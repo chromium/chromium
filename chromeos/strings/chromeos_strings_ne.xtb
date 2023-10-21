@@ -93,6 +93,7 @@
 <translation id="1643449475550628585">वालपेपर दैनिक रूपमा बदल्नुहोस्</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1651925268237749928">तपाईंले साझा एल्बम चयन गर्नुभएको छ। अन्य मान्छेहरू फोटो हाल्न वा बदल्न सक्छन्। तपाईंको वालपेपरले अहिले यो एल्बममा नभएका फोटोहरू प्रयोग गर्न सक्छ।</translation>
+<translation id="1658834457013045127">सधैँका लागि</translation>
 <translation id="1661865805917886535">खाता तथा सिस्टमसम्बन्धी केही जानकारी Google मा पठाइन सक्छ। हामी यो जानकारी प्राविधिक समस्याहरू समाधान गर्ने र हाम्रा सेवाहरूको गुणस्तर सुधार गर्ने प्रयोजनका लागि हाम्रो गोपनीयता नीति (<ph name="PRIVACYPOLICYURL" />) तथा सेवाका सर्तहरू (<ph name="TERMSOFSERVICEURL" />) बमोजिम प्रयोग गर्छौँ। सामग्री संशोधन गर्ने अनुरोध गर्न कानुनी सहायता (<ph name="LEGALHELPPAGEURL" />) मा जानुहोस्।</translation>
 <translation id="1662989795263954667">रोकियो - प्रिन्टरको मसी सकियो</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> प्रिभ्यू गर्नुहोस्</translation>
@@ -169,7 +170,9 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> वटा फोटो</translation>
 <translation id="2157660087437850958">"इमोजी पिकर" जनाउने आइकन</translation>
 <translation id="2157959690810728433">लाइनमा राखिएको छ</translation>
+<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{तपाईंका एड्मिनले तपाईंले हरेक पटक लग इन गर्दा <ph name="APP_NAME_1" /> स्वतः सुरु हुने बनाउनुभएको छ।}=2{तपाईंका एड्मिनले तपाईंले हरेक पटक लग इन गर्दा <ph name="APP_NAME_1" /> र <ph name="APP_NAME_2" /> स्वतः सुरु हुने बनाउनुभएको छ।}=3{तपाईंका एड्मिनले तपाईंले हरेक पटक लग इन गर्दा <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> र <ph name="APP_NAME_3" /> स्वतः सुरु हुने बनाउनुभएको छ।}other{तपाईंका एड्मिनले तपाईंले हरेक पटक लग इन गर्दा <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> र अन्य # वटा एपहरू स्वतः सुरु हुने बनाउनुभएको छ।}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: फेरि प्रयास गर्नुहोस्</translation>
+<translation id="215916044711630446">"APN हाल्नुहोस्" बटन अहिले अफ गरिएको छ</translation>
 <translation id="2161394479394250669">प्रिन्ट गर्ने कार्य रद्द गर्नुहोस्</translation>
 <translation id="2161656808144014275">पाठ</translation>
 <translation id="2163937499206714165">अँध्यारो मोड अन गर्नुहोस्</translation>
@@ -320,6 +323,7 @@
 <translation id="3484914941826596830">फर्मवेयर अपडेट भइरहेका बेला यो बाह्य डिभाइस अनप्लग गर्ने वा कम्प्युटर सट डाउन गर्ने काम नगर्नुहोस्। तपाईं यो विन्डो मिनिमाइज गर्न सक्नुहुन्छ। फर्मवेयर अपडेट गर्न केही मिनेट लाग्न सक्छ र अपडेट भइरहेका बेला तपाईंको बाह्य डिभाइसले काम नगर्न सक्छ।</translation>
 <translation id="3486220673238053218">परिभाषा</translation>
 <translation id="3488065109653206955">आंशिक रूपमा सक्रिय बनाइएको</translation>
+<translation id="349491921221892984"><ph name="MINUTES" /> मिनेट</translation>
 <translation id="3502426834823382181">सबै एपहरू हेर्नुहोस्</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />पर्फर्मेन्स ट्रेस डेटा<ph name="END_LINK1" /> पठाउनुहोस्</translation>
 <translation id="3517001332549868749">ChromeOS को अपडेट</translation>
@@ -399,6 +403,7 @@
 <translation id="4117637339509843559">अँध्यारो मोड</translation>
 <translation id="4130035430755296270">लेआउटसम्बन्धी थप विकल्पहरू प्राप्त गर्न होभर गरिराख्नुहोस्</translation>
 <translation id="4131410914670010031">कालो र सेतो</translation>
+<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> स्वतः सुरु गरियो}other{# वटा एपहरू स्वतः सुरु गरिए}}</translation>
 <translation id="4145784616224233563">HTTP फायरवाल</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">प्रदर्शन</translation>
@@ -444,6 +449,7 @@
 <translation id="445059817448385655">पुरानो पासवर्ड</translation>
 <translation id="4453205916657964690">सबनेट मास्क</translation>
 <translation id="4454245904991689773">स्क्यान गरेर यहाँ सेभ गर्नुहोस्</translation>
+<translation id="4456812688969919973">"APN सेभ गर्नुहोस्" बटन अहिले अफ गरिएको छ</translation>
 <translation id="4469288414739283461">अर्थ फ्लो स्क्रिन सेभर</translation>
 <translation id="4479639480957787382">इथरनेट</translation>
 <translation id="4483049906298469269">नेटवर्कको डिफल्ट गेटवेका रूपमा सेट नगरिएको यस गेटवेलाई पिङ गर्न सकिएन</translation>
@@ -478,6 +484,7 @@
 <translation id="473775607612524610">अपडेट गर्नुहोस्</translation>
 <translation id="4771607256327216405">किबोर्डको ब्याकलाइटको चमक बढाउनुहोस्</translation>
 <translation id="4773299976671772492">रोकियो</translation>
+<translation id="4782003517030001304">१ घण्टा</translation>
 <translation id="4782311465517282004">तपाईंले कुनै टेक्स्टमा दायाँ क्लिक गर्दा वा टच एन्ड होल्ड गर्दा परिभाषा, अनुवाद वा एकाइ रूपान्तरण जस्ता जानकारी प्राप्त गर्नुहोस्</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> फोटो</translation>
 <translation id="4793710386569335688">थप मद्दत चाहिएमा <ph name="BEGIN_LINK" />मद्दत केन्द्र<ph name="END_LINK" /> मा जानुहोस्।</translation>
@@ -688,6 +695,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">अँध्यारो थिम अन गर्नुहोस्‌</translation>
 <translation id="628726841779494414">प्रिन्टरसम्बन्धी सेटिङमा गई आफ्ना प्रिन्टरहरू व्यवस्थापन गर्नुहोस्</translation>
+<translation id="6292095526077353682">चार्ज भइरहेका बेला निम्न अवधिका लागि स्क्रिनसेभर देखाइयोस्</translation>
 <translation id="629550705077076970">किबोर्डको ब्याकलाइटको चमक कम गर्नुहोस्</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> परीक्षण रद्द गरिएको छ</translation>
 <translation id="631063167932043783">एक्स्प्लोर एप</translation>
@@ -714,6 +722,7 @@
 <translation id="6423239382391657905">खुल्लाVPN</translation>
 <translation id="6439505561246192797">कमजोर (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">खाताका सेटिङमा जानुहोस्</translation>
+<translation id="6462978824459367242">"APN हाल्नुहोस्" बटन अहिले अन गरिएको छ</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{पेज पुनः स्क्यान गर्ने हो?}=1{{PAGE_NUMBER} नम्बरको पेज पुनः स्क्यान गर्ने हो?}other{{PAGE_NUMBER} नम्बरको पेज पुनः स्क्यान गर्ने हो?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> ले व्यवस्थापन गर्छ</translation>
@@ -1052,6 +1061,7 @@
 <translation id="902638246363752736">किबोर्ड सेटिङहरू</translation>
 <translation id="9028832514430399253">तपाईं स्क्रिन सेभरका विकल्पहरू चयन गर्न चाहनुहुन्छ भने टगल अन गर्नुहोस्</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9049868303458988905">"APN सेभ गर्नुहोस्" बटन अहिले अन गरिएको छ</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS रिजोल्युसनमा उच्च विलम्बता छ</translation>
 <translation id="9065203028668620118">सम्पादन गर्नुहोस</translation>

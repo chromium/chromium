@@ -29,6 +29,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="109942774857561566">Mi annoio</translation>
 <translation id="1104084341931202936">Mostra impostazioni di accessibilità</translation>
 <translation id="1104621072296271835">I tuoi dispositivi funzionano ancora meglio insieme</translation>
+<translation id="1106446201446919638">1 dispositivo connesso. Durante l'utilizzo dell'hotspot, il Wi-Fi rimane disattivato.</translation>
 <translation id="1111021433905331574">Puoi cambiare il colore della retroilluminazione della tastiera in Impostazioni &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Attiva/disattiva i dati mobili. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Nascondi automaticamente barra delle app</translation>
@@ -518,6 +519,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3160929076476941240">2 h</translation>
 <translation id="3161500364292033097">Chiudi scrivania e finestre</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> sta eseguendo il rollback di <ph name="DEVICE_TYPE" />. Il dispositivo verrà reimpostato e tutti i dati verranno eliminati.</translation>
+<translation id="3170769098533255179">Nessun dispositivo connesso. Durante l'utilizzo dell'hotspot, il Wi-Fi rimane disattivato.</translation>
 <translation id="3171170659304083361">Impostazioni metodi di immissione</translation>
 <translation id="3176221688814061633">Il tuo Chromebook o dispositivo Bluetooth sta utilizzando una versione precedente di Bluetooth. Attiva la super risoluzione Bluetooth o usa il microfono interno per una migliore qualità audio.</translation>
 <translation id="3181441307743005334">Il riavvio potrebbe richiedere un po' di tempo</translation>
@@ -552,6 +554,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> dispositivi connessi all'hotspot di <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Passaggio alla modalità laptop effettuato</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> può ancora accedere in seguito.</translation>
+<translation id="3317779231018057649"><ph name="DEVICECOUNT" /> dispositivi connessi. Durante l'utilizzo dell'hotspot, il Wi-Fi rimane disattivato.</translation>
 <translation id="3321628682574733415">Codice genitore errato</translation>
 <translation id="332827762492701193">Le notifiche sono nascoste</translation>
 <translation id="3333674550998107387">Espandi la notifica <ph name="NOTIFICATION_TITLE" /></translation>
@@ -876,6 +879,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4566144812051858745">Non mi interessa alcun suggerimento</translation>
 <translation id="4569753163207712681">Visualizza app, contenuti multimediali e foto recenti dello smartphone</translation>
 <translation id="4573176682887762361">"Digita [parola/frase]"</translation>
+<translation id="4577188182049003486">Con l'hotspot attivo, il Wi-Fi non è attivo</translation>
 <translation id="4577274620589681794">Tempo scaduto · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Mostra anteprime</translation>
 <translation id="4578906031062871102">Menu Impostazioni aperto</translation>

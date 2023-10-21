@@ -75,6 +75,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> gestiona a este usuario y es posible que gestione sus ajustes y supervise su actividad de forma remota.</translation>
 <translation id="150962533380566081">El PUK no es válido.</translation>
 <translation id="1510238584712386396">Menú de aplicaciones</translation>
+<translation id="1515129336378114413">página principal del navegador</translation>
 <translation id="1526389707933164996">Animación del salvapantallas</translation>
 <translation id="152892567002884378">Subir el volumen</translation>
 <translation id="1555130319947370107">Azul</translation>
@@ -92,6 +93,7 @@
 <translation id="1643449475550628585">Cambiar imagen de fondo de pantalla a diario</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1651925268237749928">Has seleccionado un álbum compartido. Otras personas pueden añadir o cambiar fotos. Puede que tu fondo de pantalla use fotos que no están en este álbum.</translation>
+<translation id="1658834457013045127">Siempre</translation>
 <translation id="1661865805917886535">Algunos datos de tu cuenta y tu sistema podrían enviarse a Google. Usamos esta información para solucionar problemas técnicos y mejorar nuestros servicios, de acuerdo con nuestra Política de Privacidad (<ph name="PRIVACYPOLICYURL" />) y nuestros Términos del Servicio (<ph name="TERMSOFSERVICEURL" />). Para solicitar cambios de contenido, accede a la Ayuda de Legal (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Detenido: sin tinta</translation>
 <translation id="1664796644829245314">Consultar vista previa de <ph name="PREVIEW_OBJECT" /></translation>
@@ -168,7 +170,9 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotos</translation>
 <translation id="2157660087437850958">selector de emojis</translation>
 <translation id="2157959690810728433">EN COLA</translation>
+<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Tu administrador ha configurado <ph name="APP_NAME_1" /> para que se inicie automáticamente cada vez que inicies sesión.}=2{Tu administrador ha configurado <ph name="APP_NAME_1" /> y <ph name="APP_NAME_2" /> para que se inicien automáticamente cada vez que inicies sesión.}=3{Tu administrador ha configurado <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> y <ph name="APP_NAME_3" /> para que se inicien automáticamente cada vez que inicies sesión.}other{Tu administrador ha configurado <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> y # aplicaciones más para que se inicien automáticamente cada vez que inicies sesión.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Reintentar</translation>
+<translation id="215916044711630446">El botón para añadir APNs ahora está inhabilitado</translation>
 <translation id="2161394479394250669">Cancelar trabajo de impresión</translation>
 <translation id="2161656808144014275">Texto</translation>
 <translation id="2163937499206714165">Activar modo Oscuro</translation>
@@ -285,6 +289,7 @@
 <translation id="3226405216343213872">Buscando escáneres</translation>
 <translation id="3226657629376379887">Menú de acciones de diseño</translation>
 <translation id="3246869037381808805">Los trabajos de impresión con más de 1 día de antigüedad se eliminarán</translation>
+<translation id="324961752321393509">Tu administrador no permite cerrar esta aplicación</translation>
 <translation id="3268178239013324452">No se ha podido imprimir - Cierra la cubierta</translation>
 <translation id="3275729367986477355">Imagen del avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Editar archivo}other{Editar archivos}}</translation>
@@ -318,6 +323,7 @@
 <translation id="3484914941826596830">Mientras se actualiza el firmware, no desconectes este dispositivo externo ni apagues el ordenador. Puedes minimizar esta ventana. Es posible que esta actualización tarde unos minutos en instalarse y que tu dispositivo externo no funcione durante ese tiempo.</translation>
 <translation id="3486220673238053218">definición</translation>
 <translation id="3488065109653206955">Activación parcial</translation>
+<translation id="349491921221892984"><ph name="MINUTES" /> min</translation>
 <translation id="3502426834823382181">ver todas las aplicaciones</translation>
 <translation id="3510890413042482857">Enviar <ph name="BEGIN_LINK1" />datos de seguimiento de rendimiento<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Actualiza Chrome OS</translation>
@@ -397,6 +403,7 @@
 <translation id="4117637339509843559">Modo Oscuro</translation>
 <translation id="4130035430755296270">Mantén el cursor colocado sobre un elemento para ver más opciones de diseño</translation>
 <translation id="4131410914670010031">Blanco y negro</translation>
+<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> se ha iniciado automáticamente}other{# aplicaciones se han iniciado automáticamente}}</translation>
 <translation id="4145784616224233563">Cortafuegos de HTTP</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4150201353443180367">Pantalla</translation>
@@ -442,6 +449,7 @@
 <translation id="445059817448385655">Contraseña antigua</translation>
 <translation id="4453205916657964690">Máscara de subred</translation>
 <translation id="4454245904991689773">Guardar en</translation>
+<translation id="4456812688969919973">El botón para guardar APNs ahora está inhabilitado</translation>
 <translation id="4469288414739283461">Salvapantallas Movimiento de la Tierra</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Se ha producido un error al hacer ping en la puerta de enlace de red no predeterminada</translation>
@@ -476,6 +484,7 @@
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="4771607256327216405">aumentar brillo de teclado</translation>
 <translation id="4773299976671772492">Detenido</translation>
+<translation id="4782003517030001304">1 h</translation>
 <translation id="4782311465517282004">Consulta definiciones, traducciones o conversiones de unidades haciendo clic con el botón derecho en un texto o manteniéndolo pulsado</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
 <translation id="4793710386569335688">Para obtener más ayuda, accede al <ph name="BEGIN_LINK" />Centro de Ayuda<ph name="END_LINK" />.</translation>
@@ -686,6 +695,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Activar tema oscuro</translation>
 <translation id="628726841779494414">Administra tus impresoras en los ajustes de impresora</translation>
+<translation id="6292095526077353682">Mientras se carga el dispositivo, se mostrará el salvapantallas durante este periodo:</translation>
 <translation id="629550705077076970">atenuación de teclado</translation>
 <translation id="6302401976930124515">La prueba <ph name="TEST_NAME" /> se ha cancelado</translation>
 <translation id="631063167932043783">Aplicación Explorar</translation>
@@ -712,6 +722,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Débil (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Ir a la configuración de la cuenta</translation>
+<translation id="6462978824459367242">El botón para añadir APNs ahora está habilitado</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{¿Volver a escanear la página?}=1{¿Volver a escanear la página {PAGE_NUMBER}?}other{¿Volver a escanear la página {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Gestionado por <ph name="MANAGER" /></translation>
@@ -746,6 +757,7 @@
 <translation id="6659594942844771486">Pestaña</translation>
 <translation id="6673898378497337661">aumentar brillo del teclado</translation>
 <translation id="6692996468359469499">Obtener información sobre tu selección</translation>
+<translation id="6694534975463174713">candado</translation>
 <translation id="6704062477274546131">Resolución de DNS</translation>
 <translation id="6723839937902243910">Batería</translation>
 <translation id="6723847290197874913">Retroiluminación del teclado</translation>
@@ -1049,6 +1061,7 @@
 <translation id="902638246363752736">Configuración del teclado</translation>
 <translation id="9028832514430399253">Activa el interruptor para seleccionar las opciones del salvapantallas</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9049868303458988905">El botón para guardar APNs ahora está habilitado</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">La resolución de DNS tiene una latencia alta</translation>
 <translation id="9065203028668620118">Editar</translation>

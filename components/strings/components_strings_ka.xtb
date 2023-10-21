@@ -274,6 +274,7 @@
 <translation id="1507780850870535225">ლანდშაფტის დიზაინი</translation>
 <translation id="1513706915089223971">ისტორიის ჩანაწერების სია</translation>
 <translation id="1516097932025103760">ის დაიშიფრება და უსაფრთხოდ შეინახება. ამასთან, CVC არასოდეს შეინახება.</translation>
+<translation id="151720253492607760">არდაშვების გაგრძელება</translation>
 <translation id="1517433312004943670">ტელეფონის ნომრის მითითება აუცილებელია</translation>
 <translation id="1519264250979466059">აწყობის თარიღი</translation>
 <translation id="1521159554480556801">ბოჭკოვანი მასალებით და ტექსტილით შექმნილი ხელოვნება</translation>
@@ -633,7 +634,6 @@
 <translation id="2225927550500503913">ვირტუალური ბარათი ჩაირთო</translation>
 <translation id="2226636330183131181">Wi-Fi ქსელში <ph name="BEGIN_LINK" />შესვლა<ph name="END_LINK" /></translation>
 <translation id="2228057197024893428">ეს მისამართი ამჟამად შენახულია Chrome-ში. სხვადასხვა Google პროდუქტში მის გამოსაყენებლად შეინახეთ ის თქვენს Google ანგარიშში (<ph name="ACCOUNT" />).</translation>
-<translation id="2228466771983364669"><ph name="EMBEDDED_URL" />-ს ეცოდინება, <ph name="TOP_LEVEL_URL" /> რომ მოინახულეთ.</translation>
 <translation id="2233745931693710080">კომპაქტდისკი</translation>
 <translation id="2239100178324503013">ახლავე გაგზავნა</translation>
 <translation id="2241693394036365668">ფაილის ჩამოტვირთვა</translation>
@@ -878,6 +878,7 @@
 <translation id="2765217105034171413">პატარა</translation>
 <translation id="2770159525358613612">ცადეთ თქვენი ფაილების ხელახლა ატვირთვა</translation>
 <translation id="277133753123645258">გაგზავნის მეთოდი</translation>
+<translation id="2773388851563527404">Chrome უზღუდავს საიტების უმეტესობას მესამე მხარის ქუქი-ჩანაწერების გამოყენებას. ამის მიუხედავად, მესამე მხარის ქუქი-ჩანაწერები დაშვებულია ამ საიტზე, რადგან ის მათი მეშვეობით უზრუნველყოფს ძირითად სერვისებს. <ph name="LINK" /> თუ გსურთ, ეწვიეთ პარამეტრებს.</translation>
 <translation id="277499241957683684">ჩანაწერი გამოტოვებული მოწყობილობის შესახებ</translation>
 <translation id="2775884851269838147">პირველი საბეჭდი გვერდი</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -1122,6 +1123,7 @@
 <translation id="3293642807462928945">შეიტყვეთ მეტი „<ph name="POLICY_NAME" />“ წესების შესახებ</translation>
 <translation id="3295444047715739395">იხილეთ თქვენი პაროლები და მართეთ ისინი Chrome-ის პარამეტრებიდან</translation>
 <translation id="3299098170013242198">Windows Hello ჩართულია პაროლების შესავსებად</translation>
+<translation id="3299720788264079132">ფუნქციის „<ph name="FEATURE_NAME" />“ გამოყენებისას წარმოიქმნა შეფერხება</translation>
 <translation id="3303176609391916566">30 x 42 დუიმი</translation>
 <translation id="3303855915957856445">ძიების შედეგები ვერ მოიძებნა</translation>
 <translation id="3304073249511302126">Bluetooth სკანირება</translation>
@@ -1728,6 +1730,7 @@
 <translation id="4521280267704259211">კონვერტი Monarch</translation>
 <translation id="4521916730539354575">მარცხენა ლანგარი</translation>
 <translation id="4522570452068850558">დეტალები</translation>
+<translation id="4522821696628398940">გსურთ, IBAN შეინახოთ Google ანგარიშში?</translation>
 <translation id="4523643381056109546">აბრები</translation>
 <translation id="4524138615196389145">დაადასტურეთ ბარათები უფრო სწრაფად ამიერიდან WebAuthn-ის გამოყენების მეშვეობით</translation>
 <translation id="45243788195988825">დაიბლოკოს <ph name="TOPIC" /></translation>
@@ -1956,6 +1959,7 @@
 <translation id="4989163558385430922">ყველას ნახვა</translation>
 <translation id="4989542687859782284">მიუწვდომელია</translation>
 <translation id="4989809363548539747">ეს დანამატი მხარდაუჭერელია</translation>
+<translation id="4990226362263043042">ისტორიის გვერდითი პანელი</translation>
 <translation id="4990241977441916452">კონვერტი A2</translation>
 <translation id="4992066212339426712">დადუმების მოხსნა</translation>
 <translation id="4995216769782533993">ამ საიტთან თქვენი ბარათის მონაცემების გასაზიარებლად დაადასტურეთ უსაფრთხოების კოდი</translation>
@@ -2223,6 +2227,7 @@
 <translation id="5541086400771735334">საფოსტო ყუთი 7</translation>
 <translation id="5541546772353173584">დაამატეთ ელფოსტის მისამართი</translation>
 <translation id="5543722831081909240">180 გრადუსი</translation>
+<translation id="5544512018309093956">ისტორიის გვერდითი პანელი</translation>
 <translation id="555128936272638662">მობილური და უსადენო აქსესუარები</translation>
 <translation id="5551890439174915351">100 x 200 მმ</translation>
 <translation id="5552137475244467770">Chrome პერიოდულად შეამოწმებს თქვენს პაროლებს ვებში გამოქვეყნებულ სიებში. აღნიშნული ქმედებისას თქვენი პაროლები და მომხმარებლის სახელები დაშიფრული იქნება, რაც ნიშნავს, რომ მათ ვერავინ (მათ შორის, ვერც Google) წაიკითხავს.</translation>
@@ -3662,6 +3667,7 @@
 <translation id="8428634594422941299">გასაგებია</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, ქუქი-ჩანაწერების პარამეტრების Chrome-ის პარამეტრებიდან სამართავად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="8433057134996913067">ამ მოქმედებით ვებსაიტების უმეტესობიდან გამოხვალთ.</translation>
+<translation id="8434014327286137412">შემდგომი გადახდების დასაჩქარებლად შეინახეთ თქვენი IBAN თქვენს Google ანგარიშში</translation>
 <translation id="8434840396568290395">შინაური ცხოველები</translation>
 <translation id="8436623588884785770">წესების დამატება</translation>
 <translation id="8437238597147034694">გადატანის &amp;მოქმედების გაუქმება</translation>
@@ -3760,6 +3766,7 @@
 <translation id="865032292777205197">მოძრაობის სენსორები</translation>
 <translation id="865255447216708819">ყუაზე ბეჭდვის აფსკი</translation>
 <translation id="8654126188050905496">55 x 91 მმ</translation>
+<translation id="8655930295668719549">ადრე <ph name="PERMISSION" /> არ დაუშვით <ph name="ORIGIN" />-ზე</translation>
 <translation id="8662463432865928030">კომერციული უძრავი ქონება</translation>
 <translation id="8663226718884576429">შეკვეთის რეზიუმე, <ph name="TOTAL_LABEL" />, დამატებითი ინფორმაცია</translation>
 <translation id="8663909737634214500">ოპტიკური დისკი</translation>

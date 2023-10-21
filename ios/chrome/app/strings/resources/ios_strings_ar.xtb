@@ -236,6 +236,7 @@
 <translation id="2251686759395008410">القائمة ← السجلّ</translation>
 <translation id="2252674110805316998">بحث الويب</translation>
 <translation id="2256933947031277845">تتيح لك مؤسستك تسجيل الدخول باستخدام حسابات معيَّنة فقط.</translation>
+<translation id="2258326562203545455">{count,plural, =1{‏يمكنك حفظ الإشارة المرجعية في حسابك على Google‏ ({email}).}zero{‏يمكنك حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}two{‏يمكنك حفظ الإشارتَين المرجعيّتَين في حسابك على Google‏ ({email}).}few{‏يمكنك حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}many{‏يمكنك حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}other{‏يمكنك حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}}</translation>
 <translation id="225943865679747347">رمز الخطأ: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">إضافة حساب</translation>
 <translation id="2268044343513325586">تحسين</translation>
@@ -530,6 +531,7 @@
 <translation id="3779810277399252432">لا يتوفر اتصال بالإنترنت.</translation>
 <translation id="3789294999358192700">يُرجى اتّباع الخطوات التالية:</translation>
 <translation id="3789841737615482174">تثبيت</translation>
+<translation id="3792713031001122343">{count,plural, =1{‏حفظ إشارة مرجعية واحدة في حسابك على Google}zero{‏حفظ {count} إشارة مرجعية في حسابك على Google}two{‏حفظ إشارتَين مرجعيّتَين ({count}) في حسابك على Google}few{‏حفظ {count} إشارات مرجعية في حسابك على Google}many{‏حفظ {count} إشارة مرجعية في حسابك على Google}other{‏حفظ {count} إشارة مرجعية في حسابك على Google}}</translation>
 <translation id="380329542618494757">الاسم</translation>
 <translation id="3803696231112616155">اقتراح ترجمة هذا الموقع الإلكتروني</translation>
 <translation id="3810973564298564668">إدارة</translation>
@@ -797,6 +799,7 @@
 <translation id="5226568866393490213">إغلاق التحذير</translation>
 <translation id="5228579091201413441">تفعيل المزامنة</translation>
 <translation id="5232485538978018676">تسجيل الدخول باستخدام حساب مُدار</translation>
+<translation id="5234094073825090254">{count,plural, =1{‏تم حفظ الإشارة المرجعية في حسابك على Google‏ ({email}).}zero{‏تم حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}two{‏تم حفظ الإشارتَين المرجعيّتَين في حسابك على Google‏ ({email}).}few{‏تم حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}many{‏تم حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}other{‏تم حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}}</translation>
 <translation id="5234764350956374838">تجاهل</translation>
 <translation id="5235389474593199952">إخفاء السجل</translation>
 <translation id="5238301240406177137">الحفظ في الحساب</translation>
@@ -1210,6 +1213,7 @@
 <translation id="7398893703713203428">إنشاء رابط</translation>
 <translation id="7399802613464275309">التحقّق من الأمان</translation>
 <translation id="7400418766976504921">‏عنوان URL</translation>
+<translation id="7402602673739047753">{count,plural, =1{‏تم حفظ إشارة مرجعية واحدة على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، عليك حفظها في حسابك على Google‏ ({email}).}zero{‏تم حفظ {count} إشارة مرجعية على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، عليك حفظها في حسابك على Google‏ ({email}).}two{‏تم حفظ إشارتَين مرجعيّتَين ({count}) على هذا الجهاز فقط. ولاستخدامهما على أجهزتك الأخرى، عليك حفظهما في حسابك على Google‏ ({email}).}few{‏تم حفظ {count} إشارات مرجعية على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، عليك حفظها في حسابك على Google‏ ({email}).}many{‏تم حفظ {count} إشارة مرجعية على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، عليك حفظها في حسابك على Google‏ ({email}).}other{‏تم حفظ {count} إشارة مرجعية على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، عليك حفظها في حسابك على Google‏ ({email}).}}</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> مقالة غير مقروءة</translation>
 <translation id="7412027924265291969">متابعة</translation>
 <translation id="7425346204213733349">‏لن تتم بعد الآن مزامنة التغييرات التي تطرأ على الإشارات المرجعية والسجلّ وكلمات المرور وغيرها من الإعدادات مع حسابك على Google، ولكن ستظل بياناتك الحالية مخزّنة في حسابك على Google.</translation>
@@ -1494,7 +1498,6 @@
 <translation id="8868471676553493380">{count,plural, =1{علامة تبويب واحدة ({count})}zero{{count} علامة تبويب}two{علامتا تبويب ({count})}few{{count} علامات تبويب}many{{count} علامة تبويب}other{{count} علامة تبويب}}</translation>
 <translation id="8870413625673593573">العناصر المغلقة مؤخرًا</translation>
 <translation id="8876882697946675716">مواصلة مزامنة الأجهزة</translation>
-<translation id="8877287418679067891">الضبط كمتصفِّح تلقائي من خلال الإعدادات...</translation>
 <translation id="8879984884633913185">إخفاء ميزة "محو بيانات التصفّح"</translation>
 <translation id="8881801611828450202">البحث في <ph name="SEARCH_ENGINE" /> عن هذه الصورة</translation>
 <translation id="8891935667620843985">‏يمكنك فتح الروابط في Chrome تلقائيًا من خلال جعله تطبيق المتصفّح التلقائي.</translation>

@@ -93,6 +93,7 @@
 <translation id="1643449475550628585">Kasdien keisti ekrano fono vaizdą</translation>
 <translation id="1644574205037202324">Istorija</translation>
 <translation id="1651925268237749928">Pasirinkote bendrinamą albumą. Kiti žmonės gali pridėti ar keisti nuotraukas. Ekrano fonui gali būti naudojamos nuotraukos, kurių šiuo metu nėra šiame albume.</translation>
+<translation id="1658834457013045127">Visada</translation>
 <translation id="1661865805917886535">Dalis informacijos apie paskyrą ir sistemą gali būti išsiųsta „Google“. Šią informaciją naudojame spręsdami technines problemas ir tobulindami paslaugas, kurioms taikoma privatumo politika (<ph name="PRIVACYPOLICYURL" />) ir paslaugų teikimo sąlygos (<ph name="TERMSOFSERVICEURL" />). Jei norite pateikti turinio pakeitimų užklausą, eikite į puslapį „Teisinė pagalba“ (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Sustabdyta – baigėsi rašalas</translation>
 <translation id="1664796644829245314">Peržiūrėti kalendorių „<ph name="PREVIEW_OBJECT" />“</translation>
@@ -169,7 +170,9 @@
 <translation id="2152882202543497059">Nuotraukų: <ph name="NUMBER" /></translation>
 <translation id="2157660087437850958">jaustukų rinkiklis</translation>
 <translation id="2157959690810728433">ĮTRAUKTAS Į EILĘ</translation>
+<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Administratorius nustatė automatiškai paleisti programą „<ph name="APP_NAME_1" />“ kaskart, kai prisijungiate.}=2{Administratorius nustatė automatiškai paleisti programas „<ph name="APP_NAME_1" />“ ir „<ph name="APP_NAME_2" />“ kaskart, kai prisijungiate.}=3{Administratorius nustatė automatiškai paleisti programas „<ph name="APP_NAME_1" />“, „<ph name="APP_NAME_2" />“ ir „<ph name="APP_NAME_3" />“ kaskart, kai prisijungiate.}one{Administratorius nustatė automatiškai paleisti „<ph name="APP_NAME_1" />“, „<ph name="APP_NAME_2" />“ ir dar # programą kaskart, kai prisijungiate.}few{Administratorius nustatė automatiškai paleisti „<ph name="APP_NAME_1" />“, „<ph name="APP_NAME_2" />“ ir dar # programas kaskart, kai prisijungiate.}many{Administratorius nustatė automatiškai paleisti „<ph name="APP_NAME_1" />“, „<ph name="APP_NAME_2" />“ ir dar # programos kaskart, kai prisijungiate.}other{Administratorius nustatė automatiškai paleisti „<ph name="APP_NAME_1" />“, „<ph name="APP_NAME_2" />“ ir dar # programų kaskart, kai prisijungiate.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: bandyti dar kartą</translation>
+<translation id="215916044711630446">APN pridėjimo mygtukas dabar išjungtas</translation>
 <translation id="2161394479394250669">Atšaukti spausdinimo užduotį</translation>
 <translation id="2161656808144014275">Tekstas</translation>
 <translation id="2163937499206714165">Įjungti tamsų režimą</translation>
@@ -286,6 +289,7 @@
 <translation id="3226405216343213872">Ieškoma skaitytuvų</translation>
 <translation id="3226657629376379887">Išdėstymo veiksmų meniu</translation>
 <translation id="3246869037381808805">Senesnės nei 1 dienos spausdinimo užduotys bus pašalintos</translation>
+<translation id="324961752321393509">Administratorius neleidžia uždaryti šios programos</translation>
 <translation id="3268178239013324452">Nepavyko – atidarytos durelės</translation>
 <translation id="3275729367986477355">Pseudoportreto vaizdas</translation>
 <translation id="3283504360622356314">{0,plural, =1{Redaguoti failą}one{Redaguoti failus}few{Redaguoti failus}many{Redaguoti failus}other{Redaguoti failus}}</translation>
@@ -319,6 +323,7 @@
 <translation id="3484914941826596830">Kol programinė aparatinė įranga atnaujinama, neatjunkite išorinio įrenginio ir neišjunkite kompiuterio. Galite sumažinti šį langą. Šis atnaujinimo procesas gali užtrukti kelias minutes ir tuo metu jūsų išorinis įrenginys gali neveikti.</translation>
 <translation id="3486220673238053218">apibrėžimas</translation>
 <translation id="3488065109653206955">Iš dalies suaktyvinta</translation>
+<translation id="349491921221892984"><ph name="MINUTES" /> min.</translation>
 <translation id="3502426834823382181">žr. visas programas</translation>
 <translation id="3510890413042482857">Siųsti <ph name="BEGIN_LINK1" />našumo stebėjimo duomenis<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">„Chrome“ OS naujinys</translation>
@@ -398,6 +403,7 @@
 <translation id="4117637339509843559">Tamsus režimas</translation>
 <translation id="4130035430755296270">Laikykite pelės žymeklį, kad būtų parodyta daugiau išdėstymo parinkčių</translation>
 <translation id="4131410914670010031">Nespalvotai</translation>
+<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{„<ph name="APP_NAME_1" />“ buvo paleista automatiškai}one{# programa buvo paleista automatiškai}few{# programos buvo paleistos automatiškai}many{# programos buvo paleista automatiškai}other{# programų buvo paleista automatiškai}}</translation>
 <translation id="4145784616224233563">HTTP užkarda</translation>
 <translation id="4147897805161313378">„Google“ nuotraukos</translation>
 <translation id="4150201353443180367">Pateiktis</translation>
@@ -443,6 +449,7 @@
 <translation id="445059817448385655">Senas slaptažodis</translation>
 <translation id="4453205916657964690">Potinklio kaukė</translation>
 <translation id="4454245904991689773">Nuskaityti į</translation>
+<translation id="4456812688969919973">APN išsaugojimo mygtukas dabar išjungtas</translation>
 <translation id="4469288414739283461">„Earth“ srauto ekrano užsklanda</translation>
 <translation id="4479639480957787382">Eternetas</translation>
 <translation id="4483049906298469269">Nepavyko patikrinti ryšio su nenumatytuoju tinklų sietuvu</translation>
@@ -477,6 +484,7 @@
 <translation id="473775607612524610">Atnaujinti</translation>
 <translation id="4771607256327216405">klaviatūros pašviesinimas</translation>
 <translation id="4773299976671772492">Sustabdyta</translation>
+<translation id="4782003517030001304">1 val.</translation>
 <translation id="4782311465517282004">Spustelėkite dešiniuoju klavišu arba palieskite ir palaikykite tekstą, kad būtų pateiktos apibrėžtys, vertimai ar vienetų konvertavimas.</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> nuotrauk.</translation>
 <translation id="4793710386569335688">Daugiau pagalbos galite gauti <ph name="BEGIN_LINK" />pagalbos centre<ph name="END_LINK" />.</translation>
@@ -687,6 +695,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Įjungti tamsiąją temą</translation>
 <translation id="628726841779494414">Tvarkykite spausdintuvus spausdintuvų nustatymuose</translation>
+<translation id="6292095526077353682">Kol kraunama, rodyti ekrano užsklandą</translation>
 <translation id="629550705077076970">klaviatūros pritemdymas</translation>
 <translation id="6302401976930124515">Bandymas „<ph name="TEST_NAME" />“ atšauktas</translation>
 <translation id="631063167932043783">Programa „Explore“</translation>
@@ -713,6 +722,7 @@
 <translation id="6423239382391657905">Atidaryti virtualųjį privatųjį tinklą</translation>
 <translation id="6439505561246192797">Silpnas (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Eiti į paskyros nustatymus</translation>
+<translation id="6462978824459367242">APN pridėjimo mygtukas dabar įgalintas</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Iš naujo nuskaityti puslapį?}=1{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}one{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}few{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}many{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}other{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}}</translation>
 <translation id="6472207088655375767">Vienk. slaptažodis</translation>
 <translation id="6480327114083866287">Tvarko <ph name="MANAGER" /></translation>
@@ -1051,6 +1061,7 @@
 <translation id="902638246363752736">Klaviatūros nustatymai</translation>
 <translation id="9028832514430399253">Įjunkite perjungiklį, kad pasirinktumėte ekrano užsklandos parinktis</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9049868303458988905">APN išsaugojimo mygtukas dabar įgalintas</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS pavadinimų konvertavimo delsa didelė</translation>
 <translation id="9065203028668620118">Redaguoti</translation>

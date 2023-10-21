@@ -214,6 +214,7 @@
 <translation id="2158408438301413340">Chrome에서 일부 비밀번호를 확인할 수 없습니다.</translation>
 <translation id="2172688499998841696">이미지 설명 사용 중지됨</translation>
 <translation id="2172905120685242547">창을 닫으시겠습니까?</translation>
+<translation id="2173302385160625112">인터넷 연결 상태를 확인하세요.</translation>
 <translation id="2175927920773552910">QR 코드</translation>
 <translation id="218608176142494674">공유</translation>
 <translation id="2194856509914051091">고려사항</translation>
@@ -285,6 +286,7 @@
 <translation id="2571834852878229351">직접 만들기</translation>
 <translation id="2573452357057307036">Chrome을 기본 브라우저로 설정하는 방법을 알아보세요.</translation>
 <translation id="2574249610672786438">Chrome을 사용하는 어느 곳에서나 탭을 확인하려면 모든 기기에서 로그인하세요.</translation>
+<translation id="2578337197553672982">어린이를 위한 Google 콘텐츠</translation>
 <translation id="2581165646603367611">이를 통해 쿠키, 캐시 및 Chrome에서 중요하다고 간주하지 않는 사이트의 기타 데이터가 삭제됩니다.</translation>
 <translation id="2587052924345400782">최신 버전 사용 가능</translation>
 <translation id="2593272815202181319">고정 너비</translation>
@@ -699,6 +701,7 @@
 <translation id="4742970037960872810">강조표시 삭제</translation>
 <translation id="4743664893327841597">주소 표시줄이나 검색창에 입력하는 내용은 기본 검색엔진으로 전송됩니다.</translation>
 <translation id="4749960740855309258">새 탭 열기</translation>
+<translation id="4750356170202299988">어린이를 위한 콘텐츠</translation>
 <translation id="4758061975920522644">이미지만 공유</translation>
 <translation id="4759238208242260848">다운로드</translation>
 <translation id="4763480195061959176">동영상</translation>
@@ -1180,6 +1183,7 @@
 <translation id="7187993566681480880">로그인 상태일 때 Chrome에서 사용자를 보호하고 기타 Google 앱에서 사용자의 보안을 강화하는 데 사용될 수 있습니다.</translation>
 <translation id="7191430249889272776">탭이 백그라운드에 열림</translation>
 <translation id="7196215469483532480">개인 정보 보호 가이드 설명이 전체 높이로 열림</translation>
+<translation id="7205672015775254816">어린이를 위한 Google 콘텐츠 - 사용 안함</translation>
 <translation id="7207760545532569765">탭 <ph name="TAB_COUNT" />개를 새 백그라운드 탭으로 복원합니다.</translation>
 <translation id="7217781228893594884">Chrome을 종료하면 시크릿 탭이 잠깁니다.</translation>
 <translation id="7221869452894271364">페이지 새로고침</translation>
@@ -1327,6 +1331,7 @@
 <translation id="7876243839304621966">모두 삭제</translation>
 <translation id="7886917304091689118">Chrome에서 실행 중</translation>
 <translation id="7887174313503389866">주요 개인 정보 보호 및 보안 제어 기능을 둘러보세요. 추가 옵션을 알아보려면 개별 설정으로 이동합니다</translation>
+<translation id="7896724475402191389">어린이를 위한 콘텐츠 - 사용 안함</translation>
 <translation id="7903184275147100332">시간이 다소 걸릴 수 있습니다.</translation>
 <translation id="7914399737746719723">앱이 설치됨</translation>
 <translation id="7919123827536834358">자동 번역할 언어</translation>

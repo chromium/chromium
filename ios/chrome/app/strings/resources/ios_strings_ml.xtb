@@ -234,6 +234,7 @@
 <translation id="2251686759395008410">മെനു → ചരിത്രം</translation>
 <translation id="2252674110805316998">വെബ് തിരയൽ</translation>
 <translation id="2256933947031277845">ചില അക്കൗണ്ടുകൾ ഉപയോഗിച്ച് മാത്രമേ സൈൻ ഇൻ ചെയ്യാൻ നിങ്ങളുടെ സ്ഥാപനം അനുവദിക്കൂ.</translation>
+<translation id="2258326562203545455">{count,plural, =1{ബുക്ക്‌മാർക്ക്, {email} എന്ന നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിക്കാം.}other{ബുക്ക്‌മാർക്കുകൾ, {email} എന്ന നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിക്കാം.}}</translation>
 <translation id="225943865679747347">പിശക് കോഡ്: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">അക്കൗണ്ട് ചേർക്കുക</translation>
 <translation id="2268044343513325586">പരിഷ്‌ക്കരിക്കുക</translation>
@@ -528,6 +529,7 @@
 <translation id="3779810277399252432">ഇന്റർനെറ്റ് കണക്ഷനില്ല.</translation>
 <translation id="3789294999358192700">ചുവടെയുള്ള ഘട്ടങ്ങൾ ഫോളോ ചെയ്യുക:</translation>
 <translation id="3789841737615482174">ഇന്‍സ്റ്റാൾ ചെയ്യുക</translation>
+<translation id="3792713031001122343">{count,plural, =1{നിങ്ങളുടെ Google Account-ൽ 1 ബുക്ക്‌മാർക്ക് സംരക്ഷിക്കുക}other{നിങ്ങളുടെ Google Account-ൽ {count} ബുക്ക്‌മാർക്കുകൾ സംരക്ഷിക്കുക}}</translation>
 <translation id="380329542618494757">പേര്</translation>
 <translation id="3803696231112616155">ഈ സൈറ്റ് വിവർത്തനം ചെയ്യാനുള്ള അനുമതി</translation>
 <translation id="3810973564298564668">നിയന്ത്രിക്കൂ</translation>
@@ -795,6 +797,7 @@
 <translation id="5226568866393490213">മുന്നറിയിപ്പ് ഡിസ്‌മിസ് ചെയ്യുക</translation>
 <translation id="5228579091201413441">സമന്വയം പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="5232485538978018676">മാനേജ് ചെയ്യപ്പെടുന്ന അക്കൗണ്ട് ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക</translation>
+<translation id="5234094073825090254">{count,plural, =1{{email} എന്ന നിങ്ങളുടെ Google Account-ൽ ബുക്ക്‌മാർക്ക് സംരക്ഷിച്ചു.}other{{email} എന്ന നിങ്ങളുടെ Google Account-ൽ ബുക്ക്‌മാർക്കുകൾ സംരക്ഷിച്ചു.}}</translation>
 <translation id="5234764350956374838">ഡിസ്മിസ്സ് ചെയ്യുക</translation>
 <translation id="5235389474593199952">ചരിത്രം മറയ്ക്കുക</translation>
 <translation id="5238301240406177137">അക്കൗണ്ടിൽ സംരക്ഷിക്കുക</translation>
@@ -1208,6 +1211,7 @@
 <translation id="7398893703713203428">ലിങ്ക് സൃഷ്ടിക്കുക</translation>
 <translation id="7399802613464275309">സുരക്ഷാ പരിശോധന</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7402602673739047753">{count,plural, =1{1 ബുക്ക്‌മാർക്ക് ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. മറ്റ് ഉപകരണങ്ങളിൽ ഉപയോഗിക്കാൻ, {email} എന്ന നിങ്ങളുടെ Google Account-ൽ ഇത് സംരക്ഷിക്കുക.}other{{count} ബുക്ക്‌മാർക്കുകൾ ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. മറ്റ് ഉപകരണങ്ങളിൽ ഉപയോഗിക്കാൻ, {email} എന്ന നിങ്ങളുടെ Google Account-ൽ ഇവ സംരക്ഷിക്കുക.}}</translation>
 <translation id="7409985198648820906">വായിക്കാത്ത <ph name="UNREAD_COUNT" /> ലേഖനങ്ങൾ.</translation>
 <translation id="7412027924265291969">തുടരുക</translation>
 <translation id="7425346204213733349">ബുക്ക്‌മാർക്കുകൾ, ചരിത്രം, പാസ്‌വേഡുകൾ, മറ്റ് ക്രമീകരണം എന്നിവയിലുള്ള മാറ്റങ്ങളെ ഇനി നിങ്ങളുടെ Google അക്കൗണ്ടിലേക്ക് സമന്വയിപ്പിക്കില്ല. എന്നിരുന്നാലും, നിങ്ങളുടെ നിലവിലെ വിവരം Google അക്കൗണ്ടിൽ തുടർന്നും സൂക്ഷിക്കും.</translation>
@@ -1492,7 +1496,6 @@
 <translation id="8868471676553493380">{count,plural, =1{{count} ടാബ്}other{{count} ടാബുകൾ}}</translation>
 <translation id="8870413625673593573">സമീപകാലത്ത് അടച്ചവ</translation>
 <translation id="8876882697946675716">നിങ്ങളുടെ ഉപകരണങ്ങൾ സമന്വയിപ്പിച്ച് നിലനിർത്തുക</translation>
-<translation id="8877287418679067891">ക്രമീകരണത്തിൽ ഡിഫോൾട്ട് ആക്കുക...</translation>
 <translation id="8879984884633913185">'ബ്രൗസിംഗ് ഡാറ്റ മായ്ക്കുക' മറയ്ക്കുക</translation>
 <translation id="8881801611828450202">ഈ ചിത്രത്തിനായി <ph name="SEARCH_ENGINE" />-ൽ തിരയുക</translation>
 <translation id="8891935667620843985">നിങ്ങളുടെ ഡിഫോൾട്ട് ബ്രൗസർ ആപ്പ് ആയി Chrome സജ്ജീകരിച്ചാൽ നിങ്ങൾക്ക് അതിൽ ലിങ്കുകൾ സ്വയമേവ തുറക്കാം.</translation>

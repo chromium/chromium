@@ -29,6 +29,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="109942774857561566">Jeg kjeder meg</translation>
 <translation id="1104084341931202936">Vis innstillinger for tilgjengelighet</translation>
 <translation id="1104621072296271835">Enhetene fungerer enda bedre sammen</translation>
+<translation id="1106446201446919638">1 enhet er tilkoblet. Wifi holdes avslått mens wifi-sonen er i bruk.</translation>
 <translation id="1111021433905331574">Du kan endre fargen på tastaturets bakgrunnsbelysning i Innstillinger &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Slå av/på mobildata. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Skjul hyllen automatisk</translation>
@@ -517,6 +518,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3160929076476941240">2 t</translation>
 <translation id="3161500364292033097">Lukk skrivebordet og vinduene</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> utfører en rollback på <ph name="DEVICE_TYPE" />. Enheten blir tilbakestilt, og alle data blir slettet.</translation>
+<translation id="3170769098533255179">Ingen enheter er tilkoblet. Wifi holdes avslått mens wifi-sonen er i bruk.</translation>
 <translation id="3171170659304083361">Innstillinger for inndatametoder</translation>
 <translation id="3176221688814061633">Chromebooken eller Bluetooth-enheten bruker en eldre versjon av Bluetooth. Slå på Bluetooth Super Resolution eller bruk den interne mikrofonen for å få bedre lydkvalitet.</translation>
 <translation id="3181441307743005334">Det kan ta en stund å starte på nytt</translation>
@@ -550,6 +552,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> enheter er koblet til wifi-sonen på <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Byttet til laptopmodus</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan fortsatt logge på senere.</translation>
+<translation id="3317779231018057649"><ph name="DEVICECOUNT" /> enheter er tilkoblet. Wifi holdes avslått mens wifi-sonen er i bruk.</translation>
 <translation id="3321628682574733415">Feil kode for foreldertilgang</translation>
 <translation id="332827762492701193">Varsler er skjult</translation>
 <translation id="3339826665088060472">Skjermdump, verktøy for å ta skjermdumper og skjermopptak</translation>
@@ -874,6 +877,7 @@ Koble enheten til strøm.</translation>
 <translation id="4566144812051858745">Ikke interessert i noen forslag</translation>
 <translation id="4569753163207712681">Se nylige bilder, medier og apper fra telefonen din</translation>
 <translation id="4573176682887762361">«Skriv inn [ord/frase]»</translation>
+<translation id="4577188182049003486">Wifi er av når wifi-sonen er på</translation>
 <translation id="4577274620589681794">Tiden er ute · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Se forhåndsvisninger</translation>
 <translation id="4578906031062871102">Innstillinger-menyen er åpnet</translation>

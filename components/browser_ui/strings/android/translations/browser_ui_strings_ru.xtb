@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">Помогите нам улучшить Chrome – расскажите, почему вы разрешили сторонние файлы cookie. <ph name="BEGIN_LINK" />Отправить отзыв<ph name="END_LINK" /></translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Удалить</translation>
+<translation id="1192844206376121885">Будут удалены все данные и файлы cookie, которые сохранены сайтом <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Далее</translation>
 <translation id="1242008676835033345">Встроено на сайте <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Остановить</translation>
@@ -58,6 +59,7 @@
 <translation id="216989819110952009">Даже в защитных очках Дороти и ее друзья были ослеплены блеском</translation>
 <translation id="2176704795966505152">Показывать параметр изменения масштаба в главном меню</translation>
 <translation id="2182457891543959921">Запрашивать для сайтов разрешение на создание 3D-карты места, в котором вы находитесь, и отслеживание положения камеры (рекомендуется)</translation>
+<translation id="2185965788978862351">Будут удалены данные и файлы cookie, сохраненные сайтами или приложениями, добавленными на главный экран (<ph name="DATASIZE" />).</translation>
 <translation id="2194856509914051091">Важная информация</translation>
 <translation id="2212565012507486665">Разрешить файлы cookie</translation>
 <translation id="2228071138934252756">Чтобы у приложения "<ph name="APP_NAME" />" был доступ к камере, включите ее в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
@@ -80,6 +82,7 @@
 <translation id="2434158240863470628">Скачивание завершено <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="244264527810019436">В режиме инкогнито некоторые функции сайтов могут быть отключены</translation>
 <translation id="2442870161001914531">Всегда запрашивать версию для ПК</translation>
+<translation id="2469312991797799607">Будут удалены все данные и файлы cookie, сохраненные сайтом <ph name="ORIGIN" /> и связанными с ним сайтами.</translation>
 <translation id="2479148705183875116">Открыть настройки</translation>
 <translation id="2482878487686419369">Уведомления</translation>
 <translation id="2485422356828889247">Удалить</translation>
@@ -223,6 +226,7 @@
 <translation id="5063480226653192405">Использование</translation>
 <translation id="5091013926750941408">Мобильная версия</translation>
 <translation id="509133520954049755">Запрашивать версию для ПК</translation>
+<translation id="5099358668261120049">Будут удалены все данные и файлы cookie, которые сохранены сайтом <ph name="ORIGIN" /> или его приложением, добавленным на главный экран.</translation>
 <translation id="5100237604440890931">Свернуто. Нажмите, чтобы развернуть.</translation>
 <translation id="5123685120097942451">Вкладка инкогнито</translation>
 <translation id="5186036860380548585">Действие доступно вверху экрана</translation>
@@ -269,6 +273,7 @@
 <translation id="5916664084637901428">ВКЛ</translation>
 <translation id="5922853908706496913">Предоставлен доступ к вашему экрану</translation>
 <translation id="5922967540311291836">Блокировать сторонние файлы cookie</translation>
+<translation id="5923512600150154850">Будут удалены данные и файлы cookie, сохраненные сайтами (<ph name="DATASIZE" />).</translation>
 <translation id="5939518447894949180">Сбросить</translation>
 <translation id="5964247741333118902">Встроенный контент</translation>
 <translation id="5968921426641056619">Введите веб-адрес</translation>
@@ -324,6 +329,7 @@
 <translation id="6864395892908308021">Это устройство не поддерживает NFC.</translation>
 <translation id="6912998170423641340">Блокировать сайтам доступ к тексту и изображениям, скопированным в буфер обмена</translation>
 <translation id="6945221475159498467">Выбрать</translation>
+<translation id="6950072572526089586">Для обеспечения правильной работы сайты могут сохранять информацию о ваших действиях на них. Например, это делается, чтобы вам не приходилось вновь входить в аккаунт или повторно добавлять товары в корзину. Часто такая информация временно хранится на вашем устройстве.</translation>
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6981982820502123353">Спец. возможности</translation>
 <translation id="6992289844737586249">Запрашивать разрешение на доступ к микрофону (рекомендуется)</translation>
@@ -337,6 +343,7 @@
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> КБ</translation>
 <translation id="7180611975245234373">Обновить</translation>
 <translation id="7188508872042490670">Данные сайтов, сохраненные на устройстве</translation>
+<translation id="7201549776650881587">Будут удалены все данные и файлы cookie, сохраненные сайтами, которые связаны с <ph name="ORIGIN" />, или их приложением, добавленным на главный экран.</translation>
 <translation id="7203150201908454328">Развернуто</translation>
 <translation id="7219254577985949841">Удалить данные сайта?</translation>
 <translation id="723171743924126238">Выберите изображения</translation>

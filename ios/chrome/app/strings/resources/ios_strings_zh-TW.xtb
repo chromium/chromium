@@ -232,6 +232,7 @@
 <translation id="2251686759395008410">「選單」→「歷史記錄」</translation>
 <translation id="2252674110805316998">網頁搜尋</translation>
 <translation id="2256933947031277845">貴機構規定你只能使用特定帳戶登入。</translation>
+<translation id="2258326562203545455">{count,plural, =1{你可以將書籤儲存到 Google 帳戶 ({email})。}other{你可以將書籤儲存到 Google 帳戶 ({email})。}}</translation>
 <translation id="225943865679747347">錯誤代碼：<ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">新增帳戶</translation>
 <translation id="2268044343513325586">修正搜尋</translation>
@@ -526,6 +527,7 @@
 <translation id="3779810277399252432">沒有網際網路連線。</translation>
 <translation id="3789294999358192700">步驟如下：</translation>
 <translation id="3789841737615482174">安裝</translation>
+<translation id="3792713031001122343">{count,plural, =1{將 1 個書籤儲存到 Google 帳戶}other{將 {count} 個書籤儲存到 Google 帳戶}}</translation>
 <translation id="380329542618494757">姓名</translation>
 <translation id="3803696231112616155">針對這個網站提供翻譯選項</translation>
 <translation id="3810973564298564668">管理</translation>
@@ -793,6 +795,7 @@
 <translation id="5226568866393490213">忽略警告</translation>
 <translation id="5228579091201413441">啟用同步功能</translation>
 <translation id="5232485538978018676">使用受管理的帳戶登入</translation>
+<translation id="5234094073825090254">{count,plural, =1{書籤已儲存到 Google 帳戶 ({email})。}other{書籤已儲存到 Google 帳戶 ({email})。}}</translation>
 <translation id="5234764350956374838">關閉</translation>
 <translation id="5235389474593199952">隱藏「歷史記錄」</translation>
 <translation id="5238301240406177137">儲存到帳戶</translation>
@@ -1206,6 +1209,7 @@
 <translation id="7398893703713203428">建立連結</translation>
 <translation id="7399802613464275309">安全檢查</translation>
 <translation id="7400418766976504921">網址</translation>
+<translation id="7402602673739047753">{count,plural, =1{1 個書籤只會儲存在這部裝置上。如要在其他裝置上使用，請儲存到 Google 帳戶 ({email})。}other{{count} 個書籤只會儲存在這部裝置上。如要在其他裝置上使用，請儲存到 Google 帳戶 ({email})。}}</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> 篇未讀文章。</translation>
 <translation id="7412027924265291969">繼續</translation>
 <translation id="7425346204213733349">你更改過的書籤、歷史記錄、密碼和其他設定不會繼續與 Google 帳戶中的資料保持同步，但是 Google 帳戶現有的資料仍會保留。</translation>
@@ -1490,7 +1494,6 @@
 <translation id="8868471676553493380">{count,plural, =1{{count} 個分頁}other{{count} 個分頁}}</translation>
 <translation id="8870413625673593573">最近關閉的分頁</translation>
 <translation id="8876882697946675716">讓你的裝置保持同步</translation>
-<translation id="8877287418679067891">在「設定」中設為預設…</translation>
 <translation id="8879984884633913185">隱藏「清除瀏覽資料」</translation>
 <translation id="8881801611828450202">透過 <ph name="SEARCH_ENGINE" /> 搜尋這張圖片</translation>
 <translation id="8891935667620843985">只要將 Chrome 設為預設瀏覽器應用程式，即可自動在 Chrome 中開啟連結。</translation>

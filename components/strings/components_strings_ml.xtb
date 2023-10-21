@@ -274,6 +274,7 @@
 <translation id="1507780850870535225">ലാൻഡ്‌സ്‌കേപ്പ് ഡിസൈൻ</translation>
 <translation id="1513706915089223971">ചരിത്ര എൻട്രികളുടെ ലിസ്റ്റ്</translation>
 <translation id="1516097932025103760">ഇത് എൻക്രിപ്റ്റ് ചെയ്യും, സുരക്ഷിതമായി സംരക്ഷിക്കും, CVC ഒരിക്കലും സംഭരിക്കില്ല.</translation>
+<translation id="151720253492607760">അനുവദിക്കാതെ തുടരുക</translation>
 <translation id="1517433312004943670">ഫോൺ നമ്പർ ആവശ്യമാണ്</translation>
 <translation id="1519264250979466059">ബിൽഡ് തീയതി</translation>
 <translation id="1521159554480556801">ഫൈബറും ടെക്‌സ്‌റ്റൈൽ ആർട്ട്സും</translation>
@@ -633,7 +634,6 @@
 <translation id="2225927550500503913">വെർച്വൽ കാർഡ് ഓണാക്കി</translation>
 <translation id="2226636330183131181">വൈഫൈ നെറ്റ്‌വർക്കിലേക്ക് <ph name="BEGIN_LINK" />സൈൻ ഇൻ ചെയ്യുന്നു<ph name="END_LINK" /></translation>
 <translation id="2228057197024893428">ഈ വിലാസം നിലവിൽ Chrome-ൽ സംരക്ഷിച്ചിരിക്കുന്നു. Google ഉൽപ്പന്നങ്ങളിലുടനീളം ഉപയോഗിക്കാൻ, ഇത് നിങ്ങളുടെ <ph name="ACCOUNT" /> എന്ന Google Account-ൽ സംരക്ഷിക്കുക.</translation>
-<translation id="2228466771983364669">നിങ്ങൾ <ph name="TOP_LEVEL_URL" /> സന്ദർശിച്ചെന്ന് <ph name="EMBEDDED_URL" /> എന്നതിന് അറിയിപ്പ് ലഭിക്കും.</translation>
 <translation id="2233745931693710080">കോംപാക്റ്റ് ഡിസ്‌ക്</translation>
 <translation id="2239100178324503013">ഇപ്പോൾ അയയ്‌ക്കുക</translation>
 <translation id="2241693394036365668">ഫയൽ ഡൗൺലോഡ് ചെയ്യുമ്പോൾ</translation>
@@ -878,6 +878,7 @@
 <translation id="2765217105034171413">ചെറുത്</translation>
 <translation id="2770159525358613612">നിങ്ങളുടെ ഫയലുകൾ അപ്‌ലോഡ് ചെയ്യാൻ വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="277133753123645258">ഷിപ്പിംഗ് രീതി</translation>
+<translation id="2773388851563527404">മൂന്നാം കക്ഷി കുക്കികൾ ഉപയോഗിക്കുന്നതിൽ നിന്ന് മിക്ക സൈറ്റുകളെയും Chrome നിയന്ത്രിക്കുന്നു. എന്നാൽ അടിസ്ഥാന സേവനങ്ങൾ നൽകുന്നതിന് മൂന്നാം കക്ഷി കുക്കികളെ ആശ്രയിക്കുന്നതിനാൽ അവ ഈ സൈറ്റിൽ അനുവദനീയമാണ്. <ph name="LINK" /> ക്രമീകരണം സന്ദർശിക്കുക.</translation>
 <translation id="277499241957683684">ഉപകരണ റെക്കോർഡ് കാണുന്നില്ല</translation>
 <translation id="2775884851269838147">ആദ്യ അച്ചടി പേജ്</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -1121,6 +1122,7 @@
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> നയത്തെ കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="3295444047715739395">Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ പാസ്‌വേഡുകൾ കാണുക, മാനേജ് ചെയ്യുക</translation>
 <translation id="3299098170013242198">പാസ്‌വേഡുകൾ പൂരിപ്പിക്കുന്നതിന് Windows Hello ഓണാണ്</translation>
+<translation id="3299720788264079132"><ph name="FEATURE_NAME" /> ഉപയോഗിക്കുന്നതിനിടെ എന്തോ കുഴപ്പമുണ്ടായി</translation>
 <translation id="3303176609391916566">30 x 42 ഇഞ്ച്</translation>
 <translation id="3303855915957856445">തിരയൽ ഫലങ്ങളൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="3304073249511302126">Bluetooth സ്‌കാനിംഗ്</translation>
@@ -1727,6 +1729,7 @@
 <translation id="4521280267704259211">Envelope Monarch</translation>
 <translation id="4521916730539354575">ഇടത്ത് വശത്തുള്ള ട്രേ</translation>
 <translation id="4522570452068850558">വിശദാംശങ്ങൾ‌</translation>
+<translation id="4522821696628398940">Google Account-ലേക്ക് IBAN സംരക്ഷിക്കണോ?</translation>
 <translation id="4523643381056109546">സൈനേജ്</translation>
 <translation id="4524138615196389145">WebAuthn ഉപയോഗിച്ച് നിങ്ങളുടെ കാർഡുകൾ ഇപ്പോൾ മുതൽ വേഗത്തിൽ സ്ഥിരീകരിക്കുക</translation>
 <translation id="45243788195988825"><ph name="TOPIC" /> ബ്ലോക്ക് ചെയ്യുക</translation>
@@ -3162,6 +3165,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7461924472993315131">പിൻ ചെയ്യുക</translation>
 <translation id="7463075493919226237">ഓസ്ട്രേലിയൻ ഫുട്ബോൾ</translation>
+<translation id="7465036432780054056">നിങ്ങൾ <ph name="TOP_LEVEL_URL" /> സന്ദർശിച്ചെന്ന് <ph name="EMBEDDED_URL" /> എന്നതിന് അറിയിപ്പ് ലഭിക്കും</translation>
 <translation id="7465963048299965912">10 x 13 ഇഞ്ച്</translation>
 <translation id="7469935732330206581">ഫോം സുരക്ഷിതമല്ല</translation>
 <translation id="7473891865547856676">വേണ്ട, നന്ദി</translation>
@@ -3661,6 +3665,7 @@
 <translation id="8428634594422941299">മനസ്സിലായി</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ കുക്കി മുൻഗണനകൾ മാനേജ് ചെയ്യാൻ 'Tab' അമർത്തിയ ശേഷം 'Enter' അമർത്തുക</translation>
 <translation id="8433057134996913067">ഇത് നിങ്ങളെ മിക്ക വെബ്‌സൈറ്റുകളിൽ നിന്നും സൈൻ ഔട്ട് ചെയ്യിക്കും.</translation>
+<translation id="8434014327286137412">അടുത്ത തവണ കൂടുതൽ വേഗത്തിൽ പണമടയ്ക്കാൻ, Google Account-ലേക്ക് നിങ്ങളുടെ IBAN സംരക്ഷിക്കുക</translation>
 <translation id="8434840396568290395">വളർത്തുമൃഗങ്ങൾ</translation>
 <translation id="8436623588884785770">നയം ചേർക്കുക</translation>
 <translation id="8437238597147034694">&amp;നീക്കുന്നത് പഴയപടിയാക്കുക</translation>
@@ -3759,6 +3764,7 @@
 <translation id="865032292777205197">മോഷൻ സെൻസറുകൾ</translation>
 <translation id="865255447216708819">ബാക്ക് പ്രിന്റ് ഫിലിം</translation>
 <translation id="8654126188050905496">55 x 91 മി.മീ</translation>
+<translation id="8655930295668719549">നിങ്ങൾ മുമ്പ് <ph name="ORIGIN" /> -ൽ <ph name="PERMISSION" /> അനുവദിച്ചിരുന്നില്ല</translation>
 <translation id="8662463432865928030">വാണിജ്യപരമായ പ്രോപ്പർട്ടികൾ</translation>
 <translation id="8663226718884576429">ഓർഡർ സംഗ്രഹം, <ph name="TOTAL_LABEL" />, കൂടുതൽ വിശദാംശങ്ങൾ</translation>
 <translation id="8663909737634214500">ഒപ്‌റ്റിക്കൽ ഡിസ്‌ക്</translation>

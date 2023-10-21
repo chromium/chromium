@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">Дапамажыце нам палепшыць Chrome – раскажыце, чаму вы дазволілі староннія файлы cookie. <ph name="BEGIN_LINK" />Адправіць водгук<ph name="END_LINK" /></translation>
 <translation id="1178581264944972037">Прыпыніць</translation>
 <translation id="1181037720776840403">Выдаліць</translation>
+<translation id="1192844206376121885">Будуць выдалены ўсе даныя і файлы cookie, захаваныя сайтам <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Далей</translation>
 <translation id="1242008676835033345">Убудавана на сайце <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Спыніць</translation>
@@ -58,6 +59,7 @@
 <translation id="216989819110952009">Нават надзеўшы зялёныя акуляры, Дораці і яе сябры былі ашаломленыя</translation>
 <translation id="2176704795966505152">Паказваць параметр змянення маштабу ў галоўным меню</translation>
 <translation id="2182457891543959921">Пытацца, перш чым дазволіць сайтам ствараць 3D-карту вашага асяроддзя і адсочваць становішча камеры (рэкамендуецца)</translation>
+<translation id="2185965788978862351">Будуць выдалены даныя і файлы cookie (<ph name="DATASIZE" />), захаваныя сайтамі або дададзенымі на галоўны экран праграмамі.</translation>
 <translation id="2194856509914051091">Інфармацыя для разгляду</translation>
 <translation id="2212565012507486665">Дазволіць файлы cookie</translation>
 <translation id="2228071138934252756">Каб праграма "<ph name="APP_NAME" />" атрымала доступ да камеры, уключыце камеру таксама ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
@@ -80,6 +82,7 @@
 <translation id="2434158240863470628">Спампоўванне завершана <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="244264527810019436">На некаторых сайтах у рэжыме інкогніта можа не працаваць частка функцый</translation>
 <translation id="2442870161001914531">Заўсёды запытваць версію сайта для настольнага камп'ютара</translation>
+<translation id="2469312991797799607">Будуць выдалены ўсе даныя і файлы cookie дамена <ph name="ORIGIN" /> і сайтаў, якія да яго належаць.</translation>
 <translation id="2479148705183875116">Перайсці ў Налады</translation>
 <translation id="2482878487686419369">Апавяшчэнні</translation>
 <translation id="2485422356828889247">Выдаліць</translation>
@@ -223,6 +226,7 @@
 <translation id="5063480226653192405">Выкарыстанне</translation>
 <translation id="5091013926750941408">Мабільны сайт</translation>
 <translation id="509133520954049755">Запытваць версію для камп'ютараў</translation>
+<translation id="5099358668261120049">Будуць выдалены ўсе даныя і файлы cookie, захаваныя сайтам <ph name="ORIGIN" /> або яго праграмай, дададзенай на галоўны экран.</translation>
 <translation id="5100237604440890931">Згорнута – каб разгарнуць, націсніце тут.</translation>
 <translation id="5123685120097942451">Укладка інкогніта</translation>
 <translation id="5186036860380548585">Гэты выбар можна зрабіць уверсе экрана</translation>
@@ -269,6 +273,7 @@
 <translation id="5916664084637901428">Уключана</translation>
 <translation id="5922853908706496913">Ваш экран абагульваецца</translation>
 <translation id="5922967540311291836">Блакіраваць староннія файлы cookie:</translation>
+<translation id="5923512600150154850">Будуць выдалены даныя і файлы cookie (<ph name="DATASIZE" />), захаваныя сайтамі.</translation>
 <translation id="5939518447894949180">Скінуць</translation>
 <translation id="5964247741333118902">Убудаванае змесціва</translation>
 <translation id="5968921426641056619">Увядзіце вэб-адрас</translation>
@@ -324,6 +329,7 @@
 <translation id="6864395892908308021">Гэта прылада не падтрымлівае функцыю NFC</translation>
 <translation id="6912998170423641340">Заблакіраваць сайтам доступ да чытання тэксту і відарысаў з буфера абмену</translation>
 <translation id="6945221475159498467">Выбраць</translation>
+<translation id="6950072572526089586">Каб працаваць належным чынам, сайты, якія вы наведваеце, могуць захоўваць даныя пра вашы дзеянні, напрыклад інфармацыю пра дададзеныя ў кошык тавары або пра тое, што вы ўвайшлі ва ўліковы запіс. Часцей за ўсё гэта інфармацыя часова захоўваецца на прыладзе.</translation>
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6981982820502123353">Спец. магчымасці</translation>
 <translation id="6992289844737586249">Пытацца, перш чым дазволіць сайтам выкарыстоўваць мікрафон (рэкамендуецца)</translation>
@@ -337,6 +343,7 @@
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> КБ</translation>
 <translation id="7180611975245234373">Абнавіць</translation>
 <translation id="7188508872042490670">Даныя сайтаў, захаваныя на прыладзе</translation>
+<translation id="7201549776650881587">Будуць выдалены ўсе даныя і файлы cookie, захаваныя сайтамі дамена <ph name="ORIGIN" /> або яго праграмай, дададзенай на галоўны экран.</translation>
 <translation id="7203150201908454328">Разгорнута</translation>
 <translation id="7219254577985949841">Выдаліць гэтыя даныя?</translation>
 <translation id="723171743924126238">Выберыце відарысы</translation>

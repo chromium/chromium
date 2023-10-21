@@ -29,6 +29,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="109942774857561566">Nudzi mi się</translation>
 <translation id="1104084341931202936">Pokaż ustawienia ułatwień dostępu</translation>
 <translation id="1104621072296271835">Razem Twoje urządzenia mogą jeszcze więcej</translation>
+<translation id="1106446201446919638">Połączono 1 urządzenie. Gdy korzystasz z hotspota, Wi-Fi pozostaje wyłączone.</translation>
 <translation id="1111021433905331574">Kolor podświetlenia klawiatury możesz zmienić, klikając Ustawienia &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Przełącz mobilną transmisję danych. <ph name="STATE" /></translation>
 <translation id="112308213915226829">Autoukrywanie półki</translation>
@@ -191,6 +192,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1737078180382804488">Zamknij konfigurację wyświetlania powiadomień z telefonu</translation>
 <translation id="174102739345480129">Pisak jest wyłączony.</translation>
 <translation id="1743570585616704562">Nie rozpoznano</translation>
+<translation id="1743927604032653654">Zwiń powiadomienie <ph name="NOTIFICATION_TITLE" /></translation>
 <translation id="1746730358044914197">Metody wprowadzania zostały skonfigurowane przez administratora.</translation>
 <translation id="1747336645387973286">termin <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Klawiatura ekranowa włączona</translation>
@@ -517,6 +519,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3160929076476941240">2 godz.</translation>
 <translation id="3161500364292033097">Zamknij biurko i okna</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> przywraca na urządzeniu <ph name="DEVICE_TYPE" /> wcześniejszą wersję systemu operacyjnego. Urządzenie zostanie zresetowane, a wszystkie dane – usunięte.</translation>
+<translation id="3170769098533255179">Brak połączonych urządzeń. Gdy korzystasz z hotspota, Wi-Fi pozostaje wyłączone.</translation>
 <translation id="3171170659304083361">Ustawienia metod wprowadzania</translation>
 <translation id="3176221688814061633">Na Twoim Chromebooku lub urządzeniu Bluetooth funkcja Bluetooth jest dostępna w starszej wersji. Włącz superrozdzielczość Bluetooth lub użyj mikrofonu wewnętrznego, aby uzyskać lepszą jakość dźwięku.</translation>
 <translation id="3181441307743005334">Ponowne uruchomienie może trochę potrwać</translation>
@@ -530,6 +533,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3217205077783620295">Dźwięk jest włączony. Kliknij, by wyciszyć.</translation>
 <translation id="3226991577105957773">i jeszcze <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3233611303007751344">Oszczędzanie baterii zostało wyłączone</translation>
 <translation id="324366796737464147">Wyciszanie szumów</translation>
 <translation id="3249513730522716925">Okno <ph name="WINDOW_TITLE" /> zostało przeniesione z biurka <ph name="ACTIVE_DESK" /> na biurko <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Typ zadania: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -550,8 +554,10 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3306386552969601301">Urządzenia połączone z hotspotem <ph name="DEVICE_NAME" />: <ph name="DEVICECOUNT" /></translation>
 <translation id="3307642347673023554">Przełączono na tryb laptopa</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> nadal może się później zalogować.</translation>
+<translation id="3317779231018057649">Podłączone urządzenia: <ph name="DEVICECOUNT" />. Gdy korzystasz z hotspota, Wi-Fi pozostaje wyłączone.</translation>
 <translation id="3321628682574733415">Nieprawidłowy kod rodzica</translation>
 <translation id="332827762492701193">Powiadomienia są ukryte</translation>
+<translation id="3333674550998107387">Rozwiń powiadomienie <ph name="NOTIFICATION_TITLE" /></translation>
 <translation id="3339826665088060472">Zrzut ekranu, narzędzia do robienia zrzutów i nagrań ekranu</translation>
 <translation id="3340978935015468852">ustawienia</translation>
 <translation id="3341303451326249809">Wykonano zrzut ekranu</translation>
@@ -766,6 +772,8 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4146671046252289537">Przejdź na koniec następnego słowa</translation>
 <translation id="4146833061457621061">Włącz muzykę</translation>
 <translation id="4150201353443180367">Wyświetlacz</translation>
+<translation id="4156293514828496577">Bateria: pozostało <ph name="PERCENTAGE" />% (około <ph name="TIME_LEFT" />).
+W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczone.</translation>
 <translation id="4165275524535002941">Kabel może nie działać z wyświetlaczami</translation>
 <translation id="4177415338862979658">Kliknij, aby sprawdzić szczegóły</translation>
 <translation id="4177913004758410636">{0,plural, =1{Aktualizacja urządzenia nastąpi w ciągu 1 dnia}few{Aktualizacja urządzenia nastąpi w ciągu # dni}many{Aktualizacja urządzenia nastąpi w ciągu # dni}other{Aktualizacja urządzenia nastąpi w ciągu # dnia}}</translation>
@@ -874,6 +882,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4566144812051858745">Żadne sugestie mnie nie interesują</translation>
 <translation id="4569753163207712681">Wyświetlaj najnowsze zdjęcia, pliki multimedialne i aplikacje z telefonu</translation>
 <translation id="4573176682887762361">„Wpisz [słowo/wyrażenie]”</translation>
+<translation id="4577188182049003486">Gdy hotspot jest włączony, Wi-Fi jest wyłączone</translation>
 <translation id="4577274620589681794">Czas minął · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Pokaż podglądy</translation>
 <translation id="4578906031062871102">Otwarto menu ustawień</translation>
@@ -895,6 +904,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4659419629803378708">Włączono ChromeVox</translation>
 <translation id="4666911709726371538">Więcej aplikacji</translation>
 <translation id="4667099493359681081">Pobieram <ph name="FILENAME" /></translation>
+<translation id="4672539464599646374">Oszczędzanie baterii jest włączone</translation>
 <translation id="468293128311738995">Aplikacje z telefonu</translation>
 <translation id="4690510401873698237">Półka na dole</translation>
 <translation id="4696813013609194136">Odblokuj urządzenie kodem rodzica</translation>
@@ -1055,6 +1065,8 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5297704307811127955">Wyłączono</translation>
 <translation id="5300589172476337783">Pokaż</translation>
 <translation id="5302048478445481009">Język</translation>
+<translation id="5303319262469238330">Bateria: pozostało <ph name="PERCENTAGE" />%.
+W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczone.</translation>
 <translation id="5308380583665731573">Połącz</translation>
 <translation id="5313326810920013265">Ustawienia Bluetooth</translation>
 <translation id="5314219114274263156">Nagrano ekran</translation>
@@ -1295,6 +1307,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="6231419273573514727">Wydajność urządzeń peryferyjnych może być ograniczona</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> używa teraz kamery i mikrofonu</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="62380141479352646">Słaba bateria. Zostało włączone Oszczędzanie baterii.</translation>
 <translation id="6247728804802644171">Otwórz powiadomienia</translation>
 <translation id="6254629735336163724">Zablokowano w orientacji poziomej</translation>
 <translation id="6259254695169772643">Zaznacz rysikiem</translation>
@@ -1408,6 +1421,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Kamera i mikrofon w użyciu</translation>
 <translation id="6739144137573853180">OTWÓRZ USTAWIENIA</translation>
+<translation id="6747985245839783873">Poziom naładowania baterii: <ph name="PERCENTAGE" />%. Włączone jest Oszczędzanie baterii.</translation>
 <translation id="6751052314767925245">Wymusił administrator</translation>
 <translation id="6751826523481687655">Śledzenie wydajności jest włączone</translation>
 <translation id="6752912906630585008">Biurko <ph name="REMOVED_DESK" /> zostało usunięte i połączone z biurkiem <ph name="RECEIVE_DESK" /></translation>
@@ -1507,6 +1521,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="7131634465328662194">Nastąpi automatyczne wylogowanie.</translation>
 <translation id="7143207342074048698">Łączenie</translation>
 <translation id="7144942256906679589">Stan baterii</translation>
+<translation id="7145639536026937076">Naładowanie baterii: <ph name="PERCENTAGE" />%. Trwa ładowanie. Włączone jest Oszczędzanie baterii.</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1517,6 +1532,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="7198435252016571249">Podgląd z kamery został przyciągnięty do prawego dolnego rogu. Konflikt z obszarem systemowym.</translation>
 <translation id="7219573373513695352">Brak podłączonych urządzeń</translation>
 <translation id="7229029500464092426">Pamięć: <ph name="AVAILABLE_MEMORY" /> | Łącznie: <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7244725679040769470">Bateria: pozostało <ph name="PERCENTAGE" />%. Podłącz urządzenie do zasilania.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Konieczne jest ponowne uruchomienie tego Chromebooka, by zainstalować aktualizację. Może to potrwać około minuty.</translation>
 <translation id="7256634071279256947">Tylny mikrofon</translation>
 <translation id="7258828758145722155">Edytowane wczoraj</translation>
@@ -1910,6 +1926,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8878886163241303700">Rozszerzony ekran</translation>
 <translation id="888982883502837004">Dostępne są aktualizacje oprogramowania układowego urządzenia. Kliknij, aby je zobaczyć i zainstalować.</translation>
 <translation id="8896630965521842259">Sablon <ph name="DESK_TEMPLATE_NAME" /> zostanie trwale usunięty</translation>
+<translation id="889790758758811533">Bateria: pozostało <ph name="PERCENTAGE" />% (około <ph name="TIME_LEFT" />). Podłącz urządzenie do zasilania.</translation>
 <translation id="88986195241502842">Strona w dół</translation>
 <translation id="8905919797434099235">(Bez tytułu)</translation>
 <translation id="890616557918890486">Zmień źródło</translation>

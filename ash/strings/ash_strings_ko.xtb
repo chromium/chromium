@@ -191,6 +191,7 @@
 <translation id="1737078180382804488">휴대전화 알림 보기 설정 닫기</translation>
 <translation id="174102739345480129">마커가 꺼졌습니다.</translation>
 <translation id="1743570585616704562">인식할 수 없음</translation>
+<translation id="1743927604032653654"><ph name="NOTIFICATION_TITLE" /> 알림 접기</translation>
 <translation id="1746730358044914197">입력 방법은 관리자가 설정합니다.</translation>
 <translation id="1747336645387973286">마감일: <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">터치 키보드 사용 설정됨</translation>
@@ -530,6 +531,7 @@
 <translation id="3217205077783620295">볼륨이 켜져 있으며 전환하면 오디오가 꺼집니다.</translation>
 <translation id="3226991577105957773">외 <ph name="COUNT" />개</translation>
 <translation id="3227137524299004712">마이크</translation>
+<translation id="3233611303007751344">절전 모드가 사용 중지되었습니다</translation>
 <translation id="324366796737464147">주변 소음 제거</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> 창이 <ph name="ACTIVE_DESK" /> 데스크에서 <ph name="TARGET_DESK" /> 데스크로 이동했습니다.</translation>
 <translation id="3253743281242075461">수업 과제 유형: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -552,6 +554,7 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" />님은 나중에도 로그인할 수 있습니다.</translation>
 <translation id="3321628682574733415">잘못된 부모 코드</translation>
 <translation id="332827762492701193">알림이 숨겨져 있음</translation>
+<translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> 알림 펼치기</translation>
 <translation id="3339826665088060472">화면 캡처, 스크린샷을 찍고 화면을 녹화하는 도구</translation>
 <translation id="3340978935015468852">설정</translation>
 <translation id="3341303451326249809">스크린샷 촬영됨</translation>
@@ -766,6 +769,8 @@
 <translation id="4146671046252289537">다음 단어의 끝으로 이동</translation>
 <translation id="4146833061457621061">음악을 틀어 줘</translation>
 <translation id="4150201353443180367">디스플레이</translation>
+<translation id="4156293514828496577">배터리가 <ph name="PERCENTAGE" />% 남았습니다(약 <ph name="TIME_LEFT" />).
+배터리 수명을 늘리기 위해 일부 기능이 제한됩니다.</translation>
 <translation id="4165275524535002941">디스플레이를 지원하지 않는 케이블일 수 있습니다</translation>
 <translation id="4177415338862979658">클릭하여 세부정보 확인</translation>
 <translation id="4177913004758410636">{0,plural, =1{1일 이내에 기기 업데이트}other{#일 이내에 기기 업데이트}}</translation>
@@ -895,6 +900,7 @@
 <translation id="4659419629803378708">ChromeVox가 사용 설정됨</translation>
 <translation id="4666911709726371538">앱 더보기</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> 파일을 다운로드하는 중입니다</translation>
+<translation id="4672539464599646374">절전 모드 사용 설정됨</translation>
 <translation id="468293128311738995">휴대전화 앱</translation>
 <translation id="4690510401873698237">앱 표시줄 하단에 표시</translation>
 <translation id="4696813013609194136">부모 코드로 기기 잠금 해제</translation>
@@ -1055,6 +1061,8 @@
 <translation id="5297704307811127955">사용 안함</translation>
 <translation id="5300589172476337783">표시</translation>
 <translation id="5302048478445481009">언어</translation>
+<translation id="5303319262469238330">배터리가 <ph name="PERCENTAGE" />% 남았습니다.
+배터리 수명을 늘리기 위해 일부 기능이 제한됩니다.</translation>
 <translation id="5308380583665731573">연결</translation>
 <translation id="5313326810920013265">블루투스 설정</translation>
 <translation id="5314219114274263156">화면 녹화됨</translation>
@@ -1295,6 +1303,7 @@
 <translation id="6231419273573514727">주변기기 성능이 제한될 수 있습니다</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" />에서 카메라와 마이크를 사용 중입니다.</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="62380141479352646">배터리가 부족합니다. 절전 모드가 사용 설정되었습니다.</translation>
 <translation id="6247728804802644171">알림 열기</translation>
 <translation id="6254629735336163724">가로로 잠김</translation>
 <translation id="6259254695169772643">스타일러스로 선택하세요.</translation>
@@ -1409,6 +1418,7 @@
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">카메라 및 마이크 사용 중</translation>
 <translation id="6739144137573853180">설정으로 이동</translation>
+<translation id="6747985245839783873">남은 배터리는 <ph name="PERCENTAGE" />%입니다. 절전 모드가 사용 설정되어 있습니다.</translation>
 <translation id="6751052314767925245">관리자가 시행함</translation>
 <translation id="6751826523481687655">성능 추적이 사용 설정되어 있습니다.</translation>
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> 데스크가 삭제되고 <ph name="RECEIVE_DESK" /> 데스크와 병합되었습니다.</translation>
@@ -1508,6 +1518,7 @@
 <translation id="7131634465328662194">자동으로 로그아웃됩니다.</translation>
 <translation id="7143207342074048698">연결 중</translation>
 <translation id="7144942256906679589">배터리 상태</translation>
+<translation id="7145639536026937076">배터리가 <ph name="PERCENTAGE" />%이며 현재 충전 중입니다. 절전 모드가 사용 설정되어 있습니다.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1518,6 +1529,7 @@
 <translation id="7198435252016571249">카메라 미리보기가 오른쪽 하단으로 맞춰졌습니다. 시스템 표시 경로와 충돌합니다.</translation>
 <translation id="7219573373513695352">연결된 기기 없음</translation>
 <translation id="7229029500464092426">총 메모리 <ph name="TOTAL_MEMORY" /> 중 <ph name="AVAILABLE_MEMORY" /> 사용</translation>
+<translation id="7244725679040769470">배터리가 <ph name="PERCENTAGE" />% 남았습니다. 기기를 전원에 연결하세요.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. 업데이트를 적용하려면 Chromebook을 다시 시작해야 합니다. 여기에는 최대 1분이 걸릴 수 있습니다.</translation>
 <translation id="7256634071279256947">후면 마이크</translation>
 <translation id="7258828758145722155">어제 수정됨</translation>
@@ -1911,6 +1923,7 @@
 <translation id="8878886163241303700">화면 확대</translation>
 <translation id="888982883502837004">이용할 수 있는 기기 펌웨어 업데이트가 있습니다. 클릭하여 확인한 후 업데이트하세요.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> 템플릿이 완전히 삭제됩니다.</translation>
+<translation id="889790758758811533">배터리가 <ph name="PERCENTAGE" />% 남았습니다(약 <ph name="TIME_LEFT" />). 기기를 전원에 연결합니다.</translation>
 <translation id="88986195241502842">페이지 아래로</translation>
 <translation id="8905919797434099235">(제목 없음)</translation>
 <translation id="890616557918890486">소스 변경</translation>

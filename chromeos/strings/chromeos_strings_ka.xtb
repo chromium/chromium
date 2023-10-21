@@ -93,6 +93,7 @@
 <translation id="1643449475550628585">ფონის სურათის ყოველდღიურად შეცვლა</translation>
 <translation id="1644574205037202324">ისტორია</translation>
 <translation id="1651925268237749928">თქვენ აირჩიეთ გაზიარებული ალბომი. ფოტოების დამატება ან შეცვლა სხვებსაც შეუძლიათ. თქვენს ფონზე, შესაძლოა, გამოჩნდეს ფოტოები, რომლებიც ამჟამად არ არის ამ ალბომში.</translation>
+<translation id="1658834457013045127">ყოველთვის</translation>
 <translation id="1661865805917886535">ანგარიშისა და სისტემის შესახებ გარკვეული ინფორმაცია შეიძლება გაეგზავნოს Google-ს. ამ ინფორმაციას ტექნიკური პრობლემების მოსაგვარებლად და ჩვენი სერვისების გასაუმჯობესებლად გამოვიყენებთ, ჩვენი კონფიდენციალურობის დებულებისა (<ph name="PRIVACYPOLICYURL" />) და მომსახურების პირობების (<ph name="TERMSOFSERVICEURL" />) შესაბამისად. კონტენტის ცვლილებები რომ მოითხოვოთ, გადადით იურიდიული დახმარების გვერდზე (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">გაჩერდა — მელანი გათავდა</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" />-ის გადახედვა</translation>
@@ -169,7 +170,9 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> ფოტო</translation>
 <translation id="2157660087437850958">emoji-ს ამომრჩევი</translation>
 <translation id="2157959690810728433">რიგშია</translation>
+<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{თქვენმა ადმინისტრატორმა დააყენა პარამეტრები ისე, რომ <ph name="APP_NAME_1" /> ავტომატურად გაეშვება ყოველთვის, როცა სისტემაში შეხვალთ.}=2{თქვენმა ადმინისტრატორმა დააყენა პარამეტრები ისე, რომ <ph name="APP_NAME_1" /> და <ph name="APP_NAME_2" /> ავტომატურად გაეშვება ყოველთვის, როცა სისტემაში შეხვალთ.}=3{თქვენმა ადმინისტრატორმა დააყენა პარამეტრები ისე, რომ <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> და <ph name="APP_NAME_3" /> ავტომატურად გაეშვება ყოველთვის, როცა სისტემაში შეხვალთ.}other{თქვენმა ადმინისტრატორმა დააყენა პარამეტრები ისე, რომ <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> და # სხვა აპი ავტომატურად გაეშვება ყოველთვის, როცა სისტემაში შეხვალთ.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ხელახლა ცდა</translation>
+<translation id="215916044711630446">APN-ის დამატების ღილაკი ახლა გათიშულია</translation>
 <translation id="2161394479394250669">ბეჭდვის დავალების გაუქმება</translation>
 <translation id="2161656808144014275">ტექსტი</translation>
 <translation id="2163937499206714165">მუქი რეჟიმის გააქტიურება</translation>
@@ -286,6 +289,7 @@
 <translation id="3226405216343213872">მიმდინარეობს სკანერების ძიება</translation>
 <translation id="3226657629376379887">განლაგებასთან დაკავშირებული მოქმედებების მენიუ</translation>
 <translation id="3246869037381808805">ბეჭდვის 1 დღეზე ძველი დავალებები ამოიშლება</translation>
+<translation id="324961752321393509">ამ აპის დახურვა არ არის დაშვებული თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="3268178239013324452">ვერ მოხერხდა — პრინტერის კარი ღიაა</translation>
 <translation id="3275729367986477355">ავატარის სურათი</translation>
 <translation id="3283504360622356314">{0,plural, =1{ფაილის რედაქტირება}other{ფაილების რედაქტირება}}</translation>
@@ -319,6 +323,7 @@
 <translation id="3484914941826596830">ჩაშენებული პროგრამული უზრუნველყოფის განახლების პროცესში არ გამოაერთოთ ეს გარე მოწყობილობა ან არ გამორთოთ კომპიუტერი. შეგიძლიათ ამ ფანჯრის ჩაკეცვა. ამ განახლებას შეიძლება დასჭირდეს რამდენიმე წუთი და გარე მოწყობილობამ შეიძლება ამ დროს არ იმუშაოს.</translation>
 <translation id="3486220673238053218">განსაზღვრება</translation>
 <translation id="3488065109653206955">ნაწილობრივ გააქტიურებული</translation>
+<translation id="349491921221892984"><ph name="MINUTES" /> წთ</translation>
 <translation id="3502426834823382181">ყველა აპის ნახვა</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />ეფექტურობის ტრასირების მონაცემების<ph name="END_LINK1" /> გაგზავნა</translation>
 <translation id="3517001332549868749">ChromeOS განახლება</translation>
@@ -398,6 +403,7 @@
 <translation id="4117637339509843559">მუქი რეჟიმი</translation>
 <translation id="4130035430755296270">განლაგებების მეტი ვარიანტებისთვის გააგრძელეთ გადატარება</translation>
 <translation id="4131410914670010031">შავი და თეთრი</translation>
+<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> ავტომატურად გაეშვა}other{# აპი ავტომატურად გაეშვა}}</translation>
 <translation id="4145784616224233563">HTTP ქსელის დაცვა</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">ჩვენება</translation>
@@ -443,6 +449,7 @@
 <translation id="445059817448385655">ძველი პაროლი</translation>
 <translation id="4453205916657964690">ქვექსელის ნიღაბი</translation>
 <translation id="4454245904991689773">შენახვის ადგილი</translation>
+<translation id="4456812688969919973">APN-ის შენახვის ღილაკი ახლა გათიშულია</translation>
 <translation id="4469288414739283461">მიწის ნაკადის ეკრანმზოგი</translation>
 <translation id="4479639480957787382">ეთერნეთი</translation>
 <translation id="4483049906298469269">არანაგულისხმევი ქსელის გეითვეისთან კავშირის შემოწმება ვერ მოხერხდა</translation>
@@ -477,6 +484,7 @@
 <translation id="473775607612524610">განახლება</translation>
 <translation id="4771607256327216405">კლავიატურის სიკაშკაშე</translation>
 <translation id="4773299976671772492">შეწყვეტილია</translation>
+<translation id="4782003517030001304">1 სთ</translation>
 <translation id="4782311465517282004">მიიღეთ განმარტებები, თარგმნეთ ან გადაიყვანეთ საზომი ერთეულები ტექსტზე მარჯვენა დაწკაპუნების ან ხანგრძლივად შეხების მეშვეობით</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ფოტო</translation>
 <translation id="4793710386569335688">დამატებითი დახმარებისთვის გადადით <ph name="BEGIN_LINK" />დახმარების ცენტრზე<ph name="END_LINK" />.</translation>
@@ -687,6 +695,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">მუქი თემის გააქტიურება</translation>
 <translation id="628726841779494414">პრინტერების მართვა შეგიძლიათ პრინტერების პარამეტრებიდან</translation>
+<translation id="6292095526077353682">დატენისას ეკრანმზოგის ჩვენება:</translation>
 <translation id="629550705077076970">კლავიატურის დაბნელება</translation>
 <translation id="6302401976930124515">ტესტი „<ph name="TEST_NAME" />“ გაუქმდა</translation>
 <translation id="631063167932043783">გაცნობის აპი</translation>
@@ -713,6 +722,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">სუსტი (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">ანგარიშის პარამეტრებზე გადასვლა</translation>
+<translation id="6462978824459367242">APN-ის დამატების ღილაკი ახლა ჩართულია</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{გსურთ გვერდის ხელახლა სკანირება?}=1{გსურთ გვერდი {PAGE_NUMBER}-ის ხელახლა სკანირება?}other{გსურთ გვერდი {PAGE_NUMBER}-ის ხელახლა სკანირება?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">მართავს <ph name="MANAGER" /></translation>
@@ -1051,6 +1061,7 @@
 <translation id="902638246363752736">კლავიატურის პარამეტრები</translation>
 <translation id="9028832514430399253">ჩართეთ გადამრთველი, ეკრანმზოგის ვარიანტები რომ აირჩიოთ</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9049868303458988905">APN-ის შენახვის ღილაკი ახლა ჩართულია</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS-ის დარეგულირების რეაგირების დრო დიდია</translation>
 <translation id="9065203028668620118">რედაქტირება</translation>

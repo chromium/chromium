@@ -29,6 +29,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="109942774857561566">Tôi chán quá</translation>
 <translation id="1104084341931202936">Hiển thị các tùy chọn cài đặt hỗ trợ tiếp cận</translation>
 <translation id="1104621072296271835">Các thiết bị của bạn hoạt động hiệu quả hơn khi kết nối với nhau</translation>
+<translation id="1106446201446919638">Đã kết nối 1 thiết bị. Khi bạn sử dụng điểm phát sóng, Wi-Fi sẽ tắt.</translation>
 <translation id="1111021433905331574">Bạn có thể thay đổi màu của đèn nền bàn phím trong phần Cài đặt &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Bật/tắt dữ liệu di động. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Tự động ẩn kệ</translation>
@@ -518,6 +519,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3160929076476941240">2 giờ</translation>
 <translation id="3161500364292033097">Đóng không gian làm việc và cửa sổ</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> đang hạ cấp hệ điều hành trên thiết bị <ph name="DEVICE_TYPE" /> của bạn. Thiết bị của bạn sẽ được đặt lại và toàn bộ dữ liệu sẽ bị xoá.</translation>
+<translation id="3170769098533255179">Chưa kết nối thiết bị nào. Khi bạn sử dụng điểm phát sóng, Wi-Fi sẽ tắt.</translation>
 <translation id="3171170659304083361">Chế độ cài đặt phương thức nhập</translation>
 <translation id="3176221688814061633">Chromebook hoặc thiết bị Bluetooth của bạn đang dùng phiên bản Bluetooth cũ. Hãy bật Bluetooth có độ phân giải siêu cao hoặc sử dụng micrô bên trong để có chất lượng âm thanh tốt hơn.</translation>
 <translation id="3181441307743005334">Quá trình khởi động có thể mất một chút thời gian</translation>
@@ -552,6 +554,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3306386552969601301">Có <ph name="DEVICECOUNT" /> thiết bị đã kết nối với điểm phát sóng <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Đã chuyển sang chế độ máy tính xách tay</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> vẫn có thể đăng nhập vào lúc khác.</translation>
+<translation id="3317779231018057649">Đã kết nối <ph name="DEVICECOUNT" /> thiết bị. Khi bạn sử dụng điểm phát sóng, Wi-Fi sẽ tắt.</translation>
 <translation id="3321628682574733415">Mã dành cho cha mẹ không chính xác</translation>
 <translation id="332827762492701193">Thông báo bị ẩn</translation>
 <translation id="3333674550998107387">Mở rộng thông báo <ph name="NOTIFICATION_TITLE" /></translation>
@@ -879,6 +882,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4566144812051858745">Không quan tâm đến nội dung đề xuất</translation>
 <translation id="4569753163207712681">Xem ứng dụng, nội dung nghe nhìn và ảnh gần đây có trên điện thoại</translation>
 <translation id="4573176682887762361">"Nhập [từ/cụm từ]"</translation>
+<translation id="4577188182049003486">Khi điểm phát sóng bật, Wi-Fi sẽ tắt</translation>
 <translation id="4577274620589681794">Hết giờ · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Hiển thị bản xem trước</translation>
 <translation id="4578906031062871102">Đã mở trình đơn Cài đặt</translation>

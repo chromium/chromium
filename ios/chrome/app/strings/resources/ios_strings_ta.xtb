@@ -234,6 +234,7 @@
 <translation id="2251686759395008410">மெனு → இதுவரை தேடியவை</translation>
 <translation id="2252674110805316998">இணையத் தேடல்</translation>
 <translation id="2256933947031277845">குறிப்பிட்ட சில கணக்குகளை மட்டுமே பயன்படுத்தி உள்நுழைய உங்கள் நிறுவனம் அனுமதி வழங்கியுள்ளது.</translation>
+<translation id="2258326562203545455">{count,plural, =1{உங்கள் Google கணக்கில் ({email}) புக்மார்க்கை நீங்கள் சேமிக்கலாம்.}other{உங்கள் Google கணக்கில் ({email}) புக்மார்க்குகளை நீங்கள் சேமிக்கலாம்.}}</translation>
 <translation id="225943865679747347">பிழைக் குறியீடு: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">கணக்கைச் சேர்</translation>
 <translation id="2268044343513325586">துல்லியமாக்கு</translation>
@@ -528,6 +529,7 @@
 <translation id="3779810277399252432">இணைய இணைப்பு இல்லை.</translation>
 <translation id="3789294999358192700">இந்தப் படிகளைப் பின்பற்றவும்:</translation>
 <translation id="3789841737615482174">நிறுவுக</translation>
+<translation id="3792713031001122343">{count,plural, =1{1 புக்மார்க் உங்கள் Google கணக்கில் சேமிக்கப்படும்}other{{count} புக்மார்க்குகள் உங்கள் Google கணக்கில் சேமிக்கப்படும்}}</translation>
 <translation id="380329542618494757">பெயர்</translation>
 <translation id="3803696231112616155">இந்தத் தளத்தை மொழிபெயர்</translation>
 <translation id="3810973564298564668">நிர்வகி</translation>
@@ -795,6 +797,7 @@
 <translation id="5226568866393490213">எச்சரிக்கையை நிராகரி</translation>
 <translation id="5228579091201413441">ஒத்திசைவை இயக்கு</translation>
 <translation id="5232485538978018676">நிர்வகிக்கப்படும் கணக்கு மூலம் உள்நுழைதல்</translation>
+<translation id="5234094073825090254">{count,plural, =1{புக்மார்க் உங்கள் Google கணக்கில் ({email}) சேமிக்கப்பட்டது.}other{புக்மார்க்குகள் உங்கள் Google கணக்கில் ({email}) சேமிக்கப்பட்டன.}}</translation>
 <translation id="5234764350956374838">நிராகரி</translation>
 <translation id="5235389474593199952">பதிவை மறை</translation>
 <translation id="5238301240406177137">கணக்கில் சேமி</translation>
@@ -1208,6 +1211,7 @@
 <translation id="7398893703713203428">இணைப்பை உருவாக்கு</translation>
 <translation id="7399802613464275309">பாதுகாப்புச் சரிபார்ப்பு</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7402602673739047753">{count,plural, =1{1 புக்மார்க் இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்பட்டுள்ளது. பிற சாதனங்களில் பயன்படுத்த உங்கள் Google கணக்கில் ({email}) இதைச் சேமிக்கவும்.}other{{count} புக்மார்க்குகள் இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்பட்டுள்ளன. பிற சாதனங்களில் பயன்படுத்த உங்கள் Google கணக்கில் ({email}) இவற்றைச் சேமிக்கவும்.}}</translation>
 <translation id="7409985198648820906">படிக்காத கட்டுரைகள் <ph name="UNREAD_COUNT" /> உள்ளன.</translation>
 <translation id="7412027924265291969">தொடர்க</translation>
 <translation id="7425346204213733349">புத்தகக்குறிகள், வரலாறு, கடவுச்சொற்கள் ஆகியவற்றிலும் பிற அமைப்புகளிலும் செய்யும் மாற்றங்கள், இனி உங்கள் Google கணக்குடன் ஒத்திசைக்கப்படாது. எனினும், ஏற்கனவே சேமிக்கப்பட்ட உங்கள் தரவு Google கணக்கில் அப்படியே இருக்கும்.</translation>
@@ -1492,7 +1496,6 @@
 <translation id="8868471676553493380">{count,plural, =1{{count} தாவல்}other{{count} தாவல்கள்}}</translation>
 <translation id="8870413625673593573">சமீபத்தில் மூடியவை</translation>
 <translation id="8876882697946675716">சாதனங்களை ஒத்திசைவிலேயே வைத்திருங்கள்</translation>
-<translation id="8877287418679067891">அமைப்புகளில் இயல்பு உலாவியாக அமை...</translation>
 <translation id="8879984884633913185">‘உலாவிய தரவை அழி’ என்பதை மறை</translation>
 <translation id="8881801611828450202">இந்தப் படத்தை <ph name="SEARCH_ENGINE" /> இல் தேடு</translation>
 <translation id="8891935667620843985">Chromeமை உங்கள் இயல்பு உலாவி ஆப்ஸாக அமைப்பதன் மூலம் இணைப்புகளைத் தானாகவே அதில் திறக்கலாம்.</translation>

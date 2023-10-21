@@ -93,6 +93,7 @@
 <translation id="1643449475550628585">Change wallpaper image daily</translation>
 <translation id="1644574205037202324">History</translation>
 <translation id="1651925268237749928">You’ve selected a shared album. Other people can add or change photos. Your wallpaper might use photos that are not currently in this album.</translation>
+<translation id="1658834457013045127">Forever</translation>
 <translation id="1661865805917886535">Some account and system information may be sent to Google. We use this information to help address technical issues and improve our services, subject to our Privacy Policy (<ph name="PRIVACYPOLICYURL" />) and Terms of Service (<ph name="TERMSOFSERVICEURL" />). To request content changes, go to Legal Help (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Stopped – out of ink</translation>
 <translation id="1664796644829245314">Preview <ph name="PREVIEW_OBJECT" /></translation>
@@ -320,6 +321,7 @@
 <translation id="3484914941826596830">While the firmware is updating, do not unplug this external device or shut down your computer. You can minimise this window. This update may take a few minutes and your external device may not work during this time.</translation>
 <translation id="3486220673238053218">definition</translation>
 <translation id="3488065109653206955">Partially activated</translation>
+<translation id="349491921221892984"><ph name="MINUTES" /> mins</translation>
 <translation id="3502426834823382181">view all apps</translation>
 <translation id="3510890413042482857">Send <ph name="BEGIN_LINK1" />performance trace data<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">ChromeOS update</translation>
@@ -478,6 +480,7 @@
 <translation id="473775607612524610">Update</translation>
 <translation id="4771607256327216405">keyboard brighten</translation>
 <translation id="4773299976671772492">Stopped</translation>
+<translation id="4782003517030001304">1 hr</translation>
 <translation id="4782311465517282004">Get definitions, translations or unit conversions when you right-click or touch &amp; hold text</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> photo</translation>
 <translation id="4793710386569335688">For more help, go to the <ph name="BEGIN_LINK" />Help Centre<ph name="END_LINK" />.</translation>
@@ -688,6 +691,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Turn Dark theme on</translation>
 <translation id="628726841779494414">Manage your printers in printer settings</translation>
+<translation id="6292095526077353682">While charging, show screen saver for</translation>
 <translation id="629550705077076970">keyboard dimming</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> test has been cancelled</translation>
 <translation id="631063167932043783">Explore app</translation>

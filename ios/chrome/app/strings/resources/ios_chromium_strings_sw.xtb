@@ -4,6 +4,7 @@
 <translation id="1046370274005147998">Tafuta Ukitumia Sauti kwenye Chromium.</translation>
 <translation id="1047130070405668746">Chagua Chromium</translation>
 <translation id="1091252999271033193">Hii inamaanisha kwamba Chromium itahitaji tovuti ya kifaa cha mkononi kila wakati.</translation>
+<translation id="1115463765356382667">Kamilisha vitendo hivi vilivyopendekezwa hapa chini ili unufaike zaidi na Chromium.</translation>
 <translation id="1171824629317156389">Fungua Mipangilio ya Chromium kwenye iOS, kisha uguse "Programu Chaguomsingi ya Kivinjari" na uchague Chromium.</translation>
 <translation id="1185134272377778587">Kuhusu Chromium</translation>
 <translation id="1257458525759135959">Ili uhifadhi picha, gusa Mipangilio ili uruhusu Chromium iweke kwenye picha zako</translation>
@@ -51,6 +52,7 @@
 <translation id="2730884209570016437">Chromium imeshindwa kutumia kamera yako kwa sababu inatumiwa na programu nyingine</translation>
 <translation id="2784449251446768092">Kudhibiti Mipangilio ya Chromium</translation>
 <translation id="2798503587425057129">Hufungua Orodha ya Kusoma ya Chromium.</translation>
+<translation id="2843571538056574338">Tumia Chromium ili Ujaze kiotomatiki</translation>
 <translation id="2915596697727466327">Chromium hutumia Kitambulisho cha Uso ili kuhakikisha ufikiaji uliodhinishwa wa manenosiri yako.</translation>
 <translation id="2918709798697875261">Shirika lako linahitaji usiingie katika akaunti kwenye Chromium.</translation>
 <translation id="2942241131342758843">Tumia Chromium kwa chaguomsingi kufungua viungo, kutafuta kwenye wijeti na kujaza manenosiri kiotomatiki katika programu zingine</translation>
@@ -140,10 +142,12 @@ Mambo ya kuzingatia:
 1. Fungua Mipangilio
 2. Gusa Programu ya Kivinjari Chaguomsingi
 3. Chagua Chromium.</translation>
+<translation id="6154098560469640583">Tumia Chromium wakati wowote unapogusa viungo kwenye ujumbe, hati na programu nyingine.</translation>
 <translation id="6197255575340902638">Ukificha "<ph name="MODULE_NAME" />", Chromium haitafuatilia tena kiotomatiki vifurushi vyako vya siku zijazo na itafuta data yako yote ya awali ya ufuatiliaji wa vifurushi.</translation>
 <translation id="6247557882553405851">Kidhibiti cha Manenosiri cha Google</translation>
 <translation id="6268381023930128611">Ungependa kuondoka kwenye Chromium?</translation>
 <translation id="6324041800010509197">Tembelea Gridi ya Kichupo kwenye Chromium</translation>
+<translation id="6325378625795868881">Tumia Chromium wakati wowote unapogusa viungo kwenye ujumbe na programu nyingine.</translation>
 <translation id="632825460376924298">Ruhusu vidokezo vya kuingia katika akaunti kwenye Chromium</translation>
 <translation id="6337530241089703714">Chagua iwapo ungependa kufuta data yako ya Chromium kwenye kifaa hiki au kuihifadhi</translation>
 <translation id="6407399265324739055">Njia za kulipa na anwani hazitasimbwa kwa njia fiche. Historia ya kuvinjari kwenye Chromium haitasawazishwa.
@@ -156,6 +160,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="6752854822223394465">Shirika lako linaweka mipangilio ya Chromium...</translation>
 <translation id="6794054469102824109">Hufungua Mchezo wa Dinosau wa Chromium.</translation>
 <translation id="6820823224820483452">Chromium imeshindwa kukagua manenosiri yote. Jaribu tena kesho.</translation>
+<translation id="6852799557929001644">Fikia manenosiri yako ya Chromium na zaidi kwenye programu nyingine katika kifaa hiki.</translation>
 <translation id="6911341667534646387">Endelea kutumia data ya Chromium katika Akaunti yako ya Google</translation>
 <translation id="7006920032187763988">Unaweza kutumia manenosiri uliyohifadhi kwenye Kidhibiti cha Manenosiri katika programu zingine kwenye iPad yako.</translation>
 <translation id="7018284295775193585">Imeshindwa kusasisha Chromium</translation>
@@ -170,6 +175,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="7208566199746267865">Chromium inaokoa muda wako kwa kuleta akaunti zako kwenye wavuti. Unaweza kuongeza au kuondoa akaunti katika Mipangilio.</translation>
 <translation id="725427773388857052">Chromium inaweza kukusaidia ulinde akaunti yako dhidi ya ufichuzi haramu wa data, tovuti ambazo si salama na zaidi.</translation>
 <translation id="7269362888766543920">Baadhi ya programu jalizi husababisha Chromium iache kufanya kazi. Tafadhali jaribu kuziondoa.</translation>
+<translation id="7285031092584344905">Fikia manenosiri yako ya Chromium na zaidi kwenye programu nyingine.</translation>
 <translation id="7313655110045230863">Ili ufanye Chromium iwe kivinjari chako chaguomsingi, fungua Mipangilio. Gusa Programu ya Kivinjari Chaguomsingi, kisha uchague Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Data uliyochagua imeondolewa kwenye Chromium na kwenye vifaa vilivyosawazishwa. Huenda Akaunti yako ya Google ina aina nyingine za historia ya mambo uliyovinjari kama vile mambo uliyotafuta na shughuli kutoka huduma nyingine za Google katika history.google.com.</translation>
@@ -184,14 +190,18 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="786327964234957808">Unabadilisha akaunti za kusawazisha kutoka <ph name="USER_EMAIL1" /> kuwa <ph name="USER_EMAIL2" />. Data yako iliyopo ya Chromium inadhibitiwa na <ph name="DOMAIN" />. Hatua hii itafuta data yako kwenye kifaa hiki, lakini data yako itasalia katika <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Anza kutumia kichanganuzi cha Chromium</translation>
 <translation id="7905064834449738336">Unapotumia nenosiri, Chromium hukutahadharisha iwapo limechapishwa mtandaoni. Wakati inafanya hivyo, majina ya mtumiaji na manenosiri yako husimbwa kwa njia fiche, kwa hivyo hayawezi kusomwa na mtu mwingine, ikiwemo Google.</translation>
+<translation id="7917424453593305610">Tumia Chromium kwenye programu nyingine.</translation>
 <translation id="7928628054454574139">Tumia Chromium kufungua viungo vyovyote unavyogusa katika programu zingine</translation>
 <translation id="7931842119211730154">Funga Vichupo Fiche Unapofunga Chromium</translation>
 <translation id="7934404985878918282">Angalia Orodha ya Kusoma ya Chromium</translation>
 <translation id="7980860476903281594">Chromium hushiriki maelezo ya mahali ulipo na tovuti unazoruhusu.</translation>
+<translation id="7995166854192397899">Mapendekezo yanatokana na shughuli zako za kuvinjari kwenye vifaa vingine. Ili upate mapendekezo, ingia katika akaunti kwenye Chromium katika vifaa vyako vyote.</translation>
+<translation id="800195749539500647">Nufaika zaidi na Chromium</translation>
 <translation id="8013573822802650211">Ili uone vichupo vyako kwenye kifaa chochote unakotumia Chromium, ingia katika akaunti ukitumia vifaa vyako vyote</translation>
 <translation id="8071041515667087705">Nenda kwenye Mipangilio ya Chromium.</translation>
 <translation id="8073677936375100957">Ungependa kufuta data yako yote ya Chromium kwenye kifaa hiki?</translation>
 <translation id="8115308261377517697">Weka Chromium iwe Kivinjari chako Chaguomsingi</translation>
+<translation id="8197822717502700527">Sasa utanufaika zaidi na Chromium kwenye kifaa chako.</translation>
 <translation id="8235427517854598594">Ungependa Kufanya Chromium Iwe Kivinjari Chako Chaguomsingi?</translation>
 <translation id="8240981428553046115">Chromium imeshindwa kukagua kama kuna masasisho. Jaribu tena baadaye.</translation>
 <translation id="8303579360494576778">Kudhibiti Njia za Kulipa kwenye Chromium</translation>
@@ -218,6 +228,7 @@ Mambo ya kuzingatia:
 <translation id="894437814105052438">Ukiondoka katika akaunti, Chromium haitasawazisha data yoyote mpya kwenye Akaunti yako ya Google. Data iliyosawazishwa hapo awali husalia kwenye akaunti.</translation>
 <translation id="8963279154877372067">Ruhusu arifa za Chromium ili upate arifa kuhusu kupungua kwa bei</translation>
 <translation id="9022552996538154597">Ingia kwenye Chromium</translation>
+<translation id="9050790730841755540">Tumia Chromium wakati wowote unapogusa viungo kwenye programu nyingine.</translation>
 <translation id="9059693977935746710">Hutahitaji kukumbuka nenosiri hili. Litahifadhiwa kwenye Kidhibiti cha Manenosiri kwa ajili ya <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium imepitwa na wakati</translation>
 <translation id="9110075932708282655">Tumia Chromium kwa Chaguomsingi</translation>

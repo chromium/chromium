@@ -633,7 +633,6 @@
 <translation id="2225927550500503913">Віртуальная картка ўключана</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Уваход<ph name="END_LINK" /> у сетку Wi-Fi</translation>
 <translation id="2228057197024893428">Гэты адрас зараз захаваны ў Chrome. Каб выкарыстоўваць яго ў іншых прадуктах Google, захавайце гэты адрас у сваім Уліковым запісе Google (<ph name="ACCOUNT" />).</translation>
-<translation id="2228466771983364669">Сайт <ph name="EMBEDDED_URL" /> будзе ведаць, што вы наведвалі <ph name="TOP_LEVEL_URL" />.</translation>
 <translation id="2233745931693710080">Кампакт-дыск</translation>
 <translation id="2239100178324503013">Адправіць</translation>
 <translation id="2241693394036365668">Спампоўваецца файл</translation>
@@ -1122,6 +1121,7 @@
 <translation id="3293642807462928945">Даведацца больш пра палітыку "<ph name="POLICY_NAME" />"</translation>
 <translation id="3295444047715739395">Праглядаць свае паролі і кіраваць імі ў наладах Chrome</translation>
 <translation id="3299098170013242198">Windows Hello выкарыстоўваецца для ўводу пароляў.</translation>
+<translation id="3299720788264079132">Пры выкарыстанні функцыі "<ph name="FEATURE_NAME" />" адбылася памылка</translation>
 <translation id="3303176609391916566">30 x 42 цалі</translation>
 <translation id="3303855915957856445">Няма вынікаў пошуку</translation>
 <translation id="3304073249511302126">пошук прылад Bluetooth</translation>
@@ -1955,6 +1955,7 @@
 <translation id="4989163558385430922">Паказаць усе</translation>
 <translation id="4989542687859782284">Недаступна</translation>
 <translation id="4989809363548539747">Гэта ўбудова не падтрымліваецца</translation>
+<translation id="4990226362263043042">Гісторыя на бакавой панэлі</translation>
 <translation id="4990241977441916452">Канверт A2</translation>
 <translation id="4992066212339426712">Уключыць гук</translation>
 <translation id="4995216769782533993">Каб перадаць даныя карткі гэтаму сайту, пацвердзіце код бяспекі</translation>
@@ -2222,6 +2223,7 @@
 <translation id="5541086400771735334">Паштовая скрынка 7</translation>
 <translation id="5541546772353173584">Дадайце адрас электроннай пошты</translation>
 <translation id="5543722831081909240">180 градусаў</translation>
+<translation id="5544512018309093956">Гісторыя на бакавой панэлі</translation>
 <translation id="555128936272638662">Аксесуары да мабільных і бесправадных прылад</translation>
 <translation id="5551890439174915351">100 x 200 мм</translation>
 <translation id="5552137475244467770">Chrome перыядычна звярае вашы паролі з паролямі са спісаў, апублікаваных у інтэрнэце. Пры гэтым вашы паролі і імёны карыстальніка зашыфраваны – прачытаць іх не можа ніхто, нават Google.</translation>

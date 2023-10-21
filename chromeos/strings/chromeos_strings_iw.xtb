@@ -93,6 +93,7 @@
 <translation id="1643449475550628585">החלפה של תמונת הטפט מדי יום</translation>
 <translation id="1644574205037202324">היסטוריה</translation>
 <translation id="1651925268237749928">בחרת אלבום משותף. אנשים אחרים יכולים להוסיף או לשנות תמונות. יכול להיות שתמונות שלא נמצאות כרגע באלבום יוגדרו כטפט שלך.</translation>
+<translation id="1658834457013045127">ללא סיום</translation>
 <translation id="1661865805917886535">‏פרטים מסוימים על החשבון והמערכת עשויים להישלח ל-Google. אנחנו משתמשים בפרטים האלה כדי לפתור בעיות טכניות ולשפר את השירותים שלנו, בכפוף למדיניות הפרטיות (<ph name="PRIVACYPOLICYURL" />) ולתנאים ולהגבלות (<ph name="TERMSOFSERVICEURL" />) שלנו. כדי לבקש שינויים בתוכן, צריך לעבור למרכז העזרה בנושאים משפטיים (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">הפסיקה – הדיו נגמר</translation>
 <translation id="1664796644829245314">תצוגה מקדימה של <ph name="PREVIEW_OBJECT" /></translation>
@@ -169,7 +170,9 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> תמונות</translation>
 <translation id="2157660087437850958">בוחר אמוג'י</translation>
 <translation id="2157959690810728433">נמצאת בתור</translation>
+<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{האדמין הגדיר הפעלה אוטומטית של <ph name="APP_NAME_1" /> בכל התחברות שלך.}=2{האדמין הגדיר הפעלה אוטומטית של <ph name="APP_NAME_1" /> ושל <ph name="APP_NAME_2" /> בכל התחברות שלך.}=3{האדמין הגדיר הפעלה אוטומטית של <ph name="APP_NAME_1" />,‏ <ph name="APP_NAME_2" /> וגם <ph name="APP_NAME_3" /> בכל התחברות שלך.}one{האדמין הגדיר הפעלה אוטומטית של <ph name="APP_NAME_1" />,‏ <ph name="APP_NAME_2" /> ועוד # אפליקציות בכל התחברות שלך.}other{האדמין הגדיר הפעלה אוטומטית של <ph name="APP_NAME_1" />,‏ <ph name="APP_NAME_2" /> ועוד # אפליקציות בכל התחברות שלך.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ניסיון נוסף</translation>
+<translation id="215916044711630446">‏הלחצן 'הוספת ה-APN' מושבת עכשיו</translation>
 <translation id="2161394479394250669">ביטול משימת ההדפסה</translation>
 <translation id="2161656808144014275">טקסט</translation>
 <translation id="2163937499206714165">הפעלת המצב הכהה</translation>
@@ -318,6 +321,7 @@
 <translation id="3484914941826596830">במהלך עדכון הקושחה אין לנתק את המכשיר החיצוני הזה או לכבות את המחשב. אפשר למזער את החלון הזה. העדכון הזה עשוי לקחת כמה דקות ויכול להיות שהמכשיר החיצוני לא יפעל במהלכו.</translation>
 <translation id="3486220673238053218">הגדרה</translation>
 <translation id="3488065109653206955">מופעל חלקית</translation>
+<translation id="349491921221892984"><ph name="MINUTES" /> דק‘</translation>
 <translation id="3502426834823382181">הצגת כל האפליקציות</translation>
 <translation id="3510890413042482857">שליחת <ph name="BEGIN_LINK1" />נתוני מעקב אחר ביצועים<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">‏עדכון של ChromeOS</translation>
@@ -397,6 +401,7 @@
 <translation id="4117637339509843559">מצב כהה</translation>
 <translation id="4130035430755296270">כשמציבים את העכבר מעל אפשרויות הפריסה אפשר לראות עוד אפשרויות</translation>
 <translation id="4131410914670010031">שחור ולבן</translation>
+<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{האפליקציה <ph name="APP_NAME_1" /> הופעלה באופן אוטומטי}one{# אפליקציות הופעלו באופן אוטומטי}two{# אפליקציות הופעלו באופן אוטומטי}other{# אפליקציות הופעלו באופן אוטומטי}}</translation>
 <translation id="4145784616224233563">‏חומת אש מסוג HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">תצוגה</translation>
@@ -442,6 +447,7 @@
 <translation id="445059817448385655">סיסמה ישנה</translation>
 <translation id="4453205916657964690">מסכה של רשת משנה</translation>
 <translation id="4454245904991689773">מיקום שמירת הסריקה</translation>
+<translation id="4456812688969919973">‏הלחצן 'שמירת ה-APN' מושבת עכשיו</translation>
 <translation id="4469288414739283461">שומר המסך של זרימה בכדור הארץ</translation>
 <translation id="4479639480957787382">אתרנט</translation>
 <translation id="4483049906298469269">לא ניתן היה לבצע פינג לשער הרשת שאינה מוגדרת כברירת מחדל.</translation>
@@ -476,6 +482,7 @@
 <translation id="473775607612524610">עדכון</translation>
 <translation id="4771607256327216405">מקלדת בהירה</translation>
 <translation id="4773299976671772492">הופסק</translation>
+<translation id="4782003517030001304">שעה אחת</translation>
 <translation id="4782311465517282004">בלחיצה ימנית או בלחיצה ארוכה על טקסט, יוצגו הגדרות, תרגומים או המרת יחידות</translation>
 <translation id="4791000909649665275">מספר התמונות: <ph name="NUMBER" /></translation>
 <translation id="4793710386569335688">עזרה נוספת זמינה ב<ph name="BEGIN_LINK" />מרכז העזרה<ph name="END_LINK" />.</translation>
@@ -686,6 +693,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">הפעלת העיצוב הכהה</translation>
 <translation id="628726841779494414">ניתן לנהל את המדפסות בהגדרות המדפסת</translation>
+<translation id="6292095526077353682">בזמן הטעינה יוצג שומר מסך של</translation>
 <translation id="629550705077076970">עמעום התאורה במקלדת</translation>
 <translation id="6302401976930124515">בדיקת ה<ph name="TEST_NAME" /> בוטלה</translation>
 <translation id="631063167932043783">‏האפליקציה 'מה חדש ב-Chromebook'</translation>
@@ -712,6 +720,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">חלש (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">מעבר אל הגדרות החשבון</translation>
+<translation id="6462978824459367242">‏הלחצן 'הוספת ה-APN' מופעל עכשיו</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{לסרוק את הדף מחדש?}=1{לסרוק מחדש את דף {PAGE_NUMBER}?}one{לסרוק מחדש את דף {PAGE_NUMBER}?}two{לסרוק מחדש את דף {PAGE_NUMBER}?}other{לסרוק מחדש את דף {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">מנוהל על ידי <ph name="MANAGER" /></translation>
@@ -1049,6 +1058,7 @@
 <translation id="902638246363752736">הגדרות מקלדת</translation>
 <translation id="9028832514430399253">צריך להפעיל את החלפת המצב כדי לבחור את האפשרויות של שומר המסך</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9049868303458988905">‏הלחצן 'שמירת ה-APN' מופעל עכשיו</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">‏זמן האחזור של רזולוציית ה-DNS ארוך</translation>
 <translation id="9065203028668620118">עריכה</translation>

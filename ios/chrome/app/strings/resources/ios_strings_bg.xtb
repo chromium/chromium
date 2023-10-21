@@ -234,6 +234,7 @@
 <translation id="2251686759395008410">„Меню → История“</translation>
 <translation id="2252674110805316998">Търсене в мрежата</translation>
 <translation id="2256933947031277845">Организацията ви разрешава да влизате само с определени профили.</translation>
+<translation id="2258326562203545455">{count,plural, =1{Можете да запазите отметката си в профила си в Google ({email}).}other{Можете да запазите отметките си в профила си в Google ({email}).}}</translation>
 <translation id="225943865679747347">Код на грешката: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Добавяне на профил</translation>
 <translation id="2268044343513325586">Прецизиране</translation>
@@ -528,6 +529,7 @@
 <translation id="3779810277399252432">Няма връзка с интернет.</translation>
 <translation id="3789294999358192700">Изпълнете следните стъпки:</translation>
 <translation id="3789841737615482174">Инсталиране</translation>
+<translation id="3792713031001122343">{count,plural, =1{Запазване на 1 отметка в профила ви в Google}other{Запазване на {count} отметки в профила ви в Google}}</translation>
 <translation id="380329542618494757">Име</translation>
 <translation id="3803696231112616155">Предлагане да се преведе този сайт</translation>
 <translation id="3810973564298564668">Управление</translation>
@@ -795,6 +797,7 @@
 <translation id="5226568866393490213">Отхвърляне на предупреждението</translation>
 <translation id="5228579091201413441">Активиране на синхронизирането</translation>
 <translation id="5232485538978018676">Влизане с управляван профил</translation>
+<translation id="5234094073825090254">{count,plural, =1{Отметката е запазена в профила ви в Google ({email}).}other{Отметките са запазени в профила ви в Google ({email}).}}</translation>
 <translation id="5234764350956374838">Отхвърляне</translation>
 <translation id="5235389474593199952">Скриване на „История“</translation>
 <translation id="5238301240406177137">Запазване в профила</translation>
@@ -1208,6 +1211,7 @@
 <translation id="7398893703713203428">Създаване на връзка</translation>
 <translation id="7399802613464275309">Проверка на безопасността</translation>
 <translation id="7400418766976504921">URL адрес</translation>
+<translation id="7402602673739047753">{count,plural, =1{1 отметка е запазена само на това устройство. За да я използвате на другите си устройства, запазете я в профила си в Google ({email}).}other{{count} отметки са запазени само на това устройство. За да ги използвате на другите си устройства, запазете ги в профила си в Google ({email}).}}</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> непрочетени статии.</translation>
 <translation id="7412027924265291969">Напред</translation>
 <translation id="7425346204213733349">Промените в отметките, историята, паролите и другите ви настройки вече няма да се синхронизират с профила ви в Google. Съществуващите ви данни обаче ще продължат да се съхраняват в него.</translation>
@@ -1492,7 +1496,6 @@
 <translation id="8868471676553493380">{count,plural, =1{{count} раздел}other{{count} раздела}}</translation>
 <translation id="8870413625673593573">Наскоро затворени</translation>
 <translation id="8876882697946675716">Синхронизирайте устройствата си</translation>
-<translation id="8877287418679067891">Задаване като браузър по подразбиране в настройките…</translation>
 <translation id="8879984884633913185">Скриване на „Изчистване на данните за сърфирането“</translation>
 <translation id="8881801611828450202">Търсене на изобр. със: <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8891935667620843985">Връзките могат да се отварят автоматично в Chrome, като го направите стандартното си приложение за браузър.</translation>

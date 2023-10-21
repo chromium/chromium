@@ -214,6 +214,7 @@
 <translation id="2158408438301413340">Chrome 无法检查所有密码</translation>
 <translation id="2172688499998841696">“图片说明”功能已关闭</translation>
 <translation id="2172905120685242547">关闭窗口？</translation>
+<translation id="2173302385160625112">请检查您的互联网连接是否正常</translation>
 <translation id="2175927920773552910">二维码</translation>
 <translation id="218608176142494674">共享</translation>
 <translation id="2194856509914051091">注意事项</translation>
@@ -285,6 +286,7 @@
 <translation id="2571834852878229351">创建我自己的密码</translation>
 <translation id="2573452357057307036">了解如何将 Chrome 设为默认浏览器</translation>
 <translation id="2574249610672786438">要查看您在其他设备上用 Chrome 打开的标签页，请在所有设备上登录</translation>
+<translation id="2578337197553672982">Google 为青少年提供的内容</translation>
 <translation id="2581165646603367611">这会清除 Chrome 认为不重要的网站的 Cookie、缓存和其他数据。</translation>
 <translation id="2587052924345400782">新版本已推出</translation>
 <translation id="2593272815202181319">等宽</translation>
@@ -699,6 +701,7 @@
 <translation id="4742970037960872810">撤消突出显示</translation>
 <translation id="4743664893327841597">系统会将您在地址栏或搜索框中输入的内容发送至默认搜索引擎</translation>
 <translation id="4749960740855309258">打开新标签页</translation>
+<translation id="4750356170202299988">为青少年提供的内容</translation>
 <translation id="4758061975920522644">仅分享图片</translation>
 <translation id="4759238208242260848">下载内容</translation>
 <translation id="4763480195061959176">视频</translation>
@@ -1019,7 +1022,7 @@
 <translation id="6412673304250309937">将网址与存储在 Chrome 中的不安全网站列表进行比对。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能。</translation>
 <translation id="641643625718530986">打印…</translation>
 <translation id="6422857128426228781">您跟踪的商品会显示在此处</translation>
-<translation id="6433501201775827830">选择您的搜索引擎</translation>
+<translation id="6433501201775827830">选择搜索引擎</translation>
 <translation id="6434309073475700221">舍弃</translation>
 <translation id="6437478888915024427">网页信息</translation>
 <translation id="6440291723980579689">仅当您打开网页后，它们才会加载</translation>
@@ -1180,6 +1183,7 @@
 <translation id="7187993566681480880">保护您在 Chrome 中免受安全威胁，登录状态下还可让您更安全地使用其他 Google 应用。</translation>
 <translation id="7191430249889272776">标签页已在后台打开。</translation>
 <translation id="7196215469483532480">隐私保护指南说明已全屏打开</translation>
+<translation id="7205672015775254816">Google 为青少年提供的内容 - 已关闭</translation>
 <translation id="7207760545532569765">将 <ph name="TAB_COUNT" /> 个标签页恢复为新的背景标签页。</translation>
 <translation id="7217781228893594884">当您退出 Chrome 时，无痕式标签页将被锁定</translation>
 <translation id="7221869452894271364">重新加载此页</translation>
@@ -1327,6 +1331,7 @@
 <translation id="7876243839304621966">全部删除</translation>
 <translation id="7886917304091689118">正在 Chrome 中运行</translation>
 <translation id="7887174313503389866">观看导览，了解重要的隐私控制设置和安全控件。如需查看更多选项，请转到各项设置。</translation>
+<translation id="7896724475402191389">为青少年提供的内容 - 已关闭</translation>
 <translation id="7903184275147100332">请稍等片刻</translation>
 <translation id="7914399737746719723">已安装应用</translation>
 <translation id="7919123827536834358">自动翻译这些语言</translation>

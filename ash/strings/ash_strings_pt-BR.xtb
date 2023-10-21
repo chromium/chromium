@@ -29,6 +29,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="109942774857561566">Que tédio</translation>
 <translation id="1104084341931202936">Mostrar configurações de acessibilidade</translation>
 <translation id="1104621072296271835">Seus dispositivos funcionam ainda melhor juntos</translation>
+<translation id="1106446201446919638">1 dispositivo conectado. Enquanto o ponto de acesso estiver em uso, o Wi-Fi ficará desativado.</translation>
 <translation id="1111021433905331574">É possível mudar a cor da luz de fundo do teclado em "Configurações &gt; <ph name="APP_TITLE" />"</translation>
 <translation id="1117719261843403176">Alternar dados móveis. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Ocultar estante automaticamente</translation>
@@ -518,6 +519,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3160929076476941240">2h</translation>
 <translation id="3161500364292033097">Fechar espaço de trabalho e janelas</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> está revertendo seu <ph name="DEVICE_TYPE" />. O dispositivo será redefinido e todos os dados serão excluídos.</translation>
+<translation id="3170769098533255179">Nenhum dispositivo conectado. Enquanto o ponto de acesso estiver em uso, o Wi-Fi ficará desativado.</translation>
 <translation id="3171170659304083361">Configurações de métodos de entrada</translation>
 <translation id="3176221688814061633">Seu Chromebook ou dispositivo Bluetooth está usando uma versão mais antiga do Bluetooth. Ative a super resolução do Bluetooth ou use o microfone interno para melhorar a qualidade do áudio.</translation>
 <translation id="3181441307743005334">A reinicialização pode demorar um pouco</translation>
@@ -552,6 +554,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> dispositivos conectados ao ponto de acesso do <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Modo laptop ativado</translation>
 <translation id="3308453408813785101">O usuário <ph name="USER_EMAIL_ADDRESS" /> ainda poderá fazer login mais tarde.</translation>
+<translation id="3317779231018057649"><ph name="DEVICECOUNT" /> dispositivos conectados. Enquanto o ponto de acesso estiver em uso, o Wi-Fi ficará desativado.</translation>
 <translation id="3321628682574733415">Código de familiar responsável incorreto</translation>
 <translation id="332827762492701193">As notificações estão ocultas</translation>
 <translation id="3333674550998107387">Abrir notificação <ph name="NOTIFICATION_TITLE" /></translation>
@@ -879,6 +882,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4566144812051858745">Não tenho interesse em sugestões</translation>
 <translation id="4569753163207712681">Visualize os arquivos de mídia, fotos e apps recentes do smartphone</translation>
 <translation id="4573176682887762361">"Digitar [palavra / frase]"</translation>
+<translation id="4577188182049003486">Com o ponto de acesso ativado, o Wi-Fi fica desativado</translation>
 <translation id="4577274620589681794">Tempo esgotado · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Mostrar visualizações</translation>
 <translation id="4578906031062871102">Menu de configurações aberto</translation>

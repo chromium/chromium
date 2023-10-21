@@ -214,6 +214,7 @@
 <translation id="2158408438301413340">Chrome не вдалося перевірити всі паролі</translation>
 <translation id="2172688499998841696">Описи зображень вимкнено</translation>
 <translation id="2172905120685242547">Закрити вікно?</translation>
+<translation id="2173302385160625112">Перевірте інтернет-з’єднання</translation>
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="218608176142494674">Спільний доступ</translation>
 <translation id="2194856509914051091">Що варто врахувати</translation>
@@ -285,6 +286,7 @@
 <translation id="2571834852878229351">Створити власний</translation>
 <translation id="2573452357057307036">Дізнайтеся, як зробити Chrome веб-переглядачем за умовчанням</translation>
 <translation id="2574249610672786438">Щоб переглядати свої вкладки Chrome на будь-якому пристрої, увійдіть на ньому в обліковий запис</translation>
+<translation id="2578337197553672982">Контент від Google для дітей</translation>
 <translation id="2581165646603367611">Буде видалено файли cookie, кеш та інші дані сайтів, які Chrome визначив як неважливі.</translation>
 <translation id="2587052924345400782">Доступна новіша версія</translation>
 <translation id="2593272815202181319">Однакової ширини</translation>
@@ -699,6 +701,7 @@
 <translation id="4742970037960872810">Зняти виділення</translation>
 <translation id="4743664893327841597">Текст, який ви вводите в адресний рядок або поле пошуку, надсилається в пошукову систему за умовчанням</translation>
 <translation id="4749960740855309258">Відкрити нову вкладку</translation>
+<translation id="4750356170202299988">Контент для дітей</translation>
 <translation id="4758061975920522644">Поділитися лише зображенням</translation>
 <translation id="4759238208242260848">Завантаження</translation>
 <translation id="4763480195061959176">відео</translation>
@@ -1180,6 +1183,7 @@
 <translation id="7187993566681480880">Захищає вас у Chrome і може покращувати безпеку в інших додатках Google після входу в обліковий запис.</translation>
 <translation id="7191430249889272776">Вкладку відкрито у фоновому режимі.</translation>
 <translation id="7196215469483532480">Пояснення про посібник щодо конфіденційності відкрито на всю висоту</translation>
+<translation id="7205672015775254816">Контент від Google для дітей – вимкнено</translation>
 <translation id="7207760545532569765">Відновити вкладки (<ph name="TAB_COUNT" />) як нові фонові вкладки.</translation>
 <translation id="7217781228893594884">Анонімні вкладки блокуватимуться після закриття Chrome</translation>
 <translation id="7221869452894271364">Перезавантажити цю сторінку</translation>
@@ -1327,6 +1331,7 @@
 <translation id="7876243839304621966">Видалити все</translation>
 <translation id="7886917304091689118">Відкрито в Chrome</translation>
 <translation id="7887174313503389866">Уважно перегляньте основні елементи керування конфіденційністю та безпекою. Переходьте до кожного окремого налаштування, щоб побачити більше параметрів.</translation>
+<translation id="7896724475402191389">Контент для дітей – вимкнено</translation>
 <translation id="7903184275147100332">Це може тривати хвилину</translation>
 <translation id="7914399737746719723">Додаток установлено</translation>
 <translation id="7919123827536834358">Перекладати ці мови автоматично</translation>

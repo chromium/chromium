@@ -274,6 +274,7 @@
 <translation id="1507780850870535225">Διαμόρφωση υπαίθριων χώρων</translation>
 <translation id="1513706915089223971">Λίστα καταχωρίσεων ιστορικού</translation>
 <translation id="1516097932025103760">Θα κρυπτογραφηθεί και θα αποθηκευτεί με ασφάλεια, ενώ το CVC δεν αποθηκεύεται ποτέ.</translation>
+<translation id="151720253492607760">Να εξακολουθεί να μην επιτρέπεται</translation>
 <translation id="1517433312004943670">Απαιτείται αριθμός τηλεφώνου</translation>
 <translation id="1519264250979466059">Ημερομηνία κατασκευής</translation>
 <translation id="1521159554480556801">Κλωστοϋφαντουργικές τέχνες</translation>
@@ -633,7 +634,6 @@
 <translation id="2225927550500503913">Η εικονική κάρτα ενεργοποιήθηκε</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Σύνδεση<ph name="END_LINK" /> στο δίκτυο Wi-Fi</translation>
 <translation id="2228057197024893428">Αυτή η διεύθυνση είναι αποθηκευμένη στο Chrome. Για να τη χρησιμοποιήσετε σε όλα τα προϊόντα Google, αποθηκεύστε τη στον Λογαριασμό σας Google, <ph name="ACCOUNT" />.</translation>
-<translation id="2228466771983364669">Το <ph name="EMBEDDED_URL" /> θα γνωρίζει ότι επισκεφτήκατε το <ph name="TOP_LEVEL_URL" />.</translation>
 <translation id="2233745931693710080">Compact Disc (CD)</translation>
 <translation id="2239100178324503013">Αποστολή τώρα</translation>
 <translation id="2241693394036365668">Το αρχείο κατέβηκε</translation>
@@ -878,6 +878,7 @@
 <translation id="2765217105034171413">Μικρό</translation>
 <translation id="2770159525358613612">Δοκιμάστε να ανεβάσετε ξανά τα αρχεία σας</translation>
 <translation id="277133753123645258">Τρόπος αποστολής</translation>
+<translation id="2773388851563527404">Το Chrome περιορίζει τη χρήση cookie τρίτου μέρους στους περισσότερους ιστοτόπους. Ωστόσο, τα cookie τρίτου μέρους επιτρέπονται σε αυτόν τον ιστότοπο, επειδή βασίζεται σε αυτά για την παροχή βασικών υπηρεσιών. Μεταβείτε στις ρυθμίσεις για να <ph name="LINK" />.</translation>
 <translation id="277499241957683684">Λείπει κάποιο αρχείο συσκευής</translation>
 <translation id="2775884851269838147">Πρώτη σελίδα εκτύπωσης</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -1122,6 +1123,7 @@
 <translation id="3293642807462928945">Μάθετε περισσότερα σχετικά με την πολιτική <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Δείτε και διαχειριστείτε τους κωδικούς πρόσβασής σας στις ρυθμίσεις του Chrome.</translation>
 <translation id="3299098170013242198">Το Windows Hello είναι ενεργό για τη συμπλήρωση κωδικών πρόσβασης</translation>
+<translation id="3299720788264079132">Παρουσιάστηκε κάποιο πρόβλημα κατά τη χρήση της λειτουργίας <ph name="FEATURE_NAME" /></translation>
 <translation id="3303176609391916566">30 x 42 ίντσες</translation>
 <translation id="3303855915957856445">Δεν βρέθηκαν αποτελέσματα αναζήτησης</translation>
 <translation id="3304073249511302126">σάρωση Bluetooth</translation>
@@ -1729,6 +1731,7 @@
 <translation id="4521280267704259211">Φάκελος Monarch</translation>
 <translation id="4521916730539354575">Αριστερός τροφοδότης χαρτιού</translation>
 <translation id="4522570452068850558">Λεπτομέρειες</translation>
+<translation id="4522821696628398940">Αποθήκευση του IBAN στον Λογαριασμό Google;</translation>
 <translation id="4523643381056109546">Σήμανση</translation>
 <translation id="4524138615196389145">Επιβεβαιώστε πιο γρήγορα τις κάρτες σας, χρησιμοποιώντας από εδώ και στο εξής το WebAuthn</translation>
 <translation id="45243788195988825">Αποκλεισμός <ph name="TOPIC" /></translation>
@@ -3665,6 +3668,7 @@
 <translation id="8428634594422941299">Το κατάλαβα</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και μετά Enter για να διαχειριστείτε τις προτιμήσεις σας για τα cookie από τις ρυθμίσεις του Chrome</translation>
 <translation id="8433057134996913067">Αυτή η ενέργεια θα σας αποσυνδέσει από τους περισσότερους ιστότοπους.</translation>
+<translation id="8434014327286137412">Για πιο γρήγορες πληρωμές την επόμενη φορά, αποθηκεύστε το IBAN στον Λογαριασμό σας Google</translation>
 <translation id="8434840396568290395">Κατοικίδια</translation>
 <translation id="8436623588884785770">Προσθήκη πολιτικής</translation>
 <translation id="8437238597147034694">&amp;Αναίρεση μετακίνησης</translation>
@@ -3764,6 +3768,7 @@
 <translation id="865032292777205197">αισθητήρες κίνησης</translation>
 <translation id="865255447216708819">Αδιαφανές φιλμ</translation>
 <translation id="8654126188050905496">55 x 91 χιλ.</translation>
+<translation id="8655930295668719549">Στο παρελθόν δεν επιτρέπατε την άδεια <ph name="PERMISSION" /> στον ιστότοπο <ph name="ORIGIN" /></translation>
 <translation id="8662463432865928030">Εμπορικές ιδιοκτησίες</translation>
 <translation id="8663226718884576429">Σύνοψη παραγγελίας, <ph name="TOTAL_LABEL" />, Περισσότερες λεπτομέρειες</translation>
 <translation id="8663909737634214500">Οπτικός δίσκος</translation>

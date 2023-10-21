@@ -75,6 +75,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> 负责管理此用户，而且可能会远程管理设置并监控用户活动。</translation>
 <translation id="150962533380566081">PUK 无效。</translation>
 <translation id="1510238584712386396">启动器</translation>
+<translation id="1515129336378114413">浏览器主页</translation>
 <translation id="1526389707933164996">屏保动画</translation>
 <translation id="152892567002884378">调高音量</translation>
 <translation id="1555130319947370107">蓝色</translation>
@@ -92,6 +93,7 @@
 <translation id="1643449475550628585">每天更改一次壁纸图片</translation>
 <translation id="1644574205037202324">历史记录</translation>
 <translation id="1651925268237749928">您已选择一个共享影集。他人可以添加或更改照片。您的壁纸可能会使用尚不在此影集内的照片。</translation>
+<translation id="1658834457013045127">无限期</translation>
 <translation id="1661865805917886535">系统可能会将一些账号信息和系统信息发送给 Google。我们会借助这些信息来解决技术问题和提升服务质量，并且会在此过程中严格遵守 Google 的隐私权政策 (<ph name="PRIVACYPOLICYURL" />) 和服务条款 (<ph name="TERMSOFSERVICEURL" />)。如需提出内容更改请求，请前往“法律帮助”页面 (<ph name="LEGALHELPPAGEURL" />)。</translation>
 <translation id="1662989795263954667">已停止 - 墨水已用完</translation>
 <translation id="1664796644829245314">预览“<ph name="PREVIEW_OBJECT" />”</translation>
@@ -168,7 +170,9 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> 张照片</translation>
 <translation id="2157660087437850958">表情符号选择器</translation>
 <translation id="2157959690810728433">已加入队列</translation>
+<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{您的管理员已将“<ph name="APP_NAME_1" />”设为在您每次登录时都自动启动。}=2{您的管理员已将“<ph name="APP_NAME_1" />”和“<ph name="APP_NAME_2" />”设为在您每次登录时都自动启动。}=3{您的管理员已将“<ph name="APP_NAME_1" />”“<ph name="APP_NAME_2" />”和“<ph name="APP_NAME_3" />”设为在您每次登录时都自动启动。}other{您的管理员已将“<ph name="APP_NAME_1" />”“<ph name="APP_NAME_2" />”和另外 # 个应用设为在您每次登录时都自动启动。}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />：重试</translation>
+<translation id="215916044711630446">APN“添加”按钮现已停用</translation>
 <translation id="2161394479394250669">取消打印任务</translation>
 <translation id="2161656808144014275">文字</translation>
 <translation id="2163937499206714165">开启深色模式</translation>
@@ -285,6 +289,7 @@
 <translation id="3226405216343213872">正在搜寻扫描器</translation>
 <translation id="3226657629376379887">布局操作菜单</translation>
 <translation id="3246869037381808805">系统会自动移除存在时长已超过 1 天的打印任务</translation>
+<translation id="324961752321393509">您的管理员不允许关闭此应用</translation>
 <translation id="3268178239013324452">失败 - 机盖未关</translation>
 <translation id="3275729367986477355">头像图片</translation>
 <translation id="3283504360622356314">{0,plural, =1{修改文件}other{修改文件}}</translation>
@@ -318,6 +323,7 @@
 <translation id="3484914941826596830">固件更新期间，请不要拔掉此外部设备的电源插头或关闭您的计算机。您可以最小化此窗口。此更新可能需要几分钟时间，在此期间，您的外部设备可能无法正常使用。</translation>
 <translation id="3486220673238053218">定义</translation>
 <translation id="3488065109653206955">部分激活</translation>
+<translation id="349491921221892984"><ph name="MINUTES" /> 分钟</translation>
 <translation id="3502426834823382181">查看所有应用</translation>
 <translation id="3510890413042482857">发送<ph name="BEGIN_LINK1" />性能跟踪数据<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome 操作系统更新</translation>
@@ -397,6 +403,7 @@
 <translation id="4117637339509843559">深色模式</translation>
 <translation id="4130035430755296270">将鼠标指针悬停于此处可查看更多布局选项</translation>
 <translation id="4131410914670010031">黑白色</translation>
+<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{“<ph name="APP_NAME_1" />”已自动启动}other{# 个应用已自动启动}}</translation>
 <translation id="4145784616224233563">HTTP 防火墙</translation>
 <translation id="4147897805161313378">Google 相册</translation>
 <translation id="4150201353443180367">显示</translation>
@@ -442,6 +449,7 @@
 <translation id="445059817448385655">旧密码</translation>
 <translation id="4453205916657964690">子网掩码</translation>
 <translation id="4454245904991689773">将扫描的文件保存至</translation>
+<translation id="4456812688969919973">APN“保存”按钮现已停用</translation>
 <translation id="4469288414739283461">“地球的风景变化”屏保</translation>
 <translation id="4479639480957787382">以太网</translation>
 <translation id="4483049906298469269">未能对非默认网关执行 ping 操作</translation>
@@ -476,6 +484,7 @@
 <translation id="473775607612524610">更新</translation>
 <translation id="4771607256327216405">提高键盘亮度</translation>
 <translation id="4773299976671772492">已停止</translation>
+<translation id="4782003517030001304">1 小时</translation>
 <translation id="4782311465517282004">在您右键点击或轻触并按住文字时获取定义、翻译或单位换算结果</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> 张照片</translation>
 <translation id="4793710386569335688">如需更多帮助，请访问<ph name="BEGIN_LINK" />帮助中心<ph name="END_LINK" />。</translation>
@@ -686,6 +695,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">开启深色主题</translation>
 <translation id="628726841779494414">在打印机设置中管理您的打印机</translation>
+<translation id="6292095526077353682">充电时的屏保显示时长</translation>
 <translation id="629550705077076970">将键盘调暗</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />测试已被取消</translation>
 <translation id="631063167932043783">“探索”应用</translation>
@@ -712,6 +722,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">很弱 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">打开账号设置</translation>
+<translation id="6462978824459367242">APN“添加”按钮现已启用</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{重新扫描页面？}=1{重新扫描第 {PAGE_NUMBER} 页？}other{重新扫描第 {PAGE_NUMBER} 页？}}</translation>
 <translation id="6472207088655375767">动态密码</translation>
 <translation id="6480327114083866287">由 <ph name="MANAGER" /> 管理</translation>
@@ -746,6 +757,7 @@
 <translation id="6659594942844771486">标签页</translation>
 <translation id="6673898378497337661">调高键盘亮度</translation>
 <translation id="6692996468359469499">获取与您的所选项相关的信息</translation>
+<translation id="6694534975463174713">锁定</translation>
 <translation id="6704062477274546131">DNS 解析</translation>
 <translation id="6723839937902243910">电源</translation>
 <translation id="6723847290197874913">键盘背光</translation>
@@ -1049,6 +1061,7 @@
 <translation id="902638246363752736">键盘设置</translation>
 <translation id="9028832514430399253">将切换开关上的滑块滑至开启位置即可选择屏保选项</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9049868303458988905">APN“保存”按钮现已启用</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS 解析延迟时间较长</translation>
 <translation id="9065203028668620118">编辑</translation>

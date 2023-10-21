@@ -269,6 +269,7 @@
 <translation id="1507780850870535225">ల్యాండ్‌స్కేప్ డిజైన్</translation>
 <translation id="1513706915089223971">హిస్టరీ నమోదుల లిస్ట్‌</translation>
 <translation id="1516097932025103760">ఇది ఎన్‌క్రిప్ట్ చేయబడుతుంది, సురక్షితంగా సేవ్ చేయబడుతుంది, అలాగే CVC ఎప్పుడూ స్టోర్ చేయబడదు.</translation>
+<translation id="151720253492607760">అనుమతించకుండా కొనసాగించండి</translation>
 <translation id="1517433312004943670">ఫోన్ నంబర్ అవసరం</translation>
 <translation id="1519264250979466059">బిల్డ్ తేదీ</translation>
 <translation id="1521159554480556801">ఫైబర్ &amp; వస్త్ర కళలు</translation>
@@ -628,7 +629,6 @@
 <translation id="2225927550500503913">వర్చువల్ కార్డ్ ఆన్ చేయబడింది</translation>
 <translation id="2226636330183131181">WiFi నెట్‌వర్క్‌కు <ph name="BEGIN_LINK" />సైన్ ఇన్ చేస్తోంది<ph name="END_LINK" /></translation>
 <translation id="2228057197024893428">ఈ అడ్రస్ ప్రస్తుతం Chromeలో సేవ్ అవుతుంది. దీనిని Google ప్రోడక్ట్‌లన్నింటిలో ఉపయోగించాలంటే, మీ Google ఖాతా, <ph name="ACCOUNT" />‌లో దానిని సేవ్ చేయండి.</translation>
-<translation id="2228466771983364669"><ph name="EMBEDDED_URL" />‌కు మీరు <ph name="TOP_LEVEL_URL" />‌కు వెళ్లినట్లు తెలుస్తుంది.</translation>
 <translation id="2233745931693710080">కాంపాక్ట్ డిస్క్</translation>
 <translation id="2239100178324503013">ఇప్పుడే పంపండి</translation>
 <translation id="2241693394036365668">ఫైల్ డౌన్‌లోడ్ చేసినప్పుడు</translation>
@@ -873,6 +873,7 @@
 <translation id="2765217105034171413">చిన్నది</translation>
 <translation id="2770159525358613612">మీ ఫైళ్లను మళ్లీ అప్‌లోడ్ చేయడానికి ట్రై చేయండి</translation>
 <translation id="277133753123645258">రవాణా పద్ధతి</translation>
+<translation id="2773388851563527404">థర్డ్-పార్టీ కుక్కీలను ఉపయోగించకుండా Chrome చాలా సైట్‌లను పరిమితం చేస్తుంది. కానీ ఈ సైట్‌లో థర్డ్-పార్టీ కుక్కీలు అనుమతించబడతాయి ఎందుకంటే ఇది ప్రాథమిక సర్వీస్‌ను అందించడానికి వాటిపై ఆధారపడుతుంది. <ph name="LINK" /> సెట్టింగ్‌లను చూడండి.</translation>
 <translation id="277499241957683684">పరికరం రికార్డ్ లేదు</translation>
 <translation id="2775884851269838147">మొదట ఈ పేజీని ప్రింట్ చేయండి</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -1117,6 +1118,7 @@
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> విధానం గురించి మరింత తెలుసుకోండి</translation>
 <translation id="3295444047715739395">Chrome సెట్టింగ్‌లలో మీ పాస్‌వర్డ్‌లను చూడండి, మేనేజ్ చేయండి</translation>
 <translation id="3299098170013242198">పాస్‌వర్డ్‌లను పూరించడానికి Windows Hello ఆన్ చేయబడింది</translation>
+<translation id="3299720788264079132"><ph name="FEATURE_NAME" />‌ను ఉపయోగిస్తున్నప్పుడు ఏదో పొరపాటు జరిగింది</translation>
 <translation id="3303176609391916566">30 x 42 అంగుళాలు</translation>
 <translation id="3303855915957856445">ఆ సెర్చ్ కోసం ఫలితాలు ఏవీ దొరకలేదు</translation>
 <translation id="3304073249511302126">బ్లూటూత్ స్కానింగ్</translation>
@@ -1723,6 +1725,7 @@
 <translation id="4521280267704259211">ఎన్వలప్ మోనార్క్</translation>
 <translation id="4521916730539354575">లెఫ్ట్ ట్రే</translation>
 <translation id="4522570452068850558">వివరాలు</translation>
+<translation id="4522821696628398940">IBANని Google ఖాతాకు సేవ్ చేయాలా?</translation>
 <translation id="4523643381056109546">సంకేత చిహ్నాలు</translation>
 <translation id="4524138615196389145">ఇప్పటి నుండి WebAuthn ఉపయోగించి మీ కార్డ్‌లను వేగంగా నిర్ధారించండి</translation>
 <translation id="45243788195988825"><ph name="TOPIC" />‌ను బ్లాక్ చేయండి</translation>
@@ -3659,6 +3662,7 @@
 <translation id="8428634594422941299">అర్థమైంది</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome సెట్టింగ్‌లలో మీ కుక్కీ ప్రాధాన్యతలను మేనేజ్ చేయడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="8433057134996913067">దీని వలన మీరు చాలా వెబ్‌సైట్‌ల నుండి సైన్ అవుట్ చేయబడతారు.</translation>
+<translation id="8434014327286137412">తర్వాతిసారి వేగంగా పేమెంట్ చేయడానికి, మీ IBANని మీ Google ఖాతాలో సేవ్ చేయండి</translation>
 <translation id="8434840396568290395">పెంపుడు జంతువులు</translation>
 <translation id="8436623588884785770">పాలసీని జోడించండి</translation>
 <translation id="8437238597147034694">&amp;తరలించడాన్ని రద్దు చేయండి</translation>
@@ -3757,6 +3761,7 @@
 <translation id="865032292777205197">మోషన్ సెన్సార్‌లు</translation>
 <translation id="865255447216708819">బ్యాక్ ప్రింట్ ఫిల్మ్</translation>
 <translation id="8654126188050905496">55 x 91 మి.మీ.</translation>
+<translation id="8655930295668719549">మీరు మునుపటి <ph name="ORIGIN" />లో <ph name="PERMISSION" />ను అనుమతించలేదు</translation>
 <translation id="8662463432865928030">కమర్షియల్ ప్రాపర్టీలు</translation>
 <translation id="8663226718884576429">ఆర్డర్ సారాంశం, <ph name="TOTAL_LABEL" />, మరిన్ని వివరాలు</translation>
 <translation id="8663909737634214500">ఆప్టికల్ డిస్క్</translation>

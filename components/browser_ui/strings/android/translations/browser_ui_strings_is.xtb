@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">Hjálpaðu okkur að bæta Chrome með því að segja okkur hvers vegna þú leyfðir fótspor þriðju aðila. <ph name="BEGIN_LINK" />Senda ábendingu<ph name="END_LINK" /></translation>
 <translation id="1178581264944972037">Gera hlé</translation>
 <translation id="1181037720776840403">Fjarlægja</translation>
+<translation id="1192844206376121885">Þetta eyðir öllum gögnum og fótsporum sem <ph name="ORIGIN" /> hefur vistað.</translation>
 <translation id="1201402288615127009">Áfram</translation>
 <translation id="1242008676835033345">Fellt inn á <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Stöðva</translation>
@@ -58,6 +59,7 @@
 <translation id="216989819110952009">Jafnvel þótt grænu gleraugun veittu augunum vernd blinduðust Dórótea og vinir hennar í fyrstu af</translation>
 <translation id="2176704795966505152">Sýna valkost fyrir aðdrátt á aðalvalmyndinni</translation>
 <translation id="2182457891543959921">Spyrja áður en vefsvæðum er leyft að búa til þrívíddarkort af umhverfinu eða rekja staðsetningu myndavélarinnar (ráðlagt)</translation>
+<translation id="2185965788978862351">Þetta eyðir <ph name="DATASIZE" /> af gögnum og fótsporum sem vefsvæði og forrit hafa vistað á heimaskjánum.</translation>
 <translation id="2194856509914051091">Atriði til að hafa í huga</translation>
 <translation id="2212565012507486665">Leyfa fótspor</translation>
 <translation id="2228071138934252756">Til að veita <ph name="APP_NAME" /> aðgang að myndavélinni þarftu einnig að kveikja á henni í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
@@ -80,6 +82,7 @@
 <translation id="2434158240863470628">Niðurhali lokið <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="244264527810019436">Eiginleikar sumra vefsvæða virka e.t.v. ekki í huliðsstillingu</translation>
 <translation id="2442870161001914531">Biðja alltaf um tölvuútgáfu vefsvæða</translation>
+<translation id="2469312991797799607">Þessi aðgerð eyðir öllum gögnum og fótsporum fyrir <ph name="ORIGIN" /> og öll undirvefsvæði þess</translation>
 <translation id="2479148705183875116">Opna stillingar</translation>
 <translation id="2482878487686419369">Tilkynningar</translation>
 <translation id="2485422356828889247">Fjarlægja</translation>
@@ -223,6 +226,7 @@
 <translation id="5063480226653192405">Notkun</translation>
 <translation id="5091013926750941408">Snjallvefur</translation>
 <translation id="509133520954049755">Biðja um tölvuútgáfu</translation>
+<translation id="5099358668261120049">Þetta eyðir öllum gögnum og fótsporum sem <ph name="ORIGIN" /> eða forrit þess hafa vistað á heimaskjánum</translation>
 <translation id="5100237604440890931">Minnkað – smelltu til að stækka.</translation>
 <translation id="5123685120097942451">Huliðsflipi</translation>
 <translation id="5186036860380548585">Valkosturinn er við efri brún skjásins</translation>
@@ -269,6 +273,7 @@
 <translation id="5916664084637901428">Kveikt</translation>
 <translation id="5922853908706496913">Deiling skjásins þíns</translation>
 <translation id="5922967540311291836">Loka á fótspor þriðju aðila:</translation>
+<translation id="5923512600150154850">Þetta eyðir <ph name="DATASIZE" /> af gögnum og fótsporum sem vefsvæði geyma.</translation>
 <translation id="5939518447894949180">Endurstilla</translation>
 <translation id="5964247741333118902">Innfellt efni</translation>
 <translation id="5968921426641056619">Sláðu inn vefslóð</translation>
@@ -324,6 +329,7 @@
 <translation id="6864395892908308021">Þetta tæki getur ekki lesið NFC</translation>
 <translation id="6912998170423641340">Koma í veg fyrir að vefsvæði geti lesið texta og myndir af klippiborðinu</translation>
 <translation id="6945221475159498467">Velja</translation>
+<translation id="6950072572526089586">Vefsvæði sem þú skoðar getur vistað upplýsingar um það sem þú ert að gera svo það virki sem skyldi — svo sem til að viðhalda innskráningu þinni á vefsvæði eða til að vista vörur í innkaupakörfunni þinni. Oft vista vefsvæði þessar upplýsingar í tækinu tímabundið.</translation>
 <translation id="6965382102122355670">Í lagi</translation>
 <translation id="6981982820502123353">Aðgengi</translation>
 <translation id="6992289844737586249">Spyrja áður en vefsvæðum er veitt heimild til að nota hljóðnemann þinn (ráðlagt)</translation>
@@ -337,6 +343,7 @@
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Endurnýja</translation>
 <translation id="7188508872042490670">Vefsvæðagögn í tækinu</translation>
+<translation id="7201549776650881587">Þessi aðgerð eyðir öllum gögnum og fótsporum sem eru vistuð á öllum vefsvæðum undir <ph name="ORIGIN" /> eða í forriti þess á heimaskjánum hjá þér</translation>
 <translation id="7203150201908454328">Stækkað</translation>
 <translation id="7219254577985949841">Eyða vefsvæðagögnum?</translation>
 <translation id="723171743924126238">Veldu myndir</translation>

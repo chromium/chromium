@@ -29,6 +29,7 @@
 <translation id="109942774857561566">Мені нудно</translation>
 <translation id="1104084341931202936">Показати налаштування функцій доступності</translation>
 <translation id="1104621072296271835">Ваші пристрої працюватимуть разом ще краще</translation>
+<translation id="1106446201446919638">Підключено 1 пристрій. Під час використання точки доступу Wi-Fi буде вимкнено.</translation>
 <translation id="1111021433905331574">Щоб змінити колір підсвічування клавіатури, перейдіть у налаштування &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Увімкнути або вимкнути мобільний Інтернет. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Автоматично ховати панель запуску</translation>
@@ -191,6 +192,7 @@
 <translation id="1737078180382804488">Відхилити налаштування перегляду сповіщень на телефоні</translation>
 <translation id="174102739345480129">Маркер вимкнено.</translation>
 <translation id="1743570585616704562">Не розпізнано</translation>
+<translation id="1743927604032653654">Згорнути сповіщення "<ph name="NOTIFICATION_TITLE" />"</translation>
 <translation id="1746730358044914197">Адміністратор налаштував методи введення.</translation>
 <translation id="1747336645387973286">термін виконання: <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Екранну клавіатуру ввімкнено</translation>
@@ -517,6 +519,7 @@
 <translation id="3160929076476941240">2 години</translation>
 <translation id="3161500364292033097">Закрити робочий стіл і вікна</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> повертає на пристрої <ph name="DEVICE_TYPE" /> попередню версію. Налаштування пристрою буде скинуто, а дані – видалено.</translation>
+<translation id="3170769098533255179">Немає підключених пристроїв. Під час використання точки доступу Wi-Fi буде вимкнено.</translation>
 <translation id="3171170659304083361">Налаштування методів введення</translation>
 <translation id="3176221688814061633">На вашому ноутбуку Chromebook або пристрої з Bluetooth використовується застаріла версія Bluetooth. Увімкніть високу роздільну здатність Bluetooth або використовуйте внутрішній мікрофон для кращої якості аудіо.</translation>
 <translation id="3181441307743005334">Перезапуск може зайняти якийсь час</translation>
@@ -530,6 +533,7 @@
 <translation id="3217205077783620295">Звук увімкнено. Його можна вимкнути за допомогою перемикача.</translation>
 <translation id="3226991577105957773">Ще <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Мікрофон</translation>
+<translation id="3233611303007751344">Режим енергозбереження вимкнено.</translation>
 <translation id="324366796737464147">Заглушення шумів</translation>
 <translation id="3249513730522716925">Вікно "<ph name="WINDOW_TITLE" />" переміщено з робочого столу "<ph name="ACTIVE_DESK" />" на робочий стіл "<ph name="TARGET_DESK" />"</translation>
 <translation id="3253743281242075461">Тип завдання: "<ph name="GLANCEABLES_CLASSROOM_LIST_NAME" />"</translation>
@@ -550,8 +554,10 @@
 <translation id="3306386552969601301">До точки доступу <ph name="DEVICE_NAME" /> підключено стільки пристроїв: <ph name="DEVICECOUNT" /></translation>
 <translation id="3307642347673023554">Увімкнено режим ноутбука</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> усе одно зможе ввійти в обліковий запис.</translation>
+<translation id="3317779231018057649">Підключено пристроїв: <ph name="DEVICECOUNT" />. Під час використання точки доступу Wi-Fi буде вимкнено.</translation>
 <translation id="3321628682574733415">Неправильний код доступу батьків</translation>
 <translation id="332827762492701193">Сповіщення сховано</translation>
+<translation id="3333674550998107387">Розгорнути сповіщення "<ph name="NOTIFICATION_TITLE" />"</translation>
 <translation id="3339826665088060472">Запис екрана, інструменти для знімків екрана та запису відео з екрана</translation>
 <translation id="3340978935015468852">налаштування</translation>
 <translation id="3341303451326249809">Знімок екрана зроблено</translation>
@@ -766,6 +772,8 @@
 <translation id="4146671046252289537">Переміститися в кінець наступного слова</translation>
 <translation id="4146833061457621061">Увімкни музику</translation>
 <translation id="4150201353443180367">Екран</translation>
+<translation id="4156293514828496577">Залишилось <ph name="PERCENTAGE" />% заряду акумулятора (приблизно на <ph name="TIME_LEFT" />).
+Роботу деяких функцій обмежено, щоб заощадити заряд.</translation>
 <translation id="4165275524535002941">Кабель може не підтримувати дисплеї</translation>
 <translation id="4177415338862979658">Натисніть, щоб переглянути деталі</translation>
 <translation id="4177913004758410636">{0,plural, =1{Оновіть пристрій протягом дня}one{Оновіть пристрій протягом # дня}few{Оновіть пристрій протягом # днів}many{Оновіть пристрій протягом # днів}other{Оновіть пристрій протягом # дня}}</translation>
@@ -874,6 +882,7 @@
 <translation id="4566144812051858745">Мене не цікавлять жодні підказки</translation>
 <translation id="4569753163207712681">Переглядайте нещодавні фотографії, медіафайли й додатки на телефоні</translation>
 <translation id="4573176682887762361">"Написати [слово або фразу]"</translation>
+<translation id="4577188182049003486">Коли точку доступу ввімкнено, Wi-Fi не працює</translation>
 <translation id="4577274620589681794">Час минув   <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Увімкнути попередній перегляд</translation>
 <translation id="4578906031062871102">Меню налаштувань відкрито</translation>
@@ -895,6 +904,7 @@
 <translation id="4659419629803378708">ChromeVox увімкнено</translation>
 <translation id="4666911709726371538">Більше додатків</translation>
 <translation id="4667099493359681081">Завантажується файл <ph name="FILENAME" /></translation>
+<translation id="4672539464599646374">Режим енергозбереження ввімкнено</translation>
 <translation id="468293128311738995">Додатки з вашого телефона</translation>
 <translation id="4690510401873698237">Полицю розміщено внизу</translation>
 <translation id="4696813013609194136">Введіть код доступу батьків</translation>
@@ -1055,6 +1065,8 @@
 <translation id="5297704307811127955">Вимкнено</translation>
 <translation id="5300589172476337783">Показати</translation>
 <translation id="5302048478445481009">Мова</translation>
+<translation id="5303319262469238330">Залишилось <ph name="PERCENTAGE" />% заряду акумулятора.
+Роботу деяких функцій обмежено, щоб заощадити заряд.</translation>
 <translation id="5308380583665731573">Під’єднатися</translation>
 <translation id="5313326810920013265">Налаштування Bluetooth</translation>
 <translation id="5314219114274263156">Запис екрана зроблено</translation>
@@ -1295,6 +1307,7 @@
 <translation id="6231419273573514727">Ефективність периферійних пристроїв може бути обмежена</translation>
 <translation id="6232891689835436217">Додаток <ph name="APP_NAME" /> використовує ваші камеру та мікрофон</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="62380141479352646">Низький заряд акумулятора. Режим енергозбереження ввімкнено.</translation>
 <translation id="6247728804802644171">Відкрити сповіщення</translation>
 <translation id="6254629735336163724">Заблоковано в горизонтальному положенні</translation>
 <translation id="6259254695169772643">Вибирайте елементи за допомогою стилуса</translation>
@@ -1409,6 +1422,7 @@
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Використовується камера й мікрофон</translation>
 <translation id="6739144137573853180">ПЕРЕЙТИ ДО НАЛАШТУВАНЬ</translation>
+<translation id="6747985245839783873">Акумулятор заряджений на <ph name="PERCENTAGE" />. Режим енергозбереження ввімкнено.</translation>
 <translation id="6751052314767925245">Застосовується адміністратором</translation>
 <translation id="6751826523481687655">Відстеження ефективності ввімкнено</translation>
 <translation id="6752912906630585008">Робочий стіл "<ph name="REMOVED_DESK" />" видалено й об'єднано з робочим столом "<ph name="RECEIVE_DESK" />"</translation>
@@ -1508,6 +1522,7 @@
 <translation id="7131634465328662194">Ви вийдете автоматично.</translation>
 <translation id="7143207342074048698">Під’єднання</translation>
 <translation id="7144942256906679589">Стан акумулятора</translation>
+<translation id="7145639536026937076">Акумулятор заряджений на <ph name="PERCENTAGE" />% і продовжує заряджатися. Режим енергозбереження ввімкнено.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1518,6 +1533,7 @@
 <translation id="7198435252016571249">Зображення з камери закріплено в нижньому правому куті, що конфліктує із системною платформою.</translation>
 <translation id="7219573373513695352">Немає підключених пристроїв</translation>
 <translation id="7229029500464092426">Обсяг використаної пам’яті: <ph name="AVAILABLE_MEMORY" /> | Усього: <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7244725679040769470">Залишилось <ph name="PERCENTAGE" />% заряду акумулятора. Підключіть пристрій до джерела живлення.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Щоб оновлення почали діяти, Chromebook потрібно перезапустити. Це може зайняти до 1 хвилини.</translation>
 <translation id="7256634071279256947">Мікрофон на задній панелі</translation>
 <translation id="7258828758145722155">Змінено вчора</translation>
@@ -1911,6 +1927,7 @@
 <translation id="8878886163241303700">Розширення екрана</translation>
 <translation id="888982883502837004">Для вашого пристрою доступні оновлення мікропрограми. Натисніть, щоб переглянути й оновити.</translation>
 <translation id="8896630965521842259">Шаблон <ph name="DESK_TEMPLATE_NAME" /> буде видалено назавжди</translation>
+<translation id="889790758758811533">Залишилось <ph name="PERCENTAGE" />% заряду акумулятора (приблизно на <ph name="TIME_LEFT" />). Підключіть пристрій до джерела живлення.</translation>
 <translation id="88986195241502842">Сторінка вниз</translation>
 <translation id="8905919797434099235">(Без назви)</translation>
 <translation id="890616557918890486">Змінити джерело</translation>

@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">तुम्ही तृतीय पक्ष कुकीना अनुमती का दिली हे सांगून Chrome मध्ये सुधारणा करण्यात आम्हाला मदत करा. <ph name="BEGIN_LINK" />फीडबॅक पाठवणे<ph name="END_LINK" /></translation>
 <translation id="1178581264944972037">विराम द्या</translation>
 <translation id="1181037720776840403">काढून टाका</translation>
+<translation id="1192844206376121885">यामुळे <ph name="ORIGIN" /> ने स्टोअर केलेला सर्व डेटा आणि कुकी हटवल्या जातील.</translation>
 <translation id="1201402288615127009">पुढील</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> वर एम्बेड केले</translation>
 <translation id="1272079795634619415">थांबा</translation>
@@ -58,6 +59,7 @@
 <translation id="216989819110952009">डोरोथी आणि तिच्या मित्रमैत्रिणींचे डोळे हिरव्या चष्म्याने झाकले असले तरीही अद्भुत शहराच्या झगमगाटाने ते चकित झाले</translation>
 <translation id="2176704795966505152">मुख्य मेनूमध्ये झूम पर्याय दाखवा</translation>
 <translation id="2182457891543959921">साइटना तुमच्या आसपासच्या परिसराचा 3D नकाशा तयार करू किंवा कॅमेर्‍याचे स्थान ट्रॅक करू देण्याआधी विचारा (शिफारस केलेले)</translation>
+<translation id="2185965788978862351">यामुळे साइटनी किंवा तुमच्या होम स्क्रीनवर त्याच्या अ‍ॅपने स्टोअर केलेला डेटा आणि कुकीचा <ph name="DATASIZE" /> हटवला जाईल.</translation>
 <translation id="2194856509914051091">विचार करण्याच्या गोष्टी</translation>
 <translation id="2212565012507486665">कुकींना अनुमती द्या</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> ला तुमचा कॅमेरा ॲक्सेस करू देण्यासाठी, <ph name="BEGIN_LINK" />Android सेटिंग्ज<ph name="END_LINK" /> मध्येदेखील कॅमेरा सुरू करा.</translation>
@@ -80,6 +82,7 @@
 <translation id="2434158240863470628">डाउनलोड पूर्ण झाले <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="244264527810019436">काही साइटवरील वैशिष्ट्ये कदाचित गुप्त मोडमध्ये काम करणार नाहीत</translation>
 <translation id="2442870161001914531">नेहमी डेस्कटॉप साइटची विनंती करा</translation>
+<translation id="2469312991797799607">ही कृती <ph name="ORIGIN" /> आणि त्या अंतर्गत सर्व साइटसाठीचा सर्व डेटा आणि कुकी हटवेल</translation>
 <translation id="2479148705183875116">सेटिंग्ज वर जा</translation>
 <translation id="2482878487686419369">सूचना</translation>
 <translation id="2485422356828889247">अनइंस्टॉल करा</translation>
@@ -223,6 +226,7 @@
 <translation id="5063480226653192405">वापर</translation>
 <translation id="5091013926750941408">मोबाइल साइट</translation>
 <translation id="509133520954049755">डेस्कटॉप दृश्याची विनंती करा</translation>
+<translation id="5099358668261120049">यामुळे <ph name="ORIGIN" /> ने किंवा तुमच्या होम स्क्रीनवर त्याच्या अ‍ॅपने स्टोअर केलेला सर्व डेटा आणि कुकी हटवल्या जातील.</translation>
 <translation id="5100237604440890931">संकुचित केले - विस्तृत करण्यासाठी क्लिक करा.</translation>
 <translation id="5123685120097942451">गुप्त टॅब</translation>
 <translation id="5186036860380548585">स्क्रीनच्या सर्वात वरती पर्याय उपलब्ध आहे</translation>
@@ -269,6 +273,7 @@
 <translation id="5916664084637901428">सुरू</translation>
 <translation id="5922853908706496913">तुमची स्क्रीन शेअर करत आहे</translation>
 <translation id="5922967540311291836">तृतीय पक्ष कुकी ब्लॉक करा:</translation>
+<translation id="5923512600150154850">यामुळे साइटनी स्टोअर केलेल्या डेटा आणि कुकीचा <ph name="DATASIZE" /> हटवला जाईल.</translation>
 <translation id="5939518447894949180">रीसेट करा</translation>
 <translation id="5964247741333118902">एंबेड केलेला आशय</translation>
 <translation id="5968921426641056619">वेब अ‍ॅड्रेस एंटर करा</translation>
@@ -324,6 +329,7 @@
 <translation id="6864395892908308021">हे डिव्हाइस NFC रीड करू शकत नाही</translation>
 <translation id="6912998170423641340">साइटचे क्लिपबोर्डवरील मजकूर आणि इमेज रीड करणे ब्लॉक करा</translation>
 <translation id="6945221475159498467">निवडा</translation>
+<translation id="6950072572526089586">तुम्ही भेट दिलेली साइट ही तुम्ही काय करत आहात याबद्दलची माहिती सेव्ह करू शकते, जेणेकरून ती अपेक्षेप्रमाणे काम करेल — उदाहरणार्थ, तुम्हाला साइटवर साइन इन केलेले ठेवण्यासाठी किंवा तुमच्या शॉपिंग कार्टमधील आयटम सेव्ह करण्यासाठी. साइट या बरेचदा तुमच्या डिव्हाइसवर ही माहिती तात्पुरती सेव्ह करतात.</translation>
 <translation id="6965382102122355670">ठीक आहे</translation>
 <translation id="6981982820502123353">ॲक्सेसिबिलिटी</translation>
 <translation id="6992289844737586249">साइटना तुमचा मायक्रोफोन वापरण्याची अनुमती देण्यापूर्वी प्रथम विचारा (शिफारस केलेले)</translation>
@@ -337,6 +343,7 @@
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">रिफ्रेश करा</translation>
 <translation id="7188508872042490670">डिव्‍हाइसवरील साइट डेटा</translation>
+<translation id="7201549776650881587">ही कृती <ph name="ORIGIN" /> अंतर्गत किंवा तुमच्या होम स्क्रीनवर त्याच्या अ‍ॅपने सर्व साइटनी स्टोअर केलेला सर्व डेटा आणि कुकी हटवेल</translation>
 <translation id="7203150201908454328">विस्‍तृत केलेले</translation>
 <translation id="7219254577985949841">साइट डेटा हटवायचा आहे का?</translation>
 <translation id="723171743924126238">इमेज निवडा</translation>

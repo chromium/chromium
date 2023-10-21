@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">ඔබ තෙවන පාර්ශ්ව කුකීවලට ඉඩ දුන් හේතුව අපට පවසා Chrome දියුණු කිරීමට අපට උදවු කරන්න. <ph name="BEGIN_LINK" />ප්‍රතිපෝෂණය යවන්න<ph name="END_LINK" /></translation>
 <translation id="1178581264944972037">විරාමය</translation>
 <translation id="1181037720776840403">ඉවත් කරන්න</translation>
+<translation id="1192844206376121885">මෙය <ph name="ORIGIN" /> මගින් ගබඩා කර ඇති සියලු දත්ත සහ කුකීස් මකනු ඇත.</translation>
 <translation id="1201402288615127009">ඊළඟ</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> මත කාවද්දන්න</translation>
 <translation id="1272079795634619415">නවතන්න</translation>
@@ -58,6 +59,7 @@
 <translation id="216989819110952009">හරිත උපැස් යුවලෙන් ආරක්ෂා වූ දෑස්වලින් පවා ඩොරති සහ ඇගේ යෙහෙළියන් මුල දී විස්මයට පත් විය</translation>
 <translation id="2176704795966505152">ප්‍රධාන මෙනුවේ විශාලන විකල්පය පෙන්වන්න</translation>
 <translation id="2182457891543959921">වෙබ් අඩවිවලට ඔබේ වටපිටාවේ ත්‍රිමාන සිතියමක් සෑදීමට හෝ කැමරා ස්ථානය හඹා යෑමට ඉඩ දීමට පෙර අසන්න (නිර්දේශිතයි)</translation>
+<translation id="2185965788978862351">මෙය ඔබේ මුල් තිරයෙහි අඩවි හෝ යෙදුම් මගින් ගබඩා කර ඇති දත්ත සහ කුකීස් <ph name="DATASIZE" /> මකනු ඇත.</translation>
 <translation id="2194856509914051091">සලකා බැලිය යුතු කරුණු</translation>
 <translation id="2212565012507486665">කුකීවලට ඉඩ දෙන්න</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> හට ඔබේ කැමරාවට ප්‍රවේශ වීමට ඉඩ දීමට, <ph name="BEGIN_LINK" />Android සැකසීම්<ph name="END_LINK" /> තුළද කැමරාව ක්‍රියාත්මක කරන්න.</translation>
@@ -80,6 +82,7 @@
 <translation id="2434158240863470628">බාගැනීම සම්පූර්ණයි <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="244264527810019436">සමහර අඩවිවල විශේෂාංග අප්‍රසිද්ධ ප්‍රකාරයේ ක්‍රියා නොකළ හැක</translation>
 <translation id="2442870161001914531">සැම විට ඩෙස්ක්ටොප් අඩවිය ඉල්ලන්න</translation>
+<translation id="2469312991797799607">මෙම ක්‍රියාව <ph name="ORIGIN" /> සඳහා සියලු දත්ත සහ කුකීස් සහ ඒ යටතේ ඇති සියලු අඩවි මකනු ඇත</translation>
 <translation id="2479148705183875116">සැකසීම් වෙත යන්න</translation>
 <translation id="2482878487686419369">දැනුම්දීම්</translation>
 <translation id="2485422356828889247">අස්ථාපනය</translation>
@@ -223,6 +226,7 @@
 <translation id="5063480226653192405">භාවිතය</translation>
 <translation id="5091013926750941408">ජංගම අඩවිය</translation>
 <translation id="509133520954049755">ඩෙස්ක්ටොප් දසුන ඉල්ලන්න</translation>
+<translation id="5099358668261120049">මෙය ඔබේ මුල් තිරයෙහි <ph name="ORIGIN" /> හෝ එහි යෙදුම මගින් ගබඩා කර ඇති සියලු දත්ත සහ කුකීස් මකනු ඇත.</translation>
 <translation id="5100237604440890931">හකුළන ලදි - දිග හැරීමට ක්ලික් කරන්න</translation>
 <translation id="5123685120097942451">අප්‍රකට පටිත්ත</translation>
 <translation id="5186036860380548585">තිරයේ ඉහළට ආසන්නව විකල්පය තිබේ</translation>
@@ -269,6 +273,7 @@
 <translation id="5916664084637901428">ක්‍රියාත්මකයි</translation>
 <translation id="5922853908706496913">ඔබේ තිරය බෙදා ගැනීම</translation>
 <translation id="5922967540311291836">තෙවන පාර්ශ්ව කුකී අවහිර කරන්න:</translation>
+<translation id="5923512600150154850">මෙය අඩවි මගින් ගබඩා කර ඇති දත්ත සහ කුකීස් <ph name="DATASIZE" /> මකනු ඇත.</translation>
 <translation id="5939518447894949180">නැවත සකසන්න</translation>
 <translation id="5964247741333118902">කාවද්දන ලද අන්තර්ගතය</translation>
 <translation id="5968921426641056619">වෙබ් ලිපිනය ඇතුළු කරන්න</translation>
@@ -324,6 +329,7 @@
 <translation id="6864395892908308021">මෙම උපාංගය NFC කියවිය නොහැක</translation>
 <translation id="6912998170423641340">පසුරු පුවරුවෙන් පෙළ සහ රූප කියවීමෙන් අඩවි අවහිර කරන්න</translation>
 <translation id="6945221475159498467">තෝරන්න</translation>
+<translation id="6950072572526089586">ඔබ පිවිසෙන අඩවියකට ඔබ කරන දේ පිළිබඳ තතු සුරැකිය හැකි අතර, එවිට එය අපේක්ෂා කරන පරිදි ක්‍රියා කරයි — උදාහරණයක් ලෙස, ඔබව අඩවියකට පුරනය වී තබා ගැනීමට හෝ ඔබේ සාප්පු කරත්තයේ අයිතම සුරැකීමට. බොහෝ විට අඩවි මෙම තතු ඔබේ උපාංගයෙහි තාවකාලිකව සුරකියි.</translation>
 <translation id="6965382102122355670">හරි</translation>
 <translation id="6981982820502123353">ප්‍රවේශ්‍යතාව</translation>
 <translation id="6992289844737586249">අඩවි වලට ඔබගේ මයික්‍රෆෝනය භාවිතා කිරීමට ඉඩ දීමට පෙර පළමුව විමසන්න (නිර්දේශිතයි)</translation>
@@ -337,6 +343,7 @@
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">නැවුම් කරන්න</translation>
 <translation id="7188508872042490670">උපාංගය-මත අඩවි දත්ත</translation>
+<translation id="7201549776650881587">මෙම ක්‍රියාව <ph name="ORIGIN" /> යටතේ සියලු අඩවි හෝ ඔබේ මුල් තිරයෙහි එහි යෙදුම මගින් ගබඩා කර ඇති සියලු දත්ත සහ කුකී මකනු ඇත</translation>
 <translation id="7203150201908454328">දිග හරින ලද</translation>
 <translation id="7219254577985949841">අඩවි දත්ත මකන්නද?</translation>
 <translation id="723171743924126238">රූප තෝරන්න</translation>

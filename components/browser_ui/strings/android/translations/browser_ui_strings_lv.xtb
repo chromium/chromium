@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">Palīdziet mums uzlabot pārlūku Chrome, pastāstot, kāpēc atļāvāt trešo pušu sīkfailus. <ph name="BEGIN_LINK" />Sūtīt atsauksmes<ph name="END_LINK" /></translation>
 <translation id="1178581264944972037">Pauzēt</translation>
 <translation id="1181037720776840403">Noņemt</translation>
+<translation id="1192844206376121885">Tiks izdzēsti visi dati un sīkfaili, ko glabā <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Tālāk</translation>
 <translation id="1242008676835033345">Iegults vietnē <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Apturēt</translation>
@@ -58,6 +59,7 @@
 <translation id="216989819110952009">Pat raugoties caur zaļajām brillēm, kas sargāja acis, Dorotija un viņas draugi sākotnēji apžilba no</translation>
 <translation id="2176704795966505152">Rādīt tālummaiņas opciju galvenajā izvēlnē</translation>
 <translation id="2182457891543959921">Vaicāt, pirms ļaut vietnēm izveidot jūsu apkārtnes 3D karti vai izsekot kameras pozīciju (ieteicams)</translation>
+<translation id="2185965788978862351">Tiks izdzēsti dati un sīkfaili <ph name="DATASIZE" /> apjomā, ko vietnes vai lietotnes glabā jūsu sākuma ekrānā.</translation>
 <translation id="2194856509914051091">Svarīgi apsvērumi</translation>
 <translation id="2212565012507486665">Atļaut sīkfailus</translation>
 <translation id="2228071138934252756">Lai atļautu lietotnei <ph name="APP_NAME" /> piekļūt jūsu kamerai, ieslēdziet kameru arī <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
@@ -80,6 +82,7 @@
 <translation id="2434158240863470628">Lejupielāde pabeigta: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="244264527810019436">Noteiktās vietnēs funkcijas var nedarboties, ja tiek izmantots inkognito režīms</translation>
 <translation id="2442870161001914531">Vienmēr pieprasīt datora vietni</translation>
+<translation id="2469312991797799607">Veicot šo darbību, tiks izdzēsti visi dati un sīkfaili, ko glabā <ph name="ORIGIN" /> un visas šīs grupas vietnes.</translation>
 <translation id="2479148705183875116">Atvērt iestatījumus</translation>
 <translation id="2482878487686419369">Paziņojumi</translation>
 <translation id="2485422356828889247">Atinstalēt</translation>
@@ -223,6 +226,7 @@
 <translation id="5063480226653192405">Lietojums</translation>
 <translation id="5091013926750941408">Vietne mobilajām ierīcēm</translation>
 <translation id="509133520954049755">Pieprasīt skatu datorā</translation>
+<translation id="5099358668261120049">Tiks izdzēsti visi dati un sīkfaili, ko jūsu sākuma ekrānā glabā vietne <ph name="ORIGIN" /> vai tās lietotne.</translation>
 <translation id="5100237604440890931">Sakļauts — noklikšķiniet, lai izvērstu.</translation>
 <translation id="5123685120097942451">Inkognito cilne</translation>
 <translation id="5186036860380548585">Opcija pieejama ekrāna augšdaļā</translation>
@@ -269,6 +273,7 @@
 <translation id="5916664084637901428">Iesl.</translation>
 <translation id="5922853908706496913">Notiek jūsu ekrāna kopīgošana</translation>
 <translation id="5922967540311291836">Bloķēt trešo pušu sīkfailus:</translation>
+<translation id="5923512600150154850">Tiks izdzēsti dati un sīkfaili <ph name="DATASIZE" /> apjomā, ko glabā vietnes.</translation>
 <translation id="5939518447894949180">Atiestatīt</translation>
 <translation id="5964247741333118902">Iegultais saturs</translation>
 <translation id="5968921426641056619">Ievadiet tīmekļa adresi</translation>
@@ -324,6 +329,7 @@
 <translation id="6864395892908308021">Šī ierīce nevar lasīt NFC</translation>
 <translation id="6912998170423641340">Bloķēt vietņu piekļuvi teksta un attēlu lasīšanai no starpliktuves</translation>
 <translation id="6945221475159498467">Atlasīt</translation>
+<translation id="6950072572526089586">Apmeklētā vietne var saglabāt informāciju par jūsu veiktajām darbībām, lai nodrošinātu pienācīgu tās darbību, piemēram, pierakstīšanos vietnē vai iepirkumu grozā ievietoto preču saglabāšanu. Bieži vien vietnes šo informāciju jūsu ierīcē saglabā īslaicīgi.</translation>
 <translation id="6965382102122355670">Labi</translation>
 <translation id="6981982820502123353">Pieejamība</translation>
 <translation id="6992289844737586249">Jautāt, pirms atļaut vietnēm izmantot jūsu mikrofonu (ieteicams)</translation>
@@ -337,6 +343,7 @@
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Atsvaidzināt</translation>
 <translation id="7188508872042490670">Vietnes dati ierīcē</translation>
+<translation id="7201549776650881587">Veicot šo darbību, tiks izdzēsti visi dati un sīkfaili, ko jūsu sākuma ekrānā glabā vietņu grupa <ph name="ORIGIN" /> vai tās lietotne.</translation>
 <translation id="7203150201908454328">Izvērsts</translation>
 <translation id="7219254577985949841">Vai dzēst vietnes datus?</translation>
 <translation id="723171743924126238">Atlasīt attēlus</translation>
