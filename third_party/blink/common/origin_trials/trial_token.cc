@@ -257,9 +257,10 @@ std::unique_ptr<TrialToken> TrialToken::Parse(const std::string& token_payload,
     }
   }
 
-  return base::WrapUnique(new TrialToken(
-      origin, is_subdomain, *feature_name,
-      base::Time::FromDoubleT(expiry_timestamp), is_third_party, usage));
+  return base::WrapUnique(
+      new TrialToken(origin, is_subdomain, *feature_name,
+                     base::Time::FromSecondsSinceUnixEpoch(expiry_timestamp),
+                     is_third_party, usage));
 }
 
 bool TrialToken::ValidateOrigin(const url::Origin& origin) const {

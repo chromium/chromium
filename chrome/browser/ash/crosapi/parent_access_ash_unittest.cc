@@ -177,7 +177,7 @@ TEST_F(ParentAccessAshTest, GetWebsiteParentApproval_Approved) {
             EXPECT_EQ(result->get_approved()->parent_access_token, "ABC123");
             EXPECT_EQ(
                 result->get_approved()->parent_access_token_expire_timestamp,
-                base::Time::FromDoubleT(123456UL));
+                base::Time::FromSecondsSinceUnixEpoch(123456UL));
             std::move(quit_closure).Run();
           },
           run_loop.QuitClosure()));
@@ -186,7 +186,7 @@ TEST_F(ParentAccessAshTest, GetWebsiteParentApproval_Approved) {
   dialog_result->status = ash::ParentAccessDialog::Result::Status::kApproved;
   dialog_result->parent_access_token = "ABC123";
   dialog_result->parent_access_token_expire_timestamp =
-      base::Time::FromDoubleT(123456UL);
+      base::Time::FromSecondsSinceUnixEpoch(123456UL);
   dialog_provider_->TriggerCallbackWithResult(std::move(dialog_result));
   run_loop.Run();
 }

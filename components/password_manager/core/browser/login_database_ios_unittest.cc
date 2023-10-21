@@ -178,21 +178,21 @@ TEST_F(LoginDatabaseIOSTest, RemoveLoginsCreatedBetween) {
   forms[0].url = GURL("http://0.com");
   forms[0].signon_realm = "http://www.example.com";
   forms[0].username_element = u"login0";
-  forms[0].date_created = base::Time::FromDoubleT(100);
+  forms[0].date_created = base::Time::FromSecondsSinceUnixEpoch(100);
   forms[0].password_value = u"pass0";
   forms[0].in_store = PasswordForm::Store::kProfileStore;
 
   forms[1].url = GURL("http://1.com");
   forms[1].signon_realm = "http://www.example.com";
   forms[1].username_element = u"login1";
-  forms[1].date_created = base::Time::FromDoubleT(200);
+  forms[1].date_created = base::Time::FromSecondsSinceUnixEpoch(200);
   forms[1].password_value = u"pass1";
   forms[1].in_store = PasswordForm::Store::kProfileStore;
 
   forms[2].url = GURL("http://2.com");
   forms[2].signon_realm = "http://www.example.com";
   forms[2].username_element = u"login2";
-  forms[2].date_created = base::Time::FromDoubleT(300);
+  forms[2].date_created = base::Time::FromSecondsSinceUnixEpoch(300);
   forms[2].password_value = u"pass2";
   forms[2].in_store = PasswordForm::Store::kProfileStore;
 
@@ -213,9 +213,10 @@ TEST_F(LoginDatabaseIOSTest, RemoveLoginsCreatedBetween) {
     EXPECT_EQ(login.password_value, password_value);
   }
 
-  login_db_->RemoveLoginsCreatedBetween(base::Time::FromDoubleT(150),
-                                        base::Time::FromDoubleT(250),
-                                        /*changes=*/nullptr);
+  login_db_->RemoveLoginsCreatedBetween(
+      base::Time::FromSecondsSinceUnixEpoch(150),
+      base::Time::FromSecondsSinceUnixEpoch(250),
+      /*changes=*/nullptr);
 
   // Verify that one password is removed.
   std::vector<PasswordForm> remaining_logins;
@@ -245,21 +246,21 @@ TEST_F(LoginDatabaseIOSTest, DeleteAndRecreateDatabaseFile) {
   forms[0].url = GURL("http://0.com");
   forms[0].signon_realm = "http://www.example.com";
   forms[0].username_element = u"login0";
-  forms[0].date_created = base::Time::FromDoubleT(100);
+  forms[0].date_created = base::Time::FromSecondsSinceUnixEpoch(100);
   forms[0].password_value = u"pass0";
   forms[0].in_store = PasswordForm::Store::kProfileStore;
 
   forms[1].url = GURL("http://1.com");
   forms[1].signon_realm = "http://www.example.com";
   forms[1].username_element = u"login1";
-  forms[1].date_created = base::Time::FromDoubleT(200);
+  forms[1].date_created = base::Time::FromSecondsSinceUnixEpoch(200);
   forms[1].password_value = u"pass1";
   forms[1].in_store = PasswordForm::Store::kProfileStore;
 
   forms[2].url = GURL("http://2.com");
   forms[2].signon_realm = "http://www.example.com";
   forms[2].username_element = u"login2";
-  forms[2].date_created = base::Time::FromDoubleT(300);
+  forms[2].date_created = base::Time::FromSecondsSinceUnixEpoch(300);
   forms[2].password_value = u"pass2";
   forms[2].in_store = PasswordForm::Store::kProfileStore;
 

@@ -310,7 +310,7 @@ base::FilePath ProfileAttributesEntry::GetPath() const {
 
 base::Time ProfileAttributesEntry::GetActiveTime() const {
   if (IsDouble(kActiveTimeKey)) {
-    return base::Time::FromDoubleT(GetDouble(kActiveTimeKey));
+    return base::Time::FromSecondsSinceUnixEpoch(GetDouble(kActiveTimeKey));
   } else {
     return base::Time();
   }
@@ -589,7 +589,7 @@ void ProfileAttributesEntry::SetActiveTimeToNow() {
       base::Time::Now() - GetActiveTime() < base::Hours(1)) {
     return;
   }
-  SetDouble(kActiveTimeKey, base::Time::Now().ToDoubleT());
+  SetDouble(kActiveTimeKey, base::Time::Now().InSecondsFSinceUnixEpoch());
 }
 
 void ProfileAttributesEntry::SetIsOmitted(bool is_omitted) {

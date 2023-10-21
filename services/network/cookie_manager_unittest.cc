@@ -2616,8 +2616,10 @@ TEST_F(FlushableCookieManagerTest, DeletionFilterToInfo) {
   const double kTestStartEpoch = 1000;
   const double kTestEndEpoch = 10000000;
   filter_ptr = mojom::CookieDeletionFilter::New();
-  filter_ptr->created_after_time = base::Time::FromDoubleT(kTestStartEpoch);
-  filter_ptr->created_before_time = base::Time::FromDoubleT(kTestEndEpoch);
+  filter_ptr->created_after_time =
+      base::Time::FromSecondsSinceUnixEpoch(kTestStartEpoch);
+  filter_ptr->created_before_time =
+      base::Time::FromSecondsSinceUnixEpoch(kTestEndEpoch);
   filter_ptr->cookie_name = "cookie-name";
   filter_ptr->host_name = "cookie-host";
   filter_ptr->including_domains =
@@ -2634,9 +2636,9 @@ TEST_F(FlushableCookieManagerTest, DeletionFilterToInfo) {
   filter_ptr->partitioned_state_only = true;
 
   delete_info = DeletionFilterToInfo(std::move(filter_ptr));
-  EXPECT_EQ(base::Time::FromDoubleT(kTestStartEpoch),
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(kTestStartEpoch),
             delete_info.creation_range.start());
-  EXPECT_EQ(base::Time::FromDoubleT(kTestEndEpoch),
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(kTestEndEpoch),
             delete_info.creation_range.end());
 
   EXPECT_EQ(CookieDeletionInfo::SessionControl::PERSISTENT_COOKIES,

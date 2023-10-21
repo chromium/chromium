@@ -842,7 +842,7 @@ struct ToV8Traits<IDLNullable<IDLDate>> {
     if (!date)
       return v8::Null(script_state->GetIsolate());
     return v8::Date::New(script_state->GetContext(),
-                         date->ToJsTimeIgnoringNull())
+                         date->InMillisecondsFSinceUnixEpochIgnoringNull())
         .ToLocalChecked();
   }
 };

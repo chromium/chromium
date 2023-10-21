@@ -1965,10 +1965,12 @@ TEST_F(DeviceStatusCollectorTest, TestSystemFreeRamInfo) {
   base::RunLoop().RunUntilIdle();
 
   for (int i = 0; i < sample_count; ++i) {
-    timestamp_lowerbounds.push_back(base::Time::Now().ToJavaTime());
+    timestamp_lowerbounds.push_back(
+        base::Time::Now().InMillisecondsSinceUnixEpoch());
     status_collector_->RefreshSampleResourceUsage();
     base::RunLoop().RunUntilIdle();
-    timestamp_upperbounds.push_back(base::Time::Now().ToJavaTime());
+    timestamp_upperbounds.push_back(
+        base::Time::Now().InMillisecondsSinceUnixEpoch());
   }
   GetStatus();
 
@@ -1995,7 +1997,8 @@ TEST_F(DeviceStatusCollectorTest, TestCPUInfos) {
   DisableDefaultSettings();
   // Mock 100% CPU usage.
   std::string full_cpu_usage("cpu  500 0 500 0 0 0 0");
-  int64_t timestamp_lowerbound = base::Time::Now().ToJavaTime();
+  int64_t timestamp_lowerbound =
+      base::Time::Now().InMillisecondsSinceUnixEpoch();
   auto options = CreateEmptyDeviceStatusCollectorOptions();
   options->cpu_fetcher =
       base::BindRepeating(&GetFakeCPUStatistics, full_cpu_usage);
@@ -2005,7 +2008,8 @@ TEST_F(DeviceStatusCollectorTest, TestCPUInfos) {
 
   // Force finishing tasks posted by ctor of DeviceStatusCollector.
   content::RunAllTasksUntilIdle();
-  int64_t timestamp_upperbound = base::Time::Now().ToJavaTime();
+  int64_t timestamp_upperbound =
+      base::Time::Now().InMillisecondsSinceUnixEpoch();
   GetStatus();
   ASSERT_EQ(1, device_status_.cpu_utilization_infos().size());
   EXPECT_EQ(100, device_status_.cpu_utilization_infos(0).cpu_utilization_pct());
@@ -2016,10 +2020,10 @@ TEST_F(DeviceStatusCollectorTest, TestCPUInfos) {
 
   // Now sample CPU usage again (active usage counters will not increase
   // so should show 0% cpu usage).
-  timestamp_lowerbound = base::Time::Now().ToJavaTime();
+  timestamp_lowerbound = base::Time::Now().InMillisecondsSinceUnixEpoch();
   status_collector_->RefreshSampleResourceUsage();
   base::RunLoop().RunUntilIdle();
-  timestamp_upperbound = base::Time::Now().ToJavaTime();
+  timestamp_upperbound = base::Time::Now().InMillisecondsSinceUnixEpoch();
   GetStatus();
   ASSERT_EQ(2, device_status_.cpu_utilization_infos().size());
   EXPECT_EQ(0, device_status_.cpu_utilization_infos(1).cpu_utilization_pct());
@@ -2036,10 +2040,12 @@ TEST_F(DeviceStatusCollectorTest, TestCPUInfos) {
   std::vector<int64_t> timestamp_upperbounds;
 
   for (int i = 0; i < sample_count; ++i) {
-    timestamp_lowerbounds.push_back(base::Time::Now().ToJavaTime());
+    timestamp_lowerbounds.push_back(
+        base::Time::Now().InMillisecondsSinceUnixEpoch());
     status_collector_->RefreshSampleResourceUsage();
     base::RunLoop().RunUntilIdle();
-    timestamp_upperbounds.push_back(base::Time::Now().ToJavaTime());
+    timestamp_upperbounds.push_back(
+        base::Time::Now().InMillisecondsSinceUnixEpoch());
   }
   GetStatus();
 
@@ -2062,7 +2068,8 @@ TEST_F(DeviceStatusCollectorTest, TestCPUTemp) {
   DisableDefaultSettings();
   std::vector<em::CPUTempInfo> expected_temp_info;
   int cpu_cnt = 12;
-  int64_t timestamp_lowerbound = base::Time::Now().ToJavaTime();
+  int64_t timestamp_lowerbound =
+      base::Time::Now().InMillisecondsSinceUnixEpoch();
   for (int i = 0; i < cpu_cnt; ++i) {
     em::CPUTempInfo info;
     info.set_cpu_temp(i * 10 + 100);
@@ -2082,7 +2089,8 @@ TEST_F(DeviceStatusCollectorTest, TestCPUTemp) {
   content::RunAllTasksUntilIdle();
 
   GetStatus();
-  int64_t timestamp_upperbound = base::Time::Now().ToJavaTime();
+  int64_t timestamp_upperbound =
+      base::Time::Now().InMillisecondsSinceUnixEpoch();
   EXPECT_EQ(expected_temp_info.size(),
             static_cast<size_t>(device_status_.cpu_temp_infos_size()));
 
@@ -2868,9 +2876,9 @@ TEST_F(DeviceStatusCollectorTest, ReportLastRebootTimestamp) {
   // No good way to inject specific last reboot timestamp of the test machine,
   // so just make sure UnixEpoch < RebootTime < Now.
   EXPECT_GT(device_status_.os_update_status().last_reboot_timestamp(),
-            base::Time::UnixEpoch().ToJavaTime());
+            base::Time::UnixEpoch().InMillisecondsSinceUnixEpoch());
   EXPECT_LT(device_status_.os_update_status().last_reboot_timestamp(),
-            base::Time::Now().ToJavaTime());
+            base::Time::Now().InMillisecondsSinceUnixEpoch());
 }
 
 TEST_F(DeviceStatusCollectorTest, NoRunningKioskAppByDefault) {
@@ -3104,7 +3112,7 @@ TEST_F(DeviceStatusCollectorTest, TestCrashReportInfo) {
     base::Time timestamp = now - base::Hours(30) * i;
 
     em::CrashReportInfo info;
-    info.set_capture_timestamp(timestamp.ToJavaTime());
+    info.set_capture_timestamp(timestamp.InMillisecondsSinceUnixEpoch());
     info.set_remote_id(base::StringPrintf("remote_id %d", i));
     info.set_cause(base::StringPrintf("cause %d", i));
     info.set_upload_status(em::CrashReportInfo::UPLOAD_STATUS_UPLOADED);
@@ -3160,7 +3168,7 @@ TEST_F(DeviceStatusCollectorTest,
     base::Time timestamp = now - base::Hours(30) * i;
 
     em::CrashReportInfo info;
-    info.set_capture_timestamp(timestamp.ToJavaTime());
+    info.set_capture_timestamp(timestamp.InMillisecondsSinceUnixEpoch());
     info.set_remote_id(base::StringPrintf("remote_id %d", i));
     info.set_cause(base::StringPrintf("cause %d", i));
     info.set_upload_status(em::CrashReportInfo::UPLOAD_STATUS_UPLOADED);
@@ -3195,7 +3203,7 @@ TEST_F(DeviceStatusCollectorTest,
     base::Time timestamp = now - base::Hours(30) * i;
 
     em::CrashReportInfo info;
-    info.set_capture_timestamp(timestamp.ToJavaTime());
+    info.set_capture_timestamp(timestamp.InMillisecondsSinceUnixEpoch());
     info.set_remote_id(base::StringPrintf("remote_id %d", i));
     info.set_cause(base::StringPrintf("cause %d", i));
     info.set_upload_status(em::CrashReportInfo::UPLOAD_STATUS_UPLOADED);
@@ -3831,16 +3839,19 @@ TEST_F(DeviceStatusCollectorTest, GenerateAppInfo) {
       base::Time::FromUTCString("29-MAR-2020 12:00am", &reported_start_time));
   EXPECT_TRUE(
       base::Time::FromUTCString("29-MAR-2020 10:30am", &reported_end_time));
-  EXPECT_EQ(first_activity.start_timestamp(), reported_start_time.ToJavaTime());
-  EXPECT_EQ(first_activity.end_timestamp(), reported_end_time.ToJavaTime());
+  EXPECT_EQ(first_activity.start_timestamp(),
+            reported_start_time.InMillisecondsSinceUnixEpoch());
+  EXPECT_EQ(first_activity.end_timestamp(),
+            reported_end_time.InMillisecondsSinceUnixEpoch());
   auto second_activity = session_status_.app_infos(0).active_time_periods()[1];
   EXPECT_TRUE(
       base::Time::FromUTCString("30-MAR-2020 12:00am", &reported_start_time));
   EXPECT_TRUE(
       base::Time::FromUTCString("30-MAR-2020 2:30pm", &reported_end_time));
   EXPECT_EQ(second_activity.start_timestamp(),
-            reported_start_time.ToJavaTime());
-  EXPECT_EQ(second_activity.end_timestamp(), reported_end_time.ToJavaTime());
+            reported_start_time.InMillisecondsSinceUnixEpoch());
+  EXPECT_EQ(second_activity.end_timestamp(),
+            reported_end_time.InMillisecondsSinceUnixEpoch());
   EXPECT_EQ(session_status_.app_infos(1).app_id(), "id2");
   EXPECT_EQ(session_status_.app_infos(1).active_time_periods_size(), 0);
 }

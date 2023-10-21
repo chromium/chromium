@@ -58,7 +58,7 @@ const char kDeleteProhibitedError[] = "Browsing history is not allowed to be "
                                       "deleted.";
 
 double MilliSecondsFromTime(const base::Time& time) {
-  return 1000 * time.ToDoubleT();
+  return 1000 * time.InSecondsFSinceUnixEpoch();
 }
 
 HistoryItem GetHistoryItem(const history::URLRow& row) {
@@ -240,8 +240,9 @@ base::Time HistoryFunction::GetTime(double ms_from_epoch) {
   double seconds_from_epoch = ms_from_epoch / 1000.0;
   // Time::FromDoubleT converts double time 0 to empty Time object. So we need
   // to do special handling here.
-  return (seconds_from_epoch == 0) ?
-      base::Time::UnixEpoch() : base::Time::FromDoubleT(seconds_from_epoch);
+  return (seconds_from_epoch == 0)
+             ? base::Time::UnixEpoch()
+             : base::Time::FromSecondsSinceUnixEpoch(seconds_from_epoch);
 }
 
 Profile* HistoryFunction::GetProfile() const {

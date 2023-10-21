@@ -143,7 +143,8 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
   [self recordLifeCycleEvent:PushNotificationLifecycleEvent::
                                  kNotificationReception];
 
-  double incomingNotificationTime = base::Time::Now().ToDoubleT();
+  double incomingNotificationTime =
+      base::Time::Now().InSecondsFSinceUnixEpoch();
   auto* clientManager = GetApplicationContext()
                             ->GetPushNotificationService()
                             ->GetPushNotificationClientManager();
@@ -152,7 +153,7 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
       clientManager->HandleNotificationReception(userInfo);
 
   double processingTime =
-      base::Time::Now().ToDoubleT() - incomingNotificationTime;
+      base::Time::Now().InSecondsFSinceUnixEpoch() - incomingNotificationTime;
   UmaHistogramCustomTimes(
       "IOS.PushNotification.IncomingNotificationProcessingTime",
       base::Milliseconds(processingTime),

@@ -49,7 +49,7 @@ TEST_F(EncodedFormDataTest, DeepCopy) {
   scoped_refptr<EncodedFormData> original(EncodedFormData::Create());
   original->AppendData("Foo", 3);
   original->AppendFileRange("example.txt", 12345, 56789,
-                            base::Time::FromDoubleT(9999.0));
+                            base::Time::FromSecondsSinceUnixEpoch(9999.0));
 
   mojo::PendingRemote<mojom::blink::Blob> remote;
   mojo::PendingReceiver<mojom::blink::Blob> receiver =
@@ -80,7 +80,8 @@ TEST_F(EncodedFormDataTest, DeepCopy) {
   EXPECT_EQ(12345ll, copy_elements[1].file_start_);
   EXPECT_EQ(56789ll, copy_elements[1].file_length_);
   EXPECT_EQ(9999.0,
-            copy_elements[1].expected_file_modification_time_->ToDoubleT());
+            copy_elements[1]
+                .expected_file_modification_time_->InSecondsFSinceUnixEpoch());
 
   EXPECT_EQ(FormDataElement::kEncodedBlob, copy_elements[2].type_);
   EXPECT_EQ(String("originalUUID"), copy_elements[2].blob_uuid_);

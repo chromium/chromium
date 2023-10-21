@@ -165,7 +165,8 @@ Cronet_RESULT Cronet_EngineImpl::StartWithParams(
   for (const auto& public_key_pins : params->public_key_pins) {
     auto pkp = std::make_unique<URLRequestContextConfig::Pkp>(
         public_key_pins.host, public_key_pins.include_subdomains,
-        base::Time::FromJavaTime(public_key_pins.expiration_date));
+        base::Time::FromMillisecondsSinceUnixEpoch(
+            public_key_pins.expiration_date));
     if (pkp->host.empty())
       return CheckResult(Cronet_RESULT_NULL_POINTER_HOSTNAME);
     if (!IsValidHostnameForPkp(pkp->host))

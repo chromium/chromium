@@ -148,7 +148,7 @@ void InstalledWebappGeolocationBridge::OnNewLocationAvailable(
   auto position = device::mojom::Geoposition::New();
   position->latitude = latitude;
   position->longitude = longitude;
-  position->timestamp = base::Time::FromDoubleT(time_stamp);
+  position->timestamp = base::Time::FromSecondsSinceUnixEpoch(time_stamp);
   if (has_altitude)
     position->altitude = altitude;
   if (has_accuracy)

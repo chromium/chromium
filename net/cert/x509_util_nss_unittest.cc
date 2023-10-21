@@ -405,9 +405,9 @@ TEST(X509UtilNSSTest, GetValidityTimes) {
 
   // Constants copied from x509_certificate_unittest.cc.
   EXPECT_EQ(1238192407,  // Mar 27 22:20:07 2009 GMT
-            not_before.ToDoubleT());
+            not_before.InSecondsFSinceUnixEpoch());
   EXPECT_EQ(1269728407,  // Mar 27 22:20:07 2010 GMT
-            not_after.ToDoubleT());
+            not_after.InSecondsFSinceUnixEpoch());
 }
 
 TEST(X509UtilNSSTest, GetValidityTimesOptionalArgs) {
@@ -420,13 +420,13 @@ TEST(X509UtilNSSTest, GetValidityTimesOptionalArgs) {
       x509_util::GetValidityTimes(google_cert.get(), &not_before, nullptr));
   // Constants copied from x509_certificate_unittest.cc.
   EXPECT_EQ(1238192407,  // Mar 27 22:20:07 2009 GMT
-            not_before.ToDoubleT());
+            not_before.InSecondsFSinceUnixEpoch());
 
   base::Time not_after;
   EXPECT_TRUE(
       x509_util::GetValidityTimes(google_cert.get(), nullptr, &not_after));
   EXPECT_EQ(1269728407,  // Mar 27 22:20:07 2010 GMT
-            not_after.ToDoubleT());
+            not_after.InSecondsFSinceUnixEpoch());
 }
 
 TEST(X509UtilNSSTest, CalculateFingerprint256) {

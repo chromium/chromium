@@ -987,8 +987,8 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::CreateJavaBookmark(
       env, node->id(), type, ConvertUTF16ToJavaString(env, GetTitle(node)),
       url::GURLAndroid::FromNativeGURL(env, url), node->is_folder(), parent_id,
       GetBookmarkType(parent), IsEditable(node), IsManaged(node),
-      node->date_added().ToJavaTime(), read,
-      node->date_last_used().ToJavaTime());
+      node->date_added().InMillisecondsSinceUnixEpoch(), read,
+      node->date_last_used().InMillisecondsSinceUnixEpoch());
 }
 
 void BookmarkBridge::ExtractBookmarkNodeInformation(

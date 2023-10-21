@@ -914,7 +914,7 @@ bool TestRecipeReplayer::OverrideAutofillClock(
     return false;
   }
   // wpr archive stores time seed in ms, clock is set in seconds.
-  test_clock_.SetNow(base::Time::FromDoubleT(*time_value / 1000));
+  test_clock_.SetNow(base::Time::FromSecondsSinceUnixEpoch(*time_value / 1000));
   return true;
 }
 

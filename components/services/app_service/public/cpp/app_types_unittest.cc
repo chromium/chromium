@@ -59,25 +59,25 @@ namespace {
     EXPECT_FALSE(IsEqual(std::move(app1), std::move(app2))); \
   }
 
-#define VERIFY_OPTIONAL_TIME_VALUE(VALUE)                    \
-  {                                                          \
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);   \
-    app1->VALUE = base::Time::FromDoubleT(1000.0);           \
-    AppPtr app2 = app1->Clone();                             \
-    EXPECT_TRUE(IsEqual(std::move(app1), std::move(app2)));  \
-  }                                                          \
-  {                                                          \
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);   \
-    AppPtr app2 = app1->Clone();                             \
-    app2->VALUE = base::Time::FromDoubleT(1000.0);           \
-    EXPECT_FALSE(IsEqual(std::move(app1), std::move(app2))); \
-  }                                                          \
-  {                                                          \
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);   \
-    AppPtr app2 = app1->Clone();                             \
-    app1->VALUE = base::Time::FromDoubleT(1000.0);           \
-    app2->VALUE = base::Time::FromDoubleT(2000.0);           \
-    EXPECT_FALSE(IsEqual(std::move(app1), std::move(app2))); \
+#define VERIFY_OPTIONAL_TIME_VALUE(VALUE)                        \
+  {                                                              \
+    AppPtr app1 = std::make_unique<App>(app_type, app_id);       \
+    app1->VALUE = base::Time::FromSecondsSinceUnixEpoch(1000.0); \
+    AppPtr app2 = app1->Clone();                                 \
+    EXPECT_TRUE(IsEqual(std::move(app1), std::move(app2)));      \
+  }                                                              \
+  {                                                              \
+    AppPtr app1 = std::make_unique<App>(app_type, app_id);       \
+    AppPtr app2 = app1->Clone();                                 \
+    app2->VALUE = base::Time::FromSecondsSinceUnixEpoch(1000.0); \
+    EXPECT_FALSE(IsEqual(std::move(app1), std::move(app2)));     \
+  }                                                              \
+  {                                                              \
+    AppPtr app1 = std::make_unique<App>(app_type, app_id);       \
+    AppPtr app2 = app1->Clone();                                 \
+    app1->VALUE = base::Time::FromSecondsSinceUnixEpoch(1000.0); \
+    app2->VALUE = base::Time::FromSecondsSinceUnixEpoch(2000.0); \
+    EXPECT_FALSE(IsEqual(std::move(app1), std::move(app2)));     \
   }
 
 #define VERIFY_OPTIONAL_INT_VALUE(VALUE)                     \

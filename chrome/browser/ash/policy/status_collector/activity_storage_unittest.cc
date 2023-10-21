@@ -37,9 +37,10 @@ class ActivityStorageTest : public ::testing::Test {
   static testing::Matcher<em::TimePeriod> EqActivity(
       const base::Time start_time,
       const base::Time end_time) {
-    return AllOf(
-        Property(&em::TimePeriod::start_timestamp, start_time.ToJavaTime()),
-        Property(&em::TimePeriod::end_timestamp, end_time.ToJavaTime()));
+    return AllOf(Property(&em::TimePeriod::start_timestamp,
+                          start_time.InMillisecondsSinceUnixEpoch()),
+                 Property(&em::TimePeriod::end_timestamp,
+                          end_time.InMillisecondsSinceUnixEpoch()));
   }
 
   base::Time MakeLocalTime(const std::string& time_string) {
@@ -109,8 +110,8 @@ TEST_F(ActivityStorageTest, TrimActivityPeriods) {
                                MakeLocalTime("29-MAR-2020 8:30pm"), "id1");
 
   storage()->TrimActivityPeriods(
-      MakeUTCTime("26-MAR-2020 3:00am").ToJavaTime(),
-      MakeUTCTime("28-MAR-2020 2:00am").ToJavaTime());
+      MakeUTCTime("26-MAR-2020 3:00am").InMillisecondsSinceUnixEpoch(),
+      MakeUTCTime("28-MAR-2020 2:00am").InMillisecondsSinceUnixEpoch());
 
   auto activity_periods = storage()->GetActivityPeriods();
   EXPECT_THAT(

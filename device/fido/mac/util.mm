@@ -55,7 +55,7 @@ std::array<uint8_t, 4> MakeSignatureCounter(
       // counter at 0 for old credentials. Because of the conversion to a 32-bit
       // unsigned integer, the counter will overflow in the year 2108.
       uint32_t sign_counter =
-          static_cast<uint32_t>(base::Time::Now().ToDoubleT());
+          static_cast<uint32_t>(base::Time::Now().InSecondsFSinceUnixEpoch());
       return std::array<uint8_t, 4>{
           static_cast<uint8_t>((sign_counter >> 24) & 0xff),
           static_cast<uint8_t>((sign_counter >> 16) & 0xff),

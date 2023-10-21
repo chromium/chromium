@@ -348,8 +348,8 @@ void CloudPolicyInvalidator::HandleInvalidation(
   const std::string payload = invalidation.payload();
 
   // Ignore the invalidation if it is expired.
-  const auto last_fetch_time =
-      base::Time::FromJavaTime(core_->store()->policy()->timestamp());
+  const auto last_fetch_time = base::Time::FromMillisecondsSinceUnixEpoch(
+      core_->store()->policy()->timestamp());
   const auto current_time = clock_->Now();
   const bool is_expired =
       IsInvalidationExpired(invalidation, last_fetch_time, current_time);

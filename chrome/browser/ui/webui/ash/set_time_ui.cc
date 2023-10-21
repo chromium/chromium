@@ -144,7 +144,7 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
         base::BindOnce(&SetTimeMessageHandler::OnParentAccessValidation,
                        weak_factory_.GetWeakPtr()),
         SupervisedAction::kUpdateClock, !is_user_logged_in /* extra_dimmer */,
-        base::Time::FromDoubleT(seconds));
+        base::Time::FromSecondsSinceUnixEpoch(seconds));
   }
 
   void OnParentAccessValidation(bool success) {
@@ -189,7 +189,7 @@ SetTimeUI::SetTimeUI(content::WebUI* web_ui) : MojoWebDialogUI(web_ui) {
   std::string current_timezone_id;
   CrosSettings::Get()->GetString(kSystemTimezone, &current_timezone_id);
   values.Set("currentTimezoneId", current_timezone_id);
-  values.Set("buildTime", base::GetBuildTime().ToJsTime());
+  values.Set("buildTime", base::GetBuildTime().InMillisecondsFSinceUnixEpoch());
 
   source->AddLocalizedStrings(values);
 

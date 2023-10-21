@@ -88,7 +88,8 @@ const std::string& StructTraits<ash::multidevice::mojom::RemoteDeviceDataView,
 base::Time StructTraits<ash::multidevice::mojom::RemoteDeviceDataView,
                         ash::multidevice::RemoteDevice>::
     last_update_time(const ash::multidevice::RemoteDevice& remote_device) {
-  return base::Time::FromJavaTime(remote_device.last_update_time_millis);
+  return base::Time::FromMillisecondsSinceUnixEpoch(
+      remote_device.last_update_time_millis);
 }
 
 const std::map<ash::multidevice::SoftwareFeature,
@@ -151,7 +152,8 @@ bool StructTraits<ash::multidevice::mojom::RemoteDeviceDataView,
   }
 
   out->public_key = ash::multidevice::RemoteDevice::DerivePublicKey(device_id);
-  out->last_update_time_millis = last_update_time.ToJavaTime();
+  out->last_update_time_millis =
+      last_update_time.InMillisecondsSinceUnixEpoch();
 
   return true;
 }

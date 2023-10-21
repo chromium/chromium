@@ -42,7 +42,8 @@ std::string FormatAsJSON(const base::Value::Dict& value) {
 }
 
 base::Value GetJavascriptTimestamp() {
-  return base::Value(base::Time::Now().ToJsTimeIgnoringNull());
+  return base::Value(
+      base::Time::Now().InMillisecondsFSinceUnixEpochIgnoringNull());
 }
 
 // FireWebUIListener message to notify the JavaScript of HTTP message addition.

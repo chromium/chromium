@@ -209,12 +209,13 @@ base::Value::Dict HistoryEntryToValue(
   result.Set("fallbackFaviconText",
              base::UTF16ToASCII(favicon::GetFallbackIconText(entry.url)));
 
-  result.Set("time", entry.time.ToJsTime());
+  result.Set("time", entry.time.InMillisecondsFSinceUnixEpoch());
 
   // Pass the timestamps in a list.
   base::Value::List timestamps;
   for (int64_t timestamp : entry.all_timestamps) {
-    timestamps.Append(base::Time::FromInternalValue(timestamp).ToJsTime());
+    timestamps.Append(base::Time::FromInternalValue(timestamp)
+                          .InMillisecondsFSinceUnixEpoch());
   }
   result.Set("allTimestamps", std::move(timestamps));
 
@@ -464,7 +465,8 @@ void BrowsingHistoryHandler::HandleRemoveVisits(const base::Value::List& args) {
         continue;
       }
 
-      base::Time visit_time = base::Time::FromJsTime(timestamp.GetDouble());
+      base::Time visit_time =
+          base::Time::FromMillisecondsSinceUnixEpoch(timestamp.GetDouble());
       entry.all_timestamps.insert(visit_time.ToInternalValue());
     }
 

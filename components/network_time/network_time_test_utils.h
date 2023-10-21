@@ -34,7 +34,7 @@ extern const char* kGoodTimeResponseBody[5];
 extern const char* kGoodTimeResponseServerProofHeader[5];
 
 // The times that |kGoodTimeResponseBody| uses. Can be converted to a
-// base::Time with base::Time::FromJsTime.
+// base::Time with base::Time::FromMillisecondsSinceUnixEpoch.
 extern const double kGoodTimeResponseHandlerJsTime[5];
 
 // Returns a valid network time response using the constants above. See

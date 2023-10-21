@@ -255,21 +255,17 @@ void Logging::Log(const LogData& data) {
     double dispatch_delay =
         (Time::FromInternalValue(data.dispatch) -
          Time::FromInternalValue(data.sent)).InSecondsF();
-    fprintf(stderr,
-            "ipc %d %s %s%s %s%s\n  %18.5f %s%18.5f %s%18.5f%s\n",
-            data.routing_id,
-            data.flags.c_str(),
+    fprintf(stderr, "ipc %d %s %s%s %s%s\n  %18.5f %s%18.5f %s%18.5f%s\n",
+            data.routing_id, data.flags.c_str(),
             ANSIEscape(sender_ ? ANSI_COLOR_BLUE : ANSI_COLOR_CYAN),
-            message_name.c_str(),
-            ANSIEscape(ANSI_COLOR_RESET),
+            message_name.c_str(), ANSIEscape(ANSI_COLOR_RESET),
             data.params.c_str(),
-            Time::FromInternalValue(data.sent).ToDoubleT(),
+            Time::FromInternalValue(data.sent).InSecondsFSinceUnixEpoch(),
             ANSIEscape(DelayColor(receive_delay)),
-            Time::FromInternalValue(data.receive).ToDoubleT(),
+            Time::FromInternalValue(data.receive).InSecondsFSinceUnixEpoch(),
             ANSIEscape(DelayColor(dispatch_delay)),
-            Time::FromInternalValue(data.dispatch).ToDoubleT(),
-            ANSIEscape(ANSI_COLOR_RESET)
-            );
+            Time::FromInternalValue(data.dispatch).InSecondsFSinceUnixEpoch(),
+            ANSIEscape(ANSI_COLOR_RESET));
   }
 }
 

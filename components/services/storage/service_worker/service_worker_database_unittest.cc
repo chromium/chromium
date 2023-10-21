@@ -601,7 +601,7 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForStorageKey) {
   data1.script = URL(origin1, "/script1.js");
   data1.version_id = 1000;
   data1.resources_total_size_bytes = 100;
-  data1.script_response_time = base::Time::FromJsTime(0);
+  data1.script_response_time = base::Time::FromMillisecondsSinceUnixEpoch(0);
   data1.ancestor_frame_type = blink::mojom::AncestorFrameType::kNormalFrame;
   data1.policy_container_policies =
       blink::mojom::PolicyContainerPolicies::New();
@@ -627,7 +627,7 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForStorageKey) {
   data2.script = URL(origin2, "/script2.js");
   data2.version_id = 2000;
   data2.resources_total_size_bytes = 200;
-  data2.script_response_time = base::Time::FromJsTime(42);
+  data2.script_response_time = base::Time::FromMillisecondsSinceUnixEpoch(42);
   data2.ancestor_frame_type = blink::mojom::AncestorFrameType::kFencedFrame;
   data2.policy_container_policies =
       blink::mojom::PolicyContainerPolicies::New();
@@ -655,7 +655,7 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForStorageKey) {
   data3.script = URL(origin3, "/script3.js");
   data3.version_id = 3000;
   data3.resources_total_size_bytes = 300;
-  data3.script_response_time = base::Time::FromJsTime(420);
+  data3.script_response_time = base::Time::FromMillisecondsSinceUnixEpoch(420);
   data3.policy_container_policies =
       blink::mojom::PolicyContainerPolicies::New();
   data3.policy_container_policies->cross_origin_embedder_policy =
@@ -673,7 +673,7 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForStorageKey) {
   data4.script = URL(origin3, "/script4.js");
   data4.version_id = 4000;
   data4.resources_total_size_bytes = 400;
-  data4.script_response_time = base::Time::FromJsTime(4200);
+  data4.script_response_time = base::Time::FromMillisecondsSinceUnixEpoch(4200);
   data4.policy_container_policies =
       blink::mojom::PolicyContainerPolicies::New();
   data4.policy_container_policies->cross_origin_embedder_policy =

@@ -161,9 +161,10 @@ bool RequestHandlerForPolicy::ProcessCloudPolicy(
 
   em::PolicyData policy_data;
   policy_data.set_policy_type(policy_type);
-  policy_data.set_timestamp(policy_storage()->timestamp().is_null()
-                                ? base::Time::Now().ToJavaTime()
-                                : policy_storage()->timestamp().ToJavaTime());
+  policy_data.set_timestamp(
+      policy_storage()->timestamp().is_null()
+          ? base::Time::Now().InMillisecondsSinceUnixEpoch()
+          : policy_storage()->timestamp().InMillisecondsSinceUnixEpoch());
   policy_data.set_request_token(client_info.device_token);
   policy_data.set_policy_value(policy_storage()->GetPolicyPayload(
       policy_type, fetch_request.settings_entity_id()));

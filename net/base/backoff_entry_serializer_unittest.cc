@@ -21,8 +21,8 @@ namespace {
 using base::Time;
 using base::TimeTicks;
 
-const Time kParseTime =
-    Time::FromJsTime(1430907555111);  // May 2015 for realism
+const Time kParseTime = Time::FromMillisecondsSinceUnixEpoch(
+    1430907555111);  // May 2015 for realism
 
 BackoffEntry::Policy base_policy = {
     0 /* num_errors_to_ignore */,
@@ -223,7 +223,8 @@ TEST(BackoffEntrySerializerTest, DeserializeNeverInfiniteReleaseTime) {
 }
 
 TEST(BackoffEntrySerializerTest, SerializeTimeOffsets) {
-  Time original_time = Time::FromJsTime(1430907555111);  // May 2015 for realism
+  Time original_time = Time::FromMillisecondsSinceUnixEpoch(
+      1430907555111);  // May 2015 for realism
   TestTickClock original_ticks;
   BackoffEntry original(&base_policy, &original_ticks);
   // 2 errors.

@@ -188,8 +188,9 @@ UrgentPasswordExpiryNotificationUI::UrgentPasswordExpiryNotificationUI(
     const base::Time expiration_time = attrs.expiration_time();
     source->AddString("initialTitle", PasswordExpiryNotification::GetTitleText(
                                           expiration_time - base::Time::Now()));
-    source->AddString("expirationTime",
-                      base::NumberToString(expiration_time.ToJsTime()));
+    source->AddString(
+        "expirationTime",
+        base::NumberToString(expiration_time.InMillisecondsFSinceUnixEpoch()));
   }
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {

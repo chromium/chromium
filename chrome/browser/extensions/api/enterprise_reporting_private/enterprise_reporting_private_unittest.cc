@@ -1076,7 +1076,7 @@ class EnterpriseReportingPrivateEnqueueRecordFunctionTest
     ::reporting::Record record;
     record.set_data(serialized_data);
     record.set_destination(::reporting::Destination::TELEMETRY_METRIC);
-    record.set_timestamp_us(base::Time::Now().ToJavaTime() *
+    record.set_timestamp_us(base::Time::Now().InMillisecondsSinceUnixEpoch() *
                             base::Time::kMicrosecondsPerMillisecond);
 
     return record;

@@ -31,9 +31,11 @@ TEST(NearbyShareDecryptedPublicCertificateTest, Decrypt) {
       NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
           proto_cert, GetNearbyShareTestEncryptedMetadataKey());
   EXPECT_TRUE(cert);
-  EXPECT_EQ(base::Time::FromJavaTime(proto_cert.start_time().seconds() * 1000),
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(
+                proto_cert.start_time().seconds() * 1000),
             cert->not_before());
-  EXPECT_EQ(base::Time::FromJavaTime(proto_cert.end_time().seconds() * 1000),
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(
+                proto_cert.end_time().seconds() * 1000),
             cert->not_after());
   EXPECT_EQ(std::vector<uint8_t>(proto_cert.secret_id().begin(),
                                  proto_cert.secret_id().end()),

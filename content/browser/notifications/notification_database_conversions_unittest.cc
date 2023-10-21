@@ -80,12 +80,13 @@ TEST(NotificationDatabaseConversionsTest, SerializeAndDeserializeData) {
   notification_data.icon = GURL(kNotificationIconUrl);
   notification_data.badge = GURL(kNotificationBadgeUrl);
   notification_data.vibration_pattern = vibration_pattern;
-  notification_data.timestamp = base::Time::FromJsTime(kNotificationTimestamp);
+  notification_data.timestamp =
+      base::Time::FromMillisecondsSinceUnixEpoch(kNotificationTimestamp);
   notification_data.renotify = true;
   notification_data.silent = true;
   notification_data.require_interaction = true;
   notification_data.show_trigger_timestamp =
-      base::Time::FromJsTime(kShowTriggerTimestamp);
+      base::Time::FromMillisecondsSinceUnixEpoch(kShowTriggerTimestamp);
   notification_data.data = developer_data;
   for (size_t i = 0; i < blink::kNotificationMaxActions; i++) {
     auto notification_action = blink::mojom::NotificationAction::New();
@@ -105,7 +106,8 @@ TEST(NotificationDatabaseConversionsTest, SerializeAndDeserializeData) {
   database_data.replaced_existing_notification = kReplacedExistingNotification;
   database_data.num_clicks = kNumClicks;
   database_data.num_action_button_clicks = kNumActionButtonClicks;
-  database_data.creation_time_millis = base::Time::FromDoubleT(kInitTimeMillis);
+  database_data.creation_time_millis =
+      base::Time::FromSecondsSinceUnixEpoch(kInitTimeMillis);
   database_data.time_until_first_click_millis =
       base::Milliseconds(kTimeUntilFirstClickMillis);
   database_data.time_until_last_click_millis =

@@ -348,8 +348,8 @@ TEST_F(SafetyCheckMediatorTest, TimestampSetIfIssueFound) {
       PasswordCheckRowStateUnmutedCompromisedPasswords;
   [mediator_ resetsCheckStartItemIfNeeded];
 
-  base::Time lastCompletedCheck =
-      base::Time::FromDoubleT([[NSUserDefaults standardUserDefaults]
+  base::Time lastCompletedCheck = base::Time::FromSecondsSinceUnixEpoch(
+      [[NSUserDefaults standardUserDefaults]
           doubleForKey:kTimestampOfLastIssueFoundKey]);
   EXPECT_GE(lastCompletedCheck, base::Time::Now() - base::Seconds(1));
   EXPECT_LE(lastCompletedCheck, base::Time::Now() + base::Seconds(1));
@@ -363,8 +363,8 @@ TEST_F(SafetyCheckMediatorTest, TimestampResetIfNoIssuesInCheck) {
       PasswordCheckRowStateUnmutedCompromisedPasswords;
   [mediator_ resetsCheckStartItemIfNeeded];
 
-  base::Time lastCompletedCheck =
-      base::Time::FromDoubleT([[NSUserDefaults standardUserDefaults]
+  base::Time lastCompletedCheck = base::Time::FromSecondsSinceUnixEpoch(
+      [[NSUserDefaults standardUserDefaults]
           doubleForKey:kTimestampOfLastIssueFoundKey]);
   EXPECT_GE(lastCompletedCheck, base::Time::Now() - base::Seconds(1));
   EXPECT_LE(lastCompletedCheck, base::Time::Now() + base::Seconds(1));
@@ -373,8 +373,8 @@ TEST_F(SafetyCheckMediatorTest, TimestampResetIfNoIssuesInCheck) {
   mediator_.passwordCheckRowState = PasswordCheckRowStateSafe;
   [mediator_ resetsCheckStartItemIfNeeded];
 
-  lastCompletedCheck =
-      base::Time::FromDoubleT([[NSUserDefaults standardUserDefaults]
+  lastCompletedCheck = base::Time::FromSecondsSinceUnixEpoch(
+      [[NSUserDefaults standardUserDefaults]
           doubleForKey:kTimestampOfLastIssueFoundKey]);
   EXPECT_EQ(base::Time(), lastCompletedCheck);
 

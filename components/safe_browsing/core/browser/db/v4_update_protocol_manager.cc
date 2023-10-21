@@ -445,13 +445,14 @@ void V4UpdateProtocolManager::CollectUpdateInfo(
   if (last_response_code_)
     update_info->set_network_status_code(last_response_code_);
 
-  if (last_response_time_.ToJavaTime()) {
-    update_info->set_last_update_time_millis(last_response_time_.ToJavaTime());
+  if (last_response_time_.InMillisecondsSinceUnixEpoch()) {
+    update_info->set_last_update_time_millis(
+        last_response_time_.InMillisecondsSinceUnixEpoch());
   }
 
   if (next_update_time_) {
     update_info->set_next_update_time_millis(
-        next_update_time_.value().ToJavaTime());
+        next_update_time_.value().InMillisecondsSinceUnixEpoch());
   }
 }
 

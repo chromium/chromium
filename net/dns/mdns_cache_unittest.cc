@@ -128,7 +128,7 @@ class RecordRemovalMock {
 class MDnsCacheTest : public ::testing::Test {
  public:
   MDnsCacheTest()
-      : default_time_(base::Time::FromDoubleT(1234.0)) {}
+      : default_time_(base::Time::FromSecondsSinceUnixEpoch(1234.0)) {}
   ~MDnsCacheTest() override = default;
 
  protected:

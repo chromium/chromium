@@ -352,8 +352,8 @@ void HeartbeatScheduler::SendHeartbeat() {
   message.id =
       base::NumberToString(base::Time::NowFromSystemTime().ToInternalValue());
   message.data[kGcmMessageTypeKey] = kHeartbeatTypeValue;
-  message.data[kHeartbeatTimestampKey] =
-      base::NumberToString(base::Time::NowFromSystemTime().ToJavaTime());
+  message.data[kHeartbeatTimestampKey] = base::NumberToString(
+      base::Time::NowFromSystemTime().InMillisecondsSinceUnixEpoch());
   message.data[kHeartbeatCustomerIdKey] = customer_id_;
   message.data[kHeartbeatDeviceIDKey] = device_id_;
   gcm_driver_->Send(kHeartbeatGCMAppID,

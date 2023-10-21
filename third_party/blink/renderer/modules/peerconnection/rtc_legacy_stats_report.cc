@@ -36,8 +36,10 @@ RTCLegacyStatsReport::RTCLegacyStatsReport(const String& id,
     : id_(id), type_(type), timestamp_(timestamp) {}
 
 ScriptValue RTCLegacyStatsReport::timestamp(ScriptState* script_state) const {
-  return ScriptValue(script_state->GetIsolate(),
-                     ToV8(base::Time::FromJsTime(timestamp_), script_state));
+  return ScriptValue(
+      script_state->GetIsolate(),
+      ToV8(base::Time::FromMillisecondsSinceUnixEpoch(timestamp_),
+           script_state));
 }
 
 String RTCLegacyStatsReport::stat(const String& name) {

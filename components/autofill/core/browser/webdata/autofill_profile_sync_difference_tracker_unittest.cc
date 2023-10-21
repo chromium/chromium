@@ -33,7 +33,7 @@ using testing::IsEmpty;
 const char kSmallerGuid[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44A";
 const char kBiggerGuid[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44B";
 const char kLocaleString[] = "en-US";
-const base::Time kJune2017 = base::Time::FromDoubleT(1497552271);
+const base::Time kJune2017 = base::Time::FromSecondsSinceUnixEpoch(1497552271);
 
 struct UpdatesToSync {
   std::vector<AutofillProfile> profiles_to_upload_to_sync;

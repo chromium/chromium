@@ -339,7 +339,7 @@ inline absl::optional<base::Time> ToCoreNullableDate(
   double time_value = object.As<v8::Date>()->ValueOf();
   if (!std::isfinite(time_value))
     return absl::nullopt;
-  return base::Time::FromJsTime(time_value);
+  return base::Time::FromMillisecondsSinceUnixEpoch(time_value);
 }
 
 // USVString conversion helper.

@@ -257,7 +257,8 @@ TEST(HttpCredentialCleaner, StartCleanUpTest) {
     password_store->Init(/*prefs=*/nullptr,
                          /*affiliated_match_helper=*/nullptr);
 
-    double last_time = (base::Time::Now() - base::Minutes(10)).ToDoubleT();
+    double last_time =
+        (base::Time::Now() - base::Minutes(10)).InSecondsFSinceUnixEpoch();
     if (should_start_clean_up) {
       // Simulate that the clean-up was performed
       // (HttpCredentialCleaner::kCleanUpDelayInDays + 1) days ago.
@@ -267,7 +268,7 @@ TEST(HttpCredentialCleaner, StartCleanUpTest) {
       // clean-ups)
       last_time = (base::Time::Now() -
                    base::Days(HttpCredentialCleaner::kCleanUpDelayInDays + 1))
-                      .ToDoubleT();
+                      .InSecondsFSinceUnixEpoch();
     }
 
     TestingPrefServiceSimple prefs;

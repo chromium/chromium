@@ -41,10 +41,10 @@ PasswordForm CreateForm(
   form.username_value = std::u16string(username);
   form.password_value = std::u16string(password);
   form.url = GURL(signon_realm);
-  form.date_last_used =
-      base::Time::FromDoubleT(1546300800);  // 00:00 Jan 1 2019 UTC
-  form.date_created =
-      base::Time::FromDoubleT(1546300800);  // 00:00 Jan 1 2019 UTC
+  form.date_last_used = base::Time::FromSecondsSinceUnixEpoch(
+      1546300800);  // 00:00 Jan 1 2019 UTC
+  form.date_created = base::Time::FromSecondsSinceUnixEpoch(
+      1546300800);  // 00:00 Jan 1 2019 UTC
   form.in_store = store;
   return form;
 }

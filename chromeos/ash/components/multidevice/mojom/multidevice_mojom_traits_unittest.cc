@@ -21,8 +21,9 @@ const int64_t kTestBeaconSeedEndTimeMillis = 2L;
 ash::multidevice::BeaconSeed CreateTestBeaconSeed() {
   return ash::multidevice::BeaconSeed(
       kTestBeaconSeedData,
-      base::Time::FromJavaTime(kTestBeaconSeedStartTimeMillis),
-      base::Time::FromJavaTime(kTestBeaconSeedEndTimeMillis));
+      base::Time::FromMillisecondsSinceUnixEpoch(
+          kTestBeaconSeedStartTimeMillis),
+      base::Time::FromMillisecondsSinceUnixEpoch(kTestBeaconSeedEndTimeMillis));
 }
 
 }  // namespace
@@ -36,8 +37,10 @@ TEST(MultiDeviceMojomStructTraitsTest, BeaconSeed) {
           input, output));
 
   EXPECT_EQ(kTestBeaconSeedData, output.data());
-  EXPECT_EQ(kTestBeaconSeedStartTimeMillis, output.start_time().ToJavaTime());
-  EXPECT_EQ(kTestBeaconSeedEndTimeMillis, output.end_time().ToJavaTime());
+  EXPECT_EQ(kTestBeaconSeedStartTimeMillis,
+            output.start_time().InMillisecondsSinceUnixEpoch());
+  EXPECT_EQ(kTestBeaconSeedEndTimeMillis,
+            output.end_time().InMillisecondsSinceUnixEpoch());
 }
 
 TEST(MultiDeviceMojomStructTraitsTest, RemoteDevice) {
@@ -77,9 +80,9 @@ TEST(MultiDeviceMojomStructTraitsTest, RemoteDevice) {
   ASSERT_EQ(1u, output.beacon_seeds.size());
   EXPECT_EQ(kTestBeaconSeedData, output.beacon_seeds[0].data());
   EXPECT_EQ(kTestBeaconSeedStartTimeMillis,
-            output.beacon_seeds[0].start_time().ToJavaTime());
+            output.beacon_seeds[0].start_time().InMillisecondsSinceUnixEpoch());
   EXPECT_EQ(kTestBeaconSeedEndTimeMillis,
-            output.beacon_seeds[0].end_time().ToJavaTime());
+            output.beacon_seeds[0].end_time().InMillisecondsSinceUnixEpoch());
   EXPECT_EQ("01:23:45:67:89:AB", output.bluetooth_public_address);
 }
 

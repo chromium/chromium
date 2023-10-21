@@ -92,7 +92,7 @@ void PowerMessageHandler::OnGetBatteryChargeData(
     element.Set("batteryPercent", sample.battery_percent);
     element.Set("batteryDischargeRate", sample.battery_discharge_rate);
     element.Set("externalPower", sample.external_power);
-    element.Set("time", sample.time.ToJsTime());
+    element.Set("time", sample.time.InMillisecondsFSinceUnixEpoch());
 
     js_power_supply_data.Append(std::move(element));
   }
@@ -163,7 +163,7 @@ base::Value::List PowerMessageHandler::GetJsSystemResumedData() {
     const PowerDataCollector::SystemResumedSample& sample = system_resumed[i];
     base::Value::Dict element;
     element.Set("sleepDuration", sample.sleep_duration.InMillisecondsF());
-    element.Set("time", sample.time.ToJsTime());
+    element.Set("time", sample.time.InMillisecondsFSinceUnixEpoch());
 
     data.Append(std::move(element));
   }
@@ -180,7 +180,7 @@ base::Value::List PowerMessageHandler::GetJsStateOccupancyData(
     for (unsigned int i = 0; i < sample_deque.size(); ++i) {
       const CpuDataCollector::StateOccupancySample& sample = sample_deque[i];
       base::Value::Dict js_sample;
-      js_sample.Set("time", sample.time.ToJsTime());
+      js_sample.Set("time", sample.time.InMillisecondsFSinceUnixEpoch());
       js_sample.Set("cpuOnline", sample.cpu_online);
 
       base::Value::Dict state_dict;

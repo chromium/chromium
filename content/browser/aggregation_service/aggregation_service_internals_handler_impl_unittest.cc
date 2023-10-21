@@ -62,7 +62,8 @@ void VerifyWebUIAggregatableReport(
     aggregation_service_internals::mojom::ReportStatus status) {
   EXPECT_EQ(web_report.id, id);
 
-  EXPECT_EQ(web_report.report_time, report_time.ToJsTime());
+  EXPECT_EQ(web_report.report_time,
+            report_time.InMillisecondsFSinceUnixEpoch());
   EXPECT_EQ(web_report.api_identifier, request.shared_info().api_identifier);
   EXPECT_EQ(web_report.api_version, request.shared_info().api_version);
   EXPECT_EQ(web_report.report_url, request.GetReportingUrl());

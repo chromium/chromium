@@ -178,10 +178,12 @@ AuxiliarySearchProvider::GetBookmarks(bookmarks::BookmarkModel* model) const {
     bookmark->set_title(base::UTF16ToUTF8(node->GetTitle()));
     bookmark->set_url(url.spec());
     if (!node->date_added().is_null()) {
-      bookmark->set_creation_timestamp(node->date_added().ToJavaTime());
+      bookmark->set_creation_timestamp(
+          node->date_added().InMillisecondsSinceUnixEpoch());
     }
     if (!node->date_last_used().is_null()) {
-      bookmark->set_last_access_timestamp(node->date_last_used().ToJavaTime());
+      bookmark->set_last_access_timestamp(
+          node->date_last_used().InMillisecondsSinceUnixEpoch());
     }
   }
 

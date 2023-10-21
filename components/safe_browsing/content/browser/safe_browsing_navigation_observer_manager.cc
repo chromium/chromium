@@ -762,7 +762,7 @@ void SafeBrowsingNavigationObserverManager::AppendRecentNavigations(
   int current_referrer_chain_size = out_referrer_chain->size();
   double last_navigation_time_msec =
       current_referrer_chain_size == 0
-          ? base::Time::Now().ToJavaTime()
+          ? base::Time::Now().InMillisecondsSinceUnixEpoch()
           : out_referrer_chain->Get(current_referrer_chain_size - 1)
                 .navigation_time_msec();
   auto it = navigation_event_list_.navigation_events().rbegin();
@@ -773,7 +773,8 @@ void SafeBrowsingNavigationObserverManager::AppendRecentNavigations(
   size_t user_gesture_cnt = 0;
   while (it != navigation_event_list_.navigation_events().rend()) {
     // Skip navigations that happened after |last_navigation_time_msec|.
-    if (it->get()->last_updated.ToJavaTime() < last_navigation_time_msec) {
+    if (it->get()->last_updated.InMillisecondsSinceUnixEpoch() <
+        last_navigation_time_msec) {
       MaybeAddToReferrerChain(&navigation_chain, it->get(), GURL(),
                               ReferrerChainEntry::RECENT_NAVIGATION);
       if (it->get()->IsUserInitiated()) {
@@ -971,7 +972,7 @@ void SafeBrowsingNavigationObserverManager::MaybeAddToReferrerChain(
   referrer_chain_entry->set_is_retargeting(nav_event->source_tab_id !=
                                            nav_event->target_tab_id);
   referrer_chain_entry->set_navigation_time_msec(
-      nav_event->last_updated.ToJavaTime());
+      nav_event->last_updated.InMillisecondsSinceUnixEpoch());
   if (!nav_event->server_redirect_urls.empty()) {
     // The first entry in |server_redirect_chain| should be the original request
     // url.

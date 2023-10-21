@@ -167,7 +167,8 @@ TEST(AggregatableAttributionUtilsTest, RoundsSourceRegistrationTime) {
   };
 
   for (const auto& test_case : kTestCases) {
-    base::Time source_time = base::Time::FromJavaTime(test_case.source_time);
+    base::Time source_time =
+        base::Time::FromMillisecondsSinceUnixEpoch(test_case.source_time);
     AttributionReport report =
         ReportBuilder(AttributionInfoBuilder().Build(),
                       SourceBuilder(source_time).BuildStored())
@@ -209,9 +210,11 @@ TEST(AggregatableAttributionUtilsTest, AggregationCoordinatorSet) {
 TEST(AggregatableAttributionUtilsTest, AggregatableReportRequestForNullReport) {
   absl::optional<AggregatableReportRequest> request =
       CreateAggregatableReportRequest(
-          ReportBuilder(AttributionInfoBuilder().Build(),
-                        SourceBuilder(base::Time::FromJavaTime(1234567890123))
-                            .BuildStored())
+          ReportBuilder(
+              AttributionInfoBuilder().Build(),
+              SourceBuilder(
+                  base::Time::FromMillisecondsSinceUnixEpoch(1234567890123))
+                  .BuildStored())
               .BuildNullAggregatable());
   ASSERT_TRUE(request.has_value());
   EXPECT_TRUE(request->payload_contents().contributions.empty());
@@ -228,9 +231,11 @@ TEST(AggregatableAttributionUtilsTest,
      AggregatableReportRequestExcludingSourceRegistrationTime) {
   absl::optional<AggregatableReportRequest> request =
       CreateAggregatableReportRequest(
-          ReportBuilder(AttributionInfoBuilder().Build(),
-                        SourceBuilder(base::Time::FromJavaTime(1234567890123))
-                            .BuildStored())
+          ReportBuilder(
+              AttributionInfoBuilder().Build(),
+              SourceBuilder(
+                  base::Time::FromMillisecondsSinceUnixEpoch(1234567890123))
+                  .BuildStored())
               .SetAggregatableHistogramContributions(
                   {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
               .SetSourceRegistrationTimeConfig(

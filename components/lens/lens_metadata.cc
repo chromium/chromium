@@ -72,7 +72,7 @@ std::string CreateProto(
         Phase::Timestamp* timestamp = phase->mutable_timestamp();
     int64_t nanoseconds_in_milliseconds = 1e6;
     int64_t time_nanoseconds =
-        log->time.ToJavaTime() * nanoseconds_in_milliseconds;
+        log->time.InMillisecondsSinceUnixEpoch() * nanoseconds_in_milliseconds;
     timestamp->set_seconds(time_nanoseconds /
                            base::Time::kNanosecondsPerSecond);
     timestamp->set_nanos(time_nanoseconds % base::Time::kNanosecondsPerSecond);

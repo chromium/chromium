@@ -41,7 +41,8 @@ std::unique_ptr<variations::SeedResponse> GetVariationsFirstRunSeed() {
   }
   seed->signature = ConvertJavaStringToUTF8(j_seed_signature);
   seed->country = ConvertJavaStringToUTF8(j_seed_country);
-  seed->date = base::Time::FromJavaTime(static_cast<long>(j_response_date));
+  seed->date = base::Time::FromMillisecondsSinceUnixEpoch(
+      static_cast<long>(j_response_date));
   seed->is_gzip_compressed = static_cast<bool>(j_is_gzip_compressed);
   return seed;
 }

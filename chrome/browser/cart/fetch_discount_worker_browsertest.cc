@@ -53,7 +53,7 @@ cart_db::ChromeCartContentProto BuildCartProto(const char* domain,
   cart_db::ChromeCartContentProto proto;
   proto.set_key(domain);
   proto.set_merchant_cart_url(merchant_url);
-  proto.set_timestamp(base::Time::Now().ToDoubleT());
+  proto.set_timestamp(base::Time::Now().InSecondsFSinceUnixEpoch());
   return proto;
 }
 
@@ -426,8 +426,9 @@ IN_PROC_BROWSER_TEST_F(FetchFLCodeDiscountWorkerBrowserTest,
           testing::Property("promo_code",
                             &autofill::AutofillOfferData::GetPromoCode,
                             testing::Eq("SAVE$10")),
-          testing::Property("expiry", &autofill::AutofillOfferData::GetExpiry,
-                            testing::Eq(base::Time::FromDoubleT(1635204292))),
+          testing::Property(
+              "expiry", &autofill::AutofillOfferData::GetExpiry,
+              testing::Eq(base::Time::FromSecondsSinceUnixEpoch(1635204292))),
           testing::Property("display_strings",
                             &autofill::AutofillOfferData::GetDisplayStrings,
                             EqualsDisplayStrings(expected_display_string)))));
@@ -456,8 +457,9 @@ IN_PROC_BROWSER_TEST_F(FetchFLCodeDiscountWorkerBrowserTest,
           testing::Property("promo_code",
                             &autofill::AutofillOfferData::GetPromoCode,
                             testing::Eq("SAVE10")),
-          testing::Property("expiry", &autofill::AutofillOfferData::GetExpiry,
-                            testing::Eq(base::Time::FromDoubleT(1635204292.2))),
+          testing::Property(
+              "expiry", &autofill::AutofillOfferData::GetExpiry,
+              testing::Eq(base::Time::FromSecondsSinceUnixEpoch(1635204292.2))),
           testing::Property("display_strings",
                             &autofill::AutofillOfferData::GetDisplayStrings,
                             EqualsDisplayStrings(expected_display_string)))));
@@ -560,8 +562,9 @@ IN_PROC_BROWSER_TEST_F(FetchCodeBasedDiscountWorkerBrowserTest,
           testing::Property("promo_code",
                             &autofill::AutofillOfferData::GetPromoCode,
                             testing::Eq("SAVE$10")),
-          testing::Property("expiry", &autofill::AutofillOfferData::GetExpiry,
-                            testing::Eq(base::Time::FromDoubleT(1635204292))),
+          testing::Property(
+              "expiry", &autofill::AutofillOfferData::GetExpiry,
+              testing::Eq(base::Time::FromSecondsSinceUnixEpoch(1635204292))),
           testing::Property("display_strings",
                             &autofill::AutofillOfferData::GetDisplayStrings,
                             EqualsDisplayStrings(expected_display_string)))));
@@ -590,8 +593,9 @@ IN_PROC_BROWSER_TEST_F(FetchCodeBasedDiscountWorkerBrowserTest,
           testing::Property("promo_code",
                             &autofill::AutofillOfferData::GetPromoCode,
                             testing::Eq("SAVE10")),
-          testing::Property("expiry", &autofill::AutofillOfferData::GetExpiry,
-                            testing::Eq(base::Time::FromDoubleT(1635204292.2))),
+          testing::Property(
+              "expiry", &autofill::AutofillOfferData::GetExpiry,
+              testing::Eq(base::Time::FromSecondsSinceUnixEpoch(1635204292.2))),
           testing::Property("display_strings",
                             &autofill::AutofillOfferData::GetDisplayStrings,
                             EqualsDisplayStrings(expected_display_string)))));
@@ -624,8 +628,9 @@ IN_PROC_BROWSER_TEST_F(
           testing::Property("promo_code",
                             &autofill::AutofillOfferData::GetPromoCode,
                             testing::Eq("SAVE10")),
-          testing::Property("expiry", &autofill::AutofillOfferData::GetExpiry,
-                            testing::Eq(base::Time::FromDoubleT(1635204293))),
+          testing::Property(
+              "expiry", &autofill::AutofillOfferData::GetExpiry,
+              testing::Eq(base::Time::FromSecondsSinceUnixEpoch(1635204293))),
           testing::Property("display_strings",
                             &autofill::AutofillOfferData::GetDisplayStrings,
                             EqualsDisplayStrings(expected_display_string)))));

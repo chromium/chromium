@@ -114,7 +114,8 @@ base::Time SqliteEpoch() {
   // The offset is in the SQLite source code (os_unix.c) multiplied by 10.
   constexpr const double kUnixEpochAsJulianDay = 2440587.5;
 
-  return base::Time::FromJsTime(-kUnixEpochAsJulianDay * kMicroSecondsPerDay);
+  return base::Time::FromMillisecondsSinceUnixEpoch(-kUnixEpochAsJulianDay *
+                                                    kMicroSecondsPerDay);
 }
 
 #if DCHECK_IS_ON()

@@ -931,18 +931,21 @@ void NewTabPageHandler::OnPromoServiceShuttingDown() {
 
 void NewTabPageHandler::OnAppRendered(double time) {
   logger_.LogEvent(NTP_APP_RENDERED,
-                   base::Time::FromJsTime(time) - ntp_navigation_start_time_);
+                   base::Time::FromMillisecondsSinceUnixEpoch(time) -
+                       ntp_navigation_start_time_);
 }
 
 void NewTabPageHandler::OnOneGoogleBarRendered(double time) {
   logger_.LogEvent(NTP_ONE_GOOGLE_BAR_SHOWN,
-                   base::Time::FromJsTime(time) - ntp_navigation_start_time_);
+                   base::Time::FromMillisecondsSinceUnixEpoch(time) -
+                       ntp_navigation_start_time_);
 }
 
 void NewTabPageHandler::OnPromoRendered(double time,
                                         const absl::optional<GURL>& log_url) {
   logger_.LogEvent(NTP_MIDDLE_SLOT_PROMO_SHOWN,
-                   base::Time::FromJsTime(time) - ntp_navigation_start_time_);
+                   base::Time::FromMillisecondsSinceUnixEpoch(time) -
+                       ntp_navigation_start_time_);
   if (log_url.has_value() && log_url->is_valid()) {
     Fetch(*log_url, base::BindOnce([](bool, std::unique_ptr<std::string>) {}));
   }
@@ -1038,7 +1041,8 @@ void NewTabPageHandler::OnDoodleImageRendered(
     logger_.LogEvent(type == new_tab_page::mojom::DoodleImageType::kCta
                          ? NTP_CTA_LOGO_SHOWN_FROM_CACHE
                          : NTP_STATIC_LOGO_SHOWN_FROM_CACHE,
-                     base::Time::FromJsTime(time) - ntp_navigation_start_time_);
+                     base::Time::FromMillisecondsSinceUnixEpoch(time) -
+                         ntp_navigation_start_time_);
   }
   Fetch(log_url,
         base::BindOnce(&NewTabPageHandler::OnLogFetchResult,

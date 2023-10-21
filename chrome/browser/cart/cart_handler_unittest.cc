@@ -70,7 +70,7 @@ cart_db::ChromeCartContentProto BuildProto(const char* key,
   proto.set_key(domain);
   proto.set_merchant(domain);
   proto.set_merchant_cart_url(merchant_url);
-  proto.set_timestamp(base::Time::Now().ToDoubleT());
+  proto.set_timestamp(base::Time::Now().InSecondsFSinceUnixEpoch());
   return proto;
 }
 

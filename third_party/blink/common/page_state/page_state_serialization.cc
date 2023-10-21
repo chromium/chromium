@@ -409,7 +409,8 @@ void WriteResourceRequestBody(const network::ResourceRequestBody& request_body,
         WriteString(file.path().AsUTF16Unsafe(), obj);
         WriteInteger64(static_cast<int64_t>(file.offset()), obj);
         WriteInteger64(static_cast<int64_t>(file.length()), obj);
-        WriteReal(file.expected_modification_time().ToDoubleT(), obj);
+        WriteReal(file.expected_modification_time().InSecondsFSinceUnixEpoch(),
+                  obj);
         break;
       }
       default:
@@ -442,7 +443,7 @@ void ReadResourceRequestBody(
       double file_modification_time = ReadReal(obj);
       AppendFileRangeToRequestBody(
           request_body, file_path, file_start, file_length,
-          base::Time::FromDoubleT(file_modification_time));
+          base::Time::FromSecondsSinceUnixEpoch(file_modification_time));
     } else if (type == HTTPBodyElementType::kTypeBlob) {
       // Skip obsolete blob values.
       if (obj->version >= 16) {

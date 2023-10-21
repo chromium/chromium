@@ -25,7 +25,8 @@ TEST(PlatformNotificationDataTest, AssignmentOperator) {
   notification_data.vibration_pattern.assign(std::begin(vibration_pattern),
                                              std::end(vibration_pattern));
 
-  notification_data.timestamp = base::Time::FromJsTime(1513966159000.);
+  notification_data.timestamp =
+      base::Time::FromMillisecondsSinceUnixEpoch(1513966159000.);
   notification_data.renotify = true;
   notification_data.silent = true;
   notification_data.require_interaction = true;

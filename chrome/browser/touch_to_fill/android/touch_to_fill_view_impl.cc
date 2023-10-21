@@ -49,7 +49,7 @@ UiCredential ConvertJavaCredential(JNIEnv* env,
           env, Java_Credential_getOriginUrl(env, credential)))),
       static_cast<password_manager_util::GetLoginMatchType>(
           Java_Credential_getMatchType(env, credential)),
-      base::Time::FromJavaTime(
+      base::Time::FromMillisecondsSinceUnixEpoch(
           Java_Credential_lastUsedMsSinceEpoch(env, credential)));
 }
 
@@ -117,7 +117,7 @@ void TouchToFillViewImpl::Show(
         ConvertUTF8ToJavaString(env, credential.origin().Serialize()),
         ConvertUTF8ToJavaString(env, credential.display_name()),
         static_cast<int>(credential.match_type()),
-        credential.last_used().ToJavaTime());
+        credential.last_used().InMillisecondsSinceUnixEpoch());
   }
 
   base::android::ScopedJavaLocalRef<jobjectArray> passkey_array =

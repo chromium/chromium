@@ -273,7 +273,7 @@ TEST_F(PasswordCheckupUtilsTest,
   base::Time expected1 = base::Time::Now() - base::Seconds(10);
   browser_state()->GetPrefs()->SetDouble(
       password_manager::prefs::kLastTimePasswordCheckCompleted,
-      expected1.ToDoubleT());
+      expected1.InSecondsFSinceUnixEpoch());
 
   EXPECT_NSEQ(
       @"Last checked just now.",
@@ -282,7 +282,7 @@ TEST_F(PasswordCheckupUtilsTest,
   base::Time expected2 = base::Time::Now() - base::Minutes(5);
   browser_state()->GetPrefs()->SetDouble(
       password_manager::prefs::kLastTimePasswordCheckCompleted,
-      expected2.ToDoubleT());
+      expected2.InSecondsFSinceUnixEpoch());
 
   EXPECT_NSEQ(
       @"Last checked 5 minutes ago.",
@@ -303,7 +303,7 @@ TEST_F(PasswordCheckupUtilsTest,
   base::Time expected1 = base::Time::Now() - base::Seconds(10);
   browser_state()->GetPrefs()->SetDouble(
       password_manager::prefs::kLastTimePasswordCheckCompleted,
-      expected1.ToDoubleT());
+      expected1.InSecondsFSinceUnixEpoch());
 
   EXPECT_NSEQ(@"Checked just now", FormatElapsedTimeSinceLastCheck(
                                        manager().GetLastPasswordCheckTime()));
@@ -311,7 +311,7 @@ TEST_F(PasswordCheckupUtilsTest,
   base::Time expected2 = base::Time::Now() - base::Minutes(5);
   browser_state()->GetPrefs()->SetDouble(
       password_manager::prefs::kLastTimePasswordCheckCompleted,
-      expected2.ToDoubleT());
+      expected2.InSecondsFSinceUnixEpoch());
 
   EXPECT_NSEQ(
       @"Checked 5 minutes ago",
@@ -328,7 +328,7 @@ TEST_F(PasswordCheckupUtilsTest, ElapsedTimeSinceLastCheckInTitleCase) {
   base::Time expected1 = base::Time::Now() - base::Seconds(10);
   browser_state()->GetPrefs()->SetDouble(
       password_manager::prefs::kLastTimePasswordCheckCompleted,
-      expected1.ToDoubleT());
+      expected1.InSecondsFSinceUnixEpoch());
 
   EXPECT_NSEQ(@"Checked Just Now", FormatElapsedTimeSinceLastCheck(
                                        manager().GetLastPasswordCheckTime(),
@@ -337,7 +337,7 @@ TEST_F(PasswordCheckupUtilsTest, ElapsedTimeSinceLastCheckInTitleCase) {
   base::Time expected2 = base::Time::Now() - base::Minutes(5);
   browser_state()->GetPrefs()->SetDouble(
       password_manager::prefs::kLastTimePasswordCheckCompleted,
-      expected2.ToDoubleT());
+      expected2.InSecondsFSinceUnixEpoch());
 
   EXPECT_NSEQ(
       @"Checked 5 Minutes Ago",

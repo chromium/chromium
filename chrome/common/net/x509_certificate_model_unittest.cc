@@ -97,10 +97,10 @@ TEST_P(X509CertificateModel, GetGoogleCertFields) {
   // Constants copied from x509_certificate_unittest.cc.
   // Dec 18 00:00:00 2009 GMT
   const double kGoogleParseValidFrom = 1261094400;
-  EXPECT_EQ(kGoogleParseValidFrom, not_before.ToDoubleT());
+  EXPECT_EQ(kGoogleParseValidFrom, not_before.InSecondsFSinceUnixEpoch());
   // Dec 18 23:59:59 2011 GMT
   const double kGoogleParseValidTo = 1324252799;
-  EXPECT_EQ(kGoogleParseValidTo, not_after.ToDoubleT());
+  EXPECT_EQ(kGoogleParseValidTo, not_after.InSecondsFSinceUnixEpoch());
 
   EXPECT_EQ("PKCS #1 SHA-1 With RSA Encryption",
             model.ProcessSecAlgorithmSignature());

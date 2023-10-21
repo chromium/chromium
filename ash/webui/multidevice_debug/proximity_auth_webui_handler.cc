@@ -332,7 +332,8 @@ void ProximityAuthWebUIHandler::OnGetDebugInfo(
     NotifyOnEnrollmentFinished(
         true /* success */,
         CreateSyncStateDictionary(
-            debug_info_ptr->last_enrollment_time.ToJsTime(),
+            debug_info_ptr->last_enrollment_time
+                .InMillisecondsFSinceUnixEpoch(),
             ConvertNextAttemptTimeToDouble(
                 debug_info_ptr->time_to_next_enrollment_attempt),
             debug_info_ptr->is_recovering_from_enrollment_failure,
@@ -341,13 +342,14 @@ void ProximityAuthWebUIHandler::OnGetDebugInfo(
 
   if (sync_update_waiting_for_debug_info_) {
     sync_update_waiting_for_debug_info_ = false;
-    NotifyOnSyncFinished(true /* was_sync_successful */, true /* changed */,
-                         CreateSyncStateDictionary(
-                             debug_info_ptr->last_sync_time.ToJsTime(),
-                             ConvertNextAttemptTimeToDouble(
-                                 debug_info_ptr->time_to_next_sync_attempt),
-                             debug_info_ptr->is_recovering_from_sync_failure,
-                             debug_info_ptr->is_sync_in_progress));
+    NotifyOnSyncFinished(
+        true /* was_sync_successful */, true /* changed */,
+        CreateSyncStateDictionary(
+            debug_info_ptr->last_sync_time.InMillisecondsFSinceUnixEpoch(),
+            ConvertNextAttemptTimeToDouble(
+                debug_info_ptr->time_to_next_sync_attempt),
+            debug_info_ptr->is_recovering_from_sync_failure,
+            debug_info_ptr->is_sync_in_progress));
   }
 
   if (get_local_state_update_waiting_for_debug_info_) {
@@ -355,13 +357,14 @@ void ProximityAuthWebUIHandler::OnGetDebugInfo(
     NotifyGotLocalState(
         GetTruncatedLocalDeviceId(),
         CreateSyncStateDictionary(
-            debug_info_ptr->last_enrollment_time.ToJsTime(),
+            debug_info_ptr->last_enrollment_time
+                .InMillisecondsFSinceUnixEpoch(),
             ConvertNextAttemptTimeToDouble(
                 debug_info_ptr->time_to_next_enrollment_attempt),
             debug_info_ptr->is_recovering_from_enrollment_failure,
             debug_info_ptr->is_enrollment_in_progress),
         CreateSyncStateDictionary(
-            debug_info_ptr->last_sync_time.ToJsTime(),
+            debug_info_ptr->last_sync_time.InMillisecondsFSinceUnixEpoch(),
             ConvertNextAttemptTimeToDouble(
                 debug_info_ptr->time_to_next_sync_attempt),
             debug_info_ptr->is_recovering_from_sync_failure,

@@ -59,7 +59,8 @@ TEST_P(VariationsCrosEvaluateSeedGetChannel,
        GetClientFilterableState_Channel_Branded) {
   std::string lsb_release = base::StrCat(
       {"CHROMEOS_RELEASE_TRACK=", GetParam().channel_name, "-channel"});
-  const base::Time lsb_release_time(base::Time::FromDoubleT(12345.6));
+  const base::Time lsb_release_time(
+      base::Time::FromSecondsSinceUnixEpoch(12345.6));
   base::test::ScopedChromeOSVersionInfo lsb_info(lsb_release, lsb_release_time);
 
   base::CommandLine::ForCurrentProcess()->InitFromArgv({"evaluate_seed"});

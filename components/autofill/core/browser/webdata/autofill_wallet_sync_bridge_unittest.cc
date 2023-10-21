@@ -83,7 +83,7 @@ const char kCard1ClientTag[] = "Y2FyZDHvv74=";
 const char kCustomerDataClientTag[] = "deadbeef";
 const char kCloudTokenDataClientTag[] = "token";
 
-const base::Time kJune2017 = base::Time::FromDoubleT(1497552271);
+const base::Time kJune2017 = base::Time::FromSecondsSinceUnixEpoch(1497552271);
 
 const char kDefaultCacheGuid[] = "CacheGuid";
 

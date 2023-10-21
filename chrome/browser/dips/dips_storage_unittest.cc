@@ -67,8 +67,8 @@ TEST(DIPSGetSitesToClearTest, FiltersByTriggerParam) {
   GURL kStorageUrl("https://storage.com");
   GURL kStatefulBounceUrl("https://stateful_bounce.com");
 
-  TimestampRange event(
-      {base::Time::FromDoubleT(1), base::Time::FromDoubleT(1)});
+  TimestampRange event({base::Time::FromSecondsSinceUnixEpoch(1),
+                        base::Time::FromSecondsSinceUnixEpoch(1)});
   storage.WriteForTesting(kBounceUrl, StateValue{.bounce_times = event});
   storage.WriteForTesting(kStorageUrl, StateValue{.site_storage_times = event});
   storage.WriteForTesting(kStatefulBounceUrl,
@@ -112,7 +112,7 @@ TEST(DIPSGetSitesToClearTest, FiltersByTriggerParam) {
 
 TEST(DIPSGetSitesToClearTest, CustomGracePeriod) {
   base::SimpleTestClock clock;
-  clock.SetNow(base::Time::FromDoubleT(1));
+  clock.SetNow(base::Time::FromSecondsSinceUnixEpoch(1));
   base::Time start = clock.Now();
   base::Time late_trigger = start + base::Seconds(10);
   base::TimeDelta custom_grace_period = base::Seconds(5);
@@ -308,9 +308,9 @@ TEST_F(DIPSStorageTest, NewURL) {
 
 TEST_F(DIPSStorageTest, SetValues) {
   GURL url("https://example.com");
-  auto time1 = base::Time::FromDoubleT(1);
-  auto time2 = base::Time::FromDoubleT(2);
-  auto time3 = base::Time::FromDoubleT(3);
+  auto time1 = base::Time::FromSecondsSinceUnixEpoch(1);
+  auto time2 = base::Time::FromSecondsSinceUnixEpoch(2);
+  auto time3 = base::Time::FromSecondsSinceUnixEpoch(3);
 
   {
     DIPSState state = storage_.Read(url);
@@ -339,7 +339,7 @@ TEST_F(DIPSStorageTest, SameSiteSameState) {
   // while the other is HTTP.
   GURL url1("https://subdomain1.example.com");
   GURL url2("http://subdomain2.example.com");
-  auto time = base::Time::FromDoubleT(1);
+  auto time = base::Time::FromSecondsSinceUnixEpoch(1);
 
   storage_.Read(url1).update_site_storage_time(time);
 
@@ -352,8 +352,8 @@ TEST_F(DIPSStorageTest, SameSiteSameState) {
 TEST_F(DIPSStorageTest, DifferentSiteDifferentState) {
   GURL url1("https://example1.com");
   GURL url2("https://example2.com");
-  auto time1 = base::Time::FromDoubleT(1);
-  auto time2 = base::Time::FromDoubleT(2);
+  auto time1 = base::Time::FromSecondsSinceUnixEpoch(1);
+  auto time2 = base::Time::FromSecondsSinceUnixEpoch(2);
 
   storage_.Read(url1).update_site_storage_time(time1);
   storage_.Read(url2).update_site_storage_time(time2);
@@ -369,7 +369,7 @@ TEST_F(DIPSStorageTest, DifferentSiteDifferentState) {
 // overlapping scenarios.
 TEST_F(DIPSStorageTest, RemoveByTime_WebAuthnAssertion) {
   base::SimpleTestClock clock;
-  clock.SetNow(base::Time::FromDoubleT(100));
+  clock.SetNow(base::Time::FromSecondsSinceUnixEpoch(100));
   auto tiny_delta = base::Milliseconds(1);
   auto delete_begin = clock.Now();
   auto delete_end = delete_begin + tiny_delta * 100;
@@ -468,24 +468,28 @@ TEST_F(DIPSStorageTest, RemoveByTime_WebAuthnAssertion) {
 TEST_F(DIPSStorageTest, RemoveByTimeWithNullRangeEndTime) {
   GURL url1("https://example1.com");
   GURL url2("https://example2.com");
-  base::Time delete_begin = base::Time::FromDoubleT(2);
+  base::Time delete_begin = base::Time::FromSecondsSinceUnixEpoch(2);
   base::Time delete_end = base::Time();
 
   storage_.WriteForTesting(
-      url1, {/*site_storage_times= */ {
-                 {base::Time::FromDoubleT(1), base::Time::FromDoubleT(3)}},
-             /*user_interaction_times= */ {
-                 {base::Time::FromDoubleT(5), base::Time::FromDoubleT(8)}}});
-  storage_.WriteForTesting(
-      url2, {/*site_storage_times= */ TimestampRange(),
-             /*user_interaction_times= */ {
-                 {base::Time::FromDoubleT(3), base::Time::FromDoubleT(5)}}});
+      url1,
+      {/*site_storage_times= */ {{base::Time::FromSecondsSinceUnixEpoch(1),
+                                  base::Time::FromSecondsSinceUnixEpoch(3)}},
+       /*user_interaction_times= */ {
+           {base::Time::FromSecondsSinceUnixEpoch(5),
+            base::Time::FromSecondsSinceUnixEpoch(8)}}});
+  storage_.WriteForTesting(url2,
+                           {/*site_storage_times= */ TimestampRange(),
+                            /*user_interaction_times= */ {
+                                {base::Time::FromSecondsSinceUnixEpoch(3),
+                                 base::Time::FromSecondsSinceUnixEpoch(5)}}});
   storage_.RemoveEvents(delete_begin, delete_end, nullptr,
                         DIPSEventRemovalType::kAll);
 
   DIPSState state1 = storage_.Read(url1);
   EXPECT_EQ(state1.site_storage_times()->first,
-            absl::make_optional(base::Time::FromDoubleT(1)));  // no change
+            absl::make_optional(
+                base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
   EXPECT_EQ(state1.site_storage_times()->second,
             absl::make_optional(delete_begin));  // adjusted
   EXPECT_EQ(state1.user_interaction_times(),
@@ -499,17 +503,20 @@ TEST_F(DIPSStorageTest, RemoveByTimeWithNullRangeBeginTime) {
   GURL url1("https://example1.com");
   GURL url2("https://example2.com");
   base::Time delete_begin = base::Time::Min();
-  base::Time delete_end = base::Time::FromDoubleT(6);
+  base::Time delete_end = base::Time::FromSecondsSinceUnixEpoch(6);
 
   storage_.WriteForTesting(
-      url1, {/*site_storage_times= */ {
-                 {base::Time::FromDoubleT(1), base::Time::FromDoubleT(3)}},
-             /*user_interaction_times= */ {
-                 {base::Time::FromDoubleT(5), base::Time::FromDoubleT(8)}}});
-  storage_.WriteForTesting(
-      url2, {/*site_storage_times= */ TimestampRange(),
-             /*user_interaction_times= */ {
-                 {base::Time::FromDoubleT(3), base::Time::FromDoubleT(5)}}});
+      url1,
+      {/*site_storage_times= */ {{base::Time::FromSecondsSinceUnixEpoch(1),
+                                  base::Time::FromSecondsSinceUnixEpoch(3)}},
+       /*user_interaction_times= */ {
+           {base::Time::FromSecondsSinceUnixEpoch(5),
+            base::Time::FromSecondsSinceUnixEpoch(8)}}});
+  storage_.WriteForTesting(url2,
+                           {/*site_storage_times= */ TimestampRange(),
+                            /*user_interaction_times= */ {
+                                {base::Time::FromSecondsSinceUnixEpoch(3),
+                                 base::Time::FromSecondsSinceUnixEpoch(5)}}});
   storage_.RemoveEvents(delete_begin, delete_end, nullptr,
                         DIPSEventRemovalType::kAll);
 
@@ -518,7 +525,8 @@ TEST_F(DIPSStorageTest, RemoveByTimeWithNullRangeBeginTime) {
   EXPECT_EQ(state1.user_interaction_times()->first,
             absl::make_optional(delete_end));  // adjusted
   EXPECT_EQ(state1.user_interaction_times()->second,
-            absl::make_optional(base::Time::FromDoubleT(8)));  // no change
+            absl::make_optional(
+                base::Time::FromSecondsSinceUnixEpoch(8)));  // no change
 
   DIPSState state2 = storage_.Read(url2);
   EXPECT_FALSE(state2.was_loaded());  // removed
@@ -527,27 +535,32 @@ TEST_F(DIPSStorageTest, RemoveByTimeWithNullRangeBeginTime) {
 TEST_F(DIPSStorageTest, RemoveByTimeAdjustsOverlappingTimes) {
   GURL url1("https://example1.com");
   GURL url2("https://example2.com");
-  base::Time delete_begin = base::Time::FromDoubleT(2);
-  base::Time delete_end = base::Time::FromDoubleT(6);
+  base::Time delete_begin = base::Time::FromSecondsSinceUnixEpoch(2);
+  base::Time delete_end = base::Time::FromSecondsSinceUnixEpoch(6);
 
-  storage_.WriteForTesting(
-      url1, {{{base::Time::FromDoubleT(1), base::Time::FromDoubleT(3)}},
-             {{base::Time::FromDoubleT(5), base::Time::FromDoubleT(8)}}});
-  storage_.WriteForTesting(
-      url2, {TimestampRange(),
-             {{base::Time::FromDoubleT(3), base::Time::FromDoubleT(5)}}});
+  storage_.WriteForTesting(url1,
+                           {{{base::Time::FromSecondsSinceUnixEpoch(1),
+                              base::Time::FromSecondsSinceUnixEpoch(3)}},
+                            {{base::Time::FromSecondsSinceUnixEpoch(5),
+                              base::Time::FromSecondsSinceUnixEpoch(8)}}});
+  storage_.WriteForTesting(url2,
+                           {TimestampRange(),
+                            {{base::Time::FromSecondsSinceUnixEpoch(3),
+                              base::Time::FromSecondsSinceUnixEpoch(5)}}});
   storage_.RemoveEvents(delete_begin, delete_end, nullptr,
                         DIPSEventRemovalType::kAll);
 
   DIPSState state1 = storage_.Read(url1);
   EXPECT_EQ(state1.site_storage_times()->first,
-            absl::make_optional(base::Time::FromDoubleT(1)));  // no change
+            absl::make_optional(
+                base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
   EXPECT_EQ(state1.site_storage_times()->second,
             absl::make_optional(delete_begin));  // adjusted
   EXPECT_EQ(state1.user_interaction_times()->first,
             absl::make_optional(delete_end));  // adjusted
   EXPECT_EQ(state1.user_interaction_times()->second,
-            absl::make_optional(base::Time::FromDoubleT(8)));  // no change
+            absl::make_optional(
+                base::Time::FromSecondsSinceUnixEpoch(8)));  // no change
 
   DIPSState state2 = storage_.Read(url2);
   EXPECT_FALSE(state2.was_loaded());  // removed
@@ -556,82 +569,102 @@ TEST_F(DIPSStorageTest, RemoveByTimeAdjustsOverlappingTimes) {
 TEST_F(DIPSStorageTest, RemoveByTimeDoesNotAffectTouchingWindowEndpoints) {
   GURL url1("https://example1.com");
   GURL url2("https://example2.com");
-  base::Time delete_begin = base::Time::FromDoubleT(3);
-  base::Time delete_end = base::Time::FromDoubleT(5);
+  base::Time delete_begin = base::Time::FromSecondsSinceUnixEpoch(3);
+  base::Time delete_end = base::Time::FromSecondsSinceUnixEpoch(5);
 
-  storage_.WriteForTesting(
-      url1, {{{base::Time::FromDoubleT(1), base::Time::FromDoubleT(3)}},
-             {{base::Time::FromDoubleT(5), base::Time::FromDoubleT(8)}}});
+  storage_.WriteForTesting(url1,
+                           {{{base::Time::FromSecondsSinceUnixEpoch(1),
+                              base::Time::FromSecondsSinceUnixEpoch(3)}},
+                            {{base::Time::FromSecondsSinceUnixEpoch(5),
+                              base::Time::FromSecondsSinceUnixEpoch(8)}}});
   storage_.RemoveEvents(delete_begin, delete_end, nullptr,
                         DIPSEventRemovalType::kAll);
 
   DIPSState state = storage_.Read(url1);
   EXPECT_EQ(state.site_storage_times()->first,
-            absl::make_optional(base::Time::FromDoubleT(1)));  // no change
+            absl::make_optional(
+                base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
   EXPECT_EQ(state.site_storage_times()->second,
-            absl::make_optional(base::Time::FromDoubleT(3)));  // no change
+            absl::make_optional(
+                base::Time::FromSecondsSinceUnixEpoch(3)));  // no change
   EXPECT_EQ(state.user_interaction_times()->first,
-            absl::make_optional(base::Time::FromDoubleT(5)));  // no change
+            absl::make_optional(
+                base::Time::FromSecondsSinceUnixEpoch(5)));  // no change
   EXPECT_EQ(state.user_interaction_times()->second,
-            absl::make_optional(base::Time::FromDoubleT(8)));  // no change
+            absl::make_optional(
+                base::Time::FromSecondsSinceUnixEpoch(8)));  // no change
 }
 
 TEST_F(DIPSStorageTest, RemoveByTimeStorageOnly) {
   GURL url1("https://example1.com");
   GURL url2("https://example2.com");
-  base::Time delete_begin = base::Time::FromDoubleT(2);
-  base::Time delete_end = base::Time::FromDoubleT(6);
+  base::Time delete_begin = base::Time::FromSecondsSinceUnixEpoch(2);
+  base::Time delete_end = base::Time::FromSecondsSinceUnixEpoch(6);
 
-  storage_.WriteForTesting(
-      url1, {{{base::Time::FromDoubleT(1), base::Time::FromDoubleT(3)}},
-             {{base::Time::FromDoubleT(5), base::Time::FromDoubleT(8)}}});
-  storage_.WriteForTesting(
-      url2, {TimestampRange(),
-             {{base::Time::FromDoubleT(3), base::Time::FromDoubleT(5)}}});
+  storage_.WriteForTesting(url1,
+                           {{{base::Time::FromSecondsSinceUnixEpoch(1),
+                              base::Time::FromSecondsSinceUnixEpoch(3)}},
+                            {{base::Time::FromSecondsSinceUnixEpoch(5),
+                              base::Time::FromSecondsSinceUnixEpoch(8)}}});
+  storage_.WriteForTesting(url2,
+                           {TimestampRange(),
+                            {{base::Time::FromSecondsSinceUnixEpoch(3),
+                              base::Time::FromSecondsSinceUnixEpoch(5)}}});
   storage_.RemoveEvents(delete_begin, delete_end, nullptr,
                         DIPSEventRemovalType::kStorage);
 
   DIPSState state1 = storage_.Read(url1);
   EXPECT_EQ(state1.site_storage_times()->first,
-            absl::make_optional(base::Time::FromDoubleT(1)));  // no change
+            absl::make_optional(
+                base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
   EXPECT_EQ(state1.site_storage_times()->second,
             absl::make_optional(delete_begin));  // adjusted
   EXPECT_EQ(state1.user_interaction_times()->first,
-            absl::make_optional(base::Time::FromDoubleT(5)));  // no change
+            absl::make_optional(
+                base::Time::FromSecondsSinceUnixEpoch(5)));  // no change
   EXPECT_EQ(state1.user_interaction_times()->second,
-            absl::make_optional(base::Time::FromDoubleT(8)));  // no change
+            absl::make_optional(
+                base::Time::FromSecondsSinceUnixEpoch(8)));  // no change
 
   DIPSState state2 = storage_.Read(url2);
   EXPECT_EQ(state2.user_interaction_times()->first,
-            absl::make_optional(base::Time::FromDoubleT(3)));  // no change
+            absl::make_optional(
+                base::Time::FromSecondsSinceUnixEpoch(3)));  // no change
   EXPECT_EQ(state2.user_interaction_times()->second,
-            absl::make_optional(base::Time::FromDoubleT(5)));  // no change
+            absl::make_optional(
+                base::Time::FromSecondsSinceUnixEpoch(5)));  // no change
 }
 
 TEST_F(DIPSStorageTest, RemoveByTimeInteractionOnly) {
   GURL url1("https://example1.com");
   GURL url2("https://example2.com");
-  base::Time delete_begin = base::Time::FromDoubleT(2);
-  base::Time delete_end = base::Time::FromDoubleT(6);
+  base::Time delete_begin = base::Time::FromSecondsSinceUnixEpoch(2);
+  base::Time delete_end = base::Time::FromSecondsSinceUnixEpoch(6);
 
-  storage_.WriteForTesting(
-      url1, {{{base::Time::FromDoubleT(1), base::Time::FromDoubleT(3)}},
-             {{base::Time::FromDoubleT(5), base::Time::FromDoubleT(8)}}});
-  storage_.WriteForTesting(
-      url2, {TimestampRange(),
-             {{base::Time::FromDoubleT(3), base::Time::FromDoubleT(5)}}});
+  storage_.WriteForTesting(url1,
+                           {{{base::Time::FromSecondsSinceUnixEpoch(1),
+                              base::Time::FromSecondsSinceUnixEpoch(3)}},
+                            {{base::Time::FromSecondsSinceUnixEpoch(5),
+                              base::Time::FromSecondsSinceUnixEpoch(8)}}});
+  storage_.WriteForTesting(url2,
+                           {TimestampRange(),
+                            {{base::Time::FromSecondsSinceUnixEpoch(3),
+                              base::Time::FromSecondsSinceUnixEpoch(5)}}});
   storage_.RemoveEvents(delete_begin, delete_end, nullptr,
                         DIPSEventRemovalType::kHistory);
 
   DIPSState state1 = storage_.Read(url1);
   EXPECT_EQ(state1.site_storage_times()->first,
-            absl::make_optional(base::Time::FromDoubleT(1)));  // no change
+            absl::make_optional(
+                base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
   EXPECT_EQ(state1.site_storage_times()->second,
-            absl::make_optional(base::Time::FromDoubleT(3)));  // no change
+            absl::make_optional(
+                base::Time::FromSecondsSinceUnixEpoch(3)));  // no change
   EXPECT_EQ(state1.user_interaction_times()->first,
             absl::make_optional(delete_end));  // adjusted
   EXPECT_EQ(state1.user_interaction_times()->second,
-            absl::make_optional(base::Time::FromDoubleT(8)));  // no change
+            absl::make_optional(
+                base::Time::FromSecondsSinceUnixEpoch(8)));  // no change
 
   DIPSState state2 = storage_.Read(url2);
   EXPECT_FALSE(state2.was_loaded());  // removed
@@ -641,17 +674,17 @@ TEST_F(DIPSStorageTest, RemovePopupEventsByTime) {
   std::string site1 = GetSiteForDIPS(GURL("https://example1.com"));
   std::string site2 = GetSiteForDIPS(GURL("https://example2.com"));
   std::string site3 = GetSiteForDIPS(GURL("https://example3.com"));
-  base::Time delete_begin = base::Time::FromDoubleT(3);
-  base::Time delete_end = base::Time::FromDoubleT(5);
+  base::Time delete_begin = base::Time::FromSecondsSinceUnixEpoch(3);
+  base::Time delete_end = base::Time::FromSecondsSinceUnixEpoch(5);
 
   ASSERT_TRUE(storage_.WritePopup(site1, site2, /*access_id=*/1u,
-                                  base::Time::FromDoubleT(2),
+                                  base::Time::FromSecondsSinceUnixEpoch(2),
                                   /*is_current_interaction=*/true));
   ASSERT_TRUE(storage_.WritePopup(site1, site3, /*access_id=*/2u,
-                                  base::Time::FromDoubleT(4),
+                                  base::Time::FromSecondsSinceUnixEpoch(4),
                                   /*is_current_interaction=*/true));
   ASSERT_TRUE(storage_.WritePopup(site2, site3, /*access_id=*/3u,
-                                  base::Time::FromDoubleT(6),
+                                  base::Time::FromSecondsSinceUnixEpoch(6),
                                   /*is_current_interaction=*/false));
 
   storage_.RemoveEvents(delete_begin, delete_end, nullptr,
@@ -662,7 +695,8 @@ TEST_F(DIPSStorageTest, RemovePopupEventsByTime) {
   absl::optional<PopupsStateValue> popup1 = storage_.ReadPopup(site1, site2);
   ASSERT_TRUE(popup1.has_value());
   EXPECT_EQ(popup1.value().access_id, 1u);
-  EXPECT_EQ(popup1.value().last_popup_time, base::Time::FromDoubleT(2));
+  EXPECT_EQ(popup1.value().last_popup_time,
+            base::Time::FromSecondsSinceUnixEpoch(2));
   EXPECT_TRUE(popup1.value().is_current_interaction);
 
   absl::optional<PopupsStateValue> popup2 = storage_.ReadPopup(site1, site3);
@@ -671,38 +705,45 @@ TEST_F(DIPSStorageTest, RemovePopupEventsByTime) {
   absl::optional<PopupsStateValue> popup3 = storage_.ReadPopup(site2, site3);
   ASSERT_TRUE(popup3.has_value());
   EXPECT_EQ(popup3.value().access_id, 3u);
-  EXPECT_EQ(popup3.value().last_popup_time, base::Time::FromDoubleT(6));
+  EXPECT_EQ(popup3.value().last_popup_time,
+            base::Time::FromSecondsSinceUnixEpoch(6));
   EXPECT_FALSE(popup3.value().is_current_interaction);
 }
 
 TEST_F(DIPSStorageTest, RemoveByTimeBounces) {
   GURL url1("https://example1.com");
   GURL url2("https://example2.com");
-  base::Time delete_begin = base::Time::FromDoubleT(2);
-  base::Time delete_end = base::Time::FromDoubleT(6);
+  base::Time delete_begin = base::Time::FromSecondsSinceUnixEpoch(2);
+  base::Time delete_end = base::Time::FromSecondsSinceUnixEpoch(6);
 
-  storage_.WriteForTesting(
-      url1, {TimestampRange(),
-             TimestampRange(),
-             {{base::Time::FromDoubleT(1), base::Time::FromDoubleT(3)}},
-             {{base::Time::FromDoubleT(1), base::Time::FromDoubleT(8)}}});
-  storage_.WriteForTesting(
-      url2, {TimestampRange(),
-             TimestampRange(),
-             TimestampRange(),
-             {{base::Time::FromDoubleT(3), base::Time::FromDoubleT(5)}}});
+  storage_.WriteForTesting(url1,
+                           {TimestampRange(),
+                            TimestampRange(),
+                            {{base::Time::FromSecondsSinceUnixEpoch(1),
+                              base::Time::FromSecondsSinceUnixEpoch(3)}},
+                            {{base::Time::FromSecondsSinceUnixEpoch(1),
+                              base::Time::FromSecondsSinceUnixEpoch(8)}}});
+  storage_.WriteForTesting(url2,
+                           {TimestampRange(),
+                            TimestampRange(),
+                            TimestampRange(),
+                            {{base::Time::FromSecondsSinceUnixEpoch(3),
+                              base::Time::FromSecondsSinceUnixEpoch(5)}}});
   storage_.RemoveEvents(delete_begin, delete_end, nullptr,
                         DIPSEventRemovalType::kStorage);
 
   DIPSState state1 = storage_.Read(url1);
   EXPECT_EQ(state1.stateful_bounce_times()->first,
-            absl::make_optional(base::Time::FromDoubleT(1)));  // no change
+            absl::make_optional(
+                base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
   EXPECT_EQ(state1.stateful_bounce_times()->second,
             absl::make_optional(delete_begin));  // adjusted
   EXPECT_EQ(state1.bounce_times()->first,
-            absl::make_optional(base::Time::FromDoubleT(1)));  // no change
+            absl::make_optional(
+                base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
   EXPECT_EQ(state1.bounce_times()->second,
-            absl::make_optional(base::Time::FromDoubleT(8)));  // no change
+            absl::make_optional(
+                base::Time::FromSecondsSinceUnixEpoch(8)));  // no change
 
   DIPSState state2 = storage_.Read(url2);
   EXPECT_FALSE(state2.was_loaded());  // removed
@@ -714,26 +755,40 @@ TEST_F(DIPSStorageTest, RemoveBySite) {
   GURL url3("https://example3.com");
   GURL url4("https://example4.com");
 
-  storage_.WriteForTesting(
-      url1, {{{base::Time::FromDoubleT(1), base::Time::FromDoubleT(1)}},
-             {{base::Time::FromDoubleT(2), base::Time::FromDoubleT(2)}},
-             {{base::Time::FromDoubleT(3), base::Time::FromDoubleT(3)}},
-             {{base::Time::FromDoubleT(3), base::Time::FromDoubleT(4)}}});
-  storage_.WriteForTesting(
-      url2, {{{base::Time::FromDoubleT(1), base::Time::FromDoubleT(1)}},
-             {{base::Time::FromDoubleT(2), base::Time::FromDoubleT(2)}},
-             {{base::Time::FromDoubleT(3), base::Time::FromDoubleT(3)}},
-             {{base::Time::FromDoubleT(3), base::Time::FromDoubleT(4)}}});
-  storage_.WriteForTesting(
-      url3, {{{base::Time::FromDoubleT(1), base::Time::FromDoubleT(2)}},
-             TimestampRange(),
-             {{base::Time::FromDoubleT(3), base::Time::FromDoubleT(4)}},
-             {{base::Time::FromDoubleT(3), base::Time::FromDoubleT(4)}}});
-  storage_.WriteForTesting(
-      url4, {TimestampRange(),
-             {{base::Time::FromDoubleT(2), base::Time::FromDoubleT(2)}},
-             {{base::Time::FromDoubleT(3), base::Time::FromDoubleT(3)}},
-             {{base::Time::FromDoubleT(3), base::Time::FromDoubleT(4)}}});
+  storage_.WriteForTesting(url1,
+                           {{{base::Time::FromSecondsSinceUnixEpoch(1),
+                              base::Time::FromSecondsSinceUnixEpoch(1)}},
+                            {{base::Time::FromSecondsSinceUnixEpoch(2),
+                              base::Time::FromSecondsSinceUnixEpoch(2)}},
+                            {{base::Time::FromSecondsSinceUnixEpoch(3),
+                              base::Time::FromSecondsSinceUnixEpoch(3)}},
+                            {{base::Time::FromSecondsSinceUnixEpoch(3),
+                              base::Time::FromSecondsSinceUnixEpoch(4)}}});
+  storage_.WriteForTesting(url2,
+                           {{{base::Time::FromSecondsSinceUnixEpoch(1),
+                              base::Time::FromSecondsSinceUnixEpoch(1)}},
+                            {{base::Time::FromSecondsSinceUnixEpoch(2),
+                              base::Time::FromSecondsSinceUnixEpoch(2)}},
+                            {{base::Time::FromSecondsSinceUnixEpoch(3),
+                              base::Time::FromSecondsSinceUnixEpoch(3)}},
+                            {{base::Time::FromSecondsSinceUnixEpoch(3),
+                              base::Time::FromSecondsSinceUnixEpoch(4)}}});
+  storage_.WriteForTesting(url3,
+                           {{{base::Time::FromSecondsSinceUnixEpoch(1),
+                              base::Time::FromSecondsSinceUnixEpoch(2)}},
+                            TimestampRange(),
+                            {{base::Time::FromSecondsSinceUnixEpoch(3),
+                              base::Time::FromSecondsSinceUnixEpoch(4)}},
+                            {{base::Time::FromSecondsSinceUnixEpoch(3),
+                              base::Time::FromSecondsSinceUnixEpoch(4)}}});
+  storage_.WriteForTesting(url4,
+                           {TimestampRange(),
+                            {{base::Time::FromSecondsSinceUnixEpoch(2),
+                              base::Time::FromSecondsSinceUnixEpoch(2)}},
+                            {{base::Time::FromSecondsSinceUnixEpoch(3),
+                              base::Time::FromSecondsSinceUnixEpoch(3)}},
+                            {{base::Time::FromSecondsSinceUnixEpoch(3),
+                              base::Time::FromSecondsSinceUnixEpoch(4)}}});
 
   std::unique_ptr<content::BrowsingDataFilterBuilder> builder =
       content::BrowsingDataFilterBuilder::Create(
@@ -747,19 +802,24 @@ TEST_F(DIPSStorageTest, RemoveBySite) {
   DIPSState state1 = storage_.Read(url1);
   EXPECT_FALSE(state1.site_storage_times().has_value());  // removed
   EXPECT_EQ(state1.user_interaction_times()->first,
-            absl::make_optional(base::Time::FromDoubleT(2)));  // no change
+            absl::make_optional(
+                base::Time::FromSecondsSinceUnixEpoch(2)));    // no change
   EXPECT_FALSE(state1.stateful_bounce_times().has_value());    // removed
   EXPECT_FALSE(state1.bounce_times().has_value());             // removed
 
   DIPSState state2 = storage_.Read(url2);
   EXPECT_EQ(state2.site_storage_times()->first,
-            absl::make_optional(base::Time::FromDoubleT(1)));  // no change
+            absl::make_optional(
+                base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
   EXPECT_EQ(state2.user_interaction_times()->first,
-            absl::make_optional(base::Time::FromDoubleT(2)));  // no change
+            absl::make_optional(
+                base::Time::FromSecondsSinceUnixEpoch(2)));  // no change
   EXPECT_EQ(state2.stateful_bounce_times()->first,
-            absl::make_optional(base::Time::FromDoubleT(3)));  // no change
+            absl::make_optional(
+                base::Time::FromSecondsSinceUnixEpoch(3)));  // no change
   EXPECT_EQ(state2.bounce_times()->first,
-            absl::make_optional(base::Time::FromDoubleT(3)));  // no change
+            absl::make_optional(
+                base::Time::FromSecondsSinceUnixEpoch(3)));  // no change
 
   DIPSState state3 = storage_.Read(url3);
   EXPECT_FALSE(state3.was_loaded());  // removed
@@ -767,23 +827,30 @@ TEST_F(DIPSStorageTest, RemoveBySite) {
   DIPSState state4 = storage_.Read(url2);
   EXPECT_FALSE(state1.site_storage_times().has_value());  // no change
   EXPECT_EQ(state4.user_interaction_times()->first,
-            absl::make_optional(base::Time::FromDoubleT(2)));  // no change
+            absl::make_optional(
+                base::Time::FromSecondsSinceUnixEpoch(2)));  // no change
   EXPECT_EQ(state4.stateful_bounce_times()->first,
-            absl::make_optional(base::Time::FromDoubleT(3)));  // no change
+            absl::make_optional(
+                base::Time::FromSecondsSinceUnixEpoch(3)));  // no change
   EXPECT_EQ(state4.bounce_times()->first,
-            absl::make_optional(base::Time::FromDoubleT(3)));  // no change
+            absl::make_optional(
+                base::Time::FromSecondsSinceUnixEpoch(3)));  // no change
 }
 
 TEST_F(DIPSStorageTest, RemoveBySiteIgnoresDeletionWithTimeRange) {
   GURL url1("https://example1.com");
-  base::Time delete_begin = base::Time::FromDoubleT(2);
-  base::Time delete_end = base::Time::FromDoubleT(6);
+  base::Time delete_begin = base::Time::FromSecondsSinceUnixEpoch(2);
+  base::Time delete_end = base::Time::FromSecondsSinceUnixEpoch(6);
 
-  storage_.WriteForTesting(
-      url1, {{{base::Time::FromDoubleT(1), base::Time::FromDoubleT(1)}},
-             {{base::Time::FromDoubleT(2), base::Time::FromDoubleT(2)}},
-             {{base::Time::FromDoubleT(3), base::Time::FromDoubleT(3)}},
-             {{base::Time::FromDoubleT(3), base::Time::FromDoubleT(4)}}});
+  storage_.WriteForTesting(url1,
+                           {{{base::Time::FromSecondsSinceUnixEpoch(1),
+                              base::Time::FromSecondsSinceUnixEpoch(1)}},
+                            {{base::Time::FromSecondsSinceUnixEpoch(2),
+                              base::Time::FromSecondsSinceUnixEpoch(2)}},
+                            {{base::Time::FromSecondsSinceUnixEpoch(3),
+                              base::Time::FromSecondsSinceUnixEpoch(3)}},
+                            {{base::Time::FromSecondsSinceUnixEpoch(3),
+                              base::Time::FromSecondsSinceUnixEpoch(4)}}});
 
   std::unique_ptr<content::BrowsingDataFilterBuilder> builder =
       content::BrowsingDataFilterBuilder::Create(
@@ -798,13 +865,17 @@ TEST_F(DIPSStorageTest, RemoveBySiteIgnoresDeletionWithTimeRange) {
   // So url1's DIPS Storage entry should be unaffected.
   DIPSState state1 = storage_.Read(url1);
   EXPECT_EQ(state1.site_storage_times()->first,
-            absl::make_optional(base::Time::FromDoubleT(1)));  // no change
+            absl::make_optional(
+                base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
   EXPECT_EQ(state1.user_interaction_times()->first,
-            absl::make_optional(base::Time::FromDoubleT(2)));  // no change
+            absl::make_optional(
+                base::Time::FromSecondsSinceUnixEpoch(2)));  // no change
   EXPECT_EQ(state1.stateful_bounce_times()->first,
-            absl::make_optional(base::Time::FromDoubleT(3)));  // no change
+            absl::make_optional(
+                base::Time::FromSecondsSinceUnixEpoch(3)));  // no change
   EXPECT_EQ(state1.bounce_times()->first,
-            absl::make_optional(base::Time::FromDoubleT(3)));  // no change
+            absl::make_optional(
+                base::Time::FromSecondsSinceUnixEpoch(3)));  // no change
 }
 
 TEST_F(DIPSStorageTest, RemoveRows) {
@@ -813,11 +884,14 @@ TEST_F(DIPSStorageTest, RemoveRows) {
   ASSERT_TRUE(url1.is_valid());
   ASSERT_TRUE(url2.is_valid());
 
-  StateValue test_value = {
-      {{base::Time::FromDoubleT(1), base::Time::FromDoubleT(1)}},
-      {{base::Time::FromDoubleT(2), base::Time::FromDoubleT(2)}},
-      {{base::Time::FromDoubleT(3), base::Time::FromDoubleT(3)}},
-      {{base::Time::FromDoubleT(3), base::Time::FromDoubleT(4)}}};
+  StateValue test_value = {{{base::Time::FromSecondsSinceUnixEpoch(1),
+                             base::Time::FromSecondsSinceUnixEpoch(1)}},
+                           {{base::Time::FromSecondsSinceUnixEpoch(2),
+                             base::Time::FromSecondsSinceUnixEpoch(2)}},
+                           {{base::Time::FromSecondsSinceUnixEpoch(3),
+                             base::Time::FromSecondsSinceUnixEpoch(3)}},
+                           {{base::Time::FromSecondsSinceUnixEpoch(3),
+                             base::Time::FromSecondsSinceUnixEpoch(4)}}};
 
   storage_.WriteForTesting(url1, test_value);
   storage_.WriteForTesting(url2, test_value);
@@ -834,29 +908,31 @@ TEST_F(DIPSStorageTest, RemoveRows) {
 TEST_F(DIPSStorageTest, DidSiteHaveInteractionSince) {
   GURL url1("https://example1.com");
 
-  EXPECT_FALSE(
-      storage_.DidSiteHaveInteractionSince(url1, base::Time::FromDoubleT(0)));
+  EXPECT_FALSE(storage_.DidSiteHaveInteractionSince(
+      url1, base::Time::FromSecondsSinceUnixEpoch(0)));
 
   storage_.WriteForTesting(
-      url1, StateValue{.site_storage_times{{base::Time::FromDoubleT(1),
-                                            base::Time::FromDoubleT(1)}},
-                       .user_interaction_times{{base::Time::FromDoubleT(2),
-                                                base::Time::FromDoubleT(2)}},
-                       .stateful_bounce_times{{base::Time::FromDoubleT(3),
-                                               base::Time::FromDoubleT(3)}},
-                       .bounce_times{{base::Time::FromDoubleT(3),
-                                      base::Time::FromDoubleT(4)}}});
+      url1,
+      StateValue{
+          .site_storage_times{{base::Time::FromSecondsSinceUnixEpoch(1),
+                               base::Time::FromSecondsSinceUnixEpoch(1)}},
+          .user_interaction_times{{base::Time::FromSecondsSinceUnixEpoch(2),
+                                   base::Time::FromSecondsSinceUnixEpoch(2)}},
+          .stateful_bounce_times{{base::Time::FromSecondsSinceUnixEpoch(3),
+                                  base::Time::FromSecondsSinceUnixEpoch(3)}},
+          .bounce_times{{base::Time::FromSecondsSinceUnixEpoch(3),
+                         base::Time::FromSecondsSinceUnixEpoch(4)}}});
 
-  EXPECT_TRUE(
-      storage_.DidSiteHaveInteractionSince(url1, base::Time::FromDoubleT(0)));
-  EXPECT_TRUE(
-      storage_.DidSiteHaveInteractionSince(url1, base::Time::FromDoubleT(1)));
-  EXPECT_TRUE(
-      storage_.DidSiteHaveInteractionSince(url1, base::Time::FromDoubleT(2)));
-  EXPECT_FALSE(
-      storage_.DidSiteHaveInteractionSince(url1, base::Time::FromDoubleT(3)));
-  EXPECT_FALSE(
-      storage_.DidSiteHaveInteractionSince(url1, base::Time::FromDoubleT(4)));
+  EXPECT_TRUE(storage_.DidSiteHaveInteractionSince(
+      url1, base::Time::FromSecondsSinceUnixEpoch(0)));
+  EXPECT_TRUE(storage_.DidSiteHaveInteractionSince(
+      url1, base::Time::FromSecondsSinceUnixEpoch(1)));
+  EXPECT_TRUE(storage_.DidSiteHaveInteractionSince(
+      url1, base::Time::FromSecondsSinceUnixEpoch(2)));
+  EXPECT_FALSE(storage_.DidSiteHaveInteractionSince(
+      url1, base::Time::FromSecondsSinceUnixEpoch(3)));
+  EXPECT_FALSE(storage_.DidSiteHaveInteractionSince(
+      url1, base::Time::FromSecondsSinceUnixEpoch(4)));
 }
 
 class DIPSStoragePrepopulateTest : public testing::Test {
@@ -874,7 +950,7 @@ class DIPSStoragePrepopulateTest : public testing::Test {
 };
 
 TEST_F(DIPSStoragePrepopulateTest, NoExistingTime) {
-  base::Time time = base::Time::FromDoubleT(1);
+  base::Time time = base::Time::FromSecondsSinceUnixEpoch(1);
 
   storage_.AsyncCall(&DIPSStorage::Prepopulate)
       .WithArgs(time, std::vector<std::string>{"site"}, base::DoNothing());
@@ -890,9 +966,9 @@ TEST_F(DIPSStoragePrepopulateTest, NoExistingTime) {
 }
 
 TEST_F(DIPSStoragePrepopulateTest, ExistingStorageAndInteractionTimes) {
-  base::Time interaction_time = base::Time::FromDoubleT(1);
-  base::Time storage_time = base::Time::FromDoubleT(2);
-  base::Time prepopulate_time = base::Time::FromDoubleT(3);
+  base::Time interaction_time = base::Time::FromSecondsSinceUnixEpoch(1);
+  base::Time storage_time = base::Time::FromSecondsSinceUnixEpoch(2);
+  base::Time prepopulate_time = base::Time::FromSecondsSinceUnixEpoch(3);
 
   // First record interaction and storage for the site, then call Prepopulate().
   storage_.AsyncCall(&DIPSStorage::RecordInteraction)
@@ -918,8 +994,8 @@ TEST_F(DIPSStoragePrepopulateTest, ExistingStorageAndInteractionTimes) {
 }
 
 TEST_F(DIPSStoragePrepopulateTest, ExistingStorageTime) {
-  base::Time storage_time = base::Time::FromDoubleT(1);
-  base::Time prepopulate_time = base::Time::FromDoubleT(2);
+  base::Time storage_time = base::Time::FromSecondsSinceUnixEpoch(1);
+  base::Time prepopulate_time = base::Time::FromSecondsSinceUnixEpoch(2);
 
   // Record only storage for the site, then call Prepopulate().
   storage_.AsyncCall(&DIPSStorage::RecordStorage)
@@ -941,8 +1017,8 @@ TEST_F(DIPSStoragePrepopulateTest, ExistingStorageTime) {
 }
 
 TEST_F(DIPSStoragePrepopulateTest, ExistingInteractionTime) {
-  base::Time interaction_time = base::Time::FromDoubleT(1);
-  base::Time prepopulate_time = base::Time::FromDoubleT(2);
+  base::Time interaction_time = base::Time::FromSecondsSinceUnixEpoch(1);
+  base::Time prepopulate_time = base::Time::FromSecondsSinceUnixEpoch(2);
 
   // Record only storage for the site, then call Prepopulate().
   storage_.AsyncCall(&DIPSStorage::RecordInteraction)
@@ -964,7 +1040,7 @@ TEST_F(DIPSStoragePrepopulateTest, ExistingInteractionTime) {
 }
 
 TEST_F(DIPSStoragePrepopulateTest, WorksOnChunks) {
-  base::Time time = base::Time::FromDoubleT(1);
+  base::Time time = base::Time::FromSecondsSinceUnixEpoch(1);
   std::vector<std::string> sites = {"site1", "site2", "site3"};
   DIPSStorage::SetPrepopulateChunkSizeForTesting(2);
 

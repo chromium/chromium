@@ -22,7 +22,8 @@ MetricsServiceObserver::Log::Event CreateEventStruct(
     base::StringPiece message) {
   MetricsServiceObserver::Log::Event event_struct;
   event_struct.event = event;
-  event_struct.timestampMs = base::Time::Now().ToJsTimeIgnoringNull();
+  event_struct.timestampMs =
+      base::Time::Now().InMillisecondsFSinceUnixEpochIgnoringNull();
   if (!message.empty()) {
     event_struct.message = std::string(message);
   }

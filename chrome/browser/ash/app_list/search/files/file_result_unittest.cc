@@ -174,8 +174,8 @@ TEST_F(FileResultTest, FileMetadataPopulatedForDisplay) {
   base::FilePath path(local_directory.Append("test.jpg"));
   ASSERT_TRUE(base::WriteFile(path, reinterpret_cast<const char*>(kJpegData),
                               kJpegDataSize));
-  ASSERT_TRUE(base::TouchFile(path, base::Time::FromDoubleT(1),
-                              base::Time::FromDoubleT(2)));
+  ASSERT_TRUE(base::TouchFile(path, base::Time::FromSecondsSinceUnixEpoch(1),
+                              base::Time::FromSecondsSinceUnixEpoch(2)));
   FileResult result(
       /*id=*/"file://" + path.value(), path, absl::nullopt,
       ash::AppListSearchResultType::kImageSearch,
@@ -198,7 +198,8 @@ TEST_F(FileResultTest, FileMetadataPopulatedForDisplay) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(metadata.file_info.size, kJpegDataSize);
-  EXPECT_EQ(metadata.file_info.last_modified, base::Time::FromDoubleT(2));
+  EXPECT_EQ(metadata.file_info.last_modified,
+            base::Time::FromSecondsSinceUnixEpoch(2));
   EXPECT_EQ(metadata.mime_type, "image/jpeg");
   EXPECT_EQ(metadata.virtual_path.value(), "My files/test.jpg");
 

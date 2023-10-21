@@ -262,9 +262,11 @@ FileManagerPrivateGetPreferencesFunction::Run() {
   }
   result.folder_shortcuts = folder_shortcuts;
   result.office_file_moved_one_drive =
-      service->GetTime(prefs::kOfficeFileMovedToOneDrive).ToJsTime();
+      service->GetTime(prefs::kOfficeFileMovedToOneDrive)
+          .InMillisecondsFSinceUnixEpoch();
   result.office_file_moved_google_drive =
-      service->GetTime(prefs::kOfficeFileMovedToGoogleDrive).ToJsTime();
+      service->GetTime(prefs::kOfficeFileMovedToGoogleDrive)
+          .InMillisecondsFSinceUnixEpoch();
 
   return RespondNow(WithArguments(result.ToValue()));
 }

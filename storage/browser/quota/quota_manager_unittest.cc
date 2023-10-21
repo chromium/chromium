@@ -671,7 +671,7 @@ class QuotaManagerImplTest : public testing::Test {
 
   base::Time IncrementMockTime() {
     ++mock_time_counter_;
-    return base::Time::FromDoubleT(mock_time_counter_ * 10.0);
+    return base::Time::FromSecondsSinceUnixEpoch(mock_time_counter_ * 10.0);
   }
 
   scoped_refptr<MockSpecialStoragePolicy> mock_special_storage_policy_;

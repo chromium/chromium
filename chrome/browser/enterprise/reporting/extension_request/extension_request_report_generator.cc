@@ -37,7 +37,8 @@ std::unique_ptr<ExtensionsWorkflowEvent> GenerateReport(
     absl::optional<base::Time> timestamp = ::base::ValueToTime(
         request_data->Find(extension_misc::kExtensionRequestTimestamp));
     if (timestamp) {
-      report->set_request_timestamp_millis(timestamp->ToJavaTime());
+      report->set_request_timestamp_millis(
+          timestamp->InMillisecondsSinceUnixEpoch());
     }
 
     const std::string* justification = request_data->FindString(

@@ -197,8 +197,8 @@ void AttributionOsLevelManagerAndroid::ClearData(
   pending_data_deletion_callbacks_.emplace(request_id, std::move(done));
 
   Java_AttributionOsLevelManager_deleteRegistrations(
-      env, jobj_, request_id, delete_begin.ToJavaTime(),
-      delete_end.ToJavaTime(),
+      env, jobj_, request_id, delete_begin.InMillisecondsSinceUnixEpoch(),
+      delete_end.InMillisecondsSinceUnixEpoch(),
       url::GURLAndroid::ToJavaArrayOfGURLs(env, j_origins),
       base::android::ToJavaArrayOfStrings(
           env, std::vector<std::string>(domains.begin(), domains.end())),

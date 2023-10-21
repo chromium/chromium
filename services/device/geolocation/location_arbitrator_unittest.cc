@@ -47,7 +47,7 @@ class MockLocationObserver {
 double g_fake_time_now_secs = 1;
 
 base::Time GetTimeNowForTest() {
-  return base::Time::FromDoubleT(g_fake_time_now_secs);
+  return base::Time::FromSecondsSinceUnixEpoch(g_fake_time_now_secs);
 }
 
 void AdvanceTimeNow(const base::TimeDelta& delta) {

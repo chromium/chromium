@@ -34,8 +34,8 @@ base::TimeDelta CreateTimeDeltaFromTimestampsInSeconds(
   if (event_time_in_seconds - start_time_in_seconds < 0) {
     event_time_in_seconds = start_time_in_seconds;
   }
-  return base::Time::FromDoubleT(event_time_in_seconds) -
-         base::Time::FromDoubleT(start_time_in_seconds);
+  return base::Time::FromSecondsSinceUnixEpoch(event_time_in_seconds) -
+         base::Time::FromSecondsSinceUnixEpoch(start_time_in_seconds);
 }
 
 base::TimeTicks ClampToStart(base::TimeTicks event, base::TimeTicks start) {
@@ -460,7 +460,8 @@ void MetricsRenderFrameObserver::MaybeSetCompletedBeforeFCP(int request_id) {
   // This should not be possible, but none the less occasionally fails in edge
   // case tests. Since we don't expect this to be valid, throw out this entry.
   // See crbug.com/1027535.
-  if (base::Time::Now() < base::Time::FromDoubleT(perf.NavigationStart())) {
+  if (base::Time::Now() <
+      base::Time::FromSecondsSinceUnixEpoch(perf.NavigationStart())) {
     return;
   }
 
@@ -708,7 +709,7 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
   mojom::PageLoadTimingPtr timing(CreatePageLoadTiming());
   PageTimingMetadataRecorder::MonotonicTiming monotonic_timing;
   double start = perf.NavigationStart();
-  timing->navigation_start = base::Time::FromDoubleT(start);
+  timing->navigation_start = base::Time::FromSecondsSinceUnixEpoch(start);
   monotonic_timing.navigation_start = perf.NavigationStartAsMonotonicTime();
   // Document token is nullopt on the first call of `GetTiming` when the
   // document is not ready yet.

@@ -268,7 +268,7 @@ TEST_F(PasswordCheckManagerTest, RunCheckAfterLastInitialization) {
   manager().StartCheck();  // Try to start a check — has no immediate effect.
   service()->set_state_and_notify(State::kIdle);
   // Since check hasn't started, the last completion time should remain 0.
-  EXPECT_EQ(0.0, manager().GetLastCheckTimestamp().ToDoubleT());
+  EXPECT_EQ(0.0, manager().GetLastCheckTimestamp().InSecondsFSinceUnixEpoch());
 
   // Complete pending initialization. The check should run now.
   EXPECT_CALL(mock_observer(), OnCompromisedCredentialsChanged(0))
@@ -276,7 +276,7 @@ TEST_F(PasswordCheckManagerTest, RunCheckAfterLastInitialization) {
   RunUntilIdle();
   service()->set_state_and_notify(State::kIdle);  // Complete check, if any.
   // Check should have started and the last completion time be non-zero.
-  EXPECT_NE(0.0, manager().GetLastCheckTimestamp().ToDoubleT());
+  EXPECT_NE(0.0, manager().GetLastCheckTimestamp().InSecondsFSinceUnixEpoch());
 }
 
 TEST_F(PasswordCheckManagerTest, CorrectlyCreatesUIStructForSiteCredential) {
@@ -340,7 +340,7 @@ TEST_F(PasswordCheckManagerTest, SetsTimestampOnSuccessfulCheck) {
 
   // Change the state to idle to simulate a successful check finish.
   service()->set_state_and_notify(State::kIdle);
-  EXPECT_NE(0.0, manager().GetLastCheckTimestamp().ToDoubleT());
+  EXPECT_NE(0.0, manager().GetLastCheckTimestamp().InSecondsFSinceUnixEpoch());
 }
 
 TEST_F(PasswordCheckManagerTest, DoesntRecordTimestampOfUnsuccessfulCheck) {
@@ -354,7 +354,7 @@ TEST_F(PasswordCheckManagerTest, DoesntRecordTimestampOfUnsuccessfulCheck) {
 
   // Change the state to an error state to simulate a unsuccessful check finish.
   service()->set_state_and_notify(State::kSignedOut);
-  EXPECT_EQ(0.0, manager().GetLastCheckTimestamp().ToDoubleT());
+  EXPECT_EQ(0.0, manager().GetLastCheckTimestamp().InSecondsFSinceUnixEpoch());
 }
 
 TEST_F(PasswordCheckManagerTest, CorrectlyCreatesUIStruct) {

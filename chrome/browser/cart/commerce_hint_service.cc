@@ -47,7 +47,7 @@ void ConstructCartProto(cart_db::ChromeCartContentProto* proto,
   proto->set_key(domain);
   proto->set_merchant(domain);
   proto->set_merchant_cart_url(navigation_url.spec());
-  proto->set_timestamp(base::Time::Now().ToDoubleT());
+  proto->set_timestamp(base::Time::Now().InSecondsFSinceUnixEpoch());
   for (auto& product : products) {
     if (product->image_url.spec().size() != 0) {
       proto->add_product_image_urls(product->image_url.spec());

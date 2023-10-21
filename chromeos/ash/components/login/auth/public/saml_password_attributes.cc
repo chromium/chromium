@@ -21,7 +21,7 @@ constexpr char kPasswordChangeUrlKey[] = "passwordChangeUrl";
 base::Time ReadJsTime(const std::string& input) {
   int64_t js_time;
   if (base::StringToInt64(input, &js_time)) {
-    return base::Time::FromJsTime(js_time);
+    return base::Time::FromMillisecondsSinceUnixEpoch(js_time);
   }
   return base::Time();  // null time
 }

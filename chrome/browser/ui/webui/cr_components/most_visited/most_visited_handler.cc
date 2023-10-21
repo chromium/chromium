@@ -160,7 +160,8 @@ void MostVisitedHandler::OnMostVisitedTilesRendered(
   // This call flushes all most visited impression logs to UMA histograms.
   // Therefore, it must come last.
   logger_.LogMostVisitedLoaded(
-      base::Time::FromJsTime(time) - ntp_navigation_start_time_,
+      base::Time::FromMillisecondsSinceUnixEpoch(time) -
+          ntp_navigation_start_time_,
       !most_visited_sites_->IsCustomLinksEnabled(),
       most_visited_sites_->IsShortcutsVisible());
 }

@@ -146,7 +146,8 @@ void ArcNotificationItemImpl::OnUpdatedFromAndroid(
       notification_type, notification_id_, data.get(), notifier_id, rich_data,
       new ArcNotificationDelegate(weak_ptr_factory_.GetWeakPtr()));
 
-  notification->set_timestamp(base::Time::FromJavaTime(data->time));
+  notification->set_timestamp(
+      base::Time::FromMillisecondsSinceUnixEpoch(data->time));
 
   if (notification_type == message_center::NOTIFICATION_TYPE_CUSTOM) {
     notification->set_custom_view_type(kArcNotificationCustomViewType);

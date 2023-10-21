@@ -261,8 +261,8 @@ TEST_F(AutofillSyncBridgeUtilTest,
 TEST_F(AutofillSyncBridgeUtilTest,
        CopyRelevantWalletMetadataFromDisk_KeepUseStats) {
   TestAutofillClock test_clock;
-  base::Time arbitrary_time = base::Time::FromDoubleT(25);
-  base::Time disk_time = base::Time::FromDoubleT(10);
+  base::Time arbitrary_time = base::Time::FromSecondsSinceUnixEpoch(25);
+  base::Time disk_time = base::Time::FromSecondsSinceUnixEpoch(10);
   test_clock.SetNow(arbitrary_time);
 
   std::vector<CreditCard> cards_on_disk;

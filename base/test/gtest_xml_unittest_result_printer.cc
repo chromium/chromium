@@ -157,8 +157,8 @@ void XmlUnitTestResultPrinter::OnTestEnd(const testing::TestInfo& test_info) {
           static_cast<double>(test_info.result()->elapsed_time()) /
               Time::kMillisecondsPerSecond,
           test_info.test_case_name(),
-          TimeFormatAsIso8601(
-              Time::FromJavaTime(test_info.result()->start_timestamp()))
+          TimeFormatAsIso8601(Time::FromMillisecondsSinceUnixEpoch(
+                                  test_info.result()->start_timestamp()))
               .c_str());
   if (test_info.result()->Failed()) {
     fprintf(output_file_.get(),

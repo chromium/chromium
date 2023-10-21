@@ -467,7 +467,7 @@ TEST(CreditCardTest, AssignmentOperator) {
 TEST(CreditCardTest, GetMetadata) {
   CreditCard local_card = test::GetCreditCard();
   local_card.set_use_count(2);
-  local_card.set_use_date(base::Time::FromDoubleT(25));
+  local_card.set_use_date(base::Time::FromSecondsSinceUnixEpoch(25));
   local_card.set_billing_address_id("123");
   AutofillMetadata local_metadata = local_card.GetMetadata();
   EXPECT_EQ(local_card.guid(), local_metadata.id);
@@ -477,7 +477,7 @@ TEST(CreditCardTest, GetMetadata) {
 
   CreditCard masked_card = test::GetMaskedServerCard();
   masked_card.set_use_count(4);
-  masked_card.set_use_date(base::Time::FromDoubleT(50));
+  masked_card.set_use_date(base::Time::FromSecondsSinceUnixEpoch(50));
   masked_card.set_billing_address_id("abc");
   AutofillMetadata masked_metadata = masked_card.GetMetadata();
   EXPECT_EQ(masked_card.server_id(), masked_metadata.id);
@@ -488,7 +488,7 @@ TEST(CreditCardTest, GetMetadata) {
 
   CreditCard full_card = test::GetFullServerCard();
   full_card.set_use_count(6);
-  full_card.set_use_date(base::Time::FromDoubleT(100));
+  full_card.set_use_date(base::Time::FromSecondsSinceUnixEpoch(100));
   full_card.set_billing_address_id("xyz");
   AutofillMetadata full_metadata = full_card.GetMetadata();
   EXPECT_EQ(full_card.server_id(), full_metadata.id);
@@ -502,7 +502,7 @@ TEST(CreditCardTest, SetMetadata_MatchingId) {
   AutofillMetadata local_metadata;
   local_metadata.id = local_card.guid();
   local_metadata.use_count = 100;
-  local_metadata.use_date = base::Time::FromDoubleT(50);
+  local_metadata.use_date = base::Time::FromSecondsSinceUnixEpoch(50);
   local_metadata.billing_address_id = "billId1";
   EXPECT_TRUE(local_card.SetMetadata(local_metadata));
   EXPECT_EQ(local_metadata.id, local_card.guid());
@@ -514,7 +514,7 @@ TEST(CreditCardTest, SetMetadata_MatchingId) {
   AutofillMetadata masked_metadata;
   masked_metadata.id = masked_card.server_id();
   masked_metadata.use_count = 100;
-  masked_metadata.use_date = base::Time::FromDoubleT(50);
+  masked_metadata.use_date = base::Time::FromSecondsSinceUnixEpoch(50);
   masked_metadata.billing_address_id = "billId1";
   EXPECT_TRUE(masked_card.SetMetadata(masked_metadata));
   EXPECT_EQ(masked_metadata.id, masked_card.server_id());
@@ -527,7 +527,7 @@ TEST(CreditCardTest, SetMetadata_MatchingId) {
   AutofillMetadata full_metadata;
   full_metadata.id = full_card.server_id();
   full_metadata.use_count = 100;
-  full_metadata.use_date = base::Time::FromDoubleT(50);
+  full_metadata.use_date = base::Time::FromSecondsSinceUnixEpoch(50);
   full_metadata.billing_address_id = "billId1";
   EXPECT_TRUE(full_card.SetMetadata(full_metadata));
   EXPECT_EQ(full_metadata.id, full_card.server_id());
@@ -541,7 +541,7 @@ TEST(CreditCardTest, SetMetadata_NotMatchingId) {
   AutofillMetadata local_metadata;
   local_metadata.id = "WrongId";
   local_metadata.use_count = 100;
-  local_metadata.use_date = base::Time::FromDoubleT(50);
+  local_metadata.use_date = base::Time::FromSecondsSinceUnixEpoch(50);
   local_metadata.billing_address_id = "billId1";
   EXPECT_FALSE(local_card.SetMetadata(local_metadata));
   EXPECT_NE(local_metadata.id, local_card.guid());
@@ -553,7 +553,7 @@ TEST(CreditCardTest, SetMetadata_NotMatchingId) {
   AutofillMetadata masked_metadata;
   masked_metadata.id = "WrongId";
   masked_metadata.use_count = 100;
-  masked_metadata.use_date = base::Time::FromDoubleT(50);
+  masked_metadata.use_date = base::Time::FromSecondsSinceUnixEpoch(50);
   masked_metadata.billing_address_id = "billId1";
   EXPECT_FALSE(masked_card.SetMetadata(masked_metadata));
   EXPECT_NE(masked_metadata.id, masked_card.server_id());
@@ -566,7 +566,7 @@ TEST(CreditCardTest, SetMetadata_NotMatchingId) {
   AutofillMetadata full_metadata;
   full_metadata.id = "WrongId";
   full_metadata.use_count = 100;
-  full_metadata.use_date = base::Time::FromDoubleT(50);
+  full_metadata.use_date = base::Time::FromSecondsSinceUnixEpoch(50);
   full_metadata.billing_address_id = "billId1";
   EXPECT_FALSE(full_card.SetMetadata(full_metadata));
   EXPECT_NE(full_metadata.id, full_card.server_id());
@@ -1553,7 +1553,8 @@ TEST(CreditCardTest, IsDeletable) {
   // threshold later than that time. This sets the year to 2007. The code
   // expects valid expiration years to be between 2000 and 2999. However,
   // because of the year 2018 problem, we need to pick an earlier year.
-  const base::Time kArbitraryTime = base::Time::FromDoubleT(1000000000);
+  const base::Time kArbitraryTime =
+      base::Time::FromSecondsSinceUnixEpoch(1000000000);
   TestAutofillClock test_clock;
   test_clock.SetNow(kArbitraryTime + kDisusedDataModelDeletionTimeDelta +
                     base::Days(1));

@@ -312,9 +312,9 @@ NearbySharePrivateCertificate::ToPublicCertificate() const {
   public_certificate.set_public_key(
       std::string(public_key.begin(), public_key.end()));
   public_certificate.mutable_start_time()->set_seconds(
-      (not_before_ - not_before_offset).ToJavaTime() / 1000);
+      (not_before_ - not_before_offset).InMillisecondsSinceUnixEpoch() / 1000);
   public_certificate.mutable_end_time()->set_seconds(
-      (not_after_ + not_after_offset).ToJavaTime() / 1000);
+      (not_after_ + not_after_offset).InMillisecondsSinceUnixEpoch() / 1000);
 
   // When `visibility_` is set to kYourDevices, under the hood, the visibility
   // is set to Selected Contacts with an empty allowed contact list. The

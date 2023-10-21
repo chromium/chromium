@@ -287,7 +287,7 @@ void CloudPolicyInvalidatorTestBase::StorePolicy(PolicyObject object,
     // CloudPolicyInvalidator expects the topic to subscribe in this field.
     data->set_policy_invalidation_topic(GetPolicyTopic(object));
   }
-  data->set_timestamp(time.ToJavaTime());
+  data->set_timestamp(time.InMillisecondsSinceUnixEpoch());
   // Swap the policy value if a policy change is desired.
   if (policy_changed)
     policy_value_cur_ = policy_value_cur_ == policy_value_a_ ?

@@ -166,7 +166,7 @@ std::unique_ptr<protocol::Storage::StorageBucketInfo> BuildBucketInfo(
   return protocol::Storage::StorageBucketInfo::Create()
       .SetBucket(std::move(storage_bucket))
       .SetId(base::NumberToString(bucket.id.value()))
-      .SetExpiration(bucket.expiration.ToDoubleT())
+      .SetExpiration(bucket.expiration.InSecondsFSinceUnixEpoch())
       .SetQuota(bucket.quota)
       .SetPersistent(bucket.persistent)
       .SetDurability(durability_enum)
@@ -1043,8 +1043,8 @@ void StorageHandler::OnInterestGroupAccessed(
       type_enum = Storage::InterestGroupAccessTypeEnum::Clear;
       break;
   };
-  frontend_->InterestGroupAccessed(access_time.ToDoubleT(), type_enum,
-                                   owner_origin.Serialize(), name);
+  frontend_->InterestGroupAccessed(access_time.InSecondsFSinceUnixEpoch(),
+                                   type_enum, owner_origin.Serialize(), name);
 }
 
 namespace {
@@ -1094,7 +1094,7 @@ void SendGetInterestGroup(
       protocol::Storage::InterestGroupDetails::Create()
           .SetOwnerOrigin(group.owner.Serialize())
           .SetName(group.name)
-          .SetExpirationTime(group.expiry.ToDoubleT())
+          .SetExpirationTime(group.expiry.InSecondsFSinceUnixEpoch())
           .SetJoiningOrigin(storage_group->joining_origin.Serialize())
           .SetTrustedBiddingSignalsKeys(std::move(trusted_bidding_signals_keys))
           .SetAds(std::move(ads))
@@ -1213,7 +1213,7 @@ void SendSharedStorageMetadata(
   auto protocol_metadata =
       protocol::Storage::SharedStorageMetadata::Create()
           .SetLength(metadata.length)
-          .SetCreationTime(metadata.creation_time.ToDoubleT())
+          .SetCreationTime(metadata.creation_time.InSecondsFSinceUnixEpoch())
           .SetRemainingBudget(metadata.remaining_budget)
           .Build();
 
@@ -1575,8 +1575,8 @@ void StorageHandler::NotifySharedStorageAccessed(
     protocol_params->SetUrlsWithMetadata(std::move(protocol_urls));
   }
 
-  frontend_->SharedStorageAccessed(access_time.ToDoubleT(), type_enum,
-                                   main_frame_id, owner_origin,
+  frontend_->SharedStorageAccessed(access_time.InSecondsFSinceUnixEpoch(),
+                                   type_enum, main_frame_id, owner_origin,
                                    std::move(protocol_params));
 }
 
@@ -1775,7 +1775,7 @@ void StorageHandler::OnSourceHandled(
   const auto& common_info = source.common_info();
   auto out_source =
       Storage::AttributionReportingSourceRegistration::Create()
-          .SetTime(source_time.ToDoubleT())
+          .SetTime(source_time.InSecondsFSinceUnixEpoch())
           .SetType(
               attribution_reporting::SourceTypeName(common_info.source_type()))
           .SetSourceOrigin(common_info.source_origin()->Serialize())

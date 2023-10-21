@@ -63,7 +63,7 @@ enum class IOSChromeVariationsGroup {
 base::Time GetLastVariationsSeedFetchTime() {
   double timestamp = [[NSUserDefaults standardUserDefaults]
       doubleForKey:kLastVariationsSeedFetchTimeKey];
-  return base::Time::FromDoubleT(timestamp);
+  return base::Time::FromSecondsSinceUnixEpoch(timestamp);
 }
 
 // Records metric for `kIOSSeedExpiryHistogram` according whether there is a
@@ -152,7 +152,7 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
           local_state);
   if (!seed_fetch_time.is_null()) {
     [[NSUserDefaults standardUserDefaults]
-        setDouble:seed_fetch_time.ToDoubleT()
+        setDouble:seed_fetch_time.InSecondsFSinceUnixEpoch()
            forKey:kLastVariationsSeedFetchTimeKey];
   }
 }

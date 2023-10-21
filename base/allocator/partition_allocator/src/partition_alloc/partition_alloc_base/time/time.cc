@@ -149,12 +149,12 @@ time_t Time::ToTimeT() const {
 }
 
 // static
-Time Time::FromDoubleT(double dt) {
+Time Time::FromSecondsSinceUnixEpoch(double dt) {
   // Preserve 0 so we can tell it doesn't exist.
   return (dt == 0 || std::isnan(dt)) ? Time() : (UnixEpoch() + Seconds(dt));
 }
 
-double Time::ToDoubleT() const {
+double Time::InSecondsFSinceUnixEpoch() const {
   if (is_null()) {
     return 0;  // Preserve 0 so we can tell it doesn't exist.
   }
@@ -168,24 +168,24 @@ double Time::ToDoubleT() const {
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // static
 Time Time::FromTimeSpec(const timespec& ts) {
-  return FromDoubleT(ts.tv_sec +
-                     static_cast<double>(ts.tv_nsec) / kNanosecondsPerSecond);
+  return FromSecondsSinceUnixEpoch(ts.tv_sec + static_cast<double>(ts.tv_nsec) /
+                                                   kNanosecondsPerSecond);
 }
 #endif
 
 // static
-Time Time::FromJsTime(double ms_since_epoch) {
+Time Time::FromMillisecondsSinceUnixEpoch(double ms_since_epoch) {
   // The epoch is a valid time, so this constructor doesn't interpret 0 as the
   // null time.
   return UnixEpoch() + Milliseconds(ms_since_epoch);
 }
 
-double Time::ToJsTime() const {
+double Time::InMillisecondsFSinceUnixEpoch() const {
   // Preserve 0 so the invalid result doesn't depend on the platform.
-  return is_null() ? 0 : ToJsTimeIgnoringNull();
+  return is_null() ? 0 : InMillisecondsFSinceUnixEpochIgnoringNull();
 }
 
-double Time::ToJsTimeIgnoringNull() const {
+double Time::InMillisecondsFSinceUnixEpochIgnoringNull() const {
   // Preserve max and min without offset to prevent over/underflow.
   if (!is_inf()) {
     return (*this - UnixEpoch()).InMillisecondsF();
@@ -194,11 +194,11 @@ double Time::ToJsTimeIgnoringNull() const {
                    : std::numeric_limits<double>::infinity();
 }
 
-Time Time::FromJavaTime(int64_t ms_since_epoch) {
+Time Time::FromMillisecondsSinceUnixEpoch(int64_t ms_since_epoch) {
   return UnixEpoch() + Milliseconds(ms_since_epoch);
 }
 
-int64_t Time::ToJavaTime() const {
+int64_t Time::InMillisecondsSinceUnixEpoch() const {
   // Preserve 0 so the invalid result doesn't depend on the platform.
   if (is_null()) {
     return 0;

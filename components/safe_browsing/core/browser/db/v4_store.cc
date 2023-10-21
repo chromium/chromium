@@ -1091,9 +1091,9 @@ void V4Store::CollectStoreInfo(
   store_info->set_update_status(static_cast<int>(last_apply_update_result_));
   store_info->set_checks_attempted(checks_attempted_);
   store_info->set_state(state_);
-  if (last_apply_update_time_millis_.ToJavaTime()) {
+  if (last_apply_update_time_millis_.InMillisecondsSinceUnixEpoch()) {
     store_info->set_last_apply_update_time_millis(
-        last_apply_update_time_millis_.ToJavaTime());
+        last_apply_update_time_millis_.InMillisecondsSinceUnixEpoch());
   }
 
   hash_prefix_map_->GetPrefixInfo(store_info->mutable_prefix_sets());

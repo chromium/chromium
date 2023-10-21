@@ -68,6 +68,7 @@
 #include <iosfwd>
 #include <limits>
 #include <ostream>
+#include <type_traits>
 
 #include "base/base_export.h"
 #include "base/check.h"
@@ -660,8 +661,8 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   // Because WebKit initializes double time value to 0 to indicate "not
   // initialized", we map it to empty Time object that also means "not
   // initialized".
-  static constexpr Time FromDoubleT(double dt);
-  constexpr double ToDoubleT() const;
+  static constexpr Time FromSecondsSinceUnixEpoch(double dt);
+  constexpr double InSecondsFSinceUnixEpoch() const;
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // Converts the timespec structure to time. MacOS X 10.8.3 (and tentatively,
@@ -675,19 +676,32 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   // milliseconds since the epoch:
   // https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Date/getTime.
   //
-  // Don't use ToJsTime() in new code, since it contains a subtle hack (only
-  // exactly 1601-01-01 00:00 UTC is represented as 1970-01-01 00:00 UTC), and
-  // that is not appropriate for general use. Try to use ToJsTimeIgnoringNull()
-  // unless you have a very good reason to use ToJsTime().
-  static constexpr Time FromJsTime(double ms_since_epoch);
-  constexpr double ToJsTime() const;
-  constexpr double ToJsTimeIgnoringNull() const;
+  // Don't use InMillisecondsFSinceUnixEpoch() in new code, since it contains a
+  // subtle hack (only exactly 1601-01-01 00:00 UTC is represented as 1970-01-01
+  // 00:00 UTC), and that is not appropriate for general use. Try to use
+  // InMillisecondsFSinceUnixEpochIgnoringNull() unless you have a very good
+  // reason to use InMillisecondsFSinceUnixEpoch().
+  static constexpr Time FromMillisecondsSinceUnixEpoch(double ms_since_epoch);
+  constexpr double InMillisecondsFSinceUnixEpoch() const;
+  constexpr double InMillisecondsFSinceUnixEpochIgnoringNull() const;
 
   // Converts to/from Java convention for times, a number of milliseconds since
   // the epoch. Because the Java format has less resolution, converting to Java
   // time is a lossy operation.
-  static constexpr Time FromJavaTime(int64_t ms_since_epoch);
-  constexpr int64_t ToJavaTime() const;
+  static constexpr Time FromMillisecondsSinceUnixEpoch(int64_t ms_since_epoch);
+  // Explicitly forward calls with smaller integral types to the int64_t
+  // version; otherwise such calls would need to manually cast their args to
+  // int64_t, since the compiler isn't sure whether to promote to int64_t or
+  // double.
+  template <typename T,
+            typename = std::enable_if_t<
+                std::is_integral_v<T> && !std::is_same_v<T, int64_t> &&
+                (sizeof(T) < sizeof(int64_t) ||
+                 (sizeof(T) == sizeof(int64_t) && std::is_signed_v<T>))>>
+  static constexpr Time FromMillisecondsSinceUnixEpoch(T ms_since_epoch) {
+    return FromMillisecondsSinceUnixEpoch(int64_t{ms_since_epoch});
+  }
+  constexpr int64_t InMillisecondsSinceUnixEpoch() const;
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   static Time FromTimeVal(struct timeval t);
@@ -1084,12 +1098,12 @@ constexpr time_t Time::ToTimeT() const {
 }
 
 // static
-constexpr Time Time::FromDoubleT(double dt) {
+constexpr Time Time::FromSecondsSinceUnixEpoch(double dt) {
   // Preserve 0 so we can tell it doesn't exist.
   return (dt == 0 || std::isnan(dt)) ? Time() : (UnixEpoch() + Seconds(dt));
 }
 
-constexpr double Time::ToDoubleT() const {
+constexpr double Time::InSecondsFSinceUnixEpoch() const {
   if (is_null()) {
     return 0;  // Preserve 0 so we can tell it doesn't exist.
   }
@@ -1103,24 +1117,24 @@ constexpr double Time::ToDoubleT() const {
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // static
 constexpr Time Time::FromTimeSpec(const timespec& ts) {
-  return FromDoubleT(ts.tv_sec +
-                     static_cast<double>(ts.tv_nsec) / kNanosecondsPerSecond);
+  return FromSecondsSinceUnixEpoch(ts.tv_sec + static_cast<double>(ts.tv_nsec) /
+                                                   kNanosecondsPerSecond);
 }
 #endif
 
 // static
-constexpr Time Time::FromJsTime(double ms_since_epoch) {
+constexpr Time Time::FromMillisecondsSinceUnixEpoch(double ms_since_epoch) {
   // The epoch is a valid time, so this constructor doesn't interpret 0 as the
   // null time.
   return UnixEpoch() + Milliseconds(ms_since_epoch);
 }
 
-constexpr double Time::ToJsTime() const {
+constexpr double Time::InMillisecondsFSinceUnixEpoch() const {
   // Preserve 0 so the invalid result doesn't depend on the platform.
-  return is_null() ? 0 : ToJsTimeIgnoringNull();
+  return is_null() ? 0 : InMillisecondsFSinceUnixEpochIgnoringNull();
 }
 
-constexpr double Time::ToJsTimeIgnoringNull() const {
+constexpr double Time::InMillisecondsFSinceUnixEpochIgnoringNull() const {
   // Preserve max and min without offset to prevent over/underflow.
   if (!is_inf()) {
     return (*this - UnixEpoch()).InMillisecondsF();
@@ -1129,11 +1143,11 @@ constexpr double Time::ToJsTimeIgnoringNull() const {
                    : std::numeric_limits<double>::infinity();
 }
 
-constexpr Time Time::FromJavaTime(int64_t ms_since_epoch) {
+constexpr Time Time::FromMillisecondsSinceUnixEpoch(int64_t ms_since_epoch) {
   return UnixEpoch() + Milliseconds(ms_since_epoch);
 }
 
-constexpr int64_t Time::ToJavaTime() const {
+constexpr int64_t Time::InMillisecondsSinceUnixEpoch() const {
   // Preserve 0 so the invalid result doesn't depend on the platform.
   if (is_null()) {
     return 0;

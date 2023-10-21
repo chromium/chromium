@@ -117,7 +117,7 @@ std::map<std::string, std::string> GetLensQueryParametersMap(
   }
 
   query_parameters.insert({kSurfaceQueryParameter, kChromiumSurfaceProtoValue});
-  int64_t current_time_ms = base::Time::Now().ToJavaTime();
+  int64_t current_time_ms = base::Time::Now().InMillisecondsSinceUnixEpoch();
   query_parameters.insert(
       {kStartTimeQueryParameter, base::NumberToString(current_time_ms)});
   return query_parameters;
@@ -183,7 +183,7 @@ GURL AppendOrReplaceStartTimeIfLensRequest(const GURL& url) {
 
   GURL modified_url(url);
 
-  int64_t current_time_ms = base::Time::Now().ToJavaTime();
+  int64_t current_time_ms = base::Time::Now().InMillisecondsSinceUnixEpoch();
   modified_url =
       net::AppendOrReplaceQueryParameter(modified_url, kStartTimeQueryParameter,
                                          base::NumberToString(current_time_ms));

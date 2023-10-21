@@ -503,7 +503,8 @@ dnr_api::MatchedRuleInfo ActionTracker::CreateMatchedRuleInfo(
   dnr_api::MatchedRuleInfo matched_rule_info;
   matched_rule_info.rule = std::move(matched_rule);
   matched_rule_info.tab_id = tab_id;
-  matched_rule_info.time_stamp = tracked_rule.time_stamp.ToJsTimeIgnoringNull();
+  matched_rule_info.time_stamp =
+      tracked_rule.time_stamp.InMillisecondsFSinceUnixEpochIgnoringNull();
 
   return matched_rule_info;
 }

@@ -1471,7 +1471,7 @@ TEST(VariationsSeedStoreTest, ImportFirstRunJavaSeed) {
   EXPECT_EQ(test_seed_data, seed->data);
   EXPECT_EQ(test_seed_signature, seed->signature);
   EXPECT_EQ(test_seed_country, seed->country);
-  EXPECT_EQ(test_response_date, seed->date.ToJavaTime());
+  EXPECT_EQ(test_response_date, seed->date.InMillisecondsSinceUnixEpoch());
   EXPECT_EQ(test_is_gzip_compressed, seed->is_gzip_compressed);
 
   android::ClearJavaFirstRunPrefs();
@@ -1479,7 +1479,7 @@ TEST(VariationsSeedStoreTest, ImportFirstRunJavaSeed) {
   EXPECT_EQ("", seed->data);
   EXPECT_EQ("", seed->signature);
   EXPECT_EQ("", seed->country);
-  EXPECT_EQ(0, seed->date.ToJavaTime());
+  EXPECT_EQ(0, seed->date.InMillisecondsSinceUnixEpoch());
   EXPECT_FALSE(seed->is_gzip_compressed);
 }
 
@@ -1509,7 +1509,8 @@ TEST_P(VariationsSeedStoreFirstRunPrefsTest, FirstRunPrefsAllowed) {
   seed->data = seed_data;
   seed->signature = "java_seed_signature";
   seed->country = "java_seed_country";
-  seed->date = base::Time::FromJavaTime(test_response_date) + base::Days(1);
+  seed->date = base::Time::FromMillisecondsSinceUnixEpoch(test_response_date) +
+               base::Days(1);
   seed->is_gzip_compressed = false;
 
   TestingPrefServiceSimple prefs;
@@ -1523,7 +1524,7 @@ TEST_P(VariationsSeedStoreFirstRunPrefsTest, FirstRunPrefsAllowed) {
   EXPECT_EQ(test_seed_data, seed->data);
   EXPECT_EQ(test_seed_signature, seed->signature);
   EXPECT_EQ(test_seed_country, seed->country);
-  EXPECT_EQ(test_response_date, seed->date.ToJavaTime());
+  EXPECT_EQ(test_response_date, seed->date.InMillisecondsSinceUnixEpoch());
   EXPECT_EQ(test_is_gzip_compressed, seed->is_gzip_compressed);
   if (use_first_run_prefs) {
     EXPECT_TRUE(android::HasMarkedPrefsForTesting());

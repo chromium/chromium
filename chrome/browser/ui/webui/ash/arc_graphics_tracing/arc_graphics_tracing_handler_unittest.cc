@@ -218,8 +218,10 @@ TEST_F(ArcGraphicsTracingHandlerTest, ModelName) {
 }
 
 TEST_F(ArcGraphicsTracingHandlerTest, FilterSystemTraceByTimestamp) {
-  handler_->set_now(base::Time::FromJavaTime(1'500'088'880'000));
-  handler_->set_trace_time_base(base::Time::FromJavaTime(1'500'000'000'000));
+  handler_->set_now(
+      base::Time::FromMillisecondsSinceUnixEpoch(1'500'088'880'000));
+  handler_->set_trace_time_base(
+      base::Time::FromMillisecondsSinceUnixEpoch(1'500'000'000'000));
 
   exo::Surface s;
   auto arc_widget = arc::ArcTaskWindowBuilder()
@@ -277,8 +279,10 @@ TEST_F(ArcGraphicsTracingHandlerTest, FilterSystemTraceByTimestamp) {
 }
 
 TEST_F(ArcGraphicsTracingHandlerTest, SwitchWindowDuringModelBuild) {
-  handler_->set_now(base::Time::FromJavaTime(1'600'044'440'000));
-  handler_->set_trace_time_base(base::Time::FromJavaTime(1'600'000'000'000));
+  handler_->set_now(
+      base::Time::FromMillisecondsSinceUnixEpoch(1'600'044'440'000));
+  handler_->set_trace_time_base(
+      base::Time::FromMillisecondsSinceUnixEpoch(1'600'000'000'000));
 
   exo::Surface s;
   auto arc_widget = arc::ArcTaskWindowBuilder()
@@ -327,8 +331,10 @@ TEST_F(ArcGraphicsTracingHandlerTest, SwitchWindowDuringModelBuild) {
 }
 
 TEST_F(ArcGraphicsTracingHandlerTest, SwitchWindowDuringTrace) {
-  handler_->set_now(base::Time::FromJavaTime(1'600'044'440'000));
-  handler_->set_trace_time_base(base::Time::FromJavaTime(1'600'000'000'000));
+  handler_->set_now(
+      base::Time::FromMillisecondsSinceUnixEpoch(1'600'044'440'000));
+  handler_->set_trace_time_base(
+      base::Time::FromMillisecondsSinceUnixEpoch(1'600'000'000'000));
   handler_->max_tracing_time_ = base::Seconds(5);
 
   exo::Surface s;
@@ -377,8 +383,10 @@ TEST_F(ArcGraphicsTracingHandlerTest, SwitchWindowDuringTrace) {
 }
 
 TEST_F(ArcGraphicsTracingHandlerTest, CommitAndPresentTimestampsInModel) {
-  handler_->set_now(base::Time::FromJavaTime(1'600'044'440'000));
-  handler_->set_trace_time_base(base::Time::FromJavaTime(1'600'000'000'000));
+  handler_->set_now(
+      base::Time::FromMillisecondsSinceUnixEpoch(1'600'044'440'000));
+  handler_->set_trace_time_base(
+      base::Time::FromMillisecondsSinceUnixEpoch(1'600'000'000'000));
   handler_->max_tracing_time_ = base::Seconds(5);
 
   exo::Surface s;

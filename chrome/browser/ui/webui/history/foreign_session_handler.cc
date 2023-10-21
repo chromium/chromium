@@ -287,7 +287,9 @@ base::Value::List ForeignSessionHandler::GetForeignSessions() {
       session_data.Set("name", session->GetSessionName());
       session_data.Set("modifiedTime",
                        FormatSessionTime(session->GetModifiedTime()));
-      session_data.Set("timestamp", session->GetModifiedTime().ToJsTime());
+      session_data.Set(
+          "timestamp",
+          session->GetModifiedTime().InMillisecondsFSinceUnixEpoch());
 
       bool is_collapsed = collapsed_sessions.Find(session_tag);
       session_data.Set("collapsed", is_collapsed);

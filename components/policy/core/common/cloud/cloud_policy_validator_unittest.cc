@@ -66,7 +66,8 @@ class CloudPolicyValidatorTest : public testing::Test {
   CloudPolicyValidatorTest()
       : task_environment_(
             base::test::SingleThreadTaskEnvironment::MainThreadType::UI),
-        timestamp_(base::Time::FromJavaTime(PolicyBuilder::kFakeTimestamp)),
+        timestamp_(base::Time::FromMillisecondsSinceUnixEpoch(
+            PolicyBuilder::kFakeTimestamp)),
         timestamp_option_(CloudPolicyValidatorBase::TIMESTAMP_VALIDATED),
         dm_token_option_(CloudPolicyValidatorBase::DM_TOKEN_REQUIRED),
         device_id_option_(CloudPolicyValidatorBase::DEVICE_ID_REQUIRED),
@@ -298,7 +299,7 @@ TEST_F(CloudPolicyValidatorTest, IgnoreMissingTimestamp) {
 
 TEST_F(CloudPolicyValidatorTest, ErrorOldTimestamp) {
   base::Time timestamp(timestamp_ - base::Minutes(5));
-  policy_.policy_data().set_timestamp(timestamp.ToJavaTime());
+  policy_.policy_data().set_timestamp(timestamp.InMillisecondsSinceUnixEpoch());
   Validate(CheckStatus(CloudPolicyValidatorBase::VALIDATION_BAD_TIMESTAMP));
 }
 

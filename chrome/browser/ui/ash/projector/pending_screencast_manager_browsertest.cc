@@ -390,7 +390,8 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, ValidScreencast) {
   EXPECT_EQ(ps.container_dir(), base::FilePath(kTestScreencastPath));
   EXPECT_EQ(ps.pending_screencast().name, kTestScreencastName);
   EXPECT_EQ(ps.pending_screencast().created_time,
-            GetFileCreatedTime(media_file).ToJsTimeIgnoringNull());
+            GetFileCreatedTime(media_file)
+                .InMillisecondsFSinceUnixEpochIgnoringNull());
 
   // Tests PendingScreencastChangeCallback won't be invoked if pending
   // screencast status doesn't change.

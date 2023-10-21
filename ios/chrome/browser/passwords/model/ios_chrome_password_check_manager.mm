@@ -152,7 +152,7 @@ IOSChromePasswordCheckManager::GetLastPasswordCheckTime() const {
   }
 
   base::Time last_password_check =
-      base::Time::FromDoubleT(user_prefs_->GetDouble(
+      base::Time::FromSecondsSinceUnixEpoch(user_prefs_->GetDouble(
           password_manager::prefs::kLastTimePasswordCheckCompleted));
 
   if (!last_completed_weak_or_reuse_check_.has_value()) {
@@ -188,7 +188,7 @@ void IOSChromePasswordCheckManager::OnStateChanged(State state) {
     // Saving time of last successful password check
     user_prefs_->SetDouble(
         password_manager::prefs::kLastTimePasswordCheckCompleted,
-        base::Time::Now().ToDoubleT());
+        base::Time::Now().InSecondsFSinceUnixEpoch());
     user_prefs_->SetTime(
         password_manager::prefs::kSyncedLastTimePasswordCheckCompleted,
         base::Time::Now());

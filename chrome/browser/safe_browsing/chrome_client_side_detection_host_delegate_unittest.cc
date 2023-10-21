@@ -64,7 +64,8 @@ class ChromeClientSideDetectionHostDelegateTest
 
 TEST_F(ChromeClientSideDetectionHostDelegateTest, GetReferrerChain) {
   base::Time now = base::Time::Now();
-  base::Time one_second_ago = base::Time::FromDoubleT(now.ToDoubleT() - 1.0);
+  base::Time one_second_ago = base::Time::FromSecondsSinceUnixEpoch(
+      now.InSecondsFSinceUnixEpoch() - 1.0);
 
   std::unique_ptr<NavigationEvent> first_navigation =
       std::make_unique<NavigationEvent>();
@@ -101,7 +102,8 @@ TEST_F(ChromeClientSideDetectionHostDelegateTest, GetReferrerChain) {
 
 TEST_F(ChromeClientSideDetectionHostDelegateTest, NoNavigationObserverManager) {
   base::Time now = base::Time::Now();
-  base::Time one_second_ago = base::Time::FromDoubleT(now.ToDoubleT() - 1.0);
+  base::Time one_second_ago = base::Time::FromSecondsSinceUnixEpoch(
+      now.InSecondsFSinceUnixEpoch() - 1.0);
 
   std::unique_ptr<NavigationEvent> first_navigation =
       std::make_unique<NavigationEvent>();

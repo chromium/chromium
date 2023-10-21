@@ -1710,8 +1710,9 @@ class DocumentsProviderTestVolume : public TestVolume {
     arc::FakeFileSystemInstance::Document document(
         authority_, entry.name_text, root_document_id_, entry.name_text,
         GetMimeType(entry), GetFileSize(entry),
-        entry.last_modified_time.ToJavaTime(), entry.capabilities.can_delete,
-        entry.capabilities.can_rename, entry.capabilities.can_add_children,
+        entry.last_modified_time.InMillisecondsSinceUnixEpoch(),
+        entry.capabilities.can_delete, entry.capabilities.can_rename,
+        entry.capabilities.can_add_children,
         !entry.thumbnail_file_name.empty());
     file_system_instance_->AddDocument(document);
 
@@ -2730,7 +2731,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
       return;
     }
     base::Time modification_time =
-        base::Time::FromJsTime(modification_date.value());
+        base::Time::FromMillisecondsSinceUnixEpoch(modification_date.value());
     if (!base::TouchFile(full_path, modification_time, modification_time)) {
       *output = "false";
       return;
@@ -3356,8 +3357,9 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   if (name == "setPrefOfficeFileMovedToGoogleDrive") {
     absl::optional<int64_t> timestamp = value.FindDouble("timestamp");
     ASSERT_TRUE(timestamp.has_value());
-    profile()->GetPrefs()->SetTime(prefs::kOfficeFileMovedToGoogleDrive,
-                                   base::Time::FromJsTime(timestamp.value()));
+    profile()->GetPrefs()->SetTime(
+        prefs::kOfficeFileMovedToGoogleDrive,
+        base::Time::FromMillisecondsSinceUnixEpoch(timestamp.value()));
     return;
   }
 

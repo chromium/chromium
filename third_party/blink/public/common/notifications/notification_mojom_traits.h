@@ -68,7 +68,7 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::NotificationDataDataView,
   }
 
   static double timestamp(const blink::PlatformNotificationData& data) {
-    return data.timestamp.ToJsTime();
+    return data.timestamp.InMillisecondsFSinceUnixEpoch();
   }
 
   static bool renotify(const blink::PlatformNotificationData& data) {

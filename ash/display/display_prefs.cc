@@ -322,7 +322,7 @@ void LoadDisplayTouchAssociations(PrefService* local_state) {
               kTouchAssociationTimestamp);
       if (!value)
         continue;
-      info.timestamp = base::Time().FromDoubleT(*value);
+      info.timestamp = base::Time().FromSecondsSinceUnixEpoch(*value);
 
       const base::Value::Dict* calibration_data_dict =
           association_info_item.second.GetDict().FindDict(
@@ -665,8 +665,9 @@ void StoreDisplayTouchAssociations(PrefService* pref_service) {
       // |association_info_value|.
 
       // Serialize timestamp.
-      association_info_value.Set(kTouchAssociationTimestamp,
-                                 association_info.second.timestamp.ToDoubleT());
+      association_info_value.Set(
+          kTouchAssociationTimestamp,
+          association_info.second.timestamp.InSecondsFSinceUnixEpoch());
 
       // Serialize TouchCalibrationData.
       base::Value::Dict calibration_data_value;

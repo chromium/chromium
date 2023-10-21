@@ -442,7 +442,7 @@ void ClientSideDetectionService::AddPhishingReport(base::Time timestamp) {
 
   base::Value::List time_list;
   for (const base::Time& report_time : phishing_report_times_) {
-    time_list.Append(base::Value(report_time.ToDoubleT()));
+    time_list.Append(base::Value(report_time.InSecondsFSinceUnixEpoch()));
   }
   delegate_->GetPrefs()->SetList(prefs::kSafeBrowsingCsdPingTimestamps,
                                  std::move(time_list));
@@ -457,7 +457,7 @@ void ClientSideDetectionService::LoadPhishingReportTimesFromPrefs() {
   for (const base::Value& timestamp :
        delegate_->GetPrefs()->GetList(prefs::kSafeBrowsingCsdPingTimestamps)) {
     phishing_report_times_.push_back(
-        base::Time::FromDoubleT(timestamp.GetDouble()));
+        base::Time::FromSecondsSinceUnixEpoch(timestamp.GetDouble()));
   }
 }
 

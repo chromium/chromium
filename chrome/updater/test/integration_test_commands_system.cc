@@ -425,7 +425,8 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   void SetLastChecked(const base::Time& time) const override {
     RunCommand(
         "set_last_checked",
-        {Param("time", base::NumberToString(time.ToJsTimeIgnoringNull()))});
+        {Param("time", base::NumberToString(
+                           time.InMillisecondsFSinceUnixEpochIgnoringNull()))});
   }
 
   void ExpectLastChecked() const override { RunCommand("expect_last_checked"); }

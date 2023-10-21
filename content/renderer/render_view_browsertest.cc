@@ -2694,7 +2694,7 @@ TEST_F(RenderViewImplTest, BrowserNavigationStartSanitized) {
   base::RunLoop().RunUntilIdle();
   base::Time after_navigation = base::Time::Now() + base::Days(1);
 
-  base::Time late_nav_reported_start = base::Time::FromDoubleT(
+  base::Time late_nav_reported_start = base::Time::FromSecondsSinceUnixEpoch(
       GetMainFrame()->PerformanceMetricsForReporting().NavigationStart());
   EXPECT_LE(late_nav_reported_start, after_navigation);
 }

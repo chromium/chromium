@@ -423,7 +423,7 @@ MediaHistoryStore::GetOriginRowsForDebug() {
     origin->origin = url::Origin::Create(GURL(statement.ColumnString(0)));
     origin->last_updated_time = base::Time::FromDeltaSinceWindowsEpoch(
                                     base::Seconds(statement.ColumnInt64(1)))
-                                    .ToJsTime();
+                                    .InMillisecondsFSinceUnixEpoch();
     origin->cached_audio_video_watchtime =
         base::Seconds(statement.ColumnInt64(2));
     origin->actual_audio_video_watchtime =

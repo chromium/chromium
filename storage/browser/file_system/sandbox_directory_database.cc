@@ -35,8 +35,8 @@ void PickleFromFileInfo(const SandboxDirectoryDatabase::FileInfo& info,
   DCHECK(pickle);
   std::string data_path;
   // Round off here to match the behavior of the filesystem on real files.
-  base::Time time =
-      base::Time::FromDoubleT(floor(info.modification_time.ToDoubleT()));
+  base::Time time = base::Time::FromSecondsSinceUnixEpoch(
+      floor(info.modification_time.InSecondsFSinceUnixEpoch()));
   std::string name;
 
   data_path = FilePathToString(info.data_path);

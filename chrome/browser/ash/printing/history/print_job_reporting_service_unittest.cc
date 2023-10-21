@@ -53,9 +53,9 @@ em::PrintJobEvent CreateJobEvent(
   job_config->set_status(status);
   base::Time time;
   EXPECT_TRUE(base::Time::FromUTCString("14 Feb 2021 10:00", &time));
-  job_config->set_creation_timestamp_ms(time.ToJavaTime());
+  job_config->set_creation_timestamp_ms(time.InMillisecondsSinceUnixEpoch());
   EXPECT_TRUE(base::Time::FromUTCString("14 Feb 2021 10:30", &time));
-  job_config->set_completion_timestamp_ms(time.ToJavaTime());
+  job_config->set_completion_timestamp_ms(time.InMillisecondsSinceUnixEpoch());
   job_config->set_number_of_pages(10);
   // Print settings
   auto* settings = job_config->mutable_settings();
@@ -86,10 +86,10 @@ print::PrintJobInfo CreateJobInfo(const std::string id,
   info.set_status(status);
   base::Time time;
   EXPECT_TRUE(base::Time::FromUTCString("14 Feb 2021 10:00", &time));
-  info.set_creation_time(time.ToJavaTime());
-  info.set_creation_time(time.ToJavaTime());
+  info.set_creation_time(time.InMillisecondsSinceUnixEpoch());
+  info.set_creation_time(time.InMillisecondsSinceUnixEpoch());
   EXPECT_TRUE(base::Time::FromUTCString("14 Feb 2021 10:30", &time));
-  info.set_completion_time(time.ToJavaTime());
+  info.set_completion_time(time.InMillisecondsSinceUnixEpoch());
   info.set_number_of_pages(10);
   // Print settings
   auto* settings = info.mutable_settings();

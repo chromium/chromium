@@ -66,7 +66,7 @@ TEST(IbanTest, ConstructServerIban) {
 TEST(IbanTest, GetMetadata) {
   Iban local_iban = test::GetIban();
   local_iban.set_use_count(2);
-  local_iban.set_use_date(base::Time::FromDoubleT(25));
+  local_iban.set_use_date(base::Time::FromSecondsSinceUnixEpoch(25));
   AutofillMetadata local_metadata = local_iban.GetMetadata();
 
   EXPECT_EQ(local_iban.guid(), local_metadata.id);

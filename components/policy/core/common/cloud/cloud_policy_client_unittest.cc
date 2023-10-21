@@ -1145,7 +1145,8 @@ TEST_F(CloudPolicyClientTest, PolicyFetchWithMetaData) {
   em::DeviceManagementRequest policy_request = GetPolicyRequest();
   em::PolicyFetchRequest* policy_fetch_request =
       policy_request.mutable_policy_request()->mutable_requests(0);
-  policy_fetch_request->set_timestamp(kOldTimestamp.ToJavaTime());
+  policy_fetch_request->set_timestamp(
+      kOldTimestamp.InMillisecondsSinceUnixEpoch());
   policy_fetch_request->set_public_key_version(kPublicKeyVersion);
 
   em::DeviceManagementResponse policy_response = GetPolicyResponse();

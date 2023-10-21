@@ -144,8 +144,9 @@ bool HashPasswordManager::SavePasswordHash(const std::string username,
           ConvertToPasswordHashData(password_hash_data);
       if (existing_password_hash && existing_password_hash->MatchesPassword(
                                         username, password, is_gaia_password)) {
-        password_hash_data.GetDict().Set(kLastSignInTimeFieldKey,
-                                         base::Time::Now().ToDoubleT());
+        password_hash_data.GetDict().Set(
+            kLastSignInTimeFieldKey,
+            base::Time::Now().InSecondsFSinceUnixEpoch());
         return true;
       }
     }
@@ -309,8 +310,8 @@ bool HashPasswordManager::EncryptAndSave(
   encrypted_password_hash_entry.Set(kLengthAndSaltFieldKey,
                                     encrypted_length_and_salt);
   encrypted_password_hash_entry.Set(kIsGaiaFieldKey, encrypted_is_gaia_value);
-  encrypted_password_hash_entry.Set(kLastSignInTimeFieldKey,
-                                    base::Time::Now().ToDoubleT());
+  encrypted_password_hash_entry.Set(
+      kLastSignInTimeFieldKey, base::Time::Now().InSecondsFSinceUnixEpoch());
   ScopedListPrefUpdate update(prefs_, prefs::kPasswordHashDataList);
   base::Value::List& update_list = update.Get();
   size_t num_erased = update_list.EraseIf([&](const auto& dict) {

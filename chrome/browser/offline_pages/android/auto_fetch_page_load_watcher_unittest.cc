@@ -34,7 +34,7 @@ using ::offline_pages::auto_fetch_internal::TabInfo;
 using ::testing::_;
 
 const int kDefaultTabId = 123;
-const base::Time kEpoch = base::Time::FromDoubleT(1.0e6);
+const base::Time kEpoch = base::Time::FromSecondsSinceUnixEpoch(1.0e6);
 
 GURL TestURL() {
   return GURL("http://www.url.com");

@@ -86,7 +86,7 @@ void PasswordCheckManager::StopCheck() {
 }
 
 base::Time PasswordCheckManager::GetLastCheckTimestamp() {
-  return base::Time::FromDoubleT(profile_->GetPrefs()->GetDouble(
+  return base::Time::FromSecondsSinceUnixEpoch(profile_->GetPrefs()->GetDouble(
       password_manager::prefs::kLastTimePasswordCheckCompleted));
 }
 
@@ -196,7 +196,7 @@ void PasswordCheckManager::OnStateChanged(State state) {
     // Save the time at which the last successful check finished.
     profile_->GetPrefs()->SetDouble(
         password_manager::prefs::kLastTimePasswordCheckCompleted,
-        base::Time::Now().ToDoubleT());
+        base::Time::Now().InSecondsFSinceUnixEpoch());
     profile_->GetPrefs()->SetTime(
         password_manager::prefs::kSyncedLastTimePasswordCheckCompleted,
         base::Time::Now());

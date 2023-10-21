@@ -667,11 +667,12 @@ absl::optional<base::Time> ParseDateFromNullTerminatedCharacters(
     DCHECK(U_SUCCESS(status));
     offset = static_cast<int>((raw_offset + dst_offset) / kMsPerMinute);
   }
-  return base::Time::FromJsTime(ms - (offset * kMsPerMinute));
+  return base::Time::FromMillisecondsSinceUnixEpoch(ms -
+                                                    (offset * kMsPerMinute));
 }
 
 base::TimeDelta ConvertToLocalTime(base::Time time) {
-  double ms = time.ToJsTime();
+  double ms = time.InMillisecondsFSinceUnixEpoch();
   std::unique_ptr<icu::TimeZone> timezone(icu::TimeZone::createDefault());
   int32_t raw_offset, dst_offset;
   UErrorCode status = U_ZERO_ERROR;

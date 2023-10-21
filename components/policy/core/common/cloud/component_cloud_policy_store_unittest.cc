@@ -199,7 +199,8 @@ TEST_F(ComponentCloudPolicyStoreTest, ValidatePolicyWrongTimestamp) {
                             CreatePolicyData().get(), TestPolicyHash(),
                             kTestPolicy));
 
-  const int64_t kPastTimestamp = (base::Time() + base::Days(1)).ToJavaTime();
+  const int64_t kPastTimestamp =
+      (base::Time() + base::Days(1)).InMillisecondsSinceUnixEpoch();
   CHECK_GT(PolicyBuilder::kFakeTimestamp, kPastTimestamp);
   builder_.policy_data().set_timestamp(kPastTimestamp);
   std::string error;

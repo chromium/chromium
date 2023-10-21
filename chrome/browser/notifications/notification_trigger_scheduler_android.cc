@@ -33,5 +33,6 @@ void NotificationTriggerSchedulerAndroid::ScheduleTrigger(
   JNIEnv* env = base::android::AttachCurrentThread();
 
   Java_NotificationTriggerScheduler_schedule(
-      env, java_notification_trigger_scheduler_, timestamp.ToJavaTime());
+      env, java_notification_trigger_scheduler_,
+      timestamp.InMillisecondsSinceUnixEpoch());
 }

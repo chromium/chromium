@@ -485,7 +485,8 @@ TEST_P(TemplateURLServiceTest, AddOmniboxExtensionKeyword) {
   AddKeywordWithDate("nonreplaceable", "keyword2", "http://test2",
                      std::string(), std::string(), std::string(), false);
   model()->RegisterOmniboxKeyword("test3", "extension", "keyword3",
-                                  "http://test3", Time::FromDoubleT(1));
+                                  "http://test3",
+                                  Time::FromSecondsSinceUnixEpoch(1));
   TemplateURL* original3 = model()->GetTemplateURLForKeyword(u"keyword3");
   ASSERT_TRUE(original3);
 
@@ -507,7 +508,7 @@ TEST_P(TemplateURLServiceTest, AddOmniboxExtensionKeyword) {
 
   // They should override extension keywords added earlier.
   model()->RegisterOmniboxKeyword("id3", "test", "keyword3", "http://test6",
-                                  Time::FromDoubleT(4));
+                                  Time::FromSecondsSinceUnixEpoch(4));
   TemplateURL* extension3 = model()->FindTemplateURLForExtension(
       "id3", TemplateURL::OMNIBOX_API_EXTENSION);
   ASSERT_TRUE(extension3);
@@ -1957,8 +1958,9 @@ TEST_P(TemplateURLServiceTest, KeywordConflictNonReplaceableEngines) {
       model()->Add(std::make_unique<TemplateURL>(*turl_data));
 
   // Add default extension engine with same keyword as user engine.
-  const TemplateURL* extension = AddExtensionSearchEngine(
-      "common_keyword", "extension_id", true, Time::FromDoubleT(2));
+  const TemplateURL* extension =
+      AddExtensionSearchEngine("common_keyword", "extension_id", true,
+                               Time::FromSecondsSinceUnixEpoch(2));
 
   // Add another non replaceable user engine with same keyword as extension.
   // But make it slightly "better" than the other one via last-modified date.
@@ -1978,7 +1980,7 @@ TEST_P(TemplateURLServiceTest, KeywordConflictNonReplaceableEngines) {
   // earlier.
   model()->RegisterOmniboxKeyword("omnibox_api_extension_id", "extension_name",
                                   "common_keyword", "http://test3",
-                                  Time::FromDoubleT(1));
+                                  Time::FromSecondsSinceUnixEpoch(1));
   TemplateURL* omnibox_api = model()->FindTemplateURLForExtension(
       "omnibox_api_extension_id", TemplateURL::OMNIBOX_API_EXTENSION);
 
@@ -2234,23 +2236,26 @@ TEST_P(TemplateURLServiceTest, CheckReplaceableEnginesKeywordsConflicts) {
 TEST_P(TemplateURLServiceTest, ExtensionsWithSameKeywords) {
   test_util()->VerifyLoad();
   // Add non default extension engine.
-  const TemplateURL* extension1 = AddExtensionSearchEngine(
-      "common_keyword", "extension_id1", false, Time::FromDoubleT(1));
+  const TemplateURL* extension1 =
+      AddExtensionSearchEngine("common_keyword", "extension_id1", false,
+                               Time::FromSecondsSinceUnixEpoch(1));
 
   // Check that GetTemplateURLForKeyword returns last installed extension.
   EXPECT_EQ(extension1, model()->GetTemplateURLForKeyword(u"common_keyword"));
 
   // Add default extension engine with the same keyword.
-  const TemplateURL* extension2 = AddExtensionSearchEngine(
-      "common_keyword", "extension_id2", true, Time::FromDoubleT(2));
+  const TemplateURL* extension2 =
+      AddExtensionSearchEngine("common_keyword", "extension_id2", true,
+                               Time::FromSecondsSinceUnixEpoch(2));
   // Check that GetTemplateURLForKeyword now returns extension2 because it was
   // installed later.
   EXPECT_EQ(extension2, model()->GetTemplateURLForKeyword(u"common_keyword"));
 
   // Add another non default extension with same keyword. This action must not
   // change any keyword due to conflict.
-  const TemplateURL* extension3 = AddExtensionSearchEngine(
-      "common_keyword", "extension_id3", false, Time::FromDoubleT(3));
+  const TemplateURL* extension3 =
+      AddExtensionSearchEngine("common_keyword", "extension_id3", false,
+                               Time::FromSecondsSinceUnixEpoch(3));
   // Check that extension2 is set as default.
   EXPECT_EQ(extension2, model()->GetDefaultSearchProvider());
 

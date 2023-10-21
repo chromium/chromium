@@ -70,14 +70,14 @@ TEST(DiscardableSharedMemoryTest, LockAndUnlock) {
   ASSERT_TRUE(rv);
 
   // Memory is initially locked. Unlock it.
-  memory1.SetNow(Time::FromDoubleT(1));
+  memory1.SetNow(Time::FromSecondsSinceUnixEpoch(1));
   memory1.Unlock(0, 0);
   EXPECT_FALSE(memory1.IsMemoryLocked());
 
   // Lock and unlock memory.
   DiscardableSharedMemory::LockResult lock_rv = memory1.Lock(0, 0);
   EXPECT_EQ(DiscardableSharedMemory::SUCCESS, lock_rv);
-  memory1.SetNow(Time::FromDoubleT(2));
+  memory1.SetNow(Time::FromSecondsSinceUnixEpoch(2));
   memory1.Unlock(0, 0);
 
   // Lock again before duplicating and passing ownership to new instance.
@@ -93,7 +93,7 @@ TEST(DiscardableSharedMemoryTest, LockAndUnlock) {
   ASSERT_TRUE(rv);
 
   // Unlock second instance.
-  memory2.SetNow(Time::FromDoubleT(3));
+  memory2.SetNow(Time::FromSecondsSinceUnixEpoch(3));
   memory2.Unlock(0, 0);
 
   // Both memory instances should be unlocked now.
@@ -110,7 +110,7 @@ TEST(DiscardableSharedMemoryTest, LockAndUnlock) {
   EXPECT_TRUE(memory1.IsMemoryLocked());
 
   // Unlock first instance.
-  memory1.SetNow(Time::FromDoubleT(4));
+  memory1.SetNow(Time::FromSecondsSinceUnixEpoch(4));
   memory1.Unlock(0, 0);
 }
 
@@ -129,22 +129,22 @@ TEST(DiscardableSharedMemoryTest, Purge) {
   ASSERT_TRUE(rv);
 
   // This should fail as memory is locked.
-  rv = memory1.Purge(Time::FromDoubleT(1));
+  rv = memory1.Purge(Time::FromSecondsSinceUnixEpoch(1));
   EXPECT_FALSE(rv);
 
-  memory2.SetNow(Time::FromDoubleT(2));
+  memory2.SetNow(Time::FromSecondsSinceUnixEpoch(2));
   memory2.Unlock(0, 0);
 
   ASSERT_TRUE(memory2.IsMemoryResident());
 
   // Memory is unlocked, but our usage timestamp is incorrect.
-  rv = memory1.Purge(Time::FromDoubleT(3));
+  rv = memory1.Purge(Time::FromSecondsSinceUnixEpoch(3));
   EXPECT_FALSE(rv);
 
   ASSERT_TRUE(memory2.IsMemoryResident());
 
   // Memory is unlocked and our usage timestamp should be correct.
-  rv = memory1.Purge(Time::FromDoubleT(4));
+  rv = memory1.Purge(Time::FromSecondsSinceUnixEpoch(4));
   EXPECT_TRUE(rv);
 
   // Lock should fail as memory has been purged.
@@ -162,12 +162,12 @@ TEST(DiscardableSharedMemoryTest, PurgeAfterClose) {
   ASSERT_TRUE(rv);
 
   // Unlock things so we can Purge().
-  memory.SetNow(Time::FromDoubleT(2));
+  memory.SetNow(Time::FromSecondsSinceUnixEpoch(2));
   memory.Unlock(0, 0);
 
   // It should be safe to Purge() |memory| after Close()ing the handle.
   memory.Close();
-  rv = memory.Purge(Time::FromDoubleT(4));
+  rv = memory.Purge(Time::FromSecondsSinceUnixEpoch(4));
   EXPECT_TRUE(rv);
 }
 
@@ -185,47 +185,47 @@ TEST(DiscardableSharedMemoryTest, LastUsed) {
   rv = memory2.Map(kDataSize);
   ASSERT_TRUE(rv);
 
-  memory2.SetNow(Time::FromDoubleT(1));
+  memory2.SetNow(Time::FromSecondsSinceUnixEpoch(1));
   memory2.Unlock(0, 0);
 
-  EXPECT_EQ(memory2.last_known_usage(), Time::FromDoubleT(1));
+  EXPECT_EQ(memory2.last_known_usage(), Time::FromSecondsSinceUnixEpoch(1));
 
   DiscardableSharedMemory::LockResult lock_rv = memory2.Lock(0, 0);
   EXPECT_EQ(DiscardableSharedMemory::SUCCESS, lock_rv);
 
   // This should fail as memory is locked.
-  rv = memory1.Purge(Time::FromDoubleT(2));
+  rv = memory1.Purge(Time::FromSecondsSinceUnixEpoch(2));
   ASSERT_FALSE(rv);
 
   // Last usage should have been updated to timestamp passed to Purge above.
-  EXPECT_EQ(memory1.last_known_usage(), Time::FromDoubleT(2));
+  EXPECT_EQ(memory1.last_known_usage(), Time::FromSecondsSinceUnixEpoch(2));
 
-  memory2.SetNow(Time::FromDoubleT(3));
+  memory2.SetNow(Time::FromSecondsSinceUnixEpoch(3));
   memory2.Unlock(0, 0);
 
   // Usage time should be correct for |memory2| instance.
-  EXPECT_EQ(memory2.last_known_usage(), Time::FromDoubleT(3));
+  EXPECT_EQ(memory2.last_known_usage(), Time::FromSecondsSinceUnixEpoch(3));
 
   // However, usage time has not changed as far as |memory1| instance knows.
-  EXPECT_EQ(memory1.last_known_usage(), Time::FromDoubleT(2));
+  EXPECT_EQ(memory1.last_known_usage(), Time::FromSecondsSinceUnixEpoch(2));
 
   // Memory is unlocked, but our usage timestamp is incorrect.
-  rv = memory1.Purge(Time::FromDoubleT(4));
+  rv = memory1.Purge(Time::FromSecondsSinceUnixEpoch(4));
   EXPECT_FALSE(rv);
 
   // The failed purge attempt should have updated usage time to the correct
   // value.
-  EXPECT_EQ(memory1.last_known_usage(), Time::FromDoubleT(3));
+  EXPECT_EQ(memory1.last_known_usage(), Time::FromSecondsSinceUnixEpoch(3));
 
   // Purge memory through |memory2| instance. The last usage time should be
   // set to 0 as a result of this.
-  rv = memory2.Purge(Time::FromDoubleT(5));
+  rv = memory2.Purge(Time::FromSecondsSinceUnixEpoch(5));
   EXPECT_TRUE(rv);
   EXPECT_TRUE(memory2.last_known_usage().is_null());
 
   // This should fail as memory has already been purged and |memory1|'s usage
   // time is incorrect as a result.
-  rv = memory1.Purge(Time::FromDoubleT(6));
+  rv = memory1.Purge(Time::FromSecondsSinceUnixEpoch(6));
   EXPECT_FALSE(rv);
 
   // The failed purge attempt should have updated usage time to the correct
@@ -233,7 +233,7 @@ TEST(DiscardableSharedMemoryTest, LastUsed) {
   EXPECT_TRUE(memory1.last_known_usage().is_null());
 
   // Purge should succeed now that usage time is correct.
-  rv = memory1.Purge(Time::FromDoubleT(7));
+  rv = memory1.Purge(Time::FromSecondsSinceUnixEpoch(7));
   EXPECT_TRUE(rv);
 }
 
@@ -251,10 +251,10 @@ TEST(DiscardableSharedMemoryTest, LockShouldAlwaysFailAfterSuccessfulPurge) {
   rv = memory2.Map(kDataSize);
   ASSERT_TRUE(rv);
 
-  memory2.SetNow(Time::FromDoubleT(1));
+  memory2.SetNow(Time::FromSecondsSinceUnixEpoch(1));
   memory2.Unlock(0, 0);
 
-  rv = memory2.Purge(Time::FromDoubleT(2));
+  rv = memory2.Purge(Time::FromSecondsSinceUnixEpoch(2));
   EXPECT_TRUE(rv);
 
   // Lock should fail as memory has been purged.
@@ -317,46 +317,46 @@ TEST(DiscardableSharedMemoryTest, LockAndUnlockRange) {
   ASSERT_TRUE(rv);
 
   // Unlock first page.
-  memory2.SetNow(Time::FromDoubleT(1));
+  memory2.SetNow(Time::FromSecondsSinceUnixEpoch(1));
   memory2.Unlock(0, base::GetPageSize());
 
-  rv = memory1.Purge(Time::FromDoubleT(2));
+  rv = memory1.Purge(Time::FromSecondsSinceUnixEpoch(2));
   EXPECT_FALSE(rv);
 
   // Lock first page again.
-  memory2.SetNow(Time::FromDoubleT(3));
+  memory2.SetNow(Time::FromSecondsSinceUnixEpoch(3));
   DiscardableSharedMemory::LockResult lock_rv =
       memory2.Lock(0, base::GetPageSize());
   EXPECT_NE(DiscardableSharedMemory::FAILED, lock_rv);
 
   // Unlock first page.
-  memory2.SetNow(Time::FromDoubleT(4));
+  memory2.SetNow(Time::FromSecondsSinceUnixEpoch(4));
   memory2.Unlock(0, base::GetPageSize());
 
-  rv = memory1.Purge(Time::FromDoubleT(5));
+  rv = memory1.Purge(Time::FromSecondsSinceUnixEpoch(5));
   EXPECT_FALSE(rv);
 
   // Unlock second page.
-  memory2.SetNow(Time::FromDoubleT(6));
+  memory2.SetNow(Time::FromSecondsSinceUnixEpoch(6));
   memory2.Unlock(base::GetPageSize(), base::GetPageSize());
 
-  rv = memory1.Purge(Time::FromDoubleT(7));
+  rv = memory1.Purge(Time::FromSecondsSinceUnixEpoch(7));
   EXPECT_FALSE(rv);
 
   // Unlock anything onwards.
-  memory2.SetNow(Time::FromDoubleT(8));
+  memory2.SetNow(Time::FromSecondsSinceUnixEpoch(8));
   memory2.Unlock(2 * base::GetPageSize(), 0);
 
   // Memory is unlocked, but our usage timestamp is incorrect.
-  rv = memory1.Purge(Time::FromDoubleT(9));
+  rv = memory1.Purge(Time::FromSecondsSinceUnixEpoch(9));
   EXPECT_FALSE(rv);
 
   // The failed purge attempt should have updated usage time to the correct
   // value.
-  EXPECT_EQ(Time::FromDoubleT(8), memory1.last_known_usage());
+  EXPECT_EQ(Time::FromSecondsSinceUnixEpoch(8), memory1.last_known_usage());
 
   // Purge should now succeed.
-  rv = memory1.Purge(Time::FromDoubleT(10));
+  rv = memory1.Purge(Time::FromSecondsSinceUnixEpoch(10));
   EXPECT_TRUE(rv);
 }
 
@@ -387,13 +387,13 @@ TEST(DiscardableSharedMemoryTest, Close) {
   EXPECT_LE(kDataSize, memory.mapped_size());
 
   // Memory is initially locked. Unlock it.
-  memory.SetNow(Time::FromDoubleT(1));
+  memory.SetNow(Time::FromSecondsSinceUnixEpoch(1));
   memory.Unlock(0, 0);
 
   // Lock and unlock memory.
   DiscardableSharedMemory::LockResult lock_rv = memory.Lock(0, 0);
   EXPECT_EQ(DiscardableSharedMemory::SUCCESS, lock_rv);
-  memory.SetNow(Time::FromDoubleT(2));
+  memory.SetNow(Time::FromSecondsSinceUnixEpoch(2));
   memory.Unlock(0, 0);
 }
 
@@ -405,13 +405,13 @@ TEST(DiscardableSharedMemoryTest, ZeroSize) {
   EXPECT_LE(0u, memory.mapped_size());
 
   // Memory is initially locked. Unlock it.
-  memory.SetNow(Time::FromDoubleT(1));
+  memory.SetNow(Time::FromSecondsSinceUnixEpoch(1));
   memory.Unlock(0, 0);
 
   // Lock and unlock memory.
   DiscardableSharedMemory::LockResult lock_rv = memory.Lock(0, 0);
   EXPECT_NE(DiscardableSharedMemory::FAILED, lock_rv);
-  memory.SetNow(Time::FromDoubleT(2));
+  memory.SetNow(Time::FromSecondsSinceUnixEpoch(2));
   memory.Unlock(0, 0);
 }
 
@@ -437,14 +437,14 @@ TEST(DiscardableSharedMemoryTest, ZeroFilledPagesAfterPurge) {
   memset(memory2.memory(), 0xaa, kDataSize);
 
   // Unlock memory.
-  memory2.SetNow(Time::FromDoubleT(1));
+  memory2.SetNow(Time::FromSecondsSinceUnixEpoch(1));
   memory2.Unlock(0, 0);
   EXPECT_FALSE(memory1.IsMemoryLocked());
 
   // Memory is unlocked, but our usage timestamp is incorrect.
-  rv = memory1.Purge(Time::FromDoubleT(2));
+  rv = memory1.Purge(Time::FromSecondsSinceUnixEpoch(2));
   EXPECT_FALSE(rv);
-  rv = memory1.Purge(Time::FromDoubleT(3));
+  rv = memory1.Purge(Time::FromSecondsSinceUnixEpoch(3));
   EXPECT_TRUE(rv);
 
   // Check that reading memory after it has been purged is returning

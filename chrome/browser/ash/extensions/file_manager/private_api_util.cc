@@ -455,11 +455,12 @@ void SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo(
   properties_->starred = metadata->starred;
 
   if (metadata->modification_time != base::Time()) {
-    properties_->modification_time = metadata->modification_time.ToJsTime();
+    properties_->modification_time =
+        metadata->modification_time.InMillisecondsFSinceUnixEpoch();
   }
   if (metadata->last_viewed_by_me_time != base::Time()) {
     properties_->modification_by_me_time =
-        metadata->last_viewed_by_me_time.ToJsTime();
+        metadata->last_viewed_by_me_time.InMillisecondsFSinceUnixEpoch();
   }
   if (!metadata->content_mime_type.empty()) {
     properties_->content_mime_type = metadata->content_mime_type;

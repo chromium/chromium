@@ -33,8 +33,9 @@ TEST(DeprecationReportBodyJSONTest, noAnticipatedRemoval) {
 }
 
 TEST(DeprecationReportBodyJSONTest, actualAnticipatedRemoval) {
-  DeprecationReportBody body("test_id", base::Time::FromJsTime(1575950400000),
-                             "test_message");
+  DeprecationReportBody body(
+      "test_id", base::Time::FromMillisecondsSinceUnixEpoch(1575950400000),
+      "test_message");
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   V8ObjectBuilder builder(script_state);

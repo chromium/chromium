@@ -25,7 +25,7 @@ namespace {
 ResetDisplayPlatformFunc g_angle_reset_platform = nullptr;
 
 double ANGLEPlatformImpl_currentTime(PlatformMethods* platform) {
-  return base::Time::Now().ToDoubleT();
+  return base::Time::Now().InSecondsFSinceUnixEpoch();
 }
 
 double ANGLEPlatformImpl_monotonicallyIncreasingTime(

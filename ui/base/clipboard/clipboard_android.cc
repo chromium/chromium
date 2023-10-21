@@ -303,7 +303,8 @@ void ClipboardMap::OnPrimaryClipboardChanged() {
 }
 
 void ClipboardMap::OnPrimaryClipTimestampInvalidated(int64_t timestamp_ms) {
-  base::Time timestamp = base::Time::FromJavaTime(timestamp_ms);
+  base::Time timestamp =
+      base::Time::FromMillisecondsSinceUnixEpoch(timestamp_ms);
   if (GetLastModifiedTime() < timestamp) {
     sequence_number_ = ClipboardSequenceNumberToken();
     UpdateLastModifiedTime(timestamp);
@@ -442,7 +443,7 @@ void ClipboardAndroid::OnPrimaryClipTimestampInvalidated(
 }
 
 int64_t ClipboardAndroid::GetLastModifiedTimeToJavaTime(JNIEnv* env) {
-  return GetLastModifiedTime().ToJavaTime();
+  return GetLastModifiedTime().InMillisecondsSinceUnixEpoch();
 }
 
 void ClipboardAndroid::SetModifiedCallback(ModifiedCallback cb) {

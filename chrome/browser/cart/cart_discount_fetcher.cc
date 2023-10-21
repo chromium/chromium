@@ -473,7 +473,8 @@ std::string CartDiscountFetcher::generatePostData(
 
     // Set CartAbandonedTimeMinutes.
     int cart_abandoned_time_mintues =
-        (current_time - base::Time::FromDoubleT(cart_proto.timestamp()))
+        (current_time -
+         base::Time::FromSecondsSinceUnixEpoch(cart_proto.timestamp()))
             .InMinutes();
     cart_dict.Set("cartAbandonedTimeMinutes", cart_abandoned_time_mintues);
 

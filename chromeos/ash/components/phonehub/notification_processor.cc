@@ -163,7 +163,7 @@ Notification CreateInternalNotification(const proto::Notification& proto,
           proto.origin_app().package_name(), color_icon, monochrome_icon,
           icon_color, icon_is_monochrome, proto.origin_app().user_id(),
           proto.origin_app().app_streamability_status()),
-      base::Time::FromJsTime(proto.epoch_time_millis()),
+      base::Time::FromMillisecondsSinceUnixEpoch(proto.epoch_time_millis()),
       GetNotificationImportanceFromProto(proto.importance()), category,
       action_id_map, behavior, title, text_content, opt_shared_image,
       opt_contact_image);

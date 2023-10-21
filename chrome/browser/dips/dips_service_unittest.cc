@@ -147,7 +147,7 @@ TEST_F(DIPSServiceTest, EmptySiteEventsIgnored) {
 
   // Record a bounce for an empty URL.
   GURL url;
-  base::Time bounce = base::Time::FromDoubleT(2);
+  base::Time bounce = base::Time::FromSecondsSinceUnixEpoch(2);
   service->RecordBounceForTesting(
       url, GURL("https://initial.com"), GURL("https://final.com"), bounce,
       false, base::BindRepeating([](const GURL& final_url) {}));
@@ -337,7 +337,7 @@ TEST_F(DIPSServiceStateRemovalTest, BrowsingDataDeletion_Enabled) {
 
   // Record a bounce.
   GURL url("https://example.com");
-  base::Time bounce = base::Time::FromDoubleT(2);
+  base::Time bounce = base::Time::FromSecondsSinceUnixEpoch(2);
   GetService()->RecordBounceForTesting(
       url, GURL("https://initial.com"), GURL("https://final.com"), bounce,
       false, base::BindRepeating([](const GURL& final_url) {}));
@@ -387,7 +387,7 @@ TEST_F(DIPSServiceStateRemovalTest, BrowsingDataDeletion_Disabled) {
 
   // Record a bounce.
   GURL url("https://example.com");
-  base::Time bounce = base::Time::FromDoubleT(2);
+  base::Time bounce = base::Time::FromSecondsSinceUnixEpoch(2);
   GetService()->RecordBounceForTesting(
       url, GURL("https://initial.com"), GURL("https://final.com"), bounce,
       false, base::BindRepeating([](const GURL& final_url) {}));
@@ -437,7 +437,7 @@ TEST_F(DIPSServiceStateRemovalTest,
           [&](const GURL& final_url) { stateful_bounce_count++; });
 
   // Bounce through both tracking sites.
-  base::Time bounce = base::Time::FromDoubleT(2);
+  base::Time bounce = base::Time::FromSecondsSinceUnixEpoch(2);
   GetService()->RecordBounceForTesting(
       excepted_3p_url, GURL("https://initial.com"), GURL("https://final.com"),
       bounce, true, increment_bounce);
@@ -486,7 +486,7 @@ TEST_F(DIPSServiceStateRemovalTest,
       base::BindLambdaForTesting(
           [&](const GURL& final_url) { stateful_bounce_count++; });
 
-  base::Time bounce = base::Time::FromDoubleT(2);
+  base::Time bounce = base::Time::FromSecondsSinceUnixEpoch(2);
   // Record a bounce through redirect_url_1 that starts on an excepted
   // URL.
   GetService()->RecordBounceForTesting(redirect_url_1, excepted_1p_url,
@@ -581,7 +581,7 @@ TEST_F(DIPSServiceStateRemovalTest,
       base::BindLambdaForTesting(
           [&](const GURL& final_url) { stateful_bounce_count++; });
 
-  base::Time bounce = base::Time::FromDoubleT(2);
+  base::Time bounce = base::Time::FromSecondsSinceUnixEpoch(2);
   // Record a bounce through redirect_url_1 that starts on a URL with an SA
   // grant.
   GetService()->RecordBounceForTesting(redirect_url_1, storage_access_grant_url,
@@ -671,7 +671,7 @@ TEST_F(
       base::BindLambdaForTesting(
           [&](const GURL& final_url) { stateful_bounce_count++; });
 
-  base::Time bounce = base::Time::FromDoubleT(2);
+  base::Time bounce = base::Time::FromSecondsSinceUnixEpoch(2);
   // Record a bounce through redirect_url_1 that starts and ends on blocked
   // URLs.
   GetService()->RecordBounceForTesting(redirect_url_1, blocked_1p_url,
@@ -729,7 +729,7 @@ TEST_F(DIPSServiceStateRemovalTest, ImmediateEnforcement) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kDIPS, {{"delete", "true"}, {"triggering_action", "bounce"}});
-  SetNow(base::Time::FromDoubleT(2));
+  SetNow(base::Time::FromSecondsSinceUnixEpoch(2));
 
   // Record a bounce.
   GURL url("https://example.com");
@@ -804,7 +804,7 @@ TEST_F(DIPSServiceHistogramTest, DeletionLatency) {
 
   // Record a bounce.
   GURL url("https://example.com");
-  base::Time bounce = base::Time::FromDoubleT(2);
+  base::Time bounce = base::Time::FromSecondsSinceUnixEpoch(2);
   GetService()->RecordBounceForTesting(
       url, GURL("https://initial.com"), GURL("https://final.com"), bounce,
       false, base::BindRepeating([](const GURL& final_url) {}));
@@ -844,7 +844,7 @@ TEST_F(DIPSServiceHistogramTest, Deletion_Disallowed) {
 
   // Record a bounce.
   GURL url("https://example.com");
-  base::Time bounce_time = base::Time::FromDoubleT(2);
+  base::Time bounce_time = base::Time::FromSecondsSinceUnixEpoch(2);
   GetService()->RecordBounceForTesting(
       url, GURL("https://initial.com"), GURL("https://final.com"), bounce_time,
       true, base::BindRepeating([](const GURL& final_url) {}));
@@ -880,7 +880,7 @@ TEST_F(DIPSServiceHistogramTest, Deletion_ExceptedAs1P) {
   GURL url("https://example.com");
   GURL excepted_1p_url("https://initial.com");
   Add3PCException(excepted_1p_url, absl::nullopt);
-  base::Time bounce_time = base::Time::FromDoubleT(2);
+  base::Time bounce_time = base::Time::FromSecondsSinceUnixEpoch(2);
   GetService()->RecordBounceForTesting(
       url, excepted_1p_url, GURL("https://final.com"), bounce_time, true,
       base::BindRepeating([](const GURL& final_url) {}));
@@ -915,7 +915,7 @@ TEST_F(DIPSServiceHistogramTest, Deletion_ExceptedAs3P) {
   // Record a bounce.
   GURL excepted_3p_url("https://example.com");
   Add3PCException(absl::nullopt, excepted_3p_url);
-  base::Time bounce_time = base::Time::FromDoubleT(2);
+  base::Time bounce_time = base::Time::FromSecondsSinceUnixEpoch(2);
   GetService()->RecordBounceForTesting(
       excepted_3p_url, GURL("https://initial.com"), GURL("https://final.com"),
       bounce_time, true, base::BindRepeating([](const GURL& final_url) {}));
@@ -949,7 +949,7 @@ TEST_F(DIPSServiceHistogramTest, Deletion_Enforced) {
 
   // Record a bounce.
   GURL url("https://example.com");
-  base::Time bounce_time = base::Time::FromDoubleT(2);
+  base::Time bounce_time = base::Time::FromSecondsSinceUnixEpoch(2);
   GetService()->RecordBounceForTesting(
       url, GURL("https://initial.com"), GURL("https://final.com"), bounce_time,
       true, base::BindRepeating([](const GURL& final_url) {}));

@@ -714,9 +714,11 @@ TEST_F(ChildStatusCollectorTest, ReportingAppActivity) {
       EXPECT_EQ(3, app_activity.active_time_periods_size());
       Time start = start_time;
       for (const auto& active_period : app_activity.active_time_periods()) {
-        EXPECT_EQ(start.ToJavaTime(), active_period.start_timestamp());
+        EXPECT_EQ(start.InMillisecondsSinceUnixEpoch(),
+                  active_period.start_timestamp());
         const Time end = start + app1_interval;
-        EXPECT_EQ(end.ToJavaTime(), active_period.end_timestamp());
+        EXPECT_EQ(end.InMillisecondsSinceUnixEpoch(),
+                  active_period.end_timestamp());
         start = end + app2_interval;
       }
       continue;
@@ -728,9 +730,11 @@ TEST_F(ChildStatusCollectorTest, ReportingAppActivity) {
       EXPECT_EQ(2, app_activity.active_time_periods_size());
       Time start = start_time + app1_interval;
       for (const auto& active_period : app_activity.active_time_periods()) {
-        EXPECT_EQ(start.ToJavaTime(), active_period.start_timestamp());
+        EXPECT_EQ(start.InMillisecondsSinceUnixEpoch(),
+                  active_period.start_timestamp());
         const Time end = start + app2_interval;
-        EXPECT_EQ(end.ToJavaTime(), active_period.end_timestamp());
+        EXPECT_EQ(end.InMillisecondsSinceUnixEpoch(),
+                  active_period.end_timestamp());
         start = end + app1_interval;
       }
       continue;

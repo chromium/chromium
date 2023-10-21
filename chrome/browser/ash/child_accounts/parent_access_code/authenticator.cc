@@ -127,8 +127,8 @@ absl::optional<AccessCode> Authenticator::Generate(base::Time timestamp) const {
 
   // We find the beginning of the interval for the given timestamp and adjust by
   // the granularity.
-  const int64_t interval =
-      timestamp.ToJavaTime() / config_.code_validity().InMilliseconds();
+  const int64_t interval = timestamp.InMillisecondsSinceUnixEpoch() /
+                           config_.code_validity().InMilliseconds();
   const int64_t interval_beginning_timestamp =
       interval * config_.code_validity().InMilliseconds();
   const int64_t adjusted_timestamp =
@@ -155,7 +155,7 @@ absl::optional<AccessCode> Authenticator::Generate(base::Time timestamp) const {
   result &= 0x7fffffff;
 
   const base::Time valid_from =
-      base::Time::FromJavaTime(interval_beginning_timestamp);
+      base::Time::FromMillisecondsSinceUnixEpoch(interval_beginning_timestamp);
   return AccessCode(base::StringPrintf("%06d", result % 1000000), valid_from,
                     valid_from + config_.code_validity());
 }
@@ -178,13 +178,14 @@ absl::optional<AccessCode> Authenticator::ValidateInRange(
   DCHECK_LE(base::Time::UnixEpoch(), valid_from);
   DCHECK_GE(valid_to, valid_from);
 
-  const int64_t start_interval =
-      valid_from.ToJavaTime() / kAccessCodeGranularity.InMilliseconds();
-  const int64_t end_interval =
-      valid_to.ToJavaTime() / kAccessCodeGranularity.InMilliseconds();
+  const int64_t start_interval = valid_from.InMillisecondsSinceUnixEpoch() /
+                                 kAccessCodeGranularity.InMilliseconds();
+  const int64_t end_interval = valid_to.InMillisecondsSinceUnixEpoch() /
+                               kAccessCodeGranularity.InMilliseconds();
   for (int i = start_interval; i <= end_interval; ++i) {
     const base::Time generation_timestamp =
-        base::Time::FromJavaTime(i * kAccessCodeGranularity.InMilliseconds());
+        base::Time::FromMillisecondsSinceUnixEpoch(
+            i * kAccessCodeGranularity.InMilliseconds());
     absl::optional<AccessCode> pac = Generate(generation_timestamp);
     if (pac.has_value() && pac->code() == code)
       return pac;

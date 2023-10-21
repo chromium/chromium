@@ -214,7 +214,8 @@ base::Value::Dict CreateCupsPrinterStatusDictionary(
 
   printer_status.Set("printerId", cups_printer_status.GetPrinterId());
   printer_status.Set("timestamp",
-                     cups_printer_status.GetTimestamp().ToJsTimeIgnoringNull());
+                     cups_printer_status.GetTimestamp()
+                         .InMillisecondsFSinceUnixEpochIgnoringNull());
 
   base::Value::List status_reasons;
   for (const auto& reason : cups_printer_status.GetStatusReasons()) {

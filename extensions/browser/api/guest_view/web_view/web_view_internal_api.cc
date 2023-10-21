@@ -1133,9 +1133,10 @@ ExtensionFunction::ResponseAction WebViewInternalClearDataFunction::Run() {
   // gives developers milliseconds, so do a quick conversion before populating
   // the object. Also, Time::FromDoubleT converts double time 0 to empty Time
   // object. So we need to do special handling here.
-  remove_since_ = (ms_since_epoch == 0)
-                      ? base::Time::UnixEpoch()
-                      : base::Time::FromDoubleT(ms_since_epoch / 1000.0);
+  remove_since_ =
+      (ms_since_epoch == 0)
+          ? base::Time::UnixEpoch()
+          : base::Time::FromSecondsSinceUnixEpoch(ms_since_epoch / 1000.0);
 
   remove_mask_ = GetRemovalMask();
   if (bad_message_)

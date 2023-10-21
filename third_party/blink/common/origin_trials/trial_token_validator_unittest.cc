@@ -76,7 +76,8 @@ const uint8_t kSampleTokenSignature[] = {
     0x7e, 0xe4, 0x97, 0x08, 0x81, 0x26, 0x5a, 0x7f, 0x0f};
 
 // The expiry time of the sample token (2033-05-18 03:33:20 UTC).
-const base::Time kSampleTokenExpiryTime = base::Time::FromJsTime(2000000000000);
+const base::Time kSampleTokenExpiryTime =
+    base::Time::FromMillisecondsSinceUnixEpoch(2000000000000);
 
 // This is a trial token signed with the corresponding private key
 // for kTestPublicKeys2
@@ -369,7 +370,9 @@ class TrialTokenValidatorTest : public testing::Test {
     policy_.DisableToken(token_signature);
   }
 
-  base::Time Now() { return base::Time::FromDoubleT(kNowTimestamp); }
+  base::Time Now() {
+    return base::Time::FromSecondsSinceUnixEpoch(kNowTimestamp);
+  }
 
   TrialTokenValidator::OriginInfo WithInfo(const url::Origin& origin) const {
     return TrialTokenValidator::OriginInfo(origin);

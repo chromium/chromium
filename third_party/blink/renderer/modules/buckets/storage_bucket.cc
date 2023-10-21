@@ -125,7 +125,7 @@ ScriptPromise StorageBucket::setExpires(ScriptState* script_state,
   }
 
   remote_->SetExpires(
-      base::Time::FromJsTime(expires),
+      base::Time::FromMillisecondsSinceUnixEpoch(expires),
       WTF::BindOnce(&StorageBucket::DidSetExpires, WrapPersistent(this),
                     WrapPersistent(resolver)));
   return promise;
@@ -322,7 +322,7 @@ void StorageBucket::DidGetExpires(ScriptPromiseResolver* resolver,
         "Unknown error occurred while getting expires."));
   } else if (expires.has_value()) {
     resolver->Resolve(base::Time::kMillisecondsPerSecond *
-                      expires.value().ToDoubleT());
+                      expires.value().InSecondsFSinceUnixEpoch());
   } else {
     resolver->Resolve(v8::Null(script_state->GetIsolate()));
   }

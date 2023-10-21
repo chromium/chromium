@@ -31,7 +31,7 @@ namespace {
 const char kFeedHistogramPrefix[] = "ContentSuggestions.Feed.";
 
 // Converts |t| to a delta from the JS epoch, or 0 if |t| is null.
-base::TimeDelta ToJsTimeDelta(base::Time t) {
+base::TimeDelta InMillisecondsFSinceUnixEpochDelta(base::Time t) {
   return t.is_null() ? base::TimeDelta() : t - base::Time::UnixEpoch();
 }
 
@@ -82,13 +82,15 @@ void FeedV2InternalsPageHandler::GetLastFetchProperties(
   if (debug_data.fetch_info) {
     const feed::NetworkResponseInfo& net_info = *debug_data.fetch_info;
     properties->last_fetch_status = net_info.status_code;
-    properties->last_fetch_time = ToJsTimeDelta(net_info.fetch_time);
+    properties->last_fetch_time =
+        InMillisecondsFSinceUnixEpochDelta(net_info.fetch_time);
     properties->last_bless_nonce = net_info.bless_nonce;
   }
   if (debug_data.upload_info) {
     const feed::NetworkResponseInfo& net_info = *debug_data.upload_info;
     properties->last_action_upload_status = net_info.status_code;
-    properties->last_action_upload_time = ToJsTimeDelta(net_info.fetch_time);
+    properties->last_action_upload_time =
+        InMillisecondsFSinceUnixEpochDelta(net_info.fetch_time);
   }
 
   std::move(callback).Run(std::move(properties));

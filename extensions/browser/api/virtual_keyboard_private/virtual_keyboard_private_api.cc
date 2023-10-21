@@ -72,7 +72,8 @@ void ConvertClipboardHistoryItemToClipboardItem(
   // Populate all `ClipboardItem` fields except `image_data`.
   ClipboardItem item;
   item.id = history_item.id().ToString();
-  item.time_copied = history_item.time_copied().ToJsTimeIgnoringNull();
+  item.time_copied =
+      history_item.time_copied().InMillisecondsFSinceUnixEpochIgnoringNull();
 
   switch (history_item.display_format()) {
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kUnknown:

@@ -61,7 +61,7 @@ void MockQuotaClient::AddBucketToErrorSet(const BucketLocator& bucket) {
 
 base::Time MockQuotaClient::IncrementMockTime() {
   ++mock_time_counter_;
-  return base::Time::FromDoubleT(mock_time_counter_ * 10.0);
+  return base::Time::FromSecondsSinceUnixEpoch(mock_time_counter_ * 10.0);
 }
 
 void MockQuotaClient::GetBucketUsage(const BucketLocator& bucket,

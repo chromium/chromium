@@ -177,7 +177,8 @@ void ImageFetcherBridge::ReportCacheHitTime(
     const jlong start_time_millis) {
   std::string client_name =
       base::android::ConvertJavaStringToUTF8(j_client_name);
-  base::Time start_time = base::Time::FromJavaTime(start_time_millis);
+  base::Time start_time =
+      base::Time::FromMillisecondsSinceUnixEpoch(start_time_millis);
   ImageFetcherMetricsReporter::ReportImageLoadFromCacheTimeJava(client_name,
                                                                 start_time);
 }
@@ -189,7 +190,8 @@ void ImageFetcherBridge::ReportTotalFetchTimeFromNative(
     const jlong start_time_millis) {
   std::string client_name =
       base::android::ConvertJavaStringToUTF8(j_client_name);
-  base::Time start_time = base::Time::FromJavaTime(start_time_millis);
+  base::Time start_time =
+      base::Time::FromMillisecondsSinceUnixEpoch(start_time_millis);
   ImageFetcherMetricsReporter::ReportTotalFetchFromNativeTimeJava(client_name,
                                                                   start_time);
 }

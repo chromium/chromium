@@ -237,7 +237,7 @@ base::Time TabAndroid::GetLastShownTimestamp() const {
   if (timestamp == -1) {
     return base::Time();
   }
-  return base::Time::FromJavaTime(timestamp);
+  return base::Time::FromMillisecondsSinceUnixEpoch(timestamp);
 }
 
 void TabAndroid::DeleteFrozenNavigationEntries(

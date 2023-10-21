@@ -159,7 +159,7 @@ TEST_F(NotificationDelegateTest, ShouldInvokeAddOrUpdateNotification) {
             EXPECT_EQ("grouping_key", output_notification.grouping_key);
             EXPECT_EQ("obfuscated_gaia_id",
                       output_notification.obfuscated_gaia_id);
-            EXPECT_EQ(base::Time::FromJavaTime(100),
+            EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(100),
                       output_notification.expiry_time);
             EXPECT_EQ(true, output_notification.from_server);
           }));

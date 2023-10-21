@@ -373,7 +373,8 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest,
   AddDisconnectedWifiNetwork();
   SetWifiNetworkStatus(NetworkConnectionStatus::kConnected);
 
-  const base::Time kStartTime = base::Time::FromDoubleT(1600600000);
+  const base::Time kStartTime =
+      base::Time::FromSecondsSinceUnixEpoch(1600600000);
   const base::Time kInitializationFinishTime = kStartTime + base::Seconds(5);
 
   clock()->SetNow(kStartTime);
@@ -455,7 +456,8 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest,
   AddDisconnectedWifiNetwork();
   SetWifiNetworkStatus(NetworkConnectionStatus::kConnected);
 
-  const base::Time kStartTime = base::Time::FromDoubleT(1600600000);
+  const base::Time kStartTime =
+      base::Time::FromSecondsSinceUnixEpoch(1600600000);
   const base::Time kInitializationFinishTime = kStartTime + base::Seconds(5);
 
   clock()->SetNow(kStartTime);
@@ -712,7 +714,8 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest,
   AddDisconnectedWifiNetwork();
   SetWifiNetworkStatus(NetworkConnectionStatus::kConnected);
 
-  const base::Time kLastEnrollmentTime = base::Time::FromDoubleT(1600600000);
+  const base::Time kLastEnrollmentTime =
+      base::Time::FromSecondsSinceUnixEpoch(1600600000);
   const base::Time kLastEnrollmentAttemptTime =
       kLastEnrollmentTime + base::Days(30);
   const base::Time kStartTime =
@@ -757,7 +760,8 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest, HandleInvokeNext) {
   AddDisconnectedWifiNetwork();
   SetWifiNetworkStatus(NetworkConnectionStatus::kConnected);
 
-  const base::Time kLastSuccessTime = base::Time::FromDoubleT(1600600000);
+  const base::Time kLastSuccessTime =
+      base::Time::FromSecondsSinceUnixEpoch(1600600000);
   const base::Time kLastAttemptTime = kLastSuccessTime + base::Days(30);
   const base::Time kStartTime = kLastAttemptTime + (kImmediateRetryDelay / 2);
   clock()->SetNow(kStartTime);
@@ -819,7 +823,7 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest,
   AddDisconnectedWifiNetwork();
   SetWifiNetworkStatus(NetworkConnectionStatus::kConnected);
 
-  const base::Time kNow = base::Time::FromDoubleT(1600600000);
+  const base::Time kNow = base::Time::FromSecondsSinceUnixEpoch(1600600000);
   clock()->SetNow(kNow);
 
   cryptauthv2::ClientMetadata expected_device_sync_request =
@@ -943,7 +947,7 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest, RequestsMadeWhileOffline) {
 }
 
 TEST_F(DeviceSyncCryptAuthSchedulerImplTest, RequestsMadeWithNoWifiNetwork) {
-  const base::Time kNow = base::Time::FromDoubleT(1600600000);
+  const base::Time kNow = base::Time::FromSecondsSinceUnixEpoch(1600600000);
   clock()->SetNow(kNow);
   cryptauthv2::ClientMetadata expected_enrollment_request =
       cryptauthv2::BuildClientMetadata(0 /* retry_count */,

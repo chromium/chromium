@@ -326,7 +326,8 @@ TEST(PrinterTranslatorTest, GetCupsPrinterStatusOneReason) {
       CreateCupsPrinterStatusDictionary(cups_printer_status);
 
   EXPECT_EQ("id", *printer_status_dict.FindString("printerId"));
-  EXPECT_EQ(cups_printer_status.GetTimestamp().ToJsTimeIgnoringNull(),
+  EXPECT_EQ(cups_printer_status.GetTimestamp()
+                .InMillisecondsFSinceUnixEpochIgnoringNull(),
             *printer_status_dict.FindDouble("timestamp"));
 
   const base::Value::List* status_reasons =
@@ -356,7 +357,8 @@ TEST(PrinterTranslatorTest, GetCupsPrinterStatusTwoReasons) {
       CreateCupsPrinterStatusDictionary(cups_printer_status);
 
   EXPECT_EQ("id", *printer_status_dict.FindString("printerId"));
-  EXPECT_EQ(cups_printer_status.GetTimestamp().ToJsTimeIgnoringNull(),
+  EXPECT_EQ(cups_printer_status.GetTimestamp()
+                .InMillisecondsFSinceUnixEpochIgnoringNull(),
             *printer_status_dict.FindDouble("timestamp"));
 
   const base::Value::List* status_reasons =

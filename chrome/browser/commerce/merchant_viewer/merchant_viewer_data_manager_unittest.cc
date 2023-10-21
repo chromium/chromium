@@ -33,7 +33,8 @@ merchant_signal_db::MerchantSignalContentProto BuildProto(
     base::Time time_created) {
   merchant_signal_db::MerchantSignalContentProto proto;
   proto.set_key(hostname);
-  proto.set_trust_signals_message_displayed_timestamp(time_created.ToDoubleT());
+  proto.set_trust_signals_message_displayed_timestamp(
+      time_created.InSecondsFSinceUnixEpoch());
   return proto;
 }
 }  // namespace

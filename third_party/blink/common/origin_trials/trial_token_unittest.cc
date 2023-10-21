@@ -689,9 +689,12 @@ class TrialTokenTest : public testing::Test {
         incorrect_domain_origin_(
             url::Origin::Create(GURL(kIncorrectDomainOrigin))),
         invalid_tld_origin_(url::Origin::Create(GURL(kInvalidTLDOrigin))),
-        expected_expiry_(base::Time::FromDoubleT(kExpectedExpiry)),
-        valid_timestamp_(base::Time::FromDoubleT(kValidTimestamp)),
-        invalid_timestamp_(base::Time::FromDoubleT(kInvalidTimestamp)),
+        expected_expiry_(
+            base::Time::FromSecondsSinceUnixEpoch(kExpectedExpiry)),
+        valid_timestamp_(
+            base::Time::FromSecondsSinceUnixEpoch(kValidTimestamp)),
+        invalid_timestamp_(
+            base::Time::FromSecondsSinceUnixEpoch(kInvalidTimestamp)),
         expected_v2_signature_(
             std::string(reinterpret_cast<const char*>(kSampleTokenV2Signature),
                         std::size(kSampleTokenV2Signature))),

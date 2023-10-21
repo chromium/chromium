@@ -132,7 +132,8 @@ std::unique_ptr<FatalCrashEventsObserver> FatalCrashEventsObserver::Create() {
 
 // static
 int64_t FatalCrashEventsObserver::ConvertTimeToMicroseconds(base::Time t) {
-  return t.ToJavaTime() * base::Time::kMicrosecondsPerMillisecond;
+  return t.InMillisecondsSinceUnixEpoch() *
+         base::Time::kMicrosecondsPerMillisecond;
 }
 
 void FatalCrashEventsObserver::SetSkippedUnuploadedCrashCallback(
@@ -579,7 +580,7 @@ FatalCrashEventsObserver::UploadedCrashInfoManager::UploadedCrashInfoManager(
     return;
   }
 
-  uploads_log_creation_time_ = base::Time::FromJavaTime(
+  uploads_log_creation_time_ = base::Time::FromMillisecondsSinceUnixEpoch(
       result.value().uploads_log_creation_timestamp_ms);
   uploads_log_offset_ = result.value().uploads_log_offset;
 }
@@ -672,7 +673,8 @@ Status FatalCrashEventsObserver::UploadedCrashInfoManager::WriteSaveFile()
 
   base::Value::Dict info;
   info.Set(kCreationTimestampMsJsonKey,
-           base::NumberToString(uploads_log_creation_time_.ToJavaTime()));
+           base::NumberToString(
+               uploads_log_creation_time_.InMillisecondsSinceUnixEpoch()));
   info.Set(kOffsetJsonKey, base::NumberToString(uploads_log_offset_));
 
   auto content = base::WriteJson(info);

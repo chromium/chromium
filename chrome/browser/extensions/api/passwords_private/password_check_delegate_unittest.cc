@@ -248,7 +248,7 @@ auto ExpectCompromisedInfo(
     std::vector<api::passwords_private::CompromiseType> compromise_types) {
   return AllOf(Field(&CompromisedInfo::compromise_time,
                      (base::Time::Now() - elapsed_time_since_compromise)
-                         .ToJsTimeIgnoringNull()),
+                         .InMillisecondsFSinceUnixEpochIgnoringNull()),
                Field(&CompromisedInfo::elapsed_time_since_compromise,
                      elapsed_time_since_compromise_str),
                Field(&CompromisedInfo::compromise_types,
@@ -923,7 +923,7 @@ TEST_F(PasswordCheckDelegateTest, LastTimePasswordCheckCompletedNotSet) {
 TEST_F(PasswordCheckDelegateTest, LastTimePasswordCheckCompletedIsSet) {
   profile().GetPrefs()->SetDouble(
       kLastTimePasswordCheckCompleted,
-      (base::Time::Now() - base::Minutes(5)).ToDoubleT());
+      (base::Time::Now() - base::Minutes(5)).InSecondsFSinceUnixEpoch());
 
   PasswordCheckStatus status = delegate().GetPasswordCheckStatus();
   EXPECT_THAT(status.elapsed_time_since_last_check,
@@ -1099,4 +1099,3 @@ TEST_F(PasswordCheckDelegateTest,
 }
 
 }  // namespace extensions
-                          

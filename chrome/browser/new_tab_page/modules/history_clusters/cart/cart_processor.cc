@@ -35,7 +35,8 @@ ntp::history_clusters::cart::mojom::CartPtr CartToMojom(
   }
   cart_mojom->relative_date = base::UTF16ToUTF8(ui::TimeFormat::Simple(
       ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
-      base::Time::Now() - base::Time::FromDoubleT(cart.second.timestamp())));
+      base::Time::Now() -
+          base::Time::FromSecondsSinceUnixEpoch(cart.second.timestamp())));
   cart_mojom->discount_text = cart.second.discount_info().discount_text();
   return cart_mojom;
 }

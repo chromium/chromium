@@ -80,7 +80,7 @@ class OfferNotificationIconViewInteractiveTest : public InteractiveBrowserTest {
 
   void SetUpShoppingServiceToReturnDiscounts() {
     const double expiry_time_sec =
-        (AutofillClock::Now() + base::Days(2)).ToDoubleT();
+        (AutofillClock::Now() + base::Days(2)).InSecondsFSinceUnixEpoch();
 
     auto* mock_shopping_service = static_cast<commerce::MockShoppingService*>(
         commerce::ShoppingServiceFactory::GetForBrowserContext(

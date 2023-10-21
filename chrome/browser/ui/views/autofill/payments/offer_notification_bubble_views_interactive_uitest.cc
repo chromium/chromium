@@ -776,7 +776,7 @@ IN_PROC_BROWSER_TEST_P(
   const int64_t non_merchant_wide_discount_id = 123;
   const int64_t merchant_wide_discount_id = 456;
   const double expiry_time_sec =
-      (AutofillClock::Now() + base::Days(2)).ToDoubleT();
+      (AutofillClock::Now() + base::Days(2)).InSecondsFSinceUnixEpoch();
 
   auto* mock_shopping_service = static_cast<commerce::MockShoppingService*>(
       commerce::ShoppingServiceFactory::GetForBrowserContext(
@@ -858,7 +858,7 @@ IN_PROC_BROWSER_TEST_P(
   const std::string discount_code = "freelisting-discount-code";
   const int64_t non_merchant_wide_discount_id = 123;
   const double expiry_time_sec =
-      (AutofillClock::Now() + base::Days(2)).ToDoubleT();
+      (AutofillClock::Now() + base::Days(2)).InSecondsFSinceUnixEpoch();
   base::HistogramTester histogram_tester;
 
   auto* mock_shopping_service = static_cast<commerce::MockShoppingService*>(
@@ -917,7 +917,7 @@ IN_PROC_BROWSER_TEST_P(
   const std::string discount_code = "freelisting-discount-code";
   const int64_t discount_id = 123;
   const double expiry_time_sec =
-      (AutofillClock::Now() + base::Days(2)).ToDoubleT();
+      (AutofillClock::Now() + base::Days(2)).InSecondsFSinceUnixEpoch();
 
   auto* mock_shopping_service = static_cast<commerce::MockShoppingService*>(
       commerce::ShoppingServiceFactory::GetForBrowserContext(
@@ -1009,7 +1009,7 @@ IN_PROC_BROWSER_TEST_P(
   const int64_t non_merchant_wide_discount_id = 123;
   const int64_t merchant_wide_discount_id = 456;
   const double expiry_time_sec =
-      (AutofillClock::Now() + base::Days(2)).ToDoubleT();
+      (AutofillClock::Now() + base::Days(2)).InSecondsFSinceUnixEpoch();
 
   auto* mock_shopping_service = static_cast<commerce::MockShoppingService*>(
       commerce::ShoppingServiceFactory::GetForBrowserContext(
@@ -1098,7 +1098,7 @@ IN_PROC_BROWSER_TEST_P(
   const std::string discount_code = "freelisting-discount-code";
   const int64_t non_merchant_wide_discount_id = 123;
   const double expiry_time_sec =
-      (AutofillClock::Now() + base::Days(2)).ToDoubleT();
+      (AutofillClock::Now() + base::Days(2)).InSecondsFSinceUnixEpoch();
 
   auto* mock_shopping_service = static_cast<commerce::MockShoppingService*>(
       commerce::ShoppingServiceFactory::GetForBrowserContext(
@@ -1139,7 +1139,7 @@ IN_PROC_BROWSER_TEST_P(
   const std::string discount_code = "freelisting-discount-code";
   const int64_t non_merchant_wide_discount_id = 123;
   const double expiry_time_sec =
-      (AutofillClock::Now() + base::Days(2)).ToDoubleT();
+      (AutofillClock::Now() + base::Days(2)).InSecondsFSinceUnixEpoch();
   base::HistogramTester histogram_tester;
 
   auto* mock_shopping_service = static_cast<commerce::MockShoppingService*>(

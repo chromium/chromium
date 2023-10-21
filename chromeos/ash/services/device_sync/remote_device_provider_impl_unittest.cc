@@ -63,8 +63,9 @@ multidevice::RemoteDevice CreateRemoteDeviceForTest(const std::string& suffix,
                      : std::string(),
       kTestRemoteDevicePskPrefix + suffix, 100L /* last_update_time_millis */,
       {} /* software_features */,
-      {multidevice::BeaconSeed(beacon_seed_data, base::Time::FromJavaTime(200L),
-                               base::Time::FromJavaTime(300L))},
+      {multidevice::BeaconSeed(
+          beacon_seed_data, base::Time::FromMillisecondsSinceUnixEpoch(200L),
+          base::Time::FromMillisecondsSinceUnixEpoch(300L))},
       kTestRemoteDeviceBluetoothPublicAddressPrefix + suffix);
 }
 
@@ -139,14 +140,14 @@ CryptAuthDevice ConvertRemoteDeviceToCryptAuthDevice(
   for (const multidevice::BeaconSeed& seed : remote_device.beacon_seeds)
     *beto_device_metadata.add_beacon_seeds() = ToCryptAuthV2Seed(seed);
 
-  return CryptAuthDevice(
-      remote_device.instance_id, remote_device.name,
-      "DeviceSync:BetterTogether public key",
-      base::Time::FromJavaTime(remote_device.last_update_time_millis),
-      remote_device.public_key.empty()
-          ? absl::nullopt
-          : absl::make_optional(beto_device_metadata),
-      remote_device.software_features);
+  return CryptAuthDevice(remote_device.instance_id, remote_device.name,
+                         "DeviceSync:BetterTogether public key",
+                         base::Time::FromMillisecondsSinceUnixEpoch(
+                             remote_device.last_update_time_millis),
+                         remote_device.public_key.empty()
+                             ? absl::nullopt
+                             : absl::make_optional(beto_device_metadata),
+                         remote_device.software_features);
 }
 
 class TestObserver : public RemoteDeviceProvider::Observer {

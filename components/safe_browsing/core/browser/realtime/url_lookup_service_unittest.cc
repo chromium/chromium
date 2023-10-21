@@ -279,7 +279,7 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
     ChromeUserPopulation::PageLoadToken token;
     token.set_token_source(
         ChromeUserPopulation::PageLoadToken::CLIENT_GENERATION);
-    token.set_token_time_msec(base::Time::Now().ToJavaTime());
+    token.set_token_time_msec(base::Time::Now().InMillisecondsSinceUnixEpoch());
     token.set_token_value(token_value);
     return token;
   }
@@ -817,7 +817,7 @@ TEST_F(RealTimeUrlLookupServiceTest, TestReferrerChain_ReferrerChainAttached) {
                         "example.test/",
                         RTLookupResponse::ThreatInfo::COVERING_MATCH);
   ReferrerChain returned_referrer_chain;
-  double current_ts = base::Time::Now().ToDoubleT();
+  double current_ts = base::Time::Now().InSecondsFSinceUnixEpoch();
   returned_referrer_chain.Add()->Swap(
       CreateReferrerChainEntry(kTestUrl, /*main_frame_url=*/"",
                                /*referrer_url=*/"",
@@ -861,7 +861,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
                         "example.test/",
                         RTLookupResponse::ThreatInfo::COVERING_MATCH);
   ReferrerChain returned_referrer_chain;
-  double current_ts = base::Time::Now().ToDoubleT();
+  double current_ts = base::Time::Now().InSecondsFSinceUnixEpoch();
   returned_referrer_chain.Add()->Swap(
       CreateReferrerChainEntry(kTestSubframeUrl, kTestUrl,
                                kTestSubframeReferrerUrl, kTestReferrerUrl,
@@ -926,7 +926,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
                         "example.test/",
                         RTLookupResponse::ThreatInfo::COVERING_MATCH);
   ReferrerChain returned_referrer_chain;
-  double current_ts = base::Time::Now().ToDoubleT();
+  double current_ts = base::Time::Now().InSecondsFSinceUnixEpoch();
   returned_referrer_chain.Add()->Swap(
       CreateReferrerChainEntry(kTestSubframeUrl, kTestUrl,
                                kTestSubframeReferrerUrl, kTestReferrerUrl,
@@ -984,7 +984,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
   returned_referrer_chain.Add()->Swap(
       CreateReferrerChainEntry(kTestSubframeUrl, kTestUrl,
                                kTestSubframeReferrerUrl, kTestReferrerUrl,
-                               base::Time::Now().ToDoubleT())
+                               base::Time::Now().InSecondsFSinceUnixEpoch())
           .get());
 
   task_environment_.FastForwardBy(base::Minutes(1));
@@ -998,7 +998,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
       CreateReferrerChainEntry(kTestSubframeReferrerUrl, kTestReferrerUrl,
                                /*referrer_url=*/"",
                                /*referrer_main_frame_url=*/"",
-                               base::Time::Now().ToDoubleT())
+                               base::Time::Now().InSecondsFSinceUnixEpoch())
           .get());
   EXPECT_CALL(*referrer_chain_provider_,
               IdentifyReferrerChainByPendingEventURL(

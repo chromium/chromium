@@ -33,7 +33,7 @@ void DeprecationReportBody::BuildJSONValue(V8ObjectBuilder& builder) const {
     DateComponents anticipated_removal_date;
     bool is_valid =
         anticipated_removal_date.SetMillisecondsSinceEpochForDateTimeLocal(
-            anticipated_removal_->ToJsTimeIgnoringNull());
+            anticipated_removal_->InMillisecondsFSinceUnixEpochIgnoringNull());
     if (!is_valid) {
       builder.AddNull("anticipatedRemoval");
     } else {

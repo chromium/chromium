@@ -158,8 +158,9 @@ base::RepeatingCallback<bool(Args...)> WithSwitch(
       base::BindLambdaForTesting([=](const std::string& flag, Args... args) {
         double flag_value;
         if (base::StringToDouble(flag, &flag_value)) {
-          return callback.Run(base::Time::FromJsTime(flag_value),
-                              std::move(args)...);
+          return callback.Run(
+              base::Time::FromMillisecondsSinceUnixEpoch(flag_value),
+              std::move(args)...);
         }
         return false;
       }));

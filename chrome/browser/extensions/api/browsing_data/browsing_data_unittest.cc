@@ -151,7 +151,7 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
     double expected_since = 0;
     if (since_pref != browsing_data::TimePeriod::ALL_TIME) {
       base::Time time = CalculateBeginDeleteTime(since_pref);
-      expected_since = time.ToJsTime();
+      expected_since = time.InMillisecondsFSinceUnixEpoch();
     }
     // Even a synchronous function takes nonzero time, but the difference
     // between when the function was called and now should be well under a
@@ -356,7 +356,7 @@ TEST_F(BrowsingDataApiTest, RemoveBrowsingDataAll) {
   EXPECT_FALSE(RunFunctionAndReturnSingleResult(
       function.get(), kRemoveEverythingArguments, browser()->profile()));
 
-  EXPECT_EQ(base::Time::FromDoubleT(1.0), GetBeginTime());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(1.0), GetBeginTime());
   EXPECT_EQ(
       // TODO(benwells): implement clearing of site usage data via the
       // browsing data API. https://crbug.com/500801.

@@ -327,7 +327,8 @@ HRESULT MediaFoundationCdmSession::UpdateExpirationIfNeeded() {
   // an instant in time with millisecond accuracy.
   double new_expiration_ms = 0.0;
   RETURN_IF_FAILED(mf_cdm_session_->GetExpiration(&new_expiration_ms));
-  auto new_expiration = base::Time::FromJsTime(new_expiration_ms);
+  auto new_expiration =
+      base::Time::FromMillisecondsSinceUnixEpoch(new_expiration_ms);
 
   if (new_expiration == expiration_)
     return S_OK;

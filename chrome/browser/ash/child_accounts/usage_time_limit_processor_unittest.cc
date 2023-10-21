@@ -139,14 +139,14 @@ TEST_F(UsageTimeLimitProcessorInternalTest, TimeUsageWindowValid) {
                 .usage_quota.InMinutes(),
             120);
   ASSERT_EQ(usage_limit_struct.entries[Weekday::kTuesday].value().last_updated,
-            base::Time::FromDoubleT(1514800800));
+            base::Time::FromSecondsSinceUnixEpoch(1514800800));
 
   ASSERT_EQ(usage_limit_struct.entries[Weekday::kThursday]
                 .value()
                 .usage_quota.InMinutes(),
             80);
   ASSERT_EQ(usage_limit_struct.entries[Weekday::kThursday].value().last_updated,
-            base::Time::FromDoubleT(1514804400));
+            base::Time::FromSecondsSinceUnixEpoch(1514804400));
 
   // Assert that weekdays without time_usage_limits are not set.
   ASSERT_FALSE(usage_limit_struct.entries[Weekday::kMonday]);
@@ -270,7 +270,8 @@ TEST_F(UsageTimeLimitProcessorInternalTest, MultipleOverrides) {
   // Assert right fields are set.
   ASSERT_TRUE(override_struct.has_value());
   EXPECT_EQ(override_struct->action(), TimeLimitOverride::Action::kUnlock);
-  EXPECT_EQ(override_struct->created_at(), base::Time::FromJavaTime(1200000));
+  EXPECT_EQ(override_struct->created_at(),
+            base::Time::FromMillisecondsSinceUnixEpoch(1200000));
   EXPECT_FALSE(override_struct->duration());
 }
 

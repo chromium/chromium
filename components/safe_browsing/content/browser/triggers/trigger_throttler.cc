@@ -166,7 +166,7 @@ void TriggerThrottler::LoadTriggerEventsFromPref() {
     for (const auto& timestamp : trigger_pair.second.GetList()) {
       if (timestamp.is_double())
         trigger_events_[trigger_type].push_back(
-            base::Time::FromDoubleT(timestamp.GetDouble()));
+            base::Time::FromSecondsSinceUnixEpoch(timestamp.GetDouble()));
     }
   }
 }
@@ -179,7 +179,7 @@ void TriggerThrottler::WriteTriggerEventsToPref() {
   for (const auto& trigger_item : trigger_events_) {
     base::Value::List timestamps;
     for (const base::Time timestamp : trigger_item.second) {
-      timestamps.Append(timestamp.ToDoubleT());
+      timestamps.Append(timestamp.InSecondsFSinceUnixEpoch());
     }
 
     trigger_dict.Set(base::NumberToString(static_cast<int>(trigger_item.first)),

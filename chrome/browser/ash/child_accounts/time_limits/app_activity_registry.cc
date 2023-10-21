@@ -450,13 +450,15 @@ AppActivityRegistry::GenerateAppActivityReport(
           app_service_wrapper_->GetAppServiceId(app_id));
     }
     app_activity->set_app_state(AppStateForReporting(entry.app_state()));
-    app_activity->set_populated_at(timestamp.ToJavaTime());
+    app_activity->set_populated_at(timestamp.InMillisecondsSinceUnixEpoch());
 
     for (const auto& active_time : active_times) {
       enterprise_management::TimePeriod* time_period =
           app_activity->add_active_time_periods();
-      time_period->set_start_timestamp(active_time.active_from().ToJavaTime());
-      time_period->set_end_timestamp(active_time.active_to().ToJavaTime());
+      time_period->set_start_timestamp(
+          active_time.active_from().InMillisecondsSinceUnixEpoch());
+      time_period->set_end_timestamp(
+          active_time.active_to().InMillisecondsSinceUnixEpoch());
     }
     anything_reported = true;
   }

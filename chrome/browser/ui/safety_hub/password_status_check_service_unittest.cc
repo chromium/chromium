@@ -147,7 +147,7 @@ class PasswordStatusCheckServiceBaseTest : public testing::Test {
     base::Time check_time = base::Time::Now() - time_ago;
     profile().GetPrefs()->SetDouble(
         password_manager::prefs::kLastTimePasswordCheckCompleted,
-        check_time.ToDoubleT());
+        check_time.InSecondsFSinceUnixEpoch());
   }
 
   void RunUntilIdle() { task_env_.RunUntilIdle(); }
@@ -629,7 +629,7 @@ TEST_P(PasswordStatusCheckServiceParameterizedCardTest, PasswordCardState) {
   if (check_ran_previously()) {
     profile().GetPrefs()->SetDouble(
         password_manager::prefs::kLastTimePasswordCheckCompleted,
-        base::Time::Now().ToDoubleT());
+        base::Time::Now().InSecondsFSinceUnixEpoch());
   }
   if (include_safe_password()) {
     profile_store().AddLogin(MakeForm(kUsername1, kPassword));

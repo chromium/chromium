@@ -81,7 +81,7 @@ class AutocompleteHistoryManagerTest : public testing::Test {
                        CHROME_VERSION_MAJOR);
 
     // Set time to some arbitrary date.
-    test_clock.SetNow(base::Time::FromDoubleT(1546889367));
+    test_clock.SetNow(base::Time::FromSecondsSinceUnixEpoch(1546889367));
     web_data_service_ = base::MakeRefCounted<MockAutofillWebDataService>();
     autocomplete_manager_ = std::make_unique<AutocompleteHistoryManager>();
     autocomplete_manager_->Init(web_data_service_, prefs_.get(), false);

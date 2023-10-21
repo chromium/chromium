@@ -196,8 +196,8 @@ IN_PROC_BROWSER_TEST_F(AggregationServiceInternalsWebUiBrowserTest,
         }
       });
       obs.observe(table, {'childList': true});)";
-    EXPECT_TRUE(ExecJsInWebUI(
-        JsReplace(wait_script, kCompleteTitle, (now).ToJsTime())));
+    EXPECT_TRUE(ExecJsInWebUI(JsReplace(
+        wait_script, kCompleteTitle, (now).InMillisecondsFSinceUnixEpoch())));
 
     TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
     ClickRefreshButton();

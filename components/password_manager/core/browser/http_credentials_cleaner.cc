@@ -29,7 +29,7 @@ HttpCredentialCleaner::HttpCredentialCleaner(
 HttpCredentialCleaner::~HttpCredentialCleaner() = default;
 
 bool HttpCredentialCleaner::NeedsCleaning() {
-  auto last = base::Time::FromDoubleT(prefs_->GetDouble(
+  auto last = base::Time::FromSecondsSinceUnixEpoch(prefs_->GetDouble(
       password_manager::prefs::kLastTimeObsoleteHttpCredentialsRemoved));
   return ((base::Time::Now() - last).InDays() >= kCleanUpDelayInDays);
 }
@@ -120,7 +120,7 @@ void HttpCredentialCleaner::SetPrefIfDone() {
     return;
 
   prefs_->SetDouble(prefs::kLastTimeObsoleteHttpCredentialsRemoved,
-                    base::Time::Now().ToDoubleT());
+                    base::Time::Now().InSecondsFSinceUnixEpoch());
   observer_->CleaningCompleted();
 }
 

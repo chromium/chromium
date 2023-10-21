@@ -370,7 +370,8 @@ inline v8::Local<v8::Value> ToV8(T&& value, ScriptState* script_state) {
 
 // Date
 inline v8::Local<v8::Value> ToV8(base::Time date, ScriptState* script_state) {
-  return v8::Date::New(script_state->GetContext(), date.ToJsTimeIgnoringNull())
+  return v8::Date::New(script_state->GetContext(),
+                       date.InMillisecondsFSinceUnixEpochIgnoringNull())
       .ToLocalChecked();
 }
 

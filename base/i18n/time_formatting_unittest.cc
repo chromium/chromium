@@ -40,9 +40,10 @@ std::u16string GetShortTimeZone(const Time& time) {
       icu::TimeZoneFormat::createInstance(icu::Locale::getDefault(), status));
   EXPECT_TRUE(U_SUCCESS(status));
   icu::UnicodeString name;
-  zone_formatter->format(UTZFMT_STYLE_SPECIFIC_SHORT, *zone,
-                         static_cast<UDate>(time.ToDoubleT() * 1000),
-                         name, nullptr);
+  zone_formatter->format(
+      UTZFMT_STYLE_SPECIFIC_SHORT, *zone,
+      static_cast<UDate>(time.InSecondsFSinceUnixEpoch() * 1000), name,
+      nullptr);
   return i18n::UnicodeStringToString16(name);
 }
 

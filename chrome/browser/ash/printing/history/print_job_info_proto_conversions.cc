@@ -136,7 +136,7 @@ proto::PrintJobInfo_PrinterErrorCode PrinterErrorCodeToProto(
 // Helper method to convert base::Time to the number of milliseconds past the
 // Unix epoch. Loses precision beyond milliseconds.
 int64_t TimeToMillisecondsPastUnixEpoch(const base::Time& time) {
-  return static_cast<int64_t>(time.ToJsTime());
+  return static_cast<int64_t>(time.InMillisecondsFSinceUnixEpoch());
 }
 
 proto::Printer PrinterToProto(const chromeos::Printer& printer) {

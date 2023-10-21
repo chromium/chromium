@@ -57,7 +57,7 @@ String ToBase64URLWithoutPadding(DOMArrayBuffer* buffer) {
 absl::optional<blink::DOMTimeStamp> ToDOMTimeStamp(
     const absl::optional<base::Time>& time) {
   if (time)
-    return ConvertSecondsToDOMTimeStamp(time->ToDoubleT());
+    return ConvertSecondsToDOMTimeStamp(time->InSecondsFSinceUnixEpoch());
 
   return absl::nullopt;
 }

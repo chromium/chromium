@@ -68,7 +68,8 @@ TEST_F(CloudPolicyServiceTest, PolicyUpdateSuccess) {
       .Times(1);
   EXPECT_CALL(client_, UploadPolicyValidationReport(_, _, _, _)).Times(0);
   store_.NotifyStoreLoaded();
-  EXPECT_EQ(base::Time::FromJavaTime(32), client_.last_policy_timestamp_);
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(32),
+            client_.last_policy_timestamp_);
   EXPECT_TRUE(client_.public_key_version_valid_);
   EXPECT_EQ(17, client_.public_key_version_);
 }

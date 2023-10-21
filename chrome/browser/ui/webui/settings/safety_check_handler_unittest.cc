@@ -127,7 +127,7 @@ class TestTimestampDelegate : public TimestampDelegate {
     // 1 second before midnight Dec 31st 2020, so that -(24h-1s) is still on the
     // same day. This test time is hard coded to prevent DST flakiness, see
     // crbug.com/1066576.
-    return base::Time::FromDoubleT(1609459199).LocalMidnight() -
+    return base::Time::FromSecondsSinceUnixEpoch(1609459199).LocalMidnight() -
            base::Seconds(1);
   }
 };
@@ -1549,7 +1549,8 @@ TEST_F(SafetyCheckHandlerTest, CheckParentRanDisplayString) {
   // same day. This test time is hard coded to prevent DST flakiness, see
   // crbug.com/1066576.
   const base::Time system_time =
-      base::Time::FromDoubleT(1609459199).LocalMidnight() - base::Seconds(1);
+      base::Time::FromSecondsSinceUnixEpoch(1609459199).LocalMidnight() -
+      base::Seconds(1);
   // Display strings for given time deltas in seconds.
   std::vector<std::tuple<std::u16string, int>> tuples{
       std::make_tuple(u"a moment ago", 1),

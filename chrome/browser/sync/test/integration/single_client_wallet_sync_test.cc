@@ -90,7 +90,8 @@ MATCHER(AddressHasConverted, "") {
 
 const char kLocalGuidA[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44A";
 const char kDifferentBillingAddressId[] = "another address entity ID";
-const base::Time kArbitraryDefaultTime = base::Time::FromDoubleT(25);
+const base::Time kArbitraryDefaultTime =
+    base::Time::FromSecondsSinceUnixEpoch(25);
 
 template <class T>
 class AutofillWebDataServiceConsumer : public WebDataServiceConsumer {

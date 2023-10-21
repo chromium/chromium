@@ -220,7 +220,7 @@ void ComponentCloudPolicyStore::Load() {
     policy_bundle_.Get(ns).Swap(&policy);
     cached_hashes_[ns] = payload.secure_hash();
     stored_policy_times_[ns] =
-        base::Time::FromJavaTime(policy_data.timestamp());
+        base::Time::FromMillisecondsSinceUnixEpoch(policy_data.timestamp());
   }
   delegate_->OnComponentCloudPolicyStoreUpdated();
 }
@@ -253,7 +253,8 @@ bool ComponentCloudPolicyStore::Store(const PolicyNamespace& ns,
   // And expose the policy.
   policy_bundle_.Get(ns).Swap(&policy);
   cached_hashes_[ns] = secure_hash;
-  stored_policy_times_[ns] = base::Time::FromJavaTime(policy_data->timestamp());
+  stored_policy_times_[ns] =
+      base::Time::FromMillisecondsSinceUnixEpoch(policy_data->timestamp());
   delegate_->OnComponentCloudPolicyStoreUpdated();
   return true;
 }

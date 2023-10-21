@@ -297,7 +297,7 @@ void AudioDevicesPrefHandlerImpl::DropLeastRecentlySeenDevices(
   base::Value::Dict& last_seen = last_seen_update.Get();
 
   // Set timestamp of connected devices.
-  double time = base::Time::Now().ToDoubleT();
+  double time = base::Time::Now().InSecondsFSinceUnixEpoch();
   for (AudioDevice device : connected_devices) {
     last_seen.Set(GetDeviceIdString(device), time);
   }

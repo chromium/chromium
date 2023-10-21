@@ -1110,7 +1110,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
       "pu2RWy4VHhJ6dnNYoaLbdXnhQUmOxjxcoIarc6lrgGvmKBwgAAABdeyJvcmlnaW4iOiAiaHR"
       "0cHM6Ly8xMjcuMC4wLjE6NDQ0NDQiLCAiZmVhdHVyZSI6ICJGcm9idWxhdGVQZXJzaXN0ZW5"
       "0IiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9";
-  base::Time validTime = base::Time::FromDoubleT(1000000000);
+  base::Time validTime = base::Time::FromSecondsSinceUnixEpoch(1000000000);
   SetOriginTrialToken(kValidToken);
 
   EXPECT_TRUE(NavigateToURL(shell(), meta_tag_origin_trial_url()));
@@ -1131,7 +1131,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
                        BrowserRejectsInvalidTokensFromMetaTags) {
   const char kInvalidToken[] = "invalid";
-  base::Time validTime = base::Time::FromDoubleT(1000000000);
+  base::Time validTime = base::Time::FromSecondsSinceUnixEpoch(1000000000);
   SetOriginTrialToken(kInvalidToken);
 
   EXPECT_TRUE(NavigateToURL(shell(), meta_tag_origin_trial_url()));
@@ -1163,7 +1163,7 @@ IN_PROC_BROWSER_TEST_F(
       "azzrkWAxUw8AAACIeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NDUiLCAiZmVh"
       "dHVyZSI6ICJGcm9idWxhdGVQZXJzaXN0ZW50VGhpcmRQYXJ0eURlcHJlY2F0aW9uIiwgImV4"
       "cGlyeSI6IDIwMDAwMDAwMDAsICJpc1RoaXJkUGFydHkiOiB0cnVlfQ==";
-  base::Time validTime = base::Time::FromDoubleT(1000000000);
+  base::Time validTime = base::Time::FromSecondsSinceUnixEpoch(1000000000);
   SetOriginTrialToken(kValidToken);
 
   EXPECT_TRUE(NavigateToURL(shell(), script_meta_tag_origin_trial_url()));
@@ -1194,7 +1194,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
       "RQz0ZtVOfRufZVsYjATJe5DNuDjLtH4IjC5tYUQiDq6hsQgAAABzeyJvcmlnaW4iOiAiaHR0"
       "cHM6Ly8xMjcuMC4wLjE6NDQ0NDUiLCAiZmVhdHVyZSI6ICJGcm9idWxhdGVQZXJzaXN0ZW50"
       "IiwgImV4cGlyeSI6IDIwMDAwMDAwMDAsICJpc1RoaXJkUGFydHkiOiB0cnVlfQ==";
-  base::Time validTime = base::Time::FromDoubleT(1000000000);
+  base::Time validTime = base::Time::FromSecondsSinceUnixEpoch(1000000000);
   SetOriginTrialToken(kValidToken);
 
   EXPECT_TRUE(NavigateToURL(shell(), script_meta_tag_origin_trial_url()));

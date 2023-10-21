@@ -91,7 +91,8 @@ void OneShotCollector::OnMetricDataCollected(
     return;
   }
 
-  metric_data->set_timestamp_ms(base::Time::Now().ToJavaTime());
+  metric_data->set_timestamp_ms(
+      base::Time::Now().InMillisecondsSinceUnixEpoch());
   if (is_event_driven) {
     CHECK(metric_data->has_telemetry_data());
     metric_data->mutable_telemetry_data()->set_is_event_driven(is_event_driven);

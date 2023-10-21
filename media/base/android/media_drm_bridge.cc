@@ -807,8 +807,8 @@ void MediaDrmBridge::OnSessionKeysChange(
 // spec uses to indicate that the license will never expire [5].
 // [1]
 // http://developer.android.com/reference/android/media/MediaDrm.OnExpirationUpdateListener.html
-// [2] See base::Time::FromDoubleT()
-// [3] See base::Time::ToJavaTime()
+// [2] See base::Time::FromSecondsSinceUnixEpoch()
+// [3] See base::Time::InMillisecondsSinceUnixEpoch()
 // [4] See MediaKeySession::expirationChanged()
 // [5] https://github.com/w3c/encrypted-media/issues/58
 void MediaDrmBridge::OnSessionExpirationUpdate(
@@ -821,8 +821,9 @@ void MediaDrmBridge::OnSessionExpirationUpdate(
   JavaByteArrayToString(env, j_session_id, &session_id);
   task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(session_expiration_update_cb_, std::move(session_id),
-                     base::Time::FromDoubleT(expiry_time_ms / 1000.0)));
+      base::BindOnce(
+          session_expiration_update_cb_, std::move(session_id),
+          base::Time::FromSecondsSinceUnixEpoch(expiry_time_ms / 1000.0)));
 }
 
 //------------------------------------------------------------------------------

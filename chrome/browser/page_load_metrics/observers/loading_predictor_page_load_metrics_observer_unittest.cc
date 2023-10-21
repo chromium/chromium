@@ -50,7 +50,7 @@ class LoadingPredictorPageLoadMetricsObserverTest
     collector_ = std::make_unique<LoadingDataCollector>(predictor_.get(),
                                                         nullptr, config);
     predictors::LoadingPredictorTabHelper::CreateForWebContents(web_contents());
-    timing_.navigation_start = base::Time::FromDoubleT(1);
+    timing_.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
     timing_.parse_timing->parse_start = base::Milliseconds(10);
     timing_.paint_timing->first_paint = base::Seconds(2);
     timing_.paint_timing->first_contentful_paint = base::Seconds(3);

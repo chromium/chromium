@@ -154,7 +154,8 @@ TEST(SerializedScriptValueTest, FileConstructorFile) {
   V8TestingScope scope;
   scoped_refptr<BlobDataHandle> blob_data_handle = BlobDataHandle::Create();
   auto* original_file = MakeGarbageCollected<File>(
-      "hello.txt", base::Time::FromJsTime(12345678.0), blob_data_handle);
+      "hello.txt", base::Time::FromMillisecondsSinceUnixEpoch(12345678.0),
+      blob_data_handle);
   ASSERT_FALSE(original_file->HasBackingFile());
   ASSERT_EQ(File::kIsNotUserVisible, original_file->GetUserVisibility());
   ASSERT_EQ("hello.txt", original_file->name());

@@ -219,7 +219,7 @@ void AwFeatureListCreator::SetUpFieldTrials() {
     // than base::Time::Now() because we want to compute seed freshness based on
     // the initial download time, which happened in the service at some earlier
     // point.
-    seed_date = base::Time::FromJavaTime(seed_proto->date());
+    seed_date = base::Time::FromMillisecondsSinceUnixEpoch(seed_proto->date());
 
     seed = std::make_unique<variations::SeedResponse>();
     seed->data = seed_proto->seed_data();

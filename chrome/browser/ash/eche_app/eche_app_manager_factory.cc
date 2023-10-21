@@ -112,7 +112,7 @@ void LaunchWebApp(const std::string& package_name,
   url.append(visible_name);
   url.append(u"&timestamp=");
 
-  double now_seconds = base::Time::Now().ToDoubleT();
+  double now_seconds = base::Time::Now().InSecondsFSinceUnixEpoch();
   int64_t now_ms = static_cast<int64_t>(now_seconds * 1000);
   url.append(base::NumberToString16(now_ms));
 

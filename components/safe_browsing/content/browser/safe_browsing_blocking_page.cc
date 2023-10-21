@@ -150,8 +150,8 @@ void SafeBrowsingBlockingPage::OnInterstitialClosing() {
           security_interstitials::SecurityInterstitialCommand::
               CMD_CLOSE_INTERSTITIAL_WITHOUT_UI,
           security_interstitials::InterstitialInteractionDetails(
-              1, base::Time::Now().ToJavaTime(),
-              base::Time::Now().ToJavaTime()));
+              1, base::Time::Now().InMillisecondsSinceUnixEpoch(),
+              base::Time::Now().InMillisecondsSinceUnixEpoch()));
     }
   }
   // With committed interstitials OnProceed and OnDontProceed don't get

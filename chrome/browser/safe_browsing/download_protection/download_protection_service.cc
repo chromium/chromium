@@ -83,7 +83,8 @@ void AddEventUrlToReferrerChain(const download::DownloadItem& item,
   event_url_entry->set_referrer_url(
       render_frame_host->GetLastCommittedURL().spec());
   event_url_entry->set_is_retargeting(false);
-  event_url_entry->set_navigation_time_msec(base::Time::Now().ToJavaTime());
+  event_url_entry->set_navigation_time_msec(
+      base::Time::Now().InMillisecondsSinceUnixEpoch());
   for (const GURL& url : item.GetUrlChain())
     event_url_entry->add_server_redirect_chain()->set_url(url.spec());
 }

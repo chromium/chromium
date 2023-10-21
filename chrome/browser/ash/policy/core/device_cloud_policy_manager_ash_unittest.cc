@@ -620,7 +620,7 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
     // Set up test data.
     device_policy_->SetDefaultNewSigningKey();
     device_policy_->policy_data().set_timestamp(
-        base::Time::NowFromSystemTime().ToJavaTime());
+        base::Time::NowFromSystemTime().InMillisecondsSinceUnixEpoch());
     device_policy_->Build();
 
     register_response_.mutable_register_response()->set_device_management_token(

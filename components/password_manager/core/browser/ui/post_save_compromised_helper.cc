@@ -43,7 +43,8 @@ void PostSaveCompromisedHelper::AnalyzeLeakedCredentials(
   // If the check was never completed then |kLastTimePasswordCheckCompleted|
   // contains 0.
   if (!last_check_completed ||
-      base::Time::Now() - base::Time::FromDoubleT(last_check_completed) >=
+      base::Time::Now() -
+              base::Time::FromSecondsSinceUnixEpoch(last_check_completed) >=
           kMaxTimeSinceLastCheck) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,

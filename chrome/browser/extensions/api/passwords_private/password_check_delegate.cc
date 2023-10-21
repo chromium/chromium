@@ -207,7 +207,8 @@ api::passwords_private::CompromisedInfo CreateCompromiseInfo(
   // Weak credentials don't have compromise time, they also can't be muted.
   if (IsCompromised(credential)) {
     compromise_info.compromise_time =
-        credential.GetLastLeakedOrPhishedTime().ToJsTimeIgnoringNull();
+        credential.GetLastLeakedOrPhishedTime()
+            .InMillisecondsFSinceUnixEpochIgnoringNull();
     compromise_info.elapsed_time_since_compromise =
         FormatElapsedTime(credential.GetLastLeakedOrPhishedTime());
     compromise_info.is_muted = credential.IsMuted();
@@ -460,7 +461,7 @@ void PasswordCheckDelegate::
     RecordAndNotifyAboutCompletedCompromisedPasswordCheck() {
   profile_->GetPrefs()->SetDouble(
       password_manager::prefs::kLastTimePasswordCheckCompleted,
-      base::Time::Now().ToDoubleT());
+      base::Time::Now().InSecondsFSinceUnixEpoch());
   profile_->GetPrefs()->SetTime(
       password_manager::prefs::kSyncedLastTimePasswordCheckCompleted,
       base::Time::Now());

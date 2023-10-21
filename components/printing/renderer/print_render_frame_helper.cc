@@ -680,7 +680,8 @@ void PrintHeaderAndFooter(cc::PaintCanvas* canvas,
   ExecuteScript(frame, kPageLoadScriptFormat, html);
 
   base::Value::Dict options;
-  options.Set(kSettingHeaderFooterDate, base::Time::Now().ToJsTime());
+  options.Set(kSettingHeaderFooterDate,
+              base::Time::Now().InMillisecondsFSinceUnixEpoch());
   options.Set("width", static_cast<double>(page_size.width()));
   options.Set("height", static_cast<double>(page_size.height()));
   options.Set("topMargin", page_layout.margin_top);

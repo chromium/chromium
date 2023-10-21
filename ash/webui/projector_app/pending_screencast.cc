@@ -57,7 +57,9 @@ void PendingScreencastContainer::SetName(const std::string& name) {
 
 void PendingScreencastContainer::SetCreatedTime(base::Time created_time) {
   pending_screencast_.created_time =
-      created_time.is_null() ? 0.0 : created_time.ToJsTimeIgnoringNull();
+      created_time.is_null()
+          ? 0.0
+          : created_time.InMillisecondsFSinceUnixEpochIgnoringNull();
 }
 
 bool PendingScreencastContainer::operator==(

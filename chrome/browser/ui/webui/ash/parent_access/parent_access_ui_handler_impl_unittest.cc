@@ -269,8 +269,9 @@ TEST_P(ParentAccessUiHandlerImplTestParameterized,
   base::Base64Encode(parent_access_callback.SerializeAsString(),
                      &encoded_parent_access_callback);
 
-  EXPECT_CALL(delegate_, SetApproved(pat->token(), base::Time::FromDoubleT(
-                                                       expire_time->seconds())))
+  EXPECT_CALL(delegate_,
+              SetApproved(pat->token(), base::Time::FromSecondsSinceUnixEpoch(
+                                            expire_time->seconds())))
       .Times(1);
 
   base::RunLoop run_loop;

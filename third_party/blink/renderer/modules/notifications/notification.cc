@@ -175,7 +175,7 @@ Notification::Notification(ExecutionContext* context,
       listener_receiver_(this, context) {
   if (data_->show_trigger_timestamp.has_value()) {
     show_trigger_ = TimestampTrigger::Create(static_cast<DOMTimeStamp>(
-        data_->show_trigger_timestamp.value().ToJsTime()));
+        data_->show_trigger_timestamp.value().InMillisecondsFSinceUnixEpoch()));
   }
 }
 

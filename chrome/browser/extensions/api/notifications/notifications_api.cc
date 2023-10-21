@@ -254,7 +254,8 @@ bool NotificationsApiFunction::CreateNotification(
     optional_fields.priority = *options->priority;
 
   if (options->event_time)
-    optional_fields.timestamp = base::Time::FromJsTime(*options->event_time);
+    optional_fields.timestamp =
+        base::Time::FromMillisecondsSinceUnixEpoch(*options->event_time);
 
   if (options->silent)
     optional_fields.silent = *options->silent;
@@ -413,7 +414,8 @@ bool NotificationsApiFunction::UpdateNotification(
     notification->set_priority(*options->priority);
 
   if (options->event_time)
-    notification->set_timestamp(base::Time::FromJsTime(*options->event_time));
+    notification->set_timestamp(
+        base::Time::FromMillisecondsSinceUnixEpoch(*options->event_time));
 
   if (options->silent)
     notification->set_silent(*options->silent);

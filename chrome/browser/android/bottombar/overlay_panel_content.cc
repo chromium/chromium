@@ -75,7 +75,8 @@ void OverlayPanelContent::RemoveLastHistoryEntry(
     jlong search_start_time_ms) {
   // The deletion window is from the time a search URL was put in history, up
   // to a short amount of time later.
-  base::Time begin_time = base::Time::FromJsTime(search_start_time_ms);
+  base::Time begin_time =
+      base::Time::FromMillisecondsSinceUnixEpoch(search_start_time_ms);
   base::Time end_time =
       begin_time + base::Seconds(kHistoryDeletionWindowSeconds);
 

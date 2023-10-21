@@ -39,7 +39,7 @@ cart_db::ChromeCartContentProto BuildProto(const char* domain,
   cart_db::ChromeCartContentProto proto;
   proto.set_key(domain);
   proto.set_merchant_cart_url(merchant_url);
-  proto.set_timestamp(base::Time::Now().ToDoubleT());
+  proto.set_timestamp(base::Time::Now().InSecondsFSinceUnixEpoch());
   return proto;
 }
 
@@ -50,7 +50,7 @@ cart_db::ChromeCartContentProto BuildProtoWithProducts(
   cart_db::ChromeCartContentProto proto;
   proto.set_key(domain);
   proto.set_merchant_cart_url(cart_url);
-  proto.set_timestamp(base::Time::Now().ToDoubleT());
+  proto.set_timestamp(base::Time::Now().InSecondsFSinceUnixEpoch());
   for (const auto* const v : product_urls) {
     proto.add_product_image_urls(v);
   }
@@ -1144,7 +1144,7 @@ TEST_F(CartServiceTest, TestControlShowWelcomeSurface) {
 // Tests cart data is loaded in the order of timestamp.
 TEST_F(CartServiceTest, TestOrderInTimestamp) {
   base::RunLoop run_loop[3];
-  double time_now = base::Time::Now().ToDoubleT();
+  double time_now = base::Time::Now().InSecondsFSinceUnixEpoch();
   cart_db::ChromeCartContentProto merchant_A_proto =
       BuildProto(kMockMerchantA, kMockMerchantURLA);
   merchant_A_proto.set_timestamp(time_now);
@@ -1485,7 +1485,7 @@ TEST_F(CartServiceTest, TestExpiredDataDeleted) {
   merchant_proto.set_timestamp(
       (base::Time::Now() -
        base::Days(CartService::kCartExpirationTimeInDays + 2))
-          .ToDoubleT());
+          .InSecondsFSinceUnixEpoch());
   service_->AddCart(mock_merchant_url_A_, absl::nullopt, merchant_proto);
   task_environment_.RunUntilIdle();
 
@@ -1522,7 +1522,7 @@ TEST_F(CartServiceTest, TestExpiredDataDeleted) {
   merchant_proto.set_timestamp(
       (base::Time::Now() -
        base::Days(CartService::kCartExpirationTimeInDays - 2))
-          .ToDoubleT());
+          .InSecondsFSinceUnixEpoch());
   merchant_proto.set_is_removed(false);
   service_->GetDB()->AddCart(
       kMockMerchantA, merchant_proto,
@@ -1629,7 +1629,7 @@ TEST_F(CartServiceTest, TestHasActiveCartForURL) {
   merchant_proto.set_timestamp(
       (base::Time::Now() -
        base::Days(CartService::kCartExpirationTimeInDays + 2))
-          .ToDoubleT());
+          .InSecondsFSinceUnixEpoch());
   service_->AddCart(url_with_cart_A, absl::nullopt, merchant_proto);
   task_environment_.RunUntilIdle();
 

@@ -166,8 +166,8 @@ void SystemGeolocationSourceMac::RequestPermission() {
   device::mojom::Geoposition position;
   position.latitude = location.coordinate.latitude;
   position.longitude = location.coordinate.longitude;
-  position.timestamp =
-      base::Time::FromDoubleT(location.timestamp.timeIntervalSince1970);
+  position.timestamp = base::Time::FromSecondsSinceUnixEpoch(
+      location.timestamp.timeIntervalSince1970);
   position.altitude = location.altitude;
   position.accuracy = location.horizontalAccuracy;
   position.altitude_accuracy = location.verticalAccuracy;

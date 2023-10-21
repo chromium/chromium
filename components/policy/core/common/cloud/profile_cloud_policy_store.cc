@@ -68,7 +68,8 @@ ProfileCloudPolicyStore::CreateValidator(
   validator->ValidatePayload();
   if (has_policy()) {
     validator->ValidateTimestamp(
-        base::Time::FromJavaTime(policy()->timestamp()), option);
+        base::Time::FromMillisecondsSinceUnixEpoch(policy()->timestamp()),
+        option);
   }
   validator->ValidatePayload();
   return validator;

@@ -118,7 +118,8 @@ void AddRecordToStorage(scoped_refptr<StorageModuleInterface> storage,
 
   // Calculate timestamp in microseconds - to match Spanner expectations.
   const int64_t time_since_epoch_us =
-      base::Time::Now().ToJavaTime() * base::Time::kMicrosecondsPerMillisecond;
+      base::Time::Now().InMillisecondsSinceUnixEpoch() *
+      base::Time::kMicrosecondsPerMillisecond;
   if (time_since_epoch_us > kTime2122) {
     // Unusual timestamp. Reject the record even though the record is good
     // otherwise, because we can't obtain a reasonable timestamp. We have this

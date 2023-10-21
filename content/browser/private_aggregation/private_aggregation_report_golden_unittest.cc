@@ -129,7 +129,8 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
     AggregatableReportRequest actual_report =
         PrivateAggregationHost::GenerateReportRequest(
             std::move(debug_details),
-            /*scheduled_report_time=*/base::Time::FromJavaTime(1234486400000),
+            /*scheduled_report_time=*/
+            base::Time::FromMillisecondsSinceUnixEpoch(1234486400000),
             /*report_id=*/
             base::Uuid::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
             /*reporting_origin=*/kExampleOrigin, api_identifier,

@@ -76,9 +76,9 @@ CreateWebUIAggregatableReport(
       actual_report_time.value_or(request.shared_info().scheduled_report_time);
 
   return aggregation_service_internals::mojom::WebUIAggregatableReport::New(
-      id, report_time.ToJsTime(), request.shared_info().api_identifier,
-      request.shared_info().api_version, request.GetReportingUrl(),
-      std::move(contributions), status, output_json);
+      id, report_time.InMillisecondsFSinceUnixEpoch(),
+      request.shared_info().api_identifier, request.shared_info().api_version,
+      request.GetReportingUrl(), std::move(contributions), status, output_json);
 }
 
 void ForwardReportsToWebUI(

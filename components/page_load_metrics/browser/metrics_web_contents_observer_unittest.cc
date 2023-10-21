@@ -53,7 +53,7 @@ const char kFilteredCommitUrl[] = "https://whatever.com/ignore-on-commit";
 
 void PopulatePageLoadTiming(mojom::PageLoadTiming* timing) {
   page_load_metrics::InitPageLoadTimingForTest(timing);
-  timing->navigation_start = base::Time::FromDoubleT(1);
+  timing->navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
   timing->response_start = base::Milliseconds(10);
   timing->parse_timing->parse_start = base::Milliseconds(20);
 }
@@ -275,7 +275,7 @@ class MetricsWebContentsObserverTest
 TEST_F(MetricsWebContentsObserverTest, SuccessfulMainFrameNavigation) {
   mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
-  timing.navigation_start = base::Time::FromDoubleT(1);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
 
   ASSERT_TRUE(observed_committed_urls_from_on_start().empty());
   ASSERT_FALSE(is_first_navigation_in_web_contents().has_value());
@@ -317,7 +317,7 @@ TEST_F(MetricsWebContentsObserverTest,
 TEST_F(MetricsWebContentsObserverTest, SubFrame) {
   mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
-  timing.navigation_start = base::Time::FromDoubleT(1);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
   timing.response_start = base::Milliseconds(10);
   timing.parse_timing->parse_start = base::Milliseconds(20);
 
@@ -335,7 +335,7 @@ TEST_F(MetricsWebContentsObserverTest, SubFrame) {
   // Dispatch a timing update for the child frame that includes a first paint.
   mojom::PageLoadTiming subframe_timing;
   page_load_metrics::InitPageLoadTimingForTest(&subframe_timing);
-  subframe_timing.navigation_start = base::Time::FromDoubleT(2);
+  subframe_timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(2);
   subframe_timing.response_start = base::Milliseconds(10);
   subframe_timing.parse_timing->parse_start = base::Milliseconds(20);
   subframe_timing.paint_timing->first_paint = base::Milliseconds(40);
@@ -369,7 +369,7 @@ TEST_F(MetricsWebContentsObserverTest, SubFrame) {
 TEST_F(MetricsWebContentsObserverTest, SameDocumentNoTrigger) {
   mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
-  timing.navigation_start = base::Time::FromDoubleT(1);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
 
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL(kDefaultTestUrl));
@@ -401,7 +401,7 @@ TEST_F(MetricsWebContentsObserverTest, SameDocumentNoTrigger) {
 TEST_F(MetricsWebContentsObserverTest, DontLogNewTabPage) {
   mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
-  timing.navigation_start = base::Time::FromDoubleT(1);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
 
   embedder_interface_->set_is_ntp(true);
 
@@ -428,7 +428,7 @@ TEST_F(MetricsWebContentsObserverTest, DontLogNewTabPage) {
 TEST_F(MetricsWebContentsObserverTest, DontLogIrrelevantNavigation) {
   mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
-  timing.navigation_start = base::Time::FromDoubleT(10);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(10);
 
   GURL about_blank_url = GURL("about:blank");
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
@@ -515,7 +515,7 @@ TEST_F(MetricsWebContentsObserverTest, TimingOrderError) {
       web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
   mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
-  timing.navigation_start = base::Time::FromDoubleT(1);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
   timing.parse_timing->parse_stop = base::Milliseconds(1);
 
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
@@ -540,10 +540,10 @@ TEST_F(MetricsWebContentsObserverTest, TimingOrderError) {
 TEST_F(MetricsWebContentsObserverTest, BadIPC) {
   mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
-  timing.navigation_start = base::Time::FromDoubleT(10);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(10);
   mojom::PageLoadTiming timing2;
   page_load_metrics::InitPageLoadTimingForTest(&timing2);
-  timing2.navigation_start = base::Time::FromDoubleT(100);
+  timing2.navigation_start = base::Time::FromSecondsSinceUnixEpoch(100);
 
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL(kDefaultTestUrl));
@@ -566,7 +566,7 @@ TEST_F(MetricsWebContentsObserverTest, ObservePartialNavigation) {
 
   mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
-  timing.navigation_start = base::Time::FromDoubleT(10);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(10);
 
   // Start the navigation, then start observing the web contents. This used to
   // crash us. Make sure we bail out and don't log histograms.
@@ -643,7 +643,7 @@ TEST_F(MetricsWebContentsObserverTest, StopObservingOnStart) {
 TEST_F(MetricsWebContentsObserverTest, OutOfOrderCrossFrameTiming) {
   mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
-  timing.navigation_start = base::Time::FromDoubleT(1);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
   timing.response_start = base::Milliseconds(10);
 
   content::NavigationSimulator::NavigateAndCommitFromBrowser(

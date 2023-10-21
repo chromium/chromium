@@ -702,7 +702,7 @@ TEST_P(AggregatableReportTest, GetAsJsonAdditionalFields_ValidJsonReturned) {
 TEST_P(AggregatableReportTest,
        SharedInfoDebugModeDisabled_SerializeAsJsonReturnsExpectedString) {
   AggregatableReportSharedInfo shared_info(
-      base::Time::FromJavaTime(1234567890123),
+      base::Time::FromMillisecondsSinceUnixEpoch(1234567890123),
       /*report_id=*/
       base::Uuid::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
       url::Origin::Create(GURL("https://reporting.example")),
@@ -725,7 +725,7 @@ TEST_P(AggregatableReportTest,
 TEST_P(AggregatableReportTest,
        SharedInfoDebugModeEnabled_SerializeAsJsonReturnsExpectedString) {
   AggregatableReportSharedInfo shared_info(
-      base::Time::FromJavaTime(1234567890123),
+      base::Time::FromMillisecondsSinceUnixEpoch(1234567890123),
       /*report_id=*/
       base::Uuid::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
       url::Origin::Create(GURL("https://reporting.example")),
@@ -752,7 +752,7 @@ TEST_P(AggregatableReportTest, SharedInfoAdditionalFields) {
   additional_fields.Set("bar", "2");
   additional_fields.Set("baz", "3");
   AggregatableReportSharedInfo shared_info(
-      base::Time::FromJavaTime(1234567890123),
+      base::Time::FromMillisecondsSinceUnixEpoch(1234567890123),
       /*report_id=*/
       base::Uuid::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
       url::Origin::Create(GURL("https://reporting.example")),
@@ -1022,7 +1022,7 @@ TEST(AggregatableReportProtoMigrationTest,
               /*aggregation_coordinator_origin=*/absl::nullopt,
               /*max_contributions_allowed=*/1),
           AggregatableReportSharedInfo(
-              base::Time::FromJavaTime(1652984901234),
+              base::Time::FromMillisecondsSinceUnixEpoch(1652984901234),
               base::Uuid::ParseLowercase(
                   "12345678-90ab-4cde-8f12-34567890abcd"),
               /*reporting_origin=*/
@@ -1067,7 +1067,7 @@ TEST(AggregatableReportProtoMigrationTest, NegativeDebugKey_ParsesCorrectly) {
               /*aggregation_coordinator_origin=*/absl::nullopt,
               /*max_contributions_allowed=*/1),
           AggregatableReportSharedInfo(
-              base::Time::FromJavaTime(1652984901234),
+              base::Time::FromMillisecondsSinceUnixEpoch(1652984901234),
               base::Uuid::ParseLowercase(
                   "12345678-90ab-4cde-8f12-34567890abcd"),
               /*reporting_origin=*/
@@ -1111,7 +1111,7 @@ TEST(AggregatableReportProtoMigrationTest,
               /*aggregation_coordinator_origin=*/absl::nullopt,
               /*max_contributions_allowed=*/1),
           AggregatableReportSharedInfo(
-              base::Time::FromJavaTime(1652984901234),
+              base::Time::FromMillisecondsSinceUnixEpoch(1652984901234),
               base::Uuid::ParseLowercase(
                   "12345678-90ab-4cde-8f12-34567890abcd"),
               /*reporting_origin=*/

@@ -1055,7 +1055,8 @@ void NewTabPageUI::OnTilesVisibilityPrefChanged() {
 
 void NewTabPageUI::OnLoad() {
   base::Value::Dict update;
-  update.Set("navigationStartTime", navigation_start_time_.ToJsTime());
+  update.Set("navigationStartTime",
+             navigation_start_time_.InMillisecondsFSinceUnixEpoch());
   update.Set(
       "modulesEnabled",
       ntp::HasModulesEnabled(module_id_names_,

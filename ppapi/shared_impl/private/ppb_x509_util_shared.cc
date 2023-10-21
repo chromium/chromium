@@ -50,9 +50,9 @@ bool PPB_X509Util_Shared::GetCertificateFields(
       PP_X509CERTIFICATE_PRIVATE_SERIAL_NUMBER,
       base::Value(base::as_bytes(base::make_span(cert.serial_number()))));
   fields->SetField(PP_X509CERTIFICATE_PRIVATE_VALIDITY_NOT_BEFORE,
-                   base::Value(cert.valid_start().ToDoubleT()));
+                   base::Value(cert.valid_start().InSecondsFSinceUnixEpoch()));
   fields->SetField(PP_X509CERTIFICATE_PRIVATE_VALIDITY_NOT_AFTER,
-                   base::Value(cert.valid_expiry().ToDoubleT()));
+                   base::Value(cert.valid_expiry().InSecondsFSinceUnixEpoch()));
   base::StringPiece cert_der =
       net::x509_util::CryptoBufferAsStringPiece(cert.cert_buffer());
   fields->SetField(PP_X509CERTIFICATE_PRIVATE_RAW,

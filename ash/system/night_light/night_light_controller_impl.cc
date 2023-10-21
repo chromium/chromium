@@ -155,12 +155,15 @@ class NightLightControllerDelegateImpl
     // This avoids having the computation flopping over into an adjacent day.
     // See the documentation of icu::CalendarAstronomer::getSunRiseSet().
     // Note that the icu calendar works with milliseconds since epoch, and
-    // base::Time::FromDoubleT() / ToDoubleT() work with seconds since epoch.
-    const double midday_today_sec =
-        TimeOfDay(12 * 60).ToTimeToday().value_or(base::Time()).ToDoubleT();
+    // base::Time::FromSecondsSinceUnixEpoch() / InSecondsFSinceUnixEpoch() work
+    // with seconds since epoch.
+    const double midday_today_sec = TimeOfDay(12 * 60)
+                                        .ToTimeToday()
+                                        .value_or(base::Time())
+                                        .InSecondsFSinceUnixEpoch();
     astro.setTime(midday_today_sec * 1000.0);
     const double sun_rise_set_ms = astro.getSunRiseSet(sunrise);
-    return base::Time::FromDoubleT(sun_rise_set_ms / 1000.0);
+    return base::Time::FromSecondsSinceUnixEpoch(sun_rise_set_ms / 1000.0);
   }
 
   std::unique_ptr<SimpleGeoposition> geoposition_;

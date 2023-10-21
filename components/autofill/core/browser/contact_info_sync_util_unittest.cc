@@ -22,8 +22,8 @@ using sync_pb::ContactInfoSpecifics;
 constexpr char kGuid[] = "00000000-0000-0000-0000-000000000001";
 constexpr char kInvalidGuid[] = "1234";
 constexpr int kNonChromeModifier = 1234;
-const auto kUseDate = base::Time::FromDoubleT(123);
-const auto kModificationDate = base::Time::FromDoubleT(456);
+const auto kUseDate = base::Time::FromSecondsSinceUnixEpoch(123);
+const auto kModificationDate = base::Time::FromSecondsSinceUnixEpoch(456);
 
 // Returns a profile with all fields set. Contains identical data to the data
 // returned from `ConstructCompleteSpecifics()`.

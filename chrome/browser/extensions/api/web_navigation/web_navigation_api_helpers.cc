@@ -40,7 +40,7 @@ namespace {
 
 // Returns |time| as milliseconds since the epoch.
 double MilliSecondsFromTime(const base::Time& time) {
-  return 1000 * time.ToDoubleT();
+  return 1000 * time.InSecondsFSinceUnixEpoch();
 }
 
 // Dispatches events to the extension message service.

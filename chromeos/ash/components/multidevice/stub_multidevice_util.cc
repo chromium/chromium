@@ -59,8 +59,9 @@ RemoteDevice CreateStubHostPhone() {
         SoftwareFeatureState::kEnabled;
 
     std::vector<BeaconSeed> beacon_seeds = {multidevice::BeaconSeed(
-        kBeaconSeedData, base::Time::FromJavaTime(kBeaconSeedStartTimeMillis),
-        base::Time::FromJavaTime(kBeaconSeedEndTimeMillis))};
+        kBeaconSeedData,
+        base::Time::FromMillisecondsSinceUnixEpoch(kBeaconSeedStartTimeMillis),
+        base::Time::FromMillisecondsSinceUnixEpoch(kBeaconSeedEndTimeMillis))};
 
     return RemoteDevice(kStubDeviceUserId, kStubHostPhoneInstanceId,
                         kStubHostPhoneName, kStubDevicePiiFreeName,
@@ -105,8 +106,9 @@ RemoteDevice CreateStubClientComputer() {
             : SoftwareFeatureState::kNotSupported;
 
     std::vector<BeaconSeed> beacon_seeds = {multidevice::BeaconSeed(
-        kBeaconSeedData, base::Time::FromJavaTime(kBeaconSeedStartTimeMillis),
-        base::Time::FromJavaTime(kBeaconSeedEndTimeMillis))};
+        kBeaconSeedData,
+        base::Time::FromMillisecondsSinceUnixEpoch(kBeaconSeedStartTimeMillis),
+        base::Time::FromMillisecondsSinceUnixEpoch(kBeaconSeedEndTimeMillis))};
 
     return RemoteDevice(kStubDeviceUserId, kStubClientComputerInstanceId,
                         kStubClientComputerName, kStubDevicePiiFreeName,

@@ -433,7 +433,7 @@ class SupervisedUserExtensionWebstorePrivateApiTest
             break;
           }
           ash::ParentAccessDialog::GetInstance()->SetApproved(
-              "test_token", base::Time::FromDoubleT(123456L));
+              "test_token", base::Time::FromSecondsSinceUnixEpoch(123456L));
           break;
       }
     }

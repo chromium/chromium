@@ -107,7 +107,8 @@ base::Value::Dict CreateDictionaryFromVerdict(const T& verdict,
                                               const char* proto_name) {
   DCHECK(proto_name == kVerdictProto || proto_name == kRealTimeThreatInfoProto);
   base::Value::Dict result;
-  result.Set(kCacheCreationTime, static_cast<int>(receive_time.ToDoubleT()));
+  result.Set(kCacheCreationTime,
+             static_cast<int>(receive_time.InSecondsFSinceUnixEpoch()));
   std::string serialized_proto(verdict.SerializeAsString());
   // Performs a base64 encoding on the serialized proto.
   base::Base64Encode(serialized_proto, &serialized_proto);
@@ -203,12 +204,12 @@ bool PathVariantsMatchCacheExpression(
 
 bool IsCacheExpired(int cache_creation_time, int cache_duration) {
   // Note that we assume client's clock is accurate or almost accurate.
-  return base::Time::Now().ToDoubleT() >
+  return base::Time::Now().InSecondsFSinceUnixEpoch() >
          static_cast<double>(cache_creation_time + cache_duration);
 }
 
 bool IsCacheOlderThanUpperBound(int cache_creation_time) {
-  return base::Time::Now().ToDoubleT() >
+  return base::Time::Now().InSecondsFSinceUnixEpoch() >
          static_cast<double>(cache_creation_time +
                              kCacheDurationUpperBoundSecond);
 }
@@ -414,7 +415,8 @@ typename T::VerdictType GetVerdictTypeFromMostMatchedCachedVerdict(
 }
 
 bool HasPageLoadTokenExpired(int64_t token_time_msec) {
-  return base::Time::Now() - base::Time::FromJavaTime(token_time_msec) >
+  return base::Time::Now() -
+             base::Time::FromMillisecondsSinceUnixEpoch(token_time_msec) >
          base::Minutes(kPageLoadTokenExpireMinute);
 }
 
@@ -733,7 +735,7 @@ ChromeUserPopulation::PageLoadToken VerdictCacheManager::CreatePageLoadToken(
   ChromeUserPopulation::PageLoadToken token;
   token.set_token_source(
       ChromeUserPopulation::PageLoadToken::CLIENT_GENERATION);
-  token.set_token_time_msec(base::Time::Now().ToJavaTime());
+  token.set_token_time_msec(base::Time::Now().InMillisecondsSinceUnixEpoch());
   token.set_token_value(base::RandBytesAsString(kPageLoadTokenBytes));
 
   page_load_token_map_[hostname] = token;
@@ -752,7 +754,8 @@ ChromeUserPopulation::PageLoadToken VerdictCacheManager::GetPageLoadToken(
   bool has_expired = HasPageLoadTokenExpired(token.token_time_msec());
   base::UmaHistogramLongTimes(
       "SafeBrowsing.PageLoadToken.Duration",
-      base::Time::Now() - base::Time::FromJavaTime(token.token_time_msec()));
+      base::Time::Now() -
+          base::Time::FromMillisecondsSinceUnixEpoch(token.token_time_msec()));
   base::UmaHistogramBoolean("SafeBrowsing.PageLoadToken.HasExpired",
                             has_expired);
   return has_expired ? ChromeUserPopulation::PageLoadToken() : token;

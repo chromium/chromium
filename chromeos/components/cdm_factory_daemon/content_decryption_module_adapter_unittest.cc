@@ -435,7 +435,8 @@ TEST_F(ContentDecryptionModuleAdapterTest, OnSessionKeysChange) {
 TEST_F(ContentDecryptionModuleAdapterTest, OnSessionExpirationUpdate) {
   constexpr double kFakeExpiration = 123456;
   EXPECT_CALL(mock_session_expiration_update_cb_,
-              Run(kFakeSessionId2, base::Time::FromDoubleT(kFakeExpiration)));
+              Run(kFakeSessionId2,
+                  base::Time::FromSecondsSinceUnixEpoch(kFakeExpiration)));
   cdm_adapter_->OnSessionExpirationUpdate(kFakeSessionId2, kFakeExpiration);
 }
 

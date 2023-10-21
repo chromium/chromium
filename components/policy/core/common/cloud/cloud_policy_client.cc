@@ -500,7 +500,8 @@ void CloudPolicyClient::FetchPolicy(PolicyFetchReason reason) {
         fetch_request->set_device_dm_token(device_dm_token_);
       }
       if (!last_policy_timestamp_.is_null()) {
-        fetch_request->set_timestamp(last_policy_timestamp_.ToJavaTime());
+        fetch_request->set_timestamp(
+            last_policy_timestamp_.InMillisecondsSinceUnixEpoch());
       }
       if (!invalidation_payload_.empty()) {
         fetch_request->set_invalidation_version(invalidation_version_);

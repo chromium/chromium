@@ -344,7 +344,7 @@ TEST_F(UserNoteDatabaseTest, GetNoteMetadataForUrls) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_note_db.sequence_checker_);
 
   UserNoteStorage::IdSet ids;
-  base::Time time = base::Time::FromDoubleT(1600000000);
+  base::Time time = base::Time::FromSecondsSinceUnixEpoch(1600000000);
   int note_version = 1;
   for (int i = 0; i < 3; i++) {
     base::UnguessableToken note_id = base::UnguessableToken::Create();

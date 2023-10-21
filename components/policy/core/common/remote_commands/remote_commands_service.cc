@@ -384,7 +384,8 @@ void RemoteCommandsService::OnJobFinished(RemoteCommandJob* command) {
   if (command->GetResult()) {
     em::RemoteCommandResult result;
     result.set_command_id(command->unique_id());
-    result.set_timestamp(command->execution_started_time().ToJavaTime());
+    result.set_timestamp(
+        command->execution_started_time().InMillisecondsSinceUnixEpoch());
     result.set_result(command->GetResult().value());
 
     std::unique_ptr<std::string> result_payload = command->GetResultPayload();

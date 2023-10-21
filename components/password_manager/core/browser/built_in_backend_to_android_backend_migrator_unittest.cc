@@ -141,7 +141,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
   EXPECT_EQ(1, prefs()->GetInteger(
                    prefs::kCurrentMigrationVersionToGoogleMobileServices));
   EXPECT_EQ(
-      base::Time::Now().ToDoubleT(),
+      base::Time::Now().InSecondsFSinceUnixEpoch(),
       prefs()->GetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt));
 }
 
@@ -176,7 +176,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
   EXPECT_EQ(1, prefs()->GetInteger(
                    prefs::kCurrentMigrationVersionToGoogleMobileServices));
   EXPECT_EQ(
-      base::Time::Now().ToDoubleT(),
+      base::Time::Now().InSecondsFSinceUnixEpoch(),
       prefs()->GetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt));
 }
 
@@ -184,8 +184,9 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
        PrefsUnchangedWhenAttemptedMigrationEarlierToday) {
   Init();
 
-  prefs()->SetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt,
-                     (base::Time::Now() - base::Hours(2)).ToDoubleT());
+  prefs()->SetDouble(
+      password_manager::prefs::kTimeOfLastMigrationAttempt,
+      (base::Time::Now() - base::Hours(2)).InSecondsFSinceUnixEpoch());
 
   migrator()->StartMigrationIfNecessary(
       /*should_attempt_upm_reenrollment=*/false);
@@ -194,7 +195,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
   EXPECT_EQ(0, prefs()->GetInteger(
                    prefs::kCurrentMigrationVersionToGoogleMobileServices));
   EXPECT_EQ(
-      (base::Time::Now() - base::Hours(2)).ToDoubleT(),
+      (base::Time::Now() - base::Hours(2)).InSecondsFSinceUnixEpoch(),
       prefs()->GetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt));
 }
 
@@ -226,7 +227,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
   EXPECT_EQ(1, prefs()->GetInteger(
                    prefs::kCurrentMigrationVersionToGoogleMobileServices));
   EXPECT_EQ(
-      base::Time::Now().ToDoubleT(),
+      base::Time::Now().InSecondsFSinceUnixEpoch(),
       prefs()->GetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt));
 }
 

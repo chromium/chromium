@@ -118,7 +118,8 @@ const uint32_t kClockDivergenceSeconds = 60;
 // Maximum time lapse before deserialized data are considered stale.
 const uint32_t kSerializedDataMaxAgeDays = 7;
 
-// Name of a pref that stores the wall clock time, via |ToJsTime|.
+// Name of a pref that stores the wall clock time, via
+// |InMillisecondsFSinceUnixEpoch|.
 const char kPrefTime[] = "local";
 
 // Name of a pref that stores the tick clock time, via |ToInternalValue|.
@@ -127,7 +128,8 @@ const char kPrefTicks[] = "ticks";
 // Name of a pref that stores the time uncertainty, via |ToInternalValue|.
 const char kPrefUncertainty[] = "uncertainty";
 
-// Name of a pref that stores the network time via |ToJsTime|.
+// Name of a pref that stores the network time via
+// |InMillisecondsFSinceUnixEpoch|.
 const char kPrefNetworkTime[] = "network";
 
 // Time server's maximum allowable clock skew, in seconds.  (This is a property
@@ -210,13 +212,14 @@ NetworkTimeTracker::NetworkTimeTracker(
   absl::optional<double> network_time_js =
       time_mapping.FindDouble(kPrefNetworkTime);
   if (time_js && ticks_js && uncertainty_js && network_time_js) {
-    time_at_last_measurement_ = base::Time::FromJsTime(*time_js);
+    time_at_last_measurement_ =
+        base::Time::FromMillisecondsSinceUnixEpoch(*time_js);
     ticks_at_last_measurement_ =
         base::TimeTicks::FromInternalValue(static_cast<int64_t>(*ticks_js));
     network_time_uncertainty_ = base::TimeDelta::FromInternalValue(
         static_cast<int64_t>(*uncertainty_js));
     network_time_at_last_measurement_ =
-        base::Time::FromJsTime(*network_time_js);
+        base::Time::FromMillisecondsSinceUnixEpoch(*network_time_js);
   }
   base::Time now = clock_->Now();
   if (ticks_at_last_measurement_ > tick_clock_->NowTicks() ||
@@ -275,15 +278,17 @@ void NetworkTimeTracker::UpdateNetworkTime(base::Time network_time,
       kNumTimeMeasurements * base::Milliseconds(kTicksResolutionMs);
 
   base::Value::Dict time_mapping;
-  time_mapping.Set(kPrefTime, time_at_last_measurement_.ToJsTime());
+  time_mapping.Set(kPrefTime,
+                   time_at_last_measurement_.InMillisecondsFSinceUnixEpoch());
   time_mapping.Set(
       kPrefTicks,
       static_cast<double>(ticks_at_last_measurement_.ToInternalValue()));
   time_mapping.Set(
       kPrefUncertainty,
       static_cast<double>(network_time_uncertainty_.ToInternalValue()));
-  time_mapping.Set(kPrefNetworkTime,
-                   network_time_at_last_measurement_.ToJsTime());
+  time_mapping.Set(
+      kPrefNetworkTime,
+      network_time_at_last_measurement_.InMillisecondsFSinceUnixEpoch());
   pref_service_->Set(prefs::kNetworkTimeMapping,
                      base::Value(std::move(time_mapping)));
 }
@@ -523,7 +528,8 @@ bool NetworkTimeTracker::UpdateTimeFromResponse(
 
   // There is a "server_nonce" key here too, but it serves no purpose other than
   // to make the server's response unpredictable.
-  base::Time current_time = base::Time::FromJsTime(*current_time_millis);
+  base::Time current_time =
+      base::Time::FromMillisecondsSinceUnixEpoch(*current_time_millis);
   base::TimeDelta resolution =
       base::Milliseconds(1) + base::Seconds(kTimeServerMaxSkewSeconds);
 

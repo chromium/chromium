@@ -62,7 +62,7 @@ BackgroundEidGenerator::BackgroundEidGenerator(
 
 std::vector<DataWithTimestamp> BackgroundEidGenerator::GenerateNearestEids(
     const std::vector<cryptauth::BeaconSeed>& beacon_seeds) const {
-  int64_t now_timestamp_ms = clock_->Now().ToJavaTime();
+  int64_t now_timestamp_ms = clock_->Now().InMillisecondsSinceUnixEpoch();
   std::vector<DataWithTimestamp> eids;
 
   for (int i = -kEidLookAhead; i <= kEidLookAhead; ++i) {

@@ -170,7 +170,7 @@ absl::optional<int64_t> GetPsmDeterminationTimestamp(
   // we already checked the existence of the pref with non-default value.
   DCHECK(!psm_determination_timestamp.is_null());
 
-  return psm_determination_timestamp.ToJavaTime();
+  return psm_determination_timestamp.InMillisecondsSinceUnixEpoch();
 }
 
 }  // namespace

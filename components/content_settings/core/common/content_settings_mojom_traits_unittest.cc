@@ -83,9 +83,9 @@ TEST(ContentSettingsTraitsTest, Roundtrips_SessionModel) {
 
 TEST(ContentSettingsTraitsTest, Roundtrips_RuleMetadata) {
   content_settings::RuleMetaData original;
-  original.set_last_modified(base::Time::FromDoubleT(123));
-  original.set_last_visited(base::Time::FromDoubleT(234));
-  original.SetExpirationAndLifetime(base::Time::FromDoubleT(345),
+  original.set_last_modified(base::Time::FromSecondsSinceUnixEpoch(123));
+  original.set_last_visited(base::Time::FromSecondsSinceUnixEpoch(234));
+  original.SetExpirationAndLifetime(base::Time::FromSecondsSinceUnixEpoch(345),
                                     base::Days(2));
   original.set_session_model(content_settings::SessionModel::UserSession);
   content_settings::RuleMetaData round_tripped;
@@ -104,8 +104,8 @@ TEST(ContentSettingsTraitsTest, Roundtrips_ContentSettingPatternSource) {
       ContentSettingsPattern::FromString("https://foo.com:*");
   original.incognito = true;
   original.setting_value = base::Value(123);
-  original.metadata.SetExpirationAndLifetime(base::Time::FromDoubleT(234),
-                                             base::Days(2));
+  original.metadata.SetExpirationAndLifetime(
+      base::Time::FromSecondsSinceUnixEpoch(234), base::Days(2));
   original.source = "source";
   ContentSettingPatternSource round_tripped;
 

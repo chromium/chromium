@@ -136,7 +136,7 @@ ExtensionFunction::ResponseAction BrowsingDataSettingsFunction::Run() {
   double since = 0;
   if (period != browsing_data::TimePeriod::ALL_TIME) {
     base::Time time = browsing_data::CalculateBeginDeleteTime(period);
-    since = time.ToJsTime();
+    since = time.InMillisecondsFSinceUnixEpoch();
   }
 
   base::Value::Dict options;
@@ -250,7 +250,7 @@ ExtensionFunction::ResponseAction BrowsingDataRemoverFunction::Run() {
   // base::Time takes a double that represents seconds since epoch. JavaScript
   // gives developers milliseconds, so do a quick conversion before populating
   // the object.
-  remove_since_ = base::Time::FromJsTime(ms_since_epoch);
+  remove_since_ = base::Time::FromMillisecondsSinceUnixEpoch(ms_since_epoch);
 
   EXTENSION_FUNCTION_VALIDATE(GetRemovalMask(&removal_mask_));
 

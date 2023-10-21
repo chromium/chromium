@@ -28,34 +28,38 @@ bool BeaconSeed::operator==(const BeaconSeed& other) const {
 }
 
 BeaconSeed FromCryptAuthSeed(cryptauth::BeaconSeed cryptauth_seed) {
-  return BeaconSeed(
-      cryptauth_seed.data(),
-      base::Time::FromJavaTime(cryptauth_seed.start_time_millis()),
-      base::Time::FromJavaTime(cryptauth_seed.end_time_millis()));
+  return BeaconSeed(cryptauth_seed.data(),
+                    base::Time::FromMillisecondsSinceUnixEpoch(
+                        cryptauth_seed.start_time_millis()),
+                    base::Time::FromMillisecondsSinceUnixEpoch(
+                        cryptauth_seed.end_time_millis()));
 }
 
 cryptauth::BeaconSeed ToCryptAuthSeed(BeaconSeed multidevice_seed) {
   cryptauth::BeaconSeed cryptauth_seed;
   cryptauth_seed.set_data(multidevice_seed.data());
   cryptauth_seed.set_start_time_millis(
-      multidevice_seed.start_time().ToJavaTime());
-  cryptauth_seed.set_end_time_millis(multidevice_seed.end_time().ToJavaTime());
+      multidevice_seed.start_time().InMillisecondsSinceUnixEpoch());
+  cryptauth_seed.set_end_time_millis(
+      multidevice_seed.end_time().InMillisecondsSinceUnixEpoch());
   return cryptauth_seed;
 }
 
 BeaconSeed FromCryptAuthV2Seed(cryptauthv2::BeaconSeed cryptauth_seed) {
-  return BeaconSeed(
-      cryptauth_seed.data(),
-      base::Time::FromJavaTime(cryptauth_seed.start_time_millis()),
-      base::Time::FromJavaTime(cryptauth_seed.end_time_millis()));
+  return BeaconSeed(cryptauth_seed.data(),
+                    base::Time::FromMillisecondsSinceUnixEpoch(
+                        cryptauth_seed.start_time_millis()),
+                    base::Time::FromMillisecondsSinceUnixEpoch(
+                        cryptauth_seed.end_time_millis()));
 }
 
 cryptauthv2::BeaconSeed ToCryptAuthV2Seed(BeaconSeed multidevice_seed) {
   cryptauthv2::BeaconSeed cryptauth_seed;
   cryptauth_seed.set_data(multidevice_seed.data());
   cryptauth_seed.set_start_time_millis(
-      multidevice_seed.start_time().ToJavaTime());
-  cryptauth_seed.set_end_time_millis(multidevice_seed.end_time().ToJavaTime());
+      multidevice_seed.start_time().InMillisecondsSinceUnixEpoch());
+  cryptauth_seed.set_end_time_millis(
+      multidevice_seed.end_time().InMillisecondsSinceUnixEpoch());
   return cryptauth_seed;
 }
 

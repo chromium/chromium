@@ -586,8 +586,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) Time
   // Because WebKit initializes double time value to 0 to indicate "not
   // initialized", we map it to empty Time object that also means "not
   // initialized".
-  static Time FromDoubleT(double dt);
-  double ToDoubleT() const;
+  static Time FromSecondsSinceUnixEpoch(double dt);
+  double InSecondsFSinceUnixEpoch() const;
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // Converts the timespec structure to time. MacOS X 10.8.3 (and tentatively,
@@ -601,19 +601,20 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) Time
   // milliseconds since the epoch:
   // https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Date/getTime.
   //
-  // Don't use ToJsTime() in new code, since it contains a subtle hack (only
-  // exactly 1601-01-01 00:00 UTC is represented as 1970-01-01 00:00 UTC), and
-  // that is not appropriate for general use. Try to use ToJsTimeIgnoringNull()
-  // unless you have a very good reason to use ToJsTime().
-  static Time FromJsTime(double ms_since_epoch);
-  double ToJsTime() const;
-  double ToJsTimeIgnoringNull() const;
+  // Don't use InMillisecondsFSinceUnixEpoch() in new code, since it contains a
+  // subtle hack (only exactly 1601-01-01 00:00 UTC is represented as 1970-01-01
+  // 00:00 UTC), and that is not appropriate for general use. Try to use
+  // InMillisecondsFSinceUnixEpochIgnoringNull() unless you have a very good
+  // reason to use InMillisecondsFSinceUnixEpoch().
+  static Time FromMillisecondsSinceUnixEpoch(double ms_since_epoch);
+  double InMillisecondsFSinceUnixEpoch() const;
+  double InMillisecondsFSinceUnixEpochIgnoringNull() const;
 
   // Converts to/from Java convention for times, a number of milliseconds since
   // the epoch. Because the Java format has less resolution, converting to Java
   // time is a lossy operation.
-  static Time FromJavaTime(int64_t ms_since_epoch);
-  int64_t ToJavaTime() const;
+  static Time FromMillisecondsSinceUnixEpoch(int64_t ms_since_epoch);
+  int64_t InMillisecondsSinceUnixEpoch() const;
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   static Time FromTimeVal(struct timeval t);

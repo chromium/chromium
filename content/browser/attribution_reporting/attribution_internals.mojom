@@ -146,7 +146,7 @@ struct WebUISourceRegistration {
 // displayed as a log by WebUI.
 struct WebUIOsRegistration {
   // Contains msec since the Unix epoch, as returned by
-  // base::Time::ToJsTimeIgnoringNull().
+  // base::Time::InMillisecondsFSinceUnixEpochIgnoringNull().
   double time;
   url.mojom.Url registration_url;
   url.mojom.Origin top_level_origin;

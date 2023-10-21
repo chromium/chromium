@@ -32,7 +32,7 @@ PrintJobInfo ConstructPrintJobInfo(const std::string& id,
   PrintJobInfo print_job_info;
   print_job_info.set_id(id);
   print_job_info.set_completion_time(
-      static_cast<int64_t>(completion_time.ToJsTime()));
+      static_cast<int64_t>(completion_time.InMillisecondsFSinceUnixEpoch()));
   return print_job_info;
 }
 

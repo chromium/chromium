@@ -652,7 +652,7 @@ ExtensionTelemetryService::CreateReport() {
   extension_store_.clear();
 
   telemetry_report_pb->set_creation_timestamp_msec(
-      base::Time::Now().ToJavaTime());
+      base::Time::Now().InMillisecondsSinceUnixEpoch());
   return telemetry_report_pb;
 }
 
@@ -672,8 +672,8 @@ ExtensionTelemetryService::GetTokenFetcher() {
 
 void ExtensionTelemetryService::DumpReportForTest(
     const ExtensionTelemetryReportRequest& report) {
-  base::Time creation_time =
-      base::Time::FromJavaTime(report.creation_timestamp_msec());
+  base::Time creation_time = base::Time::FromMillisecondsSinceUnixEpoch(
+      report.creation_timestamp_msec());
   std::stringstream ss;
   ss << "Report creation time: "
      << base::UTF16ToUTF8(TimeFormatShortDateAndTimeWithTimeZone(creation_time))
@@ -684,8 +684,8 @@ void ExtensionTelemetryService::DumpReportForTest(
 
   for (const auto& report_pb : reports) {
     const auto& extension_pb = report_pb.extension();
-    base::Time install_time =
-        base::Time::FromJavaTime(extension_pb.install_timestamp_msec());
+    base::Time install_time = base::Time::FromMillisecondsSinceUnixEpoch(
+        extension_pb.install_timestamp_msec());
     ss << "\nExtensionId: " << extension_pb.id() << "\n"
        << "  Name: " << extension_pb.name() << "\n"
        << "  Version: " << extension_pb.version() << "\n"
@@ -948,7 +948,8 @@ ExtensionTelemetryService::GetExtensionInfoForReport(
   extension_info->set_name(extension.name());
   extension_info->set_version(extension.version().GetString());
   extension_info->set_install_timestamp_msec(
-      extension_prefs_->GetLastUpdateTime(extension.id()).ToJavaTime());
+      extension_prefs_->GetLastUpdateTime(extension.id())
+          .InMillisecondsSinceUnixEpoch());
   extension_info->set_is_default_installed(
       extension.was_installed_by_default());
   extension_info->set_is_oem_installed(extension.was_installed_by_oem());

@@ -76,7 +76,8 @@ assistant::AssistantNotification ToAssistantNotification(
 
   if (notification.expiry_timestamp_ms) {
     assistant_notification.expiry_time =
-        base::Time::FromJavaTime(notification.expiry_timestamp_ms);
+        base::Time::FromMillisecondsSinceUnixEpoch(
+            notification.expiry_timestamp_ms);
   }
 
   // The server sometimes sends an empty |notification_id|, but our client

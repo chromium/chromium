@@ -110,7 +110,7 @@ void CookieControlsBridge::OnStatusChanged(
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_CookieControlsBridge_onStatusChanged(
       env, jobject_, static_cast<int>(status_), static_cast<int>(enforcement_),
-      expiration.ToJavaTime());
+      expiration.InMillisecondsSinceUnixEpoch());
 }
 
 void CookieControlsBridge::OnSitesCountChanged(

@@ -156,8 +156,9 @@ TEST_F(GeoLanguageProviderTest, ButDoCallInTheNextDay) {
 }
 
 TEST_F(GeoLanguageProviderTest, CachedLanguagesUpdatedOnStartup) {
-  SetUpCachedLanguages({"en", "fr"},
-                       (base::Time::Now() - base::Hours(25)).ToDoubleT());
+  SetUpCachedLanguages(
+      {"en", "fr"},
+      (base::Time::Now() - base::Hours(25)).InSecondsFSinceUnixEpoch());
   MoveToLocation(23.0, 80.0);
   StartGeoLanguageProvider();
 
@@ -172,7 +173,8 @@ TEST_F(GeoLanguageProviderTest, CachedLanguagesUpdatedOnStartup) {
 }
 
 TEST_F(GeoLanguageProviderTest, CachedLanguagesNotUpdatedOnStartup) {
-  SetUpCachedLanguages({"en", "fr"}, base::Time::Now().ToDoubleT());
+  SetUpCachedLanguages({"en", "fr"},
+                       base::Time::Now().InSecondsFSinceUnixEpoch());
   MoveToLocation(23.0, 80.0);
   StartGeoLanguageProvider();
 

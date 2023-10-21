@@ -30,7 +30,8 @@ std::string GetTimeDebugString(const base::Time& t) {
                                   status);
   DCHECK(U_SUCCESS(status));
   icu::UnicodeString date_string;
-  formatter.format(static_cast<UDate>(t.ToDoubleT() * 1000), date_string);
+  formatter.format(static_cast<UDate>(t.InSecondsFSinceUnixEpoch() * 1000),
+                   date_string);
   return base::UTF16ToUTF8(base::i18n::UnicodeStringToString16(date_string));
 }
 

@@ -223,7 +223,8 @@ TEST_F(UsageStatsDatabaseTest, AddAndQueryEventsInRange) {
   // This test validates the correct lexicographic ordering of timestamps such
   // that key(0) <= key(5) < key(9) <= key(10).
   usage_stats_database()->QueryEventsInRange(
-      base::Time::FromDoubleT(0), base::Time::FromDoubleT(9),
+      base::Time::FromSecondsSinceUnixEpoch(0),
+      base::Time::FromSecondsSinceUnixEpoch(9),
       base::BindOnce(&UsageStatsDatabaseTest::OnGetEventsDone,
                      base::Unretained(this)));
 
@@ -291,7 +292,8 @@ TEST_F(UsageStatsDatabaseTest, AddAndDeleteEventsInRange) {
 
   // Delete events between time 1 (inclusive) and 10 (exclusive).
   usage_stats_database()->DeleteEventsInRange(
-      base::Time::FromDoubleT(1), base::Time::FromDoubleT(10),
+      base::Time::FromSecondsSinceUnixEpoch(1),
+      base::Time::FromSecondsSinceUnixEpoch(10),
       base::BindOnce(&UsageStatsDatabaseTest::OnUpdateDone,
                      base::Unretained(this)));
 
@@ -316,7 +318,7 @@ TEST_F(UsageStatsDatabaseTest, ExpiryDeletesOldEvents) {
 
   // Add 3 events.
   base::Time now = base::Time::NowFromSystemTime();
-  int64_t now_in_seconds = (int64_t)now.ToDoubleT();
+  int64_t now_in_seconds = (int64_t)now.InSecondsFSinceUnixEpoch();
   WebsiteEvent event1 = CreateWebsiteEvent(kFqdn1, now_in_seconds + 1,
                                            WebsiteEvent::START_BROWSING);
   WebsiteEvent event2 = CreateWebsiteEvent(kFqdn1, now_in_seconds + 2,

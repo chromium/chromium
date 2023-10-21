@@ -126,7 +126,7 @@ class PlusAddressClientRequests : public ::testing::Test {
       signin::AccessTokenInfo(token, base::Time::Max(), "");
 
   // Issue all requests starting at this time to test the latency metrics.
-  base::Time start_time = base::Time::FromDoubleT(1);
+  base::Time start_time = base::Time::FromSecondsSinceUnixEpoch(1);
 
   scoped_refptr<network::SharedURLLoaderFactory>
       scoped_shared_url_loader_factory;
@@ -687,8 +687,9 @@ class PlusAddressAuthToken : public ::testing::Test {
     features_.InitAndEnableFeatureWithParameters(
         kFeature, {{kEnterprisePlusAddressOAuthScope.name, test_scope_}});
 
-    // Time-travel back to 1970 so that we can test with base::Time::FromDoubleT
-    clock_.SetNow(base::Time::FromDoubleT(1));
+    // Time-travel back to 1970 so that we can test with
+    // base::Time::FromSecondsSinceUnixEpoch
+    clock_.SetNow(base::Time::FromSecondsSinceUnixEpoch(1));
   }
 
  protected:
@@ -726,7 +727,8 @@ class PlusAddressAuthToken : public ::testing::Test {
   std::string test_token_ = "access_token";
   std::string test_scope_ = "https://googleapis.com/test.scope";
   signin::ScopeSet test_scopes_ = {test_scope_};
-  base::Time test_token_expiration_time_ = base::Time::FromDoubleT(1000);
+  base::Time test_token_expiration_time_ =
+      base::Time::FromSecondsSinceUnixEpoch(1000);
 
   base::HistogramTester histogram_tester;
 

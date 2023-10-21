@@ -31,7 +31,7 @@ namespace base {
 namespace {
 
 UDate ToUDate(const Time& time) {
-  return time.ToJsTime();
+  return time.InMillisecondsFSinceUnixEpoch();
 }
 
 std::u16string TimeFormat(const icu::DateFormat& formatter, const Time& time) {

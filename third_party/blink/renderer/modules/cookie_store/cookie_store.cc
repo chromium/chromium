@@ -83,7 +83,8 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
   }
 
   base::Time expires = options->hasExpiresNonNull()
-                           ? base::Time::FromJavaTime(options->expiresNonNull())
+                           ? base::Time::FromMillisecondsSinceUnixEpoch(
+                                 options->expiresNonNull())
                            : base::Time();
 
   String cookie_url_host = cookie_url.Host();

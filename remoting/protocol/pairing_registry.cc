@@ -65,7 +65,8 @@ PairingRegistry::Pairing PairingRegistry::Pairing::CreateFromValue(
   if (created_time_value && client_name && client_id) {
     // The shared secret is optional.
     const std::string* shared_secret = pairing.FindString(kSharedSecretKey);
-    base::Time created_time = base::Time::FromJsTime(*created_time_value);
+    base::Time created_time =
+        base::Time::FromMillisecondsSinceUnixEpoch(*created_time_value);
     return Pairing(created_time, *client_name, *client_id,
                    shared_secret ? *shared_secret : "");
   }
@@ -76,7 +77,9 @@ PairingRegistry::Pairing PairingRegistry::Pairing::CreateFromValue(
 
 base::Value::Dict PairingRegistry::Pairing::ToValue() const {
   base::Value::Dict pairing;
-  pairing.Set(kCreatedTimeKey, static_cast<double>(created_time().ToJsTime()));
+  pairing.Set(
+      kCreatedTimeKey,
+      static_cast<double>(created_time().InMillisecondsFSinceUnixEpoch()));
   pairing.Set(kClientNameKey, client_name());
   pairing.Set(kClientIdKey, client_id());
   if (!shared_secret().empty()) {

@@ -933,7 +933,8 @@ TEST_F(ProfileAttributesStorageTest, ProfileActiveTime) {
   base::Time past = base::Time::Now() - base::Minutes(10);
   lower_bound = past - base::Seconds(1);
   upper_bound = past + base::Seconds(1);
-  ASSERT_TRUE(entry->SetDouble(kActiveTimeKey, past.ToDoubleT()));
+  ASSERT_TRUE(
+      entry->SetDouble(kActiveTimeKey, past.InSecondsFSinceUnixEpoch()));
   base::Time stored_time = entry->GetActiveTime();
   ASSERT_LE(lower_bound, stored_time);
   ASSERT_GE(upper_bound, stored_time);

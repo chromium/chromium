@@ -391,7 +391,7 @@ class FileSystemURLLoaderFactoryTest
     UErrorCode parse_status = U_ZERO_ERROR;
     UDate udate = formatter->parse(date_ustr, parse_status);
     EXPECT_TRUE(U_SUCCESS(parse_status));
-    base::Time date = base::Time::FromJsTime(udate);
+    base::Time date = base::Time::FromMillisecondsSinceUnixEpoch(udate);
     EXPECT_FALSE(date.is_null());
   }
 

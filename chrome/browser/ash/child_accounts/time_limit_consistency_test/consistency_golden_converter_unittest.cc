@@ -75,9 +75,10 @@ TEST_F(ConsistencyGoldenConverterTest, ConvertInputWithBedtimesLastUpdated) {
   consistency_utils::AddWindowLimitEntryToGoldenInput(
       &input, WEDNESDAY, consistency_utils::TimeOfDay({22, 30}),
       consistency_utils::TimeOfDay({8, 0}), kTestTimestamp);
-  utils::AddTimeWindowLimit(&expected_output, utils::kWednesday,
-                            utils::CreateTime(22, 30), utils::CreateTime(8, 0),
-                            base::Time::FromJavaTime(kTestTimestamp));
+  utils::AddTimeWindowLimit(
+      &expected_output, utils::kWednesday, utils::CreateTime(22, 30),
+      utils::CreateTime(8, 0),
+      base::Time::FromMillisecondsSinceUnixEpoch(kTestTimestamp));
 
   base::Value::Dict actual_output = ConvertGoldenInputToProcessorInput(input);
 
@@ -139,8 +140,9 @@ TEST_F(ConsistencyGoldenConverterTest, ConvertInputWithUsageLimitLastUpdated) {
   // First quota: Tuesday, 60 minutes
   consistency_utils::AddUsageLimitEntryToGoldenInput(&input, TUESDAY, 60,
                                                      kTestTimestamp);
-  utils::AddTimeUsageLimit(&expected_output, utils::kTuesday, base::Minutes(60),
-                           base::Time::FromJavaTime(kTestTimestamp));
+  utils::AddTimeUsageLimit(
+      &expected_output, utils::kTuesday, base::Minutes(60),
+      base::Time::FromMillisecondsSinceUnixEpoch(kTestTimestamp));
 
   base::Value::Dict actual_output = ConvertGoldenInputToProcessorInput(input);
 
@@ -155,9 +157,9 @@ TEST_F(ConsistencyGoldenConverterTest, ConvertInputWithOverride) {
   // Override: Unlock bedtime
   consistency_utils::AddOverrideToGoldenInput(&input, UNLOCK_WINDOW_LIMIT,
                                               kTestTimestamp);
-  utils::AddOverride(&expected_output,
-                     usage_time_limit::TimeLimitOverride::Action::kUnlock,
-                     base::Time::FromJavaTime(kTestTimestamp));
+  utils::AddOverride(
+      &expected_output, usage_time_limit::TimeLimitOverride::Action::kUnlock,
+      base::Time::FromMillisecondsSinceUnixEpoch(kTestTimestamp));
 
   base::Value::Dict actual_output = ConvertGoldenInputToProcessorInput(input);
 
@@ -175,7 +177,7 @@ TEST_F(ConsistencyGoldenConverterTest, ConvertInputWithTimedOverride) {
       &input, override_duration_millis, kTestTimestamp);
   utils::AddOverrideWithDuration(
       &expected_output, usage_time_limit::TimeLimitOverride::Action::kUnlock,
-      base::Time::FromJavaTime(kTestTimestamp),
+      base::Time::FromMillisecondsSinceUnixEpoch(kTestTimestamp),
       base::Milliseconds(override_duration_millis));
 
   base::Value::Dict actual_output = ConvertGoldenInputToProcessorInput(input);
@@ -188,7 +190,8 @@ TEST_F(ConsistencyGoldenConverterTest, ConvertOutputWhenUnlocked) {
   state.is_locked = false;
   state.active_policy = usage_time_limit::PolicyType::kNoPolicy;
   state.next_state_active_policy = usage_time_limit::PolicyType::kNoPolicy;
-  state.next_unlock_time = base::Time::FromJavaTime(kTestTimestamp);
+  state.next_unlock_time =
+      base::Time::FromMillisecondsSinceUnixEpoch(kTestTimestamp);
 
   ConsistencyGoldenOutput actual_output =
       ConvertProcessorOutputToGoldenOutput(state);
@@ -206,7 +209,8 @@ TEST_F(ConsistencyGoldenConverterTest, ConvertOutputWhenLockedByBedtime) {
   state.is_locked = true;
   state.active_policy = usage_time_limit::PolicyType::kFixedLimit;
   state.next_state_active_policy = usage_time_limit::PolicyType::kNoPolicy;
-  state.next_unlock_time = base::Time::FromJavaTime(kTestTimestamp);
+  state.next_unlock_time =
+      base::Time::FromMillisecondsSinceUnixEpoch(kTestTimestamp);
 
   ConsistencyGoldenOutput actual_output =
       ConvertProcessorOutputToGoldenOutput(state);
@@ -229,7 +233,8 @@ TEST_F(ConsistencyGoldenConverterTest, ConvertOutputWhenLockedByUsageLimit) {
   state.next_state_active_policy = usage_time_limit::PolicyType::kNoPolicy;
   state.is_time_usage_limit_enabled = true;
   state.remaining_usage = base::Milliseconds(remaining_millis);
-  state.next_unlock_time = base::Time::FromJavaTime(kTestTimestamp);
+  state.next_unlock_time =
+      base::Time::FromMillisecondsSinceUnixEpoch(kTestTimestamp);
 
   ConsistencyGoldenOutput actual_output =
       ConvertProcessorOutputToGoldenOutput(state);
@@ -258,7 +263,8 @@ TEST_F(ConsistencyGoldenConverterTest, GeneratePreviousStateUnlockUsageLimit) {
             usage_time_limit::PolicyType::kUsageLimit);
   EXPECT_EQ(generated_state->remaining_usage, base::Minutes(0));
   EXPECT_EQ(generated_state->time_usage_limit_started,
-            base::Time::FromJavaTime(kTestTimestamp) - base::Minutes(1));
+            base::Time::FromMillisecondsSinceUnixEpoch(kTestTimestamp) -
+                base::Minutes(1));
 }
 
 TEST_F(ConsistencyGoldenConverterTest, GeneratePreviousStateOtherOverrides) {

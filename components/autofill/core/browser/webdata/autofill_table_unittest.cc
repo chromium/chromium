@@ -354,7 +354,7 @@ TEST_F(AutofillTableTest, Autofill_GetEntry_Populated) {
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
-  base::Time now = base::Time::FromDoubleT(1546889367);
+  base::Time now = base::Time::FromSecondsSinceUnixEpoch(1546889367);
 
   EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, now));
 
@@ -1312,7 +1312,7 @@ TEST_F(AutofillTableTest, ClearLocalPaymentMethodsData) {
 TEST_F(AutofillTableTest, CreditCardCvc) {
   base::test::ScopedFeatureList features(
       features::kAutofillEnableCvcStorageAndFilling);
-  const base::Time arbitrary_time = base::Time::FromDoubleT(25);
+  const base::Time arbitrary_time = base::Time::FromSecondsSinceUnixEpoch(25);
   // Create the test clock and set the time to a specific value.
   TestAutofillClock test_clock;
   test_clock.SetNow(arbitrary_time);
@@ -1329,7 +1329,8 @@ TEST_F(AutofillTableTest, CreditCardCvc) {
             arbitrary_time.ToTimeT());
 
   // Set the current time to another value.
-  const base::Time some_later_time = base::Time::FromDoubleT(1000);
+  const base::Time some_later_time =
+      base::Time::FromSecondsSinceUnixEpoch(1000);
   test_clock.SetNow(some_later_time);
 
   // Update the credit card but CVC is same.
@@ -1344,7 +1345,8 @@ TEST_F(AutofillTableTest, CreditCardCvc) {
             arbitrary_time.ToTimeT());
 
   // Set the current time to another value.
-  const base::Time much_later_time = base::Time::FromDoubleT(5000);
+  const base::Time much_later_time =
+      base::Time::FromSecondsSinceUnixEpoch(5000);
   test_clock.SetNow(much_later_time);
 
   // Update the credit card and CVC is different.
@@ -1443,7 +1445,7 @@ TEST_F(AutofillTableTest, UpdateCreditCardCvc_Delete) {
 // Tests that verify add, update and clear server cvc function working as
 // expected.
 TEST_F(AutofillTableTest, ServerCvc) {
-  const base::Time kArbitraryTime = base::Time::FromDoubleT(25);
+  const base::Time kArbitraryTime = base::Time::FromSecondsSinceUnixEpoch(25);
   int64_t kInstrumentId = 111111111111;
   const std::u16string kCvc = u"123";
   const ServerCvc kServerCvc{kInstrumentId, kCvc, kArbitraryTime};
@@ -1453,7 +1455,7 @@ TEST_F(AutofillTableTest, ServerCvc) {
   EXPECT_THAT(table_->GetAllServerCvcs(),
               UnorderedElementsAre(testing::Pointee(kServerCvc)));
 
-  const base::Time kSomeLaterTime = base::Time::FromDoubleT(1000);
+  const base::Time kSomeLaterTime = base::Time::FromSecondsSinceUnixEpoch(1000);
   const std::u16string kNewCvc = u"234";
   const ServerCvc kNewServerCvcUnderSameInstrumentId{kInstrumentId, kNewCvc,
                                                      kSomeLaterTime};
@@ -1481,7 +1483,7 @@ TEST_F(AutofillTableTest, ServerCvc) {
 
 // Tests that verify reconcile server cvc function working as expected.
 TEST_F(AutofillTableTest, ReconcileServerCvcs) {
-  const base::Time kArbitraryTime = base::Time::FromDoubleT(25);
+  const base::Time kArbitraryTime = base::Time::FromSecondsSinceUnixEpoch(25);
   // Add 2 server credit cards.
   CreditCard card1 = test::WithCvc(test::GetMaskedServerCard());
   CreditCard card2 = test::WithCvc(test::GetMaskedServerCard2());
@@ -3087,9 +3089,9 @@ TEST_F(AutofillTableTest, SetAndGetCreditCardOfferData) {
   std::string promo_code_3 = "5PCTOFFSHOES";
 
   // Set expiry.
-  base::Time expiry_1 = base::Time::FromDoubleT(1000);
-  base::Time expiry_2 = base::Time::FromDoubleT(2000);
-  base::Time expiry_3 = base::Time::FromDoubleT(3000);
+  base::Time expiry_1 = base::Time::FromSecondsSinceUnixEpoch(1000);
+  base::Time expiry_2 = base::Time::FromSecondsSinceUnixEpoch(2000);
+  base::Time expiry_3 = base::Time::FromSecondsSinceUnixEpoch(3000);
 
   // Set details URL.
   GURL offer_details_url_1 = GURL("https://www.offer_1_example.com/");

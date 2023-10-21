@@ -42,8 +42,8 @@ class BrowserFeaturePromoStorageServiceTest : public testing::Test {
     data.is_dismissed = true;
     data.last_dismissed_by =
         BrowserFeaturePromoStorageService::CloseReason::kSnooze;
-    data.last_show_time = base::Time::FromJsTime(1);
-    data.last_snooze_time = base::Time::FromJsTime(2);
+    data.last_show_time = base::Time::FromMillisecondsSinceUnixEpoch(1);
+    data.last_snooze_time = base::Time::FromMillisecondsSinceUnixEpoch(2);
     data.snooze_count = 3;
     data.show_count = 4;
     data.last_snooze_duration = base::Days(3);

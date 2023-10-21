@@ -18,8 +18,8 @@ TEST(CookieDeletionInfoTest, TimeRangeValues) {
   EXPECT_EQ(base::Time(), range.start());
   EXPECT_EQ(base::Time(), range.end());
 
-  const base::Time kTestStart = base::Time::FromDoubleT(1000);
-  const base::Time kTestEnd = base::Time::FromDoubleT(10000);
+  const base::Time kTestStart = base::Time::FromSecondsSinceUnixEpoch(1000);
+  const base::Time kTestEnd = base::Time::FromSecondsSinceUnixEpoch(10000);
 
   EXPECT_EQ(kTestStart, TimeRange(kTestStart, base::Time()).start());
   EXPECT_EQ(base::Time(), TimeRange(kTestStart, base::Time()).end());
@@ -44,41 +44,56 @@ TEST(CookieDeletionInfoTest, TimeRangeContains) {
 
   // With a start, but no end.
   const double kTestMinEpoch = 1000;
-  range.SetStart(base::Time::FromDoubleT(kTestMinEpoch));
+  range.SetStart(base::Time::FromSecondsSinceUnixEpoch(kTestMinEpoch));
   EXPECT_FALSE(range.Contains(base::Time::Min()));
-  EXPECT_FALSE(range.Contains(base::Time::FromDoubleT(kTestMinEpoch - 1)));
-  EXPECT_TRUE(range.Contains(base::Time::FromDoubleT(kTestMinEpoch)));
-  EXPECT_TRUE(range.Contains(base::Time::FromDoubleT(kTestMinEpoch + 1)));
+  EXPECT_FALSE(
+      range.Contains(base::Time::FromSecondsSinceUnixEpoch(kTestMinEpoch - 1)));
+  EXPECT_TRUE(
+      range.Contains(base::Time::FromSecondsSinceUnixEpoch(kTestMinEpoch)));
+  EXPECT_TRUE(
+      range.Contains(base::Time::FromSecondsSinceUnixEpoch(kTestMinEpoch + 1)));
   EXPECT_TRUE(range.Contains(base::Time::Max()));
 
   // With an end, but no start.
   const double kTestMaxEpoch = 10000000;
   range = TimeRange();
-  range.SetEnd(base::Time::FromDoubleT(kTestMaxEpoch));
+  range.SetEnd(base::Time::FromSecondsSinceUnixEpoch(kTestMaxEpoch));
   EXPECT_TRUE(range.Contains(base::Time::Min()));
-  EXPECT_TRUE(range.Contains(base::Time::FromDoubleT(kTestMaxEpoch - 1)));
-  EXPECT_FALSE(range.Contains(base::Time::FromDoubleT(kTestMaxEpoch)));
-  EXPECT_FALSE(range.Contains(base::Time::FromDoubleT(kTestMaxEpoch + 1)));
+  EXPECT_TRUE(
+      range.Contains(base::Time::FromSecondsSinceUnixEpoch(kTestMaxEpoch - 1)));
+  EXPECT_FALSE(
+      range.Contains(base::Time::FromSecondsSinceUnixEpoch(kTestMaxEpoch)));
+  EXPECT_FALSE(
+      range.Contains(base::Time::FromSecondsSinceUnixEpoch(kTestMaxEpoch + 1)));
   EXPECT_FALSE(range.Contains(base::Time::Max()));
 
   // With both a start and an end.
-  range.SetStart(base::Time::FromDoubleT(kTestMinEpoch));
+  range.SetStart(base::Time::FromSecondsSinceUnixEpoch(kTestMinEpoch));
   EXPECT_FALSE(range.Contains(base::Time::Min()));
-  EXPECT_FALSE(range.Contains(base::Time::FromDoubleT(kTestMinEpoch - 1)));
-  EXPECT_TRUE(range.Contains(base::Time::FromDoubleT(kTestMinEpoch)));
-  EXPECT_TRUE(range.Contains(base::Time::FromDoubleT(kTestMinEpoch + 1)));
-  EXPECT_TRUE(range.Contains(base::Time::FromDoubleT(kTestMaxEpoch - 1)));
-  EXPECT_FALSE(range.Contains(base::Time::FromDoubleT(kTestMaxEpoch)));
-  EXPECT_FALSE(range.Contains(base::Time::FromDoubleT(kTestMaxEpoch + 1)));
+  EXPECT_FALSE(
+      range.Contains(base::Time::FromSecondsSinceUnixEpoch(kTestMinEpoch - 1)));
+  EXPECT_TRUE(
+      range.Contains(base::Time::FromSecondsSinceUnixEpoch(kTestMinEpoch)));
+  EXPECT_TRUE(
+      range.Contains(base::Time::FromSecondsSinceUnixEpoch(kTestMinEpoch + 1)));
+  EXPECT_TRUE(
+      range.Contains(base::Time::FromSecondsSinceUnixEpoch(kTestMaxEpoch - 1)));
+  EXPECT_FALSE(
+      range.Contains(base::Time::FromSecondsSinceUnixEpoch(kTestMaxEpoch)));
+  EXPECT_FALSE(
+      range.Contains(base::Time::FromSecondsSinceUnixEpoch(kTestMaxEpoch + 1)));
   EXPECT_FALSE(range.Contains(base::Time::Max()));
 
   // And where start==end.
-  range = TimeRange(base::Time::FromDoubleT(kTestMinEpoch),
-                    base::Time::FromDoubleT(kTestMinEpoch));
+  range = TimeRange(base::Time::FromSecondsSinceUnixEpoch(kTestMinEpoch),
+                    base::Time::FromSecondsSinceUnixEpoch(kTestMinEpoch));
   EXPECT_FALSE(range.Contains(base::Time::Min()));
-  EXPECT_FALSE(range.Contains(base::Time::FromDoubleT(kTestMinEpoch - 1)));
-  EXPECT_TRUE(range.Contains(base::Time::FromDoubleT(kTestMinEpoch)));
-  EXPECT_FALSE(range.Contains(base::Time::FromDoubleT(kTestMinEpoch + 1)));
+  EXPECT_FALSE(
+      range.Contains(base::Time::FromSecondsSinceUnixEpoch(kTestMinEpoch - 1)));
+  EXPECT_TRUE(
+      range.Contains(base::Time::FromSecondsSinceUnixEpoch(kTestMinEpoch)));
+  EXPECT_FALSE(
+      range.Contains(base::Time::FromSecondsSinceUnixEpoch(kTestMinEpoch + 1)));
 }
 
 TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchSessionControl) {
@@ -325,17 +340,20 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoDomainMatchesDomain) {
 
   const double kTestMinEpoch = 1000;
   const double kTestMaxEpoch = 10000000;
-  delete_info.creation_range.SetStart(base::Time::FromDoubleT(kTestMinEpoch));
-  delete_info.creation_range.SetEnd(base::Time::FromDoubleT(kTestMaxEpoch));
+  delete_info.creation_range.SetStart(
+      base::Time::FromSecondsSinceUnixEpoch(kTestMinEpoch));
+  delete_info.creation_range.SetEnd(
+      base::Time::FromSecondsSinceUnixEpoch(kTestMaxEpoch));
 
   auto create_cookie = [kTestMinEpoch](std::string cookie_domain) {
     return *CanonicalCookie::CreateUnsafeCookieForTesting(
         /*name=*/"test-cookie",
         /*value=*/"cookie-value", cookie_domain,
         /*path=*/"cookie/path",
-        /*creation=*/base::Time::FromDoubleT(kTestMinEpoch + 1),
+        /*creation=*/base::Time::FromSecondsSinceUnixEpoch(kTestMinEpoch + 1),
         /*expiration=*/base::Time::Max(),
-        /*last_access=*/base::Time::FromDoubleT(kTestMinEpoch + 1),
+        /*last_access=*/
+        base::Time::FromSecondsSinceUnixEpoch(kTestMinEpoch + 1),
         /*last_update=*/base::Time::Now(),
         /*secure=*/true,
         /*httponly=*/false,

@@ -532,7 +532,7 @@ TEST_P(AudioDevicesPrefHandlerTest, DropLeastRecentlySeenDevices) {
       []() {
         static int i = 0;
         i++;
-        return base::Time::FromDoubleT(i);
+        return base::Time::FromSecondsSinceUnixEpoch(i);
       },
       nullptr, nullptr);
 

@@ -28,7 +28,7 @@
 namespace {
 
 const base::Time kTestMhtmlCreationTime =
-    base::Time::FromJsTime(1522339419011L);
+    base::Time::FromMillisecondsSinceUnixEpoch(1522339419011L);
 
 const char kTestHeader[] = "reason=download";
 

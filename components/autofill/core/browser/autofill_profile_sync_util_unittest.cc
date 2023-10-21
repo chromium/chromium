@@ -30,7 +30,7 @@ using syncer::EntityData;
 const char kGuid[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44A";
 const char kGuidInvalid[] = "EDC609ED";
 
-const base::Time kJune2017 = base::Time::FromDoubleT(1497552271);
+const base::Time kJune2017 = base::Time::FromSecondsSinceUnixEpoch(1497552271);
 
 // Returns a profile with all fields set.  Contains identical data to the data
 // returned from ConstructCompleteSpecifics().

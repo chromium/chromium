@@ -60,7 +60,8 @@ absl::optional<base::TimeDelta> GetTimeZoneOffsetAtTime(const char* timezone_id,
   int32_t raw_offset = 0;
   int32_t dst_offset = 0;
   UErrorCode ec = U_ZERO_ERROR;
-  tz->getOffset(time.ToDoubleT(), false, raw_offset, dst_offset, ec);
+  tz->getOffset(time.InSecondsFSinceUnixEpoch(), false, raw_offset, dst_offset,
+                ec);
   if (!U_SUCCESS(ec)) {
     return {};
   }
@@ -243,7 +244,7 @@ TEST_F(TimeTest, DeltaSinceWindowsEpoch) {
 // Test conversion to/from time_t.
 TEST_F(TimeTest, TimeT) {
   EXPECT_EQ(10, Time().FromTimeT(10).ToTimeT());
-  EXPECT_EQ(10.0, Time().FromTimeT(10).ToDoubleT());
+  EXPECT_EQ(10.0, Time().FromTimeT(10).InSecondsFSinceUnixEpoch());
 
   // Conversions of 0 should stay 0.
   EXPECT_EQ(0, Time().ToTimeT());
@@ -325,19 +326,19 @@ TEST_F(TimeTest, LocalTimeT) {
 
 // Test conversions to/from javascript time.
 TEST_F(TimeTest, JsTime) {
-  Time epoch = Time::FromJsTime(0.0);
+  Time epoch = Time::FromMillisecondsSinceUnixEpoch(0.0);
   EXPECT_EQ(epoch, Time::UnixEpoch());
-  Time t = Time::FromJsTime(700000.3);
-  EXPECT_EQ(700.0003, t.ToDoubleT());
-  t = Time::FromDoubleT(800.73);
-  EXPECT_EQ(800730.0, t.ToJsTime());
+  Time t = Time::FromMillisecondsSinceUnixEpoch(700000.3);
+  EXPECT_EQ(700.0003, t.InSecondsFSinceUnixEpoch());
+  t = Time::FromSecondsSinceUnixEpoch(800.73);
+  EXPECT_EQ(800730.0, t.InMillisecondsFSinceUnixEpoch());
 
-  // 1601-01-01 isn't round-trip with ToJsTime().
+  // 1601-01-01 isn't round-trip with InMillisecondsFSinceUnixEpoch().
   const double kWindowsEpoch = -11644473600000.0;
-  Time time = Time::FromJsTime(kWindowsEpoch);
+  Time time = Time::FromMillisecondsSinceUnixEpoch(kWindowsEpoch);
   EXPECT_TRUE(time.is_null());
-  EXPECT_NE(kWindowsEpoch, time.ToJsTime());
-  EXPECT_EQ(kWindowsEpoch, time.ToJsTimeIgnoringNull());
+  EXPECT_NE(kWindowsEpoch, time.InMillisecondsFSinceUnixEpoch());
+  EXPECT_EQ(kWindowsEpoch, time.InMillisecondsFSinceUnixEpochIgnoringNull());
 }
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -366,7 +367,7 @@ TEST_F(TimeTest, ZeroIsSymmetric) {
   Time zero_time(Time::FromTimeT(0));
   EXPECT_EQ(0, zero_time.ToTimeT());
 
-  EXPECT_EQ(0.0, zero_time.ToDoubleT());
+  EXPECT_EQ(0.0, zero_time.InSecondsFSinceUnixEpoch());
 }
 
 // Note that this test does not check whether the implementation correctly
@@ -872,13 +873,17 @@ TEST_F(TimeTest, MaxConversions) {
   static_assert(std::numeric_limits<int64_t>::max() == kMax.ToInternalValue(),
                 "");
 
-  Time t = Time::FromDoubleT(std::numeric_limits<double>::infinity());
+  Time t =
+      Time::FromSecondsSinceUnixEpoch(std::numeric_limits<double>::infinity());
   EXPECT_TRUE(t.is_max());
-  EXPECT_EQ(std::numeric_limits<double>::infinity(), t.ToDoubleT());
+  EXPECT_EQ(std::numeric_limits<double>::infinity(),
+            t.InSecondsFSinceUnixEpoch());
 
-  t = Time::FromJsTime(std::numeric_limits<double>::infinity());
+  t = Time::FromMillisecondsSinceUnixEpoch(
+      std::numeric_limits<double>::infinity());
   EXPECT_TRUE(t.is_max());
-  EXPECT_EQ(std::numeric_limits<double>::infinity(), t.ToJsTime());
+  EXPECT_EQ(std::numeric_limits<double>::infinity(),
+            t.InMillisecondsFSinceUnixEpoch());
 
   t = Time::FromTimeT(std::numeric_limits<time_t>::max());
   EXPECT_TRUE(t.is_max());

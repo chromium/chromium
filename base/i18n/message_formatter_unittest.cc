@@ -42,8 +42,8 @@ void AppendFormattedDateTime(const std::unique_ptr<icu::DateFormat>& df,
                              const Time& now,
                              std::u16string* result) {
   icu::UnicodeString formatted;
-  result->append(UnicodeStringToString16(
-      df->format(static_cast<UDate>(now.ToJsTime()), formatted)));
+  result->append(UnicodeStringToString16(df->format(
+      static_cast<UDate>(now.InMillisecondsFSinceUnixEpoch()), formatted)));
 }
 
 }  // namespace

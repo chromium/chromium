@@ -240,7 +240,7 @@ BuiltInBackendToAndroidBackendMigrator::GetMigrationType(
 void BuiltInBackendToAndroidBackendMigrator::PrepareForMigration(
     MigrationType migration_type) {
   prefs_->SetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt,
-                    base::Time::Now().ToDoubleT());
+                    base::Time::Now().InSecondsFSinceUnixEpoch());
   migration_in_progress_type_ = migration_type;
 
   metrics_reporter_ = std::make_unique<MigrationMetricsReporter>(

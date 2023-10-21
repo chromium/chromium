@@ -104,7 +104,8 @@ TEST_F(XmppRegisterSupportHostRequestTest, Timeout) {
 
 TEST_F(XmppRegisterSupportHostRequestTest, Send) {
   // |iq_request| is freed by XmppRegisterSupportHostRequest.
-  int64_t start_time = static_cast<int64_t>(base::Time::Now().ToDoubleT());
+  int64_t start_time =
+      static_cast<int64_t>(base::Time::Now().InSecondsFSinceUnixEpoch());
 
   auto request = std::make_unique<XmppRegisterSupportHostRequest>(kTestBotJid);
   request->StartRequest(&signal_strategy_, key_pair_, authorized_helper_,
@@ -138,7 +139,8 @@ TEST_F(XmppRegisterSupportHostRequestTest, Send) {
       signature->Attr(QName(kChromotingXmlNamespace, "time"));
   int64_t time;
   EXPECT_TRUE(base::StringToInt64(time_str, &time));
-  int64_t now = static_cast<int64_t>(base::Time::Now().ToDoubleT());
+  int64_t now =
+      static_cast<int64_t>(base::Time::Now().InSecondsFSinceUnixEpoch());
   EXPECT_LE(start_time, time);
   EXPECT_GE(now, time);
 

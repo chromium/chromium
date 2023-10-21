@@ -457,7 +457,7 @@ protocol::Response InspectorEmulationAgent::setVirtualTimePolicy(
   // This needs to happen before we apply virtual time.
   base::Time initial_time =
       initial_virtual_time.has_value()
-          ? base::Time::FromDoubleT(initial_virtual_time.value())
+          ? base::Time::FromSecondsSinceUnixEpoch(initial_virtual_time.value())
           : base::Time();
   virtual_time_base_ticks_ =
       virtual_time_controller_.EnableVirtualTime(initial_time);

@@ -12,6 +12,7 @@
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -377,7 +378,8 @@ void ArcDocumentsProviderRoot::GetFileInfoFromDocument(
   info.is_symbolic_link = false;
   if (fields & storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED) {
     info.last_modified = info.last_accessed = info.creation_time =
-        base::Time::FromJavaTime(document->last_modified);
+        base::Time::FromMillisecondsSinceUnixEpoch(
+            base::checked_cast<int64_t>(document->last_modified));
   }
 
   if (base::FeatureList::IsEnabled(kDocumentsProviderUnknownSizeFeature) &&
@@ -422,10 +424,11 @@ void ArcDocumentsProviderRoot::ReadDirectoryWithNameToDocumentMap(
   for (const auto& pair : mapping) {
     const base::FilePath::StringType& name = pair.first;
     const mojom::DocumentPtr& document = pair.second;
-    files.emplace_back(
-        ThinFileInfo{name, document->document_id,
-                     document->mime_type == kAndroidDirectoryMimeType,
-                     base::Time::FromJavaTime(document->last_modified)});
+    files.emplace_back(ThinFileInfo{
+        name, document->document_id,
+        document->mime_type == kAndroidDirectoryMimeType,
+        base::Time::FromMillisecondsSinceUnixEpoch(
+            base::checked_cast<int64_t>(document->last_modified))});
   }
   std::move(callback).Run(base::File::FILE_OK, std::move(files));
 }
@@ -808,8 +811,10 @@ void ArcDocumentsProviderRoot::GetExtraMetadataFromDocument(
   metadata.supports_rename = document->supports_rename;
   metadata.dir_supports_create = document->dir_supports_create;
   metadata.supports_thumbnail = document->supports_thumbnail;
-  if (document->last_modified > 0)
-    metadata.last_modified = base::Time::FromJavaTime(document->last_modified);
+  if (document->last_modified > 0) {
+    metadata.last_modified = base::Time::FromMillisecondsSinceUnixEpoch(
+        base::checked_cast<int64_t>(document->last_modified));
+  }
   metadata.size = document->size;
   std::move(callback).Run(base::File::FILE_OK, metadata);
 }

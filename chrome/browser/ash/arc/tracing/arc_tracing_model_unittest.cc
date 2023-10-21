@@ -579,7 +579,8 @@ TEST_F(ArcTracingModelTest, GraphicsModelLoadSerialize) {
             model->platform());
   EXPECT_EQ("Play Store", model->app_title());
   EXPECT_FALSE(model->app_icon_png().empty());
-  EXPECT_EQ(base::Time::FromJsTime(1572898642036L), model->timestamp());
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(1572898642036L),
+            model->timestamp());
   EXPECT_EQ(1000U, model->duration());
 
   ArcTracingGraphicsModel test_model;

@@ -512,7 +512,8 @@ bool AddCrostiniAppInfo(
   const base::Time last_launch_time = registration.LastLaunchTime();
   if (!last_launch_time.is_null()) {
     app->set_last_launch_time_window_start_timestamp(
-        crostini::GetThreeDayWindowStart(last_launch_time).ToJavaTime());
+        crostini::GetThreeDayWindowStart(last_launch_time)
+            .InMillisecondsSinceUnixEpoch());
   }
 
   app->set_app_type(em::CROSTINI_APP_TYPE_INTERACTIVE);
@@ -617,7 +618,8 @@ void CrashReportsLoaded(
          crash_report->source == kCrashReportSourceEC)) {
       em::CrashReportInfo info;
       info.set_remote_id(crash_report->upload_id);
-      info.set_capture_timestamp(crash_report->capture_time.ToJavaTime());
+      info.set_capture_timestamp(
+          crash_report->capture_time.InMillisecondsSinceUnixEpoch());
       info.set_cause(crash_report->source);
       info.set_upload_status(GetCrashReportUploadStatus(crash_report->state));
       contents.push_back(info);
@@ -834,7 +836,7 @@ class DeviceStatusCollectorState : public StatusCollectorState {
     for (const em::CPUTempInfo& info : cpu_temp_info) {
       auto* new_info = response_params_.device_status->add_cpu_temp_infos();
       *new_info = info;
-      new_info->set_timestamp(timestamp.ToJavaTime());
+      new_info->set_timestamp(timestamp.InMillisecondsSinceUnixEpoch());
     }
   }
 
@@ -2105,7 +2107,8 @@ void DeviceStatusCollector::SampleProbeData(
     } else if (!battery_result->get_battery_info().is_null()) {
       const auto& battery = battery_result->get_battery_info();
       em::BatterySample battery_sample;
-      battery_sample.set_timestamp(sample->timestamp.ToJavaTime());
+      battery_sample.set_timestamp(
+          sample->timestamp.InMillisecondsSinceUnixEpoch());
       // Convert V to mV:
       battery_sample.set_voltage(std::lround(battery->voltage_now * 1000));
       // Convert Ah to mAh:
@@ -2169,7 +2172,7 @@ void DeviceStatusCollector::ReceiveCPUTemperature(
     std::unique_ptr<SampledData> sample,
     SamplingCallback callback,
     std::vector<em::CPUTempInfo> measurements) {
-  auto timestamp = sample->timestamp.ToJavaTime();
+  auto timestamp = sample->timestamp.InMillisecondsSinceUnixEpoch();
   for (const auto& measurement : measurements) {
     sample->cpu_samples[measurement.cpu_label()] = measurement;
     sample->cpu_samples[measurement.cpu_label()].set_timestamp(timestamp);
@@ -2556,7 +2559,8 @@ bool DeviceStatusCollector::GetMemoryInfo(
     em::SystemFreeRamInfo* system_ram_free_info =
         status->add_system_ram_free_infos();
     system_ram_free_info->set_size_in_bytes(usage.bytes_of_ram_free);
-    system_ram_free_info->set_timestamp(usage.timestamp.ToJavaTime());
+    system_ram_free_info->set_timestamp(
+        usage.timestamp.InMillisecondsSinceUnixEpoch());
   }
 
   return true;
@@ -2569,7 +2573,8 @@ bool DeviceStatusCollector::GetCPUInfo(em::DeviceStatusReportRequest* status) {
     em::CpuUtilizationInfo* cpu_utilization_info =
         status->add_cpu_utilization_infos();
     cpu_utilization_info->set_cpu_utilization_pct(usage.cpu_usage_percent);
-    cpu_utilization_info->set_timestamp(usage.timestamp.ToJavaTime());
+    cpu_utilization_info->set_timestamp(
+        usage.timestamp.InMillisecondsSinceUnixEpoch());
   }
 
   return true;
@@ -2622,7 +2627,7 @@ bool DeviceStatusCollector::GetOsUpdateStatus(
       base::Time::Now() - base::SysInfo::Uptime();
 
   os_update_status->set_last_reboot_timestamp(
-      last_reboot_timestamp.ToJavaTime());
+      last_reboot_timestamp.InMillisecondsSinceUnixEpoch());
 
   // Get last check timestamp.
   // As the timestamp precision return from UpdateEngine is in seconds (see
@@ -2631,7 +2636,7 @@ bool DeviceStatusCollector::GetOsUpdateStatus(
       base::Time::FromTimeT(update_engine_status.last_checked_time());
 
   os_update_status->set_last_checked_timestamp(
-      last_checked_timestamp.ToJavaTime());
+      last_checked_timestamp.InMillisecondsSinceUnixEpoch());
 
   if (required_platform_version &&
       platform_version == *required_platform_version) {

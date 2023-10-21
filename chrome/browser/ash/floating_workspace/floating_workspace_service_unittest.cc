@@ -48,9 +48,9 @@ namespace {
 constexpr char kLocalSessionName[] = "local_session";
 constexpr char kRemoteSessionOneName[] = "remote_session_1";
 constexpr char kRemoteSession2Name[] = "remote_session_2";
-const base::Time most_recent_time = base::Time::FromDoubleT(15);
-const base::Time more_recent_time = base::Time::FromDoubleT(10);
-const base::Time least_recent_time = base::Time::FromDoubleT(5);
+const base::Time most_recent_time = base::Time::FromSecondsSinceUnixEpoch(15);
+const base::Time more_recent_time = base::Time::FromSecondsSinceUnixEpoch(10);
+const base::Time least_recent_time = base::Time::FromSecondsSinceUnixEpoch(5);
 std::unique_ptr<sync_sessions::SyncedSession> CreateNewSession(
     const std::string& session_name,
     const base::Time& session_time) {

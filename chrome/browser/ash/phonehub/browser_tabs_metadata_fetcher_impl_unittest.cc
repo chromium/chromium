@@ -25,12 +25,12 @@ namespace {
 
 using testing::_;
 
-const base::Time kTimeA = base::Time::FromDoubleT(1);
-const base::Time kTimeB = base::Time::FromDoubleT(2);
-const base::Time kTimeC = base::Time::FromDoubleT(3);
-const base::Time kTimeD = base::Time::FromDoubleT(4);
-const base::Time kTimeE = base::Time::FromDoubleT(5);
-const base::Time kTimeF = base::Time::FromDoubleT(6);
+const base::Time kTimeA = base::Time::FromSecondsSinceUnixEpoch(1);
+const base::Time kTimeB = base::Time::FromSecondsSinceUnixEpoch(2);
+const base::Time kTimeC = base::Time::FromSecondsSinceUnixEpoch(3);
+const base::Time kTimeD = base::Time::FromSecondsSinceUnixEpoch(4);
+const base::Time kTimeE = base::Time::FromSecondsSinceUnixEpoch(5);
+const base::Time kTimeF = base::Time::FromSecondsSinceUnixEpoch(6);
 
 class MockHistoryUiFaviconRequestHandler
     : public favicon::HistoryUiFaviconRequestHandler {

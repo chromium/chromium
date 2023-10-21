@@ -1864,13 +1864,14 @@ ExtensionFunction::ResponseAction AutotestPrivateGetArcStateFunction::Run() {
 
   arc_state.provisioned = arc::IsArcProvisioned(profile);
   arc_state.tos_needed = arc::IsArcTermsOfServiceNegotiationNeeded(profile);
-  arc_state.pre_start_time =
-      pre_start_time.is_null()
-          ? 0
-          : (now_time - (now_ticks - pre_start_time)).ToJsTime();
+  arc_state.pre_start_time = pre_start_time.is_null()
+                                 ? 0
+                                 : (now_time - (now_ticks - pre_start_time))
+                                       .InMillisecondsFSinceUnixEpoch();
   arc_state.start_time = start_time.is_null()
                              ? 0
-                             : (now_time - (now_ticks - start_time)).ToJsTime();
+                             : (now_time - (now_ticks - start_time))
+                                   .InMillisecondsFSinceUnixEpoch();
 
   return RespondNow(WithArguments(arc_state.ToValue()));
 }
@@ -2125,8 +2126,10 @@ ExtensionFunction::ResponseAction AutotestPrivateGetArcAppFunction::Run() {
           .Set("activity", std::move(app_info->activity))
           .Set("intentUri", std::move(app_info->intent_uri))
           .Set("iconResourceId", std::move(app_info->icon_resource_id))
-          .Set("lastLaunchTime", app_info->last_launch_time.ToJsTime())
-          .Set("installTime", app_info->install_time.ToJsTime())
+          .Set("lastLaunchTime",
+               app_info->last_launch_time.InMillisecondsFSinceUnixEpoch())
+          .Set("installTime",
+               app_info->install_time.InMillisecondsFSinceUnixEpoch())
           .Set("sticky", app_info->sticky)
           .Set("notificationsEnabled", app_info->notifications_enabled)
           .Set("ready", app_info->ready)
@@ -2219,7 +2222,7 @@ ExtensionFunction::ResponseAction AutotestPrivateGetArcPackageFunction::Run() {
     package_value.Set("lastBackupTime",
                       base::Time::FromDeltaSinceWindowsEpoch(
                           base::Microseconds(package_info->last_backup_time))
-                          .ToJsTime());
+                          .InMillisecondsFSinceUnixEpoch());
     package_value.Set("shouldSync", package_info->should_sync);
     package_value.Set("vpnProvider", package_info->vpn_provider);
   }

@@ -682,7 +682,7 @@ StoreMetricsReporter::StoreMetricsReporter(
 
   prefs->SetDouble(
       password_manager::prefs::kLastTimePasswordStoreMetricsReported,
-      base::Time::Now().ToDoubleT());
+      base::Time::Now().InSecondsFSinceUnixEpoch());
 
   sync_username_ = password_manager::sync_util::
       GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(sync_service,

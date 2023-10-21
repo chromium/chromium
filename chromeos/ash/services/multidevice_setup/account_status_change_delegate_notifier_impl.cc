@@ -159,7 +159,7 @@ void AccountStatusChangeDelegateNotifierImpl::OnHostStatusChange(
 
 void AccountStatusChangeDelegateNotifierImpl::OnOobeCompleted() {
   pref_service_->SetInt64(kOobeSetupFlowTimestampPrefName,
-                          clock_->Now().ToJavaTime());
+                          clock_->Now().InMillisecondsSinceUnixEpoch());
   if (delegate())
     delegate()->OnNoLongerNewUser();
 }
@@ -175,7 +175,7 @@ void AccountStatusChangeDelegateNotifierImpl::
   }
   if (IsInPhoneHubNotificationExperimentGroup()) {
     pref_service_->SetInt64(kMultiDeviceLastSessionStartTime,
-                            clock_->Now().ToJavaTime());
+                            clock_->Now().InMillisecondsSinceUnixEpoch());
     CheckForNewUserPotentialHostExistsEvent(
         host_status_provider_->GetHostWithStatus());
   }
@@ -271,8 +271,9 @@ void AccountStatusChangeDelegateNotifierImpl::
   if (IsInPhoneHubNotificationExperimentGroup()) {
     if (pref_service_->GetInt64(kMultiDeviceLastSessionStartTime) !=
             kTimestampNotSet &&
-        clock_->Now() - base::Time::FromJavaTime(pref_service_->GetInt64(
-                            kMultiDeviceLastSessionStartTime)) >
+        clock_->Now() -
+                base::Time::FromMillisecondsSinceUnixEpoch(
+                    pref_service_->GetInt64(kMultiDeviceLastSessionStartTime)) >
             features::kMultiDeviceSetupNotificationTimeLimit.Get()) {
       return;
     }
@@ -281,7 +282,7 @@ void AccountStatusChangeDelegateNotifierImpl::
   if (delegate()) {
     delegate()->OnPotentialHostExistsForNewUser();
     pref_service_->SetInt64(kNewUserPotentialHostExistsPrefName,
-                            clock_->Now().ToJavaTime());
+                            clock_->Now().InMillisecondsSinceUnixEpoch());
   }
 }
 
@@ -328,7 +329,7 @@ void AccountStatusChangeDelegateNotifierImpl::
   delegate()->OnConnectedHostSwitchedForExistingUser(
       host_status_with_device.host_device()->name());
   pref_service_->SetInt64(kExistingUserHostSwitchedPrefName,
-                          clock_->Now().ToJavaTime());
+                          clock_->Now().InMillisecondsSinceUnixEpoch());
 }
 
 void AccountStatusChangeDelegateNotifierImpl::
@@ -351,7 +352,7 @@ void AccountStatusChangeDelegateNotifierImpl::
   delegate()->OnNewChromebookAddedForExistingUser(
       host_status_with_device.host_device()->name());
   pref_service_->SetInt64(kExistingUserChromebookAddedPrefName,
-                          clock_->Now().ToJavaTime());
+                          clock_->Now().InMillisecondsSinceUnixEpoch());
 }
 
 absl::optional<std::string> AccountStatusChangeDelegateNotifierImpl::

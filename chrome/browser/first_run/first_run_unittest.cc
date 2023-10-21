@@ -133,7 +133,9 @@ TEST_F(FirstRunTest, GetFirstRunSentinelCreationTime_NotCreated) {
   base::File::Info info;
   ASSERT_FALSE(base::GetFileInfo(GetSentinelFilePath(), &info));
 
-  EXPECT_EQ(0, first_run::GetFirstRunSentinelCreationTime().ToDoubleT());
+  EXPECT_EQ(
+      0,
+      first_run::GetFirstRunSentinelCreationTime().InSecondsFSinceUnixEpoch());
 }
 
 TEST_F(FirstRunTest, CreateSentinelIfNeeded) {

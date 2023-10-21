@@ -377,7 +377,8 @@ void AuctionDownloader::OnResponseStarted(
         }
 
         if (!response_head.response_time.is_null()) {
-          dict.Add("responseTime", response_head.response_time.ToJsTime());
+          dict.Add("responseTime",
+                   response_head.response_time.InMillisecondsFSinceUnixEpoch());
         }
 
         // Only send load timing if it exists, e.g. not a cache hit.

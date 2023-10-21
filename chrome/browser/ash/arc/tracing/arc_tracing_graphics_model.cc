@@ -595,7 +595,7 @@ base::Value::Dict ArcTracingGraphicsModel::Serialize() const {
   if (!platform_.empty())
     information.Set(kKeyPlatform, platform_);
   if (!timestamp_.is_null())
-    information.Set(kKeyTimestamp, timestamp_.ToJsTime());
+    information.Set(kKeyTimestamp, timestamp_.InMillisecondsFSinceUnixEpoch());
   if (!app_title_.empty())
     information.Set(kKeyTitle, app_title_);
   if (!app_icon_png_.empty()) {
@@ -682,7 +682,7 @@ bool ArcTracingGraphicsModel::LoadFromValue(const base::Value::Dict& root) {
     absl::optional<double> timestamp_value =
         informaton->FindDouble(kKeyTimestamp);
     if (timestamp_value)
-      timestamp_ = base::Time::FromJsTime(*timestamp_value);
+      timestamp_ = base::Time::FromMillisecondsSinceUnixEpoch(*timestamp_value);
   } else {
     if (!ReadDuration(&root, &duration_))
       return false;

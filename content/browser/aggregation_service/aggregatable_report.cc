@@ -591,8 +591,9 @@ std::string AggregatableReportSharedInfo::SerializeAsJson() const {
   DCHECK(!scheduled_report_time.is_null());
   DCHECK(!scheduled_report_time.is_inf());
   value.Set("scheduled_report_time",
-            base::NumberToString(scheduled_report_time.ToJavaTime() /
-                                 base::Time::kMillisecondsPerSecond));
+            base::NumberToString(
+                scheduled_report_time.InMillisecondsSinceUnixEpoch() /
+                base::Time::kMillisecondsPerSecond));
 
   value.Set("version", api_version);
 

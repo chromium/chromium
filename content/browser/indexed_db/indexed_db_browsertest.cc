@@ -613,11 +613,11 @@ class IndexedDBBrowserTestWithVersion3Schema
   std::vector<BlobModificationTime> CustomModificationTimes() override {
     return {
         {base::FilePath(FILE_PATH_LITERAL("1/00/3")),
-         base::Time::FromJsTime(1579809038000)},
+         base::Time::FromMillisecondsSinceUnixEpoch(1579809038000)},
         {base::FilePath(FILE_PATH_LITERAL("1/00/4")),
-         base::Time::FromJsTime(1579808985000)},
+         base::Time::FromMillisecondsSinceUnixEpoch(1579808985000)},
         {base::FilePath(FILE_PATH_LITERAL("1/00/5")),
-         base::Time::FromJsTime(1579199256000)},
+         base::Time::FromMillisecondsSinceUnixEpoch(1579199256000)},
     };
   }
 };

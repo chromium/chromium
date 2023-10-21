@@ -1327,7 +1327,9 @@ ScriptValue HTMLInputElement::valueAsDate(ScriptState* script_state) const {
   v8::Isolate* isolate = script_state->GetIsolate();
   if (!std::isfinite(date))
     return ScriptValue::CreateNull(isolate);
-  return ScriptValue(isolate, ToV8(base::Time::FromJsTime(date), script_state));
+  return ScriptValue(
+      isolate,
+      ToV8(base::Time::FromMillisecondsSinceUnixEpoch(date), script_state));
 }
 
 void HTMLInputElement::setValueAsDate(ScriptState* script_state,

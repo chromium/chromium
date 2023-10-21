@@ -359,7 +359,7 @@ class InitialEnrollmentTest : public EnrollmentEmbeddedPolicyServerBase {
     // we already checked the existence of the pref with non-default value.
     EXPECT_FALSE(psm_determination_timestamp.is_null());
 
-    return psm_determination_timestamp.ToJavaTime();
+    return psm_determination_timestamp.InMillisecondsSinceUnixEpoch();
   }
 
  private:

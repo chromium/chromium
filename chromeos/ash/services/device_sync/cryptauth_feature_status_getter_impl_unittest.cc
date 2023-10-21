@@ -85,7 +85,7 @@ cryptauthv2::DeviceFeatureStatus ConvertDeviceToDeviceFeatureStatus(
     // as the last_modified_time_millis. All other feature types will have
     // smaller last_modified_time_millis.
     feature_status->set_last_modified_time_millis(
-        std::max(0L, device.last_update_time.ToJavaTime() -
+        std::max(0L, device.last_update_time.InMillisecondsSinceUnixEpoch() -
                          last_modified_time_offset_millis));
     ++last_modified_time_offset_millis;
 

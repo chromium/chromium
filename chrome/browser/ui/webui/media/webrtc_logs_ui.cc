@@ -289,7 +289,8 @@ base::Value::List WebRtcLogsDOMHandler::UpdateUIWithTextLogs() const {
       // 2012 when the feature was introduced and now.
       double seconds_since_epoch;
       if (base::StringToDouble(upload->local_id, &seconds_since_epoch)) {
-        base::Time capture_time = base::Time::FromDoubleT(seconds_since_epoch);
+        base::Time capture_time =
+            base::Time::FromSecondsSinceUnixEpoch(seconds_since_epoch);
         static constexpr base::Time::Exploded kLowerLimit = {
             .year = 2012, .month = 1, .day_of_month = 1};
         base::Time out_time;

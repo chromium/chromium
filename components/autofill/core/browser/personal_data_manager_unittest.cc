@@ -76,9 +76,9 @@ using testing::UnorderedElementsAre;
 constexpr char kGuid[] = "a21f010a-eac1-41fc-aee9-c06bbedfb292";
 constexpr char kPrimaryAccountEmail[] = "syncuser@example.com";
 
-const base::Time kArbitraryTime = base::Time::FromDoubleT(25);
-const base::Time kSomeLaterTime = base::Time::FromDoubleT(1000);
-const base::Time kMuchLaterTime = base::Time::FromDoubleT(5000);
+const base::Time kArbitraryTime = base::Time::FromSecondsSinceUnixEpoch(25);
+const base::Time kSomeLaterTime = base::Time::FromSecondsSinceUnixEpoch(1000);
+const base::Time kMuchLaterTime = base::Time::FromSecondsSinceUnixEpoch(5000);
 
 class PersonalDataManagerMock : public PersonalDataManager {
  public:

@@ -379,7 +379,7 @@ RuntimeAPI::RestartAfterDelayStatus RuntimeAPI::RestartDeviceAfterDelay(
                                false);
     }
 
-    last_delayed_restart_time_ = base::Time::FromDoubleT(
+    last_delayed_restart_time_ = base::Time::FromSecondsSinceUnixEpoch(
         pref_service->GetDouble(kPrefLastRestartAfterDelayTime));
 
     if (!allow_non_kiosk_apps_restart_api_for_test) {
@@ -447,7 +447,7 @@ void RuntimeAPI::OnDelayedRestartTimerTimeout() {
   // unit tests).
   // This assumption is important, since once restart is requested, we might not
   // have enough time to persist the data to disk.
-  double now = base::Time::NowFromSystemTime().ToDoubleT();
+  double now = base::Time::NowFromSystemTime().InSecondsFSinceUnixEpoch();
   PrefService* pref_service =
       ExtensionsBrowserClient::Get()->GetPrefServiceForContext(
           browser_context_);

@@ -162,7 +162,8 @@ class MojoFileAccessor : public zip::FileAccessor {
 
     info->is_directory =
         file_info->type == filesystem::mojom::FsFileType::DIRECTORY;
-    info->last_modified = base::Time::FromDoubleT(file_info->mtime);
+    info->last_modified =
+        base::Time::FromSecondsSinceUnixEpoch(file_info->mtime);
     return true;
   }
 

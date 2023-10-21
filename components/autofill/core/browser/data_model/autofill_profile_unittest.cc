@@ -1551,7 +1551,7 @@ TEST(AutofillProfileTest, LabelsInAssignmentAndComparisonOperator) {
 TEST(AutofillProfileTest, GetMetadata) {
   AutofillProfile local_profile = test::GetFullProfile();
   local_profile.set_use_count(2);
-  local_profile.set_use_date(base::Time::FromDoubleT(25));
+  local_profile.set_use_date(base::Time::FromSecondsSinceUnixEpoch(25));
   local_profile.set_has_converted(false);
   AutofillMetadata local_metadata = local_profile.GetMetadata();
   EXPECT_EQ(local_profile.guid(), local_metadata.id);
@@ -1561,7 +1561,7 @@ TEST(AutofillProfileTest, GetMetadata) {
 
   AutofillProfile server_profile = test::GetServerProfile();
   server_profile.set_use_count(10);
-  server_profile.set_use_date(base::Time::FromDoubleT(100));
+  server_profile.set_use_date(base::Time::FromSecondsSinceUnixEpoch(100));
   server_profile.set_has_converted(true);
   AutofillMetadata server_metadata = server_profile.GetMetadata();
   EXPECT_EQ(server_profile.server_id(), server_metadata.id);
@@ -1575,7 +1575,7 @@ TEST(AutofillProfileTest, SetMetadata_MatchingId) {
   AutofillMetadata local_metadata;
   local_metadata.id = local_profile.guid();
   local_metadata.use_count = 100;
-  local_metadata.use_date = base::Time::FromDoubleT(50);
+  local_metadata.use_date = base::Time::FromSecondsSinceUnixEpoch(50);
   local_metadata.has_converted = true;
   EXPECT_TRUE(local_profile.SetMetadata(local_metadata));
   EXPECT_EQ(local_metadata.id, local_profile.guid());
@@ -1587,7 +1587,7 @@ TEST(AutofillProfileTest, SetMetadata_MatchingId) {
   AutofillMetadata server_metadata;
   server_metadata.id = server_profile.server_id();
   server_metadata.use_count = 100;
-  server_metadata.use_date = base::Time::FromDoubleT(50);
+  server_metadata.use_date = base::Time::FromSecondsSinceUnixEpoch(50);
   server_metadata.has_converted = true;
   EXPECT_TRUE(server_profile.SetMetadata(server_metadata));
   EXPECT_EQ(server_metadata.id, server_profile.server_id());
@@ -1601,7 +1601,7 @@ TEST(AutofillProfileTest, SetMetadata_NotMatchingId) {
   AutofillMetadata local_metadata;
   local_metadata.id = "WrongId";
   local_metadata.use_count = 100;
-  local_metadata.use_date = base::Time::FromDoubleT(50);
+  local_metadata.use_date = base::Time::FromSecondsSinceUnixEpoch(50);
   local_metadata.has_converted = true;
   EXPECT_FALSE(local_profile.SetMetadata(local_metadata));
   EXPECT_NE(local_metadata.id, local_profile.guid());
@@ -1613,7 +1613,7 @@ TEST(AutofillProfileTest, SetMetadata_NotMatchingId) {
   AutofillMetadata server_metadata;
   server_metadata.id = "WrongId";
   server_metadata.use_count = 100;
-  server_metadata.use_date = base::Time::FromDoubleT(50);
+  server_metadata.use_date = base::Time::FromSecondsSinceUnixEpoch(50);
   server_metadata.has_converted = true;
   EXPECT_FALSE(server_profile.SetMetadata(server_metadata));
   EXPECT_NE(server_metadata.id, server_profile.guid());

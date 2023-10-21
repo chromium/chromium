@@ -206,7 +206,7 @@ class VirtualFileSystem : public zip::FileAccessor {
 
     info->is_directory = !files_.count(path);
     info->last_modified =
-        base::Time::FromDoubleT(172097977);  // Some random date.
+        base::Time::FromSecondsSinceUnixEpoch(172097977);  // Some random date.
 
     return true;
   }

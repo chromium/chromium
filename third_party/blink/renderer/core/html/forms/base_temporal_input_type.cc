@@ -170,7 +170,8 @@ String BaseTemporalInputType::SerializeWithDate(
     const absl::optional<base::Time>& value) const {
   if (!value)
     return g_empty_string;
-  return Serialize(Decimal::FromDouble(value->ToJsTimeIgnoringNull()));
+  return Serialize(
+      Decimal::FromDouble(value->InMillisecondsFSinceUnixEpochIgnoringNull()));
 }
 
 String BaseTemporalInputType::LocalizeValue(

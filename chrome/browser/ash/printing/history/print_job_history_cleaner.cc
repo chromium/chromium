@@ -98,8 +98,8 @@ void PrintJobHistoryCleaner::OnPrintJobsRetrieved(
   base::Time now = clock_->Now();
   oldest_print_job_completion_time_ = now;
   for (const auto& print_job_info : print_job_infos) {
-    base::Time completion_time =
-        base::Time::FromJsTime(print_job_info.completion_time());
+    base::Time completion_time = base::Time::FromMillisecondsSinceUnixEpoch(
+        print_job_info.completion_time());
     if (IsCompletionTimeExpired(completion_time, now,
                                 print_job_history_expiration_period)) {
       print_job_ids_to_remove.push_back(print_job_info.id());

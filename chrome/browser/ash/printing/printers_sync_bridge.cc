@@ -376,7 +376,8 @@ bool PrintersSyncBridge::UpdatePrinterLocked(
   // Modify the printer in-place then notify the change processor.
   sync_pb::PrinterSpecifics* merged = iter->second.get();
   MergePrinterToSpecifics(*SpecificsToPrinter(*printer), merged);
-  merged->set_updated_timestamp(base::Time::Now().ToJavaTime());
+  merged->set_updated_timestamp(
+      base::Time::Now().InMillisecondsSinceUnixEpoch());
   CommitPrinterPut(*merged);
 
   return false;
@@ -448,7 +449,8 @@ void PrintersSyncBridge::AddPrinterLocked(
   // TODO(skau): Benchmark this code.  Make sure it doesn't hold onto the lock
   // for too long.
   data_lock_.AssertAcquired();
-  printer->set_updated_timestamp(base::Time::Now().ToJavaTime());
+  printer->set_updated_timestamp(
+      base::Time::Now().InMillisecondsSinceUnixEpoch());
 
   CommitPrinterPut(*printer);
   auto& dest = all_data_[printer->id()];

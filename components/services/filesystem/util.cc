@@ -84,9 +84,9 @@ mojom::FileInformationPtr MakeFileInformation(const base::File::Info& info) {
                                       : mojom::FsFileType::REGULAR_FILE;
   file_info->size = info.size;
 
-  file_info->atime = info.last_accessed.ToDoubleT();
-  file_info->mtime = info.last_modified.ToDoubleT();
-  file_info->ctime = info.creation_time.ToDoubleT();
+  file_info->atime = info.last_accessed.InSecondsFSinceUnixEpoch();
+  file_info->mtime = info.last_modified.InSecondsFSinceUnixEpoch();
+  file_info->ctime = info.creation_time.InSecondsFSinceUnixEpoch();
 
   return file_info;
 }

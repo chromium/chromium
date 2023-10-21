@@ -541,7 +541,8 @@ void StatisticsProviderImpl::LoadMachineInfoFile() {
     // testing).
     std::string stub_contents =
         "\"serial_number\"=\"stub_" +
-        base::NumberToString(base::Time::Now().ToJavaTime()) + "\"\n";
+        base::NumberToString(base::Time::Now().InMillisecondsSinceUnixEpoch()) +
+        "\"\n";
     if (!base::WriteFile(sources_.machine_info_filepath, stub_contents)) {
       PLOG(ERROR) << "Error writing machine info stub "
                   << sources_.machine_info_filepath;

@@ -708,7 +708,8 @@ void ClearKeyCdm::ScheduleNextTimer() {
   // needed for the renewal test, and is ignored for other uses of the timer.
   std::ostringstream msg_stream;
   msg_stream << "Renewal from ClearKey CDM set at time "
-             << base::Time::FromDoubleT(cdm_host_proxy_->GetCurrentWallTime())
+             << base::Time::FromSecondsSinceUnixEpoch(
+                    cdm_host_proxy_->GetCurrentWallTime())
              << ".";
   next_renewal_message_ = msg_stream.str();
 
@@ -877,8 +878,9 @@ void ClearKeyCdm::OnSessionClosed(const std::string& session_id,
 void ClearKeyCdm::OnSessionExpirationUpdate(const std::string& session_id,
                                             base::Time new_expiry_time) {
   DVLOG(1) << __func__ << ": expiry_time = " << new_expiry_time;
-  cdm_host_proxy_->OnExpirationChange(session_id.data(), session_id.length(),
-                                      new_expiry_time.ToDoubleT());
+  cdm_host_proxy_->OnExpirationChange(
+      session_id.data(), session_id.length(),
+      new_expiry_time.InSecondsFSinceUnixEpoch());
 }
 
 void ClearKeyCdm::OnSessionCreated(uint32_t promise_id,

@@ -76,10 +76,12 @@ class CloudPolicyRefreshSchedulerTest : public testing::Test {
     // value back to get a millisecond-clamped time stamp for the checks below.
     base::Time now = base::Time::NowFromSystemTime();
     base::TimeDelta initial_age = base::Minutes(kInitialCacheAgeMinutes);
-    policy_data_.set_timestamp((now - initial_age).ToJavaTime());
+    policy_data_.set_timestamp(
+        (now - initial_age).InMillisecondsSinceUnixEpoch());
     store_.set_policy_data_for_testing(
         std::make_unique<em::PolicyData>(policy_data_));
-    last_update_ = base::Time::FromJavaTime(store_.policy()->timestamp());
+    last_update_ = base::Time::FromMillisecondsSinceUnixEpoch(
+        store_.policy()->timestamp());
     last_update_ticks_ = base::TimeTicks::Now() +
                          (last_update_ - base::Time::NowFromSystemTime());
 

@@ -76,7 +76,7 @@ std::string GetDirectoryListingEntry(const std::u16string& name,
     std::stringstream raw_time_string_stream;
     // Certain access paths can only get up to seconds resolution, so here we
     // output the raw time value in seconds for consistency.
-    raw_time_string_stream << modified.ToJavaTime() /
+    raw_time_string_stream << modified.InMillisecondsSinceUnixEpoch() /
                                   base::Time::kMillisecondsPerSecond
                            << ",";
     result.append(raw_time_string_stream.str());

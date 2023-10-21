@@ -271,7 +271,8 @@ void CloudPolicyRefreshScheduler::UpdateLastRefreshFromPolicy() {
 
   if (store_->has_policy() && store_->policy()->has_timestamp() &&
       should_update) {
-    last_refresh_ = base::Time::FromJavaTime(store_->policy()->timestamp());
+    last_refresh_ = base::Time::FromMillisecondsSinceUnixEpoch(
+        store_->policy()->timestamp());
     last_refresh_ticks_ =
         GetTickClock()->NowTicks() + (last_refresh_ - GetClock()->Now());
   }

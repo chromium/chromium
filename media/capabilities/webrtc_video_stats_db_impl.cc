@@ -220,7 +220,8 @@ void WebrtcVideoStatsDBImpl::WriteUpdatedEntry(
   new_stats->set_frames_processed(new_video_stats.frames_processed);
   new_stats->set_key_frames_processed(new_video_stats.key_frames_processed);
   new_stats->set_p99_processing_time_ms(new_video_stats.p99_processing_time_ms);
-  new_stats->set_timestamp(wall_clock_->Now().ToJsTimeIgnoringNull());
+  new_stats->set_timestamp(
+      wall_clock_->Now().InMillisecondsFSinceUnixEpochIgnoringNull());
 
   DVLOG(3) << "Adding new stats entry:" << new_stats->timestamp() << ", "
            << new_stats->frames_processed() << ",  "
@@ -235,8 +236,8 @@ void WebrtcVideoStatsDBImpl::WriteUpdatedEntry(
   for (auto const& existing_stats : existing_entry_proto->stats()) {
     // Discard existing stats that have expired, if the entry is full, or if the
     // timestamps come in the wrong order.
-    if (wall_clock_->Now() -
-                base::Time::FromJsTime(existing_stats.timestamp()) <=
+    if (wall_clock_->Now() - base::Time::FromMillisecondsSinceUnixEpoch(
+                                 existing_stats.timestamp()) <=
             max_time_to_keep_stats &&
         new_entry_proto.stats_size() < max_entries_per_config &&
         existing_stats.timestamp() < previous_timestamp) {
@@ -296,7 +297,8 @@ void WebrtcVideoStatsDBImpl::OnGotVideoStats(
     const base::TimeDelta max_time_to_keep_stats = GetMaxTimeToKeepStats();
     entry.emplace();
     for (auto const& stats : stats_proto->stats()) {
-      if (wall_clock_->Now() - base::Time::FromJsTime(stats.timestamp()) <=
+      if (wall_clock_->Now() -
+              base::Time::FromMillisecondsSinceUnixEpoch(stats.timestamp()) <=
           max_time_to_keep_stats) {
         entry->emplace_back(stats.timestamp(), stats.frames_processed(),
                             stats.key_frames_processed(),
@@ -334,7 +336,8 @@ void WebrtcVideoStatsDBImpl::OnGotVideoStatsCollection(
       if (AreStatsValid(&video_stats_entry)) {
         VideoStatsEntry entry;
         for (auto const& stats : video_stats_entry.stats()) {
-          if (wall_clock_->Now() - base::Time::FromJsTime(stats.timestamp()) <=
+          if (wall_clock_->Now() - base::Time::FromMillisecondsSinceUnixEpoch(
+                                       stats.timestamp()) <=
               max_time_to_keep_stats) {
             entry.emplace_back(stats.timestamp(), stats.frames_processed(),
                                stats.key_frames_processed(),
