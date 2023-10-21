@@ -277,7 +277,7 @@ void CreateFragmentOrAddTrackIfNeeded(
 
 void AddDataToMdat(Mp4MuxerDelegate::Fragment& fragment,
                    int track_index,
-                   base::StringPiece encoded_data) {
+                   std::string encoded_data) {
   // The parameter sets are supplied in-band at the sync samples.
   // It is a default on encoded stream, see
   // `VideoEncoder::produce_annexb=false`.
@@ -337,7 +337,7 @@ Mp4MuxerDelegate::~Mp4MuxerDelegate() = default;
 
 void Mp4MuxerDelegate::AddVideoFrame(
     const Muxer::VideoParameters& params,
-    base::StringPiece encoded_data,
+    std::string encoded_data,
     absl::optional<VideoEncoder::CodecDescription> codec_description,
     base::TimeTicks timestamp,
     bool is_key_frame) {
@@ -372,7 +372,7 @@ void Mp4MuxerDelegate::AddVideoFrame(
 
 void Mp4MuxerDelegate::BuildVideoTrackWithKeyframe(
     const Muxer::VideoParameters& params,
-    base::StringPiece encoded_data,
+    std::string encoded_data,
     VideoEncoder::CodecDescription codec_description) {
   DCHECK(video_track_index_.has_value());
 
@@ -417,7 +417,7 @@ void Mp4MuxerDelegate::BuildVideoTrackWithKeyframe(
   video_track.media.information.video_header = std::move(video_header);
 }
 
-void Mp4MuxerDelegate::BuildVideoFragment(base::StringPiece encoded_data,
+void Mp4MuxerDelegate::BuildVideoFragment(std::string encoded_data,
                                           bool is_key_frame) {
   DCHECK(video_track_index_.has_value());
   CreateFragmentOrAddTrackIfNeeded(
@@ -457,7 +457,7 @@ void Mp4MuxerDelegate::BuildVideoFragment(base::StringPiece encoded_data,
 
 void Mp4MuxerDelegate::AddAudioFrame(
     const AudioParameters& params,
-    base::StringPiece encoded_data,
+    std::string encoded_data,
     absl::optional<AudioEncoder::CodecDescription> codec_description,
     base::TimeTicks timestamp) {
   if (!audio_track_index_.has_value()) {
@@ -488,7 +488,7 @@ void Mp4MuxerDelegate::AddAudioFrame(
 
 void Mp4MuxerDelegate::BuildAudioTrack(
     const AudioParameters& params,
-    base::StringPiece encoded_data,
+    std::string encoded_data,
     AudioEncoder::CodecDescription codec_description) {
   DCHECK(audio_track_index_.has_value());
 
@@ -519,7 +519,7 @@ void Mp4MuxerDelegate::BuildAudioTrack(
   audio_track.media.information.sound_header = std::move(sound_header);
 }
 
-void Mp4MuxerDelegate::BuildAudioFragment(base::StringPiece encoded_data) {
+void Mp4MuxerDelegate::BuildAudioFragment(std::string encoded_data) {
   DCHECK(audio_track_index_.has_value());
   CreateFragmentOrAddTrackIfNeeded(true, fragments_, false, *audio_track_index_,
                                    next_track_index_, last_audio_time_,

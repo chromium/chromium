@@ -126,13 +126,13 @@ TEST_F(Mp4MuxerDelegateTest, AddVideoFrame) {
   // Add video stream only.
   base::MemoryMappedFile mapped_file_1;
   LoadEncodedFile("avc-bitstream-format-0.h264", mapped_file_1);
-  base::StringPiece video_stream_1(
+  std::string video_stream_1(
       reinterpret_cast<const char*>(mapped_file_1.data()),
       mapped_file_1.length());
 
   base::MemoryMappedFile mapped_file_2;
   LoadEncodedFile("avc-bitstream-format-1.h264", mapped_file_2);
-  base::StringPiece video_stream_2(
+  std::string video_stream_2(
       reinterpret_cast<const char*>(mapped_file_2.data()),
       mapped_file_2.length());
 
@@ -452,9 +452,8 @@ TEST_F(Mp4MuxerDelegateTest, AddAudioFrame) {
 
   base::MemoryMappedFile mapped_file_1;
   LoadEncodedFile("aac-44100-packet-0", mapped_file_1);
-  base::StringPiece audio_stream(
-      reinterpret_cast<const char*>(mapped_file_1.data()),
-      mapped_file_1.length());
+  std::string audio_stream(reinterpret_cast<const char*>(mapped_file_1.data()),
+                           mapped_file_1.length());
 
   base::RunLoop run_loop;
 
@@ -687,9 +686,8 @@ TEST_F(Mp4MuxerDelegateTest, AudioOnlyNewFragmentCreation) {
 
   base::MemoryMappedFile mapped_file_1;
   LoadEncodedFile("aac-44100-packet-0", mapped_file_1);
-  base::StringPiece audio_stream(
-      reinterpret_cast<const char*>(mapped_file_1.data()),
-      mapped_file_1.length());
+  std::string audio_stream(reinterpret_cast<const char*>(mapped_file_1.data()),
+                           mapped_file_1.length());
 
   base::RunLoop run_loop;
 
@@ -813,15 +811,13 @@ TEST_F(Mp4MuxerDelegateTest, AudioAndVideoAddition) {
 
   base::MemoryMappedFile mapped_file_1;
   LoadEncodedFile("aac-44100-packet-0", mapped_file_1);
-  base::StringPiece audio_stream(
-      reinterpret_cast<const char*>(mapped_file_1.data()),
-      mapped_file_1.length());
+  std::string audio_stream(reinterpret_cast<const char*>(mapped_file_1.data()),
+                           mapped_file_1.length());
 
   base::MemoryMappedFile mapped_file_2;
   LoadEncodedFile("avc-bitstream-format-0.h264", mapped_file_2);
-  base::StringPiece video_stream(
-      reinterpret_cast<const char*>(mapped_file_1.data()),
-      mapped_file_1.length());
+  std::string video_stream(reinterpret_cast<const char*>(mapped_file_1.data()),
+                           mapped_file_1.length());
 
   base::RunLoop run_loop;
 
@@ -1023,15 +1019,13 @@ TEST_F(Mp4MuxerDelegateTest, MfraBoxOnAudioAndVideoAddition) {
 
   base::MemoryMappedFile mapped_file_1;
   LoadEncodedFile("aac-44100-packet-0", mapped_file_1);
-  base::StringPiece audio_stream(
-      reinterpret_cast<const char*>(mapped_file_1.data()),
-      mapped_file_1.length());
+  std::string audio_stream(reinterpret_cast<const char*>(mapped_file_1.data()),
+                           mapped_file_1.length());
 
   base::MemoryMappedFile mapped_file_2;
   LoadEncodedFile("avc-bitstream-format-0.h264", mapped_file_2);
-  base::StringPiece video_stream(
-      reinterpret_cast<const char*>(mapped_file_1.data()),
-      mapped_file_1.length());
+  std::string video_stream(reinterpret_cast<const char*>(mapped_file_1.data()),
+                           mapped_file_1.length());
 
   base::RunLoop run_loop;
 
@@ -1207,15 +1201,13 @@ TEST_F(Mp4MuxerDelegateTest, VideoAndAudioAddition) {
 
   base::MemoryMappedFile mapped_file_1;
   LoadEncodedFile("aac-44100-packet-0", mapped_file_1);
-  base::StringPiece audio_stream(
-      reinterpret_cast<const char*>(mapped_file_1.data()),
-      mapped_file_1.length());
+  std::string audio_stream(reinterpret_cast<const char*>(mapped_file_1.data()),
+                           mapped_file_1.length());
 
   base::MemoryMappedFile mapped_file_2;
   LoadEncodedFile("avc-bitstream-format-0.h264", mapped_file_2);
-  base::StringPiece video_stream(
-      reinterpret_cast<const char*>(mapped_file_1.data()),
-      mapped_file_1.length());
+  std::string video_stream(reinterpret_cast<const char*>(mapped_file_1.data()),
+                           mapped_file_1.length());
 
   base::RunLoop run_loop;
 
@@ -1359,15 +1351,13 @@ TEST_F(Mp4MuxerDelegateTest, AudioVideoAndAudioVideoFragment) {
 
   base::MemoryMappedFile mapped_file_1;
   LoadEncodedFile("aac-44100-packet-0", mapped_file_1);
-  base::StringPiece audio_stream(
-      reinterpret_cast<const char*>(mapped_file_1.data()),
-      mapped_file_1.length());
+  std::string audio_stream(reinterpret_cast<const char*>(mapped_file_1.data()),
+                           mapped_file_1.length());
 
   base::MemoryMappedFile mapped_file_2;
   LoadEncodedFile("avc-bitstream-format-0.h264", mapped_file_2);
-  base::StringPiece video_stream(
-      reinterpret_cast<const char*>(mapped_file_1.data()),
-      mapped_file_1.length());
+  std::string video_stream(reinterpret_cast<const char*>(mapped_file_1.data()),
+                           mapped_file_1.length());
 
   base::RunLoop run_loop;
 

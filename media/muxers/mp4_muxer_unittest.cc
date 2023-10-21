@@ -53,7 +53,7 @@ class MockDelegate : public Mp4MuxerDelegateInterface {
   MOCK_METHOD(void,
               AddVideoFrame,
               (const Muxer::VideoParameters& params,
-               base::StringPiece encoded_data,
+               std::string encoded_data,
                absl::optional<VideoEncoder::CodecDescription> codec_description,
                base::TimeTicks timestamp,
                bool is_key_frame),
@@ -61,7 +61,7 @@ class MockDelegate : public Mp4MuxerDelegateInterface {
   MOCK_METHOD(void,
               AddAudioFrame,
               (const AudioParameters& params,
-               base::StringPiece encoded_data,
+               std::string encoded_data,
                absl::optional<AudioEncoder::CodecDescription> codec_description,
                base::TimeTicks timestamp),
               (override));

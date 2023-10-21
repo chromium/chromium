@@ -31,14 +31,14 @@ class Mp4MuxerDelegateInterface {
 
   virtual void AddVideoFrame(
       const Muxer::VideoParameters& params,
-      base::StringPiece encoded_data,
+      std::string encoded_data,
       absl::optional<VideoEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp,
       bool is_key_frame) = 0;
 
   virtual void AddAudioFrame(
       const AudioParameters& params,
-      base::StringPiece encoded_data,
+      std::string encoded_data,
       absl::optional<AudioEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp) = 0;
 
@@ -51,7 +51,7 @@ class Mp4MuxerDelegateInterface {
 // MP4 format and internal data will be cleared at the end of `Flush`.
 class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
  public:
-  Mp4MuxerDelegate(
+  explicit Mp4MuxerDelegate(
       Muxer::WriteDataCB write_callback,
       base::TimeDelta max_audio_only_fragment_duration = base::Seconds(5));
   ~Mp4MuxerDelegate() override;
@@ -60,14 +60,14 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
 
   void AddVideoFrame(
       const Muxer::VideoParameters& params,
-      base::StringPiece encoded_data,
+      std::string encoded_data,
       absl::optional<VideoEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp,
       bool is_key_frame) override;
 
   void AddAudioFrame(
       const AudioParameters& params,
-      base::StringPiece encoded_data,
+      std::string encoded_data,
       absl::optional<AudioEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp) override;
   // Write to the big endian ISO-BMFF boxes and call `write_callback`.
@@ -94,13 +94,13 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
 
   void BuildVideoTrackWithKeyframe(
       const Muxer::VideoParameters& params,
-      base::StringPiece encoded_data,
+      std::string encoded_data,
       VideoEncoder::CodecDescription codec_description);
-  void BuildVideoFragment(base::StringPiece encoded_data, bool is_key_frame);
+  void BuildVideoFragment(std::string encoded_data, bool is_key_frame);
   void BuildAudioTrack(const AudioParameters& params,
-                       base::StringPiece encoded_data,
+                       std::string encoded_data,
                        AudioEncoder::CodecDescription codec_description);
-  void BuildAudioFragment(base::StringPiece encoded_data);
+  void BuildAudioFragment(std::string encoded_data);
 
   void AddLastSampleTimestamp(int track_index, base::TimeDelta inverse_of_rate);
   int GetNextTrackIndex();
