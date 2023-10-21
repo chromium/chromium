@@ -485,9 +485,7 @@ suite('DestinationStoreTest', function() {
 
       // Fire the event and expect the destination store to add the local
       // printers.
-      webUIListenerCallback(
-          'local-printers-updated', PrinterType.LOCAL_PRINTER,
-          [printer1, printer2]);
+      webUIListenerCallback('local-printers-updated', [printer1, printer2]);
       assertTrue(!!destinationStore.destinations().find(
           destination => destination.id === printer1.printerName));
       assertTrue(!!destinationStore.destinations().find(

@@ -234,11 +234,7 @@ export class DestinationStore extends EventTarget {
    */
   constructor(
       addListenerCallback:
-          (eventName: string,
-           listener:
-               (t: PrinterType,
-                p: LocalDestinationInfo[]|
-                ExtensionDestinationInfo[]) => void) => void) {
+          (eventName: string, listener: (p1: any, p2?: any) => void) => void) {
     super();
 
     this.destinationSearchStatus_ = new Map([
@@ -262,9 +258,8 @@ export class DestinationStore extends EventTarget {
     if (loadTimeData.getBoolean('isLocalPrinterObservingEnabled')) {
       addListenerCallback(
           'local-printers-updated',
-          (type: PrinterType,
-           printers: LocalDestinationInfo[]|ExtensionDestinationInfo[]) =>
-              this.onLocalPrintersUpdated_(type, printers));
+          (printers: LocalDestinationInfo[]) =>
+              this.onLocalPrintersUpdated_(printers));
     }
     // </if>
   }
@@ -974,7 +969,7 @@ export class DestinationStore extends EventTarget {
 
     this.nativeLayerCros_.observeLocalPrinters().then(
         (printers: LocalDestinationInfo[]) =>
-            this.onLocalPrintersUpdated_(PrinterType.LOCAL_PRINTER, printers));
+            this.onLocalPrintersUpdated_(printers));
   }
 
   /**
@@ -982,16 +977,13 @@ export class DestinationStore extends EventTarget {
    * @param printerType The type of printer(s) added.
    * @param printers Information about the printers that have been retrieved.
    */
-  private onLocalPrintersUpdated_(
-      printerType: PrinterType,
-      printers: LocalDestinationInfo[]|ExtensionDestinationInfo[]) {
+  private onLocalPrintersUpdated_(printers: LocalDestinationInfo[]) {
     if (!printers) {
       return;
     }
 
     this.insertDestinations_(printers.map(
-        (printer: LocalDestinationInfo|ExtensionDestinationInfo) =>
-            parseDestination(printerType, printer)));
+        printer => parseDestination(PrinterType.LOCAL_PRINTER, printer)));
   }
   // </if>
 }
