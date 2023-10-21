@@ -138,6 +138,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 namespace {
 
 #if defined(AX_FAIL_FAST_BUILD)
@@ -4049,12 +4051,12 @@ const AXObject* AXObject::DatetimeAncestor() const {
   if (!input) {
     return nullptr;
   }
-  if (input->type() != input_type_names::kDatetimeLocal &&
-      input->type() != input_type_names::kDatetime &&
-      input->type() != input_type_names::kDate &&
-      input->type() != input_type_names::kTime &&
-      input->type() != input_type_names::kMonth &&
-      input->type() != input_type_names::kWeek) {
+  FormControlType type = input->FormControlType();
+  if (type != FormControlType::kInputDatetimeLocal &&
+      type != FormControlType::kInputDate &&
+      type != FormControlType::kInputTime &&
+      type != FormControlType::kInputMonth &&
+      type != FormControlType::kInputWeek) {
     return nullptr;
   }
   return AXObjectCache().GetOrCreate(input);

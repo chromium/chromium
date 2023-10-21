@@ -352,6 +352,7 @@ using html_names::kAltAttr;
 using html_names::kTitleAttr;
 using html_names::kTypeAttr;
 using html_names::kValueAttr;
+using mojom::blink::FormControlType;
 
 // In ARIA 1.1, default value of aria-level was changed to 2.
 const int kDefaultHeadingLevel = 2;
@@ -1330,41 +1331,42 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     return DetermineTableSectionRole();
 
   if (const auto* input = DynamicTo<HTMLInputElement>(*GetNode())) {
-    const AtomicString& type = input->type();
-    if (input->DataList() && type != input_type_names::kColor)
+    FormControlType type = input->FormControlType();
+    if (input->DataList() && type != FormControlType::kInputColor) {
       return ax::mojom::blink::Role::kTextFieldWithComboBox;
-    if (type == input_type_names::kButton)
-      return ButtonRoleType();
-    if (type == input_type_names::kCheckbox)
-      return ax::mojom::blink::Role::kCheckBox;
-    if (type == input_type_names::kDate)
-      return ax::mojom::blink::Role::kDate;
-    if (type == input_type_names::kDatetime ||
-        type == input_type_names::kDatetimeLocal ||
-        type == input_type_names::kMonth || type == input_type_names::kWeek) {
-      return ax::mojom::blink::Role::kDateTime;
     }
-    if (type == input_type_names::kFile)
-      return ax::mojom::blink::Role::kButton;
-    if (type == input_type_names::kRadio)
-      return ax::mojom::blink::Role::kRadioButton;
-    if (type == input_type_names::kNumber)
-      return ax::mojom::blink::Role::kSpinButton;
-    if (input->IsTextButton())
-      return ButtonRoleType();
-    if (type == input_type_names::kRange)
-      return ax::mojom::blink::Role::kSlider;
-    if (type == input_type_names::kSearch)
-      return ax::mojom::blink::Role::kSearchBox;
-    if (type == input_type_names::kColor)
-      return ax::mojom::blink::Role::kColorWell;
-    if (type == input_type_names::kTime)
-      return ax::mojom::blink::Role::kInputTime;
-    if (type == input_type_names::kButton || type == input_type_names::kImage ||
-        type == input_type_names::kReset || type == input_type_names::kSubmit) {
-      return ax::mojom::blink::Role::kButton;
+    switch (type) {
+      case FormControlType::kInputButton:
+      case FormControlType::kInputReset:
+      case FormControlType::kInputSubmit:
+        return ButtonRoleType();
+      case FormControlType::kInputCheckbox:
+        return ax::mojom::blink::Role::kCheckBox;
+      case FormControlType::kInputDate:
+        return ax::mojom::blink::Role::kDate;
+      case FormControlType::kInputDatetimeLocal:
+      case FormControlType::kInputMonth:
+      case FormControlType::kInputWeek:
+        return ax::mojom::blink::Role::kDateTime;
+      case FormControlType::kInputFile:
+        return ax::mojom::blink::Role::kButton;
+      case FormControlType::kInputRadio:
+        return ax::mojom::blink::Role::kRadioButton;
+      case FormControlType::kInputNumber:
+        return ax::mojom::blink::Role::kSpinButton;
+      case FormControlType::kInputRange:
+        return ax::mojom::blink::Role::kSlider;
+      case FormControlType::kInputSearch:
+        return ax::mojom::blink::Role::kSearchBox;
+      case FormControlType::kInputColor:
+        return ax::mojom::blink::Role::kColorWell;
+      case FormControlType::kInputTime:
+        return ax::mojom::blink::Role::kInputTime;
+      case FormControlType::kInputImage:
+        return ax::mojom::blink::Role::kButton;
+      default:
+        return ax::mojom::blink::Role::kTextField;
     }
-    return ax::mojom::blink::Role::kTextField;
   }
 
   if (auto* select_element = DynamicTo<HTMLSelectElement>(*GetNode())) {

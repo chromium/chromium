@@ -370,6 +370,7 @@ class CORE_EXPORT HTMLInputElement
 
   bool IsDraggedSlider() const;
 
+  mojom::blink::FormControlType FormControlType() const final;
   FormElementPiiType GetFormElementPiiType() const override {
     return form_element_pii_type_;
   }
@@ -411,7 +412,6 @@ class CORE_EXPORT HTMLInputElement
 
   bool CanTriggerImplicitSubmission() const final { return IsTextField(); }
 
-  mojom::blink::FormControlType FormControlType() const final;
   const AtomicString& FormControlTypeAsString() const override;
 
   bool ShouldSaveAndRestoreFormControlState() const final;
