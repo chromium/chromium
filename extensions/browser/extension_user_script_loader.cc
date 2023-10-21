@@ -45,6 +45,7 @@
 #include "extensions/browser/state_store.h"
 #include "extensions/browser/user_script_loader.h"
 #include "extensions/common/api/content_scripts.h"
+#include "extensions/common/api/scripts_internal.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/manifest_handlers/default_locale_handler.h"
 #include "extensions/common/message_bundle.h"
@@ -386,6 +387,101 @@ void LoadScriptsOnFileTaskRunner(
                                 std::move(memory)));
 }
 
+// Attempts to coerce a `dict` from an `api::content_scripts::ContentScript` to
+// an `api::scripts_internal::SerializedUserScript`, returning absl::nullopt on
+// failure.
+// TODO(https://crbug.com/1494155): Remove this when migration is complete.
+absl::optional<api::scripts_internal::SerializedUserScript>
+ContentScriptDictToSerializedUserScript(const base::Value::Dict& dict) {
+  auto content_script = api::content_scripts::ContentScript::FromValue(dict);
+  if (!content_script.has_value()) {
+    return absl::nullopt;  // Bad entry.
+  }
+
+  auto* id = dict.FindString(scripting::kId);
+  if (!id || id->empty()) {
+    return absl::nullopt;  // Bad entry.
+  }
+
+  // If a UserScript does not have a prefixed ID, then we can assume it's a
+  // dynamic content script, as was historically the case.
+  std::string id_to_use;
+  api::scripts_internal::Source source =
+      api::scripts_internal::Source::kDynamicContentScript;
+  bool is_id_prefixed = (*id)[0] == UserScript::kReservedScriptIDPrefix;
+  if (is_id_prefixed) {
+    // Note: We don't use UserScript::GetSourceForScriptID() since:
+    // - That method allows for static content scripts, which aren't stored
+    //   here, and
+    // - That method requires input to be valid (crashing otherwise), and we
+    //   have no guarantee of that here.
+    if (base::StartsWith(*id, UserScript::kDynamicContentScriptPrefix)) {
+      source = api::scripts_internal::Source::kDynamicContentScript;
+    } else if (base::StartsWith(*id, UserScript::kDynamicUserScriptPrefix)) {
+      source = api::scripts_internal::Source::kDynamicUserScript;
+    } else {
+      // Invalid script source. Bad entry.
+      return absl::nullopt;
+    }
+    id_to_use = *id;
+  } else {
+    id_to_use = scripting::AddPrefixToDynamicScriptId(
+        *id, UserScript::Source::kDynamicContentScript);
+    source = api::scripts_internal::Source::kDynamicContentScript;
+  }
+
+  // At this point, the entry is considered valid, and we just convert it over
+  // to the serialized type.
+
+  auto file_strings_to_script_sources = [](std::vector<std::string> files) {
+    std::vector<api::scripts_internal::ScriptSource> sources;
+    sources.reserve(files.size());
+    for (auto& file : files) {
+      api::scripts_internal::ScriptSource source;
+      source.file = std::move(file);
+      sources.push_back(std::move(source));
+    }
+    return sources;
+  };
+
+  auto convert_run_at = [](api::content_scripts::RunAt run_at) {
+    switch (run_at) {
+      case api::content_scripts::RunAt::kDocumentStart:
+        return api::extension_types::RunAt::kDocumentStart;
+      case api::content_scripts::RunAt::kDocumentEnd:
+        return api::extension_types::RunAt::kDocumentEnd;
+      case api::content_scripts::RunAt::kDocumentIdle:
+        return api::extension_types::RunAt::kDocumentIdle;
+      case api::content_scripts::RunAt::kNone:
+        return api::extension_types::RunAt::kNone;
+    }
+  };
+
+  api::scripts_internal::SerializedUserScript serialized_script;
+  serialized_script.all_frames = content_script->all_frames;
+  if (content_script->css) {
+    serialized_script.css =
+        file_strings_to_script_sources(std::move(*content_script->css));
+  }
+  serialized_script.exclude_matches =
+      std::move(content_script->exclude_matches);
+  serialized_script.exclude_globs = std::move(content_script->exclude_globs);
+  serialized_script.id = std::move(id_to_use);
+  serialized_script.include_globs = std::move(content_script->include_globs);
+  if (content_script->js) {
+    serialized_script.js =
+        file_strings_to_script_sources(std::move(*content_script->js));
+  }
+  serialized_script.matches = std::move(content_script->matches);
+  serialized_script.match_origin_as_fallback =
+      content_script->match_origin_as_fallback;
+  serialized_script.run_at = convert_run_at(content_script->run_at);
+  serialized_script.source = source;
+  serialized_script.world = content_script->world;
+
+  return serialized_script;
+}
+
 // Converts the list of values in `list` to a UserScriptList.
 UserScriptList ConvertValueToScripts(const Extension& extension,
                                      const base::Value::List& list) {
@@ -393,138 +489,178 @@ UserScriptList ConvertValueToScripts(const Extension& extension,
       scripting::kScriptsCanExecuteEverywhere);
 
   UserScriptList scripts;
-  bool script_without_prefix_retrieved = false;
   for (const base::Value& value : list) {
-    std::u16string error;
-    std::unique_ptr<api::content_scripts::ContentScript> content_script =
-        api::content_scripts::ContentScript::FromValueDeprecated(value, &error);
-
-    if (!content_script) {
-      continue;
+    if (!value.is_dict()) {
+      continue;  // Bad entry; no recovery.
     }
 
-    const auto& dict = value.GetDict();
-    auto* id = dict.FindString(scripting::kId);
-    if (!id || id->empty()) {
-      continue;
-    }
+    absl::optional<api::scripts_internal::SerializedUserScript>
+        serialized_script;
 
-    auto script = std::make_unique<UserScript>();
+    // Check for the `source` key as a sentinel to determine if the underlying
+    // type is the old one we used, api::content_scripts::ContentScript, or is
+    // the new api::scripts_internal::SerializedUserScript. The `source` key is
+    // only present on the new type.
+    if (!value.GetDict().Find("source")) {
+      // It's the old type, or could be a bad entry.
 
-    // If a UserScript does not have a prefixed ID, then we can assume it's a
-    // dynamic content script. as is the case historically.
-    // TODO(crbug.com/1385165): Remove handling code for un-prefixed IDs once
-    // all UserScript IDs have been migrated to using prefixes.
-    bool is_id_prefixed = (*id)[0] == UserScript::kReservedScriptIDPrefix;
-    if (is_id_prefixed) {
-      script->set_id(*id);
-      // TODO(crbug.com/1473082): This is incorrect, it should record when id is
-      // NOT prefixed. Fix and properly update the histogram.
-      script_without_prefix_retrieved = true;
+      // TODO(https://crbug.com/1494155): Add UMA and forced-migration so we
+      // can remove this code.
+      serialized_script =
+          ContentScriptDictToSerializedUserScript(value.GetDict());
     } else {
-      script->set_id(scripting::AddPrefixToDynamicScriptId(
-          *id, UserScript::Source::kDynamicContentScript));
+      serialized_script =
+          api::scripts_internal::SerializedUserScript::FromValue(value);
     }
 
-    script->set_host_id(
+    if (!serialized_script || serialized_script->id.empty()) {
+      continue;  // Bad entry.
+    }
+
+    bool source_matches_id = true;
+    switch (serialized_script->source) {
+      case api::scripts_internal::Source::kDynamicContentScript:
+        source_matches_id = base::StartsWith(
+            serialized_script->id, UserScript::kDynamicContentScriptPrefix);
+        break;
+      case api::scripts_internal::Source::kDynamicUserScript:
+        source_matches_id = base::StartsWith(
+            serialized_script->id, UserScript::kDynamicUserScriptPrefix);
+        break;
+      case api::scripts_internal::Source::kNone:
+        NOTREACHED();  // This should have been caught by our parsing.
+    }
+
+    if (!source_matches_id) {
+      continue;  // Bad entry.
+    }
+
+    auto user_script = std::make_unique<UserScript>();
+
+    user_script->set_id(serialized_script->id);
+    user_script->set_host_id(
         mojom::HostID(mojom::HostID::HostType::kExtensions, extension.id()));
 
-    if (content_script->all_frames)
-      script->set_match_all_frames(*content_script->all_frames);
-    script->set_run_location(
-        script_parsing::ConvertManifestRunLocation(content_script->run_at));
-    script->set_execution_world(ConvertExecutionWorld(content_script->world));
+    if (serialized_script->all_frames) {
+      user_script->set_match_all_frames(*serialized_script->all_frames);
+    }
+    user_script->set_run_location(
+        ConvertRunLocation(serialized_script->run_at));
+    user_script->set_execution_world(
+        ConvertExecutionWorld(serialized_script->world));
 
+    std::u16string error;
     if (!script_parsing::ParseMatchPatterns(
-            content_script->matches,
-            base::OptionalToPtr(content_script->exclude_matches),
+            serialized_script->matches,
+            base::OptionalToPtr(serialized_script->exclude_matches),
             extension.creation_flags(), scripting::kScriptsCanExecuteEverywhere,
             valid_schemes, scripting::kAllUrlsIncludesChromeUrls,
-            /*definition_index=*/absl::nullopt, script.get(), &error,
+            /*definition_index=*/absl::nullopt, user_script.get(), &error,
             /*wants_file_access=*/nullptr)) {
       continue;
     }
 
     script_parsing::ParseGlobs(
-        base::OptionalToPtr(content_script->include_globs),
-        base::OptionalToPtr(content_script->exclude_globs), script.get());
+        base::OptionalToPtr(serialized_script->include_globs),
+        base::OptionalToPtr(serialized_script->exclude_globs),
+        user_script.get());
 
     if (!script_parsing::ParseFileSources(
-            &extension, base::OptionalToPtr(content_script->js),
-            base::OptionalToPtr(content_script->css),
-            /*definition_index=*/absl::nullopt, script.get(), &error)) {
+            &extension, base::OptionalToPtr(serialized_script->js),
+            base::OptionalToPtr(serialized_script->css),
+            /*definition_index=*/absl::nullopt, user_script.get(), &error)) {
       continue;
     }
 
-    scripts.push_back(std::move(script));
+    scripts.push_back(std::move(user_script));
   }
 
-  base::UmaHistogramBoolean(
-      "Extensions.ContentScripts.ScriptsWithoutPrefixRetrieved",
-      script_without_prefix_retrieved);
   return scripts;
 }
 
-// TODO(crbug.com/1248314): Eventually use
-// api::scripting::RegisteredContentScript instead as an intermediate type which
-// then gets converted to base::Value.
-api::content_scripts::ContentScript CreateContentScriptObject(
+api::scripts_internal::SerializedUserScript SerializeUserScript(
     const UserScript& script) {
-  api::content_scripts::ContentScript content_script;
+  api::scripts_internal::SerializedUserScript serialized_script;
 
-  content_script.matches.reserve(script.url_patterns().size());
-  for (const URLPattern& pattern : script.url_patterns())
-    content_script.matches.push_back(pattern.GetAsString());
+  auto source_to_serialized_source = [](UserScript::Source source) {
+    switch (source) {
+      case UserScript::Source::kDynamicContentScript:
+        return api::scripts_internal::Source::kDynamicContentScript;
+      case UserScript::Source::kDynamicUserScript:
+        return api::scripts_internal::Source::kDynamicUserScript;
+      case UserScript::Source::kStaticContentScript:
+      case UserScript::Source::kWebUIScript:
+        // We shouldn't be serialized these script types, ever.
+        NOTREACHED_NORETURN();
+    }
+  };
+
+  serialized_script.matches.reserve(script.url_patterns().size());
+  for (const URLPattern& pattern : script.url_patterns()) {
+    serialized_script.matches.push_back(pattern.GetAsString());
+  }
 
   if (!script.exclude_url_patterns().is_empty()) {
-    content_script.exclude_matches.emplace();
-    content_script.exclude_matches->reserve(
+    serialized_script.exclude_matches.emplace();
+    serialized_script.exclude_matches->reserve(
         script.exclude_url_patterns().size());
-    for (const URLPattern& pattern : script.exclude_url_patterns())
-      content_script.exclude_matches->push_back(pattern.GetAsString());
+    for (const URLPattern& pattern : script.exclude_url_patterns()) {
+      serialized_script.exclude_matches->push_back(pattern.GetAsString());
+    }
   }
 
   // File paths may be normalized in the returned object and can differ slightly
   // compared to what was originally passed into registerContentScripts.
   if (!script.js_scripts().empty()) {
-    content_script.js.emplace();
-    content_script.js->reserve(script.js_scripts().size());
-    for (const auto& js_script : script.js_scripts())
-      content_script.js->push_back(js_script->relative_path().AsUTF8Unsafe());
+    serialized_script.js.emplace();
+    serialized_script.js->reserve(script.js_scripts().size());
+    for (const auto& js_script : script.js_scripts()) {
+      // TODO(https://crbug.com/1385165): Handle `code`.
+      api::scripts_internal::ScriptSource source;
+      source.file = js_script->relative_path().AsUTF8Unsafe();
+      serialized_script.js->push_back(std::move(source));
+    }
   }
 
   if (!script.css_scripts().empty()) {
-    content_script.css.emplace();
-    content_script.css->reserve(script.css_scripts().size());
-    for (const auto& css_script : script.css_scripts())
-      content_script.css->push_back(css_script->relative_path().AsUTF8Unsafe());
+    serialized_script.css.emplace();
+    serialized_script.css->reserve(script.css_scripts().size());
+    for (const auto& css_script : script.css_scripts()) {
+      // TODO(https://crbug.com/1385165): Handle `code`.
+      api::scripts_internal::ScriptSource source;
+      source.file = css_script->relative_path().AsUTF8Unsafe();
+      serialized_script.css->push_back(std::move(source));
+    }
   }
 
   if (!script.globs().empty()) {
-    content_script.include_globs.emplace();
-    content_script.include_globs->reserve(script.globs().size());
+    serialized_script.include_globs.emplace();
+    serialized_script.include_globs->reserve(script.globs().size());
     for (const std::string& glob : script.globs()) {
-      content_script.include_globs->push_back(glob);
+      serialized_script.include_globs->push_back(glob);
     }
   }
 
   if (!script.exclude_globs().empty()) {
-    content_script.exclude_globs.emplace();
-    content_script.exclude_globs->reserve(script.exclude_globs().size());
+    serialized_script.exclude_globs.emplace();
+    serialized_script.exclude_globs->reserve(script.exclude_globs().size());
     for (const std::string& exclude_glob : script.exclude_globs()) {
-      content_script.exclude_globs->push_back(exclude_glob);
+      serialized_script.exclude_globs->push_back(exclude_glob);
     }
   }
 
-  content_script.all_frames = script.match_all_frames();
-  content_script.match_origin_as_fallback =
+  serialized_script.id = script.id();
+
+  serialized_script.all_frames = script.match_all_frames();
+  serialized_script.match_origin_as_fallback =
       script.match_origin_as_fallback() ==
       MatchOriginAsFallbackBehavior::kAlways;
+  serialized_script.run_at = ConvertRunLocationForAPI(script.run_location());
+  serialized_script.source = source_to_serialized_source(script.GetSource());
+  serialized_script.world =
+      ConvertExecutionWorldForAPI(script.execution_world());
 
-  content_script.run_at =
-      script_parsing::ConvertRunLocationToManifestType(script.run_location());
-  content_script.world = ConvertExecutionWorldForAPI(script.execution_world());
-  return content_script;
+  return serialized_script;
 }
 
 // Gets an extension's manifest scripts' metadata; i.e., gets a list of
@@ -784,7 +920,7 @@ void ExtensionUserScriptLoader::DynamicScriptsStorageHelper::SetDynamicScripts(
     if (!base::Contains(persistent_dynamic_script_ids, script->id()))
       continue;
 
-    base::Value::Dict value = CreateContentScriptObject(*script).ToValue();
+    base::Value::Dict value = SerializeUserScript(*script).ToValue();
     value.Set(scripting::kId, script->id());
 
     scripts_value.Append(std::move(value));

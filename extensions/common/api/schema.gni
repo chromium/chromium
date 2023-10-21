@@ -43,6 +43,7 @@ extensions_api_schema_files_ = [
   "printer_provider_internal.idl",
   "runtime.json",
   "serial.idl",
+  "scripts_internal.idl",
   "socket.idl",
   "sockets_tcp.idl",
   "sockets_tcp_server.idl",

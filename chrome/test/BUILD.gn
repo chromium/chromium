@@ -3567,6 +3567,7 @@ if (!is_android) {
         "../browser/extensions/extension_untrusted_webui_apitest.cc",
         "../browser/extensions/extension_url_loader_throttle_browsertest.cc",
         "../browser/extensions/extension_url_rewrite_browsertest.cc",
+        "../browser/extensions/extension_user_script_loader_browsertest.cc",
         "../browser/extensions/extension_view_host_factory_browsertest.cc",
         "../browser/extensions/extension_websocket_apitest.cc",
         "../browser/extensions/extension_webui_apitest.cc",

@@ -348,6 +348,49 @@ bool ParseFileSources(const Extension* extension,
   return true;
 }
 
+bool ParseFileSources(
+    const Extension* extension,
+    const std::vector<api::scripts_internal::ScriptSource>* js,
+    const std::vector<api::scripts_internal::ScriptSource>* css,
+    absl::optional<int> definition_index,
+    UserScript* result,
+    std::u16string* error) {
+  if (js) {
+    result->js_scripts().reserve(js->size());
+    for (const auto& source : *js) {
+      if (source.file) {
+        GURL url = extension->GetResourceURL(*source.file);
+        ExtensionResource resource = extension->GetResource(*source.file);
+        result->js_scripts().push_back(UserScript::Content::CreateFile(
+            resource.extension_root(), resource.relative_path(), url));
+      } else if (source.code) {
+        // TODO(https://crbug.com/1385165): Handle code.
+      }
+    }
+  }
+
+  if (css) {
+    result->css_scripts().reserve(css->size());
+    for (const auto& source : *css) {
+      if (source.file) {
+        GURL url = extension->GetResourceURL(*source.file);
+        ExtensionResource resource = extension->GetResource(*source.file);
+        result->css_scripts().push_back(UserScript::Content::CreateFile(
+            resource.extension_root(), resource.relative_path(), url));
+      }
+      // Note: We don't allow `code` in CSS blocks of any user script types yet.
+    }
+  }
+
+  // The manifest needs to have at least one js or css user script definition.
+  if (result->js_scripts().empty() && result->css_scripts().empty()) {
+    *error = GetEmptyFilesError(result->id(), definition_index);
+    return false;
+  }
+
+  return true;
+}
+
 void ParseGlobs(const std::vector<std::string>* include_globs,
                 const std::vector<std::string>* exclude_globs,
                 UserScript* result) {

@@ -10,6 +10,7 @@
 #include "base/auto_reset.h"
 #include "base/functional/callback.h"
 #include "extensions/common/api/content_scripts.h"
+#include "extensions/common/api/scripts_internal.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_resource.h"
 #include "extensions/common/script_constants.h"
@@ -72,6 +73,17 @@ bool ParseFileSources(const Extension* extension,
                       absl::optional<int> definition_index,
                       UserScript* result,
                       std::u16string* error);
+
+// As above, but takes in api::scripts_internal::SerializedUserScript sources.
+// TODO(https://crbug.com/1494155): Remove the above when all callers use this
+// instead.
+bool ParseFileSources(
+    const Extension* extension,
+    const std::vector<api::scripts_internal::ScriptSource>* js,
+    const std::vector<api::scripts_internal::ScriptSource>* css,
+    absl::optional<int> definition_index,
+    UserScript* result,
+    std::u16string* error);
 
 // Parses `include_globs` and `exclude_globs` and updates these fields for
 // `result`. Done for Greasemonkey compatibility.
