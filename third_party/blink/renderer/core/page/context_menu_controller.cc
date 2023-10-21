@@ -104,31 +104,7 @@ constexpr char kPasswordRe[] =
     "sandi|signum|slaptazodis|kata|passord|haslo|senha|geslo|contrasena|"
     "khau";
 
-static mojom::blink::ContextMenuDataInputFieldType ComputeInputFieldType(
-    Element* element) {
-  if (auto* input = DynamicTo<HTMLInputElement>(element)) {
-    if (input->type() == input_type_names::kPassword) {
-      return mojom::blink::ContextMenuDataInputFieldType::kPassword;
-    }
-    if (input->type() == input_type_names::kNumber) {
-      return mojom::blink::ContextMenuDataInputFieldType::kNumber;
-    }
-    if (input->type() == input_type_names::kTel) {
-      return mojom::blink::ContextMenuDataInputFieldType::kTelephone;
-    }
-    if (input->IsTextField()) {
-      return mojom::blink::ContextMenuDataInputFieldType::kPlainText;
-    }
-    return mojom::blink::ContextMenuDataInputFieldType::kOther;
-  } else if (IsA<HTMLTextAreaElement>(element)) {
-    return mojom::blink::ContextMenuDataInputFieldType::kPlainText;
-  }
-  return mojom::blink::ContextMenuDataInputFieldType::kNone;
-}
-
-void SetInputFieldsData(Element* element, ContextMenuData& data) {
-  data.input_field_type = ComputeInputFieldType(element);
-
+void SetPasswordManagerData(Element* element, ContextMenuData& data) {
   // Uses heuristics (finding 'password' and its short versions and translations
   // in field name and id etc.) to recognize a field intended for password input
   // of plain text HTML field type or `HasBeenPasswordField` which returns true
@@ -143,8 +119,12 @@ void SetInputFieldsData(Element* element, ContextMenuData& data) {
                             kPasswordRe, kTextCaseUnicodeInsensitive)));
 
     data.is_password_type_by_heuristics =
-        (data.input_field_type ==
-         mojom::blink::ContextMenuDataInputFieldType::kPlainText) &&
+        (data.form_control_type == mojom::blink::FormControlType::kInputText ||
+         data.form_control_type == mojom::blink::FormControlType::kInputEmail ||
+         data.form_control_type ==
+             mojom::blink::FormControlType::kInputSearch ||
+         data.form_control_type == mojom::blink::FormControlType::kInputUrl ||
+         data.form_control_type == mojom::blink::FormControlType::kTextArea) &&
         (passwordRegexp->Match(id.GetString()) >= 0 ||
          passwordRegexp->Match(name.GetString()) >= 0 ||
          input->HasBeenPasswordField());
@@ -840,11 +820,11 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
     }
   }
 
-  SetInputFieldsData(result.InnerElement(), data);
   data.selection_rect = ComputeSelectionRect(selected_frame);
   data.source_type = source_type;
 
   SetAutofillData(result.InnerNode(), data);
+  SetPasswordManagerData(result.InnerElement(), data);
 
   const bool from_touch = source_type == kMenuSourceTouch ||
                           source_type == kMenuSourceLongPress ||

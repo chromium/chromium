@@ -37,26 +37,6 @@ enum ContextMenuDataMediaType {
   kPlugin,
 };
 
-enum ContextMenuDataInputFieldType {
-  // Not an input field.
-  kNone,
-
-  // type = text, search, email, url
-  kPlainText,
-
-  // type = password
-  kPassword,
-
-  // type = number
-  kNumber,
-
-  // type = tel
-  kTelephone,
-
-  // type = <etc.>
-  kOther,
-};
-
 enum CustomContextMenuItemType {
   kOption,
   kCheckableOption,
@@ -193,13 +173,6 @@ struct UntrustworthyContextMenuParams {
 
   ui.mojom.MenuSourceType source_type;
 
-  // If this node is an input field, the type of that field.
-  ContextMenuDataInputFieldType input_field_type;
-
-  // True iff a field's type is plain text but heuristics (e.g. the name attribute
-  // contains 'password' as a substring) recognize it as a password field.
-  bool is_password_type_by_heuristics;
-
   // Rect representing the coordinates in the document space of the selection.
   gfx.mojom.Rect selection_rect;
 
@@ -231,6 +204,10 @@ struct UntrustworthyContextMenuParams {
   // associated.
   // See `autofill::FormRendererId` for the semantics of renderer IDs.
   FormRendererId form_renderer_id;
+
+  // True iff a field's type is plain text but heuristics (e.g. the name attribute
+  // contains 'password' as a substring) recognize it as a password field.
+  bool is_password_type_by_heuristics;
 };
 
 // Defines methods for Context menu to commnicate from the renderer to the

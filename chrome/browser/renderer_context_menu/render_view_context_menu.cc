@@ -693,16 +693,18 @@ void OnBrowserCreated(const GURL& link_url, Browser* browser) {
   Navigate(&nav_params);
 }
 
-bool DoesInputFieldTypeSupportEmoji(
-    blink::mojom::ContextMenuDataInputFieldType text_input_type) {
-  // Disable emoji for input types that definitely do not support emoji.
-  switch (text_input_type) {
-    case blink::mojom::ContextMenuDataInputFieldType::kNumber:
-    case blink::mojom::ContextMenuDataInputFieldType::kTelephone:
-    case blink::mojom::ContextMenuDataInputFieldType::kOther:
-      return false;
-    default:
+bool DoesFormControlTypeSupportEmoji(
+    blink::mojom::FormControlType form_control_type) {
+  switch (form_control_type) {
+    case blink::mojom::FormControlType::kInputEmail:
+    case blink::mojom::FormControlType::kInputPassword:
+    case blink::mojom::FormControlType::kInputSearch:
+    case blink::mojom::FormControlType::kInputText:
+    case blink::mojom::FormControlType::kInputUrl:
+    case blink::mojom::FormControlType::kTextArea:
       return true;
+    default:
+      return false;
   }
 }
 
@@ -2251,7 +2253,8 @@ void RenderViewContextMenu::AppendSpellingAndSearchSuggestionItems() {
   }
   bool render_separator = false;
   if (params_.misspelled_word.empty()) {
-    if (DoesInputFieldTypeSupportEmoji(params_.input_field_type) &&
+    if ((!params_.form_control_type ||
+         DoesFormControlTypeSupportEmoji(*params_.form_control_type)) &&
         ui::IsEmojiPanelSupported()) {
       render_separator = true;
       menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_EMOJI,

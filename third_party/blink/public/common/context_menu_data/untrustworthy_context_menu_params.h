@@ -124,14 +124,6 @@ struct BLINK_COMMON_EXPORT UntrustworthyContextMenuParams {
 
   ui::MenuSourceType source_type;
 
-  // If this node is an input field, the type of that field.
-  blink::mojom::ContextMenuDataInputFieldType input_field_type;
-
-  // True iff a field's type is plain text but heuristics (e.g. the name
-  // attribute contains 'password' as a substring) recognize it as a password
-  // field.
-  bool is_password_type_by_heuristics = false;
-
   // For the outermost main frame's widget, this will be the selection rect in
   // viewport space. For a local root, this is in the coordinates of the local
   // frame root.
@@ -165,6 +157,11 @@ struct BLINK_COMMON_EXPORT UntrustworthyContextMenuParams {
   // associated.
   // See `autofill::FormRendererId` for the semantics of renderer IDs.
   uint64_t form_renderer_id = 0;
+
+  // True iff a field's type is plain text but heuristics (e.g. the name
+  // attribute contains 'password' as a substring) recognize it as a password
+  // field.
+  bool is_password_type_by_heuristics = false;
 
  private:
   void Assign(const UntrustworthyContextMenuParams& other);

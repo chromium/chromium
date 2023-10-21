@@ -228,8 +228,7 @@ bool SelectionPopupController::ShowSelectionMenu(
   const bool can_edit_richly =
       !!(params.edit_flags & blink::ContextMenuDataEditFlags::kCanEditRichly);
   const bool is_password_type =
-      params.input_field_type ==
-      blink::mojom::ContextMenuDataInputFieldType::kPassword;
+      params.form_control_type == blink::mojom::FormControlType::kInputPassword;
   const ScopedJavaLocalRef<jstring> jselected_text =
       ConvertUTF16ToJavaString(env, params.selection_text);
   const bool should_suggest = params.source_type == ui::MENU_SOURCE_TOUCH ||

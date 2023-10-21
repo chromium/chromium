@@ -1044,8 +1044,7 @@ TEST_F(RenderViewContextMenuPrefsTest, ShowAllPasswords) {
 
   NavigateAndCommit(GURL("http://www.foo.com/"));
   content::ContextMenuParams params = CreateParams(MenuItem::EDITABLE);
-  params.input_field_type =
-      blink::mojom::ContextMenuDataInputFieldType::kPassword;
+  params.form_control_type = blink::mojom::FormControlType::kInputPassword;
   auto menu = std::make_unique<TestRenderViewContextMenu>(
       *web_contents()->GetPrimaryMainFrame(), params);
   menu->Init();
@@ -1069,8 +1068,7 @@ TEST_F(RenderViewContextMenuPrefsTest, ShowAllPasswordsIncognito) {
   content::WebContentsTester::For(incognito_web_contents.get())
       ->NavigateAndCommit(GURL("http://www.foo.com/"));
   content::ContextMenuParams params = CreateParams(MenuItem::EDITABLE);
-  params.input_field_type =
-      blink::mojom::ContextMenuDataInputFieldType::kPassword;
+  params.form_control_type = blink::mojom::FormControlType::kInputPassword;
   auto menu = std::make_unique<TestRenderViewContextMenu>(
       *incognito_web_contents->GetPrimaryMainFrame(), params);
   menu->Init();
@@ -1201,8 +1199,7 @@ class RenderViewContextMenuHideAutofillPopupTest
 TEST_F(RenderViewContextMenuHideAutofillPopupTest, HideAutofillPopup) {
   NavigateAndCommit(GURL("http://www.foo.com/"));
   content::ContextMenuParams params = CreateParams(MenuItem::EDITABLE);
-  params.input_field_type =
-      blink::mojom::ContextMenuDataInputFieldType::kPlainText;
+  params.form_control_type = blink::mojom::FormControlType::kInputText;
   auto menu = std::make_unique<TestRenderViewContextMenu>(
       *web_contents()->GetPrimaryMainFrame(), params);
 

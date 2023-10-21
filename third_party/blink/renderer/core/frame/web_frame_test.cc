@@ -13462,8 +13462,8 @@ TEST_F(WebFrameTest, ContextMenuDataPasswordSelectedText) {
 
   RunPendingTasks();
   web_view_helper.Reset();
-  EXPECT_EQ(frame.GetMenuData().input_field_type,
-            blink::mojom::ContextMenuDataInputFieldType::kPassword);
+  EXPECT_EQ(frame.GetMenuData().form_control_type,
+            blink::mojom::FormControlType::kInputPassword);
   EXPECT_FALSE(frame.GetMenuData().selected_text.empty());
 }
 

@@ -42,8 +42,7 @@ ReadWriteCardController* ReadWriteCardsManagerImpl::GetController(
     const content::ContextMenuParams& params) {
   // Skip password input field.
   const bool is_password_field =
-      params.input_field_type ==
-      blink::mojom::ContextMenuDataInputFieldType::kPassword;
+      params.form_control_type == blink::mojom::FormControlType::kInputPassword;
   if (is_password_field) {
     return nullptr;
   }
