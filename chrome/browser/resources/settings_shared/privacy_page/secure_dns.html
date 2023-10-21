@@ -53,6 +53,8 @@
         margin-top: 6px;
       }
     </style>
+
+<if expr="not chromeos_ash">
     <settings-toggle-button
         id="secureDnsToggle"
         class="hr"
@@ -61,6 +63,32 @@
         sub-label="[[secureDnsDescription_]]"
         on-change="onToggleChanged_">
     </settings-toggle-button>
+</if>
+<if expr="chromeos_ash">
+    <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
+      <settings-toggle-button
+          id="secureDnsToggle"
+          class="hr"
+          pref="{{secureDnsToggle_}}"
+          label="$i18n{secureDnsOsSettingsTitle}"
+          sub-label="[[secureDnsDescription_]]"
+          on-change="onToggleChanged_">
+      </settings-toggle-button>
+    </template>
+
+    <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+      <settings-toggle-button
+          id="secureDnsToggle"
+          class="hr"
+          pref="[[secureDnsToggle_]]"
+          label="$i18n{secureDnsOsSettingsTitle}"
+          sub-label="[[secureDnsDescription_]]"
+          on-settings-boolean-control-change="onDnsToggleClick_"
+          no-set-pref>
+      </settings-toggle-button>
+    </template>
+</if>
+
     <cr-radio-group id="secureDnsRadioGroup"
         selected="{{secureDnsRadio_}}"
         on-selected-changed="onRadioSelectionChanged_"
@@ -97,3 +125,11 @@
         </div>
       </cr-radio-button>
     </cr-radio-group>
+
+<if expr="chromeos_ash">
+    <template is="dom-if" if="[[showDisableDnsDialog_]]" restamp>
+      <settings-secure-dns-dialog id="warningDialog"
+          on-close="onDisableDnsDialogClosed_" prefs="{{prefs}}">
+      </settings-secure-dns-dialog>
+    </template>
+</if>

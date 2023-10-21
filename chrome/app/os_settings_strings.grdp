@@ -6252,7 +6252,24 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_APPS_SECTION_TITLE" translateable="false" desc="The title of the Apps section of the privacy hub sensor subpages.">
     Apps
   </message>
-
+  <message name="IDS_OS_SETTINGS_REVAMP_SECURE_DNS" desc="Text for secure DNS toggle in Privacy options for ChromeOS">
+    Encrypt URLs entered into the browser
+  </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DESCRIPTION" desc="Secondary, continued explanation of secure DNS in Privacy options for ChromeOS">
+    Use secure Domain Name Servers (DNS) to prevent those with access to your internet traffic from seeing which web pages you visit
+  </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TITLE" desc="Text for secure DNS dialog title in Privacy options for ChromeOS">
+    Turn off URL encryption?
+  </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_BODY" desc="Text for secure DNS dialog body in Privacy options for ChromeOS">
+    Those with access to your internet traffic can see what websites you visit
+  </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_CANCEL" desc="Text for secure DNS dialog to cancel action in Privacy options for ChromeOS">
+    Cancel
+  </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TURN_OFF" desc="Text for secure DNS dialog to turn off DNS in Privacy options for ChromeOS">
+    Turn off
+  </message>
 
   <!-- On Startup (OS settings) -->
   <message name="IDS_OS_SETTINGS_ON_STARTUP_SETTINGS_CARD_TITLE" desc="The title of the settings card that allows the user to configure the restore apps and pages options on startup.">

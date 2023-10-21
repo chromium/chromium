@@ -321,9 +321,21 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, Section) {
   RunTest("settings/settings_section_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsTest, SecureDns) {
-  RunTest("settings/secure_dns_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(SettingsTest, SecureDnsInput) {
+  RunTest("settings/secure_dns_test.js",
+          "runMochaSuite('SettingsSecureDnsInput')");
 }
+
+IN_PROC_BROWSER_TEST_F(SettingsTest, SecureDns) {
+  RunTest("settings/secure_dns_test.js", "runMochaSuite('SettingsSecureDns')");
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(SettingsTest, SecureDnsDialog) {
+  RunTest("settings/secure_dns_test.js",
+          "runMochaSuite('OsSettingsRevampSecureDnsDialog')");
+}
+#endif
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, SecurityKeysBioEnrollment) {
   RunTest("settings/security_keys_bio_enrollment_test.js", "mocha.run()");

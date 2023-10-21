@@ -422,7 +422,7 @@
     "includes": [3920],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/settings_shared/resources.grd": {
-    "META": {"sizes": {"includes": [30],}},
+    "META": {"sizes": {"includes": [50],}},
     "includes": [3940],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/signin/profile_picker/resources.grd": {

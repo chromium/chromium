@@ -22,6 +22,10 @@ build_webui("build") {
     "privacy_page/secure_dns_input.ts",
   ]
 
+  if (is_chromeos_ash) {
+    web_component_files += [ "privacy_page/secure_dns_dialog.ts" ]
+  }
+
   if (is_chromeos) {
     web_component_files += [ "controls/password_prompt_dialog.ts" ]
   }

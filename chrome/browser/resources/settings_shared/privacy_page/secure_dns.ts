@@ -24,13 +24,15 @@ import '../controls/settings_toggle_button.js';
 import './secure_dns_input.js';
 // <if expr="chromeos_ash">
 import 'chrome://resources/cr_elements/chromeos/cros_color_overrides.css.js';
+import './secure_dns_dialog.js';
 
 // </if>
 
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -46,13 +48,12 @@ export interface SettingsSecureDnsElement {
     privacyPolicy: HTMLElement,
     secureDnsInput: SecureDnsInputElement,
     secureDnsRadioGroup: CrRadioGroupElement,
-    secureDnsToggle: SettingsToggleButtonElement,
     secureResolverSelect: HTMLSelectElement,
   };
 }
 
 const SettingsSecureDnsElementBase =
-    WebUiListenerMixin(PrefsMixin(PolymerElement));
+    WebUiListenerMixin(PrefsMixin(I18nMixin(PolymerElement)));
 
 export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
   static get is() {
@@ -65,14 +66,6 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
 
   static get properties() {
     return {
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       /**
        * Mirroring the secure DNS mode enum so that it can be used from HTML
        * bindings.
@@ -130,6 +123,21 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
        * String to display in the custom text field.
        */
       secureDnsInputValue_: String,
+
+      // <if expr="chromeos_ash">
+      showDisableDnsDialog_: {
+        type: Boolean,
+        value: false,
+      },
+
+      isRevampWayfindingEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isRevampWayfindingEnabled');
+        },
+        readOnly: true,
+      },
+      // </if>
     };
   }
 
@@ -142,6 +150,10 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
   private secureDnsInputValue_: string;
   private browserProxy_: PrivacyPageBrowserProxy =
       PrivacyPageBrowserProxyImpl.getInstance();
+  // <if expr="chromeos_ash">
+  private showDisableDnsDialog_: boolean;
+  private isRevampWayfindingEnabled_: boolean;
+  // </if>
 
   override connectedCallback() {
     super.connectedCallback();
@@ -161,6 +173,12 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
           'secure-dns-setting-changed',
           (setting: SecureDnsSetting) =>
               this.onSecureDnsPrefsChanged_(setting));
+
+      // <if expr="chromeos_ash">
+      this.addEventListener(
+          'dns-settings-invalid-custom-to-off-mode',
+          () => this.onSecureDnsPrefChangedToFalse_());
+      // </if>
     });
   }
 
@@ -193,10 +211,17 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
     this.updateManagementView_(setting);
   }
 
+  // <if expr="chromeos_ash">
+  private onSecureDnsPrefChangedToFalse_() {
+    this.set('secureDnsToggle_.value', false);
+    this.showRadioGroup_ = false;
+  }
+  // </if>
+
   /**
    * Updates the underlying secure DNS mode pref based on the new toggle
    * selection (and the underlying radio button if the toggle has just been
-   * enabled).
+   * turned on).
    */
   private onToggleChanged_() {
     this.showRadioGroup_ = this.secureDnsToggle_.value;
@@ -207,6 +232,22 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
     this.updateDnsPrefs_(
         this.secureDnsToggle_.value ? this.secureDnsRadio_ : SecureDnsMode.OFF);
   }
+
+  // <if expr="chromeos_ash">
+  /**
+   * Only gets called when the user wants to turn on the toggle from ChromeOS
+   * Settings.
+   */
+  private turnOnDnsToggle_() {
+    this.showRadioGroup_ = true;
+    if (this.secureDnsRadio_ === SecureDnsMode.SECURE &&
+        !this.$.secureResolverSelect.value) {
+      this.$.secureDnsInput.focus();
+    }
+    this.set('secureDnsToggle_.value', true);
+    this.updateDnsPrefs_(this.secureDnsRadio_);
+  }
+  //</if>
 
   /**
    * Updates the underlying secure DNS prefs based on the newly selected radio
@@ -308,6 +349,11 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
     // text.
     let secureDescription = loadTimeData.getString('secureDnsDescription');
     // <if expr="chromeos_ash">
+    if (this.isRevampWayfindingEnabled_) {
+      secureDescription =
+          loadTimeData.getString('secureDnsOsSettingsDescription');
+    }
+
     if (setting.dohWithIdentifiersActive) {
       secureDescription = loadTimeData.substituteString(
           loadTimeData.getString('secureDnsWithIdentifiersDescription'),
@@ -415,6 +461,36 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
       this.updateDnsPrefs_(this.secureDnsRadio_, event.detail.text);
     }
   }
+
+  // <if expr="chromeos_ash">
+  private onDnsToggleClick_(): void {
+    const secureDnsToggle =
+        this.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#secureDnsToggle');
+    assert(secureDnsToggle);
+    if (secureDnsToggle.checked) {
+      // Always allow turning on the toggle.
+      this.turnOnDnsToggle_();
+      return;
+    }
+
+    // Do not update the underlying pref value to false. Instead if the user is
+    // attempting to turn off the toggle, present the warning dialog.
+    this.showDisableDnsDialog_ = true;
+    return;
+  }
+
+  private onDisableDnsDialogClosed_(): void {
+    // Sync the toggle's value to its pref value.
+    const secureDnsToggle =
+        this.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#secureDnsToggle');
+    assert(secureDnsToggle);
+    secureDnsToggle.resetToPrefValue();
+
+    this.showDisableDnsDialog_ = false;
+  }
+  // </if>
 }
 
 declare global {

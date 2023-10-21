@@ -339,12 +339,28 @@ void AddNearbyShareData(content::WebUIDataSource* html_source) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void AddSecureDnsStrings(content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const bool kIsRevampEnabled =
+      ash::features::IsOsSettingsRevampWayfindingEnabled();
+#endif
+
+  webui::LocalizedString kLocalizedStrings[] = {
     {"secureDns", IDS_SETTINGS_SECURE_DNS},
     {"secureDnsDescription", IDS_SETTINGS_SECURE_DNS_DESCRIPTION},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"secureDnsOsSettingsTitle", kIsRevampEnabled
+                                     ? IDS_OS_SETTINGS_REVAMP_SECURE_DNS
+                                     : IDS_SETTINGS_SECURE_DNS},
+    {"secureDnsOsSettingsDescription",
+     kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DESCRIPTION
+                      : IDS_SETTINGS_SECURE_DNS_DESCRIPTION},
     {"secureDnsWithIdentifiersDescription",
      IDS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_DESCRIPTION},
+    {"secureDnsDialogTitle", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TITLE},
+    {"secureDnsDialogBody", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_BODY},
+    {"secureDnsDialogCancel", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_CANCEL},
+    {"secureDnsDialogTurnOff",
+     IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TURN_OFF},
 #endif
     {"secureDnsDisabledForManagedEnvironment",
      IDS_SETTINGS_SECURE_DNS_DISABLED_FOR_MANAGED_ENVIRONMENT},

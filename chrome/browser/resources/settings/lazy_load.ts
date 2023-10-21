@@ -88,7 +88,11 @@ export {FontsBrowserProxy, FontsBrowserProxyImpl, FontsData} from '/shared/setti
 export {ControlledButtonElement} from '/shared/settings/controls/controlled_button.js';
 export {SettingsRadioGroupElement} from '/shared/settings/controls/settings_radio_group.js';
 export {SettingsSliderElement} from '/shared/settings/controls/settings_slider.js';
+export {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 export {SettingsSecureDnsElement} from '/shared/settings/privacy_page/secure_dns.js';
+// <if expr="chromeos_ash">
+export {SettingsSecureDnsDialogElement} from '/shared/settings/privacy_page/secure_dns_dialog.js';
+// </if>
 export {SecureDnsInputElement} from '/shared/settings/privacy_page/secure_dns_input.js';
 export {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 export {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
