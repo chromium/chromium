@@ -38,7 +38,6 @@
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
-#include "ash/system/unified/camera_mic_tray_item_view.h"
 #include "ash/system/unified/current_locale_view.h"
 #include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/ime_mode_view.h"
@@ -237,15 +236,6 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
   ime_mode_view_ = AddTrayItemToContainer(std::make_unique<ImeModeView>(shelf));
   managed_device_view_ = AddTrayItemToContainer(
       std::make_unique<ManagedDeviceTrayItemView>(shelf));
-
-  if (!features::IsPrivacyIndicatorsEnabled() &&
-      !features::IsVideoConferenceEnabled()) {
-    camera_view_ =
-        AddTrayItemToContainer(std::make_unique<CameraMicTrayItemView>(
-            shelf, CameraMicTrayItemView::Type::kCamera));
-    mic_view_ = AddTrayItemToContainer(std::make_unique<CameraMicTrayItemView>(
-        shelf, CameraMicTrayItemView::Type::kMic));
-  }
 
   if (features::IsHotspotEnabled()) {
     hotspot_tray_view_ =
@@ -727,23 +717,13 @@ std::u16string UnifiedSystemTray::GetAccessibleNameForTray() {
     status.push_back(network_string);
   }
 
-  // For privacy string, we use either `privacy_indicators_view_` or the combo
-  // of `mic_view_` and `camera_view_`.
   if (privacy_indicators_view_) {
     status.push_back(
         privacy_indicators_view_->GetVisible()
             ? privacy_indicators_view_->GetTooltipText(gfx::Point())
             : base::EmptyString16());
   } else {
-    auto mic_string = mic_view_ && mic_view_->GetVisible()
-                          ? mic_view_->GetAccessibleNameString()
-                          : base::EmptyString16();
-    auto camera_string = camera_view_ && camera_view_->GetVisible()
-                             ? camera_view_->GetAccessibleNameString()
-                             : base::EmptyString16();
-    status.push_back(l10n_util::GetStringFUTF16(
-        IDS_ASH_STATUS_TRAY_PRIVACY_ACCESSIBLE_DESCRIPTION,
-        {mic_string, camera_string}, nullptr));
+    status.push_back(base::EmptyString16());
   }
 
   status.push_back(managed_device_view_->GetVisible()

@@ -310,10 +310,6 @@ Style notes:
         <ph name="hotspot">$1<ex>Hotspot on, no devices connected</ex></ph>,
         <ph name="network">$2<ex>Connected to Google-A, Median signal</ex></ph>
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_PRIVACY_ACCESSIBLE_DESCRIPTION" is_accessibility_with_no_ui="true" desc="The accessible description of privacy in the status tray and the information on it.">
-        <ph name="mic">$1<ex>A virtual machine is using your microphone</ex></ph>,
-        <ph name="camera">$2<ex>A virtual machine is using your camera</ex></ph>
-      </message>
       <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_ACCESSIBLE_DESCRIPTION" desc="The accessible description of the quick settings bubble and the information in it.">
         Quick Settings, Press search + left to access the notification center.
       </message>
@@ -5562,17 +5558,6 @@ Here are some things you can try to get started.
       <!-- For ScreenCaptureTrayItemView -->
       <message name="IDS_ASH_ADMIN_SCREEN_CAPTURE" desc="Tooltip message shown at the systray screen capture indicator when an administrator is capturing the screens.">
         Your system administrator is monitoring your screens
-      </message>
-
-      <!-- For CameraMicTrayItemView -->
-      <message name="IDS_ASH_CAMERA_MIC_VM_USING_CAMERA" desc="Tooltip message shown at the systray camera indicator when a VM is using the camera">
-        An application is using your camera
-      </message>
-      <message name="IDS_ASH_CAMERA_MIC_VM_USING_CAMERA_AND_MIC" desc="Tooltip message shown at the systray camera indicator when a VM is using both the camera and mic">
-        An application is using your camera and microphone
-      </message>
-      <message name="IDS_ASH_CAMERA_MIC_VM_USING_MIC" desc="Tooltip message shown at the systray microphone indicator when a VM is using the microphone">
-        An application is using your microphone
       </message>
 
       <!-- For privacy indicators notification -->
