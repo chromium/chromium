@@ -81,22 +81,6 @@ class MEDIA_EXPORT MuxerTimestampAdapter {
     base::TimeTicks timestamp_minus_paused;
   };
 
-  // Class for ensuring a monotonically increasing timestamp sequence, despite
-  // incoming non-monotonically increasing timestamps.
-  class MonotonicTimestampSequence {
-   public:
-    MonotonicTimestampSequence(base::TimeTicks first_timestamp,
-                               bool& did_adjust_timestamp);
-
-    // Returns the next timestamp. This may be adjusted to enforce a
-    // monotonically increasing history.
-    base::TimeTicks UpdateAndGetNext(base::TimeTicks timestamp);
-
-   private:
-    base::TimeTicks last_timestamp_;
-    const raw_ref<bool> did_adjust_timestamp_;
-  };
-
   // Adds all currently buffered frames to the muxer in timestamp order,
   // until the queues are depleted.
   void FlushQueues();
@@ -110,6 +94,11 @@ class MEDIA_EXPORT MuxerTimestampAdapter {
   // on success and false on muxer failure.
   // Note: it's assumed that at least one video or audio frame is queued.
   bool FlushNextFrame();
+  // Ensures a monotonically increasing timestamp sequence, despite
+  // incoming non-monotonically increasing timestamps.
+  base::TimeTicks UpdateLastTimestampAndGetNext(
+      absl::optional<base::TimeTicks>& last_timestamp,
+      base::TimeTicks incoming_timestamp);
 
   // TODO(ajose): Change these when support is added for multiple tracks.
   // http://crbug.com/528523
@@ -119,8 +108,8 @@ class MEDIA_EXPORT MuxerTimestampAdapter {
   bool has_seen_audio_ = false;
 
   std::unique_ptr<Muxer> muxer_;
-  absl::optional<MonotonicTimestampSequence> video_timestamp_source_;
-  absl::optional<MonotonicTimestampSequence> audio_timestamp_source_;
+  absl::optional<base::TimeTicks> last_video_timestamp_;
+  absl::optional<base::TimeTicks> last_audio_timestamp_;
 
   // The timestamp of the lowest timestamp audio or video sample, compensated
   // for the total time in pause at the time.
@@ -147,11 +136,6 @@ class MEDIA_EXPORT MuxerTimestampAdapter {
   // If muxing audio and video, this queue holds frames until the first audio
   // frame appears.
   base::circular_deque<EncodedFrame> video_frames_;
-
-  // Source data for UMA histograms.
-  bool did_adjust_muxer_timestamp_ = false;
-  bool did_adjust_video_timestamp_ = false;
-  bool did_adjust_audio_timestamp_ = false;
 };
 
 }  // namespace media

@@ -20,32 +20,6 @@ MuxerTimestampAdapter::MuxerTimestampAdapter(std::unique_ptr<Muxer> muxer,
 
 MuxerTimestampAdapter::~MuxerTimestampAdapter() {
   Flush();
-
-  if (has_audio_ && !has_video_) {
-    base::UmaHistogramBoolean(
-        "Media.WebmMuxer.DidAdjustTimestamp.AudioOnly.Muxer",
-        did_adjust_muxer_timestamp_);
-    base::UmaHistogramBoolean(
-        "Media.WebmMuxer.DidAdjustTimestamp.AudioOnly.Audio",
-        did_adjust_audio_timestamp_);
-  } else if (!has_audio_ && has_video_) {
-    base::UmaHistogramBoolean(
-        "Media.WebmMuxer.DidAdjustTimestamp.VideoOnly.Muxer",
-        did_adjust_muxer_timestamp_);
-    base::UmaHistogramBoolean(
-        "Media.WebmMuxer.DidAdjustTimestamp.VideoOnly.Video",
-        did_adjust_video_timestamp_);
-  } else {
-    base::UmaHistogramBoolean(
-        "Media.WebmMuxer.DidAdjustTimestamp.AudioVideo.Muxer",
-        did_adjust_muxer_timestamp_);
-    base::UmaHistogramBoolean(
-        "Media.WebmMuxer.DidAdjustTimestamp.AudioVideo.Audio",
-        did_adjust_audio_timestamp_);
-    base::UmaHistogramBoolean(
-        "Media.WebmMuxer.DidAdjustTimestamp.AudioVideo.Video",
-        did_adjust_video_timestamp_);
-  }
 }
 
 bool MuxerTimestampAdapter::OnEncodedVideo(
@@ -77,14 +51,11 @@ bool MuxerTimestampAdapter::OnEncodedVideo(
 
   // Compensate for time in pause spent before the first frame.
   auto timestamp_minus_paused = timestamp - total_time_in_pause_;
-  if (!video_timestamp_source_.has_value()) {
-    video_timestamp_source_.emplace(timestamp_minus_paused,
-                                    did_adjust_video_timestamp_);
-  }
   video_frames_.push_back(EncodedFrame{
       {params, std::move(codec_description), std::move(encoded_data),
        std::move(encoded_alpha), is_key_frame},
-      video_timestamp_source_->UpdateAndGetNext(timestamp_minus_paused)});
+      UpdateLastTimestampAndGetNext(last_video_timestamp_,
+                                    timestamp_minus_paused)});
   return PartiallyFlushQueues();
 }
 
@@ -100,14 +71,11 @@ bool MuxerTimestampAdapter::OnEncodedAudio(
 
   // Compensate for time in pause spent before the first frame.
   auto timestamp_minus_paused = timestamp - total_time_in_pause_;
-  if (!audio_timestamp_source_.has_value()) {
-    audio_timestamp_source_.emplace(timestamp_minus_paused,
-                                    did_adjust_audio_timestamp_);
-  }
   audio_frames_.push_back(EncodedFrame{
       {params, std::move(codec_description), encoded_data, std::string(),
        /*is_keyframe=*/true},
-      audio_timestamp_source_->UpdateAndGetNext(timestamp_minus_paused)});
+      UpdateLastTimestampAndGetNext(last_audio_timestamp_,
+                                    timestamp_minus_paused)});
   return PartiallyFlushQueues();
 }
 
@@ -193,15 +161,13 @@ bool MuxerTimestampAdapter::FlushNextFrame() {
   // data before live-and-enabled transitions to true. This can lead to us
   // emitting non-monotonic timestamps to the muxer, which results in an error
   // return. Fix this by enforcing monotonicity by rewriting timestamps.
-  // TODO(crbug.com/1145203): If this causes audio glitches in the field,
-  // reconsider this solution. For example, consider auto-marking a track
-  // live-and-enabled when media appears and remove this catch-all.
+  // TODO(crbug.com/1145203): consider auto-marking a track live-and-enabled
+  // when media appears and remove this catch-all.
   base::TimeDelta relative_timestamp =
       frame.timestamp_minus_paused - first_timestamp_;
   DLOG_IF(WARNING, relative_timestamp < last_timestamp_written_)
       << "Enforced a monotonically increasing timestamp. Last written "
       << last_timestamp_written_ << " new " << relative_timestamp;
-  did_adjust_muxer_timestamp_ |= (relative_timestamp < last_timestamp_written_);
   relative_timestamp = std::max(relative_timestamp, last_timestamp_written_);
   last_timestamp_written_ = relative_timestamp;
 
@@ -212,25 +178,23 @@ bool MuxerTimestampAdapter::FlushNextFrame() {
   return muxer_->PutFrame(std::move(frame.frame), relative_timestamp);
 }
 
-MuxerTimestampAdapter::MonotonicTimestampSequence::MonotonicTimestampSequence(
-    base::TimeTicks first_timestamp,
-    bool& did_adjust_timestamp)
-    : last_timestamp_(first_timestamp),
-      did_adjust_timestamp_(did_adjust_timestamp) {}
-
-base::TimeTicks
-MuxerTimestampAdapter::MonotonicTimestampSequence::UpdateAndGetNext(
+base::TimeTicks MuxerTimestampAdapter::UpdateLastTimestampAndGetNext(
+    absl::optional<base::TimeTicks>& last_timestamp,
     base::TimeTicks timestamp) {
-  DVLOG(3) << __func__ << " ts " << timestamp << " last " << last_timestamp_;
+  if (!last_timestamp.has_value()) {
+    last_timestamp = timestamp;
+    return timestamp;
+  }
+  DVLOG(3) << __func__ << " ts " << timestamp << " last " << *last_timestamp;
   // In theory, time increases monotonically. In practice, it does not.
   // See http://crbug/618407.
-  // TODO(crbug.com/1494273): consider not re-using the last timestamp for MP4.
-  DLOG_IF(WARNING, timestamp < last_timestamp_)
+  // TODO(crbug.com/1494273): consider not re-using the last timestamp for
+  // MP4.
+  DLOG_IF(WARNING, timestamp < last_timestamp)
       << "Encountered a non-monotonically increasing timestamp. Was: "
-      << last_timestamp_ << ", timestamp: " << timestamp;
-  *did_adjust_timestamp_ |= (timestamp < last_timestamp_);
-  last_timestamp_ = std::max(last_timestamp_, timestamp);
-  return last_timestamp_;
+      << *last_timestamp << ", timestamp: " << timestamp;
+  last_timestamp = std::max(*last_timestamp, timestamp);
+  return *last_timestamp;
 }
 
 MuxerTimestampAdapter::EncodedFrame::EncodedFrame() = default;
