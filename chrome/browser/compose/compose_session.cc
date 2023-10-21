@@ -57,7 +57,8 @@ void ComposeSession::Bind(
 // ComposeDialogPageHandler
 void ComposeSession::Compose(compose::mojom::StyleModifiersPtr style,
                              const std::string& input) {
-  SaveNewComposeRequest(std::move(style));
+  state_->has_pending_request = true;
+  state_->style = std::move(style);
   // TODO(b/300974056): Move this to the overall feature-enabled check.
   if (!executor_ ||
       !base::FeatureList::IsEnabled(
@@ -121,13 +122,6 @@ void ComposeSession::ProcessError(const std::string& message) {
   if (dialog_remote_.is_bound()) {
     dialog_remote_->ResponseReceived(state_->response->Clone());
   }
-}
-
-void ComposeSession::SaveNewComposeRequest(
-    compose::mojom::StyleModifiersPtr style) {
-  state_ = compose::mojom::ComposeState::New();
-  state_->has_pending_request = true;
-  state_->style = std::move(style);
 }
 
 void ComposeSession::RequestInitialState(RequestInitialStateCallback callback) {

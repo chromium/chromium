@@ -80,7 +80,6 @@ class ComposeSession : public compose::mojom::ComposeDialogPageHandler {
 
  private:
   void ProcessError(const std::string& message);
-  void SaveNewComposeRequest(compose::mojom::StyleModifiersPtr style);
   void ModelExecutionCallback(
       optimization_guide::OptimizationGuideModelExecutionResult result);
 

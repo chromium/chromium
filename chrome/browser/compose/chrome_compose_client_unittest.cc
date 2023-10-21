@@ -414,6 +414,7 @@ TEST_F(ChromeComposeClientTest, TestRestoreEmptyState) {
   EXPECT_FALSE(result->compose_state->has_pending_request);
 }
 
+// Tests that saved WebUI state is returned.
 TEST_F(ChromeComposeClientTest, TestSaveAndRestoreWebUIState) {
   ShowDialogAndBindMojo();
 
@@ -424,6 +425,34 @@ TEST_F(ChromeComposeClientTest, TestSaveAndRestoreWebUIState) {
 
   compose::mojom::OpenMetadataPtr result = test_future.Take();
   EXPECT_EQ("web ui state", result->compose_state->webui_state);
+}
+
+// Tests that same saved WebUI state is returned after compose().
+TEST_F(ChromeComposeClientTest, TestSaveThenComposeThenRestoreWebUIState) {
+  ShowDialogAndBindMojo();
+  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
+      .WillOnce(testing::WithArg<2>(testing::Invoke(
+          [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            std::move(callback).Run(
+                OptimizationGuideResponse(ComposeResponse(true)));
+          })));
+
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr>
+      compose_test_future;
+  EXPECT_CALL(compose_dialog(), ResponseReceived(_))
+      .WillOnce(
+          testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
+            compose_test_future.SetValue(std::move(response));
+          }));
+
+  page_handler()->SaveWebUIState("web ui state");
+  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
+
+  base::test::TestFuture<compose::mojom::OpenMetadataPtr> test_future;
+  page_handler()->RequestInitialState(test_future.GetCallback());
+  compose::mojom::OpenMetadataPtr open_metadata = test_future.Take();
+  EXPECT_EQ("web ui state", open_metadata->compose_state->webui_state);
 }
 
 TEST_F(ChromeComposeClientTest, GetOptimizationGuidanceShowNudgeTest) {
