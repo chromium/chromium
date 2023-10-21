@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 
+#include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/browser/ui/views/toolbar/overflow_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/grit/generated_resources.h"
@@ -61,6 +62,10 @@ ToolbarController::ToolbarController(
       element_flex_order_start_(element_flex_order_start),
       toolbar_container_view_(toolbar_container_view),
       overflow_button_(overflow_button) {
+  if (ToolbarControllerUtil::PreventOverflow()) {
+    return;
+  }
+
   for (ui::ElementIdentifier id : element_ids) {
     auto* const toolbar_element =
         FindToolbarElementWithId(toolbar_container_view_, id);
@@ -222,6 +227,9 @@ views::View* ToolbarController::FindToolbarElementWithId(
 
 std::vector<ui::ElementIdentifier> ToolbarController::GetOverflowedElements() {
   std::vector<ui::ElementIdentifier> overflowed_buttons;
+  if (ToolbarControllerUtil::PreventOverflow()) {
+    return overflowed_buttons;
+  }
   for (ui::ElementIdentifier id : element_ids_) {
     if (IsOverflowed(id)) {
       overflowed_buttons.push_back(id);

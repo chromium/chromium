@@ -60,6 +60,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -403,6 +404,9 @@ void InProcessBrowserTest::Initialize() {
 #if BUILDFLAG(IS_MAC)
   bundle_swizzler_ = std::make_unique<ScopedBundleSwizzlerMac>();
 #endif
+
+  // Force all buttons not overflow to prevent test flakiness.
+  ToolbarControllerUtil::SetPreventOverflowForTesting(true);
 
   std::vector<base::test::FeatureRef> disabled_features;
 

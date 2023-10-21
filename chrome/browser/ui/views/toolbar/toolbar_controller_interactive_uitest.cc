@@ -4,6 +4,7 @@
 
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
@@ -24,6 +25,7 @@ constexpr int kBrowserContentAllowedMinimumWidth =
 class ToolbarControllerInteractiveTest : public InteractiveBrowserTest {
  public:
   ToolbarControllerInteractiveTest() {
+    ToolbarControllerUtil::SetPreventOverflowForTesting(false);
     scoped_feature_list_.InitWithFeatures({features::kResponsiveToolbar}, {});
   }
 
