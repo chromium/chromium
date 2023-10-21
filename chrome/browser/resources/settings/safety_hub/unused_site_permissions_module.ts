@@ -264,7 +264,9 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
   }
 
   private setHeaderToCompletionState_() {
-    this.headerString_ = this.i18n('safetyCheckUnusedSitePermissionsDoneLabel');
+    this.headerString_ = this.toastText_ ?
+        this.toastText_ :
+        this.i18n('safetyCheckUnusedSitePermissionsDoneLabel');
     this.subheaderString_ = '';
     this.headerIconString_ = 'cr:check';
   }

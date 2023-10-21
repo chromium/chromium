@@ -173,7 +173,8 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
   }
 
   private async setHeaderToCompletionState_() {
-    this.headerString_ =
+    this.headerString_ = this.toastText_ ?
+        this.toastText_ :
         this.i18n('safetyCheckNotificationPermissionReviewDoneLabel');
     this.subheaderString_ = '';
     this.headerIconString_ = 'cr:check';
