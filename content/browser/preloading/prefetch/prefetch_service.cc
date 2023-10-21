@@ -1458,37 +1458,38 @@ void PrefetchService::DumpPrefetchesForDebug() const {
 std::vector<PrefetchContainer*> PrefetchService::FindPrefetchContainerToServe(
     const PrefetchContainer::Key& key) {
   std::vector<PrefetchContainer*> matches;
+  std::vector<PrefetchContainer*> hint_matches;
   DVLOG(1) << "PrefetchService::FindPrefetchContainerToServe(" << key << ")";
   // Search for an exact or No-Vary-Search match first.
   no_vary_search::IterateCandidates(
       key, all_prefetches_,
       base::BindRepeating(
-          [](std::vector<PrefetchContainer*>* matches,
-             base::WeakPtr<PrefetchContainer> prefetch_container) {
-            matches->push_back(prefetch_container.get());
+          [](const PrefetchContainer::Key& key,
+             std::vector<PrefetchContainer*>* matches,
+             std::vector<PrefetchContainer*>* hint_matches,
+             base::WeakPtr<PrefetchContainer> prefetch_container,
+             no_vary_search::MatchType match_type) {
+            switch (match_type) {
+              case no_vary_search::MatchType::kExact:
+              case no_vary_search::MatchType::kNoVarySearch:
+                matches->push_back(prefetch_container.get());
+                break;
+              case no_vary_search::MatchType::kOther:
+                if (const auto& nvs_expected =
+                        prefetch_container->GetNoVarySearchHint()) {
+                  if (nvs_expected->AreEquivalent(
+                          key.second, prefetch_container->GetURL())) {
+                    hint_matches->push_back(prefetch_container.get());
+                  }
+                }
+                break;
+            }
             return no_vary_search::IterateCandidateResult::kContinue;
           },
-          base::Unretained(&matches)));
+          key, base::Unretained(&matches), base::Unretained(&hint_matches)));
 
-  // Search for an inexact match using the No-Vary-Search hint.
-  // It must either be servable now or potentially servable soon.
-  const GURL& nav_url = key.second;
-  for (const auto& active_prefetch : active_prefetches_) {
-    if (active_prefetch.first != key.first) {
-      continue;
-    }
-    PrefetchContainer* prefetch_container =
-        all_prefetches_[active_prefetch].get();
-    if (!prefetch_container) {
-      continue;
-    }
-    const auto& nvs_expected = prefetch_container->GetNoVarySearchHint();
-    if (!nvs_expected ||
-        !nvs_expected->AreEquivalent(nav_url, prefetch_container->GetURL())) {
-      continue;
-    }
-    matches.push_back(prefetch_container);
-  }
+  // Insert the No-Vary-Search hint matches at the end of `matches`.
+  matches.insert(matches.end(), hint_matches.begin(), hint_matches.end());
 
   base::EraseIf(matches, [](const auto* prefetch_container) {
     if (prefetch_container->HasPrefetchBeenConsideredToServe()) {
