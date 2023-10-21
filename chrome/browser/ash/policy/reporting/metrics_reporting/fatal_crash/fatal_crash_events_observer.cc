@@ -28,6 +28,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -48,6 +51,7 @@ constexpr std::string_view kDefaultReportedLocalIdSaveFilePath =
     "/var/lib/reporting/crash_events/REPORTED_LOCAL_IDS";
 constexpr std::string_view kDefaultUploadedCrashInfoSaveFilePath =
     "/var/lib/reporting/crash_events/UPLOADED_CRASH_INFO";
+constexpr base::TimeDelta kDefaultBackoffTimeForLoading = base::Seconds(5);
 
 // Truncates a string to a maximum of length of `size`.
 [[nodiscard]] std::string_view TruncateString(std::string_view str,
@@ -102,17 +106,20 @@ absl::optional<std::string> GetUserEmail(const ash::UserSession* user_session) {
 FatalCrashEventsObserver::FatalCrashEventsObserver()
     : FatalCrashEventsObserver(
           base::FilePath(kDefaultReportedLocalIdSaveFilePath),
-          base::FilePath(kDefaultUploadedCrashInfoSaveFilePath)) {}
+          base::FilePath(kDefaultUploadedCrashInfoSaveFilePath),
+          kDefaultBackoffTimeForLoading) {}
 
 FatalCrashEventsObserver::FatalCrashEventsObserver(
     base::FilePath reported_local_id_save_file,
-    base::FilePath uploaded_crash_info_save_file)
+    base::FilePath uploaded_crash_info_save_file,
+    base::TimeDelta backoff_time_for_loading)
     : MojoServiceEventsObserverBase<ash::cros_healthd::mojom::EventObserver>(
           this),
       reported_local_id_manager_{ReportedLocalIdManager::Create(
           std::move(reported_local_id_save_file))},
       uploaded_crash_info_manager_{UploadedCrashInfoManager::Create(
-          std::move(uploaded_crash_info_save_file))} {}
+          std::move(uploaded_crash_info_save_file))},
+      backoff_time_for_loading_{backoff_time_for_loading} {}
 
 FatalCrashEventsObserver::~FatalCrashEventsObserver() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -141,8 +148,20 @@ void FatalCrashEventsObserver::SetSkippedUploadedCrashCallback(
 }
 
 void FatalCrashEventsObserver::OnEvent(
-    const ash::cros_healthd::mojom::EventInfoPtr info) {
+    ash::cros_healthd::mojom::EventInfoPtr info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!AreLoaded()) {
+    // If save files are still being loaded, wait for
+    // `backoff_time_for_loading_` (5 seconds in production code).
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&FatalCrashEventsObserver::OnEvent,
+                       weak_factory_.GetWeakPtr(), std::move(info)),
+        backoff_time_for_loading_);
+    return;
+  }
+
   if (!info->is_crash_event_info()) {
     return;
   }
@@ -216,6 +235,12 @@ void FatalCrashEventsObserver::AddObserver() {
       ->GetEventService()
       ->AddEventObserver(ash::cros_healthd::mojom::EventCategoryEnum::kCrash,
                          BindNewPipeAndPassRemote());
+}
+
+bool FatalCrashEventsObserver::AreLoaded() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(b/266018440): Also off-load uploaded_crash_info_manager_'s save file.
+  return reported_local_id_manager_->IsLoaded();
 }
 
 MetricData FatalCrashEventsObserver::FillFatalCrashTelemetry(
@@ -323,6 +348,16 @@ bool FatalCrashEventsObserver::ReportedLocalIdManager::UpdateLocalId(
     int64_t capture_timestamp_us) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  const auto result = UpdateLocalIdInRam(local_id, capture_timestamp_us);
+  WriteSaveFile();
+  return result;
+}
+
+bool FatalCrashEventsObserver::ReportedLocalIdManager::UpdateLocalIdInRam(
+    const std::string& local_id,
+    int64_t capture_timestamp_us) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (ShouldReport(local_id, capture_timestamp_us) !=
       ReportedLocalIdManager::ShouldReportResult::kYes) {
     return false;
@@ -350,7 +385,6 @@ bool FatalCrashEventsObserver::ReportedLocalIdManager::Add(
   }
   local_id_entry_queue_.emplace(local_id, capture_timestamp_us);
 
-  WriteSaveFile();
   return true;
 }
 
@@ -365,16 +399,36 @@ void FatalCrashEventsObserver::ReportedLocalIdManager::Remove(
 void FatalCrashEventsObserver::ReportedLocalIdManager::LoadSaveFile() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!base::PathExists(save_file_)) {
-    // File has never been written yet, skip loading it.
-    return;
-  }
+  io_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::FilePath save_file) -> std::string {
+            if (!base::PathExists(save_file)) {
+              // File has never been written yet, skip loading it.
+              return std::string();
+            }
 
-  std::string content;
-  if (!base::ReadFileToString(save_file_, &content)) {
-    LOG(ERROR) << "Failed to read save file: " << save_file_;
-    return;
-  }
+            std::string content;
+            if (!base::ReadFileToString(save_file, &content)) {
+              LOG(ERROR) << "Failed to read save file: " << save_file;
+              return std::string();
+            }
+
+            return content;
+          },
+          save_file_),
+      base::BindOnce(&ReportedLocalIdManager::ResumeLoadingSaveFile,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void FatalCrashEventsObserver::ReportedLocalIdManager::ResumeLoadingSaveFile(
+    const std::string& content) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // It is OK to set loaded_ at the beginning of this method, because all future
+  // tasks in this sequence would see the save file has been loaded. Setting at
+  // the front avoids repeating this statement before every return.
+  loaded_ = true;
 
   // Parse the CSV file line by line. If one line is erroneous, stop parsing the
   // rest.
@@ -397,14 +451,14 @@ void FatalCrashEventsObserver::ReportedLocalIdManager::LoadSaveFile() {
     }
 
     // Load to RAM.
-    if (!UpdateLocalId(std::string(local_id), capture_timestamp_us)) {
+    if (!UpdateLocalIdInRam(std::string(local_id), capture_timestamp_us)) {
       LOG(ERROR) << "Not able to add the current crash: " << line;
       return;
     }
   }
 }
 
-void FatalCrashEventsObserver::ReportedLocalIdManager::WriteSaveFile() const {
+void FatalCrashEventsObserver::ReportedLocalIdManager::WriteSaveFile() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Create the content of the CSV.
   std::ostringstream csv_content;
@@ -412,19 +466,31 @@ void FatalCrashEventsObserver::ReportedLocalIdManager::WriteSaveFile() const {
     csv_content << local_id << ',' << capture_timestamp_us << '\n';
   }
 
-  // Write to the temp save file first, then rename it to the official save
-  // file. This would prevent partly written file to be effective, as renaming
-  // within the same partition is atomic on POSIX systems.
-  if (!base::WriteFile(save_file_tmp_, csv_content.str())) {
-    LOG(ERROR) << "Failed to write save file " << save_file_tmp_;
-    return;
-  }
-  if (base::File::Error err;
-      !base::ReplaceFile(save_file_tmp_, save_file_, &err)) {
-    LOG(ERROR) << "Failed to move file from " << save_file_tmp_ << " to "
-               << save_file_ << ": " << err;
-    return;
-  }
+  // TODO(b/266018440): Find a way to cancel all tasks on io_task_runner_ that
+  // has not been executed yet, as later save file writing tasks will always
+  // override the results of earlier ones.
+  io_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::FilePath save_file, base::FilePath save_file_tmp,
+             std::string content) {
+            // Write to the temp save file first, then rename it to the official
+            // save file. This would prevent partly written file to be
+            // effective, as renaming within the same partition is atomic on
+            // POSIX systems.
+            if (!base::WriteFile(save_file_tmp, content)) {
+              LOG(ERROR) << "Failed to write save file " << save_file_tmp;
+              return;
+            }
+            if (base::File::Error err;
+                !base::ReplaceFile(save_file_tmp, save_file, &err)) {
+              LOG(ERROR) << "Failed to move file from " << save_file_tmp
+                         << " to " << save_file << ": " << err;
+              return;
+            }
+            // Successfully written the save file.
+          },
+          save_file_, save_file_tmp_, std::move(csv_content).str()));
 }
 
 void FatalCrashEventsObserver::ReportedLocalIdManager::
@@ -484,6 +550,11 @@ void FatalCrashEventsObserver::ReportedLocalIdManager::
   // After the cleanup, the top of `local_id_entry_queue_` is the earliest.
   local_ids_.erase(local_id_entry_queue_.top().local_id);
   local_id_entry_queue_.pop();
+}
+
+bool FatalCrashEventsObserver::ReportedLocalIdManager::IsLoaded() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return loaded_;
 }
 
 bool FatalCrashEventsObserver::ReportedLocalIdManager::LocalIdEntryComparator::

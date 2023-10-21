@@ -57,6 +57,9 @@ class FatalCrashEventsObserver::TestEnvironment {
   // usage is correctly limited.
   static size_t GetLocalIdEntryQueueSize(FatalCrashEventsObserver& observer);
 
+  // Flushes all IO tasks.
+  static void FlushIoTasks(FatalCrashEventsObserver& observer);
+
  private:
   base::FilePath temp_dir_{base::CreateUniqueTempDirectoryScopedToTest()};
   base::FilePath reported_local_id_save_file_path_{
