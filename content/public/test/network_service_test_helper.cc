@@ -776,6 +776,21 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
   }
 #endif  // BUILDFLAG(IS_LINUX)
 
+  void AllowsGSSAPILibraryLoad(
+      AllowsGSSAPILibraryLoadCallback callback) override {
+    bool allow_gssapi_library_load;
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+    allow_gssapi_library_load =
+        network::NetworkService::GetNetworkServiceForTesting()
+            ->http_auth_dynamic_network_service_params_for_testing()
+            ->allow_gssapi_library_load;
+#else
+    allow_gssapi_library_load = true;
+#endif
+
+    std::move(callback).Run(allow_gssapi_library_load);
+  }
+
  private:
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {

@@ -267,7 +267,6 @@ NetworkSandboxState IsNetworkSandboxEnabledInternal() {
   if (g_network_service_will_allow_gssapi_library_load ||
       (local_state && local_state->HasPrefPath(kGssapiDesiredPref) &&
        local_state->GetBoolean(kGssapiDesiredPref))) {
-    g_network_service_will_allow_gssapi_library_load = true;
     return NetworkSandboxState::kDisabledBecauseOfKerberos;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
@@ -917,20 +916,35 @@ bool SystemNetworkContextManager::IsNetworkSandboxEnabled() {
   base::UmaHistogramEnumeration(
       "Chrome.SystemNetworkContextManager.NetworkSandboxState", state);
 
+  bool enabled = true;
   switch (state) {
     case NetworkSandboxState::kDisabledBecauseOfKerberos:
-      return false;
+      enabled = false;
+      break;
     case NetworkSandboxState::kDisabledByPlatform:
-      return false;
+      enabled = false;
+      break;
     case NetworkSandboxState::kEnabledByPlatform:
-      return true;
+      enabled = true;
+      break;
     case NetworkSandboxState::kDisabledByPolicy:
-      return false;
+      enabled = false;
+      break;
     case NetworkSandboxState::kEnabledByPolicy:
-      return true;
+      enabled = true;
+      break;
     case NetworkSandboxState::kDisabledBecauseOfFailedLaunch:
-      return false;
+      enabled = false;
+      break;
   }
+
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+  if (!enabled) {
+    g_network_service_will_allow_gssapi_library_load = true;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+
+  return enabled;
 }
 
 void SystemNetworkContextManager::FlushSSLConfigManagerForTesting() {

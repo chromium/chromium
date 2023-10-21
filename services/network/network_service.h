@@ -340,6 +340,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
   bool data_use_updates_enabled() const { return data_use_updates_enabled_; }
 
+  const mojom::HttpAuthDynamicParamsPtr&
+  http_auth_dynamic_network_service_params_for_testing() const {
+    return http_auth_dynamic_network_service_params_;
+  }
+
   mojom::URLLoaderNetworkServiceObserver*
   GetDefaultURLLoaderNetworkServiceObserver();
 
