@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 
@@ -136,7 +137,17 @@ void PopupTimersController::OnNotificationUpdated(const std::string& id) {
   }
 
 // ChromeOS is going to ignore the `never_timeout` field for notification
-// popups.
+// popups. Only enabled behind the `kNotificationsIgnoreRequireInteraction` flag
+// for now.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!features::IsNotificationsIgnoreRequireInteractionEnabled()) {
+    if ((*iter)->never_timeout()) {
+      CancelTimer(id);
+      return;
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   if ((*iter)->never_timeout()) {
     CancelTimer(id);

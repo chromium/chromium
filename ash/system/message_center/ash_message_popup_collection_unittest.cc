@@ -42,6 +42,7 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/phonehub/fake_phone_hub_manager.h"
 #include "chromeos/ash/components/phonehub/feature_status.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/events/test/event_generator.h"
@@ -1697,6 +1698,10 @@ class AshMessagePopupCollectionMockTimeTest : public ash::AshTestBase {
 };
 
 TEST_F(AshMessagePopupCollectionMockTimeTest, PopupTimeouts) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      ::features::kNotificationsIgnoreRequireInteraction);
+
   auto* popup_collection =
       GetPrimaryUnifiedSystemTray()->GetMessagePopupCollection();
   auto* message_center = message_center::MessageCenter::Get();

@@ -70,6 +70,14 @@ bool IsDeprecateAltClickEnabled() {
   return base::FeatureList::IsEnabled(kDeprecateAltClick);
 }
 
+BASE_FEATURE(kNotificationsIgnoreRequireInteraction,
+             "NotificationsIgnoreRequireInteraction",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsNotificationsIgnoreRequireInteractionEnabled() {
+  return base::FeatureList::IsEnabled(kNotificationsIgnoreRequireInteraction);
+}
+
 BASE_FEATURE(kShortcutCustomizationApp,
              "ShortcutCustomizationApp",
              base::FEATURE_ENABLED_BY_DEFAULT);
