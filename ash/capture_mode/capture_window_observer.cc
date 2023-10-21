@@ -26,8 +26,7 @@ CaptureWindowObserver::CaptureWindowObserver(
 
 CaptureWindowObserver::~CaptureWindowObserver() {
   DesksController::Get()->RemoveObserver(this);
-  auto* shell = Shell::Get();
-  shell->activation_client()->RemoveObserver(this);
+  Shell::Get()->activation_client()->RemoveObserver(this);
   StopObserving();
 }
 

@@ -11,7 +11,6 @@
 #include "ash/ash_export.h"
 #include "ash/wm/window_transient_descendant_iterator.h"
 #include "ui/aura/window.h"
-#include "ui/base/ui_base_types.h"
 #include "ui/wm/core/window_util.h"
 
 namespace gfx {

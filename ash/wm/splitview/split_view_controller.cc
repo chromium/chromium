@@ -1179,7 +1179,8 @@ void SplitViewController::EndSplitView(EndReason end_reason) {
     // `~SplitViewController()`, during which `root_window_` would have been
     // destroyed.
     RootWindowController::ForWindow(root_window_)
-        ->EndSplitViewOverviewSession();
+        ->EndSplitViewOverviewSession(
+            SplitViewOverviewSessionExitPoint::kShutdown);
   }
 
   StopObserving(SnapPosition::kPrimary);
@@ -2325,8 +2326,8 @@ void SplitViewController::OnWindowSnapped(
   }
 
   // Overview will be opened on the other side of the screen if there is
-  // only one snapped window in split screen when in tablet mode or clamshell
-  // mode when `CanEnterOverview()` returns true, the check will happen in
+  // only one snapped window in split screen when in tablet mode when
+  // `WillStartOverview()` returns true, the check will happen in
   // `OverviewController`.
   if (WillStartOverview()) {
     RootWindowController::ForWindow(window)->StartSplitViewOverviewSession(

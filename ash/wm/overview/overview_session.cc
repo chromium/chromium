@@ -890,7 +890,7 @@ void OverviewSession::OnWindowActivating(
     // Cancel overview session and do not restore activation when active window
     // is set to nullptr. This happens when removing a display.
     RestoreWindowActivation(false);
-    EndOverview(OverviewEndAction::kWindowActivating);
+    EndOverview(OverviewEndAction::kWindowDeactivating);
     return;
   }
 

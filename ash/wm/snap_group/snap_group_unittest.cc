@@ -67,6 +67,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect.h"
@@ -204,16 +205,31 @@ void VerifySplitViewOverviewSession(aura::Window* window) {
 
 }  // namespace
 
-using FasterSplitScreenTest = AshTestBase;
+// -----------------------------------------------------------------------------
+// FasterSplitScreenTest:
+
+// Test fixture to verify faster split screen feature.
+
+class FasterSplitScreenTest : public AshTestBase {
+ public:
+  FasterSplitScreenTest()
+      : scoped_feature_list_(features::kFasterSplitScreenSetup) {}
+  FasterSplitScreenTest(const FasterSplitScreenTest&) = delete;
+  FasterSplitScreenTest& operator=(const FasterSplitScreenTest&) = delete;
+  ~FasterSplitScreenTest() override = default;
+
+ protected:
+  base::HistogramTester histogram_tester_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 TEST_F(FasterSplitScreenTest, Basic) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kFasterSplitScreenSetup);
-
   // Create two test windows, snap `w1`. Test `w1` is snapped and excluded from
   // overview while `w2` is in overview.
-  std::unique_ptr<aura::Window> w1(CreateTestWindow());
-  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
   SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
   VerifySplitViewOverviewSession(w1.get());
   auto* overview_controller = Shell::Get()->overview_controller();
@@ -237,6 +253,134 @@ TEST_F(FasterSplitScreenTest, Basic) {
   SnapOneTestWindow(w3.get(), chromeos::WindowStateType::kPrimarySnapped);
   VerifySplitViewOverviewSession(w3.get());
 }
+
+// Tests the histograms for the split view overview session exit points are
+// recorded correctly.
+TEST_F(FasterSplitScreenTest, SplitViewOverviewSessionExitPointHistogramsTest) {
+  constexpr char kWindowLayoutCompleteOnSessionExit[] =
+      "Ash.SplitViewOverviewSession.WindowLayoutCompleteOnSessionExit";
+  constexpr char kSplitViewOverviewSessionExitPoint[] =
+      "Ash.SplitViewOverviewSession.SplitViewOverviewSessionExitPoint";
+
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+
+  // Verify the initial count for the histogram.
+  histogram_tester_.ExpectBucketCount(kWindowLayoutCompleteOnSessionExit,
+                                      /*sample=*/true,
+                                      /*expected_count=*/0);
+  histogram_tester_.ExpectBucketCount(kWindowLayoutCompleteOnSessionExit,
+                                      /*sample=*/false,
+                                      /*expected_count=*/0);
+
+  // Lambda to maximize the snapped window which will exit the split view
+  // overview session. This is used in preparation for the next round of
+  // testing.
+  WindowState* w1_state = WindowState::Get(w1.get());
+  auto maximize_to_end_session = [&]() {
+    w1_state->Maximize();
+    SplitViewOverviewSession* split_view_overview_session =
+        RootWindowController::ForWindow(w1.get())
+            ->split_view_overview_session();
+    EXPECT_FALSE(split_view_overview_session);
+  };
+
+  // Set up the splitview overview session and select a window in the partial
+  // overview to complete the window layout.
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
+  VerifySplitViewOverviewSession(w1.get());
+
+  auto* item2 = GetOverviewItemForWindow(w2.get());
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(
+      gfx::ToRoundedPoint(item2->target_bounds().CenterPoint()));
+  event_generator->ClickLeftButton();
+  histogram_tester_.ExpectBucketCount(kWindowLayoutCompleteOnSessionExit,
+                                      /*sample=*/true,
+                                      /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(kWindowLayoutCompleteOnSessionExit,
+                                      /*sample=*/false,
+                                      /*expected_count=*/0);
+  histogram_tester_.ExpectBucketCount(
+      kSplitViewOverviewSessionExitPoint,
+      SplitViewOverviewSessionExitPoint::kCompleteByActivating,
+      /*expected_count=*/1);
+  maximize_to_end_session();
+
+  // Set up the splitview overview session and click an empty area to skip the
+  // pairing.
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
+  VerifySplitViewOverviewSession(w1.get());
+  item2 = GetOverviewItemForWindow(w2.get());
+  gfx::Point outside_point =
+      gfx::ToRoundedPoint(item2->target_bounds().bottom_right());
+  outside_point.Offset(/*delta_x=*/5, /*delta_y=*/5);
+  event_generator->MoveMouseTo(outside_point);
+  event_generator->ClickLeftButton();
+  histogram_tester_.ExpectBucketCount(kWindowLayoutCompleteOnSessionExit,
+                                      /*sample=*/true,
+                                      /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(kWindowLayoutCompleteOnSessionExit,
+                                      /*sample=*/false,
+                                      /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(kSplitViewOverviewSessionExitPoint,
+                                      SplitViewOverviewSessionExitPoint::kSkip,
+                                      /*expected_count=*/1);
+  maximize_to_end_session();
+
+  // Set up the splitview overview session, create a 3rd window to be
+  // auto-snapped and complete the window layout.
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
+  VerifySplitViewOverviewSession(w1.get());
+  std::unique_ptr<aura::Window> w3(CreateAppWindow());
+  histogram_tester_.ExpectBucketCount(kWindowLayoutCompleteOnSessionExit,
+                                      /*sample=*/true,
+                                      /*expected_count=*/2);
+  histogram_tester_.ExpectBucketCount(kWindowLayoutCompleteOnSessionExit,
+                                      /*sample=*/false,
+                                      /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      kSplitViewOverviewSessionExitPoint,
+      SplitViewOverviewSessionExitPoint::kCompleteByActivating,
+      /*expected_count=*/2);
+  maximize_to_end_session();
+
+  // Set up the splitview overview session and press escape key to skip pairing.
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
+  VerifySplitViewOverviewSession(w1.get());
+  event_generator->PressAndReleaseKey(ui::VKEY_ESCAPE);
+  histogram_tester_.ExpectBucketCount(kWindowLayoutCompleteOnSessionExit,
+                                      /*sample=*/true,
+                                      /*expected_count=*/2);
+  histogram_tester_.ExpectBucketCount(kWindowLayoutCompleteOnSessionExit,
+                                      /*sample=*/false,
+                                      /*expected_count=*/2);
+  histogram_tester_.ExpectBucketCount(kSplitViewOverviewSessionExitPoint,
+                                      SplitViewOverviewSessionExitPoint::kSkip,
+                                      /*expected_count=*/2);
+  maximize_to_end_session();
+
+  // Set up the splitview overview session and close the snapped window to exit
+  // the session.
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
+  VerifySplitViewOverviewSession(w1.get());
+  w1.reset();
+  histogram_tester_.ExpectBucketCount(kWindowLayoutCompleteOnSessionExit,
+                                      /*sample=*/true,
+                                      /*expected_count=*/2);
+  histogram_tester_.ExpectBucketCount(kWindowLayoutCompleteOnSessionExit,
+                                      /*sample=*/false,
+                                      /*expected_count=*/2);
+  histogram_tester_.ExpectBucketCount(
+      kSplitViewOverviewSessionExitPoint,
+      SplitViewOverviewSessionExitPoint::kWindowDestroy,
+      /*expected_count=*/1);
+}
+
+// -----------------------------------------------------------------------------
+// SnapGroupTest:
+
+// Test fixture to verify the fundamental snap group feature.
 
 class SnapGroupTest : public AshTestBase {
  public:
@@ -465,6 +609,9 @@ TEST_F(SnapGroupTest, WindowActivationTest) {
   EXPECT_TRUE(window_util::IsStackedBelow(w3.get(), w2.get()));
 }
 
+// -----------------------------------------------------------------------------
+// SnapGroupEntryPointArm1Test:
+
 // A test fixture that tests the snap group entry point arm 1 which will create
 // a snap group automatically when two windows are snapped. This entry point is
 // guarded by the feature flag `kSnapGroup` and will only be enabled when the
@@ -660,10 +807,10 @@ TEST_F(SnapGroupEntryPointArm1Test, ClamshellSplitViewBasicFunctionalities) {
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
 }
 
-// Tests that on one window snapped, SnapGroupController starts split view
-// overview (snap group creation session).
+// Tests that on one window snapped, `SnapGroupController` starts
+// `SplitViewOverviewSession` (snap group creation session).
 TEST_F(SnapGroupEntryPointArm1Test, SnapOneTestWindowStartsOverview) {
-  std::unique_ptr<aura::Window> w(CreateTestWindow());
+  std::unique_ptr<aura::Window> w(CreateAppWindow());
   // Snap `w` to the left. Test that we are in split view overview, excluding
   // `w` and taking half the screen.
   SnapOneTestWindow(w.get(),
@@ -2576,6 +2723,9 @@ TEST_F(SnapGroupEntryPointArm1Test, CursorUpdateTest) {
       kebab_button()->GetBoundsInScreen().CenterPoint());
   EXPECT_EQ(CursorType::kNull, cursor_manager->GetCursor().type());
 }
+
+// -----------------------------------------------------------------------------
+// SnapGroupEntryPointArm2Test:
 
 // A test fixture that tests the user-initiated snap group entry point. This
 // entry point is guarded by the feature flag `kSnapGroup` and will only be

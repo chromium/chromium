@@ -6565,6 +6565,31 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Ash.SplitViewOverviewSession.SplitViewOverviewSessionExitPoint"
+    enum="SplitViewOverviewSessionExitPoint" expires_after="2024-10-25">
+  <owner>michelefan@chromium.org</owner>
+  <owner>sophiewen@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <summary>
+    Recorded at the exit point of the split view overview session. The recorded
+    enum indicates the reason that triggers the split view overview session
+    exit.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ash.SplitViewOverviewSession.WindowLayoutCompleteOnSessionExit"
+    enum="Boolean" expires_after="2024-10-25">
+  <owner>michelefan@chromium.org</owner>
+  <owner>sophiewen@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <summary>
+    Recorded at the exit point of the split view overview session. Emits true if
+    the window layout setup is complete, false otherwise.
+  </summary>
+</histogram>
+
 <histogram name="Ash.SplitViewResize.AnimationSmoothness.DividerAnimation"
     units="%" expires_after="2024-04-01">
   <owner>sammiequon@chromium.org</owner>

@@ -49,12 +49,15 @@
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_base.h"
 #include "ash/wm/overview/overview_item_view.h"
+#include "ash/wm/overview/overview_metrics.h"
+#include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/overview/overview_window_drag_controller.h"
 #include "ash/wm/overview/scoped_overview_animation_settings.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_divider.h"
+#include "ash/wm/splitview/split_view_overview_session.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_properties.h"
@@ -492,6 +495,24 @@ int GetTopViewInset(const aura::Window::Windows& windows) {
   return inset;
 }
 
+// Returns the corresponding `SplitViewOverviewSessionExitPoint` with the
+// overview end action deduced from the given `overview_session`.
+SplitViewOverviewSessionExitPoint GetSplitViewOverviewSessionExitPoint(
+    OverviewSession* overview_session) {
+  OverviewEndAction overview_end_action =
+      overview_session->overview_end_action();
+  if (overview_end_action == OverviewEndAction::kWindowActivating) {
+    return SplitViewOverviewSessionExitPoint::kCompleteByActivating;
+  } else if (overview_end_action == OverviewEndAction::kKeyEscapeOrBack ||
+             overview_end_action ==
+                 OverviewEndAction::kClickingOutsideWindowsInOverview) {
+    return SplitViewOverviewSessionExitPoint::kSkip;
+  } else if (overview_end_action == OverviewEndAction::kShuttingDown) {
+    return SplitViewOverviewSessionExitPoint::kShutdown;
+  }
+  return SplitViewOverviewSessionExitPoint::kUnspecified;
+}
+
 }  // namespace
 
 OverviewGrid::OverviewGrid(aura::Window* root_window,
@@ -537,12 +558,15 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
   EndNudge();
 
   auto* root_controller = RootWindowController::ForWindow(root_window_);
-  root_controller->EndSplitViewOverviewSession();
+  root_controller->EndSplitViewOverviewSession(
+      GetSplitViewOverviewSessionExitPoint(overview_session_));
   SplitViewController::Get(root_window_)->RemoveObserver(this);
   if (auto* animator = root_controller->GetScreenRotationAnimator()) {
     animator->RemoveObserver(this);
   }
-  Shell::Get()->wallpaper_controller()->RemoveObserver(this);
+
+  Shell* shell = Shell::Get();
+  shell->wallpaper_controller()->RemoveObserver(this);
   grid_event_handler_.reset();
 
   if (IsShowingSavedDeskLibrary())
@@ -559,16 +583,17 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
     }
     window->Shutdown();
   }
-  bool single_animation_in_clamshell =
-      (animate_count == 1 && !has_non_cover_animating) &&
-      !Shell::Get()->tablet_mode_controller()->InTabletMode();
 
   const bool in_split_view =
       SplitViewController::Get(root_window_)->InSplitViewMode();
   // OverviewGrid in splitscreen does not include the window to be activated.
   if (!window_list_.empty() || in_split_view) {
-    bool minimized_in_tablet = overview_session_->enter_exit_overview_type() ==
-                               OverviewEnterExitType::kFadeOutExit;
+    const bool minimized_in_tablet =
+        overview_session_->enter_exit_overview_type() ==
+        OverviewEnterExitType::kFadeOutExit;
+    const bool single_animation_in_clamshell =
+        (animate_count == 1 && !has_non_cover_animating) &&
+        !shell->tablet_mode_controller()->InTabletMode();
     // The following instance self-destructs when shutdown animation ends.
     new ShutdownAnimationMetricsTrackerObserver(
         root_window_->layer()->GetCompositor(), in_split_view,
@@ -2278,17 +2303,19 @@ SavedDeskSaveDeskButtonContainer* OverviewGrid::GetSaveDeskButtonContainer()
 void OverviewGrid::OnSplitViewStateChanged(
     SplitViewController::State previous_state,
     SplitViewController::State state) {
-  if (features::IsFasterSplitScreenSetupEnabled()) {
-    // When an activated is auto snapped, it will send a state change and try to
-    // end overview here. Ignore split view state when `kFasterSplitScreenSetup`
-    // is enabled.
+  // Do nothing if overview is being shutdown.
+  OverviewController* overview_controller = OverviewController::Get();
+  if (!overview_controller->InOverviewSession()) {
     return;
   }
 
-  // Do nothing if overview is being shutdown.
-  OverviewController* overview_controller = OverviewController::Get();
-  if (!overview_controller->InOverviewSession())
+  if (window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled()) {
+    // When an activated is auto snapped, it will send a state change and try to
+    // end overview here. Ignore split view state when `kFasterSplitScreenSetup`
+    // or `kSnapGroup` arm1 is enabled.
+    RefreshGridBounds(/*animate=*/false);
     return;
+  }
 
   SplitViewController* split_view_controller =
       SplitViewController::Get(root_window_);

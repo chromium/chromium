@@ -701,7 +701,7 @@ void RootWindowController::Shutdown() {
 
   touch_exploration_manager_.reset();
   wallpaper_widget_controller_.reset();
-  EndSplitViewOverviewSession();
+  EndSplitViewOverviewSession(SplitViewOverviewSessionExitPoint::kShutdown);
   CloseAmbientWidget(/*immediately=*/true);
 
   CloseChildWindows();
@@ -1009,7 +1009,12 @@ void RootWindowController::StartSplitViewOverviewSession(
   split_view_overview_session_->Init(action, type);
 }
 
-void RootWindowController::EndSplitViewOverviewSession() {
+void RootWindowController::EndSplitViewOverviewSession(
+    SplitViewOverviewSessionExitPoint exit_point) {
+  if (!is_shutting_down_ && split_view_overview_session_) {
+    split_view_overview_session_
+        ->RecordSplitViewOverviewSessionExitPointMetrics(exit_point);
+  }
   split_view_overview_session_.reset();
 }
 
@@ -1086,7 +1091,7 @@ void RootWindowController::Init(RootWindowType root_window_type) {
   // Explicitly update the desks controller before notifying the ShellObservers.
   // This is to make sure the desks' states are correct before clients are
   // updated.
-  Shell::Get()->desks_controller()->OnRootWindowAdded(root_window);
+  shell->desks_controller()->OnRootWindowAdded(root_window);
 
   if (root_window_type == RootWindowType::PRIMARY) {
     shell->keyboard_controller()->RebuildKeyboardIfEnabled();

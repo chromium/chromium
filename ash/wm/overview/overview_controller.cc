@@ -165,6 +165,7 @@ bool OverviewController::EndOverview(OverviewEndAction action,
   if (!CanEndOverview(type))
     return false;
 
+  overview_session_->set_overview_end_action(action);
   ToggleOverview(type);
   RecordOverviewEndAction(action);
 
@@ -395,7 +396,7 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
       window_util::MinimizeAndHideWithoutAnimation(windows_to_minimize);
     }
 
-    // Do not show mask and show during overview shutdown.
+    // Do not show rounded corners or shadow during overview shutdown.
     overview_session_->UpdateRoundedCornersAndShadow();
 
     for (auto& observer : observers_)

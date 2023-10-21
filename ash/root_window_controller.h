@@ -14,6 +14,7 @@
 #include "ash/style/ash_color_provider_source.h"
 #include "ash/wm/overview/overview_metrics.h"
 #include "ash/wm/overview/overview_types.h"
+#include "ash/wm/splitview/split_view_overview_session.h"
 #include "ash/wm/workspace/workspace_types.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -274,7 +275,11 @@ class ASH_EXPORT RootWindowController {
       aura::Window* window,
       absl::optional<OverviewStartAction> action,
       absl::optional<OverviewEnterExitType> type);
-  void EndSplitViewOverviewSession();
+
+  // Ends the split view overview session and reports the uma metrics if it is
+  // active.
+  void EndSplitViewOverviewSession(
+      SplitViewOverviewSessionExitPoint exit_point);
 
   void SetScreenRotationAnimatorForTest(
       std::unique_ptr<ScreenRotationAnimator> animator);

@@ -8,6 +8,7 @@
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/splitview/auto_snap_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
@@ -15,11 +16,18 @@
 #include "ash/wm/window_resizer.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "ui/compositor/layer.h"
 
 namespace ash {
 
 namespace {
+
+constexpr char kWindowLayoutCompleteOnSessionExit[] =
+    "Ash.SplitViewOverviewSession.WindowLayoutCompleteOnSessionExit";
+
+constexpr char kSplitViewOverviewSessionExitPoint[] =
+    "Ash.SplitViewOverviewSession.SplitViewOverviewSessionExitPoint";
 
 // Histogram names that record presentation time of resize operation with
 // following conditions:
@@ -66,12 +74,32 @@ SplitViewOverviewSession::~SplitViewOverviewSession() {
 void SplitViewOverviewSession::Init(
     absl::optional<OverviewStartAction> action,
     absl::optional<OverviewEnterExitType> type) {
-  if (!IsInOverviewSession()) {
-    // Overview may already be in session, if a window was dragged to split view
-    // from overview in clamshell mode.
-    Shell::Get()->overview_controller()->StartOverview(
-        action.value_or(OverviewStartAction::kSplitView),
-        type.value_or(OverviewEnterExitType::kNormal));
+  if (IsInOverviewSession()) {
+    setup_type_ = SplitViewOverviewSetupType::kOverviewThenManualSnap;
+    return;
+  }
+
+  // Overview may already be in session, if a window was dragged to split view
+  // from overview in clamshell mode.
+  Shell::Get()->overview_controller()->StartOverview(
+      action.value_or(OverviewStartAction::kSplitView),
+      type.value_or(OverviewEnterExitType::kNormal));
+  setup_type_ = SplitViewOverviewSetupType::kSnapThenAutomaticOverview;
+}
+
+void SplitViewOverviewSession::RecordSplitViewOverviewSessionExitPointMetrics(
+    SplitViewOverviewSessionExitPoint user_action) {
+  if (setup_type_ == SplitViewOverviewSetupType::kSnapThenAutomaticOverview) {
+    if (user_action ==
+            SplitViewOverviewSessionExitPoint::kCompleteByActivating ||
+        user_action == SplitViewOverviewSessionExitPoint::kSkip) {
+      base::UmaHistogramBoolean(
+          kWindowLayoutCompleteOnSessionExit,
+          user_action ==
+              SplitViewOverviewSessionExitPoint::kCompleteByActivating);
+    }
+    base::UmaHistogramEnumeration(kSplitViewOverviewSessionExitPoint,
+                                  user_action);
   }
 }
 
@@ -198,7 +226,8 @@ void SplitViewOverviewSession::OnWindowDestroying(aura::Window* window) {
   CHECK(window_observation_.IsObservingSource(window));
   CHECK_EQ(window_, window);
   // Destroys `this`.
-  RootWindowController::ForWindow(window_)->EndSplitViewOverviewSession();
+  RootWindowController::ForWindow(window_)->EndSplitViewOverviewSession(
+      SplitViewOverviewSessionExitPoint::kWindowDestroy);
 }
 
 void SplitViewOverviewSession::OnPreWindowStateTypeChange(
@@ -208,7 +237,8 @@ void SplitViewOverviewSession::OnPreWindowStateTypeChange(
   // Normally split view would have ended and destroy this, but the window can
   // get unsnapped, e.g. during mid-drag or mid-resize, so bail out here.
   if (!window_state->IsSnapped()) {
-    RootWindowController::ForWindow(window_)->EndSplitViewOverviewSession();
+    RootWindowController::ForWindow(window_)->EndSplitViewOverviewSession(
+        SplitViewOverviewSessionExitPoint::kUnspecified);
   }
 }
 

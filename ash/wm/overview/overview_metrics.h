@@ -53,7 +53,8 @@ enum class OverviewEndAction {
   kDevTools,
   kTests,
   kShowGlanceables_DEPRECATED,
-  kMaxValue = kShowGlanceables_DEPRECATED,
+  kWindowDeactivating,
+  kMaxValue = kWindowDeactivating,
 };
 void RecordOverviewEndAction(OverviewEndAction type);
 

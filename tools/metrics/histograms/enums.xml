@@ -82577,6 +82577,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="19" label="Exiting overview through dev tools"/>
   <int value="20" label="Exiting overview in tests"/>
   <int value="21" label="DEPRECATED: Showing glanceables"/>
+  <int value="22" label="Exiting overview due to window deactivation"/>
 </enum>
 
 <enum name="OverviewStartAction">
@@ -102233,6 +102234,16 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Multiple entries"/>
   <int value="4" label="Toplevel exception"/>
   <int value="5" label="Loop exception"/>
+</enum>
+
+<enum name="SplitViewOverviewSessionExitPoint">
+  <int value="0"
+      label="Complete the window layout setup by activating a window in
+             partial overview"/>
+  <int value="1" label="Skip the window layout setup"/>
+  <int value="2" label="Session exit due to window destruction"/>
+  <int value="3" label="Session exit due to shutdown"/>
+  <int value="4" label="Session exit due to unspecified reasons"/>
 </enum>
 
 <enum name="SplitViewSwapWindowsSource">
