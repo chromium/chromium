@@ -9,10 +9,13 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -63,8 +66,138 @@ class AutocompleteControllerTest : public testing::Test {
     controller_->internal_result_.AppendMatches(matches);
   }
 
+  void MaybeRemoveCompanyEntityImages() {
+    controller_->MaybeRemoveCompanyEntityImages(&controller_->internal_result_);
+  }
+
+  bool ImageURLIsEmpty(size_t index) {
+    return controller_->internal_result_.match_at(index)->image_url.is_empty();
+  }
+
+  AutocompleteMatch CreateHistoryURLMatch(std::string destination_url) {
+    AutocompleteMatch match;
+    match.type = AutocompleteMatchType::Type::HISTORY_URL;
+    match.destination_url = GURL(destination_url);
+    return match;
+  }
+
+  AutocompleteMatch CreateCompanyEntityMatch(std::string website_uri) {
+    AutocompleteMatch match;
+    match.type = AutocompleteMatchType::Type::SEARCH_SUGGEST_ENTITY;
+    match.website_uri = website_uri;
+    match.image_url = GURL("https://url");
+    return match;
+  }
+
+  AutocompleteMatch CreateSearchSuggestion() {
+    AutocompleteMatch match;
+    match.type = AutocompleteMatchType::Type::SEARCH_SUGGEST;
+    match.contents = u"text";
+    return match;
+  }
+
  protected:
   std::unique_ptr<AutocompleteController> controller_;
 
   base::test::TaskEnvironment task_environment_;
 };
+
+TEST_F(AutocompleteControllerTest, RemoveCompanyEntityImage_LeastAggressive) {
+  // Set feature flag and param.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kCompanyEntityIconAdjustment,
+      {{OmniboxFieldTrial::kCompanyEntityIconAdjustmentGroup.name,
+        "least-aggressive"}});
+  std::vector<AutocompleteMatch> matches;
+  // In the least aggressive experiment group the historical match must be the
+  // first match and the company entity must be the second match to replace the
+  // entity's image.
+  matches.push_back(
+      CreateHistoryURLMatch(/*destination_url=*/"https://www.wellsfargo.com/"));
+  matches.push_back(
+      CreateCompanyEntityMatch(/*website_uri=*/"https://www.wellsfargo.com/"));
+  matches.push_back(CreateSearchSuggestion());
+
+  set_autocomplete_matches(matches);
+  ASSERT_FALSE(ImageURLIsEmpty(/*index=*/1));
+
+  MaybeRemoveCompanyEntityImages();
+  ASSERT_TRUE(ImageURLIsEmpty(/*index=*/1));
+
+  // Entity is not the second suggestion.
+  matches.clear();
+  matches.push_back(
+      CreateHistoryURLMatch(/*destination_url=*/"https://www.wellsfargo.com/"));
+  matches.push_back(CreateSearchSuggestion());
+  matches.push_back(
+      CreateCompanyEntityMatch(/*website_uri=*/"https://www.wellsfargo.com/"));
+
+  set_autocomplete_matches(matches);
+  ASSERT_FALSE(ImageURLIsEmpty(/*index=*/2));
+
+  MaybeRemoveCompanyEntityImages();
+  // The entity's image_url should remain as is.
+  ASSERT_FALSE(ImageURLIsEmpty(/*index=*/2));
+}
+
+TEST_F(AutocompleteControllerTest, RemoveCompanyEntityImage_Moderate) {
+  // Set feature flag and param.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kCompanyEntityIconAdjustment,
+      {{OmniboxFieldTrial::kCompanyEntityIconAdjustmentGroup.name,
+        "moderate"}});
+  std::vector<AutocompleteMatch> matches;
+  // In the moderate experiment group the historical match must be the first
+  // match and the company entity can be in any slot.
+  matches.push_back(
+      CreateHistoryURLMatch(/*destination_url=*/"https://www.wellsfargo.com/"));
+  matches.push_back(CreateSearchSuggestion());
+  matches.push_back(
+      CreateCompanyEntityMatch(/*website_uri=*/"https://www.wellsfargo.com/"));
+
+  set_autocomplete_matches(matches);
+  ASSERT_FALSE(ImageURLIsEmpty(/*index=*/2));
+
+  MaybeRemoveCompanyEntityImages();
+  ASSERT_TRUE(ImageURLIsEmpty(/*index=*/2));
+
+  // History match is not the first suggestion.
+  matches.clear();
+  matches.push_back(
+      CreateCompanyEntityMatch(/*website_uri=*/"https://www.wellsfargo.com/"));
+  matches.push_back(
+      CreateHistoryURLMatch(/*destination_url=*/"https://www.wellsfargo.com/"));
+  matches.push_back(CreateSearchSuggestion());
+
+  set_autocomplete_matches(matches);
+  ASSERT_FALSE(ImageURLIsEmpty(/*index=*/0));
+
+  MaybeRemoveCompanyEntityImages();
+  // The entity's image_url should remain as is.
+  ASSERT_FALSE(ImageURLIsEmpty(/*index=*/0));
+}
+
+TEST_F(AutocompleteControllerTest, RemoveCompanyEntityImage_MostAggressive) {
+  // Set feature flag and param.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kCompanyEntityIconAdjustment,
+      {{OmniboxFieldTrial::kCompanyEntityIconAdjustmentGroup.name,
+        "most-aggressive"}});
+  std::vector<AutocompleteMatch> matches;
+  // In the most aggressive experiment group both the historical match and
+  // company entity can be in any slot.
+  matches.push_back(
+      CreateCompanyEntityMatch(/*website_uri=*/"https://www.wellsfargo.com/"));
+  matches.push_back(CreateSearchSuggestion());
+  matches.push_back(
+      CreateHistoryURLMatch(/*destination_url=*/"https://www.wellsfargo.com/"));
+
+  set_autocomplete_matches(matches);
+  ASSERT_FALSE(ImageURLIsEmpty(/*index=*/0));
+
+  MaybeRemoveCompanyEntityImages();
+  ASSERT_TRUE(ImageURLIsEmpty(/*index=*/0));
+}

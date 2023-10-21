@@ -564,6 +564,9 @@ extern const base::FeatureParam<double> kDomainSuggestionsScoreFactor;
 // traditional and the alternate scoring algorithms.
 extern const base::FeatureParam<bool> kDomainSuggestionsAlternativeScoring;
 
+extern const base::FeatureParam<omnibox::CompanyEntityIconAdjustmentGroup>
+    kCompanyEntityIconAdjustmentGroup;
+
 // ---------------------------------------------------------
 // ML Relevance Scoring ->
 

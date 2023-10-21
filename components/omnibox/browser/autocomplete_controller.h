@@ -429,6 +429,10 @@ class AutocompleteController : public AutocompleteProviderListener,
       TemplateURL* template_url,
       const TemplateURLRef::SearchTermsArgs& args) const;
 
+  // May remove company entity images if omnibox::kCompanyEntityIconAdjustment
+  // feature is enabled.
+  void MaybeRemoveCompanyEntityImages(AutocompleteResult* result);
+
   base::ObserverList<Observer> observers_;
 
   // The client passed to the providers.

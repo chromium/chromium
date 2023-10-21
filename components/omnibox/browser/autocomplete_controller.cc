@@ -13,6 +13,7 @@
 #include <numeric>
 #include <set>
 #include <string>
+#include <unordered_set>
 #include <utility>
 
 #include "base/barrier_callback.h"
@@ -183,6 +184,24 @@ bool ShouldPreserveLastDefaultMatch(bool sync_pass_done,
     return input.text().length() >= 4;
   else
     return true;
+}
+
+// Helper function to retrieve domains that will be used to find a match between
+// historical suggestions and a company entity suggestion. Matches of
+// AutocompleteMatchType::HISTORY_URL type will return the domain of
+// |destination_url| and those of AutocompleteMatchType::SEARCH_SUGGEST_ENTITY
+// will return the domain of |website_uri|. For any other match types,
+// GetDomain() should not be called.
+std::u16string GetDomain(const AutocompleteMatch& match) {
+  DCHECK(match.type == AutocompleteMatchType::HISTORY_URL ||
+         match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY);
+  GURL url = match.type == AutocompleteMatchType::HISTORY_URL
+                 ? match.destination_url
+                 : GURL(match.website_uri);
+  std::u16string url_host;
+  std::u16string url_domain;
+  url_formatter::SplitHost(url, &url_host, &url_domain, nullptr);
+  return url_domain;
 }
 
 }  // namespace
@@ -1076,6 +1095,7 @@ void AutocompleteController::SortCullAndAnnotateResult(
   UpdateAssociatedKeywords(&internal_result_);
   UpdateAssistedQueryStats(&internal_result_);
   UpdateTailSuggestPrefix(&internal_result_);
+  MaybeRemoveCompanyEntityImages(&internal_result_);
 
   if (search_provider_)
     search_provider_->RegisterDisplayedAnswers(internal_result_);
@@ -1812,4 +1832,47 @@ void AutocompleteController::CancelUrlScoringModel() {
   // WeakPtr to prevent its callbacks from being called.
   scoring_model_task_tracker_.TryCancelAll();
   weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
+void AutocompleteController::MaybeRemoveCompanyEntityImages(
+    AutocompleteResult* result) {
+  if (result->size() == 0 ||
+      !base::FeatureList::IsEnabled(omnibox::kCompanyEntityIconAdjustment)) {
+    return;
+  }
+  // Least aggressive and moderate group will only have one iteration as the
+  // first match must be of history type.
+  size_t max_iterations =
+      OmniboxFieldTrial::kCompanyEntityIconAdjustmentGroup.Get() ==
+              omnibox::CompanyEntityIconAdjustmentGroup::kMostAggressive
+          ? result->size()
+          : 1;
+
+  std::unordered_set<std::u16string> history_domains;
+  // Find all history type matches.
+  for (size_t i = 0; i < max_iterations; i++) {
+    if (result->match_at(i)->type == AutocompleteMatchType::HISTORY_URL) {
+      history_domains.insert(GetDomain(*result->match_at(i)));
+    }
+  }
+  if (history_domains.size() == 0) {
+    return;
+  }
+  for (size_t i = 0; i < result->size(); i++) {
+    // Do not attempt to change image to search loupe if not an entity
+    // suggestion.
+    if (result->match_at(i)->type !=
+        AutocompleteMatchType::SEARCH_SUGGEST_ENTITY) {
+      continue;
+    }
+    if (OmniboxFieldTrial::kCompanyEntityIconAdjustmentGroup.Get() ==
+            omnibox::CompanyEntityIconAdjustmentGroup::kLeastAggressive &&
+        i > 1) {
+      break;
+    }
+    // Check that entity domain has a matching history domain.
+    if (history_domains.contains(GetDomain(*result->match_at(i)))) {
+      result->match_at(i)->image_url = GURL();
+    }
+  }
 }

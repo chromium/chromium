@@ -1376,6 +1376,26 @@ const FeatureEntry::FeatureVariation kJourneysLabelsVariations[] = {
      std::size(kJourneysLabelsWithSearchVisitEntitiesParams), nullptr},
 };
 
+const FeatureEntry::FeatureParam
+    kOmniboxCompanyEntityIconAdjustmentLeastAggressive[] = {
+        {"OmniboxCompanyEntityAdjustmentGroup", "least-aggressive"}};
+const FeatureEntry::FeatureParam kOmniboxCompanyEntityIconAdjustmentModerate[] =
+    {{"OmniboxCompanyEntityAdjustmentGroup", "moderate"}};
+const FeatureEntry::FeatureParam
+    kOmniboxCompanyEntityIconAdjustmentMostAggressive[] = {
+        {"OmniboxCompanyEntityAdjustmentGroup", "most-aggressive"}};
+
+const FeatureEntry::FeatureVariation
+    kOmniboxCompanyEntityIconAdjustmentVariations[] = {
+        {"Least Aggressive", kOmniboxCompanyEntityIconAdjustmentLeastAggressive,
+         std::size(kOmniboxCompanyEntityIconAdjustmentLeastAggressive),
+         nullptr},
+        {"Moderate", kOmniboxCompanyEntityIconAdjustmentModerate,
+         std::size(kOmniboxCompanyEntityIconAdjustmentModerate), nullptr},
+        {"Most Aggressive", kOmniboxCompanyEntityIconAdjustmentMostAggressive,
+         std::size(kOmniboxCompanyEntityIconAdjustmentMostAggressive), nullptr},
+};
+
 const FeatureEntry::FeatureParam kChromeRefresh2023Level1[] = {{"level", "1"}};
 
 // "Enabled" is equivalent to "Enabled with Omnibox", therefore we don't need to
@@ -6309,7 +6329,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"omnibox-company-entity-icon-adjustment",
      flag_descriptions::kOmniboxCompanyEntityIconAdjustmentName,
      flag_descriptions::kOmniboxCompanyEntityIconAdjustmentDescription,
-     kOsDesktop, FEATURE_VALUE_TYPE(omnibox::kCompanyEntityIconAdjustment)},
+     kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         omnibox::kCompanyEntityIconAdjustment,
+         kOmniboxCompanyEntityIconAdjustmentVariations,
+         "OmniboxCompanyEntityIconAdjustment")},
 
     {"optimization-guide-debug-logs",
      flag_descriptions::kOptimizationGuideDebugLogsName,
