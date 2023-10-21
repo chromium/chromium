@@ -17,7 +17,7 @@
  * @license
  */
 
-import {BidiServer} from '../bidiMapper/BidiMapper.js';
+import {BidiServer, OutgoingMessage} from '../bidiMapper/BidiMapper.js';
 import {CdpConnection} from '../cdp/CdpConnection.js';
 import {LogType} from '../utils/log.js';
 
@@ -47,6 +47,13 @@ declare global {
 
     // Set from the server side if verbose logging is required.
     sendDebugMessage?: ((message: string) => void) | null;
+
+    /**
+     * @deprecated Use `runMapperInstance` instead. Used for backward compatibility
+     * with ChromeDriver.
+     */
+    // TODO: Remove this after https://crrev.com/c/4952609 reaches stable.
+    setSelfTargetId: (targetId: string) => void;
   }
 }
 
@@ -60,13 +67,13 @@ const cdpTransport = new WindowCdpTransport();
 const cdpConnection = new CdpConnection(cdpTransport, log);
 
 /**
- * Set `window.runMapper` to a function which launches the BiDi mapper instance.
- * @param selfTargetId Needed to filter out info related to BiDi target.
+ * Launches the BiDi mapper instance.
+ * @param {string} selfTargetId
  */
-window.runMapperInstance = async (selfTargetId) => {
+async function runMapperInstance(selfTargetId: string) {
   console.log('Launching Mapper instance with selfTargetId:', selfTargetId);
 
-  await BidiServer.createAndStart(
+  const bidiServer = await BidiServer.createAndStart(
     mapperTabToServerTransport,
     cdpConnection,
     /**
@@ -79,4 +86,29 @@ window.runMapperInstance = async (selfTargetId) => {
   );
 
   log(LogType.debugInfo, 'Mapper instance has been launched');
+
+  return bidiServer;
+}
+
+/**
+ * Set `window.runMapper` to a function which launches the BiDi mapper instance.
+ * @param selfTargetId Needed to filter out info related to BiDi target.
+ */
+window.runMapperInstance = async (selfTargetId) => {
+  await runMapperInstance(selfTargetId);
+};
+
+/**
+ * @deprecated Use `runMapperInstance` instead. Used for backward compatibility
+ * with ChromeDriver.
+ */
+// TODO: Remove this after https://crrev.com/c/4952609 reaches stable.
+window.setSelfTargetId = async (selfTargetId) => {
+  const bidiServer = await runMapperInstance(selfTargetId);
+  bidiServer.emitOutgoingMessage(
+    OutgoingMessage.createResolved({
+      launched: true,
+    }),
+    'launched'
+  );
 };
