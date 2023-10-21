@@ -880,10 +880,11 @@ void TaskManagerTableModel::StoreColumnsSettings() {
 
 void TaskManagerTableModel::ToggleColumnVisibility(int column_id) {
   bool new_visibility = !table_view_delegate_->IsColumnVisible(column_id);
-  table_view_delegate_->SetColumnVisibility(column_id, new_visibility);
-  columns_settings_.SetByDottedPath(GetColumnIdAsString(column_id),
-                                    new_visibility);
-  UpdateRefreshTypes(column_id, new_visibility);
+  if (table_view_delegate_->SetColumnVisibility(column_id, new_visibility)) {
+    columns_settings_.SetByDottedPath(GetColumnIdAsString(column_id),
+                                      new_visibility);
+    UpdateRefreshTypes(column_id, new_visibility);
+  }
 }
 
 absl::optional<size_t> TaskManagerTableModel::GetRowForWebContents(

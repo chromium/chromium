@@ -46,7 +46,9 @@ class TableViewDelegate {
 
   virtual bool IsColumnVisible(int column_id) const = 0;
 
-  virtual void SetColumnVisibility(int column_id, bool new_visibility) = 0;
+  // Returns whether the visibility has been changed. (Always return true on
+  // Mac. See TaskManagerMac::toggleColumn)
+  virtual bool SetColumnVisibility(int column_id, bool new_visibility) = 0;
 
   virtual bool IsTableSorted() const = 0;
 
