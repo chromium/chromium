@@ -491,11 +491,6 @@ V8ScriptValueDeserializerForModules::ReadRTCEncodedVideoFrame() {
 }
 
 AudioData* V8ScriptValueDeserializerForModules::ReadAudioData() {
-  if (!RuntimeEnabledFeatures::WebCodecsEnabled(
-          ExecutionContext::From(GetScriptState()))) {
-    return nullptr;
-  }
-
   uint32_t index;
   if (!ReadUint32(&index))
     return nullptr;
@@ -513,11 +508,6 @@ AudioData* V8ScriptValueDeserializerForModules::ReadAudioData() {
 }
 
 VideoFrame* V8ScriptValueDeserializerForModules::ReadVideoFrame() {
-  if (!RuntimeEnabledFeatures::WebCodecsEnabled(
-          ExecutionContext::From(GetScriptState()))) {
-    return nullptr;
-  }
-
   uint32_t index;
   if (!ReadUint32(&index))
     return nullptr;
@@ -536,11 +526,6 @@ VideoFrame* V8ScriptValueDeserializerForModules::ReadVideoFrame() {
 
 EncodedAudioChunk*
 V8ScriptValueDeserializerForModules::ReadEncodedAudioChunk() {
-  if (!RuntimeEnabledFeatures::WebCodecsEnabled(
-          ExecutionContext::From(GetScriptState()))) {
-    return nullptr;
-  }
-
   uint32_t index;
   if (!ReadUint32(&index))
     return nullptr;
@@ -560,11 +545,6 @@ V8ScriptValueDeserializerForModules::ReadEncodedAudioChunk() {
 
 EncodedVideoChunk*
 V8ScriptValueDeserializerForModules::ReadEncodedVideoChunk() {
-  if (!RuntimeEnabledFeatures::WebCodecsEnabled(
-          ExecutionContext::From(GetScriptState()))) {
-    return nullptr;
-  }
-
   uint32_t index;
   if (!ReadUint32(&index))
     return nullptr;

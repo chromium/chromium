@@ -4208,19 +4208,8 @@
       base_feature: "none",
     },
     {
-      name: "WebCodecs",
-      status: "stable",
-      base_feature: "none",
-      origin_trial_feature_name: "WebCodecs"
-    },
-    {
       name: "WebCodecsContentHint",
       status: "experimental",
-    },
-    {
-      name: "WebCodecsDequeueEvent",
-      status: "stable",
-      base_feature: "none",
     },
     {
       name: "WebCryptoCurve25519",

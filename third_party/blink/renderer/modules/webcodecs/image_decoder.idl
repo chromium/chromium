@@ -7,7 +7,6 @@
 // An ImageDecoder decodes images.
 [
     Exposed=(Window,DedicatedWorker),
-    RuntimeEnabled=WebCodecs,
     SecureContext,
     ImplementedAs=ImageDecoderExternal,
     ActiveScriptWrappable

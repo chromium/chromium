@@ -420,10 +420,6 @@ void EncoderBase<Traits>::DispatchDequeueEvent(Event* event) {
 template <typename Traits>
 void EncoderBase<Traits>::ScheduleDequeueEvent() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!RuntimeEnabledFeatures::WebCodecsDequeueEventEnabled())
-    return;
-
   if (dequeue_event_pending_)
     return;
   dequeue_event_pending_ = true;
