@@ -1134,10 +1134,9 @@ TEST_F(PrefetchServiceTest, SuccessCase) {
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
-  ExpectServingMetricsSuccess();
+
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   // No servable PrefetchContainer is returned for different RenderFrameHost.
   blink::DocumentToken different_document_token;
@@ -1146,6 +1145,7 @@ TEST_F(PrefetchServiceTest, SuccessCase) {
   ASSERT_FALSE(serveable_reader_for_different_initiator);
 
   ExpectServingReaderSuccess(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetricsSuccess();
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.AfterClick.RedirectChainSize", 1, 1);
@@ -1182,12 +1182,12 @@ TEST_F(PrefetchServiceTest, NoPrefetchingPreloadingDisabled) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchNotEligible(histogram_tester,
                             PreloadingEligibility::kPreloadingDisabled);
-  ExpectServingMetrics(PrefetchStatus::kPrefetchNotEligiblePreloadingDisabled);
+
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetrics(PrefetchStatus::kPrefetchNotEligiblePreloadingDisabled);
 }
 
 TEST_F(PrefetchServiceTest, NoPrefetchingDomainNotInAllowList) {
@@ -1266,11 +1266,11 @@ TEST_F(PrefetchServiceAllowAllDomainsTest, AllowAllDomains) {
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
-  ExpectServingMetricsSuccess();
+
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
   ExpectServingReaderSuccess(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetricsSuccess();
 }
 
 class PrefetchServiceAllowAllDomainsForExtendedPreloadingTest
@@ -1315,12 +1315,11 @@ TEST_F(PrefetchServiceAllowAllDomainsForExtendedPreloadingTest,
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
-  ExpectServingMetricsSuccess();
 
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
   ExpectServingReaderSuccess(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetricsSuccess();
 }
 
 TEST_F(PrefetchServiceAllowAllDomainsForExtendedPreloadingTest,
@@ -1393,12 +1392,11 @@ TEST_F(PrefetchServiceTest, NonProxiedPrefetchDoesNotRequireAllowList) {
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
-  ExpectServingMetricsSuccess(/*required_private_prefetch_proxy=*/false);
 
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
   ExpectServingReaderSuccess(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetricsSuccess(/*required_private_prefetch_proxy=*/false);
 }
 
 TEST_F(PrefetchServiceTest, NotEligibleHostnameNonUnique) {
@@ -1418,15 +1416,14 @@ TEST_F(PrefetchServiceTest, NotEligibleHostnameNonUnique) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchNotEligible(
       histogram_tester,
       ToPreloadingEligibility(
           PrefetchStatus::kPrefetchNotEligibleHostIsNonUnique));
-  ExpectServingMetrics(PrefetchStatus::kPrefetchNotEligibleHostIsNonUnique);
 
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetrics(PrefetchStatus::kPrefetchNotEligibleHostIsNonUnique);
 }
 
 TEST_F(PrefetchServiceTest, NotEligibleDataSaverEnabled) {
@@ -1452,13 +1449,12 @@ TEST_F(PrefetchServiceTest, NotEligibleDataSaverEnabled) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchNotEligible(histogram_tester,
                             PreloadingEligibility::kDataSaverEnabled);
-  ExpectServingMetrics(PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled);
 
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetrics(PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled);
 }
 
 TEST_F(PrefetchServiceTest, NotEligibleNonHttps) {
@@ -1475,15 +1471,14 @@ TEST_F(PrefetchServiceTest, NotEligibleNonHttps) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("http://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchNotEligible(
       histogram_tester,
       ToPreloadingEligibility(
           PrefetchStatus::kPrefetchNotEligibleSchemeIsNotHttps));
-  ExpectServingMetrics(PrefetchStatus::kPrefetchNotEligibleSchemeIsNotHttps);
 
+  Navigate(GURL("http://example.com"), main_rfh()->GetFrameToken());
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetrics(PrefetchStatus::kPrefetchNotEligibleSchemeIsNotHttps);
 }
 
 TEST_F(PrefetchServiceTest, NotEligiblePrefetchProxyNotAvailable) {
@@ -1508,14 +1503,13 @@ TEST_F(PrefetchServiceTest, NotEligiblePrefetchProxyNotAvailable) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchNotEligible(
       histogram_tester,
       ToPreloadingEligibility(PrefetchStatus::kPrefetchProxyNotAvailable));
-  ExpectServingMetrics(PrefetchStatus::kPrefetchProxyNotAvailable);
 
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetrics(PrefetchStatus::kPrefetchProxyNotAvailable);
 }
 
 TEST_F(PrefetchServiceTest,
@@ -1544,12 +1538,11 @@ TEST_F(PrefetchServiceTest,
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
-  ExpectServingMetricsSuccess(/*required_private_prefetch_proxy=*/false);
 
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
   ExpectServingReaderSuccess(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetricsSuccess(/*required_private_prefetch_proxy=*/false);
 }
 
 TEST_F(PrefetchServiceTest, NotEligibleOriginWithinRetryAfterWindow) {
@@ -1573,14 +1566,13 @@ TEST_F(PrefetchServiceTest, NotEligibleOriginWithinRetryAfterWindow) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchNotEligible(
       histogram_tester,
       ToPreloadingEligibility(PrefetchStatus::kPrefetchIneligibleRetryAfter));
-  ExpectServingMetrics(PrefetchStatus::kPrefetchIneligibleRetryAfter);
 
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetrics(PrefetchStatus::kPrefetchIneligibleRetryAfter);
 }
 
 TEST_F(PrefetchServiceTest, EligibleNonHttpsNonProxiedPotentiallyTrustworthy) {
@@ -1600,11 +1592,11 @@ TEST_F(PrefetchServiceTest, EligibleNonHttpsNonProxiedPotentiallyTrustworthy) {
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://localhost"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
-  ExpectServingMetricsSuccess(/*required_private_prefetch_proxy=*/false);
+
+  Navigate(GURL("https://localhost"), main_rfh()->GetFrameToken());
   ExpectServingReaderSuccess(GetPrefetchToServe(GURL("https://localhost")));
+  ExpectServingMetricsSuccess(/*required_private_prefetch_proxy=*/false);
 }
 
 TEST_F(PrefetchServiceTest, NotEligibleServiceWorkerRegistered) {
@@ -1627,16 +1619,15 @@ TEST_F(PrefetchServiceTest, NotEligibleServiceWorkerRegistered) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchNotEligible(
       histogram_tester,
       ToPreloadingEligibility(
           PrefetchStatus::kPrefetchNotEligibleUserHasServiceWorker));
+
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
+  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
   ExpectServingMetrics(
       PrefetchStatus::kPrefetchNotEligibleUserHasServiceWorker);
-
-  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
 }
 
 TEST_F(PrefetchServiceTest,
@@ -1716,12 +1707,11 @@ TEST_F(PrefetchServiceTest, EligibleServiceWorkerNotRegistered) {
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
-  ExpectServingMetricsSuccess();
 
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
   ExpectServingReaderSuccess(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetricsSuccess();
 }
 
 TEST_F(PrefetchServiceTest,
@@ -1803,12 +1793,11 @@ TEST_F(PrefetchServiceTest, EligibleServiceWorkerRegistered) {
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
-  ExpectServingMetricsSuccess();
 
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
   ExpectServingReaderSuccess(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetricsSuccess();
 }
 
 TEST_F(PrefetchServiceTest,
@@ -1889,14 +1878,13 @@ TEST_F(PrefetchServiceTest, EligibleServiceWorkerNotRegisteredAtThisPath) {
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
+  ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
+
   Navigate(GURL("https://example.com/non_sw/index.html"),
            main_rfh()->GetFrameToken());
-
-  ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
-  ExpectServingMetricsSuccess();
-
   ExpectServingReaderSuccess(
       GetPrefetchToServe(GURL("https://example.com/non_sw/index.html")));
+  ExpectServingMetricsSuccess();
 }
 
 TEST_F(PrefetchServiceTest, NotEligibleUserHasCookies) {
@@ -1915,15 +1903,14 @@ TEST_F(PrefetchServiceTest, NotEligibleUserHasCookies) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchNotEligible(
       histogram_tester,
       ToPreloadingEligibility(
           PrefetchStatus::kPrefetchNotEligibleUserHasCookies));
-  ExpectServingMetrics(PrefetchStatus::kPrefetchNotEligibleUserHasCookies);
 
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetrics(PrefetchStatus::kPrefetchNotEligibleUserHasCookies);
 }
 
 TEST_F(PrefetchServiceTest, EligibleUserHasCookiesForDifferentUrl) {
@@ -1946,12 +1933,11 @@ TEST_F(PrefetchServiceTest, EligibleUserHasCookiesForDifferentUrl) {
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
-  ExpectServingMetricsSuccess();
 
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
   ExpectServingReaderSuccess(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetricsSuccess();
 }
 
 TEST_F(PrefetchServiceTest, EligibleSameOriginPrefetchCanHaveExistingCookies) {
@@ -1976,12 +1962,11 @@ TEST_F(PrefetchServiceTest, EligibleSameOriginPrefetchCanHaveExistingCookies) {
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
-  ExpectServingMetricsSuccess(/*required_private_prefetch_proxy=*/false);
 
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
   ExpectServingReaderSuccess(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetricsSuccess(/*required_private_prefetch_proxy=*/false);
 }
 
 // TODO(crbug.com/1396460): Test flaky on lacros trybots.
@@ -2077,14 +2062,14 @@ TEST_F(PrefetchServiceTest, MAYBE_SameOriginPrefetchIgnoresProxyRequirement) {
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
+
   // serving_page_metrics->required_private_prefetch_proxy will be true if the
   // prefetch is marked as requiring the proxy when cross origin, even if only
   // prefetch request was same-origin.
-  ExpectServingMetricsSuccess();
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
   ExpectServingReaderSuccess(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetricsSuccess();
 }
 
 // TODO(crbug.com/1396460): Test flaky on lacros trybots.
@@ -2115,18 +2100,17 @@ TEST_F(PrefetchServiceTest,
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("https://other.example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchNotEligible(
       histogram_tester,
       ToPreloadingEligibility(
           PrefetchStatus::
               kPrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy));
+
+  Navigate(GURL("https://other.example.com"), main_rfh()->GetFrameToken());
+  EXPECT_FALSE(GetPrefetchToServe(GURL("https://other.example.com")));
   ExpectServingMetrics(
       PrefetchStatus::
           kPrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy);
-
-  EXPECT_FALSE(GetPrefetchToServe(GURL("https://other.example.com")));
 }
 
 TEST_F(PrefetchServiceTest, NotEligibleExistingConnectProxy) {
@@ -2149,14 +2133,13 @@ TEST_F(PrefetchServiceTest, NotEligibleExistingConnectProxy) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchNotEligible(
       histogram_tester, ToPreloadingEligibility(
                             PrefetchStatus::kPrefetchNotEligibleExistingProxy));
-  ExpectServingMetrics(PrefetchStatus::kPrefetchNotEligibleExistingProxy);
 
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetrics(PrefetchStatus::kPrefetchNotEligibleExistingProxy);
 
   PrefetchService::SetNetworkContextForProxyLookupForTesting(nullptr);
 }
@@ -2187,12 +2170,11 @@ TEST_F(PrefetchServiceTest, EligibleExistingConnectProxyButSameOriginPrefetch) {
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
-  ExpectServingMetricsSuccess(/*required_private_prefetch_proxy=*/false);
 
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
   ExpectServingReaderSuccess(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetricsSuccess(/*required_private_prefetch_proxy=*/false);
 
   PrefetchService::SetNetworkContextForProxyLookupForTesting(nullptr);
 }
@@ -2215,15 +2197,14 @@ TEST_F(PrefetchServiceTest, FailedNon2XXResponseCode) {
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchFailedAfterResponseReceived(
       histogram_tester, net::HTTP_NOT_FOUND, std::size(kHTMLBody),
       PrefetchStatus::kPrefetchFailedNon2XX);
+
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
+  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
   ExpectServingMetrics(PrefetchStatus::kPrefetchFailedNon2XX,
                        /*prefetch_header_latency=*/true);
-
-  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
 }
 
 TEST_F(PrefetchServiceTest, FailedNetError) {
@@ -2244,12 +2225,11 @@ TEST_F(PrefetchServiceTest, FailedNetError) {
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchFailedNetError(histogram_tester, net::ERR_FAILED);
-  ExpectServingMetrics(PrefetchStatus::kPrefetchFailedNetError);
 
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetrics(PrefetchStatus::kPrefetchFailedNetError);
 }
 
 TEST_F(PrefetchServiceTest, HandleRetryAfterResponse) {
@@ -2280,15 +2260,14 @@ TEST_F(PrefetchServiceTest, HandleRetryAfterResponse) {
                       {{"Retry-After", "1234"}, {"X-Testing", "Hello World"}},
                       "");
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchFailedAfterResponseReceived(
       histogram_tester, net::HTTP_SERVICE_UNAVAILABLE, 0,
       PrefetchStatus::kPrefetchFailedNon2XX);
+
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
+  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
   ExpectServingMetrics(PrefetchStatus::kPrefetchFailedNon2XX,
                        /*prefetch_header_latency=*/true);
-
-  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
 }
 
 TEST_F(PrefetchServiceTest, SuccessNonHTML) {
@@ -2311,12 +2290,11 @@ TEST_F(PrefetchServiceTest, SuccessNonHTML) {
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, body);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchSuccess(histogram_tester, body.size());
-  ExpectServingMetricsSuccess();
 
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
   ExpectServingReaderSuccess(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetricsSuccess();
 }
 
 TEST_F(PrefetchServiceTest, NotServeableNavigationInDifferentRenderFrameHost) {
@@ -2423,17 +2401,15 @@ TEST_F(PrefetchServiceLimitedPrefetchesTest, LimitedNumberOfPrefetches) {
   EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 2);
 
   Navigate(GURL("https://example1.com"), main_rfh()->GetFrameToken());
-
-  ExpectServingMetricsSuccess();
   ExpectServingReaderSuccess(GetPrefetchToServe(GURL("https://example1.com")));
+  ExpectServingMetricsSuccess();
 
   Navigate(GURL("https://example2.com"), main_rfh()->GetFrameToken());
-
-  ExpectServingMetricsSuccess();
   ExpectServingReaderSuccess(GetPrefetchToServe(GURL("https://example2.com")));
+  ExpectServingMetricsSuccess();
 
   Navigate(GURL("https://example3.com"), main_rfh()->GetFrameToken());
-
+  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example3.com")));
   absl::optional<PrefetchServingPageMetrics> serving_page_metrics3 =
       GetMetricsForMostRecentNavigation();
   ASSERT_TRUE(serving_page_metrics3);
@@ -2444,7 +2420,6 @@ TEST_F(PrefetchServiceLimitedPrefetchesTest, LimitedNumberOfPrefetches) {
   EXPECT_TRUE(serving_page_metrics3->same_tab_as_prefetching_tab);
   EXPECT_FALSE(serving_page_metrics3->prefetch_header_latency);
 
-  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example3.com")));
   {
     const auto source_id = ForceLogsUploadAndGetUkmId();
     auto actual_attempts = test_ukm_recorder()->GetEntries(
@@ -2523,15 +2498,14 @@ TEST_F(PrefetchServiceWithHTMLOnlyTest, FailedNonHTMLWithHTMLOnly) {
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, body);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchFailedAfterResponseReceived(
       histogram_tester, net::HTTP_OK, body.size(),
       PrefetchStatus::kPrefetchFailedMIMENotSupported);
+
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
+  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
   ExpectServingMetrics(PrefetchStatus::kPrefetchFailedMIMENotSupported,
                        /*prefetch_header_latency=*/true);
-
-  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
 }
 
 class PrefetchServiceAlwaysMakeDecoyRequestTest : public PrefetchServiceTest {
@@ -2566,15 +2540,14 @@ TEST_F(PrefetchServiceAlwaysMakeDecoyRequestTest, DecoyRequest) {
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   // A decoy is considered a failure.
   ExpectPrefetchFailedBeforeResponseReceived(
       histogram_tester, PrefetchStatus::kPrefetchIsPrivacyDecoy);
+
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
+  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
   ExpectServingMetrics(PrefetchStatus::kPrefetchIsPrivacyDecoy,
                        /*prefetch_header_latency=*/true);
-
-  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
 }
 
 TEST_F(PrefetchServiceAlwaysMakeDecoyRequestTest,
@@ -2600,15 +2573,14 @@ TEST_F(PrefetchServiceAlwaysMakeDecoyRequestTest,
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchNotEligible(
       histogram_tester,
       ToPreloadingEligibility(
           PrefetchStatus::kPrefetchNotEligibleUserHasCookies));
-  ExpectServingMetrics(PrefetchStatus::kPrefetchNotEligibleUserHasCookies);
 
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetrics(PrefetchStatus::kPrefetchNotEligibleUserHasCookies);
 }
 
 // TODO(crbug.com/1396460): Test flaky on lacros trybots.
@@ -2658,14 +2630,13 @@ TEST_F(PrefetchServiceAlwaysMakeDecoyRequestTest, MAYBE_RedirectDecoyRequest) {
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchFailedBeforeResponseReceived(
       histogram_tester, PrefetchStatus::kPrefetchIsPrivacyDecoy);
+
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
+  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
   ExpectServingMetrics(PrefetchStatus::kPrefetchIsPrivacyDecoy,
                        /*prefetch_header_latency=*/true);
-
-  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
 }
 
 class PrefetchServiceHoldbackTest : public PrefetchServiceTest {
@@ -2692,17 +2663,15 @@ TEST_F(PrefetchServiceHoldbackTest, PrefetchHeldback) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   // Holdback is checked and set after eligibility.
   ExpectPrefetchNoNetErrorOrResponseReceived(histogram_tester,
                                              /*is_eligible=*/true);
   ExpectCorrectUkmLogs({.holdback = PreloadingHoldbackStatus::kHoldback,
                         .outcome = PreloadingTriggeringOutcome::kUnspecified});
 
-  ExpectServingMetrics(PrefetchStatus::kPrefetchHeldback);
-
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetrics(PrefetchStatus::kPrefetchHeldback);
 }
 
 class PrefetchServiceIncognitoTest : public PrefetchServiceTest {
@@ -2728,16 +2697,15 @@ TEST_F(PrefetchServiceIncognitoTest, OffTheRecordIneligible) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchNotEligible(
       histogram_tester,
       ToPreloadingEligibility(
           PrefetchStatus::kPrefetchNotEligibleBrowserContextOffTheRecord));
+
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
+  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
   ExpectServingMetrics(
       PrefetchStatus::kPrefetchNotEligibleBrowserContextOffTheRecord);
-
-  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
 }
 
 TEST_F(PrefetchServiceTest, NonDefaultStoragePartition) {
@@ -2755,16 +2723,15 @@ TEST_F(PrefetchServiceTest, NonDefaultStoragePartition) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchNotEligible(
       histogram_tester,
       ToPreloadingEligibility(
           PrefetchStatus::kPrefetchNotEligibleNonDefaultStoragePartition));
+
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
+  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
   ExpectServingMetrics(
       PrefetchStatus::kPrefetchNotEligibleNonDefaultStoragePartition);
-
-  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
 }
 
 class PrefetchServiceStreamingURLLoaderTest : public PrefetchServiceTest {
@@ -2833,8 +2800,6 @@ TEST_F(PrefetchServiceStreamingURLLoaderTest,
   EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 1);
   EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 0);
 
-  ExpectServingMetrics(PrefetchStatus::kPrefetchNotFinishedInTime);
-
   PrefetchContainer::Reader serveable_reader =
       GetPrefetchToServe(GURL("https://example.com"));
   ASSERT_TRUE(serveable_reader);
@@ -2848,6 +2813,8 @@ TEST_F(PrefetchServiceStreamingURLLoaderTest,
                   ->GetHead()
                   ->was_in_prefetch_cache);
 
+  ExpectServingMetrics(PrefetchStatus::kPrefetchNotFinishedInTime);
+
   // Send the body and completion status of the request, then recheck all of the
   // metrics.
   SendBodyContentOfResponseAndWait(kHTMLBody);
@@ -2855,8 +2822,8 @@ TEST_F(PrefetchServiceStreamingURLLoaderTest,
 
   // Check the metrics now that the prefetch is complete.
   ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
-  ExpectServingMetricsSuccess();
   ExpectServingReaderSuccess(serveable_reader);
+  ExpectServingMetricsSuccess();
 }
 
 class PrefetchServiceNoVarySearchTest : public PrefetchServiceTest {
@@ -2895,16 +2862,15 @@ TEST_F(PrefetchServiceNoVarySearchTest, MAYBE_NoVarySearchSuccessCase) {
       {{"X-Testing", "Hello World"}, {"No-Vary-Search", R"(params=("a"))"}},
       kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
-  ExpectServingMetricsSuccess();
 
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
   PrefetchContainer::Reader serveable_reader =
       GetPrefetchToServe(GURL("https://example.com"));
   ExpectServingReaderSuccess(serveable_reader);
   EXPECT_EQ(serveable_reader.GetPrefetchContainer()->GetURL(),
             GURL("https://example.com/?a=1"));
+  ExpectServingMetricsSuccess();
 }
 
 TEST_F(PrefetchServiceTest, PrefetchNotEnabled) {
@@ -2942,12 +2908,12 @@ TEST_F(PrefetchServiceTest, PrefetchNotEnabled) {
       "PrefetchProxy.Redirect.NetworkContextStateTransition",
       PrefetchRedirectNetworkContextTransition::kIsolatedToIsolated, 0);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchFailedBeforeResponseReceived(
       histogram_tester, PrefetchStatus::kPrefetchFailedInvalidRedirect);
-  ExpectServingMetrics(PrefetchStatus::kPrefetchFailedInvalidRedirect);
+
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetrics(PrefetchStatus::kPrefetchFailedInvalidRedirect);
 }
 
 class PrefetchServiceAllowRedirectTest : public PrefetchServiceTest {
@@ -3007,11 +2973,11 @@ TEST_F(PrefetchServiceAllowRedirectTest, MAYBE_PrefetchEligibleRedirect) {
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
-  ExpectServingMetricsSuccess();
+
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
   ExpectServingReaderSuccess(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetricsSuccess();
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.AfterClick.RedirectChainSize", 2, 1);
@@ -3064,12 +3030,12 @@ TEST_F(PrefetchServiceAllowRedirectTest, MAYBE_IneligibleRedirectCookies) {
       "PrefetchProxy.Redirect.NetworkContextStateTransition",
       PrefetchRedirectNetworkContextTransition::kIsolatedToIsolated, 1);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchFailedBeforeResponseReceived(
       histogram_tester, PrefetchStatus::kPrefetchFailedIneligibleRedirect);
-  ExpectServingMetrics(PrefetchStatus::kPrefetchFailedIneligibleRedirect);
+
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetrics(PrefetchStatus::kPrefetchFailedIneligibleRedirect);
 
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.AfterClick.RedirectChainSize", 0);
@@ -3128,12 +3094,12 @@ TEST_F(PrefetchServiceAllowRedirectTest,
       "PrefetchProxy.Redirect.NetworkContextStateTransition",
       PrefetchRedirectNetworkContextTransition::kIsolatedToIsolated, 1);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchFailedBeforeResponseReceived(
       histogram_tester, PrefetchStatus::kPrefetchFailedIneligibleRedirect);
-  ExpectServingMetrics(PrefetchStatus::kPrefetchFailedIneligibleRedirect);
+
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetrics(PrefetchStatus::kPrefetchFailedIneligibleRedirect);
 
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.AfterClick.RedirectChainSize", 0);
@@ -3179,12 +3145,12 @@ TEST_F(PrefetchServiceAllowRedirectTest, MAYBE_InvalidRedirect) {
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.Redirect.NetworkContextStateTransition", 0);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchFailedBeforeResponseReceived(
       histogram_tester, PrefetchStatus::kPrefetchFailedInvalidRedirect);
-  ExpectServingMetrics(PrefetchStatus::kPrefetchFailedInvalidRedirect);
+
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetrics(PrefetchStatus::kPrefetchFailedInvalidRedirect);
 
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.AfterClick.RedirectChainSize", 0);
@@ -3241,11 +3207,11 @@ TEST_F(PrefetchServiceAllowRedirectTest,
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
-  ExpectServingMetricsSuccess(/*required_private_prefetch_proxy=*/false);
+
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
   ExpectServingReaderSuccess(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetricsSuccess(/*required_private_prefetch_proxy=*/false);
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.AfterClick.RedirectChainSize", 2, 1);
@@ -3306,13 +3272,12 @@ TEST_F(PrefetchServiceAllowRedirectTest,
       "PrefetchProxy.Redirect.NetworkContextStateTransition",
       PrefetchRedirectNetworkContextTransition::kDefaultToDefault, 1);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchFailedBeforeResponseReceived(
       histogram_tester, PrefetchStatus::kPrefetchFailedIneligibleRedirect);
-  ExpectServingMetrics(PrefetchStatus::kPrefetchFailedIneligibleRedirect);
-  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
 
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
+  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetrics(PrefetchStatus::kPrefetchFailedIneligibleRedirect);
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.AfterClick.RedirectChainSize", 0);
 }
@@ -3374,11 +3339,11 @@ TEST_F(PrefetchServiceAllowRedirectTest,
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
-  ExpectServingMetricsSuccess(/*required_private_prefetch_proxy=*/false);
+
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
   ExpectServingReaderSuccess(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetricsSuccess(/*required_private_prefetch_proxy=*/false);
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.AfterClick.RedirectChainSize", 2, 1);
@@ -3444,11 +3409,11 @@ TEST_F(PrefetchServiceAllowRedirectTest,
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
-  ExpectServingMetricsSuccess();
+
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
   ExpectServingReaderSuccess(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetricsSuccess();
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.AfterClick.RedirectChainSize", 2, 1);
@@ -3513,11 +3478,11 @@ TEST_F(PrefetchServiceAllowRedirectTest,
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://other.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
-  ExpectServingMetricsSuccess(/*required_private_prefetch_proxy=*/false);
+
+  Navigate(GURL("https://other.com"), main_rfh()->GetFrameToken());
   ExpectServingReaderSuccess(GetPrefetchToServe(GURL("https://other.com")));
+  ExpectServingMetricsSuccess(/*required_private_prefetch_proxy=*/false);
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.AfterClick.RedirectChainSize", 2, 1);
@@ -3609,8 +3574,8 @@ TEST_F(PrefetchServiceAllowRedirectsAndAlwaysBlockUntilHeadTest,
   ASSERT_TRUE(serveable_reader);
 
   ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
-  ExpectServingMetricsSuccess(/*required_private_prefetch_proxy=*/false);
   ExpectServingReaderSuccess(serveable_reader);
+  ExpectServingMetricsSuccess(/*required_private_prefetch_proxy=*/false);
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.AfterClick.RedirectChainSize", 2, 1);
@@ -3664,12 +3629,12 @@ TEST_F(PrefetchServiceAllowRedirectTest,
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.Redirect.NetworkContextStateTransition", 0);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
   ExpectPrefetchFailedBeforeResponseReceived(
       histogram_tester, PrefetchStatus::kPrefetchFailedInvalidRedirect);
-  ExpectServingMetrics(PrefetchStatus::kPrefetchFailedInvalidRedirect);
+
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetrics(PrefetchStatus::kPrefetchFailedInvalidRedirect);
 
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.AfterClick.RedirectChainSize", 0);
@@ -3812,8 +3777,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest, MAYBE_BlockUntilHeadReceived) {
 
   // Check the metrics now that the prefetch is complete.
   ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody), GetParam());
-  ExpectServingMetricsSuccess();
   ExpectServingReaderSuccess(serveable_reader);
+  ExpectServingMetricsSuccess();
 
   std::string histogram_suffix =
       GetPrefetchEagernessHistogramSuffix(GetParam());
@@ -3892,8 +3857,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   // Check the metrics now that the prefetch is complete.
   ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody), GetParam(),
                         /* is_accurate=*/true);
-  ExpectServingMetricsSuccess();
   ExpectServingReaderSuccess(serveable_reader);
+  ExpectServingMetricsSuccess();
 
   std::string histogram_suffix =
       GetPrefetchEagernessHistogramSuffix(GetParam());
