@@ -7,6 +7,7 @@
 #include <type_traits>
 
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -841,6 +842,190 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorMaxPool2d) {
                  .dimensions = {1, 2, 2, 2},
                  .values = {5, 6, 8, 9, 14, 15, 17, 18}}}
       .Test();
+}
+
+template <typename T>
+struct SplitTester {
+  OperandInfo<T> input;
+  uint32_t axis;
+  std::vector<OperandInfo<T>> outputs;
+
+  void Test() {
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    std::vector<uint64_t> output_operand_ids;
+    output_operand_ids.reserve(outputs.size());
+    for (size_t i = 0; i < outputs.size(); ++i) {
+      const auto& output = outputs[i];
+      output_operand_ids.push_back(builder.BuildOutput(
+          "output" + base::NumberToString(i), output.dimensions, output.type));
+    }
+    builder.BuildSplit(input_operand_id, output_operand_ids, axis);
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+    named_inputs.insert({"input", VectorToBigBuffer(input.values)});
+    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                    named_outputs);
+
+    for (size_t i = 0; i < outputs.size(); ++i) {
+      EXPECT_EQ(BigBufferToVector<float>(std::move(
+                    named_outputs["output" + base::NumberToString(i)])),
+                outputs[i].values);
+    }
+  }
+};
+
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorSplit) {
+  {
+    SplitTester<float>{
+        .input =
+            {
+                .type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {2, 1, 3, 4},
+                // [[[[ 1,  2,  3,  4],
+                //    [ 5,  6,  7,  8],
+                //    [ 9, 10, 11, 12]]],
+                //  [[[13, 14, 15, 16],
+                //    [17, 18, 19, 20],
+                //    [21, 22, 23, 24]]]] with shape (2, 1, 3, 4)
+                .values = {1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
+                           13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24},
+
+            },
+        .axis = 0,
+        .outputs = {{
+                        .type = mojom::Operand::DataType::kFloat32,
+                        .dimensions = {1, 1, 3, 4},
+                        // [[[[ 1,  2,  3,  4],
+                        //    [ 5,  6,  7,  8],
+                        //    [ 9, 10, 11, 12]]]] with shape (1, 1, 3, 4)
+                        .values = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12},
+                    },
+                    {
+                        .type = mojom::Operand::DataType::kFloat32,
+                        .dimensions = {1, 1, 3, 4},
+                        // [[[[13, 14, 15, 16],
+                        //    [17, 18, 19, 20],
+                        //    [21, 22, 23, 24]]]] with shape (1, 1, 3, 4)
+                        .values = {13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+                                   24},
+                    }}}
+        .Test();
+  }
+  {
+    SplitTester<float>{
+        .input =
+            {
+                .type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 2, 3, 4},
+                // [[[[ 1,  2,  3,  4],
+                //    [ 5,  6,  7,  8],
+                //    [ 9, 10, 11, 12]],
+                //   [[13, 14, 15, 16],
+                //    [17, 18, 19, 20],
+                //    [21, 22, 23, 24]]]] with shape (1, 2, 3, 4)
+                .values = {1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
+                           13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24},
+
+            },
+        .axis = 1,
+        .outputs = {{
+                        .type = mojom::Operand::DataType::kFloat32,
+                        .dimensions = {1, 1, 3, 4},
+                        // [[[[ 1,  2,  3,  4],
+                        //    [ 5,  6,  7,  8],
+                        //    [ 9, 10, 11, 12]]]] with shape (1, 1, 3, 4)
+                        .values = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12},
+                    },
+                    {
+                        .type = mojom::Operand::DataType::kFloat32,
+                        .dimensions = {1, 1, 3, 4},
+                        // [[[[13, 14, 15, 16],
+                        //    [17, 18, 19, 20],
+                        //    [21, 22, 23, 24]]]] with shape (1, 1, 3, 4)
+                        .values = {13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+                                   24},
+                    }}}
+        .Test();
+  }
+  {
+    SplitTester<float>{
+        .input =
+            {
+                .type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {2, 1, 3, 4},
+                // [[[[ 1,  2,  3,  4],
+                //    [ 5,  6,  7,  8],
+                //    [ 9, 10, 11, 12]]],
+                //  [[[13, 14, 15, 16],
+                //    [17, 18, 19, 20],
+                //    [21, 22, 23, 24]]]] with shape (2, 1, 3, 4)
+                .values = {1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
+                           13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24},
+
+            },
+        .axis = 2,
+        .outputs = {{
+                        .type = mojom::Operand::DataType::kFloat32,
+                        .dimensions = {2, 1, 1, 4},
+                        // [[[[ 1,  2,  3,  4]]],
+                        //  [[[13, 14, 15, 16]]]] with shape (2, 1, 1, 4)
+                        .values = {1, 2, 3, 4, 13, 14, 15, 16},
+                    },
+                    {
+                        .type = mojom::Operand::DataType::kFloat32,
+                        .dimensions = {2, 1, 2, 4},
+                        // [[[[ 5,  6,  7,  8],
+                        //    [ 9, 10, 11, 12]]],
+                        //  [[[17, 18, 19, 20],
+                        //    [21, 22, 23, 24]]]] with shape (2, 1, 2, 4)
+                        .values = {5, 6, 7, 8, 9, 10, 11, 12, 17, 18, 19, 20,
+                                   21, 22, 23, 24},
+                    }}}
+        .Test();
+  }
+  {
+    SplitTester<float>{
+        .input =
+            {
+                .type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {2, 1, 3, 4},
+                // [[[[ 1,  2,  3,  4],
+                //    [ 5,  6,  7,  8],
+                //    [ 9, 10, 11, 12]]],
+                //  [[[13, 14, 15, 16],
+                //    [17, 18, 19, 20],
+                //    [21, 22, 23, 24]]]] with shape (2, 1, 3, 4)
+                .values = {1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
+                           13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24},
+
+            },
+        .axis = 3,
+        .outputs = {{
+                        .type = mojom::Operand::DataType::kFloat32,
+                        .dimensions = {2, 1, 3, 2},
+                        // [[[[ 1,  2],
+                        //    [ 5,  6],
+                        //    [ 9, 10]]],
+                        //  [[[13, 14],
+                        //    [17, 18],
+                        //    [21, 22]]]] with shape (2, 1, 3, 2)
+                        .values = {1, 2, 5, 6, 9, 10, 13, 14, 17, 18, 21, 22},
+                    },
+                    {
+                        .type = mojom::Operand::DataType::kFloat32,
+                        .dimensions = {2, 1, 3, 2},
+                        // [[[[ 3,  4],
+                        //    [ 7,  8],
+                        //    [11, 12]]],
+                        //  [[[15, 16],
+                        //    [19, 20],
+                        //    [23, 24]]]] with shape (2, 1, 3, 2)
+                        .values = {3, 4, 7, 8, 11, 12, 15, 16, 19, 20, 23, 24},
+                    }}}
+        .Test();
+  }
 }
 
 template <typename T>

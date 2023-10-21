@@ -706,6 +706,54 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
   return base::ok();
 }
 
+base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForSplit(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::SplitPtr& split,
+    GraphBuilder& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input_node_output =
+      GetNodeOutputForOperand(id_to_node_output_map, split->input_operand_id);
+  const auto& input_tensor_desc = input_node_output->GetTensorDesc();
+  // Since TensorDesc stores dimensions and strides vectors, we need to keep
+  // TensorDescs until create CreateOperatorNode is called.
+  std::vector<TensorDesc> output_tensor_desc;
+  output_tensor_desc.reserve(split->output_operand_ids.size());
+  std::vector<DML_TENSOR_DESC> output_tensor_desc_dml;
+  output_tensor_desc_dml.reserve(output_tensor_desc.size());
+  for (uint64_t output_id : split->output_operand_ids) {
+    output_tensor_desc.push_back(
+        CreateOutputTensorDesc(id_to_operand_map, output_id));
+    output_tensor_desc_dml.push_back(
+        output_tensor_desc.back().GetDMLTensorDesc());
+  }
+
+  auto output_count =
+      base::checked_cast<uint32_t>(output_tensor_desc_dml.size());
+  DML_SPLIT_OPERATOR_DESC split_desc{
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .OutputCount = output_count,
+      .OutputTensors = output_tensor_desc_dml.data(),
+      .Axis = split->axis};
+
+  std::array<const NodeOutput*, 1> inputs = {input_node_output};
+  const OperatorNode* split_node =
+      graph_builder.CreateOperatorNode(DML_OPERATOR_SPLIT, &split_desc, inputs);
+
+  if (!split_node) {
+    return base::unexpected(mojom::Error::New(
+        mojom::Error::Code::kUnknownError, "Failed to create split operator."));
+  }
+
+  for (uint32_t i = 0; i < output_count; ++i) {
+    uint64_t output_id = split->output_operand_ids[i];
+    const auto* node_output = graph_builder.CreateNodeOutput(
+        split_node, std::move(output_tensor_desc[i]), i);
+    CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
+  }
+
+  return base::ok();
+}
+
 template <typename DML_OPERATOR_DESC, DML_OPERATOR_TYPE operator_type>
 const OperatorNode* CreateUnaryOperator(const TensorDesc& input_tensor,
                                         const TensorDesc& output_tensor,
@@ -1357,6 +1405,12 @@ void GraphImpl::CreateAndBuild(
                                        DML_OPERATOR_ACTIVATION_SOFTMAX>(
                 id_to_operand_map, operation->get_softmax(), graph_builder,
                 id_to_node_output_map);
+        break;
+      }
+      case mojom::Operation::Tag::kSplit: {
+        create_operator_result = CreateOperatorNodeForSplit(
+            id_to_operand_map, operation->get_split(), graph_builder,
+            id_to_node_output_map);
         break;
       }
       default: {
