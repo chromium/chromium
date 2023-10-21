@@ -181,23 +181,6 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
   size_t foreground_threads = init_params.max_num_foreground_threads;
   size_t utility_threads = init_params.max_num_utility_threads;
 
-  if (base::FeatureList::IsEnabled(kThreadPoolCap2)) {
-    // Set the size of each ThreadGroup to a initial fixed size which can grow
-    // beyond the value set here when tasks enter ScopedBlockingCall and
-    // set a minimum amount of workers per pool.
-    const int max_allowed_workers_per_pool =
-        std::max(2, kThreadPoolCapRestrictedCount.Get());
-    foreground_threads =
-        std::min(init_params.max_num_foreground_threads,
-                 static_cast<size_t>(max_allowed_workers_per_pool));
-    utility_threads =
-        std::min(init_params.max_num_utility_threads,
-                 static_cast<size_t>(max_allowed_workers_per_pool));
-    max_best_effort_tasks =
-        std::min(max_best_effort_tasks,
-                 static_cast<size_t>(max_allowed_workers_per_pool));
-  }
-
   // On platforms that can't use the background thread priority, best-effort
   // tasks run in foreground pools. A cap is set on the number of best-effort
   // tasks that can run in foreground pools to ensure that there is always
