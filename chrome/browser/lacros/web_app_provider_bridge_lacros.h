@@ -11,6 +11,10 @@
 
 class Profile;
 
+namespace base {
+class FilePath;
+}  // namespace base
+
 namespace crosapi {
 
 // Created in lacros-chrome. Allows ash-chrome to modify web app state in
@@ -42,6 +46,8 @@ class WebAppProviderBridgeLacros : public mojom::WebAppProviderBridge {
   void InstallPreloadWebApp(
       mojom::PreloadWebAppInstallInfoPtr preload_install_info,
       InstallPreloadWebAppCallback callback) override;
+  void LaunchIsolatedWebAppInstaller(
+      const base::FilePath& bundle_path) override;
 
  private:
   static void WebAppInstalledInArcImpl(
@@ -71,6 +77,9 @@ class WebAppProviderBridgeLacros : public mojom::WebAppProviderBridge {
   static void InstallPreloadWebAppImpl(
       mojom::PreloadWebAppInstallInfoPtr preload_install_info,
       InstallPreloadWebAppCallback callback,
+      Profile* profile);
+  static void LaunchIsolatedWebAppInstallerImpl(
+      const base::FilePath& bundle_path,
       Profile* profile);
 
   mojo::Receiver<mojom::WebAppProviderBridge> receiver_{this};

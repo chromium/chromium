@@ -99,8 +99,7 @@ bool InstallIsolatedWebAppVirtualTask::Execute(
     DCHECK(apps_util::ExtensionMatched(path.BaseName().AsUTF8Unsafe(),
                                        matcher_file_extensions_[0]));
 
-    // TODO(crbug.com/1479140): Call LaunchIsolatedWebAppInstaller on the
-    // bridge once it's defined there.
+    web_app_provider_bridge->LaunchIsolatedWebAppInstaller(path);
   }
 
   return true;
