@@ -294,7 +294,7 @@ void DownloadBubbleRowViewInfo::PopulateForInProgressOrComplete() {
         if (!download::DoesDownloadConnectorBlock(model_->profile(),
                                                   model_->GetURL())) {
           primary_button_command_ =
-              DownloadCommands::Command::BYPASS_DEEP_SCANNING;
+              DownloadCommands::Command::BYPASS_DEEP_SCANNING_AND_OPEN;
         }
       }
       return;

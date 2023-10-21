@@ -42,8 +42,10 @@ class DownloadCommands {
     REVIEW = 17,                // Show enterprise download review dialog.
     RETRY = 18,                 // Retry the download.
     CANCEL_DEEP_SCAN = 19,  // Cancel deep scan and return to scanning prompt.
+    BYPASS_DEEP_SCANNING_AND_OPEN = 20,  // Bypass the prompt to deep scan and
+                                         // open the file.
 
-    kMaxValue = CANCEL_DEEP_SCAN,  // Keep last.
+    kMaxValue = BYPASS_DEEP_SCANNING_AND_OPEN,  // Keep last.
   };
 
   // |model| must outlive DownloadCommands.

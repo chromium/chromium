@@ -490,7 +490,7 @@ void DownloadsDOMHandler::BypassDeepScanRequiringGesture(
   if (download) {
     DownloadItemModel model(download);
     DownloadCommands commands(model.GetWeakPtr());
-    commands.ExecuteCommand(DownloadCommands::BYPASS_DEEP_SCANNING);
+    commands.ExecuteCommand(DownloadCommands::BYPASS_DEEP_SCANNING_AND_OPEN);
   }
 }
 

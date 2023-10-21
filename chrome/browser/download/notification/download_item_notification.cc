@@ -206,6 +206,7 @@ void RecordButtonClickAction(DownloadCommands::Command command) {
     case DownloadCommands::LEARN_MORE_DOWNLOAD_BLOCKED:
     case DownloadCommands::OPEN_SAFE_BROWSING_SETTING:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
+    case DownloadCommands::BYPASS_DEEP_SCANNING_AND_OPEN:
     case DownloadCommands::CANCEL_DEEP_SCAN:
     case DownloadCommands::RETRY:
       NOTREACHED();
@@ -958,6 +959,7 @@ std::u16string DownloadItemNotification::GetCommandLabel(
     case DownloadCommands::LEARN_MORE_DOWNLOAD_BLOCKED:
     case DownloadCommands::OPEN_SAFE_BROWSING_SETTING:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
+    case DownloadCommands::BYPASS_DEEP_SCANNING_AND_OPEN:
     case DownloadCommands::CANCEL_DEEP_SCAN:
     case DownloadCommands::RETRY:
       // Only for menu.

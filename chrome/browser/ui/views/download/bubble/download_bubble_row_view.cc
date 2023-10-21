@@ -439,7 +439,7 @@ DownloadBubbleRowView::DownloadBubbleRowView(
                     l10n_util::GetStringUTF16(IDS_CONFIRM_DOWNLOAD));
   AddMainPageButton(DownloadCommands::DEEP_SCAN,
                     l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_SCAN));
-  AddMainPageButton(DownloadCommands::BYPASS_DEEP_SCANNING,
+  AddMainPageButton(DownloadCommands::BYPASS_DEEP_SCANNING_AND_OPEN,
                     l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_OPEN_NOW));
   AddMainPageButton(DownloadCommands::RESUME,
                     l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_RESUME));
@@ -907,7 +907,7 @@ std::u16string DownloadBubbleRowView::GetAccessibleNameForMainPageButton(
       return l10n_util::GetStringFUTF16(
           IDS_DOWNLOAD_BUBBLE_SCAN_MAIN_BUTTON_ACCESSIBILITY,
           info_->model()->GetFileNameToReportUser().LossyDisplayName());
-    case DownloadCommands::BYPASS_DEEP_SCANNING:
+    case DownloadCommands::BYPASS_DEEP_SCANNING_AND_OPEN:
       return l10n_util::GetStringFUTF16(
           IDS_DOWNLOAD_BUBBLE_OPEN_NOW_MAIN_BUTTON_ACCESSIBILITY,
           info_->model()->GetFileNameToReportUser().LossyDisplayName());
