@@ -4028,6 +4028,7 @@ enum WebFeature {
   kSetHTMLUnsafe = 4688,
   kWebAssemblyModuleCompilation = 4689,
   kV8MediaStreamTrack_Stats_AttributeGetter = 4690,
+  kElementCheckVisibility = 4691,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
