@@ -17,6 +17,7 @@
 #include "ash/accelerators/ash_focus_manager_factory.h"
 #include "ash/accelerators/magnifier_key_scroller.h"
 #include "ash/accelerators/pre_target_accelerator_handler.h"
+#include "ash/accelerators/shortcut_input_handler.h"
 #include "ash/accelerators/spoken_feedback_toggler.h"
 #include "ash/accelerometer/accelerometer_reader.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
@@ -744,6 +745,9 @@ Shell::~Shell() {
   }
   RemovePreTargetHandler(system_gesture_filter_.get());
   RemoveAccessibilityEventHandler(mouse_cursor_filter_.get());
+  if (features::IsPeripheralCustomizationEnabled()) {
+    RemovePreTargetHandler(shortcut_input_handler_.get());
+  }
   RemovePreTargetHandler(modality_filter_.get());
   RemovePreTargetHandler(tooltip_controller_.get());
 
@@ -765,6 +769,7 @@ Shell::~Shell() {
   input_device_tracker_.reset();
   input_device_settings_controller_.reset();
   input_device_key_alias_manager_.reset();
+  shortcut_input_handler_.reset();
 
   screen_orientation_controller_.reset();
   screen_layout_observer_.reset();
@@ -1534,6 +1539,11 @@ void Shell::Init(
 
   modality_filter_ = std::make_unique<SystemModalContainerEventFilter>(this);
   AddPreTargetHandler(modality_filter_.get());
+
+  if (features::IsPeripheralCustomizationEnabled()) {
+    shortcut_input_handler_ = std::make_unique<ShortcutInputHandler>();
+    AddPreTargetHandler(shortcut_input_handler_.get());
+  }
 
   event_client_ = std::make_unique<EventClientImpl>();
 

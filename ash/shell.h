@@ -229,6 +229,7 @@ class ShelfWindowWatcher;
 class ShellDelegate;
 struct ShellInitParams;
 class ShellObserver;
+class ShortcutInputHandler;
 class ShutdownControllerImpl;
 class SmsObserver;
 class SnapGroupController;
@@ -927,6 +928,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<KeyboardModifierMetricsRecorder>
       keyboard_modifier_metrics_recorder_;
   std::unique_ptr<InputDeviceKeyAliasManager> input_device_key_alias_manager_;
+  std::unique_ptr<ShortcutInputHandler> shortcut_input_handler_;
   std::unique_ptr<UserMetricsRecorder> user_metrics_recorder_;
 
   std::unique_ptr<AcceleratorPrefs> accelerator_prefs_;
