@@ -165,6 +165,7 @@ class WebUIRequiringGestureBrowserTest : public ContentBrowserTest {
     web_contents()->GetWebUI()->AddMessageHandler(
         base::WrapUnique(test_handler_.get()));
   }
+  void TearDownOnMainThread() override { test_handler_ = nullptr; }
 
  protected:
   void SendMessageAndWaitForFinish() {
@@ -188,7 +189,7 @@ class WebUIRequiringGestureBrowserTest : public ContentBrowserTest {
   base::SimpleTestTickClock clock_;
 
   // Owned by the WebUI associated with the WebContents.
-  raw_ptr<TestWebUIMessageHandler, DanglingUntriaged> test_handler_ = nullptr;
+  raw_ptr<TestWebUIMessageHandler> test_handler_ = nullptr;
 };
 
 }  // namespace
