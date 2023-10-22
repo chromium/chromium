@@ -274,6 +274,7 @@
 <translation id="1507780850870535225">ल्यान्डस्केप डिजाइन</translation>
 <translation id="1513706915089223971">इतिहाससम्बन्धी प्रविष्टिहरूको सूची</translation>
 <translation id="1516097932025103760">यो कार्ड इन्क्रिप्ट तथा सुरक्षित रूपमा सेभ गरिने छ तर CVC भने कहिले पनि भण्डारण गरिँदैन।</translation>
+<translation id="151720253492607760">अनुमति नदिइकन जारी राख्नुहोस्</translation>
 <translation id="1517433312004943670">फोन नम्बर आवश्यक छ</translation>
 <translation id="1519264250979466059">निर्माण मिति</translation>
 <translation id="1521159554480556801">फाइबर तथा वस्त्र कलाहरू</translation>
@@ -877,6 +878,7 @@
 <translation id="2765217105034171413">सानो</translation>
 <translation id="2770159525358613612">आफ्ना फाइलहरू फेरि अपलोड गरी हेर्नुहोस्</translation>
 <translation id="277133753123645258">ढुवानीको विधि</translation>
+<translation id="2773388851563527404">Chrome ले अधिकांश साइटहरूमा तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने कार्य सीमित गर्छ। तर यो साइट आधारभूत सेवाहरू प्रदान गर्न तेस्रो-पक्ष कुकीहरूमा भर पर्ने भएकाले यो साइटमा ती तेस्रो-पक्ष कुकीहरू अन गर्ने अनुमति दिइएको छ। <ph name="LINK" /> गर्न सेटिङमा जानुहोस्।</translation>
 <translation id="277499241957683684">हराइएको यन्त्रको रेकर्ड</translation>
 <translation id="2775884851269838147">प्रिन्ट गरिनु पर्ने पहिलो पृष्ठ</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -1726,6 +1728,7 @@
 <translation id="4521280267704259211">Envelope Monarch</translation>
 <translation id="4521916730539354575">बायाँ ट्रे</translation>
 <translation id="4522570452068850558">विवरणहरू</translation>
+<translation id="4522821696628398940">Google खातामा IBAN सेभ गर्ने हो?</translation>
 <translation id="4523643381056109546">सङ्केत बोर्ड</translation>
 <translation id="4524138615196389145">अब उप्रान्त WebAuthn प्रयोग गरी आफ्ना कार्डहरूको अझ छिटो पुष्टि गर्नुहोस्</translation>
 <translation id="45243788195988825"><ph name="TOPIC" /> ब्लक गर्नुहोस्</translation>
@@ -3663,6 +3666,7 @@
 <translation id="8428634594422941299">बुझेँ</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome का सेटिङमा गई कुकीसम्बन्धी आफ्ना प्राथमिकताहरू व्यवस्थापन गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="8433057134996913067">यसले तपाईँलाई अधिकांश साइटहरूबाट साइन आउट गराउनेछ।</translation>
+<translation id="8434014327286137412">अर्को पटक अझ छिटो भुक्तानी गर्न आफ्नो Google खातामा IBAN सेभ गर्नुहोस्</translation>
 <translation id="8434840396568290395">पाल्तु जनावरहरू</translation>
 <translation id="8436623588884785770">नीति हाल्नुहोस्</translation>
 <translation id="8437238597147034694">सार्ने कार्यलाई &amp;पूर्ववत गर्नुहोस्</translation>
@@ -3761,6 +3765,7 @@
 <translation id="865032292777205197">मोसन सेन्सरहरू</translation>
 <translation id="865255447216708819">ब्याक प्रिन्ट फिल्म</translation>
 <translation id="8654126188050905496">५५ x ९१ मिलिमिटर</translation>
+<translation id="8655930295668719549">तपाईंले पहिले <ph name="ORIGIN" /> मा <ph name="PERMISSION" /> चलाउने अनुमति दिनुभएन</translation>
 <translation id="8662463432865928030">व्यावसायिक प्रोपर्टी</translation>
 <translation id="8663226718884576429">अर्डरको सारांश, <ph name="TOTAL_LABEL" />, थप विवरण</translation>
 <translation id="8663909737634214500">अप्टिकल डिस्क</translation>

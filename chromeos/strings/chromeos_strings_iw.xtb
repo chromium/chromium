@@ -199,6 +199,7 @@
 <translation id="2326139988748364651">‏<ph name="RESOLUTION_VALUE" /> ‏DPI</translation>
 <translation id="2338501278241028356">‏יש להפעיל את Bluetooth כדי לאתר מכשירים קרובים</translation>
 <translation id="2346474577291266260">מצוין (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2358070305000735383">תיבת הדו-שיח לעריכה של <ph name="DESCRIPTION" /> פתוחה.</translation>
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2364498172489649528">הילד או הילדה עברו את הבדיקה בהצלחה</translation>
 <translation id="2367335866686097760">מקש למיפוי מקשים</translation>
@@ -288,6 +289,7 @@
 <translation id="3226405216343213872">מתבצע חיפוש של סורקים</translation>
 <translation id="3226657629376379887">תפריט הפעולות בפריסה</translation>
 <translation id="3246869037381808805">משימות הדפסה בנות יותר מיום אחד יוסרו</translation>
+<translation id="324961752321393509">אין אישור מהאדמין שלך לסגור את האפליקציה הזו</translation>
 <translation id="3268178239013324452">נכשלה – דלת המדפסת פתוחה</translation>
 <translation id="3275729367986477355">תמונת הדמות</translation>
 <translation id="3283504360622356314">{0,plural, =1{עריכת הקובץ}one{עריכת הקבצים}two{עריכת הקבצים}other{עריכת הקבצים}}</translation>
@@ -1031,6 +1033,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">המכשיר הוא טאבלט.</translation>
 <translation id="8881098542468797602">הבדיקה הושלמה בהצלחה</translation>
+<translation id="8892443466059986410">ביטול העריכה של קיצור הדרך</translation>
 <translation id="8898840733695078011">עוצמת אות</translation>
 <translation id="8909114361904403025">חץ למעלה</translation>
 <translation id="8910721771319628100">רשת ברירת המחדל חורגת מסף זמן האחזור</translation>
