@@ -197,10 +197,10 @@ bool VideoDecodeStatsDBImpl::AreStatsUsable(
       stats_proto->unweighted_average_frames_efficient() <= 1 &&
 
       // |last_write_date| represents
-      // base::Time::InMillisecondsFSinceUnixEpoch(), a number of msec since the
-      // epoch, so it should never be negative (zero is valid, as a default for
-      // this field, indicating the last write was made before we added time
-      // stamping). The converted time should also never be in the future.
+      // base::Time::InMillisecondsFSinceUnixEpoch(), so it should never be
+      // negative (zero is valid, as a default for this field, indicating the
+      // last write was made before we added time stamping). The converted time
+      // should also never be in the future.
       stats_proto->last_write_date() >= 0 &&
       base::Time::FromMillisecondsSinceUnixEpoch(
           stats_proto->last_write_date()) <= wall_clock_->Now();

@@ -49,8 +49,7 @@ const char kClearKeyCdmVersion[] = "0.1.0.1";
 
 // Variants of External Clear Key key system to test different scenarios.
 
-const int64_t kMsPerSecond = 1000;
-const int64_t kMaxTimerDelayMs = 5 * kMsPerSecond;
+const int64_t kMaxTimerDelayMs = base::Seconds(5).InMilliseconds();
 
 // CDM unit test result header. Must be in sync with UNIT_TEST_RESULT_HEADER in
 // media/test/data/eme_player_js/globals.js.
