@@ -215,6 +215,8 @@ BASE_EXPORT BASE_DECLARE_FEATURE(
     kEnableConfigurableThreadCacheMinCachedMemoryForPurging);
 BASE_EXPORT int GetThreadCacheMinCachedMemoryForPurgingBytes();
 
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocDisableBRPInBufferPartition);
+
 }  // namespace features
 }  // namespace base
 
