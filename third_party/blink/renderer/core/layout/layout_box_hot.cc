@@ -118,13 +118,17 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
   bool child_needs_layout =
       !is_blocked_by_display_lock && ChildNeedsFullLayout();
 
-  if (NeedsSimplifiedLayoutOnly()) {
-    cache_status = NGLayoutCacheStatus::kNeedsSimplifiedLayout;
-  } else if (child_needs_layout) {
+  if (child_needs_layout) {
     // If we have inline children - we can potentially reuse some of the lines.
     if (!ChildrenInline()) {
-      return nullptr;
-    }
+      // Check if we only need "simplified" layout. We don't abort yet, as we
+      // need to check if other things (like floats) will require us to perform
+      // a full layout.
+      if (!NeedsSimplifiedLayout()) {
+        return nullptr;
+      }
+      cache_status = NGLayoutCacheStatus::kNeedsSimplifiedLayout;
+   }
 
     if (!physical_fragment.HasItems()) {
       return nullptr;
