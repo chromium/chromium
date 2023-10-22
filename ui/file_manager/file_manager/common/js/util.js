@@ -274,17 +274,6 @@ util.FileOperationErrorType = {
 Object.freeze(util.FileOperationErrorType);
 
 /**
- * The kind of an entry changed event.
- * @enum {number}
- * @const
- */
-util.EntryChangedKind = {
-  CREATED: 0,
-  DELETED: 1,
-};
-Object.freeze(util.EntryChangedKind);
-
-/**
  * Collator for sorting.
  * @type {Intl.Collator}
  */
