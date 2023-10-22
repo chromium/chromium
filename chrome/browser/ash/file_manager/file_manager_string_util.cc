@@ -1328,8 +1328,6 @@ void AddFileManagerFeatureStrings(const std::string& locale,
   dict->Set("ARC_USB_STORAGE_UI_ENABLED",
             base::FeatureList::IsEnabled(arc::kUsbStorageUIFeature));
   dict->Set("ARC_VM_ENABLED", arc::IsArcVmEnabled());
-  dict->Set("FILES_SEARCH_V2",
-            base::FeatureList::IsEnabled(ash::features::kFilesSearchV2));
   dict->Set("FILES_LOCAL_IMAGE_SEARCH",
             ash::features::IsFilesLocalImageSearchEnabled());
   dict->Set("FILES_TRASH_DRIVE_ENABLED",

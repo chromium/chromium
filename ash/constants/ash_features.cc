@@ -1155,9 +1155,6 @@ BASE_FEATURE(kFilesNewDirectoryTree,
              "FilesNewDirectoryTree",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables V2 of search functionality in files.
-BASE_FEATURE(kFilesSearchV2, "FilesSearchV2", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables local image search by query in the Files app.
 BASE_FEATURE(kFilesLocalImageSearch,
              "FilesLocalImageSearch",
@@ -3355,10 +3352,6 @@ bool IsFileManagerFuseBoxDebugEnabled() {
 
 bool IsFilesConflictDialogEnabled() {
   return base::FeatureList::IsEnabled(kFilesConflictDialog);
-}
-
-bool IsFilesSearchV2Enabled() {
-  return base::FeatureList::IsEnabled(kFilesSearchV2);
 }
 
 bool IsFilesLocalImageSearchEnabled() {

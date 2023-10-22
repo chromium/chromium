@@ -4214,11 +4214,6 @@
     "expiry_milestone": 124
   },
   {
-    "name": "files-search-v2",
-    "owners": [ "majewski@chromium.org", "simmonsjosh@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "files-single-partition-format",
     "owners": [ "austinct@chromium.org", "petermarshall@chromium.org" ],
     "expiry_milestone": 104
