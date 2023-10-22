@@ -7,6 +7,7 @@ import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.j
 
 import {RateLimiter} from '../../../common/js/async_util.js';
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
+import {isTeamDriveRoot} from '../../../common/js/entry_utils.js';
 import {FileType} from '../../../common/js/file_type.js';
 import {str, strf, util} from '../../../common/js/util.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
@@ -1294,7 +1295,7 @@ export class FileTable extends Table {
                   'canPin',
                   'isDlpRestricted',
                 ])[0],
-            util.isTeamDriveRoot(entry));
+            isTeamDriveRoot(entry));
         listItem.toggleAttribute(
             'disabled',
             filelist.isDlpBlocked(

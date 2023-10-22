@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {isFakeEntry} from '../../common/js/entry_utils.js';
 import {str, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
@@ -84,7 +85,7 @@ export class PathComponent {
       return components;
     }
 
-    if (util.isFakeEntry(entry)) {
+    if (isFakeEntry(entry)) {
       components.push(new PathComponent(
           util.getEntryLabel(locationInfo, entry), entry.toURL(),
           /** @type {!FakeEntry} */ (entry)));

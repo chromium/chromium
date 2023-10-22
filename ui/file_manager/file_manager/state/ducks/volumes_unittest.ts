@@ -5,6 +5,7 @@
 import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
+import {isSameEntry} from '../../common/js/entry_utils.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {str, util} from '../../common/js/util.js';
@@ -530,7 +531,7 @@ export async function testRemoveVolumeFromMyFiles(done: () => void) {
   // Check the volume entry has also been removed from MyFiles entry.
   const uiChildren = myFilesVolumeEntry.getUIChildren();
   assertEquals(1, uiChildren.length);
-  assertTrue(util.isSameEntry(linuxFilesUiEntry, uiChildren[0]!));
+  assertTrue(isSameEntry(linuxFilesUiEntry, uiChildren[0]!));
 
   done();
 }

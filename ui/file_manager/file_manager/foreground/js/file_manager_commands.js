@@ -10,6 +10,7 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {getDlpRestrictionDetails, getHoldingSpaceState, startIOTask} from '../../common/js/api.js';
 import {DialogType, isModal} from '../../common/js/dialog_type.js';
 import {getFocusedTreeItem, isDirectoryTree, isDirectoryTreeItem} from '../../common/js/dom_utils.js';
+import {isFakeEntry, isRecentRootType, isSameEntry, isTeamDriveRoot, isTeamDrivesGrandRoot, isTrashEntry, isTrashRoot, isTrashRootType} from '../../common/js/entry_utils.js';
 import {FileType} from '../../common/js/file_type.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
 import {recordEnum, recordUserAction} from '../../common/js/metrics.js';
@@ -404,7 +405,7 @@ CommandUtil.isRootEntry = (volumeManager, entry) => {
   }
 
   const volumeInfo = volumeManager.getVolumeInfo(entry);
-  return !!volumeInfo && util.isSameEntry(volumeInfo.displayRoot, entry);
+  return !!volumeInfo && isSameEntry(volumeInfo.displayRoot, entry);
 };
 
 /**
@@ -427,7 +428,7 @@ CommandUtil.isFromSelectionMenu = event => {
  */
 CommandUtil.shouldShowMenuItemsForEntry = (volumeManager, entry) => {
   // If the entry is fake entry, hide context menu entries.
-  if (util.isFakeEntry(entry)) {
+  if (isFakeEntry(entry)) {
     return false;
   }
 
@@ -450,11 +451,11 @@ CommandUtil.shouldShowMenuItemsForEntry = (volumeManager, entry) => {
   // If the entry is root entry of its volume (but not a team drive root),
   // hide context menu entries.
   if (CommandUtil.isRootEntry(volumeManager, entry) &&
-      !util.isTeamDriveRoot(entry)) {
+      !isTeamDriveRoot(entry)) {
     return false;
   }
 
-  if (util.isTeamDrivesGrandRoot(entry)) {
+  if (isTeamDrivesGrandRoot(entry)) {
     return false;
   }
 
@@ -573,7 +574,7 @@ CommandUtil.isOnTrashRoot = fileManager => {
   if (!currentRootType) {
     return false;
   }
-  return util.isTrashRootType(currentRootType);
+  return isTrashRootType(currentRootType);
 };
 
 
@@ -1285,8 +1286,7 @@ CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
     }
     if (isDirectoryTree(event.target) || isDirectoryTreeItem(event.target)) {
       const entry = entries[0];
-      if (!entry || util.isFakeEntry(entry) ||
-          util.isTeamDrivesGrandRoot(entry)) {
+      if (!entry || isFakeEntry(entry) || isTeamDrivesGrandRoot(entry)) {
         event.canExecute = false;
         event.command.setHidden(true);
         return;
@@ -1778,8 +1778,8 @@ CommandHandler
   canExecute(event, fileManager) {
     const entries = CommandUtil.getCommandEntries(fileManager, event.target);
 
-    const enabled = entries.length > 0 &&
-        entries.every(e => util.isTrashEntry(e)) && fileManager.trashEnabled;
+    const enabled = entries.length > 0 && entries.every(e => isTrashEntry(e)) &&
+        fileManager.trashEnabled;
     event.canExecute = enabled;
     event.command.setHidden(!enabled);
   }
@@ -1838,10 +1838,10 @@ CommandHandler.COMMANDS_['empty-trash'] = new (class extends FilesCommand {
     const entries = CommandUtil.getCommandEntries(fileManager, event.target);
     // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry | undefined'
     // is not assignable to parameter of type 'FileSystemEntry | FilesAppEntry'.
-    const isTrashRoot = entries.length === 1 && util.isTrashRoot(entries[0]) &&
+    const trashRoot = entries.length === 1 && isTrashRoot(entries[0]) &&
         fileManager.trashEnabled;
-    event.canExecute = isTrashRoot || CommandUtil.isOnTrashRoot(fileManager);
-    event.command.setHidden(!isTrashRoot);
+    event.canExecute = trashRoot || CommandUtil.isOnTrashRoot(fileManager);
+    event.command.setHidden(!trashRoot);
   }
 })();
 
@@ -2072,7 +2072,7 @@ CommandHandler.cutCopyCommand_ = new (class extends FilesCommand {
       }
 
       // Cut is unavailable on Shared Drive roots.
-      if (util.isTeamDriveRoot(entry)) {
+      if (isTeamDriveRoot(entry)) {
         return false;
       }
 
@@ -2566,7 +2566,7 @@ CommandHandler.COMMANDS_['toggle-holding-space'] =
 
         const allowedVolumeTypes = HoldingSpaceUtil.getAllowedVolumeTypes();
         const currentRootType = fileManager.directoryModel.getCurrentRootType();
-        if (!util.isRecentRootType(currentRootType)) {
+        if (!isRecentRootType(currentRootType)) {
           const volumeInfo = fileManager.directoryModel.getCurrentVolumeInfo();
           if (!volumeInfo ||
               !allowedVolumeTypes.includes(volumeInfo.volumeType)) {
@@ -2677,7 +2677,7 @@ CommandHandler.COMMANDS_['go-to-file-location'] =
       // 'any' type.
       canExecute(event, fileManager) {
         // Available in Recents, Audio, Images, and Videos.
-        if (!util.isRecentRootType(
+        if (!isRecentRootType(
                 fileManager.directoryModel.getCurrentRootType())) {
           event.canExecute = false;
           event.command.setHidden(true);

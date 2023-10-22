@@ -5,6 +5,7 @@
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {getKeyModifiers} from '../../common/js/dom_utils.js';
+import {isSameEntry} from '../../common/js/entry_utils.js';
 import {util} from '../../common/js/util.js';
 import {DirectoryTreeContainer} from '../../containers/directory_tree_container.js';
 import {readSubDirectoriesForRenamedEntry} from '../../state/ducks/all_entries.js';
@@ -188,7 +189,7 @@ export class DirectoryTreeNamingController {
    */
   async performRename_(entry, newName) {
     const renamingCurrentDirectory =
-        util.isSameEntry(entry, this.directoryModel_.getCurrentDirEntry());
+        isSameEntry(entry, this.directoryModel_.getCurrentDirEntry());
     if (renamingCurrentDirectory) {
       this.directoryModel_.setIgnoringCurrentDirectoryDeletion(
           true /* ignore */);

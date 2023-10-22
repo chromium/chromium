@@ -5,6 +5,7 @@
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {queryRequiredElement} from '../../common/js/dom_utils.js';
+import {isRecentRootType} from '../../common/js/entry_utils.js';
 import {str, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
@@ -294,7 +295,7 @@ export class EmptyFolderController {
     const currentVolumeInfo = this.directoryModel_.getCurrentVolumeInfo();
 
     let svgRef = null;
-    if (util.isRecentRootType(currentRootType)) {
+    if (isRecentRootType(currentRootType)) {
       svgRef = RECENTS_EMPTY_FOLDER;
     } else if (currentRootType === VolumeManagerCommon.RootType.TRASH) {
       svgRef = TRASH_EMPTY_FOLDER;

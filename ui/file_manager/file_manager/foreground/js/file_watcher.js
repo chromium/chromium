@@ -6,6 +6,7 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
 import {AsyncQueue} from '../../common/js/async_util.js';
+import {isFakeEntry} from '../../common/js/entry_utils.js';
 import {util} from '../../common/js/util.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 
@@ -80,7 +81,7 @@ export class FileWatcher extends EventTarget {
    * @return {!Promise<void>}
    */
   changeWatchedDirectory(entry) {
-    if (!util.isFakeEntry(entry)) {
+    if (!isFakeEntry(entry)) {
       return this.changeWatchedEntry_(
           /** @type {!DirectoryEntry} */ (util.unwrapEntry(entry)));
     } else {

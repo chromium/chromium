@@ -6,6 +6,7 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {getFile} from '../../common/js/api.js';
 import {getKeyModifiers} from '../../common/js/dom_utils.js';
+import {isFakeEntry, isSameEntry} from '../../common/js/entry_utils.js';
 import {strf, UserCanceledError, util} from '../../common/js/util.js';
 
 import {FileFilter} from './directory_contents.js';
@@ -107,7 +108,7 @@ export class NamingController {
         throw new Error('Invalid filename.');
       }
 
-      if (directory && util.isFakeEntry(directory)) {
+      if (directory && isFakeEntry(directory)) {
         // Can't save a file into a fake directory.
         throw new Error('Cannot save into fake entry.');
       }
@@ -217,7 +218,7 @@ export class NamingController {
     }
 
     const leadEntry = /** @type {Entry} */ (dm.getFileList().item(leadIndex));
-    if (!util.isSameEntry(
+    if (!isSameEntry(
             // @ts-ignore: error TS2339: Property 'currentEntry' does not exist
             // on type 'HTMLInputElement'.
             this.listContainer_.renameInput.currentEntry, leadEntry)) {

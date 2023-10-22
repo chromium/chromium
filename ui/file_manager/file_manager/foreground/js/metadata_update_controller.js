@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {isFakeEntry} from '../../common/js/entry_utils.js';
 import {util} from '../../common/js/util.js';
 import {updateMetadata} from '../../state/ducks/all_entries.js';
 import {getStore} from '../../state/store.js';
@@ -69,9 +70,9 @@ export class MetadataUpdateController {
 
     // TODO(dgozman): refresh content metadata only when modificationTime
     // changed.
-    const isFakeEntry = util.isFakeEntry(directoryEntry);
-    const changedEntries =
-        (isFakeEntry ? [] : [util.unwrapEntry(directoryEntry)]).concat(entries);
+    const changedEntries = (isFakeEntry(directoryEntry) ? [] : [
+                             util.unwrapEntry(directoryEntry),
+                           ]).concat(entries);
     // @ts-ignore: error TS2345: Argument of type '(FileSystemEntry |
     // FilesAppEntry)[]' is not assignable to parameter of type
     // 'FileSystemEntry[]'.

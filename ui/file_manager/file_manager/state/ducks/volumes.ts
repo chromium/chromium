@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
-import {isVolumeEntry, sortEntries} from '../../common/js/entry_utils.js';
+import {isSameEntry, isVolumeEntry, sortEntries} from '../../common/js/entry_utils.js';
 import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
@@ -218,8 +218,8 @@ function removeVolumeReducer(currentState: State, payload: {
     const {myFilesEntry} = getMyFiles(currentState);
     const children = myFilesEntry.getUIChildren();
     const volumeEntryExistsInMyFiles = !!children.find(
-        childEntry => isVolumeEntry(childEntry) &&
-            util.isSameEntry(childEntry, volumeEntry));
+        childEntry =>
+            isVolumeEntry(childEntry) && isSameEntry(childEntry, volumeEntry));
     if (volumeEntryExistsInMyFiles) {
       // Remove it from the MyFiles UI children.
       myFilesEntry.removeChildEntry(volumeEntry);

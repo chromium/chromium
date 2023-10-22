@@ -4,7 +4,7 @@
 
 import {getParentEntry} from '../../common/js/api.js';
 import {DialogType} from '../../common/js/dialog_type.js';
-import {isDriveRootEntryList, isFakeEntryInDrives, isGrandRootEntryInDrives, isVolumeEntry, sortEntries} from '../../common/js/entry_utils.js';
+import {isDriveRootEntryList, isFakeEntryInDrives, isGrandRootEntryInDrives, isSameEntry, isVolumeEntry, sortEntries} from '../../common/js/entry_utils.js';
 import {FileType} from '../../common/js/file_type.js';
 import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {recordInterval, recordSmallCount, startInterval} from '../../common/js/metrics.js';
@@ -230,7 +230,7 @@ function appendChildIfNotExisted(
     parentEntry: VolumeEntry|EntryList,
     childEntry: Entry|FilesAppEntry): boolean {
   if (!parentEntry.getUIChildren().find(
-          (entry) => util.isSameEntry(entry, childEntry))) {
+          (entry) => isSameEntry(entry, childEntry))) {
     parentEntry.addEntry(childEntry);
     return true;
   }
