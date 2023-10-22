@@ -41,6 +41,7 @@ constexpr std::string_view kInputMethodEngineAllowlist[] = {
 constexpr AppType kAppTypeAllowlist[] = {
     AppType::BROWSER,
     AppType::LACROS,
+    AppType::SYSTEM_APP,
 };
 
 const char* kDomainsWithPathDenylist[][2] = {
@@ -53,6 +54,10 @@ const char* kDomainsWithPathDenylist[][2] = {
     {"mail.google", "/chat"},
     {"mail.google", "/mail"},
     {"meet.google", ""},
+};
+
+const char* kAppIdDenylist[] = {
+    "fkiggjmkendpmbegkagpmagjepfkpmeb",  //  Files App
 };
 
 constexpr int kTextLengthMaxLimit = 8000;
@@ -90,6 +95,10 @@ bool IsUrlAllowed(const char* (&denied_domains_with_paths)[N][2], GURL url) {
   return true;
 }
 
+bool IsAppAllowed(std::string_view app_id) {
+  return !base::Contains(kAppIdDenylist, app_id);
+}
+
 }  // namespace
 
 EditorSwitch::EditorSwitch(Profile* profile, std::string_view country_code)
@@ -117,7 +126,8 @@ bool EditorSwitch::CanBeTriggered() const {
          IsInputTypeAllowed(input_type_) && IsAppTypeAllowed(app_type_) &&
          IsTriggerableFromConsentStatus(current_consent_status) &&
          IsUrlAllowed(kDomainsWithPathDenylist, url_) &&
-         !net::NetworkChangeNotifier::IsOffline() && !tablet_mode_enabled_ &&
+         IsAppAllowed(app_id_) && !net::NetworkChangeNotifier::IsOffline() &&
+         !tablet_mode_enabled_ &&
          // user pref value
          profile_->GetPrefs()->GetBoolean(prefs::kOrcaEnabled) &&
          text_length_ <= kTextLengthMaxLimit;
@@ -147,6 +157,7 @@ void EditorSwitch::OnInputContextUpdated(
   input_type_ = input_context.type;
   app_type_ = text_field_contextual_info.app_type;
   url_ = text_field_contextual_info.tab_url;
+  app_id_ = text_field_contextual_info.app_key;
 }
 
 void EditorSwitch::OnActivateIme(std::string_view engine_id) {
