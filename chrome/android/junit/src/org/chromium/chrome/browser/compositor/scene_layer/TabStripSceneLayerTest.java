@@ -155,6 +155,7 @@ public class TabStripSceneLayerTest {
                         mTabStripSceneLayer,
                         mNewTabButton.getResourceId(),
                         mNewTabButton.getBackgroundResourceId(),
+                        false,
                         mNewTabButton.getX(),
                         mNewTabButton.getY(),
                         0.f,
@@ -190,6 +191,7 @@ public class TabStripSceneLayerTest {
                         true,
                         ((TintedCompositorButton) mModelSelectorButton).getTint(),
                         ((TintedCompositorButton) mModelSelectorButton).getBackgroundTint(),
+                        false,
                         mModelSelectorButton.getOpacity(),
                         mResourceManager);
         verify(mTabStripSceneMock)
@@ -264,6 +266,7 @@ public class TabStripSceneLayerTest {
                         true,
                         ((TintedCompositorButton) mModelSelectorButton).getTint(),
                         ((TintedCompositorButton) mModelSelectorButton).getBackgroundTint(),
+                        false,
                         mModelSelectorButton.getOpacity(),
                         mResourceManager);
         verify(mTabStripSceneMock)

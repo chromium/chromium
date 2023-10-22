@@ -330,7 +330,7 @@ public class StripLayoutTab implements VirtualView {
     }
 
     @Override
-    public boolean checkClicked(float x, float y) {
+    public boolean checkClickedOrHovered(float x, float y) {
         // Since both the close button as well as the tab inhabit the same coordinates, the tab
         // should not consider itself hit if the close button is also hit, since it is on top.
         if (checkCloseHitTest(x, y)) return false;
@@ -805,7 +805,9 @@ public class StripLayoutTab implements VirtualView {
      *         if the button can be clicked.
      */
     public boolean checkCloseHitTest(float x, float y) {
-        return mShowingCloseButton ? mCloseButton.checkClicked(x, y) : false;
+        return mShowingCloseButton
+                ? ((CompositorButton) mCloseButton).checkClickedOrHovered(x, y)
+                : false;
     }
 
     /**

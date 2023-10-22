@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewStub;
 
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.graphics.ColorUtils;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
@@ -57,6 +59,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 
@@ -261,6 +264,130 @@ public class StripLayoutHelperManagerTest {
                 5.f,
                 mStripLayoutHelperManager.getModelSelectorButton().getY(),
                 0.0);
+    }
+
+    @Test
+    @Feature("Advanced Peripherals Support")
+    public void testModelSelectorButtonHoverHighlightProperties() {
+        // setup
+        initializeTestWithTsrArm(TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED);
+
+        // Set model selector button position.
+        mStripLayoutHelperManager.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
+
+        // Verify model selector button hover highlight resource id.
+        assertEquals(
+                "Model selector button hover highlight is not as expected",
+                R.drawable.bg_circle_tab_strip_button,
+                ((TintedCompositorButton) mStripLayoutHelperManager.getModelSelectorButton())
+                        .getBackgroundResourceId());
+
+        // Verify model selector button hover highlight default tint.
+        TintedCompositorButton msb =
+                ((TintedCompositorButton) spy(mStripLayoutHelperManager.getModelSelectorButton()));
+        when(msb.getIsHovered()).thenReturn(true);
+        when(msb.isPressedFromMouse()).thenReturn(false);
+
+        int hoverBackgroundDefaultColor =
+                ColorUtils.setAlphaComponent(
+                        SemanticColorUtils.getDefaultTextColor(mContext), (int) (0.08 * 255));
+        assertEquals(
+                "Model selector button hover highlight default tint is not as expected",
+                hoverBackgroundDefaultColor,
+                msb.getBackgroundTint());
+
+        // Verify model selector button hover highlight pressed tint.
+        when(msb.isPressed()).thenReturn(true);
+        when(msb.getIsHovered()).thenReturn(false);
+        when(msb.isPressedFromMouse()).thenReturn(true);
+        int hoverBackgroundPressedColor =
+                ColorUtils.setAlphaComponent(
+                        SemanticColorUtils.getDefaultTextColor(mContext), (int) (0.12 * 255));
+        assertEquals(
+                "Model selector button hover highlight pressed tint is not as expected",
+                hoverBackgroundPressedColor,
+                msb.getBackgroundTint());
+        when(msb.isPressed()).thenReturn(false);
+
+        // Verify model selector button incognito hover highlight default tint.
+        when(msb.getIsHovered()).thenReturn(true);
+        when(msb.isIncognito()).thenReturn(true);
+        int hoverBackgroundDefaultIncognitoColor =
+                ColorUtils.setAlphaComponent(
+                        mContext.getResources().getColor(R.color.tab_strip_button_hover_bg_color),
+                        (int) (0.08 * 255));
+        assertEquals(
+                "Model selector button hover highlight pressed tint is not as expected",
+                hoverBackgroundDefaultIncognitoColor,
+                msb.getBackgroundTint());
+
+        // Verify model selector button incognito hover highlight pressed tint.
+        when(msb.isPressed()).thenReturn(true);
+        when(msb.getIsHovered()).thenReturn(false);
+        when(msb.isPressedFromMouse()).thenReturn(true);
+        int hoverBackgroundPressedIncognitoColor =
+                ColorUtils.setAlphaComponent(
+                        mContext.getResources().getColor(R.color.tab_strip_button_hover_bg_color),
+                        (int) (0.12 * 255));
+        assertEquals(
+                "Model selector button hover highlight pressed tint is not as expected",
+                hoverBackgroundPressedIncognitoColor,
+                msb.getBackgroundTint());
+        when(msb.isPressed()).thenReturn(false);
+    }
+
+    @Test
+    @Feature("Advanced Peripherals Support")
+    @EnableFeatures(ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)
+    public void testModelSelectorButtonHoverEnter() {
+        // Setup
+        initializeTestWithTsrArm(TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED);
+        mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
+
+        int x = (int) mStripLayoutHelperManager.getModelSelectorButton().getX();
+        mStripLayoutHelperManager
+                .getActiveStripLayoutHelper()
+                .onHoverEnter(
+                        x + 1,
+                        0); // mouse position within MSB range(32dp width + 12dp click slope).
+        assertEquals(
+                "Model selector button should be hovered",
+                true,
+                mStripLayoutHelperManager.getModelSelectorButton().getIsHovered());
+
+        // Verify model selector button is NOT hovered when mouse is not on the button.
+        mStripLayoutHelperManager
+                .getActiveStripLayoutHelper()
+                .onHoverEnter(
+                        x + 45,
+                        0); // mouse position out of MSB range(32dp width + 12dp click slope).
+        assertEquals(
+                "Model selector button should NOT be hovered",
+                false,
+                mStripLayoutHelperManager.getModelSelectorButton().getIsHovered());
+    }
+
+    @Test
+    @Feature("Advanced Peripherals Support")
+    @EnableFeatures(ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)
+    public void testModelSelectorButtonHoverOnDown() {
+        // Setup
+        initializeTestWithTsrArm(TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED);
+        mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
+
+        // Verify model selector button is in pressed state, not hover state, when click is from
+        // mouse.
+        mStripLayoutHelperManager.simulateOnDownForTesting(
+                mStripLayoutHelperManager.getModelSelectorButton().getX() + 1, 0, true, 1);
+        assertEquals(
+                "Model selector button should not be hovered",
+                false,
+                mStripLayoutHelperManager.getModelSelectorButton().getIsHovered());
+        assertEquals(
+                "Model selector button should be pressed from mouse",
+                true,
+                mStripLayoutHelperManager.getModelSelectorButton().isPressedFromMouse());
     }
 
     @Test

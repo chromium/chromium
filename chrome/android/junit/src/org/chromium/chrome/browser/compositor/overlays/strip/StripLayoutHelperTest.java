@@ -19,6 +19,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -40,6 +41,7 @@ import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.graphics.ColorUtils;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
@@ -65,6 +67,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
+import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab.StripLayoutTabDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -84,6 +87,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
@@ -836,6 +840,116 @@ public class StripLayoutHelperTest {
                 ((org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton)
                                 mStripLayoutHelper.getNewTabButton())
                         .getTint());
+    }
+
+    @Test
+    @Feature("Advanced Peripherals Support")
+    public void testNewTabButtonHoverHighlightProperties() {
+        // Setup
+        initializeTest(false, false, false, 0, 1);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Verify new tab button hover highlight resource id.
+        assertEquals(
+                "New tab button hover highlight is not as expected",
+                R.drawable.bg_circle_tab_strip_button,
+                mStripLayoutHelper.getNewTabButton().getBackgroundResourceId());
+
+        // Verify new tab button hover highlight default tint.
+        TintedCompositorButton ntb = spy(mStripLayoutHelper.getNewTabButton());
+        when(ntb.getIsHovered()).thenReturn(true);
+
+        int defaultNTBHoverBackgroundTint =
+                ColorUtils.setAlphaComponent(
+                        SemanticColorUtils.getDefaultTextColor(mContext), (int) (0.08 * 255));
+        assertEquals(
+                "New tab button hover highlight default tint is not as expected",
+                defaultNTBHoverBackgroundTint,
+                ntb.getBackgroundTint());
+
+        // Verify new tab button hover highlight pressed tint.
+        when(ntb.getIsHovered()).thenReturn(false);
+        when(ntb.isPressed()).thenReturn(true);
+        when(ntb.isPressedFromMouse()).thenReturn(true);
+        int pressedNTBHoverBackgroundTint =
+                ColorUtils.setAlphaComponent(
+                        SemanticColorUtils.getDefaultTextColor(mContext), (int) (0.12 * 255));
+        assertEquals(
+                "New tab button hover highlight pressed tint is not as expected",
+                pressedNTBHoverBackgroundTint,
+                ntb.getBackgroundTint());
+        when(ntb.isPressedFromMouse()).thenReturn(false);
+
+        // Verify new tab button incognito hover highlight default tint.
+        when(ntb.getIsHovered()).thenReturn(true);
+        when(ntb.isIncognito()).thenReturn(true);
+        int defaultNTBHoverBackgroundIncognitoTint =
+                ColorUtils.setAlphaComponent(
+                        mContext.getResources().getColor(R.color.tab_strip_button_hover_bg_color),
+                        (int) (0.08 * 255));
+        assertEquals(
+                "New tab button hover highlight default tint is not as expected",
+                defaultNTBHoverBackgroundIncognitoTint,
+                ntb.getBackgroundTint());
+
+        // Verify new tab button incognito hover highlight pressed tint.
+        when(ntb.getIsHovered()).thenReturn(false);
+        when(ntb.isPressed()).thenReturn(true);
+        when(ntb.isPressedFromMouse()).thenReturn(true);
+        int hoverBackgroundPressedIncognitoColor =
+                ColorUtils.setAlphaComponent(
+                        mContext.getResources().getColor(R.color.tab_strip_button_hover_bg_color),
+                        (int) (0.12 * 255));
+        assertEquals(
+                "New tab button hover highlight pressed tint is not as expected",
+                hoverBackgroundPressedIncognitoColor,
+                ntb.getBackgroundTint());
+        when(ntb.isPressedFromMouse()).thenReturn(false);
+    }
+
+    @Test
+    @Feature("Advanced Peripherals Support")
+    @EnableFeatures(ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)
+    public void testNewTabButtonHoverEnter() {
+        // Setup
+        initializeTest(false, false, false, 0, 1);
+
+        // Verify new tab button is hovered.
+        int x = (int) mStripLayoutHelper.getNewTabButton().getX();
+        mStripLayoutHelper.onHoverEnter(
+                x + 1, 0); // mouse position within NTB range(32dp width + 12dp click slope).
+        assertEquals(
+                "New tab button should be hovered",
+                true,
+                mStripLayoutHelper.getNewTabButton().getIsHovered());
+
+        // Verify new tab button is NOT hovered
+        mStripLayoutHelper.onHoverEnter(
+                x + 45, 0); // mouse position out of NTB range(32dp width + 12dp click slope).
+        assertEquals(
+                "New tab button should NOT be hovered",
+                false,
+                mStripLayoutHelper.getNewTabButton().getIsHovered());
+    }
+
+    @Test
+    @Feature("Advanced Peripherals Support")
+    @EnableFeatures(ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)
+    public void testNewTabButtonHoverOnDown() {
+        // Setup
+        initializeTest(false, false, false, 0, 1);
+
+        // Verify new tab button is in pressed state, not hover state, when clicked from mouse.
+        mStripLayoutHelper.onDown(1L, mStripLayoutHelper.getNewTabButton().getX() + 1, 0, true, 1);
+        assertEquals(
+                "New tab button should not be hovered",
+                false,
+                mStripLayoutHelper.getNewTabButton().getIsHovered());
+        assertEquals(
+                "New tab button should be pressed from mouse",
+                true,
+                mStripLayoutHelper.getNewTabButton().isPressedFromMouse());
     }
 
     @Test

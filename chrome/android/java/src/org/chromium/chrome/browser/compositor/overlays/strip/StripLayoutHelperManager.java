@@ -18,6 +18,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.graphics.ColorUtils;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -62,6 +63,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.PageTransition;
@@ -110,6 +112,8 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_Y_OFFSET_DP_DETACHED = 5.f;
     private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP_TSR = 32.f;
     private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_HEIGHT_DP_TSR = 32.f;
+    private static final float MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY = 0.12f;
+    private static final float MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY = 0.08f;
     private static final float MODEL_SELECTOR_BUTTON_CLICK_SLOP_DP = 12.f;
     private static final float BUTTON_DESIRED_TOUCH_TARGET_SIZE = 48.f;
 
@@ -184,8 +188,10 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
             // animations triggered by the down event have ended.
             // TODO (crbug.com/1483487): Monitor correctness of delay duration.
             PostTask.postDelayedTask(
-                    TaskTraits.UI_DEFAULT, this::onHoverExit, HOVER_EXIT_ON_DOWN_DELAY_MS);
-            if (mModelSelectorButton.onDown(x, y)) return;
+                    TaskTraits.UI_DEFAULT, this::clearTabHoverState, HOVER_EXIT_ON_DOWN_DELAY_MS);
+            if (mModelSelectorButton.onDown(x, y, fromMouse)) {
+                return;
+            }
             getActiveStripLayoutHelper().onDown(time(), x, y, fromMouse, buttons);
         }
 
@@ -239,17 +245,21 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                     && mTabHoverCardViewStub.getParent() != null) {
                 mTabHoverCardViewStub.inflate();
             }
-            getActiveStripLayoutHelper().onHoverEnter(x);
+            getActiveStripLayoutHelper().onHoverEnter(x, y);
         }
 
         @Override
         public void onHoverMove(float x, float y) {
-            getActiveStripLayoutHelper().onHoverMove(x);
+            getActiveStripLayoutHelper().onHoverMove(x, y);
         }
 
         @Override
         public void onHoverExit() {
             getActiveStripLayoutHelper().onHoverExit();
+        }
+
+        public void clearTabHoverState() {
+            getActiveStripLayoutHelper().clearTabHoverState();
         }
 
         private long time() {
@@ -340,18 +350,36 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
 
             // Model selector button background color.
             // Default bg color is surface inverse.
-            int backgroundDefaultColor =
+            int tsrBackgroundDefaultColor =
                     context.getResources().getColor(R.color.model_selector_button_bg_color);
 
             // Incognito bg color is surface 1 baseline for folio, surface 2 baseline for detached.
-            int backgroundIncognitoColor = TabManagementFieldTrial.isTabStripFolioEnabled()
-                    ? context.getResources().getColor(R.color.default_bg_color_dark_elev_1_baseline)
-                    : context.getResources().getColor(
-                            R.color.default_bg_color_dark_elev_2_baseline);
+            int tsrBackgroundIncognitoColor =
+                    TabManagementFieldTrial.isTabStripFolioEnabled()
+                            ? context.getResources()
+                                    .getColor(R.color.default_bg_color_dark_elev_1_baseline)
+                            : context.getResources()
+                                    .getColor(R.color.default_bg_color_dark_elev_2_baseline);
 
-            // Model selector button icon color
-            // @Todo(zheliooo crbugs.com/1447285) may need to update color using GM3 and update MSB
-            // icon per UX suggestion. Temporarily set MSB color match NTB color in normal mode
+            int apsBackgroundHoveredColor =
+                    org.chromium.ui.util.ColorUtils.setAlphaComponent(
+                            SemanticColorUtils.getDefaultTextColor(context),
+                            (int) (MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY * 255));
+            int apsBackgroundPressedColor =
+                    org.chromium.ui.util.ColorUtils.setAlphaComponent(
+                            SemanticColorUtils.getDefaultTextColor(context),
+                            (int) (MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY * 255));
+            int apsBackgroundHoveredIncognitoColor =
+                    ColorUtils.setAlphaComponent(
+                            context.getResources()
+                                    .getColor(R.color.tab_strip_button_hover_bg_color),
+                            (int) (MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY * 255));
+            int apsBackgroundPressedIncognitoColor =
+                    ColorUtils.setAlphaComponent(
+                            context.getResources()
+                                    .getColor(R.color.tab_strip_button_hover_bg_color),
+                            (int) (MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY * 255));
+
             int iconDefaultColor = TabUiFeatureUtilities.isTabStripButtonStyleDisabled()
                     ? AppCompatResources
                               .getColorStateList(context, R.color.default_icon_color_tint_list)
@@ -365,8 +393,15 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                             iconIncognitoColor);
 
             ((TintedCompositorButton) mModelSelectorButton)
-                    .setBackgroundTint(backgroundDefaultColor, backgroundDefaultColor,
-                            backgroundIncognitoColor, backgroundIncognitoColor);
+                    .setBackgroundTint(
+                            tsrBackgroundDefaultColor,
+                            tsrBackgroundDefaultColor,
+                            tsrBackgroundIncognitoColor,
+                            tsrBackgroundIncognitoColor,
+                            apsBackgroundHoveredColor,
+                            apsBackgroundPressedColor,
+                            apsBackgroundHoveredIncognitoColor,
+                            apsBackgroundPressedIncognitoColor);
 
             if (TabManagementFieldTrial.isTabStripFolioEnabled()) {
                 // y-offset for folio = lowered tab container + (tab container size - bg size)/2 -
@@ -476,6 +511,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         // Tab strip redesign button bg size is 32 * 32.
         ((TintedCompositorButton) mModelSelectorButton)
                 .setBackgroundResourceId(R.drawable.bg_circle_tab_strip_button);
+
         mModelSelectorWidth = MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP_TSR;
     }
 

@@ -44,6 +44,7 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
   new_tab_button_background_->SetIsDrawable(true);
   model_selector_button_->SetIsDrawable(true);
   model_selector_button_background_->SetIsDrawable(true);
+
   left_fade_->SetIsDrawable(true);
   right_fade_->SetIsDrawable(true);
 
@@ -132,6 +133,7 @@ void TabStripSceneLayer::UpdateNewTabButton(
     const JavaParamRef<jobject>& jobj,
     jint resource_id,
     jint bg_resource_id,
+    jboolean show_apply_hover_highlight,
     jfloat x,
     jfloat y,
     jfloat touch_target_offset,
@@ -156,6 +158,7 @@ void TabStripSceneLayer::UpdateNewTabButton(
     ui::Resource* button_background_resource =
         resource_manager->GetStaticResourceWithTint(bg_resource_id,
                                                     background_tint, true);
+
     float background_left_offset = (button_background_resource->size().width() -
                                     button_resource->size().width()) /
                                    2;
@@ -163,11 +166,15 @@ void TabStripSceneLayer::UpdateNewTabButton(
                                    button_resource->size().height()) /
                                   2;
 
-    // Do not show button bg if btn style disabled.
-    if (is_tsr_btn_style_disabled_) {
+    // Only show button bg if btn style enabled or when the btn is being
+    // hovered on.
+    if (is_tsr_btn_style_disabled_ && !show_apply_hover_highlight) {
+      new_tab_button_background_->RemoveFromParent();
+      tab_strip_layer_->AddChild(new_tab_button_);
       new_tab_button_->SetPosition(
           gfx::PointF(x + background_left_offset, y + background_top_offset));
     } else {
+      tab_strip_layer_->AddChild(new_tab_button_background_);
       new_tab_button_background_->SetUIResourceId(
           button_background_resource->ui_resource()->id());
       new_tab_button_background_->SetPosition(gfx::PointF(x, y));
@@ -230,6 +237,7 @@ void TabStripSceneLayer::UpdateModelSelectorButtonBackground(
     jboolean visible,
     jint tint,
     jint background_tint,
+    jboolean show_apply_hover_highlight,
     jfloat button_alpha,
     const JavaParamRef<jobject>& jresource_manager) {
   ui::ResourceManager* resource_manager =
@@ -255,11 +263,15 @@ void TabStripSceneLayer::UpdateModelSelectorButtonBackground(
                                  button_resource->size().height()) /
                                 2;
 
-  // Do not show button bg if btn style disabled.
-  if (is_tsr_btn_style_disabled_) {
+  // Only show button bg if btn style enabled or when the btn is being hovered
+  // on.
+  if (is_tsr_btn_style_disabled_ && !show_apply_hover_highlight) {
+    model_selector_button_background_->RemoveFromParent();
     model_selector_button_->SetPosition(
         gfx::PointF(x + background_left_offset, y + background_top_offset));
+    tab_strip_layer_->AddChild(model_selector_button_);
   } else {
+    tab_strip_layer_->AddChild(model_selector_button_background_);
     model_selector_button_background_->SetPosition(gfx::PointF(x, y));
 
     model_selector_button_background_->SetBounds(
@@ -268,6 +280,7 @@ void TabStripSceneLayer::UpdateModelSelectorButtonBackground(
     model_selector_button_background_->SetOpacity(button_alpha);
     model_selector_button_->SetPosition(
         gfx::PointF(background_left_offset, background_top_offset));
+    model_selector_button_background_->AddChild(model_selector_button_);
   }
   model_selector_button_->SetBounds(button_resource->size());
   model_selector_button_->SetHideLayerAndSubtree(!visible);
