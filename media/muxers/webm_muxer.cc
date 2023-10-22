@@ -355,6 +355,11 @@ bool WebmMuxer::PutFrame(EncodedFrame frame,
       AddAudioTrack(*audio_params);
     }
   } else {
+    // Clusterfuzz: mkvmuxer suffers from use-after-free on receiving zero-sized
+    // video data inputs - ignore these.
+    if (frame.data.size() == 0u) {
+      return true;
+    }
     auto* video_params = absl::get_if<VideoParameters>(&frame.params);
     CHECK(video_params);
     DCHECK(video_params->codec == VideoCodec::kVP8 ||
