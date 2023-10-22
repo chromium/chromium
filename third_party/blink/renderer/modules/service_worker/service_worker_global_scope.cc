@@ -33,6 +33,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -1550,10 +1551,52 @@ void ServiceWorkerGlobalScope::StartFetchEvent(
 
   if (params->race_network_request_loader_factory &&
       params->request->service_worker_race_network_request_token) {
-    race_network_request_loader_factories_.insert(
+    auto insert_result = race_network_request_loader_factories_.insert(
         String(params->request->service_worker_race_network_request_token
                    ->ToString()),
         std::move(params->race_network_request_loader_factory));
+
+    // DumpWithoutCrashing if the token is empty, or not inserted as a new entry
+    // to |race_network_request_loader_factories_|.
+    // TODO(crbug.com/1492640) Remove DumpWithoutCrashing once we collect data
+    // and identify the cause.
+    static bool has_dumped_without_crashing_for_empty_token = false;
+    static bool has_dumped_without_crashing_for_not_new_entry = false;
+    if (!has_dumped_without_crashing_for_empty_token &&
+        params->request->service_worker_race_network_request_token
+            ->is_empty()) {
+      has_dumped_without_crashing_for_empty_token = true;
+      SCOPED_CRASH_KEY_BOOL(
+          "SWGlobalScope", "empty_race_token",
+          params->request->service_worker_race_network_request_token
+              ->is_empty());
+      SCOPED_CRASH_KEY_STRING64(
+          "SWGlobalScope", "race_token_string",
+          params->request->service_worker_race_network_request_token
+              ->ToString());
+      SCOPED_CRASH_KEY_BOOL("SWGlobalScope", "race_insert_new_entry",
+                            insert_result.is_new_entry);
+      SCOPED_CRASH_KEY_STRING256("SWGlobalScope", "race_request_url",
+                                 params->request->url.GetString().Utf8());
+      base::debug::DumpWithoutCrashing();
+    }
+    if (!has_dumped_without_crashing_for_not_new_entry &&
+        !insert_result.is_new_entry) {
+      has_dumped_without_crashing_for_not_new_entry = true;
+      SCOPED_CRASH_KEY_BOOL(
+          "SWGlobalScope", "empty_race_token",
+          params->request->service_worker_race_network_request_token
+              ->is_empty());
+      SCOPED_CRASH_KEY_STRING64(
+          "SWGlobalScope", "race_token_string",
+          params->request->service_worker_race_network_request_token
+              ->ToString());
+      SCOPED_CRASH_KEY_BOOL("SWGlobalScope", "race_insert_new_entry",
+                            insert_result.is_new_entry);
+      SCOPED_CRASH_KEY_STRING256("SWGlobalScope", "race_request_url",
+                                 params->request->url.GetString().Utf8());
+      base::debug::DumpWithoutCrashing();
+    }
   }
 
   Request* request = Request::Create(
