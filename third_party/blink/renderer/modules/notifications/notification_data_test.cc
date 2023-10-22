@@ -73,9 +73,9 @@ TEST(NotificationDataTest, ReflectProperties) {
     actions.push_back(action);
   }
 
-  DOMTimeStamp showTimestamp =
+  DOMTimeStamp show_timestamp =
       base::Time::Now().InSecondsFSinceUnixEpoch() * 1000.0;
-  TimestampTrigger* showTrigger = TimestampTrigger::Create(showTimestamp);
+  TimestampTrigger* showTrigger = TimestampTrigger::Create(show_timestamp);
 
   NotificationOptions* options =
       NotificationOptions::Create(scope.GetIsolate());
@@ -110,7 +110,7 @@ TEST(NotificationDataTest, ReflectProperties) {
   EXPECT_EQ(kNotificationBody, notification_data->body);
   EXPECT_EQ(kNotificationTag, notification_data->tag);
   EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(
-                static_cast<int64_t>(showTimestamp)),
+                static_cast<int64_t>(show_timestamp)),
             notification_data->show_trigger_timestamp);
 
   // URLs should be resolved against the base URL of the execution context.
