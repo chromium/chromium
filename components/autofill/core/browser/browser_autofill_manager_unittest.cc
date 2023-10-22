@@ -338,7 +338,7 @@ class MockTouchToFillDelegate : public TouchToFillDelegate {
   MOCK_METHOD(BrowserAutofillManager*, GetManager, (), (override));
   MOCK_METHOD(bool,
               IntendsToShowTouchToFill,
-              (FormGlobalId, FieldGlobalId),
+              (FormGlobalId, FieldGlobalId, const FormData&),
               (override));
   MOCK_METHOD(bool,
               TryToShowTouchToFill,
@@ -377,7 +377,7 @@ class MockFastCheckoutDelegate : public FastCheckoutDelegate {
               (override));
   MOCK_METHOD(bool,
               IntendsToShowFastCheckout,
-              (AutofillManager&, FormGlobalId, FieldGlobalId),
+              (AutofillManager&, FormGlobalId, FieldGlobalId, const FormData&),
               (const, override));
   MOCK_METHOD(bool, IsShowingFastCheckoutUI, (), (const, override));
   MOCK_METHOD(void, HideFastCheckout, (bool), (override));

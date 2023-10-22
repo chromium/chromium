@@ -61,7 +61,7 @@ class MockTouchToFillDelegateAndroidImpl
   MOCK_METHOD(bool, IsShowingTouchToFill, (), (override));
   MOCK_METHOD(bool,
               IntendsToShowTouchToFill,
-              (FormGlobalId, FieldGlobalId),
+              (FormGlobalId, FieldGlobalId, const FormData&),
               (override));
   MOCK_METHOD(TestBrowserAutofillManager*, GetManager, (), (override));
   MOCK_METHOD(bool, ShouldShowScanCreditCard, (), (override));
@@ -142,8 +142,8 @@ class TouchToFillCreditCardControllerTest
         .WillOnce(Return(true));
     credit_card_controller()
         .keyboard_suppressor_for_test()
-        .OnBeforeAskForValuesToFill(autofill_manager(), some_form_,
-                                    some_field_);
+        .OnBeforeAskForValuesToFill(autofill_manager(), some_form_, some_field_,
+                                    some_form_data_);
     EXPECT_TRUE(credit_card_controller()
                     .keyboard_suppressor_for_test()
                     .is_suppressing());
@@ -169,7 +169,10 @@ class TouchToFillCreditCardControllerTest
       autofill_client_injector_;
   TestAutofillManagerInjector<TestBrowserAutofillManager>
       autofill_manager_injector_;
-  FormGlobalId some_form_ = test::MakeFormGlobalId();
+  FormData some_form_data_ =
+      autofill::test::CreateTestCreditCardFormData(/*is_https=*/true,
+                                                   /*use_month_type=*/false);
+  FormGlobalId some_form_ = some_form_data_.global_id();
   FieldGlobalId some_field_ = test::MakeFieldGlobalId();
 };
 

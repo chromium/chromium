@@ -138,10 +138,11 @@ FastCheckoutClientImpl::FastCheckoutClientImpl(
           }),
           base::BindRepeating([](autofill::AutofillManager& manager,
                                  autofill::FormGlobalId form,
-                                 autofill::FieldGlobalId field) {
+                                 autofill::FieldGlobalId field,
+                                 const autofill::FormData& form_data) {
             return GetDelegate(manager) &&
-                   GetDelegate(manager)->IntendsToShowFastCheckout(manager,
-                                                                   form, field);
+                   GetDelegate(manager)->IntendsToShowFastCheckout(
+                       manager, form, field, form_data);
           }),
           base::Seconds(1)) {
   driver_factory_observation_.Observe(

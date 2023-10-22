@@ -112,7 +112,8 @@ class AutofillManager
 
     virtual void OnBeforeAskForValuesToFill(AutofillManager& manager,
                                             FormGlobalId form,
-                                            FieldGlobalId field) {}
+                                            FieldGlobalId field,
+                                            const FormData& form_data) {}
     virtual void OnAfterAskForValuesToFill(AutofillManager& manager,
                                            FormGlobalId form,
                                            FieldGlobalId field) {}

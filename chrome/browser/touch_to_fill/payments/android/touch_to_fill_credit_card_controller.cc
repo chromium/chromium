@@ -37,9 +37,11 @@ TouchToFillCreditCardController::TouchToFillCreditCardController(
           }),
           base::BindRepeating([](AutofillManager& manager,
                                  FormGlobalId form,
-                                 FieldGlobalId field) {
+                                 FieldGlobalId field,
+                                 const FormData& form_data) {
             return GetDelegate(manager) &&
-                   GetDelegate(manager)->IntendsToShowTouchToFill(form, field);
+                   GetDelegate(manager)->IntendsToShowTouchToFill(form, field,
+                                                                  form_data);
           }),
           base::Seconds(1)) {
   driver_factory_observation_.Observe(

@@ -46,7 +46,8 @@ class FastCheckoutDelegateImpl : public autofill::FastCheckoutDelegate {
   bool IntendsToShowFastCheckout(
       autofill::AutofillManager& manager,
       autofill::FormGlobalId form_id,
-      autofill::FieldGlobalId field_id) const override;
+      autofill::FieldGlobalId field_id,
+      const autofill::FormData& form_data) const override;
   bool IsShowingFastCheckoutUI() const override;
   void HideFastCheckout(bool allow_further_runs) override;
 

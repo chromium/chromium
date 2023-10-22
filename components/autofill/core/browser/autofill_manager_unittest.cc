@@ -488,7 +488,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   EXPECT_CALL(observer, OnAfterDidFillAutofillFormData(m, f));
   manager_->OnDidFillAutofillFormData(form, {});
 
-  EXPECT_CALL(observer, OnBeforeAskForValuesToFill(m, f, ff));
+  EXPECT_CALL(observer, OnBeforeAskForValuesToFill(m, f, ff, Ref(form)));
   EXPECT_CALL(observer, OnAfterAskForValuesToFill(m, f, ff));
   manager_->OnAskForValuesToFill(form, field, {}, {});
 

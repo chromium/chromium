@@ -533,7 +533,7 @@ void AutofillManager::OnAskForValuesToFill(
     return;
 
   NotifyObservers(&Observer::OnBeforeAskForValuesToFill, form.global_id(),
-                  field.global_id());
+                  field.global_id(), form);
   if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)) {
     OnAskForValuesToFillImpl(form, field, bounding_box, trigger_source);
     NotifyObservers(&Observer::OnAfterAskForValuesToFill, form.global_id(),

@@ -156,7 +156,7 @@ class MockFastCheckoutDelegate : public autofill::FastCheckoutDelegate {
               (override));
   MOCK_METHOD(bool,
               IntendsToShowFastCheckout,
-              (AutofillManager&, FormGlobalId, FieldGlobalId),
+              (AutofillManager&, FormGlobalId, FieldGlobalId, const FormData&),
               (const, override));
   MOCK_METHOD(bool, IsShowingFastCheckoutUI, (), (const, override));
   MOCK_METHOD(void, HideFastCheckout, (bool), (override));
@@ -422,7 +422,7 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
     fast_checkout_client()
         ->keyboard_suppressor_for_test()
         .OnBeforeAskForValuesToFill(*autofill_manager(), some_form_,
-                                    some_field_);
+                                    some_field_, some_form_data_);
     EXPECT_TRUE(fast_checkout_client()
                     ->keyboard_suppressor_for_test()
                     .is_suppressing());
@@ -456,7 +456,10 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
   raw_ptr<MockFastCheckoutController> fast_checkout_controller_;
   raw_ptr<MockFastCheckoutTriggerValidator> validator_;
   raw_ptr<MockFastCheckoutAccessibilityService> accessibility_service_;
-  FormGlobalId some_form_ = autofill::test::MakeFormGlobalId();
+  FormData some_form_data_ =
+      autofill::test::CreateTestCreditCardFormData(/*is_https=*/true,
+                                                   /*use_month_type=*/false);
+  FormGlobalId some_form_ = some_form_data_.global_id();
   FieldGlobalId some_field_ = autofill::test::MakeFieldGlobalId();
 };
 
