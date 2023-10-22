@@ -240,6 +240,8 @@ class ImeServiceTest : public testing::Test, public mojom::InputMethodHost {
         remote_service_.BindNewPipeAndPassReceiver(),
         TestImeSharedLibraryWrapper::GetInstance(),
         std::make_unique<TestFieldTrialParamsRetriever>());
+    remote_service_->BindInputEngineManager(
+        remote_manager_.BindNewPipeAndPassReceiver());
   }
 
   void TearDown() override {
@@ -248,6 +250,7 @@ class ImeServiceTest : public testing::Test, public mojom::InputMethodHost {
   }
 
   mojo::Remote<mojom::ImeService> remote_service_;
+  mojo::Remote<mojom::InputEngineManager> remote_manager_;
 
  protected:
   std::unique_ptr<ImeService> service_;
@@ -263,16 +266,13 @@ class ImeServiceTest : public testing::Test, public mojom::InputMethodHost {
 TEST_F(ImeServiceTest, ConnectInvalidImeEngineDoesNotConnectRemote) {
   bool success = true;
   MockInputChannel test_channel;
-  mojo::Remote<mojom::InputEngineManager> remote_manager;
   mojo::Remote<mojom::InputChannel> remote_engine;
 
-  remote_service_->BindInputEngineManager(
-      remote_manager.BindNewPipeAndPassReceiver());
-  remote_manager->ConnectToImeEngine(
+  remote_manager_->ConnectToImeEngine(
       kInvalidImeSpec, remote_engine.BindNewPipeAndPassReceiver(),
       test_channel.CreatePendingRemote(), extra,
       base::BindOnce(&ConnectCallback, &success));
-  remote_manager.FlushForTesting();
+  remote_manager_.FlushForTesting();
 
   EXPECT_FALSE(success);
   EXPECT_FALSE(remote_engine.is_connected());
@@ -281,16 +281,13 @@ TEST_F(ImeServiceTest, ConnectInvalidImeEngineDoesNotConnectRemote) {
 TEST_F(ImeServiceTest, ConnectToValidEngineConnectsRemote) {
   bool success = true;
   MockInputChannel test_channel;
-  mojo::Remote<mojom::InputEngineManager> remote_manager;
   mojo::Remote<mojom::InputChannel> remote_engine;
 
-  remote_service_->BindInputEngineManager(
-      remote_manager.BindNewPipeAndPassReceiver());
-  remote_manager->ConnectToImeEngine(
+  remote_manager_->ConnectToImeEngine(
       kValidImeSpec, remote_engine.BindNewPipeAndPassReceiver(),
       test_channel.CreatePendingRemote(), {},
       base::BindOnce(&ConnectCallback, &success));
-  remote_manager.FlushForTesting();
+  remote_manager_.FlushForTesting();
 
   EXPECT_TRUE(success);
   EXPECT_TRUE(remote_engine.is_connected());
@@ -299,20 +296,17 @@ TEST_F(ImeServiceTest, ConnectToValidEngineConnectsRemote) {
 TEST_F(ImeServiceTest, ConnectToImeEngineWillOverrideExistingImeEngine) {
   bool success1, success2 = true;
   MockInputChannel test_channel1, test_channel2;
-  mojo::Remote<mojom::InputEngineManager> remote_manager;
   mojo::Remote<mojom::InputChannel> remote_engine1, remote_engine2;
 
-  remote_service_->BindInputEngineManager(
-      remote_manager.BindNewPipeAndPassReceiver());
-  remote_manager->ConnectToImeEngine(
+  remote_manager_->ConnectToImeEngine(
       kValidImeSpec, remote_engine1.BindNewPipeAndPassReceiver(),
       test_channel1.CreatePendingRemote(), /*extra=*/{},
       base::BindOnce(&ConnectCallback, &success1));
-  remote_manager->ConnectToImeEngine(
+  remote_manager_->ConnectToImeEngine(
       kValidImeSpec, remote_engine2.BindNewPipeAndPassReceiver(),
       test_channel2.CreatePendingRemote(), /*extra=*/{},
       base::BindOnce(&ConnectCallback, &success2));
-  remote_manager.FlushForTesting();
+  remote_manager_.FlushForTesting();
 
   EXPECT_TRUE(success1);
   EXPECT_TRUE(success2);
@@ -324,20 +318,17 @@ TEST_F(ImeServiceTest,
        ConnectToImeEngineCannotConnectIfConnectionFactoryIsConnected) {
   bool success1, success2 = true;
   MockInputChannel test_channel;
-  mojo::Remote<mojom::InputEngineManager> remote_manager;
   mojo::Remote<mojom::ConnectionFactory> connection_factory;
   mojo::Remote<mojom::InputChannel> remote_engine;
 
-  remote_service_->BindInputEngineManager(
-      remote_manager.BindNewPipeAndPassReceiver());
-  remote_manager->InitializeConnectionFactory(
+  remote_manager_->InitializeConnectionFactory(
       connection_factory.BindNewPipeAndPassReceiver(),
       base::BindOnce(&ConnectCallback, &success1));
-  remote_manager->ConnectToImeEngine(
+  remote_manager_->ConnectToImeEngine(
       kValidImeSpec, remote_engine.BindNewPipeAndPassReceiver(),
       test_channel.CreatePendingRemote(), /*extra=*/{},
       base::BindOnce(&ConnectCallback, &success2));
-  remote_manager.FlushForTesting();
+  remote_manager_.FlushForTesting();
 
   // The second connection should have failed.
   EXPECT_TRUE(success1);
@@ -350,25 +341,18 @@ TEST_F(ImeServiceTest,
        ConnectToImeEngineCanConnectIfConnectionFactoryIsDisconnected) {
   bool success1, success2 = true;
   MockInputChannel test_channel;
-  mojo::Remote<mojom::InputEngineManager> remote_manager;
   mojo::Remote<mojom::ConnectionFactory> connection_factory;
   mojo::Remote<mojom::InputChannel> remote_engine;
 
-  remote_service_->BindInputEngineManager(
-      remote_manager.BindNewPipeAndPassReceiver());
-  remote_manager->InitializeConnectionFactory(
+  remote_manager_->InitializeConnectionFactory(
       connection_factory.BindNewPipeAndPassReceiver(),
       base::BindOnce(&ConnectCallback, &success1));
-  remote_manager.FlushForTesting();
   connection_factory.reset();
-  remote_manager.reset();
-  remote_service_->BindInputEngineManager(
-      remote_manager.BindNewPipeAndPassReceiver());
-  remote_manager->ConnectToImeEngine(
+  remote_manager_->ConnectToImeEngine(
       kValidImeSpec, remote_engine.BindNewPipeAndPassReceiver(),
       test_channel.CreatePendingRemote(), /*extra=*/{},
       base::BindOnce(&ConnectCallback, &success2));
-  remote_manager.FlushForTesting();
+  remote_manager_.FlushForTesting();
 
   // The second connection should have succeed since the first connection was
   // disconnected.
@@ -381,24 +365,21 @@ TEST_F(ImeServiceTest,
 TEST_F(ImeServiceTest, InitializeConnectionFactoryCanOverrideAnyConnection) {
   bool success1, success2, success3 = true;
   MockInputChannel test_channel;
-  mojo::Remote<mojom::InputEngineManager> remote_manager;
   mojo::Remote<mojom::ConnectionFactory> connection_factory1,
       connection_factory2;
   mojo::Remote<mojom::InputChannel> remote_engine;
 
-  remote_service_->BindInputEngineManager(
-      remote_manager.BindNewPipeAndPassReceiver());
-  remote_manager->ConnectToImeEngine(
+  remote_manager_->ConnectToImeEngine(
       kValidImeSpec, remote_engine.BindNewPipeAndPassReceiver(),
       test_channel.CreatePendingRemote(), /*extra=*/{},
       base::BindOnce(&ConnectCallback, &success1));
-  remote_manager->InitializeConnectionFactory(
+  remote_manager_->InitializeConnectionFactory(
       connection_factory1.BindNewPipeAndPassReceiver(),
       base::BindOnce(&ConnectCallback, &success2));
-  remote_manager->InitializeConnectionFactory(
+  remote_manager_->InitializeConnectionFactory(
       connection_factory2.BindNewPipeAndPassReceiver(),
       base::BindOnce(&ConnectCallback, &success3));
-  remote_manager.FlushForTesting();
+  remote_manager_.FlushForTesting();
 
   EXPECT_TRUE(success1);
   EXPECT_TRUE(success2);
