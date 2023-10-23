@@ -6,7 +6,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 
-#include "components/password_manager/core/browser/password_manager_eviction_util.h"
+#include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #include "components/password_manager/core/browser/password_manager_setting.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"

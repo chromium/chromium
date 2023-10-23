@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/password_store_backend_migration_decorator.h"
+#include "chrome/browser/password_manager/android/password_store_backend_migration_decorator.h"
 
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/password_manager/core/browser/built_in_backend_to_android_backend_migrator.h"
-#include "components/password_manager/core/browser/password_store_proxy_backend.h"
+#include "chrome/browser/password_manager/android/built_in_backend_to_android_backend_migrator.h"
+#include "chrome/browser/password_manager/android/password_store_proxy_backend.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"

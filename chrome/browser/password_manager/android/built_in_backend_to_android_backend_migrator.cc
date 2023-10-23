@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/built_in_backend_to_android_backend_migrator.h"
+#include "chrome/browser/password_manager/android/built_in_backend_to_android_backend_migrator.h"
 
 #include "base/barrier_callback.h"
 #include "base/containers/flat_set.h"

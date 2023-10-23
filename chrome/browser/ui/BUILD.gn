@@ -959,6 +959,7 @@ static_library("ui") {
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/image_decoder",
       "//chrome/browser/notifications/scheduler/public",
+      "//chrome/browser/password_manager/android:backend",
       "//chrome/browser/touch_to_fill/payments/android",
       "//chrome/browser/ui/android/autofill/internal:jni_headers",
       "//chrome/browser/ui/android/page_insights:jni_headers",

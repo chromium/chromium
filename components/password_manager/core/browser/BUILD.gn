@@ -300,18 +300,9 @@ static_library("browser") {
     sources += [
       "android_backend_error.cc",
       "android_backend_error.h",
-      "built_in_backend_to_android_backend_migrator.cc",
-      "built_in_backend_to_android_backend_migrator.h",
       "password_credential_filler.h",
       "password_credential_filler_impl.cc",
       "password_credential_filler_impl.h",
-      "password_manager_eviction_util.cc",
-      "password_manager_eviction_util.h",
-      "password_store_android_backend_api_error_codes.h",
-      "password_store_backend_migration_decorator.cc",
-      "password_store_backend_migration_decorator.h",
-      "password_store_proxy_backend.cc",
-      "password_store_proxy_backend.h",
       "unified_password_manager_proto_utils.cc",
       "unified_password_manager_proto_utils.h",
     ]
@@ -653,12 +644,8 @@ source_set("unit_tests") {
   ]
   if (is_android) {
     sources += [
-      "built_in_backend_to_android_backend_migrator_unittest.cc",
       "password_credential_filler_impl_unittest.cc",
-      "password_manager_eviction_util_unittest.cc",
       "password_store_backend_metrics_recorder_unittest.cc",
-      "password_store_backend_migration_decorator_unittest.cc",
-      "password_store_proxy_backend_unittest.cc",
       "unified_password_manager_proto_utils_unittest.cc",
     ]
   }

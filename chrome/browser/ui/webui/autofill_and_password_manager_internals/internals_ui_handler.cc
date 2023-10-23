@@ -23,7 +23,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "components/password_manager/core/browser/password_manager_eviction_util.h"
+#include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #endif
 
 using autofill::LogRouter;
