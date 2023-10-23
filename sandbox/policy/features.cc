@@ -153,6 +153,11 @@ BASE_FEATURE(kCacheMacSandboxProfiles,
 BASE_FEATURE(kUseRendererProcessPolicy,
              "UseRendererProcessPolicy",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// When enabled, this features restricts a set of syscalls in
+// BaselinePolicyAndroid that are used by RendererProcessPolicy.
+BASE_FEATURE(kRestrictRendererPoliciesInBaseline,
+             "RestrictRendererPoliciesInBaseline",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
