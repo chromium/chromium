@@ -250,12 +250,6 @@ class AutofillManager
                                bool known_success,
                                mojom::SubmissionSource source);
 
-  void FillCreditCardForm(const FormData& form,
-                          const FormFieldData& field,
-                          const CreditCard& credit_card,
-                          const std::u16string& cvc,
-                          const AutofillTriggerDetails& trigger_details);
-
   // Invoked when |form| has been filled with the value given by
   // FillOrPreviewForm.
   // Virtual for testing.
@@ -419,13 +413,6 @@ class AutofillManager
   virtual void OnDidFillAutofillFormDataImpl(
       const FormData& form,
       const base::TimeTicks timestamp) = 0;
-
-  virtual void FillCreditCardFormImpl(
-      const FormData& form,
-      const FormFieldData& field,
-      const CreditCard& credit_card,
-      const std::u16string& cvc,
-      const AutofillTriggerDetails& trigger_details) = 0;
 
   virtual void OnFocusNoLongerOnFormImpl(bool had_interacted_form) = 0;
 

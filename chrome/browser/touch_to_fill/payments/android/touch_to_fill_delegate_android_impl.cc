@@ -236,7 +236,7 @@ void TouchToFillDelegateAndroidImpl::ScanCreditCard() {
 void TouchToFillDelegateAndroidImpl::OnCreditCardScanned(
     const CreditCard& card) {
   HideTouchToFill();
-  manager_->FillCreditCardFormImpl(
+  manager_->FillCreditCardForm(
       query_form_, query_field_, card, std::u16string(),
       {.trigger_source = AutofillTriggerSource::kTouchToFillCreditCard});
 }

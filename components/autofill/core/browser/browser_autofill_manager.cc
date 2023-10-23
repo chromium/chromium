@@ -1493,7 +1493,7 @@ void BrowserAutofillManager::FillOrPreviewForm(
   }
 }
 
-void BrowserAutofillManager::FillCreditCardFormImpl(
+void BrowserAutofillManager::FillCreditCardForm(
     const FormData& form,
     const FormFieldData& field,
     const CreditCard& credit_card,
@@ -1998,7 +1998,7 @@ void BrowserAutofillManager::OnCreditCardFetched(
   client().GetFormDataImporter()->SetFetchedCardInstrumentId(
       credit_card->instrument_id());
 
-  FillCreditCardFormImpl(
+  FillCreditCardForm(
       credit_card_form_, credit_card_field_, *credit_card, cvc,
       {.trigger_source = fetched_credit_card_trigger_source_.value_or(
            AutofillTriggerSource::kCreditCardCvcPopup)});

@@ -172,10 +172,11 @@ void AutofillHandler::FinishTrigger(
   tmp_autofill_card.SetRawInfo(autofill::CREDIT_CARD_VERIFICATION_CODE,
                                base::UTF8ToUTF16(card->GetCvc()));
 
-  autofill_driver->GetAutofillManager().FillCreditCardForm(
-      field_data->first, field_data->second, tmp_autofill_card,
-      base::UTF8ToUTF16(card->GetCvc()),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+  static_cast<autofill::BrowserAutofillManager&>(
+      autofill_driver->GetAutofillManager())
+      .FillCreditCardForm(field_data->first, field_data->second,
+                          tmp_autofill_card, base::UTF8ToUTF16(card->GetCvc()),
+                          {.trigger_source = AutofillTriggerSource::kPopup});
 
   std::move(callback)->sendSuccess();
 }

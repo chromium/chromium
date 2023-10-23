@@ -271,21 +271,6 @@ LanguageCode AutofillManager::GetCurrentPageLanguage() {
   return LanguageCode(language_state->current_language());
 }
 
-void AutofillManager::FillCreditCardForm(
-    const FormData& form,
-    const FormFieldData& field,
-    const CreditCard& credit_card,
-    const std::u16string& cvc,
-    const AutofillTriggerDetails& trigger_details) {
-  if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)) {
-    FillCreditCardFormImpl(form, field, credit_card, cvc, trigger_details);
-    return;
-  }
-  ParseFormAsync(form, ParsingCallback(&AutofillManager::FillCreditCardFormImpl,
-                                       field, credit_card, cvc, trigger_details)
-                           .Then(NotifyNoObserversCallback()));
-}
-
 void AutofillManager::OnDidFillAutofillFormData(
     const FormData& form,
     const base::TimeTicks timestamp) {

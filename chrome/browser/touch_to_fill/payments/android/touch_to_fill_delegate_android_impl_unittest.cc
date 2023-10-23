@@ -86,7 +86,7 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
               (const FormData& form, const FormFieldData& field),
               (override));
   MOCK_METHOD(void,
-              FillCreditCardFormImpl,
+              FillCreditCardForm,
               (const FormData& form,
                const FormFieldData& field,
                const CreditCard& credit_card,
@@ -670,7 +670,7 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest, ScanCreditCardIsCalled) {
   touch_to_fill_delegate_->ScanCreditCard();
 
   CreditCard credit_card = autofill::test::GetCreditCard();
-  EXPECT_CALL(*browser_autofill_manager_, FillCreditCardFormImpl);
+  EXPECT_CALL(*browser_autofill_manager_, FillCreditCardForm);
   touch_to_fill_delegate_->OnCreditCardScanned(credit_card);
   EXPECT_EQ(touch_to_fill_delegate_->IsShowingTouchToFill(), false);
 }

@@ -179,7 +179,7 @@ class MockBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
                const autofill::AutofillTriggerDetails&),
               (override));
   MOCK_METHOD(void,
-              FillCreditCardFormImpl,
+              FillCreditCardForm,
               (const FormData&,
                const FormFieldData&,
                const autofill::CreditCard&,
@@ -836,7 +836,7 @@ TEST_F(FastCheckoutClientImplTest,
       *credit_card_form->field(kCreditCardFieldIndexInForm);
 
   EXPECT_CALL(*autofill_manager(),
-              FillCreditCardFormImpl(
+              FillCreditCardForm(
                   FormDataEqualTo(credit_card_form->ToFormData()),
                   FormFieldDataEqualTo(field), Eq(*credit_card), Eq(cvc),
                   EqualsAutofilltriggerDetails(
@@ -1012,7 +1012,7 @@ TEST_F(FastCheckoutClientImplTest,
   std::u16string cvc = u"123";
 
   EXPECT_CALL(*autofill_manager(),
-              FillCreditCardFormImpl(
+              FillCreditCardForm(
                   FormDataEqualTo(credit_card_form->ToFormData()),
                   FormFieldDataEqualTo(field), Eq(*credit_card), Eq(cvc),
                   EqualsAutofilltriggerDetails(
@@ -1126,7 +1126,7 @@ TEST_F(FastCheckoutClientImplTest,
   // resolved. This assertion is a safeguard against potential future changes.
   // E.g. having the popup only for server and masked cards, like in the
   // `BrowserAutofillManager`.
-  EXPECT_CALL(*autofill_manager(), FillCreditCardFormImpl).Times(0);
+  EXPECT_CALL(*autofill_manager(), FillCreditCardForm).Times(0);
 
   fast_checkout_client()->OnAfterLoadedServerPredictions(*autofill_manager());
 
@@ -1145,7 +1145,7 @@ TEST_F(FastCheckoutClientImplTest,
       *autofill_manager(),
       SetFastCheckoutRunId(autofill::FieldTypeGroup::kCreditCard, Ne(0)));
   EXPECT_CALL(*autofill_manager(),
-              FillCreditCardFormImpl(
+              FillCreditCardForm(
                   FormDataEqualTo(credit_card_form->ToFormData()),
                   FormFieldDataEqualTo(field), _, Eq(u""),
                   EqualsAutofilltriggerDetails(

@@ -455,9 +455,10 @@ void FastCheckoutClientImpl::FillCreditCardForm(
   form_filling_states_[std::make_pair(form.form_signature(),
                                       autofill::FormType::kCreditCardForm)] =
       FillingState::kFilling;
-  static_cast<autofill::BrowserAutofillManager*>(autofill_manager_.get())
-      ->SetFastCheckoutRunId(autofill::FieldTypeGroup::kCreditCard, run_id_);
-  autofill_manager_->FillCreditCardForm(
+  auto* bam =
+      static_cast<autofill::BrowserAutofillManager*>(autofill_manager_.get());
+  bam->SetFastCheckoutRunId(autofill::FieldTypeGroup::kCreditCard, run_id_);
+  bam->FillCreditCardForm(
       form.ToFormData(), field, credit_card, cvc,
       {.trigger_source = autofill::AutofillTriggerSource::kFastCheckout});
 }

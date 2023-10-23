@@ -141,12 +141,14 @@ class BrowserAutofillManager : public AutofillManager,
                                  const FormFieldData& field,
                                  Suggestion::BackendId backend_id,
                                  const AutofillTriggerDetails& trigger_details);
-  void FillCreditCardFormImpl(
+
+  virtual void FillCreditCardForm(
       const FormData& form,
       const FormFieldData& field,
       const CreditCard& credit_card,
       const std::u16string& cvc,
-      const AutofillTriggerDetails& trigger_details) override;
+      const AutofillTriggerDetails& trigger_details);
+
   // Reverts the last autofill operation on `form` that affected
   // `trigger_field`, virtual for testing. `renderer_action` denotes whether
   // this is an actual filling or a preview operation on the renderer side.
