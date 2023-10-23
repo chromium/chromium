@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.eq;
 
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.os.Build.VERSION_CODES;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -551,6 +552,7 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
+    @DisableIf.Build(message = "Flaky crbug.com/1494912", sdk_is_greater_than = VERSION_CODES.Q)
     public void testAppMenuButtonHelper_DownUp() throws Exception {
         AppMenuButtonHelperImpl buttonHelper =
                 (AppMenuButtonHelperImpl) mAppMenuHandler.createAppMenuButtonHelper();
