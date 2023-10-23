@@ -119,7 +119,7 @@ TEST(AutofillShadowPredictionComparisonTest, ComparisonContainsAllTypes) {
     auto type = ToSafeServerFieldType(type_int, NO_SERVER_DATA);
     EXPECT_LE(GetShadowPrediction(type, NAME_FIRST, {NAME_LAST}),
               max_comparison)
-        << FieldTypeToStringPiece(type) << " has no mapping.";
+        << FieldTypeToStringView(type) << " has no mapping.";
   }
 }
 

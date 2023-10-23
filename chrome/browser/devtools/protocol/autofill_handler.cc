@@ -314,7 +314,7 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
     for (const autofill::AutofillAddressUIComponent& component : line) {
       profile_values->push_back(
           protocol::Autofill::AddressField::Create()
-              .SetName(std::string(FieldTypeToStringPiece(component.field)))
+              .SetName(FieldTypeToString(component.field))
               .SetValue(base::UTF16ToASCII(
                   profile_used_to_fill_form->GetInfo(component.field, locale)))
               .Build());

@@ -80,7 +80,7 @@ bool IsValidFieldTypeAndValue(const ServerFieldTypeSet types_seen,
        field_type_group != FieldTypeGroup::kPhone)) {
     LOG_AF(import_log_buffer)
         << LogMessage::kImportAddressProfileFromFormFailed
-        << "Multiple fields of type " << FieldTypeToStringPiece(field_type)
+        << "Multiple fields of type " << FieldTypeToStringView(field_type)
         << "." << CTag{};
     return false;
   }
@@ -90,7 +90,7 @@ bool IsValidFieldTypeAndValue(const ServerFieldTypeSet types_seen,
     LOG_AF(import_log_buffer)
         << LogMessage::kImportAddressProfileFromFormFailed
         << "Email address found in field of different type: "
-        << FieldTypeToStringPiece(field_type) << CTag{};
+        << FieldTypeToStringView(field_type) << CTag{};
     return false;
   }
 

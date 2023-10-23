@@ -80,7 +80,7 @@ base::Value::Dict AddressUiComponentAsValueMap(
     const autofill::AutofillAddressUIComponent& address_ui_component) {
   base::Value::Dict info;
   info.Set(kFieldNameKey, address_ui_component.name);
-  info.Set(kFieldTypeKey, FieldTypeToStringPiece(address_ui_component.field));
+  info.Set(kFieldTypeKey, FieldTypeToStringView(address_ui_component.field));
   info.Set(kFieldLengthKey,
            address_ui_component.length_hint ==
                autofill::AutofillAddressUIComponent::HINT_LONG);

@@ -452,15 +452,17 @@ std::ostream& operator<<(std::ostream& o, ServerFieldTypeSet field_type_set);
 // Returns whether the field can be filled with data.
 bool IsFillableFieldType(ServerFieldType field_type);
 
-// Returns a StringPiece describing |type|. As the StringPiece points to a
-// static string, you don't need to worry about dangling pointers.
-std::string_view FieldTypeToStringPiece(ServerFieldType type);
+// Returns a string view describing `type`.
+std::string_view FieldTypeToStringView(ServerFieldType type);
 
-// Inverse FieldTypeToStringPiece(). Checks that only valid ServerFieldType
+// Returns a string describing `type`.
+std::string FieldTypeToString(ServerFieldType type);
+
+// Inverse FieldTypeToStringView(). Checks that only valid ServerFieldType
 // string representations are being passed.
 ServerFieldType TypeNameToFieldType(std::string_view type_name);
 
-// Returns a StringPiece describing `type`. The devtools UI uses this string to
+// Returns a string view describing `type`. The devtools UI uses this string to
 // give developers feedback about autofill's filling decision. Note that
 // different field types can map to the same string representation for
 // simplicity of the feedback. Returns an empty string if the type is not

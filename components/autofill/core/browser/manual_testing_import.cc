@@ -94,7 +94,7 @@ absl::optional<AutofillProfile> MakeProfile(const base::Value::Dict& dict) {
     return absl::nullopt;
   }
   const std::string* country_code =
-      dict.FindString(FieldTypeToStringPiece(ADDRESS_HOME_COUNTRY));
+      dict.FindString(FieldTypeToStringView(ADDRESS_HOME_COUNTRY));
   AddressCountryCode address_country_code =
       country_code ? AddressCountryCode(*country_code) : AddressCountryCode("");
 

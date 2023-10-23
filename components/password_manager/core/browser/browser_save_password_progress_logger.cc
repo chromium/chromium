@@ -31,7 +31,7 @@ using autofill::AutofillType;
 using autofill::AutofillUploadContents;
 using autofill::FieldGlobalId;
 using autofill::FieldPropertiesFlags;
-using autofill::FieldTypeToStringPiece;
+using autofill::FieldTypeToStringView;
 using autofill::FormData;
 using autofill::FormFieldData;
 using autofill::FormStructure;
@@ -161,14 +161,14 @@ std::string GetFormDataFieldsAndPredictionsLogString(
         predictions.at(field.global_id());
 
     if (prediction.server_type() != autofill::NO_SERVER_DATA) {
-      base::StrAppend(&field_info,
-                      {", Server Type= ",
-                       FieldTypeToStringPiece(prediction.server_type())});
+      base::StrAppend(
+          &field_info,
+          {", Server Type= ", FieldTypeToStringView(prediction.server_type())});
 
       std::vector<std::string> all_predictions;
       for (const auto& p : prediction.server_predictions) {
         all_predictions.emplace_back(
-            FieldTypeToStringPiece(static_cast<ServerFieldType>(p.type())));
+            FieldTypeToStringView(static_cast<ServerFieldType>(p.type())));
       }
 
       base::StrAppend(&field_info,
@@ -300,12 +300,12 @@ std::string BrowserSavePasswordProgressLogger::FormStructureToFieldsLogString(
     if (field->server_type() != autofill::NO_SERVER_DATA) {
       base::StrAppend(
           &field_info,
-          {", Server Type: ", FieldTypeToStringPiece(field->server_type())});
+          {", Server Type: ", FieldTypeToStringView(field->server_type())});
 
       std::vector<std::string> all_predictions;
       for (const auto& p : field->server_predictions()) {
         all_predictions.emplace_back(
-            FieldTypeToStringPiece(static_cast<ServerFieldType>(p.type())));
+            FieldTypeToStringView(static_cast<ServerFieldType>(p.type())));
       }
 
       base::StrAppend(&field_info,
@@ -314,7 +314,7 @@ std::string BrowserSavePasswordProgressLogger::FormStructureToFieldsLogString(
     }
 
     for (ServerFieldType type : field->possible_types())
-      base::StrAppend(&field_info, {", VOTE: ", FieldTypeToStringPiece(type)});
+      base::StrAppend(&field_info, {", VOTE: ", FieldTypeToStringView(type)});
 
     if (field->vote_type())
       field_info += ", vote_type=" + VoteTypeToString(field->vote_type());

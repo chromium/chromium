@@ -873,9 +873,8 @@ std::vector<FormDataPredictions> FormStructure::GetFieldTypePredictions(
           base::NumberToString(field->host_form_signature.value());
       annotated_field.signature = field->FieldSignatureAsStr();
       annotated_field.heuristic_type =
-          FieldTypeToStringPiece(field->heuristic_type());
-      annotated_field.server_type =
-          FieldTypeToStringPiece(field->server_type());
+          FieldTypeToStringView(field->heuristic_type());
+      annotated_field.server_type = FieldTypeToStringView(field->server_type());
       annotated_field.overall_type = field->Type().ToString();
       annotated_field.parseable_name =
           base::UTF16ToUTF8(field->parseable_name());
@@ -1902,14 +1901,14 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
     buffer << "\n  Name: " << field->parseable_name();
 
     auto type = field->Type().ToString();
-    auto heuristic_type = FieldTypeToStringPiece(field->heuristic_type());
-    auto server_type = FieldTypeToStringPiece(field->server_type());
+    auto heuristic_type = FieldTypeToStringView(field->heuristic_type());
+    auto server_type = FieldTypeToStringView(field->server_type());
     const char* is_override =
         field->server_type_prediction_is_override() ? " (manual override)" : "";
     auto html_type_description =
         field->html_type() != HtmlFieldType::kUnspecified
             ? base::StrCat(
-                  {", html: ", FieldTypeToStringPiece(field->html_type())})
+                  {", html: ", FieldTypeToStringView(field->html_type())})
             : "";
     if (field->html_type() == HtmlFieldType::kUnrecognized &&
         !field->server_type_prediction_is_override()) {
@@ -1978,16 +1977,14 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
     buffer << Tr{} << "Placeholder:" << field->placeholder;
 
     auto type = field->Type().ToString();
-    auto heuristic_type =
-        std::string(FieldTypeToStringPiece(field->heuristic_type()));
-    auto server_type =
-        std::string(FieldTypeToStringPiece(field->server_type()));
+    auto heuristic_type = FieldTypeToStringView(field->heuristic_type());
+    auto server_type = FieldTypeToString(field->server_type());
     if (field->server_type_prediction_is_override())
       server_type += " (manual override)";
     auto html_type_description =
         field->html_type() != HtmlFieldType::kUnspecified
             ? base::StrCat(
-                  {", html: ", FieldTypeToStringPiece(field->html_type())})
+                  {", html: ", FieldTypeToStringView(field->html_type())})
             : "";
     if (field->html_type() == HtmlFieldType::kUnrecognized &&
         !field->server_type_prediction_is_override()) {

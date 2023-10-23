@@ -45,7 +45,7 @@ bool IsValidLearnableProfile(const AutofillProfile& profile,
       autofill_metrics::LogAddressFormImportRequirementMetric(invalid);
       LOG_AF(import_log_buffer)
           << LogMessage::kImportAddressProfileFromFormFailed << "Invalid "
-          << FieldTypeToStringPiece(type) << "." << CTag{};
+          << FieldTypeToStringView(type) << "." << CTag{};
       return false;
     } else {
       autofill_metrics::LogAddressFormImportRequirementMetric(valid);

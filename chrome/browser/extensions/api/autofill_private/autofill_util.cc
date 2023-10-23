@@ -73,7 +73,7 @@ autofill_private::AddressEntry ProfileToAddressEntry(
       back_inserter(address.fields), [&profile](auto field_type) {
         autofill_private::AddressField field;
         field.type = autofill_private::ParseServerFieldType(
-            FieldTypeToStringPiece(field_type));
+            FieldTypeToStringView(field_type));
         field.value = GetStringFromProfile(profile, field_type);
         return field;
       });
