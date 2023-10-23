@@ -149,6 +149,8 @@ class IpProtectionConfigProvider
       base::TimeTicks bsa_get_tokens_start_time,
       TryGetAuthTokensCallback callback,
       absl::StatusOr<absl::Span<quiche::BlindSignToken>>);
+  static network::mojom::BlindSignedAuthTokenPtr CreateBlindSignedAuthToken(
+      quiche::BlindSignToken bsa_token);
 
   void ClearOAuthTokenProblemBackoff();
 

@@ -6,8 +6,10 @@
 
 #include <memory>
 
+#include "base/base64.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/ip_protection/get_proxy_config.pb.h"
 #include "chrome/browser/ip_protection/ip_protection_config_http.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,6 +21,7 @@
 #include "net/base/features.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/blind_sign_auth_options.pb.h"
+#include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/spend_token_data.pb.h"
 
 IpProtectionConfigProvider::IpProtectionConfigProvider(
     signin::IdentityManager* identity_manager,
@@ -247,22 +250,54 @@ void IpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
     return;
   }
 
+  std::vector<network::mojom::BlindSignedAuthTokenPtr> bsa_tokens;
+  for (const quiche::BlindSignToken& token : tokens.value()) {
+    network::mojom::BlindSignedAuthTokenPtr converted_token =
+        CreateBlindSignedAuthToken(token);
+    if (converted_token->token.empty()) {
+      TryGetAuthTokensComplete(
+          absl::nullopt, std::move(callback),
+          IpProtectionTryGetAuthTokensResult::kFailedBSAOther);
+      return;
+    }
+    bsa_tokens.push_back(std::move(converted_token));
+  }
+
   const base::TimeTicks current_time = base::TimeTicks::Now();
   base::UmaHistogramTimes("NetworkService.IpProtection.TokenBatchRequestTime",
                           current_time - bsa_get_tokens_start_time);
 
-  std::vector<network::mojom::BlindSignedAuthTokenPtr> bsa_tokens;
-  base::ranges::transform(tokens.value(), std::back_inserter(bsa_tokens),
-                          [](quiche::BlindSignToken bsa_token) {
-                            base::Time expiration = base::Time::FromTimeT(
-                                absl::ToTimeT(bsa_token.expiration));
-                            return network::mojom::BlindSignedAuthToken::New(
-                                bsa_token.token, expiration);
-                          });
-
   TryGetAuthTokensComplete(absl::make_optional(std::move(bsa_tokens)),
                            std::move(callback),
                            IpProtectionTryGetAuthTokensResult::kSuccess);
+}
+
+// static
+network::mojom::BlindSignedAuthTokenPtr
+IpProtectionConfigProvider::CreateBlindSignedAuthToken(
+    quiche::BlindSignToken bsa_token) {
+  base::Time expiration =
+      base::Time::FromTimeT(absl::ToTimeT(bsa_token.expiration));
+
+  // What the network service will receive as a "token" is the fully constructed
+  // authorization header value.
+  std::string token_header_value = "";
+  if (net::features::kIpPrivacyBsaEnablePrivacyPass.Get()) {
+    privacy::ppn::PrivacyPassTokenData privacy_pass_token_data;
+    if (privacy_pass_token_data.ParseFromString(bsa_token.token)) {
+      token_header_value =
+          base::StrCat({"PrivateToken token=\"",
+                        privacy_pass_token_data.token(), "\" extensions=\"",
+                        privacy_pass_token_data.encoded_extensions(), "\""});
+    }
+  } else {
+    std::string encoded_token;
+    base::Base64Encode(bsa_token.token, &encoded_token);
+
+    token_header_value = base::StrCat({"Bearer ", encoded_token});
+  }
+  return network::mojom::BlindSignedAuthToken::New(
+      std::move(token_header_value), expiration);
 }
 
 void IpProtectionConfigProvider::TryGetAuthTokensComplete(
