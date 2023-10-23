@@ -1874,6 +1874,9 @@ config("default_warnings") {
 
           # TODO(https://crbug.com/1491833): Fix and re-enable.
           "-Wno-invalid-offsetof",
+
+          # TODO(crbug.com/1494809): Evaluate and possibly enable.
+          "-Wno-vla-extension",
         ]
 
         if (llvm_force_head_revision) {
