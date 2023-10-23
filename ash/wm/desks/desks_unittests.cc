@@ -4838,6 +4838,116 @@ TEST_F(DesksPerDeskZOrderTest, MultiDisplayMultipleAdwWithMoving) {
   });
 }
 
+class FloatAllDesksWithZOrderTest : public AshTestBase {
+ public:
+  FloatAllDesksWithZOrderTest()
+      : scoped_feature_list_(features::kEnablePerDeskZOrder) {}
+  ~FloatAllDesksWithZOrderTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that floating a window that is already visible on all desks removes its
+// z-ordering data, and unfloating the window restores the data.
+TEST_F(FloatAllDesksWithZOrderTest, TrackOrderAfterUnfloat) {
+  // Start the test with two desks.
+  NewDesk();
+
+  // Create a window that is visible on both desks.
+  auto window = CreateAppWindow();
+  views::Widget::GetWidgetForNativeWindow(window.get())
+      ->SetVisibleOnAllWorkspaces(true);
+  auto* desks_controller = DesksController::Get();
+  ASSERT_EQ(1u, desks_controller->visible_on_all_desks_windows().size());
+  ASSERT_TRUE(desks_util::IsWindowVisibleOnAllWorkspaces(window.get()));
+  EXPECT_TRUE(desks_util::BelongsToActiveDesk(window.get()));
+
+  // Each desk should be tracking the window's z-ordering data.
+  for (auto& desk : desks_controller->desks()) {
+    for (aura::Window* root : Shell::GetAllRootWindows()) {
+      auto& adw_data = desk->all_desk_window_stacking().at(root);
+      ASSERT_EQ(adw_data.size(), 1u);
+      ASSERT_EQ(adw_data.begin()->window, window.get());
+    }
+  }
+
+  // Float the window.
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(WindowState::Get(window.get())->IsFloated());
+
+  // The desks are no longer tracking the window's z-ordering data.
+  for (auto& desk : desks_controller->desks()) {
+    for (aura::Window* root : Shell::GetAllRootWindows()) {
+      auto& adw_data = desk->all_desk_window_stacking().at(root);
+      ASSERT_EQ(adw_data.size(), 0u);
+    }
+  }
+}
+
+// Tests that sending a floated window to all desks then restoring it to a
+// single desk works as intended.
+TEST_F(FloatAllDesksWithZOrderTest, FloatThenAllDesks) {
+  // Start the test with two desks.
+  NewDesk();
+
+  // Create a floated window.
+  auto window = CreateAppWindow();
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(WindowState::Get(window.get())->IsFloated());
+
+  // Send the floated window to all desks.
+  views::Widget::GetWidgetForNativeWindow(window.get())
+      ->SetVisibleOnAllWorkspaces(true);
+  auto* desks_controller = DesksController::Get();
+  ASSERT_EQ(1u, desks_controller->visible_on_all_desks_windows().size());
+
+  // The desks are not tracking the window's z-ordering data.
+  for (auto& desk : desks_controller->desks()) {
+    desk->all_desk_window_stacking().empty();
+  }
+
+  // Restore the floated window back to a single desk.
+  views::Widget::GetWidgetForNativeWindow(window.get())
+      ->SetVisibleOnAllWorkspaces(false);
+  ASSERT_EQ(0u, desks_controller->visible_on_all_desks_windows().size());
+}
+
+class FloatAllDesksWithoutZOrderTest : public AshTestBase {
+ public:
+  FloatAllDesksWithoutZOrderTest() {
+    scoped_feature_list_.InitAndDisableFeature(features::kEnablePerDeskZOrder);
+  }
+  ~FloatAllDesksWithoutZOrderTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that restacking a floated all desk window after a desk switch does not
+// cause a crash.
+TEST_F(FloatAllDesksWithoutZOrderTest, RestackOnDeskSwitch) {
+  // Start the test with two desks.
+  NewDesk();
+
+  // Create a floated window that is visible on both desks.
+  auto floated_adw = CreateAppWindow();
+  views::Widget::GetWidgetForNativeWindow(floated_adw.get())
+      ->SetVisibleOnAllWorkspaces(true);
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  auto* desks_controller = DesksController::Get();
+  ASSERT_EQ(1u, desks_controller->visible_on_all_desks_windows().size());
+  ASSERT_TRUE(desks_util::IsWindowVisibleOnAllWorkspaces(floated_adw.get()));
+  EXPECT_TRUE(desks_util::BelongsToActiveDesk(floated_adw.get()));
+  EXPECT_TRUE(WindowState::Get(floated_adw.get())->IsFloated());
+
+  // Switch desks, the window should still be floated on the new desk without
+  // crashing.
+  ActivateDesk(desks_controller->GetDeskAtIndex(1));
+  EXPECT_TRUE(desks_util::BelongsToActiveDesk(floated_adw.get()));
+  EXPECT_TRUE(WindowState::Get(floated_adw.get())->IsFloated());
+}
+
 namespace {
 
 constexpr char kUser1Email[] = "user1@desks";

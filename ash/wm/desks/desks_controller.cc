@@ -1019,9 +1019,7 @@ void DesksController::AddVisibleOnAllDesksWindow(aura::Window* window) {
   }
 
   if (features::IsPerDeskZOrderEnabled()) {
-    for (auto& desk : desks_) {
-      desk->TrackAllDeskWindow(window);
-    }
+    TrackWindowOnAllDesks(window);
   }
 
   if (do_window_bound_animation) {
@@ -1038,10 +1036,7 @@ void DesksController::AddVisibleOnAllDesksWindow(aura::Window* window) {
 void DesksController::MaybeRemoveVisibleOnAllDesksWindow(aura::Window* window) {
   if (visible_on_all_desks_windows_.erase(window)) {
     if (features::IsPerDeskZOrderEnabled()) {
-      for (auto& desk : desks_) {
-        desk->UntrackAllDeskWindow(window,
-                                   /*recent_root=*/window->GetRootWindow());
-      }
+      UntrackWindowFromAllDesks(window);
     }
 
     wm::AnimateWindow(window, wm::WINDOW_ANIMATION_TYPE_BOUNCE);
@@ -2202,6 +2197,19 @@ bool DesksController::IsUndoToastHighlighted() const {
              temporary_removed_desk_->toast_id());
 }
 
+void DesksController::TrackWindowOnAllDesks(aura::Window* window) {
+  for (auto& desk : desks_) {
+    desk->TrackAllDeskWindow(window);
+  }
+}
+
+void DesksController::UntrackWindowFromAllDesks(aura::Window* window) {
+  for (auto& desk : desks_) {
+    desk->UntrackAllDeskWindow(window,
+                               /*recent_root=*/window->GetRootWindow());
+  }
+}
+
 void DesksController::CleanUpClosedAppWindowsTask(
     std::unique_ptr<aura::WindowTracker> closing_window_tracker) {
   auto widgetless_windows = std::make_unique<aura::WindowTracker>();
@@ -2283,6 +2291,12 @@ void DesksController::RestackVisibleOnAllDesksWindowsOnActiveDesk() {
   auto mru_windows =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
   for (auto* visible_on_all_desks_window : visible_on_all_desks_windows_) {
+    // If the window is floated, it will always be on top, so there is no need
+    // to restack it.
+    if (WindowState::Get(visible_on_all_desks_window)->IsFloated()) {
+      continue;
+    }
+
     auto visible_on_all_desks_window_iter =
         base::ranges::find(mru_windows, visible_on_all_desks_window);
     if (visible_on_all_desks_window_iter == mru_windows.end())

@@ -413,6 +413,11 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   // toast's dismiss button is currently being highlighted.
   bool IsUndoToastHighlighted() const;
 
+  // Tracks/untracks the z-order of `window` on all desks. Should only be called
+  // when per-desk z-order is enabled.
+  void TrackWindowOnAllDesks(aura::Window* window);
+  void UntrackWindowFromAllDesks(aura::Window* window);
+
  private:
   class DeskTraversalsMetricsHelper;
   class RemovedDeskData;

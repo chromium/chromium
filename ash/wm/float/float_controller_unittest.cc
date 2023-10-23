@@ -939,6 +939,84 @@ TEST_F(WindowFloatTest, UnresizableFloatPerWindowState) {
   EXPECT_FALSE(window_state->IsFloated());
 }
 
+// Tests that a window sent to all desks can be floated.
+TEST_F(WindowFloatTest, FloatAllDesksWindow) {
+  // Create two new desks (three total).
+  NewDesk();
+  NewDesk();
+  auto* desks_controller = DesksController::Get();
+  ASSERT_EQ(3u, desks_controller->desks().size());
+
+  // Create a floated window and a regular window on the first desk.
+  auto first_floated_window = CreateFloatedWindow();
+  auto all_desks_window = CreateAppWindow();
+
+  // Assign the regular window to all desks.
+  views::Widget::GetWidgetForNativeWindow(all_desks_window.get())
+      ->SetVisibleOnAllWorkspaces(true);
+  ASSERT_TRUE(
+      desks_util::IsWindowVisibleOnAllWorkspaces(all_desks_window.get()));
+  ASSERT_EQ(1u, desks_controller->visible_on_all_desks_windows().size());
+
+  // Switch to the second desk and create another floated window.
+  ActivateDesk(desks_controller->desks()[1].get());
+  ASSERT_TRUE(wm::IsActiveWindow(all_desks_window.get()));
+  auto second_floated_window = CreateFloatedWindow();
+
+  // Switch to the third desk and float the `all_desks_window` using the
+  // accelerator.
+  ActivateDesk(desks_controller->desks()[2].get());
+  ASSERT_TRUE(wm::IsActiveWindow(all_desks_window.get()));
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(WindowState::Get(all_desks_window.get())->IsFloated());
+
+  // Switch back to the first and second desks. The other floated windows should
+  // no longer be floated, and the `all_desks_window` should still be floated.
+  ActivateDesk(desks_controller->desks()[0].get());
+  EXPECT_FALSE(WindowState::Get(first_floated_window.get())->IsFloated());
+  EXPECT_TRUE(WindowState::Get(all_desks_window.get())->IsFloated());
+  ActivateDesk(desks_controller->desks()[1].get());
+  EXPECT_FALSE(WindowState::Get(second_floated_window.get())->IsFloated());
+  EXPECT_TRUE(WindowState::Get(all_desks_window.get())->IsFloated());
+}
+
+// Tests that a floated window can be sent to all desks.
+TEST_F(WindowFloatTest, SendFloatedWindowToAllDesks) {
+  NewDesk();
+  auto* desks_controller = DesksController::Get();
+  ASSERT_EQ(2u, desks_controller->desks().size());
+
+  // Create a floated window on both desks.
+  auto first_floated_window = CreateFloatedWindow();
+  ActivateDesk(desks_controller->desks()[1].get());
+  auto all_floated_window = CreateFloatedWindow();
+
+  // Assign the second floated window to all desks.
+  views::Widget::GetWidgetForNativeWindow(all_floated_window.get())
+      ->SetVisibleOnAllWorkspaces(true);
+  ASSERT_EQ(1u, desks_controller->visible_on_all_desks_windows().size());
+  ASSERT_TRUE(
+      desks_util::IsWindowVisibleOnAllWorkspaces(all_floated_window.get()));
+  ASSERT_TRUE(desks_util::BelongsToActiveDesk(all_floated_window.get()));
+
+  // Switch back the first desk and verify `all_floated_window` is active
+  // and floated.
+  ActivateDesk(desks_controller->desks()[0].get());
+  ASSERT_TRUE(desks_util::BelongsToActiveDesk(all_floated_window.get()));
+  EXPECT_TRUE(WindowState::Get(all_floated_window.get())->IsFloated());
+  // The first window should no longer be floated.
+  ASSERT_TRUE(desks_util::BelongsToActiveDesk(first_floated_window.get()));
+  EXPECT_FALSE(WindowState::Get(first_floated_window.get())->IsFloated());
+
+  // Send `all_floated_window` to the second desk. It should no longer appear on
+  // the first desk, but it should still be floated on the second desk.
+  desks_controller->SendToDeskAtIndex(all_floated_window.get(), 1);
+  ASSERT_FALSE(desks_util::BelongsToActiveDesk(all_floated_window.get()));
+  ActivateDesk(desks_controller->desks()[1].get());
+  ASSERT_TRUE(desks_util::BelongsToActiveDesk(all_floated_window.get()));
+  EXPECT_TRUE(WindowState::Get(all_floated_window.get())->IsFloated());
+}
+
 // A test class that uses a mock time test environment.
 class WindowFloatMetricsTest : public WindowFloatTest {
  public:
