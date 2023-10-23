@@ -176,7 +176,6 @@ INSTANTIATE_TEST_SUITE_P(PolicyTestPageUITestInstance,
                                           testing::Bool(),
                                           testing::Bool()));
 
-namespace {
 class PolicyTestHandlerTest : public PlatformBrowserTest {
  public:
   PolicyTestHandlerTest() {
@@ -232,7 +231,6 @@ class PolicyTestHandlerTest : public PlatformBrowserTest {
       relaunch_chrome_override_;
 #endif
 };
-}  // namespace
 
 IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest,
                        HandleSetAndRevertLocalTestPolicies) {
@@ -418,6 +416,119 @@ IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest, ApplyTestPoliciesAfterRestart) {
   // map.
   const policy::PolicyMap::Entry* entry =
       policy_map->Get(policy::key::kAccessCodeCastDeviceDuration);
+  EXPECT_FALSE(entry);
+}
+
+class PolicyTestHandlerTestDisabledByPolicy : public PolicyTestHandlerTest {
+ public:
+  PolicyTestHandlerTestDisabledByPolicy() {
+    provider_.SetDefaultReturns(/*is_initialization_complete_return=*/true,
+                                /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
+
+    policy::PolicyMap policy_map;
+    base::Value::List policy_list;
+    policy_list.Append(policy::key::kPolicyTestPageEnabled);
+    policy_map.Set(policy::key::kEnableExperimentalPolicies,
+                   policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                   policy::POLICY_SOURCE_PLATFORM,
+                   base::Value(std::move(policy_list)), nullptr);
+    policy_map.Set(policy::key::kPolicyTestPageEnabled,
+                   policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                   policy::POLICY_SOURCE_PLATFORM, base::Value(false), nullptr);
+
+    provider_.UpdateChromePolicy(policy_map);
+  }
+
+  PolicyTestHandlerTestDisabledByPolicy(
+      const PolicyTestHandlerTestDisabledByPolicy&) = delete;
+  PolicyTestHandlerTestDisabledByPolicy& operator=(
+      const PolicyTestHandlerTestDisabledByPolicy&) = delete;
+
+  ~PolicyTestHandlerTestDisabledByPolicy() override = default;
+
+ private:
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
+};
+
+IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTestDisabledByPolicy,
+                       PRE_PRE_ApplyTestPoliciesAfterRestart) {
+  const policy::PolicyNamespace chrome_namespace(policy::POLICY_DOMAIN_CHROME,
+                                                 std::string());
+  policy::PolicyService* policy_service =
+      GetProfile()->GetProfilePolicyConnector()->policy_service();
+  const policy::PolicyMap& policy_map =
+      policy_service->GetPolicies(chrome_namespace);
+
+  const policy::PolicyMap::Entry* policy_test_page_enabled =
+      policy_map.Get(policy::key::kPolicyTestPageEnabled);
+  ASSERT_TRUE(policy_test_page_enabled);
+  ASSERT_FALSE(
+      policy_test_page_enabled->value(base::Value::Type::BOOLEAN)->GetBool());
+  std::unique_ptr<PolicyUIHandler> handler = SetUpHandler();
+
+  // Set the value of AccessCodeCastDeviceDuration to 100.
+  const std::string jsonString =
+      R"([
+      {"level": 0,"scope": 0,"source": 0,
+      "name": "AccessCodeCastDeviceDuration","value": 100}
+      ])";
+
+  base::Value::List list_args;
+
+  list_args.Append("restartBrowser");
+  list_args.Append(jsonString);
+
+  // Restart the browser.
+  web_ui()->HandleReceivedMessage("restartBrowser", list_args);
+
+  handler.reset();
+}
+
+IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTestDisabledByPolicy,
+                       PRE_ApplyTestPoliciesAfterRestart) {
+  const policy::PolicyNamespace chrome_namespace(policy::POLICY_DOMAIN_CHROME,
+                                                 std::string());
+  policy::PolicyService* policy_service =
+      GetProfile()->GetProfilePolicyConnector()->policy_service();
+  const policy::PolicyMap& policy_map =
+      policy_service->GetPolicies(chrome_namespace);
+
+  const policy::PolicyMap::Entry* policy_test_page_enabled =
+      policy_map.Get(policy::key::kPolicyTestPageEnabled);
+  ASSERT_TRUE(policy_test_page_enabled);
+  ASSERT_FALSE(
+      policy_test_page_enabled->value(base::Value::Type::BOOLEAN)->GetBool());
+
+  // Check that the AccessCodeCastDeviceDuration policy is not in the policy
+  // map.
+  const policy::PolicyMap::Entry* entry =
+      policy_map.Get(policy::key::kAccessCodeCastDeviceDuration);
+  EXPECT_FALSE(entry);
+
+  // Restart the browser.
+  chrome::AttemptRestart();
+}
+
+IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTestDisabledByPolicy,
+                       ApplyTestPoliciesAfterRestart) {
+  const policy::PolicyNamespace chrome_namespace(policy::POLICY_DOMAIN_CHROME,
+                                                 std::string());
+  policy::PolicyService* policy_service =
+      GetProfile()->GetProfilePolicyConnector()->policy_service();
+  const policy::PolicyMap& policy_map =
+      policy_service->GetPolicies(chrome_namespace);
+
+  const policy::PolicyMap::Entry* policy_test_page_enabled =
+      policy_map.Get(policy::key::kPolicyTestPageEnabled);
+  ASSERT_TRUE(policy_test_page_enabled);
+  ASSERT_FALSE(
+      policy_test_page_enabled->value(base::Value::Type::BOOLEAN)->GetBool());
+
+  // Check that the AccessCodeCastDeviceDuration policy is not in the policy
+  // map.
+  const policy::PolicyMap::Entry* entry =
+      policy_map.Get(policy::key::kAccessCodeCastDeviceDuration);
   EXPECT_FALSE(entry);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
