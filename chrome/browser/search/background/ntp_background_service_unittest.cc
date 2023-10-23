@@ -111,7 +111,7 @@ class NtpBackgroundServiceTest : public testing::Test,
 
 INSTANTIATE_TEST_SUITE_P(All, NtpBackgroundServiceTest, ::testing::Bool());
 
-TEST_P(NtpBackgroundServiceTest, CorrectCollectionRequest) {
+TEST_P(NtpBackgroundServiceTest, CollectionRequest) {
   g_browser_process->SetApplicationLocale("foo");
   service()->FetchCollectionInfo();
   base::RunLoop().RunUntilIdle();
@@ -127,7 +127,13 @@ TEST_P(NtpBackgroundServiceTest, CorrectCollectionRequest) {
   ntp::background::GetCollectionsRequest collection_request;
   EXPECT_TRUE(collection_request.ParseFromString(request_body));
   EXPECT_EQ("foo", collection_request.language());
-  EXPECT_EQ(3, collection_request.filtering_label_size());
+  if (BackgroundImageErrorDetectionEnabled()) {
+    EXPECT_EQ(4, collection_request.filtering_label_size());
+    EXPECT_EQ("chrome_desktop_ntp.error_detection",
+              collection_request.filtering_label(3));
+  } else {
+    EXPECT_EQ(3, collection_request.filtering_label_size());
+  }
   EXPECT_EQ("chrome_desktop_ntp", collection_request.filtering_label(0));
   EXPECT_EQ("chrome_desktop_ntp.M" + version_info::GetMajorVersionNumber(),
             collection_request.filtering_label(1));
@@ -135,9 +141,7 @@ TEST_P(NtpBackgroundServiceTest, CorrectCollectionRequest) {
             collection_request.filtering_label(2));
 }
 
-// Add GM3 filter if ChromeWebuiRefresh2023 flag is enabled.
-TEST_P(NtpBackgroundServiceTest, CollectionRequestWithGM3Flag) {
-  // Enable ChromeWebuiRefresh2023.
+TEST_P(NtpBackgroundServiceTest, CollectionRequestWithGM3Enabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {features::kChromeRefresh2023, features::kChromeWebuiRefresh2023}, {});
@@ -157,7 +161,13 @@ TEST_P(NtpBackgroundServiceTest, CollectionRequestWithGM3Flag) {
   ntp::background::GetCollectionsRequest collection_request;
   EXPECT_TRUE(collection_request.ParseFromString(request_body));
   EXPECT_EQ("foo", collection_request.language());
-  EXPECT_EQ(4, collection_request.filtering_label_size());
+  if (BackgroundImageErrorDetectionEnabled()) {
+    EXPECT_EQ(5, collection_request.filtering_label_size());
+    EXPECT_EQ("chrome_desktop_ntp.error_detection",
+              collection_request.filtering_label(4));
+  } else {
+    EXPECT_EQ(4, collection_request.filtering_label_size());
+  }
   EXPECT_EQ("chrome_desktop_ntp", collection_request.filtering_label(0));
   EXPECT_EQ("chrome_desktop_ntp.M" + version_info::GetMajorVersionNumber(),
             collection_request.filtering_label(1));
