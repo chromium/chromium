@@ -93,7 +93,10 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
   friend class OptionalAutoreleasePool;
   friend class TestMessagePumpCFRunLoopBase;
 
-  MessagePumpCFRunLoopBase();
+  // Tasks will be pumped in the run loop modes described by
+  // |initial_mode_mask|, which maps bits to the index of an internal array of
+  // run loop mode identifiers.
+  explicit MessagePumpCFRunLoopBase(int initial_mode_mask);
   ~MessagePumpCFRunLoopBase() override;
 
   // Subclasses should implement the work they need to do in MessagePump::Run
@@ -132,10 +135,21 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
   // current autorelease pool.
   virtual bool ShouldCreateAutoreleasePool();
 
+  // Enable and disable entries in |enabled_modes_| to match |mode_mask|.
+  void SetModeMask(int mode_mask);
+
+  // Get the current mode mask from |enabled_modes_|.
+  int GetModeMask() const;
+
  protected:
   raw_ptr<Delegate> delegate() { return delegate_; }
 
  private:
+  class ScopedModeEnabler;
+
+  // The maximum number of run loop modes that can be monitored.
+  static constexpr int kNumModes = 3;
+
   // Timer callback scheduled by ScheduleDelayedWork.  This does not do any
   // work, but it signals |work_source_| so that delayed work can be performed
   // within the appropriate priority constraints.
@@ -209,6 +223,9 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
 
   // The thread's run loop.
   apple::ScopedCFTypeRef<CFRunLoopRef> run_loop_;
+
+  // The enabled modes. Posted tasks may run in any non-null entry.
+  std::unique_ptr<ScopedModeEnabler> enabled_modes_[kNumModes];
 
   // The timer, sources, and observers are described above alongside their
   // callbacks.
@@ -328,6 +345,22 @@ class MessagePumpUIApplication : public MessagePumpCFRunLoopBase {
 
 #else
 
+// While in scope, permits posted tasks to be run in private AppKit run loop
+// modes that would otherwise make the UI unresponsive. E.g., menu fade out.
+class BASE_EXPORT ScopedPumpMessagesInPrivateModes {
+ public:
+  ScopedPumpMessagesInPrivateModes();
+
+  ScopedPumpMessagesInPrivateModes(const ScopedPumpMessagesInPrivateModes&) =
+      delete;
+  ScopedPumpMessagesInPrivateModes& operator=(
+      const ScopedPumpMessagesInPrivateModes&) = delete;
+
+  ~ScopedPumpMessagesInPrivateModes();
+
+  int GetModeMaskForTest();
+};
+
 class MessagePumpNSApplication : public MessagePumpCFRunLoopBase {
  public:
   MessagePumpNSApplication();
@@ -341,6 +374,8 @@ class MessagePumpNSApplication : public MessagePumpCFRunLoopBase {
   bool DoQuit() override;
 
  private:
+  friend class ScopedPumpMessagesInPrivateModes;
+
   void EnterExitRunLoop(CFRunLoopActivity activity) override;
 
   // True if DoRun is managing its own run loop as opposed to letting

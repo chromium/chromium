@@ -173,8 +173,8 @@
     _index = [cell indexOfSelectedItem];
 }
 
-- (void)cancelSynchronously {
-  [_menu cancelTrackingWithoutAnimation];
+- (void)hide {
+  [_menu cancelTracking];
 }
 
 - (int)indexOfSelectedItem {

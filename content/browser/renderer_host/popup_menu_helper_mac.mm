@@ -122,6 +122,9 @@ void PopupMenuHelper::ShowPopupMenu(
     // be done manually.
     base::mac::ScopedSendingEvent sending_event_scoper;
 
+    // Ensure the UI can update while the menu is fading out.
+    pump_in_fade_ = std::make_unique<base::ScopedPumpMessagesInPrivateModes>();
+
     // Now run a NESTED EVENT LOOP until the pop-up is finished.
     [runner runMenuInView:cocoa_view
                withBounds:[cocoa_view flipRectToNSRect:bounds]
@@ -131,6 +134,7 @@ void PopupMenuHelper::ShowPopupMenu(
   if (!weak_ptr)
     return;  // Handle |this| being deleted.
 
+  pump_in_fade_ = nullptr;
   objc_storage_->menu_runner = nil;
 
   // The RenderFrameHost may be deleted while running the menu, or it may have
@@ -151,13 +155,16 @@ void PopupMenuHelper::ShowPopupMenu(
 }
 
 void PopupMenuHelper::Hide() {
-  // FYI: Blink reuses the PopupMenu of an element and first invokes Hide() over
+  // Blink core reuses the PopupMenu of an element and first invokes Hide() over
   // IPC if a menu is already showing. Attempting to show a new menu while the
   // old menu is fading out confuses AppKit, since we're still in the NESTED
-  // EVENT LOOP of ShowPopupMenu(). That is why WebMenuRunner has to provide a
-  // synchronous, no-animation cancellation. See https://crbug.com/812260.
+  // EVENT LOOP of ShowPopupMenu(). Disable pumping of events in the fade
+  // animation of the old menu in this case so that it closes synchronously.
+  // See http://crbug.com/812260.
+  pump_in_fade_ = nullptr;
+
   if (objc_storage_->menu_runner) {
-    [objc_storage_->menu_runner cancelSynchronously];
+    [objc_storage_->menu_runner hide];
   }
   popup_was_hidden_ = true;
   popup_client_.reset();

@@ -20,6 +20,10 @@
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 
+namespace base {
+class ScopedPumpMessagesInPrivateModes;
+}
+
 namespace content {
 
 class RenderFrameHost;
@@ -76,6 +80,9 @@ class PopupMenuHelper : public RenderWidgetHostObserver {
   mojo::Remote<blink::mojom::PopupMenuClient> popup_client_;
 
   bool popup_was_hidden_ = false;
+
+  // Controls whether messages can be pumped during the menu fade.
+  std::unique_ptr<base::ScopedPumpMessagesInPrivateModes> pump_in_fade_;
 
   struct ObjCStorage;
   std::unique_ptr<ObjCStorage> objc_storage_;
