@@ -300,7 +300,7 @@ class DateTrayTest
 
   std::u16string GetTimeViewText() {
     return date_tray_->time_view_->time_view()
-        ->horizontal_label_date_for_test()
+        ->horizontal_date_label_for_test()
         ->GetText();
   }
 
