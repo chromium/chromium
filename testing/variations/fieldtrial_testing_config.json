@@ -11819,8 +11819,8 @@
                 {
                     "name": "Enabled_20230926",
                     "enable_features": [
+                        "ClearingCookiesKeepsSupervisedUsersSignedIn",
                         "EnableManagedByParentUi",
-                        "EnableSupervisionOnDesktopAndIOS",
                         "FilterWebsitesForSupervisedUsersOnDesktopAndIOS",
                         "SupervisedPrefsControlledBySupervisedStore"
                     ]
