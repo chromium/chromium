@@ -351,9 +351,9 @@ void TrackerImpl::DismissedWithSnooze(
   } else if (snooze_action == SnoozeAction::DISMISSED) {
     event_model_->DismissSnooze(feature_config.trigger.name);
   }
+  Dismissed(feature);
   if (snooze_action.has_value())
     stats::RecordUserSnoozeAction(snooze_action.value());
-  RecordShownTime(feature);
 }
 
 std::unique_ptr<DisplayLockHandle> TrackerImpl::AcquireDisplayLock() {
