@@ -2655,6 +2655,7 @@ crbug.com/626703 [ Mac ] virtual/webcodecs-without-task-runner-with-custom-delet
 crbug.com/626703 [ Mac ] virtual/webcodecs-without-task-runner-with-custom-deleter/external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h265_hevc [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/jpegxl/srgb.html [ Failure ]
 crbug.com/626703 [ Mac12 ] external/wpt/content-security-policy/generic/only-valid-whitespaces-are-allowed.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/css/css-grid/animation/grid-template-rows-interpolation.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/css/css-images/parsing/gradient-interpolation-method-valid.html [ Timeout ]
@@ -7029,7 +7030,7 @@ crbug.com/1493342 [ Mac10.15 ] external/wpt/html/canvas/element/manual/wide-gamu
 crbug.com/1493455 external/wpt/pointerevents/pointerevent_pointerrawupdate.html [ Failure ]
 
 # Gardener 2023-10-19
-crbug.com/1494133 media/controls/video-overlay-cast-light-rendering.html [ Pass Failure ]
+crbug.com/1494133 media/controls/video-overlay-cast-light-rendering.html [ Failure Pass ]
 
 # Gardener 2023-10-20
 crbug.com/1494242 [ Mac ] external/wpt/background-fetch/fetch.https.window.html [ Failure Timeout ]

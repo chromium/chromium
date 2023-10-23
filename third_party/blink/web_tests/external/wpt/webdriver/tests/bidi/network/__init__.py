@@ -4,7 +4,6 @@ from .. import (
     any_int,
     any_int_or_null,
     any_list,
-    any_list_or_null,
     any_string,
     any_string_or_null,
     recursive_compare,
@@ -236,6 +235,7 @@ def assert_response_event(
         redirect_count=redirect_count,
         expected_request=expected_request,
     )
+
 
 # Array of status and status text expected to be available in network events
 HTTP_STATUS_AND_STATUS_TEXT = [
