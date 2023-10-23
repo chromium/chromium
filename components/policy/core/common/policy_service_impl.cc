@@ -298,19 +298,83 @@ void PolicyServiceImpl::NotifyProviderUpdatesPropagated() {
   provider_update_pending_.clear();
 }
 
+void PolicyServiceImpl::NotifyPoliciesUpdated(const PolicyBundle& old_bundle) {
+  // Only notify observers of namespaces that have been modified.
+  const PolicyMap kEmpty;
+  PolicyBundle::const_iterator it_new = policy_bundle_.begin();
+  PolicyBundle::const_iterator end_new = policy_bundle_.end();
+  PolicyBundle::const_iterator it_old = old_bundle.begin();
+  PolicyBundle::const_iterator end_old = old_bundle.end();
+  while (it_new != end_new && it_old != end_old) {
+    if (it_new->first < it_old->first) {
+      // A new namespace is available.
+      NotifyNamespaceUpdated(it_new->first, kEmpty, it_new->second);
+      ++it_new;
+    } else if (it_old->first < it_new->first) {
+      // A previously available namespace is now gone.
+      NotifyNamespaceUpdated(it_old->first, it_old->second, kEmpty);
+      ++it_old;
+    } else {
+      if (!it_new->second.Equals(it_old->second)) {
+        // An existing namespace's policies have changed.
+        NotifyNamespaceUpdated(it_new->first, it_old->second, it_new->second);
+      }
+      ++it_new;
+      ++it_old;
+    }
+  }
+
+  // Send updates for the remaining new namespaces, if any.
+  for (; it_new != end_new; ++it_new) {
+    NotifyNamespaceUpdated(it_new->first, kEmpty, it_new->second);
+  }
+
+  // Sends updates for the remaining removed namespaces, if any.
+  for (; it_old != end_old; ++it_old) {
+    NotifyNamespaceUpdated(it_old->first, it_old->second, kEmpty);
+  }
+
+  const std::vector<PolicyDomain> updated_domains = UpdatePolicyDomainStatus();
+  CheckRefreshComplete();
+  NotifyProviderUpdatesPropagated();
+  // This has to go last as one of the observers might actually destroy `this`.
+  // See https://crbug.com/747817
+  MaybeNotifyPolicyDomainStatusChange(updated_domains);
+}
+
 void PolicyServiceImpl::MergeAndTriggerUpdates() {
+  std::vector<const PolicyBundle*> policy_bundles;
+  for (auto* provider : providers_) {
+    if (provider->is_active()) {
+      policy_bundles.push_back(&provider->policies());
+    }
+  }
+
+  PolicyBundle bundle = MergePolicyBundles(policy_bundles, migrators_);
+  auto& chrome_policies =
+      bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
+
+  // Add informational messages to specific policies.
+  AddPolicyMessages(chrome_policies);
+
+  // Swap first, so that observers that call GetPolicies() see the current
+  // values.
+  std::swap(policy_bundle_, bundle);
+  NotifyPoliciesUpdated(bundle);
+}
+
+// static
+PolicyBundle PolicyServiceImpl::MergePolicyBundles(
+    std::vector<const policy::PolicyBundle*>& bundles,
+    Migrators& migrators) {
   // Merge from each provider in their order of priority.
   const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
   PolicyBundle bundle;
 #if BUILDFLAG(IS_CHROMEOS)
   DefaultChromeAppsMigrator chrome_apps_migrator;
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  for (auto* provider : providers_) {
-    if (!provider->is_active()) {
-      continue;
-    }
-
-    PolicyBundle provided_bundle = provider->policies().Clone();
+  for (const PolicyBundle* policy_bundle : bundles) {
+    PolicyBundle provided_bundle = policy_bundle->Clone();
     IgnoreUserCloudPrecedencePolicies(&provided_bundle.Get(chrome_namespace));
     DowngradeMetricsReportingToRecommendedPolicy(
         &provided_bundle.Get(chrome_namespace));
@@ -366,55 +430,11 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
   for (auto& entry : bundle)
     entry.second.MergeValues(mergers);
 
-  for (auto& migrator : migrators_)
+  for (auto& migrator : migrators) {
     migrator->Migrate(&bundle);
-
-  // Add informational messages to specific policies.
-  AddPolicyMessages(chrome_policies);
-
-  // Swap first, so that observers that call GetPolicies() see the current
-  // values.
-  std::swap(policy_bundle_, bundle);
-
-  // Only notify observers of namespaces that have been modified.
-  const PolicyMap kEmpty;
-  PolicyBundle::const_iterator it_new = policy_bundle_.begin();
-  PolicyBundle::const_iterator end_new = policy_bundle_.end();
-  PolicyBundle::const_iterator it_old = bundle.begin();
-  PolicyBundle::const_iterator end_old = bundle.end();
-  while (it_new != end_new && it_old != end_old) {
-    if (it_new->first < it_old->first) {
-      // A new namespace is available.
-      NotifyNamespaceUpdated(it_new->first, kEmpty, it_new->second);
-      ++it_new;
-    } else if (it_old->first < it_new->first) {
-      // A previously available namespace is now gone.
-      NotifyNamespaceUpdated(it_old->first, it_old->second, kEmpty);
-      ++it_old;
-    } else {
-      if (!it_new->second.Equals(it_old->second)) {
-        // An existing namespace's policies have changed.
-        NotifyNamespaceUpdated(it_new->first, it_old->second, it_new->second);
-      }
-      ++it_new;
-      ++it_old;
-    }
   }
 
-  // Send updates for the remaining new namespaces, if any.
-  for (; it_new != end_new; ++it_new)
-    NotifyNamespaceUpdated(it_new->first, kEmpty, it_new->second);
-
-  // Sends updates for the remaining removed namespaces, if any.
-  for (; it_old != end_old; ++it_old)
-    NotifyNamespaceUpdated(it_old->first, it_old->second, kEmpty);
-
-  const std::vector<PolicyDomain> updated_domains = UpdatePolicyDomainStatus();
-  CheckRefreshComplete();
-  NotifyProviderUpdatesPropagated();
-  // This has to go last as one of the observers might actually destroy `this`.
-  // See https://crbug.com/747817
-  MaybeNotifyPolicyDomainStatusChange(updated_domains);
+  return bundle;
 }
 
 std::vector<PolicyDomain> PolicyServiceImpl::UpdatePolicyDomainStatus() {

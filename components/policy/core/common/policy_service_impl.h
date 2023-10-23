@@ -89,6 +89,12 @@ class POLICY_EXPORT PolicyServiceImpl
   // giving themselves increased priority, causing a security issue.
   static void IgnoreUserCloudPrecedencePolicies(PolicyMap* policies);
 
+  // Merges the policies from `bundles` into one bundle while respecting the
+  // policy priorities and applying the appropriate `migrators`.
+  static PolicyBundle MergePolicyBundles(
+      std::vector<const policy::PolicyBundle*>& bundles,
+      Migrators& migrators);
+
  private:
   enum class PolicyDomainStatus { kUninitialized, kInitialized, kPolicyReady };
 
@@ -112,6 +118,8 @@ class POLICY_EXPORT PolicyServiceImpl
                               const PolicyMap& current);
 
   void NotifyProviderUpdatesPropagated();
+
+  void NotifyPoliciesUpdated(const PolicyBundle& old_bundle);
 
   // Combines the policies from all the providers, and notifies the observers
   // of namespaces whose policies have been modified.
