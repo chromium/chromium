@@ -333,6 +333,13 @@ BASE_FEATURE(kAutofillFeedback,
              "AutofillFeedback",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Replaces cached web elements in AutofillAgent and FormTracker by their
+// renderer ids.
+// DONOTSUMBIT: Disable.
+BASE_FEATURE(kAutofillReplaceCachedWebElementsByRendererIds,
+             "AutofillReplaceCachedWebElementsByRendererIds",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Makes AutofillProfile::IsSubsetOfForFieldSet stop ignoring street address
 // types during comparison, and instead compares them using address rewriter
 // normalization.
