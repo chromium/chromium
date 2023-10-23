@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CloseReason, ComposeDialogCallbackRouter, ComposeDialogClosePageHandlerRemote, ComposeDialogPageHandlerFactory, ComposeDialogPageHandlerRemote, StyleModifiers} from './compose.mojom-webui.js';
+import {CloseReason, ComposeDialogCallbackRouter, ComposeDialogClosePageHandlerRemote, ComposeDialogPageHandlerFactory, ComposeDialogPageHandlerRemote, OpenMetadata, StyleModifiers} from './compose.mojom-webui.js';
 
 /** @interface */
 export interface ComposeApiProxy {
+  acceptComposeResult(): void;
   compose(style: StyleModifiers, input: string): void;
   getRouter(): ComposeDialogCallbackRouter;
-  acceptComposeResult(): void;
+  requestInitialState(): Promise<OpenMetadata>;
+  saveWebuiState(state: string): void;
 }
 
 export class ComposeApiProxyImpl implements ComposeApiProxy {
@@ -35,23 +37,28 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
     ComposeApiProxyImpl.instance = newInstance;
   }
 
-  /** @override */
-  compose(style: StyleModifiers, input: string): void {
-    this.composeDialogPageHandler.compose(style, input);
-  }
-
-  /** @override */
-  getRouter() {
-    return this.router;
-  }
-
-  /** @override */
   acceptComposeResult() {
     this.composeDialogPageHandler.acceptComposeResult();
   }
 
-  /** @override */
   closeUi(reason: CloseReason) {
     this.composeDialogClosePageHandler.closeUI(reason);
+  }
+
+  compose(style: StyleModifiers, input: string): void {
+    this.composeDialogPageHandler.compose(style, input);
+  }
+
+  getRouter() {
+    return this.router;
+  }
+
+  requestInitialState(): Promise<OpenMetadata> {
+    return this.composeDialogPageHandler.requestInitialState().then(
+        res => res.initialState);
+  }
+
+  saveWebuiState(state: string) {
+    this.composeDialogPageHandler.saveWebUIState(state);
   }
 }
