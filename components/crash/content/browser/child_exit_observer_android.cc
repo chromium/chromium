@@ -185,11 +185,6 @@ void ChildExitObserver::ProcessRenderProcessHostLifetimeEndEvent(
   }
 
   const auto& iter = process_host_id_to_pid_.find(rph->GetID());
-  // NOTIFICATION_RENDERER_PROCESS_CLOSED corresponds to death of an underlying
-  // RenderProcess. NOTIFICATION_RENDERER_PROCESS_TERMINATED corresponds to when
-  // the RenderProcessHost's lifetime is ending. Ideally, we'd only listen to
-  // the former, but if the RenderProcessHost is destroyed before the
-  // RenderProcess, then the former is never sent.
   if (iter == process_host_id_to_pid_.end()) {
     return;
   }
