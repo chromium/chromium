@@ -64981,6 +64981,8 @@ from previous Chrome versions.
   <int value="-288316828" label="enable-delegated-renderer"/>
   <int value="-287089194" label="PrintManagementSetupAssistance:enabled"/>
   <int value="-286603268" label="hide-android-files-in-files-app"/>
+  <int value="-285574560"
+      label="UsernameFirstFlowWithIntermediateValuesVoting:enabled"/>
   <int value="-285499775"
       label="AdaptiveButtonInTopToolbarAddToBookmarks:enabled"/>
   <int value="-284694765" label="JourneysIncludeSyncedVisits:disabled"/>
@@ -67671,6 +67673,8 @@ from previous Chrome versions.
   <int value="1026169964" label="MicMuteNotifications:enabled"/>
   <int value="1026981579" label="TLS13HardeningForLocalAnchors:enabled"/>
   <int value="1027252926" label="SyncSupportSecondaryAccount:enabled"/>
+  <int value="1030531340"
+      label="UsernameFirstFlowWithIntermediateValuesVoting:disabled"/>
   <int value="1030608602" label="AutofillAssistantProactiveHelp:enabled"/>
   <int value="1030922819" label="AlignWakeUps:enabled"/>
   <int value="1031239808" label="ForceMajorVersion100InUserAgent:disabled"/>

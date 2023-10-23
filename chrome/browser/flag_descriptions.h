@@ -1247,6 +1247,9 @@ extern const char kUsernameFirstFlowStoreSeveralValuesDescription[];
 extern const char kUsernameFirstFlowWithIntermediateValuesName[];
 extern const char kUsernameFirstFlowWithIntermediateValuesDescription[];
 
+extern const char kUsernameFirstFlowWithIntermediateValuesVotingName[];
+extern const char kUsernameFirstFlowWithIntermediateValuesVotingDescription[];
+
 extern const char kCanvas2DLayersName[];
 extern const char kCanvas2DLayersDescription[];
 

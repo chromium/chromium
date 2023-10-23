@@ -4684,6 +4684,13 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(
          password_manager::features::kUsernameFirstFlowWithIntermediateValues)},
+    {"username-first-flow-with-intermediate-values-voting",
+     flag_descriptions::kUsernameFirstFlowWithIntermediateValuesVotingName,
+     flag_descriptions::
+         kUsernameFirstFlowWithIntermediateValuesVotingDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(password_manager::features::
+                            kUsernameFirstFlowWithIntermediateValuesVoting)},
     {"enable-show-autofill-signatures",
      flag_descriptions::kShowAutofillSignaturesName,
      flag_descriptions::kShowAutofillSignaturesDescription, kOsAll,
