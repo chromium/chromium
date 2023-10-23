@@ -331,17 +331,17 @@ bool PrefetchDocumentManager::IsPrefetchAttemptFailedOrDiscarded(
     case PrefetchStatus::kPrefetchSuccessful:
     case PrefetchStatus::kPrefetchResponseUsed:
       return false;
-    case PrefetchStatus::kPrefetchNotEligibleUserHasCookies:
-    case PrefetchStatus::kPrefetchNotEligibleUserHasServiceWorker:
-    case PrefetchStatus::kPrefetchNotEligibleSchemeIsNotHttps:
-    case PrefetchStatus::kPrefetchNotEligibleNonDefaultStoragePartition:
+    case PrefetchStatus::kPrefetchIneligibleUserHasCookies:
+    case PrefetchStatus::kPrefetchIneligibleUserHasServiceWorker:
+    case PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps:
+    case PrefetchStatus::kPrefetchIneligibleNonDefaultStoragePartition:
     case PrefetchStatus::kPrefetchIneligibleRetryAfter:
-    case PrefetchStatus::kPrefetchProxyNotAvailable:
-    case PrefetchStatus::kPrefetchNotEligibleHostIsNonUnique:
-    case PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled:
-    case PrefetchStatus::kPrefetchNotEligibleBatterySaverEnabled:
-    case PrefetchStatus::kPrefetchNotEligiblePreloadingDisabled:
-    case PrefetchStatus::kPrefetchNotEligibleExistingProxy:
+    case PrefetchStatus::kPrefetchIneligiblePrefetchProxyNotAvailable:
+    case PrefetchStatus::kPrefetchIneligibleHostIsNonUnique:
+    case PrefetchStatus::kPrefetchIneligibleDataSaverEnabled:
+    case PrefetchStatus::kPrefetchIneligibleBatterySaverEnabled:
+    case PrefetchStatus::kPrefetchIneligiblePreloadingDisabled:
+    case PrefetchStatus::kPrefetchIneligibleExistingProxy:
     case PrefetchStatus::kPrefetchNotUsedProbeFailed:
     case PrefetchStatus::kPrefetchNotStarted:
     case PrefetchStatus::kPrefetchNotFinishedInTime:
@@ -351,14 +351,14 @@ bool PrefetchDocumentManager::IsPrefetchAttemptFailedOrDiscarded(
     case PrefetchStatus::kPrefetchIsPrivacyDecoy:
     case PrefetchStatus::kPrefetchIsStale:
     case PrefetchStatus::kPrefetchNotUsedCookiesChanged:
-    case PrefetchStatus::kPrefetchNotEligibleBrowserContextOffTheRecord:
+    case PrefetchStatus::kPrefetchIneligibleBrowserContextOffTheRecord:
     case PrefetchStatus::kPrefetchHeldback:
     case PrefetchStatus::kPrefetchAllowed:
     case PrefetchStatus::kPrefetchFailedInvalidRedirect:
     case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
     case PrefetchStatus::kPrefetchFailedPerPageLimitExceeded:
     case PrefetchStatus::
-        kPrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy:
+        kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy:
     case PrefetchStatus::kPrefetchEvicted:
       return true;
   }

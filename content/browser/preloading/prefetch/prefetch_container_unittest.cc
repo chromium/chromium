@@ -753,7 +753,7 @@ TEST_P(PrefetchContainerTest, IneligibleRedirect) {
   // Add a redirect, register a callback for it, and then mark it as ineligible.
   AddRedirectHop(prefetch_container, kTestUrl2);
   prefetch_container.OnEligibilityCheckComplete(
-      false, PrefetchStatus::kPrefetchNotEligibleUserHasCookies);
+      false, PrefetchStatus::kPrefetchIneligibleUserHasCookies);
 
   // Ineligible redirects are treated as failed prefetches, and not ineligible
   // prefetches.

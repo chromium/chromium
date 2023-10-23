@@ -85,23 +85,23 @@ static network::mojom::NetworkContext*
 
 bool ShouldConsiderDecoyRequestForStatus(PrefetchStatus status) {
   switch (status) {
-    case PrefetchStatus::kPrefetchNotEligibleUserHasCookies:
-    case PrefetchStatus::kPrefetchNotEligibleUserHasServiceWorker:
+    case PrefetchStatus::kPrefetchIneligibleUserHasCookies:
+    case PrefetchStatus::kPrefetchIneligibleUserHasServiceWorker:
       // If the prefetch is not eligible because of cookie or a service worker,
       // then maybe send a decoy.
       return true;
-    case PrefetchStatus::kPrefetchNotEligibleSchemeIsNotHttps:
-    case PrefetchStatus::kPrefetchNotEligibleNonDefaultStoragePartition:
+    case PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps:
+    case PrefetchStatus::kPrefetchIneligibleNonDefaultStoragePartition:
     case PrefetchStatus::kPrefetchIneligibleRetryAfter:
-    case PrefetchStatus::kPrefetchProxyNotAvailable:
-    case PrefetchStatus::kPrefetchNotEligibleHostIsNonUnique:
-    case PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled:
-    case PrefetchStatus::kPrefetchNotEligibleBatterySaverEnabled:
-    case PrefetchStatus::kPrefetchNotEligiblePreloadingDisabled:
-    case PrefetchStatus::kPrefetchNotEligibleExistingProxy:
-    case PrefetchStatus::kPrefetchNotEligibleBrowserContextOffTheRecord:
+    case PrefetchStatus::kPrefetchIneligiblePrefetchProxyNotAvailable:
+    case PrefetchStatus::kPrefetchIneligibleHostIsNonUnique:
+    case PrefetchStatus::kPrefetchIneligibleDataSaverEnabled:
+    case PrefetchStatus::kPrefetchIneligibleBatterySaverEnabled:
+    case PrefetchStatus::kPrefetchIneligiblePreloadingDisabled:
+    case PrefetchStatus::kPrefetchIneligibleExistingProxy:
+    case PrefetchStatus::kPrefetchIneligibleBrowserContextOffTheRecord:
     case PrefetchStatus::
-        kPrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy:
+        kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy:
       // These statuses don't relate to any user state, so don't send a decoy
       // request.
       return false;
@@ -398,17 +398,17 @@ void PrefetchService::PrefetchUrl(
       case PreloadingEligibility::kDataSaverEnabled:
         OnGotEligibilityResult(
             prefetch_container, false,
-            PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled);
+            PrefetchStatus::kPrefetchIneligibleDataSaverEnabled);
         return;
       case PreloadingEligibility::kBatterySaverEnabled:
         OnGotEligibilityResult(
             prefetch_container, false,
-            PrefetchStatus::kPrefetchNotEligibleBatterySaverEnabled);
+            PrefetchStatus::kPrefetchIneligibleBatterySaverEnabled);
         return;
       case PreloadingEligibility::kPreloadingDisabled:
         OnGotEligibilityResult(
             prefetch_container, false,
-            PrefetchStatus::kPrefetchNotEligiblePreloadingDisabled);
+            PrefetchStatus::kPrefetchIneligiblePreloadingDisabled);
         return;
       default:
         DVLOG(1) << *prefetch_container
@@ -458,7 +458,7 @@ void PrefetchService::CheckEligibilityOfPrefetch(
   if (browser_context_->IsOffTheRecord()) {
     std::move(result_callback)
         .Run(prefetch_container, false,
-             PrefetchStatus::kPrefetchNotEligibleBrowserContextOffTheRecord);
+             PrefetchStatus::kPrefetchIneligibleBrowserContextOffTheRecord);
     return;
   }
 
@@ -472,7 +472,7 @@ void PrefetchService::CheckEligibilityOfPrefetch(
       prefetch_container->IsProxyRequiredForURL(url) && is_host_non_unique) {
     std::move(result_callback)
         .Run(prefetch_container, false,
-             PrefetchStatus::kPrefetchNotEligibleHostIsNonUnique);
+             PrefetchStatus::kPrefetchIneligibleHostIsNonUnique);
     return;
   }
 
@@ -487,7 +487,7 @@ void PrefetchService::CheckEligibilityOfPrefetch(
   if (!is_secure_http) {
     std::move(result_callback)
         .Run(prefetch_container, false,
-             PrefetchStatus::kPrefetchNotEligibleSchemeIsNotHttps);
+             PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps);
     return;
   }
 
@@ -497,7 +497,7 @@ void PrefetchService::CheckEligibilityOfPrefetch(
        !prefetch_proxy_configurator_->IsPrefetchProxyAvailable())) {
     std::move(result_callback)
         .Run(prefetch_container, false,
-             PrefetchStatus::kPrefetchProxyNotAvailable);
+             PrefetchStatus::kPrefetchIneligiblePrefetchProxyNotAvailable);
     return;
   }
 
@@ -510,7 +510,7 @@ void PrefetchService::CheckEligibilityOfPrefetch(
                                                   /*can_create=*/false)) {
     std::move(result_callback)
         .Run(prefetch_container, false,
-             PrefetchStatus::kPrefetchNotEligibleNonDefaultStoragePartition);
+             PrefetchStatus::kPrefetchIneligibleNonDefaultStoragePartition);
     return;
   }
 
@@ -598,7 +598,7 @@ void PrefetchService::OnGotServiceWorkerResult(
     case ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER:
       std::move(result_callback)
           .Run(std::move(prefetch_container), false,
-               PrefetchStatus::kPrefetchNotEligibleUserHasServiceWorker);
+               PrefetchStatus::kPrefetchIneligibleUserHasServiceWorker);
       return;
   }
   // This blocks same-site cross-origin prefetches that require the prefetch
@@ -613,7 +613,7 @@ void PrefetchService::OnGotServiceWorkerResult(
     std::move(result_callback)
         .Run(std::move(prefetch_container), false,
              PrefetchStatus::
-                 kPrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy);
+                 kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy);
     return;
   }
   // We do not need to check the cookies of prefetches that do not need an
@@ -651,7 +651,7 @@ void PrefetchService::OnGotCookiesForEligibilityCheck(
   if (!cookie_list.empty()) {
     std::move(result_callback)
         .Run(prefetch_container, false,
-             PrefetchStatus::kPrefetchNotEligibleUserHasCookies);
+             PrefetchStatus::kPrefetchIneligibleUserHasCookies);
     return;
   }
 
@@ -676,7 +676,7 @@ void PrefetchService::OnGotCookiesForEligibilityCheck(
   if (excluded_cookie_has_tld) {
     std::move(result_callback)
         .Run(prefetch_container, false,
-             PrefetchStatus::kPrefetchNotEligibleUserHasCookies);
+             PrefetchStatus::kPrefetchIneligibleUserHasCookies);
     return;
   }
 
@@ -727,7 +727,7 @@ void PrefetchService::OnGotProxyLookupResult(
   if (has_proxy) {
     std::move(result_callback)
         .Run(prefetch_container, false,
-             PrefetchStatus::kPrefetchNotEligibleExistingProxy);
+             PrefetchStatus::kPrefetchIneligibleExistingProxy);
     return;
   }
   std::move(result_callback).Run(prefetch_container, true, absl::nullopt);
