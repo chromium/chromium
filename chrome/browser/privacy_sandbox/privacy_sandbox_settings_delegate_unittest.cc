@@ -530,8 +530,15 @@ TEST_P(CookieDeprecationExperimentEligibilityOTRProfileTest, IsEligible) {
   Profile* off_the_record_profile = profile()->GetOffTheRecordProfile(
       Profile::OTRProfileID::CreateUniqueForTesting(),
       /*create_if_needed=*/true);
-  PrivacySandboxSettingsDelegate delegate_under_test(off_the_record_profile,
-                                                     experiment_manager());
+  PrivacySandboxSettingsDelegate otr_delegate_under_test(off_the_record_profile,
+                                                         experiment_manager());
+
+  // Android does not have guest profiles.
+#if !BUILDFLAG(IS_ANDROID)
+  auto guest_profile = TestingProfile::Builder().SetGuestSession().Build();
+  PrivacySandboxSettingsDelegate guest_delegate_under_test(
+      guest_profile.get(), experiment_manager());
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   const bool use_profile_filtering = GetParam();
 
@@ -552,7 +559,21 @@ TEST_P(CookieDeprecationExperimentEligibilityOTRProfileTest, IsEligible) {
       EXPECT_CALL(*experiment_manager(), IsClientEligible).Times(0);
     }
 
-    EXPECT_TRUE(delegate_under_test.IsCookieDeprecationExperimentEligible());
+    EXPECT_TRUE(
+        otr_delegate_under_test.IsCookieDeprecationExperimentEligible());
+
+#if !BUILDFLAG(IS_ANDROID)
+    if (!use_profile_filtering) {
+      EXPECT_CALL(*experiment_manager(), IsClientEligible)
+          .WillOnce(::testing::Return(true));
+    } else {
+      EXPECT_CALL(*experiment_manager(), IsClientEligible).Times(0);
+    }
+
+    EXPECT_TRUE(
+        guest_delegate_under_test.IsCookieDeprecationExperimentEligible());
+#endif  // !BUILDFLAG(IS_ANDROID)
+
     feature_list()->Reset();
   }
 
@@ -562,7 +583,14 @@ TEST_P(CookieDeprecationExperimentEligibilityOTRProfileTest, IsEligible) {
         {{"force_eligible", "true"},
          {"use_profile_filtering", use_profile_filtering_param},
          {"enable_otr_profiles", "false"}});
-    EXPECT_FALSE(delegate_under_test.IsCookieDeprecationExperimentEligible());
+    EXPECT_FALSE(
+        otr_delegate_under_test.IsCookieDeprecationExperimentEligible());
+
+#if !BUILDFLAG(IS_ANDROID)
+    EXPECT_FALSE(
+        guest_delegate_under_test.IsCookieDeprecationExperimentEligible());
+#endif  // !BUILDFLAG(IS_ANDROID)
+
     feature_list()->Reset();
   }
 }
