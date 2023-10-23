@@ -154,7 +154,8 @@
   _alertCoordinator = nil;
 }
 
-- (void)showStoreKitWithProductIdentifier:(NSString*)productIdentifer {
+- (void)showStoreKitWithProductIdentifier:(NSString*)productIdentifer
+                            campaignToken:(NSString*)campaignToken {
   if (_storeKitCoordinator) {
     [_storeKitCoordinator stop];
     _storeKitCoordinator = nil;
@@ -164,8 +165,10 @@
       initWithBaseViewController:self.baseViewController
                          browser:self.browser];
   _storeKitCoordinator.delegate = self;
-  _storeKitCoordinator.iTunesProductParameters =
-      @{SKStoreProductParameterITunesItemIdentifier : productIdentifer};
+  _storeKitCoordinator.iTunesProductParameters = @{
+    SKStoreProductParameterITunesItemIdentifier : productIdentifer,
+    SKStoreProductParameterCampaignToken : campaignToken
+  };
   [_storeKitCoordinator start];
 }
 
