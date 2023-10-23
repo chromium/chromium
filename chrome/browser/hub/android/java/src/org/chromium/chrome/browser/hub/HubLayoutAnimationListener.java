@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.hub;
 
-/** Interface for observing {@link HubLayoutAnimationRunner} animation phases. */
+/**
+ * Interface for observing {@link HubLayoutAnimationRunner} animation phases. Animation phases are
+ * all always invoked even if the animation is forced to finish.
+ */
 public interface HubLayoutAnimationListener {
     /** Called just before a {@link HubLayoutAnimationRunner} starts an animation. */
     default void beforeStart() {}
@@ -14,6 +17,15 @@ public interface HubLayoutAnimationListener {
 
     /**
      * Called when a {@link HubLayoutAnimationRunner} ends an animation.
+     *
+     * <p>When forced to finish:
+     *
+     * <ol>
+     *   <li>For show animations the Hub will be hidden soon and work that will not result in an
+     *       invalid state or visual jank may be skipped.
+     *   <li>For hide animations the Hub will either be not shown immediately, or we are quickly
+     *       re-opening the Hub. Because the final state is unclear all work should be completed.
+     * </ol>
      *
      * @param wasForcedToFinish Whether the animation was forced to finish early.
      */

@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayerJni;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.resources.ResourceManager;
@@ -449,6 +450,8 @@ public class HubLayoutUnitTest {
         assertTrue(mHubLayout.onUpdateAnimation(FAKE_TIME, false));
 
         startHiding(LayoutType.BROWSING, NEW_TAB_ID, false);
+        verify(mHubLayout).doneShowing();
+        verify(mTab, never()).hide(anyInt());
 
         assertEquals(HubLayoutAnimationType.EXPAND_TAB, mHubLayout.getCurrentAnimationType());
         assertTrue(mHubLayout.isRunningAnimations());
@@ -461,6 +464,8 @@ public class HubLayoutUnitTest {
 
         verify(mHubController, times(1)).onHubLayoutDoneHiding();
         assertEquals(0, mFrameLayout.getChildCount());
+        verify(mHubLayout).doneHiding();
+        verify(mTab, never()).hide(anyInt());
     }
 
     private void show(
@@ -485,6 +490,8 @@ public class HubLayoutUnitTest {
 
         assertFalse(mHubLayout.isRunningAnimations());
         assertFalse(mHubLayout.onUpdateAnimation(FAKE_TIME, false));
+        verify(mHubLayout).doneShowing();
+        verify(mTab).hide(eq(TabHidingType.TAB_SWITCHER_SHOWN));
     }
 
     private void hide(
@@ -513,6 +520,7 @@ public class HubLayoutUnitTest {
 
         verify(mHubController, times(1)).onHubLayoutDoneHiding();
         assertEquals(0, mFrameLayout.getChildCount());
+        verify(mHubLayout).doneHiding();
     }
 
     private void startShowing(@LayoutType int fromLayout, boolean animate) {

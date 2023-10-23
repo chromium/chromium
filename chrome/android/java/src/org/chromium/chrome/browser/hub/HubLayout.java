@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.resources.ResourceManager;
 
@@ -190,6 +191,12 @@ public class HubLayout extends Layout {
                     @Override
                     public void onEnd(boolean wasForcedToFinish) {
                         doneShowing();
+                        if (!wasForcedToFinish) {
+                            // We don't want to hide the tab if the animation was forced to finish
+                            // since that means another layout is going to show and hiding the tab
+                            // could leave the tab in a bad state.
+                            hideCurrentTab();
+                        }
                     }
                 });
 
@@ -455,6 +462,13 @@ public class HubLayout extends Layout {
         // the last visible Tab prior to transitioning to the Hub. This should be nulled once
         // the capture is completed.
         mLayoutTabs = null;
+    }
+
+    private void hideCurrentTab() {
+        Tab currentTab = mTabModelSelector.getCurrentTab();
+        if (currentTab != null) {
+            currentTab.hide(TabHidingType.TAB_SWITCHER_SHOWN);
+        }
     }
 
     private void captureTabThumbnail(

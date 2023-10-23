@@ -74,7 +74,11 @@ public interface HubLayoutAnimationRunner {
      */
     void runWithWaitForAnimatorTimeout(long timeoutMillis);
 
-    /** Synchronously forces the current animation to run to completion. */
+    /**
+     * Synchronously forces the current animation to run to completion. The animation should reach
+     * its end state immediately while sending all relevant {@link HubLayoutAnimationListener}
+     * events.
+     */
     void forceAnimationToFinish();
 
     /**
