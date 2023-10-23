@@ -1737,8 +1737,25 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
 
   DCHECK(video_frame->metadata().texture_origin_is_top_left);
 
-  if (!video_frame->HasTextures() || video_frame->shared_image_format_type() ==
-                                         SharedImageFormatType::kLegacy) {
+  // Determine whether to use legacy mailboxes to perform the upload.
+  // We use legacy mailboxes iff one of the following is true:
+  // * `destination_gl` does not support YUV-RGB conversion.
+  // * The VideoFrame is holding a legacy mailbox.
+  // * The VideoFrame is pure software or legacy (i.e., not MultiplanarSI).
+  bool yuv_rgb_conversion_not_supported =
+      !destination_gl_capabilities.supports_yuv_rgb_conversion;
+  bool video_frame_is_legacy_mailbox =
+      video_frame->HasTextures() &&
+      !video_frame->mailbox_holder(0).mailbox.IsSharedImage();
+  bool video_frame_is_not_mp_si =
+      !video_frame->HasTextures() ||
+      video_frame->shared_image_format_type() == SharedImageFormatType::kLegacy;
+
+  bool use_legacy_mailboxes_for_upload = yuv_rgb_conversion_not_supported ||
+                                         video_frame_is_legacy_mailbox ||
+                                         video_frame_is_not_mp_si;
+
+  if (use_legacy_mailboxes_for_upload) {
     // TODO(nazabris): Support OOP-R code path here that does not have
     // GrContext.
     if (!raster_context_provider || !raster_context_provider->GrContext()) {
