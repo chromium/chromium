@@ -1,49 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.3.0-alpha06" type="baseline" client="" dependencies="true" name="" variant="all" version="8.3.0-alpha06">
-
-    <issue
-        id="NewApi"
-        message="Class requires API level 30 (current min is 24): `Natives`"
-        errorLine1="  private static AnrCollector.Natives testInstance;"
-        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chromecast/cast_shell_apk__lint/SRCJARS/gen/components/crash/android/anr_collector_jni_headers/org/chromium/components/crash/anr/AnrCollectorJni.java"
-            line="38"
-            column="18"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Class requires API level 30 (current min is 24): `Natives`"
-        errorLine1="    public void setInstanceForTesting(AnrCollector.Natives instance) {"
-        errorLine2="                                      ~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chromecast/cast_shell_apk__lint/SRCJARS/gen/components/crash/android/anr_collector_jni_headers/org/chromium/components/crash/anr/AnrCollectorJni.java"
-            line="43"
-            column="39"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Class requires API level 33 (current min is 24): `Natives`"
-        errorLine1="  private static MagnifierSurfaceControl.Natives testInstance;"
-        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chromecast/cast_shell_apk__lint/SRCJARS/gen/content/public/android/content_jni_headers/org/chromium/content/browser/selection/MagnifierSurfaceControlJni.java"
-            line="23"
-            column="18"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Class requires API level 33 (current min is 24): `Natives`"
-        errorLine1="    public void setInstanceForTesting(MagnifierSurfaceControl.Natives instance) {"
-        errorLine2="                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chromecast/cast_shell_apk__lint/SRCJARS/gen/content/public/android/content_jni_headers/org/chromium/content/browser/selection/MagnifierSurfaceControlJni.java"
-            line="28"
-            column="39"/>
-    </issue>
+<issues format="6" by="lint 8.3.0-alpha09" type="baseline" client="" dependencies="true" name="" variant="all" version="8.3.0-alpha09">
 
     <issue
         id="UnspecifiedRegisterReceiverFlag"
