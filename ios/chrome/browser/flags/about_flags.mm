@@ -657,20 +657,16 @@ const FeatureEntry::FeatureVariation kOneTapForMapsWithVariations[] = {
 
 constexpr FeatureEntry::FeatureParam kOmniboxInspireMeWith25Total5Trends[] = {
     {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name, "5"},
-    {OmniboxFieldTrial::kInspireMePsuggestQueries.name, "20"},
-    {OmniboxFieldTrial::kInspireMeNTPZPSLimit.name, "25"}};
+    {OmniboxFieldTrial::kInspireMePsuggestQueries.name, "20"}};
 constexpr FeatureEntry::FeatureParam kOmniboxInspireMeWith20Total5Trends[] = {
     {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name, "5"},
-    {OmniboxFieldTrial::kInspireMePsuggestQueries.name, "15"},
-    {OmniboxFieldTrial::kInspireMeNTPZPSLimit.name, "20"}};
+    {OmniboxFieldTrial::kInspireMePsuggestQueries.name, "15"}};
 constexpr FeatureEntry::FeatureParam kOmniboxInspireMeWith25Total10Trends[] = {
     {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name, "10"},
-    {OmniboxFieldTrial::kInspireMePsuggestQueries.name, "15"},
-    {OmniboxFieldTrial::kInspireMeNTPZPSLimit.name, "25"}};
+    {OmniboxFieldTrial::kInspireMePsuggestQueries.name, "15"}};
 constexpr FeatureEntry::FeatureParam kOmniboxInspireMeWith20Total10Trends[] = {
     {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name, "10"},
-    {OmniboxFieldTrial::kInspireMePsuggestQueries.name, "10"},
-    {OmniboxFieldTrial::kInspireMeNTPZPSLimit.name, "20"}};
+    {OmniboxFieldTrial::kInspireMePsuggestQueries.name, "10"}};
 
 constexpr FeatureEntry::FeatureVariation kOmniboxInspireMeVariants[] = {
     {"25 total, 5 Trends", kOmniboxInspireMeWith25Total5Trends,

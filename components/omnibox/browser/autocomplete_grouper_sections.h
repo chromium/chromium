@@ -159,8 +159,7 @@ class DesktopNonZpsSection : public Section {
 class IOSNTPZpsSection : public ZpsSection {
  public:
   explicit IOSNTPZpsSection(size_t max_trending_queries,
-                            size_t psuggest_count,
-                            size_t total_count,
+                            size_t max_psuggest_queries,
                             omnibox::GroupConfigMap& group_configs);
 };
 
