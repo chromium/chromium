@@ -20,6 +20,11 @@ struct PrinterAuthenticationInfo {
   // URI of OAuth2 Authorization Server and scope. Empty strings if not set.
   std::string oauth_server;
   std::string oauth_scope;
+
+  bool operator==(const PrinterAuthenticationInfo& other) const {
+    return oauth_server == other.oauth_server &&
+           oauth_scope == other.oauth_scope;
+  }
 };
 
 // A container for the results of a printer status query. A printer status query
@@ -66,6 +71,11 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) CupsPrinterStatus {
   CupsPrinterStatus& operator=(const CupsPrinterStatus& other);
 
   ~CupsPrinterStatus();
+
+  bool operator==(const CupsPrinterStatus& other) const {
+    return status_reasons_ == other.status_reasons_ &&
+           auth_info_ == other.auth_info_;
+  }
 
   const std::string& GetPrinterId() const;
 

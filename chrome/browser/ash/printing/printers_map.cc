@@ -151,17 +151,20 @@ bool PrintersMap::IsExistingPrinter(const std::string& printer_id) const {
   return Get(printer_id).has_value();
 }
 
-void PrintersMap::SavePrinterStatus(
+bool PrintersMap::SavePrinterStatus(
     const std::string& printer_id,
     const CupsPrinterStatus& cups_printer_status) {
   printer_statuses_[printer_id] = cups_printer_status;
 
   for (auto& [printer_class, printers_map] : printers_) {
     if (auto* printer = base::FindOrNull(printers_map, printer_id)) {
+      const bool is_new_status =
+          printer->printer_status() != cups_printer_status;
       printer->set_printer_status(cups_printer_status);
-      return;
+      return is_new_status;
     }
   }
+  return false;
 }
 
 std::set<std::string> PrintersMap::GetPrinterIdsInClass(

@@ -76,8 +76,10 @@ class PrintersMap {
                         const std::string& printer_id) const;
 
   // Adds printer status to existing printers in |printers_| map and also saves
-  // to |printer_statuses_| cache for future printer retrievals.
-  void SavePrinterStatus(
+  // to |printer_statuses_| cache for future printer retrievals. Returns true
+  // if this is the printer's first saved status or different than the
+  // previously saved status.
+  bool SavePrinterStatus(
       const std::string& printer_id,
       const chromeos::CupsPrinterStatus& cups_printer_status);
 
