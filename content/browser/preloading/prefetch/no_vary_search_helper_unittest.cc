@@ -109,7 +109,7 @@ class NoVarySearchHelperTester final {
     MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
                                           std::move(head), "test body");
     auto weak_prefetch_container = prefetch_container->GetWeakPtr();
-    no_vary_search::SetNoVarySearchData(prefetch_container->GetWeakPtr());
+    prefetch_container->SetNoVarySearchData(nullptr);
     owned_prefetches_.push_back(std::move(prefetch_container));
 
     return weak_prefetch_container;

@@ -11,8 +11,6 @@
 
 #include "base/feature_list.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
-#include "content/common/content_export.h"
-#include "content/public/browser/global_routing_id.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/no_vary_search.mojom.h"
@@ -31,15 +29,6 @@ class RenderFrameHost;
 // The source of truth is the `prefetches` and the helpers iterates over
 // `prefetches` to find matching `PrefetchContainer`s.
 namespace no_vary_search {
-
-// Sets `prefetch_container`'s `NoVarySearchData` based on the response header
-// (`prefetch_container->GetHead()`) if applicable. Unless this is set, the
-// helpers don't perform No-Vary-Search matching for `prefetch_container`, even
-// if `GetHead()` has No-Vary-Search headers. If `prefetch_container` doesn't
-// have a No-Vary-Search header this method is no-op and it is left to the
-// caller to handle the case of true URL equality.
-CONTENT_EXPORT void SetNoVarySearchData(
-    base::WeakPtr<PrefetchContainer> prefetch_container);
 
 // See comments inside `IterateCandidates()` for requirements for `PrefetchKey`.
 template <typename PrefetchKey>
@@ -241,12 +230,15 @@ GetAllForUrlWithoutRefAndQueryForTesting(
   return result;
 }
 
-// Send No-Vary-Search parsing errors in DevTools console.
+// Parse and return `HttpNoVarySearchData` from `head`, if any.
+//
+// On parse errors, send No-Vary-Search parsing errors in DevTools console.
 // The method will test if there are errors/warning that the developer
 // needs to know about, and if there are send them to the DevTools console.
-void MaybeSendErrorsToConsole(const GURL& url,
-                              const network::mojom::URLResponseHead& head,
-                              RenderFrameHost& rfh);
+absl::optional<net::HttpNoVarySearchData> ProcessHead(
+    const network::mojom::URLResponseHead& head,
+    const GURL& url,
+    RenderFrameHost* rfh);
 
 // Parse No-Vary-Search from mojom structure received from network service.
 net::HttpNoVarySearchData ParseHttpNoVarySearchDataFromMojom(

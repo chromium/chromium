@@ -40,6 +40,7 @@ class PrefetchServingPageMetricsContainer;
 class PrefetchStreamingURLLoader;
 class PreloadingAttempt;
 class ProxyLookupClientImpl;
+class RenderFrameHost;
 
 // Holds the relevant size information of the prefetched response. The struct is
 // installed onto `PrefetchContainer`, and gets passed into
@@ -333,9 +334,8 @@ class CONTENT_EXPORT PrefetchContainer {
   const absl::optional<net::HttpNoVarySearchData>& GetNoVarySearchData() const {
     return no_vary_search_data_;
   }
-  void SetNoVarySearchData(net::HttpNoVarySearchData no_vary_search_data) {
-    no_vary_search_data_ = std::move(no_vary_search_data);
-  }
+  // Sets `no_vary_search_data_` from `GetHead()`. Exposed for tests.
+  void SetNoVarySearchData(RenderFrameHost* rfh);
 
   class SinglePrefetch;
 
@@ -493,6 +493,8 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // The No-Vary-Search response data, parsed from the actual response header
   // (`GetHead()`).
+  // Unless this is set, `no_vary_search` helpers don't perform No-Vary-Search
+  // matching for `this`, even if `GetHead()` has No-Vary-Search headers.
   absl::optional<net::HttpNoVarySearchData> no_vary_search_data_;
 
   // The No-Vary-Search hint of the prefetch, which is specified by the

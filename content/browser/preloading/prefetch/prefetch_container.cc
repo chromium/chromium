@@ -820,12 +820,23 @@ void PrefetchContainer::Reader::OnPrefetchProbeResult(
   }
 }
 
-void PrefetchContainer::OnReceivedHead() {
+void PrefetchContainer::SetNoVarySearchData(RenderFrameHost* rfh) {
+  CHECK(!no_vary_search_data_);
   // Check `GetHead()` here, because `OnReceivedHead()` can be called in
   // non-servable cases when response headers are not available.
-  if (prefetch_document_manager_ && GetHead()) {
-    prefetch_document_manager_->OnPrefetchedHeadReceived(GetURL());
+  if (!GetHead()) {
+    return;
   }
+  no_vary_search_data_ =
+      no_vary_search::ProcessHead(*GetHead(), prefetch_url_, rfh);
+}
+
+void PrefetchContainer::OnReceivedHead() {
+  if (prefetch_document_manager_ &&
+      prefetch_document_manager_->NoVarySearchSupportEnabled()) {
+    SetNoVarySearchData(&prefetch_document_manager_->render_frame_host());
+  }
+
   if (on_received_head_callback_) {
     std::move(on_received_head_callback_).Run();
   }

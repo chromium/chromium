@@ -391,23 +391,6 @@ void PrefetchDocumentManager::OnEligibilityCheckComplete(bool is_eligible) {
     referring_page_metrics_.prefetch_eligible_count++;
 }
 
-void PrefetchDocumentManager::OnPrefetchedHeadReceived(const GURL& url) {
-  if (!no_vary_search_support_enabled_ ||
-      !base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch)) {
-    return;
-  }
-  // Find the PrefetchContainer associated with |url|.
-  const auto it = all_prefetches_.find(url);
-  if (it == all_prefetches_.end() || !it->second) {
-    return;
-  }
-
-  const auto* head = it->second->GetHead();
-  DCHECK(head);
-  no_vary_search::MaybeSendErrorsToConsole(url, *head, render_frame_host());
-  no_vary_search::SetNoVarySearchData(it->second);
-}
-
 void PrefetchDocumentManager::OnPrefetchSuccessful(
     PrefetchContainer* prefetch) {
   referring_page_metrics_.prefetch_successful_count++;
@@ -421,6 +404,11 @@ void PrefetchDocumentManager::OnPrefetchSuccessful(
 
 void PrefetchDocumentManager::EnableNoVarySearchSupport() {
   no_vary_search_support_enabled_ = true;
+}
+
+bool PrefetchDocumentManager::NoVarySearchSupportEnabled() const {
+  return no_vary_search_support_enabled_ &&
+         base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch);
 }
 
 std::tuple<bool, base::WeakPtr<PrefetchContainer>>
