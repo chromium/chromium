@@ -589,25 +589,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.DeviceRemoteCommand.Crd.Capturer.FrameSink.Created"
-    units="units" expires_after="2023-11-12">
-  <owner>macinashutosh@google.com</owner>
-  <owner>chromeos-commercial-crd@google.com</owner>
-  <summary>
-    Reports the creation of FrameSinkDesktopCapturer class object
-  </summary>
-</histogram>
-
-<histogram
-    name="Enterprise.DeviceRemoteCommand.Crd.Capturer.FrameSink.Destroyed"
-    units="units" expires_after="2024-03-17">
-  <owner>macinashutosh@google.com</owner>
-  <owner>chromeos-commercial-crd@google.com</owner>
-  <summary>
-    Reports the destruction of FrameSinkDesktopCapturer class object
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.DeviceRemoteCommand.Crd.Result"
     enum="EnterpriseCrdSessionResultCode" expires_after="2024-02-11">
   <owner>macinashutosh@google.com</owner>
