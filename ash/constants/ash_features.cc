@@ -2773,11 +2773,6 @@ BASE_FEATURE(kWallpaperPerDesk,
              "WallpaperPerDesk",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable daily wallpaper refresh revamp.
-BASE_FEATURE(kWallpaperRefreshRevamp,
-             "WallpaperRefreshRevamp",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the Welcome Tour that walks new users through ChromeOS System UI.
 BASE_FEATURE(kWelcomeTour, "WelcomeTour", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -4243,10 +4238,6 @@ bool IsWallpaperGooglePhotosSharedAlbumsEnabled() {
 
 bool IsWallpaperPerDeskEnabled() {
   return base::FeatureList::IsEnabled(kWallpaperPerDesk);
-}
-
-bool IsWallpaperRefreshRevampEnabled() {
-  return base::FeatureList::IsEnabled(kWallpaperRefreshRevamp);
 }
 
 bool IsWelcomeTourEnabled() {

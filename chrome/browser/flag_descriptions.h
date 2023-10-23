@@ -2025,9 +2025,6 @@ extern const char kWallpaperGooglePhotosSharedAlbumsDescription[];
 extern const char kWallpaperPerDeskName[];
 extern const char kWallpaperPerDeskDescription[];
 
-extern const char kWallpaperRefreshRevampName[];
-extern const char kWallpaperRefreshRevampDescription[];
-
 extern const char kWebAuthnFilterGooglePasskeysName[];
 extern const char kWebAuthnFilterGooglePasskeysDescription[];
 

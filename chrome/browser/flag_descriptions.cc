@@ -3481,12 +3481,6 @@ const char kWallpaperPerDeskName[] =
 const char kWallpaperPerDeskDescription[] =
     "Allow users to set different wallpapers on each of their active desks";
 
-const char kWallpaperRefreshRevampName[] =
-    "Enable daily wallpaper refresh revamp";
-const char kWallpaperRefreshRevampDescription[] =
-    "Allows users to switch to checkpoint based wallpaper daily refresh "
-    "feature.";
-
 const char kWebAuthnFilterGooglePasskeysName[] =
     "Filter passkeys for google.com";
 const char kWebAuthnFilterGooglePasskeysDescription[] =
