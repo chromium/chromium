@@ -54,8 +54,11 @@ LayerTreeFrameSink::LayerTreeFrameSink(
       worker_context_provider_wrapper_(
           std::move(worker_context_provider_wrapper)),
       compositor_task_runner_(std::move(compositor_task_runner)),
-      gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
-      shared_image_interface_(std::move(shared_image_interface)) {
+      gpu_memory_buffer_manager_(gpu_memory_buffer_manager) {
+  // TODO(crbug.com/1434885): For kSharedBitmapToSharedImage, put
+  // shared_image_interface_(std::move(shared_image_interface)) back When
+  // "notification for gpu channel lost" and "OutputSurface SharedIamge to
+  // SharedBitmap support" are implemented.
   DETACH_FROM_THREAD(thread_checker_);
 }
 
