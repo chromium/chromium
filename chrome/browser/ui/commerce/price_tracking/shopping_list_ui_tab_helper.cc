@@ -436,18 +436,18 @@ void ShoppingListUiTabHelper::SetPriceTrackingState(
 
   base::OnceCallback<void(bool)> wrapped_callback = base::BindOnce(
       [](base::WeakPtr<ShoppingListUiTabHelper> helper,
-         base::OnceCallback<void(bool)> callback, bool success) {
+         base::OnceCallback<void(bool)> callback, bool is_tracked,
+         bool success) {
         if (helper) {
           if (success) {
-            helper->is_cluster_id_tracked_by_user_ =
-                helper->pending_tracking_state_.value();
+            helper->is_cluster_id_tracked_by_user_ = is_tracked;
           }
           helper->pending_tracking_state_.reset();
         }
 
         std::move(callback).Run(success);
       },
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback), enable);
 
   pending_tracking_state_.emplace(enable);
 
