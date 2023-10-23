@@ -225,8 +225,11 @@ void CookieControlsBubbleViewController::OnStatusChanged(
     case CookieControlsEnforcement::kEnforcedByPolicy:
     case CookieControlsEnforcement::kEnforcedByExtension:
     case CookieControlsEnforcement::kEnforcedByCookieSetting:
+      // In 3PCD, tell the user if they allowed the current site in settings.
+      bubble_view_->GetContentView()->SetContentLabelsVisible(
+          enforcement == CookieControlsEnforcement::kEnforcedByCookieSetting &&
+          blocking_status != CookieBlocking3pcdStatus::kNotIn3pcd);
       bubble_view_->GetContentView()->SetFeedbackSectionVisibility(false);
-      bubble_view_->GetContentView()->SetContentLabelsVisible(false);
       bubble_view_->GetContentView()->SetToggleVisible(false);
       bubble_view_->GetContentView()->SetEnforcedIcon(
           content_settings::CookieControlsUtil::GetEnforcedIcon(enforcement),
