@@ -36747,6 +36747,12 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="TabContextMenu_OrganizeTabs">
+  <owner>emshack@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>User selected Organize Tabs from tab context menu.</description>
+</action>
+
 <action name="TabContextMenu_Reload">
   <owner>tbergquist@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>

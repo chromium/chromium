@@ -11,6 +11,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/prevent_close_test_base.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
@@ -23,6 +27,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
@@ -90,4 +95,34 @@ IN_PROC_BROWSER_TEST_F(TabStripModelPreventCloseTest,
 
   tab_strip_model->CloseAllTabs();
   EXPECT_EQ(0, tab_strip_model->count());
+}
+
+class TabStripModelBrowserTest : public InProcessBrowserTest {
+ public:
+  TabStripModelBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {features::kTabOrganization, features::kChromeRefresh2023}, {});
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, CommandOrganizeTabs) {
+  TabStripModel* const tab_strip_model = browser()->tab_strip_model();
+  EXPECT_EQ(1, tab_strip_model->count());
+
+  EXPECT_TRUE(tab_strip_model->IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandOrganizeTabs));
+
+  // Execute CommandOrganizeTabs once. Expect a request to have been started.
+  tab_strip_model->ExecuteContextMenuCommand(
+      0, TabStripModel::CommandOrganizeTabs);
+
+  TabOrganizationService* const service =
+      TabOrganizationServiceFactory::GetForProfile(browser()->profile());
+  const TabOrganizationSession* const session =
+      service->GetSessionForBrowser(browser());
+  EXPECT_NE(session, nullptr);
+  EXPECT_NE(session->request()->state(),
+            TabOrganizationRequest::State::NOT_STARTED);
 }

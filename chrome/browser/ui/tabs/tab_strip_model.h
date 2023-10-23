@@ -511,6 +511,7 @@ class TabStripModel : public TabGroupController {
     CommandRemoveFromGroup,
     CommandMoveToExistingWindow,
     CommandMoveTabsToNewWindow,
+    CommandOrganizeTabs,
     CommandFollowSite,
     CommandUnfollowSite,
     CommandCopyURL,
