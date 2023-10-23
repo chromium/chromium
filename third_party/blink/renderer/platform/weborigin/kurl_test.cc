@@ -1135,43 +1135,15 @@ TEST(KURLTest, HasIDNA2008DeviationCharacters) {
   EXPECT_FALSE(url2.HasIDNA2008DeviationCharacter());
 }
 
-class KURLIPv4EmbeddedIPv6Test : public ::testing::Test,
-                                 public ::testing::WithParamInterface<bool> {
- public:
-  KURLIPv4EmbeddedIPv6Test() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          url::kStrictIPv4EmbeddedIPv6AddressParsing);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          url::kStrictIPv4EmbeddedIPv6AddressParsing);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         KURLIPv4EmbeddedIPv6Test,
-                         ::testing::Bool());
-
-TEST_P(KURLIPv4EmbeddedIPv6Test, IPv4EmbeddedIPv6Address) {
+TEST(KURLTest, IPv4EmbeddedIPv6Address) {
   EXPECT_TRUE(KURL(u"http://[::1.2.3.4]/").IsValid());
   EXPECT_FALSE(KURL(u"http://[::1.2.3.4.5]/").IsValid());
   EXPECT_FALSE(KURL(u"http://[::.1.2]/").IsValid());
   EXPECT_FALSE(KURL(u"http://[::.]/").IsValid());
 
-  if (base::FeatureList::IsEnabled(
-          url::kStrictIPv4EmbeddedIPv6AddressParsing)) {
-    EXPECT_FALSE(KURL(u"http://[::1.2.3.4.]/").IsValid());
-    EXPECT_FALSE(KURL(u"http://[::1.2]/").IsValid());
-    EXPECT_FALSE(KURL(u"http://[::1.2.]/").IsValid());
-  } else {
-    EXPECT_TRUE(KURL(u"http://[::1.2.3.4.]/").IsValid());
-    EXPECT_TRUE(KURL(u"http://[::1.2]/").IsValid());
-    EXPECT_TRUE(KURL(u"http://[::1.2.]/").IsValid());
-  }
+  EXPECT_FALSE(KURL(u"http://[::1.2.3.4.]/").IsValid());
+  EXPECT_FALSE(KURL(u"http://[::1.2]/").IsValid());
+  EXPECT_FALSE(KURL(u"http://[::1.2.]/").IsValid());
 }
 
 enum class PortIsValid {

@@ -26,11 +26,6 @@ COMPONENT_EXPORT(URL) bool IsUsingDontDecodeAsciiPercentEncodedURLPath();
 // See url::kStandardCompliantHostCharacters for details.
 COMPONENT_EXPORT(URL) bool IsUsingStandardCompliantHostCharacters();
 
-// Returns true if Chrome is enforcing the 4 part check for IPv4 embedded IPv6
-// addresses.
-COMPONENT_EXPORT(URL)
-BASE_DECLARE_FEATURE(kStrictIPv4EmbeddedIPv6AddressParsing);
-
 // When enabled, allows resolving of a bare fragment containing a colon against
 // a non-hierarchical URL. (For example '#foo:bar' against 'about:blank'.)
 COMPONENT_EXPORT(URL)
