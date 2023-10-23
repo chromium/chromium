@@ -7204,7 +7204,7 @@ class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
       """ % self._url_prefix, 'utf-8')
 
     def respondWithSignedInHeader(request):
-      return {'IdP-Signin-Status': 'action=signin'}, b"Header sent"
+      return {'Set-Login': 'logged-in'}, b"Header sent"
 
     def respondWithAccountList(request):
       return {'Content-Type': 'application/json'}, bytes("""

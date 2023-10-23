@@ -1,2 +1,2 @@
-<?php header("Idp-Signin-Status: action=signout-all") ?>
+<?php header("Set-Login: logged-out") ?>
 Header sent.
