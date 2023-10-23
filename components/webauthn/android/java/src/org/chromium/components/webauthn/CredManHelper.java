@@ -42,11 +42,15 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Set;
 
 public class CredManHelper {
-    // This value is formed differently because it comes from the Jetpack
-    // library, not the framework.
+    // These two values are formed differently because they come from the
+    // Jetpack library, not the framework.
+
     @VisibleForTesting
     public static final String CRED_MAN_EXCEPTION_CREATE_CREDENTIAL_TYPE_INVALID_STATE_ERROR =
             "androidx.credentials.TYPE_CREATE_PUBLIC_KEY_CREDENTIAL_DOM_EXCEPTION/androidx.credentials.TYPE_INVALID_STATE_ERROR";
+
+    public static final String CRED_MAN_IS_AUTO_SELECT_ALLOWED =
+            "androidx.credentials.BUNDLE_KEY_IS_AUTO_SELECT_ALLOWED";
 
     private static final String CRED_MAN_EXCEPTION_CREATE_CREDENTIAL_TYPE_USER_CANCEL =
             "android.credentials.CreateCredentialException.TYPE_USER_CANCELED";
@@ -690,8 +694,14 @@ public class CredManHelper {
             return null;
         }
 
+        boolean hasAllowCredentials =
+                options.allowCredentials != null && options.allowCredentials.length != 0;
         Bundle publicKeyCredentialOptionBundle =
-                buildPublicKeyCredentialOptionBundle(requestAsJson, clientDataHash, ignoreGpm);
+                buildPublicKeyCredentialOptionBundle(
+                        requestAsJson,
+                        clientDataHash,
+                        ignoreGpm,
+                        /* allowAutoSelect= */ hasAllowCredentials);
 
         // Build the CredentialOption for passkeys:
         Object credentialOption;
@@ -741,7 +751,10 @@ public class CredManHelper {
     }
 
     private Bundle buildPublicKeyCredentialOptionBundle(
-            String requestAsJson, byte[] clientDataHash, boolean ignoreGpm) {
+            String requestAsJson,
+            byte[] clientDataHash,
+            boolean ignoreGpm,
+            boolean allowAutoSelect) {
         final Bundle publicKeyCredentialOptionBundle = new Bundle();
         publicKeyCredentialOptionBundle.putString(CRED_MAN_PREFIX + "BUNDLE_KEY_SUBTYPE",
                 CRED_MAN_PREFIX + "BUNDLE_VALUE_SUBTYPE_GET_PUBLIC_KEY_CREDENTIAL_OPTION");
@@ -749,6 +762,15 @@ public class CredManHelper {
                 CRED_MAN_PREFIX + "BUNDLE_KEY_REQUEST_JSON", requestAsJson);
         publicKeyCredentialOptionBundle.putByteArray(
                 CRED_MAN_PREFIX + "BUNDLE_KEY_CLIENT_DATA_HASH", clientDataHash);
+
+        if (allowAutoSelect) {
+            // Auto-select means that, when an allowlist is present and one of
+            // the providers matches with it, the account selector can be
+            // skipped. (However, if two or more providers match with the
+            // allowlist then the selector will, sadly, still be shown.)
+            publicKeyCredentialOptionBundle.putBoolean(CRED_MAN_IS_AUTO_SELECT_ALLOWED, true);
+        }
+
         publicKeyCredentialOptionBundle.putString(CHANNEL_KEY, getChannel());
         publicKeyCredentialOptionBundle.putBoolean(INCOGNITO_KEY, isIncognito());
         publicKeyCredentialOptionBundle.putBoolean(IGNORE_GPM, ignoreGpm);
