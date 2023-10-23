@@ -1293,6 +1293,20 @@ void DesktopNativeWidgetAura::OnKeyEvent(ui::KeyEvent* event) {
 
 void DesktopNativeWidgetAura::OnMouseEvent(ui::MouseEvent* event) {
   DCHECK(content_window_->IsVisible());
+
+  if (event->type() == ui::ET_MOUSE_MOVED) {
+#if BUILDFLAG(IS_WIN)
+    // Showing a tooltip causes Windows to generate a MOUSE_MOVED
+    // event to the same location it was already at; when that happens,
+    // we need to throw the event away rather than acting as if someone
+    // moved the mouse and showing a new tooltip.
+    if (event->location() == last_mouse_loc_) {
+      return;
+    }
+#endif
+    last_mouse_loc_ = event->location();
+  }
+
   if (tooltip_manager_.get())
     tooltip_manager_->UpdateTooltip();
   TooltipManagerAura::UpdateTooltipManagerForCapture(this);

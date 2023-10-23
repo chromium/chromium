@@ -75,6 +75,7 @@ void TooltipLacros::Update(aura::Window* parent_window,
   parent_window_ = parent_window;
   text_ = text;
   position_ = position;
+
   // Add the distance between `parent_window` and its toplevel window to
   // `position_` since Ash-side server will use this position as relative to
   // wayland toplevel window.
