@@ -1881,7 +1881,7 @@ config("default_warnings") {
 
         if (llvm_force_head_revision) {
           # TODO(https://crbug.com/1490607): Fix and re-enable.
-          cflags += [ "-Wno-thread-safety-reference" ]
+          cflags += [ "-Wno-thread-safety-reference-return" ]
         }
 
         if (llvm_force_head_revision && is_win) {
