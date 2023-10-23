@@ -565,6 +565,13 @@ UserScriptList ConvertValueToScripts(const Extension& extension,
         base::OptionalToPtr(serialized_script->exclude_globs),
         user_script.get());
 
+    if (serialized_script->match_origin_as_fallback.has_value()) {
+      user_script->set_match_origin_as_fallback(
+          *serialized_script->match_origin_as_fallback
+              ? MatchOriginAsFallbackBehavior::kAlways
+              : MatchOriginAsFallbackBehavior::kNever);
+    }
+
     if (!script_parsing::ParseFileSources(
             &extension, base::OptionalToPtr(serialized_script->js),
             base::OptionalToPtr(serialized_script->css),
