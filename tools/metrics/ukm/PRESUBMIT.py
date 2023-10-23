@@ -26,7 +26,7 @@ def CheckChange(input_api, output_api):
       if exit_code != 0:
         return [
             output_api.PresubmitError(
-                '%s is not prettified; run git cl format to fix.' % UKM_XML),
+                '%s is not prettified; run `git cl format` to fix.' % UKM_XML),
         ]
 
       exit_code = input_api.subprocess.call(

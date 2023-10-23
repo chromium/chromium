@@ -32,7 +32,7 @@ def CheckChange(input_api, output_api):
         errors.append(
             output_api.PresubmitError(
                 STRUCTURED_XML +
-                ' is not prettified; run git cl format to fix.'))
+                ' is not prettified; run `git cl format` to fix.'))
     elif basename == STRUCTURED_OLD_XML:
       errors.append(
           output_api.PresubmitError(

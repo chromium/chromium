@@ -23,8 +23,8 @@ def GetPrettyPrintErrors(input_api, output_api, cwd, rel_path, results):
   exit_code = input_api.subprocess.call(args, cwd=cwd)
 
   if exit_code != 0:
-    error_msg = (
-        '%s is not formatted correctly; run git cl format to fix.' % rel_path)
+    error_msg = ('%s is not formatted correctly; run `git cl format` to fix.' %
+                 rel_path)
     results.append(output_api.PresubmitError(error_msg))
 
 
