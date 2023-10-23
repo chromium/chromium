@@ -79,6 +79,7 @@ void ReadError<Sync::CounterError>(Sync::CounterError* error_,
 
   DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
+
 std::string Sync::AlarmError::ToString() const {
   std::stringstream ss_;
   ss_ << "Sync::AlarmError{";
@@ -121,6 +122,7 @@ void ReadError<Sync::AlarmError>(Sync::AlarmError* error_, ReadBuffer* buffer) {
 
   DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
+
 template <>
 COMPONENT_EXPORT(X11)
 void ReadEvent<Sync::CounterNotifyEvent>(Sync::CounterNotifyEvent* event_,

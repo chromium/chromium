@@ -170,6 +170,7 @@ void ReadError<XFixes::BadRegionError>(XFixes::BadRegionError* error_,
 
   DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
+
 Future<XFixes::QueryVersionReply> XFixes::QueryVersion(
     const XFixes::QueryVersionRequest& request) {
   if (!connection_->Ready() || !present())

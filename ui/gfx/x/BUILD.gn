@@ -92,7 +92,6 @@ protos = [
   # "xvmc",
 ]
 proto_generated_files = [
-  "read_event.cc",
   "read_error.cc",
   "extension_manager.h",
   "extension_manager.cc",

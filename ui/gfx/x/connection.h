@@ -170,8 +170,6 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   // Returns true if an event was read.
   bool ReadResponse(bool queued);
 
-  Event WaitForNextEvent();
-
   // Are there any events, errors, or replies already buffered?
   bool HasPendingResponses();
 

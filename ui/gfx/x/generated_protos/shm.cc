@@ -125,6 +125,7 @@ void ReadError<Shm::BadSegError>(Shm::BadSegError* error_, ReadBuffer* buffer) {
 
   DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
+
 Future<Shm::QueryVersionReply> Shm::QueryVersion(
     const Shm::QueryVersionRequest& request) {
   if (!connection_->Ready() || !present())

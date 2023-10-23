@@ -82,6 +82,7 @@ void ReadError<Xkb::KeyboardError>(Xkb::KeyboardError* error_,
 
   DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
+
 template <>
 COMPONENT_EXPORT(X11)
 void ReadEvent<Xkb::NewKeyboardNotifyEvent>(Xkb::NewKeyboardNotifyEvent* event_,
