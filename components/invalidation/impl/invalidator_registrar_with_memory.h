@@ -103,9 +103,6 @@ class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
   // updated state.
   InvalidatorState GetInvalidatorState() const;
 
-  // Notifies all handlers about the new instance ID.
-  void UpdateInvalidatorInstanceId(const std::string& instance_id);
-
  private:
   // Checks if any of the |topics| is already registered for a *different*
   // handler than the given one.

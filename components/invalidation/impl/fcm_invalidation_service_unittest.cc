@@ -203,14 +203,6 @@ TEST(FCMInvalidationServiceTest, NotifiesAboutInstanceID) {
       delegate->GetInvalidationService();
   ASSERT_TRUE(invalidation_service->GetInvalidatorClientId().empty());
 
-  // Register a handler *before* initializing the invalidation service.
-  FakeInvalidationHandler handler("owner_1");
-  invalidation_service->RegisterInvalidationHandler(&handler);
-
-  // Because the invalidation service hasn't been initialized, the client ID is
-  // still empty.
-  EXPECT_TRUE(handler.GetInvalidatorClientId().empty());
-
   // Make sure the MockInstanceID doesn't immediately provide a fresh client ID.
   InstanceID::GetIDCallback get_id_callback;
   EXPECT_CALL(*delegate->mock_instance_id_, GetID(_))
@@ -223,24 +215,13 @@ TEST(FCMInvalidationServiceTest, NotifiesAboutInstanceID) {
   // The invalidation service has requested a fresh client ID.
   ASSERT_FALSE(get_id_callback.is_null());
 
-  // The invalidation service should have restored the client ID from prefs, and
-  // passed it on to the handler.
-  EXPECT_EQ(handler.GetInvalidatorClientId(), "InstanceIDFromPrefs");
+  // The invalidation service should have restored the client ID from prefs.
+  EXPECT_EQ(invalidation_service->GetInvalidatorClientId(),
+            "InstanceIDFromPrefs");
 
-  // Once the invalidation service receives a fresh client ID, it should notify
-  // the handler again. (Note that in practice, the fresh ID will almost always
-  // be identical to the cached one.)
+  // Set another client ID in the invalidation service.
   std::move(get_id_callback).Run("FreshInstanceID");
-  EXPECT_EQ(handler.GetInvalidatorClientId(), "FreshInstanceID");
-
-  // Another handler that gets registered should immediately be informed of the
-  // client ID.
-  FakeInvalidationHandler handler2(/*owner=*/"owner_2");
-  invalidation_service->RegisterInvalidationHandler(&handler2);
-  EXPECT_EQ(handler2.GetInvalidatorClientId(), "FreshInstanceID");
-
-  invalidation_service->UnregisterInvalidationHandler(&handler2);
-  invalidation_service->UnregisterInvalidationHandler(&handler);
+  EXPECT_EQ(invalidation_service->GetInvalidatorClientId(), "FreshInstanceID");
 }
 
 TEST(FCMInvalidationServiceTest, ClearsInstanceIDOnSignout) {

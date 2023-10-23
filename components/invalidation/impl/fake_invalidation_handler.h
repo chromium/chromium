@@ -25,21 +25,18 @@ class FakeInvalidationHandler : public InvalidationHandler {
   const std::map<Topic, Invalidation>& GetReceivedInvalidations() const;
   void ClearReceivedInvalidations();
   int GetInvalidationCount() const;
-  const std::string& GetInvalidatorClientId() const;
 
   // InvalidationHandler implementation.
   void OnInvalidatorStateChange(InvalidatorState state) override;
   void OnIncomingInvalidation(const Invalidation& invalidation_map) override;
   std::string GetOwnerName() const override;
   bool IsPublicTopic(const Topic& topic) const override;
-  void OnInvalidatorClientIdChange(const std::string& client_id) override;
 
  private:
   InvalidatorState state_ = DEFAULT_INVALIDATION_ERROR;
   std::map<Topic, Invalidation> received_invalidations_;
   int invalidation_count_ = 0;
   std::string owner_name_;
-  std::string client_id_;
 };
 
 }  // namespace invalidation

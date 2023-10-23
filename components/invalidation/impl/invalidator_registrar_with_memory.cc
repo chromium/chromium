@@ -240,12 +240,6 @@ InvalidatorState InvalidatorRegistrarWithMemory::GetInvalidatorState() const {
   return state_;
 }
 
-void InvalidatorRegistrarWithMemory::UpdateInvalidatorInstanceId(
-    const std::string& instance_id) {
-  for (auto& observer : handlers_)
-    observer.OnInvalidatorClientIdChange(instance_id);
-}
-
 bool InvalidatorRegistrarWithMemory::HasDuplicateTopicRegistration(
     InvalidationHandler* handler,
     const std::set<TopicData>& topics) const {

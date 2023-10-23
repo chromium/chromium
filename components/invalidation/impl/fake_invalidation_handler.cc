@@ -29,10 +29,6 @@ int FakeInvalidationHandler::GetInvalidationCount() const {
   return invalidation_count_;
 }
 
-const std::string& FakeInvalidationHandler::GetInvalidatorClientId() const {
-  return client_id_;
-}
-
 void FakeInvalidationHandler::OnInvalidatorStateChange(InvalidatorState state) {
   state_ = state;
 }
@@ -49,11 +45,6 @@ std::string FakeInvalidationHandler::GetOwnerName() const {
 
 bool FakeInvalidationHandler::IsPublicTopic(const Topic& topic) const {
   return topic == "PREFERENCE";
-}
-
-void FakeInvalidationHandler::OnInvalidatorClientIdChange(
-    const std::string& client_id) {
-  client_id_ = client_id;
 }
 
 }  // namespace invalidation
