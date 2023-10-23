@@ -634,22 +634,20 @@ class FileManagerPathUtilConvertUrlTest : public testing::Test {
   ~FileManagerPathUtilConvertUrlTest() override = default;
 
   void SetUp() override {
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
 
     // Set up fake user manager.
-    auto* fake_user_manager = new ash::FakeChromeUserManager();
     const AccountId account_id(
         AccountId::FromUserEmailGaiaId("user@gmail.com", "1111111111"));
     const AccountId account_id_2(
         AccountId::FromUserEmailGaiaId("user2@gmail.com", "2222222222"));
-    fake_user_manager->AddUser(account_id);
-    fake_user_manager->LoginUser(account_id);
-    fake_user_manager->AddUser(account_id_2);
-    fake_user_manager->LoginUser(account_id_2);
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(std::move(fake_user_manager)));
+    fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->LoginUser(account_id);
+    fake_user_manager_->AddUser(account_id_2);
+    fake_user_manager_->LoginUser(account_id_2);
 
     primary_profile_ =
         profile_manager_->CreateTestingProfile(account_id.GetUserEmail());
@@ -718,8 +716,8 @@ class FileManagerPathUtilConvertUrlTest : public testing::Test {
     arc_service_manager_->arc_bridge_service()->file_system()->CloseInstance(
         &fake_file_system_);
     arc_service_manager_->set_browser_context(nullptr);
-    user_manager_enabler_.reset();
     profile_manager_.reset();
+    fake_user_manager_.Reset();
 
     storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
 
@@ -732,11 +730,12 @@ class FileManagerPathUtilConvertUrlTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   arc::FakeFileSystemInstance fake_file_system_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> primary_profile_;
   raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh>
       secondary_profile_;
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   base::FilePath drive_mount_point_;
   base::FilePath crostini_mount_point_;
