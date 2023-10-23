@@ -286,17 +286,28 @@ pub struct CrateFiles {
     /// may contain .rs files as well that are part of other crates and which
     /// may be include()'d or used through module paths.
     pub inputs: Vec<PathBuf>,
+    /// Like `sources` but for the crate's build script.
+    pub build_script_sources: Vec<PathBuf>,
+    /// Like `inputs` but for the crate's build script.
+    pub build_script_inputs: Vec<PathBuf>,
 }
 
 impl CrateFiles {
     fn new() -> Self {
-        Self { sources: vec![], inputs: vec![] }
+        Self {
+            sources: vec![],
+            inputs: vec![],
+            build_script_sources: vec![],
+            build_script_inputs: vec![],
+        }
     }
 
     /// Sorts the CrateFiles for a deterministic output.
     fn sort(&mut self) {
         self.sources.sort_unstable();
         self.inputs.sort_unstable();
+        self.build_script_sources.sort_unstable();
+        self.build_script_inputs.sort_unstable();
     }
 }
 
@@ -445,6 +456,10 @@ pub fn collect_std_crate_files<'a>(
         crate_config.iter().flat_map(|crate_config| &crate_config.extra_src_roots);
     let extra_input_roots =
         crate_config.iter().flat_map(|crate_config| &crate_config.extra_input_roots);
+    let extra_build_script_src_roots =
+        crate_config.iter().flat_map(|crate_config| &crate_config.extra_build_script_src_roots);
+    let extra_build_script_input_roots =
+        crate_config.iter().flat_map(|crate_config| &crate_config.extra_build_script_input_roots);
 
     let mut files = CrateFiles::new();
     recurse_crate_files(&root_dir, &mut |filepath| {
@@ -458,6 +473,24 @@ pub fn collect_std_crate_files<'a>(
     for path in extra_input_roots {
         recurse_crate_files(&root_dir.to_owned().join(path), &mut |filepath| {
             collect_crate_file(&mut files, CollectCrateFiles::ExternalInputsOnly, filepath)
+        })?;
+    }
+    for path in extra_build_script_src_roots {
+        recurse_crate_files(&root_dir.to_owned().join(path), &mut |filepath| {
+            collect_crate_file(
+                &mut files,
+                CollectCrateFiles::BuildScriptExternalSourcesAndInputs,
+                filepath,
+            )
+        })?;
+    }
+    for path in extra_build_script_input_roots {
+        recurse_crate_files(&root_dir.to_owned().join(path), &mut |filepath| {
+            collect_crate_file(
+                &mut files,
+                CollectCrateFiles::BuildScriptExternalInputsOnly,
+                filepath,
+            )
         })?;
     }
     files.sort();
@@ -522,6 +555,10 @@ enum CollectCrateFiles {
     ExternalSourcesAndInputs,
     /// Like ExternalSourcesAndInputs but excludes .rs files.
     ExternalInputsOnly,
+    /// Like `ExternalSourcesAndInputs` but for build scripts.
+    BuildScriptExternalSourcesAndInputs,
+    /// Like `ExternalInputsOnly` but for build scripts.
+    BuildScriptExternalInputsOnly,
 }
 
 // Adds a `filepath` to `CrateFiles` depending on the type of file and the
@@ -532,10 +569,22 @@ fn collect_crate_file(files: &mut CrateFiles, mode: CollectCrateFiles, filepath:
             CollectCrateFiles::Internal => files.sources.push(filepath.to_owned()),
             CollectCrateFiles::ExternalSourcesAndInputs => files.inputs.push(filepath.to_owned()),
             CollectCrateFiles::ExternalInputsOnly => (),
+            CollectCrateFiles::BuildScriptExternalSourcesAndInputs => {
+                files.build_script_inputs.push(filepath.to_owned())
+            }
+            CollectCrateFiles::BuildScriptExternalInputsOnly => (),
         },
         // md: Markdown files are commonly include!()'d into source code as docs.
         // h: cxxbridge_cmd include!()'s its .h file into it.
-        Some("md") | Some("h") => files.inputs.push(filepath.to_owned()),
+        Some("md") | Some("h") => match mode {
+            CollectCrateFiles::Internal
+            | CollectCrateFiles::ExternalSourcesAndInputs
+            | CollectCrateFiles::ExternalInputsOnly => files.inputs.push(filepath.to_owned()),
+            CollectCrateFiles::BuildScriptExternalSourcesAndInputs
+            | CollectCrateFiles::BuildScriptExternalInputsOnly => {
+                files.build_script_inputs.push(filepath.to_owned())
+            }
+        },
         _ => (),
     };
 }

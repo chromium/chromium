@@ -67,6 +67,8 @@ pub struct RuleConcrete {
     pub aliased_deps: Vec<(String, String)>,
     pub features: Vec<String>,
     pub build_root: Option<String>,
+    pub build_script_sources: Vec<String>,
+    pub build_script_inputs: Vec<String>,
     pub build_script_outputs: Vec<String>,
     pub extra_kv: HashMap<String, serde_json::Value>,
     /// Whether this rule depends on the main lib target in its group (e.g. a
@@ -215,6 +217,22 @@ pub fn build_rule_from_std_dep(
         cargo_pkg_name: dep.package_name.to_string(),
         cargo_pkg_description: dep.description.as_ref().map(|s| s.trim_end().to_string()),
         build_root: build_script_from_src.as_ref().map(|p| format!("//{p}")),
+        build_script_sources: build_script_from_src
+            .as_ref()
+            .map(|p| format!("//{p}"))
+            .into_iter()
+            .chain(
+                details
+                    .build_script_sources
+                    .iter()
+                    .map(|p| format!("//{}", paths.to_gn_abs_path(p).unwrap().to_string())),
+            )
+            .collect(),
+        build_script_inputs: details
+            .build_script_inputs
+            .iter()
+            .map(|p| format!("//{}", paths.to_gn_abs_path(p).unwrap().to_string()))
+            .collect(),
         extra_kv,
         ..Default::default()
     };
@@ -227,10 +245,14 @@ pub fn build_rule_from_std_dep(
     rule.features.sort_unstable();
     rule.features.dedup();
 
-    // Add only normal dependencies: we don't run unit tests, and we don't run
-    // build scripts (instead manually configuring build flags and env vars).
+    // Add only normal and build dependencies: we don't run unit tests.
     let dep_deps: Vec<&DepOfDep> = dep
         .dependencies
+        .iter()
+        .filter(|d| !exclude_deps.iter().any(|e| e.as_str() == &*d.package_name))
+        .collect();
+    let build_deps: Vec<&DepOfDep> = dep
+        .build_dependencies
         .iter()
         .filter(|d| !exclude_deps.iter().any(|e| e.as_str() == &*d.package_name))
         .collect();
@@ -242,6 +264,10 @@ pub fn build_rule_from_std_dep(
         name: normalize_target_name(&d.package_name),
         epoch: None,
     });
+    rule.build_deps = group_deps(&build_deps, |d| PackageId {
+        name: normalize_target_name(&d.package_name),
+        epoch: None,
+    });
 
     for dep in dep_deps {
         let target_name = normalize_target_name(&dep.package_name);
@@ -249,6 +275,8 @@ pub fn build_rule_from_std_dep(
             rule.aliased_deps.push((dep.use_name.clone(), format!(":{target_name}__rlib")));
         }
     }
+    // TODO: No support for aliased_build_deps in the `cargo_crate` GN template as
+    // there's been no usage needed.
 
     // If there are still no deps after `extra_deps`, simply clear the list.
     if rule.deps.len() == 1 && rule.deps[0].packages.len() == 0 {
@@ -294,6 +322,12 @@ fn make_build_file_for_chromium_dep(
         cargo_pkg_name: dep.package_name.clone(),
         cargo_pkg_description,
         build_root: dep.build_script.as_ref().map(|p| to_gn_path(p.as_path())),
+        build_script_sources: dep
+            .build_script
+            .as_ref()
+            .map(|p| to_gn_path(p.as_path()))
+            .into_iter()
+            .collect(),
         build_script_outputs: metadata.build_script_outputs,
         ..Default::default()
     };
