@@ -184,8 +184,6 @@ bool PersonalDataManagerCleaner::ApplyDedupingRoutine() {
   DVLOG(1) << "Starting autofill profile de-duplication.";
   std::unordered_set<std::string> profiles_to_delete;
   profiles_to_delete.reserve(profiles.size());
-  // Used to update credit card's billing addresses after the dedupe.
-  std::unordered_map<std::string, std::string> guids_merge_map;
 
   // `profiles` contains pointers to the PDM's state. Modifying them directly
   // won't update them in the database and calling `PDM:UpdateProfile()`
@@ -195,7 +193,7 @@ bool PersonalDataManagerCleaner::ApplyDedupingRoutine() {
     new_profiles.push_back(std::make_unique<AutofillProfile>(*profile));
   }
 
-  DedupeProfiles(&new_profiles, &profiles_to_delete, &guids_merge_map);
+  DedupeProfiles(&new_profiles, &profiles_to_delete);
 
   // Apply the profile changes to the database.
   for (const auto& profile : new_profiles) {
@@ -208,8 +206,6 @@ bool PersonalDataManagerCleaner::ApplyDedupingRoutine() {
     }
   }
 
-  UpdateCardsBillingAddressReference(guids_merge_map);
-
   is_autofill_profile_dedupe_pending_ = false;
   // Set the pref to the current major version.
   pref_service_->SetInteger(prefs::kAutofillLastVersionDeduped,
@@ -220,8 +216,7 @@ bool PersonalDataManagerCleaner::ApplyDedupingRoutine() {
 
 void PersonalDataManagerCleaner::DedupeProfiles(
     std::vector<std::unique_ptr<AutofillProfile>>* existing_profiles,
-    std::unordered_set<std::string>* profiles_to_delete,
-    std::unordered_map<std::string, std::string>* guids_merge_map) const {
+    std::unordered_set<std::string>* profiles_to_delete) const {
   AutofillMetrics::LogNumberOfProfilesConsideredForDedupe(
       existing_profiles->size());
 
@@ -284,8 +279,6 @@ void PersonalDataManagerCleaner::DedupeProfiles(
       // and will not accept updates from `profile_to_merge`.
       if (existing_profile.SaveAdditionalInfo(
               *profile_to_merge, personal_data_manager_->app_locale())) {
-        guids_merge_map->emplace(profile_to_merge->guid(),
-                                 existing_profile.guid());
         profiles_to_delete->insert(profile_to_merge->guid());
 
         // Account profiles track from which service they originate. This allows
@@ -318,63 +311,6 @@ void PersonalDataManagerCleaner::DedupeProfiles(
       profiles_to_delete->size());
 }
 
-void PersonalDataManagerCleaner::UpdateCardsBillingAddressReference(
-    const std::unordered_map<std::string, std::string>& guids_merge_map) {
-  /*  Here is an example of what the graph might look like.
-
-      A -> B
-             \
-               -> E
-             /
-      C -> D
-  */
-
-  std::vector<CreditCard> server_cards_to_be_updated;
-  for (auto* credit_card : personal_data_manager_->GetCreditCards()) {
-    // If the credit card is not associated with a billing address, skip it.
-    if (credit_card->billing_address_id().empty())
-      continue;
-
-    // If the billing address profile associated with the card has been merged,
-    // replace it by the id of the profile in which it was merged. Repeat the
-    // process until the billing address has not been merged into another one.
-    std::unordered_map<std::string, std::string>::size_type nb_guid_changes = 0;
-    bool was_modified = false;
-    auto it = guids_merge_map.find(credit_card->billing_address_id());
-    while (it != guids_merge_map.end()) {
-      was_modified = true;
-      credit_card->set_billing_address_id(it->second);
-      it = guids_merge_map.find(credit_card->billing_address_id());
-
-      // Out of abundance of caution.
-      if (nb_guid_changes > guids_merge_map.size()) {
-        NOTREACHED();
-        // Cancel the changes for that card.
-        was_modified = false;
-        break;
-      }
-    }
-
-    // If the card was modified, apply the changes to the database.
-    if (was_modified) {
-      if (credit_card->record_type() == CreditCard::RecordType::kLocalCard) {
-        personal_data_manager_->GetLocalDatabase()->UpdateCreditCard(
-            *credit_card);
-      } else {
-        server_cards_to_be_updated.push_back(*credit_card);
-      }
-    }
-  }
-
-  // In case, there are server cards that need to be updated,
-  // |PersonalDataManager::Refresh()| is called after they are updated.
-  if (server_cards_to_be_updated.empty())
-    personal_data_manager_->Refresh();
-  else
-    personal_data_manager_->UpdateServerCardsMetadata(
-        server_cards_to_be_updated);
-}
-
 bool PersonalDataManagerCleaner::DeleteDisusedAddresses() {
   const std::vector<AutofillProfile*>& profiles =
       personal_data_manager_->GetProfilesFromSource(
@@ -386,17 +322,11 @@ bool PersonalDataManagerCleaner::DeleteDisusedAddresses() {
     return true;
   }
 
-  std::unordered_set<std::string> used_billing_address_guids;
-  for (CreditCard* card : personal_data_manager_->GetCreditCards()) {
-    if (!card->IsDeletable()) {
-      used_billing_address_guids.insert(card->billing_address_id());
-    }
-  }
-
+  // Don't call `PDM::RemoveByGUID()` directly, since this can invalidate the
+  // pointers in `profiles`.
   std::vector<std::string> guids_to_delete;
   for (AutofillProfile* profile : profiles) {
-    if (profile->IsDeletable() &&
-        !used_billing_address_guids.count(profile->guid())) {
+    if (profile->IsDeletable()) {
       guids_to_delete.push_back(profile->guid());
     }
   }
@@ -404,12 +334,7 @@ bool PersonalDataManagerCleaner::DeleteDisusedAddresses() {
   size_t num_deleted_addresses = guids_to_delete.size();
 
   for (auto const& guid : guids_to_delete) {
-    personal_data_manager_
-        ->RemoveAutofillProfileByGUIDAndBlankCreditCardReference(guid);
-  }
-
-  if (num_deleted_addresses > 0) {
-    personal_data_manager_->Refresh();
+    personal_data_manager_->RemoveByGUID(guid);
   }
 
   AutofillMetrics::LogNumberOfAddressesDeletedForDisuse(num_deleted_addresses);

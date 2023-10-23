@@ -680,8 +680,6 @@ class PersonalDataManager : public KeyedService,
       PersonalDataManagerTest,
       GetCreditCardsToSuggest_NoCreditCardsAddedIfDisabled);
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest, LogStoredCreditCardMetrics);
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerCleanerTest,
-                           UpdateCardsBillingAddressReference);
 
   friend class autofill::PersonalDataManagerCleaner;
   friend class ::PaymentsSuggestionBottomSheetMediatorTest;
@@ -855,13 +853,6 @@ class PersonalDataManager : public KeyedService,
   // Called when the value of prefs::kAutofillCreditCardEnabled or
   // prefs::kAutofillProfileEnabled changes.
   void EnableAutofillPrefChanged();
-
-  // Removes profile from web database according to |guid| and resets credit
-  // card's billing address if that address is used by any credit cards.
-  // The method does not refresh, this allows multiple removal with one
-  // refreshing in the end.
-  void RemoveAutofillProfileByGUIDAndBlankCreditCardReference(
-      const std::string& guid);
 
   // Add/Update/Removes a profile in AutofillTable asynchronously. The changes
   // only surface in the PDM after the task on the DB sequence has finished.

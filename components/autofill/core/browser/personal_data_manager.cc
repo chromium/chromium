@@ -1310,28 +1310,6 @@ void PersonalDataManager::SetSyncServiceForTest(
   SetSyncService(sync_service);
 }
 
-void PersonalDataManager::
-    RemoveAutofillProfileByGUIDAndBlankCreditCardReference(
-        const std::string& guid) {
-  RemoveProfileFromDB(guid);
-
-  // Reset the billing_address_id of any card that referred to this profile.
-  for (CreditCard* credit_card : GetCreditCards()) {
-    if (credit_card->billing_address_id() == guid) {
-      credit_card->set_billing_address_id("");
-
-      if (credit_card->record_type() == CreditCard::RecordType::kLocalCard) {
-        database_helper_->GetLocalDatabase()->UpdateCreditCard(*credit_card);
-      } else {
-        DCHECK(database_helper_->GetServerDatabase())
-            << "Updating metadata on null server db.";
-        database_helper_->GetServerDatabase()->UpdateServerCardMetadata(
-            *credit_card);
-      }
-    }
-  }
-}
-
 void PersonalDataManager::RemoveByGUID(const std::string& guid) {
   if (!database_helper_->GetLocalDatabase())
     return;
@@ -1345,7 +1323,7 @@ void PersonalDataManager::RemoveByGUID(const std::string& guid) {
     // Refresh our local cache and send notifications to observers.
     Refresh();
   } else {
-    RemoveAutofillProfileByGUIDAndBlankCreditCardReference(guid);
+    RemoveProfileFromDB(guid);
   }
 }
 
