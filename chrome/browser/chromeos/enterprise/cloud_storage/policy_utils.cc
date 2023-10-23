@@ -16,6 +16,7 @@ namespace chromeos::cloud_storage {
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kMicrosoftOneDriveMount,
                                MicrosoftOneDriveMountAllowed);
+  registry->RegisterListPref(prefs::kMicrosoftOneDriveAccountRestrictions);
 }
 
 }  // namespace chromeos::cloud_storage
