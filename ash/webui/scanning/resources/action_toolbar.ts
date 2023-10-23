@@ -19,7 +19,7 @@ import {getTemplate} from './action_toolbar.html.js';
 
 const ActionToolbarElementBase = I18nMixin(PolymerElement);
 
-class ActionToolbarElement extends ActionToolbarElementBase {
+export class ActionToolbarElement extends ActionToolbarElementBase {
   static get is() {
     return 'action-toolbar' as const;
   }
