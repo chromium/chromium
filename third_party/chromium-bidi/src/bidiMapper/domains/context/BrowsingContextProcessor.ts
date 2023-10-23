@@ -173,14 +173,14 @@ export class BrowsingContextProcessor {
     params: BrowsingContext.CaptureScreenshotParameters
   ): Promise<BrowsingContext.CaptureScreenshotResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
-    return context.captureScreenshot(params);
+    return await context.captureScreenshot(params);
   }
 
   async print(
     params: BrowsingContext.PrintParameters
   ): Promise<BrowsingContext.PrintResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
-    return context.print(params);
+    return await context.print(params);
   }
 
   async setViewport(

@@ -795,11 +795,14 @@ export class BrowsingContextImpl {
       );
     }
 
-    return this.#cdpTarget.cdpClient.sendCommand('Page.captureScreenshot', {
-      clip: {...rect, scale: 1.0},
-      ...formatParameters,
-      captureBeyondViewport,
-    });
+    return await this.#cdpTarget.cdpClient.sendCommand(
+      'Page.captureScreenshot',
+      {
+        clip: {...rect, scale: 1.0},
+        ...formatParameters,
+        captureBeyondViewport,
+      }
+    );
   }
 
   async print(

@@ -36,7 +36,7 @@ import {WebSocketTransport} from '../utils/WebsocketTransport.js';
 
 import {MapperCdpConnection} from './MapperCdpConnection.js';
 import {getMapperTabSource} from './reader.js';
-import {SimpleTransport} from './SimpleTransport.js';
+import type {SimpleTransport} from './SimpleTransport.js';
 
 const debugInternal = debug('bidi:mapper:internal');
 

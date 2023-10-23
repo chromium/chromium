@@ -266,7 +266,7 @@ export class Realm {
     );
 
     if (cdpEvaluateResult.exceptionDetails) {
-      return this.#getExceptionResult(
+      return await this.#getExceptionResult(
         cdpEvaluateResult.exceptionDetails,
         0,
         resultOwnership
@@ -368,7 +368,7 @@ export class Realm {
   async #flattenValueList(
     listLocalValue: Script.ListLocalValue
   ): Promise<Protocol.Runtime.CallArgument[]> {
-    return Promise.all(
+    return await Promise.all(
       listLocalValue.map((localValue) => this.#deserializeToCdpArg(localValue))
     );
   }
@@ -429,7 +429,7 @@ export class Realm {
       ...(await Promise.all(
         argumentsLocalValues.map(
           async (argumentLocalValue: Script.LocalValue) =>
-            this.#deserializeToCdpArg(argumentLocalValue)
+            await this.#deserializeToCdpArg(argumentLocalValue)
         )
       )),
     ];
@@ -468,7 +468,7 @@ export class Realm {
     }
 
     if (cdpCallFunctionResult.exceptionDetails) {
-      return this.#getExceptionResult(
+      return await this.#getExceptionResult(
         cdpCallFunctionResult.exceptionDetails,
         1,
         resultOwnership

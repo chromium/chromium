@@ -32,4 +32,5 @@ jobs:
           cache: pip
       - uses: pre-commit/action@646c83fcd040023954eafda54b4db0192ce70507 #v3.0.0
         with:
-          extra_args: --hook-stage manual
+          # We need --all-files as this overrides the defaults
+          extra_args: --hook-stage manual --all-files

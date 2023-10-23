@@ -168,7 +168,7 @@ export class ChannelProxy {
           {
             functionDeclaration: String(
               async (channelHandle: {getMessage: () => Promise<unknown>}) =>
-                channelHandle.getMessage()
+                await channelHandle.getMessage()
             ),
             arguments: [
               {

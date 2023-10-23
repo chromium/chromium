@@ -182,6 +182,6 @@ export class LogManager {
     if (realm === undefined) {
       return JSON.stringify(params.exceptionDetails.exception);
     }
-    return realm.stringifyObject(params.exceptionDetails.exception);
+    return await realm.stringifyObject(params.exceptionDetails.exception);
   }
 }

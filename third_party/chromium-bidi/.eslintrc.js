@@ -85,6 +85,7 @@ module.exports = {
     '@typescript-eslint/prefer-return-this-type': 'warn',
     '@typescript-eslint/require-await': 'warn',
     '@typescript-eslint/restrict-template-expressions': 'off',
+    '@typescript-eslint/return-await': ['error', 'always'], // This is more performant; see https://v8.dev/blog/fast-async.
     '@typescript-eslint/switch-exhaustiveness-check': 'error',
     'func-names': 'error',
     'import/first': 'error',
@@ -99,7 +100,6 @@ module.exports = {
     'no-empty': ['warn', {allowEmptyCatch: true}],
     'no-implicit-coercion': 'error',
     'no-negated-condition': 'error',
-    'no-return-await': 'warn',
     'no-undef': 'error',
     'no-underscore-dangle': 'error',
     'object-shorthand': 'error',

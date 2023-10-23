@@ -94,7 +94,7 @@ export class ScriptProcessor {
     params: Script.CallFunctionParameters
   ): Promise<Script.EvaluateResult> {
     const realm = await this.#getRealm(params.target);
-    return realm.callFunction(
+    return await realm.callFunction(
       params.functionDeclaration,
       params.this ?? {
         type: 'undefined',
@@ -111,7 +111,7 @@ export class ScriptProcessor {
     params: Script.EvaluateParameters
   ): Promise<Script.EvaluateResult> {
     const realm = await this.#getRealm(params.target);
-    return realm.evaluate(
+    return await realm.evaluate(
       params.expression,
       params.awaitPromise,
       params.resultOwnership ?? Script.ResultOwnership.None,
@@ -123,7 +123,7 @@ export class ScriptProcessor {
   async disown(params: Script.DisownParameters): Promise<EmptyResult> {
     const realm = await this.#getRealm(params.target);
     await Promise.all(
-      params.handles.map(async (handle) => realm.disown(handle))
+      params.handles.map(async (handle) => await realm.disown(handle))
     );
     return {};
   }
@@ -149,6 +149,6 @@ export class ScriptProcessor {
       });
     }
     const context = this.#browsingContextStorage.getContext(target.context);
-    return context.getOrCreateSandbox(target.sandbox);
+    return await context.getOrCreateSandbox(target.sandbox);
   }
 }

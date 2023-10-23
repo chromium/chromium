@@ -136,19 +136,19 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       // Browsing Context domain
       // keep-sorted start block=yes
       case 'browsingContext.activate':
-        return this.#browsingContextProcessor.activate(
+        return await this.#browsingContextProcessor.activate(
           this.#parser.parseActivateParams(command.params)
         );
       case 'browsingContext.captureScreenshot':
-        return this.#browsingContextProcessor.captureScreenshot(
+        return await this.#browsingContextProcessor.captureScreenshot(
           this.#parser.parseCaptureScreenshotParams(command.params)
         );
       case 'browsingContext.close':
-        return this.#browsingContextProcessor.close(
+        return await this.#browsingContextProcessor.close(
           this.#parser.parseCloseParams(command.params)
         );
       case 'browsingContext.create':
-        return this.#browsingContextProcessor.create(
+        return await this.#browsingContextProcessor.create(
           this.#parser.parseCreateParams(command.params)
         );
       case 'browsingContext.getTree':
@@ -156,23 +156,23 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseGetTreeParams(command.params)
         );
       case 'browsingContext.handleUserPrompt':
-        return this.#browsingContextProcessor.handleUserPrompt(
+        return await this.#browsingContextProcessor.handleUserPrompt(
           this.#parser.parseHandleUserPromptParams(command.params)
         );
       case 'browsingContext.navigate':
-        return this.#browsingContextProcessor.navigate(
+        return await this.#browsingContextProcessor.navigate(
           this.#parser.parseNavigateParams(command.params)
         );
       case 'browsingContext.print':
-        return this.#browsingContextProcessor.print(
+        return await this.#browsingContextProcessor.print(
           this.#parser.parsePrintParams(command.params)
         );
       case 'browsingContext.reload':
-        return this.#browsingContextProcessor.reload(
+        return await this.#browsingContextProcessor.reload(
           this.#parser.parseReloadParams(command.params)
         );
       case 'browsingContext.setViewport':
-        return this.#browsingContextProcessor.setViewport(
+        return await this.#browsingContextProcessor.setViewport(
           this.#parser.parseSetViewportParams(command.params)
         );
       // keep-sorted end
@@ -184,7 +184,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseGetSessionParams(command.params)
         );
       case 'cdp.sendCommand':
-        return this.#cdpProcessor.sendCommand(
+        return await this.#cdpProcessor.sendCommand(
           this.#parser.parseSendCommandParams(command.params)
         );
       // keep-sorted end
@@ -192,11 +192,11 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       // Input domain
       // keep-sorted start block=yes
       case 'input.performActions':
-        return this.#inputProcessor.performActions(
+        return await this.#inputProcessor.performActions(
           this.#parser.parsePerformActionsParams(command.params)
         );
       case 'input.releaseActions':
-        return this.#inputProcessor.releaseActions(
+        return await this.#inputProcessor.releaseActions(
           this.#parser.parseReleaseActionsParams(command.params)
         );
       // keep-sorted end
@@ -204,15 +204,15 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       // Network domain
       // keep-sorted start block=yes
       case 'network.addIntercept':
-        return this.#networkProcessor.addIntercept(
+        return await this.#networkProcessor.addIntercept(
           this.#parser.parseAddInterceptParams(command.params)
         );
       case 'network.continueRequest':
-        return this.#networkProcessor.continueRequest(
+        return await this.#networkProcessor.continueRequest(
           this.#parser.parseContinueRequestParams(command.params)
         );
       case 'network.continueResponse':
-        return this.#networkProcessor.continueResponse(
+        return await this.#networkProcessor.continueResponse(
           this.#parser.parseContinueResponseParams(command.params)
         );
       case 'network.continueWithAuth':
@@ -220,15 +220,15 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseContinueWithAuthParams(command.params)
         );
       case 'network.failRequest':
-        return this.#networkProcessor.failRequest(
+        return await this.#networkProcessor.failRequest(
           this.#parser.parseFailRequestParams(command.params)
         );
       case 'network.provideResponse':
-        return this.#networkProcessor.provideResponse(
+        return await this.#networkProcessor.provideResponse(
           this.#parser.parseProvideResponseParams(command.params)
         );
       case 'network.removeIntercept':
-        return this.#networkProcessor.removeIntercept(
+        return await this.#networkProcessor.removeIntercept(
           this.#parser.parseRemoveInterceptParams(command.params)
         );
       // keep-sorted end
@@ -236,19 +236,19 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       // Script domain
       // keep-sorted start block=yes
       case 'script.addPreloadScript':
-        return this.#scriptProcessor.addPreloadScript(
+        return await this.#scriptProcessor.addPreloadScript(
           this.#parser.parseAddPreloadScriptParams(command.params)
         );
       case 'script.callFunction':
-        return this.#scriptProcessor.callFunction(
+        return await this.#scriptProcessor.callFunction(
           this.#parser.parseCallFunctionParams(command.params)
         );
       case 'script.disown':
-        return this.#scriptProcessor.disown(
+        return await this.#scriptProcessor.disown(
           this.#parser.parseDisownParams(command.params)
         );
       case 'script.evaluate':
-        return this.#scriptProcessor.evaluate(
+        return await this.#scriptProcessor.evaluate(
           this.#parser.parseEvaluateParams(command.params)
         );
       case 'script.getRealms':
@@ -256,7 +256,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseGetRealmsParams(command.params)
         );
       case 'script.removePreloadScript':
-        return this.#scriptProcessor.removePreloadScript(
+        return await this.#scriptProcessor.removePreloadScript(
           this.#parser.parseRemovePreloadScriptParams(command.params)
         );
       // keep-sorted end

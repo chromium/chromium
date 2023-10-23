@@ -21,6 +21,7 @@ import debug, {type Debugger} from 'debug';
 import type {CdpConnection} from '../cdp/CdpConnection.js';
 import type {CdpClient} from '../cdp/CdpClient.js';
 import type {LogPrefix, LogType} from '../utils/log.js';
+
 import {SimpleTransport} from './SimpleTransport.js';
 
 const debugInternal = debug('bidi:mapper:internal');
@@ -67,8 +68,8 @@ export class MapperCdpConnection {
   ) {
     this.#cdpConnection = cdpConnection;
     this.#mapperCdpClient = mapperCdpClient;
-    this.#bidiSession = new SimpleTransport(async (message) =>
-      this.#sendMessage(message)
+    this.#bidiSession = new SimpleTransport(
+      async (message) => await this.#sendMessage(message)
     );
 
     this.#mapperCdpClient.on('Runtime.bindingCalled', this.#onBindingCalled);
