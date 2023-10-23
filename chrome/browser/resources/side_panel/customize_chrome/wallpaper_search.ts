@@ -143,10 +143,6 @@ export class WallpaperSearchElement extends PolymerElement {
     this.$.descriptorMenuC.showAt(e.target as HTMLElement);
   }
 
-  private onDescriptorMenuClickD_(e: Event) {
-    this.$.descriptorMenuD.showAt(e.target as HTMLElement);
-  }
-
   private async onSearchClick_() {
     assert(this.descriptors_);
     const descriptorA = this.selectedDescriptorA_ ||

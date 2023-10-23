@@ -7,8 +7,18 @@
     margin: 16px 16px 8px;
   }
 
+  #descriptorMenuD {
+    display: flex;
+    height: 48px;
+    justify-content: space-between;
+    margin-top: 16px;
+    width: 272px;
+  }
+
   #descriptorMenuD cr-button {
-    background-color: var(--sys-color-neutral-container);
+    background-color: var(--color-sys-neutral-container);
+    border-radius: 8px;
+    border-color: var(--color-sys-neutral-container);
     height: 40px;
     min-width: 40px;
     padding: 0px;
@@ -16,8 +26,24 @@
 
   .descriptor-d {
     border-radius: 50%;
+    display: block;
     height: 28px;
     width: 28px;
+  }
+
+  #colorPickerIcon {
+    -webkit-mask-image: url(chrome://resources/cr_components/customize_themes/colorize.svg);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100%;
+    background-color: var(
+        --color-theme-color-picker-custom-color-icon-background,
+        var(--cr-fallback-color-on-surface-subtle));
+    height: 16px;
+    left: calc(50% - 8px);
+    pointer-events: none;
+    position: absolute;
+    top: calc(50% - 8px);
+    width: 16px;
   }
 
   #btnContainer {
@@ -134,6 +160,9 @@
           </span>
         </cr-button>
       </template>
+      <cr-button id="customColorContainer">
+        <div id="colorPickerIcon"></div>
+      </cr-button>
     </div>
     <div id="btnContainer">
       <cr-button

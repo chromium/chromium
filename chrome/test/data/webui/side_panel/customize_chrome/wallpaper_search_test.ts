@@ -101,7 +101,7 @@ suite('WallpaperSearchTest', () => {
               .querySelectorAll('#descriptorMenuC .dropdown-item')
               .length);
       assertEquals(
-          5,
+          6,
           wallpaperSearchElement.shadowRoot!
               .querySelectorAll('#descriptorMenuD cr-button')
               .length);
