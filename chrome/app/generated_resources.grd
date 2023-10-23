@@ -16248,6 +16248,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_PROMISE_APP_ACCESSIBLE_LABEL_INSTALLING" desc="Accessibility label for a promise icon in the Launcher or Shelf to indicate that the app is currently downloading or installing">
       <ph name="APP_NAME">$1<ex>Gmail</ex></ph>, installing
     </message>
+    <message name="IDS_PROMISE_APP_PLACEHOLDER_ACCESSIBLE_LABEL_WAITING" desc="Accessibility label for a promise icon in the Launcher or Shelf to indicate that an app without a name is pending installation">
+      An app, waiting
+    </message>
+    <message name="IDS_PROMISE_APP_PLACEHOLDER_ACCESSIBLE_LABEL_INSTALLING" desc="Accessibility label for a promise icon in the Launcher or Shelf to indicate that an app without a name is currently downloading or installing">
+      An app, installing
+    </message>
 
     <!-- Isolated Web App installer. -->
     <message name="IDS_IWA_INSTALLER_VERIFICATION_TITLE" desc="Title of the verification step of the IWA installation">
