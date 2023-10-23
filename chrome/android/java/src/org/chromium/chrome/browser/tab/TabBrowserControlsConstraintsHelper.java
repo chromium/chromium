@@ -176,6 +176,8 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
      *                should jump immediately.
      */
     public void update(int current, boolean animate) {
+        assert mTab.getWebContents() != null : "Shouldn't update a Tab with a null WebContents.";
+
         int constraints = getConstraints();
 
         // Do nothing if current and constraints conflict to avoid error in renderer.
