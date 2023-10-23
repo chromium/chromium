@@ -881,7 +881,7 @@ void NetworkListViewControllerImpl::UpdateMobileToggleAndSetStatusMessage() {
     if (cellular_enabled) {
       if (has_cellular_networks_ ||
           (has_tether_networks_ &&
-           !features::IsInstantHotspotRebrandEnabled())) {
+           features::IsInstantHotspotRebrandEnabled())) {
         RemoveAndResetViewIfExists(&mobile_status_message_);
         return;
       }
