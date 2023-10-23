@@ -115,6 +115,23 @@ class InteractiveAshTest
   ChromeOSIntegrationLoginMixin& login_mixin() { return login_mixin_; }
 #endif
 
+  // Waits until the element or any of its children have the requested text.
+  //
+  // element_id
+  //     The identifier of the WebContents to query.
+  //
+  // query
+  //     The DeepQuery is a path to the element to start with, it can be {} to
+  //     query the entire page.
+  //
+  // expected
+  //     The text to search for.
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  WaitForElementTextContains(
+      const ui::ElementIdentifier& element_id,
+      const WebContentsInteractionTestUtil::DeepQuery& query,
+      const std::string& expected);
+
  private:
 #if BUILDFLAG(IS_CHROMEOS_DEVICE)
   // This test runs on linux-chromeos in interactive_ui_tests and on a DUT in

@@ -1059,6 +1059,7 @@ if (is_chromeos && is_chromeos_device) {
         "../browser/ash/ml_integration_test.cc",
         "../browser/ash/power/ml/smart_dim/smart_dim_integration_test.cc",
         "../browser/ash/screenshot_integration_test.cc",
+        "../browser/ash/system_web_apps/apps/terminal_integration_test.cc",
         "../browser/ui/ash/app_list/app_list_integration_test.cc",
         "../browser/ui/ash/quick_settings_integration_test.cc",
         "../browser/ui/ash/shelf/shelf_integration_test.cc",
