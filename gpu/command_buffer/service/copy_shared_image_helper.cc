@@ -487,19 +487,6 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertYUVAMailboxesToRGB(
                 "Attempting to operate on unknown dest mailbox."));
   }
 
-  // Populate common parameters.
-  SkYUVColorSpace src_yuv_color_space;
-  SkYUVAInfo::PlaneConfig src_plane_config;
-  SkYUVAInfo::Subsampling src_subsampling;
-  int num_src_planes;
-  std::array<std::unique_ptr<SkiaImageRepresentation>, SkYUVAInfo::kMaxPlanes>
-      yuva_images;
-  RETURN_IF_ERROR(ConvertYUVACommon(
-      "ConvertYUVAMailboxesToRGB", planes_yuv_color_space, plane_config,
-      subsampling, bytes_in, representation_factory_, shared_context_state_,
-      src_yuv_color_space, src_plane_config, src_subsampling, num_src_planes,
-      yuva_images));
-
   // Populate the source RGB color space.
   sk_sp<SkColorSpace> src_rgb_color_space = ReadSkColorSpace(
       bytes_in + (SkYUVAInfo::kMaxPlanes + 1) * sizeof(gpu::Mailbox));
@@ -516,6 +503,19 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertYUVAMailboxesToRGB(
         GLError(GL_INVALID_VALUE, "glConvertYUVAMailboxesToRGB",
                 "Destination shared image is not writable"));
   }
+
+  // Populate common parameters.
+  SkYUVColorSpace src_yuv_color_space;
+  SkYUVAInfo::PlaneConfig src_plane_config;
+  SkYUVAInfo::Subsampling src_subsampling;
+  int num_src_planes;
+  std::array<std::unique_ptr<SkiaImageRepresentation>, SkYUVAInfo::kMaxPlanes>
+      yuva_images;
+  RETURN_IF_ERROR(ConvertYUVACommon(
+      "ConvertYUVAMailboxesToRGB", planes_yuv_color_space, plane_config,
+      subsampling, bytes_in, representation_factory_, shared_context_state_,
+      src_yuv_color_space, src_plane_config, src_subsampling, num_src_planes,
+      yuva_images));
 
   base::expected<void, GLError> result;
   bool source_access_valid = true;
