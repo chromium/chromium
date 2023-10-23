@@ -35,9 +35,9 @@ SharedImageInterface::ScopedMapping::~ScopedMapping() {
 // static
 std::unique_ptr<SharedImageInterface::ScopedMapping>
 SharedImageInterface::ScopedMapping::Create(
-    GpuMemoryBufferHandleInfo handle_info) {
+    gfx::GpuMemoryBuffer* gpu_memory_buffer) {
   auto scoped_mapping = base::WrapUnique(new ScopedMapping());
-  if (!scoped_mapping->Init(std::move(handle_info))) {
+  if (!scoped_mapping->Init(gpu_memory_buffer)) {
     LOG(ERROR) << "ScopedMapping init failed.";
     return nullptr;
   }
@@ -45,25 +45,17 @@ SharedImageInterface::ScopedMapping::Create(
 }
 
 bool SharedImageInterface::ScopedMapping::Init(
-    GpuMemoryBufferHandleInfo handle_info) {
-  GpuMemoryBufferSupport support;
+    gfx::GpuMemoryBuffer* gpu_memory_buffer) {
+  if (!gpu_memory_buffer) {
+    LOG(ERROR) << "No GpuMemoryBuffer.";
+    return false;
+  }
 
-  // Only single planar buffer formats are supported currently. Multiplanar will
-  // be supported when Multiplanar SharedImages are fully implemented.
-  CHECK(handle_info.format.is_single_plane());
-  buffer_ = support.CreateGpuMemoryBufferImplFromHandle(
-      std::move(handle_info.handle), handle_info.size,
-      viz::SinglePlaneSharedImageFormatToBufferFormat(handle_info.format),
-      handle_info.buffer_usage, base::DoNothing());
-  if (!buffer_) {
-    LOG(ERROR) << "Unable to create GpuMemoruBuffer.";
-    return false;
-  }
-  if (!buffer_->Map()) {
+  if (!gpu_memory_buffer->Map()) {
     LOG(ERROR) << "Failed to map the buffer.";
-    buffer_.reset();
     return false;
   }
+  buffer_ = gpu_memory_buffer;
   return true;
 }
 
@@ -116,6 +108,26 @@ std::unique_ptr<SharedImageInterface::ScopedMapping>
 SharedImageInterface::MapSharedImage(const Mailbox& mailbox) {
   NOTIMPLEMENTED();
   return nullptr;
+}
+
+// static
+std::unique_ptr<gfx::GpuMemoryBuffer>
+SharedImageInterface::CreateGpuMemoryBufferForUseByScopedMapping(
+    GpuMemoryBufferHandleInfo handle_info) {
+  GpuMemoryBufferSupport support;
+
+  // Only single planar buffer formats are supported currently. Multiplanar will
+  // be supported when Multiplanar SharedImages are fully implemented.
+  CHECK(handle_info.format.is_single_plane());
+  auto buffer = support.CreateGpuMemoryBufferImplFromHandle(
+      std::move(handle_info.handle), handle_info.size,
+      viz::SinglePlaneSharedImageFormatToBufferFormat(handle_info.format),
+      handle_info.buffer_usage, base::DoNothing());
+  if (!buffer) {
+    LOG(ERROR) << "Unable to create GpuMemoryBuffer.";
+  }
+
+  return std::move(buffer);
 }
 
 }  // namespace gpu

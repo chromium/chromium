@@ -218,13 +218,13 @@ void ClientSharedImageInterface::AddReferenceToSharedImage(
 
 std::unique_ptr<SharedImageInterface::ScopedMapping>
 ClientSharedImageInterface::MapSharedImage(const Mailbox& mailbox) {
-  auto handle_info = proxy_->GetGpuMemoryBufferHandleInfo(mailbox);
-  if (handle_info.handle.is_null()) {
+  auto* gpu_memory_buffer = proxy_->GetGpuMemoryBuffer(mailbox);
+  if (!gpu_memory_buffer) {
     LOG(ERROR) << "Buffer is null.";
     return nullptr;
   }
   auto scoped_mapping =
-      SharedImageInterface::ScopedMapping::Create(std::move(handle_info));
+      SharedImageInterface::ScopedMapping::Create(gpu_memory_buffer);
   if (!scoped_mapping) {
     LOG(ERROR) << "Unable to create ScopedMapping.";
     return nullptr;

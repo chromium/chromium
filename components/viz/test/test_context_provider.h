@@ -154,8 +154,8 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
   gpu::SyncToken most_recent_destroy_token_;
   base::flat_set<gpu::Mailbox> shared_images_;
 
-  base::flat_map<gpu::Mailbox, gpu::GpuMemoryBufferHandleInfo>
-      mailbox_to_gmb_handle_info_map_;
+  base::flat_map<gpu::Mailbox, std::unique_ptr<gfx::GpuMemoryBuffer>>
+      mailbox_to_gmb_map_;
   gpu::SharedImageCapabilities shared_image_capabilities_;
 };
 
