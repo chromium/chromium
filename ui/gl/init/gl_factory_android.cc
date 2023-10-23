@@ -43,7 +43,7 @@ class GLNonOwnedContext : public GLContextReal {
   void* GetHandle() override { return nullptr; }
 
  protected:
-  ~GLNonOwnedContext() override {}
+  ~GLNonOwnedContext() override { OnContextWillDestroy(); }
 
  private:
   EGLDisplay display_;

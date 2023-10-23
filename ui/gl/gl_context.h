@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/synchronization/atomic_flag.h"
 #include "build/build_config.h"
 #include "ui/gfx/extension_set.h"
@@ -128,6 +129,18 @@ struct GL_EXPORT GLContextAttribs {
 class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
                             public base::SupportsWeakPtr<GLContext> {
  public:
+  class GL_EXPORT GLContextObserver : public base::CheckedObserver {
+   public:
+    // Called for any observer when the context is marked lost.
+    virtual void OnGLContextLost(GLContext* context) = 0;
+
+    // Called for any observer when the context is about to be destroyed.
+    virtual void OnGLContextWillDestroy(GLContext* context) = 0;
+
+   protected:
+    ~GLContextObserver() override = default;
+  };
+
   explicit GLContext(GLShareGroup* share_group);
 
   GLContext(const GLContext&) = delete;
@@ -275,6 +288,9 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
 
   gl::GLSurface* default_surface() const { return default_surface_.get(); }
 
+  void AddObserver(GLContextObserver* observer);
+  void RemoveObserver(GLContextObserver* observer);
+
  protected:
   virtual ~GLContext();
 
@@ -321,6 +337,8 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
   void DestroyBackpressureFences();
 #endif
 
+  void OnContextWillDestroy();
+
  private:
   friend class base::RefCounted<GLContext>;
 
@@ -328,6 +346,8 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
   friend class gpu::GLContextVirtual;
 
   std::unique_ptr<GLVersionInfo> GenerateGLVersionInfo();
+
+  void MarkContextLost();
 
   static base::subtle::Atomic32 total_gl_contexts_;
 
@@ -366,6 +386,12 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
   std::map<uint64_t, GLFenceAndMetalSharedEvents> backpressure_fences_;
   uint64_t next_backpressure_fence_ = 0;
 #endif
+
+  // Implementations of this must call OnContextWillDestroy so that observers
+  // are notified.
+  bool has_called_on_destory_ = false;
+
+  base::ObserverList<GLContextObserver> observer_list_;
 };
 
 class GL_EXPORT GLContextReal : public GLContext {
