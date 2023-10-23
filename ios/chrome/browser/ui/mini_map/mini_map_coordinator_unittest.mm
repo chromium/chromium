@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/mini_map/mini_map_coordinator.h"
 
 #import "base/ios/block_types.h"
+#import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
@@ -137,6 +138,9 @@ class MiniMapCoordinatorTest : public PlatformTest {
 
 // Tests the map controller is start immediately if no consent is needed.
 TEST_F(MiniMapCoordinatorTest, TestNoConsentNeededMap) {
+  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
+    GTEST_SKIP() << "Feature only available on iOS16.4+";
+  }
   id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
   factory_.controller = mini_map_controller;
 
@@ -154,6 +158,9 @@ TEST_F(MiniMapCoordinatorTest, TestNoConsentNeededMap) {
 
 // Tests the directions controller is start immediately if no consent is needed.
 TEST_F(MiniMapCoordinatorTest, TestNoConsentNeededDirections) {
+  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
+    GTEST_SKIP() << "Feature only available on iOS16.4+";
+  }
   id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
   factory_.controller = mini_map_controller;
 
@@ -171,6 +178,9 @@ TEST_F(MiniMapCoordinatorTest, TestNoConsentNeededDirections) {
 
 // Tests that consent screen is triggered, then the map on consent.
 TEST_F(MiniMapCoordinatorTest, TestShowMapAfterConsent) {
+  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
+    GTEST_SKIP() << "Feature only available on iOS16.4+";
+  }
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(web::features::kOneTapForMaps);
   browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted,
@@ -205,6 +215,9 @@ TEST_F(MiniMapCoordinatorTest, TestShowMapAfterConsent) {
 
 // Tests that consent screen is not triggered after consent was given.
 TEST_F(MiniMapCoordinatorTest, TestShowMapAfterConsentGiven) {
+  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
+    GTEST_SKIP() << "Feature only available on iOS16.4+";
+  }
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(web::features::kOneTapForMaps);
   browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, true);
@@ -226,6 +239,9 @@ TEST_F(MiniMapCoordinatorTest, TestShowMapAfterConsentGiven) {
 
 // Tests that consent screen is not triggered, but IPH is configured.
 TEST_F(MiniMapCoordinatorTest, TestIPH) {
+  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
+    GTEST_SKIP() << "Feature only available on iOS16.4+";
+  }
   base::test::ScopedFeatureList scoped_feature_list;
   base::FieldTrialParams feature_parameters{
       {web::features::kOneTapForMapsConsentModeParamTitle,
@@ -259,6 +275,9 @@ TEST_F(MiniMapCoordinatorTest, TestIPH) {
 
 // Tests IPH is not displayed on second trigger
 TEST_F(MiniMapCoordinatorTest, TestIPHSecondLaunch) {
+  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
+    GTEST_SKIP() << "Feature only available on iOS16.4+";
+  }
   base::test::ScopedFeatureList scoped_feature_list;
   base::FieldTrialParams feature_parameters{
       {web::features::kOneTapForMapsConsentModeParamTitle,
@@ -284,6 +303,9 @@ TEST_F(MiniMapCoordinatorTest, TestIPHSecondLaunch) {
 
 // Tests that correct metrics are logged on dismiss.
 TEST_F(MiniMapCoordinatorTest, TestDismissMap) {
+  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
+    GTEST_SKIP() << "Feature only available on iOS16.4+";
+  }
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(web::features::kOneTapForMaps);
@@ -312,6 +334,9 @@ TEST_F(MiniMapCoordinatorTest, TestDismissMap) {
 
 // Tests that URL is opened if requested on dismiss.
 TEST_F(MiniMapCoordinatorTest, TestOpenURL) {
+  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
+    GTEST_SKIP() << "Feature only available on iOS16.4+";
+  }
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(web::features::kOneTapForMaps);
@@ -341,6 +366,9 @@ TEST_F(MiniMapCoordinatorTest, TestOpenURL) {
 
 // Tests the footer buttons.
 TEST_F(MiniMapCoordinatorTest, TestFooterButtons) {
+  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
+    GTEST_SKIP() << "Feature only available on iOS16.4+";
+  }
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(web::features::kOneTapForMaps);
