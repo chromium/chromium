@@ -49,6 +49,7 @@ enum EmeCodec : uint32_t {
   EME_CODEC_DTS = 1 << 20,
   EME_CODEC_DTSXP2 = 1 << 21,
   EME_CODEC_DTSE = 1 << 22,
+  EME_CODEC_AC4 = 1 << 23,
 };
 
 // *_ALL values should only be used for masking, do not use them to specify
@@ -73,6 +74,9 @@ constexpr SupportedCodecs GetMp4AudioCodecs() {
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
   codecs |= EME_CODEC_AC3 | EME_CODEC_EAC3;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+  codecs |= EME_CODEC_AC4;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
   codecs |= EME_CODEC_DTS | EME_CODEC_DTSXP2 | EME_CODEC_DTSE;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
