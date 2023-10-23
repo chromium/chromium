@@ -18,7 +18,6 @@
 #include "ash/system/notification_center/notification_list_view.h"
 #include "ash/system/notification_center/stacked_notification_bar.h"
 #include "ash/system/tray/tray_constants.h"
-#include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "base/memory/ptr_util.h"
@@ -30,14 +29,11 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/message_center/message_center.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/views/background.h"
-#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/focus/focus_search.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -65,7 +61,7 @@ NotificationCenterView::NotificationCenterView(
       // TODO(crbug.com/1247455): Determine how to use ScrollWithLayers without
       // breaking ARC.
       scroller_(new views::ScrollView()),
-      notification_list_view_(new NotificationListView(this, model)),
+      notification_list_view_(new NotificationListView(this)),
       last_scroll_position_from_bottom_(0),
       animation_(std::make_unique<gfx::LinearAnimation>(this)),
       focus_search_(std::make_unique<views::FocusSearch>(this, false, false)) {
@@ -106,9 +102,7 @@ void NotificationCenterView::Init() {
   scroller_->SetDrawOverflowIndicator(false);
   scroller_->SetPaintToLayer();
   scroller_->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{
-      static_cast<float>(chromeos::features::IsJellyEnabled()
-                             ? kJellyMessageCenterScrollViewCornerRadius
-                             : kMessageCenterScrollViewCornerRadius)});
+      static_cast<float>(kMessageCenterScrollViewCornerRadius)});
 
   AddChildView(scroller_.get());
 

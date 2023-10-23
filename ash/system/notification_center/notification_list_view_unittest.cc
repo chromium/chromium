@@ -4,21 +4,15 @@
 
 #include "ash/system/notification_center/notification_list_view.h"
 
-#include "ash/bubble/bubble_constants.h"
-#include "ash/constants/ash_features.h"
 #include "ash/system/message_center/ash_notification_view.h"
 #include "ash/system/message_center/message_center_constants.h"
-#include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/message_center/message_center.h"
@@ -75,8 +69,7 @@ class TestNotificationView : public AshNotificationView {
 
 class TestNotificationListView : public NotificationListView {
  public:
-  explicit TestNotificationListView(UnifiedSystemTrayModel* model)
-      : NotificationListView(nullptr, model) {}
+  TestNotificationListView() : NotificationListView(nullptr) {}
 
   TestNotificationListView(const TestNotificationListView&) = delete;
   TestNotificationListView& operator=(const TestNotificationListView&) = delete;
@@ -148,20 +141,6 @@ class NotificationListViewTest : public AshTestBase,
     AshTestBase::TearDown();
   }
 
-  int GetInnerCornerRadius() {
-    return chromeos::features::IsJellyEnabled()
-               ? kJellyMessageCenterNotificationInnerCornerRadius
-               : kMessageCenterNotificationInnerCornerRadius;
-  }
-
-  int GetTopBottomCornerRadius() {
-    // The top bottom radius should be the same as the corresponding scroll view
-    // corner radius.
-    return chromeos::features::IsJellyEnabled()
-               ? kJellyMessageCenterScrollViewCornerRadius
-               : kMessageCenterScrollViewCornerRadius;
-  }
-
   // views::ViewObserver:
   void OnViewPreferredSizeChanged(views::View* view) override {
     view->SetBoundsRect(gfx::Rect(view->GetPreferredSize()));
@@ -205,8 +184,7 @@ class NotificationListViewTest : public AshTestBase,
   }
 
   void CreateMessageListView() {
-    notification_list_view_ =
-        std::make_unique<TestNotificationListView>(model_.get());
+    notification_list_view_ = std::make_unique<TestNotificationListView>();
     notification_list_view_->Init();
     notification_list_view_->AddObserver(this);
     OnViewPreferredSizeChanged(notification_list_view_.get());
@@ -268,45 +246,7 @@ class NotificationListViewTest : public AshTestBase,
   std::unique_ptr<TestNotificationListView> notification_list_view_;
 };
 
-// Tests with QsRevamp and Jelly enabled and disabled.
-class ParameterizedNotificationListViewTest
-    : public NotificationListViewTest,
-      public testing::WithParamInterface<
-          std::tuple</*IsQsRevampEnabled()=*/bool,
-                     /*IsJellyEnabled()=*/bool>> {
- public:
-  ParameterizedNotificationListViewTest() = default;
-
-  ParameterizedNotificationListViewTest(
-      const ParameterizedNotificationListViewTest&) = delete;
-  ParameterizedNotificationListViewTest& operator=(
-      const ParameterizedNotificationListViewTest&) = delete;
-
-  ~ParameterizedNotificationListViewTest() override = default;
-
-  // AshTestBase:
-  void SetUp() override {
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatureStates(
-        {{features::kQsRevamp, /*enabled=*/IsQsRevampEnabled()},
-         {chromeos::features::kJelly, /*enabled=*/IsJellyEnabled()}});
-    NotificationListViewTest::SetUp();
-  }
-
-  bool IsQsRevampEnabled() const { return std::get<0>(GetParam()); }
-  bool IsJellyEnabled() const { return std::get<1>(GetParam()); }
-
- private:
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ParameterizedNotificationListViewTest,
-    testing::Combine(/*IsQsRevampEnabled()=*/testing::Bool(),
-                     /*IsJellyEnabled()=*/testing::Bool()));
-
-TEST_P(ParameterizedNotificationListViewTest, Open) {
+TEST_F(NotificationListViewTest, Open) {
   auto id0 = AddNotification();
   auto id1 = AddNotification();
   auto id2 = AddNotification();
@@ -329,8 +269,8 @@ TEST_P(ParameterizedNotificationListViewTest, Open) {
   EXPECT_EQ(GetMessageViewBounds(1).bottom() + kMessageListNotificationSpacing,
             GetMessageViewBounds(2).y());
 
-  const int top_bottom_corner_radius = GetTopBottomCornerRadius();
-  const int inner_corner_radius = GetInnerCornerRadius();
+  const int top_bottom_corner_radius = kMessageCenterScrollViewCornerRadius;
+  const int inner_corner_radius = kMessageCenterNotificationInnerCornerRadius;
   EXPECT_EQ(top_bottom_corner_radius, GetMessageViewAt(0)->top_radius());
   EXPECT_EQ(inner_corner_radius, GetMessageViewAt(1)->top_radius());
   EXPECT_EQ(inner_corner_radius, GetMessageViewAt(2)->top_radius());
@@ -343,7 +283,7 @@ TEST_P(ParameterizedNotificationListViewTest, Open) {
   EXPECT_LT(0, message_list_view()->GetPreferredSize().height());
 }
 
-TEST_P(ParameterizedNotificationListViewTest, AddNotifications) {
+TEST_F(NotificationListViewTest, AddNotifications) {
   CreateMessageListView();
   EXPECT_EQ(0, message_list_view()->GetPreferredSize().height());
 
@@ -352,8 +292,8 @@ TEST_P(ParameterizedNotificationListViewTest, AddNotifications) {
   EXPECT_EQ(1u, message_list_view()->children().size());
   EXPECT_EQ(id0, GetMessageViewAt(0)->notification_id());
 
-  const int top_bottom_corner_radius = GetTopBottomCornerRadius();
-  const int inner_corner_radius = GetInnerCornerRadius();
+  const int top_bottom_corner_radius = kMessageCenterScrollViewCornerRadius;
+  const int inner_corner_radius = kMessageCenterNotificationInnerCornerRadius;
   EXPECT_EQ(top_bottom_corner_radius, GetMessageViewAt(0)->top_radius());
   EXPECT_EQ(top_bottom_corner_radius, GetMessageViewAt(0)->bottom_radius());
 
@@ -381,7 +321,7 @@ TEST_P(ParameterizedNotificationListViewTest, AddNotifications) {
   EXPECT_EQ(top_bottom_corner_radius, GetMessageViewAt(1)->bottom_radius());
 }
 
-TEST_P(ParameterizedNotificationListViewTest, RemoveNotification) {
+TEST_F(NotificationListViewTest, RemoveNotification) {
   auto id0 = AddNotification();
   auto id1 = AddNotification();
 
@@ -390,8 +330,8 @@ TEST_P(ParameterizedNotificationListViewTest, RemoveNotification) {
 
   EXPECT_EQ(2u, message_list_view()->children().size());
 
-  const int top_bottom_corner_radius = GetTopBottomCornerRadius();
-  const int inner_corner_radius = GetInnerCornerRadius();
+  const int top_bottom_corner_radius = kMessageCenterScrollViewCornerRadius;
+  const int inner_corner_radius = kMessageCenterNotificationInnerCornerRadius;
   EXPECT_EQ(top_bottom_corner_radius, GetMessageViewAt(0)->top_radius());
   EXPECT_EQ(inner_corner_radius, GetMessageViewAt(0)->bottom_radius());
 
@@ -414,7 +354,7 @@ TEST_P(ParameterizedNotificationListViewTest, RemoveNotification) {
   EXPECT_EQ(0, message_list_view()->GetPreferredSize().height());
 }
 
-TEST_P(ParameterizedNotificationListViewTest, CollapseOlderNotifications) {
+TEST_F(NotificationListViewTest, CollapseOlderNotifications) {
   AddNotification();
   CreateMessageListView();
   EXPECT_TRUE(GetMessageViewAt(0)->IsExpanded());
@@ -442,7 +382,7 @@ TEST_P(ParameterizedNotificationListViewTest, CollapseOlderNotifications) {
   EXPECT_FALSE(GetMessageViewAt(3)->IsExpanded());
 }
 
-TEST_P(ParameterizedNotificationListViewTest, RemovingNotificationAnimation) {
+TEST_F(NotificationListViewTest, RemovingNotificationAnimation) {
   auto id0 = AddNotification(/*pinned=*/false);
   auto id1 = AddNotification();
   auto id2 = AddNotification();
@@ -481,7 +421,7 @@ TEST_P(ParameterizedNotificationListViewTest, RemovingNotificationAnimation) {
 }
 
 // Flaky: https://crbug.com/1292774.
-TEST_P(ParameterizedNotificationListViewTest, DISABLED_ResetAnimation) {
+TEST_F(NotificationListViewTest, DISABLED_ResetAnimation) {
   auto id0 = AddNotification();
   auto id1 = AddNotification();
   CreateMessageListView();
@@ -500,7 +440,7 @@ TEST_P(ParameterizedNotificationListViewTest, DISABLED_ResetAnimation) {
   EXPECT_EQ(id2, GetMessageViewAt(1)->notification_id());
 }
 
-TEST_P(ParameterizedNotificationListViewTest, KeepManuallyExpanded) {
+TEST_F(NotificationListViewTest, KeepManuallyExpanded) {
   AddNotification();
   AddNotification();
   CreateMessageListView();
@@ -543,8 +483,7 @@ TEST_P(ParameterizedNotificationListViewTest, KeepManuallyExpanded) {
   EXPECT_FALSE(GetMessageViewAt(0)->IsManuallyExpandedOrCollapsed());
 }
 
-TEST_P(ParameterizedNotificationListViewTest,
-       ClearAllWithOnlyVisibleNotifications) {
+TEST_F(NotificationListViewTest, ClearAllWithOnlyVisibleNotifications) {
   AddNotification();
   AddNotification();
   CreateMessageListView();
@@ -586,8 +525,7 @@ TEST_P(ParameterizedNotificationListViewTest,
   EXPECT_FALSE(IsAnimating());
 }
 
-TEST_P(ParameterizedNotificationListViewTest,
-       ClearAllWithStackingNotifications) {
+TEST_F(NotificationListViewTest, ClearAllWithStackingNotifications) {
   AddNotification();
   AddNotification();
   AddNotification();
@@ -634,7 +572,7 @@ TEST_P(ParameterizedNotificationListViewTest,
   EXPECT_FALSE(IsAnimating());
 }
 
-TEST_P(ParameterizedNotificationListViewTest, ClearAllClosedInTheMiddle) {
+TEST_F(NotificationListViewTest, ClearAllClosedInTheMiddle) {
   AddNotification();
   AddNotification();
   AddNotification();
@@ -647,7 +585,7 @@ TEST_P(ParameterizedNotificationListViewTest, ClearAllClosedInTheMiddle) {
   EXPECT_TRUE(MessageCenter::Get()->GetVisibleNotifications().empty());
 }
 
-TEST_P(ParameterizedNotificationListViewTest, ClearAllInterrupted) {
+TEST_F(NotificationListViewTest, ClearAllInterrupted) {
   AddNotification();
   AddNotification();
   AddNotification();
@@ -661,7 +599,7 @@ TEST_P(ParameterizedNotificationListViewTest, ClearAllInterrupted) {
   EXPECT_TRUE(MessageCenter::Get()->FindVisibleNotificationById(new_id));
 }
 
-TEST_P(ParameterizedNotificationListViewTest, ClearAllWithPinnedNotifications) {
+TEST_F(NotificationListViewTest, ClearAllWithPinnedNotifications) {
   AddNotification(/*pinned=*/true);
   AddNotification();
   AddNotification();
@@ -672,8 +610,7 @@ TEST_P(ParameterizedNotificationListViewTest, ClearAllWithPinnedNotifications) {
   EXPECT_EQ(1u, message_list_view()->children().size());
 }
 
-TEST_P(ParameterizedNotificationListViewTest,
-       ClearAllWithStackingAndPinnedNotifications) {
+TEST_F(NotificationListViewTest, ClearAllWithStackingAndPinnedNotifications) {
   AddNotification(/*pinned=*/true);
   AddNotification(/*pinned=*/true);
   AddNotification();
@@ -689,8 +626,7 @@ TEST_P(ParameterizedNotificationListViewTest,
 }
 
 // Flaky: https://crbug.com/1292701.
-TEST_P(ParameterizedNotificationListViewTest,
-       DISABLED_UserSwipesAwayNotification) {
+TEST_F(NotificationListViewTest, DISABLED_UserSwipesAwayNotification) {
   // Show message list with two notifications.
   AddNotification();
   auto id1 = AddNotification();
@@ -716,7 +652,7 @@ TEST_P(ParameterizedNotificationListViewTest,
   EXPECT_FALSE(message_list_view()->IsAnimating());
 }
 
-TEST_P(ParameterizedNotificationListViewTest, InitInSortedOrder) {
+TEST_F(NotificationListViewTest, InitInSortedOrder) {
   // MessageViews should be ordered, from top down: [ id1, id2, id0 ].
   auto id0 = AddNotification(/*pinned=*/true);
   OffsetNotificationTimestamp(id0, 2000 /* milliseconds */);
@@ -731,7 +667,7 @@ TEST_P(ParameterizedNotificationListViewTest, InitInSortedOrder) {
   EXPECT_EQ(id0, GetMessageViewAt(0)->notification_id());
 }
 
-TEST_P(ParameterizedNotificationListViewTest, NotificationAddedInSortedOrder) {
+TEST_F(NotificationListViewTest, NotificationAddedInSortedOrder) {
   auto id0 = AddNotification(/*pinned=*/true);
   OffsetNotificationTimestamp(id0, 3000 /* milliseconds */);
   auto id1 = AddNotification();
@@ -1012,25 +948,34 @@ TEST_F(NotificationListViewTest, SlideNotification) {
 
   // At first, there should be no fully rounded corners for the middle
   // notification.
-  EXPECT_EQ(GetInnerCornerRadius(), GetMessageViewAt(2)->top_radius());
-  EXPECT_EQ(GetInnerCornerRadius(), GetMessageViewAt(2)->bottom_radius());
+  EXPECT_EQ(kMessageCenterNotificationInnerCornerRadius,
+            GetMessageViewAt(2)->top_radius());
+  EXPECT_EQ(kMessageCenterNotificationInnerCornerRadius,
+            GetMessageViewAt(2)->bottom_radius());
 
   // Start sliding notification 2 away.
   StartSliding(2);
   // The top bottom radius should be the same as the
   // `kMessageCenterScrollViewCornerRadius`.
-  EXPECT_EQ(GetTopBottomCornerRadius(), GetMessageViewAt(2)->bottom_radius());
+  EXPECT_EQ(kMessageCenterScrollViewCornerRadius,
+            GetMessageViewAt(2)->bottom_radius());
 
   // Notification 1's bottom corner and notification 3's top corner should also
   // be rounded.
-  EXPECT_EQ(GetInnerCornerRadius(), GetMessageViewAt(1)->top_radius());
-  EXPECT_EQ(GetTopBottomCornerRadius(), GetMessageViewAt(1)->bottom_radius());
-  EXPECT_EQ(GetTopBottomCornerRadius(), GetMessageViewAt(3)->top_radius());
-  EXPECT_EQ(GetInnerCornerRadius(), GetMessageViewAt(3)->bottom_radius());
+  EXPECT_EQ(kMessageCenterNotificationInnerCornerRadius,
+            GetMessageViewAt(1)->top_radius());
+  EXPECT_EQ(kMessageCenterScrollViewCornerRadius,
+            GetMessageViewAt(1)->bottom_radius());
+  EXPECT_EQ(kMessageCenterScrollViewCornerRadius,
+            GetMessageViewAt(3)->top_radius());
+  EXPECT_EQ(kMessageCenterNotificationInnerCornerRadius,
+            GetMessageViewAt(3)->bottom_radius());
 
   // Notification 0 should not change.
-  EXPECT_EQ(GetTopBottomCornerRadius(), GetMessageViewAt(0)->top_radius());
-  EXPECT_EQ(GetInnerCornerRadius(), GetMessageViewAt(0)->bottom_radius());
+  EXPECT_EQ(kMessageCenterScrollViewCornerRadius,
+            GetMessageViewAt(0)->top_radius());
+  EXPECT_EQ(kMessageCenterNotificationInnerCornerRadius,
+            GetMessageViewAt(0)->bottom_radius());
 
   // Slide out notification 2, the 3 notifications left should have no rounded
   // corner after slide out done.
@@ -1038,43 +983,65 @@ TEST_F(NotificationListViewTest, SlideNotification) {
   FinishSlideOutAnimation();
   AnimateUntilIdle();
 
-  EXPECT_EQ(GetInnerCornerRadius(), GetMessageViewAt(0)->bottom_radius());
-  EXPECT_EQ(GetInnerCornerRadius(), GetMessageViewAt(1)->top_radius());
+  EXPECT_EQ(kMessageCenterNotificationInnerCornerRadius,
+            GetMessageViewAt(0)->bottom_radius());
+  EXPECT_EQ(kMessageCenterNotificationInnerCornerRadius,
+            GetMessageViewAt(1)->top_radius());
 
   // Test with notification 1. Same behavior should happen.
   StartSliding(1);
-  EXPECT_EQ(GetTopBottomCornerRadius(), GetMessageViewAt(1)->top_radius());
-  EXPECT_EQ(GetTopBottomCornerRadius(), GetMessageViewAt(1)->bottom_radius());
-  EXPECT_EQ(GetInnerCornerRadius(), GetMessageViewAt(0)->top_radius());
-  EXPECT_EQ(GetTopBottomCornerRadius(), GetMessageViewAt(0)->bottom_radius());
-  EXPECT_EQ(GetTopBottomCornerRadius(), GetMessageViewAt(2)->top_radius());
-  EXPECT_EQ(GetInnerCornerRadius(), GetMessageViewAt(2)->bottom_radius());
+  EXPECT_EQ(kMessageCenterScrollViewCornerRadius,
+            GetMessageViewAt(1)->top_radius());
+  EXPECT_EQ(kMessageCenterScrollViewCornerRadius,
+            GetMessageViewAt(1)->bottom_radius());
+  EXPECT_EQ(kMessageCenterNotificationInnerCornerRadius,
+            GetMessageViewAt(0)->top_radius());
+  EXPECT_EQ(kMessageCenterScrollViewCornerRadius,
+            GetMessageViewAt(0)->bottom_radius());
+  EXPECT_EQ(kMessageCenterScrollViewCornerRadius,
+            GetMessageViewAt(2)->top_radius());
+  EXPECT_EQ(kMessageCenterNotificationInnerCornerRadius,
+            GetMessageViewAt(2)->bottom_radius());
 
   // Cancel the slide. Everything goes back to normal.
   GetMessageViewAt(1)->OnSlideChanged(/*in_progress=*/false);
   for (int i = 0; i <= 2; i++) {
-    EXPECT_EQ(GetInnerCornerRadius(), GetMessageViewAt(i)->top_radius());
-    EXPECT_EQ(GetInnerCornerRadius(), GetMessageViewAt(i)->bottom_radius());
+    EXPECT_EQ(kMessageCenterNotificationInnerCornerRadius,
+              GetMessageViewAt(i)->top_radius());
+    EXPECT_EQ(kMessageCenterNotificationInnerCornerRadius,
+              GetMessageViewAt(i)->bottom_radius());
   }
 
   // Test with the top notification.
   StartSliding(0);
-  EXPECT_EQ(GetTopBottomCornerRadius(), GetMessageViewAt(0)->top_radius());
-  EXPECT_EQ(GetTopBottomCornerRadius(), GetMessageViewAt(0)->bottom_radius());
-  EXPECT_EQ(GetTopBottomCornerRadius(), GetMessageViewAt(1)->top_radius());
-  EXPECT_EQ(GetInnerCornerRadius(), GetMessageViewAt(1)->bottom_radius());
-  EXPECT_EQ(GetInnerCornerRadius(), GetMessageViewAt(2)->top_radius());
-  EXPECT_EQ(GetInnerCornerRadius(), GetMessageViewAt(2)->bottom_radius());
+  EXPECT_EQ(kMessageCenterScrollViewCornerRadius,
+            GetMessageViewAt(0)->top_radius());
+  EXPECT_EQ(kMessageCenterScrollViewCornerRadius,
+            GetMessageViewAt(0)->bottom_radius());
+  EXPECT_EQ(kMessageCenterScrollViewCornerRadius,
+            GetMessageViewAt(1)->top_radius());
+  EXPECT_EQ(kMessageCenterNotificationInnerCornerRadius,
+            GetMessageViewAt(1)->bottom_radius());
+  EXPECT_EQ(kMessageCenterNotificationInnerCornerRadius,
+            GetMessageViewAt(2)->top_radius());
+  EXPECT_EQ(kMessageCenterNotificationInnerCornerRadius,
+            GetMessageViewAt(2)->bottom_radius());
   GetMessageViewAt(0)->OnSlideChanged(/*in_progress=*/false);
 
   // Test with the bottom notification.
   StartSliding(2);
-  EXPECT_EQ(GetInnerCornerRadius(), GetMessageViewAt(0)->top_radius());
-  EXPECT_EQ(GetInnerCornerRadius(), GetMessageViewAt(0)->bottom_radius());
-  EXPECT_EQ(GetInnerCornerRadius(), GetMessageViewAt(1)->top_radius());
-  EXPECT_EQ(GetTopBottomCornerRadius(), GetMessageViewAt(1)->bottom_radius());
-  EXPECT_EQ(GetTopBottomCornerRadius(), GetMessageViewAt(2)->top_radius());
-  EXPECT_EQ(GetTopBottomCornerRadius(), GetMessageViewAt(2)->bottom_radius());
+  EXPECT_EQ(kMessageCenterNotificationInnerCornerRadius,
+            GetMessageViewAt(0)->top_radius());
+  EXPECT_EQ(kMessageCenterNotificationInnerCornerRadius,
+            GetMessageViewAt(0)->bottom_radius());
+  EXPECT_EQ(kMessageCenterNotificationInnerCornerRadius,
+            GetMessageViewAt(1)->top_radius());
+  EXPECT_EQ(kMessageCenterScrollViewCornerRadius,
+            GetMessageViewAt(1)->bottom_radius());
+  EXPECT_EQ(kMessageCenterScrollViewCornerRadius,
+            GetMessageViewAt(2)->top_radius());
+  EXPECT_EQ(kMessageCenterScrollViewCornerRadius,
+            GetMessageViewAt(2)->bottom_radius());
   GetMessageViewAt(2)->OnSlideChanged(/*in_progress=*/false);
 }
 
