@@ -143,6 +143,11 @@ bool IsPartialLowEndModeOnMidRangeDevicesEnabled() {
              features::kPartialLowEndModeOnMidRangeDevices);
 }
 
+bool IsPartialLowEndModeOn3GbDevicesEnabled() {
+  return SysInfo::Is3GbDevice() &&
+         base::FeatureList::IsEnabled(features::kPartialLowEndModeOn3GbDevices);
+}
+
 }  // namespace
 
 bool SysInfo::Is3GbDevice() {
@@ -171,7 +176,8 @@ bool SysInfo::Is6GbDevice() {
 bool SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   return base::SysInfo::IsLowEndDevice() ||
-         IsPartialLowEndModeOnMidRangeDevicesEnabled();
+         IsPartialLowEndModeOnMidRangeDevicesEnabled() ||
+         IsPartialLowEndModeOn3GbDevicesEnabled();
 #else
   return base::SysInfo::IsLowEndDevice();
 #endif
@@ -181,7 +187,8 @@ bool SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled(
     const FeatureParam<bool>& param_for_exclusion) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   return base::SysInfo::IsLowEndDevice() ||
-         (IsPartialLowEndModeOnMidRangeDevicesEnabled() &&
+         ((IsPartialLowEndModeOnMidRangeDevicesEnabled() ||
+           IsPartialLowEndModeOn3GbDevicesEnabled()) &&
           !param_for_exclusion.Get());
 #else
   return base::SysInfo::IsLowEndDevice();
