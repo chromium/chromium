@@ -2217,6 +2217,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_OPTIONS_TAB_PICKUP_SCREEN_TITLE" desc="Title for the screen setting displaying tab suggestion settings. (Title case)">
         Tab Suggestions
       </message>
+      <message name="IDS_IOS_PARCEL_TRACKING_IPH" desc="In product help for the parcel tracking feature.">
+        See all your tracked packages here
+      </message>
       <message name="IDS_IOS_PARCEL_TRACKING_OPT_IN_ENABLE_TRACKING" desc="Text for the button that allows the user to enable parcel tracking.">
         Enable Tracking
       </message>
