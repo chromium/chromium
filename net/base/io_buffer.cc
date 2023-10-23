@@ -24,7 +24,7 @@ void IOBuffer::AssertValidBufferSize(int size) {
   CHECK_GE(size, 0);
 }
 
-IOBuffer::IOBuffer() : data_(nullptr) {}
+IOBuffer::IOBuffer() = default;
 
 IOBuffer::IOBuffer(size_t buffer_size) {
   AssertValidBufferSize(buffer_size);

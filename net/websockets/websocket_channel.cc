@@ -933,7 +933,7 @@ ChannelState WebSocketChannel::SendClose(uint16_t code,
     // Special case: translate kWebSocketErrorNoStatusReceived into a Close
     // frame with no payload.
     DCHECK(reason.empty());
-    body = base::MakeRefCounted<IOBuffer>(0);
+    body = base::MakeRefCounted<IOBuffer>();
   } else {
     const size_t payload_length = kWebSocketCloseCodeLength + reason.length();
     body = base::MakeRefCounted<IOBuffer>(payload_length);

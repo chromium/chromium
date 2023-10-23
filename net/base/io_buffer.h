@@ -78,7 +78,6 @@ namespace net {
 class NET_EXPORT IOBuffer : public base::RefCountedThreadSafe<IOBuffer> {
  public:
   IOBuffer();
-
   explicit IOBuffer(size_t buffer_size);
 
   char* data() { return data_; }
@@ -101,7 +100,8 @@ class NET_EXPORT IOBuffer : public base::RefCountedThreadSafe<IOBuffer> {
 
   virtual ~IOBuffer();
 
-  raw_ptr<char, AcrossTasksDanglingUntriaged | AllowPtrArithmetic> data_;
+  raw_ptr<char, AcrossTasksDanglingUntriaged | AllowPtrArithmetic> data_ =
+      nullptr;
 };
 
 // This version stores the size of the buffer so that the creator of the object
