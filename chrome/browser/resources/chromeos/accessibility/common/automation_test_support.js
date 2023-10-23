@@ -33,6 +33,19 @@ class AutomationTestSupport {
   }
 
   /**
+   * Waits for the page with the given `url` to exist, then
+   * gets its bounds.
+   * @param {string} url
+   */
+  async getBoundsForRootWebArea(url) {
+    const findParams = {
+      role: 'rootWebArea',
+      attributes: {url},
+    };
+    await this.getBoundsForNodeWithParams_(findParams);
+  }
+
+  /**
    * Gets the bounds for the automation node with the given `name` and
    * `role`. Waits for the node to exist if it does not yet.
    * @param {string} name

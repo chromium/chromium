@@ -521,7 +521,10 @@ IN_PROC_BROWSER_TEST_P(DictationTest, WorksWithSelectToSpeak) {
   aura::Window* root_window = Shell::Get()->GetPrimaryRootWindow();
   ui::test::EventGenerator generator(root_window);
 
-  sts_test_utils::StartSelectToSpeakInBrowserWindow(browser(), &generator);
+  gfx::Rect bounds =
+      utils()->automation_test_utils()->GetBoundsForNodeInRootByClassName(
+          "editableForDictation");
+  sts_test_utils::StartSelectToSpeakWithBounds(bounds, &generator);
 
   // Now ensure STS still works properly.
   sm.ExpectSpeechPattern("Not idly do the leaves of Lorien fall*");

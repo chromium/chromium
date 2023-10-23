@@ -20,6 +20,8 @@ namespace ash {
 
 // Gets the bounds of the element with ID `field_id` in the web contents,
 // in density-independent pixels.
+// Do not use. Prefer AutomationTestUtils::GetNodeBoundsInRoot, which
+// works with Lacros and Ash browsers.
 gfx::Rect GetControlBoundsInRoot(content::WebContents* web_contents,
                                  const std::string& field_id);
 
