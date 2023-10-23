@@ -983,11 +983,6 @@ public class LayoutManagerImpl
     public void startHiding(int nextTabId, boolean hintAtTabSelection) {
         requestUpdate();
         if (hintAtTabSelection) {
-            // TODO(crbug.com/1108496): Remove after migrates to LayoutStateObserver.
-            for (SceneChangeObserver observer : mSceneChangeObservers) {
-                observer.onTabSelectionHinted(nextTabId);
-            }
-
             for (LayoutStateObserver observer : mLayoutObservers) {
                 observer.onTabSelectionHinted(nextTabId);
             }

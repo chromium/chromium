@@ -211,9 +211,6 @@ public class OverlayPanel extends OverlayPanelAnimation
 
         mSceneChangeObserver = new SceneChangeObserver() {
             @Override
-            public void onTabSelectionHinted(int tabId) {}
-
-            @Override
             public void onSceneChange(Layout layout) {
                 closePanel(StateChangeReason.UNKNOWN, false);
             }

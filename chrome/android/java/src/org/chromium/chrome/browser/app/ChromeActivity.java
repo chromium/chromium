@@ -2634,9 +2634,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     public void terminateIncognitoSession() {}
 
     @Override
-    public void onTabSelectionHinted(int tabId) {}
-
-    @Override
     public void onSceneChange(Layout layout) {}
 
     @Override

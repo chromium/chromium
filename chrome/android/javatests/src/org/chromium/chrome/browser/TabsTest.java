@@ -814,9 +814,6 @@ public class TabsTest {
                             .addSceneChangeObserver(
                                     new SceneChangeObserver() {
                                         @Override
-                                        public void onTabSelectionHinted(int tabId) {}
-
-                                        @Override
                                         public void onSceneChange(Layout layout) {
                                             if (layout instanceof StaticLayout) {
                                                 staticLayoutCallbackHelper.notifyCalled();
