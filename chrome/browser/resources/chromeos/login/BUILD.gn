@@ -140,7 +140,6 @@ generate_grd("build_oobe_grd") {
     "images/app_icons/files.svg",
     "images/app_icons/photos.svg",
     "images/app_icons/settings.svg",
-    "images/arc_sideloading_illustration.svg",
     "images/arc_vm_data_migration_icon.svg",
     "images/browser_sync.svg",
     "images/error.svg",
