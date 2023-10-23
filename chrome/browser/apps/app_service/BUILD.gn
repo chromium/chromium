@@ -157,6 +157,8 @@ source_set("app_service") {
       "promise_apps/promise_app_almanac_connector.h",
       "promise_apps/promise_app_icon_cache.cc",
       "promise_apps/promise_app_icon_cache.h",
+      "promise_apps/promise_app_metrics.cc",
+      "promise_apps/promise_app_metrics.h",
       "promise_apps/promise_app_registry_cache.cc",
       "promise_apps/promise_app_registry_cache.h",
       "promise_apps/promise_app_service.cc",

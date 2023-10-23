@@ -2397,6 +2397,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.PromiseApp.LifecycleEvent"
+    enum="PromiseAppLifecycleEvent" expires_after="2024-10-20">
+  <owner>vpao@google.com</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records how often each key lifecycle event occurs across all promise apps. A
+    promise app is a temporary item in the Launcher/ Shelf which represents an
+    app installation, and critical app installation stages will trigger an
+    update to this histogram under their relevant event category.
+  </summary>
+</histogram>
+
 <histogram name="Apps.QuickAppIconLoadTime" units="ms"
     expires_after="2024-03-17">
   <owner>mmourgos@chromium.org</owner>

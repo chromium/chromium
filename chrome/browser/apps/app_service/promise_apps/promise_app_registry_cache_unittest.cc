@@ -5,7 +5,9 @@
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 
 #include "base/scoped_observation.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_metrics.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_update.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_utils.h"
 #include "components/services/app_service/public/cpp/package_id.h"
@@ -24,18 +26,24 @@ class PromiseAppRegistryCacheTest : public testing::Test {
 
   PromiseAppRegistryCache* cache() { return cache_.get(); }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  private:
   std::unique_ptr<PromiseAppRegistryCache> cache_;
+  base::HistogramTester histogram_tester_;
 };
 
-TEST_F(PromiseAppRegistryCacheTest, OnPromiseApp_AddsPromiseAppToCache) {
+TEST_F(PromiseAppRegistryCacheTest, AddPromiseAppToCache) {
   auto promise_app = std::make_unique<PromiseApp>(kTestPackageId);
   ASSERT_FALSE(cache()->HasPromiseApp(kTestPackageId));
   cache()->OnPromiseApp(std::move(promise_app));
   ASSERT_TRUE(cache()->HasPromiseApp(kTestPackageId));
+  histogram_tester().ExpectBucketCount(
+      kPromiseAppLifecycleEventHistogram,
+      PromiseAppLifecycleEvent::kCreatedInCache, 1);
 }
 
-TEST_F(PromiseAppRegistryCacheTest, OnPromiseApp_UpdatesPromiseAppProgress) {
+TEST_F(PromiseAppRegistryCacheTest, UpdatePromiseAppProgress) {
   float progress_initial = 0.1;
   float progress_next = 0.9;
 
@@ -125,6 +133,9 @@ TEST_F(PromiseAppRegistryCacheTest, RemoveSuccessfullyInstalledPromiseApp) {
 
   // Confirm that the promise app was removed.
   EXPECT_FALSE(cache()->HasPromiseApp(kTestPackageId));
+  histogram_tester().ExpectBucketCount(
+      kPromiseAppLifecycleEventHistogram,
+      PromiseAppLifecycleEvent::kInstallationSucceeded, 1);
 }
 
 TEST_F(PromiseAppRegistryCacheTest, RemoveCancelledPromiseApp) {
@@ -142,6 +153,9 @@ TEST_F(PromiseAppRegistryCacheTest, RemoveCancelledPromiseApp) {
 
   // Confirm that the promise app was removed.
   EXPECT_FALSE(cache()->HasPromiseApp(kTestPackageId));
+  histogram_tester().ExpectBucketCount(
+      kPromiseAppLifecycleEventHistogram,
+      PromiseAppLifecycleEvent::kInstallationCancelled, 1);
 }
 
 class PromiseAppRegistryCacheObserverTest : public testing::Test,
