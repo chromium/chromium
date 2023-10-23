@@ -767,14 +767,15 @@ def _set_builder_config_property(ctx):
             is_excluded = builder.name in excluded_builders or node.props.builder_group in excluded_groups
             if rotations and not mirroring_builders and not is_excluded:
                 fail("{} is on a sheriff/gardener rotation, but lacks a matching trybot".format(builder.name))
-            for m in mirroring_builders:
-                mirror_id = _builder_id(m)
-                cq_identifier = "{}/{}/{}".format(
-                    mirror_id["project"],
-                    mirror_id["bucket"],
-                    mirror_id["builder"],
-                )
-                needs_mega_cq_mode = needs_mega_cq_mode.union([cq_identifier])
+            if rotations:
+                for m in mirroring_builders:
+                    mirror_id = _builder_id(m)
+                    cq_identifier = "{}/{}/{}".format(
+                        mirror_id["project"],
+                        mirror_id["bucket"],
+                        mirror_id["builder"],
+                    )
+                    needs_mega_cq_mode = needs_mega_cq_mode.union([cq_identifier])
 
     cq_config_groups = []
     for f in ctx.output:
