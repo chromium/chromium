@@ -125,9 +125,10 @@ void GaiaScreen::LoadOnlineGaia() {
     return;
   }
 
-  switch (context()->gaia_config.gaia_path) {
+  auto* context = LoginDisplayHost::default_host()->GetWizardContext();
+  switch (context->gaia_config.gaia_path) {
     case WizardContext::GaiaPath::kDefault:
-      LoadDefaultOnlineGaia(context()->gaia_config.prefilled_account);
+      LoadDefaultOnlineGaia(context->gaia_config.prefilled_account);
       break;
     case WizardContext::GaiaPath::kReauth:
       LoadDefaultOnlineGaia(EmptyAccountId());
@@ -151,7 +152,9 @@ void GaiaScreen::LoadDefaultOnlineGaia(const AccountId& account) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceCryptohomeRecoveryForTesting)) {
     DCHECK(features::IsCryptohomeRecoveryEnabled());
-    context()->gaia_config.gaia_path = WizardContext::GaiaPath::kReauth;
+    LoginDisplayHost::default_host()
+        ->GetWizardContext()
+        ->gaia_config.gaia_path = WizardContext::GaiaPath::kReauth;
     FetchGaiaReauthToken(account);
     return;
   }
@@ -171,8 +174,10 @@ void GaiaScreen::LoadDefaultOnlineGaia(const AccountId& account) {
 void GaiaScreen::Reset() {
   if (!view_)
     return;
-  context()->gaia_config.gaia_path = WizardContext::GaiaPath::kDefault;
-  context()->gaia_config.prefilled_account = EmptyAccountId();
+
+  auto* context = LoginDisplayHost::default_host()->GetWizardContext();
+  context->gaia_config.gaia_path = WizardContext::GaiaPath::kDefault;
+  context->gaia_config.prefilled_account = EmptyAccountId();
   view_->Reset();
 }
 
@@ -319,7 +324,9 @@ void GaiaScreen::OnGetAuthFactorsConfiguration(
 
   const AccountId& account_id = user_context->GetAccountId();
   if (ShouldUseReauthEndpoint(account_id, is_recovery_configured)) {
-    context()->gaia_config.gaia_path = WizardContext::GaiaPath::kReauth;
+    LoginDisplayHost::default_host()
+        ->GetWizardContext()
+        ->gaia_config.gaia_path = WizardContext::GaiaPath::kReauth;
   }
 
   if (ShouldPrepareForRecovery(account_id) && is_recovery_configured) {
