@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/dlp/test/dlp_reporting_manager_test_helper.h"
+#include "chrome/browser/enterprise/data_controls/dlp_reporting_manager_test_helper.h"
 
 #include <memory>
 
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
 #include "components/enterprise/data_controls/dlp_policy_event.pb.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -18,7 +17,7 @@ using ::testing::MatcherInterface;
 using ::testing::MatchResultListener;
 using ::testing::Mock;
 
-namespace policy {
+namespace data_controls {
 
 class DlpPolicyEventMatcher : public MatcherInterface<const DlpPolicyEvent&> {
  public:
@@ -92,7 +91,7 @@ Matcher<const DlpPolicyEvent&> IsDlpPolicyEvent(const DlpPolicyEvent& event) {
 }
 
 void SetReportQueueForReportingManager(
-    policy::DlpReportingManager* manager,
+    DlpReportingManager* manager,
     std::vector<DlpPolicyEvent>& events,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   auto report_queue =
@@ -113,4 +112,4 @@ void SetReportQueueForReportingManager(
   manager->SetReportQueueForTest(std::move(report_queue));
 }
 
-}  // namespace policy
+}  // namespace data_controls

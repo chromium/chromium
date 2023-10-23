@@ -14,6 +14,7 @@ import("//chrome/common/features.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
 import("//chromeos/dbus/config/use_real_dbus_clients.gni")
 import("//components/compose/features.gni")
+import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/feed/features.gni")
 import("//components/lens/features.gni")
 import("//components/nacl/features.gni")
@@ -727,6 +728,10 @@ static_library("ui") {
       "//chrome/browser/ui/webui/connectors_internals:mojo_bindings",
       "//components/device_signals/core/browser",
     ]
+  }
+
+  if (enterprise_data_controls) {
+    deps += [ "//chrome/browser/enterprise/data_controls" ]
   }
 
   if (enable_search_engine_choice) {

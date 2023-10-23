@@ -12,7 +12,7 @@
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
 #include "chrome/browser/ash/policy/dlp/test/files_policy_notification_manager_test_utils.h"
 #include "chrome/browser/ash/policy/dlp/test/mock_files_policy_notification_manager.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
+#include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
@@ -91,7 +91,7 @@ void DlpFilesTestWithMounts::SetUp() {
   task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   event_storage_->SetTaskRunnerForTesting(task_runner_);
 
-  reporting_manager_ = std::make_unique<DlpReportingManager>();
+  reporting_manager_ = std::make_unique<data_controls::DlpReportingManager>();
   SetReportQueueForReportingManager(
       reporting_manager_.get(), events,
       base::SequencedTaskRunner::GetCurrentDefault());

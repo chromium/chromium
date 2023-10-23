@@ -23,9 +23,9 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_observer.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_notification_helper.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -50,7 +50,7 @@ base::TimeDelta kScreenShareResumeDelay = base::Milliseconds(500);
 void ReportEvent(GURL url,
                  DlpRulesManager::Restriction restriction,
                  DlpRulesManager::Level level,
-                 DlpReportingManager* reporting_manager) {
+                 data_controls::DlpReportingManager* reporting_manager) {
   DCHECK(reporting_manager);
 
   DlpRulesManager* rules_manager =
@@ -196,7 +196,7 @@ bool DlpContentManager::IsScreenshotApiRestricted(
 }
 
 void DlpContentManager::SetReportingManagerForTesting(
-    DlpReportingManager* reporting_manager) {
+    data_controls::DlpReportingManager* reporting_manager) {
   DCHECK(!reporting_manager_);
   DCHECK(reporting_manager);
   reporting_manager_ = reporting_manager;
@@ -494,7 +494,7 @@ DlpContentManager::~DlpContentManager() {
 void DlpContentManager::ReportWarningProceededEvent(
     const GURL& url,
     DlpRulesManager::Restriction restriction,
-    DlpReportingManager* reporting_manager) {
+    data_controls::DlpReportingManager* reporting_manager) {
   if (!reporting_manager)
     return;
 
@@ -513,7 +513,7 @@ void DlpContentManager::ReportWarningProceededEvent(
 bool DlpContentManager::MaybeReportWarningProceededEvent(
     GURL url,
     DlpRulesManager::Restriction restriction,
-    DlpReportingManager* reporting_manager,
+    data_controls::DlpReportingManager* reporting_manager,
     bool should_proceed) {
   if (should_proceed) {
     ReportWarningProceededEvent(url, restriction, reporting_manager);

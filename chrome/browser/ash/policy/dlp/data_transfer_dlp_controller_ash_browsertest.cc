@@ -19,12 +19,12 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_impl.h"
-#include "chrome/browser/chromeos/policy/dlp/test/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_rules_manager_test_utils.h"
+#include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
+#include "chrome/browser/enterprise/data_controls/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/enterprise/data_controls/dlp_histogram_helper.h"
@@ -154,7 +154,8 @@ class MockDlpRulesManager : public DlpRulesManagerImpl {
       : DlpRulesManagerImpl(local_state, profile) {}
   ~MockDlpRulesManager() override = default;
 
-  MOCK_CONST_METHOD0(GetReportingManager, DlpReportingManager*());
+  MOCK_CONST_METHOD0(GetReportingManager,
+                     data_controls::DlpReportingManager*());
   MOCK_CONST_METHOD0(GetDlpFilesController, DlpFilesController*());
 };
 
@@ -173,7 +174,7 @@ class DataTransferDlpAshBrowserTest : public InProcessBrowserTest {
                             base::Unretained(this)));
     ASSERT_TRUE(DlpRulesManagerFactory::GetForPrimaryProfile());
 
-    reporting_manager_ = std::make_unique<DlpReportingManager>();
+    reporting_manager_ = std::make_unique<data_controls::DlpReportingManager>();
     SetReportQueueForReportingManager(
         reporting_manager_.get(), events,
         base::SequencedTaskRunner::GetCurrentDefault());
@@ -225,7 +226,7 @@ class DataTransferDlpAshBrowserTest : public InProcessBrowserTest {
 
   raw_ptr<MockDlpRulesManager, DanglingUntriaged | ExperimentalAsh>
       rules_manager_;
-  std::unique_ptr<DlpReportingManager> reporting_manager_;
+  std::unique_ptr<data_controls::DlpReportingManager> reporting_manager_;
   std::vector<DlpPolicyEvent> events;
   FakeClipboardNotifier helper_;
   std::unique_ptr<FakeDlpController> dlp_controller_;
@@ -270,11 +271,12 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpAshBrowserTest, MAYBE_BlockComponent) {
       ui::ClipboardBuffer::kCopyPaste, &data_dst2, &result2);
   EXPECT_EQ(std::u16string(), result2);
   ASSERT_EQ(events.size(), 1u);
-  EXPECT_THAT(events[0],
-              IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                  kMailUrl, data_controls::Component::kArc,
-                  DlpRulesManager::Restriction::kClipboard, kRuleName, kRuleId,
-                  DlpRulesManager::Level::kBlock)));
+  EXPECT_THAT(
+      events[0],
+      data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
+          kMailUrl, data_controls::Component::kArc,
+          DlpRulesManager::Restriction::kClipboard, kRuleName, kRuleId,
+          DlpRulesManager::Level::kBlock)));
 
   ui::DataTransferEndpoint data_dst3(ui::EndpointType::kCrostini);
   std::u16string result3;
@@ -282,11 +284,12 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpAshBrowserTest, MAYBE_BlockComponent) {
       ui::ClipboardBuffer::kCopyPaste, &data_dst3, &result3);
   EXPECT_EQ(std::u16string(), result3);
   ASSERT_EQ(events.size(), 2u);
-  EXPECT_THAT(events[1],
-              IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                  kMailUrl, data_controls::Component::kCrostini,
-                  DlpRulesManager::Restriction::kClipboard, kRuleName, kRuleId,
-                  DlpRulesManager::Level::kBlock)));
+  EXPECT_THAT(
+      events[1],
+      data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
+          kMailUrl, data_controls::Component::kCrostini,
+          DlpRulesManager::Restriction::kClipboard, kRuleName, kRuleId,
+          DlpRulesManager::Level::kBlock)));
 }
 
 // Flaky on MSan bots: http://crbug.com/1178328
@@ -325,11 +328,12 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpAshBrowserTest, MAYBE_WarnComponent) {
       ui::ClipboardBuffer::kCopyPaste, &arc_endpoint, &result);
   EXPECT_EQ(kClipboardText116, result);
   ASSERT_EQ(events.size(), 1u);
-  EXPECT_THAT(events[0],
-              IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                  kMailUrl, data_controls::Component::kArc,
-                  DlpRulesManager::Restriction::kClipboard, kRuleName, kRuleId,
-                  DlpRulesManager::Level::kWarn)));
+  EXPECT_THAT(
+      events[0],
+      data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
+          kMailUrl, data_controls::Component::kArc,
+          DlpRulesManager::Restriction::kClipboard, kRuleName, kRuleId,
+          DlpRulesManager::Level::kWarn)));
 
   ui::DataTransferEndpoint crostini_endpoint(ui::EndpointType::kCrostini);
   result.clear();
@@ -337,11 +341,12 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpAshBrowserTest, MAYBE_WarnComponent) {
       ui::ClipboardBuffer::kCopyPaste, &crostini_endpoint, &result);
   EXPECT_EQ(kClipboardText116, result);
   ASSERT_EQ(events.size(), 2u);
-  EXPECT_THAT(events[1],
-              IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                  kMailUrl, data_controls::Component::kCrostini,
-                  DlpRulesManager::Restriction::kClipboard, kRuleName, kRuleId,
-                  DlpRulesManager::Level::kWarn)));
+  EXPECT_THAT(
+      events[1],
+      data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
+          kMailUrl, data_controls::Component::kCrostini,
+          DlpRulesManager::Restriction::kClipboard, kRuleName, kRuleId,
+          DlpRulesManager::Level::kWarn)));
 }
 
 }  // namespace policy

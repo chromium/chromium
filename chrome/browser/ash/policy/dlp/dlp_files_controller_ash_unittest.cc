@@ -43,8 +43,8 @@
 #include "chrome/browser/ash/policy/dlp/test/files_policy_notification_manager_test_utils.h"
 #include "chrome/browser/ash/policy/dlp/test/mock_files_policy_notification_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_files_test_base.h"
+#include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/ui/base/file_icon_util.h"
@@ -1162,7 +1162,7 @@ TEST_F(DlpFilesControllerAshTest, CheckReportingOnIsDlpPolicyMatched) {
       [](const std::string& src_pattern, DlpRulesManager::Level level,
          const std::string& filename, const std::string& rule_name,
          const std::string& rule_id) {
-        auto event_builder = DlpPolicyEventBuilder::Event(
+        auto event_builder = data_controls::DlpPolicyEventBuilder::Event(
             src_pattern, rule_name, rule_id,
             DlpRulesManager::Restriction::kFiles, level);
         event_builder->SetDestinationComponent(
@@ -1209,7 +1209,8 @@ TEST_F(DlpFilesControllerAshTest, CheckReportingOnIsDlpPolicyMatched) {
 
   ASSERT_EQ(events.size(), 6u);
   for (size_t i = 0; i < events.size(); ++i) {
-    EXPECT_THAT(events[i], IsDlpPolicyEvent(*expected_events[i]));
+    EXPECT_THAT(events[i],
+                data_controls::IsDlpPolicyEvent(*expected_events[i]));
   }
 }
 
@@ -1296,7 +1297,7 @@ TEST_F(DlpFilesControllerAshTest, CheckReportingOnIsFilesTransferRestricted) {
   MockIsFilesTransferRestrictedCallback cb;
   EXPECT_CALL(cb, Run(files_levels)).Times(::testing::AnyNumber());
 
-  auto event_builder = DlpPolicyEventBuilder::Event(
+  auto event_builder = data_controls::DlpPolicyEventBuilder::Event(
       kExampleSourcePattern1, kRuleName1, kRuleId1,
       DlpRulesManager::Restriction::kFiles, DlpRulesManager::Level::kBlock);
   event_builder->SetContentName(kFilePath1);
@@ -1333,7 +1334,8 @@ TEST_F(DlpFilesControllerAshTest, CheckReportingOnIsFilesTransferRestricted) {
 
   ASSERT_EQ(events.size(), 4u);
   for (size_t i = 0; i < events.size(); ++i) {
-    EXPECT_THAT(events[i], IsDlpPolicyEvent(*expected_events[i]));
+    EXPECT_THAT(events[i],
+                data_controls::IsDlpPolicyEvent(*expected_events[i]));
   }
 }
 
@@ -1377,7 +1379,7 @@ TEST_F(DlpFilesControllerAshTest, CheckReportingOnMixedCalls) {
   MockIsFilesTransferRestrictedCallback cb;
   EXPECT_CALL(cb, Run(files_levels)).Times(1);
 
-  auto event_builder = DlpPolicyEventBuilder::Event(
+  auto event_builder = data_controls::DlpPolicyEventBuilder::Event(
       kExampleSourcePattern1, kRuleName1, kRuleId1,
       DlpRulesManager::Restriction::kFiles, DlpRulesManager::Level::kBlock);
   event_builder->SetContentName(kFilePath1);
@@ -1393,7 +1395,7 @@ TEST_F(DlpFilesControllerAshTest, CheckReportingOnMixedCalls) {
   ASSERT_TRUE(files_controller_->IsDlpPolicyMatched(file1));
 
   ASSERT_EQ(events.size(), 1u);
-  EXPECT_THAT(events[0], IsDlpPolicyEvent(event));
+  EXPECT_THAT(events[0], data_controls::IsDlpPolicyEvent(event));
 }
 
 TEST_F(DlpFilesControllerAshTest, CheckIfDropAllowed_ErrorResponse) {
@@ -1628,14 +1630,18 @@ TEST_P(DlpFilesExternalDestinationTest, IsFilesTransferRestricted_Component) {
       cb.Get());
 
   ASSERT_EQ(events.size(), 2u);
-  EXPECT_THAT(events[0], IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                             kExampleSourcePattern1, expected_component,
-                             DlpRulesManager::Restriction::kFiles, kRuleName1,
-                             kRuleId1, DlpRulesManager::Level::kBlock)));
-  EXPECT_THAT(events[1], IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                             kExampleSourcePattern3, expected_component,
-                             DlpRulesManager::Restriction::kFiles, kRuleName3,
-                             kRuleId3, DlpRulesManager::Level::kBlock)));
+  EXPECT_THAT(
+      events[0],
+      data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
+          kExampleSourcePattern1, expected_component,
+          DlpRulesManager::Restriction::kFiles, kRuleName1, kRuleId1,
+          DlpRulesManager::Level::kBlock)));
+  EXPECT_THAT(
+      events[1],
+      data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
+          kExampleSourcePattern3, expected_component,
+          DlpRulesManager::Restriction::kFiles, kRuleName3, kRuleId3,
+          DlpRulesManager::Level::kBlock)));
 }
 
 TEST_P(DlpFilesExternalDestinationTest, FileDownloadBlocked) {
@@ -1668,14 +1674,15 @@ TEST_P(DlpFilesExternalDestinationTest, FileDownloadBlocked) {
 
   ASSERT_EQ(events.size(), 1u);
 
-  auto event_builder = DlpPolicyEventBuilder::Event(
+  auto event_builder = data_controls::DlpPolicyEventBuilder::Event(
       kExampleSourcePattern1, kRuleName1, kRuleId1,
       DlpRulesManager::Restriction::kFiles, DlpRulesManager::Level::kBlock);
 
   event_builder->SetDestinationComponent(expected_component);
   event_builder->SetContentName(base::FilePath(path).BaseName().value());
 
-  EXPECT_THAT(events[0], IsDlpPolicyEvent(event_builder->Create()));
+  EXPECT_THAT(events[0],
+              data_controls::IsDlpPolicyEvent(event_builder->Create()));
 }
 
 TEST_P(DlpFilesExternalDestinationTest, FilePromptForDownload) {
@@ -1798,7 +1805,7 @@ TEST_P(DlpFilesUrlDestinationTest, IsFilesTransferRestricted_Url) {
   for (size_t i = 0u; i < disallowed_source_patterns.size(); ++i) {
     EXPECT_THAT(
         events[i],
-        IsDlpPolicyEvent(CreateDlpPolicyEvent(
+        data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
             disallowed_source_patterns[i], destination_pattern,
             DlpRulesManager::Restriction::kFiles, triggered_rule_names[i],
             triggered_rule_ids[i], DlpRulesManager::Level::kBlock)));
@@ -1872,10 +1879,10 @@ TEST_P(DlpFilesWarningDialogChoiceTest, FileDownloadWarned) {
       [&](absl::optional<DlpRulesManager::Level> level) -> DlpPolicyEvent {
     auto event_builder =
         level.has_value()
-            ? DlpPolicyEventBuilder::Event(
+            ? data_controls::DlpPolicyEventBuilder::Event(
                   kExampleSourcePattern1, kRuleName1, kRuleId1,
                   DlpRulesManager::Restriction::kFiles, level.value())
-            : DlpPolicyEventBuilder::WarningProceededEvent(
+            : data_controls::DlpPolicyEventBuilder::WarningProceededEvent(
                   kExampleSourcePattern1, kRuleName1, kRuleId1,
                   DlpRulesManager::Restriction::kFiles);
     event_builder->SetDestinationComponent(data_controls::Component::kUsb);
@@ -1884,10 +1891,11 @@ TEST_P(DlpFilesWarningDialogChoiceTest, FileDownloadWarned) {
   };
 
   ASSERT_EQ(events.size(), 1u + (choice_result ? 1 : 0));
-  EXPECT_THAT(events[0],
-              IsDlpPolicyEvent(CreateEvent(DlpRulesManager::Level::kWarn)));
+  EXPECT_THAT(events[0], data_controls::IsDlpPolicyEvent(
+                             CreateEvent(DlpRulesManager::Level::kWarn)));
   if (choice_result) {
-    EXPECT_THAT(events[1], IsDlpPolicyEvent(CreateEvent(absl::nullopt)));
+    EXPECT_THAT(events[1],
+                data_controls::IsDlpPolicyEvent(CreateEvent(absl::nullopt)));
   }
 
   EXPECT_THAT(

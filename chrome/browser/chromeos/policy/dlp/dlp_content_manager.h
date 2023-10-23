@@ -33,9 +33,11 @@ struct DesktopMediaID;
 class WebContents;
 }  // namespace content
 
-namespace policy {
-
+namespace data_controls {
 class DlpReportingManager;
+}  // namespace data_controls
+
+namespace policy {
 
 class DlpWarnNotifier;
 
@@ -119,7 +121,8 @@ class DlpContentManager : public DlpContentObserver,
  protected:
   friend class DlpContentManagerTestHelper;
 
-  void SetReportingManagerForTesting(DlpReportingManager* manager);
+  void SetReportingManagerForTesting(
+      data_controls::DlpReportingManager* manager);
 
   void SetWarnNotifierForTesting(
       std::unique_ptr<DlpWarnNotifier> warn_notifier);
@@ -271,14 +274,14 @@ class DlpContentManager : public DlpContentObserver,
   static void ReportWarningProceededEvent(
       const GURL& url,
       DlpRulesManager::Restriction restriction,
-      DlpReportingManager* reporting_manager);
+      data_controls::DlpReportingManager* reporting_manager);
 
   // Helper method to create a callback with ReportWarningProceededEvent
   // function.
   static bool MaybeReportWarningProceededEvent(
       GURL url,
       DlpRulesManager::Restriction restriction,
-      DlpReportingManager* reporting_manager,
+      data_controls::DlpReportingManager* reporting_manager,
       bool should_proceed);
 
   // Retrieves WebContents from |media_id| for tab shares. Otherwise returns
@@ -416,7 +419,8 @@ class DlpContentManager : public DlpContentObserver,
   // List of the currently running screen shares.
   std::vector<std::unique_ptr<ScreenShareInfo>> running_screen_shares_;
 
-  raw_ptr<DlpReportingManager, DanglingUntriaged> reporting_manager_{nullptr};
+  raw_ptr<data_controls::DlpReportingManager, DanglingUntriaged>
+      reporting_manager_{nullptr};
 
   std::unique_ptr<DlpWarnNotifier> warn_notifier_;
 

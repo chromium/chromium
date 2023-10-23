@@ -24,12 +24,12 @@
 #include "chrome/browser/chromeos/policy/dlp/dialogs/mock_dlp_warn_notifier.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_content_manager_test_helper.h"
-#include "chrome/browser/chromeos/policy/dlp/test/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
+#include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
+#include "chrome/browser/enterprise/data_controls/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/extensions/api/tab_capture/tab_capture_registry.h"
 #include "chrome/browser/media/media_access_handler.h"
 #include "chrome/browser/media/webrtc/desktop_capture_access_handler.h"
@@ -196,9 +196,10 @@ class DlpContentManagerAshBrowserTest : public InProcessBrowserTest {
                    size_t count) {
     EXPECT_EQ(events_.size(), count);
     for (size_t i = 0; i < count; ++i) {
-      EXPECT_THAT(events_[i],
-                  IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                      kSrcPattern, restriction, kRuleName, kRuleId, level)));
+      EXPECT_THAT(
+          events_[i],
+          data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
+              kSrcPattern, restriction, kRuleName, kRuleId, level)));
     }
   }
 
@@ -414,10 +415,11 @@ IN_PROC_BROWSER_TEST_F(ScreenshotTest, WarningProceededReportedAfterCapture) {
   static_cast<DlpContentManagerAsh*>(helper_->GetContentManager())
       ->OnImageCapture(fullscreen);
   ASSERT_EQ(events_.size(), 2u);
-  EXPECT_THAT(events_[1],
-              IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
-                  kSrcPattern, DlpRulesManager::Restriction::kScreenshot,
-                  kRuleName, kRuleId)));
+  EXPECT_THAT(
+      events_[1],
+      data_controls::IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
+          kSrcPattern, DlpRulesManager::Restriction::kScreenshot, kRuleName,
+          kRuleId)));
 }
 
 IN_PROC_BROWSER_TEST_F(ScreenshotTest, CheckRestriction_Blocked_Lacros) {
@@ -1344,16 +1346,18 @@ IN_PROC_BROWSER_TEST_P(CheckAndStartScreenShareTest, FullScreenShare) {
       /*warned_suffix=*/data_controls::dlp::kScreenShareWarnedUMA);
 
   ASSERT_EQ(events_.size(), param.report_event_count);
-  EXPECT_THAT(events_[0],
-              IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                  kSrcPattern, DlpRulesManager::Restriction::kScreenShare,
-                  kRuleName, kRuleId, param.level)));
+  EXPECT_THAT(
+      events_[0],
+      data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
+          kSrcPattern, DlpRulesManager::Restriction::kScreenShare, kRuleName,
+          kRuleId, param.level)));
 
   if (param.expect_warning_proceeded) {
-    EXPECT_THAT(events_[1],
-                IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
-                    kSrcPattern, DlpRulesManager::Restriction::kScreenShare,
-                    kRuleName, kRuleId)));
+    EXPECT_THAT(
+        events_[1],
+        data_controls::IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
+            kSrcPattern, DlpRulesManager::Restriction::kScreenShare, kRuleName,
+            kRuleId)));
     histogram_tester_.ExpectBucketCount(
         data_controls::GetDlpHistogramPrefix() +
             data_controls::dlp::kScreenShareWarnProceededUMA,
@@ -1391,16 +1395,18 @@ IN_PROC_BROWSER_TEST_P(CheckAndStartScreenShareTest, TabShare) {
       /*warned_suffix=*/data_controls::dlp::kScreenShareWarnedUMA);
 
   ASSERT_EQ(events_.size(), param.report_event_count);
-  EXPECT_THAT(events_[0],
-              IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                  kSrcPattern, DlpRulesManager::Restriction::kScreenShare,
-                  kRuleName, kRuleId, param.level)));
+  EXPECT_THAT(
+      events_[0],
+      data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
+          kSrcPattern, DlpRulesManager::Restriction::kScreenShare, kRuleName,
+          kRuleId, param.level)));
 
   if (param.expect_warning_proceeded) {
-    EXPECT_THAT(events_[1],
-                IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
-                    kSrcPattern, DlpRulesManager::Restriction::kScreenShare,
-                    kRuleName, kRuleId)));
+    EXPECT_THAT(
+        events_[1],
+        data_controls::IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
+            kSrcPattern, DlpRulesManager::Restriction::kScreenShare, kRuleName,
+            kRuleId)));
     histogram_tester_.ExpectBucketCount(
         data_controls::GetDlpHistogramPrefix() +
             data_controls::dlp::kScreenShareWarnProceededUMA,
@@ -1458,10 +1464,11 @@ IN_PROC_BROWSER_TEST_P(CheckRunningScreenShareTest, FullScreenShare) {
       param.blocked_count > 0);
 
   if (param.expect_warning_proceeded) {
-    EXPECT_THAT(events_[1],
-                IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
-                    kSrcPattern, DlpRulesManager::Restriction::kScreenShare,
-                    kRuleName, kRuleId)));
+    EXPECT_THAT(
+        events_[1],
+        data_controls::IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
+            kSrcPattern, DlpRulesManager::Restriction::kScreenShare, kRuleName,
+            kRuleId)));
     histogram_tester_.ExpectBucketCount(
         data_controls::GetDlpHistogramPrefix() +
             data_controls::dlp::kScreenShareWarnProceededUMA,
@@ -1529,10 +1536,11 @@ IN_PROC_BROWSER_TEST_P(CheckRunningScreenShareTest, TabShare) {
       param.blocked_count > 0);
 
   if (param.expect_warning_proceeded) {
-    EXPECT_THAT(events_[1],
-                IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
-                    kSrcPattern, DlpRulesManager::Restriction::kScreenShare,
-                    kRuleName, kRuleId)));
+    EXPECT_THAT(
+        events_[1],
+        data_controls::IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
+            kSrcPattern, DlpRulesManager::Restriction::kScreenShare, kRuleName,
+            kRuleId)));
     histogram_tester_.ExpectBucketCount(
         data_controls::GetDlpHistogramPrefix() +
             data_controls::dlp::kScreenShareWarnProceededUMA,
@@ -2000,10 +2008,11 @@ IN_PROC_BROWSER_TEST_P(ScreenShareNavigateWebContentsTest, Reporting) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), restricted_url));
   helper_->CheckRunningScreenShares();
   ASSERT_EQ(events_.size(), 2u);
-  EXPECT_THAT(events_[1],
-              IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                  kSrcPattern, DlpRulesManager::Restriction::kScreenShare,
-                  kRuleName, kRuleId, param.level)));
+  EXPECT_THAT(
+      events_[1],
+      data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
+          kSrcPattern, DlpRulesManager::Restriction::kScreenShare, kRuleName,
+          kRuleId, param.level)));
   if (param.level == DlpRulesManager::Level::kWarn) {
     // Proceed, as otherwise the screen share would be stopped.
     DismissDialog(/*allow=*/true);

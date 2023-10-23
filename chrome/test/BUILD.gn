@@ -5332,6 +5332,10 @@ if (!is_android) {
       deps -= [ "//components/crash/content/browser/error_reporting:mock_crash_endpoint" ]
     }
 
+    if (enterprise_data_controls) {
+      deps += [ "//chrome/browser/enterprise/data_controls:test_support" ]
+    }
+
     sources += metric_integration_sources
   }
 }
@@ -8909,7 +8913,10 @@ test("unit_tests") {
     ]
 
     if (enterprise_data_controls) {
-      sources += [ "../../components/enterprise/data_controls/data_controls_policy_handler_unittest.cc" ]
+      sources += [
+        "../../components/enterprise/data_controls/data_controls_policy_handler_unittest.cc",
+        "../browser/enterprise/data_controls/dlp_reporting_manager_unittest.cc",
+      ]
       deps += [
         "//chrome/browser/enterprise/data_controls",
         "//chrome/browser/enterprise/data_controls:test_support",
@@ -10875,6 +10882,7 @@ if (!is_android && !is_chromeos_device) {
         "//ash/constants",
         "//chrome/browser/ash:test_support",
         "//chrome/browser/chromeos:test_support",
+        "//chrome/browser/enterprise/data_controls:test_support",
         "//chrome/browser/media/router:test_support",
         "//chrome/browser/ui/ash/system_web_apps",
         "//chromeos/ash/components/dbus",
@@ -11122,7 +11130,10 @@ if (!is_android && !is_chromeos_device) {
     }
 
     if (enterprise_data_controls) {
-      deps += [ "//components/enterprise/data_controls" ]
+      deps += [
+        "//chrome/browser/enterprise/data_controls:test_support",
+        "//components/enterprise/data_controls",
+      ]
     }
   }
 }

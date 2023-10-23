@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
+#include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
 
 #include <memory>
 
@@ -10,9 +10,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
-#include "chrome/browser/policy/dm_token_utils.h"
 #include "components/enterprise/data_controls/dlp_histogram_helper.h"
 #include "components/enterprise/data_controls/dlp_policy_event.pb.h"
 #include "components/reporting/client/report_queue.h"
@@ -31,62 +28,62 @@
 #include "chromeos/startup/browser_params_proxy.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-namespace policy {
+namespace data_controls {
 // TODO(1187477, marcgrimme): revisit if this should be refactored.
-DlpPolicyEvent_Mode DlpRulesManagerLevel2DlpEventMode(
-    DlpRulesManager::Level level) {
+DlpPolicyEvent_Mode RuleLevel2DlpEventMode(
+    Rule::Level level) {
   switch (level) {
-    case DlpRulesManager::Level::kBlock:
+    case Rule::Level::kBlock:
       return DlpPolicyEvent_Mode_BLOCK;
-    case DlpRulesManager::Level::kWarn:
+    case Rule::Level::kWarn:
       return DlpPolicyEvent_Mode_WARN;
-    case DlpRulesManager::Level::kReport:
+    case Rule::Level::kReport:
       return DlpPolicyEvent_Mode_REPORT;
-    case DlpRulesManager::Level::kNotSet:
-    case DlpRulesManager::Level::kAllow:
+    case Rule::Level::kNotSet:
+    case Rule::Level::kAllow:
       return DlpPolicyEvent_Mode_UNDEFINED_MODE;
   }
 }
 
 // TODO(1187477, marcgrimme): revisit if this should be refactored.
-DlpPolicyEvent_Restriction DlpRulesManagerRestriction2DlpEventRestriction(
-    DlpRulesManager::Restriction restriction) {
+DlpPolicyEvent_Restriction RuleRestriction2DlpEventRestriction(
+    Rule::Restriction restriction) {
   switch (restriction) {
-    case DlpRulesManager::Restriction::kPrinting:
+    case Rule::Restriction::kPrinting:
       return DlpPolicyEvent_Restriction_PRINTING;
-    case DlpRulesManager::Restriction::kScreenshot:
+    case Rule::Restriction::kScreenshot:
       return DlpPolicyEvent_Restriction_SCREENSHOT;
-    case DlpRulesManager::Restriction::kScreenShare:
+    case Rule::Restriction::kScreenShare:
       return DlpPolicyEvent_Restriction_SCREENCAST;
-    case DlpRulesManager::Restriction::kPrivacyScreen:
+    case Rule::Restriction::kPrivacyScreen:
       return DlpPolicyEvent_Restriction_EPRIVACY;
-    case DlpRulesManager::Restriction::kClipboard:
+    case Rule::Restriction::kClipboard:
       return DlpPolicyEvent_Restriction_CLIPBOARD;
-    case DlpRulesManager::Restriction::kFiles:
+    case Rule::Restriction::kFiles:
       return DlpPolicyEvent_Restriction_FILES;
-    case DlpRulesManager::Restriction::kUnknownRestriction:
+    case Rule::Restriction::kUnknownRestriction:
       return DlpPolicyEvent_Restriction_UNDEFINED_RESTRICTION;
   }
 }
 
 // TODO(1187477, marcgrimme): revisit if this should be refactored.
-DlpRulesManager::Restriction DlpEventRestriction2DlpRulesManagerRestriction(
+Rule::Restriction DlpEventRestriction2RuleRestriction(
     DlpPolicyEvent_Restriction restriction) {
   switch (restriction) {
     case DlpPolicyEvent_Restriction_PRINTING:
-      return DlpRulesManager::Restriction::kPrinting;
+      return Rule::Restriction::kPrinting;
     case DlpPolicyEvent_Restriction_SCREENSHOT:
-      return DlpRulesManager::Restriction::kScreenshot;
+      return Rule::Restriction::kScreenshot;
     case DlpPolicyEvent_Restriction_SCREENCAST:
-      return DlpRulesManager::Restriction::kScreenShare;
+      return Rule::Restriction::kScreenShare;
     case DlpPolicyEvent_Restriction_EPRIVACY:
-      return DlpRulesManager::Restriction::kPrivacyScreen;
+      return Rule::Restriction::kPrivacyScreen;
     case DlpPolicyEvent_Restriction_CLIPBOARD:
-      return DlpRulesManager::Restriction::kClipboard;
+      return Rule::Restriction::kClipboard;
     case DlpPolicyEvent_Restriction_FILES:
-      return DlpRulesManager::Restriction::kFiles;
+      return Rule::Restriction::kFiles;
     case DlpPolicyEvent_Restriction_UNDEFINED_RESTRICTION:
-      return DlpRulesManager::Restriction::kUnknownRestriction;
+      return Rule::Restriction::kUnknownRestriction;
   }
 }
 
@@ -130,6 +127,9 @@ DlpPolicyEvent_UserType GetCurrentUserType() {
     case crosapi::mojom::SessionType::kChildSession:
       return DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE;
   }
+#else
+  // TODO(b/303640183): Revisit what this should return for non-CrOS platforms.
+  return DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -138,13 +138,13 @@ std::unique_ptr<DlpPolicyEventBuilder> DlpPolicyEventBuilder::Event(
     const std::string& src_pattern,
     const std::string& rule_name,
     const std::string& rule_id,
-    DlpRulesManager::Restriction restriction,
-    DlpRulesManager::Level level) {
+    Rule::Restriction restriction,
+    Rule::Level level) {
   std::unique_ptr<DlpPolicyEventBuilder> event_builder(
       new DlpPolicyEventBuilder());
   event_builder->SetSourcePattern(src_pattern);
   event_builder->SetRestriction(restriction);
-  event_builder->event.set_mode(DlpRulesManagerLevel2DlpEventMode(level));
+  event_builder->event.set_mode(RuleLevel2DlpEventMode(level));
 
   if (!rule_name.empty()) {
     event_builder->event.set_triggered_rule_name(rule_name);
@@ -161,7 +161,7 @@ DlpPolicyEventBuilder::WarningProceededEvent(
     const std::string& src_pattern,
     const std::string& rule_name,
     const std::string& rule_id,
-    DlpRulesManager::Restriction restriction) {
+    Rule::Restriction restriction) {
   std::unique_ptr<DlpPolicyEventBuilder> event_builder(
       new DlpPolicyEventBuilder());
   event_builder->SetSourcePattern(src_pattern);
@@ -184,39 +184,41 @@ void DlpPolicyEventBuilder::SetDestinationPattern(
   event.set_allocated_destination(event_destination);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 void DlpPolicyEventBuilder::SetDestinationComponent(
-    data_controls::Component dst_component) {
+    Component dst_component) {
   DlpPolicyEventDestination* event_destination = new DlpPolicyEventDestination;
   switch (dst_component) {
-    case (data_controls::Component::kArc):
+    case (Component::kArc):
       event_destination->set_component(DlpPolicyEventDestination_Component_ARC);
       break;
-    case (data_controls::Component::kCrostini):
+    case (Component::kCrostini):
       event_destination->set_component(
           DlpPolicyEventDestination_Component_CROSTINI);
       break;
-    case (data_controls::Component::kPluginVm):
+    case (Component::kPluginVm):
       event_destination->set_component(
           DlpPolicyEventDestination_Component_PLUGIN_VM);
       break;
-    case (data_controls::Component::kUsb):
+    case (Component::kUsb):
       event_destination->set_component(DlpPolicyEventDestination_Component_USB);
       break;
-    case (data_controls::Component::kDrive):
+    case (Component::kDrive):
       event_destination->set_component(
           DlpPolicyEventDestination_Component_DRIVE);
       break;
-    case (data_controls::Component::kOneDrive):
+    case (Component::kOneDrive):
       event_destination->set_component(
           DlpPolicyEventDestination_Component_ONEDRIVE);
       break;
-    case (data_controls::Component::kUnknownComponent):
+    case (Component::kUnknownComponent):
       event_destination->set_component(
           DlpPolicyEventDestination_Component_UNDEFINED_COMPONENT);
       break;
   }
   event.set_allocated_destination(event_destination);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void DlpPolicyEventBuilder::SetContentName(const std::string& content_name) {
   event.set_content_name(content_name);
@@ -233,16 +235,16 @@ void DlpPolicyEventBuilder::SetSourcePattern(const std::string& src_pattern) {
 }
 
 void DlpPolicyEventBuilder::SetRestriction(
-    DlpRulesManager::Restriction restriction) {
+    Rule::Restriction restriction) {
   event.set_restriction(
-      DlpRulesManagerRestriction2DlpEventRestriction(restriction));
+      RuleRestriction2DlpEventRestriction(restriction));
 }
 
 DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
-                                    DlpRulesManager::Restriction restriction,
+                                    Rule::Restriction restriction,
                                     const std::string& rule_name,
                                     const std::string& rule_id,
-                                    DlpRulesManager::Level level) {
+                                    Rule::Level level) {
   auto event_builder = DlpPolicyEventBuilder::Event(
       src_pattern, rule_name, rule_id, restriction, level);
   return event_builder->Create();
@@ -250,28 +252,30 @@ DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
 
 DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
                                     const std::string& dst_pattern,
-                                    DlpRulesManager::Restriction restriction,
+                                    Rule::Restriction restriction,
                                     const std::string& rule_name,
                                     const std::string& rule_id,
-                                    DlpRulesManager::Level level) {
+                                    Rule::Level level) {
   auto event_builder = DlpPolicyEventBuilder::Event(
       src_pattern, rule_name, rule_id, restriction, level);
   event_builder->SetDestinationPattern(dst_pattern);
   return event_builder->Create();
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
-                                    data_controls::Component dst_component,
-                                    DlpRulesManager::Restriction restriction,
+                                    Component dst_component,
+                                    Rule::Restriction restriction,
                                     const std::string& rule_name,
                                     const std::string& rule_id,
-                                    DlpRulesManager::Level level) {
+                                    Rule::Level level) {
   auto event_builder = DlpPolicyEventBuilder::Event(
       src_pattern, rule_name, rule_id, restriction, level);
   event_builder->SetDestinationComponent(dst_component);
 
   return event_builder->Create();
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 DlpReportingManager::DlpReportingManager()
     : report_queue_(
@@ -294,8 +298,8 @@ void DlpReportingManager::SetReportQueueForTest(
 }
 
 void DlpReportingManager::ReportEvent(const std::string& src_pattern,
-                                      DlpRulesManager::Restriction restriction,
-                                      DlpRulesManager::Level level,
+                                      Rule::Restriction restriction,
+                                      Rule::Level level,
                                       const std::string& rule_name,
                                       const std::string& rule_id) {
   auto event =
@@ -305,8 +309,8 @@ void DlpReportingManager::ReportEvent(const std::string& src_pattern,
 
 void DlpReportingManager::ReportEvent(const std::string& src_pattern,
                                       const std::string& dst_pattern,
-                                      DlpRulesManager::Restriction restriction,
-                                      DlpRulesManager::Level level,
+                                      Rule::Restriction restriction,
+                                      Rule::Level level,
                                       const std::string& rule_name,
                                       const std::string& rule_id) {
   auto event = CreateDlpPolicyEvent(src_pattern, dst_pattern, restriction,
@@ -314,17 +318,19 @@ void DlpReportingManager::ReportEvent(const std::string& src_pattern,
   ReportEvent(std::move(event));
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 void DlpReportingManager::ReportEvent(
     const std::string& src_pattern,
-    const data_controls::Component dst_component,
-    DlpRulesManager::Restriction restriction,
-    DlpRulesManager::Level level,
+    const Component dst_component,
+    Rule::Restriction restriction,
+    Rule::Level level,
     const std::string& rule_name,
     const std::string& rule_id) {
   auto event = CreateDlpPolicyEvent(src_pattern, dst_component, restriction,
                                     rule_name, rule_id, level);
   ReportEvent(std::move(event));
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void DlpReportingManager::OnEventEnqueued(reporting::Status status) {
   if (!status.ok()) {
@@ -332,8 +338,8 @@ void DlpReportingManager::OnEventEnqueued(reporting::Status status) {
             << status;
   }
   events_reported_++;
-  base::UmaHistogramEnumeration(data_controls::GetDlpHistogramPrefix() +
-                                    data_controls::dlp::kReportedEventStatus,
+  base::UmaHistogramEnumeration(GetDlpHistogramPrefix() +
+                                    dlp::kReportedEventStatus,
                                 status.code(),
                                 reporting::error::Code::MAX_VALUE);
 }
@@ -341,8 +347,8 @@ void DlpReportingManager::OnEventEnqueued(reporting::Status status) {
 void DlpReportingManager::ReportEvent(DlpPolicyEvent event) {
   // TODO(1187506, marcgrimme) Refactor to handle gracefully with user
   // interaction when queue is not ready.
-  data_controls::DlpBooleanHistogram(
-      data_controls::dlp::kErrorsReportQueueNotReady, !report_queue_.get());
+  DlpBooleanHistogram(
+      dlp::kErrorsReportQueueNotReady, !report_queue_.get());
   if (!report_queue_.get()) {
     DLOG(WARNING) << "Report queue could not be initialized. DLP reporting "
                      "functionality will be disabled.";
@@ -354,27 +360,27 @@ void DlpReportingManager::ReportEvent(DlpPolicyEvent event) {
   switch (event.mode()) {
     case DlpPolicyEvent_Mode_BLOCK:
       base::UmaHistogramEnumeration(
-          data_controls::GetDlpHistogramPrefix() +
-              data_controls::dlp::kReportedBlockLevelRestriction,
-          DlpEventRestriction2DlpRulesManagerRestriction(event.restriction()));
+          GetDlpHistogramPrefix() +
+              dlp::kReportedBlockLevelRestriction,
+          DlpEventRestriction2RuleRestriction(event.restriction()));
       break;
     case DlpPolicyEvent_Mode_REPORT:
       base::UmaHistogramEnumeration(
-          data_controls::GetDlpHistogramPrefix() +
-              data_controls::dlp::kReportedReportLevelRestriction,
-          DlpEventRestriction2DlpRulesManagerRestriction(event.restriction()));
+          GetDlpHistogramPrefix() +
+              dlp::kReportedReportLevelRestriction,
+          DlpEventRestriction2RuleRestriction(event.restriction()));
       break;
     case DlpPolicyEvent_Mode_WARN:
       base::UmaHistogramEnumeration(
-          data_controls::GetDlpHistogramPrefix() +
-              data_controls::dlp::kReportedWarnLevelRestriction,
-          DlpEventRestriction2DlpRulesManagerRestriction(event.restriction()));
+          GetDlpHistogramPrefix() +
+              dlp::kReportedWarnLevelRestriction,
+          DlpEventRestriction2RuleRestriction(event.restriction()));
       break;
     case DlpPolicyEvent_Mode_WARN_PROCEED:
       base::UmaHistogramEnumeration(
-          data_controls::GetDlpHistogramPrefix() +
-              data_controls::dlp::kReportedWarnProceedLevelRestriction,
-          DlpEventRestriction2DlpRulesManagerRestriction(event.restriction()));
+          GetDlpHistogramPrefix() +
+              dlp::kReportedWarnProceedLevelRestriction,
+          DlpEventRestriction2RuleRestriction(event.restriction()));
       break;
     case DlpPolicyEvent_Mode_UNDEFINED_MODE:
       NOTREACHED();
@@ -385,4 +391,4 @@ void DlpReportingManager::ReportEvent(DlpPolicyEvent event) {
   VLOG(1) << "DLP event sent to reporting infrastructure.";
 }
 
-}  // namespace policy
+}  // namespace data_controls

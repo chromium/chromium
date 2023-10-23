@@ -2,32 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
+#include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
 
 #include <memory>
 
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
-#include "chrome/browser/chromeos/policy/dlp/test/dlp_reporting_manager_test_helper.h"
+#include "components/enterprise/data_controls/rule.h"
+#include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
+#include "chrome/browser/enterprise/data_controls/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "components/account_id/account_id.h"
+#include "components/reporting/encryption/primitives.h"
 #include "components/enterprise/data_controls/dlp_histogram_helper.h"
 #include "components/enterprise/data_controls/dlp_policy_event.pb.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "components/reporting/storage/test_storage_module.h"
 #include "components/reporting/util/status.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "components/user_manager/user_names.h"
+#include "components/user_manager/user_names.h"  // nogncheck
+#include "components/user_manager/scoped_user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -39,7 +44,7 @@
 using ::testing::_;
 using ::testing::Mock;
 
-namespace policy {
+namespace data_controls {
 
 namespace {
 const char kCompanyPattern[] = "company.com";
@@ -62,13 +67,14 @@ class DlpReportingManagerTest : public testing::Test {
   }
 
  protected:
+#if BUILDFLAG(IS_CHROMEOS)
   void ReportEventAndCheckComponent(
-      data_controls::Component rule_component,
+      Component rule_component,
       DlpPolicyEventDestination_Component event_component,
       unsigned int event_number) {
     manager_.ReportEvent(kCompanyPattern, rule_component,
-                         DlpRulesManager::Restriction::kClipboard,
-                         DlpRulesManager::Level::kBlock, kRuleName, kRuleId);
+                         Rule::Restriction::kClipboard,
+                         Rule::Level::kBlock, kRuleName, kRuleId);
 
     ASSERT_EQ(events_.size(), event_number + 1);
     EXPECT_EQ(events_[event_number].source().url(), kCompanyPattern);
@@ -80,6 +86,7 @@ class DlpReportingManagerTest : public testing::Test {
     EXPECT_EQ(events_[event_number].triggered_rule_name(), kRuleName);
     EXPECT_EQ(events_[event_number].triggered_rule_id(), kRuleId);
   }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void ReportEventAndCheckUser(user_manager::UserManager* user_manager,
@@ -91,8 +98,8 @@ class DlpReportingManagerTest : public testing::Test {
     user_manager->UserLoggedIn(account_id, user->username_hash(),
                                /*browser_restart=*/false, is_child);
     manager_.ReportEvent(kCompanyPattern,
-                         DlpRulesManager::Restriction::kPrinting,
-                         DlpRulesManager::Level::kBlock, kRuleName, kRuleId);
+                         Rule::Restriction::kPrinting,
+                         Rule::Level::kBlock, kRuleName, kRuleId);
     ASSERT_EQ(events_.size(), event_number + 1);
     EXPECT_EQ(events_[event_number].user_type(), DlpUserType);
     user_manager->RemoveUserFromList(account_id);
@@ -110,27 +117,29 @@ class DlpReportingManagerTest : public testing::Test {
   void ReportEventAndCheckUser(DlpPolicyEvent_UserType dlp_user_type,
                                unsigned int event_number) {
     manager_.ReportEvent(kCompanyPattern,
-                         DlpRulesManager::Restriction::kPrinting,
-                         DlpRulesManager::Level::kBlock, kRuleName, kRuleId);
+                         Rule::Restriction::kPrinting,
+                         Rule::Level::kBlock, kRuleName, kRuleId);
     ASSERT_EQ(events_.size(), event_number + 1);
     EXPECT_EQ(events_[event_number].user_type(), dlp_user_type);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
-
   std::unique_ptr<::reporting::ReportingClient::TestEnvironment>
       test_reporting_;
   DlpReportingManager manager_;
   std::vector<DlpPolicyEvent> events_;
+  base::ScopedTempDir location_;
+  uint8_t signature_verification_public_key_[reporting::kKeySize];
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::LacrosService lacros_service_;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 TEST_F(DlpReportingManagerTest, ReportEvent) {
-  manager_.ReportEvent(kCompanyPattern, DlpRulesManager::Restriction::kPrinting,
-                       DlpRulesManager::Level::kBlock, kRuleName, kRuleId);
+  manager_.ReportEvent(kCompanyPattern, Rule::Restriction::kPrinting,
+                       Rule::Level::kBlock, kRuleName, kRuleId);
 
   EXPECT_EQ(manager_.events_reported(), 1u);
   EXPECT_EQ(events_.size(), 1u);
@@ -145,8 +154,8 @@ TEST_F(DlpReportingManagerTest, ReportEvent) {
 TEST_F(DlpReportingManagerTest, ReportEventWithUrlDst) {
   const std::string dst_pattern = "*";
   manager_.ReportEvent(kCompanyPattern, dst_pattern,
-                       DlpRulesManager::Restriction::kClipboard,
-                       DlpRulesManager::Level::kBlock, kRuleName, kRuleId);
+                       Rule::Restriction::kClipboard,
+                       Rule::Level::kBlock, kRuleName, kRuleId);
 
   EXPECT_EQ(manager_.events_reported(), 1u);
   EXPECT_EQ(events_.size(), 1u);
@@ -159,31 +168,33 @@ TEST_F(DlpReportingManagerTest, ReportEventWithUrlDst) {
   EXPECT_EQ(events_[0].triggered_rule_id(), kRuleId);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(DlpReportingManagerTest, ReportEventWithComponentDst) {
-  ReportEventAndCheckComponent(data_controls::Component::kArc,
+  ReportEventAndCheckComponent(Component::kArc,
                                DlpPolicyEventDestination_Component_ARC, 0u);
-  ReportEventAndCheckComponent(data_controls::Component::kCrostini,
+  ReportEventAndCheckComponent(Component::kCrostini,
                                DlpPolicyEventDestination_Component_CROSTINI,
                                1u);
-  ReportEventAndCheckComponent(data_controls::Component::kPluginVm,
+  ReportEventAndCheckComponent(Component::kPluginVm,
                                DlpPolicyEventDestination_Component_PLUGIN_VM,
                                2u);
-  ReportEventAndCheckComponent(data_controls::Component::kUsb,
+  ReportEventAndCheckComponent(Component::kUsb,
                                DlpPolicyEventDestination_Component_USB, 3u);
-  ReportEventAndCheckComponent(data_controls::Component::kDrive,
+  ReportEventAndCheckComponent(Component::kDrive,
                                DlpPolicyEventDestination_Component_DRIVE, 4u);
-  ReportEventAndCheckComponent(data_controls::Component::kOneDrive,
+  ReportEventAndCheckComponent(Component::kOneDrive,
                                DlpPolicyEventDestination_Component_ONEDRIVE,
                                5u);
   ReportEventAndCheckComponent(
-      data_controls::Component::kUnknownComponent,
+      Component::kUnknownComponent,
       DlpPolicyEventDestination_Component_UNDEFINED_COMPONENT, 6u);
   EXPECT_EQ(manager_.events_reported(), 7u);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(DlpReportingManagerTest, ReportEventWithoutNameAndRuleId) {
-  manager_.ReportEvent(kCompanyPattern, DlpRulesManager::Restriction::kPrinting,
-                       DlpRulesManager::Level::kBlock, std::string(),
+  manager_.ReportEvent(kCompanyPattern, Rule::Restriction::kPrinting,
+                       Rule::Level::kBlock, std::string(),
                        std::string());
 
   EXPECT_EQ(manager_.events_reported(), 1u);
@@ -198,33 +209,33 @@ TEST_F(DlpReportingManagerTest, ReportEventWithoutNameAndRuleId) {
 
 TEST_F(DlpReportingManagerTest, MetricsReported) {
   base::HistogramTester histogram_tester;
-  manager_.ReportEvent(kCompanyPattern, DlpRulesManager::Restriction::kPrinting,
-                       DlpRulesManager::Level::kBlock, kRuleName, kRuleId);
+  manager_.ReportEvent(kCompanyPattern, Rule::Restriction::kPrinting,
+                       Rule::Level::kBlock, kRuleName, kRuleId);
   manager_.ReportEvent(kCompanyPattern,
-                       DlpRulesManager::Restriction::kScreenshot,
-                       DlpRulesManager::Level::kReport, kRuleName, kRuleId);
+                       Rule::Restriction::kScreenshot,
+                       Rule::Level::kReport, kRuleName, kRuleId);
   manager_.ReportEvent(kCompanyPattern,
-                       DlpRulesManager::Restriction::kUnknownRestriction,
-                       DlpRulesManager::Level::kWarn, kRuleName, kRuleId);
+                       Rule::Restriction::kUnknownRestriction,
+                       Rule::Level::kWarn, kRuleName, kRuleId);
 
   EXPECT_EQ(manager_.events_reported(), 3u);
   EXPECT_EQ(events_.size(), 3u);
   histogram_tester.ExpectUniqueSample(
-      data_controls::GetDlpHistogramPrefix() +
-          data_controls::dlp::kReportedEventStatus,
-      ::reporting::error::Code::OK, 3);
+      GetDlpHistogramPrefix() +
+          dlp::kReportedEventStatus,
+      reporting::error::Code::OK, 3);
   histogram_tester.ExpectUniqueSample(
-      data_controls::GetDlpHistogramPrefix() +
-          data_controls::dlp::kReportedBlockLevelRestriction,
-      DlpRulesManager::Restriction::kPrinting, 1);
+      GetDlpHistogramPrefix() +
+          dlp::kReportedBlockLevelRestriction,
+      Rule::Restriction::kPrinting, 1);
   histogram_tester.ExpectUniqueSample(
-      data_controls::GetDlpHistogramPrefix() +
-          data_controls::dlp::kReportedReportLevelRestriction,
-      DlpRulesManager::Restriction::kScreenshot, 1);
+      GetDlpHistogramPrefix() +
+          dlp::kReportedReportLevelRestriction,
+      Rule::Restriction::kScreenshot, 1);
   histogram_tester.ExpectUniqueSample(
-      data_controls::GetDlpHistogramPrefix() +
-          data_controls::dlp::kReportedWarnLevelRestriction,
-      DlpRulesManager::Restriction::kUnknownRestriction, 1);
+      GetDlpHistogramPrefix() +
+          dlp::kReportedWarnLevelRestriction,
+      Rule::Restriction::kUnknownRestriction, 1);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -296,9 +307,9 @@ TEST_F(DlpReportingManagerTest, UserType) {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 TEST_F(DlpReportingManagerTest, CreateEventWithUnknownRestriction) {
-  DlpPolicyEvent event = policy::CreateDlpPolicyEvent(
-      kCompanyPattern, DlpRulesManager::Restriction::kUnknownRestriction,
-      kRuleName, kRuleId, DlpRulesManager::Level::kNotSet);
+  DlpPolicyEvent event = CreateDlpPolicyEvent(
+      kCompanyPattern, Rule::Restriction::kUnknownRestriction,
+      kRuleName, kRuleId, Rule::Level::kNotSet);
   EXPECT_EQ(event.source().url(), kCompanyPattern);
   EXPECT_FALSE(event.has_destination());
   EXPECT_EQ(event.restriction(),
@@ -308,8 +319,8 @@ TEST_F(DlpReportingManagerTest, CreateEventWithUnknownRestriction) {
 
 TEST_F(DlpReportingManagerTest, CreateEventForFilesRestriction) {
   auto event_builder = DlpPolicyEventBuilder::Event(
-      kCompanyPattern, kRuleName, kRuleId, DlpRulesManager::Restriction::kFiles,
-      DlpRulesManager::Level::kAllow);
+      kCompanyPattern, kRuleName, kRuleId, Rule::Restriction::kFiles,
+      Rule::Level::kAllow);
   event_builder->SetContentName(kFilename);
 
   DlpPolicyEvent event = event_builder->Create();
@@ -326,7 +337,7 @@ TEST_F(DlpReportingManagerTest, CreateEventForFilesRestriction) {
 TEST_F(DlpReportingManagerTest, CreateEventWithEmptyRuleMetadata) {
   auto event_builder = DlpPolicyEventBuilder::Event(
       kCompanyPattern, std::string(), std::string(),
-      DlpRulesManager::Restriction::kPrinting, DlpRulesManager::Level::kBlock);
+      Rule::Restriction::kPrinting, Rule::Level::kBlock);
 
   DlpPolicyEvent event = event_builder->Create();
   EXPECT_EQ(event.source().url(), kCompanyPattern);
@@ -338,9 +349,9 @@ TEST_F(DlpReportingManagerTest, CreateEventWithEmptyRuleMetadata) {
 TEST_F(DlpReportingManagerTest, Timestamp) {
   const base::Time lower_bound = base::Time::Now();
 
-  DlpPolicyEvent event = policy::CreateDlpPolicyEvent(
-      kCompanyPattern, DlpRulesManager::Restriction::kPrinting, kRuleName,
-      kRuleId, DlpRulesManager::Level::kBlock);
+  DlpPolicyEvent event = CreateDlpPolicyEvent(
+      kCompanyPattern, Rule::Restriction::kPrinting, kRuleName,
+      kRuleId, Rule::Level::kBlock);
 
   ASSERT_TRUE(event.has_timestamp_micro());
   const base::TimeDelta time_since_epoch =
@@ -358,8 +369,8 @@ TEST_F(DlpReportingManagerTest, ReportEventError) {
                        base::ThreadPool::CreateSequencedTaskRunner({})));
   manager_.SetReportQueueForTest(std::move(report_queue));
 
-  manager_.ReportEvent(kCompanyPattern, DlpRulesManager::Restriction::kPrinting,
-                       DlpRulesManager::Level::kBlock, kRuleName, kRuleId);
+  manager_.ReportEvent(kCompanyPattern, Rule::Restriction::kPrinting,
+                       Rule::Level::kBlock, kRuleName, kRuleId);
   EXPECT_EQ(manager_.events_reported(), 0u);
   EXPECT_EQ(events_.size(), 0u);
 }
@@ -382,15 +393,13 @@ TEST_F(DlpReportingManagerTest, OnEventEnqueuedError) {
 
   manager_.SetReportQueueForTest(std::move(report_queue));
 
-  manager_.ReportEvent(kCompanyPattern, DlpRulesManager::Restriction::kPrinting,
-                       DlpRulesManager::Level::kBlock, kRuleName, kRuleId);
+  manager_.ReportEvent(kCompanyPattern, Rule::Restriction::kPrinting,
+                       Rule::Level::kBlock, kRuleName, kRuleId);
 
   EXPECT_EQ(manager_.events_reported(), 1u);
   EXPECT_EQ(events_.size(), 0u);
-  histogram_tester.ExpectUniqueSample(
-      data_controls::GetDlpHistogramPrefix() +
-          data_controls::dlp::kReportedEventStatus,
-      ::reporting::error::UNKNOWN, 1);
+  histogram_tester.ExpectUniqueSample(GetDlpHistogramPrefix() + dlp::kReportedEventStatus,
+      reporting::error::UNKNOWN, 1);
 }
 
-}  // namespace policy
+}  // namespace data_controls

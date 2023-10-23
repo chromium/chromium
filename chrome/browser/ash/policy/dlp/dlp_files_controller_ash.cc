@@ -43,9 +43,9 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -939,7 +939,7 @@ DlpFilesControllerAsh::MapFilePathToPolicyComponent(
             extension_misc::kODFSExtensionId);
     auto one_drive_file_systems =
         service->GetProvidedFileSystemInfoList(provider_id);
-    CHECK(one_drive_file_systems.size() == 1);
+    CHECK_EQ(one_drive_file_systems.size(), 1u);
 
     if (one_drive_file_systems[0].mount_path().IsParent(file_path)) {
       return data_controls::Component::kOneDrive;
@@ -1151,7 +1151,7 @@ void DlpFilesControllerAsh::MaybeReportEvent(
     return;
   }
 
-  DlpReportingManager* reporting_manager =
+  data_controls::DlpReportingManager* reporting_manager =
       rules_manager_->GetReportingManager();
   if (!reporting_manager) {
     return;
@@ -1165,12 +1165,12 @@ void DlpFilesControllerAsh::MaybeReportEvent(
     return;
   }
 
-  std::unique_ptr<DlpPolicyEventBuilder> event_builder =
+  std::unique_ptr<data_controls::DlpPolicyEventBuilder> event_builder =
       is_warning_proceeded_event
-          ? DlpPolicyEventBuilder::WarningProceededEvent(
+          ? data_controls::DlpPolicyEventBuilder::WarningProceededEvent(
                 source_pattern, rule_metadata.name, rule_metadata.obfuscated_id,
                 DlpRulesManager::Restriction::kFiles)
-          : DlpPolicyEventBuilder::Event(
+          : data_controls::DlpPolicyEventBuilder::Event(
                 source_pattern, rule_metadata.name, rule_metadata.obfuscated_id,
                 DlpRulesManager::Restriction::kFiles, level.value());
 
