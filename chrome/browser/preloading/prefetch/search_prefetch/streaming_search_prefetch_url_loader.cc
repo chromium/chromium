@@ -139,6 +139,7 @@ void StreamingSearchPrefetchURLLoader::ResponseReader::
       base::BindRepeating(
           &StreamingSearchPrefetchURLLoader::ResponseReader::OnDataHandleReady,
           base::Unretained(this)));
+  CHECK(resource_response);
   forwarding_client_->OnReceiveResponse(resource_response->Clone(),
                                         std::move(consumer_handle),
                                         /*cached_metadata=*/absl::nullopt);
@@ -665,9 +666,9 @@ void StreamingSearchPrefetchURLLoader::OnStartLoadingResponseBodyFromData() {
       MOJO_WATCH_CONDITION_SATISFIED,
       base::BindRepeating(&StreamingSearchPrefetchURLLoader::OnHandleReady,
                           weak_factory_.GetWeakPtr()));
-
+  CHECK(resource_response_);
   forwarding_client_->OnReceiveResponse(
-      std::move(resource_response_), std::move(consumer_handle), absl::nullopt);
+      resource_response_->Clone(), std::move(consumer_handle), absl::nullopt);
 
   PushData();
 }

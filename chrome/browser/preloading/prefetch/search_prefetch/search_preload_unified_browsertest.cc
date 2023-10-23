@@ -46,6 +46,9 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -208,6 +211,27 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
   const content::test::PreloadingPredictionUkmEntryBuilder&
   prediction_entry_builder() {
     return *prediction_entry_builder_;
+  }
+
+  SearchPrefetchURLLoader::RequestHandler CreatePrefetchRequestHandler(
+      const network::ResourceRequest& request) {
+    return search_prefetch_service_->TakePrefetchResponseFromMemoryCache(
+        request);
+  }
+
+  SearchPrefetchURLLoader::RequestHandler CreatePrerenderRequestHandler(
+      const network::ResourceRequest& request) {
+    return search_prefetch_service_->MaybeCreateResponseReader(request);
+  }
+
+  network::ResourceRequest CreateServingRequest(const GURL& url) {
+    network::ResourceRequest serving_request;
+    serving_request.url = url;
+    serving_request.method = "GET";
+    serving_request.transition_type =
+        ui::PageTransition::PAGE_TRANSITION_GENERATED |
+        ui ::PageTransition::PAGE_TRANSITION_FROM_ADDRESS_BAR;
+    return serving_request;
   }
 
  protected:
@@ -2186,6 +2210,123 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
   histogram_tester.ExpectBucketCount(
       "Prerender.Experimental.Search.ResponseReuseCount",
       /*prerender_serving_times*/ 1, 1);
+}
+
+// Fake URLLoader that reads the prefetched response from memory cache.
+class SearchPreloadServingTestURLLoader
+    : public network::mojom::URLLoaderClient,
+      public mojo::DataPipeDrainer::Client {
+ public:
+  SearchPreloadServingTestURLLoader() = default;
+  ~SearchPreloadServingTestURLLoader() override = default;
+
+  SearchPreloadServingTestURLLoader(const SearchPreloadServingTestURLLoader&) =
+      delete;
+  SearchPreloadServingTestURLLoader& operator=(
+      const SearchPreloadServingTestURLLoader&) = delete;
+
+  mojo::PendingReceiver<network::mojom::URLLoader>
+  BindURLloaderAndGetReceiver() {
+    return remote_.BindNewPipeAndPassReceiver();
+  }
+  mojo::PendingRemote<network::mojom::URLLoaderClient>
+  BindURLLoaderClientAndGetRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+  void DisconnectMojoPipes() {
+    remote_.reset();
+    receiver_.reset();
+  }
+
+ private:
+  // network::mojom::URLLoaderClient
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
+    NOTREACHED();
+  }
+  void OnReceiveResponse(
+      network::mojom::URLResponseHeadPtr head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override {
+    pipe_drainer_ =
+        std::make_unique<mojo::DataPipeDrainer>(this, std::move(body));
+  }
+  void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
+                         network::mojom::URLResponseHeadPtr head) override {
+    NOTREACHED();
+  }
+  void OnUploadProgress(int64_t current_position,
+                        int64_t total_size,
+                        OnUploadProgressCallback callback) override {
+    NOTREACHED();
+  }
+  void OnTransferSizeUpdated(int32_t transfer_size_diff) override { return; }
+  void OnComplete(const network::URLLoaderCompletionStatus& status) override {
+    return;
+  }
+
+  // mojo::DataPipeDrainer::Client
+  void OnDataAvailable(const void* data, size_t num_bytes) override { return; }
+  void OnDataComplete() override { return; }
+
+  mojo::Remote<network::mojom::URLLoader> remote_;
+  mojo::Receiver<network::mojom::URLLoaderClient> receiver_{this};
+  std::unique_ptr<mojo::DataPipeDrainer> pipe_drainer_;
+};
+
+// Regression test for https://crbug.com/1493229.
+IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
+                       PrerenderHandlerExecutedAfterPrefetchHandler) {
+  base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  const GURL kNavigatedUrl = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(GetActiveWebContents());
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
+  SetUpContext();
+
+  // 1. Type the query to start  prefetch.
+  std::string search_query_1 = "pre";
+  std::string prerender_query = "prerender";
+  GURL expected_prerender_url =
+      GetSearchUrl(prerender_query, UrlType::kPrerender);
+  ChangeAutocompleteResult(search_query_1, prerender_query,
+                           PrerenderHint::kDisabled, PrefetchHint::kEnabled);
+  WaitUntilStatusChangesTo(GetCanonicalSearchURL(expected_prerender_url),
+                           {SearchPrefetchStatus::kComplete});
+
+  // 2. Prepare network requests and handlers.
+  network::ResourceRequest prerender_serving_request =
+      CreateServingRequest(expected_prerender_url);
+  network::ResourceRequest prefetch_serving_request =
+      CreateServingRequest(expected_prerender_url);
+
+  SearchPrefetchURLLoader::RequestHandler prerender_serving_handler =
+      CreatePrerenderRequestHandler(prerender_serving_request);
+  if (!prerender_serving_handler) {
+    NOTREACHED() << "prerender handler should not be an empty callback!";
+  }
+  SearchPrefetchURLLoader::RequestHandler prefetch_serving_handler =
+      CreatePrefetchRequestHandler(prefetch_serving_request);
+  if (!prefetch_serving_handler) {
+    NOTREACHED() << "prefetch handler should not be an empty callback!";
+  }
+  SearchPreloadServingTestURLLoader prefetch_serving_loader;
+  SearchPreloadServingTestURLLoader prerender_serving_loader;
+
+  // 3. Execute prefetch handler callback first, this should take the prefetched
+  // result away.
+  std::move(prefetch_serving_handler)
+      .Run(prerender_serving_request,
+           prefetch_serving_loader.BindURLloaderAndGetReceiver(),
+           prefetch_serving_loader.BindURLLoaderClientAndGetRemote());
+
+  // 4. Then executed the prerender one. The test should not crash.
+  std::move(prerender_serving_handler)
+      .Run(prerender_serving_request,
+           prerender_serving_loader.BindURLloaderAndGetReceiver(),
+           prerender_serving_loader.BindURLLoaderClientAndGetRemote());
+
+  prefetch_serving_loader.DisconnectMojoPipes();
+  prerender_serving_loader.DisconnectMojoPipes();
 }
 
 // We cannot open the result in another tab on Android.
