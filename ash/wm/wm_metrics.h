@@ -68,6 +68,37 @@ constexpr char kMultiWindowResizerClickHistogramName[] =
 constexpr char kMultiWindowResizerClickTwoWindowsSnappedHistogramName[] =
     "Ash.Wm.MultiWindowResizerClickTwoWindowsSnapped";
 
+// Enum histogram metric for the number of times a window drag results in a
+// window split compared to other outcomes. Enum values from
+// `ash::WindowSplitter::DragType`.
+constexpr char kWindowSplittingDragTypeHistogramName[] =
+    "Ash.Wm.WindowSplitting.DragType";
+
+// Enum histogram metric for the window region where a window is split.
+// Enum values from `ash::WindowSplitter::SplitRegion`.
+constexpr char kWindowSplittingSplitRegionHistogramName[] =
+    "Ash.Wm.WindowSplitting.SplitRegion";
+
+// Time histogram metric for the time duration a user spends dragging when a
+// window is split.
+constexpr char kWindowSplittingDragDurationPerSplitHistogramName[] =
+    "Ash.Wm.WindowSplitting.DragDuration.PerSplit";
+
+// Time histogram metric for the time duration a user spends dragging when a
+// window is not split.
+constexpr char kWindowSplittingDragDurationPerNoSplitHistogramName[] =
+    "Ash.Wm.WindowSplitting.DragDuration.PerNoSplit";
+
+// Count histogram metric for the number of times the preview is shown when a
+// window is split.
+constexpr char kWindowSplittingPreviewsShownCountPerSplitDragHistogramName[] =
+    "Ash.Wm.WindowSplitting.PreviewsShownCount.PerSplit";
+
+// Count histogram metric for the number of times the preview is shown when a
+// window is not split.
+constexpr char kWindowSplittingPreviewsShownCountPerNoSplitDragHistogramName[] =
+    "Ash.Wm.WindowSplitting.PreviewsShownCount.PerNoSplit";
+
 }  // namespace ash
 
 #endif  // ASH_WM_WM_METRICS_H_

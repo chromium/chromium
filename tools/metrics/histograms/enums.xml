@@ -118393,6 +118393,20 @@ Called by update_scheduler_enums.py.-->
   <int value="1247871240" label="Windows 10 2004 (Build 19041.264)"/>
 </enum>
 
+<enum name="WindowSplittingDragType">
+  <int value="0" label="Incomplete drag"/>
+  <int value="1" label="No window split"/>
+  <int value="2" label="Has window split"/>
+</enum>
+
+<enum name="WindowSplittingSplitRegion">
+  <int value="0" label="No split"/>
+  <int value="1" label="Split left"/>
+  <int value="2" label="Split right"/>
+  <int value="3" label="Split top"/>
+  <int value="4" label="Split bottom"/>
+</enum>
+
 <enum name="WindowsServiceStatus">
   <obsolete>
     Removed in M96.

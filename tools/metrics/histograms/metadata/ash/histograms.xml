@@ -7904,6 +7904,59 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Wm.WindowSplitting.DragDuration.PerNoSplit" units="ms"
+    expires_after="2024-09-29">
+  <owner>aluh@chromium.org</owner>
+  <owner>homi@chromium.org</owner>
+  <summary>
+    Records the time duration a user spends dragging when a window is not split.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Wm.WindowSplitting.DragDuration.PerSplit" units="ms"
+    expires_after="2024-09-29">
+  <owner>aluh@chromium.org</owner>
+  <owner>homi@chromium.org</owner>
+  <summary>
+    Records the time duration a user spends dragging when a window is split.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Wm.WindowSplitting.DragType"
+    enum="WindowSplittingDragType" expires_after="2024-09-29">
+  <owner>aluh@chromium.org</owner>
+  <owner>homi@chromium.org</owner>
+  <summary>
+    Records the number of times a window drag results in a window split compared
+    to other outcomes.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Wm.WindowSplitting.PreviewsShownCount.PerNoSplit"
+    units="previews" expires_after="2024-09-29">
+  <owner>aluh@chromium.org</owner>
+  <owner>homi@chromium.org</owner>
+  <summary>
+    Records the number of times the preview is shown when a window is not split.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Wm.WindowSplitting.PreviewsShownCount.PerSplit"
+    units="previews" expires_after="2024-09-29">
+  <owner>aluh@chromium.org</owner>
+  <owner>homi@chromium.org</owner>
+  <summary>
+    Records the number of times the preview is shown when a window is split.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Wm.WindowSplitting.SplitRegion"
+    enum="WindowSplittingSplitRegion" expires_after="2024-09-29">
+  <owner>aluh@chromium.org</owner>
+  <owner>homi@chromium.org</owner>
+  <summary>Records the window region where a window is split.</summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
