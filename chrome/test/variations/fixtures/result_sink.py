@@ -27,6 +27,13 @@ Args:
 """
 AddArtifact = Callable[[str, str], None]
 
+"""Associates a tag with the current test.
+
+Args:
+  tag_key: The tag key
+  tag_value: The string value of the tag.
+"""
+AddTag = Callable[[str, str], None]
 
 _RESULT_TYPES = {
   'passed': result_types.PASS,
@@ -69,6 +76,7 @@ def _extract_tags_from_properties(
     if sec == _PROPERTY_SECTION_TAG
   ]
 
+
 def _extract_artifacts_from_properties(
     properties: List[Tuple[str, Tuple[str, str]]]) -> Mapping[str, Any]:
   """Extracts a dict for artifacts attributes.
@@ -100,6 +108,16 @@ def add_artifact(request: pytest.FixtureRequest) -> AddArtifact:
     assert os.path.exists(file_path)
     request.node.user_properties.append(
       (_PROPERTY_SECTION_ARTIFACT, (artifact_name, file_path)))
+  return add
+
+
+@pytest.fixture
+def add_tag(request: pytest.FixtureRequest) -> AddTag:
+  """Fixture for adding a user defined tag to the current test case."""
+  def add(tag_key: str, tag_value: str) -> None:
+    request.node.user_properties.append(
+      _PROPERTY_SECTION_TAG, (tag_key, tag_value)
+    )
   return add
 
 
