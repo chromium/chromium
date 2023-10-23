@@ -174,8 +174,9 @@ LacrosAvailability GetLacrosAvailability(const user_manager::User* user,
       // See also LacrosAvailabilityPolicyObserver how it will be propergated.
       return ash::standalone_browser::
           DetermineLacrosAvailabilityFromPolicyValue(
-              user, base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-                        kLacrosAvailabilityPolicySwitch));
+              user,
+              base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+                  ash::standalone_browser::kLacrosAvailabilityPolicySwitch));
 
     case PolicyInitState::kAfterInit:
       // If policy initialization is done, the calculated value should be
@@ -376,19 +377,6 @@ const char kLacrosStabilityChannelStable[] = "stable";
 const char kLacrosSelectionSwitch[] = "lacros-selection";
 const char kLacrosSelectionRootfs[] = "rootfs";
 const char kLacrosSelectionStateful[] = "stateful";
-
-// The internal name in about_flags.cc for the lacros-availablility-policy
-// config.
-const char kLacrosAvailabilityPolicyInternalName[] =
-    "lacros-availability-policy";
-
-// The commandline flag name of lacros-availability-policy.
-// The value should be the policy value as defined just below.
-// The values need to be consistent with kLacrosAvailabilityMap above.
-const char kLacrosAvailabilityPolicySwitch[] = "lacros-availability-policy";
-const char kLacrosAvailabilityPolicyUserChoice[] = "user_choice";
-const char kLacrosAvailabilityPolicyLacrosDisabled[] = "lacros_disabled";
-const char kLacrosAvailabilityPolicyLacrosOnly[] = "lacros_only";
 
 const char kLaunchOnLoginPref[] = "lacros.launch_on_login";
 // Marks the Chrome version at which profile migration was completed.

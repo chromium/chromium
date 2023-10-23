@@ -15,7 +15,6 @@ class User;
 }
 
 namespace ash::standalone_browser {
-
 // Represents the policy indicating how to launch Lacros browser, named
 // LacrosAvailability. The values shall be consistent with the controlling
 // policy.
@@ -29,6 +28,21 @@ enum class LacrosAvailability {
   // Indicates that Lacros (if allowed) is the only available browser.
   kLacrosOnly = 4
 };
+
+// The internal name in about_flags.cc for the lacros-availablility-policy
+// config.
+inline constexpr char kLacrosAvailabilityPolicyInternalName[] =
+    "lacros-availability-policy";
+
+// The commandline flag name of lacros-availability-policy.
+// The value should be the policy value as defined just below.
+// The values need to be consistent with kLacrosAvailabilityMap above.
+inline constexpr char kLacrosAvailabilityPolicySwitch[] =
+    "lacros-availability-policy";
+inline constexpr char kLacrosAvailabilityPolicyUserChoice[] = "user_choice";
+inline constexpr char kLacrosAvailabilityPolicyLacrosDisabled[] =
+    "lacros_disabled";
+inline constexpr char kLacrosAvailabilityPolicyLacrosOnly[] = "lacros_only";
 
 // When this feature is enabled, Lacros is allowed to roll out by policy to
 // Googlers.

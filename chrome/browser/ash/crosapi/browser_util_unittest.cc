@@ -242,8 +242,9 @@ TEST_F(BrowserUtilTest, IsLacrosEnabledForMigrationBeforePolicyInit) {
   // Sets command line flag to emulate the situation where the Chrome
   // restart happens.
   base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-  cmdline->AppendSwitchASCII(browser_util::kLacrosAvailabilityPolicySwitch,
-                             browser_util::kLacrosAvailabilityPolicyLacrosOnly);
+  cmdline->AppendSwitchASCII(
+      ash::standalone_browser::kLacrosAvailabilityPolicySwitch,
+      ash::standalone_browser::kLacrosAvailabilityPolicyLacrosOnly);
 
   EXPECT_TRUE(browser_util::IsLacrosEnabledForMigration(
       user, browser_util::PolicyInitState::kBeforeInit));
@@ -351,8 +352,9 @@ TEST_F(BrowserUtilTest, IsAshWebBrowserEnabledForMigration) {
   // Sets command line flag to emulate the situation where the Chrome
   // restart happens.
   base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-  cmdline->AppendSwitchASCII(browser_util::kLacrosAvailabilityPolicySwitch,
-                             browser_util::kLacrosAvailabilityPolicyLacrosOnly);
+  cmdline->AppendSwitchASCII(
+      ash::standalone_browser::kLacrosAvailabilityPolicySwitch,
+      ash::standalone_browser::kLacrosAvailabilityPolicyLacrosOnly);
 
   // Ash browser is disabled if LacrosOnly is enabled.
   EXPECT_FALSE(browser_util::IsAshWebBrowserEnabledForMigration(

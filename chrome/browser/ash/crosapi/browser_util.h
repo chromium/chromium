@@ -169,13 +169,6 @@ extern const char kLacrosSelectionSwitch[];
 extern const char kLacrosSelectionRootfs[];
 extern const char kLacrosSelectionStateful[];
 
-// A command-line switch that is converted and set via the feature flag.
-extern const char kLacrosAvailabilityPolicyInternalName[];
-extern const char kLacrosAvailabilityPolicySwitch[];
-extern const char kLacrosAvailabilityPolicyUserChoice[];
-extern const char kLacrosAvailabilityPolicyLacrosDisabled[];
-extern const char kLacrosAvailabilityPolicyLacrosOnly[];
-
 // The internal name in about_flags.cc for the `LacrosDataBackwardMigrationMode`
 // policy.
 inline constexpr const char

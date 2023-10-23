@@ -279,6 +279,7 @@
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/components/login/hibernate/hibernate_manager.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
+#include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "components/app_restore/features.h"
@@ -1123,15 +1124,15 @@ const char kLacrosSelectionPolicyIgnoreInternalName[] =
 
 const FeatureEntry::Choice kLacrosAvailabilityPolicyChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {crosapi::browser_util::kLacrosAvailabilityPolicyUserChoice,
-     crosapi::browser_util::kLacrosAvailabilityPolicySwitch,
-     crosapi::browser_util::kLacrosAvailabilityPolicyUserChoice},
-    {crosapi::browser_util::kLacrosAvailabilityPolicyLacrosDisabled,
-     crosapi::browser_util::kLacrosAvailabilityPolicySwitch,
-     crosapi::browser_util::kLacrosAvailabilityPolicyLacrosDisabled},
-    {crosapi::browser_util::kLacrosAvailabilityPolicyLacrosOnly,
-     crosapi::browser_util::kLacrosAvailabilityPolicySwitch,
-     crosapi::browser_util::kLacrosAvailabilityPolicyLacrosOnly},
+    {ash::standalone_browser::kLacrosAvailabilityPolicyUserChoice,
+     ash::standalone_browser::kLacrosAvailabilityPolicySwitch,
+     ash::standalone_browser::kLacrosAvailabilityPolicyUserChoice},
+    {ash::standalone_browser::kLacrosAvailabilityPolicyLacrosDisabled,
+     ash::standalone_browser::kLacrosAvailabilityPolicySwitch,
+     ash::standalone_browser::kLacrosAvailabilityPolicyLacrosDisabled},
+    {ash::standalone_browser::kLacrosAvailabilityPolicyLacrosOnly,
+     ash::standalone_browser::kLacrosAvailabilityPolicySwitch,
+     ash::standalone_browser::kLacrosAvailabilityPolicyLacrosOnly},
 };
 
 const FeatureEntry::Choice kLacrosDataBackwardMigrationModePolicyChoices[] = {
@@ -4359,7 +4360,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableSuspendToDiskAllowS4Description, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSuspendToDiskAllowS4)},
     // Used to carry the policy value crossing the Chrome process lifetime.
-    {crosapi::browser_util::kLacrosAvailabilityPolicyInternalName, "", "",
+    {ash::standalone_browser::kLacrosAvailabilityPolicyInternalName, "", "",
      kOsCrOS, MULTI_VALUE_TYPE(kLacrosAvailabilityPolicyChoices)},
     // Used to carry the policy value crossing the Chrome process lifetime.
     {crosapi::browser_util::kLacrosDataBackwardMigrationModePolicyInternalName,
@@ -11197,7 +11198,7 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
 
   // Skip lacros-availability-policy always. This is a pseudo entry
   // and used to carry the policy value crossing the Chrome's lifetime.
-  if (!strcmp(crosapi::browser_util::kLacrosAvailabilityPolicyInternalName,
+  if (!strcmp(ash::standalone_browser::kLacrosAvailabilityPolicyInternalName,
               entry.internal_name)) {
     return true;
   }
