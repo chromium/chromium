@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -65,7 +66,8 @@ public class SendTabToSelfCoordinatorTest {
 
     @Test
     @LargeTest
-    @DisabledTest(message = "https://crbug.com/1302062")
+    // TODO(crbug.com/1302062): Flaky on Nexus 5x (bullhead).
+    @DisableIf.Build(hardware_is = "bullhead")
     public void testShowSigninPromoIfSignedOut() {
         // An account must be added to the device so the promo is offered.
         mSyncTestRule.addTestAccount();
