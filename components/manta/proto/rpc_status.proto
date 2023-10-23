@@ -1,0 +1,40 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+
+package manta.proto;
+
+// This should be google.protobuf.Any, but Chromium now cannot import well known
+// protos.
+message Proto3Any {
+  string type_url = 1;
+  bytes value = 2;
+}
+
+// This forks google.rpc.Status.
+message RpcStatus {
+  int32 code = 1;
+  string message = 2;
+  repeated Proto3Any details = 3;
+}
+
+// This forks google.rpc.ErrorInfo.
+message RpcErrorInfo {
+  string reason = 1;
+  string domain = 2;
+  map<string, string> metadata = 3;
+}
+
+// This forks google.rpc.LocalizedMessage.
+message RpcLocalizedMessage {
+  // The locale used following the specification defined at
+  // https://www.rfc-editor.org/rfc/bcp/bcp47.txt.
+  // Examples are: "en-US", "fr-CH", "es-MX"
+  string locale = 1;
+
+  // The localized error message in the above locale.
+  string message = 2;
+}
