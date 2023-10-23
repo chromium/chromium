@@ -6,9 +6,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -179,11 +177,13 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest, ModalCanceled) {
       PlusAddressCreationControllerDesktop::FromWebContents(web_contents.get());
   controller->set_suppress_ui_for_testing(true);
 
-  base::MockOnceCallback<void(const std::string&)> callback;
-  EXPECT_CALL(callback, Run).Times(0);
+  base::test::TestFuture<const std::string&> future;
   controller->OfferCreation(
-      url::Origin::Create(GURL("https://mattwashere.example")), callback.Get());
+      url::Origin::Create(GURL("https://mattwashere.example")),
+      future.GetCallback());
   controller->OnCanceled();
+  EXPECT_FALSE(future.IsReady());
+
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
       BucketsAre(
@@ -219,10 +219,11 @@ TEST_F(PlusAddressCreationControllerDesktopDisabledTest, NullService) {
       PlusAddressCreationControllerDesktop::FromWebContents(web_contents.get());
   controller->set_suppress_ui_for_testing(true);
 
-  base::MockOnceCallback<void(const std::string&)> callback;
-  EXPECT_CALL(callback, Run).Times(0);
+  base::test::TestFuture<const std::string&> future;
   controller->OfferCreation(
-      url::Origin::Create(GURL("https://mattwashere.example")), callback.Get());
+      url::Origin::Create(GURL("https://mattwashere.example")),
+      future.GetCallback());
   controller->OnConfirmed();
+  EXPECT_FALSE(future.IsReady());
 }
 }  // namespace plus_addresses

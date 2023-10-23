@@ -6,9 +6,8 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -90,11 +89,12 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, DirectCallback) {
       PlusAddressCreationControllerAndroid::FromWebContents(web_contents.get());
   controller->set_suppress_ui_for_testing(true);
 
-  base::MockOnceCallback<void(const std::string&)> callback;
-  EXPECT_CALL(callback, Run).Times(1);
+  base::test::TestFuture<const std::string&> future;
   controller->OfferCreation(
-      url::Origin::Create(GURL("https://mattwashere.example")), callback.Get());
+      url::Origin::Create(GURL("https://mattwashere.example")),
+      future.GetCallback());
   controller->OnConfirmed();
+  EXPECT_TRUE(future.IsReady());
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
       BucketsAre(
@@ -114,11 +114,12 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ModalCanceled) {
       PlusAddressCreationControllerAndroid::FromWebContents(web_contents.get());
   controller->set_suppress_ui_for_testing(true);
 
-  base::MockOnceCallback<void(const std::string&)> callback;
-  EXPECT_CALL(callback, Run).Times(0);
+  base::test::TestFuture<const std::string&> future;
   controller->OfferCreation(
-      url::Origin::Create(GURL("https://mattwashere.example")), callback.Get());
+      url::Origin::Create(GURL("https://mattwashere.example")),
+      future.GetCallback());
   controller->OnCanceled();
+  EXPECT_FALSE(future.IsReady());
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
       BucketsAre(
@@ -158,11 +159,11 @@ TEST_F(PlusAddressCreationControllerAndroidDisabledTest, ConfirmedNullService) {
       PlusAddressCreationControllerAndroid::FromWebContents(web_contents.get());
   controller->set_suppress_ui_for_testing(true);
 
-  base::MockOnceCallback<void(const std::string&)> callback;
-  EXPECT_CALL(callback, Run).Times(0);
+  base::test::TestFuture<const std::string&> future;
   controller->OfferCreation(url::Origin::Create(GURL("https://test.example")),
-                            callback.Get());
+                            future.GetCallback());
   controller->OnConfirmed();
+  EXPECT_FALSE(future.IsReady());
 }
 
 }  // namespace plus_addresses

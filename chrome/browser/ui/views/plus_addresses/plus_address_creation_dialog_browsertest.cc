@@ -4,7 +4,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogTest, BasicUiVerify) {
 IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogTest, DoubleInit) {
   // First, show the UI normally.
   ShowUi(std::string());
-  base::MockOnceCallback<void(const std::string&)> callback;
+  base::test::TestFuture<const std::string&> future;
 
   // Then, manually re-trigger the UI, while the modal is still open, passing
   // another callback. The second callback should not be run on confirmation in
@@ -115,10 +115,10 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogTest, DoubleInit) {
       PlusAddressCreationController::GetOrCreate(
           browser()->tab_strip_model()->GetActiveWebContents());
   controller->OfferCreation(url::Origin::Create(GURL("https://test.example")),
-                            callback.Get());
+                            future.GetCallback());
 
-  EXPECT_CALL(callback, Run).Times(0);
   controller->OnConfirmed();
+  EXPECT_FALSE(future.IsReady());
 }
 
 }  // namespace plus_addresses
