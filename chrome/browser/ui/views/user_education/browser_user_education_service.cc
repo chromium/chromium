@@ -596,7 +596,7 @@ void MaybeRegisterChromeFeaturePromos(
       FeaturePromoSpecification::CreateForTutorialPromo(
           feature_engagement::kIPHSideSearchFeature, kSideSearchButtonElementId,
           IDS_SIDE_SEARCH_PROMO, kSideSearchTutorialId)
-          .SetBubbleArrow(HelpBubbleArrow::kBottomCenter)
+          .SetBubbleArrow(HelpBubbleArrow::kTopCenter)
           .SetBubbleIcon(&vector_icons::kLightbulbOutlineIcon)));
 
   // kIPHTabSearchFeature:
@@ -878,12 +878,12 @@ void MaybeRegisterChromeTutorials(
             // 1st bubble appears and prompts users to open side search
             BubbleStep(kSideSearchButtonElementId)
                 .SetBubbleBodyText(IDS_SIDE_SEARCH_TUTORIAL_OPEN_SIDE_PANEL)
-                .SetBubbleArrow(HelpBubbleArrow::kBottomCenter),
+                .SetBubbleArrow(HelpBubbleArrow::kTopCenter),
 
             // 2nd bubble appears and prompts users to open a link
             BubbleStep(kSideSearchWebViewElementId)
                 .SetBubbleBodyText(IDS_SIDE_SEARCH_TUTORIAL_OPEN_A_LINK_TO_TAB)
-                .SetBubbleArrow(HelpBubbleArrow::kLeftCenter),
+                .SetBubbleArrow(HelpBubbleArrow::kRightCenter),
 
             // Hidden step that detects a link is pressed
             EventStep(kSideSearchResultsClickedCustomEventId,
