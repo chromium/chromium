@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/core/dom/create_element_flags.h"
 #include "third_party/blink/renderer/core/dom/document_encoding_data.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
+#include "third_party/blink/renderer/core/dom/document_part_root.h"
 #include "third_party/blink/renderer/core/dom/document_timing.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
@@ -155,7 +156,6 @@ class DocumentLoader;
 class DocumentMarkerController;
 class DocumentNameCollection;
 class DocumentParser;
-class DocumentPartRoot;
 class DocumentResourceCoordinator;
 class DocumentState;
 class DocumentTimeline;

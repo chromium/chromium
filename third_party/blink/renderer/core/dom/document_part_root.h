@@ -7,12 +7,12 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
-#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/part_root.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
 
+class Document;
 class PartRootCloneOptions;
 
 // Implementation of the DocumentPartRoot class, which is part of the DOM Parts
