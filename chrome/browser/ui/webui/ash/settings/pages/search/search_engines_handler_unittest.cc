@@ -29,12 +29,13 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
               (override));
 };
 
-class SearchEnginesHandlerTest : public testing::Test {
+class SearchEnginesHandlerAshTest : public testing::Test {
  public:
-  SearchEnginesHandlerTest() = default;
-  SearchEnginesHandlerTest(const SearchEnginesHandlerTest&) = delete;
-  SearchEnginesHandlerTest& operator=(const SearchEnginesHandlerTest&) = delete;
-  ~SearchEnginesHandlerTest() override = default;
+  SearchEnginesHandlerAshTest() = default;
+  SearchEnginesHandlerAshTest(const SearchEnginesHandlerAshTest&) = delete;
+  SearchEnginesHandlerAshTest& operator=(const SearchEnginesHandlerAshTest&) =
+      delete;
+  ~SearchEnginesHandlerAshTest() override = default;
 
   void SetUp() override {
     // Initialize profile.
@@ -79,7 +80,7 @@ class SearchEnginesHandlerTest : public testing::Test {
   std::unique_ptr<TestNewWindowDelegateProvider> new_window_provider_;
 };
 
-TEST_F(SearchEnginesHandlerTest, OpenBrowserSearchSettings) {
+TEST_F(SearchEnginesHandlerAshTest, OpenBrowserSearchSettings) {
   EXPECT_CALL(
       *new_window_delegate_primary_,
       OpenUrl(

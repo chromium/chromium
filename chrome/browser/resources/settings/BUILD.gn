@@ -179,6 +179,7 @@ build_webui("build") {
     "search_engines_page/search_engine_entry.ts",
     "search_engines_page/search_engines_list.ts",
     "search_engines_page/search_engines_page.ts",
+    "search_page/search_engine_list_dialog.ts",
     "search_page/search_page.ts",
     "settings_main/settings_main.ts",
     "settings_menu/settings_menu.ts",

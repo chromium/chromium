@@ -15,8 +15,15 @@
 
   .search-engine-name {
     margin-inline-end: auto;
-    margin-inline-start: 12px;
   }
+
+  .search-engine {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+  }
+
 </style>
 <settings-animated-pages id="pages" section="search"
     focus-config="[[focusConfig_]]">
@@ -46,10 +53,18 @@
                 url="[[defaultSearchEngine_.url]]">
             </site-favicon>
             <div class="search-engine-name">[[defaultSearchEngine_.name]]</div>
-            <cr-button disabled$="[[isDefaultSearchEngineEnforced_(
-                prefs.default_search_provider_data.template_url_data)]]">
+            <cr-button id="openDialogButton"
+                on-click="onOpenDialogButtonClick_"
+                disabled$="[[isDefaultSearchEngineEnforced_(
+                    prefs.default_search_provider_data.template_url_data)]]">
               $i18n{searchEnginesChange}
             </cr-button>
+            <template is="dom-if" if="[[showSearchEngineListDialog_]]" restamp>
+              <settings-search-engine-list-dialog
+                  search-engines="[[searchEngines_]]"
+                  on-close="onSearchEngineListDialogClose_">
+              </settings-search-engine-list-dialog>
+            </template>
           </div>
         </div>
       </template>
