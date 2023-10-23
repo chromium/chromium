@@ -64,9 +64,11 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
+import org.chromium.chrome.browser.bookmarks.BookmarkMetrics.BookmarkManagerFilter;
 import org.chromium.chrome.browser.bookmarks.BookmarkRow.Location;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
@@ -1840,21 +1842,35 @@ public class BookmarkManagerMediatorTest {
     public void testSearchBox_priceTrackingFilterClicked() {
         finishLoading();
 
-        mMediator.openFolder(mMobileFolderId);
+        try (HistogramWatcher ignored =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Bookmarks.MobileBookmarkManager.FilterShown",
+                        BookmarkManagerFilter.SHOPPING)) {
+            mMediator.openFolder(mMobileFolderId);
+        }
 
         assertEquals(2, mModelList.size());
         assertEquals(ViewType.SEARCH_BOX, mModelList.get(0).type);
 
         PropertyModel model = mModelList.get(0).model;
         assertTrue(model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY));
-        model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TOGGLE_CALLBACK).onResult(true);
+        try (HistogramWatcher ignored =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Bookmarks.MobileBookmarkManager.FilterUsed2",
+                        BookmarkManagerFilter.SHOPPING)) {
+            model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TOGGLE_CALLBACK).onResult(true);
+        }
 
         // The price-tracked bookmark item should still be there.
         assertEquals(2, mModelList.size());
 
         model = mModelList.get(0).model;
-        model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TOGGLE_CALLBACK).onResult(false);
-
+        try (HistogramWatcher ignored =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Bookmarks.MobileBookmarkManager.FilterUsed2",
+                        BookmarkManagerFilter.SHOPPING)) {
+            model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TOGGLE_CALLBACK).onResult(false);
+        }
         // Going back should still show the one bookmark.
         assertEquals(2, mModelList.size());
     }

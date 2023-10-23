@@ -1546,6 +1546,10 @@ class BookmarkManagerMediator
         if (!filterVisible && powerFilter.contains(PowerBookmarkType.SHOPPING)) {
             onShoppingFilterToggle(false);
         }
+
+        if (filterVisible) {
+            BookmarkMetrics.reportBookmarkManagerFilterShown(BookmarkManagerFilter.SHOPPING);
+        }
     }
 
     // Testing methods.
