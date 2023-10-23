@@ -99,7 +99,7 @@ BASE_FEATURE(kScreenCaptureKitMac,
 // feature has no effect if kScreenCaptureKitMac is enabled.
 BASE_FEATURE(kScreenCaptureKitMacWindow,
              "ScreenCaptureKitMacWindow",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If this feature is enabled, ScreenCaptureKit will be used for screen
 // capturing even if kScreenCaptureKitMac is disabled. Please note that this
