@@ -34,12 +34,13 @@ class MockThreatDetails : public ThreatDetails {
   MockThreatDetails& operator=(const MockThreatDetails&) = delete;
 
   ~MockThreatDetails() override {}
-  MOCK_METHOD3(
+  MOCK_METHOD4(
       FinishCollection,
       void(bool did_proceed,
            int num_visits,
            std::unique_ptr<security_interstitials::InterstitialInteractionMap>
-               interstitial_interactions));
+               interstitial_interactions,
+           absl::optional<int64_t> warning_shown_ts));
 };
 
 class MockThreatDetailsFactory : public ThreatDetailsFactory {
@@ -137,7 +138,7 @@ class TriggerManagerTest : public ::testing::Test {
       MockThreatDetails* threat_details = static_cast<MockThreatDetails*>(
           trigger_manager_.data_collectors_map_[web_contents_key]
               .threat_details.get());
-      EXPECT_CALL(*threat_details, FinishCollection(_, _, _)).Times(1);
+      EXPECT_CALL(*threat_details, FinishCollection(_, _, _, _)).Times(1);
     }
     SBErrorOptions options =
         TriggerManager::GetSBErrorDisplayOptions(pref_service_, web_contents);

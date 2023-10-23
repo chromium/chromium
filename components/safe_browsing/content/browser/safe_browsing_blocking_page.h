@@ -170,6 +170,8 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
   // Triggers trust and safety sentiment service when interstitial closes.
   base::OnceCallback<void(bool, SBThreatType)>
       trust_safety_sentiment_service_trigger_ = base::NullCallback();
+  // Timestamp of when the safe browsing blocking page was shown to the user.
+  int64_t warning_shown_ts_;
 };
 
 }  // namespace safe_browsing
