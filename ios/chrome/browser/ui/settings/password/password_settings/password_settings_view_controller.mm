@@ -460,8 +460,6 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
       UIAccessibilityTraitButton;
   _bulkMovePasswordsToAccountButtonItem.accessibilityIdentifier =
       kPasswordSettingsBulkMovePasswordsToAccountButtonTableViewId;
-  _bulkMovePasswordsToAccountButtonItem.accessibilityTraits |=
-      UIAccessibilityTraitLink;
   return _bulkMovePasswordsToAccountButtonItem;
 }
 
