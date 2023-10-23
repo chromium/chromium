@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
+#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/url_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -57,7 +58,7 @@ const char* kDomainsWithPathDenylist[][2] = {
 };
 
 const char* kAppIdDenylist[] = {
-    "fkiggjmkendpmbegkagpmagjepfkpmeb",  //  Files App
+    file_manager::kFileManagerSwaAppId,
 };
 
 constexpr int kTextLengthMaxLimit = 8000;
