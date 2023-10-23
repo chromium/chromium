@@ -114,7 +114,7 @@ TimeDelta g_high_res_timer_usage;
 TimeTicks g_high_res_timer_last_activation;
 // The lock to control access to the above set of variables.
 Lock* GetHighResLock() {
-  static auto* lock = new Lock();
+  static auto* lock = new Lock("Time::GetHighResLock");
   return lock;
 }
 
@@ -279,6 +279,7 @@ bool Time::ActivateHighResolutionTimer(bool activating) {
   const uint32_t max = std::numeric_limits<uint32_t>::max();
 
   AutoLock lock(*GetHighResLock());
+  recordreplay::Assert("[RUN-1916-2726] Time::ActivateHighResolutionTimer %d %u", activating, g_high_res_timer_count);
   if (activating) {
     DCHECK_NE(g_high_res_timer_count, max);
     ++g_high_res_timer_count;
