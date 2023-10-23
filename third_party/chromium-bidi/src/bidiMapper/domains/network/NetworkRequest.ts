@@ -259,7 +259,7 @@ export class NetworkRequest {
         mimeType: '',
         // TODO: populate.
         bytesReceived: 0,
-        headersSize: computeResponseHeadersSize(headers),
+        headersSize: computeResponseHeadersSize(headers), // TODO: Should this be computeRequestHeadersSize?
         // TODO: consider removing from spec.
         bodySize: 0,
         // TODO: consider removing from spec.
@@ -361,8 +361,8 @@ export class NetworkRequest {
   /** Returns the HTTP status code associated with this request if any. */
   get statusCode(): number {
     return (
-      this.#response.extraInfo?.statusCode ??
       this.#response.info?.response.status ??
+      this.#response.extraInfo?.statusCode ??
       200 // TODO: Throw an exception or use some other status code?
     );
   }

@@ -312,7 +312,7 @@ async def test_continue_response_completes_use_cdp_events(
                     },
                 }, ],
                 "url": example_url,
-                "status": 200,  # TODO: Update status code to 501?
+                "status": 501,
                 "statusText": "Remember to drink water",
             }),
             "timestamp": ANY_TIMESTAMP,
@@ -413,7 +413,7 @@ async def test_continue_response_completes_use_bidi_events(
                     },
                 }, ],
                 "url": example_url,
-                "status": 200,  # TODO: Update status code to 501?
+                "status": 501,
                 "statusText": "Remember to drink water",
             }),
             "timestamp": ANY_TIMESTAMP,
