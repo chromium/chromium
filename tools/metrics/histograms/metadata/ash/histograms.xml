@@ -6307,6 +6307,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.ShortcutCustomization.CustomizationsBeforeResetAll"
+    units="count" expires_after="2024-08-17">
+  <owner>jimmyxgong@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Record the number of customizations before the user resets their shortcuts
+    to default.
+  </summary>
+</histogram>
+
 <histogram name="Ash.ShortcutCustomization.CustomizationsLoadedOnStartup"
     units="count" expires_after="2024-08-17">
   <owner>jimmyxgong@chromium.org</owner>

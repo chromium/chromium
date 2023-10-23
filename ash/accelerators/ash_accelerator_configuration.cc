@@ -209,13 +209,9 @@ void AshAcceleratorConfiguration::OnActiveUserPrefServiceChanged(
   accelerator_overrides_ =
       pref_service->GetDict(prefs::kShortcutCustomizationOverrides).Clone();
 
-  // Count the total number of modifications and store the histogram.
-  int num_entries = 0;
-  for (const auto entry : accelerator_overrides_) {
-    num_entries += entry.second.GetList().size();
-  }
   base::UmaHistogramCounts1000(
-      "Ash.ShortcutCustomization.CustomizationsLoadedOnStartup", num_entries);
+      "Ash.ShortcutCustomization.CustomizationsLoadedOnStartup",
+      GetTotalNumberOfModifications());
 
   // Reset to default first.
   ResetAllAccelerators();
@@ -370,6 +366,10 @@ AcceleratorConfigResult AshAcceleratorConfiguration::RestoreDefault(
 }
 
 AcceleratorConfigResult AshAcceleratorConfiguration::RestoreAllDefaults() {
+  base::UmaHistogramCounts1000(
+      "Ash.ShortcutCustomization.CustomizationsBeforeResetAll",
+      GetTotalNumberOfModifications());
+
   ResetAllAccelerators();
 
   // Clear the prefs to be back to default.
@@ -822,6 +822,14 @@ void AshAcceleratorConfiguration::ResetAllAccelerators() {
 
   deprecated_accelerators_to_id_ = default_deprecated_accelerators_to_id_cache_;
   actions_with_deprecations_ = default_actions_with_deprecations_cache_;
+}
+
+int AshAcceleratorConfiguration::GetTotalNumberOfModifications() {
+  int num_entries = 0;
+  for (const auto entry : accelerator_overrides_) {
+    num_entries += entry.second.GetList().size();
+  }
+  return num_entries;
 }
 
 }  // namespace ash

@@ -178,6 +178,9 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration,
   // Resets all accelerator mappings to the the system default.
   void ResetAllAccelerators();
 
+  // Returns the total number of customizations for all accelerators.
+  int GetTotalNumberOfModifications();
+
   // A local copy of the pref overrides, allows modifying the overrides before
   // updating the override pref.
   base::Value::Dict accelerator_overrides_;
