@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/metrics/form_events/form_event_logger_base.h"
 
-#include "base/containers/enum_set.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -12,11 +11,9 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/form_parsing/form_field.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
-#include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
@@ -206,7 +203,6 @@ void FormEventLoggerBase::OnFormSubmitted(
   has_logged_submitted_ = true;
 
   LogFormSubmitted(form);
-  LogImpactOfHeuristicsThreshold(form);
 
   if (has_logged_suggestions_shown_) {
     Log(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, form);
@@ -507,51 +503,6 @@ void FormEventLoggerBase::RecordAblationMetrics() const {
           base::Minutes(10), 50);
     }
   }
-}
-
-// TODO(crbug.com/1352826): Remove this after investigating the impact.
-void FormEventLoggerBase::LogImpactOfHeuristicsThreshold(
-    const FormStructure& form) {
-  size_t num_fields_classified_by_local_heuristic = 0;
-  base::EnumSet<ServerFieldType, NO_SERVER_DATA, MAX_VALID_FIELD_TYPE>
-      heuristic_types;
-  // Whether the final type would have changed for at least one field if we
-  // applied the stricter heuristic.
-  bool type_would_have_changed = false;
-  for (const auto& field : form) {
-    if (field->heuristic_type() == UNKNOWN_TYPE)
-      continue;
-    num_fields_classified_by_local_heuristic++;
-    heuristic_types.Put(field->heuristic_type());
-    type_would_have_changed |=
-        field->server_type() == NO_SERVER_DATA &&
-        field->html_type() == HtmlFieldType::kUnspecified &&
-        field->heuristic_type() != EMAIL_ADDRESS &&
-        !FormField::IsSingleFieldParseableType(field->heuristic_type());
-  }
-
-  bool relevant_form =
-      // We only consider forms where the local heuristics were applied...
-      num_fields_classified_by_local_heuristic >=
-          kMinRequiredFieldsForHeuristics &&
-      // and a stricter condition to only consider local heuristics with
-      // classify >= kMinRequiredFieldsForHeuristics *distinct* fields would
-      // reject the the local classifications
-      heuristic_types.Size() < kMinRequiredFieldsForHeuristics &&
-      // and at least one field type was derived from the heuristic that is not
-      // allow listed for classification for smaller forms in
-      // FormField::ParseFormFields.
-      type_would_have_changed;
-  if (!relevant_form)
-    return;
-  UmaHistogramBoolean(
-      "Autofill.FormAffectedByLaxLocalHeuristicRule.FillingAcceptance." +
-          form_type_name_,
-      has_logged_suggestion_filled_);
-  UmaHistogramBoolean(
-      "Autofill.FormAffectedByLaxLocalHeuristicRule.FillingCorrectness." +
-          form_type_name_,
-      !has_logged_edited_autofilled_field_);
 }
 
 void FormEventLoggerBase::OnTextFieldDidChange(
