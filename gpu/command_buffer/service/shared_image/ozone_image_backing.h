@@ -113,6 +113,10 @@ class OzoneImageBacking final : public ClearTrackingSharedImageBacking {
   scoped_refptr<OzoneImageGLTexturesHolder> RetainGLTexture(
       bool is_passthrough);
 
+  // Returns a GpuMemoryBufferHandle for a single plane of the backing pixmap.
+  gfx::GpuMemoryBufferHandle GetSinglePlaneGpuMemoryBufferHandle(
+      uint32_t index);
+
   // Indicates if this backing produced a VASurface that may have pending work.
   bool has_pending_va_writes_ = false;
   std::unique_ptr<VaapiDependencies> vaapi_deps_;

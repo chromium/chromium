@@ -25,7 +25,7 @@ class SkiaVkOzoneImageRepresentation : public SkiaGaneshImageRepresentation {
       SharedImageManager* manager,
       OzoneImageBacking* backing,
       scoped_refptr<SharedContextState> context_state,
-      std::unique_ptr<VulkanImage> vulkan_image,
+      std::vector<std::unique_ptr<VulkanImage>> vulkan_images,
       MemoryTypeTracker* tracker);
 
   ~SkiaVkOzoneImageRepresentation() override;
@@ -55,8 +55,8 @@ class SkiaVkOzoneImageRepresentation : public SkiaGaneshImageRepresentation {
 
   SharedContextState* context_state() const { return context_state_.get(); }
 
-  std::unique_ptr<VulkanImage> vulkan_image_;
-  sk_sp<GrPromiseImageTexture> promise_texture_;
+  std::vector<std::unique_ptr<VulkanImage>> vulkan_images_;
+  std::vector<sk_sp<GrPromiseImageTexture>> promise_textures_;
 
  private:
   bool BeginAccess(bool readonly,
@@ -70,7 +70,7 @@ class SkiaVkOzoneImageRepresentation : public SkiaGaneshImageRepresentation {
 
   RepresentationAccessMode mode_ = RepresentationAccessMode::kNone;
   int surface_msaa_count_ = 0;
-  sk_sp<SkSurface> surface_;
+  std::vector<sk_sp<SkSurface>> surfaces_;
   scoped_refptr<SharedContextState> context_state_;
   std::vector<VkSemaphore> begin_access_semaphores_;
   VkSemaphore end_access_semaphore_ = VK_NULL_HANDLE;
