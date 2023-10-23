@@ -17,8 +17,16 @@ void OverlayCandidateTemporalTracker::Reset() {
 int OverlayCandidateTemporalTracker::GetModeledPowerGain(
     uint64_t curr_frame,
     const OverlayCandidateTemporalTracker::Config& config,
-    int display_area) {
+    int display_area,
+    bool is_fullscreen) const {
   // Model of proportional power gained by hw overlay promotion.
+
+  if (is_fullscreen) {
+    // Fullscreen removes the primary plane and saves ~2x the power of normal
+    // overlays and has no overhead as there is only one overlay present.
+    return static_cast<int>(ratio_rate_category_ * display_area * 2.f);
+  }
+
   return static_cast<int>(
       (ratio_rate_category_ - config.damage_rate_threshold) * display_area);
 }
