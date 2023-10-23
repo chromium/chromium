@@ -35,17 +35,24 @@ class FakePlusAddressService : public PlusAddressService {
   }
 
   void ReservePlusAddress(const url::Origin& origin,
-                          PlusAddressCallback on_completed) override {
-    std::move(on_completed).Run(plus_address_);
+                          PlusAddressRequestCallback on_completed) override {
+    std::move(on_completed)
+        .Run(PlusProfile({.facet = facet_,
+                          .plus_address = plus_address_,
+                          .is_confirmed = false}));
   }
 
   void ConfirmPlusAddress(const url::Origin& origin,
                           const std::string& plus_address,
-                          PlusAddressCallback on_completed) override {
-    std::move(on_completed).Run(plus_address);
+                          PlusAddressRequestCallback on_completed) override {
+    std::move(on_completed)
+        .Run(PlusProfile({.facet = facet_,
+                          .plus_address = plus_address_,
+                          .is_confirmed = true}));
   }
 
   std::string plus_address_ = "plus+plus@plus.plus";
+  std::string facet_ = "facet.bar";
 
   absl::optional<std::string> GetPrimaryEmail() override {
     return "plus+primary@plus.plus";

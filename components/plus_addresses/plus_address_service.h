@@ -56,6 +56,8 @@ class PlusAddressService : public KeyedService,
   // plus address activity is scoped to eTLD+1. This class owns the conversion
   // of `origin` to its eTLD+1 form.
   absl::optional<std::string> GetPlusAddress(url::Origin origin);
+  // Same as above, but packages the plus address along with its eTLD+1.
+  absl::optional<PlusProfile> GetPlusProfile(url::Origin origin);
   // Save a plus address for the given origin, which is converted to its eTLD+1
   // form prior to persistence.
   void SavePlusAddress(url::Origin origin, std::string plus_address);
@@ -75,7 +77,7 @@ class PlusAddressService : public KeyedService,
   //
   // Virtual to allow overriding the behavior in tests.
   virtual void ReservePlusAddress(const url::Origin& origin,
-                                  PlusAddressCallback on_completed);
+                                  PlusAddressRequestCallback on_completed);
 
   // Asks the PlusAddressClient to confirm `plus_address` for use on `origin`.
   // and returns the plus address via `on_completed`.
@@ -83,7 +85,7 @@ class PlusAddressService : public KeyedService,
   // Virtual to allow overriding the behavior in tests.
   virtual void ConfirmPlusAddress(const url::Origin& origin,
                                   const std::string& plus_address,
-                                  PlusAddressCallback on_completed);
+                                  PlusAddressRequestCallback on_completed);
 
   // The label for an autofill suggestion offering to create a new plus address.
   // While only debatably relevant to this class, this function allows for

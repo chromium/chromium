@@ -14,9 +14,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_metrics.h"
+#include "components/plus_addresses/plus_address_types.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/scope_set.h"
@@ -327,25 +329,26 @@ TEST_F(PlusAddressClientRequests,
                                                 signin::ConsentLevel::kSignin);
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
   std::string site = "https://foobar.com";
-  base::MockOnceCallback<void(const std::string&)> callback;
   // Make a request when the PlusAddressClient has an expired OAuth token.
-  EXPECT_CALL(callback, Run).Times(0);
-  client.ReservePlusAddress(site, callback.Get());
+  base::test::TestFuture<const PlusProfileOrError&> future;
+  client.ReservePlusAddress(site, future.GetCallback());
 
   // Verify that ReservePlusAddress hasn't already sent the network request.
+  ASSERT_FALSE(future.IsReady());
   ASSERT_EQ(test_url_loader_factory.NumPending(), 0);
 
   // ReservePlusAddress will  run `callback` after an OAuth token is retrieved.
-  EXPECT_CALL(callback, Run).Times(1);
   identity_test_env
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
           "token", base::Time::Max(), "id", {test_scope});
 
   // Unblock the pending request.
+  ASSERT_FALSE(future.IsReady());
   ASSERT_EQ(test_url_loader_factory.NumPending(), 1);
   test_url_loader_factory.SimulateResponseForPendingRequest(
       fullReserveEndpoint,
       MakeCreateResponse(site, "unused+plus@plus.plus", true));
+  EXPECT_TRUE(future.IsReady());
 }
 
 // For tests that cover successful but unexpected server responses, see the
@@ -355,17 +358,21 @@ TEST_F(PlusAddressClientRequests, ReservePlusAddress_RunsCallbackOnSuccess) {
   client.SetAccessTokenInfoForTesting(eternal_token_info);
   client.SetClockForTesting(test_clock());
   std::string site = "https://foobar.com";
+  std::string plus_address = "plusone@plus.plus";
 
-  base::MockOnceCallback<void(const std::string&)> on_response_parsed;
   // Initiate a request...
-  client.ReservePlusAddress(site, on_response_parsed.Get());
-  // Fulfill the request and the callback should be run
-  EXPECT_CALL(on_response_parsed, Run("plusone@plus.plus")).Times(1);
+  base::test::TestFuture<const PlusProfileOrError&> future;
+  client.ReservePlusAddress(site, future.GetCallback());
   base::TimeDelta latency = base::Milliseconds(2400);
   AdvanceTimeTo(start_time + latency);
-  const std::string json = MakeCreateResponse(site, "plusone@plus.plus", true);
+  const std::string json = MakeCreateResponse(site, plus_address, true);
+  // Fulfill the request and the callback is be run with the expected value.
   test_url_loader_factory.SimulateResponseForPendingRequest(fullReserveEndpoint,
                                                             json);
+
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().has_value());
+  EXPECT_EQ(future.Get()->plus_address, plus_address);
 
   // Verify expected metrics.
   histogram_tester.ExpectUniqueTimeSample(
@@ -379,22 +386,26 @@ TEST_F(PlusAddressClientRequests, ReservePlusAddress_RunsCallbackOnSuccess) {
 }
 
 TEST_F(PlusAddressClientRequests,
-       ReservePlusAddress_FailedRequestDoesntRunCallback) {
+       ReservePlusAddress_RunsCallbackOnNetworkError) {
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
   client.SetAccessTokenInfoForTesting(eternal_token_info);
   client.SetClockForTesting(test_clock());
   std::string site = "https://foobar.com";
 
-  base::MockOnceCallback<void(const std::string&)> on_response_parsed;
   // Initiate a request...
-  client.ReservePlusAddress(site, on_response_parsed.Get());
-
-  // The request fails and the callback is never run
-  EXPECT_CALL(on_response_parsed, Run).Times(0);
+  base::test::TestFuture<const PlusProfileOrError&> future;
+  client.ReservePlusAddress(site, future.GetCallback());
   base::TimeDelta latency = base::Milliseconds(2400);
   AdvanceTimeTo(start_time + latency);
+
+  // The request fails and the appropriate callback is run.
   EXPECT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
       fullReserveEndpoint, "", net::HTTP_NOT_FOUND));
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_FALSE(future.Get().has_value());
+  EXPECT_EQ(future.Get().error().type(),
+            PlusAddressRequestErrorType::kNetworkError);
+
   // Verify expected metrics.
   histogram_tester.ExpectUniqueTimeSample(
       LatencyHistogramFor(PlusAddressNetworkRequestType::kReserve), latency, 1);
@@ -403,6 +414,42 @@ TEST_F(PlusAddressClientRequests,
       net::HTTP_NOT_FOUND, 1);
   histogram_tester.ExpectTotalCount(
       ResponseByteSizeHistogramFor(PlusAddressNetworkRequestType::kReserve), 0);
+}
+
+TEST_F(PlusAddressClientRequests,
+       ReservePlusAddress_RunsCallbackOnClientError) {
+  PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
+  client.SetAccessTokenInfoForTesting(eternal_token_info);
+  client.SetClockForTesting(test_clock());
+  std::string site = "https://foobar.com";
+  std::string plus_address = "plus@plus.plus";
+
+  // Initiate a request...
+  base::test::TestFuture<const PlusProfileOrError&> future;
+  client.ReservePlusAddress(site, future.GetCallback());
+
+  base::TimeDelta latency = base::Milliseconds(2400);
+  AdvanceTimeTo(start_time + latency);
+  // Return a response missing all the key fields expected.
+  const std::string json = "{}";
+  test_url_loader_factory.SimulateResponseForPendingRequest(fullReserveEndpoint,
+                                                            json);
+
+  // The request fails and the appropriate callback is run.
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_FALSE(future.Get().has_value());
+  EXPECT_EQ(future.Get().error().type(),
+            PlusAddressRequestErrorType::kParsingError);
+
+  // Verify expected metrics.
+  histogram_tester.ExpectUniqueTimeSample(
+      LatencyHistogramFor(PlusAddressNetworkRequestType::kReserve), latency, 1);
+  histogram_tester.ExpectUniqueSample(
+      ResponseCodeHistogramFor(PlusAddressNetworkRequestType::kReserve),
+      net::HTTP_OK, 1);
+  histogram_tester.ExpectUniqueSample(
+      ResponseByteSizeHistogramFor(PlusAddressNetworkRequestType::kReserve),
+      json.size(), 1);
 }
 
 // Ensures the request sent by Chrome matches what we intended.
@@ -441,25 +488,28 @@ TEST_F(PlusAddressClientRequests,
                                                 signin::ConsentLevel::kSignin);
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
   std::string site = "https://foobar.com";
-  base::MockOnceCallback<void(const std::string&)> callback;
+  std::string plus_address = "plus+plus@plus.plus";
+
   // Make a request when the PlusAddressClient has an expired OAuth token.
-  EXPECT_CALL(callback, Run).Times(0);
-  client.ConfirmPlusAddress(site, "plus+plus@plus.plus", callback.Get());
+  base::test::TestFuture<const PlusProfileOrError&> future;
+  client.ConfirmPlusAddress(site, plus_address, future.GetCallback());
+  ASSERT_FALSE(future.IsReady());
 
   // Verify that ConfirmPlusAddress hasn't already sent the network request.
   ASSERT_EQ(test_url_loader_factory.NumPending(), 0);
 
   // ConfirmPlusAddress will run `callback` after an OAuth token is retrieved.
-  EXPECT_CALL(callback, Run).Times(1);
   identity_test_env
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
           "token", base::Time::Max(), "id", {test_scope});
 
   // Unblock the pending request.
   ASSERT_EQ(test_url_loader_factory.NumPending(), 1);
+  ASSERT_FALSE(future.IsReady());
   test_url_loader_factory.SimulateResponseForPendingRequest(
-      fullConfirmEndpoint,
-      MakeCreateResponse(site, "plus+plus@plus.plus", true));
+      fullConfirmEndpoint, MakeCreateResponse(site, plus_address, true));
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get()->plus_address, plus_address);
 }
 
 TEST_F(PlusAddressClientRequests, ConfirmPlusAddress_RunsCallbackOnSuccess) {
@@ -469,16 +519,20 @@ TEST_F(PlusAddressClientRequests, ConfirmPlusAddress_RunsCallbackOnSuccess) {
   std::string site = "https://foobar.com";
   std::string plus_address = "plus@plus.plus";
 
-  base::MockOnceCallback<void(const std::string&)> on_response_parsed;
   // Initiate a request...
-  client.ConfirmPlusAddress(site, plus_address, on_response_parsed.Get());
-  // Fulfill the request and the callback should be run
-  EXPECT_CALL(on_response_parsed, Run(plus_address)).Times(1);
+  base::test::TestFuture<const PlusProfileOrError&> future;
+  client.ConfirmPlusAddress(site, plus_address, future.GetCallback());
+
+  // Fulfill the request and the appropriate callback should be run.
   base::TimeDelta latency = base::Milliseconds(2400);
   AdvanceTimeTo(start_time + latency);
   const std::string json = MakeCreateResponse(site, plus_address, true);
   test_url_loader_factory.SimulateResponseForPendingRequest(fullConfirmEndpoint,
                                                             json);
+
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().has_value());
+  EXPECT_EQ(future.Get()->plus_address, plus_address);
 
   // Verify expected metrics.
   histogram_tester.ExpectUniqueTimeSample(
@@ -491,23 +545,28 @@ TEST_F(PlusAddressClientRequests, ConfirmPlusAddress_RunsCallbackOnSuccess) {
 }
 
 TEST_F(PlusAddressClientRequests,
-       ConfirmPlusAddress_FailedRequestDoesntRunCallback) {
+       ConfirmPlusAddress_RunsCallbackOnNetworkError) {
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
   client.SetAccessTokenInfoForTesting(eternal_token_info);
   client.SetClockForTesting(test_clock());
   std::string site = "https://foobar.com";
   std::string plus_address = "plus@plus.plus";
 
-  base::MockOnceCallback<void(const std::string&)> on_response_parsed;
   // Initiate a request...
-  client.ConfirmPlusAddress(site, plus_address, on_response_parsed.Get());
+  base::test::TestFuture<const PlusProfileOrError&> future;
+  client.ConfirmPlusAddress(site, plus_address, future.GetCallback());
 
-  // The request fails and the callback is never run
-  EXPECT_CALL(on_response_parsed, Run).Times(0);
   base::TimeDelta latency = base::Milliseconds(2400);
   AdvanceTimeTo(start_time + latency);
   EXPECT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
       fullConfirmEndpoint, "", net::HTTP_NOT_FOUND));
+
+  // The request fails and the appropriate callback is run.
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_FALSE(future.Get().has_value());
+  EXPECT_EQ(future.Get().error().type(),
+            PlusAddressRequestErrorType::kNetworkError);
+
   // Verify expected metrics.
   histogram_tester.ExpectUniqueTimeSample(
       LatencyHistogramFor(PlusAddressNetworkRequestType::kCreate), latency, 1);
@@ -516,6 +575,43 @@ TEST_F(PlusAddressClientRequests,
       net::HTTP_NOT_FOUND, 1);
   histogram_tester.ExpectTotalCount(
       ResponseByteSizeHistogramFor(PlusAddressNetworkRequestType::kCreate), 0);
+}
+
+TEST_F(PlusAddressClientRequests,
+       ConfirmPlusAddress_RunsCallbackOnClientError) {
+  PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
+  client.SetAccessTokenInfoForTesting(eternal_token_info);
+  client.SetClockForTesting(test_clock());
+  std::string site = "https://foobar.com";
+  std::string plus_address = "plus@plus.plus";
+
+  // Initiate a request...
+  base::test::TestFuture<const PlusProfileOrError&> future;
+  client.ConfirmPlusAddress(site, plus_address, future.GetCallback());
+
+  base::TimeDelta latency = base::Milliseconds(2400);
+  AdvanceTimeTo(start_time + latency);
+
+  // Return a response missing all the key fields expected.
+  const std::string json = "{}";
+  test_url_loader_factory.SimulateResponseForPendingRequest(fullConfirmEndpoint,
+                                                            json);
+
+  // The request fails and the appropriate callback is run.
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_FALSE(future.Get().has_value());
+  EXPECT_EQ(future.Get().error().type(),
+            PlusAddressRequestErrorType::kParsingError);
+
+  // Verify expected metrics.
+  histogram_tester.ExpectUniqueTimeSample(
+      LatencyHistogramFor(PlusAddressNetworkRequestType::kCreate), latency, 1);
+  histogram_tester.ExpectUniqueSample(
+      ResponseCodeHistogramFor(PlusAddressNetworkRequestType::kCreate),
+      net::HTTP_OK, 1);
+  histogram_tester.ExpectUniqueSample(
+      ResponseByteSizeHistogramFor(PlusAddressNetworkRequestType::kCreate),
+      json.size(), 1);
 }
 
 // Ensures the request sent by Chrome matches what we intended.
