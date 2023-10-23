@@ -350,11 +350,11 @@ Response AutofillHandler::Enable() {
       observation_.Observe(&autofill_driver->GetAutofillManager());
     }
   }
-  return Response::FallThrough();
+  return Response::Success();
 }
 
 Response AutofillHandler::Disable() {
   enabled_ = false;
   observation_.Reset();
-  return Response::FallThrough();
+  return Response::Success();
 }
