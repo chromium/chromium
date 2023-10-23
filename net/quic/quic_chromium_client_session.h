@@ -861,8 +861,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // handles::kInvalidNetworkHandle.
   handles::NetworkHandle GetCurrentNetwork() const;
 
-  bool IsAuthorized(const std::string& hostname) override;
-
   // Override to validate |server_preferred_address| on a different socket.
   // Migrates to this address on validation succeeds.
   void OnServerPreferredAddressAvailable(
