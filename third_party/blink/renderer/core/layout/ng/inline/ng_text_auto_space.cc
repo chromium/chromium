@@ -56,13 +56,25 @@ class SpacingApplier {
     const wtf_size_t* offset = offsets.begin();
     if (!offsets.empty() && *offset == current_item->StartOffset()) {
       DCHECK(last_item_);
-      // There would be spacing added to the previous item due to its last glyph
-      // is next to `current_item`'s first glyph, since the two glyphs meet the
-      // condition of adding spacing.
-      // https://drafts.csswg.org/css-text-4/#propdef-text-autospace.
-      offsets_with_spacing_.emplace_back(
-          OffsetWithSpacing({.offset = *offset, .spacing = spacing}));
-      ++offset;
+      // If the previous item's direction is from the left to the right, it is
+      // clear that the last run is the rightest run, so it is safe to add
+      // spacing behind that.
+      if (last_item_->Direction() == TextDirection::kLtr) {
+        // There would be spacing added to the previous item due to its last
+        // glyph is next to `current_item`'s first glyph, since the two glyphs
+        // meet the condition of adding spacing.
+        // https://drafts.csswg.org/css-text-4/#propdef-text-autospace.
+        offsets_with_spacing_.emplace_back(
+            OffsetWithSpacing({.offset = *offset, .spacing = spacing}));
+        ++offset;
+      } else {
+        // This branch holds an assumption that RTL texts cannot be ideograph.
+        // The assumption might be wrong, but should work for almost all cases.
+        // Just do nothing in this case, and ShapeResult::ApplyTextAutoSpacing
+        // will insert spacing as an position offset to `offset`'s glyph,
+        // (instead of advance), to ensure spacing is always add to the correct
+        // position regardless of where the line is broken.
+      }
     }
     // Apply all pending spaces to the previous item.
     ApplyIfNeeded();
@@ -152,6 +164,10 @@ void InlineTextAutoSpace::Apply(InlineItemsData& data,
   CHECK(!ranges_.empty());
   const RunSegmenter::RunSegmenterRange* range = ranges_.begin();
   absl::optional<CharType> last_type = kOther;
+
+  // The initial value does not matter, as the value is used for determine
+  // whether to add spacing into the bound of two items.
+  TextDirection last_direction = TextDirection::kLtr;
   SpacingApplier applier;
   for (const InlineItem& item : data.items) {
     if (item.Type() != InlineItem::kText) {
@@ -205,15 +221,27 @@ void InlineTextAutoSpace::Apply(InlineItemsData& data,
           const wtf_size_t saved_offset = offset;
           const CharType type = GetTypeAndNext(text, offset);
           DCHECK_NE(type, kIdeograph);
-          if (type == kLetterOrNumeral) {
+          if (type == kLetterOrNumeral &&
+              LIKELY(last_direction == item.Direction())) {
+            offsets.push_back(saved_offset);
+          } else if (UNLIKELY(last_direction == TextDirection::kLtr &&
+                              item.Direction() == TextDirection::kRtl)) {
+            // (1) Fall into the first case of RTL-LTR mixing text.
+            // Given an index i which is the last character of item[a], add
+            // spacing to the end of the last item if: str[i] is ideograph &&
+            // item[a] is LTR && ItemOfCharIndex(i+1) is RTL.
             offsets.push_back(saved_offset);
           }
           if (offset == end_offset) {
             last_type = type;
+            last_direction = item.Direction();
             continue;
           }
         }
+        // When moving the offset to the end of this range, also update the item
+        // direction as it is the last opportunity to know it.
         offset = end_offset;
+        last_direction = item.Direction();
         last_type.reset();
         continue;
       }
@@ -227,11 +255,21 @@ void InlineTextAutoSpace::Apply(InlineItemsData& data,
       while (offset < end_offset) {
         const wtf_size_t saved_offset = offset;
         const CharType type = GetTypeAndNext(text, offset);
-        if ((type == kIdeograph && last_type == kLetterOrNumeral) ||
-            (last_type == kIdeograph && type == kLetterOrNumeral)) {
-          offsets.push_back(saved_offset);
+        if (((type == kIdeograph && last_type == kLetterOrNumeral) ||
+             (last_type == kIdeograph && type == kLetterOrNumeral))) {
+          if (last_direction == item.Direction()) {
+            offsets.push_back(saved_offset);
+          } else if (UNLIKELY(last_direction == TextDirection::kRtl &&
+                              item.Direction() == TextDirection::kLtr)) {
+            // (2) Fall into the second case of RTL-LTR mixing text.
+            // Given an index i which is the first character of item[a], add
+            // spacing to the *offset* of i's glyph if: str[i] is ideograph &&
+            // item[a] is LTR && ItemOfCharIndex(i-1) is RTL.
+            offsets.push_back(saved_offset);
+          }
         }
         last_type = type;
+        last_direction = item.Direction();
       }
     } while (offset < item.EndOffset());
 

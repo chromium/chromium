@@ -123,6 +123,17 @@ struct HtmlData {
     {u"あ<span style='text-orientation: upright'>1</span>あ",
      {},
      "writing-mode: vertical-rl"},
+    // The following tests are testing the RTL/LTR mixed layout. Whether to add
+    // spacing at the boundary would be determined after line breaking, when the
+    // adjacent runs are determined.
+    // LTR RTL LTR
+    {u"ああ\u05D0ああ", {2, 3}},
+    {u"あ<span>あ\u05D0あ</span>あ", {2, 3}},
+    // RTL LTR RTL
+    {u"\u05D0ああ\u05D0あ", {1, 3, 4}},
+    {u"ああ<span>\u05D0</span>ああ", {2, 3}},
+    {u"\u05D0ああ\u05D0あ", {1, 3, 4}},
+
 };
 class HtmlTest : public InlineTextAutoSpaceTest,
                  public testing::WithParamInterface<HtmlData> {};
