@@ -32,7 +32,9 @@ using ::testing::Mock;
 using ::testing::Return;
 
 std::unique_ptr<MockMediaStreamVideoSource> MakeMockMediaStreamVideoSource() {
-  return base::WrapUnique(new MockMediaStreamVideoSource(
+  // TODO(crbug.com/1488083): Remove the NiceMock and explicitly expect
+  // only truly expected calls.
+  return base::WrapUnique(new ::testing::NiceMock<MockMediaStreamVideoSource>(
       media::VideoCaptureFormat(gfx::Size(640, 480), 30.0,
                                 media::PIXEL_FORMAT_I420),
       true));
