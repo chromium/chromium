@@ -744,6 +744,7 @@ Als je dit beleid niet instelt, krijgen gebruikers een waarschuwing (in plaats v
 <translation id="167514072300004091">Als je het beleid instelt op 3, kunnen websites vragen om toegang tot aangesloten USB-apparaten. Als je het beleid instelt op 2, wordt de toegang tot aangesloten USB-apparaten geblokkeerd.
 
       Als je het beleid niet instelt, vragen websites om toegang maar kunnen gebruikers deze instelling wijzigen.</translation>
+<translation id="1675391557079742340">Contentcodering met <ph name="ZSTANDARD_SHORTNAME" /> voor advertenties aanzetten in de header Accept-Encoding</translation>
 <translation id="1678137412645922426">Beheert het gebruik van <ph name="AES_KL_NAME" /> voor versleuteling van gebruikersopslag (als dit wordt ondersteund)</translation>
 <translation id="1681688654564283886">Schermtijd uitzetten voor websites</translation>
 <translation id="1682063842123336408">Dvrije opslagruimte (in GB) die is vereist om <ph name="PLUGIN_VM_NAME" /> te installeren.
@@ -939,6 +940,7 @@ Dit beleid heeft geen effect als het is ingesteld op apparaatniveau.</translatio
 <translation id="1844972978764975668">Toestaan dat query's naar een Google-server worden gestuurd om een nauwkeurig tijdstempel op te halen</translation>
 <translation id="1845405905602899692">Kiosk-instellingen</translation>
 <translation id="1845429996559814839">Modus voor afdrukken met pincode beperken</translation>
+<translation id="184551219281109080">Het gebruik van de functie voor contentcodering met <ph name="ZSTANDARD_SHORTNAME" /> niet toestaan</translation>
 <translation id="1845567452014584154">Bepaal of Manifest v2-extensies door de browser mogen worden gebruikt.
 
 Ondersteuning voor Manifest v2-extensies wordt beëindigd en alle extensies moeten in de toekomst worden overgezet naar v3. Je kunt meer informatie en een tijdlijn van de migratie vinden op https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
@@ -2055,6 +2057,7 @@ Dit beleid vereist aanvullende instellingen om van kracht te worden. Ga naar htt
 <translation id="2757054304033424106">Typen extensies/apps die mogen worden geïnstalleerd</translation>
 <translation id="2759224876420453487">Het gebruikersgedrag beheren in een multiprofielsessie</translation>
 <translation id="2761483219396643566">Inactieve waarschuwingsvertraging wanneer op de batterij wordt gewerkt</translation>
+<translation id="2764750330785898947">Ondersteuning voor contentcodering met <ph name="ZSTANDARD_SHORTNAME" /> aanzetten</translation>
 <translation id="2764964245640818227">Beheert of er annotaties in pdf's kunnen worden gemaakt met de pdf-viewer in <ph name="PRODUCT_NAME" />.
 
       Als dit beleid niet is ingesteld of is ingesteld op true, kunnen met de pdf-viewer annotaties in pdf's worden gemaakt.
@@ -3475,6 +3478,12 @@ Dit beleid is een tijdelijke oplossing en wordt na bepaalde tijd verwijderd (de 
           Als dit beleid niet is ingesteld, staan de plaktoetsen in eerste instantie uit op het inlogscherm. De gebruiker kan deze functie op elk gewenst moment aanzetten.</translation>
 <translation id="3927291637826333102">Bureaublad-, venster- en tabbladopname door deze oorsprongen toestaan</translation>
 <translation id="3928726028264020458">Rapportage van VPD-informatie van apparaat aanzetten</translation>
+<translation id="3929433884360648086">Met deze functie worden het gebruik van 'zstd' in de verzoekheader Accept-Encoding en ondersteuning voor het decomprimeren van met <ph name="ZSTANDARD_SHORTNAME" /> gecomprimeerde webcontent aangezet.
+
+Als je het beleid toepast of niet instelt, accepteert <ph name="PRODUCT_NAME" /> webcontent die is gecomprimeerd met <ph name="ZSTANDARD_SHORTNAME" />.
+Als je het beleid niet toepast, wordt de functie voor contentcodering met <ph name="ZSTANDARD_SHORTNAME" /> uitgezet.
+
+Dit beleid is tijdelijk en wordt in de toekomst verwijderd.</translation>
 <translation id="3941289958028934630">Gesproken feedback op het inlogscherm uitzetten</translation>
 <translation id="3943930334592166130">Met dit beleid bepaal je of de gebruiker wordt gevraagd een clientcertificaat te selecteren als meerdere certificaten overeenkomen met <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" />.
       Als je dit beleid toepast, wordt de gebruiker gevraagd een clientcertificaat te selecteren als het beleid voor automatisch selecteren overeenkomt met meerdere certificaten.

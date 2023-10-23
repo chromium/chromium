@@ -736,6 +736,7 @@
 <translation id="167514072300004091">如果此政策设为 3，系统会允许网站请求访问已连接的 USB 设备。如果此政策设为 2，系统会禁止网站访问已连接的 USB 设备。
 
       如果此政策未设置，系统会允许网站请求访问，但用户可以更改此设置。</translation>
+<translation id="1675391557079742340">在 Accept-coding 标头中启用广告 <ph name="ZSTANDARD_SHORTNAME" /> 内容编码</translation>
 <translation id="1678137412645922426">控制是否使用“<ph name="AES_KL_NAME" />”进行用户存储加密（若支持）</translation>
 <translation id="1681688654564283886">为网站停用“设备使用时间”功能</translation>
 <translation id="1682063842123336408">安装 <ph name="PLUGIN_VM_NAME" /> 所需的可用磁盘空间 (GB)。
@@ -932,6 +933,7 @@
 <translation id="1844972978764975668">允许向 Google 服务器发送查询以检索准确的时间戳</translation>
 <translation id="1845405905602899692">自助服务终端设置</translation>
 <translation id="1845429996559814839">限制 PIN 码打印模式</translation>
+<translation id="184551219281109080">不允许使用 <ph name="ZSTANDARD_SHORTNAME" /> 内容编码功能</translation>
 <translation id="1845567452014584154">控制浏览器能否使用 Manifest V2 扩展程序。
 
 对 Manifest V2 扩展程序的支持将被弃用，日后所有扩展程序都需要迁移到 V3。如需了解详情和迁移时间轴，请访问 https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/。
@@ -2048,6 +2050,7 @@
 <translation id="2757054304033424106">允许安装的扩展程序/应用的类型</translation>
 <translation id="2759224876420453487">控制多用户配置会话中的用户行为</translation>
 <translation id="2761483219396643566">使用电池供电时的闲置警告延迟时间</translation>
+<translation id="2764750330785898947">启用 <ph name="ZSTANDARD_SHORTNAME" /> 内容编码支持</translation>
 <translation id="2764964245640818227">控制 <ph name="PRODUCT_NAME" /> 中的 PDF 查看器能否在 PDF 文件中添加注释。
       如果此政策未设置或设为 true，PDF 查看器便能在 PDF 文件中添加注释。
 
@@ -3466,6 +3469,12 @@
           如果您未设置此政策，粘滞键在登录屏幕上最初会处于停用状态，但用户可随时启用它。</translation>
 <translation id="3927291637826333102">允许这些来源使用桌面、窗口和标签页截取功能</translation>
 <translation id="3928726028264020458">启用设备 VPD 信息报告功能</translation>
+<translation id="3929433884360648086">此功能可允许在 Accept-Encoding 请求标头中使用“zstd”，并且支持对经过 <ph name="ZSTANDARD_SHORTNAME" /> 压缩的 Web 内容进行解压缩。
+
+如果此政策已启用或未设置，那么 <ph name="PRODUCT_NAME" /> 将会接受使用 <ph name="ZSTANDARD_SHORTNAME" /> 压缩的 Web 内容。
+如果此政策已停用，系统会关闭 <ph name="ZSTANDARD_SHORTNAME" /> 内容编码功能。
+
+此政策只是暂时性措施，日后会被移除。</translation>
 <translation id="3941289958028934630">为登录屏幕停用语音反馈</translation>
 <translation id="3943930334592166130">此政策旨在控制是否让系统在有多个证书与 <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" /> 匹配时提示用户选择客户端证书。
       如果此政策已启用，每当自动选择政策与多个证书匹配时，系统都会提示用户选择客户端证书。

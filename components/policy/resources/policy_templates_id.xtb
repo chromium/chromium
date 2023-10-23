@@ -757,6 +757,7 @@ Jika kebijakan ini tidak disetel, pengguna akan diizinkan untuk menambahkan peng
 <translation id="167514072300004091">Jika kebijakan disetel ke 3, situs akan meminta akses ke perangkat USB yang terhubung. Jika kebijakan disetel ke 2, akses ke perangkat USB yang terhubung akan ditolak.
 
       Jika tidak disetel, situs akan meminta akses tetapi pengguna dapat mengubah setelan ini.</translation>
+<translation id="1675391557079742340">Aktifkan encoding konten <ph name="ZSTANDARD_SHORTNAME" /> iklan di header Accept-Encoding</translation>
 <translation id="1678137412645922426">Mengontrol penggunaan <ph name="AES_KL_NAME" /> untuk enkripsi penyimpanan pengguna jika didukung</translation>
 <translation id="1681688654564283886">Nonaktifkan Waktu Pemakaian Perangkat untuk situs</translation>
 <translation id="1682063842123336408">Perlu ruang disk kosong (dalam GB) untuk menginstal <ph name="PLUGIN_VM_NAME" />.
@@ -952,6 +953,7 @@ Kebijakan ini tidak berpengaruh jika disetel di tingkat perangkat.</translation>
 <translation id="1844972978764975668">Izinkan kueri ke server Google untuk mengambil stempel waktu yang akurat</translation>
 <translation id="1845405905602899692">Setelan Kios</translation>
 <translation id="1845429996559814839">Batasi mode pencetakan PIN</translation>
+<translation id="184551219281109080">Jangan izinkan penggunaan fitur encoding konten <ph name="ZSTANDARD_SHORTNAME" /></translation>
 <translation id="1845567452014584154">Mengontrol apakah ekstensi Manifes v2 dapat digunakan oleh browser.
 
 Dukungan ekstensi Manifes v2 tidak akan digunakan lagi dan semua ekstensi harus
@@ -2111,6 +2113,7 @@ Jika kebijakan disetel ke Nonaktif atau tidak disetel, pengguna akan dapat mentr
 <translation id="2757054304033424106">Ketik ekstensi/aplikasi yang diizinkan untuk dipasang</translation>
 <translation id="2759224876420453487">Mengontrol perilaku pengguna pada sesi multiprofil</translation>
 <translation id="2761483219396643566">Menunda peringatan waktu menganggur saat menggunakan daya baterai</translation>
+<translation id="2764750330785898947">Mengaktifkan dukungan encoding konten <ph name="ZSTANDARD_SHORTNAME" /></translation>
 <translation id="2764964245640818227">Mengontrol apakah penampil PDF di <ph name="PRODUCT_NAME" /> dapat menganotasi PDF.
 
       Jika kebijakan ini tidak disetel atau disetel ke benar (true), penampil PDF akan dapat menganotasi PDF.
@@ -3573,6 +3576,17 @@ Kebijakan ini adalah solusi sementara dan akan dihapus dalam beberapa milestone 
           Jika kebijakan ini tidak ditetapkan, tombol lekat mula-mula akan dinonaktifkan di layar login, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
 <translation id="3927291637826333102">Mengizinkan tangkapan Desktop, Jendela, dan Tab berdasarkan asal berikut</translation>
 <translation id="3928726028264020458">Aktifkan pelaporan info VPD perangkat</translation>
+<translation id="3929433884360648086">Fitur ini memungkinkan penggunaan "zstd" di header permintaan Accept-Encoding,
+dan dukungan untuk mendekompresi
+konten web yang dikompresi <ph name="ZSTANDARD_SHORTNAME" />.
+
+Jika kebijakan disetel ke Aktif atau tidak disetel,
+<ph name="PRODUCT_NAME" /> akan menerima konten web
+yang dikompresi dengan <ph name="ZSTANDARD_SHORTNAME" />.
+Jika kebijakan disetel ke Nonaktif,
+fitur encoding konten <ph name="ZSTANDARD_SHORTNAME" /> akan dinonaktifkan.
+
+Kebijakan ini bersifat sementara dan akan dihapus pada masa mendatang.</translation>
 <translation id="3941289958028934630">Nonaktifkan respons lisan di layar login</translation>
 <translation id="3943930334592166130">Kebijakan ini mengontrol apakah pengguna akan diminta memilih sertifikat klien saat lebih dari satu sertifikat cocok dengan <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" />.
       Jika kebijakan ini disetel ke Aktif, pengguna akan diminta memilih sertifikat klien setiap kali kebijakan pemilihan otomatis cocok dengan beberapa sertifikat.

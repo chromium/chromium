@@ -754,6 +754,7 @@ Se esta política não for definida, o usuário poderá adicionar exceções par
 <translation id="167514072300004091">Se a política for definida como 3, os sites poderão solicitar acesso a dispositivos USB conectados. Se ela for definida como 2, será negado o acesso a dispositivos USB conectados.
 
       Se não for definida, os sites terão permissão para solicitar acesso, mas os usuários poderão mudar essa configuração.</translation>
+<translation id="1675391557079742340">Ativar a codificação de conteúdo <ph name="ZSTANDARD_SHORTNAME" /> de publicidade no cabeçalho Accept-Encoding</translation>
 <translation id="1678137412645922426">Controla o uso de <ph name="AES_KL_NAME" /> na criptografia de armazenamento do usuário, se compatível</translation>
 <translation id="1681688654564283886">Desativar o Tempo de Uso para sites</translation>
 <translation id="1682063842123336408">É necessário ter espaço livre em disco (em GB) para instalar o <ph name="PLUGIN_VM_NAME" />.
@@ -949,6 +950,7 @@ Esta política não terá efeito se for definida no nível da máquina.</transla
 <translation id="1844972978764975668">Permitir consultas a um servidor do Google para recuperar um carimbo de data/hora preciso</translation>
 <translation id="1845405905602899692">Configurações de quiosque</translation>
 <translation id="1845429996559814839">Restringir modo de impressão com PIN</translation>
+<translation id="184551219281109080">Não permitir o uso do recurso de codificação de conteúdo <ph name="ZSTANDARD_SHORTNAME" /></translation>
 <translation id="1845567452014584154">Controle se as extensões do Manifest v2 podem ser usadas pelo navegador.
 
 O suporte a elas será descontinuado, e todas as extensões precisarão
@@ -2106,6 +2108,7 @@ Se a política for definida como desativada ou não for definida, o usuário pod
 <translation id="2757054304033424106">Tipos de extensões/aplicativos que podem ser instalados</translation>
 <translation id="2759224876420453487">Controla o comportamento do usuário em uma sessão de diversos perfis</translation>
 <translation id="2761483219396643566">Intervalo da advertência de inatividade no funcionamento com energia da bateria</translation>
+<translation id="2764750330785898947">Ativar suporte à codificação de conteúdo <ph name="ZSTANDARD_SHORTNAME" /></translation>
 <translation id="2764964245640818227">Controla se o visualizador de PDF no <ph name="PRODUCT_NAME" /> pode fazer anotações em PDFs.
 
       Quando esta política é deixada sem definição ou é definida como verdadeira, o visualizador de PDF pode fazer anotações em PDFs.
@@ -3561,6 +3564,17 @@ Esta política é uma solução temporária e vai ser removida em marcos futuros
           Se esta política não for definida, as teclas de aderência ficarão inicialmente desativadas na tela de login, mas poderão ser ativadas pelo usuário a qualquer momento.</translation>
 <translation id="3927291637826333102">Permitir captura de área de trabalho, janela e guia por estas origens</translation>
 <translation id="3928726028264020458">Ativar relatórios de informações VPD do dispositivo</translation>
+<translation id="3929433884360648086">Esse recurso permite usar "zstd" no cabeçalho da solicitação Accept-Encoding
+e oferece suporte à descompactação
+do conteúdo da Web compactado com <ph name="ZSTANDARD_SHORTNAME" />.
+
+Se a política for ativada ou deixada sem definição, o
+<ph name="PRODUCT_NAME" /> vai aceitar conteúdo da Web
+compactado com <ph name="ZSTANDARD_SHORTNAME" />.
+Se ela for desativada, o
+recurso de codificação de conteúdo <ph name="ZSTANDARD_SHORTNAME" /> será desativado.
+
+Essa política é temporária e será removida.</translation>
 <translation id="3941289958028934630">Desativar a resposta falada na tela de login</translation>
 <translation id="3943930334592166130">Esta política controla se o usuário receberá uma solicitação para selecionar um certificado de cliente quando a <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" /> corresponder a mais de um certificado.
       Se esta política for definida como "Ativada", o usuário receberá uma solicitação para selecionar um certificado de cliente sempre que a política de seleção automática corresponder a vários certificados.

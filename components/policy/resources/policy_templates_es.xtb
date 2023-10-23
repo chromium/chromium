@@ -745,6 +745,7 @@ Si no se establece esta política, los usuarios podrán añadir excepciones para
 <translation id="167514072300004091">Si se asigna el valor 3 a esta política, los sitios web podrán solicitar acceso a los dispositivos conectados por USB. Si se le asigna el valor 2, se bloqueará el acceso a los dispositivos conectados por USB.
 
       Si no se le asigna ningún valor, los sitios web podrán solicitar acceso, pero los usuarios podrán cambiar esta opción.</translation>
+<translation id="1675391557079742340">Habilitar la publicidad de la codificación de contenido de <ph name="ZSTANDARD_SHORTNAME" /> en el encabezado Accept-Encoding</translation>
 <translation id="1678137412645922426">Controla el uso de <ph name="AES_KL_NAME" /> para el cifrado del almacenamiento de los datos del usuario, si se admite</translation>
 <translation id="1681688654564283886">Inhabilitar Tiempo de pantalla para sitios web</translation>
 <translation id="1682063842123336408">Espacio disponible en disco (en GB) necesario para instalar <ph name="PLUGIN_VM_NAME" />.
@@ -940,6 +941,7 @@ Esta política no tiene efecto cuando se establece en un nivel de equipo.</trans
 <translation id="1844972978764975668">Permitir que consultas ocasionales a un servidor de Google obtengan una marca de tiempo precisa</translation>
 <translation id="1845405905602899692">Configuración de kiosco</translation>
 <translation id="1845429996559814839">Restringir el modo de impresión con PIN</translation>
+<translation id="184551219281109080">No permitir el uso de la función <ph name="ZSTANDARD_SHORTNAME" /> para codificar contenido</translation>
 <translation id="1845567452014584154">Controla si el navegador puede usar extensiones de Manifest V2.
 
 Las extensiones de Manifest V2 dejarán de estar disponibles, y todas las extensiones deberán migrarse a Manifest V3 en el futuro. Para consultar más detalles y el calendario de la migración, visita https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
@@ -2060,6 +2062,7 @@ Si se inhabilita esta política o no se establece, los usuarios podrán transfer
 <translation id="2757054304033424106">Tipos de extensiones o aplicaciones que se pueden instalar</translation>
 <translation id="2759224876420453487">Controlar el comportamiento del usuario en una sesión de varios perfiles</translation>
 <translation id="2761483219396643566">Tiempo de espera de advertencia de inactividad cuando el dispositivo funciona con batería</translation>
+<translation id="2764750330785898947">Habilitar la compatibilidad con la codificación de contenido de <ph name="ZSTANDARD_SHORTNAME" /></translation>
 <translation id="2764964245640818227">Controla si el visor de PDF de <ph name="PRODUCT_NAME" /> puede anotar PDFs.
 
       Si no se define esta política o se le asigna el valor true, el visor de PDF podrá anotar PDFs.
@@ -3492,6 +3495,12 @@ Esta política es una solución temporal y se eliminará gradualmente (está pre
           Si no le asignas ningún valor, las teclas persistentes estarán inhabilitadas inicialmente en la pantalla de inicio de sesión, pero el usuario podrá habilitarlas en cualquier momento.</translation>
 <translation id="3927291637826333102">Permitir la captura de escritorios, ventanas y pestañas de estos orígenes</translation>
 <translation id="3928726028264020458">Habilitar los informes sobre VPD del dispositivo</translation>
+<translation id="3929433884360648086">Esta función habilita el uso de zstd en el encabezado de solicitud Accept-Encoding y permite descomprimir contenido web comprimido con <ph name="ZSTANDARD_SHORTNAME" />.
+
+Si se habilita esta política o no se define, <ph name="PRODUCT_NAME" /> aceptará contenido web comprimido con <ph name="ZSTANDARD_SHORTNAME" />.
+Si se inhabilita esta política, se desactivará la función <ph name="ZSTANDARD_SHORTNAME" /> para codificar contenido.
+
+Esta política es temporal y se eliminará más adelante.</translation>
 <translation id="3941289958028934630">Inhabilitar los mensajes de voz en la pantalla de inicio de sesión</translation>
 <translation id="3943930334592166130">Esta política controla si al usuario se le pedirá que seleccione un certificado de cliente cuando haya más de un certificado que coincida con <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" />.
       Si se habilita esta política, se le pedirá al usuario que seleccione un certificado de cliente cuando la política de selección automática coincida con varios certificados.

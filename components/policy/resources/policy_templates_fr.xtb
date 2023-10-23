@@ -744,6 +744,7 @@ Si cette règle n'est pas configurée, les utilisateurs peuvent ajouter des exce
 <translation id="167514072300004091">Si cette règle est définie sur "3", les sites Web peuvent demander à accéder aux appareils USB connectés. Si cette règle est définie sur "2", l'accès à ces appareils est refusé.
 
       Si cette règle n'est pas configurée, les sites Web peuvent demander l'accès. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
+<translation id="1675391557079742340">Activer l'annonce de l'encodage du contenu <ph name="ZSTANDARD_SHORTNAME" /> dans l'en-tête Accept-Encoding</translation>
 <translation id="1678137412645922426">Contrôle l'utilisation de <ph name="AES_KL_NAME" /> pour le chiffrement du stockage de l'utilisateur si celui-ci est compatible</translation>
 <translation id="1681688654564283886">Désactiver la fonctionnalité "Temps d'utilisation" pour les sites Web</translation>
 <translation id="1682063842123336408">Permet de spécifier l'espace disque libre requis (en Go) pour installer <ph name="PLUGIN_VM_NAME" />.
@@ -939,6 +940,7 @@ Cette règle n'a aucun effet quand elle est définie au niveau de l'ordinateur.<
 <translation id="1844972978764975668">Autoriser l'envoi de requêtes à un serveur Google visant à récupérer un horodatage précis</translation>
 <translation id="1845405905602899692">Paramètres de kiosque</translation>
 <translation id="1845429996559814839">Limiter le mode d'impression par code</translation>
+<translation id="184551219281109080">Ne pas autoriser l'utilisation de la fonctionnalité d'encodage de contenu <ph name="ZSTANDARD_SHORTNAME" /></translation>
 <translation id="1845567452014584154">Contrôle si le navigateur peut utiliser les extensions Manifest V2.
 
 Les extensions Manifest V2 seront obsolètes et toutes les extensions devront être migrées vers V3 à l'avenir. Vous trouverez plus d'informations et le calendrier de la migration sur https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
@@ -2058,6 +2060,7 @@ Si cette règle est désactivée ou qu'elle n'est pas configurée, les utilisate
 <translation id="2757054304033424106">Types d'extensions ou d'applications autorisés à être installés</translation>
 <translation id="2759224876420453487">Contrôler le comportement de l'utilisateur lors d'une session à plusieurs profils</translation>
 <translation id="2761483219396643566">Délai d'inactivité avant l'affichage d'un avertissement (en cas d'utilisation de la batterie)</translation>
+<translation id="2764750330785898947">Activer la compatibilité avec l'encodage de contenu <ph name="ZSTANDARD_SHORTNAME" /></translation>
 <translation id="2764964245640818227">Détermine si la visionneuse de PDF intégrée à <ph name="PRODUCT_NAME" /> peut annoter les PDF.
 
       Si cette règle n'est pas configurée, ou si elle est définie sur "True", la visionneuse de PDF peut annoter ces fichiers.
@@ -3481,6 +3484,12 @@ Cette règle est une mesure temporaire et sera supprimée dans une future versio
           Si cette règle n'est pas configurée, les touches persistantes sont initialement désactivées sur l'écran de connexion, mais les utilisateurs peuvent les activer à tout moment.</translation>
 <translation id="3927291637826333102">Autoriser les captures d'écran, de fenêtre et d'onglet selon ces origines</translation>
 <translation id="3928726028264020458">Activer les rapports sur les données VPD de l'appareil</translation>
+<translation id="3929433884360648086">Cette fonctionnalité permet d'utiliser "zstd" dans l'en-tête de requête Accept-Encoding et de décompresser le contenu Web compressé avec <ph name="ZSTANDARD_SHORTNAME" />.
+
+Si cette règle est activée ou qu'elle n'est pas configurée, <ph name="PRODUCT_NAME" /> accepte les contenus Web compressés avec <ph name="ZSTANDARD_SHORTNAME" />.
+Si cette règle est désactivée, la fonctionnalité d'encodage de contenu <ph name="ZSTANDARD_SHORTNAME" /> l'est également.
+
+Cette règle est provisoire et sera supprimée prochainement.</translation>
 <translation id="3941289958028934630">Désactiver les commentaires audio sur l'écran de connexion</translation>
 <translation id="3943930334592166130">Cette règle détermine si l'utilisateur est invité ou non à sélectionner un certificat client quand la règle <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" /> établit une correspondance avec plus d'un certificat.
       Si cette règle est activée, l'utilisateur est invité à sélectionner un certificat client chaque fois que la règle de sélection automatique établit une correspondance avec plusieurs certificats.

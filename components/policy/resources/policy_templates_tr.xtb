@@ -745,6 +745,7 @@ Bu politika ayarlanmadan bırakılırsa kullanıcıların, engellenebilir karma 
 <translation id="167514072300004091">Politikayı 3 değerine ayarlamak web sitelerinin bağlı USB cihazlarına erişim istemesini sağlar. Politikayı 2 değerine ayarlamak bağlı USB cihazlarına erişimi engeller.
 
       Politikayı ayarlamadan bırakmak web sitelerinin erişim istemesini sağlar. Kullanıcılar bu ayarı değiştirebilir.</translation>
+<translation id="1675391557079742340">Accept-Encoding başlığında reklam amaçlı <ph name="ZSTANDARD_SHORTNAME" /> içerik kodlamasını etkinleştir</translation>
 <translation id="1678137412645922426">Destekleniyorsa kullanıcı depolama alanı şifrelemesi için <ph name="AES_KL_NAME" /> kullanımını kontrol eder</translation>
 <translation id="1681688654564283886">Web siteleri için ekran süresini devre dışı bırak</translation>
 <translation id="1682063842123336408"><ph name="PLUGIN_VM_NAME" /> eklentisini yüklemek için boş alan (GB cinsinden) gerektir.
@@ -940,6 +941,7 @@ Makine düzeyinde ayarlanmışsa bu politikanın etkisi olmaz.</translation>
 <translation id="1844972978764975668">Doğru zaman damgası almak için bir Google sunucusuna sorgu göndermeye izin ver</translation>
 <translation id="1845405905602899692">Kiosk ayarları</translation>
 <translation id="1845429996559814839">PIN ile yazdırma modunu kısıtla</translation>
+<translation id="184551219281109080"><ph name="ZSTANDARD_SHORTNAME" /> içerik kodlaması özelliğinin kullanılmasına izin verme</translation>
 <translation id="1845567452014584154">Manifest v2 uzantılarının, tarayıcı tarafından kullanılıp kullanılamayacağını kontrol edin.
 
 Manifest v2 uzantılarının desteği sonlandırılacağı için tüm uzantıların gelecekte v3'e taşınması gerekecektir. Taşımayla ilgili daha fazla bilgiyi ve zaman çizelgesini https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/ adresinde bulabilirsiniz.
@@ -2076,6 +2078,7 @@ Politika, Devre dışı değerine ayarlanır veya ayarlanmadan bırakılırsa ku
 <translation id="2757054304033424106">Yüklenmesine izin verilen uzantı/uygulama türleri</translation>
 <translation id="2759224876420453487">Çok profilli bir oturumda kullanıcı çalışma biçimini kontrol et</translation>
 <translation id="2761483219396643566">Pil gücüyle çalışırken boşta kalma uyarısı gecikmesi</translation>
+<translation id="2764750330785898947"><ph name="ZSTANDARD_SHORTNAME" /> içerik kodlaması desteğini etkinleştir</translation>
 <translation id="2764964245640818227"><ph name="PRODUCT_NAME" /> ürünündeki PDF görüntüleyicisinin PDF'lere not ekleme iznini kontrol eder.
 
       Bu politika ayarlanmadığında veya doğru değerine ayarlandığında PDF görüntüleyici PDF'lere not ekleyebilir.
@@ -3533,6 +3536,17 @@ Bu politika geçici bir çözümdür ve birkaç kilometre taşından kaldırıla
           Bu politika ayarlanmadan bırakılırsa giriş ekranında yapışkan tuşlar devre dışı bırakılır, ancak kullanıcılar istedikleri zaman etkinleştirebilirler.</translation>
 <translation id="3927291637826333102">Bu kaynakların Masaüstü, Pencere ve Sekme yakalamasına izin ver</translation>
 <translation id="3928726028264020458">Cihazın VPD bilgileri raporlamasını etkinleştir</translation>
+<translation id="3929433884360648086">Bu özellik, Accept-Encoding istek başlığında "zstd" kullanılmasını ve <ph name="ZSTANDARD_SHORTNAME" />
+ile sıkıştırılmış web içeriğinin
+sıkıştırmasını açma desteği sağlar.
+
+Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa
+<ph name="PRODUCT_NAME" />, <ph name="ZSTANDARD_SHORTNAME" />
+ile sıkıştırılmış web içeriklerini kabul eder.
+Politika, Devre dışı değerine ayarlanırsa
+<ph name="ZSTANDARD_SHORTNAME" /> içerik kodlaması özelliği kapatılır.
+
+Bu politika, geçici olarak tasarlanmıştır ve gelecekte kaldırılacaktır.</translation>
 <translation id="3941289958028934630">Giriş ekranında sözlü geri bildirimi devre dışı bırak</translation>
 <translation id="3943930334592166130">Bu politika, <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" /> ile eşleşen birden fazla sertifika olduğunda kullanıcıdan bir istemci sertifikası seçmesinin istenip istenmeyeceğini kontrol eder.
       Bu politika Etkin değerine ayarlanırsa, otomatik seçim politikası birden fazla sertifikayla eşleştiğinde kullanıcıdan bir istemci sertifikası seçmesi istenir.

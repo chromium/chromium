@@ -741,6 +741,7 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 <translation id="167514072300004091">Wenn die Richtlinie auf "3" gesetzt ist, können Websites den Zugriff auf angeschlossene USB-Geräte erfragen. Wenn die Richtlinie auf "2" gesetzt ist, wird der Zugriff auf angeschlossene USB-Geräte verweigert.
 
       Wenn sie nicht konfiguriert ist, können Websites den Zugriff erfragen, aber Nutzer können diese Einstellung ändern.</translation>
+<translation id="1675391557079742340">Verwendung der <ph name="ZSTANDARD_SHORTNAME" />-Inhaltscodierung im „Accept-Encoding“-Header aktivieren</translation>
 <translation id="1678137412645922426">Die Richtlinie legt die Verwendung von <ph name="AES_KL_NAME" /> für die Verschlüsselung des Nutzerdatenspeichers fest, wenn diese unterstützt wird</translation>
 <translation id="1681688654564283886">„Bildschirmzeit“ für Websites deaktivieren</translation>
 <translation id="1682063842123336408">Für die Installation von <ph name="PLUGIN_VM_NAME" /> erforderlicher freier Speicherplatz (in GB).
@@ -936,6 +937,7 @@ Diese Richtlinie hat keine Auswirkungen, wenn sie auf Geräteebene konfiguriert 
 <translation id="1844972978764975668">Anfragen an einen Google-Server zulassen, um einen exakten Zeitstempel abzufragen</translation>
 <translation id="1845405905602899692">Kioskeinstellungen</translation>
 <translation id="1845429996559814839">PIN-Druckmodus einschränken</translation>
+<translation id="184551219281109080">Verwendung der Funktion zur <ph name="ZSTANDARD_SHORTNAME" />-Inhaltscodierung nicht zulassen</translation>
 <translation id="1845567452014584154">Mit dieser Richtlinie kann festgelegt werden, ob Manifest V2-Erweiterungen im Browser verwendet werden können.
 
 Die Unterstützung für Manifest V2-Erweiterungen wird eingestellt. Alle Erweiterungen müssen dann zu V3 migriert werden. Weitere Informationen und den Zeitplan für die Migration findest du unter https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
@@ -2051,6 +2053,7 @@ Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, können Nutzer Date
 <translation id="2757054304033424106">Typen von Erweiterungen bzw. Apps, die installiert werden können</translation>
 <translation id="2759224876420453487">Nutzerverhalten in Mehrfachprofil-Sitzung steuern</translation>
 <translation id="2761483219396643566">Inaktivitätsspanne bis zur Warnung im Akkubetrieb</translation>
+<translation id="2764750330785898947">Unterstützung für die <ph name="ZSTANDARD_SHORTNAME" />-Inhaltscodierung aktivieren</translation>
 <translation id="2764964245640818227">Legt fest, ob mit dem PDF-Viewer PDFs in <ph name="PRODUCT_NAME" /> mit Anmerkungen versehen werden können.
 
       Wenn diese Richtlinie nicht konfiguriert oder auf „true“ gesetzt ist, können mit dem PDF-Viewer PDFs mit Anmerkungen versehen werden.
@@ -3478,6 +3481,13 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
           Wird sie nicht konfiguriert, ist die Einfingerbedienung auf dem Anmeldebildschirm anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
 <translation id="3927291637826333102">Desktop-, Fenster- und Tabaufnahme für diese Ursprünge zulassen</translation>
 <translation id="3928726028264020458">Melden der VPD-Informationen auf Geräten aktivieren</translation>
+<translation id="3929433884360648086">Dieses Funktion ermöglicht die Verwendung von „zstd“ im „Accept-Encoding“-Anfrageheader und die Unterstützung der Dekomprimierung
+von <ph name="ZSTANDARD_SHORTNAME" />-komprimierten Webinhalten.
+
+Ist die Richtlinie aktiviert oder nicht konfiguriert, akzeptiert <ph name="PRODUCT_NAME" /> Webinhalte, die mit <ph name="ZSTANDARD_SHORTNAME" /> komprimiert sind.
+Ist die Richtlinie deaktiviert, wird die Funktion zur <ph name="ZSTANDARD_SHORTNAME" />-Inhaltscodierung deaktiviert.
+
+Diese Richtlinie ist vorübergehend und wird zukünftig entfernt.</translation>
 <translation id="3941289958028934630">Gesprochenes Feedback auf dem Anmeldebildschirm deaktivieren</translation>
 <translation id="3943930334592166130">Diese Richtlinie legt fest, ob Nutzer aufgefordert werden, ein Clientzertifikat auszuwählen, wenn mehrere Zertifikate zu <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" /> passen.
       Ist die Richtlinie aktiviert, werden Nutzer aufgefordert, immer dann ein Clientzertifikat auszuwählen, wenn die Richtlinie für die automatische Auswahl zu mehreren Zertifikaten passt.

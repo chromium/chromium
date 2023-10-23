@@ -736,6 +736,7 @@
 <translation id="167514072300004091">如果將這項政策設為 3，網站即可要求存取已連結的 USB 裝置。如果將這項政策設為 2，網站將無法存取已連結的 USB 裝置。
 
       如果不設定，網站可要求存取已連結的 USB 裝置，但使用者可以變更這項設定。</translation>
+<translation id="1675391557079742340">在 Accept-Encoding 標頭中啟用廣告 <ph name="ZSTANDARD_SHORTNAME" /> 內容編碼功能</translation>
 <translation id="1678137412645922426">控管是否可採用 <ph name="AES_KL_NAME" /> 加密使用者儲存空間 (如果支援)</translation>
 <translation id="1681688654564283886">停用網站的裝置使用時間功能</translation>
 <translation id="1682063842123336408">安裝 <ph name="PLUGIN_VM_NAME" /> 所需的可用磁碟空間 (以 GB 為單位)。
@@ -931,6 +932,7 @@
 <translation id="1844972978764975668">允許向 Google 伺服器傳送查詢，以擷取準確的時間戳記</translation>
 <translation id="1845405905602899692">資訊站設定</translation>
 <translation id="1845429996559814839">限制 PIN 碼列印模式</translation>
+<translation id="184551219281109080">不允許使用 <ph name="ZSTANDARD_SHORTNAME" /> 內容編碼功能</translation>
 <translation id="1845567452014584154">控制瀏覽器可否使用 Manifest V2 擴充功能。
 
 系統將停止支援 Manifest V2 擴充功能，日後所有擴充功能都必須遷移至 V3。如要進一步瞭解遷移的資訊和時間表，請前往 https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/。
@@ -2035,6 +2037,7 @@
 <translation id="2757054304033424106">允許安裝的擴充功能/應用程式類型</translation>
 <translation id="2759224876420453487">控制使用者在多重設定檔工作階段中的行為</translation>
 <translation id="2761483219396643566">在電池供電環境下執行時的閒置警告延遲時間</translation>
+<translation id="2764750330785898947">支援 <ph name="ZSTANDARD_SHORTNAME" /> 內容編碼功能</translation>
 <translation id="2764964245640818227">控管 <ph name="PRODUCT_NAME" /> 中的 PDF 檢視器是否能為 PDF 加註。
 
       如果將這項政策設為 True 或不設定，PDF 檢視器將可以為 PDF 加註。
@@ -3429,6 +3432,10 @@
           如果不設定這項政策，系統會在初次顯示登入畫面時停用相黏鍵功能，但使用者隨時可以啟用。</translation>
 <translation id="3927291637826333102">依這些來源允許執行螢幕畫面、視窗和分頁擷取功能</translation>
 <translation id="3928726028264020458">啟用裝置 VPD 資訊回報功能</translation>
+<translation id="3929433884360648086">啟用這項功能後，即可在 Accept-Encoding 要求標頭中使用「zstd」，以及解壓縮使用 <ph name="ZSTANDARD_SHORTNAME" /> 壓縮的網路內容。如果將這項政策設為啟用或不設定，<ph name="PRODUCT_NAME" /> 將接受使用 <ph name="ZSTANDARD_SHORTNAME" /> 壓縮過的網路內容；
+如果設為停用，會關閉 <ph name="ZSTANDARD_SHORTNAME" /> 內容編碼功能。
+
+這項政策僅是暫時性措施，日後將會移除。</translation>
 <translation id="3941289958028934630">在登入畫面上停用互動朗讀功能</translation>
 <translation id="3943930334592166130">當多個憑證與 <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" /> 相符時，這項政策可控管是否要提示使用者選取用戶端憑證。
       如果將這項政策設為 Enabled，每當自動選取政策與多個憑證相符時，系統會提示使用者選取用戶端憑證。

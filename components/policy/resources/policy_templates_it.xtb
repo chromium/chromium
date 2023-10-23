@@ -738,6 +738,7 @@ Se questo criterio non viene configurato, gli utenti potranno aggiungere eccezio
 <translation id="167514072300004091">Se il criterio è impostato su 3, i siti web possono richiedere l'accesso ai dispositivi USB connessi. Se il criterio è impostato su 2, l'accesso ai dispositivi USB connessi viene negato.
 
       Se non viene configurato, i siti web possono richiedere l'accesso, ma gli utenti possono modificare l'impostazione.</translation>
+<translation id="1675391557079742340">Attiva la codifica dei contenuti <ph name="ZSTANDARD_SHORTNAME" /> per la pubblicità nell'intestazione Accept-Encoding</translation>
 <translation id="1678137412645922426">Controlla l'uso di <ph name="AES_KL_NAME" /> per la crittografia dello spazio di archiviazione degli utenti, se è supportata</translation>
 <translation id="1681688654564283886">Disattiva Tempo di utilizzo per i siti web</translation>
 <translation id="1682063842123336408">Spazio libero su disco (in GB) necessario per installare <ph name="PLUGIN_VM_NAME" />.
@@ -933,6 +934,7 @@ Questo criterio non ha effetto se viene impostato a livello di macchina.</transl
 <translation id="1844972978764975668">Consenti query al server di Google per recuperare un timestamp accurato</translation>
 <translation id="1845405905602899692">Impostazioni kiosk</translation>
 <translation id="1845429996559814839">Limita la modalità di stampa PIN</translation>
+<translation id="184551219281109080">Non consentire l'utilizzo della funzionalità di codifica dei contenuti di <ph name="ZSTANDARD_SHORTNAME" /></translation>
 <translation id="1845567452014584154">Consente di stabilire se le estensioni Manifest v2 possono essere utilizzate dal browser.
 
 Il supporto delle estensioni Manifest v2 verrà ritirato e in futuro sarà necessario eseguire la migrazione di tutte le estensioni alla versione 3. Ulteriori informazioni e tempistiche della migrazione sono disponibili all'indirizzo https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
@@ -2051,6 +2053,7 @@ Se il criterio viene disattivato o se non viene configurato, gli utenti possono 
 <translation id="2757054304033424106">Tipi di estensioni/app che possono essere installati</translation>
 <translation id="2759224876420453487">Controlla il comportamento dell'utente in una sessione profilo multiplo</translation>
 <translation id="2761483219396643566">Ritardo avviso inattività in caso di utilizzo della batteria</translation>
+<translation id="2764750330785898947">Attiva il supporto della codifica dei contenuti <ph name="ZSTANDARD_SHORTNAME" /></translation>
 <translation id="2764964245640818227">Controlla se il visualizzatore PDF in <ph name="PRODUCT_NAME" /> può aggiungere annotazioni nei PDF.
 
       Quando questo criterio non è impostato o è impostato su vero, il visualizzatore PDF può aggiungere annotazioni nei PDF.
@@ -3483,6 +3486,12 @@ Questo criterio è una soluzione alternativa temporanea e verrà rimosso dopo il
           Se questo criterio non viene impostato, inizialmente i tasti permanenti sono disattivati nella schermata di accesso, ma l'utente può attivarli in qualsiasi momento.</translation>
 <translation id="3927291637826333102">Consenti acquisizione schermate desktop, schede e finestre in base a queste origini</translation>
 <translation id="3928726028264020458">Attiva i report sulle informazioni VPD del dispositivo</translation>
+<translation id="3929433884360648086">Questa funzionalità consente l'utilizzo di "zstd" nell'intestazione della richiesta Accept-Encoding e supporta la decompressione dei contenuti web <ph name="ZSTANDARD_SHORTNAME" />compressi.
+
+Se il criterio viene attivato o se non viene configurato, <ph name="PRODUCT_NAME" /> accetterà i contenuti web compressi con <ph name="ZSTANDARD_SHORTNAME" />.
+Se il criterio viene disattivato, la funzionalità di codifica dei contenuti di <ph name="ZSTANDARD_SHORTNAME" /> viene disattivata.
+
+Questo criterio è stato pensato per essere temporaneo e verrà rimosso in futuro.</translation>
 <translation id="3941289958028934630">Disattiva la funzione di lettura vocale nella schermata di accesso</translation>
 <translation id="3943930334592166130">Questo criterio controlla se all'utente viene richiesto di selezionare un certificato client quando più certificati corrispondono a <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" />.
       Se il criterio viene impostato su Attivato, all'utente viene richiesto di selezionare un certificato client quando il criterio di selezione automatica corrisponde a più certificati.

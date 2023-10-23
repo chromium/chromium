@@ -3501,7 +3501,7 @@
 <translation id="37613671848467444">在無痕式視窗中開啟(&amp;I)</translation>
 <translation id="3761390540041101668">請清楚說明問題，並盡可能提供重現問題的步驟</translation>
 <translation id="3761556954875533505">要允許網站編輯檔案嗎？</translation>
-<translation id="3763433740586298940">你可以封鎖不喜歡的網站，Chrome 也會自動將 30 天前的網站從清單中刪除。</translation>
+<translation id="3763433740586298940">如果不想讓網站儲存造訪資訊，建議你封鎖這些網站。Chrome 也會自動將 30 天前的網站從清單中刪除。</translation>
 <translation id="3763549179847864476">「隱私權指南」返回按鈕</translation>
 <translation id="3764314093345384080">詳細版本資訊</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{與 1 個 USB 裝置通訊}other{與 # 個 USB 裝置通訊}}</translation>
@@ -7899,7 +7899,7 @@
 <translation id="7387273928653486359">可以接受</translation>
 <translation id="7387951778417998929">如要使用非系統預設的搜尋引擎，請在網址列中輸入相應的快捷字詞，然後按下你慣用的鍵盤快速鍵。你也可以在這裡變更你的預設搜尋引擎。</translation>
 <translation id="7388209873137778229">只顯示支援的裝置。</translation>
-<translation id="7388615499319468910">網站和廣告商可以瞭解廣告成效。這項設定已關閉。</translation>
+<translation id="7388615499319468910">網站和廣告主可以瞭解廣告成效。這項設定已關閉。</translation>
 <translation id="738903649531469042">將分頁新增至閱讀清單</translation>
 <translation id="7392118418926456391">病毒掃描失敗</translation>
 <translation id="7392915005464253525">重新開啟已關閉視窗(&amp;E)</translation>
@@ -9389,7 +9389,7 @@
 <translation id="8557856025359704738">下次下載日期為 <ph name="NEXT_DATE_DOWNLOAD" />。</translation>
 <translation id="8558281414737757274">Google 帳戶密碼</translation>
 <translation id="8559858985063901027">密碼金鑰</translation>
-<translation id="8559961053328923750">Chrome 會限制網站為評估廣告成效而透過瀏覽器分享的資料總量</translation>
+<translation id="8559961053328923750">對於收集用來評估廣告成效的資料，Chrome 會限制網站可透過瀏覽器分享的資料總量</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{在新視窗中開啟所有網址(&amp;N)}=1{在新視窗中開啟(&amp;N)}other{在新視窗中開啟所有 ({COUNT} 個) 網址(&amp;N)}}</translation>
 <translation id="8561206103590473338">大象</translation>
 <translation id="8561565784790166472">執行時請特別注意</translation>
@@ -9976,7 +9976,7 @@
 <translation id="9021662811137657072">系統偵測到病毒</translation>
 <translation id="902236149563113779">網站通常會追蹤你的攝影機位置，以提供遊戲或抬頭顯示導航等 AR 功能</translation>
 <translation id="9022847679183471841"><ph name="AVATAR_NAME" />目前已在這部電腦上使用這個帳戶。</translation>
-<translation id="9022871169049522985">網站和廣告商可評估廣告成效</translation>
+<translation id="9022871169049522985">網站和廣告主可評估廣告成效</translation>
 <translation id="9023015617655685412">將此分頁加入書籤...</translation>
 <translation id="902319268551617004">請使用裝置攝影機掃描 QR code，或輸入電信業者提供的啟用碼。</translation>
 <translation id="9023909777842748145">即使關閉了這項功能，你的裝置仍然可以傳送基本服務 (例如系統更新和安全防護) 所需的資訊。</translation>
