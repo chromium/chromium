@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/modules/clipboard/clipboard.h"
 
 #include <utility>
+
+#include "net/base/mime_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -61,12 +63,19 @@ ExecutionContext* Clipboard::GetExecutionContext() const {
 
 // static
 String Clipboard::ParseWebCustomFormat(const String& format) {
-  String web_custom_format;
   if (format.StartsWith(ui::kWebClipboardFormatPrefix)) {
-    web_custom_format = format.Substring(
+    String web_custom_format_suffix = format.Substring(
         static_cast<unsigned>(std::strlen(ui::kWebClipboardFormatPrefix)));
+    std::string web_top_level_mime_type;
+    std::string web_mime_sub_type;
+    if (net::ParseMimeTypeWithoutParameter(web_custom_format_suffix.Utf8(),
+                                           &web_top_level_mime_type,
+                                           &web_mime_sub_type)) {
+      return String::Format("%s/%s", web_top_level_mime_type.c_str(),
+                            web_mime_sub_type.c_str());
+    }
   }
-  return web_custom_format;
+  return g_empty_string;
 }
 
 void Clipboard::Trace(Visitor* visitor) const {
