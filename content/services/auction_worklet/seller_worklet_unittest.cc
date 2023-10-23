@@ -975,7 +975,8 @@ TEST_F(SellerWorkletTest, ScoreAdAllowComponentAuction) {
       "{desirability:1, allowComponentAuction:[32]}", 1);
 
   // With a top-level seller in `browser_signals_other_seller_`, an object must
-  // be returned, and `allowComponentAuction` must be true.
+  // be returned if the score is positive, and `allowComponentAuction` must be
+  // true.
   browser_signals_other_seller_ =
       mojom::ComponentAuctionOtherSeller::NewTopLevelSeller(
           url::Origin::Create(GURL("https://top.seller.test")));
@@ -999,11 +1000,16 @@ TEST_F(SellerWorkletTest, ScoreAdAllowComponentAuction) {
       "{desirability:1, allowComponentAuction:[32]}", 1,
       /*expected_errors=*/{},
       kExpectedComponentAuctionModifiedBidParams.Clone());
-  // Even with a desirability of 0, a false `allowComponentAuction` value is
+
+  // With a desirability <= 0, a false `allowComponentAuction` value is not
   // considered an error.
+  RunScoreAdWithReturnValueExpectingResult("0", 0);
+  RunScoreAdWithReturnValueExpectingResult("-1", 0);
   RunScoreAdWithReturnValueExpectingResult(
-      "{desirability:0, allowComponentAuction:false}", 0,
-      kExpectedErrorsOnFailure);
+      "{desirability:0, allowComponentAuction:false}", 0);
+  RunScoreAdWithReturnValueExpectingResult(
+      "{desirability:-1, allowComponentAuction:false}", 0);
+
   // A missing `allowComponentAuction` field is treated as if it were "false".
   RunScoreAdWithReturnValueExpectingResult("{desirability:1}", 0,
                                            kExpectedErrorsOnFailure);
