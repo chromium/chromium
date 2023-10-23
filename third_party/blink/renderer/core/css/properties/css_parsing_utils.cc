@@ -4307,6 +4307,7 @@ CSSValue* ConsumeBackgroundComponent(CSSPropertyID resolved_property,
     case CSSPropertyID::kWebkitMaskOrigin:
       return ConsumePrefixedBackgroundBox(range, AllowTextValue::kForbid);
     case CSSPropertyID::kBackgroundRepeat:
+    case CSSPropertyID::kMaskRepeat:
     case CSSPropertyID::kWebkitMaskRepeat:
       return ConsumeRepeatStyleValue(range);
     default:

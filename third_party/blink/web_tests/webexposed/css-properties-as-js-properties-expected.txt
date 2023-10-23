@@ -275,6 +275,7 @@ mask
 maskClip
 maskImage
 maskOrigin
+maskRepeat
 maskSize
 maskType
 mathDepth

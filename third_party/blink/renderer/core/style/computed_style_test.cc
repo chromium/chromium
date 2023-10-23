@@ -2002,10 +2002,10 @@ TEST_F(ComputedStyleTest, MaskRepeat) {
   auto* repeat_style_value = MakeGarbageCollected<CSSRepeatStyleValue>(
       CSSIdentifierValue::Create(CSSValueID::kRepeatY));
 
-  To<Longhand>(GetCSSPropertyWebkitMaskRepeat())
+  To<Longhand>(GetCSSPropertyMaskRepeat())
       .ApplyValue(state, *repeat_style_value, CSSProperty::ValueMode::kNormal);
   const ComputedStyle* style = state.TakeStyle();
-  auto* computed_value = To<Longhand>(GetCSSPropertyWebkitMaskRepeat())
+  auto* computed_value = To<Longhand>(GetCSSPropertyMaskRepeat())
                              .CSSValueFromComputedStyleInternal(
                                  *style, nullptr /* layout_object */,
                                  false /* allow_visited_style */);

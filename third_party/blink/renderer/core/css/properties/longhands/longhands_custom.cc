@@ -9445,6 +9445,20 @@ const CSSValue* WebkitMaskSize::CSSValueFromComputedStyleInternal(
   return ComputedStyleUtils::BackgroundImageOrWebkitMaskSize(style, fill_layer);
 }
 
+const CSSValue* MaskRepeat::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context) const {
+  return css_parsing_utils::ParseRepeatStyle(range);
+}
+
+const CSSValue* MaskRepeat::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  return ComputedStyleUtils::RepeatStyle(&style.MaskLayers());
+}
+
 const CSSValue* WebkitMaskRepeat::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,

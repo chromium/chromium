@@ -5917,6 +5917,21 @@
       computable: false,
     },
     {
+      name: "mask-repeat",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      style_builder_template: "mask_layer",
+      style_builder_template_args: {
+        fill_type: "Repeat",
+      },
+      runtime_flag: "CSSMaskingInterop",
+    },
+    {
+      name: "-webkit-alternative-mask-repeat",
+      alternative_of: "-webkit-mask-repeat",
+      alias_for: "mask-repeat",
+      runtime_flag: "CSSMaskingInterop",
+    },
+    {
       name: "-webkit-mask-repeat",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       style_builder_template: "mask_layer",
@@ -7550,7 +7565,7 @@
       alternative_of: "-webkit-mask",
       longhands: [
         "mask-image", "-webkit-mask-position-x",
-        "-webkit-mask-position-y", "mask-size", "-webkit-mask-repeat",
+        "-webkit-mask-position-y", "mask-size", "mask-repeat",
         "mask-origin", "mask-clip"
       ],
       property_methods: ["ParseShorthand"],
