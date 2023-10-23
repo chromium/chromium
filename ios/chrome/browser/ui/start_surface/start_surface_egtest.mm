@@ -41,6 +41,10 @@ constexpr base::TimeDelta kWaitElementTimeout = base::Seconds(2);
       "--force-fieldtrial-params=" + std::string(kStartSurface.name) +
       ".Test:" + std::string(kReturnToStartSurfaceInactiveDurationInSeconds) +
       "/" + "0");
+  // TODO(crbug.com/1494884): Fix these tests to pass with the default
+  // fieldtrial config, then remove this flag to re-enable running
+  // with the config applied.
+  config.additional_args.push_back("--disable-field-trial-config");
   return config;
 }
 
