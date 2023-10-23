@@ -97,13 +97,13 @@ export class SwitchAccess {
   }
 
   /** @return {!Mode} */
-  get mode() {
-    return this.mode_;
+  static get mode() {
+    return SwitchAccess.instance.mode_;
   }
 
   /** @param {!Mode} newMode */
-  set mode(newMode) {
-    this.mode_ = newMode;
+  static set mode(newMode) {
+    SwitchAccess.instance.mode_ = newMode;
   }
 
   /**
