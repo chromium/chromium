@@ -15,6 +15,7 @@ std::string GetHomepageURLForCompanion();
 std::string GetImageUploadURLForCompanion();
 bool GetShouldIssuePreconnectForCompanion();
 std::string GetPreconnectKeyForCompanion();
+bool GetShouldIssueProcessPrewarmingForCompanion();
 bool ShouldEnableOpenCompanionForImageSearch();
 bool ShouldEnableOpenCompanionForWebSearch();
 bool ShouldOpenLinksInCurrentTab();
