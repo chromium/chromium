@@ -421,7 +421,14 @@ public class PageInsightsMediatorTest {
                 mMediator
                         .getSheetContent()
                         .getToolbarView()
-                        .findViewById(R.id.page_insights_child_page_header)
+                        .findViewById(R.id.page_insights_child_title)
+                        .getVisibility());
+        assertEquals(
+                View.VISIBLE,
+                mMediator
+                        .getSheetContent()
+                        .getToolbarView()
+                        .findViewById(R.id.page_insights_back_button)
                         .getVisibility());
         assertEquals(
                 View.VISIBLE,
@@ -792,6 +799,28 @@ public class PageInsightsMediatorTest {
                 .share(url, title);
 
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void tapOnBottomSheet_peekState_expands() {
+        when(mBottomSheetController.getSheetState()).thenReturn(SheetState.PEEK);
+        createMediator();
+
+        mMediator.getSheetContent().getToolbarView().callOnClick();
+
+        verify(mBottomSheetController).expandSheet();
+    }
+
+    @Test
+    @MediumTest
+    public void tapOnBottomSheet_fullState_doesNotExpand() {
+        when(mBottomSheetController.getSheetState()).thenReturn(SheetState.FULL);
+        createMediator();
+
+        mMediator.getSheetContent().getToolbarView().callOnClick();
+
+        verify(mBottomSheetController, never()).expandSheet();
     }
 
     private PageInsightsMetadata getPageInsightsMetadata() {

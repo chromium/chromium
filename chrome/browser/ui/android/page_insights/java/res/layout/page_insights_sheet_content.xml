@@ -15,12 +15,12 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="@dimen/page_insights_toolbar_height">
-    <LinearLayout
+    <org.chromium.chrome.browser.page_insights.TapInterceptingLinearLayout
         android:id="@+id/page_insights_content_container"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:orientation="vertical"
-        tools:ignore="UselessParent">
+        android:layout_gravity="center_horizontal"
+        android:orientation="vertical">
 
         <!-- Privacy Notice for Page Insights Hub. -->
         <!-- We wrap the card with this FrameLayout to allow easier
@@ -32,6 +32,7 @@ found in the LICENSE file.
             android:paddingBottom="8dp"
             android:visibility="gone">
             <org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
+                android:id="@+id/page_insights_privacy_notice_card"
                 style="@style/MaterialCardStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -44,35 +45,34 @@ found in the LICENSE file.
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:padding="16dp"
+                    android:paddingStart="16dp"
+                    android:paddingVertical="8dp"
                     android:orientation="horizontal">
-                <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_gravity="center_vertical"
-                    android:src="@drawable/my_activity_icon"
-                    android:contentDescription="@string/page_insights_hub_my_activity_logo"/>
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center_vertical"
+                        android:src="@drawable/my_activity_icon"
+                        android:contentDescription="@string/page_insights_hub_my_activity_logo"/>
 
-                <TextView
-                    android:id="@+id/page_insights_privacy_notice_message"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="16dp"
-                    android:layout_gravity="center_vertical"
-                    android:ellipsize="end"
-                    android:textAppearance="@style/TextAppearance.TextSmall.Primary.Baseline" />
-
-                <ImageButton
-                    android:id="@+id/page_insights_privacy_notice_close_button"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:padding="16dp"
-                    android:layout_gravity="center_vertical|end"
-                    android:background="@android:color/transparent"
-                    android:contentDescription="@string/page_insights_hub_privacy_notice_close"
-                    android:src="@drawable/btn_close"
-                    app:tint="@color/default_icon_color_baseline" />
+                    <TextView
+                        android:id="@+id/page_insights_privacy_notice_message"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="16dp"
+                        android:layout_gravity="center_vertical"
+                        android:ellipsize="end"
+                        android:textAppearance="@style/TextAppearance.TextSmall.Primary.Baseline" />
+                    <ImageButton
+                        android:id="@+id/page_insights_privacy_notice_close_button"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_gravity="center_vertical|end"
+                        android:background="@android:color/transparent"
+                        android:contentDescription="@string/page_insights_hub_privacy_notice_close"
+                        android:src="@drawable/btn_close"
+                        app:tint="@color/default_icon_color_baseline" />
                 </LinearLayout>
             </org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>
         </FrameLayout>
@@ -106,5 +106,5 @@ found in the LICENSE file.
             android:contentDescription="@string/page_insights_loading_indicator_description"
             android:visibility="visible"/>
 
-    </LinearLayout>
+    </org.chromium.chrome.browser.page_insights.TapInterceptingLinearLayout>
 </FrameLayout>

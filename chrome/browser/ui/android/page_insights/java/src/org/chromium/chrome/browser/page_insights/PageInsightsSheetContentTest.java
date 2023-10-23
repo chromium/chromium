@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.page_insights;
 import static org.junit.Assert.assertEquals;
 
 import android.graphics.Color;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.test.filters.MediumTest;
@@ -54,6 +56,8 @@ public class PageInsightsSheetContentTest {
     private PageInsightsSheetContent mSheetContent;
     private BottomSheetTestSupport mTestSupport;
     private int mFullHeight;
+    private boolean mTapHandlerResult;
+    private boolean mTapHandlerCalled;
     private static final float ASSERTION_DELTA = 0.01f;
     private static final long MILLIS_IN_ONE_DAY = 86400000;
 
@@ -65,6 +69,7 @@ public class PageInsightsSheetContentTest {
 
     @Before
     public void setUp() throws Exception {
+        mTapHandlerCalled = false;
         ViewGroup rootView = sTestRule.getActivity().findViewById(android.R.id.content);
         TestThreadUtils.runOnUiThreadBlocking(() -> rootView.removeAllViews());
 
@@ -102,7 +107,11 @@ public class PageInsightsSheetContentTest {
                             new PageInsightsSheetContent(
                                     sTestRule.getActivity(),
                                     new View(sTestRule.getActivity()),
-                                    view -> {});
+                                    view -> {},
+                                    () -> {
+                                        mTapHandlerCalled = true;
+                                        return mTapHandlerResult;
+                                    });
                     mBottomSheetController.requestShowContent(mSheetContent, false);
                     mFullHeight =
                             sTestRule.getActivity().getResources().getDisplayMetrics().heightPixels;
@@ -149,8 +158,10 @@ public class PageInsightsSheetContentTest {
                             getToolbarViewById(R.id.page_insights_feed_header).getVisibility());
                     assertEquals(
                             View.GONE,
-                            getToolbarViewById(R.id.page_insights_child_page_header)
-                                    .getVisibility());
+                            getToolbarViewById(R.id.page_insights_back_button).getVisibility());
+                    assertEquals(
+                            View.GONE,
+                            getToolbarViewById(R.id.page_insights_child_title).getVisibility());
                     assertEquals(
                             View.VISIBLE,
                             getContentViewById(R.id.page_insights_feed_content).getVisibility());
@@ -171,8 +182,10 @@ public class PageInsightsSheetContentTest {
                             getToolbarViewById(R.id.page_insights_feed_header).getVisibility());
                     assertEquals(
                             View.GONE,
-                            getToolbarViewById(R.id.page_insights_child_page_header)
-                                    .getVisibility());
+                            getToolbarViewById(R.id.page_insights_back_button).getVisibility());
+                    assertEquals(
+                            View.GONE,
+                            getToolbarViewById(R.id.page_insights_child_title).getVisibility());
                     assertEquals(
                             View.VISIBLE,
                             getContentViewById(R.id.page_insights_feed_content).getVisibility());
@@ -237,8 +250,10 @@ public class PageInsightsSheetContentTest {
                             getToolbarViewById(R.id.page_insights_feed_header).getVisibility());
                     assertEquals(
                             View.VISIBLE,
-                            getToolbarViewById(R.id.page_insights_child_page_header)
-                                    .getVisibility());
+                            getToolbarViewById(R.id.page_insights_back_button).getVisibility());
+                    assertEquals(
+                            View.VISIBLE,
+                            getToolbarViewById(R.id.page_insights_child_title).getVisibility());
                     assertEquals(
                             View.GONE,
                             getContentViewById(R.id.page_insights_feed_content).getVisibility());
@@ -269,8 +284,10 @@ public class PageInsightsSheetContentTest {
                             getContentViewById(R.id.page_insights_feed_content).getVisibility());
                     assertEquals(
                             View.GONE,
-                            getToolbarViewById(R.id.page_insights_child_page_header)
-                                    .getVisibility());
+                            getToolbarViewById(R.id.page_insights_back_button).getVisibility());
+                    assertEquals(
+                            View.GONE,
+                            getToolbarViewById(R.id.page_insights_child_title).getVisibility());
                     assertEquals(
                             View.GONE,
                             getContentViewById(R.id.page_insights_child_content).getVisibility());
@@ -407,6 +424,100 @@ public class PageInsightsSheetContentTest {
                     assertEquals(
                             View.GONE,
                             getContentViewById(R.id.page_insights_privacy_notice).getVisibility());
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void nothingClicked_handlerNotCalled() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mSheetContent.initContent(new View(sTestRule.getActivity()));
+
+                    assertEquals(false, mTapHandlerCalled);
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void contentContainerClicked_handlerCalled() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mSheetContent.initContent(new View(sTestRule.getActivity()));
+
+                    getContentViewById(R.id.page_insights_content_container).callOnClick();
+
+                    assertEquals(true, mTapHandlerCalled);
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void toolbarViewClicked_handlerCalled() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mSheetContent.initContent(new View(sTestRule.getActivity()));
+
+                    mSheetContent.getToolbarView().callOnClick();
+
+                    assertEquals(true, mTapHandlerCalled);
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void contentContainerOnInterceptTouchEvent_actionUp_handlerTrue_true() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTapHandlerResult = true;
+                    mSheetContent.initContent(new View(sTestRule.getActivity()));
+
+                    assertEquals(
+                            true,
+                            ((LinearLayout)
+                                            getContentViewById(
+                                                    R.id.page_insights_content_container))
+                                    .onInterceptTouchEvent(
+                                            MotionEvent.obtain(
+                                                    0, 0, MotionEvent.ACTION_UP, 0, 0, 0)));
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void contentContainerOnInterceptTouchEvent_actionUp_handlerFalse_false() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTapHandlerResult = false;
+                    mSheetContent.initContent(new View(sTestRule.getActivity()));
+
+                    assertEquals(
+                            false,
+                            ((LinearLayout)
+                                            getContentViewById(
+                                                    R.id.page_insights_content_container))
+                                    .onInterceptTouchEvent(
+                                            MotionEvent.obtain(
+                                                    0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0)));
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void contentContainerOnInterceptTouchEvent_actionDown_handlerTrue_false() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTapHandlerResult = true;
+                    mSheetContent.initContent(new View(sTestRule.getActivity()));
+
+                    assertEquals(
+                            false,
+                            ((LinearLayout)
+                                            getContentViewById(
+                                                    R.id.page_insights_content_container))
+                                    .onInterceptTouchEvent(
+                                            MotionEvent.obtain(
+                                                    0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0)));
                 });
     }
 
