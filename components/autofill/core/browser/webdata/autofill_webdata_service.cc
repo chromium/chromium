@@ -108,7 +108,7 @@ void AutofillWebDataService::AddAutofillProfile(
 }
 
 void AutofillWebDataService::SetAutofillProfileChangedCallback(
-    base::RepeatingCallback<void(const AutofillProfileDeepChange&)> change_cb) {
+    base::RepeatingCallback<void(const AutofillProfileChange&)> change_cb) {
   autofill_backend_->SetAutofillProfileChangedCallback(std::move(change_cb));
 }
 

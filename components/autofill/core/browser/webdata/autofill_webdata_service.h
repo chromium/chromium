@@ -106,8 +106,7 @@ class AutofillWebDataService : public WebDataServiceBase {
       const std::vector<AutofillEntry>& autofill_entries);
 
   void SetAutofillProfileChangedCallback(
-      base::RepeatingCallback<void(const AutofillProfileDeepChange&)>
-          change_cb);
+      base::RepeatingCallback<void(const AutofillProfileChange&)> change_cb);
 
   // Schedules a task to add a local IBAN to the web database.
   void AddLocalIban(const Iban& iban);

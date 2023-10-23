@@ -152,7 +152,7 @@ AutofillWebDataBackendImpl::~AutofillWebDataBackendImpl() {
 }
 
 void AutofillWebDataBackendImpl::SetAutofillProfileChangedCallback(
-    base::RepeatingCallback<void(const AutofillProfileDeepChange&)> change_cb) {
+    base::RepeatingCallback<void(const AutofillProfileChange&)> change_cb) {
   // The callback must be set only once, but it can be reset in tests.
   if (!on_autofill_profile_changed_cb_.is_null()) {
     CHECK_IS_TEST();
@@ -323,9 +323,7 @@ WebDatabase::State AutofillWebDataBackendImpl::AddAutofillProfile(
 
   if (!on_autofill_profile_changed_cb_.is_null()) {
     ui_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(on_autofill_profile_changed_cb_,
-                                  AutofillProfileDeepChange(
-                                      AutofillProfileChange::ADD, profile)));
+        FROM_HERE, base::BindOnce(on_autofill_profile_changed_cb_, change));
   }
 
   ReportResult(Result::kAddAutofillProfile_Success);
@@ -359,9 +357,7 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateAutofillProfile(
 
   if (!on_autofill_profile_changed_cb_.is_null()) {
     ui_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(on_autofill_profile_changed_cb_,
-                                  AutofillProfileDeepChange(
-                                      AutofillProfileChange::UPDATE, profile)));
+        FROM_HERE, base::BindOnce(on_autofill_profile_changed_cb_, change));
   }
 
   ReportResult(Result::kUpdateAutofillProfile_Success);
@@ -394,10 +390,7 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveAutofillProfile(
 
   if (!on_autofill_profile_changed_cb_.is_null()) {
     ui_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(on_autofill_profile_changed_cb_,
-                       AutofillProfileDeepChange(AutofillProfileChange::REMOVE,
-                                                 *profile.get())));
+        FROM_HERE, base::BindOnce(on_autofill_profile_changed_cb_, change));
   }
 
   ReportResult(Result::kRemoveAutofillProfile_Success);

@@ -836,6 +836,12 @@ class PersonalDataManager : public KeyedService,
       alternative_state_name_map_updater_;
 
  private:
+  // A profile change with a boolean representing if the change is ongoing or
+  // not. "Ongoing" means that the change is taking place asynchronously on the
+  // DB sequence at the moment. Ongoing changes are still part of
+  // `ongoing_profile_changes_` to prevent other changes from being scheduled.
+  using QueuedAutofillProfileChange = std::pair<AutofillProfileChange, bool>;
+
   // Sets (or resets) the Sync service, which may not have started yet
   // but its preferences can already be queried. Can also be a nullptr
   // if it is disabled by CLI.
@@ -860,7 +866,7 @@ class PersonalDataManager : public KeyedService,
   void RemoveProfileFromDB(const std::string& guid);
 
   // Triggered when a profile is added/updated/removed on db.
-  void OnAutofillProfileChanged(const AutofillProfileDeepChange& change);
+  void OnAutofillProfileChanged(const AutofillProfileChange& change);
 
   // Triggered when all the card art image fetches have been completed,
   // regardless of whether all of them succeeded.
@@ -932,7 +938,7 @@ class PersonalDataManager : public KeyedService,
   std::unique_ptr<PersonalDataManagerCleaner> personal_data_manager_cleaner_;
 
   // A timely ordered list of ongoing changes for each profile.
-  std::unordered_map<std::string, std::deque<AutofillProfileDeepChange>>
+  std::unordered_map<std::string, std::deque<QueuedAutofillProfileChange>>
       ongoing_profile_changes_;
 
   // The identity manager that this instance uses. Must outlive this instance.

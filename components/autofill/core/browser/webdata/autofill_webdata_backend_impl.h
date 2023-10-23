@@ -61,8 +61,7 @@ class AutofillWebDataBackendImpl
       delete;
 
   void SetAutofillProfileChangedCallback(
-      base::RepeatingCallback<void(const AutofillProfileDeepChange&)>
-          change_cb);
+      base::RepeatingCallback<void(const AutofillProfileChange&)> change_cb);
 
   // AutofillWebDataBackend implementation.
   void AddObserver(
@@ -280,7 +279,7 @@ class AutofillWebDataBackendImpl
 
   base::RepeatingCallback<void(syncer::ModelType)>
       on_autofill_changed_by_sync_callback_;
-  base::RepeatingCallback<void(const AutofillProfileDeepChange&)>
+  base::RepeatingCallback<void(const AutofillProfileChange&)>
       on_autofill_profile_changed_cb_;
 };
 
