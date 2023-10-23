@@ -219,6 +219,8 @@ class SignedExchangeHandlerTest
   }
 
   void TearDown() override {
+    source_ = nullptr;
+    mock_cert_fetcher_factory_ =nullptr;
     if (original_ignore_errors_spki_list_) {
       SignedExchangeCertificateChain::IgnoreErrorsSPKIList::
           SetInstanceForTesting(std::move(original_ignore_errors_spki_list_));
@@ -394,12 +396,12 @@ class SignedExchangeHandlerTest
 
  protected:
   const base::HistogramTester histogram_tester_;
-  raw_ptr<MockSignedExchangeCertFetcherFactory, DanglingUntriaged>
+  raw_ptr<MockSignedExchangeCertFetcherFactory>
       mock_cert_fetcher_factory_;
   std::unique_ptr<net::CertVerifier> cert_verifier_;
   std::unique_ptr<MockCTPolicyEnforcer> mock_ct_policy_enforcer_;
   std::unique_ptr<MockSCTAuditingDelegate> mock_sct_auditing_delegate_;
-  raw_ptr<net::MockSourceStream, DanglingUntriaged> source_;
+  raw_ptr<net::MockSourceStream> source_;
   std::unique_ptr<SignedExchangeHandler> handler_;
 
  private:
