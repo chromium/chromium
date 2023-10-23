@@ -606,6 +606,17 @@ public final class ChromePreferenceKeys {
     public static final String PIH_PRIVACY_NOTICE_CLOSED =
             "Chrome.PageInsightsHub.PrivacyNoticeClosedByUser";
 
+    /** Indicates the latest timestamp when Privacy Notice was shown to the user */
+    public static final String PIH_PRIVACY_NOTICE_LAST_SHOWN_TIMESTAMP =
+            "Chrome.PageInsightsHub.PageInsightsHubLastOpenedTimestamp";
+
+    /**
+     * Indicates the number of times Privacy Notice of Page Insights Hub was opened by user till now
+     * . The privacy notice is not shown after it has been shown 3 times.
+     */
+    public static final String PIH_PRIVACY_NOTICE_SHOWN_TOTAL_COUNT =
+            "Chrome.PageInsightsHub.NumberOfTimesPageInsightsHubOpenedByUser";
+
     /**
      * Save the timestamp of the last time that we record metrics on whether user enables the price
      * tracking annotations.
@@ -1072,6 +1083,8 @@ public final class ChromePreferenceKeys {
                 PASSWORD_PROTECTION_ACCOUNTS,
                 PERSISTENT_OFFLINE_CONTENT_AVAILABILITY_STATUS,
                 PIH_PRIVACY_NOTICE_CLOSED,
+                PIH_PRIVACY_NOTICE_LAST_SHOWN_TIMESTAMP,
+                PIH_PRIVACY_NOTICE_SHOWN_TOTAL_COUNT,
                 PRICE_TRACKING_ANNOTATIONS_ENABLED_METRICS_TIMESTAMP,
                 PRICE_TRACKING_CHROME_MANAGED_NOTIFICATIONS_TIMESTAMPS,
                 PRICE_TRACKING_PRICE_ALERTS_MESSAGE_CARD,

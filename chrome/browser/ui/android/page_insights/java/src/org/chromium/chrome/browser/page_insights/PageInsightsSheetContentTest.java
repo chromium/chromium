@@ -55,6 +55,7 @@ public class PageInsightsSheetContentTest {
     private BottomSheetTestSupport mTestSupport;
     private int mFullHeight;
     private static final float ASSERTION_DELTA = 0.01f;
+    private static final long MILLIS_IN_ONE_DAY = 86400000;
 
     @BeforeClass
     public static void setUpSuite() {
@@ -159,15 +160,17 @@ public class PageInsightsSheetContentTest {
 
     @Test
     @SmallTest
-    public void setFeedpage() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            View testView = new View(sTestRule.getActivity());
+    public void initContent() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    View testView = new View(sTestRule.getActivity());
+                    mSheetContent.initContent(testView);
+                    ViewGroup feedView =
+                            mSheetContent
+                                    .getContentView()
+                                    .findViewById(R.id.page_insights_feed_content);
 
-            mSheetContent.setFeedPage(testView);
-            ViewGroup feedView =
-                    mSheetContent.getContentView().findViewById(R.id.page_insights_feed_content);
-
-            assertEquals(feedView.getChildAt(0), testView);
+                    assertEquals(feedView.getChildAt(0), testView);
         });
     }
 
@@ -221,6 +224,10 @@ public class PageInsightsSheetContentTest {
     public void privacyNoticeShownForFirstTime() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    View testView = new View(sTestRule.getActivity());
+                    setPrivacyNoticePreferences(
+                            false, System.currentTimeMillis() - MILLIS_IN_ONE_DAY, 0);
+                    mSheetContent.initContent(testView);
                     mSheetContent.showFeedPage();
                     float ratio = ((float) mSheetContent.getPeekHeight()) / ((float) mFullHeight);
                     assertEquals(
@@ -254,10 +261,8 @@ public class PageInsightsSheetContentTest {
     public void sharedPreferenceSetTruePrivacyNoticeNotShown() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    SharedPreferencesManager sharedPreferencesManager =
-                            ChromeSharedPreferences.getInstance();
-                    sharedPreferencesManager.writeBoolean(
-                            ChromePreferenceKeys.PIH_PRIVACY_NOTICE_CLOSED, true);
+                    setPrivacyNoticePreferences(
+                            true, System.currentTimeMillis() - MILLIS_IN_ONE_DAY, 1);
                     mSheetContent.showFeedPage();
                     float ratio = ((float) mSheetContent.getPeekHeight()) / ((float) mFullHeight);
                     assertEquals(
@@ -270,11 +275,84 @@ public class PageInsightsSheetContentTest {
                 });
     }
 
-    private View getToolbarViewById(int viewId){
+    @Test
+    @MediumTest
+    public void privacyNoticeOpenedFourTimesDifferentDayNotShownOnFourthDay() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    View testView = new View(sTestRule.getActivity());
+                    SharedPreferencesManager sharedPreferencesManager =
+                            ChromeSharedPreferences.getInstance();
+                    sharedPreferencesManager.writeBoolean(
+                            ChromePreferenceKeys.PIH_PRIVACY_NOTICE_CLOSED, false);
+                    sharedPreferencesManager.writeInt(
+                            ChromePreferenceKeys.PIH_PRIVACY_NOTICE_SHOWN_TOTAL_COUNT, 0);
+
+                    for (int i = 1; i <= 4; i++) {
+                        sharedPreferencesManager.writeLong(
+                                ChromePreferenceKeys.PIH_PRIVACY_NOTICE_LAST_SHOWN_TIMESTAMP,
+                                System.currentTimeMillis() + i * MILLIS_IN_ONE_DAY);
+                        mSheetContent.initContent(testView);
+                        mSheetContent.showFeedPage();
+                        if (i <= 3) {
+                            assertEquals(
+                                    View.VISIBLE,
+                                    getContentViewById(R.id.page_insights_privacy_notice)
+                                            .getVisibility());
+                        }
+                    }
+
+                    assertEquals(
+                            View.GONE,
+                            getContentViewById(R.id.page_insights_privacy_notice).getVisibility());
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void privacyNoticeShownOnceEachDay() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    setPrivacyNoticePreferences(
+                            false, System.currentTimeMillis() - MILLIS_IN_ONE_DAY, 0);
+                    View testView = new View(sTestRule.getActivity());
+
+                    mSheetContent.initContent(testView);
+                    mSheetContent.showFeedPage();
+
+                    assertEquals(
+                            View.VISIBLE,
+                            getContentViewById(R.id.page_insights_privacy_notice).getVisibility());
+
+                    mSheetContent.initContent(testView);
+                    mSheetContent.showFeedPage();
+
+                    assertEquals(
+                            View.GONE,
+                            getContentViewById(R.id.page_insights_privacy_notice).getVisibility());
+                });
+    }
+
+    private View getToolbarViewById(int viewId) {
         return mSheetContent.getToolbarView().findViewById(viewId);
     }
 
     private View getContentViewById(int viewId) {
         return mSheetContent.getContentView().findViewById(viewId);
+    }
+
+    private void setPrivacyNoticePreferences(
+            boolean privacyNoticeClosed,
+            long privacyNoticeLastShownTimestamp,
+            int numberOfTimesPrivacyNoticeShown) {
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
+        sharedPreferencesManager.writeBoolean(
+                ChromePreferenceKeys.PIH_PRIVACY_NOTICE_CLOSED, privacyNoticeClosed);
+        sharedPreferencesManager.writeLong(
+                ChromePreferenceKeys.PIH_PRIVACY_NOTICE_LAST_SHOWN_TIMESTAMP,
+                privacyNoticeLastShownTimestamp);
+        sharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.PIH_PRIVACY_NOTICE_SHOWN_TOTAL_COUNT,
+                numberOfTimesPrivacyNoticeShown);
     }
 }

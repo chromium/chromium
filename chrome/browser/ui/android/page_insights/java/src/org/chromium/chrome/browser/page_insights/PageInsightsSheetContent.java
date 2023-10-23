@@ -22,6 +22,9 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
+import java.text.DateFormat;
+import java.util.Date;
+
 public class PageInsightsSheetContent implements BottomSheetContent {
     /** Ratio of the height when in full mode. */
     private static final float FULL_HEIGHT_RATIO = 0.9f;
@@ -32,15 +35,21 @@ public class PageInsightsSheetContent implements BottomSheetContent {
 
     private ViewGroup mToolbarView;
     private ViewGroup mSheetContentView;
+    private boolean mShouldPrivacyNoticeBeShown;
     private int mFullScreenHeight;
-    private final SharedPreferencesManager mSharedPreferencesManager =
+    private Context mContext;
+    private Callback<View> mOnPrivacyNoticeLinkClickCallback;
+    private static final SharedPreferencesManager sSharedPreferencesManager =
             ChromeSharedPreferences.getInstance();
+    private static final long INVALID_TIMESTAMP = -1;
 
     /**
      * Constructor.
+     *
      * @param context An Android context.
      */
-    public PageInsightsSheetContent(Context context, Callback<View> myActivityUrlCallback) {
+    public PageInsightsSheetContent(
+            Context context, Callback<View> onPrivacyNoticeLinkClickCallback) {
         // TODO(kamalchoudhury): Inflate with loading indicator instead
         mToolbarView = (ViewGroup) LayoutInflater.from(context).inflate(
             R.layout.page_insights_sheet_toolbar, null);
@@ -49,7 +58,8 @@ public class PageInsightsSheetContent implements BottomSheetContent {
             .setOnClickListener((view)-> onBackButtonPressed());
         mSheetContentView = (ViewGroup) LayoutInflater.from(context).inflate(
                 R.layout.page_insights_sheet_content, null);
-        preparePrivacyNotice(context, myActivityUrlCallback);
+        mContext = context;
+        mOnPrivacyNoticeLinkClickCallback = onPrivacyNoticeLinkClickCallback;
         mFullScreenHeight = context.getResources().getDisplayMetrics().heightPixels;
     }
 
@@ -93,7 +103,7 @@ public class PageInsightsSheetContent implements BottomSheetContent {
     @Override
     public int getPeekHeight() {
         // TODO(b/282739536): Find the right peeking height value from the feed view dimension.
-        if (shouldShowPrivacyNotice()) {
+        if (mShouldPrivacyNoticeBeShown) {
             return (int) (PEEK_HEIGHT_RATIO_WITH_PRIVACY_NOTICE * mFullScreenHeight);
         }
         return (int) (PEEK_HEIGHT_RATIO_WITHOUT_PRIVACY_NOTICE * mFullScreenHeight);
@@ -160,12 +170,15 @@ public class PageInsightsSheetContent implements BottomSheetContent {
         setVisibilityById(mToolbarView, R.id.page_insights_child_page_header, View.GONE);
         setVisibilityById(mSheetContentView, R.id.page_insights_feed_content, View.VISIBLE);
         setVisibilityById(mSheetContentView, R.id.page_insights_child_content, View.GONE);
-        if (shouldShowPrivacyNotice()) {
+        if (mShouldPrivacyNoticeBeShown) {
             setVisibilityById(mSheetContentView, R.id.page_insights_privacy_notice, View.VISIBLE);
+        } else {
+            setVisibilityById(mSheetContentView, R.id.page_insights_privacy_notice, View.GONE);
         }
     }
 
-    void setFeedPage(View feedPageView) {
+    void initContent(View feedPageView) {
+        initPrivacyNotice();
         ViewGroup feedContentView = mSheetContentView.findViewById(R.id.page_insights_feed_content);
         feedContentView.removeAllViews();
         feedContentView.addView(feedPageView);
@@ -189,27 +202,72 @@ public class PageInsightsSheetContent implements BottomSheetContent {
         mViewGroup.findViewById(id).setVisibility(visibility);
     }
 
-    private boolean shouldShowPrivacyNotice() {
-        return !mSharedPreferencesManager.readBoolean(
-                ChromePreferenceKeys.PIH_PRIVACY_NOTICE_CLOSED, false);
+    private void initPrivacyNotice() {
+        /*
+         * The function checks if the privacy notice should be shown and inflates the privacy notice
+         * UI if it has to be shown. The privacy notice should appear in Page Insights Hub (PIH) the
+         * first time PIH is opened each day, until either the user dismisses it (by tapping X), or
+         * the privacy notice has been shown 3 times.
+         */
+        mShouldPrivacyNoticeBeShown = false;
+        if (sSharedPreferencesManager.readBoolean(
+                ChromePreferenceKeys.PIH_PRIVACY_NOTICE_CLOSED, false)) {
+            return;
+        }
+        int numberOfTimesPrivacyNoticeShown =
+                sSharedPreferencesManager.readInt(
+                        ChromePreferenceKeys.PIH_PRIVACY_NOTICE_SHOWN_TOTAL_COUNT, 0);
+        if (numberOfTimesPrivacyNoticeShown >= 3) {
+            return;
+        }
+        long currentTimestamp = System.currentTimeMillis();
+        if (!hasPrivacyNoticeBeenShownToday(currentTimestamp)) {
+            updatePrivacyNoticePreferences(currentTimestamp, numberOfTimesPrivacyNoticeShown);
+            preparePrivacyNoticeView();
+            mShouldPrivacyNoticeBeShown = true;
+        }
+    }
+
+    private static void updatePrivacyNoticePreferences(
+            long currentTimestamp, int numberOfTimesPrivacyNoticeShown) {
+        sSharedPreferencesManager.writeLong(
+                ChromePreferenceKeys.PIH_PRIVACY_NOTICE_LAST_SHOWN_TIMESTAMP, currentTimestamp);
+        sSharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.PIH_PRIVACY_NOTICE_SHOWN_TOTAL_COUNT,
+                numberOfTimesPrivacyNoticeShown + 1);
+    }
+
+    private static boolean hasPrivacyNoticeBeenShownToday(long currentTimestamp) {
+        DateFormat dateFormat = DateFormat.getDateInstance();
+        String currentDate = dateFormat.format(new Date(currentTimestamp));
+        long lastPihTimestamp =
+                sSharedPreferencesManager.readLong(
+                        ChromePreferenceKeys.PIH_PRIVACY_NOTICE_LAST_SHOWN_TIMESTAMP, -1);
+        return (lastPihTimestamp != INVALID_TIMESTAMP)
+                && (currentDate.compareTo(dateFormat.format(new Date(lastPihTimestamp))) == 0);
     }
 
     private void onPrivacyNoticeClosed() {
-        mSharedPreferencesManager.writeBoolean(
+        sSharedPreferencesManager.writeBoolean(
                 ChromePreferenceKeys.PIH_PRIVACY_NOTICE_CLOSED, true);
         setVisibilityById(mSheetContentView, R.id.page_insights_privacy_notice, View.GONE);
     }
 
-    private void preparePrivacyNotice(Context context, Callback<View> myActivityUrlCallback) {
+    private void preparePrivacyNoticeView() {
         mSheetContentView.findViewById(R.id.page_insights_privacy_notice_close_button)
                 .setOnClickListener((view) -> onPrivacyNoticeClosed());
         TextView privacyNoticeMessage =
                 mSheetContentView.findViewById(R.id.page_insights_privacy_notice_message);
         privacyNoticeMessage.setMovementMethod(LinkMovementMethod.getInstance());
         privacyNoticeMessage.setText(
-                SpanApplier.applySpans(context.getString(R.string.page_insights_hub_privacy_notice),
-                        new SpanApplier.SpanInfo("<link>", "</link>",
-                                new NoUnderlineClickableSpan(context, R.color.default_bg_color_blue,
-                                        myActivityUrlCallback))));
+                SpanApplier.applySpans(
+                        mContext.getString(R.string.page_insights_hub_privacy_notice),
+                        new SpanApplier.SpanInfo(
+                                "<link>",
+                                "</link>",
+                                new NoUnderlineClickableSpan(
+                                        mContext,
+                                        R.color.default_bg_color_blue,
+                                        mOnPrivacyNoticeLinkClickCallback))));
     }
 }
