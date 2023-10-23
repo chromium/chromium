@@ -466,6 +466,7 @@ class ImportNotifier:
 
         for index, bug in enumerate(bugs, start=1):
             buganizer_component_id = BUGANIZER_WPT_COMPONENT
+            issue_link = None
             if buganizer_api and USE_BUGANIZER:
                 if 'summary' not in bug.body:
                     _log.warning('failed to file bug')
@@ -489,14 +490,15 @@ class ImportNotifier:
                         cc=cc,
                         status="New",
                         componentId=buganizer_component_id)
+                    issue_link = f'b/{buganizer_res["issue_id"]}'
                 except Exception as e:
                     _log.warning('buganizer api call to new issue failed')
                     _log.warning(e)
             else:
                 # using monorail
                 response = api.insert_issue(bug)
-                _log.info('[%d] Filed bug: %s', index,
-                          MonorailIssue.crbug_link(response['id']))
+                issue_link = MonorailIssue.crbug_link(response['id'])
+            _log.info('[%d] Filed bug: %s', index, issue_link)
 
     def _get_buganizer_api(self):
         return self._buganizer_api()
