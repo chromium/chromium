@@ -4,6 +4,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/sync/base/features.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/ntp_tiles/tab_resumption/tab_resumption_prefs.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
@@ -90,7 +91,7 @@ NSString* HostnameFromGURL(GURL URL) {
   config.additional_args.push_back(
       "--enable-features=" + std::string(kTabResumption.name) + ":" +
       kTabResumptionParameterName + "/" + kTabResumptionAllTabsParam + "," +
-      kMagicStack.name);
+      kMagicStack.name + "," + syncer::kSyncSessionOnVisibilityChanged.name);
   return config;
 }
 

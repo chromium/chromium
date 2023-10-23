@@ -8,6 +8,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/sessions/core/serialized_navigation_driver.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/page_transition_conversion.h"
 #include "components/sync/base/time.h"
 #include "components/sync_device_info/device_info_proto_enum_util.h"
@@ -200,9 +201,11 @@ void SetSessionTabFromSyncData(const sync_pb::SessionTab& sync_data,
   tab->extension_app_id = sync_data.extension_app_id();
   tab->user_agent_override = sessions::SerializedUserAgentOverride();
   tab->timestamp = timestamp;
-  tab->last_active_time =
-      base::Time::UnixEpoch() +
-      base::Milliseconds(sync_data.last_active_time_unix_epoch_millis());
+  if (base::FeatureList::IsEnabled(syncer::kSyncSessionOnVisibilityChanged)) {
+    tab->last_active_time =
+        base::Time::UnixEpoch() +
+        base::Milliseconds(sync_data.last_active_time_unix_epoch_millis());
+  }
   tab->navigations.clear();
   tab->navigations.reserve(sync_data.navigation_size());
   for (int i = 0; i < sync_data.navigation_size(); ++i) {
@@ -222,8 +225,10 @@ sync_pb::SessionTab SessionTabToSyncData(
   sync_data.set_current_navigation_index(tab.current_navigation_index);
   sync_data.set_pinned(tab.pinned);
   sync_data.set_extension_app_id(tab.extension_app_id);
-  sync_data.set_last_active_time_unix_epoch_millis(
-      (tab.last_active_time - base::Time::UnixEpoch()).InMilliseconds());
+  if (base::FeatureList::IsEnabled(syncer::kSyncSessionOnVisibilityChanged)) {
+    sync_data.set_last_active_time_unix_epoch_millis(
+        (tab.last_active_time - base::Time::UnixEpoch()).InMilliseconds());
+  }
   for (const SerializedNavigationEntry& navigation : tab.navigations) {
     SessionNavigationToSyncData(navigation).Swap(sync_data.add_navigation());
   }
