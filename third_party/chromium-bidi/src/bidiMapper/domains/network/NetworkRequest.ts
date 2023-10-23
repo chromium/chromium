@@ -441,12 +441,19 @@ export class NetworkRequest {
     this.#eventManager.registerPromiseEvent(
       this.#beforeRequestSentDeferred.then((result) => {
         if (result.kind === 'success') {
-          return {
-            kind: 'success',
-            value: Object.assign(this.#getBeforeRequestEvent(), {
-              type: 'event' as const,
-            }),
-          };
+          try {
+            return {
+              kind: 'success',
+              value: Object.assign(this.#getBeforeRequestEvent(), {
+                type: 'event' as const,
+              }),
+            };
+          } catch (error) {
+            return {
+              kind: 'error',
+              error: error instanceof Error ? error : new Error('Unknown'),
+            };
+          }
         }
         return result;
       }),
@@ -478,12 +485,19 @@ export class NetworkRequest {
     this.#eventManager.registerPromiseEvent(
       this.#responseCompletedDeferred.then((result) => {
         if (result.kind === 'success') {
-          return {
-            kind: 'success',
-            value: Object.assign(this.#getResponseReceivedEvent(), {
-              type: 'event' as const,
-            }),
-          };
+          try {
+            return {
+              kind: 'success',
+              value: Object.assign(this.#getResponseReceivedEvent(), {
+                type: 'event' as const,
+              }),
+            };
+          } catch (error) {
+            return {
+              kind: 'error',
+              error: error instanceof Error ? error : new Error('Unknown'),
+            };
+          }
         }
         return result;
       }),
