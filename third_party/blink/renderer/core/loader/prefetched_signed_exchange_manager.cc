@@ -92,7 +92,7 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
   // URLLoader methods:
   void LoadSynchronously(std::unique_ptr<network::ResourceRequest> request,
                          scoped_refptr<const SecurityOrigin> top_frame_origin,
-                         bool pass_response_pipe_to_client,
+                         bool download_to_blob,
                          bool no_mime_sniffing,
                          base::TimeDelta timeout_interval,
                          URLLoaderClient* client,
