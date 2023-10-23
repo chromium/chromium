@@ -201,6 +201,7 @@ crbug.com/949003 http/tests/printing/cross-site-frame.html [ Failure Pass ]
 # with the first bug fixed. Will be fixed when the second bug is fixed (crrev.com/c/3752748).
 
 # --- Skia roll test suppressions
+crbug.com/1494899 virtual/oopr-canvas2d/fast/canvas/canvas-ellipse-zero-lineto.html [ Failure Pass ]
 # --- END Skia roll test suppresions
 
 
