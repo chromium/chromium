@@ -10241,16 +10241,6 @@ const FeatureEntry kFeatureEntries[] = {
      MULTI_VALUE_TYPE(kPrintingPpdChannelChoices)},
 #endif
 
-#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) || \
-    BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-    {"data-retention-policies-disable-sync-types-needed",
-     flag_descriptions::kDataRetentionPoliciesDisableSyncTypesNeededName,
-     flag_descriptions::kDataRetentionPoliciesDisableSyncTypesNeededDescription,
-     kOsLinux | kOsWin | kOsMac | kOsCrOS | kOsAndroid,
-     FEATURE_VALUE_TYPE(browsing_data::features::
-                            kDataRetentionPoliciesDisableSyncTypesNeeded)},
-#endif
-
     {"storage-buckets", flag_descriptions::kStorageBucketsName,
      flag_descriptions::kStorageBucketsDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kStorageBuckets)},
