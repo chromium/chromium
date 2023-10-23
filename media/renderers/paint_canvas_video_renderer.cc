@@ -779,12 +779,25 @@ VideoPixelFormatAsSkYUVAInfoValues(VideoPixelFormat format) {
 }
 
 // Controls whether the one-copy path when copying a VideoFrame to a GL texture
-// is enabled or disabled. The one-copy path being enabled is the default
-// production state - this Feature is used to be able to disable this path for
-// performance testing.
+// is enabled or disabled. This codepath is disabled on Android by default
+// pending the full transition of the codebase to the passthrough decoder and
+// the transition of this function away from using legacy mailboxes to do 1-copy
+// upload (see crbug.com/1494365 for details). On Android, this Feature serves
+// as a reverse-killswitch while we roll out the complete disabling of this
+// codepath.
+// TODO(crbug.com/1494365): Remove the usage of this feature for Android once
+// explicit disabling has safely rolled out and make
+// UploadOfVideoFrameToGLTexture() unconditionally disabled on Android.
+// On all other platforms, the one-copy path being enabled is the default
+// production state, with this Feature being used to be able to disable this
+// path for performance testing.
 BASE_FEATURE(kOneCopyUploadOfVideoFrameToGLTexture,
              "OneCopyUploadOfVideoFrameToGLTexture",
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 // Whether SharedImage is used to perform direct GPU-GPU VideoFrame to GL
 // texture uploads (when allowed) rather than legacy mailboxes.
