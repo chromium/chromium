@@ -777,8 +777,10 @@ void ExtensionTelemetryService::DumpReportForTest(
           for (const auto& remote_host_info_pb : remote_host_infos) {
             ss << "    RemoteHostInfo:\n"
                << "      URL: " << remote_host_info_pb.url() << "\n"
-               << "      ConnectionProtocal: "
+               << "      ConnectionProtocol: "
                << remote_host_info_pb.connection_protocol() << "\n"
+               << "      ContactedBy: " << remote_host_info_pb.contacted_by()
+               << "\n"
                << "      count: " << remote_host_info_pb.contact_count()
                << "\n";
           }

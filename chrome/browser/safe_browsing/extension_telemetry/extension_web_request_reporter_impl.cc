@@ -75,8 +75,11 @@ void ExtensionWebRequestReporterImpl::SendWebRequestData(
     protocol = safe_browsing::RemoteHostInfo::WEBSOCKET;
   }
 
+  // TODO(crbug.com/1494413): Get contact initiator value from the renderer
+  // throttles.
   auto remote_host_signal = std::make_unique<RemoteHostContactedSignal>(
-      origin_extension_id, telemetry_url, protocol);
+      origin_extension_id, telemetry_url, protocol,
+      safe_browsing::RemoteHostInfo::EXTENSION);
   telemetry_service->AddSignal(std::move(remote_host_signal));
 }
 

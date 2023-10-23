@@ -174,6 +174,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
     EXPECT_EQ(remote_host_info.url(), kExtensionContactedHost);
     EXPECT_EQ(remote_host_info.connection_protocol(),
               RemoteHostInfo::HTTP_HTTPS);
+    EXPECT_EQ(remote_host_info.contacted_by(), RemoteHostInfo::EXTENSION);
     const RemoteHostInfo& remote_host_contacted_info_websocket =
         remote_host_contacted_info.remote_host(1);
     EXPECT_EQ(remote_host_contacted_info_websocket.contact_count(),
@@ -182,6 +183,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
               kExtensionContactedHost);
     EXPECT_EQ(remote_host_contacted_info_websocket.connection_protocol(),
               RemoteHostInfo::WEBSOCKET);
+    EXPECT_EQ(remote_host_contacted_info_websocket.contacted_by(),
+              RemoteHostInfo::EXTENSION);
   }
 }
 
@@ -677,6 +680,7 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_EQ(remote_host_info.url(), kExtensionContactedHost);
     EXPECT_EQ(remote_host_info.connection_protocol(),
               RemoteHostInfo::HTTP_HTTPS);
+    EXPECT_EQ(remote_host_info.contacted_by(), RemoteHostInfo::EXTENSION);
     const RemoteHostInfo& remote_host_contacted_info_websocket =
         remote_host_contacted_info.remote_host(1);
     EXPECT_EQ(remote_host_contacted_info_websocket.contact_count(), 1u);
@@ -684,6 +688,8 @@ IN_PROC_BROWSER_TEST_P(
               kExtensionContactedHost);
     EXPECT_EQ(remote_host_contacted_info_websocket.connection_protocol(),
               RemoteHostInfo::WEBSOCKET);
+    EXPECT_EQ(remote_host_contacted_info_websocket.contacted_by(),
+              RemoteHostInfo::EXTENSION);
   }
   // Using MergeHistogramDeltasForTesting syncs the browser and renderer process
   // logs.
