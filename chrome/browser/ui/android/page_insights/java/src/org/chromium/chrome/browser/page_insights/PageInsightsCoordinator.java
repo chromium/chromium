@@ -7,8 +7,11 @@ package org.chromium.chrome.browser.page_insights;
 import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -56,6 +59,7 @@ public class PageInsightsCoordinator {
      * @param expandedSheetHelper Helps interaction with other UI in expanded mode.
      * @param controlsStateProvider Provides the browser controls' state.
      * @param browserControlsSizer Bottom browser controls resizer.
+     * @param backPressManager Back press manager.
      * @param isPageInsightsHubEnabled Supplier of the feature flag.
      * @param firstLoadTimeMs Timestamp for the first page load completion.
      */
@@ -70,6 +74,7 @@ public class PageInsightsCoordinator {
             ExpandedSheetHelper expandedSheetHelper,
             BrowserControlsStateProvider controlsStateProvider,
             BrowserControlsSizer browserControlsSizer,
+            @Nullable BackPressManager backPressManager,
             BooleanSupplier isPageInsightsHubEnabled,
             long firstLoadTimeMs) {
         mContext = context;
@@ -91,6 +96,7 @@ public class PageInsightsCoordinator {
                         mExpandedSheetHelper,
                         mControlsStateProvider,
                         mBrowserControlsSizer,
+                        backPressManager,
                         isPageInsightsHubEnabled,
                         firstLoadTimeMs);
     }
@@ -117,6 +123,13 @@ public class PageInsightsCoordinator {
      */
     public void onBottomUiStateChanged(boolean opened) {
         mMediator.onBottomUiStateChanged(opened);
+    }
+
+    /** Returns the controller for the Page Insights bottom sheet. */
+    // TODO(b/307046796): Remove this once we have found better way to integrate with back handling
+    // logic.
+    public ManagedBottomSheetController getBottomSheetController() {
+        return mBottomSheetController;
     }
 
     /** Destroy PageInsights component. */

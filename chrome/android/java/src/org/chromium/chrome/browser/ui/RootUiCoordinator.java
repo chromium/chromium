@@ -321,8 +321,7 @@ public class RootUiCoordinator
     private final boolean mInitializeUiWithIncognitoColors;
     private HistoryClustersCoordinator mHistoryClustersCoordinator;
     private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
-    @Nullable
-    private final BackPressManager mBackPressManager;
+    @Nullable protected final BackPressManager mBackPressManager;
     private final boolean mIsIncognitoReauthPendingOnRestore;
     protected final ExpandedSheetHelper mExpandedBottomSheetHelper;
     private final ObservableSupplierImpl<ReadAloudController> mReadAloudControllerSupplier =
@@ -546,6 +545,13 @@ public class RootUiCoordinator
      */
     public TopUiThemeColorProvider getTopUiThemeColorProvider() {
         return mTopUiThemeColorProvider;
+    }
+
+    /** Returns the controller for the Page Insights bottom sheet, if it is enabled. */
+    // TODO(b/307046796): Remove this once we have found better way to integrate with back handling
+    // logic.
+    public @Nullable ManagedBottomSheetController getPageInsightsBottomSheetController() {
+        return null;
     }
 
     public void onAttachFragment(Fragment fragment) {

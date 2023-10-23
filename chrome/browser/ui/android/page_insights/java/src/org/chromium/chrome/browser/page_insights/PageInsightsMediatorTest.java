@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.page_insights;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
@@ -57,6 +59,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -77,12 +80,16 @@ import org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsLoggingPara
 import org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsSurfaceRenderer;
 import org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsSurfaceScope;
 import org.chromium.chrome.browser.xsurface_provider.XSurfaceProcessScopeProvider;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.ExpandedSheetHelper;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
@@ -108,6 +115,7 @@ public class PageInsightsMediatorTest {
     private static final int SHORT_TRIGGER_DELAY_MS = 2 * (int) DateUtils.SECOND_IN_MILLIS;
 
     @Rule public JniMocker jniMocker = new JniMocker();
+    @Rule public Features.JUnitProcessor mFeaturesProcessor = new Features.JUnitProcessor();
 
     @Mock protected OptimizationGuideBridge.Natives mOptimizationGuideBridgeJniMock;
     @Mock private LayoutInflater mLayoutInflater;
@@ -129,6 +137,8 @@ public class PageInsightsMediatorTest {
     @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
     @Mock private ShareDelegate mShareDelegate;
     @Mock private DomDistillerUrlUtils.Natives mDistillerUrlUtilsJniMock;
+    @Mock private BackPressManager mBackPressManager;
+    @Mock private BackPressHandler mBackPressHandler;
 
     @Captor
     private ArgumentCaptor<BrowserControlsStateProvider.Observer>
@@ -169,7 +179,9 @@ public class PageInsightsMediatorTest {
         when(mProfileSupplier.get()).thenReturn(mProfile);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
+        when(mBottomSheetController.getBottomSheetBackPressHandler()).thenReturn(mBackPressHandler);
     }
+
 
     private void createMediator() {
         createMediator(DEFAULT_TRIGGER_DELAY_MS);
@@ -200,11 +212,47 @@ public class PageInsightsMediatorTest {
                         mExpandedSheetHelper,
                         mControlsStateProvider,
                         mBrowserControlsSizer,
+                        mBackPressManager,
                         () -> true,
                         firstLoadTimeMs);
         verify(mControlsStateProvider).addObserver(mBrowserControlsStateProviderObserver.capture());
         mockOptimizationGuideResponse(getPageInsightsMetadata());
         setBackgroundDrawable();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
+    public void
+            constructor_backGestureRefactorEnabled_sameBackPressHandlerNotRegistered_registers() {
+        createMediator();
+
+        verify(mBackPressManager)
+                .addHandler(mBackPressHandler, BackPressHandler.Type.PAGE_INSIGHTS_BOTTOM_SHEET);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
+    public void
+            constructor_backGestureRefactorEnabled_sameBackPressHandlerRegistered_doesNotRegister() {
+        when(mBackPressManager.has(BackPressHandler.Type.PAGE_INSIGHTS_BOTTOM_SHEET))
+                .thenReturn(true);
+
+        createMediator();
+
+        verify(mBackPressManager, never())
+                .addHandler(mBackPressHandler, BackPressHandler.Type.PAGE_INSIGHTS_BOTTOM_SHEET);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
+    public void constructor_backGestureRefactorDisabled_doesNotRegister() {
+        createMediator();
+
+        verify(mBackPressManager, never())
+                .addHandler(mBackPressHandler, BackPressHandler.Type.PAGE_INSIGHTS_BOTTOM_SHEET);
     }
 
     @Test
@@ -821,6 +869,87 @@ public class PageInsightsMediatorTest {
         mMediator.getSheetContent().getToolbarView().callOnClick();
 
         verify(mBottomSheetController, never()).expandSheet();
+    }
+
+    @Test
+    @MediumTest
+    public void handleBackPress_peekState_doesNothing() {
+        createMediator();
+        when(mBottomSheetController.getSheetState()).thenReturn(SheetState.PEEK);
+        mMediator.onSheetStateChanged(SheetState.PEEK, StateChangeReason.SWIPE);
+
+        assertFalse(mMediator.getSheetContent().getBackPressStateChangedSupplier().get());
+
+        boolean handled = mMediator.getSheetContent().handleBackPress();
+
+        assertFalse(handled);
+        verify(mBottomSheetController, never())
+                .hideContent(eq(mMediator.getSheetContent()), anyBoolean());
+    }
+
+    @Test
+    @MediumTest
+    public void handleBackPress_hiddenState_doesNothing() {
+        when(mBottomSheetController.getSheetState()).thenReturn(SheetState.HIDDEN);
+        createMediator();
+        mMediator.onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.SWIPE);
+
+        assertFalse(mMediator.getSheetContent().getBackPressStateChangedSupplier().get());
+
+        boolean handled = mMediator.getSheetContent().handleBackPress();
+
+        assertFalse(handled);
+        verify(mBottomSheetController, never())
+                .hideContent(eq(mMediator.getSheetContent()), anyBoolean());
+    }
+
+    @Test
+    @MediumTest
+    public void handleBackPress_fullState_notChildPage_hidesContent() {
+        when(mBottomSheetController.getSheetState()).thenReturn(SheetState.FULL);
+        createMediator();
+        mMediator.onSheetStateChanged(SheetState.FULL, StateChangeReason.SWIPE);
+
+        assertTrue(mMediator.getSheetContent().getBackPressStateChangedSupplier().get());
+
+        boolean handled = mMediator.getSheetContent().handleBackPress();
+
+        assertTrue(handled);
+        verify(mBottomSheetController).hideContent(mMediator.getSheetContent(), true);
+    }
+
+    @Test
+    @MediumTest
+    public void handleBackPress_fullState_childPage_goesBackToFeedPage() {
+        when(mSurfaceRenderer.render(
+                        eq(TEST_FEED_ELEMENTS_OUTPUT), mSurfaceRendererContextValues.capture()))
+                .thenReturn(new View(ContextUtils.getApplicationContext()));
+        when(mSurfaceRenderer.render(eq(TEST_CHILD_ELEMENTS_OUTPUT), any()))
+                .thenReturn(new View(ContextUtils.getApplicationContext()));
+        when(mBottomSheetController.getSheetState()).thenReturn(SheetState.FULL);
+        createMediator();
+        mMediator.launch();
+        mMediator.onSheetStateChanged(SheetState.FULL, StateChangeReason.SWIPE);
+        ((PageInsightsActionsHandler)
+                        mSurfaceRendererContextValues
+                                .getValue()
+                                .get(PageInsightsActionsHandler.KEY))
+                .navigateToPageInsightsPage(1);
+
+        assertTrue(mMediator.getSheetContent().getBackPressStateChangedSupplier().get());
+
+        boolean handled = mMediator.getSheetContent().handleBackPress();
+
+        assertTrue(handled);
+        assertEquals(
+                View.VISIBLE,
+                mMediator
+                        .getSheetContent()
+                        .getToolbarView()
+                        .findViewById(R.id.page_insights_feed_header)
+                        .getVisibility());
+        verify(mBottomSheetController, never())
+                .hideContent(eq(mMediator.getSheetContent()), anyBoolean());
     }
 
     private PageInsightsMetadata getPageInsightsMetadata() {

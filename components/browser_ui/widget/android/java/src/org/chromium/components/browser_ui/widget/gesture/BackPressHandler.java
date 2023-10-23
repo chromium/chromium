@@ -25,11 +25,27 @@ public interface BackPressHandler {
     // When adding a new identifier, make corresponding changes in the
     // - tools/metrics/histograms/enums.xml: <enum name="BackPressConsumer">
     // - chrome/browser/back_press/android/.../BackPressManager.java: sMetricsMap
-    @IntDef({Type.TEXT_BUBBLE, Type.VR_DELEGATE, Type.XR_DELEGATE, Type.SCENE_OVERLAY,
-            Type.START_SURFACE, Type.SELECTION_POPUP, Type.MANUAL_FILLING, Type.TAB_MODAL_HANDLER,
-            Type.FULLSCREEN, Type.TAB_SWITCHER, Type.CLOSE_WATCHER, Type.FIND_TOOLBAR,
-            Type.LOCATION_BAR, Type.TAB_HISTORY, Type.TAB_RETURN_TO_CHROME_START_SURFACE,
-            Type.BOTTOM_SHEET, Type.SHOW_READING_LIST, Type.MINIMIZE_APP_AND_CLOSE_TAB})
+    @IntDef({
+        Type.TEXT_BUBBLE,
+        Type.VR_DELEGATE,
+        Type.XR_DELEGATE,
+        Type.SCENE_OVERLAY,
+        Type.START_SURFACE,
+        Type.SELECTION_POPUP,
+        Type.MANUAL_FILLING,
+        Type.TAB_MODAL_HANDLER,
+        Type.FULLSCREEN,
+        Type.TAB_SWITCHER,
+        Type.CLOSE_WATCHER,
+        Type.FIND_TOOLBAR,
+        Type.LOCATION_BAR,
+        Type.TAB_HISTORY,
+        Type.TAB_RETURN_TO_CHROME_START_SURFACE,
+        Type.BOTTOM_SHEET,
+        Type.PAGE_INSIGHTS_BOTTOM_SHEET,
+        Type.SHOW_READING_LIST,
+        Type.MINIMIZE_APP_AND_CLOSE_TAB
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface Type {
         int TEXT_BUBBLE = 0;
@@ -37,20 +53,23 @@ public interface BackPressHandler {
         int XR_DELEGATE = 2;
         int SCENE_OVERLAY = 3;
         int BOTTOM_SHEET = 4;
-        int START_SURFACE = 5;
-        int TAB_SWITCHER = 6;
+        // TODO(b/307046796): Remove this once we have found better way to integrate with back
+        // handling logic.
+        int PAGE_INSIGHTS_BOTTOM_SHEET = 5;
+        int START_SURFACE = 6;
+        int TAB_SWITCHER = 7;
         // Fullscreen must be before selection popup. crbug.com/1454817.
-        int FULLSCREEN = 7;
-        int SELECTION_POPUP = 8;
-        int MANUAL_FILLING = 9;
-        int LOCATION_BAR = 10;
-        int TAB_MODAL_HANDLER = 11;
-        int CLOSE_WATCHER = 12;
-        int FIND_TOOLBAR = 13;
-        int TAB_HISTORY = 14;
-        int TAB_RETURN_TO_CHROME_START_SURFACE = 15;
-        int SHOW_READING_LIST = 16;
-        int MINIMIZE_APP_AND_CLOSE_TAB = 17;
+        int FULLSCREEN = 8;
+        int SELECTION_POPUP = 9;
+        int MANUAL_FILLING = 10;
+        int LOCATION_BAR = 11;
+        int TAB_MODAL_HANDLER = 12;
+        int CLOSE_WATCHER = 13;
+        int FIND_TOOLBAR = 14;
+        int TAB_HISTORY = 15;
+        int TAB_RETURN_TO_CHROME_START_SURFACE = 16;
+        int SHOW_READING_LIST = 17;
+        int MINIMIZE_APP_AND_CLOSE_TAB = 18;
         int NUM_TYPES = MINIMIZE_APP_AND_CLOSE_TAB + 1;
     }
 

@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.page_insights;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import android.graphics.Color;
 import android.view.MotionEvent;
@@ -26,6 +28,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
@@ -58,6 +61,8 @@ public class PageInsightsSheetContentTest {
     private int mFullHeight;
     private boolean mTapHandlerResult;
     private boolean mTapHandlerCalled;
+    private boolean mBackPressHandlerCalled;
+    private boolean mBackPressHandlerResult;
     private static final float ASSERTION_DELTA = 0.01f;
     private static final long MILLIS_IN_ONE_DAY = 86400000;
 
@@ -70,6 +75,7 @@ public class PageInsightsSheetContentTest {
     @Before
     public void setUp() throws Exception {
         mTapHandlerCalled = false;
+        mBackPressHandlerCalled = false;
         ViewGroup rootView = sTestRule.getActivity().findViewById(android.R.id.content);
         TestThreadUtils.runOnUiThreadBlocking(() -> rootView.removeAllViews());
 
@@ -108,6 +114,11 @@ public class PageInsightsSheetContentTest {
                                     sTestRule.getActivity(),
                                     new View(sTestRule.getActivity()),
                                     view -> {},
+                                    () -> {
+                                        mBackPressHandlerCalled = true;
+                                        return mBackPressHandlerResult;
+                                    },
+                                    new ObservableSupplierImpl<>(false),
                                     () -> {
                                         mTapHandlerCalled = true;
                                         return mTapHandlerResult;
@@ -149,25 +160,42 @@ public class PageInsightsSheetContentTest {
 
     @Test
     @SmallTest
-    public void backButtonPressed() {
+    public void backButtonPressed_handlerCalled() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getToolbarViewById(R.id.page_insights_back_button).performClick();
-                    assertEquals(
-                            View.VISIBLE,
-                            getToolbarViewById(R.id.page_insights_feed_header).getVisibility());
-                    assertEquals(
-                            View.GONE,
-                            getToolbarViewById(R.id.page_insights_back_button).getVisibility());
-                    assertEquals(
-                            View.GONE,
-                            getToolbarViewById(R.id.page_insights_child_title).getVisibility());
-                    assertEquals(
-                            View.VISIBLE,
-                            getContentViewById(R.id.page_insights_feed_content).getVisibility());
-                    assertEquals(
-                            View.GONE,
-                            getContentViewById(R.id.page_insights_child_content).getVisibility());
+                    assertTrue(mBackPressHandlerCalled);
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void backButtonNotClicked_handlerNotCalled() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertFalse(mTapHandlerCalled);
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void handleBackPress_true() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mBackPressHandlerResult = true;
+
+                    assertTrue(mSheetContent.handleBackPress());
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void handleBackPress_false() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mBackPressHandlerResult = false;
+
+                    assertFalse(mSheetContent.handleBackPress());
                 });
     }
 
