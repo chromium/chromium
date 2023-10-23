@@ -27,6 +27,7 @@ source_set("regular") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_metrics",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_paging",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui_constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_toolbars_configuration_provider",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_toolbars_mutator",

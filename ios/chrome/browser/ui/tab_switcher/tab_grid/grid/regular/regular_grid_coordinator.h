@@ -7,9 +7,11 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@class BaseGridContainerViewController;
 class Browser;
 @protocol GridMediatorDelegate;
 @protocol GridToolbarsMutator;
+@class GridViewController;
 @class PinnedTabsMediator;
 @class RegularGridMediator;
 @class TabGridViewController;
@@ -21,6 +23,10 @@ class Browser;
 // TODO(crbug.com/1457146): Replace this once the regular grid view controller
 // is created.
 @property(nonatomic, weak) TabGridViewController* regularViewController;
+@property(nonatomic, weak) GridViewController* gridViewController;
+// Grid view controller container.
+@property(nonatomic, strong)
+    BaseGridContainerViewController* regularGridContainerViewController;
 // Regular grid mediator.
 @property(nonatomic, readonly, weak) RegularGridMediator* regularGridMediator;
 // Pinned tabs mediator.

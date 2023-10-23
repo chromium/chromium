@@ -16,7 +16,9 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_animation_layout_providing.h"
 
 @protocol ApplicationCommands;
+@class BaseGridContainerViewController;
 @protocol GridCommands;
+@class GridViewController;
 @protocol PriceCardDataSource;
 @protocol GridShareableItemsProvider;
 class GURL;
@@ -113,10 +115,6 @@ enum class TabGridPageConfiguration {
 
 // Handles drag and drop interactions that require the model layer.
 @property(nonatomic, weak) id<TabCollectionDragDropHandler>
-    regularTabsDragDropHandler;
-@property(nonatomic, weak) id<TabCollectionDragDropHandler>
-    incognitoTabsDragDropHandler;
-@property(nonatomic, weak) id<TabCollectionDragDropHandler>
     pinnedTabsDragDropHandler;
 
 // Data source for acquiring data which power the PriceCardView
@@ -132,6 +130,9 @@ enum class TabGridPageConfiguration {
 @property(nonatomic, weak, readwrite)
     UIViewController* childViewControllerForStatusBarStyle;
 
+// Child view controllers.
+@property(nonatomic, strong) GridViewController* regularTabsViewController;
+@property(nonatomic, strong) GridViewController* incognitoTabsViewController;
 // The view controller for remote tabs.
 // TODO(crbug.com/845192) : This was only exposed in the public interface so
 // that TabGridViewController does not need to know about model objects. The
@@ -159,6 +160,14 @@ enum class TabGridPageConfiguration {
 // TODO(crbug.com/1456659): Remove this.
 @property(nonatomic, weak) id<TabGridToolbarsCommandsWrangler>
     toolbarCommandsWrangler;
+
+// Contains grids (available or disabled one).
+@property(nonatomic, weak)
+    BaseGridContainerViewController* regularGridContainerViewController;
+@property(nonatomic, weak)
+    BaseGridContainerViewController* incognitoGridContainerViewController;
+@property(nonatomic, weak)
+    BaseGridContainerViewController* remoteGridContainerViewController;
 
 // Init with tab grid view configuration, which decides which sub view
 // controller should be added.

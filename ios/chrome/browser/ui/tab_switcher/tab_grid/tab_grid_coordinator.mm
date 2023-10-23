@@ -77,6 +77,7 @@
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/ui/snackbar/snackbar_coordinator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_container_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_mediator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_coordinator.h"
@@ -177,6 +178,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   // Regular grid coordinator.
   RegularGridCoordinator* _regularGridCoordinator;
+
+  // Remote grid container.
+  // TODO(crbug.com/1457146): To remove when remote coordinator handles it.
+  BaseGridContainerViewController* _remoteGridContainerViewController;
 }
 
 // Browser that contain tabs from the main pane (i.e. non-incognito).
@@ -722,7 +727,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // TODO(crbug.com/1457146): Init view controller inside the coordinator. Also
   // it should be a RegularViewController instead of a TabGridViewController.
   _regularGridCoordinator.regularViewController = self.baseViewController;
+  _regularGridCoordinator.gridViewController =
+      self.baseViewController.regularTabsViewController;
   [_regularGridCoordinator start];
+  self.baseViewController.regularGridContainerViewController =
+      _regularGridCoordinator.regularGridContainerViewController;
   self.regularTabsMediator = _regularGridCoordinator.regularGridMediator;
   if (IsPinnedTabsEnabled()) {
     // TODO(crbug.com/1457146): To remove when pinned tabs is fully moved.
@@ -759,14 +768,17 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // TODO(crbug.com/1457146): Init view controller inside the coordinator. Also
   // it should be a IncognitoViewController instead of a TabGridViewController.
   _incognitoGridCoordinator.incognitoViewController = self.baseViewController;
+  _incognitoGridCoordinator.gridViewController =
+      self.baseViewController.incognitoTabsViewController;
   [_incognitoGridCoordinator start];
   self.incognitoTabsMediator = _incognitoGridCoordinator.incognitoGridMediator;
 
   self.baseViewController.incognitoTabsDelegate = self.incognitoTabsMediator;
-  self.baseViewController.incognitoTabsDragDropHandler =
-      self.incognitoTabsMediator;
   self.baseViewController.incognitoTabsShareableItemsProvider =
       self.incognitoTabsMediator;
+
+  self.baseViewController.incognitoGridContainerViewController =
+      _incognitoGridCoordinator.incognitoGridContainerViewController;
 
   self.recentTabsContextMenuHelper =
       [[RecentTabsContextMenuHelper alloc] initWithBrowser:self.regularBrowser
@@ -836,6 +848,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   baseViewController.remoteTabsViewController.loadStrategy =
       UrlLoadStrategy::ALWAYS_NEW_FOREGROUND_TAB;
   baseViewController.remoteTabsViewController.presentationDelegate = self;
+
+  _remoteGridContainerViewController =
+      [[BaseGridContainerViewController alloc] init];
+  self.baseViewController.remoteGridContainerViewController =
+      _remoteGridContainerViewController;
 
   self.firstPresentation = YES;
 

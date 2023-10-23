@@ -9,7 +9,12 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_mediator.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_container_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_empty_state_view.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_theme.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_mediator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_view_controller.h"
 
 @implementation IncognitoGridCoordinator {
@@ -63,6 +68,9 @@
   [_dispatcher startDispatchingToTarget:reauthAgent
                             forProtocol:@protocol(IncognitoReauthCommands)];
 
+  self.incognitoGridContainerViewController =
+      [[BaseGridContainerViewController alloc] init];
+
   // TODO(crbug.com/1457146): Init view controller here instead of having a
   // public property.
   self.incognitoViewController.reauthAgent = reauthAgent;
@@ -76,6 +84,24 @@
   _mediator.toolbarsMutator = _toolbarsMutator;
   _mediator.actionWrangler = self.incognitoViewController;
   _mediator.incognitoDelegate = self;
+
+  // If incognito is enabled then the grid exists and it is not disabled.
+  // TODO(crbug.com/1457146): Get disabled status from the mediator.
+  if (self.gridViewController) {
+    self.gridViewController.dragDropHandler = _mediator;
+    // TODO(crbug.com/1457146): Move the following lines to the grid itself when
+    // specific grid file will be created.
+    self.gridViewController.view.accessibilityIdentifier =
+        kIncognitoTabGridIdentifier;
+    self.gridViewController.emptyStateView =
+        [[TabGridEmptyStateView alloc] initWithPage:TabGridPageIncognitoTabs];
+    self.gridViewController.emptyStateView.accessibilityIdentifier =
+        kTabGridIncognitoTabsEmptyStateIdentifier;
+    self.gridViewController.theme = GridThemeDark;
+
+    [self.incognitoGridContainerViewController
+        setContainedViewController:self.gridViewController];
+  }
 
   _incognitoAuthMediator =
       [[IncognitoReauthMediator alloc] initWithReauthAgent:reauthAgent];

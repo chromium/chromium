@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/disabled_tab_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/disabled_grid_view_controller.h"
 
 #import "components/supervised_user/core/common/features.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"

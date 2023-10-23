@@ -7,8 +7,13 @@
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/tabs/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_container_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_empty_state_view.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_theme.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/regular_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_mediator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_view_controller.h"
 
 @implementation RegularGridCoordinator {
@@ -63,6 +68,9 @@
   _mediator.toolbarsMutator = _toolbarsMutator;
   _mediator.actionWrangler = self.regularViewController;
 
+  self.regularGridContainerViewController =
+      [[BaseGridContainerViewController alloc] init];
+
   // TODO(crbug.com/1457146): As browser state should never be nil, it should be
   // safe to remove the check.
   ChromeBrowserState* regularBrowserState = self.browser->GetBrowserState();
@@ -73,8 +81,25 @@
   }
 
   self.regularViewController.regularTabsDelegate = _mediator;
-  self.regularViewController.regularTabsDragDropHandler = _mediator;
   self.regularViewController.regularTabsShareableItemsProvider = _mediator;
+
+  // If regular is enabled then the grid exists and it is not disabled.
+  // TODO(crbug.com/1457146): Get disabled status from the mediator.
+  if (self.gridViewController) {
+    self.gridViewController.dragDropHandler = _mediator;
+    // TODO(crbug.com/1457146): Move the following lines to the grid itself when
+    // specific grid file will be created.
+    self.gridViewController.view.accessibilityIdentifier =
+        kRegularTabGridIdentifier;
+    self.gridViewController.emptyStateView =
+        [[TabGridEmptyStateView alloc] initWithPage:TabGridPageRegularTabs];
+    self.gridViewController.emptyStateView.accessibilityIdentifier =
+        kTabGridRegularTabsEmptyStateIdentifier;
+    self.gridViewController.theme = GridThemeLight;
+
+    [self.regularGridContainerViewController
+        setContainedViewController:self.gridViewController];
+  }
 
   if (IsPinnedTabsEnabled()) {
     _pinnedTabsMediator = [[PinnedTabsMediator alloc]
