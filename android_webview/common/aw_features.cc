@@ -46,7 +46,7 @@ BASE_FEATURE(kWebViewEnumerateDevicesCache,
 
 BASE_FEATURE(kWebViewExitReasonMetric,
              "WebViewExitReasonMetric",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable WebView to automatically darken the page in FORCE_DARK_AUTO mode if
 // the app's theme is dark.
