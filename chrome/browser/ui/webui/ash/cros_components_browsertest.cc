@@ -147,6 +147,11 @@ static constexpr const ComponentTestData kComponentsTestData[] = {
         .gtest_name = "CrosButton",
     },
     {
+        .script_src = "chrome://resources/cros_components/card/card.js",
+        .component_name = "cros-card",
+        .gtest_name = "CrosCard",
+    },
+    {
         .script_src = "chrome://resources/cros_components/checkbox/checkbox.js",
         .component_name = "cros-checkbox",
         .gtest_name = "CrosCheckbox",
