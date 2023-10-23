@@ -882,9 +882,12 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
               L"complementary"};
 
     case ax::mojom::Role::kContentDeletion:
+      return {UIALocalizationStrategy::kSupply, UIA_GroupControlTypeId,
+              L"deletion"};
+
     case ax::mojom::Role::kContentInsertion:
       return {UIALocalizationStrategy::kSupply, UIA_GroupControlTypeId,
-              L"group"};
+              L"insertion"};
 
     case ax::mojom::Role::kContentInfo:
     case ax::mojom::Role::kFooter:

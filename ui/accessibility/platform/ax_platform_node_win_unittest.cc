@@ -7752,6 +7752,20 @@ TEST_F(AXPlatformNodeWinTest, SanitizeStringAttributeForIA2) {
   EXPECT_EQ("\\\\\\:\\=\\,\\;", output);
 }
 
+TEST_F(AXPlatformNodeWinTest, AriaRoleForInsertionAndDeletion) {
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kContentInsertion
+    ++++3 kContentDeletion
+  )HTML"));
+  Init(update);
+
+  EXPECT_UIA_BSTR_EQ(GetIRawElementProviderSimpleFromChildIndex(0),
+                     UIA_AriaRolePropertyId, L"insertion");
+  EXPECT_UIA_BSTR_EQ(GetIRawElementProviderSimpleFromChildIndex(1),
+                     UIA_AriaRolePropertyId, L"deletion");
+}
+
 //
 // IChromeAccessible tests
 //
