@@ -1031,7 +1031,10 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
 
   handler().GetWallpaperSearchResults("foo", "bar", "baz", "qux",
                                       callback.Get());
-  EXPECT_EQ("foo bar baz qux", request.query());
+  EXPECT_EQ("foo", request.selector().descriptor1());
+  EXPECT_EQ("bar", request.selector().descriptor2());
+  EXPECT_EQ("baz", request.selector().descriptor3());
+  EXPECT_EQ("qux", request.selector().descriptor4());
 
   chrome_intelligence_modelexecution_proto::WallpaperSearchResponse response;
 
@@ -1110,7 +1113,10 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
   handler().GetWallpaperSearchResults("foo", absl::nullopt, absl::nullopt,
                                       "bar", callback.Get());
 
-  EXPECT_EQ("foo bar", request.query());
+  EXPECT_EQ("foo", request.selector().descriptor1());
+  EXPECT_FALSE(request.selector().has_descriptor2());
+  EXPECT_FALSE(request.selector().has_descriptor3());
+  EXPECT_EQ("bar", request.selector().descriptor4());
 }
 
 TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
@@ -1137,7 +1143,10 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
 
   handler().GetWallpaperSearchResults("foo", absl::nullopt, absl::nullopt,
                                       absl::nullopt, callback.Get());
-  EXPECT_EQ("foo", request.query());
+  EXPECT_EQ("foo", request.selector().descriptor1());
+  EXPECT_FALSE(request.selector().has_descriptor2());
+  EXPECT_FALSE(request.selector().has_descriptor3());
+  EXPECT_FALSE(request.selector().has_descriptor4());
 
   std::vector<side_panel::mojom::WallpaperSearchResultPtr> images;
   EXPECT_CALL(callback, Run(_)).WillOnce(MoveArg(&images));
@@ -1176,7 +1185,10 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
 
   handler().GetWallpaperSearchResults("foo", absl::nullopt, absl::nullopt,
                                       absl::nullopt, callback.Get());
-  EXPECT_EQ("foo", request.query());
+  EXPECT_EQ("foo", request.selector().descriptor1());
+  EXPECT_FALSE(request.selector().has_descriptor2());
+  EXPECT_FALSE(request.selector().has_descriptor3());
+  EXPECT_FALSE(request.selector().has_descriptor4());
 
   chrome_intelligence_modelexecution_proto::WallpaperSearchResponse response;
   std::string serialized_metadata;
@@ -1234,7 +1246,10 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
 
   handler().GetWallpaperSearchResults("foo", absl::nullopt, absl::nullopt,
                                       absl::nullopt, callback.Get());
-  EXPECT_EQ("foo", request.query());
+  EXPECT_EQ("foo", request.selector().descriptor1());
+  EXPECT_FALSE(request.selector().has_descriptor2());
+  EXPECT_FALSE(request.selector().has_descriptor3());
+  EXPECT_FALSE(request.selector().has_descriptor4());
 
   chrome_intelligence_modelexecution_proto::WallpaperSearchResponse response;
 
