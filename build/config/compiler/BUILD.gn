@@ -1884,6 +1884,11 @@ config("default_warnings") {
           cflags += [ "-Wno-thread-safety-reference" ]
         }
 
+        if (llvm_force_head_revision && is_win) {
+          # TODO(crbug.com/1495100): Evaluate and possibly enable.
+          cflags += [ "-Wno-delayed-template-parsing-in-cxx20" ]
+        }
+
         if (enable_precompiled_headers && !is_win) {
           cflags += [
             # TODO(crbug.com/1486799) Find a long-term solution.
