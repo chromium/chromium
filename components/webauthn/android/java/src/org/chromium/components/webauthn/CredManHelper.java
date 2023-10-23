@@ -257,10 +257,7 @@ public class CredManHelper {
                 new OutcomeReceiver<>() {
                     @Override
                     public void onError(Throwable e) {
-                        assert mConditionalUiState == ConditionalUiState.NONE
-                                || mConditionalUiState
-                                        == ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST
-                                || mConditionalUiState == ConditionalUiState.CANCEL_PENDING;
+                        assert mConditionalUiState != ConditionalUiState.WAITING_FOR_SELECTION;
                         // prepareGetCredential uses getCredentialException, but it cannot be user
                         // cancelled so all errors map to UNKNOWN_ERROR.
                         Log.e(
@@ -282,8 +279,15 @@ public class CredManHelper {
                             mBridgeProvider.getBridge().cleanupCredManRequest(mFrameHost);
                             return;
                         }
-                        assert mConditionalUiState
-                                == ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST;
+                        if (mConditionalUiState != ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST) {
+                            Log.e(
+                                    TAG,
+                                    "CredMan prepareGetCredential request received a response while"
+                                            + " the state is "
+                                            + mConditionalUiState
+                                            + ". Ignoring the response.");
+                            return;
+                        }
                         boolean hasPublicKeyCredentials;
                         boolean hasAuthenticationResults;
                         try {
@@ -524,14 +528,16 @@ public class CredManHelper {
             }
         };
 
-        if (mConditionalUiState == ConditionalUiState.REQUEST_SENT_TO_PLATFORM) {
+        if (mConditionalUiState == ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST) {
             Log.e(TAG, "Received a second credential selection while the first still in progress.");
             mMetricsHelper.reportGetCredentialMetrics(
                     CredManGetRequestEnum.COULD_NOT_SEND_REQUEST, mConditionalUiState);
             return AuthenticatorStatus.NOT_ALLOWED_ERROR;
         }
-        mConditionalUiState = options.isConditional ? ConditionalUiState.REQUEST_SENT_TO_PLATFORM
-                                                    : ConditionalUiState.NONE;
+        mConditionalUiState =
+                options.isConditional
+                        ? ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST
+                        : ConditionalUiState.NONE;
         try {
             final Object getCredentialRequest = buildGetCredentialRequest(options, originString,
                     maybeClientDataHash, mRequestPasswords,
@@ -574,12 +580,6 @@ public class CredManHelper {
                 mBridgeProvider.getBridge().cleanupCredManRequest(frameHost);
                 mConditionalUiState = ConditionalUiState.NONE;
                 mBarrier.onCredManCancelled();
-                break;
-            case REQUEST_SENT_TO_PLATFORM:
-                // If the platform successfully completes the getAssertion then cancelation is
-                // ignored, but if it returns an error then CANCEL_PENDING removes the option to
-                // try again.
-                mConditionalUiState = ConditionalUiState.CANCEL_PENDING;
                 break;
             default:
                 // No action
