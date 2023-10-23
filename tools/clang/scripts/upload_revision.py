@@ -238,13 +238,6 @@ def Git(*args, no_run: bool):
     subprocess.check_call(['git'] + list(args), shell=is_win)
 
 
-def GitDiffHasChanges(from_git_hash, to_git_hash, glob, git_dir):
-  diff = subprocess.check_output(
-      ['git', '-C', git_dir, 'diff', f'{from_git_hash}..{to_git_hash}', glob],
-      shell=is_win)
-  return bool(diff)
-
-
 def main():
   parser = argparse.ArgumentParser(description='upload new clang revision')
   # TODO(crbug.com/1401042): Remove this when the cron job doesn't pass a SHA.
@@ -341,12 +334,6 @@ def main():
     if not args.skip_clang:
       PatchRustRemoveOverride()
 
-    # Changes to this file may require changes to gnrt or build_rust.py.
-    has_bootstrap_dist_changes = GitDiffHasChanges(old_rust_version.git_hash,
-                                                   rust_version.git_hash,
-                                                   'src/bootstrap/dist.rs',
-                                                   RUST_SRC_DIR)
-
   if args.skip_clang:
     clang_change = '[skipping Clang]'
     clang_change_log = ''
@@ -366,17 +353,6 @@ def main():
                        f'{old_rust_version.short_git_hash}..'
                        f'{rust_version.short_git_hash}'
                        f'\n\n')
-    if has_bootstrap_dist_changes:
-      rust_change_log += (
-          f'bootstrap/dist.rs changes: '
-          f'{RUST_GIT_URL}/+log/'
-          f'{old_rust_version.short_git_hash}..'
-          f'{rust_version.short_git_hash}'
-          f'/src/bootstrap/dist.rs\n'
-          f'Changes to the `cargo vendor` step need to be reflected in\n'
-          f'`CargoVendor() in //tools/rust/build_rust.py and in\n'
-          f'`gnrt gen --for-std` in //tools/crates/gnrt/gen.rs.'
-          f'\n\n')
 
   title = f'Roll clang+rust {clang_change} / {rust_change}'
 
