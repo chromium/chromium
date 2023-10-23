@@ -16,6 +16,7 @@ class ChromeBrowserMainExtraPartsOptimizationGuide
 
   // ChromeBrowserMainExtraParts implementation:
   void PreCreateThreads() override;
+  void PostMainMessageLoopRun() override;
 };
 
 #endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_CHROME_BROWSER_MAIN_EXTRA_PARTS_OPTIMIZATION_GUIDE_H_

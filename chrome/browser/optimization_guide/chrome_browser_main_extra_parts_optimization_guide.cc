@@ -34,3 +34,10 @@ void ChromeBrowserMainExtraPartsOptimizationGuide::PreCreateThreads() {
   optimization_guide::PredictionModelStore::GetInstance()->Initialize(
       g_browser_process->local_state(), model_downloads_dir);
 }
+
+void ChromeBrowserMainExtraPartsOptimizationGuide::PostMainMessageLoopRun() {
+  if (!optimization_guide::features::IsInstallWideModelStoreEnabled()) {
+    return;
+  }
+  optimization_guide::PredictionModelStore::GetInstance()->ReleaseLocalState();
+}

@@ -533,4 +533,9 @@ void PredictionModelStore::ResetForTesting() {
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
 }
 
+void PredictionModelStore::ReleaseLocalState() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  local_state_ = nullptr;
+}
+
 }  // namespace optimization_guide
