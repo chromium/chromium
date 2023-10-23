@@ -226,6 +226,7 @@ class StateObserverElementT : public StateObserverElement {
     table.emplace(std::make_pair(id, context), this);
     observer_->SetStateObserverStateChangedCallback(base::BindRepeating(
         &StateObserverElementT::OnStateChanged, base::Unretained(this)));
+    OnStateChanged(current_value_);
   }
   ~StateObserverElementT() override {
     CHECK(GetLookupTable().erase(std::make_pair(identifier(), context())));
