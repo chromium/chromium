@@ -80,9 +80,16 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   apps::Readiness PriorReadiness() const;
   bool ReadinessChanged() const;
 
+  // The full name of the app. This is the name that should be used by default
+  // in most UIs.
   const std::string& Name() const;
   bool NameChanged() const;
 
+  // A possibly shortened version of the app name. May omit branding (e.g.
+  // "Google" prefixes) or rely on abbreviations (e.g. "YT Music"). If the
+  // developer/publisher does not supply a short name, this will be the same as
+  // the Name() field. May be used in UIs where space is limited and/or we want
+  // to optimize for scannability.
   const std::string& ShortName() const;
   bool ShortNameChanged() const;
 
