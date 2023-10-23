@@ -236,7 +236,7 @@ class SellerWorkletTest : public testing::Test {
     permissions_policy_state_ =
         mojom::AuctionWorkletPermissionsPolicyState::New(
             /*private_aggregation_allowed=*/true,
-            /*shared_storage_allowed=*/true);
+            /*shared_storage_allowed=*/false);
     experiment_group_id_ = absl::nullopt;
     browser_signals_other_seller_.reset();
     component_expect_bid_currency_ = absl::nullopt;
@@ -4281,6 +4281,10 @@ class SellerWorkletSharedStorageAPIEnabledTest : public SellerWorkletTest {
  public:
   SellerWorkletSharedStorageAPIEnabledTest() {
     feature_list_.InitAndEnableFeature(blink::features::kSharedStorageAPI);
+    permissions_policy_state_ =
+        mojom::AuctionWorkletPermissionsPolicyState::New(
+            /*private_aggregation_allowed=*/true,
+            /*shared_storage_allowed=*/true);
   }
 
  protected:
@@ -4906,7 +4910,7 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
     permissions_policy_state_ =
         mojom::AuctionWorkletPermissionsPolicyState::New(
             /*private_aggregation_allowed=*/false,
-            /*shared_storage_allowed=*/true);
+            /*shared_storage_allowed=*/false);
 
     RunScoreAdWithJavascriptExpectingResult(
         CreateScoreAdScript("5",
@@ -4925,7 +4929,7 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
     permissions_policy_state_ =
         mojom::AuctionWorkletPermissionsPolicyState::New(
             /*private_aggregation_allowed=*/true,
-            /*shared_storage_allowed=*/true);
+            /*shared_storage_allowed=*/false);
   }
 
   // Large bucket
@@ -5145,7 +5149,7 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
     permissions_policy_state_ =
         mojom::AuctionWorkletPermissionsPolicyState::New(
             /*private_aggregation_allowed=*/false,
-            /*shared_storage_allowed=*/true);
+            /*shared_storage_allowed=*/false);
 
     RunReportResultCreatedScriptExpectingResult(
         R"(5)",
@@ -5162,7 +5166,7 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
     permissions_policy_state_ =
         mojom::AuctionWorkletPermissionsPolicyState::New(
             /*private_aggregation_allowed=*/true,
-            /*shared_storage_allowed=*/true);
+            /*shared_storage_allowed=*/false);
   }
 
   // BigInt bucket

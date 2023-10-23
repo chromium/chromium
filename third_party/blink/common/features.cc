@@ -1654,7 +1654,7 @@ BASE_FEATURE(kSetTimeoutWithoutClamp,
 // https://github.com/pythagoraskitty/shared-storage/blob/main/README.md
 BASE_FEATURE(kSharedStorageAPI,
              "SharedStorageAPI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<int>
     kSharedStorageURLSelectionOperationInputURLSizeLimit{
         &kSharedStorageAPI, "url_selection_operation_input_url_size_limit", 8};
