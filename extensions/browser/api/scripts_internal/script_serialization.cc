@@ -117,7 +117,8 @@ api::scripts_internal::SerializedUserScript SerializeUserScript(
 
 std::unique_ptr<UserScript> ParseSerializedUserScript(
     const api::scripts_internal::SerializedUserScript& serialized_script,
-    const Extension& extension) {
+    const Extension& extension,
+    std::u16string* error_out) {
   bool source_matches_id = true;
   switch (serialized_script.source) {
     case api::scripts_internal::Source::kDynamicContentScript:
@@ -145,6 +146,9 @@ std::unique_ptr<UserScript> ParseSerializedUserScript(
   user_script->set_id(serialized_script.id);
 
   std::u16string error;
+  if (!error_out) {
+    error_out = &error;
+  }
 
   // `allFrames`.
   if (serialized_script.all_frames) {
@@ -154,7 +158,7 @@ std::unique_ptr<UserScript> ParseSerializedUserScript(
   if (!script_parsing::ParseFileSources(
           &extension, base::OptionalToPtr(serialized_script.js),
           base::OptionalToPtr(serialized_script.css),
-          /*definition_index=*/absl::nullopt, user_script.get(), &error)) {
+          /*definition_index=*/absl::nullopt, user_script.get(), error_out)) {
     return nullptr;
   }
   const int valid_schemes = UserScript::ValidUserScriptSchemes(
@@ -165,7 +169,7 @@ std::unique_ptr<UserScript> ParseSerializedUserScript(
           base::OptionalToPtr(serialized_script.exclude_matches),
           extension.creation_flags(), scripting::kScriptsCanExecuteEverywhere,
           valid_schemes, scripting::kAllUrlsIncludesChromeUrls,
-          /*definition_index=*/absl::nullopt, user_script.get(), &error,
+          /*definition_index=*/absl::nullopt, user_script.get(), error_out,
           /*wants_file_access=*/nullptr)) {
     return nullptr;
   }

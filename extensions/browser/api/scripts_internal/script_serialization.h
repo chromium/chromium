@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_API_SCRIPTS_INTERNAL_SCRIPT_SERIALIZATION_H_
 
 #include <memory>
+#include <string>
 
 #include "extensions/common/api/scripts_internal.h"
 #include "extensions/common/user_script.h"
@@ -22,12 +23,13 @@ api::scripts_internal::SerializedUserScript SerializeUserScript(
 
 // Attempts to deserialize `serialized_script` into a new `UserScript`. This can
 // fail if `serialized_script` has invalid values for parsed types (e.g.,
-// match patterns).
+// match patterns). If `error_out` is provided, it will be populated on failure.
 // TODO(devlin): It'd be nice to use absl::optional here, but UserScripts are
 // currently passed by pointer a lot.
 std::unique_ptr<UserScript> ParseSerializedUserScript(
     const api::scripts_internal::SerializedUserScript& serialized_script,
-    const Extension& extension);
+    const Extension& extension,
+    std::u16string* error_out = nullptr);
 
 }  // namespace script_serialization
 }  // namespace extensions
