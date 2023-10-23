@@ -12,7 +12,7 @@
 class GURL;
 
 // Delegate for this view controller to handle user click actions.
-@protocol DisabledTabViewControllerDelegate
+@protocol DisabledGridViewControllerDelegate
 
 // Notifies the delegate that the user tapped a link with a `URL`.
 - (void)didTapLinkWithURL:(const GURL&)URL;
@@ -24,9 +24,9 @@ class GURL;
 
 // View controller representing a view without tab grids when any of the
 // incognito tab grid, regular tab grid, and remote tab is disabled.
-@interface DisabledTabViewController : UIViewController
+@interface DisabledGridViewController : UIViewController
 
-@property(nonatomic, weak) id<DisabledTabViewControllerDelegate> delegate;
+@property(nonatomic, weak) id<DisabledGridViewControllerDelegate> delegate;
 
 // Init with page type, which decides the displayed text.
 - (instancetype)initWithPage:(TabGridPage)page NS_DESIGNATED_INITIALIZER;

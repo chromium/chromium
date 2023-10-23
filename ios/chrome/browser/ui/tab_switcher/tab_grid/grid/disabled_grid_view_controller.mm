@@ -23,7 +23,7 @@ namespace {
 const CGFloat kVerticalMargin = 16.0;
 }  // namespace
 
-@interface DisabledTabViewController () <UITextViewDelegate>
+@interface DisabledGridViewController () <UITextViewDelegate>
 
 @property(nonatomic, strong) UIScrollView* scrollView;
 @property(nonatomic, strong) NSLayoutConstraint* scrollViewHeight;
@@ -32,7 +32,7 @@ const CGFloat kVerticalMargin = 16.0;
 
 @end
 
-@implementation DisabledTabViewController
+@implementation DisabledGridViewController
 
 namespace {
 // Create a NSString for the title based on `page`.
