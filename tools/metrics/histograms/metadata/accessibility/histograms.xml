@@ -2631,14 +2631,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DomDistiller.Time.ViewerLoading" units="ms"
-    expires_after="M77">
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    Records the time from the Reader Mode panel opening to the viewer loaded.
-  </summary>
-</histogram>
-
 <histogram name="DomDistiller.Time.ViewingReaderModePage" units="ms"
     expires_after="2024-03-17">
   <owner>mdjones@chromium.org</owner>
