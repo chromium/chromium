@@ -244,9 +244,6 @@ void RenderViewContextMenuMacCocoa::Show() {
     // Make sure events can be pumped while the menu is up.
     base::CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop allow;
 
-    // Ensure the UI can update while the menu is fading out.
-    base::ScopedPumpMessagesInPrivateModes pump_private;
-
     // One of the events that could be pumped is |window.close()|.
     // User-initiated event-tracking loops protect against this by
     // setting flags in -[CrApplication sendEvent:], but since
