@@ -370,6 +370,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
           path: `/${routesMojom.SYSTEM_PREFERENCES_SECTION_PATH}`,
           icon: 'os-settings:system-preferences',
           label: this.i18n('systemPreferencesTitle'),
+          sublabel: this.i18n('systemPreferencesMenuItemDescription'),
         },
         {
           section: Section.kAboutChromeOs,

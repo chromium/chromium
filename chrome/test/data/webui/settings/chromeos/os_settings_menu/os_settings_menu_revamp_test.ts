@@ -672,4 +672,17 @@ suite('<os-settings-menu>', () => {
       assertEquals('Lock screen, controls', privacyMenuItem.sublabel);
     });
   });
+
+  suite('System preferences menu item', () => {
+    test('Description text', async () => {
+      await createMenu();
+
+      const systemPreferencesMenuItem = queryMenuItemByPath(
+          `/${routesMojom.SYSTEM_PREFERENCES_SECTION_PATH}`);
+      assertTrue(!!systemPreferencesMenuItem);
+
+      assertEquals(
+          'Storage, power, language', systemPreferencesMenuItem.sublabel);
+    });
+  });
 });
