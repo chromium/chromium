@@ -52505,6 +52505,11 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2"
       label="kFailedInvalidConfiguration: The operation failed because of
              invalid hotspot configuration."/>
+  <int value="3" label="kFailedIllegalOperation"/>
+  <int value="4" label="kFailedPermissionDenied"/>
+  <int value="5" label="kFailedInvalidArgument"/>
+  <int value="6" label="kFailedShillOperation"/>
+  <int value="7" label="kFailedUnknownShillError"/>
 </enum>
 
 <enum name="HotspotSetEnabledResult">

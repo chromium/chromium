@@ -159,9 +159,13 @@ void HotspotConfigurationHandler::OnSetHotspotConfigFailure(
 
   NET_LOG(ERROR) << "Error setting hotspot config, error name:" << error_name
                  << ", message" << error_message;
+
   HotspotMetricsHelper::RecordSetHotspotConfigResult(
-      SetHotspotConfigResult::kFailedInvalidConfiguration);
-  std::move(callback).Run(SetHotspotConfigResult::kFailedInvalidConfiguration);
+      SetHotspotConfigResult::kFailedShillOperation, error_name);
+  std::move(callback).Run(
+      error_name == shill::kErrorResultInvalidArguments
+          ? SetHotspotConfigResult::kFailedInvalidConfiguration
+          : SetHotspotConfigResult::kFailedShillOperation);
 }
 
 void HotspotConfigurationHandler::LoggedInStateChanged() {

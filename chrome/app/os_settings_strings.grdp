@@ -4034,6 +4034,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_CANCEL_BUTTON" desc="Settings > Network > Hotspot > Configure hotspot dialog: Text for the button to cancel hotspot configuration dialog.">
     Cancel
   </message>
+  <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_GENERAL_ERROR_MESSAGE" desc="Settings > Network > Hotspot > Configure hotspot dialog: Error message shown when save configuration failed.">
+    Error saving the configuration
+  </message>
   <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_INVALID_CONFIGURATION_ERROR_MESSAGE" desc="Settings > Network > Hotspot > Configure hotspot dialog: Error message shown when save configuration failed because of invalid configuration.">
     Invalid hotspot configuration
   </message>

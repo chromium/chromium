@@ -44,7 +44,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
 
   // Emits set hotspot configuration operation result to related UMA histogram.
   static void RecordSetHotspotConfigResult(
-      hotspot_config::mojom::SetHotspotConfigResult result);
+      hotspot_config::mojom::SetHotspotConfigResult result,
+      const std::string& shill_error = "");
 
   // Emits hotspot enable operation latency to related UMA histogram.
   static void RecordEnableHotspotLatency(const base::TimeDelta& latency);
@@ -78,6 +79,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
                            HotspotEnabledUpstreamStatusHistogram);
   FRIEND_TEST_ALL_PREFIXES(HotspotMetricsHelperTest,
                            HotspotDisableReasonHistogram);
+  FRIEND_TEST_ALL_PREFIXES(HotspotMetricsHelperTest, HotspotSetConfigHistogram);
   FRIEND_TEST_ALL_PREFIXES(HotspotControllerTest, EnableTetheringSuccess);
   FRIEND_TEST_ALL_PREFIXES(HotspotControllerTest, AbortEnableTethering);
   FRIEND_TEST_ALL_PREFIXES(HotspotControllerTest,
@@ -125,7 +127,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   static HotspotMetricsSetEnabledResult GetSetEnabledMetricsResult(
       const hotspot_config::mojom::HotspotControlResult& result);
   static HotspotMetricsSetConfigResult GetSetConfigMetricsResult(
-      const hotspot_config::mojom::SetHotspotConfigResult& result);
+      const hotspot_config::mojom::SetHotspotConfigResult& result,
+      const std::string& shill_error);
   static HotspotMetricsDisableReason GetMetricsDisableReason(
       const hotspot_config::mojom::DisableReason& reason);
 
@@ -151,7 +154,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
     kSuccess = 0,
     kFailedNotLogin = 1,
     kFailedInvalidConfiguration = 2,
-    kMaxValue = kFailedInvalidConfiguration,
+    kFailedIllegalOperation = 3,
+    kFailedPermissionDenied = 4,
+    kFailedInvalidArgument = 5,
+    kFailedShillOperation = 6,
+    kFailedUnknownShillError = 7,
+    kMaxValue = kFailedUnknownShillError,
   };
 
   // Represents the operation result of check tethering readiness used for
