@@ -75,8 +75,10 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"failureTitleGrouping", IDS_TAB_ORGANIZATION_FAILURE_TITLE_GROUPING},
       {"inProgressTitle", IDS_TAB_ORGANIZATION_IN_PROGRESS_TITLE},
       {"notStartedBody", IDS_TAB_ORGANIZATION_NOT_STARTED_BODY},
+      {"notStartedBodyFRE", IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_FRE},
       {"notStartedButton", IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON},
       {"notStartedTitle", IDS_TAB_ORGANIZATION_NOT_STARTED_TITLE},
+      {"notStartedTitleFRE", IDS_TAB_ORGANIZATION_NOT_STARTED_TITLE_FRE},
       {"successTitle", IDS_TAB_ORGANIZATION_SUCCESS_TITLE},
       {"tabOrganizationTabName", IDS_TAB_ORGANIZATION_TAB_NAME},
   };
@@ -117,6 +119,7 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
 
   source->AddBoolean("tabOrganizationEnabled", features::IsTabOrganization());
   source->AddInteger("tabIndex", TabIndex());
+  source->AddBoolean("showTabOrganizationFRE", ShowTabOrganizationFRE());
 
   ui::Accelerator accelerator(ui::VKEY_A,
                               ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR);
@@ -178,6 +181,11 @@ void TabSearchUI::CreatePageHandler(
   // per instance of the TabSearchUI.
   page_handler_ = std::make_unique<TabSearchPageHandler>(
       std::move(receiver), std::move(page), web_ui(), this, &metrics_reporter_);
+}
+
+bool TabSearchUI::ShowTabOrganizationFRE() {
+  PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
+  return prefs->GetBoolean(tab_search_prefs::kTabOrganizationShowFRE);
 }
 
 int TabSearchUI::TabIndex() {

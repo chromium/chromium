@@ -107,6 +107,24 @@ gfx::ImageSkia ThemeFavicon(const gfx::ImageSkia& source,
       provider.GetColor(kColorTabSearchBackground));
 }
 
+Browser* GetBrowserForWebUI(content::WebUI* web_ui) {
+  // get the browser from the web_contents
+  BrowserWindow* browser_window =
+      BrowserWindow::FindBrowserWindowWithWebContents(web_ui->GetWebContents());
+  if (!browser_window) {
+    return nullptr;
+  }
+  Browser* browser = nullptr;
+  for (auto* browser_in_list : *BrowserList::GetInstance()) {
+    if (browser_in_list->window() == browser_window) {
+      browser = browser_in_list;
+      break;
+    }
+  }
+
+  return browser;
+}
+
 }  // namespace
 
 TabSearchPageHandler::TabSearchPageHandler(
@@ -163,6 +181,9 @@ void TabSearchPageHandler::AcceptTabOrganization(
     const std::string& name,
     std::vector<tab_search::mojom::TabPtr> tabs) {
   // TODO(dpenning): Implement this
+  Browser* browser = GetBrowserForWebUI(web_ui_);
+  browser->profile()->GetPrefs()->SetBoolean(
+      tab_search_prefs::kTabOrganizationShowFRE, false);
 }
 
 void TabSearchPageHandler::RejectTabOrganization(int32_t session_id,

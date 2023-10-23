@@ -17,9 +17,14 @@ const char kTabSearchRecentlyClosedSectionExpanded[] =
 // when shown.
 const char kTabSearchTabIndex[] = "tab_search.tab_index";
 
+// Boolean pref indicating whether the user should see the first run experience
+// when interacting with the Tab Organization UI.
+const char kTabOrganizationShowFRE[] = "tab_organization.show_fre";
+
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kTabSearchRecentlyClosedSectionExpanded, true);
   registry->RegisterIntegerPref(kTabSearchTabIndex, 0);
+  registry->RegisterBooleanPref(kTabOrganizationShowFRE, true);
 }
 
 }  // namespace tab_search_prefs
