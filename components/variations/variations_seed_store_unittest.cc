@@ -1461,7 +1461,7 @@ TEST(VariationsSeedStoreTest, ImportFirstRunJavaSeed) {
   const std::string test_seed_data = "raw_seed_data_test";
   const std::string test_seed_signature = "seed_signature_test";
   const std::string test_seed_country = "seed_country_code_test";
-  const long test_response_date = 1234567890;
+  const int64_t test_response_date = 1234567890;
   const bool test_is_gzip_compressed = true;
   android::SetJavaFirstRunPrefsForTesting(test_seed_data, test_seed_signature,
                                           test_seed_country, test_response_date,
@@ -1496,7 +1496,7 @@ TEST_P(VariationsSeedStoreFirstRunPrefsTest, FirstRunPrefsAllowed) {
   const std::string test_seed_data = "raw_seed_data_test";
   const std::string test_seed_signature = "seed_signature_test";
   const std::string test_seed_country = "seed_country_code_test";
-  const long test_response_date = 1234567890;
+  const int64_t test_response_date = 1234567890;
   const bool test_is_gzip_compressed = true;
   android::SetJavaFirstRunPrefsForTesting(test_seed_data, test_seed_signature,
                                           test_seed_country, test_response_date,
