@@ -608,6 +608,43 @@ class PasswordCounterDelegateBridge
   [self.handler resetFormInputView];
 }
 
+// Logs information about what type of suggestion the user selected.
+- (void)logReauthenticationEvent:(ReauthenticationEvent)reauthenticationEvent
+                     popupItemId:(autofill::PopupItemId)popupItemId {
+  std::string histogramName;
+  if (self.currentProvider.type == SuggestionProviderTypePassword) {
+    histogramName = "IOS.Reauth.Password.Autofill";
+  } else if (self.currentProvider.type == SuggestionProviderTypeAutofill) {
+    switch (popupItemId) {
+      case autofill::PopupItemId::kCreditCardEntry:
+        histogramName = "IOS.Reauth.CreditCard.Autofill";
+        break;
+      case autofill::PopupItemId::kAddressEntry:
+        histogramName = "IOS.Reauth.Address.Autofill";
+        break;
+      default:
+        break;
+    }
+  }
+  if (!histogramName.empty()) {
+    UmaHistogramEnumeration(histogramName, reauthenticationEvent);
+  }
+}
+
+// Handles the selection of a suggestion.
+- (void)handleSuggestion:(FormSuggestion*)formSuggestion {
+  if (self.currentProvider.type == SuggestionProviderTypePassword) {
+    LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
+  }
+  if (formSuggestion.featureForIPH.length) {
+    // The IPH is only shown if the suggestion was the first one. It doesn't
+    // matter if the IPH was shown for this suggestion as we don't want to
+    // show more IPH's to the user.
+    [self.handler notifyAutofillSuggestionWithIPHSelected];
+  }
+  [self.currentProvider didSelectSuggestion:formSuggestion];
+}
+
 #pragma mark - Boolean Observer
 
 - (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
@@ -620,44 +657,26 @@ class PasswordCounterDelegateBridge
 #pragma mark - FormSuggestionClient
 
 - (void)didSelectSuggestion:(FormSuggestion*)formSuggestion {
-  UmaHistogramEnumeration("IOS.Reauth.Password.Autofill",
-                          ReauthenticationEvent::kAttempt);
+  [self logReauthenticationEvent:ReauthenticationEvent::kAttempt
+                     popupItemId:formSuggestion.popupItemId];
   LogAutofillUseForDefaultBrowserPromo();
 
-  __weak __typeof(self) weakSelf = self;
-  auto suggestionHandler = ^() {
-    __typeof(self) strongSelf = weakSelf;
-    if (!strongSelf) {
-      return;
-    }
-    if (strongSelf.currentProvider.type == SuggestionProviderTypePassword) {
-      LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
-    }
-    if (formSuggestion.featureForIPH.length) {
-      // The IPH is only shown if the suggestion was the first one. It doesn't
-      // matter if the IPH was shown for this suggestion as we don't want to
-      // show more IPH's to the user.
-      [self.handler notifyAutofillSuggestionWithIPHSelected];
-    }
-    [strongSelf.currentProvider didSelectSuggestion:formSuggestion];
-  };
-
   if (!formSuggestion.requiresReauth) {
-    UmaHistogramEnumeration("IOS.Reauth.Password.Autofill",
-                            ReauthenticationEvent::kSuccess);
-    suggestionHandler();
+    [self logReauthenticationEvent:ReauthenticationEvent::kSuccess
+                       popupItemId:formSuggestion.popupItemId];
+    [self handleSuggestion:formSuggestion];
     return;
   }
   if ([self.reauthenticationModule canAttemptReauth]) {
     NSString* reason = l10n_util::GetNSString(IDS_IOS_AUTOFILL_REAUTH_REASON);
     auto completionHandler = ^(ReauthenticationResult result) {
       if (result != ReauthenticationResult::kFailure) {
-        UmaHistogramEnumeration("IOS.Reauth.Password.Autofill",
-                                ReauthenticationEvent::kSuccess);
-        suggestionHandler();
+        [self logReauthenticationEvent:ReauthenticationEvent::kSuccess
+                           popupItemId:formSuggestion.popupItemId];
+        [self handleSuggestion:formSuggestion];
       } else {
-        UmaHistogramEnumeration("IOS.Reauth.Password.Autofill",
-                                ReauthenticationEvent::kFailure);
+        [self logReauthenticationEvent:ReauthenticationEvent::kFailure
+                           popupItemId:formSuggestion.popupItemId];
       }
     };
 
@@ -666,9 +685,9 @@ class PasswordCounterDelegateBridge
                     canReusePreviousAuth:YES
                                  handler:completionHandler];
   } else {
-    UmaHistogramEnumeration("IOS.Reauth.Password.Autofill",
-                            ReauthenticationEvent::kMissingPasscode);
-    suggestionHandler();
+    [self logReauthenticationEvent:ReauthenticationEvent::kMissingPasscode
+                       popupItemId:formSuggestion.popupItemId];
+    [self handleSuggestion:formSuggestion];
   }
 }
 
