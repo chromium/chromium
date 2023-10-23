@@ -336,8 +336,11 @@ class PDFExtensionBasicPrintingTest : public PDFExtensionPrintingTest {
   }
 };
 
+// TODO(https://crbug.com/1488085): Test is flaky.
+// Note that MAYBE_ContextMenuPrintCommandExtensionMainFrame is already
+// defined above.
 IN_PROC_BROWSER_TEST_P(PDFExtensionBasicPrintingTest,
-                       ContextMenuPrintCommandExtensionMainFrame) {
+                       MAYBE_ContextMenuPrintCommandExtensionMainFrame) {
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test.pdf"));
   content::RenderFrameHost* plugin_frame = GetPluginFrame(guest);
