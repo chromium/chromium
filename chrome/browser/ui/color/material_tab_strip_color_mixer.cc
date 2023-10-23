@@ -55,7 +55,8 @@ void AddMaterialTabStripColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabBackgroundSelectedHoverFrameInactive] = {
       ui::GetResultingPaintColor(ui::kColorSysStateHoverDimBlendProtection,
                                  kColorTabBackgroundSelectedFrameInactive)};
-
+  mixer[kColorTabDiscardRingFrameActive] = {ui::kColorSysStateDisabled};
+  mixer[kColorTabDiscardRingFrameInactive] = {kColorTabDiscardRingFrameActive};
   mixer[kColorTabForegroundActiveFrameActive] = {ui::kColorSysOnSurface};
   mixer[kColorTabForegroundActiveFrameInactive] = {
       kColorTabForegroundActiveFrameActive};

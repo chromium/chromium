@@ -164,6 +164,13 @@ void AddTabStripColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabDividerFrameActive] = {kColorToolbar};
   mixer[kColorTabDividerFrameInactive] = {kColorToolbar};
 
+  // This is not used for text and this contrast ratio most closely matches the
+  // approved ChromeRefresh2023 colors
+  mixer[kColorTabDiscardRingFrameActive] = ui::PickGoogleColor(
+      gfx::kGoogleGrey500, kColorTabBackgroundInactiveFrameActive, 2.0);
+  mixer[kColorTabDiscardRingFrameInactive] = ui::PickGoogleColor(
+      gfx::kGoogleGrey500, kColorTabBackgroundInactiveFrameInactive, 2.0);
+
   mixer[kColorNewTabButtonForegroundFrameActive] = {
       kColorTabForegroundActiveFrameActive};
   mixer[kColorNewTabButtonForegroundFrameInactive] = {
