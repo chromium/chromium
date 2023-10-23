@@ -183,16 +183,16 @@ void InvalidatorRegistrarWithMemory::RemoveUnregisteredTopics(
   RemoveSubscribedTopics(handler, std::move(topics_to_unregister));
 }
 
-Topics InvalidatorRegistrarWithMemory::GetRegisteredTopics(
+TopicMap InvalidatorRegistrarWithMemory::GetRegisteredTopics(
     InvalidationHandler* handler) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto lookup = registered_handler_to_topics_map_.find(handler);
   return lookup != registered_handler_to_topics_map_.end()
              ? ConvertTopicSetToLegacyTopicMap(lookup->second)
-             : Topics();
+             : TopicMap();
 }
 
-Topics InvalidatorRegistrarWithMemory::GetAllSubscribedTopics() const {
+TopicMap InvalidatorRegistrarWithMemory::GetAllSubscribedTopics() const {
   std::set<TopicData> subscribed_topics;
   for (const auto& handler_to_topic : handler_name_to_subscribed_topics_map_) {
     subscribed_topics.insert(handler_to_topic.second.begin(),

@@ -19,7 +19,7 @@ namespace invalidation {
 
 using Topic = std::string;
 // It should be std::set, since std::set_difference is used for it.
-using TopicSet = std::set<std::string>;
+using TopicSet = std::set<Topic>;
 
 INVALIDATION_EXPORT struct TopicMetadata {
   // Whether the topic is public.
@@ -28,7 +28,10 @@ INVALIDATION_EXPORT struct TopicMetadata {
 
 INVALIDATION_EXPORT bool operator==(const TopicMetadata&, const TopicMetadata&);
 
-using Topics = std::map<std::string, TopicMetadata>;
+using TopicMap = std::map<Topic, TopicMetadata>;
+
+// Deprecated, should be replaced with TopicMap
+using Topics = TopicMap;
 
 }  // namespace invalidation
 

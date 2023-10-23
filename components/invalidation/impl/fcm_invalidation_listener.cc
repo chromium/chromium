@@ -69,7 +69,7 @@ void FCMInvalidationListener::Start(
   DoSubscriptionUpdate();
 }
 
-void FCMInvalidationListener::UpdateInterestedTopics(const Topics& topics) {
+void FCMInvalidationListener::UpdateInterestedTopics(const TopicMap& topics) {
   topics_update_requested_ = true;
   interested_topics_ = topics;
   DoSubscriptionUpdate();
