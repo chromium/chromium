@@ -132,22 +132,22 @@ bool LoadingPredictor::PrepareForPageLoad(
 
   PreconnectPrediction prediction;
   bool has_local_preconnect_prediction = false;
-  if (features::ShouldUseLocalPredictions()) {
-    has_local_preconnect_prediction =
-        resource_prefetch_predictor_->PredictPreconnectOrigins(url,
-                                                               &prediction);
-  }
-  if (active_hints_.find(url) != active_hints_.end() &&
-      has_local_preconnect_prediction && !preconnect_prediction) {
-    // We are currently preconnecting using the local preconnect prediction. Do
-    // not proceed further.
-    return true;
-  }
-
-  if (preconnect_prediction) {
-    // Overwrite the prediction if we were provided with a non-empty one.
+  if (origin == HintOrigin::OPTIMIZATION_GUIDE) {
+    CHECK(preconnect_prediction);
     prediction = *preconnect_prediction;
   } else {
+    CHECK(!preconnect_prediction);
+    if (features::ShouldUseLocalPredictions()) {
+      has_local_preconnect_prediction =
+          resource_prefetch_predictor_->PredictPreconnectOrigins(url,
+                                                                 &prediction);
+    }
+    if (active_hints_.find(url) != active_hints_.end() &&
+        has_local_preconnect_prediction) {
+      // We are currently preconnecting using the local preconnect prediction.
+      // Do not proceed further.
+      return true;
+    }
     // Try to preconnect to the |url| even if the predictor has no
     // prediction.
     AddInitialUrlToPreconnectPrediction(url, &prediction);
