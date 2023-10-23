@@ -44,12 +44,21 @@ enum class SaveToPhotosAccountPickerActions {
 // in src/tools/metrics/histograms/enums.xml.
 enum class SaveToPhotosSettingsActions {
   kDefaultAccountNotSet =
-      0,  // User has NOT set a default Save to Photos account
-  kDefaultAccountSetAndValid = 1,  // User has set a default Save to Photos
-                                   // account which exists on device
-  kDefaultAccountSetNotValid = 2,  // User has set a default Save to Photos
-                                   // account but it is not on device anymore
-  kMaxValue = kDefaultAccountSetNotValid,
+      0,  // User has NOT set a default Save to Photos account and did NOT
+          // opt-in to skip the account picker
+  kDefaultAccountSetAndValid =
+      1,  // User has set a default Save to Photos account which exists on
+          // device and did NOT opt-in to skip the account picker
+  kDefaultAccountSetNotValid =
+      2,  // User has set a default Save to Photos account but it is not on
+          // device anymore and did NOT opt-in to skip the account picker
+  kDefaultAccountSetAndValidSkipAccountPicker =
+      3,  // User has set a default Save to Photos account which exists on
+          // device and did opt-in to skip the account picker
+  kDefaultAccountSetNotValidSkipAccountPicker =
+      4,  // User has set a default Save to Photos account but it is not on
+          // device anymore; the user did opt-in to skip the account picker
+  kMaxValue = kDefaultAccountSetNotValidSkipAccountPicker,
 };
 
 #endif  // IOS_CHROME_BROWSER_PHOTOS_PHOTOS_METRICS_H_

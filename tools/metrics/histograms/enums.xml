@@ -56503,13 +56503,21 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
 </enum>
 
 <enum name="IOSSaveToPhotosSettingsType">
-  <int value="0" label="User has NOT set a default Save to Photos account"/>
+  <int value="0"
+      label="User has NOT set a default Save to Photos account and did NOT
+             opt-in to skip the account picker"/>
   <int value="1"
       label="User has set a default Save to Photos account which exists on
-             device"/>
+             device and did NOT opt-in to skip the account picker"/>
   <int value="2"
       label="User has set a default Save to Photos account but it is not on
-             device anymore"/>
+             device anymore and did NOT opt-in to skip the account picker"/>
+  <int value="3"
+      label="User has set a default Save to Photos account which exists on
+             device and did opt-in to skip the account picker"/>
+  <int value="4"
+      label="User has set a default Save to Photos account but it is not on
+             device anymore; the user did opt-in to skip the account picker"/>
 </enum>
 
 <enum name="IOSSaveToPhotosType">
