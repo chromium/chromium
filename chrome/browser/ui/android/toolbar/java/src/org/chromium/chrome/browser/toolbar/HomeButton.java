@@ -13,7 +13,6 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -35,9 +34,7 @@ public class HomeButton extends ListMenuButton {
     private Callback<Context> mOnMenuClickCallback;
     private Supplier<Boolean> mIsManagedByPolicySupplier;
 
-    // Test related members
-    private static boolean sSaveContextMenuForTests;
-    private ModelList mMenuForTests;
+    private ModelList mMenuForTesting;
 
     public HomeButton(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -89,7 +86,7 @@ public class HomeButton extends ListMenuButton {
     private void setDelegateForMenu(View anchorView) {
         RectProvider rectProvider = MenuBuilderHelper.getRectProvider(anchorView);
         ModelList menuItems = buildMenuItems();
-        mMenuForTests = menuItems;
+        mMenuForTesting = menuItems;
         BasicListMenu listMenu = new BasicListMenu(
                 getContext(), menuItems, (model) -> mOnMenuClickCallback.onResult(getContext()));
         ListMenuButtonDelegate delegate = new ListMenuButtonDelegate() {
@@ -114,17 +111,9 @@ public class HomeButton extends ListMenuButton {
     }
 
     /**
-     * @param saveContextMenuForTests Whether we want to store the context menu for testing
-     */
-    public static void setSaveContextMenuForTests(boolean saveContextMenuForTests) {
-        sSaveContextMenuForTests = saveContextMenuForTests;
-        ResettersForTesting.register(() -> sSaveContextMenuForTests = false);
-    }
-
-    /**
      * @return Latest context menu created.
      */
-    public ModelList getMenuForTests() {
-        return mMenuForTests;
+    public ModelList getMenuForTesting() {
+        return mMenuForTesting;
     }
 }

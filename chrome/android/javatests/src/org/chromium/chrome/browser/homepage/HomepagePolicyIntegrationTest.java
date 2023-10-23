@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
-import org.chromium.chrome.browser.toolbar.HomeButton;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -48,8 +47,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Integration test for {@link HomepagePolicyManager}. Checking if enabling HomepageLocation policy
- * will reflect the expected behaviors for {@link HomepageSettings} and {@link
- * org.chromium.chrome.browser.toolbar.HomeButton}
+ * will reflect the expected behaviors for {@link HomepageSettings} and home button.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -149,7 +147,7 @@ public class HomepagePolicyIntegrationTest {
                             mActivityTestRule.getActivity().getToolbarManager();
                     Criteria.checkThat(toolbarManager, Matchers.notNullValue());
 
-                    HomeButton homeButton = toolbarManager.getHomeButtonForTesting();
+                    View homeButton = toolbarManager.getHomeButtonForTesting();
                     Criteria.checkThat(homeButton, Matchers.notNullValue());
                     Criteria.checkThat(
                             "Home Button should be visible",
@@ -167,7 +165,7 @@ public class HomepagePolicyIntegrationTest {
                 () -> {
                     ToolbarManager toolbarManager =
                             mActivityTestRule.getActivity().getToolbarManager();
-                    HomeButton homeButton = toolbarManager.getHomeButtonForTesting();
+                    View homeButton = toolbarManager.getHomeButtonForTesting();
                     TouchCommon.singleClickView(homeButton);
                 });
 

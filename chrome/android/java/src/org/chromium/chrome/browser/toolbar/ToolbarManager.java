@@ -1230,7 +1230,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         HomepageManager.getInstance().addListener(mHomepageStateListener);
         mHomepageStateListener.onHomepageStateUpdated();
 
-        HomeButton homeButton = toolbarLayout.getHomeButton();
+        HomeButton homeButton = controlContainer.findViewById(R.id.home_button);
         if (homeButton != null) {
             homeButton.init(mHomepageEnabledSupplier, this::onHomeButtonMenuClick,
                     mHomepageManagedByPolicySupplier);
@@ -1527,10 +1527,18 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         UserEducationHelper userEducationHelper = new UserEducationHelper(mActivity, mHandler);
         View homeButton = mControlContainer.findViewById(R.id.home_button);
-        mHomeButtonCoordinator = new HomeButtonCoordinator(mActivity, homeButton,
-                userEducationHelper, mIncognitoStateProvider::isIncognitoSelected,
-                mPromoShownOneshotSupplier, HomepageManager::isHomepageNonNtp,
-                FeedFeatures::isFeedEnabled, mActivityTabProvider);
+        if (homeButton != null) {
+            mHomeButtonCoordinator =
+                    new HomeButtonCoordinator(
+                            mActivity,
+                            homeButton,
+                            userEducationHelper,
+                            mIncognitoStateProvider::isIncognitoSelected,
+                            mPromoShownOneshotSupplier,
+                            HomepageManager::isHomepageNonNtp,
+                            FeedFeatures::isFeedEnabled,
+                            mActivityTabProvider);
+        }
         ToggleTabStackButton toggleTabStackButton =
                 mControlContainer.findViewById(R.id.tab_switcher_button);
         mToggleTabStackButtonCoordinator =
@@ -2331,12 +2339,12 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     }
 
     /**
-     * Get the home button on the top toolbar to verify the button status.
-     * Note that this home button is not always the home button that on the UI, and the button is
-     * not always visible.
-     * @return The {@link HomeButton} that lives in the top toolbar.
+     * Get the home button on the top toolbar to verify the button status. Note that this home
+     * button is not always the home button that on the UI, and the button is not always visible.
+     *
+     * @return The home button that lives in the top toolbar.
      */
-    public HomeButton getHomeButtonForTesting() {
+    public View getHomeButtonForTesting() {
         return mToolbar.getToolbarLayoutForTesting().getHomeButton();
     }
 

@@ -82,7 +82,6 @@ public class HomeButtonTest extends BlankUiTestActivityTestCase {
                             homepagePolicySupplier);
                     mHomeButton.setId(mIdHomeButton);
                     HomepageManager.getInstance().setSettingsLauncherForTesting(mSettingsLauncher);
-                    HomeButton.setSaveContextMenuForTests(true);
 
                     content.addView(mHomeButton);
                 });
@@ -93,7 +92,7 @@ public class HomeButtonTest extends BlankUiTestActivityTestCase {
     public void testContextMenu_AfterConversion() {
         onView(withId(mIdHomeButton)).perform(longClick());
 
-        ModelList menu = mHomeButton.getMenuForTests();
+        ModelList menu = mHomeButton.getMenuForTesting();
         Assert.assertNotNull(ASSERT_MSG_MENU_IS_CREATED, menu);
         Assert.assertEquals(ASSERT_MSG_MENU_SIZE, 1, menu.size());
 
