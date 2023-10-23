@@ -22,6 +22,7 @@ import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.j
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {EntryList} from '../../common/js/files_app_entry_types.js';
+import {isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
@@ -120,14 +121,14 @@ export class FilesFormatDialog extends PolymerElement {
    * It is used to check flag status in the tests.
    */
   getSinglePartitionFormat() {
-    if (util.isSinglePartitionFormatEnabled()) {
+    if (isSinglePartitionFormatEnabled()) {
       return 'single-partition-format';
     }
     return '';
   }
 
   getConfirmLabel(isErase: boolean) {
-    if (util.isSinglePartitionFormatEnabled()) {
+    if (isSinglePartitionFormatEnabled()) {
       if (isErase) {
         return str('REPARTITION_DIALOG_CONFIRM_LABEL');
       } else {
@@ -139,7 +140,7 @@ export class FilesFormatDialog extends PolymerElement {
   }
 
   getDialogMessage(isErase: boolean) {
-    if (util.isSinglePartitionFormatEnabled()) {
+    if (isSinglePartitionFormatEnabled()) {
       if (isErase) {
         return str('REPARTITION_DIALOG_MESSAGE');
       } else {

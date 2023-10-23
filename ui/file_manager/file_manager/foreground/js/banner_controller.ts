@@ -14,6 +14,7 @@ import {getDriveQuotaMetadata, getSizeStats} from '../../common/js/api.js';
 import {RateLimiter} from '../../common/js/async_util.js';
 import {DialogType} from '../../common/js/dialog_type.js';
 import {getTeamDriveName} from '../../common/js/entry_utils.js';
+import {isDriveFsBulkPinningEnabled, isGoogleOneOfferFilesBannerEligibleAndEnabled} from '../../common/js/flags.js';
 import {storage} from '../../common/js/storage.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
@@ -322,14 +323,14 @@ export class BannerController extends EventTarget {
       ]);
 
       const educationalBanners =
-          util.isGoogleOneOfferFilesBannerEligibleAndEnabled() ?
+          isGoogleOneOfferFilesBannerEligibleAndEnabled() ?
           [GoogleOneOfferBannerTagName] :
           [DriveWelcomeBannerTagName];
-      if (util.isDriveFsBulkPinningEnabled()) {
+      if (isDriveFsBulkPinningEnabled()) {
         educationalBanners.push(DriveBulkPinningBannerTagName);
       }
       educationalBanners.push(HoldingSpaceWelcomeBannerTagName);
-      if (!util.isDriveFsBulkPinningEnabled()) {
+      if (!isDriveFsBulkPinningEnabled()) {
         educationalBanners.push(DriveOfflinePinningBannerTagName);
       }
       educationalBanners.push(PhotosWelcomeBannerTagName);

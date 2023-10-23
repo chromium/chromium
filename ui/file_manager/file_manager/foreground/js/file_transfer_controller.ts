@@ -17,6 +17,7 @@ import {getFocusedTreeItem, htmlEscape, isDirectoryTree, queryRequiredElement} f
 import {getRootType, getTeamDriveName, isRecentRoot, isSameEntry, isSharedDriveEntry, isSiblingEntry, isTeamDriveRoot, isTrashEntry, isTrashRoot} from '../../common/js/entry_utils.js';
 import {FileType} from '../../common/js/file_type.js';
 import {getFileTypeForName} from '../../common/js/file_types_base.js';
+import {isDlpEnabled} from '../../common/js/flags.js';
 import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_center_common.js';
 import {getEnabledTrashVolumeURLs, isAllTrashEntries, TrashEntry} from '../../common/js/trash.js';
 import {str, strf, util} from '../../common/js/util.js';
@@ -399,7 +400,7 @@ export class FileTransferController {
     const sourceEntries = await pastePlan.resolveEntries();
     let disallowedTransfers: Entry[] = [];
     try {
-      if (util.isDlpEnabled()) {
+      if (isDlpEnabled()) {
         const destinationDir =
             util.unwrapEntry(pastePlan.destinationEntry) as DirectoryEntry;
         disallowedTransfers = await getDisallowedTransfers(

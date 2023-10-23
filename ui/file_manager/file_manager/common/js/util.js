@@ -22,6 +22,7 @@ import {promisify} from './api.js';
 import {createDOMError} from './dom_utils.js';
 import {isFakeEntry} from './entry_utils.js';
 import {EntryList} from './files_app_entry_types.js';
+import {isArcVmEnabled, isDriveFsBulkPinningEnabled, isPluginVmEnabled} from './flags.js';
 import {VolumeManagerCommon} from './volume_manager_types.js';
 
 /**
@@ -701,7 +702,7 @@ util.isNonModifiable = (volumeManager, entry) => {
       return true;
     }
 
-    if (fullPath === '/PvmDefault' && util.isPluginVmEnabled()) {
+    if (fullPath === '/PvmDefault' && isPluginVmEnabled()) {
       return true;
     }
 
@@ -787,133 +788,6 @@ util.timeoutPromise = (promise, ms, opt_message) => {
       throw new Error(opt_message || 'Operation timed out.');
     }),
   ]);
-};
-
-/**
- * Returns true when copy image to clipboard is enabled.
- * @return {boolean}
- */
-util.isCopyImageEnabled = () => {
-  return loadTimeData.getBoolean('COPY_IMAGE_ENABLED');
-};
-
-/**
- * Whether the Files app integration with DLP (Data Loss Prevention) is enabled.
- * @returns {boolean}
- */
-util.isDlpEnabled = () => {
-  return loadTimeData.valueExists('DLP_ENABLED') &&
-      loadTimeData.getBoolean('DLP_ENABLED');
-};
-
-/**
- * Whether the Files app Experimental flag is enabled.
- * @returns {boolean}
- */
-util.isFilesAppExperimental = () => {
-  return loadTimeData.valueExists('FILES_APP_EXPERIMENTAL') &&
-      loadTimeData.getBoolean('FILES_APP_EXPERIMENTAL');
-};
-
-/**
- * Returns true if the conflict dialog is enabled.
- * @return {boolean}
- */
-util.isFilesConflictDialogEnabled = () => {
-  return loadTimeData.getBoolean('FILES_CONFLICT_DIALOG');
-};
-
-/**
- * Returns true if FuseBoxDebug flag is enabled.
- * @return {boolean}
- */
-util.isFuseBoxDebugEnabled = () => {
-  return loadTimeData.isInitialized() &&
-      loadTimeData.valueExists('FUSEBOX_DEBUG') &&
-      loadTimeData.getBoolean('FUSEBOX_DEBUG');
-};
-
-/**
- * Returns true if GuestOsFiles flag is enabled.
- * @return {boolean}
- */
-util.isGuestOsEnabled = () => {
-  return loadTimeData.getBoolean('GUEST_OS');
-};
-
-/**
- * Returns true if Jelly flag is enabled.
- * @return {boolean}
- */
-util.isJellyEnabled = () => {
-  return loadTimeData.getBoolean('JELLY');
-};
-
-/**
- * Returns true if the cros-components flag is enabled.
- * @return {boolean}
- */
-util.isCrosComponentsEnabled = () => {
-  return loadTimeData.getBoolean('CROS_COMPONENTS');
-};
-
-/**
- * Returns true if DriveFsMirroring flag is enabled.
- * @return {boolean}
- */
-util.isMirrorSyncEnabled = () => {
-  return loadTimeData.isInitialized() &&
-      loadTimeData.valueExists('DRIVEFS_MIRRORING') &&
-      loadTimeData.getBoolean('DRIVEFS_MIRRORING');
-};
-
-util.isGoogleOneOfferFilesBannerEligibleAndEnabled = () => {
-  return loadTimeData.getBoolean(
-      'ELIGIBLE_AND_ENABLED_GOOGLE_ONE_OFFER_FILES_BANNER');
-};
-
-/**
- * Returns true if FilesSinglePartitionFormat flag is enabled.
- * @return {boolean}
- */
-util.isSinglePartitionFormatEnabled = () => {
-  return loadTimeData.getBoolean('FILES_SINGLE_PARTITION_FORMAT_ENABLED');
-};
-
-/**
- * Returns true if InlineSyncStatus feature flag is enabled.
- * @returns {boolean}
- */
-util.isInlineSyncStatusEnabled = () => {
-  return loadTimeData.valueExists('INLINE_SYNC_STATUS') &&
-      loadTimeData.getBoolean('INLINE_SYNC_STATUS');
-};
-
-/**
- * Returns true if FilesDriveShortcuts flag is enabled.
- * @return {boolean}
- */
-util.isDriveShortcutsEnabled = () => {
-  return loadTimeData.isInitialized() &&
-      loadTimeData.valueExists('DRIVE_SHORTCUTS') &&
-      loadTimeData.getBoolean('DRIVE_SHORTCUTS');
-};
-
-/**
- * Returns whether the DriveFsBulkPinning feature flag is enabled.
- * @returns {boolean}
- */
-util.isDriveFsBulkPinningEnabled = () => {
-  return loadTimeData.getBoolean('DRIVE_FS_BULK_PINNING');
-};
-
-/**
- * Whether the new directory tree flag is enabled.
- * @returns {boolean}
- */
-util.isNewDirectoryTreeEnabled = () => {
-  return loadTimeData.valueExists('NEW_DIRECTORY_TREE') &&
-      loadTimeData.getBoolean('NEW_DIRECTORY_TREE');
 };
 
 /**
@@ -1100,24 +974,6 @@ util.unwrapEntry = entry => {
   return entry;
 };
 
-/** @return {boolean} */
-util.isArcUsbStorageUIEnabled = () => {
-  return loadTimeData.valueExists('ARC_USB_STORAGE_UI_ENABLED') &&
-      loadTimeData.getBoolean('ARC_USB_STORAGE_UI_ENABLED');
-};
-
-/** @return {boolean} */
-util.isArcVmEnabled = () => {
-  return loadTimeData.valueExists('ARC_VM_ENABLED') &&
-      loadTimeData.getBoolean('ARC_VM_ENABLED');
-};
-
-/** @return {boolean} */
-util.isPluginVmEnabled = () => {
-  return loadTimeData.valueExists('PLUGIN_VM_ENABLED') &&
-      loadTimeData.getBoolean('PLUGIN_VM_ENABLED');
-};
-
 /**
  * Used for logs and debugging. It tries to tell what type is the entry, its
  * path and URL.
@@ -1257,7 +1113,7 @@ util.getLocaleBasedWeekStart = () => {
 util.isGuestOs = type => {
   return type === VolumeManagerCommon.VolumeType.GUEST_OS ||
       (type === VolumeManagerCommon.VolumeType.ANDROID_FILES &&
-       util.isArcVmEnabled());
+       isArcVmEnabled());
 };
 
 /**
@@ -1327,7 +1183,7 @@ util.isInteractiveVolume = (volumeInfo) => {
  * @returns {boolean}
  */
 util.canBulkPinningCloudPanelShow = (stage, pref) => {
-  if (!util.isDriveFsBulkPinningEnabled()) {
+  if (!isDriveFsBulkPinningEnabled()) {
     return false;
   }
 

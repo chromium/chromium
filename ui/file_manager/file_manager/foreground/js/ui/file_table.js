@@ -9,6 +9,7 @@ import {RateLimiter} from '../../../common/js/async_util.js';
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
 import {isTeamDriveRoot} from '../../../common/js/entry_utils.js';
 import {FileType} from '../../../common/js/file_type.js';
+import {isDlpEnabled, isDriveShortcutsEnabled, isInlineSyncStatusEnabled, isJellyEnabled} from '../../../common/js/flags.js';
 import {str, strf, util} from '../../../common/js/util.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
@@ -562,8 +563,7 @@ export class FileTable extends Table {
     nameColumn.headerRenderFunction = renderHeader_;
 
     const sizeColumn = new TableColumn(
-        'size', str('SIZE_COLUMN_LABEL'), 110,
-        util.isJellyEnabled() ? false : true);
+        'size', str('SIZE_COLUMN_LABEL'), 110, isJellyEnabled() ? false : true);
     // @ts-ignore: error TS2339: Property 'renderSize_' does not exist on type
     // 'Element'.
     sizeColumn.renderFunction = self.renderSize_.bind(self);
@@ -1019,7 +1019,7 @@ export class FileTable extends Table {
     }
     icon.appendChild(this.renderCheckmark_());
     label.appendChild(icon);
-    if (util.isDriveShortcutsEnabled()) {
+    if (isDriveShortcutsEnabled()) {
       // @ts-ignore: error TS2339: Property 'ownerDocument' does not exist on
       // type 'FileTable'.
       label.appendChild(filelist.renderIconBadge(this.ownerDocument));
@@ -1039,13 +1039,13 @@ export class FileTable extends Table {
       inlineStatus.classList.add('tast-inline-status');
       label.appendChild(inlineStatus);
     }
-    if (!util.isJellyEnabled() && !util.isInlineSyncStatusEnabled()) {
+    if (!isJellyEnabled() && !isInlineSyncStatusEnabled()) {
       // @ts-ignore: error TS18048: 'metadata' is possibly 'undefined'.
       const isEncrypted = FileType.isEncrypted(entry, metadata.contentMimeType);
       if (isEncrypted) {
         label.appendChild(this.renderEncryptedIcon_());
       }
-      if (util.isDlpEnabled()) {
+      if (isDlpEnabled()) {
         label.appendChild(
             // @ts-ignore: error TS18048: 'metadata' is possibly 'undefined'.
             this.renderDlpManagedIcon_(!!metadata.isDlpRestricted));
@@ -1158,7 +1158,7 @@ export class FileTable extends Table {
         // type 'FileTable'.
         (this.ownerDocument.createElement('div'));
 
-    if (util.isJellyEnabled() || util.isInlineSyncStatusEnabled()) {
+    if (isJellyEnabled() || isInlineSyncStatusEnabled()) {
       div.className = 'dateholder';
       const label = /** @type {!HTMLDivElement} */
           // @ts-ignore: error TS2339: Property 'ownerDocument' does not exist
@@ -1175,7 +1175,7 @@ export class FileTable extends Table {
       if (isEncrypted) {
         div.appendChild(this.renderEncryptedIcon_());
       }
-      if (util.isDlpEnabled()) {
+      if (isDlpEnabled()) {
         // @ts-ignore: error TS18048: 'metadata' is possibly 'undefined'.
         div.appendChild(this.renderDlpManagedIcon_(!!metadata.isDlpRestricted));
       }

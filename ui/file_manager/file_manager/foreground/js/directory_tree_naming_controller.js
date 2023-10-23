@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {getKeyModifiers} from '../../common/js/dom_utils.js';
 import {isSameEntry} from '../../common/js/entry_utils.js';
-import {util} from '../../common/js/util.js';
+import {isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
 import {DirectoryTreeContainer} from '../../containers/directory_tree_container.js';
 import {readSubDirectoriesForRenamedEntry} from '../../state/ducks/all_entries.js';
 import {getStore} from '../../state/store.js';
@@ -203,7 +203,7 @@ export class DirectoryTreeNamingController {
 
       // Put the new name in the .label element before detaching the
       // <input> to prevent showing the old name.
-      if (util.isNewDirectoryTreeEnabled()) {
+      if (isNewDirectoryTreeEnabled()) {
         // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.currentDirectoryItem_.label = newName;
       } else {
@@ -221,7 +221,7 @@ export class DirectoryTreeNamingController {
         return;
       }
 
-      if (util.isNewDirectoryTreeEnabled() && this.directoryTreeContainer_) {
+      if (isNewDirectoryTreeEnabled() && this.directoryTreeContainer_) {
         getStore().dispatch(readSubDirectoriesForRenamedEntry(newEntry));
         this.directoryTreeContainer_.focusItemWithKeyWhenRendered(
             newEntry.toURL());

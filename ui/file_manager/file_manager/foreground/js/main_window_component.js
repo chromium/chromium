@@ -7,6 +7,7 @@ import {assertInstanceof} from 'chrome://resources/ash/common/assert.js';
 import {DialogType, isFolderDialogType} from '../../common/js/dialog_type.js';
 import {getFocusedTreeItem, getKeyModifiers} from '../../common/js/dom_utils.js';
 import {isRecentRootType, isSameEntry, isTrashEntry} from '../../common/js/entry_utils.js';
+import {isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
 import {recordEnum} from '../../common/js/metrics.js';
 import {TrashEntry} from '../../common/js/trash.js';
 import {str, util} from '../../common/js/util.js';
@@ -445,7 +446,7 @@ export class MainWindowComponent {
       if (!focusedItem) {
         return;
       }
-      if (util.isNewDirectoryTreeEnabled()) {
+      if (isNewDirectoryTreeEnabled()) {
         focusedItem.selected = true;
       } else {
         // @ts-ignore: error TS2339: Property 'activate' does not exist on type

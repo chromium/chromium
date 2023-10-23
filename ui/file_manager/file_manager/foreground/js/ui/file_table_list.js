@@ -7,6 +7,7 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {ArrayDataModel} from '../../../common/js/array_data_model.js';
 import {isTeamDriveRoot} from '../../../common/js/entry_utils.js';
 import {FileType} from '../../../common/js/file_type.js';
+import {isDlpEnabled, isDriveFsBulkPinningEnabled, isInlineSyncStatusEnabled} from '../../../common/js/flags.js';
 import {str, strf, util} from '../../../common/js/util.js';
 import {EntryLocation} from '../../../externs/entry_location.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
@@ -471,7 +472,7 @@ filelist.decorateListItem = (li, entry, metadataModel, volumeManager) => {
  * @return {boolean} If `entry` is DLP blocked.
  */
 filelist.isDlpBlocked = (entry, metadataModel, volumeManager) => {
-  if (!util.isDlpEnabled()) {
+  if (!isDlpEnabled()) {
     return false;
   }
   // TODO(b/259184588): Properly handle case when VolumeInfo is not
@@ -1151,7 +1152,7 @@ filelist.updateInlineStatus = (li, metadata) => {
     syncCompletedTime,
   } = metadata;
 
-  if (util.isDriveFsBulkPinningEnabled()) {
+  if (isDriveFsBulkPinningEnabled()) {
     const cantPin = canPin === false;
     li.classList.toggle('cant-pin', cantPin);
     inlineStatus.toggleAttribute('cant-pin', cantPin);
@@ -1164,7 +1165,7 @@ filelist.updateInlineStatus = (li, metadata) => {
   li.classList.toggle('pinned', pinned);
   inlineStatus.toggleAttribute('available-offline', pinned && !dimOffline);
 
-  if (util.isInlineSyncStatusEnabled()) {
+  if (isInlineSyncStatusEnabled()) {
     let actualSyncStatus = syncStatus;
     let actualProgress = progress;
     // Force sync status as completed if it has been less than 300ms since the

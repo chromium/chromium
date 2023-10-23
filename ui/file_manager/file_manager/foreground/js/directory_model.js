@@ -9,6 +9,7 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
 import {Aggregator, AsyncQueue} from '../../common/js/async_util.js';
 import {isFakeEntry, isRecentRootType, isSameEntry} from '../../common/js/entry_utils.js';
 import {EntryList, GuestOsPlaceholder, VolumeEntry} from '../../common/js/files_app_entry_types.js';
+import {isDlpEnabled, isDriveFsBulkPinningEnabled} from '../../common/js/flags.js';
 import {recordMediumCount} from '../../common/js/metrics.js';
 import {util} from '../../common/js/util.js';
 import {isNative, VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
@@ -435,7 +436,7 @@ export class DirectoryModel extends EventTarget {
    * @return {boolean} True if the current volume is blocked by DLP.
    */
   isDlpBlocked() {
-    if (!util.isDlpEnabled()) {
+    if (!isDlpEnabled()) {
       return false;
     }
     const info = this.getCurrentVolumeInfo();
@@ -920,7 +921,7 @@ export class DirectoryModel extends EventTarget {
       // the UI delegate as hosted documents receive the available offline tick
       // when they are both explicitly pinned and heuristically cached.
       if (locationInfo && locationInfo.isDriveBased &&
-          !util.isDriveFsBulkPinningEnabled()) {
+          !isDriveFsBulkPinningEnabled()) {
         chrome.fileManagerPrivate.pollDriveHostedFilePinStates();
       }
       if (!isFakeEntry(currentEntry)) {

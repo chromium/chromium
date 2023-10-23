@@ -4,7 +4,7 @@
 
 import {getDlpMetadata} from '../../../common/js/api.js';
 import {isFakeEntry} from '../../../common/js/entry_utils.js';
-import {util} from '../../../common/js/util.js';
+import {isDlpEnabled} from '../../../common/js/flags.js';
 
 import {MetadataItem} from './metadata_item.js';
 import {MetadataProvider} from './metadata_provider.js';
@@ -24,7 +24,7 @@ export class DlpMetadataProvider extends MetadataProvider {
   // @ts-ignore: error TS7006: Parameter 'requests' implicitly has an 'any'
   // type.
   async get(requests) {
-    if (!util.isDlpEnabled()) {
+    if (!isDlpEnabled()) {
       return requests.map(() => new MetadataItem());
     }
 

@@ -113,7 +113,6 @@ js_unittest("file_type_unittest") {
 js_library("filtered_volume_manager") {
   deps = [
     ":array_data_model",
-    ":util",
     "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:cr_deprecated",
     "//ash/webui/common/resources:event_target",

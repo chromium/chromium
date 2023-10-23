@@ -6,8 +6,9 @@ import {assertInstanceof} from 'chrome://resources/ash/common/assert.js';
 
 import {DialogType} from '../../../common/js/dialog_type.js';
 import {queryDecoratedElement, queryRequiredElement} from '../../../common/js/dom_utils.js';
+import {isDlpEnabled, isDriveFsBulkPinningEnabled, isJellyEnabled, isNewDirectoryTreeEnabled} from '../../../common/js/flags.js';
 import {decorate, define as crUiDefine} from '../../../common/js/ui.js';
-import {str, strf, util} from '../../../common/js/util.js';
+import {str, strf} from '../../../common/js/util.js';
 import {AllowedPaths} from '../../../common/js/volume_manager_types.js';
 import {BreadcrumbContainer} from '../../../containers/breadcrumb_container.js';
 import {CloudPanelContainer} from '../../../containers/cloud_panel_container.js';
@@ -489,7 +490,7 @@ export class FileManagerUI {
    * @return {?XfDlpRestrictionDetailsDialog}
    */
   get dlpRestrictionDetailsDialog() {
-    if (!util.isDlpEnabled()) {
+    if (!isDlpEnabled()) {
       return null;
     }
     if (this.dlpRestrictionDetailsDialog_) {
@@ -522,7 +523,7 @@ export class FileManagerUI {
     // Splitter.
     const splitterContainer =
         queryRequiredElement('#navigation-list-splitter', this.element);
-    if (util.isJellyEnabled()) {
+    if (isJellyEnabled()) {
       // Remove the unused splitter <div> and wrap the tree and list with an
       // xf-splitter.
       const dialogNavList = splitterContainer.previousElementSibling;
@@ -557,7 +558,7 @@ export class FileManagerUI {
         queryRequiredElement('#path-display-container', this.element),
         /*a11y=*/ this);
 
-    if (util.isDriveFsBulkPinningEnabled()) {
+    if (isDriveFsBulkPinningEnabled()) {
       /**
        * @type {!CloudPanelContainer}
        * @const
@@ -658,7 +659,7 @@ export class FileManagerUI {
    * @suppress {checkTypes} closure can't cast Element to XfTree.
    */
   initDirectoryTree(directoryTree) {
-    if (util.isNewDirectoryTreeEnabled()) {
+    if (isNewDirectoryTreeEnabled()) {
       this.directoryTreeContainer =
           /** @type {!DirectoryTreeContainer} */ (directoryTree);
       this.directoryTree =
@@ -762,7 +763,7 @@ export class FileManagerUI {
         ListContainer.ListType.UNINITIALIZED) {
       this.listContainer.currentView.relayout();
     }
-    if (!util.isNewDirectoryTreeEnabled() && this.directoryTree) {
+    if (!isNewDirectoryTreeEnabled() && this.directoryTree) {
       // @ts-ignore: error TS2339: Property 'relayout' does not exist on type
       // 'XfTree | DirectoryTree'.
       this.directoryTree?.relayout();
@@ -776,7 +777,7 @@ export class FileManagerUI {
    */
   layoutChanged_() {
     // The Jelly splitter uses flexbox, no need for this.
-    if (util.isJellyEnabled() || this.scrollRAFActive_ === true) {
+    if (isJellyEnabled() || this.scrollRAFActive_ === true) {
       return;
     }
 

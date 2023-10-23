@@ -13,6 +13,7 @@ import {getFocusedTreeItem, isDirectoryTree, isDirectoryTreeItem} from '../../co
 import {isFakeEntry, isRecentRootType, isSameEntry, isTeamDriveRoot, isTeamDrivesGrandRoot, isTrashEntry, isTrashRoot, isTrashRootType} from '../../common/js/entry_utils.js';
 import {FileType} from '../../common/js/file_type.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
+import {isDlpEnabled, isDriveFsBulkPinningEnabled, isMirrorSyncEnabled, isNewDirectoryTreeEnabled, isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
 import {recordEnum, recordUserAction} from '../../common/js/metrics.js';
 import {deleteIsForever, RestoreFailedType, RestoreFailedTypesUMA, RestoreFailedUMA, shouldMoveToTrash, TrashEntry} from '../../common/js/trash.js';
 import {str, strf, util} from '../../common/js/util.js';
@@ -151,7 +152,7 @@ CommandUtil.getCommandEntries = (fileManager, element) => {
 
   // The event target could still be a descendant of a DirectoryItem element
   // (e.g. the eject button).
-  if (util.isNewDirectoryTreeEnabled()) {
+  if (isNewDirectoryTreeEnabled()) {
     // Handle eject button in the new directory tree.
     // @ts-ignore: error TS2339: Property 'classList' does not exist on type
     // 'EventTarget'.
@@ -353,7 +354,7 @@ CommandUtil.createVolumeSwitchCommand = index =>
       // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
       // 'any' type.
       execute(event, fileManager) {
-        if (util.isNewDirectoryTreeEnabled()) {
+        if (isNewDirectoryTreeEnabled()) {
           const items = fileManager.ui.directoryTree.items;
           if (items[index - 1]?.entry) {
             getStore().dispatch(
@@ -1051,7 +1052,7 @@ CommandHandler.COMMANDS_['format'] = new (class extends FilesCommand {
         location.rootType === VolumeManagerCommon.RootType.REMOVABLE;
     event.canExecute = removableRoot && (isUnrecognizedVolume || writable);
 
-    if (util.isSinglePartitionFormatEnabled()) {
+    if (isSinglePartitionFormatEnabled()) {
       let isDevice = false;
       if (root && root instanceof EntryList) {
         // root entry is device node if it has child (partition).
@@ -1088,7 +1089,7 @@ CommandHandler.COMMANDS_['erase-device'] = new (class extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   canExecute(event, fileManager) {
-    if (!util.isSinglePartitionFormatEnabled()) {
+    if (!isSinglePartitionFormatEnabled()) {
       event.canExecute = false;
       event.command.setHidden(true);
       return;
@@ -1183,7 +1184,7 @@ CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
                 // @ts-ignore: error TS7005: Variable
                 // 'executedFromDirectoryTree' implicitly has an 'any' type.
                 if (executedFromDirectoryTree) {
-                  if (util.isNewDirectoryTreeEnabled()) {
+                  if (isNewDirectoryTreeEnabled()) {
                     // After new directory is created on parent directory, we
                     // need to trigger a re-read for the parent directory to the
                     // store.
@@ -2760,7 +2761,7 @@ CommandHandler.COMMANDS_['dlp-restriction-details'] =
       // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
       // 'any' type.
       canExecute(event, fileManager) {
-        if (!util.isDlpEnabled()) {
+        if (!isDlpEnabled()) {
           event.canExecute = false;
           event.command.setHidden(true);
           return;
@@ -2909,7 +2910,7 @@ CommandHandler.COMMANDS_['toggle-pinned'] = new (class extends FilesCommand {
     // When the bulk pinning panel is enabled, the "Available offline" toggle
     // should not be visible as the underlying functionality is handled
     // automatically.
-    if (util.isDriveFsBulkPinningEnabled()) {
+    if (isDriveFsBulkPinningEnabled()) {
       const state = /** @type {State} */ (getStore().getState());
       // @ts-ignore: error TS18048: 'state.preferences' is possibly 'undefined'.
       const bulkPinningPref = state.preferences.driveFsBulkPinningEnabled;
@@ -3257,7 +3258,7 @@ CommandHandler.COMMANDS_['manage-mirrorsync'] =
         event.canExecute =
             (currentRootType === VolumeManagerCommon.RootType.MY_FILES ||
              currentRootType === VolumeManagerCommon.RootType.DOWNLOADS) &&
-            util.isMirrorSyncEnabled();
+            isMirrorSyncEnabled();
         event.command.setHidden(!event.canExecute);
       }
     })();

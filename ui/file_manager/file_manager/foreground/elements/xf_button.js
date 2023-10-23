@@ -7,7 +7,7 @@ import {Button} from 'chrome://resources/cros_components/button/button.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {queryRequiredElement} from '../../common/js/dom_utils.js';
-import {util} from '../../common/js/util.js';
+import {isCrosComponentsEnabled} from '../../common/js/flags.js';
 
 const htmlTemplate = html`{__html_template__}`;
 
@@ -68,7 +68,7 @@ export class PanelButton extends HTMLElement {
     if (!this.shadowRoot) {
       return;
     }
-    if (util.isCrosComponentsEnabled()) {
+    if (isCrosComponentsEnabled()) {
       const extraButton =
           /** @type {!Button} */ (
               queryRequiredElement('#extra-button-jelly', this.shadowRoot));
