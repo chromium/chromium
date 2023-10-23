@@ -10,10 +10,10 @@
 #include "third_party/blink/renderer/core/html/html_table_element.h"
 #include "third_party/blink/renderer/core/html/html_table_row_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_row.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_section.h"
 
 namespace blink {
 

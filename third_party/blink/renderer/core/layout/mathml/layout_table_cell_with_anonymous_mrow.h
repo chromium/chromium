@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MATHML_LAYOUT_TABLE_CELL_WITH_ANONYMOUS_MROW_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MATHML_LAYOUT_TABLE_CELL_WITH_ANONYMOUS_MROW_H_
 
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
 
 namespace blink {
 

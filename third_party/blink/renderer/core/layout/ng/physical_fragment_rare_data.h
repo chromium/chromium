@@ -8,7 +8,7 @@
 #include <climits>
 
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
-#include "third_party/blink/renderer/core/layout/ng/table/ng_table_fragment_data.h"
+#include "third_party/blink/renderer/core/layout/table/table_fragment_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
