@@ -1499,6 +1499,7 @@ viz::SharedImageFormat PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat() {
 bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     viz::RasterContextProvider* raster_context_provider,
     gpu::gles2::GLES2Interface* destination_gl,
+    const gpu::Capabilities& destination_gl_capabilities,
     scoped_refptr<VideoFrame> video_frame,
     unsigned int target,
     unsigned int texture,
@@ -1544,8 +1545,9 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
           }
         } else {
           if (UploadVideoFrameToGLTexture(
-                  raster_context_provider, destination_gl, video_frame.get(),
-                  target, texture, internal_format, format, type, flip_y)) {
+                  raster_context_provider, destination_gl,
+                  destination_gl_capabilities, video_frame.get(), target,
+                  texture, internal_format, format, type, flip_y)) {
             return true;
           }
         }
@@ -1706,6 +1708,7 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTextureViaSharedImage(
 bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
     viz::RasterContextProvider* raster_context_provider,
     gpu::gles2::GLES2Interface* destination_gl,
+    const gpu::Capabilities& destination_gl_capabilities,
     scoped_refptr<VideoFrame> video_frame,
     unsigned int target,
     unsigned int texture,
@@ -1810,6 +1813,7 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
 bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     viz::RasterContextProvider* raster_context_provider,
     gpu::gles2::GLES2Interface* destination_gl,
+    const gpu::Capabilities& destination_gl_capabilities,
     scoped_refptr<VideoFrame> video_frame,
     unsigned int target,
     unsigned int texture,
@@ -1860,8 +1864,9 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
         }
       } else {
         if (UploadVideoFrameToGLTexture(
-                raster_context_provider, destination_gl, video_frame, target,
-                texture, internal_format, format, type, flip_y)) {
+                raster_context_provider, destination_gl,
+                destination_gl_capabilities, video_frame, target, texture,
+                internal_format, format, type, flip_y)) {
           return true;
         }
       }

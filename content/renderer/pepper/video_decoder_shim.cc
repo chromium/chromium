@@ -810,8 +810,10 @@ void VideoDecoderShim::SendPictures() {
       // NOTE: We cannot use SharedImage for the direct upload optimization here
       // as that requires that the caller keep the destination texture alive,
       // which this caller does not.
+      const auto& gl_capabilities =
+          pepper_video_decode_context_provider_->ContextCapabilities();
       if (!video_renderer_->CopyVideoFrameTexturesToGLTexture(
-              shared_main_thread_context_provider_.get(), gl,
+              shared_main_thread_context_provider_.get(), gl, gl_capabilities,
               frame->video_frame, destination_holder.texture_target,
               base::strict_cast<unsigned int>(destination_texture_id), GL_RGBA,
               GL_RGBA, GL_UNSIGNED_BYTE, 0,
