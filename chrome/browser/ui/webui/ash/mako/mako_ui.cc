@@ -60,7 +60,7 @@ MakoUntrustedUI::MakoUntrustedUI(content::WebUI* web_ui)
       "polymer-template-event-attribute-policy polymer-html-literal; ");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc,
-      "style-src 'unsafe-inline'; ");
+      "style-src 'unsafe-inline'  chrome-untrusted://theme; ");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ImgSrc, "img-src data:; ");
 }
@@ -70,6 +70,12 @@ void MakoUntrustedUI::BindInterface(
     mojo::PendingReceiver<orca::mojom::EditorClient> pending_receiver) {
   input_method::EditorMediator::Get()->BindEditorClient(
       std::move(pending_receiver));
+}
+
+void MakoUntrustedUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(MakoUntrustedUI)
