@@ -185,6 +185,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.GetAssertion.Result"
+    enum="WebAuthenticationGetAssertionResult" expires_after="2024-10-01">
+  <owner>nsatragno@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>Records the result of a get assertion request.</summary>
+</histogram>
+
 <histogram name="WebAuthentication.GetAssertionRequestTransport"
     enum="WebAuthenticationFidoTransport" expires_after="2024-03-17">
   <owner>kenrb@chromium.org</owner>
