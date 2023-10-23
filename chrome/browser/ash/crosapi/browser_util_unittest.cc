@@ -26,6 +26,7 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
@@ -119,7 +120,8 @@ class BrowserUtilTest : public testing::Test {
   void TearDown() override {
     ash::system::StatisticsProvider::SetTestProvider(nullptr);
     fake_user_manager_.Reset();
-    browser_util::SetCpuAvailabilityForTesting(absl::nullopt);
+    ash::standalone_browser::BrowserSupport::SetCpuSupportedForTesting(
+        absl::nullopt);
   }
 
   void AddRegularUser(const std::string& email) {
@@ -411,9 +413,9 @@ TEST_F(BrowserUtilTest, LacrosDisabledForOldHardware) {
   EXPECT_TRUE(browser_util::IsLacrosEnabled());
   EXPECT_EQ(browser_util::LacrosMode::kOnly, browser_util::GetLacrosMode());
 
-  browser_util::SetCpuAvailabilityForTesting(false);
+  ash::standalone_browser::BrowserSupport::SetCpuSupportedForTesting(false);
   EXPECT_EQ(browser_util::LacrosMode::kDisabled, browser_util::GetLacrosMode());
-  browser_util::SetCpuAvailabilityForTesting(true);
+  ash::standalone_browser::BrowserSupport::SetCpuSupportedForTesting(true);
   EXPECT_EQ(browser_util::LacrosMode::kOnly, browser_util::GetLacrosMode());
 }
 

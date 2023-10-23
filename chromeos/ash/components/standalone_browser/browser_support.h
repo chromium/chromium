@@ -7,6 +7,7 @@
 
 #include "base/auto_reset.h"
 #include "base/component_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::standalone_browser {
 
@@ -21,6 +22,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
 
   // Returns the global instance of BrowserSupport.
   static BrowserSupport* Get();
+
+  // Returns whether CPU of this device is capable to run standalone browser.
+  // Can be called even before Initialize() is called.
+  static bool IsCpuSupported();
+
+  // Directly sets the value to be returned by IsCpuSupported for testing.
+  // Setting nullopt unsets the overridden behavior of IsCpuSupported.
+  static void SetCpuSupportedForTesting(absl::optional<bool> value);
 
  private:
   BrowserSupport();

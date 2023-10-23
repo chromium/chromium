@@ -14,6 +14,7 @@ namespace ash::standalone_browser {
 namespace {
 
 BrowserSupport* g_instance = nullptr;
+absl::optional<bool> g_cpu_supported_override_ = absl::nullopt;
 
 }  // namespace
 
@@ -64,6 +65,26 @@ void BrowserSupport::Shutdown() {
 BrowserSupport* BrowserSupport::Get() {
   DCHECK(g_instance);
   return g_instance;
+}
+
+// static
+bool BrowserSupport::IsCpuSupported() {
+  if (g_cpu_supported_override_.has_value()) {
+    return *g_cpu_supported_override_;
+  }
+
+#ifdef ARCH_CPU_X86_64
+  // Some very old Flex devices are not capable to support the SSE4.2
+  // instruction set. Those CPUs should not use Lacros as Lacros has only one
+  // binary for all x86-64 platforms.
+  return __builtin_cpu_supports("sse4.2");
+#else
+  return true;
+#endif
+}
+
+void BrowserSupport::SetCpuSupportedForTesting(absl::optional<bool> value) {
+  g_cpu_supported_override_ = value;
 }
 
 }  // namespace ash::standalone_browser
