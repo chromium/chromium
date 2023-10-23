@@ -44,6 +44,12 @@ void RecordShownActionForConfidence(
   } else if (confidence == CookieControlsBreakageConfidenceLevel::kMedium) {
     base::RecordAction(
         base::UserMetricsAction("CookieControls.MediumConfidence.Shown"));
+  } else if (confidence == CookieControlsBreakageConfidenceLevel::kLow) {
+    base::RecordAction(
+        base::UserMetricsAction("CookieControls.LowConfidence.Shown"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("CookieControls.OtherConfidence.Shown"));
   }
 }
 
@@ -55,6 +61,12 @@ void RecordOpenedActionForConfidence(
   } else if (confidence == CookieControlsBreakageConfidenceLevel::kMedium) {
     base::RecordAction(
         base::UserMetricsAction("CookieControls.MediumConfidence.Opened"));
+  } else if (confidence == CookieControlsBreakageConfidenceLevel::kLow) {
+    base::RecordAction(
+        base::UserMetricsAction("CookieControls.LowConfidence.Opened"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("CookieControls.OtherConfidence.Opened"));
   }
 }
 

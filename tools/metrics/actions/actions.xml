@@ -7854,6 +7854,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="CookieControls.LowConfidence.Opened">
+  <owner>kmg@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    Cookie controls icon was clicked on for a low confidence page.
+  </description>
+</action>
+
+<action name="CookieControls.LowConfidence.Shown">
+  <owner>kmg@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    Cookie controls icon was shown for a low confidence page.
+  </description>
+</action>
+
 <action name="CookieControls.MediumConfidence.Opened">
   <owner>kmg@google.com</owner>
   <owner>sauski@google.com</owner>
@@ -7883,6 +7899,22 @@ should be able to be added at any place in this file.
   <owner>huanzhong@chromium.org</owner>
   <description>
     Third-party cookie blocking was enabled on the incognito NTP.
+  </description>
+</action>
+
+<action name="CookieControls.OtherConfidence.Opened">
+  <owner>kmg@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    Cookie controls icon was clicked on for other confidence page.
+  </description>
+</action>
+
+<action name="CookieControls.OtherConfidence.Shown">
+  <owner>kmg@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    Cookie controls icon was shown for other confidence page.
   </description>
 </action>
 
