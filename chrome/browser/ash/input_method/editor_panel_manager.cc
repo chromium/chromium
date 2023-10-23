@@ -81,9 +81,9 @@ void EditorPanelManager::BindEditorClient() {
 
 void EditorPanelManager::GetEditorPanelContext(
     GetEditorPanelContextCallback callback) {
-  // Cache the caret bounds of the current text context, so that we can properly
-  // anchor UI bubbles that are triggered by and shown after the editor panel.
-  delegate_->CacheContextCaretBounds();
+  // Cache the current text context, so that any input fields that are part of
+  // the editor panel do not interfere with the context.
+  delegate_->CacheContext();
 
   // TODO(b/295059934): Get the panel mode from the editor mediator.
   const auto editor_panel_mode = GetEditorPanelMode(delegate_->GetEditorMode());
@@ -137,11 +137,6 @@ void EditorPanelManager::OnGetPresetTextQueriesResult(
 }
 
 void EditorPanelManager::OnEditorMenuVisibilityChanged(bool visible) {
-  is_editor_menu_visible_ = visible;
-}
-
-bool EditorPanelManager::IsEditorMenuVisible() const {
-  return is_editor_menu_visible_;
 }
 
 }  // namespace ash::input_method

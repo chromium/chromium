@@ -75,7 +75,7 @@ class EditorMediator
       absl::optional<std::string_view> preset_query_id = absl::nullopt,
       absl::optional<std::string_view> freeform_text = absl::nullopt) override;
   EditorMode GetEditorMode() const override;
-  void CacheContextCaretBounds() override;
+  void CacheContext() override;
 
   // TabletModeObserver:
   void OnTabletModeStarting() override;
@@ -101,6 +101,11 @@ class EditorMediator
   EditorPanelManager& panel_manager() { return panel_manager_; }
 
  private:
+  struct SurroundingText {
+    std::u16string text;
+    gfx::Range selection_range;
+  };
+
   void OnTextFieldContextualInfoChanged(const TextFieldContextualInfo& info);
 
   void SetUpNewEditorService();
@@ -125,6 +130,8 @@ class EditorMediator
   std::unique_ptr<EditorClientConnector> editor_client_connector_;
   std::unique_ptr<EditorTextQueryProvider> text_query_provider_;
   std::unique_ptr<EditorTextActuator> text_actuator_;
+
+  SurroundingText surrounding_text_;
 
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
