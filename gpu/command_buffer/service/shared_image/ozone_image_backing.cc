@@ -19,6 +19,7 @@
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/gl_ozone_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/ozone_image_gl_textures_holder.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -153,32 +154,54 @@ std::unique_ptr<DawnImageRepresentation> OzoneImageBacking::ProduceDawn(
 #endif
 }
 
-std::unique_ptr<GLTextureImageRepresentation>
-OzoneImageBacking::ProduceGLTexture(SharedImageManager* manager,
-                                    MemoryTypeTracker* tracker) {
-  if (!cached_texture_holders_.empty() &&
-      cached_texture_holders_[0]->WasContextLost()) {
-    cached_texture_holders_.clear();
+scoped_refptr<OzoneImageGLTexturesHolder> OzoneImageBacking::RetainGLTexture(
+    bool is_passthrough) {
+  if (cached_texture_holder_ && cached_texture_holder_->WasContextLost()) {
+    cached_texture_holder_.reset();
   }
 
   const bool need_cache = workarounds_.cache_texture_in_ozone_backing;
-  return GLTextureOzoneImageRepresentation::Create(
-      manager, this, tracker, pixmap_, plane_,
-      need_cache ? &cached_texture_holders_ : nullptr);
+  if (need_cache && cached_texture_holder_) {
+    DCHECK_EQ(cached_texture_holder_->is_passthrough(), is_passthrough);
+    CHECK(!cached_texture_holder_->WasContextLost());
+    if (!format().PrefersExternalSampler()) {
+      DCHECK_EQ(static_cast<int>(cached_texture_holder_->GetNumberOfTextures()),
+                format().NumberOfPlanes());
+    }
+    return cached_texture_holder_;
+  }
+
+  scoped_refptr<OzoneImageGLTexturesHolder> new_holder =
+      OzoneImageGLTexturesHolder::CreateAndInitTexturesHolder(
+          nullptr, this, pixmap_, plane_, is_passthrough);
+  if (!need_cache) {
+    return new_holder;
+  }
+
+  cached_texture_holder_ = new_holder;
+  return cached_texture_holder_;
+}
+
+std::unique_ptr<GLTextureImageRepresentation>
+OzoneImageBacking::ProduceGLTexture(SharedImageManager* manager,
+                                    MemoryTypeTracker* tracker) {
+  auto texture_holder = RetainGLTexture(/*is_passthrough=*/false);
+  if (!texture_holder) {
+    return nullptr;
+  }
+  return std::make_unique<GLTextureOzoneImageRepresentation>(
+      manager, this, tracker, std::move(texture_holder));
 }
 
 std::unique_ptr<GLTexturePassthroughImageRepresentation>
 OzoneImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
                                                MemoryTypeTracker* tracker) {
-  if (!cached_texture_holders_.empty() &&
-      cached_texture_holders_[0]->WasContextLost()) {
-    cached_texture_holders_.clear();
+  auto texture_holder = RetainGLTexture(/*is_passthrough=*/true);
+  if (!texture_holder) {
+    return nullptr;
   }
-
-  const bool need_cache = workarounds_.cache_texture_in_ozone_backing;
-  return GLTexturePassthroughOzoneImageRepresentation::Create(
-      manager, this, tracker, pixmap_, plane_,
-      need_cache ? &cached_texture_holders_ : nullptr);
+  return std::make_unique<GLTexturePassthroughOzoneImageRepresentation>(
+      manager, this, tracker, std::move(texture_holder));
 }
 
 std::unique_ptr<SkiaGaneshImageRepresentation>
@@ -304,9 +327,7 @@ OzoneImageBacking::OzoneImageBacking(
 
 OzoneImageBacking::~OzoneImageBacking() {
   if (context_state_->context_lost()) {
-    for (auto& texture_holder : cached_texture_holders_) {
-      texture_holder->MarkContextLost();
-    }
+    cached_texture_holder_->MarkContextLost();
   }
 }
 
