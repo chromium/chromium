@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox.suggestions.carousel;
 
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
@@ -70,6 +71,12 @@ public class BaseCarouselSuggestionSelectionManager
         }
 
         setSelectedItem(newSelectedItem, false);
+    }
+
+    /** Retrieve currently selected element. */
+    @Nullable
+    View getSelectedView() {
+        return mLayoutManager.findViewByPosition(mSelectedItem);
     }
 
     /**
