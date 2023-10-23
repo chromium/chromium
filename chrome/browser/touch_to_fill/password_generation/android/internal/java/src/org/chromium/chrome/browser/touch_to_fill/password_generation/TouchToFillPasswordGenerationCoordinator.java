@@ -16,6 +16,7 @@ import android.view.View;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -50,17 +51,30 @@ class TouchToFillPasswordGenerationCoordinator {
         void onGeneratedPasswordRejected();
     }
 
+    /**
+     * The outcome of the interaction with the password generation bottom sheet. Used for metrics.
+     *
+     * <p>Entries should not be renumbered and numeric values should never be reused. Needs to stay
+     * in sync with PasswordManager.PasswordGenerationBottomSheet.InteractionResult in enums.xml.
+     */
     @IntDef({
         InteractionResult.USED_GENERATED_PASSWORD,
-        InteractionResult.DISMISSED_GENERATED_PASSWORD,
-        InteractionResult.DISMISSED_FROM_NATIVE
+        InteractionResult.REJECTED_GENERATED_PASSWORD,
+        InteractionResult.DISMISSED_FROM_NATIVE,
+        InteractionResult.DISMISSED_SHEET,
     })
     @Retention(RetentionPolicy.SOURCE)
-    private @interface InteractionResult {
+    @interface InteractionResult {
         int USED_GENERATED_PASSWORD = 0;
-        int DISMISSED_GENERATED_PASSWORD = 1;
+        int REJECTED_GENERATED_PASSWORD = 1;
         int DISMISSED_FROM_NATIVE = 2;
+        int DISMISSED_SHEET = 3;
+
+        int COUNT = DISMISSED_SHEET + 1;
     }
+
+    static final String INTERACTION_RESULT_HISTOGRAM =
+            "PasswordManager.PasswordGenerationBottomSheet.InteractionResult";
 
     private final WebContents mWebContents;
     private final PrefService mPrefService;
@@ -72,6 +86,9 @@ class TouchToFillPasswordGenerationCoordinator {
             new EmptyBottomSheetObserver() {
                 @Override
                 public void onSheetClosed(@StateChangeReason int reason) {
+                    // This is only called when the user swipes or touches the area outside the
+                    // sheet to dismiss it. When the user clicks on one of the button inside the
+                    // sheet, this observer is removed before the sheet is actually dismissed.
                     onDismissed(sheetStateChangeReasonToInteractionResult(reason));
                 }
             };
@@ -138,12 +155,16 @@ class TouchToFillPasswordGenerationCoordinator {
     }
 
     private void onDismissed(@InteractionResult int interactionResult) {
+        // It's important to remove the observer before the `mBottomSheetController.hideContent`
+        // call to avoid calling `onDismissed` twice.
         mBottomSheetController.removeObserver(mBottomSheetObserver);
         mBottomSheetController.hideContent(mTouchToFillPasswordGenerationView, true);
         mTouchToFillPasswordGenerationDelegate.onDismissed(
                 interactionResult == InteractionResult.USED_GENERATED_PASSWORD);
 
         setPasswordGenerationBottomSheetDismissCount(interactionResult);
+        RecordHistogram.recordEnumeratedHistogram(
+                INTERACTION_RESULT_HISTOGRAM, interactionResult, InteractionResult.COUNT);
     }
 
     private void onGeneratedPasswordAccepted(String password) {
@@ -153,7 +174,7 @@ class TouchToFillPasswordGenerationCoordinator {
 
     private void onGeneratedPasswordRejected() {
         mTouchToFillPasswordGenerationDelegate.onGeneratedPasswordRejected();
-        onDismissed(InteractionResult.DISMISSED_GENERATED_PASSWORD);
+        onDismissed(InteractionResult.REJECTED_GENERATED_PASSWORD);
         restoreKeyboardFocus();
     }
 
@@ -169,7 +190,8 @@ class TouchToFillPasswordGenerationCoordinator {
 
     private void setPasswordGenerationBottomSheetDismissCount(
             @InteractionResult int interactionResult) {
-        if (interactionResult == InteractionResult.DISMISSED_GENERATED_PASSWORD) {
+        if (interactionResult == InteractionResult.REJECTED_GENERATED_PASSWORD
+                || interactionResult == InteractionResult.DISMISSED_SHEET) {
             mPrefService.setInteger(
                     Pref.PASSWORD_GENERATION_BOTTOM_SHEET_DISMISS_COUNT,
                     mPrefService.getInteger(Pref.PASSWORD_GENERATION_BOTTOM_SHEET_DISMISS_COUNT)
@@ -187,9 +209,13 @@ class TouchToFillPasswordGenerationCoordinator {
                 || reason == StateChangeReason.BACK_PRESS
                 || reason == StateChangeReason.TAP_SCRIM
                 || reason == StateChangeReason.OMNIBOX_FOCUS) {
-            return InteractionResult.DISMISSED_GENERATED_PASSWORD;
+            return InteractionResult.DISMISSED_SHEET;
         }
-        return InteractionResult.USED_GENERATED_PASSWORD;
+        assert false
+                : "Unsupported value. Cannot convert StateChangeReason "
+                        + reason
+                        + "to InteractionResult.";
+        return InteractionResult.DISMISSED_SHEET;
     }
 
     /**

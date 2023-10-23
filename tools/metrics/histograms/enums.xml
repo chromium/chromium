@@ -84084,6 +84084,13 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="(DEPRECATED IN M110) Manual reset link flow"/>
 </enum>
 
+<enum name="PasswordManager.PasswordGenerationBottomSheet.InteractionResult">
+  <int value="0" label="Used generated password"/>
+  <int value="1" label="Rejected generated password"/>
+  <int value="2" label="Bottom sheet dismissed from native"/>
+  <int value="3" label="Bottom sheet dismissed by user"/>
+</enum>
+
 <enum name="PasswordManager.PasswordSharingDesktopActions">
   <int value="0" label="Password details: 'Share' button clicked"/>
   <int value="1" label="Not family member: 'Got it' button clicked"/>

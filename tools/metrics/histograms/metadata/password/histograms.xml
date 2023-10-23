@@ -2358,6 +2358,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PasswordManager.PasswordGenerationBottomSheet.InteractionResult"
+    enum="PasswordManager.PasswordGenerationBottomSheet.InteractionResult"
+    expires_after="2024-04-01">
+  <owner>atsvirchkova@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Records the interaction result with the password generation bottom sheet.
+    The metric is recorded regardless of how the bottom sheet was triggered
+    (automatically, from keyboard accessory or through manual generation). The
+    metric is logged when the bottom sheet is dismissed.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PasswordManagementBubble.UserAction"
     enum="PasswordManagementBubbleInteractions" expires_after="2024-03-24">
   <owner>mamir@chromium.org</owner>
