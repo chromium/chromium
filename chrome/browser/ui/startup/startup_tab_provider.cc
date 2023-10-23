@@ -95,14 +95,6 @@ bool ValidateUrl(const GURL& url) {
   const GURL reset_settings_url =
       settings_url.Resolve(chrome::kResetProfileSettingsSubPage);
   url_points_to_an_approved_settings_page = url == reset_settings_url;
-#if BUILDFLAG(IS_WIN)
-  // On Windows, also allow a hash for the Chrome Cleanup Tool.
-  const GURL reset_settings_url_with_cct_hash = reset_settings_url.Resolve(
-      std::string("#") + settings::ResetSettingsHandler::kCctResetSettingsHash);
-  url_points_to_an_approved_settings_page =
-      url_points_to_an_approved_settings_page ||
-      url == reset_settings_url_with_cct_hash;
-#endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
