@@ -492,7 +492,6 @@ crbug.com/367737 external/wpt/svg/painting/reftests/paint-context-002.svg [ Fail
 
 # Unprefixed 'mask' ('mask-image', 'mask-border') support not yet implemented.
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-clip-exclude.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-url-local-mask.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-url-remote-mask.html [ Failure ]
 crbug.com/843084 external/wpt/css/css-masking/clip-path/clip-path-element-userSpaceOnUse-003.html [ Failure ]
 crbug.com/843084 external/wpt/css/css-masking/clip-path/clip-path-element-userSpaceOnUse-004.html [ Failure ]
@@ -512,7 +511,6 @@ crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-mode-b.html [ Fail
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-mode-c.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-mode-d.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-mode-to-mask-type.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-opacity-1d.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-origin-1.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-origin-3.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-position-1a.html [ Failure ]
@@ -551,13 +549,11 @@ crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-size-percent-perce
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-size-percent.html [ Failure ]
 
 # New failures exposed by supporting unprefixed mask-image.
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-3a.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-3b.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-3c.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-3d.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-3e.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-3i.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-3h.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-6.html [ Failure ]
 
 # CSS clip-path: shape() not implemented
@@ -7013,12 +7009,16 @@ crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask
 crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-1a.html [ Failure ]
 crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-1b.html [ Failure ]
 crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-2.html [ Failure ]
+crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-3a.html [ Failure ]
+crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-3h.html [ Failure ]
 crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-4a.html [ Failure ]
 crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-4b.html [ Failure ]
 crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-url-image-hash.html [ Failure ]
 crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-url-image.html [ Failure ]
+crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-url-local-mask.html [ Failure ]
 crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-opacity-1a.html [ Failure ]
 crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-opacity-1b.html [ Failure ]
+crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-opacity-1d.html [ Failure ]
 crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-opacity-1e.html [ Failure ]
 crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-size-percent-percent-stretch.html [ Failure ]
 crbug.com/626703 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-shorthand-subproperties-reset.html [ Timeout ]

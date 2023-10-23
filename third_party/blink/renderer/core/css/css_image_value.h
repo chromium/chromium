@@ -34,6 +34,7 @@
 namespace blink {
 
 class Document;
+class ProxySVGResourceClient;
 class StyleImage;
 
 class CORE_EXPORT CSSImageValue : public CSSValue {
@@ -60,6 +61,8 @@ class CORE_EXPORT CSSImageValue : public CSSValue {
       const float override_image_resolution = 0.0f);
 
   const String& RelativeUrl() const { return url_data_.UnresolvedUrl(); }
+  bool IsLocal(const Document&) const;
+  AtomicString NormalizedFragmentIdentifier() const;
 
   void ReResolveURL(const Document&) const;
 
@@ -74,6 +77,7 @@ class CORE_EXPORT CSSImageValue : public CSSValue {
         url_data_.MakeAbsolute(), Referrer(), origin_clean_, is_ad_related_,
         cached_image_.Get());
   }
+  CSSImageValue* ComputedCSSValueMaybeLocal() const;
 
   CSSImageValue* Clone() const {
     return MakeGarbageCollected<CSSImageValue>(url_data_, Referrer(),
@@ -86,6 +90,8 @@ class CORE_EXPORT CSSImageValue : public CSSValue {
   void TraceAfterDispatch(blink::Visitor*) const;
   void RestoreCachedResourceIfNeeded(const Document&) const;
 
+  ProxySVGResourceClient* GetSVGResourceClient();
+
  private:
   CSSUrlData url_data_;
   Referrer referrer_;
@@ -93,6 +99,7 @@ class CORE_EXPORT CSSImageValue : public CSSValue {
 
   // Cached image data.
   mutable Member<StyleImage> cached_image_;
+  Member<ProxySVGResourceClient> proxy_svg_resource_client_;
 
   // Whether the stylesheet that requested this image is origin-clean:
   // https://drafts.csswg.org/cssom-1/#concept-css-style-sheet-origin-clean-flag

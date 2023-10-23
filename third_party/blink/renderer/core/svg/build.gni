@@ -44,6 +44,7 @@ blink_core_sources_svg = [
   "properties/svg_property_info.h",
   "properties/svg_property_tear_off.cc",
   "properties/svg_property_tear_off.h",
+  "proxy_svg_resource_client.h",
   "radial_gradient_attributes.h",
   "svg_a_element.cc",
   "svg_a_element.h",
