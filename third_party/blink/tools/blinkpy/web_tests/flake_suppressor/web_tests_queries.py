@@ -368,7 +368,7 @@ SELECT
   ANY_VALUE(cr.typ_tags) as typ_tags
 FROM ci_results cr
 WHERE (STARTS_WITH(step_name, 'blink_wpt_tests') OR
-   STARTS_WITH(step_name, 'blink_web_tests'))
+   STARTS_WITH(step_name, 'blink_web_tests')) AND
    builder IN UNNEST({builder_names})
 GROUP BY cr.name, ARRAY_TO_STRING(cr.typ_tags, '')
 """
