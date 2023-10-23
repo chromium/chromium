@@ -162,6 +162,7 @@ class CONTENT_EXPORT PrefetchResponseReader final
   // - Redirect: `kStarted` -> `kRedirectHandled`
   // - Non-redirect: `kStarted` -> `kResponseReceived` -> `kCompleted`
   // - Failure: `kStarted` -> `kFailed`
+  //            `kStarted` -> `kFailedRedirect`
   //            `kStarted` -> `kFailedResponseReceived` -> `kFailed`
   //            `kStarted` -> `kResponseReceived` -> `kFailed`
   // Optional `OnReceiveEarlyHints()` and `OnTransferSizeUpdated()` events can
@@ -189,7 +190,10 @@ class CONTENT_EXPORT PrefetchResponseReader final
 
     // [Final] Failed completion (`OnComplete()` is called, either with
     // non-`net::OK`, or after `kFailedResponseReceived`).
-    kFailed
+    kFailed,
+
+    // [Final] Failed redirects.
+    kFailedRedirect
   };
 
   LoadState load_state_{LoadState::kStarted};

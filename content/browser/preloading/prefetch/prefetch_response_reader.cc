@@ -27,6 +27,7 @@ bool PrefetchResponseReader::Servable(
     case LoadState::kRedirectHandled:
     case LoadState::kFailedResponseReceived:
     case LoadState::kFailed:
+    case LoadState::kFailedRedirect:
       servable = false;
       break;
   }
@@ -48,6 +49,7 @@ bool PrefetchResponseReader::IsWaitingForResponse() const {
     case LoadState::kCompleted:
     case LoadState::kFailedResponseReceived:
     case LoadState::kFailed:
+    case LoadState::kFailedRedirect:
       return false;
   }
 }
@@ -136,6 +138,7 @@ PrefetchRequestHandler PrefetchResponseReader::CreateRequestHandler() {
 
     case LoadState::kStarted:
     case LoadState::kFailedResponseReceived:
+    case LoadState::kFailedRedirect:
       return {};
   }
 
@@ -211,6 +214,7 @@ void PrefetchResponseReader::BindAndStart(
 
     case LoadState::kStarted:
     case LoadState::kFailedResponseReceived:
+    case LoadState::kFailedRedirect:
       // `CreateRequestHandler()` shouldn't be called for these non-servable
       // states.
       NOTREACHED();
@@ -311,6 +315,9 @@ void PrefetchResponseReader::OnComplete(
     case LoadState::kFailed:
       CHECK(false);
       break;
+    case LoadState::kFailedRedirect:
+      CHECK(false);
+      break;
   }
 
   CHECK(!response_complete_time_);
@@ -363,9 +370,7 @@ void PrefetchResponseReader::HandleRedirect(
       break;
 
     case PrefetchRedirectStatus::kFail:
-      load_state_ = LoadState::kFailed;
-      failure_reason_ =
-          PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect;
+      load_state_ = LoadState::kFailedRedirect;
       // Do not add to the event queue on failure.
       return;
   }
@@ -546,6 +551,9 @@ PrefetchStreamingURLLoaderStatus PrefetchResponseReader::GetStatusForRecording()
       } else {
         return PrefetchStreamingURLLoaderStatus::kSuccessfulNotServed;
       }
+
+    case LoadState::kFailedRedirect:
+      return PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect;
 
     case LoadState::kFailedResponseReceived:
     case LoadState::kFailed:
