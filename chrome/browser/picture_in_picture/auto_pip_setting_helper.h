@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -62,6 +63,12 @@ class AutoPipSettingHelper {
       views::View* anchor_view,
       views::BubbleBorder::Arrow arrow);
 
+  // Ignore events on `web_contents` until the user takes an action that hides
+  // the UI.  `web_contents` is presumably for the pip window.  Optional, but if
+  // called it must be after `CreateOverlayViewIfNeeded()` returns the View, but
+  // before the user dismisses it.
+  void IgnoreInputEvents(content::WebContents* web_contents);
+
   // Only used for testing. Having access to the result callback during testing
   // allows us to test the behaviour of clicking the various UI buttons, without
   // the need to perform clicks.
@@ -89,6 +96,11 @@ class AutoPipSettingHelper {
 
   // If true, then we've shown the UI but the user hasn't picked an option yet.
   bool ui_was_shown_but_not_acknowledged_ = false;
+
+  // Optional closure to re-enable input events, to be run when the user
+  // dismisses the UI via any button.  Only used for document pip.
+  absl::optional<content::WebContents::ScopedIgnoreInputEvents>
+      scoped_ignore_input_events_;
 
   base::WeakPtrFactory<AutoPipSettingHelper> weak_factory_{this};
 };

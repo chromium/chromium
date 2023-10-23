@@ -401,6 +401,9 @@ PictureInPictureWindowManager::GetOverlayView(
   if (!overlay_view) {
     // Clear the setting helper, since the setting is either allowed or blocked.
     auto_pip_setting_helper_.reset();
+  } else if (auto* pip_contents = GetChildWebContents()) {
+    // For document pip, block input too.
+    auto_pip_setting_helper_->IgnoreInputEvents(pip_contents);
   }
 
   return overlay_view;
