@@ -94,6 +94,9 @@ TEST_F(SMILTimeContainerTest, ServiceAnimationsFlushesPendingSynchronizations) {
 }
 
 TEST_F(SMILTimeContainerTest, ServiceAnimationsResyncOnLag) {
+  if (!RuntimeEnabledFeatures::SmilAutoSuspendOnLagEnabled()) {
+    return;
+  }
   Load(R"HTML(
     <svg id="container">
       <rect width="100" height="100" fill="blue">
