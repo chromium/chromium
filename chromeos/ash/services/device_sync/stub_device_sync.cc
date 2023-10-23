@@ -47,6 +47,7 @@ void SetDeviceSoftwareFeatureState(
       kFeatureUpdatedByPhoneWhenSuiteStateChanged[] = {
           multidevice::SoftwareFeature::kSmartLockHost,
           multidevice::SoftwareFeature::kInstantTetheringHost,
+          multidevice::SoftwareFeature::kMessagesForWebHost,
           multidevice::SoftwareFeature::kPhoneHubHost,
           multidevice::SoftwareFeature::kWifiSyncHost,
           multidevice::SoftwareFeature::kEcheHost,

@@ -57,14 +57,14 @@ enum HostStatus {
 };
 
 // Individual multi-device features types. Enums should remain in sync with
-// those in c/b/r/s/chromeos/multidevice_page/multidevice_constants.ts,
+// those in c/b/r/s/chromeos/multidevice_page/multidevice_constants.js,
 // and all features should be reflected in the FeatureStateMaps generated in
 // chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.cc
 // and chrome/browser/ui/webui/settings/ash/multidevice_handler.cc
 enum Feature {
   kBetterTogetherSuite = 0,
   kInstantTethering = 1,
-  // 2 is deprecated.
+  kMessages = 2,
   kSmartLock = 3,
   kPhoneHub = 4,
   kPhoneHubNotifications = 5,

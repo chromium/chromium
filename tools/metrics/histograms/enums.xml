@@ -74320,7 +74320,7 @@ Called by update_use_counter_css.py.-->
   <int value="1" label="Better Together Suite"/>
   <int value="2" label="Smart Lock"/>
   <int value="3" label="Instant Tethering"/>
-  <int value="4" label="(Obsolete) Messages. Deprecated 2023-10."/>
+  <int value="4" label="Messages"/>
   <int value="5" label="Unexpected Client Feature"/>
 </enum>
 

@@ -78,7 +78,7 @@ const char kTestEmail[] = "example@gmail.com";
 const char kTestGcmDeviceInfoLongDeviceId[] = "longDeviceId";
 const char kTestCryptAuthGCMRegistrationId[] = "cryptAuthRegistrationId";
 const char kLocalDevicePublicKey[] = "localDevicePublicKey";
-const size_t kNumTestDevices = 4u;
+const size_t kNumTestDevices = 5u;
 
 const cryptauth::GcmDeviceInfo& GetTestGcmDeviceInfo() {
   static const base::NoDestructor<cryptauth::GcmDeviceInfo> gcm_device_info([] {
@@ -2229,8 +2229,9 @@ TEST_P(DeviceSyncServiceTest,
   // * Device 1 has kSmartLockHost disabled.
   // * Device 2 has kBetterTogetherHost enabled exclusively.
   // * Device 3 has kInstantTetheringHost enabled.
+  // * Device 4 has kMessagesForWebHost disabled.
   multidevice::RemoteDeviceList expected_remote_devices =
-      multidevice::CreateRemoteDeviceListForTest(4u);
+      multidevice::CreateRemoteDeviceListForTest(5u);
   expected_remote_devices[0]
       .software_features[multidevice::SoftwareFeature::kSmartLockHost] =
       multidevice::SoftwareFeatureState::kSupported;
@@ -2243,6 +2244,9 @@ TEST_P(DeviceSyncServiceTest,
   expected_remote_devices[3]
       .software_features[multidevice::SoftwareFeature::kInstantTetheringHost] =
       multidevice::SoftwareFeatureState::kEnabled;
+  expected_remote_devices[4]
+      .software_features[multidevice::SoftwareFeature::kMessagesForWebHost] =
+      multidevice::SoftwareFeatureState::kSupported;
 
   CallSetFeatureStatus(expected_remote_devices[0].instance_id,
                        multidevice::SoftwareFeature::kSmartLockHost,
@@ -2256,19 +2260,22 @@ TEST_P(DeviceSyncServiceTest,
   CallSetFeatureStatus(expected_remote_devices[3].instance_id,
                        multidevice::SoftwareFeature::kInstantTetheringHost,
                        FeatureStatusChange::kEnableNonExclusively);
+  CallSetFeatureStatus(expected_remote_devices[4].instance_id,
+                       multidevice::SoftwareFeature::kMessagesForWebHost,
+                       FeatureStatusChange::kDisable);
 
   if (features::ShouldUseV1DeviceSync()) {
     EXPECT_EQ(
-        4u, fake_software_feature_manager()->set_feature_status_calls().size());
+        5u, fake_software_feature_manager()->set_feature_status_calls().size());
   } else {
-    EXPECT_EQ(4u, fake_feature_status_setter()->requests().size());
+    EXPECT_EQ(5u, fake_feature_status_setter()->requests().size());
   }
 
   // The DeviceSyncImpl::SetFeatureStatus() callbacks have not yet been invoked.
   EXPECT_TRUE(set_feature_status_results().empty());
 
   // Now, invoke the success callbacks.
-  for (size_t i = 0; i < 4u; ++i) {
+  for (size_t i = 0; i < 5u; ++i) {
     if (features::ShouldUseV1DeviceSync()) {
       std::move(fake_software_feature_manager()
                     ->set_feature_status_calls()[i]
@@ -2291,8 +2298,9 @@ TEST_P(DeviceSyncServiceTest,
   // * Device 2 has kBetterTogetherHost enabled but not exclusively since device
   //   1 also has it enabled.
   // * Device 3 does not have kInstantTetheringHost enabled.
+  // * Device 4 does not have kMessagesForWebHost disabled.
   multidevice::RemoteDeviceList remote_devices_from_first_sync =
-      multidevice::CreateRemoteDeviceListForTest(4u);
+      multidevice::CreateRemoteDeviceListForTest(5u);
   remote_devices_from_first_sync[1]
       .software_features[multidevice::SoftwareFeature::kBetterTogetherHost] =
       multidevice::SoftwareFeatureState::kEnabled;
@@ -2302,6 +2310,9 @@ TEST_P(DeviceSyncServiceTest,
   remote_devices_from_first_sync[3]
       .software_features[multidevice::SoftwareFeature::kInstantTetheringHost] =
       multidevice::SoftwareFeatureState::kSupported;
+  remote_devices_from_first_sync[4]
+      .software_features[multidevice::SoftwareFeature::kMessagesForWebHost] =
+      multidevice::SoftwareFeatureState::kEnabled;
   remote_devices_from_first_sync.erase(remote_devices_from_first_sync.begin());
 
   SimulateSync(true /* success */, remote_devices_from_first_sync);
@@ -2317,7 +2328,7 @@ TEST_P(DeviceSyncServiceTest,
   SimulateSync(true /* success */, expected_remote_devices);
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_EQ(4u, set_feature_status_results().size());
+  ASSERT_EQ(5u, set_feature_status_results().size());
   for (mojom::NetworkRequestResult result : set_feature_status_results())
     EXPECT_EQ(mojom::NetworkRequestResult::kSuccess, result);
 }

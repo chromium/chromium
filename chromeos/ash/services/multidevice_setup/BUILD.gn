@@ -136,6 +136,7 @@ source_set("unit_tests") {
 
   sources = [
     "account_status_change_delegate_notifier_impl_unittest.cc",
+    "android_sms_app_installing_status_observer_unittest.cc",
     "eligible_host_devices_provider_impl_unittest.cc",
     "feature_state_manager_impl_unittest.cc",
     "global_state_feature_manager_impl_unittest.cc",

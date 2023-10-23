@@ -96,9 +96,8 @@ bool IsFeatureAllowed(mojom::Feature feature, const PrefService* pref_service) {
       // Phone Hub feature is prohibited, its sub-features are implicitly
       // prohibited.
       static const mojom::Feature kTopLevelFeaturesInSuite[] = {
-          mojom::Feature::kInstantTethering,
-          mojom::Feature::kPhoneHub,
-          mojom::Feature::kSmartLock,
+          mojom::Feature::kInstantTethering, mojom::Feature::kMessages,
+          mojom::Feature::kPhoneHub,         mojom::Feature::kSmartLock,
           mojom::Feature::kWifiSync,
       };
       for (mojom::Feature top_level_feature : kTopLevelFeaturesInSuite) {
@@ -111,6 +110,9 @@ bool IsFeatureAllowed(mojom::Feature feature, const PrefService* pref_service) {
     case mojom::Feature::kInstantTethering:
       return base::FeatureList::IsEnabled(features::kInstantTethering) &&
              pref_service->GetBoolean(kInstantTetheringAllowedPrefName);
+
+    case mojom::Feature::kMessages:
+      return pref_service->GetBoolean(kMessagesAllowedPrefName);
 
     case mojom::Feature::kSmartLock:
       return pref_service->GetBoolean(kSmartLockAllowedPrefName);
@@ -154,6 +156,9 @@ bool IsDefaultFeatureEnabledValue(mojom::Feature feature,
           ->IsDefaultValue();
     case mojom::Feature::kInstantTethering:
       return pref_service->FindPreference(kInstantTetheringEnabledPrefName)
+          ->IsDefaultValue();
+    case mojom::Feature::kMessages:
+      return pref_service->FindPreference(kMessagesEnabledPrefName)
           ->IsDefaultValue();
     case mojom::Feature::kSmartLock:
       return pref_service->FindPreference(kSmartLockEnabledPrefName)

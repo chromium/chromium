@@ -72,7 +72,21 @@ AndroidSmsAppInstallingStatusObserver::AndroidSmsAppInstallingStatusObserver(
 
 bool AndroidSmsAppInstallingStatusObserver::
     DoesFeatureStateAllowInstallation() {
-  return false;
+  mojom::FeatureState feature_state =
+      feature_state_manager_->GetFeatureStates()[mojom::Feature::kMessages];
+  if (feature_state != mojom::FeatureState::kEnabledByUser) {
+    return false;
+  }
+
+  mojom::HostStatus status(
+      host_status_provider_->GetHostWithStatus().host_status());
+  if (status !=
+          mojom::HostStatus::kHostSetLocallyButWaitingForBackendConfirmation &&
+      status != mojom::HostStatus::kHostVerified) {
+    return false;
+  }
+
+  return true;
 }
 
 void AndroidSmsAppInstallingStatusObserver::UpdatePwaInstallationState() {
