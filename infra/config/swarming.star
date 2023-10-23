@@ -63,6 +63,9 @@ swarming.pool_realm(
 swarming.task_triggerers(
     builder_realm = "ci",
     pool_realm = "pools/ci",
+    groups = [
+        "mdb/chrome-build-access-sphinx",
+    ],
     users = [
         "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
 
@@ -84,7 +87,7 @@ swarming.task_triggerers(
     builder_realm = "try",
     pool_realm = "pools/try",
     groups = [
-        "chromium-led-users",
+        "mdb/chrome-build-access-sphinx",
     ],
     users = [
         # Build Recipes Tester launches orchestrator led builds which needs to
