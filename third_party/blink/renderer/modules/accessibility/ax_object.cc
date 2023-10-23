@@ -7632,9 +7632,10 @@ const AXObject* AXObject::LowestCommonAncestor(const AXObject& first,
 void AXObject::PreSerializationConsistencyCheck() {
   CHECK(!IsDetached()) << "Do not serialize detached nodes: "
                        << ToString(true, true);
-  CHECK(AXObjectCache().IsFrozen());
-  CHECK(!NeedsToUpdateCachedValues());
-  CHECK(AccessibilityIsIncludedInTree())
+  // TODO(https://crbug.com/1480627): convert to CHECKs.
+  DCHECK(AXObjectCache().IsFrozen());
+  DCHECK(!NeedsToUpdateCachedValues());
+  DCHECK(AccessibilityIsIncludedInTree())
       << "Do not serialize unincluded nodes: " << ToString(true, true);
 #if defined(AX_FAIL_FAST_BUILD)
   // A bit more expensive, so only check in builds used for testing.
