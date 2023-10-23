@@ -27,6 +27,9 @@ public class WebApkIntentDataProviderBuilder {
     private String mManifestUrl;
     private int mWebApkVersionCode;
     private String mManifestId;
+    private String mName;
+    private String mShortName;
+    private long mToolbarColor;
 
     public WebApkIntentDataProviderBuilder(String webApkPackageName, String url) {
         mWebApkPackageName = webApkPackageName;
@@ -53,6 +56,18 @@ public class WebApkIntentDataProviderBuilder {
         mManifestId = manifestId;
     }
 
+    public void setName(String name) {
+        mName = name;
+    }
+
+    public void setShortName(String shortName) {
+        mShortName = shortName;
+    }
+
+    public void setToolbarColor(long color) {
+        mToolbarColor = color;
+    }
+
     private String manifestId() {
         if (mManifestId == null) {
             return mUrl;
@@ -64,14 +79,37 @@ public class WebApkIntentDataProviderBuilder {
      * Builds {@link BrowserServicesIntentDataProvider} object using options that have been set.
      */
     public BrowserServicesIntentDataProvider build() {
-        return WebApkIntentDataProviderFactory.create(new Intent(), mUrl, mScope, null, null, null,
-                null, mDisplayMode, ScreenOrientationLockType.DEFAULT, ShortcutSource.UNKNOWN,
-                ColorUtils.INVALID_COLOR, ColorUtils.INVALID_COLOR, ColorUtils.INVALID_COLOR,
-                ColorUtils.INVALID_COLOR, Color.WHITE, false /* isPrimaryIconMaskable */,
-                false /* isSplashIconMaskable */, mWebApkPackageName, /* shellApkVersion */ 1,
-                mManifestUrl, mUrl, manifestId(), null /*appKey*/, WebApkDistributor.BROWSER,
-                new HashMap<String, String>() /* iconUrlToMurmur2HashMap */, null,
-                false /* forceNavigation */, false /* isSplashProvidedByWebApk */, null,
-                new ArrayList<>() /* shortcutItems */, mWebApkVersionCode);
+        return WebApkIntentDataProviderFactory.create(
+                new Intent(),
+                mUrl,
+                mScope,
+                null,
+                null,
+                mName,
+                mShortName,
+                mDisplayMode,
+                ScreenOrientationLockType.DEFAULT,
+                ShortcutSource.UNKNOWN,
+                mToolbarColor,
+                ColorUtils.INVALID_COLOR,
+                ColorUtils.INVALID_COLOR,
+                ColorUtils.INVALID_COLOR,
+                Color.WHITE,
+                false /* isPrimaryIconMaskable */,
+                false /* isSplashIconMaskable */,
+                mWebApkPackageName, /* shellApkVersion */
+                1,
+                mManifestUrl,
+                mUrl,
+                manifestId(),
+                null /*appKey*/,
+                WebApkDistributor.BROWSER,
+                new HashMap<String, String>() /* iconUrlToMurmur2HashMap */,
+                null,
+                false /* forceNavigation */,
+                false /* isSplashProvidedByWebApk */,
+                null,
+                new ArrayList<>() /* shortcutItems */,
+                mWebApkVersionCode);
     }
 }

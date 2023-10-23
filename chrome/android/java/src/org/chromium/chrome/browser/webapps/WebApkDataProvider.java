@@ -65,7 +65,7 @@ public class WebApkDataProvider {
                 (((color) >> 0) & 0xFF));
     }
 
-    private static WebappInfo getPartialWebappInfo(String url) {
+    public static WebappInfo getPartialWebappInfo(String url) {
         if (sWebappInfoForTesting != null) return sWebappInfoForTesting;
 
         Context appContext = ContextUtils.getApplicationContext();

@@ -23,6 +23,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionStore;
 import org.chromium.chrome.browser.browsing_data.UrlFilter;
@@ -30,6 +31,7 @@ import org.chromium.chrome.browser.browsing_data.UrlFilterBridge;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.embedder_support.util.Origin;
+import org.chromium.components.sync.protocol.WebApkSpecifics;
 import org.chromium.webapk.lib.common.WebApkConstants;
 
 import java.util.ArrayList;
@@ -244,6 +246,79 @@ public class WebappRegistry {
         Set<String> origins = WebappRegistry.getInstance().getOriginsWithWebApk();
         String[] originsArray = new String[origins.size()];
         return origins.toArray(originsArray);
+    }
+
+    /*
+     * Returns an array of serialized |WebApkSpecifics| protos in byte[] format.
+     */
+    @CalledByNative
+    public static byte[][] getWebApkSpecifics() {
+        List<WebApkSpecifics> webApkSpecifics =
+                WebappRegistry.getInstance()
+                        .getWebApkSpecificsImpl(null /* setWebappInfoForTesting */);
+        List<byte[]> specificsBytes = new ArrayList<byte[]>();
+        for (WebApkSpecifics specifics : webApkSpecifics) {
+            specificsBytes.add(specifics.toByteArray());
+        }
+
+        byte[][] specificsBytesArray = new byte[specificsBytes.size()][];
+        return specificsBytes.toArray(specificsBytesArray);
+    }
+
+    /*
+     * Callback interface used for testing getWebApkSpecificsImpl().
+     */
+    public interface GetWebApkSpecificsImplSetWebappInfoForTesting {
+        void run(String scope);
+    }
+
+    /*
+     * Returns a List of |WebApkSpecifics| protos.
+     */
+    public List<WebApkSpecifics> getWebApkSpecificsImpl(
+            GetWebApkSpecificsImplSetWebappInfoForTesting setWebappInfoForTesting) {
+        List<WebApkSpecifics> webApkSpecificsList = new ArrayList<WebApkSpecifics>();
+        for (WebappDataStorage storage : mStorages.values()) {
+            String scope = getWebApkScopeFromStorage(storage);
+            if (scope.isEmpty()) {
+                continue;
+            }
+
+            if (setWebappInfoForTesting != null) {
+                setWebappInfoForTesting.run(scope);
+            }
+
+            WebappInfo webApkInfo = WebApkDataProvider.getPartialWebappInfo(scope);
+            if (webApkInfo == null) {
+                continue;
+            }
+
+            WebApkSpecifics.Builder webApkSpecificsBuilder = WebApkSpecifics.newBuilder();
+            if (webApkInfo.manifestId() != null) {
+                webApkSpecificsBuilder.setManifestId(webApkInfo.manifestId());
+            }
+            if (webApkInfo.manifestStartUrl() != null) {
+                webApkSpecificsBuilder.setStartUrl(webApkInfo.manifestStartUrl());
+            }
+            if (webApkInfo.name() != null) {
+                webApkSpecificsBuilder.setName(webApkInfo.name());
+            }
+            if ((webApkInfo.name() == null || webApkInfo.name().equals(""))
+                    && webApkInfo.shortName() != null) {
+                webApkSpecificsBuilder.setName(webApkInfo.shortName());
+            }
+            if (webApkInfo.hasValidToolbarColor()) {
+                webApkSpecificsBuilder.setThemeColor((int) webApkInfo.toolbarColor());
+            }
+            if (webApkInfo.scopeUrl() != null) {
+                webApkSpecificsBuilder.setScope(webApkInfo.scopeUrl());
+            }
+
+            // TODO(hartmanng): support icons and last used timestamp
+
+            webApkSpecificsList.add(webApkSpecificsBuilder.build());
+        }
+        return webApkSpecificsList;
     }
 
     /**
