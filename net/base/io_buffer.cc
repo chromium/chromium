@@ -28,11 +28,13 @@ IOBuffer::IOBuffer() = default;
 
 IOBuffer::IOBuffer(size_t buffer_size) {
   AssertValidBufferSize(buffer_size);
-  data_ = new char[buffer_size];
+  if (buffer_size) {
+    data_ = new char[buffer_size];
 #if BUILDFLAG(IS_IOS)
-  // TODO(crbug.com/1335423): Investigating crashes on iOS.
-  CHECK(data_);
+    // TODO(crbug.com/1335423): Investigating crashes on iOS.
+    CHECK(data_);
 #endif  // BUILDFLAG(IS_IOS)
+  }
 }
 
 IOBuffer::IOBuffer(char* data)
