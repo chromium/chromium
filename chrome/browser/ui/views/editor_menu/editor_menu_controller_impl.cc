@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/editor_menu/editor_menu_controller_impl.h"
 
+#include <memory>
 #include <string_view>
 #include <vector>
 
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/views/editor_menu/editor_menu_view.h"
 #include "chrome/browser/ui/views/editor_menu/utils/preset_text_query.h"
 #include "chromeos/crosapi/mojom/editor_panel.mojom.h"
+#include "content/public/browser/browser_context.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -39,7 +41,8 @@ using crosapi::mojom::EditorPanelMode;
 using crosapi::mojom::EditorPanelPresetTextQuery;
 using crosapi::mojom::EditorPanelPresetTextQueryPtr;
 
-crosapi::mojom::EditorPanelManager& GetEditorPanelManager() {
+crosapi::mojom::EditorPanelManager& GetEditorPanelManager(
+    content::BrowserContext* browser_context) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::LacrosService* const lacros_service =
       chromeos::LacrosService::Get();
@@ -91,7 +94,11 @@ void EditorMenuControllerImpl::OnTextAvailable(
     const gfx::Rect& anchor_bounds,
     const std::string& selected_text,
     const std::string& surrounding_text) {
-  GetEditorPanelManager().GetEditorPanelContext(
+  if (!card_session_) {
+    return;
+  }
+
+  card_session_->panel_manager.GetEditorPanelContext(
       base::BindOnce(&EditorMenuControllerImpl::OnGetEditorPanelContextResult,
                      weak_factory_.GetWeakPtr(), anchor_bounds));
 }
@@ -137,36 +144,61 @@ void EditorMenuControllerImpl::OnSettingsButtonPressed() {
 
 void EditorMenuControllerImpl::OnChipButtonPressed(
     std::string_view text_query_id) {
-  GetEditorPanelManager().StartEditingFlowWithPreset(
+  if (!card_session_) {
+    return;
+  }
+
+  card_session_->panel_manager.StartEditingFlowWithPreset(
       std::string(text_query_id));
 }
 
 void EditorMenuControllerImpl::OnTextfieldArrowButtonPressed(
     std::u16string_view text) {
-  if (text.empty()) {
+  if (text.empty() || !card_session_) {
     return;
   }
 
-  GetEditorPanelManager().StartEditingFlowWithFreeform(base::UTF16ToUTF8(text));
+  card_session_->panel_manager.StartEditingFlowWithFreeform(
+      base::UTF16ToUTF8(text));
 }
 
 void EditorMenuControllerImpl::OnPromoCardWidgetClosed(
     views::Widget::ClosedReason closed_reason) {
+  if (!card_session_) {
+    return;
+  }
+
   switch (closed_reason) {
     case views::Widget::ClosedReason::kAcceptButtonClicked:
-      GetEditorPanelManager().StartEditingFlow();
+      card_session_->panel_manager.StartEditingFlow();
       break;
     case views::Widget::ClosedReason::kCloseButtonClicked:
-      GetEditorPanelManager().OnPromoCardDeclined();
+      card_session_->panel_manager.OnPromoCardDeclined();
       break;
     default:
-      GetEditorPanelManager().OnPromoCardDismissed();
+      card_session_->panel_manager.OnPromoCardDismissed();
       break;
   }
+
+  OnEditorCardHidden();
 }
 
 void EditorMenuControllerImpl::OnEditorMenuVisibilityChanged(bool visible) {
-  GetEditorPanelManager().OnEditorMenuVisibilityChanged(visible);
+  if (!card_session_) {
+    return;
+  }
+
+  card_session_->panel_manager.OnEditorMenuVisibilityChanged(visible);
+
+  if (!visible) {
+    OnEditorCardHidden();
+  }
+}
+
+void EditorMenuControllerImpl::SetBrowserContext(
+    content::BrowserContext* context) {
+  card_session_ =
+      std::make_unique<EditorCardSession>(GetEditorPanelManager(context));
 }
 
 void EditorMenuControllerImpl::OnGetEditorPanelContextResultForTesting(
@@ -199,6 +231,12 @@ void EditorMenuControllerImpl::OnGetEditorPanelContextResult(
       editor_menu_widget_->ShowInactive();
       break;
   }
+}
+
+void EditorMenuControllerImpl::OnEditorCardHidden() {
+  // The currently visible card is closing and being removed from the user's
+  // view, the EditorCardSession has ended.
+  card_session_ = nullptr;
 }
 
 }  // namespace chromeos::editor_menu

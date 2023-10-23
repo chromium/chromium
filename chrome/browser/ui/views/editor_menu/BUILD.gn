@@ -43,6 +43,7 @@ source_set("editor_menu") {
     "//base",
     "//chromeos/components/editor_menu/public/cpp",
     "//chromeos/crosapi/mojom",
+    "//content/public/browser:browser",
     "//ui/gfx",
     "//ui/views",
   ]
