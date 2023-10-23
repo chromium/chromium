@@ -474,11 +474,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   previewSpeechSynthesisVoice(voice: SpeechSynthesisVoice) {
     const defaultUtteranceSettings = this.defaultUtteranceSettings();
 
-    // TODO(crbug.com/1474951): Translate the utterance into the language of
-    // the voice being previewed, and remove the hard-coded string.
+    // TODO(crbug.com/1474951): Finalize the default voice preview text.
     // TODO(crbug.com/1474951): Call this.synth.cancel() to interrupt reading
     // and reset the play icon.
-    const utterance = new SpeechSynthesisUtterance('Hi. This is a preview');
+    const utterance = new SpeechSynthesisUtterance(
+        loadTimeData.getString('readingModeVoicePreviewText'));
     utterance.voice = voice;
     utterance.lang = defaultUtteranceSettings.lang;
     utterance.volume = defaultUtteranceSettings.volume;
