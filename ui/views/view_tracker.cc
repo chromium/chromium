@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/views/view_tracker.h"
+#include "ui/views/view.h"
 
 namespace views {
 

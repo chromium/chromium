@@ -7,11 +7,13 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/views_export.h"
 
 namespace views {
+
+class View;
+
 // ViewTracker tracks a single View. When the View is deleted it's removed.
 class VIEWS_EXPORT ViewTracker : public ViewObserver {
  public:
