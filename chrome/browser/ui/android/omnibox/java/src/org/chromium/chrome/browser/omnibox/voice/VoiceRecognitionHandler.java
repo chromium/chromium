@@ -397,7 +397,7 @@ public class VoiceRecognitionHandler {
             AutocompleteMatch match =
                     AutocompleteControllerProvider.from(mDelegate.getWindowAndroid())
                             .get(profile)
-                            .classify(topResultQuery, false);
+                            .classify(topResultQuery);
 
             String url;
             if (match == null || match.isSearchSuggestion()) {
@@ -457,7 +457,7 @@ public class VoiceRecognitionHandler {
                 match =
                         AutocompleteControllerProvider.from(mDelegate.getWindowAndroid())
                                 .get(mProfileSupplier.get())
-                                .classify(culledString, false);
+                                .classify(culledString);
             }
 
             String urlOrSearchQuery;

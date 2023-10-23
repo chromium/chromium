@@ -46,8 +46,7 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer {
                      jint j_page_classification);
   base::android::ScopedJavaLocalRef<jobject> Classify(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& j_text,
-      bool focused_from_fakebox);
+      const base::android::JavaParamRef<jstring>& j_text);
   void OnOmniboxFocused(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& j_omnibox_text,

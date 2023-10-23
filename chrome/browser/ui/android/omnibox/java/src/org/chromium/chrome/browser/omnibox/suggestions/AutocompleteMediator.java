@@ -850,7 +850,7 @@ class AutocompleteMediator
             // also happen if the user presses enter before any suggestions have been received
             // from the autocomplete controller.
             if (!mNativeInitialized || mAutocomplete == null) return;
-            suggestionMatch = mAutocomplete.classify(urlText, mDelegate.didFocusUrlFromFakebox());
+            suggestionMatch = mAutocomplete.classify(urlText);
             // If urlText couldn't be classified, bail.
             if (suggestionMatch == null) return;
         }
