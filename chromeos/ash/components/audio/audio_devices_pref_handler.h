@@ -22,6 +22,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandler
   static constexpr double kDefaultInputGainPercent = 50;
   static constexpr double kDefaultOutputVolumePercent = 75;
   static constexpr double kDefaultHdmiOutputVolumePercent = 100;
+  static constexpr double kDefaultBluetoothOutputVolumePercent = 25;
 
   // Gets the audio output volume value from prefs for a device. Since we can
   // only have either a gain or a volume for a device (depending on whether it
