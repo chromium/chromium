@@ -103,7 +103,8 @@ function build_args {
     --enable-features=${FEATURES} \
     ${TOUCH_DEVICE_OPTION} \
     --enable-ash-debug-browser \
-    --lacros-chrome-path=${LACROS_BUILD_DIR}" \
+    --lacros-chrome-path=${LACROS_BUILD_DIR} \
+    ${EXTRA_ARGS}"
 
   # To enable internal display.
   ARGS="${ARGS} --use-first-display-as-internal"
@@ -188,6 +189,10 @@ command
                          wxga(1280x800), fwxga(1355x768), hdp(1600,900),
                          fhd(1920x1080), wuxga(1920,1200), qhd(2560,1440),
                          qhdp(3200,1800), f4k(3840,2160)
+  --<chrome commandline flags>
+                         Pass extra command line flags to ash-chrome.
+                         The script will reject if the string does not exist in
+                         chrome binary.
 EOF
 }
 
@@ -230,6 +235,19 @@ do
         echo "Unknown display panel: $panel"
         help
       fi
+      ;;
+    --*)
+      if [ -f ${ASH_CHROME_BUILD_DIR}/chrome ]; then
+        flag_name=${1:2}
+        set +e
+        result=$(strings ${ASH_CHROME_BUILD_DIR}/chrome | grep "$flag_name")
+        set -e
+        if $result ; then
+          echo "Can't find '${1}' in ash-chrome"
+          help
+        fi
+      fi
+      EXTRA_ARGS="${EXTRA_ARGS} $1"
       ;;
     *) echo "Unknown option $1"; help ;;
   esac
