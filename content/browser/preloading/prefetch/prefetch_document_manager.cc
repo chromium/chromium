@@ -149,11 +149,6 @@ void PrefetchDocumentManager::DidStartNavigation(
       PrefetchServingPageMetricsContainer::GetOrCreateForNavigationHandle(
           *navigation_handle);
 
-  // Currently, prefetches can only be used with a navigation from the referring
-  // page and in the same tab. Eventually we will support other types of
-  // navigations where the prefetch is used in a different tab.
-  serving_page_metrics_container->SetSameTabAsPrefetchingTab(true);
-
   base::WeakPtr<PrefetchContainer> prefetch_container =
       MatchUrl(navigation_handle->GetURL());
 
