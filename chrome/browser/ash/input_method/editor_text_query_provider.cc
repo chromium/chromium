@@ -73,6 +73,7 @@ orca::mojom::TextQueryErrorPtr ConvertErrorResponse(manta::MantaStatus status) {
 }
 
 std::vector<orca::mojom::TextQueryResultPtr> ParseSuccessResponse(
+    const std::string& request_id,
     base::Value::Dict& response) {
   std::vector<orca::mojom::TextQueryResultPtr> results;
   if (auto* output_data_list = response.FindList("outputData")) {
@@ -80,7 +81,8 @@ std::vector<orca::mojom::TextQueryResultPtr> ParseSuccessResponse(
     for (const auto& data : *output_data_list) {
       if (const auto* text = data.GetDict().FindString("text")) {
         results.push_back(orca::mojom::TextQueryResult::New(
-            base::NumberToString(result_id), *text));
+            base::StrCat({request_id, ":", base::NumberToString(result_id)}),
+            *text));
         ++result_id;
       }
     }
@@ -113,19 +115,21 @@ void EditorTextQueryProvider::Process(orca::mojom::TextQueryRequestPtr request,
     std::move(callback).Run(std::move(response));
     return;
   }
+
+  ++request_id_;
   orca_provider_->Call(
       CreateProviderRequest(std::move(request)),
       base::BindOnce(
-          [](ProcessCallback process_callback, base::Value::Dict dict,
-             manta::MantaStatus status) {
+          [](const std::string& request_id, ProcessCallback process_callback,
+             base::Value::Dict dict, manta::MantaStatus status) {
             std::move(process_callback)
                 .Run(status.status_code == manta::MantaStatusCode::kOk
                          ? orca::mojom::TextQueryResponse::NewResults(
-                               ParseSuccessResponse(dict))
+                               ParseSuccessResponse(request_id, dict))
                          : orca::mojom::TextQueryResponse::NewError(
                                ConvertErrorResponse(status)));
           },
-          std::move(callback)));
+          base::NumberToString(request_id_), std::move(callback)));
 }
 
 }  // namespace ash::input_method

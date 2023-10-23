@@ -29,6 +29,9 @@ class EditorTextQueryProvider : public orca::mojom::TextQueryProvider {
   mojo::AssociatedReceiver<orca::mojom::TextQueryProvider>
       text_query_provider_receiver_;
   std::unique_ptr<manta::OrcaProvider> orca_provider_;
+
+  // Unsigned to allow safe overflows.
+  unsigned int request_id_ = 0;
 };
 }  // namespace ash::input_method
 
