@@ -84,7 +84,6 @@ NSArray<NSLayoutConstraint*>* SameConstraintsWithInsets(
   [super viewDidLoad];
   self.view.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:self.contentStack];
-  [self applyStackViewConstraints];
 }
 
 #pragma mark - FeedTopSectionConsumer
@@ -129,30 +128,37 @@ NSArray<NSLayoutConstraint*>* SameConstraintsWithInsets(
 
 // Returns insets to add a margin around the stackview if there are items
 // to display in the stackview. Otherwise returns NSDirectionalEdgeInsetsZero.
-- (NSDirectionalEdgeInsets)stackViewInsets {
-    return NSDirectionalEdgeInsetsMake(
-        kContentStackVerticalPadding, kContentStackHorizontalPadding,
-        kContentStackVerticalPadding, kContentStackHorizontalPadding);
+// `visible` indicates whether or not the Feed Top Section is visible.
+- (NSDirectionalEdgeInsets)stackViewInsetsForTopSectionVisible:(BOOL)visible {
+  if (!visible) {
+    return NSDirectionalEdgeInsetsZero;
+  }
+  return NSDirectionalEdgeInsetsMake(
+      kContentStackVerticalPadding, kContentStackHorizontalPadding,
+      kContentStackVerticalPadding, kContentStackHorizontalPadding);
 }
 
-// Applies constraints to the stack view.
-- (void)applyStackViewConstraints {
+// Applies constraints to the stack view for a specific visibility. `visible`
+// indicates whether or not the Feed Top Section is visible.
+- (void)applyStackViewConstraintsForTopSectionVisible:(BOOL)visible {
   if (self.contentStackConstraints) {
     [NSLayoutConstraint deactivateConstraints:self.contentStackConstraints];
   }
-
+  self.contentStack.hidden = !visible;
+  self.view.hidden = !visible;
   self.contentStackConstraints = SameConstraintsWithInsets(
-      self.contentStack, self.view, [self stackViewInsets]);
+      self.contentStack, self.view,
+      [self stackViewInsetsForTopSectionVisible:visible]);
   [NSLayoutConstraint activateConstraints:self.contentStackConstraints];
 }
 
 - (void)showSigninPromo {
   // Check if the promoViewContainer does not exist. Might not exist if the
-  // promo has been "hidden", which will remove the container.
+  // promo has been "hidden", which involves removing the container.
   if (!self.promoViewContainer && !self.promoView) {
     [self createPromoViewContainer];
   }
-  [self applyStackViewConstraints];
+  [self applyStackViewConstraintsForTopSectionVisible:YES];
   [self.ntpDelegate updateFeedLayout];
 }
 
@@ -163,7 +169,7 @@ NSArray<NSLayoutConstraint*>* SameConstraintsWithInsets(
   [self.promoViewContainer removeFromSuperview];
   self.promoViewContainer = nil;
   self.promoView = nil;
-  [self applyStackViewConstraints];
+  [self applyStackViewConstraintsForTopSectionVisible:NO];
   [self.ntpDelegate updateFeedLayout];
 }
 
