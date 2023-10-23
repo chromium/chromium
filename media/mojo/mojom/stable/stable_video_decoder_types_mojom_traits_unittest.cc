@@ -588,7 +588,7 @@ TEST(StableVideoDecoderTypesMojomTraitsTest, EmptyVideoFrameMetadata) {
   EXPECT_FALSE(deserialized_video_frame_metadata.source_size.has_value());
   EXPECT_FALSE(
       deserialized_video_frame_metadata.region_capture_rect.has_value());
-  EXPECT_EQ(0u, deserialized_video_frame_metadata.crop_version);
+  EXPECT_EQ(0u, deserialized_video_frame_metadata.sub_capture_target_version);
   EXPECT_FALSE(deserialized_video_frame_metadata.dcomp_surface);
 #if BUILDFLAG(USE_VAAPI)
   EXPECT_FALSE(
@@ -657,7 +657,7 @@ TEST(StableVideoDecoderTypesMojomTraitsTest, ValidVideoFrameMetadata) {
   EXPECT_FALSE(deserialized_video_frame_metadata.source_size.has_value());
   EXPECT_FALSE(
       deserialized_video_frame_metadata.region_capture_rect.has_value());
-  EXPECT_EQ(0u, deserialized_video_frame_metadata.crop_version);
+  EXPECT_EQ(0u, deserialized_video_frame_metadata.sub_capture_target_version);
   EXPECT_FALSE(deserialized_video_frame_metadata.dcomp_surface);
 #if BUILDFLAG(USE_VAAPI)
   EXPECT_FALSE(
