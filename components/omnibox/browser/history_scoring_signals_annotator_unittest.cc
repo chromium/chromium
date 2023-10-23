@@ -85,6 +85,10 @@ void HistoryScoringSignalsAnnotatorTest::FillHistoryDbData() {
 }
 
 void HistoryScoringSignalsAnnotatorTest::CreateAutocompleteResult() {
+  AutocompleteMatch url_match_not_in_db;
+  url_match_not_in_db.destination_url = GURL("http://test1.com/");
+  url_match_not_in_db.type = AutocompleteMatchType::HISTORY_URL;
+
   AutocompleteMatch url_match;
   url_match.destination_url = GURL("http://test.com/");
   url_match.type = AutocompleteMatchType::HISTORY_URL;
@@ -93,7 +97,8 @@ void HistoryScoringSignalsAnnotatorTest::CreateAutocompleteResult() {
   AutocompleteMatch search_match;
   search_match.type = AutocompleteMatchType::SEARCH_HISTORY;
 
-  std::vector<AutocompleteMatch> matches{url_match, search_match};
+  std::vector<AutocompleteMatch> matches{url_match_not_in_db, url_match,
+                                         search_match};
   result_ = std::make_unique<AutocompleteResult>();
   result_->AppendMatches(matches);
 }
@@ -108,16 +113,26 @@ TEST_F(HistoryScoringSignalsAnnotatorTest, AnnotateResult) {
                           TestSchemeClassifier());
 
   annotator()->AnnotateResult(input, result());
-  EXPECT_EQ(result()->match_at(0)->scoring_signals->typed_count(), 2);
-  EXPECT_EQ(result()->match_at(0)->scoring_signals->visit_count(), 5);
+
+  // First match is not in the History DB, signals cannot be annotated.
+  EXPECT_FALSE(result()->match_at(0)->scoring_signals->has_typed_count());
+
+  // Match is a history URL and available in the history DB, ensure signals are
+  // annotated.
+  EXPECT_TRUE(result()->match_at(1)->scoring_signals.has_value());
+  EXPECT_TRUE(result()->match_at(1)->scoring_signals->has_typed_count());
+  EXPECT_EQ(result()->match_at(1)->scoring_signals->typed_count(), 2);
+  EXPECT_EQ(result()->match_at(1)->scoring_signals->visit_count(), 5);
   EXPECT_TRUE(
-      result()->match_at(0)->scoring_signals->elapsed_time_last_visit_secs() >
+      result()->match_at(1)->scoring_signals->elapsed_time_last_visit_secs() >
       0);
-  EXPECT_EQ(result()->match_at(0)->scoring_signals->total_title_match_length(),
+  EXPECT_EQ(result()->match_at(1)->scoring_signals->total_title_match_length(),
             3);
   EXPECT_EQ(result()
-                ->match_at(0)
+                ->match_at(1)
                 ->scoring_signals->num_input_terms_matched_by_title(),
             2);
-  EXPECT_FALSE(result()->match_at(1)->scoring_signals.has_value());
+
+  // Search results are skipped for annotation.
+  EXPECT_FALSE(result()->match_at(2)->scoring_signals.has_value());
 }
