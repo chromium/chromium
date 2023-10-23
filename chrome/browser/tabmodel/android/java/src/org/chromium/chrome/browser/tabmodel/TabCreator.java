@@ -23,10 +23,6 @@ import org.chromium.url.GURL;
  * TODO(dfalcantara): Hunt down more places where we don't actually need to return a Tab.
  */
 public abstract class TabCreator {
-    /**
-     * @return Whether the TabCreator creates Tabs asynchronously.
-     */
-    public abstract boolean createsTabsAsynchronously();
 
     /**
      * Creates a new tab and posts to UI.

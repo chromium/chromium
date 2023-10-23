@@ -54,7 +54,7 @@ import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
+import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.download.DownloadState;
@@ -158,8 +158,8 @@ public class DownloadUtils {
             LoadUrlParams params = new LoadUrlParams(UrlConstants.DOWNLOADS_URL);
             if (tab == null || !tab.isInitialized()) {
                 // Open a new tab, which pops Chrome into the foreground.
-                TabDelegate delegate = new TabDelegate(false);
-                delegate.createNewTab(params, TabLaunchType.FROM_CHROME_UI, null);
+                ChromeAsyncTabLauncher delegate = new ChromeAsyncTabLauncher(false);
+                delegate.launchNewTab(params, TabLaunchType.FROM_CHROME_UI, null);
             } else {
                 // Download Home shows up inside an existing tab, but only if the last Activity was
                 // the ChromeTabbedActivity.

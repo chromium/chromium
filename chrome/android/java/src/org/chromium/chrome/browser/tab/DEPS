@@ -31,6 +31,7 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/policy/PolicyAuditor.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/tab",
   "+chrome/android/java/src/org/chromium/chrome/browser/tabmodel/TabbedModeTabPersistencePolicy.java",
+  "+chrome/android/java/src/org/chromium/chrome/browser/tabmodel/document/ChromeAsyncTabLauncher.java",
   "+chrome/browser/android/crypto/java/src/org/chromium/chrome/browser/crypto/CipherFactory.java",
   "+chrome/browser/android/content",
   "+chrome/browser/android/lifecycle",

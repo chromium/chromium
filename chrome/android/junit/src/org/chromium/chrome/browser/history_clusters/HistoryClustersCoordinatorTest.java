@@ -56,7 +56,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.AsyncTabLauncher;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -130,8 +130,8 @@ public class HistoryClustersCoordinatorTest {
 
         @Nullable
         @Override
-        public TabCreator getTabCreator(boolean isIncognito) {
-            return mTabCreator;
+        public AsyncTabLauncher getTabLauncher(boolean isIncognito) {
+            return mTabLauncher;
         }
 
         @Override
@@ -176,7 +176,7 @@ public class HistoryClustersCoordinatorTest {
     @Mock LargeIconBridge.Natives mMockLargeIconBridgeJni;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private TabLayout mToggleView;
-    @Mock private TabCreator mTabCreator;
+    @Mock private AsyncTabLauncher mTabLauncher;
     @Mock private GURL mGurl1;
     @Mock private GURL mGurl2;
     @Mock private HistoryClustersMetricsLogger mMetricsLogger;

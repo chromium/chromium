@@ -11,9 +11,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.provider.Browser;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.ActivityUtils;
@@ -26,28 +23,21 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.tab.TabIdManager;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
-import org.chromium.chrome.browser.tabmodel.AsyncTabCreator;
+import org.chromium.chrome.browser.tabmodel.AsyncTabLauncher;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.PageTransition;
-import org.chromium.url.GURL;
 
-/**
- * Asynchronously creates Tabs by creating/starting up Activities.
- */
-public class TabDelegate extends AsyncTabCreator {
+/** Asynchronously creates Tabs by creating/starting up Activities. */
+public class ChromeAsyncTabLauncher implements AsyncTabLauncher {
     private final boolean mIsIncognito;
 
     /**
      * Creates a TabDelegate.
      * @param incognito Whether or not the TabDelegate handles the creation of incognito tabs.
      */
-    public TabDelegate(boolean incognito) {
+    public ChromeAsyncTabLauncher(boolean incognito) {
         mIsIncognito = incognito;
     }
 
@@ -64,36 +54,17 @@ public class TabDelegate extends AsyncTabCreator {
         return (tabContext instanceof Activity) ? (Activity) tabContext : null;
     }
 
-    @Override
-    public boolean createsTabsAsynchronously() {
-        return true;
-    }
-
     /**
-     * Creates a frozen Tab.  This Tab is not meant to be used or unfrozen -- it is only used as a
-     * placeholder until the real Tab can be created.
-     * The index is ignored in DocumentMode because Android handles the ordering of Tabs.
+     * Creates a tab in the "other" window in multi-window mode. This will only work if
+     * MultiWindowUtils#isOpenInOtherWindowSupported() is true for the given activity.
+     *
+     * @param loadUrlParams Parameters specifying the URL to load and other navigation details.
+     * @param activity The current {@link Activity}
+     * @param parentId The ID of the parent tab, or {@link Tab#INVALID_TAB_ID}.
+     * @param otherActivity The activity to create a new tab in. This is non-null when we have a
+     *     visible activity running adjacently.
      */
-    @Override
-    public Tab createFrozenTab(TabState state, int id, boolean isIncognito, int index) {
-        if (isIncognito != mIsIncognito) {
-            throw new IllegalStateException("Incognito state mismatch. isIncognito: " + isIncognito
-                    + ". TabDelegate: " + mIsIncognito);
-        }
-        return TabBuilder.createFromFrozenState().setId(id).setIncognito(isIncognito).build();
-    }
-
-    @Override
-    public boolean createTabWithWebContents(@Nullable Tab parent, WebContents webContents,
-            @TabLaunchType int type, @NonNull GURL url) {
-        AsyncTabCreationParams asyncParams = new AsyncTabCreationParams(
-                new LoadUrlParams(url.getSpec(), PageTransition.AUTO_TOPLEVEL), webContents);
-        createNewTab(asyncParams, type, parent != null ? parent.getId() : Tab.INVALID_TAB_ID);
-        return true;
-    }
-
-    @Override
-    public void createTabInOtherWindow(
+    public void launchTabInOtherWindow(
             LoadUrlParams loadUrlParams, Activity activity, int parentId, Activity otherActivity) {
         Intent intent = createNewTabIntent(
                 new AsyncTabCreationParams(loadUrlParams), parentId, false);
@@ -121,32 +92,32 @@ public class TabDelegate extends AsyncTabCreator {
                 intent, MultiWindowUtils.getOpenInOtherWindowActivityOptions(activity));
     }
 
-    @Override
-    public Tab buildDetachedSpareTab(@TabLaunchType int type, boolean initializeRenderer) {
-        return null;
+    /**
+     * Creates a new tab and loads the specified URL in it. This is a convenience method for {@link
+     * #launchNewTab} with the default {@link LoadUrlParams} and no parent tab.
+     *
+     * @param url the URL to open.
+     * @param type the type of action that triggered that launch. Determines how the tab is opened
+     *     (for example, in the foreground or background).
+     */
+    public void launchUrl(String url, @TabLaunchType int type) {
+        launchNewTab(new LoadUrlParams(url), type, null);
     }
 
     @Override
-    public Tab launchUrl(String url, @TabLaunchType int type) {
-        return createNewTab(new LoadUrlParams(url), type, null);
-    }
-
-    @Override
-    public Tab createNewTab(LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent) {
+    public void launchNewTab(LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent) {
         AsyncTabCreationParams asyncParams = new AsyncTabCreationParams(loadUrlParams);
-        createNewTab(asyncParams, type, parent == null ? Tab.INVALID_TAB_ID : parent.getId());
-        return null;
+        launchNewTab(asyncParams, type, parent == null ? Tab.INVALID_TAB_ID : parent.getId());
     }
 
-    @Override
-    public Tab createNewTab(
-            LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent, int position) {
-        // Ignore position as it isn't supported for async creation.
-        return createNewTab(loadUrlParams, type, parent);
-    }
-
-    @Override
-    public void createNewTab(
+    /**
+     * Launches a Tab to host the given WebContents asynchronously.
+     *
+     * @param asyncParams Parameters to create the Tab with, including the URL.
+     * @param type Information about how the tab was launched.
+     * @param parentId ID of the parent tab, if it exists.
+     */
+    public void launchNewTab(
             AsyncTabCreationParams asyncParams, @TabLaunchType int type, int parentId) {
         assert asyncParams != null;
 
@@ -207,8 +178,12 @@ public class TabDelegate extends AsyncTabCreator {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     }
 
-    @Override
-    public void createNewStandaloneFrame(Intent intent) {
+    /**
+     * Passes the supplied web app launch intent to the IntentHandler.
+     *
+     * @param intent Web app launch intent.
+     */
+    public void launchNewStandaloneFrame(Intent intent) {
         assert intent != null;
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         IntentHandler.startActivityForTrustedIntent(intent);
