@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
-                       authenticateUserToEditLocalCard) {
+                       showEditCardDialogForLocalCard_ReauthOn) {
   base::UserActionTester user_action_tester;
 
   autofill_client()
@@ -216,13 +216,33 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
                   mock_mandatory_reauth_manager),
               AuthenticateWithMessage)
       .Times(1);
-  EXPECT_TRUE(RunAutofillSubtest("authenticateUserToEditLocalCard"))
-      << message_;
+  EXPECT_TRUE(RunAutofillSubtest("getLocalCard")) << message_;
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "PaymentsUserAuthTriggeredToShowEditLocalCardDialog"));
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "PaymentsUserAuthSuccessfulToShowEditLocalCardDialog"));
 }
 #endif
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
+                       showEditCardDialogForLocalCard_ReauthOff) {
+  base::UserActionTester user_action_tester;
+
+  autofill_client()
+      ->GetPersonalDataManager()
+      ->SetPaymentMethodsMandatoryReauthEnabled(false);
+  auto* mock_mandatory_reauth_manager =
+      autofill_client()->GetOrCreatePaymentsMandatoryReauthManager();
+
+  EXPECT_CALL(*static_cast<autofill::payments::MockMandatoryReauthManager*>(
+                  mock_mandatory_reauth_manager),
+              AuthenticateWithMessage)
+      .Times(0);
+  EXPECT_TRUE(RunAutofillSubtest("getLocalCard")) << message_;
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "PaymentsUserAuthTriggeredToShowEditLocalCardDialog"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "PaymentsUserAuthSuccessfulToShowEditLocalCardDialog"));
+}
 
 }  // namespace extensions

@@ -534,7 +534,7 @@ suite('PaymentsSection', function() {
         PaymentsManagerImpl.getInstance() as TestPaymentsManager;
 
     const expectations = getDefaultExpectations();
-    expectations.authenticateUserToEditLocalCard = 1;
+    expectations.getLocalCard = 1;
     paymentsManagerProxy.assertExpectations(expectations);
   });
 

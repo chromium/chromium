@@ -384,10 +384,13 @@ export class SettingsPaymentsSectionElement extends
    */
   private async onMenuEditCreditCardClick_(e: Event) {
     e.preventDefault();
-
-    if (this.activeCreditCard_!.metadata!.isLocal) {
-      this.showCreditCardDialog_ =
-          await this.paymentsManager_.authenticateUserToEditLocalCard();
+    assert(this.activeCreditCard_);
+    if (this.activeCreditCard_.metadata!.isLocal) {
+      const unmaskedCreditCard = await this.paymentsManager_.getLocalCard(
+          this.activeCreditCard_.guid!);
+      assert(unmaskedCreditCard);
+      this.activeCreditCard_ = unmaskedCreditCard;
+      this.showCreditCardDialog_ = true;
     } else {
       this.onRemoteCreditCardUrlClick_();
     }
