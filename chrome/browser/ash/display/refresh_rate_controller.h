@@ -27,10 +27,10 @@ class RefreshRateController
     : public PowerStatus::Observer,
       public game_mode::GameModeController::Observer {
  public:
-  RefreshRateController(
-      display::DisplayConfigurator* display_configurator,
-      PowerStatus* power_status,
-      game_mode::GameModeController* game_mode_controller);
+  RefreshRateController(display::DisplayConfigurator* display_configurator,
+                        PowerStatus* power_status,
+                        game_mode::GameModeController* game_mode_controller,
+                        bool force_throttle = false);
 
   RefreshRateController(const RefreshRateController&) = delete;
   RefreshRateController& operator=(
@@ -52,6 +52,7 @@ class RefreshRateController
   // Not owned.
   raw_ptr<display::DisplayConfigurator> display_configurator_;
   const raw_ptr<PowerStatus, ExperimentalAsh> power_status_;
+  bool force_throttle_ = false;
 
   base::ScopedObservation<ash::PowerStatus, ash::PowerStatus::Observer>
       power_status_observer_{this};

@@ -9,6 +9,7 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
@@ -341,11 +342,13 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
   }
 
   ash_web_view_factory_ = std::make_unique<AshWebViewFactoryImpl>();
+  bool force_throttle = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ash::switches::kForceRefreshRateThrottle);
 
   game_mode_controller_ = std::make_unique<game_mode::GameModeController>();
   refresh_rate_controller_ = std::make_unique<ash::RefreshRateController>(
       ash::Shell::Get()->display_configurator(), ash::PowerStatus::Get(),
-      game_mode_controller_.get());
+      game_mode_controller_.get(), force_throttle);
 
   // Initialize TabScrubberChromeOS after the Ash Shell has been initialized.
   TabScrubberChromeOS::GetInstance();

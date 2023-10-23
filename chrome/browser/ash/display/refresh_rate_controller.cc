@@ -33,8 +33,11 @@ display::RefreshRateThrottleState GetDesiredThrottleState(
 RefreshRateController::RefreshRateController(
     display::DisplayConfigurator* display_configurator,
     PowerStatus* power_status,
-    game_mode::GameModeController* game_mode_controller)
-    : display_configurator_(display_configurator), power_status_(power_status) {
+    game_mode::GameModeController* game_mode_controller,
+    bool force_throttle)
+    : display_configurator_(display_configurator),
+      power_status_(power_status),
+      force_throttle_(force_throttle) {
   power_status_observer_.Observe(power_status);
   game_mode_observer_.Observe(game_mode_controller);
 }
@@ -61,6 +64,9 @@ void RefreshRateController::RefreshState() {
           ash::features::kSeamlessRefreshRateSwitching)) {
     display::RefreshRateThrottleState state =
         GetDesiredThrottleState(power_status_, game_mode_);
+    if (force_throttle_) {
+      state = display::kRefreshRateThrottleEnabled;
+    }
     if (display::HasInternalDisplay()) {
       display_configurator_->MaybeSetRefreshRateThrottleState(
           display::Display::InternalDisplayId(), state);

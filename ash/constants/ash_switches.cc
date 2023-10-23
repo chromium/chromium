@@ -1099,6 +1099,10 @@ const char kPreventKioskAutolaunchForTesting[] =
 const char kAllowDefaultShelfPinLayoutIgnoringSync[] =
     "ash-allow-default-shelf-pin-layout-ignoring-sync";
 
+// On devices that support refresh rate throttling, force the throttling
+// behavior to be active regardless of system state.
+const char kForceRefreshRateThrottle[] = "force-refresh-rate-throttle";
+
 bool IsAuthSessionCryptohomeEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kCryptohomeUseAuthSession);
