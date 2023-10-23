@@ -354,6 +354,7 @@ src/webgpu/shader/execution/zero_init.spec.ts
 src/webgpu/shader/execution/expression/binary/binary.ts
 src/webgpu/shader/execution/expression/binary/af_addition.spec.ts
 src/webgpu/shader/execution/expression/binary/af_comparison.spec.ts
+src/webgpu/shader/execution/expression/binary/af_division.spec.ts
 src/webgpu/shader/execution/expression/binary/af_matrix_addition.spec.ts
 src/webgpu/shader/execution/expression/binary/af_matrix_subtraction.spec.ts
 src/webgpu/shader/execution/expression/binary/af_multiplication.spec.ts
