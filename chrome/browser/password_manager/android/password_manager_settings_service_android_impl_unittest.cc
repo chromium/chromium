@@ -922,7 +922,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
 }
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
-       OverrideOfferToSaveForErrorWhenNotSyncing) {
+       OfferToSaveForErrorWhenNotSyncing) {
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/true);
   pref_service()->SetUserPref(
@@ -932,12 +932,12 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       base::Value(true));
   pref_service()->SetBoolean(
       password_manager::prefs::kSavePasswordsSuspendedByError, true);
-  EXPECT_FALSE(settings_service()->IsSettingEnabled(
+  EXPECT_TRUE(settings_service()->IsSettingEnabled(
       PasswordManagerSetting::kOfferToSavePasswords));
 }
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
-       OverrideOfferToSaveForErrorWhenManaged) {
+       OfferToSaveForErrorWhenManagedNotSyncing) {
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/true);
   pref_service()->SetUserPref(
@@ -947,10 +947,9 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       base::Value(true));
   pref_service()->SetBoolean(
       password_manager::prefs::kSavePasswordsSuspendedByError, true);
-  // Saving passwords is allowed by policy but errors enforce the stricter rule.
   pref_service()->SetManagedPref(
       password_manager::prefs::kCredentialsEnableService, base::Value(true));
-  EXPECT_FALSE(settings_service()->IsSettingEnabled(
+  EXPECT_TRUE(settings_service()->IsSettingEnabled(
       PasswordManagerSetting::kOfferToSavePasswords));
 }
 
