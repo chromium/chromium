@@ -545,7 +545,8 @@ class TestImporter(object):
         # and the Port class.
         manifest_path = self.finder.path_from_web_tests(
             'external', 'wpt', 'MANIFEST.json')
-        manifest = WPTManifest(self.host, manifest_path)
+        manifest = WPTManifest.from_file(self.host.port_factory.get(),
+                                         manifest_path)
         wpt_urls = manifest.all_urls()
 
         # Currently baselines for tests with query strings are merged,

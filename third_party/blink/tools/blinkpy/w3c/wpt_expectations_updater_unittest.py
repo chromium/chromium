@@ -973,8 +973,10 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                                  'external', 'wpt', MANIFEST_NAME),
             host.filesystem.join(port.web_tests_dir(), 'wpt_internal',
                                  MANIFEST_NAME))
-        wpt_internal_manifest = WPTManifest(host, host.filesystem.join(
-            port.web_tests_dir(), 'wpt_internal', MANIFEST_NAME))
+        wpt_internal_manifest = WPTManifest.from_file(
+            port,
+            host.filesystem.join(port.web_tests_dir(), 'wpt_internal',
+                                 MANIFEST_NAME))
 
         updater = WPTExpectationsUpdater(
             host,
