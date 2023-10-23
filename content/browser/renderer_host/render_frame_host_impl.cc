@@ -52,7 +52,7 @@
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/render_accessibility_host.h"
 #include "content/browser/bad_message.h"
-#include "content/browser/blob_storage/file_backed_blob_factory_impl.h"
+#include "content/browser/blob_storage/file_backed_blob_factory_frame_impl.h"
 #include "content/browser/bluetooth/web_bluetooth_service_impl.h"
 #include "content/browser/broadcast_channel/broadcast_channel_provider.h"
 #include "content/browser/broadcast_channel/broadcast_channel_service.h"
@@ -15943,8 +15943,8 @@ bool RenderFrameHostImpl::LoadedWithCacheControlNoStoreHeader() {
 void RenderFrameHostImpl::BindFileBackedBlobFactory(
     mojo::PendingAssociatedReceiver<blink::mojom::FileBackedBlobFactory>
         receiver) {
-  FileBackedBlobFactoryImpl::CreateForCurrentDocument(this,
-                                                      std::move(receiver));
+  FileBackedBlobFactoryFrameImpl::CreateForCurrentDocument(this,
+                                                           std::move(receiver));
 }
 
 bool RenderFrameHostImpl::ShouldChangeRenderFrameHostOnSameSiteNavigation()

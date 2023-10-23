@@ -2,17 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/blob_storage/file_backed_blob_factory_impl.h"
+#include "content/browser/blob_storage/file_backed_blob_factory_base.h"
+
 #include "base/functional/callback_helpers.h"
+#include "base/process/process_handle.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_impl.h"
 #include "storage/browser/blob/blob_registry_impl.h"
+#include "third_party/blink/public/mojom/blob/data_element.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -81,18 +85,27 @@ void ContinueRegisterBlob(
 
 }  // namespace
 
-FileBackedBlobFactoryImpl::~FileBackedBlobFactoryImpl() = default;
+FileBackedBlobFactoryBase::FileBackedBlobFactoryBase(int process_id)
+    : process_id_(process_id) {}
 
-void FileBackedBlobFactoryImpl::RegisterBlob(
+FileBackedBlobFactoryBase::~FileBackedBlobFactoryBase() = default;
+
+void FileBackedBlobFactoryBase::RegisterBlob(
     mojo::PendingReceiver<blink::mojom::Blob> blob,
     const std::string& uuid,
     const std::string& content_type,
     blink::mojom::DataElementFilePtr file) {
+  // We can safely perform the registration asynchronously since blob remote
+  // messages are managed by the mojo infrastructure until the blob pending
+  // receiver is resolved, and this happens when the async registration is
+  // completed. Without the mojo continuation callback the `RegisterBlobSync`
+  // call is async.
+
   RegisterBlobSync(std::move(blob), uuid, content_type, std::move(file),
                    base::NullCallback());
 }
 
-void FileBackedBlobFactoryImpl::RegisterBlobSync(
+void FileBackedBlobFactoryBase::RegisterBlobSync(
     mojo::PendingReceiver<blink::mojom::Blob> blob,
     const std::string& uuid,
     const std::string& content_type,
@@ -100,25 +113,11 @@ void FileBackedBlobFactoryImpl::RegisterBlobSync(
     RegisterBlobSyncCallback finish_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // We can safely perform the registration asynchronously since blob remote
-  // messages are managed by the mojo infrastructure until the blob pending
-  // receiver is resolved, and this happens when the async registration is
-  // completed.
-
-  // TODO(b/289958501): will this interface ever need to support filesystem
-  // files? In that case, how can we distinguish between file types in order to
-  // perform the correct ChildProcessSecurityPolicyImpl check?
   bool security_check_success =
       ChildProcessSecurityPolicyImpl::GetInstance()->CanReadFile(process_id_,
                                                                  file->path);
 
-  // TODO(b/276857839): handling of fenced frames is still in discussion. For
-  // now we use an invalid GURL as destination URL. This will allow access to
-  // unrestricted files but block access to restricted ones.
-  GURL url_for_file_access_checks =
-      render_frame_host().IsNestedWithinFencedFrame()
-          ? GURL()
-          : render_frame_host().GetOutermostMainFrame()->GetLastCommittedURL();
+  GURL url_for_file_access_checks = GetCurrentUrl();
 
   if (finish_callback) {
     finish_callback =
@@ -132,22 +131,8 @@ void FileBackedBlobFactoryImpl::RegisterBlobSync(
                      std::move(file), std::move(url_for_file_access_checks),
                      security_check_success,
                      base::BindPostTask(content::GetUIThreadTaskRunner({}),
-                                        receiver_.GetBadMessageCallback()),
+                                        GetBadMessageCallback()),
                      blob_storage_context_, std::move(finish_callback)));
 }
-
-FileBackedBlobFactoryImpl::FileBackedBlobFactoryImpl(
-    RenderFrameHost* rfh,
-    mojo::PendingAssociatedReceiver<blink::mojom::FileBackedBlobFactory>
-        receiver)
-    : DocumentUserData<FileBackedBlobFactoryImpl>(rfh),
-      receiver_(this, std::move(receiver)),
-      process_id_(render_frame_host().GetProcess()->GetID()) {
-  blob_storage_context_ = base::WrapRefCounted(ChromeBlobStorageContext::GetFor(
-      render_frame_host().GetBrowserContext()));
-  CHECK(blob_storage_context_);
-}
-
-DOCUMENT_USER_DATA_KEY_IMPL(FileBackedBlobFactoryImpl);
 
 }  // namespace content

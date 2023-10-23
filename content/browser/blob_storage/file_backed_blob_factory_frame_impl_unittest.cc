@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/blob_storage/file_backed_blob_factory_impl.h"
+#include "content/browser/blob_storage/file_backed_blob_factory_frame_impl.h"
 
 #include "base/test/task_environment.h"
 #include "components/file_access/test/mock_scoped_file_access_delegate.h"
@@ -35,19 +35,21 @@ constexpr uint64_t kOffset = 0;
 constexpr uint64_t kSize = 16;
 }  // namespace
 
-class FileBackedBlobFactoryImplTest : public RenderViewHostImplTestHarness {
+class FileBackedBlobFactoryFrameImplTest
+    : public RenderViewHostImplTestHarness {
  public:
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
 
     process_id_ = main_test_rfh()->GetProcess()->GetID();
-    FileBackedBlobFactoryImpl::CreateForCurrentDocument(
+    FileBackedBlobFactoryFrameImpl::CreateForCurrentDocument(
         main_test_rfh(), factory_.BindNewEndpointAndPassDedicatedReceiver());
 
     main_test_rfh()->SetLastCommittedUrl(GURL("https://google.com"));
 
-    mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
-        &FileBackedBlobFactoryImplTest::OnBadMessage, base::Unretained(this)));
+    mojo::SetDefaultProcessErrorHandler(
+        base::BindRepeating(&FileBackedBlobFactoryFrameImplTest::OnBadMessage,
+                            base::Unretained(this)));
   }
   void TearDown() override {
     // Clean up error handler, to avoid causing other tests run in the same
@@ -73,7 +75,7 @@ class FileBackedBlobFactoryImplTest : public RenderViewHostImplTestHarness {
   std::vector<std::string> bad_messages_;
 };
 
-TEST_F(FileBackedBlobFactoryImplTest, Register_UnreadableFile) {
+TEST_F(FileBackedBlobFactoryFrameImplTest, Register_UnreadableFile) {
   const base::FilePath path = base::FilePath(TEST_PATH("/dir/testfile"));
 
   ChildProcessSecurityPolicyImpl::GetInstance()->RevokeAllPermissionsForFile(
@@ -105,7 +107,7 @@ TEST_F(FileBackedBlobFactoryImplTest, Register_UnreadableFile) {
             handle->GetBlobStatus());
 }
 
-TEST_F(FileBackedBlobFactoryImplTest, Register_ValidFile) {
+TEST_F(FileBackedBlobFactoryFrameImplTest, Register_ValidFile) {
   const base::FilePath path = base::FilePath(TEST_PATH("/dir/testfile"));
 
   ChildProcessSecurityPolicyImpl::GetInstance()->GrantReadFile(process_id_,
@@ -144,7 +146,7 @@ TEST_F(FileBackedBlobFactoryImplTest, Register_ValidFile) {
   EXPECT_EQ(expected_blob_data, *handle->CreateSnapshot());
 }
 
-TEST_F(FileBackedBlobFactoryImplTest, Register_ExistingUUID) {
+TEST_F(FileBackedBlobFactoryFrameImplTest, Register_ExistingUUID) {
   const base::FilePath path = base::FilePath(TEST_PATH("/dir/testfile"));
 
   ChildProcessSecurityPolicyImpl::GetInstance()->GrantReadFile(process_id_,
@@ -191,7 +193,7 @@ TEST_F(FileBackedBlobFactoryImplTest, Register_ExistingUUID) {
   EXPECT_FALSE(blob2.is_connected());
 }
 
-TEST_F(FileBackedBlobFactoryImplTest, Register_EmptyUUID) {
+TEST_F(FileBackedBlobFactoryFrameImplTest, Register_EmptyUUID) {
   mojo::Remote<blink::mojom::Blob> blob;
 
   factory_->RegisterBlob(blob.BindNewPipeAndPassReceiver(), "", "",
@@ -207,7 +209,7 @@ TEST_F(FileBackedBlobFactoryImplTest, Register_EmptyUUID) {
   EXPECT_FALSE(blob.is_connected());
 }
 
-TEST_F(FileBackedBlobFactoryImplTest,
+TEST_F(FileBackedBlobFactoryFrameImplTest,
        Register_ExistingScopedFileAccessDelegate) {
   file_access::MockScopedFileAccessDelegate scoped_file_access_delegate;
   EXPECT_CALL(scoped_file_access_delegate, CreateFileAccessCallback)
