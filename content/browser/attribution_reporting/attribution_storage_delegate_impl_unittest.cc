@@ -463,10 +463,6 @@ TEST_F(AttributionStorageDelegateImplTestInvalidFeatureConfigured,
 
 TEST(AttributionStorageDelegateImplTest,
      NullAggregatableReports_IncludeSourceRegistrationTime) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      attribution_reporting::features::
-          kAttributionReportingNullAggregatableReports);
-
   const auto trigger = DefaultTrigger();
 
   EXPECT_THAT(AttributionStorageDelegateImpl()
@@ -493,10 +489,6 @@ TEST(AttributionStorageDelegateImplTest,
 
 TEST(AttributionStorageDelegateImplTest,
      NullAggregatableReports_ExcludeSourceRegistrationTime) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      attribution_reporting::features::
-          kAttributionReportingNullAggregatableReports);
-
   const auto trigger = TriggerBuilder()
                            .SetSourceRegistrationTimeConfig(
                                attribution_reporting::mojom::

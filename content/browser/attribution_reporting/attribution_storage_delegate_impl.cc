@@ -347,12 +347,6 @@ AttributionStorageDelegateImpl::GetNullAggregatableReports(
     absl::optional<base::Time> attributed_source_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!base::FeatureList::IsEnabled(
-          attribution_reporting::features::
-              kAttributionReportingNullAggregatableReports)) {
-    return {};
-  }
-
   switch (noise_mode_) {
     case AttributionNoiseMode::kDefault:
       return GetNullAggregatableReportsImpl(trigger, trigger_time,
