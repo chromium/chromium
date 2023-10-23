@@ -157,10 +157,12 @@ bool AudioSessionManagerIOS::SetInputGain(float volume) {
 }
 
 bool AudioSessionManagerIOS::IsInputMuted() {
+#if defined(__IPHONE_17_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_17_0
   if (@available(iOS 17.0, *)) {
     AVAudioApplication* audio_application = [AVAudioApplication sharedInstance];
     return audio_application.isInputMuted;
   }
+#endif
   return false;
 }
 
