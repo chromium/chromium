@@ -331,7 +331,7 @@ BASE_FEATURE(kAutofillExtractAllDatalists,
 // Enables support to submit feedback on Autofill. Used only in Desktop.
 BASE_FEATURE(kAutofillFeedback,
              "AutofillFeedback",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Replaces cached web elements in AutofillAgent and FormTracker by their
 // renderer ids.
