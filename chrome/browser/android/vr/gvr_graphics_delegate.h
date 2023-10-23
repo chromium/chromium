@@ -122,7 +122,6 @@ class GvrGraphicsDelegate : public GraphicsDelegate {
 
   // GraphicsDelegate overrides.
   FovRectangles GetRecommendedFovs() override;
-  float GetZNear() override;
   RenderInfo GetRenderInfo(FrameType frame_type,
                            const gfx::Transform& head_pose) override;
   RenderInfo GetOptimizedRenderInfoForFovs(const FovRectangles& fovs) override;
@@ -136,13 +135,10 @@ class GvrGraphicsDelegate : public GraphicsDelegate {
   // The following GraphicsDelegate overrides are only called by
   // vr_browser_renderer_thread_win and thus are not used here. They will be
   // relevant for GraphicsDelegateAndroid.
-  void SetXrViews(const std::vector<device::mojom::XRViewPtr>& views) override;
   bool PreRender() override;
   void PostRender() override;
   mojo::PlatformHandle GetTexture() override;
   const gpu::SyncToken& GetSyncToken() override;
-  gfx::RectF GetLeft() override;
-  gfx::RectF GetRight() override;
   void ResetMemoryBuffer() override;
   bool BindContext() override;
   void ClearContext() override;

@@ -11,15 +11,13 @@
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/gles2_lib.h"
+#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/ipc/client/gpu_channel_host.h"
 
 namespace vr {
-
-namespace {
-constexpr float kZNear = 0.1f;
-constexpr float kZFar = 10000.0f;
-}  // namespace
 
 GraphicsDelegateWin::GraphicsDelegateWin() {
   gpu::GpuChannelEstablishFactory* factory =
@@ -59,23 +57,16 @@ void GraphicsDelegateWin::ClearContext() {
   gles2::SetGLContext(nullptr);
 }
 
-gfx::Rect GraphicsDelegateWin::GetTextureSize() {
-  int width = left_->viewport.width() + right_->viewport.width();
-  int height = std::max(left_->viewport.height(), right_->viewport.height());
-
-  return gfx::Rect(width, height);
-}
-
 bool GraphicsDelegateWin::PreRender() {
   if (!gl_)
     return false;
 
   BindContext();
-  gfx::Rect size = GetTextureSize();
 
   // Create a memory buffer and a shared image referencing that memory buffer.
-  if (!EnsureMemoryBuffer(size.width(), size.height()))
+  if (!EnsureMemoryBuffer()) {
     return false;
+  }
 
   // Create a texture id and associate it with shared image.
   dest_texture_id_ =
@@ -137,52 +128,40 @@ const gpu::SyncToken& GraphicsDelegateWin::GetSyncToken() {
   return access_done_sync_token_;
 }
 
-gfx::RectF GraphicsDelegateWin::GetLeft() {
-  gfx::Rect size = GetTextureSize();
-  return gfx::RectF(
-      0, 0, static_cast<float>(left_->viewport.width()) / size.width(),
-      static_cast<float>(left_->viewport.height()) / size.height());
-}
-
-gfx::RectF GraphicsDelegateWin::GetRight() {
-  gfx::Rect size = GetTextureSize();
-  return gfx::RectF(
-      static_cast<float>(left_->viewport.width()) / size.width(), 0,
-      static_cast<float>(right_->viewport.width()) / size.width(),
-      static_cast<float>(right_->viewport.height()) / size.height());
-}
-
-bool GraphicsDelegateWin::EnsureMemoryBuffer(int width, int height) {
-  if (last_width_ != width || last_height_ != height || !gpu_memory_buffer_) {
-    if (!gpu_memory_buffer_manager_)
-      return false;
-
-    if (!mailbox_.IsZero()) {
-      sii_->DestroySharedImage(access_done_sync_token_, mailbox_);
-      mailbox_.SetZero();
-      access_done_sync_token_.Clear();
-    }
-
-    gfx::Size buffer_size = gfx::Size(width, height);
-    viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
-    gpu_memory_buffer_ = gpu_memory_buffer_manager_->CreateGpuMemoryBuffer(
-        buffer_size, SinglePlaneSharedImageFormatToBufferFormat(format),
-        gfx::BufferUsage::SCANOUT, gpu::kNullSurfaceHandle, nullptr);
-    if (!gpu_memory_buffer_)
-      return false;
-
-    last_width_ = width;
-    last_height_ = height;
-
-    mailbox_ = sii_->CreateSharedImage(
-        format, buffer_size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType,
-        gpu::SHARED_IMAGE_USAGE_GLES2 |
-            gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT,
-        "VRGraphicsDelegate", gpu_memory_buffer_->CloneHandle());
-
-    gl_->WaitSyncTokenCHROMIUM(sii_->GenUnverifiedSyncToken().GetConstData());
+bool GraphicsDelegateWin::EnsureMemoryBuffer() {
+  gfx::Size buffer_size = GetTextureSize();
+  if (gpu_memory_buffer_ && last_size_ == buffer_size) {
+    return true;
   }
+
+  if (!gpu_memory_buffer_manager_) {
+    return false;
+  }
+
+  if (!mailbox_.IsZero()) {
+    sii_->DestroySharedImage(access_done_sync_token_, mailbox_);
+    mailbox_.SetZero();
+    access_done_sync_token_.Clear();
+  }
+
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
+  gpu_memory_buffer_ = gpu_memory_buffer_manager_->CreateGpuMemoryBuffer(
+      buffer_size, SinglePlaneSharedImageFormatToBufferFormat(format),
+      gfx::BufferUsage::SCANOUT, gpu::kNullSurfaceHandle, nullptr);
+  if (!gpu_memory_buffer_) {
+    return false;
+  }
+
+  last_size_ = buffer_size;
+
+  mailbox_ = sii_->CreateSharedImage(
+      format, buffer_size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
+      kPremul_SkAlphaType,
+      gpu::SHARED_IMAGE_USAGE_GLES2 |
+          gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT,
+      "VRGraphicsDelegate", gpu_memory_buffer_->CloneHandle());
+
+  gl_->WaitSyncTokenCHROMIUM(sii_->GenUnverifiedSyncToken().GetConstData());
   return true;
 }
 
@@ -191,151 +170,9 @@ void GraphicsDelegateWin::ResetMemoryBuffer() {
   gpu_memory_buffer_ = nullptr;
 }
 
-void GraphicsDelegateWin::SetXrViews(
-    const std::vector<device::mojom::XRViewPtr>& views) {
-  // Store the first left and right views.
-  for (auto& view : views) {
-    if (view->eye == device::mojom::XREye::kLeft) {
-      left_ = view.Clone();
-    } else if (view->eye == device::mojom::XREye::kRight) {
-      right_ = view.Clone();
-    }
-  }
-
-  DCHECK(left_);
-  DCHECK(right_);
-}
-
-FovRectangles GraphicsDelegateWin::GetRecommendedFovs() {
-  DCHECK(left_);
-  DCHECK(right_);
-  FovRectangle left = {
-      left_->field_of_view->left_degrees,
-      left_->field_of_view->right_degrees,
-      left_->field_of_view->down_degrees,
-      left_->field_of_view->up_degrees,
-  };
-
-  FovRectangle right = {
-      right_->field_of_view->left_degrees,
-      right_->field_of_view->right_degrees,
-      right_->field_of_view->down_degrees,
-      right_->field_of_view->up_degrees,
-  };
-
-  return std::pair<FovRectangle, FovRectangle>(left, right);
-}
-
-float GraphicsDelegateWin::GetZNear() {
-  return kZNear;
-}
-
-namespace {
-
-CameraModel CameraModelViewProjFromXRView(
-    const device::mojom::XRViewPtr& view) {
-  CameraModel model = {};
-
-  // TODO(https://crbug.com/1070380): mojo space is currently equivalent to
-  // world space, so the view matrix is world_from_view.
-  model.view_matrix = view->mojo_from_view;
-
-  bool is_invertible = model.view_matrix.GetInverse(&model.view_matrix);
-  DCHECK(is_invertible);
-
-  float up_tan = tanf(view->field_of_view->up_degrees * base::kPiFloat / 180.0);
-  float left_tan =
-      tanf(view->field_of_view->left_degrees * base::kPiFloat / 180.0);
-  float right_tan =
-      tanf(view->field_of_view->right_degrees * base::kPiFloat / 180.0);
-  float down_tan =
-      tanf(view->field_of_view->down_degrees * base::kPiFloat / 180.0);
-  float x_scale = 2.0f / (left_tan + right_tan);
-  float y_scale = 2.0f / (up_tan + down_tan);
-  // clang-format off
-  gfx::Transform proj_matrix = gfx::Transform::RowMajor(
-      x_scale, 0, -((left_tan - right_tan) * x_scale * 0.5), 0,
-      0, y_scale, ((up_tan - down_tan) * y_scale * 0.5), 0,
-      0, 0, (kZFar + kZNear) / (kZNear - kZFar),
-          2 * kZFar * kZNear / (kZNear - kZFar),
-      0, 0, -1, 0);
-  // clang-format on
-  model.view_proj_matrix = proj_matrix * model.view_matrix;
-  return model;
-}
-
-}  // namespace
-
-RenderInfo GraphicsDelegateWin::GetRenderInfo(FrameType frame_type,
-                                              const gfx::Transform& head_pose) {
-  RenderInfo info;
-  info.head_pose = head_pose;
-
-  CameraModel left = CameraModelViewProjFromXRView(left_);
-  left.eye_type = kLeftEye;
-  left.viewport =
-      gfx::Rect(0, 0, left_->viewport.width(), left_->viewport.height());
-  info.left_eye_model = left;
-
-  CameraModel right = CameraModelViewProjFromXRView(right_);
-  right.eye_type = kRightEye;
-  right.viewport =
-      gfx::Rect(left_->viewport.width(), 0, right_->viewport.width(),
-                right_->viewport.height());
-  info.right_eye_model = right;
-  cached_info_ = info;
-  return info;
-}
-
-RenderInfo GraphicsDelegateWin::GetOptimizedRenderInfoForFovs(
-    const FovRectangles& fovs) {
-  RenderInfo info = cached_info_;
-  // TODO(billorr): consider optimizing overlays to save texture size.
-  // For now, we use a full-size texture when we could get by with less.
-  return info;
-}
-
-void GraphicsDelegateWin::InitializeBuffers() {
-  // No-op since we intiailize buffers elsewhere.
-}
-
-void GraphicsDelegateWin::PrepareBufferForWebXr() {
-  // Desktop doesn't render WebXR through the browser renderer.
-  DCHECK(prepared_drawing_buffer_ == DrawingBufferMode::kNone);
-  prepared_drawing_buffer_ = DrawingBufferMode::kWebXr;
-}
-
-void GraphicsDelegateWin::PrepareBufferForWebXrOverlayElements() {
-  // No-op.  We reuse the same buffer for overlays and other content, which is
-  // intialized in PreRender.
-  DCHECK(prepared_drawing_buffer_ == DrawingBufferMode::kNone);
-  prepared_drawing_buffer_ = DrawingBufferMode::kWebXrOverlayElements;
-}
-
-void GraphicsDelegateWin::PrepareBufferForBrowserUi() {
+void GraphicsDelegateWin::ClearBufferToBlack() {
   gl_->ClearColor(0, 0, 0, 0);
   gl_->Clear(GL_COLOR_BUFFER_BIT);
-
-  DCHECK(prepared_drawing_buffer_ == DrawingBufferMode::kNone);
-  prepared_drawing_buffer_ = DrawingBufferMode::kBrowserUi;
-}
-
-void GraphicsDelegateWin::OnFinishedDrawingBuffer() {
-  DCHECK(prepared_drawing_buffer_ != DrawingBufferMode::kNone);
-  prepared_drawing_buffer_ = DrawingBufferMode::kNone;
-}
-
-void GraphicsDelegateWin::GetWebXrDrawParams(int* texture_id,
-                                             Transform* uv_transform) {
-  // Reporting a texture_id of 0 will skip texture copies.
-  *texture_id = 0;
-}
-
-bool GraphicsDelegateWin::RunInSkiaContext(base::OnceClosure callback) {
-  // TODO(billorr): Support multiple contexts in a share group.  For now just
-  // share one context.
-  std::move(callback).Run();
-  return true;
 }
 
 }  // namespace vr

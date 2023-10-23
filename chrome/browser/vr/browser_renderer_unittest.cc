@@ -80,7 +80,6 @@ class MockGraphicsDelegate : public GraphicsDelegate {
   // GraphicsDelegate
   void OnResume() {}
   FovRectangles GetRecommendedFovs() override { return {}; }
-  float GetZNear() override { return 0; }
   RenderInfo GetRenderInfo(FrameType, const gfx::Transform&) override {
     return {};
   }
@@ -103,14 +102,10 @@ class MockGraphicsDelegate : public GraphicsDelegate {
 
   // TODO(https://crbug.com/1493735): Provide implementations during refactor
   // as needed.
-  void SetXrViews(const std::vector<device::mojom::XRViewPtr>& views) override {
-  }
   bool PreRender() override { return true; }
   void PostRender() override {}
   mojo::PlatformHandle GetTexture() override { NOTREACHED_NORETURN(); }
   const gpu::SyncToken& GetSyncToken() override { NOTREACHED_NORETURN(); }
-  gfx::RectF GetLeft() override { return {}; }
-  gfx::RectF GetRight() override { return {}; }
   void ResetMemoryBuffer() override {}
   bool BindContext() override { return true; }
   void ClearContext() override {}

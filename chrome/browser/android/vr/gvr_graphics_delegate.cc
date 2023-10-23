@@ -32,9 +32,6 @@
 namespace vr {
 
 namespace {
-constexpr float kZNear = 0.1f;
-constexpr float kZFar = 10000.0f;
-
 // GVR buffer indices for use with viewport->SetSourceBufferIndex
 // or frame.BindBuffer. We use one for multisampled contents (Browser UI), and
 // one for non-multisampled content (webVR or quad layer).
@@ -390,7 +387,7 @@ void GvrGraphicsDelegate::UpdateEyeInfos(const gfx::Transform& head_pose,
     eye_info.viewport = vr::CalculatePixelSpaceRect(render_size, rect);
 
     eye_info.view_proj_matrix =
-        PerspectiveMatrixFromView(vp.GetSourceFov(), kZNear, kZFar) *
+        PerspectiveMatrixFromView(vp.GetSourceFov(), GetZNear(), GetZFar()) *
         eye_info.view_matrix;
   }
 }
@@ -466,10 +463,6 @@ void GvrGraphicsDelegate::PrepareBufferForBrowserUi() {
 FovRectangles GvrGraphicsDelegate::GetRecommendedFovs() {
   return {ToUiFovRect(webvr_overlay_viewport_.left.GetSourceFov()),
           ToUiFovRect(webvr_overlay_viewport_.right.GetSourceFov())};
-}
-
-float GvrGraphicsDelegate::GetZNear() {
-  return kZNear;
 }
 
 RenderInfo GvrGraphicsDelegate::GetOptimizedRenderInfoForFovs(
@@ -582,12 +575,6 @@ bool GvrGraphicsDelegate::MakeContextCurrent(ContextId context_id) {
   return true;
 }
 
-void GvrGraphicsDelegate::SetXrViews(
-    const std::vector<device::mojom::XRViewPtr>& views) {
-  // Only called by VrBrowserRendererThreadWin which never creates this class.
-  NOTREACHED_NORETURN();
-}
-
 bool GvrGraphicsDelegate::PreRender() {
   // Only called by VrBrowserRendererThreadWin which never creates this class.
   NOTREACHED_NORETURN();
@@ -604,16 +591,6 @@ mojo::PlatformHandle GvrGraphicsDelegate::GetTexture() {
 }
 
 const gpu::SyncToken& GvrGraphicsDelegate::GetSyncToken() {
-  // Only called by VrBrowserRendererThreadWin which never creates this class.
-  NOTREACHED_NORETURN();
-}
-
-gfx::RectF GvrGraphicsDelegate::GetLeft() {
-  // Only called by VrBrowserRendererThreadWin which never creates this class.
-  NOTREACHED_NORETURN();
-}
-
-gfx::RectF GvrGraphicsDelegate::GetRight() {
   // Only called by VrBrowserRendererThreadWin which never creates this class.
   NOTREACHED_NORETURN();
 }
