@@ -326,6 +326,25 @@ void ServiceWorkerMainResourceLoader::StartRequest(
                   &ServiceWorkerMainResourceLoader::DidDispatchFetchEvent,
                   weak_factory_.GetWeakPtr()));
           cache_matcher_->Run();
+          // If the kServiceWorkerStaticRouterStartServiceWorker feature is
+          // enabled, it starts the ServiceWorker manually since we don't
+          // instantiate ServiceWorkerFetchDispatcher, which involves the
+          // ServiceWorker startup.
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE,
+              base::BindOnce(
+                  [](scoped_refptr<ServiceWorkerVersion> active_worker) {
+                    if (active_worker->running_status() !=
+                            blink::EmbeddedWorkerStatus::kRunning &&
+                        base::FeatureList::IsEnabled(
+                            features::
+                                kServiceWorkerStaticRouterStartServiceWorker)) {
+                      active_worker->StartWorker(
+                          ServiceWorkerMetrics::EventType::STATIC_ROUTER,
+                          base::DoNothing());
+                    }
+                  },
+                  active_worker));
           return;
       }
     }
