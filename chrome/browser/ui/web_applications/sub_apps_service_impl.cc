@@ -553,7 +553,7 @@ void SubAppsServiceImpl::NotifyUninstall(
         GetWebAppProvider(render_frame_host())->registrar_unsafe();
     const webapps::AppId* parent_app_id = GetAppId(render_frame_host());
     const std::u16string parent_app_name =
-        base::ASCIIToUTF16(registrar.GetAppShortName(*parent_app_id));
+        base::UTF8ToUTF16(registrar.GetAppShortName(*parent_app_id));
     const GURL start_url = registrar.GetAppStartUrl(*parent_app_id);
     const std::u16string title =
         base::i18n::MessageFormatter::FormatWithNamedArgs(
