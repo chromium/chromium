@@ -77,6 +77,7 @@
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/glanceables/glanceables_controller.h"
+#include "ash/glanceables/post_login_glanceables_metrics_recorder.h"
 #include "ash/host/ash_window_tree_host_init_params.h"
 #include "ash/hud_display/hud_display.h"
 #include "ash/ime/ime_controller_impl.h"
@@ -867,6 +868,9 @@ Shell::~Shell() {
   // need to access those windows and it will be a UAF.
   // https://crbug.com/1350711.
   capture_mode_controller_.reset();
+
+  // Relies on `overview_controller`.
+  post_login_glanceables_metrics_reporter_.reset();
 
   // Has to happen before `~MruWindowTracker` and after
   // `~GameDashboardController`.
@@ -1673,6 +1677,8 @@ void Shell::Init(
       features::AreGlanceablesV2EnabledForTrustedTesters()) {
     glanceables_controller_ = std::make_unique<GlanceablesController>();
   }
+  post_login_glanceables_metrics_reporter_ =
+      std::make_unique<PostLoginGlanceablesMetricsRecorder>();
 
   projector_controller_ = std::make_unique<ProjectorControllerImpl>();
 

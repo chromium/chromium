@@ -5445,6 +5445,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.PostLoginGlanceables.HypotheticalFetchEvent.{Delay}"
+    enum="DataFetchEventSource" expires_after="2024-03-17">
+  <owner>mmourgos@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Recorded any time a code path is triggered which would require post login
+    glanceable data to be fetched and/or displayed to the user. This histogram
+    is meant to be used for estimating how often we would typically want to
+    fetch and then show this data.
+
+    This histogram is split by different variants. The &quot;No Delay&quot;
+    variant is the raw query rate, while the 15/30 second delay variants are to
+    experiment with throttling, where the metric will not be recorded more than
+    once within any single 15/30 second time span.
+  </summary>
+  <token key="Delay">
+    <variant name="15SecondDelay" summary="15 Second Delay"/>
+    <variant name="30SecondDelay" summary="30 Second Delay"/>
+    <variant name="NoDelay" summary="No Delay"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.PowerSoundsController.PluggedInBatteryLevel" units="%"
     expires_after="2024-02-20">
   <owner>hongyulong@chromium.org</owner>

@@ -26161,6 +26161,12 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="14" label="Other"/>
 </enum>
 
+<enum name="DataFetchEventSource">
+  <int value="0" label="PostLoginFullRestore"/>
+  <int value="1" label="Overview"/>
+  <int value="2" label="Calendar"/>
+</enum>
+
 <enum name="DataReductionProxyAutoLoFiAccuracy">
   <int value="0"
       label="Estimated network quality as slow and was actually slow"/>
