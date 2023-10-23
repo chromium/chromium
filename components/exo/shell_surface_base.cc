@@ -1893,6 +1893,12 @@ void ShellSurfaceBase::UpdateWidgetBounds() {
 }
 
 void ShellSurfaceBase::UpdateHostWindowOrigin() {
+  // There's an animation happening on cloned layers, `host_window()` layer may
+  // be "ahead" of client's commit_target_layer. Do not update its origin,
+  // instead, rely on SurfaceLayer stretching until the client catches up.
+  if (GetCommitTargetLayer() != host_window()->layer()) {
+    return;
+  }
   gfx::Point origin = GetClientViewBounds().origin();
 
   origin += GetSurfaceOrigin().OffsetFromOrigin();
@@ -1946,7 +1952,15 @@ void ShellSurfaceBase::UpdateShadow() {
   aura::Window* window = widget_->GetNativeWindow();
 
   // Window shadows should be disabled if a window shape has been set.
-  if (!shadow_bounds_ || shape_dp_.has_value()) {
+  //
+  // Or if `host_window()`'s layer is not commit_target_layer, `shadow_bounds_`
+  // committed by the client should not go to current `widget_`'s shadow, but to
+  // the old widget's shadow prior to layer clone. Don't show the new shadow for
+  // now.
+  // TODO(crbug.com/1491604): Find the old widget's shadow layer and update it,
+  // and maybe show new widget's shadow by predicting its dimensions.
+  if (!shadow_bounds_ || shape_dp_.has_value() ||
+      GetCommitTargetLayer() != host_window()->layer()) {
     wm::SetShadowElevation(window, wm::kShadowElevationNone);
   } else {
     // Use a small style shadow for popup surface.
@@ -2199,7 +2213,7 @@ void ShellSurfaceBase::CommitWidget() {
   // type (e.g. caption height).
   UpdateFrameType();
   UpdateWidgetBounds();
-  UpdateHostWindowSizeAndRootSurfaceOrigin();
+  UpdateSurfaceLayerSizeAndRootSurfaceOrigin();
 
   // System modal container is used by clients to implement overlay
   // windows using a single ShellSurface instance.  If hit-test
