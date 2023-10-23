@@ -2770,6 +2770,8 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
     }
 #endif
 
+    mark_all_dirty_ = false;
+
     // Build out tree, such that each node has computed its children.
     if (RuntimeEnabledFeatures::AccessibilityEagerAXTreeUpdateEnabled()) {
       UpdateTreeIfNeeded();
@@ -4292,7 +4294,6 @@ void AXObjectCacheImpl::MarkDocumentDirtyWithCleanLayout() {
   // but will not create new AXObjects, which avoids resetting the user's
   // position in the content.
   DCHECK(mark_all_dirty_);
-  mark_all_dirty_ = false;
 
   // Assume all nodes in the tree need to recompute their properties.
   // Note that objects can remain in the tree without being re-created.
