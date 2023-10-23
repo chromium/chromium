@@ -8599,6 +8599,7 @@
                         "enable_default_model": "true"
                     },
                     "enable_features": [
+                        "IOSParcelTracking",
                         "MagicStack",
                         "SafetyCheckMagicStack",
                         "SegmentationPlatformIosModuleRanker",
