@@ -13,19 +13,40 @@
 
 namespace global_media_controls::test {
 
-class MockDeviceService : public mojom::DeviceService {
+template <class T>
+class MockMojoImpl : public T {
+ public:
+  MockMojoImpl() = default;
+  ~MockMojoImpl() override = default;
+
+  mojo::PendingRemote<T> PassRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  void BindReceiver(mojo::PendingReceiver<T> pending_receiver) {
+    receiver_.Bind(std::move(pending_receiver));
+  }
+
+  void ResetReceiver() { receiver_.reset(); }
+
+  void FlushForTesting() { receiver_.FlushForTesting(); }
+
+ protected:
+  mojo::Receiver<T> receiver_{this};
+};
+
+class MockDeviceListHost : public MockMojoImpl<mojom::DeviceListHost> {
+ public:
+  MockDeviceListHost();
+  ~MockDeviceListHost() override;
+
+  MOCK_METHOD(void, SelectDevice, (const std::string& device_id));
+};
+
+class MockDeviceService : public MockMojoImpl<mojom::DeviceService> {
  public:
   MockDeviceService();
   ~MockDeviceService() override;
-
-  // Returns a remote bound to `this`.
-  mojo::PendingRemote<mojom::DeviceService> PassRemote();
-
-  // Resets the Mojo receiver bound to `this`.
-  void ResetReceiver();
-
-  // Flushes the Mojo receiver bound to `this`.
-  void FlushForTesting();
 
   MOCK_METHOD(void,
               GetDeviceListHostForSession,
@@ -40,9 +61,6 @@ class MockDeviceService : public mojom::DeviceService {
       void,
       SetDevicePickerProvider,
       (mojo::PendingRemote<mojom::DevicePickerProvider> provider_remote));
-
- private:
-  mojo::Receiver<mojom::DeviceService> receiver_{this};
 };
 
 }  // namespace global_media_controls::test

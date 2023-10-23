@@ -90,9 +90,11 @@ class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
   // specified by the ID. If it's an empty string then all the items are shown.
   void ShowBubbleWithItem(const std::string& item_id);
 
-  TrayBubbleWrapper* tray_bubble_wrapper_for_testing() { return bubble_.get(); }
-
-  views::View* pin_button_for_testing() { return pin_button_; }
+  TrayBubbleWrapper* tray_bubble_wrapper_for_testing() const {
+    return bubble_.get();
+  }
+  views::View* content_view_for_testing() const { return content_view_; }
+  views::View* pin_button_for_testing() const { return pin_button_; }
 
  private:
   friend class MediaTrayTest;
