@@ -279,7 +279,7 @@ enum ServerFieldType {
 
   // UPI/VPA is a payment method, which is stored and filled. See
   // https://en.wikipedia.org/wiki/Unified_Payments_Interface
-  UPI_VPA = 102,
+  // UPI_VPA value 102 is deprecated.
 
   // Just the street name of an address, no house number.
   ADDRESS_HOME_STREET_NAME = 103,
@@ -498,6 +498,8 @@ constexpr ServerFieldType ToSafeServerFieldType(
            !(67 <= t && t <= 72) &&
            // Fax numbers (values [20,24]) are deprecated.
            !(20 <= t && t <= 24) &&
+           // UPI VPA type (value 102) is deprecated.
+           !(t == 102) &&
            // Reserved for server-side only use.
            !(111 <= t && t <= 113) && t != 127 && !(130 <= t && t <= 132) &&
            t != 134 && !(137 <= t && t <= 139) && !(145 <= t && t <= 150) &&

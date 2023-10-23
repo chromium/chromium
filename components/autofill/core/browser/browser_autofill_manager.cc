@@ -3135,9 +3135,6 @@ void BrowserAutofillManager::DeterminePossibleFieldTypesForUpload(
       metrics.switched_from_country_to_phone_country_code = true;
     }
 
-    if (IsUPIVirtualPaymentAddress(value))
-      matching_types.insert(UPI_VPA);
-
     if (field->state_is_a_matching_type())
       matching_types.insert(ADDRESS_HOME_STATE);
 

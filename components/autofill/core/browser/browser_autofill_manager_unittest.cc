@@ -7419,25 +7419,6 @@ TEST_F(BrowserAutofillManagerTest, DisambiguateUploadTypes) {
   }
 }
 
-// When a field contains fields with UPI ID values, a crowdsourcing vote should
-// be uploaded.
-TEST_F(BrowserAutofillManagerTest, CrowdsourceUPIVPA) {
-  std::vector<AutofillProfile> profiles;
-  std::vector<CreditCard> credit_cards;
-
-  FormData form;
-  form.fields = {CreateTestFormField("", "name1", "1234@indianbank", "text"),
-                 CreateTestFormField("", "name2", "not-upi@gmail.com", "text")};
-  FormStructure form_structure(form);
-
-  BrowserAutofillManagerTestApi::DeterminePossibleFieldTypesForUpload(
-      profiles, credit_cards, std::u16string(), "en-us", &form_structure);
-
-  EXPECT_THAT(form_structure.field(0)->possible_types(), ElementsAre(UPI_VPA));
-  EXPECT_THAT(form_structure.field(1)->possible_types(),
-              Not(Contains(UPI_VPA)));
-}
-
 // If a server-side credit card is unmasked by entering the CVC, the
 // BrowserAutofillManager reuses the CVC value to identify a potentially
 // existing CVC form field to cast a |CREDIT_CARD_VERIFICATION_CODE|-type vote.

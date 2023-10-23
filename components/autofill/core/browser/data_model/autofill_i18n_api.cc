@@ -145,7 +145,6 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
     case NOT_PASSWORD:
     case SINGLE_USERNAME:
     case NOT_USERNAME:
-    case UPI_VPA:
     case BIRTHDATE_DAY:
     case BIRTHDATE_MONTH:
     case BIRTHDATE_4_DIGIT_YEAR:

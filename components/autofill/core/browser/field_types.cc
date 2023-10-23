@@ -92,7 +92,6 @@ static constexpr auto kTypeNameToFieldType =
          {"NOT_PASSWORD", NOT_PASSWORD},
          {"SINGLE_USERNAME", SINGLE_USERNAME},
          {"NOT_USERNAME", NOT_USERNAME},
-         {"UPI_VPA", UPI_VPA},
          {"ADDRESS_HOME_STREET_NAME", ADDRESS_HOME_STREET_NAME},
          {"ADDRESS_HOME_HOUSE_NUMBER", ADDRESS_HOME_HOUSE_NUMBER},
          {"ADDRESS_HOME_SUBPREMISE", ADDRESS_HOME_SUBPREMISE},
@@ -201,9 +200,6 @@ bool IsFillableFieldType(ServerFieldType field_type) {
     case CREDIT_CARD_VERIFICATION_CODE:
     case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
       return true;
-
-    case UPI_VPA:
-      return false;
 
     case IBAN_VALUE:
       return true;
@@ -433,8 +429,6 @@ std::string_view FieldTypeToDeveloperRepresentationString(
       return "Credit card verification code";
     case COMPANY_NAME:
       return "Company name";
-    case UPI_VPA:
-      return "UPI VPA";
     case IBAN_VALUE:
       return "IBAN";
     case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
@@ -556,7 +550,6 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case FIELD_WITH_DEFAULT_VALUE:
     case MERCHANT_EMAIL_SIGNUP:
     case MERCHANT_PROMO_CODE:
-    case UPI_VPA:
       return FieldTypeGroup::kNoGroup;
 
     case USERNAME:
@@ -791,13 +784,11 @@ ServerFieldType HtmlFieldTypeToBestCorrespondingServerFieldType(
     case HtmlFieldType::kCreditCardExp4DigitYear:
       return CREDIT_CARD_EXP_4_DIGIT_YEAR;
 
-    case HtmlFieldType::kUpiVpa:
-      return UPI_VPA;
-
     case HtmlFieldType::kOneTimeCode:
       return ONE_TIME_CODE;
 
     // These types aren't stored; they're transient.
+    case HtmlFieldType::kUpiVpa:
     case HtmlFieldType::kTransactionAmount:
     case HtmlFieldType::kTransactionCurrency:
     case HtmlFieldType::kMerchantPromoCode:
