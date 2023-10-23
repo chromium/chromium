@@ -159,10 +159,11 @@ PaymentsClient::UnmaskResponseDetails::operator=(
   } else {
     fido_request_options.reset();
   }
-  card_unmask_challenge_options = other.card_unmask_challenge_options;
   card_authorization_token = other.card_authorization_token;
-  flow_status = other.flow_status;
+  card_unmask_challenge_options = other.card_unmask_challenge_options;
   context_token = other.context_token;
+  flow_status = other.flow_status;
+  card_type = other.card_type;
   autofill_error_dialog_context = other.autofill_error_dialog_context;
   return *this;
 }
