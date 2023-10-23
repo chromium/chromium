@@ -244,7 +244,7 @@ enum class VideoCaptureFrameDropReason {
   kResolutionAdapterHasNoCallbacks = 24,
   kVideoTrackFrameDelivererNotEnabledReplacingWithBlackFrame = 25,
   kRendererSinkFrameDelivererIsNotStarted = 26,
-  kCropVersionNotCurrent = 27,
+  kCropVersionNotCurrent_DEPRECATED = 27,
   kGpuMemoryBufferMapFailed = 28,
   kSubCaptureTargetVersionNotCurrent = 29,
   kMaxValue = kSubCaptureTargetVersionNotCurrent

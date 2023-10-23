@@ -1558,8 +1558,9 @@ EnumTraits<media::mojom::VideoCaptureFrameDropReason,
         kRendererSinkFrameDelivererIsNotStarted:
       return media::mojom::VideoCaptureFrameDropReason::
           kRendererSinkFrameDelivererIsNotStarted;
-    case media::VideoCaptureFrameDropReason::kCropVersionNotCurrent:
-      return media::mojom::VideoCaptureFrameDropReason::kCropVersionNotCurrent;
+    case media::VideoCaptureFrameDropReason::kCropVersionNotCurrent_DEPRECATED:
+      return media::mojom::VideoCaptureFrameDropReason::
+          kCropVersionNotCurrent_DEPRECATED;
     case media::VideoCaptureFrameDropReason::kGpuMemoryBufferMapFailed:
       return media::mojom::VideoCaptureFrameDropReason::
           kGpuMemoryBufferMapFailed;
@@ -1699,8 +1700,10 @@ bool EnumTraits<media::mojom::VideoCaptureFrameDropReason,
       *output = media::VideoCaptureFrameDropReason::
           kRendererSinkFrameDelivererIsNotStarted;
       return true;
-    case media::mojom::VideoCaptureFrameDropReason::kCropVersionNotCurrent:
-      *output = media::VideoCaptureFrameDropReason::kCropVersionNotCurrent;
+    case media::mojom::VideoCaptureFrameDropReason::
+        kCropVersionNotCurrent_DEPRECATED:
+      *output =
+          media::VideoCaptureFrameDropReason::kCropVersionNotCurrent_DEPRECATED;
       return true;
     case media::mojom::VideoCaptureFrameDropReason::kGpuMemoryBufferMapFailed:
       *output = media::VideoCaptureFrameDropReason::kGpuMemoryBufferMapFailed;

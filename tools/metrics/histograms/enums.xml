@@ -112038,13 +112038,14 @@ Full version information for the fingerprint enum values:
   <int value="19" label="kVideoTrackAdapterHasNoResolutionAdapters"/>
   <int value="20" label="kResolutionAdapterFrameIsNotValid"/>
   <int value="21" label="kResolutionAdapterWrappingFrameForCroppingFailed"/>
-  <int value="22" label="kResolutionAdapterTimestampTooCloseToPrevious"/>
+  <int value="22"
+      label="kResolutionAdapterTimestampTooCloseToPrevious_DEPRECATED"/>
   <int value="23" label="kResolutionAdapterFrameRateIsHigherThanRequested"/>
   <int value="24" label="kResolutionAdapterHasNoCallbacks"/>
   <int value="25"
       label="kVideoTrackFrameDelivererNotEnabledReplacingWithBlackFrame"/>
   <int value="26" label="kRendererSinkFrameDelivererIsNotStarted"/>
-  <int value="27" label="kCropVersionNotCurrent"/>
+  <int value="27" label="kCropVersionNotCurrent_DEPRECATED"/>
   <int value="28" label="kGpuMemoryBufferMapFailed"/>
   <int value="29" label="kSubCaptureTargetVersionNotCurrent"/>
 </enum>
