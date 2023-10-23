@@ -748,6 +748,7 @@ class SpeechRecognitionJSApiTest : public AtpJSApiTest {
     return std::vector<std::string>{
         "services/accessibility/features/mojo/test/mojom_test_support.js",
         "services/accessibility/public/mojom/speech_recognition.mojom-lite.js",
+        "services/accessibility/features/javascript/chrome_event.js",
         "services/accessibility/features/javascript/speech_recognition.js",
     };
   }
@@ -801,6 +802,21 @@ TEST_F(SpeechRecognitionJSApiTest, StopEvent) {
   WaitForJSTestComplete();
 }
 
-// TODO(b:304305202): Add test that has non-empty start options.
+TEST_F(SpeechRecognitionJSApiTest, ResultEvent) {
+  client_->SetSpeechRecognitionStartCallback(base::BindLambdaForTesting(
+      [this]() { client_->SendSpeechRecognitionResultEvent(); }));
+  ExecuteJS(R"JS(
+    const remote = axtest.mojom.TestBindingInterface.getRemote();
+    chrome.speechRecognitionPrivate.onResult.addListener((event) => {
+      if (event.transcript === 'Hello world' && event.isFinal) {
+        remote.testComplete(/*success=*/true);
+      }
+    });
+
+    const options = {};
+    chrome.speechRecognitionPrivate.start(options, (type) => {});
+  )JS");
+  WaitForJSTestComplete();
+}
 
 }  // namespace ax

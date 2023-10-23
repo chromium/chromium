@@ -99,6 +99,7 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   void SetSpeechRecognitionStartCallback(
       base::RepeatingCallback<void()> callback);
   void SendSpeechRecognitionStopEvent();
+  void SendSpeechRecognitionResultEvent();
 
   void SetTtsSpeakCallback(
       base::RepeatingCallback<void(const std::string&, mojom::TtsOptionsPtr)>

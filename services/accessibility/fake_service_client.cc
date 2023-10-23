@@ -201,6 +201,13 @@ void FakeServiceClient::SendSpeechRecognitionStopEvent() {
   sr_event_observer_->OnStop();
 }
 
+void FakeServiceClient::SendSpeechRecognitionResultEvent() {
+  auto result = ax::mojom::SpeechRecognitionResultEvent::New();
+  result->transcript = "Hello world";
+  result->is_final = true;
+  sr_event_observer_->OnResult(std::move(result));
+}
+
 void FakeServiceClient::SetTtsSpeakCallback(
     base::RepeatingCallback<void(const std::string&, mojom::TtsOptionsPtr)>
         callback) {
