@@ -105,7 +105,7 @@ declare_args() {
   enable_rust_boringssl = enable_rust && enable_all_rust_features
 
   # Enable experimental Fontations Rust font stack.
-  use_typeface_fontations = enable_rust && enable_all_rust_features
+  use_typeface_fontations = enable_rust
 }
 
 # Use the Rust toolchain built in-tree. When false, we use the prebuilt Rust

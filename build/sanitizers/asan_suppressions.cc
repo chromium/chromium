@@ -19,6 +19,7 @@ char kASanDefaultSuppressions[] =
     "odr_violation:^core::\n"
     "odr_violation:^object::\n"
     "odr_violation:^std::panicking::\n"
+    "odr_violation:^read_fonts::tables::\n"
 
     // End of suppressions.
     // PLEASE READ ABOVE BEFORE ADDING NEW SUPPRESSIONS.
