@@ -7022,6 +7022,8 @@ crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask
 crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-size-percent-length.html [ Failure ]
 crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-size-percent-percent.html [ Failure ]
 crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-size-percent.html [ Failure ]
+crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/parsing/mask-repeat-valid.html [ Failure ]
+crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/parsing/mask-repeat-computed.html [ Failure ]
 crbug.com/626703 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-shorthand-subproperties-reset.html [ Timeout ]
 
 # Gardener 2023-10-17
