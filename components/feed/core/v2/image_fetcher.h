@@ -54,6 +54,8 @@ class ImageFetcher {
 
   absl::optional<PendingRequest> RemovePending(ImageFetchId id);
 
+  uint64_t GetTrackId(ImageFetchId id) const;
+
   ImageFetchId::Generator id_generator_;
   base::flat_map<ImageFetchId, PendingRequest> pending_requests_;
   const scoped_refptr<::network::SharedURLLoaderFactory> url_loader_factory_;
