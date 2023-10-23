@@ -14,6 +14,7 @@
 #include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/extensions/web_file_handlers/intent_util.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/lacros/lacros_extensions_util.h"
@@ -40,6 +41,7 @@
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/manifest_handlers/app_display_info.h"
+#include "extensions/common/manifest_handlers/web_file_handlers_info.h"
 
 namespace {
 
@@ -337,11 +339,12 @@ class LacrosExtensionAppsPublisher::ProfileTracker
     app->allow_uninstall = (policy->UserMayModifySettings(extension, nullptr) &&
                             !policy->MustRemainInstalled(extension, nullptr));
 
-    // Add file_handlers for Chrome Apps and quickoffice, or
-    // file_browser_handler for Extensions.
+    // Add file_handlers for either of the following:
+    //   a) Chrome Apps and quickoffice.
+    //   b) Web File Handlers or file_browser_handler for Extensions.
     base::Extend(app->intent_filters,
                  which_type_.ChooseIntentFilter(
-                     extension_misc::IsQuickOfficeExtension(extension->id()),
+                     extensions::IsLegacyQuickOfficeExtension(*extension),
                      apps_util::CreateIntentFiltersForChromeApp,
                      apps_util::CreateIntentFiltersForExtension)(extension));
     return app;

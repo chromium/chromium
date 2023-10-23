@@ -280,7 +280,7 @@ bool WebFileHandlers::SupportsWebFileHandlers(const Extension& extension) {
     return true;
   }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   return false;
 #else
   // An extension in the allowlist running on Ash is supported.
