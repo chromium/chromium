@@ -226,18 +226,8 @@ NSComparisonResult SubviewSorter(__kindof NSView* lhs,
 // |child_windows| array ignoring the windows added by AppKit.
 NSUInteger CountBridgedWindows(NSArray* child_windows) {
   NSUInteger count = 0;
-
   for (NSWindow* child in child_windows) {
-    NativeWidgetMacNSWindow* parentWindow =
-        base::apple::ObjCCast<NativeWidgetMacNSWindow>([child parentWindow]);
-
-    // The child may be in an intermediary state where it's been removed from
-    // Views but not from the childWindow list (see the description of
-    // -willCloseLater in ViewsNSWindowDelegate). Child windows in this state
-    // essentially do not exist, so we should not count them.
-    if ([parentWindow willRemoveChildWindowOnActivation:child]) {
-      continue;
-    } else if ([[child delegate] isKindOfClass:[ViewsNSWindowDelegate class]]) {
+    if ([[child delegate] isKindOfClass:[ViewsNSWindowDelegate class]]) {
       ++count;
     }
   }
@@ -779,11 +769,7 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
     // DCHECK(![window_ attachedSheet]);
 
     [window_ orderOut:nil];
-
-    NativeWidgetMacNSWindow* parentWindow =
-        base::apple::ObjCCast<NativeWidgetMacNSWindow>([window_ parentWindow]);
-    DCHECK(!window_visible_ ||
-           [parentWindow willRemoveChildWindowOnActivation:window_]);
+    DCHECK(!window_visible_);
     return;
   } else if (new_state == WindowVisibilityState::kMiniaturizeWindow) {
     [window_ miniaturize:nil];
@@ -1117,12 +1103,7 @@ void NativeWidgetNSWindowBridge::OnPositionChanged() {
 }
 
 void NativeWidgetNSWindowBridge::OnVisibilityChanged() {
-  NativeWidgetMacNSWindow* parentWindow =
-      base::apple::ObjCCast<NativeWidgetMacNSWindow>([window_ parentWindow]);
-  const bool window_visible =
-      [window_ isVisible] &&
-      ![parentWindow willRemoveChildWindowOnActivation:window_];
-
+  const bool window_visible = [window_ isVisible];
   if (window_visible_ == window_visible)
     return;
 
@@ -1717,17 +1698,10 @@ void NativeWidgetNSWindowBridge::NotifyVisibilityChangeDown() {
   const size_t child_count = child_windows_.size();
   if (!window_visible_) {
     for (NativeWidgetNSWindowBridge* child : child_windows_) {
-      NSWindow* childWindow = child->ns_window();
-
       if (child->window_visible_) {
-        [childWindow orderOut:nil];
+        [child->ns_window() orderOut:nil];
       }
-      NativeWidgetMacNSWindow* parentWindow =
-          base::apple::ObjCCast<NativeWidgetMacNSWindow>(
-              [childWindow parentWindow]);
-
-      DCHECK(!child->window_visible_ ||
-             [parentWindow willRemoveChildWindowOnActivation:childWindow]);
+      DCHECK(!child->window_visible_);
       CHECK_EQ(child_count, child_windows_.size());
     }
     // The orderOut calls above should result in a call to OnVisibilityChanged()
