@@ -174,7 +174,9 @@ export class LockScreenSettings implements LockScreenSettingsInterface {
       if (toggle === null) {
         return !isAvailable;
       }
-      return toggle.outerHTML.includes('not supported') === !isAvailable;
+      // Check for presence of "learn more" link
+      return toggle.outerHTML.includes('https://support.google.com/chrome') ===
+          !isAvailable;
     };
 
     await assertAsync(property);

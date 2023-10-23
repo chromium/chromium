@@ -299,7 +299,7 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
     if (!this.cryptohomeRecoveryEnabled_ || this.recovery_) {
       return '';
     }
-    return this.i18n('recoveryNotSupportedMessage');
+    return this.i18n('recoveryLearnMoreUrl');
   }
 
   private recoveryToggleDisabled_(): boolean {
