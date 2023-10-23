@@ -10,7 +10,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -110,7 +109,7 @@ void BookmarkUpdateManager::RunUpdate() {
       pending_update_batches_.emplace();
       current_batch_count = 0;
     }
-    pending_update_batches_.back().push_back(node->uuid());
+    pending_update_batches_.back().push_back(node->id());
     current_batch_count++;
     total_bookmarks_processed++;
 
@@ -131,16 +130,16 @@ void BookmarkUpdateManager::StartNextBatch() {
 
   expected_bookmark_updates_ = pending_update_batches_.front().size();
   received_bookmark_updates_ = 0;
-  std::vector<base::Uuid> uuids = std::move(pending_update_batches_.front());
+  std::vector<int64_t> ids = std::move(pending_update_batches_.front());
   pending_update_batches_.pop();
   shopping_service_->GetUpdatedProductInfoForBookmarks(
-      std::move(uuids),
+      std::move(ids),
       base::BindRepeating(&BookmarkUpdateManager::HandleOnDemandResponse,
                           weak_ptr_factory_.GetWeakPtr()));
 }
 
 void BookmarkUpdateManager::HandleOnDemandResponse(
-    const base::Uuid& bookmark_uuid,
+    const int64_t bookmark_id,
     const GURL& url,
     absl::optional<ProductInfo> info) {
   received_bookmark_updates_++;
@@ -152,7 +151,7 @@ void BookmarkUpdateManager::HandleOnDemandResponse(
     return;
 
   const bookmarks::BookmarkNode* node =
-      bookmark_model_->GetNodeByUuid(bookmark_uuid);
+      bookmarks::GetBookmarkNodeByID(bookmark_model_, bookmark_id);
   std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
       power_bookmarks::GetNodePowerBookmarkMeta(bookmark_model_, node);
 

@@ -6,7 +6,6 @@
 
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/uuid.h"
 
 namespace commerce {
 
@@ -34,7 +33,7 @@ MockShoppingService::MockShoppingService()
   SetIsReady(true);
   SetResponseForGetProductInfoForUrl(absl::nullopt);
   SetResponsesForGetUpdatedProductInfoForBookmarks(
-      std::map<base::Uuid, ProductInfo>());
+      std::map<int64_t, ProductInfo>());
   ON_CALL(*this, GetMaxProductBookmarkUpdatesPerBatch)
       .WillByDefault(testing::Return(30));
   SetResponseForGetMerchantInfoForUrl(absl::nullopt);
@@ -84,14 +83,14 @@ void MockShoppingService::SetResponseForGetPriceInsightsInfoForUrl(
 }
 
 void MockShoppingService::SetResponsesForGetUpdatedProductInfoForBookmarks(
-    std::map<base::Uuid, ProductInfo> bookmark_updates) {
+    std::map<int64_t, ProductInfo> bookmark_updates) {
   ON_CALL(*this, GetUpdatedProductInfoForBookmarks)
       .WillByDefault(
           [bookmark_updates = std::move(bookmark_updates)](
-              const std::vector<base::Uuid>& bookmark_uuids,
+              const std::vector<int64_t>& bookmark_ids,
               BookmarkProductInfoUpdatedCallback info_updated_callback) {
-            for (const auto& uuid : bookmark_uuids) {
-              auto it = bookmark_updates.find(uuid);
+            for (auto id : bookmark_ids) {
+              auto it = bookmark_updates.find(id);
 
               if (it == bookmark_updates.end()) {
                 continue;

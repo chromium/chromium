@@ -6,7 +6,6 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/uuid.h"
 #include "base/values.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -558,17 +557,18 @@ TEST_P(ShoppingServiceTest, TestGetUpdatedProductInfoForBookmarks) {
   opt_guide_->AddOnDemandShoppingResponse(
       GURL(kProductUrl), OptimizationGuideDecision::kTrue, updated_meta);
 
-  std::vector<base::Uuid> bookmark_uuids;
-  bookmark_uuids.push_back(product1->uuid());
-  int expected_calls = bookmark_uuids.size();
+  std::vector<int64_t> bookmark_ids;
+  bookmark_ids.push_back(product1->id());
+  int expected_calls = bookmark_ids.size();
 
   base::RunLoop run_loop;
 
   auto callback = base::BindRepeating(
       [](bookmarks::BookmarkModel* model, int* call_count,
-         base::RunLoop* run_loop, const base::Uuid& uuid, const GURL& url,
+         base::RunLoop* run_loop, const int64_t id, const GURL& url,
          absl::optional<ProductInfo> info) {
-        const bookmarks::BookmarkNode* node = model->GetNodeByUuid(uuid);
+        const bookmarks::BookmarkNode* node =
+            bookmarks::GetBookmarkNodeByID(model, id);
         EXPECT_EQ(url.spec(), node->url().spec());
 
         (*call_count)--;
@@ -578,8 +578,7 @@ TEST_P(ShoppingServiceTest, TestGetUpdatedProductInfoForBookmarks) {
       },
       model, &expected_calls, &run_loop);
 
-  shopping_service_->GetUpdatedProductInfoForBookmarks(bookmark_uuids,
-                                                       callback);
+  shopping_service_->GetUpdatedProductInfoForBookmarks(bookmark_ids, callback);
   run_loop.Run();
 
   EXPECT_EQ(0, expected_calls);
