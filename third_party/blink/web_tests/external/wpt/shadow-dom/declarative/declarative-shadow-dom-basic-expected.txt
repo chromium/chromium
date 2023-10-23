@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[PASS] Declarative Shadow DOM: Basic test
+[PASS] Declarative Shadow DOM: Feature detection
+[FAIL] Shadowrootmode reflection
+  assert_equals: Invalid values map to empty string expected (string) "" but got (object) null
+[PASS] Declarative Shadow DOM: Fragment parser basic test
+[PASS] Declarative Shadow DOM: Invalid shadow root attribute
+[PASS] Declarative Shadow DOM: Closed shadow root attribute
+[PASS] Declarative Shadow DOM: Missing closing tag
+[PASS] Declarative Shadow DOM: delegates focus attribute
+[PASS] Declarative Shadow DOM: Multiple roots
+[PASS] Declarative Shadow DOM: template containing declarative shadow root
+[PASS] Declarative Shadow DOM: template containing (deeply nested) declarative shadow root
+[PASS] Declarative Shadow DOM: template containing a template containing declarative shadow root
+[PASS] Declarative Shadow DOM: template containing declarative shadow root and UA shadow root
+[PASS] Declarative Shadow DOM: template containing closed declarative shadow root and UA shadow root
+[PASS] Declarative Shadow DOM: template root element
+Harness: the test ran to completion.
+

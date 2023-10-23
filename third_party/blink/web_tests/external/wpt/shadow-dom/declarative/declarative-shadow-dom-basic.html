@@ -39,9 +39,9 @@ test(() => {
   t.setAttribute('shadowrootmode','OpEn');
   assert_equals(t.shadowRootMode,'open','Case insensitive');
   t.setAttribute('shadowrootmode','INVALID');
-  assert_equals(t.shadowRootMode,null,'Invalid values map to null');
+  assert_equals(t.shadowRootMode,'','Invalid values map to empty string');
   t.removeAttribute('shadowrootmode');
-  assert_equals(t.shadowRootMode,null,'No shadowrootmode attribute maps to null');
+  assert_equals(t.shadowRootMode,'','No shadowrootmode attribute maps to empty string');
 }, 'Shadowrootmode reflection');
 
 test(() => {
