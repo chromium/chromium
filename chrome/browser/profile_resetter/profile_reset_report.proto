@@ -77,8 +77,8 @@ message ChromeResetReport {
     RESET_REQUEST_ORIGIN_UNKNOWN = 1;
     // User clicked on the reset button on the settings page.
     RESET_REQUEST_ORIGIN_USER_CLICK = 2;
-    // A settings reset was requested by the Chrome Cleanup Tool.
-    RESET_REQUEST_ORIGIN_CCT = 3;
+    // Deprecated: RESET_REQUEST_ORIGIN_CCT
+    reserved 3;
     // The triggered settings reset API was used.
     RESET_REQUEST_ORIGIN_TRIGGERED_RESET = 4;
   }
