@@ -22,14 +22,13 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "extensions/buildflags/buildflags.h"
-#include "ui/shell_dialogs/select_file_dialog.h"
 
 class PrefChangeRegistrar;
 
 // The JavaScript message handler for the chrome://policy page.
-class PolicyUIHandler : public content::WebUIMessageHandler,
-                        public policy::PolicyValueAndStatusAggregator::Observer,
-                        public ui::SelectFileDialog::Listener {
+class PolicyUIHandler
+    : public content::WebUIMessageHandler,
+      public policy::PolicyValueAndStatusAggregator::Observer {
  public:
   PolicyUIHandler();
 
@@ -48,13 +47,6 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   void OnPolicyValueAndStatusChanged() override;
 
   void set_web_ui_for_test(content::WebUI* web_ui) { set_web_ui(web_ui); }
-
- protected:
-  // ui::SelectFileDialog::Listener implementation.
-  void FileSelected(const base::FilePath& path,
-                    int index,
-                    void* params) override;
-  void FileSelectionCanceled(void* params) override;
 
  private:
   void HandleExportPoliciesJson(const base::Value::List& args);
@@ -95,10 +87,6 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
 
   // Build a JSON string of all the policies.
   std::string GetPoliciesAsJson();
-
-  void WritePoliciesToJSONFile(const base::FilePath& path);
-
-  scoped_refptr<ui::SelectFileDialog> export_policies_select_file_dialog_;
 
   std::unique_ptr<policy::PolicyValueAndStatusAggregator>
       policy_value_and_status_aggregator_;

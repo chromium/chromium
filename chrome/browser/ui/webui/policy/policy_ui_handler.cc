@@ -107,9 +107,6 @@ constexpr char kExtensionsKey[] = "extensions";
 PolicyUIHandler::PolicyUIHandler() = default;
 
 PolicyUIHandler::~PolicyUIHandler() {
-  if (export_policies_select_file_dialog_) {
-    export_policies_select_file_dialog_->ListenerDestroyed();
-  }
   policy::RecordPolicyUIButtonUsage(reload_policies_count_,
                                     export_to_json_count_, copy_to_json_count_,
                                     upload_report_count_);
@@ -228,61 +225,15 @@ void PolicyUIHandler::OnPolicyValueAndStatusChanged() {
   SendStatus();
 }
 
-void PolicyUIHandler::FileSelected(const base::FilePath& path,
-                                   int index,
-                                   void* params) {
-  DCHECK(export_policies_select_file_dialog_);
-
-  WritePoliciesToJSONFile(path);
-
-  export_policies_select_file_dialog_ = nullptr;
-}
-
-void PolicyUIHandler::FileSelectionCanceled(void* params) {
-  DCHECK(export_policies_select_file_dialog_);
-  export_policies_select_file_dialog_ = nullptr;
-}
-
 void PolicyUIHandler::HandleExportPoliciesJson(const base::Value::List& args) {
   export_to_json_count_ += 1;
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/1228691): Unify download logic between all platforms to
-  // use the WebUI download solution (and remove the Android check).
   if (!IsJavascriptAllowed()) {
     DVLOG(1) << "Tried to export policies as JSON but executing JavaScript is "
                 "not allowed.";
     return;
   }
 
-  // Since file selection doesn't work as well on Android as on other platforms,
-  // simply download the JSON as a file via JavaScript.
   FireWebUIListener("download-json", base::Value(GetPoliciesAsJson()));
-#else
-  // If the "select file" dialog window is already opened, we don't want to open
-  // it again.
-  if (export_policies_select_file_dialog_) {
-    return;
-  }
-
-  content::WebContents* webcontents = web_ui()->GetWebContents();
-
-  // Building initial path based on download preferences.
-  base::FilePath initial_dir =
-      DownloadPrefs::FromBrowserContext(webcontents->GetBrowserContext())
-          ->DownloadPath();
-  base::FilePath initial_path =
-      initial_dir.Append(FILE_PATH_LITERAL("policies.json"));
-
-  export_policies_select_file_dialog_ = ui::SelectFileDialog::Create(
-      this,
-      std::make_unique<ChromeSelectFilePolicy>(web_ui()->GetWebContents()));
-  ui::SelectFileDialog::FileTypeInfo file_type_info;
-  file_type_info.extensions = {{FILE_PATH_LITERAL("json")}};
-  gfx::NativeWindow owning_window = webcontents->GetTopLevelNativeWindow();
-  export_policies_select_file_dialog_->SelectFile(
-      ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(), initial_path,
-      &file_type_info, 0, base::FilePath::StringType(), owning_window, nullptr);
-#endif
 }
 
 void PolicyUIHandler::HandleListenPoliciesUpdates(
@@ -477,17 +428,4 @@ std::string PolicyUIHandler::GetPoliciesAsJson() {
       /*params=*/
       policy::GetChromeMetadataParams(
           /*application_name=*/l10n_util::GetStringUTF8(IDS_PRODUCT_NAME)));
-}
-
-void PolicyUIHandler::WritePoliciesToJSONFile(const base::FilePath& path) {
-  std::string json_policies = GetPoliciesAsJson();
-  base::ThreadPool::PostTask(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-      base::BindOnce(
-          [](const base::FilePath& path, base::StringPiece content) {
-            base::WriteFile(path, content);
-          },
-          path, json_policies));
 }

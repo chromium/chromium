@@ -57,6 +57,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -64,9 +65,6 @@
 #include "components/account_id/account_id.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/simple_feature.h"
-#include "ui/shell_dialogs/select_file_dialog.h"          // nogncheck
-#include "ui/shell_dialogs/select_file_dialog_factory.h"  // nogncheck
-#include "ui/shell_dialogs/select_file_policy.h"          // nogncheck
 #else
 #include "chrome/browser/toolbar_manager_test_helper_android.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -167,60 +165,6 @@ std::vector<std::string> PopulateExpectedPolicy(
     expected_policy.push_back(l10n_util::GetStringUTF8(IDS_POLICY_OK));
   return expected_policy;
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-void SetChromeMetaData(base::Value::Dict& expected) {
-  // Only set the expected keys and types and not the values since
-  // these can vary greatly on the platform, OS, architecture
-  // that is running.
-  expected.SetByDottedPath("chromeMetadata.application", "");
-  expected.SetByDottedPath("chromeMetadata.version", "");
-  expected.SetByDottedPath("chromeMetadata.revision", "");
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  expected.SetByDottedPath("chromeMetadata.OS", "");
-#endif
-}
-
-void InitPolicyCategory(base::Value::Dict& expected_dict,
-                        const std::string& key,
-                        const std::string& name) {
-  base::Value::Dict* dict =
-      expected_dict.EnsureDict("policyValues")->EnsureDict(key);
-  dict->Set("name", name);
-  dict->Set("policies", base::Value::Dict());
-}
-
-void SetExpectedPolicy(base::Value::Dict& expected,
-                       const std::string& category,
-                       const std::string& name,
-                       const std::string& level,
-                       const std::string& scope,
-                       const std::string& source,
-                       const std::string& error,
-                       const std::string& warning,
-                       bool ignored,
-                       const base::Value& value) {
-  base::Value::Dict* dict = expected.EnsureDict("policyValues")
-                                ->EnsureDict(category)
-                                ->EnsureDict("policies")
-                                ->EnsureDict(name.c_str());
-  dict->Set("level", level);
-  dict->Set("scope", scope);
-  dict->Set("source", source);
-  if (!error.empty())
-    dict->Set("error", error);
-  if (!warning.empty())
-    dict->Set("warning", warning);
-  if (ignored)
-    dict->Set("ignored", ignored);
-  dict->Set("value", value.Clone());
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-// The temporary directory and file paths for policy saving.
-base::ScopedTempDir export_policies_test_dir;
-base::FilePath export_policies_test_file_path;
-
 }  // namespace
 
 class PolicyUITest : public PlatformBrowserTest {
@@ -246,58 +190,12 @@ class PolicyUITest : public PlatformBrowserTest {
 
   void VerifyReportButton(bool visible);
 
-  void VerifyExportingPolicies(const base::Value::Dict& expected);
-
   content::WebContents* web_contents() {
     return chrome_test_utils::GetActiveWebContents(this);
   }
 
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 };
-
-#if !BUILDFLAG(IS_ANDROID)
-// An artificial SelectFileDialog that immediately returns the location of test
-// file instead of showing the UI file picker.
-class TestSelectFileDialog : public ui::SelectFileDialog {
- public:
-  TestSelectFileDialog(ui::SelectFileDialog::Listener* listener,
-                       std::unique_ptr<ui::SelectFilePolicy> policy)
-      : ui::SelectFileDialog(listener, std::move(policy)) {}
-
-  void SelectFileImpl(Type type,
-                      const std::u16string& title,
-                      const base::FilePath& default_path,
-                      const FileTypeInfo* file_types,
-                      int file_type_index,
-                      const base::FilePath::StringType& default_extension,
-                      gfx::NativeWindow owning_window,
-                      void* params,
-                      const GURL* caller) override {
-    listener_->FileSelected(export_policies_test_file_path, 0, nullptr);
-  }
-
-  bool IsRunning(gfx::NativeWindow owning_window) const override {
-    return false;
-  }
-
-  void ListenerDestroyed() override { listener_ = nullptr; }
-
-  bool HasMultipleFileTypeChoicesImpl() override { return false; }
-
- private:
-  ~TestSelectFileDialog() override = default;
-};
-
-// A factory associated with the artificial file picker.
-class TestSelectFileDialogFactory : public ui::SelectFileDialogFactory {
- private:
-  ui::SelectFileDialog* Create(
-      ui::SelectFileDialog::Listener* listener,
-      std::unique_ptr<ui::SelectFilePolicy> policy) override {
-    return new TestSelectFileDialog(listener, std::move(policy));
-  }
-};
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 PolicyUITest::PolicyUITest() {
 #if BUILDFLAG(IS_ANDROID)
@@ -315,12 +213,6 @@ void PolicyUITest::SetUpInProcessBrowserTestFixture() {
                               /*is_first_policy_load_complete_return=*/true);
   policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
   policy::PushProfilePolicyConnectorProviderForTesting(&provider_);
-
-  // Create a directory for testing exporting policies.
-  ASSERT_TRUE(export_policies_test_dir.CreateUniqueTempDir());
-  const std::string filename = "policy.json";
-  export_policies_test_file_path =
-      export_policies_test_dir.GetPath().AppendASCII(filename);
 }
 
 void PolicyUITest::UpdateProviderPolicyForNamespace(
@@ -386,206 +278,6 @@ void PolicyUITest::VerifyReportButton(bool visible) {
   EXPECT_FALSE(ret != "none");
 #endif
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-void PolicyUITest::VerifyExportingPolicies(const base::Value::Dict& expected) {
-  // Set SelectFileDialog to use our factory.
-  ui::SelectFileDialog::SetFactory(
-      std::make_unique<TestSelectFileDialogFactory>());
-
-  // Navigate to the about:policy page.
-  ASSERT_TRUE(
-      content::NavigateToURL(web_contents(), GURL(chrome::kChromeUIPolicyURL)));
-
-  // Click on 'save policies' button.
-  const std::string javascript =
-      "document.getElementById('export-policies').click()";
-  EXPECT_TRUE(content::ExecJs(web_contents(), javascript));
-
-  base::ThreadPoolInstance::Get()->FlushForTesting();
-  // Open the created file.
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  std::string file_contents;
-  EXPECT_TRUE(
-      base::ReadFileToString(export_policies_test_file_path, &file_contents));
-
-  absl::optional<base::Value> value = base::JSONReader::Read(file_contents);
-
-  // Check that the file contains a valid dictionary.
-  EXPECT_TRUE(value);
-  base::Value::Dict* dict = value->GetIfDict();
-  EXPECT_TRUE(dict);
-
-  // Since Chrome Metadata has a lot of variations based on platform, OS,
-  // architecture and version, it is difficult to test for exact values. Test
-  // instead that the same keys exist in the meta data and also that the type of
-  // all the keys is a string. The incoming |expected| value should already be
-  // filled with the expected keys.
-  base::Value::Dict* chrome_metadata = dict->FindDict("chromeMetadata");
-  EXPECT_NE(chrome_metadata, nullptr);
-
-  // The |chrome_metadata| we compare against will have the actual values so
-  // those will be cleared to empty values so that the equals comparison below
-  // will just compare key existence and value types.
-  for (auto key_value : *chrome_metadata)
-    key_value.second = base::Value(key_value.second.type());
-
-  // Since policy management status can have variable information based on the
-  // test bot(e.g., AD joined bot can have updater domain information), it is
-  // difficult to test for exact values. Test instead that the same key,
-  // "status" exist and also that the type of it is a dictionary. The incoming
-  // |expected| value should already have a "status" key with an empty
-  // dictionary value.
-  base::Value::Dict* status = dict->FindDict("status");
-  EXPECT_NE(status, nullptr);
-  status->clear();
-
-  // Check that this dictionary is the same as expected.
-  EXPECT_EQ(expected, *dict);
-}
-
-#if !defined(NDEBUG) ||                                          \
-    (BUILDFLAG(IS_LINUX) &&                                      \
-     (BUILDFLAG(CFI_CAST_CHECK) || BUILDFLAG(CFI_ICALL_CHECK) || \
-      BUILDFLAG(CFI_ENFORCEMENT_TRAP) ||                         \
-      BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC)))
-// Slow in debug and CFI builds crbug.com/1338642
-#define MAYBE_WritePoliciesToJSONFile DISABLED_WritePoliciesToJSONFile
-#else
-#define MAYBE_WritePoliciesToJSONFile WritePoliciesToJSONFile
-#endif
-IN_PROC_BROWSER_TEST_F(PolicyUITest, MAYBE_WritePoliciesToJSONFile) {
-  // Set policy values and generate expected dictionary.
-  policy::PolicyMap values;
-  base::Value::Dict expected_values;
-  InitPolicyCategory(expected_values, "chrome", "Chrome Policies");
-  SetChromeMetaData(expected_values);
-  expected_values.FindDict("policyValues")
-      ->Set("extensions", base::Value::Dict());
-
-  auto popups_blocked_for_urls = base::Value::List().Append("aaa");
-  popups_blocked_for_urls.Append("bbb");
-  popups_blocked_for_urls.Append("ccc");
-  values.Set(policy::key::kPopupsBlockedForUrls, policy::POLICY_LEVEL_MANDATORY,
-             policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_PLATFORM,
-             base::Value(popups_blocked_for_urls.Clone()), nullptr);
-  SetExpectedPolicy(expected_values, "chrome",
-                    policy::key::kPopupsBlockedForUrls, "mandatory", "machine",
-                    "platform", std::string(), std::string(), false,
-                    base::Value(popups_blocked_for_urls.Clone()));
-
-  values.Set(policy::key::kDefaultImagesSetting, policy::POLICY_LEVEL_MANDATORY,
-             policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
-             base::Value(2), nullptr);
-  SetExpectedPolicy(expected_values, "chrome",
-                    policy::key::kDefaultImagesSetting, "mandatory", "machine",
-                    "cloud", std::string(), std::string(), false,
-                    base::Value(2));
-
-  // This also checks that we save complex policies correctly.
-  base::Value::Dict unknown_policy;
-  base::Value::Dict* body = unknown_policy.EnsureDict("body");
-  body->Set("first", 0);
-  body->Set("second", true);
-  unknown_policy.Set("head", 12);
-  const std::string kUnknownPolicy = "NoSuchThing";
-  values.Set(kUnknownPolicy, policy::POLICY_LEVEL_RECOMMENDED,
-             policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-             base::Value(unknown_policy.Clone()), nullptr);
-  SetExpectedPolicy(expected_values, "chrome", kUnknownPolicy, "recommended",
-                    "user", "cloud",
-                    l10n_util::GetStringUTF8(IDS_POLICY_UNKNOWN), std::string(),
-                    false, base::Value(std::move(unknown_policy)));
-
-  expected_values.Set("status", base::Value::Dict());
-
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  InitPolicyCategory(expected_values, "updater", "Google Update Policies");
-#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-#if !BUILDFLAG(IS_CHROMEOS)
-  InitPolicyCategory(expected_values, "precedence", "Policy Precedence");
-  // Set the default precedence order.
-  base::Value::List precedence_order;
-  precedence_order.Append("Platform machine");
-  precedence_order.Append("Cloud machine");
-  precedence_order.Append("Platform user");
-  precedence_order.Append("Cloud user");
-  expected_values.FindDict("policyValues")
-      ->FindDict("precedence")
-      ->Set("precedenceOrder", std::move(precedence_order));
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
-  provider_.UpdateChromePolicy(values);
-
-  // Check writing those policies to a newly created file.
-  VerifyExportingPolicies(expected_values);
-
-  // Change policy values.
-  values.Erase(policy::key::kDefaultImagesSetting);
-  expected_values.RemoveByDottedPath(
-      std::string("policyValues.chrome.policies.") +
-      std::string(policy::key::kDefaultImagesSetting));
-
-  popups_blocked_for_urls.Append("ddd");
-  values.Set(policy::key::kPopupsBlockedForUrls, policy::POLICY_LEVEL_MANDATORY,
-             policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_PLATFORM,
-             base::Value(popups_blocked_for_urls.Clone()), nullptr);
-  SetExpectedPolicy(expected_values, "chrome",
-                    policy::key::kPopupsBlockedForUrls, "mandatory", "machine",
-                    "platform", std::string(), std::string(), false,
-                    base::Value(popups_blocked_for_urls.Clone()));
-
-#if !BUILDFLAG(IS_CHROMEOS)
-  values.Set(policy::key::kCloudPolicyOverridesPlatformPolicy,
-             policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
-             policy::POLICY_SOURCE_PLATFORM, base::Value(true), nullptr);
-  SetExpectedPolicy(expected_values, "chrome",
-                    policy::key::kCloudPolicyOverridesPlatformPolicy,
-                    "mandatory", "machine", "platform", std::string(),
-                    std::string(), false, base::Value(true));
-  SetExpectedPolicy(expected_values, "precedence",
-                    policy::key::kCloudPolicyOverridesPlatformPolicy,
-                    "mandatory", "machine", "platform", std::string(),
-                    std::string(), false, base::Value(true));
-
-  // Update the precedence order since cloud machine policies now override
-  // platform machine policies due to policy CloudPolicyOverridesPlatformPolicy.
-  base::Value::List precedence_order_updated;
-  precedence_order_updated.Append("Cloud machine");
-  precedence_order_updated.Append("Platform machine");
-  precedence_order_updated.Append("Platform user");
-  precedence_order_updated.Append("Cloud user");
-  expected_values.FindDict("policyValues")
-      ->FindDict("precedence")
-      ->Set("precedenceOrder", std::move(precedence_order_updated));
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
-  provider_.UpdateChromePolicy(values);
-
-  // Check writing changed policies to the same file (should overwrite the
-  // contents).
-  VerifyExportingPolicies(expected_values);
-
-#if !BUILDFLAG(IS_CHROMEOS)
-  // This also checks that we do not bypass the policy that blocks file
-  // selection dialogs. This is a desktop only policy.
-  values.Set(policy::key::kAllowFileSelectionDialogs,
-             policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
-             policy::POLICY_SOURCE_PLATFORM, base::Value(false), nullptr);
-
-  popups_blocked_for_urls.Append("eeeeee");
-  values.Set(policy::key::kPopupsBlockedForUrls, policy::POLICY_LEVEL_MANDATORY,
-             policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_PLATFORM,
-             base::Value(popups_blocked_for_urls.Clone()), nullptr);
-  provider_.UpdateChromePolicy(values);
-
-  // Check writing changed policies did not overwrite the exported policies
-  // because the file selection dialog is not allowed.
-  VerifyExportingPolicies(expected_values);
-#endif
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class PolicyUIStatusTest : public MixinBasedInProcessBrowserTest {
