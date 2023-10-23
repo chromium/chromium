@@ -32,11 +32,11 @@ void AppDiscoveryService::GetApps(ResultType result_type,
   app_fetcher_manager_->GetApps(result_type, std::move(callback));
 }
 
-void AppDiscoveryService::GetIcon(const std::string& app_id,
+void AppDiscoveryService::GetIcon(const std::string& icon_id,
                                   int32_t size_hint_in_dip,
                                   ResultType result_type,
                                   GetIconCallback callback) {
-  app_fetcher_manager_->GetIcon(app_id, size_hint_in_dip, result_type,
+  app_fetcher_manager_->GetIcon(icon_id, size_hint_in_dip, result_type,
                                 std::move(callback));
 }
 

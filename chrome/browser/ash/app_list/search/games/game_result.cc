@@ -77,7 +77,7 @@ GameResult::GameResult(Profile* profile,
 
   UpdateText(game, query);
   app_discovery_service->GetIcon(
-      game.GetAppId(), dimension_, apps::ResultType::kGameSearchCatalog,
+      game.GetIconId(), dimension_, apps::ResultType::kGameSearchCatalog,
       base::BindOnce(&GameResult::OnIconLoaded, weak_factory_.GetWeakPtr()));
   if (auto* dark_light_mode_controller = ash::DarkLightModeController::Get())
     dark_light_mode_controller->AddObserver(this);

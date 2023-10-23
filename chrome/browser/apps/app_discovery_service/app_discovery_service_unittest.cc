@@ -21,7 +21,7 @@
 
 namespace {
 
-const char kTestAppId[] = "fake_id";
+const char kTestIconId[] = "fake_id";
 const std::u16string kTestAppTitle = u"fake_title";
 
 // Test PlayApp Constants
@@ -46,10 +46,10 @@ class AppDiscoveryServiceTest : public testing::Test {
 
   void CheckResult(const Result& result,
                    AppSource source,
-                   const std::string& app_id,
+                   const std::string& icon_id,
                    const std::u16string& app_title) {
     EXPECT_EQ(result.GetAppSource(), source);
-    EXPECT_EQ(result.GetAppId(), app_id);
+    EXPECT_EQ(result.GetIconId(), icon_id);
     EXPECT_EQ(result.GetAppTitle(), app_title);
   }
 
@@ -70,8 +70,8 @@ TEST_F(AppDiscoveryServiceTest, GetAppsFromFetcherNoExtras) {
   EXPECT_TRUE(app_discovery_service);
 
   std::vector<Result> fake_results;
-  fake_results.emplace_back(
-      Result(AppSource::kTestSource, kTestAppId, kTestAppTitle, nullptr));
+  fake_results.emplace_back(AppSource::kTestSource, kTestIconId, kTestAppTitle,
+                            nullptr);
   test_fetcher()->SetResults(std::move(fake_results));
 
   app_discovery_service->GetApps(
@@ -80,7 +80,7 @@ TEST_F(AppDiscoveryServiceTest, GetAppsFromFetcherNoExtras) {
                                         DiscoveryError error) {
         EXPECT_EQ(error, DiscoveryError::kSuccess);
         EXPECT_EQ(results.size(), 1u);
-        CheckResult(results[0], AppSource::kTestSource, kTestAppId,
+        CheckResult(results[0], AppSource::kTestSource, kTestIconId,
                     kTestAppTitle);
         EXPECT_FALSE(results[0].GetSourceExtras());
       }));
@@ -97,8 +97,8 @@ TEST_F(AppDiscoveryServiceTest, GetArcAppsFromFetcher) {
       kTestPlayAppPackageName, kTestIconUrl, kTestPlayAppCategory,
       kTestPlayAppDescription, kTestPlayAppContentRating, kTestIconUrl, true,
       false, false, false);
-  fake_results.emplace_back(Result(AppSource::kPlay, kTestAppId, kTestAppTitle,
-                                   std::move(play_extras)));
+  fake_results.emplace_back(AppSource::kPlay, kTestIconId, kTestAppTitle,
+                            std::move(play_extras));
   test_fetcher()->SetResults(std::move(fake_results));
 
   app_discovery_service->GetApps(
@@ -108,7 +108,7 @@ TEST_F(AppDiscoveryServiceTest, GetArcAppsFromFetcher) {
         EXPECT_EQ(error, DiscoveryError::kSuccess);
         GURL kTestIconUrl(kTestPlayAppIconUrl);
         EXPECT_EQ(results.size(), 1u);
-        CheckResult(results[0], AppSource::kPlay, kTestAppId, kTestAppTitle);
+        CheckResult(results[0], AppSource::kPlay, kTestIconId, kTestAppTitle);
         EXPECT_TRUE(results[0].GetSourceExtras());
         auto* play_extras = results[0].GetSourceExtras()->AsPlayExtras();
         EXPECT_TRUE(play_extras);
@@ -131,8 +131,8 @@ TEST_F(AppDiscoveryServiceTest, RegisterForUpdates) {
   EXPECT_TRUE(app_discovery_service);
 
   std::vector<Result> fake_results;
-  fake_results.emplace_back(
-      Result(AppSource::kTestSource, kTestAppId, kTestAppTitle, nullptr));
+  fake_results.emplace_back(AppSource::kTestSource, kTestIconId, kTestAppTitle,
+                            nullptr);
 
   bool update_verified = false;
   subscription_ = app_discovery_service->RegisterForAppUpdates(
@@ -140,7 +140,7 @@ TEST_F(AppDiscoveryServiceTest, RegisterForUpdates) {
       base::BindLambdaForTesting(
           [this, &update_verified](const std::vector<Result>& results) {
             EXPECT_EQ(results.size(), 1u);
-            CheckResult(results[0], AppSource::kTestSource, kTestAppId,
+            CheckResult(results[0], AppSource::kTestSource, kTestIconId,
                         kTestAppTitle);
             EXPECT_FALSE(results[0].GetSourceExtras());
             update_verified = true;

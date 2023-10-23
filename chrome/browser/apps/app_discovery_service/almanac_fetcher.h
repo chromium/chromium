@@ -34,7 +34,7 @@ class AlmanacFetcher : public AppFetcher {
   base::CallbackListSubscription RegisterForAppUpdates(
       RepeatingResultCallback callback) override;
 
-  void GetIcon(const std::string& app_id,
+  void GetIcon(const std::string& icon_id,
                int32_t size_hint_in_dip,
                GetIconCallback callback) override;
 
