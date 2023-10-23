@@ -17,16 +17,6 @@ namespace features {
 // Enable the policy test page at chrome://policy/test.
 POLICY_EXPORT BASE_DECLARE_FEATURE(kEnablePolicyTestPage);
 
-#if BUILDFLAG(IS_ANDROID)
-// Enable comma-separated strings for list policies on Android.
-// Enabled by default, to be used as a kill switch.
-POLICY_EXPORT BASE_DECLARE_FEATURE(
-    kListPoliciesAcceptCommaSeparatedStringsAndroid);
-
-// Enable SafeSitesFilterBehavior policy on Android.
-POLICY_EXPORT BASE_DECLARE_FEATURE(kSafeSitesFilterBehaviorPolicyAndroid);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 }  // namespace features
 }  // namespace policy
 

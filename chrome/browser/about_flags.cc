@@ -10162,15 +10162,6 @@ const FeatureEntry kFeatureEntries[] = {
          password_manager::features::kEnablePasswordsAccountStorage)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"safe-sites-filter-behavior-policy-android",
-     flag_descriptions::kSafeSitesFilterBehaviorPolicyAndroidName,
-     flag_descriptions::kSafeSitesFilterBehaviorPolicyAndroidDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         policy::features::kSafeSitesFilterBehaviorPolicyAndroid)},
-#endif
-
 #if BUILDFLAG(IS_WIN)
     {"cloud-ap-auth-attach-as-header",
      flag_descriptions::kCloudApAuthAttachAsHeaderName,

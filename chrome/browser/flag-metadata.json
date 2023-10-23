@@ -6810,11 +6810,6 @@
     "expiry_milestone": 122
   },
   {
-    "name": "safe-sites-filter-behavior-policy-android",
-    "owners": ["ftirelo@chromium.org"],
-    "expiry_milestone": 123
-  },
-  {
     "name": "safety-check-extensions",
     "owners": [
       "zackhan@chromium.org",
