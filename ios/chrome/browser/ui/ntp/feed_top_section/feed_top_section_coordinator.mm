@@ -122,13 +122,19 @@
       self.isSigninPromoVisibleOnScreen == visible) {
     return;
   }
+  // Early return if the current promo State is SigninPromoViewState::kClosed
+  // since the visibility shouldn't be updated if the Promo has been closed.
+  // TODO(b/1494171): Update visibility methods to properlyhandle close actions.
+  if (self.signinPromoMediator.signinPromoViewState ==
+      SigninPromoViewState::kClosed) {
+    return;
+  }
   if (visible) {
     [self.signinPromoMediator signinPromoViewIsVisible];
-    self.isSigninPromoVisibleOnScreen = visible;
   } else {
     [self.signinPromoMediator signinPromoViewIsHidden];
-    self.isSigninPromoVisibleOnScreen = visible;
   }
+  self.isSigninPromoVisibleOnScreen = visible;
 }
 
 #pragma mark - SigninPresenter
