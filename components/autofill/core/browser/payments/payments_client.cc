@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/payments/account_info_getter.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_details_for_enrollment_request.h"
+#include "components/autofill/core/browser/payments/payments_requests/get_iban_upload_details_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_unmask_details_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_upload_details_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/opt_change_request.h"
@@ -327,6 +328,19 @@ void PaymentsClient::UploadCard(
   IssueRequest(std::make_unique<UploadCardRequest>(
       request_details,
       account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
+      std::move(callback)));
+}
+
+void PaymentsClient::GetIbanUploadDetails(
+    const std::string& app_locale,
+    int64_t billing_customer_number,
+    int billable_service_number,
+    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+                            const std::u16string&,
+                            std::unique_ptr<base::Value::Dict>)> callback) {
+  IssueRequest(std::make_unique<GetIbanUploadDetailsRequest>(
+      account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
+      app_locale, billing_customer_number, billable_service_number,
       std::move(callback)));
 }
 
