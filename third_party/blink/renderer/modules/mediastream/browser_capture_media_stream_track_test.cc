@@ -93,7 +93,7 @@ TEST_F(BrowserCaptureMediaStreamTrackTest, CropToOnValidIdResultFirst) {
   std::unique_ptr<MockMediaStreamVideoSource> media_stream_video_source =
       MakeMockMediaStreamVideoSource();
 
-  EXPECT_CALL(*media_stream_video_source, GetNextCropVersion)
+  EXPECT_CALL(*media_stream_video_source, GetNextSubCaptureTargetVersion)
       .Times(1)
       .WillOnce(Return(absl::optional<uint32_t>(1)));
 
@@ -115,7 +115,8 @@ TEST_F(BrowserCaptureMediaStreamTrackTest, CropToOnValidIdResultFirst) {
                         WTF::String(valid_id.AsLowercaseString())),
                     v8_scope.GetExceptionState());
 
-  track->OnCropVersionObservedForTesting(/*crop_version=*/1);
+  track->OnSubCaptureTargetVersionObservedForTesting(
+      /*sub_capture_target_version=*/1);
 
   ScriptPromiseTester script_promise_tester(v8_scope.GetScriptState(), promise);
   script_promise_tester.WaitUntilSettled();
@@ -134,7 +135,7 @@ TEST_F(BrowserCaptureMediaStreamTrackTest,
   std::unique_ptr<MockMediaStreamVideoSource> media_stream_video_source =
       MakeMockMediaStreamVideoSource();
 
-  EXPECT_CALL(*media_stream_video_source, GetNextCropVersion)
+  EXPECT_CALL(*media_stream_video_source, GetNextSubCaptureTargetVersion)
       .Times(1)
       .WillOnce(Return(absl::optional<uint32_t>(1)));
 
@@ -156,7 +157,8 @@ TEST_F(BrowserCaptureMediaStreamTrackTest,
                         WTF::String(valid_id.AsLowercaseString())),
                     v8_scope.GetExceptionState());
 
-  track->OnCropVersionObservedForTesting(/*crop_version=*/1);
+  track->OnSubCaptureTargetVersionObservedForTesting(
+      /*sub_capture_target_version=*/1);
 
   ScriptPromiseTester script_promise_tester(v8_scope.GetScriptState(), promise);
   script_promise_tester.WaitUntilSettled();
@@ -168,7 +170,7 @@ TEST_F(BrowserCaptureMediaStreamTrackTest,
 }
 
 TEST_F(BrowserCaptureMediaStreamTrackTest,
-       CropToRejectsIfSourceReturnsNulloptForNextCropVersion) {
+       CropToRejectsIfSourceReturnsNulloptForNextSubCaptureTargetVersion) {
   V8TestingScope v8_scope;
 
   const base::Uuid valid_id = base::Uuid::GenerateRandomV4();
@@ -176,7 +178,7 @@ TEST_F(BrowserCaptureMediaStreamTrackTest,
   std::unique_ptr<MockMediaStreamVideoSource> media_stream_video_source =
       MakeMockMediaStreamVideoSource();
 
-  EXPECT_CALL(*media_stream_video_source, GetNextCropVersion)
+  EXPECT_CALL(*media_stream_video_source, GetNextSubCaptureTargetVersion)
       .Times(1)
       .WillOnce(Return(absl::nullopt));
 

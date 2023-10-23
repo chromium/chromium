@@ -432,7 +432,8 @@ class PepperMediaStreamVideoTrackHost::VideoSource final
   void StartSourceImpl(
       blink::VideoCaptureDeliverFrameCB frame_callback,
       blink::EncodedVideoFrameCB encoded_frame_callback,
-      blink::VideoCaptureCropVersionCB crop_version_callback,
+      blink::VideoCaptureSubCaptureTargetVersionCB
+          sub_capture_target_version_callback,
       blink::VideoCaptureNotifyFrameDroppedCB frame_dropped_callback) final {
     if (host_) {
       host_->frame_deliverer_ =

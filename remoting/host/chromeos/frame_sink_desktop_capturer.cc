@@ -126,7 +126,7 @@ bool FrameSinkDesktopCapturer::SelectSource(SourceId id) {
   video_capturer_->ChangeTarget(
       viz::VideoCaptureTarget(ash_->GetFrameSinkId(source_display_id_),
                               scoped_window_capture_request_.GetCaptureId()),
-      /*crop_version=*/0);
+      /*sub_capture_target_version=*/0);
   return true;
 }
 

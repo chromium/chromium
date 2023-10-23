@@ -288,7 +288,7 @@ class TestMediaStreamDispatcherHost
   void FocusCapturedSurface(const std::string& label, bool focus) override {}
   void Crop(const base::UnguessableToken& device_id,
             const base::Token& crop_id,
-            uint32_t crop_version,
+            uint32_t sub_capture_target_version,
             CropCallback callback) override {}
 #endif
 

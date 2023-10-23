@@ -349,10 +349,12 @@ void BroadcastingReceiver::OnFrameDropped(
   }
 }
 
-void BroadcastingReceiver::OnNewCropVersion(uint32_t crop_version) {
+void BroadcastingReceiver::OnNewSubCaptureTargetVersion(
+    uint32_t sub_capture_target_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& client : clients_) {
-    client.second.client()->OnNewCropVersion(crop_version);
+    client.second.client()->OnNewSubCaptureTargetVersion(
+        sub_capture_target_version);
   }
 }
 

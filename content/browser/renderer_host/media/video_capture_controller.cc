@@ -558,15 +558,17 @@ void VideoCaptureController::OnFrameDropped(
   }
 }
 
-void VideoCaptureController::OnNewCropVersion(uint32_t crop_version) {
+void VideoCaptureController::OnNewSubCaptureTargetVersion(
+    uint32_t sub_capture_target_version) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  EmitLogMessage(base::StringPrintf("%s(%u)", __func__, crop_version), 3);
+  EmitLogMessage(
+      base::StringPrintf("%s(%u)", __func__, sub_capture_target_version), 3);
   for (const auto& client : controller_clients_) {
     if (client->session_closed) {
       continue;
     }
-    client->event_handler->OnNewCropVersion(client->controller_id,
-                                            crop_version);
+    client->event_handler->OnNewSubCaptureTargetVersion(
+        client->controller_id, sub_capture_target_version);
   }
 }
 
@@ -738,7 +740,7 @@ void VideoCaptureController::Resume() {
 
 void VideoCaptureController::Crop(
     const base::Token& crop_id,
-    uint32_t crop_version,
+    uint32_t sub_capture_target_version,
     base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
         callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -754,7 +756,8 @@ void VideoCaptureController::Crop(
     return;
   }
 
-  launched_device_->Crop(crop_id, crop_version, std::move(callback));
+  launched_device_->Crop(crop_id, sub_capture_target_version,
+                         std::move(callback));
 }
 
 void VideoCaptureController::RequestRefreshFrame() {

@@ -210,7 +210,7 @@ class MockFrameSinkVideoCapturer : public viz::mojom::FrameSinkVideoCapturer {
   MOCK_METHOD(void,
               ChangeTarget,
               (const absl::optional<viz::VideoCaptureTarget>& target,
-               uint32_t crop_version));
+               uint32_t sub_capture_target_version));
 
   MOCK_METHOD(void,
               Start,

@@ -651,7 +651,8 @@ void CameraVideoFrameHandler::OnFrameDropped(
               << static_cast<int>(reason);
 }
 
-void CameraVideoFrameHandler::OnNewCropVersion(uint32_t crop_version) {}
+void CameraVideoFrameHandler::OnNewSubCaptureTargetVersion(
+    uint32_t sub_capture_target_version) {}
 
 void CameraVideoFrameHandler::OnFrameWithEmptyRegionCapture() {}
 

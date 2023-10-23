@@ -1453,7 +1453,7 @@ TEST(V8ScriptValueSerializerForModulesTest, TransferMediaStreamTrack) {
   EXPECT_EQ(data.content_hint,
             WebMediaStreamTrack::ContentHintType::kVideoMotion);
   EXPECT_EQ(data.ready_state, MediaStreamSource::ReadyState::kReadyStateLive);
-  EXPECT_EQ(data.crop_version, absl::optional<uint32_t>(0));
+  EXPECT_EQ(data.sub_capture_target_version, absl::optional<uint32_t>(0));
 }
 
 TEST(V8ScriptValueSerializerForModulesTest,
@@ -1485,7 +1485,7 @@ TEST(V8ScriptValueSerializerForModulesTest,
   const auto& data = mock_impl.last_argument;
   EXPECT_EQ(data.track_impl_subtype,
             MediaStreamTrack::GetStaticWrapperTypeInfo());
-  EXPECT_FALSE(data.crop_version.has_value());
+  EXPECT_FALSE(data.sub_capture_target_version.has_value());
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, TransferAudioMediaStreamTrack) {

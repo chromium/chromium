@@ -185,7 +185,8 @@ void SingleClientVideoCaptureHost::OnCaptureConfigurationChanged() {
   // Ignore this call.
 }
 
-void SingleClientVideoCaptureHost::OnNewCropVersion(uint32_t crop_version) {
+void SingleClientVideoCaptureHost::OnNewSubCaptureTargetVersion(
+    uint32_t sub_capture_target_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Ignore this call.
 }

@@ -239,7 +239,7 @@ void VideoCaptureManager::Close(
 void VideoCaptureManager::Crop(
     const base::UnguessableToken& session_id,
     const base::Token& crop_id,
-    uint32_t crop_version,
+    uint32_t sub_capture_target_version,
     base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
         callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -251,7 +251,7 @@ void VideoCaptureManager::Crop(
         media::mojom::ApplySubCaptureTargetResult::kErrorGeneric);
     return;
   }
-  controller->Crop(crop_id, crop_version, std::move(callback));
+  controller->Crop(crop_id, sub_capture_target_version, std::move(callback));
 }
 
 void VideoCaptureManager::QueueStartDevice(

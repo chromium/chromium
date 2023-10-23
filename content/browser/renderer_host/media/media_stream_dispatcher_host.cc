@@ -136,7 +136,8 @@ MediaStreamDispatcherHost::CropCallback WrapCropCallback(
          media::mojom::ApplySubCaptureTargetResult result) {
         if (result ==
             media::mojom::ApplySubCaptureTargetResult::kNonIncreasingVersion) {
-          std::move(bad_message_callback).Run("Non-increasing crop-version.");
+          std::move(bad_message_callback)
+              .Run("Non-increasing sub-capture-target-version.");
           // Intentionally avoid returning. Instead, continue execution and
           // invoke the callback. If the callback were allowed to "drop" that
           // would trigger a DCHECK in the mojom pipe.
@@ -660,7 +661,7 @@ void MediaStreamDispatcherHost::FocusCapturedSurface(const std::string& label,
 
 void MediaStreamDispatcherHost::Crop(const base::UnguessableToken& device_id,
                                      const base::Token& crop_id,
-                                     uint32_t crop_version,
+                                     uint32_t sub_capture_target_version,
                                      CropCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
@@ -681,7 +682,7 @@ void MediaStreamDispatcherHost::Crop(const base::UnguessableToken& device_id,
                      captured_id, crop_id),
       base::BindOnce(&MediaStreamDispatcherHost::OnCropValidationComplete,
                      weak_factory_.GetWeakPtr(), device_id, crop_id,
-                     crop_version,
+                     sub_capture_target_version,
                      WrapCropCallback(std::move(callback),
                                       mojo::GetBadMessageCallback())));
 }
@@ -689,7 +690,7 @@ void MediaStreamDispatcherHost::Crop(const base::UnguessableToken& device_id,
 void MediaStreamDispatcherHost::OnCropValidationComplete(
     const base::UnguessableToken& device_id,
     const base::Token& crop_id,
-    uint32_t crop_version,
+    uint32_t sub_capture_target_version,
     CropCallback callback,
     bool crop_id_passed_validation) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -701,7 +702,7 @@ void MediaStreamDispatcherHost::OnCropValidationComplete(
   }
 
   media_stream_manager_->video_capture_manager()->Crop(
-      device_id, crop_id, crop_version, std::move(callback));
+      device_id, crop_id, sub_capture_target_version, std::move(callback));
 }
 #endif
 

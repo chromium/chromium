@@ -161,7 +161,7 @@ void PushableMediaStreamVideoSource::PushFrame(
 void PushableMediaStreamVideoSource::StartSourceImpl(
     VideoCaptureDeliverFrameCB frame_callback,
     EncodedVideoFrameCB encoded_frame_callback,
-    VideoCaptureCropVersionCB crop_version_callback,
+    VideoCaptureSubCaptureTargetVersionCB sub_capture_target_version_callback,
     // The pushable media stream does not report frame drops.
     VideoCaptureNotifyFrameDroppedCB) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());

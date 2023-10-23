@@ -216,7 +216,7 @@ TEST_P(CanvasCaptureHandlerTest, GetFormatsStartAndStop) {
       params,
       base::BindRepeating(&CanvasCaptureHandlerTest::OnDeliverFrame,
                           base::Unretained(this)),
-      /*crop_version_callback=*/base::DoNothing(),
+      /*sub_capture_target_version_callback=*/base::DoNothing(),
       /*frame_dropped_callback=*/base::DoNothing(),
       base::BindRepeating(&CanvasCaptureHandlerTest::OnRunning,
                           base::Unretained(this)));
@@ -249,7 +249,7 @@ TEST_P(CanvasCaptureHandlerTest, VerifyFrame) {
       params,
       base::BindRepeating(&CanvasCaptureHandlerTest::OnVerifyDeliveredFrame,
                           base::Unretained(this), opaque_frame, width, height),
-      /*crop_version_callback=*/base::DoNothing(),
+      /*sub_capture_target_version_callback=*/base::DoNothing(),
       /*frame_dropped_callback=*/base::DoNothing(),
       base::BindRepeating(&CanvasCaptureHandlerTest::OnRunning,
                           base::Unretained(this)));
@@ -279,7 +279,7 @@ TEST_F(CanvasCaptureHandlerTest, DropAlphaDeliversOpaqueFrame) {
       base::BindRepeating(&CanvasCaptureHandlerTest::OnVerifyDeliveredFrame,
                           base::Unretained(this), /*opaque_frame=*/true, width,
                           height),
-      /*crop_version_callback=*/base::DoNothing(),
+      /*sub_capture_target_version_callback=*/base::DoNothing(),
       /*frame_dropped_callback=*/base::DoNothing(),
       base::BindRepeating(&CanvasCaptureHandlerTest::OnRunning,
                           base::Unretained(this)));

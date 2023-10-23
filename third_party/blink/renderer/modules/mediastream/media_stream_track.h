@@ -72,7 +72,7 @@ class MODULES_EXPORT MediaStreamTrack
     MediaStreamSource::ReadyState ready_state;
     // Set only if
     // track_impl_subtype->IsSubclass(BrowserCaptureMediaStreamTrack::GetStaticWrapperTypeInfo())
-    absl::optional<uint32_t> crop_version;
+    absl::optional<uint32_t> sub_capture_target_version;
   };
 
   // See SetFromTransferredStateImplForTesting in ./test/transfer_test_utils.h.

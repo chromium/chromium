@@ -669,7 +669,7 @@ bool V8ScriptValueSerializerForModules::WriteMediaStreamTrack(
       MediaStreamVideoSource* const native_source =
           MediaStreamVideoSource::GetVideoSource(source);
       DCHECK(native_source);
-      WriteUint32(native_source->GetCropVersion());
+      WriteUint32(native_source->GetSubCaptureTargetVersion());
       break;
   }
   // TODO(crbug.com/1288839): Needs to move to FinalizeTransfer?

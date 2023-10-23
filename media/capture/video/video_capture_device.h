@@ -351,8 +351,8 @@ class CAPTURE_EXPORT VideoCaptureDevice
   // Non-empty |crop_id| sets (or changes) the crop-target.
   // Empty |crop_id| reverts the capture to its original, uncropped state.
   //
-  // |crop_version| must be incremented by at least one for each call.
-  // By including it in frame's metadata, Viz informs Blink what was the
+  // |sub_capture_target_version| must be incremented by at least one for each
+  // call. By including it in frame's metadata, Viz informs Blink what was the
   // latest invocation of cropTo() before a given frame was produced.
   //
   // The callback reports success/failure. It is called on an unspecified
@@ -360,7 +360,7 @@ class CAPTURE_EXPORT VideoCaptureDevice
   // as needed.
   virtual void Crop(
       const base::Token& crop_id,
-      uint32_t crop_version,
+      uint32_t sub_capture_target_version,
       base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
           callback);
 

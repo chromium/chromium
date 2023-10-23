@@ -246,7 +246,8 @@ enum class VideoCaptureFrameDropReason {
   kRendererSinkFrameDelivererIsNotStarted = 26,
   kCropVersionNotCurrent = 27,
   kGpuMemoryBufferMapFailed = 28,
-  kMaxValue = 28
+  kSubCaptureTargetVersionNotCurrent = 29,
+  kMaxValue = kSubCaptureTargetVersionNotCurrent
 };
 
 // Assert that the int:frequency mapping is correct.

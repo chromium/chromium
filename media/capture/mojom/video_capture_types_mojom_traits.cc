@@ -1563,6 +1563,9 @@ EnumTraits<media::mojom::VideoCaptureFrameDropReason,
     case media::VideoCaptureFrameDropReason::kGpuMemoryBufferMapFailed:
       return media::mojom::VideoCaptureFrameDropReason::
           kGpuMemoryBufferMapFailed;
+    case media::VideoCaptureFrameDropReason::kSubCaptureTargetVersionNotCurrent:
+      return media::mojom::VideoCaptureFrameDropReason::
+          kSubCaptureTargetVersionNotCurrent;
   }
   NOTREACHED_NORETURN();
 }
@@ -1701,6 +1704,11 @@ bool EnumTraits<media::mojom::VideoCaptureFrameDropReason,
       return true;
     case media::mojom::VideoCaptureFrameDropReason::kGpuMemoryBufferMapFailed:
       *output = media::VideoCaptureFrameDropReason::kGpuMemoryBufferMapFailed;
+      return true;
+    case media::mojom::VideoCaptureFrameDropReason::
+        kSubCaptureTargetVersionNotCurrent:
+      *output = media::VideoCaptureFrameDropReason::
+          kSubCaptureTargetVersionNotCurrent;
       return true;
   }
   NOTREACHED_NORETURN();

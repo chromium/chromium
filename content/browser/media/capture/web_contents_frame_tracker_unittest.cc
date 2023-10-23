@@ -349,7 +349,7 @@ TEST_F(WebContentsFrameTrackerTest, NotifiesOfTargetChanges) {
   EXPECT_CALL(
       *device(),
       OnTargetChanged(absl::make_optional<viz::VideoCaptureTarget>(kNewId),
-                      /*crop_version=*/0))
+                      /*sub_capture_target_version=*/0))
       .Times(1);
 
   // The tracker doesn't actually use the frame host information, just
@@ -376,10 +376,11 @@ TEST_F(WebContentsFrameTrackerTest,
   EXPECT_CALL(*device(),
               OnTargetChanged(absl::make_optional<viz::VideoCaptureTarget>(
                                   kInitSinkId, kCropId),
-                              /*crop_version=*/1))
+                              /*sub_capture_target_version=*/1))
       .Times(1);
 
-  tracker()->Crop(kCropId, /*crop_version=*/1, std::move(callback));
+  tracker()->Crop(kCropId, /*sub_capture_target_version=*/1,
+                  std::move(callback));
 
   RunAllTasksUntilIdle();
   EXPECT_TRUE(success);
