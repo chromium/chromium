@@ -931,7 +931,8 @@ enum class PasswordNotesMigrationToOSCrypt {
   kFailedToEncrypt = 2,
   kFailedToUpdate = 3,
   kSuccess = 4,
-  kMaxValue = kSuccess,
+  kFailedToDelete = 5,
+  kMaxValue = kFailedToDelete,
 };
 
 // Records the status of the password notes migration to OSCrypt of the login db
