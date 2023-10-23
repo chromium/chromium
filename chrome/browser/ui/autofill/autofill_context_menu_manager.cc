@@ -231,6 +231,12 @@ void AutofillContextMenuManager::
     ExecuteFallbackForAutocompleteUnrecognizedCommand(
         AutofillManager& manager) {
   auto& driver = static_cast<ContentAutofillDriver&>(manager.driver());
+  if (!ShouldAddAutofillManualFallbackForAutocompleteUnrecognized(driver)) {
+    // Do nothing if the target field is not on address form field with
+    // unrecognized autocomplete attribute fillable with available data.
+    // TODO(crbug.com/1493361): Render suggestions for unclassified fields.
+    return;
+  }
   AutofillField* field = GetAutofillField(manager, driver.GetFrameToken());
   if (!field) {
     // The field should generally exist, since the fallback option is only shown
@@ -257,6 +263,15 @@ bool AutofillContextMenuManager::ShouldAddAutofillManualFallbackItem(
   if (!personal_data_manager_->IsAutofillProfileEnabled()) {
     return false;
   }
+
+  return ShouldAddAutofillManualFallbackForAutocompleteUnrecognized(driver) ||
+         base::FeatureList::IsEnabled(
+             features::kAutofillForUnclassifiedFieldsAvailable);
+}
+
+bool AutofillContextMenuManager::
+    ShouldAddAutofillManualFallbackForAutocompleteUnrecognized(
+        ContentAutofillDriver& driver) {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillFallbackForAutocompleteUnrecognized)) {
     return false;

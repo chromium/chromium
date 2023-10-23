@@ -71,6 +71,11 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   // currently focused field.
   bool ShouldAddAutofillManualFallbackItem(ContentAutofillDriver& driver);
 
+  // Checks if the currently focused field has unrecognized autocomplete but is
+  // classified and can be filled with user address data.
+  bool ShouldAddAutofillManualFallbackForAutocompleteUnrecognized(
+      ContentAutofillDriver& driver);
+
   // Emits metrics about showing the manual fallback context menu entry to the
   // user.
   void LogManualFallbackContextMenuEntryShown(ContentAutofillDriver& driver);

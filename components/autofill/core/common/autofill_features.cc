@@ -623,6 +623,13 @@ BASE_FEATURE(kAutofillGranularFillingAvailable,
              "AutofillGranularFillingAvailable",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether field filling through the context menu will be available for
+// the unclassified fields.
+// TODO(crbug.com/1493361): Clean up when launched.
+BASE_FEATURE(kAutofillForUnclassifiedFieldsAvailable,
+             "AutofillForUnclassifiedFieldsAvailable",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether testing forms using devtools will be available.
 // TODO(crbug.com/1459990): Clean up when launched.
 BASE_FEATURE(kAutofillTestFormWithDevtools,
