@@ -12172,6 +12172,24 @@
             ]
         }
     ],
+    "PasswordInfobarDisplayLength": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Sixteen_Seconds",
+                    "params": {
+                        "duration-seconds": "16"
+                    },
+                    "enable_features": [
+                        "PasswordInfobarDisplayLength"
+                    ]
+                }
+            ]
+        }
+    ],
     "PasswordManagerWidgetPromo": [
         {
             "platforms": [
