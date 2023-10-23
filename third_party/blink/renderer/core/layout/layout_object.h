@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
 #include "third_party/blink/renderer/platform/graphics/subtree_paint_property_update_reason.h"
+#include "third_party/blink/renderer/platform/graphics/visual_rect_flags.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/transform.h"
@@ -89,17 +90,6 @@ class PaintLayer;
 class StyleRequest;
 struct PaintInfo;
 struct PaintInvalidatorContext;
-
-enum VisualRectFlags {
-  kDefaultVisualRectFlags = 0,
-  kEdgeInclusive = 1 << 0,
-  // Use the GeometryMapper fast-path, if possible.
-  kUseGeometryMapper = 1 << 1,
-  // When mapping to absolute coordinates and the main frame is remote, don't
-  // apply the main frame root scroller's overflow clip.
-  kDontApplyMainFrameOverflowClip = 1 << 2,
-  kIgnoreLocalClipPath = 1 << 3,
-};
 
 enum CursorDirective { kSetCursorBasedOnStyle, kSetCursor, kDoNotSetCursor };
 

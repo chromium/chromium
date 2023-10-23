@@ -2055,7 +2055,8 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateThresholdOneOfRoot) {
 }
 
 TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateThresholdFilterOnRoot) {
-  if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+  if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled() ||
+      RuntimeEnabledFeatures::IntersectionObserverIgnoreFiltersEnabled()) {
     return;
   }
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
@@ -2099,7 +2100,8 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateThresholdFilterOnRoot) {
 
 TEST_P(IntersectionObserverTest,
        MinScrollDeltaToUpdateThresholdFilterOnTarget) {
-  if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+  if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled() ||
+      RuntimeEnabledFeatures::IntersectionObserverIgnoreFiltersEnabled()) {
     return;
   }
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
@@ -2143,7 +2145,8 @@ TEST_P(IntersectionObserverTest,
 
 TEST_P(IntersectionObserverTest,
        MinScrollDeltaToUpdateThresholdFilterOnIntermediateContainer) {
-  if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+  if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled() ||
+      RuntimeEnabledFeatures::IntersectionObserverIgnoreFiltersEnabled()) {
     return;
   }
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
@@ -2188,7 +2191,8 @@ TEST_P(IntersectionObserverTest,
 
 TEST_P(IntersectionObserverTest,
        MinScrollDeltaToUpdateThresholdFilterOnIntermediateNonContainer) {
-  if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+  if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled() ||
+      RuntimeEnabledFeatures::IntersectionObserverIgnoreFiltersEnabled()) {
     return;
   }
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));

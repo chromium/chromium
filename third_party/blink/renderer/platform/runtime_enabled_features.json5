@@ -2185,6 +2185,12 @@
       name: "InterruptComposedScrollbarDisappearance",
       status: "stable",
     },
+    // A killswitch for the change. Will remove after M120 or M121 becomes
+    // stable without no blocking bugs.
+    {
+      name: "IntersectionObserverIgnoreFilters",
+      status: "stable",
+    },
     {
       // If enabled, IntersectionObserverScrollMargin will be parsed.
       name: "IntersectionObserverScrollMargin",

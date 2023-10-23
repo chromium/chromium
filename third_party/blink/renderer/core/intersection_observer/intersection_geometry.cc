@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -310,11 +311,14 @@ void IntersectionGeometry::RootAndTarget::ComputeRelationship(
   bool has_intermediate_clippers = false;
   const LayoutObject* container = target;
   while (container != root) {
-    has_filter |= container->HasFilterInducingProperty();
+    if (!RuntimeEnabledFeatures::IntersectionObserverIgnoreFiltersEnabled()) {
+      has_filter |= container->HasFilterInducingProperty();
+    }
     // Don't check for filters if we've already found one.
     LayoutObject::AncestorSkipInfo skip_info(root, !has_filter);
     container = container->Container(&skip_info);
-    if (!has_filter) {
+    if (!RuntimeEnabledFeatures::IntersectionObserverIgnoreFiltersEnabled() &&
+        !has_filter) {
       has_filter = skip_info.FilterSkipped();
     }
     if (!container || skip_info.AncestorSkipped()) {
@@ -604,8 +608,12 @@ bool IntersectionGeometry::ClipToRoot(const LayoutObject* root,
 
   unsigned flags = kDefaultVisualRectFlags | kEdgeInclusive |
                    kDontApplyMainFrameOverflowClip;
-  if (CanUseGeometryMapper(target))
+  if (RuntimeEnabledFeatures::IntersectionObserverIgnoreFiltersEnabled()) {
+    flags |= kIgnoreFilters;
+  }
+  if (CanUseGeometryMapper(target)) {
     flags |= kUseGeometryMapper;
+  }
 
   bool does_intersect = false;
 
@@ -758,6 +766,7 @@ gfx::Vector2dF IntersectionGeometry::ComputeMinScrollDeltaToUpdate(
     return kInfiniteScrollDelta;
   }
   if (root_and_target.has_filter) {
+    DCHECK(!RuntimeEnabledFeatures::IntersectionObserverIgnoreFiltersEnabled());
     // With filters, the intersection rect can be non-empty even if root_rect_
     // and target_rect_ don't intersect.
     return gfx::Vector2dF();

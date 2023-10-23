@@ -2985,10 +2985,13 @@ bool LayoutBox::MapToVisualRectInAncestorSpaceInternal(
     TransformState& transform_state,
     VisualRectFlags visual_rect_flags) const {
   NOT_DESTROYED();
-  InflateVisualRectForFilter(transform_state);
 
   if (ancestor == this)
     return true;
+
+  if (!(visual_rect_flags & kIgnoreFilters)) {
+    InflateVisualRectForFilter(transform_state);
+  }
 
   AncestorSkipInfo skip_info(ancestor, true);
   LayoutObject* container = Container(&skip_info);
@@ -3008,7 +3011,7 @@ bool LayoutBox::MapToVisualRectInAncestorSpaceInternal(
     container_offset += AnchorPositionScrollTranslationOffset();
   }
 
-  if (skip_info.FilterSkipped()) {
+  if (skip_info.FilterSkipped() && !(visual_rect_flags & kIgnoreFilters)) {
     InflateVisualRectForFilterUnderContainer(transform_state, *container,
                                              ancestor);
   }
