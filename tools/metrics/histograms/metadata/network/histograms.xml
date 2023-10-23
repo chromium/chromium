@@ -4417,25 +4417,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NetworkService.CrossOriginResourcePolicy.ReportOnlyResult"
-    enum="NetworkServiceCorpResult" expires_after="2020-09-30">
-  <owner>mkwst@chromium.org</owner>
-  <owner>yhirano@chromium.org</owner>
-  <summary>
-    Records the result of the Cross-Origin Resource Policy check, with
-    cross-origin-embedder-policy-report-only involvement.
-  </summary>
-</histogram>
-
-<histogram name="NetworkService.CrossOriginResourcePolicy.Result"
-    enum="NetworkServiceCorpResult" expires_after="2020-09-30">
-  <owner>mkwst@chromium.org</owner>
-  <owner>yhirano@chromium.org</owner>
-  <summary>
-    Records the result of the Cross-Origin Resource Policy check.
-  </summary>
-</histogram>
-
 <histogram name="NetworkService.DeletedOldCacheData" enum="Boolean"
     expires_after="2023-11-12">
   <owner>wfh@chromium.org</owner>

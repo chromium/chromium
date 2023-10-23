@@ -77893,13 +77893,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="20" label="OWE"/>
 </enum>
 
-<enum name="NetworkServiceCorpResult">
-  <int value="0" label="success"/>
-  <int value="1" label="same-origin violation"/>
-  <int value="2" label="same-origin violation with COEP involvement"/>
-  <int value="3" label="same-site violation"/>
-</enum>
-
 <enum name="NetworkServiceCorsPreflightMethodAllowed">
   <int value="0" label="Both Disallowed"/>
   <int value="1" label="Only normalized_method allowed"/>
