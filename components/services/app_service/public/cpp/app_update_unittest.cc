@@ -517,15 +517,15 @@ class AppUpdateTest : public testing::Test {
     // LastLaunchTime tests.
 
     if (state) {
-      state->last_launch_time = base::Time::FromSecondsSinceUnixEpoch(1000.0);
-      expect_last_launch_time_ = base::Time::FromSecondsSinceUnixEpoch(1000.0);
+      state->last_launch_time = base::Time::FromSecondsSinceUnixEpoch(1000);
+      expect_last_launch_time_ = base::Time::FromSecondsSinceUnixEpoch(1000);
       expect_last_launch_time_changed_ = false;
       CheckExpects(u);
     }
 
     if (delta) {
-      delta->last_launch_time = base::Time::FromSecondsSinceUnixEpoch(1001.0);
-      expect_last_launch_time_ = base::Time::FromSecondsSinceUnixEpoch(1001.0);
+      delta->last_launch_time = base::Time::FromSecondsSinceUnixEpoch(1001);
+      expect_last_launch_time_ = base::Time::FromSecondsSinceUnixEpoch(1001);
       expect_last_launch_time_changed_ = true;
       expect_changed_ = true;
       CheckExpects(u);
@@ -541,15 +541,15 @@ class AppUpdateTest : public testing::Test {
     // InstallTime tests.
 
     if (state) {
-      state->install_time = base::Time::FromSecondsSinceUnixEpoch(2000.0);
-      expect_install_time_ = base::Time::FromSecondsSinceUnixEpoch(2000.0);
+      state->install_time = base::Time::FromSecondsSinceUnixEpoch(2000);
+      expect_install_time_ = base::Time::FromSecondsSinceUnixEpoch(2000);
       expect_install_time_changed_ = false;
       CheckExpects(u);
     }
 
     if (delta) {
-      delta->install_time = base::Time::FromSecondsSinceUnixEpoch(2001.0);
-      expect_install_time_ = base::Time::FromSecondsSinceUnixEpoch(2001.0);
+      delta->install_time = base::Time::FromSecondsSinceUnixEpoch(2001);
+      expect_install_time_ = base::Time::FromSecondsSinceUnixEpoch(2001);
       expect_install_time_changed_ = true;
       expect_changed_ = true;
       CheckExpects(u);

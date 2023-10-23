@@ -28,10 +28,6 @@ namespace autofill {
 
 namespace {
 
-const base::Time kArbitraryTime = base::Time::FromSecondsSinceUnixEpoch(25);
-const base::Time kSomeLaterTime = base::Time::FromSecondsSinceUnixEpoch(1000);
-const base::Time kMuchLaterTime = base::Time::FromSecondsSinceUnixEpoch(5000);
-
 ACTION_P(QuitMessageLoop, loop) {
   loop->Quit();
 }
