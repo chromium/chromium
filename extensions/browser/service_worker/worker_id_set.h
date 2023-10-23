@@ -8,6 +8,7 @@
 #include <set>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/extension_id.h"
 
@@ -33,6 +34,7 @@ class WorkerIdSet {
                                            int render_process_id) const;
 
   std::vector<WorkerId> GetAllForTesting() const;
+  static base::AutoReset<bool> AllowMultipleWorkersPerExtensionForTesting();
   size_t count_for_testing() const { return workers_.size(); }
 
  private:
