@@ -1075,8 +1075,13 @@ void SystemNetworkContextManager::UpdateReferrersEnabled() {
 }
 
 void SystemNetworkContextManager::UpdateIPv6ReachabilityOverrideEnabled() {
-  bool value =
+  bool is_managed = local_state_->IsManagedPreference(
+      prefs::kIPv6ReachabilityOverrideEnabled);
+  bool pref_value =
       local_state_->GetBoolean(prefs::kIPv6ReachabilityOverrideEnabled);
+  bool is_launched = base::FeatureList::IsEnabled(
+      net::features::kEnableIPv6ReachabilityOverride);
+  bool value = is_managed ? pref_value : is_launched;
   content::GetNetworkService()->SetIPv6ReachabilityOverride(value);
 }
 
