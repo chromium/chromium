@@ -64,6 +64,14 @@ BASE_FEATURE(kCrosWebAppInstallDialog,
              "CrosWebAppInstallDialog",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Enables the new UI for browser created shortcut backed by web app system
+// on Chrome OS.
+BASE_FEATURE(kCrosWebAppShortcutUiUpdate,
+             "CrosWebAppShortcutUiUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Enables the desk profiles feature.
 BASE_FEATURE(kDeskProfiles, "DeskProfiles", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -174,6 +182,15 @@ bool IsBlinkExtensionDiagnosticsEnabled() {
 
 bool IsCrosComponentsEnabled() {
   return base::FeatureList::IsEnabled(kCrosComponents) && IsJellyEnabled();
+}
+
+bool IsCrosWebAppShortcutUiUpdateEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(b/304661502): Pass the value to lacros.
+  return false;
+#else
+  return base::FeatureList::IsEnabled(kCrosWebAppShortcutUiUpdate);
+#endif
 }
 
 bool IsDeskProfilesEnabled() {

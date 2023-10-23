@@ -138,7 +138,6 @@
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
@@ -148,6 +147,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/exo/shell_surface_util.h"
@@ -6572,7 +6572,8 @@ TEST_F(ChromeShelfControllerPromiseAppsTest, SyncDataCreatesCorrectShelfItem) {
 class ChromeShelfControllerShortcutTest : public ChromeShelfControllerTest {
  public:
   ChromeShelfControllerShortcutTest() {
-    feature_list_.InitAndEnableFeature(features::kCrosWebAppShortcutUiUpdate);
+    feature_list_.InitAndEnableFeature(
+        chromeos::features::kCrosWebAppShortcutUiUpdate);
   }
   ~ChromeShelfControllerShortcutTest() override = default;
 

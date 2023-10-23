@@ -10,7 +10,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut_registry_cache.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut_update.h"
@@ -37,7 +37,7 @@ bool AppServiceShortcutIconLoader::CanLoadImageForApp(const std::string& id) {
 // static
 bool AppServiceShortcutIconLoader::CanLoadImage(Profile* profile,
                                                 const std::string& id) {
-  if (!base::FeatureList::IsEnabled(features::kCrosWebAppShortcutUiUpdate)) {
+  if (!chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
     return false;
   }
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {

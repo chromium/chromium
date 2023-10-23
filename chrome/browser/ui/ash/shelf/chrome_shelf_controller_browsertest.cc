@@ -109,6 +109,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
@@ -3088,7 +3089,7 @@ class AppServiceShortcutShelfBrowserTest : public ShelfAppBrowserTest {
  public:
   AppServiceShortcutShelfBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        features::kCrosWebAppShortcutUiUpdate);
+        chromeos::features::kCrosWebAppShortcutUiUpdate);
   }
   ~AppServiceShortcutShelfBrowserTest() override = default;
 

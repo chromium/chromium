@@ -24,7 +24,6 @@
 #include "ash/shell.h"
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -93,13 +92,13 @@
 #include "chrome/browser/ui/webui/ash/settings/app_management/app_management_uma.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
@@ -1622,7 +1621,7 @@ void ChromeShelfController::AddAppUpdaterAndIconLoader(Profile* profile) {
           std::make_unique<ShelfPromiseAppUpdater>(this, profile));
     }
 
-    if (base::FeatureList::IsEnabled(features::kCrosWebAppShortcutUiUpdate)) {
+    if (chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
       app_updaters_for_profile.emplace_back(
           std::make_unique<ShelfAppServiceShortcutUpdater>(this, profile));
     }
@@ -1641,7 +1640,7 @@ void ChromeShelfController::AddAppUpdaterAndIconLoader(Profile* profile) {
               profile, extension_misc::EXTENSION_ICON_MEDIUM, this));
     }
 
-    if (base::FeatureList::IsEnabled(features::kCrosWebAppShortcutUiUpdate)) {
+    if (chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
       app_icon_loaders_for_profile.emplace_back(
           std::make_unique<AppServiceShortcutIconLoader>(
               profile, extension_misc::EXTENSION_ICON_MEDIUM,

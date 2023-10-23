@@ -26,7 +26,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -48,6 +47,7 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/stub_notification_display_service.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/ukm/test_ukm_recorder.h"
 #endif
 
@@ -368,7 +368,7 @@ TEST_F(WebAppPublisherHelperTest, PublishPartnerSyncAppAsSync) {
 TEST_F(WebAppPublisherHelperTest, UpdateShortcutDoesNotPublishDelta) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      features::kCrosWebAppShortcutUiUpdate);
+      chromeos::features::kCrosWebAppShortcutUiUpdate);
   EXPECT_EQ(0, no_op_delegate_.num_publish_called());
   GURL shortcut_url("https://example-shortcut.com/");
   auto shortcut_id = CreateShortcut(shortcut_url, "Shortcut");
@@ -468,7 +468,7 @@ TEST_F(WebAppPublisherHelperTest, UpdateShortcutDoesPublishDelta) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
-      features::kCrosWebAppShortcutUiUpdate);
+      chromeos::features::kCrosWebAppShortcutUiUpdate);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   int expected_called_num = 0;

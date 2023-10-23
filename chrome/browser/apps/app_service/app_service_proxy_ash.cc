@@ -35,10 +35,10 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/full_restore_save_handler.h"
@@ -196,7 +196,7 @@ void AppServiceProxyAsh::Initialize() {
     promise_app_service_ = std::make_unique<apps::PromiseAppService>(
         profile_, app_registry_cache_);
   }
-  if (base::FeatureList::IsEnabled(features::kCrosWebAppShortcutUiUpdate)) {
+  if (chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
     shortcut_registry_cache_ = std::make_unique<apps::ShortcutRegistryCache>();
   }
 }
@@ -307,7 +307,7 @@ void AppServiceProxyAsh::OnApps(std::vector<AppPtr> deltas,
   // before the app gets published so that it will not create duplicated item in
   // the launcher and shelf. This should be temporary and should be removed once
   // we remove the shortcut from the web app system.
-  if (base::FeatureList::IsEnabled(features::kCrosWebAppShortcutUiUpdate)) {
+  if (chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
     for (const auto& delta : deltas) {
       if (delta->app_type == AppType::kWeb &&
           ShortcutRegistryCache()->HasShortcut(ShortcutId(delta->app_id))) {
@@ -613,7 +613,7 @@ std::unique_ptr<IconLoader::Releaser> AppServiceProxyAsh::LoadShortcutIcon(
     int32_t size_hint_in_dip,
     bool allow_placeholder_icon,
     apps::LoadIconCallback callback) {
-  if (!base::FeatureList::IsEnabled(features::kCrosWebAppShortcutUiUpdate)) {
+  if (!chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
     std::move(callback).Run(std::make_unique<IconValue>());
     return nullptr;
   }
@@ -636,7 +636,7 @@ AppServiceProxyAsh::LoadShortcutIconWithBadge(
     int32_t badge_size_hint_in_dip,
     bool allow_placeholder_icon,
     apps::LoadShortcutIconWithBadgeCallback callback) {
-  if (!base::FeatureList::IsEnabled(features::kCrosWebAppShortcutUiUpdate)) {
+  if (!chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
     std::move(callback).Run(std::make_unique<IconValue>(),
                             std::make_unique<IconValue>());
     return nullptr;

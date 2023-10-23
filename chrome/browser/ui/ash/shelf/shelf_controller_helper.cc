@@ -34,9 +34,9 @@
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
@@ -282,7 +282,7 @@ ash::AppStatus ShelfControllerHelper::ConvertPromiseStatusToAppStatus(
 // static
 bool ShelfControllerHelper::IsAppServiceShortcut(Profile* profile,
                                                  const std::string& id) {
-  return base::FeatureList::IsEnabled(features::kCrosWebAppShortcutUiUpdate) &&
+  return chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled() &&
          apps::AppServiceProxyFactory::GetForProfile(profile)
              ->ShortcutRegistryCache()
              ->HasShortcut(apps::ShortcutId(id));
