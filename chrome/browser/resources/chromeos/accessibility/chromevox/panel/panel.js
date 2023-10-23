@@ -354,34 +354,8 @@ export class Panel extends PanelInterface {
       });
 
       // Add Touch Gestures menu items.
-      if (touchScreen) {
-        const touchGestureItems = [];
-        for (const key in GestureCommandData.GESTURE_COMMAND_MAP) {
-          const command =
-              GestureCommandData.GESTURE_COMMAND_MAP[key]['command'];
-          if (!command) {
-            continue;
-          }
-
-          const gestureText =
-              Msgs.getMsg(GestureCommandData.GESTURE_COMMAND_MAP[key]['msgId']);
-          const msgForCmd =
-              GestureCommandData
-                  .GESTURE_COMMAND_MAP[key]['commandDescriptionMsgId'] ||
-              CommandStore.messageForCommand(command);
-          const titleText = Msgs.getMsg(msgForCmd);
-          touchGestureItems.push({titleText, gestureText, command});
-        }
-
-        touchGestureItems.sort(
-            (item1, item2) => item1.titleText.localeCompare(item2.titleText));
-
-        for (const item of touchGestureItems) {
-          touchMenu.addMenuItem(
-              item.titleText, '', '', item.gestureText,
-              () => BackgroundBridge.CommandHandler.onCommand(item.command),
-              item.command);
-        }
+      if (touchMenu) {
+        this.menuManager_.addTouchGestureMenuItems(touchMenu);
       }
 
       if (this.sessionState_ !== 'IN_SESSION') {

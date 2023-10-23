@@ -191,6 +191,39 @@ export class MenuManager {
     return this.searchMenu_;
   }
 
+  /** @param {!PanelMenu} touchMenu */
+  addTouchGestureMenuItems(touchMenu) {
+    const touchGestureItems = [];
+    for (const data of Object.values(GestureCommandData.GESTURE_COMMAND_MAP)) {
+      const command = data.command;
+      if (!command) {
+        continue;
+      }
+
+      const gestureText = Msgs.getMsg(data.msgId);
+      const msgForCmd = data.commandDescriptionMsgId ||
+          CommandStore.messageForCommand(command);
+      let titleText;
+      if (msgForCmd) {
+        titleText = Msgs.getMsg(msgForCmd);
+      } else {
+        console.error('No localization for: ' + command + ' (gesture)');
+        titleText = '';
+      }
+      touchGestureItems.push({titleText, gestureText, command});
+    }
+
+    touchGestureItems.sort(
+        (item1, item2) => item1.titleText.localeCompare(item2.titleText));
+
+    for (const item of touchGestureItems) {
+      touchMenu.addMenuItem(
+          item.titleText, '', '', item.gestureText,
+          () => BackgroundBridge.CommandHandler.onCommand(item.command),
+          item.command);
+    }
+  }
+
   /**
    * Advance the index of the current active menu by |delta|.
    * @param {number} delta The number to add to the active menu index.
