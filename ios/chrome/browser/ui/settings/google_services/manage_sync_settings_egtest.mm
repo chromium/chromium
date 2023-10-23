@@ -118,6 +118,22 @@ void SaveBookmark(NSString* title, NSString* url) {
   [BookmarkEarlGrey addBookmarkWithTitle:title URL:url inStorage:storageType];
 }
 
+void MatchBatchUploadRecommendationItem(int message_id,
+                                        int count,
+                                        NSString* email) {
+  NSString* text = base::SysUTF16ToNSString(
+      base::i18n::MessageFormatter::FormatWithNamedArgs(
+          l10n_util::GetStringUTF16(message_id), "count", count, "email",
+          base::SysNSStringToUTF16(email)));
+
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kBatchUploadRecommendationItemAccessibilityIdentifier),
+                     grey_accessibilityLabel(text), nil)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 }  // namespace
 
 // Integration tests using the Google services settings screen.
@@ -579,6 +595,76 @@ void SaveBookmark(NSString* title, NSString* url) {
 }
 
 // Tests that the batch upload button description in the account settings
+// contains the correct string for passwords.
+- (void)testBulkUploadDescriptionTextForPasswords {
+  // Add local data.
+  password_manager_test_utils::SavePasswordForm(@"password1", @"user1",
+                                                @"https://example1.com");
+  password_manager_test_utils::SavePasswordForm(@"password2", @"user2",
+                                                @"https://example2.com");
+
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  // Sign in with fake identity using the settings sign-in promo.
+  SignInWithPromoFromAccountSettings(fakeIdentity, /*expect_history_sync=*/YES);
+
+  // Open the "manage sync" view.
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Find and match the batch upload recommendation item text.
+  MatchBatchUploadRecommendationItem(
+      IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_PASSWORDS_ITEM, 2,
+      fakeIdentity.userEmail);
+}
+
+// Tests that the batch upload button description in the account settings
+// contains the correct string for bookmarks.
+- (void)testBulkUploadDescriptionTextForBookmarks {
+  // Add local data.
+  SaveBookmark(@"foo", @"https://www.foo.com");
+  SaveBookmark(@"bar", @"https://www.bar.com");
+
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  // Sign in with fake identity using the settings sign-in promo.
+  SignInWithPromoFromAccountSettings(fakeIdentity, /*expect_history_sync=*/YES);
+
+  // Open the "manage sync" view.
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Find and match the batch upload recommendation item text.
+  MatchBatchUploadRecommendationItem(
+      IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_ITEMS_ITEM, 2,
+      fakeIdentity.userEmail);
+}
+
+// Tests that the batch upload button description in the account settings
+// contains the correct string for reading list.
+- (void)testBulkUploadDescriptionTextForReadingList {
+  // Add local data.
+  reading_list_test_utils::AddURLToReadingList(GURL("https://example.com"));
+
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  // Sign in with fake identity using the settings sign-in promo.
+  SignInWithPromoFromAccountSettings(fakeIdentity, /*expect_history_sync=*/YES);
+
+  // Open the "manage sync" view.
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Find and match the batch upload recommendation item text.
+  MatchBatchUploadRecommendationItem(
+      IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_ITEMS_ITEM, 1,
+      fakeIdentity.userEmail);
+}
+
+// Tests that the batch upload button description in the account settings
 // contains the correct string for passwords and other data type.
 - (void)testBulkUploadDescriptionTextForPasswordsAndOthers {
   // Add local data.
@@ -587,30 +673,20 @@ void SaveBookmark(NSString* title, NSString* url) {
   reading_list_test_utils::AddURLToReadingList(GURL("https://example.com"));
   SaveBookmark(@"foo", @"https://www.foo.com");
 
-  // User is signed-in.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI waitForAppToIdle];
+  // Sign in with fake identity using the settings sign-in promo.
+  SignInWithPromoFromAccountSettings(fakeIdentity, /*expect_history_sync=*/YES);
 
   // Open the "manage sync" view.
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
-  NSString* text = base::SysUTF16ToNSString(
-      base::i18n::MessageFormatter::FormatWithNamedArgs(
-          l10n_util::GetStringUTF16(
-              IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_PASSWORDS_AND_ITEMS_ITEM),
-          "count", 1, "email",
-          base::SysNSStringToUTF16(fakeIdentity.userEmail)));
-
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(grey_accessibilityID(
-                         kBatchUploadRecommendationItemAccessibilityIdentifier),
-                     grey_accessibilityLabel(text), nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  // Find and match the batch upload recommendation item text.
+  MatchBatchUploadRecommendationItem(
+      IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_PASSWORDS_AND_ITEMS_ITEM, 1,
+      fakeIdentity.userEmail);
 }
 
 @end
