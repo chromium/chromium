@@ -58,8 +58,8 @@ class AmbientManagedSlideshowUiLauncher
  private:
   friend class AmbientAshTestBase;
 
-  // Calls update image file paths on AmbientManagedPhotoContorller. Used by
-  // the AmbientPhotoSource callback.
+  // Calls update image file paths on |AmbientManagedPhotoController|. Used by
+  // the |ScreensaverImagesPolicyHandler| callback.
   void UpdateImageFilePaths(const std::vector<base::FilePath>& path_to_images);
 
   bool ComputeReadyState();

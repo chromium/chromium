@@ -4202,8 +4202,6 @@ static_library("test_support") {
     "ambient/test/mock_ambient_view_observer.h",
     "ambient/test/test_ambient_client.cc",
     "ambient/test/test_ambient_client.h",
-    "ambient/test/test_ambient_managed_photo_source.cc",
-    "ambient/test/test_ambient_managed_photo_source.h",
     "app_list/app_list_test_api.cc",
     "app_list/test/app_list_test_helper.cc",
     "app_list/test/app_list_test_helper.h",

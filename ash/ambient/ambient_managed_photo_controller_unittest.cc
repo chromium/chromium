@@ -12,7 +12,6 @@
 #include "ash/ambient/model/ambient_slideshow_photo_config.h"
 #include "ash/ambient/test/ambient_ash_test_base.h"
 #include "ash/ambient/test/mock_ambient_backend_model_observer.h"
-#include "ash/ambient/test/test_ambient_managed_photo_source.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_paths.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
