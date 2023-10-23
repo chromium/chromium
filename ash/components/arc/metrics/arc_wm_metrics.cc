@@ -6,6 +6,8 @@
 
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/app_types_util.h"
+#include "ash/shell.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_observer.h"
 #include "base/functional/callback_forward.h"
@@ -93,6 +95,10 @@ class ArcWmMetrics::WindowStateChangeObserver
 
  private:
   void RecordWindowStateChangeDelay(ash::WindowState* state) {
+    if (ash::Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+      return;
+    }
+
     const ash::AppType app_type =
         static_cast<ash::AppType>(window_->GetProperty(aura::client::kAppType));
     if (state->IsMaximized()) {
@@ -224,6 +230,10 @@ void ArcWmMetrics::OnWindowPropertyChanged(aura::Window* window,
     return;
   }
 
+  if (ash::Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+    return;
+  }
+
   const auto new_window_show_state =
       window->GetProperty(aura::client::kShowStateKey);
   const auto old_window_show_state = static_cast<ui::WindowShowState>(old);
@@ -234,12 +244,9 @@ void ArcWmMetrics::OnWindowPropertyChanged(aura::Window* window,
     return;
   }
 
-  // When an ARC window is launched, the window show state will be changed from
-  // `SHOW_STATE_DEFAULT` to the target window state. We do not measure this
-  // case.
-  if (static_cast<ash::AppType>(window->GetProperty(aura::client::kAppType)) ==
-          ash::AppType::ARC_APP &&
-      old_window_show_state == ui::WindowShowState::SHOW_STATE_DEFAULT) {
+  if (chromeos::ToWindowShowState(
+          ash::WindowState::Get(window)->GetStateType()) ==
+      new_window_show_state) {
     return;
   }
 
