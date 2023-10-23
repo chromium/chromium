@@ -281,6 +281,9 @@ class CONTENT_EXPORT PrefetchContainer {
   void SetOnReceivedHeadCallback(base::OnceClosure on_received_head_callback);
   base::OnceClosure ReleaseOnReceivedHeadCallback();
 
+  void StartTimeoutTimer(base::TimeDelta timeout,
+                         base::OnceClosure on_timeout_callback);
+
   // Returns the head of the prefetched response. If there is no valid response,
   // then returns null.
   const network::mojom::URLResponseHead* GetHead();
@@ -584,6 +587,8 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // Called when `OnReceivedHead()` is called.
   base::OnceClosure on_received_head_callback_;
+
+  std::unique_ptr<base::OneShotTimer> timeout_timer_;
 
   base::WeakPtrFactory<PrefetchContainer> weak_method_factory_{this};
 };

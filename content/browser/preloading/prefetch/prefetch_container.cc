@@ -840,6 +840,14 @@ base::OnceClosure PrefetchContainer::ReleaseOnReceivedHeadCallback() {
   return std::move(on_received_head_callback_);
 }
 
+void PrefetchContainer::StartTimeoutTimer(
+    base::TimeDelta timeout,
+    base::OnceClosure on_timeout_callback) {
+  CHECK(!timeout_timer_);
+  timeout_timer_ = std::make_unique<base::OneShotTimer>();
+  timeout_timer_->Start(FROM_HERE, timeout, std::move(on_timeout_callback));
+}
+
 void PrefetchContainer::OnPrefetchComplete() {
   UMA_HISTOGRAM_COUNTS_100("PrefetchProxy.Prefetch.RedirectChainSize",
                            redirect_chain_.size());

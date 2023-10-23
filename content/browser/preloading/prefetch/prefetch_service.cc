@@ -968,22 +968,8 @@ void PrefetchService::TakeOwnershipOfPrefetch(
           prefetch_container->GetURL());
   DCHECK(owned_prefetch_container.get() == prefetch_container.get());
 
-  // Create callback to delete the prefetch container after
-  // |PrefetchContainerLifetimeInPrefetchService|.
-  base::TimeDelta reset_delta = PrefetchContainerLifetimeInPrefetchService();
-  std::unique_ptr<base::OneShotTimer> reset_callback = nullptr;
-  if (reset_delta.is_positive()) {
-    reset_callback = std::make_unique<base::OneShotTimer>();
-    reset_callback->Start(
-        FROM_HERE, PrefetchContainerLifetimeInPrefetchService(),
-        base::BindOnce(&PrefetchService::OnPrefetchTimeout,
-                       base::Unretained(this), prefetch_container));
-  }
-
-  // Store prefetch and callback to delete prefetch.
   owned_prefetches_[prefetch_container->GetPrefetchContainerKey()] =
-      std::make_pair(std::move(owned_prefetch_container),
-                     std::move(reset_callback));
+      std::move(owned_prefetch_container);
 }
 
 void PrefetchService::OnPrefetchTimeout(
@@ -1029,7 +1015,7 @@ void PrefetchService::EvictPrefetch(
   DCHECK(PrefetchNewLimitsEnabled());
   DCHECK(base::Contains(owned_prefetches_, prefetch_container_key));
   base::WeakPtr<PrefetchContainer> prefetch_container =
-      owned_prefetches_[prefetch_container_key].first->GetWeakPtr();
+      owned_prefetches_[prefetch_container_key]->GetWeakPtr();
   DCHECK(prefetch_container);
   prefetch_container->SetPrefetchStatus(PrefetchStatus::kPrefetchEvicted);
   ResetPrefetch(prefetch_container);
@@ -1058,6 +1044,16 @@ void PrefetchService::StartSinglePrefetch(
   }
 
   TakeOwnershipOfPrefetch(prefetch_container);
+
+  // Start timer to release the prefetch container after
+  // |PrefetchContainerLifetimeInPrefetchService|.
+  base::TimeDelta reset_delta = PrefetchContainerLifetimeInPrefetchService();
+  if (reset_delta.is_positive()) {
+    prefetch_container->StartTimeoutTimer(
+        PrefetchContainerLifetimeInPrefetchService(),
+        base::BindOnce(&PrefetchService::OnPrefetchTimeout,
+                       weak_method_factory_.GetWeakPtr(), prefetch_container));
+  }
 
   const bool is_above_limit =
       !PrefetchNewLimitsEnabled() &&
@@ -1443,7 +1439,7 @@ void PrefetchService::DumpPrefetchesForDebug() const {
 
   ss << "Owned:" << std::endl;
   for (const auto& entry : owned_prefetches_) {
-    ss << *entry.second.first << std::endl;
+    ss << *entry.second << std::endl;
   }
 
   ss << "All:" << std::endl;
