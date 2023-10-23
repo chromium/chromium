@@ -1027,11 +1027,12 @@ void RenderViewContextMenu::IssuePreconnectionToUrl(
 
   GURL anonymization_key_gurl(anonymization_key_url);
   net::SchemefulSite anonymization_key_schemeful_site(anonymization_key_gurl);
-  auto network_anonymziation_key = net::NetworkAnonymizationKey::CreateSameSite(
-      anonymization_key_schemeful_site);
+  auto network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateCrossSite(
+          anonymization_key_schemeful_site);
   loading_predictor->PreconnectURLIfAllowed(GURL(preconnect_url),
                                             /*allow_credentials=*/true,
-                                            network_anonymziation_key);
+                                            network_anonymization_key);
 }
 
 bool RenderViewContextMenu::IsInProgressiveWebApp() const {
