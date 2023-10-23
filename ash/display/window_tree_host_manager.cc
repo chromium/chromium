@@ -79,11 +79,25 @@ constexpr int kUICompositorLargeMemoryLimitMB = 1024;
 // Pixel size was chosen to trigger for 4K+ displays. See: crbug.com/1261776
 constexpr int kUICompositorMemoryLimitDisplaySizeThreshold = 3500;
 
-// An UMA signal for the current effective resolution is sent at this rate. This
-// keeps track of the effective resolution most used on internal display by the
-// user.
+// An UMA signal for the current effective resolution/dpi is sent at this rate.
+// This keeps track of the effective resolution/dpi most used on
+// internal/external display by the user.
 constexpr base::TimeDelta kEffectiveResolutionRepeatingDelay =
     base::Minutes(30);
+
+// The uma name for display effective dpi histogram. This histogram helps
+// determine the default settings of display resolution and zoom factor.
+constexpr char kInternalDisplayEffectiveDPIHistogram[] =
+    "Ash.Display.InternalDisplay.ActiveEffectiveDPI";
+constexpr char kExternalDisplayEffectiveDPIHistogram[] =
+    "Ash.Display.ExternalDisplay.ActiveEffectiveDPI";
+constexpr int kEffectiveDPIBucketSize = 5;
+// Most commonly used Chromebook internal display dpi ranges from 100 to 150. A
+// 15" 4K external display has a dpi close to 300. A 21" 8K external display's
+// dpi is around 420. Considering the display zoom factor, setting a min dpi 50
+// and max dpi 500 should cover most if not all cases.
+constexpr int kEffectiveDPIMinVal = 50;
+constexpr int kEffectiveDPIMaxVal = 500;
 
 display::DisplayManager* GetDisplayManager() {
   return Shell::Get()->display_manager();
@@ -138,6 +152,20 @@ int GetEffectiveResolutionUMAIndex(const display::Display& display) {
              : effective_size.width() * effective_size.height() - 1;
 }
 
+// Returns active effective dpi for a given active display. Returns 0 if the
+// dpi is not available.
+absl::optional<float> GetEffectiveDPI(const display::Display& display) {
+  const display::ManagedDisplayInfo& display_info =
+      GetDisplayManager()->GetDisplayInfo(display.id());
+  float dpi = display_info.device_dpi();
+  if (!dpi) {
+    return absl::nullopt;
+  }
+
+  // Apply device effective scale factor.
+  return dpi / display_info.GetEffectiveDeviceScaleFactor();
+}
+
 void RepeatingEffectiveResolutionUMA(base::RepeatingTimer* timer,
                                      bool is_first_run) {
   display::Display internal_display;
@@ -154,6 +182,26 @@ void RepeatingEffectiveResolutionUMA(base::RepeatingTimer* timer,
     base::UmaHistogramSparse(
         "Ash.Display.InternalDisplay.ActiveEffectiveResolution",
         GetEffectiveResolutionUMAIndex(internal_display));
+  }
+
+  if (session_controller->IsActiveUserSessionStarted() &&
+      session_controller->GetSessionState() ==
+          session_manager::SessionState::ACTIVE) {
+    for (const auto& display : GetDisplayManager()->active_display_list()) {
+      absl::optional<float> effective_dpi = GetEffectiveDPI(display);
+
+      // Only emit event when the dpi is valid.
+      if (effective_dpi.has_value()) {
+        size_t bucket_count = (kEffectiveDPIMaxVal - kEffectiveDPIMinVal) /
+                              kEffectiveDPIBucketSize;
+        base::UmaHistogramCustomCounts(
+            (display::IsInternalDisplayId(display.id())
+                 ? kInternalDisplayEffectiveDPIHistogram
+                 : kExternalDisplayEffectiveDPIHistogram),
+            effective_dpi.value(), kEffectiveDPIMinVal, kEffectiveDPIMaxVal,
+            bucket_count);
+      }
+    }
   }
 
   // The first run of the repeating timer is half the actual delay. Reset the
