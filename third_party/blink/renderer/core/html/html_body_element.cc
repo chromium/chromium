@@ -68,7 +68,7 @@ void HTMLBodyElement::CollectStyleForPresentationAttribute(
     AtomicString url(StripLeadingAndTrailingHTMLSpaces(value));
     if (!url.empty()) {
       CSSImageValue* image_value = MakeGarbageCollected<CSSImageValue>(
-          url, GetDocument().CompleteURL(url),
+          CSSUrlData(url, GetDocument().CompleteURL(url)),
           Referrer(GetExecutionContext()->OutgoingReferrer(),
                    GetExecutionContext()->GetReferrerPolicy()),
           OriginClean::kTrue, false /* is_ad_related */);

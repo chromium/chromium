@@ -301,6 +301,8 @@ blink_core_sources_css = [
   "css_unicode_range_value.h",
   "css_unset_value.cc",
   "css_unset_value.h",
+  "css_url_data.cc",
+  "css_url_data.h",
   "css_uri_value.cc",
   "css_uri_value.h",
   "css_value.cc",

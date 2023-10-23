@@ -1618,7 +1618,7 @@ cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenRange& range,
   }
   AtomicString url_string = url.ToAtomicString();
   return MakeGarbageCollected<cssvalue::CSSURIValue>(
-      url_string, context.CompleteNonEmptyURL(url_string));
+      CSSUrlData(url_string, context.CompleteNonEmptyURL(url_string)));
 }
 
 static bool ConsumeColorInterpolationSpace(
@@ -3003,7 +3003,8 @@ static CSSImageValue* CreateCSSImageValueWithReferrer(
     const CSSParserContext& context) {
   AtomicString raw_value = uri.ToAtomicString();
   auto* image_value = MakeGarbageCollected<CSSImageValue>(
-      raw_value, context.CompleteNonEmptyURL(raw_value), context.GetReferrer(),
+      CSSUrlData(raw_value, context.CompleteNonEmptyURL(raw_value)),
+      context.GetReferrer(),
       context.IsOriginClean() ? OriginClean::kTrue : OriginClean::kFalse,
       context.IsAdRelated());
   if (context.Mode() == kUASheetMode) {

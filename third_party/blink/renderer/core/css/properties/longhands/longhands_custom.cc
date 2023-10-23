@@ -1795,7 +1795,7 @@ const CSSValue* ClipPath::CSSValueFromComputedStyleInternal(
     }
     if (operation->GetType() == ClipPathOperation::kReference) {
       AtomicString url = To<ReferenceClipPathOperation>(operation)->Url();
-      return MakeGarbageCollected<cssvalue::CSSURIValue>(url);
+      return MakeGarbageCollected<cssvalue::CSSURIValue>(CSSUrlData(url));
     }
   }
   return CSSIdentifierValue::Create(CSSValueID::kNone);
@@ -5697,7 +5697,7 @@ const CSSValue* OffsetPath::CSSValueFromComputedStyleInternal(
         To<ReferenceOffsetPathOperation>(*operation);
     CSSValueList* list = CSSValueList::CreateSpaceSeparated();
     AtomicString url = reference_operation.Url();
-    list->Append(*MakeGarbageCollected<cssvalue::CSSURIValue>(url));
+    list->Append(*MakeGarbageCollected<cssvalue::CSSURIValue>(CSSUrlData(url)));
     CoordBox coord_box = reference_operation.GetCoordBox();
     if (coord_box != CoordBox::kBorderBox) {
       list->Append(*CSSIdentifierValue::Create(coord_box));

@@ -112,13 +112,14 @@ CSSFontFaceSrcValue::FontTechnology ValueIDToTechnology(CSSValueID valueID) {
 
 CSSValue* ConsumeFontFaceSrcURI(CSSParserTokenRange& range,
                                 const CSSParserContext& context) {
-  String url =
-      css_parsing_utils::ConsumeUrlAsStringView(range, context).ToString();
-  if (url.IsNull()) {
+  StringView url_string =
+      css_parsing_utils::ConsumeUrlAsStringView(range, context);
+  if (url_string.IsNull()) {
     return nullptr;
   }
+  AtomicString url = url_string.ToAtomicString();
   CSSFontFaceSrcValue* uri_value(CSSFontFaceSrcValue::Create(
-      url, context.CompleteNonEmptyURL(url), context.GetReferrer(),
+      CSSUrlData(url, context.CompleteNonEmptyURL(url)), context.GetReferrer(),
       context.JavascriptWorld(),
       context.IsOriginClean() ? OriginClean::kTrue : OriginClean::kFalse,
       context.IsAdRelated()));

@@ -59,7 +59,7 @@ void HTMLTablePartElement::CollectStyleForPresentationAttribute(
     String url = StripLeadingAndTrailingHTMLSpaces(value);
     if (!url.empty()) {
       CSSImageValue* image_value = MakeGarbageCollected<CSSImageValue>(
-          AtomicString(url), GetDocument().CompleteURL(url),
+          CSSUrlData(AtomicString(url), GetDocument().CompleteURL(url)),
           Referrer(GetExecutionContext()->OutgoingReferrer(),
                    GetExecutionContext()->GetReferrerPolicy()),
           OriginClean::kTrue, false /* is_ad_related */);
