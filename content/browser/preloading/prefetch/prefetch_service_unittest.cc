@@ -1221,18 +1221,18 @@ TEST_F(PrefetchServiceTest, NoPrefetchingDomainNotInAllowList) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("https://example.com"));
-
   // `IsDomainInPrefetchAllowList` returns false so we did not reach the
   // eligibility check.
   ExpectPrefetchNotEligible(histogram_tester,
                             PreloadingEligibility::kUnspecified);
+
+  Navigate(GURL("https://example.com"));
+  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
+
   absl::optional<PrefetchServingPageMetrics> serving_page_metrics =
       GetMetricsForMostRecentNavigation();
   ASSERT_TRUE(serving_page_metrics);
   EXPECT_FALSE(serving_page_metrics->prefetch_status);
-
-  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
 }
 
 class PrefetchServiceAllowAllDomainsTest : public PrefetchServiceTest {
@@ -1356,16 +1356,16 @@ TEST_F(PrefetchServiceAllowAllDomainsForExtendedPreloadingTest,
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("https://example.com"));
-
   ExpectPrefetchNotEligible(histogram_tester,
                             PreloadingEligibility::kUnspecified);
+
+  Navigate(GURL("https://example.com"));
+  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
+
   absl::optional<PrefetchServingPageMetrics> serving_page_metrics =
       GetMetricsForMostRecentNavigation();
   ASSERT_TRUE(serving_page_metrics);
   EXPECT_FALSE(serving_page_metrics->prefetch_status);
-
-  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
 }
 
 TEST_F(PrefetchServiceTest, NonProxiedPrefetchDoesNotRequireAllowList) {
