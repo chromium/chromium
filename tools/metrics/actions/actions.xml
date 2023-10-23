@@ -19771,6 +19771,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileCrossDeviceTabOpenedOrSent">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <description>
+    Recorded when a user opens a tab from another device or intentionally sends
+    a tab to another device (i.e. send tab to self). Android only.
+  </description>
+</action>
+
 <action name="MobileCustomFeedback">
   <obsolete>
     Deprecated 12/2018. CustomFeedback never shipped to 100% and is no longer
