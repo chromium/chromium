@@ -54,7 +54,7 @@ class InstallableTask {
   void OnWaitingForServiceWorker();
 
   // Evaluater.
-  void CheckEligiblity();
+  void CheckEligibility();
   void CheckInstallability();
 
   base::WeakPtr<content::WebContents> web_contents_;
@@ -69,7 +69,7 @@ class InstallableTask {
 
   enum State {
     kInactive = 0,
-    kCheckEligiblity = 1,
+    kCheckEligibility = 1,
     kFetchWebPageMetadata = 2,
     kFetchManifest = 3,
     kCheckInstallability = 4,
