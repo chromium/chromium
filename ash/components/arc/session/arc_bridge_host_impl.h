@@ -111,8 +111,6 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
       override;
   void OnKioskInstanceReady(
       mojo::PendingRemote<mojom::KioskInstance> kiosk_remote) override;
-  void OnLockScreenInstanceReady(mojo::PendingRemote<mojom::LockScreenInstance>
-                                     lock_screen_remote) override;
   void OnMediaSessionInstanceReady(
       mojo::PendingRemote<mojom::MediaSessionInstance> media_session_remote)
       override;

@@ -161,7 +161,6 @@ TEST_F(ArcBridgeHostImplTest, TestOnInstanceReady) {
     MAKE_INSTANCE_READY(Keymaster);
     MAKE_INSTANCE_READY_WITH_NAMESPACE(mojom::keymint, KeyMint);
     MAKE_INSTANCE_READY(Kiosk);
-    MAKE_INSTANCE_READY(LockScreen);
     MAKE_INSTANCE_READY(MediaSession);
     MAKE_INSTANCE_READY(Metrics);
     MAKE_INSTANCE_READY(Midis);
