@@ -2001,7 +2001,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterTimePref(prefs::kDIPSTimerLastUpdate, base::Time());
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  registry->RegisterBooleanPref(prefs::kAccessibilityPdfOcrAlwaysActive, false);
+  registry->RegisterBooleanPref(prefs::kAccessibilityPdfOcrAlwaysActive, true);
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
