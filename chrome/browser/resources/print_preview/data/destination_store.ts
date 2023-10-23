@@ -20,6 +20,7 @@ import {DestinationMatch} from './destination_match.js';
 import {ExtensionDestinationInfo, LocalDestinationInfo, parseDestination} from './local_parsers.js';
 // <if expr="is_chromeos">
 import {parseExtensionDestination} from './local_parsers.js';
+import {getStatusReasonFromPrinterStatus} from './printer_status_cros.js';
 // </if>
 
 /**
@@ -154,6 +155,8 @@ export enum DestinationStoreEventType {
       '.SELECTED_DESTINATION_CAPABILITIES_READY',
   // <if expr="is_chromeos">
   DESTINATION_EULA_READY = 'DestinationStore.DESTINATION_EULA_READY',
+  DESTINATION_PRINTER_STATUS_UPDATE =
+      'DestinationStore.DESTINATION_PRINTER_STATUS_UPDATE',
   // </if>
 }
 
@@ -982,8 +985,37 @@ export class DestinationStore extends EventTarget {
       return;
     }
 
+    // The logic in insertDestinations_() ensures only new destinations are
+    // added to the store.
     this.insertDestinations_(printers.map(
         printer => parseDestination(PrinterType.LOCAL_PRINTER, printer)));
+
+    // Parse the printer status from the LocalDestinationInfo object.
+    for (const printer of printers) {
+      this.parsePrinterStatus(printer);
+    }
+  }
+
+  // Updates the printer status for an existing destination then fires an event
+  // for updating printer status icons and text.
+  private parsePrinterStatus(destinationInfo: LocalDestinationInfo): void {
+    const printerStatus = destinationInfo.printerStatus;
+    if (!printerStatus || !printerStatus.printerId) {
+      return;
+    }
+
+    const destinationKey = createDestinationKey(
+        destinationInfo.deviceName, DestinationOrigin.CROS);
+    const existingDestination = this.destinationMap_.get(destinationKey);
+    if (existingDestination === undefined) {
+      return;
+    }
+
+    existingDestination.printerStatusReason =
+        getStatusReasonFromPrinterStatus(printerStatus);
+    this.dispatchEvent(new CustomEvent(
+        DestinationStoreEventType.DESTINATION_PRINTER_STATUS_UPDATE,
+        {detail: destinationKey}));
   }
   // </if>
 }

@@ -595,8 +595,13 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationStoreTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationStoreTest,
-                       LocalPrintersUpdatedEvent) {
-  RunTestCase("LocalPrintersUpdatedEvent");
+                       LocalPrintersUpdatedEventPrintersAdded) {
+  RunTestCase("LocalPrintersUpdatedEventPrintersAdded");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationStoreTest,
+                       LocalPrintersUpdatedEventStatusUpdate) {
+  RunTestCase("LocalPrintersUpdatedEventStatusUpdate");
 }
 #endif
 

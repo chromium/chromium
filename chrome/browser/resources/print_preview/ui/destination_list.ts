@@ -189,6 +189,18 @@ export class PrintPreviewDestinationListElement extends
   private getAriaRowindex_(index: number): number {
     return index + 1;
   }
+
+  // <if expr="is_chromeos">
+  updatePrinterStatusIcon(destinationKey: string) {
+    const index = this.matchingDestinations_.findIndex(
+        destination => destination.key === destinationKey);
+    if (index === -1) {
+      return;
+    }
+
+    this.notifyPath(`matchingDestinations_.${index}.printerStatusReason`);
+  }
+  // </if>
 }
 
 declare global {
