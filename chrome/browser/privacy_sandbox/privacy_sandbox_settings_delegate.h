@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
@@ -38,7 +39,8 @@ class PrivacySandboxSettingsDelegate
   bool HasAppropriateTopicsConsent() const override;
   bool IsSubjectToM1NoticeRestricted() const override;
   bool IsCookieDeprecationExperimentEligible() const override;
-  bool IsCookieDeprecationExperimentCurrentlyEligible() const override;
+  privacy_sandbox::TpcdExperimentEligibility
+  GetCookieDeprecationExperimentCurrentEligibility() const override;
 
 #if BUILDFLAG(IS_ANDROID)
   void OverrideWebappRegistryForTesting(
@@ -46,21 +48,6 @@ class PrivacySandboxSettingsDelegate
 #endif
 
  private:
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class TpcdExperimentEligibility {
-    kEligible = 0,
-    k3pCookiesBlocked = 1,
-    kHasNotSeenNotice = 2,
-    kNewUser = 3,
-    kEnterpriseUser = 4,
-    kPwaOrTwaInstalled = 5,  // Android only
-    kMaxValue = kPwaOrTwaInstalled,
-  };
-
-  TpcdExperimentEligibility GetCookieDeprecationExperimentCurrentEligibility()
-      const;
-
   bool PrivacySandboxRestrictedNoticeRequired() const;
   bool IsSubjectToEnterprisePolicies() const;
   raw_ptr<Profile> profile_;

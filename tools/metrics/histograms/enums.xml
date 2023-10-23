@@ -20536,6 +20536,7 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Ineligible: New user"/>
   <int value="4" label="Ineligible: Enterprise user"/>
   <int value="5" label="Ineligible: PWA or TWA installed on Android"/>
+  <int value="6" label="Eligible: Forced via kForceEligibleForTesting"/>
 </enum>
 
 <enum name="CookieEffectiveSameSite">
