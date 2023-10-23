@@ -167,13 +167,12 @@ TEST_F(FetchLaterTest, NegativeActivationTimeoutThrowRangeError) {
 
   auto* result = fetch_later_manager->FetchLater(
       scope.GetScriptState(), request->PassRequestData(scope.GetScriptState()),
-      request->signal(), /*activation_timeout=*/absl::make_optional(-1),
+      request->signal(), /*activate_after=*/absl::make_optional(-1),
       exception_state);
 
   EXPECT_THAT(result, IsNull());
-  EXPECT_THAT(
-      exception_state,
-      HasRangeError("fetchLater's activationTimeout cannot be negative."));
+  EXPECT_THAT(exception_state,
+              HasRangeError("fetchLater's activateAfter cannot be negative."));
   EXPECT_EQ(fetch_later_manager->NumLoadersForTesting(), 0u);
 }
 
@@ -196,8 +195,7 @@ TEST_F(FetchLaterTest, AbortBeforeFetchLater) {
   // Sets up a FetchLater request.
   auto* result = fetch_later_manager->FetchLater(
       scope.GetScriptState(), request->PassRequestData(scope.GetScriptState()),
-      request->signal(), /*activation_timeout_ms=*/absl::nullopt,
-      exception_state);
+      request->signal(), /*activate_after_ms=*/absl::nullopt, exception_state);
 
   EXPECT_THAT(result, IsNull());
   EXPECT_THAT(exception_state,
@@ -222,8 +220,7 @@ TEST_F(FetchLaterTest, AbortAfterFetchLater) {
   // Sets up a FetchLater request.
   auto* result = fetch_later_manager->FetchLater(
       scope.GetScriptState(), request->PassRequestData(scope.GetScriptState()),
-      request->signal(), /*activation_timeout_ms=*/absl::nullopt,
-      exception_state);
+      request->signal(), /*activate_after_ms=*/absl::nullopt, exception_state);
   EXPECT_THAT(result, Not(IsNull()));
 
   // Simulates FetchLater aborted by abort signal.
@@ -239,7 +236,7 @@ TEST_F(FetchLaterTest, AbortAfterFetchLater) {
 // Test to cover a FetchLaterManager::FetchLater() with activation timeout.
 TEST_F(FetchLaterTest, ActivationTimeout) {
   FetchLaterTestingScope scope;
-  DOMHighResTimeStamp activation_timeout_ms = 3000;
+  DOMHighResTimeStamp activate_after_ms = 3000;
   auto& exception_state = scope.GetExceptionState();
   auto target_url = AtomicString("/");
   url_test_helpers::RegisterMockedURLLoad(KURL(GetSourcePageURL() + target_url),
@@ -253,14 +250,14 @@ TEST_F(FetchLaterTest, ActivationTimeout) {
   // Sets up a FetchLater request.
   auto* result = fetch_later_manager->FetchLater(
       scope.GetScriptState(), request->PassRequestData(scope.GetScriptState()),
-      request->signal(), absl::make_optional(activation_timeout_ms),
+      request->signal(), absl::make_optional(activate_after_ms),
       exception_state);
   EXPECT_THAT(result, Not(IsNull()));
   fetch_later_manager->RecreateTimerForTesting(
       task_runner(), task_runner()->GetMockTickClock());
 
   // Triggers timer's callback by fast forwarding.
-  task_runner()->FastForwardBy(base::Milliseconds(activation_timeout_ms * 2));
+  task_runner()->FastForwardBy(base::Milliseconds(activate_after_ms * 2));
 
   EXPECT_FALSE(exception_state.HadException());
   // The FetchLaterResult held by user should still exist.
@@ -291,7 +288,7 @@ TEST_F(FetchLaterTest, ContextDestroyed) {
     result = fetch_later_manager->FetchLater(
         scope.GetScriptState(),
         request->PassRequestData(scope.GetScriptState()), request->signal(),
-        /*activation_timeout_ms=*/absl::nullopt, exception_state);
+        /*activate_after_ms=*/absl::nullopt, exception_state);
   }
   // `scope` and its execution context are destroyed.
 

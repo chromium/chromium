@@ -114,7 +114,7 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
       return nullptr;
     }
 
-    // https://whatpr.org/fetch/1647/9ca4bda...7bff4de.html#fetch-later-method
+    // https://whatpr.org/fetch/1647/9ca4bda...9994c1d.html#dom-global-fetch-later
     // Run the fetchLater(input, init) method steps:
 
     // 1. If the user-agent has determined that deferred fetching is not
@@ -136,15 +136,14 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
     probe::WillSendXMLHttpOrFetchNetworkRequest(ec, r->url());
     FetchRequestData* request_data = r->PassRequestData(script_state);
     MeasureFetchProperties(ec, request_data);
-    // 9. If init is given and init ["activationTimeout"] exists, then set
-    // `activation_timeout` to init ["activationTimeout"].
-    absl::optional<DOMHighResTimeStamp> activation_timeout =
-        (init->hasActivationTimeout()
-             ? absl::make_optional(init->activationTimeout())
-             : absl::nullopt);
-    auto* result = fetch_later_manager_->FetchLater(
-        script_state, request_data, r->signal(), activation_timeout,
-        exception_state);
+    // 6. If init is given and init ["activateAfter"] exists, then set
+    // `activate_after` to init ["activateAfter"].
+    absl::optional<DOMHighResTimeStamp> activate_after =
+        (init->hasActivateAfter() ? absl::make_optional(init->activateAfter())
+                                  : absl::nullopt);
+    auto* result = fetch_later_manager_->FetchLater(script_state, request_data,
+                                                    r->signal(), activate_after,
+                                                    exception_state);
     if (exception_state.HadException()) {
       return nullptr;
     }

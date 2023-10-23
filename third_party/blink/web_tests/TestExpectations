@@ -2667,7 +2667,7 @@ crbug.com/626703 external/wpt/css/css-fonts/parsing/font-variant-invalid.html [ 
 # Marking sending-related tests as failed until refactoring CLs are submitted.
 crbug.com/1465781 virtual/fetch-later/external/wpt/fetch/fetch-later/send-on-deactivate.tentative.https.window.html [ Failure Skip Timeout ]
 crbug.com/1465781 virtual/fetch-later/external/wpt/fetch/fetch-later/send-on-discard.tentative.https.window.html [ Failure Skip Timeout ]
-crbug.com/1465781 virtual/fetch-later/external/wpt/fetch/fetch-later/timeout.tentative.https.window.html [ Failure Skip Timeout ]
+crbug.com/1465781 virtual/fetch-later/external/wpt/fetch/fetch-later/activate-after.tentative.https.window.html [ Failure Skip Timeout ]
 
 # These tests generate baselines whose names are too long.
 crbug.com/626703 external/wpt/editing/other/insertparagraph-in-editing-host-cannot-have-div.tentative.html* [ Failure ]

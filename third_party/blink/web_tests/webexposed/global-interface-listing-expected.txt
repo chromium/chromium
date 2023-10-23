@@ -2736,6 +2736,10 @@ interface FencedFrameConfig
     getter width
     method constructor
     method setSharedStorageContext
+interface FetchLaterResult
+    attribute @@toStringTag
+    getter activated
+    method constructor
 interface File : Blob
     attribute @@toStringTag
     getter lastModified

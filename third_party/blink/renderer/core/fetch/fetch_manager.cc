@@ -951,7 +951,14 @@ void FetchLoaderBase::PerformHTTPFetch() {
   request.SetReferrerString(fetch_request_data_->ReferrerString());
   request.SetReferrerPolicy(fetch_request_data_->GetReferrerPolicy());
 
-  request.SetSkipServiceWorker(world_->IsIsolatedWorld());
+  if (IsDeferred()) {
+    // https://whatpr.org/fetch/1647/9ca4bda...9994c1d.html#request-a-deferred-fetch
+    // "Deferred fetching"
+    // 4. Set request’s service-workers mode to "none".
+    request.SetSkipServiceWorker(true);
+  } else {
+    request.SetSkipServiceWorker(world_->IsIsolatedWorld());
+  }
 
   if (fetch_request_data_->Keepalive()) {
     request.SetKeepalive(true);
@@ -1112,14 +1119,15 @@ bool FetchManager::Loader::IsDeferred() const {
   return false;
 }
 
-// A subtype of FetchLoader to handle the deferred fetching algorithm[1].
+// A subtype of FetchLoader to handle the deferred fetching algorithm [1].
 //
 // This loader and FetchManager::Loader are similar that they both runs the
 // fetching algorithm provided by the base class. However, this loader does not
-// implements any ThreadableLoader-related logic. Other differences include:
+// go down ThreadableLoader and ResourceFetcher. Rather, it creates requests via
+// a similar mojo FetchLaterLoaderFactory. Other differences include:
 //   - `IsDeferred()` is true, which helps the base generate different requests.
 //   - Expect no response after `Start()` is called.
-//   - Support activationTimeout from [2] to allow sending at specified time.
+//   - Support activateAfter from [2] to allow sending at specified time.
 //   - Support FetchLaterResult from [2].
 //
 // Underlying, this loader intends to create a "deferred" fetch request,
@@ -1132,8 +1140,10 @@ bool FetchManager::Loader::IsDeferred() const {
 // the latter method can only be called when ResourcFetcher is not detached.
 // Plus, the browser companion must be notified when the context is still alive.
 //
-// [1]: https://whatpr.org/fetch/1647/9ca4bda...7bff4de.html#deferred-fetching
-// [2]: https://whatpr.org/fetch/1647/9ca4bda...7bff4de.html#fetch-later-method
+// [1]:
+// https://whatpr.org/fetch/1647/9ca4bda...9994c1d.html#request-a-deferred-fetch
+// [2]:
+// https://whatpr.org/fetch/1647/9ca4bda...9994c1d.html#dom-global-fetch-later
 class FetchLaterManager::DeferredLoader final
     : public GarbageCollected<FetchLaterManager::DeferredLoader>,
       public FetchLoaderBase {
@@ -1143,27 +1153,15 @@ class FetchLaterManager::DeferredLoader final
                  FetchRequestData* fetch_request_data,
                  ScriptState* script_state,
                  AbortSignal* signal,
-                 const absl::optional<base::TimeDelta>& activation_timeout)
+                 const absl::optional<base::TimeDelta>& activate_after)
       : FetchLoaderBase(ec, fetch_request_data, script_state, signal),
         fetch_later_manager_(fetch_later_manager),
         fetch_later_result_(MakeGarbageCollected<FetchLaterResult>()),
-        activation_timeout_(activation_timeout),
+        activate_after_(activate_after),
         timer_(ec->GetTaskRunner(FetchLaterManager::kTaskType),
                this,
                &DeferredLoader::TimerFired) {
     base::UmaHistogramBoolean("FetchLater.Renderer.Total", true);
-
-    // https://whatpr.org/fetch/1647/9ca4bda...7bff4de.html#request-a-deferred-fetch
-    // Continued with "request a deferred fetch"
-    // 9. If `activation_timeout_` is not null, then run the following steps in
-    // parallel:
-    if (activation_timeout_.has_value()) {
-      // 9-1. The user agent should wait until `activation_timeout_`
-      // milliseconds have passed. The user agent may wait for a longer or
-      // shorter period time, e.g., to optimize batching of deferred fetches.
-      // Implementation followed by `TimerFired()`.
-      timer_.StartOneShot(*activation_timeout_, FROM_HERE);
-    }
   }
 
   FetchLaterResult* fetch_later_result() { return fetch_later_result_.Get(); }
@@ -1180,7 +1178,7 @@ class FetchLaterManager::DeferredLoader final
   }
 
   void Process() {
-    // https://whatpr.org/fetch/1647/9ca4bda...7bff4de.html#process-a-deferred-fetch
+    // https://whatpr.org/fetch/1647/9ca4bda...9994c1d.html#process-a-deferred-fetch
     // To process a deferred fetch deferredRecord:
     // 1. If deferredRecord’s invoke state is not "deferred", then return.
     if (invoke_state_ != InvokeState::DEFERRED) {
@@ -1217,8 +1215,8 @@ class FetchLaterManager::DeferredLoader final
       const base::TickClock* tick_clock) {
     timer_.Stop();
     timer_.SetTaskRunnerForTesting(std::move(task_runner), tick_clock);
-    if (activation_timeout_.has_value()) {
-      timer_.StartOneShot(*activation_timeout_, FROM_HERE);
+    if (activate_after_.has_value()) {
+      timer_.StartOneShot(*activate_after_, FROM_HERE);
     }
   }
 
@@ -1252,20 +1250,32 @@ class FetchLaterManager::DeferredLoader final
   // FetchLoaderBase overrides:
   bool IsDeferred() const override { return true; }
   void Abort() override {
-    // https://whatpr.org/fetch/1647/9ca4bda...7bff4de.html#fetch-later-method
-    // 13. Add the following abort steps to requestObject’s signal:
-    // 13-1. Set deferredRecord’s invoke state to "aborted".
+    // https://whatpr.org/fetch/1647/9ca4bda...9994c1d.html#dom-global-fetch-later
+    // 10. Add the following abort steps to requestObject’s signal:
+    // 10-1. Set deferredRecord’s invoke state to "aborted".
     SetInvokeState(InvokeState::ABORTED);
     LogFetchLaterMetric(FetchLaterRendererMetricType::kAbortedByUser);
-    // 13-2. Remove deferredRecord from request’s client’s fetch group’s
+    // 10-2. Remove deferredRecord from request’s client’s fetch group’s
     // deferred fetch records.
     // TODO(crbug.com/1465781): Implement abort function.
     NotifyFinished();
   }
+  // Triggered after `Start()`.
   void CreateLoader(
       ResourceRequest request,
       const ResourceLoaderOptions& resource_loader_options) override {
     // TODO(crbug.com/1465781): Implement via FetchLaterLoaderFactory.
+
+    // https://whatpr.org/fetch/1647/9ca4bda...9994c1d.html#request-a-deferred-fetch
+    // Continued with "request a deferred fetch"
+    // 13. If `activate_after_` is not null, then run the following steps in
+    // parallel:
+    if (activate_after_.has_value()) {
+      // 13-1. The user agent should wait until `activate_after_`
+      // milliseconds have passed,
+      // Implementation followed by `TimerFired()`.
+      timer_.StartOneShot(*activate_after_, FROM_HERE);
+    }
   }
   void Failed(const String& message,
               DOMException* dom_exception,
@@ -1286,9 +1296,9 @@ class FetchLaterManager::DeferredLoader final
 
   // Triggered by `timer_`.
   void TimerFired(TimerBase*) {
-    // https://whatpr.org/fetch/1647/9ca4bda...7bff4de.html#request-a-deferred-fetch
+    // https://whatpr.org/fetch/1647/9ca4bda...9994c1d.html#request-a-deferred-fetch
     // Continued with "request a deferred fetch":
-    // 9-2. Process a deferred fetch given deferredRecord.
+    // 13-3. Process a deferred fetch given deferredRecord.
     Process();
     NotifyFinished();
   }
@@ -1308,10 +1318,10 @@ class FetchLaterManager::DeferredLoader final
   // This field should be updated whenever `invoke_state_` changes.
   Member<FetchLaterResult> fetch_later_result_;
 
-  // The "activationTimeout" to request a deferred fetch.
+  // The "activateAfter" to request a deferred fetch.
   // https://whatpr.org/fetch/1647/9ca4bda...7bff4de.html#request-a-deferred-fetch
-  const absl::optional<base::TimeDelta> activation_timeout_;
-  // A timer to handle `activation_timeout_`.
+  const absl::optional<base::TimeDelta> activate_after_;
+  // A timer to handle `activate_after_`.
   HeapTaskRunnerTimer<DeferredLoader> timer_;
 };
 
@@ -1346,9 +1356,9 @@ FetchLaterResult* FetchLaterManager::FetchLater(
     ScriptState* script_state,
     FetchRequestData* request,
     AbortSignal* signal,
-    absl::optional<DOMHighResTimeStamp> activation_timeout_ms,
+    absl::optional<DOMHighResTimeStamp> activate_after_ms,
     ExceptionState& exception_state) {
-  // https://whatpr.org/fetch/1647/9ca4bda...7bff4de.html#fetch-later-method
+  // https://whatpr.org/fetch/1647/9ca4bda...9994c1d.html#dom-global-fetch-later
   // Continuing the fetchLater(input, init) method steps:
   CHECK(signal);
   // 3. If request’s signal is aborted, then throw signal’s abort reason.
@@ -1358,38 +1368,48 @@ FetchLaterResult* FetchLaterManager::FetchLater(
     return nullptr;
   }
 
-  // 5. If request’s URL’s scheme is not an HTTPS scheme ...
-  if (!request->Url().ProtocolIs(WTF::g_https_atom)) {
-    exception_state.ThrowTypeError("fetchLater is only supported over HTTPS.");
-    return nullptr;
-  }
-  // 6. If request’s URL is not a potentially trustworthy url ...
-  if (!network::IsUrlPotentiallyTrustworthy(GURL(request->Url()))) {
-    exception_state.ThrowSecurityError(
-        "fetchLater was passed an insecure URL.");
-    return nullptr;
-  }
-
-  absl::optional<base::TimeDelta> activation_timeout = absl::nullopt;
-  if (activation_timeout_ms.has_value()) {
-    activation_timeout = base::Milliseconds(*activation_timeout_ms);
-    // 11. If `activation_timeout` is less than 0 then throw a RangeError.
-    if (activation_timeout->is_negative()) {
+  absl::optional<base::TimeDelta> activate_after = absl::nullopt;
+  if (activate_after_ms.has_value()) {
+    activate_after = base::Milliseconds(*activate_after_ms);
+    // 8. If `activate_after` is less than 0 then throw a RangeError.
+    if (activate_after->is_negative()) {
       exception_state.ThrowRangeError(
-          "fetchLater's activationTimeout cannot be negative.");
+          "fetchLater's activateAfter cannot be negative.");
       return nullptr;
     }
   }
 
   // 12. Let deferredRecord be the result of calling request a deferred fetch
-  // given `request` and `activation_timeout`. This may throw an exception.
+  // given `request` and `activate_after`. This may throw an exception.
   //
   // "request a deferred fetch"
-  // https://whatpr.org/fetch/1647/9ca4bda...7bff4de.html#request-a-deferred-fetch
+  // https://whatpr.org/fetch/1647/9ca4bda...9994c1d.html#request-a-deferred-fetch
+
+  // 2. If request’s URL’s scheme is not an HTTPS scheme, then throw a
+  // TypeError.
+  if (!request->Url().ProtocolIs(WTF::g_https_atom)) {
+    exception_state.ThrowTypeError("fetchLater is only supported over HTTPS.");
+    return nullptr;
+  }
+  // 3. If request’s URL is not a potentially trustworthy url, then throw a
+  // "SecurityError" DOMException.
+  if (!network::IsUrlPotentiallyTrustworthy(GURL(request->Url()))) {
+    exception_state.ThrowSecurityError(
+        "fetchLater was passed an insecure URL.");
+    return nullptr;
+  }
+  // 4. Set request’s service-workers mode to "none".
+  // Done in `PerformHTTPFetch()`.
+  // 5. If request’s body is not null and request’s body’s source is null, then
+  // throw a TypeError.
+  // This disallows sending deferred fetches with a live ReadableStream.
+  // Equivalent to Step 7 below, as implementation does not set
+  // BufferByteLength() for ReadableStream.
+
   uint64_t bytes_for_origin = 0;
-  // 3. If request’s body is not null then:
+  // 7. If request’s body is not null then:
   if (request->Buffer()) {
-    // 3.1 If request’s body’s length is null, then throw a TypeError.
+    // 7-1. If request’s body’s length is null, then throw a TypeError.
     if (request->BufferByteLength() == 0) {
       UseCounter::Count(GetExecutionContext(),
                         WebFeature::kFetchLaterErrorUnknownBodyLength);
@@ -1397,10 +1417,10 @@ FetchLaterResult* FetchLaterManager::FetchLater(
           "fetchLater doesn't support body with unknown length.");
       return nullptr;
     }
-    // 3.2 Set `bytes_for_origin` to request’s body’s length.
+    // 7-2. Set `bytes_for_origin` to request’s body’s length.
     bytes_for_origin = request->BufferByteLength();
   }
-  // Run Step 5 for potential early termination. It also caps
+  // Run Step 9 below for potential early termination. It also caps
   // `bytes_per_origin`.
   if (bytes_for_origin > kMaxScheduledDeferredBytesPerOrigin) {
     UseCounter::Count(GetExecutionContext(),
@@ -1411,7 +1431,7 @@ FetchLaterResult* FetchLaterManager::FetchLater(
     return nullptr;
   }
 
-  // 4. For each deferredRecord in request’s client’s fetch group’s deferred
+  // 8. For each deferredRecord in request’s client’s fetch group’s deferred
   // fetch records: if deferredRecord’s request’s body is not null and
   // deferredRecord’s request’s URL’s origin is same origin with request’s
   // URL’s origin, then increment `bytes_for_origin` by deferredRecord’s
@@ -1422,7 +1442,7 @@ FetchLaterResult* FetchLaterManager::FetchLater(
     // the sum here is guaranteed to be <= 128 kilobytes.
     bytes_for_origin +=
         deferred_loader->GetDeferredBytesForUrlOrigin(request->Url());
-    // 5. If `bytes_for_origin` is greater than 64 kilobytes, then throw a
+    // 9. If `bytes_for_origin` is greater than 64 kilobytes, then throw a
     // QuotaExceededError.
     if (bytes_for_origin > kMaxScheduledDeferredBytesPerOrigin) {
       UseCounter::Count(GetExecutionContext(),
@@ -1435,16 +1455,16 @@ FetchLaterResult* FetchLaterManager::FetchLater(
   }
 
   request->SetDestination(network::mojom::RequestDestination::kEmpty);
-  // 6. Set request’s keepalive to true.
+  // 10. Set request’s keepalive to true.
   request->SetKeepalive(true);
 
-  // 7. Let deferredRecord be a new deferred fetch record whose request is
+  // 11. Let deferredRecord be a new deferred fetch record whose request is
   // `request`.
   auto* deferred_loader = MakeGarbageCollected<DeferredLoader>(
       GetExecutionContext(), this, request, script_state, signal,
-      activation_timeout);
-  // 8. Append deferredRecord to request’s client’s fetch group’s deferred fetch
-  // records.
+      activate_after);
+  // 12. Append deferredRecord to request’s client’s fetch group’s deferred
+  // fetch records.
   deferred_loaders_.insert(deferred_loader);
 
   deferred_loader->Start();
@@ -1492,7 +1512,7 @@ void FetchLaterManager::ContextDestroyed() {
   // https://whatpr.org/fetch/1647/9ca4bda...7bff4de.html#concept-defer=fetch-record
   // When a fetch group fetchGroup is terminated:
   // 2. process deferred fetches for fetchGroup.
-  // https://whatpr.org/fetch/1647/9ca4bda...7bff4de.html#process-deferred-fetches
+  // https://whatpr.org/fetch/1647/9ca4bda...9994c1d.html#process-deferred-fetches
   // To process deferred fetches given a fetch group fetchGroup:
   for (auto& deferred_loader : deferred_loaders_) {
     LogFetchLaterMetric(FetchLaterRendererMetricType::kContextDestroyed);

@@ -15,14 +15,14 @@ parallelPromiseTest(async t => {
 
   // Loads an iframe that creates a fetchLater request w/ short timeout.
   const iframe = await loadScriptAsIframe(`
-    fetchLater("${url}", {activationTimeout: 1000});  // 1s
+    fetchLater("${url}", {activateAfter: 1000});  // 1s
   `);
   // Deletes the iframe to trigger deferred request sending.
   document.body.removeChild(iframe);
 
   // The iframe should have sent all requests.
   await expectBeacon(uuid, {count: 1});
-}, 'fetchLater() sends out based on activationTimeout.');
+}, 'fetchLater() sends out based on activateAfter.');
 
 parallelPromiseTest(async t => {
   const uuid = token();
@@ -35,9 +35,8 @@ parallelPromiseTest(async t => {
 
   // Creates a fetchLater request with short timeout. It should be sent out
   // even if the document is then put into BFCache.
-  // only be sent on page discarded (not on entering BFCache).
   await rc1.executeScript(url => {
-    fetchLater(url, {activationTimeout: 1000});  // 1.
+    fetchLater(url, {activateAfter: 1000});  // 1s.
     // Add a pageshow listener to stash the BFCache event.
     window.addEventListener('pageshow', e => {
       window.pageshowEvent = e;
@@ -53,4 +52,4 @@ parallelPromiseTest(async t => {
   }));
 
   await expectBeacon(uuid, {count: 1});
-}, 'fetchLater() sends out based on activationTimeout, even if document is in BFCache.');
+}, 'fetchLater() sends out based on activateAfter, even if document is in BFCache.');
