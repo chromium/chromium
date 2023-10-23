@@ -2724,6 +2724,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.SaveToPhotos.ContextMenu"
+    enum="IOSSaveToPhotosContextMenuType" expires_after="2024-04-16">
+  <owner>qpubert@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <summary>
+    Logged when the user performs an action from the context menu which appears
+    after long pressing an image in a web page.
+  </summary>
+</histogram>
+
 <histogram name="IOS.SaveToPhotos.Settings" enum="IOSSaveToPhotosSettingsType"
     expires_after="2024-03-19">
   <owner>qpubert@chromium.org</owner>

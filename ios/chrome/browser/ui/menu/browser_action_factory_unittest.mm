@@ -466,7 +466,8 @@ TEST_F(BrowserActionFactoryTest, SaveImageInGooglePhotosAction) {
   UIAction* action =
       [factory actionToSaveToPhotosWithImageURL:fakeImageURL
                                        referrer:fakeImageReferrer
-                                       webState:fakeWebState.get()];
+                                       webState:fakeWebState.get()
+                                          block:nil];
 
   EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
   EXPECT_EQ(expectedImage, action.image);

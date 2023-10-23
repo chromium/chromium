@@ -142,7 +142,8 @@ TEST_F(ContextMenuConfigurationProviderTest, HasSaveImageToPhotosMenuElement) {
   UIMenuElement* expectedMenuElement =
       [actionFactory actionToSaveToPhotosWithImageURL:GURL(kImageUrl)
                                              referrer:web::Referrer()
-                                             webState:GetActiveWebState()];
+                                             webState:GetActiveWebState()
+                                                block:nil];
 
   // Test that there is an element with the expected title in the menu.
   NSUInteger indexOfFoundMenuElement =

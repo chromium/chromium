@@ -272,7 +272,8 @@
 
 - (UIAction*)actionToSaveToPhotosWithImageURL:(const GURL&)imageURL
                                      referrer:(const web::Referrer&)referrer
-                                     webState:(web::WebState*)webState {
+                                     webState:(web::WebState*)webState
+                                        block:(ProceduralBlock)block {
   __weak id<SaveToPhotosCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SaveToPhotosCommands);
   SaveImageToPhotosCommand* command =
@@ -293,6 +294,9 @@
                          image:image
                           type:MenuActionType::SaveImageToGooglePhotos
                          block:^{
+                           if (block) {
+                             block();
+                           }
                            [handler saveImageToPhotos:command];
                          }];
 }

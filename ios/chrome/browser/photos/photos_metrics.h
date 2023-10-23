@@ -8,6 +8,7 @@
 // UMA histogram names.
 extern const char kSaveToPhotosActionsHistogram[];
 extern const char kSaveToPhotosAccountPickerActionsHistogram[];
+extern const char kSaveToPhotosContextMenuActionsHistogram[];
 extern const char kSaveToPhotosSettingsActionsHistogram[];
 
 // Enum for the IOS.SaveToPhotos histogram.
@@ -37,6 +38,22 @@ enum class SaveToPhotosAccountPickerActions {
   kCancelled = 1,         // User tapped 'Cancel' in the account picker
   kSelectedIdentity = 2,  // User selected an identity in the account picker
   kMaxValue = kSelectedIdentity,
+};
+
+// Enum for the IOS.SaveToPhotos.ContextMenu histogram.
+// Keep in sync with "IOSSaveToPhotosContextMenuType"
+// in src/tools/metrics/histograms/enums.xml.
+enum class SaveToPhotosContextMenuActions {
+  kUnavailableDidSaveImageLocally =
+      0,  // "Save to Google Photos" action was unavailable and the user tapped
+          // "Save to Photos" (saved image locally)
+  kAvailableDidSaveImageLocally =
+      2,  // "Save to Google Photos" action was available but the user tapped
+          // "Save to Photos" (saved image locally)
+  kAvailableDidSaveImageToGooglePhotos =
+      3,  // "Save to Google Photos" action was available and the user tapped
+          // "Save to Google Photos"
+  kMaxValue = kAvailableDidSaveImageToGooglePhotos,
 };
 
 // Enum for the IOS.SaveToPhotos.Settings histogram.

@@ -74,10 +74,13 @@ class WebState;
 // Creates a UIAction instance for searching with Lens.
 - (UIAction*)actionToSearchWithLensWithEntryPoint:(LensEntrypoint)entryPoint;
 
-// Creates a UIAction instance for saving an image to Photos.
+// Creates a UIAction instance for saving an image to Photos. `block` will be
+// executed if the action is triggered to perform any additional action before
+// the Save to Photos UI is started.
 - (UIAction*)actionToSaveToPhotosWithImageURL:(const GURL&)url
                                      referrer:(const web::Referrer&)referrer
-                                     webState:(web::WebState*)webState;
+                                     webState:(web::WebState*)webState
+                                        block:(ProceduralBlock)block;
 
 // Creates a UIAction instance for opening a new tab.
 - (UIAction*)actionToOpenNewTab;

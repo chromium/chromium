@@ -9,5 +9,8 @@ const char kSaveToPhotosActionsHistogram[] = "IOS.SaveToPhotos";
 const char kSaveToPhotosAccountPickerActionsHistogram[] =
     "IOS.SaveToPhotos.AccountPicker";
 
+const char kSaveToPhotosContextMenuActionsHistogram[] =
+    "IOS.SaveToPhotos.ContextMenu";
+
 const char kSaveToPhotosSettingsActionsHistogram[] =
     "IOS.SaveToPhotos.Settings";

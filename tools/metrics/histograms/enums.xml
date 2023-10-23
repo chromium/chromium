@@ -56502,6 +56502,18 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="2" label="User selected an identity in the account picker"/>
 </enum>
 
+<enum name="IOSSaveToPhotosContextMenuType">
+  <int value="0"
+      label="'Save to Google Photos' action was unavailable and the user
+             tapped 'Save to Photos' (saved image locally)"/>
+  <int value="2"
+      label="'Save to Google Photos' action was available but the user tapped
+             'Save to Photos' (saved image locally)"/>
+  <int value="3"
+      label="'Save to Google Photos' action was available and the user tapped
+             'Save to Google Photos'"/>
+</enum>
+
 <enum name="IOSSaveToPhotosSettingsType">
   <int value="0"
       label="User has NOT set a default Save to Photos account and did NOT
