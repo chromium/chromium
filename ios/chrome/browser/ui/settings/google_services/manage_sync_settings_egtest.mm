@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/i18n/message_formatter.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/bookmarks/common/storage_type.h"
 #import "components/policy/policy_constants.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
@@ -10,12 +12,16 @@
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/authentication/views/views_constants.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
+#import "ios/chrome/browser/ui/reading_list/reading_list_egtest_utils.h"
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -102,6 +108,16 @@ void DismissSignOutSnackbar() {
       performAction:grey_tap()];
 }
 
+// Adds a bookmark. The storage type is determined based on if the user is
+// signed in or not.
+void SaveBookmark(NSString* title, NSString* url) {
+  bookmarks::StorageType storageType = bookmarks::StorageType::kAccount;
+  if ([SigninEarlGreyAppInterface isSignedOut]) {
+    storageType = bookmarks::StorageType::kLocalOrSyncable;
+  }
+  [BookmarkEarlGrey addBookmarkWithTitle:title URL:url inStorage:storageType];
+}
+
 }  // namespace
 
 // Integration tests using the Google services settings screen.
@@ -119,6 +135,7 @@ void DismissSignOutSnackbar() {
   } else {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
+    config.features_enabled.push_back(syncer::kSyncEnableBatchUploadLocalData);
   }
   return config;
 }
@@ -559,6 +576,41 @@ void DismissSignOutSnackbar() {
                  grey_accessibilityLabel(l10n_util::GetNSString(
                      IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON))]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that the batch upload button description in the account settings
+// contains the correct string for passwords and other data type.
+- (void)testBulkUploadDescriptionTextForPasswordsAndOthers {
+  // Add local data.
+  password_manager_test_utils::SavePasswordForm(@"password", @"user",
+                                                @"https://example.com");
+  reading_list_test_utils::AddURLToReadingList(GURL("https://example.com"));
+  SaveBookmark(@"foo", @"https://www.foo.com");
+
+  // User is signed-in.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Open the "manage sync" view.
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  NSString* text = base::SysUTF16ToNSString(
+      base::i18n::MessageFormatter::FormatWithNamedArgs(
+          l10n_util::GetStringUTF16(
+              IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_PASSWORDS_AND_ITEMS_ITEM),
+          "count", 1, "email",
+          base::SysNSStringToUTF16(fakeIdentity.userEmail)));
+
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kBatchUploadRecommendationItemAccessibilityIdentifier),
+                     grey_accessibilityLabel(text), nil)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

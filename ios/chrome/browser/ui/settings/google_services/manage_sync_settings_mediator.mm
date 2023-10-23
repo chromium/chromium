@@ -740,6 +740,8 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   item.image = CustomSymbolWithPointSize(kCloudAndArrowUpSymbol,
                                          kBatchUploadSymbolPointSize);
   item.imageViewTintColor = [UIColor colorNamed:kBlueColor];
+  item.accessibilityIdentifier =
+      kBatchUploadRecommendationItemAccessibilityIdentifier;
   return item;
 }
 
