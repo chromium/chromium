@@ -146,8 +146,6 @@ generate_grd("build_oobe_grd") {
     "images/settings_gear.svg",
     "images/cfm/enrollment.svg",
     "images/cfm/welcome.svg",
-    "images/1x/verify-account.svg",
-    "images/2x/verify-account.svg",
 
     # PNG resources
     "images/1x/thumbnail-theme-light-1x.png",
