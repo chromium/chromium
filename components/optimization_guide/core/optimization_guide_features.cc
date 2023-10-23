@@ -596,10 +596,6 @@ bool ShouldEnablePersonalizedMetadata(proto::RequestContext request_context) {
   return allowed_contexts.Has(request_context);
 }
 
-std::set<std::string> GetOAuthScopesForPersonalizedMetadata() {
-  return GetOauthScopesForFeature(kOptimizationGuidePersonalizedFetching);
-}
-
 bool ShouldOverrideOptimizationTargetDecisionForMetricsPurposes(
     proto::OptimizationTarget optimization_target) {
   if (optimization_target != proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)

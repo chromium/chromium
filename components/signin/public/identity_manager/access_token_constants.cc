@@ -83,6 +83,9 @@ const std::set<std::string> GetUnconsentedOAuth2Scopes() {
       // Password Manager.
       GaiaConstants::kPasskeysEnclaveOAuth2Scope,
 
+      // Required by Optimization Guide.
+      GaiaConstants::kOptimizationGuideServiceGetHintsOAuth2Scope,
+
     // Required by ChromeOS only.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       GaiaConstants::kAssistantOAuth2Scope,
