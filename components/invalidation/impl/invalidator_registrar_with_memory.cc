@@ -170,19 +170,6 @@ bool InvalidatorRegistrarWithMemory::UpdateRegisteredTopics(
   return true;
 }
 
-void InvalidatorRegistrarWithMemory::RemoveUnregisteredTopics(
-    InvalidationHandler* handler) {
-  auto topics_to_unregister =
-      handler_name_to_subscribed_topics_map_[handler->GetOwnerName()];
-  if (registered_handler_to_topics_map_.find(handler) !=
-      registered_handler_to_topics_map_.end()) {
-    topics_to_unregister = base::STLSetDifference<std::set<TopicData>>(
-        topics_to_unregister, registered_handler_to_topics_map_[handler]);
-  }
-
-  RemoveSubscribedTopics(handler, std::move(topics_to_unregister));
-}
-
 TopicMap InvalidatorRegistrarWithMemory::GetRegisteredTopics(
     InvalidationHandler* handler) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
