@@ -72,7 +72,7 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // https://crbug.com/1327560.
   absl::optional<gfx::Rect> region_capture_rect;
 
-  // Whenever cropTo() is called, Blink increments the
+  // Whenever cropTo() or restrictTo() are called, Blink increments the
   // sub_capture_target_version and records a Promise as associated with that
   // sub_capture_target_version. When Blink observes a frame with this new
   // version or a later one, Blink resolves the Promise. Frames associated with
