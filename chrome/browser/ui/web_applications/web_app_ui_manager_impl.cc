@@ -266,12 +266,9 @@ bool WebAppUiManagerImpl::IsAppInQuickLaunchBar(
   return false;
 }
 
-bool WebAppUiManagerImpl::IsInAppWindow(content::WebContents* web_contents,
-                                        const webapps::AppId* app_id) const {
+bool WebAppUiManagerImpl::IsInAppWindow(
+    content::WebContents* web_contents) const {
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  if (app_id) {
-    return AppBrowserController::IsForWebApp(browser, *app_id);
-  }
   return AppBrowserController::IsWebApp(browser);
 }
 

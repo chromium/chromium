@@ -132,10 +132,9 @@ class WebAppUiManager {
   virtual void AddAppToQuickLaunchBar(const webapps::AppId& app_id) = 0;
   virtual bool IsAppInQuickLaunchBar(const webapps::AppId& app_id) const = 0;
 
-  // Returns whether |web_contents| is in a web app window belonging to
-  // |app_id|, or any web app window if |app_id| is nullptr.
-  virtual bool IsInAppWindow(content::WebContents* web_contents,
-                             const webapps::AppId* app_id = nullptr) const = 0;
+  // Returns whether |web_contents| is in a web app window or popup window
+  // created from a web app window.
+  virtual bool IsInAppWindow(content::WebContents* web_contents) const = 0;
   virtual void NotifyOnAssociatedAppChanged(
       content::WebContents* web_contents,
       const absl::optional<webapps::AppId>& previous_app_id,

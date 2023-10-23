@@ -246,6 +246,9 @@ class AppBannerManager : public content::WebContentsObserver,
   virtual bool IsAppPartiallyInstalledForSiteUrl(
       const GURL& site_url) const = 0;
 
+  // Returns if the web contents this manager is on is inside of an app context.
+  virtual bool IsInAppBrowsingContext() const = 0;
+
   // The user has ignored the installation dialog and it went away due to
   // another interaction (e.g. the tab was changed, page navigated, etc).
   virtual void SaveInstallationIgnoredForMl(const GURL& manifest_id) = 0;

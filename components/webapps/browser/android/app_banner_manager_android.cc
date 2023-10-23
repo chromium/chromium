@@ -558,6 +558,10 @@ bool AppBannerManagerAndroid::IsAppPartiallyInstalledForSiteUrl(
   return false;
 }
 
+bool AppBannerManagerAndroid::IsInAppBrowsingContext() const {
+  return false;
+}
+
 void AppBannerManagerAndroid::SaveInstallationDismissedForMl(
     const GURL& manifest_id) {
   // TODO(https://crbug.com/1449993): Implement.

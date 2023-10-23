@@ -327,7 +327,8 @@ void MLInstallabilityPromoter::RequestMlClassification() {
     state_ = MLPipelineState::kComplete;
     return;
   }
-  if (app_banner_manager_->IsAppFullyInstalledForSiteUrl(site_url_)) {
+  if (app_banner_manager_->IsAppFullyInstalledForSiteUrl(site_url_) ||
+      app_banner_manager_->IsInAppBrowsingContext()) {
     // Finish the pipeline early if an app is installed here.
     state_ = MLPipelineState::kComplete;
     return;

@@ -94,8 +94,8 @@ bool FakeWebAppUiManager::IsAppInQuickLaunchBar(
   return false;
 }
 
-bool FakeWebAppUiManager::IsInAppWindow(content::WebContents* web_contents,
-                                        const webapps::AppId* app_id) const {
+bool FakeWebAppUiManager::IsInAppWindow(
+    content::WebContents* web_contents) const {
   return false;
 }
 

@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/webapps/browser/banners/app_banner_metrics.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -181,6 +182,19 @@ bool AppBannerManagerDesktop::IsAppPartiallyInstalledForSiteUrl(
   return web_app::IsNonLocallyInstalledAppWithUrlInScope(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
       site_url);
+}
+
+bool AppBannerManagerDesktop::IsInAppBrowsingContext() const {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebApps(profile);
+  if (!provider) {
+    return false;
+  }
+  return web_app::WebAppProvider::GetForWebApps(profile)
+      ->ui_manager()
+      .IsInAppWindow(web_contents());
 }
 
 void AppBannerManagerDesktop::SaveInstallationDismissedForMl(
