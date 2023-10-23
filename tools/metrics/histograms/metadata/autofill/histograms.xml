@@ -3660,10 +3660,7 @@ chromium-metrics-reviews@google.com.
     PlusAddressClient records this whenever it gets a response for the network
     requests it makes.
   </summary>
-  <token key="Type">
-    <variant name="AutofillPlusAddressNetworkRequestType"
-        summary="The relevant network request."/>
-  </token>
+  <token key="Type" variants="AutofillPlusAddressNetworkRequestType"/>
 </histogram>
 
 <histogram name="Autofill.PlusAddresses.NetworkRequest.{Type}.ResponseByteSize"
@@ -3675,10 +3672,7 @@ chromium-metrics-reviews@google.com.
     plus addresses feature. The PlusAddressClient records this whenever it gets
     a response for the network requests it makes.
   </summary>
-  <token key="Type">
-    <variant name="AutofillPlusAddressNetworkRequestType"
-        summary="The relevant network request."/>
-  </token>
+  <token key="Type" variants="AutofillPlusAddressNetworkRequestType"/>
 </histogram>
 
 <histogram name="Autofill.PlusAddresses.NetworkRequest.{Type}.ResponseCode"
@@ -3690,10 +3684,7 @@ chromium-metrics-reviews@google.com.
     plus addresses feature. The PlusAddressClient records this whenever it gets
     a response for the network requests it makes.
   </summary>
-  <token key="Type">
-    <variant name="AutofillPlusAddressNetworkRequestType"
-        summary="The relevant network request."/>
-  </token>
+  <token key="Type" variants="AutofillPlusAddressNetworkRequestType"/>
 </histogram>
 
 <histogram name="Autofill.PlusAddresses.Suggestion.Events"
