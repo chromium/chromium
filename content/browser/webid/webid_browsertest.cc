@@ -796,7 +796,7 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_noPopUpWindow) {
             content += "nonce=12345&";
             content += "account_id=not_real_account&";
             content += "disclosure_text_shown=false&";
-            content += "is_identity_credential_auto_selected=false&";
+            content += "is_auto_selected=false&";
             // Asserts that the scope, response_type and params parameters
             // were passed correctly to the id assertion endpoint.
             content += "scope=name+email+picture&";
@@ -871,7 +871,7 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_openPopUpWindow) {
             content += "nonce=12345&";
             content += "account_id=not_real_account&";
             content += "disclosure_text_shown=false&";
-            content += "is_identity_credential_auto_selected=false&";
+            content += "is_auto_selected=false&";
             content += "scope=calendar.readonly";
 
             EXPECT_EQ(request.content, content);

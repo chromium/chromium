@@ -64,7 +64,7 @@ class FederatedAuthRequestRequestTokenCallbackHelper {
                       const absl::optional<GURL>& selected_idp_config_url,
                       const absl::optional<std::string>& token,
                       blink::mojom::TokenErrorPtr error,
-                      bool is_identity_credential_auto_selected);
+                      bool is_auto_selected);
 
   void Quit();
 
@@ -74,7 +74,7 @@ class FederatedAuthRequestRequestTokenCallbackHelper {
   absl::optional<GURL> selected_idp_config_url_;
   absl::optional<std::string> token_;
   blink::mojom::TokenErrorPtr error_;
-  bool is_identity_credential_auto_selected_{false};
+  bool is_auto_selected_{false};
 };
 
 }  // namespace content

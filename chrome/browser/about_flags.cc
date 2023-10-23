@@ -8997,6 +8997,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmAuthzDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kFedCmAuthz)},
 
+    {"fedcm-auto-selected-flag", flag_descriptions::kFedCmAutoSelectedFlagName,
+     flag_descriptions::kFedCmAutoSelectedFlagDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kFedCmAutoSelectedFlag)},
+
     {"fedcm-error", flag_descriptions::kFedCmErrorName,
      flag_descriptions::kFedCmErrorDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmError)},
@@ -9004,12 +9008,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"fedcm-hosted-domain", flag_descriptions::kFedCmHostedDomainName,
      flag_descriptions::kFedCmHostedDomainDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmHostedDomain)},
-
-    {"fedcm-identity-credential-auto-selected-flag",
-     flag_descriptions::kFedCmIdentityCredentialAutoSelectedFlagName,
-     flag_descriptions::kFedCmIdentityCredentialAutoSelectedFlagDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmIdentityCredentialAutoSelectedFlag)},
 
     {"fedcm-idp-registration", flag_descriptions::kFedCmIdPRegistrationName,
      flag_descriptions::kFedCmIdPRegistrationDescription, kOsDesktop,

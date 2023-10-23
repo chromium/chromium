@@ -903,14 +903,14 @@ extern const char kFractionalScrollOffsetsDescription[];
 extern const char kFedCmAuthzName[];
 extern const char kFedCmAuthzDescription[];
 
+extern const char kFedCmAutoSelectedFlagName[];
+extern const char kFedCmAutoSelectedFlagDescription[];
+
 extern const char kFedCmErrorName[];
 extern const char kFedCmErrorDescription[];
 
 extern const char kFedCmHostedDomainName[];
 extern const char kFedCmHostedDomainDescription[];
-
-extern const char kFedCmIdentityCredentialAutoSelectedFlagName[];
-extern const char kFedCmIdentityCredentialAutoSelectedFlagDescription[];
 
 extern const char kFedCmIdPRegistrationName[];
 extern const char kFedCmIdPRegistrationDescription[];

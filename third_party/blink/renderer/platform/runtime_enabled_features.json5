@@ -1631,6 +1631,13 @@
       base_feature: "none",
     },
     {
+      name: "FedCmAutoSelectedFlag",
+      depends_on: ["FedCm"],
+      public: true,
+      status: "test",
+      base_feature: "none",
+    },
+    {
       name: "FedCmError",
       depends_on: ["FedCm"],
       public: true,
@@ -1639,13 +1646,6 @@
     },
     {
       name: "FedCmHostedDomain",
-      depends_on: ["FedCm"],
-      public: true,
-      status: "test",
-      base_feature: "none",
-    },
-    {
-      name: "FedCmIdentityCredentialAutoSelectedFlag",
       depends_on: ["FedCm"],
       public: true,
       status: "test",

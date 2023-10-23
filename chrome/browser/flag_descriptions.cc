@@ -1584,6 +1584,12 @@ const char kFedCmAuthzName[] = "FedCmAuthz";
 const char kFedCmAuthzDescription[] =
     "Enables RPs to request authorization for custom IdP scopes.";
 
+const char kFedCmAutoSelectedFlagName[] = "FedCmAutoSelectedFlag";
+const char kFedCmAutoSelectedFlagDescription[] =
+    "Allows the browser to share whether an identity credential was "
+    "auto-selected with developers post user permission to continue with the "
+    "IdP.";
+
 const char kFedCmErrorName[] = "FedCmError";
 const char kFedCmErrorDescription[] =
     "Enables IDPs to show information about an error.";
@@ -1592,13 +1598,6 @@ const char kFedCmHostedDomainName[] = "FedCmHostedDomain";
 const char kFedCmHostedDomainDescription[] =
     "Enables RPs to request only FedCM invocations to only show accounts "
     "matching a given hosted domain.";
-
-const char kFedCmIdentityCredentialAutoSelectedFlagName[] =
-    "FedCmIdentityCredentialAutoSelectedFlag";
-const char kFedCmIdentityCredentialAutoSelectedFlagDescription[] =
-    "Allows the browser to share whether an identity credential was "
-    "auto-selected with developers post user permission to continue with the "
-    "IdP.";
 
 const char kFedCmIdPRegistrationName[] = "FedCM with IdP Registration support";
 const char kFedCmIdPRegistrationDescription[] =

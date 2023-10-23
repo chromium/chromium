@@ -5271,7 +5271,7 @@ interface IIRFilterNode : AudioNode
 interface IdentityCredential : Credential
     static method logoutRPs
     attribute @@toStringTag
-    getter isIdentityCredentialAutoSelected
+    getter isAutoSelected
     getter token
     method constructor
 interface IdentityCredentialError : DOMException

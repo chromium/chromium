@@ -4009,6 +4009,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "fedcm-auto-selected-flag",
+    "owners": [ "yigu@chromium.org", "web-identity-eng@google.com"],
+    "expiry_milestone": 125
+  },
+  {
     "name": "fedcm-error",
     "owners": [ "tanzachary@chromium.org", "web-identity-eng@google.com"],
     "expiry_milestone": 125
@@ -4016,11 +4021,6 @@
   {
     "name": "fedcm-hosted-domain",
     "owners": [ "npm@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 125
-  },
-  {
-    "name": "fedcm-identity-credential-auto-selected-flag",
-    "owners": [ "yigu@chromium.org", "web-identity-eng@google.com"],
     "expiry_milestone": 125
   },
   {
