@@ -333,6 +333,8 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
     }
 
     float scale = detector.GetScaleFactor();
+    float angle = detector.GetAngleChange();
+
     if (scale == 1)
       return true;
 
@@ -356,6 +358,7 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
     GestureEventDetails pinch_details(ET_GESTURE_PINCH_UPDATE);
     pinch_details.set_device_type(GestureDeviceType::DEVICE_TOUCHSCREEN);
     pinch_details.set_scale(scale);
+    pinch_details.set_pinch_angle(angle);
     pinch_details.set_primary_unique_touch_event_id(
         current_down_action_unique_touch_event_id_);
     Send(CreateGesture(pinch_details,
