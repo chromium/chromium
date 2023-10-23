@@ -554,7 +554,8 @@ TEST_F(SafetyHubHandlerTest, VersionCardUpToDate) {
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   ASSERT_TRUE(data.arg3()->is_dict());
 
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SETTINGS_UPGRADE_UP_TO_DATE),
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_HEADER_UPDATED),
             base::UTF8ToUTF16(*data.arg3()->GetDict().FindString("header")));
   EXPECT_EQ(VersionUI::GetAnnotatedVersionStringForUi(),
             base::UTF8ToUTF16(*data.arg3()->GetDict().FindString("subheader")));
@@ -577,7 +578,8 @@ TEST_F(SafetyHubHandlerTest, VersionCardOutOfDate) {
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   ASSERT_TRUE(data.arg3()->is_dict());
 
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_RECOVERY_BUBBLE_TITLE),
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_HEADER_RESTART),
             base::UTF8ToUTF16(*data.arg3()->GetDict().FindString("header")));
   EXPECT_EQ(l10n_util ::GetStringUTF16(
                 IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_SUBHEADER_RESTART),

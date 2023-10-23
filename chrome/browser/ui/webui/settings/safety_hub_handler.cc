@@ -457,23 +457,29 @@ void SafetyHubHandler::HandleGetVersionCardData(const base::Value::List& args) {
   const base::Value& callback_id = args[0];
 
   base::Value::Dict result;
-  if (g_browser_process->GetBuildState()->update_type() ==
-      BuildState::UpdateType::kNone) {
-    result.Set(safety_hub::kCardHeaderKey,
-               l10n_util::GetStringUTF16(IDS_SETTINGS_UPGRADE_UP_TO_DATE));
-    result.Set(safety_hub::kCardSubheaderKey,
-               VersionUI::GetAnnotatedVersionStringForUi());
-    result.Set(safety_hub::kCardStateKey,
-               static_cast<int>(safety_hub::SafetyHubCardState::kSafe));
-  } else {
-    // TODO(1443466): Handle rare states such as version rollbacks.
-    result.Set(safety_hub::kCardHeaderKey,
-               l10n_util::GetStringUTF16(IDS_RECOVERY_BUBBLE_TITLE));
-    result.Set(safety_hub::kCardSubheaderKey,
-               l10n_util ::GetStringUTF16(
-                   IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_SUBHEADER_RESTART));
-    result.Set(safety_hub::kCardStateKey,
-               static_cast<int>(safety_hub::SafetyHubCardState::kWarning));
+  switch (g_browser_process->GetBuildState()->update_type()) {
+    case BuildState::UpdateType::kNone:
+      result.Set(safety_hub::kCardHeaderKey,
+                 l10n_util::GetStringUTF16(
+                     IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_HEADER_UPDATED));
+      result.Set(safety_hub::kCardSubheaderKey,
+                 VersionUI::GetAnnotatedVersionStringForUi());
+      result.Set(safety_hub::kCardStateKey,
+                 static_cast<int>(safety_hub::SafetyHubCardState::kSafe));
+      break;
+    case BuildState::UpdateType::kNormalUpdate:
+    // kEnterpriseRollback and kChannelSwitchRollback are fairly rare state,
+    // they will be handled same as there is waiting updates.
+    case BuildState::UpdateType::kEnterpriseRollback:
+    case BuildState::UpdateType::kChannelSwitchRollback:
+      result.Set(safety_hub::kCardHeaderKey,
+                 l10n_util::GetStringUTF16(
+                     IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_HEADER_RESTART));
+      result.Set(safety_hub::kCardSubheaderKey,
+                 l10n_util ::GetStringUTF16(
+                     IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_SUBHEADER_RESTART));
+      result.Set(safety_hub::kCardStateKey,
+                 static_cast<int>(safety_hub::SafetyHubCardState::kWarning));
   }
 
   ResolveJavascriptCallback(callback_id, base::Value(std::move(result)));
