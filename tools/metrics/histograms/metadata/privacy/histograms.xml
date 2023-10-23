@@ -912,7 +912,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.TrackingProtection.Onboarding.DidNoticeActionAckowledge"
-    enum="BooleanShown" expires_after="2024-09-30">
+    enum="Boolean" expires_after="2024-09-30">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -923,7 +923,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.TrackingProtection.Onboarding.DidNoticeShownOnboard"
-    enum="BooleanShown" expires_after="2024-09-30">
+    enum="Boolean" expires_after="2024-09-30">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -956,7 +956,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.TrackingProtection.Onboarding.MarkedEligibleDueToForcedFlag"
-    enum="BooleanShown" expires_after="2024-09-30">
+    enum="Boolean" expires_after="2024-09-30">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -967,7 +967,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.TrackingProtection.Onboarding.MaybeMarkEligible"
-    enum="BooleanShown" expires_after="2024-09-30">
+    enum="Boolean" expires_after="2024-09-30">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -978,7 +978,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.TrackingProtection.Onboarding.MaybeMarkIneligible"
-    enum="BooleanShown" expires_after="2024-09-30">
+    enum="Boolean" expires_after="2024-09-30">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
