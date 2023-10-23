@@ -638,7 +638,8 @@ def CheckPoliciesYamlOrdering(input_api, output_api):
     return results
 
   root = input_api.change.RepositoryRoot()
-  with open(os.path.join(root, _POLICIES_YAML_PATH), 'r', encoding='utf-8') as f:
+  with open(os.path.join(root, _POLICIES_YAML_PATH),
+            'r', encoding='utf-8') as f:
     policies_yaml_lines = f.readlines()
 
   previous_id = 0
@@ -765,7 +766,7 @@ def CheckDevicePolicies(input_api, output_api):
   root = input_api.change.RepositoryRoot()
   policy_changelist = _GetPolicyChangeList(input_api)
   if not any(policy_change['new_policy'].get('device_only', False)
-             and policy_change['new_policy']['type'] == 'external'
+             or policy_change['new_policy']['type'] == 'external'
              for policy_change in policy_changelist
              if policy_change['new_policy'] != None):
     return results
