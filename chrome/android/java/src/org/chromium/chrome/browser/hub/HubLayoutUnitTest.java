@@ -420,6 +420,32 @@ public class HubLayoutUnitTest {
 
     @Test
     @SmallTest
+    public void testHideToBrowsingThumbnailCallbackNoTabIdInStartHiding() {
+        when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID);
+
+        setupHubLayoutAnimatorAndProvider(HubLayoutAnimationType.EXPAND_TAB);
+        when(mHubLayoutAnimatorProviderMock.getThumbnailCallback()).thenReturn(mThumbnailCallback);
+        doReturn(mHubLayoutAnimatorProviderMock)
+                .when(mHubLayout)
+                .createHideAnimatorProvider(any(), anyInt());
+        when(mTab.isNativePage()).thenReturn(true);
+
+        // Succeed on the thumbnail attempt
+        doCallback(
+                        /* index= */ 1,
+                        (Callback<Bitmap> bitmapCallback) -> {
+                            bitmapCallback.onResult(mBitmap);
+                        })
+                .when(mTabContentManager)
+                .getEtc1TabThumbnailWithCallback(eq(TAB_ID), any());
+
+        hide(LayoutType.BROWSING, Tab.INVALID_TAB_ID, false, HubLayoutAnimationType.EXPAND_TAB);
+
+        verify(mThumbnailCallback).onResult(isNotNull());
+    }
+
+    @Test
+    @SmallTest
     public void testHideToStartSurfaceThumbnailCallback() {
         setupHubLayoutAnimatorAndProvider(HubLayoutAnimationType.EXPAND_TAB);
         when(mHubLayoutAnimatorProviderMock.getThumbnailCallback()).thenReturn(mThumbnailCallback);
@@ -535,7 +561,6 @@ public class HubLayoutUnitTest {
         @LayoutType int layoutType = mHubLayout.getLayoutType();
         when(mLayoutStateProvider.getActiveLayoutType()).thenReturn(layoutType);
         when(mLayoutStateProvider.getNextLayoutType()).thenReturn(nextLayout);
-        when(mTabModelSelector.getCurrentTabId()).thenReturn(nextTabId);
 
         mHubLayout.startHiding(nextTabId, hintAtTabSelection);
     }

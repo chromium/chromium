@@ -240,7 +240,12 @@ public class HubLayout extends Layout {
 
         Callback<Bitmap> thumbnailCallback = animatorProvider.getThumbnailCallback();
         if (thumbnailCallback != null) {
-            int tabId = mTabModelSelector.getCurrentTabId();
+            // TODO(crbug/1495121): Remove the need for this logic if feasible and just get the
+            // value from TabModelSelector.
+            int tabId =
+                    nextTabId != Tab.INVALID_TAB_ID
+                            ? nextTabId
+                            : mTabModelSelector.getCurrentTabId();
             if (nextLayoutType == LayoutType.BROWSING
                     && mTabContentManager != null
                     && tabId != Tab.INVALID_TAB_ID) {
