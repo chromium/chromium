@@ -44,7 +44,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 /** Mediator of the single tab switcher in the new tab page on tablet. */
-public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedObserver {
+public class SingleTabSwitcherOnNtpMediator implements ConfigurationChangedObserver {
     private final Context mContext;
     private final PropertyModel mPropertyModel;
     private final TabListFaviconProvider mTabListFaviconProvider;
@@ -54,6 +54,7 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
 
     // It is only non-null for NTP on tablets.
     private @Nullable final UiConfig mUiConfig;
+    private final boolean mIsTablet;
     private Resources mResources;
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private Tab mMostRecentTab;
@@ -66,7 +67,7 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
     private Size mThumbnailSize;
     private @Nullable DisplayStyleObserver mDisplayStyleObserver;
 
-    SingleTabSwitcherOnTabletMediator(
+    SingleTabSwitcherOnNtpMediator(
             Context context,
             PropertyModel propertyModel,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
@@ -76,7 +77,7 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
             boolean isScrollableMvtEnabled,
             Runnable singleTabCardClickedCallback,
             @Nullable TabContentManager tabContentManager,
-            @Nullable UiConfig uiConfig) {
+            @Nullable UiConfig uiConfig, boolean isTablet) {
         mContext = context;
         mPropertyModel = propertyModel;
         mResources = mContext.getResources();
@@ -86,10 +87,11 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
         mSingleTabCardClickedCallback = singleTabCardClickedCallback;
         mIsSurfacePolishEnabled = tabContentManager != null;
         mUiConfig = uiConfig;
+        mIsTablet = isTablet;
 
         mMarginNarrowWindowOnTablet =
                 mResources.getDimensionPixelSize(R.dimen.search_box_lateral_margin_polish);
-        if (!mIsSurfacePolishEnabled) {
+        if (!mIsSurfacePolishEnabled && mIsTablet) {
             mActivityLifecycleDispatcher = activityLifecycleDispatcher;
             mMarginDefaut = mResources.getDimensionPixelSize(
                     R.dimen.single_tab_card_lateral_margin_landscape_tablet);
@@ -101,7 +103,15 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
             if (mActivityLifecycleDispatcher != null) {
                 mActivityLifecycleDispatcher.register(this);
             }
+        } else if (mIsSurfacePolishEnabled && !mIsTablet) {
+            // When surface polish is enabled, the NewTabPageLayout (R.id.ntp_content) aligns with
+            // the Start surface and doesn't have any margin to its parent view. Therefore, the
+            // margins are added to each UI components.
+            mMarginDefaut = mMarginNarrowWindowOnTablet;
+            mMarginSmallPortrait = mMarginNarrowWindowOnTablet;
         } else {
+            // When surface polish is disabled, the margins are added between the NewTabPageLayout
+            // (R.id.ntp_content) and its parent view.
             mMarginDefaut = 0;
             mMarginSmallPortrait = 0;
         }
@@ -122,7 +132,7 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
         });
 
         if (mUiConfig != null) {
-            assert mIsSurfacePolishEnabled;
+            assert mIsSurfacePolishEnabled && mIsTablet;
             mDisplayStyleObserver = this::onDisplayStyleChanged;
             mUiConfig.addObserver(mDisplayStyleObserver);
         }
