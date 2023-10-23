@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/font_palette.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -24,6 +25,31 @@ TEST(FontPaletteTest, HashingAndComparison) {
   b = FontPalette::Create(AtomicString("SomePaletteReference"));
   EXPECT_NE(a->GetHash(), b->GetHash());
   EXPECT_NE(a, b);
+
+  b = FontPalette::Mix(FontPalette::Create(FontPalette::kLightPalette),
+                       FontPalette::Create(FontPalette::kDarkPalette), 30, 70,
+                       0.7, 1.0, Color::ColorSpace::kSRGB, absl::nullopt);
+  EXPECT_NE(a->GetHash(), b->GetHash());
+  EXPECT_NE(a, b);
+
+  scoped_refptr<FontPalette> c =
+      FontPalette::Mix(FontPalette::Create(FontPalette::kLightPalette),
+                       FontPalette::Create(FontPalette::kDarkPalette), 15, 35,
+                       0.7, 1.0, Color::ColorSpace::kSRGB, absl::nullopt);
+  EXPECT_NE(c->GetHash(), b->GetHash());
+  EXPECT_NE(c, b);
+
+  c = FontPalette::Mix(FontPalette::Create(FontPalette::kLightPalette),
+                       FontPalette::Create(), 30, 70, 0.7, 1.0,
+                       Color::ColorSpace::kSRGB, absl::nullopt);
+  EXPECT_NE(c->GetHash(), b->GetHash());
+  EXPECT_NE(c, b);
+
+  c = FontPalette::Mix(FontPalette::Create(FontPalette::kLightPalette),
+                       FontPalette::Create(FontPalette::kDarkPalette), 30, 70,
+                       0.7, 1.0, Color::ColorSpace::kOklab, absl::nullopt);
+  EXPECT_NE(c->GetHash(), b->GetHash());
+  EXPECT_NE(c, b);
 }
 
 TEST(FontPaletteTest, MixPaletteValue) {
