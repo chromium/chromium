@@ -4,7 +4,9 @@
 
 #include "chrome/browser/web_applications/app_shim_registry_mac.h"
 
+#include "base/base64.h"
 #include "base/memory/raw_ptr.h"
+#include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,10 +25,12 @@ class AppShimRegistryTest : public testing::Test {
     registry_->RegisterLocalPrefs(local_state_->registry());
     registry_->SetPrefServiceAndUserDataDirForTesting(local_state_.get(),
                                                       base::FilePath("/x/y/z"));
+    OSCryptMocker::SetUp();
   }
   void TearDown() override {
     registry_->SetPrefServiceAndUserDataDirForTesting(nullptr,
                                                       base::FilePath());
+    OSCryptMocker::TearDown();
   }
 
  protected:
@@ -322,6 +326,73 @@ TEST_F(AppShimRegistryTest, ProtocolHandlers) {
   // Verify uninstalling an app also removes handler information.
   EXPECT_TRUE(registry_->OnAppUninstalledForProfile(app_id, profile_path_b));
   EXPECT_TRUE(registry_->GetHandlersForApp(app_id).empty());
+}
+
+TEST_F(AppShimRegistryTest, CodeDirectoryHashes) {
+  const std::string app_id("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+  const uint8_t cd_hash[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+  const uint8_t other_cd_hash[] = {10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
+  base::FilePath profile_path("/x/y/z/Profile");
+
+  EXPECT_FALSE(registry_->VerifyCdHashForApp(app_id, cd_hash));
+
+  // Saving code directory hash for an app that isn't in any profile should
+  // be a noop.
+  registry_->SaveCdHashForApp(app_id, cd_hash);
+  EXPECT_FALSE(registry_->VerifyCdHashForApp(app_id, cd_hash));
+
+  // Install app in profile.
+  registry_->OnAppInstalledForProfile(app_id, profile_path);
+  EXPECT_FALSE(registry_->VerifyCdHashForApp(app_id, cd_hash));
+
+  // Verify saving code directory hash.
+  registry_->SaveCdHashForApp(app_id, cd_hash);
+  EXPECT_TRUE(registry_->VerifyCdHashForApp(app_id, cd_hash));
+
+  // Ensure that a different code directory hash is invalid for this app.
+  EXPECT_FALSE(registry_->VerifyCdHashForApp(app_id, other_cd_hash));
+
+  // Verify uninstalling an app removes its code directory hash.
+  EXPECT_TRUE(registry_->OnAppUninstalledForProfile(app_id, profile_path));
+  EXPECT_FALSE(registry_->VerifyCdHashForApp(app_id, cd_hash));
+}
+
+TEST_F(AppShimRegistryTest, CodeDirectoryHashesInvalidData) {
+  const std::string app_id("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+  const uint8_t cd_hash[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+  base::FilePath profile_path("/x/y/z/Profile");
+
+  // Install app in profile.
+  registry_->OnAppInstalledForProfile(app_id, profile_path);
+  registry_->SaveCdHashForApp(app_id, cd_hash);
+  EXPECT_TRUE(registry_->VerifyCdHashForApp(app_id, cd_hash));
+
+  // Overwrite the HMAC key with data that cannot be decoded as base64.
+  local_state_->SetString("app_shims_cdhash_hmac_key",
+                          "this-is-not-valid-base64");
+
+  // The existing code directory hash should fail to verify after altering the
+  // HMAC key.
+  EXPECT_FALSE(registry_->VerifyCdHashForApp(app_id, cd_hash));
+
+  // Verify that saving the code directory hash again makes it possible to
+  // verify the hash once more.
+  registry_->SaveCdHashForApp(app_id, cd_hash);
+  EXPECT_TRUE(registry_->VerifyCdHashForApp(app_id, cd_hash));
+
+  // Overwrite the HMAC key with valid base64 data that cannot be decrypted
+  // via OSCrypt.
+  local_state_->SetString("app_shims_cdhash_hmac_key",
+                          base::Base64Encode("this-is-not-a-valid-key"));
+
+  // The existing code directory hash should fail to verify after altering the
+  // HMAC key.
+  EXPECT_FALSE(registry_->VerifyCdHashForApp(app_id, cd_hash));
+
+  // Verify that saving the code directory hash again makes it possible to
+  // verify the hash once more.
+  registry_->SaveCdHashForApp(app_id, cd_hash);
+  EXPECT_TRUE(registry_->VerifyCdHashForApp(app_id, cd_hash));
 }
 
 }  // namespace

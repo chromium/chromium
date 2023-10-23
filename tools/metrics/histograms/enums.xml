@@ -114093,6 +114093,7 @@ others/histograms.xml -->
   <int value="12" label="Fail to update icon"/>
   <int value="13" label="Fail to create parent directory for destination path"/>
   <int value="14" label="Fail to copy application to destination"/>
+  <int value="15" label="Fail to code sign application"/>
 </enum>
 
 <enum name="WebAppDisplayMode">
@@ -114313,6 +114314,17 @@ others/histograms.xml -->
   <int value="1" label="Control"/>
   <int value="2" label="Window"/>
   <int value="3" label="Tab"/>
+</enum>
+
+<enum name="WebAppShimSignatureValidationResult">
+  <summary>
+    Result of validating the signature for a web app shim on macOS.
+  </summary>
+  <int value="0" label="Signature is invalid"/>
+  <int value="1" label="The app shim had a valid ad-hoc signature"/>
+  <int value="2" label="The app shim had a valid legacy signature"/>
+  <int value="3"
+      label="Expected an ad-hoc signature, but got a valid legacy signature"/>
 </enum>
 
 <enum name="WebappUninstallDialogAction">

@@ -103,6 +103,15 @@ class AppShimRegistry {
   std::map<base::FilePath, HandlerInfo> GetHandlersForApp(
       const std::string& app_id);
 
+  // Associate the given code directory hash with a given app.
+  void SaveCdHashForApp(const std::string& app_id,
+                        base::span<const uint8_t> cd_hash);
+
+  // Verify that the given code directory hash matches the one previously
+  // associated with the given app.
+  bool VerifyCdHashForApp(const std::string& app_id,
+                          base::span<const uint8_t> cd_hash);
+
   // Helper functions for testing.
   void SetPrefServiceAndUserDataDirForTesting(
       PrefService* pref_service,
@@ -126,6 +135,23 @@ class AppShimRegistry {
                             const std::string& profiles_key,
                             std::set<base::FilePath>* profiles) const;
 
+  using HmacKey = std::vector<uint8_t>;
+  static constexpr size_t kHmacKeySize = 32;
+
+  // Retrieve the key used to create HMACs of app's code directory hashes,
+  // generating a new key if needed.
+  HmacKey GetCdHashHmacKey();
+
+  // Helper function used by GetCdHashHmacKey
+  // Retrieve the existing key used to create HMACs of app's code directory
+  // hashes. Returns nullopt if no key was found or the existing key could not
+  // be decoded or decrypted.
+  absl::optional<HmacKey> GetExistingCdHashHmacKey();
+
+  // Helper function used by GetCdHashHmacKey
+  // Encode and encrypt the given HMAC key and save it to preferences.
+  void SaveCdHashHmacKey(const HmacKey& key);
+
   // Update the local storage for |app_id|. Update |installed_profiles| and
   // |last_active_profiles| only if they are non-nullptr. If
   // |installed_profiles| is non-nullptr and empty, remove the entry for
@@ -133,7 +159,8 @@ class AppShimRegistry {
   void SetAppInfo(const std::string& app_id,
                   const std::set<base::FilePath>* installed_profiles,
                   const std::set<base::FilePath>* last_active_profiles,
-                  const std::map<base::FilePath, HandlerInfo>* handlers);
+                  const std::map<base::FilePath, HandlerInfo>* handlers,
+                  const std::string* cd_hash_hmac_base64);
 
   raw_ptr<PrefService> override_pref_service_ = nullptr;
   base::FilePath override_user_data_dir_;

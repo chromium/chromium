@@ -1888,6 +1888,16 @@ chromium-metrics-reviews@google.com.
   <token key="InstallReason" variants="InstallReason"/>
 </histogram>
 
+<histogram name="Apps.AppShimSignatureValidationResult"
+    enum="WebAppShimSignatureValidationResult" expires_after="2024-01-01">
+  <owner>markrowe@chromium.org</owner>
+  <owner>chrome-platform-security-core@google.com</owner>
+  <summary>
+    Records the result of validating the code signature of a web app shim
+    connecting to the browser on macOS.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppsInFolders{AppListFolderExperiment}" units="Apps"
     expires_after="2022-10-09">
   <obsolete>
