@@ -30,7 +30,6 @@
 #import "third_party/blink/renderer/platform/fonts/mac/font_matcher_mac.h"
 
 #import <AppKit/AppKit.h>
-#import <CoreText/CoreText.h>
 #import <Foundation/Foundation.h>
 #import <math.h>
 
@@ -38,10 +37,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
-#include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
-#include "third_party/blink/renderer/platform/fonts/opentype/font_settings.h"
 #import "third_party/blink/renderer/platform/wtf/hash_set.h"
-#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #import "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
 namespace blink {
@@ -55,10 +51,6 @@ const NSFontTraitMask IMPORTANT_FONT_TRAITS =
     (NSCompressedFontMask | NSCondensedFontMask | NSExpandedFontMask |
      NSItalicFontMask | NSNarrowFontMask | NSPosterFontMask |
      NSSmallCapsFontMask);
-
-const char kWeightTag[] = "wght";
-const char kSlantTag[] = "slnt";
-const char kWidthTag[] = "wdth";
 
 BOOL AcceptableChoice(NSFontTraitMask desired_traits,
                       NSFontTraitMask candidate_traits) {
@@ -107,90 +99,19 @@ BOOL BetterChoice(NSFontTraitMask desired_traits,
   return candidate_weight_delta_magnitude < chosen_weight_delta_magnitude;
 }
 
-absl::optional<FontSelectionValue> ClampValueToVariationAxisRange(
-    FontSelectionValue desired_value,
-    CFDictionaryRef axis) {
-  CFNumberRef axis_min_number =
-      base::apple::GetValueFromDictionary<CFNumberRef>(
-          axis, kCTFontVariationAxisMinimumValueKey);
-  double axis_min_value = 0.0;
-  if (!axis_min_number ||
-      !CFNumberGetValue(axis_min_number, kCFNumberDoubleType,
-                        &axis_min_value)) {
-    return absl::nullopt;
-  }
+NSFontWeight ToFontWeight(blink::FontSelectionValue font_weight) {
+  if (font_weight <= 50 || font_weight >= 950)
+    return NSFontWeightRegular;
 
-  CFNumberRef axis_max_number =
-      base::apple::GetValueFromDictionary<CFNumberRef>(
-          axis, kCTFontVariationAxisMaximumValueKey);
-  double axis_max_value = 0.0;
-  if (!axis_max_number ||
-      !CFNumberGetValue(axis_max_number, kCFNumberDoubleType,
-                        &axis_max_value)) {
-    return absl::nullopt;
-  }
-
-  FontSelectionRange capabilities_range(
-      {FontSelectionValue(axis_min_value), FontSelectionValue(axis_max_value)});
-  return capabilities_range.clampToRange(desired_value);
-}
-
-base::apple::ScopedCFTypeRef<CTFontDescriptorRef>
-GetUIFontDescriptorWithVariation(float size,
-                                 FontSelectionValue desired_weight,
-                                 FontSelectionValue desired_slant,
-                                 FontSelectionValue desired_width) {
-  base::apple::ScopedCFTypeRef<CTFontRef> ct_font(
-      CTFontCreateUIFontForLanguage(kCTFontUIFontSystem, size, nullptr));
-  base::apple::ScopedCFTypeRef<CTFontDescriptorRef> ct_font_desc(
-      CTFontCopyFontDescriptor(ct_font));
-
-  base::apple::ScopedCFTypeRef<CFArrayRef> all_axes(
-      CTFontCopyVariationAxes(ct_font));
-  for (CFIndex i = 0; i < CFArrayGetCount(all_axes); ++i) {
-    CFDictionaryRef axis = base::apple::CFCast<CFDictionaryRef>(
-        CFArrayGetValueAtIndex(all_axes, i));
-    if (!axis) {
-      continue;
-    }
-
-    CFNumberRef axis_id = base::apple::GetValueFromDictionary<CFNumberRef>(
-        axis, kCTFontVariationAxisIdentifierKey);
-    if (!axis_id) {
-      continue;
-    }
-    uint32_t axis_id_value;
-    if (!CFNumberGetValue(axis_id, kCFNumberLongLongType, &axis_id_value)) {
-      continue;
-    }
-
-    AtomicString axis_tag = FourByteTagToAtomicString(axis_id_value);
-    if (axis_tag == kWeightTag && desired_weight != kNormalWeightValue) {
-      absl::optional<FontSelectionValue> clamped_weight =
-          ClampValueToVariationAxisRange(desired_weight, axis);
-      if (clamped_weight.has_value()) {
-        ct_font_desc.reset(CTFontDescriptorCreateCopyWithVariation(
-            ct_font_desc, axis_id, *clamped_weight));
-      }
-    }
-    if (axis_tag == kWidthTag && desired_width != kNormalWidthValue) {
-      absl::optional<FontSelectionValue> clamped_width =
-          ClampValueToVariationAxisRange(desired_width, axis);
-      if (clamped_width.has_value()) {
-        ct_font_desc.reset(CTFontDescriptorCreateCopyWithVariation(
-            ct_font_desc, axis_id, *clamped_width));
-      }
-    }
-    if (axis_tag == kSlantTag && desired_slant != kNormalSlopeValue) {
-      absl::optional<FontSelectionValue> clamped_slant =
-          ClampValueToVariationAxisRange(desired_slant, axis);
-      if (clamped_slant.has_value()) {
-        ct_font_desc.reset(CTFontDescriptorCreateCopyWithVariation(
-            ct_font_desc, axis_id, *clamped_slant));
-      }
-    }
-  }
-  return ct_font_desc;
+  const NSFontWeight ns_font_weights[] = {
+      NSFontWeightUltraLight, NSFontWeightThin,   NSFontWeightLight,
+      NSFontWeightRegular,    NSFontWeightMedium, NSFontWeightSemibold,
+      NSFontWeightBold,       NSFontWeightHeavy,  NSFontWeightBlack,
+  };
+  size_t select_weight = roundf(font_weight / 100) - 1;
+  DCHECK_GE(select_weight, 0ul);
+  DCHECK_LE(select_weight, std::size(ns_font_weights));
+  return ns_font_weights[select_weight];
 }
 
 }  // namespace
@@ -238,17 +159,16 @@ NSFont* MatchUniqueFont(const AtomicString& unique_font_name, float size) {
 NSFont* MatchNSFontFamily(const AtomicString& desired_family_string,
                           NSFontTraitMask desired_traits,
                           FontSelectionValue desired_weight,
-                          FontSelectionValue desired_slant,
-                          FontSelectionValue desired_width,
                           float size) {
   DCHECK_NE(desired_family_string, FontCache::LegacySystemFontFamily());
 
   if (desired_family_string == font_family_names::kSystemUi) {
-    base::apple::ScopedCFTypeRef<CTFontDescriptorRef>
-        ct_font_desc_with_variations = GetUIFontDescriptorWithVariation(
-            size, desired_weight, desired_slant, desired_width);
-    return base::apple::CFToNSOwnershipCast(CTFontCreateWithFontDescriptor(
-        ct_font_desc_with_variations, size, nullptr));
+    NSFont* font = [NSFont systemFontOfSize:size
+                                     weight:ToFontWeight(desired_weight)];
+    if (desired_traits & IMPORTANT_FONT_TRAITS)
+      font = [NSFontManager.sharedFontManager convertFont:font
+                                              toHaveTrait:desired_traits];
+    return font;
   }
 
   NSString* desired_family = desired_family_string;

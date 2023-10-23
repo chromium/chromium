@@ -38,8 +38,6 @@ namespace blink {
 PLATFORM_EXPORT NSFont* MatchNSFontFamily(const AtomicString& desired_family,
                                           NSFontTraitMask desired_traits,
                                           FontSelectionValue desired_weight,
-                                          FontSelectionValue desired_slant,
-                                          FontSelectionValue desired_width,
                                           float size);
 
 PLATFORM_EXPORT NSFont* MatchUniqueFont(const AtomicString& unique_font_name,
