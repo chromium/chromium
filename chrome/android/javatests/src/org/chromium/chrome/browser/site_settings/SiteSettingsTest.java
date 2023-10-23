@@ -179,6 +179,8 @@ public class SiteSettingsTest {
     private PermissionUpdateWaiter mPermissionUpdateWaiter;
 
     private static final String[] NULL_ARRAY = new String[0];
+    private static final String[] BINARY_TOGGLE_AND_INFO_TEXT =
+            new String[] {"info_text", "binary_toggle"};
     private static final String[] BINARY_TOGGLE = new String[] {"binary_toggle"};
     private static final String[] BINARY_TOGGLE_WITH_EXCEPTION_AND_INFO_TEXT =
             new String[] {"info_text", "binary_toggle", "add_exception"};
@@ -1498,7 +1500,9 @@ public class SiteSettingsTest {
     @EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_STORAGE_ACCESS})
     public void testOnlyExpectedPreferencesStorageAccess() {
         testExpectedPreferences(
-                SiteSettingsCategory.Type.STORAGE_ACCESS, BINARY_TOGGLE, BINARY_TOGGLE);
+                SiteSettingsCategory.Type.STORAGE_ACCESS,
+                BINARY_TOGGLE_AND_INFO_TEXT,
+                BINARY_TOGGLE_AND_INFO_TEXT);
     }
 
     @Test
