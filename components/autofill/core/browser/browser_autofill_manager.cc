@@ -1515,15 +1515,6 @@ void BrowserAutofillManager::FillCreditCardFormImpl(
                              /*is_refill=*/false);
 }
 
-void BrowserAutofillManager::FillProfileFormImpl(
-    const FormData& form,
-    const FormFieldData& field,
-    const AutofillProfile& profile,
-    const AutofillTriggerDetails& trigger_details) {
-  FillOrPreviewProfileForm(mojom::ActionPersistence::kFill, form, field,
-                           profile, trigger_details);
-}
-
 void BrowserAutofillManager::FillOrPreviewVirtualCardInformation(
     mojom::ActionPersistence action_persistence,
     const std::string& guid,

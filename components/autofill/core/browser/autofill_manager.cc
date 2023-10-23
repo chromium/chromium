@@ -286,20 +286,6 @@ void AutofillManager::FillCreditCardForm(
                            .Then(NotifyNoObserversCallback()));
 }
 
-void AutofillManager::FillProfileForm(
-    const AutofillProfile& profile,
-    const FormData& form,
-    const FormFieldData& field,
-    const AutofillTriggerDetails& trigger_details) {
-  if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)) {
-    FillProfileFormImpl(form, field, profile, trigger_details);
-    return;
-  }
-  ParseFormAsync(form, ParsingCallback(&AutofillManager::FillProfileFormImpl,
-                                       field, profile, trigger_details)
-                           .Then(NotifyNoObserversCallback()));
-}
-
 void AutofillManager::OnDidFillAutofillFormData(
     const FormData& form,
     const base::TimeTicks timestamp) {

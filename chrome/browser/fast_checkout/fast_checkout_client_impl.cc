@@ -412,10 +412,12 @@ void FastCheckoutClientImpl::TryToFillForms() {
         form_filling_states_[std::make_pair(form->form_signature(),
                                             autofill::FormType::kAddressForm)] =
             FillingState::kFilling;
-        static_cast<autofill::BrowserAutofillManager*>(autofill_manager_.get())
-            ->SetFastCheckoutRunId(autofill::FieldTypeGroup::kAddress, run_id_);
-        autofill_manager_->FillProfileForm(
-            *autofill_profile, form->ToFormData(), *field,
+        auto* bam = static_cast<autofill::BrowserAutofillManager*>(
+            autofill_manager_.get());
+        bam->SetFastCheckoutRunId(autofill::FieldTypeGroup::kAddress, run_id_);
+        bam->FillOrPreviewProfileForm(
+            autofill::mojom::ActionPersistence::kFill, form->ToFormData(),
+            *field, *autofill_profile,
             autofill::AutofillTriggerDetails(
                 autofill::AutofillTriggerSource::kFastCheckout));
       }

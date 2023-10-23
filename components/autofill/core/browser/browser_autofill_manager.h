@@ -158,6 +158,16 @@ class BrowserAutofillManager : public AutofillManager,
                                   const FormData& form,
                                   const FormFieldData& field);
 
+  // Fills or previews the profile form.
+  // Assumes the form and field are valid.
+  // TODO(crbug.com/1330108): Clean up the API.
+  virtual void FillOrPreviewProfileForm(
+      mojom::ActionPersistence action_persistence,
+      const FormData& form,
+      const FormFieldData& field,
+      const AutofillProfile& profile,
+      const AutofillTriggerDetails& trigger_details);
+
   // Fills or previews the credit card form.
   // Assumes the form and field are valid.
   // Asks for authentication via CVC before filling with server card data.
@@ -168,13 +178,6 @@ class BrowserAutofillManager : public AutofillManager,
       const FormFieldData& field,
       const CreditCard* credit_card,
       const AutofillTriggerDetails& trigger_details);
-
-  // TODO(crbug.com/1330108): Clean up the API.
-  void FillProfileFormImpl(
-      const FormData& form,
-      const FormFieldData& field,
-      const AutofillProfile& profile,
-      const AutofillTriggerDetails& trigger_details) override;
 
   // Fetches the related virtual card information given the related actual card
   // |guid| and fills the information into the form.
@@ -496,15 +499,6 @@ class BrowserAutofillManager : public AutofillManager,
   // will need to unmask a card.
   bool WillFillCreditCardNumber(const FormData& form,
                                 const FormFieldData& triggered_field);
-
-  // Fills or previews the profile form.
-  // Assumes the form and field are valid.
-  // TODO(crbug.com/1330108): Clean up the API.
-  void FillOrPreviewProfileForm(mojom::ActionPersistence action_persistence,
-                                const FormData& form,
-                                const FormFieldData& field,
-                                const AutofillProfile& profile,
-                                const AutofillTriggerDetails& trigger_details);
 
   // Fills or previews |data_model| in the |form|.
   // TODO(crbug.com/1330108): Clean up the API.

@@ -171,8 +171,9 @@ class MockBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
               (base::OnceCallback<void(bool)>),
               (override));
   MOCK_METHOD(void,
-              FillProfileFormImpl,
-              (const FormData&,
+              FillOrPreviewProfileForm,
+              (autofill::mojom::ActionPersistence,
+               const FormData&,
                const FormFieldData&,
                const autofill::AutofillProfile&,
                const autofill::AutofillTriggerDetails&),
@@ -792,7 +793,8 @@ TEST_F(FastCheckoutClientImplTest, OnAfterLoadedServerPredictions_FillsForms) {
 
   EXPECT_CALL(
       *autofill_manager(),
-      FillProfileFormImpl(
+      FillOrPreviewProfileForm(
+          autofill::mojom::ActionPersistence::kFill,
           FormDataEqualTo(address_form_data),
           FormFieldDataEqualTo(address_form_field_data), Eq(*autofill_profile),
           EqualsAutofilltriggerDetails(
@@ -1101,7 +1103,7 @@ TEST_F(FastCheckoutClientImplTest,
   personal_data_manager()->RemoveByGUID(autofill_profile->guid());
 
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
-  EXPECT_CALL(*autofill_manager(), FillProfileFormImpl).Times(0);
+  EXPECT_CALL(*autofill_manager(), FillOrPreviewProfileForm).Times(0);
 
   fast_checkout_client()->OnAfterLoadedServerPredictions(*autofill_manager());
 

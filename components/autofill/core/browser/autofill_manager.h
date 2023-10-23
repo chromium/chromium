@@ -256,11 +256,6 @@ class AutofillManager
                           const std::u16string& cvc,
                           const AutofillTriggerDetails& trigger_details);
 
-  void FillProfileForm(const AutofillProfile& profile,
-                       const FormData& form,
-                       const FormFieldData& field,
-                       const AutofillTriggerDetails& trigger_details);
-
   // Invoked when |form| has been filled with the value given by
   // FillOrPreviewForm.
   // Virtual for testing.
@@ -430,11 +425,6 @@ class AutofillManager
       const FormFieldData& field,
       const CreditCard& credit_card,
       const std::u16string& cvc,
-      const AutofillTriggerDetails& trigger_details) = 0;
-  virtual void FillProfileFormImpl(
-      const FormData& form,
-      const FormFieldData& field,
-      const AutofillProfile& profile,
       const AutofillTriggerDetails& trigger_details) = 0;
 
   virtual void OnFocusNoLongerOnFormImpl(bool had_interacted_form) = 0;

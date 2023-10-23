@@ -115,13 +115,6 @@ class MockAutofillManager : public AutofillManager {
                const AutofillTriggerDetails& trigger_details),
               (override));
   MOCK_METHOD(void,
-              FillProfileFormImpl,
-              (const FormData& form,
-               const FormFieldData& field,
-               const AutofillProfile& profile,
-               const AutofillTriggerDetails& trigger_details),
-              (override));
-  MOCK_METHOD(void,
               OnFocusNoLongerOnFormImpl,
               (bool had_interacted_form),
               (override));
