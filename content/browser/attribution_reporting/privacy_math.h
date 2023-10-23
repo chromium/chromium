@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_COMBINATORICS_H_
-#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_COMBINATORICS_H_
+#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_PRIVACY_MATH_H_
+#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_PRIVACY_MATH_H_
 
 #include <stdint.h>
 
@@ -66,4 +66,4 @@ CONTENT_EXPORT double ComputeChannelCapacity(int64_t num_states,
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_COMBINATORICS_H_
+#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_PRIVACY_MATH_H_
