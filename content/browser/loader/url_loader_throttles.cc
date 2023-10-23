@@ -82,10 +82,8 @@ CreateContentBrowserURLLoaderThrottles(
   // frame_tree_node_id may be invalid if we are loading the first frame
   // of the tab.
   FrameTreeNode* frame_tree_node = nullptr;
-  absl::optional<base::SafeRef<FrameTreeNode>> frame_tree_node_ref;
   if (frame_tree_node_id != FrameTreeNode::kFrameTreeNodeInvalidId) {
     frame_tree_node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
-    frame_tree_node_ref = frame_tree_node->GetSafeRef();
   }
 
   // Handle Critical Origin Trial headers if the context supports it and this
@@ -115,7 +113,7 @@ CreateContentBrowserURLLoaderThrottles(
   }
 
   auto throttle = MaybeCreateIdentityUrlLoaderThrottle(base::BindRepeating(
-      webid::SetIdpSigninStatus, browser_context, frame_tree_node_ref));
+      webid::SetIdpSigninStatus, browser_context, frame_tree_node_id));
   if (throttle)
     throttles.push_back(std::move(throttle));
 
