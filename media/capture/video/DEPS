@@ -2,7 +2,6 @@ include_rules = [
   "+ash/constants/ash_features.h",
   "+chromeos/dbus",
   "+components/device_event_log",
-  "+components/metrics/structured/structured_events.h",
   "+mojo/public/cpp",
   # This dependency is safe because it's a leaf in the video_capture_service,
   # but //media shouldn't depend on anything else from services/video_capture.

@@ -663,33 +663,6 @@
   </event>
 </project>
 
-<project name="CameraPeripheralInfo">
-  <owner>cros-camera-eng@chromium.org</owner>
-  <id>none</id>
-  <scope>device</scope>
-  <key-rotation>90</key-rotation>
-  <summary>
-    Project for camera peripheral popularity study. This is to get the list of
-    top camera peripherals.
-  </summary>
-
-  <event name="OpenCamera">
-    <summary>
-      Recorded whenever a camera is opened from Chrome.
-    </summary>
-    <metric name="VendorId" type="int">
-      <summary>
-        The vendor id of the device.
-      </summary>
-    </metric>
-    <metric name="ProductId" type="int">
-      <summary>
-        The product id of the device.
-      </summary>
-    </metric>
-  </event>
-</project>
-
 <project name="TestProjectOne">
   <owner>tby@chromium.org</owner>
   <id>per-project</id>
