@@ -212,7 +212,7 @@ void GinJavaBridgeMessageFilter::OnInvokeMethod(
     const std::string& method_name,
     const base::Value::List& arguments,
     base::Value::List* wrapped_result,
-    content::GinJavaBridgeError* error_code) {
+    mojom::GinJavaBridgeError* error_code) {
   DCHECK(JavaBridgeThread::CurrentlyOn());
 
   bool is_in_primary_main_frame = false;
@@ -227,7 +227,7 @@ void GinJavaBridgeMessageFilter::OnInvokeMethod(
                          wrapped_result, error_code);
   } else {
     wrapped_result->Append(base::Value());
-    *error_code = kGinJavaBridgeRenderFrameDeleted;
+    *error_code = mojom::GinJavaBridgeError::kGinJavaBridgeRenderFrameDeleted;
   }
 }
 

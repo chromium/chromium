@@ -483,6 +483,10 @@ mojom("mojo_bindings") {
     sources += [ "thread_type_switcher.mojom" ]
   }
 
+  if (is_android) {
+    sources += [ "gin_java_bridge.mojom" ]
+  }
+
   enabled_features = []
   if (enable_ipc_logging) {
     enabled_features += [ "ipc_logging" ]

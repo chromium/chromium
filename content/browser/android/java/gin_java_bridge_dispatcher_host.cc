@@ -370,13 +370,13 @@ void GinJavaBridgeDispatcherHost::OnInvokeMethod(
     const std::string& method_name,
     const base::Value::List& arguments,
     base::Value::List* wrapped_result,
-    content::GinJavaBridgeError* error_code) {
+    content::mojom::GinJavaBridgeError* error_code) {
   DCHECK(JavaBridgeThread::CurrentlyOn());
   DCHECK(routing_id != MSG_ROUTING_NONE);
   scoped_refptr<GinJavaBoundObject> object = FindObject(object_id);
   if (!object.get()) {
     wrapped_result->Append(base::Value());
-    *error_code = kGinJavaBridgeUnknownObjectId;
+    *error_code = mojom::GinJavaBridgeError::kGinJavaBridgeUnknownObjectId;
     return;
   }
   auto result = base::MakeRefCounted<GinJavaMethodInvocationHelper>(

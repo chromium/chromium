@@ -20,8 +20,8 @@
 
 // Messages for handling Java objects injected into JavaScript -----------------
 
-IPC_ENUM_TRAITS_MAX_VALUE(content::GinJavaBridgeError,
-                          content::kGinJavaBridgeErrorLast)
+IPC_ENUM_TRAITS_MAX_VALUE(content::mojom::GinJavaBridgeError,
+                          content::mojom::GinJavaBridgeError::kMaxValue)
 
 // Sent from browser to renderer to add a Java object with the given name.
 // Object IDs are generated on the browser side.
@@ -61,7 +61,7 @@ IPC_SYNC_MESSAGE_ROUTED3_2(GinJavaBridgeHostMsg_InvokeMethod,
                            std::string /* method_name */,
                            base::Value::List /* arguments */,
                            base::Value::List /* result */,
-                           content::GinJavaBridgeError /* error_code */)
+                           content::mojom::GinJavaBridgeError /* error_code */)
 
 // Sent from renderer to browser in two cases:
 //

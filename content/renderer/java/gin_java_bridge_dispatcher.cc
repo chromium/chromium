@@ -96,7 +96,7 @@ std::unique_ptr<base::Value> GinJavaBridgeDispatcher::InvokeJavaMethod(
     ObjectID object_id,
     const std::string& method_name,
     const base::Value::List& arguments,
-    GinJavaBridgeError* error) {
+    mojom::GinJavaBridgeError* error) {
   base::Value::List result_wrapper;
   render_frame()->Send(
       new GinJavaBridgeHostMsg_InvokeMethod(routing_id(),

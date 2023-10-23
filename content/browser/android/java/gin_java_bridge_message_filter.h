@@ -88,7 +88,7 @@ class GinJavaBridgeMessageFilter : public BrowserMessageFilter,
                       const std::string& method_name,
                       const base::Value::List& arguments,
                       base::Value::List* result,
-                      content::GinJavaBridgeError* error_code);
+                      mojom::GinJavaBridgeError* error_code);
   void OnObjectWrapperDeleted(GinJavaBoundObject::ObjectID object_id);
 
   // Accessed both from UI and background threads.
