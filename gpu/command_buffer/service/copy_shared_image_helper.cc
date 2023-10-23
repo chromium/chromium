@@ -648,6 +648,49 @@ CopySharedImageHelper::ConvertYUVAMailboxesToSkSurface(
   return result;
 }
 
+base::expected<void, GLError>
+CopySharedImageHelper::ConvertYUVAMailboxesToGLTexture(
+    GLuint dest_texture_id,
+    GLenum target,
+    GLuint internal_format,
+    GLenum type,
+    GLint src_x,
+    GLint src_y,
+    GLsizei width,
+    GLsizei height,
+    bool flip_y,
+    GLenum planes_yuv_color_space,
+    GLenum plane_config,
+    GLenum subsampling,
+    const volatile GLbyte* bytes_in) {
+  // This function requires a Ganesh GL context to create an SkSurface wrapping
+  // `dest_texture_id`.
+  GrDirectContext* direct_context = shared_context_state_->gr_context();
+  CHECK(direct_context);
+
+  // Create an SKSurface to wrap `dest_texture_id`.
+  sk_sp<SkSurface> dest_surface = CreateSkSurfaceWrappingGLTexture(
+      shared_context_state_, dest_texture_id, target, internal_format, type,
+      width, height, flip_y);
+
+  if (!dest_surface) {
+    return base::unexpected<GLError>(
+        GLError(GL_INVALID_VALUE, "glConvertYUVAMailboxesToGLTexture",
+                "Cannot create destination surface"));
+  }
+
+  // Draw the YUVA planes into the SKSurface (and hence the GL texture) as RGBA.
+  std::vector<GrBackendSemaphore> begin_semaphores;
+  std::vector<GrBackendSemaphore> end_semaphores;
+  return ConvertYUVAMailboxesToSkSurface(
+      "glConvertYUVAMailboxesToGLTexture", src_x, src_y, width, height,
+      planes_yuv_color_space, plane_config, subsampling, bytes_in,
+      dest_surface.get(), begin_semaphores, end_semaphores,
+      /*src_rgb_color_space=*/nullptr, [direct_context, &dest_surface]() {
+        direct_context->flush(dest_surface.get());
+      });
+}
+
 base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
     GLint xoffset,
     GLint yoffset,
