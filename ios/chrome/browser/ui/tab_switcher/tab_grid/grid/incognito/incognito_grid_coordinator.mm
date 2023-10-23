@@ -84,6 +84,7 @@
   _mediator.toolbarsMutator = _toolbarsMutator;
   _mediator.actionWrangler = self.incognitoViewController;
   _mediator.incognitoDelegate = self;
+  _mediator.reauthSceneAgent = reauthAgent;
 
   // If incognito is enabled then the grid exists and it is not disabled.
   // TODO(crbug.com/1457146): Get disabled status from the mediator.
