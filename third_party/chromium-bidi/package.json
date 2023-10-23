@@ -149,7 +149,9 @@
     "wpt": {
       "command": "tools/run-wpt.mjs",
       "files": [
-        "tools/run-wpt.mjs"
+        "tools/run-wpt.mjs",
+        "wpt/tools/webdriver/**/*.py",
+        "wpt/webdriver/tests/**.*.py"
       ],
       "dependencies": [
         "rollup"
@@ -158,7 +160,10 @@
     "wpt-all": {
       "command": "tools/runWPTAll.sh",
       "files": [
-        "tools/runWPTAll.sh"
+        "tools/run-wpt.mjs",
+        "tools/runWPTAll.sh",
+        "wpt/tools/webdriver/**/*.py",
+        "wpt/webdriver/tests/**.*.py"
       ],
       "dependencies": [
         "rollup"
