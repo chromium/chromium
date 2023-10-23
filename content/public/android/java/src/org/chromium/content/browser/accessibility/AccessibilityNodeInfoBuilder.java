@@ -45,6 +45,7 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.SpannableString;
 import android.text.style.LocaleSpan;
 import android.text.style.SuggestionSpan;
@@ -57,7 +58,6 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -184,15 +184,15 @@ public class AccessibilityNodeInfoBuilder {
                 // If we are focused on the same node as before, check if it has been longer than
                 // our delay since our last utterance, and if so, report invalid content and update
                 // our last reported time, otherwise suppress reporting content invalid.
-                if (Calendar.getInstance().getTimeInMillis() - mLastContentInvalidUtteranceTime
+                if (SystemClock.elapsedRealtime() - mLastContentInvalidUtteranceTime
                         >= CONTENT_INVALID_THROTTLE_DELAY) {
-                    mLastContentInvalidUtteranceTime = Calendar.getInstance().getTimeInMillis();
+                    mLastContentInvalidUtteranceTime = SystemClock.elapsedRealtime();
                     node.setContentInvalid(true);
                 }
             } else {
                 // When we are focused on a new node, report as normal and track new time.
                 mLastContentInvalidViewId = virtualViewId;
-                mLastContentInvalidUtteranceTime = Calendar.getInstance().getTimeInMillis();
+                mLastContentInvalidUtteranceTime = SystemClock.elapsedRealtime();
                 node.setContentInvalid(true);
             }
         } else {
