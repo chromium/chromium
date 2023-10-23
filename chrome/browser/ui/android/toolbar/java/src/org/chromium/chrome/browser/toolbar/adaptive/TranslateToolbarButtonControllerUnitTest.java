@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.translate.TranslateBridgeJni;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link TranslateToolbarButtonController} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -51,6 +52,7 @@ public class TranslateToolbarButtonControllerUnitTest {
         mActionTester = new UserActionTester();
 
         when(mTab.getWebContents()).thenReturn(mWebContents);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
     }
 
     @After
@@ -81,5 +83,18 @@ public class TranslateToolbarButtonControllerUnitTest {
         verify(mTracker)
                 .notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_TRANSLATE_OPENED);
         verify(mMockTranslateBridge).manualTranslateWhenReady(mWebContents);
+    }
+
+    @Test
+    public void testShouldNotShowUpOnNonHttpUrls() {
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.CHROME_ABOUT);
+        TranslateToolbarButtonController translateToolbarButtonController =
+                new TranslateToolbarButtonController(
+                        () -> mTab, mDrawable, "Translate button description", () -> mTracker);
+        ButtonData buttonData = translateToolbarButtonController.get(mTab);
+
+        Assert.assertFalse(buttonData.canShow());
+        Assert.assertTrue(buttonData.isEnabled());
+        Assert.assertNotNull(buttonData.getButtonSpec());
     }
 }
