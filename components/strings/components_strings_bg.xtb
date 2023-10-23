@@ -274,6 +274,7 @@
 <translation id="1507780850870535225">Ландшафтен дизайн</translation>
 <translation id="1513706915089223971">Списък на записите в историята</translation>
 <translation id="1516097932025103760">Ще бъде шифрована и запазена надеждно, а кодът за проверка никога не се съхранява.</translation>
+<translation id="151720253492607760">Продължаване без разрешение</translation>
 <translation id="1517433312004943670">Телефонният номер е задължителен</translation>
 <translation id="1519264250979466059">Дата на версията</translation>
 <translation id="1521159554480556801">Влакна и текстилни изкуства</translation>
@@ -877,6 +878,7 @@
 <translation id="2765217105034171413">Малък</translation>
 <translation id="2770159525358613612">Опитайте отново да качите файловете си</translation>
 <translation id="277133753123645258">Начин на доставка</translation>
+<translation id="2773388851563527404">Chrome ограничава използването на „бисквитки“ на трети страни от повечето сайтове. „Бисквитките“ на трети страни обаче са разрешени на този сайт, тъй като той разчита на тях за предоставянето на основни услуги. Отворете настройките, за да <ph name="LINK" />.</translation>
 <translation id="277499241957683684">Липсващ запис за устройството</translation>
 <translation id="2775884851269838147">Първа страница за отпечатване</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -1728,6 +1730,7 @@
 <translation id="4521280267704259211">Плик Monarch</translation>
 <translation id="4521916730539354575">Лява тава</translation>
 <translation id="4522570452068850558">Подробности</translation>
+<translation id="4522821696628398940">Да се запази ли IBAN номерът в профила в Google?</translation>
 <translation id="4523643381056109546">Знаци и надписи</translation>
 <translation id="4524138615196389145">Потвърждавайте картите си по-бързо, като от сега нататък използвате WebAuthn</translation>
 <translation id="45243788195988825">Блокиране на <ph name="TOPIC" /></translation>
@@ -2311,7 +2314,6 @@
 <translation id="5720705177508910913">Текущият потребител</translation>
 <translation id="572328651809341494">Скорошни раздели</translation>
 <translation id="5723287205918986743">Отбранителна промишленост</translation>
-<translation id="5725567311035061582">Управление на „бисквитките“ и данните за сайтовете</translation>
 <translation id="5730040223043577876">Chrome препоръчва да зададете повторно паролата си, ако сте я използвали и на други сайтове.</translation>
 <translation id="5732392974455271431">Родителите ви могат да го отблокират за вас</translation>
 <translation id="573555826359077410">Бутон за създаване на формуляр. Активирайте, за да създадете бързо формуляр в Google Формуляри</translation>
@@ -3659,11 +3661,13 @@
 <translation id="8416874502399604126">Достъпът до микрофона е разрешен този път</translation>
 <translation id="8422228580902424274">Хакерите, които използват сайта, който се опитвате да посетите, може да ви подведат да инсталирате софтуер или да разкриете информация за себе си, като например парола, телефон или номер на кредитна карта.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" />, <ph name="SECOND_LABEL" />, <ph name="THIRD_LABEL" /></translation>
+<translation id="8425213833346101688">Промяна</translation>
 <translation id="8427848540066057481">500 x 750 мм</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8428634594422941299">Разбрах</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да управлявате предпочитанията си за „бисквитките“ от настройките на Chrome</translation>
 <translation id="8433057134996913067">Ще излезете от повечето уебсайтове.</translation>
+<translation id="8434014327286137412">За да платите по-бързо следващия път, запазете IBAN номера в профила си в Google</translation>
 <translation id="8434840396568290395">Домашни любимци</translation>
 <translation id="8436623588884785770">Добавяне на правило</translation>
 <translation id="8437238597147034694">&amp;Отмяна на преместването</translation>
@@ -3762,6 +3766,7 @@
 <translation id="865032292777205197">сензори за движение</translation>
 <translation id="865255447216708819">Полупрозрачно фолио</translation>
 <translation id="8654126188050905496">55 x 91 мм</translation>
+<translation id="8655930295668719549">По-рано не разрешихте на <ph name="ORIGIN" /> да осъществи достъп до <ph name="PERMISSION" /></translation>
 <translation id="8662463432865928030">Търговски имоти</translation>
 <translation id="8663226718884576429">Обобщение на поръчката, <ph name="TOTAL_LABEL" />, още подробности</translation>
 <translation id="8663909737634214500">Оптичен диск</translation>

@@ -203,7 +203,6 @@
 <translation id="1757857692711134412">Вимкнено до заходу сонця</translation>
 <translation id="1768366657309696705">Комбінацію клавіш <ph name="LAUNCHER_KEY_NAME" /> + крапка змінено. Щоб скористатися клавішею Insert, натисніть <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Переміщено в рядок <ph name="ROW_NUMBER" />, стовпець <ph name="COLUMN_NUMBER" />.</translation>
-<translation id="1771458705381257690">Відкрийте додаток <ph name="NAME" />, щоб налаштувати свій пристрій</translation>
 <translation id="1771761307086386028">Прокрутити праворуч</translation>
 <translation id="1774796056689732716">Календар, <ph name="CURRENT_MONTH_YEAR" />, зараз вибрано <ph name="DATE" />.</translation>
 <translation id="1775598828170459419">Показано <ph name="NUM_SHOWN_ITEMS" /> з <ph name="NUM_TOTAL_ITEMS" /></translation>
@@ -308,7 +307,6 @@
 <translation id="2258734398699965611">Пропоновані файли</translation>
 <translation id="2268130516524549846">Bluetooth вимкнено</translation>
 <translation id="2268813581635650749">Вийти з усіх</translation>
-<translation id="2269016722240250274">Додаток використовує ваш мікрофон</translation>
 <translation id="2276987123919776440">15 хвилин</translation>
 <translation id="2277103315734023688">Перейти вперед</translation>
 <translation id="2282073721614284166">Відкрити посилання на вкладці</translation>
@@ -361,6 +359,7 @@
 <translation id="2465145153332031561">Стан акумулятора: <ph name="BATTERY_HEALTH_PERCENTAGE" />%, кількість циклів: <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Підтвердьте роздільну здатність</translation>
 <translation id="2475982808118771221">Сталася помилка</translation>
+<translation id="2478076885740497414">Установити додаток</translation>
 <translation id="2482878487686419369">Сповіщення</translation>
 <translation id="2484513351006226581">Натисніть комбінацію клавіш <ph name="KEYBOARD_SHORTCUT" />, щоб змінити розкладку клавіатури.</translation>
 <translation id="2487915095798731898">Приєднатися</translation>
@@ -634,8 +633,6 @@
 <translation id="3600061223661453002">Вимкнути</translation>
 <translation id="3604801046548457007">Створено робочий стіл "<ph name="DESK_TITILE" />"</translation>
 <translation id="3606978283550408104">Брайлівський дисплей під’єднано.</translation>
-<translation id="3609301425104788351"><ph name="MIC" />,
-        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">Якщо ввімкнути мобільний Інтернет, активується Bluetooth</translation>
 <translation id="3616113530831147358">Аудіо</translation>
 <translation id="3616883743181209306">Меню переміщено у верхній правий кут екрана.</translation>
@@ -685,9 +682,7 @@
 <translation id="3781910048497807059">Виділити попередню панель</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Заблокувати</translation>
-<translation id="3789841737615482174">Установити</translation>
 <translation id="3796215473395753611">alt + стрілка вгору</translation>
-<translation id="3796746699333205839">Додаток використовує ваші камеру й мікрофон</translation>
 <translation id="3798670284305777884">Динамік (внутрішній)</translation>
 <translation id="3799080171973636491">Ви натиснули комбінацію клавіш для лупи на весь екран. Увімкнути?</translation>
 <translation id="380165613292957338">Вітаю! Чим я можу допомогти?</translation>
@@ -817,6 +812,7 @@
 <translation id="428715201724021596">Триває підключення до профілю. Це може зайняти кілька хвилин.</translation>
 <translation id="4294319844246081198">Доброго ранку, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Видаліть усі сповіщення (<ph name="COUNT" />)</translation>
+<translation id="4300272766492248925">Відкрити додаток</translation>
 <translation id="430191667033048642">Додаток <ph name="MOVED_APP_NAME" /> переміщено в папку "<ph name="FOLDER_NAME" />".</translation>
 <translation id="4302592941791324970">Недоступно</translation>
 <translation id="4303223480529385476">Розгорнути панель стану</translation>
@@ -1212,7 +1208,6 @@
 <translation id="5876666360658629066">Введіть батьківський код</translation>
 <translation id="5881540930187678962">Налаштуйте функцію "Керування телефоном" пізніше</translation>
 <translation id="5881663018261910378">Вимкнено</translation>
-<translation id="5883017113634523865">Установіть супутній додаток для <ph name="NAME" /> з Google Play, щоб переглянути всі доступні функції</translation>
 <translation id="5887954372087850114">Вікно "<ph name="WINDOW_TITLE" />" призначено робочому столу "<ph name="DESK_TITLE" />". Його призначення для всіх інших робочих столів скасовано</translation>
 <translation id="588817334757907802">Відкрити файл у веб-переглядачі Chrome</translation>
 <translation id="5895138241574237353">Перезапустити</translation>
@@ -1582,7 +1577,6 @@
 <translation id="742594950370306541">Камера використовується.</translation>
 <translation id="742608627846767349">Доброго ранку!</translation>
 <translation id="743058460480092004">Камера та мікрофон використовуються.</translation>
-<translation id="7452560014878697800">Додаток використовує вашу камеру</translation>
 <translation id="7453330308669753048">Вилучено з результатів історії пошуку</translation>
 <translation id="7459485586006128091">Точку доступу вимкнено через внутрішню помилку. Спробуйте підключитися за кілька хвилин.</translation>
 <translation id="7461924472993315131">Закріпити</translation>

@@ -203,7 +203,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1757857692711134412">Funzionalità disattivata fino al tramonto</translation>
 <translation id="1768366657309696705">La scorciatoia da tastiera <ph name="LAUNCHER_KEY_NAME" /> + Punto è cambiata. Per usare il tasto Ins, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Maiusc + Backspace.</translation>
 <translation id="1770726142253415363">Spostata alla riga <ph name="ROW_NUMBER" />, colonna <ph name="COLUMN_NUMBER" />.</translation>
-<translation id="1771458705381257690">Apri <ph name="NAME" /> per configurare e personalizzare il tuo dispositivo</translation>
 <translation id="1771761307086386028">Scorri a destra</translation>
 <translation id="1774796056689732716">Calendario, <ph name="CURRENT_MONTH_YEAR" />, è attualmente selezionata la data <ph name="DATE" />.</translation>
 <translation id="1775598828170459419">Elementi visualizzati: <ph name="NUM_SHOWN_ITEMS" /> su <ph name="NUM_TOTAL_ITEMS" /></translation>
@@ -308,7 +307,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2258734398699965611">File suggeriti</translation>
 <translation id="2268130516524549846">Bluetooth disattivato</translation>
 <translation id="2268813581635650749">Disconnetti tutti</translation>
-<translation id="2269016722240250274">Un'applicazione sta utilizzando il microfono</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2277103315734023688">Vai avanti</translation>
 <translation id="2282073721614284166">Apri link in una scheda</translation>
@@ -361,6 +359,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2465145153332031561">Integrità della batteria: <ph name="BATTERY_HEALTH_PERCENTAGE" />%, numero di cicli: <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Conferma la risoluzione</translation>
 <translation id="2475982808118771221">Si è verificato un errore</translation>
+<translation id="2478076885740497414">Installa app</translation>
 <translation id="2482878487686419369">Notifiche</translation>
 <translation id="2484513351006226581">Premi <ph name="KEYBOARD_SHORTCUT" /> per cambiare il layout della tastiera.</translation>
 <translation id="2487915095798731898">Partecipa</translation>
@@ -634,8 +633,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3600061223661453002">Off</translation>
 <translation id="3604801046548457007">Scrivania <ph name="DESK_TITILE" /> creata</translation>
 <translation id="3606978283550408104">Display Braille collegato.</translation>
-<translation id="3609301425104788351"><ph name="MIC" />,
-        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">Se attivi i dati mobili verrà attivato anche il Bluetooth</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3616883743181209306">Menu spostato nell'angolo in alto a destra dello schermo.</translation>
@@ -682,9 +679,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3781910048497807059">Sposta lo stato attivo sul riquadro precedente</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Blocca</translation>
-<translation id="3789841737615482174">Installa</translation>
 <translation id="3796215473395753611">Alt + Freccia su</translation>
-<translation id="3796746699333205839">Un'applicazione sta utilizzando la fotocamera e il microfono</translation>
 <translation id="3798670284305777884">Altoparlante (interno)</translation>
 <translation id="3799080171973636491">Hai premuto la scorciatoia da tastiera per la lente d'ingrandimento a schermo intero. Vuoi attivarla?</translation>
 <translation id="380165613292957338">Ciao, come posso aiutarti?</translation>
@@ -814,6 +809,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="428715201724021596">Connessione al profilo in corso. Questa operazione può richiedere alcuni minuti.</translation>
 <translation id="4294319844246081198">Buongiorno <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Cancella tutte e <ph name="COUNT" /> le notifiche</translation>
+<translation id="4300272766492248925">Apri app</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> spostata nella cartella <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Non disponibile</translation>
 <translation id="4303223480529385476">Espandi area di stato</translation>
@@ -1209,7 +1205,6 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="5876666360658629066">Inserisci codice genitore</translation>
 <translation id="5881540930187678962">Configura Phone Hub in un secondo momento</translation>
 <translation id="5881663018261910378">Off</translation>
-<translation id="5883017113634523865">Installa l'app di <ph name="NAME" /> da Google Play per vedere tutte le funzionalità disponibili</translation>
 <translation id="5887954372087850114">Finestra <ph name="WINDOW_TITLE" /> assegnata a <ph name="DESK_TITLE" />; assegnazione della finestra a tutte le altre scrivanie annullata</translation>
 <translation id="588817334757907802">Apri un file nel browser Chrome</translation>
 <translation id="5895138241574237353">Riavvia</translation>
@@ -1579,7 +1574,6 @@ Nuova installazione</translation>
 <translation id="742594950370306541">La videocamera è in uso.</translation>
 <translation id="742608627846767349">Buongiorno,</translation>
 <translation id="743058460480092004">Videocamera e microfono sono in uso.</translation>
-<translation id="7452560014878697800">Un'applicazione sta utilizzando la fotocamera</translation>
 <translation id="7453330308669753048">Risultato della cronologia delle ricerche rimosso</translation>
 <translation id="7459485586006128091">L'hotspot è stato disattivato a causa di un errore interno. Prova a riconnetterti tra qualche minuto.</translation>
 <translation id="7461924472993315131">Blocca</translation>

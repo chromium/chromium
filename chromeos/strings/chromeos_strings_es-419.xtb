@@ -93,7 +93,6 @@
 <translation id="1643449475550628585">Cambiar la imagen del fondo de pantalla diariamente</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1651925268237749928">Seleccionaste un álbum compartido. Otras personas pueden agregar o cambiar fotos. Es posible que el fondo de pantalla use fotos que actualmente no están en este álbum.</translation>
-<translation id="1658834457013045127">Siempre</translation>
 <translation id="1661865805917886535">Es posible que se envíe a Google cierta información de la cuenta y el sistema. Usamos esta información para resolver problemas técnicos y mejorar nuestros servicios, conforme a nuestra Política de Privacidad (<ph name="PRIVACYPOLICYURL" />) y nuestras Condiciones del Servicio (<ph name="TERMSOFSERVICEURL" />). Para solicitar cambios de contenido, ve a la Ayuda legal (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Se detuvo: sin tinta</translation>
 <translation id="1664796644829245314">Vista previa de <ph name="PREVIEW_OBJECT" /></translation>
@@ -323,7 +322,6 @@
 <translation id="3484914941826596830">No desconectes este dispositivo externo ni apagues la computadora mientras se actualiza el firmware. Puedes minimizar esta ventana. Es posible que esta actualización demore unos minutos y que el dispositivo externo no funcione hasta que termine.</translation>
 <translation id="3486220673238053218">definición</translation>
 <translation id="3488065109653206955">Parcialmente activado</translation>
-<translation id="349491921221892984"><ph name="MINUTES" /> min</translation>
 <translation id="3502426834823382181">ver todas las apps</translation>
 <translation id="3510890413042482857">Enviar <ph name="BEGIN_LINK1" />datos de registro del rendimiento<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Actualización del SO</translation>
@@ -484,7 +482,6 @@
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="4771607256327216405">iluminación teclado</translation>
 <translation id="4773299976671772492">Detenida</translation>
-<translation id="4782003517030001304">1 h</translation>
 <translation id="4782311465517282004">Obtén definiciones, traducciones o conversión de unidades cuando haces clic con el botón derecho en texto o lo mantienes presionado.</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
 <translation id="4793710386569335688">Si tienes otros inconvenientes, visita el <ph name="BEGIN_LINK" />Centro de ayuda<ph name="END_LINK" />.</translation>
@@ -699,6 +696,7 @@
 <translation id="629550705077076970">atenuación del teclado</translation>
 <translation id="6302401976930124515">Se canceló la prueba de <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">App Explorar</translation>
+<translation id="6318437367327684789">siempre</translation>
 <translation id="6319207335391420837">Actualizar el firmware en <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Activar el protector de pantalla</translation>
 <translation id="6324916366299863871">Editar acceso directo</translation>

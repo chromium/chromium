@@ -203,7 +203,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1757857692711134412">Wyłączone do zachodu słońca</translation>
 <translation id="1768366657309696705">Skrót klawiszowy <ph name="LAUNCHER_KEY_NAME" /> + kropka został zmieniony. Aby użyć klawisza Insert, naciśnij <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Przeniesiono do wiersza <ph name="ROW_NUMBER" />, kolumny <ph name="COLUMN_NUMBER" />.</translation>
-<translation id="1771458705381257690">Otwórz aplikację <ph name="NAME" />, aby skonfigurować i spersonalizować urządzenie</translation>
 <translation id="1771761307086386028">Przewiń w prawo</translation>
 <translation id="1774796056689732716">Kalendarz, <ph name="CURRENT_MONTH_YEAR" />, obecnie wybrana jest data <ph name="DATE" />.</translation>
 <translation id="1775598828170459419">Wyświetlam <ph name="NUM_SHOWN_ITEMS" /> z <ph name="NUM_TOTAL_ITEMS" /></translation>
@@ -308,7 +307,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2258734398699965611">Sugerowane pliki</translation>
 <translation id="2268130516524549846">Bluetooth wyłączony</translation>
 <translation id="2268813581635650749">Wyloguj wszystkich</translation>
-<translation id="2269016722240250274">Aplikacja używa Twojego mikrofonu</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2277103315734023688">Przewiń do przodu</translation>
 <translation id="2282073721614284166">Otwórz link na karcie</translation>
@@ -361,6 +359,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2465145153332031561">Stan baterii: <ph name="BATTERY_HEALTH_PERCENTAGE" />%, Liczba cykli: <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Potwierdź rozdzielczość</translation>
 <translation id="2475982808118771221">Wystąpił błąd</translation>
+<translation id="2478076885740497414">Zainstaluj aplikację</translation>
 <translation id="2482878487686419369">Powiadomienia</translation>
 <translation id="2484513351006226581">Naciśnij <ph name="KEYBOARD_SHORTCUT" />, by przełączyć układ klawiatury.</translation>
 <translation id="2487915095798731898">Dołącz</translation>
@@ -634,8 +633,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3600061223661453002">Wył.</translation>
 <translation id="3604801046548457007">Utworzono biurko <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">Podłączono monitor brajlowski.</translation>
-<translation id="3609301425104788351"><ph name="MIC" />,
-        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">Wraz z mobilną transmisją danych zostanie włączony Bluetooth</translation>
 <translation id="3616113530831147358">Dźwięk</translation>
 <translation id="3616883743181209306">Menu zostało przeniesione w prawy górny róg ekranu.</translation>
@@ -685,9 +682,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3781910048497807059">Przenieś zaznaczenie na poprzedni panel</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Zablokuj</translation>
-<translation id="3789841737615482174">Zainstaluj</translation>
 <translation id="3796215473395753611">Alt + strzałka w górę</translation>
-<translation id="3796746699333205839">Aplikacja używa kamery i mikrofonu</translation>
 <translation id="3798670284305777884">Głośnik (wewnętrzny)</translation>
 <translation id="3799080171973636491">Naciśnięto skrót klawiszowy lupy pełnoekranowej. Czy chcesz ją włączyć?</translation>
 <translation id="380165613292957338">Cześć, w czym mogę pomóc?</translation>
@@ -817,6 +812,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="428715201724021596">Łączę z profilem. Może to potrwać kilka minut.</translation>
 <translation id="4294319844246081198">Dzień dobry <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Wyczyść wszystkie powiadomienia (<ph name="COUNT" />)</translation>
+<translation id="4300272766492248925">Otwórz aplikację</translation>
 <translation id="430191667033048642">Aplikacja <ph name="MOVED_APP_NAME" /> została przeniesiona do folderu <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Brak dostępu</translation>
 <translation id="4303223480529385476">Rozwiń pasek stanu</translation>
@@ -1212,7 +1208,6 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="5876666360658629066">Wpisz kod rodzica</translation>
 <translation id="5881540930187678962">Skonfiguruj sterowanie telefonem później</translation>
 <translation id="5881663018261910378">Wyłączono</translation>
-<translation id="5883017113634523865">Zainstaluj aplikację <ph name="NAME" /> z Google Play, aby zobaczyć wszystkie dostępne funkcje</translation>
 <translation id="5887954372087850114">Okno <ph name="WINDOW_TITLE" /> zostało przypisane do biurka <ph name="DESK_TITLE" />, a jego przypisanie do innych biurek zostało anulowane</translation>
 <translation id="588817334757907802">Otwórz plik w przeglądarce Chrome</translation>
 <translation id="5895138241574237353">Uruchom ponownie</translation>
@@ -1581,7 +1576,6 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="742594950370306541">Aparat jest używany.</translation>
 <translation id="742608627846767349">Dzień dobry,</translation>
 <translation id="743058460480092004">Aparat i mikrofon są używane.</translation>
-<translation id="7452560014878697800">Aplikacja używa kamery</translation>
 <translation id="7453330308669753048">Wynik historii wyszukiwania został usunięty</translation>
 <translation id="7459485586006128091">Hotspot został wyłączony z powodu błędu wewnętrznego. Za kilka minut spróbuj jeszcze raz nawiązać połączenie.</translation>
 <translation id="7461924472993315131">Przypnij</translation>

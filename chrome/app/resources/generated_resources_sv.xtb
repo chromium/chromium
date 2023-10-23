@@ -851,6 +851,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1646045728251578877">Det finns en programvaruuppdatering</translation>
 <translation id="1646982517418478057">Ange ett lösenord om du vill kryptera det här certifikatet</translation>
 <translation id="1647408325348388858">Vill du öppna och redigera <ph name="FILE_NAME" /> i den här webbappen?</translation>
+<translation id="1647986356840967552">Föregående sida</translation>
 <translation id="1648439345221797326">ctrl + skift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="1648528859488547844">Fastställ platsen utifrån wifi eller mobilnätverk</translation>
 <translation id="164936512206786300">Koppla från Bluetooth-enhet</translation>
@@ -1874,6 +1875,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
            • ta bort cookies och tillfällig webbplatsdata.
             <ph name="LINE_BREAKS" />
            Bokmärken, historiken och sparade lösenord påverkas inte.</translation>
+<translation id="2427507373259914951">Vänsterklicka</translation>
 <translation id="2428510569851653187">Beskriv vad du höll på med när fliken kraschade</translation>
 <translation id="2428939361789119025">Stäng av wifi</translation>
 <translation id="2428978615149723410">dessa kundvagnar</translation>
@@ -2040,7 +2042,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2541706104884128042">Ny stopptid har ställts in</translation>
 <translation id="2542050502251273923">Ställer in felsökningsnivån för nätverksanslutningshanteraren och andra tjänster som använder ff_debug.</translation>
 <translation id="2544352060595557290">Den här fliken</translation>
-<translation id="2546283357679194313">Cookies och webbplatsdata</translation>
 <translation id="2546302722632337735">Tillåt inte att webbplatser använder identifierare för att spela upp skyddat innehåll</translation>
 <translation id="2546991196809436099">Zooma in för att göra objekt på skärmen större. Aktivera och inaktivera skärmförstoring med Sök + Ctrl + M.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> har tillåtits</translation>
@@ -2079,7 +2080,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2575713839157415345">{YEARS,plural, =1{Den här enheten sparas i ett år. Nästa gång kan du ansluta utan kod. Det här ställs in av administratören.}other{Den här enheten sparas i {YEARS} år. Nästa gång kan du ansluta utan kod. Det här ställs in av administratören.}}</translation>
 <translation id="2577446426265992344">utan adressfält</translation>
 <translation id="257779572837908839">Konfigurera som Chromebox för möten</translation>
-<translation id="2579309488038515659">Aktivera surfzon</translation>
 <translation id="2580889980133367162">Tillåt alltid att <ph name="HOST" /> laddar flera filer</translation>
 <translation id="258095186877893873">Lång</translation>
 <translation id="2581455244799175627">Mer om att tillåta tredjepartscookies</translation>
@@ -3857,6 +3857,7 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="3984135167056005094">Ange inga e-postadresser</translation>
 <translation id="3984159763196946143">Det gick inte att starta demoläget</translation>
 <translation id="3984431586879874039">Vill du tillåta att webbplatsen ser din säkerhetsnyckel?</translation>
+<translation id="3984536049089846927">Nästa sida</translation>
 <translation id="398477389655464998">Kopiera länk till markering</translation>
 <translation id="3984862166739904574">Definition i Snabbinfo</translation>
 <translation id="3985022125189960801">Lägg till en webbplats igen om du vill att den ingår i en grupp av webbplatser som kan gissa vad du gillar</translation>
@@ -6405,7 +6406,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6078323886959318429">Lägg till genväg</translation>
 <translation id="6078742430369906859">Anslutningen på <ph name="NETWORK_ID" /> kan vara begränsad</translation>
 <translation id="6078752646384677957">Kontrollera mikrofonen och ljudnivåerna.</translation>
-<translation id="6079162143107623965">En webbplats som du tittar på kan bädda in innehåll från andra webbplatser, till exempel bilder, annonser och text. Dessa inbäddade webbplatser kan spara data på din enhet.</translation>
 <translation id="608029822688206592">Inga nätverk hittades. Sätt i SIM-kortet och försök igen.</translation>
 <translation id="6080689532560039067">Kontrollera systemtiden</translation>
 <translation id="6082877069782862752">Tangentmappning</translation>
@@ -6557,7 +6557,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6205314730813004066">Annonsintegritet</translation>
 <translation id="6206199626856438589">Du loggas ut från webbplatserna som visas, även på öppna flikar</translation>
 <translation id="6206311232642889873">Kopiera &amp;bild</translation>
-<translation id="6206521455877863927">Inkludera webbplatser från samma domän, till exempel google.com och mail.google.com. Webbplatser du visar kan spara data på enheten.</translation>
 <translation id="6207200176136643843">Återställ standardzoomnivån</translation>
 <translation id="6207937957461833379">Land/region</translation>
 <translation id="6208521041562685716">Mobildata aktiveras</translation>
@@ -6815,7 +6814,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6418511932144861495">Installera viktig uppdatering</translation>
 <translation id="641867537956679916">Administratören har loggat in för att undersöka ett problem. Du kan använda enheten igen när administratören har gett tillbaka kontrollen.</translation>
 <translation id="641899100123938294">Sök efter nya enheter</translation>
-<translation id="6419239627403237650">Från webbplatsen du visar</translation>
 <translation id="6419524191360800346">En uppgradering till Debian 11 (Bullseye) är tillgänglig</translation>
 <translation id="6419546358665792306">Läser in okomprimerat tillägg</translation>
 <translation id="642469772702851743">Enheten (serienr: <ph name="SERIAL_NUMBER" />) har låsts av ägaren.</translation>
@@ -9015,7 +9013,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8168435359814927499">Innehåll</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Lägg till fliken i läslistan}other{Lägg till flikarna i läslistan}}</translation>
 <translation id="8171334254070436367">Dölj alla kort</translation>
-<translation id="8172192489606308982">Från andra webbplatser</translation>
 <translation id="8174047975335711832">Enhetsinformation</translation>
 <translation id="8174876712881364124">Säkerhetskopiera till Google Drive. Återställ enkelt data eller byt enhet när som helst. Säkerhetskopian innehåller appdata. Säkerhetskopiorna krypteras med hjälp av lösenordet för ditt barns Google-konto och laddas upp på Google. <ph name="BEGIN_LINK1" />Läs mer<ph name="END_LINK1" /></translation>
 <translation id="8176332201990304395">Rosa och vit</translation>
@@ -9057,6 +9054,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8202160505685531999">Ange lösenordet på nytt om du vill uppdatera din profil på <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8203152941016626022">Enhetsnamn för Närdelning</translation>
 <translation id="8203732864715032075">Skicka aviseringar till dig och komma ihåg den här datorn som standard för Messages. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
+<translation id="8203795194971602413">Högerklicka</translation>
 <translation id="8205432712228803050">Skärmen och kringutrustningen kan återställas tillfälligt. Du måste koppla ifrån och sätta i kringutrustningen igen för att ändringen ska träda i kraft.</translation>
 <translation id="8205478243727418828">Appstartaren + nedåtpil</translation>
 <translation id="820568752112382238">Mest besökta webbplatser</translation>
@@ -9305,6 +9303,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="839363317075970734">Information om Bluetooth-enhet</translation>
 <translation id="8393700583063109961">Skicka meddelande</translation>
 <translation id="8394212467245680403">Alfanumeriskt</translation>
+<translation id="8394908167088220973">Spela upp/Pausa</translation>
 <translation id="8396098434728053815">Dela även ljud från flikar</translation>
 <translation id="8397825320644530257">Koppla från ansluten telefon</translation>
 <translation id="8398877366907290961">Fortsätt ändå</translation>

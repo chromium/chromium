@@ -851,6 +851,7 @@
 <translation id="1646045728251578877">有可用的軟件更新</translation>
 <translation id="1646982517418478057">請輸入密碼以加密此憑證</translation>
 <translation id="1647408325348388858">要在這個網絡應用程式中開啟並編輯「<ph name="FILE_NAME" />」嗎？</translation>
+<translation id="1647986356840967552">上一頁</translation>
 <translation id="1648439345221797326">Ctrl + Shift + <ph name="TOP_ROW_KEY" /> 鍵</translation>
 <translation id="1648528859488547844">使用 Wi‑Fi 或流動網絡確定位置</translation>
 <translation id="164936512206786300">取消配對藍牙裝置</translation>
@@ -1874,6 +1875,7 @@
            • 刪除 Cookie 和其他暫存網站資料
             <ph name="LINE_BREAKS" />
            書籤、記錄和已儲存的密碼並不會受到影響。</translation>
+<translation id="2427507373259914951">按一下左鍵</translation>
 <translation id="2428510569851653187">請說明分頁當機時您正在執行的動作</translation>
 <translation id="2428939361789119025">關閉 Wi-Fi</translation>
 <translation id="2428978615149723410">這些購物車</translation>
@@ -2040,7 +2042,6 @@
 <translation id="2541706104884128042">已設定新的就寢時間</translation>
 <translation id="2542050502251273923">使用 ff_debug 設定網絡連線管理員及其他服務的偵錯等級。</translation>
 <translation id="2544352060595557290">這個分頁</translation>
-<translation id="2546283357679194313">Cookie 和網站數據</translation>
 <translation id="2546302722632337735">不允許網站使用識別碼來播放受保護的內容</translation>
 <translation id="2546991196809436099">放大畫面上的項目。使用搜尋鍵 + Ctrl + M 鍵即可開啟或關閉放大鏡。</translation>
 <translation id="2548347166720081527">已允許使用<ph name="PERMISSION" /></translation>
@@ -2079,7 +2080,6 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{系統會記住此裝置，在 1 年內無需輸入驗證碼即可再次連接。此設定由管理員設定。}other{系統會記住此裝置，在 {YEARS} 年內無需輸入驗證碼即可再次連接。此設定由管理員設定。}}</translation>
 <translation id="2577446426265992344">沒有網址列</translation>
 <translation id="257779572837908839">設定為 Chromebox 視像會議</translation>
-<translation id="2579309488038515659">啟用熱點</translation>
 <translation id="2580889980133367162">永遠允許 <ph name="HOST" /> 下載多個檔案</translation>
 <translation id="258095186877893873">長</translation>
 <translation id="2581455244799175627">進一步了解允許第三方 Cookie</translation>
@@ -3855,6 +3855,7 @@
 <translation id="3984135167056005094">請勿包括電郵地址</translation>
 <translation id="3984159763196946143">無法啟動示範模式</translation>
 <translation id="3984431586879874039">要允許此網站查看您的安全密鑰嗎？</translation>
+<translation id="3984536049089846927">下一頁</translation>
 <translation id="398477389655464998">複製突顯文字的連結</translation>
 <translation id="3984862166739904574">快速解答的定義</translation>
 <translation id="3985022125189960801">您重新新增的網站可再次猜測您的興趣。</translation>
@@ -6398,7 +6399,6 @@
 <translation id="6078323886959318429">新增捷徑</translation>
 <translation id="6078742430369906859">「<ph name="NETWORK_ID" />」的連接性可能受到限制</translation>
 <translation id="6078752646384677957">請檢查麥克風和音訊音量。</translation>
-<translation id="6079162143107623965">您目前瀏覽的網站可嵌入其他網站的內容，例如圖片、廣告和文字。這些嵌入的網站可將資料儲存到您的裝置。</translation>
 <translation id="608029822688206592">找不到網絡。請插入 SIM 卡，然後再試一次。</translation>
 <translation id="6080689532560039067">請檢查您的系統時間</translation>
 <translation id="6082877069782862752">對應鍵</translation>
@@ -6551,7 +6551,6 @@
 <translation id="6205314730813004066">廣告私隱權</translation>
 <translation id="6206199626856438589">您將會從已顯示的網站 (包括已開啟的分頁) 中登出</translation>
 <translation id="6206311232642889873">複製圖片(&amp;Y)</translation>
-<translation id="6206521455877863927">包括同一網域中的網站，例如 google.com 和 mail.google.com。您目前瀏覽的網站可將資料儲存到您的裝置。</translation>
 <translation id="6207200176136643843">重設為預設縮放等級</translation>
 <translation id="6207937957461833379">國家/地區</translation>
 <translation id="6208521041562685716">正在啟用流動數據</translation>
@@ -6809,7 +6808,6 @@
 <translation id="6418511932144861495">安裝重要更新</translation>
 <translation id="641867537956679916">管理員已登入並調查問題。待管理員交還控制權後，您便可繼續使用裝置。</translation>
 <translation id="641899100123938294">掃瞄新裝置</translation>
-<translation id="6419239627403237650">來自您正在瀏覽的網站</translation>
 <translation id="6419524191360800346">可以升級至 Debian 11 (Bullseye)</translation>
 <translation id="6419546358665792306">載入已解除壓縮的擴充程式</translation>
 <translation id="642469772702851743">這部裝置 (序號：<ph name="SERIAL_NUMBER" />) 已被其擁有者上鎖。</translation>
@@ -7119,6 +7117,7 @@
 <translation id="6673898378497337661">校光鍵盤</translation>
 <translation id="6674571176963658787">如要開始同步處理，請輸入密碼短語</translation>
 <translation id="6675665718701918026">已連接指標裝置</translation>
+<translation id="6675985668044425385">如果網站無法正常運作，可以透過網址列中的追蹤保護功能選項，為該網站啟用第三方 Cookie。</translation>
 <translation id="6676212663108450937">訓練聲音時，建議您使用耳機</translation>
 <translation id="6677942524382973058">Private State Token 能夠改善網絡上的私隱，而且系統無法透過信任憑證來識別您的身分。</translation>
 <translation id="6678717876183468697">查詢網址</translation>
@@ -7457,6 +7456,7 @@
 <translation id="6943176775188458830">取消列印</translation>
 <translation id="6943939122536910181">中斷咗同 <ph name="DEVICE" /> 嘅連線</translation>
 <translation id="6944708469742828051">此密鑰只會儲存在 Windows Hello 中</translation>
+<translation id="6944750221184785444">無法安裝這個設定檔。如需技術支援，請與你的電信業者聯絡。</translation>
 <translation id="6945221475159498467">選取</translation>
 <translation id="694592694773692225">已在此網頁禁止重新導向。</translation>
 <translation id="6947015141909171112">系統會根據您最近搜尋的食譜，為您顯示食譜。
@@ -9008,7 +9008,6 @@
 <translation id="8168435359814927499">內容</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{將分頁新增至閱讀清單}other{將分頁新增至閱讀清單}}</translation>
 <translation id="8171334254070436367">隱藏所有資訊卡</translation>
-<translation id="8172192489606308982">來自其他網站</translation>
 <translation id="8174047975335711832">裝置資料</translation>
 <translation id="8174876712881364124">備份至「Google 雲端硬碟」。您可隨時輕鬆還原資料或改用其他裝置。備份包含應用程式資料。備份會上載至 Google，並使用您子女的 Google 帳戶密碼加密。<ph name="BEGIN_LINK1" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="8176332201990304395">粉紅色和白色</translation>
@@ -9050,6 +9049,7 @@
 <translation id="8202160505685531999">請重新輸入密碼以更新 <ph name="DEVICE_TYPE" /> 的個人檔案。</translation>
 <translation id="8203152941016626022">「咫尺共享」裝置名稱</translation>
 <translation id="8203732864715032075">讓「訊息」向您傳送通知並預設記住這台電腦<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="8203795194971602413">按一下右鍵</translation>
 <translation id="8205432712228803050">螢幕和周邊裝置可能會短暫重設。請先拔除周邊裝置的插頭並重新插回，此變更才會生效。</translation>
 <translation id="8205478243727418828">啟動器鍵 + 向下箭咀鍵</translation>
 <translation id="820568752112382238">最常瀏覽的網站</translation>
@@ -9298,6 +9298,7 @@
 <translation id="839363317075970734">藍牙裝置詳情</translation>
 <translation id="8393700583063109961">傳送訊息</translation>
 <translation id="8394212467245680403">英數字元</translation>
+<translation id="8394908167088220973">媒體播放/暫停</translation>
 <translation id="8396098434728053815">同時分享分頁音訊</translation>
 <translation id="8397825320644530257">解除連接已連接的手機</translation>
 <translation id="8398877366907290961">仍要繼續</translation>

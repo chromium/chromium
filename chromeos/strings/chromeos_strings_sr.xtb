@@ -93,7 +93,6 @@
 <translation id="1643449475550628585">Мењајте слику позадине сваког дана</translation>
 <translation id="1644574205037202324">Историја</translation>
 <translation id="1651925268237749928">Изабрали сте дељени албум. Други људи могу да додају или мењају слике. Позадина може да користи слике које тренутно нису у овом албуму.</translation>
-<translation id="1658834457013045127">Заувек</translation>
 <translation id="1661865805917886535">Неке информације о налогу и систему могу да се шаљу Google-у. Те информације користимо за решавање техничких проблема и побољшавање услуга, у складу са политиком приватности (<ph name="PRIVACYPOLICYURL" />) и условима коришћења услуге (<ph name="TERMSOFSERVICEURL" />). Да бисте затражили промене садржаја, посетите правну помоћ (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Заустављено – нема више мастила</translation>
 <translation id="1664796644829245314">Преглед за <ph name="PREVIEW_OBJECT" /></translation>
@@ -323,7 +322,6 @@
 <translation id="3484914941826596830">Не искључујте спољни уређај ни рачунар док се фирмвер ажурира. Можете да умањите овај прозор. Ово ажурирање може да потраје неколико минута, а спољни уређај можда неће радити током тог периода.</translation>
 <translation id="3486220673238053218">дефиниција</translation>
 <translation id="3488065109653206955">Делимично активирано</translation>
-<translation id="349491921221892984"><ph name="MINUTES" /> мин</translation>
 <translation id="3502426834823382181">прикажи све апликације</translation>
 <translation id="3510890413042482857">Шаљи <ph name="BEGIN_LINK1" />податке о праћењу учинка<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Ажурирање Chrome ОС-а</translation>
@@ -484,7 +482,6 @@
 <translation id="473775607612524610">Ажурирај</translation>
 <translation id="4771607256327216405">осветљавање тастатуре</translation>
 <translation id="4773299976671772492">Заустављено је</translation>
-<translation id="4782003517030001304">1 ч</translation>
 <translation id="4782311465517282004">Добијајте дефиниције, преводе или конверзије јединица када кликнете десним тастером на текст или га додирнете и задржите</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> слика</translation>
 <translation id="4793710386569335688">Додатну помоћ потражите у <ph name="BEGIN_LINK" />центру за помоћ<ph name="END_LINK" />.</translation>
@@ -699,6 +696,7 @@
 <translation id="629550705077076970">затамњивање тастатуре</translation>
 <translation id="6302401976930124515">Тест <ph name="TEST_NAME" /> је отказан</translation>
 <translation id="631063167932043783">Истражите апликацију</translation>
+<translation id="6318437367327684789">заувек</translation>
 <translation id="6319207335391420837">Ажурирајте фирмвер на уређају <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Укључите чувар екрана</translation>
 <translation id="6324916366299863871">Измени пречицу</translation>

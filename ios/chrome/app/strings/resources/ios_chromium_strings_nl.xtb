@@ -4,6 +4,7 @@
 <translation id="1046370274005147998">Zoeken met je stem in Chromium.</translation>
 <translation id="1047130070405668746">Selecteer Chromium</translation>
 <translation id="1091252999271033193">Dit betekent dat Chromium altijd de mobiele site opvraagt.</translation>
+<translation id="1115463765356382667">Voer de voorgestelde acties hieronder uit om het maximale uit Chromium te halen.</translation>
 <translation id="1171824629317156389">Open de Chromium-instellingen in iOS, tik op Standaard browser-app en selecteer Chromium.</translation>
 <translation id="1185134272377778587">Over Chromium</translation>
 <translation id="1257458525759135959">Als je afbeeldingen wilt opslaan, tik je op Instellingen om ze door Chromium aan je foto's te laten toevoegen</translation>
@@ -51,6 +52,7 @@
 <translation id="2730884209570016437">Chromium kan je camera niet gebruiken omdat deze wordt gebruikt door een andere app</translation>
 <translation id="2784449251446768092">Chromium-instellingen beheren</translation>
 <translation id="2798503587425057129">Opent de Chromium-leeslijst.</translation>
+<translation id="2843571538056574338">Chromium gebruiken voor automatisch invullen</translation>
 <translation id="2915596697727466327">Chromium gebruikt Face ID om geautoriseerde toegang tot je wachtwoorden mogelijk te maken.</translation>
 <translation id="2918709798697875261">Je organisatie vereist dat je uitgelogd blijft bij Chromium.</translation>
 <translation id="2942241131342758843">Gebruik standaard Chromium om links te openen, te zoeken via widgets en om wachtwoorden in andere apps automatisch in te vullen</translation>
@@ -140,10 +142,12 @@ Aandachtspunten:
 1. Open Instellingen.
 2. Tik op Standaard browser-app.
 3. Selecteer Chromium.</translation>
+<translation id="6154098560469640583">Gebruik Chromium als je op links in berichten, documenten en andere apps tikt.</translation>
 <translation id="6197255575340902638">Als je <ph name="MODULE_NAME" /> verbergt, volgt Chromium je toekomstige pakketten niet meer automatisch en worden al je eerdere pakkettrackinggegevens verwijderd.</translation>
 <translation id="6247557882553405851">Google Wachtwoordmanager</translation>
 <translation id="6268381023930128611">Uitloggen bij Chromium?</translation>
 <translation id="6324041800010509197">Het tabbladraster in Chromium bezoeken</translation>
+<translation id="6325378625795868881">Gebruik Chromium als je op links in berichten en andere apps tikt.</translation>
 <translation id="632825460376924298">Inloggen bij Chromium toestaan</translation>
 <translation id="6337530241089703714">Kies of je je Chromium-gegevens voor dit apparaat wilt verwijderen of behouden</translation>
 <translation id="6407399265324739055">Betaalmethoden en adressen worden niet versleuteld. De browsegeschiedenis in Chromium wordt niet gesynchroniseerd.
@@ -156,6 +160,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="6752854822223394465">Je organisatie stelt Chromium in…</translation>
 <translation id="6794054469102824109">Opent de Chromium Dino-game.</translation>
 <translation id="6820823224820483452">Chromium kan niet alle wachtwoorden checken. Probeer het morgen opnieuw.</translation>
+<translation id="6852799557929001644">Krijg toegang tot je Chromium-wachtwoorden en meer in andere apps op dit apparaat.</translation>
 <translation id="6911341667534646387">Blijf de Chromium-gegevens in je Google-account gebruiken</translation>
 <translation id="7006920032187763988">Je kunt de wachtwoorden die je in Wachtwoordmanager hebt opgeslagen, gebruiken in andere apps op je iPad.</translation>
 <translation id="7018284295775193585">Chromium kan niet updaten</translation>
@@ -170,6 +175,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="7208566199746267865">Chromium bespaart je tijd door je accounts beschikbaar te maken op internet. Je kunt accounts toevoegen of verwijderen bij Instellingen.</translation>
 <translation id="725427773388857052">Chromium kan je beschermen tegen gegevenslekken, niet-beveiligde websites en meer.</translation>
 <translation id="7269362888766543920">Sommige add-ons kunnen ervoor zorgen dat Chromium crasht. Verwijder deze add-ons.</translation>
+<translation id="7285031092584344905">Krijg toegang tot je Chromium-wachtwoorden en meer in andere apps.</translation>
 <translation id="7313655110045230863">Open Instellingen om Chromium in te stellen als standaardbrowser. Tik op 'Standaard browser-app' en selecteer Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">De geselecteerde gegevens zijn verwijderd uit Chromium en van gesynchroniseerde apparaten. Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekopdrachten en activiteit uit andere Google-services) beschikbaar zijn via history.google.com.</translation>
@@ -184,15 +190,18 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="786327964234957808">Je wijzigt het synchronisatieaccount van <ph name="USER_EMAIL1" /> in <ph name="USER_EMAIL2" />. Je bestaande Chromium-gegevens worden beheerd door <ph name="DOMAIN" />. Hierdoor worden je gegevens van dit apparaat verwijderd. Je gegevens blijven echter opgeslagen in <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Chromium-scanner gebruiken</translation>
 <translation id="7905064834449738336">Als je een wachtwoord gebruikt, waarschuwt Chromium je als het online is gepubliceerd. Als dit wordt gedaan, zijn je wachtwoorden en gebruikersnamen versleuteld, zodat ze door niemand (ook niet Google) kunnen worden gelezen.</translation>
+<translation id="7917424453593305610">Gebruik Chromium in andere apps.</translation>
 <translation id="7928628054454574139">Chromium openen wanneer je op links in andere apps tikt</translation>
 <translation id="7931842119211730154">Incognitotabbladen vergrendelen als je Chromium sluit</translation>
 <translation id="7934404985878918282">Chromium-leeslijst bekijken</translation>
 <translation id="7980860476903281594">Chromium deelt je locatie met sites die je toestaat.</translation>
 <translation id="7995166854192397899">Suggesties zijn gebaseerd op je browse-activiteit op je andere apparaten. Log op al je apparaten in bij Chromium om suggesties te krijgen.</translation>
+<translation id="800195749539500647">Het maximale uit Chromium halen</translation>
 <translation id="8013573822802650211">Log in op al je apparaten om je tabbladen te bekijken vanaf elk apparaat waarop je Chromium gebruikt</translation>
 <translation id="8071041515667087705">Ga naar de Chromium-instellingen.</translation>
 <translation id="8073677936375100957">Je Chromium-gegevens van dit apparaat wissen?</translation>
 <translation id="8115308261377517697">Chromium instellen als je standaardbrowser</translation>
+<translation id="8197822717502700527">Je kunt nu het maximale uit Chromium halen op je apparaat.</translation>
 <translation id="8235427517854598594">Chromium instellen als je standaardbrowser?</translation>
 <translation id="8240981428553046115">Chromium kan niet checken op updates. Probeer het later opnieuw.</translation>
 <translation id="8303579360494576778">Betaalmethoden beheren in Chromium</translation>
@@ -219,6 +228,7 @@ Aandachtspunten:
 <translation id="894437814105052438">Als je uitlogt, synchroniseert Chromium geen nieuwe gegevens met je Google-account. Eerder gesynchroniseerde gegevens blijven in het account staan.</translation>
 <translation id="8963279154877372067">Chromium-meldingen toestaan om meldingen over prijsdalingen te krijgen</translation>
 <translation id="9022552996538154597">Inloggen bij Chromium</translation>
+<translation id="9050790730841755540">Gebruik Chromium als je op links in andere apps tikt.</translation>
 <translation id="9059693977935746710">Je hoeft dit wachtwoord niet te onthouden. Het wordt opgeslagen in Wachtwoordmanager voor <ph name="EMAIL" />.</translation>
 <translation id="9089354809943900324">Chromium is verouderd</translation>
 <translation id="9110075932708282655">Chromium standaard gebruiken</translation>

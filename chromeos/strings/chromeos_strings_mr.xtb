@@ -93,7 +93,6 @@
 <translation id="1643449475550628585">वॉलपेपर इमेज रोज बदला</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1651925268237749928">तुम्ही शेअर केलेला अल्बम निवडला आहे. इतर लोक फोटो जोडू किंवा बदलू शकतात. तुमच्या वॉलपेपरवर असे फोटो वापरलेले असू शकतात जे सध्या या अल्बममध्ये नाहीत.</translation>
-<translation id="1658834457013045127">नेहमी</translation>
 <translation id="1661865805917886535">काही खाते आणि सिस्टीम माहिती Google ला पाठवली जाऊ शकते. आम्ही आमचे गोपनीयता धोरण (<ph name="PRIVACYPOLICYURL" />) आणि सेवा अटी (<ph name="TERMSOFSERVICEURL" />) यांच्या अधीन राहून, या माहितीचा वापर तांत्रिक समस्या सोडवण्यात व आमच्या सेवेमध्ये सुधारणा करण्यात मदत करण्यासाठी करतो. आशयासंबंधित बदलांची विनंती करण्यासाठी, कायदेशीर मदत (<ph name="LEGALHELPPAGEURL" />) यावर जा.</translation>
 <translation id="1662989795263954667">थांबले - शाई संपली आहे</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> चे पूर्वावलोकन करा</translation>
@@ -323,7 +322,6 @@
 <translation id="3484914941826596830">फर्मवेअर अपडेट होत असताना, हे बाह्य डिव्हाइस अनप्लग करू नका किंवा तुमचा कॉंप्युटर बंद करू नका. तुम्ही ही विंडो लहान करू शकता. या अपडेटला काही मिनिटे लागू शकतात आणि या कालावधीदरम्यान तुमचे बाह्य डिव्हाइस कदाचित काम करणार नाही.</translation>
 <translation id="3486220673238053218">परिभाषा</translation>
 <translation id="3488065109653206955">आंशिक रूपात सक्रिय </translation>
-<translation id="349491921221892984"><ph name="MINUTES" /> मिनिटे</translation>
 <translation id="3502426834823382181">सर्व अ‍ॅप्स पहा</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />परफॉर्मन्स माग डेटा<ph name="END_LINK1" /> पाठवा</translation>
 <translation id="3517001332549868749">ChromeOS अपडेट</translation>
@@ -484,7 +482,6 @@
 <translation id="473775607612524610">अपडेट करा</translation>
 <translation id="4771607256327216405">कीबोर्ड उजळणे</translation>
 <translation id="4773299976671772492">थांबविले</translation>
-<translation id="4782003517030001304">१ तास</translation>
 <translation id="4782311465517282004">तुम्ही मजकुरावर राइट-क्लिक करता तेव्हा किंवा त्याला स्पर्श करून तो धरून ठेवता तेव्हा व्याख्या, भाषांतरे किंवा युनिट रूपांतरे मिळवा</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> फोटो</translation>
 <translation id="4793710386569335688">अधिक मदत मिळवण्यासाठी, <ph name="BEGIN_LINK" />मदत केंद्र<ph name="END_LINK" /> वर जा.</translation>
@@ -699,6 +696,7 @@
 <translation id="629550705077076970">कीबोर्ड मंद करणे</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> चाचणी रद्द करण्यात आली आहे</translation>
 <translation id="631063167932043783">अ‍ॅप एक्सप्लोर करा</translation>
+<translation id="6318437367327684789">कायमचे</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> वर फर्मवेअर अपडेट करा</translation>
 <translation id="6321407676395378991">स्क्रीन सेव्हर सुरू करा</translation>
 <translation id="6324916366299863871">शॉर्टकट संपादित करा</translation>

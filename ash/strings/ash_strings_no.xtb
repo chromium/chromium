@@ -192,6 +192,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1737078180382804488">Lukk konfigurering av visning av varsler fra telefonen din</translation>
 <translation id="174102739345480129">Markøren er av.</translation>
 <translation id="1743570585616704562">Ikke gjenkjent</translation>
+<translation id="1743927604032653654">Skjul varselet <ph name="NOTIFICATION_TITLE" /></translation>
 <translation id="1746730358044914197">Inndatametoder konfigureres av administratoren din.</translation>
 <translation id="1747336645387973286">frist <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Skjermtastaturet er aktivert</translation>
@@ -202,7 +203,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1757857692711134412">Avslått til solnedgang</translation>
 <translation id="1768366657309696705">Hurtigtasten <ph name="LAUNCHER_KEY_NAME" /> + punktum er endret. For å bruke Insert-tasten, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + Shift + tilbaketasten.</translation>
 <translation id="1770726142253415363">Flyttet til rad <ph name="ROW_NUMBER" />, kolonne <ph name="COLUMN_NUMBER" />.</translation>
-<translation id="1771458705381257690">Åpne <ph name="NAME" /> for å konfigurere og tilpasse enheten</translation>
 <translation id="1771761307086386028">Rull til høyre</translation>
 <translation id="1774796056689732716">Kalender – <ph name="CURRENT_MONTH_YEAR" />. For øyeblikket er <ph name="DATE" /> valgt.</translation>
 <translation id="1775598828170459419">Viser <ph name="NUM_SHOWN_ITEMS" /> av <ph name="NUM_TOTAL_ITEMS" /></translation>
@@ -307,7 +307,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2258734398699965611">Foreslåtte filer</translation>
 <translation id="2268130516524549846">Bluetooth er deaktivert</translation>
 <translation id="2268813581635650749">Logg alle av</translation>
-<translation id="2269016722240250274">Et program bruker mikrofonen din</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2277103315734023688">Spol fremover</translation>
 <translation id="2282073721614284166">Åpne link i fane</translation>
@@ -360,6 +359,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2465145153332031561">Batteritilstand: <ph name="BATTERY_HEALTH_PERCENTAGE" /> %. Syklusantall: <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Bekreft oppløsningen</translation>
 <translation id="2475982808118771221">Det oppstod en feil</translation>
+<translation id="2478076885740497414">Installér appen</translation>
 <translation id="2482878487686419369">Varsler</translation>
 <translation id="2484513351006226581">Trykk på <ph name="KEYBOARD_SHORTCUT" /> for å bytte tastaturoppsett.</translation>
 <translation id="2487915095798731898">Bli med</translation>
@@ -532,6 +532,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3217205077783620295">Volumet er på. Hvis du slår det av, kuttes lyden.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> til</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3233611303007751344">Batterisparing er slått av</translation>
 <translation id="324366796737464147">Støyreduksjon</translation>
 <translation id="3249513730522716925">Vinduet <ph name="WINDOW_TITLE" /> ble flyttet fra skrivebord <ph name="ACTIVE_DESK" /> til skrivebord <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Kursarbeidstype: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -555,6 +556,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3317779231018057649"><ph name="DEVICECOUNT" /> enheter er tilkoblet. Wifi holdes avslått mens wifi-sonen er i bruk.</translation>
 <translation id="3321628682574733415">Feil kode for foreldertilgang</translation>
 <translation id="332827762492701193">Varsler er skjult</translation>
+<translation id="3333674550998107387">Vis varselet <ph name="NOTIFICATION_TITLE" /></translation>
 <translation id="3339826665088060472">Skjermdump, verktøy for å ta skjermdumper og skjermopptak</translation>
 <translation id="3340978935015468852">innstillinger</translation>
 <translation id="3341303451326249809">Skjermdumpen er lagret</translation>
@@ -631,8 +633,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3600061223661453002">Av</translation>
 <translation id="3604801046548457007">Opprettet skrivebord <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">En leselist er tilkoblet.</translation>
-<translation id="3609301425104788351"><ph name="MIC" />,
-        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">Hvis du slår på mobildata, blir Bluetooth også slått på</translation>
 <translation id="3616113530831147358">Lyd</translation>
 <translation id="3616883743181209306">Menyen ble flyttet til øvre høyre hjørne av skjermen.</translation>
@@ -682,9 +682,7 @@ Koble enheten til strøm.</translation>
 <translation id="3781910048497807059">Flytt fokus til forrige felt</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Lås</translation>
-<translation id="3789841737615482174">Installer</translation>
 <translation id="3796215473395753611">alt + oppoverpil</translation>
-<translation id="3796746699333205839">Et program bruker kameraet ditt og mikrofonen din</translation>
 <translation id="3798670284305777884">Høyttaler (intern)</translation>
 <translation id="3799080171973636491">Du trykket på hurtigtasten for lupen for hele skjermen. Vil du slå den på?</translation>
 <translation id="380165613292957338">Hei! Hva kan jeg hjelpe deg med?</translation>
@@ -769,6 +767,8 @@ Koble enheten til strøm.</translation>
 <translation id="4146671046252289537">Flytt til slutten av neste ord</translation>
 <translation id="4146833061457621061">Spill av musikk</translation>
 <translation id="4150201353443180367">Skjerm</translation>
+<translation id="4156293514828496577"><ph name="PERCENTAGE" /> % batteri gjenstår (ca. <ph name="TIME_LEFT" />).
+Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4165275524535002941">Kabelen støtter kanskje ikke skjermer</translation>
 <translation id="4177415338862979658">Klikk for å se etter detaljer</translation>
 <translation id="4177913004758410636">{0,plural, =1{Oppdater enheten innen en dag}other{Oppdater enheten innen # dager}}</translation>
@@ -812,6 +812,7 @@ Koble enheten til strøm.</translation>
 <translation id="428715201724021596">Kobler til profilen. Dette kan ta noen minutter.</translation>
 <translation id="4294319844246081198">God morgen, <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">Fjern alle <ph name="COUNT" /> varsler</translation>
+<translation id="4300272766492248925">Åpne appen</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> er flyttet til mappen <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Ikke tilgjengelig</translation>
 <translation id="4303223480529385476">Vis statusområdet</translation>
@@ -899,6 +900,7 @@ Koble enheten til strøm.</translation>
 <translation id="4659419629803378708">ChromeVox er slått på</translation>
 <translation id="4666911709726371538">Flere apper</translation>
 <translation id="4667099493359681081">Laster ned <ph name="FILENAME" /></translation>
+<translation id="4672539464599646374">Batterisparing er slått på</translation>
 <translation id="468293128311738995">Apper fra telefonen din</translation>
 <translation id="4690510401873698237">Hyllen er nederst</translation>
 <translation id="4696813013609194136">Lås opp enheten med foreldrekode</translation>
@@ -1059,6 +1061,8 @@ Koble enheten til strøm.</translation>
 <translation id="5297704307811127955">Av</translation>
 <translation id="5300589172476337783">Vis</translation>
 <translation id="5302048478445481009">Språk</translation>
+<translation id="5303319262469238330"><ph name="PERCENTAGE" /> % batteri gjenstår.
+Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="5308380583665731573">Koble til</translation>
 <translation id="5313326810920013265">Bluetooth-innstillinger</translation>
 <translation id="5314219114274263156">Skjermopptaket er utført</translation>
@@ -1204,7 +1208,6 @@ Koble enheten til strøm.</translation>
 <translation id="5876666360658629066">Angi foreldrekoden</translation>
 <translation id="5881540930187678962">Konfigurer Telefonstyring senere</translation>
 <translation id="5881663018261910378">Av</translation>
-<translation id="5883017113634523865">Installer appen for <ph name="NAME" /> fra Google Play for å se alle tilgjengelige funksjoner</translation>
 <translation id="5887954372087850114">Vinduet <ph name="WINDOW_TITLE" /> er tilordnet <ph name="DESK_TITLE" />, og tilordningen er fjernet på alle andre skrivebord</translation>
 <translation id="588817334757907802">Åpne filen i Chrome-nettleseren</translation>
 <translation id="5895138241574237353">Start på nytt</translation>
@@ -1299,6 +1302,7 @@ Koble enheten til strøm.</translation>
 <translation id="6231419273573514727">Ytelsen til eksterne enheter kan være begrenset</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> bruker kameraet ditt og mikrofonen din for øyeblikket</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="62380141479352646">Lavt batterinivå. Batterisparing er slått på.</translation>
 <translation id="6247728804802644171">Åpne varsler</translation>
 <translation id="6254629735336163724">Låst til horisontal</translation>
 <translation id="6259254695169772643">Bruk pekepennen til å velge</translation>
@@ -1413,6 +1417,7 @@ Nylig installert</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Kameraet og mikrofonen er i bruk</translation>
 <translation id="6739144137573853180">GÅ TIL INNSTILLINGER</translation>
+<translation id="6747985245839783873">Batteriet er <ph name="PERCENTAGE" /> % fullt. Batterisparing er på.</translation>
 <translation id="6751052314767925245">Påkreves av administratoren din</translation>
 <translation id="6751826523481687655">Ytelsessporing er slått på</translation>
 <translation id="6752912906630585008">Skrivebord <ph name="REMOVED_DESK" /> ble fjernet og slått sammen med skrivebord <ph name="RECEIVE_DESK" /></translation>
@@ -1512,6 +1517,7 @@ Nylig installert</translation>
 <translation id="7131634465328662194">Du logges av automatisk.</translation>
 <translation id="7143207342074048698">Kobler til</translation>
 <translation id="7144942256906679589">Batteristatus</translation>
+<translation id="7145639536026937076">Batteriet er <ph name="PERCENTAGE" /> % fullt og lades. Batterisparing er på.</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1522,6 +1528,7 @@ Nylig installert</translation>
 <translation id="7198435252016571249">Kameraet er festet til nedre høyre hjørne. Konflikt med systemoverflaten.</translation>
 <translation id="7219573373513695352">Ingen enheter er koblet til</translation>
 <translation id="7229029500464092426">Minne <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> totalt</translation>
+<translation id="7244725679040769470"><ph name="PERCENTAGE" /> % batteri gjenstår. Koble enheten til strøm.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Chromebook må startes på nytt for å ta i bruk en oppdatering. Dette kan ta opptil ett minutt.</translation>
 <translation id="7256634071279256947">Mikrofon bak</translation>
 <translation id="7258828758145722155">Redigert i går</translation>
@@ -1570,7 +1577,6 @@ Nylig installert</translation>
 <translation id="742594950370306541">Kameraet er i bruk.</translation>
 <translation id="742608627846767349">God morgen</translation>
 <translation id="743058460480092004">Kameraet og mikrofonen er i bruk.</translation>
-<translation id="7452560014878697800">Et program bruker kameraet ditt</translation>
 <translation id="7453330308669753048">Resultatet er fjernet fra søkeloggen</translation>
 <translation id="7459485586006128091">Wifi-sonen er slått av på grunn av en intern feil. Prøv å koble til på nytt om noen minutter.</translation>
 <translation id="7461924472993315131">Fest</translation>
@@ -1915,6 +1921,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8878886163241303700">Utvidet skjerm</translation>
 <translation id="888982883502837004">Fastvareoppdateringer er tilgjengelige for enheten. Klikk for å gjennomgå dem og oppdatere.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> blir slettet permanent</translation>
+<translation id="889790758758811533"><ph name="PERCENTAGE" /> % batteri gjenstår (ca. <ph name="TIME_LEFT" />). Koble enheten til strøm.</translation>
 <translation id="88986195241502842">Ned én side</translation>
 <translation id="8905919797434099235">(Uten tittel)</translation>
 <translation id="890616557918890486">Endre kilde</translation>

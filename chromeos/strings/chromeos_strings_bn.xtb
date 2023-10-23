@@ -93,7 +93,6 @@
 <translation id="1643449475550628585">ওয়ালপেপারের ছবি প্রতিদিন পরিবর্তন করুন</translation>
 <translation id="1644574205037202324">ইতিহাস</translation>
 <translation id="1651925268237749928">আপনি শেয়ার করা অ্যালবাম বেছে নিয়েছেন। অন্য ব্যক্তি ফটো যোগ বা পরিবর্তন করতে পারবেন। আপনার ওয়ালপেপারে এমন ফটো ব্যবহার করা হতে পারে যা বর্তমানে এই অ্যালবামে নেই।</translation>
-<translation id="1658834457013045127">সব সময়</translation>
 <translation id="1661865805917886535">অ্যাকাউন্ট ও সিস্টেমের কিছু তথ্য Google-এর কাছে পাঠানো হতে পারে। আমরা প্রযুক্তিগত সমস্যা সমাধান করতে ও আমাদের পরিষেবা উন্নত করতে এই তথ্য আমাদের গোপনীয়তা নীতি (<ph name="PRIVACYPOLICYURL" />) এবং পরিষেবার শর্তাবলী (<ph name="TERMSOFSERVICEURL" />) অনুযায়ী ব্যবহার করি। কন্টেন্ট পরিবর্তনের অনুরোধ করতে, আইনি সহায়তা (<ph name="LEGALHELPPAGEURL" />)-এ যান।</translation>
 <translation id="1662989795263954667">বন্ধ হয়ে গেছে - প্রিন্টারে কালি ফুরিয়ে গেছে</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" />-এর প্রিভিউ দেখুন</translation>
@@ -323,7 +322,6 @@
 <translation id="3484914941826596830">ফার্মওয়্যার আপডেট করার সময়, এই এক্সটার্নাল ডিভাইসটি আনপ্লাগ করবেন না বা আপনার কম্পিউটার বন্ধ করবেন না। আপনি এই উইন্ডোটি মিনিমাইজ করতে পারবেন। এই আপডেটে কয়েক মিনিট সময় লাগতে পারে এবং এই সময়ে আপনার এক্সটার্নাল ডিভাইস কাজ নাও করতে পারে।</translation>
 <translation id="3486220673238053218">সংজ্ঞা</translation>
 <translation id="3488065109653206955">আংশিকভাবে সক্রিয়</translation>
-<translation id="349491921221892984"><ph name="MINUTES" /> মিনিট</translation>
 <translation id="3502426834823382181">সব অ্যাপ দেখুন</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />পারফর্ম্যান্স ট্রেস ডেটা<ph name="END_LINK1" /> পাঠান</translation>
 <translation id="3517001332549868749">ChromeOS-এর আপডেট</translation>
@@ -484,7 +482,6 @@
 <translation id="473775607612524610">আপডেট করুন</translation>
 <translation id="4771607256327216405">কীবোর্ড আরও উজ্জ্বল</translation>
 <translation id="4773299976671772492">থামানো হয়েছে</translation>
-<translation id="4782003517030001304">১ ঘণ্টা</translation>
 <translation id="4782311465517282004">আপনি ডানদিকের বোতামে ক্লিক করলে বা টেক্সট প্রেস করে ধরে থাকলে, সংজ্ঞা, অনুবাদ বা ইউনিট কনভার্সন পাবেন</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" />টি ফটো</translation>
 <translation id="4793710386569335688">আরও সাহায্যের জন্য, <ph name="BEGIN_LINK" />সহায়তা কেন্দ্রে<ph name="END_LINK" /> যান।</translation>
@@ -699,6 +696,7 @@
 <translation id="629550705077076970">কীবোর্ড অনুজ্জ্বল হচ্ছে</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> পরীক্ষা বাতিল করা হয়েছে</translation>
 <translation id="631063167932043783">এক্সপ্লোর সংক্রান্ত অ্যাপ</translation>
+<translation id="6318437367327684789">সব সময়</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" />-এ ফার্মওয়্যার আপডেট করুন</translation>
 <translation id="6321407676395378991">স্ক্রিন সেভার চালু করুন</translation>
 <translation id="6324916366299863871">শর্টকার্ট এডিট করুন</translation>

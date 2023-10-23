@@ -93,7 +93,6 @@
 <translation id="1643449475550628585">Alterar imagem de fundo diariamente</translation>
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="1651925268237749928">Selecionou um álbum partilhado. Outras pessoas podem adicionar ou alterar fotos. A imagem de fundo pode usar fotos que não estão atualmente neste álbum.</translation>
-<translation id="1658834457013045127">Sempre</translation>
 <translation id="1661865805917886535">Algumas informações da conta e do sistema podem ser enviadas para a Google. Usamos estas informações para ajudar a resolver problemas técnicos e melhorar os nossos serviços, sujeitas à nossa Política de Privacidade (<ph name="PRIVACYPOLICYURL" />) e Termos de Utilização (<ph name="TERMSOFSERVICEURL" />). Para pedir alterações de conteúdo, aceda à Ajuda Legal (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Parada – Sem tinta</translation>
 <translation id="1664796644829245314">Pré-visualizar <ph name="PREVIEW_OBJECT" /></translation>
@@ -323,7 +322,6 @@
 <translation id="3484914941826596830">Enquanto o firmware está a ser atualizado, não desligue este dispositivo externo nem encerre o computador. Pode minimizar esta janela. Esta atualização pode demorar alguns minutos e o seu dispositivo externo pode não funcionar durante este período.</translation>
 <translation id="3486220673238053218">definição</translation>
 <translation id="3488065109653206955">Parcialmente activado</translation>
-<translation id="349491921221892984">Durante <ph name="MINUTES" /> min</translation>
 <translation id="3502426834823382181">ver todas as apps</translation>
 <translation id="3510890413042482857">Enviar <ph name="BEGIN_LINK1" />dados de rastreio do desempenho<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Atualiz. Chrome OS</translation>
@@ -484,7 +482,6 @@
 <translation id="473775607612524610">Atualizar</translation>
 <translation id="4771607256327216405">aumentar o brilho do teclado</translation>
 <translation id="4773299976671772492">Parado</translation>
-<translation id="4782003517030001304">Durante 1 h</translation>
 <translation id="4782311465517282004">Obtenha definições, traduções ou conversões de unidades quando clicar com o botão direito do rato ou tocar sem soltar no texto</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
 <translation id="4793710386569335688">Para mais ajuda, aceda ao <ph name="BEGIN_LINK" />Centro de Ajuda<ph name="END_LINK" />.</translation>
@@ -699,6 +696,7 @@
 <translation id="629550705077076970">redução da luminosidade do teclado</translation>
 <translation id="6302401976930124515">O teste <ph name="TEST_NAME" /> foi cancelado.</translation>
 <translation id="631063167932043783">Explorar app</translation>
+<translation id="6318437367327684789">para sempre</translation>
 <translation id="6319207335391420837">Atualizar firmware no <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Ativar proteção de ecrã</translation>
 <translation id="6324916366299863871">Editar atalho</translation>

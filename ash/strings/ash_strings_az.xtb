@@ -29,6 +29,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="109942774857561566">Darıxıram</translation>
 <translation id="1104084341931202936">Əlçatımlılıq ayarlarını göstərin</translation>
 <translation id="1104621072296271835">Cihazlarınız birlikdə daha yaxşı işləyir</translation>
+<translation id="1106446201446919638">1 cihaz qoşulub. Hotspot istifadə edərkən Wi-Fi deaktiv qalacaq.</translation>
 <translation id="1111021433905331574">Klaviatura işıqlandırmasının rəngini Ayarlar &gt; <ph name="APP_TITLE" /> bölməsində dəyişə bilərsiniz</translation>
 <translation id="1117719261843403176">Mobil datanı aktiv/deaktiv edin. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Rəfi avtomatik gizlədin</translation>
@@ -202,7 +203,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1757857692711134412">Gün batanadək deaktiv olacaq</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + Nöqtə klaviatura qısayolu dəyişib. "Daxil et" düyməsindən istifadə etmək üçün <ph name="LAUNCHER_KEY_NAME" /> + Shift + Geri düyməsini basın.</translation>
 <translation id="1770726142253415363">Bura köçürülüb: sıra <ph name="ROW_NUMBER" />, sütun <ph name="COLUMN_NUMBER" />.</translation>
-<translation id="1771458705381257690"><ph name="NAME" /> tətbiqini açaraq cihazı ayarlayın və fərdiləşdirin</translation>
 <translation id="1771761307086386028">Sağa sürüşdürün</translation>
 <translation id="1774796056689732716">Təqvim, <ph name="CURRENT_MONTH_YEAR" />, hazırda <ph name="DATE" /> seçilib.</translation>
 <translation id="1775598828170459419">Göstərilir: <ph name="NUM_SHOWN_ITEMS" />/<ph name="NUM_TOTAL_ITEMS" /></translation>
@@ -307,7 +307,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2258734398699965611">Təklif edilən fayllar</translation>
 <translation id="2268130516524549846">Bluetooth deaktiv edildi</translation>
 <translation id="2268813581635650749">Hamısından çıxın</translation>
-<translation id="2269016722240250274">Tətbiq mikrofonunuzu işlədir</translation>
 <translation id="2276987123919776440">15 dəq</translation>
 <translation id="2277103315734023688">İrəli çəkin</translation>
 <translation id="2282073721614284166">Linki tabda açın</translation>
@@ -360,6 +359,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2465145153332031561">Batareya tutumu <ph name="BATTERY_HEALTH_PERCENTAGE" />%, dövr sayı <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Əksetmə qabiliyyətini təsdiq edin</translation>
 <translation id="2475982808118771221">Xəta baş verdi</translation>
+<translation id="2478076885740497414">Tətbiqi quraşdırın</translation>
 <translation id="2482878487686419369">Bildirişlər</translation>
 <translation id="2484513351006226581">Klaviatura düzülüşünü dəyişmək üçün <ph name="KEYBOARD_SHORTCUT" /> süyməsinə klikləyin.</translation>
 <translation id="2487915095798731898">Qoşulun</translation>
@@ -518,6 +518,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3160929076476941240">2 saat</translation>
 <translation id="3161500364292033097">Masa və pəncərələri bağlayın</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> <ph name="DEVICE_TYPE" /> cihazınızı əvvəlki versiyaya qaytarır. Cihazınız sıfırlanacaq və bütün məlumatlar silinəcək.</translation>
+<translation id="3170769098533255179">Cihaz qoşulmayıb. Hotspot istifadə edərkən Wi-Fi deaktiv qalacaq.</translation>
 <translation id="3171170659304083361">Daxiletmə metodu ayarları</translation>
 <translation id="3176221688814061633">Chromebook və ya Bluetooth cihazının Bluetooth versiyası köhnədir. Yaxşı audio keyfiyyəti üçün Bluetooth superayırdetmə dəqiqliyini aktiv edin və ya daxili mikrofondan istifadə edin.</translation>
 <translation id="3181441307743005334">Yenidən başlatmaq bir qədər vaxt apara bilər</translation>
@@ -552,6 +553,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> cihaz <ph name="DEVICE_NAME" /> hotspotuna qoşulub</translation>
 <translation id="3307642347673023554">Noutbuk rejiminə keçirilib</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> sonradan yenə daxil ola biləcək.</translation>
+<translation id="3317779231018057649"><ph name="DEVICECOUNT" /> cihaz qoşulub. Hotspot istifadə edərkən Wi-Fi deaktiv qalacaq.</translation>
 <translation id="3321628682574733415">Yanlış valideyn kodu</translation>
 <translation id="332827762492701193">Bildirişlər gizlədilib</translation>
 <translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> bildirişini genişləndirin</translation>
@@ -631,8 +633,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3600061223661453002">Deaktiv</translation>
 <translation id="3604801046548457007">Masa <ph name="DESK_TITILE" /> yaradıldı</translation>
 <translation id="3606978283550408104">Brayl displeyi qoşuludur.</translation>
-<translation id="3609301425104788351"><ph name="MIC" />,
-        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">Mobil datanın aktiv edilməsi ilə Bluetooh da aktiv ediləcək</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3616883743181209306">Menyu ekranın yuxarı sağ küncünə köçürülüb.</translation>
@@ -682,9 +682,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="3781910048497807059">Fokusu əvvəlki panelə köçürün</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Kilidləyin</translation>
-<translation id="3789841737615482174">Quraşdırın</translation>
 <translation id="3796215473395753611">alt + yuxarı ox</translation>
-<translation id="3796746699333205839">Tətbiq kameranızı və mikrofonunuzu işlədir</translation>
 <translation id="3798670284305777884">Spiker (daxili)</translation>
 <translation id="3799080171973636491">Tam ekran böyüdücüsü üçün klaviatura qısayoluna basdınız. Onu aktiv etmək istəyirsiniz?</translation>
 <translation id="380165613292957338">Salam, necə kömək edə bilərəm?</translation>
@@ -814,6 +812,7 @@ Batareya istifadəsini uzatmaq üçün bəzi funksiyalar məhdudlaşdırılıb.<
 <translation id="428715201724021596">Profilə qoşulur. Bu, bir neçə dəqiqə çəkə bilər.</translation>
 <translation id="4294319844246081198">Sabahınız xeyir, <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875"><ph name="COUNT" /> bildirişin hamısını silin</translation>
+<translation id="4300272766492248925">Tətbiqi açın</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> <ph name="FOLDER_NAME" /> qovluğuna köçürülüb.</translation>
 <translation id="4302592941791324970">Əlçatan deyil</translation>
 <translation id="4303223480529385476">Status sahəsini genişləndirin</translation>
@@ -879,6 +878,7 @@ Batareya istifadəsini uzatmaq üçün bəzi funksiyalar məhdudlaşdırılıb.<
 <translation id="4566144812051858745">Heç bir təklif maraqlı deyil</translation>
 <translation id="4569753163207712681">Telefonun son foto, media və tətbiqlərinə baxın</translation>
 <translation id="4573176682887762361">"[söz / ifadə] yazın"</translation>
+<translation id="4577188182049003486">Hotspot aktiv olduqda Wi-Fi deaktiv olur</translation>
 <translation id="4577274620589681794">Vaxt bitdi · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Önbaxışları göstərin</translation>
 <translation id="4578906031062871102">Ayarlar menyusu açılıb</translation>
@@ -1208,7 +1208,6 @@ Batareya istifadəsini uzatmaq üçün bəzi funksiyalar məhdudlaşdırılıb.<
 <translation id="5876666360658629066">Valideyn kodunu daxil edin</translation>
 <translation id="5881540930187678962">Telefon Mərkəzini daha sonra ayarlayın</translation>
 <translation id="5881663018261910378">Deaktiv</translation>
-<translation id="5883017113634523865">Google Play-də <ph name="NAME" /> üçün tətbiqi quraşdıraraq əlçatan funksiyalara baxın</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> pəncərəsi <ph name="DESK_TITLE" /> masasına təyin edilib və bütün digər masalardan ləğv edilib</translation>
 <translation id="588817334757907802">Faylı Chrome-da açın</translation>
 <translation id="5895138241574237353">Yenidən başladın</translation>
@@ -1578,7 +1577,6 @@ Yeni quraşdırma</translation>
 <translation id="742594950370306541">Kamera istifadə olunur.</translation>
 <translation id="742608627846767349">Sabahınız xeyir,</translation>
 <translation id="743058460480092004">Kamera və mikrofon istifadə olunur.</translation>
-<translation id="7452560014878697800">Tətbiq kameranızı işlədir</translation>
 <translation id="7453330308669753048">Axtarış tarixçəsinin nəticəsi silindi</translation>
 <translation id="7459485586006128091">Daxili xətaya görə hotspot söndürülüb. Bir neçə dəqiqə sonra yenidən qoşulun.</translation>
 <translation id="7461924472993315131">Pin</translation>

@@ -93,7 +93,6 @@
 <translation id="1643449475550628585">تغییر روزانه کاغذدیواری</translation>
 <translation id="1644574205037202324">سابقه</translation>
 <translation id="1651925268237749928">آلبوم مشترکی را انتخاب کرده‌اید. دیگران می‌توانند عکس اضافه کنند یا عکس‌ها را تغییر دهند. کاغذدیواری‌تان ممکن است از عکس‌هایی استفاده کند که اکنون در این آلبوم نیست.</translation>
-<translation id="1658834457013045127">تمام مدت</translation>
 <translation id="1661865805917886535">‏ممکن است برخی‌از اطلاعات سیستم و حساب به Google ارسال شود. از این اطلاعات برای رسیدگی به مشکلات فنی و بهبود سرویس‌هایمان مطابق با «خط‌مشی رازداری» (<ph name="PRIVACYPOLICYURL" />) و «شرایط خدمات» (<ph name="TERMSOFSERVICEURL" />) خود استفاده می‌کنیم. برای درخواست تغییر محتوا، به «راهنمای محلی» (<ph name="LEGALHELPPAGEURL" />) بروید.</translation>
 <translation id="1662989795263954667">متوقف شد - جوهر تمام شده است</translation>
 <translation id="1664796644829245314">پیش‌دید کردن <ph name="PREVIEW_OBJECT" /></translation>
@@ -323,7 +322,6 @@
 <translation id="3484914941826596830">وقتی سفت‌افزار درحال به‌روزرسانی است، این دستگاه خارجی را جدا نکنید و رایانه را خاموش نکنید. می‌توانید این پنجره را کمینه کنید. این به‌روزرسانی ممکن است چند دقیقه طول بکشد و در این مدت ممکن است دستگاه خارجی‌تان کار نکند.</translation>
 <translation id="3486220673238053218">معنی</translation>
 <translation id="3488065109653206955">به‌طور نسبی فعال شده است</translation>
-<translation id="349491921221892984"><ph name="MINUTES" /> دقیقه</translation>
 <translation id="3502426834823382181">مشاهده همه برنامه‌ها</translation>
 <translation id="3510890413042482857">ارسال <ph name="BEGIN_LINK1" />داده‌های ردیابی عملکرد<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">‏به‌روزرسانی ChromeOS</translation>
@@ -484,7 +482,6 @@
 <translation id="473775607612524610">به‌روزرسانی</translation>
 <translation id="4771607256327216405">صفحه‌کلید روشن‌تر</translation>
 <translation id="4773299976671772492">متوقف شد</translation>
-<translation id="4782003517030001304">۱ ساعت</translation>
 <translation id="4782311465517282004">وقتی روی نوشتار کلیک راست می‌کنید یا آن را لمس می‌کنید و نگه می‌دارید، تعاریف، ترجمه‌ها، یا تبدیل واحدها را دریافت می‌کنید</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> عکس</translation>
 <translation id="4793710386569335688">برای دریافت راهنمایی بیشتر، به <ph name="BEGIN_LINK" />مرکز راهنمایی<ph name="END_LINK" /> بروید.</translation>
@@ -699,6 +696,7 @@
 <translation id="629550705077076970">کم‌نور کردن صفحه‌کلید</translation>
 <translation id="6302401976930124515">آزمایش <ph name="TEST_NAME" /> لغو شده است</translation>
 <translation id="631063167932043783">برنامه کاوش</translation>
+<translation id="6318437367327684789">همیشه</translation>
 <translation id="6319207335391420837">به‌روزرسانی سفت‌افزار در <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">روشن کردن محافظ صفحه</translation>
 <translation id="6324916366299863871">ویرایش میان‌بر</translation>

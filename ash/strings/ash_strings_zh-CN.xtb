@@ -29,6 +29,7 @@
 <translation id="109942774857561566">我好无聊</translation>
 <translation id="1104084341931202936">显示无障碍设置</translation>
 <translation id="1104621072296271835">协同运作可使您的各部设备更好地发挥作用</translation>
+<translation id="1106446201446919638">已连接 1 部设备。使用热点时，Wi-Fi 将保持关闭状态。</translation>
 <translation id="1111021433905331574">您可在“设置”&gt;“<ph name="APP_TITLE" />”部分中更改键盘背光的颜色</translation>
 <translation id="1117719261843403176">开启/关闭移动流量。<ph name="STATE" />。</translation>
 <translation id="112308213915226829">自动隐藏任务栏</translation>
@@ -202,7 +203,6 @@
 <translation id="1757857692711134412">保持关闭状态，直到日落</translation>
 <translation id="1768366657309696705">键盘快捷键“<ph name="LAUNCHER_KEY_NAME" /> + 句点键”已更改。若要使用 Insert 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + Shift + 退格键。</translation>
 <translation id="1770726142253415363">已移至第 <ph name="ROW_NUMBER" /> 行与第 <ph name="COLUMN_NUMBER" /> 列的相交处。</translation>
-<translation id="1771458705381257690">打开“<ph name="NAME" />”即可设置和自定义您的设备</translation>
 <translation id="1771761307086386028">向右滚动</translation>
 <translation id="1774796056689732716">日历，<ph name="CURRENT_MONTH_YEAR" />，目前所选日期为 <ph name="DATE" />。</translation>
 <translation id="1775598828170459419">当前显示 <ph name="NUM_SHOWN_ITEMS" /> 项，共 <ph name="NUM_TOTAL_ITEMS" /> 项</translation>
@@ -307,7 +307,6 @@
 <translation id="2258734398699965611">建议的文件</translation>
 <translation id="2268130516524549846">蓝牙已停用</translation>
 <translation id="2268813581635650749">全部退出</translation>
-<translation id="2269016722240250274">有一个应用正在使用您的麦克风</translation>
 <translation id="2276987123919776440">15 分钟</translation>
 <translation id="2277103315734023688">快进</translation>
 <translation id="2282073721614284166">在标签页中打开链接</translation>
@@ -360,6 +359,7 @@
 <translation id="2465145153332031561">电池健康度为 <ph name="BATTERY_HEALTH_PERCENTAGE" />%，充电循环次数为 <ph name="CYCLE_COUNT" /> 次</translation>
 <translation id="2473177541599297363">确认分辨率</translation>
 <translation id="2475982808118771221">出现错误</translation>
+<translation id="2478076885740497414">安装应用</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2484513351006226581">按 <ph name="KEYBOARD_SHORTCUT" />键可切换键盘布局。</translation>
 <translation id="2487915095798731898">加入</translation>
@@ -518,6 +518,7 @@
 <translation id="3160929076476941240">2 小时</translation>
 <translation id="3161500364292033097">关闭桌面和窗口</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> 正在回滚您的 <ph name="DEVICE_TYPE" />。您的设备将会重置，并且所有数据都会被删除。</translation>
+<translation id="3170769098533255179">未连接任何设备。使用热点时，Wi-Fi 将保持关闭状态。</translation>
 <translation id="3171170659304083361">输入法设置</translation>
 <translation id="3176221688814061633">您的 Chromebook 或蓝牙设备使用的是旧版蓝牙。开启超高解析度蓝牙或使用内置麦克风可提升音质。</translation>
 <translation id="3181441307743005334">重启可能需要一点时间</translation>
@@ -552,6 +553,7 @@
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> 部设备已连接到 <ph name="DEVICE_NAME" /> 热点</translation>
 <translation id="3307642347673023554">已切换到笔记本电脑模式</translation>
 <translation id="3308453408813785101">日后“<ph name="USER_EMAIL_ADDRESS" />”仍能登录。</translation>
+<translation id="3317779231018057649">已连接 <ph name="DEVICECOUNT" /> 部设备。使用热点时，Wi-Fi 将保持关闭状态。</translation>
 <translation id="3321628682574733415">家长访问代码不正确</translation>
 <translation id="332827762492701193">已隐藏通知</translation>
 <translation id="3333674550998107387">展开“<ph name="NOTIFICATION_TITLE" />”通知</translation>
@@ -631,8 +633,6 @@
 <translation id="3600061223661453002">关闭</translation>
 <translation id="3604801046548457007">已创建桌面“<ph name="DESK_TITILE" />”</translation>
 <translation id="3606978283550408104">已连接盲文显示屏。</translation>
-<translation id="3609301425104788351"><ph name="MIC" />，
-        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">如果您启用移动流量，蓝牙亦会随之开启</translation>
 <translation id="3616113530831147358">音频</translation>
 <translation id="3616883743181209306">菜单已移至屏幕的右上角。</translation>
@@ -682,9 +682,7 @@
 <translation id="3781910048497807059">将焦点移到上一个窗格</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">锁定</translation>
-<translation id="3789841737615482174">安装</translation>
 <translation id="3796215473395753611">alt + 向上键</translation>
-<translation id="3796746699333205839">有一个应用正在使用您的摄像头和麦克风</translation>
 <translation id="3798670284305777884">扬声器（内部）</translation>
 <translation id="3799080171973636491">您按下了全屏放大镜的键盘快捷键。要开启这项功能吗？</translation>
 <translation id="380165613292957338">嗨，有什么我可以帮你的吗？</translation>
@@ -813,6 +811,7 @@
 <translation id="428715201724021596">正在连接到配置文件。这可能需要几分钟的时间。</translation>
 <translation id="4294319844246081198"><ph name="GIVEN_NAME" />，上午好！</translation>
 <translation id="4296136865091727875">清除所有 <ph name="COUNT" /> 条通知</translation>
+<translation id="4300272766492248925">打开应用</translation>
 <translation id="430191667033048642">“<ph name="MOVED_APP_NAME" />”已移至文件夹“<ph name="FOLDER_NAME" />”</translation>
 <translation id="4302592941791324970">不可用</translation>
 <translation id="4303223480529385476">展开状态区</translation>
@@ -878,6 +877,7 @@
 <translation id="4566144812051858745">对任何建议都不感兴趣</translation>
 <translation id="4569753163207712681">查看手机中的近期照片、媒体内容和应用</translation>
 <translation id="4573176682887762361">“输入 [字词/短语]”</translation>
+<translation id="4577188182049003486">热点开启时，Wi-Fi 会关闭</translation>
 <translation id="4577274620589681794">时间到 · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">显示预览</translation>
 <translation id="4578906031062871102">已打开“设置”菜单</translation>
@@ -1206,7 +1206,6 @@
 <translation id="5876666360658629066">输入家长访问码</translation>
 <translation id="5881540930187678962">需要时再设置 Phone Hub</translation>
 <translation id="5881663018261910378">已停用</translation>
-<translation id="5883017113634523865">从 Google Play 安装“<ph name="NAME" />”的配套应用即可查看所有可用功能</translation>
 <translation id="5887954372087850114">已将窗口“<ph name="WINDOW_TITLE" />”分配至“<ph name="DESK_TITLE" />”，并已取消此窗口与所有其他桌面的分配关系</translation>
 <translation id="588817334757907802">在 Chrome 浏览器中打开文件</translation>
 <translation id="5895138241574237353">重新启动</translation>
@@ -1573,7 +1572,6 @@
 <translation id="742594950370306541">摄像头处于使用状态。</translation>
 <translation id="742608627846767349">上午好！</translation>
 <translation id="743058460480092004">摄像头和麦克风处于使用状态。</translation>
-<translation id="7452560014878697800">有一个应用正在使用您的摄像头</translation>
 <translation id="7453330308669753048">已移除搜索记录结果</translation>
 <translation id="7459485586006128091">由于内部错误，热点已关闭。请过几分钟后尝试重新连接。</translation>
 <translation id="7461924472993315131">固定</translation>

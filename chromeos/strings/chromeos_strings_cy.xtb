@@ -93,7 +93,6 @@
 <translation id="1643449475550628585">Newid y llun papur wal yn ddyddiol</translation>
 <translation id="1644574205037202324">Hanes</translation>
 <translation id="1651925268237749928">Rydych wedi dewis albwm a rennir. Gall pobl eraill ychwanegu neu newid lluniau. Mae'n bosib y bydd eich papur wal yn defnyddio lluniau nad ydynt yn yr albwm hwn ar hyn o bryd.</translation>
-<translation id="1658834457013045127">Am byth</translation>
 <translation id="1661865805917886535">Mae'n bosib y byddwn yn anfon peth gwybodaeth system a chyfrif at Google. Rydym yn defnyddio'r wybodaeth hon i helpu i fynd i'r afael â materion technegol a gwella'n gwasanaethau, yn amodol ar ein Polisi Preifatrwydd (<ph name="PRIVACYPOLICYURL" />) a Thelerau Gwasanaeth (<ph name="TERMSOFSERVICEURL" />). I wneud cais am newidiadau cynnwys, ewch i Gymorth Cyfreithiol (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Wedi stopio - Allan o inc</translation>
 <translation id="1664796644829245314">Rhagolwg <ph name="PREVIEW_OBJECT" /></translation>
@@ -323,7 +322,6 @@
 <translation id="3484914941826596830">Tra bod y gadarnwedd yn diweddaru, peidiwch â dadblygio'r ddyfais allanol hon na diffodd eich cyfrifiadur. Gallwch leihau'r ffenestr hon. Gall y diweddariad hwn gymryd ychydig funudau ac mae'n bosib na fydd eich dyfais allanol yn gweithio yn ystod y cyfnod hwn.</translation>
 <translation id="3486220673238053218">diffiniad</translation>
 <translation id="3488065109653206955">Wedi'i weithredu'n rhannol</translation>
-<translation id="349491921221892984"><ph name="MINUTES" /> o funudau</translation>
 <translation id="3502426834823382181">gweld pob ap</translation>
 <translation id="3510890413042482857">Anfon <ph name="BEGIN_LINK1" />data olrhain perfformiad<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Diweddariad ChromeOS</translation>
@@ -484,7 +482,6 @@
 <translation id="473775607612524610">Diweddaru</translation>
 <translation id="4771607256327216405">goleuo bysellfwrdd</translation>
 <translation id="4773299976671772492">Wedi stopio</translation>
-<translation id="4782003517030001304">1 awr</translation>
 <translation id="4782311465517282004">Cael diffiniadau, cyfieithiadau, neu drosiadau uned pan fyddwch yn de-glicio neu'n cyffwrdd a dal testun</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> llun</translation>
 <translation id="4793710386569335688">Am ragor o help, ewch i'r <ph name="BEGIN_LINK" />Ganolfan Gymorth<ph name="END_LINK" />.</translation>
@@ -699,6 +696,7 @@
 <translation id="629550705077076970">pylu bysellfwrdd</translation>
 <translation id="6302401976930124515">Mae'r prawf <ph name="TEST_NAME" /> wedi'i ganslo</translation>
 <translation id="631063167932043783">Ap Explore</translation>
+<translation id="6318437367327684789">am byth</translation>
 <translation id="6319207335391420837">Diweddaru'r gadarnwedd ar <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Troi'r arbedydd sgrîn ymlaen</translation>
 <translation id="6324916366299863871">Golygu'r llwybr byr</translation>

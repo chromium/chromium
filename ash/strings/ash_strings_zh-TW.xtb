@@ -29,6 +29,7 @@
 <translation id="109942774857561566">我好無聊</translation>
 <translation id="1104084341931202936">顯示無障礙設定</translation>
 <translation id="1104621072296271835">完成連結可進一步提升裝置效能</translation>
+<translation id="1106446201446919638">1 部裝置已連線。使用無線基地台時，Wi-Fi 會保持關閉。</translation>
 <translation id="1111021433905331574">你可以在「設定」&gt;「<ph name="APP_TITLE" />」中變更鍵盤背光的顏色</translation>
 <translation id="1117719261843403176">切換行動數據。<ph name="STATE" />。</translation>
 <translation id="112308213915226829">自動隱藏檔案櫃</translation>
@@ -202,7 +203,6 @@
 <translation id="1757857692711134412">關閉，直到日落</translation>
 <translation id="1768366657309696705">「<ph name="LAUNCHER_KEY_NAME" />鍵 + 句號鍵」的鍵盤快速鍵已變更。如要使用 Insert 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + Shift + Backspace 鍵。</translation>
 <translation id="1770726142253415363">已移至第 <ph name="ROW_NUMBER" /> 列，第 <ph name="COLUMN_NUMBER" /> 欄。</translation>
-<translation id="1771458705381257690">使用「<ph name="NAME" />」設定及自訂裝置</translation>
 <translation id="1771761307086386028">向右捲動</translation>
 <translation id="1774796056689732716">日曆，<ph name="CURRENT_MONTH_YEAR" />，目前已選取 <ph name="DATE" />。</translation>
 <translation id="1775598828170459419">目前顯示 <ph name="NUM_SHOWN_ITEMS" /> 個，共 <ph name="NUM_TOTAL_ITEMS" /> 個</translation>
@@ -307,7 +307,6 @@
 <translation id="2258734398699965611">建議檔案</translation>
 <translation id="2268130516524549846">藍牙已停用</translation>
 <translation id="2268813581635650749">登出所有使用者</translation>
-<translation id="2269016722240250274">某個應用程式正在使用麥克風</translation>
 <translation id="2276987123919776440">15 分鐘</translation>
 <translation id="2277103315734023688">快轉</translation>
 <translation id="2282073721614284166">在分頁中開啟連結</translation>
@@ -360,6 +359,7 @@
 <translation id="2465145153332031561">電池健康度：<ph name="BATTERY_HEALTH_PERCENTAGE" />%；充電循環次數：<ph name="CYCLE_COUNT" /> 次</translation>
 <translation id="2473177541599297363">確認解析度</translation>
 <translation id="2475982808118771221">發生錯誤</translation>
+<translation id="2478076885740497414">安裝應用程式</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2484513351006226581">按下 <ph name="KEYBOARD_SHORTCUT" />可切換鍵盤配置。</translation>
 <translation id="2487915095798731898">加入</translation>
@@ -518,6 +518,7 @@
 <translation id="3160929076476941240">2 小時</translation>
 <translation id="3161500364292033097">關閉桌面和視窗</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> 正在復原 <ph name="DEVICE_TYPE" />。你的裝置將會重設，且所有資料將遭到刪除。</translation>
+<translation id="3170769098533255179">未連線到任何裝置。使用無線基地台時，Wi-Fi 會保持關閉。</translation>
 <translation id="3171170659304083361">輸入法設定</translation>
 <translation id="3176221688814061633">Chromebook 或藍牙裝置使用的是舊版藍牙。請開啟高解析度藍牙或使用內部麥克風，以提高音訊品質。</translation>
 <translation id="3181441307743005334">重新啟動中，請稍候</translation>
@@ -552,6 +553,7 @@
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> 部裝置已連線至「<ph name="DEVICE_NAME" />」無線基地台</translation>
 <translation id="3307642347673023554">已切換為筆記型電腦模式</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> 日後仍可登入。</translation>
+<translation id="3317779231018057649"><ph name="DEVICECOUNT" /> 部裝置已連線。使用無線基地台時，Wi-Fi 會保持關閉。</translation>
 <translation id="3321628682574733415">家長存取碼不正確</translation>
 <translation id="332827762492701193">通知已隱藏</translation>
 <translation id="3333674550998107387">展開「<ph name="NOTIFICATION_TITLE" />」通知</translation>
@@ -631,7 +633,6 @@
 <translation id="3600061223661453002">關閉</translation>
 <translation id="3604801046548457007">已建立桌面 <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">已連接點字顯示器。</translation>
-<translation id="3609301425104788351"><ph name="MIC" />，<ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">如果啟用行動數據，藍牙功能也會一併開啟</translation>
 <translation id="3616113530831147358">音訊</translation>
 <translation id="3616883743181209306">已將選單移至畫面右上角。</translation>
@@ -679,9 +680,7 @@
 <translation id="3781910048497807059">將焦點移至上一個窗格</translation>
 <translation id="3783640748446814672">Alt</translation>
 <translation id="3784455785234192852">鎖定</translation>
-<translation id="3789841737615482174">安裝</translation>
 <translation id="3796215473395753611">alt + 向上鍵</translation>
-<translation id="3796746699333205839">某個應用程式正在使用攝影機和麥克風</translation>
 <translation id="3798670284305777884">喇叭 (內部)</translation>
 <translation id="3799080171973636491">你按下了全螢幕放大鏡的鍵盤快速鍵。確定要啟用這項功能嗎？</translation>
 <translation id="380165613292957338">你好，需要什麼協助嗎？</translation>
@@ -810,6 +809,7 @@
 <translation id="428715201724021596">正在連線至設定檔。請稍候片刻。</translation>
 <translation id="4294319844246081198">早安，<ph name="GIVEN_NAME" />：</translation>
 <translation id="4296136865091727875">清除全部 <ph name="COUNT" /> 則通知</translation>
+<translation id="4300272766492248925">開啟應用程式</translation>
 <translation id="430191667033048642">已將「<ph name="MOVED_APP_NAME" />」移至「<ph name="FOLDER_NAME" />」資料夾。</translation>
 <translation id="4302592941791324970">無法使用</translation>
 <translation id="4303223480529385476">展開狀態區</translation>
@@ -875,6 +875,7 @@
 <translation id="4566144812051858745">對任何建議都不感興趣</translation>
 <translation id="4569753163207712681">查看手機上最近的相片、媒體和應用程式</translation>
 <translation id="4573176682887762361">「輸入 [文字/詞組]」</translation>
+<translation id="4577188182049003486">無線基地台開啟時，Wi-Fi 會關閉</translation>
 <translation id="4577274620589681794">時間到 · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">顯示預覽</translation>
 <translation id="4578906031062871102">已開啟設定選單</translation>
@@ -1204,7 +1205,6 @@
 <translation id="5876666360658629066">輸入家長存取碼</translation>
 <translation id="5881540930187678962">稍後再設定 Phone Hub</translation>
 <translation id="5881663018261910378">已停用</translation>
-<translation id="5883017113634523865">前往 Google Play 安裝「<ph name="NAME" />」的應用程式，即可查看所有可用功能</translation>
 <translation id="5887954372087850114">「<ph name="WINDOW_TITLE" />」視窗已指派給「<ph name="DESK_TITLE" />」，並取消指派給所有其他桌面</translation>
 <translation id="588817334757907802">在 Chrome 瀏覽器中開啟檔案</translation>
 <translation id="5895138241574237353">重新啟動</translation>
@@ -1573,7 +1573,6 @@
 <translation id="742594950370306541">攝影機正在使用中。</translation>
 <translation id="742608627846767349">早安，</translation>
 <translation id="743058460480092004">攝影機和麥克風正在使用中。</translation>
-<translation id="7452560014878697800">某個應用程式正在使用攝影機</translation>
 <translation id="7453330308669753048">搜尋已移除的搜尋記錄</translation>
 <translation id="7459485586006128091">由於發生內部錯誤，無線基地台已關閉。請過幾分鐘再重試連線。</translation>
 <translation id="7461924472993315131">固定</translation>

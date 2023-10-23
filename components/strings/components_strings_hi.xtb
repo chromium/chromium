@@ -274,6 +274,7 @@
 <translation id="1507780850870535225">लैंडस्केप डिज़ाइन</translation>
 <translation id="1513706915089223971">इतिहास एंट्री की सूची</translation>
 <translation id="1516097932025103760">कार्ड को एन्क्रिप्ट (सुरक्षित) किया जाएगा और उसे सुरक्षित तरीके से सेव किया जाएगा. हालांकि, कार्ड वेरिफ़िकेशन कोड (सीवीसी) को कभी भी सेव नहीं किया जाता है.</translation>
+<translation id="151720253492607760">आगे भी इसकी अनुमति न दें</translation>
 <translation id="1517433312004943670">फ़ोन नंबर आवश्यक है</translation>
 <translation id="1519264250979466059">बिल्ड तारीख</translation>
 <translation id="1521159554480556801">फ़ाइबर और टेक्सटाइल आर्ट</translation>
@@ -878,6 +879,7 @@
 <translation id="2765217105034171413">छोटा</translation>
 <translation id="2770159525358613612">अपनी फ़ाइलें फिर से अपलोड करने की कोशिश करें</translation>
 <translation id="277133753123645258">शिपिंग का तरीका</translation>
+<translation id="2773388851563527404">Chrome, ज़्यादातर साइटों को तीसरे पक्ष की कुकी का इस्तेमाल करने से रोकता है. हालांकि, इस साइट को तीसरे पक्ष की कुकी का इस्तेमाल करने की अनुमति है, क्योंकि यह बुनियादी सेवाएं देने के लिए उन कुकी पर निर्भर करती है. <ph name="LINK" /> के लिए सेटिंग पर जाएं.</translation>
 <translation id="277499241957683684">डिवाइस का रिकॉर्ड लापता है</translation>
 <translation id="2775884851269838147">पहला प्रिंट पेज</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -1728,6 +1730,7 @@
 <translation id="4521280267704259211">मोनार्क साइज़ का लिफ़ाफ़ा</translation>
 <translation id="4521916730539354575">बाईं ट्रे</translation>
 <translation id="4522570452068850558">ब्यौरा</translation>
+<translation id="4522821696628398940">क्या आपको Google खाते में IBAN सेव करना है?</translation>
 <translation id="4523643381056109546">साइनेज</translation>
 <translation id="4524138615196389145">अब WebAuthn का इस्तेमाल करके अपने कार्ड की जल्दी पुष्टि करें</translation>
 <translation id="45243788195988825"><ph name="TOPIC" /> को ब्लॉक करें</translation>
@@ -2311,7 +2314,6 @@
 <translation id="5720705177508910913">मौजूदा उपयोगकर्ता</translation>
 <translation id="572328651809341494">हाल ही के टैब</translation>
 <translation id="5723287205918986743">रक्षा उद्योग</translation>
-<translation id="5725567311035061582">कुकी और साइट डेटा मैनेज करें</translation>
 <translation id="5730040223043577876">अगर आपने अपने पासवर्ड का दूसरी साइटों पर दोबारा इस्तेमाल किया है, तो Chrome आपको उसे रीसेट करने का सुझाव देता है.</translation>
 <translation id="5732392974455271431">आपके अभिभावक इसे आपके लिए अनवरोधित कर सकते हैं</translation>
 <translation id="573555826359077410">'फ़ॉर्म बनाएं' बटन, Google Forms में जल्दी से नया फ़ॉर्म बनाने के लिए इसे चालू करें</translation>
@@ -3165,6 +3167,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7461924472993315131">पिन करें</translation>
 <translation id="7463075493919226237">ऑस्ट्रेलियन फ़ुटबॉल</translation>
+<translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> को पता चल जाएगा कि आपने <ph name="TOP_LEVEL_URL" /> पर विज़िट किया है</translation>
 <translation id="7465963048299965912">10 x 13 इंच</translation>
 <translation id="7469935732330206581">यह फ़ॉर्म सुरक्षित नहीं है</translation>
 <translation id="7473891865547856676">नहीं, रहने दें</translation>
@@ -3659,11 +3662,13 @@
 <translation id="8416874502399604126">इस बार माइक्रोफ़ोन इस्तेमाल करने की अनुमति दी गई</translation>
 <translation id="8422228580902424274">मुमकिन है कि आपने जिस साइट पर विज़िट किया है वहां हमलावर आपसे धोखे से नुकसान पहुंचाने वाले सॉफ़्टवेयर इंस्टॉल करवा दें या पासवर्ड, फ़ोन, और क्रेडिट कार्ड नंबर जैसी जानकारी ज़ाहिर करवा दें.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
+<translation id="8425213833346101688">बदलें</translation>
 <translation id="8427848540066057481">500 x 750 मि॰मी॰</translation>
 <translation id="8428213095426709021">सेटिंग</translation>
 <translation id="8428634594422941299">समझ लिया</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में अपनी कुकी सेटिंग मैनेज करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="8433057134996913067">इससे आप ज़्यादातर वेबसाइट से प्रस्थान कर जाएंगे.</translation>
+<translation id="8434014327286137412">अगली बार तेज़ी से पैसे चुकाने के लिए, IBAN को अपने Google खाते में सेव करें</translation>
 <translation id="8434840396568290395">पालतू जानवर</translation>
 <translation id="8436623588884785770">नीति जोड़ें</translation>
 <translation id="8437238597147034694">&amp;ले जाना वापस लाएं</translation>
@@ -3763,6 +3768,7 @@
 <translation id="865032292777205197">मोशन सेंसर</translation>
 <translation id="865255447216708819">बैक प्रिंट फ़िल्म</translation>
 <translation id="8654126188050905496">55 x 91 मि॰मी॰</translation>
+<translation id="8655930295668719549">आपने <ph name="ORIGIN" /> पर पहले <ph name="PERMISSION" /> की अनुमति नहीं दी थी</translation>
 <translation id="8662463432865928030">व्यावसायिक प्रॉपर्टी</translation>
 <translation id="8663226718884576429">ऑर्डर की खास बातें, <ph name="TOTAL_LABEL" />, ज़्यादा जानकारी</translation>
 <translation id="8663909737634214500">ऑप्टिकल डिस्क</translation>

@@ -93,7 +93,6 @@
 <translation id="1643449475550628585">Дэлгэцийн зургийг өдөр бүр өөрчлөх</translation>
 <translation id="1644574205037202324">Түүх</translation>
 <translation id="1651925268237749928">Та дундын цомог сонгосон байна. Бусад хүн зураг нэмэх эсвэл өөрчлөх боломжтой. Таны дэлгэцийн зураг энэ цомогт одоогоор байхгүй зургийг ашиглаж магадгүй.</translation>
-<translation id="1658834457013045127">Үүрд</translation>
 <translation id="1661865805917886535">Зарим бүртгэл болон системийн мэдээллийг Google рүү илгээж болзошгүй. Бид энэ мэдээллийг техникийн асуудлуудыг шийдвэрлэхэд туслах, мөн өөрсдийн үйлчилгээнүүдийг сайжруулахын тулд манай нууцлалын бодлого (<ph name="PRIVACYPOLICYURL" />) болон үйлчилгээний нөхцөлийн (<ph name="TERMSOFSERVICEURL" />) дагуу ашигладаг. Контентын өөрчлөлт хүсэхийн тулд Хууль эрх зүйн тусламжийн хуудас (<ph name="LEGALHELPPAGEURL" />) руу очно уу.</translation>
 <translation id="1662989795263954667">Зогссон - Хэвлэгчийн хор дууссан</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" />-г урьдчилан үзэх</translation>
@@ -323,7 +322,6 @@
 <translation id="3484914941826596830">Жижиг программыг шинэчилж байх үед энэ гадны төхөөрөмжийг бүү салгаарай. Мөн компьютероо бүү унтраагаарай. Та энэ цонхыг багасгах боломжтой. Энэ шинэчлэлтэд хэдэн минут зарцуулж магадгүй бөгөөд энэ хугацаанд таны гадны төхөөрөмж ажиллахгүй байж магадгүй.</translation>
 <translation id="3486220673238053218">тодорхойлолт</translation>
 <translation id="3488065109653206955">Хагас идэвхжсэн</translation>
-<translation id="349491921221892984"><ph name="MINUTES" /> мин</translation>
 <translation id="3502426834823382181">бүх аппыг харах</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Гүйцэтгэлийн ул мөрийн өгөгдлийг<ph name="END_LINK1" /> илгээх</translation>
 <translation id="3517001332549868749">ChromeOS-н шинэчлэлт</translation>
@@ -484,7 +482,6 @@
 <translation id="473775607612524610">Шинэчлэх</translation>
 <translation id="4771607256327216405">гарыг илүү гэрэлтүүлэх</translation>
 <translation id="4773299976671772492">Зогссон</translation>
-<translation id="4782003517030001304">1 ц</translation>
 <translation id="4782311465517282004">Та баруун талыг товших эсвэл текстийг удаан дарах үедээ тодорхойлолт, орчуулга эсвэл нэгж хөрвүүлэлт аваарай</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> зураг</translation>
 <translation id="4793710386569335688">Илүү их тусламж авах бол <ph name="BEGIN_LINK" />Тусламжийн төв<ph name="END_LINK" /> рүү очно уу.</translation>
@@ -699,6 +696,7 @@
 <translation id="629550705077076970">гарыг бүдгэрүүлэх</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> тестийг цуцалсан байна</translation>
 <translation id="631063167932043783">Аппыг судлах</translation>
+<translation id="6318437367327684789">үүрд</translation>
 <translation id="6319207335391420837">Жижиг программыг <ph name="DEVICE_NAME" /> дээр шинэчлэх</translation>
 <translation id="6321407676395378991">Дэлгэц амраагчийг асаах</translation>
 <translation id="6324916366299863871">Товчлолыг засах</translation>

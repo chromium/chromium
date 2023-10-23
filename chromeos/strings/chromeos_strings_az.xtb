@@ -93,7 +93,6 @@
 <translation id="1643449475550628585">Hər gün divar kağızı şəklini dəyişdirin</translation>
 <translation id="1644574205037202324">Tarixçə</translation>
 <translation id="1651925268237749928">Paylaşılan albom seçmisiniz. Digər şəxslər foto əlavə edə və ya dəyişə bilər. Divar kağızında bu albomda olmayan fotolardan istifadə edilmiş ola bilər.</translation>
-<translation id="1658834457013045127">Həmişə</translation>
 <translation id="1661865805917886535">Bəzi hesab və sistem məlumatları Google-a göndərilə bilər. Texniki problemləri həll etmək və xidmətləri təkmilləşdirmək üçün bu məlumatı Məxfilik Siyasətimizə (<ph name="PRIVACYPOLICYURL" />) və Xidmət Şərtlərinə (<ph name="TERMSOFSERVICEURL" />) əsasən istifadə edirik. Kontent dəyişikliyi sorğusu göndərmək üçün Hüquqi Kömək (<ph name="LEGALHELPPAGEURL" />) bölməsinə keçin.</translation>
 <translation id="1662989795263954667">Dayanıb - Mürəkkəb yoxdur</translation>
 <translation id="1664796644829245314">Önizləyin: <ph name="PREVIEW_OBJECT" /></translation>
@@ -323,7 +322,6 @@
 <translation id="3484914941826596830">Proqram güncəllənərkən bu xarici cihazı ayırmayın və ya kompüterinizi söndürməyin. Bu pəncərəni kiçildə bilərsiniz. Bu güncəlləmə bir neçə dəqiqə çəkə bilər və xarici cihazınız bu müddət ərzində işləməyə bilər.</translation>
 <translation id="3486220673238053218">təsvir</translation>
 <translation id="3488065109653206955">Qismən aktivləşdirilib</translation>
-<translation id="349491921221892984"><ph name="MINUTES" /> dəq</translation>
 <translation id="3502426834823382181">bütün tətbiqlərə baxın</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Performans izləmə datasını<ph name="END_LINK1" /> göndərin</translation>
 <translation id="3517001332549868749">ChromeOS güncəlləməsi</translation>
@@ -484,7 +482,6 @@
 <translation id="473775607612524610">Güncəlləşdirin</translation>
 <translation id="4771607256327216405">klaviaturanın parlaqlaşdırılması</translation>
 <translation id="4773299976671772492">Durmuş</translation>
-<translation id="4782003517030001304">1 saat</translation>
 <translation id="4782311465517282004">Mətnə sağ düymə ilə toxunduqda və ya toxunub saxladıqda izahlar, tərcümələr və ya vahid çevirmələrini əldə edin</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
 <translation id="4793710386569335688">Ətraflı məlumat üçün <ph name="BEGIN_LINK" />Yardım Mərkəzinə<ph name="END_LINK" /> keçin.</translation>
@@ -699,6 +696,7 @@
 <translation id="629550705077076970">klaviaturanın qaraldılması</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> testi ləğv edilib</translation>
 <translation id="631063167932043783">Tətbiqi araşdırın</translation>
+<translation id="6318437367327684789">həmişə</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> cihazında proqramı güncəlləyin</translation>
 <translation id="6321407676395378991">Ekran qoruyucusunu aktiv edin</translation>
 <translation id="6324916366299863871">Qısayola düzəliş edin</translation>

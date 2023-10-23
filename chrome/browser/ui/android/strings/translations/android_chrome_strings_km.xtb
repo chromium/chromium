@@ -135,6 +135,7 @@
 <translation id="1672586136351118594">កុំ​បង្ហាញ​ម្ដងទៀត</translation>
 <translation id="1680919990519905526">រកទិញរូបភាពដោយប្រើ Google Lens <ph name="BEGIN_NEW" />ថ្មី<ph name="END_NEW" /></translation>
 <translation id="1687482373098770139">ក្នុង​ពេល​ឆាប់ៗ​នេះ អ្នកនឹង​ឃើញ​ខ្លឹមសារ​ពី និង​ពាក់ព័ន្ធនឹង <ph name="SITE_NAME" /> នៅក្នុង "កំពុង​តាមដាន"។ គេហទំព័រ និង​ការស្វែងរក​ដែលអ្នកតាមដាន​ត្រូវបាន​រក្សាទុកនៅក្នុង​គណនី Google របស់អ្នក។ អ្នកអាច​គ្រប់គ្រង​ការតាមដាន​របស់អ្នក​នៅក្នុង​ការកំណត់​នៅពេលណាក៏បាន។</translation>
+<translation id="1696555181932908973">អ្នកអាច​សាកល្បង​ប្រើវិធីផ្សេងទៀត ដើម្បីបន្ត​នៅលើ <ph name="SITE_ETLD_PLUS_ONE" />។</translation>
 <translation id="1702543251015153180">ប្ដូរការកំណត់​រចនាប័ទ្ម​ងងឹតរបស់អ្នកឬ?</translation>
 <translation id="1702907158640575240">កម្មវិធីរុករក​តាមអ៊ីនធឺណិត​ដែលស្ថិតក្រោមការគ្រប់គ្រង</translation>
 <translation id="1710099199314114079">ប្ដូរ ឬបិទផ្ទាំង</translation>
@@ -151,6 +152,7 @@
 <translation id="1792959175193046959">ប្ដូរ​ទីតាំង​ទាញយក​លំនាំដើម​បាន​គ្រប់ពេល</translation>
 <translation id="1807246157184219062">ភ្លឺ</translation>
 <translation id="1810845389119482123">ការរៀបចំ​សមកាលកម្ម​ដំបូង​មិនបាន​បញ្ចប់​ទេ</translation>
+<translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> មិនអាច​បន្តប្រើ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> បានទេ</translation>
 <translation id="1829244130665387512">ស្វែងរកក្នុងទំព័រ</translation>
 <translation id="1832459821645506983">បាទ/ចាស ខ្ញុំយល់ព្រម</translation>
 <translation id="185383612275551373">ធ្វើសមកាលកម្ម ដើម្បីទទួល​បាន​ខ្លឹមសារ​ដែល​ពាក់ព័ន្ធបំផុតពី Google</translation>
@@ -317,6 +319,7 @@
 <translation id="2718846868787000099">ដើម្បីបង្ហាញខ្លឹមសារជាភាសាដែលអ្នកចង់បកប្រែ គេហទំព័រដែលអ្នកចូលមើលអាចមើលចំណូលចិត្តរបស់អ្នក</translation>
 <translation id="2722945394406572875">សារ Privacy Sandbox ត្រូវបានបិទ</translation>
 <translation id="2723001399770238859">សម្លេង</translation>
+<translation id="2742373789128106053">មិនអាច​ប្រើ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ឥឡូវនេះបានទេ។</translation>
 <translation id="2760805590727089264">MM / YY</translation>
 <translation id="2760989362628427051">បើក​រចនាប័ទ្មងងឹត ពេលបើក​កម្មវិធីសន្សំថ្ម ឬរចនាប័ទ្មងងឹត​នៅលើ​ឧបករណ៍របស់អ្នក</translation>
 <translation id="2762000892062317888">អំបាញ់មិញនេះ</translation>
@@ -475,6 +478,7 @@
 <translation id="3509330069915219067">គ្មានអ៊ីនធឺណិត។ Chrome មិនអាចពិនិត្យរក​កំណែថ្មីបានទេ។</translation>
 <translation id="3513704683820682405">AR</translation>
 <translation id="3518985090088779359">ព្រមទទួល និងបន្ត</translation>
+<translation id="3521388823983121502">មិនអាច​បន្តដោយប្រើ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> បានទេ</translation>
 <translation id="3522247891732774234">មានផ្តល់ជូនការអាប់ដេត។ ជម្រើសច្រើនទៀត</translation>
 <translation id="3524138585025253783">UI អ្នកអភិវឌ្ឍន៍</translation>
 <translation id="3524334353996115845">ឱ្យ <ph name="ORIGIN" /> ផ្ទៀងផ្ទាត់​ថាជាអ្នក</translation>
@@ -627,6 +631,7 @@
 <translation id="4355272626458588338">អ្នកអាច​ត្រឡប់ទៅ​ទំព័រ​ដែលសំខាន់​ចំពោះអ្នក តាមរយៈ​ការបញ្ចូល​ចំណាំ</translation>
 <translation id="4369735607080757018">ប្រភេទ​ទិន្នន័យមួយចំនួនតូច​ត្រូវ​បាន​ចែករំលែក​រវាង​គេហទំព័រ​នានា ដើម្បី​វាស់ស្ទង់​ប្រតិបត្តិការ​នៃ​ការ​ផ្សាយពាណិជ្ជកម្ម​របស់​គេហទំព័រ​ទាំ​ងនោះ ដូច​ជាពេលវេលា​ប្រចាំថ្ងៃ​ដែល​ការផ្សាយ​ពាណិជ្ជកម្ម​ត្រូវ​បាន​បង្ហាញ​ដល់​អ្នកជាដើម</translation>
 <translation id="4378154925671717803">ទូរស័ព្ទ</translation>
+<translation id="4380055775103003110">ប្រសិនបើ​បញ្ហានេះនៅតែកើតមានទៀត អ្នកអាច​សាកល្បង​ប្រើវិធីផ្សេងទៀត ដើម្បីបន្ត​នៅលើ <ph name="SITE_ETLD_PLUS_ONE" />។</translation>
 <translation id="438319986296050901">ចែករំលែក​កាត​តែប៉ុណ្ណោះ</translation>
 <translation id="4384468725000734951">ប្រើ Sogou ដើម្បីធ្វើការស្វែងរក</translation>
 <translation id="4387647248986092471">បង្កើត​ការចាក់​សោកម្រងព័ត៌មាន​រថយន្ដ</translation>
@@ -885,6 +890,7 @@
 <translation id="569435661099256888">អ្នកអាច​មើលឃើញ​ទំព័រ​ដែលអ្នក​បានចូលមើល ឬ​សម្អាត​ទំព័រទាំងនោះ​ចេញពី​ប្រវត្តិ​របស់អ្នក</translation>
 <translation id="569536719314091526">បកប្រែ​ទំព័រនេះ​ទៅជាភាសា​ណាមួយពី​ប៊ូតុងជម្រើស​ច្រើនទៀត</translation>
 <translation id="5696597120588531049">Chrome អាចជួយរក្សាសុវត្ថិភាពរបស់អ្នកពីការបែកធ្លាយទិន្នន័យ គេហទំព័រដែលគ្មានសុវត្ថិភាព និងអ្វីៗជាច្រើនទៀត</translation>
+<translation id="5698878456427040674">ពិនិត្យមើល​ថាតើ​អាចប្រើ​គណនី​ដែលបានជ្រើសរើស​បានឬអត់។</translation>
 <translation id="570347048394355941">ប្ដូរ​ទៅ​ផ្ទាំង</translation>
 <translation id="572328651809341494">ផ្ទាំងថ្មីៗ</translation>
 <translation id="5726692708398506830">ធ្វើឲ្យអ្វីគ្រប់យ៉ាងនៅលើទំព័រនេះធំជាងមុន</translation>
@@ -963,6 +969,7 @@
 <translation id="6108923351542677676">ការដំឡើងកំពុងដំណើរការ…</translation>
 <translation id="6112702117600201073">កំពុងធ្វើឲ្យទំព័រថ្មីឡើងវិញ</translation>
 <translation id="6122831415929794347">បិទការរុករក​ដោយសុវត្ថិភាពឬ?</translation>
+<translation id="6125864963080902918"><ph name="BEGIN_LINK" />ព័ត៌មានលម្អិតបន្ថែម<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">ធាតុត្រូវបានយកចេញ</translation>
 <translation id="6130303040046284160">បង្រួម​ផ្ទាំង</translation>
 <translation id="6137022273846704445">ភាសារបស់ <ph name="APP_NAME" /></translation>
@@ -1004,6 +1011,7 @@
 <translation id="6342069812937806050">អំបាញ់មិញនេះ</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 និង <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ទៀត}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 និង <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ទៀត}}</translation>
 <translation id="6345878117466430440">សម្គាល់​ថា​បានអាន​ហើយ</translation>
+<translation id="6356893102071098867">ពិនិត្យមើលថា​អ្នកបាន​ជ្រើសរើស​គណនី​ដែលត្រឹមត្រូវ</translation>
 <translation id="6357653805084533597">អ្នកអាចប្រើទូរសព្ទនេះ ដើម្បីចូលគណនីនៅលើឧបករណ៍ដែលកំពុងបង្ហាញកូដ QR នេះ។</translation>
 <translation id="6363990818884053551">ដើម្បី​ចាប់ផ្ដើម​សមកាលកម្ម សូមផ្ទៀងផ្ទាត់ថា​ជាអ្នក</translation>
 <translation id="6364438453358674297">យកការផ្តល់យោបល់ចេញពីប្រវត្តិ?</translation>
@@ -1136,6 +1144,7 @@
 <translation id="6908998565271542516">ជម្រើស​អនុញ្ញាត ឬ​មិន​អនុញ្ញាត​គេហទំព័រ​ដែលបានបើក​ពេញអេក្រង់</translation>
 <translation id="6909589135458168665">ផ្ទុកទំព័រ​ជាមុន</translation>
 <translation id="6910211073230771657">បានលុប</translation>
+<translation id="6918398787259831832">ប្រសិនបើ​បញ្ហានេះនៅតែកើតមានទៀត សូម<ph name="BEGIN_LINK" />ទទួល​ព័ត៌មាន​បន្ថែម<ph name="END_LINK" />ពី <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />។</translation>
 <translation id="6942665639005891494">ប្ដូរ​ទីតាំង​ទាញយក​លំនាំដើម​បាន​គ្រប់ពេល​ដោយ​ប្រើ​ជម្រើ​សម៉ឺនុយ​​ការកំណត់</translation>
 <translation id="694267552845942083">បច្ចុប្បន្ន អ្នកកំពុងប្ដូរ​ការកំណត់​ការធ្វើសមកាលកម្ម​តាមបំណង​របស់អ្នក។ ដើម្បីបញ្ចប់ការបើក​សមកាលកម្ម សូមចុចប៊ូតុង "បញ្ជាក់" នៅជិតផ្នែកខាងក្រោម​នៃអេក្រង់។ រំកិលឡើងលើ</translation>
 <translation id="6945221475159498467">ជ្រើសរើស</translation>
@@ -1172,6 +1181,7 @@
 <translation id="7138678301420049075">ផ្សេងទៀត</translation>
 <translation id="7140829094791862589">តម្រៀបតាមលំដាប់ដោយផ្ទាល់ដៃ</translation>
 <translation id="7146622961999026732">គេហទំព័រ និងកម្មវិធី​ទាំងនេះ​ហាក់ដូចជា​សំខាន់​ចំពោះអ្នក៖</translation>
+<translation id="7148400116894863598"><ph name="BEGIN_LINK" />ទទួលបាន​ព័ត៌មាន​បន្ថែម<ph name="END_LINK" />ពី <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />។</translation>
 <translation id="7149893636342594995">24 ម៉ោងមុន</translation>
 <translation id="7168323970702333693">បានចូលគណនី​ជា <ph name="USER_NAME" />។ បើកការកំណត់។</translation>
 <translation id="7173114856073700355">បើកការកំណត់</translation>
@@ -1198,6 +1208,7 @@
 <translation id="7274013316676448362">ទំព័រ​ដែលបាន​រារាំង</translation>
 <translation id="7276100255011548441">Chrome លុបប្រធានបទ​ដែល​ចាស់​ជាង 4 សប្ដាហ៍ដោយ​ស្វ័យប្រវត្តិ។ នៅ​ពេល​អ្នក​បន្ត​រុករក ប្រធានបទ​ប្រហែលជា​បង្ហាញ​ឡើងវិញ​នៅ​លើ​បញ្ជី។ ឬ​អ្នក​អាច​ទប់ស្កាត់​ប្រធានបទ​ដែល​អ្នក​មិន​ចង់​ឱ្យ Chrome ចែករំលែក​ជា​មួយគេហទំព័រ។ ស្វែងយល់​បន្ថែម​អំពី<ph name="BEGIN_LINK" />ការគ្រប់គ្រង​ឯកជនភាពនៃការផ្សាយពាណិជ្ជកម្ម​របស់​អ្នក​នៅ​ក្នុង Chrome។<ph name="END_LINK" /></translation>
 <translation id="7286703216224610554">ចែករំលែកតែប្រតិកម្មប៉ុណ្ណោះ</translation>
+<translation id="7289303553784750393">ប្រសិនបើ​អ្នកភ្ជាប់ទៅ​អ៊ីនធឺណិត ប៉ុន្តែ​នៅតែមានបញ្ហានេះ​ទៀត អ្នកអាច​សាកល្បង​ប្រើវិធីផ្សេងទៀត ដើម្បីបន្ត​នៅលើ <ph name="SITE_ETLD_PLUS_ONE" />។</translation>
 <translation id="7290209999329137901">មិនអាច​ប្ដូរឈ្មោះ​បានទេ</translation>
 <translation id="7291910923717764901">បានបញ្ចូល​ការពណ៌នាអំពី​រូបភាព​សម្រាប់​ទំព័រនេះ</translation>
 <translation id="7293429513719260019">ជ្រើសរើសភាសា</translation>
@@ -1252,6 +1263,7 @@
 <translation id="750228856503700085">មិនមានបច្ចុប្បន្នភាពទេ</translation>
 <translation id="7507207699631365376">មើល<ph name="BEGIN_LINK" />គោលការណ៍ឯកជនភាព<ph name="END_LINK" />របស់ក្រុមហ៊ុនផ្ដល់សេវានេះ</translation>
 <translation id="7514365320538308">ទាញយក</translation>
+<translation id="7518079994230200553">មិនអាចប្រើ​ជម្រើសនេះ​ឥឡូវនេះបានទេ។</translation>
 <translation id="751961395872307827">មិន​អាច​ភ្ជាប់ទៅ​ទំព័រ​បានទេ</translation>
 <translation id="752220631458524187">ផ្ដាច់នៅពេលអ្នករួចរាល់</translation>
 <translation id="7523960634226602883">ប្រើ Google Lens ដើម្បីស្វែងរកដោយប្រើកាមេរ៉ារបស់អ្នក</translation>

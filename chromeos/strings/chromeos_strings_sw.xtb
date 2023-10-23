@@ -93,7 +93,6 @@
 <translation id="1643449475550628585">Badilisha picha ya mandhari kila siku</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1651925268237749928">Umechagua albamu inayoshirikiwa. Watu wengine wanaweza kuweka au kubadilisha picha. Mandhari yako inaweza kutumia picha ambazo hazipo kwenye albamu hii kwa sasa.</translation>
-<translation id="1658834457013045127">Wakati wote</translation>
 <translation id="1661865805917886535">Huenda baadhi ya maelezo ya akaunti na mfumo yakatumwa kwa Google. Tunatumia maelezo haya ili kusaidia kushughulikia matatizo ya kiufundi na kuboresha huduma zetu, kwa mujibu wa Sera ya Faragha (<ph name="PRIVACYPOLICYURL" />) na Sheria na Masharti yetu (<ph name="TERMSOFSERVICEURL" />). Ili uombe maudhui yabadilishwe, nenda kwenye ukurasa wa Usaidizi wa Kisheria (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Imesimama - Wino umeisha</translation>
 <translation id="1664796644829245314">Kagua <ph name="PREVIEW_OBJECT" /></translation>
@@ -323,7 +322,6 @@
 <translation id="3484914941826596830">Usichomoe kifaa hiki cha nje wala usizime kompyuta yako programu dhibiti ikisasishwa. Unaweza kupunguza kidirisha hiki. Sasisho hili linaweza kuchukua dakika chache na kifaa chako cha nje huenda kisifanye kazi kwa wakati huu.</translation>
 <translation id="3486220673238053218">ufafanuzi</translation>
 <translation id="3488065109653206955">Imaeamilisha kidogo</translation>
-<translation id="349491921221892984">Dak <ph name="MINUTES" /></translation>
 <translation id="3502426834823382181">angalia programu zote</translation>
 <translation id="3510890413042482857">Tuma <ph name="BEGIN_LINK1" />data ya ufuatiliaji wa utendaji<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Sasisho la ChromeOS</translation>
@@ -484,7 +482,6 @@
 <translation id="473775607612524610">Sasisha</translation>
 <translation id="4771607256327216405">kibodi inapata mwangaza</translation>
 <translation id="4773299976671772492">Imesimamishwa</translation>
-<translation id="4782003517030001304">Saa 1</translation>
 <translation id="4782311465517282004">Pata ufafanuzi, tafsiri au ubadilishaji wa vipimo unapobofya kulia au unapogusa na kushikilia maandishi</translation>
 <translation id="4791000909649665275">Picha <ph name="NUMBER" /></translation>
 <translation id="4793710386569335688">Kwa usaidizi zaidi, nenda kwenye <ph name="BEGIN_LINK" />Kituo cha Usaidizi<ph name="END_LINK" />.</translation>
@@ -699,6 +696,7 @@
 <translation id="629550705077076970">kupunguza mwangaza wa kibodi</translation>
 <translation id="6302401976930124515">Jaribio la <ph name="TEST_NAME" /> limeghairiwa</translation>
 <translation id="631063167932043783">Programu ya Gundua</translation>
+<translation id="6318437367327684789">wakati wote</translation>
 <translation id="6319207335391420837">Sasisha programu dhibiti kwenye <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Washa taswira ya skrini</translation>
 <translation id="6324916366299863871">Badilisha njia ya mkato</translation>

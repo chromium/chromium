@@ -2316,7 +2316,6 @@
 <translation id="5720705177508910913">حالیہ صارف</translation>
 <translation id="572328651809341494">حالیہ ٹیبز</translation>
 <translation id="5723287205918986743">دفاعی انڈسٹری</translation>
-<translation id="5725567311035061582">کوکیز اور سائٹ کے ڈیٹا کا نظم کریں</translation>
 <translation id="5730040223043577876">‏اگر آپ نے اپنا پاس ورڈ دیگر سائٹس پر دوبارہ استعمال کیا ہے تو Chrome آپ کو اپنا پاس ورڈ ری سیٹ کرنے کی تجویز کرتا ہے۔</translation>
 <translation id="5732392974455271431">آپ کے والدین آپ کیلئے اسے غیر مسدود کر سکتے ہیں</translation>
 <translation id="573555826359077410">‏فارم تخلیق کریں بٹن، Google Forms میں تیزی سے نیا فارم تخلیق کرنے کے لیے فعال کریں</translation>
@@ -3171,6 +3170,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7461924472993315131">پن کریں</translation>
 <translation id="7463075493919226237">آسٹریلیائی فٹبال</translation>
+<translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> کو معلوم ہو جائے گا کہ آپ نے <ph name="TOP_LEVEL_URL" /> ملاحظہ کیا ہے</translation>
 <translation id="7465963048299965912">‏‎10 x 13 انچ</translation>
 <translation id="7469935732330206581">فارم محفوظ نہیں ہے</translation>
 <translation id="7473891865547856676">نہیں شکریہ</translation>
@@ -3665,6 +3665,7 @@
 <translation id="8416874502399604126">اس بار مائیکروفون کی اجازت ہے</translation>
 <translation id="8422228580902424274">آپ جس سائٹ کو ملاحظہ کرنے کی کوشش کر رہے ہیں اس پر حملہ آور آپ کو سافٹ ویئر انسٹال کرنے یا آپ کے پاس ورڈ، فون یا کریڈٹ کارڈ نمبر جیسی چیزوں کو ظاہر کرنے کے لیے دھوکہ میں ڈال سکتے ہیں۔</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
+<translation id="8425213833346101688">تبدیل کریں</translation>
 <translation id="8427848540066057481">‏‎500 x 750 ملی میٹر</translation>
 <translation id="8428213095426709021">ترتیبات</translation>
 <translation id="8428634594422941299">سمجھ آ گئی</translation>
