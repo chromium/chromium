@@ -677,7 +677,8 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
   void GetPrefetchToServe(
       base::test::TestFuture<PrefetchContainer::Reader>& future,
       const GURL& url,
-      absl::optional<blink::DocumentToken> initiator_document_token) {
+      absl::optional<blink::DocumentToken> initiator_document_token =
+          absl::nullopt) {
     if (!initiator_document_token) {
       initiator_document_token = MainDocumentToken();
     }
@@ -4218,53 +4219,25 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   // the metrics shouldn't be recorded) because the navigation is gone before
   // the request is unblocked.
   Navigate(GURL("https://example.com"));
-  base::RunLoop get_prefetch_run_loop;
-  PrefetchContainer::Reader serveable_reader;
-  PrefetchMatchResolver* prefetch_match_resolver =
-      GetPrefetchMatchResolverForMostRecentNavigation();
-  bool first_nav_callback_called = false;
-  prefetch_match_resolver->SetOnPrefetchToServeReadyCallback(
-      base::BindLambdaForTesting(
-          [&serveable_reader, &first_nav_callback_called,
-           &get_prefetch_run_loop](
-              PrefetchContainer::Reader prefetch_to_serve) {
-            serveable_reader = std::move(prefetch_to_serve);
-            first_nav_callback_called = true;
-            get_prefetch_run_loop.Quit();
-          }));
-  prefetch_service_->GetPrefetchToServe(
-      PrefetchContainer::Key(MainDocumentToken(), GURL("https://example.com")),
-      *prefetch_match_resolver);
-  EXPECT_FALSE(serveable_reader);
+  base::test::TestFuture<PrefetchContainer::Reader> first_future;
+  GetPrefetchToServe(first_future, GURL("https://example.com"));
+  EXPECT_FALSE(first_future.IsReady());
 
   // The second navigation is started before the head of the prefetch response
   // is received.
   Navigate(GURL("https://example.com"));
-  bool second_nav_callback_called = false;
-  prefetch_match_resolver = GetPrefetchMatchResolverForMostRecentNavigation();
-  prefetch_match_resolver->SetOnPrefetchToServeReadyCallback(
-      base::BindLambdaForTesting(
-          [&serveable_reader, &get_prefetch_run_loop,
-           &second_nav_callback_called](
-              PrefetchContainer::Reader prefetch_to_serve) {
-            second_nav_callback_called = true;
-            serveable_reader = std::move(prefetch_to_serve);
-            get_prefetch_run_loop.Quit();
-          }));
-  prefetch_service_->GetPrefetchToServe(
-      PrefetchContainer::Key(MainDocumentToken(), GURL("https://example.com")),
-      *prefetch_match_resolver);
-  EXPECT_FALSE(second_nav_callback_called);
+  base::test::TestFuture<PrefetchContainer::Reader> second_future;
+  GetPrefetchToServe(second_future, GURL("https://example.com"));
+  EXPECT_FALSE(second_future.IsReady());
 
   // The prefetch times out while PrefetchService is blocking until head.
   // This should unblock the request after `kBlockUntilHeadTimeout` msec without
   // setting serveable_reader.
   task_environment()->FastForwardBy(base::Milliseconds(kPrefetchTimeout));
 
-  get_prefetch_run_loop.Run();
+  PrefetchContainer::Reader serveable_reader = second_future.Take();
+  EXPECT_FALSE(first_future.IsReady());
   EXPECT_FALSE(serveable_reader);
-  EXPECT_FALSE(first_nav_callback_called);
-  EXPECT_TRUE(second_nav_callback_called);
   ExpectPrefetchFailedNetError(histogram_tester, net::ERR_TIMED_OUT,
                                GetParam());
   ExpectServingMetrics(PrefetchStatus::kPrefetchFailedNetError,
@@ -4291,24 +4264,10 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   // The third navigation is started after the PrefetchContainer became not
   // servable.
   Navigate(GURL("https://example.com"));
-  bool third_nav_callback_called = false;
-  base::RunLoop third_get_prefetch_run_loop;
-  prefetch_match_resolver = GetPrefetchMatchResolverForMostRecentNavigation();
-  prefetch_match_resolver->SetOnPrefetchToServeReadyCallback(
-      base::BindLambdaForTesting(
-          [&serveable_reader, &third_get_prefetch_run_loop,
-           &third_nav_callback_called](
-              PrefetchContainer::Reader prefetch_to_serve) {
-            third_nav_callback_called = true;
-            serveable_reader = std::move(prefetch_to_serve);
-            third_get_prefetch_run_loop.Quit();
-          }));
-  prefetch_service_->GetPrefetchToServe(
-      PrefetchContainer::Key(MainDocumentToken(), GURL("https://example.com")),
-      *prefetch_match_resolver);
-  third_get_prefetch_run_loop.Run();
+  base::test::TestFuture<PrefetchContainer::Reader> third_future;
+  GetPrefetchToServe(third_future, GURL("https://example.com"));
+  serveable_reader = third_future.Take();
   EXPECT_FALSE(serveable_reader);
-  EXPECT_TRUE(third_nav_callback_called);
 
   // The metric should not be recorded for the third navigation, because the
   // PrefetchContainer was not servable when the third navigation starts and
@@ -4557,32 +4516,26 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadWithTimeoutTest,
       GURL("https://example.com"),
       {.use_prefetch_proxy = true,
        .expected_priority = ExpectedPriorityForEagerness(GetParam())});
-  {
-    // Navigate to the URL before the head of the prefetch response is received
-    Navigate(GURL("https://example.com"));
-    PrefetchMatchResolver* prefetch_match_resolver =
-        GetPrefetchMatchResolverForMostRecentNavigation();
-    // Request the prefetch from the PrefetchService. The same prefetch will be
-    // requested again, so this callback will not be called.
-    prefetch_match_resolver->SetOnPrefetchToServeReadyCallback(base::BindOnce(
-        [](PrefetchContainer::Reader prefetch_to_serve) { NOTREACHED(); }));
-    prefetch_service_->GetPrefetchToServe(
-        PrefetchContainer::Key(MainDocumentToken(),
-                               GURL("https://example.com")),
-        *prefetch_match_resolver);
-  }
-  {
-    Navigate(GURL("https://example.com"));
-    // Request the prefetch from the PrefetchService a second time. This
-    // callback should be triggered once the timeout is exceeded.
-    base::test::TestFuture<PrefetchContainer::Reader> future;
-    GetPrefetchToServe(future, GURL("https://example.com"),
-                       MainDocumentToken());
-    EXPECT_FALSE(future.IsReady());
-    task_environment()->FastForwardBy(base::Milliseconds(1000));
-    PrefetchContainer::Reader serveable_reader = future.Take();
-    EXPECT_FALSE(serveable_reader);
-  }
+
+  // Navigate to the URL before the head of the prefetch response is received
+  Navigate(GURL("https://example.com"));
+  // Request the prefetch from the PrefetchService. The same prefetch will be
+  // requested again, so this callback will not be called.
+  base::test::TestFuture<PrefetchContainer::Reader> first_future;
+  GetPrefetchToServe(first_future, GURL("https://example.com"));
+
+  Navigate(GURL("https://example.com"));
+  // Request the prefetch from the PrefetchService a second time. This
+  // callback should be triggered once the timeout is exceeded.
+  base::test::TestFuture<PrefetchContainer::Reader> second_future;
+  GetPrefetchToServe(second_future, GURL("https://example.com"),
+                     MainDocumentToken());
+  EXPECT_FALSE(second_future.IsReady());
+  task_environment()->FastForwardBy(base::Milliseconds(1000));
+  PrefetchContainer::Reader serveable_reader = second_future.Take();
+  EXPECT_FALSE(first_future.IsReady());
+  EXPECT_FALSE(serveable_reader);
+
   // If the prefetch is received after the block until head has timed out, it
   // will not be used.
   MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
@@ -4605,6 +4558,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadWithTimeoutTest,
           "PrefetchProxy.AfterClick.WasBlockedUntilHeadWhenServing.%s",
           histogram_suffix.c_str()),
       true, 1);
+
+  EXPECT_FALSE(first_future.IsReady());
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -5386,38 +5341,25 @@ TEST_P(PrefetchServiceWaitForMultiplePrefetchesBlockedUntilHeadTest,
   // Navigate to the URL before the head of the prefetch response is received
   Navigate(GURL(kTestUrl));
 
-  // Request the prefetch from the PrefetchService. The given callback shouldn't
-  // be called until after the head is received.
-  base::RunLoop get_prefetch_run_loop;
-  bool is_nav_unblocked = false;
-  PrefetchMatchResolver* prefetch_match_resolver =
-      GetPrefetchMatchResolverForMostRecentNavigation();
-  prefetch_match_resolver->SetOnPrefetchToServeReadyCallback(
-      base::BindLambdaForTesting(
-          [&is_nav_unblocked, &get_prefetch_run_loop,
-           kTestUrl](PrefetchContainer::Reader prefetch_to_serve) {
-            ASSERT_TRUE(prefetch_to_serve);
-            ASSERT_EQ(prefetch_to_serve.GetPrefetchContainer()->GetURL(),
-                      GURL(kTestUrl + "?a=5"));
-            is_nav_unblocked = !!prefetch_to_serve;
-            get_prefetch_run_loop.Quit();
-          }));
-  prefetch_service_->GetPrefetchToServe(
-      PrefetchContainer::Key(MainDocumentToken(), GURL(kTestUrl)),
-      *prefetch_match_resolver);
-  EXPECT_FALSE(is_nav_unblocked);
+  // Request the prefetch from the PrefetchService. `future` should be blocked
+  // until after the head is received.
+  base::test::TestFuture<PrefetchContainer::Reader> future;
+  GetPrefetchToServe(future, GURL(kTestUrl));
 
   task_environment()->FastForwardBy(base::Milliseconds(kHeaderLatency));
+  EXPECT_FALSE(future.IsReady());
 
-  // Sends the head of the prefetch response. This should trigger the above
-  // callback with a nullptr argument.
+  // Sends the head of the prefetch response. This should unblock `future`.
   SendHeadOfResponseAndWait(
       net::HTTP_OK, kHTMLMimeType,
       /*use_prefetch_proxy=*/false,
       {{"X-Testing", "Hello World"}, {"No-Vary-Search", "params=(\"a\")"}},
       std::size(kHTMLBody));
-  get_prefetch_run_loop.Run();
-  ASSERT_TRUE(is_nav_unblocked);
+
+  PrefetchContainer::Reader serveable_reader = future.Take();
+  ASSERT_TRUE(serveable_reader);
+  EXPECT_EQ(serveable_reader.GetPrefetchContainer()->GetURL(),
+            GURL(kTestUrl + "?a=5"));
 
   // Send the body and completion status of the request,
   SendBodyContentOfResponseAndWait(kHTMLBody);
@@ -5595,30 +5537,12 @@ TEST_P(PrefetchServiceWaitForMultiplePrefetchesBlockedUntilHeadTest,
 
   Navigate(GURL(kTestUrl));
 
-  // Request the prefetch from the PrefetchService. The given callback shouldn't
-  // be called until after the head is received.
-  // Request the prefetch from the PrefetchService. Since both prefetch
-  // candidates are not eligible `prefetch_to_serve` will be falsy.
-  base::RunLoop get_prefetch_run_loop;
-  bool is_fallback_navigation = false;
-  PrefetchMatchResolver* prefetch_match_resolver =
-      GetPrefetchMatchResolverForMostRecentNavigation();
-  prefetch_match_resolver->SetOnPrefetchToServeReadyCallback(
-      base::BindLambdaForTesting(
-          [&is_fallback_navigation, &get_prefetch_run_loop,
-           prefetch_match_resolver,
-           kTestUrl](PrefetchContainer::Reader prefetch_to_serve) {
-            EXPECT_FALSE(prefetch_to_serve);
-            EXPECT_FALSE(prefetch_match_resolver->IsWaitingForPrefetch(
-                GURL(kTestUrl + "?a=1")));
-            is_fallback_navigation = !prefetch_to_serve;
-            get_prefetch_run_loop.Quit();
-          }));
-  prefetch_service_->GetPrefetchToServe(
-      PrefetchContainer::Key(MainDocumentToken(), GURL(kTestUrl)),
-      *prefetch_match_resolver);
-  EXPECT_FALSE(is_fallback_navigation);
+  // Request the prefetch from the PrefetchService.
+  base::test::TestFuture<PrefetchContainer::Reader> future;
+  GetPrefetchToServe(future, GURL(kTestUrl));
+  EXPECT_FALSE(future.IsReady());
   task_environment()->RunUntilIdle();
+  EXPECT_FALSE(future.IsReady());
 
   // Sends the head of the prefetch response. This should not trigger the above
   // callback.
@@ -5627,7 +5551,14 @@ TEST_P(PrefetchServiceWaitForMultiplePrefetchesBlockedUntilHeadTest,
       /*use_prefetch_proxy=*/false,
       {{"X-Testing", "Hello World"}, {"No-Vary-Search", "params=(\"e\")"}},
       std::size(kHTMLBody));
-  ASSERT_TRUE(is_fallback_navigation);
+
+  EXPECT_TRUE(future.IsReady());
+  PrefetchContainer::Reader serveable_reader = future.Take();
+  // Both prefetch candidates are not eligible.
+  EXPECT_FALSE(serveable_reader);
+  EXPECT_FALSE(
+      GetPrefetchMatchResolverForMostRecentNavigation()->IsWaitingForPrefetch(
+          GURL(kTestUrl + "?a=1")));
 
   // Send the body and completion status of the request,
   SendBodyContentOfResponseAndWait(kHTMLBody);
@@ -5725,24 +5656,9 @@ TEST_P(PrefetchServiceWaitForMultiplePrefetchesBlockedUntilHeadTest,
 
   // Request the prefetch from the PrefetchService. The given callback shouldn't
   // be called until after the head is received.
-  base::RunLoop get_prefetch_run_loop;
-  bool is_nav_unblocked = false;
-  PrefetchMatchResolver* prefetch_match_resolver =
-      GetPrefetchMatchResolverForMostRecentNavigation();
-  prefetch_match_resolver->SetOnPrefetchToServeReadyCallback(
-      base::BindLambdaForTesting(
-          [&is_nav_unblocked, &get_prefetch_run_loop,
-           kTestUrl](PrefetchContainer::Reader prefetch_to_serve) {
-            ASSERT_TRUE(prefetch_to_serve);
-            ASSERT_EQ(prefetch_to_serve.GetPrefetchContainer()->GetURL(),
-                      GURL(kTestUrl + "?b=3"));
-            is_nav_unblocked = !!prefetch_to_serve;
-            get_prefetch_run_loop.Quit();
-          }));
-  prefetch_service_->GetPrefetchToServe(
-      PrefetchContainer::Key(MainDocumentToken(), GURL(kTestUrl)),
-      *prefetch_match_resolver);
-  EXPECT_FALSE(is_nav_unblocked);
+  base::test::TestFuture<PrefetchContainer::Reader> future;
+  GetPrefetchToServe(future, GURL(kTestUrl));
+  EXPECT_FALSE(future.IsReady());
   task_environment()->RunUntilIdle();
   // Sends the head of the prefetch response. This should not trigger the above
   // callback.
@@ -5751,20 +5667,22 @@ TEST_P(PrefetchServiceWaitForMultiplePrefetchesBlockedUntilHeadTest,
       /*use_prefetch_proxy=*/false,
       {{"X-Testing", "Hello World"}, {"No-Vary-Search", "params=(\"e\")"}},
       std::size(kHTMLBody));
-  ASSERT_FALSE(is_nav_unblocked);
+  EXPECT_FALSE(future.IsReady());
 
   // Send the body and completion status of the request,
   SendBodyContentOfResponseAndWait(kHTMLBody);
   CompleteResponseAndWait(net::OK, std::size(kHTMLBody));
-  ASSERT_FALSE(is_nav_unblocked);
+  EXPECT_FALSE(future.IsReady());
 
   SendHeadOfResponseForUrlAndWait(
       GURL(kTestUrl + "?b=3"), net::HTTP_OK, kHTMLMimeType,
       /*use_prefetch_proxy=*/false,
       {{"X-Testing", "Hello World"}, {"No-Vary-Search", "params=(\"b\")"}},
       std::size(kHTMLBody));
-  get_prefetch_run_loop.Run();
-  ASSERT_TRUE(is_nav_unblocked);
+  PrefetchContainer::Reader serveable_reader = future.Take();
+  ASSERT_TRUE(serveable_reader);
+  ASSERT_EQ(serveable_reader.GetPrefetchContainer()->GetURL(),
+            GURL(kTestUrl + "?b=3"));
 
   SendBodyContentOfResponseForUrlAndWait(GURL(kTestUrl + "?b=3"), kHTMLBody);
   CompleteResponseForUrlAndWait(GURL(kTestUrl + "?b=3"), net::OK,
