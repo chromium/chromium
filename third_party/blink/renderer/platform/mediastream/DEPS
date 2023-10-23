@@ -19,9 +19,3 @@ include_rules = [
     "+third_party/blink/renderer/platform/wtf",
     "+ui/display/types/display_constants.h",
 ]
-
-specific_include_rules = {
-  "media_stream_audio_test\.cc" : [
-    "+base/threading/platform_thread.h",
-  ],
-}

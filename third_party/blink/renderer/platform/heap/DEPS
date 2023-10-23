@@ -8,7 +8,6 @@ include_rules = [
     # Dependencies.
     "+base/functional/unretained_traits.h",
     "+base/sampling_heap_profiler/poisson_allocation_sampler.h",
-    "+base/strings/string_number_conversions.h",
     "+base/task/task_runner.h",
     "+base/task/post_job.h",
     "+gin/public/cppgc.h",
