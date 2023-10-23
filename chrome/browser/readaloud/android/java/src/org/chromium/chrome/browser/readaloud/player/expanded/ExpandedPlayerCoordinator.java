@@ -43,7 +43,9 @@ public class ExpandedPlayerCoordinator {
 
                 @Override
                 public void onSheetClosed(@StateChangeReason int reason) {
-                    // TODO: notify ExpandedPlayerSheetContent of sheet closed
+                    if (mSheetContent != null) {
+                        mSheetContent.notifySheetClosed();
+                    }
                 }
             };
     private PropertyModel mModel;
@@ -58,7 +60,8 @@ public class ExpandedPlayerCoordinator {
                 delegate,
                 model,
                 new ExpandedPlayerMediator(model),
-                new ExpandedPlayerSheetContent(context, delegate.getBottomSheetController()));
+                new ExpandedPlayerSheetContent(
+                        context, delegate.getBottomSheetController(), model));
     }
 
     @VisibleForTesting
