@@ -27,6 +27,7 @@
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "components/attribution_reporting/trigger_config.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -81,7 +82,7 @@ base::TimeDelta AdjustExpiry(base::TimeDelta expiry, SourceType source_type) {
 }  // namespace
 
 void RecordSourceRegistrationError(mojom::SourceRegistrationError error) {
-  base::UmaHistogramEnumeration("Conversions.SourceRegistrationError5", error);
+  base::UmaHistogramEnumeration("Conversions.SourceRegistrationError6", error);
 }
 
 SourceRegistration::SourceRegistration(mojo::DefaultConstruct::Tag tag)
@@ -165,6 +166,8 @@ SourceRegistration::Parse(base::Value::Dict registration,
     result.max_event_level_reports = DefaultMaxEventLevelReports(source_type);
   }
 
+  ASSIGN_OR_RETURN(result.trigger_config, TriggerConfig::Parse(registration));
+
   result.debug_key = ParseDebugKey(registration);
 
   result.debug_reporting = ParseDebugReporting(registration);
@@ -225,6 +228,8 @@ base::Value::Dict SourceRegistration::ToJson() const {
   SerializeDebugReporting(dict, debug_reporting);
 
   dict.Set(kMaxEventLevelReports, max_event_level_reports);
+
+  trigger_config.Serialize(dict);
 
   return dict;
 }

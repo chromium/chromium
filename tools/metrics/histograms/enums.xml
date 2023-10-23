@@ -20286,6 +20286,8 @@ Called by update_net_error_codes.py.-->
   <int value="36"
       label="event_report_windows and event_report_window are mutually
              exclusive"/>
+  <int value="37" label="trigger_data_matching has wrong type"/>
+  <int value="38" label="trigger_data_matching value is invalid"/>
 </enum>
 
 <enum name="ConversionStorageCreateReportStatus">
@@ -20307,6 +20309,7 @@ Called by update_net_error_codes.py.-->
   <int value="15" label="Report window has passed"/>
   <int value="16" label="Not registered"/>
   <int value="17" label="Report window has not started"/>
+  <int value="18" label="No matching trigger data"/>
 </enum>
 
 <enum name="ConversionStorageSourceStatus">
@@ -20431,6 +20434,7 @@ Called by update_net_error_codes.py.-->
   <int value="24" label="os-source-delegated"/>
   <int value="25" label="os-trigger-delegated"/>
   <int value="26" label="trigger-event-report-window-not-started"/>
+  <int value="27" label="trigger-event-no-matching-trigger-data"/>
 </enum>
 
 <enum name="CookieAccessType">

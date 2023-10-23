@@ -5223,6 +5223,7 @@ data/attribution_reporting/interop/source_storage_limit.json
 data/attribution_reporting/interop/success_debug_aggregatable.json
 data/attribution_reporting/interop/success_debug_event_level.json
 data/attribution_reporting/interop/top_level_filter_data.json
+data/attribution_reporting/interop/trigger_data_matching.json
 data/attribution_reporting/interop/trigger_data_sanitization.json
 data/attribution_reporting/interop/verbose_debug_report_multiple_data.json
 data/attribution_reporting/page_with_ads_apis_ot.html

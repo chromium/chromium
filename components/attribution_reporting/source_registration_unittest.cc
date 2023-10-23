@@ -20,6 +20,7 @@
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/test_utils.h"
+#include "components/attribution_reporting/trigger_config.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -83,7 +84,8 @@ TEST(SourceRegistrationTest, Parse) {
               Field(&SourceRegistration::filter_data, FilterData()),
               Field(&SourceRegistration::debug_key, absl::nullopt),
               Field(&SourceRegistration::aggregation_keys, AggregationKeys()),
-              Field(&SourceRegistration::debug_reporting, false))),
+              Field(&SourceRegistration::debug_reporting, false),
+              Field(&SourceRegistration::trigger_config, TriggerConfig()))),
       },
       {
           "source_event_id_valid",
@@ -341,7 +343,7 @@ TEST(SourceRegistrationTest, Parse) {
   };
 
   static constexpr char kSourceRegistrationErrorMetric[] =
-      "Conversions.SourceRegistrationError5";
+      "Conversions.SourceRegistrationError6";
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);

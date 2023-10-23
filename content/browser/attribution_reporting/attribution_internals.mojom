@@ -7,9 +7,9 @@ module attribution_internals.mojom;
 import "components/attribution_reporting/registration.mojom";
 import "components/attribution_reporting/source_type.mojom";
 import "content/browser/attribution_reporting/aggregatable_result.mojom";
+import "content/browser/attribution_reporting/attribution_reporting.mojom";
 import "content/browser/attribution_reporting/event_level_result.mojom";
 import "content/browser/attribution_reporting/store_source_result.mojom";
-import "content/browser/attribution_reporting/attribution_reporting.mojom";
 import "services/network/public/mojom/attribution.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
@@ -106,6 +106,7 @@ struct WebUISource {
   map<string, string> aggregation_keys;
   uint64 aggregatable_budget_consumed;
   array<uint64> aggregatable_dedup_keys;
+  attribution_reporting.mojom.TriggerConfig trigger_config;
 
   enum Attributability {
     kAttributable,

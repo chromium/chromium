@@ -27,6 +27,7 @@
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "components/attribution_reporting/trigger_config.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
@@ -90,7 +91,7 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
                 attribution_reporting::HexEncodeAggregationKey(key.second));
           }),
       source.aggregatable_budget_consumed(), source.aggregatable_dedup_keys(),
-      attributability);
+      source.trigger_config(), attributability);
 }
 
 void ForwardSourcesToWebUI(

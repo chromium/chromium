@@ -26,6 +26,8 @@
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_type.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "components/attribution_reporting/trigger_config.h"
+#include "components/attribution_reporting/trigger_data_matching.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
@@ -1756,6 +1758,16 @@ ToEventReportWindows(const attribution_reporting::EventReportWindows& windows) {
       .Build();
 }
 
+Storage::AttributionReportingTriggerDataMatching ToTriggerDataMatching(
+    attribution_reporting::mojom::TriggerDataMatching value) {
+  switch (value) {
+    case attribution_reporting::mojom::TriggerDataMatching::kExact:
+      return Storage::AttributionReportingTriggerDataMatchingEnum::Exact;
+    case attribution_reporting::mojom::TriggerDataMatching::kModulus:
+      return Storage::AttributionReportingTriggerDataMatchingEnum::Modulus;
+  }
+}
+
 }  // namespace
 
 void StorageHandler::OnSourceHandled(
@@ -1791,6 +1803,8 @@ void StorageHandler::OnSourceHandled(
               ToEventReportWindows(registration.event_report_windows))
           .SetAggregatableReportWindow(
               registration.aggregatable_report_window.InSeconds())
+          .SetTriggerDataMatching(ToTriggerDataMatching(
+              registration.trigger_config.trigger_data_matching()))
           .Build();
 
   if (registration.debug_key.has_value()) {

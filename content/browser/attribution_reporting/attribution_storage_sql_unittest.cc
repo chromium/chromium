@@ -1688,7 +1688,8 @@ TEST_P(AttributionStorageSqlTest,
         0, SerializeReadOnlySourceData(
                *attribution_reporting::EventReportWindows::Create(
                    base::Seconds(0), {base::Days(1)}),
-               /*max_event_level_reports=*/3, /*randomized_response_rate=*/-1));
+               /*max_event_level_reports=*/3, /*randomized_response_rate=*/-1,
+               /*trigger_config=*/nullptr));
     ASSERT_TRUE(statement.Run());
   }
 
@@ -1697,6 +1698,16 @@ TEST_P(AttributionStorageSqlTest,
   delegate()->set_randomized_response_rate(0.2);
   EXPECT_THAT(storage()->GetActiveSources(),
               ElementsAre(RandomizedResponseRateIs(0.2)));
+}
+
+// Having the missing field default to the correct value allows us to avoid a
+// DB migration to populate the field.
+TEST_P(AttributionStorageSqlTest,
+       MissingTriggerDataMatchingProtoField_DefaultsToModulus) {
+  proto::AttributionReadOnlySourceData msg;
+  ASSERT_FALSE(msg.has_trigger_data_matching());
+  EXPECT_EQ(msg.trigger_data_matching(),
+            proto::AttributionReadOnlySourceData::MODULUS);
 }
 
 TEST_P(AttributionStorageSqlTest, InvalidReportingOrigin_FailsDeserializaiton) {

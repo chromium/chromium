@@ -10,6 +10,7 @@ mojom("mojom") {
     "registration_eligibility.mojom",
     "source_registration_error.mojom",
     "source_registration_time_config.mojom",
+    "trigger_data_matching.mojom",
     "trigger_registration_error.mojom",
   ]
   webui_module_path = "/"
@@ -64,6 +65,8 @@ component("attribution_reporting") {
     "source_type.h",
     "suitable_origin.cc",
     "suitable_origin.h",
+    "trigger_config.cc",
+    "trigger_config.h",
     "trigger_registration.cc",
     "trigger_registration.h",
   ]
@@ -117,6 +120,7 @@ source_set("unit_tests") {
     "parsing_utils_unittest.cc",
     "source_registration_unittest.cc",
     "suitable_origin_unittest.cc",
+    "trigger_config_unittest.cc",
     "trigger_registration_unittest.cc",
   ]
 
@@ -309,6 +313,12 @@ mojom("registration_mojom") {
           cpp = "::attribution_reporting::EventReportWindows"
           forward_declaration =
               "namespace attribution_reporting { class EventReportWindows; }"
+        },
+        {
+          mojom = "attribution_reporting.mojom.TriggerConfig"
+          cpp = "::attribution_reporting::TriggerConfig"
+          forward_declaration =
+              "namespace attribution_reporting { class TriggerConfig; }"
         },
       ]
       traits_headers = [ "registration_mojom_traits.h" ]

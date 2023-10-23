@@ -3649,7 +3649,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.CreateReportStatus8"
+<histogram name="Conversions.CreateReportStatus9"
     enum="ConversionStorageCreateReportStatus" expires_after="2024-03-10">
   <owner>tquintanilla@chromium.org</owner>
   <owner>apaseltiner@chromium.org</owner>
@@ -4160,7 +4160,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.SentVerboseDebugReportType3"
+<histogram name="Conversions.SentVerboseDebugReportType4"
     enum="ConversionVerboseDebugReportType" expires_after="2024-02-20">
   <owner>tquintanilla@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
@@ -4173,7 +4173,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.SourceRegistrationError5"
+<histogram name="Conversions.SourceRegistrationError6"
     enum="ConversionSourceRegistrationError" expires_after="2024-03-24">
   <owner>tquintanilla@chromium.org</owner>
   <owner>linnan@chromium.org</owner>

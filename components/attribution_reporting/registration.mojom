@@ -5,6 +5,7 @@
 module attribution_reporting.mojom;
 
 import "components/attribution_reporting/source_registration_time_config.mojom";
+import "components/attribution_reporting/trigger_data_matching.mojom";
 import "mojo/public/mojom/base/int128.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
@@ -74,6 +75,12 @@ struct EventReportWindows {
   array<mojo_base.mojom.TimeDelta> end_times;
 };
 
+// Configures a source's output space.
+// https://github.com/WICG/attribution-reporting-api/blob/main/flexible_event_config.md
+struct TriggerConfig {
+  TriggerDataMatching trigger_data_matching;
+};
+
 struct SourceRegistration {
   DestinationSet destinations;
 
@@ -107,6 +114,8 @@ struct SourceRegistration {
 
   // Specifies whether to enable verbose debug reporting.
   bool debug_reporting = false;
+
+  TriggerConfig trigger_config;
 };
 
 // Deduplication key set by a reporting origin which prevents duplicate triggers
