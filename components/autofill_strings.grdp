@@ -594,4 +594,10 @@
       Submenu available, use <ph name="SHORTCUT">$1<ex>right key</ex></ph> to navigate to additional options.
     </message>
   </if>
+
+  <!-- Autofill Address Edit Dialog -->
+  <!-- Common on all platforms -->
+  <message name="IDS_AUTOFILL_ADDRESS_EDIT_DIALOG_HISPANIC_MUNICIPIO" desc="The label shown in address edit dialogs representing a municipio (Spanish) / município (Portuguese) in an address, see https://en.wikipedia.org/wiki/Municipio. This is a subdivision of a state and currently introduced for Mexico.">
+    Municipality
+  </message>
 </grit-part>
