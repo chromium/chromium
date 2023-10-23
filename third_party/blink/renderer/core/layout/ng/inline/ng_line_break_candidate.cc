@@ -12,8 +12,8 @@
 namespace blink {
 
 void NGLineBreakCandidateContext::Append(State new_state,
-                                         NGInlineItemTextIndex offset,
-                                         NGInlineItemTextIndex end,
+                                         InlineItemTextIndex offset,
+                                         InlineItemTextIndex end,
                                          float pos_no_break,
                                          float pos_if_break,
                                          float penalty,
@@ -58,14 +58,14 @@ void NGLineBreakCandidateContext::Append(State new_state,
 }
 
 void NGLineBreakCandidateContext::Append(State new_state,
-                                         const NGInlineItemTextIndex& offset,
+                                         const InlineItemTextIndex& offset,
                                          float position) {
   Append(new_state, offset, offset, position, position);
 }
 
 void NGLineBreakCandidateContext::AppendTrailingSpaces(
     State new_state,
-    const NGInlineItemTextIndex& offset,
+    const InlineItemTextIndex& offset,
     float pos_no_break) {
   DCHECK(!candidates_.empty());
   NGLineBreakCandidate& last_candidate = candidates_.back();
@@ -79,28 +79,28 @@ void NGLineBreakCandidateContext::AppendTrailingSpaces(
 
 bool NGLineBreakCandidateContext::AppendLine(const NGLineInfo& line_info,
                                              NGLineBreaker& line_breaker) {
-  const NGInlineItemResult& last_item_result = line_info.Results().back();
+  const InlineItemResult& last_item_result = line_info.Results().back();
   if (!last_item_result.can_break_after) {
     // TODO(kojii): `last_item_result.can_break_after` should be true, but there
     // are cases where it is not set. The line breaker never uses it because
     // `can_break_after` is used for rewinding, but it helps simplifying this
     // logic.
-    const_cast<NGInlineItemResult&>(last_item_result).can_break_after = true;
+    const_cast<InlineItemResult&>(last_item_result).can_break_after = true;
   }
 
-  for (const NGInlineItemResult& item_result : line_info.Results()) {
+  for (const InlineItemResult& item_result : line_info.Results()) {
     if (UNLIKELY(item_result.inline_size < LayoutUnit())) {
       // Negative margins are not supported, break opportunities must increase
       // monotonically. See `NGScoreLineBreaker::ComputeScores`.
       return false;
     }
     DCHECK(item_result.item);
-    const NGInlineItem& item = *item_result.item;
+    const InlineItem& item = *item_result.item;
     switch (item.Type()) {
-      case NGInlineItem::kText:
+      case InlineItem::kText:
         line_breaker.AppendCandidates(item_result, line_info, *this);
         break;
-      case NGInlineItem::kControl:
+      case InlineItem::kControl:
         AppendTrailingSpaces(item_result.can_break_after ? kBreak : kMidWord,
                              {item_result.item_index, item_result.EndOffset()},
                              SnappedPosition() + item_result.inline_size);
@@ -115,8 +115,8 @@ bool NGLineBreakCandidateContext::AppendLine(const NGLineInfo& line_info,
         } else {
           new_state = state_;
         }
-        const NGInlineItemTextIndex offset{item_result.item_index + 1,
-                                           item_result.EndOffset()};
+        const InlineItemTextIndex offset{item_result.item_index + 1,
+                                         item_result.EndOffset()};
         const float end_position = SnappedPosition() + item_result.inline_size;
         if (!item.Length()) {
           // Oopaque items such as open/close don't change `pos_if_break`,
@@ -148,8 +148,7 @@ bool NGLineBreakCandidateContext::AppendLine(const NGLineInfo& line_info,
 void NGLineBreakCandidateContext::EnsureFirstSentinel(
     const NGLineInfo& first_line_info) {
   DCHECK(candidates_.empty());
-  const NGInlineItemResult& first_item_result =
-      first_line_info.Results().front();
+  const InlineItemResult& first_item_result = first_line_info.Results().front();
   candidates_.push_back(NGLineBreakCandidate{first_item_result.Start(), 0});
 #if EXPENSIVE_DCHECKS_ARE_ON()
   first_offset_ = first_item_result.Start();
@@ -159,7 +158,7 @@ void NGLineBreakCandidateContext::EnsureFirstSentinel(
 void NGLineBreakCandidateContext::EnsureLastSentinel(
     const NGLineInfo& last_line_info) {
 #if EXPENSIVE_DCHECKS_ARE_ON()
-  const NGInlineItemResult& last_item_result = last_line_info.Results().back();
+  const InlineItemResult& last_item_result = last_line_info.Results().back();
   DCHECK(last_item_result.can_break_after);
   DCHECK_EQ(state_, NGLineBreakCandidateContext::kBreak);
   CheckConsistency();

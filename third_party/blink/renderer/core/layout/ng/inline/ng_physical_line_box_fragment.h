@@ -23,7 +23,7 @@ class CORE_EXPORT NGPhysicalLineBoxFragment final : public NGPhysicalFragment {
     // https://drafts.csswg.org/css2/visuren.html#phantom-line-box
     // that are ignored for margin collapsing and for other purposes.
     // https://drafts.csswg.org/css2/box.html#collapsing-margins
-    // Also see |NGInlineItem::IsEmptyItem|.
+    // Also see |InlineItem::IsEmptyItem|.
     kEmptyLineBox
   };
 

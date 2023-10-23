@@ -22,7 +22,7 @@
 
 namespace blink {
 
-String ToString(NGInlineItemResults line, NGInlineNode node) {
+String ToString(InlineItemResults line, NGInlineNode node) {
   StringBuilder builder;
   const String& text = node.ItemsData(false).text_content;
   for (const auto& item_result : line) {
@@ -397,7 +397,7 @@ TEST_F(NGLineBreakerTest, OverflowMargin) {
     </style>
     <div id=container><span>123 456</span> 789</div>
   )HTML");
-  const HeapVector<NGInlineItem>& items = node.ItemsData(false).items;
+  const HeapVector<InlineItem>& items = node.ItemsData(false).items;
 
   // While "123 456" can fit in a line, "456" has a right margin that cannot
   // fit. Since "456" and its right margin is not breakable, "456" should be on
@@ -407,7 +407,7 @@ TEST_F(NGLineBreakerTest, OverflowMargin) {
   EXPECT_EQ(3u, lines.size());
   EXPECT_EQ("123", lines[0].first);
   EXPECT_EQ("456", lines[1].first);
-  DCHECK_EQ(NGInlineItem::kCloseTag, items[lines[1].second - 1].Type());
+  DCHECK_EQ(InlineItem::kCloseTag, items[lines[1].second - 1].Type());
   EXPECT_EQ("789", lines[2].first);
 
   // Same as above, but this time "456" overflows the line because it is 70px.
@@ -415,7 +415,7 @@ TEST_F(NGLineBreakerTest, OverflowMargin) {
   EXPECT_EQ(3u, lines.size());
   EXPECT_EQ("123", lines[0].first);
   EXPECT_EQ("456", lines[1].first);
-  DCHECK_EQ(NGInlineItem::kCloseTag, items[lines[1].second].Type());
+  DCHECK_EQ(InlineItem::kCloseTag, items[lines[1].second].Type());
   EXPECT_EQ("789", lines[2].first);
 }
 
@@ -1005,10 +1005,11 @@ TEST_F(NGLineBreakerTest, SplitTextIntoSegementsCrash) {
   BreakLines(
       node, LayoutUnit::Max(),
       [](const NGLineBreaker& line_breaker, const NGLineInfo& line_info) {
-        Vector<const NGInlineItemResult*> text_results;
+        Vector<const InlineItemResult*> text_results;
         for (const auto& result : line_info.Results()) {
-          if (result.item->Type() == NGInlineItem::kText)
+          if (result.item->Type() == InlineItem::kText) {
             text_results.push_back(&result);
+          }
         }
         EXPECT_EQ(4u, text_results.size());
         EXPECT_EQ(1u, text_results[0]->Length());  // U+0343

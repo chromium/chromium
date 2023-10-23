@@ -15,7 +15,7 @@ class NGLineInfo;
 class NGLogicalLineItems;
 class ShapeResultView;
 struct FontHeight;
-struct NGInlineItemResult;
+struct InlineItemResult;
 struct PhysicalRect;
 
 // Adjust the specified |rect| of a text fragment for 'em' height.
@@ -30,11 +30,11 @@ struct NGAnnotationOverhang {
   LayoutUnit end;
 };
 
-// Returns overhang values of the specified NGInlineItemResult representing
+// Returns overhang values of the specified InlineItemResult representing
 // LayoutRubyColumn.
 //
 // This is used by NGLineBreaker.
-NGAnnotationOverhang GetOverhang(const NGInlineItemResult& item);
+NGAnnotationOverhang GetOverhang(const InlineItemResult& item);
 
 // Returns true if |start_overhang| is applied to a previous item, and
 // clamp |start_overhang| to the width of the previous item.
@@ -43,10 +43,10 @@ NGAnnotationOverhang GetOverhang(const NGInlineItemResult& item);
 bool CanApplyStartOverhang(const NGLineInfo& line_info,
                            LayoutUnit& start_overhang);
 
-// This should be called after NGInlineItemResult for a text is added in
+// This should be called after InlineItemResult for a text is added in
 // NGLineBreaker::HandleText().
 //
-// This function may update a NGInlineItemResult representing RubyColumn
+// This function may update a InlineItemResult representing RubyColumn
 // in |line_info|
 LayoutUnit CommitPendingEndOverhang(NGLineInfo* line_info);
 

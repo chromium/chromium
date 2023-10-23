@@ -14,7 +14,7 @@
 
 namespace blink {
 
-class NGInlineItem;
+class InlineItem;
 class NGLineBreaker;
 class NGLineInfo;
 
@@ -26,8 +26,8 @@ struct CORE_EXPORT NGLineBreakCandidate : public NGLineBreakPoint {
 
  public:
   NGLineBreakCandidate() = default;
-  NGLineBreakCandidate(const NGInlineItemTextIndex& offset,
-                       const NGInlineItemTextIndex& end,
+  NGLineBreakCandidate(const InlineItemTextIndex& offset,
+                       const InlineItemTextIndex& end,
                        float pos_no_break,
                        float pos_if_break,
                        float penalty = .0f,
@@ -36,7 +36,7 @@ struct CORE_EXPORT NGLineBreakCandidate : public NGLineBreakPoint {
         pos_no_break(pos_no_break),
         pos_if_break(pos_if_break),
         penalty(penalty) {}
-  NGLineBreakCandidate(const NGInlineItemTextIndex& offset, float position)
+  NGLineBreakCandidate(const InlineItemTextIndex& offset, float position)
       : NGLineBreakCandidate(offset, offset, position, position) {}
 
   bool operator==(const NGLineBreakCandidate& other) const {
@@ -67,7 +67,7 @@ using NGLineBreakCandidates =
 
 //
 // Provides a context for computing `NGLineBreakCandidate` from multiple
-// `NGLineInfo` and `NGInlineItemResult`.
+// `NGLineInfo` and `InlineItemResult`.
 //
 class CORE_EXPORT NGLineBreakCandidateContext {
   STACK_ALLOCATED();
@@ -89,9 +89,9 @@ class CORE_EXPORT NGLineBreakCandidateContext {
 
   const NGLineBreakCandidates& Candidates() const { return candidates_; }
 
-  const NGInlineItem* LastItem() const { return last_item_; }
+  const InlineItem* LastItem() const { return last_item_; }
   wtf_size_t LastEndOffset() const { return last_end_offset_; }
-  void SetLast(const NGInlineItem* item, wtf_size_t offset) {
+  void SetLast(const InlineItem* item, wtf_size_t offset) {
     last_item_ = item;
     last_end_offset_ = offset;
   }
@@ -102,17 +102,17 @@ class CORE_EXPORT NGLineBreakCandidateContext {
   // Append a new `NGLineBreakCandidate`. This modifies the last candidate if
   // `state` is `kMidWord`, instead of adding a new candidate.
   void Append(State new_state,
-              NGInlineItemTextIndex offset,
-              NGInlineItemTextIndex end,
+              InlineItemTextIndex offset,
+              InlineItemTextIndex end,
               float pos_no_break,
               float pos_if_break,
               float penalty = .0f,
               bool is_hyphenated = false);
   void Append(State new_state,
-              const NGInlineItemTextIndex& offset,
+              const InlineItemTextIndex& offset,
               float position);
   void AppendTrailingSpaces(State new_state,
-                            const NGInlineItemTextIndex& offset,
+                            const InlineItemTextIndex& offset,
                             float pos_no_break);
 
   // Append the first/last sentinel. `NGScoreLineBreaker` requires these two
@@ -123,7 +123,7 @@ class CORE_EXPORT NGLineBreakCandidateContext {
  private:
   float position_no_snap_ = .0f;
   State state_ = State::kBreak;
-  const NGInlineItem* last_item_ = nullptr;
+  const InlineItem* last_item_ = nullptr;
   wtf_size_t last_end_offset_ = 0;
   float hyphen_penalty_ = .0f;
   NGLineBreakCandidates& candidates_;
@@ -131,7 +131,7 @@ class CORE_EXPORT NGLineBreakCandidateContext {
 #if EXPENSIVE_DCHECKS_ARE_ON()
   void CheckConsistency() const;
 
-  NGInlineItemTextIndex first_offset_;
+  InlineItemTextIndex first_offset_;
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
 };
 

@@ -11,12 +11,12 @@
 
 namespace blink {
 
-NGInlineItemResult::NGInlineItemResult(const NGInlineItem* item,
-                                       unsigned index,
-                                       const NGTextOffsetRange& text_offset,
-                                       bool break_anywhere_if_overflow,
-                                       bool should_create_line_box,
-                                       bool has_unpositioned_floats)
+InlineItemResult::InlineItemResult(const InlineItem* item,
+                                   unsigned index,
+                                   const NGTextOffsetRange& text_offset,
+                                   bool break_anywhere_if_overflow,
+                                   bool should_create_line_box,
+                                   bool has_unpositioned_floats)
     : item(item),
       item_index(index),
       text_offset(text_offset),
@@ -24,7 +24,7 @@ NGInlineItemResult::NGInlineItemResult(const NGInlineItem* item,
       should_create_line_box(should_create_line_box),
       has_unpositioned_floats(has_unpositioned_floats) {}
 
-void NGInlineItemResult::ShapeHyphen() {
+void InlineItemResult::ShapeHyphen() {
   DCHECK(!hyphen);
   DCHECK(item);
   DCHECK(item->Style());
@@ -32,12 +32,12 @@ void NGInlineItemResult::ShapeHyphen() {
 }
 
 #if DCHECK_IS_ON()
-void NGInlineItemResult::CheckConsistency(bool allow_null_shape_result) const {
+void InlineItemResult::CheckConsistency(bool allow_null_shape_result) const {
   DCHECK(item);
   text_offset.AssertValid();
   DCHECK_GE(text_offset.start, item->StartOffset());
   DCHECK_LE(text_offset.end, item->EndOffset());
-  if (item->Type() == NGInlineItem::kText) {
+  if (item->Type() == InlineItem::kText) {
     if (!Length()) {
       // Empty text item should not have a `shape_result`.
       DCHECK(!shape_result);
@@ -53,7 +53,7 @@ void NGInlineItemResult::CheckConsistency(bool allow_null_shape_result) const {
 }
 #endif
 
-void NGInlineItemResult::Trace(Visitor* visitor) const {
+void InlineItemResult::Trace(Visitor* visitor) const {
   visitor->Trace(layout_result);
   if (positioned_float)
     visitor->Trace(positioned_float.value());

@@ -20,24 +20,24 @@
 namespace blink {
 
 class ExclusionSpace;
+class InlineItem;
 class NGColumnSpannerPath;
 class NGConstraintSpace;
 class NGInlineBreakToken;
 class NGInlineChildLayoutContext;
 class NGInlineNode;
-class NGInlineItem;
 class NGInlineLayoutStateStack;
 class NGLineInfo;
+struct InlineItemResult;
 struct NGInlineBoxState;
-struct NGInlineItemResult;
 struct NGLeadingFloats;
 
 // A class for laying out an inline formatting context, i.e. a block with inline
 // children.
 //
-// This class determines the position of NGInlineItem and build line boxes.
+// This class determines the position of InlineItem and build line boxes.
 //
-// Uses NGLineBreaker to find NGInlineItems to form a line.
+// Uses NGLineBreaker to find InlineItems to form a line.
 class CORE_EXPORT NGInlineLayoutAlgorithm final
     : public NGLayoutAlgorithm<NGInlineNode,
                                NGLineBoxFragmentBuilder,
@@ -77,39 +77,39 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
   void CheckBoxStates(const NGLineInfo&, const NGInlineBreakToken*) const;
 #endif
 
-  NGInlineBoxState* HandleOpenTag(const NGInlineItem&,
-                                  const NGInlineItemResult&,
+  NGInlineBoxState* HandleOpenTag(const InlineItem&,
+                                  const InlineItemResult&,
                                   NGLogicalLineItems*,
                                   NGInlineLayoutStateStack*) const;
-  NGInlineBoxState* HandleCloseTag(const NGInlineItem&,
-                                   const NGInlineItemResult&,
+  NGInlineBoxState* HandleCloseTag(const InlineItem&,
+                                   const InlineItemResult&,
                                    NGLogicalLineItems* line_box,
                                    NGInlineBoxState*);
 
   void BidiReorder(TextDirection base_direction, NGLogicalLineItems* line_box);
 
-  void PlaceControlItem(const NGInlineItem&,
+  void PlaceControlItem(const InlineItem&,
                         const NGLineInfo&,
-                        NGInlineItemResult*,
+                        InlineItemResult*,
                         NGLogicalLineItems* line_box,
                         NGInlineBoxState*);
-  void PlaceHyphen(const NGInlineItemResult&,
+  void PlaceHyphen(const InlineItemResult&,
                    LayoutUnit hyphen_inline_size,
                    NGLogicalLineItems* line_box,
                    NGInlineBoxState*);
-  NGInlineBoxState* PlaceAtomicInline(const NGInlineItem&,
+  NGInlineBoxState* PlaceAtomicInline(const InlineItem&,
                                       const NGLineInfo&,
-                                      NGInlineItemResult*,
+                                      InlineItemResult*,
                                       NGLogicalLineItems* line_box);
-  void PlaceBlockInInline(const NGInlineItem&,
+  void PlaceBlockInInline(const InlineItem&,
                           const NGLineInfo&,
-                          NGInlineItemResult*,
+                          InlineItemResult*,
                           NGLogicalLineItems* line_box);
-  void PlaceInitialLetterBox(const NGInlineItem&,
+  void PlaceInitialLetterBox(const InlineItem&,
                              const NGLineInfo&,
-                             NGInlineItemResult*,
+                             InlineItemResult*,
                              NGLogicalLineItems* line_box);
-  void PlaceLayoutResult(NGInlineItemResult*,
+  void PlaceLayoutResult(InlineItemResult*,
                          NGLogicalLineItems* line_box,
                          NGInlineBoxState*,
                          LayoutUnit inline_offset = LayoutUnit());
@@ -122,9 +122,7 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
                             NGLineInfo*,
                             NGLogicalLineItems* line_box);
   void PlaceRelativePositionedItems(NGLogicalLineItems* line_box);
-  void PlaceListMarker(const NGInlineItem&,
-                       NGInlineItemResult*,
-                       const NGLineInfo&);
+  void PlaceListMarker(const InlineItem&, InlineItemResult*, const NGLineInfo&);
 
   LayoutUnit ApplyTextAlign(NGLineInfo*);
   absl::optional<LayoutUnit> ApplyJustify(LayoutUnit space, NGLineInfo*);

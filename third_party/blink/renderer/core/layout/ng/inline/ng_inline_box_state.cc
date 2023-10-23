@@ -261,8 +261,8 @@ NGInlineBoxState* NGInlineLayoutStateStack::OnBeginPlaceItems(
 
 NGInlineBoxState* NGInlineLayoutStateStack::OnOpenTag(
     const NGConstraintSpace& space,
-    const NGInlineItem& item,
-    const NGInlineItemResult& item_result,
+    const InlineItem& item,
+    const InlineItemResult& item_result,
     FontBaseline baseline_type,
     NGLogicalLineItems* line_box) {
   NGInlineBoxState* box =
@@ -275,8 +275,8 @@ NGInlineBoxState* NGInlineLayoutStateStack::OnOpenTag(
 
 NGInlineBoxState* NGInlineLayoutStateStack::OnOpenTag(
     const NGConstraintSpace& space,
-    const NGInlineItem& item,
-    const NGInlineItemResult& item_result,
+    const InlineItem& item,
+    const InlineItemResult& item_result,
     FontBaseline baseline_type,
     const NGLogicalLineItems& line_box) {
   DCHECK(item.Style());
@@ -382,7 +382,7 @@ void NGInlineLayoutStateStack::AddBoxFragmentPlaceholder(
     NGLogicalLineItems* line_box,
     FontBaseline baseline_type) {
   DCHECK(box != stack_.begin() &&
-         box->item->Type() != NGInlineItem::kAtomicInline);
+         box->item->Type() != InlineItem::kAtomicInline);
   box->has_box_placeholder = true;
 
   LayoutUnit block_offset;

@@ -21,11 +21,11 @@ struct CORE_EXPORT NGLineBreakPoint {
 
  public:
   NGLineBreakPoint() = default;
-  NGLineBreakPoint(const NGInlineItemTextIndex& offset,
-                   const NGInlineItemTextIndex& end,
+  NGLineBreakPoint(const InlineItemTextIndex& offset,
+                   const InlineItemTextIndex& end,
                    bool is_hyphenated = false)
       : offset(offset), end(end), is_hyphenated(is_hyphenated) {}
-  explicit NGLineBreakPoint(const NGInlineItemTextIndex& offset,
+  explicit NGLineBreakPoint(const InlineItemTextIndex& offset,
                             bool is_hyphenated = false)
       : NGLineBreakPoint(offset, offset, is_hyphenated) {}
 
@@ -44,8 +44,8 @@ struct CORE_EXPORT NGLineBreakPoint {
   // end <span> </span> next
   // ```
   // Then `offset` is at `n`, while `end` is at the next space of `end`.
-  NGInlineItemTextIndex offset;
-  NGInlineItemTextIndex end;
+  InlineItemTextIndex offset;
+  InlineItemTextIndex end;
 
   // True when this break point has a hyphen.
   bool is_hyphenated = false;

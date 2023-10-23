@@ -93,7 +93,7 @@ void NGBoxFragmentBuilder::AddBreakBeforeChild(
 
       // We're at the beginning of the inline formatting context.
       last_inline_break_token_ = NGInlineBreakToken::Create(
-          *child_inline_node, /* style */ nullptr, NGInlineItemTextIndex(),
+          *child_inline_node, /* style */ nullptr, InlineItemTextIndex(),
           NGInlineBreakToken::kDefault);
     }
     return;

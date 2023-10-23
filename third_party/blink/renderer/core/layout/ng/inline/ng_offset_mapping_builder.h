@@ -96,7 +96,7 @@ class CORE_EXPORT NGOffsetMappingBuilder {
   // annotation to the builder.
   // void AppendExpandedMapping(unsigned length);
 
-  // This function should only be called by NGInlineItemsBuilder during
+  // This function should only be called by InlineItemsBuilder during
   // whitespace collapsing, and in the case that the target string of the
   // currently held mapping:
   // (i)  has at least |space_offset + 1| characters,

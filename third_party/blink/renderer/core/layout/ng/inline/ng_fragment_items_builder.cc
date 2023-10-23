@@ -22,9 +22,9 @@ FragmentItemsBuilder::FragmentItemsBuilder(
     WritingDirectionMode writing_direction,
     bool is_block_fragmented)
     : node_(node), writing_direction_(writing_direction) {
-  const NGInlineItemsData& items_data = node.ItemsData(false);
+  const InlineItemsData& items_data = node.ItemsData(false);
   text_content_ = items_data.text_content;
-  const NGInlineItemsData& first_line = node.ItemsData(true);
+  const InlineItemsData& first_line = node.ItemsData(true);
   if (&items_data != &first_line)
     first_line_text_content_ = first_line.text_content;
 
@@ -250,7 +250,7 @@ FragmentItemsBuilder::AddPreviousItems(const NGPhysicalBoxFragment& container,
       {ToLineWritingMode(writing_mode), TextDirection::kLtr});
 
   const NGInlineBreakToken* last_break_token = nullptr;
-  const NGInlineItemsData* items_data = nullptr;
+  const InlineItemsData* items_data = nullptr;
   LayoutUnit used_block_size;
   wtf_size_t line_count = 0;
 
@@ -274,7 +274,7 @@ FragmentItemsBuilder::AddPreviousItems(const NGPhysicalBoxFragment& container,
         const NGInlineBreakToken* break_token =
             To<NGInlineBreakToken>(line_fragment->BreakToken());
         DCHECK(break_token);
-        const NGInlineItemsData* current_items_data;
+        const InlineItemsData* current_items_data;
         if (UNLIKELY(break_token->UseFirstLineStyle()))
           current_items_data = &node_.ItemsData(true);
         else if (items_data)

@@ -80,7 +80,7 @@ TEST_F(InlineTextAutoSpaceTest, InsertSpacing) {
   inline_node.PrepareLayoutIfNeeded();
 
   Vector<CharacterRange> final_ranges;
-  for (const NGInlineItem& item : node_data->items) {
+  for (const InlineItem& item : node_data->items) {
     const auto* shape_result = item.TextShapeResult();
     Vector<CharacterRange> ranges;
     shape_result->IndividualCharacterRanges(&ranges);

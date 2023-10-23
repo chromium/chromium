@@ -6,26 +6,27 @@
 
 namespace blink {
 
-void NGInlineItemsData::GetOpenTagItems(wtf_size_t size,
-                                        OpenTagItems* open_items) const {
+void InlineItemsData::GetOpenTagItems(wtf_size_t size,
+                                      OpenTagItems* open_items) const {
   DCHECK_LE(size, items.size());
-  for (const NGInlineItem& item : base::make_span(items.data(), size)) {
-    if (item.Type() == NGInlineItem::kOpenTag)
+  for (const InlineItem& item : base::make_span(items.data(), size)) {
+    if (item.Type() == InlineItem::kOpenTag) {
       open_items->push_back(&item);
-    else if (item.Type() == NGInlineItem::kCloseTag)
+    } else if (item.Type() == InlineItem::kCloseTag) {
       open_items->pop_back();
+    }
   }
 }
 
 #if DCHECK_IS_ON()
-void NGInlineItemsData::CheckConsistency() const {
-  for (const NGInlineItem& item : items) {
+void InlineItemsData::CheckConsistency() const {
+  for (const InlineItem& item : items) {
     item.CheckTextType(text_content);
   }
 }
 #endif
 
-void NGInlineItemsData::Trace(Visitor* visitor) const {
+void InlineItemsData::Trace(Visitor* visitor) const {
   visitor->Trace(items);
   visitor->Trace(offset_mapping);
 }

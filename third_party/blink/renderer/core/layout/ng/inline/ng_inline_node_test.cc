@@ -44,13 +44,13 @@ class NGInlineNodeForTest : public NGInlineNode {
   using NGInlineNode::NGInlineNode;
 
   std::string Text() const { return Data().text_content.Utf8(); }
-  HeapVector<NGInlineItem>& Items() { return MutableData()->items; }
-  static HeapVector<NGInlineItem>& Items(NGInlineNodeData& data) {
+  HeapVector<InlineItem>& Items() { return MutableData()->items; }
+  static HeapVector<InlineItem>& Items(NGInlineNodeData& data) {
     return data.items;
   }
   bool IsNGShapeCacheAllowed(const String& text_content,
                              const Font* override_font,
-                             const HeapVector<NGInlineItem>& items,
+                             const HeapVector<InlineItem>& items,
                              ShapeResultSpacing<String>& spacing) const {
     return NGInlineNode::IsNGShapeCacheAllowed(text_content, override_font,
                                                items, spacing);
@@ -60,8 +60,8 @@ class NGInlineNodeForTest : public NGInlineNode {
     NGInlineNodeData* data = MutableData();
     unsigned start = data->text_content.length();
     data->text_content = data->text_content + text;
-    data->items.push_back(NGInlineItem(NGInlineItem::kText, start,
-                                       start + text.length(), layout_object));
+    data->items.push_back(InlineItem(InlineItem::kText, start,
+                                     start + text.length(), layout_object));
   }
 
   void Append(UChar character) {
@@ -69,7 +69,7 @@ class NGInlineNodeForTest : public NGInlineNode {
     data->text_content = data->text_content + character;
     unsigned end = data->text_content.length();
     data->items.push_back(
-        NGInlineItem(NGInlineItem::kBidiControl, end - 1, end, nullptr));
+        InlineItem(InlineItem::kBidiControl, end - 1, end, nullptr));
     data->is_bidi_enabled_ = true;
   }
 
@@ -134,7 +134,7 @@ class NGInlineNodeTest : public RenderingTest {
     return data->text_content;
   }
 
-  HeapVector<NGInlineItem>& Items() {
+  HeapVector<InlineItem>& Items() {
     NGInlineNodeData* data = layout_block_flow_->GetNGInlineNodeData();
     CHECK(data);
     return NGInlineNodeForTest::Items(*data);
@@ -143,7 +143,7 @@ class NGInlineNodeTest : public RenderingTest {
   void ForceLayout() { GetDocument().body()->OffsetTop(); }
 
   Vector<unsigned> ToEndOffsetList(
-      NGInlineItemSegments::const_iterator segments) {
+      InlineItemSegments::const_iterator segments) {
     Vector<unsigned> end_offsets;
     for (const RunSegmenter::RunSegmenterRange& segment : segments)
       end_offsets.push_back(segment.end);
@@ -182,12 +182,12 @@ class NGInlineNodeTest : public RenderingTest {
 };
 
 #define TEST_ITEM_TYPE_OFFSET(item, type, start, end) \
-  EXPECT_EQ(NGInlineItem::type, item.Type());         \
+  EXPECT_EQ(InlineItem::type, item.Type());           \
   EXPECT_EQ(start, item.StartOffset());               \
   EXPECT_EQ(end, item.EndOffset())
 
 #define TEST_ITEM_TYPE_OFFSET_LEVEL(item, type, start, end, level) \
-  EXPECT_EQ(NGInlineItem::type, item.Type());                      \
+  EXPECT_EQ(InlineItem::type, item.Type());                        \
   EXPECT_EQ(start, item.StartOffset());                            \
   EXPECT_EQ(end, item.EndOffset());                                \
   EXPECT_EQ(level, item.BidiLevel())
@@ -202,7 +202,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesText) {
   NGInlineNodeForTest node = CreateInlineNode();
   node.CollectInlines();
   EXPECT_FALSE(node.IsBidiEnabled());
-  HeapVector<NGInlineItem>& items = node.Items();
+  HeapVector<InlineItem>& items = node.Items();
   TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 6u);
   TEST_ITEM_TYPE_OFFSET(items[1], kOpenTag, 6u, 6u);
   TEST_ITEM_TYPE_OFFSET(items[2], kText, 6u, 12u);
@@ -217,7 +217,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesBR) {
   node.CollectInlines();
   EXPECT_EQ("Hello\nWorld", node.Text());
   EXPECT_FALSE(node.IsBidiEnabled());
-  HeapVector<NGInlineItem>& items = node.Items();
+  HeapVector<InlineItem>& items = node.Items();
   TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 5u);
   TEST_ITEM_TYPE_OFFSET(items[1], kControl, 5u, 6u);
   TEST_ITEM_TYPE_OFFSET(items[2], kText, 6u, 11u);
@@ -237,7 +237,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesFloat) {
   node.CollectInlines();
   EXPECT_EQ("abc\uFFFCghi\uFFFCmno", node.Text())
       << "floats are appeared as an object replacement character";
-  HeapVector<NGInlineItem>& items = node.Items();
+  HeapVector<InlineItem>& items = node.Items();
   ASSERT_EQ(5u, items.size());
   TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 3u);
   TEST_ITEM_TYPE_OFFSET(items[1], kFloating, 3u, 4u);
@@ -255,7 +255,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesInlineBlock) {
   node.CollectInlines();
   EXPECT_EQ("abc\uFFFCjkl", node.Text())
       << "inline-block is appeared as an object replacement character";
-  HeapVector<NGInlineItem>& items = node.Items();
+  HeapVector<InlineItem>& items = node.Items();
   ASSERT_EQ(3u, items.size());
   TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 3u);
   TEST_ITEM_TYPE_OFFSET(items[1], kAtomicInline, 3u, 4u);
@@ -290,7 +290,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesRtlWithSpan) {
   EXPECT_TRUE(node.IsBidiEnabled());
   node.SegmentText();
   EXPECT_TRUE(node.IsBidiEnabled());
-  HeapVector<NGInlineItem>& items = node.Items();
+  HeapVector<InlineItem>& items = node.Items();
   TEST_ITEM_TYPE_OFFSET_LEVEL(items[0], kText, 0u, 2u, 1u);
   TEST_ITEM_TYPE_OFFSET_LEVEL(items[1], kOpenTag, 2u, 2u, 1u);
   TEST_ITEM_TYPE_OFFSET_LEVEL(items[2], kText, 2u, 3u, 1u);
@@ -306,7 +306,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesMixedText) {
   EXPECT_TRUE(node.IsBidiEnabled());
   node.SegmentText();
   EXPECT_TRUE(node.IsBidiEnabled());
-  HeapVector<NGInlineItem>& items = node.Items();
+  HeapVector<InlineItem>& items = node.Items();
   TEST_ITEM_TYPE_OFFSET_LEVEL(items[0], kText, 0u, 7u, 0u);
   TEST_ITEM_TYPE_OFFSET_LEVEL(items[1], kText, 7u, 9u, 1u);
   TEST_ITEM_TYPE_OFFSET_LEVEL(items[2], kOpenTag, 9u, 9u, 1u);
@@ -322,7 +322,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesMixedTextEndWithON) {
   EXPECT_TRUE(node.IsBidiEnabled());
   node.SegmentText();
   EXPECT_TRUE(node.IsBidiEnabled());
-  HeapVector<NGInlineItem>& items = node.Items();
+  HeapVector<InlineItem>& items = node.Items();
   TEST_ITEM_TYPE_OFFSET_LEVEL(items[0], kText, 0u, 7u, 0u);
   TEST_ITEM_TYPE_OFFSET_LEVEL(items[1], kText, 7u, 9u, 1u);
   TEST_ITEM_TYPE_OFFSET_LEVEL(items[2], kOpenTag, 9u, 9u, 1u);
@@ -340,7 +340,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesTextCombineBR) {
       CreateInlineNode(To<LayoutNGBlockFlow>(layout_object_.Get()));
   node.CollectInlines();
   EXPECT_EQ("a z", node.Text());
-  HeapVector<NGInlineItem>& items = node.Items();
+  HeapVector<InlineItem>& items = node.Items();
   ASSERT_EQ(3u, items.size());
   TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 1u);
   TEST_ITEM_TYPE_OFFSET(items[1], kText, 1u, 2u) << "<br> isn't control";
@@ -362,7 +362,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesTextCombineListItemMarker) {
       CreateInlineNode(To<LayoutTextCombine>(layout_object_->SlowFirstChild()));
   node.CollectInlines();
   EXPECT_EQ("\u2022", node.Text());
-  HeapVector<NGInlineItem>& items = node.Items();
+  HeapVector<InlineItem>& items = node.Items();
   ASSERT_EQ(1u, items.size());
   TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 1u);
   EXPECT_TRUE(items[0].IsSymbolMarker());
@@ -376,7 +376,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesTextCombineNewline) {
       CreateInlineNode(To<LayoutNGBlockFlow>(layout_object_.Get()));
   node.CollectInlines();
   EXPECT_EQ("a z", node.Text());
-  HeapVector<NGInlineItem>& items = node.Items();
+  HeapVector<InlineItem>& items = node.Items();
   ASSERT_EQ(3u, items.size());
   TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 1u);
   TEST_ITEM_TYPE_OFFSET(items[1], kText, 1u, 2u) << "newline isn't control";
@@ -391,7 +391,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesTextCombineWBR) {
       CreateInlineNode(To<LayoutNGBlockFlow>(layout_object_.Get()));
   node.CollectInlines();
   EXPECT_EQ("a\u200Bz", node.Text());
-  HeapVector<NGInlineItem>& items = node.Items();
+  HeapVector<InlineItem>& items = node.Items();
   ASSERT_EQ(3u, items.size());
   TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 1u);
   TEST_ITEM_TYPE_OFFSET(items[1], kText, 1u, 2u) << "<wbr> isn't control";
@@ -402,7 +402,7 @@ TEST_F(NGInlineNodeTest, SegmentASCII) {
   NGInlineNodeForTest node = CreateInlineNode();
   node.Append("Hello", layout_object_);
   node.SegmentText();
-  HeapVector<NGInlineItem>& items = node.Items();
+  HeapVector<InlineItem>& items = node.Items();
   ASSERT_EQ(1u, items.size());
   TEST_ITEM_OFFSET_DIR(items[0], 0u, 5u, TextDirection::kLtr);
 }
@@ -412,7 +412,7 @@ TEST_F(NGInlineNodeTest, SegmentHebrew) {
   node.Append(u"\u05E2\u05D1\u05E8\u05D9\u05EA", layout_object_);
   node.SegmentText();
   ASSERT_EQ(1u, node.Items().size());
-  HeapVector<NGInlineItem>& items = node.Items();
+  HeapVector<InlineItem>& items = node.Items();
   ASSERT_EQ(1u, items.size());
   TEST_ITEM_OFFSET_DIR(items[0], 0u, 5u, TextDirection::kRtl);
 }
@@ -421,7 +421,7 @@ TEST_F(NGInlineNodeTest, SegmentSplit1To2) {
   NGInlineNodeForTest node = CreateInlineNode();
   node.Append(u"Hello \u05E2\u05D1\u05E8\u05D9\u05EA", layout_object_);
   node.SegmentText();
-  HeapVector<NGInlineItem>& items = node.Items();
+  HeapVector<InlineItem>& items = node.Items();
   ASSERT_EQ(2u, items.size());
   TEST_ITEM_OFFSET_DIR(items[0], 0u, 6u, TextDirection::kLtr);
   TEST_ITEM_OFFSET_DIR(items[1], 6u, 11u, TextDirection::kRtl);
@@ -433,7 +433,7 @@ TEST_F(NGInlineNodeTest, SegmentSplit3To4) {
   node.Append(u"lo \u05E2", layout_object_);
   node.Append(u"\u05D1\u05E8\u05D9\u05EA", layout_object_);
   node.SegmentText();
-  HeapVector<NGInlineItem>& items = node.Items();
+  HeapVector<InlineItem>& items = node.Items();
   ASSERT_EQ(4u, items.size());
   TEST_ITEM_OFFSET_DIR(items[0], 0u, 3u, TextDirection::kLtr);
   TEST_ITEM_OFFSET_DIR(items[1], 3u, 6u, TextDirection::kLtr);
@@ -448,7 +448,7 @@ TEST_F(NGInlineNodeTest, SegmentBidiOverride) {
   node.Append("ABC", layout_object_);
   node.Append(kPopDirectionalFormattingCharacter);
   node.SegmentText();
-  HeapVector<NGInlineItem>& items = node.Items();
+  HeapVector<InlineItem>& items = node.Items();
   ASSERT_EQ(4u, items.size());
   TEST_ITEM_OFFSET_DIR(items[0], 0u, 6u, TextDirection::kLtr);
   TEST_ITEM_OFFSET_DIR(items[1], 6u, 7u, TextDirection::kRtl);
@@ -474,7 +474,7 @@ static NGInlineNodeForTest CreateBidiIsolateNode(NGInlineNodeForTest node,
 TEST_F(NGInlineNodeTest, SegmentBidiIsolate) {
   NGInlineNodeForTest node = CreateInlineNode();
   node = CreateBidiIsolateNode(node, layout_object_);
-  HeapVector<NGInlineItem>& items = node.Items();
+  HeapVector<InlineItem>& items = node.Items();
   EXPECT_EQ(9u, items.size());
   TEST_ITEM_OFFSET_DIR(items[0], 0u, 6u, TextDirection::kLtr);
   TEST_ITEM_OFFSET_DIR(items[1], 6u, 7u, TextDirection::kLtr);
@@ -633,9 +633,10 @@ TEST_F(NGInlineNodeTest, AssociatedItemsWithControlItem) {
                          ->firstChild()
                          ->GetLayoutObject());
   ASSERT_TRUE(layout_text->HasValidInlineItems());
-  Vector<const NGInlineItem*> items;
-  for (const NGInlineItem& item : layout_text->InlineItems())
+  Vector<const InlineItem*> items;
+  for (const InlineItem& item : layout_text->InlineItems()) {
     items.push_back(&item);
+  }
   ASSERT_EQ(5u, items.size());
   TEST_ITEM_TYPE_OFFSET((*items[0]), kText, 1u, 3u);
   TEST_ITEM_TYPE_OFFSET((*items[1]), kBidiControl, 3u, 4u);
@@ -707,7 +708,7 @@ struct StyleChangeData {
     {"#parent { position: absolute; }"
      "#parent.after { position: initial; }",
      StyleChangeData::kContainer, true},
-    // List markers are captured in |NGInlineItem|.
+    // List markers are captured in |InlineItem|.
     {"#parent.after { display: list-item; }", StyleChangeData::kContainer},
     {"#parent { display: list-item; list-style-type: none; }"
      "#parent.after { list-style-type: disc; }",
@@ -1370,9 +1371,9 @@ TEST_F(NGInlineNodeTest, SegmentRanges) {
             "<span>text</span>"
             "</div>");
 
-  NGInlineItemsData* items_data = layout_block_flow_->GetNGInlineNodeData();
+  InlineItemsData* items_data = layout_block_flow_->GetNGInlineNodeData();
   ASSERT_TRUE(items_data);
-  NGInlineItemSegments* segments = items_data->segments.get();
+  InlineItemSegments* segments = items_data->segments.get();
   ASSERT_TRUE(segments);
 
   // Test EndOffset for the full text. All segment boundaries including the end
@@ -1511,10 +1512,10 @@ TEST_F(NGInlineNodeTest, ReuseFirstNonSafe) {
   const auto& items = data->items;
 
   // We shape "AV" together, which usually has kerning between "A" and "V", then
-  // split the |ShapeResult| to two |NGInlineItem|s. The |NGInlineItem| for "V"
+  // split the |ShapeResult| to two |InlineItem|s. The |InlineItem| for "V"
   // is not safe to reuse even if its style does not change.
-  const NGInlineItem& item_v = items[3];
-  EXPECT_EQ(item_v.Type(), NGInlineItem::kText);
+  const InlineItem& item_v = items[3];
+  EXPECT_EQ(item_v.Type(), InlineItem::kText);
   EXPECT_EQ(
       StringView(data->text_content, item_v.StartOffset(), item_v.Length()),
       "V");
@@ -1538,8 +1539,8 @@ TEST_F(NGInlineNodeTest, ReuseFirstNonSafeRtl) {
   const NGInlineNodeData* data = block_flow->GetNGInlineNodeData();
   ASSERT_TRUE(data);
   const auto& items = data->items;
-  const NGInlineItem& item_v = items[4];
-  EXPECT_EQ(item_v.Type(), NGInlineItem::kText);
+  const InlineItem& item_v = items[4];
+  EXPECT_EQ(item_v.Type(), InlineItem::kText);
   EXPECT_EQ(
       StringView(data->text_content, item_v.StartOffset(), item_v.Length()),
       "V");
@@ -1592,8 +1593,8 @@ TEST_F(NGInlineNodeTest, InitialLetter) {
   EXPECT_TRUE(initial_letter_box.GetPhysicalFragment(0)->IsInitialLetterBox());
 
   const NGInlineNodeData& data = *block_flow.GetNGInlineNodeData();
-  const NGInlineItem& initial_letter_item = data.items[0];
-  EXPECT_EQ(NGInlineItem::kInitialLetterBox, initial_letter_item.Type());
+  const InlineItem& initial_letter_item = data.items[0];
+  EXPECT_EQ(InlineItem::kInitialLetterBox, initial_letter_item.Type());
 }
 
 TEST_F(NGInlineNodeTest, TextCombineUsesScalingX) {
@@ -1699,7 +1700,7 @@ TEST_F(NGInlineNodeTest, ShapeCacheDisabled) {
   EXPECT_EQ("abc", node.Text());
 
   const String& text_content(node.Text().c_str());
-  HeapVector<NGInlineItem>& items = node.Items();
+  HeapVector<InlineItem>& items = node.Items();
   ShapeResultSpacing<String> spacing(text_content, node.IsSvgText());
 
   EXPECT_FALSE(
@@ -1714,7 +1715,7 @@ TEST_F(NGInlineNodeTest, ShapeCacheLongString) {
   node.CollectInlines();
 
   const String& text_content(node.Text().c_str());
-  HeapVector<NGInlineItem>& items = node.Items();
+  HeapVector<InlineItem>& items = node.Items();
   ShapeResultSpacing<String> spacing(text_content, node.IsSvgText());
 
   EXPECT_FALSE(
@@ -1729,7 +1730,7 @@ TEST_F(NGInlineNodeTest, ShapeCacheMultiItems) {
   node.CollectInlines();
 
   const String& text_content(node.Text().c_str());
-  HeapVector<NGInlineItem>& items = node.Items();
+  HeapVector<InlineItem>& items = node.Items();
   EXPECT_EQ(5u, items.size());
   ShapeResultSpacing<String> spacing(text_content, node.IsSvgText());
 
@@ -1747,7 +1748,7 @@ TEST_F(NGInlineNodeTest, ShapeCacheSpacingRequired) {
   node.CollectInlines();
 
   const String& text_content(node.Text().c_str());
-  HeapVector<NGInlineItem>& items = node.Items();
+  HeapVector<InlineItem>& items = node.Items();
   ShapeResultSpacing<String> spacing(text_content, node.IsSvgText());
 
   EXPECT_FALSE(

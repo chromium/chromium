@@ -12,8 +12,8 @@
 
 namespace blink {
 
+class InlineItem;
 class LayoutBlockFlow;
-class NGInlineItem;
 class NGInlineNode;
 
 // This class builds a list of <addressable character offset,
@@ -35,7 +35,7 @@ class SvgTextLayoutAttributesBuilder final {
   explicit SvgTextLayoutAttributesBuilder(NGInlineNode ifc);
 
   void Build(const String& ifc_text_content,
-             const HeapVector<NGInlineItem>& items);
+             const HeapVector<InlineItem>& items);
 
   // This function can be called just once after Build().
   SvgInlineNodeData* CreateSvgInlineNodeData();

@@ -42,7 +42,7 @@ ASSERT_SIZE(FragmentItem, SameSizeAsFragmentItem);
 
 }  // namespace
 
-FragmentItem::FragmentItem(const NGInlineItem& inline_item,
+FragmentItem::FragmentItem(const InlineItem& inline_item,
                            scoped_refptr<const ShapeResultView> shape_result,
                            const NGTextOffsetRange& text_offset,
                            const PhysicalSize& size,
@@ -95,7 +95,7 @@ FragmentItem::FragmentItem(const LayoutObject& layout_object,
   DCHECK(!IsFormattingContextRoot());
 }
 
-FragmentItem::FragmentItem(const NGInlineItem& inline_item,
+FragmentItem::FragmentItem(const InlineItem& inline_item,
                            scoped_refptr<const ShapeResultView> shape_result,
                            const String& text_content,
                            const PhysicalSize& size,

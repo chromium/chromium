@@ -8,19 +8,19 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_items_data.h"
 
 namespace blink {
-// |NGInlineItemSpan| performs like base::span<NGInlineItem> but stores a
-// pointer to |NGInlineItemsData|, not |HeapVector<NGInlineItem>| in
-// |NGInlineItemsData|, to keep it alive. |HeapVector<NGInlineItem>| allocated
-// in |NGInlineItemsData| is deleted in |NGInlineItemsData|'s destructor even
+// |InlineItemSpan| performs like base::span<InlineItem> but stores a
+// pointer to |InlineItemsData|, not |HeapVector<InlineItem>| in
+// |InlineItemsData|, to keep it alive. |HeapVector<InlineItem>| allocated
+// in |InlineItemsData| is deleted in |InlineItemsData|'s destructor even
 // if there is any pointer to the vector, and storing a pointer to it can
 // cause use-after-free bugs.
-struct NGInlineItemSpan final {
+struct InlineItemSpan final {
   DISALLOW_NEW();
 
  public:
-  NGInlineItemSpan() = default;
+  InlineItemSpan() = default;
 
-  void SetItems(NGInlineItemsData* data, wtf_size_t begin, wtf_size_t size) {
+  void SetItems(InlineItemsData* data, wtf_size_t begin, wtf_size_t size) {
     SECURITY_DCHECK(begin < data->items.size());
     SECURITY_DCHECK(begin_ + size_ <= data->items.size());
     data_ = data;
@@ -36,18 +36,18 @@ struct NGInlineItemSpan final {
   bool empty() const { return size_ == 0; }
   wtf_size_t size() const { return size_; }
 
-  const NGInlineItem* begin() const {
+  const InlineItem* begin() const {
     SECURITY_DCHECK(begin_ < data_->items.size());
     return data_->items.begin() + begin_;
   }
-  const NGInlineItem* end() const {
+  const InlineItem* end() const {
     SECURITY_DCHECK(begin_ + size_ <= data_->items.size());
     return begin() + size_;
   }
 
-  const NGInlineItem& front() const {
+  const InlineItem& front() const {
     CHECK(!empty());
-    const NGInlineItem* begin_ptr = begin();
+    const InlineItem* begin_ptr = begin();
     CHECK(begin_ptr);
     return *begin_ptr;
   }
@@ -55,7 +55,7 @@ struct NGInlineItemSpan final {
   void Trace(Visitor* visitor) const { visitor->Trace(data_); }
 
  private:
-  Member<NGInlineItemsData> data_;
+  Member<InlineItemsData> data_;
   wtf_size_t begin_ = 0;
   wtf_size_t size_ = 0;
 };

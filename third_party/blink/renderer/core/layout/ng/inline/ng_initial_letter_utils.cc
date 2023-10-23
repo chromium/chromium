@@ -189,8 +189,9 @@ FontHeight AdjustInitialLetterInTextPosition(const FontHeight& line_box_metrics,
   for (NGLogicalLineItem& line_item : *line_box) {
     const ShapeResultView* const shape_result = line_item.shape_result.get();
     if (!shape_result || !line_item.inline_item ||
-        line_item.inline_item->Type() != NGInlineItem::kText)
+        line_item.inline_item->Type() != InlineItem::kText) {
       continue;
+    }
 
     LayoutUnit baseline;
     const ComputedStyle& style = *line_item.Style();
@@ -222,9 +223,9 @@ FontHeight AdjustInitialLetterInTextPosition(const FontHeight& line_box_metrics,
 
 LayoutUnit CalculateInitialLetterBoxInlineSize(const NGLineInfo& line_info) {
   LayoutUnit inline_size = line_info.TextIndent();
-  for (const NGInlineItemResult& item_result : line_info.Results()) {
+  for (const InlineItemResult& item_result : line_info.Results()) {
     const ShapeResultView* const shape_result = item_result.shape_result.get();
-    if (!shape_result || item_result.item->Type() != NGInlineItem::kText) {
+    if (!shape_result || item_result.item->Type() != InlineItem::kText) {
       inline_size += item_result.inline_size;
       continue;
     }

@@ -49,7 +49,7 @@ inline bool MaybeIdeograph(UScriptCode script, StringView text) {
 class SpacingApplier {
  public:
   void SetSpacing(const Vector<wtf_size_t, 16>& offsets,
-                  const NGInlineItem* current_item,
+                  const InlineItem* current_item,
                   const ComputedStyle& style) {
     DCHECK(current_item->TextShapeResult());
     const float spacing = TextAutoSpace::GetSpacingWidth(style.GetFont());
@@ -91,12 +91,12 @@ class SpacingApplier {
         const_cast<ShapeResult*>(last_item_->TextShapeResult());
     DCHECK(shape_result);
     shape_result->ApplyTextAutoSpacing(offsets_with_spacing_);
-    NGInlineItem* item = const_cast<NGInlineItem*>(last_item_);
+    InlineItem* item = const_cast<InlineItem*>(last_item_);
     item->SetUnsafeToReuseShapeResult();
   }
 
  private:
-  const NGInlineItem* last_item_ = nullptr;
+  const InlineItem* last_item_ = nullptr;
   // Stores the spacing (1/8 ic) and auto-space points's previous positions, for
   // the previous item.
   Vector<OffsetWithSpacing, 16> offsets_with_spacing_;
@@ -104,20 +104,20 @@ class SpacingApplier {
 
 }  // namespace
 
-void InlineTextAutoSpace::Initialize(const NGInlineItemsData& data) {
-  const HeapVector<NGInlineItem>& items = data.items;
+void InlineTextAutoSpace::Initialize(const InlineItemsData& data) {
+  const HeapVector<InlineItem>& items = data.items;
   if (UNLIKELY(items.empty())) {
     return;
   }
 
   // `RunSegmenterRange` is used to find where we can skip computing Unicode
   // properties. Compute them for the whole text content. It's pre-computed, but
-  // packed in `NGInlineItemSegments` to save memory.
+  // packed in `InlineItemSegments` to save memory.
   const String& text = data.text_content;
   if (!data.segments) {
-    for (const NGInlineItem& item : items) {
-      if (item.Type() != NGInlineItem::kText) {
-        // Only `kText` has the data, see `NGInlineItem::SetSegmentData`.
+    for (const InlineItem& item : items) {
+      if (item.Type() != InlineItem::kText) {
+        // Only `kText` has the data, see `InlineItem::SetSegmentData`.
         continue;
       }
       RunSegmenter::RunSegmenterRange range = item.CreateRunSegmenterRange();
@@ -142,7 +142,7 @@ void InlineTextAutoSpace::Initialize(const NGInlineItemsData& data) {
   }
 }
 
-void InlineTextAutoSpace::Apply(NGInlineItemsData& data,
+void InlineTextAutoSpace::Apply(InlineItemsData& data,
                                 Vector<wtf_size_t>* offsets_out) {
   const String& text = data.text_content;
   DCHECK(!text.Is8Bit());
@@ -153,8 +153,8 @@ void InlineTextAutoSpace::Apply(NGInlineItemsData& data,
   const RunSegmenter::RunSegmenterRange* range = ranges_.begin();
   absl::optional<CharType> last_type = kOther;
   SpacingApplier applier;
-  for (const NGInlineItem& item : data.items) {
-    if (item.Type() != NGInlineItem::kText) {
+  for (const InlineItem& item : data.items) {
+    if (item.Type() != InlineItem::kText) {
       if (item.Length()) {
         // If `item` has a length, e.g., inline-block, set the `last_type`.
         last_type = kOther;

@@ -20,7 +20,7 @@ namespace blink {
 class ComputedStyle;
 class NGInlineBreakToken;
 class NGInlineNode;
-struct NGInlineItemsData;
+struct InlineItemsData;
 
 // Represents a line to build.
 //
@@ -33,7 +33,7 @@ class CORE_EXPORT NGLineInfo {
  public:
   void Reset();
 
-  const NGInlineItemsData& ItemsData() const {
+  const InlineItemsData& ItemsData() const {
     DCHECK(items_data_);
     return *items_data_;
   }
@@ -44,7 +44,7 @@ class CORE_EXPORT NGLineInfo {
     return *line_style_;
   }
   void SetLineStyle(const NGInlineNode&,
-                    const NGInlineItemsData&,
+                    const InlineItemsData&,
                     bool use_first_line_style);
 
   // Use ::first-line style if true.
@@ -86,9 +86,9 @@ class CORE_EXPORT NGLineInfo {
         block_in_inline_layout_result_->PhysicalFragment().BreakToken());
   }
 
-  // NGInlineItemResults for this line.
-  NGInlineItemResults* MutableResults() { return &results_; }
-  const NGInlineItemResults& Results() const { return results_; }
+  // InlineItemResults for this line.
+  InlineItemResults* MutableResults() { return &results_; }
+  const InlineItemResults& Results() const { return results_; }
 
   const NGInlineBreakToken* BreakToken() const { return break_token_; }
   void SetBreakToken(const NGInlineBreakToken* break_token) {
@@ -174,12 +174,12 @@ class CORE_EXPORT NGLineInfo {
   }
 
   // Start offset of this line.
-  const NGInlineItemTextIndex& Start() const { return start_; }
+  const InlineItemTextIndex& Start() const { return start_; }
   unsigned StartOffset() const { return start_.text_offset; }
-  void SetStart(const NGInlineItemTextIndex& index) { start_ = index; }
+  void SetStart(const InlineItemTextIndex& index) { start_ = index; }
   // End offset of this line. This is the same as the start offset of the next
   // line, or the end of block if this is the last line.
-  NGInlineItemTextIndex End() const;
+  InlineItemTextIndex End() const;
   unsigned EndTextOffset() const;
   // End text offset of this line, excluding out-of-flow objects such as
   // floating or positioned.
@@ -260,9 +260,9 @@ class CORE_EXPORT NGLineInfo {
   LayoutUnit ComputeTrailingSpaceWidth(
       unsigned* end_offset_out = nullptr) const;
 
-  const NGInlineItemsData* items_data_ = nullptr;
+  const InlineItemsData* items_data_ = nullptr;
   const ComputedStyle* line_style_{nullptr};
-  NGInlineItemResults results_;
+  InlineItemResults results_;
 
   BfcOffset bfc_offset_;
 
@@ -282,7 +282,7 @@ class CORE_EXPORT NGLineInfo {
   LayoutUnit initial_letter_box_block_start_adjustment_;
   LayoutUnit initial_letter_box_block_size_;
 
-  NGInlineItemTextIndex start_;
+  InlineItemTextIndex start_;
   unsigned end_item_index_;
   unsigned end_offset_for_justify_;
 
@@ -303,8 +303,8 @@ class CORE_EXPORT NGLineInfo {
   // Even if text combine item causes line break, this variable is not reset.
   // This variable is used to add spacing before/after text combine items if
   // "text-align: justify".
-  // Note: To avoid scanning |NGInlineItemResults|, this variable is true
-  // when |NGInlineItemResult| to |results_|.
+  // Note: To avoid scanning |InlineItemResults|, this variable is true
+  // when |InlineItemResult| to |results_|.
   bool may_have_text_combine_item_ = false;
   bool allow_hang_for_alignment_ = false;
 

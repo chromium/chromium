@@ -116,8 +116,8 @@ class LayoutTextTest : public RenderingTest {
     }
     const NGInlineNodeData& data = *block_flow.GetNGInlineNodeData();
     std::ostringstream stream;
-    for (const NGInlineItem& item : data.items) {
-      if (item.Type() != NGInlineItem::kText) {
+    for (const InlineItem& item : data.items) {
+      if (item.Type() != InlineItem::kText) {
         continue;
       }
       if (item.GetLayoutObject() == layout_text) {
@@ -151,9 +151,9 @@ class LayoutTextTest : public RenderingTest {
   }
 
   unsigned CountNumberOfGlyphs(const LayoutText& layout_text) {
-    auto* const items = layout_text.GetNGInlineItems();
+    auto* const items = layout_text.GetInlineItems();
     return std::accumulate(items->begin(), items->end(), 0u,
-                           [](unsigned sum, const NGInlineItem& item) {
+                           [](unsigned sum, const InlineItem& item) {
                              return sum + item.TextShapeResult()->NumGlyphs();
                            });
   }

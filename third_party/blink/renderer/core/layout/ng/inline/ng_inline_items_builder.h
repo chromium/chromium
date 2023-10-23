@@ -25,7 +25,7 @@ class LayoutObject;
 class LayoutText;
 struct NGInlineNodeData;
 
-// NGInlineItemsBuilder builds a string and a list of NGInlineItem from inlines.
+// InlineItemsBuilder builds a string and a list of InlineItem from inlines.
 //
 // When appending, spaces are collapsed according to CSS Text, The white space
 // processing rules
@@ -35,26 +35,25 @@ struct NGInlineNodeData;
 // characters as defined in:
 // https://drafts.csswg.org/css-writing-modes-3/#bidi-control-codes-injection-table
 //
-// NGInlineItemsBuilder may optionally take an NGOffsetMappingBuilder template
+// InlineItemsBuilder may optionally take an NGOffsetMappingBuilder template
 // parameter to construct the white-space collapsed offset mapping, which maps
 // offsets in the concatenation of all appended strings and characters to
 // offsets in |text_|.
 // See https://goo.gl/CJbxky for more details about offset mapping.
 template <typename OffsetMappingBuilder>
-class NGInlineItemsBuilderTemplate {
+class InlineItemsBuilderTemplate {
   STACK_ALLOCATED();
 
  public:
   // Create a builder that appends items to |items|.
-  NGInlineItemsBuilderTemplate(
-      LayoutBlockFlow* block_flow,
-      HeapVector<NGInlineItem>* items,
-      const SvgTextChunkOffsets* chunk_offsets = nullptr)
+  InlineItemsBuilderTemplate(LayoutBlockFlow* block_flow,
+                             HeapVector<InlineItem>* items,
+                             const SvgTextChunkOffsets* chunk_offsets = nullptr)
       : block_flow_(block_flow),
         items_(items),
         text_chunk_offsets_(chunk_offsets),
         is_text_combine_(block_flow_->IsLayoutTextCombine()) {}
-  ~NGInlineItemsBuilderTemplate();
+  ~InlineItemsBuilderTemplate();
 
   LayoutBlockFlow* GetLayoutBlockFlow() const { return block_flow_; }
 
@@ -96,7 +95,7 @@ class NGInlineItemsBuilderTemplate {
   void AppendText(const String& text, LayoutText* layout_text);
 
   // Append a break opportunity; e.g., <wbr> element.
-  NGInlineItem& AppendBreakOpportunity(LayoutObject* layout_object);
+  InlineItem& AppendBreakOpportunity(LayoutObject* layout_object);
 
   // Append a unicode "object replacement character" for an atomic inline,
   // signaling the presence of a non-text object to the unicode bidi algorithm.
@@ -113,13 +112,12 @@ class NGInlineItemsBuilderTemplate {
   // The character is opaque to space collapsing; i.e., spaces before this
   // character and after this character can collapse as if this character does
   // not exist.
-  NGInlineItem& AppendOpaque(NGInlineItem::NGInlineItemType,
-                             UChar,
-                             LayoutObject* = nullptr);
+  InlineItem& AppendOpaque(InlineItem::InlineItemType,
+                           UChar,
+                           LayoutObject* = nullptr);
 
   // Append a non-character item that is opaque to space collapsing.
-  void AppendOpaque(NGInlineItem::NGInlineItemType,
-                    LayoutObject* layout_object);
+  void AppendOpaque(InlineItem::InlineItemType, LayoutObject* layout_object);
 
   // Append a Bidi control character, for LTR or RTL depends on the style.
   void EnterBidiContext(LayoutObject*,
@@ -173,16 +171,16 @@ class NGInlineItemsBuilderTemplate {
 
     void Trace(Visitor* visitor) const { visitor->Trace(style); }
 
-    BoxInfo(unsigned item_index, const NGInlineItem& item);
+    BoxInfo(unsigned item_index, const InlineItem& item);
     bool ShouldCreateBoxFragmentForChild(const BoxInfo& child) const;
-    void SetShouldCreateBoxFragment(HeapVector<NGInlineItem>* items);
+    void SetShouldCreateBoxFragment(HeapVector<InlineItem>* items);
   };
 
  private:
   static bool NeedsBoxInfo();
 
   LayoutBlockFlow* const block_flow_;
-  HeapVector<NGInlineItem>* items_;
+  HeapVector<InlineItem>* items_;
   StringBuilder text_;
 
   // |mapping_builder_| builds the whitespace-collapsed offset mapping
@@ -211,7 +209,7 @@ class NGInlineItemsBuilderTemplate {
   // as its String version does.
   // See the String version for using nullptr for ComputedStyle and
   // LayoutObject.
-  NGInlineItem& Append(NGInlineItem::NGInlineItemType, UChar, LayoutObject*);
+  InlineItem& Append(InlineItem::InlineItemType, UChar, LayoutObject*);
 
   void AppendCollapseWhitespace(const StringView,
                                 const ComputedStyle*,
@@ -227,19 +225,19 @@ class NGInlineItemsBuilderTemplate {
   void ExitAndEnterSvgTextChunk(LayoutText& layout_text);
   void EnterSvgTextChunk(const ComputedStyle* style);
 
-  void DidAppendTextReusing(const NGInlineItem& item);
+  void DidAppendTextReusing(const InlineItem& item);
   void DidAppendForcedBreak();
 
   void RemoveTrailingCollapsibleSpaceIfExists();
-  void RemoveTrailingCollapsibleSpace(NGInlineItem*);
+  void RemoveTrailingCollapsibleSpace(InlineItem*);
 
   void RestoreTrailingCollapsibleSpaceIfRemoved();
-  void RestoreTrailingCollapsibleSpace(NGInlineItem*);
+  void RestoreTrailingCollapsibleSpace(InlineItem*);
 
   void AppendTextItem(const StringView, LayoutText* layout_object);
-  NGInlineItem& AppendTextItem(NGInlineItem::NGInlineItemType type,
-                               const StringView,
-                               LayoutText* layout_object);
+  InlineItem& AppendTextItem(InlineItem::InlineItemType type,
+                             const StringView,
+                             LayoutText* layout_object);
   void AppendEmptyTextItem(LayoutText* layout_object);
 
   void AppendGeneratedBreakOpportunity(LayoutObject*);
@@ -257,52 +255,52 @@ class NGInlineItemsBuilderTemplate {
                                                          LayoutText*,
                                                          unsigned* start);
 
-  friend class NGInlineItemsBuilderTest;
+  friend class InlineItemsBuilderTest;
 };
 
 template <>
 CORE_EXPORT bool
-NGInlineItemsBuilderTemplate<NGOffsetMappingBuilder>::AppendTextReusing(
+InlineItemsBuilderTemplate<NGOffsetMappingBuilder>::AppendTextReusing(
     const NGInlineNodeData&,
     LayoutText*);
 
 template <>
-CORE_EXPORT bool NGInlineItemsBuilderTemplate<
+CORE_EXPORT bool InlineItemsBuilderTemplate<
     NGOffsetMappingBuilder>::ShouldUpdateLayoutObject() const;
 
 template <>
 CORE_EXPORT void
-NGInlineItemsBuilderTemplate<NGOffsetMappingBuilder>::ClearInlineFragment(
+InlineItemsBuilderTemplate<NGOffsetMappingBuilder>::ClearInlineFragment(
     LayoutObject*);
 
 template <>
 CORE_EXPORT void
-NGInlineItemsBuilderTemplate<NGOffsetMappingBuilder>::ClearNeedsLayout(
+InlineItemsBuilderTemplate<NGOffsetMappingBuilder>::ClearNeedsLayout(
     LayoutObject*);
 
 template <>
-CORE_EXPORT void NGInlineItemsBuilderTemplate<
+CORE_EXPORT void InlineItemsBuilderTemplate<
     NGOffsetMappingBuilder>::UpdateShouldCreateBoxFragment(LayoutInline*);
 
 extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    NGInlineItemsBuilderTemplate<EmptyOffsetMappingBuilder>;
+    InlineItemsBuilderTemplate<EmptyOffsetMappingBuilder>;
 extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    NGInlineItemsBuilderTemplate<NGOffsetMappingBuilder>;
+    InlineItemsBuilderTemplate<NGOffsetMappingBuilder>;
 
-using NGInlineItemsBuilder =
-    NGInlineItemsBuilderTemplate<EmptyOffsetMappingBuilder>;
-using NGInlineItemsBuilderForOffsetMapping =
-    NGInlineItemsBuilderTemplate<NGOffsetMappingBuilder>;
+using InlineItemsBuilder =
+    InlineItemsBuilderTemplate<EmptyOffsetMappingBuilder>;
+using InlineItemsBuilderForOffsetMapping =
+    InlineItemsBuilderTemplate<NGOffsetMappingBuilder>;
 
 }  // namespace blink
 
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
-    blink::NGInlineItemsBuilder::BidiContext)
+    blink::InlineItemsBuilder::BidiContext)
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
-    blink::NGInlineItemsBuilderForOffsetMapping::BidiContext)
+    blink::InlineItemsBuilderForOffsetMapping::BidiContext)
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
-    blink::NGInlineItemsBuilder::BoxInfo)
+    blink::InlineItemsBuilder::BoxInfo)
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
-    blink::NGInlineItemsBuilderForOffsetMapping::BoxInfo)
+    blink::InlineItemsBuilderForOffsetMapping::BoxInfo)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_INLINE_ITEMS_BUILDER_H_

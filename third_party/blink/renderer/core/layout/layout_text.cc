@@ -83,7 +83,7 @@ struct SameSizeAsLayoutText : public LayoutObject {
   float widths[4];
   String text;
   LogicalOffset previous_starting_point;
-  NGInlineItemSpan inline_items;
+  InlineItemSpan inline_items;
   wtf_size_t first_fragment_item_index_;
 };
 
@@ -864,7 +864,7 @@ void LayoutText::SetTextWithOffset(String text, unsigned offset, unsigned len) {
   ForceSetText(std::move(text));
 
   // TODO(layout-dev): Invalidation is currently all or nothing in LayoutNG,
-  // this is probably fine for NGInlineItem reuse as recreating the individual
+  // this is probably fine for InlineItem reuse as recreating the individual
   // items is relatively cheap. If partial relayout performance improvement are
   // needed partial re-shapes are likely to be sufficient. Revisit as needed.
   valid_ng_items_ = false;
@@ -1407,7 +1407,7 @@ ContentCaptureManager* LayoutText::GetOrResetContentCaptureManager() {
   return nullptr;
 }
 
-void LayoutText::SetInlineItems(NGInlineItemsData* data,
+void LayoutText::SetInlineItems(InlineItemsData* data,
                                 wtf_size_t begin,
                                 wtf_size_t size) {
   NOT_DESTROYED();
@@ -1416,7 +1416,7 @@ void LayoutText::SetInlineItems(NGInlineItemsData* data,
     DCHECK_EQ(data->items[i].GetLayoutObject(), this);
   }
 #endif
-  auto* items = GetNGInlineItems();
+  auto* items = GetInlineItems();
   if (!items)
     return;
   valid_ng_items_ = true;
@@ -1427,16 +1427,17 @@ void LayoutText::ClearInlineItems() {
   NOT_DESTROYED();
   has_bidi_control_items_ = false;
   valid_ng_items_ = false;
-  if (auto* items = GetNGInlineItems())
+  if (auto* items = GetInlineItems()) {
     items->Clear();
+  }
 }
 
-const NGInlineItemSpan& LayoutText::InlineItems() const {
+const InlineItemSpan& LayoutText::InlineItems() const {
   NOT_DESTROYED();
   DCHECK(valid_ng_items_);
-  DCHECK(GetNGInlineItems());
-  DCHECK(!GetNGInlineItems()->empty());
-  return *GetNGInlineItems();
+  DCHECK(GetInlineItems());
+  DCHECK(!GetInlineItems()->empty());
+  return *GetInlineItems();
 }
 
 #if DCHECK_IS_ON()

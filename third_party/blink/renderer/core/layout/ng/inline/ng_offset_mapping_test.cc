@@ -1133,7 +1133,7 @@ TEST_F(NGOffsetMappingTest, NoWrapSpaceAndCollapsibleSpace) {
   const Node* bar = span->nextSibling();
   const NGOffsetMapping& mapping = GetOffsetMapping();
 
-  // NGInlineItemsBuilder inserts a ZWS to indicate break opportunity.
+  // InlineItemsBuilder inserts a ZWS to indicate break opportunity.
   EXPECT_EQ(String(u"foo \u200Bbar"), mapping.GetText());
 
   // Should't map any character in DOM to the generated ZWS.

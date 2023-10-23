@@ -14,7 +14,7 @@
 
 namespace blink {
 
-class NGInlineItem;
+class InlineItem;
 
 // A context object given to layout. The same instance should be given to
 // children of a parent node, but layout algorithm should be prepared to be
@@ -55,10 +55,9 @@ class CORE_EXPORT NGInlineChildLayoutContext {
   // To determine this, callers must call |SetItemIndex| to set the end of the
   // current line.
   NGInlineLayoutStateStack* BoxStatesIfValidForItemIndex(
-      const HeapVector<NGInlineItem>& items,
+      const HeapVector<InlineItem>& items,
       unsigned item_index);
-  void SetItemIndex(const HeapVector<NGInlineItem>& items,
-                    unsigned item_index) {
+  void SetItemIndex(const HeapVector<InlineItem>& items, unsigned item_index) {
     items_ = &items;
     item_index_ = item_index;
   }
@@ -97,7 +96,7 @@ class CORE_EXPORT NGInlineChildLayoutContext {
   absl::optional<NGInlineLayoutStateStack> box_states_;
 
   // The items and its index this context is set up for.
-  const HeapVector<NGInlineItem>* items_ = nullptr;
+  const HeapVector<InlineItem>* items_ = nullptr;
   unsigned item_index_ = 0;
 
   HeapVector<Member<const NGBreakToken>> parallel_flow_break_tokens_;

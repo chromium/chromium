@@ -22,9 +22,9 @@
 namespace blink {
 
 class Hyphenation;
+class InlineItem;
 class NGColumnSpannerPath;
 class NGInlineBreakToken;
-class NGInlineItem;
 class NGLineBreakCandidateContext;
 class NGLineInfo;
 class ResolvedTextLayoutAttributesIterator;
@@ -35,7 +35,7 @@ enum class NGLineBreakerMode { kContent, kMinContent, kMaxContent };
 
 // Represents a line breaker.
 //
-// This class measures each NGInlineItem and determines items to form a line,
+// This class measures each InlineItem and determines items to form a line,
 // so that NGInlineLayoutAlgorithm can build a line box from the output.
 class CORE_EXPORT NGLineBreaker {
   STACK_ALLOCATED();
@@ -51,13 +51,13 @@ class CORE_EXPORT NGLineBreaker {
                 ExclusionSpace*);
   ~NGLineBreaker();
 
-  const NGInlineItemsData& ItemsData() const { return items_data_; }
+  const InlineItemsData& ItemsData() const { return items_data_; }
 
   // True if the last line has `box-decoration-break: clone`, which affected the
   // size.
   bool HasClonedBoxDecorations() const { return has_cloned_box_decorations_; }
 
-  // Compute the next line break point and produces NGInlineItemResults for
+  // Compute the next line break point and produces InlineItemResults for
   // the line.
   void NextLine(NGLineInfo*);
 
@@ -83,12 +83,12 @@ class CORE_EXPORT NGLineBreaker {
   void SetIntrinsicSizeOutputs(MaxSizeCache* max_size_cache,
                                bool* depends_on_block_constraints_out);
 
-  // Compute NGInlineItemResult for an open tag item.
+  // Compute InlineItemResult for an open tag item.
   // Returns true if this item has edge and may have non-zero inline size.
-  static bool ComputeOpenTagResult(const NGInlineItem&,
+  static bool ComputeOpenTagResult(const InlineItem&,
                                    const NGConstraintSpace&,
                                    bool is_in_svg_text,
-                                   NGInlineItemResult*);
+                                   InlineItemResult*);
 
   // This enum is private, except for |WhitespaceStateForTesting()|. See
   // |whitespace_| member.
@@ -106,27 +106,27 @@ class CORE_EXPORT NGLineBreaker {
 
   // Find break candidates in the `item_result` and append to `context`. See
   // `NGLineBreakCandidate` and `NGLineBreakCandidateContext` for more details.
-  void AppendCandidates(const NGInlineItemResult& item_result,
+  void AppendCandidates(const InlineItemResult& item_result,
                         const NGLineInfo& line_info,
                         NGLineBreakCandidateContext& context);
 
   // True if the argument can break; i.e. has at least one break opportunity.
   bool CanBreakInside(const NGLineInfo& line_info);
-  bool CanBreakInside(const NGInlineItemResult& item_result);
+  bool CanBreakInside(const InlineItemResult& item_result);
 
  private:
   Document& GetDocument() const { return node_.GetDocument(); }
 
   const String& Text() const { return text_content_; }
-  const HeapVector<NGInlineItem>& Items() const { return items_data_.items; }
+  const HeapVector<InlineItem>& Items() const { return items_data_.items; }
 
   String TextContentForLineBreak() const;
 
-  NGInlineItemResult* AddItem(const NGInlineItem&,
-                              unsigned end_offset,
-                              NGLineInfo*);
-  NGInlineItemResult* AddItem(const NGInlineItem&, NGLineInfo*);
-  NGInlineItemResult* AddEmptyItem(const NGInlineItem&, NGLineInfo*);
+  InlineItemResult* AddItem(const InlineItem&,
+                            unsigned end_offset,
+                            NGLineInfo*);
+  InlineItemResult* AddItem(const InlineItem&, NGLineInfo*);
+  InlineItemResult* AddEmptyItem(const InlineItem&, NGLineInfo*);
 
   void BreakLine(NGLineInfo*);
   void PrepareNextLine(NGLineInfo*);
@@ -156,83 +156,79 @@ class CORE_EXPORT NGLineBreaker {
     kContinue,
   };
 
-  void HandleText(const NGInlineItem& item, const ShapeResult&, NGLineInfo*);
+  void HandleText(const InlineItem& item, const ShapeResult&, NGLineInfo*);
   // Split |item| into segments, and add them to |line_info|.
   // This is for SVG <text>.
-  void SplitTextIntoSegments(const NGInlineItem& item, NGLineInfo* line_info);
-  // Returns true if we should split NGInlineItem before
+  void SplitTextIntoSegments(const InlineItem& item, NGLineInfo* line_info);
+  // Returns true if we should split InlineItem before
   // svg_addressable_offset_.
   bool ShouldCreateNewSvgSegment() const;
   enum BreakResult { kSuccess, kOverflow, kBreakAt };
-  BreakResult BreakText(NGInlineItemResult*,
-                        const NGInlineItem&,
+  BreakResult BreakText(InlineItemResult*,
+                        const InlineItem&,
                         const ShapeResult&,
                         LayoutUnit available_width,
                         LayoutUnit available_width_with_hyphens,
                         NGLineInfo*);
-  bool BreakTextAt(NGInlineItemResult*,
-                   const NGInlineItem&,
+  bool BreakTextAt(InlineItemResult*,
+                   const InlineItem&,
                    ShapingLineBreaker& breaker,
                    NGLineInfo*);
-  bool BreakTextAtPreviousBreakOpportunity(NGInlineItemResult* item_result);
-  bool HandleTextForFastMinContent(NGInlineItemResult*,
-                                   const NGInlineItem&,
+  bool BreakTextAtPreviousBreakOpportunity(InlineItemResult* item_result);
+  bool HandleTextForFastMinContent(InlineItemResult*,
+                                   const InlineItem&,
                                    const ShapeResult&,
                                    NGLineInfo*);
-  void HandleEmptyText(const NGInlineItem& item, NGLineInfo*);
+  void HandleEmptyText(const InlineItem& item, NGLineInfo*);
 
-  scoped_refptr<ShapeResultView> TruncateLineEndResult(
-      const NGLineInfo&,
-      const NGInlineItemResult&,
-      unsigned end_offset);
-  void UpdateShapeResult(const NGLineInfo&, NGInlineItemResult*);
-  scoped_refptr<ShapeResult> ShapeText(const NGInlineItem&,
+  scoped_refptr<ShapeResultView> TruncateLineEndResult(const NGLineInfo&,
+                                                       const InlineItemResult&,
+                                                       unsigned end_offset);
+  void UpdateShapeResult(const NGLineInfo&, InlineItemResult*);
+  scoped_refptr<ShapeResult> ShapeText(const InlineItem&,
                                        unsigned start,
                                        unsigned end,
                                        ShapeOptions = ShapeOptions());
 
-  void HandleTrailingSpaces(const NGInlineItem&, NGLineInfo*);
-  void HandleTrailingSpaces(const NGInlineItem&,
-                            const ShapeResult*,
-                            NGLineInfo*);
+  void HandleTrailingSpaces(const InlineItem&, NGLineInfo*);
+  void HandleTrailingSpaces(const InlineItem&, const ShapeResult*, NGLineInfo*);
   void RemoveTrailingCollapsibleSpace(NGLineInfo*);
   LayoutUnit TrailingCollapsibleSpaceWidth(NGLineInfo*);
   void ComputeTrailingCollapsibleSpace(NGLineInfo*);
   void RewindTrailingOpenTags(NGLineInfo*);
 
-  void HandleControlItem(const NGInlineItem&, NGLineInfo*);
-  void HandleForcedLineBreak(const NGInlineItem*, NGLineInfo*);
-  void HandleBidiControlItem(const NGInlineItem&, NGLineInfo*);
-  void HandleAtomicInline(const NGInlineItem&, NGLineInfo*);
-  void HandleBlockInInline(const NGInlineItem&,
+  void HandleControlItem(const InlineItem&, NGLineInfo*);
+  void HandleForcedLineBreak(const InlineItem*, NGLineInfo*);
+  void HandleBidiControlItem(const InlineItem&, NGLineInfo*);
+  void HandleAtomicInline(const InlineItem&, NGLineInfo*);
+  void HandleBlockInInline(const InlineItem&,
                            const NGBlockBreakToken*,
                            NGLineInfo*);
-  void ComputeMinMaxContentSizeForBlockChild(const NGInlineItem&,
-                                             NGInlineItemResult*);
+  void ComputeMinMaxContentSizeForBlockChild(const InlineItem&,
+                                             InlineItemResult*);
 
-  bool CanBreakAfterAtomicInline(const NGInlineItem& item) const;
-  bool CanBreakAfter(const NGInlineItem& item) const;
+  bool CanBreakAfterAtomicInline(const InlineItem& item) const;
+  bool CanBreakAfter(const InlineItem& item) const;
   // Returns true when text content at |offset| is
   //    kObjectReplacementCharacter (U+FFFC), or
   //    kNoBreakSpaceCharacter (U+00A0) if |sticky_images_quirk_|.
   bool MayBeAtomicInline(wtf_size_t offset) const;
-  const NGInlineItem* TryGetAtomicInlineItemAfter(
-      const NGInlineItem& item) const;
+  const InlineItem* TryGetAtomicInlineItemAfter(const InlineItem& item) const;
 
   bool ShouldPushFloatAfterLine(NGUnpositionedFloat*, NGLineInfo*);
-  void HandleFloat(const NGInlineItem&,
+  void HandleFloat(const InlineItem&,
                    const NGBlockBreakToken* float_break_token,
                    NGLineInfo*);
 
-  void HandleInitialLetter(const NGInlineItem&, NGLineInfo*);
-  void HandleOutOfFlowPositioned(const NGInlineItem&, NGLineInfo*);
+  void HandleInitialLetter(const InlineItem&, NGLineInfo*);
+  void HandleOutOfFlowPositioned(const InlineItem&, NGLineInfo*);
 
-  void HandleOpenTag(const NGInlineItem&, NGLineInfo*);
-  void HandleCloseTag(const NGInlineItem&, NGLineInfo*);
+  void HandleOpenTag(const InlineItem&, NGLineInfo*);
+  void HandleCloseTag(const InlineItem&, NGLineInfo*);
 
   bool HandleOverflowIfNeeded(NGLineInfo*);
   void HandleOverflow(NGLineInfo*);
-  void RetryAfterOverflow(NGLineInfo*, NGInlineItemResults*);
+  void RetryAfterOverflow(NGLineInfo*, InlineItemResults*);
   void RewindOverflow(unsigned new_end, NGLineInfo*);
   void Rewind(unsigned new_end, NGLineInfo*);
   void ResetRewindLoopDetector() { last_rewind_.reset(); }
@@ -242,9 +238,9 @@ class CORE_EXPORT NGLineBreaker {
   void SetCurrentStyle(const ComputedStyle&);
   void SetCurrentStyleForce(const ComputedStyle&);
 
-  bool IsPreviousItemOfType(NGInlineItem::NGInlineItemType);
-  void MoveToNextOf(const NGInlineItem&);
-  void MoveToNextOf(const NGInlineItemResult&);
+  bool IsPreviousItemOfType(InlineItem::InlineItemType);
+  void MoveToNextOf(const InlineItem&);
+  void MoveToNextOf(const InlineItemResult&);
 
   void ComputeBaseDirection();
   void RecalcClonedBoxDecorations();
@@ -261,15 +257,15 @@ class CORE_EXPORT NGLineBreaker {
 
   // True if the current line is hyphenated.
   bool HasHyphen() const { return hyphen_index_.has_value(); }
-  LayoutUnit AddHyphen(NGInlineItemResults* item_results,
+  LayoutUnit AddHyphen(InlineItemResults* item_results,
                        wtf_size_t index,
-                       NGInlineItemResult* item_result);
-  LayoutUnit AddHyphen(NGInlineItemResults* item_results, wtf_size_t index);
-  LayoutUnit AddHyphen(NGInlineItemResults* item_results,
-                       NGInlineItemResult* item_result);
-  LayoutUnit RemoveHyphen(NGInlineItemResults* item_results);
-  void RestoreLastHyphen(NGInlineItemResults* item_results);
-  void FinalizeHyphen(NGInlineItemResults* item_results);
+                       InlineItemResult* item_result);
+  LayoutUnit AddHyphen(InlineItemResults* item_results, wtf_size_t index);
+  LayoutUnit AddHyphen(InlineItemResults* item_results,
+                       InlineItemResult* item_result);
+  LayoutUnit RemoveHyphen(InlineItemResults* item_results);
+  void RestoreLastHyphen(InlineItemResults* item_results);
+  void FinalizeHyphen(InlineItemResults* item_results);
 
   // Create an NGInlineBreakToken for the last line returned by NextLine().
   // Only call once per instance.
@@ -277,7 +273,7 @@ class CORE_EXPORT NGLineBreaker {
 
   // Represents the current offset of the input.
   LineBreakState state_;
-  NGInlineItemTextIndex current_;
+  InlineItemTextIndex current_;
   unsigned svg_addressable_offset_ = 0;
   NGLineBreakPoint break_at_;
 
@@ -347,7 +343,7 @@ class CORE_EXPORT NGLineBreaker {
   bool has_considered_creating_break_token_ = false;
 #endif
 
-  const NGInlineItemsData& items_data_;
+  const InlineItemsData& items_data_;
 
   // The text content of this node. This is same as |items_data_.text_content|
   // except when sticky images quirk is needed. See
@@ -372,7 +368,7 @@ class CORE_EXPORT NGLineBreaker {
   // Cache the result of |ComputeTrailingCollapsibleSpace| to avoid shaping
   // multiple times.
   struct TrailingCollapsibleSpace {
-    NGInlineItemResult* item_result;
+    InlineItemResult* item_result;
     scoped_refptr<const ShapeResultView> collapsed_shape_result;
   };
   absl::optional<TrailingCollapsibleSpace> trailing_collapsible_space_;
@@ -390,7 +386,7 @@ class CORE_EXPORT NGLineBreaker {
 
   // Keep the last item |HandleTextForFastMinContent()| has handled. This is
   // used to fallback the last word to |HandleText()|.
-  const NGInlineItem* fast_min_content_item_ = nullptr;
+  const InlineItem* fast_min_content_item_ = nullptr;
 
   // The current base direction for the bidi algorithm.
   // This is copied from NGInlineNode, then updated after each forced line break

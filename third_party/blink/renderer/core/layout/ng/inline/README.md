@@ -45,9 +45,9 @@ as in the following.
 
 * NGBlockNode
   - NGInlineNode
-    - NGInlineItem (open tag, span)
-    - NGInlineItem (text, "Hello")
-    - NGInlineItem (close tag, span)
+    - InlineItem (open tag, span)
+    - InlineItem (text, "Hello")
+    - InlineItem (close tag, span)
 
 ### Fragment tree ###
 
@@ -63,21 +63,21 @@ as in the following.
 Inline layout is performed in the following phases:
 
 1. **[Pre-layout]** converts LayoutObject tree to a concatenated string
-   and a list of [NGInlineItem].
+   and a list of [InlineItem].
 2. **[Line breaking]** breaks it into lines and
-   produces a list of [NGInlineItemResult] for each line.
+   produces a list of [InlineItemResult] for each line.
 3. **[Line box construction]** orders and positions items on a line.
 4. **[Generate fragments]** generates physical fragments.
 
 | Phase | Input | Output |
 |---|---|---|
-| Pre-layout | LayoutObject | [NGInlineItem] |
-| Line Breaking | [NGInlineItem] | [NGInlineItemResult] |
-| Line box construction | [NGInlineItemResult] | [NGLogicalLineItem] |
+| Pre-layout | LayoutObject | [InlineItem] |
+| Line Breaking | [InlineItem] | [InlineItemResult] |
+| Line box construction | [InlineItemResult] | [NGLogicalLineItem] |
 | Generate fragments | [NGLogicalLineItem] | [NGPhysicalFragment] / [FragmentItem] |
 
 Note: There is [an idea](https://docs.google.com/document/d/1dxzIHl1dwBtgeKgWd2cKcog8AyydN5rduQvXthMOMD0/edit?usp=sharing)
-to merge [NGInlineItemResult] and [NGLogicalLineItem], but this hasn't been happened yet.
+to merge [InlineItemResult] and [NGLogicalLineItem], but this hasn't been happened yet.
 
 This is similar to [CSS Text Processing Order of Operations],
 but not exactly the same,
@@ -98,7 +98,7 @@ three separate steps or stages that are executed in order:
     all non-atomic inlines and `TextNodes`s. Atomic inlines are represented as a
     unicode object replacement character but are otherwise skipped.
     Each non-atomic inline and `TextNodes` is fed to a
-    [NGInlineItemsBuilder](ng_inline_items_builder.h) instance which collects
+    [InlineItemsBuilder](ng_inline_items_builder.h) instance which collects
     the text content for all non-atomic inlines in the container.
 
     During this process white-space is collapsed and normalized according to CSS
@@ -118,11 +118,11 @@ three separate steps or stages that are executed in order:
 ### <a name="line-breaking">Line Breaking</a> ###
 [line breaking]: #line-breaking
 
-[NGLineBreaker] takes a list of [NGInlineItem],
+[NGLineBreaker] takes a list of [InlineItem],
 measure them, break into lines, and
-produces a list of [NGInlineItemResult] for each line.
+produces a list of [InlineItemResult] for each line.
 
-[NGInlineItemResult] keeps several information
+[InlineItemResult] keeps several information
 needed during the line box construction,
 such as inline size and [ShapeResult],
 though the inline position is recomputed later
@@ -130,7 +130,7 @@ because [Bidirectional text] may change it.
 
 This phase:
 1. Measures each item.
-2. Breaks text [NGInlineItem] into multiple [NGInlineItemResult].
+2. Breaks text [InlineItem] into multiple [InlineItemResult].
    The core logic of this part is implemented in [ShapingLineBreaker].
 3. Computes inline size of borders/margins/paddings.
    The block size of borders/margins/paddings are ignored
@@ -149,12 +149,12 @@ This phase:
 ### <a name="line-box-construction">Line Box Construction</a> ###
 [line Box Construction]: #line-box-construction
 
-`NGInlineLayoutAlgorithm::CreateLine()` takes a list of [NGInlineItemResult] and
+`NGInlineLayoutAlgorithm::CreateLine()` takes a list of [InlineItemResult] and
 produces a list of [NGLogicalLineItem].
 
 This phase consists of following sub-phases:
 
-1. Create a [NGLogicalLineItem] for each [NGInlineItemResult]
+1. Create a [NGLogicalLineItem] for each [InlineItemResult]
    and determine the positions.
 
    The inline size of each item was already determined by [NGLineBreaker],
@@ -198,7 +198,7 @@ This phase consists of following sub-phases:
 A flat list structure is suitable for many inline operations,
 but some operations require an inline box tree structure.
 A stack of [NGInlineBoxState] is constructed
-from a list of [NGInlineItemResult] to represent the box tree structure.
+from a list of [InlineItemResult] to represent the box tree structure.
 
 This stack:
 1. Caches common values for an inline box.
@@ -219,7 +219,7 @@ This stack:
    Depends on the value,
    the operation is queued to the appropriate stack entry.
 
-Because of index-based operations to the list of [NGInlineItemResult],
+Because of index-based operations to the list of [InlineItemResult],
 the list is append-only during the process.
 When all operations are done,
 `OnEndPlaceItems()` turns the list into the final fragment tree structure.
@@ -373,6 +373,8 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [FontBaseline]: ../../../../platform/fonts/font_baseline.h
 [FragmentItem]: ng_fragment_item.h
 [FragmentItems]: ng_fragment_items.h
+[InlineItem]: ng_inline_item.h
+[InlineItemResult]: ng_inline_item_result.h
 [NGBaselineAlgorithmType]: ng_baseline.h
 [NGBaselineRequest]: ng_baseline.h
 [NGBlockNode]: ../ng_block_node.h
@@ -381,8 +383,6 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [NGConstraintSpace]: ../ng_constraint_space_builder.h
 [NGConstraintSpaceBuilder]: ../ng_constraint_space_builder.h
 [NGInlineBoxState]: ng_inline_box_state.h
-[NGInlineItem]: ng_inline_item.h
-[NGInlineItemResult]: ng_inline_item_result.h
 [NGInlineNode]: ng_inline_node.h
 [NGInlineLayoutAlgorithm]: ng_inline_layout_algorithm.h
 [NGLayoutInputNode]: ../ng_layout_input_node.h

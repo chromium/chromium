@@ -168,7 +168,7 @@ absl::optional<LayoutUnit> NGParagraphLineBreaker::AttemptParagraphBalancing(
   } else {
     // Estimate the number of lines to see if the text is too long to balance.
     // Because this is an estimate, allow it to be `max_lines * 2`.
-    const NGInlineItemsData& items_data = node.ItemsData(
+    const InlineItemsData& items_data = node.ItemsData(
         /* use_first_line_style */ false);
     const wtf_size_t estimated_num_lines = EstimateNumLines(
         items_data.text_content, block_style.GetFont().PrimaryFont(),

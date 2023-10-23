@@ -526,13 +526,13 @@ class CORE_EXPORT FragmentItem final {
   friend class LayoutTextCombineTest;
 
   // Create a text item.
-  FragmentItem(const NGInlineItem& inline_item,
+  FragmentItem(const InlineItem& inline_item,
                scoped_refptr<const ShapeResultView> shape_result,
                const NGTextOffsetRange& text_offset,
                const PhysicalSize& size,
                bool is_hidden_for_paint);
   // Create a generated text item.
-  FragmentItem(const NGInlineItem& inline_item,
+  FragmentItem(const InlineItem& inline_item,
                scoped_refptr<const ShapeResultView> shape_result,
                const String& text_content,
                const PhysicalSize& size,

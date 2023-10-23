@@ -242,7 +242,7 @@ SvgTextLayoutAttributesBuilder::SvgTextLayoutAttributesBuilder(NGInlineNode ifc)
 // [1]: https://svgwg.org/svg2-draft/text.html#TextLayoutAlgorithm
 void SvgTextLayoutAttributesBuilder::Build(
     const String& ifc_text_content,
-    const HeapVector<NGInlineItem>& items) {
+    const HeapVector<InlineItem>& items) {
   LayoutAttributesStack attr_stack;
   HeapVector<SVGTextLengthContext> text_length_stack;
   unsigned addressable_index = 0;
@@ -261,7 +261,7 @@ void SvgTextLayoutAttributesBuilder::Build(
   for (const auto& item : items) {
     const LayoutObject* object = item.GetLayoutObject();
 
-    if (item.Type() == NGInlineItem::kOpenTag) {
+    if (item.Type() == InlineItem::kOpenTag) {
       if (object->IsSVGTSpan()) {
         attr_stack.Push(*object, in_text_path);
       } else if (object->IsSVGTextPath()) {
@@ -276,7 +276,7 @@ void SvgTextLayoutAttributesBuilder::Build(
             SVGTextLengthContext{object, addressable_index});
       }
 
-    } else if (item.Type() == NGInlineItem::kCloseTag) {
+    } else if (item.Type() == InlineItem::kCloseTag) {
       if (object->IsSVGTSpan()) {
         attr_stack.Pop();
       } else if (object->IsSVGTextPath()) {
@@ -301,7 +301,7 @@ void SvgTextLayoutAttributesBuilder::Build(
         text_length_stack.pop_back();
       }
 
-    } else if (item.Type() != NGInlineItem::kText) {
+    } else if (item.Type() != InlineItem::kText) {
       continue;
     }
 

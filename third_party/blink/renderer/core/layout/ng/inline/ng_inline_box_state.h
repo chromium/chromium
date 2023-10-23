@@ -18,10 +18,10 @@
 
 namespace blink {
 
-class NGInlineItem;
+class InlineItem;
 class NGLogicalLineItems;
 class ShapeResultView;
-struct NGInlineItemResult;
+struct InlineItemResult;
 
 // Fragments that require the layout position/size of ancestor are packed in
 // this struct.
@@ -41,7 +41,7 @@ struct NGInlineBoxState {
 
  public:
   unsigned fragment_start = 0;
-  const NGInlineItem* item = nullptr;
+  const InlineItem* item = nullptr;
   Member<const ComputedStyle> style;
 
   // Points to style->GetFont(), or |scaled_font| in an SVG <text>.
@@ -159,14 +159,14 @@ class CORE_EXPORT NGInlineLayoutStateStack {
 
   // Push a box state stack.
   NGInlineBoxState* OnOpenTag(const NGConstraintSpace&,
-                              const NGInlineItem&,
-                              const NGInlineItemResult&,
+                              const InlineItem&,
+                              const InlineItemResult&,
                               FontBaseline baseline_type,
                               const NGLogicalLineItems&);
   // This variation adds a box placeholder to |line_box|.
   NGInlineBoxState* OnOpenTag(const NGConstraintSpace&,
-                              const NGInlineItem&,
-                              const NGInlineItemResult&,
+                              const InlineItem&,
+                              const InlineItemResult&,
                               FontBaseline baseline_type,
                               NGLogicalLineItems* line_box);
 
@@ -256,7 +256,7 @@ class CORE_EXPORT NGInlineLayoutStateStack {
   struct BoxData {
     BoxData(unsigned start,
             unsigned end,
-            const NGInlineItem* item,
+            const InlineItem* item,
             LogicalSize size)
         : fragment_start(start),
           fragment_end(end),
@@ -278,7 +278,7 @@ class CORE_EXPORT NGInlineLayoutStateStack {
     unsigned fragment_start;
     unsigned fragment_end;
 
-    const NGInlineItem* item;
+    const InlineItem* item;
     LogicalRect rect;
 
     bool has_line_left_edge = false;

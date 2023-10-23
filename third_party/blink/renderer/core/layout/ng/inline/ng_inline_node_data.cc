@@ -11,7 +11,7 @@ namespace blink {
 void NGInlineNodeData::Trace(Visitor* visitor) const {
   visitor->Trace(first_line_items_);
   visitor->Trace(svg_node_data_);
-  NGInlineItemsData::Trace(visitor);
+  InlineItemsData::Trace(visitor);
 }
 
 }  // namespace blink

@@ -29,7 +29,7 @@ static constexpr unsigned kFontFallbackPriorityMask =
 static constexpr unsigned kRenderOrientationMask =
     (1 << kRenderOrientationBits) - 1;
 
-static_assert(NGInlineItemSegment::kSegmentDataBits ==
+static_assert(InlineItemSegment::kSegmentDataBits ==
                   kScriptBits + kRenderOrientationBits +
                       kFontFallbackPriorityBits,
               "kSegmentDataBits must be the sum of these bits");
@@ -46,15 +46,15 @@ unsigned SetRenderOrientation(
 
 }  // namespace
 
-NGInlineItemSegment::NGInlineItemSegment(
+InlineItemSegment::InlineItemSegment(
     const RunSegmenter::RunSegmenterRange& range)
     : end_offset_(range.end), segment_data_(PackSegmentData(range)) {}
 
-NGInlineItemSegment::NGInlineItemSegment(unsigned end_offset,
-                                         const NGInlineItem& item)
+InlineItemSegment::InlineItemSegment(unsigned end_offset,
+                                     const InlineItem& item)
     : end_offset_(end_offset), segment_data_(item.SegmentData()) {}
 
-unsigned NGInlineItemSegment::PackSegmentData(
+unsigned InlineItemSegment::PackSegmentData(
     const RunSegmenter::RunSegmenterRange& range) {
   DCHECK(range.script == USCRIPT_INVALID_CODE ||
          static_cast<unsigned>(range.script) <= kScriptMask);
@@ -72,7 +72,7 @@ unsigned NGInlineItemSegment::PackSegmentData(
   return value;
 }
 
-RunSegmenter::RunSegmenterRange NGInlineItemSegment::UnpackSegmentData(
+RunSegmenter::RunSegmenterRange InlineItemSegment::UnpackSegmentData(
     unsigned start_offset,
     unsigned end_offset,
     unsigned value) {
@@ -89,7 +89,7 @@ RunSegmenter::RunSegmenterRange NGInlineItemSegment::UnpackSegmentData(
       static_cast<FontFallbackPriority>(font_fallback_priority)};
 }
 
-RunSegmenter::RunSegmenterRange NGInlineItemSegment::ToRunSegmenterRange(
+RunSegmenter::RunSegmenterRange InlineItemSegment::ToRunSegmenterRange(
     unsigned start_offset,
     unsigned end_offset) const {
   DCHECK_LT(start_offset, end_offset);
@@ -98,38 +98,37 @@ RunSegmenter::RunSegmenterRange NGInlineItemSegment::ToRunSegmenterRange(
                            segment_data_);
 }
 
-std::unique_ptr<NGInlineItemSegments> NGInlineItemSegments::Clone() const {
-  auto new_segments = std::make_unique<NGInlineItemSegments>();
+std::unique_ptr<InlineItemSegments> InlineItemSegments::Clone() const {
+  auto new_segments = std::make_unique<InlineItemSegments>();
   new_segments->segments_.AppendVector(segments_);
   new_segments->items_to_segments_.AppendVector(items_to_segments_);
   return new_segments;
 }
 
-unsigned NGInlineItemSegments::OffsetForSegment(
-    const NGInlineItemSegment& segment) const {
+unsigned InlineItemSegments::OffsetForSegment(
+    const InlineItemSegment& segment) const {
   return &segment == segments_.begin() ? 0 : std::prev(&segment)->EndOffset();
 }
 
 #if DCHECK_IS_ON()
-void NGInlineItemSegments::CheckOffset(
-    unsigned offset,
-    const NGInlineItemSegment* segment) const {
+void InlineItemSegments::CheckOffset(unsigned offset,
+                                     const InlineItemSegment* segment) const {
   DCHECK(segment >= segments_.begin() && segment < segments_.end());
   DCHECK_GE(offset, OffsetForSegment(*segment));
   DCHECK_LT(offset, segment->EndOffset());
 }
 #endif
 
-void NGInlineItemSegments::ToRanges(RunSegmenterRanges& ranges) const {
+void InlineItemSegments::ToRanges(RunSegmenterRanges& ranges) const {
   ranges.ReserveInitialCapacity(segments_.size());
   wtf_size_t start_offset = 0;
-  for (const NGInlineItemSegment& segment : segments_) {
+  for (const InlineItemSegment& segment : segments_) {
     ranges.push_back(segment.ToRunSegmenterRange(start_offset));
     start_offset = segment.EndOffset();
   }
 }
 
-NGInlineItemSegments::Iterator NGInlineItemSegments::Ranges(
+InlineItemSegments::Iterator InlineItemSegments::Ranges(
     unsigned start_offset,
     unsigned end_offset,
     unsigned item_index) const {
@@ -138,7 +137,7 @@ NGInlineItemSegments::Iterator NGInlineItemSegments::Ranges(
 
   // Find the first segment for |item_index|.
   unsigned segment_index = items_to_segments_[item_index];
-  const NGInlineItemSegment* segment = &segments_[segment_index];
+  const InlineItemSegment* segment = &segments_[segment_index];
   DCHECK_GE(start_offset, OffsetForSegment(*segment));
   if (start_offset < segment->EndOffset())
     return Iterator(start_offset, end_offset, segment);
@@ -151,14 +150,14 @@ NGInlineItemSegments::Iterator NGInlineItemSegments::Ranges(
   CHECK_LE(end_segment_index, segments_.size());
   segment = std::upper_bound(
       segment, segment + (end_segment_index - segment_index), start_offset,
-      [](unsigned offset, const NGInlineItemSegment& segment) {
+      [](unsigned offset, const InlineItemSegment& segment) {
         return offset < segment.EndOffset();
       });
   CheckOffset(start_offset, segment);
   return Iterator(start_offset, end_offset, segment);
 }
 
-void NGInlineItemSegments::ComputeSegments(
+void InlineItemSegments::ComputeSegments(
     RunSegmenter* segmenter,
     RunSegmenter::RunSegmenterRange* range) {
   segments_.Shrink(0);
@@ -167,7 +166,7 @@ void NGInlineItemSegments::ComputeSegments(
   } while (segmenter->Consume(range));
 }
 
-unsigned NGInlineItemSegments::AppendMixedFontOrientation(
+unsigned InlineItemSegments::AppendMixedFontOrientation(
     const String& text_content,
     unsigned start_offset,
     unsigned end_offset,
@@ -187,7 +186,7 @@ unsigned NGInlineItemSegments::AppendMixedFontOrientation(
   return segment_index;
 }
 
-unsigned NGInlineItemSegments::PopulateItemsFromFontOrientation(
+unsigned InlineItemSegments::PopulateItemsFromFontOrientation(
     unsigned start_offset,
     unsigned end_offset,
     OrientationIterator::RenderOrientation render_orientation,
@@ -204,7 +203,7 @@ unsigned NGInlineItemSegments::PopulateItemsFromFontOrientation(
   }
 
   for (;; ++segment_index) {
-    NGInlineItemSegment& segment = segments_[segment_index];
+    InlineItemSegment& segment = segments_[segment_index];
     segment.segment_data_ =
         SetRenderOrientation(segment.segment_data_, render_orientation);
     if (end_offset == segment.EndOffset()) {
@@ -221,23 +220,22 @@ unsigned NGInlineItemSegments::PopulateItemsFromFontOrientation(
   return segment_index;
 }
 
-void NGInlineItemSegments::Split(unsigned index, unsigned offset) {
-  NGInlineItemSegment& segment = segments_[index];
+void InlineItemSegments::Split(unsigned index, unsigned offset) {
+  InlineItemSegment& segment = segments_[index];
   DCHECK_LT(offset, segment.EndOffset());
   unsigned end_offset = segment.EndOffset();
   segment.end_offset_ = offset;
   segments_.insert(index + 1,
-                   NGInlineItemSegment(end_offset, segment.segment_data_));
+                   InlineItemSegment(end_offset, segment.segment_data_));
 }
 
-void NGInlineItemSegments::ComputeItemIndex(
-    const HeapVector<NGInlineItem>& items) {
+void InlineItemSegments::ComputeItemIndex(const HeapVector<InlineItem>& items) {
   DCHECK_EQ(items.back().EndOffset(), EndOffset());
   unsigned segment_index = 0;
-  const NGInlineItemSegment* segment = segments_.begin();
+  const InlineItemSegment* segment = segments_.begin();
   unsigned item_index = 0;
   items_to_segments_.resize(items.size());
-  for (const NGInlineItem& item : items) {
+  for (const InlineItem& item : items) {
     while (segment_index < segments_.size() &&
            item.StartOffset() >= segment->EndOffset()) {
       ++segment_index;
@@ -247,7 +245,7 @@ void NGInlineItemSegments::ComputeItemIndex(
   }
 }
 
-scoped_refptr<ShapeResult> NGInlineItemSegments::ShapeText(
+scoped_refptr<ShapeResult> InlineItemSegments::ShapeText(
     const HarfBuzzShaper* shaper,
     const Font* font,
     TextDirection direction,

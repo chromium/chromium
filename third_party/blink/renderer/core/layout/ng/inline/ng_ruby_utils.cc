@@ -96,7 +96,7 @@ PhysicalRect AdjustTextRectForEmHeight(const PhysicalRect& rect,
           PhysicalSize(new_line_height, rect.size.height)};
 }
 
-NGAnnotationOverhang GetOverhang(const NGInlineItemResult& item) {
+NGAnnotationOverhang GetOverhang(const InlineItemResult& item) {
   NGAnnotationOverhang overhang;
   if (!item.layout_result)
     return overhang;
@@ -162,7 +162,7 @@ bool CanApplyStartOverhang(const NGLineInfo& line_info,
                            LayoutUnit& start_overhang) {
   if (start_overhang <= LayoutUnit())
     return false;
-  const NGInlineItemResults& items = line_info.Results();
+  const InlineItemResults& items = line_info.Results();
   // Requires at least the current item and the previous item.
   if (items.size() < 2)
     return false;
@@ -171,14 +171,16 @@ bool CanApplyStartOverhang(const NGLineInfo& line_info,
   // reordering. However, it's difficult to compute overhang after bidi
   // reordering because it affects line breaking.
   wtf_size_t previous_index = items.size() - 2;
-  while ((items[previous_index].item->Type() == NGInlineItem::kOpenTag ||
-          items[previous_index].item->Type() == NGInlineItem::kCloseTag) &&
-         previous_index > 0)
+  while ((items[previous_index].item->Type() == InlineItem::kOpenTag ||
+          items[previous_index].item->Type() == InlineItem::kCloseTag) &&
+         previous_index > 0) {
     --previous_index;
-  const NGInlineItemResult& previous_item = items[previous_index];
-  if (previous_item.item->Type() != NGInlineItem::kText)
+  }
+  const InlineItemResult& previous_item = items[previous_index];
+  if (previous_item.item->Type() != InlineItem::kText) {
     return false;
-  const NGInlineItem& current_item = *items.back().item;
+  }
+  const InlineItem& current_item = *items.back().item;
   if (previous_item.item->Style()->FontSize() >
       current_item.Style()->FontSize())
     return false;
@@ -188,22 +190,24 @@ bool CanApplyStartOverhang(const NGLineInfo& line_info,
 
 LayoutUnit CommitPendingEndOverhang(NGLineInfo* line_info) {
   DCHECK(line_info);
-  NGInlineItemResults* items = line_info->MutableResults();
+  InlineItemResults* items = line_info->MutableResults();
   if (items->size() < 2U)
     return LayoutUnit();
-  const NGInlineItemResult& text_item = items->back();
-  if (text_item.item->Type() == NGInlineItem::kControl)
+  const InlineItemResult& text_item = items->back();
+  if (text_item.item->Type() == InlineItem::kControl) {
     return LayoutUnit();
-  DCHECK(text_item.item->Type() == NGInlineItem::kText);
+  }
+  DCHECK(text_item.item->Type() == InlineItem::kText);
   wtf_size_t i = items->size() - 2;
-  while ((*items)[i].item->Type() != NGInlineItem::kAtomicInline) {
+  while ((*items)[i].item->Type() != InlineItem::kAtomicInline) {
     const auto type = (*items)[i].item->Type();
-    if (type != NGInlineItem::kOpenTag && type != NGInlineItem::kCloseTag)
+    if (type != InlineItem::kOpenTag && type != InlineItem::kCloseTag) {
       return LayoutUnit();
+    }
     if (i-- == 0)
       return LayoutUnit();
   }
-  NGInlineItemResult& atomic_inline_item = (*items)[i];
+  InlineItemResult& atomic_inline_item = (*items)[i];
   if (!atomic_inline_item.layout_result->PhysicalFragment().IsRubyColumn()) {
     return LayoutUnit();
   }
@@ -213,7 +217,7 @@ LayoutUnit CommitPendingEndOverhang(NGLineInfo* line_info) {
       text_item.item->Style()->FontSize())
     return LayoutUnit();
   // Ideally we should refer to inline_size of |text_item| instead of the width
-  // of the NGInlineItem's ShapeResult. However it's impossible to compute
+  // of the InlineItem's ShapeResult. However it's impossible to compute
   // inline_size of |text_item| before calling BreakText(), and BreakText()
   // requires precise |position_| which takes |end_overhang| into account.
   LayoutUnit end_overhang =

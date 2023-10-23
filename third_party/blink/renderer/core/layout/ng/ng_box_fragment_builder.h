@@ -46,7 +46,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
         is_inline_formatting_context_(node.IsInline()) {}
 
   // Build a fragment for LayoutObject without NGLayoutInputNode. LayoutInline
-  // has NGInlineItem but does not have corresponding NGLayoutInputNode.
+  // has InlineItem but does not have corresponding NGLayoutInputNode.
   NGBoxFragmentBuilder(LayoutObject* layout_object,
                        const ComputedStyle* style,
                        const NGConstraintSpace& space,

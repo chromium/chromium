@@ -56,7 +56,7 @@ void NGLineInfo::Reset() {
 }
 
 void NGLineInfo::SetLineStyle(const NGInlineNode& node,
-                              const NGInlineItemsData& items_data,
+                              const InlineItemsData& items_data,
                               bool use_first_line_style) {
   use_first_line_style_ = use_first_line_style;
   items_data_ = &items_data;
@@ -137,7 +137,7 @@ bool NGLineInfo::ComputeNeedsAccurateEndPosition() const {
   return false;
 }
 
-NGInlineItemTextIndex NGLineInfo::End() const {
+InlineItemTextIndex NGLineInfo::End() const {
   return BreakToken() ? BreakToken()->Start() : ItemsData().End();
 }
 
@@ -149,11 +149,12 @@ unsigned NGLineInfo::EndTextOffset() const {
 unsigned NGLineInfo::InflowEndOffset() const {
   for (const auto& item_result : base::Reversed(Results())) {
     DCHECK(item_result.item);
-    const NGInlineItem& item = *item_result.item;
-    if (item.Type() == NGInlineItem::kText ||
-        item.Type() == NGInlineItem::kControl ||
-        item.Type() == NGInlineItem::kAtomicInline)
+    const InlineItem& item = *item_result.item;
+    if (item.Type() == InlineItem::kText ||
+        item.Type() == InlineItem::kControl ||
+        item.Type() == InlineItem::kAtomicInline) {
       return item_result.EndOffset();
+    }
   }
   return StartOffset();
 }
@@ -188,7 +189,7 @@ bool NGLineInfo::ShouldHangTrailingSpaces() const {
 }
 
 bool NGLineInfo::IsHyphenated() const {
-  for (const NGInlineItemResult& item_result : base::Reversed(Results())) {
+  for (const InlineItemResult& item_result : base::Reversed(Results())) {
     if (item_result.Length()) {
       return item_result.is_hyphenated;
     }
@@ -262,19 +263,19 @@ LayoutUnit NGLineInfo::ComputeTrailingSpaceWidth(
   LayoutUnit trailing_spaces_width;
   for (const auto& item_result : base::Reversed(Results())) {
     DCHECK(item_result.item);
-    const NGInlineItem& item = *item_result.item;
+    const InlineItem& item = *item_result.item;
 
     // If this item is opaque to whitespace collapsing, whitespace before this
     // item maybe collapsed. Keep looking for previous items.
-    if (item.EndCollapseType() == NGInlineItem::kOpaqueToCollapsing) {
+    if (item.EndCollapseType() == InlineItem::kOpaqueToCollapsing) {
       continue;
     }
     // These items should be opaque-to-collapsing.
-    DCHECK(item.Type() != NGInlineItem::kFloating &&
-           item.Type() != NGInlineItem::kOutOfFlowPositioned &&
-           item.Type() != NGInlineItem::kBidiControl);
+    DCHECK(item.Type() != InlineItem::kFloating &&
+           item.Type() != InlineItem::kOutOfFlowPositioned &&
+           item.Type() != InlineItem::kBidiControl);
 
-    if (item.Type() == NGInlineItem::kControl ||
+    if (item.Type() == InlineItem::kControl ||
         item_result.has_only_trailing_spaces) {
       trailing_spaces_width += item_result.inline_size;
       continue;
@@ -284,7 +285,7 @@ LayoutUnit NGLineInfo::ComputeTrailingSpaceWidth(
     // has a forced break, or is 'white-space: pre'.
     unsigned end_offset = item_result.EndOffset();
     DCHECK(end_offset);
-    if (item.Type() == NGInlineItem::kText) {
+    if (item.Type() == InlineItem::kText) {
       if (!item_result.Length()) {
         continue;  // Skip empty items. See `NGLineBreaker::HandleEmptyText`.
       }
@@ -332,8 +333,9 @@ LayoutUnit NGLineInfo::ComputeTrailingSpaceWidth(
 
 LayoutUnit NGLineInfo::ComputeWidth() const {
   LayoutUnit inline_size = TextIndent();
-  for (const NGInlineItemResult& item_result : Results())
+  for (const InlineItemResult& item_result : Results()) {
     inline_size += item_result.inline_size;
+  }
 
   return inline_size;
 }
@@ -341,8 +343,9 @@ LayoutUnit NGLineInfo::ComputeWidth() const {
 #if DCHECK_IS_ON()
 float NGLineInfo::ComputeWidthInFloat() const {
   float inline_size = TextIndent();
-  for (const NGInlineItemResult& item_result : Results())
+  for (const InlineItemResult& item_result : Results()) {
     inline_size += item_result.inline_size.ToFloat();
+  }
 
   return inline_size;
 }

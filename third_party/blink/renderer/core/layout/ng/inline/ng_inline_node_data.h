@@ -12,10 +12,10 @@
 namespace blink {
 
 template <typename OffsetMappingBuilder>
-class NGInlineItemsBuilderTemplate;
+class InlineItemsBuilderTemplate;
 
 // Data which is required for inline nodes.
-struct CORE_EXPORT NGInlineNodeData final : NGInlineItemsData {
+struct CORE_EXPORT NGInlineNodeData final : InlineItemsData {
  public:
   NGInlineNodeData() = default;
   bool IsBidiEnabled() const { return is_bidi_enabled_; }
@@ -40,10 +40,9 @@ struct CORE_EXPORT NGInlineNodeData final : NGInlineItemsData {
     return is_score_line_break_disabled_;
   }
 
-  const NGInlineItemsData& ItemsData(bool is_first_line) const {
-    return !is_first_line || !first_line_items_
-               ? (const NGInlineItemsData&)*this
-               : *first_line_items_;
+  const InlineItemsData& ItemsData(bool is_first_line) const {
+    return !is_first_line || !first_line_items_ ? (const InlineItemsData&)*this
+                                                : *first_line_items_;
   }
 
   void Trace(Visitor* visitor) const override;
@@ -53,20 +52,20 @@ struct CORE_EXPORT NGInlineNodeData final : NGInlineItemsData {
     base_direction_ = static_cast<unsigned>(direction);
   }
 
-  friend class NGInlineItemsBuilderTest;
+  friend class InlineItemsBuilderTest;
   friend class NGInlineNode;
   friend class NGInlineNodeForTest;
   friend class NGOffsetMappingTest;
 
   template <typename OffsetMappingBuilder>
-  friend class NGInlineItemsBuilderTemplate;
+  friend class InlineItemsBuilderTemplate;
 
   // Items to use for the first line, when the node has :first-line rules.
   //
   // Items have different ComputedStyle, and may also have different
   // text_content and ShapeResult if 'text-transform' is applied or fonts are
   // different.
-  Member<NGInlineItemsData> first_line_items_;
+  Member<InlineItemsData> first_line_items_;
 
   Member<SvgInlineNodeData> svg_node_data_;
 

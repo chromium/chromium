@@ -22,7 +22,7 @@ class NGConstraintSpace;
 class NGInlineChildLayoutContext;
 class NGLayoutResult;
 class NGOffsetMapping;
-struct NGInlineItemsData;
+struct InlineItemsData;
 struct SvgTextContentRange;
 
 // Represents an anonymous block box to be laid out, that contains consecutive
@@ -56,7 +56,7 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
     DCHECK(!IsPrepareLayoutFinished());
   }
 
-  const NGInlineItemsData& ItemsData(bool is_first_line) const {
+  const InlineItemsData& ItemsData(bool is_first_line) const {
     return Data().ItemsData(is_first_line);
   }
 
@@ -72,7 +72,7 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   // Returns the text content to use for content sizing. This is normally the
   // same as |items_data.text_content|, except when sticky images quirk is
   // needed.
-  static String TextContentForStickyImagesQuirk(const NGInlineItemsData&);
+  static String TextContentForStickyImagesQuirk(const InlineItemsData&);
 
   // Returns true if we don't need to collect inline items after replacing
   // |layout_text| after deleting replacing subtext from |offset| to |length|
@@ -146,7 +146,7 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
     LayoutUnit float_inline_max_size_with_margin;
   };
 
-  static bool NeedsShapingForTesting(const NGInlineItem& item);
+  static bool NeedsShapingForTesting(const InlineItem& item);
 
   // Prepare inline and text content for layout. Must be called before
   // calling the Layout method.
@@ -167,19 +167,19 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   void SegmentScriptRuns(NGInlineNodeData*) const;
   void SegmentFontOrientation(NGInlineNodeData*) const;
   void SegmentBidiRuns(NGInlineNodeData*) const;
-  void ShapeText(NGInlineItemsData*,
+  void ShapeText(InlineItemsData*,
                  const String* previous_text = nullptr,
-                 const HeapVector<NGInlineItem>* previous_items = nullptr,
+                 const HeapVector<InlineItem>* previous_items = nullptr,
                  const Font* override_font = nullptr) const;
   void ShapeTextForFirstLineIfNeeded(NGInlineNodeData*) const;
   void ShapeTextIncludingFirstLine(
       NGInlineNodeData* data,
       const String* previous_text,
-      const HeapVector<NGInlineItem>* previous_items) const;
+      const HeapVector<InlineItem>* previous_items) const;
   void AssociateItemsWithInlines(NGInlineNodeData*) const;
   bool IsNGShapeCacheAllowed(const String&,
                              const Font*,
-                             const HeapVector<NGInlineItem>&,
+                             const HeapVector<InlineItem>&,
                              ShapeResultSpacing<String>&) const;
 
   NGInlineNodeData* MutableData() const {

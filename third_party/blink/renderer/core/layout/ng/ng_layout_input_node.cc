@@ -51,7 +51,7 @@ void AppendNodeToString(NGLayoutInputNode node,
 
   if (auto* inline_node = DynamicTo<NGInlineNode>(node)) {
     const auto& items = inline_node->ItemsData(false).items;
-    for (const NGInlineItem& inline_item : items) {
+    for (const InlineItem& inline_item : items) {
       string_builder->Append(indent_builder.ToString());
       string_builder->Append(inline_item.ToString());
       string_builder->Append("\n");

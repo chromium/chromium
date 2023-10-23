@@ -256,8 +256,8 @@ NGInlineLayoutAlgorithm::NGInlineLayoutAlgorithm(
 NGInlineLayoutAlgorithm::~NGInlineLayoutAlgorithm() = default;
 
 NGInlineBoxState* NGInlineLayoutAlgorithm::HandleOpenTag(
-    const NGInlineItem& item,
-    const NGInlineItemResult& item_result,
+    const InlineItem& item,
+    const InlineItemResult& item_result,
     NGLogicalLineItems* line_box,
     NGInlineLayoutStateStack* box_states) const {
   NGInlineBoxState* box = box_states->OnOpenTag(
@@ -279,8 +279,8 @@ NGInlineBoxState* NGInlineLayoutAlgorithm::HandleOpenTag(
 }
 
 NGInlineBoxState* NGInlineLayoutAlgorithm::HandleCloseTag(
-    const NGInlineItem& item,
-    const NGInlineItemResult& item_result,
+    const InlineItem& item,
+    const InlineItemResult& item_result,
     NGLogicalLineItems* line_box,
     NGInlineBoxState* box) {
   if (UNLIKELY(quirks_mode_ && !item.IsEmptyItem()))
@@ -312,7 +312,7 @@ void NGInlineLayoutAlgorithm::PrepareBoxStates(
   // Check if the box states in NGChildLayoutContext is valid for this line.
   // If the previous line was ::first-line, always rebuild because box states
   // have ::first-line styles.
-  const HeapVector<NGInlineItem>& items = line_info.ItemsData().items;
+  const HeapVector<InlineItem>& items = line_info.ItemsData().items;
   if (!break_token->UseFirstLineStyle()) {
     box_states_ = context_->BoxStatesIfValidForItemIndex(
         items, break_token->StartItemIndex());
@@ -356,7 +356,7 @@ void NGInlineLayoutAlgorithm::RebuildBoxStates(
     const NGInlineBreakToken* break_token,
     NGInlineLayoutStateStack* box_states) const {
   // Compute which tags are not closed at the beginning of this line.
-  NGInlineItemsData::OpenTagItems open_items;
+  InlineItemsData::OpenTagItems open_items;
   line_info.ItemsData().GetOpenTagItems(break_token->StartItemIndex(),
                                         &open_items);
 
@@ -364,8 +364,8 @@ void NGInlineLayoutAlgorithm::RebuildBoxStates(
   NGLogicalLineItems& line_box = context_->AcquireTempLogicalLineItems();
   box_states->OnBeginPlaceItems(Node(), line_info.LineStyle(), baseline_type_,
                                 quirks_mode_, &line_box);
-  for (const NGInlineItem* item : open_items) {
-    NGInlineItemResult item_result;
+  for (const InlineItem* item : open_items) {
+    InlineItemResult item_result;
     NGLineBreaker::ComputeOpenTagResult(*item, ConstraintSpace(),
                                         Node().IsSvgText(), &item_result);
     HandleOpenTag(*item, item_result, &line_box, box_states);
@@ -393,7 +393,7 @@ void NGInlineLayoutAlgorithm::CreateLine(
     NGLineInfo* line_info,
     NGLogicalLineItems* line_box) {
   // Needs MutableResults to move ShapeResult out of the NGLineInfo.
-  NGInlineItemResults* line_items = line_info->MutableResults();
+  InlineItemResults* line_items = line_info->MutableResults();
   // Clear the current line without releasing the buffer.
   line_box->Shrink(0);
 
@@ -415,7 +415,7 @@ void NGInlineLayoutAlgorithm::CreateLine(
   bool has_out_of_flow_positioned_items = false;
   bool has_floating_items = false;
   bool has_relative_positioned_items = false;
-  const NGInlineItemResult* initial_letter_item_result = nullptr;
+  const InlineItemResult* initial_letter_item_result = nullptr;
 
   // List items trigger strict line height, i.e. we make room for the line box
   // strut, for *every* line. This matches other browsers. The intention may
@@ -425,16 +425,16 @@ void NGInlineLayoutAlgorithm::CreateLine(
     box->ComputeTextMetrics(line_style, *box->font, baseline_type_);
   }
 
-  for (NGInlineItemResult& item_result : *line_items) {
+  for (InlineItemResult& item_result : *line_items) {
     DCHECK(item_result.item);
-    const NGInlineItem& item = *item_result.item;
+    const InlineItem& item = *item_result.item;
 #if DCHECK_IS_ON()
     if (line_info->IsBlockInInline()) {
       DCHECK_EQ(line_items->size(), 1u);
-      DCHECK_EQ(item.Type(), NGInlineItem::kBlockInInline);
+      DCHECK_EQ(item.Type(), InlineItem::kBlockInInline);
     }
 #endif
-    if (item.Type() == NGInlineItem::kText) {
+    if (item.Type() == InlineItem::kText) {
       DCHECK(item.GetLayoutObject());
       DCHECK(item.GetLayoutObject()->IsText() ||
              item.GetLayoutObject()->IsLayoutListItem());
@@ -485,22 +485,22 @@ void NGInlineLayoutAlgorithm::CreateLine(
       // Text boxes always need full paint invalidations.
       item.GetLayoutObject()->ClearNeedsLayoutWithFullPaintInvalidation();
 
-    } else if (item.Type() == NGInlineItem::kControl) {
+    } else if (item.Type() == InlineItem::kControl) {
       PlaceControlItem(item, *line_info, &item_result, line_box, box);
-    } else if (item.Type() == NGInlineItem::kOpenTag) {
+    } else if (item.Type() == InlineItem::kOpenTag) {
       box = HandleOpenTag(item, item_result, line_box, box_states_);
-    } else if (item.Type() == NGInlineItem::kCloseTag) {
+    } else if (item.Type() == InlineItem::kCloseTag) {
       box = HandleCloseTag(item, item_result, line_box, box);
-    } else if (item.Type() == NGInlineItem::kAtomicInline) {
+    } else if (item.Type() == InlineItem::kAtomicInline) {
       box = PlaceAtomicInline(item, *line_info, &item_result, line_box);
       has_relative_positioned_items |=
           item.Style()->GetPosition() == EPosition::kRelative;
-    } else if (item.Type() == NGInlineItem::kBlockInInline) {
+    } else if (item.Type() == InlineItem::kBlockInInline) {
       DCHECK(line_info->IsBlockInInline());
       PlaceBlockInInline(item, *line_info, &item_result, line_box);
-    } else if (item.Type() == NGInlineItem::kListMarker) {
+    } else if (item.Type() == InlineItem::kListMarker) {
       PlaceListMarker(item, &item_result, *line_info);
-    } else if (item.Type() == NGInlineItem::kOutOfFlowPositioned) {
+    } else if (item.Type() == InlineItem::kOutOfFlowPositioned) {
       // An inline-level OOF child positions itself based on its direction, a
       // block-level OOF child positions itself based on the direction of its
       // block-level container.
@@ -511,7 +511,7 @@ void NGInlineLayoutAlgorithm::CreateLine(
 
       line_box->AddChild(item.GetLayoutObject(), item.BidiLevel(), direction);
       has_out_of_flow_positioned_items = true;
-    } else if (item.Type() == NGInlineItem::kFloating) {
+    } else if (item.Type() == InlineItem::kFloating) {
       if (item_result.positioned_float) {
         if (!item_result.positioned_float->break_before_token) {
           DCHECK(item_result.positioned_float->layout_result);
@@ -526,9 +526,9 @@ void NGInlineLayoutAlgorithm::CreateLine(
       has_floating_items = true;
       has_relative_positioned_items |=
           item.Style()->GetPosition() == EPosition::kRelative;
-    } else if (item.Type() == NGInlineItem::kBidiControl) {
+    } else if (item.Type() == InlineItem::kBidiControl) {
       line_box->AddChild(item.BidiLevel());
-    } else if (UNLIKELY(item.Type() == NGInlineItem::kInitialLetterBox)) {
+    } else if (UNLIKELY(item.Type() == InlineItem::kInitialLetterBox)) {
       // The initial letter does not increase the logical height of the line
       // box in which it participates[1]. So, we should not changes
       // `NGInlineBoxState::metrics`, or not call ` ComputeTextMetrics()` to
@@ -737,12 +737,12 @@ void NGInlineLayoutAlgorithm::CreateLine(
   container_builder_.SetInlineSize(inline_size);
 }
 
-void NGInlineLayoutAlgorithm::PlaceControlItem(const NGInlineItem& item,
+void NGInlineLayoutAlgorithm::PlaceControlItem(const InlineItem& item,
                                                const NGLineInfo& line_info,
-                                               NGInlineItemResult* item_result,
+                                               InlineItemResult* item_result,
                                                NGLogicalLineItems* line_box,
                                                NGInlineBoxState* box) {
-  DCHECK_EQ(item.Type(), NGInlineItem::kControl);
+  DCHECK_EQ(item.Type(), InlineItem::kControl);
   DCHECK_GE(item.Length(), 1u);
   DCHECK(!item.TextShapeResult());
   DCHECK_NE(item.TextType(), TextItemType::kNormal);
@@ -751,7 +751,7 @@ void NGInlineLayoutAlgorithm::PlaceControlItem(const NGInlineItem& item,
 #endif
 
   // Don't generate fragments if this is a generated (not in DOM) break
-  // opportunity during the white space collapsing in NGInlineItemBuilder.
+  // opportunity during the white space collapsing in InlineItemBuilder.
   if (UNLIKELY(item.IsGeneratedForLineBreak()))
     return;
 
@@ -769,7 +769,7 @@ void NGInlineLayoutAlgorithm::PlaceControlItem(const NGInlineItem& item,
                      item.BidiLevel());
 }
 
-void NGInlineLayoutAlgorithm::PlaceHyphen(const NGInlineItemResult& item_result,
+void NGInlineLayoutAlgorithm::PlaceHyphen(const InlineItemResult& item_result,
                                           LayoutUnit hyphen_inline_size,
                                           NGLogicalLineItems* line_box,
                                           NGInlineBoxState* box) {
@@ -777,7 +777,7 @@ void NGInlineLayoutAlgorithm::PlaceHyphen(const NGInlineItemResult& item_result,
   DCHECK(item_result.is_hyphenated);
   DCHECK(item_result.hyphen);
   DCHECK_EQ(hyphen_inline_size, item_result.hyphen.InlineSize());
-  const NGInlineItem& item = *item_result.item;
+  const InlineItem& item = *item_result.item;
   line_box->AddChild(
       item, ShapeResultView::Create(&item_result.hyphen.GetShapeResult()),
       item_result.hyphen.Text(), box->text_top, hyphen_inline_size,
@@ -785,9 +785,9 @@ void NGInlineLayoutAlgorithm::PlaceHyphen(const NGInlineItemResult& item_result,
 }
 
 NGInlineBoxState* NGInlineLayoutAlgorithm::PlaceAtomicInline(
-    const NGInlineItem& item,
+    const InlineItem& item,
     const NGLineInfo& line_info,
-    NGInlineItemResult* item_result,
+    InlineItemResult* item_result,
     NGLogicalLineItems* line_box) {
   DCHECK(item_result->layout_result);
 
@@ -822,13 +822,13 @@ NGInlineBoxState* NGInlineLayoutAlgorithm::PlaceAtomicInline(
 }
 
 // Place a NGLayoutResult into the line box.
-void NGInlineLayoutAlgorithm::PlaceLayoutResult(NGInlineItemResult* item_result,
+void NGInlineLayoutAlgorithm::PlaceLayoutResult(InlineItemResult* item_result,
                                                 NGLogicalLineItems* line_box,
                                                 NGInlineBoxState* box,
                                                 LayoutUnit inline_offset) {
   DCHECK(item_result->layout_result);
   DCHECK(item_result->item);
-  const NGInlineItem& item = *item_result->item;
+  const InlineItem& item = *item_result->item;
   DCHECK(item.Style());
   FontHeight metrics =
       NGBoxFragment(ConstraintSpace().GetWritingDirection(),
@@ -845,12 +845,11 @@ void NGInlineLayoutAlgorithm::PlaceLayoutResult(NGInlineItemResult* item_result,
                      item.BidiLevel());
 }
 
-void NGInlineLayoutAlgorithm::PlaceBlockInInline(
-    const NGInlineItem& item,
-    const NGLineInfo& line_info,
-    NGInlineItemResult* item_result,
-    NGLogicalLineItems* line_box) {
-  DCHECK_EQ(item.Type(), NGInlineItem::kBlockInInline);
+void NGInlineLayoutAlgorithm::PlaceBlockInInline(const InlineItem& item,
+                                                 const NGLineInfo& line_info,
+                                                 InlineItemResult* item_result,
+                                                 NGLogicalLineItems* line_box) {
+  DCHECK_EQ(item.Type(), InlineItem::kBlockInInline);
   LayoutObject* layout_object = item.GetLayoutObject();
   DCHECK(layout_object);
   DCHECK(layout_object->IsAnonymous());
@@ -889,9 +888,9 @@ void NGInlineLayoutAlgorithm::PlaceBlockInInline(
 }
 
 void NGInlineLayoutAlgorithm::PlaceInitialLetterBox(
-    const NGInlineItem& item,
+    const InlineItem& item,
     const NGLineInfo& line_info,
-    NGInlineItemResult* item_result,
+    InlineItemResult* item_result,
     NGLogicalLineItems* line_box) {
   DCHECK(item_result->layout_result);
   DCHECK(!IsA<LayoutTextCombine>(item.GetLayoutObject()));
@@ -1097,8 +1096,8 @@ void NGInlineLayoutAlgorithm::PlaceRelativePositionedItems(
 }
 
 // Place a list marker.
-void NGInlineLayoutAlgorithm::PlaceListMarker(const NGInlineItem& item,
-                                              NGInlineItemResult* item_result,
+void NGInlineLayoutAlgorithm::PlaceListMarker(const InlineItem& item,
+                                              InlineItemResult* item_result,
                                               const NGLineInfo& line_info) {
   if (UNLIKELY(quirks_mode_)) {
     box_states_->LineBoxState().EnsureTextMetrics(
@@ -1137,7 +1136,7 @@ absl::optional<LayoutUnit> NGInlineLayoutAlgorithm::ApplyJustify(
   // Construct the line text to compute spacing for.
   StringBuilder line_text_builder;
   if (UNLIKELY(line_info->MayHaveTextCombineItem())) {
-    for (const NGInlineItemResult& item_result : line_info->Results()) {
+    for (const InlineItemResult& item_result : line_info->Results()) {
       if (item_result.StartOffset() >= end_offset)
         break;
       if (item_result.item->IsTextCombine()) {
@@ -1164,7 +1163,7 @@ absl::optional<LayoutUnit> NGInlineLayoutAlgorithm::ApplyJustify(
   // |ShapeResult|, but not in text. |ShapeResultSpacing| needs the text that
   // matches to the |ShapeResult|.
   DCHECK(!line_info->Results().empty());
-  const NGInlineItemResult& last_item_result = line_info->Results().back();
+  const InlineItemResult& last_item_result = line_info->Results().back();
   if (last_item_result.hyphen) {
     line_text_builder.Append(last_item_result.hyphen.Text());
   }
@@ -1202,7 +1201,7 @@ absl::optional<LayoutUnit> NGInlineLayoutAlgorithm::ApplyJustify(
     spacing.SetExpansion(space - inset, line_info->BaseDirection());
   }
 
-  for (NGInlineItemResult& item_result : *line_info->MutableResults()) {
+  for (InlineItemResult& item_result : *line_info->MutableResults()) {
     if (item_result.has_only_trailing_spaces)
       break;
     if (item_result.shape_result) {
@@ -1217,7 +1216,7 @@ absl::optional<LayoutUnit> NGInlineLayoutAlgorithm::ApplyJustify(
       if (UNLIKELY(item_result.is_hyphenated))
         item_result.inline_size += item_result.hyphen.InlineSize();
       item_result.shape_result = ShapeResultView::Create(shape_result.get());
-    } else if (item_result.item->Type() == NGInlineItem::kAtomicInline) {
+    } else if (item_result.item->Type() == InlineItem::kAtomicInline) {
       float spacing_before = 0.0f;
       DCHECK_LE(line_text_start_offset, item_result.StartOffset());
       const unsigned line_text_offset =
@@ -1314,16 +1313,16 @@ LayoutUnit NGInlineLayoutAlgorithm::SetAnnotationOverflow(
 
 bool NGInlineLayoutAlgorithm::AddAnyClearanceAfterLine(
     const NGLineInfo& line_info) {
-  const NGInlineItemResults& line_items = line_info.Results();
+  const InlineItemResults& line_items = line_info.Results();
   if (line_items.empty())
     return true;
 
   // If the last item was a <br> we need to adjust the content_size to clear
   // floats if specified. The <br> element must be at the back of the item
   // result list as it forces a line to break.
-  const NGInlineItemResult& item_result = line_items.back();
+  const InlineItemResult& item_result = line_items.back();
   DCHECK(item_result.item);
-  const NGInlineItem& item = *item_result.item;
+  const InlineItem& item = *item_result.item;
   const LayoutObject* layout_object = item.GetLayoutObject();
   LayoutUnit content_size = container_builder_.LineHeight();
 
@@ -1729,20 +1728,21 @@ void NGInlineLayoutAlgorithm::PositionLeadingFloats(
     return;
   }
 
-  const HeapVector<NGInlineItem>& items =
+  const HeapVector<InlineItem>& items =
       Node().ItemsData(/* is_first_line */ false).items;
 
   unsigned index = BreakToken() ? BreakToken()->StartItemIndex() : 0;
   NGPositionedFloatVector& positioned_floats = leading_floats.floats;
   for (; index < items.size(); ++index) {
-    const NGInlineItem& item = items[index];
+    const InlineItem& item = items[index];
 
     // Abort if we've found something non-empty.
     if (!item.IsEmptyItem())
       break;
 
-    if (item.Type() != NGInlineItem::kFloating)
+    if (item.Type() != InlineItem::kFloating) {
       continue;
+    }
 
     container_builder_.AddAdjoiningObjectTypes(
         item.GetLayoutObject()->StyleRef().Floating(
