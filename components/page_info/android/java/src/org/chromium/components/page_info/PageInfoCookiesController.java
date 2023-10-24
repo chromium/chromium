@@ -217,7 +217,7 @@ public class PageInfoCookiesController
     }
 
     @Override
-    public void onStatusChanged(int status, int enforcement, long expiration) {
+    public void onStatusChanged(int status, int enforcement, int blockingStatus, long expiration) {
         mStatus = status;
         mIsEnforced = enforcement != CookieControlsEnforcement.NO_ENFORCEMENT;
         mExpiration = expiration;

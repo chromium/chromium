@@ -32,6 +32,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.CHROME_HOME_PULL_TO_REFRESH_FEATURE,
     FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_QUIET_VARIANT,
     FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_ACTION_CHIP,
+    FeatureConstants.COOKIE_CONTROLS_3PCD_FEATURE,
     FeatureConstants.COOKIE_CONTROLS_FEATURE,
     FeatureConstants.DATA_SAVER_PREVIEW_FEATURE,
     FeatureConstants.DATA_SAVER_DETAIL_FEATURE,
@@ -125,7 +126,7 @@ public @interface FeatureConstants {
             "IPH_AutoDarkUserEducationMessageOptIn";
     String CONTEXTUAL_PAGE_ACTIONS_QUIET_VARIANT = "IPH_ContextualPageActions_QuietVariant";
     String CONTEXTUAL_PAGE_ACTIONS_ACTION_CHIP = "IPH_ContextualPageActions_ActionChip";
-
+    String COOKIE_CONTROLS_3PCD_FEATURE = "IPH_3pcdUserBypass";
     String COOKIE_CONTROLS_FEATURE = "IPH_CookieControls";
     String DOWNLOAD_PAGE_FEATURE = "IPH_DownloadPage";
     String DOWNLOAD_PAGE_SCREENSHOT_FEATURE = "IPH_DownloadPageScreenshot";
@@ -255,33 +256,23 @@ public @interface FeatureConstants {
      */
     String VIDEO_TUTORIAL_TRY_NOW_FEATURE = "IPH_VideoTutorial_TryNow";
 
-    /**
-     * Feature notification guide help UI for default browser promo.
-     */
+    /** Feature notification guide help UI for default browser promo. */
     String FEATURE_NOTIFICATION_GUIDE_DEFAULT_BROWSER_PROMO_FEATURE =
             "IPH_FeatureNotificationGuideDefaultBrowserPromo";
 
-    /**
-     * Feature notification guide help UI for sign in promo.
-     */
+    /** Feature notification guide help UI for sign in promo. */
     String FEATURE_NOTIFICATION_GUIDE_SIGN_IN_HELP_BUBBLE_FEATURE =
             "IPH_FeatureNotificationGuideSignInHelpBubble";
 
-    /**
-     * Feature notification guide help UI for incognito tab.
-     */
+    /** Feature notification guide help UI for incognito tab. */
     String FEATURE_NOTIFICATION_GUIDE_INCOGNITO_TAB_HELP_BUBBLE_FEATURE =
             "IPH_FeatureNotificationGuideIncognitoTabHelpBubble";
 
-    /**
-     * Feature notification guide help UI for NTP suggestion card.
-     */
+    /** Feature notification guide help UI for NTP suggestion card. */
     String FEATURE_NOTIFICATION_GUIDE_NTP_SUGGESTION_CARD_HELP_BUBBLE_FEATURE =
             "IPH_FeatureNotificationGuideNTPSuggestionCardHelpBubble";
 
-    /**
-     * Feature notification guide help UI for voice search.
-     */
+    /** Feature notification guide help UI for voice search. */
     String FEATURE_NOTIFICATION_GUIDE_VOICE_SEARCH_HELP_BUBBLE_FEATURE =
             "IPH_FeatureNotificationGuideVoiceSearchHelpBubble";
 
@@ -372,9 +363,7 @@ public @interface FeatureConstants {
      */
     String IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE = "IPH_WebFeedPostFollowDialog";
 
-    /**
-     * A dialog IPH feature to inform users about the WebFeed post-follow after the UI update.
-     */
+    /** A dialog IPH feature to inform users about the WebFeed post-follow after the UI update. */
     String IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE_WITH_UI_UPDATE =
             "IPH_WebFeedPostFollowDialogWithUIUpdate";
 

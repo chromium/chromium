@@ -39,9 +39,11 @@ import org.chromium.components.browser_ui.site_settings.ContentSettingsResources
 import org.chromium.components.browser_ui.site_settings.SiteSettingsUtil;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.content_settings.CookieBlocking3pcdStatus;
 import org.chromium.components.content_settings.CookieControlsBreakageConfidenceLevel;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
+import org.chromium.components.content_settings.CookieControlsStatus;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -111,7 +113,9 @@ public class StatusMediator
     private int mPermissionIconDisplayTimeoutMs = PERMISSION_ICON_DEFAULT_DISPLAY_TIMEOUT_MS;
 
     private CookieControlsBridge mCookieControlsBridge;
-    private boolean mShouldAnimateCookieControlsIcon;
+    private boolean mHighConfidenceBreakageReceived;
+    private int mCookieBlockingStatus;
+    private int mBlockingStatus3pcd;
 
     /**
      * @param model The {@link PropertyModel} for this mediator.
@@ -663,7 +667,14 @@ public class StatusMediator
     // CookieControlsObserver interface
     @Override
     public void onBreakageConfidenceLevelChanged(int level) {
-        mShouldAnimateCookieControlsIcon = level == CookieControlsBreakageConfidenceLevel.HIGH;
+        if (mHighConfidenceBreakageReceived) return;
+        mHighConfidenceBreakageReceived = level == CookieControlsBreakageConfidenceLevel.HIGH;
+    }
+
+    @Override
+    public void onStatusChanged(int status, int enforcement, int blockingStatus, long expiration) {
+        mCookieBlockingStatus = status;
+        mBlockingStatus3pcd = blockingStatus;
     }
 
     private void animateCookieControlsIcon() {
@@ -683,8 +694,6 @@ public class StatusMediator
         permissionIconResource.setTransitionType(IconTransitionType.ROTATE);
         permissionIconResource.setAnimationFinishedCallback(
                 () -> {
-                    mPageInfoIPHController.showCookieControlsIPH(
-                            getIPHTimeout(), R.string.cookie_controls_iph_message);
                     if (mCookieControlsBridge != null) {
                         mCookieControlsBridge.onEntryPointAnimated();
                     }
@@ -824,9 +833,17 @@ public class StatusMediator
     }
 
     public void onPageLoadStopped() {
-        if (mShouldAnimateCookieControlsIcon) {
+        if (mBlockingStatus3pcd != CookieBlocking3pcdStatus.NOT_IN3PCD) {
+            if (mCookieBlockingStatus != CookieControlsStatus.ENABLED) return;
+            mPageInfoIPHController.showCookieControlsReminderIPH(
+                    getIPHTimeout(),
+                    R.string.cookie_controls_reminder_iph_message,
+                    this::animateCookieControlsIcon);
+        } else if (mHighConfidenceBreakageReceived) {
+            mPageInfoIPHController.showCookieControlsIPH(
+                    getIPHTimeout(), R.string.cookie_controls_iph_message);
             animateCookieControlsIcon();
-            mShouldAnimateCookieControlsIcon = false;
+            mHighConfidenceBreakageReceived = false;
         }
     }
 }

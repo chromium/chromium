@@ -242,6 +242,7 @@ source_set("test_support") {
     ":permissions",
     "//base",
     "//components/content_settings/core/browser",
+    "//components/privacy_sandbox:tracking_protection_settings",
     "//components/strings:components_strings_grit",
     "//components/sync_preferences:test_support",
     "//components/ukm/content",

@@ -33,6 +33,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.content_settings.CookieBlocking3pcdStatus;
 import org.chromium.components.content_settings.CookieControlsBreakageConfidenceLevel;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
@@ -81,6 +82,7 @@ public class CookieControlsBridgeTest {
         public void onStatusChanged(
                 @CookieControlsStatus int status,
                 @CookieControlsEnforcement int enforcement,
+                @CookieBlocking3pcdStatus int blockingStatus,
                 long expiration) {
             mStatus = status;
             mEnforcement = enforcement;

@@ -50,7 +50,7 @@ void CookieControlsBridge::UpdateWebContents(
       original_context ? permissions_client->GetCookieSettings(original_context)
                        : nullptr,
       permissions_client->GetSettingsMap(context),
-      /*tracking_protection_settings=*/nullptr);
+      permissions_client->GetTrackingProtectionSettings(context));
 
   old_observation_.Observe(controller_.get());
   observation_.Observe(controller_.get());
@@ -110,6 +110,7 @@ void CookieControlsBridge::OnStatusChanged(
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_CookieControlsBridge_onStatusChanged(
       env, jobject_, static_cast<int>(status_), static_cast<int>(enforcement_),
+      static_cast<int>(blocking_status),
       expiration.InMillisecondsSinceUnixEpoch());
 }
 
