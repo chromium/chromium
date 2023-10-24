@@ -30100,6 +30100,7 @@ Called by update_document_policy_enum.py.-->
   <int value="15" label="Bypass deep scanning"/>
   <int value="16" label="Review"/>
   <int value="17" label="Retry"/>
+  <int value="21" label="Bypass deep scanning and open"/>
 </enum>
 
 <enum name="DownloadConnectionSecurity">

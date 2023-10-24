@@ -735,6 +735,7 @@ bool DownloadItemModel::IsCommandEnabled(
     case DownloadCommands::OPEN_SAFE_BROWSING_SETTING:
     case DownloadCommands::DEEP_SCAN:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
+    case DownloadCommands::BYPASS_DEEP_SCANNING_AND_OPEN:
     case DownloadCommands::REVIEW:
     case DownloadCommands::RETRY:
     case DownloadCommands::CANCEL_DEEP_SCAN:
@@ -779,6 +780,7 @@ bool DownloadItemModel::IsCommandChecked(
     case DownloadCommands::COPY_TO_CLIPBOARD:
     case DownloadCommands::DEEP_SCAN:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
+    case DownloadCommands::BYPASS_DEEP_SCANNING_AND_OPEN:
     case DownloadCommands::REVIEW:
     case DownloadCommands::RETRY:
     case DownloadCommands::CANCEL_DEEP_SCAN:
@@ -815,10 +817,14 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
         prefs->EnableAutoOpenByUserBasedOnExtension(path);
       break;
     }
+    case DownloadCommands::BYPASS_DEEP_SCANNING_AND_OPEN:
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+      SetOpenWhenComplete(true);
+#endif
+      [[fallthrough]];
     case DownloadCommands::BYPASS_DEEP_SCANNING:
 #if BUILDFLAG(FULL_SAFE_BROWSING)
       CompleteSafeBrowsingScan();
-      SetOpenWhenComplete(true);
 #endif
       if (GetDangerType() == download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING) {
         LogDeepScanEvent(download_,

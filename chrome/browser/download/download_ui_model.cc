@@ -640,6 +640,7 @@ bool DownloadUIModel::IsCommandEnabled(
     case DownloadCommands::LEARN_MORE_DOWNLOAD_BLOCKED:
     case DownloadCommands::DEEP_SCAN:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
+    case DownloadCommands::BYPASS_DEEP_SCANNING_AND_OPEN:
     case DownloadCommands::REVIEW:
     case DownloadCommands::RETRY:
     case DownloadCommands::CANCEL_DEEP_SCAN:
@@ -676,6 +677,7 @@ bool DownloadUIModel::IsCommandChecked(
     case DownloadCommands::COPY_TO_CLIPBOARD:
     case DownloadCommands::DEEP_SCAN:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
+    case DownloadCommands::BYPASS_DEEP_SCANNING_AND_OPEN:
     case DownloadCommands::REVIEW:
     case DownloadCommands::RETRY:
     case DownloadCommands::CANCEL_DEEP_SCAN:
@@ -744,6 +746,7 @@ void DownloadUIModel::ExecuteCommand(DownloadCommands* download_commands,
     case DownloadCommands::DEEP_SCAN:
       break;
     case DownloadCommands::BYPASS_DEEP_SCANNING:
+    case DownloadCommands::BYPASS_DEEP_SCANNING_AND_OPEN:
     case DownloadCommands::REVIEW:
     case DownloadCommands::RETRY:
     case DownloadCommands::CANCEL_DEEP_SCAN:
@@ -1429,7 +1432,7 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
                       .SetProgressBarLooping();
         if (!download::DoesDownloadConnectorBlock(profile(), GetURL())) {
           ui_info.AddPrimaryButton(
-              DownloadCommands::Command::BYPASS_DEEP_SCANNING);
+              DownloadCommands::Command::BYPASS_DEEP_SCANNING_AND_OPEN);
         }
       }
       return ui_info;

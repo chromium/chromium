@@ -42,6 +42,8 @@ class DownloadCommands {
     RETRY,                 // Retry the download.
     CANCEL_DEEP_SCAN,      // Cancel the deep scan, returning to a prompt for
                            // scanning.
+    BYPASS_DEEP_SCANNING_AND_OPEN = 21,  // Bypass the prompt to deep scan and
+                                         // open the file.
     MAX
   };
 
