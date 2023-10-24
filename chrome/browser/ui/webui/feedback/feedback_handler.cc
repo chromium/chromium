@@ -12,7 +12,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/feedback/child_web_dialog.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -21,6 +21,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/widget/widget.h"
+#include "ui/web_dialogs/web_dialog_delegate.h"
 #include "url/gurl.h"
 
 namespace {
@@ -34,15 +35,25 @@ void ShowChildPage(Profile* profile,
                    int dialog_height = 400,
                    bool can_resize = true,
                    bool can_minimize = true) {
-  bool isParentModal = dialog->GetWidget()->IsModal();
-  // when the dialog is closed, it will delete itself
-  ChildWebDialog* child_dialog = new ChildWebDialog(
-      profile, dialog->GetWidget(), url, title,
-      /*modal_type=*/
-      isParentModal ? ui::MODAL_TYPE_SYSTEM : ui::MODAL_TYPE_NONE, args,
-      dialog_width, dialog_height, can_resize, can_minimize);
+  const bool is_parent_modal = dialog->GetWidget()->IsModal();
 
-  child_dialog->Show();
+  auto delegate = std::make_unique<ui::WebDialogDelegate>();
+  delegate->set_dialog_args(args);
+  delegate->set_dialog_content_url(url);
+  delegate->set_dialog_modal_type(is_parent_modal ? ui::MODAL_TYPE_SYSTEM
+                                                  : ui::MODAL_TYPE_NONE);
+  delegate->set_dialog_size(gfx::Size(dialog_width, dialog_height));
+  delegate->set_dialog_title(title);
+  delegate->set_minimum_dialog_size(gfx::Size(400, 120));
+  delegate->set_can_maximize(true);
+  delegate->set_can_minimize(can_minimize);
+  delegate->set_can_resize(can_resize);
+  delegate->set_show_dialog_title(true);
+
+  chrome::ShowWebDialog(
+      dialog->GetWidget()->GetNativeView(),
+      // The delegate is self-deleting once the dialog is shown.
+      profile, delegate.release());
 }
 
 GURL ChildPageURL(const std::string& child_page) {

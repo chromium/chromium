@@ -1664,8 +1664,6 @@ static_library("ui") {
       "webui/feed/feed_ui.h",
       "webui/feed/feed_ui_config.cc",
       "webui/feed/feed_ui_config.h",
-      "webui/feedback/child_web_dialog.cc",
-      "webui/feedback/child_web_dialog.h",
       "webui/feedback/feedback_dialog.cc",
       "webui/feedback/feedback_dialog.h",
       "webui/feedback/feedback_handler.cc",
