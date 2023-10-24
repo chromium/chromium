@@ -915,8 +915,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.CharactersPerSession{InputModality}"
-    units="characters" expires_after="2023-05-01">
-  <owner>keithlee@chromium.org</owner>
+    units="characters" expires_after="2024-04-01">
+  <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
     Number of characters entered in a single user session on ChromeOS. A user
@@ -1518,8 +1518,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.VirtualKeyboard.CharactersPerMinute{InputModality}"
-    units="charactersPerMinute" expires_after="2023-05-01">
-  <owner>keithlee@chromium.org</owner>
+    units="charactersPerMinute" expires_after="2024-04-01">
+  <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
     Typing speed in each user session on ChromeOS when using the virtual
@@ -1538,8 +1538,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.VirtualKeyboard.CharactersPerSession{InputModality}"
-    units="characters" expires_after="2023-05-01">
-  <owner>keithlee@chromium.org</owner>
+    units="characters" expires_after="2024-04-01">
+  <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
     Number of characters entered in a single user session on ChromeOS when using
