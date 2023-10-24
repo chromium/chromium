@@ -11,7 +11,6 @@
 #include "ash/public/cpp/power_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/system/power/battery_image_source.h"
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/time_formatting.h"
@@ -19,7 +18,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
@@ -86,15 +84,7 @@ int PowerSourceToMessageID(
 }
 
 SkColor GetDefaultAlertColor(const ui::ColorProvider* color_provider) {
-  bool use_color_provider =
-      chromeos::features::IsJellyrollEnabled() && color_provider;
-
-  if (use_color_provider) {
-    return color_provider->GetColor(cros_tokens::kColorAlert);
-  } else {
-    return ash::AshColorProvider::Get()->GetContentLayerColor(
-        ash::AshColorProvider::ContentLayerType::kIconColorAlert);
-  }
+  return color_provider->GetColor(cros_tokens::kColorAlert);
 }
 
 }  // namespace

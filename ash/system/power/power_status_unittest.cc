@@ -7,12 +7,10 @@
 #include <memory>
 
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -331,39 +329,32 @@ TEST_F(PowerStatusTest, BatteryImageColorResolution) {
   EXPECT_EQ(resolved_colors.foreground_color, SK_ColorRED);
   EXPECT_EQ(resolved_colors.badge_color, SK_ColorBLUE);
 
-  // Test Badge Color Resolution with Jelly.
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(chromeos::features::kJelly);
+  // Test Badge Color Resolution
+  prop.set_external_power(PowerSupplyProperties::AC);
+  prop.set_battery_state(PowerSupplyProperties::CHARGING);
+  prop.set_battery_percent(51);
+  power_status_->SetProtoForTesting(prop);
+
+  // Test badge color resolution (>50%).
   resolved_colors = PowerStatus::BatteryImageInfo::ResolveColors(
       power_status_->GenerateBatteryImageInfo(SK_ColorRED), color_provider);
 
   EXPECT_EQ(resolved_colors.badge_color, SK_ColorRED);
 
-  // Test Badge Color Resolution without Jelly.
-  features.Reset();
-  features.InitAndDisableFeature(chromeos::features::kJelly);
+  // Test badge color with <= 50%.
+  prop.set_battery_percent(50);
+  power_status_->SetProtoForTesting(prop);
   resolved_colors = PowerStatus::BatteryImageInfo::ResolveColors(
       power_status_->GenerateBatteryImageInfo(SK_ColorRED), color_provider);
   EXPECT_EQ(resolved_colors.badge_color, SK_ColorRED);
 
-  // Test alert color resolution with Jelly.
-  features.Reset();
-  features.InitAndEnableFeature(chromeos::features::kJelly);
+  // Test alert color resolution.
   resolved_colors = PowerStatus::BatteryImageInfo::ResolveColors(
       power_status_->GenerateBatteryImageInfo(SK_ColorRED), color_provider);
 
   EXPECT_EQ(resolved_colors.alert_color,
             test_widget->GetRootView()->GetColorProvider()->GetColor(
                 cros_tokens::kColorAlert));
-
-  // Test alert color resolution without Jelly.
-  features.Reset();
-  features.InitAndDisableFeature(chromeos::features::kJelly);
-  resolved_colors = PowerStatus::BatteryImageInfo::ResolveColors(
-      power_status_->GenerateBatteryImageInfo(SK_ColorRED), color_provider);
-  EXPECT_EQ(resolved_colors.alert_color,
-            ash::AshColorProvider::Get()->GetContentLayerColor(
-                ash::AshColorProvider::ContentLayerType::kIconColorAlert));
 }
 
 // Tests that toggling battery saver state sends notifications to observers and
