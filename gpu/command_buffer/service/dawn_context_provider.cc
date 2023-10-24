@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/strings/stringprintf.h"
 #include "base/threading/platform_thread.h"
 #include "base/trace_event/trace_arguments.h"
 #include "base/trace_event/trace_event.h"
@@ -100,6 +101,24 @@ bool GetANGLED3D11DeviceLUID(LUID* luid) {
   *luid = adapter_desc.AdapterLuid;
   return true;
 }
+
+const char* HRESULTToString(HRESULT result) {
+  switch (result) {
+#define ERROR_CASE(E) \
+  case E:             \
+    return #E;
+    ERROR_CASE(DXGI_ERROR_DEVICE_HUNG)
+    ERROR_CASE(DXGI_ERROR_DEVICE_REMOVED)
+    ERROR_CASE(DXGI_ERROR_DEVICE_RESET)
+    ERROR_CASE(DXGI_ERROR_DRIVER_INTERNAL_ERROR)
+    ERROR_CASE(DXGI_ERROR_INVALID_CALL)
+    ERROR_CASE(S_OK)
+#undef ERROR_CASE
+    default:
+      return nullptr;
+  }
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
@@ -372,6 +391,24 @@ void DawnContextProvider::OnError(WGPUErrorType error_type,
 
   static crash_reporter::CrashKeyString<1024> error_key("dawn-error");
   error_key.Set(message);
+
+#if BUILDFLAG(IS_WIN)
+  if (auto d3d11_device = GetD3D11Device()) {
+    static crash_reporter::CrashKeyString<64> reason_message_key(
+        "d3d11-device-removed-reason");
+    HRESULT result = d3d11_device->GetDeviceRemovedReason();
+
+    if (const char* result_string = HRESULTToString(result)) {
+      LOG(ERROR) << "Device removed reason: " << result_string;
+      reason_message_key.Set(result_string);
+    } else {
+      auto unknown_error = base::StringPrintf("Unknown error(0x%08lX)", result);
+      LOG(ERROR) << "Device removed reason: " << unknown_error;
+      reason_message_key.Set(unknown_error.c_str());
+    }
+  }
+#endif
+
   base::debug::DumpWithoutCrashing();
 
   base::AutoLock auto_lock(context_lost_lock_);
