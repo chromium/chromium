@@ -23,6 +23,8 @@ var MASKED_NUMBER = '1111';
 var NUMBER = '4111 1111 1111 1111';
 var EXP_MONTH = '02';
 var EXP_YEAR = '2999';
+var CVC = '987';
+MASKED_CVC = '•••';
 var IBAN_VALUE = 'AD1400080001001234567890';
 var INVALID_IBAN_VALUE = 'AD14000800010012345678900';
 
@@ -315,7 +317,8 @@ var availableTests = [
     function filterCardProperties(cards) {
       return cards.map(cards => {
         var filteredCards = {};
-        ['name', 'cardNumber', 'expirationMonth', 'expirationYear', 'nickname']
+        ['name', 'cardNumber', 'expirationMonth', 'expirationYear', 'nickname',
+         'cvc']
             .forEach(property => {
               filteredCards[property] = cards[property];
             });
@@ -337,7 +340,8 @@ var availableTests = [
                       cardNumber: MASKED_NUMBER,
                       expirationMonth: EXP_MONTH,
                       expirationYear: EXP_YEAR,
-                      nickname: undefined
+                      nickname: undefined,
+                      cvc: MASKED_CVC
                     }],
                     filterCardProperties(cardList));
               }));
@@ -346,7 +350,8 @@ var availableTests = [
             name: CARD_NAME,
             cardNumber: NUMBER,
             expirationMonth: EXP_MONTH,
-            expirationYear: EXP_YEAR
+            expirationYear: EXP_YEAR,
+            cvc: CVC
           });
         }));
   },
@@ -369,7 +374,8 @@ var availableTests = [
         name: CARD_NAME,
         cardNumber: NUMBER,
         expirationMonth: EXP_MONTH,
-        expirationYear: EXP_YEAR
+        expirationYear: EXP_YEAR,
+        cvc: CVC
       });
     }));
   },
@@ -386,7 +392,7 @@ var availableTests = [
       return cards.map(cards => {
         var filteredCards = {};
         ['guid', 'name', 'cardNumber', 'expirationMonth', 'expirationYear',
-         'nickname']
+         'nickname', 'cvc']
             .forEach(property => {
               filteredCards[property] = cards[property];
             });
@@ -412,7 +418,8 @@ var availableTests = [
                       cardNumber: MASKED_NUMBER,
                       expirationMonth: EXP_MONTH,
                       expirationYear: UPDATED_EXP_YEAR,
-                      nickname: UPDATED_NICKNAME
+                      nickname: UPDATED_NICKNAME,
+                      cvc: MASKED_CVC
                     }],
                     filterCardProperties(cardList));
               }));

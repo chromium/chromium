@@ -178,6 +178,7 @@ declare global {
         nickname?: string;
         network?: string;
         imageSrc?: string;
+        cvc?: string;
         metadata?: AutofillMetadata;
       }
 

@@ -369,6 +369,10 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveCreditCardFunction::Run() {
     credit_card.SetNickname(base::UTF8ToUTF16(*card->nickname));
   }
 
+  if (card->cvc) {
+    credit_card.set_cvc(base::UTF8ToUTF16(*card->cvc));
+  }
+
   if (use_existing_card) {
     // Only updates when the card info changes.
     if (existing_card && existing_card->Compare(credit_card) == 0)

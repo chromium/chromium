@@ -332,6 +332,18 @@ autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
       credit_card.virtual_card_enrollment_state() ==
       autofill::CreditCard::VirtualCardEnrollmentState::kEnrolled;
 
+  if (!credit_card.cvc().empty()) {
+    // Replace all the chars in the CVC with "•" for security when
+    // the `credit_card` type is a `kMaskedServerCard` or `mask_local_cards` is
+    // true.
+    card.cvc = base::UTF16ToUTF8(credit_card.cvc());
+    if (credit_card.record_type() ==
+            autofill::CreditCard::RecordType::kMaskedServerCard ||
+        mask_local_cards) {
+      card.cvc = base::UTF16ToUTF8(std::u16string(card.cvc->size(), u'•'));
+    }
+  }
+
   return card;
 }
 

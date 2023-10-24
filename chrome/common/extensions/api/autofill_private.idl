@@ -257,6 +257,9 @@ namespace autofillPrivate {
     // Credit card's image source.
     DOMString? imageSrc;
 
+    // Credit card's masked cvc.
+    DOMString? cvc;
+
     AutofillMetadata? metadata;
   };
 
