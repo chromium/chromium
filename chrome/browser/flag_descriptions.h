@@ -443,6 +443,9 @@ extern const char kChromeWebuiRefresh2023Description[];
 extern const char kChromeRefresh2023NTBName[];
 extern const char kChromeRefresh2023NTBDescription[];
 
+extern const char kChromeRefresh2023TopChromeFontName[];
+extern const char kChromeRefresh2023TopChromeFontDescription[];
+
 extern const char kCommerceHintAndroidName[];
 extern const char kCommerceHintAndroidDescription[];
 

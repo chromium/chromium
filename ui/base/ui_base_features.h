@@ -258,6 +258,9 @@ extern const char kChromeRefresh2023NTBVariationKey[];
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 ChromeRefresh2023NTBVariation GetChromeRefresh2023NTB();
 
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kChromeRefresh2023TopChromeFont);
+
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsChromeRefresh2023();
 
 // Exposed for testing and flags integration. For actual checks please use
