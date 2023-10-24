@@ -11,7 +11,10 @@
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/url_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "extensions/common/constants.h"
 #include "net/base/network_change_notifier.h"
 #include "ui/base/ime/text_input_type.h"
 
@@ -39,10 +42,9 @@ constexpr std::string_view kInputMethodEngineAllowlist[] = {
     "xkb:us::eng",              // US
 };
 
-constexpr AppType kAppTypeAllowlist[] = {
-    AppType::BROWSER,
-    AppType::LACROS,
-    AppType::SYSTEM_APP,
+constexpr AppType kAppTypeDenylist[] = {
+    AppType::ARC_APP,
+    AppType::CROSTINI_APP,
 };
 
 const char* kDomainsWithPathDenylist[][2] = {
@@ -60,7 +62,15 @@ const char* kDomainsWithPathDenylist[][2] = {
 constexpr int kTextLengthMaxLimit = 10000;
 
 const char* kAppIdDenylist[] = {
-    file_manager::kFileManagerSwaAppId,
+    extension_misc::kGmailAppId,        extension_misc::kCalendarAppId,
+    extension_misc::kFilesManagerAppId, extension_misc::kGoogleDocsAppId,
+    extension_misc::kGoogleSlidesAppId, extension_misc::kGoogleSheetsAppId,
+    extension_misc::kGoogleDriveAppId,  extension_misc::kGoogleKeepAppId,
+    file_manager::kFileManagerSwaAppId, web_app::kGmailAppId,
+    web_app::kGoogleChatAppId,          web_app::kGoogleMeetAppId,
+    web_app::kGoogleDocsAppId,          web_app::kGoogleSlidesAppId,
+    web_app::kGoogleSheetsAppId,        web_app::kGoogleDriveAppId,
+    web_app::kGoogleKeepAppId,          web_app::kGoogleCalendarAppId,
 };
 
 bool IsCountryAllowed(std::string_view country_code) {
@@ -76,7 +86,7 @@ bool IsInputMethodEngineAllowed(std::string_view engine_id) {
 }
 
 bool IsAppTypeAllowed(AppType app_type) {
-  return base::Contains(kAppTypeAllowlist, app_type);
+  return !base::Contains(kAppTypeDenylist, app_type);
 }
 
 bool IsTriggerableFromConsentStatus(ConsentStatus consent_status) {
