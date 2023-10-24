@@ -180,8 +180,8 @@ InteractiveAshTest::WaitForElementTextContains(
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kTextFound);
 
   WebContentsInteractionTestUtil::StateChange state_change;
-  state_change.type =
-      WebContentsInteractionTestUtil::StateChange::Type::kConditionTrue;
+  state_change.type = WebContentsInteractionTestUtil::StateChange::Type::
+      kExistsAndConditionTrue;
   state_change.where = query;
   state_change.test_function = "function(el) { return el.innerText.indexOf(" +
                                base::GetQuotedJSONString(expected) +
