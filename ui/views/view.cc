@@ -35,7 +35,6 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/compositor/clip_recorder.h"
 #include "ui/compositor/compositor.h"
@@ -2609,11 +2608,6 @@ void View::OnBlur() {}
 void View::Focus() {
   OnFocus();
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1492220) - Get this working on Lacros as well.
-  UpdateTooltipForFocus();
-#endif
-
   // TODO(pbos): Investigate if parts of this can run unconditionally.
   if (!suppress_default_focus_handling_) {
     // Clear the native focus. This ensures that no visible native view has the
@@ -2671,17 +2665,6 @@ void View::TooltipTextChanged() {
   // TooltipManager may be null if there is a problem creating it.
   if (widget && widget->GetTooltipManager())
     widget->GetTooltipManager()->TooltipTextChanged(this);
-}
-
-void View::UpdateTooltipForFocus() {
-  if (base::FeatureList::IsEnabled(
-          ::views::features::kKeyboardAccessibleTooltipInViews) &&
-      !kShouldDisableKeyboardTooltipsForTesting) {
-    Widget* widget = GetWidget();
-    if (widget && widget->GetTooltipManager()) {
-      widget->GetTooltipManager()->UpdateTooltipForFocus(this);
-    }
-  }
 }
 
 // Drag and drop ---------------------------------------------------------------
@@ -3619,16 +3602,6 @@ void View::UpdateTooltip() {
   //             Widgets that it uses.
   if (widget && widget->GetTooltipManager())
     widget->GetTooltipManager()->UpdateTooltip();
-}
-
-bool View::kShouldDisableKeyboardTooltipsForTesting = false;
-
-void View::DisableKeyboardTooltipsForTesting() {
-  View::kShouldDisableKeyboardTooltipsForTesting = true;
-}
-
-void View::EnableKeyboardTooltipsForTesting() {
-  View::kShouldDisableKeyboardTooltipsForTesting = false;
 }
 
 // Drag and drop ---------------------------------------------------------------
