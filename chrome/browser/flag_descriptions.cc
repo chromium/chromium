@@ -3457,11 +3457,6 @@ const char kGlobalVaapiLockDescription[] =
     "Enable or disable the global VA-API lock for platforms and paths that "
     "support controlling this.";
 
-const char kVp9kSVCHWDecodingName[] =
-    "Hardware decode acceleration for k-SVC VP9";
-const char kVp9kSVCHWDecodingDescription[] =
-    "Enable or disable k-SVC VP9 hardware decode acceleration";
-
 const char kWalletServiceUseSandboxName[] =
     "Use Google Payments sandbox servers";
 const char kWalletServiceUseSandboxDescription[] =
@@ -7336,13 +7331,6 @@ const char kQuickOfficeForceFileDownloadDescription[] =
     "Forces the Basic Office Editor to download files instead of intercepting "
     "navigations to document types it can handle.";
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
-const char kVaapiVP9kSVCEncoderName[] =
-    "VA-API encode acceleration for k-SVC VP9";
-const char kVaapiVP9kSVCEncoderDescription[] =
-    "Enable or disable k-SVC VP9 encode acceleration using VA-API.";
-#endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 const char kChromeOSDirectVideoDecoderName[] = "ChromeOS Direct Video Decoder";

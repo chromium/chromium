@@ -8920,24 +8920,10 @@ const FeatureEntry kFeatureEntries[] = {
          "PreinstalledWebAppWindowExperimentVariations")},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
-    // TODO(b/214589754): revisit the need for this flag when the final design
-    // for HW encoding is implemented for lacros-chrome.
-    {"enable-vaapi-vp9-kSVC-encode-acceleration",
-     flag_descriptions::kVaapiVP9kSVCEncoderName,
-     flag_descriptions::kVaapiVP9kSVCEncoderDescription, kOsCrOS | kOsLacros,
-     FEATURE_VALUE_TYPE(media::kVaapiVp9kSVCHWEncoding)},
-#endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
-
     {"enable-global-vaapi-lock", flag_descriptions::kGlobalVaapiLockName,
      flag_descriptions::kGlobalVaapiLockDescription,
      kOsCrOS | kOsLinux | kOsLacros,
      FEATURE_VALUE_TYPE(media::kGlobalVaapiLock)},
-
-    {"enable-vp9-kSVC-decode-acceleration",
-     flag_descriptions::kVp9kSVCHWDecodingName,
-     flag_descriptions::kVp9kSVCHWDecodingDescription, kOsAll,
-     FEATURE_VALUE_TYPE(media::kVp9kSVCHWDecoding)},
 
 #if BUILDFLAG(IS_WIN) ||                                      \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \

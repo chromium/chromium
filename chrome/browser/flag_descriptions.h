@@ -2010,9 +2010,6 @@ extern const char kGlobalVaapiLockDescription[];
 extern const char kVmPerBootShaderCacheDescription[];
 extern const char kVmPerBootShaderCacheName[];
 
-extern const char kVp9kSVCHWDecodingName[];
-extern const char kVp9kSVCHWDecodingDescription[];
-
 extern const char kWalletServiceUseSandboxName[];
 extern const char kWalletServiceUseSandboxDescription[];
 
@@ -4220,11 +4217,6 @@ extern const char kShowForceRespectUiGainsToggleDescription[];
 extern const char kCrOSSystemVoiceIsolationOptionName[];
 extern const char kCrOSSystemVoiceIsolationOptionDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
-extern const char kVaapiVP9kSVCEncoderName[];
-extern const char kVaapiVP9kSVCEncoderDescription[];
-#endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 extern const char kChromeOSDirectVideoDecoderName[];

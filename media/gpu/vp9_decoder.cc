@@ -13,6 +13,7 @@
 #include "build/chromeos_buildflags.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
+#include "media/base/platform_features.h"
 #include "media/gpu/vp9_decoder.h"
 
 namespace media {
@@ -28,20 +29,16 @@ bool GetSpatialLayerFrameSize(const DecoderBuffer& decoder_buffer,
   }
 
   bool enable_vp9_ksvc =
-// On windows, currently only d3d11 supports decoding VP9 kSVC stream, we
-// shouldn't combine the switch kD3D11Vp9kSVCHWDecoding to kVp9kSVCHWDecoding
-// due to we want keep returning false to MediaCapability.
-#if BUILDFLAG(IS_WIN)
-      base::FeatureList::IsEnabled(media::kD3D11Vp9kSVCHWDecoding);
-#elif BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY)
-      // V4L2 stateless API decoder is not capable of decoding VP9 k-SVC stream.
+  // V4L2 stateless decoder does not support VP9 kSVC streams.
+  // See comments in media::IsVp9kSVCHWDecodingEnabled().
+#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY)
       false;
 #else
-      base::FeatureList::IsEnabled(media::kVp9kSVCHWDecoding);
-#endif
+      media::IsVp9kSVCHWDecodingEnabled();
+#endif  // BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY)
 
   if (!enable_vp9_ksvc) {
-    DLOG(ERROR) << "Vp9 k-SVC hardware decoding is disabled";
+    DLOG(ERROR) << "VP9 k-SVC hardware decoding is disabled";
     return false;
   }
 

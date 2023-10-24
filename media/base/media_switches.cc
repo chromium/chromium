@@ -847,10 +847,6 @@ BASE_FEATURE(kVaapiH264TemporalLayerHWEncoding,
 BASE_FEATURE(kVaapiVp8TemporalLayerHWEncoding,
              "VaapiVp8TemporalLayerEncoding",
              base::FEATURE_ENABLED_BY_DEFAULT);
-// Enable VP9 k-SVC encoding with HW encoder for webrtc use case on ChromeOS.
-BASE_FEATURE(kVaapiVp9kSVCHWEncoding,
-             "VaapiVp9kSVCHWEncoding",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 // Enable VP9 S-mode encoding with HW encoder for webrtc use case on ChromeOS.
 BASE_FEATURE(kVaapiVp9SModeHWEncoding,
              "VaapiVp9SModeHWEncoding",
@@ -885,16 +881,6 @@ BASE_FEATURE(kVideoToolboxVideoDecoder,
 BASE_FEATURE(kWebRTCColorAccuracy,
              "WebRTCColorAccuracy",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enable VP9 k-SVC decoding with HW decoder for webrtc use case.
-BASE_FEATURE(kVp9kSVCHWDecoding,
-             "Vp9kSVCHWDecoding",
-#if BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
 
 // Takes a reference on a video frame, keeping it alive during the duration of a
 // video.requestVideoFrameCallback call. Doesn't change anything to the API for

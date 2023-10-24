@@ -3595,11 +3595,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-vaapi-vp9-kSVC-encode-acceleration",
-    "owners": [ "mcasas@chromium.org", "chromeos-gfx-video@google.com" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "enable-variable-refresh-rate",
     "owners": [ "aswolfers@chromium.org", "chromeos-gfx-compositor@google.com" ],
     "expiry_milestone": 125
@@ -3624,11 +3619,6 @@
     "owners": [ "//ash/keyboard/OWNERS" ],
     // Useful for debugging the virtual keyboard on non-tablet devices.
     "expiry_milestone": -1
-  },
-  {
-    "name": "enable-vp9-kSVC-decode-acceleration",
-    "owners": [ "hiroh@chromium.org", "chromeos-gfx-webrtc@google.com" ],
-    "expiry_milestone": 110
   },
   {
     "name": "enable-vulkan",

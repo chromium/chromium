@@ -35,6 +35,7 @@
 #include "media/base/format_utils.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
+#include "media/base/platform_features.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
@@ -165,11 +166,6 @@ bool VaapiVideoEncodeAccelerator::Initialize(
 
 #if BUILDFLAG(IS_CHROMEOS)
     if (!IsConfiguredForTesting()) {
-      if (config.inter_layer_pred == SVCInterLayerPredMode::kOnKeyPic &&
-          !base::FeatureList::IsEnabled(kVaapiVp9kSVCHWEncoding)) {
-        MEDIA_LOG(ERROR, media_log.get()) << "Vp9 k-SVC encoding is disabled";
-        return false;
-      }
       if (config.inter_layer_pred == SVCInterLayerPredMode::kOff &&
           !base::FeatureList::IsEnabled(kVaapiVp9SModeHWEncoding)) {
         MEDIA_LOG(ERROR, media_log.get()) << "Vp9 S-mode encoding is disabled";

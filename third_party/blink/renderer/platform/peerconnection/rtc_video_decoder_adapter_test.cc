@@ -779,15 +779,12 @@ TEST_P(RTCVideoDecoderAdapterTest, UseD3D11ToDecodeVP9kSVCStream) {
   FinishDecode(0);
   media_thread_.FlushForTesting();
 }
-#endif
-
+#elif !(defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS))
 // ChromeOS has the ability to decode VP9 kSVC Stream. Other cases should
 // fallback to sw decoder.
-#if !(defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS))
 TEST_P(RTCVideoDecoderAdapterTest,
        FallbackToSWSinceDecodeVP9kSVCStreamWithoutD3D11) {
   ASSERT_TRUE(BasicSetup());
-  EXPECT_FALSE(base::FeatureList::IsEnabled(media::kVp9kSVCHWDecoding));
   SetSpatialIndex(2);
   // kTesting will represent hw decoders for other use cases mentioned above.
   EXPECT_CALL(*video_decoder_, Decode_(_, _)).Times(0);
@@ -796,7 +793,7 @@ TEST_P(RTCVideoDecoderAdapterTest,
 
   media_thread_.FlushForTesting();
 }
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
 INSTANTIATE_TEST_SUITE_P(RTCVideoDecoderAdapterTest,
                          RTCVideoDecoderAdapterTest,
