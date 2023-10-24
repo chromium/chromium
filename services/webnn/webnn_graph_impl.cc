@@ -89,16 +89,17 @@ bool ValidateClampAttributes(const mojom::ClampPtr& clamp) {
   return true;
 }
 
-bool ValidateActivation(const mojom::OperationPtr& activation) {
+bool ValidateActivation(const mojom::ActivationPtr& activation) {
   switch (activation->which()) {
-    case mojom::Operation::Tag::kClamp:
+    case mojom::Activation::Tag::kClamp:
       return ValidateClampAttributes(activation->get_clamp());
-    case mojom::Operation::Tag::kRelu:
+    case mojom::Activation::Tag::kRelu:
+    case mojom::Activation::Tag::kSigmoid:
+    case mojom::Activation::Tag::kSoftmax:
+    case mojom::Activation::Tag::kTanh:
       return true;
-    default:
-      // The activation is not supported.
-      return false;
   }
+  NOTREACHED_NORETURN();
 }
 
 webnn::Conv2dAttributes ConvertToConv2dAttributes(
@@ -213,25 +214,56 @@ const mojom::Operand* GetMojoOperand(const IdToOperandMap& id_to_operand_map,
   return operand_iterator->second.get();
 }
 
-bool ValidateClamp(const IdToOperandMap& id_to_operand_map,
-                   const mojom::ClampPtr& clamp) {
-  auto* input = GetMojoOperand(id_to_operand_map, clamp->input_operand_id);
-  auto* output = GetMojoOperand(id_to_operand_map, clamp->output_operand_id);
+bool ValidateUnaryOperation(const mojom::Operand* input,
+                            const mojom::Operand* output) {
   if (!input || !output || output == input) {
-    // The clamp operator is invalid.
-    return false;
-  }
-  if (!ValidateClampAttributes(clamp)) {
-    // The attributes of clamp are invalid.
+    // The unary operator is invalid.
     return false;
   }
   if (output->data_type != input->data_type) {
     // The output data type doesn't match input data type.
     return false;
   }
-
   if (output->dimensions != input->dimensions) {
     // The output shape is not expected.
+    return false;
+  }
+  return true;
+}
+
+template <typename Operation>
+bool ValidateUnaryOperation(const IdToOperandMap& id_to_operand_map,
+                            const Operation& operation) {
+  auto* input = GetMojoOperand(id_to_operand_map, operation->input_operand_id);
+  auto* output =
+      GetMojoOperand(id_to_operand_map, operation->output_operand_id);
+  return ValidateUnaryOperation(input, output);
+}
+
+template <typename Operation>
+bool ValidateFloatingPointUnaryOperation(
+    const IdToOperandMap& id_to_operand_map,
+    const Operation& operation) {
+  auto* input = GetMojoOperand(id_to_operand_map, operation->input_operand_id);
+  auto* output =
+      GetMojoOperand(id_to_operand_map, operation->output_operand_id);
+  if (!ValidateUnaryOperation(input, output)) {
+    return false;
+  }
+
+  if (!IsFloatingPointType(MojoOperandTypeToComponent(input->data_type))) {
+    return false;
+  }
+
+  return true;
+}
+
+bool ValidateClamp(const IdToOperandMap& id_to_operand_map,
+                   const mojom::ClampPtr& clamp) {
+  if (!ValidateUnaryOperation(id_to_operand_map, clamp)) {
+    return false;
+  }
+  if (!ValidateClampAttributes(clamp)) {
     return false;
   }
 
@@ -421,26 +453,6 @@ bool ValidatePrelu(const IdToOperandMap& id_to_operand_map,
     return false;
   }
 
-  return true;
-}
-
-bool ValidateRelu(const IdToOperandMap& id_to_operand_map,
-                  const mojom::ReluPtr& relu) {
-  auto* input = GetMojoOperand(id_to_operand_map, relu->input_operand_id);
-  auto* output = GetMojoOperand(id_to_operand_map, relu->output_operand_id);
-  if (!input || !output || output == input) {
-    // The relu operator is invalid.
-    return false;
-  }
-  if (output->data_type != input->data_type) {
-    // The output data type doesn't match input data type.
-    return false;
-  }
-
-  if (output->dimensions != input->dimensions) {
-    // The output shape is not expected.
-    return false;
-  }
   return true;
 }
 
@@ -643,13 +655,19 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
     case mojom::Operation::Tag::kReshape:
       return ValidateReshape(id_to_operand_map, operation->get_reshape());
     case mojom::Operation::Tag::kRelu:
-      return ValidateRelu(id_to_operand_map, operation->get_relu());
+      return ValidateUnaryOperation(id_to_operand_map, operation->get_relu());
     case mojom::Operation::Tag::kSlice:
       return ValidateSlice(id_to_operand_map, operation->get_slice());
+    case mojom::Operation::Tag::kSigmoid:
+      return ValidateFloatingPointUnaryOperation(id_to_operand_map,
+                                                 operation->get_sigmoid());
     case mojom::Operation::Tag::kSoftmax:
       return ValidateSoftmax(id_to_operand_map, operation->get_softmax());
     case mojom::Operation::Tag::kSplit:
       return ValidateSplit(id_to_operand_map, operation->get_split());
+    case mojom::Operation::Tag::kTanh:
+      return ValidateFloatingPointUnaryOperation(id_to_operand_map,
+                                                 operation->get_tanh());
     case mojom::Operation::Tag::kTranspose:
       return ValidateTranspose(id_to_operand_map, operation->get_transpose());
   }

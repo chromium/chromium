@@ -293,6 +293,8 @@ absl::optional<PaddingSizes> CalculateConv2dPadding(AutoPad auto_pad,
                                                     const uint32_t stride,
                                                     const uint32_t dilation);
 
+bool IsFloatingPointType(Operand::DataType data_type);
+
 }  // namespace webnn
 
 #endif  // COMPONENTS_ML_WEBNN_GRAPH_VALIDATION_UTILS_H_

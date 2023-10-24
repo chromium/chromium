@@ -245,7 +245,7 @@ struct Conv2dTester {
     mojom::InputOperandLayout input_layout =
         mojom::InputOperandLayout::kChannelsFirst;
     absl::optional<OperandInfo<T>> bias;
-    absl::optional<mojom::Operation::Tag> activation;
+    absl::optional<mojom::Activation::Tag> activation;
     absl::optional<ClampAttributes> clamp_attributes;
   };
   Conv2dAttributes attributes;
@@ -417,7 +417,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
                                .type = mojom::Operand::DataType::kFloat32,
                                .dimensions = {1},
                                .values = {-100}},
-                       .activation = mojom::Operation::Tag::kRelu},
+                       .activation = mojom::Activation::Tag::kRelu},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 5, 5, 1},
                    .values = {0,  0, 0, 0,  0,  0,  0,  0, 0,  0,  0,  0, 8,
@@ -443,7 +443,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
                                .type = mojom::Operand::DataType::kFloat16,
                                .dimensions = {1},
                                .values = Float16FromFloat32({-100})},
-                       .activation = mojom::Operation::Tag::kRelu},
+                       .activation = mojom::Activation::Tag::kRelu},
         .output = {.type = mojom::Operand::DataType::kFloat16,
                    .dimensions = {1, 5, 5, 1},
                    .values = {0,  0, 0, 0,  0,  0,  0,  0, 0,  0,  0,  0, 8,

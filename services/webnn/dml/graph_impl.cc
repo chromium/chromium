@@ -108,10 +108,14 @@ std::string OpTagToString(Operation::Tag tag) {
       return "resample2d";
     case Operation::Tag::kReshape:
       return "reshape";
+    case Operation::Tag::kSigmoid:
+      return "sigmoid";
     case Operation::Tag::kSlice:
       return "slice";
     case Operation::Tag::kSplit:
       return "split";
+    case Operation::Tag::kTanh:
+      return "tanh";
     case Operation::Tag::kTranspose:
       return "transpose";
     case Operation::Tag::kSoftmax:
@@ -402,13 +406,13 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
   // DirectML version upper than DML_FEATURE_LEVEL_6_0.
   // https://learn.microsoft.com/en-us/windows/ai/directml/dml-feature-level-history#dml_feature_level_6_0
   //
-  // TODO: Use a union of all activation operator structures to support and
-  // simplify the creation of fused activation operators.
+  // TODO(crbug.com/1486300): Use a union of all activation operator structures
+  // to support and simplify the creation of fused activation operators.
   absl::optional<DML_ACTIVATION_RELU_OPERATOR_DESC> dml_relu_desc;
   absl::optional<DML_OPERATOR_DESC> dml_activation_desc;
   if (conv2d->activation) {
     switch (conv2d->activation->which()) {
-      case mojom::Operation::Tag::kRelu: {
+      case mojom::Activation::Tag::kRelu: {
         dml_relu_desc = DML_ACTIVATION_RELU_OPERATOR_DESC{
             .InputTensor = nullptr, .OutputTensor = nullptr};
         dml_activation_desc =
