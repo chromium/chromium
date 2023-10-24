@@ -123,9 +123,9 @@ __gCrWeb.fill.inferLabelFromPrevious = function(element) {
  * @param {FormControlElement} element An element to examine.
  * @return {string} The label of element.
  */
-__gCrWeb.fill.inferLabelFromNext = function(element) {
+function inferLabelFromNext(element) {
   return inferLabelFromSibling(element, true);
-};
+}
 
 /**
  * Helper for |InferLabelForElement()| that infers a label, if possible, from
@@ -541,7 +541,7 @@ __gCrWeb.fill.inferLabelFromDefinitionList = function(element) {
 __gCrWeb.fill.inferLabelForElement = function(element) {
   let inferredLabel;
   if (__gCrWeb.fill.isCheckableElement(element)) {
-    inferredLabel = __gCrWeb.fill.inferLabelFromNext(element);
+    inferredLabel = inferLabelFromNext(element);
     if (inferenceUtil.isLabelValid(inferredLabel)) {
       return inferredLabel;
     }
@@ -604,3 +604,5 @@ __gCrWeb.fill.inferLabelForElement = function(element) {
 
   return '';
 };
+
+export {inferLabelFromNext};
