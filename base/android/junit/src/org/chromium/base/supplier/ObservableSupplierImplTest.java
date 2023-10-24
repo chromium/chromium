@@ -4,9 +4,10 @@
 
 package org.chromium.base.supplier;
 
+import static org.junit.Assert.assertEquals;
+
 import android.os.Handler;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
@@ -93,12 +94,9 @@ public class ObservableSupplierImplTest {
                     checkState(0, null, TEST_STRING_1, "after setting first string.");
 
                     Callback<String> supplierObserver =
-                            new Callback<String>() {
-                                @Override
-                                public void onResult(String result) {
-                                    mCallCount++;
-                                    mLastSuppliedString = result;
-                                }
+                            (String result) -> {
+                                mCallCount++;
+                                mLastSuppliedString = result;
                             };
 
                     mSupplier.addObserver(supplierObserver);
@@ -118,12 +116,9 @@ public class ObservableSupplierImplTest {
                     checkState(0, null, TEST_STRING_1, "after setting first string.");
 
                     Callback<String> supplierObserver =
-                            new Callback<String>() {
-                                @Override
-                                public void onResult(String result) {
-                                    mCallCount++;
-                                    mLastSuppliedString = result;
-                                }
+                            (String result) -> {
+                                mCallCount++;
+                                mLastSuppliedString = result;
                             };
 
                     mSupplier.addObserver(supplierObserver);
@@ -146,12 +141,9 @@ public class ObservableSupplierImplTest {
                     checkState(0, null, TEST_STRING_1, "after setting first string.");
 
                     Callback<String> supplierObserver =
-                            new Callback<String>() {
-                                @Override
-                                public void onResult(String result) {
-                                    mCallCount++;
-                                    mLastSuppliedString = result;
-                                }
+                            (String result) -> {
+                                mCallCount++;
+                                mLastSuppliedString = result;
                             };
 
                     mSupplier.addObserver(supplierObserver);
@@ -167,7 +159,7 @@ public class ObservableSupplierImplTest {
     @Test
     public void testObserverNotification_RemoveObserverInsideCallback() {
         Callback<String> supplierObserver =
-                new Callback<String>() {
+                new Callback<>() {
                     @Override
                     public void onResult(String result) {
                         mCallCount++;
@@ -191,13 +183,12 @@ public class ObservableSupplierImplTest {
             String expectedLastSuppliedString,
             String expectedStringFromGet,
             String assertDescription) {
-        Assert.assertEquals(
-                "Incorrect call count " + assertDescription, expectedCallCount, mCallCount);
-        Assert.assertEquals(
+        assertEquals("Incorrect call count " + assertDescription, expectedCallCount, mCallCount);
+        assertEquals(
                 "Incorrect last supplied string " + assertDescription,
                 expectedLastSuppliedString,
                 mLastSuppliedString);
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect #get() " + assertDescription, expectedStringFromGet, mSupplier.get());
     }
 }
