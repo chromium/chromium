@@ -890,9 +890,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectNGBlockFlow);
   }
-  bool IsLayoutNGFlexibleBox() const {
+  bool IsFlexibleBox() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectNGFlexibleBox);
+    return IsOfType(kLayoutObjectFlexibleBox);
   }
   bool IsLayoutListItem() const {
     NOT_DESTROYED();
@@ -950,9 +950,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectCustom);
   }
-  bool IsLayoutNGGrid() const {
+  bool IsLayoutGrid() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectNGGrid);
+    return IsOfType(kLayoutObjectGrid);
   }
   bool IsLayoutIFrame() const {
     NOT_DESTROYED();
@@ -2734,12 +2734,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   void Destroy();
 
   // TODO(1229581): Rename this function.
-  virtual bool IsFlexibleBoxIncludingNG() const {
-    NOT_DESTROYED();
-    return false;
-  }
-
-  // TODO(1229581): Rename this function.
   bool IsListItemIncludingNG() const {
     NOT_DESTROYED();
     return IsLayoutListItem() || IsInlineListItem();
@@ -3468,8 +3462,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     kLayoutObjectCustomScrollbarPart,
     kLayoutObjectEmbeddedObject,
     kLayoutObjectFieldset,
+    kLayoutObjectFlexibleBox,
     kLayoutObjectFrame,
     kLayoutObjectFrameSet,
+    kLayoutObjectGrid,
     kLayoutObjectIFrame,
     kLayoutObjectImage,
     kLayoutObjectInlineListItem,
@@ -3482,8 +3478,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     kLayoutObjectMultiColumnSet,
     kLayoutObjectMultiColumnSpannerPlaceholder,
     kLayoutObjectNGBlockFlow,
-    kLayoutObjectNGFlexibleBox,
-    kLayoutObjectNGGrid,
     kLayoutObjectOutsideListMarker,
     kLayoutObjectProgress,
     kLayoutObjectQuote,
@@ -4161,7 +4155,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     ADD_BOOLEAN_BITFIELD(is_table_column_constraints_dirty_,
                          IsTableColumnsConstraintsDirty);
 
-    // Grid item placement is cached on LayoutNGGrid.
+    // Grid item placement is cached on LayoutGrid.
     // When this flag is set, any cached item placements are invalid.
     ADD_BOOLEAN_BITFIELD(is_grid_placement_dirty_, IsGridPlacementDirty);
 

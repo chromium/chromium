@@ -11,13 +11,15 @@
 
 namespace blink {
 
-class CORE_EXPORT LayoutNGGrid : public LayoutBlock {
+class CORE_EXPORT LayoutGrid : public LayoutBlock {
  public:
-  explicit LayoutNGGrid(Element*);
+  explicit LayoutGrid(Element*);
 
   const char* GetName() const override {
     NOT_DESTROYED();
-    return "LayoutNGGrid";
+    // This string can affect a production behavior.
+    // See tool_highlight.ts in devtools-frontend.
+    return "LayoutGrid";
   }
 
   bool HasCachedPlacementData() const;
@@ -44,7 +46,7 @@ class CORE_EXPORT LayoutNGGrid : public LayoutBlock {
  protected:
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();
-    return type == kLayoutObjectNGGrid || LayoutBlock::IsOfType(type);
+    return type == kLayoutObjectGrid || LayoutBlock::IsOfType(type);
   }
 
  private:
@@ -65,9 +67,9 @@ class CORE_EXPORT LayoutNGGrid : public LayoutBlock {
 
 // wtf/casting.h helper.
 template <>
-struct DowncastTraits<LayoutNGGrid> {
+struct DowncastTraits<LayoutGrid> {
   static bool AllowFrom(const LayoutObject& object) {
-    return object.IsLayoutNGGrid();
+    return object.IsLayoutGrid();
   }
 };
 

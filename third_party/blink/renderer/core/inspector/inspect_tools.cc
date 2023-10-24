@@ -261,8 +261,7 @@ bool SearchingForNodeTool::HandleMouseMove(const WebMouseEvent& event) {
 
   contrast_info_ = FetchContrast(node);
   if (hovered_node_changed) {
-    if (auto* flexbox =
-            DynamicTo<LayoutNGFlexibleBox>(node->GetLayoutObject())) {
+    if (auto* flexbox = DynamicTo<LayoutFlexibleBox>(node->GetLayoutObject())) {
       flexbox->SetNeedsLayoutForDevtools();
     }
     NodeHighlightRequested(node);
@@ -359,7 +358,7 @@ NodeHighlightTool::NodeHighlightTool(
   std::tie(node_, content_visibility_state_) =
       DetermineContentVisibilityState(node);
   contrast_info_ = FetchContrast(node_);
-  if (auto* flexbox = DynamicTo<LayoutNGFlexibleBox>(node->GetLayoutObject())) {
+  if (auto* flexbox = DynamicTo<LayoutFlexibleBox>(node->GetLayoutObject())) {
     flexbox->SetNeedsLayoutForDevtools();
   }
 }

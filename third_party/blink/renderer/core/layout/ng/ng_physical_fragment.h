@@ -251,7 +251,7 @@ class CORE_EXPORT NGPhysicalFragment
     return IsTablePart() && layout_object_->IsTableCell();
   }
 
-  bool IsGridNG() const { return layout_object_->IsLayoutNGGrid(); }
+  bool IsGrid() const { return layout_object_->IsLayoutGrid(); }
 
   bool IsTextControlContainer() const;
   bool IsTextControlPlaceholder() const;

@@ -222,8 +222,8 @@ LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
                first_letter_text_layout_object->IsButton() ||
                IsMenuList(first_letter_text_layout_object)) {
       return nullptr;
-    } else if (first_letter_text_layout_object->IsFlexibleBoxIncludingNG() ||
-               first_letter_text_layout_object->IsLayoutNGGrid()) {
+    } else if (first_letter_text_layout_object->IsFlexibleBox() ||
+               first_letter_text_layout_object->IsLayoutGrid()) {
       first_letter_text_layout_object =
           first_letter_text_layout_object->NextSibling();
     } else if (!first_letter_text_layout_object->IsInline() &&

@@ -72,8 +72,8 @@ bool TableNode::AllowColumnPercentages(bool is_layout_pass) const {
   // from the tree.
   const LayoutBlock* block = box_->ContainingBlock();
   while (!block->IsLayoutView()) {
-    if (block->IsTableCell() || block->IsFlexibleBoxIncludingNG() ||
-        block->IsLayoutNGGrid()) {
+    if (block->IsTableCell() || block->IsFlexibleBox() ||
+        block->IsLayoutGrid()) {
       return false;
     }
 

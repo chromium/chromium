@@ -134,7 +134,7 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
 
   bool IsFrameSet() const { return box_->IsFrameSet(); }
   bool IsParentNGFrameSet() const { return box_->Parent()->IsFrameSet(); }
-  bool IsParentNGGrid() const { return box_->Parent()->IsLayoutNGGrid(); }
+  bool IsParentGrid() const { return box_->Parent()->IsLayoutGrid(); }
 
   // Return true if this block node establishes an inline formatting context.
   // This will only be the case if there is actual inline content. Empty nodes

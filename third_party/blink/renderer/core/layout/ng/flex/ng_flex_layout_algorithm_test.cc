@@ -24,12 +24,13 @@ class NGFlexLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
   const DevtoolsFlexInfo* LayoutForDevtools() {
     LayoutObject* generic_flex = GetLayoutObjectByElementId("flexbox");
     EXPECT_NE(generic_flex, nullptr);
-    LayoutNGFlexibleBox* ng_flex = DynamicTo<LayoutNGFlexibleBox>(generic_flex);
-    if (!ng_flex)
+    auto* flex = DynamicTo<LayoutFlexibleBox>(generic_flex);
+    if (!flex) {
       return nullptr;
-    ng_flex->SetNeedsLayoutForDevtools();
+    }
+    flex->SetNeedsLayoutForDevtools();
     UpdateAllLifecyclePhasesForTest();
-    return ng_flex->FlexLayoutData();
+    return flex->FlexLayoutData();
   }
 };
 
@@ -258,8 +259,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUma1) {
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
-  LayoutNGFlexibleBox* flex =
-      To<LayoutNGFlexibleBox>(GetLayoutObjectByElementId("flexbox"));
+  auto* flex = To<LayoutFlexibleBox>(GetLayoutObjectByElementId("flexbox"));
   LayoutObject* item = GetLayoutObjectByElementId("item");
   ItemPosition pos = FlexLayoutAlgorithm::AlignmentForChild(flex->StyleRef(),
                                                             item->StyleRef());

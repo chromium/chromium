@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGFlexibleBox (positioned) NAV class='nav-bar'",
+      "name": "LayoutFlexibleBox (positioned) NAV class='nav-bar'",
       "bounds": [200, 600],
       "contentsOpaque": true,
       "backgroundColor": "#008000",

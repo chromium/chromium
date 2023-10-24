@@ -16,10 +16,9 @@
 
 namespace blink {
 
-LayoutNGFlexibleBox::LayoutNGFlexibleBox(Element* element)
-    : LayoutBlock(element) {}
+LayoutFlexibleBox::LayoutFlexibleBox(Element* element) : LayoutBlock(element) {}
 
-bool LayoutNGFlexibleBox::HasTopOverflow() const {
+bool LayoutFlexibleBox::HasTopOverflow() const {
   const auto& style = StyleRef();
   bool is_wrap_reverse = StyleRef().FlexWrap() == EFlexWrap::kWrapReverse;
   if (style.IsHorizontalWritingMode()) {
@@ -31,7 +30,7 @@ bool LayoutNGFlexibleBox::HasTopOverflow() const {
           (style.ResolvedIsColumnFlexDirection() && is_wrap_reverse));
 }
 
-bool LayoutNGFlexibleBox::HasLeftOverflow() const {
+bool LayoutFlexibleBox::HasLeftOverflow() const {
   const auto& style = StyleRef();
   bool is_wrap_reverse = StyleRef().FlexWrap() == EFlexWrap::kWrapReverse;
   if (style.IsHorizontalWritingMode()) {
@@ -63,9 +62,8 @@ void MergeAnonymousFlexItems(LayoutObject* remove_child) {
 
 }  // namespace
 
-// See LayoutFlexibleBox::IsChildAllowed().
-bool LayoutNGFlexibleBox::IsChildAllowed(LayoutObject* object,
-                                         const ComputedStyle& style) const {
+bool LayoutFlexibleBox::IsChildAllowed(LayoutObject* object,
+                                       const ComputedStyle& style) const {
   const auto* select = DynamicTo<HTMLSelectElement>(GetNode());
   if (UNLIKELY(select && select->UsesMenuList())) {
     // For a size=1 <select>, we only render the active option label through the
@@ -76,19 +74,19 @@ bool LayoutNGFlexibleBox::IsChildAllowed(LayoutObject* object,
   return LayoutBlock::IsChildAllowed(object, style);
 }
 
-void LayoutNGFlexibleBox::SetNeedsLayoutForDevtools() {
+void LayoutFlexibleBox::SetNeedsLayoutForDevtools() {
   SetNeedsLayout(layout_invalidation_reason::kDevtools);
   SetNeedsDevtoolsInfo(true);
 }
 
-const DevtoolsFlexInfo* LayoutNGFlexibleBox::FlexLayoutData() const {
+const DevtoolsFlexInfo* LayoutFlexibleBox::FlexLayoutData() const {
   const wtf_size_t fragment_count = PhysicalFragmentCount();
   DCHECK_GE(fragment_count, 1u);
   // Currently, devtools data is on the first fragment of a fragmented flexbox.
   return GetLayoutResult(0)->FlexLayoutData();
 }
 
-void LayoutNGFlexibleBox::RemoveChild(LayoutObject* child) {
+void LayoutFlexibleBox::RemoveChild(LayoutObject* child) {
   if (!DocumentBeingDestroyed() &&
       !StyleRef().IsDeprecatedFlexboxUsingFlexLayout())
     MergeAnonymousFlexItems(child);

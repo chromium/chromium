@@ -164,7 +164,7 @@ NOINLINE void DetermineAlgorithmAndRun(const NGLayoutAlgorithmParams& params,
                                        const Callback& callback) {
   const ComputedStyle& style = params.node.Style();
   const LayoutBox& box = *params.node.GetLayoutBox();
-  if (box.IsLayoutNGFlexibleBox()) {
+  if (box.IsFlexibleBox()) {
     CreateAlgorithmAndRun<NGFlexLayoutAlgorithm>(params, callback);
   } else if (box.IsTable()) {
     CreateAlgorithmAndRun<TableLayoutAlgorithm>(params, callback);
@@ -176,7 +176,7 @@ NOINLINE void DetermineAlgorithmAndRun(const NGLayoutAlgorithmParams& params,
     CreateAlgorithmAndRun<CustomLayoutAlgorithm>(params, callback);
   } else if (box.IsMathML()) {
     DetermineMathMLAlgorithmAndRun(box, params, callback);
-  } else if (box.IsLayoutNGGrid()) {
+  } else if (box.IsLayoutGrid()) {
     CreateAlgorithmAndRun<NGGridLayoutAlgorithm>(params, callback);
   } else if (box.IsLayoutReplaced()) {
     CreateAlgorithmAndRun<NGReplacedLayoutAlgorithm>(params, callback);
@@ -1788,7 +1788,7 @@ void NGBlockNode::UpdateMarginPaddingInfoIfNeeded(
     // is able to return the correct value. This isn't ideal, but eventually
     // we'll answer these queries from the fragment.
     const auto* containing_block = box_->ContainingBlock();
-    if (UNLIKELY(containing_block && containing_block->IsLayoutNGGrid())) {
+    if (UNLIKELY(containing_block && containing_block->IsLayoutGrid())) {
       box_->SetOverrideContainingBlockContentLogicalWidth(
           space.PercentageResolutionInlineSizeForParentWritingMode());
     }

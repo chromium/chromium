@@ -245,7 +245,7 @@ void RangeInputType::CreateShadowSubtree() {
 
 LayoutObject* RangeInputType::CreateLayoutObject(const ComputedStyle&) const {
   // TODO(crbug.com/1131352): input[type=range] should not use flexbox.
-  return MakeGarbageCollected<LayoutNGFlexibleBox>(&GetElement());
+  return MakeGarbageCollected<LayoutFlexibleBox>(&GetElement());
 }
 
 Decimal RangeInputType::ParseToNumber(const String& src,

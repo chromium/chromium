@@ -9,7 +9,7 @@
 namespace blink {
 
 const NGGridPlacementData& NGGridNode::CachedPlacementData() const {
-  auto* layout_grid = To<LayoutNGGrid>(box_.Get());
+  auto* layout_grid = To<LayoutGrid>(box_.Get());
   return layout_grid->CachedPlacementData();
 }
 
@@ -36,7 +36,7 @@ GridItems NGGridNode::ConstructGridItems(
     *has_nested_subgrid = false;
 
   GridItems grid_items;
-  auto* layout_grid = To<LayoutNGGrid>(box_.Get());
+  auto* layout_grid = To<LayoutGrid>(box_.Get());
   const NGGridPlacementData* cached_placement_data = nullptr;
 
   if (layout_grid->HasCachedPlacementData()) {

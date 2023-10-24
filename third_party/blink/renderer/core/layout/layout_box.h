@@ -1023,13 +1023,13 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   bool IsFlexItemIncludingNG() const {
     NOT_DESTROYED();
     return !IsInline() && !IsOutOfFlowPositioned() && Parent() &&
-           Parent()->IsFlexibleBoxIncludingNG();
+           Parent()->IsFlexibleBox();
   }
 
   // TODO(1229581): Rename this function.
   bool IsGridItemIncludingNG() const {
     NOT_DESTROYED();
-    return Parent() && Parent()->IsLayoutNGGrid();
+    return Parent() && Parent()->IsLayoutGrid();
   }
 
   bool IsMathItem() const {

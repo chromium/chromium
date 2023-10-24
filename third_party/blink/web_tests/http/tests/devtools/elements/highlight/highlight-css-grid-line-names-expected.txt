@@ -92,7 +92,7 @@ grid-with-line-names{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutNGGrid",
+    "layoutObjectName": "LayoutGrid",
     "showAccessibilityInfo": true
   },
   "gridInfo": [
