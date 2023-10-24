@@ -369,6 +369,9 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // password recovery process).
   void HandleForgotPasswordFormData();
 
+  // Returns non-empty, lower case stored usernames based on `GetBestMatches()`.
+  base::flat_set<std::u16string> GetStoredUsernames() const;
+
   // The client which implements embedder-specific PasswordManager operations.
   const raw_ptr<PasswordManagerClient> client_;
 

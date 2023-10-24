@@ -33,7 +33,8 @@ DEFINE_BINARY_PROTO_FUZZER(const ::form_data_fuzzer::Form& form_proto) {
   autofill::FormData form_data = GenerateWithProto(form_proto);
 
   FormDataParser parser;
-  std::unique_ptr<PasswordForm> result = parser.Parse(form_data, mode);
+  std::unique_ptr<PasswordForm> result =
+      parser.Parse(form_data, mode, /*stored_usernames=*/{});
   if (result) {
     // Create a copy of the result -- running the copy-constructor might
     // discover some invalid data in |result|.

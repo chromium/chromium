@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 
 #include <stddef.h>
 
@@ -13,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -243,8 +245,20 @@ void CheckAllValuesUnique(const AlternativeElementVector& v) {
   }
 }
 
+// Creates a simple field with `type` and `value`. Requires an
+// `AutofillTestEnvironment` instance to generate the renderer id.
+FormFieldData CreateField(FormControlType type, std::u16string value) {
+  FormFieldData field;
+  field.form_control_type = type;
+  field.value = std::move(value);
+  field.unique_renderer_id = autofill::test::MakeFieldRendererId();
+  return field;
+}
+
 class FormParserTest : public testing::Test {
  protected:
+  autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
+
   std::u16string GetFieldNameByIndex(size_t index) {
     return u"field" + base::NumberToString16(index);
   }
@@ -352,7 +366,7 @@ class FormParserTest : public testing::Test {
             << (mode == FormDataParser::Mode::kFilling ? "Filling" : "Saving"));
 
         std::unique_ptr<PasswordForm> parsed_form =
-            parser.Parse(form_data, mode);
+            parser.Parse(form_data, mode, /*stored_usernames=*/{});
 
         const ParseResultIds& expected_ids =
             mode == FormDataParser::Mode::kFilling ? fill_result : save_result;
@@ -2932,8 +2946,10 @@ TEST_F(FormParserTest, InvalidURL) {
   // URL comes from https://crbug.com/1075515.
   form_data.url = GURL("FilEsysteM:htTp:E=/.");
   FormDataParser parser;
-  EXPECT_FALSE(parser.Parse(form_data, FormDataParser::Mode::kFilling));
-  EXPECT_FALSE(parser.Parse(form_data, FormDataParser::Mode::kSaving));
+  EXPECT_FALSE(parser.Parse(form_data, FormDataParser::Mode::kFilling,
+                            /*stored_usernames=*/{}));
+  EXPECT_FALSE(parser.Parse(form_data, FormDataParser::Mode::kSaving,
+                            /*stored_usernames=*/{}));
 }
 
 TEST_F(FormParserTest, FindUsernameInPredictions_SkipPrediction) {
@@ -3028,8 +3044,10 @@ TEST_F(FormParserTest, SkipHiddenValueField) {
     FormData form_data =
         GetFormDataAndExpectation(form_desc, &no_predictions, &dummy, &dummy);
     FormDataParser parser;
-    EXPECT_TRUE(parser.Parse(form_data, FormDataParser::Mode::kFilling));
-    EXPECT_FALSE(parser.Parse(form_data, FormDataParser::Mode::kSaving));
+    EXPECT_TRUE(parser.Parse(form_data, FormDataParser::Mode::kFilling,
+                             /*stored_usernames=*/{}));
+    EXPECT_FALSE(parser.Parse(form_data, FormDataParser::Mode::kSaving,
+                              /*stored_usernames=*/{}));
   }
 }
 
@@ -3077,8 +3095,10 @@ TEST_F(FormParserTest, DontSkipNotHiddenValues) {
     FormData form_data =
         GetFormDataAndExpectation(form_desc, &no_predictions, &dummy, &dummy);
     FormDataParser parser;
-    EXPECT_TRUE(parser.Parse(form_data, FormDataParser::Mode::kFilling));
-    EXPECT_TRUE(parser.Parse(form_data, FormDataParser::Mode::kSaving));
+    EXPECT_TRUE(parser.Parse(form_data, FormDataParser::Mode::kFilling,
+                             /*stored_usernames=*/{}));
+    EXPECT_TRUE(parser.Parse(form_data, FormDataParser::Mode::kSaving,
+                             /*stored_usernames=*/{}));
   }
 }
 
@@ -3244,8 +3264,8 @@ TEST_F(FormParserTest, UsernameFoundByServerPredictions) {
   parser.set_predictions(std::move(predictions));
 
   auto [result, username_detection_method] =
-      parser.ParseAndReturnUsernameDetection(form_data,
-                                             FormDataParser::Mode::kSaving);
+      parser.ParseAndReturnUsernameDetection(
+          form_data, FormDataParser::Mode::kSaving, /*stored_usernames=*/{});
   EXPECT_EQ(username_detection_method,
             UsernameDetectionMethod::kServerSidePrediction);
 }
@@ -3276,6 +3296,29 @@ TEST_F(FormParserTest, UsePasswordServerPredictionsOnSaving) {
               },
       },
   });
+}
+
+TEST_F(FormParserTest, BaseHeuristicsFindUsernameFieldWithStoredUsername) {
+  const std::u16string kUsername = u"the_username";
+  FormData form_data;
+  form_data.url = GURL("https://www.example.com");
+  form_data.fields.emplace_back(
+      CreateField(FormControlType::kInputText, kUsername));
+  form_data.fields.emplace_back(CreateField(FormControlType::kInputText, u""));
+  form_data.fields.emplace_back(
+      CreateField(FormControlType::kInputPassword, u""));
+
+  FormDataParser parser;
+  auto [password_form, username_detection_method] =
+      parser.ParseAndReturnUsernameDetection(
+          form_data, FormDataParser::Mode::kFilling, {kUsername});
+  ASSERT_TRUE(password_form);
+
+  EXPECT_EQ(username_detection_method, UsernameDetectionMethod::kBaseHeuristic);
+  EXPECT_EQ(password_form->username_value, kUsername);
+  EXPECT_TRUE(password_form->HasUsernameElement());
+  EXPECT_EQ(password_form->username_element_renderer_id,
+            form_data.fields[0].unique_renderer_id);
 }
 
 }  // namespace

@@ -15,6 +15,7 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/metrics/histogram_functions.h"
@@ -742,6 +743,7 @@ std::vector<const FormFieldData*> GetRelevantPasswords(
 const FormFieldData* FindUsernameFieldBaseHeuristics(
     const std::vector<ProcessedField>& processed_fields,
     const std::vector<ProcessedField>::const_iterator& first_relevant_password,
+    const base::flat_set<std::u16string>& stored_usernames,
     FormDataParser::Mode mode,
     Interactability best_interactability,
     bool is_fallback) {
@@ -757,7 +759,8 @@ const FormFieldData* FindUsernameFieldBaseHeuristics(
   const FormFieldData* focusable_username = nullptr;
   const FormFieldData* username = nullptr;
 
-  // Do reverse search to find the closest candidates preceding the password.
+  // Do reverse search to find the closest candidates preceding the
+  // password.
   for (auto it = std::make_reverse_iterator(first_relevant_password);
        it != processed_fields.rend(); ++it) {
     if (it->is_password || it->is_predicted_as_password)
@@ -773,9 +776,11 @@ const FormFieldData* FindUsernameFieldBaseHeuristics(
     }
     if (!username)
       username = it->field;
-    if (it->field->is_focusable) {
+    if (!focusable_username && it->field->is_focusable) {
       focusable_username = it->field;
-      break;
+    }
+    if (stored_usernames.contains(base::i18n::ToLower(it->field->value))) {
+      return it->field;
     }
   }
 
@@ -800,6 +805,7 @@ autofill::FieldRendererId ExtractUniqueId(const FormFieldData* field) {
 // will be updated according to that processing.
 void ParseUsingBaseHeuristics(
     const std::vector<ProcessedField>& processed_fields,
+    const base::flat_set<std::u16string>& stored_usernames,
     FormDataParser::Mode mode,
     SignificantFields* found_fields,
     Interactability* username_max,
@@ -874,8 +880,8 @@ void ParseUsingBaseHeuristics(
   }
 
   found_fields->username = FindUsernameFieldBaseHeuristics(
-      processed_fields, first_relevant_password, mode, *username_max,
-      found_fields->is_fallback);
+      processed_fields, first_relevant_password, stored_usernames, mode,
+      *username_max, found_fields->is_fallback);
   return;
 }
 
@@ -1069,8 +1075,10 @@ FormDataParser::~FormDataParser() = default;
 
 std::tuple<std::unique_ptr<PasswordForm>,
            FormDataParser::UsernameDetectionMethod>
-FormDataParser::ParseAndReturnUsernameDetection(const FormData& form_data,
-                                                Mode mode) {
+FormDataParser::ParseAndReturnUsernameDetection(
+    const FormData& form_data,
+    Mode mode,
+    const base::flat_set<std::u16string>& stored_usernames) {
   if (form_data.fields.size() > kMaxParseableFields)
     return {nullptr, UsernameDetectionMethod::kNoUsernameDetected};
   if (!form_data.url.is_valid())
@@ -1115,8 +1123,9 @@ FormDataParser::ParseAndReturnUsernameDetection(const FormData& form_data,
   // Try to parse with base heuristic.
   if (!significant_fields.is_single_username) {
     Interactability username_max = Interactability::kUnlikely;
-    ParseUsingBaseHeuristics(processed_fields, mode, &significant_fields,
-                             &username_max, &readonly_status_);
+    ParseUsingBaseHeuristics(processed_fields, stored_usernames, mode,
+                             &significant_fields, &username_max,
+                             &readonly_status_);
     if (method == UsernameDetectionMethod::kNoUsernameDetected &&
         significant_fields.username) {
       method = UsernameDetectionMethod::kBaseHeuristic;
@@ -1190,9 +1199,12 @@ FormDataParser::ParseAndReturnUsernameDetection(const FormData& form_data,
       method};
 }
 
-std::unique_ptr<PasswordForm> FormDataParser::Parse(const FormData& form_data,
-                                                    Mode mode) {
-  return std::get<0>(ParseAndReturnUsernameDetection(form_data, mode));
+std::unique_ptr<PasswordForm> FormDataParser::Parse(
+    const FormData& form_data,
+    Mode mode,
+    const base::flat_set<std::u16string>& stored_usernames) {
+  return std::get<0>(
+      ParseAndReturnUsernameDetection(form_data, mode, stored_usernames));
 }
 
 std::string GetSignonRealm(const GURL& url) {
