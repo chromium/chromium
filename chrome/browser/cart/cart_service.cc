@@ -678,7 +678,7 @@ CartDB* CartService::GetDB() {
 
 void CartService::AddCartsWithFakeData() {
   DeleteCartsWithFakeData();
-  // Polulate and add some carts with fake data.
+  // Populate and add some carts with fake data.
   double time_now = base::Time::Now().InSecondsFSinceUnixEpoch();
   cart_db::ChromeCartContentProto dummy_proto1;
   GURL dummy_url1 = GURL("https://www.example.com");

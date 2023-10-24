@@ -282,7 +282,6 @@ constexpr uint8_t kFakeUsbInterfaceNumber1 = 1;
 // Time delta representing 1 hour time interval.
 constexpr base::TimeDelta kHour = base::Hours(1);
 
-const int64_t kMillisecondsPerDay = base::Time::kMicrosecondsPerDay / 1000;
 const char kKioskAccountId[] = "kiosk_user@localhost";
 const char kArcKioskAccountId[] = "arc_kiosk_user@localhost";
 const char kWebKioskAccountId[] = "web_kiosk_user@localhost";
@@ -1486,9 +1485,9 @@ TEST_F(DeviceStatusCollectorTest, ActivityCrossingMidnight) {
 
   // Ensure that the start and end times for the period are a day apart.
   EXPECT_EQ(time_period0.end_timestamp() - time_period0.start_timestamp(),
-            kMillisecondsPerDay);
+            base::Time::kMillisecondsPerDay);
   EXPECT_EQ(time_period1.end_timestamp() - time_period1.start_timestamp(),
-            kMillisecondsPerDay);
+            base::Time::kMillisecondsPerDay);
 }
 
 TEST_F(DeviceStatusCollectorTest, ActivityTimesKeptUntilSubmittedSuccessfully) {

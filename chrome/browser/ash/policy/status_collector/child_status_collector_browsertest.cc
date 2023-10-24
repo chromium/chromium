@@ -87,8 +87,6 @@ constexpr base::TimeDelta kSixAm = base::Hours(6);
 // Time delta representing 1 hour time interval.
 constexpr base::TimeDelta kHour = base::Hours(1);
 
-constexpr int64_t kMillisecondsPerDay = Time::kMicrosecondsPerDay / 1000;
-
 constexpr int kIdlePollIntervalSeconds = 30;
 
 constexpr char kStartTime[] = "1 Jan 2020 21:15";
@@ -375,7 +373,9 @@ class ChildStatusCollectorTest : public testing::Test {
   }
 
   // Convenience method.
-  int64_t ActivePeriodMilliseconds() { return kIdlePollIntervalSeconds * 1000; }
+  static int64_t ActivePeriodMilliseconds() {
+    return kIdlePollIntervalSeconds * base::Time::kMillisecondsPerSecond;
+  }
 
   void ExpectChildScreenTimeMilliseconds(int64_t duration) {
     pref_service()->CommitPendingWrite(
@@ -659,9 +659,9 @@ TEST_F(ChildStatusCollectorTest, ActivityCrossingMidnight) {
 
   // Ensure that the start and end times for the period are a day apart.
   EXPECT_EQ(timespan0period.end_timestamp() - timespan0period.start_timestamp(),
-            kMillisecondsPerDay);
+            base::Time::kMillisecondsPerDay);
   EXPECT_EQ(timespan1period.end_timestamp() - timespan1period.start_timestamp(),
-            kMillisecondsPerDay);
+            base::Time::kMillisecondsPerDay);
   ExpectChildScreenTimeMilliseconds(0.5 * ActivePeriodMilliseconds());
 }
 
