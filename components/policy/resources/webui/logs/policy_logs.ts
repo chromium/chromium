@@ -22,7 +22,7 @@ let versionInfo: VersionInfo;
 function dumpFileWithJsonContents() {
   const dumpObject = {versionInfo, logs};
 
-  const data = JSON.stringify(dumpObject);
+  const data = JSON.stringify(dumpObject, null, 3);
   const filename = 'policy_logs_dump.json';
 
   const blob = new Blob([data], {'type': 'application/json'});
