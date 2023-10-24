@@ -15,7 +15,7 @@ import org.chromium.chrome.browser.readaloud.player.R;
 import java.util.HashMap;
 import java.util.Map;
 
-class Menu extends LinearLayout {
+public class Menu extends LinearLayout {
     // Menu item constructor params.
     private final Context mContext;
     private final AttributeSet mAttrs;

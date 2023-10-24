@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.readaloud.player.mini;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.app.Activity;
+import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.ViewStub;
 
 import org.junit.Before;
@@ -23,6 +25,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
+import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -34,6 +37,9 @@ public class MiniPlayerCoordinatorUnitTest {
     private static final String TITLE = "Title";
     private static final String PUBLISHER = "Publisher";
 
+    @Mock private Activity mActivity;
+    @Mock private Context mContextForInflation;
+    @Mock private LayoutInflater mLayoutInflater;
     @Mock private ViewStub mViewStub;
     @Mock private MiniPlayerLayout mLayout;
     @Mock private MiniPlayerMediator mMediator;
@@ -45,8 +51,12 @@ public class MiniPlayerCoordinatorUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         doReturn(mLayout).when(mViewStub).inflate();
+        doReturn(mViewStub).when(mActivity).findViewById(eq(R.id.readaloud_mini_player_stub));
+        doReturn(mLayoutInflater)
+                .when(mContextForInflation)
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mModel = new PropertyModel.Builder(PlayerProperties.ALL_KEYS).build();
-        mCoordinator = new MiniPlayerCoordinator(mViewStub, mModel, mMediator);
+        mCoordinator = new MiniPlayerCoordinator(mModel, mMediator, mLayout);
     }
 
     @Test
@@ -54,20 +64,18 @@ public class MiniPlayerCoordinatorUnitTest {
         // Test the real constructor
         reset(mViewStub);
         doReturn(mLayout).when(mViewStub).inflate();
-        mCoordinator = new MiniPlayerCoordinator(mViewStub, mModel);
+        mCoordinator = new MiniPlayerCoordinator(mActivity, mContextForInflation, mModel);
         verify(mViewStub).inflate();
     }
 
     @Test
     public void testShow() {
         mCoordinator.show(/* animate= */ false);
-        verify(mViewStub).inflate();
         verify(mMediator).show(eq(false));
 
         // Second show() shouldn't inflate the stub again.
         reset(mViewStub);
         mCoordinator.show(/* animate= */ false);
-        verify(mViewStub, never()).inflate();
         verify(mMediator, times(2)).show(eq(false));
     }
 
