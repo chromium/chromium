@@ -5,6 +5,7 @@
 package org.chromium.base.supplier;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 
 import android.os.Handler;
 
@@ -63,7 +64,16 @@ public class ObservableSupplierImplTest {
 
         mSupplier.set(TEST_STRING_1);
         checkState(1, TEST_STRING_1, TEST_STRING_1, "after resetting first string.");
+
+        // Need to trick Java to not intern our new string.
+        String anotherTestString1 = new String(new char[] {'T', 'e', 's', 't'});
+        assertNotSame(TEST_STRING_1, anotherTestString1);
+        mSupplier.set(anotherTestString1);
+        // Don't use checkState, as the string arguments do not really make sense.
+        assertEquals(
+                "Incorrect call count after setting a different but equal string.", 1, mCallCount);
     }
+
 
     @Test
     public void testObserverNotification_RemoveObserver() {

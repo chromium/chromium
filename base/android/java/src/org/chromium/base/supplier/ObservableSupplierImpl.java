@@ -12,6 +12,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 
+import java.util.Objects;
+
 /**
  * Concrete implementation of {@link ObservableSupplier} to be used by classes owning the
  * ObservableSupplier and providing it as a dependency to others.
@@ -64,12 +66,16 @@ public class ObservableSupplierImpl<E> implements ObservableSupplier<E> {
 
     /**
      * Set the object supplied by this supplier. This will notify registered callbacks that the
-     * dependency is available.
+     * dependency is available if the object changes. Object equality is used when deciding if the
+     * object has changed, not reference equality.
+     *
      * @param object The object to supply.
      */
     public void set(E object) {
         checkThread();
-        if (object == mObject) return;
+        if (Objects.equals(object, mObject)) {
+            return;
+        }
 
         mObject = object;
 
