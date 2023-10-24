@@ -254,6 +254,21 @@ TEST_F(FasterSplitScreenTest, Basic) {
   VerifySplitViewOverviewSession(w3.get());
 }
 
+TEST_F(FasterSplitScreenTest, EndSplitViewOverviewSession) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kSecondarySnapped);
+  VerifySplitViewOverviewSession(w1.get());
+
+  // Drag `w1` out of split view. Test it ends overview.
+  const gfx::Rect window_bounds(w1->GetBoundsInScreen());
+  const gfx::Point drag_point(window_bounds.CenterPoint().x(),
+                              window_bounds.y() + 10);
+  auto* event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(drag_point);
+  event_generator->DragMouseBy(10, 10);
+  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+}
+
 // Tests the histograms for the split view overview session exit points are
 // recorded correctly.
 TEST_F(FasterSplitScreenTest, SplitViewOverviewSessionExitPointHistogramsTest) {

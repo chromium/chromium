@@ -794,8 +794,8 @@ void SplitViewController::AttachSnappingWindow(aura::Window* window,
       // `AutoSnapController::AutoSnapWindowIfNeeded()`.
       // TODO(b/302397864): Handle this logic in
       // `OverviewSession::OnWindowActivating()`.
-      auto_snap_controller_ = std::make_unique<AutoSnapController>(
-          root_window_, /*is_activation_observer=*/true);
+      auto_snap_controller_ =
+          std::make_unique<AutoSnapController>(root_window_);
     }
 
     if (!IsInTabletMode() && IsInOverviewSession() && !is_flag_enabled) {

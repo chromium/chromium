@@ -49,7 +49,11 @@ constexpr char kClamshellSplitViewResizeWithOverviewMaxLatencyHistogram[] =
     "WithOverview";
 
 bool InClamshellSplitViewMode(SplitViewController* controller) {
-  return controller && controller->InClamshellSplitViewMode() &&
+  // If `kFasterSplitScreenSetup` is enabled, clamshell split view does *not*
+  // have to be active.
+  // TODO(sophiewen): Consolidate with `kSnapGroup` flag.
+  return (features::IsFasterSplitScreenSetupEnabled() ||
+          (controller && controller->InClamshellSplitViewMode())) &&
          GetOverviewSession();
 }
 
@@ -62,8 +66,8 @@ SplitViewOverviewSession::SplitViewOverviewSession(aura::Window* window)
   WindowState::Get(window)->AddObserver(this);
 
   if (window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled()) {
-    auto_snap_controller_ = std::make_unique<AutoSnapController>(
-        window->GetRootWindow(), /*is_activation_observer=*/false);
+    auto_snap_controller_ =
+        std::make_unique<AutoSnapController>(window->GetRootWindow());
   }
 }
 

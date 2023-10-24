@@ -904,22 +904,11 @@ void OverviewSession::OnWindowActivating(
     return;
   }
 
-  if (auto* split_view_overview_session =
-          RootWindowController::ForWindow(gained_active)
-              ->split_view_overview_session()) {
-    base::AutoReset<bool> ignore(&ignore_activations_, true);
-    if (auto* auto_snap_controller =
-            split_view_overview_session->auto_snap_controller();
-        auto_snap_controller &&
-        auto_snap_controller->OnWindowActivatingFromOverview(reason,
-                                                             gained_active)) {
-      // If `SplitViewOverviewSession` created `AutoSnapController`, let it
-      // handle `OnWindowActivatingFromOverview()` first in case it needs to
-      // auto snap the window, before we fall through to `EndOverview()`.
-      RestoreWindowActivation(false);
-      EndOverview(OverviewEndAction::kWindowActivating);
-      return;
-    }
+  if (RootWindowController::ForWindow(gained_active)
+          ->split_view_overview_session()) {
+    // Let `SplitViewOverviewSession` handle the window activation change.
+    RestoreWindowActivation(false);
+    return;
   }
 
   // Do not cancel overview mode if the window activation happens when split
