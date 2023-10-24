@@ -82493,16 +82493,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Direct and scaling overlay support"/>
 </enum>
 
-<enum name="OverlayWindowControl">
-  <int value="0" label="Back to tab"/>
-  <int value="1" label="Toggle mute"/>
-  <int value="2" label="Skip ad"/>
-  <int value="3" label="Close"/>
-  <int value="4" label="Toggle video to play or pause"/>
-  <int value="5" label="Next track"/>
-  <int value="6" label="Previous track"/>
-</enum>
-
 <enum name="OverscrollMode">
   <summary>Direction of the overscroll gesture.</summary>
   <int value="1" label="North">Scrolled from bottom towards top</int>

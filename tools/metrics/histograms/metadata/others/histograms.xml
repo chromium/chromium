@@ -9637,25 +9637,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PictureInPictureWindow.ButtonPressed"
-    enum="OverlayWindowControl" expires_after="M85">
-  <owner>fbeaufort@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Records Picture-in-Picture window control buttons pressed by user (basically
-    everything except user tap gestures).
-  </summary>
-</histogram>
-
-<histogram name="PictureInPictureWindow.TapGesture" enum="OverlayWindowControl"
-    expires_after="M85">
-  <owner>fbeaufort@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Records Picture-in-Picture window control user tap gestures.
-  </summary>
-</histogram>
-
 <histogram name="PLT.iOS.BrowserInitiatedPageLoadTime" units="ms"
     expires_after="M92">
   <obsolete>
