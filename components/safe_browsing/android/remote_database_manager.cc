@@ -349,9 +349,10 @@ RemoteSafeBrowsingDatabaseManager::GetBrowseUrlThreatSource(
     CheckBrowseUrlType check_type) const {
   switch (check_type) {
     case CheckBrowseUrlType::kHashDatabase:
-      // TODO(crbug.com/1490736): Return threat source based on the status of
-      // kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck.
-      return safe_browsing::ThreatSource::REMOTE;
+      return base::FeatureList::IsEnabled(
+                 kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck)
+                 ? safe_browsing::ThreatSource::ANDROID_SAFEBROWSING
+                 : safe_browsing::ThreatSource::REMOTE;
     case CheckBrowseUrlType::kHashRealTime:
       return safe_browsing::ThreatSource::ANDROID_SAFEBROWSING_REAL_TIME;
   }

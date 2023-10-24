@@ -1628,6 +1628,8 @@ message ClientSafeBrowsingReportRequest {
     PVER5_NATIVE_REAL_TIME = 6;
     // The Android Safe Browsing API hit in real time.
     ANDROID_SAFEBROWSING_REAL_TIME = 7;
+    // The Android Safe Browsing API hit in local blocklist.
+    ANDROID_SAFEBROWSING = 8;
   }
 
   // The information propagated from the client about various environment

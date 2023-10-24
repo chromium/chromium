@@ -75,8 +75,11 @@ class SafeBrowsingMetricsCollector : public KeyedService {
     // The user bypasses an interstitial that is triggered by the hash-prefix
     // real-time lookup through Android Safe Browsing API.
     ANDROID_SAFEBROWSING_REAL_TIME_INTERSTITIAL_BYPASS = 14,
+    // The user bypasses an interstitial that is triggered by the local Safe
+    // Browsing database through Android Safe Browsing API.
+    ANDROID_SAFEBROWSING_INTERSTITIAL_BYPASS = 15,
 
-    kMaxValue = ANDROID_SAFEBROWSING_REAL_TIME_INTERSTITIAL_BYPASS
+    kMaxValue = ANDROID_SAFEBROWSING_INTERSTITIAL_BYPASS
   };
 
   using EventTypeFilter = base::RepeatingCallback<bool(const EventType&)>;

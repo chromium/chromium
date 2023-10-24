@@ -30,6 +30,8 @@ enum class ThreatSource {
   // From GmsCore SafeBrowsing API. Android only. Including fallback to protocol
   // v4 (through either SafeBrowsing API or SafetyNet API).
   ANDROID_SAFEBROWSING_REAL_TIME,
+  // From GmsCore SafeBrowsing API. Android only. Protocol v4 only.
+  ANDROID_SAFEBROWSING,
 };
 
 // Data to report about the contents of a particular threat (malware, phishing,
