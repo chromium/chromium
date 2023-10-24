@@ -1158,6 +1158,8 @@
       'gpu-fyi-try-chromeos-amd64-generic': 'gpu_tests_chromeos_amd64_release_trybot_dcheck_off_no_symbols_reclient',
       'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel_dchecks_skylab_reclient_use_dummy_lastchange',
       'lacros-amd64-generic-rel-non-skylab': 'chromeos_amd64-generic_lacros_rel_dchecks_reclient',
+      # TODO (crbug.com/1287228): Remove when orchestrator is verified
+      'lacros-amd64-generic-rel-orchestrator': 'chromeos_amd64-generic_lacros_rel_dchecks_skylab_reclient_use_dummy_lastchange',
       'lacros-arm-generic-rel': 'chromeos_arm-generic_lacros_rel_dchecks_reclient',
       'lacros-arm-generic-rel-skylab': 'chromeos_arm-generic_lacros_rel_skylab_reclient',
       'lacros-arm64-generic-rel': 'chromeos_arm64-generic_lacros_rel_dchecks_reclient',
