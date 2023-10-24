@@ -51,7 +51,7 @@ void MockAffiliatedMatchHelper::
 
 void MockAffiliatedMatchHelper::InjectAffiliationAndBrandingInformation(
     std::vector<std::unique_ptr<PasswordForm>> forms,
-    PasswordFormsOrErrorCallback result_callback) {
+    base::OnceCallback<void(LoginsResultOrError)> result_callback) {
   const std::vector<AffiliationAndBrandingInformation>& information =
       OnInjectAffiliationAndBrandingInformationCalled();
   if (information.empty()) {

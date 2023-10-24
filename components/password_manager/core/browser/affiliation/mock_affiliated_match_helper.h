@@ -74,7 +74,7 @@ class MockAffiliatedMatchHelper : public AffiliatedMatchHelper {
 
   void InjectAffiliationAndBrandingInformation(
       std::vector<std::unique_ptr<PasswordForm>> forms,
-      PasswordFormsOrErrorCallback result_callback) override;
+      base::OnceCallback<void(LoginsResultOrError)> result_callback) override;
 };
 
 }  // namespace password_manager

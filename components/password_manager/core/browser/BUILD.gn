@@ -32,8 +32,6 @@ source_set("sql_builder") {
 
 static_library("browser") {
   sources = [
-    "affiliation/affiliated_match_helper.cc",
-    "affiliation/affiliated_match_helper.h",
     "browser_save_password_progress_logger.cc",
     "browser_save_password_progress_logger.h",
     "bulk_leak_check_service.cc",
@@ -221,7 +219,6 @@ static_library("browser") {
     "//components/sync",
   ]
   deps = [
-    ":affiliation_proto",
     ":hash_password_manager",
     ":password_hash_data",
     "//base",
@@ -238,6 +235,7 @@ static_library("browser") {
     "//components/favicon/core",
     "//components/keyed_service/core",
     "//components/os_crypt/sync",
+    "//components/password_manager/core/browser/affiliation:affiliation_proto",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/form_parsing",
     "//components/password_manager/core/browser/generation",
@@ -426,10 +424,6 @@ if (is_android) {
   }
 }
 
-fuzzable_proto_library("affiliation_proto") {
-  sources = [ "affiliation/affiliation_api.proto" ]
-}
-
 static_library("password_hash_data") {
   sources = [
     "password_hash_data.cc",
@@ -461,8 +455,6 @@ static_library("hash_password_manager") {
 static_library("test_support") {
   testonly = true
   sources = [
-    "affiliation/mock_affiliated_match_helper.cc",
-    "affiliation/mock_affiliated_match_helper.h",
     "fake_form_fetcher.cc",
     "fake_form_fetcher.h",
     "fake_password_store_backend.cc",
@@ -538,7 +530,6 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "affiliation/affiliated_match_helper_unittest.cc",
     "browser_save_password_progress_logger_unittest.cc",
     "bulk_leak_check_service_unittest.cc",
     "credential_cache_unittest.cc",
@@ -644,7 +635,7 @@ source_set("unit_tests") {
     "//components/favicon/core/test:test_support",
     "//components/os_crypt/sync",
     "//components/os_crypt/sync:test_support",
-    "//components/password_manager/core/browser:affiliation_proto",
+    "//components/password_manager/core/browser/affiliation:affiliation_proto",
     "//components/password_manager/core/browser/affiliation:test_support",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/features:utils",
@@ -708,19 +699,6 @@ source_set("unit_tests") {
     deps += [
       "//components/password_manager/core/browser:unified_password_manager_proto",
       "//components/webauthn/android",
-    ]
-  }
-}
-
-if (use_fuzzing_engine_with_lpm) {
-  fuzzer_test("lookup_affiliation_response_parser_fuzzer") {
-    sources = [ "affiliation/lookup_affiliation_response_parser_fuzzer.cc" ]
-    deps = [
-      ":affiliation_proto",
-      ":browser",
-      "//base:base",
-      "//base:i18n",
-      "//third_party/libprotobuf-mutator",
     ]
   }
 }

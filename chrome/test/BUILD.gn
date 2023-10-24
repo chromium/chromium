@@ -1763,7 +1763,7 @@ if (!is_android) {
       "//components/page_load_metrics/common:test_support",
       "//components/password_manager/content/browser",
       "//components/password_manager/content/common",
-      "//components/password_manager/core/browser:affiliation_proto",
+      "//components/password_manager/core/browser/affiliation:affiliation_proto",
       "//components/password_manager/core/browser/features:password_features",
       "//components/password_manager/core/browser/form_parsing",
       "//components/payments/content",
