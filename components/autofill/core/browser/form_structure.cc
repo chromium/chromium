@@ -10,6 +10,7 @@
 #include <deque>
 #include <map>
 #include <memory>
+#include <sstream>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -363,6 +364,22 @@ void InsertParsedOverrides(
   }
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+std::string ServerTypesToString(const AutofillField* field) {
+  const std::vector<
+      AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction>&
+      server_types = field->server_predictions();
+  std::ostringstream buffer;
+  for (const auto& field_prediction : server_types) {
+    if (buffer.tellp() > 0) {  // Add comma if buffer is not empty.
+      buffer << ", ";
+    }
+    ServerFieldType server_type =
+        ToSafeServerFieldType(field_prediction.type(), NO_SERVER_DATA);
+    buffer << FieldTypeToStringView(server_type);
+  }
+  return "[" + buffer.str() + "]";
+}
 
 }  // namespace
 
@@ -1902,7 +1919,7 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
 
     auto type = field->Type().ToString();
     auto heuristic_type = FieldTypeToStringView(field->heuristic_type());
-    auto server_type = FieldTypeToStringView(field->server_type());
+    std::string server_type = ServerTypesToString(field);
     const char* is_override =
         field->server_type_prediction_is_override() ? " (manual override)" : "";
     auto html_type_description =
@@ -1978,7 +1995,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
 
     auto type = field->Type().ToString();
     auto heuristic_type = FieldTypeToStringView(field->heuristic_type());
-    auto server_type = FieldTypeToString(field->server_type());
+    std::string server_type = ServerTypesToString(field);
     if (field->server_type_prediction_is_override())
       server_type += " (manual override)";
     auto html_type_description =
