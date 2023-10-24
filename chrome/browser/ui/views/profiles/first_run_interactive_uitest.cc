@@ -10,6 +10,7 @@
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_test_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -25,7 +26,10 @@
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/search_engines/search_engine_choice_utils.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -46,6 +50,7 @@ namespace {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kProfilePickerViewId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kButtonEnabled);
 
 using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
 const DeepQuery kSignInButton{"intro-app", "sign-in-promo",
@@ -58,6 +63,32 @@ const DeepQuery kOptInSyncButton{"sync-confirmation-app", "#confirmButton"};
 const DeepQuery kDontSyncButton{"sync-confirmation-app", "#notNowButton"};
 const DeepQuery kConfirmDefaultBrowserButton{"default-browser-app",
                                              "#confirmButton"};
+const DeepQuery kSubmitSearchEngineChoiceButton{"search-engine-choice-app",
+                                                "#submitButton"};
+
+struct TestParam {
+  std::string test_suffix;
+  bool with_default_browser_step = false;
+  bool with_search_engine_choice_step = false;
+};
+
+std::string ParamToTestSuffix(const ::testing::TestParamInfo<TestParam>& info) {
+  return info.param.test_suffix;
+}
+
+// Permutations of supported parameters.
+const TestParam kTestParams[] = {
+    {.test_suffix = "Default"},
+    {.test_suffix = "WithDefaultBrowserStep",
+     .with_default_browser_step = true},
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+    {.test_suffix = "WithSearchEngineChoiceStep",
+     .with_search_engine_choice_step = true},
+    {.test_suffix = "WithDefaultBrowserAndSearchEngineChoiceSteps",
+     .with_default_browser_step = true,
+     .with_search_engine_choice_step = true},
+#endif
+};
 
 }  // namespace
 
@@ -160,6 +191,16 @@ class FirstRunInteractiveUiTest
                        ExecuteJsMode::kFireAndForget);
   }
 
+  auto WaitForButtonEnabled(const ui::ElementIdentifier web_contents_id,
+                            const DeepQuery& button_query) {
+    StateChange button_enabled;
+    button_enabled.event = kButtonEnabled;
+    button_enabled.where = button_query;
+    button_enabled.type = StateChange::Type::kExistsAndConditionTrue;
+    button_enabled.test_function = "(btn) => !btn.disabled";
+    return WaitForStateChange(web_contents_id, button_enabled);
+  }
+
   // Waits for the intro buttons to be shown and presses to proceed according
   // to the value of `sign_in`.
   auto CompleteIntroStep(bool sign_in) {
@@ -244,27 +285,54 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest,
 
 class FirstRunParameterizedInteractiveUiTest
     : public FirstRunInteractiveUiTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<TestParam> {
  public:
   FirstRunParameterizedInteractiveUiTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kForYouFre, {{kForYouFreWithDefaultBrowserStep.name,
-                      WithDefaultBrowserStep() ? "forced" : "no"}});
+    std::vector<base::test::FeatureRefAndParams> enabled_features_and_params;
+    enabled_features_and_params.push_back(
+        {kForYouFre,
+         {{kForYouFreWithDefaultBrowserStep.name,
+           WithDefaultBrowserStep() ? "forced" : "no"}}});
+
+    if (WithSearchEngineChoiceStep()) {
+      scoped_chrome_build_override_ = std::make_unique<base::AutoReset<bool>>(
+          SearchEngineChoiceServiceFactory::ScopedChromeBuildOverrideForTesting(
+              /*force_chrome_build=*/true));
+
+      enabled_features_and_params.push_back(
+          {switches::kSearchEngineChoiceFre, {}});
+    }
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        enabled_features_and_params, {});
   }
 
-  bool WithDefaultBrowserStep() const { return GetParam(); }
+  // FirstRunInteractiveUiTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    FirstRunInteractiveUiTest::SetUpCommandLine(command_line);
+
+    if (WithSearchEngineChoiceStep()) {
+      command_line->AppendSwitchASCII(switches::kSearchEngineChoiceCountry,
+                                      "BE");
+    }
+  }
+
+  bool WithDefaultBrowserStep() const {
+    return GetParam().with_default_browser_step;
+  }
+
+  bool WithSearchEngineChoiceStep() const {
+    return GetParam().with_search_engine_choice_step;
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<base::AutoReset<bool>> scoped_chrome_build_override_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,
                          FirstRunParameterizedInteractiveUiTest,
-                         testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "WithDefaultBrowserStep"
-                                             : "Default";
-                         });
+                         testing::ValuesIn(kTestParams),
+                         &ParamToTestSuffix);
 
 IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
   base::test::TestFuture<bool> proceed_future;
@@ -318,6 +386,9 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
       "Signin.SignIn.Completed",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
 
+  const DeepQuery first_search_engine = {"search-engine-choice-app",
+                                         "cr-radio-button"};
+
   RunTestSequenceInContext(
       views::ElementTrackerViews::GetContextForView(view()),
       // Web Contents already instrumented in the previous sequence.
@@ -332,6 +403,15 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
       EnsurePresent(kWebContentsId, kOptInSyncButton),
       PressJsButton(kWebContentsId, kOptInSyncButton)
           .SetMustRemainVisible(false),
+
+      If([&] { return WithSearchEngineChoiceStep(); },
+         Steps(
+             WaitForWebContentsNavigation(
+                 kWebContentsId, GURL(chrome::kChromeUISearchEngineChoiceURL)),
+             PressJsButton(kWebContentsId, first_search_engine),
+             WaitForButtonEnabled(kWebContentsId,
+                                  kSubmitSearchEngineChoiceButton),
+             PressJsButton(kWebContentsId, kSubmitSearchEngineChoiceButton))),
 
       If([&] { return WithDefaultBrowserStep(); },
          Steps(
