@@ -16358,6 +16358,26 @@
             ]
         }
     ],
+    "SearchPrefetchHighPriorityPrefetchesAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledSearchNavigationPrefetchAndTouchDownTrigger_20231020",
+                    "params": {
+                        "navigation_prefetch_param": "op",
+                        "touch_down": "true"
+                    },
+                    "enable_features": [
+                        "OmniboxTouchDownTriggerForPrefetch",
+                        "SearchNavigationPrefetch"
+                    ]
+                }
+            ]
+        }
+    ],
     "SearchReadyOmniboxAllowQueryEdit": [
         {
             "platforms": [
