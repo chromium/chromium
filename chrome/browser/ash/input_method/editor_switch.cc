@@ -57,11 +57,11 @@ const char* kDomainsWithPathDenylist[][2] = {
     {"meet.google", ""},
 };
 
+constexpr int kTextLengthMaxLimit = 10000;
+
 const char* kAppIdDenylist[] = {
     file_manager::kFileManagerSwaAppId,
 };
-
-constexpr int kTextLengthMaxLimit = 8000;
 
 bool IsCountryAllowed(std::string_view country_code) {
   return base::Contains(kCountryAllowlist, country_code);
