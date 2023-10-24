@@ -30,6 +30,69 @@ namespace autofill {
 
 namespace {
 
+// Array describing how the output of the test ML model is interpreted.
+// Some of the types that the model was trained on are not supported by the
+// client. Index 0 is UNKNOWN_TYPE, while the others are non-supported types.
+// The handler receives this information as part of its metadata.
+constexpr std::array<ServerFieldType, 57> kSupportedFieldTypes = {
+    UNKNOWN_TYPE,
+    EMAIL_ADDRESS,
+    UNKNOWN_TYPE,
+    UNKNOWN_TYPE,
+    UNKNOWN_TYPE,
+    UNKNOWN_TYPE,
+    CREDIT_CARD_NUMBER,
+    CONFIRMATION_PASSWORD,
+    UNKNOWN_TYPE,
+    PHONE_HOME_EXTENSION,
+    PHONE_HOME_WHOLE_NUMBER,
+    PHONE_HOME_COUNTRY_CODE,
+    UNKNOWN_TYPE,
+    NAME_FIRST,
+    ADDRESS_HOME_DEPENDENT_LOCALITY,
+    ADDRESS_HOME_CITY,
+    ADDRESS_HOME_STREET_ADDRESS,
+    PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX,
+    UNKNOWN_TYPE,
+    NAME_HONORIFIC_PREFIX,
+    CREDIT_CARD_EXP_2_DIGIT_YEAR,
+    ADDRESS_HOME_STATE,
+    UNKNOWN_TYPE,
+    CREDIT_CARD_NAME_LAST,
+    ACCOUNT_CREATION_PASSWORD,
+    ADDRESS_HOME_HOUSE_NUMBER,
+    PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX,
+    CREDIT_CARD_TYPE,
+    CREDIT_CARD_NAME_FULL,
+    ADDRESS_HOME_APT_NUM,
+    CREDIT_CARD_NAME_FIRST,
+    ADDRESS_HOME_FLOOR,
+    UNKNOWN_TYPE,
+    ADDRESS_HOME_LANDMARK,
+    UNKNOWN_TYPE,
+    ADDRESS_HOME_STREET_NAME,
+    ADDRESS_HOME_COUNTRY,
+    CREDIT_CARD_EXP_4_DIGIT_YEAR,
+    DELIVERY_INSTRUCTIONS,
+    PHONE_HOME_NUMBER,
+    CREDIT_CARD_VERIFICATION_CODE,
+    NAME_LAST,
+    CREDIT_CARD_EXP_MONTH,
+    ADDRESS_HOME_OVERFLOW,
+    UNKNOWN_TYPE,
+    NAME_FULL,
+    COMPANY_NAME,
+    CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
+    PHONE_HOME_CITY_AND_NUMBER,
+    PHONE_HOME_CITY_CODE,
+    ADDRESS_HOME_LINE2,
+    ADDRESS_HOME_STREET_LOCATION,
+    ADDRESS_HOME_ZIP,
+    CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+    ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
+    ADDRESS_HOME_LINE3,
+    ADDRESS_HOME_LINE1};
+
 // The matcher expects two arguments of types std::unique_ptr<AutofillField>
 // and ServerFieldType respectively.
 MATCHER(MlTypeEq, "") {
@@ -88,17 +151,23 @@ class AutofillMlPredictionModelHandlerTest : public testing::Test {
 
  private:
   // Constructs metadata for the model, which can be used to construct a
-  // vectorizer containing the words from the given `dictinary_path` file.
+  // vectorizer containing the words from the given `dictinary_path` file. It
+  // also contains outputs mappings based on `kSupportedFieldTypes`.
   optimization_guide::proto::AutofillFieldClassificationModelMetadata
   ConstructorModelMetadata(const base::FilePath dictionary_path) {
     optimization_guide::proto::AutofillFieldClassificationModelMetadata
         metadata;
+    // Constructor `input_token()`.
     std::string dictionary_content;
     EXPECT_TRUE(base::ReadFileToString(dictionary_path, &dictionary_content));
     for (const std::string& token :
          base::SplitString(dictionary_content, "\n", base::TRIM_WHITESPACE,
                            base::SPLIT_WANT_ALL)) {
       metadata.add_input_token(token);
+    }
+    // Constructor `output_type()`.
+    for (ServerFieldType type : kSupportedFieldTypes) {
+      metadata.add_output_type(static_cast<int>(type));
     }
     return metadata;
   }

@@ -79,9 +79,14 @@ class AutofillMlPredictionModelHandler
   ServerFieldType GetMostLikelyType(
       const std::vector<float>& model_output) const;
 
+  struct ModelState {
+    optimization_guide::proto::AutofillFieldClassificationModelMetadata
+        metadata;
+    AutofillModelVectorizer vectorizer;
+  };
   // Initialized once the model was loaded and successfully initialized using
   // the model's metadata.
-  std::optional<AutofillModelVectorizer> vectorizer_;
+  std::optional<ModelState> state_;
 
   base::WeakPtrFactory<AutofillMlPredictionModelHandler> weak_ptr_factory_{
       this};
