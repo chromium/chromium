@@ -10,6 +10,10 @@
 #include "third_party/crashpad/crashpad/handler/handler_main.h"
 #include "third_party/crashpad/crashpad/handler/user_stream_data_source.h"
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "components/stability_report/user_stream_data_source_posix.h"
+#endif
+
 #if BUILDFLAG(ENABLE_GWP_ASAN)
 #include "components/gwp_asan/crash_handler/crash_handler.h"  // nogncheck
 #endif
@@ -26,6 +30,12 @@ __attribute__((visibility("default"), used)) int CrashpadHandlerMain(
     int argc,
     char* argv[]) {
   crashpad::UserStreamDataSources user_stream_data_sources;
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  user_stream_data_sources.push_back(
+      std::make_unique<stability_report::UserStreamDataSourcePosix>());
+#endif
+
 #if BUILDFLAG(ENABLE_GWP_ASAN)
   user_stream_data_sources.push_back(
       std::make_unique<gwp_asan::UserStreamDataSource>());

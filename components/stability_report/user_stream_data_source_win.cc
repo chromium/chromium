@@ -52,10 +52,10 @@ void CollectProcessPerformanceMetrics(
     const crashpad::ProcessSnapshot& process_snapshot,
     StabilityReport* report) {
   const base::ProcessId process_id = process_snapshot.ProcessID();
-  ProcessState* process_state = AddProcessForSnapshot(process_id, report);
+  ProcessState& process_state = AddProcessForSnapshot(process_id, report);
 
   ProcessState::MemoryState::WindowsMemory* memory_state =
-      process_state->mutable_memory_state()->mutable_windows_memory();
+      process_state.mutable_memory_state()->mutable_windows_memory();
 
   // Grab the requested allocation size in case of OOM exception.
   const crashpad::ExceptionSnapshot* const exception =

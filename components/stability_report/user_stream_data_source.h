@@ -32,7 +32,7 @@ class UserStreamDataSource : public crashpad::UserStreamDataSource {
 };
 
 // Adds an entry for the given `process_id` to `report`.
-ProcessState* AddProcessForSnapshot(const base::ProcessId process_id,
+ProcessState& AddProcessForSnapshot(const base::ProcessId process_id,
                                     StabilityReport* report);
 
 }  // namespace stability_report
