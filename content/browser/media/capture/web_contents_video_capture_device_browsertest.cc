@@ -640,12 +640,7 @@ IN_PROC_BROWSER_TEST_P(WebContentsVideoCaptureDeviceBrowserTestP,
 
   capture_stack()->SetFrameReceivedCallback(base::BindRepeating(
       [](media::VideoPixelFormat expected_format, media::VideoFrame* frame) {
-        // TODO(crbug.com/1452092): Remove this when zero-copy tab capture works
-        // with Graphite.
-        if (!features::IsSkiaGraphiteEnabled(
-                base::CommandLine::ForCurrentProcess())) {
-          EXPECT_EQ(frame->format(), expected_format);
-        }
+        EXPECT_EQ(frame->format(), expected_format);
       },
       expected_format));
 
