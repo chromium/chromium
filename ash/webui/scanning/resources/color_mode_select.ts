@@ -26,7 +26,7 @@ const ColorModeSelectElementBase = SelectMixin(I18nMixin(PolymerElement)) as
         AbstractConstructor<SelectMixinInterface<ColorMode>>&
     {new (): PolymerElement & I18nMixinInterface};
 
-class ColorModeSelectElement extends ColorModeSelectElementBase {
+export class ColorModeSelectElement extends ColorModeSelectElementBase {
   static get is() {
     return 'color-mode-select' as const;
   }
