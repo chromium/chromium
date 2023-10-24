@@ -593,9 +593,8 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest,
   EXPECT_EQ(display_info.manufacturer, kManufacturer);
   ASSERT_TRUE(display_info.model_id.has_value());
   EXPECT_EQ(static_cast<uint16_t>(display_info.model_id.value()), kModelId);
-  ASSERT_TRUE(display_info.serial_number.has_value());
-  EXPECT_EQ(static_cast<uint32_t>(display_info.serial_number.value()),
-            kSerialNumber);
+  // serial_number is not converted in ConvertPtr() for now.
+  EXPECT_FALSE(display_info.serial_number);
   ASSERT_TRUE(display_info.manufacture_week.has_value());
   EXPECT_EQ(static_cast<uint8_t>(display_info.manufacture_week.value()),
             kManufactureWeek);

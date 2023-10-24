@@ -1127,8 +1127,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                 "modelId": 6,
                 "refreshRate": 5,
                 "resolutionHorizontal": 3,
-                "resolutionVertical": 4,
-                "serialNumber": 7
+                "resolutionVertical": 4
               }
           });
 

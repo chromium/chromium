@@ -1196,9 +1196,8 @@ TEST(TelemetryApiConverters, DisplayInfo) {
   ASSERT_TRUE(embedded_display.model_id);
   EXPECT_EQ(static_cast<uint16_t>(*embedded_display.model_id),
             kModelIdEmbedded);
-  ASSERT_TRUE(embedded_display.serial_number);
-  EXPECT_EQ(static_cast<uint32_t>(*embedded_display.serial_number),
-            kSerialNumberEmbedded);
+  // serial_number is not converted in ConvertPtr() for now.
+  EXPECT_FALSE(embedded_display.serial_number);
   ASSERT_TRUE(embedded_display.manufacture_week);
   EXPECT_EQ(static_cast<uint8_t>(*embedded_display.manufacture_week),
             kManufactureWeekEmbedded);
@@ -1229,9 +1228,8 @@ TEST(TelemetryApiConverters, DisplayInfo) {
   ASSERT_TRUE(external_displays[0].model_id);
   EXPECT_EQ(static_cast<uint16_t>(*external_displays[0].model_id),
             kModelIdExternal);
-  ASSERT_TRUE(external_displays[0].serial_number);
-  EXPECT_EQ(static_cast<uint32_t>(*external_displays[0].serial_number),
-            kSerialNumberExternal);
+  // serial_number is not converted in ConvertPtr() for now.
+  EXPECT_FALSE(external_displays[0].serial_number);
   ASSERT_TRUE(external_displays[0].manufacture_week);
   EXPECT_EQ(static_cast<uint8_t>(*external_displays[0].manufacture_week),
             kManufactureWeekExternal);
