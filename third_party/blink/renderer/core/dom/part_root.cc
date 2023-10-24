@@ -122,15 +122,15 @@ void PartRoot::SwapPartsList(PartRoot& other) {
 // PartRoot (from FirstIncludedChildNode to LastIncludedChildNode), and collect
 // any Parts we find. If we find a ChildNodePart (or other PartRoot), we ignore
 // Parts until we exit the Partroot.
-HeapVector<Member<Part>>& PartRoot::RebuildPartsList() {
+void PartRoot::RebuildPartsList() {
   DCHECK(cached_parts_list_dirty_);
-  auto& ordered_parts = *MakeGarbageCollected<HeapVector<Member<Part>>>();
+  cached_ordered_parts_.clear();
   // Then traverse the tree under the root container and add parts in the order
   // they're found in the tree, and for the same Node, in the order they were
   // constructed.
   Node* node = FirstIncludedChildNode();
   if (!node || !LastIncludedChildNode()) {
-    return ordered_parts;
+    return;  // Empty list
   }
   Node* end_node = LastIncludedChildNode()->nextSibling();
   enum class NestedPartRoot {
@@ -180,23 +180,22 @@ HeapVector<Member<Part>>& PartRoot::RebuildPartsList() {
         if (part->NodeToSortBy() != node) {
           continue;
         }
-        DCHECK(!base::Contains(ordered_parts, part));
-        ordered_parts.push_back(part);
+        DCHECK(!base::Contains(cached_ordered_parts_, part));
+        cached_ordered_parts_.push_back(part);
       }
     }
     node = next_node;
   }
-  return ordered_parts;
 }
 
 const HeapVector<Member<Part>>& PartRoot::getParts() {
   if (cached_parts_list_dirty_) {
-    cached_ordered_parts_ = RebuildPartsList();
+    RebuildPartsList();
     cached_parts_list_dirty_ = false;
   } else {
     // Remove invalid cached parts.
     bool remove_invalid = false;
-    for (auto part : cached_ordered_parts_) {
+    for (auto& part : cached_ordered_parts_) {
       if (!part->IsValid()) {
         remove_invalid = true;
         break;
@@ -204,7 +203,7 @@ const HeapVector<Member<Part>>& PartRoot::getParts() {
     }
     if (remove_invalid) {
       HeapVector<Member<Part>> new_list;
-      for (auto part : cached_ordered_parts_) {
+      for (auto& part : cached_ordered_parts_) {
         if (part->IsValid()) {
           new_list.push_back(part);
         }

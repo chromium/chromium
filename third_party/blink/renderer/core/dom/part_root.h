@@ -61,7 +61,7 @@ class CORE_EXPORT PartRoot : public GarbageCollectedMixin {
   virtual const PartRoot* GetParentPartRoot() const = 0;
 
  private:
-  HeapVector<Member<Part>>& RebuildPartsList();
+  void RebuildPartsList();
   HeapVector<Member<Part>> cached_ordered_parts_;
   bool cached_parts_list_dirty_{false};
 };
