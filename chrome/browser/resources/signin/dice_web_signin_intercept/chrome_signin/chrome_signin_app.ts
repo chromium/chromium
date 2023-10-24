@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import '../strings.m.js';
+import '../signin_shared.css.js';
+import '../signin_vars.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -34,6 +36,11 @@ export class ChromeSigninAppElement extends PolymerElement {
   }
 
   private onCancel_() {
+    this.diceWebSigninInterceptBrowserProxy_.cancel();
+  }
+
+  private onAccept_() {
+    // TODO(b/301431278): change to accept when the reaction is implemented.
     this.diceWebSigninInterceptBrowserProxy_.cancel();
   }
 }
