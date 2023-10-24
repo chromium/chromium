@@ -31,9 +31,11 @@ source_set("sharing") {
   ]
   deps = [
     "//base",
-    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser:metrics_util",
     "//components/password_manager/core/browser:password_form",
+    "//components/password_manager/core/browser:password_store_interface",
     "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/core/browser/features:utils",
     "//components/prefs",
     "//components/signin/public/identity_manager",
     "//components/sync/base",
