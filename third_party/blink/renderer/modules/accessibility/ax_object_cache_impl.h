@@ -144,13 +144,19 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   void Dispose() override;
 
+  // Freeze that AXObject tree and do not allow changes until Thaw() is called.
+  // Prefer ScopedFreezeAXCache where possible.
   void Freeze() override {
     // TODO(crbug.com/1477047, fuchsia:132924): Remove Fuchsia case once post
     // lifecycle serialization is enabled for it.
 #if BUILDFLAG(IS_FUCHSIA)
-    pause_tree_updates_until_more_loaded_content_ = false;
-    UpdateAXForAllDocuments();
+    if (GetDocument().Lifecycle().GetState() <
+        DocumentLifecycle::kPrePaintClean) {
+      pause_tree_updates_until_more_loaded_content_ = false;
+      UpdateAXForAllDocuments();
+    }
 #endif
+
     ax_tree_source_->Freeze();
     is_frozen_ = true;
   }
@@ -158,7 +164,7 @@ class MODULES_EXPORT AXObjectCacheImpl
     is_frozen_ = false;
     ax_tree_source_->Thaw();
   }
-  bool IsFrozen() { return is_frozen_; }
+  bool IsFrozen() const override { return is_frozen_; }
 
   //
   // Iterators.
@@ -493,7 +499,10 @@ class MODULES_EXPORT AXObjectCacheImpl
   // Searches the accessibility tree for plugin's root object and returns it.
   // Returns an empty WebAXObject if no root object is present.
   AXObject* GetPluginRoot() override {
-    return ax_tree_source_->GetPluginRoot();
+    ax_tree_source_->Freeze();
+    AXObject* result = ax_tree_source_->GetPluginRoot();
+    ax_tree_source_->Thaw();
+    return result;
   }
 
   bool SerializeEntireTree(size_t max_node_count,
@@ -875,11 +884,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   // sends the serialized events and dirty objects to the browser process.
   void PostNotifications(Document&);
 
-  // Get the currently focused Node element.
-  Node* FocusedElement();
-
-  // GetOrCreate the focusable AXObject for a specific Node.
-  AXObject* GetOrCreateFocusedObjectFromNode(Node*);
+  // Get the currently focused Node (an element or a document).
+  Node* FocusedNode();
 
   AXObject* FocusedImageMapUIElement(HTMLAreaElement*);
 

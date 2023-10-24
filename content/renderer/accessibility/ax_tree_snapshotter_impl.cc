@@ -33,7 +33,6 @@ void AXTreeSnapshotterImpl::Snapshot(size_t max_node_count,
                                      ui::AXTreeUpdate* response) {
   if (!render_frame_->GetWebFrame())
     return;
-  context_->UpdateAXForAllDocuments();
 
   if (context_->SerializeEntireTree(max_node_count, timeout, response)) {
     return;

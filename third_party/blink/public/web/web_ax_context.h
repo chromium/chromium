@@ -61,10 +61,6 @@ class BLINK_EXPORT WebAXContext {
   // Returns an empty WebAXObject if no root object is present.
   WebAXObject GetPluginRoot();
 
-  void Freeze();
-
-  void Thaw();
-
   bool SerializeEntireTree(size_t max_node_count,
                            base::TimeDelta timeout,
                            ui::AXTreeUpdate* response);

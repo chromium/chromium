@@ -91,8 +91,10 @@ TEST_F(AccessibilityTest, GetDocumentMarkers) {
   AXObject* ax_inline_text_box = ax_text->ChildAtIncludingIgnored(0);
   ASSERT_NE(nullptr, ax_inline_text_box);
   {
+    ScopedFreezeAXCache freeze(ax_inline_text_box->AXObjectCache());
     ui::AXNodeData node_data;
     ax_inline_text_box->Serialize(&node_data, ui::kAXModeComplete);
+
     EXPECT_EQ(std::vector<int32_t>{int32_t(AXMarkerType::kSpelling)},
               node_data.GetIntListAttribute(AXIntListAttribute::kMarkerTypes));
     EXPECT_EQ(std::vector<int32_t>{0},
@@ -105,6 +107,7 @@ TEST_F(AccessibilityTest, GetDocumentMarkers) {
   ax_inline_text_box = ax_text->ChildAtIncludingIgnored(1);
   ASSERT_NE(nullptr, ax_inline_text_box);
   {
+    ScopedFreezeAXCache freeze(ax_inline_text_box->AXObjectCache());
     ui::AXNodeData node_data;
     ax_inline_text_box->Serialize(&node_data, ui::kAXModeComplete);
     EXPECT_EQ((std::vector<int32_t>{int32_t(AXMarkerType::kSpelling),
@@ -120,6 +123,7 @@ TEST_F(AccessibilityTest, GetDocumentMarkers) {
   ax_inline_text_box = ax_text->ChildAtIncludingIgnored(2);
   ASSERT_NE(nullptr, ax_inline_text_box);
   {
+    ScopedFreezeAXCache freeze(ax_inline_text_box->AXObjectCache());
     ui::AXNodeData node_data;
     ax_inline_text_box->Serialize(&node_data, ui::kAXModeComplete);
     EXPECT_EQ(std::vector<int32_t>{int32_t(AXMarkerType::kGrammar)},
@@ -134,6 +138,7 @@ TEST_F(AccessibilityTest, GetDocumentMarkers) {
   ax_inline_text_box = ax_text->ChildAtIncludingIgnored(3);
   ASSERT_NE(nullptr, ax_inline_text_box);
   {
+    ScopedFreezeAXCache freeze(ax_inline_text_box->AXObjectCache());
     ui::AXNodeData node_data;
     ax_inline_text_box->Serialize(&node_data, ui::kAXModeComplete);
     EXPECT_EQ(std::vector<int32_t>{int32_t(AXMarkerType::kGrammar)},
