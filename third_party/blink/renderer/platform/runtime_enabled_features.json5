@@ -3548,6 +3548,7 @@
     },
     {
       name: "SmilAutoSuspendOnLag",
+      status: "stable",
     },
     {
       // If enabled Border, Outline and Column-Rule Widths
