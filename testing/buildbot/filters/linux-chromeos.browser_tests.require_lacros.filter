@@ -31,6 +31,7 @@ TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 # TODO(b/301253962): Some Switch Access tests fail/flake on Lacros.
 -SwitchAccessItemScanManagerTest.*
 -SwitchAccessPointScanManagerTest.PointScanLeftClick
+-SwitchAccessTest.NavigateButtonsInTextFieldMenu
 # TODO(https://crbug.com/1378291) Ash and Lacros browser window sizes differ.
 -ChromeVoxEditingTest.SelectAcrossSoftLineWraps
 # TODO(crbug.com/1339456) Disabled when switch to LacrosOnly.
@@ -52,14 +53,9 @@ TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.MoveByCharacterPhoneticSpeechAndHints*
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.ShelfIconFocusForward*
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.FocusShelf*
-# The following tests have no dependency on Lacros browser, do not run these tests
-# as browser_tests_require_lacros.
-# TODO(b/290096429): Audit these tests, re-work to run these tests against Lacros
-# browser if necessary.
 -SelectToSpeakTest.WorksWithTouchSelectionOnNonPrimaryMonitor
 -SelectToSpeakTest.ContinuesReadingDuringResize
 -SelectToSpeakTest.ReadsSelectedTextFromContextMenuClick
--SwitchAccessTest*
 # These tests do not run with the browser and do not need to run with Lacros.
 -MagnificationManagerTest*
 -FullscreenMagnifierControllerTest.MovesContinuouslyWithMouse

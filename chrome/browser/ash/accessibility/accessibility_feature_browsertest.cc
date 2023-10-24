@@ -27,6 +27,10 @@ void AccessibilityFeatureBrowserTest::SetUpOnMainThread() {
   }
 }
 
+void AccessibilityFeatureBrowserTest::TearDownInProcessBrowserTestFixture() {
+  ash_starter_.reset();
+}
+
 void AccessibilityFeatureBrowserTest::NavigateToUrl(const GURL& url) {
   CHECK(ash_starter_);
   if (ash_starter_->HasLacrosArgument()) {
