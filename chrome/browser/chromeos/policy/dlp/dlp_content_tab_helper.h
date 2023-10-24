@@ -55,6 +55,11 @@ class DlpContentTabHelper
   void WebContentsDestroyed() override;
   void OnVisibilityChanged(content::Visibility visibility) override;
 
+  using RfhInfo =
+      std::pair<content::RenderFrameHost*, DlpContentRestrictionSet>;
+  // Returns a vector of DLP restrictions info for all the tracked frames.
+  std::vector<RfhInfo> GetFramesInfo() const;
+
  private:
   friend class content::WebContentsUserData<DlpContentTabHelper>;
 

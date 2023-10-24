@@ -29,6 +29,8 @@ class DlpInternalsPageHandler : public dlp_internals::mojom::PageHandler {
  private:
   // dlp_internals::mojom::DlpInternalsPageHandler
   void GetClipboardDataSource(GetClipboardDataSourceCallback callback) override;
+  void GetContentRestrictionsInfo(
+      GetContentRestrictionsInfoCallback callback) override;
 
   mojo::Receiver<dlp_internals::mojom::PageHandler> receiver_;
   raw_ptr<Profile> profile_;

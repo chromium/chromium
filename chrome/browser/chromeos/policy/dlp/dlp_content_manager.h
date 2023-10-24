@@ -19,6 +19,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_observer.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_observer.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -49,6 +50,23 @@ class DlpContentManager : public DlpContentObserver,
                           public BrowserListObserver,
                           public TabStripModelObserver {
  public:
+  // Holds DLP restrictions information for `web_contents` object.
+  struct WebContentsInfo {
+    WebContentsInfo();
+    WebContentsInfo(content::WebContents* web_contents,
+                    DlpContentRestrictionSet restriction_set,
+                    std::vector<DlpContentTabHelper::RfhInfo> rfh_info_vector);
+    WebContentsInfo(const WebContentsInfo&);
+    WebContentsInfo& operator=(const WebContentsInfo&);
+    ~WebContentsInfo();
+
+    raw_ptr<content::WebContents> web_contents = nullptr;
+    // Restrictions set for `web_contents`.
+    DlpContentRestrictionSet restriction_set;
+    // DLP restrictions info for RenderFrameHosts in `web_contents`.
+    std::vector<DlpContentTabHelper::RfhInfo> rfh_info_vector;
+  };
+
   DlpContentManager(const DlpContentManager&) = delete;
   DlpContentManager& operator=(const DlpContentManager&) = delete;
 
@@ -117,6 +135,9 @@ class DlpContentManager : public DlpContentObserver,
 
   void RemoveObserver(const DlpContentManagerObserver* observer,
                       DlpContentRestriction restriction);
+
+  // Returns an array of DLP restrictions info to all the tracked WebContents.
+  std::vector<WebContentsInfo> GetWebContentsInfo() const;
 
  protected:
   friend class DlpContentManagerTestHelper;

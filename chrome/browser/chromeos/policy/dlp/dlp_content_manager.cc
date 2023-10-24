@@ -108,6 +108,24 @@ const absl::optional<std::string> RestrictionToWarnProceededUMASuffix(
 
 }  // namespace
 
+DlpContentManager::WebContentsInfo::WebContentsInfo() = default;
+
+DlpContentManager::WebContentsInfo::WebContentsInfo(
+    content::WebContents* web_contents,
+    DlpContentRestrictionSet restriction_set,
+    std::vector<DlpContentTabHelper::RfhInfo> rfh_info_vector)
+    : web_contents(web_contents),
+      restriction_set(std::move(restriction_set)),
+      rfh_info_vector(std::move(rfh_info_vector)) {}
+
+DlpContentManager::WebContentsInfo::WebContentsInfo(const WebContentsInfo&) =
+    default;
+
+DlpContentManager::WebContentsInfo&
+DlpContentManager::WebContentsInfo::operator=(const WebContentsInfo&) = default;
+
+DlpContentManager::WebContentsInfo::~WebContentsInfo() = default;
+
 // static
 DlpContentManager* DlpContentManager::Get() {
   return static_cast<DlpContentManager*>(DlpContentObserver::Get());
@@ -473,6 +491,22 @@ void DlpContentManager::RemoveObserver(
     const DlpContentManagerObserver* observer,
     DlpContentRestriction restriction) {
   observer_lists_[static_cast<int>(restriction)].RemoveObserver(observer);
+}
+
+std::vector<DlpContentManager::WebContentsInfo>
+DlpContentManager::GetWebContentsInfo() const {
+  std::vector<WebContentsInfo> web_contents_info_vector;
+  for (const auto& [web_contents, restriction_set] :
+       confidential_web_contents_) {
+    DlpContentManager::WebContentsInfo web_contents_info(web_contents,
+                                                         restriction_set, {});
+    auto* tab_helper = DlpContentTabHelper::FromWebContents(web_contents);
+    if (tab_helper) {
+      web_contents_info.rfh_info_vector = tab_helper->GetFramesInfo();
+    }
+    web_contents_info_vector.push_back(std::move(web_contents_info));
+  }
+  return web_contents_info_vector;
 }
 
 DlpContentManager::DlpContentManager() {

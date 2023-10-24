@@ -59,7 +59,7 @@ export class DlpClipboardElement extends CustomElement {
     if (source.url === undefined) {
       this.clipboardSourceUrlString = 'undefined';
     } else {
-      this.clipboardSourceUrlString = source.url;
+      this.clipboardSourceUrlString = source.url.url;
     }
   }
 
