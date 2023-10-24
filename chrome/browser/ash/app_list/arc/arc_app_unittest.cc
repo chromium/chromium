@@ -677,6 +677,15 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
         EXPECT_EQ(package->web_app_info->certificate_sha256_fingerprint,
                   package_info->web_app_info->certificate_sha256_fingerprint);
       }
+      EXPECT_EQ(package->locale_info.is_null(),
+                package_info->locale_info.is_null());
+      if (!package->locale_info.is_null() &&
+          !package_info->locale_info.is_null()) {
+        EXPECT_EQ(package->locale_info->supported_locales,
+                  package_info->locale_info->supported_locales);
+        EXPECT_EQ(package->locale_info->selected_locale,
+                  package_info->locale_info->selected_locale);
+      }
     }
   }
 
@@ -2163,6 +2172,10 @@ TEST_P(ArcAppModelBuilderTest, AppLifeCycleEventsOnPackageListRefresh) {
                             &arc::mojom::ArcPackageInfo::package_name,
                             fake_packages()[3]->package_name)))
       .Times(1);
+  EXPECT_CALL(observer, OnPackageInstalled(testing::Field(
+                            &arc::mojom::ArcPackageInfo::package_name,
+                            fake_packages()[4]->package_name)))
+      .Times(1);
   app_instance()->SendRefreshPackageList(
       ArcAppTest::ClonePackages(fake_packages()));
 
@@ -2179,6 +2192,9 @@ TEST_P(ArcAppModelBuilderTest, AppLifeCycleEventsOnPackageListRefresh) {
       .Times(1);
   EXPECT_CALL(observer,
               OnPackageRemoved(fake_packages()[3]->package_name, false))
+      .Times(1);
+  EXPECT_CALL(observer,
+              OnPackageRemoved(fake_packages()[4]->package_name, false))
       .Times(1);
 
   std::vector<arc::mojom::ArcPackageInfoPtr> packages;
