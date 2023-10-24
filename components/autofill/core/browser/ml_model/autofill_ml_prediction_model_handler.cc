@@ -11,15 +11,14 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/ml_model/autofill_model_executor.h"
-#include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/browser/ml_model/autofill_model_vectorizer.h"
 #include "components/optimization_guide/core/model_handler.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
+#include "components/optimization_guide/proto/autofill_field_classification_model_metadata.pb.h"
 
 namespace autofill {
 
@@ -166,26 +165,15 @@ void AutofillMlPredictionModelHandler::OnModelUpdated(
     return;
   }
   // The model was loaded or updated.
-  InitializeVectorizer();
-}
-
-void AutofillMlPredictionModelHandler::InitializeVectorizer() {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-      base::BindOnce([] {
-        return AutofillModelVectorizer::CreateVectorizer(
-            base::FilePath::FromASCII(
-                features::kAutofillModelDictionaryFilePath.Get()));
-      }),
-      base::BindOnce(
-          [](base::WeakPtr<AutofillMlPredictionModelHandler> handler,
-             std::unique_ptr<AutofillModelVectorizer> vectorizer) {
-            if (handler) {
-              CHECK(vectorizer);
-              handler->vectorizer_ = std::move(vectorizer);
-            }
-          },
-          weak_ptr_factory_.GetWeakPtr()));
+  vectorizer_.reset();
+  optimization_guide::proto::AutofillFieldClassificationModelMetadata metadata;
+  if (!model_info->GetModelMetadata() ||
+      !metadata.ParseFromString(model_info->GetModelMetadata()->value())) {
+    // The model should always come with metadata - but since this comes from
+    // the server-side and might change in the future, it might fail.
+    return;
+  }
+  vectorizer_ = AutofillModelVectorizer(metadata.input_token());
 }
 
 AutofillModelExecutor::ModelInput
