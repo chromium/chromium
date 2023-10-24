@@ -56,7 +56,8 @@ FillLayer::FillLayer(EFillLayerType type, bool use_initial_values)
           static_cast<unsigned>(FillLayer::InitialFillAttachment(type))),
       clip_(static_cast<unsigned>(FillLayer::InitialFillClip(type))),
       origin_(static_cast<unsigned>(FillLayer::InitialFillOrigin(type))),
-      composite_(FillLayer::InitialFillComposite(type)),
+      compositing_operator_(static_cast<unsigned>(
+          FillLayer::InitialFillCompositingOperator(type))),
       size_type_(
           use_initial_values
               ? static_cast<unsigned>(FillLayer::InitialFillSizeType(type))
@@ -73,7 +74,8 @@ FillLayer::FillLayer(EFillLayerType type, bool use_initial_values)
       pos_y_set_(use_initial_values),
       background_x_origin_set_(false),
       background_y_origin_set_(false),
-      composite_set_(use_initial_values || type == EFillLayerType::kMask),
+      compositing_operator_set_(use_initial_values ||
+                                type == EFillLayerType::kMask),
       blend_mode_set_(use_initial_values),
       type_(static_cast<unsigned>(type)),
       layers_clip_max_(0),
@@ -96,7 +98,7 @@ FillLayer::FillLayer(const FillLayer& o)
       attachment_(o.attachment_),
       clip_(o.clip_),
       origin_(o.origin_),
-      composite_(o.composite_),
+      compositing_operator_(o.compositing_operator_),
       size_type_(o.size_type_),
       blend_mode_(o.blend_mode_),
       background_x_origin_(o.background_x_origin_),
@@ -110,7 +112,7 @@ FillLayer::FillLayer(const FillLayer& o)
       pos_y_set_(o.pos_y_set_),
       background_x_origin_set_(o.background_x_origin_set_),
       background_y_origin_set_(o.background_y_origin_set_),
-      composite_set_(o.composite_set_),
+      compositing_operator_set_(o.compositing_operator_set_),
       blend_mode_set_(o.blend_mode_set_),
       type_(o.type_),
       layers_clip_max_(0),
@@ -143,7 +145,7 @@ FillLayer& FillLayer::operator=(const FillLayer& o) {
   size_length_ = o.size_length_;
   attachment_ = o.attachment_;
   clip_ = o.clip_;
-  composite_ = o.composite_;
+  compositing_operator_ = o.compositing_operator_;
   blend_mode_ = o.blend_mode_;
   origin_ = o.origin_;
   repeat_ = o.repeat_;
@@ -152,7 +154,7 @@ FillLayer& FillLayer::operator=(const FillLayer& o) {
   image_set_ = o.image_set_;
   attachment_set_ = o.attachment_set_;
   clip_set_ = o.clip_set_;
-  composite_set_ = o.composite_set_;
+  compositing_operator_set_ = o.compositing_operator_set_;
   blend_mode_set_ = o.blend_mode_set_;
   origin_set_ = o.origin_set_;
   repeat_set_ = o.repeat_set_;
@@ -172,10 +174,10 @@ bool FillLayer::LayerPropertiesEqual(const FillLayer& o) const {
          background_x_origin_ == o.background_x_origin_ &&
          background_y_origin_ == o.background_y_origin_ &&
          attachment_ == o.attachment_ && clip_ == o.clip_ &&
-         composite_ == o.composite_ && blend_mode_ == o.blend_mode_ &&
-         origin_ == o.origin_ && repeat_ == o.repeat_ &&
-         size_type_ == o.size_type_ && size_length_ == o.size_length_ &&
-         type_ == o.type_;
+         compositing_operator_ == o.compositing_operator_ &&
+         blend_mode_ == o.blend_mode_ && origin_ == o.origin_ &&
+         repeat_ == o.repeat_ && size_type_ == o.size_type_ &&
+         size_length_ == o.size_length_ && type_ == o.type_;
 }
 
 bool FillLayer::operator==(const FillLayer& o) const {
@@ -263,12 +265,13 @@ void FillLayer::FillUnsetProperties() {
     }
   }
 
-  for (curr = this; curr && curr->IsCompositeSet(); curr = curr->Next()) {
+  for (curr = this; curr && curr->IsCompositingOperatorSet();
+       curr = curr->Next()) {
   }
   if (curr && curr != this) {
     // We need to fill in the remaining values with the pattern specified.
     for (FillLayer* pattern = this; curr; curr = curr->Next()) {
-      curr->composite_ = pattern->composite_;
+      curr->compositing_operator_ = pattern->compositing_operator_;
       pattern = pattern->Next();
       if (pattern == curr || !pattern) {
         pattern = this;
@@ -383,7 +386,7 @@ bool FillLayer::ClipOccludesNextLayers() const {
 bool FillLayer::ImageIsOpaque(const Document& document,
                               const ComputedStyle& style) const {
   // Returns whether we have an image that will cover the content below it when
-  // composite_ == CompositeSourceOver && blend_mode_ == BlendMode::kNormal.
+  // Composite() == CompositeSourceOver && GetBlendMode() == BlendMode::kNormal.
   // Note that it doesn't matter what orientation we use because we are only
   // checking for IsEmpty.
   return image_->KnownToBeOpaque(document, style) &&
@@ -413,7 +416,7 @@ bool FillLayer::ImageOccludesNextLayers(const Document& document,
     return false;
   }
 
-  switch (composite_) {
+  switch (Composite()) {
     case kCompositeClear:
     case kCompositeCopy:
       return ImageTilesLayer();
@@ -442,6 +445,46 @@ bool FillLayer::ImagesIdentical(const FillLayer* layer1,
   }
 
   return !layer1 && !layer2;
+}
+
+CompositeOperator FillLayer::Composite() const {
+  switch (CompositingOperator()) {
+    case CompositingOperator::kAdd:
+      return kCompositeSourceOver;
+    case CompositingOperator::kSubtract:
+      return kCompositeSourceOut;
+    case CompositingOperator::kIntersect:
+      return kCompositeSourceIn;
+    case CompositingOperator::kExclude:
+      return kCompositeXOR;
+    case CompositingOperator::kClear:
+      return kCompositeClear;
+    case CompositingOperator::kCopy:
+      return kCompositeCopy;
+    case CompositingOperator::kSourceOver:
+      return kCompositeSourceOver;
+    case CompositingOperator::kSourceIn:
+      return kCompositeSourceIn;
+    case CompositingOperator::kSourceOut:
+      return kCompositeSourceOut;
+    case CompositingOperator::kSourceAtop:
+      return kCompositeSourceAtop;
+    case CompositingOperator::kDestinationOver:
+      return kCompositeDestinationOver;
+    case CompositingOperator::kDestinationIn:
+      return kCompositeDestinationIn;
+    case CompositingOperator::kDestinationOut:
+      return kCompositeDestinationOut;
+    case CompositingOperator::kDestinationAtop:
+      return kCompositeDestinationAtop;
+    case CompositingOperator::kXOR:
+      return kCompositeXOR;
+    case CompositingOperator::kPlusLighter:
+      return kCompositePlusLighter;
+    default:
+      NOTREACHED();
+      break;
+  }
 }
 
 }  // namespace blink

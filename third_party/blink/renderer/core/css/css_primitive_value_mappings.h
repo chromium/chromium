@@ -47,7 +47,6 @@
 #include "third_party/blink/renderer/platform/fonts/font_smoothing_mode.h"
 #include "third_party/blink/renderer/platform/fonts/text_rendering_mode.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
@@ -143,43 +142,56 @@ inline OutlineIsAuto CSSIdentifierValue::ConvertTo() const {
 }
 
 template <>
-inline CSSIdentifierValue::CSSIdentifierValue(CompositeOperator e)
+inline CSSIdentifierValue::CSSIdentifierValue(
+    CompositingOperator compositing_operator)
     : CSSValue(kIdentifierClass) {
-  switch (e) {
-    case kCompositeClear:
+  switch (compositing_operator) {
+    case CompositingOperator::kAdd:
+      value_id_ = CSSValueID::kAdd;
+      break;
+    case CompositingOperator::kSubtract:
+      value_id_ = CSSValueID::kSubtract;
+      break;
+    case CompositingOperator::kIntersect:
+      value_id_ = CSSValueID::kIntersect;
+      break;
+    case CompositingOperator::kExclude:
+      value_id_ = CSSValueID::kExclude;
+      break;
+    case CompositingOperator::kClear:
       value_id_ = CSSValueID::kClear;
       break;
-    case kCompositeCopy:
+    case CompositingOperator::kCopy:
       value_id_ = CSSValueID::kCopy;
       break;
-    case kCompositeSourceOver:
+    case CompositingOperator::kSourceOver:
       value_id_ = CSSValueID::kSourceOver;
       break;
-    case kCompositeSourceIn:
+    case CompositingOperator::kSourceIn:
       value_id_ = CSSValueID::kSourceIn;
       break;
-    case kCompositeSourceOut:
+    case CompositingOperator::kSourceOut:
       value_id_ = CSSValueID::kSourceOut;
       break;
-    case kCompositeSourceAtop:
+    case CompositingOperator::kSourceAtop:
       value_id_ = CSSValueID::kSourceAtop;
       break;
-    case kCompositeDestinationOver:
+    case CompositingOperator::kDestinationOver:
       value_id_ = CSSValueID::kDestinationOver;
       break;
-    case kCompositeDestinationIn:
+    case CompositingOperator::kDestinationIn:
       value_id_ = CSSValueID::kDestinationIn;
       break;
-    case kCompositeDestinationOut:
+    case CompositingOperator::kDestinationOut:
       value_id_ = CSSValueID::kDestinationOut;
       break;
-    case kCompositeDestinationAtop:
+    case CompositingOperator::kDestinationAtop:
       value_id_ = CSSValueID::kDestinationAtop;
       break;
-    case kCompositeXOR:
+    case CompositingOperator::kXOR:
       value_id_ = CSSValueID::kXor;
       break;
-    case kCompositePlusLighter:
+    case CompositingOperator::kPlusLighter:
       value_id_ = CSSValueID::kPlusLighter;
       break;
     default:
@@ -189,38 +201,46 @@ inline CSSIdentifierValue::CSSIdentifierValue(CompositeOperator e)
 }
 
 template <>
-inline CompositeOperator CSSIdentifierValue::ConvertTo() const {
+inline CompositingOperator CSSIdentifierValue::ConvertTo() const {
   switch (value_id_) {
+    case CSSValueID::kAdd:
+      return CompositingOperator::kAdd;
+    case CSSValueID::kSubtract:
+      return CompositingOperator::kSubtract;
+    case CSSValueID::kIntersect:
+      return CompositingOperator::kIntersect;
+    case CSSValueID::kExclude:
+      return CompositingOperator::kExclude;
     case CSSValueID::kClear:
-      return kCompositeClear;
+      return CompositingOperator::kClear;
     case CSSValueID::kCopy:
-      return kCompositeCopy;
+      return CompositingOperator::kCopy;
     case CSSValueID::kSourceOver:
-      return kCompositeSourceOver;
+      return CompositingOperator::kSourceOver;
     case CSSValueID::kSourceIn:
-      return kCompositeSourceIn;
+      return CompositingOperator::kSourceIn;
     case CSSValueID::kSourceOut:
-      return kCompositeSourceOut;
+      return CompositingOperator::kSourceOut;
     case CSSValueID::kSourceAtop:
-      return kCompositeSourceAtop;
+      return CompositingOperator::kSourceAtop;
     case CSSValueID::kDestinationOver:
-      return kCompositeDestinationOver;
+      return CompositingOperator::kDestinationOver;
     case CSSValueID::kDestinationIn:
-      return kCompositeDestinationIn;
+      return CompositingOperator::kDestinationIn;
     case CSSValueID::kDestinationOut:
-      return kCompositeDestinationOut;
+      return CompositingOperator::kDestinationOut;
     case CSSValueID::kDestinationAtop:
-      return kCompositeDestinationAtop;
+      return CompositingOperator::kDestinationAtop;
     case CSSValueID::kXor:
-      return kCompositeXOR;
+      return CompositingOperator::kXOR;
     case CSSValueID::kPlusLighter:
-      return kCompositePlusLighter;
+      return CompositingOperator::kPlusLighter;
     default:
       break;
   }
 
   NOTREACHED();
-  return kCompositeClear;
+  return CompositingOperator::kAdd;
 }
 
 template <>

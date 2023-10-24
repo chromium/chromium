@@ -4122,7 +4122,12 @@ CSSValue* ConsumeBackgroundBoxOrText(CSSParserTokenRange& range) {
                       CSSValueID::kContentBox, CSSValueID::kText>(range);
 }
 
-CSSValue* ConsumeBackgroundComposite(CSSParserTokenRange& range) {
+CSSValue* ConsumeMaskComposite(CSSParserTokenRange& range) {
+  return ConsumeIdent<CSSValueID::kAdd, CSSValueID::kSubtract,
+                      CSSValueID::kIntersect, CSSValueID::kExclude>(range);
+}
+
+CSSValue* ConsumePrefixedMaskComposite(CSSParserTokenRange& range) {
   return ConsumeIdentRange(range, CSSValueID::kClear, CSSValueID::kPlusLighter);
 }
 

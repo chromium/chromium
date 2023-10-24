@@ -831,6 +831,7 @@ enum CSSSampleId {
     kMaskOrigin = 775,
     kTextSpacing = 776,
     kMaskRepeat = 777,
+    kMaskComposite = 778,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

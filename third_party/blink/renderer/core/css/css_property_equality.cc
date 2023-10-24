@@ -86,6 +86,12 @@ bool FillLayersEqual(const FillLayer& a_layers, const FillLayer& b_layers) {
           return false;
         }
         break;
+      case CSSPropertyID::kMaskComposite:
+      case CSSPropertyID::kWebkitMaskComposite:
+        if (a_layer->CompositingOperator() != b_layer->CompositingOperator()) {
+          return false;
+        }
+        break;
       case CSSPropertyID::kBackgroundOrigin:
       case CSSPropertyID::kMaskOrigin:
       case CSSPropertyID::kWebkitMaskOrigin:
@@ -782,6 +788,12 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kWebkitMaskClip:
       return FillLayersEqual<CSSPropertyID::kWebkitMaskClip>(a.MaskLayers(),
                                                              b.MaskLayers());
+    case CSSPropertyID::kMaskComposite:
+      return FillLayersEqual<CSSPropertyID::kMaskComposite>(a.MaskLayers(),
+                                                            b.MaskLayers());
+    case CSSPropertyID::kWebkitMaskComposite:
+      return FillLayersEqual<CSSPropertyID::kWebkitMaskComposite>(
+          a.MaskLayers(), b.MaskLayers());
     case CSSPropertyID::kMaskImage:
     case CSSPropertyID::kWebkitMaskImage:
       return base::ValuesEquivalent(a.MaskImage(), b.MaskImage());
@@ -919,6 +931,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kAliasWebkitAlternativeAnimationWithDelayStartEnd:
     case CSSPropertyID::kAliasWebkitAlternativeAnimationWithTimeline:
     case CSSPropertyID::kAliasWebkitAlternativeMaskClip:
+    case CSSPropertyID::kAliasWebkitAlternativeMaskComposite:
     case CSSPropertyID::kAliasWebkitAlternativeMaskImage:
     case CSSPropertyID::kAliasWebkitAlternativeMaskOrigin:
     case CSSPropertyID::kAliasWebkitAlternativeMaskRepeat:
@@ -1040,7 +1053,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kWebkitLineBreak:
     case CSSPropertyID::kWebkitLineClamp:
     case CSSPropertyID::kWebkitMaskBoxImageRepeat:
-    case CSSPropertyID::kWebkitMaskComposite:
     case CSSPropertyID::kWebkitPrintColorAdjust:
     case CSSPropertyID::kWebkitRtlOrdering:
     case CSSPropertyID::kWebkitRubyPosition:

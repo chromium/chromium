@@ -273,6 +273,7 @@ markerMid
 markerStart
 mask
 maskClip
+maskComposite
 maskImage
 maskOrigin
 maskRepeat

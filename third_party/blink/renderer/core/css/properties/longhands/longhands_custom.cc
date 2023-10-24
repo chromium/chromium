@@ -9286,12 +9286,38 @@ const CSSValue* WebkitMaskClip::CSSValueFromComputedStyleInternal(
   return list;
 }
 
+const CSSValue* MaskComposite::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext&,
+    const CSSParserLocalContext& local_context) const {
+  CHECK(RuntimeEnabledFeatures::CSSMaskingInteropEnabled());
+  if (local_context.UseAliasParsing()) {
+    return css_parsing_utils::ConsumeCommaSeparatedList(
+        css_parsing_utils::ConsumePrefixedMaskComposite, range);
+  }
+  return css_parsing_utils::ConsumeCommaSeparatedList(
+      css_parsing_utils::ConsumeMaskComposite, range);
+}
+
+const CSSValue* MaskComposite::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  const FillLayer* curr_layer = &style.MaskLayers();
+  for (; curr_layer; curr_layer = curr_layer->Next()) {
+    list->Append(
+        *CSSIdentifierValue::Create(curr_layer->CompositingOperator()));
+  }
+  return list;
+}
+
 const CSSValue* WebkitMaskComposite::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext&,
     const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumeBackgroundComposite, range);
+      css_parsing_utils::ConsumePrefixedMaskComposite, range);
 }
 
 const CSSValue* WebkitMaskComposite::CSSValueFromComputedStyleInternal(
@@ -9301,7 +9327,8 @@ const CSSValue* WebkitMaskComposite::CSSValueFromComputedStyleInternal(
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
   const FillLayer* curr_layer = &style.MaskLayers();
   for (; curr_layer; curr_layer = curr_layer->Next()) {
-    list->Append(*CSSIdentifierValue::Create(curr_layer->Composite()));
+    list->Append(
+        *CSSIdentifierValue::Create(curr_layer->CompositingOperator()));
   }
   return list;
 }
