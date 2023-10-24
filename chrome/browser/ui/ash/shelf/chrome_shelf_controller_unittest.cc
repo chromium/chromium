@@ -57,6 +57,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
@@ -69,6 +70,7 @@
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/apps/app_service/policy_util.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_metrics.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_service.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
@@ -6567,6 +6569,28 @@ TEST_F(ChromeShelfControllerPromiseAppsTest, SyncDataCreatesCorrectShelfItem) {
   ASSERT_TRUE(app_item);
   EXPECT_FALSE(app_item->is_promise_app);
   EXPECT_EQ(app_item->progress, -1);
+}
+
+TEST_F(ChromeShelfControllerPromiseAppsTest, ShelfItemCreationUpdatesMetrics) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      apps::kPromiseAppLifecycleEventHistogram,
+      apps::PromiseAppLifecycleEvent::kCreatedInShelf, 0);
+
+  const apps::PackageId package_id =
+      apps::PackageId(apps::AppType::kArc, "com.example.test");
+  apps::PromiseAppPtr promise_app =
+      std::make_unique<apps::PromiseApp>(package_id);
+  promise_app->should_show = true;
+  cache()->OnPromiseApp(std::move(promise_app));
+
+  InitShelfController();
+  PinAppWithIDToShelf(package_id.ToString());
+
+  EXPECT_TRUE(model_->IsAppPinned(package_id.ToString()));
+  histogram_tester.ExpectBucketCount(
+      apps::kPromiseAppLifecycleEventHistogram,
+      apps::PromiseAppLifecycleEvent::kCreatedInShelf, 1);
 }
 
 class ChromeShelfControllerShortcutTest : public ChromeShelfControllerTest {

@@ -91690,6 +91690,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2"
       label="App installation failed (or was cancelled) and was removed from
              PromiseAppRegistryCache"/>
+  <int value="3" label="Promise icon created in the Launcher"/>
+  <int value="4" label="Promise icon created in the Shelf"/>
 </enum>
 
 <enum name="PromoBrowserCommandEnum">

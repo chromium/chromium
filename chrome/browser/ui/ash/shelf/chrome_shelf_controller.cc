@@ -40,6 +40,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/extension_apps_utils.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_metrics.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_service.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_update.h"
 #include "chrome/browser/apps/icon_standardizer.h"
@@ -163,6 +164,13 @@ void ReportUpdateShelfIconList(const ash::ShelfModel* model) {
 
   ash::Shell::Get()->login_unlock_throughput_recorder()->UpdateShelfIconList(
       model);
+}
+
+void MaybeRecordPromiseAppShelfItemCreated(bool is_promise_app) {
+  if (is_promise_app) {
+    apps::RecordPromiseAppLifecycleEvent(
+        apps::PromiseAppLifecycleEvent::kCreatedInShelf);
+  }
 }
 
 }  // namespace
@@ -1747,6 +1755,7 @@ void ChromeShelfController::ShelfItemAdded(int index) {
 
       bool is_promise_app = ShelfControllerHelper::IsPromiseApp(
           latest_active_profile_, id.app_id);
+      MaybeRecordPromiseAppShelfItemCreated(is_promise_app);
       if (is_promise_app != item.is_promise_app) {
         needs_update = true;
         item.is_promise_app = is_promise_app;

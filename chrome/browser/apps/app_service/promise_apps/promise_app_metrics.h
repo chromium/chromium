@@ -12,10 +12,15 @@ extern const char kPromiseAppLifecycleEventHistogram[];
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class PromiseAppLifecycleEvent {
+  // Tracks events in the PromiseAppRegistryCache.
   kCreatedInCache = 0,
   kInstallationSucceeded = 1,
   kInstallationCancelled = 2,
-  kMaxValue = kInstallationCancelled
+
+  // Tracks events in the client.
+  kCreatedInLauncher = 3,
+  kCreatedInShelf = 4,
+  kMaxValue = kCreatedInShelf
 };
 
 void RecordPromiseAppLifecycleEvent(const PromiseAppLifecycleEvent event);
