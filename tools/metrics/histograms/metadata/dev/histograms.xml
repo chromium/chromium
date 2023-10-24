@@ -60,7 +60,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="DevTools.BreakpointEditDialogRevealedFrom"
     enum="DevToolsBreakpointEditDialogRevealedFrom" expires_after="2024-02-04">
   <owner>yangguo@chromium.org</owner>
-  <owner>jarin@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
   <owner>kimanh@chromium.org</owner>
   <summary>
     Records the ways in which the Breakpoint Edit Dialog was opened.
@@ -70,8 +70,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="DevTools.BreakpointsRestoredFromStorageCount"
     enum="DevToolsBreakpointsRestoredFromStorageCount"
     expires_after="2024-03-01">
-  <owner>jarin@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>
+  <owner>kimanh@chromium.org</owner>
   <summary>
     Records the number of breakpoints restored from the storage. The breakpoint
     count is restored when the debugger is initialized.
@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="DevTools.BreakpointWithConditionAdded"
     enum="DevToolsBreakpointWithConditionAdded" expires_after="2024-02-04">
   <owner>yangguo@chromium.org</owner>
-  <owner>jarin@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
   <owner>kimanh@chromium.org</owner>
   <summary>
     Records when a breakpoint with a condition was added (logpoint or
@@ -116,7 +116,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.ColorPickerOpenedFrom"
-    enum="DevToolsColorPickerOpenedFrom" expires_after="2023-12-01">
+    enum="DevToolsColorPickerOpenedFrom" expires_after="2024-12-01">
   <owner>ergunsh@chromium.org</owner>
   <owner>changhaohan@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>
@@ -248,7 +248,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="DevTools.InlineScriptParsed" enum="DevToolsVMInlineScriptType"
     expires_after="2024-02-04">
   <owner>yangguo@chromium.org</owner>
-  <owner>jarin@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
   <owner>kimanh@chromium.org</owner>
   <summary>Records the inline script types that are parsed.</summary>
 </histogram>
@@ -294,8 +294,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.IssuesPanelIssueExpanded"
-    enum="DevToolsIssuesPanelIssueExpanded" expires_after="2024-02-25">
-  <owner>yangguo@chromium.org</owner>
+    enum="DevToolsIssuesPanelIssueExpanded" expires_after="2024-12-01">
+  <owner>bmeurer@chromium.org</owner>
   <owner>dsv@chromium.org</owner>
   <summary>
     Records which type of issue is expanded in the issues panel.
@@ -303,8 +303,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.IssuesPanelOpenedFrom"
-    enum="DevToolsIssuesPanelOpenedFrom" expires_after="2023-12-01">
-  <owner>yangguo@chromium.org</owner>
+    enum="DevToolsIssuesPanelOpenedFrom" expires_after="2024-12-01">
+  <owner>bmeurer@chromium.org</owner>
   <owner>dsv@chromium.org</owner>
   <summary>
     Records which UI element is being used to open the Issues Panel.
@@ -312,8 +312,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.IssuesPanelResourceOpened"
-    enum="DevToolsIssuesPanelResourceOpened" expires_after="2024-03-05">
-  <owner>yangguo@chromium.org</owner>
+    enum="DevToolsIssuesPanelResourceOpened" expires_after="2024-12-01">
+  <owner>bmeurer@chromium.org</owner>
   <owner>dsv@chromium.org</owner>
   <summary>
     Records which resource from what issue category is opened in the issue
@@ -322,8 +322,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.KeybindSetSettingChanged" enum="DevToolsKeybindSets"
-    expires_after="2023-04-16">
-  <owner>yangguo@chromium.org</owner>
+    expires_after="2024-12-01">
+  <owner>bmeurer@chromium.org</owner>
   <owner>jalyn@microsoft.com</owner>
   <owner>leo.lee@microsoft.com</owner>
   <summary>
@@ -333,8 +333,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.KeyboardShortcutFired"
-    enum="DevToolsKeyboardShortcutAction" expires_after="2024-02-25">
-  <owner>yangguo@chromium.org</owner>
+    enum="DevToolsKeyboardShortcutAction" expires_after="2024-12-01">
+  <owner>bmeurer@chromium.org</owner>
   <owner>jalyn@microsoft.com</owner>
   <owner>leo.lee@microsoft.com</owner>
   <summary>
@@ -344,7 +344,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.Language" enum="DevToolsLanguage"
-    expires_after="2023-12-01">
+    expires_after="2024-12-01">
   <owner>bmeurer@chromium.org</owner>
   <owner>szuend@chromium.org</owner>
   <owner>yangguo@chromium.org</owner>
@@ -403,8 +403,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.ManifestSectionSelected"
-    enum="DevToolsManifestSection" expires_after="2023-12-31">
-  <owner>yangguo@chromium.org</owner>
+    enum="DevToolsManifestSection" expires_after="2024-12-31">
+  <owner>bmeurer@chromium.org</owner>
   <owner>edgedevtools@microsoft.com</owner>
   <summary>
     Records when certain items of the Manifest dropdown submenu in the
@@ -542,7 +542,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="DevTools.Sources.SidebarTabShown"
     enum="DevToolsSourcesSidebarTab" expires_after="2024-03-03">
   <owner>bmeurer@chromium.org</owner>
-  <owner>jarin@chromium.org</owner>
+  <owner>kimanh@chromium.org</owner>
   <summary>
     Specified DevTools sidebar tab was shown in the Sources panel.
   </summary>
@@ -585,7 +585,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.SyncSetting" enum="DevToolsSyncSetting"
-    expires_after="2023-12-01">
+    expires_after="2024-12-01">
   <owner>bmeurer@chromium.org</owner>
   <owner>szuend@chromium.org</owner>
   <owner>yangguo@chromium.org</owner>
@@ -618,7 +618,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="DevTools.VMInlineScriptShown"
     enum="DevToolsVMInlineScriptType" expires_after="2024-02-04">
   <owner>yangguo@chromium.org</owner>
-  <owner>jarin@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
   <owner>kimanh@chromium.org</owner>
   <summary>
     Records the inline script types for which we show the VM script instead of
