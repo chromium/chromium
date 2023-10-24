@@ -17,7 +17,5 @@ import {SourcesTestRunner} from 'sources_test_runner';
   function onSourceFrame(sourceFrame) {
     TestRunner.addResult('Source mapping loaded.');
     TestRunner.completeTest();
-    dumpSuggestions = SourcesTestRunner.dumpSuggestions.bind(SourcesTestRunner, sourceFrame.textEditor);
-    TestRunner.runTestSuite(testSuite);
   }
 })();
