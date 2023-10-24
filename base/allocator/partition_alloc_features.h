@@ -219,6 +219,8 @@ BASE_EXPORT BASE_DECLARE_FEATURE(
 extern const BASE_EXPORT base::FeatureParam<int>
     kThreadCacheMinCachedMemoryForPurgingBytes;
 
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocDisableBRPInBufferPartition);
+
 }  // namespace features
 }  // namespace base
 
