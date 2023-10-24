@@ -13,5 +13,6 @@ This is a testharness.js-based test.
   assert_equals: expected (string) "text/plain" but got (undefined) undefined
 [FAIL] getType(DOMString invalid type) converts DOMString to Blob
   assert_equals: expected (string) "not a/real type" but got (undefined) undefined
+[PASS] supports(DOMString) returns true for types that are supported, false otherwise
 Harness: the test ran to completion.
 

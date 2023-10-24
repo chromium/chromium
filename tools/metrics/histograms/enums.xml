@@ -44481,6 +44481,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4689" label="WebAssemblyModuleCompilation"/>
   <int value="4690" label="V8MediaStreamTrack_Stats_AttributeGetter"/>
   <int value="4691" label="ElementCheckVisibility"/>
+  <int value="4692" label="kV8ClipboardItem_Supports_Method"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

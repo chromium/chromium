@@ -623,6 +623,10 @@
       status: "stable",
     },
     {
+      name: "ClipboardSupportedTypes",
+      status: "experimental",
+    },
+    {
       name: "ClipboardSvg",
       status: "experimental",
       base_feature: "none",

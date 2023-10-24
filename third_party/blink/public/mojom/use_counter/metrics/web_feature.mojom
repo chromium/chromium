@@ -4029,6 +4029,7 @@ enum WebFeature {
   kWebAssemblyModuleCompilation = 4689,
   kV8MediaStreamTrack_Stats_AttributeGetter = 4690,
   kElementCheckVisibility = 4691,
+  kV8ClipboardItem_Supports_Method = 4692,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
