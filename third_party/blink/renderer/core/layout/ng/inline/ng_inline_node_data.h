@@ -55,7 +55,7 @@ struct CORE_EXPORT NGInlineNodeData final : InlineItemsData {
   friend class InlineItemsBuilderTest;
   friend class NGInlineNode;
   friend class NGInlineNodeForTest;
-  friend class NGOffsetMappingTest;
+  friend class OffsetMappingTest;
 
   template <typename OffsetMappingBuilder>
   friend class InlineItemsBuilderTemplate;

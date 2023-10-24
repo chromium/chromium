@@ -21,7 +21,7 @@ class NGColumnSpannerPath;
 class NGConstraintSpace;
 class NGInlineChildLayoutContext;
 class NGLayoutResult;
-class NGOffsetMapping;
+class OffsetMapping;
 struct InlineItemsData;
 struct SvgTextContentRange;
 
@@ -86,11 +86,11 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   // Returns the DOM to text content offset mapping of this block. If it is not
   // computed before, compute and store it in NGInlineNodeData.
   // This function must be called with clean layout.
-  const NGOffsetMapping* ComputeOffsetMappingIfNeeded() const;
+  const OffsetMapping* ComputeOffsetMappingIfNeeded() const;
 
-  // Get |NGOffsetMapping| for the |layout_block_flow|. |layout_block_flow|
+  // Get |OffsetMapping| for the |layout_block_flow|. |layout_block_flow|
   // should be laid out. This function works for both new and legacy layout.
-  static const NGOffsetMapping* GetOffsetMapping(
+  static const OffsetMapping* GetOffsetMapping(
       LayoutBlockFlow* layout_block_flow);
 
   bool IsBidiEnabled() const { return Data().is_bidi_enabled_; }

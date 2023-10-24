@@ -27,8 +27,7 @@ using HighlightPart = NGHighlightOverlay::HighlightPart;
 unsigned GetTextContentOffset(const Text& text, unsigned offset) {
   // TODO(yoichio): Sanitize DocumentMarker around text length.
   const Position position(text, std::min(offset, text.length()));
-  const NGOffsetMapping* const offset_mapping =
-      NGOffsetMapping::GetFor(position);
+  const OffsetMapping* const offset_mapping = OffsetMapping::GetFor(position);
   DCHECK(offset_mapping);
   const absl::optional<unsigned>& ng_offset =
       offset_mapping->GetTextContentOffset(position);
@@ -323,8 +322,8 @@ Vector<HighlightEdge> NGHighlightOverlay::ComputeEdges(
     // converting each marker to canonical text offsets is the most expensive
     // step of this function. We can avoid that by converting the originating
     // fragment back to DOM offsets for comparison.
-    const NGOffsetMapping* mapping =
-        NGOffsetMapping::GetFor(text_node->GetLayoutObject());
+    const OffsetMapping* mapping =
+        OffsetMapping::GetFor(text_node->GetLayoutObject());
     unsigned last_from =
         mapping->GetLastPosition(originating.from).OffsetInContainerNode();
     unsigned first_to =

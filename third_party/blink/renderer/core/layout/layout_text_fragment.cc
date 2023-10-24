@@ -286,9 +286,8 @@ String LayoutTextFragment::PlainText() const {
   LayoutText* first_letter = GetFirstLetterPart();
   if (!first_letter)
     return LayoutText::PlainText();
-  const NGOffsetMapping* remaining_text_mapping = GetNGOffsetMapping();
-  const NGOffsetMapping* first_letter_mapping =
-      first_letter->GetNGOffsetMapping();
+  const OffsetMapping* remaining_text_mapping = GetOffsetMapping();
+  const OffsetMapping* first_letter_mapping = first_letter->GetOffsetMapping();
   if (first_letter_mapping && remaining_text_mapping &&
       first_letter_mapping != remaining_text_mapping)
     return first_letter_mapping->GetText() + LayoutText::PlainText();

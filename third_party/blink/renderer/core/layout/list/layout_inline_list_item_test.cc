@@ -25,7 +25,7 @@ li {
       .getElementById(AtomicString("li2"))
       ->removeAttribute(html_names::kStyleAttr);
   UpdateAllLifecyclePhasesForTest();
-  auto* block_flow = NGOffsetMapping::GetInlineFormattingContextOf(
+  auto* block_flow = OffsetMapping::GetInlineFormattingContextOf(
       *GetLayoutObjectByElementId("li3"));
   ASSERT_TRUE(block_flow);
   EXPECT_FALSE(block_flow->NeedsLayout());

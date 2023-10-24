@@ -55,10 +55,10 @@ unsigned ClampToFragmentRange(const NGTextOffsetRange& fragment_range,
   return std::min(std::max(offset, fragment_range.start), fragment_range.end);
 }
 
-base::span<const NGOffsetMappingUnit> GetMappingUnits(
+base::span<const OffsetMappingUnit> GetMappingUnits(
     const FragmentItem& text_fragment) {
-  const NGOffsetMapping* const offset_mapping =
-      NGOffsetMapping::GetFor(text_fragment.GetLayoutObject());
+  const OffsetMapping* const offset_mapping =
+      OffsetMapping::GetFor(text_fragment.GetLayoutObject());
   DCHECK(offset_mapping);
   return offset_mapping->GetMappingUnitsForTextContentOffsetRange(
       text_fragment.StartOffset(), text_fragment.EndOffset());
@@ -113,21 +113,21 @@ class MarkerRangeMappingContext {
 
    private:
     // Find the mapping unit for `dom_offset`, starting from `begin`.
-    base::span<const NGOffsetMappingUnit>::iterator FindUnit(
-        base::span<const NGOffsetMappingUnit>::iterator begin,
+    base::span<const OffsetMappingUnit>::iterator FindUnit(
+        base::span<const OffsetMappingUnit>::iterator begin,
         unsigned dom_offset) const {
       if (dom_offset <= begin->DOMEnd()) {
         return begin;
       }
-      return std::prev(std::upper_bound(
-          begin, units_.end(), dom_offset,
-          [](unsigned offset, const NGOffsetMappingUnit& unit) {
-            return offset < unit.DOMStart();
-          }));
+      return std::prev(
+          std::upper_bound(begin, units_.end(), dom_offset,
+                           [](unsigned offset, const OffsetMappingUnit& unit) {
+                             return offset < unit.DOMStart();
+                           }));
     }
 
-    base::span<const NGOffsetMappingUnit> units_;
-    mutable base::span<const NGOffsetMappingUnit>::iterator units_begin_;
+    base::span<const OffsetMappingUnit> units_;
+    mutable base::span<const OffsetMappingUnit>::iterator units_begin_;
   };
 
  public:
@@ -1037,8 +1037,7 @@ unsigned NGHighlightPainter::GetTextContentOffset(const Text& text,
                                                   unsigned offset) {
   // TODO(yoichio): Sanitize DocumentMarker around text length.
   const Position position(text, std::min(offset, text.length()));
-  const NGOffsetMapping* const offset_mapping =
-      NGOffsetMapping::GetFor(position);
+  const OffsetMapping* const offset_mapping = OffsetMapping::GetFor(position);
   DCHECK(offset_mapping);
   const absl::optional<unsigned>& ng_offset =
       offset_mapping->GetTextContentOffset(position);

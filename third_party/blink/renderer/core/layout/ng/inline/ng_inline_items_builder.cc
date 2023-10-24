@@ -22,20 +22,19 @@ namespace blink {
 class HTMLAreaElement;
 
 // Returns true if items builder is used for other than offset mapping.
-template <typename OffsetMappingBuilder>
-bool InlineItemsBuilderTemplate<OffsetMappingBuilder>::NeedsBoxInfo() {
-  return !std::is_same<NGOffsetMappingBuilder, OffsetMappingBuilder>::value;
+template <typename MappingBuilder>
+bool InlineItemsBuilderTemplate<MappingBuilder>::NeedsBoxInfo() {
+  return !std::is_same<OffsetMappingBuilder, MappingBuilder>::value;
 }
 
-template <typename OffsetMappingBuilder>
-InlineItemsBuilderTemplate<
-    OffsetMappingBuilder>::~InlineItemsBuilderTemplate() {
+template <typename MappingBuilder>
+InlineItemsBuilderTemplate<MappingBuilder>::~InlineItemsBuilderTemplate() {
   DCHECK_EQ(0u, bidi_context_.size());
   DCHECK_EQ(text_.length(), items_->empty() ? 0 : items_->back().EndOffset());
 }
 
-template <typename OffsetMappingBuilder>
-String InlineItemsBuilderTemplate<OffsetMappingBuilder>::ToString() {
+template <typename MappingBuilder>
+String InlineItemsBuilderTemplate<MappingBuilder>::ToString() {
   return text_.ToString();
 }
 
@@ -189,8 +188,8 @@ InlineItem* LastItemToCollapseWith(HeapVector<InlineItem>* items) {
 
 }  // anonymous namespace
 
-template <typename OffsetMappingBuilder>
-InlineItemsBuilderTemplate<OffsetMappingBuilder>::BoxInfo::BoxInfo(
+template <typename MappingBuilder>
+InlineItemsBuilderTemplate<MappingBuilder>::BoxInfo::BoxInfo(
     unsigned item_index,
     const InlineItem& item)
     : style(*item.Style()),
@@ -201,8 +200,8 @@ InlineItemsBuilderTemplate<OffsetMappingBuilder>::BoxInfo::BoxInfo(
 }
 
 // True if this inline box should create a box fragment when it has |child|.
-template <typename OffsetMappingBuilder>
-bool InlineItemsBuilderTemplate<OffsetMappingBuilder>::BoxInfo::
+template <typename MappingBuilder>
+bool InlineItemsBuilderTemplate<MappingBuilder>::BoxInfo::
     ShouldCreateBoxFragmentForChild(const BoxInfo& child) const {
   // When a child inline box has margins, the parent has different width/height
   // from the union of children.
@@ -226,8 +225,8 @@ bool InlineItemsBuilderTemplate<OffsetMappingBuilder>::BoxInfo::
   return false;
 }
 
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<OffsetMappingBuilder>::BoxInfo::
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::BoxInfo::
     SetShouldCreateBoxFragment(HeapVector<InlineItem>* items) {
   DCHECK(!should_create_box_fragment);
   should_create_box_fragment = true;
@@ -235,16 +234,16 @@ void InlineItemsBuilderTemplate<OffsetMappingBuilder>::BoxInfo::
 }
 
 // Append a string as a text item.
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextItem(
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::AppendTextItem(
     const StringView string,
     LayoutText* layout_object) {
   DCHECK(layout_object);
   AppendTextItem(InlineItem::kText, string, layout_object);
 }
 
-template <typename OffsetMappingBuilder>
-InlineItem& InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextItem(
+template <typename MappingBuilder>
+InlineItem& InlineItemsBuilderTemplate<MappingBuilder>::AppendTextItem(
     InlineItem::InlineItemType type,
     const StringView string,
     LayoutText* layout_object) {
@@ -262,8 +261,8 @@ InlineItem& InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextItem(
 // Empty text items are not needed for the layout purposes, but all LayoutObject
 // must be captured in InlineItemsData to maintain states of LayoutObject in
 // this inline formatting context.
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendEmptyTextItem(
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::AppendEmptyTextItem(
     LayoutText* layout_object) {
   DCHECK(layout_object);
   unsigned offset = text_.length();
@@ -275,31 +274,28 @@ void InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendEmptyTextItem(
 }
 
 // Same as AppendBreakOpportunity, but mark the item as IsGenerated().
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<OffsetMappingBuilder>::
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::
     AppendGeneratedBreakOpportunity(LayoutObject* layout_object) {
   if (block_flow_->IsSVGText()) {
     return;
   }
   DCHECK(layout_object);
-  typename OffsetMappingBuilder::SourceNodeScope scope(&mapping_builder_,
-                                                       nullptr);
+  typename MappingBuilder::SourceNodeScope scope(&mapping_builder_, nullptr);
   InlineItem& item = AppendBreakOpportunity(layout_object);
   item.SetIsGeneratedForLineBreak();
   item.SetEndCollapseType(InlineItem::kOpaqueToCollapsing);
 }
 
-template <typename OffsetMappingBuilder>
-inline void
-InlineItemsBuilderTemplate<OffsetMappingBuilder>::DidAppendForcedBreak() {
+template <typename MappingBuilder>
+inline void InlineItemsBuilderTemplate<MappingBuilder>::DidAppendForcedBreak() {
   // Bisecting available widths can't handle multiple logical paragraphs, so
   // forced break should disable it. See `ParagraphLineBreaker`.
   is_bisect_line_break_disabled_ = true;
 }
 
-template <typename OffsetMappingBuilder>
-inline void
-InlineItemsBuilderTemplate<OffsetMappingBuilder>::DidAppendTextReusing(
+template <typename MappingBuilder>
+inline void InlineItemsBuilderTemplate<MappingBuilder>::DidAppendTextReusing(
     const InlineItem& item) {
   is_block_level_ &= item.IsBlockLevel();
   if (item.IsForcedLineBreak()) {
@@ -307,8 +303,8 @@ InlineItemsBuilderTemplate<OffsetMappingBuilder>::DidAppendTextReusing(
   }
 }
 
-template <typename OffsetMappingBuilder>
-bool InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextReusing(
+template <typename MappingBuilder>
+bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextReusing(
     const NGInlineNodeData& original_data,
     LayoutText* layout_text) {
   DCHECK(layout_text);
@@ -490,15 +486,15 @@ bool InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextReusing(
 }
 
 template <>
-bool InlineItemsBuilderTemplate<NGOffsetMappingBuilder>::AppendTextReusing(
+bool InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextReusing(
     const NGInlineNodeData&,
     LayoutText*) {
   NOTREACHED();
   return false;
 }
 
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendText(
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::AppendText(
     LayoutText* layout_text,
     const NGInlineNodeData* previous_data) {
   // If the LayoutText element hasn't changed, reuse the existing items.
@@ -510,8 +506,8 @@ void InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendText(
 
   // If not create a new item as needed.
   if (UNLIKELY(layout_text->IsWordBreak())) {
-    typename OffsetMappingBuilder::SourceNodeScope scope(&mapping_builder_,
-                                                         layout_text);
+    typename MappingBuilder::SourceNodeScope scope(&mapping_builder_,
+                                                   layout_text);
     if (UNLIKELY(is_text_combine_)) {
       // We don't break text runs in text-combine-upright:all.
       // Note: Even if we have overflow-wrap:normal and word-break:keep-all,
@@ -526,8 +522,8 @@ void InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendText(
   AppendText(layout_text->GetText(), layout_text);
 }
 
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendText(
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::AppendText(
     const String& string,
     LayoutText* layout_object) {
   DCHECK(layout_object);
@@ -551,8 +547,8 @@ void InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendText(
       text_.Reserve16BitCapacity(new_capacity);
   }
 
-  typename OffsetMappingBuilder::SourceNodeScope scope(&mapping_builder_,
-                                                       layout_object);
+  typename MappingBuilder::SourceNodeScope scope(&mapping_builder_,
+                                                 layout_object);
 
   const ComputedStyle& style = layout_object->StyleRef();
   const bool should_not_preserve_newline =
@@ -572,8 +568,8 @@ void InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendText(
   }
 }
 
-template <typename OffsetMappingBuilder>
-bool InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextChunks(
+template <typename MappingBuilder>
+bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextChunks(
     const String& string,
     LayoutText& layout_text) {
   auto iter = text_chunk_offsets_->find(&layout_text);
@@ -606,8 +602,8 @@ bool InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextChunks(
   return true;
 }
 
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendCollapseWhitespace(
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::AppendCollapseWhitespace(
     const StringView string,
     const ComputedStyle* style,
     LayoutText* layout_object) {
@@ -805,8 +801,8 @@ void InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendCollapseWhitespace(
   is_block_level_ = false;
 }
 
-template <typename OffsetMappingBuilder>
-bool InlineItemsBuilderTemplate<OffsetMappingBuilder>::
+template <typename MappingBuilder>
+bool InlineItemsBuilderTemplate<MappingBuilder>::
     ShouldInsertBreakOpportunityAfterLeadingPreservedSpaces(
         const String& string,
         const ComputedStyle& style,
@@ -828,8 +824,8 @@ bool InlineItemsBuilderTemplate<OffsetMappingBuilder>::
   return text_.empty() || text_[text_.length() - 1] == kNewlineCharacter;
 }
 
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<OffsetMappingBuilder>::
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::
     InsertBreakOpportunityAfterLeadingPreservedSpaces(
         const String& string,
         const ComputedStyle& style,
@@ -852,8 +848,8 @@ void InlineItemsBuilderTemplate<OffsetMappingBuilder>::
 // except for testing, we can get them from |LayoutText|.
 // Even when without whitespace collapsing, control characters (newlines and
 // tabs) are in their own control items to make the line breaker not special.
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendPreserveWhitespace(
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::AppendPreserveWhitespace(
     const String& string,
     const ComputedStyle* style,
     LayoutText* layout_object) {
@@ -915,8 +911,8 @@ void InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendPreserveWhitespace(
   }
 }
 
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendPreserveNewline(
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::AppendPreserveNewline(
     const String& string,
     const ComputedStyle* style,
     LayoutText* layout_object) {
@@ -937,8 +933,8 @@ void InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendPreserveNewline(
   }
 }
 
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendForcedBreak(
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::AppendForcedBreak(
     LayoutObject* layout_object) {
   DCHECK(layout_object);
   // Combined text should ignore force line break[1].
@@ -947,8 +943,7 @@ void InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendForcedBreak(
   // At the forced break, add bidi controls to pop all contexts.
   // https://drafts.csswg.org/css-writing-modes-3/#bidi-embedding-breaks
   if (!bidi_context_.empty()) {
-    typename OffsetMappingBuilder::SourceNodeScope scope(&mapping_builder_,
-                                                         nullptr);
+    typename MappingBuilder::SourceNodeScope scope(&mapping_builder_, nullptr);
     // These bidi controls need to be associated with the |layout_object| so
     // that items from a LayoutObject are consecutive.
     for (const auto& bidi : base::Reversed(bidi_context_)) {
@@ -968,8 +963,7 @@ void InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendForcedBreak(
 
   // Then re-add bidi controls to restore the bidi context.
   if (!bidi_context_.empty()) {
-    typename OffsetMappingBuilder::SourceNodeScope scope(&mapping_builder_,
-                                                         nullptr);
+    typename MappingBuilder::SourceNodeScope scope(&mapping_builder_, nullptr);
     for (const auto& bidi : bidi_context_) {
       AppendOpaque(InlineItem::kBidiControl, bidi.enter, layout_object);
     }
@@ -978,8 +972,8 @@ void InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendForcedBreak(
   DidAppendForcedBreak();
 }
 
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<OffsetMappingBuilder>::
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::
     AppendForcedBreakCollapseWhitespace(LayoutObject* layout_object) {
   // Remove collapsible spaces immediately before a preserved newline.
   RemoveTrailingCollapsibleSpaceIfExists();
@@ -987,9 +981,8 @@ void InlineItemsBuilderTemplate<OffsetMappingBuilder>::
   AppendForcedBreak(layout_object);
 }
 
-template <typename OffsetMappingBuilder>
-InlineItem&
-InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendBreakOpportunity(
+template <typename MappingBuilder>
+InlineItem& InlineItemsBuilderTemplate<MappingBuilder>::AppendBreakOpportunity(
     LayoutObject* layout_object) {
   DCHECK(layout_object);
   InlineItem& item = AppendOpaque(InlineItem::kControl,
@@ -999,16 +992,15 @@ InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendBreakOpportunity(
 }
 
 // The logic is similar to AppendForcedBreak().
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<OffsetMappingBuilder>::ExitAndEnterSvgTextChunk(
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::ExitAndEnterSvgTextChunk(
     LayoutText& layout_text) {
   DCHECK(block_flow_->IsSVGText());
   DCHECK(text_chunk_offsets_);
 
   if (bidi_context_.empty())
     return;
-  typename OffsetMappingBuilder::SourceNodeScope scope(&mapping_builder_,
-                                                       nullptr);
+  typename MappingBuilder::SourceNodeScope scope(&mapping_builder_, nullptr);
   // These bidi controls need to be associated with the |layout_text| so
   // that items from a LayoutObject are consecutive.
   for (const auto& bidi : base::Reversed(bidi_context_))
@@ -1019,8 +1011,8 @@ void InlineItemsBuilderTemplate<OffsetMappingBuilder>::ExitAndEnterSvgTextChunk(
     AppendOpaque(InlineItem::kBidiControl, bidi.enter, &layout_text);
 }
 
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<OffsetMappingBuilder>::EnterSvgTextChunk(
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::EnterSvgTextChunk(
     const ComputedStyle* style) {
   if (LIKELY(!block_flow_->IsSVGText() || !text_chunk_offsets_)) {
     return;
@@ -1031,8 +1023,8 @@ void InlineItemsBuilderTemplate<OffsetMappingBuilder>::EnterSvgTextChunk(
   // This context is automatically popped by Exit(nullptr) in ExitBlock().
 }
 
-template <typename OffsetMappingBuilder>
-InlineItem& InlineItemsBuilderTemplate<OffsetMappingBuilder>::Append(
+template <typename MappingBuilder>
+InlineItem& InlineItemsBuilderTemplate<MappingBuilder>::Append(
     InlineItem::InlineItemType type,
     UChar character,
     LayoutObject* layout_object) {
@@ -1047,12 +1039,12 @@ InlineItem& InlineItemsBuilderTemplate<OffsetMappingBuilder>::Append(
   return item;
 }
 
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendAtomicInline(
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::AppendAtomicInline(
     LayoutObject* layout_object) {
   DCHECK(layout_object);
-  typename OffsetMappingBuilder::SourceNodeScope scope(&mapping_builder_,
-                                                       layout_object);
+  typename MappingBuilder::SourceNodeScope scope(&mapping_builder_,
+                                                 layout_object);
   RestoreTrailingCollapsibleSpaceIfRemoved();
   Append(InlineItem::kAtomicInline, kObjectReplacementCharacter, layout_object);
   has_ruby_ = has_ruby_ || layout_object->IsRubyColumn();
@@ -1068,8 +1060,8 @@ void InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendAtomicInline(
   }
 }
 
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendBlockInInline(
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::AppendBlockInInline(
     LayoutObject* layout_object) {
   DCHECK(layout_object);
   // Before a block-in-inline is like after a forced break.
@@ -1095,8 +1087,8 @@ void InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendBlockInInline(
   is_bisect_line_break_disabled_ = true;
 }
 
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendFloating(
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::AppendFloating(
     LayoutObject* layout_object) {
   AppendOpaque(InlineItem::kFloating, kObjectReplacementCharacter,
                layout_object);
@@ -1107,15 +1099,15 @@ void InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendFloating(
   // `ScoreLineBreaker` supports "simple" floats. See`LineWidths`.
 }
 
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<OffsetMappingBuilder>::
-    AppendOutOfFlowPositioned(LayoutObject* layout_object) {
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::AppendOutOfFlowPositioned(
+    LayoutObject* layout_object) {
   AppendOpaque(InlineItem::kOutOfFlowPositioned, kObjectReplacementCharacter,
                layout_object);
 }
 
-template <typename OffsetMappingBuilder>
-InlineItem& InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendOpaque(
+template <typename MappingBuilder>
+InlineItem& InlineItemsBuilderTemplate<MappingBuilder>::AppendOpaque(
     InlineItem::InlineItemType type,
     UChar character,
     LayoutObject* layout_object) {
@@ -1129,8 +1121,8 @@ InlineItem& InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendOpaque(
   return item;
 }
 
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendOpaque(
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::AppendOpaque(
     InlineItem::InlineItemType type,
     LayoutObject* layout_object) {
   unsigned end_offset = text_.length();
@@ -1141,9 +1133,9 @@ void InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendOpaque(
 }
 
 // Removes the collapsible space at the end of |text_| if exists.
-template <typename OffsetMappingBuilder>
+template <typename MappingBuilder>
 void InlineItemsBuilderTemplate<
-    OffsetMappingBuilder>::RemoveTrailingCollapsibleSpaceIfExists() {
+    MappingBuilder>::RemoveTrailingCollapsibleSpaceIfExists() {
   if (InlineItem* item = LastItemToCollapseWith(items_)) {
     if (item->EndCollapseType() == InlineItem::kCollapsible) {
       RemoveTrailingCollapsibleSpace(item);
@@ -1152,9 +1144,9 @@ void InlineItemsBuilderTemplate<
 }
 
 // Removes the collapsible space at the end of the specified item.
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<
-    OffsetMappingBuilder>::RemoveTrailingCollapsibleSpace(InlineItem* item) {
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::RemoveTrailingCollapsibleSpace(
+    InlineItem* item) {
   DCHECK(item);
   DCHECK_EQ(item->EndCollapseType(), InlineItem::kCollapsible);
   DCHECK_GT(item->Length(), 0u);
@@ -1187,9 +1179,9 @@ void InlineItemsBuilderTemplate<
 }
 
 // Restore removed collapsible space at the end of items.
-template <typename OffsetMappingBuilder>
+template <typename MappingBuilder>
 void InlineItemsBuilderTemplate<
-    OffsetMappingBuilder>::RestoreTrailingCollapsibleSpaceIfRemoved() {
+    MappingBuilder>::RestoreTrailingCollapsibleSpaceIfRemoved() {
   if (InlineItem* last_item = LastItemToCollapseWith(items_)) {
     if (last_item->EndCollapseType() == InlineItem::kCollapsed) {
       RestoreTrailingCollapsibleSpace(last_item);
@@ -1198,9 +1190,9 @@ void InlineItemsBuilderTemplate<
 }
 
 // Restore removed collapsible space at the end of the specified item.
-template <typename OffsetMappingBuilder>
+template <typename MappingBuilder>
 void InlineItemsBuilderTemplate<
-    OffsetMappingBuilder>::RestoreTrailingCollapsibleSpace(InlineItem* item) {
+    MappingBuilder>::RestoreTrailingCollapsibleSpace(InlineItem* item) {
   DCHECK(item);
   DCHECK(item->EndCollapseType() == InlineItem::kCollapsed);
 
@@ -1226,8 +1218,8 @@ void InlineItemsBuilderTemplate<
   }
 }
 
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<OffsetMappingBuilder>::EnterBidiContext(
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::EnterBidiContext(
     LayoutObject* node,
     UChar enter,
     UChar exit) {
@@ -1236,8 +1228,8 @@ void InlineItemsBuilderTemplate<OffsetMappingBuilder>::EnterBidiContext(
   has_bidi_controls_ = true;
 }
 
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<OffsetMappingBuilder>::EnterBidiContext(
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::EnterBidiContext(
     LayoutObject* node,
     const ComputedStyle* style,
     UChar ltr_enter,
@@ -1247,8 +1239,8 @@ void InlineItemsBuilderTemplate<OffsetMappingBuilder>::EnterBidiContext(
                    exit);
 }
 
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<OffsetMappingBuilder>::EnterBlock(
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::EnterBlock(
     const ComputedStyle* style) {
   // Handle bidi-override on the block itself.
   if (style->RtlOrdering() == EOrder::kLogical) {
@@ -1291,8 +1283,8 @@ void InlineItemsBuilderTemplate<OffsetMappingBuilder>::EnterBlock(
   }
 }
 
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<OffsetMappingBuilder>::EnterInline(
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::EnterInline(
     LayoutInline* node) {
   DCHECK(node);
 
@@ -1349,8 +1341,8 @@ void InlineItemsBuilderTemplate<OffsetMappingBuilder>::EnterInline(
   }
 }
 
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<OffsetMappingBuilder>::ExitBlock() {
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::ExitBlock() {
   Exit(nullptr);
 
   // Segment Break Transformation Rules[1] defines to keep trailing new lines,
@@ -1359,8 +1351,8 @@ void InlineItemsBuilderTemplate<OffsetMappingBuilder>::ExitBlock() {
   RemoveTrailingCollapsibleSpaceIfExists();
 }
 
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<OffsetMappingBuilder>::ExitInline(
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::ExitInline(
     LayoutObject* node) {
   DCHECK(node);
 
@@ -1408,23 +1400,21 @@ void InlineItemsBuilderTemplate<OffsetMappingBuilder>::ExitInline(
   Exit(node);
 }
 
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<OffsetMappingBuilder>::Exit(
-    LayoutObject* node) {
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::Exit(LayoutObject* node) {
   while (!bidi_context_.empty() && bidi_context_.back().node == node) {
     AppendOpaque(InlineItem::kBidiControl, bidi_context_.back().exit);
     bidi_context_.pop_back();
   }
 }
 
-template <typename OffsetMappingBuilder>
-bool InlineItemsBuilderTemplate<OffsetMappingBuilder>::MayBeBidiEnabled()
-    const {
+template <typename MappingBuilder>
+bool InlineItemsBuilderTemplate<MappingBuilder>::MayBeBidiEnabled() const {
   return !text_.Is8Bit() || HasBidiControls();
 }
 
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<OffsetMappingBuilder>::DidFinishCollectInlines(
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::DidFinishCollectInlines(
     NGInlineNodeData* data) {
   data->text_content = ToString();
 
@@ -1446,9 +1436,8 @@ void InlineItemsBuilderTemplate<OffsetMappingBuilder>::DidFinishCollectInlines(
 #endif
 }
 
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<
-    OffsetMappingBuilder>::SetHasInititialLetterBox() {
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::SetHasInititialLetterBox() {
   DCHECK(!items_->empty());
   DCHECK(!has_initial_letter_box_);
   has_initial_letter_box_ = true;
@@ -1458,28 +1447,28 @@ void InlineItemsBuilderTemplate<
   is_score_line_break_disabled_ = true;
 }
 
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<OffsetMappingBuilder>::SetIsSymbolMarker() {
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::SetIsSymbolMarker() {
   DCHECK(!items_->empty());
   items_->back().SetIsSymbolMarker();
 }
 
-template <typename OffsetMappingBuilder>
-bool InlineItemsBuilderTemplate<
-    OffsetMappingBuilder>::ShouldUpdateLayoutObject() const {
+template <typename MappingBuilder>
+bool InlineItemsBuilderTemplate<MappingBuilder>::ShouldUpdateLayoutObject()
+    const {
   return true;
 }
 
 // Ensure this LayoutObject IsInLayoutNGInlineFormattingContext and does not
 // have associated NGPaintFragment.
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<OffsetMappingBuilder>::ClearInlineFragment(
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::ClearInlineFragment(
     LayoutObject* object) {
   object->SetIsInLayoutNGInlineFormattingContext(true);
 }
 
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<OffsetMappingBuilder>::ClearNeedsLayout(
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::ClearNeedsLayout(
     LayoutObject* object) {
   // |CollectInlines()| for the pre-layout does not |ClearNeedsLayout|. It is
   // done during the actual layout because re-layout may not require
@@ -1494,36 +1483,36 @@ void InlineItemsBuilderTemplate<OffsetMappingBuilder>::ClearNeedsLayout(
     To<LayoutText>(object)->ClearInlineItems();
 }
 
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<
-    OffsetMappingBuilder>::UpdateShouldCreateBoxFragment(LayoutInline* object) {
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::UpdateShouldCreateBoxFragment(
+    LayoutInline* object) {
   object->UpdateShouldCreateBoxFragment();
 }
 
-// |NGOffsetMappingBuilder| doesn't change states of |LayoutObject|
+// |OffsetMappingBuilder| doesn't change states of |LayoutObject|
 template <>
 bool InlineItemsBuilderTemplate<
-    NGOffsetMappingBuilder>::ShouldUpdateLayoutObject() const {
+    OffsetMappingBuilder>::ShouldUpdateLayoutObject() const {
   return false;
 }
 
-// |NGOffsetMappingBuilder| doesn't change states of |LayoutObject|
+// |OffsetMappingBuilder| doesn't change states of |LayoutObject|
 template <>
-void InlineItemsBuilderTemplate<NGOffsetMappingBuilder>::ClearNeedsLayout(
+void InlineItemsBuilderTemplate<OffsetMappingBuilder>::ClearNeedsLayout(
     LayoutObject* object) {}
 
-// |NGOffsetMappingBuilder| doesn't change states of |LayoutObject|
+// |OffsetMappingBuilder| doesn't change states of |LayoutObject|
 template <>
-void InlineItemsBuilderTemplate<NGOffsetMappingBuilder>::ClearInlineFragment(
+void InlineItemsBuilderTemplate<OffsetMappingBuilder>::ClearInlineFragment(
     LayoutObject*) {}
 
-// |NGOffsetMappingBuilder| doesn't change states of |LayoutInline|
+// |OffsetMappingBuilder| doesn't change states of |LayoutInline|
 template <>
 void InlineItemsBuilderTemplate<
-    NGOffsetMappingBuilder>::UpdateShouldCreateBoxFragment(LayoutInline*) {}
+    OffsetMappingBuilder>::UpdateShouldCreateBoxFragment(LayoutInline*) {}
 
-template <typename OffsetMappingBuilder>
-void InlineItemsBuilderTemplate<OffsetMappingBuilder>::BidiContext::Trace(
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::BidiContext::Trace(
     Visitor* visitor) const {
   visitor->Trace(node);
 }
@@ -1531,6 +1520,6 @@ void InlineItemsBuilderTemplate<OffsetMappingBuilder>::BidiContext::Trace(
 template class CORE_TEMPLATE_EXPORT
     InlineItemsBuilderTemplate<EmptyOffsetMappingBuilder>;
 template class CORE_TEMPLATE_EXPORT
-    InlineItemsBuilderTemplate<NGOffsetMappingBuilder>;
+    InlineItemsBuilderTemplate<OffsetMappingBuilder>;
 
 }  // namespace blink

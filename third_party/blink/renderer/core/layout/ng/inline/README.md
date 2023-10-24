@@ -360,7 +360,7 @@ Initial design doc: [Using ICU BiDi in LayoutNG](https://docs.google.com/documen
 
 ### Interface for Editing ###
 
-[NGOffsetMapping] provides functions for converting between offsets in the text
+[OffsetMapping] provides functions for converting between offsets in the text
 content of an inline formatting context (computed in [pre-layout]) and DOM
 positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 
@@ -389,10 +389,10 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [NGLayoutInputNode]: ../ng_layout_input_node.h
 [NGLogicalLineItem]: ng_logical_line_item.h
 [NGLogicalLineItems]: ng_logical_line_items.h
-[NGOffsetMapping]: ng_offset_mapping.h
 [NGPhysicalBoxFragment]: ../ng_physical_box_fragment.h
 [NGPhysicalFragment]: ../ng_physical_fragment.h
 [NGPhysicalLineBoxFragment]: ng_physical_line_box_fragment.h
 [NGPhysicalTextFragment]: ng_physical_text_fragment.h
+[OffsetMapping]: ng_offset_mapping.h
 [ShapeResult]: ../../../../platform/fonts/shaping/shape_result.h
 [ShapingLineBreaker]: ../../../../platform/fonts/shaping/shaping_line_breaker.h

@@ -15,7 +15,7 @@
 namespace blink {
 
 class InlineItemSegments;
-class NGOffsetMapping;
+class OffsetMapping;
 
 // Represents a text content with a list of InlineItem. A node may have an
 // additional InlineItemsData for ::first-line pseudo element.
@@ -39,7 +39,7 @@ struct CORE_EXPORT InlineItemsData : public GarbageCollected<InlineItemsData> {
   std::unique_ptr<InlineItemSegments> segments;
 
   // The DOM to text content offset mapping of this inline node.
-  Member<NGOffsetMapping> offset_mapping;
+  Member<OffsetMapping> offset_mapping;
 
   bool IsValidOffset(unsigned index, unsigned offset) const {
     return index < items.size() && items[index].IsValidOffset(offset);

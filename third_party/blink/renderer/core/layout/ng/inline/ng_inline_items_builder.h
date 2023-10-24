@@ -35,12 +35,12 @@ struct NGInlineNodeData;
 // characters as defined in:
 // https://drafts.csswg.org/css-writing-modes-3/#bidi-control-codes-injection-table
 //
-// InlineItemsBuilder may optionally take an NGOffsetMappingBuilder template
+// InlineItemsBuilder may optionally take an OffsetMappingBuilder template
 // parameter to construct the white-space collapsed offset mapping, which maps
 // offsets in the concatenation of all appended strings and characters to
 // offsets in |text_|.
 // See https://goo.gl/CJbxky for more details about offset mapping.
-template <typename OffsetMappingBuilder>
+template <typename MappingBuilder>
 class InlineItemsBuilderTemplate {
   STACK_ALLOCATED();
 
@@ -135,7 +135,7 @@ class InlineItemsBuilderTemplate {
   // Set collected inline items data to |data|.
   void DidFinishCollectInlines(NGInlineNodeData* data);
 
-  OffsetMappingBuilder& GetOffsetMappingBuilder() { return mapping_builder_; }
+  MappingBuilder& GetOffsetMappingBuilder() { return mapping_builder_; }
 
   void SetHasInititialLetterBox();
   void SetIsSymbolMarker();
@@ -186,7 +186,7 @@ class InlineItemsBuilderTemplate {
   // |mapping_builder_| builds the whitespace-collapsed offset mapping
   // during inline collection. It is updated whenever |text_| is modified or a
   // white space is collapsed.
-  OffsetMappingBuilder mapping_builder_;
+  MappingBuilder mapping_builder_;
 
   HeapVector<BoxInfo> boxes_;
   HeapVector<BidiContext> bidi_context_;
@@ -260,37 +260,38 @@ class InlineItemsBuilderTemplate {
 
 template <>
 CORE_EXPORT bool
-InlineItemsBuilderTemplate<NGOffsetMappingBuilder>::AppendTextReusing(
+InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextReusing(
     const NGInlineNodeData&,
     LayoutText*);
 
 template <>
 CORE_EXPORT bool InlineItemsBuilderTemplate<
-    NGOffsetMappingBuilder>::ShouldUpdateLayoutObject() const;
+    OffsetMappingBuilder>::ShouldUpdateLayoutObject() const;
 
 template <>
 CORE_EXPORT void
-InlineItemsBuilderTemplate<NGOffsetMappingBuilder>::ClearInlineFragment(
+InlineItemsBuilderTemplate<OffsetMappingBuilder>::ClearInlineFragment(
     LayoutObject*);
 
 template <>
 CORE_EXPORT void
-InlineItemsBuilderTemplate<NGOffsetMappingBuilder>::ClearNeedsLayout(
+InlineItemsBuilderTemplate<OffsetMappingBuilder>::ClearNeedsLayout(
     LayoutObject*);
 
 template <>
-CORE_EXPORT void InlineItemsBuilderTemplate<
-    NGOffsetMappingBuilder>::UpdateShouldCreateBoxFragment(LayoutInline*);
+CORE_EXPORT void
+InlineItemsBuilderTemplate<OffsetMappingBuilder>::UpdateShouldCreateBoxFragment(
+    LayoutInline*);
 
 extern template class CORE_EXTERN_TEMPLATE_EXPORT
     InlineItemsBuilderTemplate<EmptyOffsetMappingBuilder>;
 extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    InlineItemsBuilderTemplate<NGOffsetMappingBuilder>;
+    InlineItemsBuilderTemplate<OffsetMappingBuilder>;
 
 using InlineItemsBuilder =
     InlineItemsBuilderTemplate<EmptyOffsetMappingBuilder>;
 using InlineItemsBuilderForOffsetMapping =
-    InlineItemsBuilderTemplate<NGOffsetMappingBuilder>;
+    InlineItemsBuilderTemplate<OffsetMappingBuilder>;
 
 }  // namespace blink
 

@@ -86,7 +86,7 @@ unsigned EstimateInlineItemsCount(const LayoutBlockFlow& block) {
   return count * 4;
 }
 
-// Estimate the number of units and ranges in NGOffsetMapping to minimize vector
+// Estimate the number of units and ranges in OffsetMapping to minimize vector
 // and hash map expansions.
 unsigned EstimateOffsetMappingItemsCount(const LayoutBlockFlow& block) {
   // Cancels out the factor 4 in EstimateInlineItemsCount() to get the number of
@@ -243,7 +243,7 @@ class ReusingTextShaper final {
 
 // The function is templated to indicate the purpose of collected inlines:
 // - With EmptyOffsetMappingBuilder: updating layout;
-// - With NGOffsetMappingBuilder: building offset mapping on clean layout.
+// - With OffsetMappingBuilder: building offset mapping on clean layout.
 //
 // This allows code sharing between the two purposes with slightly different
 // behaviors. For example, we clear a LayoutObject's need layout flags when
@@ -607,7 +607,7 @@ class NGInlineNodeDataEditor final {
 
     // Note: We should compute offset mapping before calling
     // |LayoutBlockFlow::TakeNGInlineNodeData()|
-    const NGOffsetMapping* const offset_mapping =
+    const OffsetMapping* const offset_mapping =
         NGInlineNode::GetOffsetMapping(block_flow_);
     DCHECK(offset_mapping);
     if (data_) {
@@ -723,10 +723,10 @@ class NGInlineNodeDataEditor final {
   }
 
   static unsigned ConvertDOMOffsetToTextContent(
-      base::span<const NGOffsetMappingUnit> units,
+      base::span<const OffsetMappingUnit> units,
       unsigned offset) {
     auto it =
-        base::ranges::find_if(units, [offset](const NGOffsetMappingUnit& unit) {
+        base::ranges::find_if(units, [offset](const OffsetMappingUnit& unit) {
           return unit.DOMStart() <= offset && offset <= unit.DOMEnd();
         });
     DCHECK(it != units.end());
@@ -955,7 +955,7 @@ const NGInlineNodeData& NGInlineNode::EnsureData() const {
   return Data();
 }
 
-const NGOffsetMapping* NGInlineNode::ComputeOffsetMappingIfNeeded() const {
+const OffsetMapping* NGInlineNode::ComputeOffsetMappingIfNeeded() const {
   DCHECK(!GetLayoutBlockFlow()->GetDocument().NeedsLayoutTreeUpdate() ||
          GetLayoutBlockFlow()->IsLayoutNGObjectForFormattedText());
 
@@ -1004,13 +1004,13 @@ void NGInlineNode::ComputeOffsetMapping(LayoutBlockFlow* layout_block_flow,
 
   // TODO(xiaochengh): This doesn't compute offset mapping correctly when
   // text-transform CSS property changes text length.
-  NGOffsetMappingBuilder& mapping_builder = builder.GetOffsetMappingBuilder();
+  OffsetMappingBuilder& mapping_builder = builder.GetOffsetMappingBuilder();
   mapping_builder.SetDestinationString(data->text_content);
   data->offset_mapping = mapping_builder.Build();
   DCHECK(data->offset_mapping);
 }
 
-const NGOffsetMapping* NGInlineNode::GetOffsetMapping(
+const OffsetMapping* NGInlineNode::GetOffsetMapping(
     LayoutBlockFlow* layout_block_flow) {
   DCHECK(!layout_block_flow->GetDocument().NeedsLayoutTreeUpdate());
 
@@ -1071,14 +1071,14 @@ const SvgTextChunkOffsets* NGInlineNode::FindSvgTextChunks(
     LayoutBlockFlow& block,
     NGInlineNodeData& data) const {
   TRACE_EVENT0("blink", "NGInlineNode::FindSvgTextChunks");
-  // Build InlineItems and NGOffsetMapping first.  They are used only by
+  // Build InlineItems and OffsetMapping first.  They are used only by
   // SVGTextLayoutAttributesBuilder, and are discarded because they might
   // be different from final ones.
   HeapVector<InlineItem> items;
   ClearCollectionScope<HeapVector<InlineItem>> clear_scope(&items);
   items.reserve(EstimateInlineItemsCount(block));
   InlineItemsBuilderForOffsetMapping items_builder(&block, &items);
-  NGOffsetMappingBuilder& mapping_builder =
+  OffsetMappingBuilder& mapping_builder =
       items_builder.GetOffsetMappingBuilder();
   mapping_builder.ReserveCapacity(EstimateOffsetMappingItemsCount(block));
   CollectInlinesInternal(&items_builder, nullptr);
@@ -1090,7 +1090,7 @@ const SvgTextChunkOffsets* NGInlineNode::FindSvgTextChunks(
 
   // Compute DOM offsets of text chunks.
   mapping_builder.SetDestinationString(ifc_text_content);
-  NGOffsetMapping* mapping = mapping_builder.Build();
+  OffsetMapping* mapping = mapping_builder.Build();
   StringView ifc_text_view(ifc_text_content);
   for (wtf_size_t i = 0; i < data.svg_node_data_->character_data_list.size();
        ++i) {

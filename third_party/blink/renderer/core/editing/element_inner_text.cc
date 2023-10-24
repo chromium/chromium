@@ -74,7 +74,7 @@ class ElementInnerTextCollector final {
   static bool IsDisplayBlockLevel(const Node&);
   static bool ShouldEmitNewlineForTableRow(const LayoutTableRow& table_row);
 
-  const NGOffsetMapping* GetOffsetMapping(const LayoutText& layout_text);
+  const OffsetMapping* GetOffsetMapping(const LayoutText& layout_text);
   void ProcessChildren(const Node& node);
   void ProcessChildrenWithRequiredLineBreaks(const Node& node,
                                              int required_line_break_count);
@@ -201,13 +201,13 @@ bool ElementInnerTextCollector::ShouldEmitNewlineForTableRow(
   return false;
 }
 
-const NGOffsetMapping* ElementInnerTextCollector::GetOffsetMapping(
+const OffsetMapping* ElementInnerTextCollector::GetOffsetMapping(
     const LayoutText& layout_text) {
   // TODO(editing-dev): We should handle "text-transform" in "::first-line".
   // In legacy layout, |InlineTextBox| holds original text and text box
   // paint does text transform.
   LayoutBlockFlow* const block_flow =
-      NGOffsetMapping::GetInlineFormattingContextOf(layout_text);
+      OffsetMapping::GetInlineFormattingContextOf(layout_text);
   DCHECK(block_flow) << layout_text;
   return NGInlineNode::GetOffsetMapping(block_flow);
 }
@@ -237,7 +237,7 @@ void ElementInnerTextCollector::ProcessLayoutText(const LayoutText& layout_text,
     return;
   }
 
-  const NGOffsetMapping* const mapping = GetOffsetMapping(layout_text);
+  const OffsetMapping* const mapping = GetOffsetMapping(layout_text);
   if (!mapping) {
     // TODO(crbug.com/967995): There are certain cases where we fail to compute
     // |NGOffsetMapping| due to failures in layout. As the root cause is hard to
@@ -247,7 +247,7 @@ void ElementInnerTextCollector::ProcessLayoutText(const LayoutText& layout_text,
     return;
   }
 
-  for (const NGOffsetMappingUnit& unit :
+  for (const OffsetMappingUnit& unit :
        mapping->GetMappingUnitsForNode(text_node)) {
     result_.EmitText(
         StringView(mapping->GetText(), unit.TextContentStart(),
@@ -386,8 +386,8 @@ void ElementInnerTextCollector::ProcessTextNode(const Text& node) {
   const LayoutText& layout_text = *node.GetLayoutObject();
   if (LayoutText* first_letter_part = layout_text.GetFirstLetterPart()) {
     if (layout_text.TextLength() == 0 ||
-        NGOffsetMapping::GetInlineFormattingContextOf(layout_text) !=
-            NGOffsetMapping::GetInlineFormattingContextOf(*first_letter_part)) {
+        OffsetMapping::GetInlineFormattingContextOf(layout_text) !=
+            OffsetMapping::GetInlineFormattingContextOf(*first_letter_part)) {
       // "::first-letter" with "float" reach here.
       ProcessLayoutText(*first_letter_part, node);
     }
