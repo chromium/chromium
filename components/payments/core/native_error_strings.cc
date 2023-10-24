@@ -192,6 +192,9 @@ const char kCanMakePaymentEventNoExplicitlyVerifiedMethods[] =
 const char kGenericPaymentMethodNotSupportedMessage[] =
     "Payment method not supported.";
 
+const char kNoLinkHeader[] =
+    "No \"Link: rel=payment-method-manifest\" HTTP header found at \"$1\".";
+
 const char kNoContentAndNoLinkHeader[] =
     "No content and no \"Link: rel=payment-method-manifest\" HTTP header found "
     "at \"$1\".";
