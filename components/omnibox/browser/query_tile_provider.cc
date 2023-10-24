@@ -6,6 +6,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
@@ -18,6 +19,7 @@
 
 // The relevance score for query tile match.
 constexpr int kQueryTilesMatchRelevanceScore = 1600;
+constexpr base::TimeDelta kMaxQueryTilesCacheAge = base::Hours(8);
 
 QueryTileProvider::QueryTileProvider(AutocompleteProviderClient* client,
                                      AutocompleteProviderListener* listener)
@@ -49,6 +51,12 @@ void QueryTileProvider::Start(const AutocompleteInput& input,
 
 void QueryTileProvider::StartPrefetch(const AutocompleteInput& input) {
   if (!IsAllowedInContext(input)) {
+    return;
+  }
+
+  // Verify tiles age. Re-use previously cached response unless expired.
+  if (!tiles_.empty() && (base::TimeTicks::Now() - tiles_creation_timestamp_ <=
+                          kMaxQueryTilesCacheAge)) {
     return;
   }
 
@@ -88,6 +96,7 @@ bool QueryTileProvider::IsAllowedInContext(const AutocompleteInput& input) {
 void QueryTileProvider::OnTilesFetched(bool is_prefetch,
                                        std::vector<query_tiles::Tile> tiles) {
   tiles_ = std::move(tiles);
+  tiles_creation_timestamp_ = base::TimeTicks::Now();
   if (!is_prefetch) {
     BuildSuggestions();
   }

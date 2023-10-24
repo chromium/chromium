@@ -6,17 +6,15 @@
 #define COMPONENTS_OMNIBOX_BROWSER_QUERY_TILE_PROVIDER_H_
 
 #include <stddef.h>
-#include <string>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace query_tiles {
-class TileService;
 struct Tile;
 }  // namespace query_tiles
 
@@ -47,6 +45,8 @@ class QueryTileProvider : public AutocompleteProvider {
  private:
   FRIEND_TEST_ALL_PREFIXES(QueryTileProviderTest, StartPrefetch_Start);
   FRIEND_TEST_ALL_PREFIXES(QueryTileProviderTest, Start_Stop_Start);
+  FRIEND_TEST_ALL_PREFIXES(QueryTileProviderTest,
+                           StartPrefetch_CacheExpirationTest);
   ~QueryTileProvider() override;
 
   // Callback invoked in response to (pre-)fetching the top level tiles from
@@ -58,6 +58,7 @@ class QueryTileProvider : public AutocompleteProvider {
 
   const raw_ptr<AutocompleteProviderClient> client_;
   std::vector<query_tiles::Tile> tiles_;
+  base::TimeTicks tiles_creation_timestamp_;
   base::WeakPtrFactory<QueryTileProvider> weak_ptr_factory_{this};
 };
 
