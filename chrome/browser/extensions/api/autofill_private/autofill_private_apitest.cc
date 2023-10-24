@@ -194,8 +194,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
                    "PaymentsUserAuthSuccessfulForMandatoryAuthToggle"));
 }
 
-// TODO(1495229): Flaking on Mac and Linux bots
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// TODO(1495229): Flaking on Mac, Linux and ChromeOS bots
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_showEditCardDialogForLocalCard_ReauthOn DISABLED_showEditCardDialogForLocalCard_ReauthOn
 #else
 #define MAYBE_showEditCardDialogForLocalCard_ReauthOn showEditCardDialogForLocalCard_ReauthOn
@@ -230,8 +230,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
 }
 #endif
 
-// TODO(1495229): Flaking on Mac and Linux bots
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// TODO(1495229): Flaking on Mac, Linux and ChromeOS bots
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_showEditCardDialogForLocalCard_ReauthOff DISABLED_showEditCardDialogForLocalCard_ReauthOff
 #else
 #define MAYBE_showEditCardDialogForLocalCard_ReauthOff showEditCardDialogForLocalCard_ReauthOff
