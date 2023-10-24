@@ -34,7 +34,6 @@ import logging
 import os
 import shutil
 import subprocess
-from operator import attrgetter
 
 _HEADER = '''
 # Copyright 2022 The Chromium Authors
