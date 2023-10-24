@@ -2191,6 +2191,11 @@ void DesksController::MaybeCommitPendingDeskRemoval(
   }
 }
 
+bool DesksController::IsUndoToastShown() const {
+  return temporary_removed_desk_ &&
+         ToastManager::Get()->IsToastShown(temporary_removed_desk_->toast_id());
+}
+
 bool DesksController::IsUndoToastHighlighted() const {
   return temporary_removed_desk_ &&
          ToastManager::Get()->IsToastDismissButtonHighlighted(

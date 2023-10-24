@@ -409,6 +409,9 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   void MaybeCommitPendingDeskRemoval(
       const std::string& toast_id = std::string());
 
+  // Returns true if the desk removal undo toast is shown.
+  bool IsUndoToastShown() const;
+
   // Returns true if there is an active toast for undoing desk removal and that
   // toast's dismiss button is currently being highlighted.
   bool IsUndoToastHighlighted() const;

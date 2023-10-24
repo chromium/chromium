@@ -10506,10 +10506,9 @@ TEST_P(DeskBarTest, ReverseTabbing) {
   auto* desk_bar_view = GetDeskBarView();
   ASSERT_TRUE(desk_bar_view);
 
-  // If in overview, tab through the save desk for later button.
-  if (bar_type_ == DeskBarViewBase::Type::kOverview) {
-    SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  }
+  // If in overview, tab through the save desk for later button; if it's bento
+  // button desk bar, tab one more time since it starts at the active desk.
+  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
 
   // Tab through library button.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
@@ -10592,11 +10591,11 @@ TEST_P(DeskBarTest, CloseActiveDesk) {
   auto* desk_bar_view = GetDeskBarView();
   ASSERT_TRUE(desk_bar_view);
 
-  // Focus desk #1. For both `kOverview` and `kDeskButton` bars, we will
-  // need the same number of tabs because, while there is an overview item for
-  // the overview bar, the desk close button is added to the tab order for the
-  // first mini view.
-  for (int i = 0; i < 4; i++) {
+  // Focus desk #1. For `kDeskButton` bar, 1 tab is needed since it tabs from
+  // the active desk; for `kOverview` bar, 4 tabs are needed to tab through the
+  // overview item, desk 1's desk preview and desk name view.
+  for (int i = 0; i < (bar_type_ == DeskBarViewBase::Type::kDeskButton ? 1 : 4);
+       i++) {
     SendKey(ui::VKEY_TAB);
   }
 
@@ -10644,11 +10643,11 @@ TEST_P(DeskBarTest, MergeActiveDesk) {
   auto* desk_bar_view = GetDeskBarView();
   ASSERT_TRUE(desk_bar_view);
 
-  // Highlight desk #1. For both `kOverview` and `kDeskButton` bars, we will
-  // need the same number of tabs because, while there is an overview item for
-  // the overview bar, the desk close button is added to the tab order for the
-  // first mini view.
-  for (int i = 0; i < 4; i++) {
+  // Focus desk #1. For `kDeskButton` bar, 1 tab is needed since it tabs from
+  // the active desk; for `kOverview` bar, 4 tabs are needed to tab through the
+  // overview item, desk 1's desk preview and desk name view.
+  for (int i = 0; i < (bar_type_ == DeskBarViewBase::Type::kDeskButton ? 1 : 4);
+       i++) {
     SendKey(ui::VKEY_TAB);
   }
 
@@ -11013,7 +11012,7 @@ TEST_P(DeskBarTest, CanUndoDeskClosureThroughKeyboardNavigation) {
                                ? "in desk button desk bar"
                                : "in overview desk bar")),
        DeskRemovalMethod::kInactiveDeskRemovedReverseTab,
-       bar_type_ == DeskBarViewBase::Type::kDeskButton ? 1 : 4},
+       bar_type_ == DeskBarViewBase::Type::kDeskButton ? 2 : 4},
       {base::StringPrintf(
            "Activating the undo button after removing the active desk %s",
            (bar_type_ == DeskBarViewBase::Type::kDeskButton
