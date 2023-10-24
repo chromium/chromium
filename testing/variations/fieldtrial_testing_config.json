@@ -20977,16 +20977,16 @@
             ]
         }
     ],
-    "WebViewUseMetricsUploadService": [
+    "WebViewUseMetricsUploadServiceOnlySdkRuntime": [
         {
             "platforms": [
                 "android_webview"
             ],
             "experiments": [
                 {
-                    "name": "Enabled_V8",
+                    "name": "Enabled",
                     "enable_features": [
-                        "WebViewUseMetricsUploadService"
+                        "WebViewUseMetricsUploadServiceOnlySdkRuntime"
                     ]
                 }
             ]
