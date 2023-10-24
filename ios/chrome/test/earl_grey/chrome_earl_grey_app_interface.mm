@@ -1265,6 +1265,12 @@ NSString* SerializedValue(const base::Value* value) {
   prefService->SetString(path, UTF8Value);
 }
 
++ (void)setBoolValue:(BOOL)value forLocalStatePref:(NSString*)prefName {
+  std::string path = base::SysNSStringToUTF8(prefName);
+  PrefService* prefService = GetApplicationContext()->GetLocalState();
+  prefService->SetBoolean(path, value);
+}
+
 + (NSString*)userPrefValue:(NSString*)prefName {
   std::string path = base::SysNSStringToUTF8(prefName);
   const PrefService::Preference* pref =

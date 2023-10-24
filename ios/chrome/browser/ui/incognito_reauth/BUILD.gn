@@ -56,6 +56,7 @@ source_set("incognito_reauth_scene_agent") {
     "//base",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/prefs/ios",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
     "//ios/chrome/browser/shared/model/application_context",
@@ -92,5 +93,20 @@ source_set("unit_tests") {
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",
+  ]
+}
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+
+  sources = [ "incognito_reauth_egtest.mm" ]
+  deps = [
+    ":incognito_reauth_util",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
   ]
 }

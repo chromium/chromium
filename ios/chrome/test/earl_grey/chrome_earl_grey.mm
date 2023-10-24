@@ -1487,6 +1487,13 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                                   forLocalStatePref:prefName];
 }
 
+- (void)setBoolValue:(BOOL)value
+    forLocalStatePref:(const std::string&)UTF8PrefName {
+  NSString* prefName = base::SysUTF8ToNSString(UTF8PrefName);
+  return [ChromeEarlGreyAppInterface setBoolValue:value
+                                forLocalStatePref:prefName];
+}
+
 // Returns a base::Value representation of the requested pref.
 - (std::unique_ptr<base::Value>)userPrefValue:(const std::string&)prefName {
   std::string jsonRepresentation =
