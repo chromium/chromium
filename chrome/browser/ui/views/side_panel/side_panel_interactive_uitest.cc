@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/side_search/side_search_config.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
@@ -37,6 +38,8 @@
 #include "ui/base/interaction/polling_state_observer.h"
 #include "ui/base/interaction/state_observer.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -248,6 +251,33 @@ class PinnedSidePanelInteractiveTest : public InteractiveBrowserTest {
                              should_toggle);
   }
 
+  PinnedToolbarActionsContainer* GetPinnedToolbarActionsContainer() {
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->toolbar()
+        ->pinned_toolbar_actions_container();
+  }
+
+  auto OpenReadingModeSidePanel() {
+    return Steps(Do(base::BindLambdaForTesting([=]() {
+                   chrome::ExecuteCommand(browser(),
+                                          IDC_SHOW_READING_MODE_SIDE_PANEL);
+                 })),
+                 WaitForShow(kSidePanelElementId), FlushEvents());
+  }
+
+  auto CheckPinnedToolbarActionsContainerChildInkDropState(int child_index,
+                                                           bool is_active) {
+    return Steps(CheckResult(base::BindLambdaForTesting([this, child_index]() {
+                               return views::InkDrop::Get(
+                                          GetPinnedToolbarActionsContainer()
+                                              ->children()[child_index])
+                                          ->GetInkDrop()
+                                          ->GetTargetInkDropState() ==
+                                      views::InkDropState::ACTIVATED;
+                             }),
+                             is_active));
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -311,4 +341,40 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
       PressButton(kSidePanelPinButtonElementId),
       CheckActionPinnedToToolbar(kActionSidePanelShowBookmarks, false),
       CheckPinButtonToggleState(false));
+}
+
+IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
+                       PinnedToolbarButtonsHighlightWhileSidePanelVisible) {
+  PinnedToolbarActionsModel* const actions_model =
+      PinnedToolbarActionsModel::Get(browser()->profile());
+
+  actions_model->UpdatePinnedState(kActionSidePanelShowBookmarks, true);
+
+  RunTestSequence(
+      // Verify side panel is closed.
+      EnsureNotPresent(kSidePanelElementId),
+      // Verify bookmarks is pinned to the toolbar.
+      Check(base::BindLambdaForTesting([=]() {
+        return actions_model->Contains(kActionSidePanelShowBookmarks);
+      })),
+      CheckResult(
+          base::BindLambdaForTesting([this]() {
+            return GetPinnedToolbarActionsContainer()->children().size();
+          }),
+          1),
+      // Verify the bookmarks pinned toolbar button is not highlighted.
+      CheckPinnedToolbarActionsContainerChildInkDropState(0, false),
+      // Open the bookmarks side panel.
+      OpenBookmarksSidePanel(),
+      // Verify the bookmarks pinned toolbar button is highlighted.
+      CheckPinnedToolbarActionsContainerChildInkDropState(0, true),
+      // Close the side panel.
+      PressButton(kSidePanelCloseButtonElementId),
+      WaitForHide(kSidePanelElementId), FlushEvents(),
+      // Verify the bookmarks pinned toolbar button is not highlighted.
+      CheckPinnedToolbarActionsContainerChildInkDropState(0, false),
+      // Open non-bookmarks side panel.
+      OpenReadingModeSidePanel(),
+      // Verify the bookmarks pinned toolbar button is not highlighted.
+      CheckPinnedToolbarActionsContainerChildInkDropState(0, false));
 }
