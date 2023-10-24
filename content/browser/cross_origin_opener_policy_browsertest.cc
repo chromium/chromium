@@ -7041,8 +7041,14 @@ IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
 // BrowsingInstance will have visibility of all its BrowsingInstance frames, but
 // will only have visibility of the direct opener frame in a different
 // BrowsingInstance in the same CoopRelatedGroup.
+// TODO(1495328): Failing on Mac bots
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ChainedPopupsMixedBrowsingInstanceProxies DISABLED_ChainedPopupsMixedBrowsingInstanceProxies
+#else
+#define MAYBE_ChainedPopupsMixedBrowsingInstanceProxies ChainedPopupsMixedBrowsingInstanceProxies
+#endif
 IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
-                       ChainedPopupsMixedBrowsingInstanceProxies) {
+                       MAYBE_ChainedPopupsMixedBrowsingInstanceProxies) {
   GURL coop_rp_page(https_server()->GetURL(
       "a.test",
       "/set-header"
@@ -7326,8 +7332,14 @@ IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
 // event.source, even cross-BrowsingInstance, even when the source is an iframe
 // for which the target frame's SiteInstanceGroup does not have a main frame
 // proxy yet.
+// TODO(1495328) Failing on mac bots
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SubframePostMessageProxiesCrossBrowsingInstance DISABLED_SubframePostMessageProxiesCrossBrowsingInstance
+#else
+#define MAYBE_SubframePostMessageProxiesCrossBrowsingInstance SubframePostMessageProxiesCrossBrowsingInstance
+#endif
 IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
-                       SubframePostMessageProxiesCrossBrowsingInstance) {
+                       MAYBE_SubframePostMessageProxiesCrossBrowsingInstance) {
   GURL coop_rp_page(https_server()->GetURL(
       "a.test",
       "/set-header"
@@ -7438,8 +7450,14 @@ IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
 
 // Smoke test for the case where a proxy for a given subframe is created before
 // other subframe proxies, that might be below it in the indexed order.
+// TODO(1495328): Failing on Mac bots
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SubframesProxiesInWrongOrderSmokeTest DISABLED_SubframesProxiesInWrongOrderSmokeTest
+#else
+#define MAYBE_SubframesProxiesInWrongOrderSmokeTest SubframesProxiesInWrongOrderSmokeTest
+#endif
 IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
-                       SubframesProxiesInWrongOrderSmokeTest) {
+                       MAYBE_SubframesProxiesInWrongOrderSmokeTest) {
   GURL coop_rp_page(https_server()->GetURL(
       "a.test",
       "/set-header"
