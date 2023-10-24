@@ -361,6 +361,12 @@
   <message name="IDS_SETTINGS_SAFETY_HUB_EMPTY_STATE_MODULE_SUBHEADER" desc="The header of the 'Empty State Module' in the Safety Hub page. The 'Empty State Module' is visible if there is no safety recommendation.">
     Chrome will let you know if anything needs your review
   </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_VERSION_MODULE_UPPERCASE_NAME" desc="The entry point shown on the screenshot leads to Safety Check settings page (chrome://settings/safetyCheck) when at least on of the SC modules have recommendations. The subheader of the entry point lists the modules with recommendations. This string is the upper case version (i.e. version that comes first in the sentence) for the name of Chrome update module.">
+    Chrome update
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_VERSION_MODULE_LOWERCASE_NAME" desc="The entry point shown on the screenshot leads to Safety Check settings page (chrome://settings/safetyCheck) when at least on of the SC modules have recommendations. The subheader of the entry point lists the modules with recommendations. This string is the lower case version (i.e. version that comes in the middle of the sentence) for the name of Chrome update module.">
+    Chrome update
+  </message>
   <message name="IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_NO_PASSWORDS" desc="This text explains that passwords saved in Chrome are automatically checked for issues (e.g. password is leaked or weak) by SafetyHub. However the user does not have any passwords stored in Chrome, therefore the feature does not operate. This text is shown as a subtitle of the passwords card of SafetyHub. It sits below the title 'No saved passwords'.">
     Chrome can check your passwords when you save them
   </message>
