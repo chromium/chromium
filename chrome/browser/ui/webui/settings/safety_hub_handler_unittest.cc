@@ -14,7 +14,11 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/password_manager/password_manager_test_util.h"
+#include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
+#include "chrome/browser/ui/safety_hub/password_status_check_service.h"
+#include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 #include "chrome/browser/ui/webui/settings/safety_hub_handler.h"
@@ -32,6 +36,7 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/password_manager/core/browser/test_password_store.h"
 #include "components/permissions/constants.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -43,19 +48,25 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
+using password_manager::TestPasswordStore;
 using safety_hub::SafetyHubCardState;
 
 enum SettingManager { USER, ADMIN, EXTENSION };
 constexpr char kUnusedTestSite[] = "https://example1.com";
 constexpr char kUsedTestSite[] = "https://example2.com";
+constexpr char16_t kUsername[] = u"bob";
+constexpr char16_t kCompromisedPassword[] = u"fnlsr4@cm^mdls@fkspnsg3d";
 constexpr ContentSettingsType kUnusedPermission =
     ContentSettingsType::GEOLOCATION;
 
 class SafetyHubHandlerTest : public testing::Test {
  public:
   SafetyHubHandlerTest() {
-    feature_list_.InitAndEnableFeature(
-        content_settings::features::kSafetyCheckUnusedSitePermissions);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {content_settings::features::kSafetyCheckUnusedSitePermissions,
+         features::kSafetyHub},
+        /*disabled_features=*/{});
   }
 
   void SetUp() override {
@@ -78,16 +89,12 @@ class SafetyHubHandlerTest : public testing::Test {
     handler()->set_web_ui(web_ui());
     handler()->AllowJavascript();
 
-    // Create a revoked permission.
-    auto dict = base::Value::Dict().Set(
-        permissions::kRevokedKey,
-        base::Value::List().Append(
-            static_cast<int32_t>(ContentSettingsType::GEOLOCATION)));
+    // Create password stores for Password module.
+    profile_store_ = CreateAndUseTestPasswordStore(profile_.get());
+    account_store_ = CreateAndUseTestAccountPasswordStore(profile_.get());
 
-    hcsm()->SetWebsiteSettingDefaultScope(
-        GURL(kUnusedTestSite), GURL(kUnusedTestSite),
-        ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
-        base::Value(dict.Clone()));
+    // Create a revoked permission.
+    AddRevokedPermission();
 
     // There should be only an unused URL in the revoked permissions list.
     const auto& revoked_permissions =
@@ -105,6 +112,46 @@ class SafetyHubHandlerTest : public testing::Test {
         partition->WaitForDeletionTasksForTesting();
       }
     }
+  }
+
+  void AddNotificationPermissionsForReview() {
+    GURL url = GURL("https://example0.org:443");
+    // Set a host to have large number of notifications and keep engagement as
+    // NONE.
+    hcsm()->SetContentSettingDefaultScope(
+        url, GURL(), ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW);
+    auto* notifications_engagement_service =
+        NotificationsEngagementServiceFactory::GetForProfile(profile());
+    notifications_engagement_service->RecordNotificationDisplayed(url, 35);
+  }
+
+  void AddRevokedPermission() {
+    auto dict = base::Value::Dict().Set(
+        permissions::kRevokedKey,
+        base::Value::List().Append(
+            static_cast<int32_t>(ContentSettingsType::GEOLOCATION)));
+    hcsm()->SetWebsiteSettingDefaultScope(
+        GURL(kUnusedTestSite), GURL(kUnusedTestSite),
+        ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+        base::Value(dict.Clone()));
+  }
+
+  void CreateLeakedCredential() {
+    profile_store().AddLogin(
+        MakeForm(kUsername, kCompromisedPassword, kUsedTestSite, true));
+    PasswordStatusCheckService* password_service =
+        PasswordStatusCheckServiceFactory::GetForProfile(profile_.get());
+    RunUntilIdle();
+    EXPECT_EQ(password_service->compromised_credential_count(), 1UL);
+  }
+
+  void FixLeakedCredential() {
+    profile_store().UpdateLogin(
+        MakeForm(kUsername, u"new_fnlsr4@cm^mls@fkspnsg3d"));
+    PasswordStatusCheckService* password_service =
+        PasswordStatusCheckServiceFactory::GetForProfile(profile_.get());
+    RunUntilIdle();
+    EXPECT_EQ(password_service->compromised_credential_count(), 0UL);
   }
 
   void ExpectRevokedPermission() {
@@ -182,6 +229,72 @@ class SafetyHubHandlerTest : public testing::Test {
               *data.arg3()->GetDict().FindInt("state"));
   }
 
+  void ValidateHandleGetSafetyHubHasRecommendations(bool hasRecommendations) {
+    base::Value::List args;
+    args.Append("getSafetyHubHasRecommendations");
+
+    handler()->HandleGetSafetyHubHasRecommendations(args);
+
+    const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+
+    EXPECT_EQ("cr.webUIResponse", data.function_name());
+    ASSERT_TRUE(data.arg1()->is_string());
+    EXPECT_EQ("getSafetyHubHasRecommendations", data.arg1()->GetString());
+    // arg2 is a boolean that is true if the callback is successful.
+    ASSERT_TRUE(data.arg2()->is_bool());
+    ASSERT_TRUE(data.arg2());
+
+    ASSERT_TRUE(data.arg3()->is_bool());
+    EXPECT_EQ(hasRecommendations, data.arg3()->GetBool());
+  }
+
+  // For a given Safety Hub module, configure the test environment so that tests
+  // can run when there is a recommendation for the module and when there is
+  // not.
+  void SetupTestToShowOrHideRecommendationForModule(
+      SafetyHubHandler::SafetyHubModule module,
+      bool isModuleRecommended) {
+    // TODO(crbug.com/1443466): Add Extensions module.
+    switch (module) {
+      case SafetyHubHandler::SafetyHubModule::kPasswords:
+        isModuleRecommended ? CreateLeakedCredential() : FixLeakedCredential();
+        break;
+      case SafetyHubHandler::SafetyHubModule::kVersion:
+        isModuleRecommended
+            ? g_browser_process->GetBuildState()->SetUpdate(
+                  BuildState::UpdateType::kNormalUpdate,
+                  base::Version({CHROME_VERSION_MAJOR, CHROME_VERSION_MINOR,
+                                 CHROME_VERSION_BUILD,
+                                 CHROME_VERSION_PATCH + 1}),
+                  absl::nullopt)
+            : g_browser_process->GetBuildState()->SetUpdate(
+                  BuildState::UpdateType::kNone, base::Version(),
+                  absl::nullopt);
+        break;
+      case SafetyHubHandler::SafetyHubModule::kSafeBrowsing:
+        isModuleRecommended
+            ? SetPrefsForSafeBrowsing(false, false, SettingManager::USER)
+            : SetPrefsForSafeBrowsing(true, true, SettingManager::USER);
+        break;
+      case SafetyHubHandler::SafetyHubModule::kNotifications:
+        isModuleRecommended
+            ? AddNotificationPermissionsForReview()
+            : handler()->HandleIgnoreOriginsForNotificationPermissionReview(
+                  base::Value::List().Append(GetOriginList(1)));
+        break;
+      case SafetyHubHandler::SafetyHubModule::kUnusedSitePermissions:
+        isModuleRecommended
+            ? AddRevokedPermission()
+            : handler()->HandleAcknowledgeRevokedUnusedSitePermissionsList(
+                  base::Value::List());
+        break;
+      default:
+        NOTREACHED()
+            << "Unexpected SafetyHubModule for test setup. A proper setup for "
+               "the module can be done only for supported modules.\n";
+    }
+  }
+
   base::Value::List GetOriginList(int size) {
     base::Value::List origins;
     for (int i = 0; i < size; i++) {
@@ -190,11 +303,43 @@ class SafetyHubHandlerTest : public testing::Test {
     return origins;
   }
 
+  // TODO(crbug.com/1443466): Consider moving common test util functions between
+  // this file and password_status_check_service_unittest.cc to a util class.
+  password_manager::PasswordForm MakeForm(base::StringPiece16 username,
+                                          base::StringPiece16 password,
+                                          std::string origin = kUsedTestSite,
+                                          bool is_leaked = false) {
+    password_manager::PasswordForm form;
+    form.username_value = username;
+    form.password_value = password;
+    form.signon_realm = origin;
+    form.url = GURL(origin);
+
+    if (is_leaked) {
+      // Credential issues for weak and reused are detected automatically and
+      // don't need to be specified explicitly.
+      form.password_issues.insert_or_assign(
+          password_manager::InsecureType::kLeaked,
+          password_manager::InsecurityMetadata(
+              base::Time::Now(), password_manager::IsMuted(false),
+              password_manager::TriggerBackendNotification(false)));
+    }
+    return form;
+  }
+
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
+
   TestingProfile* profile() { return profile_.get(); }
   content::TestWebUI* web_ui() { return &web_ui_; }
   SafetyHubHandler* handler() { return handler_.get(); }
   HostContentSettingsMap* hcsm() { return hcsm_.get(); }
   base::SimpleTestClock* clock() { return &clock_; }
+  password_manager::TestPasswordStore& profile_store() {
+    return *profile_store_;
+  }
+  password_manager::TestPasswordStore& account_store() {
+    return *account_store_;
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -204,6 +349,8 @@ class SafetyHubHandlerTest : public testing::Test {
   content::TestWebUI web_ui_;
   scoped_refptr<HostContentSettingsMap> hcsm_;
   base::SimpleTestClock clock_;
+  scoped_refptr<password_manager::TestPasswordStore> profile_store_;
+  scoped_refptr<password_manager::TestPasswordStore> account_store_;
 };
 
 TEST_F(SafetyHubHandlerTest, PopulateUnusedSitePermissionsData) {
@@ -586,4 +733,39 @@ TEST_F(SafetyHubHandlerTest, VersionCardOutOfDate) {
             base::UTF8ToUTF16(*data.arg3()->GetDict().FindString("subheader")));
   EXPECT_EQ(static_cast<int>(SafetyHubCardState::kWarning),
             *data.arg3()->GetDict().FindInt("state"));
+}
+
+TEST_F(SafetyHubHandlerTest, HandleGetSafetyHubHasRecommendations) {
+  std::vector<SafetyHubHandler::SafetyHubModule> modules;
+  // TODO(crbug.com/1443466): Add Extensions module.
+  modules.push_back(SafetyHubHandler::SafetyHubModule::kPasswords);
+  modules.push_back(SafetyHubHandler::SafetyHubModule::kVersion);
+  modules.push_back(SafetyHubHandler::SafetyHubModule::kSafeBrowsing);
+  modules.push_back(SafetyHubHandler::SafetyHubModule::kNotifications);
+  modules.push_back(SafetyHubHandler::SafetyHubModule::kUnusedSitePermissions);
+
+  std::vector<int> masks;
+  for (int i = 0; i < (int)modules.size(); i++) {
+    masks.push_back(pow(2, i));
+  }
+
+  // Each module can either have a recommendation or not. To test all possible
+  // combinations of modules, a binary vector and bit masking is used. i-th
+  // element of the vector represents whether the i-th module in modules array
+  // has a recommendation or not.
+  for (int testCase = pow(2, (int)modules.size()) - 1; testCase >= 0;
+       testCase--) {
+    std::set<SafetyHubHandler::SafetyHubModule> recommendedModules;
+
+    for (int i = 0; i < (int)modules.size(); i++) {
+      bool isModuleRecommended = (testCase & masks[i]);
+      SetupTestToShowOrHideRecommendationForModule(modules[i],
+                                                   isModuleRecommended);
+      if (isModuleRecommended) {
+        recommendedModules.insert(modules[i]);
+      }
+    }
+
+    ValidateHandleGetSafetyHubHasRecommendations(!recommendedModules.empty());
+  }
 }

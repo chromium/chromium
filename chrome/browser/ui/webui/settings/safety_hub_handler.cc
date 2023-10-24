@@ -44,6 +44,8 @@
 #include "ui/base/l10n/time_format.h"
 #include "url/gurl.h"
 
+using safety_hub::SafetyHubCardState;
+
 namespace {
 // Key of the expiration time in the |UnusedSitePermissions| object. Indicates
 // the time after which the associated origin and permissions are no longer
@@ -113,10 +115,9 @@ SafeBrowsingState GetSafeBrowsingState(PrefService* pref_service) {
   return SafeBrowsingState::kDisabledByUser;
 }
 
-base::Value::Dict GetSafeBrowsingCardData(
-    int header_id,
-    int subheader_id,
-    safety_hub::SafetyHubCardState card_state) {
+base::Value::Dict CardDataToValue(int header_id,
+                                  int subheader_id,
+                                  SafetyHubCardState card_state) {
   base::Value::Dict sb_card_info;
 
   sb_card_info.Set(safety_hub::kCardHeaderKey,
@@ -126,6 +127,18 @@ base::Value::Dict GetSafeBrowsingCardData(
   sb_card_info.Set(safety_hub::kCardStateKey, static_cast<int>(card_state));
 
   return sb_card_info;
+}
+
+// Returns true if the card dict indicates there is something actionable for the
+// user.
+bool CardHasRecommendations(base::Value::Dict card_data) {
+  absl::optional<int> state = card_data.FindInt(safety_hub::kCardStateKey);
+  CHECK(state.has_value());
+  SafetyHubCardState card_state =
+      static_cast<SafetyHubCardState>(state.value());
+
+  return card_state == SafetyHubCardState::kWarning ||
+         card_state == SafetyHubCardState::kWeak;
 }
 }  // namespace
 
@@ -391,43 +404,46 @@ void SafetyHubHandler::HandleGetSafeBrowsingCardData(
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
 
+  ResolveJavascriptCallback(callback_id, GetSafeBrowsingCardData());
+}
+
+base::Value::Dict SafetyHubHandler::GetSafeBrowsingCardData() {
   SafeBrowsingState result = GetSafeBrowsingState(profile_->GetPrefs());
 
   base::Value::Dict sb_card_info;
 
   switch (result) {
     case SafeBrowsingState::kEnabledEnhanced:
-      sb_card_info = GetSafeBrowsingCardData(
-          IDS_SETTINGS_SAFETY_HUB_SB_ON_ENHANCED_HEADER,
-          IDS_SETTINGS_SAFETY_HUB_SB_ON_ENHANCED_SUBHEADER,
-          safety_hub::SafetyHubCardState::kSafe);
+      sb_card_info =
+          CardDataToValue(IDS_SETTINGS_SAFETY_HUB_SB_ON_ENHANCED_HEADER,
+                          IDS_SETTINGS_SAFETY_HUB_SB_ON_ENHANCED_SUBHEADER,
+                          SafetyHubCardState::kSafe);
       break;
     case SafeBrowsingState::kEnabledStandard:
-      sb_card_info = GetSafeBrowsingCardData(
-          IDS_SETTINGS_SAFETY_HUB_SB_ON_STANDARD_HEADER,
-          IDS_SETTINGS_SAFETY_HUB_SB_ON_STANDARD_SUBHEADER,
-          safety_hub::SafetyHubCardState::kSafe);
+      sb_card_info =
+          CardDataToValue(IDS_SETTINGS_SAFETY_HUB_SB_ON_STANDARD_HEADER,
+                          IDS_SETTINGS_SAFETY_HUB_SB_ON_STANDARD_SUBHEADER,
+                          SafetyHubCardState::kSafe);
       break;
     case SafeBrowsingState::kDisabledByAdmin:
-      sb_card_info = GetSafeBrowsingCardData(
-          IDS_SETTINGS_SAFETY_HUB_SB_OFF_HEADER,
-          IDS_SETTINGS_SAFETY_HUB_SB_OFF_MANAGED_SUBHEADER,
-          safety_hub::SafetyHubCardState::kInfo);
+      sb_card_info =
+          CardDataToValue(IDS_SETTINGS_SAFETY_HUB_SB_OFF_HEADER,
+                          IDS_SETTINGS_SAFETY_HUB_SB_OFF_MANAGED_SUBHEADER,
+                          SafetyHubCardState::kInfo);
       break;
     case SafeBrowsingState::kDisabledByExtension:
-      sb_card_info = GetSafeBrowsingCardData(
-          IDS_SETTINGS_SAFETY_HUB_SB_OFF_HEADER,
-          IDS_SETTINGS_SAFETY_HUB_SB_OFF_EXTENSION_SUBHEADER,
-          safety_hub::SafetyHubCardState::kInfo);
+      sb_card_info =
+          CardDataToValue(IDS_SETTINGS_SAFETY_HUB_SB_OFF_HEADER,
+                          IDS_SETTINGS_SAFETY_HUB_SB_OFF_EXTENSION_SUBHEADER,
+                          SafetyHubCardState::kInfo);
       break;
     default:
       sb_card_info =
-          GetSafeBrowsingCardData(IDS_SETTINGS_SAFETY_HUB_SB_OFF_HEADER,
-                                  IDS_SETTINGS_SAFETY_HUB_SB_OFF_USER_SUBHEADER,
-                                  safety_hub::SafetyHubCardState::kWarning);
+          CardDataToValue(IDS_SETTINGS_SAFETY_HUB_SB_OFF_HEADER,
+                          IDS_SETTINGS_SAFETY_HUB_SB_OFF_USER_SUBHEADER,
+                          SafetyHubCardState::kWarning);
   }
-
-  ResolveJavascriptCallback(callback_id, sb_card_info);
+  return sb_card_info;
 }
 
 void SafetyHubHandler::HandleGetPasswordCardData(
@@ -437,6 +453,10 @@ void SafetyHubHandler::HandleGetPasswordCardData(
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
 
+  ResolveJavascriptCallback(callback_id, base::Value(GetPasswordCardData()));
+}
+
+base::Value::Dict SafetyHubHandler::GetPasswordCardData() {
   PasswordStatusCheckService* service =
       PasswordStatusCheckServiceFactory::GetForProfile(profile_);
 
@@ -445,9 +465,7 @@ void SafetyHubHandler::HandleGetPasswordCardData(
   bool signed_in = identity_manager && identity_manager->HasPrimaryAccount(
                                            signin::ConsentLevel::kSignin);
 
-  base::Value::Dict result = service->GetPasswordCardData(signed_in);
-
-  ResolveJavascriptCallback(callback_id, base::Value(std::move(result)));
+  return service->GetPasswordCardData(signed_in);
 }
 
 void SafetyHubHandler::HandleGetVersionCardData(const base::Value::List& args) {
@@ -456,6 +474,10 @@ void SafetyHubHandler::HandleGetVersionCardData(const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
 
+  ResolveJavascriptCallback(callback_id, base::Value(GetVersionCardData()));
+}
+
+base::Value::Dict SafetyHubHandler::GetVersionCardData() {
   base::Value::Dict result;
   switch (g_browser_process->GetBuildState()->update_type()) {
     case BuildState::UpdateType::kNone:
@@ -465,24 +487,19 @@ void SafetyHubHandler::HandleGetVersionCardData(const base::Value::List& args) {
       result.Set(safety_hub::kCardSubheaderKey,
                  VersionUI::GetAnnotatedVersionStringForUi());
       result.Set(safety_hub::kCardStateKey,
-                 static_cast<int>(safety_hub::SafetyHubCardState::kSafe));
+                 static_cast<int>(SafetyHubCardState::kSafe));
       break;
     case BuildState::UpdateType::kNormalUpdate:
     // kEnterpriseRollback and kChannelSwitchRollback are fairly rare state,
     // they will be handled same as there is waiting updates.
     case BuildState::UpdateType::kEnterpriseRollback:
     case BuildState::UpdateType::kChannelSwitchRollback:
-      result.Set(safety_hub::kCardHeaderKey,
-                 l10n_util::GetStringUTF16(
-                     IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_HEADER_RESTART));
-      result.Set(safety_hub::kCardSubheaderKey,
-                 l10n_util ::GetStringUTF16(
-                     IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_SUBHEADER_RESTART));
-      result.Set(safety_hub::kCardStateKey,
-                 static_cast<int>(safety_hub::SafetyHubCardState::kWarning));
+      result = CardDataToValue(
+          IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_HEADER_RESTART,
+          IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_SUBHEADER_RESTART,
+          SafetyHubCardState::kWarning);
   }
-
-  ResolveJavascriptCallback(callback_id, base::Value(std::move(result)));
+  return result;
 }
 
 void SafetyHubHandler::HandleGetSafetyHubHasRecommendations(
@@ -492,8 +509,7 @@ void SafetyHubHandler::HandleGetSafetyHubHasRecommendations(
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
 
-  // TODO(1443466): Integrate all modules.
-  bool has_recommendations = false;
+  bool has_recommendations = !GetSafetyHubModulesWithRecommendations().empty();
 
   ResolveJavascriptCallback(callback_id, has_recommendations);
 }
@@ -505,17 +521,50 @@ void SafetyHubHandler::HandleGetSafetyHubEntryPointSubheader(
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
 
-  // TODO(1443466): Add a condition on module state, if there are
-  // recommendations the string should change.
-  bool has_recommendations = false;
+  std::set<SafetyHubModule> modules = GetSafetyHubModulesWithRecommendations();
+
+  // TODO(1443466): Compile string based on active modules.
 
   ResolveJavascriptCallback(
       callback_id,
-      base::Value(
-          has_recommendations
-              ? std::u16string(u"Dummy subheader")
-              : l10n_util::GetStringUTF16(
-                    IDS_SETTINGS_SAFETY_HUB_ENTRY_POINT_NOTHING_TO_DO)));
+      base::Value(modules.empty()
+                      ? l10n_util::GetStringUTF16(
+                            IDS_SETTINGS_SAFETY_HUB_ENTRY_POINT_NOTHING_TO_DO)
+                      : std::u16string(u"Dummy subheader")));
+}
+
+std::set<SafetyHubHandler::SafetyHubModule>
+SafetyHubHandler::GetSafetyHubModulesWithRecommendations() {
+  std::set<SafetyHubModule> modules;
+
+  // Passwords module
+  if (CardHasRecommendations(GetPasswordCardData())) {
+    modules.insert(SafetyHubModule::kPasswords);
+  }
+  // Version module
+  if (CardHasRecommendations(GetVersionCardData())) {
+    modules.insert(SafetyHubModule::kVersion);
+  }
+  // SafeBrowsing module
+  if (CardHasRecommendations(GetSafeBrowsingCardData())) {
+    modules.insert(SafetyHubModule::kSafeBrowsing);
+  }
+  if (GetNumberOfExtensionsThatNeedReview() > 0) {
+    modules.insert(SafetyHubModule::kExtensions);
+  }
+  // Notifications module
+  NotificationPermissionsReviewService* service =
+      NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
+  CHECK(service);
+  if (!service->PopulateNotificationPermissionReviewData().empty()) {
+    modules.insert(SafetyHubModule::kNotifications);
+  }
+  // Unused site permission module
+  if (!PopulateUnusedSitePermissionsData().empty()) {
+    modules.insert(SafetyHubModule::kUnusedSitePermissions);
+  }
+
+  return modules;
 }
 
 void SafetyHubHandler::RegisterMessages() {
@@ -623,6 +672,12 @@ void SafetyHubHandler::SendNotificationPermissionReviewList() {
   FireWebUIListener(
       site_settings::kNotificationPermissionsReviewListMaybeChangedEvent,
       service->PopulateNotificationPermissionReviewData());
+}
+
+// TODO(1443466): Replace with the actual method implementation once blocking
+// https://crrev.com/c/4911755 is merged.
+int SafetyHubHandler::GetNumberOfExtensionsThatNeedReview() {
+  return 0;
 }
 
 void SafetyHubHandler::SetClockForTesting(base::Clock* clock) {
