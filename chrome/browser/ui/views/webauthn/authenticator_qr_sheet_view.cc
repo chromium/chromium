@@ -8,9 +8,11 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
 #include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
@@ -52,6 +54,8 @@ class AuthenticatorQRViewCentered : public views::View {
     qr_code_image_->SetImageSize(qrCodeImageSize());
     qr_code_image_->SetPreferredSize(qrCodeImageSize() +
                                      gfx::Size(kQrCodeMargin, kQrCodeMargin));
+    qr_code_image_->SetAccessibleName(
+        l10n_util::GetStringUTF16(IDS_WEBAUTHN_QR_CODE_ALT_TEXT));
 
     qrcode_generator::mojom::GenerateQRCodeRequestPtr request =
         qrcode_generator::mojom::GenerateQRCodeRequest::New();
