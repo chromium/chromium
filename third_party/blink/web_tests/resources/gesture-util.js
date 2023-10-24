@@ -911,25 +911,45 @@ function assert_point_within_viewport(x, y, origin = "viewport") {
 //    pointerType: 'mouse' (default), 'pen' or 'touch'
 //    prevent_fling_pause_ms: How long to wait after the move to avoid a
 //                            momentum fling. Default to 0ms.
+//    adjust_for_touch_slop: Indicates if we should adjust to drag range to
+//                           compensate for touch slop. At the start of a touch
+//                           drag, we do not know if we are scrolling or not.
+//                           Once scrolled past the slop region, a touch
+//                           scroll will stick to the finger position.
+//                           Defaults to false.
 function pointerDrag(x, y, deltaX, deltaY, options = {}) {
   const origin = options.origin || "viewport";
   const eventTarget = options.eventTarget || document;
   const pointerType = options.pointerType || 'mouse';
   const prevent_fling_pause_ms = options.prevent_fling_pause_ms || 0;
+  if (options.adjust_for_touch_slop) {
+    // TODO(kevers): This value may become platform specific, in which case
+    // we may need to perform a test to measure the slop and then apply in
+    // subsequent tests.
+    const TOUCH_SLOP_AMOUNT = 15;
+    if (deltaX) {
+      deltaX += TOUCH_SLOP_AMOUNT * Math.sign(deltaX);
+    }
+    if (deltaY) {
+      deltaY += TOUCH_SLOP_AMOUNT * Math.sign(deltaY);
+    }
+  }
   verifyTestDriverLoaded();
   assert_point_within_viewport(x, y, origin);
   assert_point_within_viewport(x + deltaX, y + deltaY, origin);
-  return new Promise((resolve,reject) => {
-    // Expect a pointerup or pointercancel event depending on whether scrolling
-    // actually took place.
-    const pointerListener = (event) => {
-      eventTarget.removeEventListener('pointerup', pointerListener);
-      eventTarget.removeEventListener('pointercancel', pointerListener);
-      resolve(event.type);
-    };
-    eventTarget.addEventListener('pointerup', pointerListener);
-    eventTarget.addEventListener('pointercancel', pointerListener);
-    new test_driver.Actions()
+  // Expect a pointerup or pointercancel event depending on whether scrolling
+  // actually took place.
+  return new Promise(resolve => {
+    const pointerPromise = new Promise(resolve => {
+      const pointerListener = (event) => {
+        eventTarget.removeEventListener('pointerup', pointerListener);
+        eventTarget.removeEventListener('pointercancel', pointerListener);
+        resolve(event.type);
+      };
+      eventTarget.addEventListener('pointerup', pointerListener);
+      eventTarget.addEventListener('pointercancel', pointerListener);
+    });
+    const actionPromise = new test_driver.Actions()
       .addPointer("pointer1", pointerType)
       .pointerMove(x, y, { origin: origin })
       .pointerDown()
@@ -937,14 +957,18 @@ function pointerDrag(x, y, deltaX, deltaY, options = {}) {
       .pause(prevent_fling_pause_ms)
       .pointerUp()
       .send();
+    Promise.all([actionPromise, pointerPromise]).then(responses => {
+      resolve(responses[1]);
+    });
   });
 }
+
 
 // Performs a touch drag gesture. The prevent_fling_pause_ms options is used
 // to prevent the drag from having fling momentum.
 function touchDrag(x, y, deltaX, deltaY, options = {}) {
   options.pointerType = 'touch';
-  if (!options.prevent_fling_pause_ms) {
+  if (options.prevent_fling_pause_ms === undefined) {
     options.prevent_fling_pause_ms = 100;
   }
   return pointerDrag(x, y, deltaX, deltaY, options);
@@ -952,7 +976,7 @@ function touchDrag(x, y, deltaX, deltaY, options = {}) {
 
 // Performs a touch scroll operations.  The promise is resolved when the
 // pointer cancel and scrollend events are received.
-// The supported options are documented in touchDrag.
+// The supported options are documented in pointerDrag.
 function touchScroll(x, y, deltaX, deltaY, scroller, options = {}) {
   if (!options.eventTarget) {
     options.eventTarget = scroller.ownerDocument;
