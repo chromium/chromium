@@ -9,7 +9,6 @@
 // Must be included after windows.h.
 #include <psapi.h>
 
-#include <memory>
 #include <string>
 #include <utility>
 
@@ -17,8 +16,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/memory.h"
-#include "base/process/process.h"
-#include "components/stability_report/stability_report.pb.h"
+#include "components/stability_report/stability_report_data_source.h"
 #include "third_party/crashpad/crashpad/minidump/minidump_user_extension_stream_data_source.h"
 #include "third_party/crashpad/crashpad/snapshot/exception_snapshot.h"
 #include "third_party/crashpad/crashpad/snapshot/process_snapshot.h"
@@ -27,46 +25,9 @@ namespace stability_report {
 
 namespace {
 
-// The stream type assigned to the minidump stream that holds the serialized
-// stability report.
-// Note: the value was obtained by adding 1 to the stream type used for holding
-// the SyzyAsan proto.
-constexpr uint32_t kStreamType = 0x4B6B0002;
-
 // System memory metrics are reported in pages. Use this page size to scale
 // process memory metrics to the same units.
 constexpr size_t kPageSize = 4096;
-
-// A data source that holds a serialized StabilityReport.
-class StabilityReportDataSource final
-    : public crashpad::MinidumpUserExtensionStreamDataSource {
- public:
-  explicit StabilityReportDataSource(const StabilityReport& report);
-  ~StabilityReportDataSource() final = default;
-
-  StabilityReportDataSource(const StabilityReportDataSource&) = delete;
-  StabilityReportDataSource& operator=(const StabilityReportDataSource&) =
-      delete;
-
-  size_t StreamDataSize() final { return data_.size(); }
-
-  bool ReadStreamData(Delegate* delegate) final;
-
- private:
-  std::string data_;
-};
-
-StabilityReportDataSource::StabilityReportDataSource(
-    const StabilityReport& report)
-    : crashpad::MinidumpUserExtensionStreamDataSource(kStreamType),
-      data_(report.SerializeAsString()) {
-  // On error, SerializeAsString() will return an empty string which will
-  // cause ReadStreamData() to harmlessly return no data.
-}
-
-bool StabilityReportDataSource::ReadStreamData(Delegate* delegate) {
-  return delegate->ExtensionStreamDataSourceRead(data_.data(), data_.size());
-}
 
 // Adds system metrics to `report`.
 void CollectSystemPerformanceMetrics(StabilityReport* report) {
@@ -91,16 +52,7 @@ void CollectProcessPerformanceMetrics(
     const crashpad::ProcessSnapshot& process_snapshot,
     StabilityReport* report) {
   const base::ProcessId process_id = process_snapshot.ProcessID();
-
-#if DCHECK_IS_ON()
-  // Ensure no ProcessState was created yet for the process in question.
-  for (const ProcessState& process_state : report->process_states()) {
-    DCHECK_NE(process_state.process_id(), process_id);
-  }
-#endif
-
-  ProcessState* process_state = report->add_process_states();
-  process_state->set_process_id(process_id);
+  ProcessState* process_state = AddProcessForSnapshot(process_id, report);
 
   ProcessState::MemoryState::WindowsMemory* memory_state =
       process_state->mutable_memory_state()->mutable_windows_memory();

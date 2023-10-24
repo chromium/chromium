@@ -11,33 +11,14 @@
 #include "base/process/memory.h"
 #include "base/process/process.h"
 #include "components/stability_report/stability_report.pb.h"
+#include "components/stability_report/test/stability_report_reader.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/crashpad/crashpad/minidump/minidump_user_extension_stream_data_source.h"
 #include "third_party/crashpad/crashpad/snapshot/test/test_exception_snapshot.h"
 #include "third_party/crashpad/crashpad/snapshot/test/test_process_snapshot.h"
 
 namespace stability_report {
 
 namespace {
-
-class StabilityReportReader final
-    : public crashpad::MinidumpUserExtensionStreamDataSource::Delegate {
- public:
-  StabilityReportReader() = default;
-  ~StabilityReportReader() = default;
-
-  StabilityReportReader(const StabilityReportReader&) = delete;
-  StabilityReportReader& operator=(const StabilityReportReader&) = delete;
-
-  const StabilityReport& report() const { return report_; }
-
-  bool ExtensionStreamDataSourceRead(const void* data, size_t size) final {
-    return report_.ParseFromArray(data, size);
-  }
-
- private:
-  StabilityReport report_;
-};
 
 constexpr uint64_t kExpectedAllocationAttempt = 12345;
 
@@ -112,7 +93,7 @@ TEST_P(StabilityReportUserStreamDataSourceTest, ReadProcess) {
   ASSERT_TRUE(data_source);
 
   // Read the StabilityReport back out of the stream data.
-  StabilityReportReader reader;
+  test::StabilityReportReader reader;
   ASSERT_TRUE(data_source->ReadStreamData(&reader));
 
   // Validate ProcessState.
