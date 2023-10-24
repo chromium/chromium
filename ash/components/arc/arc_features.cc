@@ -281,12 +281,6 @@ BASE_FEATURE(kTouchscreenEmulation,
              "ArcTouchscreenEmulation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, compatibility logic for trackpad scrolling is enabled on
-// specific apps.
-BASE_FEATURE(kTrackpadScrollTouchscreenEmulation,
-             "ArcTrackpadScrollTouchscreenEmulation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether ARC should be enabled on unaffiliated devices on client side
 BASE_FEATURE(kUnaffiliatedDeviceArcRestriction,
              "UnaffiliatedDeviceArcRestriction",

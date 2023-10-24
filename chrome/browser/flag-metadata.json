@@ -381,11 +381,6 @@
     "expiry_milestone": 122
   },
   {
-    "name": "arc-trackpad-scroll-touchscreen-emulation",
-    "owners": [ "yhanada@chromium.org" ],
-    "expiry_milestone": 122
-  },
-  {
     "name": "arc-vmm-swap-keyboard-shortcut",
     "owners": [ "sstan@chromium.org"],
     "expiry_milestone": 120

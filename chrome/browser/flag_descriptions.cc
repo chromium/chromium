@@ -5442,11 +5442,6 @@ const char kArcTouchscreenEmulationName[] =
 const char kArcTouchscreenEmulationDesc[] =
     "Enable touchscreen emulation for compatibility on specific ARC apps.";
 
-const char kArcTrackpadScrollTouchscreenEmulationName[] =
-    "Enable trackpad scroll compatibility logic on specific ARC apps.";
-const char kArcTrackpadScrollTouchscreenEmulationDesc[] =
-    "Enable trackpad scroll compatibility logic on specific ARC apps.";
-
 const char kArcVmmSwapKBShortcutName[] =
     "Keyboard shortcut trigger for ARCVM"
     " vmm swap feature";
