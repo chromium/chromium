@@ -176,6 +176,12 @@ static constexpr const ComponentTestData kComponentsTestData[] = {
         .component_name = "cros-tag",
         .gtest_name = "CrosTag",
     },
+    {
+        .script_src =
+            "chrome://resources/cros_components/textfield/textfield.js",
+        .component_name = "cros-textfield",
+        .gtest_name = "CrosTextfield",
+    },
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
