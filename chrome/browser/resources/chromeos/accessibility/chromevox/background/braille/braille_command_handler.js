@@ -40,7 +40,7 @@ export class BrailleCommandHandler {
   static init() {
     if (BrailleCommandHandler.instance) {
       throw new Error(
-          'BrailleCommandHandler cannot be instantiated more than once');
+          'BrailleCommandHandler cannot be instantiated more than once.');
     }
     BrailleCommandHandler.instance = new BrailleCommandHandler();
   }
@@ -97,12 +97,10 @@ export class BrailleCommandHandler {
       case BrailleKeyCommand.ROUTING:
         const textEditHandler =
             DesktopAutomationInterface.instance.textEditHandler;
-        if (textEditHandler) {
-          textEditHandler.injectInferredIntents([{
-            command: chrome.automation.IntentCommandType.MOVE_SELECTION,
-            textBoundary: chrome.automation.IntentTextBoundaryType.CHARACTER,
-          }]);
-        }
+        textEditHandler?.injectInferredIntents([{
+          command: chrome.automation.IntentCommandType.MOVE_SELECTION,
+          textBoundary: chrome.automation.IntentTextBoundaryType.CHARACTER,
+        }]);
         BrailleCommandHandler.onRoutingCommand_(
             content.text,
             // Cast ok since displayPosition is always defined in this case.
@@ -136,7 +134,7 @@ export class BrailleCommandHandler {
     let selectionSpan = null;
     const selSpans = text.getSpansInstanceOf(OutputSelectionSpan);
     const nodeSpans = text.getSpansInstanceOf(OutputNodeSpan);
-    for (let i = 0, selSpan; selSpan = selSpans[i]; i++) {
+    for (const selSpan of selSpans) {
       if (text.getSpanStart(selSpan) <= position &&
           position < text.getSpanEnd(selSpan)) {
         selectionSpan = selSpan;
@@ -145,11 +143,10 @@ export class BrailleCommandHandler {
     }
 
     let interval;
-    for (let j = 0, nodeSpan; nodeSpan = nodeSpans[j]; j++) {
+    for (const nodeSpan of nodeSpans) {
       const intervals = text.getSpanIntervals(nodeSpan);
-      const tempInterval = intervals.find(function(innerInterval) {
-        return innerInterval.start <= position && position <= innerInterval.end;
-      });
+      const tempInterval = intervals.find(
+          inner => inner.start <= position && position <= inner.end);
       if (tempInterval) {
         actionNodeSpan = nodeSpan;
         interval = tempInterval;
@@ -177,8 +174,7 @@ export class BrailleCommandHandler {
     }
 
     if (actionNode.state.richlyEditable) {
-      const start =
-          interval ? interval.start : text.getSpanStart(selectionSpan);
+      const start = interval?.start ?? text.getSpanStart(selectionSpan);
       const targetPosition = position - start + offset;
       chrome.automation.setDocumentSelection({
         anchorObject: actionNode,
@@ -202,14 +198,14 @@ export class BrailleCommandHandler {
    */
   static onEditCommand_(command) {
     const current = ChromeVoxRange.current;
-    if (ChromeVoxPrefs.isStickyModeOn() || !current || !current.start ||
-        !current.start.node || !current.start.node.state[StateType.EDITABLE]) {
+    if (ChromeVoxPrefs.isStickyModeOn() ||
+        !current?.start?.node?.state[StateType.EDITABLE]) {
       return true;
     }
 
     const textEditHandler = DesktopAutomationInterface.instance.textEditHandler;
     const editable = AutomationUtil.getEditableRoot(current.start.node);
-    if (!editable || !textEditHandler || editable !== textEditHandler.node) {
+    if (!editable || editable !== textEditHandler?.node) {
       return true;
     }
 
