@@ -106,10 +106,6 @@ interface RestrictedCookieManager {
   //
   // The implementation may block, e.g. while cookies are still being loaded, or
   // to serialize with other operations.
-  //
-  // The booleans that are returned indicate if the site for cookies and top
-  // frame origin provided to this method from the renderer match the browser's
-  // own site for cookies and top-frame origin.
   [Sync]
   SetCookieFromString(url.mojom.Url url, SiteForCookies site_for_cookies,
                       url.mojom.Origin top_frame_origin,
