@@ -6,7 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/undo/undo_operation.h"
 

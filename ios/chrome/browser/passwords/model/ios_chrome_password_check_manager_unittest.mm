@@ -55,7 +55,6 @@ constexpr char16_t kWeakPassword[] = u"123456";
 
 using password_manager::BulkLeakCheckServiceInterface;
 using password_manager::CredentialUIEntry;
-using password_manager::InsecureCredential;
 using password_manager::InsecureType;
 using password_manager::IsLeaked;
 using password_manager::LeakCheckCredential;

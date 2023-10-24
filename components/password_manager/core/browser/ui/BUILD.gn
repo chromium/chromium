@@ -1,0 +1,117 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
+
+source_set("credential_ui_entry") {
+  sources = [
+    "credential_ui_entry.cc",
+    "credential_ui_entry.h",
+  ]
+  deps = [
+    "//components/password_manager/core/browser:passkey_credential",
+    "//components/password_manager/core/browser:password_form",
+    "//components/password_manager/core/browser/affiliation",
+    "//components/password_manager/core/browser/form_parsing",
+    "//components/password_manager/core/browser/import:csv",
+    "//components/password_manager/core/browser/well_known_change_password",
+    "//components/url_formatter",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("ui") {
+  sources = [
+    "affiliated_group.cc",
+    "affiliated_group.h",
+    "bulk_leak_check_service_adapter.cc",
+    "bulk_leak_check_service_adapter.h",
+    "credential_provider_interface.h",
+    "credential_utils.cc",
+    "credential_utils.h",
+    "insecure_credentials_manager.cc",
+    "insecure_credentials_manager.h",
+    "password_check_referrer.cc",
+    "password_check_referrer.h",
+    "password_undo_helper.cc",
+    "password_undo_helper.h",
+    "passwords_grouper.cc",
+    "passwords_grouper.h",
+    "post_save_compromised_helper.cc",
+    "post_save_compromised_helper.h",
+    "saved_passwords_presenter.cc",
+    "saved_passwords_presenter.h",
+  ]
+  public_deps = [ ":credential_ui_entry" ]
+
+  deps = [
+    "//components/autofill/core/common:common",
+    "//components/password_manager/core/browser:metrics_util",
+    "//components/password_manager/core/browser:passkey_credential",
+    "//components/password_manager/core/browser:password_form",
+    "//components/password_manager/core/browser:password_store_interface",
+    "//components/password_manager/core/browser/affiliation",
+    "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/core/browser/leak_detection",
+    "//components/password_manager/core/common",
+    "//components/password_manager/core/common:features",
+    "//components/prefs",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/sync/base:features",
+    "//components/undo",
+    "//components/url_formatter",
+    "//url",
+  ]
+
+  if (!is_ios) {
+    deps += [ "//components/webauthn/core/browser" ]
+  }
+
+  if (!is_android) {
+    sources += [
+      "reuse_check_utility.cc",
+      "reuse_check_utility.h",
+      "weak_check_utility.cc",
+      "weak_check_utility.h",
+    ]
+    deps += [ "//third_party/zxcvbn-cpp" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "bulk_leak_check_service_adapter_unittest.cc",
+    "credential_ui_entry_unittest.cc",
+    "credential_utils_unittest.cc",
+    "insecure_credentials_manager_unittest.cc",
+    "password_undo_helper_unittest.cc",
+    "passwords_grouper_unittest.cc",
+    "post_save_compromised_helper_unittest.cc",
+    "saved_passwords_presenter_unittest.cc",
+  ]
+  if (!is_android) {
+    sources += [
+      "reuse_check_utility_unittest.cc",
+      "weak_check_utility_unittest.cc",
+    ]
+  }
+
+  deps = [
+    ":ui",
+    "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/core/browser/leak_detection:test_support",
+    "//components/password_manager/core/common",
+    "//components/password_manager/core/common:features",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/sync/base:features",
+    "//components/sync/protocol",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -21,6 +21,8 @@ namespace syncer {
 class SyncService;
 }
 
+class PrefService;
+
 @protocol ReauthenticationProtocol;
 
 // Mediator for the Password Settings screen.

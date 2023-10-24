@@ -72,7 +72,6 @@
 namespace {
 
 using l10n_util::GetNSString;
-using password_manager::InsecureCredential;
 using password_manager::InsecureType;
 using password_manager::TestPasswordStore;
 using password_manager::features::IsPasswordCheckupEnabled;
