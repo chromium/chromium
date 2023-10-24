@@ -127,11 +127,8 @@ void VerifyBinaryIntegrityForTesting(IncidentReceiver* incident_receiver,
 
 void VerifyBinaryIntegrity(
     std::unique_ptr<IncidentReceiver> incident_receiver) {
-  size_t i = 0;
   for (const auto& p : GetCriticalPathsAndRequirements()) {
-    base::TimeTicks time_before = base::TimeTicks::Now();
     VerifyBinaryIntegrityHelper(incident_receiver.get(), p.path, p.requirement);
-    RecordSignatureVerificationTime(i++, base::TimeTicks::Now() - time_before);
   }
 }
 

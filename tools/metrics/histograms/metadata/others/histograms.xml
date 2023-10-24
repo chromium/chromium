@@ -11278,23 +11278,6 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
-<histogram name="SBIRS.EnvCollectionTime" units="ms" expires_after="2018-08-30">
-  <owner>caitkp@google.com</owner>
-  <summary>
-    The elapsed time to collect environmental data for a safe browsing incident
-    report.
-  </summary>
-</histogram>
-
-<histogram name="SBIRS.FindDownloadedBinaryTime" units="ms"
-    expires_after="2018-08-30">
-  <owner>caitkp@google.com</owner>
-  <summary>
-    The elapsed time to find the most recent binary download from all loaded
-    profiles when creating a safe browsing incident report.
-  </summary>
-</histogram>
-
 <histogram name="SBIRS.Incident" enum="IncidentType" expires_after="never">
 <!-- expires-never: This tracks health of the incident reporting feature and
 should be kept until we remove incident reporting. -->
@@ -11304,14 +11287,6 @@ should be kept until we remove incident reporting. -->
   <summary>
     The type of incident included in an incident report by the safe browsing
     incident reporting service.
-  </summary>
-</histogram>
-
-<histogram name="SBIRS.InterIncidentTime" units="ms" expires_after="2018-08-30">
-  <owner>caitkp@google.com</owner>
-  <summary>
-    The elapsed time between two successive incidents collated into the same
-    incident report by the safe browsing incident reporting service.
   </summary>
 </histogram>
 
@@ -11369,38 +11344,6 @@ should be kept until we remove incident reporting. -->
   <summary>
     The result of an attempted report upload by the safe browsing incident
     reporting service.
-  </summary>
-</histogram>
-
-<histogram name="SBIRS.VerifyBinaryIntegrity.0" units="ms"
-    expires_after="2018-08-30">
-  <owner>caitkp@google.com</owner>
-  <summary>
-    The elapsed time to verify the binary integrity of chrome.exe.
-  </summary>
-</histogram>
-
-<histogram name="SBIRS.VerifyBinaryIntegrity.1" units="ms"
-    expires_after="2018-08-30">
-  <owner>caitkp@google.com</owner>
-  <summary>
-    The elapsed time to verify the binary integrity of chrome.dll.
-  </summary>
-</histogram>
-
-<histogram name="SBIRS.VerifyBinaryIntegrity.2" units="ms"
-    expires_after="2018-08-30">
-  <owner>caitkp@google.com</owner>
-  <summary>
-    The elapsed time to verify the binary integrity of chrome_child.dll.
-  </summary>
-</histogram>
-
-<histogram name="SBIRS.VerifyBinaryIntegrity.3" units="ms"
-    expires_after="2018-08-30">
-  <owner>caitkp@google.com</owner>
-  <summary>
-    The elapsed time to verify the binary integrity of chrome_elf.dll.
   </summary>
 </histogram>
 
