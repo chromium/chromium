@@ -571,14 +571,6 @@ void inspector_schedule_style_invalidation_tracking_event::PseudoChange(
   dict.Add("changedPseudo", PseudoTypeToString(pseudo_type));
 }
 
-void inspector_schedule_style_invalidation_tracking_event::RuleSetInvalidation(
-    perfetto::TracedValue context,
-    ContainerNode& root_node,
-    const InvalidationSet& invalidation_set) {
-  auto dict = std::move(context).WriteDictionary();
-  FillCommonPart(dict, root_node, invalidation_set, kRuleSet);
-}
-
 String DescendantInvalidationSetToIdString(const InvalidationSet& set) {
   return ToHexString(&set);
 }

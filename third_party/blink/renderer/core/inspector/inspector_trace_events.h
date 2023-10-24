@@ -195,9 +195,6 @@ void PseudoChange(perfetto::TracedValue context,
                   Element&,
                   const InvalidationSet&,
                   CSSSelector::PseudoType);
-void RuleSetInvalidation(perfetto::TracedValue context,
-                         ContainerNode&,
-                         const InvalidationSet&);
 }  // namespace inspector_schedule_style_invalidation_tracking_event
 
 #define TRACE_SCHEDULE_STYLE_INVALIDATION(element, invalidationSet,        \
