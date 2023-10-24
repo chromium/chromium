@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_clock_override.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
@@ -298,7 +299,7 @@ TEST_F(QueryTileProviderTest, StartPrefetch_CacheExpirationTest) {
   {
     // This scenario should re-request QueryTiles.
     // We push clock forward, and the logic should detect expiration.
-    SCOPED_TRACE("StartPrefetch with Empty previous QueryTile result.");
+    SCOPED_TRACE("StartPrefetch with Default Expired previous result.");
 
     // Advance the clock by 9 hours. This should land us past the default
     // expiration age.
@@ -313,6 +314,30 @@ TEST_F(QueryTileProviderTest, StartPrefetch_CacheExpirationTest) {
     std::move(tile_callback_).Run({CreateTile("Coffee")});
     EXPECT_EQ(0u, provider_->matches().size());
     EXPECT_EQ(1u, provider_->tiles_.size());
+    EXPECT_TRUE(provider_->done());
+  }
+
+  {
+    SCOPED_TRACE("StartPrefetch with Custom Expired previous result.");
+
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeatureWithParameters(
+        omnibox::kQueryTilesInZPSOnNTP, {{"QueryTilesMaxCacheAgeHours", "2"}});
+
+    // Advance the clock by 9 hours. This should land us past the default
+    // expiration age.
+    clock.Advance(base::Hours(2));
+    clock.Advance(base::Minutes(1));
+
+    EXPECT_CALL(*tile_service_, GetQueryTiles(_)).Times(1);
+    provider_->StartPrefetch(input);
+    // Emit two tiles. Expect cached tiles but no matches and no notifications.
+    EXPECT_CALL(listener_, OnProviderUpdate(_, provider_.get())).Times(0);
+    // Report no tiles.
+    ASSERT_TRUE(tile_callback_);
+    std::move(tile_callback_).Run({CreateTile("Rick"), CreateTile("Morty")});
+    EXPECT_EQ(0u, provider_->matches().size());
+    EXPECT_EQ(2u, provider_->tiles_.size());
     EXPECT_TRUE(provider_->done());
   }
 }
