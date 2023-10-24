@@ -142,7 +142,7 @@ async def test_continue_response_non_blocked_request(websocket, context_id,
                                                      hang_url):
     await subscribe(websocket, [
         "network.beforeRequestSent", "cdp.Network.responseReceived",
-        "cdp.Network.loadingFailed"
+        "network.fetchError"
     ])
 
     await send_JSON_command(
@@ -160,8 +160,7 @@ async def test_continue_response_non_blocked_request(websocket, context_id,
 
     # Assert these events never happen, otherwise the test is ineffective.
     await assert_no_events_in_queue(
-        ["cdp.Network.responseReceived", "cdp.Network.loadingFailed"],
-        timeout=1.0)
+        ["cdp.Network.responseReceived", "network.fetchError"], timeout=1.0)
 
     assert not before_request_sent_event["params"]["isBlocked"]
 
@@ -597,6 +596,3 @@ async def test_continue_response_remove_intercept_inflight_request(
         },
         "type": "event",
     }
-
-
-# TODO: Replace cdp.Network.loadingFailed with network.fetchError BiDi event when it is implemented?

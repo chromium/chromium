@@ -13,7 +13,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 import pytest
-from anys import ANY_DICT, ANY_LIST, ANY_NUMBER, ANY_STR
+from anys import ANY_DICT, ANY_LIST, ANY_STR
 from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
                           execute_command, send_JSON_command, subscribe,
                           wait_for_event)
@@ -42,7 +42,7 @@ async def test_fail_request_non_blocked_request(websocket, context_id,
                                                 hang_url):
     await subscribe(websocket, [
         "network.beforeRequestSent", "cdp.Network.responseReceived",
-        "cdp.Network.loadingFailed"
+        "network.fetchError"
     ])
 
     await send_JSON_command(
@@ -60,8 +60,7 @@ async def test_fail_request_non_blocked_request(websocket, context_id,
 
     # Assert these events never happen, otherwise the test is ineffective.
     await assert_no_events_in_queue(
-        ["cdp.Network.responseReceived", "cdp.Network.loadingFailed"],
-        timeout=1.0)
+        ["cdp.Network.responseReceived", "network.fetchError"], timeout=1.0)
 
     assert not before_request_sent_event["params"]["isBlocked"]
 
@@ -333,7 +332,7 @@ async def test_fail_request_completes_use_cdp_events(websocket, context_id,
     }
     network_id = event_response["params"]["params"]["networkId"]
 
-    await subscribe(websocket, ["cdp.Network.loadingFailed"])
+    await subscribe(websocket, ["network.fetchError"])
 
     result = await execute_command(websocket, {
         "method": "network.failRequest",
@@ -343,20 +342,25 @@ async def test_fail_request_completes_use_cdp_events(websocket, context_id,
     })
     assert result == {}
 
-    loading_failed_response = await wait_for_event(
-        websocket, "cdp.Network.loadingFailed")
-    assert loading_failed_response == {
-        "method": "cdp.Network.loadingFailed",
+    fetch_error_response = await wait_for_event(websocket,
+                                                "network.fetchError")
+
+    assert fetch_error_response == {
+        "method": "network.fetchError",
         "params": {
-            "event": "Network.loadingFailed",
-            "params": {
-                "canceled": False,
-                "errorText": "net::ERR_FAILED",
-                "requestId": network_id,
-                "timestamp": ANY_NUMBER,
-                "type": "Document",
-            },
-            "session": ANY_STR,
+            "context": context_id,
+            "errorText": "net::ERR_FAILED",
+            "isBlocked": False,
+            "navigation": ANY_STR,
+            "redirectCount": 0,
+            "request": AnyExtending(
+                {
+                    "headers": ANY_LIST,
+                    "method": "GET",
+                    "request": network_id,
+                    "url": example_url,
+                }, ),
+            "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
     }
@@ -420,7 +424,7 @@ async def test_fail_request_completes_use_bidi_events(websocket, context_id,
     }
     network_id = event_response["params"]["request"]["request"]
 
-    await subscribe(websocket, ["cdp.Network.loadingFailed"])
+    await subscribe(websocket, ["network.fetchError"])
 
     result = await execute_command(websocket, {
         "method": "network.failRequest",
@@ -430,20 +434,25 @@ async def test_fail_request_completes_use_bidi_events(websocket, context_id,
     })
     assert result == {}
 
-    loading_failed_response = await wait_for_event(
-        websocket, "cdp.Network.loadingFailed")
-    assert loading_failed_response == {
-        "method": "cdp.Network.loadingFailed",
+    fetch_error_response = await wait_for_event(websocket,
+                                                "network.fetchError")
+
+    assert fetch_error_response == {
+        "method": "network.fetchError",
         "params": {
-            "event": "Network.loadingFailed",
-            "params": {
-                "canceled": False,
-                "errorText": "net::ERR_FAILED",
-                "requestId": network_id,
-                "timestamp": ANY_NUMBER,
-                "type": "Document",
-            },
-            "session": ANY_STR,
+            "context": context_id,
+            "errorText": "net::ERR_FAILED",
+            "isBlocked": False,
+            "navigation": ANY_STR,
+            "redirectCount": 0,
+            "request": AnyExtending(
+                {
+                    "headers": ANY_LIST,
+                    "method": "GET",
+                    "request": network_id,
+                    "url": example_url,
+                }, ),
+            "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
     }
@@ -508,7 +517,7 @@ async def test_fail_request_completes_new_request_still_blocks(
     }
     network_id_1 = event_response1["params"]["request"]["request"]
 
-    await subscribe(websocket, ["cdp.Network.loadingFailed"])
+    await subscribe(websocket, ["network.fetchError"])
 
     result = await execute_command(websocket, {
         "method": "network.failRequest",
@@ -518,20 +527,25 @@ async def test_fail_request_completes_new_request_still_blocks(
     })
     assert result == {}
 
-    loading_failed_response = await wait_for_event(
-        websocket, "cdp.Network.loadingFailed")
-    assert loading_failed_response == {
-        "method": "cdp.Network.loadingFailed",
+    fetch_error_response = await wait_for_event(websocket,
+                                                "network.fetchError")
+
+    assert fetch_error_response == {
+        "method": "network.fetchError",
         "params": {
-            "event": "Network.loadingFailed",
-            "params": {
-                "canceled": False,
-                "errorText": "net::ERR_FAILED",
-                "requestId": network_id_1,
-                "timestamp": ANY_NUMBER,
-                "type": "Document",
-            },
-            "session": ANY_STR,
+            "context": context_id,
+            "errorText": "net::ERR_FAILED",
+            "isBlocked": False,
+            "navigation": ANY_STR,
+            "redirectCount": 0,
+            "request": AnyExtending(
+                {
+                    "headers": ANY_LIST,
+                    "method": "GET",
+                    "request": network_id_1,
+                    "url": example_url,
+                }, ),
+            "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
     }
@@ -680,7 +694,7 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
 
     assert network_id_1 != network_id_2
 
-    await subscribe(websocket, ["cdp.Network.loadingFailed"])
+    await subscribe(websocket, ["network.fetchError"])
 
     # Fail the first request.
     result = await execute_command(websocket, {
@@ -691,20 +705,25 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
     })
     assert result == {}
 
-    loading_failed_response = await wait_for_event(
-        websocket, "cdp.Network.loadingFailed")
-    assert loading_failed_response == {
-        "method": "cdp.Network.loadingFailed",
+    fetch_error_response = await wait_for_event(websocket,
+                                                "network.fetchError")
+
+    assert fetch_error_response == {
+        "method": "network.fetchError",
         "params": {
-            "event": "Network.loadingFailed",
-            "params": {
-                "canceled": False,
-                "errorText": "net::ERR_FAILED",
-                "requestId": network_id_1,
-                "timestamp": ANY_NUMBER,
-                "type": "Document",
-            },
-            "session": ANY_STR,
+            "context": context_id,
+            "errorText": "net::ERR_FAILED",
+            "isBlocked": False,
+            "navigation": ANY_STR,
+            "redirectCount": 0,
+            "request": AnyExtending(
+                {
+                    "headers": ANY_LIST,
+                    "method": "GET",
+                    "request": network_id_1,
+                    "url": example_url,
+                }, ),
+            "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
     }
@@ -718,20 +737,25 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
     })
     assert result == {}
 
-    loading_failed_response = await wait_for_event(
-        websocket, "cdp.Network.loadingFailed")
-    assert loading_failed_response == {
-        "method": "cdp.Network.loadingFailed",
+    fetch_error_response = await wait_for_event(websocket,
+                                                "network.fetchError")
+
+    assert fetch_error_response == {
+        "method": "network.fetchError",
         "params": {
-            "event": "Network.loadingFailed",
-            "params": {
-                "canceled": False,
-                "errorText": "net::ERR_FAILED",
-                "requestId": network_id_2,
-                "timestamp": ANY_NUMBER,
-                "type": "Document",
-            },
-            "session": ANY_STR,
+            "context": another_context_id,
+            "errorText": "net::ERR_FAILED",
+            "isBlocked": False,
+            "navigation": ANY_STR,
+            "redirectCount": 0,
+            "request": AnyExtending(
+                {
+                    "headers": ANY_LIST,
+                    "method": "GET",
+                    "request": network_id_2,
+                    "url": example_url,
+                }, ),
+            "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
     }
@@ -805,7 +829,7 @@ async def test_fail_request_remove_intercept_inflight_request(
         })
     assert result == {}
 
-    await subscribe(websocket, ["cdp.Network.loadingFailed"])
+    await subscribe(websocket, ["network.fetchError"])
 
     result = await execute_command(websocket, {
         "method": "network.failRequest",
@@ -815,23 +839,25 @@ async def test_fail_request_remove_intercept_inflight_request(
     })
     assert result == {}
 
-    loading_failed_response = await wait_for_event(
-        websocket, "cdp.Network.loadingFailed")
-    assert loading_failed_response == {
-        "method": "cdp.Network.loadingFailed",
+    fetch_error_response = await wait_for_event(websocket,
+                                                "network.fetchError")
+
+    assert fetch_error_response == {
+        "method": "network.fetchError",
         "params": {
-            "event": "Network.loadingFailed",
-            "params": {
-                "canceled": False,
-                "errorText": "net::ERR_FAILED",
-                "requestId": network_id,
-                "timestamp": ANY_NUMBER,
-                "type": "Document",
-            },
-            "session": ANY_STR,
+            "context": context_id,
+            "errorText": "net::ERR_FAILED",
+            "isBlocked": False,
+            "navigation": ANY_STR,
+            "redirectCount": 0,
+            "request": AnyExtending(
+                {
+                    "headers": ANY_LIST,
+                    "method": "GET",
+                    "request": network_id,
+                    "url": example_url,
+                }, ),
+            "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
     }
-
-
-# TODO: Replace cdp.Network.loadingFailed with network.fetchError BiDi event when it is implemented?

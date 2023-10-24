@@ -13,7 +13,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 import pytest
-from anys import ANY_DICT, ANY_LIST, ANY_NUMBER, ANY_STR
+from anys import ANY_DICT, ANY_LIST, ANY_STR
 from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
                           execute_command, send_JSON_command, subscribe,
                           wait_for_event)
@@ -461,7 +461,7 @@ async def test_remove_intercept_does_not_affect_another_intercept(
         })
     assert result == {}
 
-    await subscribe(websocket, ["cdp.Network.loadingFailed"])
+    await subscribe(websocket, ["network.fetchError"])
 
     result = await execute_command(websocket, {
         "method": "network.failRequest",
@@ -471,20 +471,25 @@ async def test_remove_intercept_does_not_affect_another_intercept(
     })
     assert result == {}
 
-    loading_failed_response = await wait_for_event(
-        websocket, "cdp.Network.loadingFailed")
-    assert loading_failed_response == {
-        "method": "cdp.Network.loadingFailed",
+    fetch_error_response = await wait_for_event(websocket,
+                                                "network.fetchError")
+
+    assert fetch_error_response == {
+        "method": "network.fetchError",
         "params": {
-            "event": "Network.loadingFailed",
-            "params": {
-                "canceled": False,
-                "errorText": "net::ERR_FAILED",
-                "requestId": network_id_2,
-                "timestamp": ANY_NUMBER,
-                "type": "Document",
-            },
-            "session": ANY_STR,
+            "context": another_context_id,
+            "errorText": "net::ERR_FAILED",
+            "isBlocked": False,
+            "navigation": ANY_STR,
+            "redirectCount": 0,
+            "request": AnyExtending(
+                {
+                    "headers": ANY_LIST,
+                    "method": "GET",
+                    "request": network_id_2,
+                    "url": another_example_url,
+                }, ),
+            "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
     }
