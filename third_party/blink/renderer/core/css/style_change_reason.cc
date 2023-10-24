@@ -11,6 +11,7 @@
 namespace blink {
 
 namespace style_change_reason {
+const char kAccessibility[] = "Accessibility";
 const char kActiveStylesheetsUpdate[] = "ActiveStylesheetsUpdate";
 const char kAnimation[] = "Animation";
 const char kAttribute[] = "Attribute";

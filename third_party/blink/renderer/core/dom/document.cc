@@ -3187,6 +3187,12 @@ void Document::AddAXContext(AXContext* context) {
   if (!ax_object_cache_) {
     ax_object_cache_ =
         AXObjectCache::Create(*this, ComputeAXModeFromAXContexts(ax_contexts_));
+    // Invalidate style on the entire document, because accessibility
+    // needs to compute style on all elements, even those in
+    // content-visibility:auto subtrees.
+    documentElement()->SetNeedsStyleRecalc(
+        kSubtreeStyleChange, StyleChangeReasonForTracing::Create(
+                                 style_change_reason::kAccessibility));
     g_ax_object_cache_count++;
   }
 }
