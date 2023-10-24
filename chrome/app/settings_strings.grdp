@@ -2257,10 +2257,10 @@
     Always use secure connections
   </message>
   <message name="IDS_SETTINGS_HTTPS_ONLY_MODE_DESCRIPTION" desc="Secondary, continued explanation of HTTPS-Only Mode in Security settings">
-    Upgrade navigations to HTTPS and warn you before loading sites that don't support it
+    Use HTTPS whenever possible and get warned before loading sites that don’t support it
   </message>
   <message name="IDS_SETTINGS_HTTPS_ONLY_MODE_DESCRIPTION_ADVANCED_PROTECTION" desc="Secondary, continued explanation of HTTPS-Only Mode in Security settings when the user can't change the setting">
-    Upgrade navigations to HTTPS and warn you before loading sites that don't support it. You can't change this setting because you have Advanced Protection enabled.
+    Use HTTPS whenever possible and get warned before loading sites that don’t support it. You can’t change this setting because you have Advanced Protection enabled.
   </message>
   <message name="IDS_SETTINGS_MANAGE_CERTIFICATES" desc="Text for manage certificates button in Privacy options">
     Manage certificates

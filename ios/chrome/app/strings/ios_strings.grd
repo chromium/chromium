@@ -3806,7 +3806,7 @@ Try to use a unique password for every site.
         Always Use Secure Connections
       </message>
       <message name="IDS_IOS_SETTINGS_HTTPS_ONLY_MODE_DESCRIPTION" desc="Description text of HTTPS-Only Mode in  settings">
-        Upgrade to HTTPS, when possible. Secure sites might embed content that isn't secure.
+        Use HTTPS whenever possible and get warned before loading sites that don’t support it.
       </message>
       <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_DISABLED_DESC" desc="Detail text for the Safe Browsing check if the user has Safe Browsing disabled">
         Off - Not recommended
