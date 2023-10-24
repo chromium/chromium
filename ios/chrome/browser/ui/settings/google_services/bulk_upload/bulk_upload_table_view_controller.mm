@@ -48,6 +48,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+  self.tableView.accessibilityIdentifier =
+      kBulkUploadTableViewAccessibilityIdentifier;
   [self loadModel];
 }
 
@@ -119,6 +121,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   switchItem.detailText = viewItem.subtitle;
   switchItem.on = viewItem.selected;
   switchItem.dataType = static_cast<NSInteger>(viewItem.type);
+  switchItem.accessibilityIdentifier = viewItem.accessibilityIdentifier;
   [self.tableViewModel addItem:switchItem
        toSectionWithIdentifier:SectionIdentifierDataTypes];
 }

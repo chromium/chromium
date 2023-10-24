@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_egtest_utils.h"
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller_constants.h"
+#import "ios/chrome/browser/ui/settings/google_services/bulk_upload/bulk_upload_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
@@ -118,9 +119,12 @@ void SaveBookmark(NSString* title, NSString* url) {
   [BookmarkEarlGrey addBookmarkWithTitle:title URL:url inStorage:storageType];
 }
 
-void MatchBatchUploadRecommendationItem(int message_id,
-                                        int count,
-                                        NSString* email) {
+// Expects a batch upload recommendation item on the current screen with
+// `message_id` string formatted for `count` local items and `email` user email
+// id.
+void ExpectBatchUploadRecommendationItem(int message_id,
+                                         int count,
+                                         NSString* email) {
   NSString* text = base::SysUTF16ToNSString(
       base::i18n::MessageFormatter::FormatWithNamedArgs(
           l10n_util::GetStringUTF16(message_id), "count", count, "email",
@@ -614,7 +618,7 @@ void MatchBatchUploadRecommendationItem(int message_id,
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
   // Find and match the batch upload recommendation item text.
-  MatchBatchUploadRecommendationItem(
+  ExpectBatchUploadRecommendationItem(
       IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_PASSWORDS_ITEM, 2,
       fakeIdentity.userEmail);
 }
@@ -637,7 +641,7 @@ void MatchBatchUploadRecommendationItem(int message_id,
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
   // Find and match the batch upload recommendation item text.
-  MatchBatchUploadRecommendationItem(
+  ExpectBatchUploadRecommendationItem(
       IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_ITEMS_ITEM, 2,
       fakeIdentity.userEmail);
 }
@@ -659,7 +663,7 @@ void MatchBatchUploadRecommendationItem(int message_id,
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
   // Find and match the batch upload recommendation item text.
-  MatchBatchUploadRecommendationItem(
+  ExpectBatchUploadRecommendationItem(
       IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_ITEMS_ITEM, 1,
       fakeIdentity.userEmail);
 }
@@ -684,9 +688,147 @@ void MatchBatchUploadRecommendationItem(int message_id,
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
   // Find and match the batch upload recommendation item text.
-  MatchBatchUploadRecommendationItem(
+  ExpectBatchUploadRecommendationItem(
       IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_PASSWORDS_AND_ITEMS_ITEM, 1,
       fakeIdentity.userEmail);
+}
+
+// Tests that the batch upload page contains the correct listed data types:
+// - Passwords
+// - Bookmarks
+// - Reading list
+- (void)testBulkUploadPageForAllDataTypes {
+  // Add local data.
+  password_manager_test_utils::SavePasswordForm(@"password", @"user",
+                                                @"https://example.com");
+  reading_list_test_utils::AddURLToReadingList(GURL("https://example.com"));
+  SaveBookmark(@"foo", @"https://www.foo.com");
+
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  // Sign in with fake identity using the settings sign-in promo.
+  SignInWithPromoFromAccountSettings(fakeIdentity, /*expect_history_sync=*/YES);
+
+  // Open the "manage sync" view.
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Tap on the batch upload button.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBatchUploadAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Verify the bulk upload view is popped.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kBulkUploadTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify that only rows for the correct data types exist.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBulkUploadTableViewPasswordsItemAccessibilityIdentifer)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBulkUploadTableViewBookmarksItemAccessibilityIdentifer)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBulkUploadTableViewReadingListItemAccessibilityIdentifer)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the batch upload page contains the correct listed data types:
+// - Passwords
+- (void)testBulkUploadPageForPasswordsOnly {
+  // Add local data.
+  password_manager_test_utils::SavePasswordForm(@"password", @"user",
+                                                @"https://example.com");
+
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  // Sign in with fake identity using the settings sign-in promo.
+  SignInWithPromoFromAccountSettings(fakeIdentity, /*expect_history_sync=*/YES);
+
+  // Open the "manage sync" view.
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Tap on the batch upload button.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBatchUploadAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Verify the bulk upload view is popped.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kBulkUploadTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify that only rows for the correct data types exist.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBulkUploadTableViewPasswordsItemAccessibilityIdentifer)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBulkUploadTableViewBookmarksItemAccessibilityIdentifer)]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBulkUploadTableViewReadingListItemAccessibilityIdentifer)]
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that the batch upload page contains the correct listed data types:
+// - Passwords
+// - Bookmarks
+- (void)testBulkUploadPageForPasswordsAndBookmarks {
+  // Add local data.
+  password_manager_test_utils::SavePasswordForm(@"password", @"user",
+                                                @"https://example.com");
+  SaveBookmark(@"foo", @"https://www.foo.com");
+
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  // Sign in with fake identity using the settings sign-in promo.
+  SignInWithPromoFromAccountSettings(fakeIdentity, /*expect_history_sync=*/YES);
+
+  // Open the "manage sync" view.
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Tap on the batch upload button.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBatchUploadAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Verify the bulk upload view is popped.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kBulkUploadTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify that only rows for the correct data types exist.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBulkUploadTableViewPasswordsItemAccessibilityIdentifer)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBulkUploadTableViewBookmarksItemAccessibilityIdentifer)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBulkUploadTableViewReadingListItemAccessibilityIdentifer)]
+      assertWithMatcher:grey_notVisible()];
 }
 
 @end

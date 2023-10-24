@@ -31,6 +31,7 @@ struct BulkUploadModelItem {
   BulkUploadType bulk_upload_type;
   int title_string_id;
   int subtitle_string_id;
+  NSString* const view_accessibility_id;
 };
 
 // List of model type to display for the bulk upload. The order will be used
@@ -41,18 +42,21 @@ const BulkUploadModelItem kBuildUploadModelItems[] = {
         BulkUploadType::kBookmark,
         IDS_IOS_BULK_UPLOAD_BOOKMARK_TITLE,
         IDS_IOS_BULK_UPLOAD_BOOKMARK_SUBTITLE,
+        kBulkUploadTableViewBookmarksItemAccessibilityIdentifer,
     },
     {
         syncer::PASSWORDS,
         BulkUploadType::kPassword,
         IDS_IOS_BULK_UPLOAD_PASSWORD_TITLE,
         IDS_IOS_BULK_UPLOAD_BOOKMARK_SUBTITLE,
+        kBulkUploadTableViewPasswordsItemAccessibilityIdentifer,
     },
     {
         syncer::READING_LIST,
         BulkUploadType::kReadinglist,
         IDS_IOS_BULK_UPLOAD_READING_LIST_TITLE,
         IDS_IOS_BULK_UPLOAD_READING_LIST_SUBTITLE,
+        kBulkUploadTableViewReadingListItemAccessibilityIdentifer,
     },
 };
 
@@ -200,6 +204,7 @@ const BulkUploadModelItem kBuildUploadModelItems[] = {
   bulkUploadViewItem.subtitle = subtitle;
   bulkUploadViewItem.selected =
       base::Contains(_selectedTypes, modelItem.bulk_upload_type);
+  bulkUploadViewItem.accessibilityIdentifier = modelItem.view_accessibility_id;
   return bulkUploadViewItem;
 }
 
