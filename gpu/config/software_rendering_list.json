@@ -1715,6 +1715,18 @@
       "features": [
         "accelerated_video_decode"
       ]
+    },
+    {
+      "id": 179,
+      "description": "Disable canvas acceleration on some Intel 8LP GPUs on ChromeOS [b/293173688]",
+      "os": {
+        "type": "chromeos"
+      },
+      "vendor_id": "0x8086",
+      "device_id": ["0x22b1"],
+      "features": [
+        "accelerated_2d_canvas"
+      ]
     }
   ]
 }
