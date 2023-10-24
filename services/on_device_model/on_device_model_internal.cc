@@ -7,6 +7,7 @@
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "third_party/ml/public/chrome_ml.h"
 #include "third_party/ml/public/on_device_model_executor.h"
+#include "third_party/ml/public/utils.h"
 
 namespace on_device_model {
 namespace {
@@ -52,8 +53,11 @@ std::unique_ptr<mojom::OnDeviceModel> OnDeviceModelService::CreateModel(
 
 // static
 mojom::PerformanceClass OnDeviceModelService::GetEstimatedPerformanceClass() {
-  // TODO(cduvall): Add internal impl.
-  return mojom::PerformanceClass::kError;
+  auto chrome_ml = ml::ChromeML::Create();
+  if (!chrome_ml) {
+    return mojom::PerformanceClass::kError;
+  }
+  return ml::GetEstimatedPerformanceClass(*chrome_ml);
 }
 
 }  // namespace on_device_model
