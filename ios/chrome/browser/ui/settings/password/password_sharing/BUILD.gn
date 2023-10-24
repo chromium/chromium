@@ -163,6 +163,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/sharing",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/favicon:favicon",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state:test_support",

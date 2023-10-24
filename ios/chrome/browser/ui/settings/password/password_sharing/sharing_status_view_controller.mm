@@ -6,17 +6,22 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_view_controller_presentation_delegate.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/favicon/favicon_container_view.h"
+#import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 namespace {
 
@@ -30,6 +35,8 @@ const NSInteger kProgressBarCirclesAmount = 20;
 // Loaded images size dimensions.
 const CGFloat kProfileImageSize = 60.0;
 const CGFloat kLockSymbolPointSize = 24.0;
+const CGFloat kFaviconContainerSize = 30.0;
+const CGFloat kFaviconSize = 22.0;
 
 // Spacing and padding constraints.
 const CGFloat kVerticalSpacing = 16.0;
@@ -37,11 +44,14 @@ const CGFloat kTopPadding = 20.0;
 const CGFloat kBottomPadding = 42.0;
 const CGFloat kHorizontalPadding = 16.0;
 const CGFloat kTitleDoneButtonSpacing = 48.0;
+const CGFloat kFaviconProfileImageVerticalOverlap = 10.0;
 
-// Durations of specific parts of the animation.
+// Durations of specific parts of the animation in seconds.
 const CGFloat kImagesSlidingOutDuration = 1.0;
 const CGFloat kProgressBarLoadingDuration = 3.25;
 const CGFloat kImagesSlidingInDuration = 1.0;
+const CGFloat kFaviconAppearingDuration = 0.15;
+const CGFloat kFaviconAppearingDelay = 0.1;
 const CGFloat kSharingCancelledDuration = 0.5;
 
 // Distance by which the profile images need to be moved when sliding.
@@ -71,6 +81,10 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
 // circles.
 @property(nonatomic, strong) UIView* progressBarView;
 
+// The container for the favicon view that is displayed below the recipient and
+// sender images in successful status view.
+@property(nonatomic, strong) FaviconContainerView* faviconContainerView;
+
 // Animates profile image of the sender sliding to the left and profile images
 // of recipients sliding to the right.
 @property(nonatomic, strong) UIViewPropertyAnimator* imagesSlidingOutAnimation;
@@ -83,6 +97,9 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
 // Animates progress bar and lock disappearing and profile images sliding to the
 // middle.
 @property(nonatomic, strong) UIViewPropertyAnimator* imagesSlidingInAnimation;
+
+// Animates favicon appearing below recipient and sender image.
+@property(nonatomic, strong) UIViewPropertyAnimator* faviconAppearingAnimation;
 
 // Animates profile images sliding to the middle on cancel button tap.
 @property(nonatomic, strong) UIViewPropertyAnimator* sharingCancelledAnimation;
@@ -99,6 +116,9 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
 
 // The button that cancels the sharing process.
 @property(nonatomic, strong) UIButton* cancelButton;
+
+// Url of the site for which the password is being shared.
+@property(nonatomic, readonly) GURL URL;
 
 @end
 
@@ -136,6 +156,14 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
 
   // Add progress bar circles.
   [self createProgressBarSubviews];
+
+  // Add favicon and its container.
+  FaviconContainerView* faviconContainerView =
+      [self createFaviconContainerView];
+  [animationView insertSubview:faviconContainerView
+                  aboveSubview:senderImageView];
+  FaviconView* faviconView = [self createFaviconView];
+  [faviconContainerView addSubview:faviconView];
 
   // Add title label.
   UILabel* titleLabel = [self createTitleLabel];
@@ -184,6 +212,23 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
     [lockImage.centerXAnchor
         constraintEqualToAnchor:senderImageView.centerXAnchor],
 
+    // Favicon constraints.
+    [faviconContainerView.topAnchor
+        constraintEqualToAnchor:senderImageView.bottomAnchor
+                       constant:-kFaviconProfileImageVerticalOverlap],
+    [faviconContainerView.centerXAnchor
+        constraintEqualToAnchor:senderImageView.centerXAnchor],
+    [faviconContainerView.widthAnchor
+        constraintEqualToConstant:kFaviconContainerSize],
+    [faviconContainerView.heightAnchor
+        constraintEqualToConstant:kFaviconContainerSize],
+    [faviconView.centerXAnchor
+        constraintEqualToAnchor:faviconContainerView.centerXAnchor],
+    [faviconView.centerYAnchor
+        constraintEqualToAnchor:faviconContainerView.centerYAnchor],
+    [faviconView.widthAnchor constraintEqualToConstant:kFaviconSize],
+    [faviconView.heightAnchor constraintEqualToConstant:kFaviconSize],
+
     // Title constraints.
     [titleLabel.topAnchor constraintEqualToAnchor:animationView.bottomAnchor
                                          constant:kVerticalSpacing],
@@ -230,6 +275,10 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
 
 - (void)setFooterString:(NSString*)footerString {
   _footerString = footerString;
+}
+
+- (void)setURL:(const GURL&)URL {
+  _URL = URL;
 }
 
 #pragma mark - Private
@@ -292,6 +341,40 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
     circleView.layer.cornerRadius = kProgressBarCircleDiameter / 2;
     [progressBarView addSubview:circleView];
   }
+}
+
+// Creates favicon view and fetches the actual favicon, while setting the
+// default world icon as well as a fallback.
+- (FaviconView*)createFaviconView {
+  FaviconView* faviconView = [[FaviconView alloc] init];
+  faviconView.translatesAutoresizingMaskIntoConstraints = NO;
+  faviconView.contentMode = UIViewContentModeScaleAspectFill;
+
+  // Use the default world icon as a fallback.
+  FaviconAttributes* defaultFaviconAttributes = [FaviconAttributes
+      attributesWithImage:[UIImage imageNamed:@"default_world_favicon"]];
+  [faviconView configureWithAttributes:defaultFaviconAttributes];
+
+  // Fetch the actual favicon.
+  [self.imageDataSource
+      faviconForPageURL:[[CrURL alloc] initWithGURL:_URL]
+             completion:^(FaviconAttributes* attributes) {
+               [faviconView configureWithAttributes:attributes];
+             }];
+
+  return faviconView;
+}
+
+// Creates and returns the container for the favicon view.
+- (FaviconContainerView*)createFaviconContainerView {
+  FaviconContainerView* faviconContainerView =
+      [[FaviconContainerView alloc] init];
+  faviconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  [faviconContainerView
+      setFaviconBackgroundColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
+  faviconContainerView.hidden = YES;
+  self.faviconContainerView = faviconContainerView;
+  return faviconContainerView;
 }
 
 // Creates title label.
@@ -384,8 +467,20 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
                   recipientImageView.center.x - kImagesSlidingInDistance,
                   recipientImageView.center.y);
             }];
-  __weak __typeof(self.delegate) weakDelegate = self.delegate;
   [self.imagesSlidingInAnimation
+      addCompletion:^(UIViewAnimatingPosition finalPosition) {
+        [weakSelf.faviconAppearingAnimation
+            startAnimationAfterDelay:kFaviconAppearingDelay];
+      }];
+
+  self.faviconAppearingAnimation = [[UIViewPropertyAnimator alloc]
+      initWithDuration:kFaviconAppearingDuration
+                 curve:UIViewAnimationCurveEaseInOut
+            animations:^{
+              self.faviconContainerView.hidden = NO;
+            }];
+  __weak __typeof(self.delegate) weakDelegate = self.delegate;
+  [self.faviconAppearingAnimation
       addCompletion:^(UIViewAnimatingPosition finalPosition) {
         [weakSelf displaySuccessStatus];
         [weakDelegate startPasswordSharing];
@@ -554,6 +649,7 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
   [self.imagesSlidingOutAnimation stopAnimation:YES];
   [self.progressBarLoadingAnimation stopAnimation:YES];
   [self.imagesSlidingInAnimation stopAnimation:YES];
+  [self.faviconAppearingAnimation stopAnimation:YES];
 
   [self.sharingCancelledAnimation startAnimation];
 }

@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_SHARING_STATUS_CONSUMER_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_SHARING_STATUS_CONSUMER_H_
 
+class GURL;
+
 // Provides profile images of the sender, recipients and strings to be displayed
 // in the success view.
 @protocol SharingStatusConsumer <NSObject>
@@ -21,6 +23,9 @@
 
 // Sets footer string to be displayed in the success status view.
 - (void)setFooterString:(NSString*)footerString;
+
+// Sets url of the site for which the passwords are being shared.
+- (void)setURL:(const GURL&)URL;
 
 @end
 

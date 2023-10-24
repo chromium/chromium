@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_consumer.h"
 
 @protocol SharingStatusViewControllerPresentationDelegate;
+@protocol TableViewFaviconDataSource;
 
 // Presents the following animation:
 // * Recipient and sender images appear on the middle.
@@ -25,6 +26,9 @@
 // Delegate for handling dismissal of the view.
 @property(nonatomic, weak) id<SharingStatusViewControllerPresentationDelegate>
     delegate;
+
+// Data source for favicon images.
+@property(nonatomic, weak) id<TableViewFaviconDataSource> imageDataSource;
 
 @end
 

@@ -10,6 +10,8 @@
 @class RecipientInfoForIOSDisplay;
 @protocol SharingStatusCoordinatorDelegate;
 
+class GURL;
+
 // This coordinator presents a view with a sharing status animation. Main part
 // of the animation is a progress bar loading between images of the sender and
 // the recipients. The progress does not reflect actual sharing going on under
@@ -22,7 +24,8 @@
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
                     recipients:(NSArray<RecipientInfoForIOSDisplay*>*)recipients
-                       website:(NSString*)website NS_DESIGNATED_INITIALIZER;
+                       website:(NSString*)website
+                           URL:(const GURL&)URL NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;

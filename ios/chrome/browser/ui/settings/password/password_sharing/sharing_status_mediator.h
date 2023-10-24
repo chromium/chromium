@@ -7,21 +7,27 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
+
 @class RecipientInfoForIOSDisplay;
 @protocol SharingStatusConsumer;
 
 class AuthenticationService;
 class ChromeAccountManagerService;
+class FaviconLoader;
+class GURL;
 
 // This mediator passes display information about sender and recipients of the
 // user to its consumer.
-@interface SharingStatusMediator : NSObject
+@interface SharingStatusMediator : NSObject <TableViewFaviconDataSource>
 
 - (instancetype)
       initWithAuthService:(AuthenticationService*)authService
     accountManagerService:(ChromeAccountManagerService*)accountManagerService
+            faviconLoader:(FaviconLoader*)faviconLoader
                recipients:(NSArray<RecipientInfoForIOSDisplay*>*)recipients
-                  website:(NSString*)website NS_DESIGNATED_INITIALIZER;
+                  website:(NSString*)website
+                      URL:(const GURL&)URL NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

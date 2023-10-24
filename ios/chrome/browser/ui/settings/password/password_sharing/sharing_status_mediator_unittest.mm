@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/sharing/recipients_fetcher.h"
+#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -25,11 +26,13 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 namespace {
 
 constexpr NSString* kWebsite = @"example.com";
 const CGFloat kProfileImageSize = 60.0;
+const GURL kGURL = GURL("www.example.com");
 
 NSArray<RecipientInfoForIOSDisplay*>* CreateRecipients(int amount) {
   NSMutableArray<RecipientInfoForIOSDisplay*>* recipients =
@@ -53,6 +56,7 @@ NSArray<RecipientInfoForIOSDisplay*>* CreateRecipients(int amount) {
 @property(nonatomic, strong) UIImage* recipientImage;
 @property(nonatomic, strong) NSString* subtitleString;
 @property(nonatomic, strong) NSString* footerString;
+@property(nonatomic, readonly) GURL URL;
 
 @end
 
@@ -72,6 +76,10 @@ NSArray<RecipientInfoForIOSDisplay*>* CreateRecipients(int amount) {
 
 - (void)setFooterString:(NSString*)footerString {
   _footerString = footerString;
+}
+
+- (void)setURL:(const GURL&)URL {
+  _URL = URL;
 }
 
 @end
@@ -108,6 +116,11 @@ class SharingStatusMediatorTest : public PlatformTest {
         browser_state_.get());
   }
 
+  FaviconLoader* GetFaviconLoader() {
+    return IOSChromeFaviconLoaderFactory::GetForBrowserState(
+        browser_state_.get());
+  }
+
  private:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
@@ -123,8 +136,10 @@ TEST_F(SharingStatusMediatorTest, NotifiesSignedInConsumerAboutTheirAvatar) {
   auto* mediator = [[SharingStatusMediator alloc]
         initWithAuthService:GetAuthenticationService()
       accountManagerService:GetAccountManagerService()
+              faviconLoader:GetFaviconLoader()
                  recipients:CreateRecipients(1)
-                    website:kWebsite];
+                    website:kWebsite
+                        URL:kGURL];
   mediator.consumer = consumer;
 
   EXPECT_NSEQ(UIImagePNGRepresentation(CircularImageFromImage(
@@ -139,8 +154,10 @@ TEST_F(SharingStatusMediatorTest, NotifiesSignedOutConsumerWithDefaultAvatar) {
   auto* mediator = [[SharingStatusMediator alloc]
         initWithAuthService:GetAuthenticationService()
       accountManagerService:GetAccountManagerService()
+              faviconLoader:GetFaviconLoader()
                  recipients:CreateRecipients(1)
-                    website:kWebsite];
+                    website:kWebsite
+                        URL:kGURL];
   mediator.consumer = consumer;
 
   EXPECT_NSEQ(UIImagePNGRepresentation(DefaultSymbolTemplateWithPointSize(
@@ -153,8 +170,10 @@ TEST_F(SharingStatusMediatorTest, NotifiesConsumerWithRecipientImage) {
   auto* mediator = [[SharingStatusMediator alloc]
         initWithAuthService:GetAuthenticationService()
       accountManagerService:GetAccountManagerService()
+              faviconLoader:GetFaviconLoader()
                  recipients:CreateRecipients(1)
-                    website:kWebsite];
+                    website:kWebsite
+                        URL:kGURL];
   mediator.consumer = consumer;
 
   EXPECT_NSEQ(UIImagePNGRepresentation(DefaultSymbolTemplateWithPointSize(
@@ -168,8 +187,10 @@ TEST_F(SharingStatusMediatorTest,
   auto* mediator = [[SharingStatusMediator alloc]
         initWithAuthService:GetAuthenticationService()
       accountManagerService:GetAccountManagerService()
+              faviconLoader:GetFaviconLoader()
                  recipients:CreateRecipients(1)
-                    website:kWebsite];
+                    website:kWebsite
+                        URL:kGURL];
   mediator.consumer = consumer;
 
   EXPECT_NSEQ(base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
@@ -184,8 +205,10 @@ TEST_F(SharingStatusMediatorTest,
   auto* mediator = [[SharingStatusMediator alloc]
         initWithAuthService:GetAuthenticationService()
       accountManagerService:GetAccountManagerService()
+              faviconLoader:GetFaviconLoader()
                  recipients:CreateRecipients(2)
-                    website:kWebsite];
+                    website:kWebsite
+                        URL:kGURL];
   mediator.consumer = consumer;
 
   EXPECT_NSEQ(base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
@@ -199,11 +222,27 @@ TEST_F(SharingStatusMediatorTest, NotifiesConsumerAboutFooter) {
   auto* mediator = [[SharingStatusMediator alloc]
         initWithAuthService:GetAuthenticationService()
       accountManagerService:GetAccountManagerService()
+              faviconLoader:GetFaviconLoader()
                  recipients:CreateRecipients(2)
-                    website:kWebsite];
+                    website:kWebsite
+                        URL:kGURL];
   mediator.consumer = consumer;
 
   EXPECT_NSEQ(base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
                   IDS_IOS_PASSWORD_SHARING_SUCCESS_FOOTNOTE, u"example.com")),
               consumer.footerString);
+}
+
+TEST_F(SharingStatusMediatorTest, NotifiesConsumerAboutGURL) {
+  auto* consumer = [[FakeSharingStatusConsumer alloc] init];
+  auto* mediator = [[SharingStatusMediator alloc]
+        initWithAuthService:GetAuthenticationService()
+      accountManagerService:GetAccountManagerService()
+              faviconLoader:GetFaviconLoader()
+                 recipients:CreateRecipients(2)
+                    website:kWebsite
+                        URL:kGURL];
+  mediator.consumer = consumer;
+
+  EXPECT_EQ(kGURL, consumer.URL);
 }
