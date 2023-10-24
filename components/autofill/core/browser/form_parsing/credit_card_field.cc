@@ -219,15 +219,18 @@ std::unique_ptr<FormField> CreditCardField::Parse(
     // detection decision, we allow for 4 UNKONWN fields in between.
     // We can't allow for a lot of unknown fields, because the name on address
     // sections may sometimes be mistakenly detected as cardholder name.
-    // Yet, it does happen that a field separates the name from the CC number
-    // (e.g. a tax payer ID). Therefore, we also allow a field between name
-    // and other fields.
-    bool has_name =
-        credit_card_field->cardholder_ || credit_card_field->cardholder_last_;
+    //
+    // While it does happen that a field separates the name from the CC number
+    // (e.g. a tax payer ID), we still don't allow a field between name and
+    // other fields because this generates false classifications for forms for
+    // the structure ([no CC holder name present], CC number, CC exp date, CVC,
+    // billing country, billing name, billing street). We have observed pretty
+    // low n-counts of forms where the former and the latter problem occurred,
+    // though.
     bool has_verification = credit_card_field->verification_;
     bool has_numbers = !credit_card_field->numbers_.empty();
     bool has_expiration = credit_card_field->HasExpiration();
-    if ((has_name || has_verification || has_numbers || has_expiration) &&
+    if ((has_verification || has_numbers || has_expiration) &&
         (!has_verification || !has_numbers || !has_expiration) &&
         nb_unknown_fields < 4) {
       scanner->Advance();
