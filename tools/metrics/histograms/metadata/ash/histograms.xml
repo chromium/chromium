@@ -3990,6 +3990,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Login.ArcUiAvailableAfterLogin.Duration" units="ms"
+    expires_after="2024-10-24">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>alemate@chromium.org</owner>
+  <owner>cros-sw-perf@google.com</owner>
+  <summary>
+    Time between primary user logged in (i.e. a successful cryptohome mount) and
+    ARC boot completion..
+  </summary>
+</histogram>
+
 <histogram name="Ash.Login.Lock.AuthMethod.Switched"
     enum="AuthMethodSwitchType" expires_after="2024-02-25">
   <owner>emaamari@google.com</owner>
@@ -4245,6 +4256,62 @@ chromium-metrics-reviews@google.com.
   <summary>
     Relative smoothness of all animations applied during the login process. 100%
     represents the ideal smoothness for 60 frames per second.
+  </summary>
+</histogram>
+
+<histogram name="Ash.LoginSessionRestore.AllBrowserWindowsCreated" units="ms"
+    expires_after="2024-10-24">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>alemate@chromium.org</owner>
+  <owner>cros-sw-perf@google.com</owner>
+  <summary>
+    Time between primary user logged in (i.e. a successful cryptohome mount) and
+    creation of all expected restored browser windows.
+  </summary>
+</histogram>
+
+<histogram name="Ash.LoginSessionRestore.AllBrowserWindowsPresented" units="ms"
+    expires_after="2024-10-24">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>alemate@chromium.org</owner>
+  <owner>cros-sw-perf@google.com</owner>
+  <summary>
+    The duration of how long it took for all pixels of expected restored windows
+    to be rendered after primary user logged in (i.e. a successful cryptohome
+    mount).
+  </summary>
+</histogram>
+
+<histogram name="Ash.LoginSessionRestore.AllBrowserWindowsShown" units="ms"
+    expires_after="2024-10-24">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>alemate@chromium.org</owner>
+  <owner>cros-sw-perf@google.com</owner>
+  <summary>
+    Time between primary user logged in (i.e. a successful cryptohome mount) and
+    the full manifestation of all expected restored browser windows.
+  </summary>
+</histogram>
+
+<histogram name="Ash.LoginSessionRestore.AllShelfIconsLoaded" units="ms"
+    expires_after="2024-10-24">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>alemate@chromium.org</owner>
+  <owner>cros-sw-perf@google.com</owner>
+  <summary>
+    Time between primary user logged in (i.e. a successful cryptohome mount) and
+    the complete loading of all pinned button icons for restored windows.
+  </summary>
+</histogram>
+
+<histogram name="Ash.LoginSessionRestore.ShelfLoginAnimationEnd" units="ms"
+    expires_after="2024-10-24">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>alemate@chromium.org</owner>
+  <owner>cros-sw-perf@google.com</owner>
+  <summary>
+    The duration of how long it took to load all the shelf icons of restored
+    windows after primary user logged in (i.e. a successful cryptohome mount).
   </summary>
 </histogram>
 
