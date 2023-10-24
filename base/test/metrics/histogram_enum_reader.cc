@@ -85,7 +85,7 @@ absl::optional<HistogramEnumEntryMap> ParseEnumFromHistogramsXml(
 absl::optional<HistogramEnumEntryMap> ReadEnumFromEnumsXml(
     const std::string& enum_name) {
   FilePath src_root;
-  if (!PathService::Get(DIR_SOURCE_ROOT, &src_root)) {
+  if (!PathService::Get(DIR_SRC_TEST_DATA_ROOT, &src_root)) {
     ADD_FAILURE() << "Failed to get src root.";
     return absl::nullopt;
   }
