@@ -35,8 +35,8 @@ _CSS_NAMED_COLORS_REGEX = "|".join(_CSS_NAMED_COLORS)
 # named color or #rgb / #rrggbb / #rrggbbaa
 _CSS_COLOR_REGEX = f"{_CSS_NAMED_COLORS_REGEX}|#[0-9a-fA-F]{{3,8}}"
 
-# colors_default.css is fallback for colors when dynamic color is not enabled.
-_CSS_ALLOWLIST = ["css/colors_default.css"]
+# utils/cca/static/colors.css is used as a stub for local dev.
+_CSS_ALLOWLIST = ["utils/cca/static/colors.css"]
 
 
 def _check_color_tokens_css() -> int:

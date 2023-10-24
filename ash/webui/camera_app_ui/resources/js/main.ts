@@ -265,27 +265,6 @@ function preloadImages() {
   document.body.appendChild(imagesContainer);
 }
 
-/**
- * Append dynamic color CSS files and setup watcher for color changes.
- */
-async function setupDynamicColor(): Promise<void> {
-  function loadCSS(url: string): Promise<void> {
-    return new Promise((resolve) => {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = url;
-      link.addEventListener('load', () => resolve());
-      document.head.appendChild(link);
-    });
-  }
-  if (loadTimeData.getChromeFlag(Flag.JELLY)) {
-    ColorChangeUpdater.forDocument().start();
-    await loadCSS('chrome://theme/colors.css?sets=ref,sys');
-  } else {
-    await loadCSS(util.expandPath('/css/colors_default.css'));
-  }
-}
-
 async function setupMultiWindowHandling(
     cameraManager: CameraManager, cameraView: Camera,
     cameraResourceInitialized: WaitableEvent): Promise<void> {
@@ -448,8 +427,7 @@ async function main() {
 
   const perfLogger = createPerfLogger();
 
-  // toast and splash style depends on dynamic color css being imported.
-  await setupDynamicColor();
+  ColorChangeUpdater.forDocument().start();
 
   if (DEPLOYED_VERSION !== undefined) {
     // eslint-disable-next-line no-console
