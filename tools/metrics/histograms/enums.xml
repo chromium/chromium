@@ -82599,6 +82599,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="10"
       label="Entering overview during a switch desk trackpad animation"/>
   <int value="11" label="Entering overview via desk button on shelf"/>
+  <int value="12" label="Entering overview with the faster split screen setup"/>
 </enum>
 
 <enum name="OwnerKeyUmaEvent">

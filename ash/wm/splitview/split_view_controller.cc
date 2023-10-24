@@ -1363,7 +1363,7 @@ void SplitViewController::OpenPartialOverviewToUpdateSnapGroup(
                                ? primary_window_
                                : secondary_window_;
     RootWindowController::ForWindow(window)->StartSplitViewOverviewSession(
-        window, OverviewStartAction::kSplitView,
+        window, OverviewStartAction::kFasterSplitScreenSetup,
         OverviewEnterExitType::kNormal);
   }
 }
@@ -2414,7 +2414,7 @@ void SplitViewController::OnSnappedWindowDetached(aura::Window* window,
     UpdateStateAndNotifyObservers();
     RootWindowController::ForWindow(other_window)
         ->StartSplitViewOverviewSession(
-            other_window, OverviewStartAction::kSplitView,
+            other_window, OverviewStartAction::kFasterSplitScreenSetup,
             reason == WindowDetachedReason::kWindowDragged
                 ? OverviewEnterExitType::kImmediateEnter
                 : OverviewEnterExitType::kNormal);

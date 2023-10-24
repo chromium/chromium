@@ -377,6 +377,24 @@ TEST_F(FasterSplitScreenTest, SplitViewOverviewSessionExitPointHistogramsTest) {
       /*expected_count=*/1);
 }
 
+// Tests that the `OverviewStartAction` will be recorded correctly in uma for
+// the faster split screen setup.
+TEST_F(FasterSplitScreenTest, OverviewStartActionHistogramTest) {
+  constexpr char kOverviewStartActionHistogram[] = "Ash.Overview.StartAction";
+  // Verify the initial count for the histogram.
+  histogram_tester_.ExpectBucketCount(
+      kOverviewStartActionHistogram,
+      OverviewStartAction::kFasterSplitScreenSetup,
+      /*expected_count=*/0);
+  std::unique_ptr<aura::Window> window(CreateAppWindow());
+  SnapOneTestWindow(window.get(), chromeos::WindowStateType::kPrimarySnapped);
+  VerifySplitViewOverviewSession(window.get());
+  histogram_tester_.ExpectBucketCount(
+      kOverviewStartActionHistogram,
+      OverviewStartAction::kFasterSplitScreenSetup,
+      /*expected_count=*/1);
+}
+
 // -----------------------------------------------------------------------------
 // SnapGroupTest:
 

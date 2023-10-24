@@ -74,15 +74,15 @@ SplitViewOverviewSession::~SplitViewOverviewSession() {
 void SplitViewOverviewSession::Init(
     absl::optional<OverviewStartAction> action,
     absl::optional<OverviewEnterExitType> type) {
+  // Overview may already be in session, if a window was dragged to split view
+  // from overview in clamshell mode.
   if (IsInOverviewSession()) {
     setup_type_ = SplitViewOverviewSetupType::kOverviewThenManualSnap;
     return;
   }
 
-  // Overview may already be in session, if a window was dragged to split view
-  // from overview in clamshell mode.
   Shell::Get()->overview_controller()->StartOverview(
-      action.value_or(OverviewStartAction::kSplitView),
+      action.value_or(OverviewStartAction::kFasterSplitScreenSetup),
       type.value_or(OverviewEnterExitType::kNormal));
   setup_type_ = SplitViewOverviewSetupType::kSnapThenAutomaticOverview;
 }

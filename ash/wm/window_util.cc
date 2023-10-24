@@ -672,7 +672,7 @@ void MaybeStartSplitViewOverview(aura::Window* window) {
 
   if (!IsInOverviewSession()) {
     root_window_controller->StartSplitViewOverviewSession(
-        window, OverviewStartAction::kSplitView,
+        window, OverviewStartAction::kFasterSplitScreenSetup,
         OverviewEnterExitType::kNormal);
   } else {
     // If overview has already started, we may need to update the bounds. This
