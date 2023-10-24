@@ -2874,6 +2874,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_NEXT_PAGE_OPTION_LABEL" desc="Label of Next page option in the button remapping action dropdown menu.">
     Next page
   </message>
+  <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_REMAPPING_DROPDOWN_ARIA_LABEL" desc="Aria label for the button remapping dropdown in the customize button row.">
+    <ph name="BUTTON_NAME">$1<ex>Side button</ex></ph> remapped to <ph name="REMAPPING_OPTION">$2<ex>Copy</ex></ph>.
+  </message>
 
   <!-- Bluetooth page (OS settings) -->
   <message name="IDS_SETTINGS_BLUETOOTH_CONNECTED" desc="In Bluetooth device list, this label is shown below a device which is already connected.">
