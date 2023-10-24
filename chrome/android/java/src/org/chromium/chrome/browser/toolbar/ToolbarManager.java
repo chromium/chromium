@@ -270,6 +270,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private final SnackbarManager mSnackbarManager;
     private OnAttachStateChangeListener mAttachStateChangeListener;
     private final OneshotSupplier<TabReparentingController> mTabReparentingControllerSupplier;
+    private final BackPressManager mBackPressManager;
 
     private HomeButtonCoordinator mHomeButtonCoordinator;
     private ToggleTabStackButtonCoordinator mToggleTabStackButtonCoordinator;
@@ -394,7 +395,11 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         @Override
         public int handleBackPress() {
-            int res = ToolbarManager.this.handleBackPress();
+            int res = BackPressResult.SUCCESS;
+            // When enabled, the content/ native will trigger the navigation.
+            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)) {
+                res = ToolbarManager.this.handleBackPress();
+            }
             // For U+ only.
             if (mHandler != null) mHandler.onBackInvoked();
             return res;
@@ -615,6 +620,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             OnBackPressHandler handler = new OnBackPressHandler();
             backPressManager.addHandler(handler, BackPressHandler.Type.TAB_HISTORY);
             mLastBackPressMsSupplier = backPressManager::getLastPressMs;
+            mBackPressManager = backPressManager;
+        } else {
+            mBackPressManager = null;
         }
 
         BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate =
@@ -1430,8 +1438,10 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 mFullscreenManager, (ScrollingBottomViewResourceFrameLayout) root, mTabGroupUi,
                 mTabObscuringHandler, mOverlayPanelVisibilitySupplier, mConstraintsProxy);
         mBottomControlsCoordinatorSupplier.set(bottomControlsCoordinator);
-        bottomControlsCoordinator.getHandleBackPressChangedSupplier().addObserver(
-                (x) -> { onBackPressStateChanged(); });
+        if (mBackPressManager != null) {
+            mBackPressManager.addHandler(
+                    bottomControlsCoordinator, BackPressHandler.Type.BOTTOM_CONTROLS);
+        }
     }
 
     /**
