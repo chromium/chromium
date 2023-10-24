@@ -6,6 +6,7 @@ source_set("grid") {
   sources = [
     "base_grid_mediator.h",
     "base_grid_mediator.mm",
+    "grid_coordinator_audience.h",
   ]
   deps = [
     ":grid_mediator_delegate",

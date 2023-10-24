@@ -14,8 +14,7 @@
 - (void)updateParentalControlStatus:(BOOL)isSubjectToParentalControls;
 
 // Updates the tab grid for supervised users.
-// Returns YES if the tab grid is updated, NO if unchanged.
-- (BOOL)updateTabGridForIncognitoModeDisabled:(BOOL)isIncognitoModeDisabled;
+- (void)updateTabGridForIncognitoModeDisabled:(BOOL)isIncognitoModeDisabled;
 
 @end
 
