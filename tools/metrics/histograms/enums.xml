@@ -66910,6 +66910,7 @@ from previous Chrome versions.
   <int value="630776247" label="USBGuard:disabled"/>
   <int value="630947363" label="touch-events"/>
   <int value="631136125" label="EnableDefaultAppsMigration:enabled"/>
+  <int value="631315985" label="SyncSessionOnVisibilityChanged:disabled"/>
   <int value="632324382"
       label="ExperimentalAccessibilityDictationListening:disabled"/>
   <int value="632340413" label="network-settings-config"/>
@@ -70046,6 +70047,7 @@ from previous Chrome versions.
       label="ProcessSharingWithStrictSiteInstances:enabled"/>
   <int value="2137294324" label="zero-copy-video-capture"/>
   <int value="2137347307" label="enable-drive-apps-in-app-list"/>
+  <int value="2137440054" label="SyncSessionOnVisibilityChanged:enabled"/>
   <int value="2137554806"
       label="enable-experimental-accessibility-dictation-listening"/>
   <int value="2137571271" label="MediaSessionWebRTC:enabled"/>

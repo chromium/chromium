@@ -11055,6 +11055,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kTheoraVideoCodec)},
 #endif
 
+    {"sync-session-on-visibility-changed",
+     flag_descriptions::kSyncSessionOnVisibilityChangedName,
+     flag_descriptions::kSyncSessionOnVisibilityChangedDescription, kOsAll,
+     FEATURE_VALUE_TYPE(syncer::kSyncSessionOnVisibilityChanged)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

@@ -1579,6 +1579,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBottomOmniboxDeviceSwitcherResultsName,
      flag_descriptions::kBottomOmniboxDeviceSwitcherResultsDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kBottomOmniboxDeviceSwitcherResults)},
+    {"sync-session-on-visibility-changed",
+     flag_descriptions::kSyncSessionOnVisibilityChangedName,
+     flag_descriptions::kSyncSessionOnVisibilityChangedDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(syncer::kSyncSessionOnVisibilityChanged)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

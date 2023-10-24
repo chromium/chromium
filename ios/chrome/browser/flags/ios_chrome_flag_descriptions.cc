@@ -965,6 +965,11 @@ const char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 const char kSyncSandboxDescription[] =
     "Connects to the testing server for Chrome Sync.";
 
+const char kSyncSessionOnVisibilityChangedName[] =
+    "Sync session when tab visibility changes";
+const char kSyncSessionOnVisibilityChangedDescription[] =
+    "This flag enables session syncing when the visibility of a tab changes.";
+
 const char kSyncSegmentsDataName[] = "Use synced segments data";
 const char kSyncSegmentsDataDescription[] =
     "Enables history's segments to include foreign visits from syncing "
