@@ -19,6 +19,7 @@
 #include "extensions/browser/image_loader_factory.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/renderer_startup_helper.h"
+#include "extensions/browser/service_worker/service_worker_keepalive.h"
 #include "extensions/browser/service_worker_task_queue_factory.h"
 #include "extensions/browser/updater/update_service_factory.h"
 
@@ -39,6 +40,7 @@ void EnsureCoreBrowserContextKeyedServiceFactoriesBuilt() {
   MimeHandlerStreamManager::EnsureFactoryBuilt();
   ProcessManagerFactory::GetInstance();
   RendererStartupHelperFactory::GetInstance();
+  ServiceWorkerKeepalive::EnsureShutdownNotifierFactoryBuilt();
   ServiceWorkerTaskQueueFactory::GetInstance();
   UpdateServiceFactory::GetInstance();
   WebRequestEventRouterFactory::GetInstance();

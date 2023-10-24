@@ -530,6 +530,8 @@ source_set("browser_sources") {
     "script_injection_tracker.h",
     "service_worker/service_worker_host.cc",
     "service_worker/service_worker_host.h",
+    "service_worker/service_worker_keepalive.cc",
+    "service_worker/service_worker_keepalive.h",
     "service_worker/worker_id.cc",
     "service_worker/worker_id.h",
     "service_worker/worker_id_set.cc",

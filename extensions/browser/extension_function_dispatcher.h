@@ -90,8 +90,7 @@ class ExtensionFunctionDispatcher {
 
   // Called when an ExtensionFunction is done executing, after it has sent
   // a response (if any) to the extension.
-  void OnExtensionFunctionCompleted(
-      const ExtensionFunction& extension_function);
+  void OnExtensionFunctionCompleted(ExtensionFunction& extension_function);
 
   // See the Delegate class for documentation on these methods.
   // TODO(devlin): None of these belong here. We should kill

@@ -23,6 +23,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 #include "extensions/browser/quota_service.h"
+#include "extensions/browser/service_worker/service_worker_keepalive.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/context_data.h"
@@ -358,6 +359,14 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
                       : blink::mojom::kInvalidServiceWorkerVersionId;
   }
 
+  void set_service_worker_keepalive(
+      std::unique_ptr<extensions::ServiceWorkerKeepalive> keepalive) {
+    service_worker_keepalive_ = std::move(keepalive);
+  }
+  // Out-of-line because the release of the keepalive can invoke significant
+  // work.
+  void ResetServiceWorkerKeepalive();
+
   bool is_from_service_worker() const { return worker_id_.has_value(); }
 
   ResponseType* response_type() const { return response_type_.get(); }
@@ -638,6 +647,12 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // Set to the ID of the calling worker if this function was invoked by an
   // extension service worker context.
   absl::optional<extensions::WorkerId> worker_id_;
+
+  // A keepalive for the associated service worker. Only populated if this was
+  // triggered by an extension service worker. In a unique_ptr instead of an
+  // optional because it's unclear if the pre-allocated memory overhead is
+  // worthwhile (given the number of calls from e.g. webui).
+  std::unique_ptr<extensions::ServiceWorkerKeepalive> service_worker_keepalive_;
 
   // The response type of the function, if the response has been sent.
   std::unique_ptr<ResponseType> response_type_;
