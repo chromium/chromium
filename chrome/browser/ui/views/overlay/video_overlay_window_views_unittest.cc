@@ -59,7 +59,10 @@ class MockOverlayView : public AutoPipSettingOverlayView {
                                   gfx::Rect(),
                                   anchor_view,
                                   views::BubbleBorder::Arrow::FLOAT) {}
-  MOCK_METHOD(void, ShowBubble, (gfx::NativeView parent), (override));
+  MOCK_METHOD(void,
+              ShowBubble,
+              (gfx::NativeView parent, PipWindowType pip_window_type),
+              (override));
 
   bool WantsEvent(const gfx::Point& point_in_screen) override {
     // Consume any event we're given.  The goal is to make sure we're given the

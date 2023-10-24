@@ -1246,7 +1246,8 @@ void VideoOverlayWindowViews::ShowInactive() {
     // Also update the bounds, since that's already happened for everything
     // else, potentially, during widget resize.
     overlay_view_->SetBoundsRect(gfx::Rect(GetBounds().size()));
-    overlay_view_->ShowBubble(GetNativeView());
+    overlay_view_->ShowBubble(
+        GetNativeView(), AutoPipSettingOverlayView::PipWindowType::kVideoPip);
     SetBounds(CalculateAndUpdateWindowBounds());
   }
 

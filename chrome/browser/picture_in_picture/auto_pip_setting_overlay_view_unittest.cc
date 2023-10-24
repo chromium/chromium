@@ -21,7 +21,9 @@
 
 class AutoPipSettingOverlayViewTest : public views::ViewsTestBase {
  public:
-  AutoPipSettingOverlayViewTest() = default;
+  AutoPipSettingOverlayViewTest()
+      : views::ViewsTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
     ViewsTestBase::SetUp();
@@ -108,7 +110,9 @@ TEST_F(AutoPipSettingOverlayViewTest, TestBackgroundLayerAnimation) {
 }
 
 TEST_F(AutoPipSettingOverlayViewTest, TestWantsEvent) {
-  setting_overlay()->ShowBubble(anchor_view_widget()->GetNativeView());
+  setting_overlay()->ShowBubble(
+      anchor_view_widget()->GetNativeView(),
+      AutoPipSettingOverlayView::PipWindowType::kDocumentPip);
   // Assume nothing is at screen coordinate 0,0.
   EXPECT_FALSE(setting_overlay()->WantsEvent(gfx::Point(0, 0)));
 
@@ -120,4 +124,63 @@ TEST_F(AutoPipSettingOverlayViewTest, TestWantsEvent) {
       view->get_allow_once_button_center_in_screen_for_testing()));
   EXPECT_TRUE(setting_overlay()->WantsEvent(
       view->get_block_button_center_in_screen_for_testing()));
+}
+
+TEST_F(AutoPipSettingOverlayViewTest,
+       TestOverlayViewDoesNotHaveFocusForDocumentPip) {
+  setting_overlay()->ShowBubble(
+      anchor_view_widget()->GetNativeView(),
+      AutoPipSettingOverlayView::PipWindowType::kDocumentPip);
+  EXPECT_FALSE(setting_overlay()->HasFocus());
+}
+
+TEST_F(AutoPipSettingOverlayViewTest,
+       TestOverlayViewDoesNotHaveFocusForVideoPip) {
+  setting_overlay()->ShowBubble(
+      anchor_view_widget()->GetNativeView(),
+      AutoPipSettingOverlayView::PipWindowType::kVideoPip);
+  EXPECT_FALSE(setting_overlay()->HasFocus());
+}
+
+#if BUILDFLAG(IS_MAC)
+// Ensure that bubbles requested for Document Picture-in-Picture windows are
+// shown after an 180Ms delay, on Mac.
+TEST_F(AutoPipSettingOverlayViewTest,
+       TestOverlayViewShownWithDelayForDocumentPip) {
+  // Initially bubble should not be shown.
+  setting_overlay()->ShowBubble(
+      anchor_view_widget()->GetNativeView(),
+      AutoPipSettingOverlayView::PipWindowType::kDocumentPip);
+  EXPECT_FALSE(
+      setting_overlay()->get_view_for_testing()->GetWidget()->IsVisible());
+
+  // Bubble should be shown after an 180Ms delay.
+  task_environment()->FastForwardBy(base::Milliseconds(185));
+  EXPECT_TRUE(
+      setting_overlay()->get_view_for_testing()->GetWidget()->IsVisible());
+}
+#endif  // BUILDFLAG(IS_MAC)
+
+#if !BUILDFLAG(IS_MAC)
+// Ensure that bubbles requested for Document Picture-in-Picture windows are
+// shown without delay, on all platforms except for Mac.
+TEST_F(AutoPipSettingOverlayViewTest,
+       TestOverlayViewShownWithDelayForDocumentPip) {
+  setting_overlay()->ShowBubble(
+      anchor_view_widget()->GetNativeView(),
+      AutoPipSettingOverlayView::PipWindowType::kDocumentPip);
+  EXPECT_TRUE(
+      setting_overlay()->get_view_for_testing()->GetWidget()->IsVisible());
+}
+#endif  // !BUILDFLAG(IS_MAC)
+
+TEST_F(AutoPipSettingOverlayViewTest,
+       TestOverlayViewShownWithDelayForVideoPip) {
+  // Ensure that bubbles requested for Video Picture-in-Picture windows are
+  // shown without delay, regardless of platform.
+  setting_overlay()->ShowBubble(
+      anchor_view_widget()->GetNativeView(),
+      AutoPipSettingOverlayView::PipWindowType::kVideoPip);
+  EXPECT_TRUE(
+      setting_overlay()->get_view_for_testing()->GetWidget()->IsVisible());
 }
