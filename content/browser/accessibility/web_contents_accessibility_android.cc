@@ -320,13 +320,6 @@ void WebContentsAccessibilityAndroid::ReEnableRendererAccessibility(
   if (root_manager) {
     root_manager->set_web_contents_accessibility(GetWeakPtr());
   }
-
-  // The AXMode should have been set when the accessibility state was changed,
-  // so by this method it should be something other than kNone.
-  BrowserAccessibilityStateImpl* accessibility_state =
-      BrowserAccessibilityStateImpl::GetInstance();
-  DCHECK(accessibility_state->GetAccessibilityMode().flags() !=
-         ui::AXMode::kNone);
 }
 
 jboolean WebContentsAccessibilityAndroid::IsRootManagerConnected(JNIEnv* env) {

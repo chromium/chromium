@@ -768,6 +768,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                     mAutoDisableAccessibilityHandler.cancelDisableTimer();
                     mAutoDisableAccessibilityHandler.startDisableTimer(
                             NO_ACCESSIBILITY_SERVICES_ENABLED_DELAY_MS);
+                } else {
+                    mAutoDisableAccessibilityHandler.cancelDisableTimer();
                 }
             }
         }
