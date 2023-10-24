@@ -3,3 +3,4 @@ file://ash/webui/PLATFORM_OWNERS
 per-file *bluetooth*=file://ash/webui/common/resources/bluetooth/OWNERS
 per-file *net*=file://ash/webui/common/resources/network/OWNERS
 per-file drive_internals_ui.*=file://ui/file_manager/OWNERS
+per-file cros_components.*=file://third_party/cros-components/OWNERS
