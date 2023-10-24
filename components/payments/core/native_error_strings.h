@@ -228,6 +228,10 @@ extern const char kGenericPaymentMethodNotSupportedMessage[];
 
 // Used for errors downloading the payment method manifest. This format should
 // be used with base::ReplaceStringPlaceholders(fmt, {A}, nullptr).
+extern const char kNoLinkHeader[];
+
+// Used for errors downloading the payment method manifest. This format should
+// be used with base::ReplaceStringPlaceholders(fmt, {A}, nullptr).
 extern const char kNoContentAndNoLinkHeader[];
 
 // Used when the downloaded payment manifest A is empty. This format should be
