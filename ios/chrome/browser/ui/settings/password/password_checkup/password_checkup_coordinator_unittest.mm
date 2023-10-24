@@ -158,7 +158,7 @@ TEST_P(PasswordCheckupCoordinatorWithReauthenticationTest,
   // Checkup should be covered until auth is passed.
   CheckPasswordCheckupIsNotPresented();
 
-  [mock_reauth_module_ returnMockedReathenticationResult];
+  [mock_reauth_module_ returnMockedReauthenticationResult];
 
   // Successful auth should leave Checkup visible.
   CheckPasswordCheckupIsPresented();

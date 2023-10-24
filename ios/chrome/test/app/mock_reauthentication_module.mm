@@ -61,7 +61,7 @@ typedef void (^ReauthenticationResultHandler)(ReauthenticationResult success);
   }
 }
 
-- (void)returnMockedReathenticationResult {
+- (void)returnMockedReauthenticationResult {
   DCHECK(!self.shouldReturnSynchronously);
   DCHECK(self.reauthResultHandler);
 
