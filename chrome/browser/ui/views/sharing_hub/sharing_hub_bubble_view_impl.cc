@@ -88,14 +88,6 @@ std::u16string SharingHubBubbleViewImpl::GetAccessibleWindowTitle() const {
   return l10n_util::GetStringUTF16(IDS_SHARING_HUB_TOOLTIP);
 }
 
-void SharingHubBubbleViewImpl::OnPaint(gfx::Canvas* canvas) {
-  views::BubbleDialogDelegateView::OnPaint(canvas);
-  if (show_time_) {
-    share::RecordSharingHubTimeToShow(base::Time::Now() - *show_time_);
-    show_time_ = absl::nullopt;
-  }
-}
-
 void SharingHubBubbleViewImpl::OnThemeChanged() {
   LocationBarBubbleDelegateView::OnThemeChanged();
   if (GetWidget()) {
@@ -107,11 +99,6 @@ void SharingHubBubbleViewImpl::OnThemeChanged() {
           GetColorProvider()->GetColor(ui::kColorMenuItemForeground));
     }
   }
-}
-
-void SharingHubBubbleViewImpl::Show(DisplayReason reason) {
-  show_time_ = base::Time::Now();
-  ShowForReason(reason);
 }
 
 void SharingHubBubbleViewImpl::OnActionSelected(

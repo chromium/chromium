@@ -390,49 +390,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.SharingHubDesktop.TimeToFetchFaviconPreviewImage"
-    units="ms" expires_after="2023-03-12">
-  <obsolete>
-    Never actually logged in production, removed in M111.
-  </obsolete>
-  <owner>ellyjones@chromium.org</owner>
-  <owner>src/chrome/browser/share/OWNERS</owner>
-  <summary>
-    Records the elapsed time (in milliseconds) between the sharing hub becoming
-    visible on screen and the favicon image (if there is one) replacing the
-    default image. Only logged for cases where the favicon is both present and
-    is delivered to the sharing hub asynchronously, so this metric tracks how
-    slow async favicon fetching is.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.SharingHubDesktop.TimeToFetchHQPreviewImage"
-    units="ms" expires_after="2023-03-12">
-  <obsolete>
-    Never actually logged in production, removed in M111.
-  </obsolete>
-  <owner>ellyjones@chromium.org</owner>
-  <owner>src/chrome/browser/share/OWNERS</owner>
-  <summary>
-    Records the elapsed time (in milliseconds) between the sharing hub becoming
-    visible on screen and the high-quality image (if there is one) replacing the
-    default image. Only logged for cases where such a replacement eventually
-    happens - pages with no high-quality image do not produce an entry. This
-    metric essentially tracks how slow asynchronous HQ image fetching is.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.SharingHubDesktop.TimeToShow" units="ms"
-    expires_after="2023-12-04">
-  <owner>ellyjones@chromium.org</owner>
-  <owner>src/chrome/browser/share/OWNERS</owner>
-  <summary>
-    Records the elapsed time (in milliseconds) between the user gesture that
-    should summon the sharing hub and the sharing hub actually becoming visible
-    on screen.
-  </summary>
-</histogram>
-
 <histogram name="Sharing.SmsFetcherAvailableDeviceCount" units="devices"
     expires_after="2024-03-01">
   <owner>yigu@chromium.org</owner>

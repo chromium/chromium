@@ -106,7 +106,7 @@ class SharingHubBubbleTest : public ChromeViewsTestBase {
         &controller_);
     bubble_ = bubble.get();
     views::BubbleDialogDelegateView::CreateBubble(std::move(bubble));
-    bubble_->Show(sharing_hub::SharingHubBubbleViewImpl::USER_GESTURE);
+    bubble_->ShowForReason(sharing_hub::SharingHubBubbleViewImpl::USER_GESTURE);
     bubble_widget_ = bubble_->GetWidget();
   }
 

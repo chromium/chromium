@@ -2951,7 +2951,7 @@ sharing_hub::SharingHubBubbleView* BrowserView::ShowSharingHubBubble(
 
   views::BubbleDialogDelegateView::CreateBubble(bubble);
   // This is always triggered due to a user gesture, c.f. method documentation.
-  bubble->Show(sharing_hub::SharingHubBubbleViewImpl::USER_GESTURE);
+  bubble->ShowForReason(sharing_hub::SharingHubBubbleViewImpl::USER_GESTURE);
 
   return bubble;
 }
