@@ -27,4 +27,9 @@ void OnDeviceModelService::LoadModel(mojom::LoadModelParamsPtr params,
   std::move(callback).Run(mojom::LoadModelResult::NewModel(std::move(remote)));
 }
 
+void OnDeviceModelService::GetEstimatedPerformanceClass(
+    GetEstimatedPerformanceClassCallback callback) {
+  std::move(callback).Run(GetEstimatedPerformanceClass());
+}
+
 }  // namespace on_device_model

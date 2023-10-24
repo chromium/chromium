@@ -38,4 +38,9 @@ std::unique_ptr<mojom::OnDeviceModel> OnDeviceModelService::CreateModel(
   return std::make_unique<OnDeviceModel>(std::move(params));
 }
 
+// static
+mojom::PerformanceClass OnDeviceModelService::GetEstimatedPerformanceClass() {
+  return mojom::PerformanceClass::kError;
+}
+
 }  // namespace on_device_model

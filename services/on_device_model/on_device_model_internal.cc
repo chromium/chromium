@@ -50,4 +50,10 @@ std::unique_ptr<mojom::OnDeviceModel> OnDeviceModelService::CreateModel(
                                          std::move(executor));
 }
 
+// static
+mojom::PerformanceClass OnDeviceModelService::GetEstimatedPerformanceClass() {
+  // TODO(cduvall): Add internal impl.
+  return mojom::PerformanceClass::kError;
+}
+
 }  // namespace on_device_model
