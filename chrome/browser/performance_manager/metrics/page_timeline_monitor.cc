@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 #include <array>
+#include <limits>
 #include <map>
 #include <memory>
 #include <numeric>
@@ -384,8 +385,9 @@ void PageTimelineMonitor::LogCPUInterventionMetrics(
   double cpu_to_get_under_threshold =
       total_foreground_cpu_usage + total_background_cpu_usage - kThreshold;
   if (total_background_cpu_usage < cpu_to_get_under_threshold) {
-    // Use -1 to represent when closing all background tabs won't be enough
-    tabs_to_get_under_threshold = -1;
+    // Use max int to represent when closing all background tabs won't be
+    // enough.
+    tabs_to_get_under_threshold = std::numeric_limits<int>::max();
   } else {
     for (double cpu_usage : background_cpu_usage) {
       cpu_to_get_under_threshold -= cpu_usage;
