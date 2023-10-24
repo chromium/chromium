@@ -9,6 +9,7 @@
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
@@ -23,6 +24,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/cookies/cookie_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -272,6 +274,96 @@ TEST_F(PolicyProviderTest, InvalidManagedDefaultContentSetting) {
   EXPECT_FALSE(rule_iterator);
 
   provider.ShutdownOnUIThread();
+}
+
+TEST_F(PolicyProviderTest, CookiesAllowedForUrlsUsageHistogram) {
+  const struct TestCase {
+    std::string desc;
+    base::Value::List managed_pref;
+    absl::optional<net::CookiesAllowedForUrlsUsage> expected_bucket;
+  } test_cases[] = {
+      {
+          "NoRules",
+          base::Value::List(),
+          absl::nullopt,
+      },
+      {
+          "WildcardPrimaryOnly",
+          base::Value::List().Append("*,https://www.a.com/"),
+          net::CookiesAllowedForUrlsUsage::kWildcardPrimaryOnly,
+      },
+      {
+          "WildcardSecondaryOnly",
+          base::Value::List().Append("https://www.a.com/"),
+          net::CookiesAllowedForUrlsUsage::kWildcardSecondaryOnly,
+      },
+      {"ExplicitOnly",
+       base::Value::List().Append("https://www.a.com/,https://www.b.com/"),
+       net::CookiesAllowedForUrlsUsage::kExplicitOnly},
+      {
+          "ExplicitAndPrimaryWildcard",
+          base::Value::List()
+              .Append("*,https://www.a.com/")
+              .Append("https://www.a.com/,https://www.b.com/"),
+          net::CookiesAllowedForUrlsUsage::kExplicitAndPrimaryWildcard,
+      },
+      {
+          "ExplicityAndSecondaryWildcard",
+          base::Value::List()
+              .Append("https://www.a.com/")
+              .Append("https://www.a.com/,https://www.b.com/"),
+          net::CookiesAllowedForUrlsUsage::kExplicitAndSecondaryWildcard,
+      },
+      {
+          "WildcardOnly",
+          base::Value::List()
+              .Append("*,https://www.a.com/")
+              .Append("https://www.a.com/"),
+          net::CookiesAllowedForUrlsUsage::kWildcardOnly,
+      },
+      {
+          "AllPresent",
+          base::Value::List()
+              .Append("*,https://www.a.com/")
+              .Append("https://www.a.com/")
+              .Append("https://www.a.com/,https://www.b.com/"),
+          net::CookiesAllowedForUrlsUsage::kAllPresent,
+      },
+  };
+
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.desc);
+    TestingProfile profile;
+    sync_preferences::TestingPrefServiceSyncable* prefs =
+        profile.GetTestingPrefService();
+    prefs->SetManagedPref(prefs::kManagedCookiesAllowedForUrls,
+                          test_case.managed_pref.Clone());
+    // Set some other cookie-related prefs to make sure they do not impact
+    // results.
+    prefs->SetManagedPref(prefs::kManagedCookiesBlockedForUrls,
+                          base::Value::List()
+                              .Append("https://www.c.com/")
+                              .Append("*,https://www.c.com/"));
+    prefs->SetManagedPref(prefs::kManagedCookiesSessionOnlyForUrls,
+                          base::Value::List()
+                              .Append("https://www.d.com/")
+                              .Append("https://www.d.com/,https://www.e.com/"));
+    base::HistogramTester histogram_tester;
+
+    PolicyProvider provider(prefs);
+
+    histogram_tester.ExpectTotalCount(
+        "Cookie.Experimental.CookiesAllowedForUrlsUsage",
+        test_case.expected_bucket ? 1 : 0);
+    if (test_case.expected_bucket) {
+      histogram_tester.ExpectUniqueSample(
+          "Cookie.Experimental.CookiesAllowedForUrlsUsage",
+          *test_case.expected_bucket,
+          /*expected_bucket_count=*/1);
+    }
+
+    provider.ShutdownOnUIThread();
+  }
 }
 
 }  // namespace content_settings

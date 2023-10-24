@@ -20644,6 +20644,16 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="Securely Set Cookie Nonsecure Request"/>
 </enum>
 
+<enum name="CookiesAllowedForUrlsUsage">
+  <int value="0" label="Explicit Content Settings Only"/>
+  <int value="1" label="Wildcard Primary Content Settings Only"/>
+  <int value="2" label="Wildcard Secondary Content Settings Only"/>
+  <int value="3" label="Wildcard Primary and Explicit Content Settings"/>
+  <int value="4" label="Wildcard Secondary and Explicit Content Settings"/>
+  <int value="5" label="Only Wildcard Content Settings"/>
+  <int value="6" label="All Types of Content Settings Present"/>
+</enum>
+
 <enum name="CookieSameSite">
   <obsolete>
     Deprecated 1/2022 in favor of CookieSameSite2, which starts at 0 and so
