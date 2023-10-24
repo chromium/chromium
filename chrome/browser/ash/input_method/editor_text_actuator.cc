@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/input_method/editor_text_actuator.h"
 
 #include "ash/public/cpp/new_window_delegate.h"
+#include "chrome/browser/ash/input_method/editor_feedback.h"
 #include "url/url_constants.h"
 
 namespace ash::input_method {
@@ -23,6 +24,10 @@ EditorTextActuator::EditorTextActuator(
     : text_actuator_receiver_(this, std::move(receiver)), delegate_(delegate) {}
 
 EditorTextActuator::~EditorTextActuator() = default;
+
+void EditorTextActuator::SetProfile(Profile* profile) {
+  profile_ = profile;
+}
 
 void EditorTextActuator::InsertText(const std::string& text) {
   // We queue the text to be inserted here rather then insert it directly into
@@ -55,6 +60,10 @@ void EditorTextActuator::ShowUI() {
 
 void EditorTextActuator::CloseUI() {
   delegate_->CloseUI();
+}
+
+void EditorTextActuator::SubmitFeedback(const std::string& description) {
+  SendEditorFeedback(profile_, description);
 }
 
 void EditorTextActuator::OnFocus(int context_id) {

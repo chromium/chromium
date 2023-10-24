@@ -159,7 +159,11 @@ void FeedbackCommon::PrepareReport(
   *(chrome_data.mutable_chrome_browser_data()) = chrome_browser_data;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   chrome_data.set_chrome_platform(chrome_platform);
-  *(feedback_data->mutable_chrome_data()) = chrome_data;
+  // TODO(b/301518187): Investigate if this line is needed in order for custom
+  // product IDs to work. Remove `include_chrome_platform_` if it's not needed.
+  if (include_chrome_platform_) {
+    *(feedback_data->mutable_chrome_data()) = chrome_data;
+  }
 
   feedback_data->set_product_id(HasProductId() ? product_id_
                                                : default_product_id);

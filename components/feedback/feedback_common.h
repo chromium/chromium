@@ -74,6 +74,7 @@ class FeedbackCommon : public base::RefCountedThreadSafe<FeedbackCommon> {
   std::string user_agent() const { return user_agent_; }
   std::string locale() const { return locale_; }
   std::string& autofill_metadata() { return autofill_metadata_; }
+  bool include_chrome_platform() const { return include_chrome_platform_; }
 
   const AttachedFile* attachment(size_t i) const { return &attachments_[i]; }
   size_t attachments() const { return attachments_.size(); }
@@ -100,6 +101,11 @@ class FeedbackCommon : public base::RefCountedThreadSafe<FeedbackCommon> {
   void set_locale(const std::string& locale) { locale_ = locale; }
   void set_autofill_metadata(const std::string& autofill_metadata) {
     autofill_metadata_ = autofill_metadata;
+  }
+  // If true, includes whether the report is from ChromeOS or Chrome on another
+  // platform.
+  void set_include_chrome_platform(bool include_chrome_platform) {
+    include_chrome_platform_ = include_chrome_platform;
   }
 
  protected:
@@ -133,6 +139,7 @@ class FeedbackCommon : public base::RefCountedThreadSafe<FeedbackCommon> {
   std::string user_agent_;
   std::string locale_;
   std::string autofill_metadata_;
+  bool include_chrome_platform_ = true;
 
   std::string image_;
 

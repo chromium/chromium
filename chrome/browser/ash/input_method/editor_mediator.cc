@@ -254,6 +254,9 @@ void EditorMediator::SetProfileByUser(user_manager::User* user) {
   if (text_query_provider_ != nullptr) {
     text_query_provider_->OnProfileChanged(profile_);
   }
+  if (text_actuator_ != nullptr) {
+    text_actuator_->SetProfile(profile_);
+  }
 }
 
 void EditorMediator::OnProfileWillBeDestroyed(Profile* profile) {
