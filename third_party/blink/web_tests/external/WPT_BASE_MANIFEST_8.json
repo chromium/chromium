@@ -154630,6 +154630,19 @@
         {}
        ]
       ],
+      "clip-path-invalid-reference.svg": [
+       "714d90ee767f0b065dfa6fe2b1a749a6d01d95e4",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path-svg-content/reference/clip-path-green-square-001-ref.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "clip-path-invalid.svg": [
        "85aa3a825b92d928bd32c197bfc9bdbfa074e0be",
        [
@@ -156947,6 +156960,19 @@
      "mask-svg-content": {
       "mask-empty-container-with-filter.svg": [
        "ebe7e7e4d1cecd5b8c8343cdac85be644724a24f",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/mask-svg-content/reference/mask-green-square-001-ref.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "mask-invalid-reference.svg": [
+       "3d68fc0d745a57b5ac93a561329041519c19cbbb",
        [
         null,
         [
@@ -325098,6 +325124,10 @@
         "2532eb3c1bbacb5a66a84b26e4a35b966512c977",
         []
        ],
+       "clip-path-green-square-001-ref.svg": [
+        "c83ec87e7bd06b73983b6c80c9712b8b924e9375",
+        []
+       ],
        "clip-path-invisible-ref.svg": [
         "15cfd5fdca2f3377b408e7dc7148a8b69c269b17",
         []
@@ -467750,8 +467780,15 @@
     },
     "css-fonts": {
      "animations": {
+      "font-palette-animation-not-specified-endpoints.html": [
+       "f3d103983c6747b28369704e81cff40f85674fab",
+       [
+        null,
+        {}
+       ]
+      ],
       "font-palette-interpolation.html": [
-       "66b0f00ebf01dac4cb4ad12aea9eece0d67b06f0",
+       "43e1368412e205c7ee22a326f3cfcb99a4f434e7",
        [
         null,
         {}
@@ -714956,7 +714993,7 @@
        },
        "load": {
         "load.py": [
-         "d15c23e8fdd4afba7e1a7bb09a20f0f5c01da3b5",
+         "568ee51788101897bdbaa8c9dc3b1d8ee6cc235c",
          [
           null,
           {}
