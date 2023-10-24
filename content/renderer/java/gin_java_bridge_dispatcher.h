@@ -52,7 +52,7 @@ class GinJavaBridgeDispatcher
   std::unique_ptr<base::Value> InvokeJavaMethod(
       ObjectID object_id,
       const std::string& method_name,
-      const base::Value::List& arguments,
+      base::Value::List arguments,
       mojom::GinJavaBridgeError* error);
   GinJavaBridgeObject* GetObject(ObjectID object_id);
   void OnGinJavaBridgeObjectDeleted(GinJavaBridgeObject* object);
