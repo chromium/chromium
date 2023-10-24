@@ -695,7 +695,7 @@ TEST_F(AggregationServiceStorageSqlTest,
        MultipleRequests_ReturnValuesAlignsWithReportTime) {
   OpenDatabase();
 
-  constexpr base::Time kExampleTime =
+  constexpr auto kExampleTime =
       base::Time::FromMillisecondsSinceUnixEpoch(1652984901234);
 
   std::vector<base::Time> scheduled_report_times = {
@@ -781,7 +781,7 @@ TEST_F(AggregationServiceStorageSqlTest,
        ClearDataBetween_RequestsTimeRangeDeleted) {
   OpenDatabase();
 
-  constexpr base::Time kExampleTime =
+  constexpr auto kExampleTime =
       base::Time::FromMillisecondsSinceUnixEpoch(1652984901234);
 
   clock_.SetNow(kExampleTime);
@@ -965,7 +965,7 @@ TEST_F(AggregationServiceStorageSqlTest,
        AdjustOfflineReportTimes_MultipleReports) {
   OpenDatabase();
 
-  constexpr base::Time kExampleTime =
+  constexpr auto kExampleTime =
       base::Time::FromMillisecondsSinceUnixEpoch(1652984901234);
 
   std::vector<base::Time> scheduled_report_times = {

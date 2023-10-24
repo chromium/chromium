@@ -1810,7 +1810,7 @@ std::unique_ptr<protocol::Network::SecurityDetails> BuildSecurityDetails(
           .SetIssuer(ssl_info.cert->issuer().common_name)
           .SetValidFrom(ssl_info.cert->valid_start().InSecondsFSinceUnixEpoch())
           .SetValidTo(ssl_info.cert->valid_expiry().InSecondsFSinceUnixEpoch())
-          .SetCertificateId(0)  // Keep this in protocol for compatability.
+          .SetCertificateId(0)  // Keep this in protocol for compatibility.
           .SetSignedCertificateTimestampList(
               std::move(signed_certificate_timestamp_list))
           .SetCertificateTransparencyCompliance(

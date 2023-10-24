@@ -53,7 +53,7 @@ using testing::Return;
 
 using Checkpoint = testing::MockFunction<void(int step)>;
 
-constexpr base::Time kExampleTime =
+constexpr auto kExampleTime =
     base::Time::FromMillisecondsSinceUnixEpoch(1652984901234);
 
 constexpr char kExampleOriginUrl[] = "https://origin.example";
