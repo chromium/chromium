@@ -15,7 +15,9 @@ action("field_trial_testing_config_action") {
   source = "//testing/variations/fieldtrial_testing_config.json"
   inputs = [
     "//tools/json_to_struct/element_generator.py",
+    "//tools/json_to_struct/java_element_generator.py",
     "//tools/json_to_struct/json_to_struct.py",
+    "//tools/json_to_struct/class_generator.py",
     "//tools/json_to_struct/struct_generator.py",
     source,
   ]
@@ -53,6 +55,11 @@ action("field_trial_testing_config_action") {
   # include WebView/WebLayer.
   if (platform == "android") {
     args += [
+      # TODO(peilinwang) investigate impact on test runtime, then enable the
+      # generation of the java fieldtrial testing config to be used when native
+      # isn't loaded.
+      # "--java",
+
       "--platform=android_weblayer",
       "--platform=android_webview",
     ]

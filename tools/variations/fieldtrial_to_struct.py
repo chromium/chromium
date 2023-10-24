@@ -201,6 +201,10 @@ def main(arguments):
       'mandatory.')
   parser.add_option('-o', '--output', help='output filename, '
       'mandatory.')
+  parser.add_option('-j',
+                    '--java',
+                    action='store_true',
+                    help='specify this flag to generate a java class.')
   parser.add_option('-y', '--year',
       help='year to put in the copy-right.')
   parser.add_option(
@@ -236,6 +240,14 @@ def main(arguments):
       basepath, output_root, opts.namespace, schema, description,
       os.path.split(description_filename)[1], os.path.split(opts.schema)[1],
       opts.year)
+
+  # TODO(peilinwang) filter the schema by platform, form_factor, etc.
+  if opts.java:
+    json_to_struct.GenerateClass(basepath, output_root, opts.namespace, schema,
+                                 description,
+                                 os.path.split(description_filename)[1],
+                                 os.path.split(opts.schema)[1], opts.year)
+
 
 if __name__ == '__main__':
   main(sys.argv[1:])
