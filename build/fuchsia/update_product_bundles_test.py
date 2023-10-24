@@ -98,7 +98,9 @@ class TestUpdateProductBundles(unittest.TestCase):
       ])
 
   @mock.patch('common.get_hash_from_sdk', return_value='abc')
-  def testLookupAndDownloadWithAuth(self, get_hash_mock):
+  # Disallow reading sdk_override.
+  @mock.patch('os.path.isfile', return_value=False)
+  def testLookupAndDownloadWithAuth(self, get_hash_mock, isfile_mock):
     try:
       common.get_host_os()
     except:
