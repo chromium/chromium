@@ -6464,6 +6464,11 @@
     "expiry_milestone": 123
   },
   {
+    "name": "private-network-access-permission-prompt",
+    "owners": [ "lyf@chromium.org", "chrome-security-owp-team@google.com" ],
+    "expiry_milestone": 126
+  },
+  {
     "name": "private-network-access-preflight-short-timeout",
     "owners": [ "lyf@chromium.org", "chrome-security-owp-team@google.com" ],
     "expiry_milestone": 124

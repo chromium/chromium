@@ -6548,6 +6548,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          network::features::kPrivateNetworkAccessPreflightShortTimeout)},
 
+    {"private-network-access-permission-prompt",
+     flag_descriptions::kPrivateNetworkAccessPermissionPromptName,
+     flag_descriptions::kPrivateNetworkAccessPermissionPromptDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         network::features::kPrivateNetworkAccessPermissionPrompt)},
+
     {"main-thread-compositing-priority",
      flag_descriptions::kMainThreadCompositingPriorityName,
      flag_descriptions::kMainThreadCompositingPriorityDescription, kOsAll,
