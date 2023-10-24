@@ -108,6 +108,8 @@ class Connection
       base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>;
   using PayloadResponseCallback =
       base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>;
+  using OnDecodingCompleteCallback =
+      base::OnceCallback<void(mojom::QuickStartMessagePtr)>;
 
   // TargetDeviceConnectionBroker::AuthenticatedConnection:
   void RequestWifiCredentials(RequestWifiCredentialsCallback callback) override;
@@ -119,46 +121,40 @@ class Connection
   void WaitForUserVerification(AwaitUserVerificationCallback callback) override;
   base::Value::Dict GetPrepareForUpdateInfo() override;
 
-  void OnUserVerificationRequested(
+  void DoWaitForUserVerification(size_t attempt_number,
+                                 AwaitUserVerificationCallback callback);
+
+  // Called each time any one of the three user verification packets
+  // (UserVerificationRequested, UserVerificationMethod,
+  // UserVerificationResponse) is decoded. |attempt_number| tracks how many user
+  // verification packets have been decoded, since only three are expected.
+  void OnUserVerificationPacketDecoded(
+      size_t attempt_number,
       AwaitUserVerificationCallback callback,
-      absl::optional<mojom::UserVerificationRequested>
-          user_verification_request);
+      mojom::QuickStartMessagePtr quick_start_message);
 
   void OnNotifySourceOfUpdateResponse(
       NotifySourceOfUpdateCallback callback,
-      absl::optional<std::vector<uint8_t>> response_bytes);
-
-  // Called when the source device's NotifySourceOfUpdateResponse has been
-  // decoded. Either |notify_source_of_update_response| will be non-null and
-  // |error| will be nullopt, or |notify_source_of_update_response| will be null
-  // and |error| will have a value.
-  void HandleNotifySourceOfUpdateResponse(
-      NotifySourceOfUpdateCallback callback,
-      mojom::NotifySourceOfUpdateResponsePtr notify_source_of_update_response,
-      absl::optional<mojom::QuickStartDecoderError> error);
+      mojom::QuickStartMessagePtr quick_start_message);
 
   // Parses a raw AssertionResponse and converts it into a FidoAssertionInfo
   void OnRequestAccountTransferAssertionResponse(
       RequestAccountTransferAssertionCallback callback,
-      absl::optional<std::vector<uint8_t>> response_bytes);
-
-  void GenerateFidoAssertionInfo(
-      RequestAccountTransferAssertionCallback callback,
-      ash::quick_start::mojom::FidoAssertionResponsePtr fido_response,
-      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError> error);
+      mojom::QuickStartMessagePtr quick_start_message);
 
   void OnBootstrapConfigurationsResponse(
       base::OnceClosure callback,
-      absl::optional<std::vector<uint8_t>> response_bytes);
+      mojom::QuickStartMessagePtr quick_start_message);
 
-  void ParseBootstrapConfigurationsResponse(
-      base::OnceClosure callback,
-      absl::optional<mojom::BootstrapConfigurations> bootstrap_configurations);
-
-  void SendMessageAndReadResponse(
+  void SendMessageAndDecodeResponse(
       std::unique_ptr<QuickStartMessage> message,
       QuickStartResponseType response_type,
-      ConnectionResponseCallback callback,
+      OnDecodingCompleteCallback callback,
+      base::TimeDelta timeout = kDefaultRoundTripTimeout);
+  void SendMessageAndDiscardResponse(
+      std::unique_ptr<QuickStartMessage> message,
+      QuickStartResponseType response_type,
+      base::OnceClosure callback,
       base::TimeDelta timeout = kDefaultRoundTripTimeout);
   void SendBytesAndReadResponse(
       std::vector<uint8_t>&& bytes,
@@ -178,39 +174,11 @@ class Connection
                           QuickStartResponseType response_type,
                           absl::optional<std::vector<uint8_t>> response_bytes);
 
-  template <typename T>
-  using DecoderResponseCallback =
-      base::OnceCallback<void(mojo::InlinedStructPtr<T>,
-                              absl::optional<mojom::QuickStartDecoderError>)>;
-
-  template <typename T>
-  using DecoderMethod = void (mojom::QuickStartDecoder::*)(
-      const absl::optional<std::vector<uint8_t>>&,
-      DecoderResponseCallback<T>);
-
-  template <typename T>
-  using OnDecodingCompleteCallback =
-      base::OnceCallback<void(absl::optional<T>)>;
-
   // Generic method to decode data using QuickStartDecoder. If a decoding error
-  // occurs, return empty data. On success, on_success will be called
-  // with the decoded data.
-  template <typename T>
-  void DecodeData(DecoderMethod<T> decoder_method,
-                  OnDecodingCompleteCallback<T> on_decoding_complete,
-                  absl::optional<std::vector<uint8_t>> data);
-
-  template <typename T>
-  using OnDecodingSuccessCallback = base::OnceCallback<void(T)>;
-
-  // Decode data using QuickStartDecoder, allowing a separate callback for
-  // success and failure. Used to decode messages that could be one of several
-  // different types by trying each type in succession.
-  template <typename T>
-  void TryDecodeData(DecoderMethod<T> decoder_method,
-                     OnDecodingSuccessCallback<T> on_decoding_success,
-                     ConnectionResponseCallback on_decoding_failed,
-                     absl::optional<std::vector<uint8_t>> data);
+  // occurs, return invoke |on_decoding_complete| with nullptr. On success,
+  // |on_decoding_complete| will be called with the decoded data.
+  void DecodeQuickStartMessage(OnDecodingCompleteCallback on_decoding_complete,
+                               absl::optional<std::vector<uint8_t>> data);
 
   base::OneShotTimer response_timeout_timer_;
   raw_ptr<NearbyConnection, ExperimentalAsh> nearby_connection_;
