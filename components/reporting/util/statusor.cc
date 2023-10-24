@@ -11,16 +11,16 @@ namespace reporting {
 namespace internal {
 
 // static
-const Status& StatusOrHelper::NotInitializedStatus() {
-  static base::NoDestructor<Status> status_not_initialized(error::UNKNOWN,
-                                                           "Not initialized");
+const base::unexpected<Status>& StatusOrHelper::NotInitializedStatus() {
+  static base::NoDestructor<base::unexpected<Status>> status_not_initialized(
+      Status(error::UNKNOWN, "Not initialized"));
   return *status_not_initialized;
 }
 
 // static
-const Status& StatusOrHelper::MovedOutStatus() {
-  static base::NoDestructor<Status> status_moved_out(error::UNKNOWN,
-                                                     "Value moved out");
+const base::unexpected<Status>& StatusOrHelper::MovedOutStatus() {
+  static base::NoDestructor<base::unexpected<Status>> status_moved_out(
+      Status(error::UNKNOWN, "Value moved out"));
   return *status_moved_out;
 }
 
