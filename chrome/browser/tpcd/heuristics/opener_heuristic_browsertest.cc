@@ -107,18 +107,23 @@ class OpenerHeuristicBrowserTest : public PlatformBrowserTest {
  public:
   explicit OpenerHeuristicBrowserTest(
       bool current_interaction_grant_enabled = false,
-      bool past_interaction_grant_enabled = false) {
+      bool past_interaction_grant_enabled = false,
+      bool backfill_grant_enabled = false) {
     std::string current_interaction_grant_enabled_ttl =
-        current_interaction_grant_enabled ? "10s" : "0s";
+        current_interaction_grant_enabled ? "20m" : "0s";
     std::string past_interaction_grant_enabled_ttl =
-        past_interaction_grant_enabled ? "10s" : "0s";
+        past_interaction_grant_enabled ? "20m" : "0s";
+    std::string backfill_grant_enabled_lookback =
+        backfill_grant_enabled ? "10m" : "0m";
     feature_list_.InitAndEnableFeatureWithParameters(
         content_settings::features::kTpcdHeuristicsGrants,
         {{"TpcdReadHeuristicsGrants", "true"},
          {"TpcdWritePopupCurrentInteractionHeuristicsGrants",
           current_interaction_grant_enabled_ttl},
          {"TpcdWritePopupPastInteractionHeuristicsGrants",
-          past_interaction_grant_enabled_ttl}});
+          past_interaction_grant_enabled_ttl},
+         {"TpcdBackfillPopupHeuristicsGrants",
+          backfill_grant_enabled_lookback}});
   }
 
   void SetUp() override {
@@ -137,6 +142,7 @@ class OpenerHeuristicBrowserTest : public PlatformBrowserTest {
     host_resolver()->AddRule("b.test", "127.0.0.1");
     host_resolver()->AddRule("sub.b.test", "127.0.0.1");
     host_resolver()->AddRule("c.test", "127.0.0.1");
+    host_resolver()->AddRule("d.test", "127.0.0.1");
     host_resolver()->AddRule("google.com", "127.0.0.1");
     DIPSService::Get(GetActiveWebContents()->GetBrowserContext())
         ->SetStorageClockForTesting(&clock_);
@@ -339,7 +345,8 @@ class OpenerHeuristicPastInteractionGrantBrowserTest
   OpenerHeuristicPastInteractionGrantBrowserTest()
       : OpenerHeuristicBrowserTest(
             /*current_interaction_grant_enabled=*/false,
-            /*past_interaction_grant_enabled=*/GetParam()) {}
+            /*past_interaction_grant_enabled=*/GetParam(),
+            /*backfill_grant_enabled=*/false) {}
 
   void SetUpOnMainThread() override {
     OpenerHeuristicBrowserTest::SetUpOnMainThread();
@@ -372,7 +379,7 @@ IN_PROC_BROWSER_TEST_P(OpenerHeuristicPastInteractionGrantBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          OpenerHeuristicPastInteractionGrantBrowserTest,
-                         ::testing::Values(true, false));
+                         ::testing::Values(false, true));
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // TODO(crbug.com/1457925): Test is flaky on Android.
@@ -577,7 +584,8 @@ class OpenerHeuristicCurrentInteractionGrantBrowserTest
   OpenerHeuristicCurrentInteractionGrantBrowserTest()
       : OpenerHeuristicBrowserTest(
             /*current_interaction_grant_enabled=*/GetParam(),
-            /*past_interaction_grant_enabled=*/false) {}
+            /*past_interaction_grant_enabled=*/false,
+            /*backfill_grant_enabled=*/false) {}
 
   void SetUpOnMainThread() override {
     OpenerHeuristicBrowserTest::SetUpOnMainThread();
@@ -611,7 +619,7 @@ IN_PROC_BROWSER_TEST_P(OpenerHeuristicCurrentInteractionGrantBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          OpenerHeuristicCurrentInteractionGrantBrowserTest,
-                         ::testing::Values(true, false));
+                         ::testing::Values(false, true));
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
@@ -993,3 +1001,105 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest, TopLevel_PopupId) {
   EXPECT_NE(popup_id2, 0);
   EXPECT_NE(popup_id, popup_id2);
 }
+
+// chrome/browser/ui/browser.h (for changing profile prefs) is not available on
+// Android.
+#if !BUILDFLAG(IS_ANDROID)
+class OpenerHeuristicBackfillGrantBrowserTest
+    : public OpenerHeuristicBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  OpenerHeuristicBackfillGrantBrowserTest()
+      : OpenerHeuristicBrowserTest(
+            /*current_interaction_grant_enabled=*/false,
+            /*past_interaction_grant_enabled=*/false,
+            /*backfill_grant_enabled=*/GetParam()) {}
+
+  void SetUpOnMainThread() override {
+    OpenerHeuristicBrowserTest::SetUpOnMainThread();
+
+    clock_.SetNow(base::Time::Now());
+
+    browser()->profile()->GetPrefs()->SetInteger(
+        prefs::kCookieControlsMode,
+        static_cast<int>(
+            content_settings::CookieControlsMode::kBlockThirdParty));
+  }
+};
+
+// Test the backfill grants created by DIPSService when tracking protection is
+// onboarded. This logic is located in DIPSService in order to run as a
+// singleton, rather than once per tab.
+IN_PROC_BROWSER_TEST_P(OpenerHeuristicBackfillGrantBrowserTest,
+                       TrackingProtectionOnboardingCreatesBackfillGrants) {
+  GURL opener_url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  GURL popup_url_1 = embedded_test_server()->GetURL("b.test", "/title1.html");
+  GURL popup_url_2 = embedded_test_server()->GetURL("c.test", "/title1.html");
+  GURL popup_url_3 = embedded_test_server()->GetURL("d.test", "/title1.html");
+
+  // popup_url_1 was opened further back than the backfill lookback period of 10
+  // minutes.
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), opener_url));
+  auto maybe_popup = OpenPopup(popup_url_1);
+  clock_.Advance(base::Minutes(1));
+  SimulateMouseClick(*maybe_popup);
+
+  clock_.Advance(base::Minutes(10));
+
+  // popup_url_2 was opened with a past interaction, not a current interaction.
+  RecordInteraction(popup_url_2, clock_.Now() - base::Hours(3));
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), opener_url));
+  ASSERT_TRUE(OpenPopup(popup_url_2).has_value());
+
+  // Only popup_url_3 is eligible for a backfill grant.
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), opener_url));
+  maybe_popup = OpenPopup(popup_url_3);
+  clock_.Advance(base::Minutes(1));
+  SimulateMouseClick(*maybe_popup);
+
+  // The pref is updated when the user in onboarded to 3PCD tracking protection,
+  // and a PrefChangeRegistrar updates the TrackingProtectionSettingsObservers.
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kTrackingProtection3pcdEnabled, true);
+  GetDipsService()->storage()->FlushPostedTasksForTesting();
+
+  // Expect that a cookie access grant is not backfilled for popup_url_1 or
+  // popup_url_2.
+  auto cookie_settings = CookieSettingsFactory::GetForProfile(
+      Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext()));
+  EXPECT_EQ(
+      cookie_settings->GetCookieSetting(popup_url_1, opener_url,
+                                        net::CookieSettingOverrides(), nullptr),
+      CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(
+      cookie_settings->GetCookieSetting(popup_url_2, opener_url,
+                                        net::CookieSettingOverrides(), nullptr),
+      CONTENT_SETTING_BLOCK);
+
+  // Expect that a cookie access grant is backfilled for popup_url_3 when the
+  // experiment is enabled.
+  EXPECT_EQ(
+      cookie_settings->GetCookieSetting(popup_url_3, opener_url,
+                                        net::CookieSettingOverrides(), nullptr),
+      GetParam() ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
+
+  // Expect that the cookie access grant applies to other URLs with the same
+  // eTLD+1.
+  GURL popup_url_3a =
+      embedded_test_server()->GetURL("www.d.test", "/favicon.png");
+  EXPECT_EQ(
+      cookie_settings->GetCookieSetting(popup_url_3a, opener_url,
+                                        net::CookieSettingOverrides(), nullptr),
+      GetParam() ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
+  GURL popup_url_3b =
+      embedded_test_server()->GetURL("corp.d.test", "/title.html");
+  EXPECT_EQ(
+      cookie_settings->GetCookieSetting(popup_url_3b, opener_url,
+                                        net::CookieSettingOverrides(), nullptr),
+      GetParam() ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OpenerHeuristicBackfillGrantBrowserTest,
+                         ::testing::Values(false, true));
+#endif  // !BUILDFLAG(IS_ANDROID)

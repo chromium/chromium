@@ -30,6 +30,11 @@ extern const base::FeatureParam<base::TimeDelta>
 extern const base::FeatureParam<base::TimeDelta>
     kTpcdWritePopupPastInteractionHeuristicsGrants;
 
+// Whether to backfill popup heuristics grants for recent popups with a current
+// interaction, when a user is onboarded to 3PCD.
+extern const base::FeatureParam<base::TimeDelta>
+    kTpcdBackfillPopupHeuristicsGrants;
+
 }  // namespace tpcd::experiment
 
 #endif  // CHROME_BROWSER_TPCD_EXPERIMENT_TPCD_EXPERIMENT_FEATURES_H_

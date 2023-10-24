@@ -150,6 +150,12 @@ struct PopupsStateValue {
   bool is_current_interaction;
 };
 
+struct PopupWithTime {
+  std::string opener_site;
+  std::string popup_site;
+  base::Time last_popup_time;
+};
+
 inline bool operator==(const StateValue& lhs, const StateValue& rhs) {
   return std::tie(lhs.site_storage_times, lhs.user_interaction_times,
                   lhs.stateful_bounce_times, lhs.bounce_times,

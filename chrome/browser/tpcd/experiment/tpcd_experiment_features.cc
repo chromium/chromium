@@ -50,4 +50,8 @@ const base::FeatureParam<base::TimeDelta>
         /*name=*/"TpcdWritePopupPastInteractionHeuristicsGrants",
         base::TimeDelta()};
 
+const base::FeatureParam<base::TimeDelta> kTpcdBackfillPopupHeuristicsGrants{
+    &content_settings::features::kTpcdHeuristicsGrants,
+    /*name=*/"TpcdBackfillPopupHeuristicsGrants", base::TimeDelta()};
+
 }  // namespace tpcd::experiment

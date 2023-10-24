@@ -117,7 +117,19 @@ bool CookieSettings::IsAllowedByTpcdMetadataGrant(
 void CookieSettings::SetTemporaryCookieGrantForHeuristic(
     const GURL& url,
     const GURL& first_party_url,
-    const base::TimeDelta& ttl) {
+    base::TimeDelta ttl) {
+  // If the new grant has an earlier TTL than the existing setting, keep the
+  // existing TTL.
+  SettingInfo info;
+  ContentSetting current_setting =
+      host_content_settings_map_->GetContentSetting(
+          url, first_party_url, ContentSettingsType::TPCD_HEURISTICS_GRANTS,
+          &info);
+  if (IsAllowed(current_setting) && !info.metadata.expiration().is_null() &&
+      info.metadata.expiration() > base::Time::Now() + ttl) {
+    return;
+  }
+
   ContentSettingConstraints constraints;
   constraints.set_lifetime(ttl);
 
