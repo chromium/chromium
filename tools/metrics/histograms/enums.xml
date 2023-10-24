@@ -55407,14 +55407,6 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
       label="Secure download initiated by insecure non-unique source"/>
 </enum>
 
-<enum name="InsignificantPlaybackReason">
-  <int value="0" label="Frame size too small"/>
-  <int value="1" label="Audio muted"/>
-  <int value="2" label="Media is paused"/>
-  <int value="3" label="No audio track"/>
-  <int value="4" label="Number of events"/>
-</enum>
-
 <enum name="InspectionResultsCacheReadResult">
   <int value="0" label="Success"/>
   <int value="1" label="Failed to read the file"/>

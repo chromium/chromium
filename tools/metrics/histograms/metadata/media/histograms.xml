@@ -3310,68 +3310,6 @@ chromium-metrics-reviews@google.com.
   <token key="EmeApi" variants="EmeApi"/>
 </histogram>
 
-<histogram name="Media.Engagement.ScoreAtPlayback" units="%"
-    expires_after="M82">
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    The media engagement score recorded at the time of playback. It is converted
-    to a percentage so should be divided by 100 to get the actual score. It is
-    only recorded for playback that is either lacking an audio track or not
-    muted.
-  </summary>
-</histogram>
-
-<histogram
-    name="Media.Engagement.SignificantPlayers.PlayerNotAdded.AfterFirstTime"
-    enum="InsignificantPlaybackReason" expires_after="M82">
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Recorded when the Media Engagement service doesn't determine a player to be
-    significant. If a player is not significant the reasons why will be
-    individually recorded to this histogram each time except for the first time
-    which is recorded to a different histogram.
-
-    The significant state of a player is reevaluated any time the state of the
-    player changes (e.g. muted, playing/paused). If the player was not
-    considered signficiant and still is not then we will record the reasons why
-    in this histogram.
-  </summary>
-</histogram>
-
-<histogram name="Media.Engagement.SignificantPlayers.PlayerNotAdded.FirstTime"
-    enum="InsignificantPlaybackReason" expires_after="M82">
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Recorded when the Media Engagement service doesn't determine a player to be
-    significant. If a player is not significant the reasons why will be
-    individually recorded to this histogram the first time only.
-
-    The significant state of a player is reevaluated any time the state of the
-    player changes (e.g. muted, playing/paused). If the player was not
-    considered signficiant and still is not then we will record the reasons why
-    in this histogram.
-  </summary>
-</histogram>
-
-<histogram name="Media.Engagement.SignificantPlayers.PlayerRemoved"
-    enum="InsignificantPlaybackReason" expires_after="M77">
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Recorded when the Media Engagement service no longer determines a player to
-    be significant. If a player is no longer significant, the reasons why will
-    be individually recorded to this histogram.
-
-    The significant state of a player is re-evaluted any time the state of the
-    player changes (e.g. muted, playing/paused). If the player was previously
-    considered significant and is no longer considered that we will record the
-    reasons why in this histogram.
-  </summary>
-</histogram>
-
 <histogram name="Media.FallbackToHighLatencyAudioPath"
     enum="BooleanDidFallBack" expires_after="never">
 <!-- expires-never: Media pipeline health metric. -->
