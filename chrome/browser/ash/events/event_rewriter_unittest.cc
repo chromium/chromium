@@ -44,6 +44,7 @@
 #include "ui/events/ash/event_rewriter_ash.h"
 #include "ui/events/ash/event_rewriter_metrics.h"
 #include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/ash/keyboard_device_id_event_rewriter.h"
 #include "ui/events/ash/mojom/extended_fkeys_modifier.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom.h"
@@ -260,15 +261,20 @@ class EventRewriterTest : public ChromeAshTestBase {
         input_device_settings_controller_mock_.get());
     delegate_->set_pref_service_for_testing(prefs());
     device_data_manager_test_api_.SetKeyboardDevices({});
-    rewriter_ = std::make_unique<ui::EventRewriterAsh>(
+    keyboard_device_id_event_rewriter_ =
+        std::make_unique<ui::KeyboardDeviceIdEventRewriter>(
+            keyboard_capability_.get());
+    event_rewriter_ash_ = std::make_unique<ui::EventRewriterAsh>(
         delegate_.get(), keyboard_capability_.get(), nullptr, false,
         &fake_ime_keyboard_);
 
-    source_.AddEventRewriter(rewriter_.get());
+    source_.AddEventRewriter(keyboard_device_id_event_rewriter_.get());
+    source_.AddEventRewriter(event_rewriter_ash_.get());
   }
 
   void TearDown() override {
-    source_.RemoveEventRewriter(rewriter_.get());
+    source_.RemoveEventRewriter(event_rewriter_ash_.get());
+    source_.RemoveEventRewriter(keyboard_device_id_event_rewriter_.get());
 
     input_device_settings_controller_mock_.reset();
     input_device_settings_controller_resetter_.reset();
@@ -290,7 +296,7 @@ class EventRewriterTest : public ChromeAshTestBase {
 
   ui::MouseEvent RewriteMouseButtonEvent(const ui::MouseEvent& event) {
     TestEventRewriterContinuation continuation;
-    rewriter_->RewriteMouseButtonEventForTesting(
+    event_rewriter_ash_->RewriteMouseButtonEventForTesting(
         event, continuation.weak_ptr_factory_.GetWeakPtr());
     if (!continuation.rewritten_events.empty())
       return ui::MouseEvent(*continuation.rewritten_events[0]->AsMouseEvent());
@@ -356,8 +362,9 @@ class EventRewriterTest : public ChromeAshTestBase {
     device_data_manager_test_api_.SetKeyboardDevices({keyboard});
 
     // Reset the state of the EventRewriter.
-    rewriter_->ResetStateForTesting();
-    rewriter_->set_last_keyboard_device_id_for_testing(kKeyboardDeviceId);
+    event_rewriter_ash_->ResetStateForTesting();
+    event_rewriter_ash_->set_last_keyboard_device_id_for_testing(
+        kKeyboardDeviceId);
 
     return keyboard;
   }
@@ -466,7 +473,9 @@ class EventRewriterTest : public ChromeAshTestBase {
   std::unique_ptr<EventRewriterDelegateImpl> delegate_;
   std::unique_ptr<ui::KeyboardCapability> keyboard_capability_;
   input_method::FakeImeKeyboard fake_ime_keyboard_;
-  std::unique_ptr<ui::EventRewriterAsh> rewriter_;
+  std::unique_ptr<ui::KeyboardDeviceIdEventRewriter>
+      keyboard_device_id_event_rewriter_;
+  std::unique_ptr<ui::EventRewriterAsh> event_rewriter_ash_;
   TestEventSink sink_;
   ui::test::TestEventSource source_{&sink_};
   message_center::FakeMessageCenter message_center_;
@@ -3650,13 +3659,13 @@ TEST_F(EventRewriterTest, TestRewriteFunctionKeysWilcoLayouts) {
   SetupKeyboard("Drallion Keyboard", kKbdTopRowLayoutDrallionTag);
 
   // Run key tests using Drallion keyboard layout (no privacy screen)
-  rewriter_->set_privacy_screen_for_testing(false);
+  event_rewriter_ash_->set_privacy_screen_for_testing(false);
   for (const auto& test : wilco_standard_tests)
     CheckKeyTestCase(source(), test);
   CheckKeyTestCase(source(), drallion_test_no_privacy_screen);
 
   // Run key tests using Drallion keyboard layout (privacy screen supported)
-  rewriter_->set_privacy_screen_for_testing(true);
+  event_rewriter_ash_->set_privacy_screen_for_testing(true);
   for (const auto& test : wilco_standard_tests)
     CheckKeyTestCase(source(), test);
   CheckKeyTestCase(source(), drallion_test_privacy_screen);
@@ -3848,12 +3857,12 @@ TEST_F(EventRewriterTest, TestRewriteActionKeysWilcoLayouts) {
     CheckKeyTestCase(source(), test);
 
   // Drallion specific key tests (no privacy screen)
-  rewriter_->set_privacy_screen_for_testing(false);
+  event_rewriter_ash_->set_privacy_screen_for_testing(false);
   for (const auto& test : drallion_tests_no_privacy_screen)
     CheckKeyTestCase(source(), test);
 
   // Drallion specific key tests (privacy screen supported)
-  rewriter_->set_privacy_screen_for_testing(true);
+  event_rewriter_ash_->set_privacy_screen_for_testing(true);
   for (const auto& test : drallion_tests_privacy_screen)
     CheckKeyTestCase(source(), test);
 }
@@ -3982,13 +3991,13 @@ TEST_F(EventRewriterTest,
   }
 
   // Drallion specific key tests (no privacy screen)
-  rewriter_->set_privacy_screen_for_testing(false);
+  event_rewriter_ash_->set_privacy_screen_for_testing(false);
   for (const auto& test : drallion_tests_no_privacy_screen) {
     CheckKeyTestCase(source(), test);
   }
 
   // Drallion specific key tests (privacy screen supported)
-  rewriter_->set_privacy_screen_for_testing(true);
+  event_rewriter_ash_->set_privacy_screen_for_testing(true);
   for (const auto& test : drallion_tests_privacy_screen) {
     CheckKeyTestCase(source(), test);
   }
@@ -4105,13 +4114,13 @@ TEST_F(
   }
 
   // Drallion specific key tests (no privacy screen)
-  rewriter_->set_privacy_screen_for_testing(false);
+  event_rewriter_ash_->set_privacy_screen_for_testing(false);
   for (const auto& test : drallion_tests_no_privacy_screen) {
     CheckKeyTestCase(source(), test);
   }
 
   // Drallion specific key tests (privacy screen supported)
-  rewriter_->set_privacy_screen_for_testing(true);
+  event_rewriter_ash_->set_privacy_screen_for_testing(true);
   for (const auto& test : drallion_tests_privacy_screen) {
     CheckKeyTestCase(source(), test);
   }
@@ -4299,12 +4308,12 @@ TEST_F(EventRewriterTest, TestTopRowAsFnKeysForKeyboardWilcoLayouts) {
     CheckKeyTestCase(source(), test);
 
   // Drallion specific key tests (no privacy screen)
-  rewriter_->set_privacy_screen_for_testing(false);
+  event_rewriter_ash_->set_privacy_screen_for_testing(false);
   for (const auto& test : drallion_tests_no_privacy_screen)
     CheckKeyTestCase(source(), test);
 
   // Drallion specific key tests (privacy screen supported)
-  rewriter_->set_privacy_screen_for_testing(true);
+  event_rewriter_ash_->set_privacy_screen_for_testing(true);
   for (const auto& test : drallion_tests_privacy_screen)
     CheckKeyTestCase(source(), test);
 }
