@@ -35,6 +35,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/link_to_text/model",
     "//ios/chrome/browser/link_to_text/model:internal",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/browser_container:edit_menu_alert_delegate",

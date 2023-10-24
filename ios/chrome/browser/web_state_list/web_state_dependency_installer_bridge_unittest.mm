@@ -6,8 +6,8 @@
 
 #import <memory>
 
+#import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest_mac.h"
@@ -30,15 +30,14 @@
 }
 @end
 
-class WebStateDependencyInstallerBridgeTest : public PlatformTest,
-                                              public WebStateListDelegate {
+class WebStateDependencyInstallerBridgeTest : public PlatformTest {
  public:
   WebStateDependencyInstallerBridgeTest()
-      : web_state_list_(this), installer_([[TestInstaller alloc] init]) {}
-  // WebStateListDelegate.
-  void WillAddWebState(web::WebState* web_state) override {}
+      : web_state_list_(&web_state_list_delegate_),
+        installer_([[TestInstaller alloc] init]) {}
 
  protected:
+  FakeWebStateListDelegate web_state_list_delegate_;
   WebStateList web_state_list_;
   TestInstaller* installer_;
 };

@@ -7,8 +7,8 @@
 #import <memory>
 #import <set>
 
+#import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest_mac.h"
@@ -47,15 +47,13 @@ class FakeDependencyInstaller : public DependencyInstaller {
   std::set<web::WebState*> uninstalled_;
 };
 
-class WebStateDependencyInstallationObserverTest : public PlatformTest,
-                                                   public WebStateListDelegate {
+class WebStateDependencyInstallationObserverTest : public PlatformTest {
  public:
-  WebStateDependencyInstallationObserverTest() : web_state_list_(this) {}
-
-  // WebStateListDelegate.
-  void WillAddWebState(web::WebState* web_state) override {}
+  WebStateDependencyInstallationObserverTest()
+      : web_state_list_(&web_state_list_delegate_) {}
 
  protected:
+  FakeWebStateListDelegate web_state_list_delegate_;
   WebStateList web_state_list_;
   FakeDependencyInstaller installer_;
 };
