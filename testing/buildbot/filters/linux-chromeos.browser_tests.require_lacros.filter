@@ -38,6 +38,8 @@ TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 -DesksTemplatesClientLacrosTest.SystemUILaunchBrowser
 # TODO(b/277821091) Flaky
 -ChromeVoxEditingTest.GiantTextAreaPerformance
+# TODO(crbug.com/1478586): Flaky.
+-AutoclickWithAccessibilityServiceTest.ScrollableBoundsPlumbing
 # TODO(accessibility): these are native C++ tests that need investigation.
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.LandmarkNavigation*
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.NavigateChromeVoxMenu*

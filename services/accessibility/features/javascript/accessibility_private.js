@@ -2,6 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * One AutoclickObserver is created the first time
+ * chrome.accessibilityPrivate.onScrollableBoundsForPointRequested is
+ * called. This allows the browser to send events to
+ * accessibility service JS.
+ * @implements {ax.mojom.AutoclickInterface}
+ */
+class AutoclickObserver {
+  constructor(pendingReceiver, callback) {
+    this.receiver_ = new ax.mojom.AutoclickReceiver(this);
+    this.receiver_.$.bindHandle(pendingReceiver.handle);
+    this.callback_ = callback;
+  }
+
+  /** @override */
+  requestScrollableBoundsForPoint(point) {
+    if (this.callback_) {
+      this.callback_(point);
+    }
+  }
+}
 
 // Massages some mojo interfaces into the chrome.accessibilityPrivate extension
 // API surface used by a11y component extensions.
@@ -40,8 +61,61 @@ class AtpAccessibilityPrivate {
   constructor() {
     // This is a singleton.
     console.assert(!chrome.accessibilityPrivate);
-    const UserInterfaceApi = ax.mojom.UserInterface;
-    this.userInterfaceRemote_ = UserInterfaceApi.getRemote();
+
+    // Create AccessibilityPrivate's ChromeEvents.
+
+    /** @public {ChromeEvent} */
+    this.onScrollableBoundsForPointRequested = new ChromeEvent(() => {
+      // Construct remote and Autoclick receiver on-demand.
+      // This way other users of AccessibilityPrivate that do not need
+      // Autoclick do not need to try to access ax.mojom.Autoclick*,
+      // meaning we do not need to import the generated JS mojom bindings
+      // when they are not used.
+      if (!this.autoclickRemote_) {
+        this.autoclickRemote_ = ax.mojom.AutoclickClient.getRemote();
+        this.autoclickRemote_.bindAutoclick().then(bindAutoclickResult => {
+          if (!bindAutoclickResult.autoclickReceiver) {
+            console.error('autoclickReceiver was unexpectedly missing');
+            return;
+          }
+          const autoclickObserver = new AutoclickObserver(
+              bindAutoclickResult.autoclickReceiver, (point) => {
+                this.onScrollableBoundsForPointRequested.callListeners(point);
+              });
+        });
+      }
+    });
+
+    // Private members.
+
+    this.userInterfaceRemote_ = null;
+    this.autoclickRemote_ = null;
+  }
+
+  /**
+   * Load user interface remote on-demand. Not every consumer of
+   * AccessibilityPrivate will need this; this way we don't need
+   * to load the generated JS bindings for UserInterface for
+   * every consumer.
+   * @return {!ax.mojom.UserInterfaceRemote}
+   */
+  getUserInterfaceRemote_() {
+    if (!this.userInterfaceRemote_) {
+      this.userInterfaceRemote_ = ax.mojom.UserInterface.getRemote();
+    }
+    return this.userInterfaceRemote_;
+  }
+
+  /**
+   * Called by Autoclick JS when onScrollableBoundsForPointRequested has found a
+   * scrolling container. `rect` will be the bounds of the nearest scrollable
+   * ancestor of the node at the point requested using
+   * onScrollableBoundsForPointRequested.
+   * @param {chrome.accessibilityPrivate.ScreenRect} rect
+   */
+  handleScrollableBoundsForPointFound(rect) {
+    this.autoclickRemote_.handleScrollableBoundsForPointFound(
+        AtpAccessibilityPrivate.convertRectToMojom_(rect));
   }
 
   /**
@@ -49,7 +123,7 @@ class AtpAccessibilityPrivate {
    * @param {boolean} darken
    */
   darkenScreen(darken) {
-    this.userInterfaceRemote_.darkenScreen(darken);
+    this.getUserInterfaceRemote_().darkenScreen(darken);
   }
 
   /**
@@ -59,7 +133,7 @@ class AtpAccessibilityPrivate {
    * @param {string} subpage
    */
   openSettingsSubpage(subpage) {
-    this.userInterfaceRemote_.openSettingsSubpage(subpage);
+    this.getUserInterfaceRemote_().openSettingsSubpage(subpage);
   }
 
   /**
@@ -151,7 +225,7 @@ class AtpAccessibilityPrivate {
       }
       mojomFocusRings.push(mojomFocusRing)
     }
-    this.userInterfaceRemote_.setFocusRings(mojomFocusRings, mojomAtType);
+    this.getUserInterfaceRemote_().setFocusRings(mojomFocusRings, mojomAtType);
   }
 
   /**
@@ -162,7 +236,7 @@ class AtpAccessibilityPrivate {
   setHighlights(rects, color) {
     const mojomColor = AtpAccessibilityPrivate.convertColorToMojom_(color);
     const mojomRects = AtpAccessibilityPrivate.convertRectsToMojom_(rects);
-    this.userInterfaceRemote_.setHighlights(mojomRects, mojomColor);
+    this.getUserInterfaceRemote_().setHighlights(mojomRects, mojomColor);
   }
 
   /**
@@ -170,7 +244,7 @@ class AtpAccessibilityPrivate {
    * @param {boolean} is_visible
    */
   setVirtualKeyboardVisible(is_visible) {
-    this.userInterfaceRemote_.setVirtualKeyboardVisible(is_visible);
+    this.getUserInterfaceRemote_().setVirtualKeyboardVisible(is_visible);
   }
 
   /**
@@ -182,14 +256,24 @@ class AtpAccessibilityPrivate {
   static convertRectsToMojom_(rects) {
     let mojomRects = [];
     for (const rect of rects) {
-      let mojomRect = new gfx.mojom.Rect();
-      mojomRect.x = rect.left;
-      mojomRect.y = rect.top;
-      mojomRect.width = rect.width;
-      mojomRect.height = rect.height;
-      mojomRects.push(mojomRect);
+      mojomRects.push(AtpAccessibilityPrivate.convertRectToMojom_(rect));
     }
     return mojomRects;
+  }
+
+  /**
+   * Convert an accessibilityPrivate.ScreenRect to gfx.mojom.Rect.
+   * @param {chrome.accessibilityPrivate.ScreenRect} rect
+   * @return {gfx.mojom.Rect}
+   * @private
+   */
+  static convertRectToMojom_(rect) {
+    let mojomRect = new gfx.mojom.Rect();
+    mojomRect.x = rect.left;
+    mojomRect.y = rect.top;
+    mojomRect.width = rect.width;
+    mojomRect.height = rect.height;
+    return mojomRect;
   }
 
   /**

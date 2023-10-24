@@ -25,6 +25,11 @@ void FakeServiceClient::BindAutomation(
 }
 
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
+void FakeServiceClient::BindAutoclickClient(
+    mojo::PendingReceiver<ax::mojom::AutoclickClient>
+        autoclick_client_reciever) {
+  autoclick_client_recievers_.Add(this, std::move(autoclick_client_reciever));
+}
 void FakeServiceClient::BindSpeechRecognition(
     mojo::PendingReceiver<ax::mojom::SpeechRecognition> sr_receiver) {
   sr_receivers_.Add(this, std::move(sr_receiver));
@@ -38,6 +43,17 @@ void FakeServiceClient::BindTts(
 void FakeServiceClient::BindUserInterface(
     mojo::PendingReceiver<mojom::UserInterface> ux_receiver) {
   ux_receivers_.Add(this, std::move(ux_receiver));
+}
+
+void FakeServiceClient::HandleScrollableBoundsForPointFound(
+    const gfx::Rect& bounds) {
+  if (scrollable_bounds_for_point_callback_) {
+    scrollable_bounds_for_point_callback_.Run(bounds);
+  }
+}
+
+void FakeServiceClient::BindAutoclick(BindAutoclickCallback callback) {
+  std::move(callback).Run(autoclick_remote_.BindNewPipeAndPassReceiver());
 }
 
 void FakeServiceClient::Start(ax::mojom::StartOptionsPtr options,
@@ -192,6 +208,16 @@ bool FakeServiceClient::AutomationIsBound() const {
 }
 
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
+void FakeServiceClient::RequestScrollableBoundsForPoint(
+    const gfx::Point& point) {
+  autoclick_remote_->RequestScrollableBoundsForPoint(point);
+}
+
+void FakeServiceClient::SetScrollableBoundsForPointFoundCallback(
+    base::RepeatingCallback<void(const gfx::Rect&)> callback) {
+  scrollable_bounds_for_point_callback_ = std::move(callback);
+}
+
 void FakeServiceClient::SetSpeechRecognitionStartCallback(
     base::RepeatingCallback<void()> callback) {
   speech_recognition_start_callback_ = std::move(callback);

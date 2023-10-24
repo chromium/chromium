@@ -58,6 +58,8 @@ source_set("ash") {
     "accessibility/service/accessibility_service_client.h",
     "accessibility/service/accessibility_service_devtools_delegate.cc",
     "accessibility/service/accessibility_service_devtools_delegate.h",
+    "accessibility/service/autoclick_client_impl.cc",
+    "accessibility/service/autoclick_client_impl.h",
     "accessibility/service/automation_client_impl.cc",
     "accessibility/service/automation_client_impl.h",
     "accessibility/service/speech_recognition_impl.cc",

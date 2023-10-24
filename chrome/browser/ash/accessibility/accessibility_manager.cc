@@ -901,6 +901,12 @@ void AccessibilityManager::RequestAutoclickScrollableBoundsForPoint(
   if (!profile_)
     return;
 
+  if (::features::IsAccessibilityServiceEnabled()) {
+    accessibility_service_client_->RequestScrollableBoundsForPoint(
+        point_in_screen);
+    return;
+  }
+
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(profile_);
   auto event_args = extensions::api::accessibility_private::

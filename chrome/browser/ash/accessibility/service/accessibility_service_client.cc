@@ -19,6 +19,7 @@
 #include "chrome/browser/accessibility/service/accessibility_service_router_factory.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/service/accessibility_service_devtools_delegate.h"
+#include "chrome/browser/ash/accessibility/service/autoclick_client_impl.h"
 #include "chrome/browser/ash/accessibility/service/automation_client_impl.h"
 #include "chrome/browser/ash/accessibility/service/speech_recognition_impl.h"
 #include "chrome/browser/ash/accessibility/service/tts_client_impl.h"
@@ -63,6 +64,11 @@ void AccessibilityServiceClient::BindAutomation(
     mojo::PendingAssociatedRemote<ax::mojom::Automation> automation,
     mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client) {
   automation_client_->Bind(std::move(automation), std::move(automation_client));
+}
+
+void AccessibilityServiceClient::BindAutoclickClient(
+    mojo::PendingReceiver<ax::mojom::AutoclickClient> autoclick_receiver) {
+  autoclick_client_->Bind(std::move(autoclick_receiver));
 }
 
 void AccessibilityServiceClient::BindSpeechRecognition(
@@ -140,8 +146,14 @@ void AccessibilityServiceClient::SetDictationEnabled(bool enabled) {
                             enabled);
 }
 
+void AccessibilityServiceClient::RequestScrollableBoundsForPoint(
+    const gfx::Point& point) {
+  autoclick_client_->RequestScrollableBoundsForPoint(point);
+}
+
 void AccessibilityServiceClient::Reset() {
   at_controller_.reset();
+  autoclick_client_.reset();
   file_loader_.reset();
   automation_client_.reset();
   speech_recognition_impl_.reset();
@@ -206,6 +218,7 @@ void AccessibilityServiceClient::LaunchAccessibilityServiceAndBind() {
     return;
   }
 
+  autoclick_client_ = std::make_unique<AutoclickClientImpl>();
   automation_client_ = std::make_unique<AutomationClientImpl>();
   speech_recognition_impl_ = std::make_unique<SpeechRecognitionImpl>(profile_);
   tts_client_ = std::make_unique<TtsClientImpl>(profile_);

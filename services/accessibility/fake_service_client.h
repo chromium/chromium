@@ -18,6 +18,7 @@
 #include "services/accessibility/public/mojom/automation.mojom.h"
 
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
+#include "services/accessibility/public/mojom/autoclick.mojom.h"
 #include "services/accessibility/public/mojom/file_loader.mojom.h"
 #include "services/accessibility/public/mojom/speech_recognition.mojom.h"
 #include "services/accessibility/public/mojom/tts.mojom.h"
@@ -34,6 +35,7 @@ namespace ax {
 class FakeServiceClient : public mojom::AccessibilityServiceClient,
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
                           public mojom::AccessibilityFileLoader,
+                          public mojom::AutoclickClient,
                           public mojom::SpeechRecognition,
                           public mojom::Tts,
                           public mojom::UserInterface,
@@ -55,11 +57,17 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   void BindAccessibilityFileLoader(
       mojo::PendingReceiver<ax::mojom::AccessibilityFileLoader>
           file_loader_receiver) override;
+  void BindAutoclickClient(mojo::PendingReceiver<ax::mojom::AutoclickClient>
+                               autoclick_client_reciever) override;
   void BindSpeechRecognition(
       mojo::PendingReceiver<ax::mojom::SpeechRecognition> sr_receiver) override;
   void BindTts(mojo::PendingReceiver<ax::mojom::Tts> tts_receiver) override;
   void BindUserInterface(
       mojo::PendingReceiver<ax::mojom::UserInterface> ux_receiver) override;
+
+  // ax::mojom::AutoclickClient:
+  void HandleScrollableBoundsForPointFound(const gfx::Rect& bounds) override;
+  void BindAutoclick(BindAutoclickCallback callback) override;
 
   // ax::mojom::SpeechRecognition:
   void Start(ax::mojom::StartOptionsPtr options,
@@ -96,6 +104,10 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   bool AutomationIsBound() const;
 
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
+  void RequestScrollableBoundsForPoint(const gfx::Point& point);
+  void SetScrollableBoundsForPointFoundCallback(
+      base::RepeatingCallback<void(const gfx::Rect&)> callback);
+
   void SetSpeechRecognitionStartCallback(
       base::RepeatingCallback<void()> callback);
   void SendSpeechRecognitionStopEvent();
@@ -131,6 +143,11 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   mojo::AssociatedRemoteSet<mojom::Automation> automation_remotes_;
   mojo::ReceiverSet<mojom::AutomationClient> automation_client_receivers_;
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
+  mojo::ReceiverSet<ax::mojom::AutoclickClient> autoclick_client_recievers_;
+  mojo::Remote<ax::mojom::Autoclick> autoclick_remote_;
+  base::RepeatingCallback<void(const gfx::Rect&)>
+      scrollable_bounds_for_point_callback_;
+
   mojo::ReceiverSet<mojom::SpeechRecognition> sr_receivers_;
   mojo::Remote<ax::mojom::SpeechRecognitionEventObserver> sr_event_observer_;
   base::RepeatingCallback<void()> speech_recognition_start_callback_;

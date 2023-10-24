@@ -19,6 +19,8 @@ import "services/accessibility/public/mojom/user_interface.mojom";
 import "services/accessibility/public/mojom/assistive_technology_type.mojom";
 [EnableIf=supports_os_accessibility_service]
 import "services/accessibility/public/mojom/file_loader.mojom";
+[EnableIf=supports_os_accessibility_service]
+import "services/accessibility/public/mojom/autoclick.mojom";
 
 // Implemented by the accessibility service. Turns on and off features.
 // The caller is the client OS, for example, Chrome OS Ash.
@@ -76,6 +78,12 @@ interface AccessibilityServiceClient {
   BindAutomation(
     pending_associated_remote<Automation> automation,
     pending_receiver<AutomationClient> automation_client);
+
+  // Binds to a Autoclick client implemented in the main OS process, and
+  // an Autoclick implemented in the service process, called by the service.
+  [EnableIf=supports_os_accessibility_service]
+  BindAutoclickClient(
+      pending_receiver<AutoclickClient> autoclick_client);
 
   // Binds to a Speech Recognition implementation in the main OS process,
   // called by the service.

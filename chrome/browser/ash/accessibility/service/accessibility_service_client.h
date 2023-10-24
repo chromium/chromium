@@ -20,6 +20,7 @@
 #include "services/accessibility/public/mojom/speech_recognition.mojom-forward.h"
 #include "services/accessibility/public/mojom/tts.mojom-forward.h"
 #include "services/accessibility/public/mojom/user_interface.mojom-forward.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace content {
 class BrowserContext;
@@ -27,6 +28,7 @@ class DevToolsAgentHost;
 }
 
 namespace ash {
+class AutoclickClientImpl;
 class AutomationClientImpl;
 class SpeechRecognitionImpl;
 class TtsClientImpl;
@@ -51,6 +53,8 @@ class AccessibilityServiceClient : public ax::mojom::AccessibilityServiceClient,
       mojo::PendingAssociatedRemote<ax::mojom::Automation> automation,
       mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client)
       override;
+  void BindAutoclickClient(mojo::PendingReceiver<ax::mojom::AutoclickClient>
+                               autoclick_receiver) override;
   void BindSpeechRecognition(
       mojo::PendingReceiver<ax::mojom::SpeechRecognition> sr_receiver) override;
   void BindTts(mojo::PendingReceiver<ax::mojom::Tts> tts_receiver) override;
@@ -72,6 +76,9 @@ class AccessibilityServiceClient : public ax::mojom::AccessibilityServiceClient,
   void SetAutoclickEnabled(bool enabled);
   void SetMagnifierEnabled(bool enabled);
   void SetDictationEnabled(bool enabled);
+
+  // Sends information into the accessibility service.
+  void RequestScrollableBoundsForPoint(const gfx::Point& point);
 
  private:
   friend class AccessibilityServiceClientTest;
@@ -102,6 +109,7 @@ class AccessibilityServiceClient : public ax::mojom::AccessibilityServiceClient,
   std::unique_ptr<SpeechRecognitionImpl> speech_recognition_impl_;
   std::unique_ptr<TtsClientImpl> tts_client_;
   std::unique_ptr<UserInterfaceImpl> user_interface_client_;
+  std::unique_ptr<AutoclickClientImpl> autoclick_client_;
 
   // Track the currently enabled features in case we disconnect from the service
   // and need to reconnect, for example when the profile changes.
