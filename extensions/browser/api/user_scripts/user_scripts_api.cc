@@ -36,18 +36,6 @@ constexpr char kInvalidSourceError[] =
 constexpr char kMatchesMissingError[] =
     "User script with ID '*' must specify 'matches'.";
 
-api::user_scripts::ExecutionWorld ConvertExecutionWorldForAPI(
-    mojom::ExecutionWorld world) {
-  switch (world) {
-    case mojom::ExecutionWorld::kUserScript:
-      return api::user_scripts::EXECUTION_WORLD_USER_SCRIPT;
-    case mojom::ExecutionWorld::kMain:
-      return api::user_scripts::EXECUTION_WORLD_MAIN;
-    case mojom::ExecutionWorld::kIsolated:
-      NOTREACHED_NORETURN() << "ISOLATED worlds are not supported in this API.";
-  }
-}
-
 api::scripts_internal::SerializedUserScript
 ConvertRegisteredUserScriptToSerializedUserScript(
     api::user_scripts::RegisteredUserScript user_script) {
@@ -136,60 +124,58 @@ std::unique_ptr<UserScript> ParseUserScript(
 // object, used for getScripts.
 api::user_scripts::RegisteredUserScript CreateRegisteredUserScriptInfo(
     const UserScript& script) {
-  api::user_scripts::RegisteredUserScript script_info;
   CHECK_EQ(UserScript::Source::kDynamicUserScript, script.GetSource());
 
-  script_info.id = script.id();
-  script_info.all_frames = script.match_all_frames();
-  script_info.run_at = ConvertRunLocationForAPI(script.run_location());
+  // To convert a `UserScript`, we first go through our script_internal
+  // serialization; this allows us to do simple conversions and avoid any
+  // complex logic.
+  api::scripts_internal::SerializedUserScript serialized_script =
+      script_serialization::SerializeUserScript(script);
 
-  // Matches.
-  script_info.matches.emplace();
-  script_info.matches->reserve(script.url_patterns().size());
-  for (const URLPattern& pattern : script.url_patterns()) {
-    script_info.matches->push_back(pattern.GetAsString());
+  auto convert_serialized_script_sources =
+      [](std::vector<api::scripts_internal::ScriptSource> sources) {
+        std::vector<api::user_scripts::ScriptSource> converted;
+        converted.reserve(sources.size());
+        for (auto& source : sources) {
+          api::user_scripts::ScriptSource converted_source;
+          converted_source.code = std::move(source.code);
+          converted_source.file = std::move(source.file);
+          converted.push_back(std::move(converted_source));
+        }
+        return converted;
+      };
+
+  auto convert_execution_world =
+      [](api::extension_types::ExecutionWorld world) {
+        switch (world) {
+          case api::extension_types::ExecutionWorld::kNone:
+            NOTREACHED_NORETURN()
+                << "Execution world should always be present in serialization.";
+          case api::extension_types::ExecutionWorld::kIsolated:
+            NOTREACHED_NORETURN()
+                << "ISOLATED worlds are not supported in this API.";
+          case api::extension_types::ExecutionWorld::kUserScript:
+            return api::user_scripts::EXECUTION_WORLD_USER_SCRIPT;
+          case api::extension_types::ExecutionWorld::kMain:
+            return api::user_scripts::EXECUTION_WORLD_MAIN;
+        }
+      };
+
+  api::user_scripts::RegisteredUserScript result;
+  result.all_frames = serialized_script.all_frames;
+  result.exclude_matches = std::move(serialized_script.exclude_matches);
+  result.id = std::move(serialized_script.id);
+  result.include_globs = std::move(serialized_script.include_globs);
+  result.exclude_globs = std::move(serialized_script.exclude_globs);
+  if (serialized_script.js) {
+    result.js =
+        convert_serialized_script_sources(std::move(*serialized_script.js));
   }
+  result.matches = std::move(serialized_script.matches);
+  result.run_at = serialized_script.run_at;
+  result.world = convert_execution_world(serialized_script.world);
 
-  if (!script.exclude_url_patterns().is_empty()) {
-    script_info.exclude_matches.emplace();
-    script_info.exclude_matches->reserve(script.exclude_url_patterns().size());
-    for (const URLPattern& pattern : script.exclude_url_patterns()) {
-      script_info.exclude_matches->push_back(pattern.GetAsString());
-    }
-  }
-
-  // Globs.
-  if (!script.globs().empty()) {
-    script_info.include_globs.emplace();
-    script_info.include_globs->reserve(script.globs().size());
-    for (const std::string& pattern : script.globs()) {
-      script_info.include_globs->push_back(pattern);
-    }
-  }
-
-  if (!script.exclude_globs().empty()) {
-    script_info.exclude_globs.emplace();
-    script_info.exclude_globs->reserve(script.exclude_globs().size());
-    for (const std::string& pattern : script.exclude_globs()) {
-      script_info.exclude_globs->push_back(pattern);
-    }
-  }
-
-  // File paths may be normalized in the returned object and can differ slightly
-  // compared to what was originally passed into userScripts.register.
-  if (!script.js_scripts().empty()) {
-    script_info.js.reserve(script.js_scripts().size());
-    for (const auto& file : script.js_scripts()) {
-      api::user_scripts::ScriptSource source;
-      source.file = file->relative_path().AsUTF8Unsafe();
-      script_info.js.push_back(std::move(source));
-      // TODO(https://crbug.com/1385165): Handle `code` sources.
-    }
-  }
-
-  script_info.world = ConvertExecutionWorldForAPI(script.execution_world());
-
-  return script_info;
+  return result;
 }
 
 }  // namespace
