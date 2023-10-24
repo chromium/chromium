@@ -1,0 +1,63 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.features.proto";
+
+option java_outer_classname = "ComposeAiLoggingDataProto";
+
+package optimization_guide.proto;
+
+// The model request and response. These are currently just placeholders.
+message ComposeModelRequestData {}
+message ComposeModelResponseData {}
+
+// The final status of the feature.
+enum FinalStatus {
+  // The dialog was not closed, and a subsequent model request should be
+  // logged.
+  STATUS_UNSPECIFIED = 0;
+  // The user inserted this response into the page.
+  STATUS_INSERTED = 1;
+  // User pressed 'X'.
+  STATUS_ABANDONED = 2;
+  // This case includes: close tab, starting new session, navigation, etc.
+  STATUS_FINISHED_WITHOUT_INSERT = 3;
+}
+
+// The explicit feedback provided by the user.
+enum UserFeedback {
+  FEEDBACK_UNSPECIFIED = 0;
+  FEEDBACK_THUMBS_UP = 1;
+  FEEDBACK_THUMBS_DOWN = 2;
+}
+
+// How the user used their clipboard with the feature.
+enum ClipboardUse {
+  CLIPBOARD_UNSPECIFIED = 0;
+  // User copied the compose response to the clipboard.
+  CLIPBOARD_RESPONSE_COPIED = 1;
+}
+
+// Any data collected on the client outside of the model request and response.
+// This includes user feedback, and metrics about feature usage.
+message ComposeModelQualityData {
+  FinalStatus final_status = 1;
+  UserFeedback user_feedback = 2;
+  ClipboardUse clipboard_use = 3;
+  // How long the user had to wait before seeing the model response.
+  int64 request_latency_ms = 4;
+  // How much was the text modified before commit only valid iff
+  // final_status = INSERTED.
+  optional int64 edit_distance = 5;
+}
+
+// Wrapper containing all data for compose.
+message ComposeAiLoggingData {
+  ComposeModelRequestData model_request_data = 1;
+  ComposeModelResponseData model_response_data = 2;
+  ComposeModelQualityData model_quality_data = 3;
+}
