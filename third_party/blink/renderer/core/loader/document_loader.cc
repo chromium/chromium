@@ -3265,8 +3265,10 @@ void DocumentLoader::NotifyPrerenderingDocumentActivated(
 
   GetTiming().SetActivationStart(params.activation_start);
 
-  DCHECK(!view_transition_state_);
-  view_transition_state_ = std::move(params.view_transition_state);
+  if (params.view_transition_state) {
+    CHECK(!view_transition_state_);
+    view_transition_state_ = std::move(params.view_transition_state);
+  }
   StartViewTransitionIfNeeded(*frame_->GetDocument());
 }
 

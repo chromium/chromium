@@ -5,6 +5,8 @@
 #include "chrome/browser/preloading/preview/preview_tab.h"
 
 #include "base/features.h"
+#include "base/functional/callback.h"
+#include "base/time/time.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "components/zoom/zoom_controller.h"
@@ -123,7 +125,18 @@ content::PreloadingEligibility PreviewTab::IsPrerender2Supported(
 }
 
 bool PreviewTab::IsInPreviewMode() const {
-  return base::FeatureList::IsEnabled(blink::features::kLinkPreviewNavigation);
+  return is_in_preview_mode_ &&
+         base::FeatureList::IsEnabled(blink::features::kLinkPreviewNavigation);
+}
+
+// TODO(b:305000959): Write a browser test once the preview_test_util is landed.
+void PreviewTab::Activate(base::OnceClosure completion_callback) {
+  view_->GetWebContents()->ActivatePreviewPage(base::TimeTicks::Now(),
+                                               std::move(completion_callback));
+
+  // Reset the flag here as we run several checks whether the WebContents is
+  // actually running in preview mode in the call above.
+  is_in_preview_mode_ = false;
 }
 
 void PreviewTab::CancelPreviewByMojoBinderPolicy(

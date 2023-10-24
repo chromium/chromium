@@ -9980,6 +9980,23 @@ void WebContentsImpl::SetTabSwitchStartTime(base::TimeTicks start_time,
       /*show_reason_bfcache_restore=*/false);
 }
 
+void WebContentsImpl::ActivatePreviewPage(
+    base::TimeTicks activation_start,
+    base::OnceClosure completion_callback) {
+  CHECK(GetDelegate());
+  CHECK(GetDelegate()->IsInPreviewMode());
+
+  // TODO(b:299240273): Relax capability control here.
+
+  auto params = blink::mojom::PrerenderPageActivationParams::New();
+  params->activation_start = activation_start;
+  // No way to activate the previewed page other than with a user action, or
+  // testing only methods. So, we always set kYes here.
+  params->was_user_activated = blink::mojom::WasActivatedOption::kYes;
+  GetRenderViewHost()->ActivatePrerenderedPage(std::move(params),
+                                               std::move(completion_callback));
+}
+
 VisibleTimeRequestTrigger& WebContentsImpl::GetVisibleTimeRequestTrigger() {
   return visible_time_request_trigger_;
 }

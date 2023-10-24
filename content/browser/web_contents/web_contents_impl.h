@@ -580,6 +580,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void SetV8CompileHints(base::ReadOnlySharedMemoryRegion data) override;
   void SetTabSwitchStartTime(base::TimeTicks start_time,
                              bool destination_is_loaded) override;
+  void ActivatePreviewPage(base::TimeTicks activation_start,
+                           base::OnceClosure completion_callback) override;
 
   // Implementation of PageNavigator.
   WebContents* OpenURL(const OpenURLParams& params) override;
