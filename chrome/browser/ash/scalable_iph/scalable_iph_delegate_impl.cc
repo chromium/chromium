@@ -37,7 +37,6 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
-#include "chrome/browser/ash/crosapi/files_app_launcher.h"
 #include "chrome/browser/ash/crosapi/url_handler_ash.h"
 #include "chrome/browser/ash/phonehub/phone_hub_manager_factory.h"
 #include "chrome/browser/ash/printing/synced_printers_manager.h"
@@ -50,7 +49,6 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/phonehub/feature_status_provider.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "chromeos/ash/components/scalable_iph/buildflags.h"
@@ -592,14 +590,7 @@ void ScalableIphDelegateImpl::PerformActionForScalableIph(
       break;
     }
     case ActionType::kOpenFileManager: {
-      std::string user_id_hash =
-          ash::BrowserContextHelper::GetUserIdHashFromBrowserContext(profile_);
-      std::unique_ptr<crosapi::FilesAppLauncher> files_app_launcher =
-          std::make_unique<crosapi::FilesAppLauncher>(
-              apps::AppServiceProxyFactory::GetForProfile(profile_));
-      files_app_launcher->Launch(base::BindOnce(
-          crosapi::browser_util::ClearGotoFilesClicked,
-          g_browser_process->local_state(), std::move(user_id_hash)));
+      ash::NewWindowDelegate::GetPrimary()->OpenFileManager();
       SCALABLE_IPH_LOG(GetLogger()) << "Opening file manager.";
       break;
     }
