@@ -191,9 +191,11 @@ class SyncDifferenceTracker {
     if (!table_->UpdateAutofillEntries(save_to_local_)) {
       return ModelError(FROM_HERE, "Failed updating WebDatabase");
     }
-    if (!delete_from_local_.empty() || !save_to_local_.empty()) {
-      web_data_backend->NotifyOnAutofillChangedBySync(syncer::AUTOFILL);
-    }
+
+    // We do not need to NotifyOnAutofillChangedBySync() because
+    // `AutocompleteHistoryManager` queries AutofillTable on demand, hence,
+    // the changes are invisible to PersonalDataManager.
+
     return {};
   }
 
