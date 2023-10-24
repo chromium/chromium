@@ -717,7 +717,6 @@
       'android_arm64-cfi-builder-perf-fyi': 'official_reclient_minimal_symbols_android_thin_lto_opt_arm64',
       'chromeos-kevin-builder-perf-fyi': 'chromeos_kevin_include_unwind_tables_official_reclient',
       'fuchsia-builder-perf-arm64': 'official_reclient_fuchsia_arm64_perf',
-      'fuchsia-builder-perf-x64': 'official_reclient_fuchsia_x64_perf',
     },
 
     'chromium.perf.pinpoint': {
@@ -3467,10 +3466,6 @@
 
     'official_reclient_fuchsia_arm64_perf': [
       'cast_receiver_size_optimized_internal', 'official', 'reclient', 'minimal_symbols', 'fuchsia', 'fuchsia_include_sd_images', 'arm64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'test_isolate_no_emulator',
-    ],
-
-    'official_reclient_fuchsia_x64_perf': [
-      'official', 'reclient', 'minimal_symbols', 'fuchsia', 'x64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'test_isolate_no_emulator',
     ],
 
     'official_reclient_linux_perf_pgo': [
