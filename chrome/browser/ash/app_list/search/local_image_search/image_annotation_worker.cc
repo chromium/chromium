@@ -148,17 +148,6 @@ bool IsPathExcluded(const base::FilePath& path,
                      });
 }
 
-// Returns deleted files. Needs to be done in background.
-std::set<base::FilePath> GetDeletedPaths(const std::vector<ImageInfo>& images) {
-  std::set<base::FilePath> deleted_paths;
-  for (const auto& image : images) {
-    if (!base::PathExists(image.path)) {
-      deleted_paths.insert(image.path);
-    }
-  }
-  return deleted_paths;
-}
-
 bool IsOcrServiceReady() {
   return (
       screen_ai::ScreenAIInstallState::GetInstance() &&
@@ -277,7 +266,7 @@ void ImageAnnotationWorker::OnDlcInstalled() {
           },
           on_file_change_callback_));
 
-  FindAndRemoveDeletedImages(annotation_storage_->GetAllAnnotations());
+  FindAndRemoveDeletedFiles(annotation_storage_->GetAllFiles());
 }
 
 void ImageAnnotationWorker::EnsureIcaAnnotatorIsConnected() {
@@ -328,7 +317,8 @@ void ImageAnnotationWorker::ConnectToImageAnnotator() {
               *ica_dlc_initialized = true;
               DVLOG(1) << "ICA bind is done.";
             } else {
-              LOG(ERROR) << "Failed to bind ICA.";
+              LOG(ERROR) << "Failed to bind ICA. LoadModelResult: "
+                         << static_cast<int>(result);
               *ica_dlc_initialized = false;
             }
           },
@@ -357,6 +347,8 @@ void ImageAnnotationWorker::ProcessNextImage() {
 
   if (images_being_processed_.empty()) {
     DVLOG(1) << "The queue is empty.";
+    image_content_annotator_.reset();
+    screen_ai_annotator_.reset();
     return;
   }
 
@@ -507,15 +499,26 @@ void ImageAnnotationWorker::OnPerformIca(
   ProcessNextImage();
 }
 
-void ImageAnnotationWorker::FindAndRemoveDeletedImages(
-    const std::vector<ImageInfo> images) {
+void ImageAnnotationWorker::FindAndRemoveDeletedFiles(
+    const std::vector<base::FilePath> files) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "FindAndRemoveDeletedImages.";
   task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&GetDeletedPaths, std::move(images)),
+      FROM_HERE,
+      base::BindOnce(
+          [](const std::vector<base::FilePath>& files) {
+            std::vector<base::FilePath> deleted_paths;
+            for (const auto& file_path : files) {
+              if (!base::PathExists(file_path)) {
+                deleted_paths.push_back(file_path);
+              }
+            }
+            return deleted_paths;
+          },
+          std::move(files)),
       base::BindOnce(
           [](AnnotationStorage* const annotation_storage,
-             std::set<base::FilePath> paths) {
+             std::vector<base::FilePath> paths) {
             std::for_each(paths.begin(), paths.end(),
                           [&](auto path) { annotation_storage->Remove(path); });
           },

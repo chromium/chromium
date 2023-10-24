@@ -70,7 +70,7 @@ class ImageAnnotationWorker {
   void ProcessNextImage();
 
   // Removes deleted images from the annotation storage.
-  void FindAndRemoveDeletedImages(const std::vector<ImageInfo> images);
+  void FindAndRemoveDeletedFiles(const std::vector<base::FilePath> images);
 
   void ConnectToImageAnnotator();
   void RunImageAnnotator(ImageInfo image_info,

@@ -65,6 +65,9 @@ class AnnotationStorage {
   // Returns all the stored annotations.
   std::vector<ImageInfo> GetAllAnnotations();
 
+  // Returns all the stored file paths.
+  std::vector<base::FilePath> GetAllFiles();
+
   // Searches the database for a desired `image_path`.
   std::vector<ImageInfo> FindImagePath(const base::FilePath& image_path);
 

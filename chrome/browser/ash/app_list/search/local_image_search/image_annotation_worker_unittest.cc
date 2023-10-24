@@ -231,5 +231,28 @@ TEST_F(ImageAnnotationWorkerTest, MustRemoveOnFileDeleteTest) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(ImageAnnotationWorkerTest, GetAllFilesTest) {
+  storage_->Initialize();
+  annotation_worker_->Initialize(storage_.get());
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(storage_->GetAllFiles().empty());
+
+  base::WriteFile(bar_image_path_, kJpeg_image);
+  annotation_worker_->TriggerOnFileChangeForTests(bar_image_path_,
+                                                  /*error=*/false);
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(storage_->GetAllFiles(),
+              testing::ElementsAreArray({bar_image_path_}));
+
+  base::DeleteFile(bar_image_path_);
+  annotation_worker_->TriggerOnFileChangeForTests(bar_image_path_,
+                                                  /*error=*/false);
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(storage_->GetAllFiles().empty());
+
+  task_environment_.RunUntilIdle();
+}
+
 }  // namespace
 }  // namespace app_list

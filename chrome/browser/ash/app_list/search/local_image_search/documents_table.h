@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_LOCAL_IMAGE_SEARCH_DOCUMENTS_TABLE_H_
 
 #include <cstdint>
+#include <vector>
 
 namespace base {
 
@@ -36,6 +37,8 @@ class DocumentsTable {
                             const base::FilePath& file_path,
                             int64_t& document_id);
   static bool Remove(SqlDatabase* db, const base::FilePath& file_path);
+  static bool GetAllFiles(SqlDatabase* db,
+                          std::vector<base::FilePath>& documents);
 };
 
 }  // namespace app_list

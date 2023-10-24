@@ -188,6 +188,19 @@ std::vector<ImageInfo> AnnotationStorage::GetAllAnnotations() {
   return matched_paths;
 }
 
+std::vector<base::FilePath> AnnotationStorage::GetAllFiles() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DVLOG(1) << "GetAllFiles";
+
+  std::vector<base::FilePath> documents;
+  if (!DocumentsTable::GetAllFiles(sql_database_.get(), documents)) {
+    LOG(ERROR) << "Failed to get file paths from the db.";
+    return {};
+  }
+
+  return documents;
+}
+
 std::vector<ImageInfo> AnnotationStorage::FindImagePath(
     const base::FilePath& image_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
