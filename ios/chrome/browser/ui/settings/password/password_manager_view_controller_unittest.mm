@@ -16,7 +16,7 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
-#import "components/password_manager/core/browser/mock_bulk_leak_check_service.h"
+#import "components/password_manager/core/browser/leak_detection/mock_bulk_leak_check_service.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/test_password_store.h"

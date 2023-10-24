@@ -34,8 +34,6 @@ static_library("browser") {
   sources = [
     "browser_save_password_progress_logger.cc",
     "browser_save_password_progress_logger.h",
-    "bulk_leak_check_service.cc",
-    "bulk_leak_check_service.h",
     "credential_cache.cc",
     "credential_cache.h",
     "credential_manager_impl.cc",
@@ -459,8 +457,6 @@ static_library("test_support") {
     "fake_form_fetcher.h",
     "fake_password_store_backend.cc",
     "fake_password_store_backend.h",
-    "mock_bulk_leak_check_service.cc",
-    "mock_bulk_leak_check_service.h",
     "mock_password_change_success_tracker.cc",
     "mock_password_change_success_tracker.h",
     "mock_password_feature_manager.cc",
@@ -531,7 +527,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "browser_save_password_progress_logger_unittest.cc",
-    "bulk_leak_check_service_unittest.cc",
     "credential_cache_unittest.cc",
     "credential_manager_impl_unittest.cc",
     "credential_manager_logger_unittest.cc",

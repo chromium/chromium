@@ -13,7 +13,7 @@
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #import "components/password_manager/core/browser/affiliation/affiliation_service_impl.h"
-#import "components/password_manager/core/browser/bulk_leak_check_service.h"
+#import "components/password_manager/core/browser/leak_detection/bulk_leak_check_service.h"
 #import "components/password_manager/core/browser/leak_detection/bulk_leak_check_service_interface.h"
 #import "components/password_manager/core/browser/password_manager_constants.h"
 #import "ios/web_view/internal/app/application_context.h"

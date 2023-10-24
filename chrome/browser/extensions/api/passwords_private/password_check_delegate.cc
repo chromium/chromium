@@ -39,7 +39,6 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/content/browser/password_change_success_tracker_factory.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
-#include "components/password_manager/core/browser/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
 #include "components/password_manager/core/browser/password_change_success_tracker.h"
