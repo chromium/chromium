@@ -18,7 +18,7 @@ build_webui_tests("build_webui_tests") {
     "action_toolbar_test.ts",
     "color_mode_select_test.ts",
     "file_type_select_test.ts",
-    "loading_page_test.js",
+    "loading_page_test.ts",
     "multi_page_checkbox_test.js",
     "multi_page_scan_test.js",
     "page_size_select_test.js",
