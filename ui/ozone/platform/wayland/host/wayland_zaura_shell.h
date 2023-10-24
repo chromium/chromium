@@ -89,11 +89,8 @@ class WaylandZAuraShell : public wl::GlobalObjectRegistrar<WaylandZAuraShell> {
                           struct zaura_shell* zaura_shell,
                           struct wl_surface* gained_active,
                           struct wl_surface* lost_active);
-
-  // TODO(sammiequon): Remove these two deprecated functions.
   static void OnSetOverviewMode(void* data, struct zaura_shell* zaura_shell);
   static void OnUnsetOverviewMode(void* data, struct zaura_shell* zaura_shell);
-
   static void OnCompositorVersion(void* data,
                                   struct zaura_shell* zaura_shell,
                                   const char* version_label);

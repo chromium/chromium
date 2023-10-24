@@ -4938,20 +4938,21 @@ TEST_P(WaylandWindowTest, OverviewMode) {
     GTEST_SKIP();
   }
 
-  EXPECT_CALL(delegate_, OnOverviewModeChanged(Eq(true))).Times(1);
-  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
-    auto* surface = server->GetObject<wl::MockSurface>(surface_id_);
-    auto* toplevel = surface->xdg_surface()->xdg_toplevel()->zaura_toplevel();
-    zaura_toplevel_send_overview_change(toplevel->resource(),
-                                        ZAURA_TOPLEVEL_IN_OVERVIEW_IN_OVERVIEW);
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> delegate;
+  std::unique_ptr<WaylandWindow> toplevel_window =
+      CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
+                                    gfx::Rect(300, 300), &delegate);
+
+  EXPECT_CALL(delegate, OnOverviewModeChanged(Eq(true))).Times(1);
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* const zaura_shell = server->zaura_shell()->resource();
+    zaura_shell_send_set_overview_mode(zaura_shell);
   });
 
-  EXPECT_CALL(delegate_, OnOverviewModeChanged(Eq(false))).Times(1);
-  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
-    auto* surface = server->GetObject<wl::MockSurface>(surface_id_);
-    auto* toplevel = surface->xdg_surface()->xdg_toplevel()->zaura_toplevel();
-    zaura_toplevel_send_overview_change(
-        toplevel->resource(), ZAURA_TOPLEVEL_IN_OVERVIEW_NOT_IN_OVERVIEW);
+  EXPECT_CALL(delegate, OnOverviewModeChanged(Eq(false))).Times(1);
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* const zaura_shell = server->zaura_shell()->resource();
+    zaura_shell_send_unset_overview_mode(zaura_shell);
   });
 }
 #endif
