@@ -844,35 +844,36 @@ TEST_F(IndexedRuleTest, ModifyHeadersParsing) {
     ParseResult expected_result;
   } cases[] = {
       // Raise an error if no headers are specified.
-      {absl::nullopt, absl::nullopt, ParseResult::ERROR_NO_HEADERS_SPECIFIED},
+      {absl::nullopt, absl::nullopt,
+       ParseResult::ERROR_NO_HEADERS_TO_MODIFY_SPECIFIED},
 
       // Raise an error if the request or response headers list is specified,
       // but empty.
       {RawHeaderInfoList(),
        RawHeaderInfoList(
            {{dnr_api::HeaderOperation::kRemove, "set-cookie", absl::nullopt}}),
-       ParseResult::ERROR_EMPTY_REQUEST_HEADERS_LIST},
+       ParseResult::ERROR_EMPTY_MODIFY_REQUEST_HEADERS_LIST},
 
       {absl::nullopt, RawHeaderInfoList(),
-       ParseResult::ERROR_EMPTY_RESPONSE_HEADERS_LIST},
+       ParseResult::ERROR_EMPTY_MODIFY_RESPONSE_HEADERS_LIST},
 
       // Raise an error if a header list contains an empty or invalid header
       // name.
       {absl::nullopt,
        RawHeaderInfoList(
            {{dnr_api::HeaderOperation::kRemove, "", absl::nullopt}}),
-       ParseResult::ERROR_INVALID_HEADER_NAME},
+       ParseResult::ERROR_INVALID_HEADER_TO_MODIFY_NAME},
 
       {absl::nullopt,
        RawHeaderInfoList(
            {{dnr_api::HeaderOperation::kRemove, "<<invalid>>", absl::nullopt}}),
-       ParseResult::ERROR_INVALID_HEADER_NAME},
+       ParseResult::ERROR_INVALID_HEADER_TO_MODIFY_NAME},
 
       // Raise an error if a header list contains an invalid header value.
       {absl::nullopt,
        RawHeaderInfoList({{dnr_api::HeaderOperation::kAppend, "set-cookie",
                            "invalid\nvalue"}}),
-       ParseResult::ERROR_INVALID_HEADER_VALUE},
+       ParseResult::ERROR_INVALID_HEADER_TO_MODIFY_VALUE},
 
       // Raise an error if a header value is specified for a remove rule.
       {RawHeaderInfoList(
@@ -949,10 +950,10 @@ TEST_F(IndexedRuleTest, ModifyHeadersParsing) {
               indexed_rule.action_type);
 
     EXPECT_TRUE(base::ranges::equal(expected_request_headers,
-                                    indexed_rule.request_headers,
+                                    indexed_rule.request_headers_to_modify,
                                     EqualsForTesting));
     EXPECT_TRUE(base::ranges::equal(expected_response_headers,
-                                    indexed_rule.response_headers,
+                                    indexed_rule.response_headers_to_modify,
                                     EqualsForTesting));
   }
 }
