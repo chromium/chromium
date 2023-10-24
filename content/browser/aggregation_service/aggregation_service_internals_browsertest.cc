@@ -141,14 +141,12 @@ IN_PROC_BROWSER_TEST_F(AggregationServiceInternalsWebUiBrowserTest,
                 .Build());
       });
 
-  aggregation_service::TestHpkeKey hpke_key =
-      aggregation_service::GenerateKey("id123");
-
+  aggregation_service::TestHpkeKey hpke_key{/*key_id=*/"id123"};
   AggregatableReportRequest request_1 =
       aggregation_service::CreateExampleRequest();
   absl::optional<AggregatableReport> report_1 =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
-          request_1, {hpke_key.public_key});
+          request_1, {hpke_key.GetPublicKey()});
 
   aggregation_service().NotifyReportHandled(
       std::move(request_1), AggregationServiceStorage::RequestId(1),
@@ -167,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(AggregationServiceInternalsWebUiBrowserTest,
       aggregation_service::CreateExampleRequest();
   absl::optional<AggregatableReport> report_3 =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
-          request_3, {hpke_key.public_key});
+          request_3, {hpke_key.GetPublicKey()});
 
   aggregation_service().NotifyReportHandled(
       std::move(request_3), AggregationServiceStorage::RequestId(3),
@@ -336,13 +334,12 @@ IN_PROC_BROWSER_TEST_F(AggregationServiceInternalsWebUiBrowserTest,
                 .Build());
       });
 
-  aggregation_service::TestHpkeKey hpke_key =
-      aggregation_service::GenerateKey("id123");
+  aggregation_service::TestHpkeKey hpke_key{/*key_id=*/"id123"};
   AggregatableReportRequest request =
       aggregation_service::CreateExampleRequest();
   absl::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
-          request, {hpke_key.public_key});
+          request, {hpke_key.GetPublicKey()});
 
   aggregation_service().NotifyReportHandled(
       std::move(request), AggregationServiceStorage::RequestId(10),

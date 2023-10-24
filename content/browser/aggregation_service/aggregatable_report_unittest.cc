@@ -107,11 +107,11 @@ void VerifyReport(
   }
 
   for (size_t i = 0; i < expected_num_processing_urls; ++i) {
-    EXPECT_EQ(payloads[i].key_id, encryption_keys[i].public_key.id);
+    EXPECT_EQ(payloads[i].key_id, encryption_keys[i].key_id());
 
     std::vector<uint8_t> decrypted_payload =
         aggregation_service::DecryptPayloadWithHpke(
-            payloads[i].payload, encryption_keys[i].full_hpke_key,
+            payloads[i].payload, encryption_keys[i].full_hpke_key(),
             expected_serialized_shared_info);
     ASSERT_FALSE(decrypted_payload.empty());
 
@@ -229,20 +229,21 @@ TEST_P(AggregatableReportTest,
   AggregatableReportSharedInfo expected_shared_info =
       request.shared_info().Clone();
   size_t expected_num_processing_urls = request.processing_urls().size();
-  std::vector<aggregation_service::TestHpkeKey> hpke_keys = {
-      aggregation_service::GenerateKey("id123"),
-      aggregation_service::GenerateKey("456abc")};
+
+  std::vector<aggregation_service::TestHpkeKey> hpke_keys;
+  hpke_keys.emplace_back("id123");
+  hpke_keys.emplace_back("456abc");
 
   absl::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
           std::move(request),
-          {hpke_keys[0].public_key, hpke_keys[1].public_key});
+          {hpke_keys[0].GetPublicKey(), hpke_keys[1].GetPublicKey()});
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyReport(report, expected_payload_contents, expected_shared_info,
                    expected_num_processing_urls,
                    /*expected_debug_key=*/absl::nullopt,
-                   /*expected_additional_fields=*/{}, hpke_keys,
+                   /*expected_additional_fields=*/{}, std::move(hpke_keys),
                    /*should_pad_contributions=*/GetParam()));
 }
 
@@ -256,18 +257,18 @@ TEST_P(AggregatableReportTest, ValidTeeBasedRequest_ValidReportReturned) {
       request.shared_info().Clone();
   size_t expected_num_processing_urls = request.processing_urls().size();
 
-  aggregation_service::TestHpkeKey hpke_key =
-      aggregation_service::GenerateKey("id123");
+  std::vector<aggregation_service::TestHpkeKey> hpke_keys;
+  hpke_keys.emplace_back("id123");
 
   absl::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
-          std::move(request), {hpke_key.public_key});
+          std::move(request), {hpke_keys[0].GetPublicKey()});
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyReport(report, expected_payload_contents, expected_shared_info,
                    expected_num_processing_urls,
                    /*expected_debug_key=*/absl::nullopt,
-                   /*expected_additional_fields=*/{}, {hpke_key},
+                   /*expected_additional_fields=*/{}, std::move(hpke_keys),
                    /*should_pad_contributions=*/GetParam()));
 }
 
@@ -296,18 +297,18 @@ TEST_P(AggregatableReportTest,
       request->shared_info().Clone();
   size_t expected_num_processing_urls = request->processing_urls().size();
 
-  aggregation_service::TestHpkeKey hpke_key =
-      aggregation_service::GenerateKey("id123");
+  std::vector<aggregation_service::TestHpkeKey> hpke_keys;
+  hpke_keys.emplace_back("id123");
 
   absl::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
-          std::move(*request), {hpke_key.public_key});
+          std::move(*request), {hpke_keys[0].GetPublicKey()});
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyReport(report, expected_payload_contents, expected_shared_info,
                    expected_num_processing_urls,
                    /*expected_debug_key=*/absl::nullopt,
-                   /*expected_additional_fields=*/{}, {hpke_key},
+                   /*expected_additional_fields=*/{}, std::move(hpke_keys),
                    /*should_pad_contributions=*/GetParam()));
 }
 
@@ -340,18 +341,18 @@ TEST_P(AggregatableReportTest,
       request->shared_info().Clone();
   size_t expected_num_processing_urls = request->processing_urls().size();
 
-  aggregation_service::TestHpkeKey hpke_key =
-      aggregation_service::GenerateKey("id123");
+  std::vector<aggregation_service::TestHpkeKey> hpke_keys;
+  hpke_keys.emplace_back("id123");
 
   absl::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
-          std::move(*request), {hpke_key.public_key});
+          std::move(*request), {hpke_keys[0].GetPublicKey()});
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyReport(report, expected_payload_contents, expected_shared_info,
                    expected_num_processing_urls,
                    /*expected_debug_key=*/absl::nullopt,
-                   /*expected_additional_fields=*/{}, {hpke_key},
+                   /*expected_additional_fields=*/{}, std::move(hpke_keys),
                    /*should_pad_contributions=*/GetParam()));
 }
 
@@ -372,18 +373,18 @@ TEST_P(AggregatableReportTest,
       request->payload_contents();
   size_t expected_num_processing_urls = request->processing_urls().size();
 
-  aggregation_service::TestHpkeKey hpke_key =
-      aggregation_service::GenerateKey("id123");
+  std::vector<aggregation_service::TestHpkeKey> hpke_keys;
+  hpke_keys.emplace_back("id123");
 
   absl::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
-          std::move(request.value()), {hpke_key.public_key});
+          std::move(request.value()), {hpke_keys[0].GetPublicKey()});
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyReport(report, expected_payload_contents, expected_shared_info,
                    expected_num_processing_urls,
                    /*expected_debug_key=*/absl::nullopt,
-                   /*expected_additional_fields=*/{}, {hpke_key},
+                   /*expected_additional_fields=*/{}, std::move(hpke_keys),
                    /*should_pad_contributions=*/GetParam()));
 }
 
@@ -408,17 +409,17 @@ TEST_P(AggregatableReportTest,
       request->payload_contents();
   size_t expected_num_processing_urls = request->processing_urls().size();
 
-  aggregation_service::TestHpkeKey hpke_key =
-      aggregation_service::GenerateKey("id123");
+  std::vector<aggregation_service::TestHpkeKey> hpke_keys;
+  hpke_keys.emplace_back("id123");
 
   absl::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
-          std::move(request.value()), {hpke_key.public_key});
+          std::move(request.value()), {hpke_keys[0].GetPublicKey()});
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyReport(report, expected_payload_contents, expected_shared_info,
                    expected_num_processing_urls, expected_debug_key,
-                   /*expected_additional_fields=*/{}, {hpke_key},
+                   /*expected_additional_fields=*/{}, std::move(hpke_keys),
                    /*should_pad_contributions=*/GetParam()));
 }
 
@@ -440,17 +441,17 @@ TEST_P(AggregatableReportTest, AdditionalFieldsPresent_ValidReportReturned) {
       request->payload_contents();
   size_t expected_num_processing_urls = request->processing_urls().size();
 
-  aggregation_service::TestHpkeKey hpke_key =
-      aggregation_service::GenerateKey("id123");
+  std::vector<aggregation_service::TestHpkeKey> hpke_keys;
+  hpke_keys.emplace_back("id123");
 
   absl::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
-          std::move(request.value()), {hpke_key.public_key});
+          std::move(request.value()), {hpke_keys[0].GetPublicKey()});
 
   ASSERT_NO_FATAL_FAILURE(VerifyReport(
       report, expected_payload_contents, example_request.shared_info(),
       expected_num_processing_urls, /*expected_debug_key=*/absl::nullopt,
-      expected_additional_fields, {hpke_key},
+      expected_additional_fields, std::move(hpke_keys),
       /*should_pad_contributions=*/GetParam()));
 }
 

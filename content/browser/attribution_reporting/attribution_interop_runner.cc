@@ -449,7 +449,7 @@ RunAttributionInteropSimulation(base::Value::Dict input,
           GetAggregationServiceProcessingUrl(url::Origin::Create(
               GURL(::aggregation_service::kAggregationServiceCoordinatorAwsCloud
                        .Get()))),
-          PublicKeyset({aggregation_service::GenerateKey().public_key},
+          PublicKeyset({aggregation_service::TestHpkeKey().GetPublicKey()},
                        /*fetch_time=*/base::Time::Now(),
                        /*expiry_time=*/base::Time::Max()));
 
