@@ -66,6 +66,7 @@ void ChromeComposeDialogController::ShowComposeDialog(
   auto weak_ptr = bubble_view->GetWeakPtr();
   views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
 
+  weak_ptr->set_adjust_if_offscreen(true);
   weak_ptr->ShowUI();
 }
 
