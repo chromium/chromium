@@ -274,9 +274,7 @@ void OhttpKeyService::StartFetch(Callback callback,
     return;
   }
 
-  if (callback) {
-    pending_callbacks_.AddUnsafe(std::move(callback));
-  }
+  pending_callbacks_.AddUnsafe(std::move(callback));
   // If url_loader_ is not null, that means a request is already in progress.
   // Will notify the callback when it is completed.
   if (url_loader_) {
@@ -374,7 +372,7 @@ void OhttpKeyService::MaybeStartServerTriggeredFetch(
     return;
   }
 
-  StartFetch(base::NullCallback(), trigger_reason);
+  StartFetch(base::DoNothing(), trigger_reason);
 }
 
 void OhttpKeyService::PopulateKeyFromPref() {
