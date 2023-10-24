@@ -735,9 +735,9 @@ inline constexpr char kGoogleDriveOfflineLearnMoreURL[] =
 inline constexpr char kSpeakOnMuteDetectionLearnMoreURL[] =
     "https://support.google.com/chromebook?p=mic-mute";
 
-// The URL for the "Learn more" page for the geolocation toggle in the privacy
+// The URL for the "Learn more" page for the geolocation area in the privacy
 // hub page.
-inline constexpr char kGeolocationToggleLearnMoreURL[] =
+inline constexpr char kGeolocationAreaLearnMoreURL[] =
     "https://support.google.com/chromebook?p=cpn_location_sharing";
 
 // The URL for the "Learn more" page for Suggested Content in the privacy page.

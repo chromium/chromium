@@ -6229,11 +6229,11 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SPEAK_ON_MUTE_DETECTION_TOGGLE_SUBTEXT" desc="Sub-label for the microphone access toggle in the Privacy controls (aka Privacy Hub) os-settings page.">
     You'll get notified if you talk while your mic is muted when using certain apps, like video chat apps. Audio never leaves your device.
   </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_TOGGLE_TITLE" desc="The title of the toggle to enable/disable geolocation from the privacy hub.">
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_AREA_TITLE" desc="The title of the geolocation row under the Privacy controls (aka Privacy Hub) os-settings page.">
     Location access
   </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_TOGGLE_DESC" desc="The title of the toggle to enable/disable geolocation from the privacy hub.">
-    Allow apps, websites, and system services to use your location. Location may use sources like Wi-Fi, mobile networks, and sensors to help estimate your device’s location.
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_AREA_DESCRIPTION" desc="The description of the geolocation row under the Privacy controls (aka Privacy Hub) os-settings page. Displays the system overivew for geolocation usage.">
+    Allow apps, websites, and system services to use your location. Location may use sources like Wi-Fi, mobile networks, and sensors to help estimate your device’s location. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_OS_SETTINGS_HW_DATA_USAGE_TOGGLE_TITLE" desc="The label of the checkbox to enable/disable device hardware data collection and usage in ChromeOS Flex.">
     <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> hardware support and stability
