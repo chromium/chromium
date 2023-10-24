@@ -566,7 +566,7 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
   return 0;
 }
 
-bool AutofillProfile::EqualsForSyncPurposes(
+bool AutofillProfile::EqualsForLegacySyncPurposes(
     const AutofillProfile& profile) const {
   return use_count() == profile.use_count() &&
          UseDateEqualsInSeconds(&profile) && EqualsSansGuid(profile);

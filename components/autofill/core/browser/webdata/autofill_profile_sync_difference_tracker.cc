@@ -70,7 +70,7 @@ AutofillProfileSyncDifferenceTracker::IncorporateRemoteProfile(
     // profile in a deterministic way and a direct sync-back would be
     // reasonable.
 
-    if (!updated->EqualsForSyncPurposes(*local_with_same_storage_key)) {
+    if (!updated->EqualsForLegacySyncPurposes(*local_with_same_storage_key)) {
       // We need to write back locally new changes in this entry.
       update_to_local_.push_back(std::move(updated));
     }
@@ -306,7 +306,7 @@ AutofillProfileInitialSyncDifferenceTracker::MergeSimilarEntriesForInitialSync(
     // content merged (if applicable) in the profile that came from sync.
     AutofillProfile remote_before_merge = *remote;
     remote->MergeDataFrom(*local, app_locale);
-    if (!remote->EqualsForSyncPurposes(remote_before_merge)) {
+    if (!remote->EqualsForLegacySyncPurposes(remote_before_merge)) {
       // We need to sync new changes in the entry back to the server.
       save_to_sync_.push_back(std::make_unique<AutofillProfile>(*remote));
       // |remote| is updated in place within |add_to_local_| so the newest

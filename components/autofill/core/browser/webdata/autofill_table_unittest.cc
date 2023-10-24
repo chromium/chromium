@@ -2306,7 +2306,7 @@ TEST_F(AutofillTableTest, UpdateServerAddressMetadataDoesNotChangeData) {
   std::vector<std::unique_ptr<AutofillProfile>> outputs2;
   table_->GetServerProfiles(&outputs2);
   ASSERT_EQ(1u, outputs2.size());
-  EXPECT_TRUE(outputs[0]->EqualsForSyncPurposes(*outputs2[0]));
+  EXPECT_TRUE(outputs[0]->EqualsForLegacySyncPurposes(*outputs2[0]));
 }
 
 TEST_F(AutofillTableTest, UpdateServerCardMetadataDoesNotChangeData) {
