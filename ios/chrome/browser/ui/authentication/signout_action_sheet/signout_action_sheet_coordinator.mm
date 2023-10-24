@@ -399,7 +399,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
     // The snackbar should be displayed even if self has been deallocated.
     [snackbarCommandsHandler showSnackbarMessage:snackbarMessage
                                     bottomOffset:0];
-    [weakSelf signOutDidFinished];
+    [weakSelf signOutDidFinish];
   });
   // Get UMA metrics on the usage of different options for signout available
   // for users with non-managed accounts.
@@ -412,7 +412,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 }
 
 // Called when the sign-out is done.
-- (void)signOutDidFinished {
+- (void)signOutDidFinish {
   [self.delegate signoutActionSheetCoordinatorAllowUserInteraction:self];
   if (self.completion) {
     self.completion(YES);
