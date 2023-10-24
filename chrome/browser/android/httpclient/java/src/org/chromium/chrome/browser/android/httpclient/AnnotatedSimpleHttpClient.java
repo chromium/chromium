@@ -25,12 +25,6 @@ public class AnnotatedSimpleHttpClient implements ChromeHttpClient {
     private final Profile mProfile;
     private final NetworkTrafficAnnotationTag mAnnotation;
 
-    /** Use {@link #AnnotatedSimpleHttpClient(Profile, NetworkTrafficAnnotationTag)} instead. */
-    @Deprecated
-    public AnnotatedSimpleHttpClient(NetworkTrafficAnnotationTag annotation) {
-        this(Profile.getLastUsedRegularProfile(), annotation);
-    }
-
     public AnnotatedSimpleHttpClient(Profile profile, NetworkTrafficAnnotationTag annotation) {
         mProfile = profile;
         mAnnotation = annotation;
