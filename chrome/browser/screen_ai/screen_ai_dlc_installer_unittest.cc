@@ -37,6 +37,11 @@ class ScreenAIDlcInstallerTest
     task_environment_.RunUntilIdle();
   }
 
+  void UninstallAndWait() {
+    screen_ai::dlc_installer::Uninstall();
+    task_environment_.RunUntilIdle();
+  }
+
   void WaitForDelay(int delay_in_seconds) {
     task_environment_.AdvanceClock(base::Seconds(delay_in_seconds));
     task_environment_.RunUntilIdle();
@@ -46,12 +51,11 @@ class ScreenAIDlcInstallerTest
     fake_dlcservice_client()->set_install_error(error_code);
   }
 
-  void ExpectSuccessHistogramCount(int expected_count,
+  void ExpectSuccessHistogramCount(const std::string& histogram_name,
+                                   int expected_count,
                                    int expected_total_count) {
-    histogram_tester_.ExpectBucketCount(
-        "Accessibility.ScreenAI.Component.Install", true, expected_count);
-    histogram_tester_.ExpectTotalCount(
-        "Accessibility.ScreenAI.Component.Install", expected_total_count);
+    histogram_tester_.ExpectBucketCount(histogram_name, true, expected_count);
+    histogram_tester_.ExpectTotalCount(histogram_name, expected_total_count);
   }
 
   void ExpectFailureHistogramCount(int expected_count,
@@ -78,7 +82,8 @@ class ScreenAIDlcInstallerTest
 
 TEST_F(ScreenAIDlcInstallerTest, InstallSuccess) {
   InstallAndWait();
-  ExpectSuccessHistogramCount(/*expected_count=*/1, /*expected_total_count=*/1);
+  ExpectSuccessHistogramCount("Accessibility.ScreenAI.Component.Install",
+                              /*expected_count=*/1, /*expected_total_count=*/1);
 }
 
 TEST_F(ScreenAIDlcInstallerTest, InstallFailureWithDlcErrorNeedReboot) {
@@ -115,7 +120,8 @@ TEST_F(ScreenAIDlcInstallerTest,
       screen_ai::dlc_installer::CalculateNextDelayInSecondsForTesting(
           delay_in_seconds);
   WaitForDelay(delay_in_seconds);
-  ExpectSuccessHistogramCount(/*expected_count=*/1, /*expected_total_count=*/1);
+  ExpectSuccessHistogramCount("Accessibility.ScreenAI.Component.Install",
+                              /*expected_count=*/1, /*expected_total_count=*/1);
 }
 
 TEST_F(ScreenAIDlcInstallerTest, InstallFailuresRepeatedWithDlcErrorBusy) {
@@ -141,5 +147,15 @@ TEST_F(ScreenAIDlcInstallerTest, InstallFailuresRepeatedWithDlcErrorBusy) {
   }
   ExpectFailureHistogramCount(/*expected_count=*/2, /*expected_total_count=*/2);
 }
+
+TEST_F(ScreenAIDlcInstallerTest, UninstallSuccess) {
+  UninstallAndWait();
+  ExpectSuccessHistogramCount("Accessibility.ScreenAI.Component.Uninstall",
+                              /*expected_count=*/1, /*expected_total_count=*/1);
+}
+
+// TODO(b/289009784): Write tests to check installation and uninstallation
+// triggered in `screen_ai::dlc_installer::ManageInstallation()`. For those
+// tests, need to create a temp binary to trigger uninstallation successfully.
 
 }  // namespace ash

@@ -21,6 +21,7 @@ constexpr char kScreenAIDlcName[] = "screen-ai";
 constexpr int kBaseRetryDelayInSeconds = 3;
 constexpr int kMaxRetryDelayInSeconds = 180;
 constexpr int kMaxInstallRetries = 5;
+constexpr int kUninstallDelayInSeconds = 300;
 
 struct InstallMetadata {
   bool dlc_available_from_before_this_session = false;
@@ -91,11 +92,6 @@ void OnInstallProgress(double progress) {
   screen_ai::ScreenAIInstallState::GetInstance()->SetDownloadProgress(progress);
 }
 
-void Uninstall() {
-  ash::DlcserviceClient::Get()->Uninstall(
-      kScreenAIDlcName, base::BindOnce(&OnUninstallCompleted));
-}
-
 // This function can be called only on a thread that can be blocked.
 bool CheckIfDlcExistsOnNonUIThread() {
   return !screen_ai::GetLatestComponentBinaryPath().empty();
@@ -129,21 +125,33 @@ void Install() {
       }));
 }
 
+// This code is run on browser startup. The DLC uninstallation will be called
+// after a delay, so that if a feature relies on it and has not yet triggered
+// it, would have time to do it. This is specifically helpful for tests.
+void Uninstall() {
+  // If state is still `kNotDownloaded`, it means no client asked for it.
+  if (screen_ai::ScreenAIInstallState::GetInstance()->get_state() ==
+      screen_ai::ScreenAIInstallState::State::kNotDownloaded) {
+    ash::DlcserviceClient::Get()->Uninstall(
+        kScreenAIDlcName, base::BindOnce(&OnUninstallCompleted));
+  }
+}
+
 void ManageInstallation(PrefService* local_state) {
   if (screen_ai::ScreenAIInstallState::ShouldInstall(local_state)) {
     Install();
     return;
   }
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
+  base::ThreadPool::PostDelayedTask(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&CheckIfDlcExistsOnNonUIThread),
-      base::BindOnce([](bool dlc_exists) {
-        if (dlc_exists) {
+      base::BindOnce([] {
+        if (CheckIfDlcExistsOnNonUIThread()) {
           Uninstall();
         }
-      }));
+      }),
+      base::Seconds(kUninstallDelayInSeconds));
 }
 
 int CalculateNextDelayInSecondsForTesting(int delay_in_seconds) {
