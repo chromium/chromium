@@ -1638,11 +1638,24 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       int32_t widget_routing_id =
           site_instance->GetProcess()->GetNextRoutingID();
       DCHECK_EQ(nullptr, GetLocalRenderWidgetHost());
+
+      auto* previous_rfh =
+          lifecycle_state_ == LifecycleStateImpl::kSpeculative &&
+                  frame_tree_node_->current_frame_host()
+                      ->ShouldReuseCompositing(*GetSiteInstance())
+              ? frame_tree_node_->current_frame_host()
+              : nullptr;
+      auto frame_sink_id =
+          previous_rfh
+              ? previous_rfh->GetLocalRenderWidgetHost()->GetFrameSinkId()
+              : RenderWidgetHostImpl::DefaultFrameSinkId(
+                    *site_instance_->group(), widget_routing_id);
       owned_render_widget_host_ = RenderWidgetHostFactory::Create(
-          frame_tree_, frame_tree_->render_widget_delegate(),
+          frame_tree_, frame_tree_->render_widget_delegate(), frame_sink_id,
           site_instance_->group()->GetSafeRef(), widget_routing_id,
           /*hidden=*/true,
           /*renderer_initiated_creation=*/false);
+      owned_render_widget_host_->SetViewIsFrameSinkIdOwner(!previous_rfh);
     }
 
     if (is_main_frame())
@@ -3404,6 +3417,18 @@ bool RenderFrameHostImpl::CreateRenderFrame(
 
   if (auto* rwh = GetLocalRenderWidgetHost()) {
     params->widget_params = rwh->BindAndGenerateCreateFrameWidgetParams();
+
+    auto* previous_rfh =
+        lifecycle_state_ == LifecycleStateImpl::kSpeculative &&
+                frame_tree_node_->current_frame_host()->ShouldReuseCompositing(
+                    *GetSiteInstance())
+            ? frame_tree_node_->current_frame_host()
+            : nullptr;
+    if (previous_rfh) {
+      waiting_for_renderer_widget_creation_after_commit_ = true;
+      params->widget_params->previous_frame_token_for_compositor_reuse =
+          previous_rfh->GetFrameToken();
+    }
   }
   mojo::PendingAssociatedRemote<mojom::Frame> pending_frame_remote;
   params->frame = pending_frame_remote.InitWithNewEndpointAndPassReceiver();
@@ -3536,13 +3561,8 @@ void RenderFrameHostImpl::RenderFrameCreated() {
 
   // Initialize the RenderWidgetHost which marks it and the RenderViewHost as
   // live before calling to the `delegate_`.
-  if (GetLocalRenderWidgetHost()) {
-#if BUILDFLAG(IS_ANDROID)
-    GetLocalRenderWidgetHost()->SetForceEnableZoom(
-        delegate_->GetOrCreateWebPreferences().force_enable_zoom);
-#endif  // BUILDFLAG(IS_ANDROID)
-    GetLocalRenderWidgetHost()->RendererWidgetCreated(
-        /*for_frame_widget=*/true);
+  if (!waiting_for_renderer_widget_creation_after_commit_) {
+    RendererWidgetCreated();
   }
 
   // Set up mojo connections to the renderer from the `frame_` connection before
@@ -3556,6 +3576,19 @@ void RenderFrameHostImpl::RenderFrameCreated() {
 
   if (web_ui_ && enabled_bindings_ & BINDINGS_POLICY_WEB_UI)
     web_ui_->SetUpMojoConnection();
+}
+
+void RenderFrameHostImpl::RendererWidgetCreated() {
+  if (GetLocalRenderWidgetHost()) {
+#if BUILDFLAG(IS_ANDROID)
+    GetLocalRenderWidgetHost()->SetForceEnableZoom(
+        delegate_->GetOrCreateWebPreferences().force_enable_zoom);
+#endif  // BUILDFLAG(IS_ANDROID)
+    GetLocalRenderWidgetHost()->RendererWidgetCreated(
+        /*for_frame_widget=*/true);
+  }
+
+  waiting_for_renderer_widget_creation_after_commit_ = false;
 }
 
 void RenderFrameHostImpl::RenderFrameDeleted() {
@@ -12962,6 +12995,23 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     return false;
   }
 
+  // NOTE: The navigation has committed in the renderer so it is safe
+  // to pass ownership of the FrameSinkId to the new RFH.
+  if (waiting_for_renderer_widget_creation_after_commit_) {
+    RendererWidgetCreated();
+
+    CHECK_NE(frame_tree_node_->current_frame_host(), this);
+    auto* previous_rfh =
+        frame_tree_node_->current_frame_host()->ShouldReuseCompositing(
+            *GetSiteInstance())
+            ? frame_tree_node_->current_frame_host()
+            : nullptr;
+    if (owned_render_widget_host_ && previous_rfh) {
+      previous_rfh->GetRenderWidgetHost()->SetViewIsFrameSinkIdOwner(false);
+      owned_render_widget_host_->SetViewIsFrameSinkIdOwner(true);
+    }
+  }
+
   // TODO(clamy): We should stop having a special case for same-document
   // navigation and just put them in the general map of NavigationRequests.
   if (navigation_request &&
@@ -15952,6 +16002,38 @@ bool RenderFrameHostImpl::ShouldChangeRenderFrameHostOnSameSiteNavigation()
   return ShouldCreateNewRenderFrameHostOnSameSiteNavigation(
       is_main_frame(), is_local_root(), has_committed_any_navigation(),
       must_be_replaced());
+}
+
+bool RenderFrameHostImpl::ShouldReuseCompositing(
+    SiteInstanceImpl& speculative_site_instance) const {
+  if (!ShouldChangeRenderFrameHostOnSameSiteNavigation()) {
+    return false;
+  }
+
+  // This indicates that the renderer process corresponding to this frame has
+  // crashed and there is no compositor to reuse.
+  if (must_be_replaced_) {
+    return false;
+  }
+
+  if (!base::FeatureList::IsEnabled(features::kRenderDocumentCompositorReuse)) {
+    return false;
+  }
+
+  if (GetSiteInstance()->group() != speculative_site_instance.group()) {
+    return false;
+  }
+
+  CHECK_EQ(GetProcess(), speculative_site_instance.GetProcess());
+
+  // TODO(khushalsagar): We'll need this for main frames as well but the
+  // code for RFH creation/init limits it to subframes for now.
+  bool is_main_frame = !GetParent();
+  if (is_main_frame) {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace content

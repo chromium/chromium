@@ -94,6 +94,8 @@ class FlingSchedulerTest : public testing::Test,
     delegate_ = std::make_unique<MockRenderWidgetHostDelegate>();
     widget_host_ = TestRenderWidgetHost::Create(
         /* frame_tree= */ nullptr, delegate_.get(),
+        RenderWidgetHostImpl::DefaultFrameSinkId(*site_instance_group_,
+                                                 routing_id),
         site_instance_group_->GetSafeRef(), routing_id, false);
     delegate_->set_widget_host(widget_host_.get());
     return std::make_unique<TestRenderWidgetHostView>(widget_host_.get());

@@ -74,11 +74,7 @@ TestRenderWidgetHostView::TestRenderWidgetHostView(RenderWidgetHost* rwh)
 
   host()->SetView(this);
 
-  if (host()->delegate() && host()->delegate()->GetInputEventRouter() &&
-      GetFrameSinkId().is_valid()) {
-    host()->delegate()->GetInputEventRouter()->AddFrameSinkIdOwner(
-        GetFrameSinkId(), this);
-  }
+  SetIsFrameSinkIdOwner(true);
 
 #if defined(USE_AURA)
   window_ = std::make_unique<aura::Window>(
@@ -379,6 +375,7 @@ TestRenderViewHost::TestRenderViewHost(
                          std::move(main_browsing_context_state),
                          create_case),
       delete_counter_(nullptr) {
+  GetWidget()->SetViewIsFrameSinkIdOwner(true);
   if (frame_tree->is_fenced_frame()) {
     // TestRenderWidgetHostViewChildFrame deletes itself in
     // RenderWidgetHostViewChildFrame::Destroy.

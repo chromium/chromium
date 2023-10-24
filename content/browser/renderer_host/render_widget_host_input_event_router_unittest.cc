@@ -212,12 +212,15 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
     site_instance_group_root_ =
         base::WrapRefCounted(SiteInstanceGroup::CreateForTesting(
             browser_context_.get(), process_host_root_.get()));
+    auto routing_id = process_host_root_->GetNextRoutingID();
     widget_host_root_ = RenderWidgetHostImpl::Create(
         /*frame_tree=*/nullptr, &delegate_,
-        site_instance_group_root_->GetSafeRef(),
-        process_host_root_->GetNextRoutingID(),
+        RenderWidgetHostImpl::DefaultFrameSinkId(*site_instance_group_root_,
+                                                 routing_id),
+        site_instance_group_root_->GetSafeRef(), routing_id,
         /*hidden=*/false, /*renderer_initiated_creation=*/false,
         std::make_unique<FrameTokenMessageQueue>());
+    widget_host_root_->SetViewIsFrameSinkIdOwner(true);
 
     mojo::AssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
     mojo::AssociatedRemote<blink::mojom::Widget> blink_widget;
@@ -272,12 +275,15 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
     child.site_instance_group =
         base::WrapRefCounted(SiteInstanceGroup::CreateForTesting(
             site_instance_group_root_.get(), child.process_host.get()));
+    auto routing_id = child.process_host->GetNextRoutingID();
     child.widget_host = RenderWidgetHostImpl::Create(
         /*frame_tree=*/nullptr, &delegate_,
-        child.site_instance_group->GetSafeRef(),
-        child.process_host->GetNextRoutingID(),
+        RenderWidgetHostImpl::DefaultFrameSinkId(*child.site_instance_group,
+                                                 routing_id),
+        child.site_instance_group->GetSafeRef(), routing_id,
         /*hidden=*/false, /*renderer_initiated_creation=*/false,
         std::make_unique<FrameTokenMessageQueue>());
+    child.widget_host->SetViewIsFrameSinkIdOwner(true);
     child.view = std::make_unique<TestRenderWidgetHostViewChildFrame>(
         child.widget_host.get());
     child.frame_connector = std::make_unique<MockFrameConnector>(

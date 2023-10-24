@@ -91,7 +91,14 @@ void RendererCancellationThrottle::OnTimeout() {
   // Warn that the renderer is unresponsive.
   NavigationRequest* request = NavigationRequest::From(navigation_handle());
   DCHECK(request);
-  request->GetRenderFrameHost()->GetRenderWidgetHost()->RendererIsUnresponsive(
+
+  auto* previous_rfh =
+      RenderFrameHostImpl::FromID(request->GetPreviousRenderFrameHostId());
+  if (!previous_rfh) {
+    return;
+  }
+
+  previous_rfh->GetRenderWidgetHost()->RendererIsUnresponsive(
       base::BindRepeating(&RendererCancellationThrottle::RestartTimeout,
                           weak_factory_.GetWeakPtr()));
 }

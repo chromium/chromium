@@ -634,13 +634,6 @@ RenderWidgetHostViewAndroid::RenderWidgetHostViewAndroid(
         TakeContentToVisibleTimeRequest(host()));
   }
 
-  // Let the page-level input event router know about our frame sink ID
-  // for surface-based hit testing.
-  if (ShouldRouteEvents()) {
-    host()->delegate()->GetInputEventRouter()->AddFrameSinkIdOwner(
-        GetFrameSinkId(), this);
-  }
-
   host()->SetView(this);
   touch_selection_controller_client_manager_ =
       std::make_unique<TouchSelectionControllerClientManagerAndroid>(this);

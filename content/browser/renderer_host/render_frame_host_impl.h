@@ -3390,6 +3390,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojo::PendingReceiver<network::mojom::SharedDictionaryAccessObserver>
           observer) override;
 
+  // Returns true if this RFH's compositor should be reused by a speculattive
+  // RFH with the `speculative_site_instance`.
+  // Returns false if the speculative RFH should initialize a new compositor.
+  bool ShouldReuseCompositing(
+      SiteInstanceImpl& speculative_site_instance) const;
+
   // Resets any waiting state of this RenderFrameHost that is no longer
   // relevant.
   void ResetWaitingState();
@@ -4100,6 +4106,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // APIs.
   // https://github.com/ivansandrk/additional-windowing-controls/blob/main/awc-explainer.md
   bool CanUseWindowingControls(base::StringPiece js_api_name);
+
+  // Notifies when the renderer side Widget instance has been created and mojo
+  // interfaces to it can be bound.
+  void RendererWidgetCreated();
 
   // The RenderViewHost that this RenderFrameHost is associated with.
   //
@@ -5237,6 +5247,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // See: https://chromestatus.com/feature/6002307972464640
   absl::optional<blink::DocumentToken>
       fullscreen_document_on_document_element_ready_ = absl::nullopt;
+
+  // If true, the renderer side widget is created after the navigation is
+  // committed.
+  bool waiting_for_renderer_widget_creation_after_commit_ = false;
 
   // WeakPtrFactories are the last members, to ensure they are destroyed before
   // all other fields of `this`.

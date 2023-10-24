@@ -326,14 +326,16 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
                            base::SafeRef<SiteInstanceGroup> site_instance_group,
                            int32_t routing_id,
                            bool for_frame_widget)
-      : RenderWidgetHostImpl(/*frame_tree=*/nullptr,
-                             /*self_owned=*/false,
-                             delegate,
-                             std::move(site_instance_group),
-                             routing_id,
-                             /*hidden=*/false,
-                             /*renderer_initiated_creation=*/false,
-                             std::make_unique<FrameTokenMessageQueue>()) {
+      : RenderWidgetHostImpl(
+            /*frame_tree=*/nullptr,
+            /*self_owned=*/false,
+            DefaultFrameSinkId(*site_instance_group, routing_id),
+            delegate,
+            std::move(site_instance_group),
+            routing_id,
+            /*hidden=*/false,
+            /*renderer_initiated_creation=*/false,
+            std::make_unique<FrameTokenMessageQueue>()) {
     mojo::AssociatedRemote<blink::mojom::WidgetHost> widget_host;
     BindWidgetInterfaces(widget_host.BindNewEndpointAndPassDedicatedReceiver(),
                          TestRenderWidgetHost::CreateStubWidgetRemote());
