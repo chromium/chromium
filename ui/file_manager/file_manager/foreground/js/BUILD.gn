@@ -545,7 +545,6 @@ js_library("file_watcher") {
     "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:event_target",
     "//ui/file_manager/file_manager/common/js:async_util",
-    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
   ]
 }
@@ -555,7 +554,6 @@ js_library("folder_shortcuts_data_model") {
     "//ash/webui/common/resources:event_target",
     "//ui/file_manager/file_manager/common/js:async_util",
     "//ui/file_manager/file_manager/common/js:filtered_volume_manager",
-    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs/ts:store",
   ]
@@ -656,7 +654,6 @@ js_library("metadata_update_controller") {
     "metadata:metadata_model",
     "ui:file_metadata_formatter",
     "ui:list_container",
-    "//ui/file_manager/file_manager/common/js:util",
   ]
 }
 

@@ -10,7 +10,7 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {getDlpRestrictionDetails, getHoldingSpaceState, startIOTask} from '../../common/js/api.js';
 import {DialogType, isModal} from '../../common/js/dialog_type.js';
 import {getFocusedTreeItem, isDirectoryTree, isDirectoryTreeItem} from '../../common/js/dom_utils.js';
-import {isFakeEntry, isRecentRootType, isSameEntry, isTeamDriveRoot, isTeamDrivesGrandRoot, isTrashEntry, isTrashRoot, isTrashRootType} from '../../common/js/entry_utils.js';
+import {entriesToURLs, isFakeEntry, isNonModifiable, isRecentRootType, isSameEntry, isSameVolume, isTeamDriveRoot, isTeamDrivesGrandRoot, isTrashEntry, isTrashRoot, isTrashRootType, unwrapEntry} from '../../common/js/entry_utils.js';
 import {FileType} from '../../common/js/file_type.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
 import {isDlpEnabled, isDriveFsBulkPinningEnabled, isMirrorSyncEnabled, isNewDirectoryTreeEnabled, isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
@@ -529,7 +529,7 @@ CommandUtil.isDriveEntries = (entries, volumeManager) => {
   }
 
   if (volumeInfo.volumeType === VolumeManagerCommon.VolumeType.DRIVE &&
-      util.isSameVolume(entries, volumeManager)) {
+      isSameVolume(entries, volumeManager)) {
     return true;
   }
 
@@ -1668,7 +1668,7 @@ export class DeleteCommand extends FilesCommand {
     return entries.some(entry => {
       const locationInfo = fileManager.volumeManager.getLocationInfo(entry);
       return (locationInfo && locationInfo.isReadOnly) ||
-          util.isNonModifiable(fileManager.volumeManager, entry);
+          isNonModifiable(fileManager.volumeManager, entry);
     });
   }
 }
@@ -2068,7 +2068,7 @@ CommandHandler.cutCopyCommand_ = new (class extends FilesCommand {
       }
 
       // For MyFiles/Downloads and MyFiles/PluginVm we only allow copy.
-      if (isMove && util.isNonModifiable(volumeManager, entry)) {
+      if (isMove && isNonModifiable(volumeManager, entry)) {
         return false;
       }
 
@@ -2119,7 +2119,7 @@ CommandHandler.cutCopyCommand_ = new (class extends FilesCommand {
       // For MyFiles/Downloads we only allow copy.
       if (isMove &&
           fileManager.getSelection().entries.some(
-              util.isNonModifiable.bind(null, volumeManager))) {
+              isNonModifiable.bind(null, volumeManager))) {
         return false;
       }
 
@@ -2153,7 +2153,7 @@ CommandHandler.COMMANDS_['rename'] = new (class extends FilesCommand {
   // type.
   execute(event, fileManager) {
     const entry = CommandUtil.getCommandEntry(fileManager, event.target);
-    if (util.isNonModifiable(fileManager.volumeManager, entry)) {
+    if (isNonModifiable(fileManager.volumeManager, entry)) {
       return;
     }
     if (CommandUtil.isOnTrashRoot(fileManager)) {
@@ -2250,8 +2250,7 @@ CommandHandler.COMMANDS_['rename'] = new (class extends FilesCommand {
             // undefined' is not assignable to parameter of type
             // 'FileSystemEntry | FakeEntry'.
             fileManager.volumeManager, entries[0]) ||
-        entries.some(
-            util.isNonModifiable.bind(null, fileManager.volumeManager))) {
+        entries.some(isNonModifiable.bind(null, fileManager.volumeManager))) {
       event.canExecute = false;
       event.command.setHidden(true);
       return;
@@ -2459,8 +2458,7 @@ CommandHandler
                               .map(m => m.sourceUrl || '');
     chrome.fileManagerPrivate.invokeSharesheet(
         // @ts-ignore: error TS7006: Parameter 'e' implicitly has an 'any' type.
-        entries.map(e => util.unwrapEntry(e)), launchSource, dlpSourceUrls,
-        () => {
+        entries.map(e => unwrapEntry(e)), launchSource, dlpSourceUrls, () => {
           if (chrome.runtime.lastError) {
             console.warn(chrome.runtime.lastError.message);
             return;
@@ -2500,7 +2498,7 @@ CommandHandler
 
     chrome.fileManagerPrivate.sharesheetHasTargets(
         // @ts-ignore: error TS7006: Parameter 'e' implicitly has an 'any' type.
-        entries.map(e => util.unwrapEntry(e)), hasTargets => {
+        entries.map(e => unwrapEntry(e)), hasTargets => {
           if (chrome.runtime.lastError) {
             console.warn(chrome.runtime.lastError.message);
             return;
@@ -2628,7 +2626,7 @@ CommandHandler.COMMANDS_['toggle-holding-space'] =
         // @ts-ignore: error TS2345: Argument of type '(FileSystemEntry |
         // FilesAppEntry)[]' is not assignable to parameter of type
         // 'FileSystemEntry[]'.
-        const selectedUrls = util.entriesToURLs(entries);
+        const selectedUrls = entriesToURLs(entries);
         // @ts-ignore: error TS7053: Element implicitly has an 'any' type
         // because expression of type 'string' can't be used to index type '{}'.
         this.addsItems_ = selectedUrls.some(url => !itemsSet[url]);
@@ -3328,7 +3326,7 @@ class GuestOsShareCommand extends FilesCommand {
       chrome.fileManagerPrivate.sharePathsWithCrostini(
           // @ts-ignore: error TS2322: Type 'FileSystemEntry | FilesAppEntry' is
           // not assignable to type 'FileSystemEntry'.
-          this.vmName_, [util.unwrapEntry(entry)], true /* persist */, () => {
+          this.vmName_, [unwrapEntry(entry)], true /* persist */, () => {
             if (chrome.runtime.lastError) {
               console.warn(
                   'Error sharing with guest: ' +

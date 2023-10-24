@@ -8,21 +8,17 @@
  * which allows finer-grained control over introducing dependencies.
  */
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
 import {EntryLocation} from '../../externs/entry_location.js';
-import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {State} from '../../externs/ts/state.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
 import {constants} from '../../foreground/js/constants.js';
 import {getStore} from '../../state/store.js';
 
 import {promisify} from './api.js';
-import {createDOMError} from './dom_utils.js';
-import {isFakeEntry} from './entry_utils.js';
-import {EntryList} from './files_app_entry_types.js';
-import {isArcVmEnabled, isDriveFsBulkPinningEnabled, isPluginVmEnabled} from './flags.js';
+import {unwrapEntry} from './entry_utils.js';
+import {isArcVmEnabled, isDriveFsBulkPinningEnabled} from './flags.js';
 import {VolumeManagerCommon} from './volume_manager_types.js';
 
 /**
@@ -282,77 +278,6 @@ util.collator =
     new Intl.Collator([], {usage: 'sort', numeric: true, sensitivity: 'base'});
 
 /**
- * Compare by name. The 2 entries must be in same directory.
- * @param {Entry|FilesAppEntry} entry1 First entry.
- * @param {Entry|FilesAppEntry} entry2 Second entry.
- * @return {number} Compare result.
- */
-util.compareName = (entry1, entry2) => {
-  return util.collator.compare(entry1.name, entry2.name);
-};
-
-/**
- * Compare by label (i18n name). The 2 entries must be in same directory.
- * @param {EntryLocation} locationInfo
- * @param {!Entry|!FilesAppEntry} entry1 First entry.
- * @param {!Entry|!FilesAppEntry} entry2 Second entry.
- * @return {number} Compare result.
- */
-util.compareLabel = (locationInfo, entry1, entry2) => {
-  return util.collator.compare(
-      util.getEntryLabel(locationInfo, entry1),
-      util.getEntryLabel(locationInfo, entry2));
-};
-
-/**
- * Compare by path.
- * @param {Entry|FilesAppEntry} entry1 First entry.
- * @param {Entry|FilesAppEntry} entry2 Second entry.
- * @return {number} Compare result.
- */
-util.comparePath = (entry1, entry2) => {
-  return util.collator.compare(entry1.fullPath, entry2.fullPath);
-};
-
-/**
- * @param {EntryLocation} locationInfo
- * @param {!Array<Entry|FilesAppEntry>} bottomEntries entries that should be
- * grouped in the bottom, used for sorting Linux and Play files entries after
- * other folders in MyFiles.
- * return {function(Entry|FilesAppEntry, Entry|FilesAppEntry) to compare entries
- * by name.
- */
-util.compareLabelAndGroupBottomEntries = (locationInfo, bottomEntries) => {
-  const childrenMap = new Map();
-  bottomEntries.forEach((entry) => {
-    childrenMap.set(entry.toURL(), entry);
-  });
-
-  /**
-   * Compare entries putting entries from |bottomEntries| in the bottom and
-   * sort by name within entries that are the same type in regards to
-   * |bottomEntries|.
-   * @param {Entry|FilesAppEntry} entry1 First entry.
-   * @param {Entry|FilesAppEntry} entry2 First entry.
-   */
-  function compare_(entry1, entry2) {
-    // Bottom entry here means Linux or Play files, which should appear after
-    // all native entries.
-    const isBottomlEntry1 = childrenMap.has(entry1.toURL()) ? 1 : 0;
-    const isBottomlEntry2 = childrenMap.has(entry2.toURL()) ? 1 : 0;
-
-    // When there are the same type, just compare by label.
-    if (isBottomlEntry1 === isBottomlEntry2) {
-      return util.compareLabel(locationInfo, entry1, entry2);
-    }
-
-    return isBottomlEntry1 - isBottomlEntry2;
-  }
-
-  return compare_;
-};
-
-/**
  * The last URL with visitURL().
  * @private @type {string}
  */
@@ -393,103 +318,6 @@ util.getLastVisitedURL = () => {
 util.getCurrentLocaleOrDefault = () => {
   const locale = str('UI_LOCALE') || 'en';
   return locale.replace(/_/g, '-');
-};
-
-/**
- * Converts array of entries to an array of corresponding URLs.
- * @param {Array<Entry>} entries Input array of entries.
- * @return {!Array<string>} Output array of URLs.
- */
-util.entriesToURLs = entries => {
-  return entries.map(entry => {
-    // When building file_manager_base.js, cachedUrl is not referred other than
-    // here. Thus closure compiler raises an error if we refer the property like
-    // entry.cachedUrl.
-    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-    // expression of type '"cachedUrl"' can't be used to index type
-    // 'FileSystemEntry'.
-    return entry['cachedUrl'] || entry.toURL();
-  });
-};
-
-/**
- * Converts array of URLs to an array of corresponding Entries.
- *
- * @param {Array<string>} urls Input array of URLs.
- * @param {function(!Array<!Entry>, !Array<!URL>)=} opt_callback Completion
- *     callback with array of success Entries and failure URLs.
- * TODO: Add interface for the return object type.
- * @return {Promise<*>} Promise fulfilled with the object that has entries
-property
-// @ts-ignore: error TS2314: Generic type 'Promise<T>' requires 1 type
-argument(s).
- *     and failureUrls property. The promise is never rejected.
- */
-util.URLsToEntries = (urls, opt_callback) => {
-  const promises = urls.map(url => {
-    return new Promise(window.webkitResolveLocalFileSystemURL.bind(null, url))
-        .then(
-            entry => {
-              return {entry: entry};
-            },
-            // @ts-ignore: error TS6133: 'failureUrl' is declared but its value
-            // is never read.
-            failureUrl => {
-              // Not an error. Possibly, the file is not accessible anymore.
-              console.warn('Failed to resolve the file with url: ' + url + '.');
-              return {failureUrl: url};
-            });
-  });
-  const resultPromise = Promise.all(promises).then(results => {
-    const entries = [];
-    const failureUrls = [];
-    for (let i = 0; i < results.length; i++) {
-      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-      if ('entry' in results[i]) {
-        // @ts-ignore: error TS2339: Property 'entry' does not exist on type '{
-        // entry: FileSystemEntry; } | { failureUrl: string; }'.
-        entries.push(results[i].entry);
-      }
-      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-      if ('failureUrl' in results[i]) {
-        // @ts-ignore: error TS2339: Property 'failureUrl' does not exist on
-        // type '{ entry: FileSystemEntry; } | { failureUrl: string; }'.
-        failureUrls.push(results[i].failureUrl);
-      }
-    }
-    return {
-      entries: entries,
-      failureUrls: failureUrls,
-    };
-  });
-
-  // Invoke the callback. If opt_callback is specified, resultPromise is still
-  // returned and fulfilled with a result.
-  if (opt_callback) {
-    resultPromise
-        .then(result => {
-          opt_callback(result.entries, result.failureUrls);
-        })
-        .catch(error => {
-          console.warn(
-              'util.URLsToEntries is failed.',
-              error.stack ? error.stack : error);
-        });
-  }
-
-  return resultPromise;
-};
-
-/**
- * Converts a url into an {!Entry}, if possible.
- *
- * @param {string} url
- *
- * @return {!Promise<!Entry>} Promise Resolves with the corresponding
- *     {!Entry} if possible, else rejects.
- */
-util.urlToEntry = url => {
-  return new Promise(window.webkitResolveLocalFileSystemURL.bind(null, url));
 };
 
 /**
@@ -658,96 +486,6 @@ util.getEntryLabel = (locationInfo, entry) => {
 };
 
 /**
- * Returns true if the given |entry| matches any of the special entries:
- *
- *  - "My Files"/{Downloads,PvmDefault,Camera} directories, or
- *  - "Play Files"/{<any-directory>,DCIM/Camera} directories, or
- *  - "Linux Files" root "/" directory
- *  - "Guest OS" root "/" directory
- *
- * which cannot be modified such as deleted/cut or renamed.
- *
- * @param {!VolumeManager} volumeManager
- * @param {(Entry|FakeEntry)} entry Entry or a fake entry.
- * @return {boolean}
- */
-util.isNonModifiable = (volumeManager, entry) => {
-  if (!entry) {
-    return false;
-  }
-
-  if (isFakeEntry(entry)) {
-    return true;
-  }
-
-  if (!volumeManager) {
-    return false;
-  }
-
-  const volumeInfo = volumeManager.getVolumeInfo(entry);
-  if (!volumeInfo) {
-    return false;
-  }
-
-  const volumeType = volumeInfo.volumeType;
-
-  if (volumeType === VolumeManagerCommon.RootType.DOWNLOADS) {
-    if (!entry.isDirectory) {
-      return false;
-    }
-
-    const fullPath = entry.fullPath;
-
-    if (fullPath === '/Downloads') {
-      return true;
-    }
-
-    if (fullPath === '/PvmDefault' && isPluginVmEnabled()) {
-      return true;
-    }
-
-    if (fullPath === '/Camera') {
-      return true;
-    }
-
-    return false;
-  }
-
-  if (volumeType === VolumeManagerCommon.RootType.ANDROID_FILES) {
-    if (!entry.isDirectory) {
-      return false;
-    }
-
-    const fullPath = entry.fullPath;
-
-    if (fullPath === '/') {
-      return true;
-    }
-
-    const isRootDirectory = fullPath === ('/' + entry.name);
-    if (isRootDirectory) {
-      return true;
-    }
-
-    if (fullPath === '/DCIM/Camera') {
-      return true;
-    }
-
-    return false;
-  }
-
-  if (volumeType === VolumeManagerCommon.RootType.CROSTINI) {
-    return entry.fullPath === '/';
-  }
-
-  if (volumeType === VolumeManagerCommon.RootType.GUEST_OS) {
-    return entry.fullPath === '/';
-  }
-
-  return false;
-};
-
-/**
  * Checks if an API call returned an error, and if yes then prints it.
  */
 util.checkAPIError = () => {
@@ -791,117 +529,6 @@ util.timeoutPromise = (promise, ms, opt_message) => {
 };
 
 /**
- * Retrieves all entries inside the given |rootEntry|.
- * @param {!DirectoryEntry} rootEntry
- * @param {function(!Array<!Entry>):void} entriesCallback Called when some chunk
- *     of entries are read. This can be called a couple of times until the
- *     completion.
- * @param {function():void} successCallback Called when the read is completed.
- * @param {function(DOMError):void} errorCallback Called when an error occurs.
- * @param {function():boolean} shouldStop Callback to check if the read process
- *     should stop or not. When this callback is called and it returns true,
- *     the remaining recursive reads will be aborted.
- * @param {number=} opt_maxDepth Max depth to delve directories recursively.
- *     If 0 is specified, only the rootEntry will be read. If -1 is specified
- *     or opt_maxDepth is unspecified, the depth of recursion is unlimited.
- */
-util.readEntriesRecursively =
-    (rootEntry, entriesCallback, successCallback, errorCallback, shouldStop,
-     opt_maxDepth) => {
-      let numRunningTasks = 0;
-      // @ts-ignore: error TS7034: Variable 'error' implicitly has type 'any' in
-      // some locations where its type cannot be determined.
-      let error = null;
-      const maxDepth = opt_maxDepth === undefined ? -1 : opt_maxDepth;
-      const maybeRunCallback = () => {
-        if (numRunningTasks === 0) {
-          if (shouldStop()) {
-            errorCallback(createDOMError(util.FileError.ABORT_ERR));
-            // @ts-ignore: error TS7005: Variable 'error' implicitly has an
-            // 'any' type.
-          } else if (error) {
-            errorCallback(error);
-          } else {
-            successCallback();
-          }
-        }
-      };
-      // @ts-ignore: error TS7006: Parameter 'depth' implicitly has an 'any'
-      // type.
-      const processEntry = (entry, depth) => {
-        // @ts-ignore: error TS7006: Parameter 'fileError' implicitly has an
-        // 'any' type.
-        const onError = fileError => {
-          // @ts-ignore: error TS7005: Variable 'error' implicitly has an 'any'
-          // type.
-          if (!error) {
-            error = fileError;
-          }
-          numRunningTasks--;
-          maybeRunCallback();
-        };
-        // @ts-ignore: error TS7006: Parameter 'entries' implicitly has an 'any'
-        // type.
-        const onSuccess = entries => {
-          // @ts-ignore: error TS7005: Variable 'error' implicitly has an 'any'
-          // type.
-          if (shouldStop() || error || entries.length === 0) {
-            numRunningTasks--;
-            maybeRunCallback();
-            return;
-          }
-          entriesCallback(entries);
-          for (let i = 0; i < entries.length; i++) {
-            if (entries[i].isDirectory &&
-                (maxDepth === -1 || depth < maxDepth)) {
-              processEntry(entries[i], depth + 1);
-            }
-          }
-          // Read remaining entries.
-          reader.readEntries(onSuccess, onError);
-        };
-
-        numRunningTasks++;
-        const reader = entry.createReader();
-        reader.readEntries(onSuccess, onError);
-      };
-
-      processEntry(rootEntry, 0);
-    };
-
-/**
- * Do not remove or modify.  Used in vm.CrostiniFiles tast tests at:
- * https://chromium.googlesource.com/chromiumos/platform/tast-tests
- *
- * Get all entries for the given volume.
- * @param {!import('../../externs/volume_info.js').VolumeInfo} volumeInfo
- * @return {!Promise<Record<string, Entry>>} all entries keyed by fullPath.
- */
-util.getEntries = volumeInfo => {
-  const root = volumeInfo.fileSystem.root;
-  return new Promise((resolve, reject) => {
-    const allEntries = {'/': root};
-    // @ts-ignore: error TS7006: Parameter 'someEntries' implicitly has an 'any'
-    // type.
-    function entriesCallback(someEntries) {
-      // @ts-ignore: error TS7006: Parameter 'entry' implicitly has an 'any'
-      // type.
-      someEntries.forEach(entry => {
-        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-        // because expression of type 'any' can't be used to index type '{ '/':
-        // FileSystemDirectoryEntry; }'.
-        allEntries[entry.fullPath] = entry;
-      });
-    }
-    function successCallback() {
-      resolve(allEntries);
-    }
-    util.readEntriesRecursively(
-        root, entriesCallback, successCallback, reject, () => false);
-  });
-};
-
-/**
  * Executes a functions only when the context is not the incognito one in a
  * regular session. Returns a promise that when fulfilled informs us whether or
  * not the callback was invoked.
@@ -915,130 +542,6 @@ util.doIfPrimaryContext = async (callback) => {
     return true;
   }
   return false;
-};
-
-/**
- * Casts an Entry to a FilesAppEntry, to access a FilesAppEntry-specific
- * property without Closure compiler complaining.
- * TODO(lucmult): Wrap Entry in a FilesAppEntry derived class and remove
- * this function. https://crbug.com/835203.
- * @param {Entry|FilesAppEntry} entry
- * @return {FilesAppEntry}
- */
-util.toFilesAppEntry = entry => {
-  return /** @type {FilesAppEntry} */ (entry);
-};
-
-/**
- * Casts an Entry to a EntryList, to access a FilesAppEntry-specific
- * property without Closure compiler complaining.
- * @param {Entry|FilesAppEntry} entry
- * @return {EntryList}
- */
-util.toEntryList = entry => {
-  return /** @type {EntryList} */ (entry);
-};
-
-/**
- * Returns true if entry is FileSystemEntry or FileSystemDirectoryEntry, it
- * returns false if it's FakeEntry or any one of the FilesAppEntry types.
- * TODO(lucmult): Wrap Entry in a FilesAppEntry derived class and remove
- * this function. https://crbug.com/835203.
- * @param {Entry|FilesAppEntry} entry
- * @return {boolean}
- */
-util.isNativeEntry = entry => {
-  entry = util.toFilesAppEntry(entry);
-  // Only FilesAppEntry types has |type_name| attribute.
-  return entry.type_name === undefined;
-};
-
-/**
- * For FilesAppEntry types that wraps a native entry, returns the native entry
- * to be able to send to fileManagerPrivate API.
- * @param {Entry|FilesAppEntry} entry
- * @return {Entry|FilesAppEntry}
- */
-util.unwrapEntry = entry => {
-  if (!entry) {
-    return entry;
-  }
-
-  // @ts-ignore: error TS2339: Property 'getNativeEntry' does not exist on type
-  // 'FileSystemEntry | FilesAppEntry'.
-  const nativeEntry = entry.getNativeEntry && entry.getNativeEntry();
-  if (nativeEntry) {
-    return nativeEntry;
-  }
-
-  return entry;
-};
-
-/**
- * Used for logs and debugging. It tries to tell what type is the entry, its
- * path and URL.
- *
- * @param {Entry|FilesAppEntry} entry
- * @return {string}
- */
-util.entryDebugString = (entry) => {
-  if (entry === null) {
-    return 'entry is null';
-  }
-  if (entry === undefined) {
-    return 'entry is undefined';
-  }
-  let typeName = '';
-  if (entry.constructor && entry.constructor.name) {
-    typeName = entry.constructor.name;
-  } else {
-    typeName = Object.prototype.toString.call(entry);
-  }
-  let entryDescription = '(' + typeName + ') ';
-  if (entry.fullPath) {
-    entryDescription = entryDescription + entry.fullPath + ' ';
-  }
-  if (entry.toURL) {
-    entryDescription = entryDescription + entry.toURL();
-  }
-  return entryDescription;
-};
-
-/**
- * Returns true if all entries belong to the same volume. If there are no
- * entries it also returns false.
- *
- * @param {!Array<Entry|FilesAppEntry>} entries
- * @param {!VolumeManager} volumeManager
- * @return boolean
- */
-util.isSameVolume = (entries, volumeManager) => {
-  if (!entries.length) {
-    return false;
-  }
-
-  const firstEntry = entries[0];
-  if (!firstEntry) {
-    return false;
-  }
-  const volumeInfo = volumeManager.getVolumeInfo(firstEntry);
-
-  for (let i = 1; i < entries.length; i++) {
-    if (!entries[i]) {
-      return false;
-    }
-    // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry |
-    // FilesAppEntry | undefined' is not assignable to parameter of type
-    // 'FileSystemEntry | FilesAppEntry'.
-    const volumeInfoToCompare = volumeManager.getVolumeInfo(assert(entries[i]));
-    if (!volumeInfoToCompare ||
-        // @ts-ignore: error TS18047: 'volumeInfo' is possibly 'null'.
-        volumeInfoToCompare.volumeId !== volumeInfo.volumeId) {
-      return false;
-    }
-  }
-
-  return true;
 };
 
 /**
@@ -1151,7 +654,7 @@ util.isOneDrive = (volumeInfo) => {
  * @return {Entry|FilesAppEntry}
  */
 util.getODFSMetadataQueryEntry = (odfsVolumeInfo) => {
-  return util.unwrapEntry(odfsVolumeInfo.displayRoot);
+  return unwrapEntry(odfsVolumeInfo.displayRoot);
 };
 
 /**

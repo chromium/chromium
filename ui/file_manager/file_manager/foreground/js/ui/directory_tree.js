@@ -7,7 +7,7 @@ import {dispatchSimpleEvent, getPropertyDescriptor, PropertyKind} from 'chrome:/
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
-import {isComputersEntry, isDescendantEntry, isEntryInsideDrive, isRecentRootType, isSameEntry, isSharedDriveEntry} from '../../../common/js/entry_utils.js';
+import {compareLabelAndGroupBottomEntries, compareName, isComputersEntry, isDescendantEntry, isEntryInsideDrive, isRecentRootType, isSameEntry, isSharedDriveEntry} from '../../../common/js/entry_utils.js';
 import {FileType} from '../../../common/js/file_type.js';
 import {isJellyEnabled} from '../../../common/js/flags.js';
 import {vmTypeToIconName} from '../../../common/js/icon_util.js';
@@ -706,7 +706,7 @@ export class DirectoryItem extends FilesTreeItem {
    * @returns {!Array<!Entry>}
    */
   sortEntries(entries) {
-    entries.sort(util.compareName);
+    entries.sort(compareName);
     const filter = this.fileFilter_.filter.bind(this.fileFilter_);
     return entries.filter(filter);
   }
@@ -1199,7 +1199,7 @@ export class EntryListItem extends DirectoryItem {
         // undefined' is not assignable to parameter of type 'FileSystemEntry |
         // FilesAppEntry'.
         this.parentTree_.volumeManager_.getLocationInfo(entries[0]);
-    const compareFunction = util.compareLabelAndGroupBottomEntries(
+    const compareFunction = compareLabelAndGroupBottomEntries(
         // @ts-ignore: error TS2339: Property 'getUIChildren' does not exist on
         // type 'FileSystemDirectoryEntry'.
         locationInfo, this.entry.getUIChildren());
@@ -2548,7 +2548,7 @@ export class DirectoryTree extends Tree {
     while (addAt < parentItem.items.length &&
            // @ts-ignore: error TS2339: Property 'items' does not exist on type
            // 'DirectoryItem'.
-           util.compareName(parentItem.items[addAt].entry, newDirectory) < 0) {
+           compareName(parentItem.items[addAt].entry, newDirectory) < 0) {
       addAt++;
     }
 

@@ -5,11 +5,11 @@
 import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
+import {entriesToURLs} from '../../common/js/entry_utils.js';
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {installMockChrome, MockMetrics} from '../../common/js/mock_chrome.js';
 import {MockDirectoryEntry, MockEntry} from '../../common/js/mock_entry.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
-import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {addVolume, convertVolumeInfoAndMetadataToVolume, updateIsInteractiveVolume} from '../../state/ducks/volumes.js';
 import {createMyFilesDataWithVolumeEntry} from '../../state/ducks/volumes_unittest.js';
@@ -139,7 +139,7 @@ export async function testToggleHoldingSpaceCommand(done) {
       currentVolumeInfo: {
         volumeType: VolumeManagerCommon.VolumeType.DOWNLOADS,
       },
-      itemUrls: util.entriesToURLs([downloadFileEntry]),
+      itemUrls: entriesToURLs([downloadFileEntry]),
       selection: [downloadFileEntry],
       expect: {
         canExecute: true,

@@ -5,26 +5,27 @@
 import {EntryLocation} from '../../externs/entry_location.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {EntryType, FileData} from '../../externs/ts/state.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
 import {driveRootEntryListKey, myFilesEntryListKey} from '../../state/ducks/volumes.js';
 
+import {createDOMError} from './dom_utils.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from './files_app_entry_types.js';
+import {isPluginVmEnabled} from './flags.js';
 import {util} from './util.js';
 import {VolumeManagerCommon} from './volume_manager_types.js';
 
 /**
- * Type guard used to identify if a generic FileSystemEntry is actually a
- * FileSystemDirectoryEntry.
+ * Type guard used to identify if a generic Entry is actually a DirectoryEntry.
  */
-export function isFileSystemDirectoryEntry(entry: FileSystemEntry):
-    entry is FileSystemDirectoryEntry {
+export function isFileSystemDirectoryEntry(entry: Entry|FilesAppEntry):
+    entry is(DirectoryEntry | FilesAppDirEntry) {
   return entry.isDirectory;
 }
 
 /**
- * Type guard used to identify if a generic FileSystemEntry is actually a
- * FileSystemFileEntry.
+ * Type guard used to identify if a generic Entry is actually a FileEntry.
  */
-export function isFileSystemFileEntry(entry: FileSystemEntry):
+export function isFileSystemFileEntry(entry: Entry):
     entry is FileSystemFileEntry {
   return entry.isFile;
 }
@@ -166,7 +167,7 @@ export function sortEntries(
     // TODO(b/271485133): Do not use getLocationInfo() for sorting.
     const locationInfo = volumeManager.getLocationInfo(entries[0]!);
     if (locationInfo) {
-      const compareFunction = util.compareLabelAndGroupBottomEntries(
+      const compareFunction = compareLabelAndGroupBottomEntries(
           locationInfo,
           // Only Linux/Play/GuestOS files are in the UI children.
           parentEntry.getUIChildren(),
@@ -175,8 +176,7 @@ export function sortEntries(
           .sort(compareFunction);
     }
   }
-  return entries.filter(entry => fileFilter.filter(entry))
-      .sort(util.compareName);
+  return entries.filter(entry => fileFilter.filter(entry)).sort(compareName);
 }
 
 /**
@@ -457,4 +457,392 @@ export function isDescendantEntry(
     ancestorPath += '/';
   }
   return childEntry.fullPath.indexOf(ancestorPath) === 0;
+}
+
+/**
+ * Compare by name. The 2 entries must be in same directory.
+ */
+export function compareName(
+    entry1: Entry|FilesAppEntry, entry2: Entry|FilesAppEntry) {
+  return util.collator.compare(entry1.name, entry2.name);
+}
+
+/**
+ * Compare by label (i18n name). The 2 entries must be in same directory.
+ */
+export function compareLabel(
+    locationInfo: EntryLocation, entry1: Entry|FilesAppEntry,
+    entry2: Entry|FilesAppEntry) {
+  return util.collator.compare(
+      util.getEntryLabel(locationInfo, entry1),
+      util.getEntryLabel(locationInfo, entry2));
+}
+
+/**
+ * Compare by path.
+ */
+export function comparePath(
+    entry1: Entry|FilesAppEntry, entry2: Entry|FilesAppEntry) {
+  return util.collator.compare(entry1.fullPath, entry2.fullPath);
+}
+
+/**
+ * @param bottomEntries entries that should be grouped in the bottom, used for
+ *     sorting Linux and Play files entries after
+ * other folders in MyFiles.
+ */
+export function compareLabelAndGroupBottomEntries(
+    locationInfo: EntryLocation, bottomEntries: Array<Entry|FilesAppEntry>) {
+  const childrenMap = new Map();
+  bottomEntries.forEach((entry) => {
+    childrenMap.set(entry.toURL(), entry);
+  });
+
+  /**
+   * Compare entries putting entries from |bottomEntries| in the bottom and
+   * sort by name within entries that are the same type in regards to
+   * |bottomEntries|.
+   */
+  function compare(entry1: Entry|FilesAppEntry, entry2: Entry|FilesAppEntry) {
+    // Bottom entry here means Linux or Play files, which should appear after
+    // all native entries.
+    const isBottomlEntry1 = childrenMap.has(entry1.toURL()) ? 1 : 0;
+    const isBottomlEntry2 = childrenMap.has(entry2.toURL()) ? 1 : 0;
+
+    // When there are the same type, just compare by label.
+    if (isBottomlEntry1 === isBottomlEntry2) {
+      return compareLabel(locationInfo, entry1, entry2);
+    }
+
+    return isBottomlEntry1 - isBottomlEntry2;
+  }
+
+  return compare;
+}
+
+
+/**
+ * Converts array of entries to an array of corresponding URLs.
+ */
+export function entriesToURLs(entries: Entry[]): string[] {
+  return entries.map(entry => {
+    // When building file_manager_base.js, cachedUrl is not referred other than
+    // here. Thus closure compiler raises an error if we refer the property like
+    // entry.cachedUrl.
+    if ('cachedUrl' in entry) {
+      return entry['cachedUrl'] as string || entry.toURL();
+    }
+    return entry.toURL();
+  });
+}
+
+/**
+ * Converts array of URLs to an array of corresponding Entries.
+ *
+ * @param callback Completion callback with array of success Entries and failure
+ *     URLs.
+ */
+export function convertURLsToEntries(
+    urls: string[], callback?: (entries: Entry[], urls: string[]) => void) {
+  const promises = urls.map(url => {
+    return new Promise(window.webkitResolveLocalFileSystemURL.bind(null, url))
+        .then(
+            entry => {
+              return {entry: entry};
+            },
+            _ => {
+              // Not an error. Possibly, the file is not accessible anymore.
+              console.warn('Failed to resolve the file with url: ' + url + '.');
+              return {failureUrl: url};
+            });
+  });
+  const resultPromise = Promise.all(promises).then(results => {
+    const entries = [];
+    const failureUrls = [];
+    for (let i = 0; i < results.length; i++) {
+      const result = results[i]!;
+      if ('entry' in result) {
+        entries.push(result.entry);
+      }
+      if ('failureUrl' in result) {
+        failureUrls.push(result.failureUrl);
+      }
+    }
+    return {
+      entries: entries,
+      failureUrls: failureUrls,
+    };
+  });
+
+  // Invoke the callback. If opt_callback is specified, resultPromise is still
+  // returned and fulfilled with a result.
+  if (callback) {
+    resultPromise
+        .then(result => {
+          callback(result.entries, result.failureUrls);
+        })
+        .catch(error => {
+          console.warn(
+              'convertURLsToEntries has failed.',
+              error.stack ? error.stack : error);
+        });
+  }
+
+  return resultPromise;
+}
+
+/**
+ * Converts a url into an {!Entry}, if possible.
+ */
+export function urlToEntry(url: string) {
+  return new Promise(window.webkitResolveLocalFileSystemURL.bind(null, url));
+}
+
+/**
+ * Returns true if the given |entry| matches any of the special entries:
+ *
+ *  - "My Files"/{Downloads,PvmDefault,Camera} directories, or
+ *  - "Play Files"/{<any-directory>,DCIM/Camera} directories, or
+ *  - "Linux Files" root "/" directory
+ *  - "Guest OS" root "/" directory
+ *
+ * which cannot be modified such as deleted/cut or renamed.
+ */
+export function isNonModifiable(
+    volumeManager: VolumeManager, entry: Entry|FilesAppEntry) {
+  if (!entry) {
+    return false;
+  }
+
+  if (isFakeEntry(entry)) {
+    return true;
+  }
+
+  if (!volumeManager) {
+    return false;
+  }
+
+  const volumeInfo = volumeManager.getVolumeInfo(entry);
+  if (!volumeInfo) {
+    return false;
+  }
+
+  const volumeType = volumeInfo.volumeType;
+
+  if (volumeType === VolumeManagerCommon.RootType.DOWNLOADS) {
+    if (!entry.isDirectory) {
+      return false;
+    }
+
+    const fullPath = entry.fullPath;
+
+    if (fullPath === '/Downloads') {
+      return true;
+    }
+
+    if (fullPath === '/PvmDefault' && isPluginVmEnabled()) {
+      return true;
+    }
+
+    if (fullPath === '/Camera') {
+      return true;
+    }
+
+    return false;
+  }
+
+  if (volumeType === VolumeManagerCommon.RootType.ANDROID_FILES) {
+    if (!entry.isDirectory) {
+      return false;
+    }
+
+    const fullPath = entry.fullPath;
+
+    if (fullPath === '/') {
+      return true;
+    }
+
+    const isRootDirectory = fullPath === ('/' + entry.name);
+    if (isRootDirectory) {
+      return true;
+    }
+
+    if (fullPath === '/DCIM/Camera') {
+      return true;
+    }
+
+    return false;
+  }
+
+  if (volumeType === VolumeManagerCommon.RootType.CROSTINI) {
+    return entry.fullPath === '/';
+  }
+
+  if (volumeType === VolumeManagerCommon.RootType.GUEST_OS) {
+    return entry.fullPath === '/';
+  }
+
+  return false;
+}
+
+
+/**
+ * Retrieves all entries inside the given |rootEntry|.
+ * @param entriesCallback Called when some chunk of entries are read. This can
+ *     be called a couple of times until the completion.
+ * @param successCallback Called when the read is completed.
+ * @param errorCallback Called when an error occurs.
+ * @param shouldStop Callback to check if the read process should stop or not.
+ *     When this callback is called and it returns true, the remaining recursive
+ *     reads will be aborted.
+ * @param maxDepth Max depth to delve directories recursively. If 0 is
+ *     specified, only the rootEntry will be read. If -1 is specified or
+ *     maxDepth is unspecified, the depth of recursion is unlimited.
+ */
+export function readEntriesRecursively(
+    rootEntry: DirectoryEntry|FilesAppDirEntry,
+    entriesCallback: (entries: Array<Entry|FilesAppEntry>) => void,
+    successCallback: VoidCallback, errorCallback: ErrorCallback,
+    shouldStop: () => boolean, maxDepth?: number) {
+  let numRunningTasks = 0;
+  let error: Error|null = null;
+  const maxDirDepth = maxDepth === undefined ? -1 : maxDepth;
+  const maybeRunCallback = () => {
+    if (numRunningTasks === 0) {
+      if (shouldStop()) {
+        errorCallback(createDOMError(util.FileError.ABORT_ERR));
+      } else if (error) {
+        errorCallback(error);
+      } else {
+        successCallback();
+      }
+    }
+  };
+  const processEntry =
+      (entry: DirectoryEntry|FilesAppDirEntry, depth: number) => {
+        const onError: ErrorCallback = (fileError: Error) => {
+          if (!error) {
+            error = fileError;
+          }
+          numRunningTasks--;
+          maybeRunCallback();
+        };
+        const onSuccess = (entries: Array<Entry|FilesAppEntry>) => {
+          if (shouldStop() || error || entries.length === 0) {
+            numRunningTasks--;
+            maybeRunCallback();
+            return;
+          }
+          entriesCallback(entries);
+          for (let i = 0; i < entries.length; i++) {
+            const entry = entries[i];
+            if (entry && isFileSystemDirectoryEntry(entry) &&
+                (maxDirDepth === -1 || depth < maxDirDepth)) {
+              processEntry(entry, depth + 1);
+            }
+          }
+          // Read remaining entries.
+          reader.readEntries(onSuccess, onError);
+        };
+
+        numRunningTasks++;
+        const reader = entry.createReader();
+        reader.readEntries(onSuccess, onError);
+      };
+
+  processEntry(rootEntry, 0);
+}
+
+
+/**
+ * Returns true if entry is FileSystemEntry or FileSystemDirectoryEntry, it
+ * returns false if it's FakeEntry or any one of the FilesAppEntry types.
+ */
+export function isNativeEntry(entry: Entry|FilesAppEntry) {
+  return !('type_name' in entry);
+}
+
+/**
+ * For FilesAppEntry types that wraps a native entry, returns the native entry
+ * to be able to send to fileManagerPrivate API.
+ */
+type AllEntryTypes = DirectoryEntry|FilesAppDirEntry|Entry|FilesAppEntry;
+export function unwrapEntry<T extends DirectoryEntry|FilesAppDirEntry>(
+    entry: T): DirectoryEntry|FilesAppDirEntry;
+export function unwrapEntry<T extends AllEntryTypes>(entry: T): AllEntryTypes;
+export function unwrapEntry<T extends AllEntryTypes>(entry: T): AllEntryTypes {
+  if (!entry) {
+    return entry;
+  }
+
+  const nativeEntry = 'getNativeEntry' in entry && entry.getNativeEntry();
+  if (nativeEntry) {
+    if (isFileSystemDirectoryEntry(nativeEntry)) {
+      return nativeEntry;
+    }
+    return nativeEntry;
+  }
+
+  if (isFileSystemDirectoryEntry(entry)) {
+    return entry;
+  }
+
+  return entry;
+}
+
+/**
+ * Used for logs and debugging. It tries to tell what type is the entry, its
+ * path and URL.
+ */
+export function entryDebugString(entry: Entry|FilesAppEntry) {
+  if (entry === null) {
+    return 'entry is null';
+  }
+  if (entry === undefined) {
+    return 'entry is undefined';
+  }
+  let typeName = '';
+  if (entry.constructor && entry.constructor.name) {
+    typeName = entry.constructor.name;
+  } else {
+    typeName = Object.prototype.toString.call(entry);
+  }
+  let entryDescription = '(' + typeName + ') ';
+  if (entry.fullPath) {
+    entryDescription = entryDescription + entry.fullPath + ' ';
+  }
+  if (entry.toURL) {
+    entryDescription = entryDescription + entry.toURL();
+  }
+  return entryDescription;
+}
+
+/**
+ * Returns true if all entries belong to the same volume. If there are no
+ * entries it also returns false.
+ */
+export function isSameVolume(
+    entries: Array<Entry|FilesAppEntry>, volumeManager: VolumeManager) {
+  if (!entries.length) {
+    return false;
+  }
+
+  const firstEntry = entries[0];
+  if (!firstEntry) {
+    return false;
+  }
+  const volumeInfo = volumeManager.getVolumeInfo(firstEntry);
+
+  for (let i = 1; i < entries.length; i++) {
+    if (!entries[i]) {
+      return false;
+    }
+    const volumeInfoToCompare = volumeManager.getVolumeInfo(entries[i]!);
+    if (!volumeInfoToCompare ||
+        volumeInfoToCompare.volumeId !== volumeInfo?.volumeId) {
+      return false;
+    }
+  }
+
+  return true;
 }

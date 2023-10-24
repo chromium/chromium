@@ -365,7 +365,6 @@ ts_test_files = [
   "file_manager/common/js/entry_utils_unittest.ts",
   "file_manager/common/js/file_types_base_unittest.ts",
   "file_manager/common/js/lru_cache_unittest.ts",
-  "file_manager/common/js/mock_util.ts",
 
   # Containers
   "file_manager/containers/breadcrumb_container_unittest.ts",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {util} from '../../../common/js/util.js';
+import {entriesToURLs} from '../../../common/js/entry_utils.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
 import {getStore} from '../../../state/store.js';
 
@@ -227,7 +227,7 @@ export class MetadataModel {
    * @param {!Array<!Entry>} entries
    */
   notifyEntriesCreated(entries) {
-    this.cache_.clear(util.entriesToURLs(entries));
+    this.cache_.clear(entriesToURLs(entries));
     if (window.IN_TEST) {
       // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.stats_.clearCacheCount += entries.length;

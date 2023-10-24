@@ -5,6 +5,7 @@
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {ArrayDataModel} from '../../common/js/array_data_model.js';
+import {compareLabel, compareName} from '../../common/js/entry_utils.js';
 import {FileExtensionType, FileType} from '../../common/js/file_type.js';
 import {getRecentDateBucket, getTranslationKeyForDateBucket} from '../../common/js/recent_date_bucket.js';
 import {str, strf, util} from '../../common/js/util.js';
@@ -469,7 +470,7 @@ export class FileListModel extends ArrayDataModel {
       return a.isDirectory === this.isDescendingOrder_ ? 1 : -1;
     }
 
-    return util.compareName(a, b);
+    return compareName(a, b);
   }
 
   /**
@@ -492,7 +493,7 @@ export class FileListModel extends ArrayDataModel {
 
     // @ts-ignore: error TS2345: Argument of type 'EntryLocation | null' is not
     // assignable to parameter of type 'EntryLocation'.
-    return util.compareLabel(this.locationInfo_, a, b);
+    return compareLabel(this.locationInfo_, a, b);
   }
 
   /**
@@ -525,7 +526,7 @@ export class FileListModel extends ArrayDataModel {
       return -1;
     }
 
-    return util.compareName(a, b);
+    return compareName(a, b);
   }
 
   /**
@@ -567,7 +568,7 @@ export class FileListModel extends ArrayDataModel {
     // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     const bSize = properties[1].size || 0;
 
-    return aSize !== bSize ? aSize - bSize : util.compareName(a, b);
+    return aSize !== bSize ? aSize - bSize : compareName(a, b);
   }
 
   /**
@@ -593,7 +594,7 @@ export class FileListModel extends ArrayDataModel {
         FileType.getType(b, properties[1].contentMimeType));
 
     const result = util.collator.compare(aType, bType);
-    return result !== 0 ? result : util.compareName(a, b);
+    return result !== 0 ? result : compareName(a, b);
   }
 
   /**

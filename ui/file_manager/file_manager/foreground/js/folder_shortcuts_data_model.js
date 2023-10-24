@@ -6,10 +6,9 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
 
 import {getPreferences} from '../../common/js/api.js';
 import {AsyncQueue, Group} from '../../common/js/async_util.js';
-import {isSameEntry} from '../../common/js/entry_utils.js';
+import {comparePath, isSameEntry} from '../../common/js/entry_utils.js';
 import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js';
 import {recordSmallCount, recordUserAction} from '../../common/js/metrics.js';
-import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {addFolderShortcut, refreshFolderShortcut, removeFolderShortcut} from '../../state/ducks/folder_shortcuts.js';
 import {getStore} from '../../state/store.js';
@@ -330,7 +329,7 @@ export class FolderShortcutsDataModel extends EventTarget {
    *     Otherwise, returns 1.
    */
   compare(a, b) {
-    return util.comparePath(a, b);
+    return comparePath(a, b);
   }
 
   /**

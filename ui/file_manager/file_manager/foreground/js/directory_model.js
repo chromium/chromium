@@ -7,7 +7,7 @@ import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.j
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
 import {Aggregator, AsyncQueue} from '../../common/js/async_util.js';
-import {isFakeEntry, isRecentRootType, isSameEntry} from '../../common/js/entry_utils.js';
+import {convertURLsToEntries, entriesToURLs, isFakeEntry, isNativeEntry, isRecentRootType, isSameEntry, urlToEntry} from '../../common/js/entry_utils.js';
 import {EntryList, GuestOsPlaceholder, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {isDlpEnabled, isDriveFsBulkPinningEnabled} from '../../common/js/flags.js';
 import {recordMediumCount} from '../../common/js/metrics.js';
@@ -228,7 +228,7 @@ export class DirectoryModel extends EventTarget {
 
       if (!entry) {
         // TODO(lucmult): Fix potential race condition in this await/then.
-        util.urlToEntry(newURL).then((entry) => {
+        urlToEntry(newURL).then((entry) => {
           if (!entry) {
             console.error(`Failed to find the new directory key ${newURL}`);
             return;
@@ -548,7 +548,7 @@ export class DirectoryModel extends EventTarget {
 
       // @ts-ignore: error TS7005: Variable 'addedOrUpdatedFileUrls' implicitly
       // has an 'any[]' type.
-      util.URLsToEntries(addedOrUpdatedFileUrls)
+      convertURLsToEntries(addedOrUpdatedFileUrls)
           .then(result => {
             // @ts-ignore: error TS7005: Variable 'deletedFileUrls' implicitly
             // has an 'any[]' type.
@@ -579,7 +579,7 @@ export class DirectoryModel extends EventTarget {
    */
   async onFilterChanged_() {
     const currentDirectory = this.getCurrentDirEntry();
-    if (currentDirectory && util.isNativeEntry(currentDirectory) &&
+    if (currentDirectory && isNativeEntry(currentDirectory) &&
         !this.fileFilter_.filter(
             /** @type {!DirectoryEntry} */ (currentDirectory))) {
       // If the current directory should be hidden in the new filter setting,
@@ -679,7 +679,7 @@ export class DirectoryModel extends EventTarget {
   setSelectedEntries_(value) {
     const indexes = [];
     const fileList = this.getFileList();
-    const urls = util.entriesToURLs(value);
+    const urls = entriesToURLs(value);
 
     for (let i = 0; i < fileList.length; i++) {
       if (urls.indexOf(fileList.item(i).toURL()) !== -1) {
@@ -1489,7 +1489,7 @@ export class DirectoryModel extends EventTarget {
    */
   selectEntries(entries) {
     // URLs are needed here, since we are comparing Entries by URLs.
-    const urls = util.entriesToURLs(entries);
+    const urls = entriesToURLs(entries);
     const fileList = this.getFileList();
     this.fileListSelection_.beginChange();
     this.fileListSelection_.unselectAll();

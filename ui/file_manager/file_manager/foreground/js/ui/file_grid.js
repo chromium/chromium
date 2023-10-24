@@ -8,6 +8,7 @@ import {isRTL} from 'chrome://resources/ash/common/util.js';
 
 import {RateLimiter} from '../../../common/js/async_util.js';
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
+import {entriesToURLs} from '../../../common/js/entry_utils.js';
 import {FileType} from '../../../common/js/file_type.js';
 import {isDriveShortcutsEnabled, isJellyEnabled} from '../../../common/js/flags.js';
 import {str, util} from '../../../common/js/util.js';
@@ -830,7 +831,7 @@ export class FileGrid extends Grid {
    */
   // @ts-ignore: error TS6133: 'type' is declared but its value is never read.
   updateListItemsMetadata(type, entries) {
-    const urls = util.entriesToURLs(entries);
+    const urls = entriesToURLs(entries);
     // @ts-ignore: error TS2315: Type 'NodeList' is not generic.
     const boxes = /** @type {!NodeList<!HTMLElement>} */ (
         this.querySelectorAll('.img-container'));

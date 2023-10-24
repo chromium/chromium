@@ -14,7 +14,7 @@ import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
 import {getDisallowedTransfers, grantAccess, startIOTask} from '../../common/js/api.js';
 import {getFocusedTreeItem, htmlEscape, isDirectoryTree, queryRequiredElement} from '../../common/js/dom_utils.js';
-import {getRootType, getTeamDriveName, isRecentRoot, isSameEntry, isSharedDriveEntry, isSiblingEntry, isTeamDriveRoot, isTrashEntry, isTrashRoot} from '../../common/js/entry_utils.js';
+import {convertURLsToEntries, entriesToURLs, getRootType, getTeamDriveName, isNonModifiable, isRecentRoot, isSameEntry, isSharedDriveEntry, isSiblingEntry, isTeamDriveRoot, isTrashEntry, isTrashRoot, unwrapEntry} from '../../common/js/entry_utils.js';
 import {FileType} from '../../common/js/file_type.js';
 import {getFileTypeForName} from '../../common/js/file_types_base.js';
 import {isDlpEnabled} from '../../common/js/flags.js';
@@ -303,7 +303,7 @@ export class FileTransferController {
                                       entries[i]!, metadata.contentMimeType) :
                                   false);
 
-    const sourceURLs = util.entriesToURLs(entries);
+    const sourceURLs = entriesToURLs(entries);
     clipboardData.setData('fs/sources', sourceURLs.join('\n'));
 
     clipboardData.effectAllowed = effectAllowed;
@@ -401,8 +401,7 @@ export class FileTransferController {
     let disallowedTransfers: Entry[] = [];
     try {
       if (isDlpEnabled()) {
-        const destinationDir =
-            util.unwrapEntry(pastePlan.destinationEntry) as DirectoryEntry;
+        const destinationDir = unwrapEntry(pastePlan.destinationEntry);
         disallowedTransfers = await getDisallowedTransfers(
             sourceEntries, destinationDir, pastePlan.isMove);
       }
@@ -791,13 +790,14 @@ export class FileTransferController {
       event.preventDefault();
       const sourceURLs =
           (event?.dataTransfer?.getData('fs/sources') || '').split('\n');
-      const {entries, failureUrls} = await URLsToEntriesWithAccess(sourceURLs);
+      const {entries, failureUrls} =
+          await convertURLsToEntriesWithAccess(sourceURLs);
 
       // The list of entries should not be special entries (e.g. Camera, Linux
       // files) and should not already exist in Trash (i.e. you can't trash
       // something that's already trashed).
       const isModifiableAndNotInTrashRoot = (entry: Entry) => {
-        return !util.isNonModifiable(this.volumeManager_, entry) &&
+        return !isNonModifiable(this.volumeManager_, entry) &&
             !isTrashEntry(entry);
       };
       const canTrashEntries = entries && entries.length > 0 &&
@@ -1082,8 +1082,7 @@ export class FileTransferController {
     }
 
     for (let i = 0; i < entries.length; i++) {
-      if (entries[i] &&
-          util.isNonModifiable(this.volumeManager_, entries[i]!)) {
+      if (entries[i] && isNonModifiable(this.volumeManager_, entries[i]!)) {
         return false;
       }
     }
@@ -1433,7 +1432,7 @@ export class FileTransferController {
     const {entries} = this.selectionHandler_.selection;
     if (entries && entries.length > 0) {
       for (const entry of entries) {
-        if (util.isNonModifiable(this.volumeManager_, entry)) {
+        if (isNonModifiable(this.volumeManager_, entry)) {
           return false;
         }
         const entryURL = entry.toURL();
@@ -1505,7 +1504,7 @@ export class PastePlan {
    */
   async resolveEntries() {
     if (!this.sourceEntries.length) {
-      const result = await URLsToEntriesWithAccess(this.sourceURLs);
+      const result = await convertURLsToEntriesWithAccess(this.sourceURLs);
       this.sourceEntries = result.entries;
       this.failureUrls = result.failureUrls;
     }
@@ -1618,9 +1617,9 @@ export class PastePlan {
  * Converts list of urls to list of Entries with granting R/W permissions to
  * them, which is essential when pasting files from a different profile.
  */
-const URLsToEntriesWithAccess = async (urls: string[]) => {
+const convertURLsToEntriesWithAccess = async (urls: string[]) => {
   await grantAccess(urls);
-  return util.URLsToEntries(urls);
+  return convertURLsToEntries(urls);
 };
 
 

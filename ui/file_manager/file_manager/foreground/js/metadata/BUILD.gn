@@ -170,7 +170,6 @@ js_library("metadata_cache_set") {
     ":metadata_cache_item",
     ":metadata_item",
     "//ash/webui/common/resources:event_target",
-    "//ui/file_manager/file_manager/common/js:util",
   ]
 }
 
@@ -205,7 +204,6 @@ js_library("metadata_model") {
     ":metadata_item",
     ":metadata_provider",
     ":multi_metadata_provider",
-    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/externs/ts:state",
     "//ui/file_manager/file_manager/externs/ts:store",

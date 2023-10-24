@@ -5,6 +5,7 @@
 import {assert, assertInstanceof} from 'chrome://resources/ash/common/assert.js';
 
 import {queryRequiredElement, queryRequiredExactlyOne} from '../../common/js/dom_utils.js';
+import {isNonModifiable} from '../../common/js/entry_utils.js';
 import {isCrosComponentsEnabled, isDriveFsBulkPinningEnabled} from '../../common/js/flags.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
@@ -424,7 +425,7 @@ export class ToolbarController {
          !this.directoryModel_.canDeleteEntries() ||
          selection.hasReadOnlyEntry() ||
          selection.entries.some(
-             entry => util.isNonModifiable(this.volumeManager_, entry)));
+             entry => isNonModifiable(this.volumeManager_, entry)));
     // Show 'Move to Trash' rather than 'Delete' if possible. The
     // `moveToTrashCommand` needs to be set to hidden to ensure the
     // `canExecuteChange` invokes the `hiddenChange` event in the case where

@@ -8,7 +8,7 @@
  * @suppress {checkTypes}
  */
 
-import {isFileSystemDirectoryEntry, isSameEntry} from '../../common/js/entry_utils.js';
+import {isFileSystemDirectoryEntry, isSameEntry, unwrapEntry} from '../../common/js/entry_utils.js';
 import {FileType} from '../../common/js/file_type.js';
 import {TrashEntry} from '../../common/js/trash.js';
 import {util} from '../../common/js/util.js';
@@ -231,7 +231,7 @@ export class MetadataBoxController {
     if (!isFileSystemDirectoryEntry(entry)) {
       return;
     }
-    const directoryEntry = util.unwrapEntry(entry) as DirectoryEntry;
+    const directoryEntry = unwrapEntry(entry);
 
     if (this.metadataBox.size === '') {
       this.metadataBox.size = ' ';  // Provide a dummy size value.
@@ -253,7 +253,7 @@ export class MetadataBoxController {
 
     this.isDirectorySizeLoading_ = true;
     chrome.fileManagerPrivate.getDirectorySize(
-        directoryEntry, (size: number|undefined) => {
+        directoryEntry as DirectoryEntry, (size: number|undefined) => {
           this.isDirectorySizeLoading_ = false;
 
           if (this.onDirectorySizeLoaded_) {

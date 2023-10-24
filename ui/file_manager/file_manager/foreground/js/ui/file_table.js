@@ -7,7 +7,7 @@ import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.j
 
 import {RateLimiter} from '../../../common/js/async_util.js';
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
-import {isTeamDriveRoot} from '../../../common/js/entry_utils.js';
+import {entriesToURLs, isTeamDriveRoot} from '../../../common/js/entry_utils.js';
 import {FileType} from '../../../common/js/file_type.js';
 import {isDlpEnabled, isDriveShortcutsEnabled, isInlineSyncStatusEnabled, isJellyEnabled} from '../../../common/js/flags.js';
 import {str, strf, util} from '../../../common/js/util.js';
@@ -1235,7 +1235,7 @@ export class FileTable extends Table {
    * @param {Array<Entry>} entries Entries to update.
    */
   updateListItemsMetadata(type, entries) {
-    const urls = util.entriesToURLs(entries);
+    const urls = entriesToURLs(entries);
     // @ts-ignore: error TS7006: Parameter 'callback' implicitly has an 'any'
     // type.
     const forEachCell = (selector, callback) => {

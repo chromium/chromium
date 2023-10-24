@@ -110,7 +110,7 @@ FileType.getType = (entry, opt_mimeType) => {
 /**
  * Gets the media type for a given file.
  *
- * @param {Entry} entry Reference to the file.
+ * @param {Entry|FilesAppEntry} entry Reference to the file.
  * @param {string=} opt_mimeType Optional mime type for the file.
  * @return {string} The value of 'type' property from one of the elements in
  *     the knows file types (file_types.json5) or undefined.
@@ -179,7 +179,7 @@ FileType.isPDF = (entry, opt_mimeType) => {
 /**
  * Files with more pixels won't have preview.
  * @param {!Array<string>} types
- * @param {Entry} entry Reference to the file.
+ * @param {Entry|FilesAppEntry} entry Reference to the file.
  * @param {string=} opt_mimeType Optional mime type for the file.
  * @return {boolean} True if type is in specified set
  */
