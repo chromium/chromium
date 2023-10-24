@@ -193,6 +193,13 @@ std::unique_ptr<UserScript> ParseSerializedUserScript(
   user_script->set_execution_world(
       ConvertExecutionWorld(serialized_script.world));
 
+  // Post-parse validation (these rely on multiple fields).
+  if (!script_parsing::ValidateMatchOriginAsFallback(
+          user_script->match_origin_as_fallback(), user_script->url_patterns(),
+          error_out)) {
+    return nullptr;
+  }
+
   return user_script;
 }
 

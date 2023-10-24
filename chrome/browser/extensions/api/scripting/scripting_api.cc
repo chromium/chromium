@@ -509,12 +509,6 @@ std::unique_ptr<UserScript> ParseUserScript(
   // Post conversion validation and values.
   // TODO(https://crbug.com/1494155): See which of these can be moved into
   // script_serialization::ParseSerializedUserScript().
-  if (!script_parsing::ValidateMatchOriginAsFallback(
-          user_script->match_origin_as_fallback(), user_script->url_patterns(),
-          error)) {
-    return nullptr;
-  }
-
   user_script->set_incognito_enabled(
       util::IsIncognitoEnabled(extension.id(), browser_context));
 

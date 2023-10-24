@@ -8,12 +8,26 @@
 #include "extensions/browser/api/scripting/scripting_constants.h"
 #include "extensions/common/api/scripts_internal.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/manifest_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions::script_serialization {
 
 using api::scripts_internal::SerializedUserScript;
+
+namespace {
+
+// Returns the SerializedUserScript object from the given `json` blob.
+// Note: this will crash if `json` doesn't parse to a valid script.
+SerializedUserScript SerializedScriptFromJson(base::StringPiece json) {
+  base::Value value = base::test::ParseJson(json);
+  absl::optional<SerializedUserScript> serialized_script =
+      SerializedUserScript::FromValue(value);
+  return std::move(*serialized_script);
+}
+
+}  // namespace
 
 // Tests parsing a minimally-specified serialized user script. This ensures all
 // defaults are properly set.
@@ -29,14 +43,12 @@ TEST(ScriptSerializationUnitTest, ParseMinimalScript) {
            "world": "ISOLATED"
          })";
 
-  base::Value minimal_value = base::test::ParseJson(kMinimalScriptJson);
-  absl::optional<SerializedUserScript> serialized_script =
-      SerializedUserScript::FromValue(minimal_value);
-  ASSERT_TRUE(serialized_script);
+  SerializedUserScript serialized_script =
+      SerializedScriptFromJson(kMinimalScriptJson);
 
   auto stub_extension = ExtensionBuilder("foo").Build();
   std::unique_ptr<UserScript> script =
-      ParseSerializedUserScript(*serialized_script, *stub_extension);
+      ParseSerializedUserScript(serialized_script, *stub_extension);
 
   ASSERT_TRUE(script);
 
@@ -66,7 +78,7 @@ TEST(ScriptSerializationUnitTest, ParseMaximalScript) {
   // A set of all possible properties.
   // Note we explicitly choose non-default options to ensure they are properly
   // read.
-  constexpr char kMinimalScriptJson[] =
+  constexpr char kMaximalScriptJson[] =
       R"({
            "allFrames": true,
            "css": [{"file": "style.css"}],
@@ -82,14 +94,12 @@ TEST(ScriptSerializationUnitTest, ParseMaximalScript) {
            "world": "MAIN"
          })";
 
-  base::Value minimal_value = base::test::ParseJson(kMinimalScriptJson);
-  absl::optional<SerializedUserScript> serialized_script =
-      SerializedUserScript::FromValue(minimal_value);
-  ASSERT_TRUE(serialized_script);
+  SerializedUserScript serialized_script =
+      SerializedScriptFromJson(kMaximalScriptJson);
 
   auto stub_extension = ExtensionBuilder("foo").Build();
   std::unique_ptr<UserScript> script =
-      ParseSerializedUserScript(*serialized_script, *stub_extension);
+      ParseSerializedUserScript(serialized_script, *stub_extension);
 
   ASSERT_TRUE(script);
 
@@ -162,6 +172,31 @@ TEST(ScriptSerializationUnitTest, SerializeUserScript) {
            "world": "MAIN"
          })";
   EXPECT_THAT(serialized.ToValue(), base::test::IsJson(kExpectedJson));
+}
+
+// Tests that scripts cannot specify `"match_origin_as_fallback": true` if
+// they include match patterns with paths.
+TEST(ScriptSerializationUnitTest, DisallowMatchOriginAsFallbackWithPaths) {
+  static constexpr char kScriptJson[] =
+      R"({
+           "id": "_dc_script",
+           "js": [{"file": "script.js"}],
+           "matches": ["http://matches.example/path"],
+           "matchOriginAsFallback": true,
+           "source": "DYNAMIC_CONTENT_SCRIPT",
+           "world": "ISOLATED"
+         })";
+
+  SerializedUserScript serialized_script =
+      SerializedScriptFromJson(kScriptJson);
+
+  std::u16string error;
+  auto stub_extension = ExtensionBuilder("foo").Build();
+  std::unique_ptr<UserScript> script =
+      ParseSerializedUserScript(serialized_script, *stub_extension, &error);
+
+  EXPECT_FALSE(script);
+  EXPECT_EQ(error, manifest_errors::kMatchOriginAsFallbackCantHavePaths);
 }
 
 }  // namespace extensions::script_serialization
