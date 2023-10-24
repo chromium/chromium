@@ -72,7 +72,9 @@ class WebAppCommandManager {
   bool IsInstallingForWebContents(
       const content::WebContents* web_contents) const;
 
-  std::size_t GetCommandCountForTesting() { return commands_.size(); }
+  std::size_t GetCommandCountForTesting();
+
+  std::size_t GetCommandsInstallingForWebContentsForTesting();
 
   void AwaitAllCommandsCompleteForTesting();
 

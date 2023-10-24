@@ -231,6 +231,21 @@ bool WebAppCommandManager::IsInstallingForWebContents(
   return false;
 }
 
+std::size_t WebAppCommandManager::GetCommandCountForTesting() {
+  return commands_.size();
+}
+
+std::size_t
+WebAppCommandManager::GetCommandsInstallingForWebContentsForTesting() {
+  std::size_t num = 0;
+  for (const auto& [id, command] : commands_) {
+    if (command->GetInstallingWebContents() != nullptr) {
+      ++num;
+    }
+  }
+  return num;
+}
+
 void WebAppCommandManager::AwaitAllCommandsCompleteForTesting() {
   if (commands_.empty())
     return;
