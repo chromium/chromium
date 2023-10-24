@@ -84,7 +84,7 @@ bool ChromePrivateNetworkDeviceDelegate::CheckDevice(
   }
 
   // Check if `Private-Network-Access-Name` is valid.
-  const re2::RE2 pattern("^[a-zA-Z0-9_-.]+$");
+  const re2::RE2 pattern("^[a-zA-Z0-9_\\-.]+$");
   if (!device.name.has_value() || device.name.value().length() > 248 ||
       !re2::RE2::FullMatch(device.name.value(), pattern)) {
     base::UmaHistogramEnumeration(
