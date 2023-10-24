@@ -14,6 +14,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -38,6 +39,10 @@ public class ManifestMetadataUtil {
             "android.webkit.WebView.EnableSafeBrowsing";
 
     // Do not change value, it is used by external AndroidManifest.xml files
+    private static final String MULTI_PROFILE_NAME_TAG_KEY_METADATA_NAME =
+            "android.webkit.WebView.MultiProfileNameTagKey";
+
+    // Do not change value, it is used by external AndroidManifest.xml files
     private static final String METADATA_HOLDER_SERVICE_NAME =
             "android.webkit.MetaDataHolderService";
     // Do not change value, it is used by external AndroidManifest.xml files
@@ -47,28 +52,75 @@ public class ManifestMetadataUtil {
             + XRW_ALLOWLIST_METADATA_NAME + " in service " + METADATA_HOLDER_SERVICE_NAME
             + " must be a resource ID referencing a string-array resource.";
 
-    private static Set<String> sXRequestedWithAllowListOverride;
+    /** Used in tests. */
+    @Nullable private static Set<String> sXrwAllowlistForTesting;
 
     /**
-     * Find out if the App opted out from metrics collection using the meta-data tag.
+     * Cache for all AndroidManifest.xml meta-data. All meta-data should be fetched at the time this
+     * class is constructed.
      */
-    public static boolean isAppOptedOutFromMetricsCollection() {
-        Context ctx = ContextUtils.getApplicationContext();
-        try {
-            ApplicationInfo info = ctx.getPackageManager().getApplicationInfo(
-                    ctx.getPackageName(), PackageManager.GET_META_DATA);
-            if (info.metaData == null) {
-                // null means no such tag was found.
-                return false;
-            }
-            // getBoolean returns false if the key is not found, which is what we want.
-            return info.metaData.getBoolean(METRICS_OPT_OUT_METADATA_NAME);
-        } catch (PackageManager.NameNotFoundException e) {
-            // This should never happen.
-            Log.e(TAG, "App could not find itself by package name!");
-            // The conservative thing is to assume the app HAS opted out.
-            return true;
+    @VisibleForTesting
+    public static class MetadataCache {
+        private final boolean mIsAppOptedOutFromMetricsCollection;
+        private final @Nullable Boolean mSafeBrowsingOptInPreference;
+        private final @Nullable Integer mAppMultiProfileProfileNameTagKey;
+        private final @NonNull Set<String> mXRequestedAllowList;
+
+        public MetadataCache(@NonNull Context context) {
+            // Cache app level metadata.
+            @Nullable Bundle appMetadata = getAppMetadata(context);
+            mIsAppOptedOutFromMetricsCollection = isAppOptedOutFromMetricsCollection(appMetadata);
+            mSafeBrowsingOptInPreference = getSafeBrowsingAppOptInPreference(appMetadata);
+
+            // Holder service metadata.
+            @Nullable
+            Bundle metadataHolderServiceMetadata = getMetadataHolderServiceMetadata(context);
+            mAppMultiProfileProfileNameTagKey =
+                    getAppMultiProfileProfileNameTagKey(metadataHolderServiceMetadata);
+            mXRequestedAllowList =
+                    getXRequestedWithAllowList(context, metadataHolderServiceMetadata);
         }
+    }
+
+    /**
+     * The class loader will take care of synchronization as each class is only loaded once at the
+     * time it is needed.
+     */
+    private static final class MetadataCacheHolder {
+
+        /** Do not instantiate. */
+        private MetadataCacheHolder() {}
+
+        private static final MetadataCache METADATA_CACHE =
+                new MetadataCache(ContextUtils.getApplicationContext());
+    }
+
+    @VisibleForTesting
+    public static MetadataCache getMetadataCache() {
+        return MetadataCacheHolder.METADATA_CACHE;
+    }
+
+    /**
+     * Caches all of the manifest metadata values. Called lazily if any of the public metadata
+     * accessor method values are not inside of the cache at the time that they are invoked.
+     */
+
+    /** Find out if the App opted out from metrics collection using the meta-data tag. */
+    public static boolean isAppOptedOutFromMetricsCollection() {
+        return getMetadataCache().mIsAppOptedOutFromMetricsCollection;
+    }
+
+    @VisibleForTesting
+    public static boolean isAppOptedOutFromMetricsCollection(@Nullable Bundle appMetadata) {
+        boolean value;
+        if (appMetadata == null) {
+            // The conservative thing is to assume the app HAS opted out.
+            value = true;
+        } else {
+            // getBoolean returns false if the key is not found, which is what we want.
+            value = appMetadata.getBoolean(METRICS_OPT_OUT_METADATA_NAME);
+        }
+        return value;
     }
 
     /**
@@ -78,21 +130,47 @@ public class ManifestMetadataUtil {
      */
     @Nullable
     public static Boolean getSafeBrowsingAppOptInPreference() {
-        Context ctx = ContextUtils.getApplicationContext();
-        try {
-            ApplicationInfo info = ctx.getPackageManager().getApplicationInfo(
-                    ctx.getPackageName(), PackageManager.GET_META_DATA);
-            if (info.metaData == null
-                    || !info.metaData.containsKey(SAFE_BROWSING_OPT_IN_METADATA_NAME)) {
-                // No <meta-data> tag was found.
-                return null;
-            }
-            return info.metaData.getBoolean(SAFE_BROWSING_OPT_IN_METADATA_NAME);
-        } catch (PackageManager.NameNotFoundException e) {
-            // This should never happen.
-            Log.e(TAG, "App could not find itself by package name!");
-            return false;
+        return getMetadataCache().mSafeBrowsingOptInPreference;
+    }
+
+    @VisibleForTesting
+    @Nullable
+    public static Boolean getSafeBrowsingAppOptInPreference(@Nullable Bundle appMetadata) {
+        Boolean value;
+        if (appMetadata == null || !appMetadata.containsKey(SAFE_BROWSING_OPT_IN_METADATA_NAME)) {
+            // No <meta-data> tag was found.
+            value = null;
+        } else {
+            value = appMetadata.getBoolean(SAFE_BROWSING_OPT_IN_METADATA_NAME);
         }
+        return value;
+    }
+
+    /**
+     * Returns the tag key which will be used to retrieve the name of profile to associate with a
+     * WebView when it is initialized. The app will have needed to override {@link
+     * android.webkit.WebView#getTag(int)} in order to gain the benefits of this.
+     *
+     * @return the tag key for the profile name if provided by the app, otherwise null.
+     */
+    @Nullable
+    public static Integer getAppMultiProfileProfileNameTagKey() {
+        return getMetadataCache().mAppMultiProfileProfileNameTagKey;
+    }
+
+    @VisibleForTesting
+    @Nullable
+    public static Integer getAppMultiProfileProfileNameTagKey(
+            @Nullable Bundle metadataHolderServiceMetadata) {
+        Integer value;
+        if (metadataHolderServiceMetadata != null
+                && metadataHolderServiceMetadata.containsKey(
+                        MULTI_PROFILE_NAME_TAG_KEY_METADATA_NAME)) {
+            value = metadataHolderServiceMetadata.getInt(MULTI_PROFILE_NAME_TAG_KEY_METADATA_NAME);
+        } else {
+            value = null;
+        }
+        return value;
     }
 
     /**
@@ -117,29 +195,29 @@ public class ManifestMetadataUtil {
      */
     @NonNull
     public static Set<String> getXRequestedWithAllowList() {
-        if (sXRequestedWithAllowListOverride != null) {
-            return sXRequestedWithAllowListOverride;
+        if (sXrwAllowlistForTesting != null) {
+            return sXrwAllowlistForTesting;
         }
-        Context context = ContextUtils.getApplicationContext();
-        Bundle bundle = getMetadataHolderServiceBundle(context);
-        if (bundle != null) {
-            return getXRequestedWithAllowListFromMetadata(context, bundle);
-        }
-        return Collections.emptySet();
+        return getMetadataCache().mXRequestedAllowList;
     }
 
     /**
-     * Pulls out X-Requested-With header from the metadata bundle, if present.
-     * @param context Application context
-     * @param bundle Bundle to extract the resource from
-     * @return Set of strings, possibly empty if unable to find the key.
+     * Pulls out X-Requested-With header from the metadata bundle, if present, and caches it. Will
+     * cache an empty Set if unable to find the key.
+     *
+     * @param context Application context.
+     * @param metadataHolderServiceBundle the metadata holder service bundle to extract the resource
+     *     from.
      */
-    private static Set<String> getXRequestedWithAllowListFromMetadata(
-            final Context context, Bundle bundle) {
-        if (!bundle.containsKey(XRW_ALLOWLIST_METADATA_NAME)) {
+    @NonNull
+    @VisibleForTesting
+    public static Set<String> getXRequestedWithAllowList(
+            final Context context, final @Nullable Bundle metadataHolderServiceBundle) {
+        if (metadataHolderServiceBundle == null
+                || !metadataHolderServiceBundle.containsKey(XRW_ALLOWLIST_METADATA_NAME)) {
             return Collections.emptySet();
         }
-        int metadataResourceId = bundle.getInt(XRW_ALLOWLIST_METADATA_NAME);
+        int metadataResourceId = metadataHolderServiceBundle.getInt(XRW_ALLOWLIST_METADATA_NAME);
         try {
             String[] stringArray = context.getResources().getStringArray(metadataResourceId);
             return new HashSet<>(Arrays.asList(stringArray));
@@ -149,13 +227,37 @@ public class ManifestMetadataUtil {
     }
 
     /**
-     * Get metadata bundle from ApplicationManifest.xml registered to
-     * the {@link ManifestMetadataUtil#METADATA_HOLDER_SERVICE_NAME} service.
+     * Get the app level metadata bundle from the AndroidManifest.
+     *
+     * @return Metadata bundle or {@code null} if no metadata was found;
+     * @param context the Application context.
+     */
+    @VisibleForTesting
+    @Nullable
+    public static Bundle getAppMetadata(final Context context) {
+        try {
+            ApplicationInfo info =
+                    context.getPackageManager()
+                            .getApplicationInfo(
+                                    context.getPackageName(), PackageManager.GET_META_DATA);
+            return info.metaData;
+        } catch (NameNotFoundException e) {
+            // This should never happen.
+            Log.e(TAG, "App could not find itself by package name!");
+            return null;
+        }
+    }
+
+    /**
+     * Get metadata bundle from ApplicationManifest.xml registered to the {@link
+     * ManifestMetadataUtil#METADATA_HOLDER_SERVICE_NAME} service.
      *
      * @return Metadata bundle or {@code null} if no metadata was found.
-     * @param context Application context
+     * @param context the Application context.
      */
-    private static Bundle getMetadataHolderServiceBundle(final Context context) {
+    @Nullable
+    @VisibleForTesting
+    public static Bundle getMetadataHolderServiceMetadata(final Context context) {
         int flags = PackageManager.GET_META_DATA | PackageManager.MATCH_DISABLED_COMPONENTS;
         try {
             return context.getPackageManager()
@@ -168,10 +270,12 @@ public class ManifestMetadataUtil {
 
     /**
      * Set the value to be returned by {@link ManifestMetadataUtil#getXRequestedWithAllowList()}.
+     *
      * @return AutoCloseable that will reset the value when closed.
      */
-    public static AutoCloseable setXRequestedWithAllowListScopedForTesting(Set<String> allowList) {
-        sXRequestedWithAllowListOverride = allowList;
-        return () -> sXRequestedWithAllowListOverride = null;
+    public static AutoCloseable setXRequestedWithAllowListScopedForTesting(
+            @NonNull Set<String> allowList) {
+        sXrwAllowlistForTesting = allowList;
+        return () -> sXrwAllowlistForTesting = null;
     }
 }

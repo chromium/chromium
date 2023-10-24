@@ -79,6 +79,8 @@ public class WebViewBrowserFragment extends Fragment {
     // Maximal size of this state.
     private static final int MAX_STATE_LENGTH = 300 * 1024;
 
+    private static final boolean USE_CUSTOM_WEBVIEW_PROFILE = false;
+
     // Map from WebKit permissions to Android permissions
     private static final HashMap<String, String> sPermissions;
 
@@ -290,7 +292,19 @@ public class WebViewBrowserFragment extends Fragment {
     }
 
     private void createAndInitializeWebView() {
-        WebView webview = new WebView(requireContext());
+        final Context context = requireContext();
+        WebView webview =
+                new WebView(context) {
+                    @Override
+                    public Object getTag(int key) {
+                        if (USE_CUSTOM_WEBVIEW_PROFILE) {
+                            if (key == R.id.multi_profile_name_tag_key) {
+                                return "WebViewShellCustomProfile";
+                            }
+                        }
+                        return super.getTag(key);
+                    }
+                };
         WebSettings settings = webview.getSettings();
         initializeSettings(settings);
         // Third party cookies are off by default on L+;

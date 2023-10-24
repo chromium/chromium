@@ -173,4 +173,13 @@
             file="../../android_webview/tools/system_webview_shell/apk/res"/>
     </issue>
 
+    <issue
+        id="ForegroundServiceType"
+        message="To call Service.startForeground(), the <service> element of manifest file must have the foregroundServiceType attribute specified [ForegroundServiceType]&#xA; service.startForeground(id, notification, foregroundServiceType);">
+        <location
+            file="../../android_webview/tools/system_webview_shell/apk/AndroidManifest.xml"
+            line="162"
+            column="9"/>
+    </issue>
+
 </issues>

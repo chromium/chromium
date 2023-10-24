@@ -112,6 +112,7 @@ android_resources("system_webview_shell_apk_resources") {
     "apk/res/values-v17/styles.xml",
     "apk/res/values-v29/styles.xml",
     "apk/res/values/colors.xml",
+    "apk/res/values/ids.xml",
     "apk/res/values/strings.xml",
     "apk/res/values/styles.xml",
     "apk/res/xml/ad_services_config.xml",
