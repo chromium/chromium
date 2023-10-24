@@ -331,7 +331,9 @@ IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWhatsNewInvalidTest,
   ASSERT_GE(tab_strip->count(), 1);
   const auto& url = tab_strip->GetWebContentsAt(0)->GetLastCommittedURL();
 
-  if (!features::IsChromeRefresh2023() || GetParam() == BooleanPolicy::kFalse) {
+  if ((!features::IsChromeRefresh2023() ||
+       GetParam() == BooleanPolicy::kFalse) ||
+      CHROME_VERSION_MAJOR > 121) {
     // Only the NTP should show. There are no other relevant tabs since
     // welcome and What's New have both already been shown or promotional tabs
     // are disabled.
@@ -340,8 +342,9 @@ IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWhatsNewInvalidTest,
       EXPECT_PRED2(search::IsNTPOrRelatedURL, url, browser()->profile());
     }
   } else {
-    // Always show What's New for CR2023 because the launch is not based on
-    // milestones.
+    // TODO(mickeyburks): Cleanup test case after M121 is released.
+    // Always show What's New for CR2023 because the launch is active
+    // until after M121.
     EXPECT_EQ(tab_strip->count(), 2);
     // Whats's New should show and be the active tab.
     EXPECT_EQ(url.possibly_invalid_spec(), chrome::kChromeUIWhatsNewURL);

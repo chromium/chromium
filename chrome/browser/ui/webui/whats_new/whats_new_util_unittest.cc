@@ -67,7 +67,7 @@ class WhatsNewUtilTests : public testing::Test {
     }
   }
 
-  void ToggleHasShownRefresh(bool has_shown) {
+  void SetHasShownRefresh(bool has_shown) {
     prefs()->SetBoolean(prefs::kHasShownRefreshWhatsNew, has_shown);
   }
 
@@ -93,12 +93,15 @@ class WhatsNewUtilTests : public testing::Test {
 };
 
 TEST_F(WhatsNewUtilTests, ShouldShowRefresh) {
+  // Set version to a refresh-compatible version.
+  whats_new::SetChromeVersionForTests(119);
+
   // Refresh page should only be shown when
   // kChromeRefresh2023=enabled && hasShownRefreshWhatsNew=false
   EXPECT_TRUE(whats_new::ShouldShowRefresh(prefs()));
 
   // kChromeRefresh2023=enabled && hasShownRefreshWhatsNew=true
-  ToggleHasShownRefresh(true);
+  SetHasShownRefresh(true);
   EXPECT_FALSE(whats_new::ShouldShowRefresh(prefs()));
 
   // Disable Refresh 2023 feature2
@@ -107,7 +110,7 @@ TEST_F(WhatsNewUtilTests, ShouldShowRefresh) {
   EXPECT_FALSE(whats_new::ShouldShowRefresh(prefs()));
 
   // kChromeRefresh2023=disabled && hasShownRefreshWhatsNew=false
-  ToggleHasShownRefresh(false);
+  SetHasShownRefresh(false);
   EXPECT_FALSE(whats_new::ShouldShowRefresh(prefs()));
 
   // Enable only Views refresh.
@@ -117,28 +120,50 @@ TEST_F(WhatsNewUtilTests, ShouldShowRefresh) {
 }
 
 TEST_F(WhatsNewUtilTests, ShouldShowForStateUsesChromeVersionForRefresh) {
-  // kChromeRefresh2023=enabled && hasShownRefreshWhatsNew=false
+  // kChromeRefresh2023=enabled - flags enabled.
+
+  // M117
   whats_new::SetChromeVersionForTests(117);
-  // Refresh page should show
+  // User has not seen WN refresh yet.
+  SetHasShownRefresh(false);
+  // Refresh page should show.
   EXPECT_TRUE(whats_new::ShouldShowForState(prefs(), true));
 
-  // kChromeRefresh2023=enabled && hasShownRefreshWhatsNew=true
-  ToggleHasShownRefresh(true);
-  // If refresh page has been shown, and this is a refresh version
-  // (117/118), ShouldShowForState should return false
+  // User has seen WN refresh.
+  SetHasShownRefresh(true);
+  // Refresh page should not show again.
   EXPECT_FALSE(whats_new::ShouldShowForState(prefs(), true));
 
-  // kChromeRefresh2023=enabled && hasShownRefreshWhatsNew=false
+  // M116. Pre-refresh version.
   whats_new::SetChromeVersionForTests(116);
-  ToggleHasShownRefresh(false);
-  SetHasNewWhatsNewVersion(false);
-  // Refresh page should not show previous to 117
+  // User has not seen WN refresh yet.
+  SetHasShownRefresh(false);
+  // Refresh page should not show previous to 117.
   EXPECT_FALSE(whats_new::ShouldShowForState(prefs(), true));
 
-  // kChromeRefresh2023=enabled && hasShownRefreshWhatsNew=false
+  // M119
   whats_new::SetChromeVersionForTests(119);
-  SetHasNewWhatsNewVersion(true);
-  // Refresh page should show for versions after 118 if it has not been
-  // shown yet
+  // User has not seen WN refresh yet.
+  SetHasShownRefresh(false);
+  // Refresh page should show.
   EXPECT_TRUE(whats_new::ShouldShowForState(prefs(), true));
+
+  // User has seen WN refresh.
+  SetHasShownRefresh(true);
+  // Nothing should show.
+  EXPECT_FALSE(whats_new::ShouldShowForState(prefs(), true));
+
+  // User has an unseen WNP.
+  SetHasNewWhatsNewVersion(true);
+  // Regular WNP should show.
+  EXPECT_TRUE(whats_new::ShouldShowForState(prefs(), true));
+
+  // M122
+  whats_new::SetChromeVersionForTests(122);
+  // User has not seen WN refresh yet.
+  SetHasShownRefresh(false);
+  // User does not have an unseen WNP.
+  SetHasNewWhatsNewVersion(false);
+  // Refresh page should not show after 121.
+  EXPECT_FALSE(whats_new::ShouldShowForState(prefs(), true));
 }
