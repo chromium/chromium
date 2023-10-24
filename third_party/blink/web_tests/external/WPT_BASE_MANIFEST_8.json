@@ -116899,6 +116899,19 @@
        {}
       ]
      ],
+     "baseline-synthesis-vert-lr-line-under.html": [
+      "5fcb75e6cd52f60939a16a6cfe927f7ec5dd9010",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "canvas-contain-size.html": [
       "66fb7261e8fc0d965765c5ba93c48fc3167d9017",
       [
@@ -151227,7 +151240,7 @@
         ]
        ],
        "clip-path-animation-filter.html": [
-        "0ba7a0021da4e41a72ffad26f32028231edb6bfd",
+        "a9809cbc30b5ca53fc464a125af9bdaeaeef9c60",
         [
          null,
          [
@@ -151256,7 +151269,7 @@
         ]
        ],
        "clip-path-animation-fixed-position-rounding-error.html": [
-        "12d984b32a24cbfa2d7582ef0e0d431dc6223333",
+        "8a02a5b2a6d6635c2b13633ae62e296704c962a6",
         [
          null,
          [
@@ -151269,7 +151282,7 @@
         ]
        ],
        "clip-path-animation-fixed-position.html": [
-        "a9f278d8837068028097d3db103a3e6b19cf8c4a",
+        "3ffc2a30a7f3b31ba7c5a8f5f8c0f3d727ffd9f3",
         [
          null,
          [
@@ -151298,7 +151311,7 @@
         ]
        ],
        "clip-path-animation-fragmented.html": [
-        "470a2788cce7d74e69a658dd3acb3cde9d7b42dd",
+        "9f68c238faf2ee2d04940e2f65d303bf94444595",
         [
          null,
          [
@@ -151411,7 +151424,7 @@
         ]
        ],
        "clip-path-animation-none.html": [
-        "73b8a473354cde40b3f9542c1616859d0412e8bd",
+        "3efb593b72bf89af5247c7ec9079fd7d2636d664",
         [
          null,
          [
@@ -151424,7 +151437,7 @@
         ]
        ],
        "clip-path-animation-overflow.html": [
-        "09a44fb3aac327aef0d51636edfb92dcdd355942",
+        "fc8c78efbf6a9c46d0b0e4d2585bc358477a6df9",
         [
          null,
          [
@@ -151453,7 +151466,7 @@
         ]
        ],
        "clip-path-animation-svg-zoom.html": [
-        "c79c098c62239900e6740b7a83af8c3f6497f9be",
+        "f7be6d25324ce92e6bf56921fffb3eeec27cfd98",
         [
          null,
          [
@@ -151466,7 +151479,7 @@
         ]
        ],
        "clip-path-animation-svg.html": [
-        "676fe5ee5789d27654c5e73baef4c7a1eaf2e8ee",
+        "5318355585c938b3c494118cb0bcf8af00fc0b4c",
         [
          null,
          [
@@ -151521,7 +151534,7 @@
         ]
        ],
        "clip-path-animation-zoom.html": [
-        "5573318a516c6a2f53a476df03f34abe9a622513",
+        "89641240f67bfd468a260bda514ec9b91914ff0d",
         [
          null,
          [
@@ -151534,7 +151547,7 @@
         ]
        ],
        "clip-path-animation.html": [
-        "cea2ebc7c0c35f2c55202f8073bbed9d24ca097c",
+        "307d972ef63d97077f8bedee9b52e121592c265e",
         [
          null,
          [
@@ -151654,7 +151667,7 @@
         ]
        ],
        "clip-path-transition.html": [
-        "16f4de3a1b329bf330c2d13f8016a5b65efc8d7c",
+        "980f7a53e2e86001b5da911c07b3f465845f3735",
         [
          null,
          [
@@ -257008,6 +257021,19 @@
         {}
        ]
       ],
+      "has-pseudo-element.html": [
+       "0dfd602e511fbca18f1c54de5ff04719f5935e3a",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "lang-pseudo-class-in-has-document-element.html": [
        "93ece465dd51c31f67b0f1947747a4a9434fbd28",
        [
@@ -292543,6 +292569,10 @@
      "6d4853f4774ba85d0f2a6ef1ff3d5395ee1e6e66",
      []
     ],
+    "fedcm-auto-selected-flag.https.html.ini": [
+     "0d2e9a804d25c287d12496d59f6be57d55772560",
+     []
+    ],
     "fedcm-basic.https.html.ini": [
      "e648924f5eb4a23cb9d2409ec57570c9e1bbd81e",
      []
@@ -292573,10 +292603,6 @@
     ],
     "fedcm-hosteddomain.https.html.ini": [
      "641e3625b1840b1e3527d2668e4fd6261364b52a",
-     []
-    ],
-    "fedcm-identity-credential-auto-selected-flag.https.html.ini": [
-     "559df4d9ad53c4284357ccbb84984fb02e968c72",
      []
     ],
     "fedcm-iframe.https.html.ini": [
@@ -292703,8 +292729,8 @@
        "affe34f8f31f61f5cf5a5c88c0588efb331b4d1e",
        []
       ],
-      "manifest_with_identity_credential_auto_selected_flag.json": [
-       "46602247653e79f20586f3a6b2f79ceefa4959ee",
+      "manifest_with_auto_selected_flag.json": [
+       "591c927153b9a78695ded0663fed600cbae5bcb6",
        []
       ],
       "manifest_with_no_accounts.json": [
@@ -292751,8 +292777,8 @@
        "52fb20184bc081186e7f9aaab7561dc87c8906bd",
        []
       ],
-      "token_with_identity_credential_auto_selected_flag.py": [
-       "6fa579a0f1511e8da01da07e5da1f8e875667000",
+      "token_with_auto_selected_flag.py": [
+       "93ccf3ee7e2277716dc1c9d5b02805b9e2b398cc",
        []
       ],
       "two_accounts.py": [
@@ -305641,7 +305667,7 @@
       []
      ],
      "all-prop-revert-layer-expected.txt": [
-      "215225ed3a87e6724b6b908acb3bd5376aba0f61",
+      "2bb90b9e334b25b3f14f4de4a8b3b90009b356c4",
       []
      ],
      "all-prop-revert-layer.html.ini": [
@@ -325167,7 +325193,7 @@
       []
      ],
      "inheritance.sub-expected.txt": [
-      "e8f53fe7592501243ebe0da897740f91a9eee565",
+      "0475db8f5c0adb771d3b67e4b1b1d90fac72246a",
       []
      ],
      "inheritance.sub.html.ini": [
@@ -325207,36 +325233,8 @@
        "9249622cc4652b22e8dd205b05fde95b046ef11f",
        []
       ],
-      "mask-composite-1a.html.ini": [
-       "aa7ed82839ca3e1b76d749ab674381fb086363b5",
-       []
-      ],
-      "mask-composite-1b.html.ini": [
-       "8f76f14abc99b9850f9e8e9782553b50d2246f4a",
-       []
-      ],
-      "mask-composite-1c.html.ini": [
-       "68d750c781ec74cf25fd8111abd891120f817b2d",
-       []
-      ],
-      "mask-composite-1d.html.ini": [
-       "5622d332030fe9bea52ca9c646c5cd6fe3a3a513",
-       []
-      ],
       "mask-composite-2-ref.html": [
        "cbf91daad9ae8d32e4f2738430a038f227bdcd23",
-       []
-      ],
-      "mask-composite-2a.html.ini": [
-       "c5809e05be622c5b3569d4f8f3af861c239de8b9",
-       []
-      ],
-      "mask-composite-2b.html.ini": [
-       "2b62dae97bfc9264642a9e3597762a92eea1a957",
-       []
-      ],
-      "mask-composite-2c.html.ini": [
-       "57ec7d6276f493d750eec2c67386d5e2b362a88e",
        []
       ],
       "mask-image-1-ref.html": [
@@ -325634,7 +325632,7 @@
        []
       ],
       "mask-valid.sub-expected.txt": [
-       "f2da9e05f5aea71f432bb17f87b0ae63700a1c92",
+       "86287386915788095a743125ffa54cf1e6acd491",
        []
       ],
       "mask-valid.sub.html.ini": [
@@ -411276,7 +411274,7 @@
        []
       ],
       "accumulation-per-property-002-expected.txt": [
-       "e28a4a4d5f6e7891b6efbee3fb7abae7e3f17d85",
+       "743190b460459ccae8c0b986d6b0f266da75e26d",
        []
       ],
       "accumulation-per-property-002.html.ini": [
@@ -411292,7 +411290,7 @@
        []
       ],
       "addition-per-property-002-expected.txt": [
-       "11b3229b2302c8e3cef04b7e394826d1e44ce259",
+       "de5d520534ef10581ba5aec8c25cb03381184550",
        []
       ],
       "addition-per-property-002.html.ini": [
@@ -411308,7 +411306,7 @@
        []
       ],
       "interpolation-per-property-002-expected.txt": [
-       "68c7d5ce1d99815f4f427a259fa1134036a13a4f",
+       "038eb2b3d2470b5852f2a5f058270668e54e1655",
        []
       ],
       "interpolation-per-property-002.html.ini": [
@@ -411473,7 +411471,7 @@
       []
      ],
      "timing-utils.js": [
-      "d7267f94f2df0ee502cb7e03166b653ce6a5bd92",
+      "fba62a1f6d89e5811c7ed4ef79ae1046e1001971",
       []
      ],
      "xhr-doc.py": [
@@ -457768,8 +457766,17 @@
       }
      ]
     ],
+    "fedcm-auto-selected-flag.https.html": [
+     "d06aba73bc1de9a9b6e238695587c1ff47480de3",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "fedcm-basic.https.html": [
-     "ece63cae78a8f5e54890083bd8038b57064380b9",
+     "3d20f4cfb74d5a356b920d224415f622a67d446f",
      [
       null,
       {
@@ -457822,15 +457829,6 @@
     ],
     "fedcm-hosteddomain.https.html": [
      "5e39542fdef72dac98d52968fbe10f6e95d38986",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
-    "fedcm-identity-credential-auto-selected-flag.https.html": [
-     "188b6fe09430afbef4f4d6a56e55d1db3dda3f6f",
      [
       null,
       {
@@ -458042,7 +458040,7 @@
      ]
     ],
     "fedcm-returning-account-auto-reauthn.https.html": [
-     "d0757308659b5c53f2e4b4b72cbded1f52a921b5",
+     "c9fe10a485fbe2dee7508f6d69801f67ca2c6208",
      [
       null,
       {
@@ -474184,6 +474182,27 @@
         {}
        ]
       ],
+      "mask-composite-computed.html": [
+       "d2b9a4a606abf7ef7fb26c61715f9434f4be500e",
+       [
+        null,
+        {}
+       ]
+      ],
+      "mask-composite-invalid.html": [
+       "9dc4df163c72ce576e91a38a990b1b1b7a5709a3",
+       [
+        null,
+        {}
+       ]
+      ],
+      "mask-composite-valid.html": [
+       "385726c17ad16608c94a8205d263780017a67035",
+       [
+        null,
+        {}
+       ]
+      ],
       "mask-invalid.html": [
        "f9999ca98284eba958eeb5236282fa3b852f41be",
        [
@@ -474200,6 +474219,27 @@
       ],
       "mask-position-valid.html": [
        "858bb4b68ac695a17c49e9e6d60416d432c77e67",
+       [
+        null,
+        {}
+       ]
+      ],
+      "mask-repeat-computed.html": [
+       "0ecb9aa573d4170e8bccda99b9bbc64a7d3ef255",
+       [
+        null,
+        {}
+       ]
+      ],
+      "mask-repeat-invalid.html": [
+       "8a0f4e892a3a2e30b36c43304bdb475d79916e34",
+       [
+        null,
+        {}
+       ]
+      ],
+      "mask-repeat-valid.html": [
+       "1d75a1bcb2eb52dcdc47cad0c725a9fa57ea21a1",
        [
         null,
         {}
@@ -645361,7 +645401,7 @@
      ]
     ],
     "requestStorageAccess.sub.https.window.js": [
-     "e1a8b934503c9f60b0aa6c41c4c3714049842204",
+     "21c451ca6147f0c58bf9294fb40b03404525c578",
      [
       "storage-access-api/requestStorageAccess.sub.https.window.html",
       {
