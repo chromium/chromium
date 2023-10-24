@@ -132,7 +132,6 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
 
       actionList: {
         type: Array,
-        observer: 'setUpButtonMapTargets_',
       },
 
       removeTopBorder: {
@@ -188,7 +187,8 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
   static get observers(): string[] {
     return [
       'onSettingsChanged(fakePref_.*)',
-      'initializeCustomizeKey(buttonRemappingList.*, remappingIndex)',
+      'initializeCustomizeKey(buttonRemappingList.*, remappingIndex, ' +
+          'actionList)',
     ];
   }
 
