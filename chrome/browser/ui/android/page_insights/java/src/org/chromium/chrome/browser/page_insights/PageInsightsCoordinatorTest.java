@@ -51,7 +51,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeJni;
-import org.chromium.chrome.browser.page_insights.proto.Config.PageInsightsConfig;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights.AutoPeekConditions;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights.Page;
@@ -233,12 +232,7 @@ public class PageInsightsCoordinatorTest {
                                         mBrowserControlsSizer,
                                         mBackPressManager,
                                         mIsPageInsightsHubEnabled,
-                                        (navigationHandle) ->
-                                                PageInsightsConfig.newBuilder()
-                                                        .setShouldAutoTrigger(true)
-                                                        .setShouldXsurfaceLog(true)
-                                                        .setShouldAttachGaiaToRequest(true)
-                                                        .build()));
+                                        0));
         doReturn(mTab).when(mTabProvider).get();
         doReturn(JUnitTestGURLs.EXAMPLE_URL).when(mTab).getUrl();
         verify(mTabProvider).addObserver(mTabCallbackCaptor.capture());

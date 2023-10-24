@@ -13,7 +13,6 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
-import org.chromium.chrome.browser.page_insights.proto.PageInsights;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights.PageInsightsMetadata;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.RequestContext;
@@ -31,8 +30,7 @@ class PageInsightsDataLoader {
 
     PageInsightsDataLoader() {}
 
-    void loadInsightsData(
-            GURL url, boolean shouldAttachGaiaToRequest, Callback<PageInsightsMetadata> callback) {
+    void loadInsightsData(GURL url, Callback<PageInsightsMetadata> callback) {
         if (url == null) {
             Log.e(TAG, "Error fetching Page Insights data: Url cannot be null.");
             return;
@@ -46,9 +44,7 @@ class PageInsightsDataLoader {
                 .canApplyOptimizationOnDemand(
                         List.of(url),
                         List.of(PAGE_INSIGHTS),
-                        shouldAttachGaiaToRequest
-                                ? RequestContext.CONTEXT_PAGE_INSIGHTS_HUB
-                                : RequestContext.CONTEXT_NON_PERSONALIZED_PAGE_INSIGHTS_HUB,
+                        RequestContext.CONTEXT_PAGE_INSIGHTS_HUB,
                         (gurl, optimizationType, decision, metadata) -> {
                             try {
                                 if (decision != OptimizationGuideDecision.TRUE) {

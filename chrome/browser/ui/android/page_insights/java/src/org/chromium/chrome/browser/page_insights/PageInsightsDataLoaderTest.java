@@ -76,7 +76,6 @@ public class PageInsightsDataLoaderTest {
 
         mPageInsightsDataLoader.loadInsightsData(
                 mUrl,
-                /* shouldAttachGaiaToRequest= */ true,
                 (data) -> {
                     assertEquals(data, mPageInsightsMetadata);
                 });
@@ -90,7 +89,6 @@ public class PageInsightsDataLoaderTest {
 
         mPageInsightsDataLoader.loadInsightsData(
                 mUrl,
-                /* shouldAttachGaiaToRequest= */ true,
                 (data) -> {
                     assertNull(data);
                 });
@@ -101,18 +99,16 @@ public class PageInsightsDataLoaderTest {
         mPageInsightsDataLoader.clearCacheForTesting();
         mPageInsightsDataLoader.loadInsightsData(
                 null,
-                /* shouldAttachGaiaToRequest= */ true,
                 (data) -> {
                     assertNull(data);
                 });
     }
 
     @Test
-    public void testLoadInsightsData_emptyCache_gaia_callsOptimizationGuideBridge() {
+    public void testLoadInsightsData_emptyCache_callsOptimizationGuideBridge() {
         mPageInsightsDataLoader.clearCacheForTesting();
 
-        mPageInsightsDataLoader.loadInsightsData(
-                mUrl, /* shouldAttachGaiaToRequest= */ true, (data) -> {});
+        mPageInsightsDataLoader.loadInsightsData(mUrl, (data) -> {});
 
         verify(mOptimizationGuideBridgeJniMock, times(1))
                 .canApplyOptimizationOnDemand(
@@ -124,32 +120,11 @@ public class PageInsightsDataLoaderTest {
     }
 
     @Test
-    public void testLoadInsightsData_emptyCache_noGaia_callsOptimizationGuideBridge() {
-        mPageInsightsDataLoader.clearCacheForTesting();
-
-        mPageInsightsDataLoader.loadInsightsData(
-                mUrl, /* shouldAttachGaiaToRequest= */ false, (data) -> {});
-
-        verify(mOptimizationGuideBridgeJniMock, times(1))
-                .canApplyOptimizationOnDemand(
-                        eq(1L),
-                        eq(new GURL[] {mUrl}),
-                        eq(new int[] {HintsProto.OptimizationType.PAGE_INSIGHTS.getNumber()}),
-                        eq(
-                                CommonTypesProto.RequestContext
-                                        .CONTEXT_NON_PERSONALIZED_PAGE_INSIGHTS_HUB
-                                        .getNumber()),
-                        any(OptimizationGuideBridge.OnDemandOptimizationGuideCallback.class));
-    }
-
-    @Test
     public void testLoadInsightsData_sameUrl_doesNotCallOptimizationGuideBridge() {
         mPageInsightsDataLoader.clearCacheForTesting();
-        mPageInsightsDataLoader.loadInsightsData(
-                mUrl, /* shouldAttachGaiaToRequest= */ true, (data) -> {});
+        mPageInsightsDataLoader.loadInsightsData(mUrl, (data) -> {});
 
-        mPageInsightsDataLoader.loadInsightsData(
-                mUrl, /* shouldAttachGaiaToRequest= */ true, (data) -> {});
+        mPageInsightsDataLoader.loadInsightsData(mUrl, (data) -> {});
 
         verify(mOptimizationGuideBridgeJniMock, times(1))
                 .canApplyOptimizationOnDemand(
@@ -163,11 +138,9 @@ public class PageInsightsDataLoaderTest {
     @Test
     public void testLoadInsightsData_differentUrls_callsOptimizationGuideBridge() {
         mPageInsightsDataLoader.clearCacheForTesting();
-        mPageInsightsDataLoader.loadInsightsData(
-                mUrl, /* shouldAttachGaiaToRequest= */ true, (data) -> {});
+        mPageInsightsDataLoader.loadInsightsData(mUrl, (data) -> {});
 
-        mPageInsightsDataLoader.loadInsightsData(
-                mUrl2, /* shouldAttachGaiaToRequest= */ true, (data) -> {});
+        mPageInsightsDataLoader.loadInsightsData(mUrl2, (data) -> {});
 
         verify(mOptimizationGuideBridgeJniMock, times(1))
                 .canApplyOptimizationOnDemand(

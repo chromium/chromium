@@ -183,7 +183,6 @@ public class OptimizationGuideBridge implements Destroyable {
     private boolean isRequestContextAllowedForOnDemandOptimizations(RequestContext requestContext) {
         switch (requestContext) {
             case CONTEXT_PAGE_INSIGHTS_HUB:
-            case CONTEXT_NON_PERSONALIZED_PAGE_INSIGHTS_HUB:
                 return true;
             default:
                 return false;

@@ -256,8 +256,8 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
         }
     }
 
-    void initContent(View feedPageView, boolean isPrivacyNoticeRequired) {
-        initPrivacyNotice(isPrivacyNoticeRequired);
+    void initContent(View feedPageView) {
+        initPrivacyNotice();
         if (mShouldPrivacyNoticeBeShown) {
             ViewGroup privacyNoticeView =
                     mSheetContentView.findViewById(R.id.page_insights_privacy_notice);
@@ -349,7 +349,7 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
         mViewGroup.findViewById(id).setVisibility(visibility);
     }
 
-    private void initPrivacyNotice(boolean isPrivacyNoticeRequired) {
+    private void initPrivacyNotice() {
         /*
          * The function checks if the privacy notice should be shown and inflates the privacy notice
          * UI if it has to be shown. The privacy notice should appear in Page Insights Hub (PIH) the
@@ -357,9 +357,6 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
          * the privacy notice has been shown 3 times.
          */
         mShouldPrivacyNoticeBeShown = false;
-        if (!isPrivacyNoticeRequired) {
-            return;
-        }
         if (sSharedPreferencesManager.readBoolean(
                 ChromePreferenceKeys.PIH_PRIVACY_NOTICE_CLOSED, false)) {
             return;
