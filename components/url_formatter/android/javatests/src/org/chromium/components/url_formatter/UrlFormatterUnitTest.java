@@ -24,7 +24,7 @@ import java.util.function.Function;
 /**
  * Unit tests for {@link UrlFormatter}.
  *
- * <p>These tests are basic sanity checks to ensure the plumbing is working correctly. The wrapped
+ * <p>These tests are basic checks to ensure the plumbing is working correctly. The wrapped
  * functions are tested much more thoroughly elsewhere.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -70,8 +70,8 @@ public class UrlFormatterUnitTest {
 
         assertEquals("google.com/path", f.apply("http://user:pass@google.com/path"));
         assertEquals("chrome://version", f.apply("chrome://version"));
-        assertEquals("äää.de", f.apply("https://äää.de"));
-        assertEquals("xn--4caaa.com", f.apply("https://äää.com"));
+        assertEquals("äpple.de", f.apply("https://äpple.de"));
+        assertEquals("xn--pple-koa.com", f.apply("https://äpple.com"));
         assertEquals("مثال.إختبار", f.apply("https://xn--mgbh0fb.xn--kgbechtv/"));
         assertEquals("example.com/ test", f.apply("http://user:password@example.com/%20test"));
     }
@@ -84,8 +84,8 @@ public class UrlFormatterUnitTest {
 
         assertEquals("google.com", f.apply(new GURL("http://user:pass@google.com/path")));
         assertEquals("chrome://version", f.apply(new GURL("chrome://version")));
-        assertEquals("äää.de", f.apply(new GURL("https://äää.de")));
-        assertEquals("xn--4caaa.com", f.apply(new GURL("https://äää.com")));
+        assertEquals("äpple.de", f.apply(new GURL("https://äpple.de")));
+        assertEquals("xn--pple-koa.com", f.apply(new GURL("https://äpple.com")));
         assertEquals("مثال.إختبار", f.apply(new GURL("https://xn--mgbh0fb.xn--kgbechtv/")));
     }
 }
