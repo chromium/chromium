@@ -77,6 +77,22 @@ enum class ChoicePromo {
   kFre = 2,
 };
 
+//  The location from which the search engine choice was made.
+//  These values are persisted to logs. Entries should not be renumbered and
+//  numeric values should never be reused.
+//  Must be kept in sync with the ChoiceMadeLocation enum in
+//  search_engines_browser_proxy.ts
+enum class ChoiceMadeLocation {
+  // `chrome://settings/search`
+  kSearchSettings = 0,
+  // `chrome://settings/searchEngines`
+  // This value is also used for the settings pages on mobile.
+  kSearchEngineSettings = 1,
+  // The search engine choice dialog for existing users or the profile picker
+  // for new users.
+  kChoiceScreen = 2,
+};
+
 // Whether the choice screen flag is generally enabled for the specific flow.
 bool IsChoiceScreenFlagEnabled(ChoicePromo promo);
 
@@ -101,6 +117,13 @@ int GetSearchEngineChoiceCountryId(PrefService* profile_prefs);
 // search engine choice prompt.
 // See `//components/country_codes` for the Country ID format.
 bool IsEeaChoiceCountry(int country_id);
+
+// Records that the choice was made by settings the timestamp if applicable.
+// Records the location from which the choice was made.
+// TODO(b/306580764): Use `choice_location` to record histograms of the location
+// where the choice was made from.
+void RecordChoiceMade(PrefService* profile_prefs,
+                      ChoiceMadeLocation choice_location);
 
 // Records the specified choice screen condition at profile initialization.
 void RecordChoiceScreenProfileInitCondition(

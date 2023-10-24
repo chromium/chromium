@@ -233,4 +233,27 @@ void RecordChoiceScreenEvent(SearchEngineChoiceScreenEvents event) {
       search_engines::kSearchEngineChoiceScreenEventsHistogram, event);
 }
 
+void RecordChoiceMade(PrefService* profile_prefs,
+                      ChoiceMadeLocation choice_location) {
+  if (!IsChoiceScreenFlagEnabled(ChoicePromo::kAny)) {
+    return;
+  }
+
+  // Don't modify the pref if the user is not in the EEA region.
+  if (!search_engines::IsEeaChoiceCountry(
+          search_engines::GetSearchEngineChoiceCountryId(profile_prefs))) {
+    return;
+  }
+
+  // Don't modify the pref if it was already set.
+  if (profile_prefs->HasPrefPath(
+          prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp)) {
+    return;
+  }
+
+  profile_prefs->SetInt64(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());
+}
+
 }  // namespace search_engines

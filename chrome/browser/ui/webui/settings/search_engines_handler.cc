@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/user_metrics.h"
@@ -16,7 +17,6 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/ui/search_engines/template_url_table_model.h"
 #include "chrome/common/pref_names.h"
@@ -24,6 +24,8 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/search_engine_choice_utils.h"
+#include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/web_ui.h"
@@ -263,15 +265,27 @@ void SearchEnginesHandler::HandleGetSearchEnginesList(
 
 void SearchEnginesHandler::HandleSetDefaultSearchEngine(
     const base::Value::List& args) {
-  CHECK_EQ(1U, args.size());
+  CHECK_EQ(2U, args.size());
   int index = args[0].GetInt();
   if (index < 0 || static_cast<size_t>(index) >=
                        list_controller_.table_model()->RowCount()) {
     return;
   }
 
-  list_controller_.MakeDefaultTemplateURL(index);
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+  Profile& profile = CHECK_DEREF(Profile::FromWebUI(web_ui()));
+  search_engines::ChoiceMadeLocation kChoiceMadeLocation =
+      static_cast<search_engines::ChoiceMadeLocation>(args[1].GetInt());
 
+  CHECK(kChoiceMadeLocation ==
+            search_engines::ChoiceMadeLocation::kSearchSettings ||
+        kChoiceMadeLocation ==
+            search_engines::ChoiceMadeLocation::kSearchEngineSettings);
+
+  search_engines::RecordChoiceMade(profile.GetPrefs(), kChoiceMadeLocation);
+#endif
+
+  list_controller_.MakeDefaultTemplateURL(index);
   base::RecordAction(base::UserMetricsAction("Options_SearchEngineSetDefault"));
 }
 

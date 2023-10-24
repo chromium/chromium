@@ -98,9 +98,8 @@ SearchEngineChoiceService::SearchEngineChoiceService(
 void SearchEngineChoiceService::NotifyChoiceMade(int prepopulate_id) {
   // Sets the timestamp and search engine choice preferences.
   PrefService* pref_service = profile_->GetPrefs();
-  pref_service->SetInt64(
-      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());
+  RecordChoiceMade(pref_service,
+                   search_engines::ChoiceMadeLocation::kChoiceScreen);
 
   // A custom search engine would have a `prepopulate_id` of 0.
   // Having a custom search engine displayed on the choice screen would mean

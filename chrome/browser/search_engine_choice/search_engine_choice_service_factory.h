@@ -32,6 +32,12 @@ class SearchEngineChoiceServiceFactory : public ProfileKeyedServiceFactory {
   static base::AutoReset<bool> ScopedChromeBuildOverrideForTesting(
       bool force_chrome_build);
 
+  // This calls IsProfileEligibleForChoiceScreen and should only be used for
+  // testing purposes.
+  static bool IsProfileEligibleForChoiceScreenForTesting(
+      const policy::PolicyService& policy_service,
+      Profile& profile);
+
  private:
   friend class base::NoDestructor<SearchEngineChoiceServiceFactory>;
 
@@ -44,9 +50,9 @@ class SearchEngineChoiceServiceFactory : public ProfileKeyedServiceFactory {
 
   // Returns whether the profile is eligible for the Search Engine Choice dialog
   // based on device policies and profile attributes.
-  bool IsProfileEligibleForChoiceScreen(
+  static bool IsProfileEligibleForChoiceScreen(
       const policy::PolicyService& policy_service,
-      Profile& profile) const;
+      Profile& profile);
 };
 
 #endif  // CHROME_BROWSER_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_SERVICE_FACTORY_H

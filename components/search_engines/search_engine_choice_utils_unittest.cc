@@ -26,10 +26,7 @@ using ::testing::NiceMock;
 class SearchEngineChoiceUtilsTest : public ::testing::Test {
  public:
   SearchEngineChoiceUtilsTest()
-      : template_url_service_(/*initializers=*/nullptr, /*count=*/0) {}
-  ~SearchEngineChoiceUtilsTest() override = default;
-
-  void SetUp() override {
+      : template_url_service_(/*initializers=*/nullptr, /*count=*/0) {
     feature_list_.InitAndEnableFeature(switches::kSearchEngineChoice);
     country_codes::RegisterProfilePrefs(pref_service_.registry());
     pref_service_.registry()->RegisterInt64Pref(
@@ -43,6 +40,8 @@ class SearchEngineChoiceUtilsTest : public ::testing::Test {
     InitMockPolicyService();
     CheckPoliciesInitialState();
   }
+
+  ~SearchEngineChoiceUtilsTest() override = default;
 
   void VerifyWillShowChoiceScreen(
       const policy::PolicyService& policy_service,
@@ -222,9 +221,8 @@ TEST_F(SearchEngineChoiceUtilsTest,
       search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
       search_engines::SearchEngineChoiceScreenConditions::kEligible, 1);
 
-  pref_service()->SetInt64(
-      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());
+  search_engines::RecordChoiceMade(
+      pref_service(), search_engines::ChoiceMadeLocation::kChoiceScreen);
   VerifyEligibleButWillNotShowChoiceScreen(
       policy_service(),
       /*profile_properties=*/
@@ -255,9 +253,8 @@ TEST_F(SearchEngineChoiceUtilsTest, DoNotShowChoiceScreenIfCountryOutOfScope) {
 TEST_F(SearchEngineChoiceUtilsTest, ShowChoiceScreenWithForceCommandLineFlag) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kForceSearchEngineChoiceScreen);
-  pref_service()->SetInt64(
-      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());
+  search_engines::RecordChoiceMade(
+      pref_service(), search_engines::ChoiceMadeLocation::kChoiceScreen);
 
   VerifyWillShowChoiceScreen(
       policy_service(), /*profile_properties=*/
@@ -360,4 +357,47 @@ TEST_F(SearchEngineChoiceUtilsTest,
       search_engines::SearchEngineChoiceScreenConditions::
           kHasCustomSearchEngine,
       1);
+}
+
+TEST_F(SearchEngineChoiceUtilsTest, RecordChoiceMade) {
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+      switches::kSearchEngineChoiceCountry);
+
+  // Test that the choice is not recorded for countries outside the EEA region.
+  const int kUnitedStatesCountryId =
+      country_codes::CountryCharsToCountryID('U', 'S');
+  pref_service()->SetInteger(country_codes::kCountryIDAtInstall,
+                             kUnitedStatesCountryId);
+  search_engines::RecordChoiceMade(
+      pref_service(), search_engines::ChoiceMadeLocation::kChoiceScreen);
+  EXPECT_FALSE(pref_service()->HasPrefPath(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
+
+  // Revert to an EEA region country.
+  const int kBelgiumCountryId =
+      country_codes::CountryCharsToCountryID('B', 'E');
+  pref_service()->SetInteger(country_codes::kCountryIDAtInstall,
+                             kBelgiumCountryId);
+
+  // Test that the choice is recorded if it wasn't previously done.
+  search_engines::RecordChoiceMade(
+      pref_service(), search_engines::ChoiceMadeLocation::kChoiceScreen);
+
+  EXPECT_NEAR(pref_service()->GetInt64(
+                  prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp),
+              base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds(),
+              /*abs_error=*/2);
+
+  // Set the pref to 5 so that we can know if it gets modified.
+  const int kModifiedTimestamp = 5;
+  pref_service()->SetInt64(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
+      kModifiedTimestamp);
+
+  // Test that the choice is not recorded if it was previously done.
+  search_engines::RecordChoiceMade(
+      pref_service(), search_engines::ChoiceMadeLocation::kChoiceScreen);
+  EXPECT_EQ(pref_service()->GetInt64(
+                prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp),
+            kModifiedTimestamp);
 }
