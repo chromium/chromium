@@ -104,6 +104,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -336,6 +337,8 @@ public class TabListMediatorUnitTest {
         doReturn(mTabModel).when(mTabModelSelector).getModel(true);
         // Mock that tab restoring stage is over.
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
+        Profile.setLastUsedProfileForTesting(mProfile);
+        ProfileManager.onProfileAdded(mProfile);
         doReturn(mProfile).when(mTabModel).getProfile();
         doReturn(tabModelList).when(mTabModelSelector).getModels();
 
@@ -405,6 +408,8 @@ public class TabListMediatorUnitTest {
 
         mModel = new TabListModel();
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
+        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+
         setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
 
         doAnswer(
@@ -423,6 +428,7 @@ public class TabListMediatorUnitTest {
     @After
     public void tearDown() {
         PseudoTab.clearForTesting();
+        ProfileManager.resetForTesting();
     }
 
     private static SharedPreferences getGroupTitleSharedPreferences() {
@@ -2859,7 +2865,10 @@ public class TabListMediatorUnitTest {
 
         PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
                 PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD, false);
-        assertThat(PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(), equalTo(false));
+        assertThat(
+                PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(
+                        Profile.getLastUsedRegularProfile()),
+                equalTo(false));
         fetcher.maybeShowPriceWelcomeMessage(mShoppingPersistedTabData);
         verify(mPriceWelcomeMessageController, times(0)).showPriceWelcomeMessage(mPriceTabData);
     }

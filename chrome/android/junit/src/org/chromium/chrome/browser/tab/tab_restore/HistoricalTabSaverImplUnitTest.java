@@ -19,6 +19,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.WebContentsState;
@@ -35,6 +37,7 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 public class HistoricalTabSaverImplUnitTest {
     @Rule public JniMocker mJniMocker = new JniMocker();
+    @Mock private Profile mProfile;
     @Mock private TabModel mTabModel;
     @Mock private HistoricalTabSaverImpl.Natives mHistoricalTabSaverJni;
 
@@ -47,6 +50,11 @@ public class HistoricalTabSaverImplUnitTest {
         mJniMocker.mock(HistoricalTabSaverImplJni.TEST_HOOKS, mHistoricalTabSaverJni);
         mHistoricalTabSaver = new HistoricalTabSaverImpl(mTabModel);
         mHistoricalTabSaver.ignoreUrlSchemesForTesting(true);
+
+        // TODO(crbug/1494442): Remove when MockTab requires a Profile reference that can avoid
+        //                      TabHelpers from needing to use getLastUsedRegularProfile.
+        Profile.setLastUsedProfileForTesting(mProfile);
+        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
     }
 
     /** Tests nothing is saved for an empty group. */

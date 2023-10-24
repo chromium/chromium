@@ -41,6 +41,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.dragdrop.ChromeDragAndDropBrowserDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.Features;
@@ -55,6 +57,7 @@ public class TabDropTargetTest {
     @Mock private MultiInstanceManager mMultiInstanceManager;
     @Mock private StripLayoutHelper mStripLayoutHelper;
     @Mock StripLayoutTab mStripLayoutTab;
+    @Mock Profile mProfile;
 
     private TabDropTarget mTabDropTarget;
     private Activity mActivity;
@@ -77,6 +80,11 @@ public class TabDropTargetTest {
 
         mActivity = Robolectric.setupActivity(Activity.class);
         mActivity.setTheme(org.chromium.chrome.R.style.Theme_BrowserUI);
+
+        // TODO(crbug/1494442): Remove when MockTab requires a Profile reference that can avoid
+        //                      TabHelpers from needing to use getLastUsedRegularProfile.
+        Profile.setLastUsedProfileForTesting(mProfile);
+        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
 
         // Create both the TabDragSource and TabDropTarget.
         mTabDragSource = TabDragSource.getInstance();

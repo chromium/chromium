@@ -2148,9 +2148,12 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * viewed in the tab switcher grid.
      */
     private void maybeShowPriceDropIPH() {
-        if (!PriceTrackingUtilities.isTrackPricesOnTabsEnabled()
-                || !PriceTrackingFeatures.isPriceDropIphEnabled() || mTabModelSelector == null
-                || mTabModelSelector.isIncognitoSelected()) {
+        if (mTabModelSelector == null) return;
+        Profile profile = mTabModelSelector.getCurrentModel().getProfile();
+        if (profile.isOffTheRecord()) return;
+
+        if (!PriceTrackingUtilities.isTrackPricesOnTabsEnabled(profile)
+                || !PriceTrackingFeatures.isPriceDropIphEnabled(profile)) {
             return;
         }
         TabModel tabModel = mTabModelSelector.getCurrentModel();

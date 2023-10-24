@@ -126,6 +126,7 @@ robolectric_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/android/modules/readaloud/public:java",
+    "//chrome/browser/commerce/price_tracking/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/language/android:java",
     "//chrome/browser/language/android:junit",

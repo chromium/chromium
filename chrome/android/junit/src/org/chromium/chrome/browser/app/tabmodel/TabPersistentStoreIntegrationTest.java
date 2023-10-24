@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridgeJni;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -126,6 +127,8 @@ public class TabPersistentStoreIntegrationTest {
 
         // Pretend native was loaded, creating TabModelImpls.
         Profile.setLastUsedProfileForTesting(mProfile);
+        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+
         jniMocker.mock(TabModelJniBridgeJni.TEST_HOOKS, mTabModelJniBridgeJni);
         jniMocker.mock(RecentlyClosedBridgeJni.TEST_HOOKS, mRecentlyClosedBridgeJni);
         jniMocker.mock(TabImplJni.TEST_HOOKS, mTabImplJni);

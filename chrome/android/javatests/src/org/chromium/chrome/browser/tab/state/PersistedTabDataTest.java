@@ -24,6 +24,8 @@ import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
@@ -40,6 +42,7 @@ public class PersistedTabDataTest {
     private static final int CHANGED_VALUE = 51;
 
     @Mock ShoppingPersistedTabData mShoppingPersistedTabDataMock;
+    @Mock Profile mProfile;
 
     @Mock private PersistedTabData.Natives mPersistedTabDataJni;
 
@@ -55,6 +58,12 @@ public class PersistedTabDataTest {
                 () -> {
                     MockitoAnnotations.initMocks(this);
                 });
+
+        // TODO(crbug/1494442): Remove when MockTab requires a Profile reference that can avoid
+        //                      TabHelpers from needing to use getLastUsedRegularProfile.
+        Profile.setLastUsedProfileForTesting(mProfile);
+        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+
         jniMocker.mock(PersistedTabDataJni.TEST_HOOKS, mPersistedTabDataJni);
     }
 

@@ -12,6 +12,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 
@@ -180,9 +181,11 @@ public class PriceMessageService extends MessageService {
      */
     boolean preparePriceMessage(@PriceMessageType int type, @Nullable PriceTabData priceTabData) {
         assert (type == PriceMessageType.PRICE_WELCOME
-                && PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled())
+                        && PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(
+                                Profile.getLastUsedRegularProfile()))
                 || (type == PriceMessageType.PRICE_ALERTS
-                        && PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
+                        && PriceTrackingUtilities.isPriceAlertsMessageCardEnabled(
+                                Profile.getLastUsedRegularProfile()));
         if (type == PriceMessageType.PRICE_WELCOME) {
             PriceTrackingUtilities.increasePriceWelcomeMessageCardShowCount();
             if (PriceTrackingUtilities.getPriceWelcomeMessageCardShowCount()
@@ -195,7 +198,8 @@ public class PriceMessageService extends MessageService {
             // When PriceWelcomeMessageCard is available, it takes priority over
             // PriceAlertsMessageCard which will be removed first. This should be called only if
             // PriceAlertsMessageCard is currently enabled.
-            if (PriceTrackingUtilities.isPriceAlertsMessageCardEnabled()) {
+            if (PriceTrackingUtilities.isPriceAlertsMessageCardEnabled(
+                    Profile.getLastUsedRegularProfile())) {
                 PriceTrackingUtilities.decreasePriceAlertsMessageCardShowCount();
             }
         } else if (type == PriceMessageType.PRICE_ALERTS) {

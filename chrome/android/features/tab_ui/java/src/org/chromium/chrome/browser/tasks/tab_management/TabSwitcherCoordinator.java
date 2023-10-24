@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFa
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -319,7 +320,9 @@ public class TabSwitcherCoordinator
                             LargeMessageCardViewBinder::bind);
                 }
 
-                if (PriceTrackingFeatures.isPriceTrackingEnabled()) {
+                if (ProfileManager.isInitialized()
+                        && PriceTrackingFeatures.isPriceTrackingEnabled(
+                                Profile.getLastUsedRegularProfile())) {
                     mPriceAnnotationsPrefListener = (sharedPrefs, key) -> {
                         if (PriceTrackingUtilities.TRACK_PRICES_ON_TABS.equals(key)
                                 && !mTabModelSelector.isIncognitoSelected()
@@ -511,7 +514,7 @@ public class TabSwitcherCoordinator
     }
 
     private void setUpPriceTracking(Context context, ModalDialogManager modalDialogManager) {
-        if (PriceTrackingFeatures.isPriceTrackingEnabled()) {
+        if (PriceTrackingFeatures.isPriceTrackingEnabled(Profile.getLastUsedRegularProfile())) {
             PriceDropNotificationManager notificationManager =
                     PriceDropNotificationManagerFactory.create();
             if (mMode == TabListCoordinator.TabListMode.GRID) {
@@ -689,7 +692,8 @@ public class TabSwitcherCoordinator
         }
         if (tabs != null && tabs.size() > 0) {
             if (mPriceMessageService != null
-                    && PriceTrackingUtilities.isPriceAlertsMessageCardEnabled()) {
+                    && PriceTrackingUtilities.isPriceAlertsMessageCardEnabled(
+                            Profile.getLastUsedRegularProfile())) {
                 mPriceMessageService.preparePriceMessage(PriceMessageType.PRICE_ALERTS, null);
             }
             appendMessagesTo(tabs.size());
@@ -745,7 +749,8 @@ public class TabSwitcherCoordinator
     @Override
     public void showPriceWelcomeMessage(PriceMessageService.PriceTabData priceTabData) {
         if (mPriceMessageService == null
-                || !PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled()
+                || !PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(
+                        Profile.getLastUsedRegularProfile())
                 || mMessageCardProviderCoordinator.isMessageShown(
                         MessageService.MessageType.PRICE_MESSAGE, PriceMessageType.PRICE_WELCOME)) {
             return;
@@ -849,8 +854,12 @@ public class TabSwitcherCoordinator
     }
 
     private boolean shouldRegisterLargeMessageItemType() {
-        return PriceTrackingFeatures.isPriceTrackingEnabled()
-                || IncognitoReauthManager.isIncognitoReauthFeatureAvailable();
+        if (ProfileManager.isInitialized()
+                && PriceTrackingFeatures.isPriceTrackingEnabled(
+                        Profile.getLastUsedRegularProfile())) {
+            return true;
+        }
+        return IncognitoReauthManager.isIncognitoReauthFeatureAvailable();
     }
 
     @Override

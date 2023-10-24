@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceConfig;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
@@ -58,6 +59,7 @@ public class PriceMessageServiceUnitTest {
     @Mock PriceMessageService.PriceWelcomeMessageReviewActionProvider mReviewActionProvider;
     @Mock MessageService.MessageObserver mMessageObserver;
     @Mock PriceDropNotificationManager mNotificationManager;
+    @Mock Profile mProfile;
 
     private PriceMessageService mMessageService;
     private PriceTabData mPriceTabData;
@@ -82,18 +84,20 @@ public class PriceMessageServiceUnitTest {
                 "true");
         FeatureList.setTestValues(testValues);
 
+        Profile.setLastUsedProfileForTesting(mProfile);
+
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
         PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
                 PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD, true);
         PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeInt(
                 PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD_SHOW_COUNT, INITIAL_SHOW_COUNT);
-        assertTrue(PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled());
+        assertTrue(PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(mProfile));
         PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
                 PriceTrackingUtilities.PRICE_ALERTS_MESSAGE_CARD, true);
         PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeInt(
                 PriceTrackingUtilities.PRICE_ALERTS_MESSAGE_CARD_SHOW_COUNT, INITIAL_SHOW_COUNT);
-        assertTrue(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
+        assertTrue(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled(mProfile));
 
         mMessageService =
                 new PriceMessageService(
@@ -122,7 +126,7 @@ public class PriceMessageServiceUnitTest {
         mMessageService.preparePriceMessage(PriceMessageType.PRICE_WELCOME, mPriceTabData);
         assertEquals(
                 MAX_SHOW_COUNT + 1, PriceTrackingUtilities.getPriceWelcomeMessageCardShowCount());
-        assertFalse(PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled());
+        assertFalse(PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(mProfile));
     }
 
     @Test
@@ -132,7 +136,7 @@ public class PriceMessageServiceUnitTest {
         mMessageService.preparePriceMessage(PriceMessageType.PRICE_ALERTS, null);
         assertEquals(
                 MAX_SHOW_COUNT + 1, PriceTrackingUtilities.getPriceAlertsMessageCardShowCount());
-        assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
+        assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled(mProfile));
     }
 
     @Test
@@ -186,7 +190,7 @@ public class PriceMessageServiceUnitTest {
         mMessageService.review(PriceMessageType.PRICE_WELCOME);
         verify(mReviewActionProvider).scrollToTab(index);
         verify(mMessageProvider).showPriceDropTooltip(index);
-        assertFalse(PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled());
+        assertFalse(PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(mProfile));
         assertNull(mMessageService.getPriceTabDataForTesting());
     }
 
@@ -195,7 +199,7 @@ public class PriceMessageServiceUnitTest {
         doReturn(true).when(mNotificationManager).areAppNotificationsEnabled();
         mMessageService.review(PriceMessageType.PRICE_ALERTS);
         verify(mNotificationManager).createNotificationChannel();
-        assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
+        assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled(mProfile));
     }
 
     @Test
@@ -203,7 +207,7 @@ public class PriceMessageServiceUnitTest {
         doReturn(false).when(mNotificationManager).areAppNotificationsEnabled();
         mMessageService.review(PriceMessageType.PRICE_ALERTS);
         verify(mNotificationManager).launchNotificationSettings();
-        assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
+        assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled(mProfile));
     }
 
     @Test
@@ -212,14 +216,14 @@ public class PriceMessageServiceUnitTest {
         assertEquals(mPriceTabData, mMessageService.getPriceTabDataForTesting());
 
         mMessageService.dismiss(PriceMessageType.PRICE_WELCOME);
-        assertFalse(PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled());
+        assertFalse(PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(mProfile));
         assertNull(mMessageService.getPriceTabDataForTesting());
     }
 
     @Test
     public void testDismiss_PriceAlerts() {
         mMessageService.dismiss(PriceMessageType.PRICE_ALERTS);
-        assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
+        assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled(mProfile));
     }
 
     @Test

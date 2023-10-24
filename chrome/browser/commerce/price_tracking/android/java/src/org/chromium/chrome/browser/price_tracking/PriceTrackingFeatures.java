@@ -11,7 +11,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.components.commerce.core.ShoppingService;
@@ -35,8 +34,8 @@ public class PriceTrackingFeatures {
 
     /**
      * @return Whether the price tracking feature is eligible to work. Now it is used to determine
-     *         whether the menu item "track prices" is visible and whether the tab has {@link
-     *         TabProperties#SHOPPING_PERSISTED_TAB_DATA_FETCHER}.
+     *     whether the menu item "track prices" is visible and whether the tab has {@link
+     *     TabProperties#SHOPPING_PERSISTED_TAB_DATA_FETCHER}.
      */
     // TODO(b:277218890): Currently the method isPriceTrackingEnabled() is gating some
     // infrastructure setup such as registering the message card in the tab switcher and adding
@@ -44,36 +43,32 @@ public class PriceTrackingFeatures {
     // requires users to sign in and enable MSBB and the returned value can change at runtime. We
     // should implement this method in native as well and rename isPriceTrackingEnabled() to be less
     // confusing.
-    public static boolean isPriceTrackingEligible() {
+    public static boolean isPriceTrackingEligible(Profile profile) {
         if (sIsSignedInAndSyncEnabledForTesting != null) {
-            return isPriceTrackingEnabled() && sIsSignedInAndSyncEnabledForTesting;
+            return isPriceTrackingEnabled(profile) && sIsSignedInAndSyncEnabledForTesting;
         }
-        return isPriceTrackingEnabled() && isSignedIn() && isAnonymizedUrlDataCollectionEnabled();
+        return isPriceTrackingEnabled(profile)
+                && isSignedIn(profile)
+                && isAnonymizedUrlDataCollectionEnabled(profile);
     }
 
     /** Wrapper function for ShoppingService.isCommercePriceTrackingEnabled(). */
-    public static boolean isPriceTrackingEnabled() {
+    public static boolean isPriceTrackingEnabled(Profile profile) {
         if (sPriceTrackingEnabledForTesting != null) return sPriceTrackingEnabledForTesting;
-        if (!ProfileManager.isInitialized()) return false;
-
-        // TODO(b:277218890): Pass profile into this method/class instead of calling the
-        // Profile.getLastUsedRegularProfile() method.
-        Profile profile = Profile.getLastUsedRegularProfile();
         if (profile == null) return false;
         ShoppingService service = ShoppingServiceFactory.getForProfile(profile);
         if (service == null) return false;
         return service.isCommercePriceTrackingEnabled();
     }
 
-    private static boolean isSignedIn() {
+    private static boolean isSignedIn(Profile profile) {
         return IdentityServicesProvider.get()
-                .getIdentityManager(Profile.getLastUsedRegularProfile())
+                .getIdentityManager(profile)
                 .hasPrimaryAccount(ConsentLevel.SYNC);
     }
 
-    private static boolean isAnonymizedUrlDataCollectionEnabled() {
-        return UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(
-                Profile.getLastUsedRegularProfile());
+    private static boolean isAnonymizedUrlDataCollectionEnabled(Profile profile) {
+        return UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(profile);
     }
 
     public static void setIsSignedInAndSyncEnabledForTesting(Boolean isSignedInAndSyncEnabled) {
@@ -98,34 +93,37 @@ public class PriceTrackingFeatures {
     /**
      * @return whether we allow users to disable the price annotations feature.
      */
-    public static boolean allowUsersToDisablePriceAnnotations() {
+    public static boolean allowUsersToDisablePriceAnnotations(Profile profile) {
         if (FeatureList.isInitialized()) {
-            return isPriceTrackingEligible()
+            return isPriceTrackingEligible(profile)
                     && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                             ChromeFeatureList.COMMERCE_PRICE_TRACKING,
-                            ALLOW_DISABLE_PRICE_ANNOTATIONS_PARAM, true);
+                            ALLOW_DISABLE_PRICE_ANNOTATIONS_PARAM,
+                            true);
         }
-        return isPriceTrackingEligible();
+        return isPriceTrackingEligible(profile);
     }
 
-    public static boolean isPriceDropIphEnabled() {
+    public static boolean isPriceDropIphEnabled(Profile profile) {
         if (FeatureList.isInitialized()) {
-            return isPriceTrackingEligible()
+            return isPriceTrackingEligible(profile)
                     && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                            ChromeFeatureList.COMMERCE_PRICE_TRACKING, PRICE_DROP_IPH_ENABLED_PARAM,
+                            ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+                            PRICE_DROP_IPH_ENABLED_PARAM,
                             false);
         }
-        return isPriceTrackingEligible();
+        return isPriceTrackingEligible(profile);
     }
 
-    public static boolean isPriceDropBadgeEnabled() {
+    public static boolean isPriceDropBadgeEnabled(Profile profile) {
         if (FeatureList.isInitialized()) {
-            return isPriceTrackingEligible()
+            return isPriceTrackingEligible(profile)
                     && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                             ChromeFeatureList.COMMERCE_PRICE_TRACKING,
-                            PRICE_DROP_BADGE_ENABLED_PARAM, false);
+                            PRICE_DROP_BADGE_ENABLED_PARAM,
+                            false);
         }
-        return isPriceTrackingEligible();
+        return isPriceTrackingEligible(profile);
     }
 
     public static void setPriceTrackingEnabledForTesting(Boolean enabled) {

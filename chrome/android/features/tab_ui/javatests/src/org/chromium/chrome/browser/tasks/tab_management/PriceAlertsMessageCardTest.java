@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFa
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerImpl;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageDisableReason;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -71,6 +72,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.IOException;
@@ -128,12 +130,20 @@ public class PriceAlertsMessageCardTest {
         Intents.release();
     }
 
+    private boolean isPriceAlertsMessageCardEnabled() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> {
+                    return PriceTrackingUtilities.isPriceAlertsMessageCardEnabled(
+                            Profile.getLastUsedRegularProfile());
+                });
+    }
+
     @Test
     @MediumTest
     @CommandLineFlags.Add({BASE_PARAMS})
     public void testMessageCardShowing() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        assertTrue(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
+        assertTrue(isPriceAlertsMessageCardEnabled());
 
         enterTabSwitcher(cta);
         CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
@@ -146,7 +156,7 @@ public class PriceAlertsMessageCardTest {
     public void testMessageCardNotShowing_MessageDisabled() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         PriceTrackingUtilities.disablePriceAlertsMessageCard();
-        assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
+        assertFalse(isPriceAlertsMessageCardEnabled());
 
         enterTabSwitcher(cta);
         onView(withId(R.id.large_message_card_item)).check(doesNotExist());
@@ -157,7 +167,7 @@ public class PriceAlertsMessageCardTest {
     @CommandLineFlags.Add({BASE_PARAMS})
     public void testMessageCardNotShowing_InIncognito() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        assertTrue(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
+        assertTrue(isPriceAlertsMessageCardEnabled());
 
         createTabs(cta, true, 1);
         enterTabSwitcher(cta);
@@ -172,7 +182,7 @@ public class PriceAlertsMessageCardTest {
     })
     public void testMessageCardNotShowing_ImplicitSubscriptionsParameterDisabled() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
+        assertFalse(isPriceAlertsMessageCardEnabled());
 
         enterTabSwitcher(cta);
         onView(withId(R.id.large_message_card_item)).check(doesNotExist());
@@ -204,7 +214,7 @@ public class PriceAlertsMessageCardTest {
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         METRICS_IDENTIFIER, MessageDisableReason.MESSAGE_ACCEPTED));
-        assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
+        assertFalse(isPriceAlertsMessageCardEnabled());
         onView(withId(R.id.large_message_card_item)).check(doesNotExist());
     }
 
@@ -233,7 +243,7 @@ public class PriceAlertsMessageCardTest {
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         METRICS_IDENTIFIER, MessageDisableReason.MESSAGE_ACCEPTED));
-        assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
+        assertFalse(isPriceAlertsMessageCardEnabled());
     }
 
     @Test
@@ -252,7 +262,7 @@ public class PriceAlertsMessageCardTest {
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         METRICS_IDENTIFIER, MessageDisableReason.MESSAGE_DISMISSED));
-        assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
+        assertFalse(isPriceAlertsMessageCardEnabled());
         onView(withId(R.id.large_message_card_item)).check(doesNotExist());
     }
 
@@ -282,7 +292,7 @@ public class PriceAlertsMessageCardTest {
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         METRICS_IDENTIFIER, MessageDisableReason.MESSAGE_DISMISSED));
-        assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
+        assertFalse(isPriceAlertsMessageCardEnabled());
         onView(withId(R.id.large_message_card_item)).check(doesNotExist());
     }
 
@@ -320,7 +330,7 @@ public class PriceAlertsMessageCardTest {
             enterTabSwitcher(cta);
             CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
             onView(withId(R.id.large_message_card_item)).check(matches(isDisplayed()));
-            assertTrue(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
+            assertTrue(isPriceAlertsMessageCardEnabled());
             clickFirstCardFromTabSwitcher(cta);
         }
 
@@ -330,7 +340,7 @@ public class PriceAlertsMessageCardTest {
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         METRICS_IDENTIFIER, MessageDisableReason.MESSAGE_IGNORED));
-        assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
+        assertFalse(isPriceAlertsMessageCardEnabled());
     }
 
     @Test

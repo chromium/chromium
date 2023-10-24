@@ -1424,6 +1424,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/android/intents:java",
       "//chrome/browser/browser_controls/android:java",
       "//chrome/browser/commerce/android:java",
+      "//chrome/browser/commerce/price_tracking/android:java",
       "//chrome/browser/commerce/subscriptions/android:subscriptions_java",
       "//chrome/browser/contextmenu:java",
       "//chrome/browser/download/android:download_java_tests",
