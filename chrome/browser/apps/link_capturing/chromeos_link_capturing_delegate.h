@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_APPS_LINK_CAPTURING_CHROMEOS_LINK_CAPTURING_DELEGATE_H_
 #define CHROME_BROWSER_APPS_LINK_CAPTURING_CHROMEOS_LINK_CAPTURING_DELEGATE_H_
 
+#include "base/auto_reset.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_navigation_throttle.h"
 
@@ -30,7 +31,8 @@ class ChromeOsLinkCapturingDelegate
 
   // Method intended for testing purposes only.
   // Set clock used for timing to enable manipulation during tests.
-  static void SetClockForTesting(const base::TickClock* tick_clock);
+  static base::AutoReset<const base::TickClock*> SetClockForTesting(
+      const base::TickClock* tick_clock);
 
   // apps::LinkCapturingNavigationThrottle::Delegate:
   bool ShouldCancelThrottleCreation(content::NavigationHandle* handle) override;
@@ -41,10 +43,6 @@ class ChromeOsLinkCapturingDelegate
                                  bool is_navigation_from_link) final;
 
  private:
-  // Used to create a unique timestamped URL to force reload apps.
-  // Points to the base::DefaultTickClock by default.
-  static const base::TickClock* clock_;
-
   base::WeakPtrFactory<ChromeOsLinkCapturingDelegate> weak_factory_{this};
 };
 }  // namespace apps

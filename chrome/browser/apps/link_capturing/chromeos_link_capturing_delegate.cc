@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/link_capturing/chromeos_link_capturing_delegate.h"
 
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
+#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/values_equivalent.h"
@@ -129,16 +130,22 @@ void LaunchApp(base::WeakPtr<AppServiceProxy> proxy,
   IntentHandlingMetrics::RecordPreferredAppLinkClickMetrics(
       GetMetricsPlatform(app_type));
 }
+
+// Used to create a unique timestamped URL to force reload apps.
+// Points to the base::DefaultTickClock by default.
+static const base::TickClock*& GetTickClock() {
+  static const base::TickClock* g_clock = base::DefaultTickClock::GetInstance();
+  return g_clock;
+}
+
 }  // namespace
 
-// static
-const base::TickClock* ChromeOsLinkCapturingDelegate::clock_ =
-    base::DefaultTickClock::GetInstance();
 
 // static
-void ChromeOsLinkCapturingDelegate::SetClockForTesting(
+base::AutoReset<const base::TickClock*>
+ChromeOsLinkCapturingDelegate::SetClockForTesting(
     const base::TickClock* tick_clock) {
-  clock_ = tick_clock;
+  return base::AutoReset<const base::TickClock*>(&GetTickClock(), tick_clock);
 }
 
 ChromeOsLinkCapturingDelegate::ChromeOsLinkCapturingDelegate() = default;
@@ -193,7 +200,7 @@ ChromeOsLinkCapturingDelegate::CreateLinkCaptureLaunchClosure(
   auto launch_source = is_navigation_from_link ? LaunchSource::kFromLink
                                                : LaunchSource::kFromOmnibox;
   GURL redirected_url =
-      RedirectUrlIfSwa(profile, preferred_app_id, url, clock_);
+      RedirectUrlIfSwa(profile, preferred_app_id, url, GetTickClock());
 
   // Note: The launch can occur after this object is destroyed, so bind to a
   // static function.
