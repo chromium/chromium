@@ -282,6 +282,7 @@ using ReauthenticationEvent::kSuccess;
   if ((_needsRefocus || _disableBottomSheetOnExit) && _webStateList) {
     [self logExitReason:kDismissal];
     [self incrementDismissCount];
+    [self markSharedPasswordNotificationsDisplayed];
 
     web::WebState* activeWebState = _webStateList->GetActiveWebState();
     if (!activeWebState) {

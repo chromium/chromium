@@ -133,7 +133,9 @@ id<GREYMatcher> SubtitleString(const GURL& url) {
   if ([self isRunningTest:@selector
             (testOpenPasswordBottomSheetWithSingleSharedPassword)] ||
       [self isRunningTest:@selector
-            (testOpenPasswordBottomSheetWithMultipleSharedPasswords)]) {
+            (testOpenPasswordBottomSheetWithMultipleSharedPasswords)] ||
+      [self isRunningTest:@selector
+            (testOpenPasswordBottomSheetWithSharedPasswordsAndUseKeyboard)]) {
     config.features_enabled.push_back(
         password_manager::features::kSharedPasswordNotificationUI);
   }
@@ -944,6 +946,66 @@ id<GREYMatcher> NavigationBarEditButton() {
       selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
                                    IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
       performAction:grey_tap()];
+  [self verifyPasswordFieldsHaveBeenFilled:@"user1"];
+}
+
+- (void)testOpenPasswordBottomSheetWithSharedPasswordsAndUseKeyboard {
+  [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
+  [PasswordSuggestionBottomSheetAppInterface
+      mockReauthenticationModuleExpectedResult:ReauthenticationResult::
+                                                   kSuccess];
+
+  // Save a password that has been received via sharing.
+  [PasswordManagerAppInterface
+      storeCredentialWithUsername:@"user1"
+                         password:@"password1"
+                              URL:net::NSURLWithGURL(self.testServer->GetURL(
+                                      "/simple_login_form.html"))
+                           shared:YES];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                                enableSync:NO];
+  [self loadLoginPage];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user1")];
+
+  // Verify that the sharing notification title is visible.
+  id<GREYMatcher> titleMatcher = grey_accessibilityLabel(
+      base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+          IDS_IOS_PASSWORD_SHARING_NOTIFICATION_TITLE, 1)));
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(titleMatcher,
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD)]
+      performAction:grey_tap()];
+
+  // Verify that after dismissing the shared notification bottom sheet, regular
+  // bottom sheet is displayed.
+  [self loadLoginPage];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user1")];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(titleMatcher,
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_nil()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
+      performAction:grey_tap()];
+
   [self verifyPasswordFieldsHaveBeenFilled:@"user1"];
 }
 
