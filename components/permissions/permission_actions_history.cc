@@ -200,6 +200,7 @@ void PermissionActionsHistory::FillInActionCounts(
         counts->denies++;
         break;
       case PermissionAction::GRANTED:
+      case PermissionAction::GRANTED_ONCE:
         counts->grants++;
         break;
       case PermissionAction::DISMISSED:
