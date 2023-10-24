@@ -2718,6 +2718,8 @@ source_set("browser") {
       "date_time_chooser/ios/date_time_chooser_ios.mm",
       "date_time_chooser/ios/date_time_chooser_mediator.h",
       "date_time_chooser/ios/date_time_chooser_mediator.mm",
+      "date_time_chooser/ios/date_time_chooser_util.h",
+      "date_time_chooser/ios/date_time_chooser_util.mm",
       "date_time_chooser/ios/date_time_chooser_view_controller.h",
       "date_time_chooser/ios/date_time_chooser_view_controller.mm",
       "devtools/protocol/native_input_event_builder_ios.mm",

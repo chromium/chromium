@@ -2823,6 +2823,12 @@ test("content_unittests") {
     ]
   }
 
+  if (is_ios) {
+    sources += [
+      "../browser/date_time_chooser/ios/date_time_chooser_util_unittest.mm",
+    ]
+  }
+
   if (use_atk) {
     sources += [
       "../browser/accessibility/browser_accessibility_auralinux_unittest.cc",
