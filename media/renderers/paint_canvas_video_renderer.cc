@@ -39,6 +39,7 @@
 #include "media/base/data_buffer.h"
 #include "media/base/video_frame.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
+#include "media/renderers/video_frame_yuv_mailboxes_holder.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -819,6 +820,10 @@ BASE_FEATURE(kOneCopyUploadOfVideoFrameToGLTexture,
 // safely rolled out.
 BASE_FEATURE(kOneCopyUploadOfPureSoftwareVideoFrameToGLTexture,
              "OneCopyUploadOfPureSoftwareVideoFrameToGLTexture",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kOneCopyLegacyMPVideoFrameUploadViaSI,
+             "OneCopyLegacyMPVideoFrameUploadViaSI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Whether SharedImage is used to perform direct GPU-GPU VideoFrame to GL
@@ -1782,19 +1787,24 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
   // We use legacy mailboxes iff one of the following is true:
   // * `destination_gl` does not support YUV-RGB conversion.
   // * The VideoFrame is holding a legacy mailbox.
-  // * The VideoFrame is pure software or legacy (i.e., not MultiplanarSI).
+  // * The VideoFrame is pure software.
+  // * The Video is not MultiplanarSI and the codepath to handle legacy
+  //   multiplanar via ConvertYUVAMailboxesToTexture() is not enabled.
   bool yuv_rgb_conversion_not_supported =
       !destination_gl_capabilities.supports_yuv_rgb_conversion;
   bool video_frame_is_legacy_mailbox =
       video_frame->HasTextures() &&
       !video_frame->mailbox_holder(0).mailbox.IsSharedImage();
+  bool video_frame_is_pure_sw = !video_frame->HasTextures();
   bool video_frame_is_not_mp_si =
-      !video_frame->HasTextures() ||
+      video_frame_is_pure_sw ||
       video_frame->shared_image_format_type() == SharedImageFormatType::kLegacy;
 
-  bool use_legacy_mailboxes_for_upload = yuv_rgb_conversion_not_supported ||
-                                         video_frame_is_legacy_mailbox ||
-                                         video_frame_is_not_mp_si;
+  bool use_legacy_mailboxes_for_upload =
+      yuv_rgb_conversion_not_supported || video_frame_is_legacy_mailbox ||
+      video_frame_is_pure_sw ||
+      (video_frame_is_not_mp_si &&
+       !base::FeatureList::IsEnabled(kOneCopyLegacyMPVideoFrameUploadViaSI));
 
   if (use_legacy_mailboxes_for_upload) {
     // TODO(nazabris): Support OOP-R code path here that does not have
@@ -1848,18 +1858,54 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
     // Dst texture size should equal to video frame visible rect.
     BindAndTexImage2D(destination_gl, target, texture, internal_format, format,
                       type, /*level=*/0, video_frame->visible_rect().size());
-    gpu::MailboxHolder mailbox_holder =
-        GetVideoFrameMailboxHolder(video_frame.get());
-    destination_gl->WaitSyncTokenCHROMIUM(
-        mailbox_holder.sync_token.GetConstData());
 
-    // Copy shared image to gl texture for hardware video decode with
-    // multiplanar shared image formats.
-    destination_gl->CopySharedImageToTextureINTERNAL(
-        texture, target, internal_format, type, video_frame->visible_rect().x(),
-        video_frame->visible_rect().y(), video_frame->visible_rect().width(),
-        video_frame->visible_rect().height(), flip_y,
-        mailbox_holder.mailbox.name);
+    if (video_frame->NumTextures() == 1) {
+      gpu::MailboxHolder mailbox_holder =
+          GetVideoFrameMailboxHolder(video_frame.get());
+      destination_gl->WaitSyncTokenCHROMIUM(
+          mailbox_holder.sync_token.GetConstData());
+
+      // Copy shared image to gl texture for hardware video decode with
+      // multiplanar shared image formats.
+      destination_gl->CopySharedImageToTextureINTERNAL(
+          texture, target, internal_format, type,
+          video_frame->visible_rect().x(), video_frame->visible_rect().y(),
+          video_frame->visible_rect().width(),
+          video_frame->visible_rect().height(), flip_y,
+          mailbox_holder.mailbox.name);
+    } else {
+      CHECK(video_frame->HasTextures());
+      CHECK_LE(static_cast<int>(video_frame->NumTextures()),
+               SkYUVAInfo::kMaxPlanes);
+
+      // Copy YUVA mailboxes to gl texture for hardware video decode with
+      // one SharedImage per plane.
+      gpu::Mailbox mailboxes[SkYUVAInfo::kMaxPlanes]{};
+      for (size_t i = 0; i < video_frame->NumTextures(); i++) {
+        auto mailbox_holder = video_frame->mailbox_holder(i);
+        destination_gl->WaitSyncTokenCHROMIUM(
+            mailbox_holder.sync_token.GetConstData());
+        mailboxes[i] = mailbox_holder.mailbox;
+      }
+
+      auto mailbox_name_size = sizeof(mailboxes[0].name);
+      GLbyte mailbox_names[mailbox_name_size * SkYUVAInfo::kMaxPlanes];
+      for (int i = 0; i < SkYUVAInfo::kMaxPlanes; i++) {
+        memcpy(mailbox_names + mailbox_name_size * i, mailboxes[i].name,
+               mailbox_name_size);
+      }
+
+      auto yuva_info = VideoFrameYUVMailboxesHolder::VideoFrameGetSkYUVAInfo(
+          video_frame.get());
+      destination_gl->ConvertYUVAMailboxesToTextureINTERNAL(
+          texture, target, internal_format, type,
+          video_frame->visible_rect().x(), video_frame->visible_rect().y(),
+          video_frame->visible_rect().width(),
+          video_frame->visible_rect().height(), flip_y,
+          yuva_info.yuvColorSpace(),
+          static_cast<GLenum>(yuva_info.planeConfig()),
+          static_cast<GLenum>(yuva_info.subsampling()), mailbox_names);
+    }
 
     SynchronizeVideoFrameRead(std::move(video_frame), destination_gl,
                               raster_context_provider->ContextSupport());
