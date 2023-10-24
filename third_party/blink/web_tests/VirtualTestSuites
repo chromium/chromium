@@ -1818,6 +1818,7 @@
     "bases": [
       "dom/domparsing/document-render-blocking-no-block.html",
       "external/wpt/css/css-transitions/render-blocking",
+      "external/wpt/html/browsers/browsing-the-web/history-traversal/pagereveal",
       "external/wpt/html/dom/render-blocking"
     ],
     "exclusive_tests": "ALL",

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<title>View transitions: pagereveal event ordering on prerender activation</title>
-<link rel="help" href="https://drafts.csswg.org/css-view-transitions-2/">
+<title>pagereveal event fires and in correct order on prerender activation</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/webappapis.html#update-the-rendering">
 <link rel="author" href="mailto:bokan@chromium.org">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -11,12 +11,12 @@
 setup(() => assertSpeculationRulesIsSupported());
 
 const uid = token();
-const initiator_url = `resources/pagereveal-event-prerender.html?uid=${uid}`;
+const initiator_url = `resources/order-in-prerender-activation-popup.html?uid=${uid}`;
 
 // This test opens a popup to an initiator page. That page then prerenders a
 // "prerendering" version of itself (by adding a `prerendering` query param)
 // and navigates itself to activate the prerender. The results are recorded and
-// send back to this test harness.
+// sent back to this test harness.
 promise_test(async () => {
   const channel = new PrerenderChannel('result', uid);
   const test_done = new Promise(resolve => {

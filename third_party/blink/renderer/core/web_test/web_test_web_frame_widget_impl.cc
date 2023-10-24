@@ -113,6 +113,15 @@ void WebTestWebFrameWidgetImpl::ScheduleAnimationForWebTests() {
     ScheduleAnimationInternal(/*do_raster=*/true);
 }
 
+void WebTestWebFrameWidgetImpl::WasShown(bool was_evicted) {
+  WebFrameWidgetImpl::WasShown(was_evicted);
+
+  if (animation_deferred_while_hidden_) {
+    animation_deferred_while_hidden_ = false;
+    ScheduleAnimationInternal(composite_requested_);
+  }
+}
+
 void WebTestWebFrameWidgetImpl::UpdateAllLifecyclePhasesAndComposite(
     base::OnceClosure callback) {
   LayerTreeHost()->RequestSuccessfulPresentationTimeForNextFrame(WTF::BindOnce(
@@ -313,8 +322,20 @@ void WebTestWebFrameWidgetImpl::AnimateNow() {
   if (!LocalRootImpl()) {
     return;
   }
-  bool do_raster = composite_requested_;
+
   animation_scheduled_ = false;
+
+  if (LocalRootImpl()->ViewImpl()->does_composite() &&
+      !LayerTreeHost()->IsVisible()) {
+    // If the widget is hidden, SynchronouslyComposite will early-out which may
+    // leave a test waiting (e.g. waiting on a requestAnimationFrame). Setting
+    // this bit will reschedule the animation request when the widget becomes
+    // visible.
+    animation_deferred_while_hidden_ = true;
+    return;
+  }
+
+  bool do_raster = composite_requested_;
   composite_requested_ = false;
   // Composite may destroy |this|, so don't use it afterward.
   SynchronouslyComposite(base::OnceClosure(), do_raster);
