@@ -4248,6 +4248,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Extensions.ServiceWorkerBackground.FinishedExternalRequest_Result_PostReturn"
+    enum="ServiceWorkerExternalRequestResult" expires_after="2024-04-18">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Tracks the result (ServiceWorkerExternalRequestResult) of when we attempt to
+    remove (finish) an external request for the extension service worker.
+    Emitted when we attempt to finish the external request after the browser has
+    received an ack from the renderer that it fired the event in the service
+    worker. Specifically the emit is delayed until *after* we've attempted to
+    return early for either a stopped worker or the starting of the external
+    request failing.
+  </summary>
+</histogram>
+
+<histogram
     name="Extensions.ServiceWorkerBackground.ProcessManagerFinishedExternalRequestResultWithSuccessfulStart"
     enum="ServiceWorkerExternalRequestResult" expires_after="2024-08-01">
   <owner>rdevlin.cronin@chromium.org</owner>

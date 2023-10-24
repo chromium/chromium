@@ -130,9 +130,10 @@ void EventAckData::DecrementInflightEvent(
   if (worker_stopped || !start_ok)
     return;
 
-  // TODO(crbug.com/1485425): Emit a metric here that records `result` to see
-  // what results remain after we've stopped executing due to the worker being
-  // stopped or the start external request not succeeding.
+  base::UmaHistogramEnumeration(
+      "Extensions.ServiceWorkerBackground.FinishedExternalRequest_Result_"
+      "PostReturn",
+      result);
 
   switch (result) {
     case content::ServiceWorkerExternalRequestResult::kOk:
