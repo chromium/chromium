@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.screenshot_monitor;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -14,8 +13,10 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -46,17 +47,15 @@ public class ScreenshotTabObserverTest {
 
     @Test
     @SmallTest
-    @DisabledTest
     public void testScreenshotUserCounts() {
         UserActionTester userActionTester = new UserActionTester();
         mObserver.onScreenshotTaken();
         // Must wait for the user action to arrive on the UI thread before checking it.
-        TestThreadUtils.runOnUiThreadBlocking(
-                (Runnable)
-                        () -> {
-                            List<String> actions = userActionTester.getActions();
-                            Assert.assertEquals("Tab.Screenshot", actions.get(0));
-                        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    List<String> actions = userActionTester.getActions();
+                    Criteria.checkThat("Tab.Screenshot", Matchers.equalTo(actions.get(0)));
+                });
     }
 
     @Test
