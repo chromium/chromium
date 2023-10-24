@@ -98,8 +98,7 @@ void PageInfoCookiesContentView::SetInitializedCallbackForTesting(
   }
 }
 
-void PageInfoCookiesContentView::InitCookiesDialogButton(
-    bool tracking_protection_3pcd_enabled) {
+void PageInfoCookiesContentView::InitCookiesDialogButton() {
   if (cookies_dialog_button_) {
     return;
   }
@@ -118,15 +117,10 @@ void PageInfoCookiesContentView::InitCookiesDialogButton(
               },
               this),
           PageInfoViewFactory::GetPermissionIcon(info),
-          l10n_util::GetStringUTF16(
-              tracking_protection_3pcd_enabled
-                  ? IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_DIALOG_BUTTON_TITLE
-                  : IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TITLE),
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TITLE),
           /*secondary_text=*/std::u16string(),
           l10n_util::GetStringUTF16(
-              tracking_protection_3pcd_enabled
-                  ? IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_DIALOG_BUTTON_TOOLTIP
-                  : IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TOOLTIP),
+              IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TOOLTIP),
           /*subtitle_text=*/u" ", PageInfoViewFactory::GetLaunchIcon()));
   cookies_dialog_button_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG);
@@ -154,8 +148,7 @@ void PageInfoCookiesContentView::SetCookieInfo(
     SetBlockingThirdPartyCookiesInfo(cookie_info);
   }
 
-  InitCookiesDialogButton(cookie_info.blocking_status !=
-                          CookieBlocking3pcdStatus::kNotIn3pcd);
+  InitCookiesDialogButton();
   // Update the text displaying the number of allowed sites.
   cookies_dialog_button_->SetSubtitleText(l10n_util::GetPluralStringFUTF16(
       IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT,

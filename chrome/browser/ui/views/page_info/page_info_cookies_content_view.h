@@ -50,9 +50,8 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   friend class PageInfoBubbleViewCookiesSubpageBrowserTest;
 
   // Ensures the allowed sites information UI is present, with placeholder
-  // information if necessary. Uses `tracking_protection_3pcd_enabled` to
-  // set the title of the button.
-  void InitCookiesDialogButton(bool tracking_protection_3pcd_enabled);
+  // information if necessary.
+  void InitCookiesDialogButton();
 
   //  Checks if |blocking_third_party_cookies_row_| should be initiated and if
   //  so does it  and sets its info.
