@@ -41,6 +41,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
+#include "chromeos/ui/frame/frame_utils.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
@@ -941,8 +942,8 @@ void WindowState::UpdateWindowPropertiesFromStateType() {
   if (window_->GetProperty(ash::kWindowManagerManagesOpacityKey)) {
     const gfx::Size& size = window_->bounds().size();
     // WindowManager manages the window opacity. Make it opaque unless
-    // the window is in normal state whose frame has rounded corners.
-    if (IsNormalStateType()) {
+    // the window has rounded corners.
+    if (chromeos::ShouldHaveRoundedWindow(GetStateType())) {
       window_->SetTransparent(true);
       window_->SetOpaqueRegionsForOcclusion({gfx::Rect(size)});
     } else {
