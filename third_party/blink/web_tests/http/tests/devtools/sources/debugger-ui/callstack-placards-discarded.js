@@ -18,7 +18,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
       }
   `);
 
-  SourcesTestRunner.quiet = true;
+  SourcesTestRunner.setQuiet(true);
   SourcesTestRunner.runDebuggerTestSuite([
     function testCallStackPlacardsDiscarded(next) {
       TestRunner.debuggerModel.addEventListener(SDK.DebuggerModel.Events.DebuggerPaused, didPause, this);
