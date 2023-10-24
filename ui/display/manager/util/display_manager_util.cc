@@ -191,12 +191,16 @@ std::vector<float> GetDisplayZoomFactors(const ManagedDisplayMode& mode) {
   const int effective_width = std::round(
       static_cast<float>(std::max(mode.size().width(), mode.size().height())) /
       mode.device_scale_factor());
+  return GetDisplayZoomFactorsByDsiplayWidth(effective_width);
+}
 
+std::vector<float> GetDisplayZoomFactorsByDsiplayWidth(
+    const int display_width) {
   std::size_t index = kZoomListBuckets.size() - 1;
-  while (index > 0 && effective_width < kZoomListBuckets[index].first) {
+  while (index > 0 && display_width < kZoomListBuckets[index].first) {
     index--;
   }
-  DCHECK_GE(effective_width, kZoomListBuckets[index].first);
+  DCHECK_GE(display_width, kZoomListBuckets[index].first);
 
   const auto& zoom_array = kZoomListBuckets[index].second;
   return std::vector<float>(zoom_array.begin(), zoom_array.end());
