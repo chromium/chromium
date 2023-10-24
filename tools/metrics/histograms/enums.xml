@@ -25873,6 +25873,9 @@ metrics consent we also won't be able to send UMA metrics. -->
              EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION"/>
   <int value="53"
       label="Enable page insights hub EXTRA_ENABLE_PAGE_INSIGHTS_HUB"/>
+  <int value="54"
+      label="Scroll content may resize tab
+             EXTRA_ACTIVITY_SCROLL_CONTENT_RESIZE"/>
 </enum>
 
 <enum name="CustomTabsMinimizedEvents">

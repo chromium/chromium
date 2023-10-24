@@ -388,6 +388,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
         mCustomTabHeightStrategy = CustomTabHeightStrategy.createStrategy(mActivity,
                 intentDataProvider,
+                () -> mCompositorViewHolderSupplier.get(),
+                () -> mTabModelSelectorSupplier.get().getCurrentTab(),
                 CustomTabsConnection.getInstance(),
                 mActivityLifecycleDispatcher,
                 mFullscreenManager,

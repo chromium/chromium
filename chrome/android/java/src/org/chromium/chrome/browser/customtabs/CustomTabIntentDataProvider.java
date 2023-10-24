@@ -327,6 +327,13 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     public static final String EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_ACTION =
             "androidx.browser.customtabs.extra.SECONDARY_TOOLBAR_SWIPE_UP_ACTION";
 
+    /**
+     * Allow user gestures on content area to be used not only for scrolling contents
+     * but also for resizing CCT. Used for Partial Custom Tab Bottom Sheet only.
+     */
+    public static final String EXTRA_ACTIVITY_SCROLL_CONTENT_RESIZE =
+            "androidx.browser.customtabs.extra.ACTIVITY_SCROLL_CONTENT_RESIZE";
+
     private final Intent mIntent;
     private final CustomTabsSessionToken mSession;
     private final boolean mIsTrustedIntent;
@@ -390,6 +397,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     private final @Px int mPartialTabToolbarCornerRadius;
 
     private final boolean mIsPartialCustomTabFixedHeight;
+    private final boolean mContentScrollMayResizeTab;
 
     /**
      * Add extras to customize menu items for opening Reader Mode UI custom tab from Chrome.
@@ -563,6 +571,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
         mEnableUrlBarHiding = IntentUtils.safeGetBooleanExtra(
                 intent, CustomTabsIntent.EXTRA_ENABLE_URLBAR_HIDING, true);
+        mContentScrollMayResizeTab = IntentUtils.safeGetBooleanExtra(
+                intent, EXTRA_ACTIVITY_SCROLL_CONTENT_RESIZE, false);
 
         Bitmap bitmap = IntentUtils.safeGetParcelableExtra(
                 intent, CustomTabsIntent.EXTRA_CLOSE_BUTTON_ICON);
@@ -1052,6 +1062,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (CustomTabsConnection.getInstance().shouldEnablePageInsightsForIntent(this)) {
             featureUsage.log(CustomTabsFeature.EXTRA_ENABLE_PAGE_INSIGHTS_HUB);
         }
+        if (IntentUtils.safeHasExtra(intent, EXTRA_ACTIVITY_SIDE_SHEET_POSITION)) {
+            featureUsage.log(CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_POSITION);
+        }
     }
 
     @Override
@@ -1148,6 +1161,11 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @Override
     public boolean shouldEnableUrlBarHiding() {
         return mEnableUrlBarHiding;
+    }
+
+    @Override
+    public boolean contentScrollMayResizeTab() {
+        return mContentScrollMayResizeTab;
     }
 
     @Override

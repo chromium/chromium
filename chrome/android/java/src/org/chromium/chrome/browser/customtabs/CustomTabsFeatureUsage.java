@@ -72,6 +72,7 @@ public class CustomTabsFeatureUsage {
         CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR,
         CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION,
         CustomTabsFeature.EXTRA_ENABLE_PAGE_INSIGHTS_HUB,
+        CustomTabsFeature.EXTRA_ACTIVITY_SCROLL_CONTENT_RESIZE,
         CustomTabsFeature.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -131,9 +132,10 @@ public class CustomTabsFeatureUsage {
         int EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR = 51;
         int EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION = 52;
         int EXTRA_ENABLE_PAGE_INSIGHTS_HUB = 53;
+        int EXTRA_ACTIVITY_SCROLL_CONTENT_RESIZE = 54;
 
         /** Total count of entries. */
-        int COUNT = 54;
+        int COUNT = 55;
     }
 
     // Whether flag-enabled or not.

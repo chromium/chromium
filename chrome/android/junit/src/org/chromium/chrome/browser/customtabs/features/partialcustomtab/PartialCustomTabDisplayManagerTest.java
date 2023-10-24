@@ -98,6 +98,8 @@ public class PartialCustomTabDisplayManagerTest {
                 new PartialCustomTabDisplayManager(
                         mPCCTTestRule.mActivity,
                         mPCCTTestRule.mIntentData,
+                        () -> mPCCTTestRule.mTouchEventProvider,
+                        () -> mPCCTTestRule.mTab,
                         mPCCTTestRule.mOnResizedCallback,
                         mPCCTTestRule.mOnActivityLayoutCallback,
                         mPCCTTestRule.mActivityLifecycleDispatcher,

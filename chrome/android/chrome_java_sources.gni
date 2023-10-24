@@ -514,6 +514,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/customtabs/features/minimizedcustomtab/MinimizedCardProperties.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/minimizedcustomtab/MinimizedCardViewBinder.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/minimizedcustomtab/MinimizedFeatureUtils.java",
+  "java/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/ContentGestureListener.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/CustomTabDragBar.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/CustomTabHeightStrategy.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabBaseStrategy.java",

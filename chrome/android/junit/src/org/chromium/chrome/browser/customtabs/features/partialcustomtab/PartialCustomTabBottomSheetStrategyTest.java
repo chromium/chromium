@@ -36,6 +36,7 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowInsets;
@@ -58,12 +59,14 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.customtabs.features.partialcustomtab.ContentGestureListener.GestureState;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBaseStrategy.ResizeType;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.HandleStrategy;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.embedder_support.view.ContentView;
 
 import java.util.concurrent.TimeUnit;
 
@@ -95,6 +98,8 @@ public class PartialCustomTabBottomSheetStrategyTest {
                 new PartialCustomTabBottomSheetStrategy(
                         mPCCTTestRule.mActivity,
                         mPCCTTestRule.mIntentData,
+                        () -> mPCCTTestRule.mTouchEventProvider,
+                        () -> mPCCTTestRule.mTab,
                         mPCCTTestRule.mOnResizedCallback,
                         mPCCTTestRule.mOnActivityLayoutCallback,
                         mPCCTTestRule.mActivityLifecycleDispatcher,
@@ -126,6 +131,8 @@ public class PartialCustomTabBottomSheetStrategyTest {
                 new PartialCustomTabBottomSheetStrategy(
                         mPCCTTestRule.mActivity,
                         mPCCTTestRule.mIntentData,
+                        () -> mPCCTTestRule.mTouchEventProvider,
+                        () -> mPCCTTestRule.mTab,
                         mPCCTTestRule.mOnResizedCallback,
                         mPCCTTestRule.mOnActivityLayoutCallback,
                         mPCCTTestRule.mActivityLifecycleDispatcher,
@@ -1184,5 +1191,47 @@ public class PartialCustomTabBottomSheetStrategyTest {
                         eq(DEVICE_HEIGHT - NAVBAR_HEIGHT),
                         eq(ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET));
         clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
+    }
+
+    @Test
+    public void contentScrollMayResizeTab() {
+        var intentData = mPCCTTestRule.mIntentData;
+        when(intentData.contentScrollMayResizeTab()).thenReturn(true);
+        ContentView contentView = Mockito.mock(ContentView.class);
+        when(mPCCTTestRule.mTab.getContentView()).thenReturn(contentView);
+
+        var strategy = createPcctAtHeight(500);
+        GestureDetector detector = Mockito.mock(GestureDetector.class);
+        ContentGestureListener listener = Mockito.mock(ContentGestureListener.class);
+        strategy.setGestureObjectsForTesting(detector, listener);
+
+        MotionEvent e = Mockito.mock(MotionEvent.class);
+        when(e.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
+        when(listener.getState()).thenReturn(GestureState.NONE);
+
+        // At initial state (none) -> down event forwarded to GestureDetector
+        assertFalse(strategy.onInterceptTouchEvent(e));
+        verify(detector).onTouchEvent(e);
+        clearInvocations(detector);
+
+        strategy.onTouchEvent(e);
+        verify(detector, never()).onTouchEvent(e);
+
+        // At content-scroll state -> forward events to contentview
+        when(listener.getState()).thenReturn(GestureState.SCROLL_CONTENT);
+        when(e.getActionMasked()).thenReturn(MotionEvent.ACTION_MOVE);
+        strategy.onTouchEvent(e);
+        verify(detector).onTouchEvent(e);
+        verify(contentView).onTouchEvent(e);
+
+        clearInvocations(detector);
+        clearInvocations(contentView);
+
+        // Lift up finger -> release
+        when(e.getActionMasked()).thenReturn(MotionEvent.ACTION_UP);
+        strategy.onTouchEvent(e);
+        verify(detector).onTouchEvent(e);
+        verify(contentView).onTouchEvent(e);
+        verify(listener).doNonFlingRelease();
     }
 }
