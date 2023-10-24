@@ -138,7 +138,8 @@ AppListSearchView::AppListSearchView(
                                     gfx::Insets::TLBR(16, 16, 0, 16));
       search_notifier_->icon()->SetProperty(views::kMarginsKey,
                                             gfx::Insets::TLBR(8, 8, 8, 0));
-      search_notifier_->toast_button()->SetAccessibleName(notifier_subtitle);
+      search_notifier_->toast_button()->SetAccessibleDescription(
+          notifier_subtitle);
 
       // Add a guidance under AppListSearchView to guide users to move focus to
       // the search notifier.
