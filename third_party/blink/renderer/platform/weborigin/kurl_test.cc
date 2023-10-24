@@ -35,7 +35,6 @@
 
 #include <stdint.h>
 
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -1062,30 +1061,6 @@ TEST(KURLTest, SetFileProtocolToNonSpecial) {
   EXPECT_TRUE(url.SetProtocol("non-special-scheme"));
   EXPECT_EQ(url.Protocol(), "file");
   EXPECT_EQ(url.GetPath(), "/path");
-}
-
-TEST(KURLTest, SetNonSpecialSchemeOnSpecialSchemeHistogram) {
-  ASSERT_TRUE(SchemeRegistry::IsSpecialScheme("http"));
-  ASSERT_FALSE(SchemeRegistry::IsSpecialScheme("non-special"));
-
-  struct TestCase {
-    const char* url;
-    const char* protocol;
-    base::HistogramBase::Count cnt;
-  } cases[] = {
-      {"http://example.com", "http", 0},
-      {"http://example.com", "non-special", 1},
-      {"non-special://example.com", "http", 0},
-      {"non-special://example.com", "non-special", 0},
-  };
-
-  for (const auto& c : cases) {
-    base::HistogramTester histogram_tester;
-    KURL url(c.url);
-    url.SetProtocol(c.protocol);
-    histogram_tester.ExpectBucketCount(
-        "URL.Scheme.SetNonSpecialSchemeOnSpecialScheme", 1, c.cnt);
-  }
 }
 
 TEST(KURLTest, InvalidKURLToGURL) {

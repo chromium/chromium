@@ -493,16 +493,10 @@ bool KURL::SetProtocol(const String& protocol) {
       String(canon_protocol.data(), protocol_length);
 
   if (SchemeRegistry::IsSpecialScheme(Protocol())) {
-    bool new_protocol_is_special_scheme =
-        SchemeRegistry::IsSpecialScheme(new_protocol_canon);
-
-    base::UmaHistogramBoolean("URL.Scheme.SetNonSpecialSchemeOnSpecialScheme",
-                              !new_protocol_is_special_scheme);
-
     // https://url.spec.whatwg.org/#scheme-state
     // 2.1.1 If url’s scheme is a special scheme and buffer is not a special
     //       scheme, then return.
-    if (!new_protocol_is_special_scheme) {
+    if (!SchemeRegistry::IsSpecialScheme(new_protocol_canon)) {
       return true;
     }
 
