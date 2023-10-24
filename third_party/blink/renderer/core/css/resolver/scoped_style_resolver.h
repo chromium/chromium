@@ -78,8 +78,8 @@ class CORE_EXPORT ScopedStyleResolver final
   const CascadeLayerMap* GetCascadeLayerMap() const {
     return cascade_layer_map_.Get();
   }
-  const HeapVector<Member<CSSStyleSheet>>& GetStyleSheets() const {
-    return style_sheets_;
+  const ActiveStyleSheetVector& GetActiveStyleSheets() const {
+    return active_style_sheets_;
   }
 
   void AppendActiveStyleSheets(unsigned index, const ActiveStyleSheetVector&);
@@ -120,9 +120,15 @@ class CORE_EXPORT ScopedStyleResolver final
 
   CounterStyleMap& EnsureCounterStyleMap();
 
+  void AddImplicitScopeTriggers(CSSStyleSheet&, const RuleSet&);
+  void AddImplicitScopeTrigger(Element&, const StyleScope&);
+  void RemoveImplicitScopeTriggers();
+  void RemoveImplicitScopeTriggers(CSSStyleSheet&, const RuleSet&);
+  void RemoveImplicitScopeTrigger(Element&, const StyleScope&);
+
   Member<TreeScope> scope_;
 
-  HeapVector<Member<CSSStyleSheet>> style_sheets_;
+  ActiveStyleSheetVector active_style_sheets_;
   MediaQueryResultFlags media_query_result_flags_;
 
   using KeyframesRuleMap =

@@ -6547,6 +6547,14 @@ ContainerQueryEvaluator& Element::EnsureContainerQueryEvaluator() {
   return *evaluator;
 }
 
+StyleScopeData& Element::EnsureStyleScopeData() {
+  return EnsureElementRareData().EnsureStyleScopeData();
+}
+
+StyleScopeData* Element::GetStyleScopeData() const {
+  return HasRareData() ? GetElementRareData()->GetStyleScopeData() : nullptr;
+}
+
 bool Element::SkippedContainerStyleRecalc() const {
   if (const ContainerQueryData* cq_data = GetContainerQueryData()) {
     return cq_data->SkippedStyleRecalc();

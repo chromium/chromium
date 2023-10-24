@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/css/container_query_data.h"
 #include "third_party/blink/renderer/core/css/cssom/inline_style_property_map.h"
 #include "third_party/blink/renderer/core/css/inline_css_style_declaration.h"
+#include "third_party/blink/renderer/core/css/style_scope_data.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/dom/attr.h"
 #include "third_party/blink/renderer/core/dom/css_toggle_map.h"
@@ -45,8 +46,8 @@ ElementRareDataVector::~ElementRareDataVector() {
 unsigned ElementRareDataVector::GetFieldIndex(FieldId field_id) const {
   unsigned field_id_int = static_cast<unsigned>(field_id);
   DCHECK(fields_bitfield_ & (static_cast<BitfieldType>(1) << field_id_int));
-  return __builtin_popcount(fields_bitfield_ &
-                            ~(~static_cast<BitfieldType>(0) << field_id_int));
+  return __builtin_popcountll(fields_bitfield_ &
+                              ~(~static_cast<BitfieldType>(0) << field_id_int));
 }
 
 ElementRareDataField* ElementRareDataVector::GetField(FieldId field_id) const {
@@ -301,6 +302,13 @@ ContainerQueryData* ElementRareDataVector::GetContainerQueryData() const {
 }
 void ElementRareDataVector::ClearContainerQueryData() {
   SetField(FieldId::kContainerQueryData, nullptr);
+}
+
+StyleScopeData& ElementRareDataVector::EnsureStyleScopeData() {
+  return EnsureField<StyleScopeData>(FieldId::kStyleScopeData);
+}
+StyleScopeData* ElementRareDataVector::GetStyleScopeData() const {
+  return static_cast<StyleScopeData*>(GetField(FieldId::kStyleScopeData));
 }
 
 const RegionCaptureCropId* ElementRareDataVector::GetRegionCaptureCropId()

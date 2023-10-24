@@ -37,6 +37,7 @@ class DisplayLockContext;
 class ContainerQueryData;
 class ResizeObserver;
 class ResizeObservation;
+class StyleScopeData;
 class CustomElementDefinition;
 class PopoverData;
 class CSSToggleMap;
@@ -96,8 +97,9 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
     kLastRememberedBlockSize = 28,
     kLastRememberedInlineSize = 29,
     kRestrictionTargetId = 30,
+    kStyleScopeData = 31,
 
-    kNumFields = 31,
+    kNumFields = 32,
   };
 
   ElementRareDataField* GetField(FieldId field_id) const;
@@ -108,7 +110,7 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   void SetField(FieldId field_id, ElementRareDataField* field);
 
   HeapVector<Member<ElementRareDataField>> fields_;
-  using BitfieldType = uint32_t;
+  using BitfieldType = uint64_t;
   BitfieldType fields_bitfield_;
   static_assert(sizeof(fields_bitfield_) * 8 >=
                     static_cast<unsigned>(FieldId::kNumFields),
@@ -251,6 +253,9 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   ContainerQueryData& EnsureContainerQueryData();
   ContainerQueryData* GetContainerQueryData() const;
   void ClearContainerQueryData();
+
+  StyleScopeData& EnsureStyleScopeData();
+  StyleScopeData* GetStyleScopeData() const;
 
   // Returns the crop-ID if one was set, or nullptr otherwise.
   const RegionCaptureCropId* GetRegionCaptureCropId() const;
