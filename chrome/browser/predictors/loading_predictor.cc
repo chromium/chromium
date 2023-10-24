@@ -154,7 +154,12 @@ bool LoadingPredictor::PrepareForPageLoad(
   }
 
   // LCPP: set fonts to be prefetched to prefetch_requests.
-  if (base::FeatureList::IsEnabled(blink::features::kLCPPFontURLPredictor)) {
+  // TODO(crbug.com/1493768): make prefetch work for platforms without the
+  // optimization guide.
+  if (base::FeatureList::IsEnabled(blink::features::kLCPPFontURLPredictor) &&
+      base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch) &&
+      features::kLoadingPredictorPrefetchSubresourceType.Get() ==
+          features::PrefetchSubresourceType::kAll) {
     absl::optional<LcppData> lcpp_data =
         resource_prefetch_predictor()->GetLcppData(url);
     if (lcpp_data) {
