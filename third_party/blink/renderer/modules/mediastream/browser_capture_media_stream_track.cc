@@ -136,9 +136,40 @@ void BrowserCaptureMediaStreamTrack::Trace(Visitor* visitor) const {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-// TODO(crbug.com/1418194): Move this to make the order correspond
-// to the order in the header file. (This was originally placed here
-// to minimize the delta and make reviewers' lives easier.)
+ScriptPromise BrowserCaptureMediaStreamTrack::cropTo(
+    ScriptState* script_state,
+    CropTarget* target,
+    ExceptionState& exception_state) {
+  DCHECK(IsMainThread());
+  return ApplySubCaptureTarget(script_state,
+                               SubCaptureTarget::Type::kCropTarget, target,
+                               exception_state);
+}
+
+ScriptPromise BrowserCaptureMediaStreamTrack::restrictTo(
+    ScriptState* script_state,
+    RestrictionTarget* target,
+    ExceptionState& exception_state) {
+  DCHECK(IsMainThread());
+  return ApplySubCaptureTarget(script_state,
+                               SubCaptureTarget::Type::kRestrictionTarget,
+                               target, exception_state);
+}
+
+BrowserCaptureMediaStreamTrack* BrowserCaptureMediaStreamTrack::clone(
+    ExecutionContext* execution_context) {
+  // Instantiate the clone.
+  BrowserCaptureMediaStreamTrack* cloned_track =
+      MakeGarbageCollected<BrowserCaptureMediaStreamTrack>(
+          execution_context, Component()->Clone(), GetReadyState(),
+          base::DoNothing());
+
+  // Copy state.
+  MediaStreamTrackImpl::CloneInternal(cloned_track);
+
+  return cloned_track;
+}
+
 ScriptPromise BrowserCaptureMediaStreamTrack::ApplySubCaptureTarget(
     ScriptState* script_state,
     SubCaptureTarget::Type type,
@@ -237,40 +268,6 @@ ScriptPromise BrowserCaptureMediaStreamTrack::ApplySubCaptureTarget(
 
   return promise;
 #endif
-}
-
-ScriptPromise BrowserCaptureMediaStreamTrack::cropTo(
-    ScriptState* script_state,
-    CropTarget* target,
-    ExceptionState& exception_state) {
-  DCHECK(IsMainThread());
-  return ApplySubCaptureTarget(script_state,
-                               SubCaptureTarget::Type::kCropTarget, target,
-                               exception_state);
-}
-
-ScriptPromise BrowserCaptureMediaStreamTrack::restrictTo(
-    ScriptState* script_state,
-    RestrictionTarget* target,
-    ExceptionState& exception_state) {
-  DCHECK(IsMainThread());
-  return ApplySubCaptureTarget(script_state,
-                               SubCaptureTarget::Type::kRestrictionTarget,
-                               target, exception_state);
-}
-
-BrowserCaptureMediaStreamTrack* BrowserCaptureMediaStreamTrack::clone(
-    ExecutionContext* execution_context) {
-  // Instantiate the clone.
-  BrowserCaptureMediaStreamTrack* cloned_track =
-      MakeGarbageCollected<BrowserCaptureMediaStreamTrack>(
-          execution_context, Component()->Clone(), GetReadyState(),
-          base::DoNothing());
-
-  // Copy state.
-  MediaStreamTrackImpl::CloneInternal(cloned_track);
-
-  return cloned_track;
 }
 
 #if !BUILDFLAG(IS_ANDROID)
