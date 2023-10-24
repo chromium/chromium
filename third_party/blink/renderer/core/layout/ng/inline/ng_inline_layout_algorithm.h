@@ -21,12 +21,12 @@ namespace blink {
 
 class ExclusionSpace;
 class InlineItem;
+class InlineNode;
 class LineInfo;
 class NGColumnSpannerPath;
 class NGConstraintSpace;
 class NGInlineBreakToken;
 class NGInlineChildLayoutContext;
-class NGInlineNode;
 class NGInlineLayoutStateStack;
 struct InlineItemResult;
 struct NGInlineBoxState;
@@ -39,11 +39,11 @@ struct NGLeadingFloats;
 //
 // Uses LineBreaker to find InlineItems to form a line.
 class CORE_EXPORT NGInlineLayoutAlgorithm final
-    : public NGLayoutAlgorithm<NGInlineNode,
+    : public NGLayoutAlgorithm<InlineNode,
                                NGLineBoxFragmentBuilder,
                                NGInlineBreakToken> {
  public:
-  NGInlineLayoutAlgorithm(NGInlineNode,
+  NGInlineLayoutAlgorithm(InlineNode,
                           const NGConstraintSpace&,
                           const NGInlineBreakToken*,
                           const NGColumnSpannerPath*,

@@ -15,7 +15,7 @@ namespace blink {
 
 class LineBreakCandidateTest : public RenderingTest {
  public:
-  bool ComputeCandidates(const NGInlineNode& node,
+  bool ComputeCandidates(const InlineNode& node,
                          LayoutUnit available_width,
                          LineBreakCandidates& candidates) {
     NGConstraintSpace space = ConstraintSpaceForAvailableSize(available_width);
@@ -60,7 +60,7 @@ TEST_F(LineBreakCandidateTest, Text) {
       01 345
     </div>
   )HTML");
-  const NGInlineNode target = GetInlineNodeByElementId("target");
+  const InlineNode target = GetInlineNodeByElementId("target");
   for (int width : {800, 50, 10}) {
     LineBreakCandidates candidates;
     EXPECT_TRUE(ComputeCandidates(target, LayoutUnit(width), candidates));
@@ -86,7 +86,7 @@ TEST_F(LineBreakCandidateTest, SoftHyphen) {
       01&shy;345&shy;7890&shy;
     </div>
   )HTML");
-  const NGInlineNode target = GetInlineNodeByElementId("target");
+  const InlineNode target = GetInlineNodeByElementId("target");
   for (int width : {800, 70, 60, 50, 10}) {
     LineBreakCandidates candidates;
     EXPECT_TRUE(ComputeCandidates(target, LayoutUnit(width), candidates));
@@ -115,7 +115,7 @@ TEST_F(LineBreakCandidateTest, SoftHyphenDisabled) {
       01&shy;345&shy;7890
     </div>
   )HTML");
-  const NGInlineNode target = GetInlineNodeByElementId("target");
+  const InlineNode target = GetInlineNodeByElementId("target");
   for (int width : {800, 60, 10}) {
     LineBreakCandidates candidates;
     EXPECT_TRUE(ComputeCandidates(target, LayoutUnit(width), candidates));
@@ -140,7 +140,7 @@ TEST_F(LineBreakCandidateTest, Span) {
       01 <span>345</span> 7890
     </div>
   )HTML");
-  const NGInlineNode target = GetInlineNodeByElementId("target");
+  const InlineNode target = GetInlineNodeByElementId("target");
   for (const int width : {800, 60, 50, 10}) {
     LineBreakCandidates candidates;
     EXPECT_TRUE(ComputeCandidates(target, LayoutUnit(width), candidates));
@@ -167,7 +167,7 @@ TEST_F(LineBreakCandidateTest, SpanMidWord) {
       0<span>12</span>345 7890
     </div>
   )HTML");
-  const NGInlineNode target = GetInlineNodeByElementId("target");
+  const InlineNode target = GetInlineNodeByElementId("target");
   for (const int width : {800, 80, 10}) {
     LineBreakCandidates candidates;
     EXPECT_TRUE(ComputeCandidates(target, LayoutUnit(width), candidates));
@@ -193,7 +193,7 @@ TEST_F(LineBreakCandidateTest, SpanCloseAfterSpace) {
       01 <span>345 </span>7890
     </div>
   )HTML");
-  const NGInlineNode target = GetInlineNodeByElementId("target");
+  const InlineNode target = GetInlineNodeByElementId("target");
   for (const int width : {800, 50, 10}) {
     LineBreakCandidates candidates;
     EXPECT_TRUE(ComputeCandidates(target, LayoutUnit(width), candidates));
@@ -220,7 +220,7 @@ TEST_F(LineBreakCandidateTest, TrailingSpacesCollapsed) {
       012 <span style="font-size: 20px"> </span>456
     </div>
   )HTML");
-  const NGInlineNode target = GetInlineNodeByElementId("target");
+  const InlineNode target = GetInlineNodeByElementId("target");
   for (const int width : {800, 50, 10}) {
     LineBreakCandidates candidates;
     EXPECT_TRUE(ComputeCandidates(target, LayoutUnit(width), candidates));
@@ -259,7 +259,7 @@ TEST_F(LineBreakCandidateTest, AtomicInline) {
     </style>
     <div id="target"><span></span><span></span></div>
   )HTML");
-  const NGInlineNode target = GetInlineNodeByElementId("target");
+  const InlineNode target = GetInlineNodeByElementId("target");
   for (const int width : {800, 10}) {
     LineBreakCandidates candidates;
     EXPECT_TRUE(ComputeCandidates(target, LayoutUnit(width), candidates));
@@ -291,7 +291,7 @@ TEST_F(LineBreakCandidateTest, AtomicInlineBr) {
       <br>
     </div>
   )HTML");
-  const NGInlineNode target = GetInlineNodeByElementId("target");
+  const InlineNode target = GetInlineNodeByElementId("target");
   for (const int width : {800, 10}) {
     LineBreakCandidates candidates;
     EXPECT_TRUE(ComputeCandidates(target, LayoutUnit(width), candidates));
@@ -322,7 +322,7 @@ TEST_F(LineBreakCandidateTest, AtomicInlineTrailingSpaces) {
       <span>23</span>
     </div>
   )HTML");
-  const NGInlineNode target = GetInlineNodeByElementId("target");
+  const InlineNode target = GetInlineNodeByElementId("target");
   for (const int width : {800, 10}) {
     LineBreakCandidates candidates;
     EXPECT_TRUE(ComputeCandidates(target, LayoutUnit(width), candidates));
@@ -350,7 +350,7 @@ TEST_F(LineBreakCandidateTest, ForcedBreak) {
       01 3456 <br>
     </div>
   )HTML");
-  const NGInlineNode target = GetInlineNodeByElementId("target");
+  const InlineNode target = GetInlineNodeByElementId("target");
   for (const int width : {800, 40, 10}) {
     LineBreakCandidates candidates;
     EXPECT_TRUE(ComputeCandidates(target, LayoutUnit(width), candidates));

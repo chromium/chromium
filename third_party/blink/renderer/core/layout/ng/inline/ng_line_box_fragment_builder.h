@@ -27,7 +27,7 @@ class CORE_EXPORT NGLineBoxFragmentBuilder final : public NGFragmentBuilder {
   STACK_ALLOCATED();
 
  public:
-  NGLineBoxFragmentBuilder(NGInlineNode node,
+  NGLineBoxFragmentBuilder(InlineNode node,
                            const ComputedStyle* style,
                            const NGConstraintSpace& space,
                            WritingDirectionMode writing_direction)

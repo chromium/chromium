@@ -141,9 +141,10 @@ void CachedTextInputInfo::EnsureCached(const ContainerNode& container) const {
     unsigned capacity = kInitialCapacity;
     if (auto* block_flow =
             DynamicTo<LayoutBlockFlow>(container.GetLayoutObject())) {
-      if (block_flow->GetNGInlineNodeData()) {
-        if (const auto* mapping = NGInlineNode::GetOffsetMapping(block_flow))
+      if (block_flow->GetInlineNodeData()) {
+        if (const auto* mapping = InlineNode::GetOffsetMapping(block_flow)) {
           capacity = mapping->GetText().length();
+        }
       }
     }
     builder.ReserveCapacity(capacity);

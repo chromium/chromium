@@ -49,7 +49,7 @@ void AppendNodeToString(NGLayoutInputNode node,
     }
   }
 
-  if (auto* inline_node = DynamicTo<NGInlineNode>(node)) {
+  if (auto* inline_node = DynamicTo<InlineNode>(node)) {
     const auto& items = inline_node->ItemsData(false).items;
     for (const InlineItem& inline_item : items) {
       string_builder->Append(indent_builder.ToString());
@@ -156,7 +156,7 @@ void NGLayoutInputNode::IntrinsicSize(
 }
 
 NGLayoutInputNode NGLayoutInputNode::NextSibling() const {
-  auto* inline_node = DynamicTo<NGInlineNode>(this);
+  auto* inline_node = DynamicTo<InlineNode>(this);
   return inline_node ? inline_node->NextSibling()
                      : To<NGBlockNode>(*this).NextSibling();
 }
@@ -168,7 +168,7 @@ PhysicalSize NGLayoutInputNode::InitialContainingBlockSize() const {
 }
 
 String NGLayoutInputNode::ToString() const {
-  auto* inline_node = DynamicTo<NGInlineNode>(this);
+  auto* inline_node = DynamicTo<InlineNode>(this);
   return inline_node ? inline_node->ToString()
                      : To<NGBlockNode>(*this).ToString();
 }

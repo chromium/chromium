@@ -440,7 +440,7 @@ UBiDiLevel InlineCursorPosition::BidiLevel() const {
     const LayoutBlockFlow& block_flow =
         *GetLayoutObject()->FragmentItemsContainer();
     const auto& items =
-        block_flow.GetNGInlineNodeData()->ItemsData(UsesFirstLineStyle()).items;
+        block_flow.GetInlineNodeData()->ItemsData(UsesFirstLineStyle()).items;
     const auto* const item = base::ranges::find(items, GetLayoutObject(),
                                                 &InlineItem::GetLayoutObject);
     DCHECK(item != items.end()) << this;

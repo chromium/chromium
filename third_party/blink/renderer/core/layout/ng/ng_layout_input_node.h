@@ -285,7 +285,7 @@ class CORE_EXPORT NGLayoutInputNode {
   }
 
   CustomLayoutChild* GetCustomLayoutChild() const {
-    // TODO(ikilpatrick): Support NGInlineNode.
+    // TODO(ikilpatrick): Support InlineNode.
     DCHECK(IsBlock());
     return box_->GetCustomLayoutChild();
   }

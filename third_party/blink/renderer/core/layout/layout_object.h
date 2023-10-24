@@ -3943,7 +3943,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
         IntrinsicLogicalWidthsChildDependsOnBlockConstraints);
 
     // This flag is set on inline container boxes that need to run the
-    // Pre-layout phase in LayoutNG. See NGInlineNode::CollectInlines().
+    // Pre-layout phase in LayoutNG. See InlineNode::CollectInlines().
     // Also maybe set to inline boxes to optimize the propagation.
     ADD_BOOLEAN_BITFIELD(needs_collect_inlines_, NeedsCollectInlines);
 

@@ -18,7 +18,7 @@ namespace blink {
 
 namespace {
 
-LayoutUnit FragmentWidth(const NGInlineNode& node) {
+LayoutUnit FragmentWidth(const InlineNode& node) {
   const NGPhysicalBoxFragment* fragment =
       node.GetLayoutBox()->GetPhysicalFragment(0);
   return fragment->Size().width;
@@ -58,7 +58,7 @@ class ScoreLineBreakerTest : public RenderingTest {
     }
   }
 
-  Vector<float> ComputeScores(const NGInlineNode& node) {
+  Vector<float> ComputeScores(const InlineNode& node) {
     const LayoutUnit width = FragmentWidth(node);
     NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
     LineWidths line_widths(width);
@@ -95,7 +95,7 @@ TEST_F(ScoreLineBreakerTest, LastLines) {
       678 012 45
     </div>
   )HTML");
-  const NGInlineNode node = GetInlineNodeByElementId("target");
+  const InlineNode node = GetInlineNodeByElementId("target");
   const LayoutUnit width = FragmentWidth(node);
   NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
   LineWidths line_widths(width);
@@ -193,7 +193,7 @@ TEST_P(BlockInInlineTest, BeforeAfter) {
   )HTML",
       has_before ? "Before 89 1234 6789 1234 6789 1234 6789 12" : "",
       has_after ? "After 789 1234 6789 1234 6789 1234 6789 12" : ""));
-  const NGInlineNode node = GetInlineNodeByElementId("target");
+  const InlineNode node = GetInlineNodeByElementId("target");
   const LayoutUnit width = FragmentWidth(node);
   NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
   LineWidths line_widths(width);
@@ -251,7 +251,7 @@ TEST_F(ScoreLineBreakerTest, ForcedBreak) {
       12
     </div>
   )HTML");
-  const NGInlineNode node = GetInlineNodeByElementId("target");
+  const InlineNode node = GetInlineNodeByElementId("target");
   const LayoutUnit width = FragmentWidth(node);
   NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
   LineWidths line_widths(width);
@@ -384,7 +384,7 @@ TEST_P(DisabledByLineBreakerTest, Data) {
   EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kTextWrapBalance));
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kTextWrapPretty));
 
-  const NGInlineNode node = GetInlineNodeByElementId("target");
+  const InlineNode node = GetInlineNodeByElementId("target");
   const LayoutUnit width = FragmentWidth(node);
   NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
   LineWidths line_widths(width);
@@ -449,7 +449,7 @@ TEST_F(ScoreLineBreakerTest, Zoom) {
       012
     </div>
   )HTML");
-  const NGInlineNode target = GetInlineNodeByElementId("target");
+  const InlineNode target = GetInlineNodeByElementId("target");
   Vector<float> scores = ComputeScores(target);
 
   constexpr float zoom = 2;

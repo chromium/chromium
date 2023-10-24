@@ -18,8 +18,8 @@
 namespace blink {
 
 class ComputedStyle;
+class InlineNode;
 class NGInlineBreakToken;
-class NGInlineNode;
 struct InlineItemsData;
 
 // Represents a line to build.
@@ -43,7 +43,7 @@ class CORE_EXPORT LineInfo {
     DCHECK(line_style_);
     return *line_style_;
   }
-  void SetLineStyle(const NGInlineNode&,
+  void SetLineStyle(const InlineNode&,
                     const InlineItemsData&,
                     bool use_first_line_style);
 

@@ -101,7 +101,7 @@ class OffsetMappingTest : public RenderingTest {
 
   const OffsetMapping& GetOffsetMapping() const {
     const OffsetMapping* map =
-        NGInlineNode(layout_block_flow_).ComputeOffsetMappingIfNeeded();
+        InlineNode(layout_block_flow_).ComputeOffsetMappingIfNeeded();
     CHECK(map);
     return *map;
   }
@@ -187,7 +187,7 @@ class OffsetMappingTest : public RenderingTest {
   }
 
   bool IsOffsetMappingStored() const {
-    return layout_block_flow_->GetNGInlineNodeData()->offset_mapping != nullptr;
+    return layout_block_flow_->GetInlineNodeData()->offset_mapping != nullptr;
   }
 
   const LayoutText* GetLayoutTextUnder(const char* parent_id) {
@@ -1527,7 +1527,7 @@ TEST_F(OffsetMappingGetterTest, Get) {
   DCHECK(layout_block_flow->ChildrenInline());
 
   const OffsetMapping* mapping =
-      NGInlineNode::GetOffsetMapping(layout_block_flow);
+      InlineNode::GetOffsetMapping(layout_block_flow);
   EXPECT_TRUE(mapping);
 
   const String& text_content = mapping->GetText();

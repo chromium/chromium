@@ -114,7 +114,7 @@ class LayoutTextTest : public RenderingTest {
     if (block_flow.NeedsCollectInlines()) {
       return "LayoutBlockFlow has NeedsCollectInlines";
     }
-    const NGInlineNodeData& data = *block_flow.GetNGInlineNodeData();
+    const InlineNodeData& data = *block_flow.GetInlineNodeData();
     std::ostringstream stream;
     for (const InlineItem& item : data.items) {
       if (item.Type() != InlineItem::kText) {

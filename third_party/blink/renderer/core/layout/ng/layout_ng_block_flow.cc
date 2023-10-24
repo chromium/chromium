@@ -37,22 +37,22 @@ void LayoutNGBlockFlow::StyleDidChange(StyleDifference diff,
   }
 }
 
-NGInlineNodeData* LayoutNGBlockFlow::TakeNGInlineNodeData() {
+InlineNodeData* LayoutNGBlockFlow::TakeInlineNodeData() {
   NOT_DESTROYED();
   return ng_inline_node_data_.Release();
 }
 
-NGInlineNodeData* LayoutNGBlockFlow::GetNGInlineNodeData() const {
+InlineNodeData* LayoutNGBlockFlow::GetInlineNodeData() const {
   NOT_DESTROYED();
   return ng_inline_node_data_.Get();
 }
 
-void LayoutNGBlockFlow::ResetNGInlineNodeData() {
+void LayoutNGBlockFlow::ResetInlineNodeData() {
   NOT_DESTROYED();
-  ng_inline_node_data_ = MakeGarbageCollected<NGInlineNodeData>();
+  ng_inline_node_data_ = MakeGarbageCollected<InlineNodeData>();
 }
 
-void LayoutNGBlockFlow::ClearNGInlineNodeData() {
+void LayoutNGBlockFlow::ClearInlineNodeData() {
   NOT_DESTROYED();
   if (ng_inline_node_data_) {
     // ng_inline_node_data_ is not used from now on but exists until GC happens,
@@ -150,7 +150,7 @@ void LayoutNGBlockFlow::DirtyLinesFromChangedChild(LayoutObject* child) {
 
   // We need to dirty line box fragments only if the child is once laid out in
   // LayoutNG inline formatting context. New objects are handled in
-  // NGInlineNode::MarkLineBoxesDirty().
+  // InlineNode::MarkLineBoxesDirty().
   if (child->IsInLayoutNGInlineFormattingContext()) {
     FragmentItems::DirtyLinesFromChangedChild(*child, *this);
   }

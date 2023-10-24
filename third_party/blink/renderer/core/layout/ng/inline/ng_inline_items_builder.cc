@@ -305,7 +305,7 @@ inline void InlineItemsBuilderTemplate<MappingBuilder>::DidAppendTextReusing(
 
 template <typename MappingBuilder>
 bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextReusing(
-    const NGInlineNodeData& original_data,
+    const InlineNodeData& original_data,
     LayoutText* layout_text) {
   DCHECK(layout_text);
   const auto& items = layout_text->InlineItems();
@@ -487,7 +487,7 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextReusing(
 
 template <>
 bool InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextReusing(
-    const NGInlineNodeData&,
+    const InlineNodeData&,
     LayoutText*) {
   NOTREACHED();
   return false;
@@ -496,7 +496,7 @@ bool InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextReusing(
 template <typename MappingBuilder>
 void InlineItemsBuilderTemplate<MappingBuilder>::AppendText(
     LayoutText* layout_text,
-    const NGInlineNodeData* previous_data) {
+    const InlineNodeData* previous_data) {
   // If the LayoutText element hasn't changed, reuse the existing items.
   if (previous_data && layout_text->HasValidInlineItems()) {
     if (AppendTextReusing(*previous_data, layout_text)) {
@@ -1415,7 +1415,7 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::MayBeBidiEnabled() const {
 
 template <typename MappingBuilder>
 void InlineItemsBuilderTemplate<MappingBuilder>::DidFinishCollectInlines(
-    NGInlineNodeData* data) {
+    InlineNodeData* data) {
   data->text_content = ToString();
 
   // Set |is_bidi_enabled_| for all UTF-16 strings for now, because at this

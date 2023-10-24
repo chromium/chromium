@@ -245,7 +245,7 @@ const AXPosition AXPosition::FromPosition(
     LayoutBlockFlow* formatting_context =
         OffsetMapping::GetInlineFormattingContextOf(parent_anchored_position);
     const OffsetMapping* container_offset_mapping =
-        formatting_context ? NGInlineNode::GetOffsetMapping(formatting_context)
+        formatting_context ? InlineNode::GetOffsetMapping(formatting_context)
                            : nullptr;
     if (!container_offset_mapping) {
       // We are unable to compute the text offset in the accessibility tree that
@@ -465,7 +465,7 @@ int AXPosition::MaxTextOffset() const {
   LayoutBlockFlow* formatting_context =
       OffsetMapping::GetInlineFormattingContextOf(*layout_object);
   const OffsetMapping* container_offset_mapping =
-      formatting_context ? NGInlineNode::GetOffsetMapping(formatting_context)
+      formatting_context ? InlineNode::GetOffsetMapping(formatting_context)
                          : nullptr;
   if (!container_offset_mapping)
     return container_object_->ComputedName().length();
@@ -938,7 +938,7 @@ const PositionWithAffinity AXPosition::ToPositionWithAffinity(
     LayoutBlockFlow* formatting_context =
         OffsetMapping::GetInlineFormattingContextOf(*layout_object);
     container_offset_mapping =
-        formatting_context ? NGInlineNode::GetOffsetMapping(formatting_context)
+        formatting_context ? InlineNode::GetOffsetMapping(formatting_context)
                            : nullptr;
   }
 

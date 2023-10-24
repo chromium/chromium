@@ -44,7 +44,7 @@ as in the following.
 ### NGLayoutInputNode ###
 
 * NGBlockNode
-  - NGInlineNode
+  - InlineNode
     - InlineItem (open tag, span)
     - InlineItem (text, "Hello")
     - InlineItem (close tag, span)
@@ -91,7 +91,7 @@ because the spec prioritizes the simple description than being accurate.
 For inline layout there is a pre-layout pass that prepares the internal data
 structures needed to perform line layout.
 
-The pre-layout pass, triggered by calling `NGInlineNode::PrepareLayout()`, has
+The pre-layout pass, triggered by calling `InlineNode::PrepareLayout()`, has
 three separate steps or stages that are executed in order:
 
   - `CollectInlines`: Performs a depth-first scan of the container collecting
@@ -375,6 +375,7 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [FragmentItems]: ng_fragment_items.h
 [InlineItem]: ng_inline_item.h
 [InlineItemResult]: ng_inline_item_result.h
+[InlineNode]: ng_inline_node.h
 [LineBreaker]: ng_line_breaker.h
 [NGBaselineAlgorithmType]: ng_baseline.h
 [NGBaselineRequest]: ng_baseline.h
@@ -384,7 +385,6 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [NGConstraintSpace]: ../ng_constraint_space_builder.h
 [NGConstraintSpaceBuilder]: ../ng_constraint_space_builder.h
 [NGInlineBoxState]: ng_inline_box_state.h
-[NGInlineNode]: ng_inline_node.h
 [NGInlineLayoutAlgorithm]: ng_inline_layout_algorithm.h
 [NGLayoutInputNode]: ../ng_layout_input_node.h
 [NGLogicalLineItem]: ng_logical_line_item.h

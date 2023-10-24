@@ -15,12 +15,12 @@
 namespace blink {
 
 class FragmentItems;
+class InlineNode;
 class LayoutBox;
 class NGBlockBreakToken;
 class NGColumnSpannerPath;
 class NGConstraintSpace;
 class NGEarlyBreak;
-class NGInlineNode;
 class NGLayoutResult;
 class NGPhysicalBoxFragment;
 class NGPhysicalFragment;
@@ -141,7 +141,7 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   // or nodes consisting purely of block-level, floats, and/or out-of-flow
   // positioned children will return false.
   bool IsInlineFormattingContextRoot(
-      NGInlineNode* first_child_out = nullptr) const;
+      InlineNode* first_child_out = nullptr) const;
 
   bool IsInlineLevel() const;
   bool IsAtomicInlineLevel() const;

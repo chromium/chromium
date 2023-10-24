@@ -31,7 +31,7 @@ struct LineBreakResults {
   STACK_ALLOCATED();
 
  public:
-  LineBreakResults(const NGInlineNode& node, const NGConstraintSpace& space)
+  LineBreakResults(const InlineNode& node, const NGConstraintSpace& space)
       : node_(node), space_(space) {}
 
   wtf_size_t Size() const { return lines_.size(); }
@@ -114,7 +114,7 @@ struct LineBreakResults {
   }
 
  private:
-  const NGInlineNode node_;
+  const InlineNode node_;
   const NGConstraintSpace& space_;
   Vector<LineBreakResult, kMaxLinesForBalance> lines_;
   const NGInlineBreakToken* break_token_ = nullptr;
@@ -142,7 +142,7 @@ wtf_size_t EstimateNumLines(const String& text_content,
 
 // static
 absl::optional<LayoutUnit> ParagraphLineBreaker::AttemptParagraphBalancing(
-    const NGInlineNode& node,
+    const InlineNode& node,
     const NGConstraintSpace& space,
     const LineLayoutOpportunity& line_opportunity) {
   if (node.IsBisectLineBreakDisabled()) {

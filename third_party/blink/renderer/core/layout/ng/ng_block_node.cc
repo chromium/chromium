@@ -836,9 +836,9 @@ void NGBlockNode::FinishLayout(
       if (items)
         CopyFragmentItemsToLayoutBox(physical_fragment, *items, break_token);
     } else {
-      // We still need to clear |NGInlineNodeData| in case it had inline
+      // We still need to clear |InlineNodeData| in case it had inline
       // children.
-      block_flow->ClearNGInlineNodeData();
+      block_flow->ClearInlineNodeData();
     }
   } else {
     DCHECK(!physical_fragment.HasItems());
@@ -1082,7 +1082,7 @@ NGLayoutInputNode NGBlockNode::FirstChild() const {
   if (!AreNGBlockFlowChildrenInline(block))
     return NGBlockNode(To<LayoutBox>(child));
 
-  NGInlineNode inline_node(To<LayoutBlockFlow>(block));
+  InlineNode inline_node(To<LayoutBlockFlow>(block));
   if (!inline_node.IsBlockLevel())
     return std::move(inline_node);
 
@@ -1244,7 +1244,7 @@ void NGBlockNode::PlaceChildrenInLayoutBox(
     bool needs_invalidation_check) const {
   for (const auto& child_fragment : physical_fragment.Children()) {
     // Skip any line-boxes we have as children, this is handled within
-    // NGInlineNode at the moment.
+    // InlineNode at the moment.
     if (!child_fragment->IsBox())
       continue;
 
@@ -1596,14 +1596,14 @@ void NGBlockNode::CopyFragmentItemsToLayoutBox(
 }
 
 bool NGBlockNode::IsInlineFormattingContextRoot(
-    NGInlineNode* first_child_out) const {
+    InlineNode* first_child_out) const {
   if (const auto* block = DynamicTo<LayoutBlockFlow>(box_.Get())) {
     if (!AreNGBlockFlowChildrenInline(block))
       return false;
     NGLayoutInputNode first_child = FirstChild();
     if (first_child.IsInline()) {
       if (first_child_out)
-        *first_child_out = To<NGInlineNode>(first_child);
+        *first_child_out = To<InlineNode>(first_child);
       return true;
     }
   }

@@ -418,7 +418,7 @@ NGCaretPosition ComputeNGCaretPosition(
     return NGCaretPosition();
   }
 
-  const OffsetMapping* const mapping = NGInlineNode::GetOffsetMapping(context);
+  const OffsetMapping* const mapping = InlineNode::GetOffsetMapping(context);
   if (!mapping) {
     // TODO(yosin): We should find when we reach here[1].
     // [1] http://crbug.com/1100481

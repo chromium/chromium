@@ -149,7 +149,7 @@ class InlineItemsBuilderTest : public RenderingTest {
 
   void CheckReuseItemsProducesSameResult(Vector<Input> inputs,
                                          bool has_bidi_controls) {
-    NGInlineNodeData& fake_data = *MakeGarbageCollected<NGInlineNodeData>();
+    InlineNodeData& fake_data = *MakeGarbageCollected<InlineNodeData>();
     fake_data.text_content = text_;
     fake_data.is_bidi_enabled_ = has_bidi_controls;
 

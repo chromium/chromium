@@ -279,8 +279,8 @@ class CORE_EXPORT InlineItem {
   unsigned is_end_collapsible_newline_ : 1;
   unsigned is_generated_for_line_break_ : 1;
   unsigned is_unsafe_to_reuse_shape_result_ : 1;
-  friend class NGInlineNode;
-  friend class NGInlineNodeDataEditor;
+  friend class InlineNode;
+  friend class InlineNodeDataEditor;
 };
 
 inline bool InlineItem::IsValidOffset(unsigned offset) const {

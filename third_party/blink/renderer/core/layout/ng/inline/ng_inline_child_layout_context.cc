@@ -43,7 +43,7 @@ bool IsBlockFragmented(const NGBoxFragmentBuilder& fragment_builder) {
 }  // namespace
 
 NGInlineChildLayoutContext::NGInlineChildLayoutContext(
-    const NGInlineNode& node,
+    const InlineNode& node,
     NGBoxFragmentBuilder* container_builder,
     LineInfo* line_info)
     : container_builder_(container_builder),
@@ -55,7 +55,7 @@ NGInlineChildLayoutContext::NGInlineChildLayoutContext(
 }
 
 NGInlineChildLayoutContext::NGInlineChildLayoutContext(
-    const NGInlineNode& node,
+    const InlineNode& node,
     NGBoxFragmentBuilder* container_builder,
     ScoreLineBreakContext* score_line_break_context)
     : container_builder_(container_builder),

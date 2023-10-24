@@ -13,8 +13,8 @@
 
 namespace blink {
 
+class InlineNode;
 class NGInlineBreakToken;
-class NGInlineNode;
 
 //
 // This class computes the line width of each line for _simple_ nodes without
@@ -35,7 +35,7 @@ class CORE_EXPORT LineWidths {
   LayoutUnit operator[](wtf_size_t index) const;
 
   // Compute the line widths. Returns `false` if the `node` is not _simple_.
-  bool Set(const NGInlineNode& node,
+  bool Set(const InlineNode& node,
            base::span<const LayoutOpportunity> opportunities,
            const NGInlineBreakToken* break_token = nullptr);
 

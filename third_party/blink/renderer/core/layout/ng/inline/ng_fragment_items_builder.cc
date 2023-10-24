@@ -18,7 +18,7 @@ FragmentItemsBuilder::FragmentItemsBuilder(
     : node_(nullptr), writing_direction_(writing_direction) {}
 
 FragmentItemsBuilder::FragmentItemsBuilder(
-    const NGInlineNode& node,
+    const InlineNode& node,
     WritingDirectionMode writing_direction,
     bool is_block_fragmented)
     : node_(node), writing_direction_(writing_direction) {

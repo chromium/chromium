@@ -15,9 +15,9 @@ template <typename OffsetMappingBuilder>
 class InlineItemsBuilderTemplate;
 
 // Data which is required for inline nodes.
-struct CORE_EXPORT NGInlineNodeData final : InlineItemsData {
+struct CORE_EXPORT InlineNodeData final : InlineItemsData {
  public:
-  NGInlineNodeData() = default;
+  InlineNodeData() = default;
   bool IsBidiEnabled() const { return is_bidi_enabled_; }
   TextDirection BaseDirection() const {
     return static_cast<TextDirection>(base_direction_);
@@ -53,8 +53,8 @@ struct CORE_EXPORT NGInlineNodeData final : InlineItemsData {
   }
 
   friend class InlineItemsBuilderTest;
-  friend class NGInlineNode;
-  friend class NGInlineNodeForTest;
+  friend class InlineNode;
+  friend class InlineNodeForTest;
   friend class OffsetMappingTest;
 
   template <typename OffsetMappingBuilder>

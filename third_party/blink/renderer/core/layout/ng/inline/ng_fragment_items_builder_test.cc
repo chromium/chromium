@@ -39,7 +39,7 @@ TEST_F(FragmentItemsBuilderTest, MultipleLogicalLineItems) {
   const NGPhysicalLineBoxFragment* line_fragment2 =
       cursor.Current()->LineBoxFragment();
 
-  NGInlineNode inline_node(container);
+  InlineNode inline_node(container);
   {
     // First test emulates what |NGBlockLayoutAlgorithm| does, which loops
     // following calls for each line:

@@ -236,7 +236,7 @@ const OffsetMapping* OffsetMapping::ForceGetFor(const Position& position) {
       OffsetMapping::GetInlineFormattingContextOf(position);
   if (!context)
     return nullptr;
-  return NGInlineNode::GetOffsetMapping(context);
+  return InlineNode::GetOffsetMapping(context);
 }
 
 // static
@@ -246,7 +246,7 @@ const OffsetMapping* OffsetMapping::GetFor(const LayoutObject* layout_object) {
   LayoutBlockFlow* context = layout_object->FragmentItemsContainer();
   if (!context)
     return nullptr;
-  return NGInlineNode::GetOffsetMapping(context);
+  return InlineNode::GetOffsetMapping(context);
 }
 
 // static

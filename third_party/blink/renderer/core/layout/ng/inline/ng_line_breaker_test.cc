@@ -22,7 +22,7 @@
 
 namespace blink {
 
-String ToString(InlineItemResults line, NGInlineNode node) {
+String ToString(InlineItemResults line, InlineNode node) {
   StringBuilder builder;
   const String& text = node.ItemsData(false).text_content;
   for (const auto& item_result : line) {
@@ -34,17 +34,17 @@ String ToString(InlineItemResults line, NGInlineNode node) {
 
 class LineBreakerTest : public RenderingTest {
  protected:
-  NGInlineNode CreateInlineNode(const String& html_content) {
+  InlineNode CreateInlineNode(const String& html_content) {
     SetBodyInnerHTML(html_content);
 
     LayoutBlockFlow* block_flow =
         To<LayoutBlockFlow>(GetLayoutObjectByElementId("container"));
-    return NGInlineNode(block_flow);
+    return InlineNode(block_flow);
   }
 
   // Break lines using the specified available width.
   Vector<std::pair<String, unsigned>> BreakLines(
-      NGInlineNode node,
+      InlineNode node,
       LayoutUnit available_width,
       void (*callback)(const LineBreaker&, const LineInfo&) = nullptr,
       bool fill_first_space_ = false) {
@@ -83,7 +83,7 @@ class LineBreakerTest : public RenderingTest {
     return lines;
   }
 
-  wtf_size_t BreakLinesAt(NGInlineNode node,
+  wtf_size_t BreakLinesAt(InlineNode node,
                           LayoutUnit available_width,
                           base::span<LineBreakPoint> break_points,
                           base::span<LineInfo> line_info_list) {
@@ -112,14 +112,14 @@ class LineBreakerTest : public RenderingTest {
     return line_index;
   }
 
-  wtf_size_t BreakLines(NGInlineNode node,
+  wtf_size_t BreakLines(InlineNode node,
                         LayoutUnit available_width,
                         base::span<LineInfo> line_info_list) {
     Vector<LineBreakPoint> break_points;
     return BreakLinesAt(node, available_width, break_points, line_info_list);
   }
 
-  MinMaxSizes ComputeMinMaxSizes(NGInlineNode node) {
+  MinMaxSizes ComputeMinMaxSizes(InlineNode node) {
     const auto space =
         NGConstraintSpaceBuilder(node.Style().GetWritingMode(),
                                  node.Style().GetWritingDirection(),
@@ -140,7 +140,7 @@ namespace {
 
 TEST_F(LineBreakerTest, FitWithEpsilon) {
   LoadAhem();
-  NGInlineNode node = CreateInlineNode(R"HTML(
+  InlineNode node = CreateInlineNode(R"HTML(
     <!DOCTYPE html>
     <style>
     #container {
@@ -167,7 +167,7 @@ TEST_F(LineBreakerTest, FitWithEpsilon) {
 
 TEST_F(LineBreakerTest, SingleNode) {
   LoadAhem();
-  NGInlineNode node = CreateInlineNode(R"HTML(
+  InlineNode node = CreateInlineNode(R"HTML(
     <!DOCTYPE html>
     <style>
     #container {
@@ -199,7 +199,7 @@ TEST_F(LineBreakerTest, TextCombineCloseTag) {
       "  writing-mode: vertical-lr;"
       "}"
       "tcy { text-combine-upright: all }");
-  NGInlineNode node = CreateInlineNode(
+  InlineNode node = CreateInlineNode(
       "<div id=container>"
       "abc<tcy style='white-space:pre'>XYZ</tcy>def");
 
@@ -225,7 +225,7 @@ TEST_F(LineBreakerTest, TextCombineBreak) {
       "  writing-mode: vertical-lr;"
       "}"
       "tcy { text-combine-upright: all }");
-  NGInlineNode node = CreateInlineNode("<div id=container>abc<tcy>-</tcy>def");
+  InlineNode node = CreateInlineNode("<div id=container>abc<tcy>-</tcy>def");
 
   Vector<std::pair<String, unsigned>> lines;
   lines = BreakLines(node, LayoutUnit(30));
@@ -243,8 +243,7 @@ TEST_F(LineBreakerTest, TextCombineNoBreak) {
       "  writing-mode: vertical-lr;"
       "}"
       "tcy { text-combine-upright: all }");
-  NGInlineNode node =
-      CreateInlineNode("<div id=container>abc<tcy>XYZ</tcy>def");
+  InlineNode node = CreateInlineNode("<div id=container>abc<tcy>XYZ</tcy>def");
 
   Vector<std::pair<String, unsigned>> lines;
   lines = BreakLines(node, LayoutUnit(30));
@@ -261,8 +260,7 @@ TEST_F(LineBreakerTest, TextCombineNoBreakWithSpace) {
       "  writing-mode: vertical-lr;"
       "}"
       "tcy { text-combine-upright: all }");
-  NGInlineNode node =
-      CreateInlineNode("<div id=container>abc<tcy>X Z</tcy>def");
+  InlineNode node = CreateInlineNode("<div id=container>abc<tcy>X Z</tcy>def");
 
   Vector<std::pair<String, unsigned>> lines;
   lines = BreakLines(node, LayoutUnit(30));
@@ -273,7 +271,7 @@ TEST_F(LineBreakerTest, TextCombineNoBreakWithSpace) {
 
 TEST_F(LineBreakerTest, OverflowWord) {
   LoadAhem();
-  NGInlineNode node = CreateInlineNode(R"HTML(
+  InlineNode node = CreateInlineNode(R"HTML(
     <!DOCTYPE html>
     <style>
     #container {
@@ -299,7 +297,7 @@ TEST_F(LineBreakerTest, OverflowWord) {
 
 TEST_F(LineBreakerTest, OverflowTab) {
   LoadAhem();
-  NGInlineNode node = CreateInlineNode(R"HTML(
+  InlineNode node = CreateInlineNode(R"HTML(
     <!DOCTYPE html>
     <style>
     #container {
@@ -321,7 +319,7 @@ TEST_F(LineBreakerTest, OverflowTab) {
 
 TEST_F(LineBreakerTest, OverflowTabBreakWord) {
   LoadAhem();
-  NGInlineNode node = CreateInlineNode(R"HTML(
+  InlineNode node = CreateInlineNode(R"HTML(
     <!DOCTYPE html>
     <style>
     #container {
@@ -344,7 +342,7 @@ TEST_F(LineBreakerTest, OverflowTabBreakWord) {
 
 TEST_F(LineBreakerTest, OverflowAtomicInline) {
   LoadAhem();
-  NGInlineNode node = CreateInlineNode(R"HTML(
+  InlineNode node = CreateInlineNode(R"HTML(
     <!DOCTYPE html>
     <style>
     #container {
@@ -385,7 +383,7 @@ TEST_F(LineBreakerTest, OverflowAtomicInline) {
 
 TEST_F(LineBreakerTest, OverflowMargin) {
   LoadAhem();
-  NGInlineNode node = CreateInlineNode(R"HTML(
+  InlineNode node = CreateInlineNode(R"HTML(
     <!DOCTYPE html>
     <style>
     #container {
@@ -421,7 +419,7 @@ TEST_F(LineBreakerTest, OverflowMargin) {
 
 TEST_F(LineBreakerTest, OverflowAfterSpacesAcrossElements) {
   LoadAhem();
-  NGInlineNode node = CreateInlineNode(R"HTML(
+  InlineNode node = CreateInlineNode(R"HTML(
     <!DOCTYPE html>
     <style>
     div {
@@ -445,7 +443,7 @@ TEST_F(LineBreakerTest, OverflowAfterSpacesAcrossElements) {
 // Tests when the last word in a node wraps, and another node continues.
 TEST_F(LineBreakerTest, WrapLastWord) {
   LoadAhem();
-  NGInlineNode node = CreateInlineNode(R"HTML(
+  InlineNode node = CreateInlineNode(R"HTML(
     <!DOCTYPE html>
     <style>
     #container {
@@ -463,7 +461,7 @@ TEST_F(LineBreakerTest, WrapLastWord) {
 }
 
 TEST_F(LineBreakerTest, WrapLetterSpacing) {
-  NGInlineNode node = CreateInlineNode(R"HTML(
+  InlineNode node = CreateInlineNode(R"HTML(
     <!DOCTYPE html>
     <style>
     #container {
@@ -484,7 +482,7 @@ TEST_F(LineBreakerTest, WrapLetterSpacing) {
 
 TEST_F(LineBreakerTest, BoundaryInWord) {
   LoadAhem();
-  NGInlineNode node = CreateInlineNode(R"HTML(
+  InlineNode node = CreateInlineNode(R"HTML(
     <!DOCTYPE html>
     <style>
     #container {
@@ -514,7 +512,7 @@ TEST_F(LineBreakerTest, BoundaryInWord) {
 
 TEST_F(LineBreakerTest, BoundaryInFirstWord) {
   LoadAhem();
-  NGInlineNode node = CreateInlineNode(R"HTML(
+  InlineNode node = CreateInlineNode(R"HTML(
     <!DOCTYPE html>
     <style>
     #container {
@@ -593,18 +591,18 @@ INSTANTIATE_TEST_SUITE_P(LineBreakerTest,
 TEST_P(WhitespaceStateTest, WhitespaceState) {
   const auto& data = GetParam();
   LoadAhem();
-  NGInlineNode node = CreateInlineNode(String(R"HTML(
+  InlineNode node = CreateInlineNode(String(R"HTML(
     <!DOCTYPE html>
     <style>
     #container {
       font: 10px/1 Ahem;
       width: 50px;
       white-space: )HTML") + data.white_space +
-                                       R"HTML(
+                                     R"HTML(
     }
     </style>
     <div id=container>)HTML" + data.html +
-                                       R"HTML(</div>
+                                     R"HTML(</div>
   )HTML");
 
   BreakLines(node, LayoutUnit(50));
@@ -653,7 +651,7 @@ INSTANTIATE_TEST_SUITE_P(LineBreakerTest,
 TEST_P(TrailingSpaceWidthTest, TrailingSpaceWidth) {
   const auto& data = GetParam();
   LoadAhem();
-  NGInlineNode node = CreateInlineNode(String(R"HTML(
+  InlineNode node = CreateInlineNode(String(R"HTML(
     <!DOCTYPE html>
     <style>
     #container {
@@ -661,11 +659,11 @@ TEST_P(TrailingSpaceWidthTest, TrailingSpaceWidth) {
       width: 50px;
       tab-size: 2;
       white-space: )HTML") + data.white_space +
-                                       R"HTML(;
+                                     R"HTML(;
     }
     </style>
     <div id=container>)HTML" + data.html +
-                                       R"HTML(</div>
+                                     R"HTML(</div>
   )HTML");
 
   BreakLines(node, LayoutUnit(50), nullptr, true);
@@ -676,7 +674,7 @@ TEST_F(LineBreakerTest, FullyCollapsedSpaces) {
   // The space in `span` will be collapsed in `CollectInlines`, but it may have
   // set `NeedsLayout`. It should be cleared when a layout lifecycle is done,
   // but not by the line breaker.
-  NGInlineNode node = CreateInlineNode(R"HTML(
+  InlineNode node = CreateInlineNode(R"HTML(
     <style>
     #container {
       font-size: 10px;
@@ -703,7 +701,7 @@ TEST_F(LineBreakerTest, TrailingCollapsedSpaces) {
   // trailing space. Similar to `FullyCollapsedSpaces` above, its `NeedsLayout`
   // should be cleared in a layout lifecycle, but not by the line breaker.
   LoadAhem();
-  NGInlineNode node = CreateInlineNode(R"HTML(
+  InlineNode node = CreateInlineNode(R"HTML(
     <style>
     #container {
       font-size: 10px;
@@ -729,7 +727,7 @@ TEST_F(LineBreakerTest, TrailingCollapsedSpaces) {
 
 TEST_F(LineBreakerTest, MinMaxWithTrailingSpaces) {
   LoadAhem();
-  NGInlineNode node = CreateInlineNode(R"HTML(
+  InlineNode node = CreateInlineNode(R"HTML(
     <!DOCTYPE html>
     <style>
     #container {
@@ -748,7 +746,7 @@ TEST_F(LineBreakerTest, MinMaxWithTrailingSpaces) {
 // `word-break: break-word` can break a space run.
 TEST_F(LineBreakerTest, MinMaxBreakSpaces) {
   LoadAhem();
-  NGInlineNode node = CreateInlineNode(R"HTML(
+  InlineNode node = CreateInlineNode(R"HTML(
     <!DOCTYPE html>
     <style>
     div {
@@ -771,7 +769,7 @@ TEST_F(LineBreakerTest, MinMaxBreakSpaces) {
 
 TEST_F(LineBreakerTest, MinMaxWithSoftHyphen) {
   LoadAhem();
-  NGInlineNode node = CreateInlineNode(R"HTML(
+  InlineNode node = CreateInlineNode(R"HTML(
     <!DOCTYPE html>
     <style>
     #container {
@@ -788,7 +786,7 @@ TEST_F(LineBreakerTest, MinMaxWithSoftHyphen) {
 
 TEST_F(LineBreakerTest, MinMaxWithHyphensDisabled) {
   LoadAhem();
-  NGInlineNode node = CreateInlineNode(R"HTML(
+  InlineNode node = CreateInlineNode(R"HTML(
     <!DOCTYPE html>
     <style>
     #container {
@@ -806,7 +804,7 @@ TEST_F(LineBreakerTest, MinMaxWithHyphensDisabled) {
 
 TEST_F(LineBreakerTest, MinMaxWithHyphensDisabledWithTrailingSpaces) {
   LoadAhem();
-  NGInlineNode node = CreateInlineNode(R"HTML(
+  InlineNode node = CreateInlineNode(R"HTML(
     <!DOCTYPE html>
     <style>
     #container {
@@ -826,7 +824,7 @@ TEST_F(LineBreakerTest, MinMaxWithHyphensAuto) {
   LoadAhem();
   LayoutLocale::SetHyphenationForTesting(AtomicString("en-us"),
                                          MockHyphenation::Create());
-  NGInlineNode node = CreateInlineNode(R"HTML(
+  InlineNode node = CreateInlineNode(R"HTML(
     <!DOCTYPE html>
     <style>
     #container {
@@ -849,7 +847,7 @@ TEST_F(LineBreakerTest, SplitTextZero) {
   V8TestingScope scope;
 
   LoadAhem();
-  NGInlineNode node = CreateInlineNode(R"HTML(
+  InlineNode node = CreateInlineNode(R"HTML(
     <!DOCTYPE html>
     <style>
     #container {
@@ -904,7 +902,7 @@ TEST_F(LineBreakerTest, ForcedBreakFollowedByCloseTag) {
 }
 
 TEST_F(LineBreakerTest, TableCellWidthCalculationQuirkOutOfFlow) {
-  NGInlineNode node = CreateInlineNode(R"HTML(
+  InlineNode node = CreateInlineNode(R"HTML(
     <style>
     table {
       font-size: 10px;
@@ -947,7 +945,7 @@ TEST_F(LineBreakerTest, RewindPositionedFloat) {
 
 // crbug.com/1091359
 TEST_F(LineBreakerTest, RewindRubyColumn) {
-  NGInlineNode node = CreateInlineNode(R"HTML(
+  InlineNode node = CreateInlineNode(R"HTML(
 <div id="container">
 <style>
 * {
@@ -970,7 +968,7 @@ B AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 }
 
 TEST_F(LineBreakerTest, SplitTextIntoSegements) {
-  NGInlineNode node = CreateInlineNode(
+  InlineNode node = CreateInlineNode(
       uR"HTML(
       <!DOCTYPE html>
       <svg viewBox="0 0 800 600">
@@ -996,7 +994,7 @@ TEST_F(LineBreakerTest, SplitTextIntoSegements) {
 
 // crbug.com/1251960
 TEST_F(LineBreakerTest, SplitTextIntoSegementsCrash) {
-  NGInlineNode node = CreateInlineNode(R"HTML(<!DOCTYPE html>
+  InlineNode node = CreateInlineNode(R"HTML(<!DOCTYPE html>
       <svg viewBox="0 0 800 600">
       <text id="container" x="50 100 150">&#x0343;&#x2585;&#x0343;&#x2585;<!--
       -->&#x0343;&#x2585;</text>
@@ -1019,7 +1017,7 @@ TEST_F(LineBreakerTest, SplitTextIntoSegementsCrash) {
 
 // crbug.com/1214232
 TEST_F(LineBreakerTest, GetOverhangCrash) {
-  NGInlineNode node = CreateInlineNode(
+  InlineNode node = CreateInlineNode(
       R"HTML(
 <!DOCTYPE html>
 <style>
@@ -1043,7 +1041,7 @@ C c
 TEST_F(LineBreakerTest, IdeographicSpaceBeforeEndBracket) {
   LoadAhem();
   // Atomic inline, and ideographic space before the ideographic full stop.
-  NGInlineNode node1 = CreateInlineNode(
+  InlineNode node1 = CreateInlineNode(
       uR"HTML(
 <!DOCTYPE html>
 <style>
@@ -1059,7 +1057,7 @@ body { margin: 0; padding: 0; font: 10px/10px Ahem; }
   EXPECT_EQ(lines1.size(), 2u);
 
   // No ideographic space.
-  NGInlineNode node2 = CreateInlineNode(
+  InlineNode node2 = CreateInlineNode(
       uR"HTML(
 <!DOCTYPE html>
 <style>
@@ -1095,7 +1093,7 @@ TEST_F(LineBreakerTest, BreakAt) {
       0 23 5<inline-block></inline-block><inline-block></inline-block>89
     </div>
   )HTML");
-  NGInlineNode target = GetInlineNodeByElementId("target");
+  InlineNode target = GetInlineNodeByElementId("target");
   LineBreakPoint break_points[]{LineBreakPoint{{0, 2}}, LineBreakPoint{{1, 6}},
                                 LineBreakPoint{{2, 7}}};
   LineInfo line_info_list[4];
@@ -1134,7 +1132,7 @@ TEST_F(LineBreakerTest, BreakAtTrailingSpaces) {
       56
     </div>
   )HTML");
-  NGInlineNode target = GetInlineNodeByElementId("target");
+  InlineNode target = GetInlineNodeByElementId("target");
   LineBreakPoint break_points[]{LineBreakPoint{{7, 5}, {3, 4}}};
   LineInfo line_info_list[2];
   const wtf_size_t num_lines =
@@ -1169,7 +1167,7 @@ TEST_F(LineBreakerTest, BreakAtTrailingSpacesAfterAtomicInline) {
       <span>23</span>
     </div>
   )HTML");
-  NGInlineNode target = GetInlineNodeByElementId("target");
+  InlineNode target = GetInlineNodeByElementId("target");
   LineBreakPoint break_points[]{LineBreakPoint{{4, 2}, {2, 1}}};
   LineInfo line_info_list[2];
   const wtf_size_t num_lines =
@@ -1225,7 +1223,7 @@ TEST_P(CanBreakInsideTest, Data) {
     <div id="target">%s</div>
   )HTML",
                                   data.target_css, data.style, data.html));
-  NGInlineNode target = GetInlineNodeByElementId("target");
+  InlineNode target = GetInlineNodeByElementId("target");
   LineInfo line_info_list[1];
   const LayoutUnit available_width = LayoutUnit(800);
   const wtf_size_t num_lines =

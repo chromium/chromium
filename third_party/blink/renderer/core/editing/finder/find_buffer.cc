@@ -481,7 +481,7 @@ void FindBuffer::AddTextToBuffer(const Text& text_node,
                                  LayoutBlockFlow& block_flow,
                                  const EphemeralRangeInFlatTree& range) {
   if (!offset_mapping_) {
-    offset_mapping_ = NGInlineNode::GetOffsetMapping(&block_flow);
+    offset_mapping_ = InlineNode::GetOffsetMapping(&block_flow);
 
     if (UNLIKELY(!offset_mapping_)) {
       // TODO(crbug.com/955678): There are certain cases where we fail to

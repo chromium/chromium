@@ -41,7 +41,7 @@ class CORE_EXPORT LineBreaker {
   STACK_ALLOCATED();
 
  public:
-  LineBreaker(NGInlineNode,
+  LineBreaker(InlineNode,
               LineBreakerMode,
               const NGConstraintSpace&,
               const LineLayoutOpportunity&,
@@ -65,7 +65,7 @@ class CORE_EXPORT LineBreaker {
 
   // True if there are items that `ScoreLineBreaker` doesn't support.
   // Conditions that can be determined by `CollectInlines` are done by
-  // `NGInlineNode::IsScoreLineBreakDisabled()`, but some conditions can change
+  // `InlineNode::IsScoreLineBreakDisabled()`, but some conditions can change
   // withoiut `CollectInlines`. They are determined by this.
   bool ShouldDisableScoreLineBreak() const { return disable_score_line_break_; }
 
@@ -285,7 +285,7 @@ class CORE_EXPORT LineBreaker {
   LayoutUnit available_width_;
   LineLayoutOpportunity line_opportunity_;
 
-  NGInlineNode node_;
+  InlineNode node_;
 
   LineBreakerMode mode_;
 
@@ -345,7 +345,7 @@ class CORE_EXPORT LineBreaker {
 
   // The text content of this node. This is same as |items_data_.text_content|
   // except when sticky images quirk is needed. See
-  // |NGInlineNode::TextContentForContentSize|.
+  // |InlineNode::TextContentForContentSize|.
   String text_content_;
 
   const NGConstraintSpace& constraint_space_;
@@ -387,7 +387,7 @@ class CORE_EXPORT LineBreaker {
   const InlineItem* fast_min_content_item_ = nullptr;
 
   // The current base direction for the bidi algorithm.
-  // This is copied from NGInlineNode, then updated after each forced line break
+  // This is copied from InlineNode, then updated after each forced line break
   // if 'unicode-bidi: plaintext'.
   TextDirection base_direction_;
 

@@ -151,7 +151,7 @@ class CORE_EXPORT NGInlineLayoutStateStack {
 
   // Initialize the box state stack for a new line.
   // @return The initial box state for the line.
-  NGInlineBoxState* OnBeginPlaceItems(const NGInlineNode node,
+  NGInlineBoxState* OnBeginPlaceItems(const InlineNode node,
                                       const ComputedStyle&,
                                       FontBaseline,
                                       bool line_height_quirk,

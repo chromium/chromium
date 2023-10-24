@@ -15,11 +15,11 @@
 
 namespace blink {
 
+class InlineNode;
 class LineInfoList;
 class LineWidths;
 class NGConstraintSpace;
 class NGInlineBreakToken;
-class NGInlineNode;
 struct NGLeadingFloats;
 
 //
@@ -43,7 +43,7 @@ class CORE_EXPORT ScoreLineBreaker {
   STACK_ALLOCATED();
 
  public:
-  ScoreLineBreaker(const NGInlineNode& node,
+  ScoreLineBreaker(const InlineNode& node,
                    const NGConstraintSpace& space,
                    const LineWidths& line_widths,
                    const NGInlineBreakToken* break_token,
@@ -84,7 +84,7 @@ class CORE_EXPORT ScoreLineBreaker {
   using LineBreakScores =
       Vector<LineBreakScore, LineBreakCandidate::kInlineCapacity>;
 
-  const NGInlineNode& Node() const { return node_; }
+  const InlineNode& Node() const { return node_; }
   LayoutUnit AvailableWidth(wtf_size_t line_index) const;
   LayoutUnit AvailableWidthToFit(wtf_size_t line_index) const {
     return AvailableWidth(line_index).AddEpsilon();  // Match `LineBreaker`.
@@ -108,7 +108,7 @@ class CORE_EXPORT ScoreLineBreaker {
   static constexpr float kScoreOverfull = 1e12f;
   static constexpr float kLastLinePenaltyMultiplier = 4.0f;
 
-  const NGInlineNode node_;
+  const InlineNode node_;
   const NGConstraintSpace& space_;
   const LineWidths& line_widths_;
   ExclusionSpace* exclusion_space_;

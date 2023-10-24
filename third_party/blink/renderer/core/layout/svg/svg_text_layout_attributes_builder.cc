@@ -230,7 +230,7 @@ bool HasValidTextLength(const LayoutObject& layout_object) {
 
 }  // anonymous namespace
 
-SvgTextLayoutAttributesBuilder::SvgTextLayoutAttributesBuilder(NGInlineNode ifc)
+SvgTextLayoutAttributesBuilder::SvgTextLayoutAttributesBuilder(InlineNode ifc)
     : block_flow_(To<LayoutBlockFlow>(ifc.GetLayoutBox())) {}
 
 // This is an implementation of "3. Resolve character positioning" in [1],

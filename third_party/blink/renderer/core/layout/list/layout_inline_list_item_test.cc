@@ -29,11 +29,11 @@ li {
       *GetLayoutObjectByElementId("li3"));
   ASSERT_TRUE(block_flow);
   EXPECT_FALSE(block_flow->NeedsLayout());
-  EXPECT_TRUE(NGInlineNode::GetOffsetMapping(block_flow));
+  EXPECT_TRUE(InlineNode::GetOffsetMapping(block_flow));
   // We had a bug that the above GetOffsetMapping() unexpectedly set
   // NeedsLayout due to a lack of SetNeedsCollectInlines.
   EXPECT_FALSE(block_flow->NeedsLayout());
-  EXPECT_TRUE(NGInlineNode::GetOffsetMapping(block_flow));
+  EXPECT_TRUE(InlineNode::GetOffsetMapping(block_flow));
 }
 
 }  // namespace blink

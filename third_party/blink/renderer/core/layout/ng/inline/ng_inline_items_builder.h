@@ -23,7 +23,7 @@ class ComputedStyle;
 class LayoutInline;
 class LayoutObject;
 class LayoutText;
-struct NGInlineNodeData;
+struct InlineNodeData;
 
 // InlineItemsBuilder builds a string and a list of InlineItem from inlines.
 //
@@ -73,14 +73,13 @@ class InlineItemsBuilderTemplate {
   //
   // If |previous_data| is given, reuse existing items if they exist and are
   // reusable. Otherwise appends new items.
-  void AppendText(LayoutText* layout_text,
-                  const NGInlineNodeData* previous_data);
+  void AppendText(LayoutText* layout_text, const InlineNodeData* previous_data);
 
   // Append existing items from an unchanged LayoutObject.
   // Returns whether the existing items could be reused.
   // NOTE: The state of the builder remains unchanged if the append operation
   // fails (i.e. if it returns false).
-  bool AppendTextReusing(const NGInlineNodeData& previous_data,
+  bool AppendTextReusing(const InlineNodeData& previous_data,
                          LayoutText* layout_text);
 
   // Append a string.
@@ -133,7 +132,7 @@ class InlineItemsBuilderTemplate {
   void ExitInline(LayoutObject*);
 
   // Set collected inline items data to |data|.
-  void DidFinishCollectInlines(NGInlineNodeData* data);
+  void DidFinishCollectInlines(InlineNodeData* data);
 
   MappingBuilder& GetOffsetMappingBuilder() { return mapping_builder_; }
 
@@ -261,7 +260,7 @@ class InlineItemsBuilderTemplate {
 template <>
 CORE_EXPORT bool
 InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextReusing(
-    const NGInlineNodeData&,
+    const InlineNodeData&,
     LayoutText*);
 
 template <>

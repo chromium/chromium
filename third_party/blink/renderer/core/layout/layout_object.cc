@@ -1452,7 +1452,7 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
 
 // Mark this object needing to re-run |CollectInlines()|.
 //
-// The flag is propagated to its container so that NGInlineNode that contains
+// The flag is propagated to its container so that InlineNode that contains
 // |this| is marked too. When |this| is a container, the propagation stops at
 // |this|. When invalidating on inline blocks, floats, or OOF, caller need to
 // pay attention whether it should mark its inner context or outer.

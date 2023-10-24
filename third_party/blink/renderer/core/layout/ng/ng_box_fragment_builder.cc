@@ -65,7 +65,7 @@ void NGBoxFragmentBuilder::AddBreakBeforeChild(
   if (!has_inflow_child_break_inside_)
     has_inflow_child_break_inside_ = !child.IsFloatingOrOutOfFlowPositioned();
 
-  if (auto* child_inline_node = DynamicTo<NGInlineNode>(child)) {
+  if (auto* child_inline_node = DynamicTo<InlineNode>(child)) {
     if (!last_inline_break_token_) {
       // In some cases we may want to break before the first line in the
       // fragment. This happens if there's a tall float before the line, or, as

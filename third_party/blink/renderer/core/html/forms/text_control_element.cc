@@ -919,7 +919,7 @@ String TextControlElement::ValueWithHardLineBreaks() const {
     InlineCursor cursor(*layout_object);
     if (!cursor)
       return Value();
-    const auto* mapping = NGInlineNode::GetOffsetMapping(layout_object);
+    const auto* mapping = InlineNode::GetOffsetMapping(layout_object);
     if (!mapping)
       return Value();
     Position break_position = GetNextSoftBreak(*mapping, cursor);

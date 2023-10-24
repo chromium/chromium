@@ -24,7 +24,7 @@ namespace blink {
 
 // See https://svgwg.org/svg2-draft/text.html#TextLayoutAlgorithm
 
-SvgTextLayoutAlgorithm::SvgTextLayoutAlgorithm(NGInlineNode node,
+SvgTextLayoutAlgorithm::SvgTextLayoutAlgorithm(InlineNode node,
                                                WritingMode writing_mode)
     : inline_node_(node),
       // 1.5. Let "horizontal" be a flag, true if the writing mode of ‘text’

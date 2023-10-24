@@ -33,7 +33,7 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
   // produce more fragments.
   // Takes ownership of the state_stack.
   static NGInlineBreakToken* Create(
-      NGInlineNode node,
+      InlineNode node,
       const ComputedStyle* style,
       const InlineItemTextIndex& start,
       unsigned flags /* NGInlineBreakTokenFlags */,
@@ -44,7 +44,7 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
   // Wrapping it inside an inline break token makes it possible to resume and
   // place it correctly inside any inline ancestors.
   static NGInlineBreakToken* CreateForParallelBlockFlow(
-      NGInlineNode node,
+      InlineNode node,
       const InlineItemTextIndex& start,
       const NGBlockBreakToken& child_break_token);
 
@@ -81,7 +81,7 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
 
   using PassKey = base::PassKey<NGInlineBreakToken>;
   NGInlineBreakToken(PassKey,
-                     NGInlineNode node,
+                     InlineNode node,
                      const ComputedStyle*,
                      const InlineItemTextIndex& start,
                      unsigned flags /* NGInlineBreakTokenFlags */,

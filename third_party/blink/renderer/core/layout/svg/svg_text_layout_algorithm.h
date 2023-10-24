@@ -16,7 +16,7 @@ class SvgTextLayoutAlgorithm {
   STACK_ALLOCATED();
 
  public:
-  SvgTextLayoutAlgorithm(NGInlineNode node, WritingMode writing_mode);
+  SvgTextLayoutAlgorithm(InlineNode node, WritingMode writing_mode);
 
   // Apply SVG specific text layout algorithm to |items|.
   // Text items in |items| will be converted to kSVGText type.
@@ -46,7 +46,7 @@ class SvgTextLayoutAlgorithm {
                         wtf_size_t addressable_index) const;
   bool IsFirstCharacterInTextPath(wtf_size_t index) const;
 
-  NGInlineNode inline_node_;
+  InlineNode inline_node_;
 
   // This data member represents the number of addressable characters in the
   // target IFC. It's similar to "count" defined in the specification.

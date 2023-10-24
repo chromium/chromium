@@ -59,7 +59,7 @@ class NGLineBreakStrategy {
 
  public:
   NGLineBreakStrategy(NGInlineChildLayoutContext* context,
-                      const NGInlineNode& node,
+                      const InlineNode& node,
                       const ComputedStyle& block_style,
                       const NGInlineBreakToken* break_token,
                       const NGColumnSpannerPath* column_spanner_path) {
@@ -95,7 +95,7 @@ class NGLineBreakStrategy {
   }
 
   void Prepare(NGInlineChildLayoutContext* context,
-               const NGInlineNode& node,
+               const InlineNode& node,
                const NGConstraintSpace& space,
                base::span<const LayoutOpportunity> opportunities,
                const LineLayoutOpportunity& line_opportunity,
@@ -135,7 +135,7 @@ class NGLineBreakStrategy {
 
  private:
   void Balance(NGInlineChildLayoutContext* context,
-               const NGInlineNode& node,
+               const InlineNode& node,
                const NGConstraintSpace& space,
                const base::span<const LayoutOpportunity>& opportunities,
                const LineLayoutOpportunity& line_opportunity,
@@ -188,7 +188,7 @@ class NGLineBreakStrategy {
                         timer.Elapsed());
   }
 
-  void Optimize(const NGInlineNode& node,
+  void Optimize(const InlineNode& node,
                 const NGConstraintSpace& space,
                 const base::span<const LayoutOpportunity>& opportunities,
                 const NGLeadingFloats& leading_floats,
@@ -231,7 +231,7 @@ class NGLineBreakStrategy {
 }  // namespace
 
 NGInlineLayoutAlgorithm::NGInlineLayoutAlgorithm(
-    NGInlineNode inline_node,
+    InlineNode inline_node,
     const NGConstraintSpace& space,
     const NGInlineBreakToken* break_token,
     const NGColumnSpannerPath* column_spanner_path,

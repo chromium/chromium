@@ -17,7 +17,7 @@ namespace blink {
 
 namespace {
 
-LayoutUnit FragmentWidth(const NGInlineNode& node) {
+LayoutUnit FragmentWidth(const InlineNode& node) {
   const NGPhysicalBoxFragment* fragment =
       node.GetLayoutBox()->GetPhysicalFragment(0);
   return fragment->Size().width;
@@ -27,7 +27,7 @@ LayoutUnit FragmentWidth(const NGInlineNode& node) {
 
 class LineWidthsTest : public RenderingTest {
  public:
-  absl::optional<LineWidths> ComputeLineWidths(NGInlineNode node) {
+  absl::optional<LineWidths> ComputeLineWidths(InlineNode node) {
     const LayoutUnit width = FragmentWidth(node);
     NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
     const ComputedStyle& style = node.Style();
@@ -197,7 +197,7 @@ TEST_P(LineWidthsDataTest, Data) {
     %s
   )HTML",
                                   data.html));
-  const NGInlineNode target = GetInlineNodeByElementId("target");
+  const InlineNode target = GetInlineNodeByElementId("target");
   const absl::optional<LineWidths> line_widths = ComputeLineWidths(target);
   std::vector<int> actual_widths;
   if (line_widths) {

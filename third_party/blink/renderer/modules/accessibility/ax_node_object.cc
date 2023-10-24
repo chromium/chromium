@@ -4356,7 +4356,7 @@ int AXNodeObject::TextOffsetInFormattingContext(int offset) const {
   // If "formatting_context" is not a Layout NG object, the offset mappings will
   // be computed on demand and cached.
   const OffsetMapping* inline_offset_mapping =
-      NGInlineNode::GetOffsetMapping(formatting_context);
+      InlineNode::GetOffsetMapping(formatting_context);
   if (!inline_offset_mapping)
     return AXObject::TextOffsetInFormattingContext(offset);
 

@@ -78,12 +78,12 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   NOINLINE const NGLayoutResult* HandleNonsuccessfulLayoutResult(
       const NGLayoutResult*);
 
-  const NGLayoutResult* LayoutInlineChild(const NGInlineNode& child);
+  const NGLayoutResult* LayoutInlineChild(const InlineNode& child);
   NOINLINE const NGLayoutResult* LayoutWithSimpleInlineChildLayoutContext(
-      const NGInlineNode& child);
+      const InlineNode& child);
   template <wtf_size_t capacity>
   NOINLINE const NGLayoutResult* LayoutWithOptimalInlineChildLayoutContext(
-      const NGInlineNode& child);
+      const InlineNode& child);
 
   NOINLINE const NGLayoutResult* RelayoutIgnoringLineClamp();
 
@@ -160,7 +160,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   // |break_token_| to continue layout from the last reused fragment, and
   // returns |true|. Otherwise returns |false|.
   bool TryReuseFragmentsFromCache(
-      NGInlineNode child,
+      InlineNode child,
       NGPreviousInflowPosition*,
       const NGInlineBreakToken** inline_break_token_out);
 

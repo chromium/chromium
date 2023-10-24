@@ -8,7 +8,7 @@
 
 namespace blink {
 
-void NGInlineNodeData::Trace(Visitor* visitor) const {
+void InlineNodeData::Trace(Visitor* visitor) const {
   visitor->Trace(first_line_items_);
   visitor->Trace(svg_node_data_);
   InlineItemsData::Trace(visitor);

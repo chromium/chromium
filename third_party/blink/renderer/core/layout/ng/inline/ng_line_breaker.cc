@@ -365,7 +365,7 @@ void LineBreaker::UpdateAvailableWidth() {
   available_width_ = available_width;
 }
 
-LineBreaker::LineBreaker(NGInlineNode node,
+LineBreaker::LineBreaker(InlineNode node,
                          LineBreakerMode mode,
                          const NGConstraintSpace& space,
                          const LineLayoutOpportunity& line_opportunity,
@@ -390,7 +390,7 @@ LineBreaker::LineBreaker(NGInlineNode node,
       text_content_(
           !sticky_images_quirk_
               ? items_data_.text_content
-              : NGInlineNode::TextContentForStickyImagesQuirk(items_data_)),
+              : InlineNode::TextContentForStickyImagesQuirk(items_data_)),
       constraint_space_(space),
       exclusion_space_(exclusion_space),
       break_token_(break_token),
@@ -963,14 +963,14 @@ bool LineBreaker::CanBreakAfterAtomicInline(const InlineItem& item) const {
 
   // Populate |text_content| with |item| and text content after |item|.
   StringBuilder text_content;
-  NGInlineNode(text_combine).PrepareLayoutIfNeeded();
+  InlineNode(text_combine).PrepareLayoutIfNeeded();
   text_content.Append(text_combine->GetTextContent());
   const auto text_combine_end_offset = text_content.length();
   auto* const atomic_inline_item = TryGetAtomicInlineItemAfter(item);
   if (auto* next_text_combine = MayBeTextCombine(atomic_inline_item)) {
     // Note: In |LineBreakerMode::k{Min,Max}Content|, we've not laid
     // out atomic line box yet.
-    NGInlineNode(next_text_combine).PrepareLayoutIfNeeded();
+    InlineNode(next_text_combine).PrepareLayoutIfNeeded();
     text_content.Append(next_text_combine->GetTextContent());
   } else {
     text_content.Append(StringView(Text(), item.EndOffset(),
@@ -1030,7 +1030,7 @@ bool LineBreaker::CanBreakAfter(const InlineItem& item) const {
   const auto item_end_offset = text_content.length();
   // Note: In |LineBreakerMode::k{Min,Max}Content|, we've not laid out
   // atomic line box yet.
-  NGInlineNode(text_combine).PrepareLayoutIfNeeded();
+  InlineNode(text_combine).PrepareLayoutIfNeeded();
   text_content.Append(text_combine->GetTextContent());
 
   DCHECK_EQ(Text(), break_iterator_.GetString());

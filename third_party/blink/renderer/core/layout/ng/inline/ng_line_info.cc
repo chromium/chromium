@@ -55,7 +55,7 @@ void LineInfo::Reset() {
   allow_hang_for_alignment_ = false;
 }
 
-void LineInfo::SetLineStyle(const NGInlineNode& node,
+void LineInfo::SetLineStyle(const InlineNode& node,
                             const InlineItemsData& items_data,
                             bool use_first_line_style) {
   use_first_line_style_ = use_first_line_style;

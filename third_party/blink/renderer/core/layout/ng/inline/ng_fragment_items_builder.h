@@ -16,7 +16,7 @@ namespace blink {
 
 class FragmentItem;
 class FragmentItems;
-class NGInlineNode;
+class InlineNode;
 
 // This class builds |FragmentItems|.
 //
@@ -26,7 +26,7 @@ class CORE_EXPORT FragmentItemsBuilder {
 
  public:
   explicit FragmentItemsBuilder(WritingDirectionMode writing_direction);
-  FragmentItemsBuilder(const NGInlineNode& node,
+  FragmentItemsBuilder(const InlineNode& node,
                        WritingDirectionMode writing_direction,
                        bool is_block_fragmented);
   ~FragmentItemsBuilder();
@@ -168,7 +168,7 @@ class CORE_EXPORT FragmentItemsBuilder {
   NGLogicalLineItems* const line_items_pool_ =
       MakeGarbageCollected<NGLogicalLineItems>();
 
-  NGInlineNode node_;
+  InlineNode node_;
 
   WritingDirectionMode writing_direction_;
 

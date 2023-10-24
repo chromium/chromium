@@ -175,7 +175,7 @@ TEST_F(NGInlineLayoutAlgorithmTest, BreakToken) {
   // Perform 1st Layout.
   auto* block_flow =
       To<LayoutBlockFlow>(GetLayoutObjectByElementId("container"));
-  NGInlineNode inline_node(block_flow);
+  InlineNode inline_node(block_flow);
   LogicalSize size(LayoutUnit(50), LayoutUnit(20));
 
   NGConstraintSpaceBuilder builder(
@@ -359,7 +359,7 @@ TEST_F(NGInlineLayoutAlgorithmTest, InlineBoxBorderPadding) {
 
 // A block with inline children generates fragment tree as follows:
 // - A box fragment created by NGBlockNode
-//   - A wrapper box fragment created by NGInlineNode
+//   - A wrapper box fragment created by InlineNode
 //     - Line box fragments.
 // This test verifies that borders/paddings are applied to the wrapper box.
 TEST_F(NGInlineLayoutAlgorithmTest, ContainerBorderPadding) {

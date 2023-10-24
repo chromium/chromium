@@ -843,7 +843,7 @@ void LayoutText::SetTextWithOffset(String text, unsigned offset, unsigned len) {
     return;
   }
 
-  if (NGInlineNode::SetTextWithOffset(this, text, offset, len)) {
+  if (InlineNode::SetTextWithOffset(this, text, offset, len)) {
     DCHECK(!NeedsCollectInlines());
     // Prevent |TextDidChange()| to propagate |NeedsCollectInlines|
     SetNeedsCollectInlines(true);

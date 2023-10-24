@@ -522,7 +522,7 @@ void LayoutBlockFlow::MakeChildrenNonInline(LayoutObject* insertion_point) {
   DCHECK(!insertion_point || insertion_point->Parent() == this);
 
   SetChildrenInline(false);
-  ClearNGInlineNodeData();
+  ClearInlineNodeData();
 
   LayoutObject* child = FirstChild();
   if (!child)

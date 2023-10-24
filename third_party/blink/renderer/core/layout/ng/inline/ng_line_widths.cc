@@ -10,7 +10,7 @@
 
 namespace blink {
 
-bool LineWidths::Set(const NGInlineNode& node,
+bool LineWidths::Set(const InlineNode& node,
                      base::span<const LayoutOpportunity> opportunities,
                      const NGInlineBreakToken* break_token) {
   // Set the default width if no exclusions.

@@ -42,7 +42,7 @@ class InlineTextAutoSpaceTest : public RenderingTest,
                                       String container_css = String()) {
     const LayoutBlockFlow* container =
         PreparePageLayoutBlock(html, container_css);
-    NGInlineNodeData* node_data = container->GetNGInlineNodeData();
+    InlineNodeData* node_data = container->GetInlineNodeData();
     Vector<wtf_size_t> offsets;
     InlineTextAutoSpace auto_space(*node_data);
     auto_space.ApplyIfNeeded(*node_data, &offsets);
@@ -75,8 +75,8 @@ TEST_F(InlineTextAutoSpaceTest, InsertSpacing) {
   LoadAhem();
   String test_string = u"AAAあああa";
   LayoutBlockFlow* container = PreparePageLayoutBlock(test_string);
-  NGInlineNode inline_node{container};
-  NGInlineNodeData* node_data = container->GetNGInlineNodeData();
+  InlineNode inline_node{container};
+  InlineNodeData* node_data = container->GetInlineNodeData();
   inline_node.PrepareLayoutIfNeeded();
 
   Vector<CharacterRange> final_ranges;

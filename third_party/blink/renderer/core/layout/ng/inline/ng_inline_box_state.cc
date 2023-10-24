@@ -204,7 +204,7 @@ bool NGInlineBoxState::CanAddTextOfStyle(
 }
 
 NGInlineBoxState* NGInlineLayoutStateStack::OnBeginPlaceItems(
-    const NGInlineNode node,
+    const InlineNode node,
     const ComputedStyle& line_style,
     FontBaseline baseline_type,
     bool line_height_quirk,

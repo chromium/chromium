@@ -457,8 +457,7 @@ bool HasRenderedNonAnonymousDescendantsWithHeight(
     // Note: tests[1][2] require this.
     // [1] editing/style/underline.html
     // [2] editing/inserting/return-with-object-element.html
-    if (const NGInlineNodeData* inline_data =
-            block_flow->GetNGInlineNodeData()) {
+    if (const InlineNodeData* inline_data = block_flow->GetInlineNodeData()) {
       if (inline_data->ItemsData(false).text_content.empty() &&
           block_flow->HasLineIfEmpty()) {
         return false;

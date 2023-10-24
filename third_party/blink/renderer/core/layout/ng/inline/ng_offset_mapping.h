@@ -250,7 +250,7 @@ class CORE_EXPORT OffsetMapping final : public GarbageCollected<OffsetMapping> {
   RangeMap ranges_;
 
   // The text content string of the inline formatting context. Same string as
-  // |NGInlineNodeData::text_content_|.
+  // |InlineNodeData::text_content_|.
   String text_;
 };
 

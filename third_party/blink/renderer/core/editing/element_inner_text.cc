@@ -209,7 +209,7 @@ const OffsetMapping* ElementInnerTextCollector::GetOffsetMapping(
   LayoutBlockFlow* const block_flow =
       OffsetMapping::GetInlineFormattingContextOf(layout_text);
   DCHECK(block_flow) << layout_text;
-  return NGInlineNode::GetOffsetMapping(block_flow);
+  return InlineNode::GetOffsetMapping(block_flow);
 }
 
 void ElementInnerTextCollector::ProcessChildren(const Node& container) {

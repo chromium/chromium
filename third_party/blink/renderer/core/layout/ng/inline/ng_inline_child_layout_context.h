@@ -77,10 +77,10 @@ class CORE_EXPORT NGInlineChildLayoutContext {
   }
 
  protected:
-  NGInlineChildLayoutContext(const NGInlineNode& node,
+  NGInlineChildLayoutContext(const InlineNode& node,
                              NGBoxFragmentBuilder* container_builder,
                              LineInfo* line_info);
-  NGInlineChildLayoutContext(const NGInlineNode& node,
+  NGInlineChildLayoutContext(const InlineNode& node,
                              NGBoxFragmentBuilder* container_builder,
                              ScoreLineBreakContext* score_line_break_context);
 
@@ -110,7 +110,7 @@ class CORE_EXPORT NGInlineChildLayoutContext {
 class CORE_EXPORT NGSimpleInlineChildLayoutContext
     : public NGInlineChildLayoutContext {
  public:
-  NGSimpleInlineChildLayoutContext(const NGInlineNode& node,
+  NGSimpleInlineChildLayoutContext(const InlineNode& node,
                                    NGBoxFragmentBuilder* container_builder)
       : NGInlineChildLayoutContext(node,
                                    container_builder,
@@ -126,7 +126,7 @@ template <wtf_size_t max_lines>
 class CORE_EXPORT NGOptimalInlineChildLayoutContext
     : public NGInlineChildLayoutContext {
  public:
-  NGOptimalInlineChildLayoutContext(const NGInlineNode& node,
+  NGOptimalInlineChildLayoutContext(const InlineNode& node,
                                     NGBoxFragmentBuilder* container_builder)
       : NGInlineChildLayoutContext(node,
                                    container_builder,
