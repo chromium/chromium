@@ -124,7 +124,6 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   void EnsureViewVisible(const GridIndex& index) override;
   absl::optional<VisibleItemIndexRange> GetVisibleItemIndexRange()
       const override;
-  base::ScopedClosureRunner LockAppsGridOpacity() override;
   bool ShouldContainerHandleDragEvents() override;
 
   // PaginationModelObserver:
@@ -348,9 +347,6 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   int margin_for_gradient_mask_ = 0;
 
   void StackCardsAtBottom() override;
-
-  // If true, ignore the calls on `UpdateOpacity()`.
-  bool lock_opacity_ = false;
 
   // Whether the apps grid is currently animating  the cardified state.
   bool is_animating_cardified_state_ = false;

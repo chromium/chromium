@@ -3664,13 +3664,6 @@ void AppsGridView::OnFadeOutAnimationEnded(ReorderAnimationCallback callback,
   // their final positions instantly.
   base::AutoReset auto_reset(&enable_item_move_animation_, false);
 
-  // Prevent the opacity from changing before starting the fade in animation.
-  // It is necessary because `PagedAppsGridView::UpdateOpacity()` updates
-  // the apps grid opacity based on the app list state.
-  // TODO(https://crbug.com/1289380): remove this line when a better solution
-  // is came up with.
-  base::ScopedClosureRunner runner = LockAppsGridOpacity();
-
   callback.Run(aborted);
 
   if (fade_out_done_closure_for_test_)

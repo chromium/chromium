@@ -486,10 +486,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   virtual absl::optional<VisibleItemIndexRange> GetVisibleItemIndexRange()
       const = 0;
 
-  // Disables any change on the apps grid's opacity. Returns an scoped runner
-  // that carries a closure to re-enable opacity updates.
-  [[nodiscard]] virtual base::ScopedClosureRunner LockAppsGridOpacity() = 0;
-
   // Makes sure that the background cards render behind everything
   // else in the items container.
   virtual void StackCardsAtBottom() {}
