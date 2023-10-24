@@ -622,6 +622,7 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterTimePref(kLastInteractionTimeForGoodVisits, base::Time());
   registry->RegisterDoublePref(kLongDiscoverFeedVisitTimeAggregateKey, 0.0);
   registry->RegisterDoublePref(kLongFollowingFeedVisitTimeAggregateKey, 0.0);
+  registry->RegisterDoublePref(kLongFeedVisitTimeAggregateKey, 0.0);
 
   registry->RegisterBooleanPref(kSyncRequested, false);
 }
@@ -795,6 +796,10 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
   // Added 10/2023.
   MigrateDoublePreferenceFromUserDefaults(
       kLongFollowingFeedVisitTimeAggregateKey, prefs, defaults);
+
+  // Added 10/2023.
+  MigrateDoublePreferenceFromUserDefaults(kLongFeedVisitTimeAggregateKey, prefs,
+                                          defaults);
 }
 
 void MigrateObsoleteUserDefault(void) {

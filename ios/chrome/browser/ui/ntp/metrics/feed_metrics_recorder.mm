@@ -217,7 +217,7 @@ using feed::FeedUserActionType;
     [self recordTimeSpentInFeedIfDayIsDone];
 
     self.previousTimeInFeedForGoodVisitSession =
-        [defaults doubleForKey:kLongFeedVisitTimeAggregateKey];
+        self.prefService->GetDouble(kLongFeedVisitTimeAggregateKey);
     self.discoverPreviousTimeInFeedGV =
         self.prefService->GetDouble(kLongDiscoverFeedVisitTimeAggregateKey);
     self.followingPreviousTimeInFeedGV =
@@ -246,8 +246,8 @@ using feed::FeedUserActionType;
     }
   } else {
     // Once the NTP becomes hidden, check for Good Visit which updates
-    // `self.previousTimeInFeedForGoodVisitSession` and then we save it to
-    // defaults.
+    // `self.previousTimeInFeedForGoodVisitSession` and then we save it in
+    // PrefService.
 
     // Also calculate total aggregate for the time in feed aggregate metric.
     self.timeSpentInFeed = base::Time::Now() - self.feedBecameVisibleTime;
@@ -255,8 +255,8 @@ using feed::FeedUserActionType;
     [self checkEngagementGoodVisitWithInteraction:NO];
     self.prefService->SetDouble(kTimeSpentInFeedAggregateKey,
                                 self.timeSpentInFeed.InSecondsF());
-    [defaults setDouble:self.previousTimeInFeedForGoodVisitSession
-                 forKey:kLongFeedVisitTimeAggregateKey];
+    self.prefService->SetDouble(kLongFeedVisitTimeAggregateKey,
+                                self.previousTimeInFeedForGoodVisitSession);
     self.prefService->SetDouble(kLongDiscoverFeedVisitTimeAggregateKey,
                                 self.discoverPreviousTimeInFeedGV);
     self.prefService->SetDouble(kLongFollowingFeedVisitTimeAggregateKey,
@@ -1313,8 +1313,7 @@ using feed::FeedUserActionType;
   // Reset defaults for new session.
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   [defaults setObject:nil forKey:kArticleVisitTimestampKey];
-  [defaults setDouble:0 forKey:kLongFeedVisitTimeAggregateKey];
-
+  self.prefService->ClearPref(kLongFeedVisitTimeAggregateKey);
   base::Time now = base::Time::Now();
 
   self.lastInteractionTimeForGoodVisits = now;
