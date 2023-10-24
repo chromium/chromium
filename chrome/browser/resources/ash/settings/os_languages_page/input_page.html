@@ -313,13 +313,13 @@
     <h2>$i18n{suggestionsTitle}</h2>
     <div class="subsection">
       <template is="dom-if" if="[[allowOrca_]]">
-        <!-- TODO(b/304894074): add the learn-more-url. -->
         <settings-toggle-button id="orcaToggle"
             pref="{{prefs.assistive_input.orca_enabled}}"
             label="$i18n{orcaTitle}"
             sub-label="$i18n{orcaDescription}"
             aria-label="$i18n{orcaTitle}"
-            deep-link-focus-id$="[[Setting.kShowOrca]]">
+            deep-link-focus-id$="[[Setting.kShowOrca]]"
+            learn-more-url="$i18n{orcaLearnMoreUrl}">
         </settings-toggle-button>
       </template>
 

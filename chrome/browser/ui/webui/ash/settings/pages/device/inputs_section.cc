@@ -340,6 +340,8 @@ void AddSuggestionsLoadTimeData(content::WebUIDataSource* html_source,
       {"emojiSuggestionDescription",
        IDS_SETTINGS_SUGGESTIONS_EMOJI_SUGGESTION_DESCRIPTION}};
   html_source->AddLocalizedStrings(kLocalizedStrings);
+  html_source->AddString("orcaLearnMoreUrl",
+                         chrome::kOrcaSuggestionLearnMoreURL);
 
   html_source->AddBoolean("allowEmojiSuggestion", is_emoji_suggestion_allowed);
   html_source->AddBoolean(

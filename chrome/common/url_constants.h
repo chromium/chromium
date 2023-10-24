@@ -670,6 +670,9 @@ inline constexpr char kHapticFeedbackHelpURL[] =
 // The URL path to offline OEM EULA.
 inline constexpr char kOemEulaURLPath[] = "oem";
 
+inline constexpr char kOrcaSuggestionLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=copyeditor";
+
 // Help URL for the OS settings page's search feature.
 inline constexpr char kOsSettingsSearchHelpURL[] =
     "https://support.google.com/chromebook?p=settings_search_help";
