@@ -1554,6 +1554,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Missive.StorageQueueParsingFailure" enum="Boolean"
+    expires_after="2024-09-30">
+  <owner>lbaraz@google.com</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    Logging 'true' whenever `StorageQueue::Write` cannot parse a wrapper record
+    back after serializing it.
+  </summary>
+</histogram>
+
 <histogram name="Platform.Missive.StorageUsage" units="MiB"
     expires_after="2024-03-17">
   <owner>xuhong@chromium.org</owner>
