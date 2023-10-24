@@ -308,6 +308,9 @@ void LacrosExtensionAppsController::FinallyLaunch(
     crosapi::mojom::LaunchParamsPtr launch_params,
     LaunchCallback callback,
     crosapi::mojom::LaunchResultPtr result) {
+  // instance_id is required as defined in mojom for app service.
+  result->instance_id = base::UnguessableToken::Create();
+
   Profile* profile = nullptr;
   const extensions::Extension* extension = nullptr;
   bool success = lacros_extensions_util::GetProfileAndExtension(
@@ -326,7 +329,6 @@ void LacrosExtensionAppsController::FinallyLaunch(
 
     // TODO(https://crbug.com/1225848): Store the resulting instance token,
     // which will be used to close the instance at a later point in time.
-    result->instance_id = base::UnguessableToken::Create();
     result->state = crosapi::mojom::LaunchResultState::kSuccess;
     std::move(callback).Run(std::move(result));
     return;
