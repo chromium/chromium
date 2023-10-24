@@ -5,12 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_PASSWORDS_IOS_CHROME_PASSWORD_CHECK_MANAGER_H_
 #define IOS_CHROME_BROWSER_PASSWORDS_IOS_CHROME_PASSWORD_CHECK_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "components/password_manager/core/browser/affiliation/affiliation_service.h"
 #include "components/password_manager/core/browser/ui/bulk_leak_check_service_adapter.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
@@ -21,6 +23,7 @@ class IOSChromePasswordCheckManager;
 namespace {
 class IOSChromePasswordCheckManagerProxy;
 }
+class PrefService;
 
 // Enum which represents possible states of Password Check on UI.
 // It's created based on BulkLeakCheckService::State.
@@ -84,7 +87,13 @@ class IOSChromePasswordCheckManager
   friend class base::RefCounted<IOSChromePasswordCheckManager>;
   friend class IOSChromePasswordCheckManagerProxy;
 
-  explicit IOSChromePasswordCheckManager(ChromeBrowserState* browser_state);
+  explicit IOSChromePasswordCheckManager(
+      scoped_refptr<password_manager::PasswordStoreInterface> profile_store,
+      scoped_refptr<password_manager::PasswordStoreInterface> account_store,
+      password_manager::AffiliationService* affiliation_service,
+      password_manager::BulkLeakCheckServiceInterface* bulk_leak_check_service,
+      PrefService* user_prefs);
+
   ~IOSChromePasswordCheckManager() override;
 
   // password_manager::SavedPasswordsPresenter::Observer:
@@ -110,8 +119,6 @@ class IOSChromePasswordCheckManager
 
   // Remembers whether a password check is running right now.
   bool is_check_running_ = false;
-
-  ChromeBrowserState* browser_state_ = nullptr;
 
   // Handles to the password stores, powering both `saved_passwords_presenter_`
   // and `insecure_credentials_manager_`.
@@ -143,6 +150,9 @@ class IOSChromePasswordCheckManager
 
   // Store when the last weak or reuse check was completed.
   absl::optional<base::Time> last_completed_weak_or_reuse_check_;
+
+  // Pref service.
+  const raw_ptr<PrefService> user_prefs_;
 
   // A scoped observer for `saved_passwords_presenter_`.
   base::ScopedObservation<password_manager::SavedPasswordsPresenter,
