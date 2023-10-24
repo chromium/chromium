@@ -368,7 +368,6 @@ void WebAppCommandScheduler::InstallIsolatedWebApp(
           url_info, location, expected_version,
           IsolatedWebAppInstallCommandHelper::CreateIsolatedWebAppWebContents(
               *profile_),
-          provider_->web_contents_manager().CreateUrlLoader(),
           std::move(optional_keep_alive),
           std::move(optional_profile_keep_alive), std::move(callback),
           std::make_unique<IsolatedWebAppInstallCommandHelper>(
