@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.bookmarks;
 
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
+import android.util.Pair;
 import android.view.View;
 
 import androidx.annotation.IntDef;
@@ -76,18 +77,48 @@ public class ImprovedBookmarkRowProperties {
 
     public static final WritableObjectPropertyKey<ShoppingAccessoryCoordinator>
             SHOPPING_ACCESSORY_COORDINATOR = new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<ImprovedBookmarkFolderViewCoordinator>
-            FOLDER_COORDINATOR = new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<String> CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
 
-    private static final PropertyKey[] IMPROVED_BOOKMARK_ROW_PROPERTIES = {TITLE, DESCRIPTION,
-            DESCRIPTION_VISIBLE, START_IMAGE_VISIBILITY, START_AREA_BACKGROUND_COLOR,
-            START_ICON_TINT, START_ICON_DRAWABLE, ACCESSORY_VIEW, LIST_MENU_BUTTON_DELEGATE,
-            POPUP_LISTENER, SELECTED, SELECTION_ACTIVE, DRAG_ENABLED, EDITABLE, ROW_CLICK_LISTENER,
-            ROW_LONG_CLICK_LISTENER, SHOPPING_ACCESSORY_COORDINATOR, FOLDER_COORDINATOR,
-            END_IMAGE_VISIBILITY, END_IMAGE_RES, CONTENT_DESCRIPTION};
+    // Folder-specific properties.
+    public static final WritableIntPropertyKey FOLDER_START_AREA_BACKGROUND_COLOR =
+            new WritableIntPropertyKey();
+    public static final WritableObjectPropertyKey<ColorStateList> FOLDER_START_ICON_TINT =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Drawable> FOLDER_START_ICON_DRAWABLE =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<LazyOneshotSupplier<Pair<Drawable, Drawable>>>
+            FOLDER_START_IMAGE_FOLDER_DRAWABLES = new WritableObjectPropertyKey<>();
+    public static final WritableIntPropertyKey FOLDER_CHILD_COUNT = new WritableIntPropertyKey();
+
+    private static final PropertyKey[] IMPROVED_BOOKMARK_ROW_PROPERTIES = {
+        TITLE,
+        DESCRIPTION,
+        DESCRIPTION_VISIBLE,
+        START_IMAGE_VISIBILITY,
+        START_AREA_BACKGROUND_COLOR,
+        START_ICON_TINT,
+        START_ICON_DRAWABLE,
+        ACCESSORY_VIEW,
+        LIST_MENU_BUTTON_DELEGATE,
+        POPUP_LISTENER,
+        SELECTED,
+        SELECTION_ACTIVE,
+        DRAG_ENABLED,
+        EDITABLE,
+        ROW_CLICK_LISTENER,
+        ROW_LONG_CLICK_LISTENER,
+        SHOPPING_ACCESSORY_COORDINATOR,
+        END_IMAGE_VISIBILITY,
+        END_IMAGE_RES,
+        CONTENT_DESCRIPTION,
+        FOLDER_START_AREA_BACKGROUND_COLOR,
+        FOLDER_START_ICON_TINT,
+        FOLDER_START_ICON_DRAWABLE,
+        FOLDER_START_IMAGE_FOLDER_DRAWABLES,
+        FOLDER_CHILD_COUNT
+    };
     public static final PropertyKey[] ALL_KEYS = PropertyModel.concatKeys(
             BookmarkManagerProperties.ALL_KEYS, IMPROVED_BOOKMARK_ROW_PROPERTIES);
 }

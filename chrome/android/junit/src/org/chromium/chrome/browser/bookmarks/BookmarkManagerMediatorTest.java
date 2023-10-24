@@ -1053,6 +1053,8 @@ public class BookmarkManagerMediatorTest {
         ListItem item = mModelList.get(1);
         assertEquals(ViewType.IMPROVED_BOOKMARK_VISUAL, item.type);
 
+        assertTrue(BookmarkUtils.shouldShowImagesForFolder(mBookmarkModel, mFolderItem2.getId()));
+
         PropertyModel model = item.model;
         assertNotNull(model);
         assertEquals(
@@ -1064,15 +1066,13 @@ public class BookmarkManagerMediatorTest {
         assertEquals(
                 ImageVisibility.FOLDER_DRAWABLE,
                 model.get(ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY));
-        assertNotNull(model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE));
-        assertNotNull(model.get(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR));
-        assertNotNull(model.get(ImprovedBookmarkRowProperties.START_ICON_TINT));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.POPUP_LISTENER));
         assertEquals(false, model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
         assertEquals(false, model.get(ImprovedBookmarkRowProperties.DRAG_ENABLED));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE));
         assertEquals(true, model.get(ImprovedBookmarkRowProperties.EDITABLE));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER));
+        assertNotNull(model.get(ImprovedBookmarkRowProperties.FOLDER_START_IMAGE_FOLDER_DRAWABLES));
     }
 
     @Test
@@ -1304,14 +1304,8 @@ public class BookmarkManagerMediatorTest {
         mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.VISUAL);
 
         assertEquals(3, mModelList.size());
-        PropertyModel coordinatorModel =
-                mModelList
-                        .get(1)
-                        .model
-                        .get(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR)
-                        .getModelForTesting();
         assertEquals(
-                1, coordinatorModel.get(ImprovedBookmarkFolderViewProperties.FOLDER_CHILD_COUNT));
+                1, mModelList.get(1).model.get(ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT));
 
         doReturn(0).when(mBookmarkModel).getTotalBookmarkCount(mFolderId2);
         verify(mBookmarkModel).addObserver(mBookmarkModelObserverArgumentCaptor.capture());
@@ -1319,14 +1313,8 @@ public class BookmarkManagerMediatorTest {
                 .getValue()
                 .bookmarkNodeRemoved(mFolderItem2, 0, mBookmarkItem21, false);
 
-        coordinatorModel =
-                mModelList
-                        .get(1)
-                        .model
-                        .get(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR)
-                        .getModelForTesting();
         assertEquals(
-                0, coordinatorModel.get(ImprovedBookmarkFolderViewProperties.FOLDER_CHILD_COUNT));
+                0, mModelList.get(1).model.get(ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT));
     }
 
     @Test

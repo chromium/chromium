@@ -215,10 +215,6 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
         updateView();
     }
 
-    void setFolderCoordinator(ImprovedBookmarkFolderViewCoordinator folderCoordinator) {
-        folderCoordinator.setView(mFolderIconView);
-    }
-
     void setRowClickListener(View.OnClickListener listener) {
         setOnClickListener(listener);
     }
