@@ -4512,6 +4512,7 @@ class EventRewriterAshTest : public ChromeAshTestBase {
 
   void SetUp() override {
     ChromeAshTestBase::SetUp();
+
     input_device_settings_controller_resetter_ = std::make_unique<
         InputDeviceSettingsController::ScopedResetterForTest>();
     input_device_settings_controller_mock_ =
@@ -4538,6 +4539,10 @@ class EventRewriterAshTest : public ChromeAshTestBase {
     rewriter_.reset();
     ChromeAshTestBase::TearDown();
   }
+
+  ui::EventRewriterAsh* rewriter() { return rewriter_.get(); }
+
+  EventRewriterDelegateImpl* delegate() { return delegate_.get(); }
 
  protected:
   raw_ptr<StickyKeysController, DanglingUntriaged | ExperimentalAsh>
@@ -5370,119 +5375,36 @@ TEST_F(StickyKeysOverlayTest, ModifierVisibility) {
   EXPECT_FALSE(overlay_->GetModifierVisible(ui::EF_MOD3_DOWN));
 }
 
-class ExtensionRewriterInputTest : public EventRewriterAshTest,
-                                   public ui::EventRewriterAsh::Delegate {
+class ExtensionRewriterInputTest : public EventRewriterAshTest {
  public:
   ExtensionRewriterInputTest() = default;
   ExtensionRewriterInputTest(const ExtensionRewriterInputTest&) = delete;
   ExtensionRewriterInputTest& operator=(const ExtensionRewriterInputTest&) =
       delete;
-  ~ExtensionRewriterInputTest() override {}
+  ~ExtensionRewriterInputTest() override = default;
 
-  void SetUp() override {
-    EventRewriterAshTest::SetUp();
-    event_rewriter_ash_ = std::make_unique<ui::EventRewriterAsh>(
-        this, Shell::Get()->keyboard_capability(), nullptr, false,
-        &fake_ime_keyboard_);
+  void SetModifierRemapping(ui::mojom::ModifierKey remap_from,
+                            ui::mojom::ModifierKey remap_to) {
+    keyboard_settings->modifier_remappings[remap_from] = remap_to;
   }
 
-  void SetModifierRemapping(const std::string& pref_name,
-                            ui::mojom::ModifierKey value) {
-    modifier_remapping_[pref_name] = value;
-  }
-
-  void RegisterExtensionShortcut(ui::KeyboardCode key_code, int flags) {
-    constexpr int kModifierMasks = ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN |
-                                   ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN;
-    // No other masks should be present aside from the ones speicifed in
-    // kModifierMasks.
-    DCHECK((flags & kModifierMasks) == flags);
-    registered_extension_shortcuts_.emplace(key_code, flags);
+  void SetExtensionCommands(
+      base::flat_set<std::pair<ui::KeyboardCode, int>> commands) {
+    delegate()->SetExtensionCommandsOverrideForTesting(std::move(commands));
   }
 
   void RemoveAllExtensionShortcuts() {
-    registered_extension_shortcuts_.clear();
+    delegate()->SetExtensionCommandsOverrideForTesting(absl::nullopt);
   }
 
   void ExpectEventRewrittenTo(const KeyTestCase& test) {
-    CheckKeyTestCase(event_rewriter_ash_.get(), test);
+    CheckKeyTestCase(rewriter(), test);
   }
-
- protected:
-  sync_preferences::TestingPrefServiceSyncable prefs_;
-  input_method::FakeImeKeyboard fake_ime_keyboard_;
-  std::unique_ptr<ui::EventRewriterAsh> event_rewriter_ash_;
-
- private:
-  // ui::EventRewriterAsh::Delegate:
-  bool RewriteModifierKeys() override { return true; }
-  bool RewriteMetaTopRowKeyComboEvents(int device_id) const override {
-    return true;
-  }
-
-  absl::optional<ui::mojom::ModifierKey> GetKeyboardRemappedModifierValue(
-      int device_id,
-      ui::mojom::ModifierKey modifier_key,
-      const std::string& pref_name) const override {
-    auto it = modifier_remapping_.find(pref_name);
-    if (it == modifier_remapping_.end()) {
-      return absl::nullopt;
-    }
-    return it->second;
-  }
-
-  bool TopRowKeysAreFunctionKeys(int device_id) const override { return false; }
-
-  bool IsExtensionCommandRegistered(ui::KeyboardCode key_code,
-                                    int flags) const override {
-    return base::Contains(registered_extension_shortcuts_,
-                          ui::Accelerator(key_code, flags));
-  }
-
-  bool IsSearchKeyAcceleratorReserved() const override { return false; }
-  bool NotifyDeprecatedRightClickRewrite() override { return false; }
-  bool NotifyDeprecatedSixPackKeyRewrite(ui::KeyboardCode key_code) override {
-    return false;
-  }
-  void SuppressModifierKeyRewrites(bool should_suppress) override {}
-  void SuppressMetaTopRowKeyComboRewrites(bool should_suppress) override {}
-  void RecordEventRemappedToRightClick(bool alt_based_right_click) override {}
-  void RecordSixPackEventRewrite(ui::KeyboardCode key_code,
-                                 bool alt_based) override {}
-  absl::optional<ui::mojom::SimulateRightClickModifier>
-  GetRemapRightClickModifier(int device_id) override {
-    return absl::nullopt;
-  }
-
-  absl::optional<ui::mojom::SixPackShortcutModifier>
-  GetShortcutModifierForSixPackKey(int device_id,
-                                   ui::KeyboardCode key_code) override {
-    return absl::nullopt;
-  }
-
-  void NotifyRightClickRewriteBlockedBySetting(
-      ui::mojom::SimulateRightClickModifier blocked_modifier,
-      ui::mojom::SimulateRightClickModifier active_modifier) override {}
-
-  void NotifySixPackRewriteBlockedBySetting(
-      ui::KeyboardCode key_code,
-      ui::mojom::SixPackShortcutModifier blocked_modifier,
-      ui::mojom::SixPackShortcutModifier active_modifier,
-      int device_id) override {}
-
-  absl::optional<ui::mojom::ExtendedFkeysModifier> GetExtendedFkeySetting(
-      int device_id,
-      ui::KeyboardCode key_code) override {
-    return absl::nullopt;
-  }
-
-  std::map<std::string, ui::mojom::ModifierKey> modifier_remapping_;
-  base::flat_set<ui::Accelerator> registered_extension_shortcuts_;
 };
 
 TEST_F(ExtensionRewriterInputTest, RewrittenModifier) {
   // Register Control + B as an extension shortcut.
-  RegisterExtensionShortcut(ui::VKEY_B, ui::EF_CONTROL_DOWN);
+  SetExtensionCommands({{ui::VKEY_B, ui::EF_CONTROL_DOWN}});
 
   // Check that standard extension input has no rewritten modifiers.
   ExpectEventRewrittenTo({ui::ET_KEY_PRESSED,
@@ -5492,7 +5414,7 @@ TEST_F(ExtensionRewriterInputTest, RewrittenModifier) {
                            ui::DomKey::Constant<'b'>::Character}});
 
   // Remap Control -> Alt.
-  SetModifierRemapping(::prefs::kLanguageRemapControlKeyTo,
+  SetModifierRemapping(ui::mojom::ModifierKey::kControl,
                        ui::mojom::ModifierKey::kAlt);
   // Pressing Control + B should now be remapped to Alt + B.
   ExpectEventRewrittenTo({ui::ET_KEY_PRESSED,
@@ -5502,7 +5424,7 @@ TEST_F(ExtensionRewriterInputTest, RewrittenModifier) {
                            ui::DomKey::Constant<'b'>::Character}});
 
   // Remap Alt -> Control.
-  SetModifierRemapping(::prefs::kLanguageRemapAltKeyTo,
+  SetModifierRemapping(ui::mojom::ModifierKey::kAlt,
                        ui::mojom::ModifierKey::kControl);
   // Pressing Alt + B should now be remapped to Control + B.
   ExpectEventRewrittenTo({ui::ET_KEY_PRESSED,
@@ -5528,7 +5450,7 @@ TEST_F(ExtensionRewriterInputTest, RewrittenModifier) {
 
 TEST_F(ExtensionRewriterInputTest, RewriteNumpadExtensionCommand) {
   // Register Control + NUMPAD1 as an extension shortcut.
-  RegisterExtensionShortcut(ui::VKEY_NUMPAD1, ui::EF_CONTROL_DOWN);
+  SetExtensionCommands({{ui::VKEY_NUMPAD1, ui::EF_CONTROL_DOWN}});
   // Check that extension shortcuts that involve numpads keys are properly
   // rewritten. Note that VKEY_END is associated with NUMPAD1 if Num Lock is
   // disabled. The result should be "NumPad 1 with Control".
