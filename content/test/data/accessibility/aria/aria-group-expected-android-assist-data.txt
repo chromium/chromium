@@ -1,0 +1,6 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="div", role="group"]
+++++View textSize:16.00 style:0 bundle:[display="block", htmlTag="div", role="link"]
+++++++TextView text:"Group Link1" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++View textSize:16.00 style:0 bundle:[display="block", htmlTag="div", role="link"]
+++++++TextView text:"Group Link2" textSize:16.00 style:0 bundle:[display="", htmlTag=""]

@@ -1,0 +1,4 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View text:"Busy log" textSize:16.00 style:0 bundle:[aria-busy="true", aria-label="Busy log", display="block", htmlTag="div", role="log", tabindex="0"]
+++View text:"Not-busy log" textSize:16.00 style:0 bundle:[aria-busy="false", aria-label="Not-busy log", display="block", htmlTag="div", role="log", tabindex="1"]
+++View text:"plain div" textSize:16.00 style:0 bundle:[aria-busy="true", aria-description="plain div", display="block", htmlTag="div", name="plain div"]

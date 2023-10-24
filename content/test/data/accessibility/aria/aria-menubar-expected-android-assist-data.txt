@@ -1,0 +1,8 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="ul", role="menubar", style="list-style-type: none"]
+++++MenuItem textSize:16.00 style:0 bundle:[aria-controls="filemenu", display="list-item", htmlTag="li", role="menuitem"]
+++++++TextView text:"File" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++MenuItem textSize:16.00 style:0 bundle:[display="list-item", htmlTag="li", role="menuitem"]
+++++++TextView text:"Edit" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++MenuItem textSize:16.00 style:0 bundle:[display="list-item", htmlTag="li", role="menuitem"]
+++++++TextView text:"View" textSize:16.00 style:0 bundle:[display="", htmlTag=""]

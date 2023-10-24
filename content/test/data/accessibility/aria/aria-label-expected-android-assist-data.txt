@@ -1,0 +1,2 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++CheckBox text:"aria label" textSize:16.00 style:0 bundle:[aria-label="aria label", display="block", htmlTag="div", role="checkbox"]

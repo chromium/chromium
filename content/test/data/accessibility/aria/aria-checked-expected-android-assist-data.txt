@@ -1,0 +1,4 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++CheckBox textSize:16.00 style:0 bundle:[aria-checked="true", display="block", htmlTag="div", role="checkbox", tabindex="0"]
+++CheckBox textSize:16.00 style:0 bundle:[aria-checked="false", display="block", htmlTag="div", role="checkbox", tabindex="1"]
+++CheckBox textSize:16.00 style:0 bundle:[aria-checked="mixed", display="block", htmlTag="div", role="checkbox", tabindex="2"]

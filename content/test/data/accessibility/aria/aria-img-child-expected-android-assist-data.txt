@@ -1,0 +1,4 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++Image text:"Img.jpg" textSize:16.00 style:0 bundle:[display="block", htmlTag="div", role="img"]
+++++View textSize:16.00 style:0 bundle:[display="inline", htmlTag="span", id="span-in-img"]
+++++++TextView text:"Img.jpg" textSize:16.00 style:0 bundle:[display="", htmlTag=""]

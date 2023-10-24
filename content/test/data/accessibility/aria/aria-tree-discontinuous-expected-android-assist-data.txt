@@ -1,0 +1,7 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="div", role="tree"]
+++++View textSize:16.00 style:0 bundle:[display="block", htmlTag="div", role="treeitem", tabindex="0"]
+++++++TextView text:"card content" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++View textSize:16.00 style:0 bundle:[aria-hidden="false", display="block", htmlTag="div"]
+++++View textSize:16.00 style:0 bundle:[display="block", htmlTag="div", role="treeitem", tabindex="0"]
+++++++TextView text:"card content" textSize:16.00 style:0 bundle:[display="", htmlTag=""]

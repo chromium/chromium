@@ -1,0 +1,5 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++ProgressBar text:"funding" textSize:16.00 style:0 bundle:[aria-label="funding", aria-valuemax="100", aria-valuemin="0", aria-valuenow="50", aria-valuetext="half-way", display="block", htmlTag="div", role="meter"]
+++++TextView text:"We're getting there!" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++ProgressBar text:"funding" textSize:16.00 style:0 bundle:[aria-label="funding", aria-valuemax="100", aria-valuemin="0", aria-valuenow="10", display="block", htmlTag="div", role="meter"]
+++++TextView text:"Not so great." textSize:16.00 style:0 bundle:[display="", htmlTag=""]

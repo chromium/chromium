@@ -1,0 +1,8 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="body"]
+++++Button textSize:13.33 style:0 bgColor:-1052689 bundle:[aria-keyshortcuts="Ctrl+X", display="inline-block", htmlTag="button"]
+++++++TextView text:"Cut" textSize:13.33 style:0 bgColor:-1052689 bundle:[display="", htmlTag=""]
+++++Button textSize:13.33 style:0 bgColor:-1052689 bundle:[aria-keyshortcuts="Ctrl+C", display="inline-block", htmlTag="button"]
+++++++TextView text:"Copy" textSize:13.33 style:0 bgColor:-1052689 bundle:[display="", htmlTag=""]
+++++Button textSize:13.33 style:0 bgColor:-1052689 bundle:[aria-keyshortcuts="Ctrl+V", display="inline-block", htmlTag="button"]
+++++++TextView text:"Paste" textSize:13.33 style:0 bgColor:-1052689 bundle:[display="", htmlTag=""]

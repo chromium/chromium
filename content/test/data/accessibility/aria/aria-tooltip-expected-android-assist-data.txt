@@ -1,0 +1,5 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++EditText text:"Your username should be your email id" textSize:13.33 style:0 bundle:[aria-describedby="username-tip", display="inline-block", htmlTag="input", id="username", type="text"]
+++++View textSize:13.33 style:0 bundle:[display="flow-root", htmlTag="div"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="div", id="username-tip", role="tooltip"]
+++++TextView text:"Your username should be your email id" textSize:16.00 style:0 bundle:[display="", htmlTag=""]

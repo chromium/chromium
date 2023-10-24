@@ -1,0 +1,5 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++EditText text:"\n    TextBox1\n  " textSize:16.00 style:0 bundle:[contenteditable="plaintext-only", display="block", htmlTag="div", role="textbox"]
+++++TextView text:"\n    TextBox1\n  " textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++EditText text:"\n    TextBox2\n  " textSize:16.00 style:0 bundle:[aria-multiline="true", contenteditable="plaintext-only", display="block", htmlTag="div", role="textbox"]
+++++TextView text:"\n    TextBox2\n  " textSize:16.00 style:0 bundle:[display="", htmlTag=""]
