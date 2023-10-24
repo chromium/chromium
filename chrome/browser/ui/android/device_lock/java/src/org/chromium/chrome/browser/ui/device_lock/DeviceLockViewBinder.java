@@ -77,7 +77,7 @@ public class DeviceLockViewBinder {
 
     private static void setUiStyle(PropertyModel model, DeviceLockView view) {
         if (model.get(DeviceLockProperties.UI_ENABLED)) {
-            view.getProgressBar().setVisibility(View.GONE);
+            view.getProgressBar().setVisibility(View.INVISIBLE);
             view.getTitle().setTextAppearance(R.style.TextAppearance_Headline_Primary);
             view.getDescription().setTextAppearance(R.style.TextAppearance_TextMedium_Primary);
             view.getNoticeText().setTextAppearance(R.style.TextAppearance_TextMedium_Primary);

@@ -168,7 +168,7 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
 
         assertEquals(
                 "The progress bar should not be visible.",
-                View.GONE,
+                View.INVISIBLE,
                 mView.getProgressBar().getVisibility());
         assertTrue("The continue button should be enabled.", mView.getContinueButton().isEnabled());
         assertTrue("The dismiss button should be enabled.", mView.getDismissButton().isEnabled());
