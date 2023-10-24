@@ -189,40 +189,6 @@ source_set("%TARGET_NAME%_standalone") {
 }
 '''.strip()
 
-# This is the latest version of the Android NDK that is compatible with
-# XNNPACK.
-_ANDROID_NDK_VERSION = 'android-ndk-r19c'
-_ANDROID_NDK_URL = 'https://dl.google.com/android/repository/android-ndk-r19c-linux-x86_64.zip'
-
-g_android_ndk = None
-
-
-def _ensure_android_ndk_available():
-  """
-  Ensures that the Android NDK is available to bazel, downloading a new copy if
-  needed. Raises an Exception if any command fails.
-
-  Returns: the full path to the Android NDK
-  """
-  global g_android_ndk
-  if g_android_ndk:
-    return g_android_ndk
-  g_android_ndk = '/tmp/' + _ANDROID_NDK_VERSION
-  if os.path.exists(g_android_ndk):
-    logging.info('Using existing Android NDK at ' + g_android_ndk)
-    return g_android_ndk
-  logging.info('Downloading new copy of the Android NDK')
-  zipfile = '/tmp/{ndk}.zip'.format(ndk=_ANDROID_NDK_VERSION)
-  subprocess.run(['curl', '-o', zipfile, _ANDROID_NDK_URL],
-                 stdout=subprocess.DEVNULL,
-                 stderr=subprocess.DEVNULL,
-                 check=True)
-  subprocess.run(['unzip', '-o', zipfile, '-d', '/tmp'],
-                 stdout=subprocess.DEVNULL,
-                 stderr=subprocess.DEVNULL,
-                 check=True)
-  return g_android_ndk
-
 
 # A SourceSet corresponds to a single source_set() gn tuple.
 SourceSet = collections.namedtuple('SourceSet', ['dir', 'srcs', 'args'],
@@ -301,16 +267,11 @@ def _run_bazel_cmd(args):
         "bazel` or put the bazel executable in $PATH")
   cmd = [exec_path]
   cmd.extend(args)
-  env = os.environ
-  env.update({
-      'ANDROID_NDK_HOME': _ensure_android_ndk_available(),
-  })
   proc = subprocess.Popen(cmd,
                           text=True,
                           cwd=_tflite_dir(),
                           stdout=subprocess.PIPE,
-                          stderr=subprocess.PIPE,
-                          env=env)
+                          stderr=subprocess.PIPE)
   stdout, stderr = proc.communicate()
   if proc.returncode != 0:
     raise Exception("bazel command returned non-zero return code:\n"
