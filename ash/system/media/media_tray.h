@@ -111,19 +111,17 @@ class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
 
   void ShowEmptyState();
 
-  // Ptr to pin button in the dialog, owned by the view hierarchy.
-  raw_ptr<views::Button, DanglingUntriaged | ExperimentalAsh> pin_button_ =
-      nullptr;
+  // Pointer to pin button in the dialog, owned by the view hierarchy.
+  raw_ptr<views::Button> pin_button_ = nullptr;
 
   std::unique_ptr<TrayBubbleWrapper> bubble_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   // Weak pointer, will be parented by TrayContainer for its lifetime.
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_;
+  raw_ptr<views::ImageView> icon_;
 
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> content_view_ =
-      nullptr;
-  raw_ptr<views::View, ExperimentalAsh> empty_state_view_ = nullptr;
+  raw_ptr<views::View> content_view_ = nullptr;
+  raw_ptr<views::View> empty_state_view_ = nullptr;
 
   bool bubble_has_shown_ = false;
 };
