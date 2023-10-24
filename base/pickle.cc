@@ -4,7 +4,7 @@
 
 #include "base/pickle.h"
 
-#include <algorithm>  // for max()
+#include <algorithm>
 #include <cstdlib>
 #include <limits>
 #include <ostream>
@@ -433,7 +433,7 @@ inline void* Pickle::ClaimUninitializedBytesInternal(size_t length) {
   }
 
   char* write = mutable_payload() + write_offset_;
-  memset(write + length, 0, data_len - length);  // Always initialize padding
+  std::fill(write + length, write + data_len, 0);  // Always initialize padding
   header_->payload_size = static_cast<uint32_t>(new_size);
   write_offset_ = new_size;
   return write;
@@ -444,7 +444,8 @@ inline void Pickle::WriteBytesCommon(const void* data, size_t length) {
       << "oops: pickle is readonly";
   MSAN_CHECK_MEM_IS_INITIALIZED(data, length);
   void* write = ClaimUninitializedBytesInternal(length);
-  memcpy(write, data, length);
+  std::copy(static_cast<const char*>(data),
+            static_cast<const char*>(data) + length, static_cast<char*>(write));
 }
 
 }  // namespace base
