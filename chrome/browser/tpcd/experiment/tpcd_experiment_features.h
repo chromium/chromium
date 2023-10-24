@@ -20,6 +20,10 @@ extern const base::FeatureParam<bool> kDisable3PCookies;
 extern const base::FeatureParam<base::TimeDelta> kDecisionDelayTime;
 extern const base::FeatureParam<bool> kForceEligibleForTesting;
 
+extern const char kTpcdWritePopupCurrentInteractionHeuristicsGrantsName[];
+extern const char kTpcdWritePopupPastInteractionHeuristicsGrantsName[];
+extern const char kTpcdBackfillPopupHeuristicsGrantsName[];
+
 // Whether to create a short-term grant when observing the Popup With Current
 // Interaction scenario.
 extern const base::FeatureParam<base::TimeDelta>

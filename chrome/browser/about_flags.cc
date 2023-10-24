@@ -3659,6 +3659,29 @@ const FeatureEntry::FeatureVariation
          std::size(kTPCPhaseOutFacilitatedTestingForceControl2), nullptr},
 };
 
+const FeatureEntry::FeatureParam kTpcdHeuristicsGrantsControl[] = {
+    {content_settings::features::kTpcdReadHeuristicsGrantsName, "false"}};
+const FeatureEntry::FeatureParam kTpcdHeuristicsGrantsCurrentInteraction[] = {
+    {content_settings::features::kTpcdReadHeuristicsGrantsName, "true"},
+    {tpcd::experiment::kTpcdWritePopupCurrentInteractionHeuristicsGrantsName,
+     "30d"}};
+const FeatureEntry::FeatureParam
+    kTpcdHeuristicsGrantsCurrentInteractionWithBackfill[] = {
+        {content_settings::features::kTpcdReadHeuristicsGrantsName, "true"},
+        {tpcd::experiment::
+             kTpcdWritePopupCurrentInteractionHeuristicsGrantsName,
+         "30d"},
+        {tpcd::experiment::kTpcdBackfillPopupHeuristicsGrantsName, "30d"}};
+
+const FeatureEntry::FeatureVariation kTpcdHeuristicsGrantsVariations[] = {
+    {"Control", kTpcdHeuristicsGrantsControl,
+     std::size(kTpcdHeuristicsGrantsControl), nullptr},
+    {"Current Interaction", kTpcdHeuristicsGrantsCurrentInteraction,
+     std::size(kTpcdHeuristicsGrantsCurrentInteraction), nullptr},
+    {"Current Interaction With Backfill",
+     kTpcdHeuristicsGrantsCurrentInteractionWithBackfill,
+     std::size(kTpcdHeuristicsGrantsCurrentInteractionWithBackfill), nullptr}};
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const FeatureEntry::FeatureParam kVcSegmentationModelHighResolution[] = {
     {"segmentation_model", "high_resolution"},
@@ -9293,6 +9316,13 @@ const FeatureEntry kFeatureEntries[] = {
          features::kCookieDeprecationFacilitatedTesting,
          kTPCPhaseOutFacilitatedTestingVariations,
          "TPCPhaseOutFacilitatedTesting")},
+
+    {"tpcd-heuristics-grants", flag_descriptions::kTpcdHeuristicsGrantsName,
+     flag_descriptions::kTpcdHeuristicsGrantsDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         content_settings::features::kTpcdHeuristicsGrants,
+         kTpcdHeuristicsGrantsVariations,
+         "TpcdHeuristicsGrants")},
 
     {"bounce-tracking-mitigations", flag_descriptions::kDIPSName,
      flag_descriptions::kDIPSDescription, kOsAll,

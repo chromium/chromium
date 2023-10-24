@@ -3378,6 +3378,14 @@ const char kTPCPhaseOutFacilitatedTestingDescription[] =
     "Enables third-party cookie phase out for facilitated testing described in "
     "https://developer.chrome.com/en/docs/privacy-sandbox/chrome-testing/";
 
+const char kTpcdHeuristicsGrantsName[] =
+    "Third-party Cookie Grants Heuristics Testing";
+const char kTpcdHeuristicsGrantsDescription[] =
+    "Enables temporary storage access grants for certain user behavior "
+    "heuristics. See "
+    "https://github.com/amaliev/3pcd-exemption-heuristics/blob/main/"
+    "explainer.md for more details.";
+
 const char kTrackingProtection3pcdName[] = "Tracking Protection for 3PCD";
 const char kTrackingProtection3pcdDescription[] =
     "Enables the tracking protection UI + prefs that will be used for the 3PCD "

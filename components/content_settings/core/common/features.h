@@ -107,6 +107,9 @@ BASE_DECLARE_FEATURE(kImprovedSemanticsActivityIndicators);
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 BASE_DECLARE_FEATURE(kTrackingProtection3pcd);
 
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+extern const char kTpcdReadHeuristicsGrantsName[];
+
 // Enables writing and reading temporary storage access grants from 3PCD
 // heuristics.
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)

@@ -61541,6 +61541,7 @@ from previous Chrome versions.
   <int value="-1986313133" label="InstantHotspotRebrand:enabled"/>
   <int value="-1985452239" label="SmartDim20190221:disabled"/>
   <int value="-1985239289" label="AutofillRichMetadataQueries:enabled"/>
+  <int value="-1985145145" label="TpcdHeuristicsGrants:enabled"/>
   <int value="-1985025593" label="file-manager-enable-new-gallery"/>
   <int value="-1983891525" label="DecodeJpeg420ImagesToYUV:disabled"/>
   <int value="-1983569861" label="WebXROrientationSensorDevice:disabled"/>
@@ -70028,6 +70029,7 @@ from previous Chrome versions.
   <int value="2125732298" label="RetailCoupons:disabled"/>
   <int value="2126030721" label="VCBackgroundBlur:disabled"/>
   <int value="2126203058" label="force-show-update-menu-badge"/>
+  <int value="2126724836" label="TpcdHeuristicsGrants:disabled"/>
   <int value="2127648677" label="OmniboxExperimentalSuggestScoring:disabled"/>
   <int value="2127700228" label="NtpHistoryClustersModule:enabled"/>
   <int value="2129184006" label="NTPOfflinePageDownloadSuggestions:enabled"/>
