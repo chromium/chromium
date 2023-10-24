@@ -1028,6 +1028,51 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorSplit) {
   }
 }
 
+// Test building and computing a DML graph in the following topology.
+//         [input]
+//            |
+//          split
+//        /       \
+//   [output1]  reshape
+//                 |
+//             [output2]
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeGraphWithSplitAndReshape) {
+  // Build the mojom graph info.
+  GraphInfoBuilder builder;
+  uint64_t input_operand_id =
+      builder.BuildInput("input", {2, 5}, mojom::Operand::DataType::kFloat32);
+  uint64_t output1_operand_id = builder.BuildOutput(
+      "output1", {2, 2}, mojom::Operand::DataType::kFloat32);
+  uint64_t split_operand_id = builder.BuildIntermediateOperand(
+      {2, 3}, mojom::Operand::DataType::kFloat32);
+  builder.BuildSplit(input_operand_id, {output1_operand_id, split_operand_id},
+                     1);
+
+  uint64_t output_operand_id = builder.BuildOutput(
+      "output2", {3, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildReshape(split_operand_id, output_operand_id);
+
+  base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+  // [[ 1  2  3  4  5]
+  //  [ 6  7  8  9 10]] with shape (2, 5)
+  std::vector<float> input_data = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+  named_inputs.insert({"input", VectorToBigBuffer(input_data)});
+  base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                  named_outputs);
+
+  // [[1  2]
+  //  [6  7]] with shape (2, 2)
+  EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output1"])),
+            std::vector<float>({1, 2, 6, 7}));
+  // [[3  4]
+  //  [5  8]
+  //  [9  10]] with shape (3, 2)
+  EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output2"])),
+            std::vector<float>({3, 4, 5, 8, 9, 10}));
+}
+
 template <typename T>
 struct UnaryOperatorTester {
   mojom::Operation::Tag tag;
@@ -2081,6 +2126,241 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorResample2d) {
                    .values = {2, 3.5, 6.5, 8}}}
         .Test();
   }
+}
+
+// Test building and computing a DML graph with single operator transpose.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorTranspose) {
+  // Build the mojom graph info.
+  GraphInfoBuilder builder;
+  uint64_t input_operand_id =
+      builder.BuildInput("input", {2, 3}, mojom::Operand::DataType::kFloat32);
+  uint64_t output_operand_id =
+      builder.BuildOutput("output", {3, 2}, mojom::Operand::DataType::kFloat32);
+
+  builder.BuildTranspose(input_operand_id, output_operand_id, {1, 0});
+
+  base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+  std::vector<float> input_data = {-1, -2, -3, -4, -5, -6};
+  named_inputs.insert({"input", VectorToBigBuffer(input_data)});
+  base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                  named_outputs);
+
+  EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
+            std::vector<float>({-1, -4, -2, -5, -3, -6}));
+}
+
+// Test building and computing a DML graph in the following topology.
+//      [input]
+//         |
+//     transpose
+//         |
+//     transpose
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeGraphWithTwoTranspose) {
+  // Build the mojom graph info.
+  GraphInfoBuilder builder;
+  uint64_t input_operand_id = builder.BuildInput(
+      "input", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
+
+  uint64_t transpose_operand_id = builder.BuildIntermediateOperand(
+      {2, 1, 3, 4}, mojom::Operand::DataType::kFloat32);
+  builder.BuildTranspose(input_operand_id, transpose_operand_id, {1, 0, 2, 3});
+
+  uint64_t output_operand_id = builder.BuildOutput(
+      "output", {4, 3, 1, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildTranspose(transpose_operand_id, output_operand_id, {3, 2, 1, 0});
+
+  base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+  // [[[[ -1  -2  -3  -4]
+  //    [ -5  -6  -7  -8]
+  //    [ -9 -10 -11 -12]]
+  //   [[ 13  14  15  16]
+  //    [ 17  18  19  20]
+  //    [ 21  22  23  24]]]] with shape (1, 2, 3, 4)
+  std::vector<float> input_data = {-1, -2,  -3,  -4,  -5, -6, -7, -8,
+                                   -9, -10, -11, -12, 13, 14, 15, 16,
+                                   17, 18,  19,  20,  21, 22, 23, 24};
+  named_inputs.insert({"input", VectorToBigBuffer(input_data)});
+  base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                  named_outputs);
+
+  // [[[[ -1  13]]
+  //   [[ -5  17]]
+  //   [[ -9  21]]]
+  //  [[[ -2  14]]
+  //   [[ -6  18]]
+  //   [[-10  22]]]
+  //  [[[ -3  15]]
+  //   [[ -7  19]]
+  //   [[-11  23]]]
+  //  [[[ -4  16]]
+  //   [[ -8  20]]
+  //   [[-12  24]]]] with shape (4, 3, 1, 2)
+  EXPECT_EQ(
+      BigBufferToVector<float>(std::move(named_outputs["output"])),
+      std::vector<float>({-1, 13, -5, 17, -9,  21, -2, 14, -6, 18, -10, 22,
+                          -3, 15, -7, 19, -11, 23, -4, 16, -8, 20, -12, 24}));
+}
+
+// Test building and computing a DML graph in the following topology.
+//      [input]
+//         |
+//     transpose
+//         |
+//       relu
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeGraphWithTransposeAndRelu) {
+  // Build the mojom graph info.
+  GraphInfoBuilder builder;
+  uint64_t input_operand_id = builder.BuildInput(
+      "input", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
+
+  uint64_t transpose_operand_id = builder.BuildIntermediateOperand(
+      {4, 3, 1, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildTranspose(input_operand_id, transpose_operand_id, {3, 2, 0, 1});
+
+  uint64_t output_operand_id = builder.BuildOutput(
+      "output", {4, 3, 1, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildRelu(transpose_operand_id, output_operand_id);
+
+  base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+  // [[[[ -1  -2  -3  -4]
+  //    [ -5  -6  -7  -8]
+  //    [ -9 -10 -11 -12]]
+  //   [[ 13  14  15  16]
+  //    [ 17  18  19  20]
+  //    [ 21  22  23  24]]]] with shape (1, 2, 3, 4)
+  std::vector<float> input_data = {-1, -2,  -3,  -4,  -5, -6, -7, -8,
+                                   -9, -10, -11, -12, 13, 14, 15, 16,
+                                   17, 18,  19,  20,  21, 22, 23, 24};
+  named_inputs.insert({"input", VectorToBigBuffer(input_data)});
+  base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                  named_outputs);
+  // [[[[ 0  13]]
+  //   [[ 0  17]]
+  //   [[ 0  21]]]
+  //  [[[ 0  14]]
+  //   [[ 0  18]]
+  //   [[ 0  22]]]
+  //  [[[ 0  15]]
+  //   [[ 0  19]]
+  //   [[ 0  23]]]
+  //  [[[ 0  16]]
+  //   [[ 0  20]]
+  //   [[ 0  24]]]] wit shape (4, 3, 1, 2)
+  EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
+            std::vector<float>({0, 13, 0, 17, 0, 21, 0, 14, 0, 18, 0, 22,
+                                0, 15, 0, 19, 0, 23, 0, 16, 0, 20, 0, 24}));
+}
+
+// Test building and computing a DML graph in the following topology.
+//      [input]
+//         |
+//     transpose
+//         |
+//      reshape
+//         |
+//      reshape
+//         |
+//     transpose
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeGraphWithTransposeAndTwoReshape) {
+  // Build the mojom graph info.
+  GraphInfoBuilder builder;
+  uint64_t input_operand_id = builder.BuildInput(
+      "input", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
+
+  uint64_t transpose_operand_id = builder.BuildIntermediateOperand(
+      {4, 3, 1, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildTranspose(input_operand_id, transpose_operand_id, {3, 2, 0, 1});
+
+  uint64_t reshape_operand_id1 = builder.BuildIntermediateOperand(
+      {2, 2, 6}, mojom::Operand::DataType::kFloat32);
+  builder.BuildReshape(transpose_operand_id, reshape_operand_id1);
+
+  uint64_t reshape_operand_id2 = builder.BuildIntermediateOperand(
+      {12, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildReshape(reshape_operand_id1, reshape_operand_id2);
+
+  uint64_t output_operand_id = builder.BuildOutput(
+      "output", {2, 12}, mojom::Operand::DataType::kFloat32);
+  builder.BuildTranspose(reshape_operand_id2, output_operand_id, {1, 0});
+
+  base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+  // [[[[ -1  -2  -3  -4]
+  //    [ -5  -6  -7  -8]
+  //    [ -9 -10 -11 -12]]
+  //   [[ 13  14  15  16]
+  //    [ 17  18  19  20]
+  //    [ 21  22  23  24]]]] with shape (1, 2, 3, 4)
+  std::vector<float> input_data = {-1, -2,  -3,  -4,  -5, -6, -7, -8,
+                                   -9, -10, -11, -12, 13, 14, 15, 16,
+                                   17, 18,  19,  20,  21, 22, 23, 24};
+  named_inputs.insert({"input", VectorToBigBuffer(input_data)});
+  base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                  named_outputs);
+
+  // [[ -1  -5  -9  -2  -6 -10  -3  -7 -11  -4  -8 -12]
+  //  [ 13  17  21  14  18  22  15  19  23  16  20  24]] wit shape (2, 12)
+  EXPECT_EQ(
+      BigBufferToVector<float>(std::move(named_outputs["output"])),
+      std::vector<float>({-1, -5, -9, -2, -6, -10, -3, -7, -11, -4, -8, -12,
+                          13, 17, 21, 14, 18, 22,  15, 19, 23,  16, 20, 24}));
+}
+
+// Test building and computing a DML graph in the following topology.
+//         [input]
+//            |
+//           relu
+//          /    \
+//     reshape    transpose
+//        |           |
+//    [output1]   [output2]
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeGraphWithTransposeAndTwoOutputs) {
+  // Build the mojom graph info.
+  GraphInfoBuilder builder;
+  uint64_t input_operand_id = builder.BuildInput(
+      "input", {1, 2, 3, 2}, mojom::Operand::DataType::kFloat32);
+  uint64_t relu_operand_id = builder.BuildIntermediateOperand(
+      {1, 2, 3, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildRelu(input_operand_id, relu_operand_id);
+
+  uint64_t output1_operand_id = builder.BuildOutput(
+      "output1", {3, 4}, mojom::Operand::DataType::kFloat32);
+  uint64_t output2_operand_id = builder.BuildOutput(
+      "output2", {1, 2, 2, 3}, mojom::Operand::DataType::kFloat32);
+  builder.BuildReshape(relu_operand_id, output1_operand_id);
+  builder.BuildTranspose(relu_operand_id, output2_operand_id, {0, 3, 1, 2});
+
+  base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+  // [[[[ -1  -2]
+  //    [ -5 -10]
+  //    [ -7   0]]
+  //   [[  1   2]
+  //    [  3   6]
+  //    [ 10  20]]]] with shape (1, 2, 3, 2)
+  std::vector<float> input_data = {-1, -2, -5, -10, -7, 0, 1, 2, 3, 6, 10, 20};
+  named_inputs.insert({"input", VectorToBigBuffer(input_data)});
+  base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                  named_outputs);
+  // [[ 0  0  0  0]
+  //  [ 0  0  1  2]
+  //  [ 3  6 10 20]] with shape (3, 4)
+  EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output1"])),
+            std::vector<float>({0, 0, 0, 0, 0, 0, 1, 2, 3, 6, 10, 20}));
+  // [[[[ 0  0  0]
+  //    [ 1  3 10]]
+  //   [[ 0  0  0]
+  //    [ 2  6 20]]]] with shape (1, 2, 2, 3)
+  EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output2"])),
+            std::vector<float>({0, 0, 0, 1, 3, 10, 0, 0, 0, 2, 6, 20}));
 }
 
 }  // namespace webnn::dml
