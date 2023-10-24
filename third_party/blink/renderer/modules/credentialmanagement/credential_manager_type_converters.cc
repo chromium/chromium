@@ -25,6 +25,9 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_values.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authenticator_selection_criteria.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cable_authentication_data.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_field_requirement.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_provider.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_selector.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_logout_r_ps_request.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options_context.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options_mode.h"
@@ -37,10 +40,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_rp_entity.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_user_entity.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_remote_desktop_client_override.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_string_walletfieldrequirement.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_wallet_field_requirement.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_wallet_provider.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_wallet_selector.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_digitalcredentialfieldrequirement_string.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/federated_credential.h"
@@ -894,10 +894,11 @@ TypeConverter<IdentityProviderPtr, blink::IdentityProviderConfig>::Convert(
             requested_element->name = element->GetAsString();
           } else {
             requested_element->name =
-                element->GetAsWalletFieldRequirement()->name();
-            if (element->GetAsWalletFieldRequirement()->hasEquals()) {
+                element->GetAsDigitalCredentialFieldRequirement()->name();
+            if (element->GetAsDigitalCredentialFieldRequirement()
+                    ->hasEquals()) {
               requested_element->equals =
-                  element->GetAsWalletFieldRequirement()->equals();
+                  element->GetAsDigitalCredentialFieldRequirement()->equals();
             }
           }
 
