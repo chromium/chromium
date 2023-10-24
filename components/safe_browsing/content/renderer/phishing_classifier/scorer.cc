@@ -438,6 +438,16 @@ std::unique_ptr<Scorer> Scorer::CreateScorerWithImageEmbeddingModel(
   return scorer;
 }
 
+void Scorer::AttachImageEmbeddingModel(base::File image_embedding_model) {
+  if (image_embedding_model.IsValid()) {
+    if (!image_embedding_model_.Initialize(std::move(image_embedding_model))) {
+      RecordScorerCreationStatus(
+          SCORER_FAIL_FLATBUFFER_INVALID_IMAGE_EMBEDDING_TFLITE_MODEL);
+      return;
+    }
+  }
+}
+
 double Scorer::ComputeRuleScore(const flat::ClientSideModel_::Rule* rule,
                                 const FeatureMap& features) const {
   if (!rule->feature()) {

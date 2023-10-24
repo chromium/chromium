@@ -86,6 +86,8 @@ class ClientSidePhishingModel
 
   bool IsModelMetadataImageEmbeddingVersionMatching();
 
+  int GetTriggerModelVersion();
+
   void SetVisualTfLiteModelForTesting(base::File file);
   // Overrides model type.
   void SetModelTypeForTesting(CSDModelType model_type);

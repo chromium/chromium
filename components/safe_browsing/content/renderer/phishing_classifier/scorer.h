@@ -77,6 +77,8 @@ class Scorer {
       base::File visual_tflite_model,
       base::File image_embedding_model);
 
+  void AttachImageEmbeddingModel(base::File image_embedding_model);
+
   // This method computes the probability that the given features are indicative
   // of phishing.  It returns a score value that falls in the range [0.0,1.0]
   // (range is inclusive on both ends).

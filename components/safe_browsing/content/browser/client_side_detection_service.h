@@ -174,7 +174,8 @@ class ClientSideDetectionService
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Sends a model to each renderer.
-  void SetPhishingModel(content::RenderProcessHost* rph);
+  void SetPhishingModel(content::RenderProcessHost* rph,
+                        bool new_renderer_process_host);
 
   // Returns a WeakPtr for this service.
   base::WeakPtr<ClientSideDetectionService> GetWeakPtr();
@@ -277,6 +278,12 @@ class ClientSideDetectionService
   // haven't been sent or we should clear the models in the scorer because they
   // have been sent.
   bool sent_trigger_models_ = false;
+
+  // This is to keep track of the trigger model version that was last sent to
+  // the renderer host processes. This is used to determine, when the image
+  // embedding model arrives, whether a new scorer should be made with all
+  // models or the image embedding model can be attached to the current scorer.
+  int trigger_model_version_ = 0;
 
   // Map of client report phishing request to the corresponding callback that
   // has to be invoked when the request is done.
