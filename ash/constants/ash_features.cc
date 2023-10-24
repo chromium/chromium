@@ -2643,14 +2643,6 @@ BASE_FEATURE(kUseAndroidStagingSmds,
              "UseAndroidStagingSmds",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Uses new AuthFactor-based API when communicating with cryptohome.
-// This feature flag also affects usage of AuthSessions in QuickUnlock, but
-// only in case when cryptohome is used as backend.
-// This feature flag also affects usage of AuthSession on lock screen.
-BASE_FEATURE(kUseAuthFactors,
-             "UseAuthFactors",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Uses AuthSessionStorage signleton class instead of Profile-keyed
 // QuickUnlockStorage to store authenticated UserContext.
 BASE_FEATURE(kUseAuthSessionStorage,
