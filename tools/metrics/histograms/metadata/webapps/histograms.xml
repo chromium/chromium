@@ -1574,17 +1574,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebApp.Uninstall.IconDataSuccess" enum="BooleanSuccess"
-    expires_after="2022-09-01">
-  <owner>dmurph@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
-  <summary>
-    Records if removing icon data from disk was successful during webapp
-    uninstall, before the webapp is removed from the database. Uninstall can
-    occur from the user, enterprise policy, device policy, or chrome sync.
-  </summary>
-</histogram>
-
 <histogram name="WebApp.Uninstall.NonSyncIncompleteCount"
     units="Partially uninstalled webapps" expires_after="2024-03-17">
   <owner>dmurph@chromium.org</owner>
@@ -1597,19 +1586,11 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebApp.Uninstall.OsHookSuccess" enum="BooleanSuccess"
-    expires_after="2022-09-01">
-  <owner>dmurph@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
-  <summary>
-    Records if uninstalling OS hooks was successful during webapp uninstall,
-    before the webapp is removed from the database. Uninstall can occur from the
-    user, enterprise policy, device policy, or chrome sync.
-  </summary>
-</histogram>
-
 <histogram name="WebApp.Uninstall.Result" enum="BooleanSuccess"
-    expires_after="2022-09-01">
+    expires_after="never">
+<!-- expires-never: The dPWA team uses this in chirp alerts to ensure
+      uninstallation doesn't start failing. dmurph@ -->
+
   <owner>dmurph@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
