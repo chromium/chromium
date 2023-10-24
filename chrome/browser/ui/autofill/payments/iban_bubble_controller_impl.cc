@@ -8,6 +8,7 @@
 
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/autofill/payments/save_iban_ui.h"
@@ -21,6 +22,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -155,6 +157,28 @@ std::u16string IbanBubbleControllerImpl::GetDeclineButtonText() const {
       NOTREACHED();
       return std::u16string();
   }
+}
+
+AccountInfo IbanBubbleControllerImpl::GetAccountInfo() {
+  // The results of this call should not be cached because the user can update
+  // their account info at any time.
+  Profile* profile = GetProfile();
+  if (!profile) {
+    return AccountInfo();
+  }
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager) {
+    return AccountInfo();
+  }
+  PersonalDataManager* personal_data_manager =
+      PersonalDataManagerFactory::GetForProfile(profile);
+  if (!personal_data_manager) {
+    return AccountInfo();
+  }
+
+  return identity_manager->FindExtendedAccountInfo(
+      personal_data_manager->GetAccountInfoForPaymentsServer());
 }
 
 const Iban& IbanBubbleControllerImpl::GetIban() const {
@@ -360,6 +384,13 @@ void IbanBubbleControllerImpl::DoShowBubble() {
   if (observer_for_testing_) {
     observer_for_testing_->OnBubbleShown();
   }
+}
+
+Profile* IbanBubbleControllerImpl::GetProfile() {
+  if (!web_contents()) {
+    return nullptr;
+  }
+  return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 }
 
 void IbanBubbleControllerImpl::ShowIconOnly() {

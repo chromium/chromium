@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -26,6 +27,9 @@ class Widget;
 }  // namespace views
 
 namespace autofill {
+
+// Gets the user avatar icon if available, or else a placeholder.
+ui::ImageModel GetProfileAvatar(const AccountInfo& account_info);
 
 // Defines a title view with an icon, a separator, and a label, to be used
 // by dialogs that need to present the Google or Google Pay logo with a

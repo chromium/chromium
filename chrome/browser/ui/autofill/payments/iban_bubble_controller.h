@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/web_contents.h"
 
 namespace autofill {
@@ -42,6 +43,9 @@ class IbanBubbleController {
   // Returns the button label text for IBAN save bubbles.
   virtual std::u16string GetAcceptButtonText() const = 0;
   virtual std::u16string GetDeclineButtonText() const = 0;
+
+  // Returns the account info of the signed-in user.
+  virtual AccountInfo GetAccountInfo() = 0;
 
   // Returns the IBAN that will be saved in save bubble view or the IBAN that
   // has been saved in manage bubble view.

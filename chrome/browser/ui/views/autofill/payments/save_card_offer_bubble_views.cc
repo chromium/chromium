@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -34,7 +33,6 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
@@ -53,27 +51,6 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
-
-namespace {
-
-ui::ImageModel GetProfileAvatar(AccountInfo account_info) {
-  // Get the user avatar icon.
-  gfx::Image account_avatar = account_info.account_image;
-
-  // Check if the avatar is empty, and if so, replace it with a placeholder.
-  if (account_avatar.IsEmpty()) {
-    account_avatar = ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-        profiles::GetPlaceholderAvatarIconResourceID());
-  }
-
-  int avatar_size = views::TypographyProvider::Get().GetLineHeight(
-      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY);
-
-  return ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
-      account_avatar, avatar_size, avatar_size, profiles::SHAPE_CIRCLE));
-}
-
-}  // namespace
 
 namespace autofill {
 
