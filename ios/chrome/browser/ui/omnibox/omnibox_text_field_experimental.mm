@@ -49,7 +49,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 }  // namespace
 
-@interface OmniboxTextFieldExperimental () <UIGestureRecognizerDelegate>
+@interface OmniboxTextFieldExperimental ()
 
 // Font to use in regular x regular size class. If not set, the regular font is
 // used instead.
@@ -64,9 +64,6 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 // Length of autocomplete text.
 @property(nonatomic) size_t autocompleteTextLength;
-
-// Tap gesture recognizer for this view.
-@property(nonatomic, strong) UITapGestureRecognizer* tapGestureRecognizer;
 
 @end
 
@@ -109,11 +106,9 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
     self.font = self.currentFont;
     [super setText:@" "];
 
-    self.tapGestureRecognizer =
-        [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                action:@selector(handleTap:)];
-    self.tapGestureRecognizer.delegate = self;
-    [self addGestureRecognizer:self.tapGestureRecognizer];
+    [self addGestureRecognizer:[[UITapGestureRecognizer alloc]
+                                   initWithTarget:self
+                                           action:@selector(handleTap)]];
   }
   return self;
 }
@@ -481,30 +476,24 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   [self setAttributedText:self.attributedText];
 }
 
-#pragma mark - UIGestureRecognizerDelegate
-
-- (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
-    shouldRecognizeSimultaneouslyWithGestureRecognizer:
-        (UIGestureRecognizer*)otherGestureRecognizer {
-  return YES;
-}
-
-- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer {
-  if (gestureRecognizer == self.tapGestureRecognizer) {
-    return [self isPreEditing] || [self hasAutocompleteText];
-  }
-  return YES;
-}
-
 #pragma mark - UIResponder
 
 // Triggered on tap gesture recognizer.
-- (void)handleTap:(UITapGestureRecognizer*)sender {
+- (void)handleTap {
   if ([self isPreEditing]) {
     [self exitPreEditState];
-  }
-  if ([self hasAutocompleteText]) {
+    [super selectAll:self];
+  } else if ([self hasAutocompleteText]) {
+    // Accept selection.
     [self acceptAutocompleteText];
+  } else {
+    [self becomeFirstResponder];
+    UIMenuController* menuController = [UIMenuController sharedMenuController];
+    if (menuController.isMenuVisible) {
+      [menuController hideMenu];
+    } else {
+      [menuController showMenuFromView:self rect:self.bounds];
+    }
   }
 }
 
