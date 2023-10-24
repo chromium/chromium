@@ -145,12 +145,7 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUISearchEngineChoiceHost);
 
-  // TODO(b/280753567): Differentiate new from existing users. For new users use
-  // IDS_SEARCH_ENGINE_CHOICE_PAGE_TITLE if
-  // FirstRunServiceFactory::GetForBrowserContextIfExists(profile_.get()) is
-  // present indicating it's part of FRE.
-  source->AddLocalizedString("title",
-                             IDS_SEARCH_ENGINE_CHOICE_PAGE_EXISTING_USER_TITLE);
+  source->AddLocalizedString("title", IDS_SEARCH_ENGINE_CHOICE_PAGE_TITLE);
   source->AddLocalizedString("subtitle",
                              IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE);
   source->AddLocalizedString("subtitleInfoLink",
