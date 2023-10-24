@@ -20,7 +20,7 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_user_education_coordinator.h"
@@ -307,14 +307,14 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 
 #pragma mark - GridViewControllerDelegate
 
-- (void)gridViewController:(GridViewController*)gridViewController
+- (void)gridViewController:(BaseGridViewController*)gridViewController
        didSelectItemWithID:(web::WebStateID)itemID {
   base::RecordAction(base::UserMetricsAction("MobileTabGridOpenInactiveTab"));
   [_delegate inactiveTabsCoordinator:self didSelectItemWithID:itemID];
   [self didFinish];
 }
 
-- (void)gridViewController:(GridViewController*)gridViewController
+- (void)gridViewController:(BaseGridViewController*)gridViewController
         didCloseItemWithID:(web::WebStateID)itemID {
   __weak __typeof(self) weakSelf = self;
   auto closeItem = ^{
@@ -337,13 +337,13 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
   }
 }
 
-- (void)gridViewController:(GridViewController*)gridViewController
+- (void)gridViewController:(BaseGridViewController*)gridViewController
          didMoveItemWithID:(web::WebStateID)itemID
                    toIndex:(NSUInteger)destinationIndex {
   NOTREACHED();
 }
 
-- (void)gridViewController:(GridViewController*)gridViewController
+- (void)gridViewController:(BaseGridViewController*)gridViewController
         didChangeItemCount:(NSUInteger)count {
   // Close the Inactive Tabs view when closing the last inactive tab.
   if (count == 0 && self.showing) {
@@ -361,58 +361,58 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
   }
 }
 
-- (void)gridViewController:(GridViewController*)gridViewController
+- (void)gridViewController:(BaseGridViewController*)gridViewController
        didRemoveItemWIthID:(web::WebStateID)itemID {
   // No op.
 }
 
 - (void)didChangeLastItemVisibilityInGridViewController:
-    (GridViewController*)gridViewController {
+    (BaseGridViewController*)gridViewController {
   // No op.
 }
 
-- (void)gridViewController:(GridViewController*)gridViewController
+- (void)gridViewController:(BaseGridViewController*)gridViewController
     contentNeedsAuthenticationChanged:(BOOL)needsAuth {
   NOTREACHED();
 }
 
 - (void)gridViewControllerWillBeginDragging:
-    (GridViewController*)gridViewController {
+    (BaseGridViewController*)gridViewController {
   // No op.
 }
 
 - (void)gridViewControllerDragSessionWillBegin:
-    (GridViewController*)gridViewController {
+    (BaseGridViewController*)gridViewController {
   // No op.
 }
 
 - (void)gridViewControllerDragSessionDidEnd:
-    (GridViewController*)gridViewController {
+    (BaseGridViewController*)gridViewController {
   // No op.
 }
 
 - (void)gridViewControllerScrollViewDidScroll:
-    (GridViewController*)gridViewController {
+    (BaseGridViewController*)gridViewController {
   // No op.
 }
 
 - (void)gridViewControllerDropAnimationWillBegin:
-    (GridViewController*)gridViewController {
+    (BaseGridViewController*)gridViewController {
   NOTREACHED();
 }
 
 - (void)gridViewControllerDropAnimationDidEnd:
-    (GridViewController*)gridViewController {
+    (BaseGridViewController*)gridViewController {
   NOTREACHED();
 }
 
 - (void)didTapInactiveTabsButtonInGridViewController:
-    (GridViewController*)gridViewController {
+    (BaseGridViewController*)gridViewController {
   NOTREACHED();
 }
 
 - (void)didTapInactiveTabsSettingsLinkInGridViewController:
-    (GridViewController*)gridViewController {
+    (BaseGridViewController*)gridViewController {
   [self presentSettings];
 }
 

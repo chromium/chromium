@@ -11,7 +11,6 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_collection_commands.h"
 
-@class GridViewController;
 namespace web {
 class WebStateID;
 }  // namespace web

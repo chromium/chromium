@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_VIEW_CONTROLLER_PRIVATE_H_
-#define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_VIEW_CONTROLLER_PRIVATE_H_
+#ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_BASE_GRID_VIEW_CONTROLLER_PRIVATE_H_
+#define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_BASE_GRID_VIEW_CONTROLLER_PRIVATE_H_
 
 #import <UIKit/UIKit.h>
 
 @class TabSwitcherItem;
 
-@interface GridViewController (Private)
+@interface BaseGridViewController (Private)
 
 @property(nonatomic, readonly) NSMutableArray<TabSwitcherItem*>* items;
 @property(nonatomic, readonly) NSUInteger selectedIndex;
@@ -17,4 +17,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_VIEW_CONTROLLER_PRIVATE_H_
+#endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_BASE_GRID_VIEW_CONTROLLER_PRIVATE_H_

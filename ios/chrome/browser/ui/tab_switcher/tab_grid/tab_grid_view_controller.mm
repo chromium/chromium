@@ -33,11 +33,11 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_container_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/disabled_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_empty_state_view.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_delegate.h"
@@ -183,8 +183,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
     switch (_pageConfiguration) {
       case TabGridPageConfiguration::kAllPagesEnabled:
-        _incognitoTabsViewController = [[GridViewController alloc] init];
-        _regularTabsViewController = [[GridViewController alloc] init];
+        _incognitoTabsViewController = [[BaseGridViewController alloc] init];
+        _regularTabsViewController = [[BaseGridViewController alloc] init];
         _remoteTabsViewController =
             [[RecentTabsTableViewController alloc] init];
         _pageViewControllers = @[
@@ -196,7 +196,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
         _incognitoDisabledViewController = [[DisabledGridViewController alloc]
             initWithPage:TabGridPageIncognitoTabs];
         _incognitoDisabledViewController.delegate = self;
-        _regularTabsViewController = [[GridViewController alloc] init];
+        _regularTabsViewController = [[BaseGridViewController alloc] init];
         _remoteTabsViewController =
             [[RecentTabsTableViewController alloc] init];
         _pageViewControllers = @[
@@ -205,7 +205,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
         ];
         break;
       case TabGridPageConfiguration::kIncognitoPageOnly:
-        _incognitoTabsViewController = [[GridViewController alloc] init];
+        _incognitoTabsViewController = [[BaseGridViewController alloc] init];
         _regularDisabledViewController = [[DisabledGridViewController alloc]
             initWithPage:TabGridPageRegularTabs];
         _regularDisabledViewController.delegate = self;
@@ -891,9 +891,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       [self calculateInsetForRegularGridView];
 }
 
-// Returns the corresponding GridViewController for `page`. Returns `nil` if
-// page does not have a corresponding GridViewController.
-- (GridViewController*)gridViewControllerForPage:(TabGridPage)page {
+// Returns the corresponding BaseGridViewController for `page`. Returns `nil` if
+// page does not have a corresponding BaseGridViewController.
+- (BaseGridViewController*)gridViewControllerForPage:(TabGridPage)page {
   switch (page) {
     case TabGridPageIncognitoTabs:
       return self.incognitoTabsViewController;
@@ -1252,7 +1252,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 // Updates the add to menu items with all the currently selected items.
 - (void)configureAddToButtonMenuForSelectedItems {
-  GridViewController* gridViewController =
+  BaseGridViewController* gridViewController =
       [self gridViewControllerForPage:self.currentPage];
   // This can be called when the current page is not tied to a grid view
   // controller. If so, return early, because getting the std::set off of a nil
@@ -1342,7 +1342,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     return;
 
   // Otherwise setup as a Close All button.
-  GridViewController* gridViewController =
+  BaseGridViewController* gridViewController =
       [self gridViewControllerForPage:self.currentPage];
 
   // "Close all" can be called if there is element in regular tab grid or in
@@ -1453,18 +1453,18 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // Updates the labels and the buttons on the top and the bottom toolbars based
 // based on the selected tabs count.
 - (void)updateSelectionModeToolbars {
-  GridViewController* currentGridViewController =
+  BaseGridViewController* currentBaseGridViewController =
       [self gridViewControllerForPage:self.currentPage];
   // This can be called when the current page is not tied to a grid view
   // controller. If so, return early, because getting the std::set off of a nil
   // gridViewController would return a garbage std::set.
-  if (!currentGridViewController) {
+  if (!currentBaseGridViewController) {
     return;
   }
   NSUInteger selectedItemsCount =
-      currentGridViewController.selectedItemIDsForEditing.size();
+      currentBaseGridViewController.selectedItemIDsForEditing.size();
   NSUInteger sharableSelectedItemsCount =
-      currentGridViewController.selectedShareableItemIDsForEditing.size();
+      currentBaseGridViewController.selectedShareableItemIDsForEditing.size();
   self.topToolbar.selectedTabsCount = selectedItemsCount;
   self.bottomToolbar.selectedTabsCount = selectedItemsCount;
 
@@ -1479,7 +1479,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       setCloseTabsButtonEnabled:!incognitoTabsNeedsAuth && selectedItemsCount];
   [self.topToolbar setSelectAllButtonEnabled:!incognitoTabsNeedsAuth];
 
-  if (currentGridViewController.allItemsSelectedForEditing) {
+  if (currentBaseGridViewController.allItemsSelectedForEditing) {
     [self.topToolbar configureDeselectAllButtonTitle];
   } else {
     [self.topToolbar configureSelectAllButtonTitle];
@@ -1893,7 +1893,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self setCurrentIdlePageStatus:NO];
 }
 
-- (void)pinnedTabsViewController:(GridViewController*)gridViewController
+- (void)pinnedTabsViewController:(BaseGridViewController*)gridViewController
              didRemoveItemWIthID:(web::WebStateID)itemID {
   [self setCurrentIdlePageStatus:NO];
 }
@@ -1919,9 +1919,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self configureNewTabButtonBasedOnContentPermissions];
 }
 
-#pragma mark - GridViewControllerDelegate
+#pragma mark - BaseGridViewControllerDelegate
 
-- (void)gridViewController:(GridViewController*)gridViewController
+- (void)gridViewController:(BaseGridViewController*)gridViewController
        didSelectItemWithID:(web::WebStateID)itemID {
   // Check that the current page matches the grid view being interacted with.
   BOOL isOnRegularTabsPage = self.currentPage == TabGridPageRegularTabs;
@@ -1988,7 +1988,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
                                        focusOmnibox:NO];
 }
 
-- (void)gridViewController:(GridViewController*)gridViewController
+- (void)gridViewController:(BaseGridViewController*)gridViewController
         didCloseItemWithID:(web::WebStateID)itemID {
   [self setCurrentIdlePageStatus:NO];
 
@@ -2004,7 +2004,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 }
 
-- (void)gridViewController:(GridViewController*)gridViewController
+- (void)gridViewController:(BaseGridViewController*)gridViewController
          didMoveItemWithID:(web::WebStateID)itemID
                    toIndex:(NSUInteger)destinationIndex {
   [self setCurrentIdlePageStatus:NO];
@@ -2016,7 +2016,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 }
 
-- (void)gridViewController:(GridViewController*)gridViewController
+- (void)gridViewController:(BaseGridViewController*)gridViewController
         didChangeItemCount:(NSUInteger)count {
   if (gridViewController == self.regularTabsViewController) {
     self.topToolbar.pageControl.regularTabCount = count;
@@ -2031,26 +2031,26 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 }
 
-- (void)gridViewController:(GridViewController*)gridViewController
+- (void)gridViewController:(BaseGridViewController*)gridViewController
        didRemoveItemWIthID:(web::WebStateID)itemID {
   [self setCurrentIdlePageStatus:NO];
 }
 
 - (void)didChangeLastItemVisibilityInGridViewController:
-    (GridViewController*)gridViewController {
+    (BaseGridViewController*)gridViewController {
 }
 
-- (void)gridViewController:(GridViewController*)gridViewController
+- (void)gridViewController:(BaseGridViewController*)gridViewController
     contentNeedsAuthenticationChanged:(BOOL)needsAuth {
   [self configureButtonsForActiveAndCurrentPage];
 }
 
 - (void)gridViewControllerWillBeginDragging:
-    (GridViewController*)gridViewController {
+    (BaseGridViewController*)gridViewController {
 }
 
 - (void)gridViewControllerDragSessionWillBegin:
-    (GridViewController*)gridViewController {
+    (BaseGridViewController*)gridViewController {
   self.dragSessionInProgress = YES;
 
   // Actions on both bars should be disabled during dragging.
@@ -2070,7 +2070,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)gridViewControllerDragSessionDidEnd:
-    (GridViewController*)gridViewController {
+    (BaseGridViewController*)gridViewController {
   self.dragSessionInProgress = NO;
 
   [self.topToolbar setSearchButtonEnabled:YES];
@@ -2088,26 +2088,26 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)gridViewControllerScrollViewDidScroll:
-    (GridViewController*)gridViewController {
+    (BaseGridViewController*)gridViewController {
   [self updateToolbarsAppearance];
 }
 
 - (void)gridViewControllerDropAnimationWillBegin:
-    (GridViewController*)gridViewController {
+    (BaseGridViewController*)gridViewController {
   if (IsPinnedTabsEnabled()) {
     self.pinnedTabsViewController.dropAnimationInProgress = YES;
   }
 }
 
 - (void)gridViewControllerDropAnimationDidEnd:
-    (GridViewController*)gridViewController {
+    (BaseGridViewController*)gridViewController {
   if (IsPinnedTabsEnabled()) {
     [self.pinnedTabsViewController dropAnimationDidEnd];
   }
 }
 
 - (void)didTapInactiveTabsButtonInGridViewController:
-    (GridViewController*)gridViewController {
+    (BaseGridViewController*)gridViewController {
   CHECK(IsInactiveTabsEnabled());
   CHECK_EQ(self.currentPage, TabGridPageRegularTabs);
   base::RecordAction(base::UserMetricsAction("MobileTabGridShowInactiveTabs"));
@@ -2115,7 +2115,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)didTapInactiveTabsSettingsLinkInGridViewController:
-    (GridViewController*)gridViewController {
+    (BaseGridViewController*)gridViewController {
   NOTREACHED();
 }
 
@@ -2156,7 +2156,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)selectAllButtonTapped:(id)sender {
-  GridViewController* gridViewController =
+  BaseGridViewController* gridViewController =
       [self gridViewControllerForPage:self.currentPage];
   CHECK(gridViewController);
 
@@ -2189,7 +2189,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)closeSelectedTabs:(id)sender {
-  GridViewController* gridViewController =
+  BaseGridViewController* gridViewController =
       [self gridViewControllerForPage:self.currentPage];
   CHECK(gridViewController);
   const std::set<web::WebStateID> itemIDs =
@@ -2214,7 +2214,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)shareSelectedTabs:(id)sender {
-  GridViewController* gridViewController =
+  BaseGridViewController* gridViewController =
       [self gridViewControllerForPage:self.currentPage];
   CHECK(gridViewController);
   const std::set<web::WebStateID> itemIDs =
@@ -2326,7 +2326,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     _incognitoDisabledViewController = nil;
 
     // Create and initialize the incognito view controller.
-    _incognitoTabsViewController = [[GridViewController alloc] init];
+    _incognitoTabsViewController = [[BaseGridViewController alloc] init];
     self.incognitoTabsViewController.mode = self.tabGridMode;
     [self setupIncognitoTabsViewController];
 

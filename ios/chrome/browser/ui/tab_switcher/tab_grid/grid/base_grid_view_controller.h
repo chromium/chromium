@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_BASE_GRID_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_BASE_GRID_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
 
@@ -20,7 +20,7 @@
 @protocol GridEmptyView;
 @protocol GridShareableItemsProvider;
 @class LegacyGridTransitionLayout;
-@class GridViewController;
+@class BaseGridViewController;
 @protocol IncognitoReauthCommands;
 @protocol PriceCardDataSource;
 @protocol SuggestedActionsDelegate;
@@ -33,73 +33,73 @@ class WebStateID;
 
 // Tells the delegate that the item with `itemID` was selected in
 // `gridViewController`.
-- (void)gridViewController:(GridViewController*)gridViewController
+- (void)gridViewController:(BaseGridViewController*)gridViewController
        didSelectItemWithID:(web::WebStateID)itemID;
 // Tells the delegate that the item with `itemID` was closed in
 // `gridViewController`.
-- (void)gridViewController:(GridViewController*)gridViewController
+- (void)gridViewController:(BaseGridViewController*)gridViewController
         didCloseItemWithID:(web::WebStateID)itemID;
 // Tells the delegate that the item with `itemID` was moved to
 // `destinationIndex`.
-- (void)gridViewController:(GridViewController*)gridViewController
+- (void)gridViewController:(BaseGridViewController*)gridViewController
          didMoveItemWithID:(web::WebStateID)itemID
                    toIndex:(NSUInteger)destinationIndex;
 // Tells the delegate that the the number of items in `gridViewController`
 // changed to `count`.
-- (void)gridViewController:(GridViewController*)gridViewController
+- (void)gridViewController:(BaseGridViewController*)gridViewController
         didChangeItemCount:(NSUInteger)count;
 // Tells the delegate that the item with `itemID` was removed.
-- (void)gridViewController:(GridViewController*)gridViewController
+- (void)gridViewController:(BaseGridViewController*)gridViewController
        didRemoveItemWIthID:(web::WebStateID)itemID;
 
 // Tells the delegate that the visibility of the last item of the grid changed.
 - (void)didChangeLastItemVisibilityInGridViewController:
-    (GridViewController*)gridViewController;
+    (BaseGridViewController*)gridViewController;
 
 // Tells the delegate when the currently displayed content is hidden from the
 // user until they authenticate. Used for incognito biometric authentication.
-- (void)gridViewController:(GridViewController*)gridViewController
+- (void)gridViewController:(BaseGridViewController*)gridViewController
     contentNeedsAuthenticationChanged:(BOOL)needsAuth;
 
 // Tells the delegate that the grid view controller's scroll view will begin
 // dragging.
 - (void)gridViewControllerWillBeginDragging:
-    (GridViewController*)gridViewController;
+    (BaseGridViewController*)gridViewController;
 // Tells the delegate that the grid view controller cells will begin dragging.
 - (void)gridViewControllerDragSessionWillBegin:
-    (GridViewController*)gridViewController;
+    (BaseGridViewController*)gridViewController;
 // Tells the delegate that the grid view controller cells did end dragging.
 - (void)gridViewControllerDragSessionDidEnd:
-    (GridViewController*)gridViewController;
+    (BaseGridViewController*)gridViewController;
 // Tells the delegate that the grid view controller did scroll.
 - (void)gridViewControllerScrollViewDidScroll:
-    (GridViewController*)gridViewController;
+    (BaseGridViewController*)gridViewController;
 
 // Tells the delegate that a drop animation will begin.
 - (void)gridViewControllerDropAnimationWillBegin:
-    (GridViewController*)gridViewController;
+    (BaseGridViewController*)gridViewController;
 // Tells the delegate that a drop animation did end.
 - (void)gridViewControllerDropAnimationDidEnd:
-    (GridViewController*)gridViewController;
+    (BaseGridViewController*)gridViewController;
 
 // Tells the delegate that the inactive tabs button was tapped in
 // `gridViewController`, i.e., there was an intention to show inactive tabs (in
 // TabGridModeNormal).
 - (void)didTapInactiveTabsButtonInGridViewController:
-    (GridViewController*)gridViewController;
+    (BaseGridViewController*)gridViewController;
 
 // Tells the delegate that the inactive tabs settings link was tapped in
 // `gridViewController`, i.e., there was an intention to show inactive tabs
 // settings (in TabGridModeInactive).
 - (void)didTapInactiveTabsSettingsLinkInGridViewController:
-    (GridViewController*)gridViewController;
+    (BaseGridViewController*)gridViewController;
 
 @end
 
 // A view controller that contains a grid of items.
-@interface GridViewController : UIViewController <InactiveTabsInfoConsumer,
-                                                  IncognitoReauthConsumer,
-                                                  TabCollectionConsumer>
+@interface BaseGridViewController : UIViewController <InactiveTabsInfoConsumer,
+                                                      IncognitoReauthConsumer,
+                                                      TabCollectionConsumer>
 // The gridView is accessible to manage the content inset behavior.
 @property(nonatomic, readonly) UIScrollView* gridView;
 // The view that is shown when there are no items.
@@ -180,4 +180,4 @@ class WebStateID;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_BASE_GRID_VIEW_CONTROLLER_H_

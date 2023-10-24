@@ -11,7 +11,7 @@
 class Browser;
 @protocol GridMediatorDelegate;
 @protocol GridToolbarsMutator;
-@class GridViewController;
+@class BaseGridViewController;
 @class PinnedTabsMediator;
 @class RegularGridMediator;
 @class TabGridViewController;
@@ -23,7 +23,7 @@ class Browser;
 // TODO(crbug.com/1457146): Replace this once the regular grid view controller
 // is created.
 @property(nonatomic, weak) TabGridViewController* regularViewController;
-@property(nonatomic, weak) GridViewController* gridViewController;
+@property(nonatomic, weak) BaseGridViewController* gridViewController;
 // Grid view controller container.
 @property(nonatomic, strong)
     BaseGridContainerViewController* regularGridContainerViewController;

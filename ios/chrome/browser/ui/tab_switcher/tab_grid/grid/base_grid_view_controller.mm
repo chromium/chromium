@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller+private.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_empty_view.h"
@@ -33,7 +34,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_shareable_items_provider.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller+private.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_button_ui_swift.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_preamble_header.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_delegate.h"
@@ -98,13 +98,13 @@ typedef UICollectionViewDiffableDataSource<NSString*, GridItemIdentifier*>
     DiffableDataSource;
 typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 
-@interface GridViewController () <GridCellDelegate,
-                                  SuggestedActionsViewControllerDelegate,
-                                  UICollectionViewDelegate,
-                                  UICollectionViewDelegateFlowLayout,
-                                  UICollectionViewDragDelegate,
-                                  UICollectionViewDropDelegate,
-                                  UIPointerInteractionDelegate>
+@interface BaseGridViewController () <GridCellDelegate,
+                                      SuggestedActionsViewControllerDelegate,
+                                      UICollectionViewDelegate,
+                                      UICollectionViewDelegateFlowLayout,
+                                      UICollectionViewDragDelegate,
+                                      UICollectionViewDropDelegate,
+                                      UIPointerInteractionDelegate>
 // A collection view of items in a grid format.
 @property(nonatomic, weak) UICollectionView* collectionView;
 // The collection view's data source.
@@ -175,7 +175,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 @property(nonatomic) BOOL isClosingAllOrUndoRunning;
 @end
 
-@implementation GridViewController {
+@implementation BaseGridViewController {
   // Tracks when the grid view is scrolling. Create a new instance to start
   // timing and reset to stop and log the associated time histogram.
   absl::optional<ScopedScrollingTimeLogger> _scopedScrollingTimeLogger;
@@ -316,8 +316,9 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 }
 
 - (void)setEmptyStateView:(UIView<GridEmptyView>*)emptyStateView {
-  if (_emptyStateView)
+  if (_emptyStateView) {
     [_emptyStateView removeFromSuperview];
+  }
   _emptyStateView = emptyStateView;
   emptyStateView.scrollViewContentInsets =
       self.collectionView.adjustedContentInset;
@@ -424,8 +425,9 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   // The collection view's selected item may not have updated yet, so use the
   // selected index.
   NSUInteger selectedIndex = self.selectedIndex;
-  if (selectedIndex == NSNotFound)
+  if (selectedIndex == NSNotFound) {
     return NO;
+  }
   NSIndexPath* selectedIndexPath = CreateIndexPath(selectedIndex);
   return [self.collectionView.indexPathsForVisibleItems
       containsObject:selectedIndexPath];
@@ -438,8 +440,9 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   LegacyGridTransitionActiveItem* activeItem;
   LegacyGridTransitionItem* selectionItem;
   for (NSIndexPath* path in self.collectionView.indexPathsForVisibleItems) {
-    if (path.section != kOpenTabsSectionIndex)
+    if (path.section != kOpenTabsSectionIndex) {
       continue;
+    }
     GridCell* cell = ObjCCastStrict<GridCell>(
         [self.collectionView cellForItemAtIndexPath:path]);
     UICollectionViewLayoutAttributes* attributes =
@@ -1275,8 +1278,9 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   // Whether the view is visible or not, the delegate must be updated.
   [self.delegate gridViewController:self didChangeItemCount:self.items.count];
   if (_mode == TabGridModeSearch) {
-    if (_searchText.length)
+    if (_searchText.length) {
       [self updateSearchResultsHeader];
+    }
     [self.collectionView
         setContentOffset:CGPointMake(
                              -self.collectionView.adjustedContentInset.left,
@@ -1803,8 +1807,9 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   // Speculative fix for crbug.com/1134663, where this method is called while
   // updates from a tab insertion are processing.
   // *** Do not add any code before this check. ***
-  if (self.updating)
+  if (self.updating) {
     return;
+  }
 
   NSUInteger index = base::checked_cast<NSUInteger>(indexPath.item);
   DCHECK_LT(index, self.items.count);
@@ -1813,8 +1818,9 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   // might be a case of the UI sending touch events after the model has updated.
   // In this case, just no-op; if the user has to tap again to activate a tab,
   // that's better than a crash.
-  if (index >= self.items.count)
+  if (index >= self.items.count) {
     return;
+  }
 
   web::WebStateID itemID = self.items[index].identifier;
   if (_mode == TabGridModeSelection) {
@@ -1885,8 +1891,9 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
            .indexPathsForVisibleItems) {
     UICollectionViewCell* cell =
         [self.collectionView cellForItemAtIndexPath:indexPath];
-    if (![cell isKindOfClass:[GridCell class]])
+    if (![cell isKindOfClass:[GridCell class]]) {
       continue;
+    }
     NSUInteger itemIndex = base::checked_cast<NSUInteger>(indexPath.item);
     cell.accessibilityIdentifier = GridCellAccessibilityIdentifier(itemIndex);
   }
@@ -1907,8 +1914,9 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
                               [NSIndexPath
                                   indexPathForRow:0
                                         inSection:kOpenTabsSectionIndex]];
-  if (!headerView)
+  if (!headerView) {
     return;
+  }
   NSString* resultsCount = [@(self.items.count) stringValue];
   headerView.value =
       l10n_util::GetNSStringF(IDS_IOS_TABS_SEARCH_OPEN_TABS_COUNT,

@@ -18,7 +18,7 @@
 @protocol ApplicationCommands;
 @class BaseGridContainerViewController;
 @protocol GridCommands;
-@class GridViewController;
+@class BaseGridViewController;
 @protocol PriceCardDataSource;
 @protocol GridShareableItemsProvider;
 class GURL;
@@ -131,8 +131,9 @@ enum class TabGridPageConfiguration {
     UIViewController* childViewControllerForStatusBarStyle;
 
 // Child view controllers.
-@property(nonatomic, strong) GridViewController* regularTabsViewController;
-@property(nonatomic, strong) GridViewController* incognitoTabsViewController;
+@property(nonatomic, strong) BaseGridViewController* regularTabsViewController;
+@property(nonatomic, strong)
+    BaseGridViewController* incognitoTabsViewController;
 // The view controller for remote tabs.
 // TODO(crbug.com/845192) : This was only exposed in the public interface so
 // that TabGridViewController does not need to know about model objects. The

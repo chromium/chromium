@@ -11,7 +11,7 @@
 @class BaseGridContainerViewController;
 @protocol GridMediatorDelegate;
 @protocol GridToolbarsMutator;
-@class GridViewController;
+@class BaseGridViewController;
 @class IncognitoGridMediator;
 @class TabGridViewController;
 
@@ -21,7 +21,7 @@
 // TODO(crbug.com/1457146): Replace this once the incognito grid view controller
 // is created.
 @property(nonatomic, weak) TabGridViewController* incognitoViewController;
-@property(nonatomic, weak) GridViewController* gridViewController;
+@property(nonatomic, weak) BaseGridViewController* gridViewController;
 // Incognito grid mediator.
 @property(nonatomic, readonly, weak)
     IncognitoGridMediator* incognitoGridMediator;
