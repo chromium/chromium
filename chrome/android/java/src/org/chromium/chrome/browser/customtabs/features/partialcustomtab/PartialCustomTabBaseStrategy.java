@@ -167,9 +167,8 @@ public abstract class PartialCustomTabBaseStrategy
     public void onPostInflationStartup() {
         // Elevate the main web contents area as high as the handle bar to have the shadow
         // effect look right.
-        int ev = mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_elevation);
         View coordinatorLayout = getCoordinatorLayout();
-        coordinatorLayout.setElevation(ev);
+        coordinatorLayout.setElevation(getCustomTabsElevation());
 
         mPositionUpdater.run();
 
@@ -419,11 +418,9 @@ public abstract class PartialCustomTabBaseStrategy
             handleViewStub.inflate();
         }
 
-        getCoordinatorLayout().setElevation(
-                mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_elevation));
+        getCoordinatorLayout().setElevation(getCustomTabsElevation());
         View handleView = mActivity.findViewById(R.id.custom_tabs_handle_view);
-        handleView.setElevation(
-                mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_elevation));
+        handleView.setElevation(getCustomTabsElevation());
         updateShadowOffset();
         GradientDrawable cctBackground = (GradientDrawable) handleView.getBackground();
         adjustCornerRadius(cctBackground, toolbarCornerRadius);
@@ -571,6 +568,10 @@ public abstract class PartialCustomTabBaseStrategy
 
         mFinishRunnable.run();
         mFinishRunnable = null;
+    }
+
+    protected int getCustomTabsElevation() {
+        return mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_elevation);
     }
 
     private void onToolbarContainerVisibilityChange(int visibility) {

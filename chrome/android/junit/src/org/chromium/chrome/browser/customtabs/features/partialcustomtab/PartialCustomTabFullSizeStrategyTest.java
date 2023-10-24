@@ -13,6 +13,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
+import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_HEIGHT;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_WIDTH;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_WIDTH_LANDSCAPE;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.MULTIWINDOW_HEIGHT;
@@ -118,6 +119,36 @@ public class PartialCustomTabFullSizeStrategyTest {
                         eq(0),
                         eq(DEVICE_WIDTH),
                         eq(MULTIWINDOW_HEIGHT),
+                        eq(ACTIVITY_LAYOUT_STATE_FULL_SCREEN));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
+    }
+
+    @Test
+    public void create_fullSizeStrategyInPortrait_HeightNotSet_WidthSet() {
+        when(mPCCTTestRule.mIntentData.getInitialActivityWidth()).thenReturn(300);
+        mPCCTTestRule.configPortraitMode();
+
+        PartialCustomTabFullSizeStrategy strategy = createPcctFullSizeStrategy();
+
+        assertEquals(Math.round(mPCCTTestRule.mCoordinatorLayout.getElevation()), 0);
+        assertEquals(
+                "Full-Size PCCT should be created",
+                PartialCustomTabBaseStrategy.PartialCustomTabType.FULL_SIZE,
+                strategy.getStrategyType());
+        assertEquals(
+                "Full-Size has wrong height",
+                MATCH_PARENT,
+                mPCCTTestRule.mAttributeResults.get(0).height);
+        assertEquals(
+                "Full-Size has wrong width",
+                MATCH_PARENT,
+                mPCCTTestRule.mAttributeResults.get(0).width);
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(
+                        eq(0),
+                        eq(0),
+                        eq(DEVICE_WIDTH),
+                        eq(DEVICE_HEIGHT),
                         eq(ACTIVITY_LAYOUT_STATE_FULL_SCREEN));
         clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
     }
