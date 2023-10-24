@@ -9,6 +9,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';
 
 import {SpHeading} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -32,6 +33,7 @@ export interface WallpaperSearchElement {
     descriptorMenuC: CrActionMenuElement,
     descriptorMenuD: CrActionMenuElement,
     heading: SpHeading,
+    loading: HTMLElement,
     submitButton: CrButtonElement,
   };
 }
@@ -63,6 +65,10 @@ export class WallpaperSearchElement extends PolymerElement {
         value: DESCRIPTOR_C_VALUE,
       },
       emptyContainers_: Object,
+      loading_: {
+        type: Boolean,
+        value: false,
+      },
       results_: Object,
       submitBtnText_: {
         type: String,
@@ -75,6 +81,7 @@ export class WallpaperSearchElement extends PolymerElement {
   private descriptors_: Descriptors|null;
   private descriptorD_: string[];
   private emptyContainers_: number[];
+  private loading_: boolean;
   private results_: WallpaperSearchResult[];
   private selectedDescriptorA_: string|null;
   private selectedDescriptorB_: string|null;
@@ -147,9 +154,11 @@ export class WallpaperSearchElement extends PolymerElement {
     assert(this.descriptors_);
     const descriptorA = this.selectedDescriptorA_ ||
         getRandomDescriptorA(this.descriptors_.descriptorA);
+    this.loading_ = true;
     const {results} = await this.pageHandler_.getWallpaperSearchResults(
         descriptorA, this.selectedDescriptorB_, this.selectedDescriptorC_,
         this.selectedDescriptorD_);
+    this.loading_ = false;
     this.results_ = results;
     this.emptyContainers_ = Array.from(
         {length: results.length > 0 ? 6 - results.length : 0}, () => 0);

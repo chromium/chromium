@@ -10,7 +10,7 @@ import {DESCRIPTOR_C_VALUE, WallpaperSearchElement} from 'chrome://customize-chr
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {$$, assertNotStyle, assertStyle, installMock} from './test_support.js';
 
@@ -253,8 +253,11 @@ suite('WallpaperSearchTest', () => {
       createWallpaperSearchElementWithDescriptors();
       await flushTasks();
 
+      assertFalse(isVisible(wallpaperSearchElement.$.loading));
       wallpaperSearchElement.$.submitButton.click();
+      assertTrue(isVisible(wallpaperSearchElement.$.loading));
       await waitAfterNextRender(wallpaperSearchElement);
+      assertFalse(isVisible(wallpaperSearchElement.$.loading));
 
       const result = $$(wallpaperSearchElement, '.tile.result');
       assertTrue(!!result);

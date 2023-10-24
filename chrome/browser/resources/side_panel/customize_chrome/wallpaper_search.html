@@ -173,6 +173,22 @@
       </cr-button>
     </div>
     <hr class="sp-hr">
+    <div id="loading" hidden$="[[!loading_]]">
+      <cr-loading-gradient>
+        <svg width="280" height="183" xmlns="http://www.w3.org/2000/svg">
+          <clipPath>
+            <rect x="0" y="0" width="86.67" height="86.67" rx="12"></rect>
+            <rect x="96.67" y="0" width="86.67" height="86.67" rx="12"></rect>
+            <rect x="193.34" y="0" width="86.67" height="86.67" rx="12"></rect>
+            <rect x="0" y="96.67" width="86.67" height="86.67" rx="12"></rect>
+            <rect x="96.67" y="96.67" width="86.67" height="86.67" rx="12">
+            </rect>
+            <rect x="193.34" y="96.67" width="86.67" height="86.67" rx="12">
+            </rect>
+          </clipPath>
+        </svg>
+      </cr-loading-gradient>
+    </div>
     <cr-grid columns="3" disable-arrow-navigation>
       <template is="dom-repeat" id="resultsRepeat" items="[[results_]]">
         <div class="tile result" tabindex="0" role="button"
@@ -188,7 +204,7 @@
           <div class="image-container"></div>
         </div>
       </template>
-    <cr-grid>
+    </cr-grid>
   </div>
 </div>
 
