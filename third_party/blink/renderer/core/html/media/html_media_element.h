@@ -497,7 +497,8 @@ class CORE_EXPORT HTMLMediaElement
   bool AreAuthorShadowsAllowed() const final { return false; }
 
   bool SupportsFocus() const final;
-  bool IsFocusable() const final;
+  bool IsFocusable(
+      bool disallow_layout_updates_for_accessibility_only = false) const final;
   bool IsKeyboardFocusable() const final;
   int DefaultTabIndex() const final;
   bool LayoutObjectIsNeeded(const DisplayStyle&) const override;

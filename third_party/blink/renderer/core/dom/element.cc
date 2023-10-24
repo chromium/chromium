@@ -600,17 +600,6 @@ int Element::DefaultTabIndex() const {
 }
 
 bool Element::IsFocusableStyle() const {
-  // TODO(vmpstr): Note that this may be called by accessibility during layout
-  // tree attachment, at which point we might not have cleared all of the dirty
-  // bits to ensure that the layout tree doesn't need an update. This should be
-  // fixable by deferring AX tree updates as a separate phase after layout tree
-  // attachment has happened. At that point `InStyleRecalc()` portion of the
-  // following DCHECK can be removed.
-  DCHECK(
-      !GetDocument().IsActive() || GetDocument().InStyleRecalc() ||
-      !GetDocument().NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(*this))
-      << *this;
-
   if (LayoutObject* layout_object = GetLayoutObject()) {
     return layout_object->StyleRef().IsFocusable();
   }
@@ -6036,7 +6025,18 @@ bool Element::IsKeyboardFocusable() const {
          IsScrollableContainerThatShouldBeKeyboardFocusable();
 }
 
-bool Element::IsFocusable() const {
+bool Element::IsFocusableStyleNeverLayoutForAccessibilityOnly() const {
+  DCHECK(!NeedsStyleRecalc()) << this;
+  DocumentLifecycle::DisallowTransitionScope scope(GetDocument().Lifecycle());
+  return IsFocusableStyle();
+}
+
+bool Element::IsFocusable(
+    bool disallow_layout_updates_for_accessibility_only) const {
+  if (UNLIKELY(disallow_layout_updates_for_accessibility_only)) {
+    return isConnected() && IsFocusableStyleNeverLayoutForAccessibilityOnly() &&
+           SupportsFocus();
+  }
   return isConnected() && IsFocusableStyleAfterUpdate() && SupportsFocus();
 }
 

@@ -1,2 +1,2 @@
 android.webkit.WebView focusable focused scrollable
-++android.app.Dialog role_description='dialog' name='Text in dialog'
+++android.app.Dialog role_description='dialog' focusable name='Text in dialog'

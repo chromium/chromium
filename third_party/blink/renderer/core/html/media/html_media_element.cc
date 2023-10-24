@@ -719,11 +719,13 @@ bool HTMLMediaElement::SupportsFocus() const {
   return ShouldShowControls() || HTMLElement::SupportsFocus();
 }
 
-bool HTMLMediaElement::IsFocusable() const {
+bool HTMLMediaElement::IsFocusable(
+    bool disallow_layout_updates_for_accessibility_only) const {
   if (!SupportsFocus()) {
     return false;
   }
-  return !IsFullscreen() || HTMLElement::IsFocusable();
+  return !IsFullscreen() || HTMLElement::IsFocusable(
+                                disallow_layout_updates_for_accessibility_only);
 }
 
 bool HTMLMediaElement::IsKeyboardFocusable() const {
