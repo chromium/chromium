@@ -573,6 +573,67 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBinary(
   return base::ok();
 }
 
+base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPad(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::PadPtr& pad,
+    GraphBuilder& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input =
+      GetNodeOutputForOperand(id_to_node_output_map, pad->input_operand_id);
+  const auto& input_tensor_desc = input->GetTensorDesc();
+
+  uint64_t output_id = pad->output_operand_id;
+  const auto& output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+
+  DML_PADDING_MODE padding_mode;
+  // This value is ignored for other padding modes.
+  float padding_value = 0;
+  switch (pad->mode->which()) {
+    case mojom::PaddingMode::Tag::kConstant:
+      padding_mode = DML_PADDING_MODE::DML_PADDING_MODE_CONSTANT;
+      padding_value = pad->mode->get_constant()->value;
+      break;
+    case mojom::PaddingMode::Tag::kEdge:
+      padding_mode = DML_PADDING_MODE::DML_PADDING_MODE_EDGE;
+      break;
+    case mojom::PaddingMode::Tag::kReflection:
+      padding_mode = DML_PADDING_MODE::DML_PADDING_MODE_REFLECTION;
+      break;
+    case mojom::PaddingMode::Tag::kSymmetric:
+      padding_mode = DML_PADDING_MODE::DML_PADDING_MODE_SYMMETRIC;
+      break;
+  }
+
+  const auto& beginning_padding = pad->beginning_padding;
+  const auto& ending_padding = pad->ending_padding;
+  CHECK_EQ(beginning_padding.size(), ending_padding.size());
+
+  DML_PADDING_OPERATOR_DESC pad_operator_desc = {
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      .PaddingMode = padding_mode,
+      .PaddingValue = padding_value,
+      .DimensionCount = static_cast<uint32_t>(beginning_padding.size()),
+      .StartPadding = beginning_padding.data(),
+      .EndPadding = ending_padding.data()};
+
+  std::array<const NodeOutput*, 1> inputs = {input};
+  const OperatorNode* pad_node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_PADDING, &pad_operator_desc, {inputs});
+  if (!pad_node) {
+    return base::unexpected(mojom::Error::New(
+        mojom::Error::Code::kUnknownError, "Failed to create pad operator."));
+  }
+
+  const NodeOutput* output =
+      graph_builder.CreateNodeOutput(pad_node, std::move(output_tensor_desc));
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
+
+  return base::ok();
+}
+
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
     const IdToOperandMap& id_to_operand_map,
     const mojom::Pool2dPtr& pool2d,
@@ -1472,6 +1533,12 @@ void GraphImpl::CreateAndBuild(
         create_operator_result =
             CreateOperatorNodeForGemm(id_to_operand_map, operation->get_gemm(),
                                       graph_builder, id_to_node_output_map);
+        break;
+      }
+      case Operation::Tag::kPad: {
+        create_operator_result =
+            CreateOperatorNodeForPad(id_to_operand_map, operation->get_pad(),
+                                     graph_builder, id_to_node_output_map);
         break;
       }
       case Operation::Tag::kPool2d: {

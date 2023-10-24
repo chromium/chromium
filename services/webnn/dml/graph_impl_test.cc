@@ -1109,6 +1109,146 @@ struct UnaryOperatorTester {
   }
 };
 
+template <typename T>
+struct PadTester {
+  OperandInfo<T> input;
+  std::vector<uint32_t> beginning_padding;
+  std::vector<uint32_t> ending_padding;
+  mojom::PaddingMode::Tag mode = mojom::PaddingMode::Tag::kConstant;
+  float value = 0;
+  OperandInfo<float> output;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildPad(input_operand_id, output_operand_id, beginning_padding,
+                     ending_padding, mode, value);
+
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+    named_inputs.insert({"input", VectorToBigBuffer(input.values)});
+    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                    named_outputs);
+
+    VerifyFloatDataIsEqual(
+        GetFloatOutputData(std::move(named_outputs["output"]), output.type),
+        output.values);
+  }
+};
+
+// Test building and computing a DML graph with single operator resample2d.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorPad) {
+  // Test pad with mode = "constant" and value = 0 by default.
+  {
+    PadTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2, 3},
+                  // [[1 2 3]
+                  //  [4 5 6]]]] with shape (2, 3)
+                  .values = {1, 2, 3, 4, 5, 6}},
+        .beginning_padding = {1, 2},
+        .ending_padding = {1, 2},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {4, 7},
+                   // [[0 0 0 0 0 0 0]
+                   //  [0 0 1 2 3 0 0]
+                   //  [0 0 4 5 6 0 0]
+                   //  [0 0 0 0 0 0 0]] with shape ( 4, 7)
+                   .values = {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 0, 0,
+                              0, 0, 4, 5, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0}}}
+        .Test();
+  }
+  // Test pad with mode = "constant" and value = 1.
+  {
+    PadTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2, 3},
+                  // [[1 2 3]
+                  //  [4 5 6]]]] with shape (2, 3)
+                  .values = {1, 2, 3, 4, 5, 6}},
+        .beginning_padding = {1, 2},
+        .ending_padding = {1, 2},
+        .value = 1,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {4, 7},
+                   // [[1 1 1 1 1 1 1]
+                   //  [1 1 1 2 3 1 1]
+                   //  [1 1 4 5 6 1 1]
+                   //  [1 1 1 1 1 1 1]] with shape ( 4, 7)
+                   .values = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 1,
+                              1, 1, 4, 5, 6, 1, 1, 1, 1, 1, 1, 1, 1, 1}}}
+        .Test();
+  }
+  // Test pad with mode = "edge".
+  {
+    PadTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2, 3},
+                  // [[1 2 3]
+                  //  [4 5 6]]]] with shape (2, 3)
+                  .values = {1, 2, 3, 4, 5, 6}},
+        .beginning_padding = {1, 2},
+        .ending_padding = {1, 2},
+        .mode = mojom::PaddingMode::Tag::kEdge,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {4, 7},
+                   // [[1 1 1 2 3 3 3]
+                   //  [1 1 1 2 3 3 3]
+                   //  [4 4 4 5 6 6 6]
+                   //  [4 4 4 5 6 6 6]] with shape ( 4, 7)
+                   .values = {1, 1, 1, 2, 3, 3, 3, 1, 1, 1, 2, 3, 3, 3,
+                              4, 4, 4, 5, 6, 6, 6, 4, 4, 4, 5, 6, 6, 6}}}
+        .Test();
+  }
+  // Test pad with mode = "reflection".
+  {
+    PadTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2, 3},
+                  // [[1 2 3]
+                  //  [4 5 6]]]] with shape (2, 3)
+                  .values = {1, 2, 3, 4, 5, 6}},
+        .beginning_padding = {1, 2},
+        .ending_padding = {1, 2},
+        .mode = mojom::PaddingMode::Tag::kReflection,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {4, 7},
+                   // [[6 5 4 5 6 5 4]
+                   //  [3 2 1 2 3 2 1]
+                   //  [6 5 4 5 6 5 4]
+                   //  [3 2 1 2 3 2 1]] with shape ( 4, 7)
+                   .values = {6, 5, 4, 5, 6, 5, 4, 3, 2, 1, 2, 3, 2, 1,
+                              6, 5, 4, 5, 6, 5, 4, 3, 2, 1, 2, 3, 2, 1}}}
+        .Test();
+  }
+  // Test pad with mode = "symmetric".
+  {
+    PadTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2, 3},
+                  // [[1 2 3]
+                  //  [4 5 6]]]] with shape (2, 3)
+                  .values = {1, 2, 3, 4, 5, 6}},
+        .beginning_padding = {1, 2},
+        .ending_padding = {1, 2},
+        .mode = mojom::PaddingMode::Tag::kSymmetric,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {4, 7},
+                   // [[2 1 1 2 3 3 2]
+                   //  [2 1 1 2 3 3 2]
+                   //  [5 4 4 5 6 6 5]
+                   //  [5 4 4 5 6 6 5]] with shape ( 4, 7)
+                   .values = {2, 1, 1, 2, 3, 3, 2, 2, 1, 1, 2, 3, 3, 2,
+                              5, 4, 4, 5, 6, 6, 5, 5, 4, 4, 5, 6, 6, 5}}}
+        .Test();
+  }
+}
+
 // Test building and computing a DML graph with single operator softmax.
 TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorSoftmax) {
   // DML_ACTIVATION_SOFTMAX_OPERATOR_DESC support for 2 dimensions was
