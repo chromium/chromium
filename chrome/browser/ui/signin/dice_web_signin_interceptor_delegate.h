@@ -14,6 +14,7 @@ class WebContents;
 }
 
 class Browser;
+class Profile;
 struct CoreAccountId;
 
 class DiceWebSigninInterceptorDelegate : public WebSigninInterceptor::Delegate {
@@ -33,6 +34,12 @@ class DiceWebSigninInterceptorDelegate : public WebSigninInterceptor::Delegate {
       Browser* browser,
       const CoreAccountId& account_id,
       WebSigninInterceptor::SigninInterceptionType interception_type) override;
+
+  // Record metrics about the result of the signin interception.
+  static void RecordInterceptionResult(
+      const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
+      Profile* profile,
+      SigninInterceptionResult result);
 
  private:
   // Implemented in dice_web_signin_interception_bubble_view.cc

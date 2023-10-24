@@ -14,6 +14,10 @@ std::string GetStateSuffix(StateSuffix suffix) {
   switch (suffix) {
     case StateSuffix::kAll:
       return "_All";
+    case StateSuffix::kAllManagedDevice:
+      return "_AllManagedDevice";
+    case StateSuffix::kAllUnmanagedDevice:
+      return "_AllUnmanagedDevice";
     case StateSuffix::kActiveMultiProfile:
       return "_ActiveMultiProfile";
     case StateSuffix::kLatentMultiProfile:
