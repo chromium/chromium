@@ -555,8 +555,7 @@ TEST_P(AudioDevicesPrefHandlerTest, DropLeastRecentlySeenDevices) {
   base::subtle::ScopedTimeClockOverrides time_override(
       []() {
         static int i = 0;
-        i++;
-        return base::Time::FromSecondsSinceUnixEpoch(i);
+        return base::Time::FromSecondsSinceUnixEpoch(i++);
       },
       nullptr, nullptr);
 

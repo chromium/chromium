@@ -462,8 +462,7 @@ base::Time NetworkMetadataStore::UpdateAndRetrieveWiFiTimestamp(
   const base::TimeDelta minimum_age = ComputeMigrationMinimumAge();
 
   if (creation_timestamp + minimum_age <= current_timestamp) {
-    SetPref(network_guid, kCreationTimestamp,
-            base::Value(base::Time::UnixEpoch().InSecondsFSinceUnixEpoch()));
+    SetPref(network_guid, kCreationTimestamp, base::Value(0.0));
     return base::Time::UnixEpoch();
   }
   return creation_timestamp;
