@@ -251,8 +251,8 @@
       'linux-cfm-rel': 'linux_cfm_release_bot_reclient',
       'linux-chromeos-dbg': 'chromeos_with_codecs_debug_bot_reclient',
       'linux-chromeos-rel': 'chromeos_with_codecs_with_lacros_release_bot_reclient',
-      'linux-lacros-builder-rel': 'lacros_on_linux_release_bot_reclient',
-      'linux-lacros-dbg': 'lacros_on_linux_debug_bot_reclient',
+      'linux-lacros-builder-rel': 'lacros_on_linux_release_bot_reclient_with_cups',
+      'linux-lacros-dbg': 'lacros_on_linux_debug_bot_reclient_with_cups',
       'linux-lacros-tester-rel': 'lacros_on_linux_release_bot',
     },
 
@@ -1169,8 +1169,8 @@
       'linux-chromeos-dbg': 'chromeos_with_codecs_debug_trybot_reclient',
       'linux-chromeos-inverse-fieldtrials-fyi-rel': 'chromeos_with_codecs_release_trybot_invert_fieldtrials_reclient',
       'linux-chromeos-rel': 'chromeos_with_codecs_release_trybot_code_coverage_reclient',
-      'linux-lacros-dbg': 'lacros_on_linux_debug_bot_reclient',
-      'linux-lacros-rel': 'lacros_on_linux_release_trybot_reclient_code_coverage',
+      'linux-lacros-dbg': 'lacros_on_linux_debug_bot_reclient_with_cups',
+      'linux-lacros-rel': 'lacros_on_linux_release_trybot_reclient_code_coverage_with_cups',
     },
 
     'tryserver.chromium.codesearch': {
@@ -3154,12 +3154,20 @@
       'lacros_on_linux', 'debug_bot_reclient', 'also_build_ash_chrome',
     ],
 
+    'lacros_on_linux_debug_bot_reclient_with_cups': [
+      'lacros_on_linux', 'debug_bot_reclient', 'also_build_ash_chrome', 'use_cups',
+    ],
+
     'lacros_on_linux_release_bot': [
       'lacros_on_linux', 'release_bot', 'also_build_ash_chrome',
     ],
 
     'lacros_on_linux_release_bot_reclient': [
       'lacros_on_linux', 'release_bot_reclient', 'also_build_ash_chrome',
+    ],
+
+    'lacros_on_linux_release_bot_reclient_with_cups': [
+      'lacros_on_linux', 'release_bot_reclient', 'also_build_ash_chrome', 'use_cups',
     ],
 
     'lacros_on_linux_release_not_build_ash_bot_reclient': [
@@ -3170,8 +3178,8 @@
       'lacros_on_linux_release_trybot_reclient',
     ],
 
-    'lacros_on_linux_release_trybot_reclient_code_coverage': [
-      'lacros_on_linux_release_trybot_reclient', 'clang', 'use_clang_coverage', 'partial_code_coverage_instrumentation', 'use_dummy_lastchange',
+    'lacros_on_linux_release_trybot_reclient_code_coverage_with_cups': [
+      'lacros_on_linux_release_trybot_reclient', 'clang', 'use_clang_coverage', 'use_cups', 'partial_code_coverage_instrumentation', 'use_dummy_lastchange',
     ],
 
     'lacros_on_linux_tot_debug': [

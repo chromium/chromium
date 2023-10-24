@@ -232,6 +232,7 @@
       "is_component_build": false,
       "is_debug": false,
       "target_os": "chromeos",
+      "use_cups": true,
       "use_remoteexec": true
     }
   },
@@ -243,6 +244,7 @@
       "is_debug": true,
       "symbol_level": 1,
       "target_os": "chromeos",
+      "use_cups": true,
       "use_remoteexec": true
     }
   },
