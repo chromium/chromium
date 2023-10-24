@@ -26,6 +26,7 @@ class ComposeManagerImpl : public ComposeManager {
   // AutofillComposeDelegate
   bool ShouldOfferComposePopup(
       const autofill::FormFieldData& trigger_field) override;
+  bool HasSavedState(const autofill::FieldGlobalId& trigger_field_id) override;
   void OpenCompose(UiEntryPoint ui_entry_point,
                    const autofill::FormFieldData& trigger_field,
                    std::optional<PopupScreenLocation> popup_screen_location,

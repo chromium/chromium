@@ -100,6 +100,12 @@ void ChromeComposeClient::ShowComposeDialog(
   }
 }
 
+bool ChromeComposeClient::HasSession(
+    const autofill::FieldGlobalId& trigger_field_id) {
+  auto it = sessions_.find(trigger_field_id);
+  return it != sessions_.end();
+}
+
 void ChromeComposeClient::CloseUI(compose::mojom::CloseReason reason) {
   switch (reason) {
     case compose::mojom::CloseReason::kCloseButton:

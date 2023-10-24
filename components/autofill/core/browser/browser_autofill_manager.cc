@@ -3840,10 +3840,22 @@ absl::optional<Suggestion> BrowserAutofillManager::MaybeGetComposeSuggestion(
   if (!compose_delegate || !compose_delegate->ShouldOfferComposePopup(field)) {
     return absl::nullopt;
   }
-  Suggestion suggestion(
-      l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_MAIN_TEXT));
-  suggestion.labels = {{Suggestion::Text(
-      l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_LABEL))}};
+  std::u16string suggestion_text;
+  std::u16string label_text;
+  if (compose_delegate->HasSavedState(field.global_id())) {
+    // The nudge text indicates that the user can resume where they left off in
+    // the Compose dialog.
+    suggestion_text =
+        l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_SAVED_TEXT);
+    label_text = l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_SAVED_LABEL);
+  } else {
+    // Text for a new Compose session.
+    suggestion_text =
+        l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_MAIN_TEXT);
+    label_text = l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_LABEL);
+  }
+  Suggestion suggestion(std::move(suggestion_text));
+  suggestion.labels = {{Suggestion::Text(std::move(label_text))}};
   suggestion.popup_item_id = PopupItemId::kCompose;
   suggestion.icon = "keyIcon";
   return suggestion;

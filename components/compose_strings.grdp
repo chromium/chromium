@@ -8,6 +8,12 @@
   <message name="IDS_COMPOSE_SUGGESTION_LABEL" desc="The label beneath the main text in the Autofill suggestion that a user sees adter interacting with a supported text element." translateable="false">
   Powered by Google
   </message>
+  <message name="IDS_COMPOSE_SUGGESTION_SAVED_TEXT" desc="The main text displayed in the Autofill suggestion that a user sees after interacting with a supported text element, indicating that user state was saved." translateable="false">
+  Progress saved
+  </message>
+  <message name="IDS_COMPOSE_SUGGESTION_SAVED_LABEL" desc="The label beneath the main text in the Autofill suggestion that a user sees after interacting with a supported text element, indicating that user state was saved." translateable="false">
+  Select to Autofill
+  </message>
 
   <!-- Input dialog -->
   <message name="IDS_COMPOSE_TITLE" desc="The title of the input dialog." translateable="false">

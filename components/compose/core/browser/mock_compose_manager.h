@@ -28,6 +28,10 @@ class MockComposeManager : public ComposeManager {
                std::optional<autofill::AutofillClient::PopupScreenLocation>,
                ComposeCallback),
               (override));
+  MOCK_METHOD(bool,
+              HasSavedState,
+              (const autofill::FieldGlobalId&),
+              (override));
 
   // ComposeManager:
   MOCK_METHOD(bool, ShouldOfferComposeContextMenu, (), (override));

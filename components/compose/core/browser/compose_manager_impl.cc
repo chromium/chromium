@@ -31,6 +31,14 @@ bool ComposeManagerImpl::ShouldOfferComposeContextMenu() {
   return IsEnabled();
 }
 
+bool ComposeManagerImpl::HasSavedState(
+    const autofill::FieldGlobalId& trigger_field_id) {
+  // State is saved as a ComposeSession in the ComposeClient. A user can resume
+  // where they left off in a field if the ComposeClient has a ComposeSession
+  // for that field.
+  return client_->HasSession(trigger_field_id);
+}
+
 bool ComposeManagerImpl::IsEnabled() const {
   return base::FeatureList::IsEnabled(features::kEnableCompose);
 }
