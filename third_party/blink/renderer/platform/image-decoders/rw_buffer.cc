@@ -104,6 +104,10 @@ struct RWBuffer::BufferHead {
     if (!ref_count_.Decrement()) {
       // Like unique(), the acquire is only needed on success.
       RWBuffer::BufferBlock* block = block_.next_;
+
+      // `buffer_` has a `raw_ptr` that needs to be destroyed to
+      // properly lower the refcount.
+      block_.~BufferBlock();
       WTF::Partitions::BufferFree(
           reinterpret_cast<void*>(const_cast<RWBuffer::BufferHead*>(this)));
       while (block) {
