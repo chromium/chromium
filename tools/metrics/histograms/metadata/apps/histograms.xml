@@ -2407,6 +2407,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.PromiseApp.IconType" enum="PromiseAppIconType"
+    expires_after="2024-10-20">
+  <owner>vpao@google.com</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records how often placeholder icons (as opposed to real app icons) are used
+    across all promise apps. A promise app is a temporary item in the Launcher/
+    Shelf which represents an app installation, and some promise apps will have
+    an icon available while others will have no icons and need to fallback on a
+    placeholder.
+  </summary>
+</histogram>
+
 <histogram name="Apps.PromiseApp.LifecycleEvent"
     enum="PromiseAppLifecycleEvent" expires_after="2024-10-20">
   <owner>vpao@google.com</owner>

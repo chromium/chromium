@@ -8,6 +8,7 @@
 namespace apps {
 
 extern const char kPromiseAppLifecycleEventHistogram[];
+extern const char kPromiseAppIconTypeHistogram[];
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -23,7 +24,17 @@ enum class PromiseAppLifecycleEvent {
   kMaxValue = kCreatedInShelf
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PromiseAppIconType {
+  kPlaceholderIcon = 0,
+  kRealIcon = 1,
+  kMaxValue = kRealIcon
+};
+
 void RecordPromiseAppLifecycleEvent(const PromiseAppLifecycleEvent event);
+
+void RecordPromiseAppIconType(const PromiseAppIconType icon_type);
 
 }  // namespace apps
 

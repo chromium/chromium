@@ -91676,6 +91676,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="20" label="Toggle toolbar location to bottom center (Obsolete)"/>
 </enum>
 
+<enum name="PromiseAppIconType">
+  <int value="0" label="Placeholder icon"/>
+  <int value="1" label="Real app icon"/>
+</enum>
+
 <enum name="PromiseAppLifecycleEvent">
   <int value="0" label="Promise app created in PromiseAppRegistryCache"/>
   <int value="1"
