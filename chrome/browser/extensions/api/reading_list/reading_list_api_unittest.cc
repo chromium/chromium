@@ -527,6 +527,13 @@ TEST_F(ReadingListApiUnitTest, ReadingListOnEntryUpdated) {
 
   TestEventRouterObserver event_observer(EventRouter::Get(browser_context()));
 
+  reading_list_model->SetReadStatusIfExists(url, /*read=*/true);
+  EXPECT_TRUE(reading_list_model->GetEntryByURL(url)->IsRead());
+
+  EXPECT_EQ(event_observer.events().size(), 1u);
+  EXPECT_TRUE(base::Contains(event_observer.events(),
+                             api::reading_list::OnEntryUpdated::kEventName));
+
   reading_list_model->SetEntryTitleIfExists(url, "New title");
   EXPECT_EQ(reading_list_model->GetEntryByURL(url)->Title(), "New title");
 
