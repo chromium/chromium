@@ -800,6 +800,63 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForUnary(
   return base::ok();
 }
 
+base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForResample2d(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::Resample2dPtr& resample2d,
+    GraphBuilder& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input = GetNodeOutputForOperand(
+      id_to_node_output_map, resample2d->input_operand_id);
+  const auto& input_tensor_desc = input->GetTensorDesc();
+
+  uint64_t output_id = resample2d->output_operand_id;
+  const auto& output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+
+  const auto& input_dimensions = input_tensor_desc.GetDimensions();
+  const auto& output_dimensions = output_tensor_desc.GetDimensions();
+  size_t input_rank = input_dimensions.size();
+  CHECK_EQ(input_rank, output_dimensions.size());
+  std::vector<float> scales(input_rank);
+  for (size_t i = 0; i < input_rank; ++i) {
+    scales[i] =
+        base::checked_cast<float>(output_dimensions[i]) / input_dimensions[i];
+  }
+
+  DML_INTERPOLATION_MODE mode;
+  switch (resample2d->mode) {
+    case mojom::Resample2d::InterpolationMode::kNearestNeighbor:
+      mode = DML_INTERPOLATION_MODE_NEAREST_NEIGHBOR;
+      break;
+    case mojom::Resample2d::InterpolationMode::kLinear:
+      mode = DML_INTERPOLATION_MODE_LINEAR;
+      break;
+  }
+
+  DML_RESAMPLE_OPERATOR_DESC resample2d_operator_desc = {
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      .InterpolationMode = mode,
+      .ScaleCount = static_cast<uint32_t>(scales.size()),
+      .Scales = scales.data()};
+
+  std::array<const NodeOutput*, 1> inputs = {input};
+  const OperatorNode* resample2d_node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_RESAMPLE, &resample2d_operator_desc, inputs);
+  if (!resample2d_node) {
+    return base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kUnknownError,
+                          "Failed to create resample2d operator."));
+  }
+
+  const NodeOutput* output = graph_builder.CreateNodeOutput(
+      resample2d_node, std::move(output_tensor_desc), 0);
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
+
+  return base::ok();
+}
+
 // DirectML API does not have a real Reshape operator. The WebNN Reshape is
 // implemented by creating a new NodeOutput for the input Node. The new
 // NodeOutput has the reshaped dimensions and is used as the output of the WebNN
@@ -1392,6 +1449,12 @@ void GraphImpl::CreateAndBuild(
                                        DML_OPERATOR_ACTIVATION_RELU>(
                 id_to_operand_map, operation->get_relu(), graph_builder,
                 id_to_node_output_map);
+        break;
+      }
+      case Operation::Tag::kResample2d: {
+        create_operator_result = CreateOperatorNodeForResample2d(
+            id_to_operand_map, operation->get_resample2d(), graph_builder,
+            id_to_node_output_map);
         break;
       }
       case Operation::Tag::kReshape: {

@@ -1956,4 +1956,131 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeConcatWithConstants) {
             std::vector<float>({0, 0, 0, 1, 2, 3, -1, -2, -3, -4, -5, -6}));
 }
 
+template <typename T>
+struct Resample2dTester {
+  OperandInfo<T> input;
+  mojom::Resample2d::InterpolationMode mode =
+      mojom::Resample2d::InterpolationMode::kNearestNeighbor;
+  OperandInfo<float> output;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildResample2d(input_operand_id, output_operand_id, mode);
+
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+    named_inputs.insert({"input", VectorToBigBuffer(input.values)});
+    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                    named_outputs);
+
+    VerifyFloatDataIsEqual(
+        GetFloatOutputData(std::move(named_outputs["output"]), output.type),
+        output.values);
+  }
+};
+
+// Test building and computing a DML graph with single operator resample2d.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorResample2d) {
+  // Test resample2d with "NearestNeighbor" mode.
+  {
+    Resample2dTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 2, 2},
+                  // [[[[1 2]
+                  //    [3 4]]]] with shape (1, 1, 2, 2)
+                  .values = {1, 2, 3, 4}},
+        .mode = mojom::Resample2d::InterpolationMode::kNearestNeighbor,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 4, 6},
+                   // [[[[1 1 1 2 2 2]
+                   //    [1 1 1 2 2 2]
+                   //    [3 3 3 4 4 4]
+                   //    [3 3 3 4 4 4]]]] with shape (1, 1, 4, 6)
+                   .values = {1, 1, 1, 2, 2, 2, 1, 1, 1, 2, 2, 2,
+                              3, 3, 3, 4, 4, 4, 3, 3, 3, 4, 4, 4}}}
+        .Test();
+  }
+  // Test resample2d with "Linear" mode.
+  {
+    Resample2dTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 2, 2},
+                  // [[[[1 2]
+                  //    [3 4]]]] with shape (1, 1, 2, 2)
+                  .values = {1, 2, 3, 4}},
+        .mode = mojom::Resample2d::InterpolationMode::kLinear,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 4, 4},
+                   // [[[[1   1.25 1.75 2  ]
+                   //    [1.5 1.75 2.25 2.5]
+                   //    [2.5 2.75 3.25 3.5]
+                   //    [3   3.25 3.75 4]]]] with shape (1, 1, 4, 4)
+                   .values = {1, 1.25, 1.75, 2, 1.5, 1.75, 2.25, 2.5, 2.5, 2.75,
+                              3.25, 3.5, 3, 3.25, 3.75, 4}}}
+        .Test();
+  }
+  // Test resample2d with "NearestNeighbor" mode and output sizes larger but
+  // not divisible to input sizes.
+  {
+    Resample2dTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 2, 3},
+                  // [[[[1 2 3]
+                  //    [4 5 6]]]] with shape (1, 1, 2, 3)
+                  .values = {1, 2, 3, 4, 5, 6}},
+        .mode = mojom::Resample2d::InterpolationMode::kNearestNeighbor,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 4, 5},
+                   // [[[[1 1 2 3 3]
+                   //    [1 1 2 3 3]
+                   //    [4 4 5 6 6]
+                   //    [4 4 5 6 6]]]] with shape (1, 1, 4, 5)
+                   .values = {1, 1, 2, 3, 3, 1, 1, 2, 3, 3,
+                              4, 4, 5, 6, 6, 4, 4, 5, 6, 6}}}
+        .Test();
+  }
+  // Test resample2d with "NearestNeighbor" mode and output sizes smaller than
+  // input sizes.
+  {
+    Resample2dTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 3, 3},
+                  // [[[[1 2 3]
+                  //    [4 5 6]
+                  //    [7 8 9]]]] with shape (1, 1, 3, 3)
+                  .values = {1, 2, 3, 4, 5, 6, 7, 8, 9}},
+        .mode = mojom::Resample2d::InterpolationMode::kNearestNeighbor,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 2, 2},
+                   // [[[[1 3]
+                   //    [7 9]]]] with shape (1, 1, 2, 2)
+                   .values = {1, 3, 7, 9}}}
+        .Test();
+  }
+  // Test resample2d with "Linear" mode and output sizes smaller than
+  // input sizes.
+  {
+    Resample2dTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 3, 3},
+                  // [[[[1 2 3]
+                  //    [4 5 6]
+                  //    [7 8 9]]]] with shape (1, 1, 3, 3)
+                  .values = {1, 2, 3, 4, 5, 6, 7, 8, 9}},
+        .mode = mojom::Resample2d::InterpolationMode::kLinear,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 2, 2},
+                   // [[[[2   3.5]
+                   //    [6.5 8  ]]]] with shape (1, 1, 2, 2)
+                   .values = {2, 3.5, 6.5, 8}}}
+        .Test();
+  }
+}
+
 }  // namespace webnn::dml
