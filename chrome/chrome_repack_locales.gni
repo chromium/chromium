@@ -99,6 +99,12 @@ template("chrome_repack_locales") {
       deps += [ "//extensions/strings" ]
     }
 
+    # src-internal strings only available on Chrome branded builds.
+    if (is_chrome_branded) {
+      source_patterns += [ "${root_gen_dir}/chrome/browser/nearby_sharing/internal/resources/nearby_share_internal_strings_" ]
+      deps += [ "//chrome/browser/nearby_sharing/internal/resources:nearby_share_internal_strings" ]
+    }
+
     source_patterns += [
       "${root_gen_dir}/chrome/${branding_path_product}_strings_",
       "${root_gen_dir}/components/strings/components_${branding_path_product}_strings_",

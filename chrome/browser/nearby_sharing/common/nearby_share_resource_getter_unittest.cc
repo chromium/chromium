@@ -6,6 +6,9 @@
 
 #include <string>
 
+#include "base/test/scoped_feature_list.h"
+#include "build/branding_buildflags.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -16,11 +19,24 @@ class NearbyShareResourceGetterTest : public ::testing::Test {
   ~NearbyShareResourceGetterTest() override = default;
 };
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 TEST_F(NearbyShareResourceGetterTest,
-       GetStringWithFeatureNameWorksWithPlaceholder) {
-  // Expect the feature name to be inserted into the string.
-  // TODO(b/304349796): Replace this string with a more straightforward example.
-  EXPECT_EQ(NearbyShareResourceGetter::GetInstance()->GetStringWithFeatureName(
-                IDS_NEARBY_HIGH_VISIBILITY_SUB_TITLE_SECONDS),
-            u"Nearby Share sec");
+       GetStringWithFeatureNameWorksWithPlaceholderOfficialBuild) {
+  base::test::ScopedFeatureList feature_list{features::kIsNameEnabled};
+
+  // Just enforce non empty string for official branded builds..
+  EXPECT_NE(NearbyShareResourceGetter::GetInstance()->GetStringWithFeatureName(
+                IDS_NEARBY_SHARE_FEATURE_NAME_PH),
+            u"");
 }
+#else   // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+TEST_F(NearbyShareResourceGetterTest,
+       GetStringWithFeatureNameWorksWithPlaceholderUnofficialBuild) {
+  base::test::ScopedFeatureList feature_list{features::kIsNameEnabled};
+
+  // Expect the feature name to be inserted into the string.
+  EXPECT_EQ(NearbyShareResourceGetter::GetInstance()->GetStringWithFeatureName(
+                IDS_NEARBY_SHARE_FEATURE_NAME_PH),
+            u"Nearby Share");
+}
+#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
