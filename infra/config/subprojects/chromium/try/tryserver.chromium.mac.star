@@ -422,6 +422,7 @@ ios_builder(
     mirrors = [
         "ci/ios-blink-dbg-fyi",
     ],
+    builderless = True,
     cpu = cpu.ARM64,
     execution_timeout = 4 * time.hour,
 )

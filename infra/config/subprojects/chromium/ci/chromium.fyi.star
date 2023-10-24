@@ -1762,6 +1762,7 @@ fyi_ios_builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
+    builderless = True,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "iOS",
