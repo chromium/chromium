@@ -6110,6 +6110,8 @@ TEST_P(PerDeskShelfTest, ShelfViewTransformUpdatedForScrollWhenSwitchingDesks) {
   ShelfViewTestAPI shelf_view_test_api(shelf_view);
   shelf_view_test_api.SetAnimationDuration(base::Milliseconds(1));
 
+  NewDesk();
+
   // Create apps running on the active desk, and not pinned to the shelf, until
   // the right or bottom scroll arrow appears.
   ScrollArrowView* right_arrow = scrollable_shelf_view->right_arrow();
@@ -6126,7 +6128,6 @@ TEST_P(PerDeskShelfTest, ShelfViewTransformUpdatedForScrollWhenSwitchingDesks) {
   EXPECT_FALSE(scrolled_transform.IsIdentity());
 
   // Switch desks.
-  NewDesk();
   ActivateDesk(DesksController::Get()->GetDeskAtIndex(1));
   if (IsPerDeskShelfEnabled()) {
     EXPECT_TRUE(shelf_view->GetTransform().IsIdentity());
