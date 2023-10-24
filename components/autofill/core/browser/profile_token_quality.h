@@ -161,6 +161,11 @@ class ProfileTokenQuality {
   // Resets all observations for the `type`.
   void ResetObservationsForStoredType(ServerFieldType type);
 
+  // Resets the observations for all tokens in which `profile_` and `other`
+  // differ. This is used as a mechanism to reset outdated observations, by
+  // setting `other` to the profile before modifications took place.
+  void ResetObservationsForDifferingTokens(const AutofillProfile& other);
+
   void disable_randomization_for_testing() {
     diable_randomization_for_testing_ = true;
   }

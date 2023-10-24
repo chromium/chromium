@@ -341,6 +341,20 @@ void ProfileTokenQuality::ResetObservationsForStoredType(ServerFieldType type) {
   observations_.erase(type);
 }
 
+void ProfileTokenQuality::ResetObservationsForDifferingTokens(
+    const AutofillProfile& other) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillTrackProfileTokenQuality)) {
+    return;
+  }
+  for (ServerFieldType type :
+       AutofillTable::GetStoredTypesForAutofillProfile()) {
+    if (profile_->GetRawInfo(type) != other.GetRawInfo(type)) {
+      ResetObservationsForStoredType(type);
+    }
+  }
+}
+
 ProfileTokenQuality::FormSignatureHash
 ProfileTokenQuality::GetFormSignatureHash(FormSignature form_signature) const {
   // Just take the lowest 8 bits of the `form_signature`.

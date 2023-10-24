@@ -254,28 +254,6 @@ void OrderProfiles(std::vector<AutofillProfile*>& profiles,
   }
 }
 
-// Constructs a new profile without observations for any of the stored types in
-// which `old_profile` and `new_profile` differ.
-// This is used as a mechanism to reset outdated observations. E.g, a user might
-// edit a value of a token in settings. In this case, all observations that were
-// previously collected for that value no longer apply.
-AutofillProfile GetProfileWithRemovedInvalidObservations(
-    const AutofillProfile& old_profile,
-    const AutofillProfile& new_profile) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillTrackProfileTokenQuality)) {
-    return new_profile;
-  }
-  AutofillProfile updated_profile = new_profile;
-  for (ServerFieldType type :
-       AutofillTable::GetStoredTypesForAutofillProfile()) {
-    if (old_profile.GetRawInfo(type) != new_profile.GetRawInfo(type)) {
-      updated_profile.token_quality().ResetObservationsForStoredType(type);
-    }
-  }
-  return updated_profile;
-}
-
 }  // namespace
 
 // Helper class to abstract the switching between account and profile storage
@@ -2614,8 +2592,9 @@ void PersonalDataManager::HandleNextProfileChange(const std::string& guid) {
       // At this point, the `existing_profile` is consistent with
       // AutofillTable's state. Reset observations for all types that change due
       // to this update.
-      AutofillProfile updated_profile =
-          GetProfileWithRemovedInvalidObservations(*existing_profile, profile);
+      AutofillProfile updated_profile = profile;
+      updated_profile.token_quality().ResetObservationsForDifferingTokens(
+          *existing_profile);
       // Unless only metadata has changed, which operator== ignores, update the
       // modification date. This happens e.g. when increasing the use count.
       if (*existing_profile != updated_profile) {
