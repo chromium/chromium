@@ -7012,3 +7012,8 @@ crbug.com/1494265 [ Mac10.15 ] virtual/disable-intersection-optimization/externa
 
 # Gardener 2023-10-23
 crbug.com/1363683 [ Mac10.15 ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-2d-drawImage.html [ Failure ]
+
+# Gardener 2023-10-24
+crbug.com/1495422 [ Mac10.15 ] external/wpt/css/css-text/parsing/white-space-shorthand-text-wrap.html [ Failure ]
+crbug.com/1495422 [ Mac10.15 ] external/wpt/html/semantics/popovers/popover-light-dismiss-flat-tree-nested.html [ Failure ]
+crbug.com/1495422 [ Mac10.15 ] external/wpt/css/css-typed-om/the-stylepropertymap/properties/white-space.html [ Failure ]
