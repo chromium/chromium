@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -38,11 +39,16 @@ constexpr char kFormPassword[] = "pw";
 
 namespace {
 
+NSString* const kPassphrase = @"hello";
+
 using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::kWaitForUIElementTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
+using chrome_test_util::SettingsAccountButton;
+using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::TapWebElementWithId;
 using chrome_test_util::UseSuggestedPasswordMatcher;
+
 using testing::ElementWithAccessibilityLabelSubstring;
 
 id<GREYMatcher> PasswordInfobarLabels(int prompt_id) {
@@ -127,6 +133,16 @@ BOOL WaitForKeyboardToAppear() {
   if ([self isRunningTest:@selector(testUpdatePromptAppearsOnFormSubmission)]) {
     config.features_enabled.push_back(
         password_manager::features::kIOSPasswordBottomSheet);
+  }
+  if ([self isRunningTest:@selector
+            (testPasswordGenerationForSignedInNotSyncingAccount)] ||
+      [self
+          isRunningTest:@selector
+          (testPasswordGenerationForSignedInNotSyncingWithPasswordsDisabled)] ||
+      [self isRunningTest:@selector
+            (testPasswordGenerationForSignedInNotSyncingWithError)]) {
+    config.features_enabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
   }
   return config;
 }
@@ -352,6 +368,122 @@ BOOL WaitForKeyboardToAppear() {
       [NSString stringWithFormat:@"document.getElementById('%s').value !== ''",
                                  kFormPassword];
   [ChromeEarlGrey waitForJavaScriptCondition:filledFieldCondition];
+}
+
+// Tests that password generation is offered for signed in not syncing users.
+- (void)testPasswordGenerationForSignedInNotSyncingAccount {
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [ChromeEarlGrey waitForSyncEngineInitialized:YES
+                                   syncTimeout:base::Seconds(10)];
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/simple_signup_form.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Signup form."];
+
+  // Verify that the target field is empty.
+  NSString* emptyFieldCondition =
+      [NSString stringWithFormat:@"document.getElementById('%s').value === ''",
+                                 kFormPassword];
+  [ChromeEarlGrey waitForJavaScriptCondition:emptyFieldCondition];
+
+  // Bring up the keyboard.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormPassword)];
+
+  // Wait for the accessory icon to appear.
+  WaitForKeyboardToAppear();
+
+  // Verify the 'Suggest Password...' chip is shown.
+  [[EarlGrey selectElementWithMatcher:SuggestPasswordChip()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap on a 'Suggest Password...' chip.
+  [[EarlGrey selectElementWithMatcher:SuggestPasswordChip()]
+      performAction:grey_tap()];
+
+  // Confirm by tapping on the 'Use Suggested Password' button.
+  [[EarlGrey selectElementWithMatcher:UseSuggestedPasswordMatcher()]
+      performAction:grey_tap()];
+}
+
+// Tests that password generation is not offered for signed in not syncing users
+// with passwords toggle disabled.
+- (void)testPasswordGenerationForSignedInNotSyncingWithPasswordsDisabled {
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [ChromeEarlGrey waitForSyncEngineInitialized:YES
+                                   syncTimeout:base::Seconds(10)];
+
+  // Disable Passwords toggle in account settings.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSyncPasswordsIdentifier)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(/*on=*/NO)];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/simple_signup_form.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Signup form."];
+
+  // Verify that the target field is empty.
+  NSString* emptyFieldCondition =
+      [NSString stringWithFormat:@"document.getElementById('%s').value === ''",
+                                 kFormPassword];
+  [ChromeEarlGrey waitForJavaScriptCondition:emptyFieldCondition];
+
+  // Bring up the keyboard.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormPassword)];
+
+  // Wait for the accessory icon to appear.
+  WaitForKeyboardToAppear();
+
+  // Verify the 'Suggest Password...' chip is not shown.
+  [[EarlGrey selectElementWithMatcher:SuggestPasswordChip()]
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that password generation is not offered for signed in not syncing users
+// with an encryption error; missing passphrase.
+- (void)testPasswordGenerationForSignedInNotSyncingWithError {
+  // Encrypt synced data with a passphrase to enable passphrase encryption for
+  // the signed in account.
+  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                                enableSync:NO];
+  [ChromeEarlGrey waitForSyncEngineInitialized:YES
+                                   syncTimeout:base::Seconds(10)];
+
+  // Verify encryption error is showing in in account settings.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+  // Verify the error section is showing.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(l10n_util::GetNSString(
+                     IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/simple_signup_form.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Signup form."];
+
+  // Verify that the target field is empty.
+  NSString* emptyFieldCondition =
+      [NSString stringWithFormat:@"document.getElementById('%s').value === ''",
+                                 kFormPassword];
+  [ChromeEarlGrey waitForJavaScriptCondition:emptyFieldCondition];
+
+  // Bring up the keyboard.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormPassword)];
+
+  // Wait for the accessory icon to appear.
+  WaitForKeyboardToAppear();
+
+  // Verify the 'Suggest Password...' chip is not shown.
+  [[EarlGrey selectElementWithMatcher:SuggestPasswordChip()]
+      assertWithMatcher:grey_notVisible()];
 }
 
 @end
