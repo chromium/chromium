@@ -501,7 +501,10 @@ using signin_metrics::PromoAction;
     // animation. The interruption has to be processed when the view controller
     // will be fully presented.
     // See crbug.com/1126170
-    DCHECK(!self.interruptCallback);
+    // TODO(crbug.com/1493398): Convert to CHECK.
+    DUMP_WILL_BE_CHECK(!self.interruptCallback)
+        << "Action: " << static_cast<int>(action) << ", "
+        << base::SysNSStringToUTF8([self description]);
     __weak __typeof(self) weakSelf = self;
     self.interruptCallback = ^() {
       [weakSelf interruptUserSigninUIWithAction:action
