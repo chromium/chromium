@@ -337,6 +337,11 @@ class CONTENT_EXPORT PrefetchContainer {
   // Sets `no_vary_search_data_` from `GetHead()`. Exposed for tests.
   void SetNoVarySearchData(RenderFrameHost* rfh);
 
+  // Called when cookies changes are detected via
+  // `HaveDefaultContextCookiesChanged()`, either for `this` or other
+  // `PrefetchContainer`s under the same `PrefetchMatchResolver`.
+  void OnCookiesChanged();
+
   class SinglePrefetch;
 
   // A `Reader` represents the current state of serving.

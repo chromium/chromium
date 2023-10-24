@@ -1019,6 +1019,12 @@ void PrefetchContainer::SimulateAttemptAtInterceptorForTest() {
   SetPrefetchStatus(PrefetchStatus::kPrefetchSuccessful);
 }
 
+void PrefetchContainer::OnCookiesChanged() {
+  SetPrefetchStatus(PrefetchStatus::kPrefetchNotUsedCookiesChanged);
+  UpdateServingPageMetrics();
+  CancelStreamingURLLoaderIfNotServing();
+}
+
 // TODO(crbug.com/1462206): We might be waiting on PrefetchContainer's head
 // from multiple navigations.
 // E.g. We might wait from one navigation but not use the prefetch, and
