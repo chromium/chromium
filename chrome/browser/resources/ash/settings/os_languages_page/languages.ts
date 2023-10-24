@@ -329,11 +329,10 @@ export class SettingsLanguagesElement extends SettingsLanguagesElementBase
           this.boundOnSpellcheckDictionariesChanged_);
 
       if (loadTimeData.getBoolean('languagePacksInSettingsEnabled')) {
-        // Poll language packs once to get the initial state of language pack
-        // statuses.
+        // Get the initial state of language pack statuses.
         // Do so in the next microtask to prevent `connectedCallback()` from
         // failing and stalling tests.
-        Promise.resolve().then(() => this.pollLanguagePacks_());
+        Promise.resolve().then(() => this.fetchMissingLanguagePackStatuses_());
         this.boundOnLanguagePackStatusChanged_ =
             this.onLanguagePackStatusChanged_.bind(this);
         this.inputMethodPrivate_.onLanguagePackStatusChanged.addListener(
@@ -1216,6 +1215,7 @@ export class SettingsLanguagesElement extends SettingsLanguagesElementBase
           enabledInputMethodSet.has(inputMethod));
     }
     this.set('languages.inputMethods.enabled', enabledInputMethods);
+    this.fetchMissingLanguagePackStatuses_();
   }
 
   addInputMethod(id: string): void {
@@ -1324,20 +1324,27 @@ export class SettingsLanguagesElement extends SettingsLanguagesElementBase
   }
 
   /**
-   * Manually poll language packs for the status of enabled input methods.
-   * Required to get the initial language pack status of input methods - further
-   * updates will be done via a listener to changes.
+   * Fetch the language pack status of enabled input methods which we do not
+   * have a status for.
    */
-  private pollLanguagePacks_(): void {
+  private fetchMissingLanguagePackStatuses_(): void {
     if (!this.languages) {
       return;
     }
     // Safety: `LanguagesModel.inputMethods` is always defined on CrOS.
     for (const inputMethod of this.languages.inputMethods!.enabled) {
-      void this.inputMethodPrivate_.getLanguagePackStatus(inputMethod.id)
-          .then((status) => {
-            this.setLanguagePackStatus_(inputMethod.id, status);
-          });
+      if (this.languages.inputMethods!.imeLanguagePackStatus[inputMethod.id] ===
+          undefined) {
+        // Explicitly set this input method status to unknown to prevent future
+        // calls of this method from fetching this again.
+        this.languages.inputMethods!.imeLanguagePackStatus[inputMethod.id] =
+            chrome.inputMethodPrivate.LanguagePackStatus.UNKNOWN;
+
+        void this.inputMethodPrivate_.getLanguagePackStatus(inputMethod.id)
+            .then((status) => {
+              this.setLanguagePackStatus_(inputMethod.id, status);
+            });
+      }
     }
   }
 
