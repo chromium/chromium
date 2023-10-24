@@ -387,7 +387,6 @@ void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
 
   manifest_url_ = *(data.manifest_url);
   manifest_ = data.manifest->Clone();
-  manifest_id_ = blink::GetIdFromManifest(manifest());
   web_page_metadata_ = data.web_page_metadata->Clone();
 
   // Skip checks for PasswordManager WebUI page.
@@ -549,7 +548,6 @@ void AppBannerManager::ResetCurrentPageData() {
   manifest_ = blink::mojom::Manifest::New();
   web_page_metadata_ = mojom::WebPageMetadata::New();
   manifest_url_ = GURL();
-  manifest_id_ = GURL();
   validated_url_ = GURL();
   UpdateState(State::INACTIVE);
   SetInstallableWebAppCheckResult(InstallableWebAppCheckResult::kUnknown);
@@ -870,7 +868,7 @@ std::string AppBannerManager::GetInstallableWebAppManifestId(
       return std::string();
     case InstallableWebAppCheckResult::kYes_ByUserRequest:
     case InstallableWebAppCheckResult::kYes_Promotable:
-      return manager->manifest_id_.spec();
+      return manager->manifest().id.spec();
   }
 }
 bool AppBannerManager::IsProbablyPromotableWebApp(

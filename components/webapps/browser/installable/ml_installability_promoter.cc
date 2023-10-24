@@ -222,7 +222,7 @@ GURL MLInstallabilityPromoter::GetProjectedManifestIdAfterMetricsCollection() {
   if (blink::IsEmptyManifest(manifest_)) {
     manifest_id = site_url_.GetWithoutRef();
   } else {
-    manifest_id = blink::GetIdFromManifest(*manifest_);
+    manifest_id = manifest_->id;
     if (!manifest_id.is_valid()) {
       manifest_id = site_url_.GetWithoutRef();
     }

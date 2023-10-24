@@ -188,7 +188,7 @@ bool AppBannerManagerAndroid::IsWebAppConsideredInstalled() const {
   return WebappsUtils::IsWebApkInstalled(web_contents()->GetBrowserContext(),
                                          manifest().start_url) ||
          WebappsClient::Get()->IsInstallationInProgress(web_contents(),
-                                                        manifest_id_);
+                                                        manifest().id);
 }
 
 void AppBannerManagerAndroid::ResetCurrentPageData() {

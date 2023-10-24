@@ -349,15 +349,6 @@ TEST_F(ShortcutInfoTest, ManifestIdGenerated) {
   EXPECT_EQ(info_.manifest_id.spec(), "https://new.com/new_id");
 }
 
-TEST_F(ShortcutInfoTest, ManifestIdFallback) {
-  manifest_.start_url = GURL("https://new.com/start");
-
-  info_.UpdateFromManifest(manifest_);
-
-  // If id is not specified, use start_url.
-  EXPECT_EQ(info_.manifest_id.spec(), manifest_.start_url.spec());
-}
-
 TEST_F(ShortcutInfoTest, UpdateDisplayModeWebApk) {
   scoped_feature_list_.InitAndEnableFeature(
       features::kUniversalInstallManifest);
