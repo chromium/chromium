@@ -304,7 +304,7 @@ bool ValidateButtonRemappingList(
         break;
       }
     }
-    if (!found || new_remapping->name.size() >= kMaxButtonNameLength) {
+    if (!found || new_remapping->name.size() > kMaxButtonNameLength) {
       return false;
     }
   }
