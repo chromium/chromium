@@ -35,7 +35,6 @@
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/frame/browser_actions.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -68,7 +67,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/actions/actions.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/tab_helper.h"
@@ -2267,56 +2265,4 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(base::FeatureList::IsEnabled(
       companion::features::internal::kSidePanelCompanion));
   EXPECT_FALSE(companion::IsCompanionFeatureEnabled());
-}
-
-class CompanionSidePanelPinningBrowserTest : public CompanionPageBrowserTest {
- public:
-  CompanionSidePanelPinningBrowserTest() = default;
-
-  void SetUpFeatureList() override {
-    CompanionPageBrowserTest::SetUpFeatureList();
-    pinning_feature_list_.InitAndEnableFeature(features::kSidePanelPinning);
-  }
-
-  ~CompanionSidePanelPinningBrowserTest() override = default;
-
-  void EnableCompanionByPolicy(bool enable_companion_by_policy) {
-    browser()->profile()->GetPrefs()->SetBoolean(
-        prefs::kGoogleSearchSidePanelEnabled, enable_companion_by_policy);
-  }
-
- private:
-  base::test::ScopedFeatureList pinning_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(CompanionSidePanelPinningBrowserTest,
-                       ActionItemDisabledOnInternalPage) {
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  actions::ActionItem* companion_action_item =
-      actions::ActionManager::Get().FindAction(
-          kActionSidePanelShowSearchCompanion,
-          BrowserActions::FromBrowser(browser())->root_action_item());
-  EXPECT_TRUE(companion_action_item->GetEnabled());
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(chrome::kChromeUIExtensionsURL)));
-  ASSERT_FALSE(companion_action_item->GetEnabled());
-}
-
-IN_PROC_BROWSER_TEST_F(CompanionSidePanelPinningBrowserTest,
-                       ActionItemChangeOnPolicyChange) {
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  actions::ActionItem* companion_action_item =
-      actions::ActionManager::Get().FindAction(
-          kActionSidePanelShowSearchCompanion,
-          BrowserActions::FromBrowser(browser())->root_action_item());
-  EXPECT_TRUE(companion_action_item->GetEnabled());
-
-  EnableCompanionByPolicy(false);
-  EXPECT_FALSE(companion_action_item->GetVisible());
-
-  EnableCompanionByPolicy(true);
-  EXPECT_TRUE(companion_action_item->GetVisible());
 }
