@@ -5266,6 +5266,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.SpdySession.OnSettings.{StreamState}StreamCount"
+    units="count" expires_after="2024-01-24">
+  <owner>bashi@chromium.org</owner>
+  <owner>chrome-network-stack@google.com</owner>
+  <summary>
+    Records the number of {StreamState} streams when a SpdySession receives an
+    HTTP/2 SETTINGS frame.
+  </summary>
+  <token key="StreamState">
+    <variant name="Active" summary="active"/>
+    <variant name="Created" summary="created"/>
+    <variant name="CreatedAndActive" summary="created and active"/>
+    <variant name="Pending" summary="pending"/>
+  </token>
+</histogram>
+
 <histogram name="Net.SpdySession.PushedAndUnclaimedBytes" units="count"
     expires_after="2024-04-03">
   <obsolete>
