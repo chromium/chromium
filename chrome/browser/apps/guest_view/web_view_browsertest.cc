@@ -4712,8 +4712,8 @@ IN_PROC_BROWSER_TEST_F(WebViewTest,
 
 // Makes sure that a webview will display correctly after reloading it after a
 // crash.
-// TODO(https://crbug.com/1494743): Flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
+// TODO(https://crbug.com/1494743): Flaky on Linux and ChromeOS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ReloadAfterCrash DISABLED_ReloadAfterCrash
 #else
 #define MAYBE_ReloadAfterCrash ReloadAfterCrash
