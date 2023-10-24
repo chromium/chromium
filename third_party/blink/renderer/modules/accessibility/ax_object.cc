@@ -610,7 +610,11 @@ void AXObject::SetHasDirtyDescendants(bool dirty) const {
 void AXObject::SetAncestorsHaveDirtyDescendants() const {
   CHECK(!IsDetached());
   CHECK(!AXObjectCache().HasBeenDisposed());
-  CHECK(!AXObjectCache().IsFrozen());
+  if (AXObjectCache().IsFrozen()) {
+    // TODO(accessibility): Restore as CHECK(), remove early return.
+    DCHECK(false) << "Attempt to update frozen tree: " << ToString(true, true);
+    return;
+  }
   CHECK(!AXObjectCache().UpdatingTree());
 
   if (!RuntimeEnabledFeatures::AccessibilityEagerAXTreeUpdateEnabled()) {
