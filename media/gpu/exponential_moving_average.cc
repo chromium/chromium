@@ -4,6 +4,8 @@
 
 #include "media/gpu/exponential_moving_average.h"
 
+#include <cmath>
+
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/logging.h"
@@ -17,7 +19,7 @@ ExponentialMovingAverage::ExponentialMovingAverage(
 ExponentialMovingAverage::~ExponentialMovingAverage() = default;
 
 float ExponentialMovingAverage::GetStdDeviation() const {
-  return std::sqrtf(std::max(mean_square_ - std::pow(mean_, 2), 0.0));
+  return std::sqrt(std::max(mean_square_ - std::pow(mean_, 2.0f), 0.0f));
 }
 
 }  // namespace media

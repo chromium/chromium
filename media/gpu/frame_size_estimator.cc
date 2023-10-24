@@ -4,6 +4,8 @@
 
 #include "media/gpu/frame_size_estimator.h"
 
+#include <cmath>
+
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/logging.h"
@@ -14,7 +16,7 @@ namespace {
 // Maps QP to quantizer step size. 0.625 is Q-step value for QP=0 for H.26x
 // codecs.
 float Qp2QStepSize(uint32_t qp) {
-  return 0.625f * std::powf(2, qp / 6.0f);
+  return 0.625f * std::pow(2.0f, static_cast<float>(qp) / 6.0f);
 }
 
 void CalculateQSteps(uint32_t qp,
