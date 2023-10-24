@@ -92,7 +92,6 @@
 #include "extensions/browser/path_util.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/process_manager_factory.h"
-#include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/ui_util.h"
 #include "extensions/browser/updater/extension_downloader_types.h"
 #include "extensions/browser/warning_service.h"
@@ -101,7 +100,6 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/feature_switch.h"
-#include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
@@ -1090,10 +1088,10 @@ DeveloperPrivateUpdateProfileConfigurationFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const developer::ProfileConfigurationUpdate& update = params->update;
-  Profile* profile = Profile::FromBrowserContext(browser_context());
 
-  PrefService* prefs = profile->GetPrefs();
   if (update.in_developer_mode) {
+    Profile* profile = Profile::FromBrowserContext(browser_context());
+
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     supervised_user::SupervisedUserService* service =
         SupervisedUserServiceFactory::GetForProfile(profile);
@@ -1102,13 +1100,7 @@ DeveloperPrivateUpdateProfileConfigurationFunction::Run() {
     }
 #endif
 
-    prefs->SetBoolean(prefs::kExtensionsUIDeveloperMode,
-                      *update.in_developer_mode);
-    SetCurrentDeveloperMode(util::GetBrowserContextId(browser_context()),
-                            *update.in_developer_mode);
-
-    RendererStartupHelperFactory::GetForBrowserContext(browser_context())
-        ->OnDeveloperModeChanged(*update.in_developer_mode);
+    util::SetDeveloperModeForProfile(profile, *update.in_developer_mode);
   }
 
   return RespondNow(NoArguments());

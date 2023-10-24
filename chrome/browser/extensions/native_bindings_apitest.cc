@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -26,7 +27,6 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension_features.h"
-#include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -591,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(
   // With kDeveloperModeRestriction enabled, developer mode-only APIs
   // should not be available if the user is not in developer mode.
   SetCustomArg("not_in_developer_mode");
-  SetCurrentDeveloperMode(util::GetBrowserContextId(profile()), false);
+  util::SetDeveloperModeForProfile(profile(), false);
   ASSERT_TRUE(RunExtensionTest(
       "native_bindings/developer_mode_only_with_api_permission"))
       << message_;
@@ -603,7 +603,7 @@ IN_PROC_BROWSER_TEST_F(
   // With kDeveloperModeRestriction enabled, developer mode-only APIs
   // should be available if the user is in developer mode.
   SetCustomArg("in_developer_mode");
-  SetCurrentDeveloperMode(util::GetBrowserContextId(profile()), true);
+  util::SetDeveloperModeForProfile(profile(), true);
   ASSERT_TRUE(RunExtensionTest(
       "native_bindings/developer_mode_only_with_api_permission"))
       << message_;
@@ -612,7 +612,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     NativeBindingsRestrictedToDeveloperModeApiTest,
     DeveloperModeOnlyWithoutAPIPermissionUserIsNotInDeveloperMode) {
-  SetCurrentDeveloperMode(util::GetBrowserContextId(profile()), false);
+  util::SetDeveloperModeForProfile(profile(), false);
   ASSERT_TRUE(RunExtensionTest(
       "native_bindings/developer_mode_only_without_api_permission"))
       << message_;
@@ -621,7 +621,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     NativeBindingsRestrictedToDeveloperModeApiTest,
     DeveloperModeOnlyWithoutAPIPermissionUserIsInDeveloperMode) {
-  SetCurrentDeveloperMode(util::GetBrowserContextId(profile()), true);
+  util::SetDeveloperModeForProfile(profile(), true);
   ASSERT_TRUE(RunExtensionTest(
       "native_bindings/developer_mode_only_without_api_permission"))
       << message_;
