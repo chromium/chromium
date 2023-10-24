@@ -1168,10 +1168,14 @@ bool RenderWidgetHostViewAndroid::IsShowing() {
 }
 
 void RenderWidgetHostViewAndroid::SelectAroundCaretAck(
+    int startOffset,
+    int endOffset,
+    int surroundingTextLength,
     blink::mojom::SelectAroundCaretResultPtr result) {
   if (!selection_popup_controller_)
     return;
-  selection_popup_controller_->OnSelectAroundCaretAck(std::move(result));
+  selection_popup_controller_->OnSelectAroundCaretAck(
+      startOffset, endOffset, surroundingTextLength, std::move(result));
 }
 
 gfx::Rect RenderWidgetHostViewAndroid::GetViewBounds() {

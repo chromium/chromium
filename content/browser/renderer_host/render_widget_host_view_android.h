@@ -326,7 +326,10 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void DismissTextHandles();
   void SetTextHandlesHiddenForDropdownMenu(bool hide_handles);
   void SetTextHandlesTemporarilyHidden(bool hide_handles);
-  void SelectAroundCaretAck(blink::mojom::SelectAroundCaretResultPtr result);
+  void SelectAroundCaretAck(int startOffset,
+                            int endOffset,
+                            int surroundingTextLength,
+                            blink::mojom::SelectAroundCaretResultPtr result);
 
   void SetSynchronousCompositorClient(SynchronousCompositorClient* client);
 

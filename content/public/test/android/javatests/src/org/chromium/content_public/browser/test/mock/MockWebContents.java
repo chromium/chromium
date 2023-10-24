@@ -199,8 +199,13 @@ public class MockWebContents implements WebContents {
     public void scrollFocusedEditableNodeIntoView() {}
 
     @Override
-    public void selectAroundCaret(@SelectionGranularity int granularity, boolean shouldShowHandle,
-            boolean shouldShowContextMenu) {}
+    public void selectAroundCaret(
+            @SelectionGranularity int granularity,
+            boolean shouldShowHandle,
+            boolean shouldShowContextMenu,
+            int startOffset,
+            int endOffset,
+            int surroundingTextLength) {}
 
     @Override
     public void adjustSelectionByCharacterOffset(
