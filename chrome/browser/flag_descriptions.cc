@@ -5867,6 +5867,11 @@ const char kEnableRuntimeCountersTelemetryName[] =
 const char kEnableRuntimeCountersTelemetryDescription[] =
     "Allow admins to collect runtime counters telemetry (Intel Gen 14+ only).";
 
+const char kFasterSplitScreenSetupName[] = "Enable Faster Split Screen Setup";
+const char kFasterSplitScreenSetupDescription[] =
+    "Enables faster split screen setup process by showing partial overview on "
+    "window snapped";
+
 const char kFastPairName[] = "Enable Fast Pair";
 const char kFastPairDescription[] =
     "Enables Google Fast Pair service which uses BLE to discover supported "

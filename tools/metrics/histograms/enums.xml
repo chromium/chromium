@@ -68213,6 +68213,7 @@ from previous Chrome versions.
   <int value="1281379527" label="AmbientSubpageUIChange:enabled"/>
   <int value="1281399380" label="NetworkServiceSandbox:disabled"/>
   <int value="1281471853" label="UseButtonTranslateBubbleUI:disabled"/>
+  <int value="1283205498" label="FasterSplitScreenSetup:disabled"/>
   <int value="1283672117" label="RequestDesktopSiteWindowSetting:enabled"/>
   <int value="1283908088" label="ImprovedLanguageSettings:disabled"/>
   <int value="1283956865" label="force-tablet-mode"/>
@@ -69516,6 +69517,7 @@ from previous Chrome versions.
   <int value="1902894451" label="BorealisPermitted:enabled"/>
   <int value="1903206193" label="NewWindowAppMenu:disabled"/>
   <int value="1903444879" label="VirtualKeyboardApi:disabled"/>
+  <int value="1903793531" label="FasterSplitScreenSetup:enabled"/>
   <int value="1905129994"
       label="AutofillEnableAndroidNKeyForFidoAuthentication:enabled"/>
   <int value="1905465678" label="ContextualSearchSingleActions:enabled"/>

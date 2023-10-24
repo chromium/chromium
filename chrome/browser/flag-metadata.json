@@ -425,6 +425,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "ash-faster-split-screen-setup",
+    "owners": [ "michelefan@chromium.org", "sophiewen@chromium.org", "xdai@chromium.org" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "ash-limit-shelf-items-to-active-desk",
     "owners": [ "afakhry@chromium.org", "tclaiborne@chromium.org" ],
     "expiry_milestone": 118

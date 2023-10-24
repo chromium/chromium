@@ -3386,6 +3386,9 @@ extern const char kDisplayAlignmentAssistanceDescription[];
 extern const char kDropdownPanel[];
 extern const char kDropdownPanelDescription[];
 
+extern const char kFasterSplitScreenSetupName[];
+extern const char kFasterSplitScreenSetupDescription[];
+
 extern const char kFastPairName[];
 extern const char kFastPairDescription[];
 
