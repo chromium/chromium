@@ -38,8 +38,8 @@ ComposeSession::ComposeSession(
       web_contents_(web_contents),
       weak_ptr_factory_(this) {
   callback_ = std::move(callback);
-  state_ = compose::mojom::ComposeState::New();
-  state_->style = compose::mojom::StyleModifiers::New();
+  current_state_ = compose::mojom::ComposeState::New();
+  current_state_->style = compose::mojom::StyleModifiers::New();
 }
 
 ComposeSession::~ComposeSession() = default;
@@ -57,8 +57,8 @@ void ComposeSession::Bind(
 // ComposeDialogPageHandler
 void ComposeSession::Compose(compose::mojom::StyleModifiersPtr style,
                              const std::string& input) {
-  state_->has_pending_request = true;
-  state_->style = std::move(style);
+  current_state_->has_pending_request = true;
+  current_state_->style = std::move(style);
   // TODO(b/300974056): Move this to the overall feature-enabled check.
   if (!executor_ ||
       !base::FeatureList::IsEnabled(
@@ -73,8 +73,8 @@ void ComposeSession::Compose(compose::mojom::StyleModifiersPtr style,
 
   compose_proto::ComposeRequest request;
   request.set_user_input(input);
-  request.set_tone(ComposeTone(state_->style->tone));
-  request.set_length(ComposeLength(state_->style->length));
+  request.set_tone(ComposeTone(current_state_->style->tone));
+  request.set_length(ComposeLength(current_state_->style->length));
   *request.mutable_page_metadata() = std::move(page_metadata);
   executor_->ExecuteModel(
       optimization_guide::proto::ModelExecutionFeature::
@@ -86,7 +86,7 @@ void ComposeSession::Compose(compose::mojom::StyleModifiersPtr style,
 
 void ComposeSession::ModelExecutionCallback(
     optimization_guide::OptimizationGuideModelExecutionResult result) {
-  state_->has_pending_request = false;
+  current_state_->has_pending_request = false;
 
   if (!result.has_value()) {
     // TODO(b/302748001 Add proper error handler.
@@ -106,38 +106,76 @@ void ComposeSession::ModelExecutionCallback(
   auto ui_response = compose::mojom::ComposeResponse::New();
   ui_response->status = compose::mojom::ComposeStatus::kOk;
   ui_response->result = response->output();
-
-  state_->response = ui_response->Clone();
-
+  current_state_->response = ui_response->Clone();
+  SaveLastOKStateToUndoStack();
+  ui_response->undo_available = !undo_states_.empty();
   if (dialog_remote_.is_bound()) {
     dialog_remote_->ResponseReceived(std::move(ui_response));
   }
 }
 
 void ComposeSession::ProcessError(const std::string& message) {
-  state_->has_pending_request = false;
-  state_->response = compose::mojom::ComposeResponse::New();
-  state_->response->status = compose::mojom::ComposeStatus::kError;
+  current_state_->has_pending_request = false;
+  current_state_->response = compose::mojom::ComposeResponse::New();
+  current_state_->response->status = compose::mojom::ComposeStatus::kError;
 
   if (dialog_remote_.is_bound()) {
-    dialog_remote_->ResponseReceived(state_->response->Clone());
+    dialog_remote_->ResponseReceived(current_state_->response->Clone());
   }
 }
 
 void ComposeSession::RequestInitialState(RequestInitialStateCallback callback) {
-  std::move(callback).Run(
-      compose::mojom::OpenMetadata::New(initial_input_, state_->Clone()));
+  if (current_state_->response) {
+    current_state_->response->undo_available = !undo_states_.empty();
+  }
+  std::move(callback).Run(compose::mojom::OpenMetadata::New(
+      initial_input_, current_state_->Clone()));
 }
 
 void ComposeSession::SaveWebUIState(const std::string& webui_state) {
-  state_->webui_state = webui_state;
+  current_state_->webui_state = webui_state;
 }
 
 void ComposeSession::AcceptComposeResult() {
-  CHECK(state_->response->status == compose::mojom::ComposeStatus::kOk);
+  CHECK(current_state_->response->status == compose::mojom::ComposeStatus::kOk);
   if (!callback_.is_null()) {
     // Guard against invoking twice before the UI is able to disconnect.
-    std::move(callback_).Run(base::UTF8ToUTF16(state_->response->result));
+    std::move(callback_).Run(
+        base::UTF8ToUTF16(current_state_->response->result));
   }
   // TODO(b/301370241): Make sure the WebUI or browser calls CloseUI.
+}
+
+void ComposeSession::Undo(UndoCallback callback) {
+  if (undo_states_.empty()) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  compose::mojom::ComposeStatePtr undo_state = std::move(undo_states_.top());
+  undo_states_.pop();
+  if (!undo_state->response ||
+      undo_state->response->status != compose::mojom::ComposeStatus::kOk ||
+      undo_state->response->result == "") {
+    // Gracefully fail if we find an invalid state on the undo stack.
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  // State returns to the last undo_state.
+  current_state_ = undo_state->Clone();
+  last_ok_state_ = undo_state->Clone();
+  undo_state->response->undo_available = !undo_states_.empty();
+  std::move(callback).Run(std::move(undo_state));
+}
+
+void ComposeSession::SaveLastOKStateToUndoStack() {
+  if (!current_state_->response ||
+      current_state_->response->status != compose::mojom::ComposeStatus::kOk ||
+      current_state_->response->result == "") {
+    // Attempting to save a state with an invalid response onto the undo stack.
+    return;
+  }
+  if (last_ok_state_) {
+    undo_states_.push(std::move(last_ok_state_));
+  }
+  last_ok_state_ = current_state_->Clone();
 }

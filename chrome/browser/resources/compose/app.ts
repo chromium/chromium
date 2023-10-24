@@ -159,6 +159,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private composeResponseReceived_(response: ComposeResponse) {
     this.response_ = response;
     this.loading_ = false;
+    this.undoEnabled_ = response.undoAvailable;
     this.requestUpdateScroll();
   }
 
@@ -174,6 +175,30 @@ export class ComposeAppElement extends ComposeAppElementBase {
     const state: ComposeAppState = {input: this.input_};
     // TODO(johntlee): Throttle this call or parts of this call (eg. input).
     this.apiProxy_.saveWebuiState(JSON.stringify(state));
+  }
+
+  private async onUndoClick_() {
+    try {
+      const state = await this.apiProxy_.undo();
+      if (state == null) {
+        // Attempted to undo when there are no compose states available to undo.
+        // Ensure undo is disabled since it is not possible.
+        this.undoEnabled_ = false;
+        return;
+      }
+      // Restore state to the state returned by Undo.
+      this.response_ = state!.response!;
+      this.undoEnabled_ = state!.response!.undoAvailable;
+      this.selectedLength_ = state!.style.length;
+      this.selectedTone_ = state!.style.tone;
+    } catch (error) {
+      // Error (e.g., disconnected mojo pipe) from a rejected Promise.
+      // Previously, we received a true `undo_available` field in either
+      // RequestInitialState(), ComposeResponseReceived(), or a previous Undo().
+      // So we think it is possible to undo, but the Promise failed.
+      // Allow the user to try again. Leave the undo button enabled.
+      // TODO(b/301368162) Ask UX how to handle the edge case of multiple fails.
+    }
   }
 }
 

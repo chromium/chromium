@@ -31,6 +31,10 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
     this.methodCalled('compose', {style, input});
   }
 
+  undo(): Promise<(ComposeState | null)> {
+    return Promise.resolve(null);
+  }
+
   getRouter() {
     return this.router_;
   }
@@ -81,7 +85,8 @@ suite('ComposeApp', () => {
   }
 
   function mockResponse(result: string = 'some response'): Promise<void> {
-    testProxy.remote.responseReceived({status: ComposeStatus.kOk, result});
+    testProxy.remote.responseReceived(
+        {status: ComposeStatus.kOk, undoAvailable: false, result});
     return testProxy.remote.$.flushForTesting();
   }
 
@@ -201,7 +206,11 @@ suite('ComposeApp', () => {
     const appWithResult = await initializeNewAppWithState({
       webuiState: JSON.stringify({input: 'some input'}),
       hasPendingRequest: false,
-      response: {status: ComposeStatus.kOk, result: 'here is a result'},
+      response: {
+        status: ComposeStatus.kOk,
+        undoAvailable: false,
+        result: 'here is a result',
+      },
     });
     assertTrue(isVisible(appWithResult.$.resultContainer));
     assertTrue(appWithResult.$.resultContainer.textContent!.includes(

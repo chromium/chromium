@@ -186,9 +186,9 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     return request;
   }
 
-  compose_proto::ComposeResponse ComposeResponse(bool ok) {
+  compose_proto::ComposeResponse ComposeResponse(bool ok, std::string output) {
     compose_proto::ComposeResponse response;
-    response.set_output(ok ? "Cucumbers" : "");
+    response.set_output(ok ? output : "");
     return response;
   }
 
@@ -223,7 +223,7 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
           [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
                   callback) {
             std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true)));
+                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")));
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
@@ -251,7 +251,7 @@ TEST_F(ChromeComposeClientTest, TestComposeParams) {
           [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
                   callback) {
             std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true)));
+                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")));
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
@@ -375,7 +375,7 @@ TEST_F(ChromeComposeClientTest, TestRestoreStateAfterRequestResponse) {
           [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
                   callback) {
             std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true)));
+                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")));
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
@@ -435,7 +435,7 @@ TEST_F(ChromeComposeClientTest, TestSaveThenComposeThenRestoreWebUIState) {
           [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
                   callback) {
             std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true)));
+                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")));
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr>
@@ -593,7 +593,7 @@ TEST_F(ChromeComposeClientTest, NoStateWorksAtChromeCompose) {
           [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
                   callback) {
             std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true)));
+                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")));
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
@@ -658,6 +658,197 @@ TEST_F(ChromeComposeClientTest, TestClearStateWhenOpenWithSelectedText) {
 
   compose::mojom::OpenMetadataPtr result = open_test_future.Take();
   EXPECT_EQ("", result->compose_state->webui_state);
+}
+
+// Tests that undo is not possible when compose is never called and no response
+// is ever received.
+TEST_F(ChromeComposeClientTest, TestEmptyUndo) {
+  ShowDialogAndBindMojo();
+  base::test::TestFuture<compose::mojom::ComposeStatePtr> test_future;
+  page_handler()->Undo(test_future.GetCallback());
+  EXPECT_FALSE(test_future.Take());
+}
+
+// Tests that Undo is not possible after only one Compose() invocation.
+TEST_F(ChromeComposeClientTest, TestUndoUnavailableFirstCompose) {
+  ShowDialogAndBindMojo();
+
+  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
+      .WillOnce(testing::WithArg<2>(testing::Invoke(
+          [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            std::move(callback).Run(
+                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")));
+          })));
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
+  EXPECT_CALL(compose_dialog(), ResponseReceived(_))
+      .WillOnce(
+          testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
+            compose_future.SetValue(std::move(response));
+          }));
+
+  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
+  compose::mojom::ComposeResponsePtr response = compose_future.Take();
+  EXPECT_FALSE(response->undo_available)
+      << "First Compose() response should say undo not available.";
+
+  base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_future;
+  page_handler()->RequestInitialState(open_future.GetCallback());
+  compose::mojom::OpenMetadataPtr open_metadata = open_future.Take();
+  EXPECT_FALSE(open_metadata->compose_state->response->undo_available)
+      << "RequestInitialState() should return a response that undo is "
+         "not available after only one Compose() invocation.";
+
+  base::test::TestFuture<compose::mojom::ComposeStatePtr> undo_future;
+  page_handler()->Undo(undo_future.GetCallback());
+  compose::mojom::ComposeStatePtr state = undo_future.Take();
+  EXPECT_FALSE(state)
+      << "Undo should return null after only one Compose() invocation.";
+}
+
+// Tests undo after calling Compose() twice.
+TEST_F(ChromeComposeClientTest, TestComposeTwiceThenUpdateWebUIStateThenUndo) {
+  ShowDialogAndBindMojo();
+
+  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
+      .WillRepeatedly(testing::WithArg<2>(testing::Invoke(
+          [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            std::move(callback).Run(
+                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")));
+          })));
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
+  EXPECT_CALL(compose_dialog(), ResponseReceived(_))
+      .WillRepeatedly(
+          testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
+            compose_future.SetValue(std::move(response));
+          }));
+
+  page_handler()->SaveWebUIState("this state should be restored with undo");
+  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
+  page_handler()->SaveWebUIState("second state");
+  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
+
+  compose::mojom::ComposeResponsePtr response = compose_future.Take();
+  EXPECT_FALSE(response->undo_available) << "First Compose() response should "
+                                            "say undo is not available.";
+  response = compose_future.Take();
+  EXPECT_TRUE(response->undo_available) << "Second Compose() response should "
+                                           "say undo is available.";
+  page_handler()->SaveWebUIState("user edited the input field further");
+
+  base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_future;
+  page_handler()->RequestInitialState(open_future.GetCallback());
+  compose::mojom::OpenMetadataPtr open_metadata = open_future.Take();
+  EXPECT_TRUE(open_metadata->compose_state->response->undo_available)
+      << "RequestInitialState() should return a response that undo is "
+         "available after second Compose() invocation.";
+  EXPECT_EQ("user edited the input field further",
+            open_metadata->compose_state->webui_state);
+
+  base::test::TestFuture<compose::mojom::ComposeStatePtr> undo_future;
+  page_handler()->Undo(undo_future.GetCallback());
+  compose::mojom::ComposeStatePtr state = undo_future.Take();
+  EXPECT_TRUE(state)
+      << "Undo should return valid state after second Compose() invocation.";
+  EXPECT_EQ("this state should be restored with undo", state->webui_state);
+}
+
+// Tests if undo can be done more than once.
+TEST_F(ChromeComposeClientTest, TestUndoStackMultipleUndos) {
+  ShowDialogAndBindMojo();
+
+  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
+      .WillRepeatedly(testing::WithArg<2>(testing::Invoke(
+          [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            std::move(callback).Run(
+                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")));
+          })));
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
+  EXPECT_CALL(compose_dialog(), ResponseReceived(_))
+      .WillRepeatedly(
+          testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
+            compose_future.SetValue(std::move(response));
+          }));
+
+  page_handler()->SaveWebUIState("first state");
+  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
+  page_handler()->SaveWebUIState("second state");
+  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
+  page_handler()->SaveWebUIState("third state");
+  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
+  page_handler()->SaveWebUIState("fourth state");
+
+  compose::mojom::ComposeResponsePtr response = compose_future.Take();
+  EXPECT_FALSE(response->undo_available) << "First Compose() response should "
+                                            "say undo is not available.";
+  response = compose_future.Take();
+  EXPECT_TRUE(response->undo_available) << "Second Compose() response should "
+                                           "say undo is available.";
+  response = compose_future.Take();
+  EXPECT_TRUE(response->undo_available) << "Third Compose() response should "
+                                           "say undo is available.";
+
+  base::test::TestFuture<compose::mojom::ComposeStatePtr> undo_future;
+  page_handler()->Undo(undo_future.GetCallback());
+  compose::mojom::ComposeStatePtr state = undo_future.Take();
+  EXPECT_EQ("second state", state->webui_state);
+  EXPECT_TRUE(state->response->undo_available);
+
+  base::test::TestFuture<compose::mojom::ComposeStatePtr> undo_future2;
+  page_handler()->Undo(undo_future2.GetCallback());
+  compose::mojom::ComposeStatePtr state2 = undo_future2.Take();
+  EXPECT_EQ("first state", state2->webui_state);
+  EXPECT_FALSE(state2->response->undo_available);
+}
+
+// Tests scenario: Undo returns state A. Compose, then undo again returns to
+// state A.
+TEST_F(ChromeComposeClientTest, TestUndoComposeThenUndoAgain) {
+  ShowDialogAndBindMojo();
+
+  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
+      .WillRepeatedly(testing::WithArg<2>(testing::Invoke(
+          [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            std::move(callback).Run(
+                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")));
+          })));
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
+  EXPECT_CALL(compose_dialog(), ResponseReceived(_))
+      .WillRepeatedly(
+          testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
+            compose_future.SetValue(std::move(response));
+          }));
+
+  page_handler()->SaveWebUIState("first state");
+  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
+  page_handler()->SaveWebUIState("second state");
+  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
+  page_handler()->SaveWebUIState("wip web ui state");
+
+  compose::mojom::ComposeResponsePtr response = compose_future.Take();
+  EXPECT_FALSE(response->undo_available) << "First Compose() response should "
+                                            "say undo is not available.";
+  response = compose_future.Take();
+  EXPECT_TRUE(response->undo_available) << "Second Compose() response should "
+                                           "say undo is available.";
+
+  base::test::TestFuture<compose::mojom::ComposeStatePtr> undo_future;
+  page_handler()->Undo(undo_future.GetCallback());
+  EXPECT_EQ("first state", undo_future.Take()->webui_state);
+
+  page_handler()->SaveWebUIState("third state");
+  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
+
+  response = compose_future.Take();
+  EXPECT_TRUE(response->undo_available) << "Third Compose() response should "
+                                           "say undo is available.";
+
+  base::test::TestFuture<compose::mojom::ComposeStatePtr> undo2_future;
+  page_handler()->Undo(undo2_future.GetCallback());
+  EXPECT_EQ("first state", undo2_future.Take()->webui_state);
 }
 
 #if defined(GTEST_HAS_DEATH_TEST)
