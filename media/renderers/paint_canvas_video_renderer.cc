@@ -799,6 +799,28 @@ BASE_FEATURE(kOneCopyUploadOfVideoFrameToGLTexture,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// Controls whether the one-copy path when copying a pure software VideoFrame
+// (i.e., a VideoFrame with no textures) to a GL texture is enabled or disabled.
+// It is not possible to support this codepath via MultiplanarSharedImage: these
+// VideoFrames have format I420, and it is not possible across all platforms to
+// upload the VideoFrame's data via raster to a MultiplanarSI with format I420
+// that is accessible by WebGL. Such an SI must be backed by a native buffer to
+// be accessible to WebGL, and native buffer-backed I420 SharedImages are in
+// general not supported (and *cannot* be supported on Windows). 1-copy of pure
+// software VideoFrames *is* supported in the legacy 1-copy implementation that
+// uses legacy mailboxes to perform the copy, but we are in the process of
+// eliminating this implementation. Whether 1 GPU-GPU copy or 2 GPU-GPU copies
+// are performed for pure video software upload should not be a significant
+// factor in performance, as dominant factor in terms of performance will be the
+// fact that the VideoFrame's data needs to be uploaded from the CPU to the GPU.
+// This Feature serves as a reverse-killswitch while we roll out the complete
+// disabling of this codepath.
+// TODO(crbug.com/1410164): Remove the usage of this feature disabling has
+// safely rolled out.
+BASE_FEATURE(kOneCopyUploadOfPureSoftwareVideoFrameToGLTexture,
+             "OneCopyUploadOfPureSoftwareVideoFrameToGLTexture",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether SharedImage is used to perform direct GPU-GPU VideoFrame to GL
 // texture uploads (when allowed) rather than legacy mailboxes.
 BASE_FEATURE(kUseSharedImageForDirectUpload,
@@ -1745,6 +1767,12 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
   if (!ValidFormatForDirectUploading(raster_context_provider,
                                      static_cast<GLenum>(internal_format),
                                      type)) {
+    return false;
+  }
+
+  if (!video_frame->HasTextures() &&
+      !base::FeatureList::IsEnabled(
+          kOneCopyUploadOfPureSoftwareVideoFrameToGLTexture)) {
     return false;
   }
 
