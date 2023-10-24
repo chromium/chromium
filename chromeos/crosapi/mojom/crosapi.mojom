@@ -1045,8 +1045,8 @@ enum OpenUrlFrom {
 // parameters here. If a new parameter is added and its value is only known
 // after the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 72
-// Next id: 72
+// Next version: 73
+// Next id: 73
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1483,6 +1483,11 @@ struct BrowserInitParams {
   // Tells if the desk profiles feature is enabled.
   [MinVersion=71]
   bool is_desk_profiles_enabled@71;
+
+  // If true, the shortcuts in web app system will be published as shortcuts to
+  // app service and displayed with updated UI in ash.
+  [MinVersion=72]
+  bool is_cros_web_app_shortcut_ui_update_enabled@72;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams
