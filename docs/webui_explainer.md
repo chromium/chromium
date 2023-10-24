@@ -441,12 +441,12 @@ interface PageHandler {
 
   // Expects a response from the browser.
   GetNumberOfDonuts() => (uint32 num_donuts);
-}
+};
 
 // Called from C++ side of chrome://donuts. (Browser -> Renderer)
 interface Page {
   DonutsBaked(uint32 num_donuts);
-}
+};
 ```
 
 #### BUILD.gn mojo target
