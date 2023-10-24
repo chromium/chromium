@@ -116,9 +116,20 @@ def add_tag(request: pytest.FixtureRequest) -> AddTag:
   """Fixture for adding a user defined tag to the current test case."""
   def add(tag_key: str, tag_value: str) -> None:
     request.node.user_properties.append(
-      _PROPERTY_SECTION_TAG, (tag_key, tag_value)
+      (_PROPERTY_SECTION_TAG, (tag_key, tag_value))
     )
   return add
+
+@pytest.fixture(autouse=True)
+def tag_common_test_params(pytestconfig, add_tag) -> None:
+  # Add test parameters to result logs.
+  platform = pytestconfig.getoption('target_platform')
+  channel = pytestconfig.getoption('channel')
+  chrome_version = pytestconfig.getoption('chrome_version')
+  add_tag('platform', platform)
+  add_tag('channel', channel)
+  if chrome_version:
+    add_tag('chrome_version', chrome_version)
 
 
 def _report_test_result(result: pytest.TestReport,
