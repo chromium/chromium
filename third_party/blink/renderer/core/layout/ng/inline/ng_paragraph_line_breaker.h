@@ -16,7 +16,7 @@ class NGConstraintSpace;
 class NGInlineNode;
 struct LineLayoutOpportunity;
 
-class CORE_EXPORT NGParagraphLineBreaker {
+class CORE_EXPORT ParagraphLineBreaker {
  public:
   static absl::optional<LayoutUnit> AttemptParagraphBalancing(
       const NGInlineNode& node,

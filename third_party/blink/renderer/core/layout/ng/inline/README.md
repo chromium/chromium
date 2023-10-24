@@ -118,7 +118,7 @@ three separate steps or stages that are executed in order:
 ### <a name="line-breaking">Line Breaking</a> ###
 [line breaking]: #line-breaking
 
-[NGLineBreaker] takes a list of [InlineItem],
+[LineBreaker] takes a list of [InlineItem],
 measure them, break into lines, and
 produces a list of [InlineItemResult] for each line.
 
@@ -157,7 +157,7 @@ This phase consists of following sub-phases:
 1. Create a [NGLogicalLineItem] for each [InlineItemResult]
    and determine the positions.
 
-   The inline size of each item was already determined by [NGLineBreaker],
+   The inline size of each item was already determined by [LineBreaker],
    but the inline position is recomputed
    because [BiDi reordering](#bidi) may change them.
 
@@ -375,6 +375,7 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [FragmentItems]: ng_fragment_items.h
 [InlineItem]: ng_inline_item.h
 [InlineItemResult]: ng_inline_item_result.h
+[LineBreaker]: ng_line_breaker.h
 [NGBaselineAlgorithmType]: ng_baseline.h
 [NGBaselineRequest]: ng_baseline.h
 [NGBlockNode]: ../ng_block_node.h
@@ -386,7 +387,6 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [NGInlineNode]: ng_inline_node.h
 [NGInlineLayoutAlgorithm]: ng_inline_layout_algorithm.h
 [NGLayoutInputNode]: ../ng_layout_input_node.h
-[NGLineBreaker]: ng_line_breaker.h
 [NGLogicalLineItem]: ng_logical_line_item.h
 [NGLogicalLineItems]: ng_logical_line_items.h
 [NGOffsetMapping]: ng_offset_mapping.h

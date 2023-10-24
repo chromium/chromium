@@ -25,9 +25,9 @@ LayoutUnit FragmentWidth(const NGInlineNode& node) {
 
 }  // namespace
 
-class NGLineWidthsTest : public RenderingTest {
+class LineWidthsTest : public RenderingTest {
  public:
-  absl::optional<NGLineWidths> ComputeLineWidths(NGInlineNode node) {
+  absl::optional<LineWidths> ComputeLineWidths(NGInlineNode node) {
     const LayoutUnit width = FragmentWidth(node);
     NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
     const ComputedStyle& style = node.Style();
@@ -45,7 +45,7 @@ class NGLineWidthsTest : public RenderingTest {
             {space.GetBfcOffset().line_offset,
              /*bfc_block_offset*/ LayoutUnit()},
             space.AvailableSize().inline_size);
-    NGLineWidths line_width;
+    LineWidths line_width;
     if (line_width.Set(node, opportunities)) {
       return line_width;
     }
@@ -165,14 +165,14 @@ struct LineWidthsData {
       </div>
     )HTML"},
 };
-class NGLineWidthsDataTest
-    : public NGLineWidthsTest,
-      public testing::WithParamInterface<LineWidthsData> {};
-INSTANTIATE_TEST_SUITE_P(NGLineWidthsTest,
-                         NGLineWidthsDataTest,
+class LineWidthsDataTest : public LineWidthsTest,
+                           public testing::WithParamInterface<LineWidthsData> {
+};
+INSTANTIATE_TEST_SUITE_P(LineWidthsTest,
+                         LineWidthsDataTest,
                          testing::ValuesIn(line_widths_data));
 
-TEST_P(NGLineWidthsDataTest, Data) {
+TEST_P(LineWidthsDataTest, Data) {
   const auto& data = GetParam();
   LoadAhem();
   SetBodyInnerHTML(String::Format(R"HTML(
@@ -198,7 +198,7 @@ TEST_P(NGLineWidthsDataTest, Data) {
   )HTML",
                                   data.html));
   const NGInlineNode target = GetInlineNodeByElementId("target");
-  const absl::optional<NGLineWidths> line_widths = ComputeLineWidths(target);
+  const absl::optional<LineWidths> line_widths = ComputeLineWidths(target);
   std::vector<int> actual_widths;
   if (line_widths) {
     const size_t size = data.widths.size() ? data.widths.size() : 3;

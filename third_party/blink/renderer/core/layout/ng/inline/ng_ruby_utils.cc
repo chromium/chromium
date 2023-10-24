@@ -158,7 +158,7 @@ NGAnnotationOverhang GetOverhang(const InlineItemResult& item) {
   return overhang;
 }
 
-bool CanApplyStartOverhang(const NGLineInfo& line_info,
+bool CanApplyStartOverhang(const LineInfo& line_info,
                            LayoutUnit& start_overhang) {
   if (start_overhang <= LayoutUnit())
     return false;
@@ -188,7 +188,7 @@ bool CanApplyStartOverhang(const NGLineInfo& line_info,
   return true;
 }
 
-LayoutUnit CommitPendingEndOverhang(NGLineInfo* line_info) {
+LayoutUnit CommitPendingEndOverhang(LineInfo* line_info) {
   DCHECK(line_info);
   InlineItemResults* items = line_info->MutableResults();
   if (items->size() < 2U)

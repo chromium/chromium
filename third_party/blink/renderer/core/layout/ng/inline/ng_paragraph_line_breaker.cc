@@ -61,12 +61,12 @@ struct LineBreakResults {
     const LineLayoutOpportunity line_opportunity(available_width);
     NGLeadingFloats leading_floats;
     ExclusionSpace exclusion_space;
-    NGLineInfo line_info;
+    LineInfo line_info;
     for (;;) {
-      NGLineBreaker line_breaker(node_, NGLineBreakerMode::kContent, space_,
-                                 line_opportunity, leading_floats, break_token_,
-                                 /* column_spanner_path_ */ nullptr,
-                                 &exclusion_space);
+      LineBreaker line_breaker(node_, LineBreakerMode::kContent, space_,
+                               line_opportunity, leading_floats, break_token_,
+                               /* column_spanner_path_ */ nullptr,
+                               &exclusion_space);
       line_breaker.NextLine(&line_info);
       // Bisecting can't find the desired value if the paragraph has forced line
       // breaks.
@@ -141,7 +141,7 @@ wtf_size_t EstimateNumLines(const String& text_content,
 }  // namespace
 
 // static
-absl::optional<LayoutUnit> NGParagraphLineBreaker::AttemptParagraphBalancing(
+absl::optional<LayoutUnit> ParagraphLineBreaker::AttemptParagraphBalancing(
     const NGInlineNode& node,
     const NGConstraintSpace& space,
     const LineLayoutOpportunity& line_opportunity) {

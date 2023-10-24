@@ -102,13 +102,13 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
 
   bool IsBlockLevel() { return EnsureData().is_block_level_; }
 
-  // True if this node can't use the bisection in `NGParagraphLineBreaker`.
+  // True if this node can't use the bisection in `ParagraphLineBreaker`.
   bool IsBisectLineBreakDisabled() const {
     return Data().IsBisectLineBreakDisabled();
   }
   // True if this node can't use the `NGScorehLineBreaker`, that can be
   // determined by `CollectInlines`. Conditions that can change without
-  // `CollectInlines` are in `NGLineBreaker::ShouldDisableScoreLineBreak()`.
+  // `CollectInlines` are in `LineBreaker::ShouldDisableScoreLineBreak()`.
   bool IsScoreLineBreakDisabled() const {
     return Data().IsScoreLineBreakDisabled();
   }
@@ -202,7 +202,7 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   static void ComputeOffsetMapping(LayoutBlockFlow* layout_block_flow,
                                    NGInlineNodeData* data);
 
-  friend class NGLineBreakerTest;
+  friend class LineBreakerTest;
 };
 
 inline bool NGInlineNode::IsStickyImagesQuirkForContentSize() const {

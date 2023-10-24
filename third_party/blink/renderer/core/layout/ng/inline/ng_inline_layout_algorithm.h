@@ -21,13 +21,13 @@ namespace blink {
 
 class ExclusionSpace;
 class InlineItem;
+class LineInfo;
 class NGColumnSpannerPath;
 class NGConstraintSpace;
 class NGInlineBreakToken;
 class NGInlineChildLayoutContext;
 class NGInlineNode;
 class NGInlineLayoutStateStack;
-class NGLineInfo;
 struct InlineItemResult;
 struct NGInlineBoxState;
 struct NGLeadingFloats;
@@ -37,7 +37,7 @@ struct NGLeadingFloats;
 //
 // This class determines the position of InlineItem and build line boxes.
 //
-// Uses NGLineBreaker to find InlineItems to form a line.
+// Uses LineBreaker to find InlineItems to form a line.
 class CORE_EXPORT NGInlineLayoutAlgorithm final
     : public NGLayoutAlgorithm<NGInlineNode,
                                NGLineBoxFragmentBuilder,
@@ -51,7 +51,7 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
   ~NGInlineLayoutAlgorithm() override;
 
   void CreateLine(const LineLayoutOpportunity&,
-                  NGLineInfo*,
+                  LineInfo*,
                   NGLogicalLineItems* line_box);
 
   const NGLayoutResult* Layout() override;
@@ -62,19 +62,19 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
   }
 
  private:
-  friend class NGLineWidthsTest;
+  friend class LineWidthsTest;
 
   void PositionLeadingFloats(ExclusionSpace&, NGLeadingFloats&);
   NGPositionedFloat PositionFloat(LayoutUnit origin_block_bfc_offset,
                                   LayoutObject* floating_object,
                                   ExclusionSpace*);
 
-  void PrepareBoxStates(const NGLineInfo&, const NGInlineBreakToken*);
-  void RebuildBoxStates(const NGLineInfo&,
+  void PrepareBoxStates(const LineInfo&, const NGInlineBreakToken*);
+  void RebuildBoxStates(const LineInfo&,
                         const NGInlineBreakToken*,
                         NGInlineLayoutStateStack*) const;
 #if EXPENSIVE_DCHECKS_ARE_ON()
-  void CheckBoxStates(const NGLineInfo&, const NGInlineBreakToken*) const;
+  void CheckBoxStates(const LineInfo&, const NGInlineBreakToken*) const;
 #endif
 
   NGInlineBoxState* HandleOpenTag(const InlineItem&,
@@ -89,7 +89,7 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
   void BidiReorder(TextDirection base_direction, NGLogicalLineItems* line_box);
 
   void PlaceControlItem(const InlineItem&,
-                        const NGLineInfo&,
+                        const LineInfo&,
                         InlineItemResult*,
                         NGLogicalLineItems* line_box,
                         NGInlineBoxState*);
@@ -98,42 +98,42 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
                    NGLogicalLineItems* line_box,
                    NGInlineBoxState*);
   NGInlineBoxState* PlaceAtomicInline(const InlineItem&,
-                                      const NGLineInfo&,
+                                      const LineInfo&,
                                       InlineItemResult*,
                                       NGLogicalLineItems* line_box);
   void PlaceBlockInInline(const InlineItem&,
-                          const NGLineInfo&,
+                          const LineInfo&,
                           InlineItemResult*,
                           NGLogicalLineItems* line_box);
   void PlaceInitialLetterBox(const InlineItem&,
-                             const NGLineInfo&,
+                             const LineInfo&,
                              InlineItemResult*,
                              NGLogicalLineItems* line_box);
   void PlaceLayoutResult(InlineItemResult*,
                          NGLogicalLineItems* line_box,
                          NGInlineBoxState*,
                          LayoutUnit inline_offset = LayoutUnit());
-  void PlaceOutOfFlowObjects(const NGLineInfo&,
+  void PlaceOutOfFlowObjects(const LineInfo&,
                              const FontHeight&,
                              NGLogicalLineItems* line_box);
   void PlaceFloatingObjects(const FontHeight&,
                             const LineLayoutOpportunity&,
                             LayoutUnit ruby_block_start_adjust,
-                            NGLineInfo*,
+                            LineInfo*,
                             NGLogicalLineItems* line_box);
   void PlaceRelativePositionedItems(NGLogicalLineItems* line_box);
-  void PlaceListMarker(const InlineItem&, InlineItemResult*, const NGLineInfo&);
+  void PlaceListMarker(const InlineItem&, InlineItemResult*, const LineInfo&);
 
-  LayoutUnit ApplyTextAlign(NGLineInfo*);
-  absl::optional<LayoutUnit> ApplyJustify(LayoutUnit space, NGLineInfo*);
+  LayoutUnit ApplyTextAlign(LineInfo*);
+  absl::optional<LayoutUnit> ApplyJustify(LayoutUnit space, LineInfo*);
 
   // Add any trailing clearance requested by a BR 'clear' attribute on the line.
   // Return true if this was successful (this also includes cases where there is
   // no clearance needed). Return false if the floats that we need to clear past
   // will be resumed in a subsequent fragmentainer.
-  bool AddAnyClearanceAfterLine(const NGLineInfo&);
+  bool AddAnyClearanceAfterLine(const LineInfo&);
 
-  LayoutUnit SetAnnotationOverflow(const NGLineInfo& line_info,
+  LayoutUnit SetAnnotationOverflow(const LineInfo& line_info,
                                    const NGLogicalLineItems& line_box,
                                    const FontHeight& line_box_metrics);
 

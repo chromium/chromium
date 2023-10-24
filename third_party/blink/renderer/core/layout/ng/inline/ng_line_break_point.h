@@ -16,22 +16,22 @@ namespace blink {
 //
 // Represents a determined break point.
 //
-struct CORE_EXPORT NGLineBreakPoint {
+struct CORE_EXPORT LineBreakPoint {
   DISALLOW_NEW();
 
  public:
-  NGLineBreakPoint() = default;
-  NGLineBreakPoint(const InlineItemTextIndex& offset,
-                   const InlineItemTextIndex& end,
-                   bool is_hyphenated = false)
+  LineBreakPoint() = default;
+  LineBreakPoint(const InlineItemTextIndex& offset,
+                 const InlineItemTextIndex& end,
+                 bool is_hyphenated = false)
       : offset(offset), end(end), is_hyphenated(is_hyphenated) {}
-  explicit NGLineBreakPoint(const InlineItemTextIndex& offset,
-                            bool is_hyphenated = false)
-      : NGLineBreakPoint(offset, offset, is_hyphenated) {}
+  explicit LineBreakPoint(const InlineItemTextIndex& offset,
+                          bool is_hyphenated = false)
+      : LineBreakPoint(offset, offset, is_hyphenated) {}
 
   explicit operator bool() const { return offset.text_offset; }
 
-  bool operator==(const NGLineBreakPoint& other) const {
+  bool operator==(const LineBreakPoint& other) const {
     return offset == other.offset && end == other.end &&
            is_hyphenated == other.is_hyphenated;
   }

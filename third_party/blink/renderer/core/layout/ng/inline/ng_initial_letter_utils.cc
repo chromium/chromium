@@ -221,7 +221,7 @@ FontHeight AdjustInitialLetterInTextPosition(const FontHeight& line_box_metrics,
   return font_height;
 }
 
-LayoutUnit CalculateInitialLetterBoxInlineSize(const NGLineInfo& line_info) {
+LayoutUnit CalculateInitialLetterBoxInlineSize(const LineInfo& line_info) {
   LayoutUnit inline_size = line_info.TextIndent();
   for (const InlineItemResult& item_result : line_info.Results()) {
     const ShapeResultView* const shape_result = item_result.shape_result.get();
@@ -250,7 +250,7 @@ const ExclusionArea* PostPlaceInitialLetterBox(
     const BoxStrut& initial_letter_box_margins,
     NGLogicalLineItems* line_box,
     const BfcOffset& line_origin,
-    NGLineInfo* line_info) {
+    LineInfo* line_info) {
   NGLogicalLineItem* const initial_letter_line_item = std::find_if(
       line_box->begin(), line_box->end(),
       [](const auto& line_item) { return line_item.IsInitialLetterBox(); });

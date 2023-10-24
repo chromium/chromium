@@ -12,8 +12,8 @@
 
 namespace blink {
 
+class LineInfo;
 class NGInlineLayoutStateStack;
-class NGLineInfo;
 class NGLogicalLineItems;
 struct NGLogicalLineItem;
 
@@ -24,7 +24,7 @@ class CORE_EXPORT NGLineTruncator final {
   STACK_ALLOCATED();
 
  public:
-  NGLineTruncator(const NGLineInfo& line_info);
+  NGLineTruncator(const LineInfo& line_info);
 
   // Truncate |line_box| and place ellipsis. Returns the new inline-size of the
   // |line_box|.

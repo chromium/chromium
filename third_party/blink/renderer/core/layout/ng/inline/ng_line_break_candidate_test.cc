@@ -13,24 +13,24 @@
 
 namespace blink {
 
-class NGLineBreakCandidateTest : public RenderingTest {
+class LineBreakCandidateTest : public RenderingTest {
  public:
   bool ComputeCandidates(const NGInlineNode& node,
                          LayoutUnit available_width,
-                         NGLineBreakCandidates& candidates) {
+                         LineBreakCandidates& candidates) {
     NGConstraintSpace space = ConstraintSpaceForAvailableSize(available_width);
     ExclusionSpace exclusion_space;
     NGLeadingFloats leading_floats;
     LineLayoutOpportunity line_opportunity(available_width);
     const NGInlineBreakToken* break_token = nullptr;
-    NGLineInfo line_info;
-    NGLineBreakCandidateContext context(candidates);
+    LineInfo line_info;
+    LineBreakCandidateContext context(candidates);
     bool is_first = true;
     do {
-      NGLineBreaker line_breaker(node, NGLineBreakerMode::kContent, space,
-                                 line_opportunity, leading_floats, break_token,
-                                 /* column_spanner_path */ nullptr,
-                                 &exclusion_space);
+      LineBreaker line_breaker(node, LineBreakerMode::kContent, space,
+                               line_opportunity, leading_floats, break_token,
+                               /* column_spanner_path */ nullptr,
+                               &exclusion_space);
       line_breaker.NextLine(&line_info);
       if (is_first) {
         context.EnsureFirstSentinel(line_info);
@@ -46,7 +46,7 @@ class NGLineBreakCandidateTest : public RenderingTest {
   }
 };
 
-TEST_F(NGLineBreakCandidateTest, Text) {
+TEST_F(LineBreakCandidateTest, Text) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
@@ -62,17 +62,17 @@ TEST_F(NGLineBreakCandidateTest, Text) {
   )HTML");
   const NGInlineNode target = GetInlineNodeByElementId("target");
   for (int width : {800, 50, 10}) {
-    NGLineBreakCandidates candidates;
+    LineBreakCandidates candidates;
     EXPECT_TRUE(ComputeCandidates(target, LayoutUnit(width), candidates));
-    EXPECT_THAT(candidates, testing::ElementsAre(
-                                NGLineBreakCandidate({0, 0}, 0),
-                                NGLineBreakCandidate({0, 3}, {0, 2}, 30, 20),
-                                NGLineBreakCandidate({0, 6}, 60)))
+    EXPECT_THAT(candidates,
+                testing::ElementsAre(LineBreakCandidate({0, 0}, 0),
+                                     LineBreakCandidate({0, 3}, {0, 2}, 30, 20),
+                                     LineBreakCandidate({0, 6}, 60)))
         << String::Format("Width=%d", width);
   }
 }
 
-TEST_F(NGLineBreakCandidateTest, SoftHyphen) {
+TEST_F(LineBreakCandidateTest, SoftHyphen) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
@@ -88,19 +88,19 @@ TEST_F(NGLineBreakCandidateTest, SoftHyphen) {
   )HTML");
   const NGInlineNode target = GetInlineNodeByElementId("target");
   for (int width : {800, 70, 60, 50, 10}) {
-    NGLineBreakCandidates candidates;
+    LineBreakCandidates candidates;
     EXPECT_TRUE(ComputeCandidates(target, LayoutUnit(width), candidates));
     EXPECT_THAT(candidates,
                 testing::ElementsAre(
-                    NGLineBreakCandidate({0, 0}, 0),
-                    NGLineBreakCandidate({0, 3}, {0, 3}, 20, 30, 0, true),
-                    NGLineBreakCandidate({0, 7}, {0, 7}, 50, 60, 0, true),
-                    NGLineBreakCandidate({0, 12}, 90)))
+                    LineBreakCandidate({0, 0}, 0),
+                    LineBreakCandidate({0, 3}, {0, 3}, 20, 30, 0, true),
+                    LineBreakCandidate({0, 7}, {0, 7}, 50, 60, 0, true),
+                    LineBreakCandidate({0, 12}, 90)))
         << String::Format("Width=%d", width);
   }
 }
 
-TEST_F(NGLineBreakCandidateTest, SoftHyphenDisabled) {
+TEST_F(LineBreakCandidateTest, SoftHyphenDisabled) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
@@ -117,16 +117,16 @@ TEST_F(NGLineBreakCandidateTest, SoftHyphenDisabled) {
   )HTML");
   const NGInlineNode target = GetInlineNodeByElementId("target");
   for (int width : {800, 60, 10}) {
-    NGLineBreakCandidates candidates;
+    LineBreakCandidates candidates;
     EXPECT_TRUE(ComputeCandidates(target, LayoutUnit(width), candidates));
     EXPECT_THAT(candidates,
-                testing::ElementsAre(NGLineBreakCandidate({0, 0}, 0),
-                                     NGLineBreakCandidate({0, 11}, 90)))
+                testing::ElementsAre(LineBreakCandidate({0, 0}, 0),
+                                     LineBreakCandidate({0, 11}, 90)))
         << String::Format("Width=%d", width);
   }
 }
 
-TEST_F(NGLineBreakCandidateTest, Span) {
+TEST_F(LineBreakCandidateTest, Span) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
@@ -142,18 +142,18 @@ TEST_F(NGLineBreakCandidateTest, Span) {
   )HTML");
   const NGInlineNode target = GetInlineNodeByElementId("target");
   for (const int width : {800, 60, 50, 10}) {
-    NGLineBreakCandidates candidates;
+    LineBreakCandidates candidates;
     EXPECT_TRUE(ComputeCandidates(target, LayoutUnit(width), candidates));
-    EXPECT_THAT(candidates, testing::ElementsAre(
-                                NGLineBreakCandidate({0, 0}, 0),
-                                NGLineBreakCandidate({0, 3}, {0, 2}, 30, 20),
-                                NGLineBreakCandidate({4, 7}, {2, 6}, 70, 60),
-                                NGLineBreakCandidate({4, 11}, 110)))
+    EXPECT_THAT(candidates,
+                testing::ElementsAre(LineBreakCandidate({0, 0}, 0),
+                                     LineBreakCandidate({0, 3}, {0, 2}, 30, 20),
+                                     LineBreakCandidate({4, 7}, {2, 6}, 70, 60),
+                                     LineBreakCandidate({4, 11}, 110)))
         << String::Format("Width=%d", width);
   }
 }
 
-TEST_F(NGLineBreakCandidateTest, SpanMidWord) {
+TEST_F(LineBreakCandidateTest, SpanMidWord) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
@@ -169,17 +169,17 @@ TEST_F(NGLineBreakCandidateTest, SpanMidWord) {
   )HTML");
   const NGInlineNode target = GetInlineNodeByElementId("target");
   for (const int width : {800, 80, 10}) {
-    NGLineBreakCandidates candidates;
+    LineBreakCandidates candidates;
     EXPECT_TRUE(ComputeCandidates(target, LayoutUnit(width), candidates));
-    EXPECT_THAT(candidates, testing::ElementsAre(
-                                NGLineBreakCandidate({0, 0}, 0),
-                                NGLineBreakCandidate({4, 7}, {4, 6}, 70, 60),
-                                NGLineBreakCandidate({4, 11}, 110)))
+    EXPECT_THAT(candidates,
+                testing::ElementsAre(LineBreakCandidate({0, 0}, 0),
+                                     LineBreakCandidate({4, 7}, {4, 6}, 70, 60),
+                                     LineBreakCandidate({4, 11}, 110)))
         << String::Format("Width=%d", width);
   }
 }
 
-TEST_F(NGLineBreakCandidateTest, SpanCloseAfterSpace) {
+TEST_F(LineBreakCandidateTest, SpanCloseAfterSpace) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
@@ -195,18 +195,18 @@ TEST_F(NGLineBreakCandidateTest, SpanCloseAfterSpace) {
   )HTML");
   const NGInlineNode target = GetInlineNodeByElementId("target");
   for (const int width : {800, 50, 10}) {
-    NGLineBreakCandidates candidates;
+    LineBreakCandidates candidates;
     EXPECT_TRUE(ComputeCandidates(target, LayoutUnit(width), candidates));
-    EXPECT_THAT(candidates, testing::ElementsAre(
-                                NGLineBreakCandidate({0, 0}, 0),
-                                NGLineBreakCandidate({0, 3}, {0, 2}, 30, 20),
-                                NGLineBreakCandidate({4, 7}, {2, 6}, 70, 60),
-                                NGLineBreakCandidate({4, 11}, 110)))
+    EXPECT_THAT(candidates,
+                testing::ElementsAre(LineBreakCandidate({0, 0}, 0),
+                                     LineBreakCandidate({0, 3}, {0, 2}, 30, 20),
+                                     LineBreakCandidate({4, 7}, {2, 6}, 70, 60),
+                                     LineBreakCandidate({4, 11}, 110)))
         << String::Format("Width=%d", width);
   }
 }
 
-TEST_F(NGLineBreakCandidateTest, TrailingSpacesCollapsed) {
+TEST_F(LineBreakCandidateTest, TrailingSpacesCollapsed) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
@@ -222,28 +222,28 @@ TEST_F(NGLineBreakCandidateTest, TrailingSpacesCollapsed) {
   )HTML");
   const NGInlineNode target = GetInlineNodeByElementId("target");
   for (const int width : {800, 50, 10}) {
-    NGLineBreakCandidates candidates;
+    LineBreakCandidates candidates;
     EXPECT_TRUE(ComputeCandidates(target, LayoutUnit(width), candidates));
     // TODO(kojii): There shouldn't be a break opportunity before `<span>`, but
     // `item_results[0].can_break_after` is set.
     if (width < 70) {
       EXPECT_THAT(candidates, testing::ElementsAre(
-                                  NGLineBreakCandidate({0, 0}, 0),
-                                  NGLineBreakCandidate({0, 4}, {0, 3}, 40, 30),
-                                  NGLineBreakCandidate({4, 4}, {0, 3}, 40, 30),
-                                  NGLineBreakCandidate({4, 7}, 70)))
+                                  LineBreakCandidate({0, 0}, 0),
+                                  LineBreakCandidate({0, 4}, {0, 3}, 40, 30),
+                                  LineBreakCandidate({4, 4}, {0, 3}, 40, 30),
+                                  LineBreakCandidate({4, 7}, 70)))
           << String::Format("Width=%d", width);
       continue;
     }
-    EXPECT_THAT(candidates, testing::ElementsAre(
-                                NGLineBreakCandidate({0, 0}, 0),
-                                NGLineBreakCandidate({0, 4}, {0, 3}, 40, 30),
-                                NGLineBreakCandidate({4, 7}, 70)))
+    EXPECT_THAT(candidates,
+                testing::ElementsAre(LineBreakCandidate({0, 0}, 0),
+                                     LineBreakCandidate({0, 4}, {0, 3}, 40, 30),
+                                     LineBreakCandidate({4, 7}, 70)))
         << String::Format("Width=%d", width);
   }
 }
 
-TEST_F(NGLineBreakCandidateTest, AtomicInline) {
+TEST_F(LineBreakCandidateTest, AtomicInline) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
@@ -261,18 +261,18 @@ TEST_F(NGLineBreakCandidateTest, AtomicInline) {
   )HTML");
   const NGInlineNode target = GetInlineNodeByElementId("target");
   for (const int width : {800, 10}) {
-    NGLineBreakCandidates candidates;
+    LineBreakCandidates candidates;
     EXPECT_TRUE(ComputeCandidates(target, LayoutUnit(width), candidates));
     EXPECT_THAT(candidates,
-                testing::ElementsAre(NGLineBreakCandidate({0, 0}, 0),
-                                     NGLineBreakCandidate({1, 1}, 10),
-                                     NGLineBreakCandidate({2, 2}, 20)))
+                testing::ElementsAre(LineBreakCandidate({0, 0}, 0),
+                                     LineBreakCandidate({1, 1}, 10),
+                                     LineBreakCandidate({2, 2}, 20)))
         << String::Format("Width=%d", width);
   }
 }
 
 // fast/borders/border-image-border-radius.html
-TEST_F(NGLineBreakCandidateTest, AtomicInlineBr) {
+TEST_F(LineBreakCandidateTest, AtomicInlineBr) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
@@ -293,17 +293,17 @@ TEST_F(NGLineBreakCandidateTest, AtomicInlineBr) {
   )HTML");
   const NGInlineNode target = GetInlineNodeByElementId("target");
   for (const int width : {800, 10}) {
-    NGLineBreakCandidates candidates;
+    LineBreakCandidates candidates;
     EXPECT_TRUE(ComputeCandidates(target, LayoutUnit(width), candidates));
     EXPECT_THAT(candidates, testing::ElementsAre(
-                                NGLineBreakCandidate({0, 0}, 0),
-                                NGLineBreakCandidate({2, 2}, {1, 1}, 10, 10)))
+                                LineBreakCandidate({0, 0}, 0),
+                                LineBreakCandidate({2, 2}, {1, 1}, 10, 10)))
         << String::Format("Width=%d", width);
   }
 }
 
 // All/VisualRectMappingTest.LayoutTextContainerFlippedWritingMode/6
-TEST_F(NGLineBreakCandidateTest, AtomicInlineTrailingSpaces) {
+TEST_F(LineBreakCandidateTest, AtomicInlineTrailingSpaces) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
@@ -324,18 +324,18 @@ TEST_F(NGLineBreakCandidateTest, AtomicInlineTrailingSpaces) {
   )HTML");
   const NGInlineNode target = GetInlineNodeByElementId("target");
   for (const int width : {800, 10}) {
-    NGLineBreakCandidates candidates;
+    LineBreakCandidates candidates;
     EXPECT_TRUE(ComputeCandidates(target, LayoutUnit(width), candidates));
     EXPECT_THAT(candidates, testing::ElementsAre(
-                                NGLineBreakCandidate({0, 0}, 0),
+                                LineBreakCandidate({0, 0}, 0),
                                 // TODO(kojii): {3,2} should be {4,2}.
-                                NGLineBreakCandidate({3, 2}, {2, 1}, 20, 10),
-                                NGLineBreakCandidate({7, 4}, {5, 4}, 40, 40)))
+                                LineBreakCandidate({3, 2}, {2, 1}, 20, 10),
+                                LineBreakCandidate({7, 4}, {5, 4}, 40, 40)))
         << String::Format("Width=%d", width);
   }
 }
 
-TEST_F(NGLineBreakCandidateTest, ForcedBreak) {
+TEST_F(LineBreakCandidateTest, ForcedBreak) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
@@ -352,15 +352,14 @@ TEST_F(NGLineBreakCandidateTest, ForcedBreak) {
   )HTML");
   const NGInlineNode target = GetInlineNodeByElementId("target");
   for (const int width : {800, 40, 10}) {
-    NGLineBreakCandidates candidates;
+    LineBreakCandidates candidates;
     EXPECT_TRUE(ComputeCandidates(target, LayoutUnit(width), candidates));
-    EXPECT_THAT(
-        candidates,
-        testing::ElementsAre(NGLineBreakCandidate({0, 0}, 0),
-                             NGLineBreakCandidate({0, 3}, {0, 2}, 30, 20),
-                             NGLineBreakCandidate({1, 7}, {0, 6}, 60, 60),
-                             NGLineBreakCandidate({2, 10}, {2, 9}, 90, 80),
-                             NGLineBreakCandidate({3, 15}, {2, 14}, 130, 130)))
+    EXPECT_THAT(candidates, testing::ElementsAre(
+                                LineBreakCandidate({0, 0}, 0),
+                                LineBreakCandidate({0, 3}, {0, 2}, 30, 20),
+                                LineBreakCandidate({1, 7}, {0, 6}, 60, 60),
+                                LineBreakCandidate({2, 10}, {2, 9}, 90, 80),
+                                LineBreakCandidate({3, 15}, {2, 14}, 130, 130)))
         << String::Format("Width=%d", width);
   }
 }

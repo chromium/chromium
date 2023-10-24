@@ -32,7 +32,7 @@ struct NGPositionedFloat;
 // Produced while determining the line break points, but these data are needed
 // to create line boxes.
 //
-// NGLineBreaker produces, and NGInlineLayoutAlgorithm consumes.
+// LineBreaker produces, and NGInlineLayoutAlgorithm consumes.
 struct CORE_EXPORT InlineItemResult {
   DISALLOW_NEW();
 

@@ -293,7 +293,7 @@ template <typename OffsetMappingBuilder>
 inline void
 InlineItemsBuilderTemplate<OffsetMappingBuilder>::DidAppendForcedBreak() {
   // Bisecting available widths can't handle multiple logical paragraphs, so
-  // forced break should disable it. See `NGParagraphLineBreaker`.
+  // forced break should disable it. See `ParagraphLineBreaker`.
   is_bisect_line_break_disabled_ = true;
 }
 
@@ -1091,7 +1091,7 @@ void InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendBlockInInline(
 
   // Block-in-inline produces 3 logical paragraphs. It requires to bisect
   // block-in-inline, before it and after it separately. See
-  // `NGParagraphLineBreaker`.
+  // `ParagraphLineBreaker`.
   is_bisect_line_break_disabled_ = true;
 }
 
@@ -1102,9 +1102,9 @@ void InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendFloating(
                layout_object);
   has_floats_ = true;
   // Floats/exclusions require computing line heights, which is currently
-  // skipped during the bisect. See `NGParagraphLineBreaker`.
+  // skipped during the bisect. See `ParagraphLineBreaker`.
   is_bisect_line_break_disabled_ = true;
-  // `NGScoreLineBreaker` supports "simple" floats. See`NGLineWidths`.
+  // `ScoreLineBreaker` supports "simple" floats. See`LineWidths`.
 }
 
 template <typename OffsetMappingBuilder>
@@ -1453,7 +1453,7 @@ void InlineItemsBuilderTemplate<
   DCHECK(!has_initial_letter_box_);
   has_initial_letter_box_ = true;
   // Floats/exclusions require computing line heights, which is currently
-  // skipped during the bisect. See `NGParagraphLineBreaker`.
+  // skipped during the bisect. See `ParagraphLineBreaker`.
   is_bisect_line_break_disabled_ = true;
   is_score_line_break_disabled_ = true;
 }

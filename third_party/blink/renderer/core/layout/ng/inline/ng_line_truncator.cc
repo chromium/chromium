@@ -32,7 +32,7 @@ bool IsRightMostOffset(const ShapeResult& shape_result, unsigned offset) {
 
 }  // namespace
 
-NGLineTruncator::NGLineTruncator(const NGLineInfo& line_info)
+NGLineTruncator::NGLineTruncator(const LineInfo& line_info)
     : line_style_(&line_info.LineStyle()),
       available_width_(line_info.AvailableWidth() - line_info.TextIndent()),
       line_direction_(line_info.BaseDirection()) {}

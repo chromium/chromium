@@ -11,7 +11,7 @@
 namespace blink {
 
 class ComputedStyle;
-class NGLineInfo;
+class LineInfo;
 class NGLogicalLineItems;
 class ShapeResultView;
 struct FontHeight;
@@ -33,22 +33,22 @@ struct NGAnnotationOverhang {
 // Returns overhang values of the specified InlineItemResult representing
 // LayoutRubyColumn.
 //
-// This is used by NGLineBreaker.
+// This is used by LineBreaker.
 NGAnnotationOverhang GetOverhang(const InlineItemResult& item);
 
 // Returns true if |start_overhang| is applied to a previous item, and
 // clamp |start_overhang| to the width of the previous item.
 //
-// This is used by NGLineBreaker.
-bool CanApplyStartOverhang(const NGLineInfo& line_info,
+// This is used by LineBreaker.
+bool CanApplyStartOverhang(const LineInfo& line_info,
                            LayoutUnit& start_overhang);
 
 // This should be called after InlineItemResult for a text is added in
-// NGLineBreaker::HandleText().
+// LineBreaker::HandleText().
 //
 // This function may update a InlineItemResult representing RubyColumn
 // in |line_info|
-LayoutUnit CommitPendingEndOverhang(NGLineInfo* line_info);
+LayoutUnit CommitPendingEndOverhang(LineInfo* line_info);
 
 // Stores ComputeAnnotationOverflow() results.
 //

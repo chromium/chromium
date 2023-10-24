@@ -45,7 +45,7 @@ bool IsBlockFragmented(const NGBoxFragmentBuilder& fragment_builder) {
 NGInlineChildLayoutContext::NGInlineChildLayoutContext(
     const NGInlineNode& node,
     NGBoxFragmentBuilder* container_builder,
-    NGLineInfo* line_info)
+    LineInfo* line_info)
     : container_builder_(container_builder),
       items_builder_(node,
                      container_builder->GetWritingDirection(),
@@ -57,7 +57,7 @@ NGInlineChildLayoutContext::NGInlineChildLayoutContext(
 NGInlineChildLayoutContext::NGInlineChildLayoutContext(
     const NGInlineNode& node,
     NGBoxFragmentBuilder* container_builder,
-    NGScoreLineBreakContext* score_line_break_context)
+    ScoreLineBreakContext* score_line_break_context)
     : container_builder_(container_builder),
       items_builder_(node,
                      container_builder->GetWritingDirection(),

@@ -1651,24 +1651,23 @@ String NGInlineNode::TextContentForStickyImagesQuirk(
   return text_content;
 }
 
-static LayoutUnit ComputeContentSize(
-    NGInlineNode node,
-    WritingMode container_writing_mode,
-    const NGConstraintSpace& space,
-    const MinMaxSizesFloatInput& float_input,
-    NGLineBreakerMode mode,
-    NGLineBreaker::MaxSizeCache* max_size_cache,
-    absl::optional<LayoutUnit>* max_size_out,
-    bool* depends_on_block_constraints_out) {
+static LayoutUnit ComputeContentSize(NGInlineNode node,
+                                     WritingMode container_writing_mode,
+                                     const NGConstraintSpace& space,
+                                     const MinMaxSizesFloatInput& float_input,
+                                     LineBreakerMode mode,
+                                     LineBreaker::MaxSizeCache* max_size_cache,
+                                     absl::optional<LayoutUnit>* max_size_out,
+                                     bool* depends_on_block_constraints_out) {
   const ComputedStyle& style = node.Style();
   LayoutUnit available_inline_size =
-      mode == NGLineBreakerMode::kMaxContent ? LayoutUnit::Max() : LayoutUnit();
+      mode == LineBreakerMode::kMaxContent ? LayoutUnit::Max() : LayoutUnit();
 
   ExclusionSpace empty_exclusion_space;
   NGLeadingFloats empty_leading_floats;
   LineLayoutOpportunity line_opportunity(available_inline_size);
   LayoutUnit result;
-  NGLineBreaker line_breaker(
+  LineBreaker line_breaker(
       node, mode, space, line_opportunity, empty_leading_floats,
       /* break_token */ nullptr,
       /* column_spanner_path */ nullptr, &empty_exclusion_space);
@@ -1745,14 +1744,13 @@ static LayoutUnit ComputeContentSize(
     LayoutUnit max_size;
     const InlineItemsData& items_data;
     const InlineItem* next_item;
-    const NGLineBreaker::MaxSizeCache& max_size_cache;
+    const LineBreaker::MaxSizeCache& max_size_cache;
     FloatsMaxSize* floats;
     bool is_after_break = true;
 
-    explicit MaxSizeFromMinSize(
-        const InlineItemsData& items_data,
-        const NGLineBreaker::MaxSizeCache& max_size_cache,
-        FloatsMaxSize* floats)
+    explicit MaxSizeFromMinSize(const InlineItemsData& items_data,
+                                const LineBreaker::MaxSizeCache& max_size_cache,
+                                FloatsMaxSize* floats)
         : items_data(items_data),
           next_item(items_data.items.begin()),
           max_size_cache(max_size_cache),
@@ -1772,7 +1770,7 @@ static LayoutUnit ComputeContentSize(
       }
     }
 
-    void ForceLineBreak(const NGLineInfo& line_info) {
+    void ForceLineBreak(const LineInfo& line_info) {
       // Add all text up to the end of the line. There may be spaces that were
       // removed during the line breaking.
       CHECK_LE(line_info.EndItemIndex(), items_data.items.size());
@@ -1804,7 +1802,7 @@ static LayoutUnit ComputeContentSize(
                                            max_size);
     }
 
-    void ComputeFromMinSize(const NGLineInfo& line_info) {
+    void ComputeFromMinSize(const LineInfo& line_info) {
       if (is_after_break) {
         position += line_info.TextIndent();
         is_after_break = false;
@@ -1857,7 +1855,7 @@ static LayoutUnit ComputeContentSize(
 
   if (UNLIKELY(node.IsInitialLetterBox())) {
     LayoutUnit inline_size = LayoutUnit();
-    NGLineInfo line_info;
+    LineInfo line_info;
     do {
       line_breaker.NextLine(&line_info);
       if (line_info.Results().empty())
@@ -1873,7 +1871,7 @@ static LayoutUnit ComputeContentSize(
   MaxSizeFromMinSize max_size_from_min_size(items_data, *max_size_cache,
                                             &floats_max_size);
 
-  NGLineInfo line_info;
+  LineInfo line_info;
   do {
     line_breaker.NextLine(&line_info);
     if (line_info.Results().empty())
@@ -1910,7 +1908,7 @@ static LayoutUnit ComputeContentSize(
             child_result.depends_on_block_constraints;
       }
 
-      if (mode == NGLineBreakerMode::kMinContent) {
+      if (mode == LineBreakerMode::kMinContent) {
         result = std::max(result,
                           child_result.sizes.min_size + child_inline_margins);
       }
@@ -1919,7 +1917,7 @@ static LayoutUnit ComputeContentSize(
           child_result.sizes.max_size + child_inline_margins);
     }
 
-    if (mode == NGLineBreakerMode::kMinContent) {
+    if (mode == LineBreakerMode::kMinContent) {
       result = std::max(result, inline_size);
       can_compute_max_size_from_min_size =
           can_compute_max_size_from_min_size &&
@@ -1934,7 +1932,7 @@ static LayoutUnit ComputeContentSize(
     }
   } while (!line_breaker.IsFinished());
 
-  if (mode == NGLineBreakerMode::kMinContent &&
+  if (mode == LineBreakerMode::kMinContent &&
       can_compute_max_size_from_min_size) {
     if (node.IsSvgText()) {
       *max_size_out = result;
@@ -1949,7 +1947,7 @@ static LayoutUnit ComputeContentSize(
     // Check the max size matches to the value computed from 2 pass.
     LayoutUnit content_size = ComputeContentSize(
         node, container_writing_mode, space, float_input,
-        NGLineBreakerMode::kMaxContent, max_size_cache, nullptr, nullptr);
+        LineBreakerMode::kMaxContent, max_size_cache, nullptr, nullptr);
     bool values_might_be_saturated =
         (*max_size_out)->MightBeSaturated() || content_size.MightBeSaturated();
     if (!values_might_be_saturated) {
@@ -1971,20 +1969,20 @@ MinMaxSizesResult NGInlineNode::ComputeMinMaxSizes(
   // Compute the max of inline sizes of all line boxes with 0 available inline
   // size. This gives the min-content, the width where lines wrap at every
   // break opportunity.
-  NGLineBreaker::MaxSizeCache max_size_cache;
+  LineBreaker::MaxSizeCache max_size_cache;
   MinMaxSizes sizes;
   absl::optional<LayoutUnit> max_size;
   bool depends_on_block_constraints = false;
   sizes.min_size =
       ComputeContentSize(*this, container_writing_mode, space, float_input,
-                         NGLineBreakerMode::kMinContent, &max_size_cache,
+                         LineBreakerMode::kMinContent, &max_size_cache,
                          &max_size, &depends_on_block_constraints);
   if (max_size) {
     sizes.max_size = *max_size;
   } else {
     sizes.max_size = ComputeContentSize(
         *this, container_writing_mode, space, float_input,
-        NGLineBreakerMode::kMaxContent, &max_size_cache, nullptr, nullptr);
+        LineBreakerMode::kMaxContent, &max_size_cache, nullptr, nullptr);
   }
 
   // Negative text-indent can make min > max. Ensure min is the minimum size.

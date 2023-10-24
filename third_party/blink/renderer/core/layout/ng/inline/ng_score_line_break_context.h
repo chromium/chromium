@@ -17,27 +17,27 @@ namespace blink {
 constexpr wtf_size_t kMaxLinesForBalance = 6;
 constexpr wtf_size_t kMaxLinesForOptimal = 4;
 
-using NGLineBreakPoints = Vector<NGLineBreakPoint, kMaxLinesForBalance>;
+using LineBreakPoints = Vector<LineBreakPoint, kMaxLinesForBalance>;
 
 //
-// Represents states and fields for `NGScoreLineBreaker` that should be kept
+// Represents states and fields for `ScoreLineBreaker` that should be kept
 // across lines in an inline formatting context.
 //
-// Use `NGScoreLineBreakContextOf` to instantiate.
+// Use `ScoreLineBreakContextOf` to instantiate.
 //
-class CORE_EXPORT NGScoreLineBreakContext {
+class CORE_EXPORT ScoreLineBreakContext {
   STACK_ALLOCATED();
 
  public:
-  NGLineInfoList& LineInfoList() { return line_info_list_; }
+  LineInfoList& GetLineInfoList() { return line_info_list_; }
 
-  NGLineBreakPoints& LineBreakPoints() { return line_break_points_; }
+  LineBreakPoints& GetLineBreakPoints() { return line_break_points_; }
   wtf_size_t LineBreakPointsIndex() { return line_break_points_index_; }
-  // Returns the current `NGLineBreakPoint` if it exists. The current is
+  // Returns the current `LineBreakPoint` if it exists. The current is
   // incremented by `DidCreateLine()`.
-  const NGLineBreakPoint* CurrentLineBreakPoint() const;
+  const LineBreakPoint* CurrentLineBreakPoint() const;
 
-  // True if `NGScoreLineBreaker` can handle next line.
+  // True if `ScoreLineBreaker` can handle next line.
   bool IsActive() const { return line_break_points_.empty() && !is_suspended_; }
   // Suspend (make `IsActive()` false) until the end of the paragraph; i.e.,
   // either the end of the block or a forced break.
@@ -47,30 +47,29 @@ class CORE_EXPORT NGScoreLineBreakContext {
   void DidCreateLine(bool is_end_paragraph);
 
  protected:
-  explicit NGScoreLineBreakContext(NGLineInfoList& line_info_list)
+  explicit ScoreLineBreakContext(LineInfoList& line_info_list)
       : line_info_list_(line_info_list) {}
 
  private:
-  NGLineInfoList& line_info_list_;
-  NGLineBreakPoints line_break_points_;
+  LineInfoList& line_info_list_;
+  LineBreakPoints line_break_points_;
   wtf_size_t line_break_points_index_ = 0;
   bool is_suspended_ = false;
 };
 
 //
-// Instantiate `NGScoreLineBreakContext` with the given `max_lines`.
+// Instantiate `ScoreLineBreakContext` with the given `max_lines`.
 //
 template <wtf_size_t max_lines>
-class CORE_EXPORT NGScoreLineBreakContextOf : public NGScoreLineBreakContext {
+class CORE_EXPORT ScoreLineBreakContextOf : public ScoreLineBreakContext {
  public:
-  NGScoreLineBreakContextOf()
-      : NGScoreLineBreakContext(line_info_list_instance_) {}
+  ScoreLineBreakContextOf() : ScoreLineBreakContext(line_info_list_instance_) {}
 
  private:
-  NGLineInfoListOf<max_lines> line_info_list_instance_;
+  LineInfoListOf<max_lines> line_info_list_instance_;
 };
 
-inline const NGLineBreakPoint* NGScoreLineBreakContext::CurrentLineBreakPoint()
+inline const LineBreakPoint* ScoreLineBreakContext::CurrentLineBreakPoint()
     const {
   if (line_break_points_.empty()) {
     return nullptr;
@@ -79,7 +78,7 @@ inline const NGLineBreakPoint* NGScoreLineBreakContext::CurrentLineBreakPoint()
   return &line_break_points_[line_break_points_index_];
 }
 
-inline void NGScoreLineBreakContext::DidCreateLine(bool is_end_paragraph) {
+inline void ScoreLineBreakContext::DidCreateLine(bool is_end_paragraph) {
   // Resume from the suspended state if all lines are consumed.
   if (UNLIKELY(is_suspended_ && is_end_paragraph)) {
     is_suspended_ = false;

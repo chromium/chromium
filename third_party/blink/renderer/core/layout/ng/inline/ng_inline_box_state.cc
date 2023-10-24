@@ -400,7 +400,7 @@ void NGInlineLayoutStateStack::AddBoxFragmentPlaceholder(
     }
 
     // Extend the block direction of the box by borders and paddings. Inline
-    // direction is already included into positions in NGLineBreaker.
+    // direction is already included into positions in LineBreaker.
     block_offset =
         -metrics.ascent - (box->borders.line_over + box->padding.line_over);
     block_size = metrics.LineHeight() + box->borders.BlockSum() +

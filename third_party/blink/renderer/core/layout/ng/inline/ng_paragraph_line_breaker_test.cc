@@ -11,7 +11,7 @@
 
 namespace blink {
 
-class NGParagraphLineBreakerTest : public RenderingTest {
+class ParagraphLineBreakerTest : public RenderingTest {
  public:
   absl::optional<LayoutUnit> AttemptParagraphBalancing(
       const NGInlineNode& node) {
@@ -20,12 +20,12 @@ class NGParagraphLineBreakerTest : public RenderingTest {
     const LayoutUnit width = fragment->Size().width;
     NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
     LineLayoutOpportunity line_opportunity(width);
-    return NGParagraphLineBreaker::AttemptParagraphBalancing(node, space,
-                                                             line_opportunity);
+    return ParagraphLineBreaker::AttemptParagraphBalancing(node, space,
+                                                           line_opportunity);
   }
 };
 
-TEST_F(NGParagraphLineBreakerTest, IsDisabledByBlockInInline) {
+TEST_F(ParagraphLineBreakerTest, IsDisabledByBlockInInline) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -50,7 +50,7 @@ TEST_F(NGParagraphLineBreakerTest, IsDisabledByBlockInInline) {
   EXPECT_FALSE(AttemptParagraphBalancing(target));
 }
 
-TEST_F(NGParagraphLineBreakerTest, IsDisabledByFirstLine) {
+TEST_F(ParagraphLineBreakerTest, IsDisabledByFirstLine) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -73,7 +73,7 @@ TEST_F(NGParagraphLineBreakerTest, IsDisabledByFirstLine) {
   EXPECT_TRUE(AttemptParagraphBalancing(target));
 }
 
-TEST_F(NGParagraphLineBreakerTest, IsDisabledByFloatLeading) {
+TEST_F(ParagraphLineBreakerTest, IsDisabledByFloatLeading) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -95,7 +95,7 @@ TEST_F(NGParagraphLineBreakerTest, IsDisabledByFloatLeading) {
   EXPECT_FALSE(AttemptParagraphBalancing(target));
 }
 
-TEST_F(NGParagraphLineBreakerTest, IsDisabledByFloat) {
+TEST_F(ParagraphLineBreakerTest, IsDisabledByFloat) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -117,7 +117,7 @@ TEST_F(NGParagraphLineBreakerTest, IsDisabledByFloat) {
   EXPECT_FALSE(AttemptParagraphBalancing(target));
 }
 
-TEST_F(NGParagraphLineBreakerTest, IsDisabledByForcedBreak) {
+TEST_F(ParagraphLineBreakerTest, IsDisabledByForcedBreak) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -138,7 +138,7 @@ TEST_F(NGParagraphLineBreakerTest, IsDisabledByForcedBreak) {
   EXPECT_FALSE(AttemptParagraphBalancing(target));
 }
 
-TEST_F(NGParagraphLineBreakerTest, IsDisabledByForcedBreakReusing) {
+TEST_F(ParagraphLineBreakerTest, IsDisabledByForcedBreakReusing) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -161,7 +161,7 @@ TEST_F(NGParagraphLineBreakerTest, IsDisabledByForcedBreakReusing) {
   EXPECT_FALSE(AttemptParagraphBalancing(target));
 }
 
-TEST_F(NGParagraphLineBreakerTest, IsDisabledByInitialLetter) {
+TEST_F(ParagraphLineBreakerTest, IsDisabledByInitialLetter) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -184,7 +184,7 @@ TEST_F(NGParagraphLineBreakerTest, IsDisabledByInitialLetter) {
   EXPECT_FALSE(AttemptParagraphBalancing(target));
 }
 
-TEST_F(NGParagraphLineBreakerTest, IsDisabledByTabulationCharacters) {
+TEST_F(ParagraphLineBreakerTest, IsDisabledByTabulationCharacters) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>

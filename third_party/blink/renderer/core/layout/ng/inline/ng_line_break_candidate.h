@@ -15,32 +15,32 @@
 namespace blink {
 
 class InlineItem;
-class NGLineBreaker;
-class NGLineInfo;
+class LineBreaker;
+class LineInfo;
 
 //
 // Represents a break candidate (break opportunity).
 //
-struct CORE_EXPORT NGLineBreakCandidate : public NGLineBreakPoint {
+struct CORE_EXPORT LineBreakCandidate : public LineBreakPoint {
   DISALLOW_NEW();
 
  public:
-  NGLineBreakCandidate() = default;
-  NGLineBreakCandidate(const InlineItemTextIndex& offset,
-                       const InlineItemTextIndex& end,
-                       float pos_no_break,
-                       float pos_if_break,
-                       float penalty = .0f,
-                       bool is_hyphenated = false)
-      : NGLineBreakPoint(offset, end, is_hyphenated),
+  LineBreakCandidate() = default;
+  LineBreakCandidate(const InlineItemTextIndex& offset,
+                     const InlineItemTextIndex& end,
+                     float pos_no_break,
+                     float pos_if_break,
+                     float penalty = .0f,
+                     bool is_hyphenated = false)
+      : LineBreakPoint(offset, end, is_hyphenated),
         pos_no_break(pos_no_break),
         pos_if_break(pos_if_break),
         penalty(penalty) {}
-  NGLineBreakCandidate(const InlineItemTextIndex& offset, float position)
-      : NGLineBreakCandidate(offset, offset, position, position) {}
+  LineBreakCandidate(const InlineItemTextIndex& offset, float position)
+      : LineBreakCandidate(offset, offset, position, position) {}
 
-  bool operator==(const NGLineBreakCandidate& other) const {
-    return NGLineBreakPoint::operator==(other) &&
+  bool operator==(const LineBreakCandidate& other) const {
+    return LineBreakPoint::operator==(other) &&
            pos_no_break == other.pos_no_break &&
            pos_if_break == other.pos_if_break && penalty == other.penalty;
   }
@@ -57,23 +57,23 @@ struct CORE_EXPORT NGLineBreakCandidate : public NGLineBreakPoint {
 };
 
 CORE_EXPORT std::ostream& operator<<(std::ostream& ostream,
-                                     const NGLineBreakCandidate& candidate);
+                                     const LineBreakCandidate& candidate);
 
 //
-// A vector of `NGLineBreakCandidate`.
+// A vector of `LineBreakCandidate`.
 //
-using NGLineBreakCandidates =
-    Vector<NGLineBreakCandidate, NGLineBreakCandidate::kInlineCapacity>;
+using LineBreakCandidates =
+    Vector<LineBreakCandidate, LineBreakCandidate::kInlineCapacity>;
 
 //
-// Provides a context for computing `NGLineBreakCandidate` from multiple
-// `NGLineInfo` and `InlineItemResult`.
+// Provides a context for computing `LineBreakCandidate` from multiple
+// `LineInfo` and `InlineItemResult`.
 //
-class CORE_EXPORT NGLineBreakCandidateContext {
+class CORE_EXPORT LineBreakCandidateContext {
   STACK_ALLOCATED();
 
  public:
-  explicit NGLineBreakCandidateContext(NGLineBreakCandidates& candidates)
+  explicit LineBreakCandidateContext(LineBreakCandidates& candidates)
       : candidates_(candidates) {}
 
   float HyphenPenalty() const { return hyphen_penalty_; }
@@ -87,7 +87,7 @@ class CORE_EXPORT NGLineBreakCandidateContext {
     return LayoutUnit::FromFloatCeil(position_no_snap_);
   }
 
-  const NGLineBreakCandidates& Candidates() const { return candidates_; }
+  const LineBreakCandidates& Candidates() const { return candidates_; }
 
   const InlineItem* LastItem() const { return last_item_; }
   wtf_size_t LastEndOffset() const { return last_end_offset_; }
@@ -96,10 +96,10 @@ class CORE_EXPORT NGLineBreakCandidateContext {
     last_end_offset_ = offset;
   }
 
-  // Append a `NGLineInfo` to this context.
-  bool AppendLine(const NGLineInfo& line_info, NGLineBreaker& line_breaker);
+  // Append a `LineInfo` to this context.
+  bool AppendLine(const LineInfo& line_info, LineBreaker& line_breaker);
 
-  // Append a new `NGLineBreakCandidate`. This modifies the last candidate if
+  // Append a new `LineBreakCandidate`. This modifies the last candidate if
   // `state` is `kMidWord`, instead of adding a new candidate.
   void Append(State new_state,
               InlineItemTextIndex offset,
@@ -115,10 +115,10 @@ class CORE_EXPORT NGLineBreakCandidateContext {
                             const InlineItemTextIndex& offset,
                             float pos_no_break);
 
-  // Append the first/last sentinel. `NGScoreLineBreaker` requires these two
+  // Append the first/last sentinel. `ScoreLineBreaker` requires these two
   // sentinels.
-  void EnsureFirstSentinel(const NGLineInfo& first_line_info);
-  void EnsureLastSentinel(const NGLineInfo& last_line_info);
+  void EnsureFirstSentinel(const LineInfo& first_line_info);
+  void EnsureLastSentinel(const LineInfo& last_line_info);
 
  private:
   float position_no_snap_ = .0f;
@@ -126,7 +126,7 @@ class CORE_EXPORT NGLineBreakCandidateContext {
   const InlineItem* last_item_ = nullptr;
   wtf_size_t last_end_offset_ = 0;
   float hyphen_penalty_ = .0f;
-  NGLineBreakCandidates& candidates_;
+  LineBreakCandidates& candidates_;
 
 #if EXPENSIVE_DCHECKS_ARE_ON()
   void CheckConsistency() const;

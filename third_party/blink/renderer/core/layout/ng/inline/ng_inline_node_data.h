@@ -29,13 +29,13 @@ struct CORE_EXPORT NGInlineNodeData final : InlineItemsData {
 
   bool IsBlockLevel() const { return is_block_level_; }
 
-  // True if this node can't use the bisection in `NGParagraphLineBreaker`.
+  // True if this node can't use the bisection in `ParagraphLineBreaker`.
   bool IsBisectLineBreakDisabled() const {
     return is_bisect_line_break_disabled_;
   }
   // True if this node can't use the `NGScorehLineBreaker`, that can be
   // determined by `CollectInlines`. Conditions that can change without
-  // `CollectInlines` are in `NGLineBreaker::ShouldDisableScoreLineBreak()`.
+  // `CollectInlines` are in `LineBreaker::ShouldDisableScoreLineBreak()`.
   bool IsScoreLineBreakDisabled() const {
     return is_score_line_break_disabled_;
   }

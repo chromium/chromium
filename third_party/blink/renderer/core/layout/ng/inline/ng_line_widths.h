@@ -20,13 +20,13 @@ class NGInlineNode;
 // This class computes the line width of each line for _simple_ nodes without
 // actually laying them out.
 //
-class CORE_EXPORT NGLineWidths {
+class CORE_EXPORT LineWidths {
   STACK_ALLOCATED();
 
  public:
-  NGLineWidths() = default;
+  LineWidths() = default;
   // Construct with the given `width`, without any exclusions.
-  explicit NGLineWidths(LayoutUnit width) : default_width_(width) {}
+  explicit LineWidths(LayoutUnit width) : default_width_(width) {}
 
   LayoutUnit Default() const { return default_width_; }
   bool HasExclusions() const { return num_excluded_lines_; }
@@ -45,7 +45,7 @@ class CORE_EXPORT NGLineWidths {
   wtf_size_t num_excluded_lines_ = 0;
 };
 
-inline LayoutUnit NGLineWidths::operator[](wtf_size_t index) const {
+inline LayoutUnit LineWidths::operator[](wtf_size_t index) const {
   if (UNLIKELY(index < num_excluded_lines_)) {
     return excluded_width_;
   }

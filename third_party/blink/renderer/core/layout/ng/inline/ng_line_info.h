@@ -26,8 +26,8 @@ struct InlineItemsData;
 //
 // This is a transient context object only while building line boxes.
 //
-// NGLineBreaker produces, and NGInlineLayoutAlgorithm consumes.
-class CORE_EXPORT NGLineInfo {
+// LineBreaker produces, and NGInlineLayoutAlgorithm consumes.
+class CORE_EXPORT LineInfo {
   STACK_ALLOCATED();
 
  public:
@@ -311,7 +311,7 @@ class CORE_EXPORT NGLineInfo {
   // When adding fields, pelase ensure `Reset()` is in sync.
 };
 
-std::ostream& operator<<(std::ostream& ostream, const NGLineInfo& line_info);
+std::ostream& operator<<(std::ostream& ostream, const LineInfo& line_info);
 
 }  // namespace blink
 
