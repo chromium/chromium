@@ -21,6 +21,7 @@
 #include "media/capture/video_capture_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/media/video_capture.h"
+#include "third_party/blink/public/mojom/mediastream/media_devices.mojom-shared.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/blink/public/platform/modules/mediastream/media_stream_types.h"
 #include "third_party/blink/public/platform/modules/mediastream/secure_display_link_tracker.h"
@@ -166,43 +167,51 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   virtual bool SupportsEncodedOutput() const;
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Start/stop cropping a video track.
+  // Start/stop cropping or restricting the video track.
   //
-  // Non-empty |crop_id| sets (or changes) the crop-target.
-  // Empty |crop_id| reverts the capture to its original, uncropped state.
+  // Non-empty |sub_capture_target_id| sets (or changes) the target.
+  // Empty |sub_capture_target_id| reverts the capture to its original state.
   //
   // |sub_capture_target_version| is plumbed down to Viz, which associates that
-  // value with all subsequent frames. For a given device, new calls to Crop()
-  // must be with a |sub_capture_target_version| that is greater than the value
-  // from the previous call, but not necessarily by exactly one. (If a call to
-  // cropTo is rejected earlier in the pipeline, the sub-capture-target-version
-  // can increase in Blink, and later calls to cropTo() can appear over this
-  // mojom pipe with a higher version.)
+  // value with all subsequent frames.
+  //
+  // For a given device, new calls to ApplySubCaptureTarget() must be with a
+  // |sub_capture_target_version| that is greater than the value from the
+  // previous call, but not necessarily by exactly one.
+  // (If a call to cropTo or restrictTo is rejected earlier in the pipeline,
+  // the sub-capture-target-version can increase in Blink, and later calls to
+  // cropTo() or restrictTo() can appear over this mojom pipe with
+  // a higher version.)
   //
   // The callback reports success/failure.
-  virtual void Crop(
-      const base::Token& crop_id,
+  virtual void ApplySubCaptureTarget(
+      mojom::SubCaptureTargetType type,
+      const base::Token& sub_capture_target,
       uint32_t sub_capture_target_version,
       base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
           callback);
 
   // If a new |sub_capture_target_version| can be assigned, returns it.
   // Otherwise, returns nullopt. (Can happen if the source does not support
-  // cropping, or if a change of crop-target is not possible at this time,
-  // due to technical limitations, e.g. if clones exist.)
+  // cropping/restriction, or if a change of target is not possible at this
+  // time due to technical limitations, e.g. if clones exist.)
   //
-  // For an explanation of what a |sub_capture_target_version| is, see Crop().
+  // For an explanation of what a |sub_capture_target_version| is,
+  // see ApplySubCaptureTarget().
   //
   // TODO(crbug.com/1332628): Make the sub-capture-target-version an
-  // implementation detail that is not exposed to the entity calling Crop().
+  // implementation detail that is not exposed to the entity
+  // calling ApplySubCaptureTarget().
   virtual absl::optional<uint32_t> GetNextSubCaptureTargetVersion();
 #endif
 
   // Returns the current sub-capture-target version.
-  // For an explanation of what a |sub_capture_target_version| is, see Crop().
+  // For an explanation of what a |sub_capture_target_version| is,
+  // see ApplySubCaptureTarget().
   // The initial sub-capture-target version is zero. On platforms where cropping
-  // is not supported (Android), and for sources that don't support cropping
-  // (audio), the sub-capture-target version never goes over 0.
+  // and restriction are not supported (Android), and for sources that don't
+  // support cropping and restriction (audio), the sub-capture-target version
+  // never goes over 0.
   virtual uint32_t GetSubCaptureTargetVersion() const;
 
   // Notifies the source about that the number of encoded sinks have been

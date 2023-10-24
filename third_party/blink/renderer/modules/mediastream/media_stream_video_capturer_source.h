@@ -93,10 +93,12 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
   absl::optional<media::VideoCaptureFormat> GetCurrentFormat() const override;
   void ChangeSourceImpl(const MediaStreamDevice& new_device) override;
 #if !BUILDFLAG(IS_ANDROID)
-  void Crop(const base::Token& crop_id,
-            uint32_t sub_capture_target_version,
-            base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
-                callback) override;
+  void ApplySubCaptureTarget(
+      mojom::blink::SubCaptureTargetType type,
+      const base::Token& sub_capture_target,
+      uint32_t sub_capture_target_version,
+      base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
+          callback) override;
   absl::optional<uint32_t> GetNextSubCaptureTargetVersion() override;
 #endif
   uint32_t GetSubCaptureTargetVersion() const override;

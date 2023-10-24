@@ -197,8 +197,9 @@ void MediaStreamVideoCapturerSource::ChangeSourceImpl(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-void MediaStreamVideoCapturerSource::Crop(
-    const base::Token& crop_id,
+void MediaStreamVideoCapturerSource::ApplySubCaptureTarget(
+    mojom::blink::SubCaptureTargetType type,
+    const base::Token& sub_capture_target,
     uint32_t sub_capture_target_version,
     base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
         callback) {
@@ -210,9 +211,9 @@ void MediaStreamVideoCapturerSource::Crop(
         media::mojom::ApplySubCaptureTargetResult::kErrorGeneric);
     return;
   }
-  GetMediaStreamDispatcherHost()->Crop(session_id.value(), crop_id,
-                                       sub_capture_target_version,
-                                       std::move(callback));
+  GetMediaStreamDispatcherHost()->ApplySubCaptureTarget(
+      session_id.value(), type, sub_capture_target, sub_capture_target_version,
+      std::move(callback));
 }
 
 absl::optional<uint32_t>

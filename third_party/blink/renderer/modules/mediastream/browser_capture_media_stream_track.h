@@ -9,6 +9,8 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/mediastream/crop_target.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
+#include "third_party/blink/renderer/modules/mediastream/restriction_target.h"
+#include "third_party/blink/renderer/modules/mediastream/sub_capture_target.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 
@@ -42,6 +44,7 @@ class MODULES_EXPORT BrowserCaptureMediaStreamTrack
 #endif
 
   ScriptPromise cropTo(ScriptState*, CropTarget*, ExceptionState&);
+  ScriptPromise restrictTo(ScriptState*, RestrictionTarget*, ExceptionState&);
 
   BrowserCaptureMediaStreamTrack* clone(ExecutionContext*) override;
 
@@ -61,6 +64,15 @@ class MODULES_EXPORT BrowserCaptureMediaStreamTrack
   };
 
  private:
+  // Helper function serving cropTo(), restrictTo(), and any potential
+  // future function that takes a BCMST and mutates what it is capturing
+  // to some subset of the original target, based on a target identified
+  // using a SubCaptureTarget.
+  ScriptPromise ApplySubCaptureTarget(ScriptState*,
+                                      SubCaptureTarget::Type,
+                                      SubCaptureTarget*,
+                                      ExceptionState&);
+
 #if !BUILDFLAG(IS_ANDROID)
   struct PromiseInfo : GarbageCollected<PromiseInfo> {
     explicit PromiseInfo(
@@ -81,10 +93,10 @@ class MODULES_EXPORT BrowserCaptureMediaStreamTrack
                   Member<BrowserCaptureMediaStreamTrack::PromiseInfo>>;
   using PromiseMapIterator = SubCaptureTargetVersionToPromiseInfoMap::iterator;
 
-  // Each cropTo() call is associated with a unique |sub_capture_target_version|
-  // which identifies this specific cropTo() invocation. When the browser
-  // process responds with the result of the cropTo() invocation, it triggers a
-  // call to OnResultFromBrowserProcess() with that
+  // Each cropTo() or restrictTo() call is associated with a unique
+  // |sub_capture_target_version| which identifies this specific invocation.
+  // When the browser process responds with the result of the invocation,
+  // it triggers a call to OnResultFromBrowserProcess() with that
   // |sub_capture_target_version|.
   void OnResultFromBrowserProcess(
       uint32_t sub_capture_target_version,

@@ -569,8 +569,9 @@ bool MediaStreamVideoSource::SupportsEncodedOutput() const {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-void MediaStreamVideoSource::Crop(
-    const base::Token& crop_id,
+void MediaStreamVideoSource::ApplySubCaptureTarget(
+    mojom::blink::SubCaptureTargetType type,
+    const base::Token& sub_capture_target,
     uint32_t sub_capture_target_version,
     base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
         callback) {

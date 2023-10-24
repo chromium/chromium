@@ -13,6 +13,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/modules/mediastream/crop_target.h"
+#include "third_party/blink/renderer/modules/mediastream/restriction_target.h"
+#include "third_party/blink/renderer/modules/mediastream/sub_capture_target.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/region_capture_crop_id.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -133,22 +136,33 @@ void BrowserCaptureMediaStreamTrack::Trace(Visitor* visitor) const {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-ScriptPromise BrowserCaptureMediaStreamTrack::cropTo(
+// TODO(crbug.com/1418194): Move this to make the order correspond
+// to the order in the header file. (This was originally placed here
+// to minimize the delta and make reviewers' lives easier.)
+ScriptPromise BrowserCaptureMediaStreamTrack::ApplySubCaptureTarget(
     ScriptState* script_state,
-    CropTarget* crop_target,
+    SubCaptureTarget::Type type,
+    SubCaptureTarget* target,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
+  CHECK(type == SubCaptureTarget::Type::kCropTarget ||
+        type == SubCaptureTarget::Type::kRestrictionTarget);
 
-  const String crop_id(crop_target ? crop_target->GetId() : String());
+  const std::string metric_name_prefix =
+      (type == SubCaptureTarget::Type::kCropTarget)
+          ? "Media.RegionCapture.CropTo"
+          : "Media.ElementCapture.RestrictTo";
 
-  // If the promise is not resolved within the |timeout_interval|, a
+  // If the promise is not resolved within the |timeout_interval|, an
   // ApplySubCaptureTargetResult::kTimedOut response will be recorded in the
   // UMA.
   auto* resolver = MakeGarbageCollected<
       ScriptPromiseResolverWithTracker<ApplySubCaptureTargetResult>>(
-      script_state, /*metric_name_prefix=*/"Media.RegionCapture.CropTo",
+      script_state, metric_name_prefix,
       /*timeout_interval=*/base::Seconds(10));
-  resolver->SetResultSuffix("Result2");
+  if (type == SubCaptureTarget::Type::kCropTarget) {
+    resolver->SetResultSuffix("Result2");
+  }
   ScriptPromise promise = resolver->Promise();
 
 #if BUILDFLAG(IS_ANDROID)
@@ -159,8 +173,9 @@ ScriptPromise BrowserCaptureMediaStreamTrack::cropTo(
   return promise;
 #else
 
-  const absl::optional<base::Token> crop_id_token = IdStringToToken(crop_id);
-  if (!crop_id_token.has_value()) {
+  const absl::optional<base::Token> token =
+      IdStringToToken(target ? target->GetId() : String());
+  if (!token.has_value()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
                          DOMExceptionCode::kUnknownError, "Invalid token."),
                      ApplySubCaptureTargetResult::kInvalidTarget);
@@ -215,13 +230,33 @@ ScriptPromise BrowserCaptureMediaStreamTrack::cropTo(
           &BrowserCaptureMediaStreamTrack::OnSubCaptureTargetVersionObserved,
           WrapWeakPersistent(this), sub_capture_target_version));
 
-  native_source->Crop(
-      crop_id_token.value(), sub_capture_target_version,
+  native_source->ApplySubCaptureTarget(
+      type, token.value(), sub_capture_target_version,
       WTF::BindOnce(&BrowserCaptureMediaStreamTrack::OnResultFromBrowserProcess,
                     WrapWeakPersistent(this), sub_capture_target_version));
 
   return promise;
 #endif
+}
+
+ScriptPromise BrowserCaptureMediaStreamTrack::cropTo(
+    ScriptState* script_state,
+    CropTarget* target,
+    ExceptionState& exception_state) {
+  DCHECK(IsMainThread());
+  return ApplySubCaptureTarget(script_state,
+                               SubCaptureTarget::Type::kCropTarget, target,
+                               exception_state);
+}
+
+ScriptPromise BrowserCaptureMediaStreamTrack::restrictTo(
+    ScriptState* script_state,
+    RestrictionTarget* target,
+    ExceptionState& exception_state) {
+  DCHECK(IsMainThread());
+  return ApplySubCaptureTarget(script_state,
+                               SubCaptureTarget::Type::kRestrictionTarget,
+                               target, exception_state);
 }
 
 BrowserCaptureMediaStreamTrack* BrowserCaptureMediaStreamTrack::clone(

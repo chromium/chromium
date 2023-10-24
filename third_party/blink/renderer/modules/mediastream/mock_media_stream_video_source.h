@@ -5,9 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MOCK_MEDIA_STREAM_VIDEO_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MOCK_MEDIA_STREAM_VIDEO_SOURCE_H_
 
-#include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
-
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
+#include "third_party/blink/renderer/modules/mediastream/sub_capture_target.h"
 
 namespace blink {
 
@@ -32,9 +32,10 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
   MOCK_METHOD1(OnCapturingLinkSecured, void(bool));
   MOCK_METHOD1(OnSourceCanDiscardAlpha, void(bool can_discard_alpha));
   MOCK_CONST_METHOD0(SupportsEncodedOutput, bool());
-  MOCK_METHOD3(
-      Crop,
+  MOCK_METHOD4(
+      ApplySubCaptureTarget,
       void(
+          SubCaptureTarget::Type,
           const base::Token&,
           uint32_t,
           base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>));
