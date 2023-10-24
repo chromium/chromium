@@ -152,6 +152,11 @@
         "ApplyAutomationOverride",
       ]
     },
+    InspectorOverlayAgent: {
+      probes: [
+        "DidInitializeFrameWidget",
+      ]
+    },
     InspectorLayerTreeAgent: {
       probes: [
         "LayerTreeDidChange",

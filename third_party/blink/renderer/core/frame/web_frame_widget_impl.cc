@@ -2316,6 +2316,8 @@ void WebFrameWidgetImpl::InitializeCompositingInternal(
                             ->widget_base_.get()
                       : nullptr);
 
+  probe::DidInitializeFrameWidget(local_root_->GetFrame());
+
   // TODO(bokan): This seems wrong. Page may host multiple FrameWidgets so this
   // will call DidInitializeCompositing once per FrameWidget. It probably makes
   // sense to move LinkHighlight from Page to WidgetBase so initialization is

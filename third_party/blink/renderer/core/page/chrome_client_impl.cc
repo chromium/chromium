@@ -875,6 +875,10 @@ void ChromeClientImpl::AttachRootLayer(scoped_refptr<cc::Layer> root_layer,
 
 cc::AnimationHost* ChromeClientImpl::GetCompositorAnimationHost(
     LocalFrame& local_frame) const {
+  WebLocalFrameImpl* web_frame = WebLocalFrameImpl::FromFrame(local_frame);
+  if (!web_frame || web_frame->IsProvisional()) {
+    return nullptr;
+  }
   FrameWidget* widget = local_frame.GetWidgetForLocalRoot();
   DCHECK(widget);
   return widget->AnimationHost();
