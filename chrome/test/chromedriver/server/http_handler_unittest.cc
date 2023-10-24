@@ -373,6 +373,61 @@ TEST(CreateBidiErrorResponse, NoId) {
 }
 
 class WebSocketMessageTest : public testing::Test {
+ public:
+  void Echo(const base::Value::Dict& params,
+            const std::string& session_id,
+            const CommandCallback& callback) {
+    base::Value::Dict response = params.Clone();
+    response.Set("is_response", true);
+    callback.Run(Status{kOk},
+                 std::make_unique<base::Value>(std::move(response)), session_id,
+                 true);
+  }
+
+  Command EchoClosure() {
+    return base::BindRepeating(&WebSocketMessageTest::Echo,
+                               base::Unretained(this));
+  }
+
+  Command FailClosure(StatusCode code, const std::string& message) {
+    return base::BindRepeating(
+        [](StatusCode code, std::string message,
+           const base::Value::Dict& params, const std::string& session_id,
+           const CommandCallback& callback) {
+          callback.Run(Status{code, message}, nullptr, session_id, true);
+        },
+        code, message);
+  }
+
+  Command SuccessNoResultClosure() {
+    return base::BindRepeating([](const base::Value::Dict& params,
+                                  const std::string& session_id,
+                                  const CommandCallback& callback) {
+      callback.Run(Status{kOk}, nullptr, session_id, true);
+    });
+  }
+
+  Command SuccessEmptyResultClosure() {
+    return base::BindRepeating([](const base::Value::Dict& params,
+                                  const std::string& session_id,
+                                  const CommandCallback& callback) {
+      callback.Run(Status{kOk},
+                   std::make_unique<base::Value>(base::Value::Type::DICT),
+                   session_id, true);
+    });
+  }
+
+  Command SessionCreatedClosure(std::string session_id) {
+    return base::BindRepeating(
+        [](std::string created_session_id, const base::Value::Dict& params,
+           const std::string& session_id, const CommandCallback& callback) {
+          callback.Run(Status{kOk},
+                       std::make_unique<base::Value>(base::Value::Type::DICT),
+                       created_session_id, true);
+        },
+        std::move(session_id));
+  }
+
  protected:
   void SetUp() override {
     handler = std::make_unique<HttpHandler>("/");
@@ -390,6 +445,20 @@ class WebSocketMessageTest : public testing::Test {
     handler->session_connection_map_[session_id].push_back(connection_id);
   }
 
+  void AddStaticCommand(std::string name, Command command) {
+    handler->static_bidi_command_map_.emplace(std::move(name),
+                                              std::move(command));
+  }
+
+  void AddSessionCommand(std::string name, Command command) {
+    handler->session_bidi_command_map_.emplace(std::move(name),
+                                               std::move(command));
+  }
+
+  void SetForwardingCommand(Command command) {
+    handler->forward_session_command_ = std::move(command);
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment;
   std::unique_ptr<HttpHandler> handler;
 };
@@ -403,7 +472,8 @@ TEST_F(WebSocketMessageTest, UnknownSessionNoId) {
       ToString(internal::CreateBidiErrorResponse(expected_error));
   EXPECT_CALL(http_server, SendOverWebSocket(Eq(1), Eq(expected_response)));
   handler->OnWebSocketMessage(&http_server, 1, "not used");
-  handler->io_task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
+  task_environment.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                       run_loop.QuitClosure());
   run_loop.Run();
 }
 
@@ -426,7 +496,8 @@ TEST_F(WebSocketMessageTest, UnknownSessionWithId) {
   EXPECT_CALL(http_server, SendOverWebSocket(Eq(3), Eq(expected_response)));
   std::string incoming = "{\"method\": \"some\", \"id\": 15, \"params\": {}}";
   handler->OnWebSocketMessage(&http_server, 3, incoming);
-  handler->io_task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
+  task_environment.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                       run_loop.QuitClosure());
   run_loop.Run();
 }
 
@@ -439,55 +510,205 @@ TEST_F(WebSocketMessageTest, UnknownSessionWithIdIsPostedToIO) {
   handler->OnWebSocketMessage(&http_server, 3, incoming);
 }
 
-TEST_F(WebSocketMessageTest, NoId) {
-  // Verify that the missing command id is treated as an error.
+TEST_F(WebSocketMessageTest, SessionCommandWithIdUnboundConnection) {
+  // Well formed session command arriving over an unbound connection must be
+  // handled with "invalid session id" error.
+  base::RunLoop run_loop;
+  MockHttpServer http_server;
+  Status expected_error{kInvalidSessionId, "session not found"};
+  std::string expected_response =
+      ToString(internal::CreateBidiErrorResponse(expected_error, 15));
+  // The connection is unbound
+  AddConnection(3);
+  EXPECT_CALL(http_server, SendOverWebSocket(Eq(3), Eq(expected_response)));
+  std::string incoming =
+      "{\"method\": \"script.evaluate\", \"id\": 15, \"params\": {}}";
+  handler->OnWebSocketMessage(&http_server, 3, incoming);
+  task_environment.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                       run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+TEST_F(WebSocketMessageTest, SessionCommandWithIdPostedToIOUnboundConnection) {
+  // Verify that the response is properly posted to the IO thread.
+  base::RunLoop run_loop;
+  MockHttpServer http_server;
+  EXPECT_CALL(http_server, SendOverWebSocket(_, _)).Times(0);
+  AddConnection(3);
+  std::string incoming =
+      "{\"method\": \"script.evaluate\", \"id\": 15, \"params\": {}}";
+  handler->OnWebSocketMessage(&http_server, 3, incoming);
+}
+
+TEST_F(WebSocketMessageTest, SessionCommandNoIdUnboundConnection) {
+  // Verify that missing "id" is checked before connection affinity with any
+  // session.
+  base::RunLoop run_loop;
+  MockHttpServer http_server;
+  std::string incoming = "{\"method\": \"script.evaluate\", \"params\": {}}";
+  base::Value::Dict parsed;
+  Status expected_error = internal::ParseBidiCommand(incoming, parsed);
+  // missing "id" is an "invalid argument" error
+  EXPECT_EQ(kInvalidArgument, expected_error.code());
+  std::string expected_response =
+      ToString(internal::CreateBidiErrorResponse(expected_error));
+  AddConnection(3);
+  EXPECT_CALL(http_server, SendOverWebSocket(Eq(3), Eq(expected_response)));
+  handler->OnWebSocketMessage(&http_server, 3, incoming);
+  task_environment.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                       run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+TEST_F(WebSocketMessageTest, SessionCommandNoIdPostedToIOUnboundConnection) {
+  // Verify that the response is properly posted to the IO thread.
+  base::RunLoop run_loop;
+  MockHttpServer http_server;
+  EXPECT_CALL(http_server, SendOverWebSocket(_, _)).Times(0);
+  AddConnection(3);
+  std::string incoming = "{\"method\": \"script.evaluate\", \"params\": {}}";
+  handler->OnWebSocketMessage(&http_server, 3, incoming);
+}
+
+TEST_F(WebSocketMessageTest, SessionCommandNoIdBoundConnection) {
+  // Verify that the missing command "id" is treated as an error.
   base::RunLoop run_loop;
   MockHttpServer http_server;
   AddConnection(4, "some_session");
-  std::string incoming = "{\"method\": \"some\", \"params\": {}}";
+  std::string incoming = "{\"method\": \"script.evaluate\", \"params\": {}}";
   base::Value::Dict parsed;
   Status expected_error = internal::ParseBidiCommand(incoming, parsed);
-  EXPECT_TRUE(expected_error.IsError());
+  EXPECT_EQ(kInvalidArgument, expected_error.code());
   std::string expected_response =
       ToString(internal::CreateBidiErrorResponse(expected_error));
   EXPECT_CALL(http_server, SendOverWebSocket(Eq(4), Eq(expected_response)));
   handler->OnWebSocketMessage(&http_server, 4, incoming);
-  handler->io_task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
+  task_environment.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                       run_loop.QuitClosure());
   run_loop.Run();
 }
 
-TEST_F(WebSocketMessageTest, NoMethod) {
-  // Verify that the missing method is treated as an error.
+TEST_F(WebSocketMessageTest, SessionCommandNoIdPostedToIOBoundConnection) {
+  // Verify that the response is properly posted to the IO thread.
+  base::RunLoop run_loop;
+  MockHttpServer http_server;
+  EXPECT_CALL(http_server, SendOverWebSocket(_, _)).Times(0);
+  AddConnection(3, "some_session");
+  std::string incoming = "{\"method\": \"script.evaluate\", \"params\": {}}";
+  handler->OnWebSocketMessage(&http_server, 3, incoming);
+}
+
+TEST_F(WebSocketMessageTest, NoMethodUnboundConnection) {
+  // Verify that the missing "method" is treated as an error.
+  base::RunLoop run_loop;
+  MockHttpServer http_server;
+  AddConnection(5);
+  std::string incoming = "{\"id\": 61, \"params\": {}}";
+  base::Value::Dict parsed;
+  Status expected_error = internal::ParseBidiCommand(incoming, parsed);
+  EXPECT_EQ(kInvalidArgument, expected_error.code());
+  std::string expected_response =
+      ToString(internal::CreateBidiErrorResponse(expected_error, 61));
+  EXPECT_CALL(http_server, SendOverWebSocket(Eq(5), Eq(expected_response)));
+  handler->OnWebSocketMessage(&http_server, 5, incoming);
+  task_environment.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                       run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+TEST_F(WebSocketMessageTest, NoMethodPostedToIOUnboundConnection) {
+  // Verify that the response is properly posted to the IO thread.
+  base::RunLoop run_loop;
+  MockHttpServer http_server;
+  EXPECT_CALL(http_server, SendOverWebSocket(_, _)).Times(0);
+  AddConnection(3);
+  std::string incoming = "{\"id\": 61, \"params\": {}}";
+  handler->OnWebSocketMessage(&http_server, 3, incoming);
+}
+
+TEST_F(WebSocketMessageTest, NoMethodBoundConnection) {
+  // Verify that the missing "method" is treated as an error.
   base::RunLoop run_loop;
   MockHttpServer http_server;
   AddConnection(5, "some_session");
   std::string incoming = "{\"id\": 61, \"params\": {}}";
   base::Value::Dict parsed;
   Status expected_error = internal::ParseBidiCommand(incoming, parsed);
-  EXPECT_TRUE(expected_error.IsError());
+  EXPECT_EQ(kInvalidArgument, expected_error.code());
   std::string expected_response =
       ToString(internal::CreateBidiErrorResponse(expected_error, 61));
   EXPECT_CALL(http_server, SendOverWebSocket(Eq(5), Eq(expected_response)));
   handler->OnWebSocketMessage(&http_server, 5, incoming);
-  handler->io_task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
+  task_environment.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                       run_loop.QuitClosure());
   run_loop.Run();
 }
 
-TEST_F(WebSocketMessageTest, NoParams) {
+TEST_F(WebSocketMessageTest, NoMethodPostedToIOBoundConnection) {
+  // Verify that the response is properly posted to the IO thread.
+  base::RunLoop run_loop;
+  MockHttpServer http_server;
+  EXPECT_CALL(http_server, SendOverWebSocket(_, _)).Times(0);
+  AddConnection(3, "some_session");
+  std::string incoming = "{\"id\": 61, \"params\": {}}";
+  handler->OnWebSocketMessage(&http_server, 3, incoming);
+}
+
+TEST_F(WebSocketMessageTest, SessionCommandNoParamsUnboundConnection) {
   // Verify that the missing command params are treated as an error.
   base::RunLoop run_loop;
   MockHttpServer http_server;
-  AddConnection(6, "some_session");
-  std::string incoming = "{\"method\": \"some\", \"id\": 18}";
+  AddConnection(6);
+  std::string incoming = "{\"method\": \"script.evaluate\", \"id\": 18}";
   base::Value::Dict parsed;
   Status expected_error = internal::ParseBidiCommand(incoming, parsed);
-  EXPECT_TRUE(expected_error.IsError());
+  EXPECT_EQ(kInvalidArgument, expected_error.code());
   std::string expected_response =
       ToString(internal::CreateBidiErrorResponse(expected_error, 18));
   EXPECT_CALL(http_server, SendOverWebSocket(Eq(6), Eq(expected_response)));
   handler->OnWebSocketMessage(&http_server, 6, incoming);
-  handler->io_task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
+  task_environment.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                       run_loop.QuitClosure());
   run_loop.Run();
+}
+
+TEST_F(WebSocketMessageTest,
+       SessionCommandNoParamsPostedToIOUnboundConnection) {
+  // Verify that the response is properly posted to the IO thread.
+  base::RunLoop run_loop;
+  MockHttpServer http_server;
+  EXPECT_CALL(http_server, SendOverWebSocket(_, _)).Times(0);
+  AddConnection(3);
+  std::string incoming = "{\"method\": \"script.evaluate\", \"id\": 18}";
+  handler->OnWebSocketMessage(&http_server, 3, incoming);
+}
+
+TEST_F(WebSocketMessageTest, SessionCommandNoParamsBoundConnection) {
+  // Verify that the missing command params are treated as an error.
+  base::RunLoop run_loop;
+  MockHttpServer http_server;
+  AddConnection(6, "some_session");
+  std::string incoming = "{\"method\": \"script.evaluate\", \"id\": 18}";
+  base::Value::Dict parsed;
+  Status expected_error = internal::ParseBidiCommand(incoming, parsed);
+  EXPECT_EQ(kInvalidArgument, expected_error.code());
+  std::string expected_response =
+      ToString(internal::CreateBidiErrorResponse(expected_error, 18));
+  EXPECT_CALL(http_server, SendOverWebSocket(Eq(6), Eq(expected_response)));
+  handler->OnWebSocketMessage(&http_server, 6, incoming);
+  task_environment.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                       run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+TEST_F(WebSocketMessageTest, SessionCommandNoParamsPostedToIOBoundConnection) {
+  // Verify that the response is properly posted to the IO thread.
+  base::RunLoop run_loop;
+  MockHttpServer http_server;
+  EXPECT_CALL(http_server, SendOverWebSocket(_, _)).Times(0);
+  AddConnection(3, "some_session");
+  std::string incoming = "{\"method\": \"script.evaluate\", \"id\": 18}";
+  handler->OnWebSocketMessage(&http_server, 3, incoming);
 }
 
 TEST_F(WebSocketMessageTest, MalformedJson) {
@@ -503,21 +724,22 @@ TEST_F(WebSocketMessageTest, MalformedJson) {
       ToString(internal::CreateBidiErrorResponse(expected_error));
   EXPECT_CALL(http_server, SendOverWebSocket(Eq(6), Eq(expected_response)));
   handler->OnWebSocketMessage(&http_server, 6, incoming);
-  handler->io_task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
+  task_environment.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                       run_loop.QuitClosure());
   run_loop.Run();
 }
 
-TEST_F(WebSocketMessageTest, OtherErrorIsPostedToIO) {
+TEST_F(WebSocketMessageTest, MalformedJsonPostedToIO) {
   // Verify that the response is properly posted to the IO thread.
   base::RunLoop run_loop;
   MockHttpServer http_server;
   AddConnection(6, "some_session");
   EXPECT_CALL(http_server, SendOverWebSocket(_, _)).Times(0);
   // The message contains no id, no method and no params
-  handler->OnWebSocketMessage(&http_server, 6, "{}");
+  handler->OnWebSocketMessage(&http_server, 6, "}{");
 }
 
-TEST_F(WebSocketMessageTest, UnknownStaticCommand) {
+TEST_F(WebSocketMessageTest, UnknownCommandUnboundConnection) {
   // Verify that any unknown static command is treated as an error.
   base::RunLoop run_loop;
   MockHttpServer http_server;
@@ -529,11 +751,12 @@ TEST_F(WebSocketMessageTest, UnknownStaticCommand) {
       ToString(internal::CreateBidiErrorResponse(expected_error, 19));
   EXPECT_CALL(http_server, SendOverWebSocket(Eq(7), Eq(expected_response)));
   handler->OnWebSocketMessage(&http_server, 7, incoming);
-  handler->io_task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
+  task_environment.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                       run_loop.QuitClosure());
   run_loop.Run();
 }
 
-TEST_F(WebSocketMessageTest, UnknownStaticCommandIsPostedToIO) {
+TEST_F(WebSocketMessageTest, UnknownCommandIsPostedToIOUnboundConnection) {
   // Verify that the response is properly posted to the IO thread.
   base::RunLoop run_loop;
   MockHttpServer http_server;
@@ -544,22 +767,165 @@ TEST_F(WebSocketMessageTest, UnknownStaticCommandIsPostedToIO) {
   handler->OnWebSocketMessage(&http_server, 7, incoming);
 }
 
+TEST_F(WebSocketMessageTest, UnknownCommandBoundConnection) {
+  // Verify that any unknown command is forwarded to BiDiMapper in the case if
+  // the connection is bound to a BiDi session.
+  base::RunLoop run_loop;
+  MockHttpServer http_server;
+  AddConnection(7, "some_session");
+  std::string incoming =
+      "{\"method\": \"abracadabra\", \"id\": 19, \"params\": {}}";
+  bool invoked = false;
+  SetForwardingCommand(base::BindRepeating(
+      [](bool* invoked, const base::Value::Dict& params,
+         const std::string& session_id, const CommandCallback&) {
+        *invoked = true;
+        EXPECT_EQ("some_session", session_id);
+        EXPECT_EQ(7, params.FindDouble("connectionId").value_or(-1));
+        EXPECT_THAT(params.FindStringByDottedPath("bidiCommand.method"),
+                    Pointee(Eq("abracadabra")));
+        EXPECT_THAT(params.FindDoubleByDottedPath("bidiCommand.id"),
+                    Optional(Eq(19)));
+      },
+      base::Unretained(&invoked)));
+  handler->OnWebSocketMessage(&http_server, 7, incoming);
+  task_environment.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                       run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_TRUE(invoked);
+}
+
+TEST_F(WebSocketMessageTest, StaticCommandNoIdUnboundConnection) {
+  // Verify that missing "id" is checked before static command invocation
+  base::RunLoop run_loop;
+  AddStaticCommand("echo", EchoClosure());
+  std::string incoming = "{\"method\": \"echo\", \"params\": {}}";
+  base::Value::Dict parsed;
+  Status expected_error = internal::ParseBidiCommand(incoming, parsed);
+  // missing "id" is an "invalid argument" error
+  EXPECT_EQ(kInvalidArgument, expected_error.code());
+  std::string expected_response =
+      ToString(internal::CreateBidiErrorResponse(expected_error));
+  AddConnection(3);
+  MockHttpServer http_server;
+  EXPECT_CALL(http_server, SendOverWebSocket(Eq(3), Eq(expected_response)));
+  handler->OnWebSocketMessage(&http_server, 3, incoming);
+  task_environment.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                       run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+TEST_F(WebSocketMessageTest, StaticCommandNoIdPostedToIOUnboundConnection) {
+  // Verify that the response is properly posted to the IO thread.
+  base::RunLoop run_loop;
+  AddStaticCommand("echo", EchoClosure());
+  std::string incoming = "{\"method\": \"echo\", \"params\": {}}";
+  MockHttpServer http_server;
+  EXPECT_CALL(http_server, SendOverWebSocket(_, _)).Times(0);
+  AddConnection(3);
+  handler->OnWebSocketMessage(&http_server, 3, incoming);
+}
+
+TEST_F(WebSocketMessageTest, StaticCommandNoIdBoundConnection) {
+  // Verify that missing "id" is checked before static command invocation
+  base::RunLoop run_loop;
+  AddStaticCommand("echo", EchoClosure());
+  std::string incoming = "{\"method\": \"echo\", \"params\": {}}";
+  base::Value::Dict parsed;
+  Status expected_error = internal::ParseBidiCommand(incoming, parsed);
+  // missing "id" is an "invalid argument" error
+  EXPECT_EQ(kInvalidArgument, expected_error.code());
+  std::string expected_response =
+      ToString(internal::CreateBidiErrorResponse(expected_error));
+  AddConnection(3, "some_session");
+  MockHttpServer http_server;
+  EXPECT_CALL(http_server, SendOverWebSocket(Eq(3), Eq(expected_response)));
+  handler->OnWebSocketMessage(&http_server, 3, incoming);
+  task_environment.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                       run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+TEST_F(WebSocketMessageTest, StaticCommandNoIdPostedToBoundConnection) {
+  // Verify that the response is properly posted to the IO thread.
+  base::RunLoop run_loop;
+  AddStaticCommand("echo", EchoClosure());
+  std::string incoming = "{\"method\": \"echo\", \"params\": {}}";
+  MockHttpServer http_server;
+  EXPECT_CALL(http_server, SendOverWebSocket(_, _)).Times(0);
+  AddConnection(3, "some_session");
+  handler->OnWebSocketMessage(&http_server, 3, incoming);
+}
+
+TEST_F(WebSocketMessageTest, StaticCommandNoParamsUnboundConnection) {
+  // Verify that the missing command params are treated as an error.
+  base::RunLoop run_loop;
+  MockHttpServer http_server;
+  AddConnection(6);
+  AddStaticCommand("echo", EchoClosure());
+  std::string incoming = "{\"method\": \"echo\", \"id\": 18}";
+  base::Value::Dict parsed;
+  Status expected_error = internal::ParseBidiCommand(incoming, parsed);
+  EXPECT_EQ(kInvalidArgument, expected_error.code());
+  std::string expected_response =
+      ToString(internal::CreateBidiErrorResponse(expected_error, 18));
+  EXPECT_CALL(http_server, SendOverWebSocket(Eq(6), Eq(expected_response)));
+  handler->OnWebSocketMessage(&http_server, 6, incoming);
+  task_environment.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                       run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+TEST_F(WebSocketMessageTest, StaticCommandNoParamsPostedToIOUnboundConnection) {
+  // Verify that the response is properly posted to the IO thread.
+  base::RunLoop run_loop;
+  MockHttpServer http_server;
+  AddConnection(6);
+  AddStaticCommand("echo", EchoClosure());
+  EXPECT_CALL(http_server, SendOverWebSocket(_, _)).Times(0);
+  AddConnection(3);
+  std::string incoming = "{\"method\": \"echo\", \"id\": 18}";
+  handler->OnWebSocketMessage(&http_server, 3, incoming);
+}
+
+TEST_F(WebSocketMessageTest, StaticCommandNoParamsBoundConnection) {
+  // Verify that the missing command params are treated as an error.
+  base::RunLoop run_loop;
+  MockHttpServer http_server;
+  AddConnection(6, "some_session");
+  AddStaticCommand("echo", EchoClosure());
+  std::string incoming = "{\"method\": \"echo\", \"id\": 18}";
+  base::Value::Dict parsed;
+  Status expected_error = internal::ParseBidiCommand(incoming, parsed);
+  EXPECT_EQ(kInvalidArgument, expected_error.code());
+  std::string expected_response =
+      ToString(internal::CreateBidiErrorResponse(expected_error, 18));
+  EXPECT_CALL(http_server, SendOverWebSocket(Eq(6), Eq(expected_response)));
+  handler->OnWebSocketMessage(&http_server, 6, incoming);
+  task_environment.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                       run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+TEST_F(WebSocketMessageTest, StaticCommandNoParamsPostedToIOBoundConnection) {
+  // Verify that the response is properly posted to the IO thread.
+  base::RunLoop run_loop;
+  MockHttpServer http_server;
+  AddConnection(3, "some_session");
+  AddStaticCommand("echo", EchoClosure());
+  EXPECT_CALL(http_server, SendOverWebSocket(_, _)).Times(0);
+  AddConnection(3, "some_session");
+  std::string incoming = "{\"method\": \"echo\", \"id\": 18}";
+  handler->OnWebSocketMessage(&http_server, 3, incoming);
+}
+
 TEST_F(WebSocketMessageTest, KnownStaticCommandReturnsSuccess) {
   // Verify that the response from a successful static command is sent over the
   // web socket.
   base::RunLoop run_loop;
   MockHttpServer http_server;
   AddConnection(8);
-  Command echo = base::BindRepeating([](const base::Value::Dict& params,
-                                        const std::string& session_id,
-                                        const CommandCallback& callback) {
-    base::Value::Dict response = params.Clone();
-    response.Set("is_response", true);
-    callback.Run(Status{kOk},
-                 std::make_unique<base::Value>(std::move(response)), session_id,
-                 true);
-  });
-  handler->static_bidi_command_map_.emplace("echo", std::move(echo));
+  AddStaticCommand("echo", EchoClosure());
   std::string incoming =
       "{\"method\": \"echo\", \"id\": 20, \"params\": {\"a\": 1}}";
   base::Value::Dict expected_response;
@@ -573,7 +939,8 @@ TEST_F(WebSocketMessageTest, KnownStaticCommandReturnsSuccess) {
   EXPECT_CALL(http_server,
               SendOverWebSocket(Eq(8), Eq(expected_response_message)));
   handler->OnWebSocketMessage(&http_server, 8, incoming);
-  handler->io_task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
+  task_environment.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                       run_loop.QuitClosure());
   run_loop.Run();
 }
 
@@ -583,13 +950,8 @@ TEST_F(WebSocketMessageTest, KnownStaticCommandReturnsError) {
   base::RunLoop run_loop;
   MockHttpServer http_server;
   AddConnection(9);
-  Command fail = base::BindRepeating([](const base::Value::Dict& params,
-                                        const std::string& session_id,
-                                        const CommandCallback& callback) {
-    callback.Run(Status{kInvalidSelector, "this game has no name"}, nullptr,
-                 session_id, true);
-  });
-  handler->static_bidi_command_map_.emplace("fail", std::move(fail));
+  AddStaticCommand("fail",
+                   FailClosure(kInvalidSelector, "this game has no name"));
   std::string incoming =
       "{\"method\": \"fail\", \"id\": 21, \"params\": {\"a\": 1}}";
   Status expected_error = Status{kInvalidSelector, "this game has no name"};
@@ -597,7 +959,8 @@ TEST_F(WebSocketMessageTest, KnownStaticCommandReturnsError) {
       ToString(internal::CreateBidiErrorResponse(expected_error, 21));
   EXPECT_CALL(http_server, SendOverWebSocket(Eq(9), Eq(expected_response)));
   handler->OnWebSocketMessage(&http_server, 9, incoming);
-  handler->io_task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
+  task_environment.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                       run_loop.QuitClosure());
   run_loop.Run();
 }
 
@@ -606,13 +969,7 @@ TEST_F(WebSocketMessageTest, KnownStaticCommandResponseIsPostedToIO) {
   base::RunLoop run_loop;
   MockHttpServer http_server;
   AddConnection(8);
-  Command echo = base::BindRepeating([](const base::Value::Dict& params,
-                                        const std::string& session_id,
-                                        const CommandCallback& callback) {
-    callback.Run(Status{kOk}, std::make_unique<base::Value>(params.Clone()),
-                 session_id, true);
-  });
-  handler->static_bidi_command_map_.emplace("echo", std::move(echo));
+  AddStaticCommand("echo", EchoClosure());
   std::string incoming =
       "{\"method\": \"echo\", \"id\": 20, \"params\": {\"a\": 1}}";
   EXPECT_CALL(http_server, SendOverWebSocket(_, _)).Times(0);
@@ -625,17 +982,13 @@ TEST_F(WebSocketMessageTest, SessionCommandReturnsSuccess) {
   base::RunLoop run_loop;
   MockHttpServer http_server;
   AddConnection(8, "some_session");
-  Command echo = base::BindRepeating([](const base::Value::Dict& params,
-                                        const std::string& session_id,
-                                        const CommandCallback& callback) {
-    callback.Run(Status{kOk}, nullptr, session_id, true);
-  });
-  handler->execute_session_command_ = echo;
+  SetForwardingCommand(SuccessNoResultClosure());
   std::string incoming =
       "{\"method\": \"echo\", \"id\": 20, \"params\": {\"a\": 1}}";
   EXPECT_CALL(http_server, SendOverWebSocket(_, _)).Times(0);
   handler->OnWebSocketMessage(&http_server, 8, incoming);
-  handler->io_task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
+  task_environment.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                       run_loop.QuitClosure());
   run_loop.Run();
 }
 
@@ -645,17 +998,13 @@ TEST_F(WebSocketMessageTest, SessionCommandNoReturnValue) {
   base::RunLoop run_loop;
   MockHttpServer http_server;
   AddConnection(8, "some_session");
-  Command forward = base::BindRepeating([](const base::Value::Dict& params,
-                                           const std::string& session_id,
-                                           const CommandCallback& callback) {
-    callback.Run(Status{kOk}, nullptr, session_id, true);
-  });
-  handler->execute_session_command_ = forward;
+  SetForwardingCommand(SuccessNoResultClosure());
   std::string incoming =
       "{\"method\": \"echo\", \"id\": 20, \"params\": {\"a\": 1}}";
   EXPECT_CALL(http_server, SendOverWebSocket(_, _)).Times(0);
   handler->OnWebSocketMessage(&http_server, 8, incoming);
-  handler->io_task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
+  task_environment.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                       run_loop.QuitClosure());
   run_loop.Run();
 }
 
@@ -676,7 +1025,7 @@ TEST_F(WebSocketMessageTest, SessionCommandReturnsError) {
                  std::make_unique<base::Value>(std::move(response)), session_id,
                  true);
   });
-  handler->execute_session_command_ = std::move(fail);
+  SetForwardingCommand(std::move(fail));
   std::string incoming =
       "{\"method\": \"fail\", \"id\": 21, \"params\": {\"a\": 1}}";
   Status expected_error = Status{kJavaScriptError, "this game has no name"};
@@ -684,7 +1033,8 @@ TEST_F(WebSocketMessageTest, SessionCommandReturnsError) {
       ToString(internal::CreateBidiErrorResponse(expected_error, 21));
   EXPECT_CALL(http_server, SendOverWebSocket(Eq(9), Eq(expected_response)));
   handler->OnWebSocketMessage(&http_server, 9, incoming);
-  handler->io_task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
+  task_environment.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                       run_loop.QuitClosure());
   run_loop.Run();
 }
 
@@ -705,7 +1055,7 @@ TEST_F(WebSocketMessageTest, SessionCommandResponseIsPostedToIO) {
                  std::make_unique<base::Value>(std::move(response)), session_id,
                  true);
   });
-  handler->static_bidi_command_map_.emplace("echo", std::move(echo));
+  AddStaticCommand("echo", std::move(echo));
   std::string incoming =
       "{\"method\": \"echo\", \"id\": 20, \"params\": {\"a\": 1}}";
   EXPECT_CALL(http_server, SendOverWebSocket(_, _)).Times(0);
@@ -717,7 +1067,7 @@ TEST_F(WebSocketMessageTest, StaticCommandOnSessionBoundConnection) {
   base::RunLoop run_loop;
   MockHttpServer http_server;
   AddConnection(9, "some_session");
-  auto register_invokation = base::BindRepeating(
+  auto register_invocation = base::BindRepeating(
       [](bool* invoked, const base::Value::Dict& params,
          const std::string& session_id, const CommandCallback& callback) {
         *invoked = true;
@@ -725,20 +1075,97 @@ TEST_F(WebSocketMessageTest, StaticCommandOnSessionBoundConnection) {
                      session_id, true);
       });
   bool static_is_invoked = false;
-  handler->static_bidi_command_map_.emplace(
-      "static_cmd",
-      base::BindRepeating(register_invokation, &static_is_invoked));
+  AddStaticCommand("static_cmd", base::BindRepeating(register_invocation,
+                                                     &static_is_invoked));
   bool session_is_invoked = false;
-  handler->execute_session_command_ =
-      base::BindRepeating(register_invokation, &session_is_invoked);
+  SetForwardingCommand(
+      base::BindRepeating(register_invocation, &session_is_invoked));
   std::string incoming =
       "{\"method\": \"static_cmd\", \"id\": 20, \"params\": {\"a\": 1}}";
   EXPECT_CALL(http_server, SendOverWebSocket(Eq(9), _));
   handler->OnWebSocketMessage(&http_server, 9, incoming);
-  handler->io_task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
+  task_environment.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                       run_loop.QuitClosure());
   run_loop.Run();
   EXPECT_TRUE(static_is_invoked);
   EXPECT_FALSE(session_is_invoked);
+}
+
+TEST_F(WebSocketMessageTest, SessionNew) {
+  // Verify that unbound connection becomes session bound after session.new
+  MockHttpServer http_server;
+  // Initially connection #8 is unbound
+  AddConnection(8);
+  AddStaticCommand("session.new", SessionCreatedClosure("gray_session"));
+  SetForwardingCommand(SuccessEmptyResultClosure());
+  // Check that connection #8 is not open
+  {
+    Status expected_error{kInvalidSessionId, "session not found"};
+    std::string expected_response_str =
+        ToString(internal::CreateBidiErrorResponse(expected_error, 23));
+    EXPECT_CALL(http_server, SendOverWebSocket(8, expected_response_str));
+    std::string incoming =
+        "{\"method\": \"script.evaluate\", \"id\": 23, \"params\": {}}";
+    base::RunLoop run_loop;
+    handler->OnWebSocketMessage(&http_server, 8, incoming);
+    task_environment.GetMainThreadTaskRunner()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+  {
+    base::Value::Dict expected_response;
+    expected_response.Set("id", 24.0);
+    expected_response.Set("type", "success");
+    expected_response.Set("result", base::Value::Dict());
+    std::string expected_response_str = ToString(expected_response);
+    EXPECT_CALL(http_server, SendOverWebSocket(8, expected_response_str));
+    std::string incoming =
+        "{\"method\": \"session.new\", \"id\": 24, \"params\": {}}";
+    base::RunLoop run_loop;
+    handler->OnWebSocketMessage(&http_server, 8, incoming);
+    task_environment.GetMainThreadTaskRunner()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+  // Check that connection #8 is bound to a new session
+  {
+    base::Value::Dict expected_response;
+    expected_response.Set("id", 25.0);
+    expected_response.Set("type", "success");
+    expected_response.Set("result", base::Value::Dict());
+    std::string expected_response_str = ToString(expected_response);
+    EXPECT_CALL(http_server, SendOverWebSocket(8, expected_response_str));
+    std::string incoming =
+        "{\"method\": \"script.evaluate\", \"id\": 25, \"params\": {}}";
+    base::RunLoop run_loop;
+    handler->OnWebSocketMessage(&http_server, 8, incoming);
+    task_environment.GetMainThreadTaskRunner()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+}
+
+TEST_F(WebSocketMessageTest, SessionEnd) {
+  // Verify that all bound connection are closed after session.end
+  MockHttpServer http_server;
+  AddConnection(10, "red_session");
+  AddSessionCommand("session.end", SuccessEmptyResultClosure());
+  SetForwardingCommand(SuccessEmptyResultClosure());
+  {
+    base::Value::Dict expected_response;
+    expected_response.Set("id", 21.0);
+    expected_response.Set("type", "success");
+    expected_response.Set("result", base::Value::Dict());
+    std::string expected_response_str = ToString(expected_response);
+    EXPECT_CALL(http_server, SendOverWebSocket(10, expected_response_str));
+    std::string incoming =
+        "{\"method\": \"session.end\", \"id\": 21, \"params\": {}}";
+    base::RunLoop run_loop;
+    handler->OnWebSocketMessage(&http_server, 10, incoming);
+    task_environment.GetMainThreadTaskRunner()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
 }
 
 class WebSocketRequestTest : public testing::Test {
@@ -757,6 +1184,11 @@ class WebSocketRequestTest : public testing::Test {
     handler->connection_session_map_.insert(
         std::make_pair(connection_id, session_id));
     handler->session_connection_map_[session_id].push_back(connection_id);
+  }
+
+  void AddStaticCommand(std::string name, Command command) {
+    handler->static_bidi_command_map_.emplace(std::move(name),
+                                              std::move(command));
   }
 
   base::test::SingleThreadTaskEnvironment task_environment;
@@ -779,7 +1211,8 @@ TEST_F(WebSocketRequestTest, UnknownPath) {
                                     Eq(expected_response.Serialize())),
                            _));
   handler->OnWebSocketRequest(&http_server, 2, rq);
-  handler->io_task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
+  task_environment.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                       run_loop.QuitClosure());
   run_loop.Run();
 }
 
@@ -799,7 +1232,8 @@ TEST_F(WebSocketRequestTest, UnknownSession) {
                                     Eq(expected_response.Serialize())),
                            _));
   handler->OnWebSocketRequest(&http_server, 1, rq);
-  handler->io_task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
+  task_environment.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                       run_loop.QuitClosure());
   run_loop.Run();
 }
 
@@ -820,7 +1254,8 @@ TEST_F(WebSocketRequestTest, ConnectionAlreadyBound) {
                                     Eq(expected_response.Serialize())),
                            _));
   handler->OnWebSocketRequest(&http_server, 3, rq);
-  handler->io_task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
+  task_environment.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                       run_loop.QuitClosure());
   run_loop.Run();
 }
 
@@ -833,7 +1268,8 @@ TEST_F(WebSocketRequestTest, CreateUnboundConnection) {
   handler->OnWebSocketRequest(&http_server, 3, rq);
   {
     base::RunLoop run_loop;
-    handler->io_task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
+    task_environment.GetMainThreadTaskRunner()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -846,13 +1282,14 @@ TEST_F(WebSocketRequestTest, CreateUnboundConnection) {
                      session_id, true);
       },
       &invoked);
-  handler->static_bidi_command_map_.emplace("cmd", std::move(cmd));
+  AddStaticCommand("cmd", std::move(cmd));
   std::string incoming = "{\"method\": \"cmd\", \"id\": 20, \"params\": {}}";
   EXPECT_CALL(http_server, SendOverWebSocket(Eq(3), _));
   handler->OnWebSocketMessage(&http_server, 3, incoming);
   {
     base::RunLoop run_loop;
-    handler->io_task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
+    task_environment.GetMainThreadTaskRunner()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
   }
   EXPECT_TRUE(invoked);

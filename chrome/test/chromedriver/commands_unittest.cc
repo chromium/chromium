@@ -72,33 +72,33 @@ TEST(CommandsTest, GetStatus) {
 
 namespace {
 
-void OnBidiGetStatusNoSession(const Status& status,
-                              std::unique_ptr<base::Value> value,
-                              const std::string& session_id,
-                              bool w3c_compliant) {
+void OnBidiSessionStatusNoSession(const Status& status,
+                                  std::unique_ptr<base::Value> value,
+                                  const std::string& session_id,
+                                  bool w3c_compliant) {
   ASSERT_EQ(kOk, status.code());
   base::Value::Dict* dict = value->GetIfDict();
   ASSERT_TRUE(dict);
-  ASSERT_THAT(dict->FindBool("ready"), Optional(Eq(false)));
+  ASSERT_THAT(dict->FindBool("ready"), Optional(Eq(true)));
   ASSERT_THAT(dict->FindString("message"),
-              Pointee(HasSubstr("does not yet support BiDi-only sessions")));
+              Pointee(HasSubstr("ready for new sessions.")));
   AssertGetStatusExtendedData(dict);
 }
 
 }  // namespace
 
-TEST(CommandsTest, BidiGetStatusNoSession) {
+TEST(CommandsTest, BidiSessionStatusNoSession) {
   base::Value::Dict params;
-  ExecuteBidiGetStatus(params, std::string(),
-                       base::BindRepeating(&OnBidiGetStatusNoSession));
+  ExecuteBidiSessionStatus(params, std::string(),
+                           base::BindRepeating(&OnBidiSessionStatusNoSession));
 }
 
 namespace {
 
-void OnBidiGetStatusWithSession(const Status& status,
-                                std::unique_ptr<base::Value> value,
-                                const std::string& session_id,
-                                bool w3c_compliant) {
+void OnBidiSessionStatusWithSession(const Status& status,
+                                    std::unique_ptr<base::Value> value,
+                                    const std::string& session_id,
+                                    bool w3c_compliant) {
   ASSERT_EQ(kOk, status.code());
   base::Value::Dict* dict = value->GetIfDict();
   ASSERT_TRUE(dict);
@@ -110,10 +110,11 @@ void OnBidiGetStatusWithSession(const Status& status,
 
 }  // namespace
 
-TEST(CommandsTest, BidiGetStatusWithSession) {
+TEST(CommandsTest, BidiSessionStatusWithSession) {
   base::Value::Dict params;
-  ExecuteBidiGetStatus(params, "some_session",
-                       base::BindRepeating(&OnBidiGetStatusWithSession));
+  ExecuteBidiSessionStatus(
+      params, "some_session",
+      base::BindRepeating(&OnBidiSessionStatusWithSession));
 }
 
 namespace {
@@ -286,6 +287,7 @@ void OnSimpleCommand(base::RunLoop* run_loop,
 
 TEST(CommandsTest, ExecuteSessionCommand) {
   SessionThreadMap map;
+  SessionConnectionMap session_connection_map;
   auto thread_info = std::make_unique<SessionThreadInfo>("1", true);
   base::Thread* thread = thread_info->thread();
   ASSERT_TRUE(thread->Start());
@@ -304,7 +306,8 @@ TEST(CommandsTest, ExecuteSessionCommand) {
   base::test::SingleThreadTaskEnvironment task_environment;
   base::RunLoop run_loop;
   ExecuteSessionCommand(
-      &map, "cmd", cmd, true /*w3c_standard_command*/, false, params, id,
+      &map, &session_connection_map, "cmd", cmd, true /*w3c_standard_command*/,
+      false, params, id,
       base::BindRepeating(&OnSimpleCommand, &run_loop, id, &expected_value));
   run_loop.Run();
 }
@@ -338,16 +341,20 @@ void OnNoSuchSessionIsOk(const Status& status,
 
 TEST(CommandsTest, ExecuteSessionCommandOnNoSuchSession) {
   SessionThreadMap map;
+  SessionConnectionMap session_connection_map;
   base::Value::Dict params;
-  ExecuteSessionCommand(&map, "cmd", base::BindRepeating(&ShouldNotBeCalled),
+  ExecuteSessionCommand(&map, &session_connection_map, "cmd",
+                        base::BindRepeating(&ShouldNotBeCalled),
                         true /*w3c_standard_command*/, false, params, "session",
                         base::BindRepeating(&OnNoSuchSession));
 }
 
 TEST(CommandsTest, ExecuteSessionCommandOnNoSuchSessionWhenItExpectsOk) {
   SessionThreadMap map;
+  SessionConnectionMap session_connection_map;
   base::Value::Dict params;
-  ExecuteSessionCommand(&map, "cmd", base::BindRepeating(&ShouldNotBeCalled),
+  ExecuteSessionCommand(&map, &session_connection_map, "cmd",
+                        base::BindRepeating(&ShouldNotBeCalled),
                         true /*w3c_standard_command*/, true, params, "session",
                         base::BindRepeating(&OnNoSuchSessionIsOk));
 }
@@ -368,6 +375,7 @@ void OnNoSuchSessionAndQuit(base::RunLoop* run_loop,
 
 TEST(CommandsTest, ExecuteSessionCommandOnJustDeletedSession) {
   SessionThreadMap map;
+  SessionConnectionMap session_connection_map;
   auto thread_info = std::make_unique<SessionThreadInfo>("1", true);
   ASSERT_TRUE(thread_info->thread()->Start());
   std::string id("id");
@@ -377,8 +385,9 @@ TEST(CommandsTest, ExecuteSessionCommandOnJustDeletedSession) {
   base::Value::Dict params;
   base::RunLoop run_loop;
   ExecuteSessionCommand(
-      &map, "cmd", base::BindRepeating(&ShouldNotBeCalled),
-      true /*w3c_standard_command*/, false, params, "session",
+      &map, &session_connection_map, "cmd",
+      base::BindRepeating(&ShouldNotBeCalled), true /*w3c_standard_command*/,
+      false, params, "session",
       base::BindRepeating(&OnNoSuchSessionAndQuit, &run_loop));
   run_loop.Run();
 }
@@ -427,7 +436,7 @@ class FindElementWebView : public StubWebView {
       }
     }
   }
-  ~FindElementWebView() override {}
+  ~FindElementWebView() override = default;
 
   void Verify(const std::string& expected_frame,
               const base::Value* expected_args,
@@ -653,7 +662,7 @@ class ErrorCallFunctionWebView : public StubWebView {
  public:
   explicit ErrorCallFunctionWebView(StatusCode code)
       : StubWebView("1"), code_(code) {}
-  ~ErrorCallFunctionWebView() override {}
+  ~ErrorCallFunctionWebView() override = default;
 
   // Overridden from WebView:
   Status CallFunction(const std::string& frame,
@@ -756,6 +765,7 @@ void OnSessionCommand(base::RunLoop* run_loop,
 
 TEST(CommandsTest, SuccessNotifyingCommandListeners) {
   SessionThreadMap map;
+  SessionConnectionMap session_connection_map;
   auto thread_info = std::make_unique<SessionThreadInfo>("1", true);
   base::Thread* thread = thread_info->thread();
   ASSERT_TRUE(thread->Start());
@@ -781,7 +791,8 @@ TEST(CommandsTest, SuccessNotifyingCommandListeners) {
   // Here, the command adds |listener| to the session, so |listener|
   // should not be notified since it will not have been added yet.
   ExecuteSessionCommand(
-      &map, "cmd", cmd, true /*w3c_standard_command*/, false, params, id,
+      &map, &session_connection_map, "cmd", cmd, true /*w3c_standard_command*/,
+      false, params, id,
       base::BindRepeating(&OnSessionCommand, &run_loop_addlistener));
   run_loop_addlistener.Run();
 
@@ -793,7 +804,8 @@ TEST(CommandsTest, SuccessNotifyingCommandListeners) {
   // |listener| was added to |session| by ExecuteAddListenerToSessionCommand
   // and should be notified before the next command, ExecuteQuitSessionCommand.
   ExecuteSessionCommand(
-      &map, "cmd", cmd, true /*w3c_standard_command*/, false, params, id,
+      &map, &session_connection_map, "cmd", cmd, true /*w3c_standard_command*/,
+      false, params, id,
       base::BindRepeating(&OnSessionCommand, &run_loop_testlistener));
   run_loop_testlistener.Run();
 
@@ -838,6 +850,7 @@ void VerifySessionWasDeleted() {
 
 TEST(CommandsTest, ErrorNotifyingCommandListeners) {
   SessionThreadMap map;
+  SessionConnectionMap session_connection_map;
   auto thread_info = std::make_unique<SessionThreadInfo>("1", true);
   base::Thread* thread = thread_info->thread();
   ASSERT_TRUE(thread->Start());
@@ -862,7 +875,8 @@ TEST(CommandsTest, ErrorNotifyingCommandListeners) {
   base::RunLoop run_loop;
 
   ExecuteSessionCommand(
-      &map, "cmd", cmd, true /*w3c_standard_command*/, false, params, id,
+      &map, &session_connection_map, "cmd", cmd, true /*w3c_standard_command*/,
+      false, params, id,
       base::BindRepeating(&OnFailBecauseErrorNotifyingListeners, &run_loop));
   run_loop.Run();
 

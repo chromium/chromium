@@ -5224,7 +5224,7 @@ class ChromeDownloadDirTest(ChromeDriverBaseTest):
     with open(prefs_file_path, 'w') as f:
       json.dump(prefs, f)
 
-    driver = self.CreateDriver(
+    self.CreateDriver(
         chrome_switches=['user-data-dir=' + user_data_dir],
         download_dir=download_dir)
 
@@ -6398,74 +6398,225 @@ class PureBidiTest(ChromeDriverBaseTestWithWebServer):
 
   def tearDown(self):
     for conn in self._connections:
-      conn.Close()
+      try:
+        conn.PostCommand({
+          'method': 'session.end',
+          'params': {}
+        })
+        conn.Close()
+      except chromedriver.WebSocketConnectionClosedException:
+        pass
     super().tearDown()
 
-  def createUnboundWebSocketConnection(self):
+  def createWebSocketConnection(self, session_id = None):
     server_url = _CHROMEDRIVER_SERVER_URL
-    conn = WebSocketConnection(server_url)
+    conn = WebSocketConnection(server_url, session_id = session_id)
     conn.SetTimeout(5 * 60) # 5 minutes
     self._connections.append(conn)
     return conn
 
   def testSessionStatus(self):
-    conn = self.createUnboundWebSocketConnection()
-    cmd_id = conn.SendCommand({
+    conn = self.createWebSocketConnection()
+    status = conn.SendCommand({
       'method': 'session.status',
       'params': {}
     })
-    status = conn.WaitForResponse(cmd_id)
-    self.assertEqual('success', status['type'])
-    self.assertEqual(False, status['result']['ready'])
-    self.assertEqual('ChromeDriver does not yet support BiDi-only sessions.',
-                     status['result']['message'])
+    self.assertEqual(True, status['ready'])
+    self.assertEqual('ChromeDriver ready for new sessions.',
+                     status['message'])
 
   def testSessionNew(self):
-    conn = self.createUnboundWebSocketConnection()
-    cmd_id = conn.SendCommand({
+    conn = self.createWebSocketConnection()
+    response = conn.SendCommand({
       'method': 'session.new',
       'params': {
           'capabilities': {}
       }
     })
-    status = conn.WaitForResponse(cmd_id)
-    self.assertEqual('error', status['type'])
-    self.assertEqual('session not created', status['error'])
-    self.assertEqual(''.join([
-        'session not created: ',
-        'ChromeDriver does not yet support BiDi-only sessions.']),
-        status['message'])
+    self.assertRegex(response['sessionId'], '\\w+')
+
+  def testStatusInActiveSession(self):
+    conn = self.createWebSocketConnection()
+    conn.SendCommand({
+      'method': 'session.new',
+      'params': {
+          'capabilities': {}
+      }
+    })
+    status = conn.SendCommand({
+      'method': 'session.status',
+      'params': {}
+    })
+    self.assertEqual(False, status['ready'])
+    self.assertEqual('already connected', status['message'])
+
+  def testSessionNewIfSessionAlreadyCreated(self):
+    conn = self.createWebSocketConnection()
+    conn.SendCommand({
+      'method': 'session.new',
+      'params': {
+          'capabilities': {}
+      }
+    })
+
+    with self.assertRaisesRegex(chromedriver.SessionNotCreated,
+                  "session not created: session already exists"):
+      conn.SendCommand({
+        'method': 'session.new',
+        'params': {
+            'capabilities': {}
+        }
+      })
+
+  def testAnySessionCommand(self):
+    conn = self.createWebSocketConnection()
+    conn.SendCommand({
+      'method': 'session.new',
+      'params': {
+          'capabilities': {}
+      }
+    })
+    response = conn.SendCommand({
+      'method': 'browsingContext.getTree',
+      'params': {
+      }
+    })
+    context = response['contexts'][0]['context']
+    self.assertIsNotNone(context)
 
   def testUnknownStaticCommand(self):
-    conn = self.createUnboundWebSocketConnection()
-    cmd_id = conn.SendCommand({
-      'method': 'abracadabra',
-      'params': {}
-    })
-    status = conn.WaitForResponse(cmd_id)
-    self.assertEqual('error', status['type'])
-    self.assertEqual('unknown command', status['error'])
-    self.assertEqual('unknown command: abracadabra', status['message'])
+    conn = self.createWebSocketConnection()
+    with self.assertRaisesRegex(chromedriver.UnknownCommand,
+                                'unknown command: abracadabra'):
+      conn.SendCommand({
+        'method': 'abracadabra',
+        'params': {}
+      })
 
   def testStaticCommandWithoutMethod(self):
-    conn = self.createUnboundWebSocketConnection()
-    cmd_id = conn.SendCommand({
-      'params': {}
-    })
-    status = conn.WaitForResponse(cmd_id)
-    self.assertEqual('error', status['type'])
-    self.assertEqual('invalid argument', status['error'])
-    self.assertRegex(status['message'], 'no\\s+method')
+    conn = self.createWebSocketConnection()
+    with self.assertRaisesRegex(chromedriver.InvalidArgument,
+                                'no\\s+method'):
+      conn.SendCommand({
+        'params': {}
+      })
 
   def testStaticCommandWithoutParams(self):
-    conn = self.createUnboundWebSocketConnection()
-    cmd_id = conn.SendCommand({
-        'method': 'session.status'
+    conn = self.createWebSocketConnection()
+    with self.assertRaisesRegex(chromedriver.InvalidArgument,
+                                'no\\s+params'):
+      conn.SendCommand({
+          'method': 'session.status'
+      })
+
+  def testSessionCommandInEndedSession(self):
+    conn = self.createWebSocketConnection()
+    conn.SendCommand({
+      'method': 'session.new',
+      'params': {
+          'capabilities': {}
+      }
     })
-    status = conn.WaitForResponse(cmd_id)
-    self.assertEqual('error', status['type'])
-    self.assertEqual('invalid argument', status['error'])
-    self.assertRegex(status['message'], 'no\\s+params')
+    conn.SendCommand({
+      'method': 'session.end',
+      'params': {
+      }
+    })
+    with self.assertRaises(chromedriver.WebSocketConnectionClosedException):
+      conn.SendCommand({
+        'method': 'browsingContext.getTree',
+        'params': {
+        }
+      })
+
+  def testSessionCommandInEndedSessionNoWait(self):
+    conn = self.createWebSocketConnection()
+    conn.PostCommand({
+      'method': 'session.new',
+      'params': {
+          'capabilities': {}
+      }
+    })
+    conn.PostCommand({
+      'method': 'session.end',
+      'params': {
+      }
+    })
+    # Depending on timing the command might fail with either
+    # WebSocketConnectionClosedException or it might return an error code
+    # "invalid session id".
+    try:
+      conn.SendCommand({
+        'method': 'browsingContext.getTree',
+        'params': {
+        }
+      })
+    except chromedriver.WebSocketConnectionClosedException:
+      pass
+    except chromedriver.InvalidSessionId:
+      # This situation can happen if "browsingContext.getTree" arrives before
+      # the ExecuteBidiSessionEnd response is returned to the CMD thread.
+      pass
+
+  def testMultipleConnectionsToSameSession(self):
+    conn1 = self.createWebSocketConnection()
+    response = conn1.SendCommand({
+      'method': 'session.new',
+      'params': {
+          'capabilities': {}
+      }
+    })
+    session_id = response['sessionId']
+    conn2 = self.createWebSocketConnection(session_id=session_id)
+    response = conn1.SendCommand({
+      'method': 'browsingContext.getTree',
+      'params': {
+      }
+    })
+    context = response['contexts'][0]['context']
+    conn1.PostCommand({
+      'method': 'script.evaluate',
+      'params': {
+          'expression': 'window.test_desert = "Kalahari"',
+          'target': {
+              'context': context
+          },
+          'awaitPromise': True,
+      }
+    })
+    response = conn2.SendCommand({
+      'method': 'script.evaluate',
+      'params': {
+          'expression': 'window.test_desert',
+          'target': {
+              'context': context
+          },
+          'awaitPromise': True,
+      }
+    })
+    self.assertEqual('Kalahari', response['result']['value'])
+
+  def testParallelConnectionIsClosedOnSessionEnd(self):
+    conn1 = self.createWebSocketConnection()
+    response = conn1.SendCommand({
+      'method': 'session.new',
+      'params': {
+          'capabilities': {}
+      }
+    })
+    session_id = response['sessionId']
+    conn2 = self.createWebSocketConnection(session_id=session_id)
+    conn2.SendCommand({
+      'method': 'session.end',
+      'params': {
+      }
+    })
+    with self.assertRaises(chromedriver.WebSocketConnectionClosedException):
+      conn1.SendCommand({
+        'method': 'browsingContext.getTree',
+        'params': {
+        }
+      })
 
 class BidiTest(ChromeDriverBaseTestWithWebServer):
 
@@ -6496,13 +6647,12 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     return conn
 
   def getContextId(self, conn, idx):
-    cmd_id = conn.SendCommand({
+    response = conn.SendCommand({
       'method': 'browsingContext.getTree',
       'params': {
       }
     })
-    resp = conn.WaitForResponse(cmd_id)
-    return resp['result']['contexts'][idx]['context']
+    return response['contexts'][idx]['context']
 
   def postEvaluate(self, conn, expression, context_id=None, channel=None,
                    id=None):
@@ -6522,55 +6672,46 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
       command['channel'] = channel
     if id is not None:
       command['id'] = id
-    return conn.SendCommand(command)
+    return conn.PostCommand(command)
 
   def testCreateContext(self):
     conn = self.createWebSocketConnection()
-
     old_handles = self._driver.GetWindowHandles()
     self.assertEqual(1, len(old_handles))
     self.assertNotEqual("BiDi Mapper", self._driver.GetTitle())
-
-    cmd_id = conn.SendCommand({
+    conn.SendCommand({
       'method': 'browsingContext.create',
       'params': {
           'type': 'tab'
       }
     })
-    conn.WaitForResponse(cmd_id)
     new_handles = self._driver.GetWindowHandles()
     diff = set(new_handles) - set(old_handles)
     self.assertEqual(1, len(diff))
 
   def testGetBrowsingContextTree(self):
     conn = self.createWebSocketConnection()
-
-    cmd_id = conn.SendCommand({
+    response = conn.SendCommand({
       'method': 'browsingContext.getTree',
       'params': {
       }
     })
-    resp = conn.WaitForResponse(cmd_id)
-    contexts = resp['result']['contexts']
+    contexts = response['contexts']
     self.assertEqual(1, len(contexts))
 
   def testMapperIsNotDisplacedByNavigation(self):
     self._http_server.SetDataForPath('/page.html',
      bytes('<html><title>Regular Page</title></body></html>', 'utf-8'))
-
     conn = self.createWebSocketConnection()
     old_handles = self._driver.GetWindowHandles()
-
     self._driver.Load(self._http_server.GetUrl() + '/page.html')
     self.assertEqual("Regular Page", self._driver.GetTitle())
-
-    cmd_id = conn.SendCommand({
+    conn.SendCommand({
       'method': 'browsingContext.create',
       'params': {
           'type': 'tab'
       }
     })
-    conn.WaitForResponse(cmd_id)
     new_handles = self._driver.GetWindowHandles()
     diff = set(new_handles) - set(old_handles)
     self.assertEqual(1, len(diff))
@@ -6592,11 +6733,9 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
 
   def testBrowserQuitsWhenLastPageIsClosed(self):
     conn = self.createWebSocketConnection()
-
     handles = self._driver.GetWindowHandles()
     self.assertEqual(1, len(handles))
     self._driver.CloseWindow()
-
     with self.assertRaises(chromedriver.WebSocketConnectionClosedException):
       # BiDi messages cannot have negative "id".
       # Wait indefinitely until time out.
@@ -6604,42 +6743,32 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
 
   def testCloseOneOfManyPages(self):
     conn = self.createWebSocketConnection()
-
-    cmd_id = conn.SendCommand({
+    conn.SendCommand({
       'method': 'browsingContext.create',
       'params': {
           'type': 'tab'
       }
     })
-    conn.WaitForResponse(cmd_id)
-
     handles = self._driver.GetWindowHandles()
     self.assertEqual(2, len(handles))
     self._driver.CloseWindow()
-
-    cmd_id = conn.SendCommand({
+    response = conn.SendCommand({
       'method': 'browsingContext.getTree',
       'params': {
       }
     })
-    resp = conn.WaitForResponse(cmd_id)
-    contexts = resp['result']['contexts']
+    contexts = response['contexts']
     self.assertEqual(1, len(contexts))
 
   def testBrowserQuitsWhenLastBrowsingContextIsClosed(self):
     conn = self.createWebSocketConnection()
-
     context_id = self.getContextId(conn, 0)
-
-    cmd_id = conn.SendCommand({
+    conn.SendCommand({
       'method': 'browsingContext.close',
       'params': {
           'context': context_id
       }
     })
-    response = conn.WaitForResponse(cmd_id)
-    self.assertEqual('success', response['type'])
-
     with self.assertRaises(chromedriver.WebSocketConnectionClosedException):
       # BiDi messages cannot have negative "id".
       # Wait indefinitely until time out.
@@ -6649,12 +6778,10 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     driver = self.CreateDriver(web_socket_url=True)
     conn = self.createWebSocketConnection(driver)
     driver.Quit()
-
     with self.assertRaises(chromedriver.WebSocketConnectionClosedException):
       # BiDi messages cannot have negative "id".
       # Wait indefinitely until time out.
       conn.WaitForResponse(-1)
-
 
   def testCmdIdCheatAndBrowserClosing(self):
     # Browser closing mechanism should not rely on command id
@@ -6667,8 +6794,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
                                   "24",
                                   context_id = context_id,
                                   id = 10005)
-
-    cmd_id2 = conn.SendCommand({
+    cmd_id2 = conn.PostCommand({
       'id': 10005,
       'method': 'browsingContext.close',
       'params': {
@@ -6677,7 +6803,6 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     })
     self.assertEqual(cmd_id1, cmd_id2)
     conn.WaitForResponse(cmd_id2)
-
     with self.assertRaises(chromedriver.WebSocketConnectionClosedException):
       # BiDi messages cannot have negative "id".
       # Wait indefinitely until time out.
@@ -6691,17 +6816,13 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     # to the duplication of the nested browsing context.
     self._driver.Load(url)
     self._driver.Load(url)
-
     conn = self.createWebSocketConnection()
-
-    cmd_id = conn.SendCommand({
+    response = conn.SendCommand({
       'method': 'browsingContext.getTree',
       'params': {
       }
     })
-    resp = conn.WaitForResponse(cmd_id)
-    contexts = resp['result']['contexts']
-
+    contexts = response['contexts']
     self.assertIsNotNone(contexts)
     self.assertIsInstance(contexts, list)
     self.assertEqual(1, len(contexts))
@@ -6721,11 +6842,11 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     cmd_id2 = self.postEvaluate(conn, '13', context_id=context_id)
 
     resp = conn.WaitForResponse(cmd_id2)
-    self.assertEqual(13, resp['result']['result']['value'])
+    self.assertEqual(13, resp['result']['value'])
     resp = conn.TryGetResponse(cmd_id1)
     self.assertIsNone(resp)
     resp = conn.WaitForResponse(cmd_id1, channel="abc")
-    self.assertEqual(9, resp['result']['result']['value'])
+    self.assertEqual(9, resp['result']['value'])
 
   def testMultipleConnections(self):
     conn1 = self.createWebSocketConnection()
@@ -6741,13 +6862,13 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     cmd_id4 = self.postEvaluate(conn2, '98', context_id = context_id)
 
     resp = conn1.WaitForResponse(cmd_id1)
-    self.assertEqual(77, resp['result']['result']['value'])
+    self.assertEqual(77, resp['result']['value'])
     resp = conn1.WaitForResponse(cmd_id3)
-    self.assertEqual(41, resp['result']['result']['value'])
+    self.assertEqual(41, resp['result']['value'])
     resp = conn2.WaitForResponse(cmd_id4)
-    self.assertEqual(98, resp['result']['result']['value'])
+    self.assertEqual(98, resp['result']['value'])
     resp = conn2.WaitForResponse(cmd_id2)
-    self.assertEqual(23, resp['result']['result']['value'])
+    self.assertEqual(23, resp['result']['value'])
 
   def testMultipleConnectionsDifferentIPs(self):
     conn1 = self.createWebSocketConnection()
@@ -6763,13 +6884,13 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     cmd_id4 = self.postEvaluate(conn2, '98', context_id = context_id)
 
     resp = conn1.WaitForResponse(cmd_id1)
-    self.assertEqual(77, resp['result']['result']['value'])
+    self.assertEqual(77, resp['result']['value'])
     resp = conn1.WaitForResponse(cmd_id3)
-    self.assertEqual(41, resp['result']['result']['value'])
+    self.assertEqual(41, resp['result']['value'])
     resp = conn2.WaitForResponse(cmd_id4)
-    self.assertEqual(98, resp['result']['result']['value'])
+    self.assertEqual(98, resp['result']['value'])
     resp = conn2.WaitForResponse(cmd_id2)
-    self.assertEqual(23, resp['result']['result']['value'])
+    self.assertEqual(23, resp['result']['value'])
 
   def testMultipleConnectionsNamedChannels(self):
     conn1 = self.createWebSocketConnection()
@@ -6790,15 +6911,15 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     cmd_id5 = self.postEvaluate(conn2, '6', context_id=context_id, id=100)
 
     resp = conn2.WaitForResponse(cmd_id3, channel='3')
-    self.assertEqual(41, resp['result']['result']['value'])
+    self.assertEqual(41, resp['result']['value'])
     resp = conn1.WaitForResponse(cmd_id1, channel = '3')
-    self.assertEqual(77, resp['result']['result']['value'])
+    self.assertEqual(77, resp['result']['value'])
     resp = conn1.WaitForResponse(cmd_id2, channel='/')
-    self.assertEqual(23, resp['result']['result']['value'])
+    self.assertEqual(23, resp['result']['value'])
     resp = conn2.WaitForResponse(cmd_id4, channel='')
-    self.assertEqual(98, resp['result']['result']['value'])
+    self.assertEqual(98, resp['result']['value'])
     resp = conn2.WaitForResponse(cmd_id5)
-    self.assertEqual(6, resp['result']['result']['value'])
+    self.assertEqual(6, resp['result']['value'])
 
   def subscribeToLoad(self, conn, channel=None):
     command = {
@@ -6808,7 +6929,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
               'browsingContext.load']}}
     if channel is not None:
       command['channel'] = channel
-    return conn.SendCommand(command)
+    return conn.SendCommand(command, channel=channel)
 
   def navigateSomewhere(self, conn, context_id=None, channel=None):
     if context_id is None:
@@ -6821,7 +6942,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
             'context': context_id}}
     if channel is not None:
       command['channel'] = channel
-    return conn.SendCommand(command)
+    return conn.SendCommand(command, channel=channel)
 
   def testEvent(self):
     conn = self.createWebSocketConnection()
@@ -6829,8 +6950,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     self.assertIsNotNone(context_id)
 
     self.subscribeToLoad(conn)
-    cmd_id = self.navigateSomewhere(conn, context_id)
-    conn.WaitForResponse(cmd_id)
+    self.navigateSomewhere(conn, context_id)
 
     events = conn.TakeEvents()
     # The event for about:blank is also possible
@@ -6844,8 +6964,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     self.assertIsNotNone(context_id)
 
     self.subscribeToLoad(conn, channel='abc')
-    cmd_id = self.navigateSomewhere(conn, context_id, channel='abc')
-    conn.WaitForResponse(cmd_id, channel='abc')
+    self.navigateSomewhere(conn, context_id, channel='abc')
 
     events = conn.TakeEvents()
     # The event for about:blank is also possible
@@ -6860,8 +6979,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
 
     self.subscribeToLoad(conn)
     self.subscribeToLoad(conn, channel='x')
-    cmd_id = self.navigateSomewhere(conn, context_id)
-    conn.WaitForResponse(cmd_id)
+    self.navigateSomewhere(conn, context_id)
 
     all_events = conn.TakeEvents()
     events = [evt for evt in all_events if 'channel' not in evt]
@@ -6885,8 +7003,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     self.assertIsNotNone(context_id)
 
     self.subscribeToLoad(conn2)
-    cmd_id = self.navigateSomewhere(conn1, context_id=context_id)
-    conn1.WaitForResponse(cmd_id)
+    self.navigateSomewhere(conn1, context_id=context_id)
     # push the events
     cmd_id = self.postEvaluate(conn2, '12', context_id=context_id)
     conn2.WaitForResponse(cmd_id)
@@ -6927,7 +7044,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     self.assertGreaterEqual(pos, 0, "Element Id format is incorrect")
     classic_backend_node_id = node_id[pos+1:]
 
-    cmd_id = conn.SendCommand({
+    resp = conn.SendCommand({
       'method': 'script.evaluate',
       'params': {
           'expression': 'document.getElementsByTagName("div")[0]',
@@ -6938,8 +7055,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
           'resultOwnership': 'root',
       }
     })
-    resp = conn.WaitForResponse(cmd_id)
-    shared_id = resp['result']['result']['sharedId']
+    shared_id = resp['result']['sharedId']
     self.assertRegex(shared_id, '\\w+_element_\\w',
                      msg='Shared id format is incorrect')
     pos = shared_id.rfind('_')
@@ -6960,7 +7076,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
         '});'
         'return div;')
 
-    cmd_id = conn.SendCommand({
+    conn.SendCommand({
       'method': 'script.callFunction',
       'params': {
           'functionDeclaration': '(elem) => elem.click()',
@@ -6974,15 +7090,13 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
           'resultOwnership': 'root',
       }
     })
-    resp = conn.WaitForResponse(cmd_id)
-    self.assertNotIn('error', resp)
     self.assertEqual(1, len(self._driver.FindElements('tag name', 'br')))
 
   def testBidiIdInClassic(self):
     conn = self.createWebSocketConnection()
     root_context = self.getContextId(conn, 0)
 
-    cmd_id = conn.SendCommand({
+    resp = conn.SendCommand({
       'method': 'script.evaluate',
       'params': {
           'expression': 'document.body.innerHTML = "<div>old</div>";'
@@ -6998,8 +7112,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
           'resultOwnership': 'root',
       }
     })
-    resp = conn.WaitForResponse(cmd_id)
-    node_id = resp['result']['result']['sharedId']
+    node_id = resp['result']['sharedId']
     div = webelement.WebElement(self._driver, node_id)
     div.Click()
     self.assertEqual(1, len(self._driver.FindElements('tag name', 'br')))
@@ -7043,7 +7156,6 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
       titles.append(self._driver.GetTitle())
     expected_titles = [''] + ['iframes' for _ in range(0, 10)]
     self.assertListEqual(expected_titles, sorted(titles))
-
 
 
 class CustomBidiMapperTest(ChromeDriverBaseTest):
