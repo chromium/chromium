@@ -3,8 +3,11 @@
 # found in the LICENSE file.
 
 source_set("privacy_guide") {
-  sources = []
-  public_deps = []
+  sources = [
+    "privacy_guide_main_coordinator.h",
+    "privacy_guide_main_coordinator.mm",
+  ]
+  public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
 }
 
 source_set("features") {
