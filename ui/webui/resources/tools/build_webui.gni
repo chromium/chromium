@@ -13,6 +13,7 @@ import("//tools/polymer/css_to_wrapper.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/bundle_js.gni")
+import("//ui/webui/resources/tools/bundle_js_excludes.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/resources/tools/minify_js.gni")
 import("//ui/webui/webui_features.gni")
@@ -22,7 +23,6 @@ if (use_blink) {
 }
 
 # See documentation at https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui_build_configuration.md#build_webui
-
 template("build_webui") {
   not_needed([ "target_name" ])
 
@@ -395,8 +395,9 @@ template("build_webui") {
       input = rebase_path(ts_out_dir, root_build_dir)
       js_module_in_files = invoker.optimize_webui_in_files
       out_folder = "$target_gen_dir/bundled"
+      excludes = BUNDLE_JS_EXCLUDES
       if (defined(invoker.optimize_webui_excludes)) {
-        excludes = invoker.optimize_webui_excludes
+        excludes += invoker.optimize_webui_excludes
       }
 
       if (defined(invoker.optimize_webui_external_paths)) {
