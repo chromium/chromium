@@ -95,10 +95,10 @@ TEST_F(DriveNotificationManagerTest, RegisterTeamDrives) {
   auto subscribed_topics = fake_invalidation_service_->invalidator_registrar()
                                .GetAllSubscribedTopics();
 
-  // TODO(crbug.com/1029698): replace invalidation::Topics with
+  // TODO(crbug.com/1029698): replace invalidation::TopicMap with
   // invalidation::TopicSet once |is_public| become the part of dedicated
   // invalidation::Topic struct. This should simplify this test.
-  invalidation::Topics expected_topics;
+  invalidation::TopicMap expected_topics;
   expected_topics.emplace(kDefaultCorpusTopic,
                           invalidation::TopicMetadata{/*is_public=*/false});
   EXPECT_EQ(expected_topics, subscribed_topics);
@@ -227,10 +227,10 @@ TEST_F(DriveNotificationManagerTest, UnregisterOnNoObservers) {
   auto subscribed_topics = fake_invalidation_service_->invalidator_registrar()
                                .GetAllSubscribedTopics();
 
-  // TODO(crbug.com/1029698): replace invalidation::Topics with
+  // TODO(crbug.com/1029698): replace invalidation::TopicMap with
   // invalidation::TopicSet once |is_public| become the part of dedicated
   // invalidation::Topic struct.
-  invalidation::Topics expected_topics;
+  invalidation::TopicMap expected_topics;
   expected_topics.emplace(kDefaultCorpusTopic,
                           invalidation::TopicMetadata{/*is_public=*/false});
   EXPECT_EQ(expected_topics, subscribed_topics);
@@ -241,7 +241,7 @@ TEST_F(DriveNotificationManagerTest, UnregisterOnNoObservers) {
 
   subscribed_topics = fake_invalidation_service_->invalidator_registrar()
                           .GetAllSubscribedTopics();
-  EXPECT_EQ(invalidation::Topics(), subscribed_topics);
+  EXPECT_EQ(invalidation::TopicMap(), subscribed_topics);
 
   // Start observing drive notification manager again. It should subscribe to
   // the previously subscried topics.

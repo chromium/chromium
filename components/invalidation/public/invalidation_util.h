@@ -12,7 +12,6 @@
 #include <set>
 #include <string>
 
-#include "base/functional/callback.h"
 #include "components/invalidation/public/invalidation_export.h"
 
 namespace invalidation {
@@ -29,9 +28,6 @@ INVALIDATION_EXPORT struct TopicMetadata {
 INVALIDATION_EXPORT bool operator==(const TopicMetadata&, const TopicMetadata&);
 
 using TopicMap = std::map<Topic, TopicMetadata>;
-
-// Deprecated, should be replaced with TopicMap
-using Topics = TopicMap;
 
 }  // namespace invalidation
 
