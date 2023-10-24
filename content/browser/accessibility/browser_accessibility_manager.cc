@@ -26,6 +26,7 @@
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_language_detection.h"
 #include "ui/accessibility/ax_tree_data.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_serializer.h"
 #include "ui/accessibility/ax_tree_update_util.h"
 #include "ui/base/buildflags.h"
@@ -128,8 +129,15 @@ BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
 BrowserAccessibilityManager* BrowserAccessibilityManager::FromID(
     ui::AXTreeID ax_tree_id) {
   DCHECK(ax_tree_id != ui::AXTreeIDUnknown());
-  return static_cast<BrowserAccessibilityManager*>(
-      ui::AXTreeManager::FromID(ax_tree_id));
+  auto* manager = ui::AXTreeManager::FromID(ax_tree_id);
+  // If `manager` does not maintain a list of platform objects (such as
+  // `BrowserAccessibility`) corresponding to each `AXNode` in its managed tree,
+  // then we can't cast it to one that does, in this case a
+  // `BrowserAccessibilityManager`.
+  if (!manager || !manager->IsPlatformTreeManager()) {
+    return nullptr;
+  }
+  return static_cast<BrowserAccessibilityManager*>(manager);
 }
 
 BrowserAccessibilityManager::BrowserAccessibilityManager(
@@ -241,9 +249,16 @@ BrowserAccessibility* BrowserAccessibilityManager::GetFromAXNode(
   // TODO(aleventhal) Why would node->GetManager() return null?
   // TODO(aleventhal) Should we just use |this| as the manager in most cases? It
   // looks like node->GetManager() may be slow because of AXTreeID usage.
-  if (AXTreeManager* manager = node->GetManager()) {
-    return static_cast<BrowserAccessibilityManager*>(manager)->GetFromID(
-        node->id());
+  if (const AXTreeManager* manager = node->GetManager()) {
+    // If `manager` does not maintain a list of platform objects (such as
+    // `BrowserAccessibility`) corresponding to each `AXNode` in its managed
+    // tree, then we can't cast it to one that does, in this case a
+    // `BrowserAccessibilityManager`.
+    if (manager->IsPlatformTreeManager()) {
+      return static_cast<const BrowserAccessibilityManager*>(manager)
+          ->GetFromID(node->id());
+    }
+    return nullptr;
   }
   return GetFromID(node->id());
 }
@@ -279,10 +294,13 @@ BrowserAccessibilityManager::GetParentNodeFromParentTreeAsBrowserAccessibility()
   // There is a chance that the parent manager is not a
   // `BrowserAccessibilityManager` since the parent of the
   // manager that is on the root frame will be a
-  // `ViewsAXTreeManager`. In that case, we should return nullptr since doing
-  // the cast will fail and result in undefined behavior.
-  if (this->IsRootFrameManager())
+  // `ViewsAXTreeManager`. The manager could also own an `AXTree` with
+  // generated content, which is currently not a platform tree manager. In those
+  // cases, we should return nullptr since doing the cast will fail and result
+  // in undefined behavior.
+  if (IsRootFrameManager() || !IsPlatformTreeManager()) {
     return nullptr;
+  }
   BrowserAccessibilityManager* parent_manager_wrapper =
       static_cast<BrowserAccessibilityManager*>(parent_manager);
   BrowserAccessibility* parent_node =
@@ -1059,6 +1077,23 @@ void BrowserAccessibilityManager::SetSelection(
   BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
 }
 
+void BrowserAccessibilityManager::StitchChildTree(
+    const BrowserAccessibility& node,
+    const ui::AXTreeID& child_tree_id) {
+  if (!delegate_) {
+    return;
+  }
+  CHECK_NE(child_tree_id, GetTreeID()) << "Circular tree stitching at node:\n"
+                                       << node;
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kStitchChildTree;
+  action_data.target_tree_id = GetTreeID();
+  action_data.target_node_id = node.GetId();
+  action_data.child_tree_id = child_tree_id;
+  delegate_->AccessibilityPerformAction(action_data);
+  BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
+}
+
 void BrowserAccessibilityManager::LoadInlineTextBoxes(
     const BrowserAccessibility& node) {
   if (!delegate_)
@@ -1603,10 +1638,13 @@ ui::AXTreeManager* BrowserAccessibilityManager::GetParentManager() const {
   // There is a chance that the parent manager is not a
   // `BrowserAccessibilityManager` since the parent of the
   // manager that is on the root frame will be a
-  // `ViewsAXTreeManager`. In that case, we should return nullptr since doing
-  // the cast will fail and result in undefined behavior.
-  if (this->IsRootFrameManager())
+  // `ViewsAXTreeManager`. The manager could also ownn an `AXTree` with
+  // generated content, which is currently not a platform tree manager. In those
+  // case, we should return nullptr since doing the cast will fail and result in
+  // undefined behavior.
+  if (IsRootFrameManager() || !IsPlatformTreeManager()) {
     return parent;
+  }
   BrowserAccessibilityManager* browser_accessibility_manager_parent =
       static_cast<BrowserAccessibilityManager*>(parent);
   DCHECK(browser_accessibility_manager_parent ||
