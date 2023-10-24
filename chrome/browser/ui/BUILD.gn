@@ -803,6 +803,8 @@ static_library("ui") {
       "android/autofill/card_unmask_prompt_view_android.h",
       "android/autofill/credit_card_scanner_view_android.cc",
       "android/autofill/credit_card_scanner_view_android.h",
+      "android/autofill/facilitated_payment_bottom_sheet_bridge.cc",
+      "android/autofill/facilitated_payment_bottom_sheet_bridge.h",
       "android/autofill/otp_verification_dialog_view_android.cc",
       "android/autofill/otp_verification_dialog_view_android.h",
       "android/autofill/save_update_address_profile_flow_manager.cc",

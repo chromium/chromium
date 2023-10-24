@@ -41,6 +41,8 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/autofill/AutofillSaveCardBottomSheetMediatorTest.java",
   "junit/src/org/chromium/chrome/browser/autofill/AutofillSuggestionTest.java",
   "junit/src/org/chromium/chrome/browser/autofill/AutofillUiUtilsTest.java",
+  "junit/src/org/chromium/chrome/browser/autofill/fp/FacilitatedPaymentBottomSheetBridgeTest.java",
+  "junit/src/org/chromium/chrome/browser/autofill/fp/FacilitatedPaymentBottomSheetContentTest.java",
   "junit/src/org/chromium/chrome/browser/autofill/SaveUpdateAddressProfilePromptTest.java",
   "junit/src/org/chromium/chrome/browser/autofill/settings/AutofillVirtualCardEnrollmentDialogTest.java",
   "junit/src/org/chromium/chrome/browser/autofill/settings/AutofillVirtualCardUnenrollmentDialogTest.java",
