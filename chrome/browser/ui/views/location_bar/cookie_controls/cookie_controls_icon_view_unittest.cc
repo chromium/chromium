@@ -128,6 +128,7 @@ class CookieControlsIconViewUnitTest
 INSTANTIATE_TEST_SUITE_P(All,
                          CookieControlsIconViewUnitTest,
                          testing::Values(CookieBlocking3pcdStatus::kNotIn3pcd,
+                                         CookieBlocking3pcdStatus::kLimited,
                                          CookieBlocking3pcdStatus::kAll));
 
 /// Enabled third-party cookie blocking.
