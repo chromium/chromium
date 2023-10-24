@@ -834,7 +834,7 @@ struct ConcurrentRotationFailureTestCase {
 // Tests that a properly initialized key manager handles concurrent rotate key
 // request properly when the second one fails.
 TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_Concurrent_SuccessThenFail) {
-  const std::array<ConcurrentRotationFailureTestCase, 3> test_cases = {
+  const std::array<ConcurrentRotationFailureTestCase, 8> test_cases = {
       ConcurrentRotationFailureTestCase{KeyRotationCommand::Status::FAILED,
                                         DTKeyRotationResult::kFailed},
       ConcurrentRotationFailureTestCase{
@@ -842,7 +842,22 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_Concurrent_SuccessThenFail) {
           DTKeyRotationResult::kFailedOSRestriction},
       ConcurrentRotationFailureTestCase{
           KeyRotationCommand::Status::FAILED_KEY_CONFLICT,
-          DTKeyRotationResult::kFailedKeyConflict}};
+          DTKeyRotationResult::kFailedKeyConflict},
+      ConcurrentRotationFailureTestCase{
+          KeyRotationCommand::Status::FAILED_INVALID_DMTOKEN_STORAGE,
+          DTKeyRotationResult::kFailedInvalidDmTokenStorage},
+      ConcurrentRotationFailureTestCase{
+          KeyRotationCommand::Status::FAILED_INVALID_DMTOKEN,
+          DTKeyRotationResult::kFailedInvalidDmToken},
+      ConcurrentRotationFailureTestCase{
+          KeyRotationCommand::Status::FAILED_INVALID_MANAGEMENT_SERVICE,
+          DTKeyRotationResult::kFailedInvalidManagementService},
+      ConcurrentRotationFailureTestCase{
+          KeyRotationCommand::Status::FAILED_INVALID_DMSERVER_URL,
+          DTKeyRotationResult::kFailedInvalidDmServerUrl},
+      ConcurrentRotationFailureTestCase{
+          KeyRotationCommand::Status::FAILED_INVALID_COMMAND,
+          DTKeyRotationResult::kFailedInvalidCommand}};
 
   for (const auto& test_case : test_cases) {
     // A key already exists and the manager already loaded it.

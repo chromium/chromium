@@ -45,7 +45,12 @@ enum class DTKeyRotationResult {
   kFailedOSRestriction = 4,
   kFailedInvalidPermissions = 5,
   kFailedInvalidInstallation = 6,
-  kMaxValue = kFailedInvalidInstallation,
+  kFailedInvalidDmTokenStorage = 7,
+  kFailedInvalidDmToken = 8,
+  kFailedInvalidManagementService = 9,
+  kFailedInvalidDmServerUrl = 10,
+  kFailedInvalidCommand = 11,
+  kMaxValue = kFailedInvalidCommand,
 };
 
 // Possible client errors that can happen during key synchronization.

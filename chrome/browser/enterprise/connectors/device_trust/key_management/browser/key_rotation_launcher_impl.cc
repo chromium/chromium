@@ -23,32 +23,39 @@ KeyRotationLauncherImpl::KeyRotationLauncherImpl(
     : dm_token_storage_(dm_token_storage),
       device_management_service_(device_management_service),
       url_loader_factory_(std::move(url_loader_factory)) {
-  DCHECK(dm_token_storage_);
-  DCHECK(device_management_service_);
-  DCHECK(url_loader_factory_);
+  CHECK(url_loader_factory_);
 }
+
 KeyRotationLauncherImpl::~KeyRotationLauncherImpl() = default;
 
 void KeyRotationLauncherImpl::LaunchKeyRotation(
     const std::string& nonce,
     KeyRotationCommand::Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!dm_token_storage_ || !device_management_service_) {
-    std::move(callback).Run(KeyRotationCommand::Status::FAILED);
+  if (!dm_token_storage_) {
+    std::move(callback).Run(
+        KeyRotationCommand::Status::FAILED_INVALID_DMTOKEN_STORAGE);
     return;
   }
 
   auto dm_token = dm_token_storage_->RetrieveDMToken();
   if (!dm_token.is_valid()) {
-    std::move(callback).Run(KeyRotationCommand::Status::FAILED);
+    std::move(callback).Run(KeyRotationCommand::Status::FAILED_INVALID_DMTOKEN);
+    return;
+  }
+
+  if (!device_management_service_) {
+    std::move(callback).Run(
+        KeyRotationCommand::Status::FAILED_INVALID_MANAGEMENT_SERVICE);
     return;
   }
 
   auto dm_server_url = GetUploadBrowserPublicKeyUrl(
       dm_token_storage_->RetrieveClientId(), dm_token.value(),
       device_management_service_);
-  if (!dm_token.is_valid() || !dm_server_url) {
-    std::move(callback).Run(KeyRotationCommand::Status::FAILED);
+  if (!dm_server_url) {
+    std::move(callback).Run(
+        KeyRotationCommand::Status::FAILED_INVALID_DMSERVER_URL);
     return;
   }
 
@@ -59,7 +66,7 @@ void KeyRotationLauncherImpl::LaunchKeyRotation(
   if (!command_) {
     // Command can be nullptr if trying to create a key on a unsupported
     // platform.
-    std::move(callback).Run(KeyRotationCommand::Status::FAILED);
+    std::move(callback).Run(KeyRotationCommand::Status::FAILED_INVALID_COMMAND);
     return;
   }
 

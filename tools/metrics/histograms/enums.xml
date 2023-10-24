@@ -31281,6 +31281,11 @@ Called by update_document_policy_enum.py.-->
   <int value="4" label="Failed OS Restriction"/>
   <int value="5" label="Failed Invalid Permissions"/>
   <int value="6" label="Failed Invalid Installation"/>
+  <int value="7" label="Failed Invalid DM Token Storage"/>
+  <int value="8" label="Failed Invalid DM Token"/>
+  <int value="9" label="Failed Invalid Management Service"/>
+  <int value="10" label="Failed Invalid DM Server URL"/>
+  <int value="11" label="Failed Invalid Command"/>
 </enum>
 
 <enum name="DTKeyTrustLevel">
