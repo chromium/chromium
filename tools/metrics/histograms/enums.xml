@@ -54369,6 +54369,22 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="Aggressive"/>
 </enum>
 
+<enum name="IMEEditorStates">
+  <int value="0" label="NATIVE_UI_SHOWN_OPPORTUNITY"/>
+  <int value="1" label="NATIVE_UI_SHOWN"/>
+  <int value="2" label="REQUEST"/>
+  <int value="3" label="DISMISS"/>
+  <int value="4" label="REFINE_REQUEST"/>
+  <int value="5" label="SUCCESS_RESPONSE"/>
+  <int value="6" label="ERROR_RESPONSE"/>
+  <int value="7" label="THUMBS_UP"/>
+  <int value="8" label="THUMBS_DOWN"/>
+  <int value="9" label="INSERT"/>
+  <int value="10" label="CHARACTERS_INSERTED"/>
+  <int value="11" label="CHARACTERS_SELECTED_FOR_INSERT"/>
+  <int value="12" label="FREEFORM_CHARACTERS_FOR_INSERT"/>
+</enum>
+
 <enum name="IMEGrammarActions">
   <int value="0" label="UNDERLINED"/>
   <int value="1" label="WINDOW_SHOWN"/>

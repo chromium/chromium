@@ -6,6 +6,8 @@
 
 #include "ash/public/cpp/new_window_delegate.h"
 #include "chrome/browser/ash/input_method/editor_feedback.h"
+#include "chrome/browser/ash/input_method/editor_metrics_enums.h"
+#include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 #include "url/url_constants.h"
 
 namespace ash::input_method {
@@ -30,6 +32,8 @@ void EditorTextActuator::SetProfile(Profile* profile) {
 }
 
 void EditorTextActuator::InsertText(const std::string& text) {
+  LogEditorState(EditorStates::kInsert, delegate_->GetEditorMode());
+
   // We queue the text to be inserted here rather then insert it directly into
   // the input.
   inserter_.InsertTextOnNextFocus(text);

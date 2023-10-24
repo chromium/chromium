@@ -26,6 +26,7 @@ class EditorTextActuator : public orca::mojom::TextActuator {
     virtual void ProcessConsentAction(ConsentAction consent_action) = 0;
     virtual void ShowUI() = 0;
     virtual void CloseUI() = 0;
+    virtual EditorMode GetEditorMode() const = 0;
   };
 
   EditorTextActuator(
