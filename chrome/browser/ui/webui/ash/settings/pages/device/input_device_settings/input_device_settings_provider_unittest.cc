@@ -303,31 +303,36 @@ class FakeInputDeviceSettingsController
   void RestoreDefaultKeyboardRemappings(DeviceId id) override {
     ++num_times_restore_default_keyboard_remappings_called_;
   }
-  void SetKeyboardSettings(
+  bool SetKeyboardSettings(
       DeviceId id,
       ::ash::mojom::KeyboardSettingsPtr settings) override {
-    ++num_times_set_keyboard_settings_called_;
+    return MockInputDeviceSettingsController::SetKeyboardSettings(
+        id, std::move(settings));
   }
   void AddObserver(Observer* observer) override { observer_ = observer; }
   void RemoveObserver(Observer* observer) override { observer_ = nullptr; }
-  void SetTouchpadSettings(
+  bool SetTouchpadSettings(
       DeviceId id,
       ::ash::mojom::TouchpadSettingsPtr settings) override {
-    ++num_times_set_touchpad_settings_called_;
+    return MockInputDeviceSettingsController::SetTouchpadSettings(
+        id, std::move(settings));
   }
-  void SetMouseSettings(DeviceId id,
+  bool SetMouseSettings(DeviceId id,
                         ::ash::mojom::MouseSettingsPtr settings) override {
-    ++num_times_set_mouse_settings_called_;
+    return MockInputDeviceSettingsController::SetMouseSettings(
+        id, std::move(settings));
   }
-  void SetPointingStickSettings(
+  bool SetPointingStickSettings(
       DeviceId id,
       ::ash::mojom::PointingStickSettingsPtr settings) override {
-    ++num_times_set_pointing_stick_settings_called_;
+    return MockInputDeviceSettingsController::SetPointingStickSettings(
+        id, std::move(settings));
   }
-  void SetGraphicsTabletSettings(
+  bool SetGraphicsTabletSettings(
       DeviceId id,
       ::ash::mojom::GraphicsTabletSettingsPtr settings) override {
-    ++num_times_set_graphics_tablet_settings_called_;
+    return MockInputDeviceSettingsController::SetGraphicsTabletSettings(
+        id, std::move(settings));
   }
 
   void StartObservingButtons(DeviceId id) override {
@@ -425,21 +430,6 @@ class FakeInputDeviceSettingsController
   int num_times_restore_default_keyboard_remappings_called() {
     return num_times_restore_default_keyboard_remappings_called_;
   }
-  int num_times_set_keyboard_settings_called() {
-    return num_times_set_keyboard_settings_called_;
-  }
-  int num_times_set_pointing_stick_settings_called() {
-    return num_times_set_pointing_stick_settings_called_;
-  }
-  int num_times_set_mouse_settings_called() {
-    return num_times_set_mouse_settings_called_;
-  }
-  int num_times_set_touchpad_settings_called() {
-    return num_times_set_touchpad_settings_called_;
-  }
-  int num_times_set_graphics_tablet_settings_called() {
-    return num_times_set_graphics_tablet_settings_called_;
-  }
   bool observed_currently() { return observed_currently_; }
 
  private:
@@ -455,11 +445,6 @@ class FakeInputDeviceSettingsController
 
   raw_ptr<InputDeviceSettingsController::Observer> observer_ = nullptr;
   int num_times_restore_default_keyboard_remappings_called_ = 0;
-  int num_times_set_keyboard_settings_called_ = 0;
-  int num_times_set_pointing_stick_settings_called_ = 0;
-  int num_times_set_mouse_settings_called_ = 0;
-  int num_times_set_touchpad_settings_called_ = 0;
-  int num_times_set_graphics_tablet_settings_called_ = 0;
   bool observed_currently_ = false;
 };
 
@@ -505,16 +490,32 @@ class InputDeviceSettingsProviderTest : public views::ViewsTestBase {
 
 TEST_F(InputDeviceSettingsProviderTest, TestSetKeyboardSettings) {
   controller_->AddKeyboard(kKeyboard1.Clone());
-  provider_->SetKeyboardSettings(kKeyboard1.id, kKeyboard1.settings->Clone());
-
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1, controller_->num_times_set_keyboard_settings_called());
-
   controller_->AddKeyboard(kKeyboard2.Clone());
-  provider_->SetKeyboardSettings(kKeyboard2.id, kKeyboard1.settings->Clone());
 
+  FakeKeyboardSettingsObserver fake_observer;
+  provider_->ObserveKeyboardSettings(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+
+  EXPECT_CALL(*controller_, SetKeyboardSettings(kKeyboard1.id, testing::_))
+      .Times(1)
+      .WillOnce(testing::Return(true));
+  provider_->SetKeyboardSettings(kKeyboard1.id, kKeyboard1.settings->Clone());
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(2, controller_->num_times_set_keyboard_settings_called());
+  EXPECT_EQ(1, fake_observer.num_times_keyboard_list_updated());
+
+  EXPECT_CALL(*controller_, SetKeyboardSettings(kKeyboard2.id, testing::_))
+      .Times(1)
+      .WillOnce(testing::Return(true));
+  provider_->SetKeyboardSettings(kKeyboard2.id, kKeyboard1.settings->Clone());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, fake_observer.num_times_keyboard_list_updated());
+
+  EXPECT_CALL(*controller_, SetKeyboardSettings(kKeyboard2.id, testing::_))
+      .Times(1)
+      .WillOnce(testing::Return(false));
+  provider_->SetKeyboardSettings(kKeyboard2.id, kKeyboard1.settings->Clone());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(2, fake_observer.num_times_keyboard_list_updated());
 }
 
 TEST_F(InputDeviceSettingsProviderTest, TestRestoreDefaultKeyboardRemappings) {
@@ -535,62 +536,134 @@ TEST_F(InputDeviceSettingsProviderTest, TestRestoreDefaultKeyboardRemappings) {
 
 TEST_F(InputDeviceSettingsProviderTest, TestSetPointingStickSettings) {
   controller_->AddPointingStick(kPointingStick1.Clone());
+  controller_->AddPointingStick(kPointingStick2.Clone());
+
+  FakePointingStickSettingsObserver fake_observer;
+  provider_->ObservePointingStickSettings(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+
+  EXPECT_CALL(*controller_,
+              SetPointingStickSettings(kPointingStick1.id, testing::_))
+      .Times(1)
+      .WillOnce(testing::Return(true));
   provider_->SetPointingStickSettings(kPointingStick1.id,
                                       kPointingStick1.settings->Clone());
-
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1, controller_->num_times_set_pointing_stick_settings_called());
+  EXPECT_EQ(1, fake_observer.num_times_called());
 
-  controller_->AddPointingStick(kPointingStick2.Clone());
+  EXPECT_CALL(*controller_,
+              SetPointingStickSettings(kPointingStick2.id, testing::_))
+      .Times(1)
+      .WillOnce(testing::Return(true));
   provider_->SetPointingStickSettings(kPointingStick2.id,
                                       kPointingStick1.settings->Clone());
-
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(2, controller_->num_times_set_pointing_stick_settings_called());
+  EXPECT_EQ(1, fake_observer.num_times_called());
+
+  EXPECT_CALL(*controller_,
+              SetPointingStickSettings(kPointingStick2.id, testing::_))
+      .Times(1)
+      .WillOnce(testing::Return(false));
+  provider_->SetPointingStickSettings(kPointingStick2.id,
+                                      kPointingStick1.settings->Clone());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(2, fake_observer.num_times_called());
 }
 
 TEST_F(InputDeviceSettingsProviderTest, TestSetMouseSettings) {
   controller_->AddMouse(kMouse1.Clone());
-  provider_->SetMouseSettings(kMouse1.id, kMouse1.settings->Clone());
-
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1, controller_->num_times_set_mouse_settings_called());
-
   controller_->AddMouse(kMouse2.Clone());
-  provider_->SetMouseSettings(kMouse2.id, kMouse1.settings->Clone());
 
+  FakeMouseSettingsObserver fake_observer;
+  provider_->ObserveMouseSettings(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+
+  EXPECT_CALL(*controller_, SetMouseSettings(kMouse1.id, testing::_))
+      .Times(1)
+      .WillOnce(testing::Return(true));
+  provider_->SetMouseSettings(kMouse1.id, kMouse1.settings->Clone());
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(2, controller_->num_times_set_mouse_settings_called());
+  EXPECT_EQ(1, fake_observer.num_times_mouse_list_updated());
+
+  EXPECT_CALL(*controller_, SetMouseSettings(kMouse2.id, testing::_))
+      .Times(1)
+      .WillOnce(testing::Return(true));
+  provider_->SetMouseSettings(kMouse2.id, kMouse1.settings->Clone());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, fake_observer.num_times_mouse_list_updated());
+
+  EXPECT_CALL(*controller_, SetMouseSettings(kMouse2.id, testing::_))
+      .Times(1)
+      .WillOnce(testing::Return(false));
+  provider_->SetMouseSettings(kMouse2.id, kMouse1.settings->Clone());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(2, fake_observer.num_times_mouse_list_updated());
 }
 
 TEST_F(InputDeviceSettingsProviderTest, TestSetTouchpadSettings) {
   controller_->AddTouchpad(kTouchpad1.Clone());
-  provider_->SetTouchpadSettings(kTouchpad1.id, kTouchpad1.settings->Clone());
-
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1, controller_->num_times_set_touchpad_settings_called());
-
   controller_->AddTouchpad(kTouchpad2.Clone());
-  provider_->SetTouchpadSettings(kTouchpad2.id, kTouchpad1.settings->Clone());
 
+  FakeTouchpadSettingsObserver fake_observer;
+  provider_->ObserveTouchpadSettings(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+
+  EXPECT_CALL(*controller_, SetTouchpadSettings(kTouchpad1.id, testing::_))
+      .Times(1)
+      .WillOnce(testing::Return(true));
+  provider_->SetTouchpadSettings(kTouchpad1.id, kTouchpad1.settings->Clone());
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(2, controller_->num_times_set_touchpad_settings_called());
+  EXPECT_EQ(1, fake_observer.num_times_called());
+
+  EXPECT_CALL(*controller_, SetTouchpadSettings(kTouchpad2.id, testing::_))
+      .Times(1)
+      .WillOnce(testing::Return(true));
+  provider_->SetTouchpadSettings(kTouchpad2.id, kTouchpad1.settings->Clone());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, fake_observer.num_times_called());
+
+  EXPECT_CALL(*controller_, SetTouchpadSettings(kTouchpad2.id, testing::_))
+      .Times(1)
+      .WillOnce(testing::Return(false));
+  provider_->SetTouchpadSettings(kTouchpad2.id, kTouchpad1.settings->Clone());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(2, fake_observer.num_times_called());
 }
 
 TEST_F(InputDeviceSettingsProviderTest, TestSetGraphicsTabletSettings) {
   controller_->AddGraphicsTablet(kGraphicsTablet1.Clone());
+  controller_->AddGraphicsTablet(kGraphicsTablet2.Clone());
+
+  FakeGraphicsTabletSettingsObserver fake_observer;
+  provider_->ObserveGraphicsTabletSettings(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+
+  EXPECT_CALL(*controller_,
+              SetGraphicsTabletSettings(kGraphicsTablet1.id, testing::_))
+      .Times(1)
+      .WillOnce(testing::Return(true));
   provider_->SetGraphicsTabletSettings(kGraphicsTablet1.id,
                                        kGraphicsTablet1.settings->Clone());
-
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1, controller_->num_times_set_graphics_tablet_settings_called());
+  EXPECT_EQ(1, fake_observer.num_times_graphics_tablet_list_updated());
 
-  controller_->AddGraphicsTablet(kGraphicsTablet2.Clone());
+  EXPECT_CALL(*controller_,
+              SetGraphicsTabletSettings(kGraphicsTablet2.id, testing::_))
+      .Times(1)
+      .WillOnce(testing::Return(true));
   provider_->SetGraphicsTabletSettings(kGraphicsTablet2.id,
                                        kGraphicsTablet2.settings->Clone());
-
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(2, controller_->num_times_set_graphics_tablet_settings_called());
+  EXPECT_EQ(1, fake_observer.num_times_graphics_tablet_list_updated());
+
+  EXPECT_CALL(*controller_,
+              SetGraphicsTabletSettings(kGraphicsTablet2.id, testing::_))
+      .Times(1)
+      .WillOnce(testing::Return(false));
+  provider_->SetGraphicsTabletSettings(kGraphicsTablet2.id,
+                                       kGraphicsTablet2.settings->Clone());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(2, fake_observer.num_times_graphics_tablet_list_updated());
 }
 
 TEST_F(InputDeviceSettingsProviderTest, TestKeyboardSettingsObeserver) {
