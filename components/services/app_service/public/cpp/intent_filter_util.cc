@@ -107,6 +107,9 @@ const char kValueKey[] = "value";
 const char kMatchTypeKey[] = "match_type";
 const char kConditionTypeKey[] = "condition_type";
 const char kConditionValuesKey[] = "condition_values";
+const char kConditionsKey[] = "conditions";
+const char kActivityNameKey[] = "activity_name";
+const char kActivityLabelKey[] = "activity_label";
 
 apps::IntentFilterPtr MakeIntentFilterForUrlScope(const GURL& url,
                                                   bool omit_port_for_testing) {
@@ -396,7 +399,7 @@ apps::ConditionPtr ConvertDictToCondition(const base::Value::Dict& dict) {
       std::move(condition_values));
 }
 
-base::Value::List ConvertIntentFilterToList(
+base::Value::List ConvertIntentFilterConditionsToList(
     const apps::IntentFilterPtr& intent_filter) {
   base::Value::List intent_filter_list;
   for (auto& condition : intent_filter->conditions) {
@@ -405,13 +408,14 @@ base::Value::List ConvertIntentFilterToList(
   return intent_filter_list;
 }
 
-apps::IntentFilterPtr ConvertValueToIntentFilter(const base::Value* value) {
-  if (!value || !value->is_list()) {
+apps::IntentFilterPtr ConvertListToIntentFilterConditions(
+    const base::Value::List* value) {
+  if (!value) {
     DVLOG(0) << "Fail to parse intent filter. Cannot find the conditions list.";
     return nullptr;
   }
   auto intent_filter = std::make_unique<apps::IntentFilter>();
-  for (const base::Value& condition : value->GetList()) {
+  for (const base::Value& condition : *value) {
     auto parsed_condition =
         apps_util::ConvertDictToCondition(condition.GetDict());
     if (!parsed_condition) {
@@ -420,6 +424,63 @@ apps::IntentFilterPtr ConvertValueToIntentFilter(const base::Value* value) {
     }
     intent_filter->conditions.push_back(std::move(parsed_condition));
   }
+  return intent_filter;
+}
+
+base::Value::Dict ConvertIntentFilterToDict(
+    const apps::IntentFilterPtr& intent_filter) {
+  base::Value::Dict intent_filter_dict;
+
+  if (!intent_filter) {
+    return intent_filter_dict;
+  }
+
+  if (!intent_filter->conditions.empty()) {
+    intent_filter_dict.Set(kConditionsKey,
+                           ConvertIntentFilterConditionsToList(intent_filter));
+  }
+
+  if (intent_filter->activity_name.has_value()) {
+    intent_filter_dict.Set(kActivityNameKey,
+                           intent_filter->activity_name.value());
+  }
+
+  if (intent_filter->activity_label.has_value()) {
+    intent_filter_dict.Set(kActivityLabelKey,
+                           intent_filter->activity_label.value());
+  }
+
+  return intent_filter_dict;
+}
+
+apps::IntentFilterPtr ConvertDictToIntentFilter(const base::Value::Dict* dict) {
+  if (!dict) {
+    return nullptr;
+  }
+
+  apps::IntentFilterPtr intent_filter = std::make_unique<apps::IntentFilter>();
+
+  const base::Value::List* conditions_list = dict->FindList(kConditionsKey);
+  if (conditions_list) {
+    for (const base::Value& condition : *conditions_list) {
+      auto parsed_condition =
+          apps_util::ConvertDictToCondition(condition.GetDict());
+      if (parsed_condition) {
+        intent_filter->conditions.push_back(std::move(parsed_condition));
+      }
+    }
+  }
+
+  const std::string* activity_name = dict->FindString(kActivityNameKey);
+  if (activity_name) {
+    intent_filter->activity_name = *activity_name;
+  }
+
+  const std::string* activity_label = dict->FindString(kActivityLabelKey);
+  if (activity_label) {
+    intent_filter->activity_label = *activity_label;
+  }
+
   return intent_filter;
 }
 

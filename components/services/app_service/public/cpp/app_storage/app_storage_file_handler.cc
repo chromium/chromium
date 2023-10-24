@@ -11,6 +11,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "components/services/app_service/public/cpp/icon_effects.h"
+#include "components/services/app_service/public/cpp/intent_filter_util.h"
 
 namespace apps {
 
@@ -38,6 +39,7 @@ constexpr char kShowInSearchKey[] = "show_in_search";
 constexpr char kShowInManagementKey[] = "show_in_management";
 constexpr char kHandlesIntentsKey[] = "handles_intents";
 constexpr char kAllowUninstallKey[] = "allow_uninstall";
+constexpr char kIntentFiltersKey[] = "intent_filters";
 
 absl::optional<std::string> GetStringValueFromDict(
     const base::Value::Dict& dict,
@@ -172,6 +174,15 @@ base::Value AppStorageFileHandler::ConvertAppsToValue(
     SET_KEY_FOR_OPTIONAL_VALUE(handles_intents, kHandlesIntentsKey);
     SET_KEY_FOR_OPTIONAL_VALUE(allow_uninstall, kAllowUninstallKey);
 
+    if (!app->intent_filters.empty()) {
+      base::Value::List intent_filters;
+      for (const auto& intent_filter : app->intent_filters) {
+        intent_filters.Append(
+            apps_util::ConvertIntentFilterToDict(intent_filter));
+      }
+      app_details_dict.Set(kIntentFiltersKey, std::move(intent_filters));
+    }
+
     // TODO(crbug.com/1385932): Add other files in the App structure.
     app_info_dict.Set(app->app_id, std::move(app_details_dict));
   }
@@ -264,6 +275,14 @@ std::unique_ptr<AppInfo> AppStorageFileHandler::ConvertValueToApps(
     // implementation as AppPublisher::MakeApp, and wait for the family link to
     // update the pasued status.
     app->paused = false;
+
+    auto* intent_filters = value->FindList(kIntentFiltersKey);
+    if (intent_filters) {
+      for (const auto& intent_filter : *intent_filters) {
+        app->intent_filters.push_back(
+            apps_util::ConvertDictToIntentFilter(intent_filter.GetIfDict()));
+      }
+    }
 
     // TODO(crbug.com/1385932): Add other files in the App structure.
     app_info->apps.push_back(std::move(app));

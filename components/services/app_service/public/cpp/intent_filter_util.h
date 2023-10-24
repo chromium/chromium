@@ -19,6 +19,9 @@ extern const char kValueKey[];
 extern const char kMatchTypeKey[];
 extern const char kConditionTypeKey[];
 extern const char kConditionValuesKey[];
+extern const char kConditionsKey[];
+extern const char kActivityNameKey[];
+extern const char kActivityLabelKey[];
 
 // Create intent filter for URL scope, with prefix matching only for the path.
 // e.g. filter created for https://www.google.com/ will match any URL that
@@ -95,11 +98,37 @@ apps::ConditionPtr ConvertDictToCondition(const base::Value::Dict& dict);
 //       {"value": "bb", "match_type": 3}},
 //   },
 // }
-base::Value::List ConvertIntentFilterToList(
+base::Value::List ConvertIntentFilterConditionsToList(
     const apps::IntentFilterPtr& intent_filter);
 
-// Converts base::Value to IntentFilter.
-apps::IntentFilterPtr ConvertValueToIntentFilter(const base::Value* value);
+// Converts base::Value::List to IntentFilter.
+apps::IntentFilterPtr ConvertListToIntentFilterConditions(
+    const base::Value::List* value);
+
+// Converts `IntentFilter` to base::Value::Dict, e.g.:
+// {
+//   "conditions":
+//     {
+//       {
+//         "condition_type": 3,
+//         "condition_values":
+//           {{"value": "xx", "match_type": 2},
+//            {"value": "yy", "match_type": 3}},
+//       },
+//       {
+//         "condition_type": 2,
+//         "condition_values":
+//           {{"value": "aa", "match_type": 2},
+//            {"value": "bb", "match_type": 3}},
+//       }},
+//   "activity_name": "name",
+//   "activity_label": "label",
+// }
+base::Value::Dict ConvertIntentFilterToDict(
+    const apps::IntentFilterPtr& intent_filter);
+
+// Converts base::Value::Dict to IntentFilter.
+apps::IntentFilterPtr ConvertDictToIntentFilter(const base::Value::Dict* dict);
 
 }  // namespace apps_util
 

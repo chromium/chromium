@@ -34,9 +34,9 @@ base::Value ConvertPreferredAppsToValue(const PreferredApps& preferred_apps) {
   base::Value::List preferred_apps_list;
   for (auto& preferred_app : preferred_apps) {
     base::Value::Dict preferred_app_dict;
-    preferred_app_dict.Set(
-        kIntentFilterKey,
-        apps_util::ConvertIntentFilterToList(preferred_app->intent_filter));
+    preferred_app_dict.Set(kIntentFilterKey,
+                           apps_util::ConvertIntentFilterConditionsToList(
+                               preferred_app->intent_filter));
     preferred_app_dict.Set(kAppIdKey, preferred_app->app_id);
     preferred_apps_list.Append(std::move(preferred_app_dict));
   }
@@ -68,8 +68,8 @@ PreferredApps ParseValueToPreferredApps(
                << apps::kAppIdKey << "\" key with string value.";
       return PreferredApps();
     }
-    auto parsed_intent_filter =
-        apps_util::ConvertValueToIntentFilter(entry.Find(kIntentFilterKey));
+    auto parsed_intent_filter = apps_util::ConvertListToIntentFilterConditions(
+        entry.FindList(kIntentFilterKey));
     if (!parsed_intent_filter) {
       DVLOG(0) << "Fail to parse condition value. Cannot parse intent filter.";
       return PreferredApps();
