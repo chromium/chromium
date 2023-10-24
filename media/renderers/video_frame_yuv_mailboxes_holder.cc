@@ -108,8 +108,7 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
     const VideoFrame* video_frame,
     viz::RasterContextProvider* raster_context_provider,
     gpu::Mailbox mailboxes[SkYUVAInfo::kMaxPlanes],
-    bool allow_multiplanar_for_upload,
-    uint32_t client_mailbox_usage) {
+    bool allow_multiplanar_for_upload) {
   yuva_info_ = VideoFrameGetSkYUVAInfo(video_frame);
   num_planes_ = yuva_info_.planeDimensions(plane_sizes_);
 
@@ -156,7 +155,6 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
   } else {
     mailbox_usage = gpu::SHARED_IMAGE_USAGE_GLES2;
   }
-  mailbox_usage |= client_mailbox_usage;
 
   // Enabled with flags UseWritePixelsYUV and
   // UseMultiPlaneFormatForHardwareVideo.
