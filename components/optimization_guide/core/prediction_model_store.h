@@ -117,10 +117,6 @@ class PredictionModelStore {
   // singleton.
   void ResetForTesting();
 
-  // Releases local_state_ raw pointer. local_state_ should not be
-  // de-referenced once ReleaseLocalState() is called.
-  void ReleaseLocalState();
-
  private:
   friend base::NoDestructor<PredictionModelStore>;
   friend class PredictionModelStoreBrowserTestBase;
@@ -163,12 +159,10 @@ class PredictionModelStore {
   // Invoked when model files gets deleted.
   void OnFilePathDeleted(const std::string& path_to_delete, bool success);
 
-  // Raw pointer to local state that stores the prefs across all profiles. This
-  // class does not own the object pointed and outlives the object local_state_
-  // points. The object local_state_ points to is cleared during browser
-  // shutdown by PostMainMessageLoopRun().
-  raw_ptr<PrefService> local_state_ GUARDED_BY_CONTEXT(sequence_checker_) =
-      nullptr;
+  // Local state that stores the prefs across all profiles. Not owned and
+  // outlives |this|.
+  raw_ptr<PrefService, LeakedDanglingUntriaged> local_state_
+      GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
   // The base dir where the prediction model dirs are saved.
   base::FilePath base_store_dir_ GUARDED_BY_CONTEXT(sequence_checker_);

@@ -565,10 +565,6 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
   // tsan flakes caused by other tasks running while |feature_list_| is
   // destroyed.
   base::test::ScopedFeatureList feature_list_;
-  // `local_state_prefs_` needs to be destroyed after
-  // `prediction_model_store_`, to avoid prediction_model_store_->local_state_
-  // dangling.
-  std::unique_ptr<TestingPrefServiceSimple> local_state_prefs_;
   std::unique_ptr<PredictionModelStore> prediction_model_store_;
 
  private:
@@ -581,6 +577,7 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+  std::unique_ptr<TestingPrefServiceSimple> local_state_prefs_;
   bool component_updates_enabled_ = true;
 };
 
@@ -710,6 +707,7 @@ class PredictionManagerTest : public testing::WithParamInterface<bool>,
  private:
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
+  std::unique_ptr<TestingPrefServiceSimple> local_state_prefs_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
