@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -94,7 +95,7 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
                                               debug_label));
 }
 
-Mailbox ClientSharedImageInterface::CreateSharedImage(
+scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
     viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
@@ -111,9 +112,9 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
   // `format` at `size` so if span is smaller there is a problem.
   CHECK_GE(pixel_data.size(), format.EstimatedSizeInBytes(size));
 
-  return AddMailbox(proxy_->CreateSharedImage(format, size, color_space,
-                                              surface_origin, alpha_type, usage,
-                                              debug_label, pixel_data));
+  return base::MakeRefCounted<ClientSharedImage>(AddMailbox(
+      proxy_->CreateSharedImage(format, size, color_space, surface_origin,
+                                alpha_type, usage, debug_label, pixel_data)));
 }
 
 Mailbox ClientSharedImageInterface::CreateSharedImage(

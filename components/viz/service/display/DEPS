@@ -17,6 +17,7 @@ include_rules = [
   "+components/viz/service/display_embedder/overlay_candidate_validator_win.h",
   "+components/viz/service/display_embedder/skia_output_surface_dependency.h",
   "+components/viz/common",
+  "+gpu/command_buffer/client/client_shared_image.h",
   "+gpu/command_buffer/client/raster_interface.h",
   "+gpu/command_buffer/client/shared_image_interface.h",
   "+gpu/command_buffer/common",

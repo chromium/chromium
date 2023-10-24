@@ -22,6 +22,7 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/test/test_gles2_interface.h"
 #include "components/viz/test/test_raster_interface.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/raster_implementation_gles.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/config/skia_limits.h"
@@ -171,7 +172,8 @@ gpu::Mailbox TestSharedImageInterface::CreateSharedImage(
   return mailbox;
 }
 
-gpu::Mailbox TestSharedImageInterface::CreateSharedImage(
+scoped_refptr<gpu::ClientSharedImage>
+TestSharedImageInterface::CreateSharedImage(
     SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
@@ -183,7 +185,7 @@ gpu::Mailbox TestSharedImageInterface::CreateSharedImage(
   base::AutoLock locked(lock_);
   auto mailbox = gpu::Mailbox::GenerateForSharedImage();
   shared_images_.insert(mailbox);
-  return mailbox;
+  return base::MakeRefCounted<gpu::ClientSharedImage>(mailbox);
 }
 
 gpu::Mailbox TestSharedImageInterface::CreateSharedImage(

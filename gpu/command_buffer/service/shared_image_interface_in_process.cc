@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -260,7 +261,8 @@ void SharedImageInterfaceInProcess::CreateSharedImageOnGpuThread(
   sync_point_client_state_->ReleaseFenceSync(sync_token.release_count());
 }
 
-Mailbox SharedImageInterfaceInProcess::CreateSharedImage(
+scoped_refptr<ClientSharedImage>
+SharedImageInterfaceInProcess::CreateSharedImage(
     viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
@@ -287,7 +289,7 @@ Mailbox SharedImageInterfaceInProcess::CreateSharedImage(
                                    std::move(pixel_data_copy)),
                     {});
   }
-  return mailbox;
+  return base::MakeRefCounted<ClientSharedImage>(mailbox);
 }
 
 void SharedImageInterfaceInProcess::CreateSharedImageWithDataOnGpuThread(
