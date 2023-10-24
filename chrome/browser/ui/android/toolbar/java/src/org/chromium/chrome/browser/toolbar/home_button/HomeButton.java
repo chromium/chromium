@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.toolbar;
+package org.chromium.chrome.browser.toolbar.home_button;
 
 import static org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.buildMenuListItem;
 
@@ -16,6 +16,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
 import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
@@ -23,13 +24,9 @@ import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.RectProvider;
 
-/**
- * The home button.
- * TODO(crbug.com/1056422): Fix the visibility bug on NTP.
- */
+/** The home button. TODO(crbug.com/1056422): Fix the visibility bug on NTP. */
 public class HomeButton extends ListMenuButton {
-    @VisibleForTesting
-    public static final int ID_SETTINGS = 0;
+    @VisibleForTesting public static final int ID_SETTINGS = 0;
 
     private Callback<Context> mOnMenuClickCallback;
     private Supplier<Boolean> mIsManagedByPolicySupplier;
@@ -42,11 +39,13 @@ public class HomeButton extends ListMenuButton {
 
     /**
      * Initialize home button.
+     *
      * @param homepageVisibility Observable used to react on homepage visibility change.
      * @param onMenuClickCallback Callback for menu click event on homepage.
      * @param isHomepageManagedByPolicy Supplier that tells if homepage is managed by policy.
      */
-    public void init(ObservableSupplier<Boolean> homepageVisibility,
+    public void init(
+            ObservableSupplier<Boolean> homepageVisibility,
             Callback<Context> onMenuClickCallback,
             ObservableSupplier<Boolean> isHomepageManagedByPolicy) {
         Callback<Boolean> contextUpdateCallback = (visible) -> updateContextMenuListener();
@@ -73,11 +72,12 @@ public class HomeButton extends ListMenuButton {
 
     private void updateContextMenuListener() {
         if (!mIsManagedByPolicySupplier.get() && mOnMenuClickCallback != null) {
-            setOnLongClickListener(view -> {
-                setDelegateForMenu(view);
-                ((ListMenuButton) view).showMenu();
-                return true;
-            });
+            setOnLongClickListener(
+                    view -> {
+                        setDelegateForMenu(view);
+                        ((ListMenuButton) view).showMenu();
+                        return true;
+                    });
         } else {
             setLongClickable(false);
         }
@@ -87,26 +87,33 @@ public class HomeButton extends ListMenuButton {
         RectProvider rectProvider = MenuBuilderHelper.getRectProvider(anchorView);
         ModelList menuItems = buildMenuItems();
         mMenuForTesting = menuItems;
-        BasicListMenu listMenu = new BasicListMenu(
-                getContext(), menuItems, (model) -> mOnMenuClickCallback.onResult(getContext()));
-        ListMenuButtonDelegate delegate = new ListMenuButtonDelegate() {
-            @Override
-            public ListMenu getListMenu() {
-                return listMenu;
-            }
+        BasicListMenu listMenu =
+                new BasicListMenu(
+                        getContext(),
+                        menuItems,
+                        (model) -> mOnMenuClickCallback.onResult(getContext()));
+        ListMenuButtonDelegate delegate =
+                new ListMenuButtonDelegate() {
+                    @Override
+                    public ListMenu getListMenu() {
+                        return listMenu;
+                    }
 
-            @Override
-            public RectProvider getRectProvider(View listMenuButton) {
-                return rectProvider;
-            }
-        };
+                    @Override
+                    public RectProvider getRectProvider(View listMenuButton) {
+                        return rectProvider;
+                    }
+                };
         setDelegate(delegate, false);
     }
 
     public ModelList buildMenuItems() {
         ModelList itemList = new ModelList();
-        itemList.add(buildMenuListItem(
-                R.string.options_homepage_edit_title, ID_SETTINGS, R.drawable.ic_edit_24dp));
+        itemList.add(
+                buildMenuListItem(
+                        org.chromium.chrome.browser.toolbar.R.string.options_homepage_edit_title,
+                        ID_SETTINGS,
+                        org.chromium.chrome.browser.toolbar.R.drawable.ic_edit_24dp));
         return itemList;
     }
 

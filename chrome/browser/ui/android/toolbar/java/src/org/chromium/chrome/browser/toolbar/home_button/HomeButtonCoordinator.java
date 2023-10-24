@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.toolbar.top;
+package org.chromium.chrome.browser.toolbar.home_button;
 
 import android.content.Context;
 import android.view.View;
@@ -18,7 +18,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.toolbar.HomeButton;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -57,12 +56,15 @@ public class HomeButtonCoordinator {
      * @param isFeedEnabled Supplier for whether feed is enabled.
      * @param tabSupplier Supplier of the activity tab.
      */
-    public HomeButtonCoordinator(@NonNull Context context, @Nullable View homeButton,
+    public HomeButtonCoordinator(
+            @NonNull Context context,
+            @Nullable View homeButton,
             @NonNull UserEducationHelper userEducationHelper,
             @NonNull BooleanSupplier isIncognitoSupplier,
             @NonNull OneshotSupplier<Boolean> promoShownOneshotSupplier,
             @NonNull Supplier<Boolean> isHomepageNonNtpSupplier,
-            @NonNull BooleanSupplier isFeedEnabled, @NonNull ObservableSupplier<Tab> tabSupplier) {
+            @NonNull BooleanSupplier isFeedEnabled,
+            @NonNull ObservableSupplier<Tab> tabSupplier) {
         mContext = context;
         mHomeButton = homeButton;
         mUserEducationHelper = userEducationHelper;
@@ -70,17 +72,23 @@ public class HomeButtonCoordinator {
         mPromoShownOneshotSupplier = promoShownOneshotSupplier;
         mIsHomepageNonNtpSupplier = isHomepageNonNtpSupplier;
         mIsFeedEnabled = isFeedEnabled;
-        mPageLoadObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
-            @Override
-            public void onPageLoadFinished(Tab tab, GURL url) {
-                // Part of scroll jank investigation http://crbug.com/1311003. Will remove
-                // TraceEvent after the investigation is complete.
-                try (TraceEvent te =
-                                TraceEvent.scoped("HomeButtonCoordinator::onPageLoadFinished")) {
-                    handlePageLoadFinished(url);
-                }
-            }
-        }, /*swapCallback=*/null);
+        mPageLoadObserver =
+                new CurrentTabObserver(
+                        tabSupplier,
+                        new EmptyTabObserver() {
+                            @Override
+                            public void onPageLoadFinished(Tab tab, GURL url) {
+                                // Part of scroll jank investigation http://crbug.com/1311003. Will
+                                // remove
+                                // TraceEvent after the investigation is complete.
+                                try (TraceEvent te =
+                                        TraceEvent.scoped(
+                                                "HomeButtonCoordinator::onPageLoadFinished")) {
+                                    handlePageLoadFinished(url);
+                                }
+                            }
+                        },
+                        /* swapCallback= */ null);
     }
 
     /** Cleans up observers. */
@@ -90,6 +98,7 @@ public class HomeButtonCoordinator {
 
     /**
      * TODO(https://crbug.com/1133355): Reduce visibility once ActivityTabTabObserver is mockable.
+     *
      * @param url The URL of the current page that was just loaded.
      */
     @VisibleForTesting
@@ -102,14 +111,19 @@ public class HomeButtonCoordinator {
 
         boolean hasFeed = mIsFeedEnabled.getAsBoolean();
         int textId = hasFeed ? R.string.iph_ntp_with_feed_text : R.string.iph_ntp_without_feed_text;
-        int accessibilityTextId = hasFeed ? R.string.iph_ntp_with_feed_accessibility_text
-                                          : R.string.iph_ntp_without_feed_accessibility_text;
+        int accessibilityTextId =
+                hasFeed
+                        ? R.string.iph_ntp_with_feed_accessibility_text
+                        : R.string.iph_ntp_without_feed_accessibility_text;
 
-        mUserEducationHelper.requestShowIPH(new IPHCommandBuilder(mContext.getResources(),
-                FeatureConstants.NEW_TAB_PAGE_HOME_BUTTON_FEATURE, textId, accessibilityTextId)
-                                                    .setAnchorView(mHomeButton)
-                                                    .setHighlightParams(new HighlightParams(
-                                                            HighlightShape.CIRCLE))
-                                                    .build());
+        mUserEducationHelper.requestShowIPH(
+                new IPHCommandBuilder(
+                                mContext.getResources(),
+                                FeatureConstants.NEW_TAB_PAGE_HOME_BUTTON_FEATURE,
+                                textId,
+                                accessibilityTextId)
+                        .setAnchorView(mHomeButton)
+                        .setHighlightParams(new HighlightParams(HighlightShape.CIRCLE))
+                        .build());
     }
 }

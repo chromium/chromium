@@ -15,7 +15,7 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="@dimen/toolbar_height_no_shadow" >
 
-    <org.chromium.chrome.browser.toolbar.HomeButton
+    <org.chromium.chrome.browser.toolbar.home_button.HomeButton
         android:id="@+id/home_button"
         style="@style/ToolbarHoverableButton"
         android:src="@drawable/btn_toolbar_home"
