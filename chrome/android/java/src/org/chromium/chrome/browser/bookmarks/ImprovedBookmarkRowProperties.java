@@ -24,7 +24,12 @@ import java.lang.annotation.RetentionPolicy;
 
 /** Responsible for hosting properties of the improved bookmark row. */
 public class ImprovedBookmarkRowProperties {
-    @IntDef({ImageVisibility.DRAWABLE, ImageVisibility.FOLDER_DRAWABLE, ImageVisibility.MENU})
+    @IntDef({
+        ImageVisibility.DRAWABLE,
+        ImageVisibility.FOLDER_DRAWABLE,
+        ImageVisibility.MENU,
+        ImageVisibility.NONE
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ImageVisibility {
         // Single drawable displayed.
@@ -33,6 +38,8 @@ public class ImprovedBookmarkRowProperties {
         int FOLDER_DRAWABLE = 1;
         // Menu displayed.
         int MENU = 2;
+        // Nothing shown.
+        int NONE = 3;
     }
 
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();

@@ -217,7 +217,7 @@ public class BookmarkManagerMediatorTest {
                     null,
                     true,
                     mRootFolderId,
-                    true,
+                    false,
                     false,
                     0,
                     false,
@@ -229,7 +229,7 @@ public class BookmarkManagerMediatorTest {
                     null,
                     true,
                     mRootFolderId,
-                    true,
+                    false,
                     false,
                     0,
                     false,
@@ -241,7 +241,7 @@ public class BookmarkManagerMediatorTest {
                     null,
                     true,
                     mRootFolderId,
-                    true,
+                    false,
                     false,
                     0,
                     false,
@@ -895,6 +895,28 @@ public class BookmarkManagerMediatorTest {
         assertNotNull(model.get(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE));
         assertEquals(true, model.get(ImprovedBookmarkRowProperties.EDITABLE));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER));
+        assertEquals(
+                ImageVisibility.MENU,
+                model.get(ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testBuildImprovedBookmarkRow_NotEditable() {
+        finishLoading();
+        mMediator.openFolder(mRootFolderId);
+        assertEquals(5, mModelList.size());
+
+        ListItem item = mModelList.get(1);
+        assertEquals(ViewType.IMPROVED_BOOKMARK_COMPACT, item.type);
+
+        PropertyModel model = item.model;
+        assertEquals(
+                mDesktopFolderItem,
+                model.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY).getBookmarkItem());
+        assertEquals(
+                ImageVisibility.NONE,
+                model.get(ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY));
     }
 
     @Test
