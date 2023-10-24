@@ -88,11 +88,11 @@ double ConsoleMessage::Timestamp() const {
   return timestamp_;
 }
 
-mojom::blink::ConsoleMessageSource ConsoleMessage::Source() const {
+ConsoleMessage::Source ConsoleMessage::GetSource() const {
   return source_;
 }
 
-mojom::blink::ConsoleMessageLevel ConsoleMessage::Level() const {
+ConsoleMessage::Level ConsoleMessage::GetLevel() const {
   return level_;
 }
 

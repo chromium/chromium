@@ -24,23 +24,26 @@ struct WebConsoleMessage;
 class CORE_EXPORT ConsoleMessage final
     : public GarbageCollected<ConsoleMessage> {
  public:
+  using Source = mojom::blink::ConsoleMessageSource;
+  using Level = mojom::blink::ConsoleMessageLevel;
+
   // This constructor captures current location if available.
-  ConsoleMessage(mojom::blink::ConsoleMessageSource,
-                 mojom::blink::ConsoleMessageLevel,
+  ConsoleMessage(Source,
+                 Level,
                  const String& message,
                  const String& url,
                  DocumentLoader*,
                  uint64_t request_identifier);
   // Creates message from WorkerMessageSource.
-  ConsoleMessage(mojom::blink::ConsoleMessageLevel,
+  ConsoleMessage(Level,
                  const String& message,
                  std::unique_ptr<SourceLocation>,
                  WorkerThread*);
   // Creates a ConsoleMessage from a similar WebConsoleMessage.
   ConsoleMessage(const WebConsoleMessage&, LocalFrame*);
   // If provided, source_location must be non-null.
-  ConsoleMessage(mojom::blink::ConsoleMessageSource,
-                 mojom::blink::ConsoleMessageLevel,
+  ConsoleMessage(Source,
+                 Level,
                  const String& message,
                  std::unique_ptr<SourceLocation> source_location =
                      CaptureSourceLocation());
@@ -49,8 +52,8 @@ class CORE_EXPORT ConsoleMessage final
   SourceLocation* Location() const;
   const String& RequestIdentifier() const;
   double Timestamp() const;
-  mojom::blink::ConsoleMessageSource Source() const;
-  mojom::blink::ConsoleMessageLevel Level() const;
+  Source GetSource() const;
+  Level GetLevel() const;
   const String& Message() const;
   const String& WorkerId() const;
   LocalFrame* Frame() const;
@@ -62,8 +65,8 @@ class CORE_EXPORT ConsoleMessage final
   void Trace(Visitor*) const;
 
  private:
-  mojom::blink::ConsoleMessageSource source_;
-  mojom::blink::ConsoleMessageLevel level_;
+  Source source_;
+  Level level_;
   absl::optional<mojom::blink::ConsoleMessageCategory> category_;
   String message_;
   std::unique_ptr<SourceLocation> location_;
