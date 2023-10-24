@@ -16,7 +16,9 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/pattern.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/launcher/test_launcher.h"
 #include "base/test/launcher/unit_test_launcher.h"
@@ -31,6 +33,7 @@
 namespace {
 
 using DetailedImports = std::map<std::string, std::set<std::string>>;
+using SupportedApiSets = std::map<std::string, size_t>;
 
 // Generated static data - see `generate_allowed_imports.py` - module must be
 // lowercase as we force imports to lowercase when we read the module.
@@ -38,14 +41,14 @@ using DetailedImports = std::map<std::string, std::set<std::string>>;
 //     {"kernel32.dll", {"Function1", "Function2"}}};
 const DetailedImports kAvailableImports = {
 #include "chrome/test/delayload/supported_imports.inc"
-// Asan pulls in sync api (e.g. WaitOnAddress) via an apiset - we currently do
-// not expect chrome to pull in apisets so have not included them in the
-// generated allowlist but append them here when needed:
-#if defined(ADDRESS_SANITIZER)
-    ,
-    {"api-ms-win-core-synch-l1-2-0.dll",
-     {"WaitOnAddress", "WakeByAddressAll", "WakeByAddressSingle"}}
-#endif
+};
+
+// Highest min version of each ApiSet that is allowed - this file is checked in
+// but can be regenerated using `generate_allowed_apisets.py`.
+// e.g. { "api-ms-win-core-synch-l1-2", 2}
+// allows "api-ms-win-core-synch-l1-2-1.dll"
+const SupportedApiSets kSupportedApiSets = {
+#include "chrome/test/delayload/supported_apisets_10.0.10240.inc"
 };
 
 class DelayloadsTest : public testing::Test {
@@ -113,24 +116,61 @@ class DelayloadsTest : public testing::Test {
     return imports;
   }
 
+  // Validate ApiSet is supported.
+  //  `import` - a normal import like 'chrome_elf.dll' or an ApiSet like
+  //     'api-ms-win-core-synch-l1-2-0.dll'.
+  // ApiSets are supported if the (name, major, minor) match, and the requested
+  // subversion is <= the supported subversion.
+  static bool SupportedApiSet(const std::string& import) {
+    if (!base::StartsWith(import, "api-") || !base::EndsWith(import, ".dll")) {
+      return false;
+    }
+    // Need at least api-{components}-l1-1-0.dll so > four dashes.
+    if (base::ranges::count(import, '-') < 5) {
+      return false;
+    }
+
+    // Want (requested_api: api-{components}-l1-1) and (requested_version: 0).
+    const size_t last_dash = import.rfind("-");
+    const size_t dot = import.rfind(".");
+    size_t requested_version = 0;
+    const auto requested_version_str =
+        import.substr(last_dash + 1, dot - last_dash - 1);
+    if (!base::StringToSizeT(requested_version_str, &requested_version)) {
+      return false;
+    }
+
+    const auto requested_api = import.substr(0, last_dash);
+    const auto api_to_max_ver = kSupportedApiSets.find(requested_api);
+    if (api_to_max_ver == kSupportedApiSets.end()) {
+      // ApiSet not supported.
+      return false;
+    }
+
+    return requested_version <= api_to_max_ver->second;
+  }
+
   // Validate that any static (non-delayloaded) imported functions are available
   // in the earliest version of Windows that Chrome supports. If an unsupported
   // function is added to Chrome's imports Chrome and its crash reporting client
   // may fail to start.
   // `mod_path` - exe or dll (e.g. chrome.exe) to check.
-  // `internal_modules` - modules from the build (e.g. chrome.exe can import
-  // chrome_elf.dll).
+  // `allowed_imports` - modules from the build (e.g. chrome.exe can import
+  // chrome_elf.dll or a supported apiset dll).
   static void ValidateImportsForEarliestWindowsVersion(
       const base::FilePath& mod_path,
-      const std::set<std::string>& internal_modules) {
+      const std::set<std::string>& allowed_imports) {
     DetailedImports imports = GetDetailedImports(mod_path);
 
     for (const auto& imports_entry : imports) {
       const std::string& module = imports_entry.first;
       auto available_functions = kAvailableImports.find(module);
       if (available_functions == kAvailableImports.end()) {
-        // Unlisted modules must be provided by the Chrome build.
-        EXPECT_THAT(internal_modules, testing::Contains(module));
+        // Unlisted modules must be provided by the Chrome build or be a
+        // supported apiset.
+        if (!SupportedApiSet(module)) {
+          EXPECT_THAT(allowed_imports, testing::Contains(module));
+        }
       } else {
         // Imported functions must be available in earliest Windows version.
         for (const auto& function : imports_entry.second) {
@@ -420,6 +460,13 @@ TEST_F(DelayloadsTest, ChromeExeLoadSanityCheck) {
       << "Illegal import order in chrome.exe (ensure the "
          "delayloads_unittests "
          "target was built, instead of just delayloads_unittests.exe)";
+}
+
+TEST_F(DelayloadsTest, ValidateApisetChecker) {
+  // These may need to be updated if the checked-in apiset file is updated.
+  ASSERT_TRUE(SupportedApiSet("api-ms-win-core-synch-l1-2-0.dll"));
+  ASSERT_FALSE(SupportedApiSet("api-ms-win-core-synch-l1-2-2.dll"));
+  ASSERT_FALSE(SupportedApiSet("api-ms-win-core-synch-l1-3-0.dll"));
 }
 
 }  // namespace
