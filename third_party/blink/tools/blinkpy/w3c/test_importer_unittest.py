@@ -77,13 +77,13 @@ class TestImporterTest(LoggingTestCase):
         host.filesystem.write_text_file(ANDROID_DISABLED_TESTS, '')
         return host
 
-    def _get_test_importer(self, host, wpt_github=None):
+    def _get_test_importer(self, host, github=None):
         port = host.port_factory.get()
         manifest = port.wpt_manifest('external/wpt')
         # Clear logs from manifest generation.
         self.logMessages().clear()
         return TestImporter(host,
-                            wpt_github=wpt_github,
+                            github=github,
                             wpt_manifests=[manifest])
 
     def test_update_expectations_for_cl_no_results(self):
@@ -383,7 +383,7 @@ class TestImporterTest(LoggingTestCase):
         # TODO(robertma): Consider using MockLocalWPT.
         host = self.mock_host()
         importer = self._get_test_importer(
-            host, wpt_github=MockWPTGitHub(pull_requests=[]))
+            host, github=MockWPTGitHub(pull_requests=[]))
         importer.wpt_git = MockGit(cwd='/tmp/wpt', executive=host.executive)
         fake_commit = MockChromiumCommit(
             host,
@@ -432,8 +432,8 @@ class TestImporterTest(LoggingTestCase):
 
     def test_apply_exportable_commits_locally_returns_none_on_failure(self):
         host = self.mock_host()
-        wpt_github = MockWPTGitHub(pull_requests=[])
-        importer = self._get_test_importer(host, wpt_github=wpt_github)
+        github = MockWPTGitHub(pull_requests=[])
+        importer = self._get_test_importer(host, github=github)
         commit = MockChromiumCommit(host, subject='My fake commit')
         importer.exportable_but_not_exported_commits = lambda _: [commit]
         # Failure to apply patch.
@@ -449,7 +449,7 @@ class TestImporterTest(LoggingTestCase):
             MOCK_WEB_TESTS + 'external/wpt/foo/OWNERS',
             'someone@chromium.org\n')
         importer = self._get_test_importer(host)
-        importer.chromium_git.changed_files = lambda: [RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html']
+        importer.project_git.changed_files = lambda: [RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html']
         self.assertEqual(importer.get_directory_owners(),
                          {('someone@chromium.org', ): ['external/wpt/foo']})
 
@@ -469,7 +469,7 @@ class TestImporterTest(LoggingTestCase):
         host = self.mock_host()
         importer = self._get_test_importer(host)
         importer._commit_changes('dummy message')
-        self.assertEqual(importer.chromium_git.local_commits(),
+        self.assertEqual(importer.project_git.local_commits(),
                          [['dummy message']])
 
     def test_commit_message(self):
@@ -594,23 +594,23 @@ class TestImporterTest(LoggingTestCase):
             MOCK_WEB_TESTS + 'external/wpt/MANIFEST.json', '{}')
         importer._generate_manifest()
         self.assertEqual(host.executive.calls, [MANIFEST_INSTALL_CMD] * 2)
-        self.assertEqual(importer.chromium_git.added_paths,
+        self.assertEqual(importer.project_git.added_paths,
                          {MOCK_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME})
 
     def test_has_wpt_changes(self):
         host = self.mock_host()
         importer = self._get_test_importer(host)
-        importer.chromium_git.changed_files = lambda: [
+        importer.project_git.changed_files = lambda: [
             RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME,
             RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html']
         self.assertTrue(importer._has_wpt_changes())
 
-        importer.chromium_git.changed_files = lambda: [
+        importer.project_git.changed_files = lambda: [
             RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME,
             RELATIVE_WEB_TESTS + 'TestExpectations']
         self.assertFalse(importer._has_wpt_changes())
 
-        importer.chromium_git.changed_files = lambda: [
+        importer.project_git.changed_files = lambda: [
             RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME]
         self.assertFalse(importer._has_wpt_changes())
 
@@ -748,9 +748,9 @@ class TestImporterTest(LoggingTestCase):
                 MOCK_WEB_TESTS + "external/wpt/6_deleted_idlharness.html",
             ]
 
-        importer.chromium_git.added_files = _git_added_files
-        importer.chromium_git.deleted_files = _git_deleted_files
-        importer.chromium_git._relative_to_web_test_dir = \
+        importer.project_git.added_files = _git_added_files
+        importer.project_git.deleted_files = _git_deleted_files
+        importer.project_git._relative_to_web_test_dir = \
             lambda test_path: test_path
         testlist_path = importer.finder.path_from_web_tests(
             "TestLists", "android.filter")
@@ -770,7 +770,7 @@ class TestImporterTest(LoggingTestCase):
         ]
         host.filesystem.write_text_file(testlist_path,
                                         "\n".join(test_list_lines))
-        with patch.object(importer.chromium_git, "run") as mock_git_run:
+        with patch.object(importer.project_git, "run") as mock_git_run:
             importer.update_testlist_with_idlharness_changes(testlist_path)
             actual_test_list_lines = host.filesystem.open_text_file_for_reading(
                 testlist_path).read().split("\n")
@@ -789,9 +789,9 @@ class TestImporterTest(LoggingTestCase):
         def _git_deleted_files():
             return []
 
-        importer.chromium_git.added_files = _git_added_files
-        importer.chromium_git.deleted_files = _git_deleted_files
-        importer.chromium_git._relative_to_web_test_dir = \
+        importer.project_git.added_files = _git_added_files
+        importer.project_git.deleted_files = _git_deleted_files
+        importer.project_git._relative_to_web_test_dir = \
             lambda test_path: test_path
         testlist_path = importer.finder.path_from_web_tests(
             "TestLists", "android.filter")
@@ -812,7 +812,7 @@ class TestImporterTest(LoggingTestCase):
         ]
         host.filesystem.write_text_file(testlist_path,
                                         "\n".join(test_list_lines))
-        with patch.object(importer.chromium_git, "run") as mock_git_run:
+        with patch.object(importer.project_git, "run") as mock_git_run:
             importer.update_testlist_with_idlharness_changes(testlist_path)
             actual_test_list_lines = host.filesystem.open_text_file_for_reading(
                 testlist_path).read().split("\n")
@@ -822,24 +822,24 @@ class TestImporterTest(LoggingTestCase):
     def test_need_sheriff_attention(self):
         host = self.mock_host()
         importer = self._get_test_importer(host)
-        importer.chromium_git.changed_files = lambda: [
+        importer.project_git.changed_files = lambda: [
             RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME,
             RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html']
         self.assertFalse(importer._need_sheriff_attention())
 
-        importer.chromium_git.changed_files = lambda: [
+        importer.project_git.changed_files = lambda: [
             RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME,
             RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html',
             RELATIVE_WEB_TESTS + 'external/wpt/foo/y.sh']
         self.assertTrue(importer._need_sheriff_attention())
 
-        importer.chromium_git.changed_files = lambda: [
+        importer.project_git.changed_files = lambda: [
             RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME,
             RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html',
             RELATIVE_WEB_TESTS + 'external/wpt/foo/y.py']
         self.assertTrue(importer._need_sheriff_attention())
 
-        importer.chromium_git.changed_files = lambda: [
+        importer.project_git.changed_files = lambda: [
             RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME,
             RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html',
             RELATIVE_WEB_TESTS + 'external/wpt/foo/y.bat']
