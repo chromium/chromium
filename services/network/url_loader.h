@@ -345,10 +345,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   //
   // Start in `ProcessOutboundSharedStorageInterceptor()`
   // - Execute `SharedStorageRequestHelper::ProcessOutgoingRequest`, which will
-  // add the `kSharedStorageWritableHeader` request header to the `URLRequest`
-  // if `ResourceRequest::shared_storage_writable` is true and there is a
-  // `mojom::URLLoaderNetworkServiceObserver*` available to forward processed
-  // headers to.
+  // add the `kSecSharedStorageWritableHeader` request header to the
+  // `URLRequest` if `ResourceRequest::shared_storage_writable` is true and
+  // there is a `mojom::URLLoaderNetworkServiceObserver*` available to forward
+  // processed headers to.
   // - `ScheduleStart` immediately afterwards regardless of eligibility for
   // shared storage
   //
@@ -358,8 +358,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // - Execute
   // `SharedStorageRequestHelper::`
   //   `RemoveEligibilityIfSharedStorageWritableRemoved`
-  // to remove the `kSharedStorageWritableHeader` request header if eligibility
-  // has been lost
+  // to remove the `kSecSharedStorageWritableHeader` request header if
+  // eligibility has been lost
   //
   // Inbound redirection control flow:
   //
@@ -367,7 +367,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // - Execute `SharedStorageRequestHelper::ProcessIncomingResponse`
   // - If the request has received the `kSharedStorageWriteHeader` response
   // header and if it is currently eligible for shared storage (i.e., in
-  // particular, the `kSharedStorageWritableHeader` has not been removed on a
+  // particular, the `kSecSharedStorageWritableHeader` has not been removed on a
   // redirect), the helper will parse the header value into a vector of Shared
   // Storage operations to call
   // - If the request has not received the `kSharedStorageWriteHeader` response
@@ -383,7 +383,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // - Execute `SharedStorageRequestHelper::ProcessIncomingResponse`
   // - If the request has received the `kSharedStorageWriteHeader` response
   // header and if it is currently eligible for shared storage (i.e., in
-  // particular, the `kSharedStorageWritableHeader` has not been removed on a
+  // particular, the `kSecSharedStorageWritableHeader` has not been removed on a
   // redirect), the helper will parse the header value into a vector of Shared
   // Storage operations to call
   // - If the request has not received the `kSharedStorageWriteHeader` response

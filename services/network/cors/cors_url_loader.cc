@@ -461,7 +461,7 @@ void CorsURLLoader::FollowRedirect(
   }
   request_.headers.MergeFrom(modified_headers);
 
-  if (base::Contains(removed_headers, kSharedStorageWritableHeader)) {
+  if (base::Contains(removed_headers, kSecSharedStorageWritableHeader)) {
     request_.shared_storage_writable = false;
   }
 

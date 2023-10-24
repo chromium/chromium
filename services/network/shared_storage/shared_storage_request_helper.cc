@@ -30,10 +30,10 @@ namespace {
   return item.is_string() || item.is_token() || item.is_byte_sequence();
 }
 
-// Adds request header `kSharedStorageWritableHeader`.
+// Adds request header `kSecSharedStorageWritableHeader`.
 void AddWritableRequestHeader(net::URLRequest& request) {
-  request.SetExtraRequestHeaderByName(kSharedStorageWritableHeader,
-                                      kSharedStorageWritableValue,
+  request.SetExtraRequestHeaderByName(kSecSharedStorageWritableHeader,
+                                      kSecSharedStorageWritableValue,
                                       /*overwrite=*/true);
 }
 
@@ -135,7 +135,7 @@ void SharedStorageRequestHelper::ProcessOutgoingRequest(
     return;
   }
 
-  // This `request` should have the `kSharedStorageWritableHeader` added.
+  // This `request` should have the `kSecSharedStorageWritableHeader` added.
   AddWritableRequestHeader(request);
 }
 
@@ -167,7 +167,7 @@ bool SharedStorageRequestHelper::ProcessIncomingResponse(
 void SharedStorageRequestHelper::
     RemoveEligibilityIfSharedStorageWritableRemoved(
         const std::vector<std::string>& removed_headers) {
-  if (base::Contains(removed_headers, kSharedStorageWritableHeader)) {
+  if (base::Contains(removed_headers, kSecSharedStorageWritableHeader)) {
     shared_storage_writable_ = false;
   }
 }

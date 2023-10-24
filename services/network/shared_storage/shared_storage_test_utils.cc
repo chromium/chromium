@@ -92,10 +92,10 @@ HandleSharedStorageRequestSimple(std::string shared_storage_write,
     return nullptr;
   }
 
-  auto it = request.headers.find(kSharedStorageWritableHeader);
+  auto it = request.headers.find(kSecSharedStorageWritableHeader);
   if (path == MakeSharedStorageBypassPath() ||
       (it != request.headers.end() &&
-       it->second == kSharedStorageWritableValue)) {
+       it->second == kSecSharedStorageWritableValue)) {
     return std::make_unique<SharedStorageResponse>(
         std::move(shared_storage_write));
   }
@@ -112,10 +112,10 @@ HandleSharedStorageRequestMultiple(
   }
 
   absl::optional<std::string> write_header;
-  auto it = request.headers.find(kSharedStorageWritableHeader);
+  auto it = request.headers.find(kSecSharedStorageWritableHeader);
   if ((base::EndsWith(path, kSharedStorageWritePathSuffix) &&
        it != request.headers.end() &&
-       it->second == kSharedStorageWritableValue) &&
+       it->second == kSecSharedStorageWritableValue) &&
       SharedStorageRequestCount::Increment() <=
           shared_storage_write_headers.size()) {
     write_header = std::move(

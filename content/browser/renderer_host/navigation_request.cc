@@ -240,7 +240,8 @@ const char kIsolatedAppCSP[] =
     "style-src 'self' 'unsafe-inline';"
     "require-trusted-types-for 'script';";
 
-const char kSharedStorageWritableRequestHeaderKey[] = "Shared-Storage-Writable";
+const char kSecSharedStorageWritableRequestHeaderKey[] =
+    "Sec-Shared-Storage-Writable";
 
 // Denotes the type of user agent string value sent in the User-Agent request
 // header.
@@ -5151,7 +5152,7 @@ void NavigationRequest::OnRedirectChecksComplete(
     shared_storage_writable_ = IsSharedStorageWritableForNavigationRequest(
         frame_tree_node_, common_params_->url);
     if (!shared_storage_writable_) {
-      removed_headers.push_back(kSharedStorageWritableRequestHeaderKey);
+      removed_headers.push_back(kSecSharedStorageWritableRequestHeaderKey);
     }
   }
 

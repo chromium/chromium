@@ -3081,7 +3081,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageHeaderPrefBrowserTest, Basic) {
 
   response.WaitForRequest();
   ASSERT_TRUE(base::Contains(response.http_request()->headers,
-                             "Shared-Storage-Writable"));
+                             "Sec-Shared-Storage-Writable"));
   EXPECT_EQ(response.http_request()->content, "");
   response.Send(
       /*http_status=*/net::HTTP_OK,

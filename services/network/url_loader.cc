@@ -1100,7 +1100,7 @@ void URLLoader::FollowRedirect(
   }
 
   // Propagate removal of shared storage eligiblity to the helper if the
-  // "Shared-Storage-Writable" request header has been removed.
+  // "Sec-Shared-Storage-Writable" request header has been removed.
   DCHECK(shared_storage_request_helper_);
   shared_storage_request_helper_
       ->RemoveEligibilityIfSharedStorageWritableRemoved(removed_headers);

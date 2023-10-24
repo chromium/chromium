@@ -298,8 +298,8 @@ class PLATFORM_EXPORT ResourceRequestHead {
   }
 
   // True if the request and any subsequent redirects should have the
-  // `http_names::kSharedStorageWritable` header attached and allow writing to
-  // shared storage via the response headers.
+  // `http_names::kSecSharedStorageWritable` header attached and allow writing
+  // to shared storage via the response headers.
   bool GetSharedStorageWritable() const { return shared_storage_writable_; }
   void SetSharedStorageWritable(bool shared_storage_writable) {
     shared_storage_writable_ = shared_storage_writable;
