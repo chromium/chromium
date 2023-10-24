@@ -261,8 +261,8 @@ TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUma1) {
   UpdateAllLifecyclePhasesForTest();
   auto* flex = To<LayoutFlexibleBox>(GetLayoutObjectByElementId("flexbox"));
   LayoutObject* item = GetLayoutObjectByElementId("item");
-  ItemPosition pos = FlexLayoutAlgorithm::AlignmentForChild(flex->StyleRef(),
-                                                            item->StyleRef());
+  ItemPosition pos = FlexibleBoxAlgorithm::AlignmentForChild(flex->StyleRef(),
+                                                             item->StyleRef());
   ASSERT_EQ(pos, ItemPosition::kFlexEnd);
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos));
 }

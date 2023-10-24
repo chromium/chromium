@@ -137,7 +137,7 @@ NGFlexLayoutAlgorithm::NGFlexLayoutAlgorithm(
     const HashMap<wtf_size_t, LayoutUnit>* cross_size_adjustments)
     : NGLayoutAlgorithm(params),
       is_column_(Style().ResolvedIsColumnFlexDirection()),
-      is_horizontal_flow_(FlexLayoutAlgorithm::IsHorizontalFlow(Style())),
+      is_horizontal_flow_(FlexibleBoxAlgorithm::IsHorizontalFlow(Style())),
       is_cross_size_definite_(IsContainerCrossSizeDefinite()),
       child_percentage_size_(
           CalculateChildPercentageSize(ConstraintSpace(),
@@ -191,7 +191,7 @@ enum AxisEdge { kStart, kCenter, kEnd };
 AxisEdge MainAxisStaticPositionEdge(const ComputedStyle& style,
                                     bool is_column) {
   const StyleContentAlignmentData justify =
-      FlexLayoutAlgorithm::ResolvedJustifyContent(style);
+      FlexibleBoxAlgorithm::ResolvedJustifyContent(style);
   const ContentPosition content_position = justify.GetPosition();
   bool is_reverse_flex = is_column
                              ? style.ResolvedIsColumnReverseFlexDirection()
@@ -219,7 +219,7 @@ AxisEdge MainAxisStaticPositionEdge(const ComputedStyle& style,
 AxisEdge CrossAxisStaticPositionEdge(const ComputedStyle& style,
                                      const ComputedStyle& child_style) {
   ItemPosition alignment =
-      FlexLayoutAlgorithm::AlignmentForChild(style, child_style);
+      FlexibleBoxAlgorithm::AlignmentForChild(style, child_style);
   // AlignmentForChild already accounted for wrap-reverse for kFlexStart and
   // kFlexEnd, but not kStretch. kStretch is supposed to act like kFlexStart.
   if (style.FlexWrap() == EFlexWrap::kWrapReverse &&
@@ -301,11 +301,11 @@ void NGFlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
           child_style.UsedLeft());
       if (is_column_) {
         const ItemPosition normalized_alignment =
-            FlexLayoutAlgorithm::AlignmentForChild(style, child_style);
+            FlexibleBoxAlgorithm::AlignmentForChild(style, child_style);
         const ItemPosition default_justify_self_behavior =
             child.IsReplaced() ? ItemPosition::kStart : ItemPosition::kStretch;
         const ItemPosition normalized_justify =
-            FlexLayoutAlgorithm::TranslateItemPosition(
+            FlexibleBoxAlgorithm::TranslateItemPosition(
                 style, child_style,
                 child_style.ResolvedJustifySelf(default_justify_self_behavior)
                     .GetPosition());
@@ -407,7 +407,7 @@ bool NGFlexLayoutAlgorithm::DoesItemStretch(const NGBlockNode& child) const {
   if (!is_horizontal_flow_ &&
       (child_style.MarginLeft().IsAuto() || child_style.MarginRight().IsAuto()))
     return false;
-  return FlexLayoutAlgorithm::AlignmentForChild(Style(), child_style) ==
+  return FlexibleBoxAlgorithm::AlignmentForChild(Style(), child_style) ==
          ItemPosition::kStretch;
 }
 
@@ -656,7 +656,7 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       align_content.Distribution() != ContentDistributionType::kStretch &&
       align_content.GetPosition() != ContentPosition::kBaseline;
   const LayoutUnit kAvailableFreeSpace(100);
-  LayoutUnit line_offset = FlexLayoutAlgorithm::InitialContentPositionOffset(
+  LayoutUnit line_offset = FlexibleBoxAlgorithm::InitialContentPositionOffset(
       Style(), kAvailableFreeSpace, align_content,
       /* number_of_items */ 1,
       /* is_reversed */ false);
@@ -696,7 +696,7 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         all_items_match_container_alignment && phase == Phase::kLayout) {
       LayoutUnit item_offset = FlexItem::AlignmentOffset(
           kAvailableFreeSpace,
-          FlexLayoutAlgorithm::AlignmentForChild(Style(), child_style),
+          FlexibleBoxAlgorithm::AlignmentForChild(Style(), child_style),
           LayoutUnit(), /* is_wrap_reverse */ false,
           Style().IsDeprecatedWebkitBox());
       all_items_match_container_alignment = (item_offset == line_offset);
@@ -996,7 +996,7 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     const auto container_writing_direction =
         ConstraintSpace().GetWritingDirection();
     bool is_last_baseline =
-        FlexLayoutAlgorithm::AlignmentForChild(Style(), child_style) ==
+        FlexibleBoxAlgorithm::AlignmentForChild(Style(), child_style) ==
         ItemPosition::kLastBaseline;
     const auto baseline_writing_mode = DetermineBaselineWritingMode(
         container_writing_direction, child_writing_mode,
