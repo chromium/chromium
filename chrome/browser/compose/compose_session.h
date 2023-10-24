@@ -71,7 +71,7 @@ class ComposeSession : public compose::mojom::ComposeDialogPageHandler {
 
   // Non-ComposeDialogPageHandler Methods
 
-  void SetComposeResultCallback(ComposeCallback callback) {
+  void set_compose_callback(ComposeCallback callback) {
     callback_ = std::move(callback);
   }
 

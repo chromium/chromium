@@ -125,7 +125,7 @@ void ChromeComposeClient::CreateSessionIfNeeded(
   if (found && selected_text.empty()) {
     // Update existing session (only if session was not removed earlier).
     auto& existing_session = *it->second;
-    existing_session.SetComposeResultCallback(std::move(callback));
+    existing_session.set_compose_callback(std::move(callback));
   } else {
     // Insert new session.
     sessions_.emplace(
