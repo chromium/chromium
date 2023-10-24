@@ -49,10 +49,6 @@ config("inside_blink") {
       "-Wno-implicit-float-conversion",
       "-Wno-implicit-int-conversion",
     ]
-    if (llvm_force_head_revision) {
-      # TODO(https://crbug.com/1494925) Evaluate, but signal seems low.
-      cflags += [ "-Wno-bitfield-conversion" ]
-    }
   }
 }
 
