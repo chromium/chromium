@@ -1244,17 +1244,18 @@ void PrefetchService::OnPrefetchRedirect(
                      std::move(redirect_head)));
 }
 
-PrefetchStreamingURLLoaderStatus PrefetchService::OnPrefetchResponseStarted(
+absl::optional<PrefetchErrorOnResponseReceived>
+PrefetchService::OnPrefetchResponseStarted(
     base::WeakPtr<PrefetchContainer> prefetch_container,
     network::mojom::URLResponseHead* head) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!prefetch_container || prefetch_container->IsDecoy()) {
-    return PrefetchStreamingURLLoaderStatus::kPrefetchWasDecoy;
+    return PrefetchErrorOnResponseReceived::kPrefetchWasDecoy;
   }
 
   if (!head) {
-    return PrefetchStreamingURLLoaderStatus::kFailedInvalidHead;
+    return PrefetchErrorOnResponseReceived::kFailedInvalidHead;
   }
 
   const auto& devtools_observer = prefetch_container->GetDevToolsObserver();
@@ -1265,7 +1266,7 @@ PrefetchStreamingURLLoaderStatus PrefetchService::OnPrefetchResponseStarted(
   }
 
   if (!head->headers) {
-    return PrefetchStreamingURLLoaderStatus::kFailedInvalidHeaders;
+    return PrefetchErrorOnResponseReceived::kFailedInvalidHeaders;
   }
 
   RecordPrefetchProxyPrefetchMainframeTotalTime(head);
@@ -1294,16 +1295,16 @@ PrefetchStreamingURLLoaderStatus PrefetchService::OnPrefetchResponseStarted(
                                           retry_after);
       }
     }
-    return PrefetchStreamingURLLoaderStatus::kFailedNon2XX;
+    return PrefetchErrorOnResponseReceived::kFailedNon2XX;
   }
 
   if (PrefetchServiceHTMLOnly() && head->mime_type != "text/html") {
     prefetch_container->SetPrefetchStatus(
         PrefetchStatus::kPrefetchFailedMIMENotSupported);
-    return PrefetchStreamingURLLoaderStatus::kFailedMIMENotSupported;
+    return PrefetchErrorOnResponseReceived::kFailedMIMENotSupported;
   }
 
-  return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+  return absl::nullopt;
 }
 
 void PrefetchService::OnPrefetchResponseCompleted(

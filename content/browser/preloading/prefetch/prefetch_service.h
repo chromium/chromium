@@ -259,9 +259,9 @@ class CONTENT_EXPORT PrefetchService {
 
   // Called when the response for |prefetch_container| has started. Based on
   // |head|, returns a status to inform the |PrefetchStreamingURLLoader| whether
-  // the prefetch is servable. If servable, then |kHeadReceivedWaitingOnBody|
-  // will be returned, otherwise a valid failure status is returned.
-  PrefetchStreamingURLLoaderStatus OnPrefetchResponseStarted(
+  // the prefetch is servable. If servable, then `absl::nullopt` will be
+  // returned, otherwise a failure status is returned.
+  absl::optional<PrefetchErrorOnResponseReceived> OnPrefetchResponseStarted(
       base::WeakPtr<PrefetchContainer> prefetch_container,
       network::mojom::URLResponseHead* head);
 

@@ -231,7 +231,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulServedAfterCompletion) {
           [](base::RunLoop* on_response_received_loop,
              network::mojom::URLResponseHead* head) {
             on_response_received_loop->Quit();
-            return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+            return absl::optional<PrefetchErrorOnResponseReceived>();
           },
           &on_response_received_loop),
       base::BindOnce(
@@ -341,7 +341,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulServedBeforeCompletion) {
           [](base::RunLoop* on_response_received_loop,
              network::mojom::URLResponseHead* head) {
             on_response_received_loop->Quit();
-            return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+            return absl::optional<PrefetchErrorOnResponseReceived>();
           },
           &on_response_received_loop),
       base::BindOnce(
@@ -464,7 +464,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulNotServed) {
           [](base::RunLoop* on_response_received_loop,
              network::mojom::URLResponseHead* head) {
             on_response_received_loop->Quit();
-            return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+            return absl::optional<PrefetchErrorOnResponseReceived>();
           },
           &on_response_received_loop),
       base::BindOnce(
@@ -529,7 +529,8 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedInvalidHead) {
              network::mojom::URLResponseHead* head) {
             on_response_received_loop->Quit();
             // This will cause the prefetch to be marked as not servable.
-            return PrefetchStreamingURLLoaderStatus::kFailedInvalidHead;
+            return absl::make_optional(
+                PrefetchErrorOnResponseReceived::kFailedInvalidHead);
           },
           &on_response_received_loop),
       base::BindOnce(
@@ -591,7 +592,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetError_HeadReceived) {
           [](base::RunLoop* on_response_received_loop,
              network::mojom::URLResponseHead* head) {
             on_response_received_loop->Quit();
-            return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+            return absl::optional<PrefetchErrorOnResponseReceived>();
           },
           &on_response_received_loop),
       base::BindOnce(
@@ -656,7 +657,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetError_HeadNotReveived) {
       TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
       base::BindOnce([](network::mojom::URLResponseHead* head) {
         NOTREACHED();
-        return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+        return absl::optional<PrefetchErrorOnResponseReceived>();
       }),
       base::BindOnce(
           [](base::RunLoop* on_response_complete_loop,
@@ -717,7 +718,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetErrorButServed) {
           [](base::RunLoop* on_response_received_loop,
              network::mojom::URLResponseHead* head) {
             on_response_received_loop->Quit();
-            return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+            return absl::optional<PrefetchErrorOnResponseReceived>();
           },
           &on_response_received_loop),
       base::BindOnce(
@@ -841,7 +842,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
           [](base::RunLoop* on_response_received_loop,
              network::mojom::URLResponseHead* head) {
             on_response_received_loop->Quit();
-            return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+            return absl::optional<PrefetchErrorOnResponseReceived>();
           },
           &on_response_received_loop),
       base::BindOnce(
@@ -1000,7 +1001,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, IneligibleRedirect) {
       TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
       base::BindOnce([](network::mojom::URLResponseHead* head) {
         NOTREACHED();
-        return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+        return absl::optional<PrefetchErrorOnResponseReceived>();
       }),
       base::BindOnce(
           [](const network::URLLoaderCompletionStatus& completion_status) {
@@ -1061,7 +1062,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, RedirectSwitchInNetworkContext) {
       TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
       base::BindOnce([](network::mojom::URLResponseHead* head) {
         NOTREACHED();
-        return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+        return absl::optional<PrefetchErrorOnResponseReceived>();
       }),
       base::BindOnce(
           [](const network::URLLoaderCompletionStatus& completion_status) {
@@ -1166,7 +1167,7 @@ TEST_P(PrefetchStreamingURLLoaderTest,
       TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
       base::BindOnce([](network::mojom::URLResponseHead* head) {
         NOTREACHED();
-        return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+        return absl::optional<PrefetchErrorOnResponseReceived>();
       }),
       base::BindOnce(
           [](const network::URLLoaderCompletionStatus& completion_status) {
@@ -1236,7 +1237,8 @@ TEST_P(PrefetchStreamingURLLoaderTest, Decoy) {
           [](base::RunLoop* on_response_received_loop,
              network::mojom::URLResponseHead* head) {
             on_response_received_loop->Quit();
-            return PrefetchStreamingURLLoaderStatus::kPrefetchWasDecoy;
+            return absl::make_optional(
+                PrefetchErrorOnResponseReceived::kPrefetchWasDecoy);
           },
           &on_response_received_loop),
       base::BindOnce(
@@ -1299,7 +1301,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, Timeout) {
       TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::Seconds(1),
       base::BindOnce([](network::mojom::URLResponseHead* head) {
         NOTREACHED();
-        return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+        return absl::optional<PrefetchErrorOnResponseReceived>();
       }),
       base::BindOnce(
           [](base::RunLoop* on_response_complete_loop,
@@ -1361,7 +1363,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, StopTimeoutTimerAfterBeingServed) {
           [](base::RunLoop* on_response_received_loop,
              network::mojom::URLResponseHead* head) {
             on_response_received_loop->Quit();
-            return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+            return absl::optional<PrefetchErrorOnResponseReceived>();
           },
           &on_response_received_loop),
       base::BindOnce(
@@ -1468,7 +1470,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, StaleResponse) {
           [](base::RunLoop* on_response_received_loop,
              network::mojom::URLResponseHead* head) {
             on_response_received_loop->Quit();
-            return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+            return absl::optional<PrefetchErrorOnResponseReceived>();
           },
           &on_response_received_loop),
       base::BindOnce(
@@ -1540,7 +1542,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, TransferSizeUpdated) {
           [](base::RunLoop* on_response_received_loop,
              network::mojom::URLResponseHead* head) {
             on_response_received_loop->Quit();
-            return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+            return absl::optional<PrefetchErrorOnResponseReceived>();
           },
           &on_response_received_loop),
       base::BindOnce(
@@ -1655,7 +1657,8 @@ TEST_P(PrefetchStreamingURLLoaderTest, DoesNotTakeDevToolsObserver) {
       url_loader_factory_remote.get(), request, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*timeout_duration=*/base::TimeDelta(),
       base::BindOnce([](network::mojom::URLResponseHead*) {
-        return PrefetchStreamingURLLoaderStatus::kFailedInvalidHead;
+        return absl::make_optional(
+            PrefetchErrorOnResponseReceived::kFailedInvalidHead);
       }),
       base::DoNothing(), base::DoNothing(), base::DoNothing(), nullptr);
   EXPECT_TRUE(request.trusted_params->devtools_observer.is_valid());

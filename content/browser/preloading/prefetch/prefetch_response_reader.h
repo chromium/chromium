@@ -58,7 +58,7 @@ class CONTENT_EXPORT PrefetchResponseReader final
   // `PrefetchStreamingURLLoader` to `event_queue_` and existing
   // `serving_url_loader_clients_`.
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints);
-  void OnReceiveResponse(PrefetchStreamingURLLoaderStatus status,
+  void OnReceiveResponse(absl::optional<PrefetchErrorOnResponseReceived> status,
                          network::mojom::URLResponseHeadPtr head,
                          mojo::ScopedDataPipeConsumerHandle body);
   void HandleRedirect(PrefetchRedirectStatus redirect_status,
@@ -202,7 +202,7 @@ class CONTENT_EXPORT PrefetchResponseReader final
   // TODO(crbug.com/1449360): we might want to adapt these flags and UMA
   // semantics for multiple client settings, but so far we don't have any
   // specific plans.
-  absl::optional<PrefetchStreamingURLLoaderStatus> failure_reason_;
+  absl::optional<PrefetchErrorOnResponseReceived> failure_reason_;
   bool served_before_completion_{false};
   bool served_after_completion_{false};
   bool should_record_metrics_{true};
