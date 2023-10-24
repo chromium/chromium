@@ -148,7 +148,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             if (!mSceneOverlays.get(i).isSceneOverlayTreeShowing()) continue;
             if (mSceneOverlays.get(i).handlesTabCreating()) {
                 // Prevent animation from happening if the overlay handles creation.
-                startHiding(layout.getLayoutTabsToRender()[0].getId(), false);
+                startHiding();
                 doneHiding();
                 return true;
             }

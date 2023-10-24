@@ -528,14 +528,14 @@ public class TabSwitcherLayout extends Layout {
     }
 
     @Override
-    public void startHiding(int nextId, boolean hintAtTabSelection) {
+    public void startHiding(int nextId) {
         try (TraceEvent e = TraceEvent.scoped(TRACE_HIDE_TAB_SWITCHER)) {
             // This is already in the process of hiding. No-op.
             if (isStartingToHide()) return;
 
             mTransitionStartTime = SystemClock.elapsedRealtime();
 
-            super.startHiding(nextId, hintAtTabSelection);
+            super.startHiding(nextId);
 
             // The new tab animation will handle the rest of the hide.
             if (mRunningNewTabAnimation) return;

@@ -375,14 +375,14 @@ public class HubLayoutUnitTest {
     @SmallTest
     @Config(qualifiers = "sw600dp")
     public void testHideTablet() {
-        hide(LayoutType.BROWSING, TAB_ID, true, HubLayoutAnimationType.TRANSLATE_DOWN);
+        hide(LayoutType.BROWSING, TAB_ID, HubLayoutAnimationType.TRANSLATE_DOWN);
         verify(mTabContentManager, never()).getEtc1TabThumbnailWithCallback(anyInt(), any());
     }
 
     @Test
     @SmallTest
     public void testHideToStartSurface() {
-        hide(LayoutType.START_SURFACE, Tab.INVALID_TAB_ID, false, HubLayoutAnimationType.FADE_OUT);
+        hide(LayoutType.START_SURFACE, Tab.INVALID_TAB_ID, HubLayoutAnimationType.FADE_OUT);
         verify(mTabContentManager, never()).getEtc1TabThumbnailWithCallback(anyInt(), any());
     }
 
@@ -390,7 +390,7 @@ public class HubLayoutUnitTest {
     @SmallTest
     public void testHideViaNewTab() {
         mHubLayout.onTabCreated(FAKE_TIME, NEW_TAB_ID, NEW_TAB_INDEX, TAB_ID, false, false, 0, 0);
-        hide(LayoutType.BROWSING, NEW_TAB_ID, false, HubLayoutAnimationType.NEW_TAB);
+        hide(LayoutType.BROWSING, NEW_TAB_ID, HubLayoutAnimationType.NEW_TAB);
         verify(mTabContentManager, never()).getEtc1TabThumbnailWithCallback(anyInt(), any());
     }
 
@@ -413,7 +413,7 @@ public class HubLayoutUnitTest {
                 .when(mTabContentManager)
                 .getEtc1TabThumbnailWithCallback(eq(TAB_ID), any());
 
-        hide(LayoutType.BROWSING, TAB_ID, true, HubLayoutAnimationType.EXPAND_TAB);
+        hide(LayoutType.BROWSING, TAB_ID, HubLayoutAnimationType.EXPAND_TAB);
 
         verify(mThumbnailCallback).onResult(isNotNull());
     }
@@ -439,7 +439,7 @@ public class HubLayoutUnitTest {
                 .when(mTabContentManager)
                 .getEtc1TabThumbnailWithCallback(eq(TAB_ID), any());
 
-        hide(LayoutType.BROWSING, Tab.INVALID_TAB_ID, false, HubLayoutAnimationType.EXPAND_TAB);
+        hide(LayoutType.BROWSING, Tab.INVALID_TAB_ID, HubLayoutAnimationType.EXPAND_TAB);
 
         verify(mThumbnailCallback).onResult(isNotNull());
     }
@@ -454,7 +454,7 @@ public class HubLayoutUnitTest {
                 .createHideAnimatorProvider(any(), anyInt());
         when(mTab.isNativePage()).thenReturn(true);
 
-        hide(LayoutType.START_SURFACE, TAB_ID, true, HubLayoutAnimationType.EXPAND_TAB);
+        hide(LayoutType.START_SURFACE, TAB_ID, HubLayoutAnimationType.EXPAND_TAB);
 
         verify(mThumbnailCallback).onResult(isNull());
         verify(mTabContentManager, never()).getEtc1TabThumbnailWithCallback(anyInt(), any());
@@ -475,7 +475,7 @@ public class HubLayoutUnitTest {
         assertTrue(mHubLayout.isRunningAnimations());
         assertTrue(mHubLayout.onUpdateAnimation(FAKE_TIME, false));
 
-        startHiding(LayoutType.BROWSING, NEW_TAB_ID, false);
+        startHiding(LayoutType.BROWSING, NEW_TAB_ID);
         verify(mHubLayout).doneShowing();
         verify(mTab, never()).hide(anyInt());
 
@@ -523,7 +523,6 @@ public class HubLayoutUnitTest {
     private void hide(
             @LayoutType int nextLayout,
             int nextTabId,
-            boolean hintAtTabSelection,
             @HubLayoutAnimationType int expectedAnimationType) {
         if (expectedAnimationType == HubLayoutAnimationType.NEW_TAB) {
             assertTrue(mHubLayout.isRunningAnimations());
@@ -533,7 +532,7 @@ public class HubLayoutUnitTest {
             assertFalse(mHubLayout.onUpdateAnimation(FAKE_TIME, false));
         }
 
-        startHiding(nextLayout, nextTabId, hintAtTabSelection);
+        startHiding(nextLayout, nextTabId);
 
         assertEquals(expectedAnimationType, mHubLayout.getCurrentAnimationType());
         assertTrue(mHubLayout.isRunningAnimations());
@@ -556,13 +555,12 @@ public class HubLayoutUnitTest {
         mHubLayout.show(FAKE_TIME, animate);
     }
 
-    private void startHiding(
-            @LayoutType int nextLayout, int nextTabId, boolean hintAtTabSelection) {
+    private void startHiding(@LayoutType int nextLayout, int nextTabId) {
         @LayoutType int layoutType = mHubLayout.getLayoutType();
         when(mLayoutStateProvider.getActiveLayoutType()).thenReturn(layoutType);
         when(mLayoutStateProvider.getNextLayoutType()).thenReturn(nextLayout);
 
-        mHubLayout.startHiding(nextTabId, hintAtTabSelection);
+        mHubLayout.startHiding(nextTabId);
     }
 
     private void setupHubLayoutAnimatorAndProvider(@HubLayoutAnimationType int animationType) {
