@@ -310,14 +310,20 @@ WebDatabase::State AutofillWebDataBackendImpl::AddAutofillProfile(
     const AutofillProfile& profile,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  if (!AutofillTable::FromWebDatabase(db)->AddAutofillProfile(profile)) {
+  AutofillTable* table = AutofillTable::FromWebDatabase(db);
+  if (!table->AddAutofillProfile(profile)) {
     ReportResult(Result::kAddAutofillProfile_Failure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
 
   // Send GUID-based notification.
+  // The `db_profile` is not guaranteed to be equivalent to `profile`, since the
+  // database might perform operations like `FinalizeAfterImport()`. Notify
+  // observers with `db_profile`.
+  AutofillProfile db_profile =
+      *table->GetAutofillProfile(profile.guid(), profile.source());
   AutofillProfileChange change(AutofillProfileChange::ADD, profile.guid(),
-                               profile);
+                               std::move(db_profile));
   for (auto& db_observer : db_observer_list_)
     db_observer.AutofillProfileChanged(change);
 
@@ -334,24 +340,29 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateAutofillProfile(
     const AutofillProfile& profile,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  AutofillTable* table = AutofillTable::FromWebDatabase(db);
   // Only perform the update if the profile exists.  It is currently
   // valid to try to update a missing profile.  We simply drop the write and
   // the caller will detect this on the next refresh.
   std::unique_ptr<AutofillProfile> original_profile =
-      AutofillTable::FromWebDatabase(db)->GetAutofillProfile(profile.guid(),
-                                                             profile.source());
+      table->GetAutofillProfile(profile.guid(), profile.source());
   if (!original_profile) {
     ReportResult(Result::kUpdateAutofillProfile_ReadFailure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
-  if (!AutofillTable::FromWebDatabase(db)->UpdateAutofillProfile(profile)) {
+  if (!table->UpdateAutofillProfile(profile)) {
     ReportResult(Result::kUpdateAutofillProfile_WriteFailure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
 
   // Send GUID-based notification.
+  // The `db_profile` is not guaranteed to be equivalent to `profile`, since the
+  // database might perform operations like `FinalizeAfterImport()`. Notify
+  // observers with `db_profile`.
+  AutofillProfile db_profile =
+      *table->GetAutofillProfile(profile.guid(), profile.source());
   AutofillProfileChange change(AutofillProfileChange::UPDATE, profile.guid(),
-                               profile);
+                               std::move(db_profile));
   for (auto& db_observer : db_observer_list_)
     db_observer.AutofillProfileChanged(change);
 
@@ -384,6 +395,8 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveAutofillProfile(
   }
 
   // Send GUID-based notification.
+  // TODO(crbug.com/1420547): The change event for removal operations shouldn't
+  // need to include the deleted profile. The GUID should suffice.
   AutofillProfileChange change(AutofillProfileChange::REMOVE, guid, *profile);
   for (auto& db_observer : db_observer_list_)
     db_observer.AutofillProfileChanged(change);

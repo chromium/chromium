@@ -2510,11 +2510,9 @@ void PersonalDataManager::OnUserAcceptedUpstreamOffer() {
 }
 
 void PersonalDataManager::NotifyPersonalDataObserver() {
-  // After all pending write operations have concluded, the PDM calls Refresh(),
-  // which triggers a series of read operations to update members like
-  // `synced_local_profiles_` and `local_credit_cards_`.
-  // Only when all read operations are concluded, the PDM is in a consistent
-  // state again.
+  // The PDM's state is inconsistent with the database in two cases:
+  // - When profile modifications are still pending: ProfileChangesAreOngoing().
+  // - When reads are still pending.
   bool pending_changes = ProfileChangesAreOngoing() || HasPendingQueries();
   for (PersonalDataManagerObserver& observer : observers_) {
     observer.OnPersonalDataChanged();
@@ -2649,13 +2647,8 @@ bool PersonalDataManager::ProfileChangesAreOngoing() {
 
 void PersonalDataManager::OnProfileChangeDone(const std::string& guid) {
   ongoing_profile_changes_[guid].pop_front();
-
-  if (!ProfileChangesAreOngoing()) {
-    Refresh();
-  } else {
-    NotifyPersonalDataObserver();
-    HandleNextProfileChange(guid);
-  }
+  NotifyPersonalDataObserver();
+  HandleNextProfileChange(guid);
 }
 
 bool PersonalDataManager::HasPendingQueries() {
