@@ -250,6 +250,7 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="235789365079050412">Politique de confidentialité de Google</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2362083820973145409">Connecté en tant que <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Ouvre les paramètres.</translation>
+<translation id="2364539095045928896">Bouton Fermer pour fermer l'avis de confidentialité du Centre des statistiques de la page.</translation>
 <translation id="2386938421315164605">Masquer et afficher les sujets</translation>
 <translation id="2390510615457643724">Voulez-vous télécharger <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) de nouveau?</translation>
 <translation id="2394602618534698961">Les fichiers que vous téléchargez s'affichent ici</translation>
@@ -873,6 +874,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5458366071038729214">Les sites que vous suivez s'afficheront ici</translation>
 <translation id="5468068603361015296">Voulez-vous quand même télécharger <ph name="FILE_NAME" />?</translation>
 <translation id="548278423535722844">Ouvrir dans l'application Maps</translation>
+<translation id="5486841595534124508">Logo de l'avis de confidentialité pour le Centre des statistiques de la page qui redirige vers la page Mon activité.</translation>
 <translation id="5487521232677179737">Effacer les données</translation>
 <translation id="5492637351392383067">Chiffrement sur l'appareil</translation>
 <translation id="5514904542973294328">Option désactivée par l'administrateur de cet appareil</translation>
@@ -1347,6 +1349,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7810647596859435254">Ouvrir avec…</translation>
 <translation id="7815484226266492798">Capture d'écran longue</translation>
 <translation id="7822705602465980873">Lorsque vous êtes connecté, ces données sont associées à votre compte Google pour vous protéger dans l'ensemble des services Google. Elles permettent, par exemple, de renforcer la protection dans Gmail à la suite d'un incident de sécurité.</translation>
+<translation id="782705168687182233">Votre activité est enregistrée dans votre <ph name="BEGIN_LINK" />compte Google<ph name="END_LINK" />.</translation>
 <translation id="78270725016672455">Votre ordinateur souhaite enregistrer cet appareil pour se connecter à un site</translation>
 <translation id="7844171778363018843">Aucune donnée à synchroniser n'a été sélectionnée</translation>
 <translation id="7846296061357476882">Services Google</translation>

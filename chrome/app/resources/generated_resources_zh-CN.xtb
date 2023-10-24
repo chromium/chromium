@@ -2788,7 +2788,7 @@
 <translation id="3183944777708523606">显示器排列方式</translation>
 <translation id="3184536091884214176">设置或管理 CUPS 打印机。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{这个应用已被屏蔽}other{某些应用已被屏蔽}}</translation>
-<translation id="3187472288455401631">广告衡量</translation>
+<translation id="3187472288455401631">广告效果衡量</translation>
 <translation id="3188257591659621405">我的文件</translation>
 <translation id="3188465121994729530">移动平均值</translation>
 <translation id="3189187154924005138">大号光标</translation>

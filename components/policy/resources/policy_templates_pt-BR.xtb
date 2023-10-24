@@ -132,9 +132,9 @@ Se a política não for definida, nenhuma exceção a <ph name="DEVICE_AUTHENTIC
       Se você definir a política, os usuários não poderão mudá-la.</translation>
 <translation id="1123650965531933634">Nega a permissão para posicionamento de janelas em todos os sites por padrão</translation>
 <translation id="1126456433590366966">Automatizar o fluxo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="GOOGLE_DRIVE_NAME" /> e <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
-<translation id="112794759469625182">Esta política foi removida na versão M118. Ele servia para ativar e desativar a certificação remota para o usuário, mas a certificação agora é ativada por padrão.
+<translation id="112794759469625182">Esta política foi removida na versão M118. Ele servia para ativar e desativar o atestado remoto para o usuário, que agora é ativado por padrão.
 
-Se a política for ativada, os usuários poderão usar o hardware de dispositivos <ph name="PRODUCT_OS_NAME" /> para fazer a certificação remota da identidade para a CA de privacidade usando a <ph name="CHALLENGE_USER_KEY_FUNCTION" /> com <ph name="ENTERPRISE_PLATFORM_KEYS_API" />.
+Se a política for ativada, os usuários poderão usar o hardware de dispositivos <ph name="PRODUCT_OS_NAME" /> para fazer o atestado remoto da identidade para a CA de privacidade usando a <ph name="CHALLENGE_USER_KEY_FUNCTION" /> com <ph name="ENTERPRISE_PLATFORM_KEYS_API" />.
 
       Se a política for desativada ou deixada sem definição, as chamadas para a API vão falhar com um código de erro.</translation>
 <translation id="1133622335785078255">Permitir que usuários criem e usem perfis secundários e usem o modo visitante no navegador <ph name="LACROS_NAME" /></translation>
