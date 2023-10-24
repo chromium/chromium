@@ -30,7 +30,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
     for (let i = 0; i < ElementsTestRunner.events.length; ++i)
       TestRunner.addResult(ElementsTestRunner.events[i]);
 
-    ElementsTestRunner.events = [];
+    ElementsTestRunner.events.length = 0; // 'events' is readonly.
     TestRunner.addResult("");
   }
 
