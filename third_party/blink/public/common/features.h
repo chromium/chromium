@@ -1269,10 +1269,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kTimedHTMLParserBudget);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUACHOverrideBlank);
 
-// Disallow setting URL ports with a value that will overflow.
-// See https://crbug.com/1416017
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kURLSetPortCheckOverflow);
-
 // Kill switch for using a custom task runner in the blink scheduler that makes
 // DeleteSoon/ReleaseSoon less prone to memory leaks.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
