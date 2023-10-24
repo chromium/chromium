@@ -86,10 +86,6 @@ class ProcessMonitor : public content::BrowserChildProcessObserver,
     // time the metric was sampled. See base/process/process_metrics.h for a
     // more detailed explanation.
     int package_idle_wakeups = 0;
-
-    // "Energy Impact" is a synthetic power estimation metric displayed by macOS
-    // in Activity Monitor and the battery menu.
-    double energy_impact = 0.0;
 #endif
   };
 

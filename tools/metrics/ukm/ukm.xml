@@ -20378,6 +20378,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="EnergyImpactScore">
+    <obsolete>
+      Removed 10/2023
+    </obsolete>
     <summary>
       Sum of the energy impact score for all Chrome processes (Mac-only).
     </summary>
