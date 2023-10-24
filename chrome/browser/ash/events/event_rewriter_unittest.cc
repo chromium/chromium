@@ -65,6 +65,7 @@
 #include "ui/events/test/events_test_utils.h"
 #include "ui/events/test/test_event_processor.h"
 #include "ui/events/test/test_event_rewriter_continuation.h"
+#include "ui/events/test/test_event_source.h"
 #include "ui/events/types/event_type.h"
 #include "ui/message_center/fake_message_center.h"
 #include "ui/wm/core/window_util.h"
@@ -4443,20 +4444,6 @@ class EventBuffer : public ui::test::TestEventProcessor {
   std::vector<std::unique_ptr<ui::Event>> events_;
 };
 
-// Trivial EventSource that does nothing but send events.
-class TestEventSource : public ui::EventSource {
- public:
-  explicit TestEventSource(ui::EventProcessor* processor)
-      : processor_(processor) {}
-  ui::EventSink* GetEventSink() override { return processor_; }
-  ui::EventDispatchDetails Send(ui::Event* event) {
-    return SendEventToSink(event);
-  }
-
- private:
-  raw_ptr<ui::EventProcessor, ExperimentalAsh> processor_;
-};
-
 // Tests of event rewriting that depend on the Ash window manager.
 class EventRewriterAshTest : public ChromeAshTestBase {
  public:
@@ -4571,7 +4558,7 @@ class EventRewriterAshTest : public ChromeAshTestBase {
       input_device_settings_controller_resetter_;
 
   EventBuffer buffer_;
-  TestEventSource source_;
+  ui::test::TestEventSource source_;
 
   raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
       fake_user_manager_;  // Not owned.
