@@ -1633,6 +1633,12 @@ void StyleResolver::ApplyBaseStyle(
     // (see the function comment).
     state.SetStyle(*element->GetComputedStyle());
 
+    // This is always false when creating a new style, but is not reset
+    // when copying the style, so it needs to happen here. After us,
+    // Element::StyleForLayoutObject() will call AdjustElementStyle(),
+    // which sets it to true if applicable.
+    state.StyleBuilder().ResetSkipsContents();
+
     const CSSPropertyValueSet* inline_style = element->InlineStyle();
     if (inline_style) {
       int num_properties = inline_style->PropertyCount();

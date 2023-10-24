@@ -151,7 +151,7 @@ const ComputedStyle* DisplayLockContext::AdjustElementStyle(
     return style;
   if (IsLocked()) {
     ComputedStyleBuilder builder(*style);
-    builder.SetSkipsContents();
+    builder.SetSkipsContents(true);
     return builder.TakeStyle();
   }
   return style;
