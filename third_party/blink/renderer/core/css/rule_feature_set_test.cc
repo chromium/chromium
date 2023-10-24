@@ -1924,6 +1924,10 @@ RefTestData ref_equal_test_data[] = {
     {":is([foo], [bar]) .a", "[foo] .a, [bar] .a"},
     {":is([a], [b]) :is([c], [d])", "[a] [c], [a] [d], [b] [c], [b] [d]"},
 
+    {"", "div"},
+    {"ol", "ul"},
+    {"::cue(a)", "::cue(b)"},
+    {"div", "span"},
     // clang-format on
 };
 
@@ -1932,7 +1936,6 @@ RefTestData ref_not_equal_test_data[] = {
     // clang-format off
     {"", ".a"},
     {"", "#a"},
-    {"", "div"},
     {"", ":hover"},
     {"", "::before"},
     {"", ":host"},
@@ -1943,17 +1946,14 @@ RefTestData ref_not_equal_test_data[] = {
     {".a", ".b"},
     {".a", ".a, .b"},
     {"#a", "#b"},
-    {"ol", "ul"},
     {"[foo]", "[bar]"},
     {":link", ":visited"},
     {".a::before", ".b::after"},
-    {"::cue(a)", "::cue(b)"},
     {".a .b", ".a .c"},
     {".a + .b", ".a + .c"},
     {".a + .b .c", ".a + .b .d"},
     {"div + .a", "div + .b"},
     {".a:nth-child(1)", ".b:nth-child(1)"},
-    {"div", "span"},
     // clang-format on
 };
 

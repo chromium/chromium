@@ -485,8 +485,6 @@ bool RuleFeatureSet::operator==(const RuleFeatureSet& other) const {
                                 other.nth_invalidation_set_) &&
          base::ValuesEquivalent(universal_sibling_invalidation_set_,
                                 other.universal_sibling_invalidation_set_) &&
-         base::ValuesEquivalent(type_rule_invalidation_set_,
-                                other.type_rule_invalidation_set_) &&
          media_query_result_flags_ == other.media_query_result_flags_ &&
          classes_in_has_argument_ == other.classes_in_has_argument_ &&
          attributes_in_has_argument_ == other.attributes_in_has_argument_ &&
@@ -889,17 +887,6 @@ void RuleFeatureSet::UpdateRuleSetInvalidation(
        features.tag_names.empty())) {
     metadata_.needs_full_recalc_for_rule_set_invalidation = true;
     return;
-  }
-
-  EnsureTypeRuleInvalidationSet();
-
-  if (features.invalidation_flags.InvalidateCustomPseudo()) {
-    type_rule_invalidation_set_->SetCustomPseudoInvalid();
-    type_rule_invalidation_set_->SetTreeBoundaryCrossing();
-  }
-
-  for (auto tag_name : features.tag_names) {
-    type_rule_invalidation_set_->AddTagName(tag_name);
   }
 }
 
@@ -1921,7 +1908,6 @@ void RuleFeatureSet::Clear() {
   pseudo_invalidation_sets_.clear();
   universal_sibling_invalidation_set_ = nullptr;
   nth_invalidation_set_ = nullptr;
-  type_rule_invalidation_set_ = nullptr;
   media_query_result_flags_.Clear();
   classes_in_has_argument_.clear();
   attributes_in_has_argument_.clear();
@@ -2174,23 +2160,6 @@ void RuleFeatureSet::CollectPartInvalidationSet(
   }
 }
 
-void RuleFeatureSet::CollectTypeRuleInvalidationSet(
-    InvalidationLists& invalidation_lists,
-    ContainerNode& root_node) const {
-  if (type_rule_invalidation_set_) {
-    invalidation_lists.descendants.push_back(type_rule_invalidation_set_);
-    TRACE_SCHEDULE_STYLE_INVALIDATION(root_node, *type_rule_invalidation_set_,
-                                      RuleSetInvalidation);
-  }
-}
-
-DescendantInvalidationSet& RuleFeatureSet::EnsureTypeRuleInvalidationSet() {
-  if (!type_rule_invalidation_set_) {
-    type_rule_invalidation_set_ = DescendantInvalidationSet::Create();
-  }
-  return *type_rule_invalidation_set_;
-}
-
 void RuleFeatureSet::AddFeaturesToUniversalSiblingInvalidationSet(
     const InvalidationSetFeatures& sibling_features,
     const InvalidationSetFeatures& descendant_features) {
@@ -2318,9 +2287,8 @@ String RuleFeatureSet::ToString() const {
     kPseudo = 1 << 3,
     kDescendant = 1 << 4,
     kSibling = 1 << 5,
-    kType = 1 << 6,
-    kUniversal = 1 << 7,
-    kNth = 1 << 8,
+    kUniversal = 1 << 6,
+    kNth = 1 << 7,
   };
 
   struct Entry {
@@ -2403,7 +2371,6 @@ String RuleFeatureSet::ToString() const {
     add_invalidation_sets(name, i.value.get(), kPseudo, ":", "");
   }
 
-  add_invalidation_sets("type", type_rule_invalidation_set_.get(), kType);
   add_invalidation_sets("*", universal_sibling_invalidation_set_.get(),
                         kUniversal);
   add_invalidation_sets("nth", nth_invalidation_set_.get(), kNth);

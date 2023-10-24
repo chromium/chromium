@@ -874,7 +874,6 @@ class CORE_EXPORT RuleFeatureSet {
   PseudoTypeInvalidationSetMap pseudo_invalidation_sets_;
   scoped_refptr<SiblingInvalidationSet> universal_sibling_invalidation_set_;
   scoped_refptr<NthSiblingInvalidationSet> nth_invalidation_set_;
-  scoped_refptr<DescendantInvalidationSet> type_rule_invalidation_set_;
   MediaQueryResultFlags media_query_result_flags_;
   ValuesInHasArgument classes_in_has_argument_;
   ValuesInHasArgument attributes_in_has_argument_;
