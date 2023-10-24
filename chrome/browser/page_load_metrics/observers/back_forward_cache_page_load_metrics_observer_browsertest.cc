@@ -728,6 +728,7 @@ IN_PROC_BROWSER_TEST_F(
       "NumInteractionsAfterBackForwardCacheRestore"};
 
   for (auto& ukm : ukm_list) {
+    SCOPED_TRACE(ukm);
     ExpectMetricCountForUrl(url_a, ukm.c_str(), 1);
     ExpectMetricCountForUrl(url_b, ukm.c_str(), 0);
   }
