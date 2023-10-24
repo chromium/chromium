@@ -21,12 +21,12 @@ import {getTemplate} from './customize_button_row.html.js';
 import {setDataTransferOriginIndex} from './drag_and_drop_manager.js';
 import {FakeInputDeviceSettingsProvider} from './fake_input_device_settings_provider.js';
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {ActionChoice, Button, ButtonRemapping, InputDeviceSettingsProviderInterface, KeyEvent, RemappingAction} from './input_device_settings_types.js';
+import {ActionChoice, Button, ButtonRemapping, InputDeviceSettingsProviderInterface, KeyEvent, RemappingAction, StaticShortcutAction} from './input_device_settings_types.js';
 import {buttonsAreEqual} from './input_device_settings_utils.js';
 
-const NO_REMAPPING_OPTION_LABEL = 'none';
-const KEY_COMBINATION_OPTION_LABEL = 'key combination';
-const OPEN_DIALOG_OPTION_LABEL = 'open key combination dialog';
+const NO_REMAPPING_OPTION_VALUE = 'none';
+const KEY_COMBINATION_OPTION_VALUE = 'key combination';
+const OPEN_DIALOG_OPTION_VALUE = 'open key combination dialog';
 const ACCELERATOR_ACTION_PREFIX = 'acceleratorAction';
 const STATICS_SHORTCUT_ACTION_PREFIX = 'staticShortcutAction';
 
@@ -125,7 +125,7 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
           return {
             key: 'fakeCustomizeKeyPref',
             type: chrome.settingsPrivate.PrefType.STRING,
-            value: NO_REMAPPING_OPTION_LABEL,
+            value: NO_REMAPPING_OPTION_VALUE,
           };
         },
       },
@@ -145,26 +145,11 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
       },
 
       /**
-       * The value of the "None" item in dropdown menu.
-       */
-      noRemappingOptionValue_: {
-        type: String,
-        value: NO_REMAPPING_OPTION_LABEL,
-        readOnly: true,
-      },
-
-      /**
        * The value of the "Key combination" item in dropdown menu.
        */
       keyCombinationOptionValue_: {
         type: String,
-        value: KEY_COMBINATION_OPTION_LABEL,
-        readOnly: true,
-      },
-
-      openDialogOptionValue_: {
-        type: String,
-        value: OPEN_DIALOG_OPTION_LABEL,
+        value: KEY_COMBINATION_OPTION_VALUE,
         readOnly: true,
       },
 
@@ -214,9 +199,7 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
   private buttonRemapping_: ButtonRemapping;
   private buttonMapTargets_: DropdownMenuOptionList;
   private fakePref_: chrome.settingsPrivate.PrefObject;
-  private noRemappingOptionValue_: string;
   private keyCombinationOptionValue_: string;
-  private openDialogOptionValue_: string;
   private keyCombinationLabel_: string;
   private buttonRemappingName_: string;
   private isInitialized_: boolean;
@@ -260,7 +243,7 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
 
     microTask.run(() => {
       dropdown.value =
-          option === undefined ? NO_REMAPPING_OPTION_LABEL : originalAction;
+          option === undefined ? NO_REMAPPING_OPTION_VALUE : originalAction;
       this.prevChoice_ = dropdown.value;
     });
   }
@@ -273,8 +256,14 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
     if (!this.actionList) {
       return;
     }
-    // TODO(yyhyyh@): Get buttonMapTargets_ from provider in customization
-    // pages, and pass it as a value instead of creating fake data here.
+
+    // Put default action to the top of dropdown menu per UX requirement.
+    this.buttonMapTargets_.push({
+      value: NO_REMAPPING_OPTION_VALUE,
+      name: this.i18n('noRemappingOptionLabel'),
+    });
+
+    // Fill the dropdown menu with actionList.
     for (const actionChoice of this.actionList) {
       const acceleratorAction = actionChoice.actionType.acceleratorAction;
       const staticShortcutAction = actionChoice.actionType.staticShortcutAction;
@@ -295,6 +284,18 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
         });
       }
     }
+
+    // Put 'Key combination' option in the dropdown menu.
+    this.buttonMapTargets_.push({
+      value: OPEN_DIALOG_OPTION_VALUE,
+      name: this.i18n('keyCombinationOptionLabel'),
+    });
+
+    // Put kDisable action to the end of dropdown menu per UX requirement.
+    this.buttonMapTargets_.push({
+      value: STATICS_SHORTCUT_ACTION_PREFIX + StaticShortcutAction.kDisable,
+      name: this.i18n('disbableOptionLabel'),
+    });
   }
 
   /**
@@ -322,12 +323,12 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
           ACCELERATOR_ACTION_PREFIX + acceleratorAction.toString();
       this.initializeDropdown_(originalAcceleratorAction, dropdown);
     } else if (keyEvent) {
-      this.set('fakePref_.value', KEY_COMBINATION_OPTION_LABEL);
+      this.set('fakePref_.value', KEY_COMBINATION_OPTION_VALUE);
       this.keyCombinationLabel_ = getKeyCombinationLabel(keyEvent) ??
           this.i18n('keyCombinationOptionLabel');
 
       microTask.run(() => {
-        dropdown.value = KEY_COMBINATION_OPTION_LABEL;
+        dropdown.value = KEY_COMBINATION_OPTION_VALUE;
         this.prevChoice_ = dropdown.value;
       });
     } else if (
@@ -338,9 +339,9 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
           STATICS_SHORTCUT_ACTION_PREFIX + staticShortcutAction.toString();
       this.initializeDropdown_(originalStaticShortcutAction, dropdown);
     } else {
-      this.set('fakePref_.value', NO_REMAPPING_OPTION_LABEL);
+      this.set('fakePref_.value', NO_REMAPPING_OPTION_VALUE);
       microTask.run(() => {
-        dropdown.value = NO_REMAPPING_OPTION_LABEL;
+        dropdown.value = NO_REMAPPING_OPTION_VALUE;
         this.prevChoice_ = dropdown.value;
       });
     }
@@ -364,13 +365,13 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
 
   /**
    * This method is called when fakePref_.value is changed to
-   * NO_REMAPPING_OPTION_LABEL or enums of remappingAction.
+   * NO_REMAPPING_OPTION_VALUE or enums of remappingAction.
    *
    * @returns Updated button remapping with selected remapping action or
    * no remapping action.
    */
   private getUpdatedRemapping(): ButtonRemapping {
-    if (this.fakePref_.value === NO_REMAPPING_OPTION_LABEL) {
+    if (this.fakePref_.value === NO_REMAPPING_OPTION_VALUE) {
       const updatedRemapping: ButtonRemapping = {
         name: this.buttonRemapping_.name,
         button: this.buttonRemapping_.button,
@@ -421,7 +422,7 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
 
   private onSelectChange_(): void {
     const select = this.$.remappingActionDropdown;
-    if (select.value === OPEN_DIALOG_OPTION_LABEL) {
+    if (select.value === OPEN_DIALOG_OPTION_VALUE) {
       this.dispatchEvent(new CustomEvent('show-key-combination-dialog', {
         bubbles: true,
         composed: true,
