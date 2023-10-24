@@ -51,6 +51,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/loader/javascript_framework_detection.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/metrics/accept_language_and_content_language_usage.h"
 #include "third_party/blink/public/common/page/browsing_context_group_info.h"
@@ -122,6 +123,9 @@
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/permissions_policy/document_policy_parser.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/speculation_rules/auto_speculation_rules_config.h"
+#include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
+#include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rules_header.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/profiler_group.h"
@@ -804,6 +808,37 @@ void DocumentLoader::DidObserveJavaScriptFrameworks(
   if (frame_) {
     DCHECK_GE(state_, kCommitted);
     GetLocalFrameClient().DidObserveJavaScriptFrameworks(result);
+    InjectAutoSpeculationRules(result);
+  }
+}
+
+void DocumentLoader::InjectAutoSpeculationRules(
+    const JavaScriptFrameworkDetectionResult& result) {
+  if (!base::FeatureList::IsEnabled(features::kAutoSpeculationRules)) {
+    return;
+  }
+
+  const auto& config = AutoSpeculationRulesConfig::GetInstance();
+
+  for (const auto& detected_version : result.detected_versions) {
+    if (String speculation_rules =
+            config.ForFramework(detected_version.first)) {
+      auto* source = SpeculationRuleSet::Source::FromBrowserInjected(
+          speculation_rules, this->Url());
+      auto* rule_set = SpeculationRuleSet::Parse(source, frame_->DomWindow());
+      CHECK(rule_set);
+
+      // The JSON string in speculation_rules comes from a potentially-fallible
+      // remote config, so this should not be a CHECK failure.
+      if (rule_set->HasError()) {
+        LOG(ERROR) << "Failed to parse speculation rules for "
+                   << detected_version.first << ": " << speculation_rules;
+        continue;
+      }
+
+      DocumentSpeculationRules::From(*frame_->GetDocument())
+          .AddRuleSet(rule_set);
+    }
   }
 }
 

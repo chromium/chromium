@@ -3,13 +3,22 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/speculation_rules/auto_speculation_rules_config.h"
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/loader/javascript_framework_detection.mojom-shared.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
+
+namespace {
+
+static AutoSpeculationRulesConfig* g_override = nullptr;
+
+}
 
 AutoSpeculationRulesConfig::AutoSpeculationRulesConfig(
     const String& config_string) {
@@ -60,6 +69,28 @@ AutoSpeculationRulesConfig::AutoSpeculationRulesConfig(
 
     framework_to_speculation_rules_.insert(framework, speculation_rules);
   }
+}
+
+const AutoSpeculationRulesConfig& AutoSpeculationRulesConfig::GetInstance() {
+  CHECK(base::FeatureList::IsEnabled(features::kAutoSpeculationRules));
+
+  const String config_string =
+      String::FromUTF8(features::kAutoSpeculationRulesConfig.Get());
+  DEFINE_STATIC_LOCAL(AutoSpeculationRulesConfig, instance, (config_string));
+
+  if (g_override) {
+    return *g_override;
+  }
+
+  return instance;
+}
+
+AutoSpeculationRulesConfig*
+AutoSpeculationRulesConfig::OverrideInstanceForTesting(
+    AutoSpeculationRulesConfig* new_override) {
+  AutoSpeculationRulesConfig* old_override = g_override;
+  g_override = new_override;
+  return old_override;
 }
 
 String AutoSpeculationRulesConfig::ForFramework(

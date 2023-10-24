@@ -611,6 +611,11 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // specified.
   void StartViewTransitionIfNeeded(Document& document);
 
+  // Injects speculation rules automatically for some pages based on their
+  // contents (currently only detected JavaScript frameworks). Configured by the
+  // AutoSpeculationRules feature.
+  void InjectAutoSpeculationRules(const JavaScriptFrameworkDetectionResult&);
+
   // Params are saved in constructor and are cleared after StartLoading().
   // TODO(dgozman): remove once StartLoading is merged with constructor.
   std::unique_ptr<WebNavigationParams> params_;

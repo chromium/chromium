@@ -13,6 +13,10 @@
 
 namespace blink {
 
+namespace test {
+class AutoSpeculationRulesConfigOverride;
+}
+
 // Parses the auto speculation rules config string and provides methods to query
 // the resulting configuration. See https://crbug.com/1472970 for more details
 // on auto speculation rules.
@@ -21,9 +25,19 @@ class CORE_EXPORT AutoSpeculationRulesConfig {
   explicit AutoSpeculationRulesConfig(const String& config_string);
   ~AutoSpeculationRulesConfig() = default;
 
+  static const AutoSpeculationRulesConfig& GetInstance();
+
   String ForFramework(mojom::JavaScriptFramework) const;
 
  private:
+  friend class test::AutoSpeculationRulesConfigOverride;
+
+  // Makes GetInstance() return the given value. Returns the previous override,
+  // if any. The caller is responsible for calling OverrideInstanceForTesting()
+  // again with that returned value once they're done.
+  static AutoSpeculationRulesConfig* OverrideInstanceForTesting(
+      AutoSpeculationRulesConfig* new_override);
+
   WTF::HashMap<mojom::JavaScriptFramework, String>
       framework_to_speculation_rules_;
 };
