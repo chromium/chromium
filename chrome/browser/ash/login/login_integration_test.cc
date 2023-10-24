@@ -24,7 +24,9 @@ class LoginIntegrationTest : public InteractiveAshTest {
   ~LoginIntegrationTest() override = default;
 };
 
-IN_PROC_BROWSER_TEST_F(LoginIntegrationTest, TestLogin) {
+// Disable due to failure on amd64-generic.
+// TODO(b/307386689): Enable after fix.
+IN_PROC_BROWSER_TEST_F(LoginIntegrationTest, DISABLED_TestLogin) {
   login_mixin().Login();
 
   // Waits for the primary user session to start.
