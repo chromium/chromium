@@ -18,7 +18,7 @@ using InputState = HidDetectionManager::InputState;
 // In floss, a virtual device is created when a HID is bonded or paired.
 // We do not want to include this virtual device to our list of added devices.
 // (b/299955128)
-std::unordered_set<std::string> kBlockedDeviceNames = {"VIRTUAL_SUSPEND_UHID"};
+const char* kBlockedDeviceNames[] = {"VIRTUAL_SUSPEND_UHID"};
 
 HidDetectionManagerImpl::InputDeviceManagerBinder&
 GetInputDeviceManagerBinderOverride() {
@@ -94,7 +94,8 @@ HidDetectionManagerImpl::ComputeHidDetectionStatus() const {
 void HidDetectionManagerImpl::InputDeviceAdded(
     device::mojom::InputDeviceInfoPtr info) {
   // Special case where the added device is a blocked device.
-  if (kBlockedDeviceNames.find(info->name) != kBlockedDeviceNames.end()) {
+  if (std::find(std::begin(kBlockedDeviceNames), std::end(kBlockedDeviceNames),
+                info->name) != std::end(kBlockedDeviceNames)) {
     return;
   }
 
