@@ -57,7 +57,7 @@ void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
     Element* lcp_element) {
   if (lcp_element && IsA<HTMLImageElement>(lcp_element)) {
     std::string lcp_element_locator_string =
-        element_locator::OfElement(lcp_element)->SerializeAsString();
+        element_locator::OfElement(lcp_element).SerializeAsString();
 
     base::UmaHistogramCounts10000(
         "Blink.LCPP.LCPElementLocatorSize",

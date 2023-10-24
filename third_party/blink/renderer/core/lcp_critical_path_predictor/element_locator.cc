@@ -14,7 +14,7 @@
 
 namespace blink::element_locator {
 
-absl::optional<ElementLocator> OfElement(Element* element) {
+ElementLocator OfElement(Element* element) {
   ElementLocator locator;
 
   while (element) {
