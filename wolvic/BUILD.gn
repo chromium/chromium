@@ -142,6 +142,8 @@ static_library("content_native_lib") {
     "//components/url_formatter",
     "//components/variations",
     "//components/variations/service",
+    "//components/visitedlink/browser",
+    "//components/visitedlink/renderer",
     "//components/web_cache/renderer",
     "//components/webxr:webxr",
     "//content:content_resources",

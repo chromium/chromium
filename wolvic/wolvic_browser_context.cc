@@ -32,6 +32,7 @@
 #include "components/prefs/pref_service_factory.h"
 #include "components/prefs/segregated_pref_store.h"
 #include "components/user_prefs/user_prefs.h"
+#include "components/visitedlink/browser/visitedlink_writer.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
@@ -96,6 +97,10 @@ void WolvicBrowserContext::FinishInitWhileIOAllowed() {
   key_ = std::make_unique<SimpleFactoryKey>(path_, off_the_record_);
   SimpleKeyMap::GetInstance()->Associate(this, key_.get());
   CreateUserPrefService();
+
+  visitedlink_writer_ =
+      std::make_unique<visitedlink::VisitedLinkWriter>(this, this, true);
+  visitedlink_writer_->Init();
 }
 
 base::FilePath WolvicBrowserContext::GetPrefStorePath() {
@@ -242,6 +247,15 @@ WolvicBrowserContext::GetReduceAcceptLanguageControllerDelegate() {
 OriginTrialsControllerDelegate*
 WolvicBrowserContext::GetOriginTrialsControllerDelegate() {
   return nullptr;
+}
+
+void
+WolvicBrowserContext::RebuildTable(
+    const scoped_refptr<URLEnumerator>& enumerator) {
+  // Android WebView rebuilds from WebChromeClient.getVisitedHistory. The client
+  // can change in the lifetime of this WebView and may not yet be set here.
+  // Therefore this initialization path is not used.
+  enumerator->OnComplete(true);
 }
 
 }  // namespace content

@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_name_set.h"
+#include "components/visitedlink/browser/visitedlink_delegate.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/resource_context.h"
@@ -19,9 +20,14 @@ class SimpleFactoryKey;
 class PrefService;
 class PrefRegistrySimple;
 
+namespace visitedlink {
+class VisitedLinkWriter;
+}
+
 namespace content {
 
-class WolvicBrowserContext : public BrowserContext {
+class WolvicBrowserContext : public BrowserContext,
+			     public visitedlink::VisitedLinkDelegate {
  public:
   // If |delay_services_creation| is true, the owner is responsible for calling
   // CreateBrowserContextServices() for this BrowserContext.
@@ -61,6 +67,9 @@ class WolvicBrowserContext : public BrowserContext {
   GetReduceAcceptLanguageControllerDelegate() override;
   OriginTrialsControllerDelegate* GetOriginTrialsControllerDelegate() override;
 
+  // visitedlink::VisitedLinkDelegate implementation.
+  void RebuildTable(const scoped_refptr<URLEnumerator>& enumerator) override;
+
  protected:
   std::unique_ptr<PermissionControllerDelegate> permission_manager_;
   std::unique_ptr<BackgroundSyncController> background_sync_controller_;
@@ -86,6 +95,7 @@ class WolvicBrowserContext : public BrowserContext {
   std::unique_ptr<PrefService> user_pref_service_;
   base::FilePath path_;
   std::unique_ptr<SimpleFactoryKey> key_;
+  std::unique_ptr<visitedlink::VisitedLinkWriter> visitedlink_writer_;
 };
 
 }  // namespace content
