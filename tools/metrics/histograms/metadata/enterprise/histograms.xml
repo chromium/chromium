@@ -1448,6 +1448,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.Dlp.FilesUnknownAccessLevel"
+    units="DlpEnterprisePolicyLevel" expires_after="2024-10-01">
+  <owner>poromov@google.com</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Records the resolved Data Leak Prevention file access level every time an
+    unknown unauthorized access is being resolved over IsDlpPolicyMatched.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.Dlp.FilesWarnedCount" units="entries"
     expires_after="2024-03-01">
   <owner>ayaelattar@google.com</owner>

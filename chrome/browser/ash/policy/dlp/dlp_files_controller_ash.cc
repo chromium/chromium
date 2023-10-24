@@ -840,11 +840,17 @@ bool DlpFilesControllerAsh::IsDlpPolicyMatched(const FileDaemonInfo& file) {
       restricted = true;
       break;
     case policy::DlpRulesManager::Level::kWarn:
-      // TODO(b/298950702): Show warning if applicable.
+      // Normally this case should not be hit as it means that a restricted file
+      // was accessed by a flow without requesting access before. We protect
+      // warned files the same way as blocked to not allow unauthorized access.
+      restricted = true;
       break;
     default:
       break;
   }
+
+  data_controls::DlpHistogramEnumeration(
+      data_controls::dlp::kFilesUnknownAccessLevel, level);
 
   MaybeReportEvent(
       file.inode, file.crtime, file.path, src_pattern,

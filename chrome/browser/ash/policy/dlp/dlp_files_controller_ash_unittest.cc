@@ -1187,7 +1187,7 @@ TEST_F(DlpFilesControllerAshTest, CheckReportingOnIsDlpPolicyMatched) {
   // Report `event1`, `event2`, and `event3` after these calls.
   ASSERT_TRUE(files_controller_->IsDlpPolicyMatched(file1));
   ASSERT_FALSE(files_controller_->IsDlpPolicyMatched(file2));
-  ASSERT_FALSE(files_controller_->IsDlpPolicyMatched(file3));
+  ASSERT_TRUE(files_controller_->IsDlpPolicyMatched(file3));
   ASSERT_FALSE(files_controller_->IsDlpPolicyMatched(file4));
 
   task_runner_->FastForwardBy(cooldown_time);
@@ -1195,14 +1195,14 @@ TEST_F(DlpFilesControllerAshTest, CheckReportingOnIsDlpPolicyMatched) {
   // Report `event1`, `event2`, and `event3` after these calls.
   ASSERT_TRUE(files_controller_->IsDlpPolicyMatched(file1));
   ASSERT_FALSE(files_controller_->IsDlpPolicyMatched(file2));
-  ASSERT_FALSE(files_controller_->IsDlpPolicyMatched(file3));
+  ASSERT_TRUE(files_controller_->IsDlpPolicyMatched(file3));
 
   task_runner_->FastForwardBy(cooldown_time / 2);
 
   // Do not report after these calls.
   ASSERT_TRUE(files_controller_->IsDlpPolicyMatched(file1));
   ASSERT_FALSE(files_controller_->IsDlpPolicyMatched(file2));
-  ASSERT_FALSE(files_controller_->IsDlpPolicyMatched(file3));
+  ASSERT_TRUE(files_controller_->IsDlpPolicyMatched(file3));
 
   const auto expected_events = std::vector<const DlpPolicyEvent*>(
       {&event1, &event2, &event3, &event1, &event2, &event3});
@@ -1212,6 +1212,15 @@ TEST_F(DlpFilesControllerAshTest, CheckReportingOnIsDlpPolicyMatched) {
     EXPECT_THAT(events[i],
                 data_controls::IsDlpPolicyEvent(*expected_events[i]));
   }
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  data_controls::GetDlpHistogramPrefix() +
+                  std::string(data_controls::dlp::kFilesUnknownAccessLevel)),
+              base::BucketsAre(
+                  base::Bucket(policy::DlpRulesManager::Level::kBlock, 3),
+                  base::Bucket(policy::DlpRulesManager::Level::kReport, 3),
+                  base::Bucket(policy::DlpRulesManager::Level::kWarn, 3),
+                  base::Bucket(policy::DlpRulesManager::Level::kAllow, 1)));
 }
 
 TEST_F(DlpFilesControllerAshTest, CheckReportingOnIsFilesTransferRestricted) {

@@ -29168,6 +29168,15 @@ Called by update_debug_scenarios.py.-->
   <int value="2132270559" label="libsvn_tsvn32.dll"/>
 </enum>
 
+<enum name="DlpEnterprisePolicyLevel">
+  <summary>Restriction level enforced by Data Leak Prevention policy.</summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Report"/>
+  <int value="2" label="Warn"/>
+  <int value="3" label="Block"/>
+  <int value="4" label="Allow"/>
+</enum>
+
 <enum name="DNS.AddressListDeltaType">
   <int value="0" label="Same addresses in the same order"/>
   <int value="1" label="Same addresses in a different order"/>
