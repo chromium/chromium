@@ -10,9 +10,9 @@ source_set("model") {
     "window_activity_helpers.h",
     "window_activity_helpers.mm",
   ]
+  public_deps = [ "//base" ]
   deps = [
     ":ios_move_tab_activity_type_buildflags",
-    "//base",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/url_loading/model:url_loading_params_header",
     "//ios/web/public",

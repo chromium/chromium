@@ -22,9 +22,9 @@ source_set("model") {
 
   friend = [ ":unit_tests" ]
 
+  public_deps = [ "//base" ]
   deps = [
     ":prerender_pref",
-    "//base",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/prefs",
