@@ -9,7 +9,7 @@ for more details about the presubmit API built into depot_tools.
 
 PRESUBMIT_VERSION = '2.0.0'
 
-from pathlib import Path
+from pathlib import Path, PurePath
 
 def CheckIncludeForFullPath(input_api, output_api):
   """Checks to make sure every .h file has a full path."""
@@ -21,11 +21,17 @@ def CheckIncludeForFullPath(input_api, output_api):
       continue
     contents = input_api.ReadFile(f)
     for include in pattern.finditer(contents):
-      header = include.group(1)
-      if not header.casefold().endswith('.h'):
+      header = PurePath(include.group(1))
+      if header.suffix.casefold() != '.h':
         continue
-      if not header.startswith('/'):
-        header = '../../' + header
+      if header.parts[0] == 'build':
+        continue
+      if not header.is_absolute():
+        header = '../../' / header
+      if tuple(header.suffixes) == ('.pb', '.h'):
+        # *.pb.h files don't exist in source code, replace the suffix with
+        # *.proto.
+        header = header.with_suffix('').with_suffix('.proto')
       if not Path(header).is_file():
         errors.append(f.LocalPath() + ': ' + include.group(1))
   if errors:
