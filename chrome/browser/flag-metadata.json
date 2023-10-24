@@ -372,8 +372,8 @@
   },
   {
     "name": "arc-sync-install-priority",
-    "owners": ["lgcheng@chromium.org"],
-    "expiry_milestone": 120
+    "owners": ["lgcheng@google.com"],
+    "expiry_milestone": 124
   },
   {
     "name": "arc-touchscreen-emulation",
