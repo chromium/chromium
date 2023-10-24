@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
-import {BookmarkListItem} from '../shared/nux_types.js';
+
+import type {BookmarkListItem} from '../shared/nux_types.js';
 
 enum NuxGoogleAppsSelections {
   GMAIL_DEPRECATED = 0,
