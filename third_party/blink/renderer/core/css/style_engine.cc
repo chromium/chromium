@@ -161,9 +161,6 @@ unsigned GetRuleSetFlags(const HeapHashSet<Member<RuleSet>> rule_sets) {
     if (!rule_set->FontFeatureValuesRules().empty()) {
       flags |= kFontFeatureValuesRules;
     }
-    if (rule_set->NeedsFullRecalcForRuleSetInvalidation()) {
-      flags |= kFullRecalcRules;
-    }
     if (!rule_set->PropertyRules().empty()) {
       flags |= kPropertyRules;
     }
@@ -2157,14 +2154,6 @@ void StyleEngine::ApplyRuleSetInvalidation(
     SelectorFilter& selector_filter,
     const HeapHashSet<Member<RuleSet>>& rule_sets,
     InvalidationScope invalidation_scope) {
-#if DCHECK_IS_ON()
-  // Full scope recalcs should be handled while collecting the rule sets before
-  // calling this method.
-  for (auto rule_set : rule_sets) {
-    DCHECK(!rule_set->Features().NeedsFullRecalcForRuleSetInvalidation());
-  }
-#endif  // DCHECK_IS_ON()
-
   TRACE_EVENT0("blink,blink_style",
                "StyleEngine::scheduleInvalidationsForRuleSets");
 
