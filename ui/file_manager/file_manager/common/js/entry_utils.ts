@@ -17,7 +17,7 @@ import {VolumeManagerCommon} from './volume_manager_types.js';
 /**
  * Type guard used to identify if a generic Entry is actually a DirectoryEntry.
  */
-export function isFileSystemDirectoryEntry(entry: Entry|FilesAppEntry):
+export function isDirectoryEntry(entry: Entry|FilesAppEntry):
     entry is(DirectoryEntry | FilesAppDirEntry) {
   return entry.isDirectory;
 }
@@ -25,8 +25,7 @@ export function isFileSystemDirectoryEntry(entry: Entry|FilesAppEntry):
 /**
  * Type guard used to identify if a generic Entry is actually a FileEntry.
  */
-export function isFileSystemFileEntry(entry: Entry):
-    entry is FileSystemFileEntry {
+export function isFileEntry(entry: Entry): entry is FileEntry {
   return entry.isFile;
 }
 
@@ -435,7 +434,7 @@ export function isDescendantEntry(
             return true;
           }
 
-          return isFileSystemDirectoryEntry(volumeEntry) &&
+          return isDirectoryEntry(volumeEntry) &&
               isDescendantEntry(volumeEntry, childEntry);
         });
   }
@@ -736,7 +735,7 @@ export function readEntriesRecursively(
           entriesCallback(entries);
           for (let i = 0; i < entries.length; i++) {
             const entry = entries[i];
-            if (entry && isFileSystemDirectoryEntry(entry) &&
+            if (entry && isDirectoryEntry(entry) &&
                 (maxDirDepth === -1 || depth < maxDirDepth)) {
               processEntry(entry, depth + 1);
             }
@@ -777,13 +776,13 @@ export function unwrapEntry<T extends AllEntryTypes>(entry: T): AllEntryTypes {
 
   const nativeEntry = 'getNativeEntry' in entry && entry.getNativeEntry();
   if (nativeEntry) {
-    if (isFileSystemDirectoryEntry(nativeEntry)) {
+    if (isDirectoryEntry(nativeEntry)) {
       return nativeEntry;
     }
     return nativeEntry;
   }
 
-  if (isFileSystemDirectoryEntry(entry)) {
+  if (isDirectoryEntry(entry)) {
     return entry;
   }
 

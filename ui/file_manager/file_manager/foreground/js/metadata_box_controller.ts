@@ -8,7 +8,7 @@
  * @suppress {checkTypes}
  */
 
-import {isFileSystemDirectoryEntry, isSameEntry, unwrapEntry} from '../../common/js/entry_utils.js';
+import {isDirectoryEntry, isSameEntry, unwrapEntry} from '../../common/js/entry_utils.js';
 import {FileType} from '../../common/js/file_type.js';
 import {TrashEntry} from '../../common/js/trash.js';
 import {util} from '../../common/js/util.js';
@@ -118,7 +118,7 @@ export class MetadataBoxController {
     const type = FileType.getType(entry).type;
     const item = items[0];
 
-    if (isFileSystemDirectoryEntry(entry)) {
+    if (isDirectoryEntry(entry)) {
       this.setDirectorySize_(entry, isSameEntry);
     } else if (item?.size) {
       this.metadataBox.size =
@@ -228,7 +228,7 @@ export class MetadataBoxController {
    * enables the loading animation.
    */
   private setDirectorySize_(entry: DirectoryEntry, sameEntry: boolean) {
-    if (!isFileSystemDirectoryEntry(entry)) {
+    if (!isDirectoryEntry(entry)) {
       return;
     }
     const directoryEntry = unwrapEntry(entry);
