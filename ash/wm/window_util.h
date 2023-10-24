@@ -131,7 +131,7 @@ bool IsAnyWindowDragged();
 
 // Returns the top window on MRU window list, or null if the list is empty.
 aura::Window* GetTopWindow();
-aura::Window* GetTopNonFloatedWindow();
+ASH_EXPORT aura::Window* GetTopNonFloatedWindow();
 
 // Returns the floated window for the active desk if it exists.
 ASH_EXPORT aura::Window* GetFloatedWindowForActiveDesk();

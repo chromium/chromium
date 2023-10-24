@@ -100,4 +100,47 @@ TEST_F(ArcWmMetricsTest, TestWindowCloseDelayMetrics) {
   histogram_tester.ExpectTotalCount(histogram_name, 1);
 }
 
+TEST_F(ArcWmMetricsTest, TestWindowEnterTabletModeDelayMetrics) {
+  ash::AppType app_type = ash::AppType::ARC_APP;
+  auto window = CreateAppWindow(gfx::Rect(0, 0, 100, 100), app_type);
+  window->Show();
+
+  base::HistogramTester histogram_tester;
+  const auto histogram_name =
+      ArcWmMetrics::GetWindowEnterTabletModeTimeHistogramName(app_type);
+  histogram_tester.ExpectTotalCount(histogram_name, 0);
+
+  ash::TabletModeControllerTestApi().EnterTabletMode();
+  histogram_tester.ExpectTotalCount(histogram_name, 1);
+
+  // Window maximizing histogram should not record data.
+  histogram_tester.ExpectTotalCount(
+      ArcWmMetrics::GetWindowMaximizedTimeHistogramName(app_type), 0);
+}
+
+TEST_F(ArcWmMetricsTest, TestMultipleWindowsEnterTabletModeDelayMetrics) {
+  auto lower_window =
+      CreateAppWindow(gfx::Rect(0, 0, 100, 100), ash::AppType::BROWSER);
+  lower_window->Show();
+  auto upper_window =
+      CreateAppWindow(gfx::Rect(0, 0, 100, 100), ash::AppType::ARC_APP);
+  upper_window->Show();
+
+  base::HistogramTester histogram_tester;
+  const auto histogram_name_lower_window =
+      ArcWmMetrics::GetWindowEnterTabletModeTimeHistogramName(
+          ash::AppType::BROWSER);
+  const auto histogram_name_upper_window =
+      ArcWmMetrics::GetWindowEnterTabletModeTimeHistogramName(
+          ash::AppType::ARC_APP);
+
+  histogram_tester.ExpectTotalCount(histogram_name_lower_window, 0);
+  histogram_tester.ExpectTotalCount(histogram_name_upper_window, 0);
+
+  // Only the data of upper window should be recorded.
+  ash::TabletModeControllerTestApi().EnterTabletMode();
+  histogram_tester.ExpectTotalCount(histogram_name_lower_window, 0);
+  histogram_tester.ExpectTotalCount(histogram_name_upper_window, 1);
+}
+
 }  // namespace arc
