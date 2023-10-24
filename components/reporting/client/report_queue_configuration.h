@@ -92,7 +92,7 @@ class ReportQueueConfiguration {
   //   if (!config_result.ok()) {
   //     return config_result.status();
   //   }
-  //   auto config = config_result.ValueOrDie();
+  //   auto config = config_result.value();
   static Builder Create(const Settings& settings);
 
   // Deprecated and should not be used. Use `Create({settings})` instead.

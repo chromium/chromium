@@ -61,15 +61,15 @@ MATCHER_P(ResponseEquals,
   if (!arg.ok()) {
     return false;
   }
-  if (arg.ValueOrDie().sequence_information.GetTypeName() !=
+  if (arg.value().sequence_information.GetTypeName() !=
       expected.sequence_information.GetTypeName()) {
     return false;
   }
-  if (arg.ValueOrDie().sequence_information.SerializeAsString() !=
+  if (arg.value().sequence_information.SerializeAsString() !=
       expected.sequence_information.SerializeAsString()) {
     return false;
   }
-  return arg.ValueOrDie().force_confirm == expected.force_confirm;
+  return arg.value().force_confirm == expected.force_confirm;
 }
 
 class MockFileUploadDelegate : public FileUploadJob::Delegate {

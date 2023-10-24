@@ -16,7 +16,7 @@
 //
 //  StatusOr<float> result = DoBigCalculationThatCouldFail();
 //  if (result.ok()) {
-//    float answer = result.ValueOrDie();
+//    float answer = result.value();
 //    printf("Big calculation yielded: %f", answer);
 //  } else {
 //    LOG(ERROR) << result.status();
@@ -26,7 +26,7 @@
 //
 //  StatusOr<Foo*> result = FooFactory::MakeNewFoo(arg);
 //  if (result.ok()) {
-//    std::unique_ptr<Foo> foo(result.ValueOrDie());
+//    std::unique_ptr<Foo> foo(result.value());
 //    foo->DoSomethingCool();
 //  } else {
 //    LOG(ERROR) << result.status();
@@ -36,7 +36,7 @@
 //
 //  StatusOr<std::unique_ptr<Foo>> result = FooFactory::MakeNewFoo(arg);
 //  if (result.ok()) {
-//    std::unique_ptr<Foo> foo = std::move(result.ValueOrDie());
+//    std::unique_ptr<Foo> foo = std::move(result.value());
 //    foo->DoSomethingCool();
 //  } else {
 //    LOG(ERROR) << result.status();
@@ -98,7 +98,7 @@ class [[nodiscard]] StatusOr {
   StatusOr() : expected_(internal::StatusOrHelper::NotInitializedStatus()) {}
 
   // Constructs a new StatusOr with the given non-ok status. After calling
-  // this constructor, calls to ValueOrDie() will CHECK-fail.
+  // this constructor, calls to value() will CHECK-fail.
   //
   // This constructor is not declared explicit so that a function with a return
   // type of |StatusOr<T>| can return a Status object, and the status will be
@@ -114,7 +114,7 @@ class [[nodiscard]] StatusOr {
 
   // Constructs a StatusOr object that contains |value|. The resulting object
   // is considered to have an OK status. The wrapped element can be accessed
-  // with ValueOrDie().
+  // with value().
   //
   // This constructor is made implicit so that a function with a return type of
   // |StatusOr<T>| can return an object of type |U&&|, implicitly converting
@@ -205,73 +205,13 @@ class [[nodiscard]] StatusOr {
     return (expected_.has_value() ? Status::StatusOK() : expected_.error());
   }
 
-  // Gets the stored |T| value.
-  //
-  // This method should only be called if this StatusOr object's status is OK
-  // (i.e. a call to ok() returns true), otherwise this call will abort.
-  [[nodiscard]] const T& ValueOrDie() const& {
-    if (!ok()) {
-      internal::StatusOrHelper::Crash(expected_.error());
-    }
-    return expected_.value();
-  }
-
-  // Gets a mutable reference to the stored |T| value.
-  //
-  // This method should only be called if this StatusOr object's status is OK
-  // (i.e. a call to ok() returns true), otherwise this call will abort.
-  [[nodiscard]] T& ValueOrDie() & {
-    if (!ok()) {
-      internal::StatusOrHelper::Crash(expected_.error());
-    }
-    return expected_.value();
-  }
-
-  // Moves and returns the internally-stored |T| value.
-  //
-  // This method should only be called if this StatusOr object's status is OK
-  // (i.e. a call to ok() returns true), otherwise this call will abort. The
-  // StatusOr object is invalidated after this call and will be updated to
-  // contain a non-OK status with a |error::UNKNOWN| error code.
-  [[nodiscard]] T ValueOrDie() && {
-    if (!ok()) {
-      internal::StatusOrHelper::Crash(expected_.error());
-    }
-
-    // Invalidate this StatusOr object before returning control to caller.
-    StatusResetter set_moved_status(this,
-                                    internal::StatusOrHelper::MovedOutStatus());
-    return std::move(expected_.value());
-  }
+  // Proxies of `base::expected<T, Status>::value`. They would crash if it does
+  // not have a value.
+  [[nodiscard]] const T& value() const& { return expected_.value(); }
+  [[nodiscard]] T& value() & { return expected_.value(); }
+  [[nodiscard]] T value() && { return std::move(expected_).value(); }
 
  private:
-  class StatusResetter {
-   public:
-    StatusResetter(StatusOr<T>* status_or,
-                   const base::unexpected<Status>& reset_to_status)
-        : status_or_(status_or), reset_to_status_(reset_to_status) {}
-    StatusResetter(const StatusResetter& other) = delete;
-    StatusResetter& operator=(const StatusResetter& other) = delete;
-    ~StatusResetter() {
-      status_or_->OverwriteValueWithStatus(std::move(reset_to_status_));
-    }
-
-   private:
-    const raw_ptr<StatusOr<T>> status_or_;
-    base::unexpected<Status> reset_to_status_;
-  };
-
-  // Under the assumption that |this| is currently holding a value, resets the
-  // |value_| member and sets |status_| to indicate that |this| does not have
-  // a value.
-  template <class U>
-  void OverwriteValueWithStatus(U&& status) {
-    if (!ok()) {
-      LOG(FATAL) << "Object does not have a value to change from";
-    }
-    expected_ = std::forward<U>(status);
-  }
-
   base::expected<T, Status> expected_;
 };
 

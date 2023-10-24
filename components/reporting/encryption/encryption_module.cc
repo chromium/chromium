@@ -51,7 +51,7 @@ EncryptionModule::EncryptionModule(base::TimeDelta renew_encryption_key_period)
                 "Public key id types must match");
   auto encryptor_result = Encryptor::Create();
   CHECK_OK(encryptor_result) << encryptor_result.status();
-  encryptor_ = std::move(encryptor_result.ValueOrDie());
+  encryptor_ = std::move(encryptor_result.value());
 }
 
 EncryptionModule::~EncryptionModule() = default;
@@ -69,10 +69,9 @@ void EncryptionModule::EncryptRecordImpl(
           return;
         }
         base::ThreadPool::PostTask(
-            FROM_HERE,
-            base::BindOnce(&AddToRecord, record,
-                           base::Unretained(handle_result.ValueOrDie()),
-                           std::move(cb)));
+            FROM_HERE, base::BindOnce(&AddToRecord, record,
+                                      base::Unretained(handle_result.value()),
+                                      std::move(cb)));
       },
       std::string(record), std::move(cb)));
 }

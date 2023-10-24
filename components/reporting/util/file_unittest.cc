@@ -33,7 +33,7 @@ void RemoveAndTruncateTest(const base::FilePath& file_path,
   const auto read_status = MaybeReadFile(file_path, 0);
   ASSERT_OK(read_status) << read_status.status();
   ASSERT_THAT(
-      read_status.ValueOrDie(),
+      read_status.value(),
       StrEq(
           &kMultiLineData[expected_lines_removed * kMultiLineDataLineLength]));
 }
@@ -143,7 +143,7 @@ TEST(FileTest, ReadWriteFile) {
 
   auto read_status = MaybeReadFile(file_path, /*offset=*/0);
   ASSERT_OK(read_status) << read_status.status();
-  EXPECT_EQ(read_status.ValueOrDie(), kWriteDataOne);
+  EXPECT_EQ(read_status.value(), kWriteDataOne);
 
   // Overwrite file.
   write_status = MaybeWriteFile(file_path, kWriteDataTwo);
@@ -151,7 +151,7 @@ TEST(FileTest, ReadWriteFile) {
 
   read_status = MaybeReadFile(file_path, /*offset=*/0);
   ASSERT_OK(read_status) << read_status.status();
-  EXPECT_EQ(read_status.ValueOrDie(), kWriteDataTwo);
+  EXPECT_EQ(read_status.value(), kWriteDataTwo);
 
   // Read file at an out of bounds index
   read_status = MaybeReadFile(file_path, kOverFlowPos);
@@ -175,12 +175,12 @@ TEST(FileTest, AppendLine) {
   status = AppendLine(file_path, kWriteDataOne);
   auto read_status = MaybeReadFile(file_path, /*offset=*/0);
   ASSERT_OK(read_status) << read_status.status();
-  ASSERT_EQ(read_status.ValueOrDie(), base::StrCat({kWriteDataOne, "\n"}));
+  ASSERT_EQ(read_status.value(), base::StrCat({kWriteDataOne, "\n"}));
 
   status = AppendLine(file_path, kWriteDataTwo);
   read_status = MaybeReadFile(file_path, /*offset=*/0);
   ASSERT_OK(read_status) << read_status.status();
-  ASSERT_EQ(read_status.ValueOrDie(),
+  ASSERT_EQ(read_status.value(),
             base::StrCat({kWriteDataOne, "\n", kWriteDataTwo, "\n"}));
 }
 

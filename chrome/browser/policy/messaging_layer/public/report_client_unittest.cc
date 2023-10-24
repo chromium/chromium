@@ -66,7 +66,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
       // Create decryption module.
       auto decryptor_result = test::Decryptor::Create();
       ASSERT_OK(decryptor_result.status()) << decryptor_result.status();
-      decryptor_ = std::move(decryptor_result.ValueOrDie());
+      decryptor_ = std::move(decryptor_result.value());
       // Prepare the key.
       signed_encryption_key_ = GenerateAndSignKey();
     } else {
@@ -111,7 +111,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
         prepare_key_pair.cb());
     auto prepare_key_result = prepare_key_pair.result();
     CHECK_OK(prepare_key_result) << prepare_key_result.status();
-    public_key_id = prepare_key_result.ValueOrDie();
+    public_key_id = prepare_key_result.value();
     // Prepare public key to be delivered to Storage.
     SignedEncryptionInfo signed_encryption_key;
     signed_encryption_key.set_public_asymmetric_key(
@@ -146,7 +146,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
             .SetPolicyCheckCallback(policy_checker_callback_)
             .Build();
     EXPECT_TRUE(config_result.ok()) << config_result.status();
-    return CreateQueueWithConfig(std::move(config_result.ValueOrDie()));
+    return CreateQueueWithConfig(std::move(config_result.value()));
   }
 
   StatusOr<std::unique_ptr<ReportQueue>> CreateQueueWithConfig(
@@ -174,8 +174,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
             .Build();
     EXPECT_TRUE(config_result.ok()) << config_result.status();
 
-    return CreateSpeculativeQueueWithConfig(
-        std::move(config_result.ValueOrDie()));
+    return CreateSpeculativeQueueWithConfig(std::move(config_result.value()));
   }
 
   std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>
@@ -188,7 +187,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
         std::move(report_queue_config));
     EXPECT_TRUE(speculative_queue_result.ok())
         << speculative_queue_result.status();
-    return std::move(speculative_queue_result.ValueOrDie());
+    return std::move(speculative_queue_result.value());
   }
 
   bool is_encryption_enabled() const { return GetParam(); }
@@ -297,9 +296,9 @@ TEST_P(ReportClientTest, CreatesReportQueueWithDMToken) {
           .Build();
   EXPECT_OK(config_result);
   auto report_queue_result =
-      CreateQueueWithConfig(std::move(config_result.ValueOrDie()));
+      CreateQueueWithConfig(std::move(config_result.value()));
   ASSERT_OK(report_queue_result);
-  ASSERT_THAT(std::move(report_queue_result.ValueOrDie()).get(), Ne(nullptr));
+  ASSERT_THAT(std::move(report_queue_result.value()).get(), Ne(nullptr));
   EXPECT_THAT(report_queue_config_->dm_token(), StrEq(random_dm_token));
 }
 
@@ -308,7 +307,7 @@ TEST_P(ReportClientTest, CreatesReportQueueWithDMToken) {
 TEST_P(ReportClientTest, CreatesReportQueueGivenEventType) {
   auto report_queue_result = CreateQueue();
   ASSERT_OK(report_queue_result);
-  ASSERT_THAT(std::move(report_queue_result.ValueOrDie()).get(), Ne(nullptr));
+  ASSERT_THAT(std::move(report_queue_result.value()).get(), Ne(nullptr));
   EXPECT_THAT(report_queue_config_->dm_token(), StrEq(kDMToken));
 }
 
@@ -333,8 +332,8 @@ TEST_P(ReportClientTest, CreatesTwoDifferentReportQueues) {
   auto report_queue_result_2 = CreateQueue();
   ASSERT_OK(report_queue_result_2);
 
-  auto report_queue_1 = std::move(report_queue_result_1.ValueOrDie());
-  auto report_queue_2 = std::move(report_queue_result_2.ValueOrDie());
+  auto report_queue_1 = std::move(report_queue_result_1.value());
+  auto report_queue_2 = std::move(report_queue_result_2.value());
   ASSERT_THAT(report_queue_1.get(), Ne(nullptr));
   ASSERT_THAT(report_queue_2.get(), Ne(nullptr));
 
@@ -352,7 +351,7 @@ TEST_P(ReportClientTest, EnqueueMessageAndUpload) {
   ASSERT_OK(report_queue_result);
 
   test::TestEvent<Status> enqueue_record_event;
-  std::move(report_queue_result.ValueOrDie())
+  std::move(report_queue_result.value())
       ->Enqueue("Record", FAST_BATCH, enqueue_record_event.cb());
 
   if (is_encryption_enabled()) {

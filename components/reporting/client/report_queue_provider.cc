@@ -160,8 +160,8 @@ void ReportQueueProvider::CreateNewQueue(
                   base::ThreadPool::PostTask(
                       FROM_HERE,
                       base::BindOnce(&ReportQueueImpl::Create,
-                                     std::move(config_result.ValueOrDie()),
-                                     storage, std::move(cb)));
+                                     std::move(config_result.value()), storage,
+                                     std::move(cb)));
                 },
                 provider->storage_, std::move(cb));
 
@@ -270,7 +270,7 @@ void ReportQueueProvider::OnStorageModuleConfigured(
   // Note that `CreateNewQueue` call offsets heavy work to arbitrary threads.
   CHECK(!storage_) << "Storage module already recorded";
   OnInitCompleted();
-  storage_ = storage_result.ValueOrDie();
+  storage_ = storage_result.value();
   while (!create_request_queue_.empty()) {
     auto& report_queue_request = create_request_queue_.front();
     CreateNewQueue(report_queue_request->release_config(),

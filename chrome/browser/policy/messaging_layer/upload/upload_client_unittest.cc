@@ -204,7 +204,7 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   StatusOr<std::unique_ptr<UploadClient>> upload_client_result = e.result();
   ASSERT_OK(upload_client_result) << upload_client_result.status();
 
-  auto upload_client = std::move(upload_client_result.ValueOrDie());
+  auto upload_client = std::move(upload_client_result.value());
   // config_file_version is set to 0 for testing. The default value is -1 and we
   // want to override it.
   auto enqueue_result = upload_client->EnqueueUpload(
