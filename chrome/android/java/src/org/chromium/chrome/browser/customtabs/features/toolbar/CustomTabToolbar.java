@@ -1495,7 +1495,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             WebContents webContents = tab.getWebContents();
             if (webContents != null) {
                 BrowserContextHandle originalBrowserContext =
-                        tab.isIncognito() ? Profile.fromWebContents(webContents) : null;
+                        tab.isIncognito()
+                                ? Profile.fromWebContents(webContents).getOriginalProfile()
+                                : null;
                 if (mCookieControlsBridge != null) {
                     mCookieControlsBridge.updateWebContents(webContents, originalBrowserContext);
                 } else {
