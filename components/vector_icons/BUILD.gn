@@ -233,7 +233,6 @@ aggregate_vector_icons("components_vector_icons") {
     "vr_headset_off_chrome_refresh.icon",
     "warning.icon",
     "warning_outline.icon",
-    "wifi_add.icon",
   ]
 
   if (is_chromeos_ash) {

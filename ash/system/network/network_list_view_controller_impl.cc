@@ -24,10 +24,8 @@
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/tray/tray_info_label.h"
 #include "ash/system/tray/tri_view.h"
-#include "base/feature_list.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-shared.h"
@@ -36,7 +34,6 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/controls/separator.h"
 
 namespace ash {
 
@@ -209,45 +206,25 @@ void NetworkListViewControllerImpl::OnGetNetworkStateList(
 
   UpdateNetworkTypeExistence(networks);
 
-  if (features::IsQsRevampEnabled()) {
-    network_detailed_network_view()->ReorderFirstListView(index++);
+  network_detailed_network_view()->ReorderFirstListView(index++);
 
-    // If `QsRevamp` is enabled, the warning message entry and the ethernet
-    // entry are placed in the `network_detailed_network_view()`'s
-    // `first_list_view_`. Here this index is used to indicate the current
-    // position a entry will be added to or reordered in the `first_list_view_`.
-    size_t first_list_item_index = 0;
+  // The warning message entry and the ethernet entry are placed in the
+  // `network_detailed_network_view()`'s `first_list_view_`. Here this index is
+  // used to indicate the current position a entry will be added to or reordered
+  // in the `first_list_view_`.
+  size_t first_list_item_index = 0;
 
-    // Show a warning that the connection might be monitored if connected to a
-    // VPN or if the default network has a proxy installed.
-    first_list_item_index =
-        ShowConnectionWarningIfNetworkMonitored(first_list_item_index);
+  // Show a warning that the connection might be monitored if connected to a
+  // VPN or if the default network has a proxy installed.
+  first_list_item_index =
+      ShowConnectionWarningIfNetworkMonitored(first_list_item_index);
 
-    // Show Ethernet section first.
-    first_list_item_index = CreateItemViewsIfMissingAndReorder(
-        NetworkType::kEthernet, first_list_item_index, networks,
-        &previous_network_views);
-
-  } else {
-    // Show a warning that the connection might be monitored if connected to a
-    // VPN or if the default network has a proxy installed.
-    index = ShowConnectionWarningIfNetworkMonitored(index);
-
-    // Show Ethernet section first.
-    index = CreateItemViewsIfMissingAndReorder(
-        NetworkType::kEthernet, index, networks, &previous_network_views);
-  }
+  // Show Ethernet section first.
+  first_list_item_index = CreateItemViewsIfMissingAndReorder(
+      NetworkType::kEthernet, first_list_item_index, networks,
+      &previous_network_views);
 
   if (ShouldMobileDataSectionBeShown()) {
-    // Add separator if mobile section is not the first view child, else
-    // delete unused separator.
-    if (index > 0 && !features::IsQsRevampEnabled()) {
-      index =
-          CreateSeparatorIfMissingAndReorder(index, &mobile_separator_view_);
-    } else {
-      RemoveAndResetViewIfExists(&mobile_separator_view_);
-    }
-
     if (!mobile_header_view_) {
       RecordDetailedViewSection(DetailedViewSection::kMobileSection);
       mobile_header_view_ =
@@ -262,51 +239,31 @@ void NetworkListViewControllerImpl::OnGetNetworkStateList(
     }
 
     UpdateMobileSection();
-    if (features::IsQsRevampEnabled()) {
-      network_detailed_network_view()->ReorderMobileTopContainer(index++);
+    network_detailed_network_view()->ReorderMobileTopContainer(index++);
 
-      size_t mobile_item_index = 0;
-      mobile_item_index = CreateItemViewsIfMissingAndReorder(
-          GetMobileSectionNetworkType(), mobile_item_index, networks,
-          &previous_network_views);
+    size_t mobile_item_index = 0;
+    mobile_item_index = CreateItemViewsIfMissingAndReorder(
+        GetMobileSectionNetworkType(), mobile_item_index, networks,
+        &previous_network_views);
 
-      // Add mobile status message to NetworkDetailedNetworkView's
-      // `mobile_network_list_view_` if it exist.
-      if (mobile_status_message_) {
-        network_detailed_network_view()
-            ->GetNetworkList(GetMobileSectionNetworkType())
-            ->ReorderChildView(mobile_status_message_, mobile_item_index++);
-      }
-
-      if (ShouldAddESimEntry()) {
-        mobile_item_index = CreateConfigureNetworkEntry(
-            &add_esim_entry_, GetMobileSectionNetworkType(), mobile_item_index);
-      } else {
-        RemoveAndResetViewIfExists(&add_esim_entry_);
-      }
-
-      network_detailed_network_view()->ReorderMobileListView(index++);
-    } else {
+    // Add mobile status message to NetworkDetailedNetworkView's
+    // `mobile_network_list_view_` if it exist.
+    if (mobile_status_message_) {
       network_detailed_network_view()
           ->GetNetworkList(GetMobileSectionNetworkType())
-          ->ReorderChildView(mobile_header_view_, index++);
-
-      index = CreateItemViewsIfMissingAndReorder(GetMobileSectionNetworkType(),
-                                                 index, networks,
-                                                 &previous_network_views);
-
-      // Add mobile status message to NetworkDetailedNetworkView scroll list if
-      // it exist.
-      if (mobile_status_message_) {
-        network_detailed_network_view()
-            ->GetNetworkList(GetMobileSectionNetworkType())
-            ->ReorderChildView(mobile_status_message_, index++);
-      }
+          ->ReorderChildView(mobile_status_message_, mobile_item_index++);
     }
 
+    if (ShouldAddESimEntry()) {
+      mobile_item_index = CreateConfigureNetworkEntry(
+          &add_esim_entry_, GetMobileSectionNetworkType(), mobile_item_index);
+    } else {
+      RemoveAndResetViewIfExists(&add_esim_entry_);
+    }
+
+    network_detailed_network_view()->ReorderMobileListView(index++);
   } else {
     RemoveAndResetViewIfExists(&mobile_header_view_);
-    RemoveAndResetViewIfExists(&mobile_separator_view_);
   }
 
   if (features::IsInstantHotspotRebrandEnabled()) {
@@ -330,73 +287,51 @@ void NetworkListViewControllerImpl::OnGetNetworkStateList(
     }
   }
 
-  if (index > 0 && !features::IsQsRevampEnabled()) {
-    index = CreateSeparatorIfMissingAndReorder(index, &wifi_separator_view_);
-  } else {
-    RemoveAndResetViewIfExists(&wifi_separator_view_);
-  }
-
   UpdateWifiSection();
-
-  if (features::IsQsRevampEnabled()) {
-    network_detailed_network_view()->ReorderNetworkTopContainer(index++);
-  } else {
-    network_detailed_network_view()
-        ->GetNetworkList(NetworkType::kWiFi)
-        ->ReorderChildView(wifi_header_view_, index++);
-  }
+  network_detailed_network_view()->ReorderNetworkTopContainer(index++);
 
   size_t network_item_index = 0;
-  // In the revamped view the wifi networks are grouped into known and unknown
-  // groups.
-  if (features::IsQsRevampEnabled()) {
-    std::vector<NetworkStatePropertiesPtr> known_networks;
-    std::vector<NetworkStatePropertiesPtr> unknown_networks;
-    for (NetworkStatePropertiesPtr& network : networks) {
-      if (network->source != OncSource::kNone &&
-          NetworkTypeMatchesType(network->type, NetworkType::kWiFi)) {
-        known_networks.push_back(std::move(network));
-      } else if (NetworkTypeMatchesType(network->type, NetworkType::kWiFi)) {
-        unknown_networks.push_back(std::move(network));
-      }
+  // The wifi networks are grouped into known and unknown groups.
+  std::vector<NetworkStatePropertiesPtr> known_networks;
+  std::vector<NetworkStatePropertiesPtr> unknown_networks;
+  for (NetworkStatePropertiesPtr& network : networks) {
+    if (network->source != OncSource::kNone &&
+        NetworkTypeMatchesType(network->type, NetworkType::kWiFi)) {
+      known_networks.push_back(std::move(network));
+    } else if (NetworkTypeMatchesType(network->type, NetworkType::kWiFi)) {
+      unknown_networks.push_back(std::move(network));
     }
-    if (!known_networks.empty()) {
-      network_item_index =
-          CreateWifiGroupHeader(network_item_index, /*is_known=*/true);
-      network_item_index = CreateItemViewsIfMissingAndReorder(
-          NetworkType::kWiFi, network_item_index, known_networks,
-          &previous_network_views);
-    } else {
-      RemoveAndResetViewIfExists(&known_header_);
-    }
-    if (!unknown_networks.empty()) {
-      network_item_index =
-          CreateWifiGroupHeader(network_item_index, /*is_known=*/false);
-      network_item_index = CreateItemViewsIfMissingAndReorder(
-          NetworkType::kWiFi, network_item_index, unknown_networks,
-          &previous_network_views);
-    } else {
-      RemoveAndResetViewIfExists(&unknown_header_);
-    }
-    if (is_wifi_enabled_) {
-      network_item_index = CreateConfigureNetworkEntry(
-          &join_wifi_entry_, NetworkType::kWiFi, network_item_index);
-    } else {
-      RemoveAndResetViewIfExists(&join_wifi_entry_);
-    }
-    network_detailed_network_view()->ReorderNetworkListView(index++);
-
-  } else {
-    index = CreateItemViewsIfMissingAndReorder(
-        NetworkType::kWiFi, index, networks, &previous_network_views);
   }
+  if (!known_networks.empty()) {
+    network_item_index =
+        CreateWifiGroupHeader(network_item_index, /*is_known=*/true);
+    network_item_index = CreateItemViewsIfMissingAndReorder(
+        NetworkType::kWiFi, network_item_index, known_networks,
+        &previous_network_views);
+  } else {
+    RemoveAndResetViewIfExists(&known_header_);
+  }
+  if (!unknown_networks.empty()) {
+    network_item_index =
+        CreateWifiGroupHeader(network_item_index, /*is_known=*/false);
+    network_item_index = CreateItemViewsIfMissingAndReorder(
+        NetworkType::kWiFi, network_item_index, unknown_networks,
+        &previous_network_views);
+  } else {
+    RemoveAndResetViewIfExists(&unknown_header_);
+  }
+  if (is_wifi_enabled_) {
+    network_item_index = CreateConfigureNetworkEntry(
+        &join_wifi_entry_, NetworkType::kWiFi, network_item_index);
+  } else {
+    RemoveAndResetViewIfExists(&join_wifi_entry_);
+  }
+  network_detailed_network_view()->ReorderNetworkListView(index++);
 
   if (wifi_status_message_) {
     network_detailed_network_view()
         ->GetNetworkList(NetworkType::kWiFi)
-        ->ReorderChildView(wifi_status_message_, features::IsQsRevampEnabled()
-                                                     ? network_item_index++
-                                                     : index++);
+        ->ReorderChildView(wifi_status_message_, network_item_index++);
   }
 
   UpdateScanningBarAndTimer();
@@ -661,39 +596,6 @@ bool NetworkListViewControllerImpl::ShouldTetherHostsSectionBeShown() {
   return true;
 }
 
-size_t NetworkListViewControllerImpl::CreateSeparatorIfMissingAndReorder(
-    size_t index,
-    views::Separator** separator_view) {
-  // Separator view should never be the first view in the list.
-  DCHECK(index);
-  DCHECK(separator_view);
-
-  if (*separator_view) {
-    network_detailed_network_view()
-        ->GetNetworkList(NetworkType::kWiFi)
-        ->ReorderChildView(*separator_view, index++);
-    return index;
-  }
-
-  std::unique_ptr<views::Separator> separator =
-      base::WrapUnique(TrayPopupUtils::CreateListSubHeaderSeparator());
-
-  if (separator_view == &wifi_separator_view_) {
-    separator->SetID(
-        static_cast<int>(NetworkListViewControllerViewChildId::kWifiSeparator));
-  } else if (separator_view == &mobile_separator_view_) {
-    separator->SetID(static_cast<int>(
-        NetworkListViewControllerViewChildId::kMobileSeparator));
-  } else {
-    NOTREACHED();
-  }
-
-  *separator_view = network_detailed_network_view()
-                        ->GetNetworkList(NetworkType::kWiFi)
-                        ->AddChildViewAt(std::move(separator), index++);
-  return index;
-}
-
 size_t NetworkListViewControllerImpl::CreateWifiGroupHeader(
     size_t index,
     const bool is_known) {
@@ -752,22 +654,6 @@ void NetworkListViewControllerImpl::UpdateMobileSection() {
   if (!mobile_header_view_) {
     return;
   }
-
-  const bool is_add_esim_enabled =
-      is_mobile_network_enabled_ && !IsCellularDeviceInhibited();
-
-  bool is_add_esim_visible = IsESimSupported();
-  const GlobalPolicy* global_policy = model()->global_policy();
-
-  // Adding new cellular networks is disallowed when only policy cellular
-  // networks are allowed by admin.
-  if (!global_policy || global_policy->allow_only_policy_cellular_networks) {
-    is_add_esim_visible = false;
-  }
-
-  mobile_header_view_->SetAddESimButtonState(/*enabled=*/is_add_esim_enabled,
-                                             /*visible=*/is_add_esim_visible);
-
   UpdateMobileToggleAndSetStatusMessage();
 }
 
@@ -784,22 +670,18 @@ void NetworkListViewControllerImpl::UpdateWifiSection() {
                                       /*animate_toggle=*/false);
   }
 
-  wifi_header_view_->SetJoinWifiButtonState(/*enabled=*/is_wifi_enabled_,
-                                            /*visible=*/true);
   wifi_header_view_->SetToggleVisibility(/*visible=*/true);
   wifi_header_view_->SetToggleState(/*enabled=*/true,
                                     /*is_on=*/is_wifi_enabled_,
                                     /*animate_toggle=*/true);
 
-    network_detailed_network_view()->UpdateWifiStatus(is_wifi_enabled_);
+  network_detailed_network_view()->UpdateWifiStatus(is_wifi_enabled_);
 
   if (!is_wifi_enabled_) {
-    if (features::IsQsRevampEnabled()) {
-      return;
-    }
-    CreateInfoLabelIfMissingAndUpdate(IDS_ASH_STATUS_TRAY_NETWORK_WIFI_DISABLED,
-                                      &wifi_status_message_);
-  } else if (!has_wifi_networks_) {
+    return;
+  }
+
+  if (!has_wifi_networks_) {
     CreateInfoLabelIfMissingAndUpdate(IDS_ASH_STATUS_TRAY_NETWORK_WIFI_ENABLED,
                                       &wifi_status_message_);
   } else {
@@ -886,20 +768,14 @@ void NetworkListViewControllerImpl::UpdateMobileToggleAndSetStatusMessage() {
         return;
       }
 
-      // For QsRevamp: if `add_esim_entry_` is added, don't show the no mobile
-      // network label.
-      if (features::IsQsRevampEnabled() && ShouldAddESimEntry()) {
+      // If `add_esim_entry_` is added, don't show the no mobile network label.
+      if (ShouldAddESimEntry()) {
         RemoveAndResetViewIfExists(&mobile_status_message_);
         return;
       }
       CreateInfoLabelIfMissingAndUpdate(IDS_ASH_STATUS_TRAY_NO_MOBILE_NETWORKS,
                                         &mobile_status_message_);
       return;
-    }
-
-    if (!features::IsQsRevampEnabled()) {
-      CreateInfoLabelIfMissingAndUpdate(
-          IDS_ASH_STATUS_TRAY_NETWORK_MOBILE_DISABLED, &mobile_status_message_);
     }
     return;
   }
@@ -1062,13 +938,8 @@ void NetworkListViewControllerImpl::ShowConnectionWarning(
   label->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
   label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary));
-  if (chromeos::features::IsJellyEnabled()) {
-    label->SetAutoColorReadabilityEnabled(false);
-    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2, *label);
-  } else {
-    TrayPopupUtils::SetLabelFontList(
-        label.get(), TrayPopupUtils::FontStyle::kDetailedViewLabel);
-  }
+  label->SetAutoColorReadabilityEnabled(false);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2, *label);
   label->SetID(static_cast<int>(
       NetworkListViewControllerViewChildId::kConnectionWarningLabel));
   connection_warning_label_ = label.get();

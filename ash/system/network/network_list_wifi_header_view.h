@@ -13,6 +13,7 @@ namespace ash {
 
 // This class is the interface used to create network list header for Wifi
 // networks, and is responsible for the creation of wifi-specific buttons.
+// TODO(b/251724646): remove this interface after the QsRevamp clean up.
 class ASH_EXPORT NetworkListWifiHeaderView
     : public NetworkListNetworkHeaderView {
  public:
@@ -24,8 +25,6 @@ class ASH_EXPORT NetworkListWifiHeaderView
   NetworkListWifiHeaderView& operator=(const NetworkListWifiHeaderView&) =
       delete;
   ~NetworkListWifiHeaderView() override;
-
-  virtual void SetJoinWifiButtonState(bool enabled, bool visible) = 0;
 };
 
 }  // namespace ash

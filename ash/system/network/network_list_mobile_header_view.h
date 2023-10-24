@@ -13,6 +13,7 @@ namespace ash {
 
 // This class is the interface used to create network list header for Mobile
 // networks, and is responsible for the creation of mobile-specific buttons.
+// TODO(b/251724646): remove this interface after the QsRevamp clean up.
 class ASH_EXPORT NetworkListMobileHeaderView
     : public NetworkListNetworkHeaderView {
  public:
@@ -24,8 +25,6 @@ class ASH_EXPORT NetworkListMobileHeaderView
   NetworkListMobileHeaderView& operator=(const NetworkListMobileHeaderView&) =
       delete;
   ~NetworkListMobileHeaderView() override;
-
-  virtual void SetAddESimButtonState(bool enabled, bool visible) = 0;
 };
 
 }  // namespace ash
