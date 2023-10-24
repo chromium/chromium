@@ -56,7 +56,9 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
@@ -237,6 +239,14 @@ void MaybeRegisterChromeFeaturePromos(
   using user_education::FeaturePromoSpecification;
   using user_education::HelpBubbleArrow;
 
+  // This icon got updated, so select which is used based on whether refresh is
+  // enabled. Note that the WebUI refresh state is not taken into account, so
+  // this selection will affect both Views and WebUI help bubbles.
+  const gfx::VectorIcon* const kLightbulbOutlineIcon =
+      features::IsChromeRefresh2023()
+          ? &vector_icons::kLightbulbOutlineChromeRefreshIcon
+          : &vector_icons::kLightbulbOutlineIcon;
+
   // Verify that we haven't already registered the expected features.
   // TODO(dfried): figure out if we should do something more sophisticated here.
   if (registry.IsFeatureRegistered(
@@ -284,7 +294,7 @@ void MaybeRegisterChromeFeaturePromos(
                     kTabStripRegionElementId, IDS_TAB_GROUPS_NEW_GROUP_PROMO,
                     kTabGroupTutorialId)
                     .SetBubbleArrow(HelpBubbleArrow::kNone)
-                    .SetBubbleIcon(&vector_icons::kLightbulbOutlineIcon)));
+                    .SetBubbleIcon(kLightbulbOutlineIcon)));
 
   // kIPHDesktopCustomizeChromeFeature:
   registry.RegisterFeature(std::move(
@@ -333,7 +343,7 @@ void MaybeRegisterChromeFeaturePromos(
                 tutorial_service->LogIPHLinkClicked(tutorial_id, true);
               }))
           .SetBubbleArrow(HelpBubbleArrow::kNone)
-          .SetBubbleIcon(&vector_icons::kLightbulbOutlineIcon)
+          .SetBubbleIcon(kLightbulbOutlineIcon)
           .SetCustomActionIsDefault(true)
           .SetCustomActionDismissText(IDS_PROMO_SNOOZE_BUTTON)));
 
@@ -440,7 +450,7 @@ void MaybeRegisterChromeFeaturePromos(
           IDS_PASSWORD_MANAGER_IPH_CREATE_SHORTCUT_BODY,
           kPasswordManagerTutorialId)
           .SetBubbleArrow(HelpBubbleArrow::kBottomRight)
-          .SetBubbleIcon(&vector_icons::kLightbulbOutlineIcon)
+          .SetBubbleIcon(kLightbulbOutlineIcon)
           .SetBubbleTitleText(IDS_PASSWORD_MANAGER_IPH_CREATE_SHORTCUT_TITLE)));
 
   // kIPHPasswordSharingFeature:
@@ -452,7 +462,7 @@ void MaybeRegisterChromeFeaturePromos(
                     IDS_PASSWORD_MANAGER_IPH_SHARE_PASSWORD_BUTTON_SCREENREADER,
                     FeaturePromoSpecification::AcceleratorInfo())
                     .SetInAnyContext(true)
-                    .SetBubbleIcon(&vector_icons::kLightbulbOutlineIcon)
+                    .SetBubbleIcon(kLightbulbOutlineIcon)
                     .SetBubbleArrow(HelpBubbleArrow::kTopRight)));
 
   // kIPHPowerBookmarksSidePanelFeature:
@@ -526,7 +536,7 @@ void MaybeRegisterChromeFeaturePromos(
               }))
           .SetBubbleTitleText(IDS_COOKIE_CONTROLS_PROMO_TITLE)
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-          .SetBubbleIcon(&vector_icons::kLightbulbOutlineIcon)
+          .SetBubbleIcon(kLightbulbOutlineIcon)
           .SetCustomActionIsDefault(true)
           .SetCustomActionDismissText(
               IDS_COOKIE_CONTROLS_PROMO_CLOSE_BUTTON_TEXT)));
@@ -597,7 +607,7 @@ void MaybeRegisterChromeFeaturePromos(
           feature_engagement::kIPHSideSearchFeature, kSideSearchButtonElementId,
           IDS_SIDE_SEARCH_PROMO, kSideSearchTutorialId)
           .SetBubbleArrow(HelpBubbleArrow::kTopCenter)
-          .SetBubbleIcon(&vector_icons::kLightbulbOutlineIcon)));
+          .SetBubbleIcon(kLightbulbOutlineIcon)));
 
   // kIPHTabSearchFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
