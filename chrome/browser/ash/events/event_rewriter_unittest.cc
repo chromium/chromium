@@ -93,6 +93,28 @@ constexpr int kTouchpadId2 = 11;
 constexpr char kKbdDefaultCustomTopRowLayout[] =
     "01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f";
 
+class TestEventSink : public ui::EventSink {
+ public:
+  TestEventSink() = default;
+  TestEventSink(const TestEventSink&) = delete;
+  TestEventSink& operator=(const TestEventSink&) = delete;
+  ~TestEventSink() override = default;
+
+  // Returns the recorded events.
+  std::vector<std::unique_ptr<ui::Event>> TakeEvents() {
+    return std::move(events_);
+  }
+
+  // ui::EventSink:
+  ui::EventDispatchDetails OnEventFromSource(ui::Event* event) override {
+    events_.emplace_back(event->Clone());
+    return ui::EventDispatchDetails();
+  }
+
+ private:
+  std::vector<std::unique_ptr<ui::Event>> events_;
+};
+
 class TestEventRewriterContinuation
     : public ui::test::TestEventRewriterContinuation {
  public:
@@ -4419,36 +4441,11 @@ TEST_F(EventRewriterTest, TestRewriteNonNativeEvent) {
                                  (ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN));
 }
 
-// Keeps a buffer of handled events.
-class EventBuffer : public ui::test::TestEventProcessor {
- public:
-  EventBuffer() {}
-
-  EventBuffer(const EventBuffer&) = delete;
-  EventBuffer& operator=(const EventBuffer&) = delete;
-
-  ~EventBuffer() override {}
-
-  void PopEvents(std::vector<std::unique_ptr<ui::Event>>* events) {
-    events->clear();
-    events->swap(events_);
-  }
-
- private:
-  // ui::EventSink overrides:
-  ui::EventDispatchDetails OnEventFromSource(ui::Event* event) override {
-    events_.push_back(event->Clone());
-    return ui::EventDispatchDetails();
-  }
-
-  std::vector<std::unique_ptr<ui::Event>> events_;
-};
-
 // Tests of event rewriting that depend on the Ash window manager.
 class EventRewriterAshTest : public ChromeAshTestBase {
  public:
   EventRewriterAshTest()
-      : source_(&buffer_),
+      : source_(&sink_),
         fake_user_manager_(new FakeChromeUserManager),
         user_manager_enabler_(base::WrapUnique(fake_user_manager_.get())) {}
 
@@ -4509,8 +4506,8 @@ class EventRewriterAshTest : public ChromeAshTestBase {
     keyboard_settings->modifier_remappings[remap_from] = remap_to;
   }
 
-  void PopEvents(std::vector<std::unique_ptr<ui::Event>>* events) {
-    buffer_.PopEvents(events);
+  std::vector<std::unique_ptr<ui::Event>> TakeEvents() {
+    return sink_.TakeEvents();
   }
 
   void SetUp() override {
@@ -4557,7 +4554,7 @@ class EventRewriterAshTest : public ChromeAshTestBase {
   std::unique_ptr<InputDeviceSettingsController::ScopedResetterForTest>
       input_device_settings_controller_resetter_;
 
-  EventBuffer buffer_;
+  TestEventSink sink_;
   ui::test::TestEventSource source_;
 
   raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
@@ -4569,7 +4566,6 @@ class EventRewriterAshTest : public ChromeAshTestBase {
 TEST_F(EventRewriterAshTest, TopRowKeysAreFunctionKeys) {
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(1));
   wm::ActivateWindow(window.get());
-  std::vector<std::unique_ptr<ui::Event>> events;
 
   // Create a simulated keypress of F1 targetted at the window.
   ui::KeyEvent press_f1(ui::ET_KEY_PRESSED, ui::VKEY_F1, ui::DomCode::F1,
@@ -4583,25 +4579,29 @@ TEST_F(EventRewriterAshTest, TopRowKeysAreFunctionKeys) {
   keyboard_settings->top_row_are_fkeys = true;
   ui::EventDispatchDetails details = Send(&press_f1);
   ASSERT_FALSE(details.dispatcher_destroyed);
-  PopEvents(&events);
-  EXPECT_EQ(1u, events.size());
-  EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_F1,
-                                      ui::DomCode::F1, ui::EF_NONE,
-                                      ui::DomKey::F1, kNoScanCode),
-            GetKeyEventAsString(*static_cast<ui::KeyEvent*>(events[0].get())));
-
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(1u, events.size());
+    EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_F1,
+                                        ui::DomCode::F1, ui::EF_NONE,
+                                        ui::DomKey::F1, kNoScanCode),
+              GetKeyEventAsString(*events[0]->AsKeyEvent()));
+  }
   // If the pref isn't set when an event is sent to a regular window, F1 is
   // rewritten to the back key.
   send_function_keys_pref.SetValue(false);
   keyboard_settings->top_row_are_fkeys = false;
   details = Send(&press_f1);
   ASSERT_FALSE(details.dispatcher_destroyed);
-  PopEvents(&events);
-  EXPECT_EQ(1u, events.size());
-  EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_BROWSER_BACK,
-                                      ui::DomCode::BROWSER_BACK, ui::EF_NONE,
-                                      ui::DomKey::BROWSER_BACK, kNoScanCode),
-            GetKeyEventAsString(*static_cast<ui::KeyEvent*>(events[0].get())));
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(1u, events.size());
+    EXPECT_EQ(
+        GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_BROWSER_BACK,
+                                  ui::DomCode::BROWSER_BACK, ui::EF_NONE,
+                                  ui::DomKey::BROWSER_BACK, kNoScanCode),
+        GetKeyEventAsString(*events[0]->AsKeyEvent()));
+  }
 }
 
 // Parameterized version of test with the same name that accepts the
@@ -4885,15 +4885,14 @@ TEST_F(EventRewriterTest, DeprecatedAltClickGeneratesNotification) {
 
 TEST_F(EventRewriterAshTest, StickyKeyEventDispatchImpl) {
   // Test the actual key event dispatch implementation.
-  std::vector<std::unique_ptr<ui::Event>> events;
-
   SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
                                ui::DomKey::CONTROL);
-  PopEvents(&events);
-  EXPECT_EQ(1u, events.size());
-  EXPECT_EQ(ui::ET_KEY_PRESSED, events[0]->type());
-  EXPECT_EQ(ui::VKEY_CONTROL,
-            static_cast<ui::KeyEvent*>(events[0].get())->key_code());
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(1u, events.size());
+    ASSERT_EQ(ui::ET_KEY_PRESSED, events[0]->type());
+    EXPECT_EQ(ui::VKEY_CONTROL, events[0]->AsKeyEvent()->key_code());
+  }
 
   // Test key press event is correctly modified and modifier release
   // event is sent.
@@ -4901,15 +4900,16 @@ TEST_F(EventRewriterAshTest, StickyKeyEventDispatchImpl) {
                      ui::EF_NONE, ui::DomKey::Constant<'c'>::Character,
                      ui::EventTimeForNow());
   ui::EventDispatchDetails details = Send(&press);
-  PopEvents(&events);
-  EXPECT_EQ(2u, events.size());
-  EXPECT_EQ(ui::ET_KEY_PRESSED, events[0]->type());
-  EXPECT_EQ(ui::VKEY_C,
-            static_cast<ui::KeyEvent*>(events[0].get())->key_code());
-  EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, events[1]->type());
-  EXPECT_EQ(ui::VKEY_CONTROL,
-            static_cast<ui::KeyEvent*>(events[1].get())->key_code());
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(2u, events.size());
+    ASSERT_EQ(ui::ET_KEY_PRESSED, events[0]->type());
+    EXPECT_EQ(ui::VKEY_C, events[0]->AsKeyEvent()->key_code());
+    EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+
+    ASSERT_EQ(ui::ET_KEY_RELEASED, events[1]->type());
+    EXPECT_EQ(ui::VKEY_CONTROL, events[1]->AsKeyEvent()->key_code());
+  }
 
   // Test key release event is not modified.
   ui::KeyEvent release(ui::ET_KEY_RELEASED, ui::VKEY_C, ui::DomCode::US_C,
@@ -4917,20 +4917,19 @@ TEST_F(EventRewriterAshTest, StickyKeyEventDispatchImpl) {
                        ui::EventTimeForNow());
   details = Send(&release);
   ASSERT_FALSE(details.dispatcher_destroyed);
-  PopEvents(&events);
-  EXPECT_EQ(1u, events.size());
-  EXPECT_EQ(ui::ET_KEY_RELEASED, events[0]->type());
-  EXPECT_EQ(ui::VKEY_C,
-            static_cast<ui::KeyEvent*>(events[0].get())->key_code());
-  EXPECT_FALSE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(1u, events.size());
+    ASSERT_EQ(ui::ET_KEY_RELEASED, events[0]->type());
+    ASSERT_EQ(ui::VKEY_C, events[0]->AsKeyEvent()->key_code());
+    EXPECT_FALSE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+  }
 }
 
 TEST_F(EventRewriterAshTest, MouseEventDispatchImpl) {
-  std::vector<std::unique_ptr<ui::Event>> events;
-
   SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
                                ui::DomKey::CONTROL);
-  PopEvents(&events);
+  std::ignore = TakeEvents();
 
   // Test mouse press event is correctly modified.
   gfx::Point location(0, 0);
@@ -4939,10 +4938,12 @@ TEST_F(EventRewriterAshTest, MouseEventDispatchImpl) {
                        ui::EF_LEFT_MOUSE_BUTTON);
   ui::EventDispatchDetails details = Send(&press);
   ASSERT_FALSE(details.dispatcher_destroyed);
-  PopEvents(&events);
-  EXPECT_EQ(1u, events.size());
-  EXPECT_EQ(ui::ET_MOUSE_PRESSED, events[0]->type());
-  EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(1u, events.size());
+    EXPECT_EQ(ui::ET_MOUSE_PRESSED, events[0]->type());
+    EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+  }
 
   // Test mouse release event is correctly modified and modifier release
   // event is sent. The mouse event should have the correct DIP location.
@@ -4951,23 +4952,24 @@ TEST_F(EventRewriterAshTest, MouseEventDispatchImpl) {
                          ui::EF_LEFT_MOUSE_BUTTON);
   details = Send(&release);
   ASSERT_FALSE(details.dispatcher_destroyed);
-  PopEvents(&events);
-  EXPECT_EQ(2u, events.size());
-  EXPECT_EQ(ui::ET_MOUSE_RELEASED, events[0]->type());
-  EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, events[1]->type());
-  EXPECT_EQ(ui::VKEY_CONTROL,
-            static_cast<ui::KeyEvent*>(events[1].get())->key_code());
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(2u, events.size());
+    EXPECT_EQ(ui::ET_MOUSE_RELEASED, events[0]->type());
+    EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+
+    ASSERT_EQ(ui::ET_KEY_RELEASED, events[1]->type());
+    EXPECT_EQ(ui::VKEY_CONTROL, events[1]->AsKeyEvent()->key_code());
+  }
 }
 
 TEST_F(EventRewriterAshTest, MouseWheelEventDispatchImpl) {
-  std::vector<std::unique_ptr<ui::Event>> events;
-
   // Test positive mouse wheel event is correctly modified and modifier release
   // event is sent.
   SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
                                ui::DomKey::CONTROL);
-  PopEvents(&events);
+  std::ignore = TakeEvents();
+
   gfx::Point location(0, 0);
   ui::MouseWheelEvent positive(
       gfx::Vector2d(0, ui::MouseWheelEvent::kWheelDelta), location, location,
@@ -4975,32 +4977,37 @@ TEST_F(EventRewriterAshTest, MouseWheelEventDispatchImpl) {
       ui::EF_LEFT_MOUSE_BUTTON);
   ui::EventDispatchDetails details = Send(&positive);
   ASSERT_FALSE(details.dispatcher_destroyed);
-  PopEvents(&events);
-  EXPECT_EQ(2u, events.size());
-  EXPECT_TRUE(events[0]->IsMouseWheelEvent());
-  EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, events[1]->type());
-  EXPECT_EQ(ui::VKEY_CONTROL,
-            static_cast<ui::KeyEvent*>(events[1].get())->key_code());
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(2u, events.size());
+    EXPECT_TRUE(events[0]->IsMouseWheelEvent());
+    EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+
+    ASSERT_EQ(ui::ET_KEY_RELEASED, events[1]->type());
+    EXPECT_EQ(ui::VKEY_CONTROL, events[1]->AsKeyEvent()->key_code());
+  }
 
   // Test negative mouse wheel event is correctly modified and modifier release
   // event is sent.
   SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
                                ui::DomKey::CONTROL);
-  PopEvents(&events);
+  std::ignore = TakeEvents();
+
   ui::MouseWheelEvent negative(
       gfx::Vector2d(0, -ui::MouseWheelEvent::kWheelDelta), location, location,
       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
       ui::EF_LEFT_MOUSE_BUTTON);
   details = Send(&negative);
   ASSERT_FALSE(details.dispatcher_destroyed);
-  PopEvents(&events);
-  EXPECT_EQ(2u, events.size());
-  EXPECT_TRUE(events[0]->IsMouseWheelEvent());
-  EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, events[1]->type());
-  EXPECT_EQ(ui::VKEY_CONTROL,
-            static_cast<ui::KeyEvent*>(events[1].get())->key_code());
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(2u, events.size());
+    EXPECT_TRUE(events[0]->IsMouseWheelEvent());
+    EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+
+    ASSERT_EQ(ui::ET_KEY_RELEASED, events[1]->type());
+    EXPECT_EQ(ui::VKEY_CONTROL, events[1]->AsKeyEvent()->key_code());
+  }
 }
 
 // Tests that if modifier keys are remapped, the flags of a mouse wheel event
@@ -5008,7 +5015,6 @@ TEST_F(EventRewriterAshTest, MouseWheelEventDispatchImpl) {
 TEST_F(EventRewriterAshTest, MouseWheelEventModifiersRewritten) {
   // Generate a mouse wheel event that has a CONTROL_DOWN modifier flag and
   // expect that no rewriting happens as no modifier remapping is active.
-  std::vector<std::unique_ptr<ui::Event>> events;
   gfx::Point location(0, 0);
   ui::MouseWheelEvent positive(
       gfx::Vector2d(0, ui::MouseWheelEvent::kWheelDelta), location, location,
@@ -5016,10 +5022,12 @@ TEST_F(EventRewriterAshTest, MouseWheelEventModifiersRewritten) {
       ui::EF_LEFT_MOUSE_BUTTON);
   ui::EventDispatchDetails details = Send(&positive);
   ASSERT_FALSE(details.dispatcher_destroyed);
-  PopEvents(&events);
-  EXPECT_EQ(1u, events.size());
-  EXPECT_TRUE(events[0]->IsMouseWheelEvent());
-  EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(1u, events.size());
+    EXPECT_TRUE(events[0]->IsMouseWheelEvent());
+    EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+  }
 
   // Remap Control to Alt.
   IntegerPrefMember control;
@@ -5031,11 +5039,13 @@ TEST_F(EventRewriterAshTest, MouseWheelEventModifiersRewritten) {
   // ALT_DOWN.
   details = Send(&positive);
   ASSERT_FALSE(details.dispatcher_destroyed);
-  PopEvents(&events);
-  EXPECT_EQ(1u, events.size());
-  EXPECT_TRUE(events[0]->IsMouseWheelEvent());
-  EXPECT_FALSE(events[0]->flags() & ui::EF_CONTROL_DOWN);
-  EXPECT_TRUE(events[0]->flags() & ui::EF_ALT_DOWN);
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(1u, events.size());
+    EXPECT_TRUE(events[0]->IsMouseWheelEvent());
+    EXPECT_FALSE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+    EXPECT_TRUE(events[0]->flags() & ui::EF_ALT_DOWN);
+  }
 }
 
 // Tests edge cases of key event rewriting (see https://crbug.com/913209).
@@ -5043,7 +5053,6 @@ TEST_F(EventRewriterAshTest, KeyEventRewritingEdgeCases) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       features::kAltClickAndSixPackCustomization);
-  std::vector<std::unique_ptr<ui::Event>> events;
 
   // Edge case 1: Press the Launcher button first. Then press the Up Arrow
   // button.
@@ -5051,52 +5060,48 @@ TEST_F(EventRewriterAshTest, KeyEventRewritingEdgeCases) {
                ui::DomKey::META);
   SendKeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_UP, ui::DomCode::ARROW_UP,
                ui::DomKey::ARROW_UP, ui::EF_COMMAND_DOWN);
-
-  PopEvents(&events);
-  EXPECT_EQ(2u, events.size());
-  events.clear();
-
-  SendKeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_COMMAND, ui::DomCode::META_LEFT,
-               ui::DomKey::META);
-  PopEvents(&events);
+  {
+    auto events = TakeEvents();
+    EXPECT_EQ(2u, events.size());
+  }
 
   // When releasing the Launcher button, the rewritten event should be released
   // as well.
-  EXPECT_EQ(2u, events.size());
-  EXPECT_EQ(ui::VKEY_COMMAND,
-            static_cast<ui::KeyEvent*>(events[0].get())->key_code());
-  EXPECT_EQ(ui::VKEY_PRIOR,
-            static_cast<ui::KeyEvent*>(events[1].get())->key_code());
-
-  events.clear();
+  SendKeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_COMMAND, ui::DomCode::META_LEFT,
+               ui::DomKey::META);
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(2u, events.size());
+    EXPECT_EQ(ui::VKEY_COMMAND, events[0]->AsKeyEvent()->key_code());
+    EXPECT_EQ(ui::VKEY_PRIOR, events[1]->AsKeyEvent()->key_code());
+  }
 
   // Edge case 2: Press the Up Arrow button first. Then press the Launch button.
   SendKeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_UP, ui::DomCode::ARROW_UP,
                ui::DomKey::ARROW_UP);
   SendKeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_COMMAND, ui::DomCode::META_LEFT,
                ui::DomKey::META);
-
-  PopEvents(&events);
-  EXPECT_EQ(2u, events.size());
-  events.clear();
-
-  SendKeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_UP, ui::DomCode::ARROW_UP,
-               ui::DomKey::ARROW_UP, ui::EF_COMMAND_DOWN);
-  PopEvents(&events);
+  {
+    auto events = TakeEvents();
+    EXPECT_EQ(2u, events.size());
+  }
 
   // When releasing the Up Arrow button, the rewritten event should be blocked.
-  EXPECT_EQ(1u, events.size());
-  EXPECT_EQ(ui::VKEY_UP,
-            static_cast<ui::KeyEvent*>(events[0].get())->key_code());
+  SendKeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_UP, ui::DomCode::ARROW_UP,
+               ui::DomKey::ARROW_UP, ui::EF_COMMAND_DOWN);
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(1u, events.size());
+    EXPECT_EQ(ui::VKEY_UP, events[0]->AsKeyEvent()->key_code());
+  }
 }
 
 TEST_F(EventRewriterAshTest, ScrollEventDispatchImpl) {
-  std::vector<std::unique_ptr<ui::Event>> events;
-
   // Test scroll event is correctly modified.
   SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
                                ui::DomKey::CONTROL);
-  PopEvents(&events);
+  std::ignore = TakeEvents();
+
   gfx::PointF location(0, 0);
   ui::ScrollEvent scroll(ui::ET_SCROLL, location, location,
                          ui::EventTimeForNow(), 0 /* flag */, 0 /* x_offset */,
@@ -5104,10 +5109,12 @@ TEST_F(EventRewriterAshTest, ScrollEventDispatchImpl) {
                          1 /* y_offset_ordinal */, 2 /* finger */);
   ui::EventDispatchDetails details = Send(&scroll);
   ASSERT_FALSE(details.dispatcher_destroyed);
-  PopEvents(&events);
-  EXPECT_EQ(1u, events.size());
-  EXPECT_TRUE(events[0]->IsScrollEvent());
-  EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(1u, events.size());
+    EXPECT_TRUE(events[0]->IsScrollEvent());
+    EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+  }
 
   // Test FLING_START event deactivates the sticky key, but is modified.
   ui::ScrollEvent fling_start(
@@ -5115,20 +5122,22 @@ TEST_F(EventRewriterAshTest, ScrollEventDispatchImpl) {
       0 /* flag */, 0 /* x_offset */, 0 /* y_offset */,
       0 /* x_offset_ordinal */, 0 /* y_offset_ordinal */, 2 /* finger */);
   details = Send(&fling_start);
-  PopEvents(&events);
-  EXPECT_EQ(2u, events.size());
-  EXPECT_TRUE(events[0]->IsScrollEvent());
-  EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, events[1]->type());
-  EXPECT_EQ(ui::VKEY_CONTROL,
-            static_cast<ui::KeyEvent*>(events[1].get())->key_code());
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(2u, events.size());
+    EXPECT_TRUE(events[0]->IsScrollEvent());
+    EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+
+    ASSERT_EQ(ui::ET_KEY_RELEASED, events[1]->type());
+    EXPECT_EQ(ui::VKEY_CONTROL, events[1]->AsKeyEvent()->key_code());
+  }
 
   // Test scroll direction change causes that modifier release event is sent.
   SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
                                ui::DomKey::CONTROL);
   details = Send(&scroll);
   ASSERT_FALSE(details.dispatcher_destroyed);
-  PopEvents(&events);
+  std::ignore = TakeEvents();
 
   ui::ScrollEvent scroll2(ui::ET_SCROLL, location, location,
                           ui::EventTimeForNow(), 0 /* flag */, 0 /* x_offset */,
@@ -5136,13 +5145,15 @@ TEST_F(EventRewriterAshTest, ScrollEventDispatchImpl) {
                           -1 /* y_offset_ordinal */, 2 /* finger */);
   details = Send(&scroll2);
   ASSERT_FALSE(details.dispatcher_destroyed);
-  PopEvents(&events);
-  EXPECT_EQ(2u, events.size());
-  EXPECT_TRUE(events[0]->IsScrollEvent());
-  EXPECT_FALSE(events[0]->flags() & ui::EF_CONTROL_DOWN);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, events[1]->type());
-  EXPECT_EQ(ui::VKEY_CONTROL,
-            static_cast<ui::KeyEvent*>(events[1].get())->key_code());
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(2u, events.size());
+    EXPECT_TRUE(events[0]->IsScrollEvent());
+    EXPECT_FALSE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+
+    ASSERT_EQ(ui::ET_KEY_RELEASED, events[1]->type());
+    EXPECT_EQ(ui::VKEY_CONTROL, events[1]->AsKeyEvent()->key_code());
+  }
 }
 
 class StickyKeysOverlayTest : public EventRewriterAshTest {
