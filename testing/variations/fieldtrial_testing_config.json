@@ -17681,6 +17681,25 @@
             ]
         }
     ],
+    "SyncWebauthnCredentials": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SyncWebauthnCredentials"
+                    ]
+                }
+            ]
+        }
+    ],
     "SynchronizedScrolling": [
         {
             "platforms": [
