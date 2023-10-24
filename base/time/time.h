@@ -120,6 +120,16 @@ class TimeDelta;
 template <typename T>
 constexpr TimeDelta Microseconds(T n);
 
+namespace {
+
+// TODO: Replace usage of this with std::isnan() once Chromium uses C++23,
+// where that is constexpr.
+constexpr bool isnan(double d) {
+  return d != d;
+}
+
+}
+
 // TimeDelta ------------------------------------------------------------------
 
 class BASE_EXPORT TimeDelta {
@@ -1100,7 +1110,7 @@ constexpr time_t Time::ToTimeT() const {
 // static
 constexpr Time Time::FromSecondsSinceUnixEpoch(double dt) {
   // Preserve 0 so we can tell it doesn't exist.
-  return (dt == 0 || std::isnan(dt)) ? Time() : (UnixEpoch() + Seconds(dt));
+  return (dt == 0 || isnan(dt)) ? Time() : (UnixEpoch() + Seconds(dt));
 }
 
 constexpr double Time::InSecondsFSinceUnixEpoch() const {
@@ -1144,7 +1154,8 @@ constexpr double Time::InMillisecondsFSinceUnixEpochIgnoringNull() const {
 }
 
 constexpr Time Time::FromMillisecondsSinceUnixEpoch(int64_t ms_since_epoch) {
-  return UnixEpoch() + Milliseconds(ms_since_epoch);
+  return isnan(ms_since_epoch) ? Time()
+                               : (UnixEpoch() + Milliseconds(ms_since_epoch));
 }
 
 constexpr int64_t Time::InMillisecondsSinceUnixEpoch() const {
