@@ -687,7 +687,7 @@
 <translation id="3824784079442479685">Доступ да камеры атрымае праграма "<ph name="APP_NAME" />" і ўсе праграмы і вэб-сайты, якія маюць дазвол выкарыстоўваць камеру. Магчыма, трэба будзе абнавіць вэб-старонку або перазапусціць праграму.</translation>
 <translation id="3825680296690914697">Здадзена: <ph name="NUM_TURNED_IN" /> з <ph name="TOTAL_NUM_OF_SUBMISSIONS" />. Праверана: <ph name="NUM_GRADED" />.</translation>
 <translation id="3826099427150913765">Пераключыцца на пароль</translation>
-<translation id="383058930331066723">Уключаны рэжым эканоміі зараду</translation>
+<translation id="383058930331066723">Рэжым энергазберажэння ўключаны</translation>
 <translation id="383629559565718788">Паказаць налады клавіятуры</translation>
 <translation id="384082539148746321">Выдаліць шаблон?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, затым <ph name="KEY_ONE" />, або <ph name="KEY_TWO" />, або <ph name="KEY_THREE" />, або <ph name="KEY_FOUR" /></translation>
@@ -1535,7 +1535,7 @@
 <translation id="7377481913241237033">Падключыцца з дапамогай кода</translation>
 <translation id="7378203170292176219">Выберыце вобласць запісу з дапамогай перацягвання</translation>
 <translation id="7378594059915113390">Элементы кіравання мультымедыйным змесцівам</translation>
-<translation id="7378889811480108604">Рэжым эканоміі зараду выключаны</translation>
+<translation id="7378889811480108604">Рэжым энергазберажэння выключаны</translation>
 <translation id="7382640522316003298">Уключыць або выключыць хот-спот. Хот-спот уключаны. Падключана прылад: <ph name="DEVICECOUNT" />.</translation>
 <translation id="7382680553121047388">Укл.</translation>
 <translation id="7384028040782072252">Каб змяніць парадак размяшчэння праграм, націсніце правай кнопкай мышы ў любым месцы экрана</translation>

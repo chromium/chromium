@@ -3078,7 +3078,7 @@ Dodatni detalji:
 <translation id="7403591733719184120">Uređaj <ph name="DEVICE_NAME" /> je upravljani uređaj</translation>
 <translation id="7405878640835614059">Domena <ph name="ENROLLMENT_DOMAIN" /> je instalirala aplikacije zbog dodatnih funkcija. Ekstenzije imaju pristup samo nekim vašim podacima.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Ova greška će se prikazati ako na svom Windows računaru imate Superfish softver.&lt;/p&gt;
-      &lt;p&gt;Da privremeno onemogućite softver kako biste pristupili webu, slijedite ove korake. Potrebne su vam privilegije administratora.&lt;/p&gt;
+      &lt;p&gt;Da privremeno onemogućite softver kako biste pristupili webu, slijedite ove korake. Potrebna su vam administratorska prava.&lt;/p&gt;
       &lt;ol&gt;
       &lt;li&gt;Kliknite na &lt;strong&gt;Start&lt;/strong&gt;, zatim pretražite i odaberite &lt;strong&gt;"View local services"&lt;/strong&gt;
       &lt;li&gt;Odaberite &lt;strong&gt;VisualDiscovery&lt;/strong&gt;

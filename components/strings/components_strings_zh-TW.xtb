@@ -981,7 +981,7 @@
 <translation id="3067505415088964188">價格較低</translation>
 <translation id="3068991664510324412">電腦與電玩遊戲</translation>
 <translation id="3080254622891793721">圖片</translation>
-<translation id="3081538120861307764">為評估廣告成效，網站之間僅會分享特定類型的資料，例如在一天中向使用者放送廣告的時段。</translation>
+<translation id="3081538120861307764">為評估廣告成效，網站之間僅會分享特定類型的資料，例如廣告的放送時間。</translation>
 <translation id="3082007635241601060">允許 Google 使用你的購物車，尋找可用的個人化折扣</translation>
 <translation id="3086579638707268289">你的網路活動正遭到監控</translation>
 <translation id="3087734570205094154">置底</translation>
@@ -2771,7 +2771,7 @@
 <translation id="6786145470008421571">Envelope 6 x 9 in</translation>
 <translation id="67862343314499040">紫羅蘭色</translation>
 <translation id="6786747875388722282">擴充功能</translation>
-<translation id="6787094689637422836">我們即將推出全新的隱私權功能，讓你更能掌控自己看到的廣告。</translation>
+<translation id="6787094689637422836">我們推出全新的隱私權功能，讓你更能掌控自己看到的廣告。</translation>
 <translation id="6789062271869667677">連續 (長邊)</translation>
 <translation id="678982761784843853">受保護的內容 ID</translation>
 <translation id="6790428901817661496">播放</translation>
@@ -3887,7 +3887,7 @@
 <translation id="9049981332609050619">你嘗試連線至 <ph name="DOMAIN" />，但伺服器提供的憑證無效。</translation>
 <translation id="9050666287014529139">通關密語</translation>
 <translation id="9051072642122229460">咖啡與濃縮咖啡機</translation>
-<translation id="9053840549256861041">我們即將推出名為「廣告評估」的全新廣告隱私權功能。Chrome 只會在網站之間分享相當有限的資訊 (例如向使用者放送廣告的時段)，協助網站評估廣告成效。</translation>
+<translation id="9053840549256861041">我們推出名為「廣告評估」的全新廣告隱私權功能。Chrome 只會在網站之間分享相當有限的資訊 (例如：廣告的放送時間)，協助評估廣告成效。</translation>
 <translation id="9056953843249698117">商店</translation>
 <translation id="9062620674789239642">檔案可能已遭到移動、編輯或刪除。</translation>
 <translation id="9063398205799684336">Envelope Kaku 2</translation>
