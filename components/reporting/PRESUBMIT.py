@@ -14,7 +14,7 @@ from pathlib import Path
 def CheckIncludeForFullPath(input_api, output_api):
   """Checks to make sure every .h file has a full path."""
   errors = []
-  pattern = input_api.re.compile(r'^#include\s*[\"<](\S*)[\">]',
+  pattern = input_api.re.compile(r'^#include\s*\"(\S*)\"',
                                   input_api.re.MULTILINE)
   for f in input_api.AffectedSourceFiles(input_api.FilterSourceFile):
     if not f.LocalPath().casefold().endswith(('.h', '.cc')):
