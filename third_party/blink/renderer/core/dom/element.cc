@@ -7599,7 +7599,7 @@ KURL Element::HrefURL() const {
   // doesn't <link> implement URLUtils?
   if (IsA<HTMLAnchorElement>(*this) || IsA<HTMLAreaElement>(*this) ||
       IsA<HTMLLinkElement>(*this)) {
-    return GetURLAttribute(html_names::kHrefAttr);
+    return GetURLAttributeAsKURL(html_names::kHrefAttr);
   }
   if (auto* svg_a = DynamicTo<SVGAElement>(*this)) {
     return svg_a->LegacyHrefURL(GetDocument());
@@ -7607,7 +7607,7 @@ KURL Element::HrefURL() const {
   return KURL();
 }
 
-KURL Element::GetURLAttribute(const QualifiedName& name) const {
+String Element::GetURLAttribute(const QualifiedName& name) const {
 #if DCHECK_IS_ON()
   if (HasElementData()) {
     if (const Attribute* attribute = Attributes().Find(name)) {
@@ -7615,6 +7615,14 @@ KURL Element::GetURLAttribute(const QualifiedName& name) const {
     }
   }
 #endif
+  KURL url = GetDocument().CompleteURL(
+      StripLeadingAndTrailingHTMLSpaces(getAttribute(name)));
+  return url.IsValid() || !RuntimeEnabledFeatures::URLAttributeFixEnabled()
+             ? url
+             : StripLeadingAndTrailingHTMLSpaces(getAttribute(name));
+}
+
+KURL Element::GetURLAttributeAsKURL(const QualifiedName& name) const {
   return GetDocument().CompleteURL(
       StripLeadingAndTrailingHTMLSpaces(getAttribute(name)));
 }
