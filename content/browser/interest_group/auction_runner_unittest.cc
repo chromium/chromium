@@ -20231,6 +20231,67 @@ TEST_P(AuctionRunnerKAnonTest, AdditionalBidBuyerReporting) {
                   "https://contextual.test/?additionalPseudoIG"));
 }
 
+TEST_P(AuctionRunnerKAnonTest, CookieDeprecationFacilitatedTestingExcluded) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kCookieDeprecationFacilitatedTesting);
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      // bidding script tries to bid with ad that is not k-anonymous.
+      std::string(R"(
+        function generateBid(interestGroup, auctionSignals, perBuyerSignals,
+                         trustedBiddingSignals, browserSignals) {
+          privateAggregation.contributeToHistogramOnEvent("reserved.loss", {
+              bucket: {baseValue: "bid-reject-reason"},
+              value: 0,
+            });
+          privateAggregation.contributeToHistogramOnEvent("reserved.loss", {
+              bucket: {baseValue: "winning-bid"},
+              value: 2,
+            });
+          return {ad: {},
+              bid: 1,
+              render: "https://ad1.com",
+              allowComponentAuction: true};
+        })") +
+          kReportWinNoUrl);
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrl,
+      std::string(kMinimumDecisionScript) + kBasicReportResult);
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+
+  // No k-anon authorizations.
+  StartAuction(kSellerUrl, bidders);
+  auction_run_loop_->Run();
+  // Have to spin all message loops to flush any k-anon set join events.
+  task_environment()->RunUntilIdle();
+  EXPECT_THAT(interest_group_manager_->TakeJoinedKAnonSets(),
+              testing::UnorderedElementsAre(
+                  blink::KAnonKeyForAdBid(
+                      bidders[0].interest_group,
+                      bidders[0].interest_group.ads.value()[0].render_url),
+                  blink::KAnonKeyForAdNameReporting(
+                      bidders[0].interest_group,
+                      bidders[0].interest_group.ads.value()[0])));
+  histogram_tester_->ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", false, 1);
+
+  // Always act like the k-anonymity mode is `KAnonMode::kNone`
+  ASSERT_TRUE(result_.ad_descriptor.has_value());
+  EXPECT_EQ(GURL("https://ad1.com"), result_.ad_descriptor->url);
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  EXPECT_THAT(
+      private_aggregation_manager_.TakePrivateAggregationRequests(),
+      testing::UnorderedElementsAre(testing::Pair(
+          kSeller, ElementsAreRequests(
+                       kExpectedReportResultPrivateAggregationRequest))));
+}
+
 INSTANTIATE_TEST_SUITE_P(
     /* no label */,
     AuctionRunnerKAnonTest,

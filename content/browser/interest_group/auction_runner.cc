@@ -37,6 +37,11 @@ namespace content {
 namespace {
 
 auction_worklet::mojom::KAnonymityBidMode DetermineKAnonMode() {
+  // K-anonymity enforcement is always disabled for the testing population.
+  if (base::FeatureList::IsEnabled(
+          features::kCookieDeprecationFacilitatedTesting)) {
+    return auction_worklet::mojom::KAnonymityBidMode::kNone;
+  }
   if (base::FeatureList::IsEnabled(
           blink::features::kFledgeConsiderKAnonymity)) {
     if (base::FeatureList::IsEnabled(
