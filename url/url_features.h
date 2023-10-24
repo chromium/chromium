@@ -18,11 +18,7 @@ COMPONENT_EXPORT(URL) bool IsUsingIDNA2008NonTransitional();
 // Returns true if Chrome is recording IDNA 2008 related metrics.
 COMPONENT_EXPORT(URL) bool IsRecordingIDNA2008Metrics();
 
-// Returns true if kDontDecodeAsciiPercentEncodedURLPath feature is enabled.
-// See url::kDontDecodeAsciiPercentEncodedURLPath for details.
-COMPONENT_EXPORT(URL) bool IsUsingDontDecodeAsciiPercentEncodedURLPath();
-
-// Returns true if kDontDecodeAsciiPercentEncodedURLPath feature is enabled.
+// Returns true if IsUsingStandardCompliantHostCharacters feature is enabled.
 // See url::kStandardCompliantHostCharacters for details.
 COMPONENT_EXPORT(URL) bool IsUsingStandardCompliantHostCharacters();
 
@@ -30,11 +26,6 @@ COMPONENT_EXPORT(URL) bool IsUsingStandardCompliantHostCharacters();
 // a non-hierarchical URL. (For example '#foo:bar' against 'about:blank'.)
 COMPONENT_EXPORT(URL)
 BASE_DECLARE_FEATURE(kResolveBareFragmentWithColonOnNonHierarchical);
-
-// When enabled, percent-encoded ASCII characters in URL path are not decoded
-// automatically. See https://crbug.com/125231.
-COMPONENT_EXPORT(URL)
-BASE_DECLARE_FEATURE(kDontDecodeAsciiPercentEncodedURLPath);
 
 // When enabled, Chrome uses URL Standard compliant mode to
 // handle punctuation characters in URL host part.

@@ -21,11 +21,6 @@ BASE_FEATURE(kResolveBareFragmentWithColonOnNonHierarchical,
              "ResolveBareFragmentWithColonOnNonHierarchical",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Kill switch for crbug.com/1252531.
-BASE_FEATURE(kDontDecodeAsciiPercentEncodedURLPath,
-             "DontDecodeAsciiPercentEncodedURLPath",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Kill switch for https://crbug.com/1416013.
 BASE_FEATURE(kStandardCompliantHostCharacters,
              "StandardCompliantHostCharacters",
@@ -40,17 +35,6 @@ bool IsUsingIDNA2008NonTransitional() {
   }
 
   return base::FeatureList::IsEnabled(kUseIDNA2008NonTransitional);
-}
-
-bool IsUsingDontDecodeAsciiPercentEncodedURLPath() {
-  // If the FeatureList isn't available yet, fall back to the feature's default
-  // state. This may happen during early startup, see https://crbug.com/1478960.
-  if (!base::FeatureList::GetInstance()) {
-    return kDontDecodeAsciiPercentEncodedURLPath.default_state ==
-           base::FEATURE_ENABLED_BY_DEFAULT;
-  }
-
-  return base::FeatureList::IsEnabled(kDontDecodeAsciiPercentEncodedURLPath);
 }
 
 bool IsUsingStandardCompliantHostCharacters() {
