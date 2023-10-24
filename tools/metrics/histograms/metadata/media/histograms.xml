@@ -3758,12 +3758,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.HardwareKeyPressed" enum="MediaHardwareKeyAction"
-    expires_after="2021-08-29">
+    expires_after="2024-01-31">
   <owner>steimel@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Records media key presses that are handled by the
     HardwareKeyMediaController.
+
+    Warning: this histogram was expired from 2021-08-29 to 2023-10-24; data may
+    be missing.
   </summary>
 </histogram>
 
