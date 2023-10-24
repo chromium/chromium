@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.StringCachedFieldTrialParameter;
+import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.version_info.VersionInfo;
@@ -309,6 +310,11 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     public static final StringCachedFieldTrialParameter ALLOWLIST_ENTRIES =
             new StringCachedFieldTrialParameter(ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
                     ALLOWLIST_ENTRIES_PARAM_NAME, "");
+
+    // TODO(b/306597895): Remove the String when Page Insights Hub (Chrome Side Implementation)
+    // experiment is completed
+    public static final String EXTRA_PAGE_INSIGHTS_OVERFLOW_ITEM_TITLE =
+            "org.chromium.chrome.browser.customtabs.extra.PAGE_INSIGHTS_OVERFLOW_ITEM_TITLE";
 
     /**
      * Extra that specifies the {@link PendingIntent} to be sent when the user swipes up from the
@@ -682,14 +688,28 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     private void updateExtraMenuItems(List<Bundle> menuItems) {
         if (menuItems == null) return;
+        boolean isPageInsightsHubEnabled = isPageInsightsHubEnabled();
+        String pihOverflowMenuItemTitle =
+                IntentUtils.safeGetStringExtra(mIntent, EXTRA_PAGE_INSIGHTS_OVERFLOW_ITEM_TITLE);
         for (int i = 0; i < Math.min(MAX_CUSTOM_MENU_ITEMS, menuItems.size()); i++) {
             Bundle bundle = menuItems.get(i);
             String title = IntentUtils.safeGetString(bundle, CustomTabsIntent.KEY_MENU_ITEM_TITLE);
             PendingIntent pendingIntent =
                     IntentUtils.safeGetParcelable(bundle, CustomTabsIntent.KEY_PENDING_INTENT);
-            if (TextUtils.isEmpty(title) || pendingIntent == null) continue;
+            if (TextUtils.isEmpty(title)
+                    || pendingIntent == null
+                    // Discard Page Insights overflow menu item provided by embedder if the Chrome
+                    // implementation is enabled
+                    || (isPageInsightsHubEnabled && title.equals(pihOverflowMenuItemTitle))) {
+                continue;
+            }
             mMenuEntries.add(new Pair<String, PendingIntent>(title, pendingIntent));
         }
+    }
+
+    private boolean isPageInsightsHubEnabled() {
+        return (PageInsightsCoordinator.isFeatureEnabled()
+                && CustomTabsConnection.getInstance().shouldEnablePageInsightsForIntent(this));
     }
 
     /**
