@@ -7,6 +7,7 @@
 
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -38,15 +39,18 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_divider_view.h"
+#include "ash/wm/splitview/split_view_overview_session.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_cycle/window_cycle_list.h"
 #include "ash/wm/window_cycle/window_cycle_view.h"
 #include "ash/wm/window_mini_view.h"
+#include "ash/wm/window_resizer.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
+#include "ash/wm/wm_metrics.h"
 #include "ash/wm/workspace/multi_window_resize_controller.h"
 #include "ash/wm/workspace/workspace_event_handler.h"
 #include "ash/wm/workspace_controller_test_api.h"
@@ -59,6 +63,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
@@ -80,6 +85,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_modality_controller.h"
 #include "ui/wm/core/window_util.h"
+#include "ui/wm/public/window_move_client.h"
 
 namespace ash {
 
@@ -458,17 +464,21 @@ class SnapGroupTest : public AshTestBase {
 
   // Verifies that `window` is in split view overview, where `window` is
   // excluded from overview, and overview occupies the work area opposite of
-  // `window`.
-  void VerifySplitViewOverviewSession(aura::Window* window) {
+  // `window`. Returns the corresponding `SplitViewOverviewSession` if exits and
+  // nullptr otherwise.
+  SplitViewOverviewSession* VerifySplitViewOverviewSession(
+      aura::Window* window) {
     auto* overview_controller = OverviewController::Get();
     EXPECT_TRUE(overview_controller->InOverviewSession());
     EXPECT_FALSE(
         overview_controller->overview_session()->IsWindowInOverview(window));
-    EXPECT_TRUE(
-        RootWindowController::ForWindow(window)->split_view_overview_session());
+    SplitViewOverviewSession* split_view_overview_session =
+        RootWindowController::ForWindow(window)->split_view_overview_session();
+    EXPECT_TRUE(split_view_overview_session);
     gfx::Rect expected_grid_bounds = work_area_bounds();
     expected_grid_bounds.Subtract(window->GetBoundsInScreen());
     EXPECT_EQ(expected_grid_bounds, GetOverviewGridBounds());
+    return split_view_overview_session;
   }
 
   // Verifies that the icon image and the tooltip of the lock button reflect the
@@ -2667,47 +2677,6 @@ TEST_F(SnapGroupEntryPointArm1Test,
   }
 }
 
-// Tests that the swap window source histogram is recorded correctly.
-// TODO(michelefan): move this test to the snap group histogram test fixture
-// when implementing the histograms for the feature.
-TEST_F(SnapGroupEntryPointArm1Test, SwapWindowsSourceHistogramTest) {
-  base::HistogramTester histogram_tester;
-  constexpr char kHistogramName[] = "Ash.SplitView.SwapWindowSource";
-  histogram_tester.ExpectBucketCount(
-      kHistogramName, SplitViewController::SwapWindowsSource::kDoubleTap, 0);
-  histogram_tester.ExpectBucketCount(
-      kHistogramName,
-      SplitViewController::SwapWindowsSource::kSnapGroupSwapWindowsButton, 0);
-
-  for (const bool in_tablet_mode : {false, true}) {
-    std::unique_ptr<aura::Window> w1(CreateTestWindow());
-    std::unique_ptr<aura::Window> w2(CreateTestWindow());
-    if (in_tablet_mode) {
-      SwitchToTabletMode();
-      ASSERT_TRUE(Shell::Get()->IsInTabletMode());
-      split_view_controller()->SnapWindow(
-          w1.get(), SplitViewController::SnapPosition::kPrimary);
-      split_view_controller()->SnapWindow(
-          w2.get(), SplitViewController::SnapPosition::kSecondary);
-      ASSERT_EQ(split_view_controller()->primary_window(), w1.get());
-      ASSERT_EQ(split_view_controller()->secondary_window(), w2.get());
-      split_view_controller()->SwapWindows(
-          SplitViewController::SwapWindowsSource::kDoubleTap);
-      histogram_tester.ExpectBucketCount(
-          kHistogramName, SplitViewController::SwapWindowsSource::kDoubleTap,
-          1);
-    } else {
-      SnapTwoTestWindowsInArm1(w1.get(), w2.get(), /*horizontal=*/true);
-      ClickKebabButtonToShowExpandedMenu();
-      ClickSwapWindowsButtonAndVerify();
-      histogram_tester.ExpectBucketCount(
-          kHistogramName,
-          SplitViewController::SwapWindowsSource::kSnapGroupSwapWindowsButton,
-          1);
-    }
-  }
-}
-
 // Tests that the cursor type gets updated on mouse hovering over everywhere on
 // the split view divider excluding the kebab button.
 TEST_F(SnapGroupEntryPointArm1Test, CursorUpdateTest) {
@@ -2755,6 +2724,110 @@ TEST_F(SnapGroupEntryPointArm1Test, CursorUpdateTest) {
   event_generator->MoveMouseTo(
       kebab_button()->GetBoundsInScreen().CenterPoint());
   EXPECT_EQ(CursorType::kNull, cursor_manager->GetCursor().type());
+}
+
+// -----------------------------------------------------------------------------
+// SnapGroupHistogramTest:
+
+using SnapGroupHistogramTest = SnapGroupEntryPointArm1Test;
+
+// Tests that the pipeline to get snap action source info all the way to be
+// stored in the `SplitViewOverviewSession` is working. This test focuses on the
+// snap action source with top-usage in clamshell.
+TEST_F(SnapGroupHistogramTest, SnapActionSourcePipeline) {
+  UpdateDisplay("800x600");
+  std::unique_ptr<aura::Window> window(CreateAppWindow(gfx::Rect(100, 100)));
+  WindowState* window_state = WindowState::Get(window.get());
+  auto maximize_to_end_session = [&]() {
+    window_state->Maximize();
+    SplitViewOverviewSession* split_view_overview_session =
+        RootWindowController::ForWindow(window.get())
+            ->split_view_overview_session();
+    EXPECT_FALSE(split_view_overview_session);
+  };
+
+  // Drag a window to snap and verify the snap action source info.
+  std::unique_ptr<WindowResizer> resizer(CreateWindowResizer(
+      window.get(), gfx::PointF(), HTCAPTION, wm::WINDOW_MOVE_SOURCE_MOUSE));
+  resizer->Drag(gfx::PointF(0, 400), /*event_flags=*/0);
+  resizer->CompleteDrag();
+  resizer.reset();
+  SplitViewOverviewSession* split_view_overview_session =
+      VerifySplitViewOverviewSession(window.get());
+  EXPECT_EQ(split_view_overview_session->snap_action_source_for_testing(),
+            WindowSnapActionSource::kDragWindowToEdgeToSnap);
+  maximize_to_end_session();
+
+  // User keyboard shortcut to snap a window and verify the snap action source
+  // info.
+  AcceleratorController::Get()->PerformActionIfEnabled(
+      AcceleratorAction::kWindowCycleSnapRight, {});
+  split_view_overview_session = VerifySplitViewOverviewSession(window.get());
+  EXPECT_TRUE(split_view_overview_session);
+  EXPECT_EQ(split_view_overview_session->snap_action_source_for_testing(),
+            WindowSnapActionSource::kKeyboardShortcutToSnap);
+  maximize_to_end_session();
+
+  // Mock snap from window layout menu and verify the snap action source info.
+  chromeos::SnapController::Get()->CommitSnap(
+      window.get(), chromeos::SnapDirection::kSecondary,
+      chromeos::kDefaultSnapRatio,
+      chromeos::SnapController::SnapRequestSource::kWindowLayoutMenu);
+  split_view_overview_session = VerifySplitViewOverviewSession(window.get());
+  EXPECT_TRUE(split_view_overview_session);
+  EXPECT_EQ(split_view_overview_session->snap_action_source_for_testing(),
+            WindowSnapActionSource::kSnapByWindowLayoutMenu);
+  maximize_to_end_session();
+
+  // Mock snap from window snap button and verify the snap action source info.
+  chromeos::SnapController::Get()->CommitSnap(
+      window.get(), chromeos::SnapDirection::kPrimary,
+      chromeos::kDefaultSnapRatio,
+      chromeos::SnapController::SnapRequestSource::kSnapButton);
+  split_view_overview_session = VerifySplitViewOverviewSession(window.get());
+  EXPECT_TRUE(split_view_overview_session);
+  EXPECT_EQ(split_view_overview_session->snap_action_source_for_testing(),
+            WindowSnapActionSource::kLongPressCaptionButtonToSnap);
+  maximize_to_end_session();
+}
+
+// Tests that the swap window source histogram is recorded correctly.
+TEST_F(SnapGroupHistogramTest, SwapWindowsSourceHistogramTest) {
+  base::HistogramTester histogram_tester;
+  constexpr char kHistogramName[] = "Ash.SplitView.SwapWindowSource";
+  histogram_tester.ExpectBucketCount(
+      kHistogramName, SplitViewController::SwapWindowsSource::kDoubleTap, 0);
+  histogram_tester.ExpectBucketCount(
+      kHistogramName,
+      SplitViewController::SwapWindowsSource::kSnapGroupSwapWindowsButton, 0);
+
+  for (const bool in_tablet_mode : {false, true}) {
+    std::unique_ptr<aura::Window> w1(CreateTestWindow());
+    std::unique_ptr<aura::Window> w2(CreateTestWindow());
+    if (in_tablet_mode) {
+      SwitchToTabletMode();
+      ASSERT_TRUE(Shell::Get()->IsInTabletMode());
+      split_view_controller()->SnapWindow(
+          w1.get(), SplitViewController::SnapPosition::kPrimary);
+      split_view_controller()->SnapWindow(
+          w2.get(), SplitViewController::SnapPosition::kSecondary);
+      ASSERT_EQ(split_view_controller()->primary_window(), w1.get());
+      ASSERT_EQ(split_view_controller()->secondary_window(), w2.get());
+      split_view_controller()->SwapWindows(
+          SplitViewController::SwapWindowsSource::kDoubleTap);
+      histogram_tester.ExpectBucketCount(
+          kHistogramName, SplitViewController::SwapWindowsSource::kDoubleTap,
+          1);
+    } else {
+      SnapTwoTestWindowsInArm1(w1.get(), w2.get(), /*horizontal=*/true);
+      ClickKebabButtonToShowExpandedMenu();
+      ClickSwapWindowsButtonAndVerify();
+      histogram_tester.ExpectBucketCount(
+          kHistogramName,
+          SplitViewController::SwapWindowsSource::kSnapGroupSwapWindowsButton,
+          1);
+    }
+  }
 }
 
 // -----------------------------------------------------------------------------

@@ -32,7 +32,7 @@ constexpr char kSplitViewOverviewSessionExitPoint[] =
 // Histogram names that record presentation time of resize operation with
 // following conditions:
 // a) clamshell split view, empty overview grid;
-// b) clamshell split view, nonempty overview grid;
+// b) clamshell split view, non-empty overview grid;
 // c) clamshell split view, two snapped windows (for Snap Groups);
 constexpr char kClamshellSplitViewResizeSingleHistogram[] =
     "Ash.SplitViewResize.PresentationTime.ClamshellMode.SingleWindow";
@@ -59,8 +59,10 @@ bool InClamshellSplitViewMode(SplitViewController* controller) {
 
 }  // namespace
 
-SplitViewOverviewSession::SplitViewOverviewSession(aura::Window* window)
-    : window_(window) {
+SplitViewOverviewSession::SplitViewOverviewSession(
+    aura::Window* window,
+    WindowSnapActionSource snap_action_source)
+    : window_(window), snap_action_source_(snap_action_source) {
   CHECK(window);
   window_observation_.Observe(window);
   WindowState::Get(window)->AddObserver(this);

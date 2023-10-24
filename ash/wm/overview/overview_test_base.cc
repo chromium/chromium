@@ -7,12 +7,10 @@
 #include <tuple>
 
 #include "ash/public/cpp/test/test_saved_desk_delegate.h"
-#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/style/close_button.h"
 #include "ash/style/system_shadow.h"
-#include "ash/test_shell_delegate.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"

@@ -4,8 +4,6 @@
 
 #include "ash/wm/client_controlled_state.h"
 
-#include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/cpp/window_animation_types.h"
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
@@ -18,12 +16,14 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/window_state_util.h"
+#include "ash/wm/wm_metrics.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/display/screen.h"
 #include "ui/wm/core/window_util.h"
 
@@ -38,6 +38,11 @@ constexpr int kClientControlledWindowMinimumOnScreenArea =
     kMinimumOnScreenArea + 1;
 }  // namespace
 
+ClientControlledState::ClientControlledState(std::unique_ptr<Delegate> delegate)
+    : BaseState(WindowStateType::kDefault), delegate_(std::move(delegate)) {}
+
+ClientControlledState::~ClientControlledState() = default;
+
 // static
 void ClientControlledState::AdjustBoundsForMinimumWindowVisibility(
     const gfx::Rect& display_bounds,
@@ -46,11 +51,6 @@ void ClientControlledState::AdjustBoundsForMinimumWindowVisibility(
       display_bounds, kClientControlledWindowMinimumOnScreenArea,
       kClientControlledWindowMinimumOnScreenArea, bounds);
 }
-
-ClientControlledState::ClientControlledState(std::unique_ptr<Delegate> delegate)
-    : BaseState(WindowStateType::kDefault), delegate_(std::move(delegate)) {}
-
-ClientControlledState::~ClientControlledState() = default;
 
 void ClientControlledState::ResetDelegate() {
   delegate_.reset();
@@ -347,39 +347,31 @@ void ClientControlledState::UpdateWindowForTransitionEvents(
 
   if (chromeos::IsSnappedWindowStateType(next_state_type)) {
     if (window_state->CanSnap()) {
+      const bool is_restoring =
+          window->GetProperty(aura::client::kIsRestoringKey) ||
+          event_type == WM_EVENT_RESTORE;
+      CHECK(is_restoring || event->IsSnapEvent());
+
+      const WindowSnapActionSource snap_action_source =
+          is_restoring ? WindowSnapActionSource::kSnapByWindowStateRestore
+                       : event->AsSnapEvent()->snap_action_source();
       HandleWindowSnapping(window_state,
                            next_state_type == WindowStateType::kPrimarySnapped
                                ? WM_EVENT_SNAP_PRIMARY
-                               : WM_EVENT_SNAP_SECONDARY);
-
-      const bool is_restoring =
-          window_state->window()->GetProperty(aura::client::kIsRestoringKey) ||
-          event_type == WM_EVENT_RESTORE;
-      if (is_restoring) {
-        window_state->RecordWindowSnapActionSource(
-            WindowSnapActionSource::kSnapByWindowStateRestore);
-      } else {
-        CHECK(event->IsSnapEvent());
-        window_state->RecordWindowSnapActionSource(
-            event->AsSnapEvent()->snap_action_source());
-      }
+                               : WM_EVENT_SNAP_SECONDARY,
+                           snap_action_source);
+      window_state->RecordWindowSnapActionSource(snap_action_source);
 
       // Get the desired window bounds for the snap state.
       // TODO(b/246683799): Investigate why window_state->snap_ratio() can be
       // empty.
       // Use the saved `window_state->snap_ratio()` if restoring, otherwise use
       // the event requested snap ratio, which has a default value.
-      float next_snap_ratio;
-      if (is_restoring) {
-        next_snap_ratio =
-            window_state->snap_ratio().value_or(chromeos::kDefaultSnapRatio);
-      } else {
-        CHECK(event->IsSnapEvent());
-        CHECK(event->AsSnapEvent());
-        next_snap_ratio = event->AsSnapEvent()->snap_ratio();
-      }
-      gfx::Rect bounds = GetSnappedWindowBoundsInParent(window, next_state_type,
-                                                        next_snap_ratio);
+      const float next_snap_ratio =
+          is_restoring
+              ? window_state->snap_ratio().value_or(chromeos::kDefaultSnapRatio)
+              : event->AsSnapEvent()->snap_ratio();
+
       // We don't want Unminimize() to restore the pre-snapped state during the
       // transition. See crbug.com/1031313 for why we need this.
       // kRestoreShowStateKey property will be updated properly after the window
@@ -393,8 +385,11 @@ void ClientControlledState::UpdateWindowForTransitionEvents(
               << ", next_state=" << next_state_type;
 
       // Then ask delegate to set the desired bounds for the snap state.
-      delegate_->HandleBoundsRequest(window_state, next_state_type, bounds,
-                                     window_state->GetDisplay().id());
+      delegate_->HandleBoundsRequest(
+          window_state, next_state_type,
+          GetSnappedWindowBoundsInParent(window, next_state_type,
+                                         next_snap_ratio),
+          window_state->GetDisplay().id());
     }
   } else if (next_state_type == WindowStateType::kFloated) {
     if (chromeos::wm::CanFloatWindow(window)) {

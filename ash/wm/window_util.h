@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/window_transient_descendant_iterator.h"
+#include "ash/wm/wm_metrics.h"
 #include "ui/aura/window.h"
 #include "ui/wm/core/window_util.h"
 
@@ -184,7 +185,8 @@ ASH_EXPORT bool ShouldRoundThumbnailWindow(
 bool IsFasterSplitScreenOrSnapGroupArm1Enabled();
 
 // Starts SplitViewOverviewSession for `window`, if it wasn't already active.
-void MaybeStartSplitViewOverview(aura::Window* window);
+void MaybeStartSplitViewOverview(aura::Window* window,
+                                 WindowSnapActionSource snap_action_source);
 
 }  // namespace ash::window_util
 

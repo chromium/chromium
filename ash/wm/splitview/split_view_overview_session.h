@@ -8,6 +8,7 @@
 #include "ash/wm/overview/overview_metrics.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/window_state_observer.h"
+#include "ash/wm/wm_metrics.h"
 #include "base/scoped_observation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
@@ -54,10 +55,11 @@ enum class SplitViewOverviewSessionExitPoint {
 //
 // Note that clamshell split view does *not* have a divider, and resizing
 // overview is done via resizing the window directly.
-class SplitViewOverviewSession : public aura::WindowObserver,
-                                 public WindowStateObserver {
+class ASH_EXPORT SplitViewOverviewSession : public aura::WindowObserver,
+                                            public WindowStateObserver {
  public:
-  SplitViewOverviewSession(aura::Window* window);
+  SplitViewOverviewSession(aura::Window* window,
+                           WindowSnapActionSource snap_action_source);
   SplitViewOverviewSession(const SplitViewOverviewSession&) = delete;
   SplitViewOverviewSession& operator=(const SplitViewOverviewSession&) = delete;
   ~SplitViewOverviewSession() override;
@@ -91,6 +93,10 @@ class SplitViewOverviewSession : public aura::WindowObserver,
   void OnPreWindowStateTypeChange(WindowState* window_state,
                                   chromeos::WindowStateType old_type) override;
 
+  WindowSnapActionSource snap_action_source_for_testing() const {
+    return snap_action_source_;
+  }
+
  private:
   // Records the presentation time of resize operation in clamshell split view
   // mode.
@@ -105,6 +111,9 @@ class SplitViewOverviewSession : public aura::WindowObserver,
 
   SplitViewOverviewSetupType setup_type_ =
       SplitViewOverviewSetupType::kSnapThenAutomaticOverview;
+
+  // Stores the snap action source info for the snapped `window_`.
+  const WindowSnapActionSource snap_action_source_;
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};

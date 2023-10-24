@@ -117662,6 +117662,9 @@ Called by update_scheduler_enums.py.-->
   <int value="13"
       label="Window is snapped due to tablet and clamshell transition"/>
   <int value="14" label="Window is snapped due to desk or session change"/>
+  <int value="15"
+      label="Window is snapped when updating a window in snap group"/>
+  <int value="16" label="Window is snapped in test"/>
 </enum>
 
 <enum name="WindowsNotificationActivationStatus">

@@ -35,6 +35,7 @@
 #include "ash/wm/window_state_observer.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
+#include "ash/wm/wm_metrics.h"
 #include "base/containers/adapters.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
@@ -235,7 +236,7 @@ float GetCurrentSnapRatio(aura::Window* window) {
 // windows and transient children of the transient children.
 void MoveAllTransientChildrenToNewRoot(aura::Window* window) {
   aura::Window* dst_root = window->GetRootWindow();
-  for (aura::Window* transient_child : ::wm::GetTransientChildren(window)) {
+  for (aura::Window* transient_child : wm::GetTransientChildren(window)) {
     if (!transient_child->parent())
       continue;
     const int container_id = transient_child->parent()->GetId();
@@ -244,7 +245,7 @@ void MoveAllTransientChildrenToNewRoot(aura::Window* window) {
     if (container->Contains(transient_child))
       continue;
     gfx::Rect child_bounds = transient_child->bounds();
-    ::wm::ConvertRectToScreen(dst_root, &child_bounds);
+    wm::ConvertRectToScreen(dst_root, &child_bounds);
     container->AddChild(transient_child);
     transient_child->SetBoundsInScreen(
         child_bounds,
@@ -454,15 +455,15 @@ bool WindowState::HasRestoreBounds() const {
 }
 
 void WindowState::Maximize() {
-  ::wm::SetWindowState(window_, ui::SHOW_STATE_MAXIMIZED);
+  wm::SetWindowState(window_, ui::SHOW_STATE_MAXIMIZED);
 }
 
 void WindowState::Minimize() {
-  ::wm::SetWindowState(window_, ui::SHOW_STATE_MINIMIZED);
+  wm::SetWindowState(window_, ui::SHOW_STATE_MINIMIZED);
 }
 
 void WindowState::Unminimize() {
-  ::wm::Unminimize(window_);
+  wm::Unminimize(window_);
 }
 
 void WindowState::Activate() {
@@ -520,10 +521,11 @@ void WindowState::OnWMEvent(const WMEvent* event) {
     return;
   }
 
-  if (event->IsSnapEvent()) {
+  const WindowSnapWMEvent* snap_event = event->AsSnapEvent();
+
+  if (snap_event) {
     // Save `event` requested snap ratio.
-    CHECK(event->AsSnapEvent());
-    const float target_snap_ratio = event->AsSnapEvent()->snap_ratio();
+    const float target_snap_ratio = snap_event->snap_ratio();
     snap_ratio_ = absl::make_optional(target_snap_ratio);
     if (IsPartial(target_snap_ratio)) {
       partial_start_time_ = base::TimeTicks::Now();
@@ -545,25 +547,27 @@ void WindowState::OnWMEvent(const WMEvent* event) {
 
   // The current snap ratio may be different from the requested snap ratio, if
   // the window has a minimum size requirement.
-  if (event->IsBoundsEvent())
+  if (event->IsBoundsEvent()) {
     UpdateSnapRatio();
+  }
 
-  if (event->IsSnapEvent()) {
-    // TODO(b/306218235): Replace `event->IsSnapEvent()` with `IsSnapped()`.
+  if (snap_event) {
+    const WindowSnapActionSource snap_action_source =
+        snap_event->snap_action_source();
     if (features::IsFasterSplitScreenSetupEnabled()) {
-      window_util::MaybeStartSplitViewOverview(window());
+      window_util::MaybeStartSplitViewOverview(window_, snap_action_source);
       return;
     }
 
     if (IsSnapGroupEnabledInClamshellMode()) {
-      SnapGroupController::Get()->OnWindowSnapped(window());
+      SnapGroupController::Get()->OnWindowSnapped(window_, snap_action_source);
     }
   }
 }
 
 gfx::Rect WindowState::GetCurrentBoundsInScreen() const {
   gfx::Rect bounds_in_screen = window_->GetTargetBounds();
-  ::wm::ConvertRectToScreen(window_->parent(), &bounds_in_screen);
+  wm::ConvertRectToScreen(window_->parent(), &bounds_in_screen);
   return bounds_in_screen;
 }
 
@@ -579,7 +583,7 @@ gfx::Rect WindowState::GetRestoreBoundsInScreen() const {
 
 gfx::Rect WindowState::GetRestoreBoundsInParent() const {
   gfx::Rect result = GetRestoreBoundsInScreen();
-  ::wm::ConvertRectFromScreen(window_->parent(), &result);
+  wm::ConvertRectFromScreen(window_->parent(), &result);
   return result;
 }
 
@@ -589,13 +593,13 @@ void WindowState::SetRestoreBoundsInScreen(const gfx::Rect& bounds) {
 
 void WindowState::SetRestoreBoundsInParent(const gfx::Rect& bounds) {
   gfx::Rect bounds_in_screen = bounds;
-  ::wm::ConvertRectToScreen(window_->parent(), &bounds_in_screen);
+  wm::ConvertRectToScreen(window_->parent(), &bounds_in_screen);
   SetRestoreBoundsInScreen(bounds_in_screen);
 }
 
 void WindowState::ClearRestoreBounds() {
   window_->ClearProperty(aura::client::kRestoreBoundsKey);
-  window_->ClearProperty(::wm::kVirtualKeyboardRestoreBoundsKey);
+  window_->ClearProperty(wm::kVirtualKeyboardRestoreBoundsKey);
 }
 
 bool WindowState::VerticallyShrinkWindow(const gfx::Rect& work_area) {
@@ -647,8 +651,8 @@ bool WindowState::HorizontallyShrinkWindow(const gfx::Rect& work_area) {
 void WindowState::UpdatePipBounds() {
   gfx::Rect new_bounds =
       PipPositioner::GetPositionAfterMovementAreaChange(this);
-  ::wm::ConvertRectFromScreen(window()->GetRootWindow(), &new_bounds);
-  if (window()->bounds() != new_bounds) {
+  wm::ConvertRectFromScreen(window_->GetRootWindow(), &new_bounds);
+  if (window_->bounds() != new_bounds) {
     SetBoundsWMEvent event(new_bounds, /*animate=*/true);
     OnWMEvent(&event);
   }
@@ -767,7 +771,7 @@ void WindowState::OnRevertDrag(const gfx::PointF& location) {
 
 void WindowState::OnActivationLost() {
   if (IsPip()) {
-    views::Widget::GetWidgetForNativeWindow(window())
+    views::Widget::GetWidgetForNativeWindow(window_)
         ->widget_delegate()
         ->SetCanActivate(false);
   }
@@ -840,7 +844,7 @@ base::AutoReset<bool> WindowState::GetScopedIgnorePropertyChange() {
 
 void WindowState::CreateDragDetails(const gfx::PointF& point_in_parent,
                                     int window_component,
-                                    ::wm::WindowMoveSource source) {
+                                    wm::WindowMoveSource source) {
   drag_details_ = std::make_unique<DragDetails>(window_, point_in_parent,
                                                 window_component, source);
 }
@@ -880,7 +884,7 @@ ui::WindowShowState WindowState::GetShowState() const {
 
 void WindowState::SetBoundsInScreen(const gfx::Rect& bounds_in_screen) {
   gfx::Rect bounds_in_parent = bounds_in_screen;
-  ::wm::ConvertRectFromScreen(window_->parent(), &bounds_in_parent);
+  wm::ConvertRectFromScreen(window_->parent(), &bounds_in_parent);
   window_->SetBounds(bounds_in_parent);
 }
 
@@ -977,8 +981,8 @@ void WindowState::OnPostPipStateChange(WindowStateType old_window_state_type) {
   if (old_window_state_type == WindowStateType::kPip) {
     // The animation type may be FADE_OUT_SLIDE_IN at this point, which we don't
     // want it to be anymore if the window is not PIP anymore.
-    ::wm::SetWindowVisibilityAnimationType(
-        window_, ::wm::WINDOW_VISIBILITY_ANIMATION_TYPE_DEFAULT);
+    wm::SetWindowVisibilityAnimationType(
+        window_, wm::WINDOW_VISIBILITY_ANIMATION_TYPE_DEFAULT);
   }
 }
 
@@ -1015,11 +1019,11 @@ void WindowState::SetBoundsDirect(const gfx::Rect& bounds) {
     // of the screen, which makes the snap fraction logic fail. Ensure to snap
     // it again.
     if (IsPip() && !is_dragged()) {
-      ::wm::ConvertRectToScreen(window_->GetRootWindow(), &actual_new_bounds);
+      wm::ConvertRectToScreen(window_->GetRootWindow(), &actual_new_bounds);
       actual_new_bounds = CollisionDetectionUtils::GetRestingPosition(
           display, actual_new_bounds,
           CollisionDetectionUtils::RelativePriority::kPictureInPicture);
-      ::wm::ConvertRectFromScreen(window_->GetRootWindow(), &actual_new_bounds);
+      wm::ConvertRectFromScreen(window_->GetRootWindow(), &actual_new_bounds);
     }
   }
   BoundsSetter().SetBounds(window_, actual_new_bounds);
@@ -1036,7 +1040,7 @@ void WindowState::SetBoundsConstrained(const gfx::Rect& bounds) {
 void WindowState::SetBoundsDirectAnimated(const gfx::Rect& bounds,
                                           base::TimeDelta duration,
                                           gfx::Tween::Type tween_type) {
-  if (::wm::WindowAnimationsDisabled(window_)) {
+  if (wm::WindowAnimationsDisabled(window_)) {
     SetBoundsDirect(bounds);
     return;
   }
@@ -1062,7 +1066,7 @@ void WindowState::SetBoundsDirectCrossFade(const gfx::Rect& new_bounds,
   // If the window already has a transform in place, do not use the cross fade
   // animation, set the bounds directly instead, or animation is disabled.
   if (!window_->layer()->GetTargetTransform().IsIdentity() ||
-      ::wm::WindowAnimationsDisabled(window_)) {
+      wm::WindowAnimationsDisabled(window_)) {
     SetBoundsDirect(new_bounds);
     return;
   }
@@ -1073,7 +1077,7 @@ void WindowState::SetBoundsDirectCrossFade(const gfx::Rect& new_bounds,
   // Specify |set_bounds| to true here to keep the old bounds in the child
   // windows of |window|.
   std::unique_ptr<ui::LayerTreeOwner> old_layer_owner =
-      ::wm::RecreateLayers(window_);
+      wm::RecreateLayers(window_);
 
   // Resize the window to the new size, which will force a layout and paint.
   SetBoundsDirect(new_bounds);
@@ -1088,11 +1092,11 @@ void WindowState::SetBoundsDirectCrossFade(const gfx::Rect& new_bounds,
 }
 
 void WindowState::OnPrePipStateChange(WindowStateType old_window_state_type) {
-  auto* widget = views::Widget::GetWidgetForNativeWindow(window());
+  auto* widget = views::Widget::GetWidgetForNativeWindow(window_);
   const bool was_pip = old_window_state_type == WindowStateType::kPip;
   if (IsPip()) {
     CollisionDetectionUtils::MarkWindowPriorityForCollisionDetection(
-        window(), CollisionDetectionUtils::RelativePriority::kPictureInPicture);
+        window_, CollisionDetectionUtils::RelativePriority::kPictureInPicture);
     // widget may not exit in some unit tests.
     // TODO(oshima): Fix unit tests and add DCHECK.
     if (widget) {
@@ -1101,8 +1105,8 @@ void WindowState::OnPrePipStateChange(WindowStateType old_window_state_type) {
         widget->Deactivate();
       Shell::Get()->focus_cycler()->AddWidget(widget);
     }
-    ::wm::SetWindowVisibilityAnimationType(
-        window(), WINDOW_VISIBILITY_ANIMATION_TYPE_FADE_IN_SLIDE_OUT);
+    wm::SetWindowVisibilityAnimationType(
+        window_, WINDOW_VISIBILITY_ANIMATION_TYPE_FADE_IN_SLIDE_OUT);
     // There may already be a system ui window on the initial position.
     UpdatePipBounds();
     if (!was_pip) {
@@ -1115,17 +1119,17 @@ void WindowState::OnPrePipStateChange(WindowStateType old_window_state_type) {
     CollectPipEnterExitMetrics(/*enter=*/true);
 
     // PIP window shouldn't be tracked in MruWindowTracker.
-    window()->SetProperty(ash::kExcludeInMruKey, true);
+    window_->SetProperty(ash::kExcludeInMruKey, true);
   } else if (was_pip) {
     if (widget) {
       widget->widget_delegate()->SetCanActivate(true);
       Shell::Get()->focus_cycler()->RemoveWidget(widget);
     }
-    ::wm::SetWindowVisibilityAnimationType(
-        window(), ::wm::WINDOW_VISIBILITY_ANIMATION_TYPE_DEFAULT);
+    wm::SetWindowVisibilityAnimationType(
+        window_, wm::WINDOW_VISIBILITY_ANIMATION_TYPE_DEFAULT);
 
     CollectPipEnterExitMetrics(/*enter=*/false);
-    window()->ClearProperty(ash::kExcludeInMruKey);
+    window_->ClearProperty(ash::kExcludeInMruKey);
   }
   // PIP uses the snap fraction to place the PIP window at the correct position
   // after screen rotation, system UI area change, etc. Make sure to reset this
@@ -1135,7 +1139,7 @@ void WindowState::OnPrePipStateChange(WindowStateType old_window_state_type) {
 }
 
 void WindowState::CollectPipEnterExitMetrics(bool enter) {
-  const bool is_arc = IsArcWindow(window());
+  const bool is_arc = IsArcWindow(window_);
   if (enter) {
     pip_start_time_ = base::TimeTicks::Now();
 
@@ -1219,7 +1223,7 @@ void WindowState::UpdateWindowStateRestoreHistoryStack(
 }
 
 chromeos::WindowStateType WindowState::GetWindowTypeOnMaximizable() const {
-  return CanMaximize() && ::wm::GetTransientParent(window_) == nullptr
+  return CanMaximize() && wm::GetTransientParent(window_) == nullptr
              ? WindowStateType::kMaximized
              : WindowStateType::kNormal;
 }
@@ -1320,8 +1324,9 @@ void WindowState::OnWindowPropertyChanged(aura::Window* window,
 
 void WindowState::OnWindowAddedToRootWindow(aura::Window* window) {
   DCHECK_EQ(window_, window);
-  if (::wm::GetTransientParent(window))
+  if (wm::GetTransientParent(window)) {
     return;
+  }
   MoveAllTransientChildrenToNewRoot(window);
 }
 
@@ -1346,7 +1351,7 @@ void WindowState::OnWindowBoundsChanged(aura::Window* window,
                                         const gfx::Rect& old_bounds,
                                         const gfx::Rect& new_bounds,
                                         ui::PropertyChangeReason reason) {
-  DCHECK_EQ(this->window(), window);
+  CHECK_EQ(window_, window);
   if (window_->GetTransparent() && IsNormalStateType() &&
       window_->GetProperty(ash::kWindowManagerManagesOpacityKey)) {
     window_->SetOpaqueRegionsForOcclusion({gfx::Rect(new_bounds.size())});
