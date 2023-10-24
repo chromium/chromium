@@ -12,9 +12,7 @@
 
         var path = htmlDoc.getElementById('theImage').src;
 
-        if (path == 'file:///test')
-            document.getElementById('result').innerHTML = 'SUCCESS';
-        else if (/^file:\/\/\/[C-Z]:\/test$/.test(path))  // MS Windows.
+        if (path == '/test')
             document.getElementById('result').innerHTML = 'SUCCESS';
     }
     </script>

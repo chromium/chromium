@@ -4546,11 +4546,11 @@ KURL Document::FallbackBaseURL() const {
     }
   }
 
-  // [spec] 2. If document's URL is about:blank, and document's browsing
-  //           context's creator base URL is non-null, then return that creator
-  //           base URL.
+  // [spec] 2. If document's URL matches about:blank and document's about base
+  //           URL is non-null, then return document's about base URL.
   if (urlForBinding().IsAboutBlankURL()) {
-    if (!dom_window_ && execution_context_) {
+    if (!RuntimeEnabledFeatures::DocumentBaseURIFixEnabled() && !dom_window_ &&
+        execution_context_) {
       return execution_context_->BaseURL();
     }
 
