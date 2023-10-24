@@ -311,7 +311,7 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
        didSelectItemWithID:(web::WebStateID)itemID {
   base::RecordAction(base::UserMetricsAction("MobileTabGridOpenInactiveTab"));
   [_delegate inactiveTabsCoordinator:self didSelectItemWithID:itemID];
-  [_delegate inactiveTabsCoordinatorDidFinish:self];
+  [self didFinish];
 }
 
 - (void)gridViewController:(GridViewController*)gridViewController
@@ -326,7 +326,7 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
   // change after the UI is no longer visible.
   if (numberOfTabs <= 1) {
     // Pop the view controller.
-    [_delegate inactiveTabsCoordinatorDidFinish:self];
+    [self didFinish];
     // To prevent the Inactive Tabs grid from being immediately emptied, defer
     // the closing to after the view is popped.
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -349,11 +349,7 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
   if (count == 0 && self.showing) {
     __weak __typeof(self) weakSelf = self;
     ProceduralBlock didFinish = ^{
-      InactiveTabsCoordinator* strongSelf = weakSelf;
-      if (!strongSelf) {
-        return;
-      }
-      [strongSelf->_delegate inactiveTabsCoordinatorDidFinish:strongSelf];
+      [weakSelf didFinish];
     };
 
     // Delay updating the UI if settings are presented.
@@ -441,7 +437,7 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 
 - (void)inactiveTabsViewControllerDidTapBackButton:
     (InactiveTabsViewController*)inactiveTabsViewController {
-  [_delegate inactiveTabsCoordinatorDidFinish:self];
+  [self didFinish];
 }
 
 - (void)inactiveTabsViewController:
@@ -572,6 +568,11 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 
 #pragma mark - Private
 
+// Called when inactive tabs should be dismissed.
+- (void)didFinish {
+  [_delegate inactiveTabsCoordinatorDidFinish:self];
+}
+
 - (void)dismissActionSheetCoordinator {
   [_actionSheetCoordinator stop];
   _actionSheetCoordinator = nil;
@@ -678,7 +679,7 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 
 // Called when the user confirmed wanting to close all inactive tabs.
 - (void)closeAllInactiveTabs {
-  [_delegate inactiveTabsCoordinatorDidFinish:self];
+  [self didFinish];
   // To prevent the Inactive Tabs grid from being immediately emptied, defer the
   // closing to after the view is popped.
   __weak __typeof(self) weakSelf = self;
