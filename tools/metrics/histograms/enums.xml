@@ -62532,6 +62532,7 @@ from previous Chrome versions.
   <int value="-1314757884" label="TabGroupsSave:enabled"/>
   <int value="-1314603238" label="ChromeHomePullToRefreshIphAtTop:enabled"/>
   <int value="-1313810940" label="StrictOriginIsolation:disabled"/>
+  <int value="-1312719341" label="ChromeRefresh2023NTB:enabled"/>
   <int value="-1311575452"
       label="AutofillEnforceMinRequiredFieldsForUpload:disabled"/>
   <int value="-1311503211" label="MuteNotificationsDuringScreenShare:enabled"/>
@@ -63739,6 +63740,7 @@ from previous Chrome versions.
   <int value="-726176676" label="AudioHFPNbsWarning:disabled"/>
   <int value="-725264428" label="CompositingBasedThrottling:enabled"/>
   <int value="-723224470" label="enable-password-force-saving:enabled"/>
+  <int value="-722635250" label="ChromeRefresh2023NTB:disabled"/>
   <int value="-722474177" label="browser-side-navigation:disabled"/>
   <int value="-722172419" label="SystemChinesePhysicalTyping:disabled"/>
   <int value="-721685663" label="WebViewMixedContentAutoupgrades:enabled"/>

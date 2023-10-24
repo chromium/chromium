@@ -1507,6 +1507,43 @@ const FeatureEntry::FeatureVariation kChromeRefresh2023Variations[] = {
     {"without Omnibox", kChromeRefresh2023Level1,
      std::size(kChromeRefresh2023Level1), nullptr}};
 
+const FeatureEntry::FeatureParam kChromeRefresh2023NTBVariationGM2Full[] = {
+    {features::kChromeRefresh2023NTBVariationKey, "GM2Full"}};
+const FeatureEntry::FeatureParam
+    kChromeRefresh2023NTBVariationGM3OldIconNoBackground[] = {
+        {features::kChromeRefresh2023NTBVariationKey,
+         "GM3OldIconNoBackground"}};
+const FeatureEntry::FeatureParam
+    kChromeRefresh2023NTBVariationGM3OldIconWithBackground[] = {
+        {features::kChromeRefresh2023NTBVariationKey,
+         "GM3OldIconWithBackground"}};
+const FeatureEntry::FeatureParam
+    kChromeRefresh2023NTBVariationGM3NewIconNoBackground[] = {
+        {features::kChromeRefresh2023NTBVariationKey,
+         "GM3NewIconNoBackground"}};
+const FeatureEntry::FeatureParam
+    kChromeRefresh2023NTBVariationGM3NewIconWithBackground[] = {
+        {features::kChromeRefresh2023NTBVariationKey,
+         "GM3NewIconWithBackground"}};
+
+const FeatureEntry::FeatureVariation kChromeRefresh2023NTBVariations[] = {
+    {"GM2 Implementation", kChromeRefresh2023NTBVariationGM2Full,
+     std::size(kChromeRefresh2023NTBVariationGM2Full), nullptr},
+    {"GM3 Old Icon No Background",
+     kChromeRefresh2023NTBVariationGM3OldIconNoBackground,
+     std::size(kChromeRefresh2023NTBVariationGM3OldIconNoBackground), nullptr},
+    {"GM3 Old Icon With Background",
+     kChromeRefresh2023NTBVariationGM3OldIconWithBackground,
+     std::size(kChromeRefresh2023NTBVariationGM3OldIconWithBackground),
+     nullptr},
+    {"GM3 New Icon No Background",
+     kChromeRefresh2023NTBVariationGM3NewIconNoBackground,
+     std::size(kChromeRefresh2023NTBVariationGM3NewIconNoBackground), nullptr},
+    {"GM3 New Icon With Background",
+     kChromeRefresh2023NTBVariationGM3NewIconWithBackground,
+     std::size(kChromeRefresh2023NTBVariationGM3NewIconWithBackground),
+     nullptr}};
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 const FeatureEntry::FeatureParam kShortcutBoostSearchAndUrl1414[] = {
@@ -8976,6 +9013,12 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-first-party-sets", flag_descriptions::kEnableFirstPartySetsName,
      flag_descriptions::kEnableFirstPartySetsDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFirstPartySets)},
+
+    {"chrome-refresh-2023-ntb", flag_descriptions::kChromeRefresh2023NTBName,
+     flag_descriptions::kChromeRefresh2023NTBDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kChromeRefresh2023NTB,
+                                    kChromeRefresh2023NTBVariations,
+                                    "ChromeRefresh2023NTBVariations")},
 
 #if BUILDFLAG(IS_ANDROID)
     {"autofill-enable-offers-in-clank-keyboard-accessory",

@@ -32,11 +32,10 @@ TabOrganizationButton::TabOrganizationButton(TabStrip* tab_strip,
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ORGANIZE));
   SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_ORGANIZE));
 
-  UpdateForegroundFrameActiveColorId(kColorNewTabButtonForegroundFrameActive);
-  UpdateForegroundFrameInactiveColorId(
-      kColorNewTabButtonForegroundFrameInactive);
-  UpdateBackgroundFrameActiveColorId(kColorNewTabButtonCRBackgroundFrameActive);
-  UpdateBackgroundFrameInactiveColorId(
+  SetForegroundFrameActiveColorId(kColorNewTabButtonForegroundFrameActive);
+  SetForegroundFrameInactiveColorId(kColorNewTabButtonForegroundFrameInactive);
+  SetBackgroundFrameActiveColorId(kColorNewTabButtonCRBackgroundFrameActive);
+  SetBackgroundFrameInactiveColorId(
       kColorNewTabButtonCRBackgroundFrameInactive);
 
   set_paint_transparent_for_custom_image_theme(false);

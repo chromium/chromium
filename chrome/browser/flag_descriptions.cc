@@ -818,6 +818,10 @@ const char kChromeWebuiRefresh2023Name[] = "Chrome WebUI Refresh 2023";
 const char kChromeWebuiRefresh2023Description[] =
     "Enables Chrome Refresh 2023 styles for various WebUI surfaces.";
 
+const char kChromeRefresh2023NTBName[] = "Chrome Refresh 2023 New Tab Button";
+const char kChromeRefresh2023NTBDescription[] =
+    "Enables the variations of the new tab button for chrome refresh 2023.";
+
 const char kCommerceHintAndroidName[] = "Commerce Hint Android";
 const char kCommerceHintAndroidDescription[] =
     "Enables commerce hint detection on Android.";
