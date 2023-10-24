@@ -352,6 +352,14 @@ Microsoft::WRL::ComPtr<ID3D11Device> DawnContextProvider::GetD3D11Device()
 }
 #endif
 
+bool DawnContextProvider::SupportsFeature(wgpu::FeatureName feature) {
+  if (!device_) {
+    return false;
+  }
+
+  return device_.HasFeature(feature);
+}
+
 absl::optional<error::ContextLostReason> DawnContextProvider::GetResetStatus()
     const {
   base::AutoLock auto_lock(context_lost_lock_);
