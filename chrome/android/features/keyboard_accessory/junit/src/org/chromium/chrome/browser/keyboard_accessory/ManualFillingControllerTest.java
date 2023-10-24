@@ -87,8 +87,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.widget.InsetObserverView;
-import org.chromium.components.browser_ui.widget.InsetObserverViewSupplier;
+import org.chromium.components.browser_ui.widget.InsetObserver;
+import org.chromium.components.browser_ui.widget.InsetObserverSupplier;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
@@ -123,7 +123,7 @@ public class ManualFillingControllerTest {
     @Mock private ManualFillingComponent.SoftKeyboardDelegate mMockSoftKeyboardDelegate;
     @Mock private ConfirmationDialogHelper mMockConfirmationHelper;
     @Mock private FullscreenManager mMockFullscreenManager;
-    @Mock private InsetObserverView mInsetObserver;
+    @Mock private InsetObserver mInsetObserver;
     @Mock private BackPressManager mMockBackPressManager;
 
     @Rule public Features.JUnitProcessor mFeaturesProcessor = new Features.JUnitProcessor();
@@ -319,7 +319,7 @@ public class ManualFillingControllerTest {
         when(mMockContentView.getRootView()).thenReturn(mock(View.class));
         mLastMockWebContents = mock(WebContents.class);
         when(mMockActivity.getCurrentWebContents()).then(i -> mLastMockWebContents);
-        InsetObserverViewSupplier.setInstanceForTesting(mInsetObserver);
+        InsetObserverSupplier.setInstanceForTesting(mInsetObserver);
         simulateLayoutSizeChange(
                 2.f, 80, 128, /* keyboardShown= */ false, VirtualKeyboardMode.RESIZES_VISUAL);
         Configuration config = new Configuration();

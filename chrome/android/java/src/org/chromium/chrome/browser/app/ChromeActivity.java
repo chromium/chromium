@@ -192,8 +192,8 @@ import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.components.browser_ui.widget.InsetObserverView;
-import org.chromium.components.browser_ui.widget.InsetObserverViewSupplier;
+import org.chromium.components.browser_ui.widget.InsetObserver;
+import org.chromium.components.browser_ui.widget.InsetObserverSupplier;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.Type;
@@ -319,8 +319,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             new ObservableSupplierImpl<>();
     private ObservableSupplierImpl<LayoutManagerImpl> mLayoutManagerSupplier =
             new ObservableSupplierImpl<>();
-    protected final UnownedUserDataSupplier<InsetObserverView> mInsetObserverViewSupplier =
-            new InsetObserverViewSupplier();
+    protected final UnownedUserDataSupplier<InsetObserver> mInsetObserverViewSupplier =
+            new InsetObserverSupplier();
     private final ObservableSupplierImpl<ContextualSearchManager> mContextualSearchManagerSupplier =
             new ObservableSupplierImpl<>();
 
@@ -815,11 +815,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         // insets.
         rootView.setFitsSystemWindows(false);
 
-        // Add a custom view right after the root view that stores the insets to access later.
+        // Add an inset observer that stores the insets to access later.
         // WebContents needs the insets to determine the portion of the screen obscured by
         // non-content displaying things such as the OSK.
-        mInsetObserverViewSupplier.set(InsetObserverView.create(this));
-        rootView.addView(mInsetObserverViewSupplier.get(), 0);
+        mInsetObserverViewSupplier.set(new InsetObserver(rootView));
 
         super.onInitialLayoutInflationComplete();
     }

@@ -73,8 +73,8 @@ import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
-import org.chromium.components.browser_ui.widget.InsetObserverView;
-import org.chromium.components.browser_ui.widget.InsetObserverViewSupplier;
+import org.chromium.components.browser_ui.widget.InsetObserver;
+import org.chromium.components.browser_ui.widget.InsetObserverSupplier;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -162,8 +162,8 @@ public class SearchActivity extends AsyncInitializationActivity
     private SearchBoxDataProvider mSearchBoxDataProvider;
     private Tab mTab;
     private ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
-    protected final UnownedUserDataSupplier<InsetObserverView> mInsetObserverViewSupplier =
-            new InsetObserverViewSupplier();
+    protected final UnownedUserDataSupplier<InsetObserver> mInsetObserverViewSupplier =
+            new InsetObserverSupplier();
 
     @Override
     protected boolean isStartedUpCorrectly(Intent intent) {
@@ -207,12 +207,11 @@ public class SearchActivity extends AsyncInitializationActivity
         // Setting fitsSystemWindows to false ensures that the root view doesn't consume the
         // insets.
         rootView.setFitsSystemWindows(false);
-        // Add a custom view right after the root view that stores the insets to access later.
+        // Add an inset observer that stores the insets to access later.
         // WebContents needs the insets to determine the portion of the screen obscured by
         // non-content displaying things such as the OSK.
         mInsetObserverViewSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
-        mInsetObserverViewSupplier.set(InsetObserverView.create(this));
-        rootView.addView(mInsetObserverViewSupplier.get(), 0);
+        mInsetObserverViewSupplier.set(new InsetObserver(rootView));
 
         mContentView = createContentView();
         setContentView(mContentView);

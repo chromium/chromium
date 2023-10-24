@@ -34,8 +34,8 @@ import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController;
-import org.chromium.components.browser_ui.widget.InsetObserverView;
-import org.chromium.components.browser_ui.widget.InsetObserverViewSupplier;
+import org.chromium.components.browser_ui.widget.InsetObserver;
+import org.chromium.components.browser_ui.widget.InsetObserverSupplier;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -57,7 +57,7 @@ public class DisplayCutoutControllerTest {
 
     @Mock private ChromeActivity mChromeActivity;
 
-    @Mock private InsetObserverView mInsetObserver;
+    @Mock private InsetObserver mInsetObserver;
 
     private DisplayCutoutTabHelper mDisplayCutoutTabHelper;
     private DisplayCutoutController mController;
@@ -80,7 +80,7 @@ public class DisplayCutoutControllerTest {
         when(mWebContents.isFullscreenForCurrentTab()).thenReturn(true);
         when(mWindowAndroid.getActivity()).thenReturn(mActivityRef);
 
-        InsetObserverViewSupplier.setInstanceForTesting(mInsetObserver);
+        InsetObserverSupplier.setInstanceForTesting(mInsetObserver);
         ActivityDisplayCutoutModeSupplier.setInstanceForTesting(0);
 
         mDisplayCutoutTabHelper = spy(new DisplayCutoutTabHelper(mTab));

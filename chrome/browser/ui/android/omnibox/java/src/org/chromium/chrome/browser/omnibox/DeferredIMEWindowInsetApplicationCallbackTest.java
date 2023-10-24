@@ -25,8 +25,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.components.browser_ui.widget.InsetObserverView;
-import org.chromium.components.browser_ui.widget.InsetObserverViewSupplier;
+import org.chromium.components.browser_ui.widget.InsetObserver;
+import org.chromium.components.browser_ui.widget.InsetObserverSupplier;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Unit tests for {@link DeferredIMEWindowInsetApplicationCallback}. */
@@ -45,11 +45,11 @@ public class DeferredIMEWindowInsetApplicationCallbackTest {
     @Mock private Runnable mUpdateRunnable;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private View mView;
-    @Mock InsetObserverView mInsetObserverView;
+    @Mock InsetObserver mInsetObserver;
 
     @Before
     public void setUp() {
-        InsetObserverViewSupplier.setInstanceForTesting(mInsetObserverView);
+        InsetObserverSupplier.setInstanceForTesting(mInsetObserver);
         mAnimation = new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 160);
         mAnimation2 = new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 160);
         mCallback = new DeferredIMEWindowInsetApplicationCallback(mUpdateRunnable);
@@ -120,12 +120,12 @@ public class DeferredIMEWindowInsetApplicationCallbackTest {
     @Test
     public void testAttachDetach() {
         mCallback.attach(mWindowAndroid);
-        verify(mInsetObserverView).addWindowInsetsAnimationListener(mCallback);
-        verify(mInsetObserverView).addInsetsConsumer(mCallback);
+        verify(mInsetObserver).addWindowInsetsAnimationListener(mCallback);
+        verify(mInsetObserver).addInsetsConsumer(mCallback);
 
         mCallback.detach();
-        verify(mInsetObserverView).removeWindowInsetsAnimationListener(mCallback);
-        verify(mInsetObserverView).removeInsetsConsumer(mCallback);
+        verify(mInsetObserver).removeWindowInsetsAnimationListener(mCallback);
+        verify(mInsetObserver).removeInsetsConsumer(mCallback);
     }
 
     @Test

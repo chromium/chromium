@@ -12,10 +12,10 @@ import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsAnimationCompat.BoundsCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import org.chromium.components.browser_ui.widget.InsetObserverView;
-import org.chromium.components.browser_ui.widget.InsetObserverView.WindowInsetsAnimationListener;
-import org.chromium.components.browser_ui.widget.InsetObserverView.WindowInsetsConsumer;
-import org.chromium.components.browser_ui.widget.InsetObserverViewSupplier;
+import org.chromium.components.browser_ui.widget.InsetObserver;
+import org.chromium.components.browser_ui.widget.InsetObserver.WindowInsetsAnimationListener;
+import org.chromium.components.browser_ui.widget.InsetObserver.WindowInsetsConsumer;
+import org.chromium.components.browser_ui.widget.InsetObserverSupplier;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.List;
@@ -34,7 +34,7 @@ class DeferredIMEWindowInsetApplicationCallback
     private int mKeyboardHeight;
     private boolean mAnimationInProgress;
     private WindowInsetsAnimationCompat mCurrentAnimation;
-    private InsetObserverView mInsetObserverView;
+    private InsetObserver mInsetObserver;
     private final Runnable mOnUpdateCallback;
 
     /**
@@ -51,24 +51,23 @@ class DeferredIMEWindowInsetApplicationCallback
      * window insets and listening for IME animation updates.
      */
     public void attach(WindowAndroid windowAndroid) {
-        InsetObserverView insetObserverView =
-                InsetObserverViewSupplier.getValueOrNullFrom(windowAndroid);
-        assert insetObserverView != null
+        InsetObserver insetObserver = InsetObserverSupplier.getValueOrNullFrom(windowAndroid);
+        assert insetObserver != null
                 : "DeferredIMEWindowInsetApplicationCallback can only be used in activities with an"
                         + " InsetObserverView";
-        mInsetObserverView = insetObserverView;
-        insetObserverView.addInsetsConsumer(this);
-        insetObserverView.addWindowInsetsAnimationListener(this);
+        mInsetObserver = insetObserver;
+        insetObserver.addInsetsConsumer(this);
+        insetObserver.addWindowInsetsAnimationListener(this);
     }
 
     /** Detaches this callback from the root of the given window. */
     public void detach() {
-        mInsetObserverView.removeInsetsConsumer(this);
-        mInsetObserverView.removeWindowInsetsAnimationListener(this);
+        mInsetObserver.removeInsetsConsumer(this);
+        mInsetObserver.removeWindowInsetsAnimationListener(this);
         mAnimationInProgress = false;
         mDeferredKeyboardHeight = NO_DEFERRED_KEYBOARD_HEIGHT;
         mKeyboardHeight = 0;
-        mInsetObserverView = null;
+        mInsetObserver = null;
     }
 
     public int getCurrentKeyboardHeight() {

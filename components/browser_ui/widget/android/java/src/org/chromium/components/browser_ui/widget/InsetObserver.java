@@ -4,15 +4,12 @@
 
 package org.chromium.components.browser_ui.widget;
 
-import android.content.Context;
 import android.graphics.Rect;
-import android.os.Build;
-import android.view.DisplayCutout;
 import android.view.View;
-import android.view.WindowInsets;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
+import androidx.core.view.DisplayCutoutCompat;
+import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsAnimationCompat.BoundsCompat;
@@ -27,18 +24,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The purpose of this view is to store the system window insets (OSK, status bar) for
+ * The purpose of this class is to store the system window insets (OSK, status bar) for
  * later use.
  */
-public class InsetObserverView extends View {
+public class InsetObserver implements OnApplyWindowInsetsListener {
     private final Rect mWindowInsets;
+    private final Rect mCurrentSafeArea;
     private int mKeyboardInset;
     protected final ObserverList<WindowInsetObserver> mObservers;
     private final KeyboardInsetObservableSupplier mKeyboardInsetSupplier;
     private final WindowInsetsAnimationCompat.Callback mWindowInsetsAnimationProxyCallback;
     private final List<WindowInsetsAnimationListener> mWindowInsetsAnimationListeners =
             new ArrayList<>();
-    private List<WindowInsetsConsumer> mInsetsConsumers = new ArrayList<>();
+    private final List<WindowInsetsConsumer> mInsetsConsumers = new ArrayList<>();
+    private final View mRootView;
 
     /**
      * Allows observing changes to the window insets from Android system UI.
@@ -91,7 +90,7 @@ public class InsetObserverView extends View {
         void onEnd(@NonNull WindowInsetsAnimationCompat animation);
     }
 
-    private class KeyboardInsetObservableSupplier
+    private static class KeyboardInsetObservableSupplier
             extends ObservableSupplierImpl<Integer> implements WindowInsetObserver {
         @Override
         public void onKeyboardInsetChanged(int inset) {
@@ -100,26 +99,13 @@ public class InsetObserverView extends View {
     }
 
     /**
-     * Constructs a new {@link InsetObserverView} for the appropriate Android version.
-     * @param context The Context the view is running in, through which it can access the current
-     *            theme, resources, etc.
-     * @return an instance of a InsetObserverView.
+     * Creates an instance of {@link InsetObserver}.
+     * @param rootView The root view of the app.
      */
-    public static InsetObserverView create(Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            return new InsetObserverViewApi28(context);
-        }
-        return new InsetObserverView(context);
-    }
-
-    /**
-     * Creates an instance of {@link InsetObserverView}.
-     * @param context The Context to create this {@link InsetObserverView} in.
-     */
-    public InsetObserverView(Context context) {
-        super(context);
-        setVisibility(INVISIBLE);
+    public InsetObserver(View rootView) {
+        mRootView = rootView;
         mWindowInsets = new Rect();
+        mCurrentSafeArea = new Rect();
         mKeyboardInset = 0;
         mObservers = new ObserverList<>();
         mKeyboardInsetSupplier = new KeyboardInsetObservableSupplier();
@@ -163,11 +149,12 @@ public class InsetObserverView extends View {
             }
         };
 
-        ViewCompat.setWindowInsetsAnimationCallback(this, mWindowInsetsAnimationProxyCallback);
+        ViewCompat.setWindowInsetsAnimationCallback(rootView, mWindowInsetsAnimationProxyCallback);
+        ViewCompat.setOnApplyWindowInsetsListener(rootView, this);
     }
 
     /**
-     * Returns a supplier that observes this {@link InsetObserverView} and
+     * Returns a supplier that observes this {@link InsetObserver} and
      * provides changes to the keyboard inset using the {@link
      * ObservableSupplier} interface.
      */
@@ -200,34 +187,6 @@ public class InsetObserverView extends View {
     }
 
     /**
-     * Returns the left {@link WindowInsets} in pixels.
-     */
-    public int getSystemWindowInsetsLeft() {
-        return mWindowInsets.left;
-    }
-
-    /**
-     * Returns the top {@link WindowInsets} in pixels.
-     */
-    public int getSystemWindowInsetsTop() {
-        return mWindowInsets.top;
-    }
-
-    /**
-     * Returns the right {@link WindowInsets} in pixels.
-     */
-    public int getSystemWindowInsetsRight() {
-        return mWindowInsets.right;
-    }
-
-    /**
-     * Returns the bottom {@link WindowInsets} in pixels.
-     */
-    public int getSystemWindowInsetsBottom() {
-        return mWindowInsets.bottom;
-    }
-
-    /**
      * Add an observer to be notified when the window insets have changed.
      */
     public void addObserver(WindowInsetObserver observer) {
@@ -245,12 +204,15 @@ public class InsetObserverView extends View {
         return mWindowInsetsAnimationProxyCallback;
     }
 
+    @NonNull
     @Override
-    public WindowInsets onApplyWindowInsets(WindowInsets insets) {
+    public WindowInsetsCompat onApplyWindowInsets(@NonNull View view,
+        @NonNull WindowInsetsCompat insets) {
+        setCurrentSafeAreaFromInsets(insets);
         insets = forwardToInsetConsumers(insets);
         updateKeyboardInset();
         onInsetChanged(insets.getSystemWindowInsetLeft(), insets.getSystemWindowInsetTop(),
-                insets.getSystemWindowInsetRight(), insets.getSystemWindowInsetBottom());
+            insets.getSystemWindowInsetRight(), insets.getSystemWindowInsetBottom());
         return insets;
     }
 
@@ -277,7 +239,7 @@ public class InsetObserverView extends View {
 
     private void updateKeyboardInset() {
         int keyboardInset =
-                KeyboardVisibilityDelegate.getInstance().calculateKeyboardHeight(getRootView());
+                KeyboardVisibilityDelegate.getInstance().calculateKeyboardHeight(mRootView);
 
         if (mKeyboardInset == keyboardInset) {
             return;
@@ -290,39 +252,19 @@ public class InsetObserverView extends View {
         }
     }
 
-    private WindowInsets forwardToInsetConsumers(WindowInsets insets) {
-        WindowInsetsCompat windowInsetsCompat =
-                WindowInsetsCompat.toWindowInsetsCompat(insets, this);
+    private WindowInsetsCompat forwardToInsetConsumers(WindowInsetsCompat insets) {
         for (WindowInsetsConsumer consumer : mInsetsConsumers) {
-            windowInsetsCompat = consumer.onApplyWindowInsets(this, windowInsetsCompat);
+            insets = consumer.onApplyWindowInsets(mRootView, insets);
         }
-        return windowInsetsCompat.toWindowInsets();
+        return insets;
     }
-
-    @RequiresApi(Build.VERSION_CODES.P)
-    private static class InsetObserverViewApi28 extends InsetObserverView {
-        private Rect mCurrentSafeArea = new Rect();
-
-        /**
-         * Creates an instance of {@link InsetObserverView} for Android versions P and above.
-         * @param context The Context to create this {@link InsetObserverView} in.
-         */
-        InsetObserverViewApi28(Context context) {
-            super(context);
-        }
-
-        @Override
-        public WindowInsets onApplyWindowInsets(WindowInsets insets) {
-            setCurrentSafeAreaFromInsets(insets);
-            return super.onApplyWindowInsets(insets);
-        }
 
         /**
          * Get the safe area from the WindowInsets, store it and notify any observers.
          * @param insets The WindowInsets containing the safe area.
          */
-        private void setCurrentSafeAreaFromInsets(WindowInsets insets) {
-            DisplayCutout displayCutout = insets.getDisplayCutout();
+        private void setCurrentSafeAreaFromInsets(WindowInsetsCompat insets) {
+            DisplayCutoutCompat displayCutout = insets.getDisplayCutout();
 
             int left = 0;
             int top = 0;
@@ -348,5 +290,4 @@ public class InsetObserverView extends View {
                 mObserver.onSafeAreaChanged(mCurrentSafeArea);
             }
         }
-    }
 }
