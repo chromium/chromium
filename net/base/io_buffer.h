@@ -92,7 +92,6 @@ class NET_EXPORT IOBuffer : public base::RefCountedThreadSafe<IOBuffer> {
   friend class base::RefCountedThreadSafe<IOBuffer>;
 
   static void AssertValidBufferSize(size_t size);
-  static void AssertValidBufferSize(int size);
 
   // Only allow derived classes to specify data_.
   // In all other cases, we own data_, and must delete it at destruction time.
@@ -157,8 +156,6 @@ class NET_EXPORT StringIOBuffer : public IOBuffer {
 //
 class NET_EXPORT DrainableIOBuffer : public IOBuffer {
  public:
-  // TODO(eroman): Deprecated. Use the size_t flavor instead. crbug.com/488553
-  DrainableIOBuffer(scoped_refptr<IOBuffer> base, int size);
   DrainableIOBuffer(scoped_refptr<IOBuffer> base, size_t size);
 
   // DidConsume() changes the |data_| pointer so that |data_| always points
