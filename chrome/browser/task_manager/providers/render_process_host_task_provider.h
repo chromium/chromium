@@ -12,6 +12,7 @@
 #include "chrome/browser/task_manager/providers/task_provider.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
+#include "content/public/browser/render_process_host_creation_observer.h"
 
 namespace task_manager {
 
@@ -20,8 +21,10 @@ class ChildProcessTask;
 // This provides tasks that represent RenderProcessHost processes. It does so by
 // listening to the notification service for the creation and destruction of the
 // RenderProcessHost.
-class RenderProcessHostTaskProvider : public TaskProvider,
-                                      public content::NotificationObserver {
+class RenderProcessHostTaskProvider
+    : public TaskProvider,
+      public content::RenderProcessHostCreationObserver,
+      public content::NotificationObserver {
  public:
   RenderProcessHostTaskProvider();
   RenderProcessHostTaskProvider(const RenderProcessHostTaskProvider&) = delete;
@@ -31,6 +34,9 @@ class RenderProcessHostTaskProvider : public TaskProvider,
 
   // task_manager::TaskProvider:
   Task* GetTaskOfUrlRequest(int child_id, int route_id) override;
+
+  // content::RenderProcessHostCreationObserver:
+  void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
 
   // content::NotificationObserver:
   void Observe(int type,
@@ -49,6 +55,9 @@ class RenderProcessHostTaskProvider : public TaskProvider,
   // Deletes a RenderProcessHostTask whose |render_process_host_id| is provided
   // after notifying the observer of its deletion.
   void DeleteTask(const int render_process_host_id);
+
+  // True if the provider is between StartUpdating() and StopUpdating().
+  bool is_updating_ = false;
 
   std::map<int, std::unique_ptr<ChildProcessTask>> tasks_by_rph_id_;
 
