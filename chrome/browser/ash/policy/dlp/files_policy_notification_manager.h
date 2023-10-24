@@ -84,7 +84,7 @@ class FilesPolicyNotificationManager
   // will be paused. Otherwise a desktop notification will be shown. Virtual
   // to allow overrides in tests.
   virtual void ShowDlpWarning(
-      OnDlpRestrictionCheckedWithJustificationCallback callback,
+      WarningWithJustificationCallback callback,
       absl::optional<file_manager::io_task::IOTaskId> task_id,
       std::vector<base::FilePath> warning_files,
       const DlpFileDestination& destination,
@@ -92,11 +92,10 @@ class FilesPolicyNotificationManager
 
   // Shows Connectors Warning UI and pauses the corresponding IOTask.
   // Virtual to allow overrides in tests.
-  virtual void ShowConnectorsWarning(
-      OnDlpRestrictionCheckedWithJustificationCallback callback,
-      file_manager::io_task::IOTaskId task_id,
-      dlp::FileAction action,
-      FilesPolicyDialog::Info dialog_info);
+  virtual void ShowConnectorsWarning(WarningWithJustificationCallback callback,
+                                     file_manager::io_task::IOTaskId task_id,
+                                     dlp::FileAction action,
+                                     FilesPolicyDialog::Info dialog_info);
 
   // Shows a Files Policy warning or error desktop notification with
   // `notification_id` based on `status`. Used for IO tasks.
@@ -151,11 +150,10 @@ class FilesPolicyNotificationManager
   // needed for custom messaging should be added here.
   struct WarningInfo {
     WarningInfo() = delete;
-    WarningInfo(
-        Policy warning_reason,
-        OnDlpRestrictionCheckedWithJustificationCallback warning_callback,
-        OnDlpRestrictionCheckedWithJustificationCallback dialog_callback,
-        FilesPolicyDialog::Info dialog_info);
+    WarningInfo(Policy warning_reason,
+                WarningWithJustificationCallback warning_callback,
+                WarningWithJustificationCallback dialog_callback,
+                FilesPolicyDialog::Info dialog_info);
     WarningInfo(WarningInfo&& other);
     ~WarningInfo();
 
@@ -163,11 +161,11 @@ class FilesPolicyNotificationManager
     // warnings aren't supported.
     Policy warning_reason;
     // Warning callback.
-    OnDlpRestrictionCheckedWithJustificationCallback warning_callback;
+    WarningWithJustificationCallback warning_callback;
     // Invoked by clicking on dialog's buttons. Wrapper around `callback` as it
     // performs additional actions before running `callback` with the same
     // `should_proceed` parameter.
-    OnDlpRestrictionCheckedWithJustificationCallback dialog_callback;
+    WarningWithJustificationCallback dialog_callback;
     // Holds warning dialog info such as the warned files, the warning message,
     // an optional custom learn more URL or whether bypassing the warning
     // requires a user justification that should be used when displaying the
@@ -374,15 +372,14 @@ class FilesPolicyNotificationManager
                                 dlp::FileAction action);
 
   // Shows DLP warning desktop notification.
-  void ShowDlpWarningNotification(
-      OnDlpRestrictionCheckedWithJustificationCallback callback,
-      std::vector<base::FilePath> warning_files,
-      const DlpFileDestination& destination,
-      dlp::FileAction action);
+  void ShowDlpWarningNotification(WarningWithJustificationCallback callback,
+                                  std::vector<base::FilePath> warning_files,
+                                  const DlpFileDestination& destination,
+                                  dlp::FileAction action);
 
   // Pauses IO task due to `warning_reason`.
   void PauseIOTask(file_manager::io_task::IOTaskId task_id,
-                   OnDlpRestrictionCheckedWithJustificationCallback callback,
+                   WarningWithJustificationCallback callback,
                    dlp::FileAction action,
                    Policy warning_reason,
                    FilesPolicyDialog::Info dialog_info);

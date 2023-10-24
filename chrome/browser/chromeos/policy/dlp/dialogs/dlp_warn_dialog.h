@@ -62,8 +62,7 @@ class DlpWarnDialog : public PolicyDialogBase {
   };
 
   DlpWarnDialog() = delete;
-  DlpWarnDialog(OnDlpRestrictionCheckedCallback callback,
-                DlpWarnDialogOptions options);
+  DlpWarnDialog(WarningCallback callback, DlpWarnDialogOptions options);
   DlpWarnDialog(const DlpWarnDialog& other) = delete;
   DlpWarnDialog& operator=(const DlpWarnDialog& other) = delete;
   ~DlpWarnDialog() override;

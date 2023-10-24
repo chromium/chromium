@@ -70,7 +70,7 @@ class DlpContentManager : public DlpContentObserver,
   // to proceed or not.
   void CheckPrintingRestriction(content::WebContents* web_contents,
                                 content::GlobalRenderFrameHostId rfh_id,
-                                OnDlpRestrictionCheckedCallback callback);
+                                WarningCallback callback);
 
   // Returns whether screenshots should be restricted for extensions API.
   virtual bool IsScreenshotApiRestricted(content::WebContents* web_contents);
@@ -82,7 +82,7 @@ class DlpContentManager : public DlpContentObserver,
   virtual void CheckScreenShareRestriction(
       const content::DesktopMediaID& media_id,
       const std::u16string& application_title,
-      OnDlpRestrictionCheckedCallback callback) = 0;
+      WarningCallback callback) = 0;
 
   // Called when screen share is started.
   // |state_change_callback| will be called when restricted content will appear
@@ -328,7 +328,7 @@ class DlpContentManager : public DlpContentObserver,
   // app |application_title| and calls the |callback| with a result.
   void ProcessScreenShareRestriction(const std::u16string& application_title,
                                      ConfidentialContentsInfo info,
-                                     OnDlpRestrictionCheckedCallback callback);
+                                     WarningCallback callback);
 
   // Returns which level, url, and information about visible confidential
   // contents of screen share restriction that is currently enforced for
@@ -380,7 +380,7 @@ class DlpContentManager : public DlpContentObserver,
   void OnDlpWarnDialogReply(
       const DlpConfidentialContents& confidential_contents,
       DlpRulesManager::Restriction restriction,
-      OnDlpRestrictionCheckedCallback callback,
+      WarningCallback callback,
       bool should_proceed);
 
   // Reports events if required by the |restriction_info| and

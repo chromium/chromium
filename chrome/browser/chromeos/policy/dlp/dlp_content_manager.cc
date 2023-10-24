@@ -130,7 +130,7 @@ bool DlpContentManager::IsScreenShareBlocked(
 void DlpContentManager::CheckPrintingRestriction(
     content::WebContents* web_contents,
     content::GlobalRenderFrameHostId rfh_id,
-    OnDlpRestrictionCheckedCallback callback) {
+    WarningCallback callback) {
   const RestrictionLevelAndUrl restriction_info =
       GetPrintingRestrictionInfo(web_contents, rfh_id);
   MaybeReportEvent(restriction_info, DlpRulesManager::Restriction::kPrinting);
@@ -613,7 +613,7 @@ DlpContentManager::GetScreenShareConfidentialContentsInfoForWebContents(
 void DlpContentManager::ProcessScreenShareRestriction(
     const std::u16string& application_title,
     ConfidentialContentsInfo info,
-    OnDlpRestrictionCheckedCallback callback) {
+    WarningCallback callback) {
   data_controls::DlpBooleanHistogram(data_controls::dlp::kScreenShareBlockedUMA,
                                      IsBlocked(info.restriction_info));
   data_controls::DlpBooleanHistogram(data_controls::dlp::kScreenShareWarnedUMA,
@@ -876,7 +876,7 @@ void DlpContentManager::OnDlpScreenShareWarnDialogReply(
 void DlpContentManager::OnDlpWarnDialogReply(
     const DlpConfidentialContents& confidential_contents,
     DlpRulesManager::Restriction restriction,
-    OnDlpRestrictionCheckedCallback callback,
+    WarningCallback callback,
     bool should_proceed) {
   auto suffix = RestrictionToWarnProceededUMASuffix(restriction);
   if (suffix.has_value())

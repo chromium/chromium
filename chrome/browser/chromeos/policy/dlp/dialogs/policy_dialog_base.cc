@@ -69,8 +69,7 @@ PolicyDialogBase::PolicyDialogBase() {
 
 PolicyDialogBase::~PolicyDialogBase() = default;
 
-void PolicyDialogBase::SetOnDlpRestrictionCheckedCallback(
-    OnDlpRestrictionCheckedCallback callback) {
+void PolicyDialogBase::SetWarningCallback(WarningCallback callback) {
   auto split = base::SplitOnceCallback(std::move(callback));
   SetAcceptCallback(base::BindOnce(std::move(split.first), true));
   SetCancelCallback(base::BindOnce(std::move(split.second), false));

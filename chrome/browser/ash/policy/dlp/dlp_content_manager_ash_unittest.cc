@@ -101,8 +101,8 @@ class MockPrivacyScreenHelper : public ash::PrivacyScreenDlpHelper {
 
 }  // namespace
 
-using MockOnDlpRestrictionCheckedCallback =
-    testing::StrictMock<base::MockCallback<OnDlpRestrictionCheckedCallback>>;
+using MockWarningCallback =
+    testing::StrictMock<base::MockCallback<WarningCallback>>;
 
 class DlpContentManagerAshTest : public testing::Test {
  public:
@@ -641,7 +641,7 @@ TEST_F(DlpContentManagerAshTest, PrintingRestricted) {
       .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
                                      ::testing::Return(kSrcPattern)));
 
-  MockOnDlpRestrictionCheckedCallback cb;
+  MockWarningCallback cb;
   testing::InSequence s;
   EXPECT_CALL(cb, Run(true)).Times(1);   // No restrictions.
   EXPECT_CALL(cb, Run(false)).Times(1);  // Block restriction.
@@ -702,7 +702,7 @@ TEST_F(DlpContentManagerAshTest, PrintingWarnedProceeded) {
       .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
                                      ::testing::Return(kSrcPattern)));
 
-  MockOnDlpRestrictionCheckedCallback cb;
+  MockWarningCallback cb;
   EXPECT_CALL(cb, Run(true)).Times(3);
 
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
@@ -786,7 +786,7 @@ TEST_F(DlpContentManagerAshTest, PrintingWarnedCancelled) {
       .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
                                      ::testing::Return(kSrcPattern)));
 
-  MockOnDlpRestrictionCheckedCallback cb;
+  MockWarningCallback cb;
   testing::InSequence s;
   EXPECT_CALL(cb, Run(false)).Times(2);  // Action canceled after the warning.
   EXPECT_CALL(cb, Run(true)).Times(1);   // WebContents destroyed.
@@ -858,7 +858,7 @@ TEST_F(DlpContentManagerAshTest, CaptureModeInitRestricted) {
       .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
                                      ::testing::Return(kSrcPattern)));
 
-  MockOnDlpRestrictionCheckedCallback cb;
+  MockWarningCallback cb;
   testing::InSequence s;
   EXPECT_CALL(cb, Run(true)).Times(1);   // No restrictions enforced.
   EXPECT_CALL(cb, Run(false)).Times(1);  // Block restriction.
@@ -911,7 +911,7 @@ TEST_F(DlpContentManagerAshTest, CaptureModeInitWarnedContinued) {
       .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
                                      ::testing::Return(kSrcPattern)));
 
-  MockOnDlpRestrictionCheckedCallback cb;
+  MockWarningCallback cb;
   testing::InSequence s;
   EXPECT_CALL(cb, Run(true)).Times(2);
 
@@ -969,7 +969,7 @@ TEST_F(DlpContentManagerAshTest, CaptureModeInitWarnedCancelled) {
       .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
                                      ::testing::Return(kSrcPattern)));
 
-  MockOnDlpRestrictionCheckedCallback cb;
+  MockWarningCallback cb;
   testing::InSequence s;
   EXPECT_CALL(cb, Run(false)).Times(2);
 
@@ -1025,7 +1025,7 @@ TEST_F(DlpContentManagerAshTest, ScreenshotRestricted) {
       .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
                                      ::testing::Return(kSrcPattern)));
 
-  MockOnDlpRestrictionCheckedCallback cb;
+  MockWarningCallback cb;
   testing::InSequence s;
   EXPECT_CALL(cb, Run(true)).Times(1);   // No restrictions enforced.
   EXPECT_CALL(cb, Run(false)).Times(1);  // Block restriction.
@@ -1081,7 +1081,7 @@ TEST_F(DlpContentManagerAshTest, ScreenshotWarnedContinued) {
       .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
                                      ::testing::Return(kSrcPattern)));
 
-  MockOnDlpRestrictionCheckedCallback cb;
+  MockWarningCallback cb;
   EXPECT_CALL(cb, Run(true)).Times(2);
 
   ScreenshotArea area = ScreenshotArea::CreateForAllRootWindows();
@@ -1130,7 +1130,7 @@ TEST_F(DlpContentManagerAshTest, ScreenshotWarnedCancelled) {
       .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
                                      ::testing::Return(kSrcPattern)));
 
-  MockOnDlpRestrictionCheckedCallback cb;
+  MockWarningCallback cb;
   EXPECT_CALL(cb, Run(false)).Times(2);
 
   ScreenshotArea area = ScreenshotArea::CreateForAllRootWindows();
@@ -1187,7 +1187,7 @@ TEST_F(DlpContentManagerAshTest, ScreenShareRestricted) {
       .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
                                      ::testing::Return(kSrcPattern)));
 
-  MockOnDlpRestrictionCheckedCallback cb;
+  MockWarningCallback cb;
   testing::InSequence s;
   EXPECT_CALL(cb, Run(true)).Times(1);   // No restrictions enforced.
   EXPECT_CALL(cb, Run(false)).Times(1);  // Block restriction.
@@ -1251,7 +1251,7 @@ TEST_F(DlpContentManagerAshTest, ScreenShareWarnedContinued) {
       .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
                                      ::testing::Return(kSrcPattern)));
 
-  MockOnDlpRestrictionCheckedCallback cb;
+  MockWarningCallback cb;
   EXPECT_CALL(cb, Run(true)).Times(2);
 
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
@@ -1307,7 +1307,7 @@ TEST_F(DlpContentManagerAshTest, ScreenShareWarnedCancelled) {
       .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
                                      ::testing::Return(kSrcPattern)));
 
-  MockOnDlpRestrictionCheckedCallback cb;
+  MockWarningCallback cb;
   EXPECT_CALL(cb, Run(false)).Times(2);
 
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();

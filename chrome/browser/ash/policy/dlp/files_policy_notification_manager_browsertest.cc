@@ -87,7 +87,7 @@ class MockFilesPolicyDialogFactory : public FilesPolicyDialogFactory {
  public:
   MOCK_METHOD(views::Widget*,
               CreateWarnDialog,
-              (OnDlpRestrictionCheckedWithJustificationCallback,
+              (WarningWithJustificationCallback,
                dlp::FileAction,
                gfx::NativeWindow,
                absl::optional<DlpFileDestination>,
@@ -225,7 +225,7 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, SingleFileNoButtonIgnored) {
   fpnm_->SetTaskRunnerForTesting(task_runner);
 
   // The callback is not invoked.
-  base::MockCallback<OnDlpRestrictionCheckedWithJustificationCallback> cb;
+  base::MockCallback<WarningWithJustificationCallback> cb;
   EXPECT_CALL(cb, Run).Times(0);
   fpnm_->ShowDlpWarning(cb.Get(), /*task_id=*/absl::nullopt,
                         {base::FilePath("file1.txt")}, DlpFileDestination(),
@@ -267,7 +267,7 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, SingleFileCloseCancels) {
   auto action = GetParam();
 
   // The task is cancelled.
-  base::MockCallback<OnDlpRestrictionCheckedWithJustificationCallback> cb;
+  base::MockCallback<WarningWithJustificationCallback> cb;
   EXPECT_CALL(cb, Run(/*user_justification=*/absl::optional<std::u16string>(),
                       /*should_proceed=*/false))
       .Times(1);
@@ -306,7 +306,7 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, SingleFileOKContinues) {
                                        ash::SystemWebAppType::FILE_MANAGER));
 
   // The callback is invoked directly from the notification.
-  base::MockCallback<OnDlpRestrictionCheckedWithJustificationCallback> cb;
+  base::MockCallback<WarningWithJustificationCallback> cb;
   EXPECT_CALL(cb, Run(/*user_justification=*/absl::optional<std::u16string>(),
                       /*should_proceed=*/true))
       .Times(1);
@@ -356,7 +356,7 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, MultiFileOKShowsDialog) {
                       FilesPolicyDialog::BlockReason::kDlp, warning_files)))
       .Times(2)
       .WillRepeatedly(
-          [](OnDlpRestrictionCheckedWithJustificationCallback callback,
+          [](WarningWithJustificationCallback callback,
              dlp::FileAction file_action, gfx::NativeWindow modal_parent,
              absl::optional<DlpFileDestination> destination,
              FilesPolicyDialog::Info dialog_info) {
@@ -376,7 +376,7 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, MultiFileOKShowsDialog) {
       base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   fpnm_->SetTaskRunnerForTesting(task_runner);
 
-  base::MockCallback<OnDlpRestrictionCheckedWithJustificationCallback> cb;
+  base::MockCallback<WarningWithJustificationCallback> cb;
   EXPECT_CALL(cb, Run).Times(0);
   fpnm_->ShowDlpWarning(cb.Get(), /*task_id=*/absl::nullopt, warning_files,
                         DlpFileDestination(), action);
@@ -448,7 +448,7 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest,
                   FilesPolicyDialog::Info::Warn(
                       FilesPolicyDialog::BlockReason::kDlp, warning_files)))
       .Times(1)
-      .WillOnce([](OnDlpRestrictionCheckedWithJustificationCallback callback,
+      .WillOnce([](WarningWithJustificationCallback callback,
                    dlp::FileAction file_action, gfx::NativeWindow modal_parent,
                    absl::optional<DlpFileDestination> destination,
                    FilesPolicyDialog::Info dialog_info) {
@@ -468,7 +468,7 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest,
       base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   fpnm_->SetTaskRunnerForTesting(task_runner);
 
-  base::MockCallback<OnDlpRestrictionCheckedWithJustificationCallback> cb;
+  base::MockCallback<WarningWithJustificationCallback> cb;
   EXPECT_CALL(cb, Run).Times(0);
   fpnm_->ShowDlpWarning(cb.Get(), /*task_id=*/absl::nullopt, warning_files,
                         DlpFileDestination(), action);
@@ -522,7 +522,7 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, CancelShowsNoDialog) {
   ASSERT_FALSE(FindFilesApp());
 
   // The callback is invoked directly from the notification.
-  base::MockCallback<OnDlpRestrictionCheckedWithJustificationCallback> cb;
+  base::MockCallback<WarningWithJustificationCallback> cb;
   EXPECT_CALL(cb, Run(/*user_justification=*/absl::optional<std::u16string>(),
                       /*should_proceed=*/false))
       .Times(1);
@@ -1106,7 +1106,7 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
                                std::move(dialog_info)))
       .Times(2)
       .WillRepeatedly(
-          [](OnDlpRestrictionCheckedWithJustificationCallback callback,
+          [](WarningWithJustificationCallback callback,
              dlp::FileAction file_action, gfx::NativeWindow modal_parent,
              absl::optional<DlpFileDestination> destination,
              FilesPolicyDialog::Info dialog_info) {

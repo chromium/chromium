@@ -143,7 +143,7 @@ void DlpContentManagerAsh::CheckScreenshotRestriction(
 void DlpContentManagerAsh::CheckScreenShareRestriction(
     const content::DesktopMediaID& media_id,
     const std::u16string& application_title,
-    OnDlpRestrictionCheckedCallback callback) {
+    WarningCallback callback) {
   ConfidentialContentsInfo info = GetScreenShareConfidentialContentsInfo(
       media_id, GetWebContentsFromMediaId(media_id));
   ProcessScreenShareRestriction(application_title, info, std::move(callback));

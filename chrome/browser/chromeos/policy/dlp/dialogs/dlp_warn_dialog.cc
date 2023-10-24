@@ -72,12 +72,12 @@ DlpWarnDialog::DlpWarnDialogOptions::operator=(
 
 DlpWarnDialog::DlpWarnDialogOptions::~DlpWarnDialogOptions() = default;
 
-DlpWarnDialog::DlpWarnDialog(OnDlpRestrictionCheckedCallback callback,
+DlpWarnDialog::DlpWarnDialog(WarningCallback callback,
                              DlpWarnDialogOptions options)
     : restriction_(options.restriction),
       application_title_(options.application_title),
       contents_(std::move(options.confidential_contents)) {
-  SetOnDlpRestrictionCheckedCallback(std::move(callback));
+  SetWarningCallback(std::move(callback));
 
   set_margins(gfx::Insets::TLBR(20, 0, 20, 0));
 

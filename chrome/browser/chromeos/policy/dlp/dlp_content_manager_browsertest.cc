@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingNotRestricted) {
 
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
 
-  base::MockCallback<OnDlpRestrictionCheckedCallback> cb;
+  base::MockCallback<WarningCallback> cb;
   EXPECT_CALL(cb, Run(true)).Times(1);
 
   helper_->GetContentManager()->CheckPrintingRestriction(
@@ -505,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
 
   // Set up the mocks for directly calling CheckPrintingRestriction().
-  base::MockCallback<OnDlpRestrictionCheckedCallback> cb;
+  base::MockCallback<WarningCallback> cb;
   testing::InSequence s;
   EXPECT_CALL(cb, Run(true)).Times(1);
   EXPECT_CALL(cb, Run(false)).Times(1);
@@ -552,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
   helper_->ChangeConfidentiality(web_contents, kPrintReported);
   // Printing should be reported, but still allowed whether we call
   // CheckPrintingRestriction() directly or indirectly.
-  base::MockCallback<OnDlpRestrictionCheckedCallback> cb;
+  base::MockCallback<WarningCallback> cb;
   EXPECT_CALL(cb, Run(true)).Times(1);
   helper_->GetContentManager()->CheckPrintingRestriction(
       web_contents, web_contents->GetPrimaryMainFrame()->GetGlobalId(),

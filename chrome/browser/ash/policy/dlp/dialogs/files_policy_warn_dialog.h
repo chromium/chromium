@@ -29,12 +29,11 @@ class FilesPolicyWarnDialog : public FilesPolicyDialog,
   METADATA_HEADER(FilesPolicyWarnDialog);
 
   FilesPolicyWarnDialog() = delete;
-  FilesPolicyWarnDialog(
-      OnDlpRestrictionCheckedWithJustificationCallback callback,
-      dlp::FileAction action,
-      gfx::NativeWindow modal_parent,
-      absl::optional<DlpFileDestination> destination,
-      Info dialog_info);
+  FilesPolicyWarnDialog(WarningWithJustificationCallback callback,
+                        dlp::FileAction action,
+                        gfx::NativeWindow modal_parent,
+                        absl::optional<DlpFileDestination> destination,
+                        Info dialog_info);
   FilesPolicyWarnDialog(const FilesPolicyWarnDialog&) = delete;
   FilesPolicyWarnDialog(FilesPolicyWarnDialog&&) = delete;
   FilesPolicyWarnDialog& operator=(const FilesPolicyWarnDialog&) = delete;
@@ -56,10 +55,9 @@ class FilesPolicyWarnDialog : public FilesPolicyDialog,
   std::u16string GetCancelButton();
 
   // Called when the user proceeds the warning.
-  void ProceedWarning(
-      OnDlpRestrictionCheckedWithJustificationCallback callback);
+  void ProceedWarning(WarningWithJustificationCallback callback);
   // Called when the user cancels the warning.
-  void CancelWarning(OnDlpRestrictionCheckedWithJustificationCallback callback);
+  void CancelWarning(WarningWithJustificationCallback callback);
 
   // Sets up view elements to handle user justification if required.
   void MaybeAddJustificationPanel();

@@ -714,7 +714,7 @@ class CopyOrMoveIOTaskWithScansTest
   raw_ptr<policy::MockFilesPolicyNotificationManager,
           DanglingUntriaged | ExperimentalAsh>
       fpnm_;
-  policy::OnDlpRestrictionCheckedWithJustificationCallback warning_callback_;
+  policy::WarningWithJustificationCallback warning_callback_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

@@ -327,7 +327,7 @@ void FilesPolicyNotificationManager::SetConnectorsBlockedFiles(
 }
 
 void FilesPolicyNotificationManager::ShowDlpWarning(
-    OnDlpRestrictionCheckedWithJustificationCallback callback,
+    WarningWithJustificationCallback callback,
     absl::optional<file_manager::io_task::IOTaskId> task_id,
     std::vector<base::FilePath> warning_files,
     const DlpFileDestination& destination,
@@ -349,7 +349,7 @@ void FilesPolicyNotificationManager::ShowDlpWarning(
 }
 
 void FilesPolicyNotificationManager::ShowConnectorsWarning(
-    OnDlpRestrictionCheckedWithJustificationCallback callback,
+    WarningWithJustificationCallback callback,
     file_manager::io_task::IOTaskId task_id,
     dlp::FileAction action,
     FilesPolicyDialog::Info dialog_info) {
@@ -583,8 +583,8 @@ void FilesPolicyNotificationManager::HandleDlpErrorNotificationClick(
 
 FilesPolicyNotificationManager::WarningInfo::WarningInfo(
     Policy warning_reason,
-    OnDlpRestrictionCheckedWithJustificationCallback warning_callback,
-    OnDlpRestrictionCheckedWithJustificationCallback dialog_callback,
+    WarningWithJustificationCallback warning_callback,
+    WarningWithJustificationCallback dialog_callback,
     FilesPolicyDialog::Info dialog_info)
     : warning_reason(warning_reason),
       warning_callback(std::move(warning_callback)),
@@ -1187,7 +1187,7 @@ void FilesPolicyNotificationManager::ShowDlpBlockNotification(
 }
 
 void FilesPolicyNotificationManager::ShowDlpWarningNotification(
-    OnDlpRestrictionCheckedWithJustificationCallback callback,
+    WarningWithJustificationCallback callback,
     std::vector<base::FilePath> warning_files,
     const DlpFileDestination& destination,
     dlp::FileAction action) {
@@ -1252,7 +1252,7 @@ void FilesPolicyNotificationManager::ShowDlpWarningNotification(
 
 void FilesPolicyNotificationManager::PauseIOTask(
     file_manager::io_task::IOTaskId task_id,
-    OnDlpRestrictionCheckedWithJustificationCallback callback,
+    WarningWithJustificationCallback callback,
     dlp::FileAction action,
     Policy warning_reason,
     FilesPolicyDialog::Info dialog_info) {

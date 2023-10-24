@@ -1836,7 +1836,7 @@ TEST_P(DlpFilesWarningDialogChoiceTest, FileDownloadWarned) {
 
   EXPECT_CALL(*fpnm_, ShowDlpWarning)
       .WillOnce([&choice_result](
-                    OnDlpRestrictionCheckedWithJustificationCallback callback,
+                    WarningWithJustificationCallback callback,
                     absl::optional<file_manager::io_task::IOTaskId> task_id,
                     const std::vector<base::FilePath>& warning_files,
                     const DlpFileDestination& destination,
@@ -2018,7 +2018,7 @@ TEST_P(DlpFilesWarningDialogContentTest,
                              std::move(expected_files),
                              DlpFileDestination(data_controls::Component::kUsb),
                              transfer_info.files_action))
-      .WillOnce([](OnDlpRestrictionCheckedWithJustificationCallback callback,
+      .WillOnce([](WarningWithJustificationCallback callback,
                    absl::optional<file_manager::io_task::IOTaskId> task_id,
                    const std::vector<base::FilePath>& confidential_files,
                    const DlpFileDestination& destination,
