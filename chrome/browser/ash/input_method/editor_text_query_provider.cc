@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "base/values.h"
+#include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "components/manta/features.h"
@@ -94,9 +95,11 @@ std::vector<orca::mojom::TextQueryResultPtr> ParseSuccessResponse(
 
 EditorTextQueryProvider::EditorTextQueryProvider(
     mojo::PendingAssociatedReceiver<orca::mojom::TextQueryProvider> receiver,
-    Profile* profile)
+    Profile* profile,
+    EditorSwitch* editor_switch)
     : text_query_provider_receiver_(this, std::move(receiver)),
-      orca_provider_(CreateProvider(profile)) {}
+      orca_provider_(CreateProvider(profile)),
+      editor_switch_(editor_switch) {}
 
 EditorTextQueryProvider::~EditorTextQueryProvider() = default;
 
@@ -120,7 +123,8 @@ void EditorTextQueryProvider::Process(orca::mojom::TextQueryRequestPtr request,
   orca_provider_->Call(
       CreateProviderRequest(std::move(request)),
       base::BindOnce(
-          [](const std::string& request_id, ProcessCallback process_callback,
+          [](const std::string& request_id, EditorMode editor_mode,
+             ProcessCallback process_callback,
              base::Value::Dict dict, manta::MantaStatus status) {
             std::move(process_callback)
                 .Run(status.status_code == manta::MantaStatusCode::kOk
@@ -128,8 +132,14 @@ void EditorTextQueryProvider::Process(orca::mojom::TextQueryRequestPtr request,
                                ParseSuccessResponse(request_id, dict))
                          : orca::mojom::TextQueryResponse::NewError(
                                ConvertErrorResponse(status)));
+
+            LogEditorState(status.status_code == manta::MantaStatusCode::kOk
+                               ? EditorStates::kSuccessResponse
+                               : EditorStates::kErrorResponse,
+                           editor_mode);
           },
-          base::NumberToString(request_id_), std::move(callback)));
+          base::NumberToString(request_id_), editor_switch_->GetEditorMode(),
+          std::move(callback)));
 }
 
 }  // namespace ash::input_method

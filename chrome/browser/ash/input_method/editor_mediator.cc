@@ -101,7 +101,7 @@ void EditorMediator::SetUpNewEditorService() {
         text_actuator_remote.InitWithNewEndpointAndPassReceiver(), this);
     text_query_provider_ = std::make_unique<EditorTextQueryProvider>(
         text_query_provider_remote.InitWithNewEndpointAndPassReceiver(),
-        profile_);
+        profile_, editor_switch_.get());
     editor_client_connector_ = std::make_unique<EditorClientConnector>(
         editor_client_connector_receiver.InitWithNewEndpointAndPassRemote());
     editor_event_proxy_ = std::make_unique<EditorEventProxy>(
@@ -264,6 +264,7 @@ void EditorMediator::OnProfileWillBeDestroyed(Profile* profile) {
 
   mako_bubble_coordinator_.CloseUI();
   profile_ = nullptr;
+  text_query_provider_ = nullptr;
   consent_store_ = nullptr;
   editor_switch_ = nullptr;
 }
