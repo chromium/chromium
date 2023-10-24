@@ -53,6 +53,7 @@ source_set("browser_prefs") {
     "//components/optimization_guide/core",
     "//components/password_manager/core/browser",
     "//components/payments/core",
+    "//components/plus_addresses",
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/pref_registry",
