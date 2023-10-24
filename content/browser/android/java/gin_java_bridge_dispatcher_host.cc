@@ -33,8 +33,9 @@ namespace content {
 GinJavaBridgeDispatcherHost::GinJavaBridgeDispatcherHost(
     WebContents* web_contents,
     const base::android::JavaRef<jobject>& retained_object_set)
-    : WebContentsObserver(web_contents),
-      next_object_id_(1),
+    : RefCountedDeleteOnSequence<GinJavaBridgeDispatcherHost>(
+          base::SequencedTaskRunner::GetCurrentDefault()),
+      WebContentsObserver(web_contents),
       retained_object_set_(base::android::AttachCurrentThread(),
                            retained_object_set),
       allow_object_contents_inspection_(true) {

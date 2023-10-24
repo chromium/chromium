@@ -13,6 +13,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/values.h"
@@ -30,7 +31,7 @@ class WebContentsImpl;
 // on the renderer side.  The injected Java objects are identified by ObjectID,
 // while wrappers are identified by a pair of (ObjectID, frame_routing_id).
 class GinJavaBridgeDispatcherHost
-    : public base::RefCountedThreadSafe<GinJavaBridgeDispatcherHost>,
+    : public base::RefCountedDeleteOnSequence<GinJavaBridgeDispatcherHost>,
       public WebContentsObserver,
       public GinJavaMethodInvocationHelper::DispatcherDelegate {
  public:
@@ -75,7 +76,8 @@ class GinJavaBridgeDispatcherHost
                               GinJavaBoundObject::ObjectID object_id);
 
  private:
-  friend class base::RefCountedThreadSafe<GinJavaBridgeDispatcherHost>;
+  friend class base::RefCountedDeleteOnSequence<GinJavaBridgeDispatcherHost>;
+  friend class base::DeleteHelper<GinJavaBridgeDispatcherHost>;
 
   typedef std::map<GinJavaBoundObject::ObjectID,
                    scoped_refptr<GinJavaBoundObject>> ObjectMap;
@@ -108,7 +110,7 @@ class GinJavaBridgeDispatcherHost
 
   // The following objects are used on both threads, so locking must be used.
 
-  GinJavaBoundObject::ObjectID next_object_id_;
+  GinJavaBoundObject::ObjectID next_object_id_ = 1;
   // Every time a GinJavaBoundObject backed by a real Java object is
   // created/destroyed, we insert/remove a strong ref to that Java object into
   // this set so that it doesn't get garbage collected while it's still
