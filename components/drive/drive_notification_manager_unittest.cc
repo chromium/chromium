@@ -163,7 +163,7 @@ TEST_F(DriveNotificationManagerTest, TestBatchInvalidation) {
   // Emitting an invalidation should not call our observer until the timer
   // expires.
   fake_invalidation_service_->EmitInvalidationForTest(
-      invalidation::Invalidation::Init(kDefaultCorpusTopic, 1, ""));
+      invalidation::Invalidation(kDefaultCorpusTopic, 1, ""));
   EXPECT_TRUE(drive_notification_observer_->GetNotificationIds().empty());
 
   task_runner_->FastForwardBy(base::Seconds(30));
@@ -184,7 +184,7 @@ TEST_F(DriveNotificationManagerTest, TestBatchInvalidation) {
   // Emit invalidation for default corpus, should not emit a team drive
   // invalidation.
   fake_invalidation_service_->EmitInvalidationForTest(
-      invalidation::Invalidation::Init(kDefaultCorpusTopic, 1, ""));
+      invalidation::Invalidation(kDefaultCorpusTopic, 1, ""));
   EXPECT_TRUE(drive_notification_observer_->GetNotificationIds().empty());
 
   task_runner_->FastForwardBy(base::Seconds(30));
@@ -196,7 +196,7 @@ TEST_F(DriveNotificationManagerTest, TestBatchInvalidation) {
 
   // Emit team drive invalidation
   fake_invalidation_service_->EmitInvalidationForTest(
-      invalidation::Invalidation::Init(team_drive_1_topic, 2, ""));
+      invalidation::Invalidation(team_drive_1_topic, 2, ""));
   EXPECT_TRUE(drive_notification_observer_->GetNotificationIds().empty());
 
   task_runner_->FastForwardBy(base::Seconds(30));
@@ -206,13 +206,13 @@ TEST_F(DriveNotificationManagerTest, TestBatchInvalidation) {
 
   // Emit both default corpus and team drive.
   fake_invalidation_service_->EmitInvalidationForTest(
-      invalidation::Invalidation::Init(kDefaultCorpusTopic, 1, ""));
+      invalidation::Invalidation(kDefaultCorpusTopic, 1, ""));
   fake_invalidation_service_->EmitInvalidationForTest(
-      invalidation::Invalidation::Init(team_drive_1_topic, 2, ""));
+      invalidation::Invalidation(team_drive_1_topic, 2, ""));
 
   // Emit with an earlier version. This should be ignored.
   fake_invalidation_service_->EmitInvalidationForTest(
-      invalidation::Invalidation::Init(kDefaultCorpusTopic, 0, ""));
+      invalidation::Invalidation(kDefaultCorpusTopic, 0, ""));
 
   EXPECT_TRUE(drive_notification_observer_->GetNotificationIds().empty());
 

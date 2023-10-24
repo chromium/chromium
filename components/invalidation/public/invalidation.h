@@ -23,11 +23,6 @@ class AckHandler;
 // and simple serialization to pref values.
 class INVALIDATION_EXPORT Invalidation {
  public:
-  // Deprecated factory functions, currently still used in tests.
-  static Invalidation Init(const Topic& topic,
-                           int64_t version,
-                           const std::string& payload);
-
   Invalidation(const Topic& topic, int64_t version, const std::string& payload);
   Invalidation(const Invalidation& other);
   Invalidation& operator=(const Invalidation& other);

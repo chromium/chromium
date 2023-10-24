@@ -4,21 +4,12 @@
 
 #include "components/invalidation/public/invalidation.h"
 
-#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/invalidation/public/ack_handler.h"
 #include "components/invalidation/public/invalidation_util.h"
 
 namespace invalidation {
-
-// static
-Invalidation Invalidation::Init(const Topic& topic,
-                                int64_t version,
-                                const std::string& payload) {
-  CHECK_IS_TEST();
-  return Invalidation(topic, version, payload);
-}
 
 Invalidation::Invalidation(const Topic& topic,
                            int64_t version,
