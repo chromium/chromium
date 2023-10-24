@@ -370,7 +370,7 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
 
   // Checks if the feature is observing geoposition changes.
   bool IsFeatureObservingGeoposition() {
-    return geolocation_controller()->HasObserverForTesting(feature());
+    return geolocation_controller()->HasObserver(feature());
   }
 
   // Sets the wall clock time at which the test case starts. After calling this,

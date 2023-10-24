@@ -879,14 +879,6 @@ inline constexpr char kNightLightCustomStartTime[] =
 inline constexpr char kNightLightCustomEndTime[] =
     "ash.night_light.custom_end_time";
 
-// Double prefs storing the most recent valid geoposition, which is only used
-// when the device lacks connectivity and we're unable to retrieve a valid
-// geoposition to calculate the sunset / sunrise times.
-inline constexpr char kNightLightCachedLatitude[] =
-    "ash.night_light.cached_latitude";
-inline constexpr char kNightLightCachedLongitude[] =
-    "ash.night_light.cached_longitude";
-
 // A boolean pref storing whether the AutoNightLight notification has ever been
 // dismissed by the user, which we use to stop showing it again.
 inline constexpr char kAutoNightLightNotificationDismissed[] =

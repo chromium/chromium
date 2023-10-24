@@ -39,7 +39,6 @@
 #include "chrome/browser/ash/login/hid_detection_revamp_field_trial.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/ash/night_light/night_light_client.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
@@ -1163,13 +1162,10 @@ void Preferences::ApplyPreferences(ApplyReason reason,
         g_browser_process->platform_part()->GetTimezoneResolverManager();
     GeolocationController* geolocation_controller =
         ash::Shell::Get()->geolocation_controller();
-    NightLightClient* night_light_client = ash::NightLightClient::Get();
 
     timezone_resolver_manager->OnSystemGeolocationPermissionChanged(
         system_geolocation_permission_enabled);
     geolocation_controller->OnSystemGeolocationPermissionChanged(
-        system_geolocation_permission_enabled);
-    night_light_client->OnSystemGeolocationPermissionChanged(
         system_geolocation_permission_enabled);
   }
 
