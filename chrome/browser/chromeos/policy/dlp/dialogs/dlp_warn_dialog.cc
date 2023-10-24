@@ -92,6 +92,12 @@ DlpWarnDialog::DlpWarnDialog(WarningCallback callback,
 
 DlpWarnDialog::~DlpWarnDialog() = default;
 
+void DlpWarnDialog::SetWarningCallback(WarningCallback callback) {
+  auto split = base::SplitOnceCallback(std::move(callback));
+  SetAcceptCallback(base::BindOnce(std::move(split.first), true));
+  SetCancelCallback(base::BindOnce(std::move(split.second), false));
+}
+
 views::Label* DlpWarnDialog::AddTitle(const std::u16string& title) {
   // Call the parent class to setup the element. Do not remove.
   views::Label* title_label = PolicyDialogBase::AddTitle(title);

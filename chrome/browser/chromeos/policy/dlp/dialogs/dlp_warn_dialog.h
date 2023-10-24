@@ -68,6 +68,9 @@ class DlpWarnDialog : public PolicyDialogBase {
   ~DlpWarnDialog() override;
 
  private:
+  // Splits `callback` and assigns to accept and cancel callbacks.
+  void SetWarningCallback(WarningCallback callback);
+
   // PolicyDialogBase overrides:
   views::Label* AddTitle(const std::u16string& title) override;
   views::Label* AddMessage(const std::u16string& message) override;

@@ -70,9 +70,6 @@ class PolicyDialogBase : public views::DialogDelegateView {
   ~PolicyDialogBase() override;
 
  protected:
-  // Splits `callback` and assigns to accept and cancel callbacks.
-  void SetWarningCallback(WarningCallback callback);
-
   // Sets up the dialog's upper panel and adds the managed icon and container
   // for the title and message. To add the text, use `AddTitle()` and
   // `AddMessage()` after this method.
