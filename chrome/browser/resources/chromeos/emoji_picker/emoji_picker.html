@@ -116,7 +116,14 @@
   #tabs {
     display: grid;
     grid-gap: var(--emoji-spacing);
-    grid-template-columns: repeat(18,1fr);
+    /**
+     * The number of repetition here should be aligned with the maximum number
+     * of paginations. Theoretically, we can put MAX_INT here but 100 seems big
+     * enough for our case for now.
+     *
+     * TODO(b/295426497): Find a better way rather than having a magic number.
+     */
+    grid-template-columns: repeat(100,1fr);
     left: var(--emoji-group-tabs-left);
     overflow-x: hidden;
     padding-top: var(--emoji-picker-tabs-vertical-padding, 6px);
