@@ -28,14 +28,12 @@
 #define BASE_ATOMICOPS_INTERNALS_PORTABLE_H_
 
 #include <atomic>
-#include <type_traits>
 
+#include "base/numerics/wrapping_math.h"
 #include "build/build_config.h"
 
 namespace base {
 namespace subtle {
-
-using AtomicU32 = std::make_unsigned_t<Atomic32>;
 
 // This implementation is transitional and maintains the original API for
 // atomicops.h. This requires casting memory locations to the atomic types, and
@@ -69,23 +67,15 @@ inline Atomic32 NoBarrier_AtomicExchange(volatile Atomic32* ptr,
 
 inline Atomic32 NoBarrier_AtomicIncrement(volatile Atomic32* ptr,
                                           Atomic32 increment) {
-  Atomic32 old_value =
-      ((AtomicLocation32)ptr)->fetch_add(increment, std::memory_order_relaxed);
-  // Add as the unsigned type for defined overflow. fetch_add has defined
-  // overflow and has already done this computation. We only need to redo it
-  // because it returns the old value, where we expect the new value.
-  return static_cast<Atomic32>(static_cast<AtomicU32>(increment) +
-                               static_cast<AtomicU32>(old_value));
+  return base::WrappingAdd(
+      ((AtomicLocation32)ptr)->fetch_add(increment, std::memory_order_relaxed),
+      increment);
 }
 
 inline Atomic32 Barrier_AtomicIncrement(volatile Atomic32* ptr,
                                         Atomic32 increment) {
-  Atomic32 old_value = ((AtomicLocation32)ptr)->fetch_add(increment);
-  // Add as the unsigned type for defined overflow. fetch_add has defined
-  // overflow and has already done this computation. We only need to redo it
-  // because it returns the old value, where we expect the new value.
-  return static_cast<Atomic32>(static_cast<AtomicU32>(increment) +
-                               static_cast<AtomicU32>(old_value));
+  return base::WrappingAdd(((AtomicLocation32)ptr)->fetch_add(increment),
+                           increment);
 }
 
 inline Atomic32 Acquire_CompareAndSwap(volatile Atomic32* ptr,
@@ -153,23 +143,15 @@ inline Atomic64 NoBarrier_AtomicExchange(volatile Atomic64* ptr,
 
 inline Atomic64 NoBarrier_AtomicIncrement(volatile Atomic64* ptr,
                                           Atomic64 increment) {
-  Atomic64 old_value =
-      ((AtomicLocation64)ptr)->fetch_add(increment, std::memory_order_relaxed);
-  // Add as the unsigned type for defined overflow. fetch_add has defined
-  // overflow and has already done this computation. We only need to redo it
-  // because it returns the old value, where we expect the new value.
-  return static_cast<Atomic64>(static_cast<AtomicU64>(increment) +
-                               static_cast<AtomicU64>(old_value));
+  return base::WrappingAdd(
+      ((AtomicLocation64)ptr)->fetch_add(increment, std::memory_order_relaxed),
+      increment);
 }
 
 inline Atomic64 Barrier_AtomicIncrement(volatile Atomic64* ptr,
                                         Atomic64 increment) {
-  Atomic64 old_value = ((AtomicLocation64)ptr)->fetch_add(increment);
-  // Add as the unsigned type for defined overflow. fetch_add has defined
-  // overflow and has already done this computation. We only need to redo it
-  // because it returns the old value, where we expect the new value.
-  return static_cast<Atomic64>(static_cast<AtomicU64>(increment) +
-                               static_cast<AtomicU64>(old_value));
+  return base::WrappingAdd(((AtomicLocation64)ptr)->fetch_add(increment),
+                           increment);
 }
 
 inline Atomic64 Acquire_CompareAndSwap(volatile Atomic64* ptr,

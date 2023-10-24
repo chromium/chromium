@@ -29,6 +29,7 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
+#include "base/numerics/wrapping_math.h"
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -1884,6 +1885,82 @@ TEST(SafeNumerics, Int64) {
   EXPECT_EQ(0, ClampFloor<int64_t>(-kNaN));
   EXPECT_EQ(0, ClampCeil<int64_t>(-kNaN));
   EXPECT_EQ(0, ClampRound<int64_t>(-kNaN));
+}
+
+template <typename T>
+void TestWrappingMathSigned() {
+  static_assert(std::is_signed_v<T>);
+  constexpr T kMinusTwo = -2;
+  constexpr T kMinusOne = -1;
+  constexpr T kZero = 0;
+  constexpr T kOne = 1;
+  constexpr T kTwo = 2;
+  constexpr T kThree = 3;
+  constexpr T kMax = std::numeric_limits<T>::max();
+  constexpr T kMin = std::numeric_limits<T>::min();
+
+  EXPECT_EQ(base::WrappingAdd(kOne, kTwo), kThree);
+  static_assert(base::WrappingAdd(kOne, kTwo) == kThree);
+  EXPECT_EQ(base::WrappingAdd(kMax, kOne), kMin);
+  static_assert(base::WrappingAdd(kMax, kOne) == kMin);
+  EXPECT_EQ(base::WrappingAdd(kMax, kTwo), kMin + 1);
+  static_assert(base::WrappingAdd(kMax, kTwo) == kMin + 1);
+  EXPECT_EQ(base::WrappingAdd(kMax, kMax), kMinusTwo);
+  static_assert(base::WrappingAdd(kMax, kMax) == kMinusTwo);
+  EXPECT_EQ(base::WrappingAdd(kMin, kMin), kZero);
+  static_assert(base::WrappingAdd(kMin, kMin) == kZero);
+
+  EXPECT_EQ(base::WrappingSub(kTwo, kOne), kOne);
+  static_assert(base::WrappingSub(kTwo, kOne) == kOne);
+  EXPECT_EQ(base::WrappingSub(kOne, kTwo), kMinusOne);
+  static_assert(base::WrappingSub(kOne, kTwo) == kMinusOne);
+  EXPECT_EQ(base::WrappingSub(kMin, kOne), kMax);
+  static_assert(base::WrappingSub(kMin, kOne) == kMax);
+  EXPECT_EQ(base::WrappingSub(kMin, kTwo), kMax - 1);
+  static_assert(base::WrappingSub(kMin, kTwo) == kMax - 1);
+  EXPECT_EQ(base::WrappingSub(kMax, kMin), kMinusOne);
+  static_assert(base::WrappingSub(kMax, kMin) == kMinusOne);
+  EXPECT_EQ(base::WrappingSub(kMin, kMax), kOne);
+  static_assert(base::WrappingSub(kMin, kMax) == kOne);
+}
+
+template <typename T>
+void TestWrappingMathUnsigned() {
+  static_assert(std::is_unsigned_v<T>);
+  constexpr T kZero = 0;
+  constexpr T kOne = 1;
+  constexpr T kTwo = 2;
+  constexpr T kThree = 3;
+  constexpr T kMax = std::numeric_limits<T>::max();
+
+  EXPECT_EQ(base::WrappingAdd(kOne, kTwo), kThree);
+  static_assert(base::WrappingAdd(kOne, kTwo) == kThree);
+  EXPECT_EQ(base::WrappingAdd(kMax, kOne), kZero);
+  static_assert(base::WrappingAdd(kMax, kOne) == kZero);
+  EXPECT_EQ(base::WrappingAdd(kMax, kTwo), kOne);
+  static_assert(base::WrappingAdd(kMax, kTwo) == kOne);
+  EXPECT_EQ(base::WrappingAdd(kMax, kMax), kMax - 1);
+  static_assert(base::WrappingAdd(kMax, kMax) == kMax - 1);
+
+  EXPECT_EQ(base::WrappingSub(kTwo, kOne), kOne);
+  static_assert(base::WrappingSub(kTwo, kOne) == kOne);
+  EXPECT_EQ(base::WrappingSub(kOne, kTwo), kMax);
+  static_assert(base::WrappingSub(kOne, kTwo) == kMax);
+  EXPECT_EQ(base::WrappingSub(kZero, kOne), kMax);
+  static_assert(base::WrappingSub(kZero, kOne) == kMax);
+  EXPECT_EQ(base::WrappingSub(kZero, kTwo), kMax - 1);
+  static_assert(base::WrappingSub(kZero, kTwo) == kMax - 1);
+}
+
+TEST(SafeNumerics, WrappingMath) {
+  TestWrappingMathSigned<int8_t>();
+  TestWrappingMathUnsigned<uint8_t>();
+  TestWrappingMathSigned<int16_t>();
+  TestWrappingMathUnsigned<uint16_t>();
+  TestWrappingMathSigned<int32_t>();
+  TestWrappingMathUnsigned<uint32_t>();
+  TestWrappingMathSigned<int64_t>();
+  TestWrappingMathUnsigned<uint64_t>();
 }
 
 #if defined(__clang__)

@@ -4,6 +4,8 @@
 
 #include "base/metrics/sample_map.h"
 
+#include <type_traits>
+
 #include "base/check.h"
 #include "base/numerics/safe_conversions.h"
 
@@ -165,7 +167,12 @@ bool SampleMap::AddSubtractImpl(SampleCountIterator* iter, Operator op) {
     // if a lock is used, we know the value would not be concurrently modified
     // by a different process (in contrast to PersistentSampleMap, where the
     // value in shared memory may be modified concurrently by a subprocess).
-    sample_counts_[min] += (op == HistogramSamples::ADD) ? count : -count;
+    Count& sample_ref = sample_counts_[min];
+    if (op == HistogramSamples::ADD) {
+      sample_ref = base::WrappingAdd(sample_ref, count);
+    } else {
+      sample_ref = base::WrappingSub(sample_ref, count);
+    }
   }
   return true;
 }
