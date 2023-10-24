@@ -183,12 +183,6 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   // Timeout before attempt is timed out.
   base::TimeDelta attempt_timeout_;
 
-  // Last received result from captive portal detector.
-  CaptivePortalStatus last_detection_status_ = CAPTIVE_PORTAL_STATUS_UNKNOWN;
-
-  // Number of detection attempts with same result in a row.
-  int same_detection_result_count_ = 0;
-
   // Number of detection attempts.
   int captive_portal_detector_run_count_ = 0;
 
