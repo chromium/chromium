@@ -2765,7 +2765,6 @@
 <translation id="3115147772012638511">కాష్ కోసం వేచి ఉంది...</translation>
 <translation id="3115580024857770654">అన్నీ కుదించు</translation>
 <translation id="3115743155098198207">Google ఖాతా భాషను మేనేజ్ చేయండి</translation>
-<translation id="3117138513108032865">నావిగేషన్‌లు HTTPSకు అప్‌గ్రేడ్ అవుతాయి, దాన్ని సపోర్ట్ చేయని సైట్‌లు లోడ్ కావడానికి ముందు మీకు హెచ్చరిక వస్తుంది. మీరు అడ్వాన్స్‌డ్ ప్రొటెక్షన్‌ను ఎనేబుల్ చేసినందున ఈ సెట్టింగ్‌ను మార్చలేరు.</translation>
 <translation id="3117362587799608430">డాక్‌కు పూర్తి అనుకూలత లేదు</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{<ph name="DEVICE_NAME" />కి <ph name="ATTACHMENTS" />ని పంపడంలో విఫలమైంది}other{<ph name="DEVICE_NAME" />కి <ph name="ATTACHMENTS" />ని పంపడంలో విఫలమైంది}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> సహాయం</translation>
@@ -4422,7 +4421,6 @@
 <translation id="4451203458188403050">PDF నుండి టెక్స్ట్‌ను ఎక్స్‌ట్రాక్ట్ చేయండి</translation>
 <translation id="4452898361839215358">లేదా PPDని ఎంచుకోండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">మీ కీబోర్డ్‌కు ఎగువ కుడి మూలన ఉన్న వేలిముద్ర సెన్సార్‌ను తాకండి. మీ వేలిముద్ర డేటా సురక్షితంగా స్టోర్ చేయబడుతుంది, ఎప్పటికీ మీ <ph name="DEVICE_TYPE" />‌లోనే ఉంటుంది.</translation>
-<translation id="4453853000812412311"><ph name="DESCRIPTION_ITEM_1" />, <ph name="DESCRIPTION_ITEM_2" />, <ph name="DESCRIPTION_ITEM_3" /></translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" />లో సెర్చ్ చేయండి లేదా URL టైప్ చేయండి</translation>
 <translation id="4457472090507035117">ప్రస్తుత వాయిస్‌ని ఎంచుకోండి:</translation>
 <translation id="4459169140545916303"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> రోజుల క్రితం యాక్టివ్‌గా ఉంది</translation>
@@ -4688,6 +4686,7 @@
 <translation id="4666911709726371538">మరిన్ని యాప్‌లు</translation>
 <translation id="4667027203988048332">ఎలాంటి డేటా ఉపయోగించబడుతుంది:</translation>
 <translation id="4668279686271488041">యాడ్ మెజర్‌మెంట్ డేటా మీ పరికరం నుండి క్రమం తప్పకుండా తొలగించబడుతుంది</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="4672759829555593783">ఇప్పుడు <ph name="FILE_NAME" /> ఫైల్‌ను తెరవండి</translation>
 <translation id="4673442866648850031">స్టైలస్‌ను బయటకు తీసినప్పుడు స్టైలస్ సాధనాలను తెరుస్తుంది</translation>
 <translation id="4673785607287397025">కనెక్ట్ చేయడంలో సమస్య ఉంది. మీ Chromecast, కంప్యూటర్ ఒకే నెట్‌వర్క్‌కు కనెక్ట్ చేయబడ్డాయని నిర్ధారించుకుని, మళ్లీ ట్రై చేయండి.</translation>
@@ -5160,7 +5159,6 @@
 <translation id="506886127401228110">ఐసోలేటెడ్ వెబ్ యాప్‌లను ఆన్ చేయండి</translation>
 <translation id="5068919226082848014">పిజ్జా</translation>
 <translation id="506934332411950286">మీ Android ఫోన్ నుండి Wi-Fi బదిలీ చేయబడుతోంది</translation>
-<translation id="5070710277167211639">నావిగేషన్‌లు HTTPSకు అప్‌గ్రేడ్ చేయబడతాయి, దాన్ని సపోర్ట్ చేయని సైట్‌లు లోడ్ కావడానికి ముందు మీకు హెచ్చరిక వస్తుంది</translation>
 <translation id="5070773577685395116">ఇది అర్థం కాలేదు?</translation>
 <translation id="5071295820492622726">ఇటీవలి డౌన్‌లోడ్‌లకు తిరిగి వెళ్లండి</translation>
 <translation id="5071892329440114717">స్టాండర్డ్ భద్రతా వివరాలను చూపించు</translation>
@@ -5727,6 +5725,7 @@
 <translation id="5526745900034778153">సింక్‌ను కొనసాగించడానికి మళ్లీ సైన్ ఇన్ చేయండి</translation>
 <translation id="5527463195266282916">ఎక్స్‌టెన్ష‌న్‌ను డౌన్‌గ్రేడ్ చేయడానికి ప్ర‌య‌త్నం జ‌రిగింది.</translation>
 <translation id="5527474464531963247">మీరు మరొక నెట్‌వర్క్‌ను కూడా ఎంచుకోవచ్చు.</translation>
+<translation id="5527597176701279474"><ph name="APP_NAME" />, ఇన్‌స్టాల్ అవుతోంది</translation>
 <translation id="5528295196101251711">VM పేరు</translation>
 <translation id="5529554942700688235">మెమరీ సేవింగ్స్ సారాంశం, <ph name="MEMORY_VALUE" /> మెమరీ ఖాళీ చేయబడింది</translation>
 <translation id="5532223876348815659">సార్వజనీనం</translation>
@@ -7699,6 +7698,7 @@
 <translation id="7131040479572660648"><ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> మరియు <ph name="WEBSITE_3" />లోని మీ డేటాను చదవండి</translation>
 <translation id="713122686776214250">పే&amp;జీని జోడించండి...</translation>
 <translation id="7131431455372521159">అన్ని ట్రాక్‌పాయింట్‌లు డిస్‌కనెక్ట్ చేయబడ్డాయి</translation>
+<translation id="7131896909366247105"><ph name="APP_NAME" />, వేచి ఉంది</translation>
 <translation id="7134098520442464001">టెక్స్ట్‌ని చిన్నదిగా చేయండి</translation>
 <translation id="7135729336746831607">బ్లూటూత్ ఆన్ చేయాలా?</translation>
 <translation id="7136694880210472378">ఆటోమేటిక్ ఆప్షన్‌గా సెట్ చేయి</translation>
@@ -7746,6 +7746,7 @@
 <translation id="7180611975245234373">రిఫ్రెష్ చేయండి</translation>
 <translation id="7180865173735832675">అనుకూలంగా మార్చండి</translation>
 <translation id="7181117767881540376">&amp;బుక్‌మార్క్‌ల బార్‌ను దాచండి</translation>
+<translation id="7182063559013288142">ఇన్‌స్టంట్ హాట్‌స్పాట్</translation>
 <translation id="7182791023900310535">మీ పాస్‌వర్డ్‌ను తరలించండి</translation>
 <translation id="718427252411067142">ఇతరులు మీ పాస్‌వర్డ్‌ను ఉపయోగించకుండా ఆపడానికి, యాప్‌ను తెరిచి, మీ పాస్‌వర్డ్‌ను మార్చండి</translation>
 <translation id="7186088072322679094">సాధనపట్టీలో ఉంచండి</translation>
@@ -10207,7 +10208,6 @@
 <translation id="9101691533782776290">యాప్‌ను ప్రారంభించండి</translation>
 <translation id="9102610709270966160">ఎక్స్‌టెన్ష‌న్‌ను ప్రారంభించండి</translation>
 <translation id="9102864637938129124">యాడ్‌ల పనితీరు ఎలా ఉంది అనేది సైట్‌లు, అడ్వర్టయిజర్‌లు అర్థం చేసుకోగలరు. ఈ సెట్టింగ్ ఆన్ చేయబడింది.</translation>
-<translation id="9103308773831468707"><ph name="DESCRIPTION_ITEM_1" />, <ph name="DESCRIPTION_ITEM_2" /></translation>
 <translation id="9103479157856427471">దగ్గరగా జూమ్ చేసిన స్క్రీన్ కీబోర్డ్ ఫోకస్‌ను ఫాలో చేస్తుంది</translation>
 <translation id="9103868373786083162">హిస్టరీని చూసేందుకు వెనుకకు వెళ్లు, సందర్భ మెనూ నొక్కండి</translation>
 <translation id="9107096627210171112">అనువదించండి...</translation>

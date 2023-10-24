@@ -170,6 +170,7 @@
 <translation id="3918378745482005425">قد لا تعمل بعض الميزات، ولكن لا يزال بإمكان المواقع الإلكترونية ذات الصلة استخدام ملفات تعريف الارتباط التابعة لجهات خارجية.</translation>
 <translation id="3955193568934677022">السماح للمواقع الإلكترونية بتشغيل المحتوى المحمي (مُستحسَن)</translation>
 <translation id="3967822245660637423">اكتمل التنزيل</translation>
+<translation id="3974105241379491420">السماح للمواقع الإلكترونية بطلب استخدام المعلومات التي تم حفظها عنك</translation>
 <translation id="3987993985790029246">نسخ الرابط</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992684624889376114">لمحة حول هذه الصفحة</translation>
@@ -244,6 +245,7 @@
 <translation id="5335288049665977812">‏السماح للمواقع الإلكترونية بتشغيل JavaScript (موصى به)</translation>
 <translation id="534295439873310000">‏أجهزة NFC</translation>
 <translation id="5344522958567249764">إدارة إعدادات الخصوصية في عرض الإعلانات</translation>
+<translation id="5389626883706033615">المواقع الإلكترونية محظورة من أن تطلب منك استخدام المعلومات التي تم حفظها عنك.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 آخر)}zero{(+ # آخر)}two{(+ اثنين (#) آخرين)}few{(+ # أخرى)}many{(+ # آخر)}other{(+ # آخر)}}</translation>
 <translation id="5403592356182871684">الأسماء</translation>
 <translation id="5438097262470833822">سيؤدي هذا الخيار إلى إعادة ضبط أذونات الموقع الإلكتروني <ph name="WEBSITE" />.</translation>

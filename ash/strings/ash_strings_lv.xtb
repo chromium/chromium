@@ -29,6 +29,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="109942774857561566">Man ir garlaicīgi</translation>
 <translation id="1104084341931202936">Rādīt pieejamības iestatījumus</translation>
 <translation id="1104621072296271835">Kopā jūsu ierīces darbojas vēl labāk</translation>
+<translation id="1106446201446919638">Pievienota viena ierīce. Tīklāja izmantošanas laikā Wi-Fi savienojums būs izslēgts.</translation>
 <translation id="1111021433905331574">Varat mainīt tastatūras fona apgaismojuma krāsu sadaļā Iestatījumi &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Pārslēgt mobilos datus. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Automātiski slēpt plauktu</translation>
@@ -517,6 +518,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3160929076476941240">2 h</translation>
 <translation id="3161500364292033097">Aizvērt darbvietu un logus</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> ierīcē <ph name="DEVICE_TYPE" /> atjauno iepriekšējo versiju. Ierīce tiks atiestatīta, un visi dati tiks izdzēsti.</translation>
+<translation id="3170769098533255179">Nav pievienota neviena ierīce. Tīklāja izmantošanas laikā Wi-Fi savienojums būs izslēgts.</translation>
 <translation id="3171170659304083361">Ievades metožu iestatījumi</translation>
 <translation id="3176221688814061633">Jūsu Chromebook datorā vai Bluetooth ierīcē tiek izmantota vecāka Bluetooth versija. Lai uzlabotu audio kvalitāti, iespējojiet īpaši augstu Bluetooth izšķirtspēju vai izmantojiet iekšējo mikrofonu.</translation>
 <translation id="3181441307743005334">Restartēšana var ilgt kādu brīdi</translation>
@@ -551,6 +553,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3306386552969601301">Šīs ierīces (<ph name="DEVICE_NAME" />) tīklājam ir pievienotas vairākas ierīces (<ph name="DEVICECOUNT" />).</translation>
 <translation id="3307642347673023554">Ieslēgts klēpjdatora režīms</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> joprojām varēs pierakstīties vēlāk.</translation>
+<translation id="3317779231018057649">Pievienoto ierīču skaits: <ph name="DEVICECOUNT" />. Tīklāja izmantošanas laikā Wi-Fi savienojums būs izslēgts.</translation>
 <translation id="3321628682574733415">Nepareizs vecāku kods</translation>
 <translation id="332827762492701193">Paziņojumi ir paslēpti.</translation>
 <translation id="3333674550998107387">Izvērst paziņojumu <ph name="NOTIFICATION_TITLE" /></translation>
@@ -875,6 +878,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="4566144812051858745">Neinteresē nekādi ieteikumi</translation>
 <translation id="4569753163207712681">Skatīt tālruņa jaunākos fotoattēlus, multivides saturu un lietotnes</translation>
 <translation id="4573176682887762361">“Type [word / phrase]” (Ievadīt [vārds/frāze])</translation>
+<translation id="4577188182049003486">Kad tīklājs ir ieslēgts, Wi-Fi savienojums ir izslēgts</translation>
 <translation id="4577274620589681794">Laiks ir beidzies! · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Rādīt priekšskatījumus</translation>
 <translation id="4578906031062871102">Iestatījumu izvēlne ir atvērta</translation>

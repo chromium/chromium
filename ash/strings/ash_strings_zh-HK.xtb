@@ -29,7 +29,7 @@
 <translation id="109942774857561566">我好悶</translation>
 <translation id="1104084341931202936">顯示無障礙功能設定</translation>
 <translation id="1104621072296271835">連結您的裝置，以獲得更佳的體驗</translation>
-<translation id="1106446201446919638">1 部裝置已連線。使用無線基地台時，Wi-Fi 會保持關閉。</translation>
+<translation id="1106446201446919638">已連接 1 部裝置。使用熱點時，Wi-Fi 將保持關閉。</translation>
 <translation id="1111021433905331574">您可在「設定」&gt;「<ph name="APP_TITLE" />」中變更鍵盤背光的顏色</translation>
 <translation id="1117719261843403176">切換流動數據。<ph name="STATE" />。</translation>
 <translation id="112308213915226829">自動隱藏捷徑列</translation>
@@ -518,7 +518,7 @@
 <translation id="3160929076476941240">2 小時</translation>
 <translation id="3161500364292033097">關閉桌面和視窗</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> 正在回復您的 <ph name="DEVICE_TYPE" />。您的裝置將會重設，且所有資料將會被刪除。</translation>
-<translation id="3170769098533255179">未連線到任何裝置。使用無線基地台時，Wi-Fi 會保持關閉。</translation>
+<translation id="3170769098533255179">未連接任何裝置。使用熱點時，Wi-Fi 將保持關閉。</translation>
 <translation id="3171170659304083361">輸入方法設定</translation>
 <translation id="3176221688814061633">Chromebook 或藍牙裝置正使用較舊版本的藍牙。請開啟「超解像度藍牙」或使用內置麥克風，以提高音效品質。</translation>
 <translation id="3181441307743005334">重新啟動中，請稍候</translation>
@@ -553,7 +553,7 @@
 <translation id="3306386552969601301">有 <ph name="DEVICECOUNT" /> 部裝置已連線至 <ph name="DEVICE_NAME" /> 熱點</translation>
 <translation id="3307642347673023554">已切換至手提電腦模式</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> 稍後仍可登入。</translation>
-<translation id="3317779231018057649"><ph name="DEVICECOUNT" /> 部裝置已連線。使用無線基地台時，Wi-Fi 會保持關閉。</translation>
+<translation id="3317779231018057649">已連接 <ph name="DEVICECOUNT" /> 部裝置。使用熱點時，Wi-Fi 將保持關閉。</translation>
 <translation id="3321628682574733415">家長存取碼錯誤</translation>
 <translation id="332827762492701193">已隱藏通知</translation>
 <translation id="3333674550998107387">展開「<ph name="NOTIFICATION_TITLE" />」通知</translation>
@@ -878,7 +878,7 @@
 <translation id="4566144812051858745">對所有建議都不感興趣</translation>
 <translation id="4569753163207712681">查看手機最近的相片、媒體和通知</translation>
 <translation id="4573176682887762361">「輸入 [文字/詞組]」</translation>
-<translation id="4577188182049003486">無線基地台開啟時，Wi-Fi 會關閉</translation>
+<translation id="4577188182049003486">熱點開啟時，Wi-Fi 會關閉</translation>
 <translation id="4577274620589681794">時間到 · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">顯示預覽</translation>
 <translation id="4578906031062871102">開咗設定選單</translation>

@@ -2753,7 +2753,6 @@
 <translation id="3115147772012638511">Чакаецца кэш...</translation>
 <translation id="3115580024857770654">Згарнуць усе</translation>
 <translation id="3115743155098198207">Кіраваць мовамі Уліковага запісу Google</translation>
-<translation id="3117138513108032865">Выкарыстоўваць пратакол HTTPS пры наведванні сайтаў і папярэджваць, калі ён не падтрымліваецца, перад тым як іх загружаць. Паколькі ўключана Палепшаная абарона, вы не можаце змяніць гэту наладу.</translation>
 <translation id="3117362587799608430">Док-станцыя не поўнасцю сумяшчальная з прыладай</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{Даныя (<ph name="ATTACHMENTS" />) не ўдалося адправіць на прыладу "<ph name="DEVICE_NAME" />"}one{Даныя (<ph name="ATTACHMENTS" />) не ўдалося адправіць на прыладу "<ph name="DEVICE_NAME" />"}few{Даныя (<ph name="ATTACHMENTS" />) не ўдалося адправіць на прыладу "<ph name="DEVICE_NAME" />"}many{Даныя (<ph name="ATTACHMENTS" />) не ўдалося адправіць на прыладу "<ph name="DEVICE_NAME" />"}other{Даныя (<ph name="ATTACHMENTS" />) не ўдалося адправіць на прыладу "<ph name="DEVICE_NAME" />"}}</translation>
 <translation id="3118319026408854581">Даведка <ph name="PRODUCT_NAME" /></translation>
@@ -4408,7 +4407,6 @@
 <translation id="4451203458188403050">Выняць тэкст з PDF</translation>
 <translation id="4452898361839215358">або выберыце файл PPD. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">Дакраніцеся да сканера адбіткаў пальцаў у правым верхнім вугле клавіятуры. Даныя адбіткаў пальцаў надзейна захоўваюцца на прыладзе <ph name="DEVICE_TYPE" /> і нікуды не перадаюцца.</translation>
-<translation id="4453853000812412311"><ph name="DESCRIPTION_ITEM_1" />, <ph name="DESCRIPTION_ITEM_2" />, <ph name="DESCRIPTION_ITEM_3" /></translation>
 <translation id="4453946976636652378">Шукайце праз <ph name="SEARCH_ENGINE_NAME" /> або ўвядзіце URL-адрас</translation>
 <translation id="4457472090507035117">Выбар бягучага голасу:</translation>
 <translation id="4459169140545916303">Апошнія дзеянні: <ph name="DEVICE_LAST_ACTIVATED_TIME" /> сут таму</translation>
@@ -4673,6 +4671,7 @@
 <translation id="4666911709726371538">Іншыя праграмы</translation>
 <translation id="4667027203988048332">Якія даныя выкарыстоўваюцца:</translation>
 <translation id="4668279686271488041">Даныя вымярэння паказчыкаў, звязаных з рэкламай, рэгулярна выдаляюцца з прылады.</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="4672759829555593783">Адкрыць файл "<ph name="FILE_NAME" />"</translation>
 <translation id="4673442866648850031">Адкрываць інструменты для пяра, калі яно вымаецца</translation>
 <translation id="4673785607287397025">Праблемы з падключэннем. Упэўніцеся, што ваш Chromecast і камп'ютар знаходзяцца ў адной сетцы, і паўтарыце спробу.</translation>
@@ -5145,7 +5144,6 @@
 <translation id="506886127401228110">Уключыць ізаляваныя вэб-праграмы</translation>
 <translation id="5068919226082848014">Піца</translation>
 <translation id="506934332411950286">Перадача даных Wi-Fi з вашага тэлефона Android</translation>
-<translation id="5070710277167211639">Выкарыстоўваць пратакол HTTPS пры наведванні сайтаў і папярэджваць, калі ён не падтрымліваецца, перад тым як іх загружаць</translation>
 <translation id="5070773577685395116">Не атрымалі апавяшчэнне?</translation>
 <translation id="5071295820492622726">Вярнуцца да нядаўніх спамповак</translation>
 <translation id="5071892329440114717">Паказаць падрабязныя звесткі аб стандартнай абароне</translation>
@@ -7112,6 +7110,7 @@
 <translation id="6673898378497337661">павялічыць яркасць клавіятуры</translation>
 <translation id="6674571176963658787">Каб пачаць сінхранізацыю, увядзіце фразу-пароль</translation>
 <translation id="6675665718701918026">Падключана ўказальная прылада</translation>
+<translation id="6675985668044425385">Калі сайт не працуе належным чынам, дазвольце яму выкарыстоўваць староннія файлы cookie. Для гэтага вам трэба змяніць параметры функцыі "Абарона ад адсочвання", доступ да якой можна атрымаць праз адрасны радок.</translation>
 <translation id="6676212663108450937">Карыстайцеся навушнікамі, калі выпрабоўваеце голас</translation>
 <translation id="6677942524382973058">Прыватныя токены стану павышаюць узровень прыватнасці ў інтэрнэце. З іх дапамогай нельга ідэнтыфікаваць вашу асобу.</translation>
 <translation id="6678717876183468697">URL запыту</translation>
@@ -7450,6 +7449,7 @@
 <translation id="6943176775188458830">Скасаваць друк</translation>
 <translation id="6943939122536910181">Адключана ад прылады "<ph name="DEVICE" />"</translation>
 <translation id="6944708469742828051">Гэты ключ доступу будзе захаваны толькі ў Windows Hello</translation>
+<translation id="6944750221184785444">Не ўдалося ўсталяваць гэты профіль. Па тэхнічную падтрымку звяртайцеся да свайго аператара.</translation>
 <translation id="6945221475159498467">Выбраць</translation>
 <translation id="694592694773692225">Заблакіравана перанакіраванне на гэтай старонцы.</translation>
 <translation id="6947015141909171112">Вы бачыце рэцэпты, падабраныя на аснове вашай нядаўняй гісторыі пошуку рэцэптаў.
@@ -10197,7 +10197,6 @@
 <translation id="9101691533782776290">Запусціць праграму</translation>
 <translation id="9102610709270966160">Уключыць пашырэнне</translation>
 <translation id="9102864637938129124">Сайты і рэкламадаўцы могуць ацэньваць эфектыўнасць рэкламы. Гэта налада ўключана.</translation>
-<translation id="9103308773831468707"><ph name="DESCRIPTION_ITEM_1" />, <ph name="DESCRIPTION_ITEM_2" /></translation>
 <translation id="9103479157856427471">Пры павелічэнні маштабу перамяшчаць павялічаны ўчастак экрана за фокусам клавіятуры</translation>
 <translation id="9103868373786083162">Націсніце гэту кнопку, каб перайсці назад, кантэкстнае меню – для прагляду гісторыі</translation>
 <translation id="9107096627210171112">&amp;Перакласці</translation>

@@ -169,6 +169,7 @@
 <translation id="3918378745482005425">ಕೆಲವು ಫೀಚರ್‌ಗಳು ಕಾರ್ಯನಿರ್ವಹಿಸದಿರಬಹುದು. ಸಂಬಂಧಿತ ಸೈಟ್‌ಗಳು ಇನ್ನೂ ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ಬಳಸಬಹುದು.</translation>
 <translation id="3955193568934677022">ಸಂರಕ್ಷಿಸಲಾದ ವಿಷಯವನ್ನು ಪ್ಲೇ ಮಾಡಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="3967822245660637423">ಡೌನ್‌ಲೋಡ್‌‌ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
+<translation id="3974105241379491420">ನಿಮ್ಮ ಕುರಿತು ಅವುಗಳು ಸೇವ್ ಮಾಡಿರುವ ಮಾಹಿತಿಯನ್ನು ಬಳಸಲು ಸೈಟ್‌ಗಳು ಕೇಳಬಹುದು</translation>
 <translation id="3987993985790029246">ಲಿಂಕ್ ನಕಲಿಸಿ</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992684624889376114">ಈ ಪುಟದ ಕುರಿತು</translation>
@@ -243,6 +244,7 @@
 <translation id="5335288049665977812">JavaScript ರನ್ ಮಾಡಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="534295439873310000">NFC ಸಾಧನಗಳು</translation>
 <translation id="5344522958567249764">ಜಾಹೀರಾತು ಗೌಪ್ಯತೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
+<translation id="5389626883706033615">ನಿಮ್ಮ ಕುರಿತು ಅವುಗಳು ಸೇವ್ ಮಾಡಿರುವ ಮಾಹಿತಿಯನ್ನು ಬಳಸಲು ನಿಮ್ಮನ್ನು ಕೇಳದಂತೆ ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 ಹೆಚ್ಚು)}one{(+ # ಹೆಚ್ಚು)}other{(+ # ಹೆಚ್ಚು)}}</translation>
 <translation id="5403592356182871684">ಹೆಸರುಗಳು</translation>
 <translation id="5438097262470833822">ಈ ಆಯ್ಕೆಯು <ph name="WEBSITE" /> ನ ಅನುಮತಿಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡುತ್ತದೆ</translation>
