@@ -5,10 +5,10 @@
 import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
-import {isSameEntry} from '../../common/js/entry_utils.js';
+import {isInteractiveVolume, isSameEntry} from '../../common/js/entry_utils.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
-import {str, util} from '../../common/js/util.js';
+import {str} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileData, State, Volume} from '../../externs/ts/state.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
@@ -549,7 +549,7 @@ export async function testUpdateIsInteractiveVolume(done: () => void) {
   const store = setupStore(initialState);
 
   // Expect that the ODFS volume is interactive.
-  assertTrue(util.isInteractiveVolume(volumeInfo));
+  assertTrue(isInteractiveVolume(volumeInfo));
 
   // Dispatch an action to set |isInteractive| for the volume to false.
   store.dispatch(updateIsInteractiveVolume({

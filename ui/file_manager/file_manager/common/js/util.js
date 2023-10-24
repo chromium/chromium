@@ -12,13 +12,9 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
 import {EntryLocation} from '../../externs/entry_location.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {State} from '../../externs/ts/state.js';
-import {constants} from '../../foreground/js/constants.js';
-import {getStore} from '../../state/store.js';
 
 import {promisify} from './api.js';
-import {unwrapEntry} from './entry_utils.js';
-import {isArcVmEnabled, isDriveFsBulkPinningEnabled} from './flags.js';
+import {isDriveFsBulkPinningEnabled} from './flags.js';
 import {VolumeManagerCommon} from './volume_manager_types.js';
 
 /**
@@ -608,18 +604,6 @@ util.getLocaleBasedWeekStart = () => {
 };
 
 /**
- * Returns a boolean indicating whether the volume is a GuestOs volume. And
- * ANDROID_FILES type volume can also be a GuestOs volume if ARCVM is enabled.
- * @param {VolumeManagerCommon.VolumeType} type
- * @return {boolean}
- */
-util.isGuestOs = type => {
-  return type === VolumeManagerCommon.VolumeType.GUEST_OS ||
-      (type === VolumeManagerCommon.VolumeType.ANDROID_FILES &&
-       isArcVmEnabled());
-};
-
-/**
  * A kind of error that represents user electing to cancel an operation. We use
  * this specialization to differentiate between system errors and errors
  * generated through legitimate user actions.
@@ -632,51 +616,6 @@ class UserCanceledError extends Error {}
  * @returns {boolean}
  */
 util.isNullOrUndefined = (value) => value === null || value === undefined;
-
-/**
- * @param {string|undefined} providerId
- * @return {boolean}
- */
-util.isOneDriveId = (providerId) => providerId === constants.ODFS_EXTENSION_ID;
-
-/**
- * @param {?import('../../externs/volume_info.js').VolumeInfo} volumeInfo
- * @return {boolean}
- */
-util.isOneDrive = (volumeInfo) => {
-  return util.isOneDriveId(volumeInfo?.providerId);
-};
-
-/**
- * Returns the ODFS root as an Entry. Request the actions of this
- * Entry to get ODFS metadata.
- * @param {import('../../externs/volume_info.js').VolumeInfo} odfsVolumeInfo
- * @return {Entry|FilesAppEntry}
- */
-util.getODFSMetadataQueryEntry = (odfsVolumeInfo) => {
-  return unwrapEntry(odfsVolumeInfo.displayRoot);
-};
-
-/**
- * Return true if the volume with |volumeInfo| is an
- * interactive volume.
- * @param {import('../../externs/volume_info.js').VolumeInfo} volumeInfo
- * @return {boolean}
- */
-util.isInteractiveVolume = (volumeInfo) => {
-  const state = /** @type {State} */ (getStore().getState());
-  const volumes = state.volumes;
-  if (!volumes) {
-    console.error('Expected volumes to exist in the store.');
-    return true;
-  }
-  const volume = volumes[volumeInfo.volumeId];
-  if (!volume) {
-    console.error('Expected volume to be in the store.');
-    return true;
-  }
-  return volume.isInteractive;
-};
 
 /**
  * Bulk pinning should only show visible UI elements when in progress or

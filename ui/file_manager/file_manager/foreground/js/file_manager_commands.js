@@ -10,7 +10,7 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {getDlpRestrictionDetails, getHoldingSpaceState, startIOTask} from '../../common/js/api.js';
 import {DialogType, isModal} from '../../common/js/dialog_type.js';
 import {getFocusedTreeItem, isDirectoryTree, isDirectoryTreeItem} from '../../common/js/dom_utils.js';
-import {entriesToURLs, isFakeEntry, isNonModifiable, isRecentRootType, isSameEntry, isSameVolume, isTeamDriveRoot, isTeamDrivesGrandRoot, isTrashEntry, isTrashRoot, isTrashRootType, unwrapEntry} from '../../common/js/entry_utils.js';
+import {entriesToURLs, isFakeEntry, isInteractiveVolume, isNonModifiable, isRecentRootType, isSameEntry, isSameVolume, isTeamDriveRoot, isTeamDrivesGrandRoot, isTrashEntry, isTrashRoot, isTrashRootType, unwrapEntry} from '../../common/js/entry_utils.js';
 import {FileType} from '../../common/js/file_type.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
 import {isDlpEnabled, isDriveFsBulkPinningEnabled, isMirrorSyncEnabled, isNewDirectoryTreeEnabled, isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
@@ -445,7 +445,7 @@ CommandUtil.shouldShowMenuItemsForEntry = (volumeManager, entry) => {
 
   // If the entry belongs to a non-interactive volume, hide context menu
   // entries.
-  if (!util.isInteractiveVolume(volumeInfo)) {
+  if (!isInteractiveVolume(volumeInfo)) {
     return false;
   }
 
@@ -616,7 +616,7 @@ CommandUtil.currentVolumeIsInteractive = fileManager => {
   if (!volumeInfo) {
     return true;
   }
-  return util.isInteractiveVolume(volumeInfo);
+  return isInteractiveVolume(volumeInfo);
 };
 
 
@@ -633,7 +633,7 @@ CommandUtil.containsNonInteractiveEntry = (entries, fileManager) => {
     if (!volumeInfo) {
       return false;
     }
-    return util.isInteractiveVolume(volumeInfo);
+    return isInteractiveVolume(volumeInfo);
   });
 };
 

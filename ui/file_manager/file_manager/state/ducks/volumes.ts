@@ -4,10 +4,9 @@
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
-import {isSameEntry, isVolumeEntry, sortEntries} from '../../common/js/entry_utils.js';
+import {isOneDriveId, isSameEntry, isVolumeEntry, sortEntries} from '../../common/js/entry_utils.js';
 import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {isGuestOsEnabled} from '../../common/js/flags.js';
-import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 import {PropStatus, State, Volume, VolumeId} from '../../externs/ts/state.js';
@@ -297,8 +296,7 @@ function updateDeviceConnectionStateReducer(
   const disableODFS = payload.connection ===
       chrome.fileManagerPrivate.DeviceConnectionState.OFFLINE;
   for (const volume of Object.values<Volume>(currentState.volumes)) {
-    if (!util.isOneDriveId(volume.providerId) ||
-        volume.isDisabled === disableODFS) {
+    if (!isOneDriveId(volume.providerId) || volume.isDisabled === disableODFS) {
       continue;
     }
     const updatedVolume =

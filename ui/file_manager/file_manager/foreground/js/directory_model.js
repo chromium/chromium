@@ -7,7 +7,7 @@ import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.j
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
 import {Aggregator, AsyncQueue} from '../../common/js/async_util.js';
-import {convertURLsToEntries, entriesToURLs, isFakeEntry, isNativeEntry, isRecentRootType, isSameEntry, urlToEntry} from '../../common/js/entry_utils.js';
+import {convertURLsToEntries, entriesToURLs, isFakeEntry, isGuestOs, isNativeEntry, isOneDriveId, isRecentRootType, isSameEntry, urlToEntry} from '../../common/js/entry_utils.js';
 import {EntryList, GuestOsPlaceholder, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {isDlpEnabled, isDriveFsBulkPinningEnabled} from '../../common/js/flags.js';
 import {recordMediumCount} from '../../common/js/metrics.js';
@@ -606,7 +606,7 @@ export class DirectoryModel extends EventTarget {
     for (const volume of Object.values(state.volumes)) {
       // Navigate out of ODFS if it got disabled and the current directory is
       // under ODFS.
-      const isOdfs = util.isOneDriveId(volume.providerId);
+      const isOdfs = isOneDriveId(volume.providerId);
       if (!(isOdfs && volume.isDisabled)) {
         continue;
       }
@@ -614,8 +614,8 @@ export class DirectoryModel extends EventTarget {
           // @ts-ignore: error TS18048: 'state.currentDirectory' is possibly
           // 'undefined'.
           getFileData(state, state.currentDirectory.key);
-      const currentDirectoryOnOdfs = util.isOneDriveId(
-          getVolume(state, currentDirectoryFileData)?.providerId);
+      const currentDirectoryOnOdfs =
+          isOneDriveId(getVolume(state, currentDirectoryFileData)?.providerId);
       if (currentDirectoryOnOdfs) {
         const {myFilesEntry} = /**
                                   @type {{myFilesVolume: (Volume|null),
@@ -1592,7 +1592,7 @@ export class DirectoryModel extends EventTarget {
         // different Guest OS folder.
         // @ts-ignore: error TS2339: Property 'added' does not exist on type
         // 'Event'.
-        (util.isGuestOs(event.added[0].volumeType) &&
+        (isGuestOs(event.added[0].volumeType) &&
          this.getCurrentRootType() === VolumeManagerCommon.RootType.GUEST_OS)) {
       // Resolving a display root on FSP volumes is instant, despite the
       // asynchronous call.

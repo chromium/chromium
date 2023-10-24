@@ -2,15 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EntryLocation} from '../../externs/entry_location.js';
-import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import type {EntryLocation} from '../../externs/entry_location.js';
+import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {EntryType, FileData} from '../../externs/ts/state.js';
+import type {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
+import {constants} from '../../foreground/js/constants.js';
 import {driveRootEntryListKey, myFilesEntryListKey} from '../../state/ducks/volumes.js';
+import {getStore} from '../../state/store.js';
 
 import {createDOMError} from './dom_utils.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from './files_app_entry_types.js';
-import {isPluginVmEnabled} from './flags.js';
+import {isArcVmEnabled, isPluginVmEnabled} from './flags.js';
 import {util} from './util.js';
 import {VolumeManagerCommon} from './volume_manager_types.js';
 
@@ -844,4 +847,49 @@ export function isSameVolume(
   }
 
   return true;
+}
+
+/**
+ * Returns the ODFS root as an Entry. Request the actions of this
+ * Entry to get ODFS metadata.
+ */
+export function getODFSMetadataQueryEntry(odfsVolumeInfo: VolumeInfo) {
+  return unwrapEntry(odfsVolumeInfo.displayRoot);
+}
+
+/**
+ * Return true if the volume with |volumeInfo| is an
+ * interactive volume.
+ */
+export function isInteractiveVolume(volumeInfo: VolumeInfo) {
+  const state = getStore().getState();
+  const volumes = state.volumes;
+  if (!volumes) {
+    console.error('Expected volumes to exist in the store.');
+    return true;
+  }
+  const volume = volumes[volumeInfo.volumeId];
+  if (!volume) {
+    console.error('Expected volume to be in the store.');
+    return true;
+  }
+  return volume.isInteractive;
+}
+
+export const isOneDriveId = (providerId: string|null|undefined) =>
+    providerId === constants.ODFS_EXTENSION_ID;
+
+export function isOneDrive(volumeInfo: VolumeInfo) {
+  return isOneDriveId(volumeInfo?.providerId);
+}
+
+
+/**
+ * Returns a boolean indicating whether the volume is a GuestOs volume. And
+ * ANDROID_FILES type volume can also be a GuestOs volume if ARCVM is enabled.
+ */
+export function isGuestOs(type: VolumeManagerCommon.VolumeType) {
+  return type === VolumeManagerCommon.VolumeType.GUEST_OS ||
+      (type === VolumeManagerCommon.VolumeType.ANDROID_FILES &&
+       isArcVmEnabled());
 }
