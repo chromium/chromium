@@ -623,6 +623,14 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   // ServiceWorker.FetchEvent.QueuingTime histogram.
   void RecordQueuingTime(base::TimeTicks created_time);
 
+  void InsertNewItemToRaceNetworkRequests(
+      int fetch_event_id,
+      const base::UnguessableToken& token,
+      mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
+          url_loader_factory,
+      const KURL& request_url);
+  void RemoveItemFromRaceNetworkRequests(int fetch_event_id);
+
   Member<ServiceWorkerClients> clients_;
   Member<ServiceWorkerRegistration> registration_;
   Member<::blink::ServiceWorker> service_worker_;
@@ -768,10 +776,17 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
 
   blink::BlinkStorageKey storage_key_;
 
+  struct RaceNetworkRequestInfo {
+    int fetch_event_id;
+    String token;
+    mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
+        url_loader_factory;
+  };
   // TODO(crbug.com/918702) WTF::HashMap cannot use base::UnguessableToken as a
   // key. As a workaround uses WTF::String as a key instead.
-  HashMap<String, mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>
-      race_network_request_loader_factories_;
+  HashMap<String, std::unique_ptr<RaceNetworkRequestInfo>>
+      race_network_requests_;
+  HashMap<int, RaceNetworkRequestInfo*> race_network_request_fetch_event_ids_;
 
   HeapMojoAssociatedRemote<mojom::blink::AssociatedInterfaceProvider>
       remote_associated_interfaces_{this};
