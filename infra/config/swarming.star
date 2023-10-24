@@ -88,6 +88,9 @@ swarming.task_triggerers(
     pool_realm = "pools/try",
     groups = [
         "mdb/chrome-build-access-sphinx",
+        # Prefer the above sphinx group for led access. But if folks outside
+        # Chrome need access, can add them to chromium-led-users.
+        "chromium-led-users",
     ],
     users = [
         # Build Recipes Tester launches orchestrator led builds which needs to
