@@ -4856,6 +4856,10 @@ const char kNtpRealboxIsTallName[] = "NTP Realbox Is Tall";
 const char kNtpRealboxIsTallDescription[] =
     "Makes NTP Realbox taller when enabled.";
 
+const char kNtpRealboxCr23AllName[] = "Realbox Chrome Refresh 2023";
+const char kNtpRealboxCr23AllDescription[] =
+    "Enables all NTP Realbox Chrome Refresh features";
+
 const char kNtpRealboxMatchSearchboxThemeName[] =
     "NTP Realbox Matches Searchbox Theme";
 const char kNtpRealboxMatchSearchboxThemeDescription[] =

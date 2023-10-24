@@ -63460,6 +63460,7 @@ from previous Chrome versions.
   <int value="-1056860259"
       label="OmniboxEnableClipboardProviderImageSuggestions:enabled"/>
   <int value="-1056629722" label="AssistantIntentTranslateInfo:enabled"/>
+  <int value="-1056368985" label="NtpRealboxCr23All:enabled"/>
   <int value="-1056310158" label="disable-memory-pressure-chromeos"/>
   <int value="-1055845287" label="SensorContentSetting:enabled"/>
   <int value="-1055523523" label="ForceMinorVersion100InUserAgent:disabled"/>
@@ -64496,6 +64497,7 @@ from previous Chrome versions.
       label="OmniboxDocumentProviderNoSyncRequirement:enabled"/>
   <int value="-556021689" label="ArcEnableVirtioBlkForData:disabled"/>
   <int value="-555341956" label="AutofillSaveAndFillVPA:enabled"/>
+  <int value="-554140610" label="NtpRealboxCr23All:disabled"/>
   <int value="-553732400" label="ShoppingPageTypes:enabled"/>
   <int value="-552425893" label="ProjectorAnnotator:disabled"/>
   <int value="-552407626" label="ContextualSearchNewSettings:disabled"/>

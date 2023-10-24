@@ -6868,6 +6868,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpRealboxIsTallDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kRealboxIsTall)},
 
+    {"ntp-realbox-cr23-all", flag_descriptions::kNtpRealboxCr23AllName,
+     flag_descriptions::kNtpRealboxCr23AllDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kRealboxCr23All)},
+
     {"ntp-realbox-match-searchbox-theme",
      flag_descriptions::kNtpRealboxMatchSearchboxThemeName,
      flag_descriptions::kNtpRealboxMatchSearchboxThemeDescription, kOsDesktop,

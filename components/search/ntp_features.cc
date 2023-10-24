@@ -52,6 +52,11 @@ BASE_FEATURE(kDismissPromos,
              "DismissNtpPromos",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, all NTP "realbox" Chrome Refresh features will be enabled
+BASE_FEATURE(kRealboxCr23All,
+             "NtpRealboxCr23All",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the NTP "realbox" will have same border/drop shadow in hover
 // state as searchbox.
 BASE_FEATURE(kRealboxMatchSearchboxTheme,
