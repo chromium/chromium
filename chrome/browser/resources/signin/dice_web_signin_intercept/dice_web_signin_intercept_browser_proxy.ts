@@ -31,6 +31,13 @@ export interface InterceptionParameters {
   showManagedDisclaimer: boolean;
 }
 
+export interface ChromeSigninInterceptionParameters {
+  fullName: string;
+  givenName: string;
+  email: string;
+  pictureUrl: string;
+}
+
 export interface DiceWebSigninInterceptBrowserProxy {
   // Called when the user accepts the interception bubble.
   accept(): void;
@@ -43,6 +50,10 @@ export interface DiceWebSigninInterceptBrowserProxy {
 
   // Called when the page is loaded.
   pageLoaded(): Promise<InterceptionParameters>;
+
+  // Called when the Chrome Signin promo is loaded.
+  // Returns the user parameters that are expected to be displayed.
+  chromeSigninPageLoaded(): Promise<ChromeSigninInterceptionParameters>;
 
   // Called after the page is loaded, sending the final height of the page in
   // order to set the size of the bubble dynamically.
@@ -65,6 +76,10 @@ export class DiceWebSigninInterceptBrowserProxyImpl implements
 
   pageLoaded() {
     return sendWithPromise('pageLoaded');
+  }
+
+  chromeSigninPageLoaded(): Promise<ChromeSigninInterceptionParameters> {
+    return sendWithPromise('chromeSigninPageLoaded');
   }
 
   initializedWithHeight(height: number) {

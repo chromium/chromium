@@ -81,30 +81,27 @@ aria-describedby="contents">
               chrome://theme/current-channel-logo@2x 2x"
       role="presentation">
 
-    <div id="title">
-      Get the most out of Chrome
-    </div>
-    <div id="subtitle">
-      Sign in to get your Chrome stuff across devices
-    </div>
+    <div id="title">$i18n{chromeSigninTitle}</div>
+    <div id="subtitle">$i18n{chromeSigninSubtitle}</div>
+
   </div>
 
   <div id="contents-container">
     <div id="contents">
 
       <img id="account-icon" alt=""
-          src="chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE">
+          src="[[interceptionParameters_.pictureUrl]]">
 
-      <div id="name">Elisa Beckett</div>
-      <div id="email">elisa.g.beckett@gmail.com</div>
+      <div id="name">[[interceptionParameters_.fullName]]</div>
+      <div id="email">[[interceptionParameters_.email]]</div>
 
       <div id="button-container">
         <cr-button id="accept-button" class="action-button"
             on-click="onAccept_">
-          Continue as Elisa
+          [[i18n('chromeSigninAcceptText', interceptionParameters_.givenName)]]
         </cr-button>
         <cr-button id="cancel-button" on-click="onCancel_">
-          Use Chrome without an account
+          $i18n{chromeSigninDeclineText}
         </cr-button>
       </div>
 
