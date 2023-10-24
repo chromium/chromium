@@ -224,7 +224,73 @@ TEST_F(PlusAddressServiceRequestsTest, OfferPlusAddressCreation) {
   EXPECT_EQ(second_future.Get(), plus_address);
 }
 
-TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress) {
+TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_ReturnsUnconfirmed) {
+  signin::IdentityTestEnvironment identity_test_env;
+  identity_test_env.MakeAccountAvailable("plus@plus.plus",
+                                         {signin::ConsentLevel::kSignin});
+
+  PlusAddressClient client(identity_test_env.identity_manager(),
+                           test_shared_loader_factory);
+  client.SetAccessTokenInfoForTesting(eternal_access_token_info);
+  PlusAddressService service(identity_test_env.identity_manager(), nullptr,
+                             std::move(client));
+
+  base::test::TestFuture<const PlusProfileOrError&> future;
+  const url::Origin no_subdomain_origin =
+      url::Origin::Create(GURL("https://test.example"));
+  std::string site = "test.example";
+  std::string plus_address = "plus+remote@plus.plus";
+
+  service.ReservePlusAddress(no_subdomain_origin, future.GetCallback());
+
+  // Check that the future callback is still blocked, and unblock it.
+  ASSERT_FALSE(future.IsReady());
+  test_url_loader_factory.SimulateResponseForPendingRequest(
+      reserve_plus_address_endpoint,
+      test::MakeCreationResponse(PlusProfile({.facet = site,
+                                              .plus_address = plus_address,
+                                              .is_confirmed = false})));
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get()->plus_address, plus_address);
+
+  // The service should not save plus_address if it hasn't been confirmed yet.
+  EXPECT_FALSE(service.IsPlusAddress(plus_address));
+}
+
+TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_ReturnsConfirmed) {
+  signin::IdentityTestEnvironment identity_test_env;
+  identity_test_env.MakeAccountAvailable("plus@plus.plus",
+                                         {signin::ConsentLevel::kSignin});
+
+  PlusAddressClient client(identity_test_env.identity_manager(),
+                           test_shared_loader_factory);
+  client.SetAccessTokenInfoForTesting(eternal_access_token_info);
+  PlusAddressService service(identity_test_env.identity_manager(), nullptr,
+                             std::move(client));
+
+  base::test::TestFuture<const PlusProfileOrError&> future;
+  const url::Origin no_subdomain_origin =
+      url::Origin::Create(GURL("https://test.example"));
+  const std::string site = "test.example";
+  const std::string plus_address = "plus+remote@plus.plus";
+
+  service.ReservePlusAddress(no_subdomain_origin, future.GetCallback());
+
+  // Check that the future callback is still blocked, and unblock it.
+  ASSERT_FALSE(future.IsReady());
+  test_url_loader_factory.SimulateResponseForPendingRequest(
+      reserve_plus_address_endpoint,
+      test::MakeCreationResponse(PlusProfile({.facet = site,
+                                              .plus_address = plus_address,
+                                              .is_confirmed = true})));
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get()->plus_address, plus_address);
+
+  // The service should save plus_address if it has already been confirmed.
+  EXPECT_TRUE(service.IsPlusAddress(plus_address));
+}
+
+TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_Fails) {
   signin::IdentityTestEnvironment identity_test_env;
   identity_test_env.MakeAccountAvailable("plus@plus.plus",
                                          {signin::ConsentLevel::kSignin});
@@ -246,14 +312,12 @@ TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress) {
   // Check that the future callback is still blocked, and unblock it.
   ASSERT_FALSE(future.IsReady());
   test_url_loader_factory.SimulateResponseForPendingRequest(
-      reserve_plus_address_endpoint,
-      test::MakeCreationResponse(
-          PlusProfile({.facet = site, .plus_address = plus_address})));
+      reserve_plus_address_endpoint, "", net::HTTP_BAD_REQUEST);
   ASSERT_TRUE(future.IsReady());
-  EXPECT_EQ(future.Get()->plus_address, plus_address);
+  EXPECT_FALSE(future.Get().has_value());
 }
 
-TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress) {
+TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Successful) {
   signin::IdentityTestEnvironment identity_test_env;
   identity_test_env.MakeAccountAvailable("plus@plus.plus",
                                          {signin::ConsentLevel::kSignin});
@@ -263,12 +327,12 @@ TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress) {
   PlusAddressService service(identity_test_env.identity_manager(), nullptr,
                              std::move(client));
 
+  base::test::TestFuture<const PlusProfileOrError&> future;
   const url::Origin no_subdomain_origin =
       url::Origin::Create(GURL("https://test.example"));
   const std::string site = "test.example";
   const std::string plus_address = "plus+remote@plus.plus";
 
-  base::test::TestFuture<const PlusProfileOrError&> future;
   service.ConfirmPlusAddress(no_subdomain_origin, plus_address,
                              future.GetCallback());
 
@@ -280,6 +344,8 @@ TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress) {
           PlusProfile({.facet = site, .plus_address = plus_address})));
   ASSERT_TRUE(future.IsReady());
   EXPECT_EQ(future.Get()->plus_address, plus_address);
+  // Verify that the plus_address is saved when confirmation is successful.
+  EXPECT_TRUE(service.IsPlusAddress(plus_address));
 
   // Assert that ensuing calls to the same facet do not make a network request.
   const url::Origin subdomain_origin =
@@ -289,6 +355,35 @@ TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress) {
                              second_future.GetCallback());
   ASSERT_TRUE(second_future.IsReady());
   EXPECT_EQ(second_future.Get()->plus_address, plus_address);
+}
+
+TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Fails) {
+  signin::IdentityTestEnvironment identity_test_env;
+  identity_test_env.MakeAccountAvailable("plus@plus.plus",
+                                         {signin::ConsentLevel::kSignin});
+  PlusAddressClient client(identity_test_env.identity_manager(),
+                           test_shared_loader_factory);
+  client.SetAccessTokenInfoForTesting(eternal_access_token_info);
+  PlusAddressService service(identity_test_env.identity_manager(), nullptr,
+                             std::move(client));
+  std::string plus_address = "plus+remote@plus.plus";
+  ASSERT_FALSE(service.IsPlusAddress(plus_address));
+
+  base::test::TestFuture<const PlusProfileOrError&> future;
+  const url::Origin no_subdomain_origin =
+      url::Origin::Create(GURL("https://test.example"));
+  service.ConfirmPlusAddress(no_subdomain_origin, plus_address,
+                             future.GetCallback());
+
+  // Check that the future callback is still blocked, and unblock it.
+  ASSERT_FALSE(future.IsReady());
+  test_url_loader_factory.SimulateResponseForPendingRequest(
+      confirm_plus_address_endpoint, "", net::HTTP_BAD_REQUEST);
+  ASSERT_TRUE(future.IsReady());
+
+  // An error is propagated from the callback and plus_address is not saved.
+  EXPECT_FALSE(future.Get().has_value());
+  EXPECT_FALSE(service.IsPlusAddress(plus_address));
 }
 
 // Doesn't run on ChromeOS since ClearPrimaryAccount() doesn't exist for it.

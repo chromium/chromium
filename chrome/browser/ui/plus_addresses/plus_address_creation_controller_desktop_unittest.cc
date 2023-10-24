@@ -152,18 +152,15 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
 
   // Make Reserve() return kFakePlusAddress as an already-confirmed address.
   fake_plus_address_service_->set_is_confirmed(true);
-  EXPECT_FALSE(fake_plus_address_service_->IsPlusAddress(kFakePlusAddress));
 
   base::test::TestFuture<const std::string&> future;
   controller->OfferCreation(
       url::Origin::Create(GURL("https://kirubelwashere.example")),
       future.GetCallback());
   ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), kFakePlusAddress);
 
-  // Verify that the plus address is saved even though the user doesn't go
-  // through the modal. We should save all confirmed addresses, even if the
-  // confirmation doesn't happen in this browsing session.
-  EXPECT_TRUE(fake_plus_address_service_->IsPlusAddress(kFakePlusAddress));
+  // Verify that the plus address modal is not shown in this case.
   histogram_tester_.ExpectTotalCount(kPlusAddressModalEventHistogram, 0);
 }
 

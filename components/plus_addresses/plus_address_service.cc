@@ -135,8 +135,23 @@ void PlusAddressService::ReservePlusAddress(
   if (!is_enabled()) {
     return;
   }
-  plus_address_client_.ReservePlusAddress(GetEtldPlusOne(origin),
-                                          std::move(on_completed));
+  plus_address_client_.ReservePlusAddress(
+      GetEtldPlusOne(origin),
+      // Thin wrapper around on_completed to save the PlusAddress in the
+      // success case.
+      base::BindOnce(
+          [](PlusAddressService* service, const url::Origin& origin,
+             PlusAddressRequestCallback callback,
+             const PlusProfileOrError& maybe_profile) {
+            if (maybe_profile.has_value() && maybe_profile->is_confirmed) {
+              service->SavePlusAddress(origin, maybe_profile->plus_address);
+            }
+            // Run callback last in case it's dependent on above changes.
+            std::move(callback).Run(maybe_profile);
+          },
+          // base::Unretained is safe here since PlusAddressService owns
+          // the PlusAddressClient and they will have the same lifetime.
+          base::Unretained(this), origin, std::move(on_completed)));
 }
 
 void PlusAddressService::ConfirmPlusAddress(
@@ -160,10 +175,11 @@ void PlusAddressService::ConfirmPlusAddress(
           [](PlusAddressService* service, const url::Origin& origin,
              PlusAddressRequestCallback callback,
              const PlusProfileOrError& maybe_profile) {
-            std::move(callback).Run(maybe_profile);
             if (maybe_profile.has_value()) {
               service->SavePlusAddress(origin, maybe_profile->plus_address);
             }
+            // Run callback last in case it's dependent on above changes.
+            std::move(callback).Run(maybe_profile);
           },
           // base::Unretained is safe here since PlusAddressService owns
           // the PlusAddressClient and they will have the same lifetime.

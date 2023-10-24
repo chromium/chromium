@@ -99,9 +99,6 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressReserved(
   if (maybe_plus_profile->is_confirmed) {
     // TODO: crbug.com/1467623 - Add metrics here?
     std::move(callback_).Run(maybe_plus_profile->plus_address);
-    PlusAddressServiceFactory::GetForBrowserContext(
-        GetWebContents().GetBrowserContext())
-        ->SavePlusAddress(relevant_origin_, plus_address_);
     return;
   }
   PlusAddressMetrics::RecordModalEvent(
