@@ -379,6 +379,11 @@ bool DeskMiniView::IsPointOnMiniView(const gfx::Point& screen_location) const {
 
 void DeskMiniView::OpenContextMenu(ui::MenuSourceType source) {
   is_context_menu_open_ = true;
+  base::UmaHistogramBoolean(
+      owner_bar_->type() == DeskBarViewBase::Type::kDeskButton
+          ? kDeskButtonDeskBarOpenContextMenuHistogramName
+          : kOverviewDeskBarOpenContextMenuHistogramName,
+      true);
   UpdateDeskButtonVisibility();
 
   desk_preview_->SetHighlightOverlayVisibility(true);

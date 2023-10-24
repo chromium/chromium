@@ -2786,6 +2786,7 @@ chromium-metrics-reviews@google.com.
     <variant name="CloseDesk" summary="closes a desk with its windows"/>
     <variant name="CombineDesks" summary="combines a desk with another desk"/>
     <variant name="NewDesk" summary="creates a new desk"/>
+    <variant name="OpenContextMenu" summary="right click open context menu"/>
     <variant name="OpenLibrary" summary="opens the saved desks library"/>
     <variant name="RenameDesk" summary="renames a desk"/>
     <variant name="ReorderDesk" summary="reorders a desk"/>

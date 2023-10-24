@@ -85,6 +85,8 @@ constexpr char kDeskButtonDeskBarCombineDesksHistogramName[] =
     "Ash.Desks.DeskButton.BarAction.CombineDesks";
 constexpr char kDeskButtonDeskBarNewDeskHistogramName[] =
     "Ash.Desks.DeskButton.BarAction.NewDesk";
+constexpr char kDeskButtonDeskBarOpenContextMenuHistogramName[] =
+    "Ash.Desks.DeskButton.BarAction.OpenContextMenu";
 constexpr char kDeskButtonDeskBarOpenLibraryHistogramName[] =
     "Ash.Desks.DeskButton.BarAction.OpenLibrary";
 constexpr char kDeskButtonDeskBarRenameDeskHistogramName[] =
@@ -100,6 +102,8 @@ constexpr char kOverviewDeskBarCombineDesksHistogramName[] =
     "Ash.Desks.Overview.BarAction.CombineDesks";
 constexpr char kOverviewDeskBarNewDeskHistogramName[] =
     "Ash.Desks.Overview.BarAction.NewDesk";
+constexpr char kOverviewDeskBarOpenContextMenuHistogramName[] =
+    "Ash.Desks.Overview.BarAction.OpenContextMenu";
 constexpr char kOverviewDeskBarOpenLibraryHistogramName[] =
     "Ash.Desks.Overview.BarAction.OpenLibrary";
 constexpr char kOverviewDeskBarRenameDeskHistogramName[] =

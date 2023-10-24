@@ -224,6 +224,15 @@ void ClickOnView(const views::View* view,
   event_generator->ClickLeftButton();
 }
 
+void RightClickOnView(const views::View* view,
+                      ui::test::EventGenerator* event_generator) {
+  DCHECK(view);
+
+  const gfx::Point view_center = view->GetBoundsInScreen().CenterPoint();
+  event_generator->MoveMouseTo(view_center);
+  event_generator->ClickRightButton();
+}
+
 void DoubleClickOnView(const views::View* view,
                        ui::test::EventGenerator* event_generator) {
   DCHECK(view);
@@ -10938,6 +10947,33 @@ TEST_P(DeskBarTest, DeskCreationRemovalMetrics) {
           ? DesksCreationRemovalSource::kDeskButtonDeskBarButton
           : DesksCreationRemovalSource::kButton,
       2);
+}
+
+// Tests that metrics are correctly separated for open desk context menu
+// between the overview desk bar and the desk button desk bar.
+TEST_P(DeskBarTest, DeskOpenContextMenuMetrics) {
+  NewDesk();
+
+  base::HistogramTester histogram_tester;
+
+  WindowHolder window(CreateAppWindow());
+  auto* desks_controller = DesksController::Get();
+  desks_controller->SendToDeskAtIndex(window.window(), 0);
+
+  OpenDeskBar();
+  auto* desk_bar = GetDeskBarView();
+  auto* event_generator = GetEventGenerator();
+  RightClickOnView(desk_bar->mini_views()[0], event_generator);
+
+  EnterOverview();
+  auto* overview_desks_bar =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
+  RightClickOnView(overview_desks_bar->mini_views()[0], event_generator);
+  histogram_tester.ExpectTotalCount(
+      bar_type_ == DeskBarViewBase::Type::kDeskButton
+          ? kDeskButtonDeskBarOpenContextMenuHistogramName
+          : kOverviewDeskBarOpenContextMenuHistogramName,
+      1);
 }
 
 // Tests that setting to bottom locked shelf should not crash. Please refer to
