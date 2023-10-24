@@ -1402,6 +1402,9 @@ void ChromeMainDelegate::PreSandboxStartup() {
 
     // NOTE: When launching Lacros at login screen, after this point,
     // the user should have logged in. The cryptohome is now accessible.
+    if (chrome::ProcessNeedsProfileDir(process_type)) {
+      InitializeUserDataDir(base::CommandLine::ForCurrentProcess());
+    }
 
     // Redirect logs from system directory to cryptohome.
     RedirectLacrosLogging();
@@ -1427,9 +1430,16 @@ void ChromeMainDelegate::PreSandboxStartup() {
   base::CPU cpu_info;
 #endif
 
+  bool initialize_user_data_dir = chrome::ProcessNeedsProfileDir(process_type);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // In Lacros, when prelaunching at login screen, we postpone the
+  // initialization of the user data directory.
+  initialize_user_data_dir &= !chromeos::IsLaunchedWithPostLoginParams();
+#endif
   // Initialize the user data dir for any process type that needs it.
-  if (chrome::ProcessNeedsProfileDir(process_type))
+  if (initialize_user_data_dir) {
     InitializeUserDataDir(base::CommandLine::ForCurrentProcess());
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Generate shared resource file only on browser process. This is to avoid
