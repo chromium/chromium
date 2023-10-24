@@ -135,9 +135,11 @@ LocalBookmarkModelMerger::FindGuidMatches(
     const bookmarks::BookmarkNode* const local_node = local_iterator.Next();
     CHECK(local_node->uuid().is_valid());
 
-    // Exclude managed nodes.
+    // Exclude non-syncable nodes (e.g. managed nodes).
+    // TODO(crbug.com/1494120): Revisit if permanent nodes need to be
+    // special-cased.
     if (!local_node->is_permanent_node() &&
-        local_model->IsNodeManaged(local_node)) {
+        !local_model->IsNodeSyncable(local_node)) {
       continue;
     }
 
@@ -179,9 +181,9 @@ void LocalBookmarkModelMerger::MergeSubtree(
     const bookmarks::BookmarkNode* const account_child =
         account_child_ptr.get();
 
-    // Managed nodes are not expected to exist in the account BookmarkModel
-    // instance.
-    CHECK(!account_model_->IsNodeManaged(account_child));
+    // Non-syncable nodes (e.g. managed nodes) are not expected to exist in the
+    // account BookmarkModel instance.
+    CHECK(account_model_->IsNodeSyncable(account_child));
 
     // If a UUID match exists, it takes precedence over semantic matching.
     if (FindMatchingLocalNodeByUuid(account_child)) {
@@ -201,9 +203,9 @@ void LocalBookmarkModelMerger::MergeSubtree(
   for (const auto& local_child_ptr : local_subtree_root->children()) {
     const bookmarks::BookmarkNode* const local_child = local_child_ptr.get();
 
-    // Special-case managed bookmarks, which don't need merging into the account
-    // model.
-    if (local_model_->IsNodeManaged(local_child)) {
+    // Ignore non-syncable nodes (e.g. managed bookmarks), which don't need
+    // merging into the account model.
+    if (!local_model_->IsNodeSyncable(local_child)) {
       continue;
     }
 

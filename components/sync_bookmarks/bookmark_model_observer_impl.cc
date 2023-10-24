@@ -124,9 +124,12 @@ void BookmarkModelObserverImpl::BookmarkNodeMoved(
 
   // We shouldn't see changes to the top-level nodes.
   DCHECK(!bookmark_model_->is_permanent_node(node));
-  if (bookmark_model_->IsNodeManaged(node)) {
+
+  // Ignore changes to non-syncable nodes (e.g. managed nodes).
+  if (!bookmark_model_->IsNodeSyncable(node)) {
     return;
   }
+
   const SyncedBookmarkTrackerEntity* entity =
       bookmark_tracker_->GetEntityForBookmarkNode(node);
   DCHECK(entity);
@@ -154,7 +157,9 @@ void BookmarkModelObserverImpl::BookmarkNodeAdded(
     size_t index,
     bool added_by_user) {
   const bookmarks::BookmarkNode* node = parent->children()[index].get();
-  if (bookmark_model_->IsNodeManaged(node)) {
+
+  // Ignore changes to non-syncable nodes (e.g. managed nodes).
+  if (!bookmark_model_->IsNodeSyncable(node)) {
     return;
   }
 
@@ -203,7 +208,8 @@ void BookmarkModelObserverImpl::OnWillRemoveBookmarks(
     const bookmarks::BookmarkNode* parent,
     size_t old_index,
     const bookmarks::BookmarkNode* node) {
-  if (bookmark_model_->IsNodeManaged(node)) {
+  // Ignore changes to non-syncable nodes (e.g. managed nodes).
+  if (!bookmark_model_->IsNodeSyncable(node)) {
     return;
   }
   bookmark_tracker_->CheckAllNodesTracked(bookmark_model_);
@@ -228,7 +234,7 @@ void BookmarkModelObserverImpl::OnWillRemoveAllUserBookmarks(
   const bookmarks::BookmarkNode* root_node = bookmark_model_->root_node();
   for (const auto& permanent_node : root_node->children()) {
     for (const auto& child : permanent_node->children()) {
-      if (!bookmark_model_->IsNodeManaged(child.get())) {
+      if (bookmark_model_->IsNodeSyncable(child.get())) {
         ProcessDelete(child.get());
       }
     }
@@ -246,7 +252,8 @@ void BookmarkModelObserverImpl::BookmarkAllUserNodesRemoved(
 void BookmarkModelObserverImpl::BookmarkNodeChanged(
     bookmarks::BookmarkModel* /*unused*/,
     const bookmarks::BookmarkNode* node) {
-  if (bookmark_model_->IsNodeManaged(node)) {
+  // Ignore changes to non-syncable nodes (e.g. managed nodes).
+  if (!bookmark_model_->IsNodeSyncable(node)) {
     return;
   }
 
@@ -286,7 +293,8 @@ void BookmarkModelObserverImpl::BookmarkMetaInfoChanged(
 void BookmarkModelObserverImpl::BookmarkNodeFaviconChanged(
     bookmarks::BookmarkModel* /*unused*/,
     const bookmarks::BookmarkNode* node) {
-  if (bookmark_model_->IsNodeManaged(node)) {
+  // Ignore changes to non-syncable nodes (e.g. managed nodes).
+  if (!bookmark_model_->IsNodeSyncable(node)) {
     return;
   }
 
@@ -335,7 +343,8 @@ void BookmarkModelObserverImpl::BookmarkNodeFaviconChanged(
 void BookmarkModelObserverImpl::BookmarkNodeChildrenReordered(
     bookmarks::BookmarkModel* /*unused*/,
     const bookmarks::BookmarkNode* node) {
-  if (bookmark_model_->IsNodeManaged(node)) {
+  // Ignore changes to non-syncable nodes (e.g. managed nodes).
+  if (!bookmark_model_->IsNodeSyncable(node)) {
     return;
   }
 

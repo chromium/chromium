@@ -546,7 +546,7 @@ SyncedBookmarkTracker::InitEntitiesFromModelAndMetadata(
       model->root_node());
   while (iterator.has_next()) {
     const bookmarks::BookmarkNode* node = iterator.Next();
-    if (model->IsNodeManaged(node)) {
+    if (!model->IsNodeSyncable(node)) {
       if (bookmark_node_to_entities_map_.count(node) != 0) {
         return CorruptionReason::TRACKED_MANAGED_NODE;
       }
@@ -782,7 +782,7 @@ void SyncedBookmarkTracker::CheckAllNodesTracked(
       bookmark_model->root_node());
   while (iterator.has_next()) {
     const bookmarks::BookmarkNode* node = iterator.Next();
-    if (bookmark_model->IsNodeManaged(node)) {
+    if (!bookmark_model->IsNodeSyncable(node)) {
       DCHECK(!GetEntityForBookmarkNode(node));
       continue;
     }

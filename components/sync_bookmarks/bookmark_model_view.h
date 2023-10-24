@@ -32,7 +32,12 @@ class BookmarkModelView {
   BookmarkModelView& operator=(const BookmarkModelView&) = delete;
 
   // Functions that don't map directly to equivalent ones in BookmarkModel.
-  bool IsNodeManaged(const bookmarks::BookmarkNode* node) const;
+
+  // Returns whether `node` is actually relevant in the context of this view,
+  // which allows filtering which subset of bookmarks should be sync-ed. Note
+  // that some other APIs, such as traversing root(), can expose nodes that are
+  // NOT meant to be sync-ed, hence the need for this predicate.
+  bool IsNodeSyncable(const bookmarks::BookmarkNode* node) const;
 
   // See bookmarks::BookmarkModel for documentation, as all functions below
   // mimic the same API.

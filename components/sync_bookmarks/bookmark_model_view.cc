@@ -7,9 +7,28 @@
 #include "base/check.h"
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 
 namespace sync_bookmarks {
+
+namespace {
+
+const bookmarks::BookmarkNode* GetAncestorPermanentFolder(
+    const bookmarks::BookmarkNode* node) {
+  CHECK(node);
+
+  const bookmarks::BookmarkNode* self_or_ancestor = node;
+
+  while (!self_or_ancestor->is_permanent_node()) {
+    self_or_ancestor = self_or_ancestor->parent();
+    CHECK(self_or_ancestor);
+  }
+
+  return self_or_ancestor;
+}
+
+}  // namespace
 
 BookmarkModelView::BookmarkModelView(bookmarks::BookmarkModel* bookmark_model)
     : bookmark_model_(bookmark_model->AsWeakPtr()) {
@@ -18,9 +37,19 @@ BookmarkModelView::BookmarkModelView(bookmarks::BookmarkModel* bookmark_model)
 
 BookmarkModelView::~BookmarkModelView() = default;
 
-bool BookmarkModelView::IsNodeManaged(
+bool BookmarkModelView::IsNodeSyncable(
     const bookmarks::BookmarkNode* node) const {
-  return bookmark_model_->client()->IsNodeManaged(node);
+  const bookmarks::BookmarkNode* ancestor_permanent_folder =
+      GetAncestorPermanentFolder(node);
+  CHECK(ancestor_permanent_folder);
+  CHECK(ancestor_permanent_folder->is_permanent_node());
+  CHECK_NE(ancestor_permanent_folder, root_node());
+
+  // A node is considered syncable if it is a descendant of one of the syncable
+  // permanent folder (e.g. excludes enterprise-managed nodes).
+  return ancestor_permanent_folder == bookmark_bar_node() ||
+         ancestor_permanent_folder == other_node() ||
+         ancestor_permanent_folder == mobile_node();
 }
 
 bool BookmarkModelView::loaded() const {

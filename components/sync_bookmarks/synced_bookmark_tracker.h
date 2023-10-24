@@ -183,8 +183,8 @@ class SyncedBookmarkTracker {
   // Clears the specifics hash for |entity|, useful for testing.
   void ClearSpecificsHashForTest(const SyncedBookmarkTrackerEntity* entity);
 
-  // Checks whther all nodes in |bookmark_model| that *should* be tracked as per
-  // IsNodeManaged() are tracked.
+  // Checks whether all nodes in |bookmark_model| that *should* be tracked as
+  // per IsNodeSyncable() are tracked.
   void CheckAllNodesTracked(const BookmarkModelView* bookmark_model) const;
 
   // This method is used to mark all entities except permanent nodes as
