@@ -30,12 +30,18 @@
 #include "device/fido/enclave/enclave_authenticator.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/public_key_credential_descriptor.h"
+#include "mojo/core/embedder/embedder.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/cert_verifier/cert_verifier_service_factory.h"
+#include "services/network/network_service.h"
+#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 
 namespace device {
 namespace {
 
 // Default if unspecified on the command line.
-const GURL kLocalUrl = GURL("http://127.0.0.1:8080");
+const GURL kLocalUrl = GURL("ws://127.0.0.1:8080");
 
 const uint8_t kCredentialId[] = {10, 11, 12, 13};
 
@@ -72,7 +78,7 @@ std::vector<uint8_t> Sign(crypto::ECPrivateKey* signing_key,
 // integrated as a FIDO authenticator and has proper unit tests.
 class EnclaveTestClient {
  public:
-  EnclaveTestClient() = default;
+  EnclaveTestClient();
 
   int StartTransaction(const std::string& device_id,
                        const std::string& signing_key,
@@ -81,14 +87,26 @@ class EnclaveTestClient {
                        const std::string& sync_entity);
 
  private:
+  network::mojom::CertVerifierServiceRemoteParamsPtr GetCertVerifierParams();
+  void CreateInProcessNetworkServiceAndContext();
+
   void Terminate(CtapDeviceResponseCode result,
                  std::vector<AuthenticatorGetAssertionResponse> response);
 
   std::unique_ptr<enclave::EnclaveAuthenticator> device_;
   std::unique_ptr<crypto::ECPrivateKey> signing_key_;
 
+  mojo::Remote<network::mojom::NetworkService> network_service_remote_;
+  mojo::Remote<network::mojom::NetworkContext> network_context_;
+  std::unique_ptr<network::NetworkService> in_process_network_service_;
+  std::unique_ptr<cert_verifier::CertVerifierServiceFactoryImpl> factory_;
+
   base::RunLoop run_loop_;
 };
+
+EnclaveTestClient::EnclaveTestClient() {
+  CreateInProcessNetworkServiceAndContext();
+}
 
 int EnclaveTestClient::StartTransaction(const std::string& device_id,
                                         const std::string& signing_key,
@@ -135,7 +153,7 @@ int EnclaveTestClient::StartTransaction(const std::string& device_id,
   device_ = std::make_unique<enclave::EnclaveAuthenticator>(
       service_url.empty() ? kLocalUrl : GURL(service_url), kPeerPublicKey,
       std::move(passkeys), std::move(device_id_bytes),
-      username.empty() ? "testuser" : username,
+      username.empty() ? "testuser" : username, network_context_.get(),
       base::BindRepeating(&Sign, signing_key_.get()));
   device_->GetAssertion(
       request, options,
@@ -143,6 +161,36 @@ int EnclaveTestClient::StartTransaction(const std::string& device_id,
 
   run_loop_.Run();
   return 0;
+}
+
+network::mojom::CertVerifierServiceRemoteParamsPtr
+EnclaveTestClient::GetCertVerifierParams() {
+  mojo::PendingRemote<cert_verifier::mojom::CertVerifierService>
+      cert_verifier_remote;
+  mojo::PendingReceiver<cert_verifier::mojom::CertVerifierServiceClient>
+      cert_verifier_client;
+
+  mojo::Remote<cert_verifier::mojom::CertVerifierServiceFactory> factory_remote;
+  factory_ = std::make_unique<cert_verifier::CertVerifierServiceFactoryImpl>(
+      factory_remote.BindNewPipeAndPassReceiver());
+  factory_->GetNewCertVerifier(
+      cert_verifier_remote.InitWithNewPipeAndPassReceiver(),
+      cert_verifier_client.InitWithNewPipeAndPassRemote(),
+      cert_verifier::mojom::CertVerifierCreationParams::New());
+
+  return network::mojom::CertVerifierServiceRemoteParams::New(
+      std::move(cert_verifier_remote), std::move(cert_verifier_client));
+}
+
+void EnclaveTestClient::CreateInProcessNetworkServiceAndContext() {
+  in_process_network_service_ = network::NetworkService::Create(
+      network_service_remote_.BindNewPipeAndPassReceiver());
+  in_process_network_service_->Initialize(
+      network::mojom::NetworkServiceParams::New());
+  auto context_params = network::mojom::NetworkContextParams::New();
+  context_params->cert_verifier_params = GetCertVerifierParams();
+  network_service_remote_->CreateNetworkContext(
+      network_context_.BindNewPipeAndPassReceiver(), std::move(context_params));
 }
 
 void EnclaveTestClient::Terminate(
@@ -184,6 +232,7 @@ int main(int argc, char** argv) {
   settings.logging_dest =
       logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
   logging::InitLogging(settings);
+  mojo::core::Init();
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   std::string device_id = command_line->GetSwitchValueASCII("device-id");

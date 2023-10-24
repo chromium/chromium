@@ -17,9 +17,11 @@
 namespace device::enclave {
 
 EnclaveAuthenticatorDiscovery::EnclaveAuthenticatorDiscovery(
-    std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys)
+    std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys,
+    raw_ptr<network::mojom::NetworkContext> network_context)
     : FidoDiscoveryBase(FidoTransportProtocol::kInternal),
-      passkeys_(std::move(passkeys)) {}
+      passkeys_(std::move(passkeys)),
+      network_context_(network_context) {}
 
 EnclaveAuthenticatorDiscovery::~EnclaveAuthenticatorDiscovery() = default;
 
@@ -52,7 +54,7 @@ void EnclaveAuthenticatorDiscovery::AddAuthenticator() {
   std::vector<uint8_t> device_id = {1, 2, 3, 4};
   authenticator_ = std::make_unique<EnclaveAuthenticator>(
       local_url, peer_public_key, std::move(passkeys_), std::move(device_id),
-      test_username, EnclaveRequestSigningCallback());
+      test_username, network_context_, EnclaveRequestSigningCallback());
   observer()->DiscoveryStarted(this, /*success=*/true, {authenticator_.get()});
 }
 

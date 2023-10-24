@@ -8,8 +8,10 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/fido/fido_discovery_base.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace sync_pb {
 class WebauthnCredentialSpecifics;
@@ -25,7 +27,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticatorDiscovery
     : public FidoDiscoveryBase {
  public:
   explicit EnclaveAuthenticatorDiscovery(
-      std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys);
+      std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys,
+      raw_ptr<network::mojom::NetworkContext> network_context);
   ~EnclaveAuthenticatorDiscovery() override;
 
   // FidoDiscoveryBase:
@@ -36,6 +39,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticatorDiscovery
 
   std::unique_ptr<EnclaveAuthenticator> authenticator_;
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys_;
+  raw_ptr<network::mojom::NetworkContext> network_context_;
 
   base::WeakPtrFactory<EnclaveAuthenticatorDiscovery> weak_factory_{this};
 };

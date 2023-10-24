@@ -773,6 +773,10 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
     discovery_factory->set_cable_event_callback(
         base::BindRepeating(&ChromeAuthenticatorRequestDelegate::OnCableEvent,
                             weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  if (non_extension_cablev2_enabled || cablev2_extension_provided ||
+      base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)) {
     if (SystemNetworkContextManager::GetInstance()) {
       discovery_factory->set_network_context(
           SystemNetworkContextManager::GetInstance()->GetContext());
