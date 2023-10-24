@@ -2022,6 +2022,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #endif
 
   registry->RegisterBooleanPref(prefs::kBlockTruncatedCookies, true);
+  registry->RegisterBooleanPref(
+      prefs::kManagedPrivateNetworkAccessRestrictionsEnabled, false);
 
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
   data_controls::RegisterProfilePrefs(registry);

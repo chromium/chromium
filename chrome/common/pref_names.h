@@ -1854,6 +1854,9 @@ inline constexpr char kGoogleSearchSidePanelEnabled[] =
     "side_panel.google_search_side_panel_enabled";
 #endif
 
+inline constexpr char kManagedPrivateNetworkAccessRestrictionsEnabled[] =
+    "managed_private_network_access_restrictions_enabled";
+
 // *************** LOCAL STATE ***************
 // These are attached to the machine/installation
 
