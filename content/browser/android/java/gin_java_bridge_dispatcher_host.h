@@ -19,6 +19,7 @@
 #include "base/values.h"
 #include "content/browser/android/java/gin_java_bound_object.h"
 #include "content/browser/android/java/gin_java_method_invocation_helper.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
@@ -66,13 +67,13 @@ class GinJavaBridgeDispatcherHost
   void OnHasMethod(GinJavaBoundObject::ObjectID object_id,
                    const std::string& method_name,
                    bool* result);
-  void OnInvokeMethod(int routing_id,
+  void OnInvokeMethod(const GlobalRenderFrameHostId& routing_id,
                       GinJavaBoundObject::ObjectID object_id,
                       const std::string& method_name,
                       const base::Value::List& arguments,
                       base::Value::List* result,
                       mojom::GinJavaBridgeError* error_code);
-  void OnObjectWrapperDeleted(int routing_id,
+  void OnObjectWrapperDeleted(const GlobalRenderFrameHostId& routing_id,
                               GinJavaBoundObject::ObjectID object_id);
 
  private:
@@ -92,16 +93,15 @@ class GinJavaBridgeDispatcherHost
   GinJavaBoundObject::ObjectID AddObject(
       const base::android::JavaRef<jobject>& object,
       const base::android::JavaRef<jclass>& safe_annotation_clazz,
-      bool is_named,
-      int32_t holder);
+      absl::optional<GlobalRenderFrameHostId> holder);
   scoped_refptr<GinJavaBoundObject> FindObject(
       GinJavaBoundObject::ObjectID object_id);
   bool FindObjectId(const base::android::JavaRef<jobject>& object,
                     GinJavaBoundObject::ObjectID* object_id);
   void RemoveFromRetainedObjectSetLocked(const JavaObjectWeakGlobalRef& ref);
-  JavaObjectWeakGlobalRef RemoveHolderLocked(int32_t holder,
-                                             ObjectMap::iterator* iter_ptr)
-      EXCLUSIVE_LOCKS_REQUIRED(objects_lock_);
+  JavaObjectWeakGlobalRef RemoveHolderLocked(
+      const GlobalRenderFrameHostId& holder,
+      ObjectMap::iterator* iter_ptr) EXCLUSIVE_LOCKS_REQUIRED(objects_lock_);
 
   // The following objects are used only on the UI thread.
 

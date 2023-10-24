@@ -104,7 +104,8 @@ class GinJavaBridgeMessageFilter : public BrowserMessageFilter,
 
   // The routing id of the RenderFrameHost whose request we are processing.
   // Used on the background thread.
-  int32_t current_routing_id_;
+  int32_t current_routing_id_ = MSG_ROUTING_NONE;
+  const int32_t render_process_id_;
 };
 
 }  // namespace content
