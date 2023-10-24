@@ -346,6 +346,9 @@ def register_log_args(parser: ArgumentParser) -> None:
 
 def get_component_uri(package: str) -> str:
     """Retrieve the uri for a package."""
+    # If the input is a full package already, do nothing
+    if package.startswith('fuchsia-pkg://'):
+        return package
     return f'fuchsia-pkg://{REPO_ALIAS}/{package}#meta/{package}.cm'
 
 

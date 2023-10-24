@@ -110,7 +110,7 @@ class PublishPackageTest(unittest.TestCase):
                 _REPO, '--out-dir', 'out/test', '--purge-repo'
         ]):
             publish_package.main()
-            self.assertEqual(self._ffx_mock.call_count, 1)
+            self.assertEqual(self._ffx_mock.call_count, 2)
             self.assertEqual(make_clean_directory_mock.call_count, 1)
 
 
