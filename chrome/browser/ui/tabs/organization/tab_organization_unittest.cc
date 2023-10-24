@@ -370,7 +370,7 @@ TEST_F(TabOrganizationTest,
                                  }));
 
   std::unique_ptr<TabOrganizationSession> session =
-      std::make_unique<TabOrganizationSession>(std::move(request));
+      std::make_unique<TabOrganizationSession>(nullptr, std::move(request));
   session->StartRequest();
   session.reset();
 
@@ -380,7 +380,7 @@ TEST_F(TabOrganizationTest,
 TEST_F(TabOrganizationTest, TabOrganizationSessionGetNextTabOrganization) {
   std::unique_ptr<TabOrganizationSession> session =
       std::make_unique<TabOrganizationSession>(
-          std::make_unique<TabOrganizationRequest>());
+          nullptr, std::make_unique<TabOrganizationRequest>());
 
   EXPECT_EQ(session->GetNextTabOrganization(), nullptr);
 
@@ -403,7 +403,7 @@ TEST_F(TabOrganizationTest,
        TabOrganizationSessionGetNextTabOrganizationAfterAccept) {
   std::unique_ptr<TabOrganizationSession> session =
       std::make_unique<TabOrganizationSession>(
-          std::make_unique<TabOrganizationRequest>());
+          nullptr, std::make_unique<TabOrganizationRequest>());
 
   EXPECT_EQ(session->GetNextTabOrganization(), nullptr);
 
@@ -429,7 +429,7 @@ TEST_F(TabOrganizationTest,
        TabOrganizationSessionGetNextTabOrganizationAfterReject) {
   std::unique_ptr<TabOrganizationSession> session =
       std::make_unique<TabOrganizationSession>(
-          std::make_unique<TabOrganizationRequest>());
+          nullptr, std::make_unique<TabOrganizationRequest>());
 
   EXPECT_EQ(session->GetNextTabOrganization(), nullptr);
 
@@ -479,7 +479,7 @@ TEST_F(TabOrganizationTest,
   // Create the session.
   TabOrganizationRequest* request_ptr = request.get();
   std::unique_ptr<TabOrganizationSession> session =
-      std::make_unique<TabOrganizationSession>(std::move(request));
+      std::make_unique<TabOrganizationSession>(nullptr, std::move(request));
 
   // Create the a response that uses the invalid tab.
   std::vector<TabData::TabID> tab_ids{valid_tab_data_id_1, valid_tab_data_id_2,
@@ -541,7 +541,7 @@ TEST_F(TabOrganizationTest,
   // Create the session.
   TabOrganizationRequest* request_ptr = request.get();
   std::unique_ptr<TabOrganizationSession> session =
-      std::make_unique<TabOrganizationSession>(std::move(request));
+      std::make_unique<TabOrganizationSession>(nullptr, std::move(request));
 
   // Create the a response that uses the missing tab.
   std::vector<TabData::TabID> tab_ids{valid_tab_data_id_1, valid_tab_data_id_2,
@@ -592,7 +592,7 @@ TEST_F(TabOrganizationTest, TabOrganizationSessionCreation) {
       std::make_unique<TabData>(tab_strip_model(), tab_to_not_group));
 
   std::unique_ptr<TabOrganizationSession> session =
-      std::make_unique<TabOrganizationSession>(std::move(request));
+      std::make_unique<TabOrganizationSession>(nullptr, std::move(request));
 
   std::vector<TabOrganizationResponse::Organization> response_organizations;
   TabOrganizationResponse::Organization organization(

@@ -51,17 +51,10 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest, TogglesActionUIState) {
   TabOrganizationService* service =
       tab_search_container()->tab_organization_service_for_testing();
 
-  ASSERT_EQ(
-      nullptr,
-      tab_search_container()->tab_organization_button()->session_for_testing());
-
   service->OnTriggerOccured(browser());
 
   ASSERT_TRUE(
       tab_search_container()->expansion_animation_for_testing()->IsShowing());
-  ASSERT_NE(
-      nullptr,
-      tab_search_container()->tab_organization_button()->session_for_testing());
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest, DelaysShow) {
