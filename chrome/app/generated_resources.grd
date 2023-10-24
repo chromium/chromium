@@ -8100,6 +8100,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_TITLE" desc="The consent flow is a 2-step process. This text shown on the step 2 as the title description.">
         Get discounts?
       </message>
+      <message name="IDS_NTP_MODULES_CUSTOMIZE_IPH" desc="The description of the IPH that shows for customizing NTP Desktop modules.">
+        Customize what you see on this page
+      </message>
       <message name="IDS_NTP_MODULES_NEW_TAG_LABEL" desc="Label for tag shown on new Modular NTP Desktop features.">
         New
       </message>

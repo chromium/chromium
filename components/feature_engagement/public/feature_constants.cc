@@ -46,6 +46,9 @@ BASE_FEATURE(kIPHDesktopCustomizeChromeFeature,
 BASE_FEATURE(kIPHDesktopCustomizeChromeRefreshFeature,
              "IPH_DesktopCustomizeChromeRefresh",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHDesktopNewTabPageModulesCustomizeFeature,
+             "IPH_DesktopNewTabPageModulesCustomize",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHDownloadToolbarButtonFeature,
              "IPH_DownloadToolbarButton",
              base::FEATURE_ENABLED_BY_DEFAULT);

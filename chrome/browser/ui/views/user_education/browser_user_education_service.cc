@@ -373,6 +373,16 @@ void MaybeRegisterChromeFeaturePromos(
           .SetCustomActionIsDefault(false)
           .SetCustomActionDismissText(IDS_PROMO_DISMISS_BUTTON)));
 
+  // kIPHDesktopNewTabPageModulesCustomizeFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForSnoozePromo(
+          feature_engagement::kIPHDesktopNewTabPageModulesCustomizeFeature,
+          NewTabPageUI::kModulesCustomizeIPHAnchorElement,
+          IDS_NTP_MODULES_CUSTOMIZE_IPH)
+          .SetBubbleArrow(HelpBubbleArrow::kBottomRight)
+          .SetBubbleIcon(&vector_icons::kLightbulbOutlineIcon)
+          .SetInAnyContext(true)));
+
   // kIPHExtensionsMenuFeature:
   registry.RegisterFeature(std::move(
       user_education::FeaturePromoSpecification::CreateForSnoozePromo(

@@ -447,6 +447,22 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHDesktopNewTabPageModulesCustomizeFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::ALL;
+    // Show the promo max once every 10 years if the user hasn't interacted with
+    // the modules within the last year.
+    config->trigger = EventConfig("iph_desktop_new_tab_page_modules_triggered",
+                                  Comparator(EQUAL, 0), 3600, 3600);
+    config->used = EventConfig(events::kDesktopNTPModuleUsed,
+                               Comparator(EQUAL, 0), 360, 360);
+    config->snooze_params.max_limit = 5;
+    return config;
+  }
+
   if (kIPHPasswordsWebAppProfileSwitchFeature.name == feature->name) {
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;

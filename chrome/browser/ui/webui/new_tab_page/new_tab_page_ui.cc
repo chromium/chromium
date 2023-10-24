@@ -107,6 +107,9 @@ using content::WebContents;
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(NewTabPageUI,
                                       kCustomizeChromeButtonElementId);
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(NewTabPageUI,
+                                      kModulesCustomizeIPHAnchorElement);
+
 namespace {
 
 constexpr char kPrevNavigationTimePrefName[] = "NewTabPage.PrevNavigationTime";
@@ -968,7 +971,8 @@ void NewTabPageUI::CreateHelpBubbleHandler(
   help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
       std::move(handler), std::move(client), this,
       std::vector<ui::ElementIdentifier>{
-          NewTabPageUI::kCustomizeChromeButtonElementId});
+          NewTabPageUI::kCustomizeChromeButtonElementId,
+          NewTabPageUI::kModulesCustomizeIPHAnchorElement});
 }
 
 // OnColorProviderChanged can be called during the destruction process and

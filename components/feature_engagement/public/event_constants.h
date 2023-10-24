@@ -65,6 +65,9 @@ extern const char kWebUITabStripOpened[];
 // The PWA was installed by the user.
 extern const char kDesktopPwaInstalled[];
 
+// A module's actions were clicked on the NewTabPage.
+extern const char kDesktopNTPModuleUsed[];
+
 // The user entered the special "focus help bubble" accelerator.
 extern const char kFocusHelpBubbleAcceleratorPressed[];
 
