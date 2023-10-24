@@ -627,6 +627,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             prefService.setBoolean(DESKTOP_SITE_DISPLAY_SETTING_ENABLED, (boolean) newValue);
         } else if (DESKTOP_SITE_WINDOW_TOGGLE_KEY.equals(preference.getKey())) {
             prefService.setBoolean(DESKTOP_SITE_WINDOW_SETTING_ENABLED, (boolean) newValue);
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.RequestDesktopSite.WindowSettingChanged", (boolean) newValue);
         }
         return true;
     }

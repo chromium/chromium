@@ -2638,6 +2638,9 @@ public class SiteSettingsTest {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    HistogramWatcher histogramExpectation =
+                            HistogramWatcher.newSingleRecordWatcher(
+                                    "Android.RequestDesktopSite.WindowSettingChanged", true);
                     SingleCategorySettings preferences =
                             (SingleCategorySettings) settingsActivity.getMainFragment();
                     // Window setting is only available when the Global Setting is ON.
@@ -2657,6 +2660,7 @@ public class SiteSettingsTest {
                     Assert.assertTrue(
                             "Window setting should be ON.",
                             prefService.getBoolean(DESKTOP_SITE_WINDOW_SETTING_ENABLED));
+                    histogramExpectation.assertExpected();
 
                     preferences.onPreferenceChange(windowSettingPref, false);
                     Assert.assertFalse(
