@@ -29,6 +29,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -53,7 +54,6 @@
 #include "components/enterprise/data_controls/dlp_histogram_helper.h"
 #include "components/enterprise/data_controls/dlp_policy_event.pb.h"
 #include "components/file_access/scoped_file_access.h"
-#include "components/reporting/util/test_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "extensions/common/constants.h"
@@ -62,6 +62,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+using ::base::EqualsProto;
 using blink::mojom::FileSystemFileInfo;
 using blink::mojom::NativeFileInfo;
 using storage::FileSystemURL;

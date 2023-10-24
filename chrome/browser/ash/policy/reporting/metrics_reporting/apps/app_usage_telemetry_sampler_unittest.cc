@@ -11,6 +11,7 @@
 #include "base/json/values_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
@@ -32,12 +33,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+using ::base::EqualsProto;
 using ::testing::_;
+using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::NotNull;
-using ::testing::Pointwise;
 using ::testing::StrEq;
-using ::testing::UnorderedPointwise;
+using ::testing::UnorderedElementsAre;
 
 namespace reporting {
 namespace {
@@ -45,15 +47,6 @@ namespace {
 constexpr char kTestUserEmail[] = "test@test.com";
 constexpr char kTestAppId[] = "TestApp";
 constexpr char kTestAppPublisherId[] = "com.google.test";
-
-// Checks equality of the two protos in an std::tuple. Useful for matching two
-// two protos using ::testing::Pointwise or ::testing::UnorderedPointwise.
-MATCHER(EqualsProto, "") {
-  std::string serialized1, serialized2;
-  std::get<0>(arg).SerializeToString(&serialized1);
-  std::get<1>(arg).SerializeToString(&serialized2);
-  return serialized1 == serialized2;
-}
 
 class AppUsageTelemetrySamplerTest : public ::testing::Test {
  protected:
@@ -171,8 +164,7 @@ TEST_F(AppUsageTelemetrySamplerTest, CollectAppUsageDataForInstance) {
       metric_data.telemetry_data().app_telemetry().has_app_usage_data());
   EXPECT_THAT(
       metric_data.telemetry_data().app_telemetry().app_usage_data().app_usage(),
-      Pointwise(EqualsProto(),
-                {AppUsageProto(kInstanceId, kAppUsageDuration)}));
+      ElementsAre(EqualsProto(AppUsageProto(kInstanceId, kAppUsageDuration))));
 
   // Also verify usage data is reset in the pref store.
   VerifyAppUsageDataInPrefStoreForInstance(kInstanceId, base::TimeDelta());
@@ -250,8 +242,8 @@ TEST_F(AppUsageTelemetrySamplerTest, CollectSubsequentAppUsageData) {
                     .app_telemetry()
                     .app_usage_data()
                     .app_usage(),
-                Pointwise(EqualsProto(),
-                          {AppUsageProto(kInstanceId, kAppUsageDuration)}));
+                ElementsAre(EqualsProto(
+                    AppUsageProto(kInstanceId, kAppUsageDuration))));
     VerifyAppUsageDataInPrefStoreForInstance(kInstanceId, base::TimeDelta());
   }
 }
@@ -282,9 +274,9 @@ TEST_F(AppUsageTelemetrySamplerTest,
       metric_data.telemetry_data().app_telemetry().has_app_usage_data());
   EXPECT_THAT(
       metric_data.telemetry_data().app_telemetry().app_usage_data().app_usage(),
-      UnorderedPointwise(EqualsProto(),
-                         {AppUsageProto(kInstanceId1, kAppUsageDuration),
-                          AppUsageProto(kInstanceId2, kAppUsageDuration)}));
+      UnorderedElementsAre(
+          EqualsProto(AppUsageProto(kInstanceId1, kAppUsageDuration)),
+          EqualsProto(AppUsageProto(kInstanceId2, kAppUsageDuration))));
 
   // Verify data is reset in the pref store now that it has been reported.
   VerifyAppUsageDataInPrefStoreForInstance(kInstanceId1, base::TimeDelta());

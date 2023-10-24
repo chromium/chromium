@@ -9,14 +9,16 @@
 #include "base/process/process_handle.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_files_test_base.h"
 #include "chrome/common/chrome_paths_lacros.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "components/enterprise/data_controls/component.h"
-#include "components/reporting/util/test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ::base::EqualsProto;
 
 namespace policy {
 
