@@ -82,17 +82,36 @@ if (enable_rust_boringssl) {
     ]
     visibility = [ ":*" ]  # private, should only be exposed through bssl_crypto
 
-    _bindgen_output = get_target_outputs(":raw_bssl_sys_bindings")
+    bindgen_output = get_target_outputs(":raw_bssl_sys_bindings")
+    inputs = bindgen_output
     rustenv =
         [ "BINDGEN_RS_FILE=" +
-          rebase_path(_bindgen_output[0], get_path_info(crate_root, "dir")) ]
+          rebase_path(bindgen_output[0], get_path_info(crate_root, "dir")) ]
   }
 
   # Rust bindings to boringssl
   cargo_crate("bssl_crypto") {
     crate_type = "rlib"
     crate_root = "src/rust/bssl-crypto/src/lib.rs"
-    sources = [ "src/rust/bssl-crypto/src/lib.rs" ]
+    sources = [
+      "src/rust/bssl-crypto/src/aead.rs",
+      "src/rust/bssl-crypto/src/aes.rs",
+      "src/rust/bssl-crypto/src/bn.rs",
+      "src/rust/bssl-crypto/src/cipher/aes_cbc.rs",
+      "src/rust/bssl-crypto/src/cipher/aes_ctr.rs",
+      "src/rust/bssl-crypto/src/cipher/mod.rs",
+      "src/rust/bssl-crypto/src/digest.rs",
+      "src/rust/bssl-crypto/src/ec.rs",
+      "src/rust/bssl-crypto/src/ecdh.rs",
+      "src/rust/bssl-crypto/src/ed25519.rs",
+      "src/rust/bssl-crypto/src/hkdf.rs",
+      "src/rust/bssl-crypto/src/hmac.rs",
+      "src/rust/bssl-crypto/src/lib.rs",
+      "src/rust/bssl-crypto/src/mem.rs",
+      "src/rust/bssl-crypto/src/pkey.rs",
+      "src/rust/bssl-crypto/src/rand.rs",
+      "src/rust/bssl-crypto/src/x25519.rs",
+    ]
     edition = "2021"
     deps = [ ":bssl_sys" ]
   }
