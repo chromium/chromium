@@ -790,12 +790,6 @@ void DocumentLoader::DidChangePerformanceTiming() {
   }
 }
 
-void DocumentLoader::DidObserveInputDelay(base::TimeDelta input_delay) {
-  if (frame_ && state_ >= kCommitted) {
-    GetLocalFrameClient().DidObserveInputDelay(input_delay);
-  }
-}
-
 void DocumentLoader::DidObserveLoadingBehavior(LoadingBehaviorFlag behavior) {
   if (frame_) {
     DCHECK_GE(state_, kCommitted);

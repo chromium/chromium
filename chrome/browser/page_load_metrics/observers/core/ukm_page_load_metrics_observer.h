@@ -173,7 +173,6 @@ class UkmPageLoadMetricsObserver
       ukm::builders::PageLoad& builder,
       const page_load_metrics::PageEndReason page_end_reason);
 
-  void RecordInputTimingMetrics();
   void RecordSmoothnessMetrics();
   void RecordResponsivenessMetrics();
 

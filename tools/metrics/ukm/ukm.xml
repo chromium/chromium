@@ -12080,6 +12080,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="InputEvent">
+  <obsolete>
+    Deprecated in favor of PerformanceAPI.LongAnimationFrame events.
+  </obsolete>
   <owner>mmocny@chromium.org</owner>
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -16452,6 +16455,9 @@ be describing additional metrics about the same event.
     </aggregation>
   </metric>
   <metric name="ForegroundNumInputEvents">
+    <obsolete>
+      Depreacated October 2023.
+    </obsolete>
     <summary>
       The number of Input Events, including click, tap, key press, cancellable
       touchstart, or pointer down followed by apointer up. This metric gets
@@ -16471,6 +16477,9 @@ be describing additional metrics about the same event.
     </aggregation>
   </metric>
   <metric name="ForegroundTotalAdjustedInputDelay">
+    <obsolete>
+      Depreacated October 2023.
+    </obsolete>
     <summary>
       sum(max(Input Delay - 50, 0)), recorded each time the page is
       backgrounded. The Input Delay refers to the duration between the hardware
@@ -16924,6 +16933,9 @@ be describing additional metrics about the same event.
     </aggregation>
   </metric>
   <metric name="InteractiveTiming.FirstInputProcessingTimes">
+    <obsolete>
+      This metric isn't being used; removed October 2023.
+    </obsolete>
     <summary>
       Measures First Input Processing Time, the duration of event handlers
       processing the first input event. In ms.
@@ -17065,6 +17077,9 @@ be describing additional metrics about the same event.
     </aggregation>
   </metric>
   <metric name="InteractiveTiming.LongestInputDelay4">
+    <obsolete>
+      Removed October 2023; no longer needed after https://web.dev/inp.
+    </obsolete>
     <summary>
       Measures longest Input Delay, the longest duration between the hardware
       timestamp and the start of event processing on the main thread for the
@@ -17112,12 +17127,18 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="InteractiveTiming.LongestInputTimestamp4">
+    <obsolete>
+      Removed October 2023; no longer needed after https://web.dev/inp.
+    </obsolete>
     <summary>
       The duration between navigation start and the hardware timestamp of the
       meaningful input with longest queuing delay per navigation. In ms.
     </summary>
   </metric>
   <metric name="InteractiveTiming.NumInputEvents">
+    <obsolete>
+      Deprecated October 2023 in favor of InteractiveTiming.NumInteractions.
+    </obsolete>
     <summary>
       The number of Input Events, including click, tap, key press, cancellable
       touchstart, or pointer down followed by a pointer up.
@@ -17226,6 +17247,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="InteractiveTiming.TotalAdjustedInputDelay">
+    <obsolete>
+      Depreacated October 2023.
+    </obsolete>
     <summary>
       sum(max(Input Delay - 50, 0)). The Input Delay refers to the duration
       between the hardware timestamp and the start of event processing on the
@@ -17240,6 +17264,9 @@ be describing additional metrics about the same event.
     </aggregation>
   </metric>
   <metric name="InteractiveTiming.TotalInputDelay">
+    <obsolete>
+      Depreacated October 2023.
+    </obsolete>
     <summary>
       sum(Input Delay). The Input Delay refers to the duration between the
       hardware timestamp and the start of event processing on the main thread

@@ -226,8 +226,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   // PageLoadMetricsUpdateDispatcher::Client implementation:
   bool IsPageMainFrame(content::RenderFrameHost* rfh) const override;
   void OnTimingChanged() override;
-  void OnPageInputTimingChanged(uint64_t num_interactions,
-                                uint64_t num_input_events) override;
+  void OnPageInputTimingChanged(uint64_t num_interactions) override;
   void OnSubFrameTimingChanged(content::RenderFrameHost* rfh,
                                const mojom::PageLoadTiming& timing) override;
   void OnSubFrameInputTimingChanged(

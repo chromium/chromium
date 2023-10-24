@@ -55,8 +55,7 @@ class WaiterMetricsObserver final : public PageLoadMetricsObserver {
   void OnSoftNavigationUpdated(
       const mojom::SoftNavigationMetrics& soft_navigation_metrics) override;
 
-  void OnPageInputTimingUpdate(uint64_t num_interactions,
-                               uint64_t num_input_events) override;
+  void OnPageInputTimingUpdate(uint64_t num_interactions) override;
 
   void OnCpuTimingUpdate(content::RenderFrameHost* subframe_rfh,
                          const mojom::CpuTiming& timing) override;
@@ -132,9 +131,6 @@ std::string PageLoadMetricsTestWaiter::TimingFieldBitSet::ToDebugString()
 
   if (ContainsTimingField(TimingField::kLargestContentfulPaint))
     debug_string += "LargestContentfulPaint|";
-
-  if (ContainsTimingField(TimingField::kTotalInputDelay))
-    debug_string += "TotalInputDelay|";
 
   if (ContainsTimingField(TimingField::kFirstScrollDelay))
     debug_string += "FirstScrollDelay|";
@@ -369,16 +365,10 @@ void PageLoadMetricsTestWaiter::OnSoftNavigationMetricsUpdated(
 }
 
 void PageLoadMetricsTestWaiter::OnPageInputTimingUpdated(
-    uint64_t num_interactions,
-    uint64_t num_input_events) {
+    uint64_t num_interactions) {
   // The number of user interactions, including click, tap and key press in this
   // update.
   current_num_interactions_ += num_interactions;
-  // The total number of input events including click, tap, key press,
-  // cancellable touchstart, or pointer down followed by a pointer up...
-  current_num_input_events_ = num_input_events;
-  if (num_input_events)
-    observed_.page_fields_.Set(TimingField::kTotalInputDelay);
   if (ExpectationsSatisfied() && run_loop_)
     run_loop_->Quit();
 }
@@ -722,13 +712,6 @@ bool PageLoadMetricsTestWaiter::MemoryUpdateExpectationsSatisfied() const {
   return IsSubset(expected_.memory_update_frame_ids_,
                   observed_.memory_update_frame_ids_);
 }
-
-bool PageLoadMetricsTestWaiter::TotalInputDelayExpectationsSatisfied() const {
-  if (!expected_.page_fields_.IsSet(TimingField::kTotalInputDelay))
-    return true;
-  return current_num_input_events_ == expected_num_input_events_;
-}
-
 bool PageLoadMetricsTestWaiter::LayoutShiftExpectationsSatisfied() const {
   return expected_.num_layout_shifts_ <= observed_.num_layout_shifts_;
 }
@@ -799,7 +782,6 @@ bool PageLoadMetricsTestWaiter::ExpectationsSatisfied() const {
          MainFrameViewportRectExpectationsSatisfied() &&
          MainFrameImageAdRectsExpectationsSatisfied() &&
          MemoryUpdateExpectationsSatisfied() &&
-         TotalInputDelayExpectationsSatisfied() &&
          LayoutShiftExpectationsSatisfied() &&
          NumInteractionsExpectationsSatisfied() &&
          NumLargestContentfulPaintImageSatisfied() &&
@@ -824,7 +806,6 @@ void PageLoadMetricsTestWaiter::AssertExpectationsSatisfied() const {
   EXPECT_TRUE(MainFrameIntersectionExpectationsSatisfied());
   EXPECT_TRUE(MainFrameViewportRectExpectationsSatisfied());
   EXPECT_TRUE(MemoryUpdateExpectationsSatisfied());
-  EXPECT_TRUE(TotalInputDelayExpectationsSatisfied());
 }
 
 void PageLoadMetricsTestWaiter::ResetExpectations() {
@@ -869,10 +850,9 @@ void WaiterMetricsObserver::OnSoftNavigationUpdated(
   }
 }
 
-void WaiterMetricsObserver::OnPageInputTimingUpdate(uint64_t num_interactions,
-                                                    uint64_t num_input_events) {
+void WaiterMetricsObserver::OnPageInputTimingUpdate(uint64_t num_interactions) {
   if (waiter_)
-    waiter_->OnPageInputTimingUpdated(num_interactions, num_input_events);
+    waiter_->OnPageInputTimingUpdated(num_interactions);
 }
 
 void WaiterMetricsObserver::OnCpuTimingUpdate(

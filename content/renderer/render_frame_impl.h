@@ -597,7 +597,6 @@ class CONTENT_EXPORT RenderFrameImpl
       const blink::WebURLRequest& request,
       const blink::WebURLResponse& response) override;
   void DidChangePerformanceTiming() override;
-  void DidObserveInputDelay(base::TimeDelta input_delay) override;
   void DidObserveUserInteraction(
       base::TimeTicks max_event_start,
       base::TimeTicks max_event_end,

@@ -17,9 +17,9 @@ which then calls the document's
 which checks if this is the first event and stores the delay if so.
 
 The `HandleForInputDelay` method calls
-[`DocumentLoader::DidObserveInputDelay()`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/loader/document_loader.cc;l=647;drc=054e08864177603f17edbc111db7ebc8586906bd;bpv=1;bpt=1?q=page_timing_metrics_sender.h&ss=chromium%2Fchromium%2Fsrc)
+[`DocumentLoader::DidChangePerformanceTiming()`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/loader/document_loader.cc;drc=977dc02c431b4979e34c7792bc3d646f649dacb4;l=757)
 which eventually causes
-[`PageTimingMetricsSender::DidObserveInputDelay()`](https://source.chromium.org/chromium/chromium/src/+/main:components/page_load_metrics/renderer/page_timing_metrics_sender.cc;l=103;drc=054e08864177603f17edbc111db7ebc8586906bd;bpv=1;bpt=1?q=page_timing_metrics_sender.h&ss=chromium%2Fchromium%2Fsrc)
+[`MetricsRenderFrameObserver::DidChangePerformanceTiming()`](https://source.chromium.org/chromium/chromium/src/+/main:components/page_load_metrics/renderer/metrics_render_frame_observer.cc;l=110?q=DidChangePerformanceTiming&ss=chromium%2Fchromium%2Fsrc&start=11)
 to be called, ensuring the data is sent via mojo IPC to the browser, so that
 [`PageLoadMetricsObserver`s](/chrome/browser/page_load_metrics/observers/README.md)
 can merge frames and report the data to UKM.

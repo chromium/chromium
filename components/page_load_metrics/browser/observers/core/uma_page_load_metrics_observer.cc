@@ -910,10 +910,6 @@ void UmaPageLoadMetricsObserver::RecordTimingHistograms(
         "data", all_frames_largest_contentful_paint.DataAsTraceValue());
   }
 
-  if (main_frame_timing.interactive_timing->longest_input_timestamp) {
-    DCHECK(main_frame_timing.interactive_timing->longest_input_delay);
-  }
-
   RecordNormalizedResponsivenessMetrics();
 }
 

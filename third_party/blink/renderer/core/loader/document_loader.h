@@ -230,7 +230,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       const;
 
   void DidChangePerformanceTiming();
-  void DidObserveInputDelay(base::TimeDelta input_delay);
   void DidObserveLoadingBehavior(LoadingBehaviorFlag);
   void DidObserveJavaScriptFrameworks(
       const JavaScriptFrameworkDetectionResult&);

@@ -197,9 +197,6 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   // Notifications when |PerformanceTiming| data becomes available
   virtual void DidChangePerformanceTiming() {}
 
-  // Notifications when an input delay data becomes available.
-  virtual void DidObserveInputDelay(base::TimeDelta input_delay) {}
-
   // Notifications when a user interaction latency data becomes available. A
   // user interaction can be built up from multiple input events (e.g. keydown
   // then keyup). Each of these events has an input to next frame latency. This

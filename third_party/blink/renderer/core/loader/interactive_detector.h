@@ -25,23 +25,10 @@ namespace base {
 class TickClock;
 }  // namespace base
 
-namespace ukm {
-class UkmRecorder;
-}  // namespace ukm
-
 namespace blink {
 
 class Document;
 class Event;
-
-// This enum is for EventType UKM and existing values should not be removed or
-// modified.
-enum class InputEventType {
-  kMousedown = 0,
-  kClick = 1,
-  kKeydown = 2,
-  kPointerup = 3
-};
 
 // Detects when a page reaches First Idle and Time to Interactive. See
 // https://goo.gl/SYt55W for detailed description and motivation of First Idle
@@ -104,18 +91,6 @@ class CORE_EXPORT InteractiveDetector
   // The timestamp of the event whose delay is reported by GetFirstInputDelay().
   absl::optional<base::TimeTicks> GetFirstInputTimestamp() const;
 
-  // Queueing Time of the meaningful input event with longest delay. Meaningful
-  // input events are click, tap, key press, cancellable touchstart, or pointer
-  // down followed by a pointer up.
-  absl::optional<base::TimeDelta> GetLongestInputDelay() const;
-
-  // The timestamp of the event whose delay is reported by
-  // GetLongestInputDelay().
-  absl::optional<base::TimeTicks> GetLongestInputTimestamp() const;
-
-  // The duration of event handlers processing the first input event.
-  absl::optional<base::TimeDelta> GetFirstInputProcessingTime() const;
-
   // The duration between the user's first scroll and display update.
   absl::optional<base::TimeTicks> GetFirstScrollTimestamp() const;
 
@@ -140,14 +115,8 @@ class CORE_EXPORT InteractiveDetector
   // The caller owns the |clock| which must outlive the InteractiveDetector.
   void SetTickClockForTesting(const base::TickClock* clock);
 
-  ukm::UkmRecorder* GetUkmRecorder() const;
-
-  void SetUkmRecorderForTesting(ukm::UkmRecorder* test_ukm_recorder);
-
-  void RecordInputEventTimingUKM(base::TimeDelta input_delay,
-                                 base::TimeDelta processing_time,
-                                 base::TimeDelta time_to_next_paint,
-                                 WTF::AtomicString event_type);
+  void RecordInputEventTimingUMA(base::TimeDelta processing_time,
+                                 base::TimeDelta time_to_next_paint);
 
   void DidObserveFirstScrollDelay(base::TimeDelta first_scroll_delay,
                                   base::TimeTicks first_scroll_timestamp);
@@ -173,10 +142,7 @@ class CORE_EXPORT InteractiveDetector
     // on a trace event.
     base::TimeTicks first_invalidating_input;
     absl::optional<base::TimeDelta> first_input_delay;
-    absl::optional<base::TimeDelta> longest_input_delay;
     absl::optional<base::TimeTicks> first_input_timestamp;
-    absl::optional<base::TimeTicks> longest_input_timestamp;
-    absl::optional<base::TimeDelta> first_input_processing_time;
     absl::optional<base::TimeTicks> first_scroll_timestamp;
     absl::optional<base::TimeDelta> frist_scroll_delay;
 
@@ -250,8 +216,6 @@ class CORE_EXPORT InteractiveDetector
   // pending_pointerdown_delay_.
   base::TimeTicks pending_pointerdown_timestamp_;
   base::TimeTicks pending_mousedown_timestamp_;
-
-  ukm::UkmRecorder* ukm_recorder_;
 };
 
 }  // namespace blink

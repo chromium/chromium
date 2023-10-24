@@ -195,21 +195,6 @@ WebPerformanceMetricsForReporting::FirstInputTimestampAsMonotonicTime() const {
 }
 
 absl::optional<base::TimeDelta>
-WebPerformanceMetricsForReporting::LongestInputDelay() const {
-  return private_->timingForReporting()->LongestInputDelay();
-}
-
-absl::optional<base::TimeDelta>
-WebPerformanceMetricsForReporting::LongestInputTimestamp() const {
-  return private_->timingForReporting()->LongestInputTimestamp();
-}
-
-absl::optional<base::TimeDelta>
-WebPerformanceMetricsForReporting::FirstInputProcessingTime() const {
-  return private_->timingForReporting()->FirstInputProcessingTime();
-}
-
-absl::optional<base::TimeDelta>
 WebPerformanceMetricsForReporting::FirstScrollDelay() const {
   return private_->timingForReporting()->FirstScrollDelay();
 }
