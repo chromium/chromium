@@ -137,13 +137,13 @@ bool SanitizedFieldIsEmpty(const std::u16string& value) {
   return base::ContainsOnlyChars(value, *formatting);
 }
 
-bool IsWithinLevenshteinDistance(std::u16string_view a,
-                                 std::u16string_view b,
-                                 size_t k) {
+size_t LevenshteinDistance(std::u16string_view a,
+                           std::u16string_view b,
+                           size_t k) {
   // If the string's lengths differ by more than `k`, so does their
   // Levenshtein distance.
   if (a.size() + k < b.size() || a.size() > b.size() + k) {
-    return false;
+    return k + 1;
   }
   // The classical Levenshtein distance DP defines dp[i][j] as the minimum
   // number of insert, remove and replace operation to convert a[:i] to b[:j].
@@ -196,7 +196,7 @@ bool IsWithinLevenshteinDistance(std::u16string_view a,
       }
     }
   }
-  return dp[b.size() + k - a.size()] <= k;
+  return std::min(dp[b.size() + k - a.size()], k + 1);
 }
 
 bool ShouldAutoselectFirstSuggestionOnArrowDown() {

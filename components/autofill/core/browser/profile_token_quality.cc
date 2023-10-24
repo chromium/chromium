@@ -87,10 +87,10 @@ ObservationType GetObservationTypeForEditedField(
     return ObservationType::kEditedValueCleared;
   }
 
-  if (IsWithinLevenshteinDistance(
-          base::ToLowerASCII(profile.GetInfo(type, app_locale)),
-          base::ToLowerASCII(edited_value),
-          ProfileTokenQuality::kMaximumLevenshteinDistance)) {
+  if (LevenshteinDistance(base::ToLowerASCII(profile.GetInfo(type, app_locale)),
+                          base::ToLowerASCII(edited_value),
+                          ProfileTokenQuality::kMaximumLevenshteinDistance) <=
+      ProfileTokenQuality::kMaximumLevenshteinDistance) {
     return ObservationType::kEditedToSimilarValue;
   }
 
