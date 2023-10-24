@@ -167,8 +167,7 @@ public class TabUtils {
         if (forcedByUser) {
             @TabUserAgent
             int tabUserAgent = switchToDesktop ? TabUserAgent.DESKTOP : TabUserAgent.MOBILE;
-            if (isDesktopSiteGlobalEnabled(Profile.fromWebContents(tab.getWebContents()))
-                    == switchToDesktop) {
+            if (isDesktopSiteGlobalEnabled(tab.getProfile()) == switchToDesktop) {
                 tabUserAgent = TabUserAgent.DEFAULT;
             }
             tab.setUserAgent(tabUserAgent);

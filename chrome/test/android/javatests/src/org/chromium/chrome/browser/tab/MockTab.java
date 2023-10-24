@@ -20,6 +20,7 @@ public class MockTab extends TabImpl {
     private boolean mIsInitialized;
     private boolean mIsDestroyed;
     private boolean mIsBeingRestored;
+    private boolean mIncognito;
 
     private boolean mIsCustomTab;
 
@@ -50,11 +51,14 @@ public class MockTab extends TabImpl {
      * these two fields only.
      */
     public MockTab(int id, boolean incognito) {
-        super(id, incognito, null);
+        this(id, incognito, null);
     }
 
+    // TODO(crbug/1494442): Update to take a Profile instead of an incognito boolean. Ensure the
+    //                      Profile reference is non-null.
     public MockTab(int id, boolean incognito, @TabLaunchType Integer type) {
-        super(id, incognito, type);
+        super(id, null, type);
+        mIncognito = incognito;
     }
 
     @Override
@@ -94,6 +98,11 @@ public class MockTab extends TabImpl {
             return mWebContentsOverride;
         }
         return super.getWebContents();
+    }
+
+    @Override
+    public boolean isIncognito() {
+        return mIncognito;
     }
 
     @Override

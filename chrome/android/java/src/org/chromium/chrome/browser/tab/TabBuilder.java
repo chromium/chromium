@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.tab;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -63,9 +65,11 @@ public class TabBuilder {
 
     /**
      * Sets incognito mode.
+     *
      * @param incognito {@code true} if the tab will be in incognito mode.
      * @return {@link TabBuilder} creating the Tab.
      */
+    // TODO(crbug/1494442): Update to take a Profile reference instead.
     public TabBuilder setIncognito(boolean incognito) {
         mIncognito = incognito;
         return this;
@@ -168,7 +172,14 @@ public class TabBuilder {
             if (mFromFrozenState) assert mLaunchType == TabLaunchType.FROM_RESTORE;
         }
 
-        TabImpl tab = new TabImpl(mId, mIncognito, mLaunchType);
+        Profile profile = IncognitoUtils.getProfileFromWindowAndroid(mWindow, mIncognito);
+        assert profile != null;
+        if (profile.isOffTheRecord() != mIncognito) {
+            throw new IllegalStateException(
+                    "Attempting to create a tab with an incognito mismatch");
+        }
+
+        TabImpl tab = new TabImpl(mId, profile, mLaunchType);
         Tab parent = null;
         if (mParent != null) {
             parent = mParent;

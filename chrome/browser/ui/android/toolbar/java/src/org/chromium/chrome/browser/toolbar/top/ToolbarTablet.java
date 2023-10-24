@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.ButtonData;
@@ -365,10 +364,16 @@ public class ToolbarTablet
     private void displayNavigationPopup(boolean isForward, View anchorView) {
         Tab tab = getToolbarDataProvider().getTab();
         if (tab == null || tab.getWebContents() == null) return;
-        mNavigationPopup = new NavigationPopup(Profile.fromWebContents(tab.getWebContents()),
-                getContext(), tab.getWebContents().getNavigationController(),
-                isForward ? NavigationPopup.Type.TABLET_FORWARD : NavigationPopup.Type.TABLET_BACK,
-                getToolbarDataProvider()::getTab, mHistoryDelegate);
+        mNavigationPopup =
+                new NavigationPopup(
+                        tab.getProfile(),
+                        getContext(),
+                        tab.getWebContents().getNavigationController(),
+                        isForward
+                                ? NavigationPopup.Type.TABLET_FORWARD
+                                : NavigationPopup.Type.TABLET_BACK,
+                        getToolbarDataProvider()::getTab,
+                        mHistoryDelegate);
         mNavigationPopup.show(anchorView);
     }
 

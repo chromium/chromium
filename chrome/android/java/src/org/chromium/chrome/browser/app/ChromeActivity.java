@@ -2494,8 +2494,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         if (id == R.id.translate_id) {
             RecordUserAction.record("MobileMenuTranslate");
-            Tracker tracker = TrackerFactory.getTrackerForProfile(
-                    Profile.fromWebContents(currentTab.getWebContents()));
+            Tracker tracker = TrackerFactory.getTrackerForProfile(currentTab.getProfile());
             tracker.notifyEvent(EventConstants.TRANSLATE_MENU_BUTTON_CLICKED);
             TranslateBridge.translateTabWhenReady(currentTab);
             return true;
@@ -2882,8 +2881,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         AddToHomescreenCoordinator.showForAppMenu(this, getWindowAndroid(), getModalDialogManager(),
                 currentTab.getWebContents(), mMenuItemData);
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.ADD_TO_HOMESCREEN_IPH)) {
-            Tracker tracker = TrackerFactory.getTrackerForProfile(
-                    Profile.fromWebContents(currentTab.getWebContents()));
+            Tracker tracker = TrackerFactory.getTrackerForProfile(currentTab.getProfile());
             tracker.notifyEvent(EventConstants.ADD_TO_HOMESCREEN_DIALOG_SHOWN);
         }
         return true;

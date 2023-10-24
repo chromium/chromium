@@ -95,9 +95,7 @@ public class IncognitoHistoryLeakageTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile =
-                            (tab == null)
-                                    ? Profile.getLastUsedRegularProfile()
-                                    : Profile.fromWebContents(tab.getWebContents());
+                            (tab == null) ? Profile.getLastUsedRegularProfile() : tab.getProfile();
                     BrowsingHistoryBridge historyService = new BrowsingHistoryBridge(profile);
                     historyService.setObserver(historyObserver);
                     String historyQueryFilter = "";

@@ -33,6 +33,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -52,6 +53,7 @@ public class TabUnitTest {
 
     @Rule public JniMocker mocker = new JniMocker();
 
+    @Mock private Profile mProfile;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private LoadUrlParams mLoadUrlParams;
     @Mock private EmptyTabObserver mObserver;
@@ -80,7 +82,7 @@ public class TabUnitTest {
         doReturn(mContext).when(mContext).getApplicationContext();
 
         mTab =
-                new TabImpl(TAB1_ID, false, null) {
+                new TabImpl(TAB1_ID, mProfile, null) {
                     @Override
                     public boolean isInitialized() {
                         return true;
@@ -144,7 +146,7 @@ public class TabUnitTest {
         doReturn(mChromeActivity).when(mWeakReferenceContext).get();
 
         mTab =
-                new TabImpl(TAB1_ID, false, null) {
+                new TabImpl(TAB1_ID, mProfile, null) {
                     @Override
                     void updateWindowAndroid(WindowAndroid windowAndroid) {}
 

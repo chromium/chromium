@@ -304,10 +304,7 @@ public class GeolocationHeader {
      * @return The X-Geo header string or null.
      */
     public static @Nullable String getGeoHeader(String url, Tab tab) {
-        Profile profile = Profile.fromWebContents(tab.getWebContents());
-        if (profile == null) return null;
-
-        return getGeoHeader(url, profile, tab);
+        return getGeoHeader(url, tab.getProfile(), tab);
     }
 
     /**

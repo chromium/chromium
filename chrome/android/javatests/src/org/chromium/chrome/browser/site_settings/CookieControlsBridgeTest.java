@@ -350,8 +350,7 @@ public class CookieControlsBridgeTest {
                             new CookieControlsBridge(
                                     mCallbackHandler,
                                     incognitoTab.getWebContents(),
-                                    Profile.fromWebContents(incognitoTab.getWebContents())
-                                            .getOriginalProfile());
+                                    incognitoTab.getProfile().getOriginalProfile());
                 });
         mCallbackHelper.waitForCallback(currentCallCount, 2);
         assertEquals(CookieControlsStatus.ENABLED, mStatus);
@@ -538,8 +537,7 @@ public class CookieControlsBridgeTest {
                             new CookieControlsBridge(
                                     mCallbackHandler,
                                     incognitoTab.getWebContents(),
-                                    Profile.fromWebContents(incognitoTab.getWebContents())
-                                            .getOriginalProfile());
+                                    incognitoTab.getProfile().getOriginalProfile());
                 });
         mCallbackHelper.waitForCallback(currentCallCount, 2);
         assertEquals(CookieControlsStatus.ENABLED, mStatus);

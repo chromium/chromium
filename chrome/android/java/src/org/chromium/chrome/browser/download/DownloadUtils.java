@@ -70,7 +70,6 @@ import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OpenParams;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.widget.Toast;
@@ -143,8 +142,7 @@ public class DownloadUtils {
 
         // Use tab's profile if a valid tab exists.
         if (otrProfileID == null && tab != null) {
-            Profile profile = Profile.fromWebContents(tab.getWebContents());
-            otrProfileID = profile != null ? profile.getOTRProfileID() : otrProfileID;
+            otrProfileID = tab.getProfile().getOTRProfileID();
         }
 
         // If the profile is off-the-record and it does not exist, then do not start the activity.
@@ -324,8 +322,7 @@ public class DownloadUtils {
         if (tab.isShowingErrorPage()) {
             // The download needs to be scheduled to happen at later time due to current network
             // error.
-            final OfflinePageBridge bridge =
-                    OfflinePageBridge.getForProfile(Profile.fromWebContents(tab.getWebContents()));
+            final OfflinePageBridge bridge = OfflinePageBridge.getForProfile(tab.getProfile());
             bridge.scheduleDownload(tab.getWebContents(), OfflinePageBridge.ASYNC_NAMESPACE,
                     tab.getUrl().getSpec(), DownloadUiActionFlags.PROMPT_DUPLICATE, origin);
         } else {
@@ -333,13 +330,7 @@ public class DownloadUtils {
             OfflinePageDownloadBridge.startDownload(tab, origin);
             DownloadUtils.recordDownloadPageMetrics(tab);
         }
-
-        WebContents webContents = tab.getWebContents();
-        if (webContents == null) return;
-
-        Profile profile = Profile.fromWebContents(webContents);
-        if (profile == null) return;
-        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+        Tracker tracker = TrackerFactory.getTrackerForProfile(tab.getProfile());
         tracker.notifyEvent(EventConstants.DOWNLOAD_PAGE_STARTED);
     }
 
@@ -361,8 +352,7 @@ public class DownloadUtils {
 
         // Download will only be allowed for the error page if download button is shown in the page.
         if (tab.isShowingErrorPage()) {
-            final OfflinePageBridge bridge =
-                    OfflinePageBridge.getForProfile(Profile.fromWebContents(tab.getWebContents()));
+            final OfflinePageBridge bridge = OfflinePageBridge.getForProfile(tab.getProfile());
             return bridge.isShowingDownloadButtonInErrorPage(tab.getWebContents());
         }
 

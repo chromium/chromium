@@ -416,10 +416,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         if (webContents == null) {
             return false;
         }
-        Profile profile = Profile.fromWebContents(mTab.getWebContents());
-        if (profile == null) {
-            return false;
-        }
+        Profile profile = mTab.getProfile();
         return isNightModeEnabled()
                 && WebContentsDarkModeController.isEnabledForUrl(
                         profile, webContents.getVisibleUrl());

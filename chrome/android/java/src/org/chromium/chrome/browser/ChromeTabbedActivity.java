@@ -2332,9 +2332,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             }
         } else if (id == R.id.downloads_menu_id) {
             OTRProfileID otrProfileID = null;
-            if (currentTab != null && currentTab.getWebContents() != null) {
-                Profile profile = Profile.fromWebContents(currentTab.getWebContents());
-                otrProfileID = profile != null ? profile.getOTRProfileID() : null;
+            if (currentTab != null) {
+                otrProfileID = currentTab.getProfile().getOTRProfileID();
             }
             DownloadUtils.showDownloadManager(
                     this, currentTab, otrProfileID, DownloadOpenSource.MENU);

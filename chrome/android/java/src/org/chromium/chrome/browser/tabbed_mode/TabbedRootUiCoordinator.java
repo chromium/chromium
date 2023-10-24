@@ -434,7 +434,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mActivity == null) return;
         Tab tab = mActivityTabProvider.get();
         if (tab == null || tab.getWebContents() == null || !tab.isUserInteractable()) return;
-        Profile profile = Profile.fromWebContents(tab.getWebContents());
+        Profile profile = tab.getProfile();
         mNavigationSheet = NavigationSheet.create(
                 mActivity.getWindow().getDecorView().findViewById(android.R.id.content), mActivity,
                 this::getBottomSheetController, profile);

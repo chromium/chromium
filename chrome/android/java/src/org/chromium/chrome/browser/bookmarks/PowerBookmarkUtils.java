@@ -59,9 +59,7 @@ public class PowerBookmarkUtils {
         if (tab == null || tab.getWebContents() == null) return false;
         if (sPriceTrackingEligibleForTesting != null) return sPriceTrackingEligibleForTesting;
 
-        Profile profile = Profile.fromWebContents(tab.getWebContents());
-        assert profile != null;
-
+        Profile profile = tab.getProfile();
         ShoppingService service = ShoppingServiceFactory.getForProfile(profile);
         if (service == null) return false;
 

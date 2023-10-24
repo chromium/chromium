@@ -382,7 +382,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mIsInNightMode = isInNightMode;
 
-        Profile profile = Profile.fromWebContents(mTab.getWebContents());
+        Profile profile = mTab.getProfile();
 
         SuggestionsNavigationDelegate navigationDelegate = new SuggestionsNavigationDelegate(
                 activity, profile, nativePageHost, tabModelSelector, mTab);
@@ -538,7 +538,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     protected void initializeMainView(Activity activity, WindowAndroid windowAndroid,
             SnackbarManager snackbarManager, NewTabPageUma uma, boolean isInNightMode,
             Supplier<ShareDelegate> shareDelegateSupplier, String url) {
-        Profile profile = Profile.fromWebContents(mTab.getWebContents());
+        Profile profile = mTab.getProfile();
 
         LayoutInflater inflater = LayoutInflater.from(activity);
         mNewTabPageLayout = (NewTabPageLayout) inflater.inflate(R.layout.new_tab_page_layout, null);

@@ -58,7 +58,6 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -128,8 +127,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock private ManagedBrowserUtils.Natives mManagedBrowserUtilsJniMock;
     @Mock private Profile mProfile;
     @Mock private AppMenuDelegate mAppMenuDelegate;
-    @Mock Profile.Natives mProfileJniMock;
-    @Mock Profile mProfileMock;
     @Mock private WebFeedSnackbarController.FeedLauncher mFeedLauncher;
     @Mock private ModalDialogManager mDialogManager;
     @Mock private SnackbarManager mSnackbarManager;
@@ -175,6 +172,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         mIncognitoReauthControllerSupplier.set(mIncognitoReauthControllerMock);
         mReadAloudControllerSupplier.set(mReadAloudController);
         when(mTab.getWebContents()).thenReturn(mWebContents);
+        when(mTab.getProfile()).thenReturn(mProfile);
         when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
         when(mNavigationController.getUseDesktopUserAgent()).thenReturn(false);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
@@ -183,8 +181,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
         when(mTabModelFilterProvider.getCurrentTabModelFilter()).thenReturn(mTabModelFilter);
         when(mTabModelFilter.getTabModel()).thenReturn(mTabModel);
-        jniMocker.mock(ProfileJni.TEST_HOOKS, mProfileJniMock);
-        when(mProfileJniMock.fromWebContents(any(WebContents.class))).thenReturn(mProfileMock);
         jniMocker.mock(ManagedBrowserUtilsJni.TEST_HOOKS, mManagedBrowserUtilsJniMock);
         Profile.setLastUsedProfileForTesting(mProfile);
         jniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceBridgeJniMock);

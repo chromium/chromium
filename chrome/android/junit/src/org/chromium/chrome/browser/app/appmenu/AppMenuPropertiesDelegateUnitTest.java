@@ -76,7 +76,6 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -141,7 +140,6 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Mock private StartSurfaceCoordinator mStartSurfaceCoordinator;
     @Mock private UpdateMenuItemHelper mUpdateMenuItemHelper;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
-    @Mock private Profile.Natives mProfileJniMock;
     @Mock private Profile mProfile;
     @Mock private PrefService mPrefService;
     @Mock private TabModelFilterProvider mTabModelFilterProvider;
@@ -186,6 +184,7 @@ public class AppMenuPropertiesDelegateUnitTest {
         mIncognitoReauthControllerSupplier.set(mIncognitoReauthControllerMock);
         mReadAloudControllerSupplier.set(mReadAloudController);
         when(mTab.getWebContents()).thenReturn(mWebContents);
+        when(mTab.getProfile()).thenReturn(mProfile);
         when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
         when(mNavigationController.getUseDesktopUserAgent()).thenReturn(false);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
@@ -203,10 +202,8 @@ public class AppMenuPropertiesDelegateUnitTest {
         doReturn(mMenuUiState).when(mUpdateMenuItemHelper).getUiState();
 
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
-        mJniMocker.mock(ProfileJni.TEST_HOOKS, mProfileJniMock);
         mJniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceBridgeJniMock);
         Mockito.when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
-        Mockito.when(mProfileJniMock.fromWebContents(mWebContents)).thenReturn(mProfile);
         FeatureList.setTestCanUseDefaultsForTesting();
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(false);
         WebappRegistry.refreshSharedPrefsForTesting();
