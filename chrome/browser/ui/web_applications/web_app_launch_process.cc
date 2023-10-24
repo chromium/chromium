@@ -133,7 +133,9 @@ content::WebContents* WebAppLaunchProcess::Run() {
                   << params_->app_id;
   }
 #else
-  DCHECK(registrar_->IsUrlInAppExtendedScope(launch_url, params_->app_id));
+  // TODO(dmurph): Figure out why this is failing. https://crbug.com/2546057
+  DCHECK(registrar_->IsUrlInAppExtendedScope(launch_url, params_->app_id))
+      << launch_url.spec();
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
