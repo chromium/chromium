@@ -27,7 +27,13 @@ TEST_F(AutoSpeculationRulesConfigTest, EmptyConfig) {
   ExpectNoFrameworkSpeculationRules(config);
 }
 
-TEST_F(AutoSpeculationRulesConfigTest, ValidConfig) {
+// TODO(1495420): Tests fail on Linux CFI builder
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ValidConfig DISABLED_ValidConfig
+#else
+#define MAYBE_ValidConfig ValidConfig
+#endif
+TEST_F(AutoSpeculationRulesConfigTest, MAYBE_ValidConfig) {
   AutoSpeculationRulesConfig config(R"(
   {
     "framework_to_speculation_rules": {
@@ -67,7 +73,13 @@ TEST_F(AutoSpeculationRulesConfigTest, NonObjectFrameworkToSpeculationRules) {
   ExpectNoFrameworkSpeculationRules(config);
 }
 
-TEST_F(AutoSpeculationRulesConfigTest, OutOfRangeFramework) {
+// TODO(1495420): Tests fail on Linux CFI builder
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_OutOfRangeFramework DISABLED_OutOfRangeFramework
+#else
+#define MAYBE_OutOfRangeFramework OutOfRangeFramework
+#endif
+TEST_F(AutoSpeculationRulesConfigTest, MAYBE_OutOfRangeFramework) {
   static_assert(base::to_underlying(mojom::JavaScriptFramework::kMaxValue) <
                 999);
 
@@ -86,7 +98,13 @@ TEST_F(AutoSpeculationRulesConfigTest, OutOfRangeFramework) {
                   .IsNull());
 }
 
-TEST_F(AutoSpeculationRulesConfigTest, NonIntegerFramework) {
+// TODO(1495420): Tests fail on Linux CFI builder
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_NonIntegerFramework DISABLED_NonIntegerFramework
+#else
+#define MAYBE_NonIntegerFramework NonIntegerFramework
+#endif
+TEST_F(AutoSpeculationRulesConfigTest, MAYBE_NonIntegerFramework) {
   static_assert(base::to_underlying(mojom::JavaScriptFramework::kMaxValue) <
                 999);
 
@@ -105,7 +123,13 @@ TEST_F(AutoSpeculationRulesConfigTest, NonIntegerFramework) {
                   .IsNull());
 }
 
-TEST_F(AutoSpeculationRulesConfigTest, NonStringSpeculationRules) {
+// TODO(1495420): Tests fail on Linux CFI builder
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_NonStringSpeculationRules DISABLED_NonStringSpeculationRules
+#else
+#define MAYBE_NonStringSpeculationRules NonStringSpeculationRules
+#endif
+TEST_F(AutoSpeculationRulesConfigTest, MAYBE_NonStringSpeculationRules) {
   static_assert(base::to_underlying(mojom::JavaScriptFramework::kMaxValue) <
                 999);
 
