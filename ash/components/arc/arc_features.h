@@ -33,7 +33,6 @@ BASE_DECLARE_FEATURE(kGhostWindowNewStyle);
 BASE_DECLARE_FEATURE(kVirtioBlkDataConfigOverride);
 extern const base::FeatureParam<bool> kVirtioBlkDataConfigUseLvm;
 BASE_DECLARE_FEATURE(kFilePickerExperimentFeature);
-BASE_DECLARE_FEATURE(kGameModeFeature);
 BASE_DECLARE_FEATURE(kGmsCoreLowMemoryKillerProtection);
 BASE_DECLARE_FEATURE(kGuestZram);
 extern const base::FeatureParam<int> kGuestZramSize;

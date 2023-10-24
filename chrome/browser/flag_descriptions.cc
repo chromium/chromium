@@ -5379,11 +5379,6 @@ const char kArcFilePickerExperimentName[] =
 const char kArcFilePickerExperimentDescription[] =
     "Enables using ChromeOS file picker in ARC.";
 
-const char kArcGameModeName[] = "Enable Game Mode for ARC";
-const char kArcGameModeDescription[] =
-    "ARC Fullscreen Games will request accomodation from ChromeOS for "
-    "sustained performance.";
-
 const char kArcIdleManagerName[] = "Enable ARC Idle Manager";
 const char kArcIdleManagerDescription[] =
     "ARC will turn on Android's doze mode when idle.";

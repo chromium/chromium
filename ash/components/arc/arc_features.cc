@@ -135,12 +135,6 @@ BASE_FEATURE(kFilePickerExperimentFeature,
              "ArcFilePickerExperiment",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether ARCVM can request resourced make more resources available
-// for a currently-active ARCVM game.
-BASE_FEATURE(kGameModeFeature,
-             "ArcGameModeFeature",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether the guest zram is enabled. This is only for ARCVM.
 BASE_FEATURE(kGuestZram, "ArcGuestZram", base::FEATURE_DISABLED_BY_DEFAULT);
 
