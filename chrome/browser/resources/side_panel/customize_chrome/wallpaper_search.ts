@@ -27,8 +27,7 @@ export const DESCRIPTOR_C_VALUE =
 
 export interface WallpaperSearchElement {
   $: {
-    combobox: CustomizeChromeCombobox,
-    descriptorMenuA: CrActionMenuElement,
+    descriptorComboboxA: CustomizeChromeCombobox,
     descriptorMenuB: CrActionMenuElement,
     descriptorMenuC: CrActionMenuElement,
     descriptorMenuD: CrActionMenuElement,
@@ -114,15 +113,6 @@ export class WallpaperSearchElement extends PolymerElement {
     this.dispatchEvent(new Event('back-click'));
   }
 
-  private onComboboxDemoChange_() {
-    this.selectedDescriptorA_ = this.$.combobox.value || null;
-  }
-
-  private onDescriptorLabelClickA_(e: DomRepeatEvent<string>) {
-    this.selectedDescriptorA_ = e.model.item;
-    this.$.descriptorMenuA.close();
-  }
-
   private onDescriptorLabelClickB_(e: DomRepeatEvent<DescriptorB>) {
     this.selectedDescriptorB_ = e.model.item.label;
     this.$.descriptorMenuB.close();
@@ -136,10 +126,6 @@ export class WallpaperSearchElement extends PolymerElement {
   private onDescriptorLabelClickD_(e: DomRepeatEvent<string>) {
     this.selectedDescriptorD_ = e.model.item;
     this.$.descriptorMenuC.close();
-  }
-
-  private onDescriptorMenuClickA_(e: Event) {
-    this.$.descriptorMenuA.showAt(e.target as HTMLElement);
   }
 
   private onDescriptorMenuClickB_(e: Event) {

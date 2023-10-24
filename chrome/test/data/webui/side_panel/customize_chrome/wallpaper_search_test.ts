@@ -80,15 +80,13 @@ suite('WallpaperSearchTest', () => {
       await flushTasks();
 
       assertNotStyle(
-          $$(wallpaperSearchElement, '#descriptorBtnA')!, 'display', 'none');
-      assertNotStyle(
           $$(wallpaperSearchElement, '#descriptorBtnB')!, 'display', 'none');
       assertNotStyle(
           $$(wallpaperSearchElement, '#descriptorBtnC')!, 'display', 'none');
       assertEquals(
           2,
           wallpaperSearchElement.shadowRoot!
-              .querySelectorAll('#descriptorMenuA .dropdown-item')
+              .querySelectorAll('#descriptorComboboxA .dropdown-item')
               .length);
       assertEquals(
           1,
@@ -105,21 +103,6 @@ suite('WallpaperSearchTest', () => {
           wallpaperSearchElement.shadowRoot!
               .querySelectorAll('#descriptorMenuD cr-button')
               .length);
-    });
-
-    test('descriptor menus open and close', async () => {
-      createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
-      assertFalse(wallpaperSearchElement.$.descriptorMenuA.open);
-
-      $$<HTMLElement>(wallpaperSearchElement, '#descriptorBtnA')!.click();
-
-      assertTrue(wallpaperSearchElement.$.descriptorMenuA.open);
-
-      $$<HTMLElement>(
-          wallpaperSearchElement, '#descriptorMenuA .dropdown-item')!.click();
-
-      assertFalse(wallpaperSearchElement.$.descriptorMenuA.open);
     });
   });
 
@@ -145,7 +128,8 @@ suite('WallpaperSearchTest', () => {
       await flushTasks();
 
       $$<HTMLElement>(
-          wallpaperSearchElement, '#descriptorMenuA .dropdown-item')!.click();
+          wallpaperSearchElement,
+          '#descriptorComboboxA .dropdown-item')!.click();
       $$<HTMLElement>(
           wallpaperSearchElement, '#descriptorMenuB .dropdown-item')!.click();
       $$<HTMLElement>(
@@ -192,7 +176,8 @@ suite('WallpaperSearchTest', () => {
       await flushTasks();
 
       $$<HTMLElement>(
-          wallpaperSearchElement, '#descriptorMenuA .dropdown-item')!.click();
+          wallpaperSearchElement,
+          '#descriptorComboboxA .dropdown-item')!.click();
       wallpaperSearchElement.$.submitButton.click();
 
       assertEquals(1, handler.getCallCount('getWallpaperSearchResults'));

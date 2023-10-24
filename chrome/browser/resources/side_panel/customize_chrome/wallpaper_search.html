@@ -7,6 +7,16 @@
     margin: 16px 16px 8px;
   }
 
+  customize-chrome-combobox {
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--color-sys-on-surface);
+  }
+
+  .category {
+    font-weight: 700;
+  }
+
   #descriptorMenuD {
     display: flex;
     height: 48px;
@@ -119,19 +129,19 @@
     <h2 slot="heading">Wallpaper Search</h2>
   </sp-heading>
   <div class="content" hidden$="[[!descriptors_]]">
-    <cr-button id="descriptorBtnA" on-click="onDescriptorMenuClickA_">
-      Descriptor A
-    </cr-button>
-    <cr-action-menu id="descriptorMenuA">
+    <customize-chrome-combobox id="descriptorComboboxA" label="Descriptor A"
+        value="{{selectedDescriptorA_}}">
       <template is="dom-repeat" items="[[descriptors_.descriptorA]]">
-        <span>[[item.category]]</span>
-        <template is="dom-repeat" items="[[item.labels]]">
-          <button class="dropdown-item" on-click="onDescriptorLabelClickA_">
-            <span>[[item]]</span>
-          </button>
-        </template>
+        <div role="group">
+          <span class="category">[[item.category]]</span>
+          <template is="dom-repeat" items="[[item.labels]]">
+            <div class="dropdown-item" role="option" value="[[item]]">
+              [[item]]
+            </div>
+          </template>
+        </div>
       </template>
-    </cr-action-menu>
+    </customize-chrome-combobox>
     <cr-button id="descriptorBtnB" on-click="onDescriptorMenuClickB_">
       Descriptor B
     </cr-button>
@@ -207,17 +217,3 @@
     </cr-grid>
   </div>
 </div>
-
-<!-- demo -->
-<customize-chrome-combobox id="combobox" label="Descriptor A"
-    value="[[selectedDescriptorA_]]"
-    on-value-changed="onComboboxDemoChange_">
-  <template is="dom-repeat" items="[[descriptors_.descriptorA]]">
-    <div role="group">
-      [[item.category]]
-      <template is="dom-repeat" items="[[item.labels]]">
-        <div role="option" value="[[item]]">[[item]]</div>
-      </template>
-    </div>
-  </template>
-</customize-chrome-combobox>
