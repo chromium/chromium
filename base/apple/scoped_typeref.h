@@ -5,7 +5,7 @@
 #ifndef BASE_APPLE_SCOPED_TYPEREF_H_
 #define BASE_APPLE_SCOPED_TYPEREF_H_
 
-#include "base/check.h"
+#include "base/check_op.h"
 #include "base/memory/scoped_policy.h"
 
 namespace base::apple {
@@ -56,13 +56,14 @@ class ScopedTypeRef {
       element_type object = Traits::InvalidValue(),
       base::scoped_policy::OwnershipPolicy policy = base::scoped_policy::ASSUME)
       : object_(object) {
-    if (object_ && policy == base::scoped_policy::RETAIN) {
+    if (object_ != Traits::InvalidValue() &&
+        policy == base::scoped_policy::RETAIN) {
       object_ = Traits::Retain(object_);
     }
   }
 
   ScopedTypeRef(const ScopedTypeRef<T, Traits>& that) : object_(that.object_) {
-    if (object_) {
+    if (object_ != Traits::InvalidValue()) {
       object_ = Traits::Retain(object_);
     }
   }
@@ -71,7 +72,7 @@ class ScopedTypeRef {
   template <typename R, typename RTraits>
   explicit ScopedTypeRef(const ScopedTypeRef<R, RTraits>& that_as_subclass)
       : object_(that_as_subclass.get()) {
-    if (object_) {
+    if (object_ != Traits::InvalidValue()) {
       object_ = Traits::Retain(object_);
     }
   }
@@ -81,7 +82,7 @@ class ScopedTypeRef {
   }
 
   ~ScopedTypeRef() {
-    if (object_) {
+    if (object_ != Traits::InvalidValue()) {
       Traits::Release(object_);
     }
   }
@@ -95,7 +96,7 @@ class ScopedTypeRef {
   // by pass-by-pointer create functions. To enforce this, require that the
   // object be reset to NULL before this may be used.
   [[nodiscard]] element_type* InitializeInto() {
-    DCHECK(!object_);
+    CHECK_EQ(object_, Traits::InvalidValue());
     return &object_;
   }
 
@@ -106,10 +107,11 @@ class ScopedTypeRef {
   void reset(element_type object = Traits::InvalidValue(),
              base::scoped_policy::OwnershipPolicy policy =
                  base::scoped_policy::ASSUME) {
-    if (object && policy == base::scoped_policy::RETAIN) {
+    if (object != Traits::InvalidValue() &&
+        policy == base::scoped_policy::RETAIN) {
       object = Traits::Retain(object);
     }
-    if (object_) {
+    if (object_ != Traits::InvalidValue()) {
       Traits::Release(object_);
     }
     object_ = object;
