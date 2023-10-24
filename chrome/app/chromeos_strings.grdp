@@ -7311,4 +7311,15 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     Remove
   </message>
 
+  <!-- Remote activity notification dialog -->
+  <message name="IDS_REMOTE_ACTIVITY_NOTIFICATION_TITLE" desc="Title text displayed to inform the user a remote admin had taken control of the ChromeOS device for maintenance.">
+    Maintenance is done
+  </message>
+  <message name="IDS_REMOTE_ACTIVITY_NOTIFICATION_DESCRIPTION" desc="Detailed description displayed to inform the user a remote admin had taken control of the ChromeOS device for maintenance.">
+    Your administrator has logged out. You're in control now.
+  </message>
+  <message name="IDS_REMOTE_ACTIVITY_NOTIFICATION_BUTTON_LABEL" desc="Button label for describing that the device is available for use and user can click on the button to remove the full screen notification.">
+    Continue to use the device
+  </message>
+
 </grit-part>

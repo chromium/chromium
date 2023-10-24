@@ -66,6 +66,7 @@
 #include "chrome/browser/ash/login/screens/quick_start_screen.h"
 #include "chrome/browser/ash/login/screens/recommend_apps_screen.h"
 #include "chrome/browser/ash/login/screens/recovery_eligibility_screen.h"
+#include "chrome/browser/ash/login/screens/remote_activity_notification_screen.h"
 #include "chrome/browser/ash/login/screens/saml_confirm_password_screen.h"
 #include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"
 #include "chrome/browser/ash/login/screens/smart_privacy_protection_screen.h"
@@ -307,6 +308,7 @@ class WizardController : public OobeUI::Observer {
   void ShowSyncConsentScreen();
   void ShowFingerprintSetupScreen();
   void ShowRecommendAppsScreen();
+  void ShowRemoteActivityNotificationScreen();
   void ShowAppDownloadingScreen();
   void ShowWrongHWIDScreen();
   void ShowAutoEnrollmentCheckScreen();
@@ -402,6 +404,7 @@ class WizardController : public OobeUI::Observer {
   void FinishAuthFactorsSetup();
   // End of Local authentication setup sub-group
   void OnRecommendAppsScreenExit(RecommendAppsScreen::Result result);
+  void OnRemoteActivityNotificationScreenExit();
   void OnAppDownloadingScreenExit();
   void OnAssistantOptInFlowScreenExit(AssistantOptInFlowScreen::Result result);
   void OnMultiDeviceSetupScreenExit(MultiDeviceSetupScreen::Result result);

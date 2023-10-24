@@ -1903,6 +1903,8 @@ source_set("ash") {
     "login/screens/password_selection_screen.h",
     "login/screens/pin_setup_screen.cc",
     "login/screens/pin_setup_screen.h",
+    "login/screens/remote_activity_notification_screen.cc",
+    "login/screens/remote_activity_notification_screen.h",
     "login/smart_lock/chrome_proximity_auth_client.cc",
     "login/smart_lock/chrome_proximity_auth_client.h",
     "login/smart_lock/smart_lock_auth_attempt.cc",

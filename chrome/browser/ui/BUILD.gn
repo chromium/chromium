@@ -3125,6 +3125,8 @@ static_library("ui") {
       "webui/ash/login/password_selection_screen_handler.h",
       "webui/ash/login/pin_setup_screen_handler.cc",
       "webui/ash/login/pin_setup_screen_handler.h",
+      "webui/ash/login/remote_activity_notification_screen_handler.cc",
+      "webui/ash/login/remote_activity_notification_screen_handler.h",
       "webui/ash/os_feedback_dialog.cc",
       "webui/ash/os_feedback_dialog.h",
 
@@ -3740,6 +3742,7 @@ static_library("ui") {
       "//google_apis/tasks",
       "//media/capture:capture_lib",
       "//mojo/public/js:resources_grit",
+      "//remoting/host/chromeos:features",
       "//services/audio/public/mojom",
       "//services/data_decoder/public/cpp",
       "//services/device/public/cpp:device_features",

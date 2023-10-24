@@ -61,6 +61,7 @@ js_type_check("closure_compile_local") {
     ":pin_setup",
     ":placeholder",
     ":recommend_apps",
+    ":remote_activity_notification",
     ":saml_confirm_password",
     ":signin_fatal_error",
     ":smart_privacy_protection",
@@ -621,6 +622,19 @@ js_library("recommend_apps") {
   extra_deps = [ ":web_components" ]
 }
 
+js_library("remote_activity_notification") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/remote_activity_notification.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior",
+    "../../components/behaviors:oobe_dialog_host_behavior",
+    "../../components/behaviors:oobe_i18n_behavior",
+    "../../components/buttons:oobe_text_button",
+    "../../components/dialogs:oobe_adaptive_dialog",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":web_components" ]
+}
+
 js_library("saml_confirm_password") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/saml_confirm_password.js" ]
   deps = [
@@ -801,6 +815,7 @@ html_to_js("web_components") {
     "pin_setup.js",
     "placeholder.js",
     "recommend_apps.js",
+    "remote_activity_notification.js",
     "saml_confirm_password.js",
     "signin_fatal_error.js",
     "smart_privacy_protection.js",

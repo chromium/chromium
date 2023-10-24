@@ -102,6 +102,7 @@
 #include "chrome/browser/ash/login/screens/quick_start_screen.h"
 #include "chrome/browser/ash/login/screens/recommend_apps_screen.h"
 #include "chrome/browser/ash/login/screens/recovery_eligibility_screen.h"
+#include "chrome/browser/ash/login/screens/remote_activity_notification_screen.h"
 #include "chrome/browser/ash/login/screens/reset_screen.h"
 #include "chrome/browser/ash/login/screens/saml_confirm_password_screen.h"
 #include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"
@@ -191,6 +192,7 @@
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/recommend_apps_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/recovery_eligibility_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/remote_activity_notification_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/saml_confirm_password_handler.h"
 #include "chrome/browser/ui/webui/ash/login/signin_fatal_error_screen_handler.h"
@@ -232,6 +234,7 @@
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "remoting/host/chromeos/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/service_manager/public/cpp/connector.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -863,6 +866,16 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnThemeSelectionScreenExit,
                           weak_factory_.GetWeakPtr())));
 
+  if (base::FeatureList::IsEnabled(
+          remoting::features::kEnableCrdAdminRemoteAccessV2)) {
+    append(std::make_unique<RemoteActivityNotificationScreen>(
+        oobe_ui->GetView<RemoteActivityNotificationScreenHandler>()
+            ->AsWeakPtr(),
+        base::BindRepeating(
+            &WizardController::OnRemoteActivityNotificationScreenExit,
+            weak_factory_.GetWeakPtr())));
+  }
+
   if (features::IsCryptohomeRecoveryEnabled()) {
     append(std::make_unique<CryptohomeRecoveryScreen>(
         oobe_ui->GetView<CryptohomeRecoveryScreenHandler>()->AsWeakPtr(),
@@ -1110,6 +1123,10 @@ void WizardController::ShowMarketingOptInScreen() {
 
 void WizardController::ShowRecommendAppsScreen() {
   SetCurrentScreen(GetScreen(RecommendAppsScreenView::kScreenId));
+}
+
+void WizardController::ShowRemoteActivityNotificationScreen() {
+  SetCurrentScreen(GetScreen(RemoteActivityNotificationView::kScreenId));
 }
 
 void WizardController::ShowAppDownloadingScreen() {
@@ -2242,6 +2259,10 @@ void WizardController::OnRecommendAppsScreenExit(
   }
 }
 
+void WizardController::OnRemoteActivityNotificationScreenExit() {
+  OnScreenExit(AppDownloadingScreenView::kScreenId, kDefaultExitReason);
+}
+
 void WizardController::OnAppDownloadingScreenExit() {
   OnScreenExit(AppDownloadingScreenView::kScreenId, kDefaultExitReason);
 
@@ -2681,6 +2702,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowSyncConsentScreen();
   } else if (screen_id == RecommendAppsScreenView::kScreenId) {
     ShowRecommendAppsScreen();
+  } else if (screen_id == RemoteActivityNotificationView::kScreenId) {
+    ShowRemoteActivityNotificationScreen();
   } else if (screen_id == AppDownloadingScreenView::kScreenId) {
     ShowAppDownloadingScreen();
   } else if (screen_id == WrongHWIDScreenView::kScreenId) {
