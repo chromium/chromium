@@ -15,6 +15,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.Interpolator;
@@ -23,11 +24,16 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
+
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
+import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.interpolators.Interpolators;
+import org.chromium.ui.util.ColorUtils;
 
 /** Convenience class for manipulating mini player UI layout. */
 public class MiniPlayerLayout extends LinearLayout {
@@ -76,6 +82,17 @@ public class MiniPlayerLayout extends LinearLayout {
         mNormalLayout = (LinearLayout) findViewById(R.id.normal_layout);
         mBufferingLayout = (LinearLayout) findViewById(R.id.buffering_layout);
         mErrorLayout = (LinearLayout) findViewById(R.id.error_layout);
+
+        Context context = getContext();
+        @ColorInt int backgroundColor = SemanticColorUtils.getDefaultBgColor(context);
+        @ColorInt int progressBarColor = SemanticColorUtils.getDefaultIconColor(context);
+        if (ColorUtils.inNightMode(context)) {
+            // This color should change to "Surface Container High" in the next Material update.
+            backgroundColor = ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_4);
+            progressBarColor = context.getColor(R.color.baseline_primary_80);
+        }
+        findViewById(R.id.backdrop).setBackgroundColor(backgroundColor);
+        mProgressBar.setProgressTintList(ColorStateList.valueOf(progressBarColor));
 
         mLastPlaybackState = PlaybackListener.State.UNKNOWN;
         mNextAnimationPlayTime = 0L;
@@ -162,7 +179,7 @@ public class MiniPlayerLayout extends LinearLayout {
     void setInteractionHandler(InteractionHandler handler) {
         mInteractionHandler = handler;
         setOnClickListener(R.id.close_button, handler::onCloseClick);
-        setOnClickListener(R.id.mini_player_background, handler::onMiniPlayerExpandClick);
+        setOnClickListener(R.id.mini_player_container, handler::onMiniPlayerExpandClick);
         setOnClickListener(R.id.play_button, handler::onPlayPauseClick);
     }
 

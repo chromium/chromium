@@ -160,7 +160,7 @@ public class MiniPlayerLayoutUnitTest {
         mLayout.setInteractionHandler(mInteractionHandler);
         mLayout.onPlaybackStateChanged(PlaybackListener.State.PLAYING);
 
-        assertTrue(mLayout.findViewById(R.id.mini_player_background).performClick());
+        assertTrue(mLayout.findViewById(R.id.mini_player_container).performClick());
         verify(mInteractionHandler).onMiniPlayerExpandClick();
     }
 
