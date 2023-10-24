@@ -1575,6 +1575,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"privacy-guide-ios", flag_descriptions::kPrivacyGuideIosName,
      flag_descriptions::kPrivacyGuideIosDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kPrivacyGuideIos)},
+    {"bottom-omnibox-device-switcher-results",
+     flag_descriptions::kBottomOmniboxDeviceSwitcherResultsName,
+     flag_descriptions::kBottomOmniboxDeviceSwitcherResultsDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kBottomOmniboxDeviceSwitcherResults)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
