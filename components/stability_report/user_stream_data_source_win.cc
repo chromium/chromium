@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/stability_report/user_stream_data_source.h"
+#include "components/stability_report/user_stream_data_source_win.h"
 
 #include <windows.h>
 
@@ -147,7 +147,7 @@ void CollectProcessPerformanceMetrics(
 }  // namespace
 
 std::unique_ptr<crashpad::MinidumpUserExtensionStreamDataSource>
-UserStreamDataSource::ProduceStreamData(
+UserStreamDataSourceWin::ProduceStreamData(
     crashpad::ProcessSnapshot* process_snapshot) {
   DCHECK(process_snapshot);
 

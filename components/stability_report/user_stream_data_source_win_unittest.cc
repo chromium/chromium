@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/stability_report/user_stream_data_source.h"
+#include "components/stability_report/user_stream_data_source_win.h"
 
 #include <memory>
 #include <tuple>
@@ -106,7 +106,7 @@ TEST_P(StabilityReportUserStreamDataSourceTest, ReadProcess) {
   }
 
   // Collect a StabilityReport from `process_snapshot`.
-  UserStreamDataSource source;
+  UserStreamDataSourceWin source;
   std::unique_ptr<crashpad::MinidumpUserExtensionStreamDataSource> data_source =
       source.ProduceStreamData(&process_snapshot);
   ASSERT_TRUE(data_source);

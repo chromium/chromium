@@ -13,9 +13,11 @@ if (is_win) {
   # on Windows.
   static_library("stability_report") {
     sources = [
-      "user_stream_data_source.cc",
       "user_stream_data_source.h",
+      "user_stream_data_source_win.cc",
+      "user_stream_data_source_win.h",
     ]
+
     deps = [
       ":stability_report_proto",
       "//base",
@@ -27,7 +29,9 @@ if (is_win) {
 
   source_set("unit_tests") {
     testonly = true
-    sources = [ "user_stream_data_source_unittest.cc" ]
+
+    sources = [ "user_stream_data_source_win_unittest.cc" ]
+
     deps = [
       ":stability_report",
       ":stability_report_proto",
