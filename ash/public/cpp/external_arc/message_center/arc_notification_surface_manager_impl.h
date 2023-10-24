@@ -47,6 +47,9 @@ class ArcNotificationSurfaceManagerImpl
   using NotificationSurfaceMap =
       std::unordered_map<std::string,
                          std::unique_ptr<ArcNotificationSurfaceImpl>>;
+
+  void RemoveSurfaceByKey(const std::string& notification_key);
+
   NotificationSurfaceMap notification_surface_map_;
 
   base::ObserverList<Observer>::Unchecked observers_;
