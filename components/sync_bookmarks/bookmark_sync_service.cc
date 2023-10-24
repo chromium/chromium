@@ -26,8 +26,9 @@ void BookmarkSyncService::DecodeBookmarkSyncMetadata(
     const std::string& metadata_str,
     const base::RepeatingClosure& schedule_save_closure,
     bookmarks::BookmarkModel* model) {
-  bookmark_model_type_processor_.ModelReadyToSync(metadata_str,
-                                                  schedule_save_closure, model);
+  bookmark_model_view_ = std::make_unique<BookmarkModelView>(model);
+  bookmark_model_type_processor_.ModelReadyToSync(
+      metadata_str, schedule_save_closure, bookmark_model_view_.get());
 }
 
 base::WeakPtr<syncer::ModelTypeControllerDelegate>

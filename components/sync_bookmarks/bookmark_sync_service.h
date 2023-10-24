@@ -14,6 +14,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 #include "components/sync_bookmarks/bookmark_model_type_processor.h"
+#include "components/sync_bookmarks/bookmark_model_view.h"
 
 class BookmarkUndoService;
 
@@ -75,6 +76,7 @@ class BookmarkSyncService : public KeyedService {
   void SetBookmarksLimitForTesting(size_t limit);
 
  private:
+  std::unique_ptr<BookmarkModelView> bookmark_model_view_;
   // BookmarkModelTypeProcessor handles communications between sync engine and
   // BookmarkModel/HistoryService.
   BookmarkModelTypeProcessor bookmark_model_type_processor_;

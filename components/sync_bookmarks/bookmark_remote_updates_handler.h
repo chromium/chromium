@@ -13,7 +13,6 @@
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
 
 namespace bookmarks {
-class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
 
@@ -23,13 +22,15 @@ class FaviconService;
 
 namespace sync_bookmarks {
 
+class BookmarkModelView;
+
 // Responsible for processing one batch of remote updates received from the sync
 // server.
 class BookmarkRemoteUpdatesHandler {
  public:
   // |bookmark_model|, |favicon_service| and |bookmark_tracker| must not be null
   // and must outlive this object.
-  BookmarkRemoteUpdatesHandler(bookmarks::BookmarkModel* bookmark_model,
+  BookmarkRemoteUpdatesHandler(BookmarkModelView* bookmark_model,
                                favicon::FaviconService* favicon_service,
                                SyncedBookmarkTracker* bookmark_tracker);
 
@@ -127,7 +128,7 @@ class BookmarkRemoteUpdatesHandler {
       const syncer::EntityData& entity_data,
       const SyncedBookmarkTrackerEntity* tracked_entity);
 
-  const raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  const raw_ptr<BookmarkModelView> bookmark_model_;
   const raw_ptr<favicon::FaviconService> favicon_service_;
   const raw_ptr<SyncedBookmarkTracker> bookmark_tracker_;
 };

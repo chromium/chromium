@@ -23,6 +23,7 @@
 #include "components/reading_list/core/dual_reading_list_model.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/service/local_data_description.h"
+#include "components/sync_bookmarks/bookmark_model_view.h"
 #include "components/sync_bookmarks/local_bookmark_model_merger.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/base/models/tree_node_iterator.h"
@@ -277,8 +278,12 @@ class LocalDataMigrationHelper::LocalDataMigrationRequest
       CHECK(helper_->local_bookmark_model_);
       CHECK(helper_->account_bookmark_model_);
       // Merge all local bookmarks into the account bookmark model.
-      sync_bookmarks::LocalBookmarkModelMerger(helper_->local_bookmark_model_,
-                                               helper_->account_bookmark_model_)
+      sync_bookmarks::BookmarkModelView local_model_view(
+          helper_->local_bookmark_model_);
+      sync_bookmarks::BookmarkModelView account_model_view(
+          helper_->account_bookmark_model_);
+      sync_bookmarks::LocalBookmarkModelMerger(&local_model_view,
+                                               &account_model_view)
           .Merge();
       // Remove all bookmarks from the local model.
       helper_->local_bookmark_model_->RemoveAllUserBookmarks();

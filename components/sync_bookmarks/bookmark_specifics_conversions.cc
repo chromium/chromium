@@ -21,7 +21,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
-#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
@@ -30,6 +29,7 @@
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync_bookmarks/bookmark_model_view.h"
 #include "components/sync_bookmarks/switches.h"
 #include "ui/gfx/favicon_size.h"
 #include "url/gurl.h"
@@ -215,7 +215,7 @@ std::u16string NodeTitleFromSpecifics(
   return base::UTF8ToUTF16(node_title);
 }
 
-void MoveAllChildren(bookmarks::BookmarkModel* model,
+void MoveAllChildren(BookmarkModelView* model,
                      const bookmarks::BookmarkNode* old_parent,
                      const bookmarks::BookmarkNode* new_parent) {
   DCHECK(old_parent && old_parent->is_folder());
@@ -276,7 +276,7 @@ bool IsBookmarkEntityReuploadNeeded(
 
 sync_pb::EntitySpecifics CreateSpecificsFromBookmarkNode(
     const bookmarks::BookmarkNode* node,
-    bookmarks::BookmarkModel* model,
+    BookmarkModelView* model,
     const sync_pb::UniquePosition& unique_position,
     bool force_favicon_load) {
   sync_pb::EntitySpecifics specifics;
@@ -347,7 +347,7 @@ const bookmarks::BookmarkNode* CreateBookmarkNodeFromSpecifics(
     const sync_pb::BookmarkSpecifics& specifics,
     const bookmarks::BookmarkNode* parent,
     size_t index,
-    bookmarks::BookmarkModel* model,
+    BookmarkModelView* model,
     favicon::FaviconService* favicon_service) {
   DCHECK(parent);
   DCHECK(model);
@@ -404,7 +404,7 @@ const bookmarks::BookmarkNode* CreateBookmarkNodeFromSpecifics(
 void UpdateBookmarkNodeFromSpecifics(
     const sync_pb::BookmarkSpecifics& specifics,
     const bookmarks::BookmarkNode* node,
-    bookmarks::BookmarkModel* model,
+    BookmarkModelView* model,
     favicon::FaviconService* favicon_service) {
   DCHECK(node);
   DCHECK(model);
@@ -415,13 +415,11 @@ void UpdateBookmarkNodeFromSpecifics(
   base::Uuid guid = base::Uuid::ParseLowercase(specifics.guid());
   DCHECK(!guid.is_valid() || guid == node->uuid());
 
-  model->SetTitle(node, NodeTitleFromSpecifics(specifics),
-                  bookmarks::metrics::BookmarkEditSource::kOther);
+  model->SetTitle(node, NodeTitleFromSpecifics(specifics));
   model->SetNodeMetaInfoMap(node, GetBookmarkMetaInfo(specifics));
 
   if (!node->is_folder()) {
-    model->SetURL(node, GURL(specifics.url()),
-                  bookmarks::metrics::BookmarkEditSource::kOther);
+    model->SetURL(node, GURL(specifics.url()));
     SetBookmarkFaviconFromSpecifics(specifics, node, favicon_service);
 
     if (specifics.has_last_used_time_us()) {
@@ -455,7 +453,7 @@ sync_pb::BookmarkSpecifics::Type GetProtoTypeFromBookmarkNode(
 const bookmarks::BookmarkNode* ReplaceBookmarkNodeUuid(
     const bookmarks::BookmarkNode* node,
     const base::Uuid& guid,
-    bookmarks::BookmarkModel* model) {
+    BookmarkModelView* model) {
   DCHECK(guid.is_valid());
 
   if (node->uuid() == guid) {
@@ -476,7 +474,7 @@ const bookmarks::BookmarkNode* ReplaceBookmarkNodeUuid(
                       node->date_added(), guid);
   }
 
-  model->Remove(node, bookmarks::metrics::BookmarkEditSource::kOther);
+  model->Remove(node);
 
   return new_node;
 }

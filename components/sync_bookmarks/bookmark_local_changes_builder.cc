@@ -9,10 +9,10 @@
 #include <utility>
 #include <vector>
 
-#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
+#include "components/sync_bookmarks/bookmark_model_view.h"
 #include "components/sync_bookmarks/bookmark_specifics_conversions.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker_entity.h"
@@ -21,7 +21,7 @@ namespace sync_bookmarks {
 
 BookmarkLocalChangesBuilder::BookmarkLocalChangesBuilder(
     SyncedBookmarkTracker* const bookmark_tracker,
-    bookmarks::BookmarkModel* bookmark_model)
+    BookmarkModelView* bookmark_model)
     : bookmark_tracker_(bookmark_tracker), bookmark_model_(bookmark_model) {
   DCHECK(bookmark_tracker);
   DCHECK(bookmark_model);
