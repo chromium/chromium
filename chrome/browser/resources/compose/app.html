@@ -134,7 +134,7 @@
 </style>
 
 <div id="heading">
-  <h1>Autofill</h1>
+  <h1>$i18n{dialogTitle}</h1>
   <cr-icon-button iron-icon="cr:close"></cr-icon-button>
 </div>
 
@@ -161,8 +161,12 @@
     [[response_.result]]
 
     <div id="resultOptions">
-      <select class="md-select"><option>Menu 1</option></select>
-      <select class="md-select"><option>Menu 2</option></select>
+      <select class="md-select">
+        <option>$i18n{menu1Title}</option>
+      </select>
+      <select class="md-select">
+        <option>$i18n{menu2Title}</option>
+      </select>
 
       <div class="icon-buttons-row">
         <cr-icon-button id="undoButton" iron-icon="compose:undo"
@@ -180,12 +184,12 @@
 <div id="submitFooter" class="footer" hidden$="[[submitted_]]">
   <div class="footer-text">
     <div>
-      <strong>Do:</strong> look at this text.
+      $i18nRaw{inputFooter}
     </div>
   </div>
   <cr-button id="submitButton" class="action-button" on-click="onSubmit_"
       disabled="[[!isSubmitEnabled_]]">
-    Submit
+    $i18n{submitButton}
   </cr-button>
 </div>
 
@@ -193,8 +197,7 @@
     hidden="[[!hasSuccessfulResponse_(response_)]]">
   <div class="footer-text">
     <div>
-      Here is some text
-      <a href="#">Learn more</a>
+      $i18nRaw{resultFooter}
     </div>
 
     <div class="icon-buttons-row">
@@ -203,7 +206,7 @@
     </div>
   </div>
   <cr-button id="insertButton" class="action-button" on-click="onAccept_">
-    Insert
+    $i18n{insertButton}
   </cr-button>
 </div>
 

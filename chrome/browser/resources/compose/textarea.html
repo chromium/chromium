@@ -69,13 +69,13 @@
 
 <div id="inputContainer" hidden$="[[readonly]]">
   <textarea id="input"
-      placeholder="Some placeholder text"
+      placeholder="$i18n{inputPlaceholder}"
       value="{{value::input}}"
       rows="4"
       required>
   </textarea>
   <div id="error" hidden$="[[!tooLong_]]">
-    This is too long. Shorten and try again.
+    $i18n{errorTooLong}
   </div>
 </div>
 
