@@ -1889,9 +1889,10 @@ config("default_warnings") {
           cflags += [ "-Wno-delayed-template-parsing-in-cxx20" ]
         }
 
-        if (enable_precompiled_headers && !is_win) {
+        if (enable_precompiled_headers && !is_win &&
+            !llvm_force_head_revision) {
           cflags += [
-            # TODO(crbug.com/1486799) Find a long-term solution.
+            # TODO(crbug.com/1486799) Remove in next clang roll.
             "-Wno-deprecated-include-gch",
           ]
         }
