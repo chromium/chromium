@@ -52,10 +52,6 @@ SignInInternalsHandlerIOS::~SignInInternalsHandlerIOS() {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromWebUIIOS(web_ui());
   DCHECK(browser_state);
-  AboutSigninInternals* about_signin_internals =
-      ios::AboutSigninInternalsFactory::GetForBrowserState(browser_state);
-  if (about_signin_internals)
-    about_signin_internals->RemoveSigninObserver(this);
 }
 
 void SignInInternalsHandlerIOS::RegisterMessages() {
@@ -89,7 +85,7 @@ void SignInInternalsHandlerIOS::HandleGetSignInInfo(
   // reasonable defaults, so the about:signin-internals page doesn't look
   // empty in incognito mode. Alternatively, we could force about:signin to
   // open in non-incognito mode always (like about:settings for ex.).
-  about_signin_internals->AddSigninObserver(this);
+  about_signin_internals_observeration_.Observe(about_signin_internals);
   const base::Value::Dict status = about_signin_internals->GetSigninStatus();
   base::ValueView return_args[] = {callback, success, status};
   web_ui()->CallJavascriptFunction("cr.webUIResponse", return_args);

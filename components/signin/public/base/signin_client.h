@@ -9,6 +9,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
+#include "base/scoped_observation_traits.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -141,5 +142,21 @@ class SigninClient : public KeyedService {
  protected:
   absl::optional<SignoutDecision> is_clear_primary_account_allowed_for_testing_;
 };
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<SigninClient, content_settings::Observer> {
+  static void AddObserver(SigninClient* source,
+                          content_settings::Observer* observer) {
+    source->AddContentSettingsObserver(observer);
+  }
+  static void RemoveObserver(SigninClient* source,
+                             content_settings::Observer* observer) {
+    source->RemoveContentSettingsObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_BASE_SIGNIN_CLIENT_H_
