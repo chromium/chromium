@@ -242,7 +242,13 @@ void HlsManifestDemuxerEngine::OnStateChecked(
 void HlsManifestDemuxerEngine::Seek(base::TimeDelta time,
                                     ManifestDemuxer::SeekCallback cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-  CHECK(data_source_provider_);
+  if (!data_source_provider_) {
+    // The pipeline can call Seek just after an error was surfaced. The error
+    // handler resets |data_source_provider_|, so we should just reply with
+    // another error here.
+    std::move(cb).Run(PIPELINE_ERROR_ABORT);
+    return;
+  }
   data_source_provider_.AsyncCall(&HlsDataSourceProvider::AbortPendingReads)
       .WithArgs(base::BindPostTaskToCurrentDefault(
           base::BindOnce(&HlsManifestDemuxerEngine::ContinueSeekInternal,
