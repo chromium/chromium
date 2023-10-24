@@ -630,7 +630,11 @@ int TaskManagerTableModel::CompareValues(size_t row1,
       return ValueCompare(proc1_fd_count, proc2_fd_count);
     }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-
+    case IDS_TASK_MANAGER_KEEPALIVE_COUNT_COLUMN: {
+      return ValueCompare(
+          observed_task_manager()->GetKeepaliveCount(tasks_[row1]),
+          observed_task_manager()->GetKeepaliveCount(tasks_[row2]));
+    }
     default:
       NOTREACHED();
       return 0;
