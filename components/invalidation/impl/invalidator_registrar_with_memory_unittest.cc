@@ -45,10 +45,10 @@ class InvalidatorRegistrarWithMemoryTest : public testing::Test {
   const TopicData kTopic2 = {/*name=*/"topic_2", /*is_public=*/false};
   const TopicData kTopic3 = {/*name=*/"topic_3", /*is_public=*/false};
   const TopicData kTopic4 = {/*name=*/"topic_4", /*is_public=*/false};
-  const Invalidation kInv1 = Invalidation::Init(kTopic1.name, 1, "1");
-  const Invalidation kInv2 = Invalidation::Init(kTopic2.name, 2, "2");
-  const Invalidation kInv3 = Invalidation::Init(kTopic3.name, 3, "3");
-  const Invalidation kInv4 = Invalidation::Init(kTopic4.name, 4, "4");
+  const Invalidation kInv1 = Invalidation(kTopic1.name, 1, "1");
+  const Invalidation kInv2 = Invalidation(kTopic2.name, 2, "2");
+  const Invalidation kInv3 = Invalidation(kTopic3.name, 3, "3");
+  const Invalidation kInv4 = Invalidation(kTopic4.name, 4, "4");
 };
 
 // Initialize the invalidator, register a handler, register some topics for that
@@ -64,10 +64,6 @@ TEST_F(InvalidatorRegistrarWithMemoryTest, Basic) {
 
   FakeInvalidationHandler handler("owner");
   invalidator->RegisterHandler(&handler);
-
-  const auto kInv1 = Invalidation::Init(this->kTopic1.name, 1, "1");
-  const auto kInv2 = Invalidation::Init(kTopic2.name, 2, "2");
-  const auto kInv3 = Invalidation::Init(kTopic3.name, 3, "3");
 
   // Should be ignored since no topics are registered to |handler|.
   Dispatch(*invalidator, kInv1, kInv2, kInv3);
@@ -144,11 +140,6 @@ TEST_F(InvalidatorRegistrarWithMemoryTest, MultipleHandlers) {
   EXPECT_EQ(INVALIDATIONS_ENABLED, handler2.GetInvalidatorState());
   EXPECT_EQ(INVALIDATIONS_ENABLED, handler3.GetInvalidatorState());
   EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler4.GetInvalidatorState());
-
-  const auto kInv1 = Invalidation::Init(kTopic1.name, 1, "1");
-  const auto kInv2 = Invalidation::Init(kTopic2.name, 2, "2");
-  const auto kInv3 = Invalidation::Init(kTopic3.name, 3, "3");
-  const auto kInv4 = Invalidation::Init(kTopic4.name, 4, "4");
 
   Dispatch(*invalidator, kInv1, kInv2, kInv3, kInv4);
 
@@ -235,10 +226,6 @@ TEST_F(InvalidatorRegistrarWithMemoryTest, EmptySetUnregisters) {
   EXPECT_EQ(INVALIDATIONS_ENABLED, handler2.GetInvalidatorState());
 
   {
-    const auto kInv1 = Invalidation::Init(kTopic1.name, 1, "1");
-    const auto kInv2 = Invalidation::Init(kTopic2.name, 2, "2");
-    const auto kInv3 = Invalidation::Init(kTopic3.name, 3, "3");
-
     Dispatch(*invalidator, kInv1, kInv2, kInv3);
 
     EXPECT_EQ(0, handler1.GetInvalidationCount());

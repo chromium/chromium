@@ -4,6 +4,7 @@
 
 #include "components/invalidation/public/invalidation.h"
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/invalidation/public/ack_handler.h"
@@ -15,8 +16,14 @@ namespace invalidation {
 Invalidation Invalidation::Init(const Topic& topic,
                                 int64_t version,
                                 const std::string& payload) {
-  return Invalidation(topic, version, payload, AckHandle::CreateUnique());
+  CHECK_IS_TEST();
+  return Invalidation(topic, version, payload);
 }
+
+Invalidation::Invalidation(const Topic& topic,
+                           int64_t version,
+                           const std::string& payload)
+    : topic_(topic), version_(version), payload_(payload) {}
 
 Invalidation::Invalidation(const Invalidation& other) = default;
 
@@ -59,14 +66,5 @@ bool Invalidation::operator==(const Invalidation& other) const {
   return topic_ == other.topic_ &&
          version_ == other.version_ && payload_ == other.payload_;
 }
-
-Invalidation::Invalidation(const Topic& topic,
-                           int64_t version,
-                           const std::string& payload,
-                           AckHandle ack_handle)
-    : topic_(topic),
-      version_(version),
-      payload_(payload),
-      ack_handle_(ack_handle) {}
 
 }  // namespace invalidation

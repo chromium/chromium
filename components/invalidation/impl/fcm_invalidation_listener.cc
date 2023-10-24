@@ -96,8 +96,7 @@ void FCMInvalidationListener::InvalidationReceived(
              << expected_public_topic.value_or("<None>");
     return;
   }
-  Invalidation inv =
-      Invalidation::Init(*expected_public_topic, version, payload);
+  Invalidation inv = Invalidation(*expected_public_topic, version, payload);
   inv.SetAckHandler(weak_factory_.GetWeakPtr(),
                     base::SingleThreadTaskRunner::GetCurrentDefault());
   DVLOG(1) << "Received invalidation with version " << inv.version() << " for "
