@@ -1583,9 +1583,8 @@ VADisplayStateHandle VADisplayStateSingleton::GetHandle() {
   // guarded by USE_VAAPI_X11. For example, if USE_VAAPI_X11 is true, but the
   // user chooses the Wayland backend for Ozone at runtime, then many things (if
   // not all) that we do for X11 won't apply.
-  if (!ui::OzonePlatform::GetInstance()
-           ->GetPlatformProperties()
-           .supports_vaapi) {
+  auto* ozone = ui::OzonePlatform::GetInstance();
+  if (!ozone || !ozone->GetPlatformProperties().supports_vaapi) {
     return {};
   }
 #endif
