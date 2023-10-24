@@ -27,7 +27,10 @@ bundle_js("bundle_js_interstitial_large") {
   js_module_in_files = [ "interstitial_large.js" ]
 
   external_paths = [ "chrome://interstitials/|$shared_interstitials_path" ]
-  deps = [ "../../common/resources:preprocess" ]
+  deps = [
+    "../../common/resources:preprocess",
+    "//ui/webui/resources/js:build_ts",
+  ]
 }
 
 bundle_js("bundle_js_interstitial_webview_quiet") {
@@ -39,5 +42,8 @@ bundle_js("bundle_js_interstitial_webview_quiet") {
   js_module_in_files = [ "interstitial_webview_quiet.js" ]
 
   external_paths = [ "chrome://interstitials/|$shared_interstitials_path" ]
-  deps = [ "../../common/resources:preprocess" ]
+  deps = [
+    "../../common/resources:preprocess",
+    "//ui/webui/resources/js:build_ts",
+  ]
 }

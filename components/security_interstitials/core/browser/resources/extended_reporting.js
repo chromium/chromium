@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {SecurityInterstitialCommandId, sendCommand} from 'chrome://interstitials/common/resources/interstitial_common.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 // Other constants defined in security_interstitial_page.h.
 const SB_BOX_CHECKED = 'boxchecked';
