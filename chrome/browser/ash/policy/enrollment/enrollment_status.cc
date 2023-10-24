@@ -6,8 +6,6 @@
 
 #include <string_view>
 
-#include "build/chromeos_buildflags.h"
-
 namespace policy {
 namespace {
 std::string_view ToStringView(EnrollmentStatus::Code enrollment_code) {
@@ -103,7 +101,6 @@ EnrollmentStatus EnrollmentStatus::ForStoreError(
   return status;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // static
 EnrollmentStatus EnrollmentStatus::ForLockError(
     ash::InstallAttributes::LockResult lock_status) {
@@ -112,7 +109,6 @@ EnrollmentStatus EnrollmentStatus::ForLockError(
   status.lock_status_ = lock_status;
   return status;
 }
-#endif
 
 EnrollmentStatus::EnrollmentStatus() = default;
 
