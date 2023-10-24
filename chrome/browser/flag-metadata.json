@@ -804,7 +804,7 @@
   {
     "name": "block-insecure-private-network-requests",
     "owners": [ "lyf@chromium.org", "phao@chromium.org", "chrome-security-owp-team@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 124
   },
   {
     "name": "bluetooth-coredump",
