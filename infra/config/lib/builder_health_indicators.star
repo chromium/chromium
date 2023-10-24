@@ -172,7 +172,6 @@ _exempted_from_contact_builders = {
         "Libfuzzer Upload iOS Catalyst Debug",
         "Linux ASan LSan Builder",
         "Linux ASan LSan Tests (1)",
-        "Linux ASan Tests (sandboxed)",
         "Linux Builder (Wayland)",
         "Linux Builder (reclient compare)",
         "Linux CFI",
