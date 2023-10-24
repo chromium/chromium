@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
@@ -121,7 +122,7 @@ class ReadAnythingUntrustedPageHandler
   void LogTextStyle();
 
   raw_ptr<ReadAnythingCoordinator> coordinator_;
-  const raw_ptr<Browser> browser_;
+  const base::WeakPtr<Browser> browser_;
   const raw_ptr<content::WebUI> web_ui_;
   const std::map<std::string, ReadAnythingFont> font_map_ = {
       {"Poppins", ReadAnythingFont::kPoppins},
