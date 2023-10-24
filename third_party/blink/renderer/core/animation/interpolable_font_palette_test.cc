@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/animation/interpolable_font_palette.h"
 #include <memory>
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/values_equivalent.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/font_palette.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -60,7 +61,7 @@ TEST(InterpolableFontPaletteTest, NestedEndpointsInterpolation) {
 }
 
 // Scale/Add should have no effect.
-TEST(InterpolableFontPaletteTest, NoEffectScaleAdd) {
+TEST(InterpolableFontPaletteTest, TestScaleAndAdd) {
   ScopedFontPaletteAnimationForTest scoped_feature(true);
   scoped_refptr<FontPalette> palette1 = FontPalette::Mix(
       FontPalette::Create(), FontPalette::Create(FontPalette::kDarkPalette), 30,
@@ -78,8 +79,8 @@ TEST(InterpolableFontPaletteTest, NoEffectScaleAdd) {
   scoped_refptr<FontPalette> font_palette =
       interpolable_palette1->GetFontPalette();
 
-  EXPECT_EQ("palette-mix(in oklab, normal, dark 70%)",
-            font_palette->ToString());
+  EXPECT_TRUE(base::ValuesEquivalent(font_palette,
+                                     interpolable_palette2->GetFontPalette()));
 }
 
 TEST(InterpolableFontPaletteTest, InterpolablePalettesEqual) {
