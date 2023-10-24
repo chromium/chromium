@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/supervised_user/core/common/buildflags.h"
+#include "media/gpu/buildflags.h"
 #include "pdf/buildflags.h"
 
 // Keep in identical order as the header file, see the comment at the top
@@ -7338,6 +7339,7 @@ const char kQuickOfficeForceFileDownloadDescription[] =
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if !BUILDFLAG(USE_VAAPI)
 const char kChromeOSDirectVideoDecoderName[] = "ChromeOS Direct Video Decoder";
 const char kChromeOSDirectVideoDecoderDescription[] =
     "Enables the hardware-accelerated ChromeOS direct media::VideoDecoder "
@@ -7345,7 +7347,8 @@ const char kChromeOSDirectVideoDecoderDescription[] =
     "--platform-disallows-chromeos-direct-video-decoder command line switch "
     "which is added for platforms where said direct VideoDecoder does not work "
     "or is not well tested (see the disable_cros_video_decoder USE flag in "
-    "ChromeOS)";
+    "ChromeOS). This flag is supported only on non-Intel and non-AMD devices.";
+#endif  // !BUILDFLAG(USE_VAAPI)
 const char kChromeOSHWVBREncodingName[] =
     "ChromeOS Hardware Variable Bitrate Encoding";
 const char kChromeOSHWVBREncodingDescription[] =

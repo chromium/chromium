@@ -7578,11 +7578,13 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if !BUILDFLAG(USE_VAAPI)
     {"chromeos-direct-video-decoder",
      flag_descriptions::kChromeOSDirectVideoDecoderName,
      flag_descriptions::kChromeOSDirectVideoDecoderDescription,
      kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(media::kUseChromeOSDirectVideoDecoder)},
+#endif  // !BUILDFLAG(USE_VAAPI)
 
     {"enable-vbr-encode-acceleration",
      flag_descriptions::kChromeOSHWVBREncodingName,

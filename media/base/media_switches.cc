@@ -1192,6 +1192,7 @@ BASE_FEATURE(kChromeOSHWVBREncoding,
              "ChromeOSHWVBREncoding",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(USE_VAAPI)
 // Enable the hardware-accelerated direct video decoder instead of the one
 // needing the VdaVideoDecoder adapter. This flag is used mainly as a
 // chrome:flag for developers debugging issues as well as to be able to
@@ -1200,6 +1201,7 @@ BASE_FEATURE(kChromeOSHWVBREncoding,
 BASE_FEATURE(kUseChromeOSDirectVideoDecoder,
              "UseChromeOSDirectVideoDecoder",
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(USE_VAAPI)
 
 // Limit the number of concurrent hardware decoder instances on ChromeOS.
 BASE_FEATURE(kLimitConcurrentDecoderInstances,
@@ -1228,7 +1230,7 @@ BASE_FEATURE(kPreferSoftwareMT21,
              "PreferSoftwareMT21",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(USE_VAAPI)
 // ChromeOS has one of two VideoDecoder implementations active based on
 // SoC/board specific configurations that are sent via command line flags. This
 // switch allows using the non default implementation for testing.
@@ -1236,7 +1238,7 @@ BASE_FEATURE(kPreferSoftwareMT21,
 BASE_FEATURE(kUseAlternateVideoDecoderImplementation,
              "UseAlternateVideoDecoderImplementation",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(USE_VAAPI)
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
 #if BUILDFLAG(IS_WIN)

@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/media_export.h"
+#include "media/gpu/buildflags.h"
 #include "media/media_buildflags.h"
 
 namespace base {
@@ -381,16 +382,18 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kBuiltInHlsPlayer);
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kChromeOSHWAV1Decoder);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kChromeOSHWVBREncoding);
+#if !BUILDFLAG(USE_VAAPI)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseChromeOSDirectVideoDecoder);
+#endif  // !BUILDFLAG(USE_VAAPI)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kLimitConcurrentDecoderInstances);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUSeSequencedTaskRunnerForVEA);
 #if defined(ARCH_CPU_ARM_FAMILY)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kPreferGLImageProcessor);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kPreferSoftwareMT21);
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(USE_VAAPI)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseAlternateVideoDecoderImplementation);
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(USE_VAAPI)
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
 #if BUILDFLAG(IS_WIN)
