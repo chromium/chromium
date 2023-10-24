@@ -11,6 +11,7 @@
 
 #include "base/auto_reset.h"
 #include "base/functional/callback.h"
+#include "base/scoped_observation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget_observer.h"
@@ -55,7 +56,10 @@ class SubAppsInstallDialogController : public views::WidgetObserver {
   void OnWidgetDestroying(views::Widget* widget) override;
 
   base::OnceCallback<void(bool)> callback_;
+
   raw_ptr<views::Widget> widget_ = nullptr;
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
 };
 
 }  // namespace web_app
