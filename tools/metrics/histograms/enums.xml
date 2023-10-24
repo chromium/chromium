@@ -12803,11 +12803,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="has discount"/>
 </enum>
 
-<enum name="BooleanHasDistilledData">
-  <int value="0" label="No distilled data"/>
-  <int value="1" label="Has distilled data"/>
-</enum>
-
 <enum name="BooleanHasFetchers">
   <int value="0" label="Missing fetchers"/>
   <int value="1" label="Has fetchers"/>

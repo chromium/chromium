@@ -2517,12 +2517,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DomDistiller.PageHasDistilledData"
-    enum="BooleanHasDistilledData" expires_after="M85">
-  <owner>kuan@chromium.org</owner>
-  <summary>Records whether a page has distilled data.</summary>
-</histogram>
-
 <histogram name="DomDistiller.ReaderMode.EntryPoint"
     enum="ReaderModeEntryPoint" expires_after="2023-11-30">
   <owner>katie@chromium.org</owner>
