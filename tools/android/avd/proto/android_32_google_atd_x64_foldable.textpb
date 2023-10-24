@@ -1,0 +1,26 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for an Android-12L (S_V2, API 32) AVD on google_atd on x86_64
+# This defines a foldable device
+
+emulator_package {
+  package_name: "chromium/third_party/android_sdk/public/emulator"
+  version: "N2X90_ADQtGKgoxkXZH3-TM5dbrynU-zGC4mj0B5KMIC"  # 32.1.15
+  dest_path: "android_32_google_atd_x64_foldable"
+}
+
+system_image_package {
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-32/google_atd/x86_64"
+  version: "FCZ_rmn_f1plPb_m80Elty4yaCaKZWTCpY0UGDBiWLsC"  # r1, SE1B.220616.006
+  dest_path: "android_32_google_atd_x64_foldable"
+}
+system_image_name: "system-images;android-32;google_atd;x86_64"
+
+avd_package {
+  package_name: "chromium/third_party/android_sdk/public/avds/android-32/google_atd/x86_64"
+  version: "T05phbyFET4srvfGP_D7EIyreXJHGjBBY6ogdbXYXDMC"  # created in bb_id 8766331535335385185
+  dest_path: "android_32_google_atd_x64_foldable"
+}
+avd_name: "android_32_google_atd_x64_foldable"
