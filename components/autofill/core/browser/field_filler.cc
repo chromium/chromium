@@ -677,7 +677,7 @@ std::u16string GetExpirationForMonthControl(const CreditCard& card) {
 std::u16string GetStreetAddressForInput(
     const std::u16string& address_value,
     const std::string& address_language_code,
-    FormFieldData* field) {
+    const FormFieldData* field) {
   if (field->form_control_type == FormControlType::kTextArea) {
     return address_value;
   }
@@ -698,7 +698,7 @@ std::u16string GetStreetAddressForInput(
 // the canonical state name nor its abbreviation fit into the field.
 std::u16string GetStateTextForInput(const std::u16string& state_value,
                                     const std::string& country_code,
-                                    FormFieldData* field,
+                                    const FormFieldData* field,
                                     std::string* failure_to_fill) {
   if (field->max_length == 0 || field->max_length >= state_value.size())
     // Return the state value directly.
@@ -929,41 +929,6 @@ std::u16string GetValueForCreditCard(
   }
 }
 
-// Returns the appropriate |profile| value based on |type| to fill
-// into |field|.
-std::u16string GetValueForProfile(const AutofillProfile& profile,
-                                  const std::string& app_locale,
-                                  const AutofillField& field,
-                                  FormFieldData* field_data,
-                                  std::string* failure_to_fill) {
-  const AutofillType type = field.Type();
-  std::u16string value = profile.GetInfo(type, app_locale);
-
-  if (type.group() == FieldTypeGroup::kPhone) {
-    // If the `field_data` is a selection box and having the type
-    // `PHONE_HOME_COUNTRY_CODE`, call
-    // `GetPhoneCountryCodeSelectControlForInput`.
-    if (field_data->IsSelectOrSelectListElement() &&
-        type.GetStorableType() == PHONE_HOME_COUNTRY_CODE) {
-      value = GetPhoneCountryCodeSelectControlForInput(value, field_data,
-                                                       failure_to_fill);
-    } else {
-      value = FieldFiller::GetPhoneNumberValueForInput(
-          field_data->max_length, value,
-          profile.GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale));
-    }
-  } else if (type.GetStorableType() == ADDRESS_HOME_STREET_ADDRESS) {
-    const std::string& profile_language_code = profile.language_code();
-    value = GetStreetAddressForInput(value, profile_language_code, field_data);
-  } else if (type.GetStorableType() == ADDRESS_HOME_STATE) {
-    const std::string& country_code =
-        data_util::GetCountryCodeWithFallback(profile, app_locale);
-    value =
-        GetStateTextForInput(value, country_code, field_data, failure_to_fill);
-  }
-  return value;
-}
-
 // Returns the appropriate |virtual_card| value based on |storable_type| to
 // preview into |field|.
 std::u16string GetValueForVirtualCardPreview(const CreditCard& virtual_card,
@@ -1006,7 +971,34 @@ FieldFiller::FieldFiller(const std::string& app_locale,
                          AddressNormalizer* address_normalizer)
     : app_locale_(app_locale), address_normalizer_(address_normalizer) {}
 
-FieldFiller::~FieldFiller() {}
+FieldFiller::~FieldFiller() = default;
+
+// static
+std::u16string FieldFiller::GetValueForProfile(const AutofillProfile& profile,
+                                               const std::string& app_locale,
+                                               const AutofillType& field_type,
+                                               FormFieldData* field_data,
+                                               std::string* failure_to_fill) {
+  const std::u16string value = profile.GetInfo(field_type, app_locale);
+  if (field_type.group() == FieldTypeGroup::kPhone) {
+    return field_data->IsSelectOrSelectListElement() &&
+                   field_type.GetStorableType() == PHONE_HOME_COUNTRY_CODE
+               ? GetPhoneCountryCodeSelectControlForInput(value, field_data,
+                                                          failure_to_fill)
+               : FieldFiller::GetPhoneNumberValueForInput(
+                     field_data->max_length, value,
+                     profile.GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale));
+  }
+  if (field_type.GetStorableType() == ADDRESS_HOME_STREET_ADDRESS) {
+    return GetStreetAddressForInput(value, profile.language_code(), field_data);
+  }
+  if (field_type.GetStorableType() == ADDRESS_HOME_STATE) {
+    return GetStateTextForInput(
+        value, data_util::GetCountryCodeWithFallback(profile, app_locale),
+        field_data, failure_to_fill);
+  }
+  return value;
+}
 
 std::u16string FieldFiller::GetValueForFilling(
     const AutofillField& field,
@@ -1040,7 +1032,7 @@ std::u16string FieldFiller::GetValueForFilling(
     const AutofillProfile* profile =
         absl::get<const AutofillProfile*>(profile_or_credit_card);
 
-    value = GetValueForProfile(*profile, app_locale_, field, field_data,
+    value = GetValueForProfile(*profile, app_locale_, field.Type(), field_data,
                                failure_to_fill);
   }
 
