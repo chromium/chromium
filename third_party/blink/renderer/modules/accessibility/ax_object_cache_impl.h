@@ -320,6 +320,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   // Used for objects without backing DOM nodes, layout objects, etc.
   AXObject* CreateAndInit(ax::mojom::blink::Role, AXObject* parent);
 
+  // Note that these functions do NOT guarantee that an AXObject will
+  // be created. For instance, not all HTMLElements can have an AXObject,
+  // such as <head> or <script> tags.
   AXObject* GetOrCreate(AccessibleNode*, AXObject* parent);
   AXObject* GetOrCreate(LayoutObject*, AXObject* parent_if_known) override;
   AXObject* GetOrCreate(LayoutObject* layout_object);

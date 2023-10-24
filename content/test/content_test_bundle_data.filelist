@@ -5006,8 +5006,6 @@ data/accessibility/mathml/unknown-expected-blink.txt
 data/accessibility/mathml/unknown-node-expected-blink.txt
 data/accessibility/mathml/unknown.html
 data/accessibility/readme.md
-data/accessibility/regression/activedescendant-crash-expected-blink.txt
-data/accessibility/regression/activedescendant-crash.html
 data/accessibility/regression/add-child-of-not-included-in-tree-chain-expected-blink.txt
 data/accessibility/regression/add-child-of-not-included-in-tree-chain.html
 data/accessibility/regression/add-click-ignored-changed-expected-blink.txt
@@ -5047,6 +5045,8 @@ data/accessibility/regression/option-accessible-name-is-select.html
 data/accessibility/regression/progress-with-background-exposes-values-expected-blink.txt
 data/accessibility/regression/progress-with-background-exposes-values.html
 data/accessibility/regression/reentrant-add-children.html
+data/accessibility/regression/relation-points-to-invalid-nodes-crash-expected-blink.txt
+data/accessibility/regression/relation-points-to-invalid-nodes-crash.html
 data/accessibility/regression/remove-aria-owner-expected-auralinux.txt
 data/accessibility/regression/remove-aria-owner-expected-blink.txt
 data/accessibility/regression/remove-aria-owner.html

@@ -5274,7 +5274,7 @@ AXObject::AXObjectVector AXNodeObject::ErrorMessageFromAria() const {
   AXObjectVector error_messages;
   for (Element* element : elements_from_attribute) {
     AXObject* obj = AXObjectCache().GetOrCreate(element);
-    if (!obj->AccessibilityIsIgnored()) {
+    if (obj && !obj->AccessibilityIsIgnored()) {
       error_messages.push_back(obj);
     }
   }
