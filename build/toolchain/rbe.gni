@@ -1,9 +1,9 @@
 # Defines the configuration of Remote Build Execution (RBE).
 
-# The directory where the re-client tooling binaries are.
-rbe_bin_dir = rebase_path("//buildtools/reclient", root_build_dir)
-
 declare_args() {
+  # The directory where the re-client tooling binaries are.
+  rbe_bin_dir = rebase_path("//buildtools/reclient", root_build_dir)
+
   # Execution root - this should be the root of the source tree.
   # This is defined here instead of in the config file because
   # this will vary depending on where the user has placed the
