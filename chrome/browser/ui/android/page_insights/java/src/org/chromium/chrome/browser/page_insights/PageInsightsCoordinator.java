@@ -15,14 +15,17 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.page_insights.proto.Config.PageInsightsConfig;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.ExpandedSheetHelper;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
+import org.chromium.content_public.browser.NavigationHandle;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.Function;
 
 /**
  * Coordinator for PageInsights bottom sheet module. Provides API, and initializes
@@ -75,8 +78,8 @@ public class PageInsightsCoordinator {
             BrowserControlsStateProvider controlsStateProvider,
             BrowserControlsSizer browserControlsSizer,
             @Nullable BackPressManager backPressManager,
-            BooleanSupplier isPageInsightsHubEnabled,
-            long firstLoadTimeMs) {
+            BooleanSupplier isPageInsightsEnabledSupplier,
+            Function<NavigationHandle, PageInsightsConfig> pageInsightsConfigProvider) {
         mContext = context;
         mTabProvider = tabProvider;
         mBottomSheetController = bottomSheetController;
@@ -97,8 +100,8 @@ public class PageInsightsCoordinator {
                         mControlsStateProvider,
                         mBrowserControlsSizer,
                         backPressManager,
-                        isPageInsightsHubEnabled,
-                        firstLoadTimeMs);
+                        isPageInsightsEnabledSupplier,
+                        pageInsightsConfigProvider);
     }
 
     /**
