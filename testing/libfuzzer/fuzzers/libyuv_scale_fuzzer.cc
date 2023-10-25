@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <fuzzer/FuzzedDataProvider.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <random>
+#include <string>
 
+#include "testing/libfuzzer/fuzzers/libyuv_scale_fuzzer.h"
 #include "third_party/libyuv/include/libyuv.h"
 
-void FillBufferWithRandomData(uint8_t* dst, size_t len, std::minstd_rand0 rng) {
+static void FillBufferWithRandomData(uint8_t* dst,
+                                     size_t len,
+                                     std::minstd_rand0 rng) {
   size_t i;
   for (i = 0; i + 3 < len; i += 4) {
     *reinterpret_cast<uint32_t*>(dst) = rng();
@@ -20,13 +23,13 @@ void FillBufferWithRandomData(uint8_t* dst, size_t len, std::minstd_rand0 rng) {
   }
 }
 
-static void Scale(bool is420,
-                  int src_width,
-                  int src_height,
-                  int dst_width,
-                  int dst_height,
-                  int filter_num,
-                  std::string seed_str) {
+void Scale(bool is420,
+           int src_width,
+           int src_height,
+           int dst_width,
+           int dst_height,
+           int filter_num,
+           std::string seed_str) {
   int src_width_uv, src_height_uv;
   if (is420) {
     src_width_uv = (std::abs(src_width) + 1) >> 1;
@@ -56,6 +59,9 @@ static void Scale(bool is420,
   std::seed_seq seed(seed_str.begin(), seed_str.end());
   std::minstd_rand0 rng(seed);
 
+  // TODO - consider taking directly as parameters when this code
+  // is being run using FuzzTest, though it would probably require
+  // complex domains to ensure they're the right size.
   FillBufferWithRandomData(src_y, src_y_plane_size, rng);
   FillBufferWithRandomData(src_u, src_uv_plane_size, rng);
   FillBufferWithRandomData(src_v, src_uv_plane_size, rng);
@@ -133,25 +139,4 @@ static void Scale(bool is420,
   free(p_dst_y_16);
   free(p_dst_u_16);
   free(p_dst_v_16);
-}
-
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  FuzzedDataProvider provider(data, size);
-
-  // Limit width and height for performance.
-  int src_width = provider.ConsumeIntegralInRange<int>(1, 256);
-  int src_height = provider.ConsumeIntegralInRange<int>(1, 256);
-
-  int filter_num =
-      provider.ConsumeIntegralInRange<int>(0, libyuv::FilterMode::kFilterBox);
-
-  int dst_width = provider.ConsumeIntegralInRange<int>(1, 256);
-  int dst_height = provider.ConsumeIntegralInRange<int>(1, 256);
-
-  std::string seed = provider.ConsumeRemainingBytesAsString();
-
-  Scale(true, src_width, src_height, dst_width, dst_height, filter_num, seed);
-  Scale(false, src_width, src_height, dst_width, dst_height, filter_num, seed);
-
-  return 0;
 }
