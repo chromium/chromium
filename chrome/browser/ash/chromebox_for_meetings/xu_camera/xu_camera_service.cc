@@ -16,6 +16,7 @@
 #include <cstdint>
 #include <utility>
 
+#include "base/strings/string_util.h"
 #include "chrome/browser/media/media_device_id_salt.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_hotline_client.h"
 #include "chromeos/ash/services/chromebox_for_meetings/public/cpp/service_connection.h"
@@ -30,6 +31,8 @@
 #include "content/public/browser/render_frame_host.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"
+
+using chromeos::IpPeripheralServiceClient;
 
 namespace ash::cfm {
 
@@ -47,6 +50,15 @@ typedef struct {
   uint8_t kUnitId;
   uint8_t kGuidLe[kGuidSize];  // little-endian from camera
 } kXuInterface;
+
+static const char* kLocalIpAddress = "192.168.";  // Series One peripherals
+static const std::initializer_list<uint8_t> kMeetXuGuidLe = {
+    0x24, 0xE9, 0xD7, 0x74,  // bytes 0-3 (little-endian)
+    0xC9, 0x49,              // bytes 4-5 (little-endian)
+    0x45, 0x4A,              // bytes 6-7 (little-endian)
+    0x98, 0xA3, 0x8A, 0x9F, 0x60, 0x06, 0x1E,
+    0x83,  // bytes 8-15 (byte array)
+};
 
 class RealDelegate : public XuCameraService::Delegate {
  public:
@@ -73,6 +85,36 @@ class RealDelegate : public XuCameraService::Delegate {
     return fd.is_valid();
   }
 };
+
+bool IsIpCamera(const std::string& dev_path) {
+  return base::StartsWith(dev_path, kLocalIpAddress);
+}
+
+IpPeripheralServiceClient::GetControlCallback ConvertGetCtrlCallbackForDbus(
+    XuCameraService::GetCtrlCallback callback) {
+  // Adapts a XuCameraService::GetCtrlCallback OnceCallback<void (uint8_t,
+  // std::vector<unsigned char>)> to a
+  // IpPeripheralServiceClient::GetControlCallback OnceCallback<void (bool,
+  // std::vector<uint8_t>)> (Note difference in first argument.)
+  return base::BindOnce(
+      [](XuCameraService::GetCtrlCallback cb, bool success,
+         std::vector<uint8_t> result) -> void {
+        std::move(cb).Run(success ? 0 : EINVAL, std::move(result));
+      },
+      std::move(callback));
+}
+
+IpPeripheralServiceClient::SetControlCallback ConvertSetCtrlCallbackForDbus(
+    XuCameraService::SetCtrlCallback callback) {
+  // Adapts a XuCameraService::SetCtrlCallback OnceCallback<void (uint8_t)>
+  // to a IpPeripheralServiceClient::SetControlCallback OnceCallback<void
+  // (bool)> (Note difference in first argument.)
+  return base::BindOnce(
+      [](XuCameraService::SetCtrlCallback cb, bool success) -> void {
+        std::move(cb).Run(success ? 0 : EINVAL);
+      },
+      std::move(callback));
+}
 
 void TranslateDeviceId(
     const std::string& hashed_device_id,
@@ -102,7 +144,9 @@ XuCameraService* g_xu_camera_service = nullptr;
 }  // namespace
 
 XuCameraService::XuCameraService(Delegate* delegate)
-    : delegate_(delegate), service_adaptor_(mojom::XuCamera::Name_, this) {
+    : delegate_(delegate),
+      service_adaptor_(mojom::XuCamera::Name_, this),
+      meet_xu_guid_le_(kMeetXuGuidLe) {
   CfmHotlineClient::Get()->AddObserver(this);
 }
 
@@ -213,13 +257,21 @@ void XuCameraService::GetUnitIdWithDevicePath(
     const std::vector<uint8_t>& guid_le,
     GetUnitIdCallback callback,
     const absl::optional<std::string>& dev_path) {
-  // TODO(b/260593636): Leverage WebRTC and GetDevicePath() once implemented
-  auto unitId = guid_unitid_map_.find(guid_le);
-  if (unitId != guid_unitid_map_.end()) {
-    VLOG(4) << __func__
-            << ": UnitId found: " << static_cast<char>(unitId->second);
-    std::move(callback).Run(0, unitId->second);
-    return;
+  if (dev_path.has_value()) {
+    const bool is_ip_camera = IsIpCamera(*dev_path);
+    if (is_ip_camera) {
+      VLOG(4) << __func__ << ": No UnitId for IP cameras";
+      std::move(callback).Run(0, 0);
+      return;
+    }
+    // TODO(b/260593636): Leverage WebRTC and GetDevicePath() once implemented
+    auto unitId = guid_unitid_map_.find(guid_le);
+    if (unitId != guid_unitid_map_.end()) {
+      VLOG(4) << __func__ << ": UnitId found: "
+              << static_cast<unsigned int>(unitId->second);
+      std::move(callback).Run(0, unitId->second);
+      return;
+    }
   }
 
   content::GetDeviceService().BindUsbDeviceManager(
@@ -270,7 +322,7 @@ void XuCameraService::OnGetDevices(
   auto unitId = guid_unitid_map_.find(guid_le);
   if (unitId != guid_unitid_map_.end()) {
     VLOG(4) << __func__
-            << ": UnitId found: " << static_cast<char>(unitId->second);
+            << ": UnitId found: " << static_cast<unsigned int>(unitId->second);
     std::move(callback).Run(0, unitId->second);
     return;
   }
@@ -295,7 +347,7 @@ void XuCameraService::MapCtrl(mojom::WebcamIdPtr id,
 void XuCameraService::MapCtrlWithDevicePath(
     const mojom::ControlMappingPtr mapping_ctrl,
     MapCtrlCallback callback,
-    const absl::optional<std::string>& dev_path) {
+    const absl::optional<std::string>& dev_path) const {
   uint8_t error_code = 0;
   base::ScopedFD file_descriptor;
 
@@ -364,11 +416,8 @@ void XuCameraService::GetCtrlWithDevicePath(
     const mojom::CtrlTypePtr ctrl,
     const mojom::GetFn fn,
     GetCtrlCallback callback,
-    const absl::optional<std::string>& dev_path) {
-  uint8_t error_code = 0;
+    const absl::optional<std::string>& dev_path) const {
   std::vector<uint8_t> data;
-  base::ScopedFD file_descriptor;
-
   if (!dev_path) {
     LOG(ERROR) << __func__ << ": Unable to determine device path";
     std::move(callback).Run(ENOENT, data);
@@ -377,15 +426,23 @@ void XuCameraService::GetCtrlWithDevicePath(
 
   VLOG(4) << __func__ << ": dev_path - " << *dev_path;
 
-  if (!delegate_->OpenFile(file_descriptor, *dev_path)) {
+  const bool is_ip_camera = IsIpCamera(*dev_path);
+  base::ScopedFD file_descriptor;
+  if (!is_ip_camera && !delegate_->OpenFile(file_descriptor, *dev_path)) {
     LOG(ERROR) << __func__ << ": File is invalid";
     std::move(callback).Run(ENOENT, data);
     return;
   }
 
+  uint8_t error_code = 0;
   // GetCtrl depending on whether id provided is WebRTC or filepath
   switch (ctrl->which()) {
     case mojom::CtrlType::Tag::kQueryCtrl:
+      if (is_ip_camera) {
+        GetCtrlDbus(*dev_path, std::move(ctrl->get_query_ctrl()),
+                    GetRequest(fn), std::move(callback));
+        return;
+      }
       error_code =
           CtrlThroughQuery(file_descriptor, std::move(ctrl->get_query_ctrl()),
                            data, GetRequest(fn));
@@ -419,9 +476,7 @@ void XuCameraService::SetCtrlWithDevicePath(
     const mojom::CtrlTypePtr ctrl,
     const std::vector<uint8_t>& data,
     SetCtrlCallback callback,
-    const absl::optional<std::string>& dev_path) {
-  uint8_t error_code = 0;
-
+    const absl::optional<std::string>& dev_path) const {
   if (!dev_path) {
     LOG(ERROR) << __func__ << ": Unable to determine device path";
     std::move(callback).Run(ENOENT);
@@ -430,17 +485,24 @@ void XuCameraService::SetCtrlWithDevicePath(
 
   VLOG(4) << __func__ << ": dev_path - " << *dev_path;
 
+  const bool is_ip_camera = IsIpCamera(*dev_path);
   base::ScopedFD file_descriptor;
-  if (!delegate_->OpenFile(file_descriptor, *dev_path)) {
+  if (!is_ip_camera && !delegate_->OpenFile(file_descriptor, *dev_path)) {
     LOG(ERROR) << __func__ << ": File is invalid";
     std::move(callback).Run(ENOENT);
     return;
   }
 
+  uint8_t error_code = 0;
   std::vector<uint8_t> data_(data);
   // SetCtrl depending on whether id provided is WebRTC or filepath
   switch (ctrl->which()) {
     case mojom::CtrlType::Tag::kQueryCtrl:
+      if (is_ip_camera) {
+        SetCtrlDbus(*dev_path, std::move(ctrl->get_query_ctrl()), data_,
+                    std::move(callback));
+        return;
+      }
       error_code =
           CtrlThroughQuery(file_descriptor, std::move(ctrl->get_query_ctrl()),
                            data_, UVC_SET_CUR);
@@ -466,7 +528,7 @@ uint8_t XuCameraService::QueryXuControl(const base::ScopedFD& file_descriptor,
                                         uint8_t selector,
                                         uint8_t* data,
                                         uint8_t query_request,
-                                        uint16_t size) {
+                                        uint16_t size) const {
   struct uvc_xu_control_query control_query;
   control_query.unit = unit_id;
   control_query.selector = selector;
@@ -533,11 +595,55 @@ void XuCameraService::GetDevicePath(
                     browser_context->GetMediaDeviceIDSalt());
 }
 
+void XuCameraService::GetCtrlDbus(const std::string& dev_path,
+                                  const mojom::ControlQueryPtr& query,
+                                  const uint8_t& request,
+                                  GetCtrlCallback callback) const {
+  const std::string& ip_address = dev_path;
+  VLOG(4) << __func__ << " ip - " << ip_address  //
+          << " selector - " << static_cast<unsigned int>(query->selector)
+          << " request - " << static_cast<unsigned int>(request);
+
+  auto* ip_peripheral_service_client = IpPeripheralServiceClient::Get();
+  auto get_control_callback =
+      ConvertGetCtrlCallbackForDbus(std::move(callback));
+  if (ip_peripheral_service_client) {
+    ip_peripheral_service_client->GetControl(ip_address, meet_xu_guid_le_,
+                                             query->selector, request,
+                                             std::move(get_control_callback));
+  } else {
+    LOG(ERROR) << __func__ << " failed to get IpPeripheralServiceClient";
+    std::move(get_control_callback).Run(false, std::vector<uint8_t>());
+  }
+}
+
+void XuCameraService::SetCtrlDbus(const std::string& dev_path,
+                                  const mojom::ControlQueryPtr& query,
+                                  const std::vector<uint8_t>& data,
+                                  SetCtrlCallback callback) const {
+  const std::string& ip_address = dev_path;
+  VLOG(4) << __func__ << " ip - " << ip_address  //
+          << " selector - " << static_cast<unsigned int>(query->selector);
+
+  auto* ip_peripheral_service_client = IpPeripheralServiceClient::Get();
+  auto set_control_callback =
+      ConvertSetCtrlCallbackForDbus(std::move(callback));
+  if (ip_peripheral_service_client) {
+    ip_peripheral_service_client->SetControl(ip_address, meet_xu_guid_le_,
+                                             query->selector, data,
+                                             std::move(set_control_callback));
+  } else {
+    LOG(ERROR) << __func__ << " failed to get IpPeripheralServiceClient";
+    std::move(set_control_callback).Run(false);
+  }
+}
+
 uint8_t XuCameraService::CtrlThroughQuery(const base::ScopedFD& file_descriptor,
                                           const mojom::ControlQueryPtr& query,
                                           std::vector<uint8_t>& data,
-                                          const uint8_t& request) {
-  VLOG(4) << __func__ << " request - " << static_cast<unsigned int>(request);
+                                          const uint8_t& request) const {
+  VLOG(4) << __func__ << " request - " << static_cast<unsigned int>(request)
+          << " selector - " << static_cast<unsigned int>(query->selector);
   uint8_t data_len;
   uint8_t error_code = 0;
   if (UVC_SET_CUR == request) {
@@ -576,7 +682,7 @@ uint8_t XuCameraService::CtrlThroughMapping(
     const base::ScopedFD& file_descriptor,
     const mojom::ControlMappingPtr& mapping,
     std::vector<uint8_t>& data,
-    const mojom::GetFn& fn) {
+    const mojom::GetFn& fn) const {
   uint8_t error_code = 0;
 
   VLOG(4) << __func__ << " GetFn - " << fn;
@@ -638,7 +744,7 @@ uint8_t XuCameraService::CtrlThroughMapping(
 template <typename T>
 void XuCameraService::CopyToData(T* value,
                                  std::vector<uint8_t>& data,
-                                 size_t size) {
+                                 size_t size) const {
   VLOG(4) << __func__ << " of size " << size;
   data.reserve(size);
   uint8_t* valueAsUint8 = reinterpret_cast<uint8_t*>(value);
@@ -649,7 +755,8 @@ void XuCameraService::CopyToData(T* value,
 }
 
 template <typename T>
-void XuCameraService::CopyFromData(T* value, std::vector<uint8_t>& data) {
+void XuCameraService::CopyFromData(T* value,
+                                   const std::vector<uint8_t>& data) const {
   int shiftBit = 0;
   for (size_t i = 0; i < data.size(); ++i) {
     *value += data[i] << shiftBit;
@@ -660,7 +767,7 @@ void XuCameraService::CopyFromData(T* value, std::vector<uint8_t>& data) {
 uint8_t XuCameraService::GetLength(uint8_t* data,
                                    const base::ScopedFD& file_descriptor,
                                    const uint8_t& unit_id,
-                                   const uint8_t& selector) {
+                                   const uint8_t& selector) const {
   // UVC_GET_LEN is always size of 2
   uint8_t error_code =
       QueryXuControl(file_descriptor, unit_id, selector, data, UVC_GET_LEN, 2);
