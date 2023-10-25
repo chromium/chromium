@@ -1726,6 +1726,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.NavigationObserver.IsScriptUrlValid"
+    enum="BooleanValid" expires_after="2024-02-23">
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs whether a notification's script URL is a valid URL each time a user
+    clicks on a Push notification that takes them to a new page.
+  </summary>
+</histogram>
+
 <histogram
     name="SafeBrowsing.NavigationObserver.MissingInitiatorRenderFrameHostPortal"
     enum="BooleanExists" expires_after="2023-04-23">
