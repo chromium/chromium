@@ -202,7 +202,7 @@
   {
     "name": "animated-image-drag-shadow",
     "owners": [ "shuyng@google.com", "wenyufu@chromium.org", "clank-app-team@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 124
   },
   {
     "name": "animated-image-resume",
@@ -1566,7 +1566,7 @@
   {
     "name": "default-viewport-is-device-width",
     "owners": [ "bokan@google.com", "twellington@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 124
   },
   {
     "name": "defer-tab-switcher-layout-creation",
