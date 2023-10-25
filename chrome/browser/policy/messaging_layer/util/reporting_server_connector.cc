@@ -53,10 +53,6 @@ using ::policy::CloudPolicyCore;
 
 namespace reporting {
 
-BASE_FEATURE(kEnableEncryptedReportingClientForUpload,
-             "EnableEncryptedReportingClientForUpload",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // TODO(b/281905099): remove after rolling out reporting managed user events
 // from unmanaged devices
 BASE_FEATURE(kEnableReportingFromUnmanagedDevices,
@@ -219,25 +215,9 @@ void ReportingServerConnector::UploadEncryptedReportInternal(
     base::Value::Dict merging_payload,
     absl::optional<base::Value::Dict> context,
     ResponseCallback callback) {
-  if (base::FeatureList::IsEnabled(kEnableEncryptedReportingClientForUpload)) {
-    encrypted_reporting_client_->UploadReport(std::move(merging_payload),
-                                              std::move(context), client_,
-                                              std::move(callback));
-    return;
-  }
-  // Deprecated: uses cloud policy client.
-  auto cb = base::BindOnce(
-      [](ResponseCallback callback,
-         absl::optional<base::Value::Dict> client_result) {
-        if (!client_result.has_value()) {
-          std::move(callback).Run(Status(error::DATA_LOSS, "Failed to upload"));
-          return;
-        }
-        std::move(callback).Run(std::move(client_result.value()));
-      },
-      std::move(callback));
-  client_->UploadEncryptedReport(std::move(merging_payload), std::move(context),
-                                 std::move(cb));
+  encrypted_reporting_client_->UploadReport(std::move(merging_payload),
+                                            std::move(context), client_,
+                                            std::move(callback));
 }
 
 // static
@@ -277,7 +257,7 @@ void ReportingServerConnector::UploadEncryptedReport(
     context.SetByDottedPath("device.dmToken", connector->client_->dm_token());
   }
 
-  // Forward the `UploadEncryptedReport` to the cloud policy client.
+  // Forward the `UploadEncryptedReport` to `encrypted_reporting_client_`.
   absl::optional<int> request_payload_size;
   if (PayloadSizeComputationRateLimiterForUma::Get().ShouldDo()) {
     request_payload_size = GetPayloadSize(merging_payload);
