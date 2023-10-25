@@ -17,7 +17,6 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/pip/pip_test_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -157,7 +156,6 @@ class PipWindowResizerTest : public AshTestBase,
     auto test_state = std::make_unique<FakeWindowState>(WindowStateType::kPip);
     test_state_ = test_state.get();
     WindowState::Get(window_)->SetStateObject(std::move(test_state));
-    Shell::Get()->pip_controller()->SetPipWindow(window_);
 
     long root_window_index = static_cast<long>(std::get<1>(GetParam()));
     window_->SetProperty(aura::client::kFullscreenTargetDisplayIdKey,
