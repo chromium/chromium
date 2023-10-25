@@ -823,4 +823,40 @@ TEST(StableVideoDecoderTypesMojomTraitsTest,
   ASSERT_FALSE(stable::mojom::VideoDecoderConfig::Deserialize(
       serialized_video_decoder_config, &deserialized_video_decoder_config));
 }
+
+TEST(StableVideoDecoderTypesMojomTraitsTest, ValidSubsampleEntry) {
+  auto subsample_entry = SubsampleEntry(22, 42);
+
+  std::vector<uint8_t> serialized_subsample_entry =
+      stable::mojom::SubsampleEntry::Serialize(&subsample_entry);
+
+  SubsampleEntry deserialized_subsample_entry;
+  ASSERT_TRUE(stable::mojom::SubsampleEntry::Deserialize(
+      serialized_subsample_entry, &deserialized_subsample_entry));
+
+  EXPECT_EQ(subsample_entry.clear_bytes,
+            deserialized_subsample_entry.clear_bytes);
+  EXPECT_EQ(subsample_entry.cypher_bytes,
+            deserialized_subsample_entry.cypher_bytes);
+}
+
+TEST(StableVideoDecoderTypesMojomTraitsTest, ValidMediaLogRecord) {
+  MediaLogRecord media_log_record;
+  media_log_record.id = 2;
+  media_log_record.type = MediaLogRecord::Type::kMediaStatus;
+  media_log_record.params.Set("Test", "Value");
+  media_log_record.time = base::TimeTicks::Now();
+
+  std::vector<uint8_t> serialized_media_log_record =
+      stable::mojom::MediaLogRecord::Serialize(&media_log_record);
+
+  MediaLogRecord deserialized_media_log_record;
+  ASSERT_TRUE(stable::mojom::MediaLogRecord::Deserialize(
+      serialized_media_log_record, &deserialized_media_log_record));
+
+  EXPECT_EQ(media_log_record.id, deserialized_media_log_record.id);
+  EXPECT_EQ(media_log_record.type, deserialized_media_log_record.type);
+  EXPECT_EQ(media_log_record.params, deserialized_media_log_record.params);
+  EXPECT_EQ(media_log_record.time, deserialized_media_log_record.time);
+}
 }  // namespace media
