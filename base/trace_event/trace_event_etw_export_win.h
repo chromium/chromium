@@ -60,14 +60,14 @@ class BASE_EXPORT TraceEventETWExport {
   // Returns true if any category in the group is enabled.
   static bool IsCategoryGroupEnabled(StringPiece category_group_name);
 
-  // Called from the ETW EnableCallback when the state of the provider or
-  // keywords has changed.
-  static void OnETWEnableUpdate();
-
  private:
   // Ensure only the provider can construct us.
   friend struct StaticMemorySingletonTraits<TraceEventETWExport>;
   TraceEventETWExport();
+
+  // Called from the ETW EnableCallback when the state of the provider or
+  // keywords has changed.
+  void OnETWEnableUpdate(TlmProvider::EventControlCode enabled);
 
   // Updates the list of enabled categories by consulting the ETW keyword.
   // Returns true if there was a change, false otherwise.
@@ -78,7 +78,7 @@ class BASE_EXPORT TraceEventETWExport {
   // Returns true if the category is enabled.
   bool IsCategoryEnabled(StringPiece category_name) const;
 
-  static bool is_registration_complete_;
+  bool is_registration_complete_ = false;
 
   // The keywords that were enabled last time the callback was made.
   uint64_t etw_match_any_keyword_ = 0;

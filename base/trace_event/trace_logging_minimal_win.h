@@ -27,6 +27,7 @@
 #include <windows.h>
 // Evntprov.h must come after windows.h.
 #include <evntprov.h>
+#include <cstdint>
 // TODO(joel@microsoft.com) Update headers and use defined constants instead
 // of magic numbers after crbug.com/1089996 is resolved.
 
@@ -107,23 +108,31 @@
  *     my_provider.Unregister();
  */
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 
 class TlmProvider {
  public:
+  enum class EventControlCode {
+    kDisableProvider = 0,
+    kEnableProvider = 1,
+    kCaptureState = 2,
+    kHighest = kCaptureState
+  };
+
   // Initialize a provider in the unregistered state.
   // Note that WriteEvent and Unregister operations on an unregistered
   // provider are safe no-ops.
-  constexpr TlmProvider() noexcept = default;
+  TlmProvider() noexcept;
 
   // Initializes a provider and attempts to register it.
   // If there is an error, provider will be left unregistered.
   // Note that WriteEvent and Unregister operations on an unregistered
   // provider are safe no-ops.
-  TlmProvider(const char* provider_name,
-              const GUID& provider_guid,
-              PENABLECALLBACK enable_callback = nullptr,
-              void* enable_callback_context = nullptr) noexcept;
+  TlmProvider(
+      const char* provider_name,
+      const GUID& provider_guid,
+      base::RepeatingCallback<void(EventControlCode)> on_updated) noexcept;
 
   // If provider is registered, unregisters provider.
   ~TlmProvider();
@@ -145,10 +154,10 @@ class TlmProvider {
   // Calling Register on an already-registered provider is a fatal error.
   // Not thread safe - caller must ensure serialization between calls to
   // Register() and calls to Unregister().
-  ULONG Register(const char* provider_name,
-                 const GUID& provider_guid,
-                 PENABLECALLBACK enable_callback = nullptr,
-                 void* enable_callback_context = nullptr) noexcept;
+  ULONG Register(
+      const char* provider_name,
+      const GUID& provider_guid,
+      base::RepeatingCallback<void(EventControlCode)> on_updated) noexcept;
 
   // Returns true if any active trace listeners are interested in any events
   // from this provider.
@@ -168,6 +177,8 @@ class TlmProvider {
   // from this provider with the specified level and keyword.
   // Equivalent to IsEnabled(event_descriptor.level, event_descriptor.keyword).
   bool IsEnabled(const EVENT_DESCRIPTOR& event_descriptor) const noexcept;
+
+  uint64_t keyword_any() const { return keyword_any_; }
 
   // If any active trace listeners are interested in events from this provider
   // with the specified level and keyword, packs the data into an event and
@@ -282,8 +293,7 @@ class TlmProvider {
   uint64_t keyword_any_ = 0;
   uint64_t keyword_all_ = 0;
   uint64_t reg_handle_ = 0;
-  PENABLECALLBACK enable_callback_ = nullptr;
-  raw_ptr<void> enable_callback_context_ = nullptr;
+  base::RepeatingCallback<void(EventControlCode)> on_updated_callback_;
   char provider_metadata_[kMaxProviderMetadataSize] = {};
 };
 

@@ -141,41 +141,15 @@ const char* const kFilteredEventGroupNames[] = {
 // These must be kept as the last two entries in the above array.
 constexpr uint8_t kOtherEventsGroupNameIndex = 46;
 constexpr uint8_t kDisabledOtherEventsGroupNameIndex = 47;
+constexpr uint64_t kCategoryKeywordMask = ~0xFFFF000000000000;
 
 // Max number of available keyword bits.
 constexpr size_t kMaxNumberOfGroupNames = 48;
-uint64_t g_callback_match_any_keyword = 0;
-
-static void __stdcall EtwEnableCallback(LPCGUID SourceId,
-                                        ULONG ControlCode,
-                                        UCHAR Level,
-                                        ULONGLONG MatchAnyKeyword,
-                                        ULONGLONG MatchAllKeyword,
-                                        PEVENT_FILTER_DESCRIPTOR FilterData,
-                                        PVOID CallbackContext) {
-  // This callback is called in the context of an ETW OS thread to
-  // inform the process of the global state of the level and keyword
-  // across all sessions for this provider. We need to update the
-  // local keywords so we log the corresponding events. Protect the
-  // upper 16 bits reserved by winmeta.xml as they should not be used
-  // but older logging code and tools incorrectly used them.
-  g_callback_match_any_keyword = MatchAnyKeyword;
-  g_callback_match_any_keyword &= ~0xFFFF000000000000;
-
-  DVLOG(1) << "ETW Keyword"
-           << " Bits enabled in global context: " << std::hex << MatchAnyKeyword
-           << " Bits enabled in our code: " << std::hex
-           << g_callback_match_any_keyword;
-
-  base::trace_event::TraceEventETWExport::OnETWEnableUpdate();
-}
 
 }  // namespace
 
 namespace base {
 namespace trace_event {
-
-bool TraceEventETWExport::is_registration_complete_ = false;
 
 TraceEventETWExport::TraceEventETWExport() {
   // Construct the ETW provider. If construction fails then the event logging
@@ -191,9 +165,11 @@ TraceEventETWExport::TraceEventETWExport() {
       0x45B6,
       {0xA0, 0x9F, 0x30, 0xE3, 0x27, 0x15, 0xF4, 0x2D}};
 
-  etw_provider_ = std::make_unique<TlmProvider>("Google.Chrome", Chrome_GUID,
-                                                &EtwEnableCallback);
-  TraceEventETWExport::is_registration_complete_ = true;
+  etw_provider_ = std::make_unique<TlmProvider>(
+      "Google.Chrome", Chrome_GUID,
+      base::BindRepeating(&TraceEventETWExport::OnETWEnableUpdate,
+                          base::Unretained(this)));
+  is_registration_complete_ = true;
 
   // Make sure to initialize the map with all the group names. Subsequent
   // modifications will be made by the background thread and only affect the
@@ -443,15 +419,17 @@ bool TraceEventETWExport::IsCategoryGroupEnabled(
 }
 
 bool TraceEventETWExport::UpdateEnabledCategories() {
-  if (etw_match_any_keyword_ == g_callback_match_any_keyword)
+  if (etw_match_any_keyword_ ==
+      (etw_provider_->keyword_any() & kCategoryKeywordMask)) {
     return false;
+  }
 
-  // If the global keyword has changed, update each category. The global
+  // If keyword_any() has changed, update each category. The global
   // context is set by UIforETW (or other ETW trace recording tools)
   // using the ETW infrastructure. When the global context changes the
   // callback will be called to set the updated keyword bits in each
-  // browser process that has registered their ETW provider.
-  etw_match_any_keyword_ = g_callback_match_any_keyword;
+  // process that has registered their ETW provider.
+  etw_match_any_keyword_ = etw_provider_->keyword_any() & kCategoryKeywordMask;
   for (size_t i = 0; i < ARRAYSIZE(kFilteredEventGroupNames); i++) {
     if (etw_match_any_keyword_ & (1ULL << i)) {
       categories_status_[kFilteredEventGroupNames[i]] = true;
@@ -491,16 +469,14 @@ bool TraceEventETWExport::IsCategoryEnabled(StringPiece category_name) const {
   }
 }
 
-// static
-void TraceEventETWExport::OnETWEnableUpdate() {
+void TraceEventETWExport::OnETWEnableUpdate(
+    TlmProvider::EventControlCode enabled) {
   // During construction, if tracing is already enabled, we'll get
   // a callback synchronously on the same thread. Calling GetInstance
   // in that case will hang since we're in the process of creating the
   // singleton.
   if (is_registration_complete_) {
-    auto* instance = GetInstance();
-    if (instance)
-      instance->UpdateEnabledCategories();
+    UpdateEnabledCategories();
   }
 }
 
