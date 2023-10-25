@@ -231,7 +231,19 @@ Values of `Integer` type are also supported, which allows using a sentinel
   * `TODO(username): Some sentence here.`
   * `TODO(crbug.com/123456): Even better to use a bug for context.`
 
-### Code Formatting
+### Parameter Comments
+
+Use [parameter comments] when they aid in the readability of a function call.
+
+E.g.:
+
+```java
+someMethod(/* enabled= */ true, /* target= */ null, defaultValue);
+```
+
+[parameter comments]: https://errorprone.info/bugpattern/ParameterName
+
+### Default Field Initializers
 
 * Fields should not be explicitly initialized to default values (see
   [here](https://groups.google.com/a/chromium.org/d/topic/chromium-dev/ylbLOvLs0bs/discussion)).
