@@ -4,6 +4,11 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.notNull;
@@ -57,6 +62,8 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DeviceRestriction;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /** Instrumentation tests for AutofillPaymentMethodsFragment. */
@@ -79,6 +86,7 @@ public class AutofillPaymentMethodsFragmentTest {
 
     // Card Issuer values that map to the browser CreditCard.Issuer enum.
     private static final int CARD_ISSUER_UNKNOWN = 0;
+    private static final List<String> CARD_ISSUER_NETWORKS = Arrays.asList("visa", "mastercard");
 
     private static final CreditCard SAMPLE_CARD_VISA =
             new CreditCard(
@@ -368,7 +376,7 @@ public class AutofillPaymentMethodsFragmentTest {
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
-        Preference cardPreference = getPreferenceScreen(activity).getPreference(4);
+        Preference cardPreference = getCardPreference(activity);
         String summary = cardPreference.getSummary().toString();
         assertThat(summary)
                 .contains(
@@ -389,7 +397,8 @@ public class AutofillPaymentMethodsFragmentTest {
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
-        Preference cardPreference = getPreferenceScreen(activity).getPreference(4);
+        Preference cardPreference = getCardPreference(activity);
+
         String summary = cardPreference.getSummary().toString();
         assertThat(summary).contains(String.format("05/%s", AutofillTestHelper.twoDigitNextYear()));
         assertThat(summary)
@@ -949,6 +958,8 @@ public class AutofillPaymentMethodsFragmentTest {
     @MediumTest
     @Features.DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
     public void testDeleteSavedCvcsButton_notShownWhenFeatureDisabled() throws Exception {
+        mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_WITH_CVC);
+
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
         Preference expectedNullDeleteSavedCvcsToggle =
@@ -960,7 +971,64 @@ public class AutofillPaymentMethodsFragmentTest {
     @Test
     @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
-    public void testDeleteSavedCvcsButton_shown() throws Exception {
+    public void testDeleteSavedCvcsButton_whenCvcExists_shown() throws Exception {
+        mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_WITH_CVC);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        Preference deleteSavedCvcsToggle =
+                getPreferenceScreen(activity)
+                        .findPreference(AutofillPaymentMethodsFragment.PREF_DELETE_SAVED_CVCS);
+        Assert.assertNotNull(deleteSavedCvcsToggle);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void testDeleteSavedCvcsButton_whenCvcDoesNotExist_notShown() throws Exception {
+        mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_VISA);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        Preference deleteSavedCvcsToggle =
+                getPreferenceScreen(activity)
+                        .findPreference(AutofillPaymentMethodsFragment.PREF_DELETE_SAVED_CVCS);
+        Assert.assertNull(deleteSavedCvcsToggle);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void testDeleteSavedCvcsButton_whenClicked_confirmationDialogIsShown() throws Exception {
+        mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_WITH_CVC);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        Preference deleteSavedCvcsToggle =
+                getPreferenceScreen(activity)
+                        .findPreference(AutofillPaymentMethodsFragment.PREF_DELETE_SAVED_CVCS);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    deleteSavedCvcsToggle.performClick();
+                });
+
+        onView(withText(R.string.autofill_delete_saved_cvcs_confirmation_dialog_title))
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.autofill_delete_saved_cvcs_confirmation_dialog_message))
+                .check(matches(isDisplayed()));
+        onView(withText(
+                R.string.autofill_delete_saved_cvcs_confirmation_dialog_delete_button_label))
+                    .check(matches(isDisplayed()));
+        onView(withText(android.R.string.cancel)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    @Policies.Add({@Policies.Item(key = "AutofillCreditCardEnabled", string = "false")})
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void testDeleteSavedCvcsButton_whenAutofillCreditCardDisabledAndCvcExists_shown()
+            throws Exception {
+        mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_WITH_CVC);
+
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
         Preference deleteSavedCvcsToggle =
@@ -1011,5 +1079,24 @@ public class AutofillPaymentMethodsFragmentTest {
         } else {
             return getPreferenceScreen(activity).getPreference(1);
         }
+    }
+
+    private Preference getCardPreference(SettingsActivity activity) {
+        for (int i = 0; i < getPreferenceScreen(activity).getPreferenceCount(); i++) {
+            Preference preference = getPreferenceScreen(activity).getPreference(i);
+            if (preference.getTitle() != null
+                    && CARD_ISSUER_NETWORKS.stream()
+                            .anyMatch(
+                                    issuer ->
+                                            preference
+                                                    .getTitle()
+                                                    .toString()
+                                                    .toLowerCase()
+                                                    .contains(issuer))) {
+                return preference;
+            }
+        }
+        Assert.fail("Failed to find the card preference.");
+        return null;
     }
 }
