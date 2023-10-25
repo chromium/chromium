@@ -21946,7 +21946,7 @@ Called by update_net_error_codes.py.-->
   <int value="14" label="CRAS_METRICS_DEVICE_A2DP"/>
   <int value="15" label="CRAS_METRICS_DEVICE_HFP"/>
   <int value="16" label="CRAS_METRICS_DEVICE_HSP"/>
-  <int value="17" label="CRAS_METRICS_DEVICE_BLUETOOTH"/>
+  <int value="17" label="CRAS_METRICS_DEVICE_BLUETOOTH (Deprecated)"/>
   <int value="18" label="CRAS_METRICS_DEVICE_BLUETOOTH_NB_MIC"/>
   <int value="19" label="CRAS_METRICS_DEVICE_NO_DEVICE"/>
   <int value="20" label="CRAS_METRICS_DEVICE_NORMAL_FALLBACK"/>
