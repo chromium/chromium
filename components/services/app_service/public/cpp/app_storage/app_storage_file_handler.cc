@@ -27,12 +27,15 @@ constexpr char kTypeKey[] = "type";
 constexpr char kReadinessKey[] = "readiness";
 constexpr char kNameKey[] = "name";
 constexpr char kShortNameKey[] = "short_name";
+constexpr char kDescriptionKey[] = "description";
+constexpr char kVersionKey[] = "version";
 constexpr char kAdditionalSearchTermsKey[] = "additional_search_terms";
 constexpr char kIconResourceIdKey[] = "icon_resource_id";
 constexpr char kLastLaunchTimeKey[] = "last_launch_time";
 constexpr char kInstallTimeKey[] = "install_time";
 constexpr char kInstallReasonKey[] = "install_reason";
 constexpr char kInstallSourceKey[] = "install_source";
+constexpr char kPolicyIdsKey[] = "policy_ids";
 constexpr char kIsPlatformAppKey[] = "is_platform_app";
 constexpr char kRecommendableKey[] = "recommendable";
 constexpr char kSearchableKey[] = "searchable";
@@ -136,12 +139,10 @@ base::Value AppStorageFileHandler::ConvertAppsToValue(
       app_details_dict.Set(kReadinessKey, static_cast<int>(app->readiness));
     }
 
-    if (app->name.has_value()) {
-      app_details_dict.Set(kNameKey, app->name.value());
-    }
-    if (app->short_name.has_value()) {
-      app_details_dict.Set(kShortNameKey, app->short_name.value());
-    }
+    SET_KEY_FOR_OPTIONAL_VALUE(name, kNameKey)
+    SET_KEY_FOR_OPTIONAL_VALUE(short_name, kShortNameKey)
+    SET_KEY_FOR_OPTIONAL_VALUE(description, kDescriptionKey)
+    SET_KEY_FOR_OPTIONAL_VALUE(version, kVersionKey)
 
     if (!app->additional_search_terms.empty()) {
       base::Value::List additional_search_terms;
@@ -175,6 +176,14 @@ base::Value AppStorageFileHandler::ConvertAppsToValue(
     if (app->install_source != InstallSource::kUnknown) {
       app_details_dict.Set(kInstallSourceKey,
                            static_cast<int>(app->install_source));
+    }
+
+    if (!app->policy_ids.empty()) {
+      base::Value::List policy_ids;
+      for (const auto& policy_id : app->policy_ids) {
+        policy_ids.Append(policy_id);
+      }
+      app_details_dict.Set(kPolicyIdsKey, std::move(policy_ids));
     }
 
     SET_KEY_FOR_OPTIONAL_VALUE(is_platform_app, kIsPlatformAppKey);
@@ -244,6 +253,8 @@ std::unique_ptr<AppInfo> AppStorageFileHandler::ConvertValueToApps(
 
     app->name = GetStringValueFromDict(*value, kNameKey);
     app->short_name = GetStringValueFromDict(*value, kShortNameKey);
+    app->description = GetStringValueFromDict(*value, kDescriptionKey);
+    app->version = GetStringValueFromDict(*value, kVersionKey);
 
     auto icon_resource_id = value->FindInt(kIconResourceIdKey);
     if (icon_resource_id.has_value()) {
@@ -275,6 +286,13 @@ std::unique_ptr<AppInfo> AppStorageFileHandler::ConvertValueToApps(
         install_source.value() >= static_cast<int>(InstallSource::kUnknown) &&
         install_source.value() <= static_cast<int>(InstallSource::kMaxValue)) {
       app->install_source = static_cast<InstallSource>(install_source.value());
+    }
+
+    auto* policy_ids = value->FindList(kPolicyIdsKey);
+    if (policy_ids) {
+      for (auto& policy_id : *policy_ids) {
+        app->policy_ids.push_back(policy_id.GetString());
+      }
     }
 
     app->is_platform_app = value->FindBool(kIsPlatformAppKey);

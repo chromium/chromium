@@ -157,6 +157,8 @@ class AppStorageTest : public testing::Test {
     app2->readiness = kReadiness2;
     app2->name = kAppName2;
     app2->short_name = kAppShortName1;
+    app2->description = "description";
+    app2->version = "version";
     app2->additional_search_terms = {"term1", "term2"};
     app2->icon_key =
         apps::IconKey(apps::IconKey::kDoesNotChangeOverTime,
@@ -165,6 +167,7 @@ class AppStorageTest : public testing::Test {
     app2->install_time = base::Time() + base::Days(1);
     app2->install_reason = InstallReason::kUser;
     app2->install_source = InstallSource::kBrowser;
+    app2->policy_ids = {"plicy1", "policy2"};
     app2->is_platform_app = false;
     app2->recommendable = true;
     app2->searchable = true;
@@ -185,11 +188,14 @@ class AppStorageTest : public testing::Test {
 
   MODIFY_FIELD(name, kAppName2)
   MODIFY_FIELD(short_name, kAppShortName2)
+  MODIFY_FIELD(description, "description")
+  MODIFY_FIELD(version, "version")
   MODIFY_FIELD(additional_search_terms, {"term1"})
   MODIFY_FIELD(last_launch_time, base::Time() + base::Days(2))
   MODIFY_FIELD(install_time, base::Time() + base::Days(1))
   MODIFY_FIELD(install_reason, InstallReason::kDefault)
   MODIFY_FIELD(install_source, InstallSource::kSync)
+  MODIFY_FIELD(policy_ids, {"policy"})
   MODIFY_FIELD(is_platform_app, true)
   MODIFY_FIELD(recommendable, false)
   MODIFY_FIELD(searchable, false)
@@ -322,11 +328,14 @@ TEST_F(AppStorageTest, ReadAndWriteMultipleApps) {
 
   VERIFY_MODIFY_FIELD(name, kAppName2);
   VERIFY_MODIFY_FIELD(short_name, kAppShortName2);
+  VERIFY_MODIFY_FIELD(description, "description");
+  VERIFY_MODIFY_FIELD(version, "version");
   VERIFY_MODIFY_FIELD(additional_search_terms, {"term1"});
   VERIFY_MODIFY_FIELD(last_launch_time, base::Time() + base::Days(2));
   VERIFY_MODIFY_FIELD(install_time, base::Time() + base::Days(1));
   VERIFY_MODIFY_FIELD(install_reason, InstallReason::kDefault);
   VERIFY_MODIFY_FIELD(install_source, InstallSource::kSync);
+  VERIFY_MODIFY_FIELD(policy_ids, {"policy"});
   VERIFY_MODIFY_FIELD(is_platform_app, true);
   VERIFY_MODIFY_FIELD(recommendable, false);
   VERIFY_MODIFY_FIELD(searchable, false);

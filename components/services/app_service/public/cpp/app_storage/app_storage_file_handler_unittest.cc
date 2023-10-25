@@ -109,6 +109,8 @@ class AppStorageFileHandlerTest : public testing::Test {
     app2->readiness = Readiness::kDisabledByUser;
     app2->name = kAppName2;
     app2->short_name = kAppShortName;
+    app2->description = "description";
+    app2->version = "version";
     app2->additional_search_terms = {"item1", "item2"};
     app2->icon_key =
         apps::IconKey(apps::IconKey::kDoesNotChangeOverTime,
@@ -117,6 +119,7 @@ class AppStorageFileHandlerTest : public testing::Test {
     app2->install_time = base::Time() + base::Days(1);
     app2->install_reason = InstallReason::kUser;
     app2->install_source = InstallSource::kBrowser;
+    app2->policy_ids = {"plicy1", "policy2"};
     app2->is_platform_app = false;
     app2->recommendable = true;
     app2->searchable = true;

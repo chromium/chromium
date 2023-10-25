@@ -133,16 +133,12 @@ bool AppStorage::IsAppChanged(const apps::AppUpdate& update) {
 
   IS_APP_VALUE_CHANGED(name);
   IS_APP_VALUE_CHANGED(short_name);
+  IS_APP_VALUE_CHANGED(description);
+  IS_APP_VALUE_CHANGED(version);
 
-  if (app->additional_search_terms.size() !=
-      it->second->additional_search_terms.size()) {
+  if (!app->additional_search_terms.empty() &&
+      app->additional_search_terms != it->second->additional_search_terms) {
     return true;
-  }
-  for (size_t i = 0; i < app->additional_search_terms.size(); i++) {
-    if (app->additional_search_terms[i] !=
-        it->second->additional_search_terms[i]) {
-      return true;
-    }
   }
 
   if (app->icon_key.has_value() &&
@@ -157,6 +153,10 @@ bool AppStorage::IsAppChanged(const apps::AppUpdate& update) {
 
   IS_APP_VALUE_CHANGED_FOR_ENUM(install_reason, InstallReason::kUnknown)
   IS_APP_VALUE_CHANGED_FOR_ENUM(install_source, InstallSource::kUnknown)
+
+  if (!app->policy_ids.empty() && app->policy_ids != it->second->policy_ids) {
+    return true;
+  }
 
   IS_APP_VALUE_CHANGED(is_platform_app);
   IS_APP_VALUE_CHANGED(recommendable);
