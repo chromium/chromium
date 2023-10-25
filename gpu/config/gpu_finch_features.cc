@@ -362,6 +362,10 @@ BASE_FEATURE(kSkiaGraphite,
 const base::FeatureParam<bool> kSkiaGraphiteDawnSkipValidation{
     &kSkiaGraphite, "dawn_skip_validation", true};
 
+// Whether Dawn backend validation is enabled for Skia Graphite.
+const base::FeatureParam<bool> kSkiaGraphiteDawnBackendValidation{
+    &kSkiaGraphite, "dawn_backend_validation", false};
+
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kSkiaGraphiteDawnUseD3D12,
              "SkiaGraphiteDawnUseD3D12",

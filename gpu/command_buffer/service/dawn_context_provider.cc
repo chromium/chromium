@@ -313,7 +313,26 @@ bool DawnContextProvider::Initialize(wgpu::BackendType backend_type,
   descriptor.requiredFeatures = features.data();
   descriptor.requiredFeatureCount = std::size(features);
 
-  wgpu::Device device = adapter.CreateDevice(&descriptor);
+  std::vector<dawn::native::BackendValidationLevel> backend_validation_levels =
+      {dawn::native::BackendValidationLevel::Disabled};
+  if (features::kSkiaGraphiteDawnBackendValidation.Get()) {
+    backend_validation_levels.push_back(
+        dawn::native::BackendValidationLevel::Partial);
+    backend_validation_levels.push_back(
+        dawn::native::BackendValidationLevel::Full);
+  }
+
+  wgpu::Device device;
+  // Try create device with backend validation level.
+  for (auto it = backend_validation_levels.rbegin();
+       it != backend_validation_levels.rend(); ++it) {
+    instance_->SetBackendValidationLevel(*it);
+    device = adapter.CreateDevice(&descriptor);
+    if (device) {
+      break;
+    }
+  }
+
   if (!device) {
     LOG(ERROR) << "Failed to create device.";
     return false;
