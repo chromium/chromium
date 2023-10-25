@@ -485,11 +485,9 @@ fuzzer_test("libyuv_scale_fuzzer") {
 # In time, we may choose a different option here.
 test("libyuv_scale_fuzztest") {
   sources = [ "libyuv_scale_fuzztest.cc" ]
+  enable_fuzztest = true
 
-  deps = [
-    ":libyuv_scale_fuzzer_common",
-    "//third_party/fuzztest",
-  ]
+  deps = [ ":libyuv_scale_fuzzer_common" ]
 }
 
 proto_library("command_buffer_lpm_fuzzer_proto") {
