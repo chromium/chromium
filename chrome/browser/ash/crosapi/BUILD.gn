@@ -39,8 +39,6 @@ source_set("crosapi") {
     "arc_ash.h",
     "audio_service_ash.cc",
     "audio_service_ash.h",
-    "authentication_ash.cc",
-    "authentication_ash.h",
     "automation_ash.cc",
     "automation_ash.h",
     "browser_action.cc",

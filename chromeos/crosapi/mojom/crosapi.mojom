@@ -163,11 +163,10 @@ interface Crosapi {
   [MinVersion=82] BindAudioService@85(
       pending_receiver<AudioService> receiver);
 
-  // Binds the authenticate profile handler service which allows authentication
-  // of profiles by Ash.
+  // Deprecated.
   // Added in M97.
-  [MinVersion=58] BindAuthentication@62(
-      pending_receiver<Authentication> receiver);
+  [MinVersion=58] REMOVED_62@62(
+      pending_receiver<AuthenticationDeprecated> receiver);
 
   // Binds the automation factory interface which allows ash to enableautomation
   // for Lacros and Lacros to send automation data to Ash.

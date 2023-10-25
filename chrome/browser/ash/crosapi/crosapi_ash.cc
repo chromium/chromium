@@ -24,7 +24,6 @@
 #include "chrome/browser/apps/digital_goods/digital_goods_ash.h"
 #include "chrome/browser/ash/crosapi/arc_ash.h"
 #include "chrome/browser/ash/crosapi/audio_service_ash.h"
-#include "chrome/browser/ash/crosapi/authentication_ash.h"
 #include "chrome/browser/ash/crosapi/automation_ash.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_service_host_ash.h"
@@ -197,7 +196,6 @@ Profile* GetAshProfile() {
 CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
     : arc_ash_(std::make_unique<ArcAsh>()),
       audio_service_ash_(std::make_unique<AudioServiceAsh>()),
-      authentication_ash_(std::make_unique<AuthenticationAsh>()),
       automation_ash_(std::make_unique<AutomationAsh>()),
       browser_service_host_ash_(std::make_unique<BrowserServiceHostAsh>()),
       browser_version_service_ash_(std::make_unique<BrowserVersionServiceAsh>(
@@ -355,11 +353,6 @@ void CrosapiAsh::BindAudioService(
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   audio_service_ash_->Initialize(profile);
   audio_service_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindAuthentication(
-    mojo::PendingReceiver<mojom::Authentication> receiver) {
-  authentication_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindAutomationDeprecated(
@@ -1033,6 +1026,11 @@ void CrosapiAsh::REMOVED_29(
 void CrosapiAsh::REMOVED_105(
     mojo::PendingReceiver<crosapi::mojom::FirewallHoleServiceDeprecated>
         receiver) {
+  NOTIMPLEMENTED();
+}
+
+void CrosapiAsh::REMOVED_62(
+    mojo::PendingReceiver<crosapi::mojom::AuthenticationDeprecated> receiver) {
   NOTIMPLEMENTED();
 }
 

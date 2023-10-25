@@ -309,7 +309,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<chromeos::sensors::mojom::SensorHalClient>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Arc>(),
     MakeInterfaceVersionEntry<crosapi::mojom::AudioService>(),
-    MakeInterfaceVersionEntry<crosapi::mojom::Authentication>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::AuthenticationDeprecated>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Automation>(),
     MakeInterfaceVersionEntry<crosapi::mojom::AutomationFactory>(),
     MakeInterfaceVersionEntry<crosapi::mojom::AccountManager>(),
