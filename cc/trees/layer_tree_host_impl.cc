@@ -2488,6 +2488,16 @@ absl::optional<LayerTreeHostImpl::SubmitInfo> LayerTreeHostImpl::DrawLayers(
     TRACE_EVENT_INSTANT0("cc", "EarlyOut_NoDamage", TRACE_EVENT_SCOPE_THREAD);
     active_tree()->BreakSwapPromises(SwapPromise::SWAP_FAILS);
     active_tree()->ResetAllChangeTracking();
+
+    // Drop pending event metrics for UI when the frame has no damage because
+    // it could leave the event metrics pending indefinitely and also breaks the
+    // association between input events and screen updates.
+    // See b/297940877.
+    if (settings_.is_layer_tree_for_ui) {
+      std::ignore = active_tree()->TakeEventsMetrics();
+      std::ignore = events_metrics_manager_.TakeSavedEventsMetrics();
+    }
+
     return absl::nullopt;
   }
 

@@ -501,6 +501,10 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
 
   const cc::LayerTreeSettings& GetLayerTreeSettings() const;
 
+  size_t saved_events_metrics_count_for_testing() const {
+    return host_->saved_events_metrics_count_for_testing();
+  }
+
  private:
   friend class base::RefCounted<Compositor>;
   friend class TotalAnimationThroughputReporter;

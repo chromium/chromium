@@ -9,9 +9,11 @@
 
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_widget_builder.h"
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/mock_ime_engine_handler.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/test/test_event_handler.h"
@@ -19,7 +21,6 @@
 
 namespace ash {
 namespace {
-
 // TestIMEEngineHandler invokes the callback synchronously for ProcessKeyEvent.
 class TestIMEEngineHandler : public MockIMEEngineHandler {
  public:
@@ -59,12 +60,29 @@ class WidgetDestroyHandler : public ui::test::TestEventHandler {
   int received_key_event_ = 0;
 };
 
-// FakeTestView to consumer all events and trigger a paint. Derived from
-// `Textfield` so that IME related tests dispatches key events to IME engine.
-class FakeTestView : public views::Textfield {
+// FakeTestView to consume MouseEvent and trigger a force redraw.
+// Derived directly from `View` so no additional frames would be generated.
+class FakeTestView : public views::View {
  public:
   FakeTestView() { SetAccessibleName(u"FakeTestView"); }
   ~FakeTestView() override = default;
+
+  // views::View:
+  bool OnMousePressed(const ui::MouseEvent& event) override {
+    // Schedule a draw with no damaged rect to create a did-not-produce-frame
+    // case.
+    GetWidget()->GetCompositor()->ScheduleDraw();
+    return true;
+  }
+};
+
+// FakeTextField to consumer all events and trigger a paint. Derived
+// from `Textfield` so that IME related tests dispatches key events to IME
+// engine.
+class FakeTextField : public views::Textfield {
+ public:
+  FakeTextField() { SetAccessibleName(u"FakeTextField"); }
+  ~FakeTextField() override = default;
 
   // views::View:
   void OnEvent(ui::Event* event) override {
@@ -110,8 +128,8 @@ class UiMetricsRecorderTest : public AshTestBase {
 // UI changes.
 TEST_F(UiMetricsRecorderTest, KeyEvent) {
   std::unique_ptr<views::Widget> widget = CreateTestWindowWidget();
-  FakeTestView* view =
-      widget->SetContentsView(std::make_unique<FakeTestView>());
+  FakeTextField* view =
+      widget->SetContentsView(std::make_unique<FakeTextField>());
   widget->GetFocusManager()->SetFocusedView(view);
 
   base::HistogramTester histogram_tester;
@@ -131,8 +149,8 @@ TEST_F(UiMetricsRecorderTest, KeyEvent) {
 
 TEST_F(UiMetricsRecorderTest, Gestures) {
   std::unique_ptr<views::Widget> widget = CreateTestWindowWidget();
-  FakeTestView* view =
-      widget->SetContentsView(std::make_unique<FakeTestView>());
+  FakeTextField* view =
+      widget->SetContentsView(std::make_unique<FakeTextField>());
   const gfx::Rect bounds = view->GetBoundsInScreen();
 
   {
@@ -204,8 +222,8 @@ TEST_F(UiMetricsRecorderTest, TargetDestroyedWithSyncIME) {
   IMEBridge::Get()->SetCurrentEngineHandler(ime_engine.get());
 
   std::unique_ptr<views::Widget> widget = CreateTestWindowWidget();
-  FakeTestView* view =
-      widget->SetContentsView(std::make_unique<FakeTestView>());
+  FakeTextField* view =
+      widget->SetContentsView(std::make_unique<FakeTextField>());
   widget->GetFocusManager()->SetFocusedView(view);
 
   // Create an event handler on the test widget to close it synchronously.
@@ -226,8 +244,8 @@ TEST_F(UiMetricsRecorderTest, TargetDestroyedWithSyncIME) {
 // screen updates.
 TEST_F(UiMetricsRecorderTest, NoScreenUpdateNoLatency) {
   std::unique_ptr<views::Widget> widget = CreateTestWindowWidget();
-  FakeTestView* view =
-      widget->SetContentsView(std::make_unique<FakeTestView>());
+  FakeTextField* view =
+      widget->SetContentsView(std::make_unique<FakeTextField>());
 
   base::HistogramTester histogram_tester;
 
@@ -237,6 +255,38 @@ TEST_F(UiMetricsRecorderTest, NoScreenUpdateNoLatency) {
 
   // Force one frame out side event handling to ensure no latency is reported.
   auto* compositor = widget->GetCompositor();
+  compositor->ScheduleFullRedraw();
+  EXPECT_TRUE(ui::WaitForNextFrameToBePresented(compositor));
+
+  histogram_tester.ExpectTotalCount("Ash.EventLatency.TotalLatency", 0);
+}
+
+// Verifies that the event latency is not recorded when its frame has no damage.
+TEST_F(UiMetricsRecorderTest, NoDamageNoLatency) {
+  std::unique_ptr<views::Widget> widget = CreateTestWindowWidget();
+  FakeTestView* view =
+      widget->SetContentsView(std::make_unique<FakeTestView>());
+
+  base::HistogramTester histogram_tester;
+  auto* compositor = widget->GetCompositor();
+
+  // Force one frame to ensure that the screen is updated.
+  compositor->ScheduleFullRedraw();
+  EXPECT_TRUE(ui::WaitForNextFrameToBePresented(compositor));
+
+  // Simulate an event that triggers commit but there is no damage.
+  LeftClickOn(view);
+
+  // Wait for the event metrics to be picked up.
+  ASSERT_EQ(compositor->saved_events_metrics_count_for_testing(), 1u);
+  while (compositor->saved_events_metrics_count_for_testing() != 0) {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
+    run_loop.Run();
+  }
+
+  // Force one frame out side event handling to ensure no latency is reported.
   compositor->ScheduleFullRedraw();
   EXPECT_TRUE(ui::WaitForNextFrameToBePresented(compositor));
 
