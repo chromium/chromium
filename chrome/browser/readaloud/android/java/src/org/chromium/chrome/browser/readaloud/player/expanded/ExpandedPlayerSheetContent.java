@@ -59,6 +59,10 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         mBottomSheetController = bottomSheetController;
         mContentView = contentView;
         mModel = model;
+        ((TextView) mContentView.findViewById(R.id.readaloud_expanded_player_title))
+                .setText("Page title");
+        ((TextView) mContentView.findViewById(R.id.readaloud_expanded_player_publisher))
+                .setText("Site");
         Resources res = mContext.getResources();
         mContentView
                 .findViewById(R.id.readaloud_seek_back_button)
@@ -66,6 +70,8 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         mContentView
                 .findViewById(R.id.readaloud_seek_forward_button)
                 .setContentDescription(res.getString(R.string.readaloud_forward, FORWARD_SECONDS));
+        ((TextView) mContentView.findViewById(R.id.readaloud_player_time)).setText("00:00");
+        ((TextView) mContentView.findViewById(R.id.readaloud_player_duration)).setText("00:00");
         setSpeed(DEFAULT_INITIAL_SPEED);
     }
 

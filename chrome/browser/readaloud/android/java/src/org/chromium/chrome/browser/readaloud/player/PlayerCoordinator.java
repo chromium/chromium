@@ -9,7 +9,6 @@ import android.view.ViewStub;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.BundleUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.readaloud.player.expanded.ExpandedPlayerCoordinator;
@@ -38,21 +37,12 @@ public class PlayerCoordinator implements Player {
     private final ExpandedPlayerCoordinator mExpandedPlayer;
     private Playback mPlayback;
 
-    // TODO remove internal call and then remove this constructor
-    public PlayerCoordinator(
-            Context splitContext, ViewStub miniPlayerViewStubm, Delegate delegate) {
-        this(delegate);
-    }
-
-    public PlayerCoordinator(Delegate delegate) {
+    public PlayerCoordinator(Context context, ViewStub miniPlayerStub, Delegate delegate) {
+        // Note, context isn't used yet but will be needed by the expanded player.
         mObserverList = new ObserverList<Observer>();
         PropertyModel model = new PropertyModel.Builder(PlayerProperties.ALL_KEYS).build();
-        // This Context can be used to inflate views from the split.
-        Context contextForInflation =
-                BundleUtils.createContextForInflation(
-                        delegate.getActivity(), "read_aloud_playback");
-        mMiniPlayer = new MiniPlayerCoordinator(delegate.getActivity(), contextForInflation, model);
-        mExpandedPlayer = new ExpandedPlayerCoordinator(contextForInflation, delegate, model);
+        mMiniPlayer = new MiniPlayerCoordinator(miniPlayerStub, model);
+        mExpandedPlayer = new ExpandedPlayerCoordinator(context, delegate, model);
         mMediator = new PlayerMediator(/* coordinator= */ this, delegate, model);
         mDelegate = delegate;
     }
