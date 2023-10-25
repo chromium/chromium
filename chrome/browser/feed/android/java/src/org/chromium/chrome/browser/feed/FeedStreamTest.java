@@ -54,6 +54,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
@@ -161,6 +162,16 @@ public class FeedStreamTest {
         overrides.put(ChromeFeatureList.FEED_LOADING_PLACEHOLDER, feedLoadingPlaceholderOn);
         overrides.put(ChromeFeatureList.FEED_USER_INTERACTION_RELIABILITY_REPORT, true);
         FeatureList.setTestFeatures(overrides);
+    }
+
+    private static HistogramWatcher expectFeedRecordForLoadMoreTrigger(
+            @StreamKind int streamKind, int itemCount, int numCardsRemaining) {
+        return HistogramWatcher.newBuilder()
+                .expectIntRecord(FeedUma.TOTAL_CARDS_HISTOGRAM_NAMES[streamKind - 1], itemCount)
+                .expectIntRecord(
+                        FeedUma.OFFSET_FROM_END_OF_STREAM_HISTOGRAM_NAMES[streamKind - 1],
+                        numCardsRemaining)
+                .build();
     }
 
     @Before
@@ -455,22 +466,27 @@ public class FeedStreamTest {
         bindToView();
         final int triggerDistance = getLoadMoreTriggerScrollDistance();
         final int itemCount = 10;
+        final int lookAheadRange = itemCount - LOAD_MORE_TRIGGER_LOOKAHEAD;
+        HistogramWatcher histogramWatcher =
+                expectFeedRecordForLoadMoreTrigger(
+                        mFeedStream.getStreamKind(), itemCount, lookAheadRange - 1);
 
         // loadMore not triggered due to not enough accumulated scrolling distance.
         mFeedStream.checkScrollingForLoadMore(triggerDistance / 2);
         verify(mFeedSurfaceRendererBridgeMock, never()).loadMore(any(Callback.class));
 
         // loadMore not triggered due to last visible item not falling into lookahead range.
-        mLayoutManager.setLastVisiblePosition(itemCount - LOAD_MORE_TRIGGER_LOOKAHEAD - 1);
+        mLayoutManager.setLastVisiblePosition(lookAheadRange - 1);
         mLayoutManager.setItemCount(itemCount);
         mFeedStream.checkScrollingForLoadMore(triggerDistance / 2);
         verify(mFeedSurfaceRendererBridgeMock, never()).loadMore(any(Callback.class));
 
         // loadMore triggered.
-        mLayoutManager.setLastVisiblePosition(itemCount - LOAD_MORE_TRIGGER_LOOKAHEAD + 1);
+        mLayoutManager.setLastVisiblePosition(lookAheadRange + 1);
         mLayoutManager.setItemCount(itemCount);
         mFeedStream.checkScrollingForLoadMore(triggerDistance / 2);
         verify(mFeedSurfaceRendererBridgeMock).loadMore(any(Callback.class));
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -478,9 +494,13 @@ public class FeedStreamTest {
         bindToView();
         final int triggerDistance = getLoadMoreTriggerScrollDistance();
         final int itemCount = 10;
+        final int lookAheadRange = itemCount - LOAD_MORE_TRIGGER_LOOKAHEAD;
+        HistogramWatcher histogramWatcher =
+                expectFeedRecordForLoadMoreTrigger(
+                        mFeedStream.getStreamKind(), itemCount, lookAheadRange - 1);
 
         // loadMore triggered.
-        mLayoutManager.setLastVisiblePosition(itemCount - LOAD_MORE_TRIGGER_LOOKAHEAD + 1);
+        mLayoutManager.setLastVisiblePosition(lookAheadRange + 1);
         mLayoutManager.setItemCount(itemCount);
         mFeedStream.checkScrollingForLoadMore(triggerDistance);
         verify(mFeedSurfaceRendererBridgeMock).loadMore(any(Callback.class));
@@ -490,10 +510,11 @@ public class FeedStreamTest {
         mFeedStream.unbind(false, false);
         bindToView();
 
-        mLayoutManager.setLastVisiblePosition(itemCount - LOAD_MORE_TRIGGER_LOOKAHEAD + 1);
+        mLayoutManager.setLastVisiblePosition(lookAheadRange + 1);
         mLayoutManager.setItemCount(itemCount);
         mFeedStream.checkScrollingForLoadMore(triggerDistance);
         verify(mFeedSurfaceRendererBridgeMock).loadMore(any(Callback.class));
+        histogramWatcher.assertExpected();
     }
 
     @Test
