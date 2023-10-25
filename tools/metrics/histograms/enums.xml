@@ -27674,8 +27674,6 @@ Called by update_debug_scenarios.py.-->
   <int value="103" label="Animations panel - Animation group is scrubbed"/>
   <int value="104" label="Animations panel - Animation group is replayed"/>
   <int value="105" label="Sources - Override Tab - Delete Folder Context Menu"/>
-  <int value="106"
-      label="Sources - Override Tab - Delete Overrides Context Menu"/>
   <int value="107" label="Add Workspace folder via drag-drop"/>
   <int value="108" label="Add Workspace folder via select in placeholder"/>
   <int value="109" label="Override Content Context Menu Source Mapped Warning"/>
@@ -27930,7 +27928,6 @@ Called by update_debug_scenarios.py.-->
   <int value="75" label="selfXssWarning"/>
   <int value="76" label="useSourceMapScopes"/>
   <int value="77" label="storageBucketsTree"/>
-  <int value="78" label="deleteOverridesTemporarilyEnable"/>
   <int value="79" label="networkPanelFilterBarRedesign"/>
   <int value="80" label="breadcrumbsPerformancePanel"/>
   <int value="81" label="trackContextMenu"/>
