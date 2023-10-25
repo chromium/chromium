@@ -33,12 +33,6 @@ namespace autofill {
 
 namespace {
 
-// The command IDs reserved for autofill's custom menus.
-static constexpr int kAutofillContextFeedback =
-    IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK;
-static constexpr int kAutofillFallbackForAddress =
-    IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS;
-
 constexpr char kFeedbackPlaceholder[] =
     "What steps did you just take?\n"
     "(1)\n"
@@ -116,7 +110,9 @@ bool IsLikelyDogfoodClient() {
 bool AutofillContextMenuManager::IsAutofillCustomCommandId(
     CommandId command_id) {
   const int id = command_id.value();
-  return id == kAutofillContextFeedback || id == kAutofillFallbackForAddress;
+  return id == IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK ||
+         id == IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS ||
+         id == IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS;
 }
 
 AutofillContextMenuManager::AutofillContextMenuManager(
@@ -166,16 +162,7 @@ void AutofillContextMenuManager::AppendItems() {
     menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
   }
 
-  if (ShouldAddAutofillManualFallbackItem(*driver)) {
-    menu_model_->AddTitle(
-        l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE));
-    menu_model_->AddItemWithStringId(
-        kAutofillFallbackForAddress,
-        IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS);
-    menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
-
-    LogManualFallbackContextMenuEntryShown(*driver);
-  }
+  MaybeAddAutofillManualFallbackItems(*driver);
 }
 
 bool AutofillContextMenuManager::IsCommandIdSupported(int command_id) {
@@ -200,13 +187,19 @@ void AutofillContextMenuManager::ExecuteCommand(int command_id) {
 
   CHECK(IsAutofillCustomCommandId(CommandId(command_id)));
 
-  if (command_id == kAutofillContextFeedback) {
+  if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK) {
     ExecuteAutofillFeedbackCommand(driver->GetFrameToken(), manager);
     return;
   }
 
-  if (command_id == kAutofillFallbackForAddress) {
+  if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS) {
     ExecuteFallbackForAutocompleteUnrecognizedCommand(manager);
+    return;
+  }
+
+  if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS) {
+    // TODO(crbug.com/1493361): Render payments suggestions.
+    NOTIMPLEMENTED();
     return;
   }
 }
@@ -230,7 +223,7 @@ void AutofillContextMenuManager::
     ExecuteFallbackForAutocompleteUnrecognizedCommand(
         AutofillManager& manager) {
   auto& driver = static_cast<ContentAutofillDriver&>(manager.driver());
-  if (!ShouldAddAutofillManualFallbackForAutocompleteUnrecognized(driver)) {
+  if (!ShouldAddAddressManualFallbackForAutocompleteUnrecognized(driver)) {
     // Do nothing if the target field is not on address form field with
     // unrecognized autocomplete attribute fillable with available data.
     // TODO(crbug.com/1493361): Render suggestions for unclassified fields.
@@ -253,27 +246,51 @@ void AutofillContextMenuManager::
               ->ShouldSuppressSuggestionsAndFillingByDefault());
 }
 
-bool AutofillContextMenuManager::ShouldAddAutofillManualFallbackItem(
+void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems(
     ContentAutofillDriver& driver) {
   if (!ShouldShowAutofillContextMenu(params_)) {
     // Autofill entries are only available in input or text area fields
-    return false;
+    return;
   }
-  if (!personal_data_manager_->IsAutofillProfileEnabled()) {
+  const bool add_address_fallback = ShouldAddAddressManualFallbackItem(driver);
+  const bool add_payments_fallback =
+      !personal_data_manager_->GetCreditCardsToSuggest().empty() &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillForUnclassifiedFieldsAvailable);
+
+  if (!add_address_fallback && !add_payments_fallback) {
+    return;
+  }
+  menu_model_->AddTitle(
+      l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE));
+
+  if (add_address_fallback) {
+    menu_model_->AddItemWithStringId(
+        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS,
+        IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS);
+    LogManualFallbackContextMenuEntryShown(driver);
+  }
+  if (add_payments_fallback) {
+    menu_model_->AddItemWithStringId(
+        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS,
+        IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS);
+  }
+  menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
+}
+
+bool AutofillContextMenuManager::ShouldAddAddressManualFallbackItem(
+    ContentAutofillDriver& driver) {
+  if (personal_data_manager_->GetProfilesToSuggest().empty()) {
     return false;
   }
 
-  if (ShouldAddAutofillManualFallbackForAutocompleteUnrecognized(driver)) {
-    return true;
-  }
-
-  return !personal_data_manager_->GetProfiles().empty() &&
+  return ShouldAddAddressManualFallbackForAutocompleteUnrecognized(driver) ||
          base::FeatureList::IsEnabled(
              features::kAutofillForUnclassifiedFieldsAvailable);
 }
 
 bool AutofillContextMenuManager::
-    ShouldAddAutofillManualFallbackForAutocompleteUnrecognized(
+    ShouldAddAddressManualFallbackForAutocompleteUnrecognized(
         ContentAutofillDriver& driver) {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillFallbackForAutocompleteUnrecognized)) {

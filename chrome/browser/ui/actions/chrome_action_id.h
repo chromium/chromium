@@ -500,6 +500,8 @@
   /* Autofill context menu commands */ \
   E(kActionContentContextAutofillFallbackAddress, \
     IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS) \
+  E(kActionContentContextAutofillFallbackPayments, \
+    IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS) \
   /* Live Caption */ \
   E(kActionLiveCaption, IDC_LIVE_CAPTION) \
   /* Device API system tray icon */ \

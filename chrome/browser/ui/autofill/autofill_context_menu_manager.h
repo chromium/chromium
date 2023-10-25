@@ -67,13 +67,18 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   void ExecuteAutofillFeedbackCommand(const LocalFrameToken& frame_token,
                                       AutofillManager& manager);
 
+  // Conditionally adds the address and / or payments Autofill manual fallbacks
+  // to the context menu model depending on whether there's data to suggest
+  // and corresponding feature flags are enabled.
+  void MaybeAddAutofillManualFallbackItems(ContentAutofillDriver& driver);
+
   // Checks if the manual fallback context menu entry can be shown for the
   // currently focused field.
-  bool ShouldAddAutofillManualFallbackItem(ContentAutofillDriver& driver);
+  bool ShouldAddAddressManualFallbackItem(ContentAutofillDriver& driver);
 
   // Checks if the currently focused field has unrecognized autocomplete but is
   // classified and can be filled with user address data.
-  bool ShouldAddAutofillManualFallbackForAutocompleteUnrecognized(
+  bool ShouldAddAddressManualFallbackForAutocompleteUnrecognized(
       ContentAutofillDriver& driver);
 
   // Emits metrics about showing the manual fallback context menu entry to the

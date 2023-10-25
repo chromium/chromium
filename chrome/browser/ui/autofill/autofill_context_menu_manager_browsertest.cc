@@ -57,13 +57,17 @@ MATCHER(ContainsAnyAutofillFallbackEntries, "") {
                      IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS)) {
       return true;
     }
+    if (label == l10n_util::GetStringUTF16(
+                     IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS)) {
+      return true;
+    }
   }
   return false;
 }
 
-// Checks is the context menu model contains the Autofill manual fallback
+// Checks if the context menu model contains the address manual fallback
 // entries with correct UI strings. `arg` must be of type ui::SimpleMenuModel.
-MATCHER(IsAutofillFallbackAdded, "") {
+MATCHER(OnlyAddressFallbackAdded, "") {
   EXPECT_EQ(arg->GetItemCount(), 3u);
   return arg->GetTypeAt(0) == ui::MenuModel::ItemType::TYPE_TITLE &&
          arg->GetLabelAt(0) ==
@@ -73,6 +77,38 @@ MATCHER(IsAutofillFallbackAdded, "") {
              l10n_util::GetStringUTF16(
                  IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS) &&
          arg->GetTypeAt(2) == ui::MenuModel::ItemType::TYPE_SEPARATOR;
+}
+
+// Checks if the context menu model contains the payments manual fallback
+// entries with correct UI strings. `arg` must be of type ui::SimpleMenuModel.
+MATCHER(OnlyPaymentsFallbackAdded, "") {
+  EXPECT_EQ(arg->GetItemCount(), 3u);
+  return arg->GetTypeAt(0) == ui::MenuModel::ItemType::TYPE_TITLE &&
+         arg->GetLabelAt(0) ==
+             l10n_util::GetStringUTF16(
+                 IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE) &&
+         arg->GetLabelAt(1) ==
+             l10n_util::GetStringUTF16(
+                 IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS) &&
+         arg->GetTypeAt(2) == ui::MenuModel::ItemType::TYPE_SEPARATOR;
+}
+
+// Checks if the context menu model contains the address and payments manual
+// fallback entries with correct UI strings. `arg` must be of type
+// ui::SimpleMenuModel.
+MATCHER(AddressAndPaymentsFallbacksAdded, "") {
+  EXPECT_EQ(arg->GetItemCount(), 4u);
+  return arg->GetTypeAt(0) == ui::MenuModel::ItemType::TYPE_TITLE &&
+         arg->GetLabelAt(0) ==
+             l10n_util::GetStringUTF16(
+                 IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE) &&
+         arg->GetLabelAt(1) ==
+             l10n_util::GetStringUTF16(
+                 IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS) &&
+         arg->GetLabelAt(2) ==
+             l10n_util::GetStringUTF16(
+                 IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS) &&
+         arg->GetTypeAt(3) == ui::MenuModel::ItemType::TYPE_SEPARATOR;
 }
 
 // Generates a ContextMenuParams for the Autofill context menu options.
@@ -130,8 +166,6 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
     personal_data_ = PersonalDataManagerFactory::GetForProfile(profile());
-
-    AddCreditCard(test::GetCreditCard());
 
     menu_model_ = std::make_unique<ui::SimpleMenuModel>(nullptr);
     render_view_context_menu_ = std::make_unique<TestRenderViewContextMenu>(
@@ -383,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteUnrecognizedFieldsTest,
                               form.fields[0].unique_renderer_id));
   autofill_context_menu_manager()->AppendItems();
 
-  EXPECT_THAT(menu_model(), IsAutofillFallbackAdded());
+  EXPECT_THAT(menu_model(), OnlyAddressFallbackAdded());
 }
 
 // Tests that when triggering the context menu on an ac=unrecognized field, the
@@ -398,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(
                               form.fields[0].unique_renderer_id));
   autofill_context_menu_manager()->AppendItems();
 
-  EXPECT_THAT(menu_model(), IsAutofillFallbackAdded());
+  EXPECT_THAT(menu_model(), OnlyAddressFallbackAdded());
 }
 
 // Tests that when the fallback entry for ac=unrecognized fields is selected,
@@ -487,9 +521,23 @@ class UnclassifiedFieldsTest : public BaseAutofillContextMenuManagerTest {
 };
 
 // Tests that when triggering the context menu on an unclassified form, the
-// fallback entry is part of the menu.
+// manual fallback entries are not added if user has no address or credit card
+// data stored.
 IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
-                       UnclassifiedFormShown_FallbackOptionsPresent) {
+                       NoUserData_ManualFallbacksNotPresent) {
+  FormData form = CreateAndAttachUnclassifiedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.unique_renderer_id,
+                              form.fields[0].unique_renderer_id));
+  autofill_context_menu_manager()->AppendItems();
+
+  EXPECT_THAT(menu_model(), Not(ContainsAnyAutofillFallbackEntries()));
+}
+
+// Tests that when triggering the context menu on an unclassified form, address
+// manual fallback entries are added when the user has address data stored.
+IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
+                       HasAddressData_AddressManualFallbackAdded) {
   AddAutofillProfile(test::GetFullProfile());
   FormData form = CreateAndAttachUnclassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
@@ -497,43 +545,75 @@ IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
                               form.fields[0].unique_renderer_id));
   autofill_context_menu_manager()->AppendItems();
 
-  EXPECT_THAT(menu_model(), IsAutofillFallbackAdded());
+  EXPECT_THAT(menu_model(), OnlyAddressFallbackAdded());
+}
+
+// Tests that when triggering the context menu on an unclassified form, payments
+// manual fallback entries are added when the user has credit card data stored.
+IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
+                       HasCreditCardData_PaymentsManualFallbackAdded) {
+  AddCreditCard(test::GetCreditCard());
+  FormData form = CreateAndAttachUnclassifiedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.unique_renderer_id,
+                              form.fields[0].unique_renderer_id));
+  autofill_context_menu_manager()->AppendItems();
+
+  EXPECT_THAT(menu_model(), OnlyPaymentsFallbackAdded());
+}
+
+// Tests that when triggering the context menu on an unclassified form, the
+// fallback entry is part of the menu.
+IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
+                       UnclassifiedFormShown_ManualFallbacksPresent) {
+  AddAutofillProfile(test::GetFullProfile());
+  AddCreditCard(test::GetCreditCard());
+  FormData form = CreateAndAttachUnclassifiedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.unique_renderer_id,
+                              form.fields[0].unique_renderer_id));
+  autofill_context_menu_manager()->AppendItems();
+
+  EXPECT_THAT(menu_model(), AddressAndPaymentsFallbacksAdded());
 }
 
 // Tests that when triggering the context menu on an autocomplete unrecognized
 // field, the fallback entry is part of the menu.
 IN_PROC_BROWSER_TEST_F(
     UnclassifiedFieldsTest,
-    AutocompleteUnrecognizedFieldShown_FallbackOptionsPresent) {
+    AutocompleteUnrecognizedFieldShown_ManualFallbacksPresent) {
   AddAutofillProfile(test::GetFullProfile());
+  AddCreditCard(test::GetCreditCard());
   FormData form = CreateAndAttachAutocompleteUnrecognizedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.unique_renderer_id,
                               form.fields[0].unique_renderer_id));
   autofill_context_menu_manager()->AppendItems();
 
-  EXPECT_THAT(menu_model(), IsAutofillFallbackAdded());
+  EXPECT_THAT(menu_model(), AddressAndPaymentsFallbacksAdded());
 }
 
 // Tests that when triggering the context menu on a classified form, the
 // fallback entry is part of the menu.
 IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
-                       ClassifiedFormShown_FallbackOptionsPresent) {
+                       ClassifiedFormShown_ManualFallbacksPresent) {
   AddAutofillProfile(test::GetFullProfile());
+  AddCreditCard(test::GetCreditCard());
   FormData form = CreateAndAttachClassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.unique_renderer_id,
                               form.fields[0].unique_renderer_id));
   autofill_context_menu_manager()->AppendItems();
 
-  EXPECT_THAT(menu_model(), IsAutofillFallbackAdded());
+  EXPECT_THAT(menu_model(), AddressAndPaymentsFallbacksAdded());
 }
 
-// Tests that when the fallback entry for the unclassified fields is selected,
-// suggestions are not triggered.
+// Tests that when the manual fallback entry for the unclassified fields is
+// selected, suggestions are not triggered.
 IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
-                       UnclassifiedFormShown_ManualFallbackOptionIsNoOp) {
+                       UnclassifiedFormShown_ManualFallbackOptionsAreNoOps) {
   AddAutofillProfile(test::GetFullProfile());
+  AddCreditCard(test::GetCreditCard());
   FormData form = CreateAndAttachAutocompleteUnrecognizedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.unique_renderer_id,
@@ -545,6 +625,8 @@ IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
   EXPECT_CALL(*driver(), RendererShouldTriggerSuggestions).Times(0);
   autofill_context_menu_manager()->ExecuteCommand(
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS);
+  autofill_context_menu_manager()->ExecuteCommand(
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS);
 }
 
 }  // namespace autofill
