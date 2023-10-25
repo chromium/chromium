@@ -993,6 +993,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostTest,
                            AddAndRemoveInputEventObserver);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostTest,
+                           ScopedObservationWithInputEventObserver);
+  FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostTest,
                            AddAndRemoveImeInputEventObserver);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostTest,
                            InputRouterReceivesHasTouchEventHandlers);
