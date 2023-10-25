@@ -47,6 +47,15 @@ public class TabUiFeatureUtilities {
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_STRIP_REDESIGN,
                     TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE_PARAM, false);
 
+    // Field trial parameter for animation start timeout for new Android based shrink and expand
+    // animations in TabSwitcherLayout.
+    private static final String ANIMATION_START_TIMEOUT_MS_PARAM = "animation_start_timeout_ms";
+    public static final IntCachedFieldTrialParameter ANIMATION_START_TIMEOUT_MS =
+            new IntCachedFieldTrialParameter(
+                    ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS,
+                    ANIMATION_START_TIMEOUT_MS_PARAM,
+                    300);
+
     public static final MutableFlagWithSafeDefault sThumbnailPlaceholder =
             new MutableFlagWithSafeDefault(ChromeFeatureList.THUMBNAIL_PLACEHOLDER, false);
 

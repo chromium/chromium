@@ -96,9 +96,6 @@ public class TabSwitcherLayout extends Layout {
     private static final int BACKGROUND_FADING_DURATION_MS = 150;
     private static final int SCRIM_FADE_DURATION_MS = 350;
 
-    private static final int ANIMATION_TIMEOUT_SHRINK_MS = 250;
-    private static final int ANIMATION_TIMEOUT_EXPAND_MS = 250;
-
     private static final String TRACE_SHOW_TAB_SWITCHER = "TabSwitcherLayout.Show.TabSwitcher";
     private static final String TRACE_HIDE_TAB_SWITCHER = "TabSwitcherLayout.Hide.TabSwitcher";
     private static final String TRACE_DONE_SHOWING_TAB_SWITCHER = "TabSwitcherLayout.DoneShowing";
@@ -482,15 +479,18 @@ public class TabSwitcherLayout extends Layout {
                 }
             } else {
                 assert conditionalAnimationRunner != null;
-                mGridTabListDelegate.runAnimationOnNextLayout(() -> {
-                    conditionalAnimationRunner.setLayoutCompleted();
+                mGridTabListDelegate.runAnimationOnNextLayout(
+                        () -> {
+                            conditionalAnimationRunner.setLayoutCompleted();
 
-                    if (mHasPerfListenerForTesting) return;
+                            if (mHasPerfListenerForTesting) return;
 
-                    // Layout should always wait for completion so post after that signal finishes.
-                    mHandler.postDelayed(conditionalAnimationRunner::runAnimationDueToTimeout,
-                            ANIMATION_TIMEOUT_SHRINK_MS);
-                });
+                            // Layout should always wait for completion so post after that signal
+                            // finishes.
+                            mHandler.postDelayed(
+                                    conditionalAnimationRunner::runAnimationDueToTimeout,
+                                    TabUiFeatureUtilities.ANIMATION_START_TIMEOUT_MS.getValue());
+                        });
             }
         }
     }
@@ -1039,7 +1039,8 @@ public class TabSwitcherLayout extends Layout {
                 tabId, (bitmap) -> { conditionalAnimationRunner.setBitmap(bitmap); });
         if (mHasPerfListenerForTesting) return;
         mHandler.postDelayed(
-                conditionalAnimationRunner::runAnimationDueToTimeout, ANIMATION_TIMEOUT_EXPAND_MS);
+                conditionalAnimationRunner::runAnimationDueToTimeout,
+                TabUiFeatureUtilities.ANIMATION_START_TIMEOUT_MS.getValue());
     }
 
     /**

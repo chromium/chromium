@@ -7576,6 +7576,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "animation_start_timeout_ms": "300"
+                    },
                     "enable_features": [
                         "GridTabSwitcherAndroidAnimations"
                     ]
