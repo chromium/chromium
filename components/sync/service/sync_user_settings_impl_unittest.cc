@@ -104,11 +104,24 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncEverything) {
       MakeSyncUserSettings(GetUserTypes());
 
   ModelTypeSet expected_types = GetUserTypes();
+  UserSelectableTypeSet all_registered_types =
+      sync_user_settings->GetRegisteredSelectableTypes();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Apps sync is controlled by a dedicated preference on Lacros,
+  // corresponding to the Apps toggle in OS Sync settings. That pref
+  // isn't set up in this test.
+  if (base::FeatureList::IsEnabled(kSyncChromeOSAppsToggleSharing)) {
+    ASSERT_TRUE(all_registered_types.Has(UserSelectableType::kApps));
+    ASSERT_FALSE(sync_prefs_->IsAppsSyncEnabledByOs());
+    expected_types.RemoveAll({APPS, APP_SETTINGS, WEB_APPS});
+    all_registered_types.Remove(UserSelectableType::kApps);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   EXPECT_TRUE(sync_user_settings->IsSyncEverythingEnabled());
   EXPECT_EQ(expected_types, GetPreferredUserTypes(*sync_user_settings));
 
-  UserSelectableTypeSet all_registered_types =
-      sync_user_settings->GetRegisteredSelectableTypes();
   for (UserSelectableType type : all_registered_types) {
     sync_user_settings->SetSelectedTypes(/*sync_everything=*/true, {type});
     EXPECT_EQ(expected_types, GetPreferredUserTypes(*sync_user_settings));
@@ -184,8 +197,20 @@ TEST_F(SyncUserSettingsImplTest, SetSelectedTypeInFullSyncMode) {
       MakeSyncUserSettings(GetUserTypes(),
                            SyncPrefs::SyncAccountState::kSyncing);
 
-  const UserSelectableTypeSet registered_types =
+  UserSelectableTypeSet registered_types =
       sync_user_settings->GetRegisteredSelectableTypes();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (base::FeatureList::IsEnabled(kSyncChromeOSAppsToggleSharing)) {
+    // Apps sync is controlled by a dedicated preference on Lacros,
+    // corresponding to the Apps toggle in OS Sync settings. That pref
+    // isn't set up in this test.
+    ASSERT_TRUE(registered_types.Has(UserSelectableType::kApps));
+    ASSERT_FALSE(sync_prefs_->IsAppsSyncEnabledByOs());
+    registered_types.Remove(UserSelectableType::kApps);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   const UserSelectableTypeSet registered_types_except_passwords =
       base::Difference(registered_types,
                        UserSelectableTypeSet({UserSelectableType::kPasswords}));
@@ -246,6 +271,18 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesNotKeepEverythingSynced) {
 
   UserSelectableTypeSet all_registered_types =
       sync_user_settings->GetRegisteredSelectableTypes();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (base::FeatureList::IsEnabled(kSyncChromeOSAppsToggleSharing)) {
+    // Apps sync is controlled by a dedicated preference on Lacros,
+    // corresponding to the Apps toggle in OS Sync settings. That pref
+    // isn't set up in this test.
+    ASSERT_TRUE(all_registered_types.Has(UserSelectableType::kApps));
+    ASSERT_FALSE(sync_prefs_->IsAppsSyncEnabledByOs());
+    all_registered_types.Remove(UserSelectableType::kApps);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   for (UserSelectableType type : all_registered_types) {
     ModelTypeSet expected_preferred_types =
         UserSelectableTypeToAllModelTypes(type);
