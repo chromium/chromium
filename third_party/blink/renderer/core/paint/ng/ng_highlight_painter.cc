@@ -388,7 +388,7 @@ void NGHighlightPainter::SelectionPaintState::PaintSelectionBackground(
       document, style, node, selection_style_.current_color,
       kPseudoIdSelection);
   NGHighlightPainter::PaintHighlightBackground(
-      context, node, document, style, color, PhysicalSelectionRect(), rotation);
+      context, style, color, PhysicalSelectionRect(), rotation);
 }
 
 // Paint the selected text only.
@@ -524,6 +524,24 @@ NGHighlightPainter::NGHighlightPainter(
                 layers_[i - 1].text_style, paint_info_,
                 layers[i].PseudoArgument()),
         });
+      }
+    }
+    if (!parts_.empty()) {
+      // TODO(schenney) The code here still results in n^2 calculations or,
+      // more precisely, O(num_edges * text_length) because
+      // CaretInlinePositionForOffset ultimately does a linear walk through
+      // the text shaping result looking for the offset while accumulating
+      // character widths. Given the edges are sorted, we should enable
+      // one pass through the text to accumulate all the necessary offset
+      // positions.
+      edges_info_.push_back(
+          HighlightEdgeInfo{parts_[0].range.from,
+                            fragment_item_.CaretInlinePositionForOffset(
+                                cursor_.CurrentText(), parts_[0].range.from)});
+      for (const HighlightPart& part : parts_) {
+        edges_info_.push_back(HighlightEdgeInfo{
+            part.range.to, fragment_item_.CaretInlinePositionForOffset(
+                               cursor_.CurrentText(), part.range.to)});
       }
     }
   }
@@ -957,9 +975,9 @@ void NGHighlightPainter::PaintHighlightOverlays(
     Vector<LayoutSelectionStatus> highlights = GetHighlights(layer);
 
     for (const auto& highlight : highlights) {
-      const unsigned length = highlight.end - highlight.start;
-      if (length == 0)
+      if (highlight.end == highlight.start) {
         continue;
+      }
 
       const StringView text = cursor_.CurrentText();
 
@@ -975,9 +993,8 @@ void NGHighlightPainter::PaintHighlightOverlays(
           document, originating_style_, node_, layer.text_style.current_color,
           layer.id.PseudoId(), layer.id.PseudoArgument());
 
-      PaintHighlightBackground(paint_info_.context, node_, document,
-                               originating_style_, background_color, rect,
-                               rotation);
+      PaintHighlightBackground(paint_info_.context, originating_style_,
+                               background_color, rect, rotation);
 
       if (layer.text_style.shadow) {
         text_painter_.Paint(
@@ -1047,8 +1064,6 @@ unsigned NGHighlightPainter::GetTextContentOffset(const Text& text,
 
 void NGHighlightPainter::PaintHighlightBackground(
     GraphicsContext& context,
-    Node* node,
-    const Document& document,
     const ComputedStyle& style,
     Color color,
     const PhysicalRect& rect,
@@ -1112,9 +1127,36 @@ Color NGHighlightPainter::ColorFor(DocumentMarker::MarkerType type) {
 
 LineRelativeRect NGHighlightPainter::LineRelativeWorldRect(
     const NGHighlightOverlay::HighlightRange& range) {
-  const StringView text = cursor_.CurrentText();
-  return LineRelativeLocalRect(fragment_item_, text, range.from, range.to) +
+  return LocalRectInWritingModeSpace(range.from, range.to) +
          LineRelativeOffset::CreateFromBoxOrigin(box_origin_);
+}
+
+LineRelativeRect NGHighlightPainter::LocalRectInWritingModeSpace(
+    unsigned from,
+    unsigned to) const {
+  if (paint_case_ != kOverlay) {
+    const StringView text = cursor_.CurrentText();
+    return LineRelativeLocalRect(fragment_item_, text, from, to);
+  }
+
+  const HighlightEdgeInfo* from_info =
+      std::lower_bound(edges_info_.begin(), edges_info_.end(), from,
+                       [](const HighlightEdgeInfo& info, unsigned offset) {
+                         return info.offset < offset;
+                       });
+  const HighlightEdgeInfo* to_info =
+      std::lower_bound(from_info, edges_info_.end(), to,
+                       [](const HighlightEdgeInfo& info, unsigned offset) {
+                         return info.offset < offset;
+                       });
+  DCHECK_NE(from_info, edges_info_.end());
+  DCHECK_NE(to_info, edges_info_.end());
+
+  const LayoutUnit height = fragment_item_.InkOverflow().Height();
+  if (from_info->x > to_info->x) {
+    return {{to_info->x, LayoutUnit{}}, {from_info->x - to_info->x, height}};
+  }
+  return {{from_info->x, LayoutUnit{}}, {to_info->x - from_info->x, height}};
 }
 
 void NGHighlightPainter::ClipToPartDecorations(

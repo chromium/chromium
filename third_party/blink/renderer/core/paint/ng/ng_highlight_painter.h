@@ -202,8 +202,6 @@ class CORE_EXPORT NGHighlightPainter {
 
   static void PaintHighlightBackground(
       GraphicsContext& context,
-      Node* node,
-      const Document& document,
       const ComputedStyle& style,
       Color color,
       const PhysicalRect& rect,
@@ -242,6 +240,11 @@ class CORE_EXPORT NGHighlightPainter {
   };
 
  private:
+  struct HighlightEdgeInfo {
+    unsigned offset;
+    LayoutUnit x;
+  };
+
   Case ComputePaintCase() const;
 
   const PhysicalRect ComputeBackgroundRect(StringView text,
@@ -269,6 +272,8 @@ class CORE_EXPORT NGHighlightPainter {
   LineRelativeRect LineRelativeWorldRect(
       const NGHighlightOverlay::HighlightRange&);
   void ClipToPartDecorations(const LineRelativeRect&);
+  LineRelativeRect LocalRectInWritingModeSpace(unsigned from,
+                                               unsigned to) const;
   void PaintDecorationsExceptLineThrough(
       const NGHighlightOverlay::HighlightPart&);
   void PaintDecorationsExceptLineThrough(
@@ -310,6 +315,7 @@ class CORE_EXPORT NGHighlightPainter {
   DocumentMarkerVector custom_;
   HeapVector<LayerPaintState> layers_;
   Vector<NGHighlightOverlay::HighlightPart> parts_;
+  Vector<HighlightEdgeInfo> edges_info_;
   const bool skip_backgrounds_;
   Case paint_case_;
 };
