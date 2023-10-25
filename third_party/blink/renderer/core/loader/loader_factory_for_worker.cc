@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/loader/loader_factory_for_worker.h"
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -104,12 +106,35 @@ std::unique_ptr<URLLoader> LoaderFactoryForWorker::CreateURLLoader(
     }
     // URLLoader for RaceNetworkRequest
     if (request.GetServiceWorkerRaceNetworkRequestToken().has_value()) {
+      auto token = request.GetServiceWorkerRaceNetworkRequestToken().value();
       absl::optional<
           mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>
           race_network_request_url_loader_factory =
-              global_scope_->FindRaceNetworkRequestURLLoaderFactory(
-                  request.GetServiceWorkerRaceNetworkRequestToken().value());
+              global_scope_->FindRaceNetworkRequestURLLoaderFactory(token);
       if (race_network_request_url_loader_factory) {
+        // DumpWithoutCrashing if the corresponding URLLoaderFactory is found
+        // and the request URL protocol is not in the HTTP family. The
+        // URLLoaderFactory should be found only when the request is HTTP or
+        // HTTPS. The crash seems to be caused by extension resources.
+        // TODO(crbug.com/1492640) Remove DumpWithoutCrashing once we collect
+        // data and identify the cause.
+        static bool has_dumped_without_crashing = false;
+        if (!has_dumped_without_crashing &&
+            !request.Url().ProtocolIsInHTTPFamily()) {
+          has_dumped_without_crashing = true;
+          SCOPED_CRASH_KEY_BOOL(
+              "SWRace", "loader_factory_has_value",
+              race_network_request_url_loader_factory.has_value());
+          SCOPED_CRASH_KEY_BOOL(
+              "SWRace", "is_valid_loader_factory",
+              race_network_request_url_loader_factory->is_valid());
+          SCOPED_CRASH_KEY_BOOL("SWRace", "is_empty_token", token.is_empty());
+          SCOPED_CRASH_KEY_STRING64("SWRace", "token", token.ToString());
+          SCOPED_CRASH_KEY_STRING256("SWRace", "request_url",
+                                     request.Url().GetString().Utf8());
+          base::debug::DumpWithoutCrashing();
+        }
+
         return web_context_
             ->WrapURLLoaderFactory(
                 std::move(race_network_request_url_loader_factory.value()))
