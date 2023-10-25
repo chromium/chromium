@@ -3889,7 +3889,7 @@ ui::WindowShowState WebContentsImpl::GetWindowShowState() {
 }
 
 bool WebContentsImpl::GetResizable() {
-  return GetContentClient()->browser()->GetCanResize(&GetPrimaryPage());
+  return GetDelegate() && GetDelegate()->GetCanResize();
 }
 
 void WebContentsImpl::FullscreenFrameSetUpdated() {

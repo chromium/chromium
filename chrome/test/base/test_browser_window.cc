@@ -154,6 +154,10 @@ bool TestBrowserWindow::ShouldHideUIForFullscreen() const {
   return false;
 }
 
+bool TestBrowserWindow::GetCanResize() {
+  return false;
+}
+
 bool TestBrowserWindow::IsFullscreen() const {
   return false;
 }

@@ -577,7 +577,6 @@
 #include "chrome/browser/ui/side_search/side_search_side_contents_helper.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #endif
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
@@ -3102,36 +3101,6 @@ ChromeContentBrowserClient::AllowServiceWorker(
   return embedder_support::AllowServiceWorker(
       scope, site_for_cookies, top_frame_origin, cookie_settings.get(),
       HostContentSettingsMapFactory::GetForProfile(profile));
-}
-
-namespace {
-#if defined(TOOLKIT_VIEWS)
-BrowserView* GetBrowserView(content::Page* page) {
-  Browser* browser = chrome::FindBrowserWithTab(
-      content::WebContents::FromRenderFrameHost(&page->GetMainDocument()));
-  return browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
-}
-#endif  // defined(TOOLKIT_VIEWS)
-}  // namespace
-
-void ChromeContentBrowserClient::SetCanResizeFromWebAPI(
-    content::Page* page,
-    absl::optional<bool> can_resize) {
-  // Additional windowing controls (AWC) is a desktop-only feature.
-#if defined(TOOLKIT_VIEWS)
-  if (BrowserView* browser_view = GetBrowserView(page)) {
-    browser_view->SetCanResizeFromWebAPI(can_resize);
-  }
-#endif  // defined(TOOLKIT_VIEWS)
-}
-
-bool ChromeContentBrowserClient::GetCanResize(content::Page* page) {
-#if !defined(TOOLKIT_VIEWS)
-  return false;
-#else
-  BrowserView* browser_view = GetBrowserView(page);
-  return browser_view && browser_view->CanResize();
-#endif  // !defined(TOOLKIT_VIEWS)
 }
 
 bool ChromeContentBrowserClient::MayDeleteServiceWorkerRegistration(

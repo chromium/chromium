@@ -457,6 +457,12 @@ class CONTENT_EXPORT WebContentsDelegate {
   // https://github.com/ivansandrk/additional-windowing-controls/blob/main/awc-explainer.md
   virtual bool CanUseWindowingControls(RenderFrameHost* requesting_frame);
 
+  // Sends the resizable boolean set via `window.setResizable(bool)` API to
+  // `BrowserView`. Passing std::nullopt will reset the resizable state to the
+  // default.
+  virtual void SetCanResizeFromWebAPI(absl::optional<bool> can_resize) {}
+  virtual bool GetCanResize();
+
   // Returns whether entering fullscreen with |EnterFullscreenModeForTab()| is
   // allowed.
   virtual bool CanEnterFullscreenModeForTab(

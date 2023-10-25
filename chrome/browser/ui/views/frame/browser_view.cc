@@ -2559,6 +2559,10 @@ absl::optional<bool> BrowserView::GetCanResizeFromWebAPI() const {
   return absl::nullopt;
 }
 
+bool BrowserView::GetCanResize() {
+  return CanResize();
+}
+
 void BrowserView::SetCanResizeFromWebAPI(absl::optional<bool> can_resize) {
   // TODO(laurila, crbug.com/1493617): Support multi-tab apps.
   // The value can only be set in web apps, where there currently can only be 1

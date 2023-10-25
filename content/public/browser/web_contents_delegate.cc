@@ -160,6 +160,10 @@ bool WebContentsDelegate::CanUseWindowingControls(
   return false;
 }
 
+bool WebContentsDelegate::GetCanResize() {
+  return false;
+}
+
 bool WebContentsDelegate::IsFullscreenForTabOrPending(
     const WebContents* web_contents) {
   return false;

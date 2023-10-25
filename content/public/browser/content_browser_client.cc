@@ -418,18 +418,6 @@ AllowServiceWorkerResult ContentBrowserClient::AllowServiceWorker(
   return AllowServiceWorkerResult::Yes();
 }
 
-void ContentBrowserClient::SetCanResizeFromWebAPI(
-    content::Page* page,
-    absl::optional<bool> can_resize) {}
-
-bool ContentBrowserClient::GetCanResize(content::Page* page) {
-#if BUILDFLAG(IS_ANDROID)
-  return false;
-#else
-  return true;
-#endif
-}
-
 bool ContentBrowserClient::MayDeleteServiceWorkerRegistration(
     const GURL& scope,
     BrowserContext* browser_context) {

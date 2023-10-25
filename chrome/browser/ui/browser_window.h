@@ -662,6 +662,12 @@ class BrowserWindow : public ui::BaseWindow {
   // of a full titlebar. This is only supported for desktop web apps.
   virtual bool IsBorderlessModeEnabled() const = 0;
 
+  // Sends the resizable boolean set via `window.setResizable(bool)` API to
+  // `BrowserView`. Passing std::nullopt will reset the resizable state to the
+  // default.
+  virtual void SetCanResizeFromWebAPI(absl::optional<bool> can_resize) = 0;
+  virtual bool GetCanResize() = 0;
+
   // Shows the Chrome Labs bubble if enabled.
   virtual void ShowChromeLabs() = 0;
 

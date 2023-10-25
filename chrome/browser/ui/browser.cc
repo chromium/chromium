@@ -2043,6 +2043,14 @@ bool Browser::CanUseWindowingControls(
   return true;
 }
 
+void Browser::SetCanResizeFromWebAPI(absl::optional<bool> can_resize) {
+  window_->SetCanResizeFromWebAPI(can_resize);
+}
+
+bool Browser::GetCanResize() {
+  return window_->GetCanResize();
+}
+
 bool Browser::CanEnterFullscreenModeForTab(
     content::RenderFrameHost* requesting_frame,
     const blink::mojom::FullscreenOptions& options) {

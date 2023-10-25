@@ -38,7 +38,6 @@
 #include "content/public/browser/interest_group_manager.h"
 #include "content/public/browser/login_delegate.h"
 #include "content/public/browser/mojo_binder_policy_map.h"
-#include "content/public/browser/page.h"
 #include "content/public/browser/privacy_sandbox_invoking_api.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/alternative_error_page_override_info.mojom-forward.h"
@@ -765,13 +764,6 @@ class CONTENT_EXPORT ContentBrowserClient {
       const absl::optional<url::Origin>& top_frame_origin,
       const GURL& script_url,
       BrowserContext* context);
-
-  // Sends the resizable boolean set via `window.setResizable(bool)` API to
-  // `BrowserView`. Passing std::nullopt will reset the resizable state to the
-  // default.
-  virtual void SetCanResizeFromWebAPI(content::Page* page,
-                                      absl::optional<bool> can_resize);
-  virtual bool GetCanResize(content::Page* page);
 
   // Returns true if the service worker associated with the given `scope` may be
   // deleted. This can return false if the service worker is tied to another

@@ -451,8 +451,7 @@ class BrowserView : public BrowserWindow,
 
   void UpdateWebAppStatusIconsVisiblity();
 
-  // Setter and getter for the `window.setResizable(bool)` state.
-  void SetCanResizeFromWebAPI(absl::optional<bool> can_resize);
+  // Getter for the `window.setResizable(bool)` state.
   absl::optional<bool> GetCanResizeFromWebAPI() const;
 
   // BrowserWindow:
@@ -504,6 +503,8 @@ class BrowserView : public BrowserWindow,
   void Maximize() override;
   void Minimize() override;
   void Restore() override;
+  void SetCanResizeFromWebAPI(absl::optional<bool> can_resize) override;
+  bool GetCanResize() override;
   void EnterFullscreen(const GURL& url,
                        ExclusiveAccessBubbleType bubble_type,
                        int64_t display_id) override;
