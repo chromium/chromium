@@ -32,8 +32,8 @@ v8::MaybeLocal<v8::Value> CreatePrevWinsArray(
                const mojom::PreviousWinPtr& prev_win2) {
               return prev_win1->time < prev_win2->time;
             });
-  std::vector<v8::Local<v8::Value>> prev_wins_v8;
   v8::Isolate* isolate = v8_helper->isolate();
+  v8::LocalVector<v8::Value> prev_wins_v8(isolate);
   v8::Local<v8::String> render_url_key =
       v8_helper->CreateStringFromLiteral("renderURL");
   v8::Local<v8::String> metadata_key =
@@ -166,7 +166,7 @@ void InterestGroupLazyFiller::HandleTrustedBiddingSignalsKeys(
   v8::Isolate* isolate = v8_helper->isolate();
   if (self->bidder_worklet_non_shared_params_ &&
       self->bidder_worklet_non_shared_params_->trusted_bidding_signals_keys) {
-    std::vector<v8::Local<v8::Value>> trusted_bidding_signals_keys;
+    v8::LocalVector<v8::Value> trusted_bidding_signals_keys(isolate);
     for (const auto& key : *self->bidder_worklet_non_shared_params_
                                 ->trusted_bidding_signals_keys) {
       v8::Local<v8::Value> key_value;

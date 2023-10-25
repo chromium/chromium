@@ -80,7 +80,7 @@ class DeepFreezeAllowAll : public v8::Context::DeepFreezeDelegate {
  public:
   bool FreezeEmbedderObjectAndGetChildren(
       v8::Local<v8::Object> obj,
-      std::vector<v8::Local<v8::Object>>& children_out) override {
+      v8::LocalVector<v8::Object>& children_out) override {
     return true;
   }
 };
@@ -88,7 +88,7 @@ class DeepFreezeAllowAll : public v8::Context::DeepFreezeDelegate {
 bool AppendJsonValueOrNull(AuctionV8Helper* const v8_helper,
                            v8::Local<v8::Context> context,
                            const std::string* maybe_json,
-                           std::vector<v8::Local<v8::Value>>* args) {
+                           v8::LocalVector<v8::Value>* args) {
   v8::Isolate* isolate = v8_helper->isolate();
   if (maybe_json) {
     if (!v8_helper->AppendJsonValue(context, *maybe_json, args)) {
@@ -238,7 +238,7 @@ bool CreateAdVector(AuctionV8Helper* v8_helper,
                     v8::Local<v8::Value>& out_value) {
   v8::Isolate* isolate = v8_helper->isolate();
 
-  std::vector<v8::Local<v8::Value>> ads_vector;
+  v8::LocalVector<v8::Value> ads_vector(isolate);
   for (const auto& ad : ads) {
     if (is_ad_excluded.Run(ad.render_url)) {
       continue;
@@ -751,7 +751,7 @@ void BidderWorklet::V8State::ReportWin(
   ContextRecyclerScope context_recycler_scope(context_recycler);
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
 
-  std::vector<v8::Local<v8::Value>> args;
+  v8::LocalVector<v8::Value> args(isolate);
   if (!AppendJsonValueOrNull(v8_helper_.get(), context,
                              base::OptionalToPtr(auction_signals_json),
                              &args) ||
@@ -1243,7 +1243,7 @@ BidderWorklet::V8State::GenerateSingleBid(
       &bidder_worklet_non_shared_params, expected_buyer_currency,
       should_exclude_ad_due_to_kanon, should_exclude_component_ad_due_to_kanon);
 
-  std::vector<v8::Local<v8::Value>> args;
+  v8::LocalVector<v8::Value> args(isolate);
   v8::Local<v8::Object> interest_group_object = v8::Object::New(isolate);
   gin::Dictionary interest_group_dict(isolate, interest_group_object);
   if (!interest_group_dict.Set("owner", owner_.Serialize()) ||

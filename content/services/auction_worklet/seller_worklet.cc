@@ -301,7 +301,7 @@ bool AppendAuctionConfig(AuctionV8Helper* v8_helper,
                          const absl::optional<uint16_t> experiment_group_id,
                          const blink::AuctionConfig::NonSharedParams&
                              auction_ad_config_non_shared_params,
-                         std::vector<v8::Local<v8::Value>>* args) {
+                         v8::LocalVector<v8::Value>* args) {
   v8::Isolate* isolate = v8_helper->isolate();
   v8::Local<v8::Object> auction_config_value = v8::Object::New(isolate);
   gin::Dictionary auction_config_dict(isolate, auction_config_value);
@@ -316,7 +316,7 @@ bool AppendAuctionConfig(AuctionV8Helper* v8_helper,
   }
 
   if (auction_ad_config_non_shared_params.interest_group_buyers) {
-    std::vector<v8::Local<v8::Value>> interest_group_buyers;
+    v8::LocalVector<v8::Value> interest_group_buyers(isolate);
     for (const url::Origin& buyer :
          *auction_ad_config_non_shared_params.interest_group_buyers) {
       v8::Local<v8::String> v8_buyer;
@@ -437,7 +437,7 @@ bool AppendAuctionConfig(AuctionV8Helper* v8_helper,
   const auto& component_auctions =
       auction_ad_config_non_shared_params.component_auctions;
   if (!component_auctions.empty()) {
-    std::vector<v8::Local<v8::Value>> component_auction_vector;
+    v8::LocalVector<v8::Value> component_auction_vector(isolate);
     for (const auto& component_auction : component_auctions) {
       if (!AppendAuctionConfig(
               v8_helper, context, *component_auction.decision_logic_url,
@@ -937,7 +937,7 @@ void SellerWorklet::V8State::ScoreAd(
   ContextRecyclerScope context_recycler_scope(context_recycler);
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
 
-  std::vector<v8::Local<v8::Value>> args;
+  v8::LocalVector<v8::Value> args(isolate);
   if (!v8_helper_->AppendJsonValue(context, ad_metadata_json, &args)) {
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
@@ -1395,7 +1395,7 @@ void SellerWorklet::V8State::ReportResult(
   ContextRecyclerScope context_recycler_scope(context_recycler);
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
 
-  std::vector<v8::Local<v8::Value>> args;
+  v8::LocalVector<v8::Value> args(isolate);
   if (!AppendAuctionConfig(v8_helper_.get(), context, decision_logic_url_,
                            trusted_scoring_signals_url_, experiment_group_id_,
                            auction_ad_config_non_shared_params, &args)) {
