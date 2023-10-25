@@ -799,19 +799,17 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("dirContextMenuCrostini").NewDirectoryTree(),
         TestCase("dirContextMenuPlayFiles").NewDirectoryTree(),
         TestCase("dirContextMenuUsbs").NewDirectoryTree(),
-        // TODO(b/305119034): support single partition format for new tree.
-        // TestCase("dirContextMenuUsbs")
-        //     .EnableSinglePartitionFormat()
-        //     .NewDirectoryTree(),
+        TestCase("dirContextMenuUsbs")
+            .EnableSinglePartitionFormat()
+            .NewDirectoryTree(),
         TestCase("dirContextMenuFsp").NewDirectoryTree(),
         TestCase("dirContextMenuDocumentsProvider")
             .EnableGenericDocumentsProvider()
             .NewDirectoryTree(),
-        // TODO(b/305119034): support single partition format for new tree.
         TestCase("dirContextMenuUsbDcim").NewDirectoryTree(),
-        // TestCase("dirContextMenuUsbDcim")
-        //     .EnableSinglePartitionFormat()
-        //     .NewDirectoryTree(),
+        TestCase("dirContextMenuUsbDcim")
+            .EnableSinglePartitionFormat()
+            .NewDirectoryTree(),
         TestCase("dirContextMenuMtp").NewDirectoryTree(),
         TestCase("dirContextMenuMyDrive").NewDirectoryTree(),
         TestCase("dirContextMenuSharedDrive").NewDirectoryTree(),

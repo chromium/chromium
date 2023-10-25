@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {isInteractiveVolume, isSameEntry} from '../../common/js/entry_utils.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from '../../common/js/files_app_entry_types.js';
+import {isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {str} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
@@ -248,9 +250,90 @@ export async function testAddDriveVolume(done: () => void) {
   done();
 }
 
-/** Tests that multiple partition volumes can be added correctly. */
-export async function testAddVolumeForMultipleUsbPartitionsGrouping(
+/** Tests that single partition volume can be added correctly. */
+async function addVolumeForSinglePartitionRemovable(done: () => void) {
+  const initialState = getEmptyState();
+  const store = setupStore(initialState);
+
+  // Dispatch an action to add single partition volume.
+  const volumeInfo = MockVolumeManager.createMockVolumeInfo(
+      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:hoge', 'USB Drive',
+      '/device/path/1');
+  const volumeMetadata = createFakeVolumeMetadata(volumeInfo);
+  store.dispatch(addVolume({
+    volumeInfo: volumeInfo,
+    volumeMetadata: volumeMetadata,
+  }));
+
+  // Expect the volume is in the store.
+  const myFilesFileData = createMyFilesDataWithEntryList();
+  const volumeEntry = new VolumeEntry(volumeInfo);
+  const parentEntry = new EntryList(
+      volumeMetadata.driveLabel || '', VolumeManagerCommon.RootType.REMOVABLE,
+      volumeMetadata.devicePath);
+  parentEntry.addEntry(volumeEntry);
+
+  // There should be a parent wrapper if the flag is on.
+  const hasParentWrapper = isSinglePartitionFormatEnabled();
+
+  const want: Partial<State> = {
+    allEntries: {
+      // Single partition volume.
+      [volumeEntry.toURL()]: {
+        ...convertEntryToFileData(volumeEntry),
+        // When there is a parent wrapper, icon and ejectable values are
+        // different.
+        ...(hasParentWrapper ? {
+          icon: constants.ICON_TYPES.UNKNOWN_REMOVABLE,
+          isEjectable: false,
+        } :
+                               {
+                                 icon: constants.ICON_TYPES.USB,
+                                 isEjectable: true,
+                               }),
+      },
+      // My Files entry list.
+      [myFilesFileData.entry.toURL()]: myFilesFileData,
+      // Parent wrapper entry.
+      ...(hasParentWrapper ? {
+        [parentEntry.toURL()]: {
+          ...convertEntryToFileData(parentEntry),
+          isEjectable: true,
+        },
+      } :
+                             {}),
+    },
+    volumes: {
+      [volumeInfo.volumeId]: {
+        ...convertVolumeInfoAndMetadataToVolume(volumeInfo, volumeMetadata),
+        ...(hasParentWrapper ? {prefixKey: parentEntry.toURL()} : {}),
+      },
+    },
+  };
+  await waitDeepEquals(store, want, (state) => ({
+                                      allEntries: state.allEntries,
+                                      volumes: state.volumes,
+                                    }));
+
+  done();
+}
+
+/** Run the above test with FilesSinglePartitionFormat flag off. */
+export async function testAddVolumeForSinglePartitionRemovableWithFlagOff(
     done: () => void) {
+  loadTimeData.overrideValues({FILES_SINGLE_PARTITION_FORMAT_ENABLED: false});
+  addVolumeForSinglePartitionRemovable(done);
+}
+
+/** Run the above test with FilesSinglePartitionFormat flag on. */
+export async function testAddVolumeForSinglePartitionRemovableWithFlagOn(
+    done: () => void) {
+  loadTimeData.overrideValues({FILES_SINGLE_PARTITION_FORMAT_ENABLED: true});
+  addVolumeForSinglePartitionRemovable(done);
+}
+
+/** Tests that multiple partition volumes can be added correctly. */
+async function addVolumeForMultipleUsbPartitionsGrouping(done: () => void) {
   const initialState = getEmptyState();
   // Put partition-1 volume in the store.
   const {volumeManager} = window.fileManager;
@@ -333,6 +416,21 @@ export async function testAddVolumeForMultipleUsbPartitionsGrouping(
   done();
 }
 
+/** Run the above test with FilesSinglePartitionFormat flag off. */
+export async function testAddVolumeForMultipleUsbPartitionsGroupingWithFlagOff(
+    done: () => void) {
+  loadTimeData.overrideValues({FILES_SINGLE_PARTITION_FORMAT_ENABLED: false});
+  addVolumeForMultipleUsbPartitionsGrouping(done);
+}
+
+
+/** Run the above test with FilesSinglePartitionFormat flag on. */
+export async function testAddVolumeForMultipleUsbPartitionsGroupingWithFlagOn(
+    done: () => void) {
+  loadTimeData.overrideValues({FILES_SINGLE_PARTITION_FORMAT_ENABLED: true});
+  addVolumeForMultipleUsbPartitionsGrouping(done);
+}
+
 /**
  * Tests that volume will be disabled if it is disabled in the volume manager.
  */
@@ -412,9 +510,6 @@ export async function testAddArchiveVolume(done: () => void) {
   const {volumeManager} = window.fileManager;
   const volumeInfo = MockVolumeManager.createMockVolumeInfo(
       VolumeManagerCommon.VolumeType.ARCHIVE, 'test', 'test.zip');
-  // Archive's source should be File.
-  // @ts-ignore: access private variable to customize the source.
-  volumeInfo.source_ = VolumeManagerCommon.Source.FILE;
   volumeManager.volumeInfoList.add(volumeInfo);
   const volumeEntry = new VolumeEntry(volumeInfo);
   const volumeMetadata = createFakeVolumeMetadata(volumeInfo);
@@ -504,7 +599,7 @@ export async function testRemoveVolumeFromMyFiles(done: () => void) {
 
   const store = setupStore(initialState);
 
-  // Dispatch an action to remove volume entry.
+  // Dispatch an action to remove volume.
   store.dispatch(removeVolume({volumeId: crostiniVolume.volumeId}));
 
   // Expect the volume entry has been removed from MyFiles and the UI entry has
@@ -532,6 +627,128 @@ export async function testRemoveVolumeFromMyFiles(done: () => void) {
   const uiChildren = myFilesVolumeEntry.getUIChildren();
   assertEquals(1, uiChildren.length);
   assertTrue(isSameEntry(linuxFilesUiEntry, uiChildren[0]!));
+
+  done();
+}
+
+/**
+ * Tests removing grouped removable volume will also update the parent UI entry.
+ */
+export async function testRemoveGroupedRemovableVolume(done: () => void) {
+  const initialState = getEmptyState();
+  // Put partition-1 volume in the store.
+  const {volumeManager} = window.fileManager;
+  const partition1VolumeInfo = MockVolumeManager.createMockVolumeInfo(
+      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:partition1',
+      'Partition 1', '/device/path');
+  volumeManager.volumeInfoList.add(partition1VolumeInfo);
+  const partition1VolumeEntry = new VolumeEntry(partition1VolumeInfo);
+  const partition1FileData = convertEntryToFileData(partition1VolumeEntry);
+  const partition1VolumeMetadata =
+      createFakeVolumeMetadata(partition1VolumeInfo);
+  partition1VolumeMetadata.driveLabel = 'USB_Drive';
+  const partition1Volume = convertVolumeInfoAndMetadataToVolume(
+      partition1VolumeInfo, partition1VolumeMetadata);
+  initialState.volumes[partition1Volume.volumeId] = partition1Volume;
+  initialState.allEntries[partition1VolumeEntry.toURL()] = partition1FileData;
+
+  // Put partition-2 volume in the store.
+  const partition2VolumeInfo = MockVolumeManager.createMockVolumeInfo(
+      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:partition2',
+      'Partition 2', '/device/path');
+  volumeManager.volumeInfoList.add(partition2VolumeInfo);
+  const partition2VolumeEntry = new VolumeEntry(partition2VolumeInfo);
+  const partition2FileData = convertEntryToFileData(partition2VolumeEntry);
+  const partition2VolumeMetadata =
+      createFakeVolumeMetadata(partition2VolumeInfo);
+  partition2VolumeMetadata.driveLabel = 'USB_Drive';
+  const partition2Volume = convertVolumeInfoAndMetadataToVolume(
+      partition2VolumeInfo, partition2VolumeMetadata);
+  initialState.volumes[partition2Volume.volumeId] = partition2Volume;
+  initialState.allEntries[partition2VolumeEntry.toURL()] = partition2FileData;
+
+  // Put parent wrapper in the store.
+  const parentEntry = new EntryList(
+      partition1VolumeMetadata.driveLabel || '',
+      VolumeManagerCommon.RootType.REMOVABLE,
+      partition1VolumeMetadata.devicePath);
+  parentEntry.addEntry(partition1VolumeEntry);
+  initialState.volumes[partition1Volume.volumeId].prefixKey =
+      parentEntry.toURL();
+  parentEntry.addEntry(partition2VolumeEntry);
+  initialState.volumes[partition2Volume.volumeId].prefixKey =
+      parentEntry.toURL();
+  const parentFileData = convertEntryToFileData(parentEntry);
+  parentFileData.children =
+      [partition1VolumeEntry.toURL(), partition2VolumeEntry.toURL()];
+  initialState.allEntries[parentEntry.toURL()] = parentFileData;
+  initialState.uiEntries.push(parentEntry.toURL());
+
+  const store = setupStore(initialState);
+
+  // Dispatch an action to remove partition1.
+  store.dispatch(removeVolume({volumeId: partition1Volume.volumeId}));
+
+  // Expect the partition1 entry has been removed from its parent entry.
+  const wantAfterRemovingPartition1: Partial<State> = {
+    allEntries: {
+      // parent entry.
+      [parentEntry.toURL()]: {
+        ...parentFileData,
+        children: [partition2VolumeEntry.toURL()],
+      },
+      // partition1 entry.
+      [partition1VolumeEntry.toURL()]: partition1FileData,
+      // partition2 entry.
+      [partition2VolumeEntry.toURL()]: partition2FileData,
+    },
+    volumes: {
+      [partition2Volume.volumeId]: partition2Volume,
+    },
+    uiEntries: [parentEntry.toURL()],
+  };
+  await waitDeepEquals(
+      store, wantAfterRemovingPartition1, (state) => ({
+                                            allEntries: state.allEntries,
+                                            uiEntries: state.uiEntries,
+                                            volumes: state.volumes,
+                                          }));
+
+  // Check the partition1 entry has also been removed from parent entry.
+  const uiChildrenAfterRemovingPartition1 = parentEntry.getUIChildren();
+  assertEquals(1, uiChildrenAfterRemovingPartition1.length);
+  assertTrue(isSameEntry(
+      partition2VolumeEntry, uiChildrenAfterRemovingPartition1[0]!));
+
+  // Dispatch an action to remove partition2.
+  store.dispatch(removeVolume({volumeId: partition2Volume.volumeId}));
+
+  // Expect the partition2 entry has been removed from its parent entry.
+  const wantAfterRemovingPartition2: Partial<State> = {
+    allEntries: {
+      // parent entry.
+      [parentEntry.toURL()]: {
+        ...parentFileData,
+        children: [],
+      },
+      // partition1 entry.
+      [partition1VolumeEntry.toURL()]: partition1FileData,
+      // partition2 entry.
+      [partition2VolumeEntry.toURL()]: partition2FileData,
+    },
+    volumes: {},
+    uiEntries: [],
+  };
+  await waitDeepEquals(
+      store, wantAfterRemovingPartition2, (state) => ({
+                                            allEntries: state.allEntries,
+                                            uiEntries: state.uiEntries,
+                                            volumes: state.volumes,
+                                          }));
+
+  // Check parent entry now has no children.
+  const uiChildrenAfterRemovingPartition2 = parentEntry.getUIChildren();
+  assertEquals(0, uiChildrenAfterRemovingPartition2.length);
 
   done();
 }

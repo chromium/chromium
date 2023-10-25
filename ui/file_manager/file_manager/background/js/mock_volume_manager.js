@@ -225,6 +225,13 @@ export class MockVolumeManager {
           /** @type VolumeManagerCommon.FileSystemType */ ('fusebox');
     }
 
+    let source = VolumeManagerCommon.Source.NETWORK;
+    if (type === VolumeManagerCommon.VolumeType.ARCHIVE) {
+      source = VolumeManagerCommon.Source.FILE;
+    } else if (type === VolumeManagerCommon.VolumeType.REMOVABLE) {
+      source = VolumeManagerCommon.Source.DEVICE;
+    }
+
     // If there's no label set it to volumeId to make it shorter to write
     // tests.
     const volumeInfo = new VolumeInfoImpl(
@@ -242,7 +249,7 @@ export class MockVolumeManager {
         false,                                      // hasMedia
         false,                                      // configurable
         false,                                      // watchable
-        VolumeManagerCommon.Source.NETWORK,         // source
+        source,                                     // source
         diskFileSystemType,                         // diskFileSystemType
         // @ts-ignore: error TS2345: Argument of type '{}' is not assignable to
         // parameter of type 'IconSet'.
