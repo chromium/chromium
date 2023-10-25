@@ -1089,6 +1089,11 @@ static ParseColorResult ParseColor(CSSPropertyID property_id,
   DCHECK(!string.empty());
   DCHECK(IsColorPropertyID(property_id));
   CSSValueID value_id = CssValueKeywordID(string);
+  if ((value_id == CSSValueID::kAccentcolor ||
+       value_id == CSSValueID::kAccentcolortext) &&
+      !RuntimeEnabledFeatures::CSSSystemAccentColorEnabled()) {
+    return ParseColorResult::kFailure;
+  }
   if (StyleColor::IsColorKeyword(value_id)) {
     if (!isValueAllowedInMode(value_id, parser_mode)) {
       return ParseColorResult::kFailure;

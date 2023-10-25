@@ -1169,6 +1169,7 @@
       status: "stable",
     },
     {
+      // The AccentColor And AccentColorText CSS system color keywords
       name: "CSSSystemAccentColor",
       status: "experimental",
     },
