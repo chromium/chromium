@@ -191,7 +191,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
       },
 
       historyClustersPath_: {
-        type: Boolean,
+        type: String,
         value: () =>
             loadTimeData.getBoolean('renameJourneys') ? 'grouped' : 'journeys',
       },
@@ -228,10 +228,11 @@ export class HistoryAppElement extends HistoryAppElementBase {
   }
 
   footerInfo: FooterInfo;
-  private browserService_: BrowserService|null = null;
+  private browserService_: BrowserService = BrowserServiceImpl.getInstance();
   private eventTracker_: EventTracker = new EventTracker();
   private hasDrawer_: boolean;
   private historyClustersEnabled_: boolean;
+  private historyClustersPath_: string;
   private historyClustersVisible_: boolean;
   private isUserSignedIn_: boolean = loadTimeData.getBoolean('isUserSignedIn');
   private pendingDelete_: boolean;
@@ -275,7 +276,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
         'foreign-sessions-changed',
         (sessionList: ForeignSession[]) =>
             this.setForeignSessions_(sessionList));
-    this.browserService_ = BrowserServiceImpl.getInstance();
     this.shadowRoot!.querySelector('history-query-manager')!.initialize();
     this.browserService_!.getForeignSessions().then(
         sessionList => this.setForeignSessions_(sessionList));
@@ -290,6 +290,12 @@ export class HistoryAppElement extends HistoryAppElementBase {
     this.addEventListener('history-close-drawer', this.closeDrawer_);
     this.addEventListener('history-view-changed', this.historyViewChanged_);
     this.addEventListener('unselect-all', this.unselectAll);
+
+    // If there are url params, the router updates the selectedTab/Page and
+    // sets queryState params. Setting the tab manually overrides this.
+    if (!window.location.search) {
+      this.selectedTab_ = this.getDefaultSelectedTab_();
+    }
   }
 
   override disconnectedCallback() {
@@ -300,6 +306,17 @@ export class HistoryAppElement extends HistoryAppElementBase {
   private fire_(eventName: string, detail?: any) {
     this.dispatchEvent(
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+  }
+
+  /**
+   * Returns the tab that should be opened based on url params and then
+   * preferences
+   */
+  private getDefaultSelectedTab_(): number {
+    if (window.location.pathname === '/' + this.historyClustersPath_) {
+      return TABBED_PAGES.indexOf(Page.HISTORY_CLUSTERS);
+    }
+    return loadTimeData.getInteger('lastSelectedTab');
   }
 
   private computeShowHistoryClusters_(): boolean {
@@ -517,6 +534,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
     // Change in the currently selected tab requires change in the currently
     // selected page.
     this.selectedPage_ = TABBED_PAGES[this.selectedTab_];
+    this.browserService_!.setLastSelectedTab(this.selectedTab_);
   }
 
   private maybeUpdateSelectedHistoryTab_() {

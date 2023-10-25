@@ -40,6 +40,7 @@
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
+#include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/query_parser/snippet.h"
@@ -349,6 +350,10 @@ void BrowsingHistoryHandler::RegisterMessages() {
       "removeBookmark",
       base::BindRepeating(&BrowsingHistoryHandler::HandleRemoveBookmark,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "setLastSelectedTab",
+      base::BindRepeating(&BrowsingHistoryHandler::HandleSetLastSelectedTab,
+                          base::Unretained(this)));
 }
 
 void BrowsingHistoryHandler::StartQueryHistory() {
@@ -492,6 +497,14 @@ void BrowsingHistoryHandler::HandleRemoveBookmark(
   Profile* profile = GetProfile();
   BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(profile);
   bookmarks::RemoveAllBookmarks(model, GURL(url));
+}
+
+void BrowsingHistoryHandler::HandleSetLastSelectedTab(
+    const base::Value::List& args) {
+  const base::Value& last_tab = args[0];
+  Profile* profile = GetProfile();
+  profile->GetPrefs()->SetInteger(history_clusters::prefs::kLastSelectedTab,
+                                  last_tab.GetInt());
 }
 
 void BrowsingHistoryHandler::OnQueryComplete(

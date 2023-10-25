@@ -9,9 +9,14 @@ class PrefRegistrySimple;
 
 namespace history_clusters::prefs {
 
+// This is equivalent to TABBED_PAGES in
+// chrome/browser/resources/history/router.ts.
+enum TabbedPage { DATE = 0, GROUP = 1 };
+
 extern const char kVisible[];
 extern const char kShortCache[];
 extern const char kAllCache[];
+extern const char kLastSelectedTab[];
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 

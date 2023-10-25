@@ -155,6 +155,10 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
 
   source->AddBoolean(kIsUserSignedInKey, IsUserSignedIn(profile));
 
+  source->AddInteger(
+      "lastSelectedTab",
+      prefs->GetInteger(history_clusters::prefs::kLastSelectedTab));
+
   // History clusters
   HistoryClustersUtil::PopulateSource(source, profile, /*in_side_panel=*/false);
 
