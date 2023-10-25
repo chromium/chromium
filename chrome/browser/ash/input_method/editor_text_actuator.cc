@@ -21,15 +21,14 @@ bool IsUrlAllowed(const GURL& url) {
 }  // namespace
 
 EditorTextActuator::EditorTextActuator(
+    Profile* profile,
     mojo::PendingAssociatedReceiver<orca::mojom::TextActuator> receiver,
     Delegate* delegate)
-    : text_actuator_receiver_(this, std::move(receiver)), delegate_(delegate) {}
+    : profile_(profile),
+      text_actuator_receiver_(this, std::move(receiver)),
+      delegate_(delegate) {}
 
 EditorTextActuator::~EditorTextActuator() = default;
-
-void EditorTextActuator::SetProfile(Profile* profile) {
-  profile_ = profile;
-}
 
 void EditorTextActuator::InsertText(const std::string& text) {
   LogEditorState(EditorStates::kInsert, delegate_->GetEditorMode());

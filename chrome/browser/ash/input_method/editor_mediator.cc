@@ -78,7 +78,8 @@ void EditorMediator::SetUpNewEditorService() {
         editor_event_sink_receiver;
 
     text_actuator_ = std::make_unique<EditorTextActuator>(
-        text_actuator_remote.InitWithNewEndpointAndPassReceiver(), this);
+        profile_, text_actuator_remote.InitWithNewEndpointAndPassReceiver(),
+        this);
     text_query_provider_ = std::make_unique<EditorTextQueryProvider>(
         text_query_provider_remote.InitWithNewEndpointAndPassReceiver(),
         profile_, editor_switch_.get());

@@ -31,11 +31,10 @@ class EditorTextActuator : public orca::mojom::TextActuator {
   };
 
   EditorTextActuator(
+      Profile* profile,
       mojo::PendingAssociatedReceiver<orca::mojom::TextActuator> receiver,
       Delegate* delegate);
   ~EditorTextActuator() override;
-
-  void SetProfile(Profile* profile);
 
   // orca::mojom::TextActuator overrides
   void InsertText(const std::string& text) override;
