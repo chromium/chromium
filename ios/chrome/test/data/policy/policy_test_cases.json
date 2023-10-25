@@ -598,6 +598,44 @@
   "OptimizationGuideFetchingEnabled": {
     "reason_for_missing_test": "Policy was removed"
   },
+  "ParcelTrackingEnabled": {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "ios.parcel_tracking.policy_enabled": {
+            "location": "local_state",
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "ParcelTrackingEnabled": false
+        },
+        "prefs": {
+          "ios.parcel_tracking.policy_enabled": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ParcelTrackingEnabled": true
+        },
+        "prefs": {
+          "ios.parcel_tracking.policy_enabled": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      }
+    ]
+  },
   "PasswordManagerEnabled": {
     "os": [
       "ios"

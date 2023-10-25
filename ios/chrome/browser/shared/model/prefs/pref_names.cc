@@ -213,6 +213,10 @@ const char kIosParcelTrackingOptInStatus[] =
 const char kIosParcelTrackingOptInPromptSwipedDown[] =
     "ios.parcel_tracking.opt_in_prompt_swiped_down";
 
+// Boolean to represent if Parcel Tracking is enabled for enterprise users.
+const char kIosParcelTrackingPolicyEnabled[] =
+    "ios.parcel_tracking.policy_enabled";
+
 // The number of consecutive times the user dismissed the password bottom sheet.
 // This gets reset to 0 whenever the user selects a password from the bottom
 // sheet or from the keyboard accessory.

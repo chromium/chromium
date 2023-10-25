@@ -27,7 +27,9 @@ BASE_FEATURE(kIOSParcelTracking,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsIOSParcelTrackingEnabled() {
-  return base::FeatureList::IsEnabled(kIOSParcelTracking);
+  return base::FeatureList::IsEnabled(kIOSParcelTracking) &&
+         GetApplicationContext()->GetLocalState()->GetBoolean(
+             prefs::kIosParcelTrackingPolicyEnabled);
 }
 
 bool IsUserEligibleParcelTrackingOptInPrompt(

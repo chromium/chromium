@@ -134,6 +134,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kContextMenuPhotoSharingSettings,
     prefs::kIosSaveToPhotosContextMenuPolicySettings,
     base::Value::Type::INTEGER },
+  { policy::key::kParcelTrackingEnabled,
+    prefs::kIosParcelTrackingPolicyEnabled,
+    base::Value::Type::BOOLEAN },
 };
 // clang-format on
 
