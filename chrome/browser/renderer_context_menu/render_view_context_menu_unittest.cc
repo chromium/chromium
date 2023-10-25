@@ -606,6 +606,9 @@ class RenderViewContextMenuPrefsTest
       const net::NetworkAnonymizationKey& network_anonymization_key,
       bool success) override {
     last_preresolved_url_ = url;
+    if (!preresolved_finished_closure_.is_null()) {
+      std::move(preresolved_finished_closure_).Run();
+    }
   }
 
   void TearDown() override {
@@ -691,12 +694,18 @@ class RenderViewContextMenuPrefsTest
     return mock_rph_factory_;
   }
 
+  base::OnceClosure& preresolved_finished_closure() {
+    return preresolved_finished_closure_;
+  }
+
  private:
   std::unique_ptr<custom_handlers::ProtocolHandlerRegistry> registry_;
   std::unique_ptr<ScopedTestingLocalState> testing_local_state_;
   raw_ptr<TemplateURLService, DanglingUntriaged> template_url_service_;
   std::unique_ptr<Browser> browser_;
   GURL last_preresolved_url_;
+  base::OnceClosure preresolved_finished_closure_;
+
   content::MockRenderProcessHostFactory mock_rph_factory_;
 };
 
@@ -1724,7 +1733,9 @@ TEST_F(RenderViewContextMenuPrefsTest,
   ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
       IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE, &model, &index));
 
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  preresolved_finished_closure() = run_loop.QuitClosure();
+  run_loop.Run();
   ASSERT_EQ(last_preresolved_url().spec(), "https://lens.google.com/");
 }
 
@@ -1762,7 +1773,9 @@ TEST_F(RenderViewContextMenuPrefsTest,
       IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, &model, &index));
   EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
 
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  preresolved_finished_closure() = run_loop.QuitClosure();
+  run_loop.Run();
   ASSERT_EQ(last_preresolved_url().spec(), "https://lens.google.com/");
 }
 
@@ -1796,7 +1809,9 @@ TEST_F(RenderViewContextMenuPrefsTest,
   ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
       IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE, &model, &index));
 
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  preresolved_finished_closure() = run_loop.QuitClosure();
+  run_loop.Run();
   ASSERT_EQ(last_preresolved_url().spec(), "https://lens.google.com/");
 }
 
@@ -1831,7 +1846,9 @@ TEST_F(RenderViewContextMenuPrefsTest,
       IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, &model, &index));
   EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
 
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  preresolved_finished_closure() = run_loop.QuitClosure();
+  run_loop.Run();
   ASSERT_EQ(last_preresolved_url().spec(), "https://lens.google.com/");
 }
 
