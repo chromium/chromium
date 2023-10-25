@@ -5841,36 +5841,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.VideoCapture.MacBook.AttemptCountWhenNoCamera"
-    units="attempts" expires_after="2020-03-15">
-  <owner>chfremer@chromium.org</owner>
-  <summary>
-    Indicates how many times Chrome has asked AVFoundation to enumerate devices
-    since the process start when zero devices are returned. This event is only
-    emitted for the first time that zero devices are returned since the process
-    start. This is used in the context of investigating http://crbug.com/582931.
-  </summary>
-</histogram>
-
-<histogram name="Media.VideoCapture.MacBook.HardwareVersionWhenNoCamera"
-    enum="MacBookVersions" expires_after="M82">
-  <owner>perkj@chromium.org</owner>
-  <summary>
-    MacBook hardware version used when Chrome cannot enumerate a video device.
-    This is used for tracking http://crbug.com/582931.
-  </summary>
-</histogram>
-
-<histogram name="Media.VideoCapture.MacBook.NumberOfDevices" units="devices"
-    expires_after="M82">
-  <owner>perkj@chromium.org</owner>
-  <summary>
-    Number of video capture devices detected by Chrome during device
-    enumeration. Zero devices indicate a problem since all MacBooks should have
-    a built-in camera. This is used for tracking http://crbug.com/582931.
-  </summary>
-</histogram>
-
 <histogram name="Media.VideoCapture.NumberOfClients" units="units"
     expires_after="2021-12-12">
   <owner>fbeaufort@chromium.org</owner>
