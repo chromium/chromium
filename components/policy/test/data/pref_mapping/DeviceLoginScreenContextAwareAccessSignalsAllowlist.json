@@ -8,10 +8,6 @@
         "note": "Default value when DeviceLoginScreenContextAwareAccessSignalsAllowlist is unset.",
         "policies": {},
         "prefs": {
-          "enterprise_connectors.device_trust.origins": {
-            "default_value": [],
-            "location": "signin_profile"
-          },
           "enterprise_connectors.device_trust_user.origins": {
             "default_value": [],
             "location": "signin_profile"
@@ -28,14 +24,6 @@
           ]
         },
         "prefs": {
-          "enterprise_connectors.device_trust.origins": {
-            "location": "signin_profile",
-            "value": [
-              "https://example1.com",
-              "https://[*.]example2.com",
-              "https://foo.example3.com/path"
-            ]
-          },
           "enterprise_connectors.device_trust_user.origins": {
             "location": "signin_profile",
             "value": [

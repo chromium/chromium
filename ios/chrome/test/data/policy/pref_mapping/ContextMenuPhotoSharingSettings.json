@@ -1,0 +1,29 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ContextMenuPhotoSharingSettings": 0
+        },
+        "prefs": {
+          "ios.save_to_photos.context_menu_policy": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "ContextMenuPhotoSharingSettings": 1
+        },
+        "prefs": {
+          "ios.save_to_photos.context_menu_policy": {
+            "value": 1
+          }
+        }
+      }
+    ]
+  }
+]

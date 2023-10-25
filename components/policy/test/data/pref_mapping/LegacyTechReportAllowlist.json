@@ -25,7 +25,7 @@
           }
         },
         "prefs": {
-          "enterprise_reporting.legachy_tech.urls": {
+          "enterprise_reporting.legacy_tech.urls": {
             "value": [
               "https://www.example.com",
               "www.example.com/path",
@@ -46,7 +46,7 @@
           }
         },
         "prefs": {
-          "enterprise_reporting.legachy_tech.urls": {
+          "enterprise_reporting.legacy_tech.urls": {
             "value": []
           }
         }
