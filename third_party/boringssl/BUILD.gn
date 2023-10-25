@@ -110,6 +110,7 @@ if (enable_rust_boringssl) {
       "src/rust/bssl-crypto/src/mem.rs",
       "src/rust/bssl-crypto/src/pkey.rs",
       "src/rust/bssl-crypto/src/rand.rs",
+      "src/rust/bssl-crypto/src/test_helpers.rs",
       "src/rust/bssl-crypto/src/x25519.rs",
     ]
     edition = "2021"
