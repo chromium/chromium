@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
 
@@ -27,13 +28,34 @@ class PinnedToolbarActionsContainer
     : public ToolbarIconContainerView,
       public PinnedToolbarActionsModel::Observer {
  public:
+  class PinnedActionToolbarButton : public ToolbarButton {
+   public:
+    PinnedActionToolbarButton(Browser* browser, actions::ActionId action_id);
+    ~PinnedActionToolbarButton() override;
+
+    actions::ActionId GetActionId();
+
+    void ButtonPressed();
+
+    void AddHighlight();
+    void ResetHighlight();
+
+   private:
+    void ActionItemChanged();
+
+    raw_ptr<actions::ActionItem> action_item_ = nullptr;
+    base::CallbackListSubscription action_changed_subscription_;
+    // Used to ensure the button remains highlighted while active.
+    absl::optional<Button::ScopedAnchorHighlight> anchor_higlight_;
+  };
+
   explicit PinnedToolbarActionsContainer(BrowserView* browser_view);
   PinnedToolbarActionsContainer(const PinnedToolbarActionsContainer&) = delete;
   PinnedToolbarActionsContainer& operator=(
       const PinnedToolbarActionsContainer&) = delete;
   ~PinnedToolbarActionsContainer() override;
 
-  ToolbarButton* GetPinnedButtonFor(const actions::ActionId& id);
+  void UpdateActionState(actions::ActionId id, bool is_active);
 
   // ToolbarIconContainerView:
   void UpdateAllIcons() override;
@@ -47,25 +69,12 @@ class PinnedToolbarActionsContainer
   void OnActionsChanged() override {}
 
  private:
-  class PinnedActionToolbarButton : public ToolbarButton {
-   public:
-    PinnedActionToolbarButton(Browser* browser, actions::ActionId action_id);
-    ~PinnedActionToolbarButton() override;
-
-    actions::ActionId GetActionId();
-
-    void ButtonPressed();
-
-   private:
-    void ActionItemChanged();
-
-    raw_ptr<actions::ActionItem> action_item_ = nullptr;
-    base::CallbackListSubscription action_changed_subscription_;
-  };
+  friend class PinnedSidePanelInteractiveTest;
 
   void CreatePinnedActionButtons();
   void AddPinnedActionButtonFor(const actions::ActionId& id);
   void RemovePinnedActionButtonFor(const actions::ActionId& id);
+  PinnedActionToolbarButton* GetPinnedButtonFor(const actions::ActionId& id);
   SidePanelCoordinator* GetSidePanelCoordinator();
 
   const raw_ptr<BrowserView> browser_view_;
