@@ -16280,6 +16280,15 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </message>
 
     <!-- Isolated Web App installer. -->
+    <message name="IDS_IWA_INSTALLER_DISABLED_TITLE" desc="Title of the feature disabled screen of the Isolated Web App installer">
+      This app can’t be opened because you do not have permission to run isolated web apps
+    </message>
+    <message name="IDS_IWA_INSTALLER_DISABLED_CHANGE_PREFERENCE" desc="Link to a settings page to enable/disable Isolated Web Apps">
+      Change your preferences
+    </message>
+    <message name="IDS_IWA_INSTALLER_DISABLED_SUBTITLE" desc="Subtitle of the feature disabled screen of the IWA installer. $1 = IDS_IWA_INSTALLER_DISABLED_CHANGE_PREFERENCE">
+      You security preferences do not allow installations of Isolated Apps. <ph name="CHANGE_PREFERENCE">$1<ex>Change your preferences</ex></ph>
+    </message>
     <message name="IDS_IWA_INSTALLER_VERIFICATION_TITLE" desc="Title of the verification step of the IWA installation">
       Chrome is verifying the installation bundle
     </message>

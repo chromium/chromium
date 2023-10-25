@@ -111,6 +111,7 @@ void IsolatedWebAppInstallerViewController::OnModelChanged() {
   // TODO(crbug.com/1479140): Configure Install/Cancel buttons for all screens
   switch (model_->step()) {
     case IsolatedWebAppInstallerModel::Step::kDisabled:
+      dialog_delegate_->SetButtons(ui::DIALOG_BUTTON_CANCEL);
       view_->ShowDisabledScreen();
       break;
 

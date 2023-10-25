@@ -38,6 +38,7 @@ std::string ParamToTestSuffix(const ::testing::TestParamInfo<TestParam>& info) {
 }
 
 const TestParam kTestParam[] = {
+    {.test_suffix = "Disabled", .step = Step::kDisabled},
     {.test_suffix = "GetMetadata", .step = Step::kGetMetadata},
 };
 
