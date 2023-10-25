@@ -18369,6 +18369,19 @@
             ]
         }
     ],
+    "TurndownZine": [
+        {
+            "platforms": [
+                "android",
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled"
+                }
+            ]
+        }
+    ],
     "UIEnableSharedImageCacheForGpu": [
         {
             "platforms": [
