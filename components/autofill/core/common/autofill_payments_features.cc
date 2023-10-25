@@ -205,7 +205,7 @@ BASE_FEATURE(kAutofillSuggestServerCardInsteadOfLocalCard,
 // the legacy Payments Center.
 BASE_FEATURE(kAutofillUpdateChromeSettingsLinkToGPayWeb,
              "AutofillUpdateChromeSettingsLinkToGPayWeb",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls offering credit card upload to Google Payments. Cannot ever be
 // ENABLED_BY_DEFAULT because the feature state depends on the user's country.
