@@ -221,14 +221,17 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
     case RequestType::kDiskQuota:
       message_id = IDS_REQUEST_QUOTA_PERMISSION_FRAGMENT;
       break;
-    case RequestType::kLocalFonts:
-      message_id = IDS_FONT_ACCESS_PERMISSION_FRAGMENT;
+    case RequestType::kFileSystemAccess:
+      message_id = IDS_SITE_SETTINGS_TYPE_FILE_SYSTEM_ACCESS_WRITE;
       break;
     case RequestType::kGeolocation:
       message_id = IDS_GEOLOCATION_INFOBAR_PERMISSION_FRAGMENT;
       break;
     case RequestType::kIdleDetection:
       message_id = IDS_IDLE_DETECTION_PERMISSION_FRAGMENT;
+      break;
+    case RequestType::kLocalFonts:
+      message_id = IDS_FONT_ACCESS_PERMISSION_FRAGMENT;
       break;
     case RequestType::kMicStream:
       message_id = IDS_MEDIA_CAPTURE_AUDIO_ONLY_PERMISSION_FRAGMENT;

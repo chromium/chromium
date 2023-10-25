@@ -13,6 +13,7 @@
 #include "base/json/values_util.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_file_util.h"
@@ -34,6 +35,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/render_process_host.h"
@@ -172,6 +174,7 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
   // context.
   PermissionRequestOutcome TriggerRestorePermissionPromptAfterBeingBackgrounded(
       const url::Origin& origin) {
+    base::HistogramTester histograms;
     auto grant1 = permission_context()->GetReadPermissionGrant(
         kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
     auto grant2 = permission_context()->GetReadPermissionGrant(
@@ -180,10 +183,17 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
     EXPECT_EQ(grant2->GetStatus(), PermissionStatus::GRANTED);
 
     // Dormant grants exist after tabs are backgrounded for the amount of time
-    // specified by the extended permissions policy.
+    // specified by the extended permissions policy, and the corresponding
+    // histogram is recorded.
     permission_context()->OnAllTabsInBackgroundTimerExpired(
         kTestOrigin,
         OneTimePermissionsTrackerObserver::BackgroundExpiryType::kLongTimeout);
+    histograms.ExpectBucketCount(
+        permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
+            ContentSettingsType::FILE_SYSTEM_WRITE_GUARD),
+        static_cast<base::HistogramBase::Sample>(
+            permissions::OneTimePermissionEvent::EXPIRED_IN_BACKGROUND),
+        1);
     EXPECT_EQ(grant1->GetStatus(), PermissionStatus::ASK);
     EXPECT_EQ(grant2->GetStatus(), PermissionStatus::ASK);
 

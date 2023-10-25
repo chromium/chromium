@@ -134,6 +134,8 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
     case RequestType::kWindowManagement:
       return cr23 ? vector_icons::kSelectWindowChromeRefreshIcon
                   : vector_icons::kSelectWindowIcon;
+    case RequestType::kFileSystemAccess:
+      return vector_icons::kFolderIcon;
   }
   NOTREACHED();
   return gfx::kNoneIcon;
@@ -238,6 +240,10 @@ absl::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
 #endif
     case ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS:
       return RequestType::kTopLevelStorageAccess;
+#if !BUILDFLAG(IS_ANDROID)
+    case ContentSettingsType::FILE_SYSTEM_WRITE_GUARD:
+      return RequestType::kFileSystemAccess;
+#endif
     default:
       return absl::nullopt;
   }
@@ -357,13 +363,17 @@ const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
     case permissions::RequestType::kDiskQuota:
       return "disk_quota";
 #if !BUILDFLAG(IS_ANDROID)
-    case permissions::RequestType::kLocalFonts:
-      return "local_fonts";
+    case permissions::RequestType::kFileSystemAccess:
+      return "file_system";
 #endif
     case permissions::RequestType::kGeolocation:
       return "geolocation";
     case permissions::RequestType::kIdleDetection:
       return "idle_detection";
+#if !BUILDFLAG(IS_ANDROID)
+    case permissions::RequestType::kLocalFonts:
+      return "local_fonts";
+#endif
     case permissions::RequestType::kMicStream:
       return "mic_stream";
     case permissions::RequestType::kMidi:

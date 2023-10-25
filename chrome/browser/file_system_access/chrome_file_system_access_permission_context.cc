@@ -43,6 +43,7 @@
 #include "components/permissions/features.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
@@ -1979,9 +1980,9 @@ void ChromeFileSystemAccessPermissionContext::OnAllTabsInBackgroundTimerExpired(
   }
   SetPersistedGrantStatus(origin, PersistedGrantStatus::kBackgrounded);
   if (RevokeActiveGrants(origin)) {
-    // TODO(crbug.com/1011533): Add `RecordOneTimePermissionEvent` UMA
-    // histogram logging when active grants are revoked as a result of tab
-    // backgrounding.
+    permissions::PermissionUmaUtil::RecordOneTimePermissionEvent(
+        ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
+        permissions::OneTimePermissionEvent::EXPIRED_IN_BACKGROUND);
     ScheduleUsageIconUpdate();
   }
 }
