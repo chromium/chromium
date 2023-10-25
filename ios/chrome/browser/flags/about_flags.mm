@@ -1584,6 +1584,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSyncSessionOnVisibilityChangedDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(syncer::kSyncSessionOnVisibilityChanged)},
+    {"enable-save-to-drive", flag_descriptions::kIOSSaveToDriveName,
+     flag_descriptions::kIOSSaveToDriveDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIOSSaveToDrive)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

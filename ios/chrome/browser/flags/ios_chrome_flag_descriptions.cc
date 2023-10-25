@@ -592,6 +592,10 @@ const char kIOSPasswordUISplitDescription[] =
     "Splits Password Settings and "
     "Password Manager into two separate UIs.";
 
+const char kIOSSaveToDriveName[] = "IOS Save to Drive";
+const char kIOSSaveToDriveDescription[] =
+    "Enables the Save to Drive feature on iOS.";
+
 const char kIOSSaveToPhotosName[] = "IOS Save to Photos";
 const char kIOSSaveToPhotosDescription[] =
     "Enables the Save to Photos feature on iOS.";

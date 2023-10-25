@@ -244,6 +244,9 @@ bool IsSafetyCheckMagicStackEnabled();
 // ChromeTableViewController.
 BASE_DECLARE_FEATURE(kBlockSimultaneousCellSelectionKillSwitch);
 
+// Feature flag enabling Save to Drive.
+BASE_DECLARE_FEATURE(kIOSSaveToDrive);
+
 // Feature flag enabling Save to Photos.
 BASE_DECLARE_FEATURE(kIOSSaveToPhotos);
 
