@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/css/part_names.h"
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/css/style_scope_data.h"
 #include "third_party/blink/renderer/core/dom/css_toggle.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -2441,6 +2442,15 @@ const Element* ActivationCeiling(const StyleScopeActivation& activation) {
   return shadow_root ? &shadow_root->host() : nullptr;
 }
 
+// True if this StyleScope has an implicit root at the specified element.
+// This is used to find the roots for prelude-less @scope rules.
+bool HasImplicitRoot(const StyleScope& style_scope, Element& element) {
+  if (const StyleScopeData* style_scope_data = element.GetStyleScopeData()) {
+    return style_scope_data->TriggersScope(style_scope);
+  }
+  return false;
+}
+
 }  // namespace
 
 const StyleScopeActivations& SelectorChecker::EnsureActivations(
@@ -2557,7 +2567,7 @@ const StyleScopeActivations* SelectorChecker::CalculateActivations(
               ? MatchesWithScope(element, *style_scope.From(),
                                  outer_activation.root, match_visited,
                                  activations->match_flags)
-              : style_scope.HasImplicitRoot(&element)) {
+              : HasImplicitRoot(style_scope, element)) {
         StyleScopeActivation activation{&element, 0};
         // It's possible for a newly created activation to be immediately
         // limited (e.g. @scope (.x) to (.x)).

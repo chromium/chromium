@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
-class Element;
+
 class StyleRule;
 class StyleSheetContents;
 
@@ -61,10 +61,6 @@ class CORE_EXPORT StyleScope final : public GarbageCollected<StyleScope> {
 
   // https://drafts.csswg.org/css-cascade-6/#implicit-scope
   bool IsImplicit() const { return contents_ != nullptr; }
-
-  // True if this StyleScope has an implicit root at the specified element.
-  // This is used to find the roots for prelude-less @scope rules.
-  bool HasImplicitRoot(Element*) const;
 
  private:
   // If `contents_` is not nullptr, then this is a prelude-less @scope rule
