@@ -261,6 +261,7 @@ IndexedDBBucketContext::Delegate::Delegate()
     : on_tasks_available(base::DoNothing()),
       on_fatal_error(base::DoNothing()),
       on_content_changed(base::DoNothing()),
+      on_writing_transaction_complete(base::DoNothing()),
       for_each_bucket_context(base::DoNothing()) {}
 
 IndexedDBBucketContext::Delegate::Delegate(Delegate&& other) = default;

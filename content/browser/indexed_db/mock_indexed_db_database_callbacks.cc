@@ -5,7 +5,6 @@
 #include "content/browser/indexed_db/mock_indexed_db_database_callbacks.h"
 
 #include "base/task/sequenced_task_runner.h"
-#include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -13,7 +12,6 @@ namespace content {
 
 MockIndexedDBDatabaseCallbacks::MockIndexedDBDatabaseCallbacks()
     : IndexedDBDatabaseCallbacks(
-          scoped_refptr<IndexedDBContextImpl>(nullptr),
           mojo::NullAssociatedRemote(),
           base::SequencedTaskRunner::GetCurrentDefault().get()),
       abort_called_(false),

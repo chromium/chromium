@@ -135,10 +135,17 @@ class CONTENT_EXPORT IndexedDBBucketContext {
     // destroyed after this is invoked.
     base::RepeatingCallback<void(leveldb::Status)> on_fatal_error;
 
-    // Called when database content has changed.
+    // Called when database content has changed. Technically this is called when
+    // the content *probably will* change --- it's invoked before a transaction
+    // is actually committed --- but it's only used for devtools so accuracy
+    // isn't that important.
     base::RepeatingCallback<void(const std::u16string& /*database_name*/,
                                  const std::u16string& /*object_store_name*/)>
         on_content_changed;
+
+    // Called to inform the quota system that a transaction which may have
+    // updated the amount of disk space used has completed.
+    base::RepeatingClosure on_writing_transaction_complete;
 
     // Called to run a given callback on every bucket context (including the one
     // in the current sequence and those in other sequences/associated with

@@ -16,7 +16,6 @@
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
 namespace content {
-class IndexedDBContextImpl;
 class IndexedDBDatabaseError;
 class IndexedDBTransaction;
 
@@ -25,7 +24,6 @@ class CONTENT_EXPORT IndexedDBDatabaseCallbacks
     : public base::RefCounted<IndexedDBDatabaseCallbacks> {
  public:
   IndexedDBDatabaseCallbacks(
-      scoped_refptr<IndexedDBContextImpl> context,
       mojo::PendingAssociatedRemote<blink::mojom::IDBDatabaseCallbacks>
           callbacks_remote,
       base::SequencedTaskRunner* idb_runner);
@@ -48,7 +46,6 @@ class CONTENT_EXPORT IndexedDBDatabaseCallbacks
   friend class base::RefCounted<IndexedDBDatabaseCallbacks>;
 
   bool complete_ = false;
-  scoped_refptr<IndexedDBContextImpl> indexed_db_context_;
   mojo::AssociatedRemote<blink::mojom::IDBDatabaseCallbacks> callbacks_;
   SEQUENCE_CHECKER(sequence_checker_);
 };

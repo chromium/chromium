@@ -212,11 +212,6 @@ class CONTENT_EXPORT IndexedDBFactory
       bool is_first_attempt,
       bool create_if_missing);
 
-  void NotifyIndexedDBContentChanged(
-      const storage::BucketLocator& bucket_locator,
-      const std::u16string& database_name,
-      const std::u16string& object_store_name);
-
   void ForEachBucketContext(IndexedDBBucketContext::InstanceClosure callback);
 
   // Called when the database has been deleted on disk.
@@ -233,7 +228,7 @@ class CONTENT_EXPORT IndexedDBFactory
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  // Raw pointer is safe because IndexedDBContextImpl owns this object.
+  // This will be set to null after `ContextDestroyed` is called.
   raw_ptr<IndexedDBContextImpl> context_;
   const raw_ptr<base::Clock> clock_;
 

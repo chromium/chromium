@@ -626,8 +626,14 @@ leveldb::Status IndexedDBTransaction::CommitPhaseTwo() {
           "txn.id", id());
       callbacks_->OnComplete(*this);
     }
-    if (database_)
+
+    if (mode() != blink::mojom::IDBTransactionMode::ReadOnly) {
+      bucket_context_->delegate().on_writing_transaction_complete.Run();
+    }
+
+    if (database_) {
       database_->TransactionFinished(mode_, true);
+    }
     return s;
   } else {
     while (!abort_task_stack_.empty())

@@ -293,8 +293,7 @@ void IndexedDBFactory::Open(
   auto callbacks = std::make_unique<IndexedDBFactoryClient>(
       std::move(pending_factory_client), context_->IDBTaskRunner());
   auto database_callbacks = base::MakeRefCounted<IndexedDBDatabaseCallbacks>(
-      context_.get(), std::move(database_callbacks_remote),
-      context_->IDBTaskRunner().get());
+      std::move(database_callbacks_remote), context_->IDBTaskRunner().get());
 
   const storage::BucketLocator bucket_locator = bucket->ToBucketLocator();
   const base::FilePath data_directory = context_->GetDataPath(bucket_locator);
@@ -535,7 +534,7 @@ V2SchemaCorruptionStatus IndexedDBFactory::HasV2SchemaCorruption(
 
 void IndexedDBFactory::ContextDestroyed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Set `context_` to nullptr first to ensure no re-entry into the `cotext_`
+  // Set `context_` to nullptr first to ensure no re-entry into the `context_`
   // object during shutdown. This can happen in methods like BlobFilesCleaned.
   context_ = nullptr;
   // Invalidate the weak factory that is used by the IndexedDBBucketContexts
@@ -584,18 +583,6 @@ size_t IndexedDBFactory::GetConnectionCount(storage::BucketId bucket_id) const {
   }
 
   return count;
-}
-
-void IndexedDBFactory::NotifyIndexedDBContentChanged(
-    const storage::BucketLocator& bucket_locator,
-    const std::u16string& database_name,
-    const std::u16string& object_store_name) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!context_) {
-    return;
-  }
-  context_->NotifyIndexedDBContentChanged(bucket_locator, database_name,
-                                          object_store_name);
 }
 
 void IndexedDBFactory::ForEachBucketContext(
@@ -799,9 +786,25 @@ IndexedDBFactory::GetOrCreateBucketContext(const storage::BucketInfo& bucket,
         factory->OnDatabaseError(bucket_locator, s, nullptr);
       },
       bucket_locator, weak_factory_.GetWeakPtr());
-  bucket_delegate.on_content_changed =
-      base::BindRepeating(&IndexedDBFactory::NotifyIndexedDBContentChanged,
-                          weak_factory_.GetWeakPtr(), bucket_locator);
+  bucket_delegate.on_content_changed = base::BindRepeating(
+      [](base::WeakPtr<IndexedDBFactory> factory,
+         storage::BucketLocator bucket_locator,
+         const std::u16string& database_name,
+         const std::u16string& object_store_name) {
+        if (factory) {
+          factory->context_->NotifyIndexedDBContentChanged(
+              bucket_locator, database_name, object_store_name);
+        }
+      },
+      bucket_context_destruction_weak_factory_.GetWeakPtr(), bucket_locator);
+  bucket_delegate.on_writing_transaction_complete = base::BindRepeating(
+      [](base::WeakPtr<IndexedDBFactory> factory,
+         storage::BucketLocator bucket_locator) {
+        if (factory) {
+          factory->context_->WritingTransactionComplete(bucket_locator);
+        }
+      },
+      bucket_context_destruction_weak_factory_.GetWeakPtr(), bucket_locator);
   bucket_delegate.for_each_bucket_context = base::BindRepeating(
       &IndexedDBFactory::ForEachBucketContext, weak_factory_.GetWeakPtr());
 
