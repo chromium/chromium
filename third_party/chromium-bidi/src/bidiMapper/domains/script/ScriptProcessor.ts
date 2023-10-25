@@ -24,6 +24,7 @@ import {
 import type {LoggerFn} from '../../../utils/log';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage';
 import type {CdpTarget} from '../context/CdpTarget';
+import type {BrowsingContextImpl} from '../context/BrowsingContextImpl';
 
 import type {PreloadScriptStorage} from './PreloadScriptStorage';
 import {PreloadScript} from './PreloadScript';
@@ -51,6 +52,7 @@ export class ScriptProcessor {
   async addPreloadScript(
     params: Script.AddPreloadScriptParameters
   ): Promise<Script.AddPreloadScriptResult> {
+    const contexts = new Set<BrowsingContextImpl>();
     if (params.contexts) {
       // XXX: Remove once https://github.com/google/cddlconv/issues/16 is implemented
       if (params.contexts.length === 0) {
@@ -59,7 +61,9 @@ export class ScriptProcessor {
 
       for (const contextId of params.contexts) {
         const context = this.#browsingContextStorage.getContext(contextId);
-        if (!context.isTopLevelContext()) {
+        if (context.isTopLevelContext()) {
+          contexts.add(context);
+        } else {
           throw new InvalidArgumentException(
             `Non top-level context '${contextId}' given.`
           );
@@ -70,11 +74,16 @@ export class ScriptProcessor {
     const preloadScript = new PreloadScript(params, this.#logger);
     this.#preloadScriptStorage.add(preloadScript);
 
-    const cdpTargets = new Set<CdpTarget>(
-      this.#browsingContextStorage
-        .getTopLevelContexts()
-        .map((context) => context.cdpTarget)
-    );
+    const cdpTargets =
+      contexts.size === 0
+        ? new Set<CdpTarget>(
+            this.#browsingContextStorage
+              .getTopLevelContexts()
+              .map((context) => context.cdpTarget)
+          )
+        : new Set<CdpTarget>(
+            [...contexts.values()].map((context) => context.cdpTarget)
+          );
 
     await preloadScript.initInTargets(cdpTargets, false);
 

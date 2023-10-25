@@ -18,7 +18,7 @@
 
 import type Protocol from 'devtools-protocol';
 
-import type {Script} from '../../../protocol/protocol.js';
+import type {BrowsingContext, Script} from '../../../protocol/protocol.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import type {CdpTarget} from '../context/CdpTarget.js';
 import type {LoggerFn} from '../../../utils/log.js';
@@ -55,6 +55,8 @@ export class PreloadScript {
   readonly #channels: ChannelProxy[];
   /** The script sandbox / world name. */
   readonly #sandbox?: string;
+  /** The browsing contexts to execute the preload scripts in, if any. */
+  readonly #contexts?: BrowsingContext.BrowsingContext[];
 
   get id(): string {
     return this.#id;
@@ -69,11 +71,17 @@ export class PreloadScript {
       params.arguments?.map((a) => new ChannelProxy(a.value, logger)) ?? [];
     this.#functionDeclaration = params.functionDeclaration;
     this.#sandbox = params.sandbox;
+    this.#contexts = params.contexts;
   }
 
   /** Channels of the preload script. */
   get channels(): ChannelProxy[] {
     return this.#channels;
+  }
+
+  /** Contexts of the preload script, if any */
+  get contexts(): BrowsingContext.BrowsingContext[] | undefined {
+    return this.#contexts;
   }
 
   /**
