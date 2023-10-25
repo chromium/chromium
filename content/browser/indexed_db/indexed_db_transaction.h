@@ -27,6 +27,7 @@
 #include "content/browser/indexed_db/indexed_db_external_object_storage.h"
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
 
 namespace content {
@@ -47,7 +48,8 @@ FORWARD_DECLARE_TEST(IndexedDBTransactionTest, Timeout);
 FORWARD_DECLARE_TEST(IndexedDBTransactionTest, TimeoutPreemptive);
 }  // namespace indexed_db_transaction_unittest
 
-class CONTENT_EXPORT IndexedDBTransaction {
+class CONTENT_EXPORT IndexedDBTransaction
+    : public blink::mojom::IDBTransaction {
  public:
   using Operation = base::OnceCallback<leveldb::Status(IndexedDBTransaction*)>;
   using AbortOperation = base::OnceClosure;
@@ -69,7 +71,11 @@ class CONTENT_EXPORT IndexedDBTransaction {
       blink::mojom::IDBTransactionMode mode,
       IndexedDBBucketContextHandle bucket_context,
       IndexedDBBackingStore::Transaction* backing_store_transaction);
-  ~IndexedDBTransaction();
+  ~IndexedDBTransaction() override;
+
+  void BindReceiver(
+      mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction>
+          mojo_receiver);
 
   // Signals the transaction for commit.
   void SetCommitFlag();
@@ -78,6 +84,12 @@ class CONTENT_EXPORT IndexedDBTransaction {
   // process of committing, or finished committing or was aborted. Essentially
   // when this returns false no tasks should be scheduled that try to modify
   // the transaction.
+  // TODO(https://crbug.com/1249908): If the transaction was already committed
+  // (or is in the process of being committed), and this object receives a new
+  // Mojo message, we should kill the renderer. This branch however also
+  // includes cases where the browser process aborted the transaction, as
+  // currently we don't distinguish that state from the transaction having been
+  // committed. So for now simply ignore the request.
   bool IsAcceptingRequests() {
     return !is_commit_pending_ && state_ != COMMITTING && state_ != FINISHED;
   }
@@ -111,7 +123,7 @@ class CONTENT_EXPORT IndexedDBTransaction {
   std::tuple<RunTasksResult, leveldb::Status> RunTasks();
 
   IndexedDBBackingStore::Transaction* BackingStoreTransaction() {
-    return transaction_.get();
+    return backing_store_transaction_.get();
   }
   int64_t id() const { return id_; }
 
@@ -122,9 +134,6 @@ class CONTENT_EXPORT IndexedDBTransaction {
   int64_t num_errors_sent() const { return num_errors_sent_; }
   int64_t num_errors_handled() const { return num_errors_handled_; }
   void IncrementNumErrorsSent() { ++num_errors_sent_; }
-  void SetNumErrorsHandled(int64_t num_errors_handled) {
-    num_errors_handled_ = num_errors_handled;
-  }
 
   State state() const { return state_; }
   bool aborted() const { return aborted_; }
@@ -184,7 +193,29 @@ class CONTENT_EXPORT IndexedDBTransaction {
       indexed_db_transaction_unittest::IndexedDBTransactionTest,
       TimeoutPreemptive);
 
-  leveldb::Status Commit();
+  // blink::mojom::IDBTransaction:
+  void CreateObjectStore(int64_t object_store_id,
+                         const std::u16string& name,
+                         const blink::IndexedDBKeyPath& key_path,
+                         bool auto_increment) override;
+  void DeleteObjectStore(int64_t object_store_id) override;
+  void Put(int64_t object_store_id,
+           blink::mojom::IDBValuePtr value,
+           const blink::IndexedDBKey& key,
+           blink::mojom::IDBPutMode mode,
+           const std::vector<blink::IndexedDBIndexKeys>& index_keys,
+           blink::mojom::IDBTransaction::PutCallback callback) override;
+  void Commit(int64_t num_errors_handled) override;
+
+  void OnQuotaCheckDone(bool allowed);
+
+  // Turns an IDBValue into a set of IndexedDBExternalObjects in
+  // |external_objects|.
+  uint64_t CreateExternalObjects(
+      blink::mojom::IDBValuePtr& value,
+      std::vector<IndexedDBExternalObject>* external_objects);
+
+  leveldb::Status DoPendingCommit();
 
   // Helper for posting a task to call IndexedDBTransaction::CommitPhaseTwo when
   // we know the transaction had no requests and therefore the commit must
@@ -259,7 +290,8 @@ class CONTENT_EXPORT IndexedDBTransaction {
   TaskQueue preemptive_task_queue_;
   TaskStack abort_task_stack_;
 
-  std::unique_ptr<IndexedDBBackingStore::Transaction> transaction_;
+  std::unique_ptr<IndexedDBBackingStore::Transaction>
+      backing_store_transaction_;
   bool backing_store_transaction_begun_ = false;
 
   int pending_preemptive_events_ = 0;
@@ -268,6 +300,26 @@ class CONTENT_EXPORT IndexedDBTransaction {
 
   int64_t num_errors_sent_ = 0;
   int64_t num_errors_handled_ = 0;
+
+  // In bytes, the estimated additional space used on disk after this
+  // transaction is committed. Note that this is a very approximate view of the
+  // changes associated with this transaction:
+  //
+  //   * It ignores the additional overhead needed for meta records such as
+  //     object stores.
+  //   * It ignores compression which may be applied before rows are flushed to
+  //     disk.
+  //   * It ignores space freed up by deletions, which currently flow through
+  //     DatabaseImpl::DeleteRange(), and which can't easily be calculated a
+  //     priori.
+  //
+  // As such, it's only useful as a rough upper bound for the amount of
+  // additional space required by this transaction, used to abandon transactions
+  // that would likely exceed quota caps, but not used to calculate ultimate
+  // quota usage.
+  //
+  // See crbug.com/1493696 for discussion of how this should be improved.
+  int64_t preliminary_size_estimate_ = 0;
 
   std::set<IndexedDBCursor*> open_cursors_;
 
@@ -279,6 +331,8 @@ class CONTENT_EXPORT IndexedDBTransaction {
   base::OneShotTimer timeout_timer_;
 
   Diagnostics diagnostics_;
+
+  mojo::AssociatedReceiver<blink::mojom::IDBTransaction> receiver_;
 
   base::WeakPtrFactory<IndexedDBTransaction> ptr_factory_{this};
 };

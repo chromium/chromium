@@ -17,7 +17,6 @@
 #include "content/browser/indexed_db/indexed_db_callback_helpers.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
-#include "content/browser/indexed_db/transaction_impl.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "third_party/blink/public/common/features.h"
@@ -135,15 +134,13 @@ void DatabaseImpl::CreateTransaction(
   }
 
   IndexedDBTransaction* transaction = connection_->CreateTransaction(
-      transaction_id,
+      std::move(transaction_receiver), transaction_id,
       std::set<int64_t>(object_store_ids.begin(), object_store_ids.end()), mode,
       connection_->database()
           ->backing_store()
           ->CreateTransaction(durability, mode)
           .release());
   connection_->database()->RegisterAndScheduleTransaction(transaction);
-  TransactionImpl::CreateAndBind(std::move(transaction_receiver),
-                                 transaction->AsWeakPtr());
 }
 
 void DatabaseImpl::Close() {

@@ -88,7 +88,7 @@ class IndexedDBConnectionCoordinator::ConnectionRequest {
   virtual void OnNoConnections() = 0;
 
   // Called when the transaction should be bound.
-  virtual void CreateAndBindTransaction() = 0;
+  virtual void BindTransactionReceiver() = 0;
 
   // Called when the upgrade transaction has started executing.
   virtual void UpgradeTransactionStarted(int64_t old_version) = 0;
@@ -318,16 +318,17 @@ class IndexedDBConnectionCoordinator::OpenRequest
     std::vector<int64_t> object_store_ids;
 
     state_ = RequestState::kPendingTransactionComplete;
-    IndexedDBTransaction* transaction = connection_->CreateTransaction(
-        pending_->transaction_id,
-        std::set<int64_t>(object_store_ids.begin(), object_store_ids.end()),
-        blink::mojom::IDBTransactionMode::VersionChange,
-        db_->backing_store()
-            ->CreateTransaction(blink::mojom::IDBTransactionDurability::Strict,
-                                blink::mojom::IDBTransactionMode::ReadWrite)
-            .release());
+    IndexedDBTransaction* transaction =
+        connection_->CreateVersionChangeTransaction(
+            pending_->transaction_id,
+            std::set<int64_t>(object_store_ids.begin(), object_store_ids.end()),
+            db_->backing_store()
+                ->CreateTransaction(
+                    blink::mojom::IDBTransactionDurability::Strict,
+                    blink::mojom::IDBTransactionMode::ReadWrite)
+                .release());
 
-    // Save a WeakPtr<IndexedDBTransaction> for the CreateAndBindTransaction
+    // Save a WeakPtr<IndexedDBTransaction> for the BindTransactionReceiver
     // function to use later.
     pending_->transaction = transaction->AsWeakPtr();
 
@@ -339,10 +340,10 @@ class IndexedDBConnectionCoordinator::OpenRequest
     transaction->Start();
   }
 
-  void CreateAndBindTransaction() override {
-    if (pending_->create_transaction_callback && pending_->transaction) {
-      std::move(pending_->create_transaction_callback)
-          .Run(std::move(pending_->transaction));
+  void BindTransactionReceiver() override {
+    if (pending_->transaction) {
+      pending_->transaction->BindReceiver(
+          std::move(pending_->pending_mojo_receiver));
     }
   }
 
@@ -539,7 +540,7 @@ class IndexedDBConnectionCoordinator::DeleteRequest
     state_ = RequestState::kDone;
   }
 
-  void CreateAndBindTransaction() override { NOTREACHED(); }
+  void BindTransactionReceiver() override { NOTREACHED(); }
 
   void UpgradeTransactionStarted(int64_t old_version) override { NOTREACHED(); }
 
@@ -638,12 +639,12 @@ void IndexedDBConnectionCoordinator::OnUpgradeTransactionStarted(
   request_queue_.front()->UpgradeTransactionStarted(old_version);
 }
 
-void IndexedDBConnectionCoordinator::CreateAndBindUpgradeTransaction() {
+void IndexedDBConnectionCoordinator::BindVersionChangeTransactionReceiver() {
   if (request_queue_.empty() || request_queue_.front()->state() !=
                                     RequestState::kPendingTransactionComplete) {
     return;
   }
-  request_queue_.front()->CreateAndBindTransaction();
+  request_queue_.front()->BindTransactionReceiver();
 }
 
 void IndexedDBConnectionCoordinator::OnUpgradeTransactionFinished(

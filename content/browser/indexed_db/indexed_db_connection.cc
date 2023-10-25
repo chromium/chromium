@@ -15,6 +15,7 @@
 #include "content/browser/indexed_db/indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -111,18 +112,34 @@ bool IndexedDBConnection::IsConnected() {
   return callbacks_.get();
 }
 
+IndexedDBTransaction* IndexedDBConnection::CreateVersionChangeTransaction(
+    int64_t id,
+    const std::set<int64_t>& scope,
+    IndexedDBBackingStore::Transaction* backing_store_transaction) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(GetTransaction(id), nullptr) << "Duplicate transaction id." << id;
+  return (transactions_[id] = std::make_unique<IndexedDBTransaction>(
+              id, this, scope, blink::mojom::IDBTransactionMode::VersionChange,
+              bucket_context_handle_, backing_store_transaction))
+      .get();
+}
+
 IndexedDBTransaction* IndexedDBConnection::CreateTransaction(
+    mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction>
+        transaction_receiver,
     int64_t id,
     const std::set<int64_t>& scope,
     blink::mojom::IDBTransactionMode mode,
     IndexedDBBackingStore::Transaction* backing_store_transaction) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(GetTransaction(id), nullptr) << "Duplicate transaction id." << id;
-  auto transaction = std::make_unique<IndexedDBTransaction>(
-      id, this, scope, mode, bucket_context_handle_, backing_store_transaction);
-  IndexedDBTransaction* transaction_ptr = transaction.get();
-  transactions_[id] = std::move(transaction);
-  return transaction_ptr;
+  IndexedDBTransaction* transaction =
+      (transactions_[id] = std::make_unique<IndexedDBTransaction>(
+           id, this, scope, mode, bucket_context_handle_,
+           backing_store_transaction))
+          .get();
+  transaction->BindReceiver(std::move(transaction_receiver));
+  return transaction;
 }
 
 void IndexedDBConnection::AbortTransactionAndTearDownOnError(
