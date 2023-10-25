@@ -14,7 +14,6 @@ namespace blink {
 class QualifiedName;
 
 namespace style_change_reason {
-extern const char kAccessibility[];
 extern const char kActiveStylesheetsUpdate[];
 extern const char kAnimation[];
 extern const char kAttribute[];

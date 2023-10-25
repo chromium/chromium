@@ -738,10 +738,10 @@ class CORE_EXPORT Document : public ContainerNode,
   // Gets the description for the specified page. This includes preferred page
   // size and margins in pixels, assuming 96 pixels per inch. The size and
   // margins must be initialized to the default values that are used if auto is
-  // specified. Updates layout as needed to get the description.
+  // specified. Note that, if the |page_index| variant of the function is used,
+  // layout needs to be complete, since page names are determined during layout.
   void GetPageDescription(uint32_t page_index, WebPrintPageDescription*);
-  void GetPageDescriptionNoLifecycleUpdate(const ComputedStyle&,
-                                           WebPrintPageDescription*);
+  void GetPageDescription(const ComputedStyle&, WebPrintPageDescription*);
 
   ResourceFetcher* Fetcher() const { return fetcher_.Get(); }
 

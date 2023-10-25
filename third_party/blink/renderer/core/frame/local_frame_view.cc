@@ -3976,8 +3976,6 @@ void LocalFrameView::PaintOutsideOfLifecycle(GraphicsContext& context,
                                              const CullRect& cull_rect) {
   DCHECK(PaintOutsideOfLifecycleIsAllowed(context, *this));
 
-  UpdateAllLifecyclePhasesExceptPaint(DocumentUpdateReason::kPrinting);
-
   SCOPED_UMA_AND_UKM_TIMER(GetUkmAggregator(), LocalFrameUkmAggregator::kPaint);
 
   ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
