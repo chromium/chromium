@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/editing/editing_tri_state.h"
+#include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -147,7 +148,8 @@ void SetAutofillData(Node* node, ContextMenuData& data) {
       data.form_renderer_id = 0;
     }
   }
-  if (auto* html_element = DynamicTo<HTMLElement>(node)) {
+  if (auto* html_element =
+          node ? DynamicTo<HTMLElement>(RootEditableElement(*node)) : nullptr) {
     ContentEditableType content_editable =
         html_element->contentEditableNormalized();
     if (base::FeatureList::IsEnabled(
