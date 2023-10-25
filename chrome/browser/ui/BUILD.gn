@@ -1591,6 +1591,8 @@ static_library("ui") {
       "user_education/scoped_new_badge_tracker.h",
       "user_education/show_promo_in_page.cc",
       "user_education/show_promo_in_page.h",
+      "user_education/start_tutorial_in_page.cc",
+      "user_education/start_tutorial_in_page.h",
       "user_notes/user_notes_controller.cc",
       "user_notes/user_notes_controller.h",
       "views/eye_dropper/eye_dropper.cc",

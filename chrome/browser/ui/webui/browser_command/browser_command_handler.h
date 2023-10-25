@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/command_updater_delegate.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/user_education/start_tutorial_in_page.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -76,16 +77,21 @@ class BrowserCommandHandler : public CommandUpdaterDelegate,
   virtual bool DefaultSearchProviderIsGoogle();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(BrowserCommandHandlerTest,
+                           StartPasswordManagerTutorialCommand);
+
   virtual void NavigateToURL(const GURL& url,
                              WindowOpenDisposition disposition);
   virtual void OpenFeedbackForm();
-  virtual user_education::TutorialService* GetTutorialService();
-  virtual ui::ElementContext GetUiElementContext();
+  virtual void OnTutorialStarted(
+      user_education::TutorialIdentifier tutorial_id,
+      user_education::TutorialService* tutorial_service);
+  virtual void StartTutorial(StartTutorialInPage::Params params);
+  virtual bool TutorialServiceExists();
   virtual void NavigateToEnhancedProtectionSetting();
   virtual void OpenPasswordManager();
   void StartTabGroupTutorial();
-  void OpenNTPAndStartCustomizeChromeTutorial(
-      WindowOpenDisposition disposition);
+  void OpenNTPAndStartCustomizeChromeTutorial();
   void StartPasswordManagerTutorial();
 
   FeedbackCommandSettings feedback_settings_;
