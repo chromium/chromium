@@ -23,6 +23,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -135,7 +136,9 @@ class FakeTabContainerController final : public TabContainerController {
 
 class TabContainerTest : public ChromeViewsTestBase {
  public:
-  TabContainerTest() = default;
+  TabContainerTest()
+      : animation_mode_reset_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
+            gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)) {}
   TabContainerTest(const TabContainerTest&) = delete;
   TabContainerTest& operator=(const TabContainerTest&) = delete;
   ~TabContainerTest() override = default;
@@ -350,6 +353,10 @@ class TabContainerTest : public ChromeViewsTestBase {
   raw_ptr<FakeTabDragContext> drag_context_;
   raw_ptr<TabContainer> tab_container_;
   std::unique_ptr<views::Widget> widget_;
+
+  // Used to force animation on, so that any tests that rely on animation pass
+  // on machines where animation is turned off.
+  gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_;
 
   int tab_container_width_ = 0;
 };
