@@ -49,8 +49,14 @@ class WebAppUrlLoader;
 enum class WebAppUrlLoaderResult;
 
 struct InstallIsolatedWebAppCommandSuccess {
-  explicit InstallIsolatedWebAppCommandSuccess(base::Version installed_version);
+  InstallIsolatedWebAppCommandSuccess(base::Version installed_version,
+                                      IsolatedWebAppLocation location);
+  InstallIsolatedWebAppCommandSuccess(
+      const InstallIsolatedWebAppCommandSuccess& other);
+  ~InstallIsolatedWebAppCommandSuccess();
+
   base::Version installed_version;
+  IsolatedWebAppLocation location;
 };
 
 std::ostream& operator<<(std::ostream& os,
@@ -147,6 +153,14 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
 
   Profile& profile();
 
+  void CopyToProfileDirectory(
+      base::OnceCallback<void(base::expected<IsolatedWebAppLocation,
+                                             std::string>)> next_step_callback);
+
+  void UpdateLocation(
+      base::OnceClosure next_step_callback,
+      base::expected<IsolatedWebAppLocation, std::string> new_location);
+
   void CheckTrustAndSignatures(base::OnceClosure next_step_callback);
 
   void CreateStoragePartition(base::OnceClosure next_step_callback);
@@ -181,7 +195,9 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
   std::unique_ptr<IsolatedWebAppInstallCommandHelper> command_helper_;
 
   IsolatedWebAppUrlInfo url_info_;
-  IsolatedWebAppLocation location_;
+  IsolatedWebAppLocation source_location_;
+  absl::optional<IsolatedWebAppLocation> lazy_destination_location_;
+
   absl::optional<base::Version> expected_version_;
   // Populated as part of the installation process based on the version read
   // from the Web Bundle.

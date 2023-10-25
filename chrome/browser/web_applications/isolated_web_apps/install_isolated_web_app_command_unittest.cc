@@ -6,7 +6,6 @@
 
 #include <map>
 #include <memory>
-#include <sstream>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -21,7 +20,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
+#include "base/functional/overloaded.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
@@ -33,7 +32,6 @@
 #include "base/types/expected.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_builder.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
-#include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
@@ -41,7 +39,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
-#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 #include "chrome/browser/web_applications/locks/lock.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
@@ -712,10 +709,35 @@ TEST_P(InstallIsolatedWebAppCommandBundleTest, InstallsWhenThereIsNoError) {
       .url_info = url_info_,
       .location = location_,
   });
+
+  const base::FilePath iwa_root_dir = profile()->GetPath().Append(kIwaDirName);
+
   if (bundle_info_.want_success) {
     EXPECT_THAT(result, HasValue());
+    absl::visit(base::Overloaded{
+                    [&iwa_root_dir](const InstalledBundle& installed_bundle) {
+                      EXPECT_TRUE(DirectoryExists(iwa_root_dir));
+                      EXPECT_TRUE(PathExists(installed_bundle.path));
+                    },
+                    [&iwa_root_dir](const DevModeBundle&) {
+                      EXPECT_FALSE(DirectoryExists(iwa_root_dir));
+                    },
+                    [](const DevModeProxy&) {}},
+                result->location);
   } else {
     EXPECT_THAT(result, Not(HasValue()));
+    // Wait till IWA directory is removed.
+    task_environment()->RunUntilIdle();
+    absl::visit(
+        base::Overloaded{[&iwa_root_dir](const InstalledBundle&) {
+                           EXPECT_TRUE(DirectoryExists(iwa_root_dir));
+                           EXPECT_TRUE(base::IsDirectoryEmpty(iwa_root_dir));
+                         },
+                         [&iwa_root_dir](const DevModeBundle&) {
+                           EXPECT_FALSE(DirectoryExists(iwa_root_dir));
+                         },
+                         [](const DevModeProxy&) {}},
+        location_);
   }
 }
 

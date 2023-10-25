@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
@@ -179,8 +180,10 @@ class TestIwaInstallCommandWrapper
         EXPECT_EQ(expected_version, base::Version("3.0.0"));
       }
 
-      std::move(callback).Run(
-          InstallIsolatedWebAppCommandSuccess(expected_version));
+      IsolatedWebAppLocation dest_location = InstalledBundle{
+          .path = base::FilePath{FILE_PATH_LITERAL("/some/random/path")}};
+      std::move(callback).Run(InstallIsolatedWebAppCommandSuccess(
+          expected_version, std::move(dest_location)));
       return;
     }
 

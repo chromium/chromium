@@ -432,6 +432,7 @@ source_set("web_applications") {
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chrome/common:non_code_constants",
+    "//components/base32:base32",
     "//components/browsing_data/content",
     "//components/content_settings/core/browser",
     "//components/custom_handlers",

@@ -387,9 +387,6 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest, Succeeds) {
               ValueIs(Task::Success::kUpdateFoundAndSavedInDatabase))
       << task.AsDebugValue();
 
-  base::FilePath temp_dir;
-  EXPECT_TRUE(base::GetTempDir(&temp_dir));
-
   const WebApp* web_app =
       fake_provider().registrar_unsafe().GetAppById(url_info_.app_id());
   EXPECT_THAT(
@@ -400,8 +397,9 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest, Succeeds) {
               Eq(installed_bundle_location_), Eq(base::Version("1.0.0")),
               /*controlled_frame_partitions=*/_,
               test::PendingUpdateInfoIs(
-                  VariantWith<InstalledBundle>(Field(
-                      "path", &InstalledBundle::path, test::IsInDir(temp_dir))),
+                  VariantWith<InstalledBundle>(
+                      Field("path", &InstalledBundle::path,
+                            test::IsInIwaRandomDir(profile()->GetPath()))),
                   base::Version("3.0.0")))))
       << task.AsDebugValue();
 }
@@ -428,9 +426,6 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest,
               ValueIs(Task::Success::kUpdateFoundAndSavedInDatabase))
       << task.AsDebugValue();
 
-  base::FilePath temp_dir;
-  EXPECT_TRUE(base::GetTempDir(&temp_dir));
-
   const WebApp* web_app =
       fake_provider().registrar_unsafe().GetAppById(url_info_.app_id());
   EXPECT_THAT(
@@ -441,8 +436,9 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest,
               Eq(installed_bundle_location_), Eq(base::Version("1.0.0")),
               /*controlled_frame_partitions=*/_,
               test::PendingUpdateInfoIs(
-                  VariantWith<InstalledBundle>(Field(
-                      "path", &InstalledBundle::path, test::IsInDir(temp_dir))),
+                  VariantWith<InstalledBundle>(
+                      Field("path", &InstalledBundle::path,
+                            test::IsInIwaRandomDir(profile()->GetPath()))),
                   base::Version("2.0.0")))))
       << task.AsDebugValue();
 }
