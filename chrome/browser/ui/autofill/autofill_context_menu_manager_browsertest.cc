@@ -342,11 +342,29 @@ IN_PROC_BROWSER_TEST_F(AutocompleteUnrecognizedFieldsTest,
 }
 
 // Tests that when triggering the context menu on an ac=unrecognized field, the
-// fallback entry is not part of the menu if there's no AutofillProfile data to
-// fill in.
+// fallback entry is not part of the menu if the user has no AutofillProfiles
+// stored.
 IN_PROC_BROWSER_TEST_F(
     AutocompleteUnrecognizedFieldsTest,
-    AutocompleteUnrecognizedFormShown_NoUserData_FallbackOptionsNotPresent) {
+    AutocompleteUnrecognizedFormShown_NoAutofillProfiles_FallbackOptionsNotPresent) {
+  FormData form = CreateAndAttachAutocompleteUnrecognizedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.unique_renderer_id,
+                              form.fields[0].unique_renderer_id));
+  autofill_context_menu_manager()->AppendItems();
+
+  EXPECT_THAT(menu_model(), Not(ContainsAnyAutofillFallbackEntries()));
+}
+
+// Tests that when triggering the context menu on an ac=unrecognized field, the
+// fallback entry is not part of the menu if there's no suitable AutofillProfile
+// data to fill in.
+IN_PROC_BROWSER_TEST_F(
+    AutocompleteUnrecognizedFieldsTest,
+    AutocompleteUnrecognizedFormShown_NoSuitableData_FallbackOptionsNotPresent) {
+  AutofillProfile profile;
+  profile.SetRawInfo(COMPANY_NAME, u"company");
+  AddAutofillProfile(profile);
   FormData form = CreateAndAttachAutocompleteUnrecognizedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.unique_renderer_id,
@@ -474,6 +492,7 @@ class UnclassifiedFieldsTest : public BaseAutofillContextMenuManagerTest {
 // fallback entry is part of the menu.
 IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
                        UnclassifiedFormShown_FallbackOptionsPresent) {
+  AddAutofillProfile(test::GetFullProfile());
   FormData form = CreateAndAttachUnclassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.unique_renderer_id,
@@ -488,6 +507,7 @@ IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
 IN_PROC_BROWSER_TEST_F(
     UnclassifiedFieldsTest,
     AutocompleteUnrecognizedFieldShown_FallbackOptionsPresent) {
+  AddAutofillProfile(test::GetFullProfile());
   FormData form = CreateAndAttachAutocompleteUnrecognizedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.unique_renderer_id,
@@ -501,6 +521,7 @@ IN_PROC_BROWSER_TEST_F(
 // fallback entry is part of the menu.
 IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
                        ClassifiedFormShown_FallbackOptionsPresent) {
+  AddAutofillProfile(test::GetFullProfile());
   FormData form = CreateAndAttachClassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.unique_renderer_id,

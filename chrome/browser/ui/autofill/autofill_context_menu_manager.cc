@@ -264,7 +264,11 @@ bool AutofillContextMenuManager::ShouldAddAutofillManualFallbackItem(
     return false;
   }
 
-  return ShouldAddAutofillManualFallbackForAutocompleteUnrecognized(driver) ||
+  if (ShouldAddAutofillManualFallbackForAutocompleteUnrecognized(driver)) {
+    return true;
+  }
+
+  return !personal_data_manager_->GetProfiles().empty() &&
          base::FeatureList::IsEnabled(
              features::kAutofillForUnclassifiedFieldsAvailable);
 }
