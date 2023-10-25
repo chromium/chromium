@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
 
+#include <memory>
+
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -12,12 +14,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/side_panel/companion/companion_tab_helper.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_actions.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
@@ -28,6 +32,8 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/actions/actions.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 
 namespace {
@@ -217,6 +223,7 @@ void SearchCompanionSidePanelCoordinator::
   if (!browser_view) {
     return;
   }
+
   SidePanelToolbarContainer* container =
       browser_view->toolbar()->side_panel_container();
 
@@ -227,8 +234,13 @@ void SearchCompanionSidePanelCoordinator::
         "Companion.SidePanelAvailabilityChanged",
         CompanionSidePanelAvailabilityChanged::kUnavailableToAvailable);
     is_currently_observing_tab_changes_ = true;
-    container->AddPinnedEntryButtonFor(SidePanelEntry::Id::kSearchCompanion,
-                                       accessible_name(), name(), icon());
+
+    if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+      GetActionItem()->SetVisible(true);
+    } else {
+      container->AddPinnedEntryButtonFor(SidePanelEntry::Id::kSearchCompanion,
+                                         accessible_name(), name(), icon());
+    }
     browser_->tab_strip_model()->AddObserver(this);
     CreateAndRegisterEntriesForExistingWebContents(browser_->tab_strip_model());
     return;
@@ -240,7 +252,13 @@ void SearchCompanionSidePanelCoordinator::
         "Companion.SidePanelAvailabilityChanged",
         CompanionSidePanelAvailabilityChanged::kAvailableToUnavailable);
     is_currently_observing_tab_changes_ = false;
-    container->RemovePinnedEntryButtonFor(SidePanelEntry::Id::kSearchCompanion);
+
+    if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+      GetActionItem()->SetVisible(false);
+    } else {
+      container->RemovePinnedEntryButtonFor(
+          SidePanelEntry::Id::kSearchCompanion);
+    }
     browser_->tab_strip_model()->RemoveObserver(this);
     DeregisterEntriesForExistingWebContents(browser_->tab_strip_model());
     return;
@@ -264,10 +282,25 @@ void SearchCompanionSidePanelCoordinator::
   NOTREACHED();
 }
 
+actions::ActionItem* SearchCompanionSidePanelCoordinator::GetActionItem() {
+  BrowserActions* browser_actions = BrowserActions::FromBrowser(browser_);
+  return actions::ActionManager::Get().FindAction(
+      kActionSidePanelShowSearchCompanion, browser_actions->root_action_item());
+}
+
 void SearchCompanionSidePanelCoordinator::MaybeUpdateCompanionEnabledState() {
   bool enabled = companion::IsCompanionAvailableForCurrentActiveTab(browser_);
-  MaybeUpdatePinnedButtonEnabledState(enabled);
-  MaybeUpdateComboboxEntryEnabledState(enabled);
+
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    actions::ActionItem* action_item = GetActionItem();
+    action_item->SetEnabled(enabled);
+    action_item->SetImage(ui::ImageModel::FromVectorIcon(
+        (enabled ? icon() : disabled_icon()), ui::kColorIcon,
+        /*icon_size=*/16));
+  } else {
+    MaybeUpdatePinnedButtonEnabledState(enabled);
+    MaybeUpdateComboboxEntryEnabledState(enabled);
+  }
 }
 
 void SearchCompanionSidePanelCoordinator::MaybeUpdatePinnedButtonEnabledState(

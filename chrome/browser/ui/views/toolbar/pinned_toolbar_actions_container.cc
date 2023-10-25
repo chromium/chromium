@@ -95,6 +95,7 @@ void PinnedToolbarActionsContainer::PinnedActionToolbarButton::
   }
   SetImageModel(views::Button::STATE_NORMAL, action_item_->GetImage());
   SetEnabled(action_item_->GetEnabled());
+  SetVisible(action_item_->GetVisible());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
