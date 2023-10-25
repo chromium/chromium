@@ -114,7 +114,7 @@ inline bool ChildNodePart::IsValid() const {
   if (previous_sibling_ == next_sibling_) {
     return false;
   }
-  Node* left = previous_sibling_;
+  Node* left = previous_sibling_.Get();
   do {
     left = left->nextSibling();
     if (left == next_sibling_) {

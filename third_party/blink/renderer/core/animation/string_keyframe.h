@@ -68,7 +68,7 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
     CHECK_GE(index, 0);
     return css_property_map_->PropertyAt(static_cast<unsigned>(index))
         .Value()
-        .EnsureScopedValue(tree_scope_);
+        .EnsureScopedValue(tree_scope_.Get());
   }
 
   const CSSValue& PresentationAttributeValue(
@@ -78,7 +78,7 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
     CHECK_GE(index, 0);
     return presentation_attribute_map_->PropertyAt(static_cast<unsigned>(index))
         .Value()
-        .EnsureScopedValue(tree_scope_);
+        .EnsureScopedValue(tree_scope_.Get());
     ;
   }
 

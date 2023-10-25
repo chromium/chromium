@@ -314,7 +314,7 @@ blink::Animation* InspectorAnimationAgent::AnimationClone(
   const String id = String::Number(animation->SequenceNumber());
   auto it = id_to_animation_clone_.find(id);
   if (it != id_to_animation_clone_.end())
-    return it->value;
+    return it->value.Get();
 
   auto* old_effect = To<KeyframeEffect>(animation->effect());
   DCHECK(old_effect->Model()->IsKeyframeEffectModel());

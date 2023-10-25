@@ -1085,7 +1085,7 @@ void ListBoxSelectType::ScrollToSelection() {
 void ListBoxSelectType::ScrollToOption(HTMLOptionElement* option) {
   if (!option)
     return;
-  bool has_pending_task = option_to_scroll_to_;
+  bool has_pending_task = option_to_scroll_to_ != nullptr;
   // We'd like to keep an HTMLOptionElement reference rather than the index of
   // the option because the task should work even if unselected option is
   // inserted before executing ScrollToOptionTask().

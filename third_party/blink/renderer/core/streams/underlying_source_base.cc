@@ -84,7 +84,7 @@ void UnderlyingSourceBase::Trace(Visitor* visitor) const {
 v8::MaybeLocal<v8::Promise> UnderlyingStartAlgorithm::Run(
     ScriptState* script_state,
     ExceptionState&) {
-  return source_->startWrapper(script_state, controller_).V8Promise();
+  return source_->startWrapper(script_state, controller_.Get()).V8Promise();
 }
 
 void UnderlyingStartAlgorithm::Trace(Visitor* visitor) const {

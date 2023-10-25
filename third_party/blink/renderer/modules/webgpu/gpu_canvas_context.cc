@@ -564,7 +564,7 @@ GPUTexture* GPUCanvasContext::getCurrentTexture(
   if (!swap_buffers_) {
     device_->InjectError(WGPUErrorType_Validation,
                          "context configuration is invalid.");
-    return GPUTexture::CreateError(device_, &texture_descriptor_);
+    return GPUTexture::CreateError(device_.Get(), &texture_descriptor_);
   }
 
   ReplaceDrawingBuffer(/* destroy_swap_buffers */ false);

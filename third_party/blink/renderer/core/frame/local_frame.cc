@@ -2043,7 +2043,7 @@ ContentCaptureManager* LocalFrame::GetOrResetContentCaptureManager() {
     content_capture_manager_->Shutdown();
     content_capture_manager_ = nullptr;
   }
-  return content_capture_manager_;
+  return content_capture_manager_.Get();
 }
 
 BrowserInterfaceBrokerProxy& LocalFrame::GetBrowserInterfaceBroker() {
@@ -2458,7 +2458,7 @@ void LocalFrame::FinishedScrollSequence() {
 SmoothScrollSequencer* LocalFrame::GetSmoothScrollSequencer() const {
   if (!IsLocalRoot())
     return LocalFrameRoot().GetSmoothScrollSequencer();
-  return smooth_scroll_sequencer_;
+  return smooth_scroll_sequencer_.Get();
 }
 
 ukm::UkmRecorder* LocalFrame::GetUkmRecorder() {

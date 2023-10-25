@@ -689,7 +689,7 @@ ExplicitlySetAttrElementsMap* Document::GetExplicitlySetAttrElementsMap(
     add_result.stored_value->value =
         MakeGarbageCollected<ExplicitlySetAttrElementsMap>();
   }
-  return add_result.stored_value->value;
+  return add_result.stored_value->value.Get();
 }
 
 void Document::MoveElementExplicitlySetAttrElementsMapToNewDocument(
@@ -3617,7 +3617,7 @@ DocumentParser* Document::ImplicitOpen(
     load_event_progress_ = kLoadEventNotRun;
   }
   DispatchHandleLoadStart();
-  return parser_;
+  return parser_.Get();
 }
 
 void Document::DispatchHandleLoadStart() {

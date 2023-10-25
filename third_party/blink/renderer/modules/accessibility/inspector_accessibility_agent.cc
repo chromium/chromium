@@ -767,7 +767,8 @@ InspectorAccessibilityAgent::BuildProtocolAXNodeForUnignoredAXObject(
 LocalFrame* InspectorAccessibilityAgent::FrameFromIdOrRoot(
     const protocol::Maybe<String>& frame_id) {
   if (frame_id.has_value()) {
-    return IdentifiersFactory::FrameById(inspected_frames_, frame_id.value());
+    return IdentifiersFactory::FrameById(inspected_frames_.Get(),
+                                         frame_id.value());
   }
   return inspected_frames_->Root();
 }

@@ -565,7 +565,7 @@ Element* StyleEngine::EnsureVTTOriginatingElement() {
     vtt_originating_element_ = MakeGarbageCollected<Element>(
         QualifiedName(g_null_atom, g_empty_atom, g_empty_atom), document_);
   }
-  return vtt_originating_element_;
+  return vtt_originating_element_.Get();
 }
 
 void StyleEngine::MediaQueryAffectingValueChanged(

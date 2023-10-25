@@ -166,7 +166,7 @@ scoped_refptr<Image> CSSPaintValue::GetImage(
     }
   }
 
-  return generator.Paint(client, target_size, parsed_input_arguments_);
+  return generator.Paint(client, target_size, parsed_input_arguments_.Get());
 }
 
 void CSSPaintValue::BuildInputArgumentValues(

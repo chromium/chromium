@@ -381,7 +381,7 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
         const PropertyHandle&,
         EffectModel::CompositeOperation,
         double) const final {
-      return property_specific_;  // We know a shortcut.
+      return property_specific_.Get();  // We know a shortcut.
     }
 
     void Trace(Visitor* visitor) const override {
@@ -415,7 +415,7 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
         return true;
       }
       const CompositorKeyframeValue* GetCompositorKeyframeValue() const final {
-        return compositor_keyframe_value_;
+        return compositor_keyframe_value_.Get();
       }
       PropertySpecificKeyframe* NeutralKeyframe(
           double,

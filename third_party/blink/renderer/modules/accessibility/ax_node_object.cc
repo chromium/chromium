@@ -3374,7 +3374,7 @@ AXObject* AXNodeObject::ChooserPopup() const {
     case ax::mojom::blink::Role::kTextFieldWithComboBox: {
       for (const auto& child : ChildrenIncludingIgnored()) {
         if (IsA<Document>(child->GetNode())) {
-          return child;
+          return child.Get();
         }
       }
       return nullptr;
@@ -4992,7 +4992,7 @@ Node* AXNodeObject::GetNode() const {
       << "If there is an associated layout object, its node should match the "
          "associated node of this accessibility object.\n"
       << ToString(true, true);
-  return node_;
+  return node_.Get();
 }
 
 // TODO(chrishall): consider merging this with AXObject::Language in followup.

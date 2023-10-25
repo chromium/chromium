@@ -48,7 +48,7 @@ const CSSPrimitiveValue& CSSImageSetOptionValue::GetResolution() const {
 }
 
 const CSSImageSetTypeValue* CSSImageSetOptionValue::GetType() const {
-  return type_;
+  return type_.Get();
 }
 
 String CSSImageSetOptionValue::CustomCSSText() const {

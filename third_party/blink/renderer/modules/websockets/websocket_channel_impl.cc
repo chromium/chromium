@@ -378,7 +378,7 @@ bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
 
   DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
       "WebSocketCreate", InspectorWebSocketCreateEvent::Data,
-      execution_context_, identifier_, url, protocol);
+      execution_context_.Get(), identifier_, url, protocol);
   return true;
 }
 
@@ -514,10 +514,10 @@ void WebSocketChannelImpl::Fail(const String& reason,
 void WebSocketChannelImpl::Disconnect() {
   DVLOG(1) << this << " disconnect()";
   if (identifier_) {
-    DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT("WebSocketDestroy",
-                                          InspectorWebSocketEvent::Data,
-                                          execution_context_, identifier_);
-    probe::DidCloseWebSocket(execution_context_, identifier_);
+    DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
+        "WebSocketDestroy", InspectorWebSocketEvent::Data,
+        execution_context_.Get(), identifier_);
+    probe::DidCloseWebSocket(execution_context_.Get(), identifier_);
   }
 
   AbortAsyncOperations();

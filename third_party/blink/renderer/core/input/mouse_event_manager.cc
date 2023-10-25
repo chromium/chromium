@@ -1138,7 +1138,7 @@ void MouseEventManager::SetCapturesDragging(bool captures_dragging) {
 }
 
 Node* MouseEventManager::MousePressNode() {
-  return mouse_press_node_;
+  return mouse_press_node_.Get();
 }
 
 void MouseEventManager::SetMousePressNode(Node* node) {
@@ -1146,7 +1146,7 @@ void MouseEventManager::SetMousePressNode(Node* node) {
 }
 
 Element* MouseEventManager::ClickElement() {
-  return click_element_;
+  return click_element_.Get();
 }
 
 void MouseEventManager::SetClickElement(Element* element) {

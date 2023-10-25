@@ -340,8 +340,9 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   bool HasInsertedChildBreak() const {
     if (child_break_tokens_.empty())
       return false;
-    for (const NGBreakToken* child_token : child_break_tokens_) {
-      const auto* block_child_token = DynamicTo<NGBlockBreakToken>(child_token);
+    for (auto& child_token : child_break_tokens_) {
+      const auto* block_child_token =
+          DynamicTo<NGBlockBreakToken>(child_token.Get());
       if (!block_child_token || !block_child_token->IsRepeated())
         return true;
     }

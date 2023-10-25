@@ -818,7 +818,7 @@ class CSSAnimationsCompositorSyncTest : public CSSAnimationsTest {
     // persist the reference.
     ElementAnimations* element_animations = element_->GetElementAnimations();
     EXPECT_EQ(1u, element_animations->Animations().size());
-    return (*element_animations->Animations().begin()).key;
+    return (*element_animations->Animations().begin()).key.Get();
   }
 
   void NotifyStartTime() {

@@ -2919,7 +2919,7 @@ void WebLocalFrameImpl::CreateFrameWidgetInternal(
 }
 
 WebFrameWidget* WebLocalFrameImpl::FrameWidget() const {
-  return frame_widget_;
+  return frame_widget_.Get();
 }
 
 void WebLocalFrameImpl::CopyImageAtForTesting(
@@ -3153,7 +3153,7 @@ WebDevToolsAgentImpl* WebLocalFrameImpl::DevToolsAgentImpl() {
     return nullptr;
   if (!dev_tools_agent_)
     dev_tools_agent_ = WebDevToolsAgentImpl::CreateForFrame(this);
-  return dev_tools_agent_;
+  return dev_tools_agent_.Get();
 }
 
 void WebLocalFrameImpl::WasHidden() {

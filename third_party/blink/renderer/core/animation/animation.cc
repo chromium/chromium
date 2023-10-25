@@ -353,7 +353,7 @@ bool Animation::Limited(absl::optional<AnimationTimeDelta> current_time) const {
 }
 
 Document* Animation::GetDocument() const {
-  return document_;
+  return document_.Get();
 }
 
 absl::optional<AnimationTimeDelta> Animation::TimelineTime() const {

@@ -870,7 +870,7 @@ Element* Internals::innerEditorElement(Element* container,
 }
 
 bool Internals::isPreloaded(const String& url) {
-  return isPreloadedBy(url, document_);
+  return isPreloadedBy(url, document_.Get());
 }
 
 bool Internals::isPreloadedBy(const String& url, Document* document) {

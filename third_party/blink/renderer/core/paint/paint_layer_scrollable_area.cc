@@ -890,7 +890,7 @@ LayoutBox* PaintLayerScrollableArea::GetLayoutBox() const {
 }
 
 PaintLayer* PaintLayerScrollableArea::Layer() const {
-  return layer_;
+  return layer_.Get();
 }
 
 PhysicalSize PaintLayerScrollableArea::Size() const {

@@ -793,7 +793,7 @@ AXObject* AXObjectCacheImpl::Root() {
     return root;
 
   ProcessDeferredAccessibilityEvents(GetDocument());
-  return SafeGet(document_);
+  return SafeGet(document_.Get());
 }
 
 AXObject* AXObjectCacheImpl::ObjectFromAXID(AXID id) const {

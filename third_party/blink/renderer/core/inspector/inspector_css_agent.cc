@@ -421,7 +421,7 @@ class InspectorCSSAgent::ModifyRuleAction final
       default:
         NOTREACHED();
     }
-    return css_rule_;
+    return css_rule_ != nullptr;
   }
 
   CSSRule* TakeRule() {

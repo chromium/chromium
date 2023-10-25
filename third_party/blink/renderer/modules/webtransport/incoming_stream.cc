@@ -48,7 +48,7 @@ class IncomingStream::UnderlyingByteSource final
                      ExceptionState& exception_state) override {
     DCHECK_EQ(controller, incoming_stream_->controller_);
     incoming_stream_->ReadFromPipeAndEnqueue(exception_state);
-    return ScriptPromise::CastUndefined(script_state_);
+    return ScriptPromise::CastUndefined(script_state_.Get());
   }
 
   ScriptPromise Cancel(ExceptionState& exception_state) override {
@@ -64,7 +64,7 @@ class IncomingStream::UnderlyingByteSource final
       code = exception->streamErrorCode().value_or(0);
     }
     incoming_stream_->AbortAndReset(code);
-    return ScriptPromise::CastUndefined(script_state_);
+    return ScriptPromise::CastUndefined(script_state_.Get());
   }
 
   ScriptState* GetScriptState() override { return script_state_.Get(); }

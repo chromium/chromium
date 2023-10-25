@@ -141,7 +141,7 @@ inline PseudoElement* TransitionPseudoElementData::GetPseudoElement(
     case kPseudoIdViewTransitionGroup: {
       DCHECK(view_transition_name);
       auto it = transition_containers_.find(view_transition_name);
-      return it == transition_containers_.end() ? nullptr : it->value;
+      return it == transition_containers_.end() ? nullptr : it->value.Get();
     }
     default:
       NOTREACHED();

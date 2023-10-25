@@ -1472,7 +1472,7 @@ LocalFrame* EventHandler::DetermineActivePointerTrackerFrame(
   // current frame's PEM; otherwise, check if it's a touch-like pointer that
   // have its active states in the local frame root's PEM.
   if (IsPointerIdActiveOnFrame(pointer_id, frame_))
-    return frame_;
+    return frame_.Get();
   if (RootFrameTrackedActivePointerInCurrentFrame(pointer_id))
     return &frame_->LocalFrameRoot();
   return nullptr;

@@ -2903,7 +2903,7 @@ const NGLayoutResult* LayoutBox::GetCachedMeasureResult() const {
            .IsOnlyForNode())
     return nullptr;
 
-  return measure_result_;
+  return measure_result_.Get();
 }
 
 const NGLayoutResult* LayoutBox::GetSingleCachedLayoutResult() const {
@@ -2913,7 +2913,7 @@ const NGLayoutResult* LayoutBox::GetSingleCachedLayoutResult() const {
 
 const NGLayoutResult* LayoutBox::GetLayoutResult(wtf_size_t i) const {
   NOT_DESTROYED();
-  return layout_results_[i];
+  return layout_results_[i].Get();
 }
 
 const NGPhysicalBoxFragment&

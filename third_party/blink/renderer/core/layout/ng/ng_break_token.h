@@ -44,7 +44,8 @@ class CORE_EXPORT NGBreakToken : public GarbageCollected<NGBreakToken> {
   // used with any other node.
   NGLayoutInputNode InputNode() const {
     return NGLayoutInputNode::Create(
-        box_, static_cast<NGLayoutInputNode::NGLayoutInputNodeType>(type_));
+        box_.Get(),
+        static_cast<NGLayoutInputNode::NGLayoutInputNodeType>(type_));
   }
 
 #if DCHECK_IS_ON()

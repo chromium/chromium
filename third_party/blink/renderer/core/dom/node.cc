@@ -602,7 +602,7 @@ Node* Node::ConvertNodesIntoNode(const Node* parent,
                                  Document& document,
                                  ExceptionState& exception_state) {
   if (nodes.size() == 1) {
-    return nodes[0];
+    return nodes[0].Get();
   }
 
   Node* fragment = DocumentFragment::Create(document);

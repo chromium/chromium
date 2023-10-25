@@ -53,7 +53,7 @@ unsigned ElementRareDataVector::GetFieldIndex(FieldId field_id) const {
 ElementRareDataField* ElementRareDataVector::GetField(FieldId field_id) const {
   if (fields_bitfield_ &
       (static_cast<BitfieldType>(1) << static_cast<unsigned>(field_id)))
-    return fields_[GetFieldIndex(field_id)];
+    return fields_[GetFieldIndex(field_id)].Get();
   return nullptr;
 }
 

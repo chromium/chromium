@@ -156,7 +156,7 @@ MacScrollbarAnimator* ScrollableArea::GetMacScrollbarAnimator() const {
         MacScrollbarAnimator::Create(const_cast<ScrollableArea*>(this));
   }
 #endif
-  return mac_scrollbar_animator_;
+  return mac_scrollbar_animator_.Get();
 }
 
 ScrollAnimatorBase& ScrollableArea::GetScrollAnimator() const {

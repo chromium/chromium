@@ -354,7 +354,7 @@ class OpenDatabaseCallback final : public NativeEventListener {
     }
 
     IDBDatabase* idb_database = request_result->IdbDatabase();
-    executable_with_database_->Execute(idb_database, script_state_);
+    executable_with_database_->Execute(idb_database, script_state_.Get());
     context->GetAgent()->event_loop()->RunEndOfMicrotaskCheckpointTasks();
     idb_database->close();
   }

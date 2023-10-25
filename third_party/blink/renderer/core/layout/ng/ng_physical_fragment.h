@@ -596,7 +596,7 @@ class CORE_EXPORT NGPhysicalFragment
      private:
       void SkipInvalidAndSetPostLayout() {
         for (; current_ != end_; ++current_) {
-          const NGPhysicalFragment* fragment = current_->fragment;
+          const NGPhysicalFragment* fragment = current_->fragment.Get();
           if (UNLIKELY(fragment->IsLayoutObjectDestroyedOrMoved()))
             continue;
           if (const NGPhysicalFragment* post_layout = fragment->PostLayout()) {

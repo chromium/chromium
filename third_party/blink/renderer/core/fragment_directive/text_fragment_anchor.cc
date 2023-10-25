@@ -482,7 +482,7 @@ void TextFragmentAnchor::DidFinishSearch() {
   metrics_->SetSearchEngineSource(HasSearchEngineSource());
   metrics_->ReportMetrics();
 
-  bool did_find_any_matches = first_match_;
+  bool did_find_any_matches = first_match_ != nullptr;
 
   if (!did_find_any_matches) {
     DCHECK(!element_fragment_anchor_);

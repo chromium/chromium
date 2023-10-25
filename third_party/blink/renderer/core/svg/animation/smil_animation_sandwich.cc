@@ -37,7 +37,7 @@ struct PriorityCompare {
   PriorityCompare(SMILTime elapsed) : elapsed_(elapsed) {}
   bool operator()(const Member<SVGSMILElement>& a,
                   const Member<SVGSMILElement>& b) {
-    return b->IsHigherPriorityThan(a, elapsed_);
+    return b->IsHigherPriorityThan(a.Get(), elapsed_);
   }
   SMILTime elapsed_;
 };

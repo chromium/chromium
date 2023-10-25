@@ -564,7 +564,7 @@ LayoutMultiColumnSet* LayoutMultiColumnFlowThread::PendingColumnSetForNG()
   if (last_set_worked_on_ &&
       !last_set_worked_on_->FirstFragmentainerGroup().IsLogicalHeightKnown()) {
     DCHECK_EQ(last_set_worked_on_->FragmentainerGroups().size(), 1u);
-    return last_set_worked_on_;
+    return last_set_worked_on_.Get();
   }
   return nullptr;
 }

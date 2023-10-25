@@ -335,7 +335,7 @@ FileList* DataTransfer::files() const {
   }
 
   if (!files_->IsEmpty())
-    return files_;
+    return files_.Get();
 
   for (uint32_t i = 0; i < data_object_->length(); ++i) {
     if (data_object_->Item(i)->Kind() == DataObjectItem::kFileKind) {
@@ -345,7 +345,7 @@ FileList* DataTransfer::files() const {
     }
   }
 
-  return files_;
+  return files_.Get();
 }
 
 void DataTransfer::setDragImage(Element* image, int x, int y) {
@@ -598,7 +598,7 @@ DataTransferItemList* DataTransfer::items() {
 }
 
 DataObject* DataTransfer::GetDataObject() const {
-  return data_object_;
+  return data_object_.Get();
 }
 
 DataTransfer::DataTransfer(DataTransferType type,

@@ -3215,7 +3215,7 @@ void DocumentLoader::InitializePrefetchedSignedExchangeManager() {
 
 PrefetchedSignedExchangeManager*
 DocumentLoader::GetPrefetchedSignedExchangeManager() const {
-  return prefetched_signed_exchange_manager_;
+  return prefetched_signed_exchange_manager_.Get();
 }
 
 base::TimeDelta DocumentLoader::RemainingTimeToLCPLimit() const {

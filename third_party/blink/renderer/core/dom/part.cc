@@ -100,7 +100,7 @@ void Part::disconnect() {
 }
 
 PartRootUnion* Part::rootForBindings() const {
-  return PartRoot::GetUnionFromPartRoot(root_);
+  return PartRoot::GetUnionFromPartRoot(root_.Get());
 }
 
 }  // namespace blink

@@ -5273,7 +5273,7 @@ AXObject* AXObject::LiveRegionRoot() const {
   CHECK(CanAccessCachedValues());
 
   UpdateCachedAttributeValuesIfNeeded();
-  return cached_live_region_root_;
+  return cached_live_region_root_.Get();
 }
 
 bool AXObject::LiveRegionAtomic() const {
@@ -5354,7 +5354,7 @@ AXObject* AXObject::ChildAtIncludingIgnored(int index) const {
   DCHECK_LE(index, ChildCountIncludingIgnored());
   if (index >= ChildCountIncludingIgnored())
     return nullptr;
-  return ChildrenIncludingIgnored()[index];
+  return ChildrenIncludingIgnored()[index].Get();
 }
 
 const AXObject::AXObjectVector& AXObject::ChildrenIncludingIgnored() const {
@@ -5578,7 +5578,7 @@ AXObject* AXObject::UnignoredChildAt(int index) const {
   const AXObjectVector unignored_children = UnignoredChildren();
   if (index < 0 || index >= static_cast<int>(unignored_children.size()))
     return nullptr;
-  return unignored_children[index];
+  return unignored_children[index].Get();
 }
 
 AXObject* AXObject::UnignoredNextSibling() const {
@@ -5703,7 +5703,7 @@ AXObject* AXObject::ParentObject() const {
     }
   }
 
-  return parent_;
+  return parent_.Get();
 }
 
 AXObject* AXObject::ParentObjectUnignored() const {
@@ -6347,7 +6347,7 @@ AXObject* AXObject::CellForColumnAndRow(unsigned target_column_index,
     unsigned column_index = 0;
     for (const auto& cell : row->TableCellChildren()) {
       if (target_column_index == column_index && target_row_index == row_index)
-        return cell;
+        return cell.Get();
       column_index++;
     }
     row_index++;

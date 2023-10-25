@@ -139,7 +139,7 @@ void AXLayoutObject::Trace(Visitor* visitor) const {
 }
 
 LayoutObject* AXLayoutObject::GetLayoutObject() const {
-  return layout_object_;
+  return layout_object_.Get();
 }
 
 ScrollableArea* AXLayoutObject::GetScrollableAreaIfScrollable() const {
