@@ -1,0 +1,22 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("device_reauth") {
+  sources = [
+    "ios_device_authenticator.h",
+    "ios_device_authenticator.mm",
+    "ios_device_authenticator_factory.h",
+    "ios_device_authenticator_factory.mm",
+  ]
+
+  deps = [
+    "//components/device_reauth:device_reauth",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//ios/chrome/browser/shared/model/browser_state:browser_state",
+    "//ios/chrome/common/ui/reauthentication",
+    "//third_party/abseil-cpp:absl",
+    "//ui/base:base",
+  ]
+}

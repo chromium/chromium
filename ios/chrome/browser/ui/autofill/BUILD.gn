@@ -34,6 +34,7 @@ source_set("autofill") {
     "//ios/chrome/browser/autofill:autofill_shared",
     "//ios/chrome/browser/autofill/bottom_sheet",
     "//ios/chrome/browser/autofill/manual_fill",
+    "//ios/chrome/browser/device_reauth",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/metrics",
     "//ios/chrome/browser/passwords/model",

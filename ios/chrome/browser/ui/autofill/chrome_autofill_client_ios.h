@@ -155,6 +155,8 @@ class ChromeAutofillClientIOS : public AutofillClient {
   void OfferPlusAddressCreation(
       const url::Origin& main_frame_origin,
       plus_addresses::PlusAddressCallback callback) override;
+  std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
+      override;
 
   // RiskDataLoader:
   void LoadRiskData(
