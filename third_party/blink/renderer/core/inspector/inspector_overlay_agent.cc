@@ -490,7 +490,10 @@ protocol::Response InspectorOverlayAgent::enable() {
 }
 
 void InspectorOverlayAgent::EnsureAXContext(Node* node) {
-  Document& document = node->GetDocument();
+  EnsureAXContext(node->GetDocument());
+}
+
+void InspectorOverlayAgent::EnsureAXContext(Document& document) {
   if (!document_to_ax_context_.Contains(&document)) {
     auto context = std::make_unique<AXContext>(document, ui::kAXModeComplete);
     document_to_ax_context_.Set(&document, std::move(context));
@@ -1700,6 +1703,7 @@ protocol::Response InspectorOverlayAgent::SetInspectTool(
   LoadOverlayPageResource();
   EvaluateInOverlay("setOverlay", inspect_tool->GetOverlayName());
   EnsureEnableFrameOverlay();
+  EnsureAXContext(frame->GetDocument());
   ScheduleUpdate();
   return protocol::Response::Success();
 }
