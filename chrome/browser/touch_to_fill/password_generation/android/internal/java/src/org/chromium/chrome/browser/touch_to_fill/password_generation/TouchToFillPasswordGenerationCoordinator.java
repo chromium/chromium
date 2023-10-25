@@ -179,7 +179,7 @@ class TouchToFillPasswordGenerationCoordinator {
         restoreKeyboardFocus();
     }
 
-    void restoreKeyboardFocus() {
+    private void restoreKeyboardFocus() {
         if (mWebContents.getViewAndroidDelegate() == null) return;
         if (mWebContents.getViewAndroidDelegate().getContainerView() == null) return;
 

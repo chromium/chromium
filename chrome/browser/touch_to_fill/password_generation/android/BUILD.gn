@@ -74,3 +74,18 @@ source_set("unit_tests") {
 
   sources = [ "touch_to_fill_password_generation_controller_unittest.cc" ]
 }
+
+android_library("test_support_java") {
+  testonly = true
+  resources_package =
+      "org.chromium.chrome.browser.touch_to_fill.password_generation"
+
+  sources = [ "java/src/org/chromium/chrome/browser/touch_to_fill/password_generation/TouchToFillPasswordGenerationTestHelper.java" ]
+
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/touch_to_fill/password_generation/android/internal:java_resources",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/hamcrest:hamcrest_java",
+  ]
+}

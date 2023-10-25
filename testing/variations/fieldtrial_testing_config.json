@@ -12235,6 +12235,21 @@
             ]
         }
     ],
+    "PasswordGenerationBottomSheet": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20231018",
+                    "enable_features": [
+                        "PasswordGenerationBottomSheet"
+                    ]
+                }
+            ]
+        }
+    ],
     "PasswordInfobarDisplayLength": [
         {
             "platforms": [
