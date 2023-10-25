@@ -6,4 +6,8 @@
 
 @implementation TabGridToolbarsConfiguration
 
++ (TabGridToolbarsConfiguration*)disabledConfiguration {
+  return [[self alloc] init];
+}
+
 @end

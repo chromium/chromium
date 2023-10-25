@@ -180,12 +180,17 @@
   // correct delegate.
   [self.toolbarsMutator setToolbarsButtonsDelegate:self];
 
+  if (IsIncognitoModeForced(self.browser->GetBrowserState()->GetPrefs())) {
+    [self.toolbarsMutator setToolbarConfiguration:[TabGridToolbarsConfiguration
+                                                      disabledConfiguration]];
+    return;
+  }
+
   TabGridToolbarsConfiguration* toolbarsConfiguration =
       [[TabGridToolbarsConfiguration alloc] init];
   toolbarsConfiguration.closeAllButton = [self canCloseAll];
   toolbarsConfiguration.doneButton = YES;
-  toolbarsConfiguration.newTabButton = IsAddNewTabAllowedByPolicy(
-      self.browser->GetBrowserState()->GetPrefs(), NO);
+  toolbarsConfiguration.newTabButton = YES;
   toolbarsConfiguration.searchButton = YES;
   toolbarsConfiguration.selectTabsButton = [self isTabsInGrid];
   toolbarsConfiguration.undoButton = [self canUndo];

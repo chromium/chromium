@@ -26,6 +26,9 @@
 @property(nonatomic) BOOL shareButton;
 @property(nonatomic) BOOL undoButton;
 
+// Returns a configuration disabling all buttons.
++ (TabGridToolbarsConfiguration*)disabledConfiguration;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TOOLBARS_TAB_GRID_TOOLBARS_CONFIGURATION_H_
