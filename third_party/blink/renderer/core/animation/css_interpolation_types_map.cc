@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/animation/css_content_visibility_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_custom_length_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_custom_list_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/css_custom_transform_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_default_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_display_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_filter_list_interpolation_type.h"
@@ -508,9 +509,11 @@ CreateInterpolationTypeForCSSSyntax(CSSSyntaxType syntax,
       return std::make_unique<CSSNumberInterpolationType>(property,
                                                           &registration, true);
     case CSSSyntaxType::kTransformFunction:
-    case CSSSyntaxType::kTransformList:
-      // TODO(alancutter): Support smooth interpolation of these types.
+      // TODO(futhark): Implement smooth interpolation for <transform-function>
       return nullptr;
+    case CSSSyntaxType::kTransformList:
+      return std::make_unique<CSSCustomTransformInterpolationType>(
+          property, &registration);
     case CSSSyntaxType::kCustomIdent:
     case CSSSyntaxType::kIdent:
     case CSSSyntaxType::kTokenStream:

@@ -7,8 +7,38 @@
 
 #include "base/check_op.h"
 #include "third_party/blink/renderer/core/animation/css_interpolation_type.h"
+#include "third_party/blink/renderer/core/css/css_property_names.h"
 
 namespace blink {
+
+inline bool IsTransformFunction(CSSValueID function_id) {
+  switch (function_id) {
+    case CSSValueID::kScale:
+    case CSSValueID::kScaleX:
+    case CSSValueID::kScaleY:
+    case CSSValueID::kScaleZ:
+    case CSSValueID::kScale3d:
+    case CSSValueID::kTranslate:
+    case CSSValueID::kTranslateX:
+    case CSSValueID::kTranslateY:
+    case CSSValueID::kTranslateZ:
+    case CSSValueID::kTranslate3d:
+    case CSSValueID::kRotate:
+    case CSSValueID::kRotateX:
+    case CSSValueID::kRotateY:
+    case CSSValueID::kRotateZ:
+    case CSSValueID::kRotate3d:
+    case CSSValueID::kSkew:
+    case CSSValueID::kSkewX:
+    case CSSValueID::kSkewY:
+    case CSSValueID::kMatrix:
+    case CSSValueID::kMatrix3d:
+    case CSSValueID::kPerspective:
+      return true;
+    default:
+      return false;
+  }
+}
 
 class CSSTransformInterpolationType : public CSSInterpolationType {
  public:
@@ -18,7 +48,7 @@ class CSSTransformInterpolationType : public CSSInterpolationType {
   }
 
   InterpolationValue MaybeConvertStandardPropertyUnderlyingValue(
-      const ComputedStyle&) const final;
+      const ComputedStyle&) const override;
   PairwiseInterpolationValue MaybeMergeSingles(
       InterpolationValue&& start,
       InterpolationValue&& end) const final;
@@ -28,23 +58,29 @@ class CSSTransformInterpolationType : public CSSInterpolationType {
                  double interpolation_fraction) const final;
   void ApplyStandardPropertyValue(const InterpolableValue&,
                                   const NonInterpolableValue*,
-                                  StyleResolverState&) const final;
+                                  StyleResolverState&) const override;
 
- private:
-  InterpolationValue MaybeConvertNeutral(const InterpolationValue& underlying,
-                                         ConversionCheckers&) const final;
-  InterpolationValue MaybeConvertInitial(const StyleResolverState&,
-                                         ConversionCheckers&) const final;
-  InterpolationValue MaybeConvertInherit(const StyleResolverState&,
-                                         ConversionCheckers&) const final;
-  InterpolationValue MaybeConvertValue(const CSSValue&,
-                                       const StyleResolverState*,
-                                       ConversionCheckers&) const final;
+ protected:
+  CSSTransformInterpolationType(PropertyHandle property,
+                                const PropertyRegistration* registration)
+      : CSSInterpolationType(property, registration) {}
+
   InterpolationValue PreInterpolationCompositeIfNeeded(
       InterpolationValue value,
       const InterpolationValue& underlying,
       EffectModel::CompositeOperation,
-      ConversionCheckers&) const final;
+      ConversionCheckers&) const override;
+
+ private:
+  InterpolationValue MaybeConvertNeutral(const InterpolationValue& underlying,
+                                         ConversionCheckers&) const override;
+  InterpolationValue MaybeConvertInitial(const StyleResolverState&,
+                                         ConversionCheckers&) const override;
+  InterpolationValue MaybeConvertInherit(const StyleResolverState&,
+                                         ConversionCheckers&) const override;
+  InterpolationValue MaybeConvertValue(const CSSValue&,
+                                       const StyleResolverState*,
+                                       ConversionCheckers&) const override;
 };
 
 }  // namespace blink
