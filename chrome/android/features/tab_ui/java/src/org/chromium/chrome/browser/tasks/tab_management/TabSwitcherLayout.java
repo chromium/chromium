@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.compositor.scene_layer.SolidColorSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.TabListSceneLayer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.hub.ShrinkExpandAnimator;
 import org.chromium.chrome.browser.hub.ShrinkExpandImageView;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -105,7 +106,7 @@ public class TabSwitcherLayout extends Layout {
 
     // ObjectAnimator only holds a weak reference to its target. Hold a strong reference here to
     // prevent the animation from cancelling early.
-    private GtsRectAnimator mRectAnimator;
+    private ShrinkExpandAnimator mShrinkExpandAnimator;
 
     // The transition animation from a tab to the tab switcher.
     private AnimatorSet mTabToSwitcherAnimation;
@@ -698,9 +699,14 @@ public class TabSwitcherLayout extends Layout {
         updateBackgroundColor(newIsIncognito);
         mTabJavaView.setVisibility(View.INVISIBLE);
 
-        mRectAnimator = new GtsRectAnimator(mTabJavaView, origin, fullscreenRect);
-        ObjectAnimator animator = ObjectAnimator.ofObject(
-                mRectAnimator, GtsRectAnimator.RECT, new RectEvaluator(), origin, fullscreenRect);
+        mShrinkExpandAnimator = new ShrinkExpandAnimator(mTabJavaView, origin, fullscreenRect);
+        ObjectAnimator animator =
+                ObjectAnimator.ofObject(
+                        mShrinkExpandAnimator,
+                        ShrinkExpandAnimator.RECT,
+                        new RectEvaluator(),
+                        origin,
+                        fullscreenRect);
         animator.setDuration(FOREGROUND_DURATION_MS);
         animator.setInterpolator(Interpolators.STANDARD_INTERPOLATOR);
 
@@ -898,10 +904,15 @@ public class TabSwitcherLayout extends Layout {
         mTabJavaView.setImageBitmap(bitmap);
         mTabJavaView.setVisibility(View.INVISIBLE);
 
-        mRectAnimator = new GtsRectAnimator(mTabJavaView, fullscreenRect, targetRect);
-        mRectAnimator.setRect(fullscreenRect);
-        ObjectAnimator animator = ObjectAnimator.ofObject(mRectAnimator, GtsRectAnimator.RECT,
-                new RectEvaluator(), fullscreenRect, targetRect);
+        mShrinkExpandAnimator = new ShrinkExpandAnimator(mTabJavaView, fullscreenRect, targetRect);
+        mShrinkExpandAnimator.setRect(fullscreenRect);
+        ObjectAnimator animator =
+                ObjectAnimator.ofObject(
+                        mShrinkExpandAnimator,
+                        ShrinkExpandAnimator.RECT,
+                        new RectEvaluator(),
+                        fullscreenRect,
+                        targetRect);
         animator.addUpdateListener((valueAnimator) -> { mAnimationTracker.onUpdate(); });
         animator.setDuration(ZOOMING_DURATION);
         animator.setInterpolator(Interpolators.EMPHASIZED);
@@ -969,11 +980,16 @@ public class TabSwitcherLayout extends Layout {
                         source.bottom + topMargin));
         mTabJavaView.setVisibility(View.INVISIBLE);
 
-        mRectAnimator = new GtsRectAnimator(mTabJavaView, source, fullscreenRect);
-        mRectAnimator.setThumbnailSizeForOffset(thumbnailSize);
+        mShrinkExpandAnimator = new ShrinkExpandAnimator(mTabJavaView, source, fullscreenRect);
+        mShrinkExpandAnimator.setThumbnailSizeForOffset(thumbnailSize);
 
-        ObjectAnimator animator = ObjectAnimator.ofObject(
-                mRectAnimator, GtsRectAnimator.RECT, new RectEvaluator(), source, fullscreenRect);
+        ObjectAnimator animator =
+                ObjectAnimator.ofObject(
+                        mShrinkExpandAnimator,
+                        ShrinkExpandAnimator.RECT,
+                        new RectEvaluator(),
+                        source,
+                        fullscreenRect);
         animator.addUpdateListener((valueAnimator) -> { mAnimationTracker.onUpdate(); });
         animator.setDuration(ZOOMING_DURATION);
         animator.setInterpolator(Interpolators.EMPHASIZED);
@@ -1004,7 +1020,7 @@ public class TabSwitcherLayout extends Layout {
 
                             updateBackgroundColor(isIncognito());
                             mTabJavaView.setImageBitmap(bitmap);
-                            mRectAnimator.setRect(source);
+                            mShrinkExpandAnimator.setRect(source);
                             mTabJavaView.setVisibility(View.VISIBLE);
 
                             mAnimationTransitionType = TransitionType.EXPAND;

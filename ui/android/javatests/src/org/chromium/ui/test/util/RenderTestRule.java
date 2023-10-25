@@ -121,26 +121,51 @@ public class RenderTestRule extends TestWatcher {
         String ANDROID_VR_RENDER_TESTS = "android-vr-render-tests";
     }
 
-    @StringDef({Component.BLINK_CONTACTS, Component.BLINK_FORMS_COLOR, Component.BLINK_PAYMENTS,
-            Component.FREEZE_DRIED_TABS, Component.PRIVACY, Component.PRIVACY_INCOGNITO,
-            Component.SERVICES_SIGN_IN, Component.SERVICES_SYNC, Component.UI_BROWSER_AUTOFILL,
-            Component.UI_BROWSER_BOOKMARKS, Component.UI_BROWSER_BUBBLES_PAGE_INFO,
-            Component.UI_BROWSER_CONTENT_SUGGESTIONS, Component.UI_BROWSER_CONTENT_SUGGESTIONS_FEED,
-            Component.UI_BROWSER_CONTENT_SUGGESTIONS_HISTORY, Component.UI_BROWSER_FIRST_RUN,
-            Component.UI_BROWSER_INCOGNITO, Component.UI_BROWSER_INFOBARS,
-            Component.UI_BROWSER_MEDIA_PICKER, Component.UI_BROWSER_MOBILE,
-            Component.UI_BROWSER_MOBILE_APP_MENU, Component.UI_BROWSER_MOBILE_CONTEXT_MENU,
-            Component.UI_BROWSER_MOBILE_CUSTOM_TABS, Component.UI_BROWSER_MOBILE_MESSAGES,
-            Component.UI_BROWSER_MOBILE_RECENT_TABS, Component.UI_BROWSER_MOBILE_SETTINGS,
-            Component.UI_BROWSER_MOBILE_START, Component.UI_BROWSER_MOBILE_TAB_GROUPS,
-            Component.UI_BROWSER_MOBILE_TAB_SWITCHER, Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID,
-            Component.UI_BROWSER_NEW_TAB_PAGE, Component.UI_BROWSER_NEW_TAB_PAGE_EXPLORE_SITES,
-            Component.UI_BROWSER_OMNIBOX, Component.UI_BROWSER_PASSWORDS,
-            Component.UI_BROWSER_SEARCH_VOICE, Component.UI_BROWSER_SHARING,
-            Component.UI_BROWSER_SHOPPING, Component.UI_BROWSER_SHOPPING_MERCHANT_TRUST,
-            Component.UI_BROWSER_SHOPPING_PRICE_TRACKING, Component.UI_BROWSER_TOOLBAR,
-            Component.UI_BROWSER_THUMBNAIL, Component.UI_BROWSER_WEB_APP_INSTALLS,
-            Component.UI_SETTINGS_PRIVACY})
+    @StringDef({
+        Component.BLINK_CONTACTS,
+        Component.BLINK_FORMS_COLOR,
+        Component.BLINK_PAYMENTS,
+        Component.FREEZE_DRIED_TABS,
+        Component.PRIVACY,
+        Component.PRIVACY_INCOGNITO,
+        Component.SERVICES_SIGN_IN,
+        Component.SERVICES_SYNC,
+        Component.UI_BROWSER_AUTOFILL,
+        Component.UI_BROWSER_BOOKMARKS,
+        Component.UI_BROWSER_BUBBLES_PAGE_INFO,
+        Component.UI_BROWSER_CONTENT_SUGGESTIONS,
+        Component.UI_BROWSER_CONTENT_SUGGESTIONS_FEED,
+        Component.UI_BROWSER_CONTENT_SUGGESTIONS_HISTORY,
+        Component.UI_BROWSER_FIRST_RUN,
+        Component.UI_BROWSER_INCOGNITO,
+        Component.UI_BROWSER_INFOBARS,
+        Component.UI_BROWSER_MEDIA_PICKER,
+        Component.UI_BROWSER_MOBILE,
+        Component.UI_BROWSER_MOBILE_APP_MENU,
+        Component.UI_BROWSER_MOBILE_CONTEXT_MENU,
+        Component.UI_BROWSER_MOBILE_CUSTOM_TABS,
+        Component.UI_BROWSER_MOBILE_HUB,
+        Component.UI_BROWSER_MOBILE_MESSAGES,
+        Component.UI_BROWSER_MOBILE_RECENT_TABS,
+        Component.UI_BROWSER_MOBILE_SETTINGS,
+        Component.UI_BROWSER_MOBILE_START,
+        Component.UI_BROWSER_MOBILE_TAB_GROUPS,
+        Component.UI_BROWSER_MOBILE_TAB_SWITCHER,
+        Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID,
+        Component.UI_BROWSER_NEW_TAB_PAGE,
+        Component.UI_BROWSER_NEW_TAB_PAGE_EXPLORE_SITES,
+        Component.UI_BROWSER_OMNIBOX,
+        Component.UI_BROWSER_PASSWORDS,
+        Component.UI_BROWSER_SEARCH_VOICE,
+        Component.UI_BROWSER_SHARING,
+        Component.UI_BROWSER_SHOPPING,
+        Component.UI_BROWSER_SHOPPING_MERCHANT_TRUST,
+        Component.UI_BROWSER_SHOPPING_PRICE_TRACKING,
+        Component.UI_BROWSER_TOOLBAR,
+        Component.UI_BROWSER_THUMBNAIL,
+        Component.UI_BROWSER_WEB_APP_INSTALLS,
+        Component.UI_SETTINGS_PRIVACY
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Component {
         String BLINK_CONTACTS = "Blink>Contacts";
@@ -166,6 +191,7 @@ public class RenderTestRule extends TestWatcher {
         String UI_BROWSER_MOBILE_APP_MENU = "UI>Browser>Mobile>AppMenu";
         String UI_BROWSER_MOBILE_CONTEXT_MENU = "UI>Browser>Mobile>ContextMenu";
         String UI_BROWSER_MOBILE_CUSTOM_TABS = "UI>Browser>Mobile>CustomTabs";
+        String UI_BROWSER_MOBILE_HUB = "UI>Browser>Mobile>Hub";
         String UI_BROWSER_MOBILE_MESSAGES = "UI>Browser>Mobile>Messages";
         String UI_BROWSER_MOBILE_RECENT_TABS = "UI>Browser>Mobile>RecentTabs";
         String UI_BROWSER_MOBILE_SETTINGS = "UI>Browser>Mobile>Settings";

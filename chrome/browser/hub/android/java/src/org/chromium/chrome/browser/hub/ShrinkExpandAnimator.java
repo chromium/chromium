@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management;
+package org.chromium.chrome.browser.hub;
 
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -13,10 +13,10 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 
 import org.chromium.build.annotations.UsedByReflection;
-import org.chromium.chrome.browser.hub.ShrinkExpandImageView;
 
 /** Animator for scaling a {@link ShrinkExpandImageView} from one rect to another. */
-public class GtsRectAnimator {
+// TODO(crbug/1495731): Move to hub/internal/ once TabSwitcherLayout no longer depends on this.
+public class ShrinkExpandAnimator {
     /**
      * Tag for the {@link ObjectAnimator#ofObject()} {@code propertyName} param. Using this
      * triggers invocation of {@link #setRect(Rect)} during animation steps. An
@@ -38,7 +38,7 @@ public class GtsRectAnimator {
      * @param initialRect the initial rect that view encompasses in global coordinates.
      * @param finalRect the final rect that view will encompass in global coordinates.
      */
-    public GtsRectAnimator(
+    public ShrinkExpandAnimator(
             @NonNull ShrinkExpandImageView view,
             @NonNull Rect initialRect,
             @NonNull Rect finalRect) {
@@ -57,7 +57,7 @@ public class GtsRectAnimator {
      * Set the size of the thumbnail for top offset computation. Only necessary when expanding.
      * @param thumbnailSize The size of the thumbnail in the tab grid.
      */
-    void setThumbnailSizeForOffset(Size thumbnailSize) {
+    public void setThumbnailSizeForOffset(Size thumbnailSize) {
         mThumbnailSize = thumbnailSize;
     }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management;
+package org.chromium.chrome.browser.hub;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 
@@ -32,7 +32,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.hub.ShrinkExpandImageView;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -40,19 +39,20 @@ import org.chromium.ui.test.util.RenderTestRule;
 
 import java.util.Locale;
 
-/** Render tests for {@link GtsRectAnimator}. */
+/** Render tests for {@link ShrinkExpandAnimator}. */
+// TODO(crbug/1495731): Move to hub/internal/ once TabSwitcherLayout no longer depends on this.
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
-public class GtsRectAnimatorTest extends BlankUiTestActivityTestCase {
+public class ShrinkExpandAnimatorRenderTest extends BlankUiTestActivityTestCase {
     private static final int ANIMATION_STEPS = 5;
 
     @Rule
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID)
+                    .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE_HUB)
                     .build();
 
-    public GtsRectAnimatorTest() {
+    public ShrinkExpandAnimatorRenderTest() {
         NightModeTestUtils.setUpNightModeForBlankUiTestActivity(false);
         mRenderTestRule.setNightModeEnabled(false);
     }
@@ -104,7 +104,7 @@ public class GtsRectAnimatorTest extends BlankUiTestActivityTestCase {
                         startY + thumbnailSize.getHeight());
 
         setupShrinkExpandImageView(startValue);
-        GtsRectAnimator animator = createAnimator(startValue, endValue, thumbnailSize);
+        ShrinkExpandAnimator animator = createAnimator(startValue, endValue, thumbnailSize);
 
         stepThroughAnimation("expand_rect", animator, startValue, endValue, ANIMATION_STEPS);
     }
@@ -129,7 +129,7 @@ public class GtsRectAnimatorTest extends BlankUiTestActivityTestCase {
                         Math.round(thumbnailSize.getHeight() / 2.0f));
 
         setupShrinkExpandImageView(startValue);
-        GtsRectAnimator animator = createAnimator(startValue, endValue, thumbnailSize);
+        ShrinkExpandAnimator animator = createAnimator(startValue, endValue, thumbnailSize);
 
         stepThroughAnimation(
                 "expand_rect_with_top_clip", animator, startValue, endValue, ANIMATION_STEPS);
@@ -156,16 +156,16 @@ public class GtsRectAnimatorTest extends BlankUiTestActivityTestCase {
                         endY + thumbnailSize.getHeight());
 
         setupShrinkExpandImageView(startValue);
-        GtsRectAnimator animator = createAnimator(startValue, endValue, thumbnailSize);
+        ShrinkExpandAnimator animator = createAnimator(startValue, endValue, thumbnailSize);
 
         stepThroughAnimation("shrink_rect_rect", animator, startValue, endValue, ANIMATION_STEPS);
     }
 
-    private GtsRectAnimator createAnimator(
+    private ShrinkExpandAnimator createAnimator(
             Rect startValue, Rect endValue, @Nullable Size thumbnailSize) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
-                    GtsRectAnimator animator = new GtsRectAnimator(mView, startValue, endValue);
+                    ShrinkExpandAnimator animator = new ShrinkExpandAnimator(mView, startValue, endValue);
                     animator.setThumbnailSizeForOffset(thumbnailSize);
                     animator.setRect(startValue);
                     return animator;
@@ -189,7 +189,7 @@ public class GtsRectAnimatorTest extends BlankUiTestActivityTestCase {
      */
     private void stepThroughAnimation(
             String testcaseName,
-            GtsRectAnimator rectAnimator,
+            ShrinkExpandAnimator rectAnimator,
             Rect startValue,
             Rect endValue,
             int steps)
@@ -202,7 +202,7 @@ public class GtsRectAnimatorTest extends BlankUiTestActivityTestCase {
                         () -> {
                             return ObjectAnimator.ofObject(
                                     rectAnimator,
-                                    GtsRectAnimator.RECT,
+                                    ShrinkExpandAnimator.RECT,
                                     new RectEvaluator(),
                                     startValue,
                                     endValue);
