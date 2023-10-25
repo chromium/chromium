@@ -76,11 +76,11 @@ class TestDelegate : public XuCameraService::Delegate {
   }
 };
 
-class XuCameraServiceTest : public ::testing::Test {
+class CfMXuCameraServiceTest : public ::testing::Test {
  public:
-  XuCameraServiceTest() = default;
-  XuCameraServiceTest(const XuCameraServiceTest&) = delete;
-  XuCameraServiceTest& operator=(const XuCameraServiceTest&) = delete;
+  CfMXuCameraServiceTest() = default;
+  CfMXuCameraServiceTest(const CfMXuCameraServiceTest&) = delete;
+  CfMXuCameraServiceTest& operator=(const CfMXuCameraServiceTest&) = delete;
 
   void SetUp() override {
     CfmHotlineClient::InitializeFake();
@@ -158,19 +158,19 @@ class XuCameraServiceTest : public ::testing::Test {
 
 // This test ensures that the XuCameraService is discoverable by its
 // mojom name by sending a signal received by CfmHotlineClient.
-TEST_F(XuCameraServiceTest, XuCameraServiceAvailable) {
+TEST_F(CfMXuCameraServiceTest, XuCameraServiceAvailable) {
   ASSERT_TRUE(GetClient()->FakeEmitSignal(mojom::XuCamera::Name_));
 }
 
 // This test ensures that the XuCameraService correctly registers itself
 // for discovery by the cfm mojom binder daemon and correctly returns a
 // working mojom remote.
-TEST_F(XuCameraServiceTest, GetXuCameraRemote) {
+TEST_F(CfMXuCameraServiceTest, GetXuCameraRemote) {
   ASSERT_TRUE(GetXuCameraRemote().is_connected());
 }
 
 // This test ensure that the XU camera can get unit id
-TEST_F(XuCameraServiceTest, GetXuCameraUnitId) {
+TEST_F(CfMXuCameraServiceTest, GetXuCameraUnitId) {
   base::RunLoop run_loop;
   auto devPath = mojom::WebcamId::NewDevPath(kFakePath);
   GetXuCameraRemote()->GetUnitId(
@@ -185,7 +185,7 @@ TEST_F(XuCameraServiceTest, GetXuCameraUnitId) {
 }
 
 // This test ensure that the XU camera can map control
-TEST_F(XuCameraServiceTest, GetXuCameraMapCtrl) {
+TEST_F(CfMXuCameraServiceTest, GetXuCameraMapCtrl) {
   auto devPath = mojom::WebcamId::NewDevPath(kFakePath);
   auto mapping = mojom::ControlMapping::New(
       /* id= */ 1, /* name= */ kName, /* guid= */ kGuid, /* selector= */ 1,
@@ -204,7 +204,7 @@ TEST_F(XuCameraServiceTest, GetXuCameraMapCtrl) {
 }
 
 // This test ensure that the XU camera can get control given a ctrl query
-TEST_F(XuCameraServiceTest, XuCameraGetCtrlWithDeviceIdCtrlMapping) {
+TEST_F(CfMXuCameraServiceTest, XuCameraGetCtrlWithDeviceIdCtrlMapping) {
   base::RunLoop run_loop;
   auto devId = mojom::WebcamId::NewDeviceId("123");
   auto mapping = mojom::CtrlType::NewMappingCtrl(mojom::ControlMapping::New(
@@ -227,7 +227,7 @@ TEST_F(XuCameraServiceTest, XuCameraGetCtrlWithDeviceIdCtrlMapping) {
 }
 
 // This test ensure that the XU camera can get control given a ctrl query
-TEST_F(XuCameraServiceTest, XuCameraGetCtrlWithDevPathCtrlMapping) {
+TEST_F(CfMXuCameraServiceTest, XuCameraGetCtrlWithDevPathCtrlMapping) {
   base::RunLoop run_loop;
   auto devPath = mojom::WebcamId::NewDevPath(kFakePath);
   auto mapping = mojom::CtrlType::NewMappingCtrl(mojom::ControlMapping::New(
@@ -249,7 +249,7 @@ TEST_F(XuCameraServiceTest, XuCameraGetCtrlWithDevPathCtrlMapping) {
 }
 
 // This test ensure that the XU camera can get control given a ctrl query
-TEST_F(XuCameraServiceTest, XuCameraGetCtrlWithDeviceIdCtrlQuery) {
+TEST_F(CfMXuCameraServiceTest, XuCameraGetCtrlWithDeviceIdCtrlQuery) {
   base::RunLoop run_loop;
   auto devId = mojom::WebcamId::NewDeviceId("123");
   auto ctrlTypeQuery =
@@ -269,7 +269,7 @@ TEST_F(XuCameraServiceTest, XuCameraGetCtrlWithDeviceIdCtrlQuery) {
 }
 
 // This test ensure that the XU camera can get control given a ctrl query
-TEST_F(XuCameraServiceTest, XuCameraGetCtrlWithDevPathCtrlQuery) {
+TEST_F(CfMXuCameraServiceTest, XuCameraGetCtrlWithDevPathCtrlQuery) {
   base::RunLoop run_loop;
   auto devPath = mojom::WebcamId::NewDevPath(kFakePath);
   auto ctrlTypeQuery =
@@ -288,7 +288,7 @@ TEST_F(XuCameraServiceTest, XuCameraGetCtrlWithDevPathCtrlQuery) {
 
 // This test ensure that the XU camera can get control length given a ctrl
 // query
-TEST_F(XuCameraServiceTest, XuCameraGetCtrlLenWithDevPathCtrlQuery) {
+TEST_F(CfMXuCameraServiceTest, XuCameraGetCtrlLenWithDevPathCtrlQuery) {
   base::RunLoop run_loop;
   auto devPath = mojom::WebcamId::NewDevPath(kFakePath);
   auto ctrlTypeQuery =
@@ -306,7 +306,7 @@ TEST_F(XuCameraServiceTest, XuCameraGetCtrlLenWithDevPathCtrlQuery) {
 }
 
 /// This test ensure that the XU camera can get control given a ctrl query
-TEST_F(XuCameraServiceTest, XuCameraSetCtrlWithDeviceIdCtrlMapping) {
+TEST_F(CfMXuCameraServiceTest, XuCameraSetCtrlWithDeviceIdCtrlMapping) {
   base::RunLoop run_loop;
   auto devId = mojom::WebcamId::NewDeviceId("123");
   auto mapping = mojom::CtrlType::NewMappingCtrl(mojom::ControlMapping::New(
@@ -327,7 +327,7 @@ TEST_F(XuCameraServiceTest, XuCameraSetCtrlWithDeviceIdCtrlMapping) {
 }
 
 /// This test ensure that the XU camera can get control given a ctrl query
-TEST_F(XuCameraServiceTest, XuCameraSetCtrlWithDevPathCtrlMapping) {
+TEST_F(CfMXuCameraServiceTest, XuCameraSetCtrlWithDevPathCtrlMapping) {
   base::RunLoop run_loop;
   auto devPath = mojom::WebcamId::NewDevPath(kFakePath);
   auto mapping = mojom::CtrlType::NewMappingCtrl(mojom::ControlMapping::New(
@@ -348,7 +348,7 @@ TEST_F(XuCameraServiceTest, XuCameraSetCtrlWithDevPathCtrlMapping) {
 }
 
 /// This test ensure that the XU camera can get control given a ctrl query
-TEST_F(XuCameraServiceTest, XuCameraSetCtrlWithDeviceIdCtrlQuery) {
+TEST_F(CfMXuCameraServiceTest, XuCameraSetCtrlWithDeviceIdCtrlQuery) {
   base::RunLoop run_loop;
   auto devId = mojom::WebcamId::NewDeviceId("123");
   auto ctrlTypeQuery =
@@ -365,7 +365,7 @@ TEST_F(XuCameraServiceTest, XuCameraSetCtrlWithDeviceIdCtrlQuery) {
 }
 
 /// This test ensure that the XU camera can get control given a ctrl query
-TEST_F(XuCameraServiceTest, XuCameraSetCtrlWithDevPathCtrlQuery) {
+TEST_F(CfMXuCameraServiceTest, XuCameraSetCtrlWithDevPathCtrlQuery) {
   base::RunLoop run_loop;
   auto devPath = mojom::WebcamId::NewDevPath(kFakePath);
   auto ctrlTypeQuery =
