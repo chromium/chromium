@@ -31,7 +31,6 @@
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
@@ -215,9 +214,7 @@ class PinnedSidePanelInteractiveTest : public InteractiveBrowserTest {
   void SetUp() override {
     set_open_about_blank_on_browser_launch(true);
     scoped_feature_list_.InitWithFeatures(
-        {features::kSidePanelPinning, features::kChromeRefresh2023,
-         features::kReadAnything},
-        {});
+        {features::kSidePanelPinning, features::kChromeRefresh2023}, {});
     InteractiveBrowserTest::SetUp();
   }
 
