@@ -715,6 +715,10 @@ void RenderWidgetHostViewChildFrame::NotifyHitTestRegionUpdated(
     screen_rect_stable_since_for_iov2_ = base::TimeTicks::Now();
     return;
   }
+
+  // Convert to DIP
+  screen_rect->Scale(1. / screen_infos_.current().device_scale_factor);
+
   if ((ToRoundedSize(screen_rect->size()) !=
        ToRoundedSize(last_stable_screen_rect_.size())) ||
       (std::abs(last_stable_screen_rect_.x() - screen_rect->x()) +
