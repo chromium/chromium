@@ -45,6 +45,7 @@ class LocalPasswordSetupScreen : public BaseScreen {
   void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;
 
+  void OnUpdateLocalPassword(auth::mojom::ConfigureResult result);
   void OnSetLocalPassword(auth::mojom::ConfigureResult result);
   std::string GetToken() const;
 

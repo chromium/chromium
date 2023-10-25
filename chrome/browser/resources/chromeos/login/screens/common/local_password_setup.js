@@ -139,6 +139,18 @@ class LocalPasswordSetup extends LocalPasswordSetupBase {
   onDoneClicked_() {
     this.userActed(['done']);
   }
+
+  titleText_(locale, isRecoveryFlow) {
+    const key =
+        isRecoveryFlow ? 'localPasswordResetTitle' : 'localPasswordSetupTitle';
+    return this.i18n(key);
+  }
+
+  doneTitleText_(locale, isRecoveryFlow) {
+    const key = isRecoveryFlow ? 'localPasswordResetDoneTitle' :
+                                 'localPasswordSetupDoneTitle';
+    return this.i18n(key);
+  }
 }
 
 customElements.define(LocalPasswordSetup.is, LocalPasswordSetup);

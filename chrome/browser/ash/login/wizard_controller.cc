@@ -1241,6 +1241,8 @@ void WizardController::ShowCryptohomeRecoveryScreen(
     std::unique_ptr<UserContext> user_context) {
   DCHECK(features::IsCryptohomeRecoveryEnabled());
   wizard_context_->user_context = std::move(user_context);
+  wizard_context_->knowledge_factor_setup.auth_setup_flow =
+      WizardContext::AuthChangeFlow::kRecovery;
   SetCurrentScreen(GetScreen(CryptohomeRecoveryScreenView::kScreenId));
 }
 

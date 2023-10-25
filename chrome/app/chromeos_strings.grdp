@@ -1698,13 +1698,19 @@
   <message name="IDS_LOGIN_CONFIRM_PASSWORD_TITLE" desc="Title for the confirm password dialog.">
     Please re-enter your password to update your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> profile.
   </message>
-  <message name="IDS_LOGIN_LOCAL_PASSWORD_SETUP_TITLE" desc="Title local password setup dialog.">
+  <message name="IDS_LOGIN_LOCAL_PASSWORD_SETUP_TITLE" desc="Title for the local password setup dialog.">
     Set <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> password
   </message>
-  <message name="IDS_LOGIN_LOCAL_PASSWORD_SETUP_DONE_TITLE" desc="Title local password setup done dialog.">
+  <message name="IDS_LOGIN_LOCAL_PASSWORD_RESET_TITLE" desc="Title for the local password reset dialog.">
+    Reset <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> password
+  </message>
+  <message name="IDS_LOGIN_LOCAL_PASSWORD_SETUP_DONE_TITLE" desc="Title for the local password setup done dialog.">
     Your password is set
   </message>
-  <message name="IDS_LOGIN_LOCAL_PASSWORD_SETUP_DONE_SUBTITLE" desc="Subitle local password setup done dialog.">
+  <message name="IDS_LOGIN_LOCAL_PASSWORD_RESET_DONE_TITLE" desc="Title for the local password reset done dialog.">
+    Your password has been updated
+  </message>
+  <message name="IDS_LOGIN_LOCAL_PASSWORD_SETUP_DONE_SUBTITLE" desc="Subitle for the local password setup done dialog.">
     You can use this password to sign in to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
   </message>
   <message name="IDS_LOGIN_MANUAL_PASSWORD_TITLE" desc="Title for the manual password setting dialog.">

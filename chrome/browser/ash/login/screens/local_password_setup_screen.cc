@@ -59,7 +59,8 @@ void LocalPasswordSetupScreen::ShowImpl() {
     return;
   }
   bool can_go_back = !context()->knowledge_factor_setup.local_password_forced;
-  view_->Show(can_go_back);
+  view_->Show(can_go_back, context()->knowledge_factor_setup.auth_setup_flow ==
+                               WizardContext::AuthChangeFlow::kRecovery);
 }
 
 void LocalPasswordSetupScreen::HideImpl() {}
@@ -73,6 +74,15 @@ void LocalPasswordSetupScreen::OnUserAction(const base::Value::List& args) {
         auth::GetPasswordFactorEditor(
             quick_unlock::QuickUnlockFactory::GetDelegate(),
             g_browser_process->local_state());
+
+    if (context()->knowledge_factor_setup.auth_setup_flow ==
+        WizardContext::AuthChangeFlow::kRecovery) {
+      password_factor_editor.UpdateLocalPassword(
+          GetToken(), password,
+          base::BindOnce(&LocalPasswordSetupScreen::OnSetLocalPassword,
+                         weak_factory_.GetWeakPtr()));
+      return;
+    }
 
     password_factor_editor.SetLocalPassword(
         GetToken(), password,
@@ -88,6 +98,19 @@ void LocalPasswordSetupScreen::OnUserAction(const base::Value::List& args) {
     return;
   }
   BaseScreen::OnUserAction(args);
+}
+
+void LocalPasswordSetupScreen::OnUpdateLocalPassword(
+    auth::mojom::ConfigureResult result) {
+  if (result != auth::mojom::ConfigureResult::kSuccess) {
+    view_->ShowLocalPasswordSetupFailure();
+    LOG(ERROR) << "Failed to update local password, error id= "
+               << static_cast<int>(result);
+    exit_callback_.Run(Result::kDone);
+    crash_reporter::DumpWithoutCrashing();
+    return;
+  }
+  view_->ShowLocalPasswordSetupSuccess();
 }
 
 void LocalPasswordSetupScreen::OnSetLocalPassword(
