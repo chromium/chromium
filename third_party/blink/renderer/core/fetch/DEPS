@@ -12,3 +12,9 @@ include_rules = [
     "+storage/common/quota/padding_key.h",
     "+url/gurl.h",
 ]
+
+specific_include_rules = {
+  "fetch_manager.cc" : [
+      "+net/traffic_annotation/network_traffic_annotation.h"
+  ],
+}

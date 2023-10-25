@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -102,6 +103,39 @@ namespace {
 
 // 64 kilobytes.
 constexpr uint64_t kMaxScheduledDeferredBytesPerOrigin = 64 * 1024;
+
+constexpr net::NetworkTrafficAnnotationTag kFetchLaterTrafficAnnotationTag =
+    net::DefineNetworkTrafficAnnotation("blink_fetch_later_manager",
+                                        R"(
+    semantics {
+      sender: "Blink Fetch Later Manager"
+      description:
+        "This request is a website-initiated FetchLater request."
+      trigger:
+        "On document unloaded or after developer specified timeout has passed."
+      data: "Anything the initiator wants to send."
+      user_data {
+        type: ARBITRARY_DATA
+      }
+      destination: OTHER
+      internal {
+        contacts {
+          email: "pending-beacon-experiment@chromium.org"
+        }
+      }
+      last_reviewed: "2023-10-25"
+    }
+    policy {
+      cookies_allowed: YES
+      cookies_store: "user"
+      setting: "These requests cannot be fully disabled in settings. "
+        "Only for the requests intended to send after document in BFCache, "
+        "they can be disabled via the `Background Sync` section under the "
+        "`Privacy and security` tab in settings. "
+        "This feature is not yet enabled."
+      policy_exception_justification: "The policy for Background sync is not "
+      "yet implemented."
+    })");
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -1265,6 +1299,8 @@ class FetchLaterManager::DeferredLoader final
       ResourceRequest request,
       const ResourceLoaderOptions& resource_loader_options) override {
     // TODO(crbug.com/1465781): Implement via FetchLaterLoaderFactory.
+    std::ignore = net::MutableNetworkTrafficAnnotationTag(
+        kFetchLaterTrafficAnnotationTag);
 
     // https://whatpr.org/fetch/1647/9ca4bda...9994c1d.html#request-a-deferred-fetch
     // Continued with "request a deferred fetch"

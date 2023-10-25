@@ -294,6 +294,7 @@ after discussions on the right group.
       <annotation id="ip_protection_service_get_proxy_config"/>
       <annotation id="customize_chrome_page_handler"/>
       <annotation id="almanac_icon_cache"/>
+      <annotation id="blink_fetch_later_manager"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
