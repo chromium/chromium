@@ -1466,33 +1466,6 @@ void BrowserAutofillManager::UndoAutofill(
   }
 }
 
-void BrowserAutofillManager::FillOrPreviewForm(
-    mojom::ActionPersistence action_persistence,
-    const FormData& form,
-    const FormFieldData& field,
-    Suggestion::BackendId backend_id,
-    const AutofillTriggerDetails& trigger_details) {
-  if (!IsValidFormData(form) || !IsValidFormFieldData(field))
-    return;
-
-  // NOTE: RefreshDataModels may invalidate |data_model|. Thus it must come
-  // before GetProfile or GetCreditCard.
-  if (!RefreshDataModels() || !driver().RendererIsAvailable()) {
-    return;
-  }
-
-  const AutofillProfile* profile = GetProfile(backend_id);
-  const CreditCard* credit_card = GetCreditCard(backend_id);
-
-  if (credit_card) {
-    FillOrPreviewCreditCardForm(action_persistence, form, field, credit_card,
-                                trigger_details);
-  } else if (profile) {
-    FillOrPreviewProfileForm(action_persistence, form, field, *profile,
-                             trigger_details);
-  }
-}
-
 void BrowserAutofillManager::FillCreditCardForm(
     const FormData& form,
     const FormFieldData& field,

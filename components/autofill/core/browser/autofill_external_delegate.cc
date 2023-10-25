@@ -765,9 +765,17 @@ void AutofillExternalDelegate::FillAutofillFormData(
                  : mojom::ActionPersistence::kFill;
 
   DCHECK(manager_->driver().RendererIsAvailable());
-  // Fill the values for the whole form.
-  manager_->FillOrPreviewForm(action_persistence, query_form_, query_field_,
-                              backend_id, trigger_details);
+  PersonalDataManager* pdm = manager_->client().GetPersonalDataManager();
+  if (const CreditCard* credit_card =
+          pdm->GetCreditCardByGUID(backend_id.value())) {
+    manager_->FillOrPreviewCreditCardForm(action_persistence, query_form_,
+                                          query_field_, credit_card,
+                                          trigger_details);
+  } else if (const AutofillProfile* profile =
+                 pdm->GetProfileByGUID(backend_id.value())) {
+    manager_->FillOrPreviewProfileForm(action_persistence, query_form_,
+                                       query_field_, *profile, trigger_details);
+  }
 }
 
 void AutofillExternalDelegate::PossiblyRemoveAutofillWarnings(

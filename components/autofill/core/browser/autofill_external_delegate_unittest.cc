@@ -249,12 +249,12 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
                const FormFieldData& trigger_field),
               (override));
   MOCK_METHOD(void,
-              FillOrPreviewForm,
-              (mojom::ActionPersistence action_persistence,
-               const FormData& form,
-               const FormFieldData& field,
-               Suggestion::BackendId backend_id,
-               const AutofillTriggerDetails& trigger_details),
+              FillOrPreviewProfileForm,
+              (mojom::ActionPersistence,
+               const FormData&,
+               const FormFieldData&,
+               const AutofillProfile&,
+               const AutofillTriggerDetails&),
               (override));
   MOCK_METHOD(void,
               FillCreditCardForm,
@@ -650,14 +650,17 @@ TEST_F(AutofillExternalDelegateUnitTest, TestExternalDelegateVirtualCalls) {
               ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
 
   // This should call ShowAutofillPopup.
-  std::vector<Suggestion> autofill_item;
-  autofill_item.emplace_back();
-  autofill_item[0].popup_item_id = PopupItemId::kAddressEntry;
+  const AutofillProfile profile = test::GetFullProfile();
+  personal_data().AddProfile(profile);
+  std::vector<Suggestion> autofill_item = {
+      Suggestion(PopupItemId::kAddressEntry)};
+  autofill_item[0].payload = Suggestion::BackendId(profile.guid());
   external_delegate_->OnSuggestionsReturned(
       queried_form_triggering_field_id_, autofill_item, kDefaultTriggerSource);
 
-  EXPECT_CALL(*browser_autofill_manager_,
-              FillOrPreviewForm(mojom::ActionPersistence::kFill, _, _, _, _));
+  EXPECT_CALL(
+      *browser_autofill_manager_,
+      FillOrPreviewProfileForm(mojom::ActionPersistence::kFill, _, _, _, _));
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
 
@@ -885,9 +888,9 @@ TEST_F(AutofillExternalDelegateUnitTest,
 // negative unique id.
 TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateInvalidUniqueId) {
   // Ensure it doesn't try to preview the negative id.
-  EXPECT_CALL(*browser_autofill_manager_, FillOrPreviewForm(_, _, _, _, _))
-      .Times(0);
-  EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm());
+  EXPECT_CALL(*browser_autofill_manager_, FillOrPreviewProfileForm).Times(0);
+  EXPECT_CALL(*browser_autofill_manager_, FillCreditCardForm).Times(0);
+  EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm);
   const Suggestion suggestion{
       PopupItemId::kInsecureContextPaymentDisabledMessage};
   external_delegate_->DidSelectSuggestion(suggestion, kDefaultTriggerSource);
@@ -895,8 +898,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateInvalidUniqueId) {
   // Ensure it doesn't try to fill the form in with the negative id.
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
-  EXPECT_CALL(*browser_autofill_manager_, FillOrPreviewForm(_, _, _, _, _))
-      .Times(0);
+  EXPECT_CALL(*browser_autofill_manager_, FillCreditCardForm).Times(0);
 
   external_delegate_->DidAcceptSuggestion(suggestion, /*position=*/0,
                                           kDefaultTriggerSource);
@@ -1002,9 +1004,12 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearPreviewedForm) {
   EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm());
   EXPECT_CALL(
       *browser_autofill_manager_,
-      FillOrPreviewForm(mojom::ActionPersistence::kPreview, _, _, _, _));
+      FillOrPreviewProfileForm(mojom::ActionPersistence::kPreview, _, _, _, _));
+  const AutofillProfile profile = test::GetFullProfile();
+  personal_data().AddProfile(profile);
   external_delegate_->DidSelectSuggestion(
-      test::CreateAutofillSuggestion(PopupItemId::kAddressEntry, u"baz foo"),
+      test::CreateAutofillSuggestion(PopupItemId::kAddressEntry, u"baz foo",
+                                     Suggestion::BackendId(profile.guid())),
       kDefaultTriggerSource);
 
   // Ensure selecting an autocomplete entry will cause any previews to
@@ -1086,8 +1091,10 @@ const GroupFillingTestParams kGroupFillingTestCases[] = {
 TEST_P(GroupFillingUnitTest, GroupFillingTests_FillAndPreview) {
   IssueOnQuery();
   const GroupFillingTestParams& params = GetParam();
-  const Suggestion suggestion =
-      test::CreateAutofillSuggestion(params.popup_item_id, u"baz foo");
+  const AutofillProfile profile = test::GetFullProfile();
+  personal_data().AddProfile(profile);
+  const Suggestion suggestion = test::CreateAutofillSuggestion(
+      params.popup_item_id, u"baz foo", Suggestion::BackendId(profile.guid()));
   auto expected_source =
 #if BUILDFLAG(IS_ANDROID)
       AutofillTriggerSource::kKeyboardAccessory;
@@ -1096,7 +1103,7 @@ TEST_P(GroupFillingUnitTest, GroupFillingTests_FillAndPreview) {
 #endif
   // Test preview
   EXPECT_CALL(*browser_autofill_manager_,
-              FillOrPreviewForm(
+              FillOrPreviewProfileForm(
                   mojom::ActionPersistence::kPreview, _, _, _,
                   EqualsAutofilltriggerDetails(
                       {.trigger_source = expected_source,
@@ -1105,7 +1112,7 @@ TEST_P(GroupFillingUnitTest, GroupFillingTests_FillAndPreview) {
 
   // Test fill
   EXPECT_CALL(*browser_autofill_manager_,
-              FillOrPreviewForm(
+              FillOrPreviewProfileForm(
                   mojom::ActionPersistence::kFill, _, _, _,
                   EqualsAutofilltriggerDetails(
                       {.trigger_source = expected_source,
@@ -1127,44 +1134,53 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_F(AutofillExternalDelegateUnitTest, AcceptSuggestion) {
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
-  EXPECT_CALL(*browser_autofill_manager_,
-              FillOrPreviewForm(mojom::ActionPersistence::kFill, _, _, _, _));
+  EXPECT_CALL(
+      *browser_autofill_manager_,
+      FillOrPreviewProfileForm(mojom::ActionPersistence::kFill, _, _, _, _));
 
+  const AutofillProfile profile = test::GetFullProfile();
+  personal_data().AddProfile(profile);
   external_delegate_->DidAcceptSuggestion(
-      test::CreateAutofillSuggestion(PopupItemId::kAddressEntry,
-                                     u"John Legend"),
+      test::CreateAutofillSuggestion(PopupItemId::kAddressEntry, u"John Legend",
+                                     Suggestion::BackendId(profile.guid())),
       /*position=*/2, kDefaultTriggerSource);
 }
 
 TEST_F(AutofillExternalDelegateUnitTest,
        ExternalDelegateAccept_FillEverythingSuggestion_FillAndPreview) {
+  const AutofillProfile profile = test::GetFullProfile();
+  personal_data().AddProfile(profile);
+  const Suggestion suggestion = test::CreateAutofillSuggestion(
+      PopupItemId::kFillEverythingFromAddressProfile, u"John Legend",
+      Suggestion::BackendId(profile.guid()));
+
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
   // Test fill
-  EXPECT_CALL(*browser_autofill_manager_,
-              FillOrPreviewForm(mojom::ActionPersistence::kFill, _, _, _, _));
+  EXPECT_CALL(
+      *browser_autofill_manager_,
+      FillOrPreviewProfileForm(mojom::ActionPersistence::kFill, _, _, _, _));
 
-  external_delegate_->DidAcceptSuggestion(
-      test::CreateAutofillSuggestion(
-          PopupItemId::kFillEverythingFromAddressProfile, u"John Legend"),
-      /*position=*/2, kDefaultTriggerSource);
+  external_delegate_->DidAcceptSuggestion(suggestion,
+                                          /*position=*/2,
+                                          kDefaultTriggerSource);
 
   // Test preview
   EXPECT_CALL(
       *browser_autofill_manager_,
-      FillOrPreviewForm(mojom::ActionPersistence::kPreview, _, _, _, _));
+      FillOrPreviewProfileForm(mojom::ActionPersistence::kPreview, _, _, _, _));
 
-  external_delegate_->DidSelectSuggestion(
-      test::CreateAutofillSuggestion(
-          PopupItemId::kFillEverythingFromAddressProfile, u"John Legend"),
-      kDefaultTriggerSource);
+  external_delegate_->DidSelectSuggestion(suggestion, kDefaultTriggerSource);
 }
 
 // Tests that when accepting a suggestion, the `AutofillSuggestionTriggerSource`
 // is converted to the correct `AutofillTriggerSource`.
 TEST_F(AutofillExternalDelegateUnitTest, AcceptSuggestion_TriggerSource) {
-  Suggestion suggestion =
-      test::CreateAutofillSuggestion(PopupItemId::kAddressEntry);
+  const AutofillProfile profile = test::GetFullProfile();
+  personal_data().AddProfile(profile);
+  Suggestion suggestion = test::CreateAutofillSuggestion(
+      PopupItemId::kAddressEntry, /*main_text_value=*/u"",
+      Suggestion::BackendId(profile.guid()));
 
   // Expect that `kFormControlElementClicked` translates to source `kPopup` or
   // `kKeyboardAccessory`, depending on the platform.
@@ -1176,10 +1192,11 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptSuggestion_TriggerSource) {
 #else
       AutofillTriggerSource::kPopup;
 #endif
-  EXPECT_CALL(*browser_autofill_manager_,
-              FillOrPreviewForm(mojom::ActionPersistence::kFill, _, _, _,
-                                EqualsAutofilltriggerDetails(
-                                    {.trigger_source = expected_source})));
+  EXPECT_CALL(
+      *browser_autofill_manager_,
+      FillOrPreviewProfileForm(
+          mojom::ActionPersistence::kFill, _, _, _,
+          EqualsAutofilltriggerDetails({.trigger_source = expected_source})));
   external_delegate_->DidAcceptSuggestion(suggestion, /*position=*/1,
                                           suggestion_source);
 
@@ -1189,10 +1206,11 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptSuggestion_TriggerSource) {
       kManualFallbackForAutocompleteUnrecognized;
   expected_source =
       AutofillTriggerSource::kManualFallbackForAutocompleteUnrecognized;
-  EXPECT_CALL(*browser_autofill_manager_,
-              FillOrPreviewForm(mojom::ActionPersistence::kFill, _, _, _,
-                                EqualsAutofilltriggerDetails(
-                                    {.trigger_source = expected_source})));
+  EXPECT_CALL(
+      *browser_autofill_manager_,
+      FillOrPreviewProfileForm(
+          mojom::ActionPersistence::kFill, _, _, _,
+          EqualsAutofilltriggerDetails({.trigger_source = expected_source})));
   external_delegate_->DidAcceptSuggestion(suggestion, /*position=*/1,
                                           suggestion_source);
 }

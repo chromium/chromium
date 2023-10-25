@@ -134,14 +134,6 @@ class BrowserAutofillManager : public AutofillManager,
   virtual void RefetchCardsAndUpdatePopup(const FormData& form,
                                           const FormFieldData& field_data);
 
-  // Called from our external delegate so they cannot be private.
-  // TODO(crbug.com/1330108): Clean up the API.
-  virtual void FillOrPreviewForm(mojom::ActionPersistence action_persistence,
-                                 const FormData& form,
-                                 const FormFieldData& field,
-                                 Suggestion::BackendId backend_id,
-                                 const AutofillTriggerDetails& trigger_details);
-
   virtual void FillCreditCardForm(
       const FormData& form,
       const FormFieldData& field,

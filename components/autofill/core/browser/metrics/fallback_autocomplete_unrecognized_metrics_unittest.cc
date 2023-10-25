@@ -71,9 +71,9 @@ TEST_F(AutocompleteUnrecognizedFallbackEventLoggerTest,
       AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized};
   ShowSuggestions(form);
   // Fill the suggestion.
-  autofill_manager().FillOrPreviewForm(
+  autofill_manager().FillOrPreviewProfileForm(
       mojom::ActionPersistence::kFill, form, form.fields[0],
-      Suggestion::BackendId(kTestProfileId),
+      *personal_data().GetProfileByGUID(kTestProfileId),
       {.trigger_source = AutofillTriggerSource::kPopup});
 
   base::HistogramTester histogram_tester;
@@ -102,9 +102,9 @@ TEST_F(AutocompleteUnrecognizedFallbackEventLoggerTest,
   form.fields[0].parsed_autocomplete =
       AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized};
   SeeForm(form);
-  autofill_manager().FillOrPreviewForm(
+  autofill_manager().FillOrPreviewProfileForm(
       mojom::ActionPersistence::kFill, form, form.fields[0],
-      Suggestion::BackendId(kTestProfileId),
+      *personal_data().GetProfileByGUID(kTestProfileId),
       {.trigger_source = AutofillTriggerSource::kPopup});
 
   base::HistogramTester histogram_tester;

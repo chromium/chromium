@@ -794,6 +794,8 @@ class BrowserAutofillManagerTest : public testing::Test {
         .AddFormFillEntry(filled_fields, filled_autofill_fields, is_refill);
   }
 
+  // TODO(crbug.com/1330108): Have separate functions for profile and credit
+  // card filling.
   void FillAutofillFormData(
       const FormData& form,
       const FormFieldData& field,
@@ -803,15 +805,22 @@ class BrowserAutofillManagerTest : public testing::Test {
     browser_autofill_manager_->OnAskForValuesToFill(
         form, field, {},
         AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown);
-    browser_autofill_manager_->FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form, field,
-        Suggestion::BackendId(guid), trigger_details);
+    if (const AutofillProfile* profile =
+            personal_data().GetProfileByGUID(guid)) {
+      browser_autofill_manager_->FillOrPreviewProfileForm(
+          mojom::ActionPersistence::kFill, form, field, *profile,
+          trigger_details);
+    } else if (const CreditCard* card =
+                   personal_data().GetCreditCardByGUID(guid)) {
+      browser_autofill_manager_->FillOrPreviewCreditCardForm(
+          mojom::ActionPersistence::kFill, form, field, card, trigger_details);
+    }
   }
 
   // Calls |browser_autofill_manager_->OnFillAutofillFormData()| with the
   // specified input parameters after setting up the expectation that the mock
-  // driver's |FillOrPreviewForm()| method will be called and saving the
-  // parameter of that call into the |response_data| output parameter.
+  // driver's |ApplyFormAction()| method will be called and saving the parameter
+  // of that call into the |response_data| output parameter.
   FormData FillAutofillFormDataAndGetResults(
       const FormData& input_form,
       const FormFieldData& input_field,
@@ -3713,9 +3722,9 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteUnrecognizedFillingBehavior) {
   EXPECT_CALL(*autofill_driver_, ApplyFormAction)
       .WillOnce(DoAll(SaveArg<2>(&filled_form),
                       Return(std::vector<FieldGlobalId>{})));
-  browser_autofill_manager_->FillOrPreviewForm(
+  browser_autofill_manager_->FillOrPreviewProfileForm(
       mojom::ActionPersistence::kFill, form, form.fields[0],
-      Suggestion::BackendId(kElvisProfileGuid),
+      *personal_data().GetProfileByGUID(kElvisProfileGuid),
       {.trigger_source =
            AutofillTriggerSource::kManualFallbackForAutocompleteUnrecognized});
   ExpectFilledForm(filled_form, kElvisAddressFillData,
