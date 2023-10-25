@@ -51,5 +51,20 @@
   <message name="IDS_COMPOSE_ERROR_TOO_LONG" desc="Error that the input was too long." translateable="false">
   Input is too long. Cannot use Autofill.
   </message>
+  <message name="IDS_COMPOSE_ERROR_TRY_AGAIN" desc="Error indicating that the request should be tried again." translateable="false">
+  Something went wrong. Try again.
+  </message>
+  <message name="IDS_COMPOSE_ERROR_TRY_AGAIN_LATER" desc="Error indicating that the request should be tried again later." translateable="false">
+  Something went wrong. Try again later.
+  </message>
+  <message name="IDS_COMPOSE_ERROR_REQUEST_NOT_SUCCESSFUL" desc="Error that the request was not able to be fulfilled." translateable="false">
+    Autofill does not work in this field. Try a different field.
+  </message>
+  <message name="IDS_COMPOSE_ERROR_PERMISSION_DENIED" desc="Error that the request failed by denied permission." translateable="false">
+  Something went wrong. Are you signed in?
+  </message>
+  <message name="IDS_COMPOSE_ERROR_GENERIC" desc="Error without further details." translateable="false">
+  Something went wrong.
+  </message>
 
 </grit-part>

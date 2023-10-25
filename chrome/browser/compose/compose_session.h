@@ -87,7 +87,7 @@ class ComposeSession : public compose::mojom::ComposeDialogPageHandler {
   void set_initial_input(const std::string input) { initial_input_ = input; }
 
  private:
-  void ProcessError(const std::string& message);
+  void ProcessError(compose::mojom::ComposeStatus status);
   void ModelExecutionCallback(
       optimization_guide::OptimizationGuideModelExecutionResult result);
 

@@ -7,6 +7,7 @@ import 'chrome://compose/app.js';
 import {ComposeAppElement} from 'chrome://compose/app.js';
 import {CloseReason, ComposeDialogCallbackRouter, ComposeState, ComposeStatus, Length, OpenMetadata, StyleModifiers, Tone} from 'chrome://compose/compose.mojom-webui.js';
 import {ComposeApiProxy, ComposeApiProxyImpl} from 'chrome://compose/compose_api_proxy.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -88,9 +89,11 @@ suite('ComposeApp', () => {
     app.$.textarea.dispatchEvent(new CustomEvent('value-changed'));
   }
 
-  function mockResponse(result: string = 'some response'): Promise<void> {
+  function mockResponse(
+      result: string = 'some response',
+      status: ComposeStatus = ComposeStatus.kOk): Promise<void> {
     testProxy.remote.responseReceived(
-        {status: ComposeStatus.kOk, undoAvailable: false, result});
+        {status: status, undoAvailable: false, result});
     return testProxy.remote.$.flushForTesting();
   }
 
@@ -243,5 +246,27 @@ suite('ComposeApp', () => {
     // Close reason should match that given to the close button.
     const closeReason = await testProxy.whenCalled('closeUi');
     assertEquals(CloseReason.kCloseButton, closeReason);
+  });
+
+  test('ErrorFooterShowsMessage', async () => {
+    async function testError(status: ComposeStatus, stringKey: string) {
+      const errorMessage = `some error ${stringKey}`;
+      loadTimeData.overrideValues({[stringKey]: errorMessage});
+
+      mockInput('Here is my input.');
+      app.$.submitButton.click();
+      await testProxy.whenCalled('compose');
+      await mockResponse('', status);
+
+      assertTrue(isVisible(app.$.errorFooter));
+      assertTrue(app.$.errorFooter.textContent!.includes(errorMessage));
+    }
+
+    testError(ComposeStatus.kError, 'errorGeneric');
+    testError(ComposeStatus.kNotSuccessful, 'errorRequestNotSuccessful');
+    testError(ComposeStatus.kTryAgainLater, 'errorTryAgainLater');
+    testError(ComposeStatus.kTryAgain, 'errorTryAgain');
+    testError(ComposeStatus.kPermissionDenied, 'errorPermissionDenied');
+    testError(ComposeStatus.kMisconfiguration, 'errorGeneric');
   });
 });

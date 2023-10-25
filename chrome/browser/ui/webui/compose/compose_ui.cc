@@ -47,6 +47,11 @@ ComposeUI::ComposeUI(content::WebUI* web_ui)
       {"menu1Title", IDS_COMPOSE_MENU_1_TITLE},
       {"menu2Title", IDS_COMPOSE_MENU_2_TITLE},
       {"errorTooLong", IDS_COMPOSE_ERROR_TOO_LONG},
+      {"errorTryAgain", IDS_COMPOSE_ERROR_TRY_AGAIN},
+      {"errorTryAgainLater", IDS_COMPOSE_ERROR_TRY_AGAIN_LATER},
+      {"errorRequestNotSuccessful", IDS_COMPOSE_ERROR_REQUEST_NOT_SUCCESSFUL},
+      {"errorPermissionDenied", IDS_COMPOSE_ERROR_REQUEST_NOT_SUCCESSFUL},
+      {"errorGeneric", IDS_COMPOSE_ERROR_GENERIC},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddString(

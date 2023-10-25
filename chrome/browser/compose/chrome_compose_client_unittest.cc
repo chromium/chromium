@@ -293,7 +293,7 @@ TEST_F(ChromeComposeClientTest, TestComposeNoResponse) {
   page_handler()->Compose(std::move(style_modifiers), "a user typed this");
 
   compose::mojom::ComposeResponsePtr result = test_future.Take();
-  EXPECT_EQ(compose::mojom::ComposeStatus::kError, result->status);
+  EXPECT_EQ(compose::mojom::ComposeStatus::kTryAgainLater, result->status);
 }
 
 // Tests that we return an error if Optimization Guide is unable to parse the
@@ -319,7 +319,7 @@ TEST_F(ChromeComposeClientTest, TestComposeNoParsedAny) {
   page_handler()->Compose(std::move(style_modifiers), "a user typed this");
 
   compose::mojom::ComposeResponsePtr result = test_future.Take();
-  EXPECT_EQ(compose::mojom::ComposeStatus::kError, result->status);
+  EXPECT_EQ(compose::mojom::ComposeStatus::kTryAgain, result->status);
 }
 
 TEST_F(ChromeComposeClientTest, TestOptimizationGuideDisabled) {
@@ -345,7 +345,7 @@ TEST_F(ChromeComposeClientTest, TestOptimizationGuideDisabled) {
   page_handler()->Compose(std::move(style_modifiers), "a user typed this");
 
   compose::mojom::ComposeResponsePtr result = test_future.Take();
-  EXPECT_EQ(compose::mojom::ComposeStatus::kError, result->status);
+  EXPECT_EQ(compose::mojom::ComposeStatus::kMisconfiguration, result->status);
 }
 
 TEST_F(ChromeComposeClientTest, TestNoModelExecutor) {
@@ -364,7 +364,7 @@ TEST_F(ChromeComposeClientTest, TestNoModelExecutor) {
   page_handler()->Compose(std::move(style_modifiers), "a user typed this");
 
   compose::mojom::ComposeResponsePtr result = test_future.Take();
-  EXPECT_EQ(compose::mojom::ComposeStatus::kError, result->status);
+  EXPECT_EQ(compose::mojom::ComposeStatus::kMisconfiguration, result->status);
 }
 
 TEST_F(ChromeComposeClientTest, TestRestoreStateAfterRequestResponse) {

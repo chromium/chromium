@@ -21,6 +21,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/compose/core/browser/compose_manager_impl.h"
 #include "components/compose/proto/compose_metadata.pb.h"
+#include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/strings/grit/components_strings.h"
@@ -63,7 +64,7 @@ void ComposeSession::Compose(compose::mojom::StyleModifiersPtr style,
   if (!executor_ ||
       !base::FeatureList::IsEnabled(
           optimization_guide::features::kOptimizationGuideModelExecution)) {
-    ProcessError(l10n_util::GetStringUTF8(IDS_COMPOSE_CONFIGURATION_ERROR));
+    ProcessError(compose::mojom::ComposeStatus::kMisconfiguration);
     return;
   }
 
@@ -88,9 +89,11 @@ void ComposeSession::ModelExecutionCallback(
     optimization_guide::OptimizationGuideModelExecutionResult result) {
   current_state_->has_pending_request = false;
 
-  if (!result.has_value()) {
-    // TODO(b/302748001 Add proper error handler.
-    ProcessError("");
+  compose::mojom::ComposeStatus status =
+      ComposeStatusFromOptimizationGuideResult(result);
+
+  if (status != compose::mojom::ComposeStatus::kOk) {
+    ProcessError(status);
     return;
   }
 
@@ -99,7 +102,7 @@ void ComposeSession::ModelExecutionCallback(
           result.value());
 
   if (!response) {
-    ProcessError("");
+    ProcessError(compose::mojom::ComposeStatus::kTryAgain);
     return;
   }
 
@@ -114,10 +117,10 @@ void ComposeSession::ModelExecutionCallback(
   }
 }
 
-void ComposeSession::ProcessError(const std::string& message) {
+void ComposeSession::ProcessError(compose::mojom::ComposeStatus error) {
   current_state_->has_pending_request = false;
   current_state_->response = compose::mojom::ComposeResponse::New();
-  current_state_->response->status = compose::mojom::ComposeStatus::kError;
+  current_state_->response->status = error;
 
   if (dialog_remote_.is_bound()) {
     dialog_remote_->ResponseReceived(current_state_->response->Clone());

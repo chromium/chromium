@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './icons.html.js';
+import './strings.m.js';
 import './textarea.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_hidden_style.css.js';
@@ -15,6 +16,7 @@ import {ColorChangeUpdater} from '//resources/cr_components/color_change_listene
 import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {CrScrollableMixin} from '//resources/cr_elements/cr_scrollable_mixin.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 
 import {getTemplate} from './app.html.js';
 import {CloseReason, ComposeDialogCallbackRouter, ComposeResponse, ComposeStatus, Length, Tone} from './compose.mojom-webui.js';
@@ -31,6 +33,7 @@ export interface ComposeAppElement {
   $: {
     body: HTMLElement,
     closeButton: HTMLElement,
+    errorFooter: HTMLElement,
     insertButton: CrButtonElement,
     loading: HTMLElement,
     refreshButton: HTMLElement,
@@ -40,7 +43,7 @@ export interface ComposeAppElement {
   };
 }
 
-const ComposeAppElementBase = CrScrollableMixin(PolymerElement);
+const ComposeAppElementBase = I18nMixin(CrScrollableMixin(PolymerElement));
 export class ComposeAppElement extends ComposeAppElementBase {
   static get is() {
     return 'compose-app';
@@ -173,7 +176,28 @@ export class ComposeAppElement extends ComposeAppElementBase {
   }
 
   private hasFailedResponse_(): boolean {
-    return this.response_?.status === ComposeStatus.kError;
+    if (!this.response_) {
+      return false;
+    }
+
+    return this.response_.status !== ComposeStatus.kOk;
+  }
+
+  private failedResponseErrorText_(): string {
+    switch (this.response_?.status) {
+      case ComposeStatus.kNotSuccessful:
+        return this.i18n('errorRequestNotSuccessful');
+      case ComposeStatus.kTryAgain:
+        return this.i18n('errorTryAgain');
+      case ComposeStatus.kTryAgainLater:
+        return this.i18n('errorTryAgainLater');
+      case ComposeStatus.kPermissionDenied:
+        return this.i18n('errorPermissionDenied');
+      case ComposeStatus.kError:
+      case ComposeStatus.kMisconfiguration:
+      default:
+        return this.i18n('errorGeneric');
+    }
   }
 
   private saveComposeAppState_() {

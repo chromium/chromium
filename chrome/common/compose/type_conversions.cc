@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/common/compose/type_conversions.h"
+#include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
+
+using ModelExecutionError = optimization_guide::
+    OptimizationGuideModelExecutionError::ModelExecutionError;
 
 compose_proto::ComposeLength ComposeLength(compose::mojom::Length length) {
   switch (length) {
@@ -25,5 +29,23 @@ compose_proto::ComposeTone ComposeTone(compose::mojom::Tone tone) {
     case compose::mojom::Tone::kUnset:
     default:
       return compose_proto::ComposeTone::COMPOSE_UNSPECIFIED_TONE;
+  }
+}
+
+compose::mojom::ComposeStatus ComposeStatusFromOptimizationGuideResult(
+    optimization_guide::OptimizationGuideModelExecutionResult result) {
+  if (result.has_value()) {
+    return compose::mojom::ComposeStatus::kOk;
+  }
+
+  switch (result.error().error()) {
+    case ModelExecutionError::kUnknown:
+    case ModelExecutionError::kRequestThrottled:
+    case ModelExecutionError::kGenericFailure:
+      return compose::mojom::ComposeStatus::kTryAgainLater;
+    case ModelExecutionError::kInvalidRequest:
+      return compose::mojom::ComposeStatus::kNotSuccessful;
+    case ModelExecutionError::kPermissionDenied:
+      return compose::mojom::ComposeStatus::kPermissionDenied;
   }
 }

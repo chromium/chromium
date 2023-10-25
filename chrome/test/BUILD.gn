@@ -6904,11 +6904,14 @@ test("unit_tests") {
     sources += [
       "../browser/compose/chrome_compose_client_unittest.cc",
       "../browser/compose/compose_enabling_unittest.cc",
+      "../common/compose/type_conversions_unittest.cc",
     ]
     deps += [
-      "//chrome/common/compose:mojo_bindings",
+      "//chrome/common/compose",
       "//components/compose/core/browser:features",
       "//components/compose/proto",
+      "//components/optimization_guide/core",
+      "//components/optimization_guide/proto:optimization_guide_proto",
     ]
   }
 

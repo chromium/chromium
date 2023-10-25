@@ -12,7 +12,10 @@ source_set("compose") {
   ]
 
   public_deps = [ ":mojo_bindings" ]
-  deps = [ "//components/compose/proto:proto" ]
+  deps = [
+    "//components/compose/proto:proto",
+    "//components/optimization_guide/core",
+  ]
 }
 
 mojom("mojo_bindings") {

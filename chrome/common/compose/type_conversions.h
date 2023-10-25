@@ -7,8 +7,11 @@
 
 #include "chrome/common/compose/compose.mojom.h"
 #include "components/compose/proto/compose_metadata.pb.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 
 compose_proto::ComposeLength ComposeLength(compose::mojom::Length length);
 compose_proto::ComposeTone ComposeTone(compose::mojom::Tone tone);
+compose::mojom::ComposeStatus ComposeStatusFromOptimizationGuideResult(
+    optimization_guide::OptimizationGuideModelExecutionResult result);
 
 #endif  // CHROME_COMMON_COMPOSE_TYPE_CONVERSIONS_H_
