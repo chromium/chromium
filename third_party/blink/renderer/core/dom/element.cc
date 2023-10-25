@@ -7037,7 +7037,8 @@ AtomicString Element::ComputeInheritedLanguage() const {
         if (const Attribute* attribute =
                 attributes.Find(xml_names::kLangAttr)) {
           value = attribute->Value();
-        } else {
+        } else if (n->IsHTMLElement() || n->IsSVGElement() ||
+                   !RuntimeEnabledFeatures::HTMLLangNewInheritanceEnabled()) {
           attribute = attributes.Find(html_names::kLangAttr);
           if (attribute) {
             value = attribute->Value();
@@ -7049,7 +7050,13 @@ AtomicString Element::ComputeInheritedLanguage() const {
       value = document->ContentLanguage();
     }
 
-    n = n->ParentOrShadowHostNode();
+    const HTMLSlotElement* slot =
+        ToHTMLSlotElementIfSupportsAssignmentOrNull(n);
+    if (slot && RuntimeEnabledFeatures::HTMLLangNewInheritanceEnabled()) {
+      n = &n->ContainingShadowRoot()->host();
+    } else {
+      n = n->ParentOrShadowHostNode();
+    }
   } while (n && value.IsNull());
 
   return value;
