@@ -185,7 +185,7 @@ public class HubLayout extends Layout {
             captureTabThumbnail(currentTab, thumbnailCallback);
         } else {
             mCurrentSceneLayer = mEmptySceneLayer;
-            runMaybeNullCallback(thumbnailCallback, null);
+            Callback.runNullSafe(thumbnailCallback, null);
         }
 
         assert mCurrentAnimationRunner == null;
@@ -489,7 +489,7 @@ public class HubLayout extends Layout {
     private void captureTabThumbnail(
             @Nullable Tab currentTab, @Nullable Callback<Bitmap> thumbnailCallback) {
         if (currentTab == null) {
-            runMaybeNullCallback(thumbnailCallback, null);
+            Callback.runNullSafe(thumbnailCallback, null);
             return;
         }
 
@@ -522,11 +522,5 @@ public class HubLayout extends Layout {
      */
     private int getIdForTab(@Nullable Tab tab) {
         return tab == null ? Tab.INVALID_TAB_ID : tab.getId();
-    }
-
-    private static <T> void runMaybeNullCallback(
-            @Nullable Callback<T> callback, @Nullable T object) {
-        if (callback == null) return;
-        callback.onResult(object);
     }
 }

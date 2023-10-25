@@ -4,6 +4,8 @@
 
 package org.chromium.base;
 
+import androidx.annotation.Nullable;
+
 import org.jni_zero.CalledByNative;
 
 /**
@@ -28,6 +30,18 @@ public interface Callback<T> {
      */
     default Runnable bind(T result) {
         return () -> onResult(result);
+    }
+
+    /**
+     * Runs a callback checking if the callback may be null.
+     *
+     * <p>Can be used as syntactic sugar for: if (callback != null) callback.onResult(object);
+     *
+     * @param callback The {@link Callback} to run.
+     * @param object The payload to provide to the callback (may be null).
+     */
+    static <T> void runNullSafe(@Nullable Callback<T> callback, @Nullable T object) {
+        if (callback != null) callback.onResult(object);
     }
 
     /**
