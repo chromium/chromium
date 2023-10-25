@@ -6,7 +6,6 @@
 
 #include <base/notreached.h>
 #include <base/posix/eintr_wrapper.h>
-#include <errno.h>
 #include <fcntl.h>
 #include <libudev.h>
 #include <linux/usb/video.h>
@@ -356,8 +355,9 @@ uint8_t XuCameraService::QueryXuControl(const base::ScopedFD& file_descriptor,
       delegate_->Ioctl(file_descriptor, UVCIOC_CTRL_QUERY, &control_query);
 
   if (error < 0) {
-    LOG(ERROR) << "ioctl call failed. error: " << errno;
-    return errno;
+    logging::SystemErrorCode err = logging::GetLastSystemErrorCode();
+    LOG(ERROR) << "ioctl call failed. error: " << logging::SystemErrorCodeToString(err);
+    return err;
   }
   return error;
 }
