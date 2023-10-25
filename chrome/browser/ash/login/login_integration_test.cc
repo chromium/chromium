@@ -52,7 +52,9 @@ class GaiaLoginIntegrationTest : public InteractiveAshTest {
   ~GaiaLoginIntegrationTest() override = default;
 };
 
-IN_PROC_BROWSER_TEST_F(GaiaLoginIntegrationTest, GaiaLogin) {
+// Disable due to failure on chromeos-betty-pi-arc-chrome.
+// TODO(b/307386689): Enable after fix.
+IN_PROC_BROWSER_TEST_F(GaiaLoginIntegrationTest, DISABLED_GaiaLogin) {
   login_mixin().Login();
 
   // Waits for the primary user session to start.
