@@ -28,40 +28,16 @@ namespace {
 // getHighEntropyValues() call if the user is in the study.
 void MaybeRecordMetric(bool record_identifiability,
                        const String& hint,
-                       const IdentifiableToken token,
+                       const String& value,
                        ExecutionContext* execution_context) {
-  if (LIKELY(!record_identifiability)) {
+  if (LIKELY(!record_identifiability))
     return;
-  }
   auto identifiable_surface = IdentifiableSurface::FromTypeAndToken(
       IdentifiableSurface::Type::kNavigatorUAData_GetHighEntropyValues,
       IdentifiableToken(hint.Utf8()));
   IdentifiabilityMetricBuilder(execution_context->UkmSourceID())
-      .Add(identifiable_surface, token)
+      .Add(identifiable_surface, IdentifiableToken(value.Utf8()))
       .Record(execution_context->UkmRecorder());
-}
-
-void MaybeRecordMetric(bool record_identifiability,
-                       const String& hint,
-                       const String& value,
-                       ExecutionContext* execution_context) {
-  MaybeRecordMetric(record_identifiability, hint,
-                    IdentifiableToken(value.Utf8()), execution_context);
-}
-
-void MaybeRecordMetric(bool record_identifiability,
-                       const String& hint,
-                       const Vector<String>& strings,
-                       ExecutionContext* execution_context) {
-  if (LIKELY(!record_identifiability)) {
-    return;
-  }
-  IdentifiableTokenBuilder token_builder;
-  for (const auto& s : strings) {
-    token_builder.AddAtomic(s.Utf8());
-  }
-  MaybeRecordMetric(record_identifiability, hint, token_builder.GetToken(),
-                    execution_context);
 }
 
 }  // namespace
@@ -135,8 +111,8 @@ void NavigatorUAData::SetWoW64(bool wow64) {
   is_wow64_ = wow64;
 }
 
-void NavigatorUAData::SetFormFactor(Vector<String> form_factor) {
-  form_factor_ = std::move(form_factor);
+void NavigatorUAData::SetFormFactor(const String& form_factor) {
+  form_factor_ = form_factor;
 }
 
 bool NavigatorUAData::mobile() const {

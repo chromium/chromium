@@ -35,7 +35,7 @@ public class AwUserAgentMetadata {
     private boolean mMobile;
     private int mBitness;
     private boolean mWow64;
-    private @FormFactors String[] mFormFactor;
+    private String mFormFactor;
 
     /**
      * Key for the user-agent metadata properties.
@@ -64,32 +64,6 @@ public class AwUserAgentMetadata {
      * each brand should contains brand, major version and full version.
      */
     public static final int BRAND_VERSION_LENGTH = 3;
-
-    /**
-     * Values for the Sec-CH-UA-Form-Factor header.
-     * https://wicg.github.io/ua-client-hints/#sec-ch-ua-form-factor
-     */
-    // LINT.IfChange
-    @StringDef({
-        FormFactors.DESKTOP,
-        FormFactors.AUTOMOTIVE,
-        FormFactors.MOBILE,
-        FormFactors.TABLET,
-        FormFactors.XR,
-        FormFactors.EINK,
-        FormFactors.WATCH
-    })
-    // LINT.ThenChange(/third_party/blink/public/common/user_agent/user_agent_metadata.h)
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface FormFactors {
-        String DESKTOP = "Desktop";
-        String AUTOMOTIVE = "Automotive";
-        String MOBILE = "Mobile";
-        String TABLET = "Tablet";
-        String XR = "XR";
-        String EINK = "EInk";
-        String WATCH = "Watch";
-    };
 
     // To better manage the data within this class, make the constructor as private to avoid
     // creating instances outside of the class.
@@ -178,7 +152,7 @@ public class AwUserAgentMetadata {
     }
 
     @CalledByNative
-    private @FormFactors String[] getFormFactor() {
+    private String getFormFactor() {
         return mFormFactor;
     }
 
@@ -186,18 +160,10 @@ public class AwUserAgentMetadata {
      * Construct a AwUserAgentMetadata instance, and low-entropy client hints should not be null.
      */
     @CalledByNative
-    private static AwUserAgentMetadata create(
-            @NonNull String[][] brandVersionList,
-            String[][] brandFullVersionList,
-            String fullVersion,
-            @NonNull String platform,
-            String platformVersion,
-            String architecture,
-            String model,
-            boolean mobile,
-            String bitness,
-            boolean wow64,
-            @FormFactors String[] formFactor) {
+    private static AwUserAgentMetadata create(@NonNull String[][] brandVersionList,
+            String[][] brandFullVersionList, String fullVersion, @NonNull String platform,
+            String platformVersion, String architecture, String model, boolean mobile,
+            String bitness, boolean wow64, String formFactor) {
         AwUserAgentMetadata result = new AwUserAgentMetadata();
         result.mBrandVersionList = new String[brandVersionList.length][BRAND_VERSION_LENGTH];
         for (int i = 0; i < brandVersionList.length; i++) {
@@ -305,19 +271,6 @@ public class AwUserAgentMetadata {
             }
         }
 
-        Object formFactorValue = uaMetadataMap.get(MetadataKeys.FORM_FACTOR);
-        @FormFactors String[] formFactor = defaultData.mFormFactor;
-        if (formFactorValue != null) {
-            if (!(formFactorValue instanceof String[])) {
-                throw new IllegalArgumentException(
-                        "AwUserAgentMetadata map does not have "
-                                + "right type of value for key: "
-                                + MetadataKeys.FORM_FACTOR);
-            }
-            @FormFactors String[] asArray = (String[]) formFactorValue;
-            formFactor = Arrays.copyOf(asArray, asArray.length);
-        }
-
         AwUserAgentMetadata result = new AwUserAgentMetadata();
         result.mBrandVersionList = brandVersionList;
         result.mFullVersion = getValueAsString(
@@ -332,7 +285,8 @@ public class AwUserAgentMetadata {
         result.mMobile = getValueAsBoolean(uaMetadataMap, MetadataKeys.MOBILE, defaultData.mMobile);
         result.mBitness = getValueAsInt(uaMetadataMap, MetadataKeys.BITNESS, defaultData.mBitness);
         result.mWow64 = getValueAsBoolean(uaMetadataMap, MetadataKeys.WOW64, defaultData.mWow64);
-        result.mFormFactor = formFactor;
+        result.mFormFactor =
+                getValueAsString(uaMetadataMap, MetadataKeys.FORM_FACTOR, defaultData.mFormFactor);
         return result;
     }
 
@@ -360,30 +314,19 @@ public class AwUserAgentMetadata {
             return false;
         }
         AwUserAgentMetadata that = (AwUserAgentMetadata) o;
-        return mMobile == that.mMobile
-                && mWow64 == that.mWow64
-                && mBitness == that.mBitness
+        return mMobile == that.mMobile && mWow64 == that.mWow64 && mBitness == that.mBitness
                 && Arrays.deepEquals(mBrandVersionList, that.mBrandVersionList)
                 && Objects.equals(mFullVersion, that.mFullVersion)
                 && Objects.equals(mPlatform, that.mPlatform)
                 && Objects.equals(mPlatformVersion, that.mPlatformVersion)
                 && Objects.equals(mArchitecture, that.mArchitecture)
                 && Objects.equals(mModel, that.mModel)
-                && Arrays.deepEquals(mFormFactor, that.mFormFactor);
+                && Objects.equals(mFormFactor, that.mFormFactor);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-                Arrays.deepHashCode(mBrandVersionList),
-                mFullVersion,
-                mPlatform,
-                mPlatformVersion,
-                mArchitecture,
-                mModel,
-                mMobile,
-                mBitness,
-                mWow64,
-                Arrays.deepHashCode(mFormFactor));
+        return Objects.hash(Arrays.deepHashCode(mBrandVersionList), mFullVersion, mPlatform,
+                mPlatformVersion, mArchitecture, mModel, mMobile, mBitness, mWow64, mFormFactor);
     }
 }

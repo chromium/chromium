@@ -767,9 +767,7 @@ TEST_F(UserAgentUtilsTest, UserAgentMetadata) {
   EXPECT_EQ(metadata.model, content::BuildModelInfo());
   EXPECT_EQ(metadata.bitness, content::GetCpuBitness());
   EXPECT_EQ(metadata.wow64, content::IsWoW64());
-  std::vector<std::string> expected_form_factor = {metadata.mobile ? "Mobile"
-                                                                   : "Desktop"};
-  EXPECT_EQ(metadata.form_factor, expected_form_factor);
+  EXPECT_EQ(metadata.form_factor, metadata.mobile ? "Mobile" : "");
 
   // Verify only populate low-entropy client hints.
   metadata = GetUserAgentMetadata(true);
