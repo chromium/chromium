@@ -108,26 +108,24 @@ repos:
           .* See the License for the specific language governing permissions and
           .* limitations under the License.
         language: pygrep
-        files: \.js$|\.cjs$|\.mjs$|\.ts$|\.py$
+        types_or: [javascript, ts, python]
         exclude: __init__\.py$
         args: [--negate, --multiline]
       - id: node-self
         name: check nodejs `self.`
         entry: '\bself\.'
         language: pygrep
-        files: \.ts$
+        types_or: [ts]
       # ESLint is the slowest hook, so keep it at the bottom.
       - id: eslint
         name: eslint
         entry: 'npx eslint --fix'
         language: system
         verbose: true
-        files: \.[jt]s$
-        types: [file]
+        types_or: [javascript, ts]
       # ESLint may update code style (formatting) so keep prettier last.
       - id: prettier
         name: prettier
-        entry: 'npx prettier --check .'
+        entry: 'npx prettier --write --ignore-unknown --check'
         language: system
-        files: \.[jt]s$
-        types: [file]
+        types_or: [text]
