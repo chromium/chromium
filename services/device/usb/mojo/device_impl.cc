@@ -19,6 +19,7 @@
 #include "base/ranges/algorithm.h"
 #include "services/device/public/cpp/usb/usb_utils.h"
 #include "services/device/usb/usb_device.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -87,6 +88,20 @@ bool IsAndroidSecurityKeyRequest(
          params->request == 52 && params->index == 1 &&
          data.size() >= strlen(magic) &&
          memcmp(data.data(), magic, strlen(magic)) == 0;
+}
+
+// Returns the sum of `packet_lengths`, or nullopt if the sum would overflow.
+absl::optional<uint32_t> TotalPacketLength(
+    base::span<const uint32_t> packet_lengths) {
+  uint32_t total_bytes = 0;
+  for (const uint32_t packet_length : packet_lengths) {
+    // Check for overflow.
+    if (std::numeric_limits<uint32_t>::max() - total_bytes < packet_length) {
+      return absl::nullopt;
+    }
+    total_bytes += packet_length;
+  }
+  return total_bytes;
 }
 
 }  // namespace
@@ -397,6 +412,15 @@ void DeviceImpl::IsochronousTransferIn(
     return;
   }
 
+  absl::optional<uint32_t> total_bytes = TotalPacketLength(packet_lengths);
+  if (!total_bytes.has_value()) {
+    mojo::ReportBadMessage("Invalid isochronous packet lengths.");
+    std::move(callback).Run(
+        {}, BuildIsochronousPacketArray(
+                packet_lengths, mojom::UsbTransferStatus::TRANSFER_ERROR));
+    return;
+  }
+
   uint8_t endpoint_address = endpoint_number | 0x80;
   device_handle_->IsochronousTransferIn(
       endpoint_address, packet_lengths, timeout,
@@ -410,6 +434,14 @@ void DeviceImpl::IsochronousTransferOut(
     uint32_t timeout,
     IsochronousTransferOutCallback callback) {
   if (!device_handle_) {
+    std::move(callback).Run(BuildIsochronousPacketArray(
+        packet_lengths, mojom::UsbTransferStatus::TRANSFER_ERROR));
+    return;
+  }
+
+  absl::optional<uint32_t> total_bytes = TotalPacketLength(packet_lengths);
+  if (!total_bytes.has_value() || total_bytes.value() != data.size()) {
+    mojo::ReportBadMessage("Invalid isochronous packet lengths.");
     std::move(callback).Run(BuildIsochronousPacketArray(
         packet_lengths, mojom::UsbTransferStatus::TRANSFER_ERROR));
     return;
