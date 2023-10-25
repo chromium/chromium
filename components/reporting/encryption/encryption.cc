@@ -53,7 +53,7 @@ void Encryptor::Handle::ProduceEncryptedRecord(
     std::move(cb).Run(asymmetric_key_result.status());
     return;
   }
-  const auto& asymmetric_key = asymmetric_key_result.ValueOrDie();
+  const auto& asymmetric_key = asymmetric_key_result.value();
   if (asymmetric_key.first.size() != kKeySize) {
     std::move(cb).Run(Status(
         error::INTERNAL,

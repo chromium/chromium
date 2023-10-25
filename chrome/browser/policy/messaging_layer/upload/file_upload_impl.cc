@@ -241,7 +241,7 @@ class FileUploadDelegate::InitContext
     }
 
     // Record total size of the file.
-    total_ = total_result.ValueOrDie();
+    total_ = total_result.value();
 
     // Initiate upload.
     DVLOG(1) << "Starting URL fetcher.";
@@ -304,7 +304,7 @@ class FileUploadDelegate::InitContext
       return;
     }
 
-    const std::string upload_status = status_result.ValueOrDie();
+    const std::string upload_status = status_result.value();
     if (!base::EqualsCaseInsensitiveASCII(upload_status, "active")) {
       Complete(
           Status(error::DATA_LOSS,
@@ -431,7 +431,7 @@ class FileUploadDelegate::NextStepContext
       return;
     }
 
-    const std::string upload_status = status_result.ValueOrDie();
+    const std::string upload_status = status_result.value();
     if (base::EqualsCaseInsensitiveASCII(upload_status, "final")) {
       // Already done.
       Complete(std::make_pair(total_, session_token_));
@@ -472,7 +472,7 @@ class FileUploadDelegate::NextStepContext
       Complete(upload_granularity_result.status());
       return;
     }
-    auto upload_granularity = upload_granularity_result.ValueOrDie();
+    auto upload_granularity = upload_granularity_result.value();
 
     // Determine maximum buffer size, rounded down to upload_granularity.
     DCHECK_CALLED_ON_VALID_SEQUENCE(delegate()->sequence_checker_);
@@ -538,7 +538,7 @@ class FileUploadDelegate::NextStepContext
 
     url_loader_ = delegate()->CreatePostLoader(std::move(resource_request));
     url_loader_->AttachStringForUpload(
-        buffer_result.ValueOrDie(),  // owned by caller!
+        buffer_result.value(),  // owned by caller!
         "application/octet-stream");
 
     // Make a call and get response headers.
@@ -564,7 +564,7 @@ class FileUploadDelegate::NextStepContext
       return;
     }
 
-    const std::string upload_status = status_result.ValueOrDie();
+    const std::string upload_status = status_result.value();
     if (base::EqualsCaseInsensitiveASCII(upload_status, "final")) {
       // Already done.
       Complete(std::make_pair(total_, session_token_));
@@ -710,7 +710,7 @@ class FileUploadDelegate::FinalContext
       return;
     }
 
-    const std::string upload_status = status_result.ValueOrDie();
+    const std::string upload_status = status_result.value();
     if (base::EqualsCaseInsensitiveASCII(upload_status, "final")) {
       // All done.
       RespondOnFinal(headers);
@@ -766,7 +766,7 @@ class FileUploadDelegate::FinalContext
       return;
     }
 
-    const std::string upload_status = status_result.ValueOrDie();
+    const std::string upload_status = status_result.value();
     if (!base::EqualsCaseInsensitiveASCII(upload_status, "final")) {
       Complete(
           Status(error::DATA_LOSS,
@@ -946,9 +946,8 @@ void FileUploadDelegate::OnAccessTokenResult(
   }
 
   // Measure file size and store it in total.
-  (new InitContext(origin_path, upload_parameters,
-                   access_token_result.ValueOrDie(), GetWeakPtr(),
-                   std::move(result_cb)))
+  (new InitContext(origin_path, upload_parameters, access_token_result.value(),
+                   GetWeakPtr(), std::move(result_cb)))
       ->Run();
 }
 

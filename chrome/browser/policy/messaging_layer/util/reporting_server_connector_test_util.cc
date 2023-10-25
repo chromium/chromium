@@ -146,7 +146,7 @@ void ReportingServerConnector::TestEnvironment::
       (*url_loader_factory()->pending_requests())[0].request.url.spec();
   std::string response_string = "";
   if (response.ok()) {
-    base::JSONWriter::Write(response.ValueOrDie(), &response_string);
+    base::JSONWriter::Write(response.value(), &response_string);
   }
   url_loader_factory()->SimulateResponseForPendingRequest(pending_request_url,
                                                           response_string);

@@ -626,7 +626,7 @@ class StorageQueueTest
     ASSERT_OK(storage_queue_result)
         << "Failed to create TestStorageQueue, error="
         << storage_queue_result.status();
-    storage_queue_ = std::move(storage_queue_result.ValueOrDie());
+    storage_queue_ = std::move(storage_queue_result.value());
   }
 
   void CreateTestEncryptionModuleOrDie() {
@@ -743,7 +743,7 @@ class StorageQueueTest
                 std::move(start_uploader_cb).Run(result.status());
                 return;
               }
-              auto uploader = std::move(result.ValueOrDie());
+              auto uploader = std::move(result.value());
               std::move(start_uploader_cb).Run(std::move(uploader));
             },
             reason, std::move(start_uploader_cb), base::Unretained(this)));

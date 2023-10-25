@@ -173,8 +173,8 @@ void ProcessFileUpload(base::WeakPtr<FileUploadJob::Delegate> delegate,
                   return;
                 }
                 // Job has been located or created.
-                job_or_error.ValueOrDie()->event_helper()->Run(
-                    scoped_reservation, std::move(done_cb));
+                job_or_error.value()->event_helper()->Run(scoped_reservation,
+                                                          std::move(done_cb));
               },
               ScopedReservation(0uL, scoped_reservation), std::move(done_cb)));
       break;
@@ -337,7 +337,7 @@ RecordHandlerImpl::SequenceInformationValueToProto(
                                 "id or generation id : ",
                                 value.DebugString()}));
   }
-  const auto [seq_id, gen_id] = parse_seq_id_gen_id_result.ValueOrDie();
+  const auto [seq_id, gen_id] = parse_seq_id_gen_id_result.value();
 
   SequenceInformation proto;
   proto.set_sequencing_id(seq_id);
@@ -590,7 +590,7 @@ void RecordHandlerImpl::ReportUploader::OnUploadComplete(
     return;
   }
 
-  HandleSuccessfulUpload(std::move(response.ValueOrDie()));
+  HandleSuccessfulUpload(std::move(response.value()));
 }
 
 void RecordHandlerImpl::ReportUploader::HandleFailedUpload(Status status) {
@@ -631,7 +631,7 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload(
     auto seq_info_result =
         SequenceInformationValueToProto(*last_succeed_uploaded_record);
     if (seq_info_result.ok()) {
-      highest_sequence_information_ = std::move(seq_info_result.ValueOrDie());
+      highest_sequence_information_ = std::move(seq_info_result.value());
     } else {
       LOG(ERROR) << "Server responded with an invalid SequenceInformation "
                     "for lastSucceedUploadedRecord"
@@ -762,7 +762,7 @@ RecordHandlerImpl::ReportUploader::HandleFailedUploadedSequenceInformation(
     return absl::nullopt;
   }
 
-  SequenceInformation& seq_info = seq_info_result.ValueOrDie();
+  SequenceInformation& seq_info = seq_info_result.value();
 
   // |seq_info| should be of the same generation, generation guid, and
   // priority as highest_sequence_information_, and have the next

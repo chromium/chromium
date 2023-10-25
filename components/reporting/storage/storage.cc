@@ -111,7 +111,7 @@ class Storage::QueueUploaderInterface : public UploaderInterface {
     }
     std::move(start_uploader_cb)
         .Run(std::make_unique<QueueUploaderInterface>(
-            priority, std::move(uploader_result.ValueOrDie())));
+            priority, std::move(uploader_result.value())));
   }
 
   const Priority priority_;
@@ -199,7 +199,7 @@ class Storage::KeyDelivery {
     }
     std::move(start_uploader_cb)
         .Run(std::make_unique<QueueUploaderInterface>(
-            priority, std::move(uploader_result.ValueOrDie())));
+            priority, std::move(uploader_result.value())));
   }
 
   void EncryptionKeyReceiverReady(
@@ -208,7 +208,7 @@ class Storage::KeyDelivery {
       OnCompletion(uploader_result.status());
       return;
     }
-    uploader_result.ValueOrDie()->Completed(Status::StatusOK());
+    uploader_result.value()->Completed(Status::StatusOK());
   }
 
   const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
@@ -357,7 +357,7 @@ class Storage::KeyInStorage {
               const auto file_index =
                   StorageQueue::GetFileSequenceIdFromPath(full_name);
               if (!file_index.ok() ||  // Should not happen, will remove file.
-                  file_index.ValueOrDie() <
+                  file_index.value() <
                       static_cast<int64_t>(
                           new_file_index)) {  // Lower index file, will remove
                                               // it.
@@ -390,8 +390,7 @@ class Storage::KeyInStorage {
         continue;
       }
       if (!found_key_files
-               ->emplace(static_cast<uint64_t>(file_index.ValueOrDie()),
-                         full_name)
+               ->emplace(static_cast<uint64_t>(file_index.value()), full_name)
                .second) {
         // Duplicate extension (e.g., 01 and 001). Should not happen (file is
         // corrupt).
@@ -399,9 +398,9 @@ class Storage::KeyInStorage {
       }
       // Set 'next_key_file_index_' to a number which is definitely not used.
       if (static_cast<int64_t>(next_key_file_index_.load()) <=
-          file_index.ValueOrDie()) {
+          file_index.value()) {
         next_key_file_index_.store(
-            static_cast<uint64_t>(file_index.ValueOrDie() + 1));
+            static_cast<uint64_t>(file_index.value() + 1));
       }
     }
   }
@@ -522,8 +521,7 @@ void Storage::Create(
 
       // Key found, verified and downloaded.
       storage_->encryption_module_->UpdateAsymmetricKey(
-          download_key_result.ValueOrDie().first,
-          download_key_result.ValueOrDie().second,
+          download_key_result.value().first, download_key_result.value().second,
           base::BindOnce(&StorageInitContext::ScheduleEncryptionSetUp,
                          base::Unretained(this)));
     }
@@ -582,8 +580,8 @@ void Storage::Create(
       CheckOnValidSequence();
       DCHECK_CALLED_ON_VALID_SEQUENCE(storage_->sequence_checker_);
       if (storage_queue_result.ok()) {
-        auto add_result = storage_->queues_.emplace(
-            priority, storage_queue_result.ValueOrDie());
+        auto add_result =
+            storage_->queues_.emplace(priority, storage_queue_result.value());
         CHECK(add_result.second);
       } else {
         LOG(ERROR) << "Could not create queue, priority=" << priority
@@ -608,10 +606,9 @@ void Storage::Create(
       for (const auto& queue_options : queues_options_) {
         const auto queue_or_error = storage_->GetQueue(queue_options.first);
         CHECK_OK(queue_or_error) << queue_or_error.status();
-        queue_or_error.ValueOrDie()->AssignDegradationQueues(
-            degradation_queues);
+        queue_or_error.value()->AssignDegradationQueues(degradation_queues);
         // Add newly created queue to the list to be used by all the later ones.
-        degradation_queues.emplace_back(queue_or_error.ValueOrDie());
+        degradation_queues.emplace_back(queue_or_error.value());
       }
 
       Response(std::move(storage_));
@@ -783,7 +780,7 @@ void Storage::AsyncGetQueueAndProceed(
             // Queue found, execute the action (it should relocate on
             // queue thread soon, to not block Storage task runner).
             std::move(queue_action)
-                .Run(queue_result.ValueOrDie(), std::move(completion_cb));
+                .Run(queue_result.value(), std::move(completion_cb));
           },
           base::WrapRefCounted(this), priority, std::move(queue_action),
           std::move(completion_cb)));

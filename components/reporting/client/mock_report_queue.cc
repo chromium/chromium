@@ -31,7 +31,6 @@ void MockReportQueueStrict::ForwardProducedRecord(
     std::move(callback).Run(record_result.status());
     return;
   }
-  AddRecord(std::move(record_result.ValueOrDie()), priority,
-            std::move(callback));
+  AddRecord(std::move(record_result.value()), priority, std::move(callback));
 }
 }  // namespace reporting

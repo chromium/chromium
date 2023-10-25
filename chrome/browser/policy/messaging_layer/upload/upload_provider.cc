@@ -183,7 +183,7 @@ void EncryptedReportingUploadProvider::UploadHelper::OnUploadClientResult(
   sequenced_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&UploadHelper::UpdateUploadClient,
                                 weak_ptr_factory_.GetWeakPtr(),
-                                std::move(client_result.ValueOrDie())));
+                                std::move(client_result.value())));
 }
 
 void EncryptedReportingUploadProvider::UploadHelper::UpdateUploadClient(

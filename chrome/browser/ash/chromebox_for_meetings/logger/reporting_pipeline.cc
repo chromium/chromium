@@ -155,7 +155,7 @@ void ReportingPipeline::UpdateToken(std::string request_token) {
             reporting::ReportQueueProvider::CreateQueue(
                 std::move(config), std::move(queue_callback));
           },
-          std::move(config_result).ValueOrDie(), std::move(queue_callback)));
+          std::move(config_result).value(), std::move(queue_callback)));
 }
 
 ::reporting::Status ReportingPipeline::CheckPolicy() const {
@@ -187,7 +187,7 @@ void ReportingPipeline::OnReportQueueUpdated(
     return;
   }
 
-  report_queue_ = std::move(report_queue_result.ValueOrDie());
+  report_queue_ = std::move(report_queue_result.value());
 
   update_status_callback_.Run(mojom::LoggerState::kReadyForRequests);
 

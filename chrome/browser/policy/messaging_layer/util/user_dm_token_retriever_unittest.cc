@@ -78,7 +78,7 @@ TEST_F(UserDMTokenRetrieverTest, GetDMToken) {
       ->RetrieveDMToken(dm_token_retrieved_event.cb());
   const auto dm_token_result = dm_token_retrieved_event.result();
   ASSERT_OK(dm_token_result);
-  EXPECT_THAT(dm_token_result.ValueOrDie(), StrEq(kDMToken));
+  EXPECT_THAT(dm_token_result.value(), StrEq(kDMToken));
 }
 
 TEST_F(UserDMTokenRetrieverTest, GetDMTokenMultipleRequests) {
@@ -97,8 +97,8 @@ TEST_F(UserDMTokenRetrieverTest, GetDMTokenMultipleRequests) {
   const auto dm_token_result_2 = dm_token_retrieved_event_2.result();
   ASSERT_OK(dm_token_result_1);
   ASSERT_OK(dm_token_result_2);
-  EXPECT_THAT(dm_token_result_1.ValueOrDie(), StrEq(kDMToken));
-  EXPECT_THAT(dm_token_result_2.ValueOrDie(), StrEq(kDMToken));
+  EXPECT_THAT(dm_token_result_1.value(), StrEq(kDMToken));
+  EXPECT_THAT(dm_token_result_2.value(), StrEq(kDMToken));
 }
 
 TEST_F(UserDMTokenRetrieverTest, GetDMTokenInvalid) {
