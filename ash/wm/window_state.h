@@ -362,11 +362,6 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // If window is not horizontally shrinkable, return false.
   bool HorizontallyShrinkWindow(const gfx::Rect& work_area);
 
-  // Updates the PIP bounds if necessary. This may need to happen when the
-  // display work area changes, or if system ui regions like the virtual
-  // keyboard position changes.
-  void UpdatePipBounds();
-
   // Updates the window bounds. This may get called when a window is resized in
   // splitview (i.e. a snapped window and overview). Side-by-side snapped
   // windows will get resized by WorkspaceWindowResizer normally.

@@ -21,6 +21,7 @@
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ash/wm/default_state.h"
 #include "ash/wm/float/float_controller.h"
+#include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
@@ -648,16 +649,6 @@ bool WindowState::HorizontallyShrinkWindow(const gfx::Rect& work_area) {
   return true;
 }
 
-void WindowState::UpdatePipBounds() {
-  gfx::Rect new_bounds =
-      PipPositioner::GetPositionAfterMovementAreaChange(this);
-  wm::ConvertRectFromScreen(window_->GetRootWindow(), &new_bounds);
-  if (window_->bounds() != new_bounds) {
-    SetBoundsWMEvent event(new_bounds, /*animate=*/true);
-    OnWMEvent(&event);
-  }
-}
-
 void WindowState::UpdateSnappedBounds() {
   auto* split_view_controller = SplitViewController::Get(window_);
   DCHECK(split_view_controller->IsWindowInSplitView(window_));
@@ -1094,6 +1085,7 @@ void WindowState::SetBoundsDirectCrossFade(const gfx::Rect& new_bounds,
 void WindowState::OnPrePipStateChange(WindowStateType old_window_state_type) {
   auto* widget = views::Widget::GetWidgetForNativeWindow(window_);
   const bool was_pip = old_window_state_type == WindowStateType::kPip;
+  auto* const pip_controller = Shell::Get()->pip_controller();
   if (IsPip()) {
     CollisionDetectionUtils::MarkWindowPriorityForCollisionDetection(
         window_, CollisionDetectionUtils::RelativePriority::kPictureInPicture);
@@ -1107,8 +1099,16 @@ void WindowState::OnPrePipStateChange(WindowStateType old_window_state_type) {
     }
     wm::SetWindowVisibilityAnimationType(
         window_, WINDOW_VISIBILITY_ANIMATION_TYPE_FADE_IN_SLIDE_OUT);
+
+    // Add this window to `PipController`.
+    // `window_state->NotifyPreStateTypeChange()` because that triggers
+    // `PipController::UpdatePipBounds()` which needs the target to be
+    // set.
+    pip_controller->SetPipWindow(window_);
+
     // There may already be a system ui window on the initial position.
-    UpdatePipBounds();
+    pip_controller->UpdatePipBounds();
+
     if (!was_pip) {
       if (widget && widget->GetContentsView()) {
         widget->GetContentsView()->GetViewAccessibility().AnnounceText(
@@ -1130,6 +1130,9 @@ void WindowState::OnPrePipStateChange(WindowStateType old_window_state_type) {
 
     CollectPipEnterExitMetrics(/*enter=*/false);
     window_->ClearProperty(ash::kExcludeInMruKey);
+
+    // Unset PiP window when exiting PiP state to another state.
+    pip_controller->UnsetPipWindow();
   }
   // PIP uses the snap fraction to place the PIP window at the correct position
   // after screen rotation, system UI area change, etc. Make sure to reset this
