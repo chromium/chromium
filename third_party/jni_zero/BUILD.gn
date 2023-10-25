@@ -8,12 +8,6 @@ config("jni_include_dir") {
   include_dirs = [ jni_headers_dir ]
 }
 
-config("jni_defines") {
-  if (build_with_chromium) {
-    defines = [ "BUILD_WITH_CHROMIUM" ]
-  }
-}
-
 source_set("jni_export") {
   sources = [ "jni_export.h" ]
 }
@@ -24,12 +18,10 @@ source_set("jni_zero") {
     "jni_zero_helper.h",
   ]
 
-  public_deps = [ ":jni_export" ]
-  if (build_with_chromium) {
-    public_deps += [ "//base" ]
-  }
-
-  public_configs = [ ":jni_defines" ]
+  public_deps = [
+    ":jni_export",
+    "//base",
+  ]
 }
 
 if (enable_java_templates && is_android) {
