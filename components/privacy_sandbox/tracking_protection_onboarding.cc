@@ -212,22 +212,6 @@ TrackingProtectionOnboarding::TrackingProtectionOnboarding(
           &TrackingProtectionOnboarding::OnOffboardingPrefChanged,
           base::Unretained(this)));
 
-  // If we're forcing eligibility, then let' set it now.
-  if (base::FeatureList::IsEnabled(
-          privacy_sandbox::kTrackingProtectionOnboardingForceEligibility) &&
-      GetInternalOnboardingStatus(pref_service_) ==
-          TrackingProtectionOnboardingStatus::kIneligible) {
-    base::UmaHistogramBoolean(
-        "PrivacySandbox.TrackingProtection.Onboarding."
-        "MarkedEligibleDueToForcedFlag",
-        true);
-    MaybeMarkEligible();
-  } else {
-    base::UmaHistogramBoolean(
-        "PrivacySandbox.TrackingProtection.Onboarding."
-        "MarkedEligibleDueToForcedFlag",
-        false);
-  }
   RecordHistogramsOnStartup(pref_service_);
 }
 

@@ -511,27 +511,6 @@ INSTANTIATE_TEST_SUITE_P(
         std::pair(TrackingProtectionOnboarding::NoticeAction::kClosed,
                   TrackingProtectionOnboardingAckAction::kClosed)));
 
-class TrackingProtectionOnboardingWithFeatureOverrideTest
-    : public TrackingProtectionOnboardingTest {
- public:
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        privacy_sandbox::kTrackingProtectionOnboardingForceEligibility);
-    tracking_protection_onboarding_service_ =
-        std::make_unique<TrackingProtectionOnboarding>(
-            prefs(), version_info::Channel::UNKNOWN);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(TrackingProtectionOnboardingWithFeatureOverrideTest,
-       StartsUpAsEligible) {
-  EXPECT_EQ(tracking_protection_onboarding()->GetOnboardingStatus(),
-            TrackingProtectionOnboarding::OnboardingStatus::kEligible);
-}
-
 class TrackingProtectionOffboardingTest
     : public TrackingProtectionOnboardingTest {
  public:
@@ -1040,29 +1019,5 @@ TEST_F(TrackingProtectionOnboardingTest,
       true, 1);
 }
 
-TEST_F(TrackingProtectionOnboardingTest,
-       OnboardingMarkedEligibleDueToForcedFlagHistogram) {
-  // Verification
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.TrackingProtection.Onboarding."
-      "MarkedEligibleDueToForcedFlag",
-      false, 1);
-
-  // Setup
-  feature_list_.InitAndEnableFeature(
-      privacy_sandbox::kTrackingProtectionOnboardingForceEligibility);
-
-  // Action
-  tracking_protection_onboarding_service_.reset();
-  tracking_protection_onboarding_service_ =
-      std::make_unique<TrackingProtectionOnboarding>(
-          prefs(), version_info::Channel::UNKNOWN);
-
-  // Verification
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.TrackingProtection.Onboarding."
-      "MarkedEligibleDueToForcedFlag",
-      true, 1);
-}
 }  // namespace
 }  // namespace privacy_sandbox
