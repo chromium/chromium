@@ -764,6 +764,48 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
   return base::ok();
 }
 
+base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPrelu(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::PreluPtr& prelu,
+    GraphBuilder& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input =
+      GetNodeOutputForOperand(id_to_node_output_map, prelu->input_operand_id);
+  const auto& input_tensor_desc = input->GetTensorDesc();
+  const NodeOutput* slope =
+      GetNodeOutputForOperand(id_to_node_output_map, prelu->slope_operand_id);
+  auto slope_tensor_desc = slope->GetTensorDesc();
+
+  uint64_t output_id = prelu->output_operand_id;
+  const auto output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+
+  const auto& output_dimensions = output_tensor_desc.GetDimensions();
+  if (slope_tensor_desc.GetDimensions() != output_dimensions) {
+    slope_tensor_desc.BroadcastTo(output_dimensions);
+  }
+
+  DML_ACTIVATION_PARAMETERIZED_RELU_OPERATOR_DESC prelu_desc{
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .SlopeTensor = &slope_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc()};
+
+  std::array<const NodeOutput*, 2> inputs = {input, slope};
+  const OperatorNode* prelu_node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_ACTIVATION_PARAMETERIZED_RELU, &prelu_desc, inputs);
+  if (!prelu_node) {
+    return base::unexpected(mojom::Error::New(
+        mojom::Error::Code::kUnknownError, "Failed to create prelu operator."));
+  }
+
+  const NodeOutput* node_output =
+      graph_builder.CreateNodeOutput(prelu_node, std::move(output_tensor_desc));
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
+
+  return base::ok();
+}
+
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForSplit(
     const IdToOperandMap& id_to_operand_map,
     const mojom::SplitPtr& split,
@@ -1548,6 +1590,12 @@ void GraphImpl::CreateAndBuild(
       case Operation::Tag::kPool2d: {
         create_operator_result = CreateOperatorNodeForPool2d(
             id_to_operand_map, operation->get_pool2d(), graph_builder,
+            id_to_node_output_map);
+        break;
+      }
+      case Operation::Tag::kPrelu: {
+        create_operator_result = CreateOperatorNodeForPrelu(
+            id_to_operand_map, operation->get_prelu(), graph_builder,
             id_to_node_output_map);
         break;
       }

@@ -845,6 +845,75 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorMaxPool2d) {
 }
 
 template <typename T>
+struct PreluTester {
+  OperandInfo<T> input;
+  OperandInfo<T> slope;
+  OperandInfo<float> output;
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t slope_operand_id =
+        builder.BuildInput("slope", slope.dimensions, slope.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildPrelu(input_operand_id, slope_operand_id, output_operand_id);
+
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+    named_inputs.insert({"input", VectorToBigBuffer(input.values)});
+    named_inputs.insert({"slope", VectorToBigBuffer(slope.values)});
+    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                    named_outputs);
+
+    VerifyFloatDataIsEqual(
+        GetFloatOutputData(std::move(named_outputs["output"]), output.type),
+        output.values);
+  }
+};
+
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorPrelu) {
+  {
+    // Test prelu when the input and slope have the same dimensions.
+    PreluTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 3},
+                  .values = {-1, -2, -3, -4, -5, -6, -7, -8, -9, -10, 11, 12,
+                             13, 14, 15, 16, 17, 18}},
+        .slope = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 3},
+                  .values = {0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08,
+                             0.09, 0.1, 0.11, 0.12, 0.13, 0.14, 0.15, 0.16,
+                             0.17, 0.18}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3},
+                   .values = {-0.01, -0.04, -0.09, -0.16, -0.25, -0.36, -0.49,
+                              -0.64, -0.81, -1, 11, 12, 13, 14, 15, 16, 17,
+                              18}}}
+        .Test();
+  }
+  {
+    // Test prelu with broadcastable slope.
+    PreluTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 3},
+                  .values = {-1, -2, -3, -4, -5, -6, -7, -8, -9, -10, 11, 12,
+                             13, 14, 15, 16, 17, 18}},
+        .slope = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1},
+                  .values = {0.01}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3},
+                   .values = {-0.01, -0.02, -0.03, -0.04, -0.05, -0.06, -0.07,
+                              -0.08, -0.09, -0.1, 11, 12, 13, 14, 15, 16, 17,
+                              18}}}
+        .Test();
+  }
+}
+
+template <typename T>
 struct SplitTester {
   OperandInfo<T> input;
   uint32_t axis;
