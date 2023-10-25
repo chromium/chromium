@@ -76,6 +76,10 @@ class FileSystemServiceTest : public testing::Test {
             GetAllExecutableMetadata(FilePathSet()))
         .WillByDefault(Return(FilePathMap<ExecutableMetadata>()));
   }
+  ~FileSystemServiceTest() override {
+    mock_platform_delegate_ = nullptr;
+    mock_executable_metadata_service_ = nullptr;
+  }
 
   void ExpectResolvablePath(const base::FilePath& path,
                             const base::FilePath& resolved_path) {
@@ -93,9 +97,8 @@ class FileSystemServiceTest : public testing::Test {
         .WillOnce(Return(true));
   }
 
-  raw_ptr<testing::StrictMock<MockPlatformDelegate>, DanglingUntriaged>
-      mock_platform_delegate_;
-  raw_ptr<testing::StrictMock<MockExecutableMetadataService>, DanglingUntriaged>
+  raw_ptr<testing::StrictMock<MockPlatformDelegate>> mock_platform_delegate_;
+  raw_ptr<testing::StrictMock<MockExecutableMetadataService>>
       mock_executable_metadata_service_;
   std::unique_ptr<FileSystemService> file_system_service_;
 };
