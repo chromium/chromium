@@ -369,6 +369,8 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       base::Uuid generation_id,
       base::OnceCallback<void(BiddingAndAuctionData)> callback);
 
+  // Get the public key to use for the auction data. The `loader` pointer must
+  // remain valid until the `callback` is called or destroyed.
   void GetBiddingAndAuctionServerKey(
       network::mojom::URLLoaderFactory* loader,
       absl::optional<url::Origin> coordinator,

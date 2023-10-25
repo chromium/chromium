@@ -177,6 +177,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
                         BiddingAndAuctionData data);
   void OnGotBiddingAndAuctionServerKey(
       BiddingAndAuctionDataConstructionState state,
+      scoped_refptr<network::WrapperSharedURLLoaderFactory> loader,
       base::expected<BiddingAndAuctionServerKey, std::string> maybe_key);
 
   InterestGroupManagerImpl& GetInterestGroupManager() const;

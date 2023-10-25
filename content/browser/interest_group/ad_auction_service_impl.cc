@@ -859,14 +859,19 @@ void AdAuctionServiceImpl::OnGotAuctionData(
 
   state.data = std::move(data);
   absl::optional<url::Origin> coordinator = state.coordinator;
+  scoped_refptr<network::WrapperSharedURLLoaderFactory> loader =
+      GetRefCountedTrustedURLLoaderFactory();
+  network::WrapperSharedURLLoaderFactory* loader_ptr = loader.get();
   GetInterestGroupManager().GetBiddingAndAuctionServerKey(
-      GetRefCountedTrustedURLLoaderFactory().get(), std::move(coordinator),
+      loader_ptr, std::move(coordinator),
       base::BindOnce(&AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(state)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(state),
+                     std::move(loader)));
 }
 
 void AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey(
     BiddingAndAuctionDataConstructionState state,
+    scoped_refptr<network::WrapperSharedURLLoaderFactory> loader,
     base::expected<BiddingAndAuctionServerKey, std::string> maybe_key) {
   if (!maybe_key.has_value()) {
     std::move(state.callback).Run({}, {}, maybe_key.error());
