@@ -276,18 +276,19 @@ public class WebappLauncherActivity extends Activity {
         int webappSource = IntentUtils.safeGetIntExtra(
                 sourceIntent, WebappConstants.EXTRA_SOURCE, ShortcutSource.UNKNOWN);
 
-        if (TextUtils.isEmpty(webappUrl)) return;
+        if (!TextUtils.isEmpty(webappUrl)) {
+            Intent launchIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(webappUrl));
+            launchIntent.setClassName(
+                    appContext.getPackageName(), ChromeLauncherActivity.class.getName());
+            launchIntent.putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
+            launchIntent.putExtra(WebappConstants.EXTRA_SOURCE, webappSource);
+            launchIntent.setFlags(
+                    Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
 
-        Intent launchIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(webappUrl));
-        launchIntent.setClassName(
-                appContext.getPackageName(), ChromeLauncherActivity.class.getName());
-        launchIntent.putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
-        launchIntent.putExtra(WebappConstants.EXTRA_SOURCE, webappSource);
-        launchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+            Log.e(TAG, "Shortcut (%s) opened in Chrome.", webappUrl);
 
-        Log.e(TAG, "Shortcut (%s) opened in Chrome.", webappUrl);
-
-        IntentUtils.safeStartActivity(appContext, launchIntent);
+            IntentUtils.safeStartActivity(appContext, launchIntent);
+        }
         launchingActivity.finishAndRemoveTask();
     }
 
