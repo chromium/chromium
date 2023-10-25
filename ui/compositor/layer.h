@@ -423,18 +423,10 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   void SetTextureFlipped(bool flipped);
   bool TextureFlipped() const;
 
+  // TODO(fsamuel): Update this comment.
   // Begins showing content from a surface with a particular ID.
-  // TODO(crbug.com/1491605): with surface sync, size shouldn't rely on
-  // `frame_size_in_dip` anymore, so this method can be deleted, and
-  // surface_size uses `bounds_` instead.
   void SetShowSurface(const viz::SurfaceId& surface_id,
                       const gfx::Size& frame_size_in_dip,
-                      SkColor default_background_color,
-                      const cc::DeadlinePolicy& deadline_policy,
-                      bool stretch_content_to_fill_bounds);
-
-  // Updates the surface to a particular ID without changing size.
-  void SetShowSurface(const viz::SurfaceId& surface_id,
                       SkColor default_background_color,
                       const cc::DeadlinePolicy& deadline_policy,
                       bool stretch_content_to_fill_bounds);
@@ -590,8 +582,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // for proper scaling if the embedder is resized and the |surface_layer_| is
   // set to stretch to fill bounds.
   void SetSurfaceSize(gfx::Size surface_size_in_dip);
-
-  base::WeakPtr<Layer> AsWeakPtr();
 
   bool ContainsMirrorForTest(Layer* mirror) const;
 

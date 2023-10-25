@@ -1017,10 +1017,6 @@ void Layer::SetSurfaceSize(gfx::Size surface_size_in_dip) {
   RecomputeDrawsContentAndUVRect();
 }
 
-base::WeakPtr<Layer> Layer::AsWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
 bool Layer::ContainsMirrorForTest(Layer* mirror) const {
   return base::Contains(mirrors_, mirror, &LayerMirror::dest);
 }
@@ -1105,29 +1101,6 @@ void Layer::SetShowSurface(const viz::SurfaceId& surface_id,
   for (const auto& mirror : mirrors_) {
     mirror->dest()->SetShowSurface(surface_id, frame_size_in_dip,
                                    default_background_color, deadline_policy,
-                                   stretch_content_to_fill_bounds);
-  }
-}
-
-void Layer::SetShowSurface(const viz::SurfaceId& surface_id,
-                           SkColor default_background_color,
-                           const cc::DeadlinePolicy& deadline_policy,
-                           bool stretch_content_to_fill_bounds) {
-  DCHECK(type_ == LAYER_TEXTURED || type_ == LAYER_SOLID_COLOR);
-  DCHECK(surface_layer_.get());
-
-  // Assumes `frame_size_in_dip_` is already set.
-  // TODO(crbug.com/1491605): with surface sync, it should use on `bounds_`.
-  surface_layer_->SetSurfaceId(surface_id, deadline_policy);
-  surface_layer_->SetBackgroundColor(
-      SkColor4f::FromColor(default_background_color));
-  surface_layer_->SetSafeOpaqueBackgroundColor(
-      SkColor4f::FromColor(default_background_color));
-  surface_layer_->SetStretchContentToFillBounds(stretch_content_to_fill_bounds);
-
-  for (const auto& mirror : mirrors_) {
-    mirror->dest()->SetShowSurface(surface_id, default_background_color,
-                                   deadline_policy,
                                    stretch_content_to_fill_bounds);
   }
 }
@@ -1803,8 +1776,6 @@ void Layer::RecomputeDrawsContentAndUVRect() {
       static_cast<float>(size.height()) / frame_size_in_dip_.height());
     texture_layer_->SetUV(uv_top_left, uv_bottom_right);
   } else if (surface_layer_.get()) {
-    // TODO(crbug.com/1491605): with surface sync, size shouldn't rely on
-    // `frame_size_in_dip_` anymore.
     size.SetToMin(frame_size_in_dip_);
   }
   cc_layer_->SetBounds(size);

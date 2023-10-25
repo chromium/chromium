@@ -152,8 +152,6 @@ void SurfaceTreeHost::SetRootSurface(Surface* root_surface) {
   if (root_surface_) {
     root_surface_->window()->Hide();
     host_window_->RemoveChild(root_surface_->window());
-    viz::ScopedSurfaceIdAllocator scoped_suppression =
-        host_window()->GetSurfaceIdAllocator(base::NullCallback());
     host_window_->SetBounds(
         gfx::Rect(host_window_->bounds().origin(), gfx::Size()));
     AllocateLocalSurfaceId();
@@ -176,7 +174,7 @@ void SurfaceTreeHost::SetRootSurface(Surface* root_surface) {
       SetScaleFactorTransform(GetScaleFactor());
     }
     host_window_->AddChild(root_surface_->window());
-    UpdateSurfaceLayerSizeAndRootSurfaceOrigin();
+    UpdateHostWindowSizeAndRootSurfaceOrigin();
   }
   set_bounds_is_dirty(true);
 }
@@ -241,7 +239,7 @@ void SurfaceTreeHost::SetLayerTreeFrameSinkHolderFactoryForTesting(
 
 void SurfaceTreeHost::OnSurfaceCommit() {
   root_surface_->CommitSurfaceHierarchy(false);
-  UpdateSurfaceLayerSizeAndRootSurfaceOrigin();
+  UpdateHostWindowSizeAndRootSurfaceOrigin();
 }
 
 bool SurfaceTreeHost::IsSurfaceSynchronized() const {
@@ -410,14 +408,11 @@ void SurfaceTreeHost::SubmitEmptyCompositorFrame() {
                                                        /*submit_now=*/true);
 }
 
-void SurfaceTreeHost::UpdateSurfaceLayerSizeAndRootSurfaceOrigin() {
+void SurfaceTreeHost::UpdateHostWindowSizeAndRootSurfaceOrigin() {
   // This method applies multiple changes to the window tree. Use ScopedPause
   // to ensure that occlusion isn't recomputed before all changes have been
   // applied.
   aura::WindowOcclusionTracker::ScopedPause pause_occlusion;
-  viz::ScopedSurfaceIdAllocator scoped_suppression =
-      host_window()->GetSurfaceIdAllocator(base::NullCallback());
-  ui::Layer* commit_target_layer = GetCommitTargetLayer();
 
   const gfx::Rect& bounds = root_surface_->surface_hierarchy_content_bounds();
   gfx::Size size = bounds.size();
@@ -425,10 +420,9 @@ void SurfaceTreeHost::UpdateSurfaceLayerSizeAndRootSurfaceOrigin() {
     size = gfx::ScaleToCeiledSize(size, 1.0f / GetScaleFactor());
   }
   gfx::Rect scaled_bounds(bounds.origin(), size);
-  if (commit_target_layer && scaled_bounds != commit_target_layer->bounds()) {
+  if (scaled_bounds != host_window_->bounds()) {
     // DP size has changed, set new bounds.
-    commit_target_layer->SetBounds(
-        {commit_target_layer->bounds().origin(), size});
+    host_window_->SetBounds({host_window_->bounds().origin(), size});
   }
 
   // TODO(yjliu): a) consolidate with ClientControlledShellSurface. b) use the
@@ -440,11 +434,7 @@ void SurfaceTreeHost::UpdateSurfaceLayerSizeAndRootSurfaceOrigin() {
   const bool fills_bounds_opaquely =
       gfx::SizeF(bounds.size()) == root_surface_->content_size() &&
       root_surface_->FillsBoundsOpaquely();
-  if (commit_target_layer == host_window_->layer()) {
-    host_window_->SetTransparent(!fills_bounds_opaquely);
-  } else if (commit_target_layer) {
-    commit_target_layer->SetFillsBoundsOpaquely(fills_bounds_opaquely);
-  }
+  host_window_->SetTransparent(!fills_bounds_opaquely);
 
   root_surface_origin_pixel_ = gfx::Point() - bounds.OffsetFromOrigin();
   gfx::Point root_surface_origin_dp =
@@ -545,21 +535,20 @@ void SurfaceTreeHost::UpdateLocalSurfaceIdFromParent(
 }
 
 void SurfaceTreeHost::MaybeActivateSurface() {
-  ui::Layer* commit_target_layer = GetCommitTargetLayer();
-  if (!commit_target_layer) {
-    return;
-  }
+  DCHECK(!host_window_->layer()->GetSurfaceId() ||
+         GetCurrentLocalSurfaceId().IsSameOrNewerThan(
+             host_window_->layer()->GetSurfaceId()->local_surface_id()));
 
-  if (commit_target_layer->GetSurfaceId() &&
+  if (host_window_->layer()->GetSurfaceId() &&
       !GetCurrentLocalSurfaceId().IsNewerThan(
-          commit_target_layer->GetSurfaceId()->local_surface_id())) {
+          host_window_->layer()->GetSurfaceId()->local_surface_id())) {
     return;
   }
 
   host_window_->UpdateLocalSurfaceIdFromEmbeddedClient(
       GetCurrentLocalSurfaceId());
-  commit_target_layer->SetShowSurface(
-      GetSurfaceId(), commit_target_layer->bounds().size(), SK_ColorWHITE,
+  host_window_->layer()->SetShowSurface(
+      GetSurfaceId(), host_window_->bounds().size(), SK_ColorWHITE,
       cc::DeadlinePolicy::UseDefaultDeadline(),
       false /* stretch_content_to_fill_bounds */);
 }
@@ -572,15 +561,12 @@ const viz::LocalSurfaceId& SurfaceTreeHost::GetCurrentLocalSurfaceId() const {
   return child_local_surface_id_allocator_->GetCurrentLocalSurfaceId();
 }
 
-ui::Layer* SurfaceTreeHost::GetCommitTargetLayer() {
-  return host_window_->layer();
+void SurfaceTreeHost::OnLayerRecreated(ui::Layer* old_layer) {
+  // TODO(crbug/1251778): Track the old layer copies that are kept and advance
+  // them to new local_surface_id in case the surface property changes, until
+  // the copies' corresponding parent local_surface_id is synchronized to the
+  // surface_tree_host.
 }
-
-const ui::Layer* SurfaceTreeHost::GetCommitTargetLayer() const {
-  return host_window_->layer();
-}
-
-void SurfaceTreeHost::OnLayerRecreated(ui::Layer* old_layer) {}
 
 viz::CompositorFrame SurfaceTreeHost::PrepareToSubmitCompositorFrame() {
   DCHECK(root_surface_);

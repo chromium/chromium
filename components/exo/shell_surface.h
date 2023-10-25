@@ -10,7 +10,6 @@
 #include "ash/wm/window_state_observer.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_observer.h"
@@ -22,7 +21,6 @@ class ScopedAnimationDisabler;
 
 namespace ui {
 class CompositorLock;
-class Layer;
 }  // namespace ui
 
 namespace exo {
@@ -145,11 +143,6 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   void OnSetFrame(SurfaceFrameType type) override;
   void OnSetParent(Surface* parent, const gfx::Point& position) override;
 
-  // Overridden from SurfaceTreeHost:
-  void MaybeActivateSurface() override;
-  ui::Layer* GetCommitTargetLayer() override;
-  const ui::Layer* GetCommitTargetLayer() const override;
-
   // Overridden from ShellSurfaceBase:
   void InitializeWindowState(ash::WindowState* window_state) override;
   absl::optional<gfx::Rect> GetWidgetBounds() const override;
@@ -184,9 +177,6 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   bool OnPreWidgetCommit() override;
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
-
-  // Overridden from ui::LayerOwner::Observer:
-  void OnLayerRecreated(ui::Layer* old_layer) override;
 
   void EndDrag();
 
@@ -238,16 +228,7 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
       const chromeos::WindowStateType state) const;
   display::Display GetDisplayForInitialBounds() const;
 
-  void UpdateLayerSurfaceRange(ui::Layer* layer,
-                               const viz::LocalSurfaceId& current_lsi);
-
   std::unique_ptr<ash::ScopedAnimationDisabler> animations_disabler_;
-
-  // Temporarily stores the `host_window()`'s layer when it's recreated for
-  // animation. Client-side commits may be directed towards the `old_layer_`
-  // instead of `host_window()->layer()` due to the asynchronous config/ack
-  // flow.
-  base::WeakPtr<ui::Layer> old_layer_;
 
   std::unique_ptr<ui::CompositorLock> configure_compositor_lock_;
 
