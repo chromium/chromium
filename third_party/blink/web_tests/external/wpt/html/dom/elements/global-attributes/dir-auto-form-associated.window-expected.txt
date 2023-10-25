@@ -1,0 +1,30 @@
+This is a testharness.js-based test.
+[FAIL] <input dir=auto type=hidden> directionality
+  assert_true: expected true got false
+[PASS] <input dir=auto type=text> directionality
+[PASS] <input dir=auto type=search> directionality
+[PASS] <input dir=auto type=tel> directionality
+[PASS] <input dir=auto type=url> directionality
+[PASS] <input dir=auto type=email> directionality
+[FAIL] <input dir=auto type=password> directionality
+  assert_true: expected true got false
+[FAIL] <input dir=auto type=submit> directionality
+  assert_true: expected true got false
+[FAIL] <input dir=auto type=reset> directionality
+  assert_true: expected true got false
+[FAIL] <input dir=auto type=button> directionality
+  assert_true: expected true got false
+[PASS] <input dir=auto type=date> directionality
+[PASS] <input dir=auto type=month> directionality
+[PASS] <input dir=auto type=week> directionality
+[PASS] <input dir=auto type=time> directionality
+[PASS] <input dir=auto type=datetime-local> directionality
+[PASS] <input dir=auto type=number> directionality
+[PASS] <input dir=auto type=range> directionality
+[PASS] <input dir=auto type=color> directionality
+[PASS] <input dir=auto type=checkbox> directionality
+[PASS] <input dir=auto type=radio> directionality
+[PASS] <input dir=auto type=image> directionality
+[PASS] <textarea dir=auto> directionality
+Harness: the test ran to completion.
+
