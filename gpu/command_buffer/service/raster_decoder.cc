@@ -100,6 +100,11 @@
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing_factory.h"
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(SKIA_USE_DAWN)
+#include <dawn/webgpu_cpp.h>
+#include "gpu/command_buffer/service/dawn_context_provider.h"
+#endif  // BUILDFLAG(USE_DAWN)
+
 // Local versions of the SET_GL_ERROR macros
 #define LOCAL_SET_GL_ERROR(error, function_name, msg) \
   ERRORSTATE_SET_GL_ERROR(error_state_.get(), error, function_name, msg)
@@ -1292,9 +1297,25 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
         feature_info()->feature_flags().enable_texture_half_float_linear;
   }
   caps.disable_legacy_mailbox = disable_legacy_mailbox_;
-  // TODO(crbug.com/1450879): Support YUV rendering and readback for Graphite.
-  caps.supports_yuv_rgb_conversion = !graphite_context();
-  caps.supports_yuv_readback = !graphite_context();
+
+  if (graphite_context()) {
+    bool supports_multiplanar_rendering = false;
+#if BUILDFLAG(SKIA_USE_DAWN)
+    auto* dawn_context_provider =
+        shared_context_state_->dawn_context_provider();
+    if (dawn_context_provider &&
+        dawn_context_provider->SupportsFeature(
+            wgpu::FeatureName::MultiPlanarRenderTargets)) {
+      supports_multiplanar_rendering = true;
+    }
+#endif
+    caps.supports_yuv_rgb_conversion = supports_multiplanar_rendering;
+    caps.supports_yuv_readback = supports_multiplanar_rendering;
+  } else {
+    caps.supports_yuv_rgb_conversion = true;
+    caps.supports_yuv_readback = true;
+  }
+
   return caps;
 }
 

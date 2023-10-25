@@ -408,6 +408,13 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertRGBAToYUVAMailboxes(
                                     "glConvertYUVAMailboxesToRGB",
                                     "RGBA shared image is not readable"));
   }
+
+  // The yuva_scoped_access must be destroyed after `cleanup` is done so that
+  // Skia performs submits properly.
+  std::array<std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>,
+             SkYUVAInfo::kMaxPlanes>
+      yuva_scoped_access;
+
   // Perform ApplyBackendSurfaceEndState() on the ScopedReadAccess before
   // exiting.
   absl::Cleanup cleanup = [&]() {
@@ -423,9 +430,6 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertRGBAToYUVAMailboxes(
                                     "Couldn't create SkImage for reading."));
   }
 
-  std::array<std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>,
-             SkYUVAInfo::kMaxPlanes>
-      yuva_scoped_access;
   for (int i = 0; i < num_yuva_planes; ++i) {
     yuva_scoped_access[i] = yuva_images[i]->BeginScopedWriteAccess(
         &begin_semaphores, &end_semaphores,
@@ -859,9 +863,6 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
                             gfx::RectToSkRect(dest_rect), SkSamplingOptions(),
                             &paint, SkCanvas::kStrict_SrcRectConstraint);
     } else {
-      // TODO(crbug.com/1450879): Make this path work for Graphite after Dawn
-      // supports multiplanar rendering and we integrate it into Chrome.
-      CHECK(shared_context_state_->gr_context());
       SkSurface* yuva_sk_surfaces[SkYUVAInfo::kMaxPlanes] = {};
       for (int plane_index = 0; plane_index < dest_format.NumberOfPlanes();
            plane_index++) {
