@@ -1,4 +1,3 @@
-ci/Android ASAN (dbg)
 ci/Android WebView O (dbg)
 ci/Android WebView P (dbg)
 ci/Android arm Builder (dbg)

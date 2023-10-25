@@ -8,7 +8,6 @@ chromium/try/android-arm-compile-dbg
 chromium/try/android-arm64-all-targets-dbg
 chromium/try/android-arm64-rel
 chromium/try/android-arm64-siso-rel
-chromium/try/android-asan-compile-dbg
 chromium/try/android-bfcache-rel
 chromium/try/android-clobber-rel
 chromium/try/android-dawn-arm-rel

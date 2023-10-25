@@ -65,8 +65,10 @@ ci.builder(
     ),
     builderless = False,
     cores = None,
-    # TODO(crbug.com/1486663): Restore tree-closing when bot is fixed.
+    # TODO(crbug.com/1486663): Restore tree-closing and sheriff rotation if/when
+    # bot is fixed.
     # tree_closing = True,
+    sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "builder|arm",
         short_name = "san",
