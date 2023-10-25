@@ -245,6 +245,8 @@ testing/data/ime-on-focus-after-navigation-within-page.html
 testing/data/ime-on-focus-on-autofocus.html
 testing/data/ime-on-focus-on-load.html
 testing/data/ime-on-focus-on-user-gesture.html
+testing/data/inner_text_test1.html
+testing/data/inner_text_test2.html
 testing/data/input-image-broken.html
 testing/data/input_field_default.html
 testing/data/input_field_email.html
@@ -456,6 +458,7 @@ testing/data/sticky-position.html
 testing/data/subframe-a.html
 testing/data/subframe-b.html
 testing/data/subframe-c.html
+testing/data/subframe-d.html
 testing/data/subframe-hello.html
 testing/data/subtree-layout.html
 testing/data/sv-size.html

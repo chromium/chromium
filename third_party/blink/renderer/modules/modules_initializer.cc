@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
@@ -45,6 +46,7 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d.h"
 #include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_rendering_context.h"
 #include "third_party/blink/renderer/modules/canvas/offscreencanvas2d/offscreen_canvas_rendering_context_2d.h"
+#include "third_party/blink/renderer/modules/content_extraction/inner_text_agent.h"
 #include "third_party/blink/renderer/modules/csspaint/css_paint_image_generator_impl.h"
 #include "third_party/blink/renderer/modules/csspaint/nativepaint/background_color_paint_image_generator_impl.h"
 #include "third_party/blink/renderer/modules/csspaint/nativepaint/clip_path_paint_image_generator_impl.h"
@@ -124,6 +126,11 @@ namespace {
 // CategorizedWorkerPool, which predates the base thread pool.
 BASE_FEATURE(kBlinkMediaPlayerUsesBaseThreadPool,
              "BlinkMediaPlayerUsesThreadPool",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Serves as a kill switch.
+BASE_FEATURE(kBlinkEnableInnerTextAgent,
+             "BlinkEnableInnerTextAgent",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
@@ -252,6 +259,11 @@ void ModulesInitializer::InitLocalFrame(LocalFrame& frame) const {
   frame.GetInterfaceRegistry()->AddInterface(
       WTF::BindRepeating(&PeerConnectionTracker::BindToFrame,
                          WrapCrossThreadWeakPersistent(&frame)));
+
+  if (base::FeatureList::IsEnabled(kBlinkEnableInnerTextAgent)) {
+    frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
+        &InnerTextAgent::BindReceiver, WrapWeakPersistent(&frame)));
+  }
 }
 
 void ModulesInitializer::InstallSupplements(LocalFrame& frame) const {

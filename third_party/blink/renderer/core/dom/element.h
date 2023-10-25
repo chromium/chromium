@@ -122,6 +122,7 @@ class StylePropertyMapReadOnly;
 class StyleRecalcContext;
 class StyleRequest;
 class StyleScopeData;
+class TextVisitor;
 class V8UnionBooleanOrScrollIntoViewOptions;
 class ComputedStyleBuilder;
 class StyleAdjuster;
@@ -853,8 +854,12 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   // The implementations of |innerText()| and |GetInnerTextWithoutUpdate()| are
   // found in "element_inner_text.cc".
-  String GetInnerTextWithoutUpdate();  // Avoids layout update.
-  String innerText();
+  // Avoids layout update.
+  String GetInnerTextWithoutUpdate(TextVisitor* visitor = nullptr);
+  // `visitor` is called as each node is considered. Note that this is not
+  // called for nodes that are not considered in generating the text. For
+  // example, all descendants of hidden nodes are not considered.
+  String innerText(TextVisitor* visitor = nullptr);
   String outerText();
 
   Element* insertAdjacentElement(const String& where,

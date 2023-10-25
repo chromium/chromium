@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/dom/text_visitor.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
@@ -40,7 +41,8 @@ class ElementInnerTextCollector final {
   STACK_ALLOCATED();
 
  public:
-  ElementInnerTextCollector() = default;
+  explicit ElementInnerTextCollector(TextVisitor* visitor)
+      : visitor_(visitor) {}
   ElementInnerTextCollector(const ElementInnerTextCollector&) = delete;
   ElementInnerTextCollector& operator=(const ElementInnerTextCollector&) =
       delete;
@@ -60,6 +62,8 @@ class ElementInnerTextCollector final {
     void EmitTab();
     void EmitText(const StringView& text);
     String Finish();
+
+    unsigned length() const { return builder_.length(); }
 
    private:
     void FlushRequiredLineBreak();
@@ -86,10 +90,15 @@ class ElementInnerTextCollector final {
 
   // Result character buffer.
   Result result_;
+  TextVisitor* visitor_;
 };
 
 String ElementInnerTextCollector::RunOn(const Element& element) {
   DCHECK(!element.InActiveDocument() || !NeedsLayoutTreeUpdate(element));
+
+  if (visitor_) {
+    visitor_->WillVisit(element, result_.length());
+  }
 
   // 1. If this element is locked or a part of a locked subtree, then it is
   // hidden from view (and also possibly not laid out) and innerText should be
@@ -106,7 +115,7 @@ String ElementInnerTextCollector::RunOn(const Element& element) {
   // [1] https://github.com/whatwg/html/issues/1837
   if (!IsBeingRendered(element) && !HasDisplayContentsStyle(element)) {
     const bool convert_brs_to_newlines = false;
-    return element.textContent(convert_brs_to_newlines);
+    return element.textContent(convert_brs_to_newlines, visitor_);
   }
 
   // 3. Let results be a new empty list.
@@ -213,8 +222,12 @@ const OffsetMapping* ElementInnerTextCollector::GetOffsetMapping(
 }
 
 void ElementInnerTextCollector::ProcessChildren(const Node& container) {
-  for (const Node& node : NodeTraversal::ChildrenOf(container))
+  for (const Node& node : NodeTraversal::ChildrenOf(container)) {
+    if (visitor_) {
+      visitor_->WillVisit(node, result_.length());
+    }
     ProcessNode(node);
+  }
 }
 
 void ElementInnerTextCollector::ProcessChildrenWithRequiredLineBreaks(
@@ -363,18 +376,26 @@ void ElementInnerTextCollector::ProcessOptionElement(
 void ElementInnerTextCollector::ProcessSelectElement(
     const HTMLSelectElement& select_element) {
   for (const Node& child : NodeTraversal::ChildrenOf(select_element)) {
+    if (visitor_) {
+      visitor_->WillVisit(child, result_.length());
+    }
     if (auto* option_element = DynamicTo<HTMLOptionElement>(child)) {
       ProcessOptionElement(*option_element);
       continue;
     }
-    if (!IsA<HTMLOptGroupElement>(child))
+    if (!IsA<HTMLOptGroupElement>(child)) {
       continue;
+    }
     // Note: We should emit newline for OPTGROUP even if it has no OPTION.
     // e.g. <div>a<select><optgroup></select>b</div>.innerText == "a\nb"
     result_.EmitRequiredLineBreak(1);
     for (const Node& maybe_option : NodeTraversal::ChildrenOf(child)) {
-      if (auto* option_element = DynamicTo<HTMLOptionElement>(maybe_option))
+      if (visitor_) {
+        visitor_->WillVisit(maybe_option, result_.length());
+      }
+      if (auto* option_element = DynamicTo<HTMLOptionElement>(maybe_option)) {
         ProcessOptionElement(*option_element);
+      }
     }
     result_.EmitRequiredLineBreak(1);
   }
@@ -445,16 +466,16 @@ void ElementInnerTextCollector::Result::FlushRequiredLineBreak() {
 
 }  // anonymous namespace
 
-String Element::innerText() {
+String Element::innerText(TextVisitor* visitor) {
   // We need to update layout, since |ElementInnerTextCollector()| uses line
   // boxes in the layout tree.
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
-  return GetInnerTextWithoutUpdate();
+  return GetInnerTextWithoutUpdate(visitor);
 }
 
 // Used for callers that must ensure no document lifecycle rewind.
-String Element::GetInnerTextWithoutUpdate() {
+String Element::GetInnerTextWithoutUpdate(TextVisitor* visitor) {
   // TODO(https:://crbug.com/1165850 https:://crbug.com/1166296) Layout should
   // always be clean here, but the lifecycle does not report the correctly
   // updated value unless servicing animations. Fix the UpdateStyleAndLayout()
@@ -464,7 +485,7 @@ String Element::GetInnerTextWithoutUpdate() {
   //        GetDocument().Lifecycle().GetState() >=
   //            DocumentLifecycle::kLayoutClean)
   //     << "Layout must be clean when GetInnerTextWithoutUpdate() is called.";
-  return ElementInnerTextCollector().RunOn(*this);
+  return ElementInnerTextCollector(visitor).RunOn(*this);
 }
 
 }  // namespace blink

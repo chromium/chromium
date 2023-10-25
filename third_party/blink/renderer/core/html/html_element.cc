@@ -918,10 +918,6 @@ void HTMLElement::setInnerTextForBinding(
   setInnerText(value);
 }
 
-String HTMLElement::innerText() {
-  return Element::innerText();
-}
-
 void HTMLElement::setInnerText(const String& text) {
   // FIXME: This doesn't take whitespace collapsing into account at all.
 

@@ -279,6 +279,7 @@ blink_core_sources_dom = [
   "text.h",
   "text_link_colors.cc",
   "text_link_colors.h",
+  "text_visitor.h",
   "throw_on_dynamic_markup_insertion_count_incrementer.h",
   "transform_source.h",
   "transform_source_libxslt.cc",

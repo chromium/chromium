@@ -77,6 +77,7 @@
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/dom/template_content_document_fragment.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/dom/text_visitor.h"
 #include "third_party/blink/renderer/core/dom/tree_scope_adopter.h"
 #include "third_party/blink/renderer/core/dom/user_action_element_set.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -1786,7 +1787,8 @@ const AtomicString& Node::lookupNamespaceURI(
   }
 }
 
-String Node::textContent(bool convert_brs_to_newlines) const {
+String Node::textContent(bool convert_brs_to_newlines,
+                         TextVisitor* visitor) const {
   // This covers ProcessingInstruction and Comment that should return their
   // value when .textContent is accessed on them, but should be ignored when
   // iterated over as a descendant of a ContainerNode.
@@ -1804,6 +1806,9 @@ String Node::textContent(bool convert_brs_to_newlines) const {
 
   StringBuilder content;
   for (const Node& node : NodeTraversal::InclusiveDescendantsOf(*this)) {
+    if (visitor) {
+      visitor->WillVisit(node, content.length());
+    }
     if (IsA<HTMLBRElement>(node) && convert_brs_to_newlines) {
       content.Append('\n');
     } else if (auto* text_node = DynamicTo<Text>(node)) {

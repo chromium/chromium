@@ -1,0 +1,43 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
+
+// Represents a single frame.
+struct InnerTextFrame {
+  blink.mojom.LocalFrameToken token;
+  // Content of the frame.
+  array<InnerTextSegment> segments;
+};
+
+enum NodeLocationType {
+  kStart,
+};
+
+// Frame content consists of any number of text strings and frames and may
+// contain a single node location.
+union InnerTextSegment {
+  // Used when the segment represents the starting location of a node.
+  NodeLocationType node_location;
+  string text;
+  InnerTextFrame frame;
+};
+
+struct InnerTextParams {
+  // If set, identifies a node to obtain the position of. The position will
+  // be added to the segments of the frame containing the node. The id is
+  // a DomNodeId (see WebNode::GetDomeNodeId()).
+  int32? node_id;
+};
+
+// Used to obtain the inner-text of a frame, as well as the inner-text of all
+// iframes with the same origin.
+interface InnerTextAgent {
+  // Requests the snapshot for the frame. This implicitly includes any local
+  // frames associated with the frame, but does not include any cross origin
+  // frames.
+  GetInnerText(InnerTextParams params) => (InnerTextFrame frame);
+};

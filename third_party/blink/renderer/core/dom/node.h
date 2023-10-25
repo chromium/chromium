@@ -87,6 +87,7 @@ template <typename NodeType>
 class StaticNodeTypeList;
 using StaticNodeList = StaticNodeTypeList<Node>;
 class StyleChangeReasonForTracing;
+class TextVisitor;
 class V8UnionNodeOrStringOrTrustedScript;
 class V8UnionStringOrTrustedScript;
 class WebPluginContainerImpl;
@@ -303,7 +304,8 @@ class CORE_EXPORT Node : public EventTarget {
   const AtomicString& lookupPrefix(const AtomicString& namespace_uri) const;
   const AtomicString& lookupNamespaceURI(const String& prefix) const;
 
-  String textContent(bool convert_brs_to_newlines = false) const;
+  String textContent(bool convert_brs_to_newlines = false,
+                     TextVisitor* visitor = nullptr) const;
   virtual void setTextContent(const String&);
   V8UnionStringOrTrustedScript* textContentForBinding() const;
   virtual void setTextContentForBinding(
