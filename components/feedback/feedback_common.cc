@@ -176,7 +176,9 @@ void FeedbackCommon::PrepareReport(
   common_data->set_source_description_language(locale());
 
   userfeedback::WebData* web_data = feedback_data->mutable_web_data();
-  web_data->set_url(page_url());
+  if (!page_url().empty()) {
+    web_data->set_url(page_url());
+  }
   web_data->mutable_navigator()->set_user_agent(user_agent());
 
   AddFilesAndLogsToReport(feedback_data);

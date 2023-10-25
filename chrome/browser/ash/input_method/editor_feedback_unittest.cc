@@ -153,7 +153,6 @@ TEST(EditorFeedback, SendFeedbackOnlyContainsNecessaryInformation) {
       "test description");
   expected_feedback_data.mutable_common_data()->set_source_description_language(
       "");
-  expected_feedback_data.mutable_web_data()->set_url("");
   expected_feedback_data.mutable_web_data()
       ->mutable_navigator()
       ->set_user_agent("");
