@@ -41,8 +41,8 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout_view.h"
-#include "ui/views/layout/table_layout_view.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/view_utils.h"
 

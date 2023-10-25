@@ -14,8 +14,8 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
+class BoxLayoutView;
 class FlexLayoutView;
-class TableLayoutView;
 class Label;
 }  // namespace views
 
@@ -51,7 +51,7 @@ class ASH_EXPORT SearchResultImageListView : public SearchResultContainerView {
   // `image_info_container_` if needed.
   void OnImageMetadataLoaded(ash::FileMetadata metadata);
 
-  const views::TableLayoutView* image_info_container_for_test() const {
+  const views::BoxLayoutView* image_info_container_for_test() const {
     return image_info_container_.get();
   }
   const std::vector<views::Label*>& metadata_content_labels_for_test() const {
@@ -73,7 +73,10 @@ class ASH_EXPORT SearchResultImageListView : public SearchResultContainerView {
   // Owned by views hierarchy.
   raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::FlexLayoutView> image_view_container_ = nullptr;
-  raw_ptr<views::TableLayoutView> image_info_container_ = nullptr;
+  raw_ptr<views::BoxLayoutView> image_info_container_ = nullptr;
+  raw_ptr<views::FlexLayoutView> image_info_title_container_ = nullptr;
+  raw_ptr<views::FlexLayoutView> image_info_content_container_ = nullptr;
+
   std::vector<SearchResultImageView*> image_views_;
 
   // Labels that show the file metadata in `image_info_container_`. There should
