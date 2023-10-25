@@ -10,9 +10,9 @@ js_type_check("closure_compile") {
                     "browser_resolver_prefix_replacements=\"chrome://chrome-signin/gaia_action_buttons/=" + rebase_path(
                             "//chrome/browser/resources/chromeos/gaia_action_buttons/",
                             root_build_dir) + "\"",
-                    "browser_resolver_prefix_replacements=\"chrome://test/=" +
-                        rebase_path("//chrome/test/data/webui/",
-                                    root_build_dir) + "\"",
+                    "browser_resolver_prefix_replacements=\"chrome://webui-test/=" + rebase_path(
+                            "//chrome/test/data/webui/",
+                            root_build_dir) + "\"",
                     "js_module_root=" + rebase_path("//chrome/test/data/webui/",
                                                     root_build_dir),
                     "js_module_root=./gen/chrome/test/data/webui/",

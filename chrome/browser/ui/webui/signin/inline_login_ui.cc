@@ -312,7 +312,8 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
                         .spec());
 
   source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::FrameSrc, "frame-src chrome://test/;");
+      network::mojom::CSPDirectiveName::FrameSrc,
+      "frame-src chrome://webui-test/;");
 
   std::u16string username =
       ash::ProfileHelper::Get()->GetUserByProfile(profile)->GetGivenName();

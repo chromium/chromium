@@ -6,8 +6,8 @@ import {PostMessageApiClient} from 'chrome://resources/ash/common/post_message_a
 import {PostMessageApiServer} from 'chrome://resources/ash/common/post_message_api/post_message_api_server.js';
 
 const TARGET_URL =
-    'chrome://test/chromeos/ash_common/post_message_api/iframe.html';
-const TARGET_ORIGIN = 'chrome://test/';
+    'chrome://webui-test/chromeos/ash_common/post_message_api/iframe.html';
+const TARGET_ORIGIN = 'chrome://webui-test/';
 
 class TestPostMessageAPIServer extends PostMessageApiServer {
   constructor(iframeElement) {

@@ -45,6 +45,9 @@ generate_grd("build_grdp") {
   grd_prefix = "webui_chromeos_ash_common"
   out_grd = "$target_gen_dir/resources.grdp"
 
+  input_files = [ "post_message_api/iframe.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+
   deps = [ ":build_ts" ]
   manifest_files =
       filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
