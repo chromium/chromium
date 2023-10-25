@@ -308,8 +308,12 @@ void CameraAppUI::BindInterface(
 void CameraAppUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window());
-  // Camera app is always dark.
-  widget->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark);
+  if (widget) {
+    // Camera app is always dark.
+    widget->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark);
+  } else {
+    LOG(ERROR) << "Can't find widget for CCA window.";
+  }
 
   color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
       web_ui()->GetWebContents(), std::move(receiver));
