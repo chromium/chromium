@@ -158,6 +158,7 @@ template <typename T>
 auto FormatConvertImpl(const T& v, FormatConversionSpecImpl,
                        FormatSinkImpl* sink)
     -> std::enable_if_t<!std::is_enum<T>::value &&
+                            !std::is_same<T, absl::Cord>::value &&
                             std::is_void<decltype(AbslStringify(
                                 std::declval<FormatSink&>(), v))>::value,
                         ArgConvertResult<FormatConversionCharSetInternal::v>> {

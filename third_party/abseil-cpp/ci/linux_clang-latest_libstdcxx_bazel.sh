@@ -84,7 +84,6 @@ for std in ${STD}; do
           --features=external_include_paths \
           --keep_going \
           --linkopt="--gcc-toolchain=/usr/local" \
-          --remote_download_minimal \
           --show_timestamps \
           --test_env="GTEST_INSTALL_FAILURE_SIGNAL_HANDLER=1" \
           --test_env="TZDIR=/abseil-cpp/absl/time/internal/cctz/testdata/zoneinfo" \

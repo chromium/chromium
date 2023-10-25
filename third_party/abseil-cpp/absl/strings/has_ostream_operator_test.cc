@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "absl/strings/has_absl_stringify.h"
+#include "absl/strings/has_ostream_operator.h"
 
+#include <ostream>
 #include <string>
 
 #include "gtest/gtest.h"
@@ -21,20 +22,20 @@
 
 namespace {
 
-struct TypeWithoutAbslStringify {};
+struct TypeWithoutOstreamOp {};
 
-struct TypeWithAbslStringify {
-  template <typename Sink>
-  friend void AbslStringify(Sink&, const TypeWithAbslStringify&) {}
+struct TypeWithOstreamOp {
+  friend std::ostream& operator<<(std::ostream& os, const TypeWithOstreamOp&) {
+    return os;
+  }
 };
 
-TEST(HasAbslStringifyTest, Works) {
-  EXPECT_FALSE(absl::HasAbslStringify<int>::value);
-  EXPECT_FALSE(absl::HasAbslStringify<std::string>::value);
-  EXPECT_FALSE(absl::HasAbslStringify<TypeWithoutAbslStringify>::value);
-  EXPECT_TRUE(absl::HasAbslStringify<TypeWithAbslStringify>::value);
-  EXPECT_FALSE(
-      absl::HasAbslStringify<absl::optional<TypeWithAbslStringify>>::value);
+TEST(HasOstreamOperatorTest, Works) {
+  EXPECT_TRUE(absl::HasOstreamOperator<int>::value);
+  EXPECT_TRUE(absl::HasOstreamOperator<std::string>::value);
+  EXPECT_FALSE(absl::HasOstreamOperator<absl::optional<int>>::value);
+  EXPECT_FALSE(absl::HasOstreamOperator<TypeWithoutOstreamOp>::value);
+  EXPECT_TRUE(absl::HasOstreamOperator<TypeWithOstreamOp>::value);
 }
 
 }  // namespace

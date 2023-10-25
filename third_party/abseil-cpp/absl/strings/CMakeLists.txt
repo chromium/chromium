@@ -103,6 +103,18 @@ absl_cc_library(
   PUBLIC
 )
 
+absl_cc_library(
+  NAME
+    has_ostream_operator
+  HDRS
+    "has_ostream_operator.h"
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+  DEPS
+    absl::config
+  PUBLIC
+)
+
 # Internal-only target, do not depend on directly.
 absl_cc_library(
   NAME
@@ -162,7 +174,21 @@ absl_cc_test(
   COPTS
     ${ABSL_TEST_COPTS}
   DEPS
+    absl::optional
     absl::strings
+    GTest::gmock_main
+)
+
+absl_cc_test(
+  NAME
+    has_ostream_operator_test
+  SRCS
+    "has_ostream_operator_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::has_ostream_operator
+    absl::optional
     GTest::gmock_main
 )
 

@@ -381,7 +381,7 @@ std::string& StrAppendFormat(std::string* dst,
 //
 // Writes to an output stream given a format string and zero or more arguments,
 // generally in a manner that is more efficient than streaming the result of
-// `absl:: StrFormat()`. The returned object must be streamed before the full
+// `absl::StrFormat()`. The returned object must be streamed before the full
 // expression ends.
 //
 // Example:

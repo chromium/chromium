@@ -2656,6 +2656,13 @@ TEST_P(CordTest, Format) {
   EXPECT_EQ(c, "There were 0003 little pigs.And 1   bad wolf!");
 }
 
+TEST_P(CordTest, Stringify) {
+  absl::Cord c =
+      absl::MakeFragmentedCord({"A ", "small ", "fragmented ", "Cord", "."});
+  MaybeHarden(c);
+  EXPECT_EQ(absl::StrCat(c), "A small fragmented Cord.");
+}
+
 TEST_P(CordTest, Hardening) {
   absl::Cord cord("hello");
   MaybeHarden(cord);

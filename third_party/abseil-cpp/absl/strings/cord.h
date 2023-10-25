@@ -765,6 +765,14 @@ class Cord {
     cord->Append(part);
   }
 
+  // Support automatic stringification with absl::StrCat and absl::StrFormat.
+  template <typename Sink>
+  friend void AbslStringify(Sink& sink, const absl::Cord& cord) {
+    for (absl::string_view chunk : cord.Chunks()) {
+      sink.Append(chunk);
+    }
+  }
+
   // Cord::SetExpectedChecksum()
   //
   // Stores a checksum value with this non-empty cord instance, for later

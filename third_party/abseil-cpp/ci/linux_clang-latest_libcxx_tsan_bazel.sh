@@ -86,7 +86,6 @@ for std in ${STD}; do
           --features=external_include_paths \
           --keep_going \
           --linkopt="-fsanitize=thread" \
-          --remote_download_minimal \
           --show_timestamps \
           --test_env="TSAN_SYMBOLIZER_PATH=/opt/llvm/clang/bin/llvm-symbolizer" \
           --test_env="TZDIR=/abseil-cpp/absl/time/internal/cctz/testdata/zoneinfo" \
