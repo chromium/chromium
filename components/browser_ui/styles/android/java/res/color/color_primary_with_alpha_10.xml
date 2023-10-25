@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- NOTE: UnusedResources is suppressed because this file is currently only used by Read Aloud UI in internal builds. -->
+<!-- TODO(b/307767504) Link to Read Aloud README.md when ready. -->
+<selector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="UnusedResources">
+  <item android:alpha="0.10" android:color="?attr/colorPrimary" />
+</selector>
