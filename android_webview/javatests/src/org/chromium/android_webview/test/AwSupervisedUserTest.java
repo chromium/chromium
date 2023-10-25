@@ -79,8 +79,7 @@ public class AwSupervisedUserTest {
         return sb.toString();
     }
 
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private OnProgressChangedClient mContentsClient = new OnProgressChangedClient();
     private AwContents mAwContents;
@@ -95,10 +94,11 @@ public class AwSupervisedUserTest {
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         mAwContents = testContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mAwContents.addWebMessageListener(
-                    "myObject", new String[] {"*"}, mIFrameLoadedListener);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mAwContents.addWebMessageListener(
+                            "myObject", new String[] {"*"}, mIFrameLoadedListener);
+                });
     }
 
     @After
@@ -174,10 +174,12 @@ public class AwSupervisedUserTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add("disable-features=" + AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK + ","
-            + AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_DETECTION)
-    public void
-    testDisallowedSiteIsLoadedFeatureOff() throws Throwable {
+    @CommandLineFlags.Add(
+            "disable-features="
+                    + AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK
+                    + ","
+                    + AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_DETECTION)
+    public void testDisallowedSiteIsLoadedFeatureOff() throws Throwable {
         String embeddedUrl = setUpWebPage(MATURE_SITE_IFRAME_PATH, MATURE_SITE_IFRAME_TITLE, null);
         String requestUrl = setUpWebPage(MATURE_SITE_PATH, MATURE_SITE_TITLE, embeddedUrl);
 
@@ -192,8 +194,8 @@ public class AwSupervisedUserTest {
     }
 
     private void loadUrl(String requestUrl) throws TimeoutException {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> mAwContents.loadUrl(requestUrl, null));
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(() -> mAwContents.loadUrl(requestUrl, null));
         mContentsClient.waitForFullLoad();
     }
 

@@ -50,13 +50,21 @@ import java.util.regex.Pattern;
 @DoNotBatch(reason = "These tests conflict with each other.")
 @RunWith(AwJUnit4ClassRunner.class)
 public class ClientHintsTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
-    private static final String[] USER_AGENT_CLIENT_HINTS = {"sec-ch-ua", "sec-ch-ua-arch",
-            "sec-ch-ua-platform", "sec-ch-ua-model", "sec-ch-ua-mobile", "sec-ch-ua-full-version",
-            "sec-ch-ua-platform-version", "sec-ch-ua-bitness", "sec-ch-ua-full-version-list",
-            "sec-ch-ua-wow64", "sec-ch-ua-form-factor"};
+    private static final String[] USER_AGENT_CLIENT_HINTS = {
+        "sec-ch-ua",
+        "sec-ch-ua-arch",
+        "sec-ch-ua-platform",
+        "sec-ch-ua-model",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-full-version",
+        "sec-ch-ua-platform-version",
+        "sec-ch-ua-bitness",
+        "sec-ch-ua-full-version-list",
+        "sec-ch-ua-wow64",
+        "sec-ch-ua-form-factor"
+    };
 
     private static final String ANDROID_WEBVIEW_BRAND_NAME = "Android WebView";
 
@@ -65,6 +73,7 @@ public class ClientHintsTest {
     private static class ClientHintsTestResult {
         public Map<String, String> mHttpHeaderClientHints;
         public JSONObject mJsClientHints;
+
         public ClientHintsTestResult(
                 Map<String, String> httpHeaderClientHints, JSONObject jsClientHints) {
             this.mHttpHeaderClientHints = httpHeaderClientHints;
@@ -75,28 +84,32 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"disable-features=UserAgentClientHint",
-            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void
-    testClientHintsDefault() throws Throwable {
+    @CommandLineFlags.Add({
+        "disable-features=UserAgentClientHint",
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
+    })
+    public void testClientHintsDefault() throws Throwable {
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
         final AwContents contents =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient)
+                mActivityTestRule
+                        .createAwTestContainerViewOnMainSync(contentsClient)
                         .getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(contents);
         contents.getSettings().setJavaScriptEnabled(true);
 
         // First round uses insecure server.
-        AwEmbeddedTestServer server = AwEmbeddedTestServer.createAndStartServer(
-                InstrumentationRegistry.getInstrumentation().getTargetContext());
+        AwEmbeddedTestServer server =
+                AwEmbeddedTestServer.createAndStartServer(
+                        InstrumentationRegistry.getInstrumentation().getTargetContext());
         verifyClientHintBehavior(server, contents, contentsClient, false);
         clearCookies();
         server.stopAndDestroyServer();
 
         // Second round uses secure server.
-        server = AwEmbeddedTestServer.createAndStartHTTPSServer(
-                InstrumentationRegistry.getInstrumentation().getTargetContext(),
-                ServerCertificate.CERT_OK);
+        server =
+                AwEmbeddedTestServer.createAndStartHTTPSServer(
+                        InstrumentationRegistry.getInstrumentation().getTargetContext(),
+                        ServerCertificate.CERT_OK);
         verifyClientHintBehavior(server, contents, contentsClient, true);
         clearCookies();
         server.stopAndDestroyServer();
@@ -105,69 +118,76 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"disable-features=UserAgentClientHint",
-            "enable-features=ClientHintsPrefersReducedTransparency",
-            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void
-    testAllClientHints() throws Throwable {
+    @CommandLineFlags.Add({
+        "disable-features=UserAgentClientHint",
+        "enable-features=ClientHintsPrefersReducedTransparency",
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
+    })
+    public void testAllClientHints() throws Throwable {
         // Initial test setup.
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
         final AwContents contents =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient)
+                mActivityTestRule
+                        .createAwTestContainerViewOnMainSync(contentsClient)
                         .getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(contents);
         contents.getSettings().setJavaScriptEnabled(true);
-        final AwEmbeddedTestServer server = AwEmbeddedTestServer.createAndStartServer(
-                InstrumentationRegistry.getInstrumentation().getTargetContext());
+        final AwEmbeddedTestServer server =
+                AwEmbeddedTestServer.createAndStartServer(
+                        InstrumentationRegistry.getInstrumentation().getTargetContext());
 
         // Please keep these here (and below) in the same order as web_client_hints_types.mojom.
         final String[] activeClientHints = {
-                "device-memory",
-                "dpr",
-                "width",
-                "viewport-width",
-                "rtt",
-                "downlink",
-                "ect",
-                // "sec-ch-lang" was removed in M96
-                "sec-ch-ua",
-                "sec-ch-ua-arch",
-                "sec-ch-ua-platform",
-                "sec-ch-ua-model",
-                "sec-ch-ua-mobile",
-                "sec-ch-ua-full-version",
-                "sec-ch-ua-platform-version",
-                "sec-ch-prefers-color-scheme",
-                "sec-ch-ua-bitness",
-                "sec-ch-viewport-height",
-                "sec-ch-device-memory",
-                "sec-ch-dpr",
-                "sec-ch-width",
-                "sec-ch-viewport-width",
-                "sec-ch-ua-full-version-list",
-                "sec-ch-ua-wow64",
-                "save-data",
-                "sec-ch-prefers-reduced-motion",
-                "sec-ch-ua-form-factor",
-                "sec-ch-prefers-reduced-transparency",
-                // Add client hints above. The final row should have a trailing comma for cleaner
-                // diffs.
+            "device-memory",
+            "dpr",
+            "width",
+            "viewport-width",
+            "rtt",
+            "downlink",
+            "ect",
+            // "sec-ch-lang" was removed in M96
+            "sec-ch-ua",
+            "sec-ch-ua-arch",
+            "sec-ch-ua-platform",
+            "sec-ch-ua-model",
+            "sec-ch-ua-mobile",
+            "sec-ch-ua-full-version",
+            "sec-ch-ua-platform-version",
+            "sec-ch-prefers-color-scheme",
+            "sec-ch-ua-bitness",
+            "sec-ch-viewport-height",
+            "sec-ch-device-memory",
+            "sec-ch-dpr",
+            "sec-ch-width",
+            "sec-ch-viewport-width",
+            "sec-ch-ua-full-version-list",
+            "sec-ch-ua-wow64",
+            "save-data",
+            "sec-ch-prefers-reduced-motion",
+            "sec-ch-ua-form-factor",
+            "sec-ch-prefers-reduced-transparency",
+            // Add client hints above. The final row should have a trailing comma for cleaner
+            // diffs.
         };
-        final String url = server.getURL(
-                "/client-hints-header?accept-ch=" + String.join(",", activeClientHints));
+        final String url =
+                server.getURL(
+                        "/client-hints-header?accept-ch=" + String.join(",", activeClientHints));
 
         // Load twice to be sure hints are returned, then parse the results.
         loadUrlSync(contents, contentsClient.getOnPageFinishedHelper(), url);
         loadUrlSync(contents, contentsClient.getOnPageFinishedHelper(), url);
         String textContent =
-                mActivityTestRule.getJavaScriptResultBodyTextContent(contents, contentsClient)
+                mActivityTestRule
+                        .getJavaScriptResultBodyTextContent(contents, contentsClient)
                         .replaceAll("\\\\\"", "\"");
         JSONObject jsonObject = new JSONObject(textContent);
         // If you're here because this line broke, please update this test to verify whichever
         // client hints were added or removed by changing `activeClientHints` above.
-        Assert.assertEquals("The number of client hints is unexpected. If you intentionally added "
+        Assert.assertEquals(
+                "The number of client hints is unexpected. If you intentionally added "
                         + "or removed a client hint, please update this test.",
-                activeClientHints.length, jsonObject.length());
+                activeClientHints.length,
+                jsonObject.length());
 
         // All client hints must be verified for default behavior.
         Assert.assertTrue(jsonObject.getInt("device-memory") > 0);
@@ -224,133 +244,156 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=UserAgentClientHint,ClientHintsFormFactor",
-            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void
-    testEnableUserAgentClientHintsNoCustom() throws Throwable {
+    @CommandLineFlags.Add({
+        "enable-features=UserAgentClientHint,ClientHintsFormFactor",
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
+    })
+    public void testEnableUserAgentClientHintsNoCustom() throws Throwable {
         // Initial test setup.
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
         final AwContents contents =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient)
+                mActivityTestRule
+                        .createAwTestContainerViewOnMainSync(contentsClient)
                         .getAwContents();
-        verifyUserAgentOverrideClientHints(/*contentsClient=*/contentsClient,
-                /*contents=*/contents,
-                /*customUserAgent=*/null,
-                /*expectHighEntropyClientHints=*/true);
+        verifyUserAgentOverrideClientHints(
+                /* contentsClient= */ contentsClient,
+                /* contents= */ contents,
+                /* customUserAgent= */ null,
+                /* expectHighEntropyClientHints= */ true);
     }
 
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=UserAgentClientHint,ClientHintsFormFactor",
-            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void
-    testEnableUserAgentClientHintsCustomOverride() throws Throwable {
+    @CommandLineFlags.Add({
+        "enable-features=UserAgentClientHint,ClientHintsFormFactor",
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
+    })
+    public void testEnableUserAgentClientHintsCustomOverride() throws Throwable {
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
         final AwContents contents =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient)
+                mActivityTestRule
+                        .createAwTestContainerViewOnMainSync(contentsClient)
                         .getAwContents();
-        verifyUserAgentOverrideClientHints(/*contentsClient=*/contentsClient,
-                /*contents=*/contents,
-                /*customUserAgent=*/"CustomUserAgentOverride",
-                /*expectHighEntropyClientHints=*/false);
+        verifyUserAgentOverrideClientHints(
+                /* contentsClient= */ contentsClient,
+                /* contents= */ contents,
+                /* customUserAgent= */ "CustomUserAgentOverride",
+                /* expectHighEntropyClientHints= */ false);
     }
 
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=UserAgentClientHint,ClientHintsFormFactor",
-            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void
-    testEnableUserAgentClientHintsModifyDefaultUserAgent() throws Throwable {
+    @CommandLineFlags.Add({
+        "enable-features=UserAgentClientHint,ClientHintsFormFactor",
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
+    })
+    public void testEnableUserAgentClientHintsModifyDefaultUserAgent() throws Throwable {
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
         final AwContents contents =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient)
+                mActivityTestRule
+                        .createAwTestContainerViewOnMainSync(contentsClient)
                         .getAwContents();
         AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(contents);
         String defaultUserAgent = settings.getUserAgentString();
 
         // Override user-agent with appending suffix.
-        verifyUserAgentOverrideClientHints(/*contentsClient=*/contentsClient,
-                /*contents=*/contents,
-                /*customUserAgent=*/defaultUserAgent + "CustomUserAgentSuffix",
-                /*expectHighEntropyClientHints=*/true);
+        verifyUserAgentOverrideClientHints(
+                /* contentsClient= */ contentsClient,
+                /* contents= */ contents,
+                /* customUserAgent= */ defaultUserAgent + "CustomUserAgentSuffix",
+                /* expectHighEntropyClientHints= */ true);
 
         // Override user-agent with adding prefix.
-        verifyUserAgentOverrideClientHints(/*contentsClient=*/contentsClient,
-                /*contents=*/contents,
-                /*customUserAgent=*/"CustomUserAgentPrefix" + defaultUserAgent,
-                /*expectHighEntropyClientHints=*/true);
+        verifyUserAgentOverrideClientHints(
+                /* contentsClient= */ contentsClient,
+                /* contents= */ contents,
+                /* customUserAgent= */ "CustomUserAgentPrefix" + defaultUserAgent,
+                /* expectHighEntropyClientHints= */ true);
 
         // Override user-agent with adding both prefix and suffix.
-        verifyUserAgentOverrideClientHints(/*contentsClient=*/contentsClient,
-                /*contents=*/contents,
-                /*customUserAgent=*/"CustomUserAgentPrefix" + defaultUserAgent
+        verifyUserAgentOverrideClientHints(
+                /* contentsClient= */ contentsClient,
+                /* contents= */ contents,
+                /* customUserAgent= */ "CustomUserAgentPrefix"
+                        + defaultUserAgent
                         + "CustomUserAgentSuffix",
-                /*expectHighEntropyClientHints=*/true);
+                /* expectHighEntropyClientHints= */ true);
 
         // Override user-agent with empty string, it's assumed to use system default.
-        verifyUserAgentOverrideClientHints(/*contentsClient=*/contentsClient,
-                /*contents=*/contents,
-                /*customUserAgent=*/"",
-                /*expectHighEntropyClientHints=*/true);
+        verifyUserAgentOverrideClientHints(
+                /* contentsClient= */ contentsClient,
+                /* contents= */ contents,
+                /* customUserAgent= */ "",
+                /* expectHighEntropyClientHints= */ true);
     }
 
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
-    @CommandLineFlags.Add({"enable-features=UserAgentClientHint,ClientHintsFormFactor",
-            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void
-    testEnableUserAgentClientHintsJavaScript() throws Throwable {
-        verifyClientHintsJavaScript(/*useCustomUserAgent=*/false);
+    @CommandLineFlags.Add({
+        "enable-features=UserAgentClientHint,ClientHintsFormFactor",
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
+    })
+    public void testEnableUserAgentClientHintsJavaScript() throws Throwable {
+        verifyClientHintsJavaScript(/* useCustomUserAgent= */ false);
     }
 
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
-    @CommandLineFlags.Add({"enable-features=UserAgentClientHint,ClientHintsFormFactor",
-            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void
-    testEnableUserAgentClientHintsOverrideJavaScript() throws Throwable {
-        verifyClientHintsJavaScript(/*useCustomUserAgent=*/true);
+    @CommandLineFlags.Add({
+        "enable-features=UserAgentClientHint,ClientHintsFormFactor",
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
+    })
+    public void testEnableUserAgentClientHintsOverrideJavaScript() throws Throwable {
+        verifyClientHintsJavaScript(/* useCustomUserAgent= */ true);
     }
 
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"disable-features=UserAgentClientHint",
-            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void
-    testCriticalClientHints() throws Throwable {
+    @CommandLineFlags.Add({
+        "disable-features=UserAgentClientHint",
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
+    })
+    public void testCriticalClientHints() throws Throwable {
         // Initial test setup.
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
         final AwContents contents =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient)
+                mActivityTestRule
+                        .createAwTestContainerViewOnMainSync(contentsClient)
                         .getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(contents);
         contents.getSettings().setJavaScriptEnabled(true);
-        final AwEmbeddedTestServer server = AwEmbeddedTestServer.createAndStartServer(
-                InstrumentationRegistry.getInstrumentation().getTargetContext());
+        final AwEmbeddedTestServer server =
+                AwEmbeddedTestServer.createAndStartServer(
+                        InstrumentationRegistry.getInstrumentation().getTargetContext());
 
         // First we verify that sec-ch-device-memory (critical) is returned on the first load.
-        String url = server.getURL("/critical-client-hints-header?accept-ch=sec-ch-device-memory&"
-                + "critical-ch=sec-ch-device-memory");
+        String url =
+                server.getURL(
+                        "/critical-client-hints-header?accept-ch=sec-ch-device-memory&"
+                                + "critical-ch=sec-ch-device-memory");
         loadUrlSync(contents, contentsClient.getOnPageFinishedHelper(), url);
         validateHeadersFromJSON(contents, contentsClient, "sec-ch-device-memory", true);
         validateHeadersFromJSON(contents, contentsClient, "device-memory", false);
 
         // Second we verify that device-memory (not critical) won't cause a reload.
-        url = server.getURL(
-                "/critical-client-hints-header?accept-ch=sec-ch-device-memory,device-memory&"
-                + "critical-ch=sec-ch-device-memory");
+        url =
+                server.getURL(
+                        "/critical-client-hints-header?accept-ch=sec-ch-device-memory,device-memory&"
+                            + "critical-ch=sec-ch-device-memory");
         loadUrlSync(contents, contentsClient.getOnPageFinishedHelper(), url);
         validateHeadersFromJSON(contents, contentsClient, "sec-ch-device-memory", true);
         validateHeadersFromJSON(contents, contentsClient, "device-memory", false);
 
         // Third we verify that device-memory is returned on the final load even with no request.
-        url = server.getURL("/critical-client-hints-header?accept-ch=sec-ch-device-memory&"
-                + "critical-ch=sec-ch-device-memory");
+        url =
+                server.getURL(
+                        "/critical-client-hints-header?accept-ch=sec-ch-device-memory&"
+                                + "critical-ch=sec-ch-device-memory");
         loadUrlSync(contents, contentsClient.getOnPageFinishedHelper(), url);
         validateHeadersFromJSON(contents, contentsClient, "sec-ch-device-memory", true);
         validateHeadersFromJSON(contents, contentsClient, "device-memory", true);
@@ -363,13 +406,15 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
-    @CommandLineFlags.Add({"enable-features=UserAgentClientHint",
-            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void
-    testOverrideUserAgentMetadataGetApi() throws Throwable {
+    @CommandLineFlags.Add({
+        "enable-features=UserAgentClientHint",
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
+    })
+    public void testOverrideUserAgentMetadataGetApi() throws Throwable {
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
         final AwContents contents =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient)
+                mActivityTestRule
+                        .createAwTestContainerViewOnMainSync(contentsClient)
                         .getAwContents();
         AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(contents);
 
@@ -382,7 +427,8 @@ public class ClientHintsTest {
         Map<String, Object> customUserAgentMetadata = settings.getUserAgentMetadataMap();
         Assert.assertEquals(
                 "Android", defaultUserAgentMetadata.get(AwUserAgentMetadata.MetadataKeys.PLATFORM));
-        Assert.assertEquals("fake_platform",
+        Assert.assertEquals(
+                "fake_platform",
                 customUserAgentMetadata.get(AwUserAgentMetadata.MetadataKeys.PLATFORM));
 
         // Verify the remaining of entries are equals.
@@ -394,16 +440,19 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
-    @CommandLineFlags.Add({"enable-features=UserAgentClientHint",
-            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void
-    testOverrideUserAgentMetadataInvalidBitness() throws Throwable {
+    @CommandLineFlags.Add({
+        "enable-features=UserAgentClientHint",
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
+    })
+    public void testOverrideUserAgentMetadataInvalidBitness() throws Throwable {
         try {
-            getClientHintsWithOverrides(Map.of(AwUserAgentMetadata.MetadataKeys.BITNESS, "foo"),
-                    /*overrideUserAgent=*/null);
+            getClientHintsWithOverrides(
+                    Map.of(AwUserAgentMetadata.MetadataKeys.BITNESS, "foo"),
+                    /* overrideUserAgent= */ null);
             Assert.fail("Should have thrown exception.");
         } catch (IllegalArgumentException e) {
-            Assert.assertEquals("AwUserAgentMetadata map does not have right type of "
+            Assert.assertEquals(
+                    "AwUserAgentMetadata map does not have right type of "
                             + "value for key: BITNESS",
                     e.getMessage());
         }
@@ -412,14 +461,16 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
-    @CommandLineFlags.Add({"enable-features=UserAgentClientHint",
-            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void
-    testOverrideUserAgentMetadataDefaultBitness() throws Throwable {
+    @CommandLineFlags.Add({
+        "enable-features=UserAgentClientHint",
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
+    })
+    public void testOverrideUserAgentMetadataDefaultBitness() throws Throwable {
         // Override with bitness 0, we expect it return an empty string.
         ClientHintsTestResult clientHintsResult =
-                getClientHintsWithOverrides(Map.of(AwUserAgentMetadata.MetadataKeys.BITNESS, 0),
-                        /*overrideUserAgent=*/null);
+                getClientHintsWithOverrides(
+                        Map.of(AwUserAgentMetadata.MetadataKeys.BITNESS, 0),
+                        /* overrideUserAgent= */ null);
 
         // Verify Http header client hints results.
         Map<String, String> clientHintsMap = clientHintsResult.mHttpHeaderClientHints;
@@ -435,13 +486,15 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
-    @CommandLineFlags.Add({"enable-features=UserAgentClientHint",
-            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void
-    testOverrideUserAgentMetadataValidBitness() throws Throwable {
+    @CommandLineFlags.Add({
+        "enable-features=UserAgentClientHint",
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
+    })
+    public void testOverrideUserAgentMetadataValidBitness() throws Throwable {
         ClientHintsTestResult clientHintsResult =
-                getClientHintsWithOverrides(Map.of(AwUserAgentMetadata.MetadataKeys.BITNESS, 32),
-                        /*overrideUserAgent=*/null);
+                getClientHintsWithOverrides(
+                        Map.of(AwUserAgentMetadata.MetadataKeys.BITNESS, 32),
+                        /* overrideUserAgent= */ null);
 
         // Verify Http header client hints results.
         Map<String, String> clientHintsMap = clientHintsResult.mHttpHeaderClientHints;
@@ -455,15 +508,18 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
-    @CommandLineFlags.Add({"enable-features=UserAgentClientHint",
-            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void
-    testOverrideUserAgentMetadataOverrideBrand() throws Throwable {
+    @CommandLineFlags.Add({
+        "enable-features=UserAgentClientHint",
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
+    })
+    public void testOverrideUserAgentMetadataOverrideBrand() throws Throwable {
         // override with empty full version
-        ClientHintsTestResult clientHintsResult = getClientHintsWithOverrides(
-                Map.of(AwUserAgentMetadata.MetadataKeys.BRAND_VERSION_LIST,
-                        new String[][] {{"brand1", "1", "1.1.1"}, {"brand2", "2", ""}}),
-                /*overrideUserAgent=*/null);
+        ClientHintsTestResult clientHintsResult =
+                getClientHintsWithOverrides(
+                        Map.of(
+                                AwUserAgentMetadata.MetadataKeys.BRAND_VERSION_LIST,
+                                new String[][] {{"brand1", "1", "1.1.1"}, {"brand2", "2", ""}}),
+                        /* overrideUserAgent= */ null);
 
         // Verify Http header client hints results.
         Map<String, String> clientHintsMap = clientHintsResult.mHttpHeaderClientHints;
@@ -475,10 +531,12 @@ public class ClientHintsTest {
 
         // Verify js client hints results.
         JSONObject jsClientHints = clientHintsResult.mJsClientHints;
-        Assert.assertEquals("[{\"brand\":\"brand1\",\"version\":\"1\"},"
+        Assert.assertEquals(
+                "[{\"brand\":\"brand1\",\"version\":\"1\"},"
                         + "{\"brand\":\"brand2\",\"version\":\"2\"}]",
                 jsClientHints.getString("brands"));
-        Assert.assertEquals("[{\"brand\":\"brand1\",\"version\":\"1.1.1\"}]",
+        Assert.assertEquals(
+                "[{\"brand\":\"brand1\",\"version\":\"1.1.1\"}]",
                 jsClientHints.getString("fullVersionList"));
         Assert.assertEquals("Android", jsClientHints.getString("platform"));
     }
@@ -486,20 +544,24 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
-    @CommandLineFlags.Add({"enable-features=UserAgentClientHint",
-            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void
-    testOverrideUserAgentMetadataInvalidBrand() throws Throwable {
+    @CommandLineFlags.Add({
+        "enable-features=UserAgentClientHint",
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
+    })
+    public void testOverrideUserAgentMetadataInvalidBrand() throws Throwable {
         // Test invalid input brand array: size only 2.
         try {
             getClientHintsWithOverrides(
-                    Map.of(AwUserAgentMetadata.MetadataKeys.BRAND_VERSION_LIST,
+                    Map.of(
+                            AwUserAgentMetadata.MetadataKeys.BRAND_VERSION_LIST,
                             new String[][] {{"brand1", "1", "1.1.1"}, {"brand2", "2"}}),
-                    /*overrideUserAgent=*/null);
+                    /* overrideUserAgent= */ null);
             Assert.fail("Should have thrown exception.");
         } catch (IllegalArgumentException e) {
-            Assert.assertEquals("AwUserAgentMetadata map does not have right type of value "
-                            + "for key: " + AwUserAgentMetadata.MetadataKeys.BRAND_VERSION_LIST
+            Assert.assertEquals(
+                    "AwUserAgentMetadata map does not have right type of value "
+                            + "for key: "
+                            + AwUserAgentMetadata.MetadataKeys.BRAND_VERSION_LIST
                             + ", expect brand item length:3, actual:2",
                     e.getMessage());
         }
@@ -507,13 +569,16 @@ public class ClientHintsTest {
         // Test invalid input brand array with null.
         try {
             getClientHintsWithOverrides(
-                    Map.of(AwUserAgentMetadata.MetadataKeys.BRAND_VERSION_LIST,
+                    Map.of(
+                            AwUserAgentMetadata.MetadataKeys.BRAND_VERSION_LIST,
                             new String[][] {{"brand1", "1", "1.1.1"}, {"brand2", "2", null}}),
-                    /*overrideUserAgent=*/null);
+                    /* overrideUserAgent= */ null);
             Assert.fail("Should have thrown exception.");
         } catch (IllegalArgumentException e) {
-            Assert.assertEquals("AwUserAgentMetadata map does not have right type of value "
-                            + "for key: " + AwUserAgentMetadata.MetadataKeys.BRAND_VERSION_LIST
+            Assert.assertEquals(
+                    "AwUserAgentMetadata map does not have right type of value "
+                            + "for key: "
+                            + AwUserAgentMetadata.MetadataKeys.BRAND_VERSION_LIST
                             + ", brand item should not set as null",
                     e.getMessage());
         }
@@ -522,26 +587,33 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
-    @CommandLineFlags.Add({"enable-features=UserAgentClientHint",
-            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void
-    testOverrideUserAgentMetadataClearOverride() throws Throwable {
+    @CommandLineFlags.Add({
+        "enable-features=UserAgentClientHint",
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
+    })
+    public void testOverrideUserAgentMetadataClearOverride() throws Throwable {
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
         final AwContents contents =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient)
+                mActivityTestRule
+                        .createAwTestContainerViewOnMainSync(contentsClient)
                         .getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(contents);
         contents.getSettings().setJavaScriptEnabled(true);
         AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(contents);
 
         // 1. Override platform, brands, and wow64
-        settings.setUserAgentMetadataFromMap(Map.of(AwUserAgentMetadata.MetadataKeys.PLATFORM,
-                "fake_platform", AwUserAgentMetadata.MetadataKeys.BRAND_VERSION_LIST,
-                new String[][] {{"brand1", "1", "1.1.1"}, {"brand2", "2", "2.2.2"}},
-                AwUserAgentMetadata.MetadataKeys.WOW64, true));
+        settings.setUserAgentMetadataFromMap(
+                Map.of(
+                        AwUserAgentMetadata.MetadataKeys.PLATFORM,
+                        "fake_platform",
+                        AwUserAgentMetadata.MetadataKeys.BRAND_VERSION_LIST,
+                        new String[][] {{"brand1", "1", "1.1.1"}, {"brand2", "2", "2.2.2"}},
+                        AwUserAgentMetadata.MetadataKeys.WOW64,
+                        true));
 
-        final AwEmbeddedTestServer server = AwEmbeddedTestServer.createAndStartServer(
-                InstrumentationRegistry.getInstrumentation().getTargetContext());
+        final AwEmbeddedTestServer server =
+                AwEmbeddedTestServer.createAndStartServer(
+                        InstrumentationRegistry.getInstrumentation().getTargetContext());
 
         // Make first request and verify client hints.
         ClientHintsTestResult clientHintsResult =
@@ -551,17 +623,20 @@ public class ClientHintsTest {
         Assert.assertEquals("\"fake_platform\"", clientHintsMap.get("sec-ch-ua-platform"));
         Assert.assertEquals(
                 "\"brand1\";v=\"1\", \"brand2\";v=\"2\"", clientHintsMap.get("sec-ch-ua"));
-        Assert.assertEquals("\"brand1\";v=\"1.1.1\", \"brand2\";v=\"2.2.2\"",
+        Assert.assertEquals(
+                "\"brand1\";v=\"1.1.1\", \"brand2\";v=\"2.2.2\"",
                 clientHintsMap.get("sec-ch-ua-full-version-list"));
         Assert.assertEquals("?1", clientHintsMap.get("sec-ch-ua-wow64"));
 
         // Verify js client hints results.
         JSONObject jsClientHints = clientHintsResult.mJsClientHints;
         Assert.assertEquals("fake_platform", jsClientHints.getString("platform"));
-        Assert.assertEquals("[{\"brand\":\"brand1\",\"version\":\"1\"},"
+        Assert.assertEquals(
+                "[{\"brand\":\"brand1\",\"version\":\"1\"},"
                         + "{\"brand\":\"brand2\",\"version\":\"2\"}]",
                 jsClientHints.getString("brands"));
-        Assert.assertEquals("[{\"brand\":\"brand1\",\"version\":\"1.1.1\"},"
+        Assert.assertEquals(
+                "[{\"brand\":\"brand1\",\"version\":\"1.1.1\"},"
                         + "{\"brand\":\"brand2\",\"version\":\"2.2.2\"}]",
                 jsClientHints.getString("fullVersionList"));
         Assert.assertTrue(jsClientHints.getBoolean("wow64"));
@@ -569,7 +644,8 @@ public class ClientHintsTest {
         // 2. Reset previous overrides for platform.
         HashMap<String, Object> overrideResetMap = new HashMap<>();
         overrideResetMap.put(AwUserAgentMetadata.MetadataKeys.PLATFORM, null);
-        overrideResetMap.put(AwUserAgentMetadata.MetadataKeys.BRAND_VERSION_LIST,
+        overrideResetMap.put(
+                AwUserAgentMetadata.MetadataKeys.BRAND_VERSION_LIST,
                 new String[][] {{"brand1", "2", "2.1.1"}, {"brand2", "3", "3.2.2"}});
         overrideResetMap.put(AwUserAgentMetadata.MetadataKeys.BITNESS, 100);
         settings.setUserAgentMetadataFromMap(overrideResetMap);
@@ -584,7 +660,8 @@ public class ClientHintsTest {
         // Brand should use the latest override value.
         Assert.assertEquals(
                 "\"brand1\";v=\"2\", \"brand2\";v=\"3\"", clientHintsMap.get("sec-ch-ua"));
-        Assert.assertEquals("\"brand1\";v=\"2.1.1\", \"brand2\";v=\"3.2.2\"",
+        Assert.assertEquals(
+                "\"brand1\";v=\"2.1.1\", \"brand2\";v=\"3.2.2\"",
                 clientHintsMap.get("sec-ch-ua-full-version-list"));
         // Wow64 has been reset to default.
         Assert.assertEquals("?0", clientHintsMap.get("sec-ch-ua-wow64"));
@@ -594,10 +671,12 @@ public class ClientHintsTest {
         // Verify js client hints results.
         jsClientHints = clientHintsResult.mJsClientHints;
         Assert.assertEquals("Android", jsClientHints.getString("platform"));
-        Assert.assertEquals("[{\"brand\":\"brand1\",\"version\":\"2\"},"
+        Assert.assertEquals(
+                "[{\"brand\":\"brand1\",\"version\":\"2\"},"
                         + "{\"brand\":\"brand2\",\"version\":\"3\"}]",
                 jsClientHints.getString("brands"));
-        Assert.assertEquals("[{\"brand\":\"brand1\",\"version\":\"2.1.1\"},"
+        Assert.assertEquals(
+                "[{\"brand\":\"brand1\",\"version\":\"2.1.1\"},"
                         + "{\"brand\":\"brand2\",\"version\":\"3.2.2\"}]",
                 jsClientHints.getString("fullVersionList"));
         Assert.assertFalse(jsClientHints.getBoolean("wow64"));
@@ -611,13 +690,15 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
-    @CommandLineFlags.Add({"enable-features=UserAgentClientHint",
-            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void
-    testOverrideUserAgentMetadataClearOverrideWithCustomUA() throws Throwable {
+    @CommandLineFlags.Add({
+        "enable-features=UserAgentClientHint",
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
+    })
+    public void testOverrideUserAgentMetadataClearOverrideWithCustomUA() throws Throwable {
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
         final AwContents contents =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient)
+                mActivityTestRule
+                        .createAwTestContainerViewOnMainSync(contentsClient)
                         .getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(contents);
         contents.getSettings().setJavaScriptEnabled(true);
@@ -625,14 +706,19 @@ public class ClientHintsTest {
 
         // 1. Override user-agent metadata and overridden user-agent doesn't contains default
         // user-agent.
-        settings.setUserAgentMetadataFromMap(Map.of(AwUserAgentMetadata.MetadataKeys.PLATFORM,
-                "fake_platform", AwUserAgentMetadata.MetadataKeys.BRAND_VERSION_LIST,
-                new String[][] {{"brand1", "1", "1.1.1"}, {"brand2", "2", "2.2.2"}},
-                AwUserAgentMetadata.MetadataKeys.WOW64, true));
+        settings.setUserAgentMetadataFromMap(
+                Map.of(
+                        AwUserAgentMetadata.MetadataKeys.PLATFORM,
+                        "fake_platform",
+                        AwUserAgentMetadata.MetadataKeys.BRAND_VERSION_LIST,
+                        new String[][] {{"brand1", "1", "1.1.1"}, {"brand2", "2", "2.2.2"}},
+                        AwUserAgentMetadata.MetadataKeys.WOW64,
+                        true));
         settings.setUserAgentString("testCustomUserAgent");
 
-        final AwEmbeddedTestServer server = AwEmbeddedTestServer.createAndStartServer(
-                InstrumentationRegistry.getInstrumentation().getTargetContext());
+        final AwEmbeddedTestServer server =
+                AwEmbeddedTestServer.createAndStartServer(
+                        InstrumentationRegistry.getInstrumentation().getTargetContext());
 
         // Make first request and verify client hints.
         ClientHintsTestResult clientHintsResult =
@@ -642,17 +728,20 @@ public class ClientHintsTest {
         Assert.assertEquals("\"fake_platform\"", clientHintsMap.get("sec-ch-ua-platform"));
         Assert.assertEquals(
                 "\"brand1\";v=\"1\", \"brand2\";v=\"2\"", clientHintsMap.get("sec-ch-ua"));
-        Assert.assertEquals("\"brand1\";v=\"1.1.1\", \"brand2\";v=\"2.2.2\"",
+        Assert.assertEquals(
+                "\"brand1\";v=\"1.1.1\", \"brand2\";v=\"2.2.2\"",
                 clientHintsMap.get("sec-ch-ua-full-version-list"));
         Assert.assertEquals("?1", clientHintsMap.get("sec-ch-ua-wow64"));
 
         // Verify js client hints results.
         JSONObject jsClientHints = clientHintsResult.mJsClientHints;
         Assert.assertEquals("fake_platform", jsClientHints.getString("platform"));
-        Assert.assertEquals("[{\"brand\":\"brand1\",\"version\":\"1\"},"
+        Assert.assertEquals(
+                "[{\"brand\":\"brand1\",\"version\":\"1\"},"
                         + "{\"brand\":\"brand2\",\"version\":\"2\"}]",
                 jsClientHints.getString("brands"));
-        Assert.assertEquals("[{\"brand\":\"brand1\",\"version\":\"1.1.1\"},"
+        Assert.assertEquals(
+                "[{\"brand\":\"brand1\",\"version\":\"1.1.1\"},"
                         + "{\"brand\":\"brand2\",\"version\":\"2.2.2\"}]",
                 jsClientHints.getString("fullVersionList"));
         Assert.assertTrue(jsClientHints.getBoolean("wow64"));
@@ -688,35 +777,50 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
-    @CommandLineFlags.Add({"enable-features=UserAgentClientHint",
-            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void
-    testOverrideUserAgentMetadataClearOverrideVerifyGetApi() throws Throwable {
+    @CommandLineFlags.Add({
+        "enable-features=UserAgentClientHint",
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
+    })
+    public void testOverrideUserAgentMetadataClearOverrideVerifyGetApi() throws Throwable {
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
         final AwContents contents =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient)
+                mActivityTestRule
+                        .createAwTestContainerViewOnMainSync(contentsClient)
                         .getAwContents();
         AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(contents);
 
         // Override platform in user-agent metadata.
         String[][] overrideBrands =
                 new String[][] {{"brand1", "1", "1.1.1"}, {"brand2", "2", "2.2.2"}};
-        settings.setUserAgentMetadataFromMap(Map.of(AwUserAgentMetadata.MetadataKeys.PLATFORM,
-                "fake_platform", AwUserAgentMetadata.MetadataKeys.BRAND_VERSION_LIST,
-                overrideBrands, AwUserAgentMetadata.MetadataKeys.WOW64, true));
+        settings.setUserAgentMetadataFromMap(
+                Map.of(
+                        AwUserAgentMetadata.MetadataKeys.PLATFORM,
+                        "fake_platform",
+                        AwUserAgentMetadata.MetadataKeys.BRAND_VERSION_LIST,
+                        overrideBrands,
+                        AwUserAgentMetadata.MetadataKeys.WOW64,
+                        true));
         Map<String, Object> customUserAgentMetadata = settings.getUserAgentMetadataMap();
-        Assert.assertEquals("fake_platform",
+        Assert.assertEquals(
+                "fake_platform",
                 customUserAgentMetadata.get(AwUserAgentMetadata.MetadataKeys.PLATFORM));
-        Assert.assertEquals(new Boolean(true),
+        Assert.assertEquals(
+                new Boolean(true),
                 customUserAgentMetadata.get(AwUserAgentMetadata.MetadataKeys.WOW64));
-        Assert.assertEquals(Arrays.deepToString(overrideBrands),
-                Arrays.deepToString((String[][]) customUserAgentMetadata.get(
-                        AwUserAgentMetadata.MetadataKeys.BRAND_VERSION_LIST)));
+        Assert.assertEquals(
+                Arrays.deepToString(overrideBrands),
+                Arrays.deepToString(
+                        (String[][])
+                                customUserAgentMetadata.get(
+                                        AwUserAgentMetadata.MetadataKeys.BRAND_VERSION_LIST)));
         // Update the outside brand, the deep copy brand version list shouldn't change.
         overrideBrands[0][0] = "updated_brand";
-        Assert.assertNotEquals(Arrays.deepToString(overrideBrands),
-                Arrays.deepToString((String[][]) customUserAgentMetadata.get(
-                        AwUserAgentMetadata.MetadataKeys.BRAND_VERSION_LIST)));
+        Assert.assertNotEquals(
+                Arrays.deepToString(overrideBrands),
+                Arrays.deepToString(
+                        (String[][])
+                                customUserAgentMetadata.get(
+                                        AwUserAgentMetadata.MetadataKeys.BRAND_VERSION_LIST)));
 
         // Reset the previous override, the user-agent metadata should be the default value.
         HashMap<String, Object> overrideResetMap = new HashMap<>();
@@ -725,11 +829,14 @@ public class ClientHintsTest {
         customUserAgentMetadata = settings.getUserAgentMetadataMap();
         Assert.assertEquals(
                 "Android", customUserAgentMetadata.get(AwUserAgentMetadata.MetadataKeys.PLATFORM));
-        Assert.assertEquals(new Boolean(false),
+        Assert.assertEquals(
+                new Boolean(false),
                 customUserAgentMetadata.get(AwUserAgentMetadata.MetadataKeys.WOW64));
 
-        String[][] actualOverrideBrands = (String[][]) customUserAgentMetadata.get(
-                AwUserAgentMetadata.MetadataKeys.BRAND_VERSION_LIST);
+        String[][] actualOverrideBrands =
+                (String[][])
+                        customUserAgentMetadata.get(
+                                AwUserAgentMetadata.MetadataKeys.BRAND_VERSION_LIST);
         List<String> brands = new ArrayList<>();
         for (String[] bv : actualOverrideBrands) {
             brands.add(bv[0]);
@@ -740,10 +847,11 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
-    @CommandLineFlags.Add({"enable-features=UserAgentClientHint,ClientHintsFormFactor",
-            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void
-    testOverrideUserAgentMetadataFullWithoutUAOverrides() throws Throwable {
+    @CommandLineFlags.Add({
+        "enable-features=UserAgentClientHint,ClientHintsFormFactor",
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
+    })
+    public void testOverrideUserAgentMetadataFullWithoutUAOverrides() throws Throwable {
         // Test overriding full set of user-agent metadata and has no user-agent overrides.
         verifyOverrideUaAndOverrideUaMetadata(null);
     }
@@ -751,10 +859,11 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
-    @CommandLineFlags.Add({"enable-features=UserAgentClientHint,ClientHintsFormFactor",
-            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void
-    testOverrideUserAgentMetadataFullWithCustomUa() throws Throwable {
+    @CommandLineFlags.Add({
+        "enable-features=UserAgentClientHint,ClientHintsFormFactor",
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
+    })
+    public void testOverrideUserAgentMetadataFullWithCustomUa() throws Throwable {
         // Test overriding full set of user-agent metadata and overriding user-agent doesn't
         // contains default user-agent.
         verifyOverrideUaAndOverrideUaMetadata("customUserAgent");
@@ -763,10 +872,11 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
-    @CommandLineFlags.Add({"enable-features=UserAgentClientHint,ClientHintsFormFactor",
-            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void
-    testOverrideUserAgentMetadataFullWithDefaultUA() throws Throwable {
+    @CommandLineFlags.Add({
+        "enable-features=UserAgentClientHint,ClientHintsFormFactor",
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
+    })
+    public void testOverrideUserAgentMetadataFullWithDefaultUA() throws Throwable {
         // Test overriding full set of user-agent metadata and overriding user-agent contains
         // default user-agent.
         verifyOverrideUaAndOverrideUaMetadata(getDefaultUserAgent() + "_Suffix");
@@ -775,14 +885,17 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
-    @CommandLineFlags.Add({"enable-features=UserAgentClientHint,ClientHintsFormFactor",
-            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void
-    testOverrideUserAgentMetadataNullWithCustomUserAgent() throws Throwable {
+    @CommandLineFlags.Add({
+        "enable-features=UserAgentClientHint,ClientHintsFormFactor",
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
+    })
+    public void testOverrideUserAgentMetadataNullWithCustomUserAgent() throws Throwable {
         // High-entropy client hints should not be populated when overridden user-agent
         // doesn't contain default ua, and users also don't override user-agent metadata.
-        ClientHintsTestResult clientHintsResult = getClientHintsWithOverrides(
-                /*uaMetadataOverrides=*/null, /*overrideUserAgent=*/"customUserAgent");
+        ClientHintsTestResult clientHintsResult =
+                getClientHintsWithOverrides(
+                        /* uaMetadataOverrides= */ null,
+                        /* overrideUserAgent= */ "customUserAgent");
         Map<String, String> clientHintsMap = clientHintsResult.mHttpHeaderClientHints;
 
         // Verify http header low-entropy client hints result.
@@ -815,7 +928,8 @@ public class ClientHintsTest {
         // Verify user-agent minor version not reduced.
         Matcher uaMatcher = Pattern.compile(CHROME_PRODUCT_PATTERN).matcher(defaultUserAgent);
         Assert.assertTrue(uaMatcher.find());
-        Assert.assertNotEquals("0.0.0",
+        Assert.assertNotEquals(
+                "0.0.0",
                 String.format(
                         "%s.%s.%s", uaMatcher.group(2), uaMatcher.group(3), uaMatcher.group(4)));
     }
@@ -829,20 +943,23 @@ public class ClientHintsTest {
         // Verify user-agent minor version is reduced.
         Matcher uaMatcher = Pattern.compile(CHROME_PRODUCT_PATTERN).matcher(defaultUserAgent);
         Assert.assertTrue(uaMatcher.find());
-        Assert.assertEquals("0.0.0",
+        Assert.assertEquals(
+                "0.0.0",
                 String.format(
                         "%s.%s.%s", uaMatcher.group(2), uaMatcher.group(3), uaMatcher.group(4)));
     }
 
     private void verifyOverrideUaAndOverrideUaMetadata(String overrideUserAgent) throws Throwable {
-        ClientHintsTestResult clientHintsResult = getClientHintsWithOverrides(
-                makeFakeMetadata(), /*overrideUserAgent=*/overrideUserAgent);
+        ClientHintsTestResult clientHintsResult =
+                getClientHintsWithOverrides(
+                        makeFakeMetadata(), /* overrideUserAgent= */ overrideUserAgent);
         Map<String, String> clientHintsMap = clientHintsResult.mHttpHeaderClientHints;
 
         // Verify http header client hints result.
         Assert.assertEquals(
                 "\"brand1\";v=\"1\", \"brand2\";v=\"2\"", clientHintsMap.get("sec-ch-ua"));
-        Assert.assertEquals("\"brand1\";v=\"1.1.1\", \"brand2\";v=\"2.2.2\"",
+        Assert.assertEquals(
+                "\"brand1\";v=\"1.1.1\", \"brand2\";v=\"2.2.2\"",
                 clientHintsMap.get("sec-ch-ua-full-version-list"));
         Assert.assertEquals("\"2.2.2\"", clientHintsMap.get("sec-ch-ua-full-version"));
         Assert.assertEquals("\"overrideTest\"", clientHintsMap.get("sec-ch-ua-platform"));
@@ -856,10 +973,12 @@ public class ClientHintsTest {
 
         // Verify js client hints result.
         JSONObject jsClientHints = clientHintsResult.mJsClientHints;
-        Assert.assertEquals("[{\"brand\":\"brand1\",\"version\":\"1\"},"
+        Assert.assertEquals(
+                "[{\"brand\":\"brand1\",\"version\":\"1\"},"
                         + "{\"brand\":\"brand2\",\"version\":\"2\"}]",
                 jsClientHints.getString("brands"));
-        Assert.assertEquals("[{\"brand\":\"brand1\",\"version\":\"1.1.1\"},"
+        Assert.assertEquals(
+                "[{\"brand\":\"brand1\",\"version\":\"1.1.1\"},"
                         + "{\"brand\":\"brand2\",\"version\":\"2.2.2\"}]",
                 jsClientHints.getString("fullVersionList"));
         Assert.assertEquals("2.2.2", jsClientHints.getString("uaFullVersion"));
@@ -875,7 +994,8 @@ public class ClientHintsTest {
 
     private Map<String, Object> makeFakeMetadata() {
         HashMap<String, Object> settings = new HashMap<>();
-        settings.put(AwUserAgentMetadata.MetadataKeys.BRAND_VERSION_LIST,
+        settings.put(
+                AwUserAgentMetadata.MetadataKeys.BRAND_VERSION_LIST,
                 new String[][] {{"brand1", "1", "1.1.1"}, {"brand2", "2", "2.2.2"}});
         settings.put(AwUserAgentMetadata.MetadataKeys.FULL_VERSION, "2.2.2");
         settings.put(AwUserAgentMetadata.MetadataKeys.PLATFORM, "overrideTest");
@@ -891,7 +1011,8 @@ public class ClientHintsTest {
 
     private String getDefaultUserAgent() throws Throwable {
         final AwContents contents =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(new TestAwContentsClient())
+                mActivityTestRule
+                        .createAwTestContainerViewOnMainSync(new TestAwContentsClient())
                         .getAwContents();
         return mActivityTestRule.getAwSettingsOnUiThread(contents).getUserAgentString();
     }
@@ -900,7 +1021,8 @@ public class ClientHintsTest {
             Map<String, Object> uaMetadataOverrides, String overrideUserAgent) throws Throwable {
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
         final AwContents contents =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient)
+                mActivityTestRule
+                        .createAwTestContainerViewOnMainSync(contentsClient)
                         .getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(contents);
         contents.getSettings().setJavaScriptEnabled(true);
@@ -915,8 +1037,9 @@ public class ClientHintsTest {
             settings.setUserAgentString(overrideUserAgent);
         }
 
-        final AwEmbeddedTestServer server = AwEmbeddedTestServer.createAndStartServer(
-                InstrumentationRegistry.getInstrumentation().getTargetContext());
+        final AwEmbeddedTestServer server =
+                AwEmbeddedTestServer.createAndStartServer(
+                        InstrumentationRegistry.getInstrumentation().getTargetContext());
 
         ClientHintsTestResult clientHintsResult =
                 makeRequestAndGetClientHints(server, contents, contentsClient);
@@ -928,33 +1051,42 @@ public class ClientHintsTest {
         return clientHintsResult;
     }
 
-    private ClientHintsTestResult makeRequestAndGetClientHints(final AwEmbeddedTestServer server,
-            final AwContents contents, final TestAwContentsClient contentsClient) throws Throwable {
+    private ClientHintsTestResult makeRequestAndGetClientHints(
+            final AwEmbeddedTestServer server,
+            final AwContents contents,
+            final TestAwContentsClient contentsClient)
+            throws Throwable {
         final SettableFuture<String> highEntropyResultFuture = SettableFuture.create();
-        Object injectedObject = new Object() {
-            @JavascriptInterface
-            public void setUserAgentClientHints(String ua) {
-                highEntropyResultFuture.set(ua);
-            }
-        };
+        Object injectedObject =
+                new Object() {
+                    @JavascriptInterface
+                    public void setUserAgentClientHints(String ua) {
+                        highEntropyResultFuture.set(ua);
+                    }
+                };
         AwActivityTestRule.addJavascriptInterfaceOnUiThread(
                 contents, injectedObject, "injectedObject");
 
-        final String url = server.getURL(
-                "/client-hints-header?accept-ch=" + String.join(",", USER_AGENT_CLIENT_HINTS));
+        final String url =
+                server.getURL(
+                        "/client-hints-header?accept-ch="
+                                + String.join(",", USER_AGENT_CLIENT_HINTS));
 
         // Load twice to be sure hints are returned, then parse the results.
         loadUrlSync(contents, contentsClient.getOnPageFinishedHelper(), url);
         loadUrlSync(contents, contentsClient.getOnPageFinishedHelper(), url);
         String textContent =
-                mActivityTestRule.getJavaScriptResultBodyTextContent(contents, contentsClient)
+                mActivityTestRule
+                        .getJavaScriptResultBodyTextContent(contents, contentsClient)
                         .replaceAll("\\\\\"", "\"");
         // Get client hints from HTTP request header.
         HashMap<String, String> clientHintsMap = getClientHints(textContent);
 
         // Get client hints from JS API.
-        JSUtils.executeJavaScriptAndWaitForResult(InstrumentationRegistry.getInstrumentation(),
-                contents, contentsClient.getOnEvaluateJavaScriptResultHelper(),
+        JSUtils.executeJavaScriptAndWaitForResult(
+                InstrumentationRegistry.getInstrumentation(),
+                contents,
+                contentsClient.getOnEvaluateJavaScriptResultHelper(),
                 "navigator.userAgentData"
                         + ".getHighEntropyValues(['architecture', 'bitness', 'brands', "
                         + "'mobile', 'model', 'platform', 'platformVersion', 'uaFullVersion', "
@@ -968,13 +1100,17 @@ public class ClientHintsTest {
         return new ClientHintsTestResult(clientHintsMap, jsonObject);
     }
 
-    private void verifyClientHintBehavior(final AwEmbeddedTestServer server,
-            final AwContents contents, final TestAwContentsClient contentsClient, boolean isSecure)
+    private void verifyClientHintBehavior(
+            final AwEmbeddedTestServer server,
+            final AwContents contents,
+            final TestAwContentsClient contentsClient,
+            boolean isSecure)
             throws Throwable {
         final String localhostURL =
                 server.getURL("/client-hints-header?accept-ch=sec-ch-device-memory");
-        final String fooURL = server.getURLWithHostName(
-                "foo.test", "/client-hints-header?accept-ch=sec-ch-device-memory");
+        final String fooURL =
+                server.getURLWithHostName(
+                        "foo.test", "/client-hints-header?accept-ch=sec-ch-device-memory");
 
         // First load of the localhost shouldn't have the hint as it wasn't requested before.
         loadUrlSync(contents, contentsClient.getOnPageFinishedHelper(), localhostURL);
@@ -1010,19 +1146,24 @@ public class ClientHintsTest {
         validateHeadersFromJSON(contents, contentsClient, "sec-ch-device-memory", isSecure);
     }
 
-    private void loadUrlSync(final AwContents contents, CallbackHelper onPageFinishedHelper,
-            final String url) throws Throwable {
+    private void loadUrlSync(
+            final AwContents contents, CallbackHelper onPageFinishedHelper, final String url)
+            throws Throwable {
         int currentCallCount = onPageFinishedHelper.getCallCount();
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> contents.loadUrl(url));
         onPageFinishedHelper.waitForCallback(
                 currentCallCount, 1, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
     }
 
-    private void validateHeadersFromJSON(final AwContents contents,
-            final TestAwContentsClient contentsClient, String name, boolean isPresent)
+    private void validateHeadersFromJSON(
+            final AwContents contents,
+            final TestAwContentsClient contentsClient,
+            String name,
+            boolean isPresent)
             throws Exception {
         String textContent =
-                mActivityTestRule.getJavaScriptResultBodyTextContent(contents, contentsClient)
+                mActivityTestRule
+                        .getJavaScriptResultBodyTextContent(contents, contentsClient)
                         .replaceAll("\\\\\"", "\"");
         JSONObject jsonObject = new JSONObject(textContent);
         String actualVaue = jsonObject.getString(name);
@@ -1038,8 +1179,11 @@ public class ClientHintsTest {
                 InstrumentationRegistry.getInstrumentation(), new AwCookieManager());
     }
 
-    private void verifyUserAgentOverrideClientHints(final TestAwContentsClient contentsClient,
-            final AwContents contents, String customUserAgent, boolean expectHighEntropyClientHints)
+    private void verifyUserAgentOverrideClientHints(
+            final TestAwContentsClient contentsClient,
+            final AwContents contents,
+            String customUserAgent,
+            boolean expectHighEntropyClientHints)
             throws Throwable {
         AwActivityTestRule.enableJavaScriptOnUiThread(contents);
         contents.getSettings().setJavaScriptEnabled(true);
@@ -1048,17 +1192,21 @@ public class ClientHintsTest {
             settings.setUserAgentString(customUserAgent);
         }
 
-        final AwEmbeddedTestServer server = AwEmbeddedTestServer.createAndStartServer(
-                InstrumentationRegistry.getInstrumentation().getTargetContext());
+        final AwEmbeddedTestServer server =
+                AwEmbeddedTestServer.createAndStartServer(
+                        InstrumentationRegistry.getInstrumentation().getTargetContext());
 
-        final String url = server.getURL(
-                "/client-hints-header?accept-ch=" + String.join(",", USER_AGENT_CLIENT_HINTS));
+        final String url =
+                server.getURL(
+                        "/client-hints-header?accept-ch="
+                                + String.join(",", USER_AGENT_CLIENT_HINTS));
 
         // Load twice to be sure hints are returned, then parse the results.
         loadUrlSync(contents, contentsClient.getOnPageFinishedHelper(), url);
         loadUrlSync(contents, contentsClient.getOnPageFinishedHelper(), url);
         String textContent =
-                mActivityTestRule.getJavaScriptResultBodyTextContent(contents, contentsClient)
+                mActivityTestRule
+                        .getJavaScriptResultBodyTextContent(contents, contentsClient)
                         .replaceAll("\\\\\"", "\"");
         // JSONObject can't support parsing client hint values (like sec-ch-ua) have quote("). We
         // writes a custom parser function to approximately get the user-agent client hints in the
@@ -1091,8 +1239,10 @@ public class ClientHintsTest {
 
     private void verifyClientHintsJavaScript(boolean useCustomUserAgent) throws Throwable {
         final TestAwContentsClient contentClient = new TestAwContentsClient();
-        AwContents contents = mActivityTestRule.createAwTestContainerViewOnMainSync(contentClient)
-                                      .getAwContents();
+        AwContents contents =
+                mActivityTestRule
+                        .createAwTestContainerViewOnMainSync(contentClient)
+                        .getAwContents();
 
         if (useCustomUserAgent) {
             AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(contents);
@@ -1102,18 +1252,20 @@ public class ClientHintsTest {
         AwActivityTestRule.enableJavaScriptOnUiThread(contents);
 
         final SettableFuture<String> highEntropyResultFuture = SettableFuture.create();
-        Object injectedObject = new Object() {
-            @JavascriptInterface
-            public void setUserAgentClientHints(String ua) {
-                highEntropyResultFuture.set(ua);
-            }
-        };
+        Object injectedObject =
+                new Object() {
+                    @JavascriptInterface
+                    public void setUserAgentClientHints(String ua) {
+                        highEntropyResultFuture.set(ua);
+                    }
+                };
         AwActivityTestRule.addJavascriptInterfaceOnUiThread(
                 contents, injectedObject, "injectedObject");
 
-        EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartHTTPSServer(
-                InstrumentationRegistry.getInstrumentation().getContext(),
-                ServerCertificate.CERT_OK);
+        EmbeddedTestServer testServer =
+                EmbeddedTestServer.createAndStartHTTPSServer(
+                        InstrumentationRegistry.getInstrumentation().getContext(),
+                        ServerCertificate.CERT_OK);
 
         try {
             String targetUrl = testServer.getURL("/android_webview/test/data/client_hints.html");
@@ -1137,8 +1289,10 @@ public class ClientHintsTest {
             Assert.assertFalse(uaItems[2].isEmpty());
             Assert.assertTrue(uaItems[2].indexOf(ANDROID_WEBVIEW_BRAND_NAME) != -1);
 
-            JSUtils.executeJavaScriptAndWaitForResult(InstrumentationRegistry.getInstrumentation(),
-                    contents, contentClient.getOnEvaluateJavaScriptResultHelper(),
+            JSUtils.executeJavaScriptAndWaitForResult(
+                    InstrumentationRegistry.getInstrumentation(),
+                    contents,
+                    contentClient.getOnEvaluateJavaScriptResultHelper(),
                     "navigator.userAgentData"
                             + ".getHighEntropyValues(['architecture', 'bitness', 'brands', "
                             + "'mobile', 'model', 'platform', 'platformVersion', 'uaFullVersion', "
@@ -1236,9 +1390,10 @@ public class ClientHintsTest {
 
             // Since we use `,"` as the separator, the client hints name could start without
             // quote(").
-            String clientHintName = hints[0].startsWith("\"")
-                    ? hints[0].substring(1, hints[0].length() - 1)
-                    : hints[0].substring(0, hints[0].length() - 1);
+            String clientHintName =
+                    hints[0].startsWith("\"")
+                            ? hints[0].substring(1, hints[0].length() - 1)
+                            : hints[0].substring(0, hints[0].length() - 1);
             String clientHintValue = hints[1].substring(1, hints[1].length() - 1);
             if (clientHintName.startsWith("sec-ch-ua")) {
                 userAgentClientHintsCount++;

@@ -52,23 +52,21 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Test suite for loadUrl().
- */
+/** Test suite for loadUrl(). */
 @RunWith(AwJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class LoadUrlTest {
     private static final String ASSET_FILE_URL = "file:///android_asset/asset_file.html";
 
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private AwEmbeddedTestServer mTestServer;
 
     @Before
     public void setUp() {
-        mTestServer = AwEmbeddedTestServer.createAndStartServer(
-                InstrumentationRegistry.getInstrumentation().getTargetContext());
+        mTestServer =
+                AwEmbeddedTestServer.createAndStartServer(
+                        InstrumentationRegistry.getInstrumentation().getTargetContext());
     }
 
     @Test
@@ -101,8 +99,11 @@ public class LoadUrlTest {
         // Ensure that special file urls are blocked in the AwSettings.
         awContents.setShouldBlockSpecialFileUrls(true);
 
-        mActivityTestRule.loadUrlSyncAndExpectError(awContents,
-                contentsClient.getOnPageFinishedHelper(), onReceivedErrorHelper, ASSET_FILE_URL);
+        mActivityTestRule.loadUrlSyncAndExpectError(
+                awContents,
+                contentsClient.getOnPageFinishedHelper(),
+                onReceivedErrorHelper,
+                ASSET_FILE_URL);
 
         AwWebResourceError error = onReceivedErrorHelper.getError();
         Assert.assertEquals(WebviewErrorCode.ERROR_UNKNOWN, error.errorCode);
@@ -182,8 +183,13 @@ public class LoadUrlTest {
         final AwTestContainerView testContainerView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient);
         final AwContents awContents = testContainerView.getAwContents();
-        mActivityTestRule.loadDataSyncWithCharset(awContents,
-                contentsClient.getOnPageFinishedHelper(), data, "text/html", false, "UTF-8");
+        mActivityTestRule.loadDataSyncWithCharset(
+                awContents,
+                contentsClient.getOnPageFinishedHelper(),
+                data,
+                "text/html",
+                false,
+                "UTF-8");
         Assert.assertEquals(expectedTitle, mActivityTestRule.getTitleOnUiThread(awContents));
     }
 
@@ -202,6 +208,7 @@ public class LoadUrlTest {
         public void waitForFullLoad() throws TimeoutException {
             mCallbackHelper.waitForFirst();
         }
+
         private CallbackHelper mCallbackHelper = new CallbackHelper();
     }
 
@@ -219,19 +226,27 @@ public class LoadUrlTest {
             final String url = webServer.setResponse("/page.html", "<html>Page</html>", null);
 
             /* Before loading, progress is 100. */
-            InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                    ()
-                            -> Assert.assertEquals(100,
-                                    testContainerView.getAwContents().getMostRecentProgress()));
+            InstrumentationRegistry.getInstrumentation()
+                    .runOnMainSync(
+                            () ->
+                                    Assert.assertEquals(
+                                            100,
+                                            testContainerView
+                                                    .getAwContents()
+                                                    .getMostRecentProgress()));
 
-            InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                    () -> testContainerView.getAwContents().loadUrl(url, null));
+            InstrumentationRegistry.getInstrumentation()
+                    .runOnMainSync(() -> testContainerView.getAwContents().loadUrl(url, null));
             contentsClient.waitForFullLoad();
             /* After loading, progress is 100. */
-            InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                    ()
-                            -> Assert.assertEquals(100,
-                                    testContainerView.getAwContents().getMostRecentProgress()));
+            InstrumentationRegistry.getInstrumentation()
+                    .runOnMainSync(
+                            () ->
+                                    Assert.assertEquals(
+                                            100,
+                                            testContainerView
+                                                    .getAwContents()
+                                                    .getMostRecentProgress()));
 
             /* At some point during the load, progress was not 100. */
             Assert.assertTrue(contentsClient.mProgresses.size() > 1);
@@ -242,19 +257,18 @@ public class LoadUrlTest {
         }
     }
 
-    /**
-     * Loads url on the UI thread and blocks until onPageFinished is called.
-     */
+    /** Loads url on the UI thread and blocks until onPageFinished is called. */
     protected void loadUrlWithExtraHeadersSync(
             final AwContents awContents,
             CallbackHelper onPageFinishedHelper,
             final String url,
-            final Map<String, String> extraHeaders) throws Throwable {
+            final Map<String, String> extraHeaders)
+            throws Throwable {
         int currentCallCount = onPageFinishedHelper.getCallCount();
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> awContents.loadUrl(url, extraHeaders));
-        onPageFinishedHelper.waitForCallback(currentCallCount, 1, WAIT_TIMEOUT_MS,
-                TimeUnit.MILLISECONDS);
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(() -> awContents.loadUrl(url, extraHeaders));
+        onPageFinishedHelper.waitForCallback(
+                currentCallCount, 1, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
     }
 
     private static List<Pair<String, String>> createHeadersList(String[] namesAndValues) {
@@ -273,9 +287,12 @@ public class LoadUrlTest {
         return result;
     }
 
-    private void validateHeadersValue(final AwContents awContents,
-            final TestAwContentsClient contentsClient, String[] extraHeader,
-            boolean shouldHeaderExist) throws Exception {
+    private void validateHeadersValue(
+            final AwContents awContents,
+            final TestAwContentsClient contentsClient,
+            String[] extraHeader,
+            boolean shouldHeaderExist)
+            throws Exception {
         String textContent =
                 mActivityTestRule.getJavaScriptResultBodyTextContent(awContents, contentsClient);
         String[] header_values = textContent.split("\\\\n");
@@ -285,11 +302,16 @@ public class LoadUrlTest {
         }
     }
 
-    private void validateHeadersFromJson(final AwContents awContents,
-            final TestAwContentsClient contentsClient, String[] extraHeader, String jsonName,
-            boolean shouldHeaderExist) throws Exception {
+    private void validateHeadersFromJson(
+            final AwContents awContents,
+            final TestAwContentsClient contentsClient,
+            String[] extraHeader,
+            String jsonName,
+            boolean shouldHeaderExist)
+            throws Exception {
         String textContent =
-                mActivityTestRule.getJavaScriptResultBodyTextContent(awContents, contentsClient)
+                mActivityTestRule
+                        .getJavaScriptResultBodyTextContent(awContents, contentsClient)
                         .replaceAll("\\\\\"", "\"");
         JSONObject jsonObject = new JSONObject(textContent);
         JSONArray jsonArray = jsonObject.getJSONArray(jsonName);
@@ -307,9 +329,7 @@ public class LoadUrlTest {
         }
     }
 
-    /**
-     * Make a test server URL look like it is a different origin.
-     */
+    /** Make a test server URL look like it is a different origin. */
     private static String toDifferentOriginUrl(String url) {
         if (url.contains("localhost")) {
             return url.replace("localhost", "127.0.0.1");
@@ -323,14 +343,16 @@ public class LoadUrlTest {
     /** Call loadUrl() and expect it to throw IllegalArgumentException. */
     private void loadWithInvalidHeaders(AwContents awContents, Map<String, String> extraHeaders)
             throws Exception {
-        Assert.assertTrue(TestThreadUtils.runOnUiThreadBlocking(() -> {
-            try {
-                awContents.loadUrl("about:blank", extraHeaders);
-                return false;
-            } catch (IllegalArgumentException e) {
-                return true;
-            }
-        }));
+        Assert.assertTrue(
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            try {
+                                awContents.loadUrl("about:blank", extraHeaders);
+                                return false;
+                            } catch (IllegalArgumentException e) {
+                                return true;
+                            }
+                        }));
     }
 
     @Test
@@ -361,18 +383,33 @@ public class LoadUrlTest {
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
 
         String[] extraHeaders = {
-                "X-ExtraHeaders1", "extra-header-data1", "x-extraHeaders2", "EXTRA-HEADER-DATA2"};
+            "X-ExtraHeaders1", "extra-header-data1", "x-extraHeaders2", "EXTRA-HEADER-DATA2"
+        };
 
-        final String url1 = mTestServer.getURL("/image-response-if-header-not-exists?resource="
-                + encodeUrl(CommonResources.FAVICON_DATA_BASE64) + "&header=" + extraHeaders[0]
-                + "&header=" + extraHeaders[2]);
-        final String url2 = mTestServer.getURL("/image-onload-html?imagesrc=" + encodeUrl(url1)
-                + "&header=" + extraHeaders[0] + "&header=" + extraHeaders[2]);
+        final String url1 =
+                mTestServer.getURL(
+                        "/image-response-if-header-not-exists?resource="
+                                + encodeUrl(CommonResources.FAVICON_DATA_BASE64)
+                                + "&header="
+                                + extraHeaders[0]
+                                + "&header="
+                                + extraHeaders[2]);
+        final String url2 =
+                mTestServer.getURL(
+                        "/image-onload-html?imagesrc="
+                                + encodeUrl(url1)
+                                + "&header="
+                                + extraHeaders[0]
+                                + "&header="
+                                + extraHeaders[2]);
 
         TestAwContentsClient.OnReceivedTitleHelper onReceivedTitleHelper =
                 contentsClient.getOnReceivedTitleHelper();
         int onReceivedTitleCallCount = onReceivedTitleHelper.getCallCount();
-        loadUrlWithExtraHeadersSync(awContents, contentsClient.getOnPageFinishedHelper(), url2,
+        loadUrlWithExtraHeadersSync(
+                awContents,
+                contentsClient.getOnPageFinishedHelper(),
+                url2,
                 createHeadersMap(extraHeaders));
         // Verify that extra headers are passed to the loaded url, but not to the image subresource.
         validateHeadersValue(awContents, contentsClient, extraHeaders, true);
@@ -394,7 +431,10 @@ public class LoadUrlTest {
         final String url = mTestServer.getURL("/echoheader?user-agent");
         String[] extraHeaders = {"user-agent", "Borewicz 07 & Bond 007"};
 
-        loadUrlWithExtraHeadersSync(awContents, contentsClient.getOnPageFinishedHelper(), url,
+        loadUrlWithExtraHeadersSync(
+                awContents,
+                contentsClient.getOnPageFinishedHelper(),
+                url,
                 createHeadersMap(extraHeaders));
         String header =
                 mActivityTestRule.getJavaScriptResultBodyTextContent(awContents, contentsClient);
@@ -413,11 +453,15 @@ public class LoadUrlTest {
         final AwContents awContents = testContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
         String[] extraHeaders = {
-                "X-ExtraHeaders1", "extra-header-data1", "x-extraHeaders2", "EXTRA-HEADER-DATA2"};
+            "X-ExtraHeaders1", "extra-header-data1", "x-extraHeaders2", "EXTRA-HEADER-DATA2"
+        };
         final String url =
                 mTestServer.getURL("/echoheader?" + extraHeaders[0] + "&" + extraHeaders[2]);
 
-        loadUrlWithExtraHeadersSync(awContents, contentsClient.getOnPageFinishedHelper(), url,
+        loadUrlWithExtraHeadersSync(
+                awContents,
+                contentsClient.getOnPageFinishedHelper(),
+                url,
                 createHeadersMap(extraHeaders));
         validateHeadersValue(awContents, contentsClient, extraHeaders, true);
         mActivityTestRule.reloadSync(awContents, contentsClient.getOnPageFinishedHelper());
@@ -434,11 +478,15 @@ public class LoadUrlTest {
         final AwContents awContents = testContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
         String[] extraHeaders = {
-                "X-ExtraHeaders1", "extra-header-data1", "x-extraHeaders2", "EXTRA-HEADER-DATA2"};
+            "X-ExtraHeaders1", "extra-header-data1", "x-extraHeaders2", "EXTRA-HEADER-DATA2"
+        };
         final String url =
                 mTestServer.getURL("/echoheader?" + extraHeaders[0] + "&" + extraHeaders[2]);
 
-        loadUrlWithExtraHeadersSync(awContents, contentsClient.getOnPageFinishedHelper(), url,
+        loadUrlWithExtraHeadersSync(
+                awContents,
+                contentsClient.getOnPageFinishedHelper(),
+                url,
                 createHeadersMap(extraHeaders));
         validateHeadersValue(awContents, contentsClient, extraHeaders, true);
 
@@ -462,14 +510,27 @@ public class LoadUrlTest {
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
 
         String[] extraHeaders = {
-                "X-ExtraHeaders1", "extra-header-data1", "x-extraHeaders2", "EXTRA-HEADER-DATA2"};
-        final String redirectedUrl = mTestServer.getURL("/echoheader-and-set-data?header="
-                + extraHeaders[0] + "&header=" + extraHeaders[2]);
+            "X-ExtraHeaders1", "extra-header-data1", "x-extraHeaders2", "EXTRA-HEADER-DATA2"
+        };
+        final String redirectedUrl =
+                mTestServer.getURL(
+                        "/echoheader-and-set-data?header="
+                                + extraHeaders[0]
+                                + "&header="
+                                + extraHeaders[2]);
         final String initialUrl =
-                mTestServer.getURL("/server-redirect-echoheader?url=" + encodeUrl(redirectedUrl)
-                        + "&header=" + extraHeaders[0] + "&header=" + extraHeaders[2]);
-        loadUrlWithExtraHeadersSync(awContents, contentsClient.getOnPageFinishedHelper(),
-                initialUrl, createHeadersMap(extraHeaders));
+                mTestServer.getURL(
+                        "/server-redirect-echoheader?url="
+                                + encodeUrl(redirectedUrl)
+                                + "&header="
+                                + extraHeaders[0]
+                                + "&header="
+                                + extraHeaders[2]);
+        loadUrlWithExtraHeadersSync(
+                awContents,
+                contentsClient.getOnPageFinishedHelper(),
+                initialUrl,
+                createHeadersMap(extraHeaders));
         validateHeadersFromJson(
                 awContents, contentsClient, extraHeaders, echoRedirectedUrlHeader, true);
         validateHeadersFromJson(
@@ -498,15 +559,28 @@ public class LoadUrlTest {
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
 
         String[] extraHeaders = {
-                "X-ExtraHeaders1", "extra-header-data1", "x-extraHeaders2", "EXTRA-HEADER-DATA2"};
+            "X-ExtraHeaders1", "extra-header-data1", "x-extraHeaders2", "EXTRA-HEADER-DATA2"
+        };
         final String redirectedUrl =
-                toDifferentOriginUrl(mTestServer.getURL("/echoheader-and-set-data?header="
-                        + extraHeaders[0] + "&header=" + extraHeaders[2]));
+                toDifferentOriginUrl(
+                        mTestServer.getURL(
+                                "/echoheader-and-set-data?header="
+                                        + extraHeaders[0]
+                                        + "&header="
+                                        + extraHeaders[2]));
         final String initialUrl =
-                mTestServer.getURL("/server-redirect-echoheader?url=" + encodeUrl(redirectedUrl)
-                        + "&header=" + extraHeaders[0] + "&header=" + extraHeaders[2]);
-        loadUrlWithExtraHeadersSync(awContents, contentsClient.getOnPageFinishedHelper(),
-                initialUrl, createHeadersMap(extraHeaders));
+                mTestServer.getURL(
+                        "/server-redirect-echoheader?url="
+                                + encodeUrl(redirectedUrl)
+                                + "&header="
+                                + extraHeaders[0]
+                                + "&header="
+                                + extraHeaders[2]);
+        loadUrlWithExtraHeadersSync(
+                awContents,
+                contentsClient.getOnPageFinishedHelper(),
+                initialUrl,
+                createHeadersMap(extraHeaders));
         validateHeadersFromJson(
                 awContents, contentsClient, extraHeaders, echoInitialUrlHeader, true);
         // Check that the headers were removed when the request was redirected to another origin.
@@ -529,15 +603,23 @@ public class LoadUrlTest {
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
 
         String[] extraHeaders = {
-                "X-ExtraHeaders1", "extra-header-data1", "x-extraHeaders2", "EXTRA-HEADER-DATA2"};
-        final String redirectedUrl = mTestServer.getURL("/echoheader-and-set-data?header="
-                + extraHeaders[0] + "&header=" + extraHeaders[2]);
+            "X-ExtraHeaders1", "extra-header-data1", "x-extraHeaders2", "EXTRA-HEADER-DATA2"
+        };
+        final String redirectedUrl =
+                mTestServer.getURL(
+                        "/echoheader-and-set-data?header="
+                                + extraHeaders[0]
+                                + "&header="
+                                + extraHeaders[2]);
         final String initialUrl =
                 mTestServer.getURL("/server-redirect-echoheader?url=" + encodeUrl(redirectedUrl));
 
         // First load the redirect target URL with extra headers
-        loadUrlWithExtraHeadersSync(awContents, contentsClient.getOnPageFinishedHelper(),
-                redirectedUrl, createHeadersMap(extraHeaders));
+        loadUrlWithExtraHeadersSync(
+                awContents,
+                contentsClient.getOnPageFinishedHelper(),
+                redirectedUrl,
+                createHeadersMap(extraHeaders));
         validateHeadersFromJson(
                 awContents, contentsClient, extraHeaders, echoRedirectedUrlHeader, true);
 
@@ -560,15 +642,24 @@ public class LoadUrlTest {
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
 
         String[] extraHeaders = {
-                "X-ExtraHeaders1", "extra-header-data1", "x-extraHeaders2", "EXTRA-HEADER-DATA2"};
+            "X-ExtraHeaders1", "extra-header-data1", "x-extraHeaders2", "EXTRA-HEADER-DATA2"
+        };
         final String redirectedUrl =
                 mTestServer.getURL("/echoheader?" + extraHeaders[0] + "&" + extraHeaders[2]);
         final String initialUrl =
-                mTestServer.getURL("/click-redirect?url=" + encodeUrl(redirectedUrl)
-                        + "&header=" + extraHeaders[0] + "&header=" + extraHeaders[2]);
+                mTestServer.getURL(
+                        "/click-redirect?url="
+                                + encodeUrl(redirectedUrl)
+                                + "&header="
+                                + extraHeaders[0]
+                                + "&header="
+                                + extraHeaders[2]);
 
-        loadUrlWithExtraHeadersSync(awContents, contentsClient.getOnPageFinishedHelper(),
-                initialUrl, createHeadersMap(extraHeaders));
+        loadUrlWithExtraHeadersSync(
+                awContents,
+                contentsClient.getOnPageFinishedHelper(),
+                initialUrl,
+                createHeadersMap(extraHeaders));
         validateHeadersValue(awContents, contentsClient, extraHeaders, true);
 
         int currentCallCount = contentsClient.getOnPageFinishedHelper().getCallCount();
@@ -578,13 +669,16 @@ public class LoadUrlTest {
         // loaded.
         JSUtils.clickNodeWithUserGesture(testContainerView.getWebContents(), "click");
 
-        contentsClient.getOnPageFinishedHelper().waitForCallback(
-                currentCallCount, 1, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        contentsClient
+                .getOnPageFinishedHelper()
+                .waitForCallback(currentCallCount, 1, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         // No extra headers for the page navigated via clicking.
         validateHeadersValue(awContents, contentsClient, extraHeaders, false);
 
-        HistoryUtils.goBackSync(InstrumentationRegistry.getInstrumentation(),
-                awContents.getWebContents(), contentsClient.getOnPageFinishedHelper());
+        HistoryUtils.goBackSync(
+                InstrumentationRegistry.getInstrumentation(),
+                awContents.getWebContents(),
+                contentsClient.getOnPageFinishedHelper());
         validateHeadersValue(awContents, contentsClient, extraHeaders, true);
     }
 
@@ -592,11 +686,13 @@ public class LoadUrlTest {
         void setOnReceivedTitleCallback(Runnable onReceivedTitleCallback) {
             mOnReceivedTitleCallback = onReceivedTitleCallback;
         }
+
         @Override
         public void onReceivedTitle(String title) {
             super.onReceivedTitle(title);
             mOnReceivedTitleCallback.run();
         }
+
         private Runnable mOnReceivedTitleCallback;
     }
 
@@ -648,10 +744,16 @@ public class LoadUrlTest {
         TestWebServer webServer = TestWebServer.start();
         try {
             final String title = "Title";
-            final String url1 = webServer.setResponse("/page1.html",
-                    "<html><head><title>" + title + "</title></head>Page 1</html>", null);
-            final String url2 = webServer.setResponse("/page2.html",
-                    "<html><head><title>" + title + "</title></head>Page 2</html>", null);
+            final String url1 =
+                    webServer.setResponse(
+                            "/page1.html",
+                            "<html><head><title>" + title + "</title></head>Page 1</html>",
+                            null);
+            final String url2 =
+                    webServer.setResponse(
+                            "/page2.html",
+                            "<html><head><title>" + title + "</title></head>Page 2</html>",
+                            null);
             TestAwContentsClient.OnReceivedTitleHelper onReceivedTitleHelper =
                     contentsClient.getOnReceivedTitleHelper();
             int onReceivedTitleCallCount = onReceivedTitleHelper.getCallCount();
@@ -720,12 +822,18 @@ public class LoadUrlTest {
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
 
         final String iframeLoadedMessage = "iframe loaded";
-        final String iframeHtml = "<html><body><script>"
-                + "console.log('" + iframeLoadedMessage + "')"
-                + ";</script></body></html>";
-        final String pageHtml = "<html><body>"
-                + "<iframe src=\"data:text/html," + iframeHtml + "\"></iframe>"
-                + "</body></html>";
+        final String iframeHtml =
+                "<html><body><script>"
+                        + "console.log('"
+                        + iframeLoadedMessage
+                        + "')"
+                        + ";</script></body></html>";
+        final String pageHtml =
+                "<html><body>"
+                        + "<iframe src=\"data:text/html,"
+                        + iframeHtml
+                        + "\"></iframe>"
+                        + "</body></html>";
 
         CallbackHelper onPageFinishedHelper = contentsClient.getOnPageFinishedHelper();
         int onPageFinishedCallCount = onPageFinishedHelper.getCallCount();
@@ -759,12 +867,18 @@ public class LoadUrlTest {
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
 
         final String iframeLoadedMessage = "iframe loaded";
-        final String iframeHtml = "<html><body><script>"
-                + "console.log('" + iframeLoadedMessage + "')"
-                + ";</script></body></html>";
-        final String pageHtml = "<html><body>"
-                + "<iframe src=\"data:text/html," + iframeHtml + "\"></iframe>"
-                + "</body></html>";
+        final String iframeHtml =
+                "<html><body><script>"
+                        + "console.log('"
+                        + iframeLoadedMessage
+                        + "')"
+                        + ";</script></body></html>";
+        final String pageHtml =
+                "<html><body>"
+                        + "<iframe src=\"data:text/html,"
+                        + iframeHtml
+                        + "\"></iframe>"
+                        + "</body></html>";
 
         CallbackHelper onPageFinishedHelper = contentsClient.getOnPageFinishedHelper();
         int onPageFinishedCallCount = onPageFinishedHelper.getCallCount();
@@ -792,12 +906,24 @@ public class LoadUrlTest {
     class TestAwContentsClientTestDependencyFactory
             extends AwActivityTestRule.TestDependencyFactory {
         @Override
-        public AwContents createAwContents(AwBrowserContext browserContext, ViewGroup containerView,
-                Context context, InternalAccessDelegate internalAccessAdapter,
-                NativeDrawFunctorFactory nativeDrawFunctorFactory, AwContentsClient contentsClient,
-                AwSettings settings, DependencyFactory dependencyFactory) {
-            return new TestAwContents(browserContext, containerView, context, internalAccessAdapter,
-                    nativeDrawFunctorFactory, contentsClient, settings, dependencyFactory);
+        public AwContents createAwContents(
+                AwBrowserContext browserContext,
+                ViewGroup containerView,
+                Context context,
+                InternalAccessDelegate internalAccessAdapter,
+                NativeDrawFunctorFactory nativeDrawFunctorFactory,
+                AwContentsClient contentsClient,
+                AwSettings settings,
+                DependencyFactory dependencyFactory) {
+            return new TestAwContents(
+                    browserContext,
+                    containerView,
+                    context,
+                    internalAccessAdapter,
+                    nativeDrawFunctorFactory,
+                    contentsClient,
+                    settings,
+                    dependencyFactory);
         }
     }
 }

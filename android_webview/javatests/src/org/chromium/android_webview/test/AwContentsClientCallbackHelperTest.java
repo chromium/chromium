@@ -33,15 +33,12 @@ import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer
 
 import java.util.concurrent.Callable;
 
-/**
- * Test suite for AwContentsClientCallbackHelper.
- */
+/** Test suite for AwContentsClientCallbackHelper. */
 @RunWith(AwJUnit4ClassRunner.class)
 @OnlyRunIn(SINGLE_PROCESS) // These are unit tests. No need to repeat for multiprocess.
 @Batch(Batch.PER_CLASS)
 public class AwContentsClientCallbackHelperTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private static class TestCancelCallbackPoller
             implements AwContentsClientCallbackHelper.CancelCallbackPoller {
@@ -123,8 +120,8 @@ public class AwContentsClientCallbackHelperTest {
         OnDownloadStartHelper downloadStartHelper = mContentsClient.getOnDownloadStartHelper();
 
         int onDownloadStartCount = downloadStartHelper.getCallCount();
-        mClientHelper.postOnDownloadStart(TEST_URL, USER_AGENT, CONTENT_DISPOSITION,
-                MIME_TYPE, CONTENT_LENGTH);
+        mClientHelper.postOnDownloadStart(
+                TEST_URL, USER_AGENT, CONTENT_DISPOSITION, MIME_TYPE, CONTENT_LENGTH);
         downloadStartHelper.waitForCallback(onDownloadStartCount);
         Assert.assertEquals(TEST_URL, downloadStartHelper.getUrl());
         Assert.assertEquals(USER_AGENT, downloadStartHelper.getUserAgent());
@@ -151,10 +148,11 @@ public class AwContentsClientCallbackHelperTest {
         // before mLooper processes the first. To do this we run both posts as a single block
         // and we do it in the thread that is processes the callbacks (mLooper).
         Handler mainHandler = new Handler(mLooper);
-        Runnable postPictures = () -> {
-            mClientHelper.postOnNewPicture(pictureProvider);
-            mClientHelper.postOnNewPicture(pictureProvider);
-        };
+        Runnable postPictures =
+                () -> {
+                    mClientHelper.postOnNewPicture(pictureProvider);
+                    mClientHelper.postOnNewPicture(pictureProvider);
+                };
         mainHandler.post(postPictures);
 
         // We want to check that one and only one callback is fired,
@@ -165,8 +163,7 @@ public class AwContentsClientCallbackHelperTest {
         // Then we post a runnable on the callback handler thread. Since both posts have happened
         // and the first callback has happened a second callback (if it exists) must be
         // in the queue before this runnable.
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-        });
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {});
 
         // When that runnable has finished we assert that one and only on callback happened.
         Assert.assertEquals(thePicture, pictureListenerHelper.getPicture());
@@ -240,8 +237,7 @@ public class AwContentsClientCallbackHelperTest {
         cancelCallbackPollerHelper.waitForCallback(pollCount);
 
         // Flush main queue.
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-        });
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {});
 
         // Neither callback should actually happen.
         Assert.assertEquals(onPageStartedCount, pageStartedHelper.getCallCount());

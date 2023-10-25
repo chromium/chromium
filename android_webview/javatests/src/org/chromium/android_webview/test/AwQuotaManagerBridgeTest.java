@@ -21,13 +21,10 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.net.test.util.TestWebServer;
 
-/**
- * Tests for the AwQuotaManagerBridge.
- */
+/** Tests for the AwQuotaManagerBridge. */
 @RunWith(AwJUnit4ClassRunner.class)
 public class AwQuotaManagerBridgeTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private TestAwContentsClient mContentsClient;
     private AwTestContainerView mTestView;
@@ -65,8 +62,8 @@ public class AwQuotaManagerBridgeTest {
     private void deleteOrigin(final String origin) {
         final AwQuotaManagerBridge bridge =
                 mActivityTestRule.getAwBrowserContext().getQuotaManagerBridge();
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> bridge.deleteOrigin(origin));
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(() -> bridge.deleteOrigin(origin));
     }
 
     private static class LongValueCallbackHelper extends CallbackHelper {
@@ -89,9 +86,11 @@ public class AwQuotaManagerBridgeTest {
                 mActivityTestRule.getAwBrowserContext().getQuotaManagerBridge();
 
         int callCount = callbackHelper.getCallCount();
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> bridge.getQuotaForOrigin("foo.com",
-                        quota -> callbackHelper.notifyCalled(quota)));
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () ->
+                                bridge.getQuotaForOrigin(
+                                        "foo.com", quota -> callbackHelper.notifyCalled(quota)));
         callbackHelper.waitForCallback(callCount);
 
         return callbackHelper.getValue();
@@ -103,9 +102,11 @@ public class AwQuotaManagerBridgeTest {
                 mActivityTestRule.getAwBrowserContext().getQuotaManagerBridge();
 
         int callCount = callbackHelper.getCallCount();
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> bridge.getUsageForOrigin(origin,
-                        usage -> callbackHelper.notifyCalled(usage)));
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () ->
+                                bridge.getUsageForOrigin(
+                                        origin, usage -> callbackHelper.notifyCalled(usage)));
         callbackHelper.waitForCallback(callCount);
 
         return callbackHelper.getValue();

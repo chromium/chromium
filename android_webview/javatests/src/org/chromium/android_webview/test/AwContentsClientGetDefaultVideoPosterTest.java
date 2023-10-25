@@ -26,13 +26,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for AwContentClient.GetDefaultVideoPoster.
- */
+/** Tests for AwContentClient.GetDefaultVideoPoster. */
 @RunWith(AwJUnit4ClassRunner.class)
 public class AwContentsClientGetDefaultVideoPosterTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private static final String TAG = "AwContentsClientGetDefaultVideoPosterTest";
 
@@ -58,8 +55,8 @@ public class AwContentsClientGetDefaultVideoPosterTest {
         public Bitmap getPoster() {
             if (mPoster == null) {
                 try {
-                    mPoster = BitmapFactory.decodeStream(
-                            mContext.getAssets().open("asset_icon.png"));
+                    mPoster =
+                            BitmapFactory.decodeStream(mContext.getAssets().open("asset_icon.png"));
                 } catch (IOException e) {
                     Log.e(TAG, null, e);
                 }
@@ -72,8 +69,9 @@ public class AwContentsClientGetDefaultVideoPosterTest {
     @Feature({"AndroidWebView"})
     @SmallTest
     public void testGetDefaultVideoPoster() throws Throwable {
-        DefaultVideoPosterClient contentsClient = new DefaultVideoPosterClient(
-                InstrumentationRegistry.getInstrumentation().getContext());
+        DefaultVideoPosterClient contentsClient =
+                new DefaultVideoPosterClient(
+                        InstrumentationRegistry.getInstrumentation().getContext());
         AwTestContainerView testContainerView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient);
         String data = "<html><head><body><video id='video' control src='' /> </body></html>";
@@ -86,15 +84,16 @@ public class AwContentsClientGetDefaultVideoPosterTest {
     @Feature({"AndroidWebView"})
     @SmallTest
     public void testDefaultVideoPosterCSP() throws Throwable {
-        DefaultVideoPosterClient contentsClient = new DefaultVideoPosterClient(
-                InstrumentationRegistry.getInstrumentation().getContext());
+        DefaultVideoPosterClient contentsClient =
+                new DefaultVideoPosterClient(
+                        InstrumentationRegistry.getInstrumentation().getContext());
         AwTestContainerView testContainerView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient);
         // Even though this content security policy does not allow loading from
         // android-webview-video-poster: this should still work as it's exempt from CSP.
-        String data = "<html><head>"
-                + "<meta http-equiv='Content-Security-Policy' content=\"default-src 'self';\">"
-                + "<body><video id='video' control src='' /> </body></html>";
+        String data =
+                "<html><head><meta http-equiv='Content-Security-Policy' content=\"default-src"
+                        + " 'self';\"><body><video id='video' control src='' /> </body></html>";
         mActivityTestRule.loadDataAsync(
                 testContainerView.getAwContents(), data, "text/html", false);
         contentsClient.waitForGetDefaultVideoPosterCalled();
@@ -104,8 +103,9 @@ public class AwContentsClientGetDefaultVideoPosterTest {
     @Feature({"AndroidWebView"})
     @SmallTest
     public void testInterceptDefaultVidoePosterURL() {
-        DefaultVideoPosterClient contentsClient = new DefaultVideoPosterClient(
-                InstrumentationRegistry.getInstrumentation().getTargetContext());
+        DefaultVideoPosterClient contentsClient =
+                new DefaultVideoPosterClient(
+                        InstrumentationRegistry.getInstrumentation().getTargetContext());
         DefaultVideoPosterRequestHandler handler =
                 new DefaultVideoPosterRequestHandler(contentsClient);
         WebResourceResponseInfo requestData =
@@ -113,9 +113,13 @@ public class AwContentsClientGetDefaultVideoPosterTest {
         Assert.assertTrue(requestData.getMimeType().equals("image/png"));
         Bitmap bitmap = BitmapFactory.decodeStream(requestData.getData());
         Bitmap poster = contentsClient.getPoster();
-        Assert.assertEquals("poster.getHeight() not equal to bitmap.getHeight()",
-                poster.getHeight(), bitmap.getHeight());
-        Assert.assertEquals("poster.getWidth() not equal to bitmap.getWidth()", poster.getWidth(),
+        Assert.assertEquals(
+                "poster.getHeight() not equal to bitmap.getHeight()",
+                poster.getHeight(),
+                bitmap.getHeight());
+        Assert.assertEquals(
+                "poster.getWidth() not equal to bitmap.getWidth()",
+                poster.getWidth(),
                 bitmap.getWidth());
     }
 

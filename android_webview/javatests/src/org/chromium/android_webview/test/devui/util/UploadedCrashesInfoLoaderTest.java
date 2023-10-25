@@ -29,9 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Unit tests for UploadedCrashesInfoLoader.
- */
+/** Unit tests for UploadedCrashesInfoLoader. */
 @RunWith(AwJUnit4ClassRunner.class)
 @OnlyRunIn(SINGLE_PROCESS) // These are unit tests
 @Batch(Batch.UNIT_TESTS)
@@ -45,7 +43,7 @@ public class UploadedCrashesInfoLoaderTest {
     private File mLogFile;
 
     private static void writeUploadLogs(File logFile, List<String> logEntries) throws IOException {
-        FileWriter writer = new FileWriter(logFile, /* Appending */ false);
+        FileWriter writer = new FileWriter(logFile, /* append= */ false);
         BufferedWriter bw = new BufferedWriter(writer);
         for (String entry : logEntries) {
             bw.write(entry);
@@ -88,9 +86,14 @@ public class UploadedCrashesInfoLoaderTest {
     public void testParseMultipleEntries() throws IOException {
         List<String> logs = new ArrayList<>();
         for (int i = 1; i <= 4; ++i) {
-            String testEntry = TEST_UPLOAD_TIME_SEC_STR + ","
-                    + "upload" + Integer.toString(i) + ","
-                    + "local" + Integer.toString(i);
+            String testEntry =
+                    TEST_UPLOAD_TIME_SEC_STR
+                            + ","
+                            + "upload"
+                            + Integer.toString(i)
+                            + ","
+                            + "local"
+                            + Integer.toString(i);
             logs.add(testEntry);
         }
         writeUploadLogs(mLogFile, logs);
@@ -114,13 +117,17 @@ public class UploadedCrashesInfoLoaderTest {
         List<String> logs = new ArrayList<>();
         // Valid logs
         for (int i = 1; i <= 2; ++i) {
-            String testEntry = TEST_UPLOAD_TIME_SEC_STR + ","
-                    + "upload" + Integer.toString(i) + ","
-                    + "local" + Integer.toString(i);
+            String testEntry =
+                    TEST_UPLOAD_TIME_SEC_STR
+                            + ","
+                            + "upload"
+                            + Integer.toString(i)
+                            + ","
+                            + "local"
+                            + Integer.toString(i);
             logs.add(testEntry);
         }
-        // Invalid logs
-        // invalid upload time
+        // Invalid logs invalid upload time
         logs.add("12345678a,1a2b3c,4d5e6f");
         // missing upload time
         logs.add(",1a2b3c,4d5e6f");
@@ -135,9 +142,14 @@ public class UploadedCrashesInfoLoaderTest {
         // too many components
         logs.add("123456789,1a2b3c,4d5e6f,1011121314");
         for (int i = 3; i <= 4; ++i) {
-            String testEntry = TEST_UPLOAD_TIME_SEC_STR + ","
-                    + "upload" + Integer.toString(i) + ","
-                    + "local" + Integer.toString(i);
+            String testEntry =
+                    TEST_UPLOAD_TIME_SEC_STR
+                            + ","
+                            + "upload"
+                            + Integer.toString(i)
+                            + ","
+                            + "local"
+                            + Integer.toString(i);
             logs.add(testEntry);
         }
         writeUploadLogs(mLogFile, logs);

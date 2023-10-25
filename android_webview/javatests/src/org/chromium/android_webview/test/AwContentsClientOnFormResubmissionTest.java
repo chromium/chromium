@@ -26,13 +26,10 @@ import org.chromium.net.test.util.TestWebServer;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests if resubmission of post data is handled properly.
- */
+/** Tests if resubmission of post data is handled properly. */
 @RunWith(AwJUnit4ClassRunner.class)
 public class AwContentsClientOnFormResubmissionTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private static class TestAwContentsClient
             extends org.chromium.android_webview.test.TestAwContentsClient {
@@ -179,8 +176,8 @@ public class AwContentsClientOnFormResubmissionTest {
                 mContentsClient.getOnPageFinishedHelper();
         int callCount = onPageFinishedHelper.getCallCount();
         // Run reload on UI thread.
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> mAwContents.getNavigationController().reload(true));
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(() -> mAwContents.getNavigationController().reload(true));
         try {
             // Wait for page finished callback, or a timeout. A timeout is necessary
             // to detect a dontResend response.

@@ -42,8 +42,7 @@ import java.util.concurrent.TimeUnit;
  */
 @RunWith(AwJUnit4ClassRunner.class)
 public class ClientOnReceivedError2Test {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private VerifyOnReceivedErrorCallClient mContentsClient;
     private AwTestContainerView mTestContainerView;
@@ -89,8 +88,10 @@ public class ClientOnReceivedError2Test {
                 Assert.assertEquals(
                         "onPageFinished called twice for " + url, false, mIsOnPageFinishedCalled);
                 mIsOnPageFinishedCalled = true;
-                Assert.assertEquals("onReceivedError not called before onPageFinished for " + url,
-                        true, mIsOnReceivedErrorCalled);
+                Assert.assertEquals(
+                        "onReceivedError not called before onPageFinished for " + url,
+                        true,
+                        mIsOnReceivedErrorCalled);
             }
             super.onPageFinished(url);
         }
@@ -98,7 +99,9 @@ public class ClientOnReceivedError2Test {
         @Override
         public void onReceivedError(AwWebResourceRequest request, AwWebResourceError error) {
             if (!mBypass) {
-                Assert.assertEquals("onReceivedError called twice for " + request.url, false,
+                Assert.assertEquals(
+                        "onReceivedError called twice for " + request.url,
+                        false,
                         mIsOnReceivedErrorCalled);
                 mIsOnReceivedErrorCalled = true;
             }
@@ -145,8 +148,11 @@ public class ClientOnReceivedError2Test {
                 mContentsClient.getOnReceivedErrorHelper();
         int onReceivedErrorCount = onReceivedErrorHelper.getCallCount();
         AwTestTouchUtils.simulateTouchCenterOfView(mTestContainerView);
-        onReceivedErrorHelper.waitForCallback(onReceivedErrorCount,
-                /* numberOfCallsToWaitFor= */ 1, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        onReceivedErrorHelper.waitForCallback(
+                onReceivedErrorCount,
+                /* numberOfCallsToWaitFor= */ 1,
+                WAIT_TIMEOUT_MS,
+                TimeUnit.MILLISECONDS);
         AwWebResourceRequest request = onReceivedErrorHelper.getRequest();
         Assert.assertNotNull(request);
         Assert.assertEquals(BAD_HTML_URL, request.url);
@@ -167,10 +173,14 @@ public class ClientOnReceivedError2Test {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testIframeSubresource() throws Throwable {
-        final String pageHtml = CommonResources.makeHtmlPageFrom(
-                "", "<iframe src='" + BAD_HTML_URL + "' />");
-        mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
-                pageHtml, "text/html", false);
+        final String pageHtml =
+                CommonResources.makeHtmlPageFrom("", "<iframe src='" + BAD_HTML_URL + "' />");
+        mActivityTestRule.loadDataSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                pageHtml,
+                "text/html",
+                false);
 
         TestAwContentsClient.OnReceivedErrorHelper onReceivedErrorHelper =
                 mContentsClient.getOnReceivedErrorHelper();
@@ -198,8 +208,9 @@ public class ClientOnReceivedError2Test {
         startWebServer();
         final String iframeHtml = CommonResources.makeHtmlPageWithSimpleLinkTo(BAD_HTML_URL);
         final String iframeUrl = mWebServer.setResponse("/iframe.html", iframeHtml, null);
-        final String pageHtml = CommonResources.makeHtmlPageFrom(
-                "", "<iframe style='width:100%;height:100%;' src='" + iframeUrl + "' />");
+        final String pageHtml =
+                CommonResources.makeHtmlPageFrom(
+                        "", "<iframe style='width:100%;height:100%;' src='" + iframeUrl + "' />");
         mActivityTestRule.loadDataAsync(mAwContents, pageHtml, "text/html", false);
         mActivityTestRule.waitForPixelColorAtCenterOfView(
                 mAwContents, mTestContainerView, CommonResources.LINK_COLOR);
@@ -208,8 +219,11 @@ public class ClientOnReceivedError2Test {
                 mContentsClient.getOnReceivedErrorHelper();
         int onReceivedErrorCount = onReceivedErrorHelper.getCallCount();
         AwTestTouchUtils.simulateTouchCenterOfView(mTestContainerView);
-        onReceivedErrorHelper.waitForCallback(onReceivedErrorCount,
-                /* numberOfCallsToWaitFor= */ 1, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        onReceivedErrorHelper.waitForCallback(
+                onReceivedErrorCount,
+                /* numberOfCallsToWaitFor= */ 1,
+                WAIT_TIMEOUT_MS,
+                TimeUnit.MILLISECONDS);
         AwWebResourceRequest request = onReceivedErrorHelper.getRequest();
         Assert.assertNotNull(request);
         Assert.assertEquals(BAD_HTML_URL, request.url);
@@ -232,8 +246,12 @@ public class ClientOnReceivedError2Test {
     public void testImageSubresource() throws Throwable {
         final String pageHtml =
                 CommonResources.makeHtmlPageFrom("", "<img src='" + BAD_IMAGE_URL + "' />");
-        mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
-                pageHtml, "text/html", false);
+        mActivityTestRule.loadDataSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                pageHtml,
+                "text/html",
+                false);
 
         TestAwContentsClient.OnReceivedErrorHelper onReceivedErrorHelper =
                 mContentsClient.getOnReceivedErrorHelper();
@@ -258,10 +276,14 @@ public class ClientOnReceivedError2Test {
     @Feature({"AndroidWebView"})
     public void testOnInvalidScheme() throws Throwable {
         final String iframeUrl = "foo://some/resource";
-        final String pageHtml = CommonResources.makeHtmlPageFrom(
-                "", "<iframe src='" + iframeUrl + "' />");
-        mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
-                pageHtml, "text/html", false);
+        final String pageHtml =
+                CommonResources.makeHtmlPageFrom("", "<iframe src='" + iframeUrl + "' />");
+        mActivityTestRule.loadDataSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                pageHtml,
+                "text/html",
+                false);
 
         TestAwContentsClient.OnReceivedErrorHelper onReceivedErrorHelper =
                 mContentsClient.getOnReceivedErrorHelper();
@@ -284,10 +306,15 @@ public class ClientOnReceivedError2Test {
     public void testOnNonExistentAssetUrl() throws Throwable {
         final String baseUrl = "file:///android_asset/";
         final String iframeUrl = baseUrl + "does_not_exist.html";
-        final String pageHtml = CommonResources.makeHtmlPageFrom(
-                "", "<iframe src='" + iframeUrl + "' />");
-        mActivityTestRule.loadDataWithBaseUrlSync(mAwContents,
-                mContentsClient.getOnPageFinishedHelper(), pageHtml, "text/html", false, baseUrl,
+        final String pageHtml =
+                CommonResources.makeHtmlPageFrom("", "<iframe src='" + iframeUrl + "' />");
+        mActivityTestRule.loadDataWithBaseUrlSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                pageHtml,
+                "text/html",
+                false,
+                baseUrl,
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
         TestAwContentsClient.OnReceivedErrorHelper onReceivedErrorHelper =
@@ -311,10 +338,15 @@ public class ClientOnReceivedError2Test {
     public void testOnNonExistentResourceUrl() throws Throwable {
         final String baseUrl = "file:///android_res/raw/";
         final String iframeUrl = baseUrl + "does_not_exist.html";
-        final String pageHtml = CommonResources.makeHtmlPageFrom(
-                "", "<iframe src='" + iframeUrl + "' />");
-        mActivityTestRule.loadDataWithBaseUrlSync(mAwContents,
-                mContentsClient.getOnPageFinishedHelper(), pageHtml, "text/html", false, baseUrl,
+        final String pageHtml =
+                CommonResources.makeHtmlPageFrom("", "<iframe src='" + iframeUrl + "' />");
+        mActivityTestRule.loadDataWithBaseUrlSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                pageHtml,
+                "text/html",
+                false,
+                baseUrl,
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
         TestAwContentsClient.OnReceivedErrorHelper onReceivedErrorHelper =
@@ -337,12 +369,17 @@ public class ClientOnReceivedError2Test {
     @Feature({"AndroidWebView"})
     public void testOnCacheMiss() throws Throwable {
         final String iframeUrl = "http://example.com/index.html";
-        final String pageHtml = CommonResources.makeHtmlPageFrom(
-                "", "<iframe src='" + iframeUrl + "' />");
-        mActivityTestRule.getAwSettingsOnUiThread(mAwContents)
+        final String pageHtml =
+                CommonResources.makeHtmlPageFrom("", "<iframe src='" + iframeUrl + "' />");
+        mActivityTestRule
+                .getAwSettingsOnUiThread(mAwContents)
                 .setCacheMode(WebSettings.LOAD_CACHE_ONLY);
-        mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
-                pageHtml, "text/html", false);
+        mActivityTestRule.loadDataSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                pageHtml,
+                "text/html",
+                false);
 
         TestAwContentsClient.OnReceivedErrorHelper onReceivedErrorHelper =
                 mContentsClient.getOnReceivedErrorHelper();
@@ -366,22 +403,26 @@ public class ClientOnReceivedError2Test {
         useDefaultTestAwContentsClient();
         final CountDownLatch latch = new CountDownLatch(1);
         startWebServer();
-        final String url = mWebServer.setResponseWithRunnableAction(
-                "/about.html", CommonResources.ABOUT_HTML, null,
-                () -> {
-                    try {
-                        latch.await(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-                    } catch (InterruptedException e) {
-                        Assert.fail("Caught InterruptedException " + e);
-                    }
-                });
+        final String url =
+                mWebServer.setResponseWithRunnableAction(
+                        "/about.html",
+                        CommonResources.ABOUT_HTML,
+                        null,
+                        () -> {
+                            try {
+                                latch.await(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+                            } catch (InterruptedException e) {
+                                Assert.fail("Caught InterruptedException " + e);
+                            }
+                        });
         TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
                 mContentsClient.getOnPageFinishedHelper();
         final int onPageFinishedCallCount = onPageFinishedHelper.getCallCount();
         mActivityTestRule.loadUrlAsync(mAwContents, url);
         mActivityTestRule.stopLoading(mAwContents);
-        onPageFinishedHelper.waitForCallback(onPageFinishedCallCount,
-                1 /* numberOfCallsToWaitFor */,
+        onPageFinishedHelper.waitForCallback(
+                onPageFinishedCallCount,
+                /* numberOfCallsToWaitFor= */ 1,
                 WAIT_TIMEOUT_MS,
                 TimeUnit.MILLISECONDS);
         latch.countDown(); // Release the server.
@@ -393,8 +434,11 @@ public class ClientOnReceivedError2Test {
                 mContentsClient.getOnReceivedErrorHelper();
         final int onReceivedErrorCount = onReceivedErrorHelper.getCallCount();
         mActivityTestRule.loadUrlAsync(mAwContents, BAD_HTML_URL);
-        onReceivedErrorHelper.waitForCallback(onReceivedErrorCount,
-                /* numberOfCallsToWaitFor= */ 1, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        onReceivedErrorHelper.waitForCallback(
+                onReceivedErrorCount,
+                /* numberOfCallsToWaitFor= */ 1,
+                WAIT_TIMEOUT_MS,
+                TimeUnit.MILLISECONDS);
         Assert.assertEquals(onReceivedErrorCount + 1, onReceivedErrorHelper.getCallCount());
         Assert.assertEquals(BAD_HTML_URL, onReceivedErrorHelper.getRequest().url);
     }
@@ -413,8 +457,11 @@ public class ClientOnReceivedError2Test {
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), redirectUrl);
 
-        onReceivedErrorHelper.waitForCallback(onReceivedErrorCount,
-                /* numberOfCallsToWaitFor= */ 1, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        onReceivedErrorHelper.waitForCallback(
+                onReceivedErrorCount,
+                /* numberOfCallsToWaitFor= */ 1,
+                WAIT_TIMEOUT_MS,
+                TimeUnit.MILLISECONDS);
         Assert.assertEquals(onReceivedErrorCount + 1, onReceivedErrorHelper.getCallCount());
         AwWebResourceError error = onReceivedErrorHelper.getError();
         Assert.assertEquals("net::ERR_UNSAFE_REDIRECT", error.description);

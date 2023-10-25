@@ -71,15 +71,15 @@ public class VariationsSeedServerTest {
     public void testGetSeed() throws FileNotFoundException, RemoteException {
         final ParcelFileDescriptor file =
                 ParcelFileDescriptor.open(mTempFile, ParcelFileDescriptor.MODE_WRITE_ONLY);
-        Intent intent = new Intent(
-                ContextUtils.getApplicationContext(), VariationsSeedServer.class);
+        Intent intent =
+                new Intent(ContextUtils.getApplicationContext(), VariationsSeedServer.class);
         try (ServiceConnectionHelper helper =
-                        new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
+                new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
             IVariationsSeedServer service =
                     IVariationsSeedServer.Stub.asInterface(helper.getBinder());
             // TODO(paulmiller): Test with various oldSeedDate values, after
             // VariationsSeedServer can write actual seeds (with actual date values).
-            service.getSeed(file, /*oldSeedDate=*/0, new StubSeedServerCallback());
+            service.getSeed(file, /* oldSeedDate= */ 0, new StubSeedServerCallback());
         }
     }
 
@@ -97,15 +97,18 @@ public class VariationsSeedServerTest {
         initialMetrics.setJobQueueTime(1000);
         initialMetrics.setLastEnqueueTime(4);
         initialMetrics.setLastJobStartTime(7);
-        Assert.assertTrue("Failed to write initial variations SharedPreferences",
+        Assert.assertTrue(
+                "Failed to write initial variations SharedPreferences",
                 initialMetrics.writeMetricsToVariationsSharedPreferences(context));
 
         VariationsSeedServer server = new VariationsSeedServer();
         IBinder binder = server.onBind(null);
         StubSeedServerCallback callback = new StubSeedServerCallback();
-        IVariationsSeedServer.Stub.asInterface(binder).getSeed(
-                ParcelFileDescriptor.open(mTempFile, ParcelFileDescriptor.MODE_WRITE_ONLY),
-                /*oldSeedDate=*/0, callback);
+        IVariationsSeedServer.Stub.asInterface(binder)
+                .getSeed(
+                        ParcelFileDescriptor.open(mTempFile, ParcelFileDescriptor.MODE_WRITE_ONLY),
+                        /* oldSeedDate= */ 0,
+                        callback);
 
         callback.helper.waitForCallback(
                 "Timed out waiting for reportSeedMetrics() to be called", 0);

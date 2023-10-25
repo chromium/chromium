@@ -22,23 +22,21 @@ import org.chromium.base.JNIUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 
-/**
- * Tests for AwPacProcessor class.
- */
+/** Tests for AwPacProcessor class. */
 @RunWith(AwJUnit4ClassRunner.class)
 @MinAndroidSdkLevel(Build.VERSION_CODES.P)
 @RequiresApi(Build.VERSION_CODES.P)
 public class AwPacProcessorTest {
     private AwPacProcessor mProcessor;
 
-    private final String mPacScript = "function FindProxyForURL(url, host) {\n"
-            + "var x = myIpAddress();"
-            + "\treturn \"PROXY \" + x + \":80\";\n"
-            + "}";
+    private final String mPacScript =
+            "function FindProxyForURL(url, host) {\n"
+                    + "var x = myIpAddress();"
+                    + "\treturn \"PROXY \" + x + \":80\";\n"
+                    + "}";
     private final String mTestUrl = "http://testurl.test";
 
-    @Rule
-    public AwActivityTestRule mRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mRule = new AwActivityTestRule();
 
     @Before
     public void setUp() {

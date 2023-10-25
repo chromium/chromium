@@ -16,13 +16,10 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.base.test.util.Feature;
 import org.chromium.net.test.util.TestWebServer;
 
-/**
- * A test suite for ContentView.getTitle().
- */
+/** A test suite for ContentView.getTitle(). */
 @RunWith(AwJUnit4ClassRunner.class)
 public class GetTitleTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private static final String TITLE = "TITLE";
 
@@ -73,7 +70,8 @@ public class GetTitleTest {
             final String url = webServer.setResponse(filename, html, null);
             mActivityTestRule.loadUrlSync(
                     mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
-            return new PageInfo(mActivityTestRule.getTitleOnUiThread(mAwContents),
+            return new PageInfo(
+                    mActivityTestRule.getTitleOnUiThread(mAwContents),
                     url.replaceAll("http:\\/\\/", ""));
         } finally {
             webServer.shutdown();
@@ -167,9 +165,11 @@ public class GetTitleTest {
         final String expectedTitle = "Expected";
         final String page =
                 "<html><head>"
-                + "<script>document.title=\"" + expectedTitle + "\"</script>"
-                + "</head><body>"
-                + "</body></html>";
+                        + "<script>document.title=\""
+                        + expectedTitle
+                        + "\"</script>"
+                        + "</head><body>"
+                        + "</body></html>";
         mActivityTestRule.getAwSettingsOnUiThread(mAwContents).setJavaScriptEnabled(true);
         final String title = loadFromDataAndGetTitle(page);
         Assert.assertEquals("Incorrect title :: ", expectedTitle, title);

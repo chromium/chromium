@@ -47,15 +47,15 @@ public class EmbeddedComponentLoaderTest {
     private static List<String> sNativeErrors;
 
     private static final String TEST_COMPONENT_ID = "jebgalgnebhfojomionfpkfelancnnkf";
-    private static final String MANIFEST_JSON_STRING = "{"
-            + "\n\"manifest_version\": 2,"
-            + "\n\"name\": \"jebgalgnebhfojomionfpkfelancnnkf\","
-            + "\n\"version\": \"123.456.789\""
-            + "\n}";
+    private static final String MANIFEST_JSON_STRING =
+            "{"
+                    + "\n\"manifest_version\": 2,"
+                    + "\n\"name\": \"jebgalgnebhfojomionfpkfelancnnkf\","
+                    + "\n\"version\": \"123.456.789\""
+                    + "\n}";
 
     // Use AwActivityTestRule to start a browser process and init native library.
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     @Before
     public void setUp() throws Exception {
@@ -66,7 +66,8 @@ public class EmbeddedComponentLoaderTest {
 
     @After
     public void tearDown() {
-        Assert.assertTrue("Failed to cleanup temporary test files",
+        Assert.assertTrue(
+                "Failed to cleanup temporary test files",
                 FileUtils.recursivelyDeleteFile(getTestDirectory(), null));
         if (!sNativeErrors.isEmpty()) {
             StringBuilder builder = new StringBuilder();
@@ -106,24 +107,30 @@ public class EmbeddedComponentLoaderTest {
                 new ByteArrayInputStream(MANIFEST_JSON_STRING.getBytes()), manifestFile);
 
         Intent intent = new Intent(ContextUtils.getApplicationContext(), serviceClass);
-        intent.putExtra(TEST_COMPONENT_ID,
+        intent.putExtra(
+                TEST_COMPONENT_ID,
                 new String[] {file.getAbsolutePath(), manifestFile.getAbsolutePath()});
 
-        mActivityTestRule.runOnUiThread(() -> {
-            EmbeddedComponentLoader mLoader =
-                    EmbeddedComponentLoaderFactory.makeEmbeddedComponentLoader();
-            mLoader.connect(intent);
-        });
+        mActivityTestRule.runOnUiThread(
+                () -> {
+                    EmbeddedComponentLoader mLoader =
+                            EmbeddedComponentLoaderFactory.makeEmbeddedComponentLoader();
+                    mLoader.connect(intent);
+                });
 
         // Should be called once for AvailableComponentLoaderPolicy.
         sOnComponentLoadedHelper.waitForCallback(
                 "Timed out waiting for onComponentLoaded() to be called",
-                onComponentLoadedCallCount, 1, AwActivityTestRule.WAIT_TIMEOUT_MS,
+                onComponentLoadedCallCount,
+                1,
+                AwActivityTestRule.WAIT_TIMEOUT_MS,
                 TimeUnit.MILLISECONDS);
         // Should be called once for UnavailableComponentLoaderPolicy.
         sOnComponentLoadFailedHelper.waitForCallback(
                 "Timed out waiting for onComponentLoadFailed() to be called",
-                onComponentLoadFailedCallCount, 1, AwActivityTestRule.WAIT_TIMEOUT_MS,
+                onComponentLoadFailedCallCount,
+                1,
+                AwActivityTestRule.WAIT_TIMEOUT_MS,
                 TimeUnit.MILLISECONDS);
     }
 
@@ -143,7 +150,8 @@ public class EmbeddedComponentLoaderTest {
     }
 
     private static File getTestDirectory() {
-        return new File(ComponentsProviderPathUtil.getComponentsServingDirectoryPath(),
+        return new File(
+                ComponentsProviderPathUtil.getComponentsServingDirectoryPath(),
                 TEST_COMPONENT_ID + "/3_123.456.789");
     }
 }

@@ -25,13 +25,10 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.url.GURL;
 
-/**
- * Navigation history tests.
- */
+/** Navigation history tests. */
 @RunWith(AwJUnit4ClassRunner.class)
 public class NavigationHistoryTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private static final String PAGE_1_PATH = "/page1.html";
     private static final String PAGE_1_TITLE = "Page 1 Title";
@@ -59,14 +56,17 @@ public class NavigationHistoryTest {
         mWebServer.shutdown();
     }
 
-    private NavigationHistory getNavigationHistory(final AwContents awContents)
-            throws Exception {
+    private NavigationHistory getNavigationHistory(final AwContents awContents) throws Exception {
         return TestThreadUtils.runOnUiThreadBlocking(
                 () -> awContents.getNavigationController().getNavigationHistory());
     }
 
-    private void checkHistoryItem(NavigationEntry item, String url, String originalUrl,
-            String title, boolean faviconNull) {
+    private void checkHistoryItem(
+            NavigationEntry item,
+            String url,
+            String originalUrl,
+            String title,
+            boolean faviconNull) {
         Assert.assertEquals(url, item.getUrl().getSpec());
         Assert.assertEquals(originalUrl, item.getOriginalUrl().getSpec());
         Assert.assertEquals(title, item.getTitle());
@@ -78,23 +78,24 @@ public class NavigationHistoryTest {
     }
 
     private String addPage1ToServer(TestWebServer webServer) {
-        return mWebServer.setResponse(PAGE_1_PATH,
+        return mWebServer.setResponse(
+                PAGE_1_PATH,
                 CommonResources.makeHtmlPageFrom(
-                        "<title>" + PAGE_1_TITLE + "</title>",
-                        "<div>This is test page 1.</div>"),
+                        "<title>" + PAGE_1_TITLE + "</title>", "<div>This is test page 1.</div>"),
                 CommonResources.getTextHtmlHeaders(false));
     }
 
     private String addPage2ToServer(TestWebServer webServer) {
-        return mWebServer.setResponse(PAGE_2_PATH,
+        return mWebServer.setResponse(
+                PAGE_2_PATH,
                 CommonResources.makeHtmlPageFrom(
-                        "<title>" + PAGE_2_TITLE + "</title>",
-                        "<div>This is test page 2.</div>"),
+                        "<title>" + PAGE_2_TITLE + "</title>", "<div>This is test page 2.</div>"),
                 CommonResources.getTextHtmlHeaders(false));
     }
 
     private String addPageWithHashTagRedirectToServer(TestWebServer webServer) {
-        return mWebServer.setResponse(PAGE_2_PATH,
+        return mWebServer.setResponse(
+                PAGE_2_PATH,
                 CommonResources.makeHtmlPageFrom(
                         "<title>" + PAGE_WITH_HASHTAG_REDIRECT_TITLE + "</title>",
                         "<iframe onLoad=\"location.replace(location.href + '#tag');\" />"),
@@ -102,7 +103,8 @@ public class NavigationHistoryTest {
     }
 
     private String addPageWithSameDocumentToServer(TestWebServer webServer) {
-        return mWebServer.setResponse(PAGE_WITH_SAME_DOCUMENT,
+        return mWebServer.setResponse(
+                PAGE_WITH_SAME_DOCUMENT,
                 CommonResources.makeHtmlPageFrom(
                         "<script>history.pushState(null, null, '/history.html');</script>",
                         "<div>This is test page with samedocument.</div>"),
@@ -122,7 +124,8 @@ public class NavigationHistoryTest {
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), pageWithHashTagRedirectUrl);
 
         history = getNavigationHistory(mAwContents);
-        checkHistoryItem(history.getEntryAtIndex(0),
+        checkHistoryItem(
+                history.getEntryAtIndex(0),
                 pageWithHashTagRedirectUrl + "#tag",
                 pageWithHashTagRedirectUrl,
                 PAGE_WITH_HASHTAG_REDIRECT_TITLE,
@@ -151,8 +154,10 @@ public class NavigationHistoryTest {
         Assert.assertTrue(mAwContents.canGoBackOrForward(-1));
         Assert.assertFalse(mAwContents.canGoBackOrForward(-2));
 
-        HistoryUtils.goBackSync(InstrumentationRegistry.getInstrumentation(),
-                mAwContents.getWebContents(), mContentsClient.getOnPageFinishedHelper());
+        HistoryUtils.goBackSync(
+                InstrumentationRegistry.getInstrumentation(),
+                mAwContents.getWebContents(),
+                mContentsClient.getOnPageFinishedHelper());
 
         Assert.assertTrue(mAwContents.canGoBackOrForward(1));
         Assert.assertFalse(mAwContents.canGoBackOrForward(2));
@@ -178,18 +183,10 @@ public class NavigationHistoryTest {
         Assert.assertEquals(2, list.getEntryCount());
 
         // Make sure the first entry is still okay
-        checkHistoryItem(list.getEntryAtIndex(0),
-                page1Url,
-                page1Url,
-                PAGE_1_TITLE,
-                true);
+        checkHistoryItem(list.getEntryAtIndex(0), page1Url, page1Url, PAGE_1_TITLE, true);
 
         // Make sure the second entry was added properly
-        checkHistoryItem(list.getEntryAtIndex(1),
-                page2Url,
-                page2Url,
-                PAGE_2_TITLE,
-                true);
+        checkHistoryItem(list.getEntryAtIndex(1), page2Url, page2Url, PAGE_2_TITLE, true);
 
         Assert.assertEquals(1, list.getCurrentEntryIndex());
     }
@@ -208,23 +205,17 @@ public class NavigationHistoryTest {
         mActivityTestRule.loadUrlSync(mAwContents, onPageFinishedHelper, page1Url);
         mActivityTestRule.loadUrlSync(mAwContents, onPageFinishedHelper, page2Url);
 
-        HistoryUtils.goBackSync(InstrumentationRegistry.getInstrumentation(),
-                mAwContents.getWebContents(), onPageFinishedHelper);
+        HistoryUtils.goBackSync(
+                InstrumentationRegistry.getInstrumentation(),
+                mAwContents.getWebContents(),
+                onPageFinishedHelper);
         list = getNavigationHistory(mAwContents);
 
         // Make sure the first entry is still okay
-        checkHistoryItem(list.getEntryAtIndex(0),
-                page1Url,
-                page1Url,
-                PAGE_1_TITLE,
-                true);
+        checkHistoryItem(list.getEntryAtIndex(0), page1Url, page1Url, PAGE_1_TITLE, true);
 
         // Make sure the second entry is still okay
-        checkHistoryItem(list.getEntryAtIndex(1),
-                page2Url,
-                page2Url,
-                PAGE_2_TITLE,
-                true);
+        checkHistoryItem(list.getEntryAtIndex(1), page2Url, page2Url, PAGE_2_TITLE, true);
 
         // Make sure the current index is back to 0
         Assert.assertEquals(0, list.getCurrentEntryIndex());
@@ -233,10 +224,12 @@ public class NavigationHistoryTest {
     @Test
     @SmallTest
     public void testFavicon() throws Throwable {
-        mWebServer.setResponseBase64("/" + CommonResources.FAVICON_FILENAME,
-                CommonResources.FAVICON_DATA_BASE64, CommonResources.getImagePngHeaders(false));
-        final String url = mWebServer.setResponse("/favicon.html",
-                CommonResources.FAVICON_STATIC_HTML, null);
+        mWebServer.setResponseBase64(
+                "/" + CommonResources.FAVICON_FILENAME,
+                CommonResources.FAVICON_DATA_BASE64,
+                CommonResources.getImagePngHeaders(false));
+        final String url =
+                mWebServer.setResponse("/favicon.html", CommonResources.FAVICON_STATIC_HTML, null);
 
         NavigationHistory list = getNavigationHistory(mAwContents);
         Assert.assertEquals(1, list.getEntryCount());
@@ -275,9 +268,11 @@ public class NavigationHistoryTest {
         do {
             onReceivedTitleHelper.waitForCallback(onReceivedTitleCallCount);
             onReceivedTitleCallCount = onReceivedTitleHelper.getCallCount();
-        } while(!PAGE_2_TITLE.equals(onReceivedTitleHelper.getTitle()));
-        HistoryUtils.goBackSync(InstrumentationRegistry.getInstrumentation(),
-                mAwContents.getWebContents(), onPageFinishedHelper);
+        } while (!PAGE_2_TITLE.equals(onReceivedTitleHelper.getTitle()));
+        HistoryUtils.goBackSync(
+                InstrumentationRegistry.getInstrumentation(),
+                mAwContents.getWebContents(),
+                onPageFinishedHelper);
         onReceivedTitleHelper.waitForCallback(onReceivedTitleCallCount);
         Assert.assertEquals(PAGE_1_TITLE, onReceivedTitleHelper.getTitle());
     }
@@ -316,13 +311,21 @@ public class NavigationHistoryTest {
     @SmallTest
     public void testPopupInitialNavigationHistory() throws Throwable {
         // Open a popup without an URL.
-        final String parentPageHtml = CommonResources.makeHtmlPageFrom("",
-                "<script>"
-                        + "function tryOpenWindow() {"
-                        + "  var newWindow = window.open();"
-                        + "}</script>");
-        mActivityTestRule.triggerPopup(mAwContents, mContentsClient, mWebServer, parentPageHtml,
-                /*popupHtml=*/null, /*popupPath=*/null, "tryOpenWindow()");
+        final String parentPageHtml =
+                CommonResources.makeHtmlPageFrom(
+                        "",
+                        "<script>"
+                                + "function tryOpenWindow() {"
+                                + "  var newWindow = window.open();"
+                                + "}</script>");
+        mActivityTestRule.triggerPopup(
+                mAwContents,
+                mContentsClient,
+                mWebServer,
+                parentPageHtml,
+                /* popupHtml= */ null,
+                /* popupPath= */ null,
+                "tryOpenWindow()");
         PopupInfo popupInfo = mActivityTestRule.createPopupContents(mAwContents);
         final AwContents popupContents = popupInfo.popupContents;
 

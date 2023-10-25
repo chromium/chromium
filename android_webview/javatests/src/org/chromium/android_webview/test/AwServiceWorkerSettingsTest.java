@@ -39,8 +39,7 @@ import java.util.Set;
 @Batch(Batch.PER_CLASS)
 public class AwServiceWorkerSettingsTest {
     public static final String TAG = "AwSWSettingsTest";
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private TestWebServer mWebServer;
 
@@ -53,53 +52,54 @@ public class AwServiceWorkerSettingsTest {
     public static final String INDEX_URL = "/index.html";
     public static final String SW_URL = "/sw.js";
     public static final String FETCH_URL = "/content.txt";
-    private static final String INDEX_HTML_TEMPLATE = "<!DOCTYPE html>\n"
-            + "<script>\n"
-            + "    state = '';\n"
-            + "    function setState(newState) {\n"
-            + "        console.log(newState);\n"
-            + "        state = newState;\n"
-            + "    }\n"
-            + "    function swReady(sw) {\n"
-            + "        setState('sw_ready');\n"
-            + "        sw.postMessage({fetches: %d});\n" // <- Format param on this line
-            + "    }\n"
-            + "    navigator.serviceWorker.register('sw.js')\n"
-            + "        .then(sw_reg => {\n"
-            + "            setState('sw_registered');\n"
-            + "            let sw = sw_reg.installing || sw_reg.waiting || sw_reg.active;\n"
-            + "            if (sw.state == 'activated') {\n"
-            + "                swReady(sw);\n"
-            + "            } else {\n"
-            + "                sw.addEventListener('statechange', e => {\n"
-            + "                    if(e.target.state == 'activated') swReady(e.target); \n"
-            + "                });            \n"
-            + "            }\n"
-            + "        }).catch(err => {\n"
-            + "            console.log(err);\n"
-            + "            setState('sw_registration_error');\n"
-            + "        });\n"
-            + "    navigator.serviceWorker.addEventListener('message',\n"
-            + "        event => setState(event.data.msg));\n"
-            + "    setState('page_loaded');\n"
-            + "</script>\n";
+    private static final String INDEX_HTML_TEMPLATE =
+            "<!DOCTYPE html>\n"
+                    + "<script>\n"
+                    + "    state = '';\n"
+                    + "    function setState(newState) {\n"
+                    + "        console.log(newState);\n"
+                    + "        state = newState;\n"
+                    + "    }\n"
+                    + "    function swReady(sw) {\n"
+                    + "        setState('sw_ready');\n"
+                    + "        sw.postMessage({fetches: %d});\n" // <- Format param on this line
+                    + "    }\n"
+                    + "    navigator.serviceWorker.register('sw.js')\n"
+                    + "        .then(sw_reg => {\n"
+                    + "            setState('sw_registered');\n"
+                    + "            let sw = sw_reg.installing || sw_reg.waiting || sw_reg.active;\n"
+                    + "            if (sw.state == 'activated') {\n"
+                    + "                swReady(sw);\n"
+                    + "            } else {\n"
+                    + "                sw.addEventListener('statechange', e => {\n"
+                    + "                    if(e.target.state == 'activated') swReady(e.target); \n"
+                    + "                });            \n"
+                    + "            }\n"
+                    + "        }).catch(err => {\n"
+                    + "            console.log(err);\n"
+                    + "            setState('sw_registration_error');\n"
+                    + "        });\n"
+                    + "    navigator.serviceWorker.addEventListener('message',\n"
+                    + "        event => setState(event.data.msg));\n"
+                    + "    setState('page_loaded');\n"
+                    + "</script>\n";
 
     private static final String NETWORK_ACCESS_SW_JS =
             "self.addEventListener('message', async event => {\n"
-            + "    try {\n"
-            + "        let resp;\n"
-            + "        for (let i = 0; i < event.data.fetches; i++) {\n"
-            + "            resp = await fetch('content.txt');\n"
-            + "        }\n"
-            + "        if (resp && resp.ok) {\n"
-            + "            event.source.postMessage({ msg: await resp.text() });\n"
-            + "        } else {\n"
-            + "            event.source.postMessage({ msg: 'fetch_not_ok' });\n"
-            + "        }\n"
-            + "    } catch {\n"
-            + "        event.source.postMessage({ msg: 'fetch_catch' })\n"
-            + "    }\n"
-            + "});\n";
+                    + "    try {\n"
+                    + "        let resp;\n"
+                    + "        for (let i = 0; i < event.data.fetches; i++) {\n"
+                    + "            resp = await fetch('content.txt');\n"
+                    + "        }\n"
+                    + "        if (resp && resp.ok) {\n"
+                    + "            event.source.postMessage({ msg: await resp.text() });\n"
+                    + "        } else {\n"
+                    + "            event.source.postMessage({ msg: 'fetch_not_ok' });\n"
+                    + "        }\n"
+                    + "    } catch {\n"
+                    + "        event.source.postMessage({ msg: 'fetch_catch' })\n"
+                    + "    }\n"
+                    + "});\n";
 
     private static final String FETCH_CONTENT = "fetch_success";
 
@@ -119,15 +119,19 @@ public class AwServiceWorkerSettingsTest {
         mAwContents = mTestContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
 
-        mAwServiceWorkerSettings = mActivityTestRule.getAwBrowserContext()
-                                           .getServiceWorkerController()
-                                           .getAwServiceWorkerSettings();
+        mAwServiceWorkerSettings =
+                mActivityTestRule
+                        .getAwBrowserContext()
+                        .getServiceWorkerController()
+                        .getAwServiceWorkerSettings();
 
         // To ensure that any settings supplied by the user are respected, even if the
         // serviceWorkerClient is null, we set it explicitly here.
         // See http://crbug.com/979321
-        mActivityTestRule.getAwBrowserContext().getServiceWorkerController().setServiceWorkerClient(
-                null);
+        mActivityTestRule
+                .getAwBrowserContext()
+                .getServiceWorkerController()
+                .setServiceWorkerClient(null);
     }
 
     @After
@@ -148,7 +152,9 @@ public class AwServiceWorkerSettingsTest {
 
         loadPage(fullIndexUrl, FETCH_CONTENT);
         Assert.assertEquals(1, mWebServer.getRequestCount(SW_URL));
-        Assert.assertEquals("The service worker should make one network request", 1,
+        Assert.assertEquals(
+                "The service worker should make one network request",
+                1,
                 mWebServer.getRequestCount(FETCH_URL));
     }
 
@@ -168,7 +174,9 @@ public class AwServiceWorkerSettingsTest {
         loadPage(fullIndexUrl, "sw_registration_error");
         Assert.assertEquals(
                 "The service worker should not be loaded", 0, mWebServer.getRequestCount(SW_URL));
-        Assert.assertEquals("The service worker should not make any network requests", 0,
+        Assert.assertEquals(
+                "The service worker should not make any network requests",
+                0,
                 mWebServer.getRequestCount(FETCH_URL));
     }
 
@@ -184,7 +192,9 @@ public class AwServiceWorkerSettingsTest {
         mAwServiceWorkerSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
 
         loadPage(fullIndexUrl, FETCH_CONTENT);
-        Assert.assertEquals("Two requests should be made in no-cache mode", 2,
+        Assert.assertEquals(
+                "Two requests should be made in no-cache mode",
+                2,
                 mWebServer.getRequestCount(FETCH_URL));
     }
 
@@ -200,7 +210,9 @@ public class AwServiceWorkerSettingsTest {
         mAwServiceWorkerSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
 
         loadPage(fullIndexUrl, FETCH_CONTENT);
-        Assert.assertEquals("Only one request should be made when cache is available", 1,
+        Assert.assertEquals(
+                "Only one request should be made when cache is available",
+                1,
                 mWebServer.getRequestCount(FETCH_URL));
     }
 
@@ -217,9 +229,13 @@ public class AwServiceWorkerSettingsTest {
 
         // sw won't be in cache so register will fail
         loadPage(fullIndexUrl, "sw_registration_error");
-        Assert.assertEquals("No requests should be made in cache-only mode", 0,
+        Assert.assertEquals(
+                "No requests should be made in cache-only mode",
+                0,
                 mWebServer.getRequestCount(SW_URL));
-        Assert.assertEquals("No requests should be made in cache-only mode", 0,
+        Assert.assertEquals(
+                "No requests should be made in cache-only mode",
+                0,
                 mWebServer.getRequestCount(FETCH_URL));
     }
 
@@ -230,7 +246,8 @@ public class AwServiceWorkerSettingsTest {
         initAwServiceWorkerSettings();
         final Set<String> allowList = Set.of("https://*.example.com", "https://*.google.com");
 
-        Assert.assertEquals(Collections.emptySet(),
+        Assert.assertEquals(
+                Collections.emptySet(),
                 mAwServiceWorkerSettings.getRequestedWithHeaderOriginAllowList());
 
         mAwServiceWorkerSettings.setRequestedWithHeaderOriginAllowList(allowList);
@@ -269,8 +286,9 @@ public class AwServiceWorkerSettingsTest {
     }
 
     private String getStateFromJs() throws Exception {
-        String state = mActivityTestRule.executeJavaScriptAndWaitForResult(
-                mAwContents, mContentsClient, "state");
+        String state =
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        mAwContents, mContentsClient, "state");
         // Logging the state helps with troubleshooting
         Log.i(TAG, "state = %s", state);
         return state;

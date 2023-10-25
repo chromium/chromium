@@ -35,17 +35,18 @@ import org.chromium.net.test.util.TestWebServer;
 @RunWith(AwJUnit4ClassRunner.class)
 public class CookieManagerStartupTest {
     @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule() {
-        @Override
-        public boolean needsAwBrowserContextCreated() {
-            return false;
-        }
+    public AwActivityTestRule mActivityTestRule =
+            new AwActivityTestRule() {
+                @Override
+                public boolean needsAwBrowserContextCreated() {
+                    return false;
+                }
 
-        @Override
-        public boolean needsBrowserProcessStarted() {
-            return false;
-        }
-    };
+                @Override
+                public boolean needsBrowserProcessStarted() {
+                    return false;
+                }
+            };
 
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
@@ -109,7 +110,9 @@ public class CookieManagerStartupTest {
             startChromium();
             mActivityTestRule.loadUrlSync(
                     mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
-            mActivityTestRule.executeJavaScriptAndWaitForResult(mAwContents, mContentsClient,
+            mActivityTestRule.executeJavaScriptAndWaitForResult(
+                    mAwContents,
+                    mContentsClient,
                     "var c=document.cookie.split('=');document.cookie=c[0]+'='+(1+(+c[1]));");
 
             // Verify that the cookie value we set before was successfully passed through to the
@@ -152,13 +155,15 @@ public class CookieManagerStartupTest {
         ThreadUtils.setWillOverrideUiThread();
         ThreadUtils.setUiThread(Looper.getMainLooper());
         String url = "http://www.example.com";
-        TestAwContentsClient contentsClient = new TestAwContentsClient() {
-            @Override
-            public WebResourceResponseInfo shouldInterceptRequest(AwWebResourceRequest request) {
-                (new AwCookieManager()).getCookie("www.example.com");
-                return null;
-            }
-        };
+        TestAwContentsClient contentsClient =
+                new TestAwContentsClient() {
+                    @Override
+                    public WebResourceResponseInfo shouldInterceptRequest(
+                            AwWebResourceRequest request) {
+                        (new AwCookieManager()).getCookie("www.example.com");
+                        return null;
+                    }
+                };
         startChromiumWithClient(contentsClient);
         mActivityTestRule.loadUrlSync(mAwContents, contentsClient.getOnPageFinishedHelper(), url);
     }

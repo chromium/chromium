@@ -38,13 +38,10 @@ import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestInputMethodManagerWrapper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- * Tests for IME (input method editor) on Android WebView.
- */
+/** Tests for IME (input method editor) on Android WebView. */
 @RunWith(AwJUnit4ClassRunner.class)
 public class AwImeTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private static class TestJavascriptInterface {
         private final CallbackHelper mFocusCallbackHelper = new CallbackHelper();
@@ -68,32 +65,35 @@ public class AwImeTest {
     @Before
     public void setUp() {
         mContentsClient = new TestAwContentsClient();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Use detached container view to avoid focus request.
-            mTestContainerView =
-                    mActivityTestRule.createDetachedAwTestContainerView(mContentsClient);
-            mTestContainerView.setLayoutParams(
-                    new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-            mEditText = new EditText(mActivityTestRule.getActivity());
-            LinearLayout linearLayout = new LinearLayout(mActivityTestRule.getActivity());
-            linearLayout.setOrientation(LinearLayout.VERTICAL);
-            linearLayout.setLayoutParams(
-                    new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Use detached container view to avoid focus request.
+                    mTestContainerView =
+                            mActivityTestRule.createDetachedAwTestContainerView(mContentsClient);
+                    mTestContainerView.setLayoutParams(
+                            new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+                    mEditText = new EditText(mActivityTestRule.getActivity());
+                    LinearLayout linearLayout = new LinearLayout(mActivityTestRule.getActivity());
+                    linearLayout.setOrientation(LinearLayout.VERTICAL);
+                    linearLayout.setLayoutParams(
+                            new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
-            // Ensures that we don't autofocus EditText.
-            linearLayout.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
-            linearLayout.setFocusableInTouchMode(true);
+                    // Ensures that we don't autofocus EditText.
+                    linearLayout.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
+                    linearLayout.setFocusableInTouchMode(true);
 
-            mActivityTestRule.getActivity().addView(linearLayout);
-            linearLayout.addView(mEditText);
-            linearLayout.addView(mTestContainerView);
-            mTestContainerView.getAwContents().addJavascriptInterface(
-                    mTestJavascriptInterface, "test");
-            // Let's not test against real input method.
-            ImeAdapter imeAdapter = ImeAdapter.fromWebContents(mTestContainerView.getWebContents());
-            imeAdapter.setInputMethodManagerWrapper(
-                    TestInputMethodManagerWrapper.create(imeAdapter));
-        });
+                    mActivityTestRule.getActivity().addView(linearLayout);
+                    linearLayout.addView(mEditText);
+                    linearLayout.addView(mTestContainerView);
+                    mTestContainerView
+                            .getAwContents()
+                            .addJavascriptInterface(mTestJavascriptInterface, "test");
+                    // Let's not test against real input method.
+                    ImeAdapter imeAdapter =
+                            ImeAdapter.fromWebContents(mTestContainerView.getWebContents());
+                    imeAdapter.setInputMethodManagerWrapper(
+                            TestInputMethodManagerWrapper.create(imeAdapter));
+                });
         AwActivityTestRule.enableJavaScriptOnUiThread(mTestContainerView.getAwContents());
     }
 
@@ -108,10 +108,10 @@ public class AwImeTest {
 
     private void loadBottomInputHtml() throws Throwable {
         // Shows an input at the bottom of the screen.
-        final String htmlDocument = "<html><head>"
-                + "<style>html, body{background-color:beige} "
-                + "div{position:absolute;top:10000px;}</style></head>"
-                + "<body>Test<div id='footer'><input id='input_text'><br/></div></body></html>";
+        final String htmlDocument =
+                "<html><head><style>html, body{background-color:beige} "
+                        + "div{position:absolute;top:10000px;}</style></head><body>Test<div"
+                        + " id='footer'><input id='input_text'><br/></div></body></html>";
         final CallbackHelper loadHelper = mContentsClient.getOnPageFinishedHelper();
 
         mActivityTestRule.loadHtmlSync(
@@ -119,13 +119,16 @@ public class AwImeTest {
     }
 
     private void focusOnEditTextAndShowKeyboard() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mEditText.requestFocus();
-            InputMethodManager imm =
-                    (InputMethodManager) mActivityTestRule.getActivity().getSystemService(
-                            Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(mEditText, 0);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mEditText.requestFocus();
+                    InputMethodManager imm =
+                            (InputMethodManager)
+                                    mActivityTestRule
+                                            .getActivity()
+                                            .getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.showSoftInput(mEditText, 0);
+                });
     }
 
     private void focusOnWebViewAndEnableEditing() throws Exception {
@@ -134,7 +137,8 @@ public class AwImeTest {
         // View focus may not have been propagated to the renderer process yet. If document is not
         // yet focused, and focusing on an element is an invalid operation. See crbug.com/622151
         // for details.
-        mActivityTestRule.executeJavaScriptAndWaitForResult(mTestContainerView.getAwContents(),
+        mActivityTestRule.executeJavaScriptAndWaitForResult(
+                mTestContainerView.getAwContents(),
                 mContentsClient,
                 "function onDocumentFocused() {\n"
                         + "  document.getElementById('editor').focus();\n"
@@ -158,9 +162,7 @@ public class AwImeTest {
         CriteriaHelper.pollUiThread(() -> Criteria.checkThat(getInputConnection(), notNullValue()));
     }
 
-    /**
-     * Tests that moving from EditText to WebView keeps the keyboard showing.
-     */
+    /** Tests that moving from EditText to WebView keeps the keyboard showing. */
     // https://crbug.com/569556
     @Test
     @SmallTest
@@ -186,19 +188,28 @@ public class AwImeTest {
         focusOnWebViewAndEnableEditing();
         waitForNonNullInputConnection();
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    mActivityTestRule.getActivity().getCurrentFocus(), is(mTestContainerView));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mActivityTestRule.getActivity().getCurrentFocus(),
+                            is(mTestContainerView));
+                });
 
-        TestThreadUtils.runOnUiThreadBlocking((Runnable) () -> {
-            getInputConnection().sendKeyEvent(
-                    new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_UP));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                (Runnable)
+                        () -> {
+                            getInputConnection()
+                                    .sendKeyEvent(
+                                            new KeyEvent(
+                                                    KeyEvent.ACTION_DOWN,
+                                                    KeyEvent.KEYCODE_DPAD_UP));
+                        });
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mActivityTestRule.getActivity().getCurrentFocus(), is(mEditText));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mActivityTestRule.getActivity().getCurrentFocus(), is(mEditText));
+                });
     }
 
     /**
@@ -214,30 +225,40 @@ public class AwImeTest {
         focusOnWebViewAndEnableEditing();
         waitForNonNullInputConnection();
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    mActivityTestRule.getActivity().getCurrentFocus(), is(mTestContainerView));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mActivityTestRule.getActivity().getCurrentFocus(),
+                            is(mTestContainerView));
+                });
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTestContainerView.dispatchKeyEvent(
-                    new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_UP));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTestContainerView.dispatchKeyEvent(
+                            new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_UP));
+                });
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mActivityTestRule.getActivity().getCurrentFocus(), is(mEditText));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mActivityTestRule.getActivity().getCurrentFocus(), is(mEditText));
+                });
     }
 
     private void scrollBottomOfNodeIntoView(String nodeId) throws Exception {
-        mActivityTestRule.executeJavaScriptAndWaitForResult(mTestContainerView.getAwContents(),
+        mActivityTestRule.executeJavaScriptAndWaitForResult(
+                mTestContainerView.getAwContents(),
                 mContentsClient,
                 "document.getElementById('" + nodeId + "').scrollIntoView(false);");
     }
 
     private float getScrollY() throws Exception {
-        float res = Float.parseFloat(mActivityTestRule.executeJavaScriptAndWaitForResult(
-                mTestContainerView.getAwContents(), mContentsClient, "window.scrollY"));
+        float res =
+                Float.parseFloat(
+                        mActivityTestRule.executeJavaScriptAndWaitForResult(
+                                mTestContainerView.getAwContents(),
+                                mContentsClient,
+                                "window.scrollY"));
         return res;
     }
 
@@ -250,7 +271,9 @@ public class AwImeTest {
         Rect currentRect = new Rect();
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mTestContainerView.getWindowVisibleDisplayFrame(currentRect); });
+                () -> {
+                    mTestContainerView.getWindowVisibleDisplayFrame(currentRect);
+                });
         WebContents webContents = mTestContainerView.getAwContents().getWebContents();
 
         DOMUtils.waitForNonZeroNodeBounds(webContents, "input_text");
@@ -263,26 +286,31 @@ public class AwImeTest {
         float scrollYAtBottom = getScrollY();
         assertThat(scrollYAtBottom, greaterThan(initialScrollY));
 
-        DOMUtils.clickNode(webContents, "input_text", true /* goThroughAndroidRootView */,
-                false /* shouldScrollIntoView */);
+        DOMUtils.clickNode(
+                webContents,
+                "input_text",
+                /* goThroughAndroidRootView= */ true,
+                /* shouldScrollIntoView= */ false);
 
         CriteriaHelper.pollInstrumentationThread(
                 () -> "input_text".equals(DOMUtils.getFocusedNode(webContents)));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Expect that we may have a size change.
-            ImeAdapter imeAdapter = ImeAdapter.fromWebContents(mTestContainerView.getWebContents());
-            imeAdapter.onShowKeyboardReceiveResult(InputMethodManager.RESULT_SHOWN);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Expect that we may have a size change.
+                    ImeAdapter imeAdapter =
+                            ImeAdapter.fromWebContents(mTestContainerView.getWebContents());
+                    imeAdapter.onShowKeyboardReceiveResult(InputMethodManager.RESULT_SHOWN);
 
-            // When a virtual keyboard shows up, the window and view size shrink. Note that we are
-            // not depend on the real virtual keyboard behavior here. We only emulate the behavior
-            // by shrinking the view height.
-            currentRect.bottom = currentRect.centerY();
-            mTestContainerView.setWindowVisibleDisplayFrameOverride(currentRect);
-            int width = mTestContainerView.getWidth();
-            int height = mTestContainerView.getHeight();
-            mTestContainerView.onSizeChanged(width, height / 2, width, height);
-        });
+                    // When a virtual keyboard shows up, the window and view size shrink. Note that
+                    // we are not depend on the real virtual keyboard behavior here. We only
+                    // emulate the behavior by shrinking the view height.
+                    currentRect.bottom = currentRect.centerY();
+                    mTestContainerView.setWindowVisibleDisplayFrameOverride(currentRect);
+                    int width = mTestContainerView.getWidth();
+                    int height = mTestContainerView.getHeight();
+                    mTestContainerView.onSizeChanged(width, height / 2, width, height);
+                });
 
         // Scrolling may take some time. Ensures that scrolling happened.
         CriteriaHelper.pollInstrumentationThread(

@@ -26,9 +26,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
 
-/**
- * Unit tests for {@link ServiceConnectionDelayRecorder}.
- */
+/** Unit tests for {@link ServiceConnectionDelayRecorder}. */
 @RunWith(AwJUnit4ClassRunner.class)
 @OnlyRunIn(SINGLE_PROCESS)
 @DoNotBatch(reason = "To make sure all bound services are properly killed between tests.")
@@ -47,8 +45,8 @@ public class ServiceConnectionDelayRecorderTest {
         }
     }
 
-    private static class TestServiceConnectionDelayRecorder
-            extends ServiceConnectionDelayRecorder implements AutoCloseable {
+    private static class TestServiceConnectionDelayRecorder extends ServiceConnectionDelayRecorder
+            implements AutoCloseable {
         private final CallbackHelper mHelper = new CallbackHelper();
         private final TestClock mClock = new TestClock();
 
@@ -85,14 +83,16 @@ public class ServiceConnectionDelayRecorderTest {
                 new Intent(ContextUtils.getApplicationContext(), MockVariationsSeedServer.class);
 
         try (TestServiceConnectionDelayRecorder recorderConnection =
-                        new TestServiceConnectionDelayRecorder()) {
-            HistogramWatcher histogramExpectation = HistogramWatcher.newSingleRecordWatcher(
-                    expectedHistogramName, expectedHistogramValue);
+                new TestServiceConnectionDelayRecorder()) {
+            HistogramWatcher histogramExpectation =
+                    HistogramWatcher.newSingleRecordWatcher(
+                            expectedHistogramName, expectedHistogramValue);
             CallbackHelper helper = recorderConnection.getOnServiceConnectedListener();
             int onServiceConnectedInitCount = helper.getCallCount();
 
-            boolean result = recorderConnection.bind(
-                    ContextUtils.getApplicationContext(), intent, Context.BIND_AUTO_CREATE);
+            boolean result =
+                    recorderConnection.bind(
+                            ContextUtils.getApplicationContext(), intent, Context.BIND_AUTO_CREATE);
             Assert.assertTrue("Failed to bind to service with " + intent, result);
 
             helper.waitForCallback(onServiceConnectedInitCount, 1);

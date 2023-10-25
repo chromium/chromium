@@ -23,13 +23,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Tests for the WebViewClient.onUnhandledKeyEvent() method.
- */
+/** Tests for the WebViewClient.onUnhandledKeyEvent() method. */
 @RunWith(AwJUnit4ClassRunner.class)
 public class AwContentsClientOnUnhandledKeyEventTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private KeyEventTestAwContentsClient mContentsClient;
     private AwTestContainerView mTestContainerView;
@@ -72,10 +69,13 @@ public class AwContentsClientOnUnhandledKeyEventTest {
     @SmallTest
     @Feature({"AndroidWebView", "TextInput"})
     public void testUnconsumedKeyEvents() throws Throwable {
-        final String data = "<html><head></head><body>Plain page</body>"
-                + "</html>";
-        mActivityTestRule.loadDataSync(mTestContainerView.getAwContents(),
-                mContentsClient.getOnPageFinishedHelper(), data, "text/html", false);
+        final String data = "<html><head></head><body>Plain page</body>" + "</html>";
+        mActivityTestRule.loadDataSync(
+                mTestContainerView.getAwContents(),
+                mContentsClient.getOnPageFinishedHelper(),
+                data,
+                "text/html",
+                false);
 
         int callCount;
 

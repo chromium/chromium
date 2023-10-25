@@ -43,8 +43,7 @@ import org.chromium.base.test.util.Feature;
  */
 @RunWith(AwJUnit4ClassRunner.class)
 public class VisualStateCallbackTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private static class VisualStateCallbackHelper extends CallbackHelper {
         // Indicates VisualStateCallback has been received by AwContents, but
@@ -74,13 +73,24 @@ public class VisualStateCallbackTest {
         private VisualStateCallback mCallback;
         private long mRequestId;
 
-        public VisualStateCallbackTestAwContents(AwBrowserContext browserContext,
-                ViewGroup containerView, Context context,
+        public VisualStateCallbackTestAwContents(
+                AwBrowserContext browserContext,
+                ViewGroup containerView,
+                Context context,
                 InternalAccessDelegate internalAccessAdapter,
-                NativeDrawFunctorFactory nativeDrawFunctorFactory, AwContentsClient contentsClient,
-                AwSettings settings, DependencyFactory dependencyFactory) {
-            super(browserContext, containerView, context, internalAccessAdapter,
-                    nativeDrawFunctorFactory, contentsClient, settings, dependencyFactory);
+                NativeDrawFunctorFactory nativeDrawFunctorFactory,
+                AwContentsClient contentsClient,
+                AwSettings settings,
+                DependencyFactory dependencyFactory) {
+            super(
+                    browserContext,
+                    containerView,
+                    context,
+                    internalAccessAdapter,
+                    nativeDrawFunctorFactory,
+                    contentsClient,
+                    settings,
+                    dependencyFactory);
             mVisualStateCallbackHelper = new VisualStateCallbackHelper();
         }
 
@@ -110,12 +120,23 @@ public class VisualStateCallbackTest {
     private static class CrashTestDependencyFactory
             extends AwActivityTestRule.TestDependencyFactory {
         @Override
-        public AwContents createAwContents(AwBrowserContext browserContext, ViewGroup containerView,
-                Context context, InternalAccessDelegate internalAccessAdapter,
-                NativeDrawFunctorFactory nativeDrawFunctorFactory, AwContentsClient contentsClient,
-                AwSettings settings, DependencyFactory dependencyFactory) {
-            return new VisualStateCallbackTestAwContents(browserContext, containerView, context,
-                    internalAccessAdapter, nativeDrawFunctorFactory, contentsClient, settings,
+        public AwContents createAwContents(
+                AwBrowserContext browserContext,
+                ViewGroup containerView,
+                Context context,
+                InternalAccessDelegate internalAccessAdapter,
+                NativeDrawFunctorFactory nativeDrawFunctorFactory,
+                AwContentsClient contentsClient,
+                AwSettings settings,
+                DependencyFactory dependencyFactory) {
+            return new VisualStateCallbackTestAwContents(
+                    browserContext,
+                    containerView,
+                    context,
+                    internalAccessAdapter,
+                    nativeDrawFunctorFactory,
+                    contentsClient,
+                    settings,
                     dependencyFactory);
         }
     }
@@ -145,8 +166,9 @@ public class VisualStateCallbackTest {
     public void setUp() {
         RenderProcessGoneTestAwContentsClient contentsClient =
                 new RenderProcessGoneTestAwContentsClient();
-        AwTestContainerView testView = mActivityTestRule.createAwTestContainerViewOnMainSync(
-                contentsClient, false, new CrashTestDependencyFactory());
+        AwTestContainerView testView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(
+                        contentsClient, false, new CrashTestDependencyFactory());
         mAwContents = (VisualStateCallbackTestAwContents) testView.getAwContents();
         mHelper = mAwContents.getRenderProcessGoneHelper();
     }

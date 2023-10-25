@@ -37,15 +37,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Test for creating fenced frames in Android WebView.
- */
+/** Test for creating fenced frames in Android WebView. */
 @DoNotBatch(reason = "Test instrumentation only supports one hardware compositing view.")
 @CommandLineFlags.Add(AwSwitches.WEBVIEW_FENCED_FRAMES)
 @RunWith(AwJUnit4ClassRunner.class)
 public class FencedFrameTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private TestAwContentsClient mContentsClient;
     private AwTestContainerView mTestView;
@@ -80,9 +77,10 @@ public class FencedFrameTest {
         String mainPath = "/main_document.html";
         String mainResponseStr =
                 "<html><body><fencedframe style='width: 100%; height: 100%'></fencedframe>"
-                + "<script>const url = new URL(\"" + fencedFrameUrl + "\");"
-                + "document.querySelector(\"fencedframe\").config = new FencedFrameConfig(url);"
-                + "</script></body></html>";
+                        + "<script>const url = new URL(\""
+                        + fencedFrameUrl
+                        + "\");document.querySelector(\"fencedframe\").config = new"
+                        + " FencedFrameConfig(url);</script></body></html>";
         return mWebServer.setResponse(mainPath, mainResponseStr, null);
     }
 
@@ -100,9 +98,12 @@ public class FencedFrameTest {
         final String fencedFrameObserverName = "fencedFrameObserver";
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
 
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            fencedFrameObserver.register(mTestView.getWebContents(), fencedFrameObserverName);
-        });
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () -> {
+                            fencedFrameObserver.register(
+                                    mTestView.getWebContents(), fencedFrameObserverName);
+                        });
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), mainUrl);
         Assert.assertTrue(fencedFrameObserver.waitForEvent(WAIT_TIMEOUT_MS));
@@ -116,16 +117,17 @@ public class FencedFrameTest {
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
     public void testCommunicationBetweenFrames() throws Throwable {
-        String fencedFrameSource = "<script>"
-                + "  function step() {"
-                + "    if (testObserver.getValue() == 'SET') {"
-                + "      testObserver.notifyJava(); "
-                + "    } else {"
-                + "      requestAnimationFrame(step);"
-                + "    }"
-                + "  }"
-                + "  requestAnimationFrame(step);"
-                + "</script>";
+        String fencedFrameSource =
+                "<script>"
+                        + "  function step() {"
+                        + "    if (testObserver.getValue() == 'SET') {"
+                        + "      testObserver.notifyJava(); "
+                        + "    } else {"
+                        + "      requestAnimationFrame(step);"
+                        + "    }"
+                        + "  }"
+                        + "  requestAnimationFrame(step);"
+                        + "</script>";
         String mainUrl = generateFencedFrame(fencedFrameSource);
 
         class TestObserver {
@@ -160,7 +162,9 @@ public class FencedFrameTest {
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), mainUrl);
 
         mActivityTestRule.runOnUiThread(
-                () -> { mAwContents.evaluateJavaScript("testObserver.setString('SET');", null); });
+                () -> {
+                    mAwContents.evaluateJavaScript("testObserver.setString('SET');", null);
+                });
         testObserver.waitForEvent();
     }
 
@@ -171,18 +175,23 @@ public class FencedFrameTest {
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
     public void hitTestFencedFrame() throws Throwable {
-        String fencedFrameSource = CommonResources.makeHtmlPageFrom("",
-                "<a href='http://foo/' class='full_view' onclick='return false;'>Test</a>"
-                        + "<script>fencedFrameObserver.notifyJava();</script>");
+        String fencedFrameSource =
+                CommonResources.makeHtmlPageFrom(
+                        "",
+                        "<a href='http://foo/' class='full_view' onclick='return false;'>Test</a>"
+                                + "<script>fencedFrameObserver.notifyJava();</script>");
         String mainUrl = generateFencedFrame(fencedFrameSource);
 
         final JavascriptEventObserver fencedFrameObserver = new JavascriptEventObserver();
         final String fencedFrameObserverName = "fencedFrameObserver";
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
 
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            fencedFrameObserver.register(mTestView.getWebContents(), fencedFrameObserverName);
-        });
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () -> {
+                            fencedFrameObserver.register(
+                                    mTestView.getWebContents(), fencedFrameObserverName);
+                        });
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), mainUrl);
 
@@ -190,16 +199,17 @@ public class FencedFrameTest {
         // for the outermost main frame.
         Assert.assertTrue(fencedFrameObserver.waitForEvent(WAIT_TIMEOUT_MS));
 
-        mActivityTestRule.pollUiThread(() -> {
-            // The hit testing regions may not be available on the first calls and there is no way
-            // of knowing when they are ready and it is safe to send input, so we send it every
-            // iteration.
-            AwTestTouchUtils.simulateTouchCenterOfView(mTestView);
+        mActivityTestRule.pollUiThread(
+                () -> {
+                    // The hit testing regions may not be available on the first calls and there is
+                    // no way of knowing when they are ready and it is safe to send input, so we
+                    // send it every iteration.
+                    AwTestTouchUtils.simulateTouchCenterOfView(mTestView);
 
-            AwContents.HitTestData data = mAwContents.getLastHitTestResult();
-            return HitTestResult.SRC_ANCHOR_TYPE == data.hitTestResultType
-                    && "http://foo/".equals(data.hitTestResultExtraData);
-        });
+                    AwContents.HitTestData data = mAwContents.getLastHitTestResult();
+                    return HitTestResult.SRC_ANCHOR_TYPE == data.hitTestResultType
+                            && "http://foo/".equals(data.hitTestResultExtraData);
+                });
     }
 
     /**
@@ -209,30 +219,34 @@ public class FencedFrameTest {
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
     public void fencedFrameDrawingSmokeTest() throws Throwable {
-        String fencedFrameSource = "<html>"
-                + "  <body style=\""
-                + "       padding: 0;"
-                + "       margin: 0;"
-                + "       display: grid;"
-                + "       display: grid;"
-                + "       grid-template-columns: 50% 50%;"
-                + "       grid-template-rows: 50% 50%;\">"
-                + "   <div style=\"background-color: rgb(255, 0, 0);\"></div>"
-                + "   <div style=\"background-color: rgb(0, 255, 0);\"></div>"
-                + "   <div style=\"background-color: rgb(0, 0, 255);\"></div>"
-                + "   <div style=\"background-color: rgb(128, 128, 128);\"></div>"
-                + "   <script>fencedFrameObserver.notifyJava();</script>"
-                + "  </body>"
-                + "</html>";
+        String fencedFrameSource =
+                "<html>"
+                        + "  <body style=\""
+                        + "       padding: 0;"
+                        + "       margin: 0;"
+                        + "       display: grid;"
+                        + "       display: grid;"
+                        + "       grid-template-columns: 50% 50%;"
+                        + "       grid-template-rows: 50% 50%;\">"
+                        + "   <div style=\"background-color: rgb(255, 0, 0);\"></div>"
+                        + "   <div style=\"background-color: rgb(0, 255, 0);\"></div>"
+                        + "   <div style=\"background-color: rgb(0, 0, 255);\"></div>"
+                        + "   <div style=\"background-color: rgb(128, 128, 128);\"></div>"
+                        + "   <script>fencedFrameObserver.notifyJava();</script>"
+                        + "  </body>"
+                        + "</html>";
         String mainUrl = generateFencedFrame(fencedFrameSource);
 
         final JavascriptEventObserver fencedFrameObserver = new JavascriptEventObserver();
         final String fencedFrameObserverName = "fencedFrameObserver";
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
 
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            fencedFrameObserver.register(mTestView.getWebContents(), fencedFrameObserverName);
-        });
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () -> {
+                            fencedFrameObserver.register(
+                                    mTestView.getWebContents(), fencedFrameObserverName);
+                        });
 
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), mainUrl);
@@ -241,8 +255,12 @@ public class FencedFrameTest {
         Assert.assertTrue(fencedFrameObserver.waitForEvent(WAIT_TIMEOUT_MS));
         mActivityTestRule.waitForVisualStateCallback(mAwContents);
 
-        int expectedQuadrantColors[] = {Color.rgb(255, 0, 0), Color.rgb(0, 255, 0),
-                Color.rgb(0, 0, 255), Color.rgb(128, 128, 128)};
+        int expectedQuadrantColors[] = {
+            Color.rgb(255, 0, 0),
+            Color.rgb(0, 255, 0),
+            Color.rgb(0, 0, 255),
+            Color.rgb(128, 128, 128)
+        };
 
         GraphicsTestUtils.pollForQuadrantColors(mTestView, expectedQuadrantColors);
     }

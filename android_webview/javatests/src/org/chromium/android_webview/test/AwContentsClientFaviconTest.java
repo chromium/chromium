@@ -25,20 +25,16 @@ import org.chromium.net.test.util.TestWebServer;
 import java.io.InputStream;
 import java.net.URL;
 
-/**
- * Tests for the Favicon and TouchIcon related APIs.
- */
+/** Tests for the Favicon and TouchIcon related APIs. */
 @RunWith(AwJUnit4ClassRunner.class)
 public class AwContentsClientFaviconTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private static final String FAVICON1_URL = "/favicon1.png";
     private static final String FAVICON1_PAGE_URL = "/favicon1.html";
     private static final String FAVICON1_PAGE_HTML =
             CommonResources.makeHtmlPageFrom(
-                    "<link rel=\"icon\" href=\"" + FAVICON1_URL + "\" />",
-                    "Body");
+                    "<link rel=\"icon\" href=\"" + FAVICON1_URL + "\" />", "Body");
 
     private static final String TOUCHICON_REL_LINK = "touch.png";
     private static final String TOUCHICON_REL_LINK_72 = "touch_72.png";
@@ -46,9 +42,12 @@ public class AwContentsClientFaviconTest {
     private static final String TOUCHICON_REL_URL_72 = "/" + TOUCHICON_REL_LINK_72;
     private static final String TOUCHICON_REL_PAGE_HTML =
             CommonResources.makeHtmlPageFrom(
-                    "<link rel=\"apple-touch-icon\" href=\"" + TOUCHICON_REL_URL + "\" />"
-                    + "<link rel=\"apple-touch-icon\" sizes=\"72x72\" href=\""
-                    + TOUCHICON_REL_URL_72 + "\" />",
+                    "<link rel=\"apple-touch-icon\" href=\""
+                            + TOUCHICON_REL_URL
+                            + "\" />"
+                            + "<link rel=\"apple-touch-icon\" sizes=\"72x72\" href=\""
+                            + TOUCHICON_REL_URL_72
+                            + "\" />",
                     "Body");
 
     // Maximum number of milliseconds within which a request to web server is made.
@@ -78,10 +77,16 @@ public class AwContentsClientFaviconTest {
     public void testReceiveBasicFavicon() throws Throwable {
         int callCount = mContentsClient.getFaviconHelper().getCallCount();
 
-        final String faviconUrl = mWebServer.setResponseBase64(FAVICON1_URL,
-                CommonResources.FAVICON_DATA_BASE64, CommonResources.getImagePngHeaders(true));
-        final String pageUrl = mWebServer.setResponse(FAVICON1_PAGE_URL, FAVICON1_PAGE_HTML,
-                CommonResources.getTextHtmlHeaders(true));
+        final String faviconUrl =
+                mWebServer.setResponseBase64(
+                        FAVICON1_URL,
+                        CommonResources.FAVICON_DATA_BASE64,
+                        CommonResources.getImagePngHeaders(true));
+        final String pageUrl =
+                mWebServer.setResponse(
+                        FAVICON1_PAGE_URL,
+                        FAVICON1_PAGE_HTML,
+                        CommonResources.getTextHtmlHeaders(true));
 
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
@@ -105,8 +110,11 @@ public class AwContentsClientFaviconTest {
     @SmallTest
     public void testDoNotMakeRequestForFaviconAfter404() throws Throwable {
         mWebServer.setResponseWithNotFoundStatus(FAVICON1_URL);
-        final String pageUrl = mWebServer.setResponse(FAVICON1_PAGE_URL, FAVICON1_PAGE_HTML,
-                CommonResources.getTextHtmlHeaders(true));
+        final String pageUrl =
+                mWebServer.setResponse(
+                        FAVICON1_PAGE_URL,
+                        FAVICON1_PAGE_HTML,
+                        CommonResources.getTextHtmlHeaders(true));
 
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
@@ -126,17 +134,24 @@ public class AwContentsClientFaviconTest {
     public void testReceiveBasicTouchIconLinkRel() throws Throwable {
         int callCount = mContentsClient.getFaviconHelper().getCallCount();
 
-        final String pageUrl = mWebServer.setResponse(TOUCHICON_REL_URL, TOUCHICON_REL_PAGE_HTML,
-                CommonResources.getTextHtmlHeaders(true));
+        final String pageUrl =
+                mWebServer.setResponse(
+                        TOUCHICON_REL_URL,
+                        TOUCHICON_REL_PAGE_HTML,
+                        CommonResources.getTextHtmlHeaders(true));
 
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
 
         mContentsClient.getTouchIconHelper().waitForCallback(callCount, 2);
         Assert.assertEquals(2, mContentsClient.getTouchIconHelper().getTouchIconsCount());
-        Assert.assertFalse(mContentsClient.getTouchIconHelper().hasTouchIcon(
-                mWebServer.getBaseUrl() + TOUCHICON_REL_LINK));
-        Assert.assertFalse(mContentsClient.getTouchIconHelper().hasTouchIcon(
-                mWebServer.getBaseUrl() + TOUCHICON_REL_LINK_72));
+        Assert.assertFalse(
+                mContentsClient
+                        .getTouchIconHelper()
+                        .hasTouchIcon(mWebServer.getBaseUrl() + TOUCHICON_REL_LINK));
+        Assert.assertFalse(
+                mContentsClient
+                        .getTouchIconHelper()
+                        .hasTouchIcon(mWebServer.getBaseUrl() + TOUCHICON_REL_LINK_72));
     }
 }

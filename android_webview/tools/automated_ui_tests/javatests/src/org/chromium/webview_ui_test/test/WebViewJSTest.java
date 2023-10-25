@@ -35,8 +35,8 @@ import org.chromium.webview_ui_test.test.util.WebViewUiTestRule;
 @RunWith(BaseJUnit4ClassRunner.class)
 public class WebViewJSTest {
     @Rule
-    public WebViewUiTestRule mWebViewActivityRule = new WebViewUiTestRule(
-            WebViewUiTestActivity.class);
+    public WebViewUiTestRule mWebViewActivityRule =
+            new WebViewUiTestRule(WebViewUiTestActivity.class);
 
     @Before
     public void setUp() {

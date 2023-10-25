@@ -35,18 +35,20 @@ import java.util.Map;
 /**
  * Integration test for the X-Requested-With origin trial in WebView.
  *
- * This test is temporary, and should be deleted once the WebViewXRequestedWithDeprecation trial
+ * <p>This test is temporary, and should be deleted once the WebViewXRequestedWithDeprecation trial
  * ends.
  *
- * Tests in this class start a server on specific ports since the port number is part of the origin,
- * which is encoded in the static trial tokens. To reduce the likelihood of collisions when running
- * the full test suite, the tests use different ports, but it is still possible that the server may
- * not be able to start if the same test is run multiple times in quick succession.
+ * <p>Tests in this class start a server on specific ports since the port number is part of the
+ * origin, which is encoded in the static trial tokens. To reduce the likelihood of collisions when
+ * running the full test suite, the tests use different ports, but it is still possible that the
+ * server may not be able to start if the same test is run multiple times in quick succession.
  */
 @Batch(Batch.PER_CLASS)
 @RunWith(AwJUnit4ClassRunner.class)
-@CommandLineFlags.Add({"origin-trial-public-key=dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=",
-        "enable-features=PersistentOriginTrials,WebViewXRequestedWithHeaderControl"})
+@CommandLineFlags.Add({
+    "origin-trial-public-key=dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=",
+    "enable-features=PersistentOriginTrials,WebViewXRequestedWithHeaderControl"
+})
 public class XRWOriginTrialTest {
     private static final String ORIGIN_TRIAL_HEADER = "Origin-Trial";
     private static final String CRITICAL_ORIGIN_TRIAL_HEADER = "Critical-Origin-Trial";
@@ -56,8 +58,7 @@ public class XRWOriginTrialTest {
 
     private static final String REQUEST_PATH = "/";
 
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
@@ -75,10 +76,11 @@ public class XRWOriginTrialTest {
     @After
     public void tearDown() throws Exception {
         // Clean up the stored tokens after tests
-        mActivityTestRule.runOnUiThread(() -> {
-            AwBrowserContext context = mActivityTestRule.getAwBrowserContext();
-            context.clearPersistentOriginTrialStorageForTesting();
-        });
+        mActivityTestRule.runOnUiThread(
+                () -> {
+                    AwBrowserContext context = mActivityTestRule.getAwBrowserContext();
+                    context.clearPersistentOriginTrialStorageForTesting();
+                });
         mActivityTestRule.destroyAwContentsOnMainSync(mAwContents);
     }
 
@@ -110,8 +112,8 @@ public class XRWOriginTrialTest {
         */
         final String trialToken =
                 "AyNFCtEW5OxS8NeOGQ5IN10l6pQiiDRWtvgLq7teZDxi7gl//fxZ/EBVYXDWqYs8LQ5IhCx/xya5ZHh1NT"
-                + "FA1AwAAABpeyJvcmlnaW4iOiAiaHR0cDovL2xvY2FsaG9zdDoyMjQ0MyIsICJmZWF0dXJlIjogIl"
-                + "dlYlZpZXdYUmVxdWVzdGVkV2l0aERlcHJlY2F0aW9uIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9";
+                    + "FA1AwAAABpeyJvcmlnaW4iOiAiaHR0cDovL2xvY2FsaG9zdDoyMjQ0MyIsICJmZWF0dXJlIjogIl"
+                    + "dlYlZpZXdYUmVxdWVzdGVkV2l0aERlcHJlY2F0aW9uIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9";
         // Port number unique to this test method. Other tests should use different ports.
         try (TestWebServer server = TestWebServer.start(22443)) {
             var headers = Map.of(ORIGIN_TRIAL_HEADER, trialToken);
@@ -137,12 +139,16 @@ public class XRWOriginTrialTest {
         */
         final String trialToken =
                 "A/kHrOHw8h7WZ6L54iqkbhLpjf8m6dhrvKfZ1IQS3lF32ZFowFpx3E9LFYftApKPUZ5HBkSr5GI1UQra8c"
-                + "nK3QQAAABpeyJvcmlnaW4iOiAiaHR0cDovL2xvY2FsaG9zdDoyMjQ1MyIsICJmZWF0dXJlIjogIl"
-                + "dlYlZpZXdYUmVxdWVzdGVkV2l0aERlcHJlY2F0aW9uIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9";
+                    + "nK3QQAAABpeyJvcmlnaW4iOiAiaHR0cDovL2xvY2FsaG9zdDoyMjQ1MyIsICJmZWF0dXJlIjogIl"
+                    + "dlYlZpZXdYUmVxdWVzdGVkV2l0aERlcHJlY2F0aW9uIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9";
         // Port number unique to this test method. Other tests should use different ports.
         try (TestWebServer server = TestWebServer.start(22453)) {
-            var headers = Map.of(ORIGIN_TRIAL_HEADER, trialToken, CRITICAL_ORIGIN_TRIAL_HEADER,
-                    PERSISTENT_TRIAL_NAME);
+            var headers =
+                    Map.of(
+                            ORIGIN_TRIAL_HEADER,
+                            trialToken,
+                            CRITICAL_ORIGIN_TRIAL_HEADER,
+                            PERSISTENT_TRIAL_NAME);
 
             String requestUrl = setResponseHeadersForUrl(server, headers);
 
@@ -161,49 +167,60 @@ public class XRWOriginTrialTest {
         final int mainServerPort = 22463;
         final int thirdPartyPort = 22473;
 
-        // Generated with
-        // tools/origin_trials/generate_token.py http://localhost:22473
+        // Generated with tools/origin_trials/generate_token.py http://localhost:22473
         // WebViewXRequestedWithDeprecation --expire-timestamp=2000000000 --is-third-party
         final String trialToken =
                 "A6cHxkfwJmfXXuUv6PrTqnYqPcrnrDj50ZrzAJaIR394yEKISBDrhAiLecCfb1fSBA/8H4jAHQf0uUREEm"
-                + "HLcwYAAAB/eyJvcmlnaW4iOiAiaHR0cDovL2xvY2FsaG9zdDoyMjQ3MyIsICJmZWF0dXJlIjogIl"
-                + "dlYlZpZXdYUmVxdWVzdGVkV2l0aERlcHJlY2F0aW9uIiwgImV4cGlyeSI6IDIwMDAwMDAwMDAsIC"
-                + "Jpc1RoaXJkUGFydHkiOiB0cnVlfQ==";
+                    + "HLcwYAAAB/eyJvcmlnaW4iOiAiaHR0cDovL2xvY2FsaG9zdDoyMjQ3MyIsICJmZWF0dXJlIjogIl"
+                    + "dlYlZpZXdYUmVxdWVzdGVkV2l0aERlcHJlY2F0aW9uIiwgImV4cGlyeSI6IDIwMDAwMDAwMDAsIC"
+                    + "Jpc1RoaXJkUGFydHkiOiB0cnVlfQ==";
         try (TestWebServer primaryServer = TestWebServer.start(mainServerPort);
                 TestWebServer thirdPartyServer = TestWebServer.startAdditional(thirdPartyPort)) {
             // This is our target request, which should have the XRW header.
             final String thirdPartyEnabledCheckPath = "/cross-origin";
             String crossOriginUrl =
-                    thirdPartyServer.setResponse(thirdPartyEnabledCheckPath, "window.test_done = 1",
+                    thirdPartyServer.setResponse(
+                            thirdPartyEnabledCheckPath,
+                            "window.test_done = 1",
                             List.of(new Pair<>("Content-Type", "application/javascript")));
 
             // This script is loaded from the main origin but injecting a third-party token,
             // which creates a deliberate mismatch between the injecting origin and the target
             // origin.
-            String injectJs = "window.test_done = 0;\n"
-                    + "const otMeta = document.createElement('meta');\n"
-                    + "otMeta.httpEquiv = 'origin-trial';\n"
-                    + "otMeta.content = '" + trialToken + "';\n"
-                    + "document.head.append(otMeta);\n"
-                    + "console.log(otMeta);\n"
-                    // Inject an extra script tag to make a request with trial enabled.
-                    + "const triggerScriptLoad = function() {\n"
-                    + "  const targetScript = document.createElement('script');\n"
-                    + "  targetScript.src = '" + crossOriginUrl + "';\n"
-                    + "  document.head.append(targetScript);\n"
-                    + "  console.log(targetScript);\n"
-                    + "};" // triggerScriptLoad
-                    + "setTimeout(triggerScriptLoad, 500);";
+            String injectJs =
+                    "window.test_done = 0;\n"
+                            + "const otMeta = document.createElement('meta');\n"
+                            + "otMeta.httpEquiv = 'origin-trial';\n"
+                            + "otMeta.content = '"
+                            + trialToken
+                            + "';\n"
+                            + "document.head.append(otMeta);\n"
+                            + "console.log(otMeta);\n"
+                            // Inject an extra script tag to make a request with trial enabled.
+                            + "const triggerScriptLoad = function() {\n"
+                            + "  const targetScript = document.createElement('script');\n"
+                            + "  targetScript.src = '"
+                            + crossOriginUrl
+                            + "';\n"
+                            + "  document.head.append(targetScript);\n"
+                            + "  console.log(targetScript);\n"
+                            + "};" // triggerScriptLoad
+                            + "setTimeout(triggerScriptLoad, 500);";
 
             // Load the inject script from the primary origin, to confirm we can inject a
             // cross-origin token.
             final String injectScriptPath = "/inject.js";
-            String injectUrl = primaryServer.setResponse(injectScriptPath, injectJs,
-                    List.of(new Pair<>("Content-Type", "application/javascript")));
+            String injectUrl =
+                    primaryServer.setResponse(
+                            injectScriptPath,
+                            injectJs,
+                            List.of(new Pair<>("Content-Type", "application/javascript")));
 
             // The main web site which simply loads the injectJs script.
-            String mainResponse = "<!DOCTYPE html><head><script src=\"" + injectUrl
-                    + "\"></script>\n<body>hello world";
+            String mainResponse =
+                    "<!DOCTYPE html><head><script src=\""
+                            + injectUrl
+                            + "\"></script>\n<body>hello world";
             String requestUrl =
                     primaryServer.setResponse(REQUEST_PATH, mainResponse, Collections.emptyList());
 
@@ -218,20 +235,20 @@ public class XRWOriginTrialTest {
         }
     }
 
-    /**
-     * Wait for {@code window.test_done == 1}.
-     */
+    /** Wait for {@code window.test_done == 1}. */
     private void waitForTestDone() {
-        AwActivityTestRule.pollInstrumentationThread(() -> {
-            try {
-                return Integer.parseInt(mActivityTestRule.executeJavaScriptAndWaitForResult(
-                               mAwContents, mContentsClient, "window.test_done"))
-                        == 1;
-            } catch (Exception e) {
-                Assert.fail("Unable to get success");
-            }
-            return false;
-        });
+        AwActivityTestRule.pollInstrumentationThread(
+                () -> {
+                    try {
+                        return Integer.parseInt(
+                                        mActivityTestRule.executeJavaScriptAndWaitForResult(
+                                                mAwContents, mContentsClient, "window.test_done"))
+                                == 1;
+                    } catch (Exception e) {
+                        Assert.fail("Unable to get success");
+                    }
+                    return false;
+                });
     }
 
     private void loadUrlSync(String requestUrl) throws Exception {

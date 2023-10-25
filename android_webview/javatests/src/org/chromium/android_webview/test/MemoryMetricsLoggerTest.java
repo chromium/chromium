@@ -21,19 +21,17 @@ import org.chromium.android_webview.test.util.MemoryMetricsLoggerUtilsJni;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 
-/**
- * Tests for memory_metrics_logger.cc.
- */
+/** Tests for memory_metrics_logger.cc. */
 @JNINamespace("android_webview")
 @RunWith(AwJUnit4ClassRunner.class)
 public class MemoryMetricsLoggerTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private HistogramWatcher mHistogramExpectationBrowser;
     private HistogramWatcher mHistogramExpectationRendererMulti;
     private HistogramWatcher mHistogramExpectationRendererSingle;
     private HistogramWatcher mHistogramExpectationTotal;
+
     @Before
     public void setUp() throws Exception {
         mHistogramExpectationBrowser =
@@ -59,8 +57,10 @@ public class MemoryMetricsLoggerTest {
         AwTestContainerView testContainerView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient);
 
-        mActivityTestRule.loadUrlSync(testContainerView.getAwContents(),
-                contentsClient.getOnPageFinishedHelper(), "about:blank");
+        mActivityTestRule.loadUrlSync(
+                testContainerView.getAwContents(),
+                contentsClient.getOnPageFinishedHelper(),
+                "about:blank");
         Assert.assertTrue(MemoryMetricsLoggerUtilsJni.get().forceRecordHistograms());
     }
 

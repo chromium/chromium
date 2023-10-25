@@ -174,8 +174,11 @@ public class AwContentCaptureTest {
 
         public void waitForCallback(int currentCallCount, int numberOfCallsToWaitFor)
                 throws Exception {
-            mCallbackHelper.waitForCallback(currentCallCount, numberOfCallsToWaitFor,
-                    DEFAULT_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS);
+            mCallbackHelper.waitForCallback(
+                    currentCallCount,
+                    numberOfCallsToWaitFor,
+                    DEFAULT_TIMEOUT_IN_SECONDS,
+                    TimeUnit.SECONDS);
             mCallCount += numberOfCallsToWaitFor;
         }
 
@@ -217,8 +220,7 @@ public class AwContentCaptureTest {
     private static final String MAIN_FRAME_FILE = "/main_frame.html";
     private static final String SECOND_PAGE = "/second_page.html";
 
-    @Rule
-    public AwActivityTestRule mRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mRule = new AwActivityTestRule();
 
     private TestWebServer mWebServer;
 
@@ -250,32 +252,48 @@ public class AwContentCaptureTest {
         mContainerView = mRule.createAwTestContainerViewOnMainSync(mContentsClient);
         mAwContents = mContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mConsumer = new TestAwContentCaptureConsumer();
-            mOnscreenContentProvider = new OnscreenContentProvider(
-                    mRule.getActivity(), mContainerView, mAwContents.getWebContents());
-            mOnscreenContentProvider.addConsumer(mConsumer);
-            mOnscreenContentProvider.removePlatformConsumerForTesting();
-            mAwContents.setOnscreenContentProvider(mOnscreenContentProvider);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mConsumer = new TestAwContentCaptureConsumer();
+                    mOnscreenContentProvider =
+                            new OnscreenContentProvider(
+                                    mRule.getActivity(),
+                                    mContainerView,
+                                    mAwContents.getWebContents());
+                    mOnscreenContentProvider.addConsumer(mConsumer);
+                    mOnscreenContentProvider.removePlatformConsumerForTesting();
+                    mAwContents.setOnscreenContentProvider(mOnscreenContentProvider);
+                });
     }
 
     private void insertElement(String id, String content) {
-        String script = "var place_holder = document.getElementById('place_holder');"
-                + "place_holder.insertAdjacentHTML('beforebegin', '<p id=\\'" + id + "\\'>"
-                + content + "</p>');";
+        String script =
+                "var place_holder = document.getElementById('place_holder');"
+                        + "place_holder.insertAdjacentHTML('beforebegin', '<p id=\\'"
+                        + id
+                        + "\\'>"
+                        + content
+                        + "</p>');";
         runScript(script);
     }
 
     private void setInnerHTML(String id, String content) {
-        String script = "var el = document.getElementById('" + id + "');"
-                + "el.innerHTML='" + content + "';";
+        String script =
+                "var el = document.getElementById('"
+                        + id
+                        + "');"
+                        + "el.innerHTML='"
+                        + content
+                        + "';";
         runScript(script);
     }
 
     private void removeElement(String id) {
-        String script = "var el = document.getElementById('" + id + "');"
-                + "document.body.removeChild(el);";
+        String script =
+                "var el = document.getElementById('"
+                        + id
+                        + "');"
+                        + "document.body.removeChild(el);";
         runScript(script);
     }
 
@@ -288,22 +306,35 @@ public class AwContentCaptureTest {
     }
 
     private void destroyAwContents() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mAwContents.destroy(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mAwContents.destroy();
+                });
     }
 
     private void scrollToBottom() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mContainerView.scrollTo(0, mContainerView.getHeight()); });
+                () -> {
+                    mContainerView.scrollTo(0, mContainerView.getHeight());
+                });
     }
 
     private void changeContent(String id, String content) {
-        String script = "var el = document.getElementById('" + id + "');"
-                + "el.firstChild.textContent = '" + content + "';";
+        String script =
+                "var el = document.getElementById('"
+                        + id
+                        + "');"
+                        + "el.firstChild.textContent = '"
+                        + content
+                        + "';";
         runScript(script);
     }
 
     private void scrollToTop() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mContainerView.scrollTo(0, 0); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mContainerView.scrollTo(0, 0);
+                });
     }
 
     private static void verifyFrame(
@@ -323,13 +354,19 @@ public class AwContentCaptureTest {
         if (expected == null && (result == null || result.isEmpty())) return;
         Assert.assertEquals(expected.size(), result.size());
         for (int i = 0; i < expected.size(); i++) {
-            verifyFrame(expected.get(i).getId(), expected.get(i).getUrl(),
-                    expected.get(i).getTitle(), result.get(i));
+            verifyFrame(
+                    expected.get(i).getId(),
+                    expected.get(i).getUrl(),
+                    expected.get(i).getTitle(),
+                    result.get(i));
         }
     }
 
-    private static void verifyContent(Set<String> expectedContent, Set<Long> unexpectedIds,
-            Set<Long> expectedIds, ContentCaptureFrame result) {
+    private static void verifyContent(
+            Set<String> expectedContent,
+            Set<Long> unexpectedIds,
+            Set<Long> expectedIds,
+            ContentCaptureFrame result) {
         Assert.assertEquals(expectedContent.size(), result.getChildren().size());
         if (expectedIds != null) {
             Assert.assertEquals(expectedIds.size(), result.getChildren().size());
@@ -348,9 +385,14 @@ public class AwContentCaptureTest {
         Assert.assertTrue(expectedContent.isEmpty());
     }
 
-    private static void verifyCapturedContent(FrameSession expectedParentSession,
-            Long expectedFrameId, String expectedUrl, String expectedTitle,
-            Set<String> expectedContent, Set<Long> unexpectedContentIds, FrameSession parentResult,
+    private static void verifyCapturedContent(
+            FrameSession expectedParentSession,
+            Long expectedFrameId,
+            String expectedUrl,
+            String expectedTitle,
+            Set<String> expectedContent,
+            Set<Long> unexpectedContentIds,
+            FrameSession parentResult,
             ContentCaptureFrame result) {
         verifyFrameSession(expectedParentSession, parentResult);
         // Title is only set to main frame.
@@ -363,9 +405,14 @@ public class AwContentCaptureTest {
         verifyContent(expectedContent, unexpectedContentIds, null, result);
     }
 
-    private static void verifyUpdatedContent(FrameSession expectedParentSession,
-            Long expectedFrameId, String expectedUrl, Set<String> expectedContent,
-            Set<Long> expectedContentIds, FrameSession parentResult, ContentCaptureFrame result) {
+    private static void verifyUpdatedContent(
+            FrameSession expectedParentSession,
+            Long expectedFrameId,
+            String expectedUrl,
+            Set<String> expectedContent,
+            Set<Long> expectedContentIds,
+            FrameSession parentResult,
+            ContentCaptureFrame result) {
         verifyFrameSession(expectedParentSession, parentResult);
         verifyFrame(expectedFrameId, expectedUrl, null, result);
         verifyContent(expectedContent, null, expectedContentIds, result);
@@ -380,21 +427,30 @@ public class AwContentCaptureTest {
         Assert.assertTrue(expectedIds.containsAll(resultSet));
     }
 
-    private static void verifyRemovedContent(Long expectedFrameId, String expectedUrl,
-            Set<Long> expectedIds, FrameSession resultFrame, long[] result) {
+    private static void verifyRemovedContent(
+            Long expectedFrameId,
+            String expectedUrl,
+            Set<Long> expectedIds,
+            FrameSession resultFrame,
+            long[] result) {
         Assert.assertEquals(1, resultFrame.size());
         verifyFrame(expectedFrameId, expectedUrl, null, resultFrame.get(0));
         verifyRemovedIds(expectedIds, result);
     }
 
     private static void verifyCallbacks(int[] expectedCallbacks, int[] results) {
-        Assert.assertArrayEquals("Expect: " + Arrays.toString(expectedCallbacks)
-                        + " Result: " + Arrays.toString(results),
-                expectedCallbacks, results);
+        Assert.assertArrayEquals(
+                "Expect: "
+                        + Arrays.toString(expectedCallbacks)
+                        + " Result: "
+                        + Arrays.toString(results),
+                expectedCallbacks,
+                results);
     }
 
-    private static void waitAndVerifyCallbacks(int[] expectedCallbacks, int callCount,
-            TestAwContentCaptureConsumer consumer) throws Throwable {
+    private static void waitAndVerifyCallbacks(
+            int[] expectedCallbacks, int callCount, TestAwContentCaptureConsumer consumer)
+            throws Throwable {
         try {
             consumer.waitForCallback(callCount, expectedCallbacks.length);
         } finally {
@@ -418,8 +474,9 @@ public class AwContentCaptureTest {
         FrameSession session = new FrameSession(1);
         ContentCaptureFrame c = data;
         Rect r = c.getBounds();
-        session.add(ContentCaptureFrame.createContentCaptureFrame(
-                c.getId(), c.getUrl(), r.left, r.top, r.width(), r.height(), null, null));
+        session.add(
+                ContentCaptureFrame.createContentCaptureFrame(
+                        c.getId(), c.getUrl(), r.left, r.top, r.width(), r.height(), null, null));
         return session;
     }
 
@@ -467,61 +524,109 @@ public class AwContentCaptureTest {
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add({"disable-features=ContentCaptureConstantStreaming"})
     public void testSingleFrameWithoutConstantStreaming() throws Throwable {
-        final String response = "<html><head></head><body>"
-                + "<div id='place_holder'>"
-                + "<p style=\"height: 100vh\">Hello</p>"
-                + "<p>world</p>"
-                + "</body></html>";
+        final String response =
+                "<html><head></head><body>"
+                        + "<div id='place_holder'>"
+                        + "<p style=\"height: 100vh\">Hello</p>"
+                        + "<p>world</p>"
+                        + "</body></html>";
         final String url = mWebServer.setResponse(MAIN_FRAME_FILE, response, null);
-        runAndVerifyCallbacks(() -> {
-            loadUrlSync(url);
-        }, toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
+        runAndVerifyCallbacks(
+                () -> {
+                    loadUrlSync(url);
+                },
+                toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
         Long frameId = null;
         Set<Long> capturedContentIds = null;
         // Verify only on-screen content is captured.
-        verifyCapturedContent(null, frameId, url, null, toStringSet("Hello"), capturedContentIds,
-                mConsumer.getParentFrame(), mConsumer.getCapturedContent());
+        verifyCapturedContent(
+                null,
+                frameId,
+                url,
+                null,
+                toStringSet("Hello"),
+                capturedContentIds,
+                mConsumer.getParentFrame(),
+                mConsumer.getCapturedContent());
 
         frameId = Long.valueOf(mConsumer.getCapturedContent().getId());
         capturedContentIds = mConsumer.cloneCaptureContentIds();
-        runAndVerifyCallbacks(() -> {
-            scrollToBottom();
-        }, toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
-        verifyCapturedContent(null, frameId, url, null, toStringSet("world"), capturedContentIds,
-                mConsumer.getParentFrame(), mConsumer.getCapturedContent());
+        runAndVerifyCallbacks(
+                () -> {
+                    scrollToBottom();
+                },
+                toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
+        verifyCapturedContent(
+                null,
+                frameId,
+                url,
+                null,
+                toStringSet("world"),
+                capturedContentIds,
+                mConsumer.getParentFrame(),
+                mConsumer.getCapturedContent());
 
         final String newContentId = "new_content_id";
         final String newContent = "new content";
         // Only new content is captured, the content that has been captured will not be captured
         // again.
-        runAndVerifyCallbacks(() -> {
-            insertElement(newContentId, newContent);
-            scrollToTop();
-        }, toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
-        verifyCapturedContent(null, frameId, url, null, toStringSet(newContent), capturedContentIds,
-                mConsumer.getParentFrame(), mConsumer.getCapturedContent());
+        runAndVerifyCallbacks(
+                () -> {
+                    insertElement(newContentId, newContent);
+                    scrollToTop();
+                },
+                toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
+        verifyCapturedContent(
+                null,
+                frameId,
+                url,
+                null,
+                toStringSet(newContent),
+                capturedContentIds,
+                mConsumer.getParentFrame(),
+                mConsumer.getCapturedContent());
 
         // Changed previous added element, this will trigger remove/capture events.
         long removedContentId = mConsumer.getCapturedContent().getChildren().get(0).getId();
         final String newContent2 = "new content 2";
         capturedContentIds = mConsumer.cloneCaptureContentIds();
-        runAndVerifyCallbacks(()
-                                      -> { setInnerHTML(newContentId, newContent2); },
-                toIntArray(TestAwContentCaptureConsumer.CONTENT_REMOVED,
+        runAndVerifyCallbacks(
+                () -> {
+                    setInnerHTML(newContentId, newContent2);
+                },
+                toIntArray(
+                        TestAwContentCaptureConsumer.CONTENT_REMOVED,
                         TestAwContentCaptureConsumer.CONTENT_CAPTURED));
-        verifyRemovedContent(frameId, url, toLongSet(removedContentId),
-                mConsumer.getCurrentFrameSession(), mConsumer.getRemovedIds());
-        verifyCapturedContent(null, frameId, url, null, toStringSet(newContent2),
-                capturedContentIds, mConsumer.getParentFrame(), mConsumer.getCapturedContent());
+        verifyRemovedContent(
+                frameId,
+                url,
+                toLongSet(removedContentId),
+                mConsumer.getCurrentFrameSession(),
+                mConsumer.getRemovedIds());
+        verifyCapturedContent(
+                null,
+                frameId,
+                url,
+                null,
+                toStringSet(newContent2),
+                capturedContentIds,
+                mConsumer.getParentFrame(),
+                mConsumer.getCapturedContent());
 
         // Remove the element.
         removedContentId = mConsumer.getCapturedContent().getChildren().get(0).getId();
         capturedContentIds = mConsumer.cloneCaptureContentIds();
-        runAndVerifyCallbacks(() -> {
-            removeElement(newContentId);
-        }, toIntArray(TestAwContentCaptureConsumer.CONTENT_REMOVED));
-        verifyRemovedContent(frameId, url, toLongSet(removedContentId),
-                mConsumer.getCurrentFrameSession(), mConsumer.getRemovedIds());
+        runAndVerifyCallbacks(
+                () -> {
+                    removeElement(newContentId);
+                },
+                toIntArray(TestAwContentCaptureConsumer.CONTENT_REMOVED));
+        verifyRemovedContent(
+                frameId,
+                url,
+                toLongSet(removedContentId),
+                mConsumer.getCurrentFrameSession(),
+                mConsumer.getRemovedIds());
     }
 
     @Test
@@ -529,34 +634,58 @@ public class AwContentCaptureTest {
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add({"enable-features=ContentCaptureConstantStreaming"})
     public void testSingleFrameWithConstantStreaming() throws Throwable {
-        final String response = "<html><head></head><body>"
-                + "<div id='place_holder'>"
-                + "<p style=\"height: 100vh\">Hello</p>"
-                + "<p>world</p>"
-                + "</body></html>";
+        final String response =
+                "<html><head></head><body>"
+                        + "<div id='place_holder'>"
+                        + "<p style=\"height: 100vh\">Hello</p>"
+                        + "<p>world</p>"
+                        + "</body></html>";
         final String url = mWebServer.setResponse(MAIN_FRAME_FILE, response, null);
-        runAndVerifyCallbacks(() -> {
-            loadUrlSync(url);
-        }, toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
+        runAndVerifyCallbacks(
+                () -> {
+                    loadUrlSync(url);
+                },
+                toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
         Long frameId = null;
         Set<Long> capturedContentIds = null;
         // Verify only on-screen content is captured.
-        verifyCapturedContent(null, frameId, url, null, toStringSet("Hello"), capturedContentIds,
-                mConsumer.getParentFrame(), mConsumer.getCapturedContent());
+        verifyCapturedContent(
+                null,
+                frameId,
+                url,
+                null,
+                toStringSet("Hello"),
+                capturedContentIds,
+                mConsumer.getParentFrame(),
+                mConsumer.getCapturedContent());
 
         // Scrolls to the bottom, the node that became invisible is removed, and the content
         // at bottom is captured.
         frameId = Long.valueOf(mConsumer.getCapturedContent().getId());
         long contentHelloId = mConsumer.getCapturedContent().getChildren().get(0).getId();
         capturedContentIds = mConsumer.cloneCaptureContentIds();
-        runAndVerifyCallbacks(()
-                                      -> { scrollToBottom(); },
-                toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED,
+        runAndVerifyCallbacks(
+                () -> {
+                    scrollToBottom();
+                },
+                toIntArray(
+                        TestAwContentCaptureConsumer.CONTENT_CAPTURED,
                         TestAwContentCaptureConsumer.CONTENT_REMOVED));
-        verifyCapturedContent(null, frameId, url, null, toStringSet("world"), capturedContentIds,
-                mConsumer.getParentFrame(), mConsumer.getCapturedContent());
-        verifyRemovedContent(frameId, url, toLongSet(contentHelloId),
-                mConsumer.getCurrentFrameSession(), mConsumer.getRemovedIds());
+        verifyCapturedContent(
+                null,
+                frameId,
+                url,
+                null,
+                toStringSet("world"),
+                capturedContentIds,
+                mConsumer.getParentFrame(),
+                mConsumer.getCapturedContent());
+        verifyRemovedContent(
+                frameId,
+                url,
+                toLongSet(contentHelloId),
+                mConsumer.getCurrentFrameSession(),
+                mConsumer.getRemovedIds());
         long contentWorldId = mConsumer.getCapturedContent().getChildren().get(0).getId();
         // Adds the new content at the beginning and scroll back, the newly visible content
         // is captured and invisible content is removed.
@@ -564,17 +693,28 @@ public class AwContentCaptureTest {
         final String newContent = "new content";
         capturedContentIds = mConsumer.cloneCaptureContentIds();
         runAndVerifyCallbacks(
-                ()
-                        -> {
+                () -> {
                     insertElement(newContentId, newContent);
                     scrollToTop();
                 },
-                toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED,
+                toIntArray(
+                        TestAwContentCaptureConsumer.CONTENT_CAPTURED,
                         TestAwContentCaptureConsumer.CONTENT_REMOVED));
-        verifyCapturedContent(null, frameId, url, null, toStringSet(newContent, "Hello"),
-                capturedContentIds, mConsumer.getParentFrame(), mConsumer.getCapturedContent());
-        verifyRemovedContent(frameId, url, toLongSet(contentWorldId),
-                mConsumer.getCurrentFrameSession(), mConsumer.getRemovedIds());
+        verifyCapturedContent(
+                null,
+                frameId,
+                url,
+                null,
+                toStringSet(newContent, "Hello"),
+                capturedContentIds,
+                mConsumer.getParentFrame(),
+                mConsumer.getCapturedContent());
+        verifyRemovedContent(
+                frameId,
+                url,
+                toLongSet(contentWorldId),
+                mConsumer.getCurrentFrameSession(),
+                mConsumer.getRemovedIds());
 
         // Changed previous added element, this will trigger remove/capture events.
         long removedContentId = mConsumer.getCapturedContent().getChildren().get(0).getId();
@@ -584,90 +724,154 @@ public class AwContentCaptureTest {
         }
         final String newContent2 = "new content 2";
         capturedContentIds = mConsumer.cloneCaptureContentIds();
-        runAndVerifyCallbacks(()
-                                      -> { setInnerHTML(newContentId, newContent2); },
-                toIntArray(TestAwContentCaptureConsumer.CONTENT_REMOVED,
+        runAndVerifyCallbacks(
+                () -> {
+                    setInnerHTML(newContentId, newContent2);
+                },
+                toIntArray(
+                        TestAwContentCaptureConsumer.CONTENT_REMOVED,
                         TestAwContentCaptureConsumer.CONTENT_CAPTURED));
-        verifyRemovedContent(frameId, url, toLongSet(removedContentId),
-                mConsumer.getCurrentFrameSession(), mConsumer.getRemovedIds());
-        verifyCapturedContent(null, frameId, url, null, toStringSet(newContent2),
-                capturedContentIds, mConsumer.getParentFrame(), mConsumer.getCapturedContent());
+        verifyRemovedContent(
+                frameId,
+                url,
+                toLongSet(removedContentId),
+                mConsumer.getCurrentFrameSession(),
+                mConsumer.getRemovedIds());
+        verifyCapturedContent(
+                null,
+                frameId,
+                url,
+                null,
+                toStringSet(newContent2),
+                capturedContentIds,
+                mConsumer.getParentFrame(),
+                mConsumer.getCapturedContent());
 
         // Remove the element.
         removedContentId = mConsumer.getCapturedContent().getChildren().get(0).getId();
         capturedContentIds = mConsumer.cloneCaptureContentIds();
-        runAndVerifyCallbacks(() -> {
-            removeElement(newContentId);
-        }, toIntArray(TestAwContentCaptureConsumer.CONTENT_REMOVED));
-        verifyRemovedContent(frameId, url, toLongSet(removedContentId),
-                mConsumer.getCurrentFrameSession(), mConsumer.getRemovedIds());
+        runAndVerifyCallbacks(
+                () -> {
+                    removeElement(newContentId);
+                },
+                toIntArray(TestAwContentCaptureConsumer.CONTENT_REMOVED));
+        verifyRemovedContent(
+                frameId,
+                url,
+                toLongSet(removedContentId),
+                mConsumer.getCurrentFrameSession(),
+                mConsumer.getRemovedIds());
     }
 
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testChangeContent() throws Throwable {
-        final String response = "<html><head></head><body>"
-                + "<div id='editable_id'>Hello</div>"
-                + "</div></body></html>";
+        final String response =
+                "<html><head></head><body>"
+                        + "<div id='editable_id'>Hello</div>"
+                        + "</div></body></html>";
         final String url = mWebServer.setResponse(MAIN_FRAME_FILE, response, null);
-        runAndVerifyCallbacks(() -> {
-            loadUrlSync(url);
-        }, toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
+        runAndVerifyCallbacks(
+                () -> {
+                    loadUrlSync(url);
+                },
+                toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
         Long frameId = null;
         Set<Long> capturedContentIds = null;
         // Verify only on-screen content is captured.
-        verifyCapturedContent(null, frameId, url, null, toStringSet("Hello"), capturedContentIds,
-                mConsumer.getParentFrame(), mConsumer.getCapturedContent());
+        verifyCapturedContent(
+                null,
+                frameId,
+                url,
+                null,
+                toStringSet("Hello"),
+                capturedContentIds,
+                mConsumer.getParentFrame(),
+                mConsumer.getCapturedContent());
 
         // Change the content, we shall get content updated callback.
         frameId = Long.valueOf(mConsumer.getCapturedContent().getId());
         capturedContentIds = mConsumer.cloneCaptureContentIds();
         final String changeContent = "Hello world";
-        runAndVerifyCallbacks(() -> {
-            changeContent("editable_id", changeContent);
-        }, toIntArray(TestAwContentCaptureConsumer.CONTENT_UPDATED));
-        verifyUpdatedContent(null, frameId, url, toStringSet(changeContent), capturedContentIds,
-                mConsumer.getParentFrame(), mConsumer.getUpdatedContent());
+        runAndVerifyCallbacks(
+                () -> {
+                    changeContent("editable_id", changeContent);
+                },
+                toIntArray(TestAwContentCaptureConsumer.CONTENT_UPDATED));
+        verifyUpdatedContent(
+                null,
+                frameId,
+                url,
+                toStringSet(changeContent),
+                capturedContentIds,
+                mConsumer.getParentFrame(),
+                mConsumer.getUpdatedContent());
     }
 
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testRemoveSession() throws Throwable {
-        final String response = "<html><head></head><body>"
-                + "<div id='editable_id'>Hello</div>"
-                + "</div></body></html>";
-        final String response2 = "<html><head></head><body>"
-                + "<div id='editable_id'>World</div>"
-                + "</div></body></html>";
+        final String response =
+                "<html><head></head><body>"
+                        + "<div id='editable_id'>Hello</div>"
+                        + "</div></body></html>";
+        final String response2 =
+                "<html><head></head><body>"
+                        + "<div id='editable_id'>World</div>"
+                        + "</div></body></html>";
         final String url = mWebServer.setResponse(MAIN_FRAME_FILE, response, null);
         final String url2 = mWebServer.setResponse(SECOND_PAGE, response2, null);
 
-        runAndVerifyCallbacks(() -> {
-            loadUrlSync(url);
-        }, toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
+        runAndVerifyCallbacks(
+                () -> {
+                    loadUrlSync(url);
+                },
+                toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
         Long frameId = null;
         Set<Long> capturedContentIds = null;
-        verifyCapturedContent(null, frameId, url, null, toStringSet("Hello"), capturedContentIds,
-                mConsumer.getParentFrame(), mConsumer.getCapturedContent());
+        verifyCapturedContent(
+                null,
+                frameId,
+                url,
+                null,
+                toStringSet("Hello"),
+                capturedContentIds,
+                mConsumer.getParentFrame(),
+                mConsumer.getCapturedContent());
 
         // Keep a copy of current session to verify it removed later.
         FrameSession removedSession = createFrameSession(mConsumer.getCapturedContent());
         capturedContentIds = mConsumer.cloneCaptureContentIds();
-        int[] expectedCallbacks = toIntArray(TestAwContentCaptureConsumer.SESSION_REMOVED,
-                TestAwContentCaptureConsumer.CONTENT_CAPTURED);
-        runAndVerifyCallbacks(() -> { loadUrlSync(url2); }, expectedCallbacks);
-        verifyCapturedContent(null, frameId, url2, null, toStringSet("World"), capturedContentIds,
-                mConsumer.getParentFrame(), mConsumer.getCapturedContent());
+        int[] expectedCallbacks =
+                toIntArray(
+                        TestAwContentCaptureConsumer.SESSION_REMOVED,
+                        TestAwContentCaptureConsumer.CONTENT_CAPTURED);
+        runAndVerifyCallbacks(
+                () -> {
+                    loadUrlSync(url2);
+                },
+                expectedCallbacks);
+        verifyCapturedContent(
+                null,
+                frameId,
+                url2,
+                null,
+                toStringSet("World"),
+                capturedContentIds,
+                mConsumer.getParentFrame(),
+                mConsumer.getCapturedContent());
         // Verify previous session has been removed.
         verifyFrameSession(removedSession, mConsumer.getRemovedSession());
 
         // Keep a copy of current session to verify it removed later.
         removedSession = createFrameSession(mConsumer.getCapturedContent());
-        runAndVerifyCallbacks(() -> {
-            destroyAwContents();
-        }, toIntArray(TestAwContentCaptureConsumer.SESSION_REMOVED));
+        runAndVerifyCallbacks(
+                () -> {
+                    destroyAwContents();
+                },
+                toIntArray(TestAwContentCaptureConsumer.SESSION_REMOVED));
         verifyFrameSession(removedSession, mConsumer.getRemovedSession());
     }
 
@@ -675,29 +879,45 @@ public class AwContentCaptureTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testRemoveIframe() throws Throwable {
-        final String subFrame = "<html><head></head><body>"
-                + "<div id='editable_id'>Hello</div>"
-                + "</div></body></html>";
+        final String subFrame =
+                "<html><head></head><body>"
+                        + "<div id='editable_id'>Hello</div>"
+                        + "</div></body></html>";
         final String subFrameUrl = mWebServer.setResponse(SECOND_PAGE, subFrame, null);
-        final String mainFrame = "<html><head></head><body>"
-                + "<iframe id='sub_frame_id' src='" + subFrameUrl + "'></iframe></body></html>";
+        final String mainFrame =
+                "<html><head></head><body>"
+                        + "<iframe id='sub_frame_id' src='"
+                        + subFrameUrl
+                        + "'></iframe></body></html>";
         final String mainFrameUrl = mWebServer.setResponse(MAIN_FRAME_FILE, mainFrame, null);
-        runAndVerifyCallbacks(() -> {
-            loadUrlSync(mainFrameUrl);
-        }, toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
+        runAndVerifyCallbacks(
+                () -> {
+                    loadUrlSync(mainFrameUrl);
+                },
+                toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
 
         FrameSession expectedParentFrameSession = createFrameSession(mainFrameUrl);
         Long frameId = null;
-        verifyCapturedContent(expectedParentFrameSession, frameId, subFrameUrl, null,
-                toStringSet("Hello"), null, mConsumer.getParentFrame(),
+        verifyCapturedContent(
+                expectedParentFrameSession,
+                frameId,
+                subFrameUrl,
+                null,
+                toStringSet("Hello"),
+                null,
+                mConsumer.getParentFrame(),
                 mConsumer.getCapturedContent());
 
-        FrameSession removedSession = createFrameSession(
-                mConsumer.getCapturedContent(), mConsumer.getParentFrame().get(0));
-        runAndVerifyCallbacks(() -> {
-            runScript("var frame = document.getElementById('sub_frame_id');"
-                    + "frame.parentNode.removeChild(frame);");
-        }, toIntArray(TestAwContentCaptureConsumer.SESSION_REMOVED));
+        FrameSession removedSession =
+                createFrameSession(
+                        mConsumer.getCapturedContent(), mConsumer.getParentFrame().get(0));
+        runAndVerifyCallbacks(
+                () -> {
+                    runScript(
+                            "var frame = document.getElementById('sub_frame_id');"
+                                    + "frame.parentNode.removeChild(frame);");
+                },
+                toIntArray(TestAwContentCaptureConsumer.SESSION_REMOVED));
         verifyFrameSession(removedSession, mConsumer.getRemovedSession());
     }
 
@@ -705,22 +925,28 @@ public class AwContentCaptureTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testMultipleConsumers() throws Throwable {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mSecondConsumer = new TestAwContentCaptureConsumer();
-            mOnscreenContentProvider.addConsumer(mSecondConsumer);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mSecondConsumer = new TestAwContentCaptureConsumer();
+                    mOnscreenContentProvider.addConsumer(mSecondConsumer);
+                });
         int callCount = mSecondConsumer.getCallCount();
-        final String response = "<html><head></head><body>"
-                + "<div id='place_holder'>"
-                + "<p style=\"height: 100vh\">Hello</p>"
-                + "<p>world</p>"
-                + "</body></html>";
+        final String response =
+                "<html><head></head><body>"
+                        + "<div id='place_holder'>"
+                        + "<p style=\"height: 100vh\">Hello</p>"
+                        + "<p>world</p>"
+                        + "</body></html>";
         final String url = mWebServer.setResponse(MAIN_FRAME_FILE, response, null);
-        runAndVerifyCallbacks(() -> {
-            loadUrlSync(url);
-        }, toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
+        runAndVerifyCallbacks(
+                () -> {
+                    loadUrlSync(url);
+                },
+                toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
         // Verify the other one also get the content.
-        waitAndVerifyCallbacks(toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED), callCount,
+        waitAndVerifyCallbacks(
+                toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED),
+                callCount,
                 mSecondConsumer);
     }
 
@@ -730,32 +956,40 @@ public class AwContentCaptureTest {
     @CommandLineFlags.Add({"enable-features=ContentCaptureTriggeringForExperiment"})
     public void testHostNotAllowed() throws Throwable {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mSecondConsumer = new TestAwContentCaptureConsumer(); });
-        final String response = "<html><head></head><body>"
-                + "<div id='place_holder'>"
-                + "<p style=\"height: 100vh\">Hello</p>"
-                + "<p>world</p>"
-                + "</body></html>";
+                () -> {
+                    mSecondConsumer = new TestAwContentCaptureConsumer();
+                });
+        final String response =
+                "<html><head></head><body>"
+                        + "<div id='place_holder'>"
+                        + "<p style=\"height: 100vh\">Hello</p>"
+                        + "<p>world</p>"
+                        + "</body></html>";
         final String url = mWebServer.setResponse(MAIN_FRAME_FILE, response, null);
         mSecondConsumer.setAllowURL("www.chromium.org");
-        runAndVerifyCallbacks(() -> {
-            loadUrlSync(url);
-        }, toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
+        runAndVerifyCallbacks(
+                () -> {
+                    loadUrlSync(url);
+                },
+                toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
         // Verify the other one didn't get the content.
         Assert.assertEquals(0, mSecondConsumer.getCallbacks().length);
     }
 
     private void runHostAllowedTest() throws Throwable {
-        final String response = "<html><head></head><body>"
-                + "<div id='place_holder'>"
-                + "<p style=\"height: 100vh\">Hello</p>"
-                + "<p>world</p>"
-                + "</body></html>";
+        final String response =
+                "<html><head></head><body>"
+                        + "<div id='place_holder'>"
+                        + "<p style=\"height: 100vh\">Hello</p>"
+                        + "<p>world</p>"
+                        + "</body></html>";
         final String url = mWebServer.setResponse(MAIN_FRAME_FILE, response, null);
         mConsumer.setAllowURL(Uri.parse(url).getHost());
-        runAndVerifyCallbacks(() -> {
-            loadUrlSync(url);
-        }, toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
+        runAndVerifyCallbacks(
+                () -> {
+                    loadUrlSync(url);
+                },
+                toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
     }
 
     @Test
@@ -788,64 +1022,92 @@ public class AwContentCaptureTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testHideAndShow() throws Throwable {
-        final String response = "<html><head></head><body>"
-                + "<div id='editable_id'>Hello</div>"
-                + "</div></body></html>";
+        final String response =
+                "<html><head></head><body>"
+                        + "<div id='editable_id'>Hello</div>"
+                        + "</div></body></html>";
         final String url = mWebServer.setResponse(MAIN_FRAME_FILE, response, null);
-        runAndVerifyCallbacks(() -> {
-            loadUrlSync(url);
-        }, toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
+        runAndVerifyCallbacks(
+                () -> {
+                    loadUrlSync(url);
+                },
+                toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
 
         // Hides and shows the WebContent and verifies the content is captured again.
-        runAndVerifyCallbacks(() -> {
-            TestThreadUtils.runOnUiThreadBlocking(
-                    () -> { mContainerView.onWindowVisibilityChanged(View.INVISIBLE); });
-            AwActivityTestRule.pollInstrumentationThread(() -> !mAwContents.isPageVisible());
-            TestThreadUtils.runOnUiThreadBlocking(
-                    () -> { mContainerView.onWindowVisibilityChanged(View.VISIBLE); });
-            AwActivityTestRule.pollInstrumentationThread(() -> mAwContents.isPageVisible());
-        }, toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
+        runAndVerifyCallbacks(
+                () -> {
+                    TestThreadUtils.runOnUiThreadBlocking(
+                            () -> {
+                                mContainerView.onWindowVisibilityChanged(View.INVISIBLE);
+                            });
+                    AwActivityTestRule.pollInstrumentationThread(
+                            () -> !mAwContents.isPageVisible());
+                    TestThreadUtils.runOnUiThreadBlocking(
+                            () -> {
+                                mContainerView.onWindowVisibilityChanged(View.VISIBLE);
+                            });
+                    AwActivityTestRule.pollInstrumentationThread(() -> mAwContents.isPageVisible());
+                },
+                toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
     }
 
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testTitle() throws Throwable {
-        final String response = "<html><head><title>Hello</title></head><body>"
-                + "<p>world</p>"
-                + "</body></html>";
+        final String response =
+                "<html><head><title>Hello</title></head><body>" + "<p>world</p>" + "</body></html>";
         final String url = mWebServer.setResponse(MAIN_FRAME_FILE, response, null);
-        runAndVerifyCallbacks(() -> {
-            loadUrlSync(url);
-        }, toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
+        runAndVerifyCallbacks(
+                () -> {
+                    loadUrlSync(url);
+                },
+                toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
         Long frameId = null;
         Set<Long> capturedContentIds = null;
         // Verify only on-screen content is captured.
-        verifyCapturedContent(null, frameId, url, "Hello", toStringSet("world"), capturedContentIds,
-                mConsumer.getParentFrame(), mConsumer.getCapturedContent());
+        verifyCapturedContent(
+                null,
+                frameId,
+                url,
+                "Hello",
+                toStringSet("world"),
+                capturedContentIds,
+                mConsumer.getParentFrame(),
+                mConsumer.getCapturedContent());
     }
 
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testUpdateTitle() throws Throwable {
-        final String response = "<html><head><title>Hello</title></head><body>"
-                + "<p>world</p>"
-                + "</body></html>";
+        final String response =
+                "<html><head><title>Hello</title></head><body>" + "<p>world</p>" + "</body></html>";
         final String url = mWebServer.setResponse(MAIN_FRAME_FILE, response, null);
-        runAndVerifyCallbacks(() -> {
-            loadUrlSync(url);
-        }, toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
+        runAndVerifyCallbacks(
+                () -> {
+                    loadUrlSync(url);
+                },
+                toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
         Long frameId = null;
         Set<Long> capturedContentIds = null;
         // Verify only on-screen content is captured.
-        verifyCapturedContent(null, frameId, url, "Hello", toStringSet("world"), capturedContentIds,
-                mConsumer.getParentFrame(), mConsumer.getCapturedContent());
+        verifyCapturedContent(
+                null,
+                frameId,
+                url,
+                "Hello",
+                toStringSet("world"),
+                capturedContentIds,
+                mConsumer.getParentFrame(),
+                mConsumer.getCapturedContent());
 
         // Update the title and verify the result.
-        runAndVerifyCallbacks(() -> {
-            runScript("document.title='hello world'");
-        }, toIntArray(TestAwContentCaptureConsumer.TITLE_UPDATED));
+        runAndVerifyCallbacks(
+                () -> {
+                    runScript("document.title='hello world'");
+                },
+                toIntArray(TestAwContentCaptureConsumer.TITLE_UPDATED));
     }
 
     @Test
@@ -853,11 +1115,12 @@ public class AwContentCaptureTest {
     @Feature({"AndroidWebView"})
     public void testFaviconRetrievedAtFirstContentCapture() throws Throwable {
         // Starts with a empty document, so no content shall be streamed.
-        final String response = "<html><head>"
-                + "<link rel=\"apple-touch-icon\" href=\"image.png\">"
-                + "</head><body>"
-                + "<p id='place_holder'></p>"
-                + "</body></html>";
+        final String response =
+                "<html><head>"
+                        + "<link rel=\"apple-touch-icon\" href=\"image.png\">"
+                        + "</head><body>"
+                        + "<p id='place_holder'></p>"
+                        + "</body></html>";
         final String url = mWebServer.setResponse(MAIN_FRAME_FILE, response, null);
         int count = mContentsClient.getTouchIconHelper().getCallCount();
         loadUrlSync(url);
@@ -865,23 +1128,27 @@ public class AwContentCaptureTest {
         // wait favicon being available in WebContents, then insert the text to document.
         mContentsClient.getTouchIconHelper().waitForCallback(count);
         Assert.assertEquals(1, mContentsClient.getTouchIconHelper().getTouchIconsCount());
-        runAndVerifyCallbacks(() -> {
-            runScript("document.getElementById('place_holder').innerHTML = 'world';");
-        }, toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
+        runAndVerifyCallbacks(
+                () -> {
+                    runScript("document.getElementById('place_holder').innerHTML = 'world';");
+                },
+                toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
         GURL gurl = new GURL(url);
         String origin = gurl.getOrigin().getSpec();
         // Blink attaches the default favicon if it is not specified in page.
-        final String expectedJson = String.format("["
-                        + "    {"
-                        + "        \"type\" : \"favicon\","
-                        + "        \"url\" : \"%sfavicon.ico\""
-                        + "    },"
-                        + "    {"
-                        + "        \"type\" : \"touch icon\","
-                        + "        \"url\" : \"%simage.png\""
-                        + "    }"
-                        + "]",
-                origin, origin);
+        final String expectedJson =
+                String.format(
+                        "["
+                                + "    {"
+                                + "        \"type\" : \"favicon\","
+                                + "        \"url\" : \"%sfavicon.ico\""
+                                + "    },"
+                                + "    {"
+                                + "        \"type\" : \"touch icon\","
+                                + "        \"url\" : \"%simage.png\""
+                                + "    }"
+                                + "]",
+                        origin, origin);
         verifyFaviconResult(expectedJson, mConsumer.getCapturedContent().getFavicon());
     }
 
@@ -889,38 +1156,48 @@ public class AwContentCaptureTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testFaviconRetrievedAfterFirstContentCapture() throws Throwable {
-        final String response = "<html><head'>"
-                + "</head><body>"
-                + "<p id='place_holder'>world</p>"
-                + "</body></html>";
+        final String response =
+                "<html><head'>"
+                        + "</head><body>"
+                        + "<p id='place_holder'>world</p>"
+                        + "</body></html>";
         final String url = mWebServer.setResponse(MAIN_FRAME_FILE, response, null);
         // Direct ContentCaptureReveiver and OnscreenContentProvider not to get the favicon
         // from Webontents, because there is no way to control the time of favicon update.
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { ContentCaptureTestSupport.disableGetFaviconFromWebContents(); });
-        runAndVerifyCallbacks(() -> {
-            loadUrlSync(url);
-        }, toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
+                () -> {
+                    ContentCaptureTestSupport.disableGetFaviconFromWebContents();
+                });
+        runAndVerifyCallbacks(
+                () -> {
+                    loadUrlSync(url);
+                },
+                toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
         GURL gurl = new GURL(url);
         String origin = gurl.getOrigin().getSpec();
-        final String expectedJson = String.format("["
-                        + "    {"
-                        + "        \"type\" : \"favicon\","
-                        + "        \"url\" : \"%sfavicon.ico\""
-                        + "    },"
-                        + "    {"
-                        + "        \"type\" : \"touch icon\","
-                        + "        \"url\" : \"%simage.png\""
-                        + "    }"
-                        + "]",
-                origin, origin);
+        final String expectedJson =
+                String.format(
+                        "["
+                                + "    {"
+                                + "        \"type\" : \"favicon\","
+                                + "        \"url\" : \"%sfavicon.ico\""
+                                + "    },"
+                                + "    {"
+                                + "        \"type\" : \"touch icon\","
+                                + "        \"url\" : \"%simage.png\""
+                                + "    }"
+                                + "]",
+                        origin, origin);
         // Simulates favicon update by calling OnscreenContentProvider's test method.
-        runAndVerifyCallbacks(() -> {
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                ContentCaptureTestSupport.simulateDidUpdateFaviconURL(
-                        mAwContents.getWebContents(), expectedJson);
-            });
-        }, toIntArray(TestAwContentCaptureConsumer.FAVICON_UPDATED));
+        runAndVerifyCallbacks(
+                () -> {
+                    TestThreadUtils.runOnUiThreadBlocking(
+                            () -> {
+                                ContentCaptureTestSupport.simulateDidUpdateFaviconURL(
+                                        mAwContents.getWebContents(), expectedJson);
+                            });
+                },
+                toIntArray(TestAwContentCaptureConsumer.FAVICON_UPDATED));
         verifyFaviconResult(expectedJson, mConsumer.getFaviconUpdatedFrame().getFavicon());
     }
 
@@ -928,21 +1205,28 @@ public class AwContentCaptureTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testFavicon() throws Throwable {
-        final String response = "<html><head>"
-                + "<link rel=icon href=mac.icns sizes=\"128x128 512x512 8192x8192 32768x32768\">"
-                + "</head><body>"
-                + "<p>world</p>"
-                + "</body></html>";
+        final String response =
+                "<html><head><link rel=icon href=mac.icns sizes=\"128x128 512x512 8192x8192"
+                        + " 32768x32768\"></head><body><p>world</p></body></html>";
         final String url = mWebServer.setResponse(MAIN_FRAME_FILE, response, null);
 
-        runAndVerifyCallbacks(() -> {
-            loadUrlSync(url);
-        }, toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
+        runAndVerifyCallbacks(
+                () -> {
+                    loadUrlSync(url);
+                },
+                toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
         Long frameId = null;
         Set<Long> capturedContentIds = null;
         // Verify only on-screen content is captured.
-        verifyCapturedContent(null, frameId, url, null, toStringSet("world"), capturedContentIds,
-                mConsumer.getParentFrame(), mConsumer.getCapturedContent());
+        verifyCapturedContent(
+                null,
+                frameId,
+                url,
+                null,
+                toStringSet("world"),
+                capturedContentIds,
+                mConsumer.getParentFrame(),
+                mConsumer.getCapturedContent());
         // The favicon could be from either first capture or FaviconUpdated callback.
         String favicon = mConsumer.getCapturedContent().getFavicon();
         if (favicon == null) {
@@ -953,32 +1237,34 @@ public class AwContentCaptureTest {
         }
         GURL gurl = new GURL(url);
         String origin = gurl.getOrigin().getSpec();
-        final String expectedJson = String.format("["
-                        + "     {"
-                        + "         \"sizes\" : "
-                        + "         ["
-                        + "             {"
-                        + "                 \"height\" : 128,"
-                        + "                 \"width\" : 128"
-                        + "             },"
-                        + "             {"
-                        + "                 \"height\" : 512,"
-                        + "                 \"width\" : 512"
-                        + "             },"
-                        + "             {"
-                        + "                 \"height\" : 8192,"
-                        + "                 \"width\" : 8192"
-                        + "             },"
-                        + "             {"
-                        + "                 \"height\" : 32768,"
-                        + "                 \"width\" : 32768"
-                        + "             }"
-                        + "         ],"
-                        + "         \"type\" : \"favicon\","
-                        + "         \"url\" : \"%smac.icns\""
-                        + "     }"
-                        + " ]",
-                origin);
+        final String expectedJson =
+                String.format(
+                        "["
+                                + "     {"
+                                + "         \"sizes\" : "
+                                + "         ["
+                                + "             {"
+                                + "                 \"height\" : 128,"
+                                + "                 \"width\" : 128"
+                                + "             },"
+                                + "             {"
+                                + "                 \"height\" : 512,"
+                                + "                 \"width\" : 512"
+                                + "             },"
+                                + "             {"
+                                + "                 \"height\" : 8192,"
+                                + "                 \"width\" : 8192"
+                                + "             },"
+                                + "             {"
+                                + "                 \"height\" : 32768,"
+                                + "                 \"width\" : 32768"
+                                + "             }"
+                                + "         ],"
+                                + "         \"type\" : \"favicon\","
+                                + "         \"url\" : \"%smac.icns\""
+                                + "     }"
+                                + " ]",
+                        origin);
         verifyFaviconResult(expectedJson, favicon);
     }
 
@@ -986,7 +1272,9 @@ public class AwContentCaptureTest {
             throws Throwable {
         JSONArray expectedResult = (JSONArray) new JSONTokener(expectedJson).nextValue();
         JSONArray actualResult = (JSONArray) new JSONTokener(resultJson).nextValue();
-        Assert.assertEquals(String.format("Actual:%s\n Expected:\n%s\n", resultJson, expectedJson),
-                expectedResult.toString(), actualResult.toString());
+        Assert.assertEquals(
+                String.format("Actual:%s\n Expected:\n%s\n", resultJson, expectedJson),
+                expectedResult.toString(),
+                actualResult.toString());
     }
 }

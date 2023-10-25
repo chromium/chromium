@@ -45,14 +45,11 @@ import java.util.Locale;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Tests for pop up window flow.
- */
+/** Tests for pop up window flow. */
 @RunWith(AwJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class PopupWindowTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private TestAwContentsClient mParentContentsClient;
     private AwTestContainerView mParentContainerView;
@@ -82,17 +79,28 @@ public class PopupWindowTest {
     @Feature({"AndroidWebView"})
     public void testPopupWindow() throws Throwable {
         final String popupPath = "/popup.html";
-        final String parentPageHtml = CommonResources.makeHtmlPageFrom("", "<script>"
-                        + "function tryOpenWindow() {"
-                        + "  var newWindow = window.open('" + popupPath + "');"
-                        + "}</script>");
+        final String parentPageHtml =
+                CommonResources.makeHtmlPageFrom(
+                        "",
+                        "<script>"
+                                + "function tryOpenWindow() {"
+                                + "  var newWindow = window.open('"
+                                + popupPath
+                                + "');"
+                                + "}</script>");
 
-        final String popupPageHtml = CommonResources.makeHtmlPageFrom(
-                "<title>" + POPUP_TITLE + "</title>",
-                "This is a popup window");
+        final String popupPageHtml =
+                CommonResources.makeHtmlPageFrom(
+                        "<title>" + POPUP_TITLE + "</title>", "This is a popup window");
 
-        mActivityTestRule.triggerPopup(mParentContents, mParentContentsClient, mWebServer,
-                parentPageHtml, popupPageHtml, popupPath, "tryOpenWindow()");
+        mActivityTestRule.triggerPopup(
+                mParentContents,
+                mParentContentsClient,
+                mWebServer,
+                parentPageHtml,
+                popupPageHtml,
+                popupPath,
+                "tryOpenWindow()");
         AwContents popupContents =
                 mActivityTestRule.connectPendingPopup(mParentContents).popupContents;
         Assert.assertEquals(POPUP_TITLE, mActivityTestRule.getTitleOnUiThread(popupContents));
@@ -104,17 +112,28 @@ public class PopupWindowTest {
     public void testJavascriptInterfaceForPopupWindow() throws Throwable {
         // android.webkit.cts.WebViewTest#testJavascriptInterfaceForClientPopup
         final String popupPath = "/popup.html";
-        final String parentPageHtml = CommonResources.makeHtmlPageFrom("",
-                "<script>"
-                        + "function tryOpenWindow() {"
-                        + "  var newWindow = window.open('" + popupPath + "');"
-                        + "}</script>");
+        final String parentPageHtml =
+                CommonResources.makeHtmlPageFrom(
+                        "",
+                        "<script>"
+                                + "function tryOpenWindow() {"
+                                + "  var newWindow = window.open('"
+                                + popupPath
+                                + "');"
+                                + "}</script>");
 
-        final String popupPageHtml = CommonResources.makeHtmlPageFrom(
-                "<title>" + POPUP_TITLE + "</title>", "This is a popup window");
+        final String popupPageHtml =
+                CommonResources.makeHtmlPageFrom(
+                        "<title>" + POPUP_TITLE + "</title>", "This is a popup window");
 
-        mActivityTestRule.triggerPopup(mParentContents, mParentContentsClient, mWebServer,
-                parentPageHtml, popupPageHtml, popupPath, "tryOpenWindow()");
+        mActivityTestRule.triggerPopup(
+                mParentContents,
+                mParentContentsClient,
+                mWebServer,
+                parentPageHtml,
+                popupPageHtml,
+                popupPath,
+                "tryOpenWindow()");
         PopupInfo popupInfo = mActivityTestRule.createPopupContents(mParentContents);
         TestAwContentsClient popupContentsClient = popupInfo.popupContentsClient;
         final AwContents popupContents = popupInfo.popupContents;
@@ -131,12 +150,14 @@ public class PopupWindowTest {
 
         mActivityTestRule.loadPopupContents(mParentContents, popupInfo, null);
 
-        AwActivityTestRule.pollInstrumentationThread(() -> {
-            String ans = mActivityTestRule.executeJavaScriptAndWaitForResult(
-                    popupContents, popupContentsClient, "interface.test()");
+        AwActivityTestRule.pollInstrumentationThread(
+                () -> {
+                    String ans =
+                            mActivityTestRule.executeJavaScriptAndWaitForResult(
+                                    popupContents, popupContentsClient, "interface.test()");
 
-            return ans.equals("42");
-        });
+                    return ans.equals("42");
+                });
     }
 
     @Test
@@ -146,23 +167,35 @@ public class PopupWindowTest {
         mActivityTestRule.getAwSettingsOnUiThread(mParentContents).setJavaScriptEnabled(true);
         mActivityTestRule.loadUrlSync(
                 mParentContents, mParentContentsClient.getOnPageFinishedHelper(), "about:blank");
-        String parentUserAgent = mActivityTestRule.executeJavaScriptAndWaitForResult(
-                mParentContents, mParentContentsClient, "navigator.userAgent");
+        String parentUserAgent =
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        mParentContents, mParentContentsClient, "navigator.userAgent");
 
         final String popupPath = "/popup.html";
         final String myUserAgentString = "myUserAgent";
-        final String parentPageHtml = CommonResources.makeHtmlPageFrom("",
-                "<script>"
-                        + "function tryOpenWindow() {"
-                        + "  var newWindow = window.open('" + popupPath + "');"
-                        + "}</script>");
+        final String parentPageHtml =
+                CommonResources.makeHtmlPageFrom(
+                        "",
+                        "<script>"
+                                + "function tryOpenWindow() {"
+                                + "  var newWindow = window.open('"
+                                + popupPath
+                                + "');"
+                                + "}</script>");
 
-        final String popupPageHtml = "<html><head><script>"
-                + "document.title = navigator.userAgent;"
-                + "</script><body><div id='a'></div></body></html>";
+        final String popupPageHtml =
+                "<html><head><script>"
+                        + "document.title = navigator.userAgent;"
+                        + "</script><body><div id='a'></div></body></html>";
 
-        mActivityTestRule.triggerPopup(mParentContents, mParentContentsClient, mWebServer,
-                parentPageHtml, popupPageHtml, popupPath, "tryOpenWindow()");
+        mActivityTestRule.triggerPopup(
+                mParentContents,
+                mParentContentsClient,
+                mWebServer,
+                parentPageHtml,
+                popupPageHtml,
+                popupPath,
+                "tryOpenWindow()");
 
         PopupInfo popupInfo = mActivityTestRule.createPopupContents(mParentContents);
         TestAwContentsClient popupContentsClient = popupInfo.popupContentsClient;
@@ -170,8 +203,9 @@ public class PopupWindowTest {
 
         mActivityTestRule.loadPopupContents(mParentContents, popupInfo, null);
 
-        final String childUserAgent = mActivityTestRule.executeJavaScriptAndWaitForResult(
-                popupContents, popupContentsClient, "navigator.userAgent");
+        final String childUserAgent =
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        popupContents, popupContentsClient, "navigator.userAgent");
 
         Assert.assertEquals(parentUserAgent, childUserAgent);
     }
@@ -182,18 +216,29 @@ public class PopupWindowTest {
     public void testOverrideUserAgentInOnCreateWindow() throws Throwable {
         final String popupPath = "/popup.html";
         final String myUserAgentString = "myUserAgent";
-        final String parentPageHtml = CommonResources.makeHtmlPageFrom("",
-                "<script>"
-                        + "function tryOpenWindow() {"
-                        + "  var newWindow = window.open('" + popupPath + "');"
-                        + "}</script>");
+        final String parentPageHtml =
+                CommonResources.makeHtmlPageFrom(
+                        "",
+                        "<script>"
+                                + "function tryOpenWindow() {"
+                                + "  var newWindow = window.open('"
+                                + popupPath
+                                + "');"
+                                + "}</script>");
 
-        final String popupPageHtml = "<html><head><script>"
-                + "document.title = navigator.userAgent;"
-                + "</script><body><div id='a'></div></body></html>";
+        final String popupPageHtml =
+                "<html><head><script>"
+                        + "document.title = navigator.userAgent;"
+                        + "</script><body><div id='a'></div></body></html>";
 
-        mActivityTestRule.triggerPopup(mParentContents, mParentContentsClient, mWebServer,
-                parentPageHtml, popupPageHtml, popupPath, "tryOpenWindow()");
+        mActivityTestRule.triggerPopup(
+                mParentContents,
+                mParentContentsClient,
+                mWebServer,
+                parentPageHtml,
+                popupPageHtml,
+                popupPath,
+                "tryOpenWindow()");
 
         PopupInfo popupInfo = mActivityTestRule.createPopupContents(mParentContents);
         TestAwContentsClient popupContentsClient = popupInfo.popupContentsClient;
@@ -201,7 +246,9 @@ public class PopupWindowTest {
 
         // Override the user agent string for the popup window.
         mActivityTestRule.loadPopupContents(
-                mParentContents, popupInfo, new AwActivityTestRule.OnCreateWindowHandler() {
+                mParentContents,
+                popupInfo,
+                new AwActivityTestRule.OnCreateWindowHandler() {
                     @Override
                     public boolean onCreateWindow(AwContents awContents) {
                         awContents.getSettings().setUserAgentString(myUserAgentString);
@@ -209,14 +256,16 @@ public class PopupWindowTest {
                     }
                 });
 
-        CriteriaHelper.pollUiThread(() -> {
-            try {
-                Criteria.checkThat(mActivityTestRule.getTitleOnUiThread(popupContents),
-                        Matchers.is(myUserAgentString));
-            } catch (Exception e) {
-                throw new CriteriaNotSatisfiedException(e);
-            }
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    try {
+                        Criteria.checkThat(
+                                mActivityTestRule.getTitleOnUiThread(popupContents),
+                                Matchers.is(myUserAgentString));
+                    } catch (Exception e) {
+                        throw new CriteriaNotSatisfiedException(e);
+                    }
+                });
     }
 
     @Test
@@ -225,17 +274,25 @@ public class PopupWindowTest {
     public void testSynthesizedOnPageFinishedCalledOnceAfterDomModificationDuringNavigation()
             throws Throwable {
         final String popupPath = "/popup.html";
-        final String parentPageHtml = CommonResources.makeHtmlPageFrom("",
-                "<script>"
-                        + "function tryOpenWindow() {"
-                        + "  window.popupWindow = window.open('" + popupPath + "');"
-                        + "}"
-                        + "function modifyDomOfPopup() {"
-                        + "  window.popupWindow.document.body.innerHTML = 'Hello from the parent!';"
-                        + "}</script>");
+        final String parentPageHtml =
+                CommonResources.makeHtmlPageFrom(
+                        "",
+                        "<script>"
+                                + "function tryOpenWindow() {"
+                                + "  window.popupWindow = window.open('"
+                                + popupPath
+                                + "');}function modifyDomOfPopup() { "
+                                + " window.popupWindow.document.body.innerHTML = 'Hello from the"
+                                + " parent!';}</script>");
 
-        mActivityTestRule.triggerPopup(mParentContents, mParentContentsClient, mWebServer,
-                parentPageHtml, "<html></html>", popupPath, "tryOpenWindow()");
+        mActivityTestRule.triggerPopup(
+                mParentContents,
+                mParentContentsClient,
+                mWebServer,
+                parentPageHtml,
+                "<html></html>",
+                popupPath,
+                "tryOpenWindow()");
         PopupInfo popupInfo = mActivityTestRule.createPopupContents(mParentContents);
         TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
                 popupInfo.popupContentsClient.getOnPageFinishedHelper();
@@ -245,17 +302,22 @@ public class PopupWindowTest {
         int shouldInterceptRequestCount = shouldInterceptRequestHelper.getCallCount();
         // Modify DOM before navigation gets committed. Once it gets committed, then
         // DidAccessInitialDocument does not get triggered.
-        popupInfo.popupContentsClient.getShouldInterceptRequestHelper().runDuringFirstTimeCallback(
-                () -> {
-                    ThreadUtils.assertOnBackgroundThread();
-                    try {
-                        // Ensures that we modify DOM before navigation gets committed.
-                        mActivityTestRule.executeJavaScriptAndWaitForResult(
-                                mParentContents, mParentContentsClient, "modifyDomOfPopup()");
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                });
+        popupInfo
+                .popupContentsClient
+                .getShouldInterceptRequestHelper()
+                .runDuringFirstTimeCallback(
+                        () -> {
+                            ThreadUtils.assertOnBackgroundThread();
+                            try {
+                                // Ensures that we modify DOM before navigation gets committed.
+                                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                                        mParentContents,
+                                        mParentContentsClient,
+                                        "modifyDomOfPopup()");
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
         mActivityTestRule.loadPopupContents(mParentContents, popupInfo, null);
         shouldInterceptRequestHelper.waitForCallback(shouldInterceptRequestCount);
         // Modifying DOM in the middle while loading a popup window - this causes navigation state
@@ -283,17 +345,30 @@ public class PopupWindowTest {
     @Feature({"AndroidWebView"})
     public void testPopupWindowTextHandle() throws Throwable {
         final String popupPath = "/popup.html";
-        final String parentPageHtml = CommonResources.makeHtmlPageFrom("", "<script>"
-                        + "function tryOpenWindow() {"
-                        + "  var newWindow = window.open('" + popupPath + "');"
-                        + "}</script>");
+        final String parentPageHtml =
+                CommonResources.makeHtmlPageFrom(
+                        "",
+                        "<script>"
+                                + "function tryOpenWindow() {"
+                                + "  var newWindow = window.open('"
+                                + popupPath
+                                + "');"
+                                + "}</script>");
 
-        final String popupPageHtml = CommonResources.makeHtmlPageFrom(
-                "<title>" + POPUP_TITLE + "</title>",
-                "<span id=\"plain_text\" class=\"full_view\">This is a popup window.</span>");
+        final String popupPageHtml =
+                CommonResources.makeHtmlPageFrom(
+                        "<title>" + POPUP_TITLE + "</title>",
+                        "<span id=\"plain_text\" class=\"full_view\">This is a popup"
+                                + " window.</span>");
 
-        mActivityTestRule.triggerPopup(mParentContents, mParentContentsClient, mWebServer,
-                parentPageHtml, popupPageHtml, popupPath, "tryOpenWindow()");
+        mActivityTestRule.triggerPopup(
+                mParentContents,
+                mParentContentsClient,
+                mWebServer,
+                parentPageHtml,
+                popupPageHtml,
+                popupPath,
+                "tryOpenWindow()");
         PopupInfo popupInfo = mActivityTestRule.connectPendingPopup(mParentContents);
         final AwContents popupContents = popupInfo.popupContents;
         TestAwContentsClient popupContentsClient = popupInfo.popupContentsClient;
@@ -303,8 +378,11 @@ public class PopupWindowTest {
 
         // Now long press on some texts and see if the text handles show up.
         DOMUtils.longPressNode(popupContents.getWebContents(), "plain_text");
-        SelectionPopupController controller = TestThreadUtils.runOnUiThreadBlocking(
-                () -> SelectionPopupController.fromWebContents(popupContents.getWebContents()));
+        SelectionPopupController controller =
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                SelectionPopupController.fromWebContents(
+                                        popupContents.getWebContents()));
         assertWaitForSelectActionBarStatus(true, controller);
         Assert.assertTrue(TestThreadUtils.runOnUiThreadBlocking(() -> controller.hasSelection()));
 
@@ -315,7 +393,8 @@ public class PopupWindowTest {
         assertWaitForSelectActionBarStatus(false, controller);
         String jsGetSelection = "window.getSelection().toString()";
         // Test window.getSelection() returns empty string "" literally.
-        Assert.assertEquals("\"\"",
+        Assert.assertEquals(
+                "\"\"",
                 mActivityTestRule.executeJavaScriptAndWaitForResult(
                         popupContents, popupContentsClient, jsGetSelection));
     }
@@ -335,21 +414,26 @@ public class PopupWindowTest {
     }
 
     private void runPopupUserGestureTest(boolean hasOpener) throws Throwable {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mParentContents.getSettings().setJavaScriptEnabled(true);
-            mParentContents.getSettings().setSupportMultipleWindows(true);
-            mParentContents.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mParentContents.getSettings().setJavaScriptEnabled(true);
+                    mParentContents.getSettings().setSupportMultipleWindows(true);
+                    mParentContents.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+                });
 
-        final String body = String.format(Locale.US,
-                "<a href=\"popup.html\" id=\"link\" %s target=\"_blank\">example.com</a>",
-                hasOpener ? "" : "rel=\"noopener noreferrer\"");
+        final String body =
+                String.format(
+                        Locale.US,
+                        "<a href=\"popup.html\" id=\"link\" %s target=\"_blank\">example.com</a>",
+                        hasOpener ? "" : "rel=\"noopener noreferrer\"");
         final String mainHtml = CommonResources.makeHtmlPageFrom("", body);
         final String openerUrl = mWebServer.setResponse("/popupOpener.html", mainHtml, null);
-        final String popupUrl = mWebServer.setResponse("/popup.html",
-                CommonResources.makeHtmlPageFrom(
-                        "<title>" + POPUP_TITLE + "</title>", "This is a popup window"),
-                null);
+        final String popupUrl =
+                mWebServer.setResponse(
+                        "/popup.html",
+                        CommonResources.makeHtmlPageFrom(
+                                "<title>" + POPUP_TITLE + "</title>", "This is a popup window"),
+                        null);
 
         mParentContentsClient.getOnCreateWindowHelper().setReturnValue(true);
         mActivityTestRule.loadUrlSync(
@@ -370,17 +454,28 @@ public class PopupWindowTest {
     @Feature({"AndroidWebView"})
     public void testPopupWindowNoUserGestureForJsInitiated() throws Throwable {
         final String popupPath = "/popup.html";
-        final String openerPageHtml = CommonResources.makeHtmlPageFrom("",
-                "<script>"
-                        + "function tryOpenWindow() {"
-                        + "  var newWindow = window.open('" + popupPath + "');"
-                        + "}</script>");
+        final String openerPageHtml =
+                CommonResources.makeHtmlPageFrom(
+                        "",
+                        "<script>"
+                                + "function tryOpenWindow() {"
+                                + "  var newWindow = window.open('"
+                                + popupPath
+                                + "');"
+                                + "}</script>");
 
-        final String popupPageHtml = CommonResources.makeHtmlPageFrom(
-                "<title>" + POPUP_TITLE + "</title>", "This is a popup window");
+        final String popupPageHtml =
+                CommonResources.makeHtmlPageFrom(
+                        "<title>" + POPUP_TITLE + "</title>", "This is a popup window");
 
-        mActivityTestRule.triggerPopup(mParentContents, mParentContentsClient, mWebServer,
-                openerPageHtml, popupPageHtml, popupPath, "tryOpenWindow()");
+        mActivityTestRule.triggerPopup(
+                mParentContents,
+                mParentContentsClient,
+                mWebServer,
+                openerPageHtml,
+                popupPageHtml,
+                popupPath,
+                "tryOpenWindow()");
         TestAwContentsClient.OnCreateWindowHelper onCreateWindowHelper =
                 mParentContentsClient.getOnCreateWindowHelper();
         Assert.assertFalse(onCreateWindowHelper.getIsUserGesture());
@@ -440,56 +535,55 @@ public class PopupWindowTest {
         // Choose a free port which is different from |mWebServer| so they have different origins.
         TestWebServer crossOriginWebServer = TestWebServer.startAdditional();
 
-        final String windowOpenJavaScript = "javascript:{"
-                + "  let elem = document.createElement('p');"
-                + "  elem.setAttribute('id', 'inject');"
-                + "  document.body.append(elem);"
-                + "}";
-        final String iframeHtml = "<html><head>"
-                + "<script>"
-                + "  myObject.onmessage = function(e) {"
-                + "    window.open(\"" + windowOpenJavaScript + "\");"
-                + "    myObject.postMessage('done');"
-                + "  };"
-                + "  window.onload = function() {"
-                + "    let link = document.getElementById('iframe_link');"
-                + "    let rect = link.getBoundingClientRect();"
-                + "    let message = Math.round(rect.left) + ';' + Math.round(rect.top) + ';';"
-                + "    message += Math.round(rect.right) + ';' + Math.round(rect.bottom);"
-                + "    myObject.postMessage(message);"
-                + "  };"
-                + "</script>"
-                + "</head><body>"
-                + "  <div>I am iframe.</div>"
-                + "  <a href='#' id='iframe_link' onclick='myObject.postMessage(\"clicked\");'>"
-                + "   iframe link"
-                + "  </a>"
-                + "</body></html>";
+        final String windowOpenJavaScript =
+                "javascript:{"
+                        + "  let elem = document.createElement('p');"
+                        + "  elem.setAttribute('id', 'inject');"
+                        + "  document.body.append(elem);"
+                        + "}";
+        final String iframeHtml =
+                "<html><head>"
+                        + "<script>"
+                        + "  myObject.onmessage = function(e) {"
+                        + "    window.open(\""
+                        + windowOpenJavaScript
+                        + "\");    myObject.postMessage('done');  };  window.onload = function() { "
+                        + "   let link = document.getElementById('iframe_link');    let rect ="
+                        + " link.getBoundingClientRect();    let message = Math.round(rect.left) +"
+                        + " ';' + Math.round(rect.top) + ';';    message += Math.round(rect.right)"
+                        + " + ';' + Math.round(rect.bottom);    myObject.postMessage(message);  };"
+                        + "</script></head><body>  <div>I am iframe.</div>  <a href='#'"
+                        + " id='iframe_link' onclick='myObject.postMessage(\"clicked\");'>   iframe"
+                        + " link  </a></body></html>";
         final String iframeHtmlPath =
                 crossOriginWebServer.setResponse("/iframe.html", iframeHtml, null);
-        final String mainHtml = "<html><head><script>"
-                + "  myObject.onmessage = function(e) {"
-                + "    let elem = document.getElementById('inject');"
-                + "    if (elem) { myObject.postMessage('failed'); }"
-                + "    else { myObject.postMessage('succeed'); }"
-                + "  };"
-                + "  myObject.postMessage('init');"
-                + "</script></head><body>"
-                + "<iframe src='" + iframeHtmlPath + "'></iframe>"
-                + "<div>I am main frame</div>"
-                + "</body></html>";
+        final String mainHtml =
+                "<html><head><script>"
+                        + "  myObject.onmessage = function(e) {"
+                        + "    let elem = document.getElementById('inject');"
+                        + "    if (elem) { myObject.postMessage('failed'); }"
+                        + "    else { myObject.postMessage('succeed'); }"
+                        + "  };"
+                        + "  myObject.postMessage('init');"
+                        + "</script></head><body>"
+                        + "<iframe src='"
+                        + iframeHtmlPath
+                        + "'></iframe>"
+                        + "<div>I am main frame</div>"
+                        + "</body></html>";
         final String mainHtmlPath = mWebServer.setResponse("/main.html", mainHtml, null);
 
         TestWebMessageListener webMessageListener = new TestWebMessageListener();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mParentContents.getSettings().setJavaScriptEnabled(true);
-            // |false| is the default setting for setSupportMultipleWindows(), we explicitly set it
-            // to |false| here for better readability.
-            mParentContents.getSettings().setSupportMultipleWindows(false);
-            mParentContents.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-            mParentContents.addWebMessageListener(
-                    "myObject", new String[] {"*"}, webMessageListener);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mParentContents.getSettings().setJavaScriptEnabled(true);
+                    // |false| is the default setting for setSupportMultipleWindows(), we explicitly
+                    // set it to |false| here for better readability.
+                    mParentContents.getSettings().setSupportMultipleWindows(false);
+                    mParentContents.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+                    mParentContents.addWebMessageListener(
+                            "myObject", new String[] {"*"}, webMessageListener);
+                });
 
         // Step 1.
         mActivityTestRule.loadUrlSync(
@@ -510,8 +604,12 @@ public class PopupWindowTest {
                 iframeReplyProxy = data.mReplyProxy;
                 // iframe_link location.
                 String[] c = data.mMessage.split(";");
-                rect = new Rect(Integer.parseInt(c[0]), Integer.parseInt(c[1]),
-                        Integer.parseInt(c[2]), Integer.parseInt(c[3]));
+                rect =
+                        new Rect(
+                                Integer.parseInt(c[0]),
+                                Integer.parseInt(c[1]),
+                                Integer.parseInt(c[2]),
+                                Integer.parseInt(c[3]));
             }
         }
 
@@ -520,9 +618,8 @@ public class PopupWindowTest {
         Assert.assertNotNull("iframeReplyProxy should not be null.", iframeReplyProxy);
 
         // Wait for the page to finish rendering entirely before
-        // attempting to click the iframe_link
-        // We need this because we're using the DOMUtils
-        // Long term we plan to switch to JSUtils to avoid this
+        // attempting to click the iframe_link We need this because we're using the DOMUtils Long
+        // term we plan to switch to JSUtils to avoid this
         // https://crbug.com/1334843
         mParentContentsClient.getOnPageCommitVisibleHelper().waitForFirst();
 
@@ -553,13 +650,14 @@ public class PopupWindowTest {
     // Copied from imeTest.java.
     private void assertWaitForSelectActionBarStatus(
             boolean show, final SelectionPopupController controller) {
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(controller.isSelectActionBarShowing(), Matchers.is(show));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(controller.isSelectActionBarShowing(), Matchers.is(show));
+                });
     }
 
     private void hideSelectActionMode(final SelectionPopupController controller) {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> controller.destroySelectActionMode());
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(() -> controller.destroySelectActionMode());
     }
 }

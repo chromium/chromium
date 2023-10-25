@@ -24,9 +24,7 @@ import org.chromium.base.test.util.Feature;
 import java.util.Collections;
 import java.util.Set;
 
-/**
- * Test for {@link ManifestMetadataUtil}
- */
+/** Test for {@link ManifestMetadataUtil} */
 @RunWith(AwJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class ManifestMetadataUtilTest {
@@ -55,10 +53,11 @@ public class ManifestMetadataUtilTest {
 
     @Before
     public void setUp() throws Exception {
-        mContext = new ManifestMetadataMockApplicationContext(
-                InstrumentationRegistry.getInstrumentation()
-                        .getTargetContext()
-                        .getApplicationContext());
+        mContext =
+                new ManifestMetadataMockApplicationContext(
+                        InstrumentationRegistry.getInstrumentation()
+                                .getTargetContext()
+                                .getApplicationContext());
         ContextUtils.initApplicationContextForTests(mContext);
         mMetadataServiceName = new ComponentName(mContext, METADATA_HOLDER_SERVICE_NAME);
     }

@@ -43,20 +43,24 @@ public class MetricsBridgeServiceTest {
                         .setHistogramName("testRecordAndRetrieveNonembeddedMetrics")
                         .setSample(1)
                         .build();
-        byte[][] expectedData = new byte[][] {
-                recordProto.toByteArray(), RETRIEVE_METRICS_TASK_STATUS_SUCCESS_RECORD};
+        byte[][] expectedData =
+                new byte[][] {
+                    recordProto.toByteArray(), RETRIEVE_METRICS_TASK_STATUS_SUCCESS_RECORD
+                };
 
         Intent intent =
                 new Intent(ContextUtils.getApplicationContext(), MetricsBridgeService.class);
         try (ServiceConnectionHelper helper =
-                        new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
+                new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
             IMetricsBridgeService service =
                     IMetricsBridgeService.Stub.asInterface(helper.getBinder());
             service.recordMetrics(recordProto.toByteArray());
             List<byte[]> retrievedDataList = service.retrieveNonembeddedMetrics();
 
-            Assert.assertArrayEquals("retrieved byte data is different from the expected data",
-                    expectedData, retrievedDataList.toArray());
+            Assert.assertArrayEquals(
+                    "retrieved byte data is different from the expected data",
+                    expectedData,
+                    retrievedDataList.toArray());
         }
     }
 
@@ -70,26 +74,31 @@ public class MetricsBridgeServiceTest {
                         .setHistogramName("testClearAfterRetrieveNonembeddedMetrics")
                         .setSample(1)
                         .build();
-        byte[][] expectedData = new byte[][] {
-                recordProto.toByteArray(), RETRIEVE_METRICS_TASK_STATUS_SUCCESS_RECORD};
+        byte[][] expectedData =
+                new byte[][] {
+                    recordProto.toByteArray(), RETRIEVE_METRICS_TASK_STATUS_SUCCESS_RECORD
+                };
 
         Intent intent =
                 new Intent(ContextUtils.getApplicationContext(), MetricsBridgeService.class);
         try (ServiceConnectionHelper helper =
-                        new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
+                new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
             IMetricsBridgeService service =
                     IMetricsBridgeService.Stub.asInterface(helper.getBinder());
             service.recordMetrics(recordProto.toByteArray());
             List<byte[]> retrievedDataList = service.retrieveNonembeddedMetrics();
 
             Assert.assertNotNull("retrieved byte data from the service is null", retrievedDataList);
-            Assert.assertArrayEquals("retrieved byte data is different from the expected data",
-                    expectedData, retrievedDataList.toArray());
+            Assert.assertArrayEquals(
+                    "retrieved byte data is different from the expected data",
+                    expectedData,
+                    retrievedDataList.toArray());
 
             // Retrieve data a second time to make sure it has been cleared after the first call
             retrievedDataList = service.retrieveNonembeddedMetrics();
 
-            Assert.assertArrayEquals("metrics kept by the service hasn't been cleared",
+            Assert.assertArrayEquals(
+                    "metrics kept by the service hasn't been cleared",
                     new byte[][] {RETRIEVE_METRICS_TASK_STATUS_SUCCESS_RECORD},
                     retrievedDataList.toArray());
         }

@@ -26,8 +26,7 @@ import org.chromium.base.test.util.Feature;
  */
 @RunWith(AwJUnit4ClassRunner.class)
 public class KeySystemTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     /**
      * AwContentsClient subclass that allows permissions requests for the
@@ -43,7 +42,7 @@ public class KeySystemTest {
                 awPermissionRequest.deny();
             }
         }
-    };
+    }
 
     private TestAwContentsClient mContentsClient = new EmeAllowingAwContentsClient();
     private AwContents mAwContents;
@@ -55,7 +54,9 @@ public class KeySystemTest {
         mAwContents = testContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
 
-        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+        mActivityTestRule.loadUrlSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
                 "file:///android_asset/key-system-test.html");
     }
 
@@ -69,17 +70,19 @@ public class KeySystemTest {
     }
 
     private boolean areProprietaryCodecsSupported() throws Exception {
-        String result = mActivityTestRule.maybeStripDoubleQuotes(
-                mActivityTestRule.executeJavaScriptAndWaitForResult(
-                        mAwContents, mContentsClient, "areProprietaryCodecsSupported()"));
+        String result =
+                mActivityTestRule.maybeStripDoubleQuotes(
+                        mActivityTestRule.executeJavaScriptAndWaitForResult(
+                                mAwContents, mContentsClient, "areProprietaryCodecsSupported()"));
         return !result.isEmpty();
     }
 
     private String getResultFromJS() {
         String result = "null";
         try {
-            result = mActivityTestRule.executeJavaScriptAndWaitForResult(
-                    mAwContents, mContentsClient, "result");
+            result =
+                    mActivityTestRule.executeJavaScriptAndWaitForResult(
+                            mAwContents, mContentsClient, "result");
         } catch (Exception e) {
             Assert.fail("Unable to get result");
         }
@@ -127,7 +130,8 @@ public class KeySystemTest {
     @Feature({"AndroidWebView"})
     @SmallTest
     public void testSupportPlatformKeySystem() throws Throwable {
-        Assert.assertEquals(getPlatformKeySystemExpectations(),
+        Assert.assertEquals(
+                getPlatformKeySystemExpectations(),
                 isKeySystemSupported("x-com.oem.test-keysystem"));
     }
 

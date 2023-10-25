@@ -20,13 +20,10 @@ import org.chromium.net.test.util.TestWebServer;
 
 import java.util.List;
 
-/**
- * Tests Service Worker Client related APIs.
- */
+/** Tests Service Worker Client related APIs. */
 @RunWith(AwJUnit4ClassRunner.class)
 public class AwServiceWorkerClientTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
@@ -36,18 +33,18 @@ public class AwServiceWorkerClientTest {
 
     private static final String INDEX_HTML =
             "<!DOCTYPE html>\n"
-            + "<html>\n"
-            + "  <body>\n"
-            + "    <script>\n"
-            + "      success = 0;\n"
-            + "      navigator.serviceWorker.register('sw.js').then(function(reg) {;\n"
-            + "         success = 1;\n"
-            + "      }).catch(function(err) { \n"
-            + "         console.error(err);\n"
-            + "      });\n"
-            + "    </script>\n"
-            + "  </body>\n"
-            + "</html>\n";
+                    + "<html>\n"
+                    + "  <body>\n"
+                    + "    <script>\n"
+                    + "      success = 0;\n"
+                    + "      navigator.serviceWorker.register('sw.js').then(function(reg) {;\n"
+                    + "         success = 1;\n"
+                    + "      }).catch(function(err) { \n"
+                    + "         console.error(err);\n"
+                    + "      });\n"
+                    + "    </script>\n"
+                    + "  </body>\n"
+                    + "</html>\n";
 
     private static final String SW_HTML = "fetch('fetch.html');";
     private static final String FETCH_HTML = ";)";
@@ -58,8 +55,10 @@ public class AwServiceWorkerClientTest {
         mContentsClient = new TestAwContentsClient();
         mTestContainerView = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         mServiceWorkerClient = new TestAwServiceWorkerClient();
-        mActivityTestRule.getAwBrowserContext().getServiceWorkerController().setServiceWorkerClient(
-                mServiceWorkerClient);
+        mActivityTestRule
+                .getAwBrowserContext()
+                .getServiceWorkerController()
+                .setServiceWorkerClient(mServiceWorkerClient);
         mAwContents = mTestContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
     }
@@ -112,8 +111,8 @@ public class AwServiceWorkerClientTest {
     @SmallTest
     public void testFetchResourceLoadingError() throws Throwable {
         final String fullIndexUrl = mWebServer.setResponse("/index.html", INDEX_HTML, null);
-        final String fullSwUrl = mWebServer.setResponse("/sw.js",
-                "fetch('https://google.gov');", null);
+        final String fullSwUrl =
+                mWebServer.setResponse("/sw.js", "fetch('https://google.gov');", null);
 
         TestAwServiceWorkerClient.ShouldInterceptRequestHelper helper =
                 mServiceWorkerClient.getShouldInterceptRequestHelper();
@@ -124,9 +123,11 @@ public class AwServiceWorkerClientTest {
         Assert.assertEquals(fullSwUrl, requests.get(0).url);
     }
 
-    private void loadPage(final String fullIndexUrl,
+    private void loadPage(
+            final String fullIndexUrl,
             TestAwServiceWorkerClient.ShouldInterceptRequestHelper helper,
-            int expectedInterceptRequestCount) throws Exception {
+            int expectedInterceptRequestCount)
+            throws Exception {
         int currentShouldInterceptRequestCount = helper.getCallCount();
 
         TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
@@ -140,12 +141,13 @@ public class AwServiceWorkerClientTest {
         helper.waitForCallback(currentShouldInterceptRequestCount, expectedInterceptRequestCount);
     }
 
-
     private int getSuccessFromJS() {
         int result = -1;
         try {
-            result = Integer.parseInt(mActivityTestRule.executeJavaScriptAndWaitForResult(
-                    mAwContents, mContentsClient, "success"));
+            result =
+                    Integer.parseInt(
+                            mActivityTestRule.executeJavaScriptAndWaitForResult(
+                                    mAwContents, mContentsClient, "success"));
         } catch (Exception e) {
             Assert.fail("Unable to get success");
         }

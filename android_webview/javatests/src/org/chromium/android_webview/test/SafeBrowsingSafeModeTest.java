@@ -33,15 +33,12 @@ import org.chromium.base.test.util.Feature;
 
 import java.util.Set;
 
-/**
- * Tests for AwSafeBrowsingSafeModeAction.
- */
+/** Tests for AwSafeBrowsingSafeModeAction. */
 @RunWith(AwJUnit4ClassRunner.class)
 public class SafeBrowsingSafeModeTest {
     private static final String WEB_UI_MALWARE_URL = "chrome://safe-browsing/match?type=malware";
 
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private TestAwContentsClient mContentsClient;
     private AwTestContainerView mContainerView;
@@ -132,6 +129,7 @@ public class SafeBrowsingSafeModeTest {
 
     private static class MockPlatformServiceBridge extends PlatformServiceBridge {
         private boolean mWarmUpSafeBrowsingCalled;
+
         @Override
         public void warmUpSafeBrowsing(Context context, @NonNull final Callback<Boolean> callback) {
             mWarmUpSafeBrowsingCalled = true;

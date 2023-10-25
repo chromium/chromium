@@ -29,13 +29,10 @@ import org.chromium.content_public.common.ContentUrlConstants;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-/**
- * AwContents rendering / pixel tests.
- */
+/** AwContents rendering / pixel tests. */
 @RunWith(AwJUnit4ClassRunner.class)
 public class AwContentsRenderTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
@@ -62,7 +59,9 @@ public class AwContentsRenderTest {
         setBackgroundColorOnUiThread(Color.CYAN);
         GraphicsTestUtils.pollForBackgroundColor(mAwContents, Color.CYAN);
 
-        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+        mActivityTestRule.loadUrlSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         GraphicsTestUtils.pollForBackgroundColor(mAwContents, Color.CYAN);
 
@@ -70,15 +69,20 @@ public class AwContentsRenderTest {
         GraphicsTestUtils.pollForBackgroundColor(mAwContents, Color.YELLOW);
 
         final String html_meta = "<html><head><meta name=color-scheme content=dark></head></html>";
-        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+        mActivityTestRule.loadUrlSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
                 "data:text/html," + html_meta);
         final int dark_scheme_color = 0xFF121212;
         GraphicsTestUtils.pollForBackgroundColor(mAwContents, dark_scheme_color);
 
-        final String html = "<html><head><style>body {background-color:#227788}</style></head>"
-                + "<body></body></html>";
+        final String html =
+                "<html><head><style>body {background-color:#227788}</style></head>"
+                        + "<body></body></html>";
         // Loading the html via a data URI requires us to encode '#' symbols as '%23'.
-        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+        mActivityTestRule.loadUrlSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
                 "data:text/html," + html.replace("#", "%23"));
         final int teal = 0xFF227788;
         GraphicsTestUtils.pollForBackgroundColor(mAwContents, teal);
@@ -98,7 +102,9 @@ public class AwContentsRenderTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> mAwContents.enableOnNewPicture(true, true));
 
         int pictureCount = mContentsClient.getPictureListenerHelper().getCallCount();
-        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+        mActivityTestRule.loadUrlSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         mContentsClient.getPictureListenerHelper().waitForCallback(pictureCount, 1);
         // Invalidation only, so picture should be null.
@@ -109,25 +115,32 @@ public class AwContentsRenderTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testForceDrawWhenInvisible() throws Throwable {
-        final String html = "<html><head><style>body {background-color:#227788}</style></head>"
-                + "<body>Hello world!</body></html>";
+        final String html =
+                "<html><head><style>body {background-color:#227788}</style></head>"
+                        + "<body>Hello world!</body></html>";
         // Loading the html via a data URI requires us to encode '#' symbols as '%23'.
-        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+        mActivityTestRule.loadUrlSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
                 "data:text/html," + html.replace("#", "%23"));
 
         Bitmap visibleBitmap = null;
         Bitmap invisibleBitmap = null;
         final CountDownLatch latch = new CountDownLatch(1);
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            final long requestId1 = 1;
-            mAwContents.insertVisualStateCallback(requestId1, new VisualStateCallback() {
-                @Override
-                public void onComplete(long id) {
-                    Assert.assertEquals(requestId1, id);
-                    latch.countDown();
-                }
-            });
-        });
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () -> {
+                            final long requestId1 = 1;
+                            mAwContents.insertVisualStateCallback(
+                                    requestId1,
+                                    new VisualStateCallback() {
+                                        @Override
+                                        public void onComplete(long id) {
+                                            Assert.assertEquals(requestId1, id);
+                                            latch.countDown();
+                                        }
+                                    });
+                        });
         Assert.assertTrue(
                 latch.await(AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
@@ -141,21 +154,23 @@ public class AwContentsRenderTest {
         // 1. isPaused
         // 2. window's visibility, if the webview is attached to a window.
         // Note android.view.View's visibility does not affect DOM page visibility.
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            mContainerView.setVisibility(View.INVISIBLE);
-            Assert.assertTrue(mAwContents.isPageVisible());
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () -> {
+                            mContainerView.setVisibility(View.INVISIBLE);
+                            Assert.assertTrue(mAwContents.isPageVisible());
 
-            mAwContents.onPause();
-            Assert.assertFalse(mAwContents.isPageVisible());
+                            mAwContents.onPause();
+                            Assert.assertFalse(mAwContents.isPageVisible());
 
-            mAwContents.onResume();
-            Assert.assertTrue(mAwContents.isPageVisible());
+                            mAwContents.onResume();
+                            Assert.assertTrue(mAwContents.isPageVisible());
 
-            // Simulate a window visiblity change. WebView test app can't
-            // manipulate the window visibility directly.
-            mAwContents.onWindowVisibilityChanged(View.INVISIBLE);
-            Assert.assertFalse(mAwContents.isPageVisible());
-        });
+                            // Simulate a window visibility change. WebView test app can't
+                            // manipulate the window visibility directly.
+                            mAwContents.onWindowVisibilityChanged(View.INVISIBLE);
+                            Assert.assertFalse(mAwContents.isPageVisible());
+                        });
 
         // VisualStateCallback#onComplete won't be called when WebView is
         // invisible. So there is no reliable way to tell if View#setVisibility
@@ -179,9 +194,11 @@ public class AwContentsRenderTest {
         mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
         mActivityTestRule.waitForVisualStateCallback(mAwContents);
 
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            Bitmap bitmap = GraphicsTestUtils.drawAwContentsOnUiThread(mAwContents, 500, 500);
-            return Color.GREEN == bitmap.getPixel(250, 250);
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Bitmap bitmap =
+                            GraphicsTestUtils.drawAwContentsOnUiThread(mAwContents, 500, 500);
+                    return Color.GREEN == bitmap.getPixel(250, 250);
+                });
     }
 }

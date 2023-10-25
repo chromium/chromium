@@ -38,9 +38,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/**
- * Junit tests for TrackExitReasonsOfInterest.
- */
+/** Junit tests for TrackExitReasonsOfInterest. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 30, manifest = Config.NONE)
 public class TrackExitReasonsOfInterestTest {
@@ -57,9 +55,11 @@ public class TrackExitReasonsOfInterestTest {
 
     public class MockAwContentsLifecycleNotifier {
         public @AppState int mState;
+
         public MockAwContentsLifecycleNotifier() {
             mState = AppState.UNKNOWN;
         }
+
         public MockAwContentsLifecycleNotifier(@AppState int appState) {
             mState = appState;
         }
@@ -78,25 +78,35 @@ public class TrackExitReasonsOfInterestTest {
         long timeAtLastRecording = 5L;
         TrackExitReasonsOfInterest.writeLastExitInfo(
                 new ExitReasonData(previousPid, timeAtLastRecording, AppState.UNKNOWN));
-        assertTrue("last-exit-info file should exist after writing to it",
+        assertTrue(
+                "last-exit-info file should exist after writing to it",
                 TrackExitReasonsOfInterest.getLastExitInfoFile().exists());
         ExitReasonData data = TrackExitReasonsOfInterest.readLastExitInfo();
-        assertEquals("Last exit info PID should be stored in last-exit-info file", previousPid,
+        assertEquals(
+                "Last exit info PID should be stored in last-exit-info file",
+                previousPid,
                 data.mExitInfoPid);
-        assertEquals("Last exit info timestamp should be stored in last-exit-info file",
-                timeAtLastRecording, data.mTimestampAtLastRecordingInMillis);
-        assertEquals("Last exit info timestamp should be stored in last-exit-info file",
-                AppState.UNKNOWN, data.mState);
+        assertEquals(
+                "Last exit info timestamp should be stored in last-exit-info file",
+                timeAtLastRecording,
+                data.mTimestampAtLastRecordingInMillis);
+        assertEquals(
+                "Last exit info timestamp should be stored in last-exit-info file",
+                AppState.UNKNOWN,
+                data.mState);
     }
 
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testExitReasonMarkedAsInvalidWhenFileDoesNotExist() {
-        ActivityManager mockedActivityManager = getMockedActivityManager(
-                /*pid=*/1, ApplicationExitInfo.REASON_ANR, /*isEmpty=*/true);
+        ActivityManager mockedActivityManager =
+                getMockedActivityManager(
+                        /* pid= */ 1, ApplicationExitInfo.REASON_ANR, /* isEmpty= */ true);
         ProcessExitReasonFromSystem.setActivityManagerForTest(mockedActivityManager);
-        assertEquals("Last exit info data should be created after first run", -1,
+        assertEquals(
+                "Last exit info data should be created after first run",
+                -1,
                 TrackExitReasonsOfInterest.run());
     }
 
@@ -118,12 +128,13 @@ public class TrackExitReasonsOfInterestTest {
         assertTrue(data.mState == AppState.DESTROYED);
 
         final CallbackHelper writeFinished = new CallbackHelper();
-        final Callback<Boolean> callback = new Callback<Boolean>() {
-            @Override
-            public void onResult(Boolean result) {
-                writeFinished.notifyCalled();
-            }
-        };
+        final Callback<Boolean> callback =
+                new Callback<Boolean>() {
+                    @Override
+                    public void onResult(Boolean result) {
+                        writeFinished.notifyCalled();
+                    }
+                };
         int calls;
         for (@AppState int appState = AppState.UNKNOWN; appState < AppState.DESTROYED; appState++) {
             mTestSupplier.mState = appState;
@@ -146,12 +157,13 @@ public class TrackExitReasonsOfInterestTest {
         int previousPid = 1;
         long timeAtLastRecording = 5L;
         final CallbackHelper writeFinished = new CallbackHelper();
-        final Callback<Boolean> callback = new Callback<Boolean>() {
-            @Override
-            public void onResult(Boolean result) {
-                writeFinished.notifyCalled();
-            }
-        };
+        final Callback<Boolean> callback =
+                new Callback<Boolean>() {
+                    @Override
+                    public void onResult(Boolean result) {
+                        writeFinished.notifyCalled();
+                    }
+                };
         int calls;
         TrackExitReasonsOfInterest.setPidForTest(previousPid);
         TrackExitReasonsOfInterest.setCurrtimeForTest(timeAtLastRecording);
@@ -182,12 +194,15 @@ public class TrackExitReasonsOfInterestTest {
     @Feature({"AndroidWebView"})
     public void testExitReasonMarkedAsInvalidWhenExitReasonsFileDoesNotHavePreviousPid() {
         int previousPid = 0;
-        ActivityManager mockedActivityManager = getMockedActivityManager(
-                previousPid, ApplicationExitInfo.REASON_ANR, /*isEmpty=*/false);
+        ActivityManager mockedActivityManager =
+                getMockedActivityManager(
+                        previousPid, ApplicationExitInfo.REASON_ANR, /* isEmpty= */ false);
         ProcessExitReasonFromSystem.setActivityManagerForTest(mockedActivityManager);
         TrackExitReasonsOfInterest.writeLastExitInfo(
                 new ExitReasonData(previousPid + 1, 5L, AppState.UNKNOWN));
-        assertEquals("Last exit info data should be created after first run", -1,
+        assertEquals(
+                "Last exit info data should be created after first run",
+                -1,
                 TrackExitReasonsOfInterest.run());
     }
 
@@ -199,22 +214,30 @@ public class TrackExitReasonsOfInterestTest {
         long timeAtLastRecording = 5L;
         long systemTimeForTest = 10L;
         TrackExitReasonsOfInterest.setSystemTimeForTest(systemTimeForTest);
-        for (int mockedSystemExitReason = 0; mockedSystemExitReason < ExitReason.NUM_ENTRIES;
+        for (int mockedSystemExitReason = 0;
+                mockedSystemExitReason < ExitReason.NUM_ENTRIES;
                 mockedSystemExitReason++) {
-            ActivityManager mockedActivityManager = getMockedActivityManager(
-                    previousPid, mockedSystemExitReason, /*isEmpty=*/false);
+            ActivityManager mockedActivityManager =
+                    getMockedActivityManager(
+                            previousPid, mockedSystemExitReason, /* isEmpty= */ false);
             ProcessExitReasonFromSystem.setActivityManagerForTest(mockedActivityManager);
             TrackExitReasonsOfInterest.writeLastExitInfo(
                     new ExitReasonData(previousPid, timeAtLastRecording, AppState.UNKNOWN));
             Integer exitReasonData =
                     ProcessExitReasonFromSystem.convertApplicationExitInfoToExitReason(
                             TrackExitReasonsOfInterest.run());
-            Integer exitReason = ProcessExitReasonFromSystem.convertApplicationExitInfoToExitReason(
-                    mockedSystemExitReason);
-            assertEquals("Last exit info data should be created after first run", exitReason,
+            Integer exitReason =
+                    ProcessExitReasonFromSystem.convertApplicationExitInfoToExitReason(
+                            mockedSystemExitReason);
+            assertEquals(
+                    "Last exit info data should be created after first run",
+                    exitReason,
                     exitReasonData);
-            assertTrue("Exit reason should be within the expected range of exit reasons: "
-                            + exitReason + " " + mockedSystemExitReason,
+            assertTrue(
+                    "Exit reason should be within the expected range of exit reasons: "
+                            + exitReason
+                            + " "
+                            + mockedSystemExitReason,
                     exitReasonData != null);
         }
     }
@@ -229,28 +252,34 @@ public class TrackExitReasonsOfInterestTest {
         TrackExitReasonsOfInterest.setSystemTimeForTest(systemTimeForTest);
         // Mock current PID
         TrackExitReasonsOfInterest.setPidForTest(previousPid + 1);
-        for (int mockedSystemExitReason = 0; mockedSystemExitReason < ExitReason.NUM_ENTRIES;
+        for (int mockedSystemExitReason = 0;
+                mockedSystemExitReason < ExitReason.NUM_ENTRIES;
                 mockedSystemExitReason++) {
             for (@AppState int state = 0; state <= AppState.DESTROYED; state++) {
-                ActivityManager mockedActivityManager = getMockedActivityManager(
-                        previousPid, mockedSystemExitReason, /*isEmpty=*/false);
+                ActivityManager mockedActivityManager =
+                        getMockedActivityManager(
+                                previousPid, mockedSystemExitReason, /* isEmpty= */ false);
                 ProcessExitReasonFromSystem.setActivityManagerForTest(mockedActivityManager);
                 TrackExitReasonsOfInterest.writeLastExitInfo(
                         new ExitReasonData(previousPid, timeAtLastRecording, state));
 
                 var histogramWatcher =
                         HistogramWatcher.newBuilder()
-                                .expectIntRecord(TrackExitReasonsOfInterest.UMA_COUNTS + "."
+                                .expectIntRecord(
+                                        TrackExitReasonsOfInterest.UMA_COUNTS
+                                                + "."
                                                 + TrackExitReasonsOfInterest.sUmaSuffixMap.get(
                                                         state),
                                         ProcessExitReasonFromSystem
                                                 .convertApplicationExitInfoToExitReason(
                                                         mockedSystemExitReason))
-                                .expectIntRecord(TrackExitReasonsOfInterest.UMA_COUNTS,
+                                .expectIntRecord(
+                                        TrackExitReasonsOfInterest.UMA_COUNTS,
                                         ProcessExitReasonFromSystem
                                                 .convertApplicationExitInfoToExitReason(
                                                         mockedSystemExitReason))
-                                .expectIntRecord(TrackExitReasonsOfInterest.UMA_DELTA,
+                                .expectIntRecord(
+                                        TrackExitReasonsOfInterest.UMA_DELTA,
                                         (int) (systemTimeForTest - timeAtLastRecording))
                                 .build();
                 TrackExitReasonsOfInterest.run();
@@ -258,11 +287,15 @@ public class TrackExitReasonsOfInterestTest {
 
                 ExitReasonData data = TrackExitReasonsOfInterest.readLastExitInfo();
                 // pids are updated
-                assertTrue("Pid in last-exit-info should be updated with current PID"
-                                + data.mExitInfoPid + " " + previousPid,
+                assertTrue(
+                        "Pid in last-exit-info should be updated with current PID"
+                                + data.mExitInfoPid
+                                + " "
+                                + previousPid,
                         data.mExitInfoPid != previousPid);
                 // timestamps are updated
-                assertTrue("Timestamp in last-exit-info should be updated with latest system time",
+                assertTrue(
+                        "Timestamp in last-exit-info should be updated with latest system time",
                         data.mTimestampAtLastRecordingInMillis != timeAtLastRecording);
             }
         }
@@ -274,14 +307,17 @@ public class TrackExitReasonsOfInterestTest {
     public void testExitReasonDataBuilderProvidesExpectedValues() {
         int testPid = 10;
         long testTimestampAtLastRecordingInMillis = 12345;
-        for (@AppState int testState = AppState.UNKNOWN; testState <= AppState.DESTROYED;
+        for (@AppState int testState = AppState.UNKNOWN;
+                testState <= AppState.DESTROYED;
                 testState++) {
             ExitReasonData data =
                     new ExitReasonData(testPid, testTimestampAtLastRecordingInMillis, testState);
             assertEquals("Last exit info data PIDs should match", testPid, data.mExitInfoPid);
             assertEquals("Last exit info data's AppState should match", testState, data.mState);
-            assertEquals("Last exit info data's timestamps should match",
-                    testTimestampAtLastRecordingInMillis, data.mTimestampAtLastRecordingInMillis);
+            assertEquals(
+                    "Last exit info data's timestamps should match",
+                    testTimestampAtLastRecordingInMillis,
+                    data.mTimestampAtLastRecordingInMillis);
         }
     }
 
@@ -291,15 +327,18 @@ public class TrackExitReasonsOfInterestTest {
     public void testLastExitInfoIsFilledAfterExecution() {
         int previousPid = 50;
         TrackExitReasonsOfInterest.setPidForTest(previousPid);
-        ActivityManager mockedActivityManager = getMockedActivityManager(
-                previousPid, ApplicationExitInfo.REASON_ANR, /*isEmpty=*/false);
+        ActivityManager mockedActivityManager =
+                getMockedActivityManager(
+                        previousPid, ApplicationExitInfo.REASON_ANR, /* isEmpty= */ false);
         ProcessExitReasonFromSystem.setActivityManagerForTest(mockedActivityManager);
         TrackExitReasonsOfInterest.run();
 
         ExitReasonData data = TrackExitReasonsOfInterest.readLastExitInfo();
-        assertTrue("Last exit info pid should be created after first run " + data.mExitInfoPid,
+        assertTrue(
+                "Last exit info pid should be created after first run " + data.mExitInfoPid,
                 data != null && data.mExitInfoPid == previousPid);
-        assertTrue("Last exit info timestamp should be created after first run "
+        assertTrue(
+                "Last exit info timestamp should be created after first run "
                         + data.mTimestampAtLastRecordingInMillis,
                 data.mTimestampAtLastRecordingInMillis != 0L);
     }

@@ -22,13 +22,10 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.util.TestWebServer;
 
-/**
- * Test MediaAccessPermissionRequest.
- */
+/** Test MediaAccessPermissionRequest. */
 @RunWith(AwJUnit4ClassRunner.class)
 public class MediaAccessPermissionRequestTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private static class OnPermissionRequestHelper extends CallbackHelper {
         private boolean mCanceled;
@@ -43,21 +40,22 @@ public class MediaAccessPermissionRequestTest {
         }
     }
 
-    private static final String DATA = "<html> <script> "
-            + "var constraints = {audio: true, video: true};"
-            + "var video = document.querySelector('video');"
-            + "function successCallback(stream) {"
-            + "  window.document.title = 'grant';"
-            + "  video.srcObject = stream;"
-            + "}"
-            + "function errorCallback(error){"
-            + "  window.document.title = 'deny';"
-            + "  console.log('navigator.getUserMedia error: ', error);"
-            + "}"
-            + "navigator.webkitGetUserMedia(constraints, successCallback, errorCallback)"
-            + "</script><body>"
-            + "<video autoplay></video>"
-            + "</body></html>";
+    private static final String DATA =
+            "<html> <script> "
+                    + "var constraints = {audio: true, video: true};"
+                    + "var video = document.querySelector('video');"
+                    + "function successCallback(stream) {"
+                    + "  window.document.title = 'grant';"
+                    + "  video.srcObject = stream;"
+                    + "}"
+                    + "function errorCallback(error){"
+                    + "  window.document.title = 'deny';"
+                    + "  console.log('navigator.getUserMedia error: ', error);"
+                    + "}"
+                    + "navigator.webkitGetUserMedia(constraints, successCallback, errorCallback)"
+                    + "</script><body>"
+                    + "<video autoplay></video>"
+                    + "</body></html>";
 
     private TestWebServer mTestWebServer;
     private String mWebRTCPage;
@@ -65,8 +63,9 @@ public class MediaAccessPermissionRequestTest {
     @Before
     public void setUp() throws Exception {
         mTestWebServer = TestWebServer.start();
-        mWebRTCPage = mTestWebServer.setResponse("/WebRTC", DATA,
-                CommonResources.getTextHtmlHeaders(true));
+        mWebRTCPage =
+                mTestWebServer.setResponse(
+                        "/WebRTC", DATA, CommonResources.getTextHtmlHeaders(true));
     }
 
     @After
@@ -155,10 +154,11 @@ public class MediaAccessPermissionRequestTest {
         Runtime.getRuntime().gc();
 
         // Poll with gc in each iteration to reduce flake.
-        AwActivityTestRule.pollInstrumentationThread(() -> {
-            Runtime.getRuntime().gc();
-            return "deny".equals(mActivityTestRule.getTitleOnUiThread(awContents));
-        });
+        AwActivityTestRule.pollInstrumentationThread(
+                () -> {
+                    Runtime.getRuntime().gc();
+                    return "deny".equals(mActivityTestRule.getTitleOnUiThread(awContents));
+                });
     }
 
     @Test
@@ -170,6 +170,7 @@ public class MediaAccessPermissionRequestTest {
         TestAwContentsClient contentsClient =
                 new TestAwContentsClient() {
                     private AwPermissionRequest mRequest;
+
                     @Override
                     public void onPermissionRequest(AwPermissionRequest awPermissionRequest) {
                         Assert.assertNull(mRequest);
@@ -177,6 +178,7 @@ public class MediaAccessPermissionRequestTest {
                         // Don't respond and wait for the request canceled.
                         helper.notifyCalled();
                     }
+
                     @Override
                     public void onPermissionRequestCanceled(
                             AwPermissionRequest awPermissionRequest) {

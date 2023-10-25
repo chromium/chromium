@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * Test suite for displaying and functioning of modal dialogs.
- */
-
+/** Test suite for displaying and functioning of modal dialogs. */
 package org.chromium.android_webview.test;
 
 import androidx.test.filters.MediumTest;
@@ -28,22 +25,18 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * Tests for callbacks implementing JS alerts and prompts.
- */
+/** Tests for callbacks implementing JS alerts and prompts. */
 @RunWith(AwJUnit4ClassRunner.class)
 public class WebViewModalDialogOverrideTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private static final String EMPTY_PAGE =
-            "<!doctype html>"
-            + "<title>Modal Dialog Test</title><p>Testcase.</p>";
+            "<!doctype html>" + "<title>Modal Dialog Test</title><p>Testcase.</p>";
     private static final String BEFORE_UNLOAD_URL =
             "<!doctype html>"
-            + "<head><script>window.onbeforeunload=function() {"
-            + "return 'Are you sure?';"
-            + "};</script></head></body>";
+                    + "<head><script>window.onbeforeunload=function() {"
+                    + "return 'Are you sure?';"
+                    + "};</script></head></body>";
 
     /*
      * Verify that when the AwContentsClient calls handleJsAlert.
@@ -56,14 +49,15 @@ public class WebViewModalDialogOverrideTest {
 
         final AtomicBoolean callbackCalled = new AtomicBoolean(false);
         // Returning true from the callback should not show a dialog.
-        TestAwContentsClient client = new TestAwContentsClient() {
-            @Override
-            public void handleJsAlert(String url, String message, JsResultReceiver res) {
-                callbackCalled.set(true);
-                res.confirm();
-                Assert.assertEquals(alertText, message);
-            }
-        };
+        TestAwContentsClient client =
+                new TestAwContentsClient() {
+                    @Override
+                    public void handleJsAlert(String url, String message, JsResultReceiver res) {
+                        callbackCalled.set(true);
+                        res.confirm();
+                        Assert.assertEquals(alertText, message);
+                    }
+                };
         AwTestContainerView view = mActivityTestRule.createAwTestContainerViewOnMainSync(client);
         final AwContents awContents = view.getAwContents();
 
@@ -88,24 +82,29 @@ public class WebViewModalDialogOverrideTest {
 
         final AtomicBoolean called = new AtomicBoolean(false);
         // Returning true from the callback should not show a dialog.
-        final TestAwContentsClient client = new TestAwContentsClient() {
-            @Override
-            public void handleJsPrompt(String url, String message, String defaultValue,
-                                      JsPromptResultReceiver res) {
-                Assert.assertEquals(promtText, message);
-                Assert.assertEquals(promptDefault, defaultValue);
-                res.confirm(promptResult);
-                called.set(true);
-            }
-        };
+        final TestAwContentsClient client =
+                new TestAwContentsClient() {
+                    @Override
+                    public void handleJsPrompt(
+                            String url,
+                            String message,
+                            String defaultValue,
+                            JsPromptResultReceiver res) {
+                        Assert.assertEquals(promtText, message);
+                        Assert.assertEquals(promptDefault, defaultValue);
+                        res.confirm(promptResult);
+                        called.set(true);
+                    }
+                };
         AwTestContainerView view = mActivityTestRule.createAwTestContainerViewOnMainSync(client);
         final AwContents awContents = view.getAwContents();
 
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
         mActivityTestRule.loadDataSync(
                 awContents, client.getOnPageFinishedHelper(), EMPTY_PAGE, "text/html", false);
-        String result = mActivityTestRule.executeJavaScriptAndWaitForResult(
-                awContents, client, "prompt('" + promtText + "','" + promptDefault + "')");
+        String result =
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        awContents, client, "prompt('" + promtText + "','" + promptDefault + "')");
         Assert.assertTrue(called.get());
         Assert.assertEquals("\"" + promptResult + "\"", result);
     }
@@ -121,22 +120,24 @@ public class WebViewModalDialogOverrideTest {
 
         final AtomicBoolean called = new AtomicBoolean(false);
         // Returning true from the callback should not show a dialog.
-        TestAwContentsClient client = new TestAwContentsClient() {
-            @Override
-            public void handleJsConfirm(String url, String message, JsResultReceiver res) {
-                Assert.assertEquals(confirmText, message);
-                res.confirm();
-                called.set(true);
-            }
-        };
+        TestAwContentsClient client =
+                new TestAwContentsClient() {
+                    @Override
+                    public void handleJsConfirm(String url, String message, JsResultReceiver res) {
+                        Assert.assertEquals(confirmText, message);
+                        res.confirm();
+                        called.set(true);
+                    }
+                };
         AwTestContainerView view = mActivityTestRule.createAwTestContainerViewOnMainSync(client);
         final AwContents awContents = view.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
 
         mActivityTestRule.loadDataSync(
                 awContents, client.getOnPageFinishedHelper(), EMPTY_PAGE, "text/html", false);
-        String result = mActivityTestRule.executeJavaScriptAndWaitForResult(
-                awContents, client, "confirm('" + confirmText + "')");
+        String result =
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        awContents, client, "confirm('" + confirmText + "')");
         Assert.assertTrue(called.get());
         Assert.assertEquals("true", result);
     }
@@ -152,22 +153,24 @@ public class WebViewModalDialogOverrideTest {
 
         final AtomicBoolean called = new AtomicBoolean(false);
         // Returning true from the callback should not show a dialog.
-        TestAwContentsClient client = new TestAwContentsClient() {
-            @Override
-            public void handleJsConfirm(String url, String message, JsResultReceiver res) {
-                Assert.assertEquals(confirmText, message);
-                res.cancel();
-                called.set(true);
-            }
-        };
+        TestAwContentsClient client =
+                new TestAwContentsClient() {
+                    @Override
+                    public void handleJsConfirm(String url, String message, JsResultReceiver res) {
+                        Assert.assertEquals(confirmText, message);
+                        res.cancel();
+                        called.set(true);
+                    }
+                };
         AwTestContainerView view = mActivityTestRule.createAwTestContainerViewOnMainSync(client);
         final AwContents awContents = view.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
 
         mActivityTestRule.loadDataSync(
                 awContents, client.getOnPageFinishedHelper(), EMPTY_PAGE, "text/html", false);
-        String result = mActivityTestRule.executeJavaScriptAndWaitForResult(
-                awContents, client, "confirm('" + confirmText + "')");
+        String result =
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        awContents, client, "confirm('" + confirmText + "')");
         Assert.assertTrue(called.get());
         Assert.assertEquals("false", result);
     }
@@ -189,16 +192,15 @@ public class WebViewModalDialogOverrideTest {
         }
     }
 
-    /**
-     * Taps on a view and waits for a callback.
-     */
+    /** Taps on a view and waits for a callback. */
     private void tapViewAndWait(AwTestContainerView view) throws Throwable {
         final TapGestureStateListener tapGestureStateListener = new TapGestureStateListener();
         int callCount = tapGestureStateListener.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            GestureListenerManager.fromWebContents(view.getWebContents())
-                    .addListener(tapGestureStateListener);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    GestureListenerManager.fromWebContents(view.getWebContents())
+                            .addListener(tapGestureStateListener);
+                });
 
         AwTestTouchUtils.simulateTouchCenterOfView(view);
         tapGestureStateListener.waitForTap(callCount);
@@ -212,19 +214,25 @@ public class WebViewModalDialogOverrideTest {
     @Feature({"AndroidWebView"})
     public void testOverrideBeforeUnloadHandling() throws Throwable {
         final CallbackHelper jsBeforeUnloadHelper = new CallbackHelper();
-        TestAwContentsClient client = new TestAwContentsClient() {
-            @Override
-            public void handleJsBeforeUnload(String url, String message, JsResultReceiver res) {
-                res.cancel();
-                jsBeforeUnloadHelper.notifyCalled();
-            }
-        };
+        TestAwContentsClient client =
+                new TestAwContentsClient() {
+                    @Override
+                    public void handleJsBeforeUnload(
+                            String url, String message, JsResultReceiver res) {
+                        res.cancel();
+                        jsBeforeUnloadHelper.notifyCalled();
+                    }
+                };
         AwTestContainerView view = mActivityTestRule.createAwTestContainerViewOnMainSync(client);
         final AwContents awContents = view.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
 
-        mActivityTestRule.loadDataSync(awContents, client.getOnPageFinishedHelper(),
-                BEFORE_UNLOAD_URL, "text/html", false);
+        mActivityTestRule.loadDataSync(
+                awContents,
+                client.getOnPageFinishedHelper(),
+                BEFORE_UNLOAD_URL,
+                "text/html",
+                false);
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
         // JavaScript onbeforeunload dialogs require a user gesture.
         tapViewAndWait(view);

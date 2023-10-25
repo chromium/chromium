@@ -32,21 +32,20 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.Date;
 
-/**
- * Tests that seeds saved to disk get loaded correctly on WebView startup.
- */
+/** Tests that seeds saved to disk get loaded correctly on WebView startup. */
 @RunWith(AwJUnit4ClassRunner.class)
 @OnlyRunIn(SINGLE_PROCESS)
 public class VariationsTest {
     @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule() {
-        @Override
-        public boolean needsBrowserProcessStarted() {
-            // Don't start the browser process automatically so we can do some setup in the test
-            // beforehand.
-            return false;
-        }
-    };
+    public AwActivityTestRule mActivityTestRule =
+            new AwActivityTestRule() {
+                @Override
+                public boolean needsBrowserProcessStarted() {
+                    // Don't start the browser process automatically so we can do some setup in the
+                    // test beforehand.
+                    return false;
+                }
+            };
 
     private void createAndLoadSeedFile(FeatureAssociation features) throws FileNotFoundException {
         // Disable seed verification so we don't reject the fake seed created below.
@@ -55,12 +54,14 @@ public class VariationsTest {
         // Write a fake seed to disk that will enable a Feature.
         VariationsSeed seed =
                 VariationsSeed.newBuilder()
-                        .addStudy(Study.newBuilder()
-                                          .setName("TestStudy")
-                                          .addExperiment(Experiment.newBuilder()
-                                                                 .setName("default")
-                                                                 .setProbabilityWeight(100)
-                                                                 .setFeatureAssociation(features)))
+                        .addStudy(
+                                Study.newBuilder()
+                                        .setName("TestStudy")
+                                        .addExperiment(
+                                                Experiment.newBuilder()
+                                                        .setName("default")
+                                                        .setProbabilityWeight(100)
+                                                        .setFeatureAssociation(features)))
                         .build();
         SeedInfo seedInfo = new SeedInfo();
         seedInfo.signature = "";
@@ -72,11 +73,12 @@ public class VariationsTest {
         VariationsUtils.writeSeed(out, seedInfo);
 
         // Because our tests bypass WebView's glue layer, we need to load the seed manually.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            VariationsSeedLoader loader = new VariationsSeedLoader();
-            loader.startVariationsInit();
-            loader.finishVariationsInit();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    VariationsSeedLoader loader = new VariationsSeedLoader();
+                    loader.startVariationsInit();
+                    loader.finishVariationsInit();
+                });
     }
 
     @Test
@@ -96,10 +98,12 @@ public class VariationsTest {
             // The seed should be loaded during browser process startup.
             mActivityTestRule.startBrowserProcess();
 
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                Assert.assertTrue("TEST_FEATURE_NAME should be enabled",
-                        AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_TEST_FEATURE));
-            });
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        Assert.assertTrue(
+                                "TEST_FEATURE_NAME should be enabled",
+                                AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_TEST_FEATURE));
+                    });
         } finally {
             VariationsTestUtils.deleteSeeds();
         }

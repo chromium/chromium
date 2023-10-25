@@ -38,12 +38,13 @@ import java.util.concurrent.TimeUnit;
 @RunWith(AwJUnit4ClassRunner.class)
 public class AwSecondBrowserProcessTest {
     @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule() {
-        @Override
-        public boolean needsBrowserProcessStarted() {
-            return false;
-        }
-    };
+    public AwActivityTestRule mActivityTestRule =
+            new AwActivityTestRule() {
+                @Override
+                public boolean needsBrowserProcessStarted() {
+                    return false;
+                }
+            };
 
     private CountDownLatch mSecondBrowserProcessLatch;
     private int mSecondBrowserServicePid;
@@ -82,26 +83,30 @@ public class AwSecondBrowserProcessTest {
         Assert.assertTrue(tryStartingBrowserProcess());
     }
 
-    private final ServiceConnection mConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            Parcel result = Parcel.obtain();
-            try {
-                Assert.assertTrue(service.transact(
-                        SecondBrowserProcess.CODE_START, Parcel.obtain(), result, 0));
-            } catch (RemoteException e) {
-                Assert.fail("RemoteException: " + e);
-            }
-            result.readException();
-            mSecondBrowserServicePid = result.readInt();
-            Assert.assertTrue(mSecondBrowserServicePid > 0);
-            mSecondBrowserProcessLatch.countDown();
-        }
+    private final ServiceConnection mConnection =
+            new ServiceConnection() {
+                @Override
+                public void onServiceConnected(ComponentName className, IBinder service) {
+                    Parcel result = Parcel.obtain();
+                    try {
+                        Assert.assertTrue(
+                                service.transact(
+                                        SecondBrowserProcess.CODE_START,
+                                        Parcel.obtain(),
+                                        result,
+                                        0));
+                    } catch (RemoteException e) {
+                        Assert.fail("RemoteException: " + e);
+                    }
+                    result.readException();
+                    mSecondBrowserServicePid = result.readInt();
+                    Assert.assertTrue(mSecondBrowserServicePid > 0);
+                    mSecondBrowserProcessLatch.countDown();
+                }
 
-        @Override
-        public void onServiceDisconnected(ComponentName className) {
-        }
-    };
+                @Override
+                public void onServiceDisconnected(ComponentName className) {}
+            };
 
     private void startSecondBrowserProcess() throws Exception {
         Context context = mActivityTestRule.getActivity();
@@ -109,8 +114,9 @@ public class AwSecondBrowserProcessTest {
         mSecondBrowserProcessLatch = new CountDownLatch(1);
         Assert.assertNotNull(context.startService(intent));
         Assert.assertTrue(ServiceHelper.bindService(context, intent, mConnection, 0));
-        Assert.assertTrue(mSecondBrowserProcessLatch.await(
-                AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertTrue(
+                mSecondBrowserProcessLatch.await(
+                        AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
         mSecondBrowserProcessLatch = null;
     }
 
@@ -132,15 +138,18 @@ public class AwSecondBrowserProcessTest {
         // The activity must be launched in order for proper webview statics to be setup.
         mActivityTestRule.getActivity();
         // runOnMainSync does not catch RuntimeExceptions, they just terminate the test.
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            try {
-                AwTestContainerView.installDrawFnFunctionTable(/*useVulkan=*/false);
-                AwBrowserProcess.start();
-                success[0] = true;
-            } catch (RuntimeException e) {
-                success[0] = false;
-            }
-        });
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () -> {
+                            try {
+                                AwTestContainerView.installDrawFnFunctionTable(
+                                        /* useVulkan= */ false);
+                                AwBrowserProcess.start();
+                                success[0] = true;
+                            } catch (RuntimeException e) {
+                                success[0] = false;
+                            }
+                        });
         Assert.assertNotNull(success[0]);
         return success[0];
     }
@@ -150,8 +159,8 @@ public class AwSecondBrowserProcessTest {
     // the locks. The only reliable way to do that is to scan the process list.
     private boolean isSecondBrowserServiceRunning() {
         ActivityManager activityManager =
-                (ActivityManager) mActivityTestRule.getActivity().getSystemService(
-                        Context.ACTIVITY_SERVICE);
+                (ActivityManager)
+                        mActivityTestRule.getActivity().getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo si : activityManager.getRunningServices(65536)) {
             if (si.pid == mSecondBrowserServicePid) return true;
         }

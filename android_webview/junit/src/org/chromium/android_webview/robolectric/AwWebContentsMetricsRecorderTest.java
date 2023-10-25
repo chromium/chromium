@@ -46,72 +46,95 @@ public class AwWebContentsMetricsRecorderTest {
     @Feature({"AndroidWebView"})
     public void testRecordDarkModeMetrics() {
         // The hardcode numbers can't be changed, they are written to histogram.
-        AwWebContentsMetricsRecorder.recordDarkModeMetrics(DarkModeHelper.NightMode.NIGHT_MODE_ON,
-                DarkModeHelper.LightTheme.LIGHT_THEME_TRUE, /*isDarkMode=*/true,
-                AwSettings.FORCE_DARK_ON, AwSettings.MEDIA_QUERY_ONLY,
+        AwWebContentsMetricsRecorder.recordDarkModeMetrics(
+                DarkModeHelper.NightMode.NIGHT_MODE_ON,
+                DarkModeHelper.LightTheme.LIGHT_THEME_TRUE,
+                /* isDarkMode= */ true,
+                AwSettings.FORCE_DARK_ON,
+                AwSettings.MEDIA_QUERY_ONLY,
                 DarkModeHelper.TextLuminance.TEXT_LUMINACE_LIGHT);
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Android.WebView.DarkMode.ForceDarkBehavior"));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.WebView.DarkMode.ForceDarkBehavior", 1 /*MEDIA_QUERY_ONLY*/));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Android.WebView.DarkMode.ForceDarkMode"));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.WebView.DarkMode.ForceDarkMode", 2 /*FORCE_DARK_ON*/));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Android.WebView.DarkMode.InDarkMode"));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.WebView.DarkMode.InDarkMode", 1 /*isDarkMode=true*/));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Android.WebView.DarkMode.InDarkModeVsLightTheme"));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.WebView.DarkMode.InDarkModeVsLightTheme",
                         2 /*isDarkMode=true && LIGHT_THEME_TRUE*/));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Android.WebView.DarkMode.InDarkModeVsNightMode"));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.WebView.DarkMode.InDarkModeVsNightMode",
                         1 /*isDarkMode=true && NIGHT_MODE_ON*/));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Android.WebView.DarkMode.LightTheme"));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.WebView.DarkMode.LightTheme", 2 /*LIGHT_THEME_TRUE*/));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Android.WebView.DarkMode.PrimaryTextLuminanceVsLightTheme"));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.WebView.DarkMode.PrimaryTextLuminanceVsLightTheme",
                         5 /*TEXT_LUMINACE_LIGHT && LIGHT_THEME_TRUE*/));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Android.WebView.DarkMode.PrimaryTextLuminanceVsNightMode"));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.WebView.DarkMode.PrimaryTextLuminanceVsNightMode",
                         4 /*TEXT_LUMINACE_LIGHT && NIGHT_MODE_ON*/));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Android.WebView.DarkMode.NightMode"));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.WebView.DarkMode.NightMode", 1 /*NIGHT_MODE_ON*/));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Android.WebView.DarkMode.NightModeVsLightTheme"));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.WebView.DarkMode.NightModeVsLightTheme",
                         5 /*NIGHT_MODE_ON && LIGHT_THEME_TRUE*/));
@@ -130,10 +153,12 @@ public class AwWebContentsMetricsRecorderTest {
 
         AwWebContentsMetricsRecorder.recordForceDarkModeAPIUsage(
                 mockedContext, AwSettings.FORCE_DARK_AUTO);
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramTotalCountForTesting("Android.WebView.ForceDarkMode"));
         // The hardcode numbers can't be changed, they are written to histogram.
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.WebView.ForceDarkMode", 7 /* NIGHT_MODE_OFF && FOCE_DARK_AUTO*/));
     }
@@ -144,11 +169,13 @@ public class AwWebContentsMetricsRecorderTest {
     public void testRecordForceDarkBehaviorAPIUsage() {
         AwWebContentsMetricsRecorder.recordForceDarkBehaviorAPIUsage(
                 AwSettings.PREFER_MEDIA_QUERY_OVER_FORCE_DARK);
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Android.WebView.ForceDarkBehavior"));
         // The hardcode numbers can't be changed, they are written to histogram.
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.WebView.ForceDarkBehavior",
                         2 /* PREFER_MEDIA_QUERY_OVER_FORCE_DARK*/));

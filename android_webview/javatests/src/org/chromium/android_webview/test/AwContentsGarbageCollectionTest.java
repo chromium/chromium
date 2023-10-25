@@ -56,16 +56,17 @@ import java.util.concurrent.Callable;
 @DoNotBatch(reason = "GC tests require full restarts")
 public class AwContentsGarbageCollectionTest {
     @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule() {
-        @Override
-        public TestDependencyFactory createTestDependencyFactory() {
-            if (mOverriddenFactory == null) {
-                return new TestDependencyFactory();
-            } else {
-                return mOverriddenFactory;
-            }
-        }
-    };
+    public AwActivityTestRule mActivityTestRule =
+            new AwActivityTestRule() {
+                @Override
+                public TestDependencyFactory createTestDependencyFactory() {
+                    if (mOverriddenFactory == null) {
+                        return new TestDependencyFactory();
+                    } else {
+                        return mOverriddenFactory;
+                    }
+                }
+            };
 
     private TestDependencyFactory mOverriddenFactory;
 
@@ -76,6 +77,7 @@ public class AwContentsGarbageCollectionTest {
 
     private static class StrongRefTestContext extends ContextWrapper {
         private AwContents mAwContents;
+
         public void setAwContentsStrongRef(AwContents awContents) {
             mAwContents = awContents;
         }
@@ -102,6 +104,7 @@ public class AwContentsGarbageCollectionTest {
 
     private static class StrongRefTestAwContentsClient extends TestAwContentsClient {
         private AwContents mAwContentsStrongRef;
+
         public void setAwContentsStrongRef(AwContents awContents) {
             mAwContentsStrongRef = awContents;
         }
@@ -112,15 +115,17 @@ public class AwContentsGarbageCollectionTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testCreateAndGcOneTime() throws Throwable {
-        runAwContentsGcTest(() -> {
-            TestAwContentsClient client = new TestAwContentsClient();
-            AwTestContainerView containerView =
-                    mActivityTestRule.createAwTestContainerViewOnMainSync(client);
-            mActivityTestRule.loadUrlAsync(
-                    containerView.getAwContents(), ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
-            containerView = null;
-            return null;
-        });
+        runAwContentsGcTest(
+                () -> {
+                    TestAwContentsClient client = new TestAwContentsClient();
+                    AwTestContainerView containerView =
+                            mActivityTestRule.createAwTestContainerViewOnMainSync(client);
+                    mActivityTestRule.loadUrlAsync(
+                            containerView.getAwContents(),
+                            ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+                    containerView = null;
+                    return null;
+                });
     }
 
     @Test
@@ -128,25 +133,30 @@ public class AwContentsGarbageCollectionTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testHoldKeyboardResultReceiver() throws Throwable {
-        runAwContentsGcTest(() -> {
-            TestAwContentsClient client = new TestAwContentsClient();
-            AwTestContainerView containerView =
-                    mActivityTestRule.createAwTestContainerViewOnMainSync(client);
-            mActivityTestRule.loadUrlAsync(
-                    containerView.getAwContents(), ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
-            // When we call showSoftInput(), we pass a ResultReceiver object as a parameter.
-            // Android framework will hold the object reference until the matching
-            // ResultReceiver in InputMethodService (IME app) gets garbage-collected.
-            // WebView object wouldn't get gc'ed once OSK shows up because of this.
-            // It is difficult to show keyboard and wait until input method window shows up.
-            // Instead, we simply emulate Android's behavior by keeping strong references.
-            // See crbug.com/595613 for details.
-            ResultReceiver resultReceiver = TestThreadUtils.runOnUiThreadBlocking(
-                    () -> ImeAdapter.fromWebContents(containerView.getWebContents())
-                                       .getNewShowKeyboardReceiver());
+        runAwContentsGcTest(
+                () -> {
+                    TestAwContentsClient client = new TestAwContentsClient();
+                    AwTestContainerView containerView =
+                            mActivityTestRule.createAwTestContainerViewOnMainSync(client);
+                    mActivityTestRule.loadUrlAsync(
+                            containerView.getAwContents(),
+                            ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+                    // When we call showSoftInput(), we pass a ResultReceiver object as a parameter.
+                    // Android framework will hold the object reference until the matching
+                    // ResultReceiver in InputMethodService (IME app) gets garbage-collected.
+                    // WebView object wouldn't get gc'ed once OSK shows up because of this.
+                    // It is difficult to show keyboard and wait until input method window shows up.
+                    // Instead, we simply emulate Android's behavior by keeping strong references.
+                    // See crbug.com/595613 for details.
+                    ResultReceiver resultReceiver =
+                            TestThreadUtils.runOnUiThreadBlocking(
+                                    () ->
+                                            ImeAdapter.fromWebContents(
+                                                            containerView.getWebContents())
+                                                    .getNewShowKeyboardReceiver());
 
-            return resultReceiver;
-        });
+                    return resultReceiver;
+                });
     }
 
     @Test
@@ -154,24 +164,29 @@ public class AwContentsGarbageCollectionTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testAccessibility() throws Throwable {
-        runAwContentsGcTest(() -> {
-            TestAwContentsClient client = new TestAwContentsClient();
-            AwTestContainerView containerView =
-                    mActivityTestRule.createAwTestContainerViewOnMainSync(client);
-            mActivityTestRule.loadUrlAsync(
-                    containerView.getAwContents(), ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                // Enable a11y for testing.
-                AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
-                // Initialize native object.
-                containerView.getAccessibilityNodeProvider();
-                WebContentsAccessibility webContentsA11y =
-                        WebContentsAccessibility.fromWebContents(containerView.getWebContents());
-                Assert.assertTrue(webContentsA11y.isNativeInitialized());
-            });
+        runAwContentsGcTest(
+                () -> {
+                    TestAwContentsClient client = new TestAwContentsClient();
+                    AwTestContainerView containerView =
+                            mActivityTestRule.createAwTestContainerViewOnMainSync(client);
+                    mActivityTestRule.loadUrlAsync(
+                            containerView.getAwContents(),
+                            ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+                    TestThreadUtils.runOnUiThreadBlocking(
+                            () -> {
+                                // Enable a11y for testing.
+                                AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(
+                                        true);
+                                // Initialize native object.
+                                containerView.getAccessibilityNodeProvider();
+                                WebContentsAccessibility webContentsA11y =
+                                        WebContentsAccessibility.fromWebContents(
+                                                containerView.getWebContents());
+                                Assert.assertTrue(webContentsA11y.isNativeInitialized());
+                            });
 
-            return null;
-        });
+                    return null;
+                });
     }
 
     @Test
@@ -179,17 +194,19 @@ public class AwContentsGarbageCollectionTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testReferenceFromClient() throws Throwable {
-        runAwContentsGcTest(() -> {
-            StrongRefTestAwContentsClient client = new StrongRefTestAwContentsClient();
-            AwTestContainerView containerView =
-                    mActivityTestRule.createAwTestContainerViewOnMainSync(client);
-            client.setAwContentsStrongRef(containerView.getAwContents());
-            mActivityTestRule.loadUrlAsync(
-                    containerView.getAwContents(), ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+        runAwContentsGcTest(
+                () -> {
+                    StrongRefTestAwContentsClient client = new StrongRefTestAwContentsClient();
+                    AwTestContainerView containerView =
+                            mActivityTestRule.createAwTestContainerViewOnMainSync(client);
+                    client.setAwContentsStrongRef(containerView.getAwContents());
+                    mActivityTestRule.loadUrlAsync(
+                            containerView.getAwContents(),
+                            ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
-            containerView = null;
-            return null;
-        });
+                    containerView = null;
+                    return null;
+                });
     }
 
     @Test
@@ -197,21 +214,23 @@ public class AwContentsGarbageCollectionTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testReferenceFromContext() throws Throwable {
-        runAwContentsGcTest(() -> {
-            TestAwContentsClient client = new TestAwContentsClient();
-            StrongRefTestContext context =
-                    new StrongRefTestContext(mActivityTestRule.getActivity());
-            mOverriddenFactory = new GcTestDependencyFactory(context);
-            AwTestContainerView containerView =
-                    mActivityTestRule.createAwTestContainerViewOnMainSync(client);
-            context.setAwContentsStrongRef(containerView.getAwContents());
-            mOverriddenFactory = null;
-            mActivityTestRule.loadUrlAsync(
-                    containerView.getAwContents(), ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+        runAwContentsGcTest(
+                () -> {
+                    TestAwContentsClient client = new TestAwContentsClient();
+                    StrongRefTestContext context =
+                            new StrongRefTestContext(mActivityTestRule.getActivity());
+                    mOverriddenFactory = new GcTestDependencyFactory(context);
+                    AwTestContainerView containerView =
+                            mActivityTestRule.createAwTestContainerViewOnMainSync(client);
+                    context.setAwContentsStrongRef(containerView.getAwContents());
+                    mOverriddenFactory = null;
+                    mActivityTestRule.loadUrlAsync(
+                            containerView.getAwContents(),
+                            ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
-            containerView = null;
-            return null;
-        });
+                    containerView = null;
+                    return null;
+                });
     }
 
     @Test
@@ -219,35 +238,41 @@ public class AwContentsGarbageCollectionTest {
     @LargeTest
     @Feature({"AndroidWebView"})
     public void testCreateAndGcManyTimes() throws Throwable {
-        runAwContentsGcTest(() -> {
-            final int concurrentInstances = 4;
-            final int repetitions = 16;
+        runAwContentsGcTest(
+                () -> {
+                    final int concurrentInstances = 4;
+                    final int repetitions = 16;
 
-            for (int i = 0; i < repetitions; ++i) {
-                for (int j = 0; j < concurrentInstances; ++j) {
-                    StrongRefTestAwContentsClient client = new StrongRefTestAwContentsClient();
-                    StrongRefTestContext context =
-                            new StrongRefTestContext(mActivityTestRule.getActivity());
-                    mOverriddenFactory = new GcTestDependencyFactory(context);
-                    AwTestContainerView view =
-                            mActivityTestRule.createAwTestContainerViewOnMainSync(client);
-                    mOverriddenFactory = null;
-                    // Embedding app can hold onto a strong ref to the WebView from either
-                    // WebViewClient or WebChromeClient. That should not prevent WebView from
-                    // gc-ed. We simulate that behavior by making the equivalent change here,
-                    // have AwContentsClient hold a strong ref to the AwContents object.
-                    client.setAwContentsStrongRef(view.getAwContents());
-                    context.setAwContentsStrongRef(view.getAwContents());
-                    mActivityTestRule.loadUrlAsync(
-                            view.getAwContents(), ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
-                }
-                Assert.assertTrue(AwContents.getNativeInstanceCount() >= concurrentInstances);
-                Assert.assertTrue(
-                        AwContents.getNativeInstanceCount() <= (i + 1) * concurrentInstances);
-                removeAllViews();
-            }
-            return null;
-        });
+                    for (int i = 0; i < repetitions; ++i) {
+                        for (int j = 0; j < concurrentInstances; ++j) {
+                            StrongRefTestAwContentsClient client =
+                                    new StrongRefTestAwContentsClient();
+                            StrongRefTestContext context =
+                                    new StrongRefTestContext(mActivityTestRule.getActivity());
+                            mOverriddenFactory = new GcTestDependencyFactory(context);
+                            AwTestContainerView view =
+                                    mActivityTestRule.createAwTestContainerViewOnMainSync(client);
+                            mOverriddenFactory = null;
+                            // Embedding app can hold onto a strong ref to the WebView from either
+                            // WebViewClient or WebChromeClient. That should not prevent WebView
+                            // from gc-ed. We simulate that behavior by making the equivalent
+                            // change here, have AwContentsClient hold a strong ref to the
+                            // AwContents object.
+                            client.setAwContentsStrongRef(view.getAwContents());
+                            context.setAwContentsStrongRef(view.getAwContents());
+                            mActivityTestRule.loadUrlAsync(
+                                    view.getAwContents(),
+                                    ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+                        }
+                        Assert.assertTrue(
+                                AwContents.getNativeInstanceCount() >= concurrentInstances);
+                        Assert.assertTrue(
+                                AwContents.getNativeInstanceCount()
+                                        <= (i + 1) * concurrentInstances);
+                        removeAllViews();
+                    }
+                    return null;
+                });
     }
 
     @Test
@@ -255,40 +280,50 @@ public class AwContentsGarbageCollectionTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testGcAfterUsingJavascriptObject() throws Throwable {
-        runAwContentsGcTest(() -> {
-            // Javascript object with a reference to WebView.
-            class Test {
-                Test(int value, AwContents awContents) {
-                    mValue = value;
-                    mAwContents = awContents;
-                }
-                @JavascriptInterface
-                public int getValue() {
-                    return mValue;
-                }
-                public AwContents getAwContents() {
-                    return mAwContents;
-                }
-                private int mValue;
-                private AwContents mAwContents;
-            }
-            String html = "<html>Hello World</html>";
-            TestAwContentsClient contentsClient = new TestAwContentsClient();
-            AwTestContainerView containerView =
-                    mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient);
-            AwActivityTestRule.enableJavaScriptOnUiThread(containerView.getAwContents());
-            final AwContents awContents = containerView.getAwContents();
-            final Test jsObject = new Test(42, awContents);
-            AwActivityTestRule.addJavascriptInterfaceOnUiThread(awContents, jsObject, "test");
-            mActivityTestRule.loadDataSync(
-                    awContents, contentsClient.getOnPageFinishedHelper(), html, "text/html", false);
-            Assert.assertEquals(String.valueOf(42),
-                    mActivityTestRule.executeJavaScriptAndWaitForResult(
-                            awContents, contentsClient, "test.getValue()"));
+        runAwContentsGcTest(
+                () -> {
+                    // Javascript object with a reference to WebView.
+                    class Test {
+                        Test(int value, AwContents awContents) {
+                            mValue = value;
+                            mAwContents = awContents;
+                        }
 
-            containerView = null;
-            return null;
-        });
+                        @JavascriptInterface
+                        public int getValue() {
+                            return mValue;
+                        }
+
+                        public AwContents getAwContents() {
+                            return mAwContents;
+                        }
+
+                        private int mValue;
+                        private AwContents mAwContents;
+                    }
+                    String html = "<html>Hello World</html>";
+                    TestAwContentsClient contentsClient = new TestAwContentsClient();
+                    AwTestContainerView containerView =
+                            mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient);
+                    AwActivityTestRule.enableJavaScriptOnUiThread(containerView.getAwContents());
+                    final AwContents awContents = containerView.getAwContents();
+                    final Test jsObject = new Test(42, awContents);
+                    AwActivityTestRule.addJavascriptInterfaceOnUiThread(
+                            awContents, jsObject, "test");
+                    mActivityTestRule.loadDataSync(
+                            awContents,
+                            contentsClient.getOnPageFinishedHelper(),
+                            html,
+                            "text/html",
+                            false);
+                    Assert.assertEquals(
+                            String.valueOf(42),
+                            mActivityTestRule.executeJavaScriptAndWaitForResult(
+                                    awContents, contentsClient, "test.getValue()"));
+
+                    containerView = null;
+                    return null;
+                });
     }
 
     @Test
@@ -316,12 +351,15 @@ public class AwContentsGarbageCollectionTest {
 
         Runtime.getRuntime().gc();
         final long timeoutMs = 30000L;
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            Runtime.getRuntime().gc();
-            Reference enqueuedReference = referenceQueue.poll();
-            Criteria.checkThat(enqueuedReference, Matchers.notNullValue());
-            Criteria.checkThat(enqueuedReference, Matchers.is(reference));
-        }, timeoutMs, CHECK_INTERVAL);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Runtime.getRuntime().gc();
+                    Reference enqueuedReference = referenceQueue.poll();
+                    Criteria.checkThat(enqueuedReference, Matchers.notNullValue());
+                    Criteria.checkThat(enqueuedReference, Matchers.is(reference));
+                },
+                timeoutMs,
+                CHECK_INTERVAL);
         gcAndCheckAllAwContentsDestroyed();
     }
 
@@ -336,12 +374,13 @@ public class AwContentsGarbageCollectionTest {
             removeAllViews();
 
             // This clears a reference that InputMethodManager holds onto focused view.
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                Window window = mActivityTestRule.getActivity().getWindow();
-                window.addFlags(WindowManager.LayoutParams.FLAG_LOCAL_FOCUS_MODE);
-                window.setLocalFocus(false, false);
-                window.clearFlags(WindowManager.LayoutParams.FLAG_LOCAL_FOCUS_MODE);
-            });
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        Window window = mActivityTestRule.getActivity().getWindow();
+                        window.addFlags(WindowManager.LayoutParams.FLAG_LOCAL_FOCUS_MODE);
+                        window.setLocalFocus(false, false);
+                        window.clearFlags(WindowManager.LayoutParams.FLAG_LOCAL_FOCUS_MODE);
+                    });
 
             gcAndCheckAllAwContentsDestroyed();
         } finally {
@@ -352,26 +391,32 @@ public class AwContentsGarbageCollectionTest {
     }
 
     private void removeAllViews() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> mActivityTestRule.getActivity().removeAllViews());
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(() -> mActivityTestRule.getActivity().removeAllViews());
     }
 
     private void gcAndCheckAllAwContentsDestroyed() {
         Runtime.getRuntime().gc();
 
-        Runnable criteria = () -> {
-            Pair<Integer, Integer> nativeCounts = null;
-            try {
-                nativeCounts = TestThreadUtils.runOnUiThreadBlocking(() -> {
-                    return Pair.create(AwContents.getNativeInstanceCount(),
-                            AwGLFunctor.getNativeInstanceCount());
-                });
-            } catch (Exception e) {
-                throw new CriteriaNotSatisfiedException(e);
-            }
-            Criteria.checkThat("AwContents count", (int) nativeCounts.first, Matchers.is(0));
-            Criteria.checkThat("AwGLFunctor count", (int) nativeCounts.second, Matchers.is(0));
-        };
+        Runnable criteria =
+                () -> {
+                    Pair<Integer, Integer> nativeCounts = null;
+                    try {
+                        nativeCounts =
+                                TestThreadUtils.runOnUiThreadBlocking(
+                                        () -> {
+                                            return Pair.create(
+                                                    AwContents.getNativeInstanceCount(),
+                                                    AwGLFunctor.getNativeInstanceCount());
+                                        });
+                    } catch (Exception e) {
+                        throw new CriteriaNotSatisfiedException(e);
+                    }
+                    Criteria.checkThat(
+                            "AwContents count", (int) nativeCounts.first, Matchers.is(0));
+                    Criteria.checkThat(
+                            "AwGLFunctor count", (int) nativeCounts.second, Matchers.is(0));
+                };
 
         // Depending on a single gc call can make this test flaky. It's possible
         // that the WebView still has transient references during load so it does not get

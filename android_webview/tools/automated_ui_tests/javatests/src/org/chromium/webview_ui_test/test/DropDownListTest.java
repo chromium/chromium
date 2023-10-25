@@ -39,16 +39,14 @@ import org.chromium.webview_ui_test.test.util.Atoms;
 import org.chromium.webview_ui_test.test.util.UseLayout;
 import org.chromium.webview_ui_test.test.util.WebViewUiTestRule;
 
-/**
- * Tests for WebView ActionMode.
- */
+/** Tests for WebView ActionMode. */
 // TODO(aluo): Re-enable once crbug.com/947352 is fixed.
 @DisabledTest(message = "https://crbug.com/947352")
 @RunWith(BaseJUnit4ClassRunner.class)
 public class DropDownListTest {
     @Rule
-    public WebViewUiTestRule mWebViewActivityRule = new WebViewUiTestRule(
-            WebViewUiTestActivity.class);
+    public WebViewUiTestRule mWebViewActivityRule =
+            new WebViewUiTestRule(WebViewUiTestActivity.class);
 
     private static final String AFTER_VALUE = "Value2";
     private static final String BEFORE_VALUE = "Value1";
@@ -62,9 +60,7 @@ public class DropDownListTest {
         onWebView().forceJavascriptEnabled();
     }
 
-    /**
-     * Test Drop Down List works in ViewPort Scale Factor = 1
-     */
+    /** Test Drop Down List works in ViewPort Scale Factor = 1 */
     @Test
     @SmallTest
     @UseLayout("edittext_webview")
@@ -73,9 +69,7 @@ public class DropDownListTest {
         changeAllSelectValues();
     }
 
-    /**
-     * Test Drop Down List works in ViewPort Scale Factor > 1
-     */
+    /** Test Drop Down List works in ViewPort Scale Factor > 1 */
     @Test
     @SmallTest
     @UseLayout("edittext_webview")
@@ -84,17 +78,14 @@ public class DropDownListTest {
         changeAllSelectValues();
     }
 
-    /**
-     * Test Drop Down List works in ViewPort Scale Factor > 1 in wideViewPortMode
-     */
+    /** Test Drop Down List works in ViewPort Scale Factor > 1 in wideViewPortMode */
     @Test
     @SmallTest
     @UseLayout("edittext_webview")
     public void testDropDownScaledViewPortUseWideViewPort() {
         onView(withId(R.id.webview)).perform(Actions.setUseWideViewPort());
         mWebViewActivityRule.loadFileSync(HTML_SCALED, false);
-        WebView webView = (WebView) mWebViewActivityRule.getActivity()
-                .findViewById(R.id.webview);
+        WebView webView = (WebView) mWebViewActivityRule.getActivity().findViewById(R.id.webview);
         int w = webView.getWidth();
         int h = webView.getHeight();
         changeSelectValue("select1");
@@ -106,40 +97,35 @@ public class DropDownListTest {
         changeSelectValue("select4");
     }
 
-    /**
-     * Test that WebView does not scroll when a drop down menu is selected
-     */
+    /** Test that WebView does not scroll when a drop down menu is selected */
     @Test
     @SmallTest
     @UseLayout("edittext_webview")
     public void testSelectNoScroll() {
         mWebViewActivityRule.loadFileSync(HTML_SCROLL, false);
-        WebView webView = (WebView) mWebViewActivityRule.getActivity()
-                .findViewById(R.id.webview);
+        WebView webView = (WebView) mWebViewActivityRule.getActivity().findViewById(R.id.webview);
         int w = webView.getWidth();
         int h = webView.getHeight();
         onView(withId(R.id.webview)).perform(Actions.scrollBy(w, h));
-        Point beforeSelectScroll = getScroll((WebView) mWebViewActivityRule
-                .getActivity().findViewById(R.id.webview));
+        Point beforeSelectScroll =
+                getScroll((WebView) mWebViewActivityRule.getActivity().findViewById(R.id.webview));
         changeSelectValue("select");
-        Point afterSelectScroll = getScroll((WebView) mWebViewActivityRule
-                .getActivity().findViewById(R.id.webview));
-        assertEquals("Scroll should not move after clicking select element",
-                beforeSelectScroll, afterSelectScroll);
+        Point afterSelectScroll =
+                getScroll((WebView) mWebViewActivityRule.getActivity().findViewById(R.id.webview));
+        assertEquals(
+                "Scroll should not move after clicking select element",
+                beforeSelectScroll,
+                afterSelectScroll);
     }
 
-    /**
-     * Get the scroll position of the view
-     */
+    /** Get the scroll position of the view */
     private Point getScroll(View v) {
         int x = v.getScrollX();
         int y = v.getScrollY();
         return new Point(x, y);
     }
 
-    /**
-     * Change all select box values
-     */
+    /** Change all select box values */
     private void changeAllSelectValues() {
         changeSelectValue("select1");
         changeSelectValue("select2");
@@ -147,17 +133,13 @@ public class DropDownListTest {
         changeSelectValue("select4");
     }
 
-    /**
-     * Change select box value from Value1 to Value2
-     */
+    /** Change select box value from Value1 to Value2 */
     private void changeSelectValue(String id) {
         Web.WebInteraction<Void> selectElement =
                 onWebView().withElement(findElement(Locator.ID, id));
-        selectElement.check(webMatches(Atoms.currentSelection(),
-                is(BEFORE_VALUE)));
+        selectElement.check(webMatches(Atoms.currentSelection(), is(BEFORE_VALUE)));
         selectElement.perform(Atoms.webSelect());
         onView(withText(AFTER_VALUE)).inRoot(withDecorView(isEnabled())).perform(click());
-        selectElement.check(webMatches(Atoms.currentSelection(),
-                is(AFTER_VALUE)));
+        selectElement.check(webMatches(Atoms.currentSelection(), is(AFTER_VALUE)));
     }
 }

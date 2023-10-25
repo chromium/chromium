@@ -41,23 +41,26 @@ public class AwUncaughtExceptionTest {
     // exception off the UI thread. An uncaught exception on the UI
     // thread appears to cause the test to fail to exit.
     @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule() {
-        @Override
-        public boolean needsAwBrowserContextCreated() {
-            return false;
-        }
-        @Override
-        public boolean needsBrowserProcessStarted() {
-            return false;
-        }
-        @Override
-        public boolean needsAwContentsCleanup() {
-            // State of VM might be hosed after throwing and not catching exceptions.
-            // Do not assume it is safe to destroy AwContents by posting to the UI thread.
-            // Instead explicitly destroy any AwContents created in this test.
-            return false;
-        }
-    };
+    public AwActivityTestRule mActivityTestRule =
+            new AwActivityTestRule() {
+                @Override
+                public boolean needsAwBrowserContextCreated() {
+                    return false;
+                }
+
+                @Override
+                public boolean needsBrowserProcessStarted() {
+                    return false;
+                }
+
+                @Override
+                public boolean needsAwContentsCleanup() {
+                    // State of VM might be hosed after throwing and not catching exceptions.
+                    // Do not assume it is safe to destroy AwContents by posting to the UI thread.
+                    // Instead explicitly destroy any AwContents created in this test.
+                    return false;
+                }
+            };
 
     private class BackgroundThread extends Thread {
         private Looper mLooper;
@@ -92,7 +95,7 @@ public class AwUncaughtExceptionTest {
             }
             return mLooper;
         }
-    };
+    }
 
     private BackgroundThread mBackgroundThread;
     private TestAwContentsClient mContentsClient;
@@ -137,34 +140,50 @@ public class AwUncaughtExceptionTest {
         Thread.setDefaultUncaughtExceptionHandler(mDefaultUncaughtExceptionHandler);
     }
 
-    private void expectUncaughtException(Thread onThread, Class<? extends Exception> exceptionClass,
-            String message, boolean reportable, Runnable onException) {
-        Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> {
-            if ((onThread == null || onThread.equals(thread))
-                    && (exceptionClass == null || exceptionClass.isInstance(exception))
-                    && (message == null || exception.getMessage().equals(message))) {
-                Assert.assertEquals(
-                        reportable, AwCrashReporterClient.stackTraceContainsWebViewCode(exception));
-                onException.run();
-            } else {
-                mDefaultUncaughtExceptionHandler.uncaughtException(thread, exception);
-            }
-        });
+    private void expectUncaughtException(
+            Thread onThread,
+            Class<? extends Exception> exceptionClass,
+            String message,
+            boolean reportable,
+            Runnable onException) {
+        Thread.setDefaultUncaughtExceptionHandler(
+                (thread, exception) -> {
+                    if ((onThread == null || onThread.equals(thread))
+                            && (exceptionClass == null || exceptionClass.isInstance(exception))
+                            && (message == null || exception.getMessage().equals(message))) {
+                        Assert.assertEquals(
+                                reportable,
+                                AwCrashReporterClient.stackTraceContainsWebViewCode(exception));
+                        onException.run();
+                    } else {
+                        mDefaultUncaughtExceptionHandler.uncaughtException(thread, exception);
+                    }
+                });
     }
 
     private void doTestUncaughtReportedException(boolean postTask) throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final String msg = "dies.";
 
-        expectUncaughtException(mBackgroundThread, RuntimeException.class, msg,
-                true /* reportable */, () -> { latch.countDown(); });
+        expectUncaughtException(
+                mBackgroundThread,
+                RuntimeException.class,
+                msg,
+                /* reportable= */ true,
+                () -> {
+                    latch.countDown();
+                });
 
-        Runnable r = () -> {
-            RuntimeException exception = new RuntimeException(msg);
-            exception.setStackTrace(new StackTraceElement[] {
-                    new StackTraceElement("android.webkit.WebView", "loadUrl", "<none>", 0)});
-            throw exception;
-        };
+        Runnable r =
+                () -> {
+                    RuntimeException exception = new RuntimeException(msg);
+                    exception.setStackTrace(
+                            new StackTraceElement[] {
+                                new StackTraceElement(
+                                        "android.webkit.WebView", "loadUrl", "<none>", 0)
+                            });
+                    throw exception;
+                };
 
         if (postTask) {
             PostTask.postTask(TaskTraits.UI_DEFAULT, r);
@@ -193,15 +212,24 @@ public class AwUncaughtExceptionTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final String msg = "dies.";
 
-        expectUncaughtException(mBackgroundThread, RuntimeException.class, msg,
-                false /* reportable */, () -> { latch.countDown(); });
+        expectUncaughtException(
+                mBackgroundThread,
+                RuntimeException.class,
+                msg,
+                /* reportable= */ false,
+                () -> {
+                    latch.countDown();
+                });
 
-        Runnable r = () -> {
-            RuntimeException exception = new RuntimeException(msg);
-            exception.setStackTrace(new StackTraceElement[] {
-                    new StackTraceElement("java.lang.Object", "equals", "<none>", 0)});
-            throw exception;
-        };
+        Runnable r =
+                () -> {
+                    RuntimeException exception = new RuntimeException(msg);
+                    exception.setStackTrace(
+                            new StackTraceElement[] {
+                                new StackTraceElement("java.lang.Object", "equals", "<none>", 0)
+                            });
+                    throw exception;
+                };
 
         if (postTask) {
             PostTask.postTask(TaskTraits.UI_DEFAULT, r);
@@ -233,26 +261,37 @@ public class AwUncaughtExceptionTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final String msg = "dies.";
 
-        expectUncaughtException(mBackgroundThread, RuntimeException.class, msg,
-                true /* reportable */, () -> { latch.countDown(); });
+        expectUncaughtException(
+                mBackgroundThread,
+                RuntimeException.class,
+                msg,
+                /* reportable= */ true,
+                () -> {
+                    latch.countDown();
+                });
 
-        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
-            mContentsClient = new TestAwContentsClient() {
-                @Override
-                public boolean shouldOverrideUrlLoading(AwWebResourceRequest request) {
-                    mAwContents.destroyNatives();
-                    throw new RuntimeException(msg);
-                }
-            };
-            mTestContainerView =
-                    mActivityTestRule.createDetachedAwTestContainerView(mContentsClient);
-            mAwContents = mTestContainerView.getAwContents();
-            mAwContents.getSettings().setJavaScriptEnabled(true);
-            mAwContents.loadUrl(
-                    "data:text/html,<script>window.location='https://www.google.com';</script>");
-        });
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    mContentsClient =
+                            new TestAwContentsClient() {
+                                @Override
+                                public boolean shouldOverrideUrlLoading(
+                                        AwWebResourceRequest request) {
+                                    mAwContents.destroyNatives();
+                                    throw new RuntimeException(msg);
+                                }
+                            };
+                    mTestContainerView =
+                            mActivityTestRule.createDetachedAwTestContainerView(mContentsClient);
+                    mAwContents = mTestContainerView.getAwContents();
+                    mAwContents.getSettings().setJavaScriptEnabled(true);
+                    mAwContents.loadUrl(
+                            "data:text/html,<script>window.location='https://www.google.com';</script>");
+                });
 
         Assert.assertTrue(
                 latch.await(SCALED_WAIT_TIMEOUT_MS, java.util.concurrent.TimeUnit.MILLISECONDS));
     }
-};
+}
+;

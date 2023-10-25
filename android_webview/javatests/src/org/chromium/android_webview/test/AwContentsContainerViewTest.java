@@ -14,13 +14,10 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Feature;
 
-/**
- * AwContents container view tests.
- */
+/** AwContents container view tests. */
 @RunWith(AwJUnit4ClassRunner.class)
 public class AwContentsContainerViewTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private TestAwContentsClient mContentsClient;
     private AwTestContainerView mContainerView;

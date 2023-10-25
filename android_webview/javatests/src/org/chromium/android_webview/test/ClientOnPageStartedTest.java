@@ -30,13 +30,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
-/**
- * Tests for the ContentViewClient.onPageStarted() method.
- */
+/** Tests for the ContentViewClient.onPageStarted() method. */
 @RunWith(AwJUnit4ClassRunner.class)
 public class ClientOnPageStartedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
@@ -52,17 +49,22 @@ public class ClientOnPageStartedTest {
         mWebServer = TestWebServer.start();
         mHangingRequestCallbackHelper = new CallbackHelper();
         mHangingRequestSemaphore = new Semaphore(0);
-        Runnable hangingResponseRunnable = () -> {
-            mHangingRequestCallbackHelper.notifyCalled();
-            try {
-                mHangingRequestSemaphore.acquire();
-            } catch (Exception e) {
-                Assert.fail(e.getMessage());
-            }
-        };
+        Runnable hangingResponseRunnable =
+                () -> {
+                    mHangingRequestCallbackHelper.notifyCalled();
+                    try {
+                        mHangingRequestSemaphore.acquire();
+                    } catch (Exception e) {
+                        Assert.fail(e.getMessage());
+                    }
+                };
 
-        mHangingUrl = mWebServer.setResponseWithRunnableAction(
-                "/hanging_page.html", "<body>hanging page</body>", null, hangingResponseRunnable);
+        mHangingUrl =
+                mWebServer.setResponseWithRunnableAction(
+                        "/hanging_page.html",
+                        "<body>hanging page</body>",
+                        null,
+                        hangingResponseRunnable);
         mRedirectToHangingUrl = mWebServer.setRedirect("/redirect_to_hanging.html", mHangingUrl);
     }
 
@@ -120,11 +122,14 @@ public class ClientOnPageStartedTest {
 
             @Override
             public void onReceivedError(AwWebResourceRequest request, AwWebResourceError error) {
-                Assert.assertEquals("onReceivedError called twice for " + request.url, false,
+                Assert.assertEquals(
+                        "onReceivedError called twice for " + request.url,
+                        false,
                         mIsOnReceivedErrorCalled);
                 mIsOnReceivedErrorCalled = true;
                 Assert.assertEquals(
-                        "onPageStarted not called before onReceivedError for " + request.url, true,
+                        "onPageStarted not called before onReceivedError for " + request.url,
+                        true,
                         mIsOnPageStartedCalled);
                 super.onReceivedError(request, error);
             }
@@ -138,7 +143,9 @@ public class ClientOnPageStartedTest {
                 Assert.assertEquals(
                         "onPageStarted called twice for " + url, false, mIsOnPageStartedCalled);
                 mIsOnPageStartedCalled = true;
-                Assert.assertEquals("onReceivedError called before onPageStarted for " + url, false,
+                Assert.assertEquals(
+                        "onReceivedError called before onPageStarted for " + url,
+                        false,
                         mIsOnReceivedErrorCalled);
                 super.onPageStarted(url);
             }
@@ -212,18 +219,23 @@ public class ClientOnPageStartedTest {
         int shouldOverrideUrlLoadingCount =
                 mContentsClient.getShouldOverrideUrlLoadingHelper().getCallCount();
         int onLoadResourceCount = mContentsClient.getOnLoadResourceHelper().getCallCount();
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
-            mAwContents.evaluateJavaScript(
-                    "window.location.assign(\"" + downloadUrl + "\");", null);
-        });
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    mAwContents.evaluateJavaScript(
+                            "window.location.assign(\"" + downloadUrl + "\");", null);
+                });
 
         // onPageStarted and onPageFinished should not be called.
-        mContentsClient.getShouldOverrideUrlLoadingHelper().waitForCallback(
-                shouldOverrideUrlLoadingCount);
+        mContentsClient
+                .getShouldOverrideUrlLoadingHelper()
+                .waitForCallback(shouldOverrideUrlLoadingCount);
         mContentsClient.getOnDownloadStartHelper().waitForCallback(downloadCount);
         mContentsClient.getOnLoadResourceHelper().waitForCallback(onLoadResourceCount);
-        Assert.assertEquals(downloadUrl,
-                mContentsClient.getShouldOverrideUrlLoadingHelper()
+        Assert.assertEquals(
+                downloadUrl,
+                mContentsClient
+                        .getShouldOverrideUrlLoadingHelper()
                         .getShouldOverrideUrlLoadingUrl());
         Assert.assertEquals(downloadUrl, mContentsClient.getOnDownloadStartHelper().getUrl());
         Assert.assertEquals(
@@ -248,18 +260,23 @@ public class ClientOnPageStartedTest {
                 mContentsClient.getShouldOverrideUrlLoadingHelper().getCallCount();
         int onLoadResourceCount = mContentsClient.getOnLoadResourceHelper().getCallCount();
         int hangingRequestCount = mHangingRequestCallbackHelper.getCallCount();
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
-            mAwContents.evaluateJavaScript(
-                    "window.location.assign(\"" + mHangingUrl + "\");", null);
-        });
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    mAwContents.evaluateJavaScript(
+                            "window.location.assign(\"" + mHangingUrl + "\");", null);
+                });
 
         // onPageStarted and onPageFinished should not be called yet.
-        mContentsClient.getShouldOverrideUrlLoadingHelper().waitForCallback(
-                shouldOverrideUrlLoadingCount);
+        mContentsClient
+                .getShouldOverrideUrlLoadingHelper()
+                .waitForCallback(shouldOverrideUrlLoadingCount);
         mContentsClient.getOnLoadResourceHelper().waitForCallback(onLoadResourceCount);
         mHangingRequestCallbackHelper.waitForCallback(hangingRequestCount);
-        Assert.assertEquals(mHangingUrl,
-                mContentsClient.getShouldOverrideUrlLoadingHelper()
+        Assert.assertEquals(
+                mHangingUrl,
+                mContentsClient
+                        .getShouldOverrideUrlLoadingHelper()
                         .getShouldOverrideUrlLoadingUrl());
         Assert.assertEquals(
                 mHangingUrl, mContentsClient.getOnLoadResourceHelper().getLastLoadedResource());
@@ -319,20 +336,26 @@ public class ClientOnPageStartedTest {
                 mContentsClient.getShouldOverrideUrlLoadingHelper().getCallCount();
         int onLoadResourceCount = mContentsClient.getOnLoadResourceHelper().getCallCount();
         int hangingRequestCount = mHangingRequestCallbackHelper.getCallCount();
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
-            mAwContents.evaluateJavaScript(
-                    "window.location.assign(\"" + mRedirectToHangingUrl + "\");", null);
-        });
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    mAwContents.evaluateJavaScript(
+                            "window.location.assign(\"" + mRedirectToHangingUrl + "\");", null);
+                });
 
         // onPageStarted and onPageFinished should not be called yet.
-        mContentsClient.getShouldOverrideUrlLoadingHelper().waitForCallback(
-                shouldOverrideUrlLoadingCount, 2);
+        mContentsClient
+                .getShouldOverrideUrlLoadingHelper()
+                .waitForCallback(shouldOverrideUrlLoadingCount, 2);
         mContentsClient.getOnLoadResourceHelper().waitForCallback(onLoadResourceCount);
         mHangingRequestCallbackHelper.waitForCallback(hangingRequestCount);
-        Assert.assertEquals(mHangingUrl,
-                mContentsClient.getShouldOverrideUrlLoadingHelper()
+        Assert.assertEquals(
+                mHangingUrl,
+                mContentsClient
+                        .getShouldOverrideUrlLoadingHelper()
                         .getShouldOverrideUrlLoadingUrl());
-        Assert.assertEquals(mRedirectToHangingUrl,
+        Assert.assertEquals(
+                mRedirectToHangingUrl,
                 mContentsClient.getOnLoadResourceHelper().getLastLoadedResource());
         Assert.assertEquals(
                 pageStartedCount, mContentsClient.getOnPageStartedHelper().getCallCount());
@@ -361,14 +384,18 @@ public class ClientOnPageStartedTest {
         mActivityTestRule.loadUrlAsync(mAwContents, mRedirectToHangingUrl);
 
         // onPageStarted and onPageFinished should not be called yet.
-        mContentsClient.getShouldOverrideUrlLoadingHelper().waitForCallback(
-                shouldOverrideUrlLoadingCount);
+        mContentsClient
+                .getShouldOverrideUrlLoadingHelper()
+                .waitForCallback(shouldOverrideUrlLoadingCount);
         mContentsClient.getOnLoadResourceHelper().waitForCallback(onLoadResourceCount);
         mHangingRequestCallbackHelper.waitForCallback(hangingRequestCount);
-        Assert.assertEquals(mHangingUrl,
-                mContentsClient.getShouldOverrideUrlLoadingHelper()
+        Assert.assertEquals(
+                mHangingUrl,
+                mContentsClient
+                        .getShouldOverrideUrlLoadingHelper()
                         .getShouldOverrideUrlLoadingUrl());
-        Assert.assertEquals(mRedirectToHangingUrl,
+        Assert.assertEquals(
+                mRedirectToHangingUrl,
                 mContentsClient.getOnLoadResourceHelper().getLastLoadedResource());
         Assert.assertEquals(
                 pageStartedCount, mContentsClient.getOnPageStartedHelper().getCallCount());

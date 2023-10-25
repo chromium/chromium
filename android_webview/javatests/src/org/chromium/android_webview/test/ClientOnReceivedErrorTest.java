@@ -33,8 +33,7 @@ import java.util.concurrent.TimeUnit;
  */
 @RunWith(AwJUnit4ClassRunner.class)
 public class ClientOnReceivedErrorTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
@@ -62,8 +61,11 @@ public class ClientOnReceivedErrorTest {
         // Verify that onReceivedError is called. The particular error code
         // that is returned depends on the configuration of the device (such as
         // existence of a proxy) so we don't test for it.
-        onReceivedErrorHelper.waitForCallback(onReceivedErrorCount,
-                /* numberOfCallsToWaitFor= */ 1, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        onReceivedErrorHelper.waitForCallback(
+                onReceivedErrorCount,
+                /* numberOfCallsToWaitFor= */ 1,
+                WAIT_TIMEOUT_MS,
+                TimeUnit.MILLISECONDS);
         Assert.assertEquals(BAD_HTML_URL, onReceivedErrorHelper.getRequest().url);
         Assert.assertNotNull(onReceivedErrorHelper.getError().description);
     }
@@ -79,7 +81,8 @@ public class ClientOnReceivedErrorTest {
         mActivityTestRule.loadUrlAsync(mAwContents, url);
 
         onReceivedErrorHelper.waitForCallback(onReceivedErrorCount);
-        Assert.assertEquals(WebviewErrorCode.ERROR_UNSUPPORTED_SCHEME,
+        Assert.assertEquals(
+                WebviewErrorCode.ERROR_UNSUPPORTED_SCHEME,
                 onReceivedErrorHelper.getError().errorCode);
         Assert.assertEquals(url, onReceivedErrorHelper.getRequest().url);
         Assert.assertNotNull(onReceivedErrorHelper.getError().description);
@@ -94,8 +97,11 @@ public class ClientOnReceivedErrorTest {
                 mContentsClient.getOnPageFinishedHelper();
 
         int currentCallCount = onPageFinishedHelper.getCallCount();
-        mActivityTestRule.loadDataAsync(mAwContents,
-                "<html><iframe src=\"http//invalid.url.co/\" /></html>", "text/html", false);
+        mActivityTestRule.loadDataAsync(
+                mAwContents,
+                "<html><iframe src=\"http//invalid.url.co/\" /></html>",
+                "text/html",
+                false);
 
         onPageFinishedHelper.waitForCallback(currentCallCount);
         Assert.assertEquals(0, onReceivedErrorHelper.getCallCount());
@@ -140,7 +146,8 @@ public class ClientOnReceivedErrorTest {
         OnReceivedErrorHelper onReceivedErrorHelper = mContentsClient.getOnReceivedErrorHelper();
         final String url = "http://example.com/index.html";
         int onReceivedErrorCount = onReceivedErrorHelper.getCallCount();
-        mActivityTestRule.getAwSettingsOnUiThread(mAwContents)
+        mActivityTestRule
+                .getAwSettingsOnUiThread(mAwContents)
                 .setCacheMode(WebSettings.LOAD_CACHE_ONLY);
         mActivityTestRule.loadUrlAsync(mAwContents, url);
 

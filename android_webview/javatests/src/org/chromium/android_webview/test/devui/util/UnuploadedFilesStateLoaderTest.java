@@ -27,9 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Unit tests for UnuploadedFilesStateLoader.
- */
+/** Unit tests for UnuploadedFilesStateLoader. */
 @RunWith(AwJUnit4ClassRunner.class)
 @OnlyRunIn(SINGLE_PROCESS) // These are unit tests
 @Batch(Batch.UNIT_TESTS)
@@ -37,8 +35,7 @@ public class UnuploadedFilesStateLoaderTest {
     private static final String LOCAL_ID = "localId1234";
     private static final String TEST_FILE_NAME = "test_file-" + LOCAL_ID;
 
-    @Rule
-    public TemporaryFolder mTestCacheDir = new TemporaryFolder();
+    @Rule public TemporaryFolder mTestCacheDir = new TemporaryFolder();
 
     private File mTestCrashDir;
     private CrashFileManager mCrashFileManager;

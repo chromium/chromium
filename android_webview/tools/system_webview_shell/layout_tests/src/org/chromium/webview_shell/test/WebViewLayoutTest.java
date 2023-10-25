@@ -41,9 +41,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests running end-to-end layout tests.
- */
+/** Tests running end-to-end layout tests. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @DoNotBatch(reason = "https://crbug.com/1465624")
 public class WebViewLayoutTest {
@@ -63,21 +61,31 @@ public class WebViewLayoutTest {
     // against a fallback approach is used. The order in the List below is important due
     // to how blink performs baseline optimizations. For more details see
     // third_party/blink/tools/blinkpy/common/checkout/baseline_optimizer.py.
-    private static final List<String> BLINK_STABLE_FALLBACKS = Arrays.asList(
-            EXTERNAL_PREFIX + BASE_BLINK_TEST_PATH + "virtual/stable/" + GLOBAL_LISTING_FILE,
-            EXTERNAL_PREFIX + BASE_BLINK_TEST_PATH + "platform/linux/virtual/stable/"
-                    + GLOBAL_LISTING_FILE,
-            EXTERNAL_PREFIX + BASE_BLINK_TEST_PATH + "platform/win/virtual/stable/"
-                    + GLOBAL_LISTING_FILE,
-            EXTERNAL_PREFIX + BASE_BLINK_TEST_PATH + "platform/mac/virtual/stable/"
-                    + GLOBAL_LISTING_FILE);
+    private static final List<String> BLINK_STABLE_FALLBACKS =
+            Arrays.asList(
+                    EXTERNAL_PREFIX
+                            + BASE_BLINK_TEST_PATH
+                            + "virtual/stable/"
+                            + GLOBAL_LISTING_FILE,
+                    EXTERNAL_PREFIX
+                            + BASE_BLINK_TEST_PATH
+                            + "platform/linux/virtual/stable/"
+                            + GLOBAL_LISTING_FILE,
+                    EXTERNAL_PREFIX
+                            + BASE_BLINK_TEST_PATH
+                            + "platform/win/virtual/stable/"
+                            + GLOBAL_LISTING_FILE,
+                    EXTERNAL_PREFIX
+                            + BASE_BLINK_TEST_PATH
+                            + "platform/mac/virtual/stable/"
+                            + GLOBAL_LISTING_FILE);
 
     private static final long TIMEOUT_SECONDS = 20;
 
     private static final String MODE_REBASELINE = "rebaseline";
     private static final String NOT_WEBVIEW_EXPOSED_CHROMIUM_PATH =
             "//android_webview/tools/system_webview_shell/test/data/"
-            + "webexposed/not-webview-exposed.txt";
+                    + "webexposed/not-webview-exposed.txt";
 
     private WebViewLayoutTestActivity mTestActivity;
     private boolean mRebaseLine;
@@ -109,16 +117,18 @@ public class WebViewLayoutTest {
     @Test
     @MediumTest
     public void testSimple() throws Exception {
-        runWebViewLayoutTest("experimental/basic-logging.html",
-                             "experimental/basic-logging-expected.txt");
+        runWebViewLayoutTest(
+                "experimental/basic-logging.html", "experimental/basic-logging-expected.txt");
     }
 
     // This is a non-failing test because it tends to require frequent rebaselines.
     @Test
     @MediumTest
     public void testGlobalInterfaceNoFail() throws Exception {
-        runBlinkLayoutTest("webexposed/global-interface-listing.html",
-                           "webexposed/global-interface-listing-expected.txt", true);
+        runBlinkLayoutTest(
+                "webexposed/global-interface-listing.html",
+                "webexposed/global-interface-listing-expected.txt",
+                true);
     }
 
     // This is a non-failing test to avoid rebaselines by the sheriff
@@ -127,12 +137,13 @@ public class WebViewLayoutTest {
     @MediumTest
     public void testNoUnexpectedInterfaces() throws Exception {
         // Begin by running the web test.
-        loadUrlWebViewAsync("file://" + PATH_BLINK_PREFIX
-                + "webexposed/global-interface-listing.html", mTestActivity);
+        loadUrlWebViewAsync(
+                "file://" + PATH_BLINK_PREFIX + "webexposed/global-interface-listing.html",
+                mTestActivity);
 
         // Process all expectations files.
-        String webviewExpected = readFile(PATH_WEBVIEW_PREFIX
-                + "webexposed/global-interface-listing-expected.txt");
+        String webviewExpected =
+                readFile(PATH_WEBVIEW_PREFIX + "webexposed/global-interface-listing-expected.txt");
         HashMap<String, HashSet<String>> webviewExpectedInterfacesMap =
                 buildHashMap(webviewExpected);
 
@@ -164,8 +175,9 @@ public class WebViewLayoutTest {
     @MediumTest
     public void testWebViewExcludedInterfaces() throws Exception {
         // Begin by running the web test.
-        loadUrlWebViewAsync("file://" + PATH_BLINK_PREFIX
-                + "webexposed/global-interface-listing.html", mTestActivity);
+        loadUrlWebViewAsync(
+                "file://" + PATH_BLINK_PREFIX + "webexposed/global-interface-listing.html",
+                mTestActivity);
 
         // Process all expectations files.
         String webviewExcluded =
@@ -189,45 +201,63 @@ public class WebViewLayoutTest {
 
         // Check that each excluded interface and its properties are
         // not present in webviewInterfacesMap.
-        webviewExcludedInterfacesMap.forEach((interfaceInExcluded, excludedInterfaceProperties) -> {
-            if (excludedInterfaceProperties.isEmpty()
-                    && webviewInterfacesMap.containsKey(interfaceInExcluded)) {
-                // An interface with an empty property list in not-webview-exposed.txt
-                // should not be in the global-interface-listing.html results for WebView.
-                interfacesNotExposedInWebview.add(interfaceInExcluded);
-            }
+        webviewExcludedInterfacesMap.forEach(
+                (interfaceInExcluded, excludedInterfaceProperties) -> {
+                    if (excludedInterfaceProperties.isEmpty()
+                            && webviewInterfacesMap.containsKey(interfaceInExcluded)) {
+                        // An interface with an empty property list in not-webview-exposed.txt
+                        // should not be in the global-interface-listing.html results for WebView.
+                        interfacesNotExposedInWebview.add(interfaceInExcluded);
+                    }
 
-            // global-interface-listing.html and not-webview-exposed.txt are mutually exclusive.
-            excludedInterfaceProperties.forEach((excludedProperty) -> {
-                if (webviewInterfacesMap.getOrDefault(interfaceInExcluded, new HashSet<>())
-                                .contains(excludedProperty)) {
-                    propertiesNotExposedInWebview.putIfAbsent(interfaceInExcluded, new HashSet<>());
-                    propertiesNotExposedInWebview.get(interfaceInExcluded).add(excludedProperty);
-                }
-            });
-        });
+                    // global-interface-listing.html and not-webview-exposed.txt are mutually
+                    // exclusive.
+                    excludedInterfaceProperties.forEach(
+                            (excludedProperty) -> {
+                                if (webviewInterfacesMap
+                                        .getOrDefault(interfaceInExcluded, new HashSet<>())
+                                        .contains(excludedProperty)) {
+                                    propertiesNotExposedInWebview.putIfAbsent(
+                                            interfaceInExcluded, new HashSet<>());
+                                    propertiesNotExposedInWebview
+                                            .get(interfaceInExcluded)
+                                            .add(excludedProperty);
+                                }
+                            });
+                });
 
         StringBuilder errorMessage = new StringBuilder();
         if (!interfacesNotExposedInWebview.isEmpty()) {
             errorMessage.append(
-                    String.format("\nThe Blink interfaces below are exposed in WebView. "
+                    String.format(
+                            "\nThe Blink interfaces below are exposed in WebView. "
                                     + "Remove them from\n%s\n to resolve this error.\n",
                             NOT_WEBVIEW_EXPOSED_CHROMIUM_PATH));
-            interfacesNotExposedInWebview.forEach(illegallyExposedInterface -> {
-                errorMessage.append("\t- " + illegallyExposedInterface + "\n");
-            });
+            interfacesNotExposedInWebview.forEach(
+                    illegallyExposedInterface -> {
+                        errorMessage.append("\t- " + illegallyExposedInterface + "\n");
+                    });
         }
-        propertiesNotExposedInWebview.forEach((webviewInterface, propertiesNotExposed) -> {
-            errorMessage.append(String.format("\n%d of the properties of the Blink interface "
-                            + "\"%s\"\nare exposed in WebView. Remove them from the "
-                            + "list of properties excluded for the \n\"%s\" interface in \n%s\n "
-                            + "to resolve this error\n",
-                    propertiesNotExposed.size(), webviewInterface, webviewInterface,
-                    NOT_WEBVIEW_EXPOSED_CHROMIUM_PATH));
-            propertiesNotExposed.forEach(propertyNotExposed -> {
-                errorMessage.append("\t- " + propertyNotExposed + "\n");
-            });
-        });
+        propertiesNotExposedInWebview.forEach(
+                (webviewInterface, propertiesNotExposed) -> {
+                    errorMessage.append(
+                            String.format(
+                                    "\n"
+                                            + "%d of the properties of the Blink interface \"%s\"\n"
+                                            + "are exposed in WebView. Remove them from the list of"
+                                            + " properties excluded for the \n"
+                                            + "\"%s\" interface in \n"
+                                            + "%s\n"
+                                            + " to resolve this error\n",
+                                    propertiesNotExposed.size(),
+                                    webviewInterface,
+                                    webviewInterface,
+                                    NOT_WEBVIEW_EXPOSED_CHROMIUM_PATH));
+                    propertiesNotExposed.forEach(
+                            propertyNotExposed -> {
+                                errorMessage.append("\t- " + propertyNotExposed + "\n");
+                            });
+                });
         if (errorMessage.length() > 0) {
             Assert.fail(errorMessage.toString());
         }
@@ -237,8 +267,9 @@ public class WebViewLayoutTest {
     @MediumTest
     public void testWebViewIncludedStableInterfaces() throws Exception {
         // Begin by running the web test.
-        loadUrlWebViewAsync("file://" + PATH_BLINK_PREFIX
-                + "webexposed/global-interface-listing.html", mTestActivity);
+        loadUrlWebViewAsync(
+                "file://" + PATH_BLINK_PREFIX + "webexposed/global-interface-listing.html",
+                mTestActivity);
 
         // Process all expectations files.
         String blinkStableExpected = readFileWithFallbacks(BLINK_STABLE_FALLBACKS);
@@ -300,29 +331,43 @@ public class WebViewLayoutTest {
 
         StringBuilder errorMessage = new StringBuilder();
         if (!missingInterfaces.isEmpty()) {
-            errorMessage.append(String.format("\nWebView does not expose the "
-                            + "Blink interfaces below. Add them to\n%s\nto resolve this error.\n",
-                    NOT_WEBVIEW_EXPOSED_CHROMIUM_PATH));
+            errorMessage.append(
+                    String.format(
+                            "\n"
+                                    + "WebView does not expose the Blink interfaces below. Add them"
+                                    + " to\n"
+                                    + "%s\n"
+                                    + "to resolve this error.\n",
+                            NOT_WEBVIEW_EXPOSED_CHROMIUM_PATH));
             missingInterfaces.forEach(
                     (missingInterface) -> errorMessage.append("\t- " + missingInterface + "\n"));
         }
-        missingInterfaceProperties.forEach((blinkInterface, missingProperties) -> {
-            errorMessage.append(String.format(
-                    "\nAt least one of the properties of the Blink interface \"%s\" "
-                            + "is not exposed in WebView.\nAdd them to the list of properties "
-                            + "not exposed for the \"%s\" interface in\n%s\nto resolve "
-                            + "this error\n",
-                    blinkInterface, blinkInterface, NOT_WEBVIEW_EXPOSED_CHROMIUM_PATH));
-            missingProperties.forEach(
-                    (missingProperty) -> errorMessage.append("\t- " + missingProperty + "\n"));
-        });
+        missingInterfaceProperties.forEach(
+                (blinkInterface, missingProperties) -> {
+                    errorMessage.append(
+                            String.format(
+                                    "\n"
+                                        + "At least one of the properties of the Blink interface"
+                                        + " \"%s\" is not exposed in WebView.\n"
+                                        + "Add them to the list of properties not exposed for the"
+                                        + " \"%s\" interface in\n"
+                                        + "%s\n"
+                                        + "to resolve this error\n",
+                                    blinkInterface,
+                                    blinkInterface,
+                                    NOT_WEBVIEW_EXPOSED_CHROMIUM_PATH));
+                    missingProperties.forEach(
+                            (missingProperty) ->
+                                    errorMessage.append("\t- " + missingProperty + "\n"));
+                });
         Assert.assertTrue(errorMessage.toString(), errorMessage.length() == 0);
     }
 
     @Test
     @MediumTest
     public void testRequestMIDIAccess() throws Exception {
-        runWebViewLayoutTest("blink-apis/webmidi/requestmidiaccess.html",
+        runWebViewLayoutTest(
+                "blink-apis/webmidi/requestmidiaccess.html",
                 "blink-apis/webmidi/requestmidiaccess-expected.txt");
     }
 
@@ -330,7 +375,8 @@ public class WebViewLayoutTest {
     @MediumTest
     public void testRequestMIDIAccessWithSysex() throws Exception {
         mTestActivity.setGrantPermission(true);
-        runWebViewLayoutTest("blink-apis/webmidi/requestmidiaccess-with-sysex.html",
+        runWebViewLayoutTest(
+                "blink-apis/webmidi/requestmidiaccess-with-sysex.html",
                 "blink-apis/webmidi/requestmidiaccess-with-sysex-expected.txt");
         mTestActivity.setGrantPermission(false);
     }
@@ -338,7 +384,8 @@ public class WebViewLayoutTest {
     @Test
     @MediumTest
     public void testRequestMIDIAccessDenyPermission() throws Exception {
-        runWebViewLayoutTest("blink-apis/webmidi/requestmidiaccess-permission-denied.html",
+        runWebViewLayoutTest(
+                "blink-apis/webmidi/requestmidiaccess-permission-denied.html",
                 "blink-apis/webmidi/requestmidiaccess-permission-denied-expected.txt");
     }
 
@@ -347,7 +394,8 @@ public class WebViewLayoutTest {
     @Test
     @MediumTest
     public void testGeolocationCallbacks() throws Exception {
-        runWebViewLayoutTest("blink-apis/geolocation/geolocation-permission-callbacks.html",
+        runWebViewLayoutTest(
+                "blink-apis/geolocation/geolocation-permission-callbacks.html",
                 "blink-apis/geolocation/geolocation-permission-callbacks-expected.txt");
     }
 
@@ -356,7 +404,8 @@ public class WebViewLayoutTest {
     @CommandLineFlags.Add("use-fake-device-for-media-stream")
     @DisabledTest(message = "crbug.com/1477889")
     public void testMediaStreamApiDenyPermission() throws Exception {
-        runWebViewLayoutTest("blink-apis/webrtc/mediastream-permission-denied-callbacks.html",
+        runWebViewLayoutTest(
+                "blink-apis/webrtc/mediastream-permission-denied-callbacks.html",
                 "blink-apis/webrtc/mediastream-permission-denied-callbacks-expected.txt");
     }
 
@@ -366,7 +415,8 @@ public class WebViewLayoutTest {
     @DisabledTest(message = "crbug.com/1477889")
     public void testMediaStreamApi() throws Exception {
         mTestActivity.setGrantPermission(true);
-        runWebViewLayoutTest("blink-apis/webrtc/mediastream-callbacks.html",
+        runWebViewLayoutTest(
+                "blink-apis/webrtc/mediastream-callbacks.html",
                 "blink-apis/webrtc/mediastream-callbacks-expected.txt");
         mTestActivity.setGrantPermission(false);
     }
@@ -374,7 +424,8 @@ public class WebViewLayoutTest {
     @Test
     @MediumTest
     public void testBatteryApi() throws Exception {
-        runWebViewLayoutTest("blink-apis/battery-status/battery-callback.html",
+        runWebViewLayoutTest(
+                "blink-apis/battery-status/battery-callback.html",
                 "blink-apis/battery-status/battery-callback-expected.txt");
     }
 
@@ -426,19 +477,19 @@ public class WebViewLayoutTest {
         }
     }
 
-    private void loadUrlWebViewAsync(final String fileUrl,
-            final WebViewLayoutTestActivity activity) {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                activity.loadUrl(fileUrl);
-            }
-        });
+    private void loadUrlWebViewAsync(
+            final String fileUrl, final WebViewLayoutTestActivity activity) {
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                activity.loadUrl(fileUrl);
+                            }
+                        });
     }
 
-    /**
-     * Reads a file and returns it's contents as string.
-     */
+    /** Reads a file and returns it's contents as string. */
     private static String readFile(String fileName) throws IOException {
         FileInputStream inputStream = new FileInputStream(new File(fileName));
         try {
@@ -542,7 +593,9 @@ public class WebViewLayoutTest {
     }
 
     private boolean isInterfaceProperty(String s) {
-        return s.startsWith("getter") || s.startsWith("setter")
-                || s.startsWith("method") || s.startsWith("attribute");
+        return s.startsWith("getter")
+                || s.startsWith("setter")
+                || s.startsWith("method")
+                || s.startsWith("attribute");
     }
 }

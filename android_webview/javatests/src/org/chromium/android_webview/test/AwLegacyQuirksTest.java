@@ -24,13 +24,10 @@ import org.chromium.ui.display.DisplayAndroid;
 
 import java.util.Locale;
 
-/**
- * Tests for legacy quirks (compatibility with WebView Classic).
- */
+/** Tests for legacy quirks (compatibility with WebView Classic). */
 @RunWith(AwJUnit4ClassRunner.class)
 public class AwLegacyQuirksTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     // WebView layout width tests are flaky: http://crbug.com/746264
     @Test
@@ -45,19 +42,23 @@ public class AwLegacyQuirksTest {
         AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
         CallbackHelper onPageFinishedHelper = contentClient.getOnPageFinishedHelper();
 
-        final String pageTemplate = "<html><head>"
-                + "<meta name='viewport' content='width=device-width, target-densityDpi=%s' />"
-                + "</head><body onload='document.title=document.body.clientWidth'></body></html>";
+        final String pageTemplate =
+                "<html><head><meta name='viewport' content='width=device-width,"
+                        + " target-densityDpi=%s' /></head><body"
+                        + " onload='document.title=document.body.clientWidth'></body></html>";
         final String pageDeviceDpi = String.format((Locale) null, pageTemplate, "device-dpi");
         final String pageHighDpi = String.format((Locale) null, pageTemplate, "high-dpi");
         final String pageDpi100 = String.format((Locale) null, pageTemplate, "100");
 
         settings.setJavaScriptEnabled(true);
 
-        DisplayAndroid displayAndroid = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return DisplayAndroid.getNonMultiDisplay(
-                    InstrumentationRegistry.getInstrumentation().getTargetContext());
-        });
+        DisplayAndroid displayAndroid =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            return DisplayAndroid.getNonMultiDisplay(
+                                    InstrumentationRegistry.getInstrumentation()
+                                            .getTargetContext());
+                        });
         mActivityTestRule.loadDataSync(
                 awContents, onPageFinishedHelper, pageDeviceDpi, "text/html", false);
         int actualWidth = Integer.parseInt(mActivityTestRule.getTitleOnUiThread(awContents));
@@ -90,20 +91,23 @@ public class AwLegacyQuirksTest {
         AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
         CallbackHelper onPageFinishedHelper = contentClient.getOnPageFinishedHelper();
 
-        final String page = "<html><head>"
-                + "<meta name='viewport' content='width=device-width, initial-scale=0.5' />"
-                + "</head><body onload='document.title=document.body.clientWidth'></body></html>";
+        final String page =
+                "<html><head><meta name='viewport' content='width=device-width, initial-scale=0.5'"
+                        + " /></head><body"
+                        + " onload='document.title=document.body.clientWidth'></body></html>";
 
         settings.setJavaScriptEnabled(true);
         settings.setUseWideViewPort(true);
 
-        DisplayAndroid displayAndroid = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return DisplayAndroid.getNonMultiDisplay(
-                    InstrumentationRegistry.getInstrumentation().getTargetContext());
-        });
+        DisplayAndroid displayAndroid =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            return DisplayAndroid.getNonMultiDisplay(
+                                    InstrumentationRegistry.getInstrumentation()
+                                            .getTargetContext());
+                        });
         mActivityTestRule.loadDataSync(awContents, onPageFinishedHelper, page, "text/html", false);
-        float displayWidth =
-                displayAndroid.getDisplayWidth() / displayAndroid.getDipScale();
+        float displayWidth = displayAndroid.getDisplayWidth() / displayAndroid.getDipScale();
         int actualWidth = Integer.parseInt(mActivityTestRule.getTitleOnUiThread(awContents));
         Assert.assertEquals(displayWidth, actualWidth, 10f);
         Assert.assertEquals(1.0f, mActivityTestRule.getScaleOnUiThread(awContents), 0);
@@ -122,20 +126,22 @@ public class AwLegacyQuirksTest {
         AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
         CallbackHelper onPageFinishedHelper = contentClient.getOnPageFinishedHelper();
 
-        final String page = "<html><head>"
-                + "<meta name='viewport' content='width=0, height=0, initial-scale=0.0, "
-                + "    minimum-scale=0.0, maximum-scale=0.0' />"
-                + "</head><body onload='document.title=document.body.clientWidth'></body></html>";
+        final String page =
+                "<html><head><meta name='viewport' content='width=0, height=0, initial-scale=0.0,  "
+                        + "   minimum-scale=0.0, maximum-scale=0.0' /></head><body"
+                        + " onload='document.title=document.body.clientWidth'></body></html>";
 
         settings.setJavaScriptEnabled(true);
 
-        DisplayAndroid displayAndroid = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return DisplayAndroid.getNonMultiDisplay(
-                    InstrumentationRegistry.getInstrumentation().getTargetContext());
-        });
+        DisplayAndroid displayAndroid =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            return DisplayAndroid.getNonMultiDisplay(
+                                    InstrumentationRegistry.getInstrumentation()
+                                            .getTargetContext());
+                        });
         mActivityTestRule.loadDataSync(awContents, onPageFinishedHelper, page, "text/html", false);
-        float displayWidth =
-                displayAndroid.getDisplayWidth() / displayAndroid.getDipScale();
+        float displayWidth = displayAndroid.getDisplayWidth() / displayAndroid.getDipScale();
         int actualWidth = Integer.parseInt(mActivityTestRule.getTitleOnUiThread(awContents));
         Assert.assertEquals(displayWidth, actualWidth, 10f);
         Assert.assertEquals(1.0f, mActivityTestRule.getScaleOnUiThread(awContents), 0);
@@ -163,46 +169,71 @@ public class AwLegacyQuirksTest {
         mActivityTestRule.loadUrlSync(
                 awContents, onPageFinishedHelper, ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
-        DisplayAndroid displayAndroid = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return DisplayAndroid.getNonMultiDisplay(
-                    InstrumentationRegistry.getInstrumentation().getTargetContext());
-        });
+        DisplayAndroid displayAndroid =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            return DisplayAndroid.getNonMultiDisplay(
+                                    InstrumentationRegistry.getInstrumentation()
+                                            .getTargetContext());
+                        });
         float dipScale = displayAndroid.getDipScale();
         float physicalDisplayWidth = displayAndroid.getDisplayWidth();
         float physicalDisplayHeight = displayAndroid.getDisplayHeight();
 
-        float screenWidth = Integer.parseInt(mActivityTestRule.executeJavaScriptAndWaitForResult(
-                awContents, contentClient, "screen.width"));
+        float screenWidth =
+                Integer.parseInt(
+                        mActivityTestRule.executeJavaScriptAndWaitForResult(
+                                awContents, contentClient, "screen.width"));
         Assert.assertEquals(physicalDisplayWidth, screenWidth, 10f);
         float screenAvailWidth =
-                Integer.parseInt(mActivityTestRule.executeJavaScriptAndWaitForResult(
-                        awContents, contentClient, "screen.availWidth"));
+                Integer.parseInt(
+                        mActivityTestRule.executeJavaScriptAndWaitForResult(
+                                awContents, contentClient, "screen.availWidth"));
         Assert.assertEquals(physicalDisplayWidth, screenAvailWidth, 10f);
-        float outerWidth = Integer.parseInt(mActivityTestRule.executeJavaScriptAndWaitForResult(
-                awContents, contentClient, "outerWidth"));
-        float innerWidth = Integer.parseInt(mActivityTestRule.executeJavaScriptAndWaitForResult(
-                awContents, contentClient, "innerWidth"));
+        float outerWidth =
+                Integer.parseInt(
+                        mActivityTestRule.executeJavaScriptAndWaitForResult(
+                                awContents, contentClient, "outerWidth"));
+        float innerWidth =
+                Integer.parseInt(
+                        mActivityTestRule.executeJavaScriptAndWaitForResult(
+                                awContents, contentClient, "innerWidth"));
         Assert.assertEquals(innerWidth * dipScale, outerWidth, 10f);
-        String deviceWidthEqualsScreenWidth = mActivityTestRule.executeJavaScriptAndWaitForResult(
-                awContents, contentClient,
-                "matchMedia(\"screen and (device-width:" + (int) screenWidth + "px)\").matches");
+        String deviceWidthEqualsScreenWidth =
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        awContents,
+                        contentClient,
+                        "matchMedia(\"screen and (device-width:"
+                                + (int) screenWidth
+                                + "px)\").matches");
         Assert.assertEquals("true", deviceWidthEqualsScreenWidth);
 
-        float screenHeight = Integer.parseInt(mActivityTestRule.executeJavaScriptAndWaitForResult(
-                awContents, contentClient, "screen.height"));
+        float screenHeight =
+                Integer.parseInt(
+                        mActivityTestRule.executeJavaScriptAndWaitForResult(
+                                awContents, contentClient, "screen.height"));
         Assert.assertEquals(physicalDisplayHeight, screenHeight, 10f);
         float screenAvailHeight =
-                Integer.parseInt(mActivityTestRule.executeJavaScriptAndWaitForResult(
-                        awContents, contentClient, "screen.availHeight"));
+                Integer.parseInt(
+                        mActivityTestRule.executeJavaScriptAndWaitForResult(
+                                awContents, contentClient, "screen.availHeight"));
         Assert.assertEquals(physicalDisplayHeight, screenAvailHeight, 10f);
-        float outerHeight = Integer.parseInt(mActivityTestRule.executeJavaScriptAndWaitForResult(
-                awContents, contentClient, "outerHeight"));
-        float innerHeight = Integer.parseInt(mActivityTestRule.executeJavaScriptAndWaitForResult(
-                awContents, contentClient, "innerHeight"));
+        float outerHeight =
+                Integer.parseInt(
+                        mActivityTestRule.executeJavaScriptAndWaitForResult(
+                                awContents, contentClient, "outerHeight"));
+        float innerHeight =
+                Integer.parseInt(
+                        mActivityTestRule.executeJavaScriptAndWaitForResult(
+                                awContents, contentClient, "innerHeight"));
         Assert.assertEquals(innerHeight * dipScale, outerHeight, 10f);
-        String deviceHeightEqualsScreenHeight = mActivityTestRule.executeJavaScriptAndWaitForResult(
-                awContents, contentClient,
-                "matchMedia(\"screen and (device-height:" + (int) screenHeight + "px)\").matches");
+        String deviceHeightEqualsScreenHeight =
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        awContents,
+                        contentClient,
+                        "matchMedia(\"screen and (device-height:"
+                                + (int) screenHeight
+                                + "px)\").matches");
         Assert.assertEquals("true", deviceHeightEqualsScreenHeight);
     }
 
@@ -219,12 +250,15 @@ public class AwLegacyQuirksTest {
 
         final int pageWidth = 3000;
         final float pageScale = 1.0f;
-        final String page = String.format((Locale) null, "<html><head>"
-                + "<meta name='viewport' content='width=%d' />"
-                + "<meta name='viewport' content='initial-scale=%.1f' />"
-                + "<meta name='viewport' content='user-scalable=0' />"
-                + "</head><body onload='document.title=document.body.clientWidth'></body></html>",
-                pageWidth, pageScale);
+        final String page =
+                String.format(
+                        (Locale) null,
+                        "<html><head><meta name='viewport' content='width=%d' /><meta"
+                            + " name='viewport' content='initial-scale=%.1f' /><meta"
+                            + " name='viewport' content='user-scalable=0' /></head><body"
+                            + " onload='document.title=document.body.clientWidth'></body></html>",
+                        pageWidth,
+                        pageScale);
 
         settings.setJavaScriptEnabled(true);
         settings.setUseWideViewPort(true);
@@ -235,8 +269,9 @@ public class AwLegacyQuirksTest {
         // ContentView must update itself according to the viewport setup.
         // As we specify 'user-scalable=0', the page must become non-zoomable.
         AwActivityTestRule.pollInstrumentationThread(
-                () -> !mActivityTestRule.canZoomInOnUiThread(awContents)
-                        && !mActivityTestRule.canZoomOutOnUiThread(awContents));
+                () ->
+                        !mActivityTestRule.canZoomInOnUiThread(awContents)
+                                && !mActivityTestRule.canZoomOutOnUiThread(awContents));
         int width = Integer.parseInt(mActivityTestRule.getTitleOnUiThread(awContents));
         Assert.assertEquals(pageWidth, width);
         Assert.assertEquals(pageScale, mActivityTestRule.getScaleOnUiThread(awContents), 0);
@@ -254,11 +289,13 @@ public class AwLegacyQuirksTest {
         CallbackHelper onPageFinishedHelper = contentClient.getOnPageFinishedHelper();
 
         final int pageWidth = 3000;
-        final String page = String.format((Locale) null, "<html><head>"
-                + "<meta name='viewport' content='width=device-width' />"
-                + "<meta name='viewport' content='width=%d' />"
-                + "</head><body onload='document.title=document.body.clientWidth'></body></html>",
-                pageWidth);
+        final String page =
+                String.format(
+                        (Locale) null,
+                        "<html><head><meta name='viewport' content='width=device-width' /><meta"
+                            + " name='viewport' content='width=%d' /></head><body"
+                            + " onload='document.title=document.body.clientWidth'></body></html>",
+                        pageWidth);
 
         settings.setJavaScriptEnabled(true);
         settings.setUseWideViewPort(true);
@@ -279,11 +316,12 @@ public class AwLegacyQuirksTest {
         AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
         CallbackHelper onPageFinishedHelper = contentClient.getOnPageFinishedHelper();
 
-        final String pageTemplate = "<html><head>"
-                + "<meta name='viewport' content='initial-scale=%d' />"
-                + "</head><body>"
-                + "<div style='width:10000px;height:200px'>A big div</div>"
-                + "</body></html>";
+        final String pageTemplate =
+                "<html><head>"
+                        + "<meta name='viewport' content='initial-scale=%d' />"
+                        + "</head><body>"
+                        + "<div style='width:10000px;height:200px'>A big div</div>"
+                        + "</body></html>";
         final String pageScale4 = String.format((Locale) null, pageTemplate, 4);
         final String page = String.format((Locale) null, pageTemplate, 1);
 
@@ -314,17 +352,19 @@ public class AwLegacyQuirksTest {
         final AwContents awContents = testContainerView.getAwContents();
         CallbackHelper onPageFinishedHelper = contentClient.getOnPageFinishedHelper();
 
-        final String pageScale4 = "<html><head>"
-                + "<meta name='viewport' content='initial-scale=4' />"
-                + "</head><body>"
-                + "<div style='width:10000px;height:200px'>A big div</div>"
-                + "</body></html>";
-        final String page = "<html><head>"
-                + "<meta name='viewport' "
-                + "content='width=device-width,initial-scale=2,user-scalable=no' />"
-                + "</head><body>"
-                + "<div style='width:10000px;height:200px'>A big div</div>"
-                + "</body></html>";
+        final String pageScale4 =
+                "<html><head>"
+                        + "<meta name='viewport' content='initial-scale=4' />"
+                        + "</head><body>"
+                        + "<div style='width:10000px;height:200px'>A big div</div>"
+                        + "</body></html>";
+        final String page =
+                "<html><head>"
+                        + "<meta name='viewport' "
+                        + "content='width=device-width,initial-scale=2,user-scalable=no' />"
+                        + "</head><body>"
+                        + "<div style='width:10000px;height:200px'>A big div</div>"
+                        + "</body></html>";
 
         // Page scale updates are asynchronous. There is an issue that we can't
         // reliably check, whether the scale as NOT changed (i.e. remains to be 1.0).
@@ -354,18 +394,17 @@ public class AwLegacyQuirksTest {
         AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
         CallbackHelper onPageFinishedHelper = contentClient.getOnPageFinishedHelper();
         final String expectedBackgroundSize = "cover";
-        final String page = "<html><head>"
-                + "<script>"
-                + "function getBackgroundSize() {"
-                + "  var e = document.getElementById('test'); "
-                + "  e.style.backgroundSize = '" + expectedBackgroundSize + "';"
-                + "  e.style.background = 'center red url(dummy://test.png) no-repeat border-box'; "
-                + "  return e.style.backgroundSize; "
-                + "}"
-                + "</script></head>"
-                + "<body onload='document.title=getBackgroundSize()'>"
-                + "  <div id='test'> </div>"
-                + "</body></html>";
+        final String page =
+                "<html><head>"
+                        + "<script>"
+                        + "function getBackgroundSize() {"
+                        + "  var e = document.getElementById('test'); "
+                        + "  e.style.backgroundSize = '"
+                        + expectedBackgroundSize
+                        + "';  e.style.background = 'center red url(dummy://test.png) no-repeat"
+                        + " border-box';   return e.style.backgroundSize; }</script></head><body"
+                        + " onload='document.title=getBackgroundSize()'>  <div id='test'> </div>"
+                        + "</body></html>";
         settings.setJavaScriptEnabled(true);
         mActivityTestRule.loadDataSync(awContents, onPageFinishedHelper, page, "text/html", false);
         String actualBackgroundSize = mActivityTestRule.getTitleOnUiThread(awContents);

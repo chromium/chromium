@@ -39,9 +39,7 @@ import org.chromium.base.Log;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 
-/**
- * JUnit tests for AwDisplayCutoutController.
- */
+/** JUnit tests for AwDisplayCutoutController. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class AwDisplayCutoutControllerTest {
@@ -51,21 +49,14 @@ public class AwDisplayCutoutControllerTest {
     private InOrder mInOrder;
     private Context mContext;
 
-    @Mock
-    private AwDisplayCutoutController.Delegate mDelegate;
-    @Mock
-    private WindowInsets mWindowInsets;
-    @Mock
-    private DisplayCutout mDisplayCutout;
-    @Mock
-    private View mView;
-    @Mock
-    private View mAnotherView;
+    @Mock private AwDisplayCutoutController.Delegate mDelegate;
+    @Mock private WindowInsets mWindowInsets;
+    @Mock private DisplayCutout mDisplayCutout;
+    @Mock private View mView;
+    @Mock private View mAnotherView;
 
-    @Mock
-    private ViewGroup mParentView;
-    @Mock
-    private ViewGroup mRootView;
+    @Mock private ViewGroup mParentView;
+    @Mock private ViewGroup mRootView;
 
     private View.OnApplyWindowInsetsListener mListener;
     private int[] mLocationOnScreen = {0, 0};
@@ -95,22 +86,26 @@ public class AwDisplayCutoutControllerTest {
         mDipScale = 2.0f;
 
         // Set up the view.
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                mListener = (View.OnApplyWindowInsetsListener) (invocation.getArguments()[0]);
-                return null;
-            }
-        })
+        doAnswer(
+                        new Answer<Void>() {
+                            @Override
+                            public Void answer(InvocationOnMock invocation) throws Throwable {
+                                mListener =
+                                        (View.OnApplyWindowInsetsListener)
+                                                (invocation.getArguments()[0]);
+                                return null;
+                            }
+                        })
                 .when(mView)
                 .setOnApplyWindowInsetsListener(any(View.OnApplyWindowInsetsListener.class));
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                mListener.onApplyWindowInsets(mView, mWindowInsets);
-                return null;
-            }
-        })
+        doAnswer(
+                        new Answer<Void>() {
+                            @Override
+                            public Void answer(InvocationOnMock invocation) throws Throwable {
+                                mListener.onApplyWindowInsets(mView, mWindowInsets);
+                                return null;
+                            }
+                        })
                 .when(mView)
                 .requestApplyInsets();
 
@@ -121,8 +116,8 @@ public class AwDisplayCutoutControllerTest {
 
         mController = new AwDisplayCutoutController(mDelegate, mView);
 
-        mInOrder.verify(mView).setOnApplyWindowInsetsListener(
-                any(View.OnApplyWindowInsetsListener.class));
+        mInOrder.verify(mView)
+                .setOnApplyWindowInsetsListener(any(View.OnApplyWindowInsetsListener.class));
 
         mInOrder.verifyNoMoreInteractions();
     }

@@ -29,36 +29,33 @@ import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.util.TestWebServer;
 
-/**
- * Test AwPermissionManager.
- */
+/** Test AwPermissionManager. */
 @RunWith(AwJUnit4ClassRunner.class)
 public class AwPermissionManagerTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
-    private static final String REQUEST_DUPLICATE = "<html> <script>"
-            + "navigator.requestMIDIAccess({sysex: true}).then(function() {"
-            + "});"
-            + "navigator.requestMIDIAccess({sysex: true}).then(function() {"
-            + "  window.document.title = 'second-granted';"
-            + "});"
-            + "</script><body>"
-            + "</body></html>";
+    private static final String REQUEST_DUPLICATE =
+            "<html> <script>"
+                    + "navigator.requestMIDIAccess({sysex: true}).then(function() {"
+                    + "});"
+                    + "navigator.requestMIDIAccess({sysex: true}).then(function() {"
+                    + "  window.document.title = 'second-granted';"
+                    + "});"
+                    + "</script><body>"
+                    + "</body></html>";
 
-    private static final String EMPTY_PAGE = "<html><script>"
-            + "</script><body>"
-            + "</body></html>";
+    private static final String EMPTY_PAGE =
+            "<html><script>" + "</script><body>" + "</body></html>";
 
     private static final String GUM_JS =
             "navigator.mediaDevices.getUserMedia({video: true, audio: true})"
-            + ".then((_) => domAutomationController.send('success'))"
-            + ".catch((error) => domAutomationController.send('failure'));";
+                    + ".then((_) => domAutomationController.send('success'))"
+                    + ".catch((error) => domAutomationController.send('failure'));";
 
     private static final String ENUMERATE_DEVICES_JS =
             "navigator.mediaDevices.enumerateDevices().then("
-            + "(devices) => domAutomationController.send(devices.map("
-            + "  (d) => `${d['label']}`)));";
+                    + "(devices) => domAutomationController.send(devices.map("
+                    + "  (d) => `${d['label']}`)));";
 
     private final DomAutomationController mDomAutomationController = new DomAutomationController();
     private TestWebServer mTestWebServer;
@@ -80,25 +77,30 @@ public class AwPermissionManagerTest {
     @Feature({"AndroidWebView"})
     @SmallTest
     public void testRequestMultiple() {
-        mPage = mTestWebServer.setResponse("/permissions", REQUEST_DUPLICATE,
-                CommonResources.getTextHtmlHeaders(true));
+        mPage =
+                mTestWebServer.setResponse(
+                        "/permissions",
+                        REQUEST_DUPLICATE,
+                        CommonResources.getTextHtmlHeaders(true));
 
-        mContentsClient = new TestAwContentsClient() {
-            private boolean mCalled;
+        mContentsClient =
+                new TestAwContentsClient() {
+                    private boolean mCalled;
 
-            @Override
-            public void onPermissionRequest(final AwPermissionRequest awPermissionRequest) {
-                if (mCalled) {
-                    Assert.fail("Only one request was expected");
-                    return;
-                }
-                mCalled = true;
+                    @Override
+                    public void onPermissionRequest(final AwPermissionRequest awPermissionRequest) {
+                        if (mCalled) {
+                            Assert.fail("Only one request was expected");
+                            return;
+                        }
+                        mCalled = true;
 
-                // Emulate a delayed response to the request by running four seconds in the future.
-                Handler handler = new Handler(Looper.myLooper());
-                handler.postDelayed(awPermissionRequest::grant, 4000);
-            }
-        };
+                        // Emulate a delayed response to the request by running four seconds in the
+                        // future.
+                        Handler handler = new Handler(Looper.myLooper());
+                        handler.postDelayed(awPermissionRequest::grant, 4000);
+                    }
+                };
 
         final AwTestContainerView testContainerView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
@@ -118,8 +120,9 @@ public class AwPermissionManagerTest {
         mActivityTestRule.loadUrlSync(awContents, mContentsClient.getOnPageFinishedHelper(), mPage);
         JavaScriptUtils.runJavascriptWithUserGestureAndAsyncResult(
                 awContents.getWebContents(), GUM_JS);
-        String devices = JavaScriptUtils.runJavascriptWithUserGestureAndAsyncResult(
-                awContents.getWebContents(), ENUMERATE_DEVICES_JS);
+        String devices =
+                JavaScriptUtils.runJavascriptWithUserGestureAndAsyncResult(
+                        awContents.getWebContents(), ENUMERATE_DEVICES_JS);
 
         assertDeviceLabels(devices, false);
     }
@@ -132,8 +135,9 @@ public class AwPermissionManagerTest {
         AwContents awContents = setUpEnumerateDevicesTest(null);
 
         TestWebServer secondServer = TestWebServer.startAdditional();
-        String secondPage = secondServer.setResponse(
-                "/new-page", EMPTY_PAGE, CommonResources.getTextHtmlHeaders(true));
+        String secondPage =
+                secondServer.setResponse(
+                        "/new-page", EMPTY_PAGE, CommonResources.getTextHtmlHeaders(true));
 
         mActivityTestRule.loadUrlSync(awContents, mContentsClient.getOnPageFinishedHelper(), mPage);
         JavaScriptUtils.runJavascriptWithUserGestureAndAsyncResult(
@@ -144,8 +148,9 @@ public class AwPermissionManagerTest {
         // Navigate to a page with a different origin.
         mActivityTestRule.loadUrlSync(
                 awContents, mContentsClient.getOnPageFinishedHelper(), secondPage);
-        String devices = JavaScriptUtils.runJavascriptWithUserGestureAndAsyncResult(
-                awContents.getWebContents(), ENUMERATE_DEVICES_JS);
+        String devices =
+                JavaScriptUtils.runJavascriptWithUserGestureAndAsyncResult(
+                        awContents.getWebContents(), ENUMERATE_DEVICES_JS);
 
         assertDeviceLabels(devices, true);
     }
@@ -158,8 +163,9 @@ public class AwPermissionManagerTest {
         AwContents awContents = setUpEnumerateDevicesTest(null);
 
         mActivityTestRule.loadUrlSync(awContents, mContentsClient.getOnPageFinishedHelper(), mPage);
-        String devices = JavaScriptUtils.runJavascriptWithUserGestureAndAsyncResult(
-                awContents.getWebContents(), ENUMERATE_DEVICES_JS);
+        String devices =
+                JavaScriptUtils.runJavascriptWithUserGestureAndAsyncResult(
+                        awContents.getWebContents(), ENUMERATE_DEVICES_JS);
 
         assertDeviceLabels(devices, true);
     }
@@ -169,19 +175,22 @@ public class AwPermissionManagerTest {
     @SmallTest
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
     public void testRevokeEnumerateDevicesPermission() throws Exception {
-        AwContents awContents = setUpEnumerateDevicesTest(new TestAwContentsClient() {
-            private boolean mHasBeenGranted;
+        AwContents awContents =
+                setUpEnumerateDevicesTest(
+                        new TestAwContentsClient() {
+                            private boolean mHasBeenGranted;
 
-            @Override
-            public void onPermissionRequest(AwPermissionRequest awPermissionRequest) {
-                if (mHasBeenGranted) {
-                    awPermissionRequest.deny();
-                    return;
-                }
-                mHasBeenGranted = true;
-                awPermissionRequest.grant();
-            }
-        });
+                            @Override
+                            public void onPermissionRequest(
+                                    AwPermissionRequest awPermissionRequest) {
+                                if (mHasBeenGranted) {
+                                    awPermissionRequest.deny();
+                                    return;
+                                }
+                                mHasBeenGranted = true;
+                                awPermissionRequest.grant();
+                            }
+                        });
 
         mActivityTestRule.loadUrlSync(awContents, mContentsClient.getOnPageFinishedHelper(), mPage);
         JavaScriptUtils.runJavascriptWithUserGestureAndAsyncResult(
@@ -190,8 +199,9 @@ public class AwPermissionManagerTest {
                 awContents.getWebContents(), ENUMERATE_DEVICES_JS);
         JavaScriptUtils.runJavascriptWithUserGestureAndAsyncResult(
                 awContents.getWebContents(), GUM_JS);
-        String devices = JavaScriptUtils.runJavascriptWithUserGestureAndAsyncResult(
-                awContents.getWebContents(), ENUMERATE_DEVICES_JS);
+        String devices =
+                JavaScriptUtils.runJavascriptWithUserGestureAndAsyncResult(
+                        awContents.getWebContents(), ENUMERATE_DEVICES_JS);
         assertDeviceLabels(devices, true);
     }
 
@@ -202,15 +212,20 @@ public class AwPermissionManagerTest {
 
     private AwContents setUpEnumerateDevicesTest(@Nullable TestAwContentsClient contentsClient)
             throws Exception {
-        mPage = mTestWebServer.setResponse(
-                "/media", EMPTY_PAGE, CommonResources.getTextHtmlHeaders(true));
+        mPage =
+                mTestWebServer.setResponse(
+                        "/media", EMPTY_PAGE, CommonResources.getTextHtmlHeaders(true));
 
-        mContentsClient = contentsClient != null ? contentsClient : new TestAwContentsClient() {
-            @Override
-            public void onPermissionRequest(final AwPermissionRequest awPermissionRequest) {
-                awPermissionRequest.grant();
-            }
-        };
+        mContentsClient =
+                contentsClient != null
+                        ? contentsClient
+                        : new TestAwContentsClient() {
+                            @Override
+                            public void onPermissionRequest(
+                                    final AwPermissionRequest awPermissionRequest) {
+                                awPermissionRequest.grant();
+                            }
+                        };
 
         final AwTestContainerView testContainerView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
@@ -237,4 +252,3 @@ public class AwPermissionManagerTest {
         }
     }
 }
-

@@ -19,13 +19,10 @@ import org.chromium.url.GURL;
 import java.io.IOException;
 import java.io.InputStream;
 
-/**
- * Test AndroidProtocolHandler.
- */
+/** Test AndroidProtocolHandler. */
 @RunWith(AwJUnit4ClassRunner.class)
 public class AndroidProtocolHandlerTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     @Test
     @SmallTest

@@ -39,8 +39,7 @@ import java.util.Arrays;
 /** Tests for the policy based URL filtering. */
 @RunWith(AwJUnit4ClassRunner.class)
 public class PolicyUrlFilteringTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
@@ -56,13 +55,21 @@ public class PolicyUrlFilteringTest {
     @Before
     public void setUp() throws Exception {
         mContentsClient = new TestAwContentsClient();
-        mAwContents = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient)
-                              .getAwContents();
+        mAwContents =
+                mActivityTestRule
+                        .createAwTestContainerViewOnMainSync(mContentsClient)
+                        .getAwContents();
         mWebServer = TestWebServer.start();
-        mFooTestUrl = mWebServer.setResponse(sFooTestFilePath, "<html><body>foo</body></html>",
-                new ArrayList<Pair<String, String>>());
-        mBarTestUrl = mWebServer.setResponse("/bar.html", "<html><body>bar</body></html>",
-                new ArrayList<Pair<String, String>>());
+        mFooTestUrl =
+                mWebServer.setResponse(
+                        sFooTestFilePath,
+                        "<html><body>foo</body></html>",
+                        new ArrayList<Pair<String, String>>());
+        mBarTestUrl =
+                mWebServer.setResponse(
+                        "/bar.html",
+                        "<html><body>bar</body></html>",
+                        new ArrayList<Pair<String, String>>());
 
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
@@ -91,7 +98,8 @@ public class PolicyUrlFilteringTest {
         setFilteringPolicy(testProvider, new String[] {"localhost"}, new String[] {});
 
         navigateAndCheckOutcome(mFooTestUrl, 0 /* error count before */, 1 /* error count after */);
-        Assert.assertEquals(WebviewErrorCode.ERROR_CONNECT,
+        Assert.assertEquals(
+                WebviewErrorCode.ERROR_CONNECT,
                 mContentsClient.getOnReceivedErrorHelper().getError().errorCode);
     }
 
@@ -100,8 +108,12 @@ public class PolicyUrlFilteringTest {
     @MediumTest
     @Feature({"AndroidWebView", "Policy"})
     @Policies.Add({
-            @Policies.Item(key = sBlocklistPolicyName, stringArray = {"*"}),
-            @Policies.Item(key = sAllowlistPolicyName, stringArray = {sFooAllowlistFilter})
+        @Policies.Item(
+                key = sBlocklistPolicyName,
+                stringArray = {"*"}),
+        @Policies.Item(
+                key = sAllowlistPolicyName,
+                stringArray = {sFooAllowlistFilter})
     })
     @OnlyRunIn(SINGLE_PROCESS) // http://crbug.com/660517
     public void testAllowlistedUrl() throws Throwable {
@@ -109,7 +121,8 @@ public class PolicyUrlFilteringTest {
 
         // Make sure it goes through the blocklist
         navigateAndCheckOutcome(mBarTestUrl, 0 /* error count before */, 1 /* error count after */);
-        Assert.assertEquals(WebviewErrorCode.ERROR_CONNECT,
+        Assert.assertEquals(
+                WebviewErrorCode.ERROR_CONNECT,
                 mContentsClient.getOnReceivedErrorHelper().getError().errorCode);
     }
 
@@ -117,8 +130,9 @@ public class PolicyUrlFilteringTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Policy"})
-    @Policies.
-    Add({ @Policies.Item(key = sBlocklistPolicyName, string = "shouldBeAJsonArrayNotAString") })
+    @Policies.Add({
+        @Policies.Item(key = sBlocklistPolicyName, string = "shouldBeAJsonArrayNotAString")
+    })
     public void testBadPolicyValue() throws Exception {
         navigateAndCheckOutcome(mFooTestUrl, 0 /* error count before */, 0 /* error count after */);
         // At the moment this test is written, a failure is a crash, a success is no crash.
@@ -150,10 +164,14 @@ public class PolicyUrlFilteringTest {
         Assert.assertEquals(expectedErrorCount, onReceivedErrorHelper.getCallCount());
     }
 
-    private void setFilteringPolicy(final AwPolicyProvider testProvider,
-            final String[] blocklistUrls, final String[] allowlistUrls) {
-        final PolicyData[] policies = {new PolicyData.StrArray(sBlocklistPolicyName, blocklistUrls),
-                new PolicyData.StrArray(sAllowlistPolicyName, allowlistUrls)};
+    private void setFilteringPolicy(
+            final AwPolicyProvider testProvider,
+            final String[] blocklistUrls,
+            final String[] allowlistUrls) {
+        final PolicyData[] policies = {
+            new PolicyData.StrArray(sBlocklistPolicyName, blocklistUrls),
+            new PolicyData.StrArray(sAllowlistPolicyName, allowlistUrls)
+        };
 
         AbstractAppRestrictionsProvider.setTestRestrictions(
                 PolicyData.asBundle(Arrays.asList(policies)));

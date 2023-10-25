@@ -24,13 +24,10 @@ import org.chromium.net.test.util.TestWebServer;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 
-/**
- * AwProxyController tests.
- */
+/** AwProxyController tests. */
 @RunWith(AwJUnit4ClassRunner.class)
 public class AwProxyControllerTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private static final String MATCH_ALL_SCHEMES = "*";
     private static final String DIRECT = "direct://";
@@ -49,15 +46,20 @@ public class AwProxyControllerTest {
         mAwProxyController = new AwProxyController();
         mContentServer = TestWebServer.start();
         mProxyServer = TestWebServer.startAdditional();
-        mContentUrl = mContentServer.setResponse(
-                "/", "<html><head><title>" + CONTENT + "</title></head>Page 1</html>", null);
-        mProxyUrl = mProxyServer
-                            .setResponse(mContentUrl,
-                                    "<html><head><title>" + PROXY + "</title></head>Page 1</html>",
-                                    null)
-                            .replace(mContentUrl, "")
-                            .replace("http://", "")
-                            .replace("/", "");
+        mContentUrl =
+                mContentServer.setResponse(
+                        "/",
+                        "<html><head><title>" + CONTENT + "</title></head>Page 1</html>",
+                        null);
+        mProxyUrl =
+                mProxyServer
+                        .setResponse(
+                                mContentUrl,
+                                "<html><head><title>" + PROXY + "</title></head>Page 1</html>",
+                                null)
+                        .replace(mContentUrl, "")
+                        .replace("http://", "")
+                        .replace("/", "");
     }
 
     @After
@@ -78,8 +80,7 @@ public class AwProxyControllerTest {
 
         int proxyServerRequestCount = mProxyServer.getRequestCount(mContentUrl);
 
-        // Set proxy override and load content url
-        // Localhost should use proxy with loopback rule
+        // Set proxy override and load content url Localhost should use proxy with loopback rule
         setProxyOverrideSync(
                 new String[][] {{MATCH_ALL_SCHEMES, mProxyUrl}}, new String[] {LOOPBACK}, false);
         TestAwContentsClient.OnReceivedTitleHelper onReceivedTitleHelper =
@@ -116,8 +117,7 @@ public class AwProxyControllerTest {
 
         int proxyServerRequestCount = mProxyServer.getRequestCount(mContentUrl);
 
-        // Set proxy override and load a local url
-        // Localhost should not use proxy settings
+        // Set proxy override and load a local url Localhost should not use proxy settings
         setProxyOverrideSync(
                 new String[][] {{MATCH_ALL_SCHEMES, mProxyUrl}}, new String[] {}, false);
         TestAwContentsClient.OnReceivedTitleHelper onReceivedTitleHelper =
@@ -179,18 +179,24 @@ public class AwProxyControllerTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testValidInput() throws Throwable {
-        String[][] proxyRules = {{MATCH_ALL_SCHEMES, DIRECT},
-                {MATCH_ALL_SCHEMES, "www.example.com"},
-                {MATCH_ALL_SCHEMES, "http://www.example.com"},
-                {MATCH_ALL_SCHEMES, "https://www.example.com"},
-                {MATCH_ALL_SCHEMES, "www.example.com:123"},
-                {MATCH_ALL_SCHEMES, "http://www.example.com:123"}, {MATCH_ALL_SCHEMES, "10.0.0.1"},
-                {MATCH_ALL_SCHEMES, "10.0.0.1:123"}, {MATCH_ALL_SCHEMES, "http://10.0.0.1"},
-                {MATCH_ALL_SCHEMES, "https://10.0.0.1"}, {MATCH_ALL_SCHEMES, "http://10.0.0.1:123"},
-                {MATCH_ALL_SCHEMES, "[FE80:CD00:0000:0CDE:1257:0000:211E:729C]"},
-                {MATCH_ALL_SCHEMES, "[FE80:CD00:0:CDE:1257:0:211E:729C]"}};
+        String[][] proxyRules = {
+            {MATCH_ALL_SCHEMES, DIRECT},
+            {MATCH_ALL_SCHEMES, "www.example.com"},
+            {MATCH_ALL_SCHEMES, "http://www.example.com"},
+            {MATCH_ALL_SCHEMES, "https://www.example.com"},
+            {MATCH_ALL_SCHEMES, "www.example.com:123"},
+            {MATCH_ALL_SCHEMES, "http://www.example.com:123"},
+            {MATCH_ALL_SCHEMES, "10.0.0.1"},
+            {MATCH_ALL_SCHEMES, "10.0.0.1:123"},
+            {MATCH_ALL_SCHEMES, "http://10.0.0.1"},
+            {MATCH_ALL_SCHEMES, "https://10.0.0.1"},
+            {MATCH_ALL_SCHEMES, "http://10.0.0.1:123"},
+            {MATCH_ALL_SCHEMES, "[FE80:CD00:0000:0CDE:1257:0000:211E:729C]"},
+            {MATCH_ALL_SCHEMES, "[FE80:CD00:0:CDE:1257:0:211E:729C]"}
+        };
         String[] bypassRules = {
-                "www.rule.com", "*.rule.com", "*rule.com", "www.*.com", "www.rule*"};
+            "www.rule.com", "*.rule.com", "*rule.com", "www.*.com", "www.rule*"
+        };
         setProxyOverrideSync(proxyRules, bypassRules, false);
         // If we got to this point it means our input was accepted as expected
     }
@@ -200,15 +206,15 @@ public class AwProxyControllerTest {
     @Feature({"AndroidWebView"})
     public void testInvalidProxyUrls() throws Throwable {
         String[] invalidProxyUrls = {
-                null,
-                "", // empty
-                "   ", // spaces only
-                "dddf:", // bad port
-                "dddd:d", // bad port
-                "http://", // no valid host/port
-                "http:/", // ambiguous, will fail due to bad port
-                "http:", // ambiguous, will fail due to bad port
-                "direct://xyz", // direct shouldn't have host/port
+            null,
+            "", // empty
+            "   ", // spaces only
+            "dddf:", // bad port
+            "dddd:d", // bad port
+            "http://", // no valid host/port
+            "http:/", // ambiguous, will fail due to bad port
+            "http:", // ambiguous, will fail due to bad port
+            "direct://xyz", // direct shouldn't have host/port
         };
 
         for (String proxyUrl : invalidProxyUrls) {
@@ -226,11 +232,11 @@ public class AwProxyControllerTest {
     @Feature({"AndroidWebView"})
     public void testInvalidBypassRules() throws Throwable {
         String[] invalidBypassRules = {
-                null,
-                "", // empty
-                "http://", // no valid host/port
-                "20:example.com", // bad port
-                "example.com:-20" // bad port
+            null,
+            "", // empty
+            "http://", // no valid host/port
+            "20:example.com", // bad port
+            "example.com:-20" // bad port
         };
 
         for (String bypassRule : invalidBypassRules) {
@@ -247,28 +253,37 @@ public class AwProxyControllerTest {
             String[][] proxyRules, String[] bypassRules, boolean reverseBypass) throws Exception {
         CallbackHelper ch = new CallbackHelper();
         int callCount = ch.getCallCount();
-        runOnUiThreadBlocking(() -> {
-            mAwProxyController.setProxyOverride(proxyRules, bypassRules, new Runnable() {
-                @Override
-                public void run() {
-                    ch.notifyCalled();
-                }
-            }, new SynchronousExecutor(), reverseBypass);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    mAwProxyController.setProxyOverride(
+                            proxyRules,
+                            bypassRules,
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    ch.notifyCalled();
+                                }
+                            },
+                            new SynchronousExecutor(),
+                            reverseBypass);
+                });
         ch.waitForCallback(callCount);
     }
 
     private void clearProxyOverrideSync() throws Exception {
         CallbackHelper ch = new CallbackHelper();
         int callCount = ch.getCallCount();
-        runOnUiThreadBlocking(() -> {
-            mAwProxyController.clearProxyOverride(new Runnable() {
-                @Override
-                public void run() {
-                    ch.notifyCalled();
-                }
-            }, new SynchronousExecutor());
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    mAwProxyController.clearProxyOverride(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    ch.notifyCalled();
+                                }
+                            },
+                            new SynchronousExecutor());
+                });
         ch.waitForCallback(callCount);
     }
 

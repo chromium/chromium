@@ -53,9 +53,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Test AwVariationsSeedFetcher.
- */
+/** Test AwVariationsSeedFetcher. */
 @RunWith(AwJUnit4ClassRunner.class)
 @OnlyRunIn(SINGLE_PROCESS)
 public class AwVariationsSeedFetcherTest {
@@ -114,8 +112,10 @@ public class AwVariationsSeedFetcherTest {
         @Override
         public int schedule(JobInfo job) {
             Assert.assertEquals("Job scheduled with wrong ID", JOB_ID, job.getId());
-            Assert.assertEquals("Job scheduled with wrong network type",
-                    JobInfo.NETWORK_TYPE_ANY, job.getNetworkType());
+            Assert.assertEquals(
+                    "Job scheduled with wrong network type",
+                    JobInfo.NETWORK_TYPE_ANY,
+                    job.getNetworkType());
             mJob = job;
             return JobScheduler.RESULT_SUCCESS;
         }
@@ -141,8 +141,9 @@ public class AwVariationsSeedFetcherTest {
             // Pretend the servers-side |serialNumber| equals |SAVED_VARIATIONS_SEED_SERIAL_NUMBER|
             // and return |HTTP_NOT_MODIFIED|
             if (currInfo != null
-                    && currInfo.getParsedVariationsSeed().getSerialNumber().equals(
-                            SAVED_VARIATIONS_SEED_SERIAL_NUMBER)) {
+                    && currInfo.getParsedVariationsSeed()
+                            .getSerialNumber()
+                            .equals(SAVED_VARIATIONS_SEED_SERIAL_NUMBER)) {
                 fetchInfo.seedInfo = currInfo;
                 fetchInfo.seedInfo.date = getDateTime().newDate().getTime();
                 fetchInfo.seedFetchResult = HTTP_NOT_MODIFIED;
@@ -202,8 +203,7 @@ public class AwVariationsSeedFetcherTest {
     private TestClock mClock = new TestClock();
     private Context mContext;
 
-    @Mock
-    private JobParameters mMockJobParameters;
+    @Mock private JobParameters mMockJobParameters;
 
     @Before
     public void setUp() throws IOException {
@@ -240,20 +240,26 @@ public class AwVariationsSeedFetcherTest {
             AwVariationsSeedFetcher.scheduleIfNeeded();
             mScheduler.assertScheduled();
             JobInfo pendingJob = mScheduler.getPendingJob(JOB_ID);
-            Assert.assertTrue("Fast mode should disabled.",
-                    !pendingJob.getExtras().getBoolean(
-                            AwVariationsSeedFetcher.JOB_REQUEST_FAST_MODE));
+            Assert.assertTrue(
+                    "Fast mode should disabled.",
+                    !pendingJob
+                            .getExtras()
+                            .getBoolean(AwVariationsSeedFetcher.JOB_REQUEST_FAST_MODE));
             mScheduler.clear();
 
-            AwVariationsSeedFetcher.scheduleIfNeeded(/*requireFastMode=*/true);
+            AwVariationsSeedFetcher.scheduleIfNeeded(/* requireFastMode= */ true);
             mScheduler.assertScheduled();
             pendingJob = mScheduler.getPendingJob(JOB_ID);
-            Assert.assertTrue("Fast mode should enabled.",
-                    pendingJob.getExtras().getBoolean(
-                            AwVariationsSeedFetcher.JOB_REQUEST_FAST_MODE));
+            Assert.assertTrue(
+                    "Fast mode should enabled.",
+                    pendingJob
+                            .getExtras()
+                            .getBoolean(AwVariationsSeedFetcher.JOB_REQUEST_FAST_MODE));
             Assert.assertTrue("Fast mode jobs should be persisted", pendingJob.isPersisted());
-            Assert.assertEquals("Fast Mode backoff policy should be linear.",
-                    pendingJob.getBackoffPolicy(), JobInfo.BACKOFF_POLICY_LINEAR);
+            Assert.assertEquals(
+                    "Fast Mode backoff policy should be linear.",
+                    pendingJob.getBackoffPolicy(),
+                    JobInfo.BACKOFF_POLICY_LINEAR);
         } finally {
             mScheduler.clear();
         }
@@ -302,12 +308,14 @@ public class AwVariationsSeedFetcherTest {
         File stamp = VariationsUtils.getStampFile();
         try {
             @SuppressLint("JobSchedulerService")
-            ComponentName component = new ComponentName(
-                    ContextUtils.getApplicationContext(), AwVariationsSeedFetcher.class);
-            JobInfo job = new JobInfo.Builder(JOB_ID, component)
-                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                    .setRequiresCharging(true)
-                    .build();
+            ComponentName component =
+                    new ComponentName(
+                            ContextUtils.getApplicationContext(), AwVariationsSeedFetcher.class);
+            JobInfo job =
+                    new JobInfo.Builder(JOB_ID, component)
+                            .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                            .setRequiresCharging(true)
+                            .build();
             mScheduler.schedule(job);
             AwVariationsSeedFetcher.scheduleIfNeeded();
             // Check that our job object hasn't been replaced (meaning that scheduleIfNeeded didn't
@@ -356,7 +364,8 @@ public class AwVariationsSeedFetcherTest {
             Assert.assertNotNull("Job should have been rescheduled", rescheduledJob);
             Assert.assertNotSame(
                     "Rescheduled job should not be equal to the originally scheduled job",
-                    originalJob, rescheduledJob);
+                    originalJob,
+                    rescheduledJob);
         } finally {
             mScheduler.clear();
         }
@@ -389,7 +398,8 @@ public class AwVariationsSeedFetcherTest {
             AwVariationsSeedFetcher.scheduleIfNeeded();
             JobInfo job = mScheduler.getPendingJob(JOB_ID);
             Assert.assertNotNull("Job should have been scheduled", job);
-            Assert.assertFalse("Job should not require charging when flag is set but it does",
+            Assert.assertFalse(
+                    "Job should not require charging when flag is set but it does",
                     job.isRequireCharging());
         } finally {
             mScheduler.clear();
@@ -406,15 +416,18 @@ public class AwVariationsSeedFetcherTest {
             when(mMockJobParameters.getExtras()).thenReturn(new PersistableBundle());
             fetcher.onStartJob(mMockJobParameters);
 
-            Assert.assertFalse("neededReschedule should be false before making a request",
+            Assert.assertFalse(
+                    "neededReschedule should be false before making a request",
                     fetcher.neededReschedule());
             fetcher.helper.waitForCallback(
                     "Timeout out waiting for AwVariationsSeedFetcher to call jobFinished",
                     fetcher.helper.getCallCount());
-            Assert.assertFalse("neededReschedule should be false after a successful seed request.",
+            Assert.assertFalse(
+                    "neededReschedule should be false after a successful seed request.",
                     fetcher.neededReschedule());
             File stamp = VariationsUtils.getStampFile();
-            Assert.assertTrue("AwVariationsSeedFetcher should have updated stamp file " + stamp,
+            Assert.assertTrue(
+                    "AwVariationsSeedFetcher should have updated stamp file " + stamp,
                     stamp.exists());
         } finally {
             VariationsTestUtils.deleteSeeds(); // Remove the stamp file.
@@ -433,13 +446,15 @@ public class AwVariationsSeedFetcherTest {
             when(mMockJobParameters.getExtras()).thenReturn(bundle);
             fetcher.onStartJob(mMockJobParameters);
 
-            Assert.assertFalse("neededReschedule should be false before making a request",
+            Assert.assertFalse(
+                    "neededReschedule should be false before making a request",
                     fetcher.neededReschedule());
             fetcher.helper.waitForCallback(
                     "Timeout out waiting for AwVariationsSeedFetcher to call jobFinished",
                     fetcher.helper.getCallCount());
             Assert.assertTrue(
-                    "AwVariationsSeedFetcher should have scheduled periodic fast mode job after jitter period has expired",
+                    "AwVariationsSeedFetcher should have scheduled periodic fast mode job after"
+                            + " jitter period has expired",
                     AwVariationsSeedFetcher.periodicFastModeJobScheduled());
         } finally {
             VariationsTestUtils.deleteSeeds(); // Remove the stamp file.
@@ -450,13 +465,15 @@ public class AwVariationsSeedFetcherTest {
     @SmallTest
     public void testPeriodicFastFetch() throws IOException, TimeoutException {
         AwVariationsSeedFetcher.scheduleJob(
-                mScheduler, /*requireFastMode=*/true, /*requestPeriodicFastMode=*/false);
-        Assert.assertFalse("AwVariationsSeedFetcher should not schedule periodic fast mode job.",
+                mScheduler, /* requireFastMode= */ true, /* requestPeriodicFastMode= */ false);
+        Assert.assertFalse(
+                "AwVariationsSeedFetcher should not schedule periodic fast mode job.",
                 AwVariationsSeedFetcher.periodicFastModeJobScheduled());
 
         AwVariationsSeedFetcher.scheduleJob(
-                mScheduler, /*requireFastMode=*/true, /*requestPeriodicFastMode=*/true);
-        Assert.assertTrue("AwVariationsSeedFetcher should have scheduled periodic fast mode job.",
+                mScheduler, /* requireFastMode= */ true, /* requestPeriodicFastMode= */ true);
+        Assert.assertTrue(
+                "AwVariationsSeedFetcher should have scheduled periodic fast mode job.",
                 AwVariationsSeedFetcher.periodicFastModeJobScheduled());
     }
 
@@ -470,26 +487,34 @@ public class AwVariationsSeedFetcherTest {
 
             JobInfo originalJob = mScheduler.getPendingJob(JOB_ID);
             Assert.assertNotNull("Job should have been scheduled", originalJob);
-            Assert.assertEquals("Initial request count should be 0", 0,
-                    originalJob.getExtras().getInt(
-                            AwVariationsSeedFetcher.JOB_REQUEST_COUNT_KEY, -1));
+            Assert.assertEquals(
+                    "Initial request count should be 0",
+                    0,
+                    originalJob
+                            .getExtras()
+                            .getInt(AwVariationsSeedFetcher.JOB_REQUEST_COUNT_KEY, -1));
 
             // This TestAwVariationsSeedFetcher instance will delegate its HTTP requests to the
             // failing VariationsSeedFetcher that we set as the mock instance above.
             TestAwVariationsSeedFetcher fetcher = new TestAwVariationsSeedFetcher();
-            when(mMockJobParameters.getExtras()).thenAnswer(invocation -> {
-                return mScheduler.getPendingJob(JOB_ID).getExtras();
-            });
+            when(mMockJobParameters.getExtras())
+                    .thenAnswer(
+                            invocation -> {
+                                return mScheduler.getPendingJob(JOB_ID).getExtras();
+                            });
 
             fetcher.onStartJob(mMockJobParameters);
 
             fetcher.helper.waitForCallback(
                     "Timeout out waiting for AwVariationsSeedFetcher to call jobFinished",
                     fetcher.helper.getCallCount());
-            Assert.assertTrue("neededReschedule should be true after a failed seed request.",
+            Assert.assertTrue(
+                    "neededReschedule should be true after a failed seed request.",
                     fetcher.neededReschedule());
-            int requestCount = fetcher.getFinishedJobParameters().getExtras().getInt(
-                    AwVariationsSeedFetcher.JOB_REQUEST_COUNT_KEY);
+            int requestCount =
+                    fetcher.getFinishedJobParameters()
+                            .getExtras()
+                            .getInt(AwVariationsSeedFetcher.JOB_REQUEST_COUNT_KEY);
             Assert.assertEquals("Request count should have increased", requestCount, 1);
 
         } finally {
@@ -507,7 +532,8 @@ public class AwVariationsSeedFetcherTest {
             // failing VariationsSeedFetcher that we set as the mock instance above.
             TestAwVariationsSeedFetcher fetcher = new TestAwVariationsSeedFetcher();
             PersistableBundle jobInfoExtras = new PersistableBundle();
-            jobInfoExtras.putInt(AwVariationsSeedFetcher.JOB_REQUEST_COUNT_KEY,
+            jobInfoExtras.putInt(
+                    AwVariationsSeedFetcher.JOB_REQUEST_COUNT_KEY,
                     AwVariationsSeedFetcher.JOB_MAX_REQUEST_COUNT);
             when(mMockJobParameters.getExtras()).thenReturn(jobInfoExtras);
 
@@ -516,7 +542,8 @@ public class AwVariationsSeedFetcherTest {
             fetcher.helper.waitForCallback(
                     "Timeout out waiting for AwVariationsSeedFetcher to call jobFinished",
                     fetcher.helper.getCallCount());
-            Assert.assertFalse("neededReschedule should be false after the max "
+            Assert.assertFalse(
+                    "neededReschedule should be false after the max "
                             + "failed seed requests has been reached.",
                     fetcher.neededReschedule());
 

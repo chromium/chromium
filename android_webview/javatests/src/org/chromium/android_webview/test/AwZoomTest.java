@@ -25,13 +25,10 @@ import org.chromium.base.test.util.TestThreadUtils;
 
 import java.util.Locale;
 
-/**
- * A test suite for zooming-related methods and settings.
- */
+/** A test suite for zooming-related methods and settings. */
 @RunWith(AwJUnit4ClassRunner.class)
 public class AwZoomTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
@@ -48,12 +45,16 @@ public class AwZoomTest {
 
     private String getZoomableHtml(float scale) {
         final int divWidthPercent = (int) (100.0f / scale);
-        return String.format(Locale.US, "<html><head><meta name=\"viewport\" content=\""
-                + "width=device-width, minimum-scale=%f, maximum-scale=%f, initial-scale=%f"
-                + "\"/></head><body style='margin:0'>"
-                + "<div style='width:%d%%;height:100px;border:1px solid black'>Zoomable</div>"
-                + "</body></html>",
-                scale, MAXIMUM_SCALE, scale, divWidthPercent);
+        return String.format(
+                Locale.US,
+                "<html><head><meta name=\"viewport\" content=\"width=device-width,"
+                        + " minimum-scale=%f, maximum-scale=%f, initial-scale=%f\"/></head><body"
+                        + " style='margin:0'><div style='width:%d%%;height:100px;border:1px solid"
+                        + " black'>Zoomable</div></body></html>",
+                scale,
+                MAXIMUM_SCALE,
+                scale,
+                divWidthPercent);
     }
 
     private String getNonZoomableHtml() {
@@ -122,28 +123,35 @@ public class AwZoomTest {
 
     private void waitForScaleToBecome(final float expectedScale) {
         AwActivityTestRule.pollInstrumentationThread(
-                () -> Math.abs(expectedScale
-                                   - mActivityTestRule.getScaleOnUiThread(mAwContents))
-                        < EPSILON);
+                () ->
+                        Math.abs(expectedScale - mActivityTestRule.getScaleOnUiThread(mAwContents))
+                                < EPSILON);
     }
 
     private void waitUntilCanNotZoom() {
         AwActivityTestRule.pollInstrumentationThread(
-                () -> !mActivityTestRule.canZoomInOnUiThread(mAwContents)
-                        && !mActivityTestRule.canZoomOutOnUiThread(mAwContents));
+                () ->
+                        !mActivityTestRule.canZoomInOnUiThread(mAwContents)
+                                && !mActivityTestRule.canZoomOutOnUiThread(mAwContents));
     }
 
     private void runMagnificationTest() throws Throwable {
         mActivityTestRule.getAwSettingsOnUiThread(mAwContents).setUseWideViewPort(true);
-        Assert.assertFalse("Should not be able to zoom in",
+        Assert.assertFalse(
+                "Should not be able to zoom in",
                 mActivityTestRule.canZoomInOnUiThread(mAwContents));
         final float pageMinimumScale = 0.5f;
-        mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
-                getZoomableHtml(pageMinimumScale), "text/html", false);
+        mActivityTestRule.loadDataSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                getZoomableHtml(pageMinimumScale),
+                "text/html",
+                false);
         waitForScaleToBecome(pageMinimumScale);
         Assert.assertTrue(
                 "Should be able to zoom in", mActivityTestRule.canZoomInOnUiThread(mAwContents));
-        Assert.assertFalse("Should not be able to zoom out",
+        Assert.assertFalse(
+                "Should not be able to zoom out",
                 mActivityTestRule.canZoomOutOnUiThread(mAwContents));
 
         while (mActivityTestRule.canZoomInOnUiThread(mAwContents)) {
@@ -191,8 +199,12 @@ public class AwZoomTest {
     @Feature({"AndroidWebView"})
     public void testZoomUsingMultiTouch() throws Throwable {
         AwSettings webSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
-        mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
-                getZoomableHtml(0.5f), "text/html", false);
+        mActivityTestRule.loadDataSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                getZoomableHtml(0.5f),
+                "text/html",
+                false);
 
         Assert.assertTrue(webSettings.supportZoom());
         Assert.assertFalse(webSettings.getBuiltInZoomControls());
@@ -211,11 +223,16 @@ public class AwZoomTest {
     public void testZoomControls() throws Throwable {
         AwSettings webSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
         webSettings.setUseWideViewPort(true);
-        Assert.assertFalse("Should not be able to zoom in",
+        Assert.assertFalse(
+                "Should not be able to zoom in",
                 mActivityTestRule.canZoomInOnUiThread(mAwContents));
         final float pageMinimumScale = 0.5f;
-        mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
-                getZoomableHtml(pageMinimumScale), "text/html", false);
+        mActivityTestRule.loadDataSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                getZoomableHtml(pageMinimumScale),
+                "text/html",
+                false);
         waitForScaleToBecome(pageMinimumScale);
         // It must be possible to zoom in (or zoom out) for zoom controls to be shown
         Assert.assertTrue(
@@ -249,8 +266,12 @@ public class AwZoomTest {
         Assert.assertFalse(canZoomInUsingZoomControls());
         Assert.assertFalse(canZoomOutUsingZoomControls());
         final float pageMinimumScale = 0.5f;
-        mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
-                getZoomableHtml(pageMinimumScale), "text/html", false);
+        mActivityTestRule.loadDataSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                getZoomableHtml(pageMinimumScale),
+                "text/html",
+                false);
         waitForScaleToBecome(pageMinimumScale);
         Assert.assertTrue(canZoomInUsingZoomControls());
         Assert.assertFalse(canZoomOutUsingZoomControls());
@@ -269,8 +290,12 @@ public class AwZoomTest {
     @Feature({"AndroidWebView"})
     public void testZoomControlsOnNonZoomableContent() throws Throwable {
         AwSettings webSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
-        mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
-                getNonZoomableHtml(), "text/html", false);
+        mActivityTestRule.loadDataSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                getNonZoomableHtml(),
+                "text/html",
+                false);
 
         // ContentView must update itself according to the viewport setup.
         waitUntilCanNotZoom();
@@ -290,8 +315,12 @@ public class AwZoomTest {
     @Feature({"AndroidWebView"})
     public void testZoomControlsOnOrientationChange() throws Throwable {
         AwSettings webSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
-        mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
-                getZoomableHtml(0.5f), "text/html", false);
+        mActivityTestRule.loadDataSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                getZoomableHtml(0.5f),
+                "text/html",
+                false);
 
         Assert.assertTrue(webSettings.supportZoom());
         webSettings.setBuiltInZoomControls(true);

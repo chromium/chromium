@@ -19,13 +19,10 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- * Test suite for the WebView specific JavaBridge features.
- */
+/** Test suite for the WebView specific JavaBridge features. */
 @RunWith(AwJUnit4ClassRunner.class)
 public class AwJavaBridgeTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private TestAwContentsClient mContentsClient = new TestAwContentsClient();
     private AwTestContainerView mTestContainerView;
@@ -53,8 +50,8 @@ public class AwJavaBridgeTest {
             @JavascriptInterface
             public void destroy() {
                 try {
-                    InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                            () -> awContents.destroy());
+                    InstrumentationRegistry.getInstrumentation()
+                            .runOnMainSync(() -> awContents.destroy());
                     // Destroying one AwContents from within the JS callback should still
                     // leave others functioning. Note that we must do this asynchronously,
                     // as Blink thread is currently blocked waiting for this method to finish.
@@ -73,7 +70,8 @@ public class AwJavaBridgeTest {
                 awContents, mContentsClient.getOnPageFinishedHelper(), html, "text/html", false);
 
         // Ensure the JS interface object is there, and invoke the test method.
-        Assert.assertEquals("\"function\"",
+        Assert.assertEquals(
+                "\"function\"",
                 mActivityTestRule.executeJavaScriptAndWaitForResult(
                         awContents, mContentsClient, "typeof test.destroy"));
         int currentCallCount = client2.getOnPageFinishedHelper().getCallCount();
@@ -100,10 +98,12 @@ public class AwJavaBridgeTest {
             Test(int value) {
                 mValue = value;
             }
+
             @JavascriptInterface
             public int getValue() {
                 return mValue;
             }
+
             private int mValue;
         }
 
@@ -115,10 +115,12 @@ public class AwJavaBridgeTest {
         mActivityTestRule.loadDataSync(
                 awContents2, client2.getOnPageFinishedHelper(), html, "text/html", false);
 
-        Assert.assertEquals("1",
+        Assert.assertEquals(
+                "1",
                 mActivityTestRule.executeJavaScriptAndWaitForResult(
                         awContents1, mContentsClient, "test.getValue()"));
-        Assert.assertEquals("2",
+        Assert.assertEquals(
+                "2",
                 mActivityTestRule.executeJavaScriptAndWaitForResult(
                         awContents2, client2, "test.getValue()"));
     }
@@ -134,10 +136,12 @@ public class AwJavaBridgeTest {
             Test(int value) {
                 mValue = value;
             }
+
             @JavascriptInterface
             public int getValue() {
                 return mValue;
             }
+
             private int mValue;
         }
 
@@ -145,7 +149,8 @@ public class AwJavaBridgeTest {
         final String html = "<html>Hello World</html>";
         mActivityTestRule.loadDataSync(
                 awContents1, mContentsClient.getOnPageFinishedHelper(), html, "text/html", false);
-        Assert.assertEquals("1",
+        Assert.assertEquals(
+                "1",
                 mActivityTestRule.executeJavaScriptAndWaitForResult(
                         awContents1, mContentsClient, "test.getValue()"));
 
@@ -159,10 +164,12 @@ public class AwJavaBridgeTest {
         mActivityTestRule.loadDataSync(
                 awContents2, client2.getOnPageFinishedHelper(), html, "text/html", false);
 
-        Assert.assertEquals("1",
+        Assert.assertEquals(
+                "1",
                 mActivityTestRule.executeJavaScriptAndWaitForResult(
                         awContents1, mContentsClient, "test.getValue()"));
-        Assert.assertEquals("2",
+        Assert.assertEquals(
+                "2",
                 mActivityTestRule.executeJavaScriptAndWaitForResult(
                         awContents2, client2, "test.getValue()"));
     }

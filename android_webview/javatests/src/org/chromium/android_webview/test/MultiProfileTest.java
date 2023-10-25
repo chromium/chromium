@@ -39,14 +39,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Tests the management of multiple AwBrowserContexts (profiles)
- */
+/** Tests the management of multiple AwBrowserContexts (profiles) */
 @RunWith(AwJUnit4ClassRunner.class)
 @DoNotBatch(reason = "Tests focus on manipulation of global profile state")
 public class MultiProfileTest {
-    @Rule
-    public MultiProfileTestRule mRule = new MultiProfileTestRule();
+    @Rule public MultiProfileTestRule mRule = new MultiProfileTestRule();
 
     private TestAwContentsClient mContentsClient = mRule.getContentsClient();
 
@@ -105,10 +102,14 @@ public class MultiProfileTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testCannotDeleteDefault() {
-        mRule.runOnUiThread(() -> {
-            Assert.assertThrows(IllegalArgumentException.class,
-                    () -> { AwBrowserContext.deleteNamedContext("Default"); });
-        });
+        mRule.runOnUiThread(
+                () -> {
+                    Assert.assertThrows(
+                            IllegalArgumentException.class,
+                            () -> {
+                                AwBrowserContext.deleteNamedContext("Default");
+                            });
+                });
     }
 
     @Test
@@ -116,10 +117,14 @@ public class MultiProfileTest {
     @Feature({"AndroidWebView"})
     public void testCannotDeleteProfileInUse() {
         mRule.getProfileSync("myProfile", true);
-        mRule.runOnUiThread(() -> {
-            Assert.assertThrows(IllegalStateException.class,
-                    () -> { AwBrowserContext.deleteNamedContext("myProfile"); });
-        });
+        mRule.runOnUiThread(
+                () -> {
+                    Assert.assertThrows(
+                            IllegalStateException.class,
+                            () -> {
+                                AwBrowserContext.deleteNamedContext("myProfile");
+                            });
+                });
     }
 
     @Test
@@ -127,7 +132,9 @@ public class MultiProfileTest {
     @Feature({"AndroidWebView"})
     public void testCanDeleteNonExistent() {
         mRule.runOnUiThread(
-                () -> { Assert.assertFalse(AwBrowserContext.deleteNamedContext("DoesNotExist")); });
+                () -> {
+                    Assert.assertFalse(AwBrowserContext.deleteNamedContext("DoesNotExist"));
+                });
     }
 
     @Test
@@ -165,13 +172,17 @@ public class MultiProfileTest {
         final AwBrowserContext myOtherCoolProfile =
                 mRule.getProfileSync("MyOtherCoolProfile", true);
         final AwBrowserContext myCoolProfileCopy = mRule.getProfileSync("MyCoolProfile", true);
-        assertEquals("WebViewProfilePrefsDefault_MyDataDirSuffix",
+        assertEquals(
+                "WebViewProfilePrefsDefault_MyDataDirSuffix",
                 defaultProfile.getSharedPrefsNameForTesting());
-        assertEquals("WebViewProfilePrefsProfile 1_MyDataDirSuffix",
+        assertEquals(
+                "WebViewProfilePrefsProfile 1_MyDataDirSuffix",
                 myCoolProfile.getSharedPrefsNameForTesting());
-        assertEquals("WebViewProfilePrefsProfile 2_MyDataDirSuffix",
+        assertEquals(
+                "WebViewProfilePrefsProfile 2_MyDataDirSuffix",
                 myOtherCoolProfile.getSharedPrefsNameForTesting());
-        assertEquals(myCoolProfile.getSharedPrefsNameForTesting(),
+        assertEquals(
+                myCoolProfile.getSharedPrefsNameForTesting(),
                 myCoolProfileCopy.getSharedPrefsNameForTesting());
 
         AwBrowserProcess.setProcessDataDirSuffixForTesting(null);
@@ -179,7 +190,8 @@ public class MultiProfileTest {
         assertEquals("WebViewProfilePrefsProfile 1", myCoolProfile.getSharedPrefsNameForTesting());
         assertEquals(
                 "WebViewProfilePrefsProfile 2", myOtherCoolProfile.getSharedPrefsNameForTesting());
-        assertEquals(myCoolProfile.getSharedPrefsNameForTesting(),
+        assertEquals(
+                myCoolProfile.getSharedPrefsNameForTesting(),
                 myCoolProfileCopy.getSharedPrefsNameForTesting());
     }
 
@@ -190,14 +202,18 @@ public class MultiProfileTest {
     public void testSetBrowserContextOnDestroyedWebViewThrowsException() {
         mRule.startBrowserProcess();
         final AwBrowserContext otherProfile = mRule.getProfileSync("other-profile", true);
-        mRule.runOnUiThread(() -> {
-            AwContents awContents =
-                    mRule.createAwTestContainerView(mContentsClient).getAwContents();
-            awContents.destroy();
-            Assert.assertThrows("Cannot set new profile on a WebView that has been destroyed",
-                    IllegalStateException.class,
-                    () -> { awContents.setBrowserContext(otherProfile); });
-        });
+        mRule.runOnUiThread(
+                () -> {
+                    AwContents awContents =
+                            mRule.createAwTestContainerView(mContentsClient).getAwContents();
+                    awContents.destroy();
+                    Assert.assertThrows(
+                            "Cannot set new profile on a WebView that has been destroyed",
+                            IllegalStateException.class,
+                            () -> {
+                                awContents.setBrowserContext(otherProfile);
+                            });
+                });
     }
 
     @Test
@@ -207,16 +223,19 @@ public class MultiProfileTest {
     public void testSetBrowserContextAfterGetBrowserContextThrowsException() {
         mRule.startBrowserProcess();
         final AwBrowserContext otherProfile = mRule.getProfileSync("other-profile", true);
-        mRule.runOnUiThread(() -> {
-            AwContents awContents =
-                    mRule.createAwTestContainerView(mContentsClient).getAwContents();
-            awContents.getBrowserContext();
-            Assert.assertThrows(
-                    "Cannot set new profile after the current one has been retrieved via. "
-                            + "WebViewCompat#getProfile",
-                    IllegalStateException.class,
-                    () -> { awContents.setBrowserContext(otherProfile); });
-        });
+        mRule.runOnUiThread(
+                () -> {
+                    AwContents awContents =
+                            mRule.createAwTestContainerView(mContentsClient).getAwContents();
+                    awContents.getBrowserContext();
+                    Assert.assertThrows(
+                            "Cannot set new profile after the current one has been retrieved via. "
+                                    + "WebViewCompat#getProfile",
+                            IllegalStateException.class,
+                            () -> {
+                                awContents.setBrowserContext(otherProfile);
+                            });
+                });
     }
 
     @Test
@@ -227,15 +246,19 @@ public class MultiProfileTest {
         mRule.startBrowserProcess();
         final AwBrowserContext myCoolProfile = mRule.getProfileSync("my-profile", true);
         final AwBrowserContext myOtherCoolProfile = mRule.getProfileSync("my-other-profile", true);
-        mRule.runOnUiThread(() -> {
-            AwContents awContents =
-                    mRule.createAwTestContainerView(mContentsClient).getAwContents();
-            awContents.setBrowserContext(myCoolProfile);
-            Assert.assertThrows("Cannot set new profile after one has already been set"
-                            + "via. WebViewCompat#setProfile",
-                    IllegalStateException.class,
-                    () -> { awContents.setBrowserContext(myOtherCoolProfile); });
-        });
+        mRule.runOnUiThread(
+                () -> {
+                    AwContents awContents =
+                            mRule.createAwTestContainerView(mContentsClient).getAwContents();
+                    awContents.setBrowserContext(myCoolProfile);
+                    Assert.assertThrows(
+                            "Cannot set new profile after one has already been set"
+                                    + "via. WebViewCompat#setProfile",
+                            IllegalStateException.class,
+                            () -> {
+                                awContents.setBrowserContext(myOtherCoolProfile);
+                            });
+                });
     }
 
     @Test
@@ -245,14 +268,15 @@ public class MultiProfileTest {
     public void testSetBrowserContextAfterEvaluateJavascriptThrowsException() {
         mRule.startBrowserProcess();
         AwContents awContents = mRule.createAwContents();
-        ThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            awContents.evaluateJavaScript("", null);
-            return null;
-        });
+        ThreadUtils.runOnUiThreadBlockingNoException(
+                () -> {
+                    awContents.evaluateJavaScript("", null);
+                    return null;
+                });
         final AwBrowserContext myCoolProfile = mRule.getProfileSync("my-profile", true);
         mRule.runOnUiThread(
-                ()
-                        -> Assert.assertThrows(
+                () ->
+                        Assert.assertThrows(
                                 "Cannot set new profile after call to WebView#evaluateJavascript",
                                 IllegalStateException.class,
                                 () -> awContents.setBrowserContext(myCoolProfile)));
@@ -269,13 +293,17 @@ public class MultiProfileTest {
         TestWebServer webServer = TestWebServer.start();
         String url = webServer.setResponse("/URL.html", "", null);
         mRule.loadUrlSync(awContents, mContentsClient.getOnPageFinishedHelper(), url);
-        mRule.runOnUiThread(() -> {
-            Assert.assertThrows(
-                    "Cannot set new profile on a WebView that has been previously navigated.",
-                    IllegalStateException.class,
-                    () -> { awContents.setBrowserContext(myCoolProfile); });
-            webServer.shutdown();
-        });
+        mRule.runOnUiThread(
+                () -> {
+                    Assert.assertThrows(
+                            "Cannot set new profile on a WebView that has been previously"
+                                    + " navigated.",
+                            IllegalStateException.class,
+                            () -> {
+                                awContents.setBrowserContext(myCoolProfile);
+                            });
+                    webServer.shutdown();
+                });
     }
 
     @Test
@@ -302,8 +330,10 @@ public class MultiProfileTest {
         final AwBrowserContext myProfile = mRule.getProfileSync("my-profile", true);
         final AwContents awContents = mRule.createAwContents(myProfile);
         awContents.destroy();
-        Assert.assertThrows("Cannot get profile for destroyed WebView.",
-                IllegalStateException.class, awContents::getBrowserContext);
+        Assert.assertThrows(
+                "Cannot get profile for destroyed WebView.",
+                IllegalStateException.class,
+                awContents::getBrowserContext);
     }
 
     @Test
@@ -332,8 +362,11 @@ public class MultiProfileTest {
 
         TestWebServer webServer = TestWebServer.start();
 
-        String[] cookies = {"httponly=foo1; HttpOnly", "strictsamesite=foo2; SameSite=Strict",
-                "laxsamesite=foo3; SameSite=Lax"};
+        String[] cookies = {
+            "httponly=foo1; HttpOnly",
+            "strictsamesite=foo2; SameSite=Strict",
+            "laxsamesite=foo3; SameSite=Lax"
+        };
         List<Pair<String, String>> responseHeaders = new ArrayList<>();
         for (String cookie : cookies) {
             responseHeaders.add(Pair.create("Set-Cookie", cookie));
@@ -412,7 +445,9 @@ public class MultiProfileTest {
         }
         Set<String> expectedCookieNamesSet =
                 new HashSet<String>(Arrays.asList(expectedCookieNames));
-        assertEquals("Found cookies list differs from expected list", expectedCookieNamesSet,
+        assertEquals(
+                "Found cookies list differs from expected list",
+                expectedCookieNamesSet,
                 foundCookieNamesSet);
     }
 
@@ -439,10 +474,11 @@ public class MultiProfileTest {
                 };
 
         // Setup a message listener and a startup script to post on to the listener.
-        mRule.runOnUiThread(() -> {
-            webView.addWebMessageListener(listenerName, injectDomains, injectedListener);
-            webView.addDocumentStartJavaScript(startupScript, injectDomains);
-        });
+        mRule.runOnUiThread(
+                () -> {
+                    webView.addWebMessageListener(listenerName, injectDomains, injectedListener);
+                    webView.addDocumentStartJavaScript(startupScript, injectDomains);
+                });
 
         // Switch the profile after the JS objects have been injected, but before content is loaded.
         AwBrowserContext otherProfile = mRule.getProfileSync("other-profile", true);
@@ -453,7 +489,9 @@ public class MultiProfileTest {
             server.setResponse("/", "hello, world", new ArrayList<>());
             mRule.loadUrlSync(
                     webView, mContentsClient.getOnPageFinishedHelper(), server.getBaseUrl());
-            Assert.assertEquals("Injected listener was missing", "true",
+            Assert.assertEquals(
+                    "Injected listener was missing",
+                    "true",
                     mRule.executeJavaScriptAndWaitForResult(
                             webView, mContentsClient, listenerName + " != null"));
         }

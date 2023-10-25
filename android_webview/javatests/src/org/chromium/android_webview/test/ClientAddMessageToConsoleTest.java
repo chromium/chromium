@@ -17,13 +17,10 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwWebContentsDelegate;
 import org.chromium.base.test.util.Feature;
 
-/**
- * Tests for the ContentViewClient.addMessageToConsole() method.
- */
+/** Tests for the ContentViewClient.addMessageToConsole() method. */
 @RunWith(AwJUnit4ClassRunner.class)
 public class ClientAddMessageToConsoleTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     // Line number at which the console message is logged in the page returned by the
     // getLogMessageJavaScriptData method.
@@ -42,8 +39,8 @@ public class ClientAddMessageToConsoleTest {
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         mAwContents = testContainerView.getAwContents();
 
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> mAwContents.getSettings().setJavaScriptEnabled(true));
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(() -> mAwContents.getSettings().setJavaScriptEnabled(true));
     }
 
     private static String getLogMessageJavaScriptData(
@@ -54,10 +51,17 @@ public class ClientAddMessageToConsoleTest {
         return "<html>%0A"
                 + "<body>%0A"
                 + "  <script>%0A"
-                + "  console." + consoleLogMethod + "(" + logMessage + ");%0A"
+                + "  console."
+                + consoleLogMethod
+                + "("
+                + logMessage
+                + ");%0A"
                 + "  </script>%0A"
                 + "  <div>%0A"
-                + "Logging the message [" + message + "] using console." + consoleLogMethod
+                + "Logging the message ["
+                + message
+                + "] using console."
+                + consoleLogMethod
                 + " method. "
                 + "  </div>%0A"
                 + "</body>%0A"
@@ -72,22 +76,34 @@ public class ClientAddMessageToConsoleTest {
                 mContentsClient.getAddMessageToConsoleHelper();
 
         int callCount = addMessageToConsoleHelper.getCallCount();
-        mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
-                getLogMessageJavaScriptData("error", "msg", true), "text/html", false);
+        mActivityTestRule.loadDataSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                getLogMessageJavaScriptData("error", "msg", true),
+                "text/html",
+                false);
         addMessageToConsoleHelper.waitForCallback(callCount);
         Assert.assertEquals(
                 AwWebContentsDelegate.LOG_LEVEL_ERROR, addMessageToConsoleHelper.getLevel());
 
         callCount = addMessageToConsoleHelper.getCallCount();
-        mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
-                getLogMessageJavaScriptData("warn", "msg", true), "text/html", false);
+        mActivityTestRule.loadDataSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                getLogMessageJavaScriptData("warn", "msg", true),
+                "text/html",
+                false);
         addMessageToConsoleHelper.waitForCallback(callCount);
         Assert.assertEquals(
                 AwWebContentsDelegate.LOG_LEVEL_WARNING, addMessageToConsoleHelper.getLevel());
 
         callCount = addMessageToConsoleHelper.getCallCount();
-        mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
-                getLogMessageJavaScriptData("log", "msg", true), "text/html", false);
+        mActivityTestRule.loadDataSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                getLogMessageJavaScriptData("log", "msg", true),
+                "text/html",
+                false);
         addMessageToConsoleHelper.waitForCallback(callCount);
         Assert.assertEquals(
                 AwWebContentsDelegate.LOG_LEVEL_LOG, addMessageToConsoleHelper.getLevel());
@@ -104,14 +120,22 @@ public class ClientAddMessageToConsoleTest {
                 mContentsClient.getAddMessageToConsoleHelper();
 
         int callCount = addMessageToConsoleHelper.getCallCount();
-        mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
-                getLogMessageJavaScriptData("log", TEST_MESSAGE_ONE, true), "text/html", false);
+        mActivityTestRule.loadDataSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                getLogMessageJavaScriptData("log", TEST_MESSAGE_ONE, true),
+                "text/html",
+                false);
         addMessageToConsoleHelper.waitForCallback(callCount);
         Assert.assertEquals(TEST_MESSAGE_ONE, addMessageToConsoleHelper.getMessage());
 
         callCount = addMessageToConsoleHelper.getCallCount();
-        mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
-                getLogMessageJavaScriptData("log", TEST_MESSAGE_TWO, true), "text/html", false);
+        mActivityTestRule.loadDataSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                getLogMessageJavaScriptData("log", TEST_MESSAGE_TWO, true),
+                "text/html",
+                false);
         addMessageToConsoleHelper.waitForCallback(callCount);
         Assert.assertEquals(TEST_MESSAGE_TWO, addMessageToConsoleHelper.getMessage());
     }
@@ -128,8 +152,12 @@ public class ClientAddMessageToConsoleTest {
         mActivityTestRule.loadDataSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), data, "text/html", false);
         addMessageToConsoleHelper.waitForCallback(callCount);
-        Assert.assertTrue("Url [" + addMessageToConsoleHelper.getSourceId()
-                        + "] expected to end with [" + data + "].",
+        Assert.assertTrue(
+                "Url ["
+                        + addMessageToConsoleHelper.getSourceId()
+                        + "] expected to end with ["
+                        + data
+                        + "].",
                 addMessageToConsoleHelper.getSourceId().endsWith(data));
         Assert.assertEquals(
                 LOG_MESSAGE_JAVASCRIPT_DATA_LINE_NUMBER, addMessageToConsoleHelper.getLineNumber());

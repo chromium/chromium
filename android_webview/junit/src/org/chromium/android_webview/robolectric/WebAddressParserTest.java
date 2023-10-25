@@ -17,9 +17,7 @@ import org.chromium.base.test.util.Feature;
 
 import java.net.URISyntaxException;
 
-/**
- * Unit tests for WebAddressParser.
- */
+/** Unit tests for WebAddressParser. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class WebAddressParserTest {
@@ -41,21 +39,28 @@ public class WebAddressParserTest {
                 "https://www.example.com:8000/", fixupUrl("https://www.example.com:8000"));
         Assert.assertEquals(
                 "http://www.example.com:8000/", fixupUrl("http://www.example.com:8000"));
-        Assert.assertEquals("http://www.example.com/somepath/otherpath/thirdpath",
+        Assert.assertEquals(
+                "http://www.example.com/somepath/otherpath/thirdpath",
                 fixupUrl("http://www.example.com/somepath/otherpath/thirdpath"));
-        Assert.assertEquals("http://www.example.com/somepath/otherpath/thirdpath",
+        Assert.assertEquals(
+                "http://www.example.com/somepath/otherpath/thirdpath",
                 fixupUrl("http://www.example.com/somepath/otherpath/thirdpath#fragment"));
-        Assert.assertEquals("http://www.example.com:8000/somepath/otherpath/thirdpath",
+        Assert.assertEquals(
+                "http://www.example.com:8000/somepath/otherpath/thirdpath",
                 fixupUrl("http://www.example.com:8000/somepath/otherpath/thirdpath#fragment"));
         Assert.assertEquals("http://www.example.com/", fixupUrl("http://www.example.com#fragment"));
 
-        Assert.assertEquals("http://username:password@www.example.com/",
+        Assert.assertEquals(
+                "http://username:password@www.example.com/",
                 fixupUrl("http://username:password@www.example.com"));
-        Assert.assertEquals("http://username:password@@@@www.example.com/",
+        Assert.assertEquals(
+                "http://username:password@@@@www.example.com/",
                 fixupUrl("http://username:password@@@@www.example.com"));
-        Assert.assertEquals("http://username@@www.example.com:80000/",
+        Assert.assertEquals(
+                "http://username@@www.example.com:80000/",
                 fixupUrl("username@@www.example.com:80000"));
-        Assert.assertEquals("http://username@@www.example.com/somepath/otherpath/thirdpath",
+        Assert.assertEquals(
+                "http://username@@www.example.com/somepath/otherpath/thirdpath",
                 fixupUrl("http://username@@www.example.com/somepath/otherpath/thirdpath"));
         Assert.assertEquals(
                 "http://username:password@@www.example.com/somepath/otherpath/thirdpath",
@@ -64,9 +69,11 @@ public class WebAddressParserTest {
         // crbug.com/1247395
         Assert.assertEquals(
                 "http://www.example.com@@example.com/", fixupUrl("www.example.com@@example.com"));
-        Assert.assertEquals("http://www.google.com@@localhost:8000/",
+        Assert.assertEquals(
+                "http://www.google.com@@localhost:8000/",
                 fixupUrl("www.google.com@@localhost:8000"));
-        Assert.assertEquals("http://www.google.com^@localhost:8000/",
+        Assert.assertEquals(
+                "http://www.google.com^@localhost:8000/",
                 fixupUrl("http://www.google.com^@localhost:8000"));
 
         Assert.assertEquals("http://foo/", fixupUrl("foo"));
@@ -86,9 +93,11 @@ public class WebAddressParserTest {
         Assert.assertEquals("http:///.some.domain", fixupUrl("http://.some.domain"));
 
         Assert.assertEquals("http://www.example.com/-1", fixupUrl("www.example.com:-1"));
-        Assert.assertEquals("http:///www.example.com@@example.com:80",
+        Assert.assertEquals(
+                "http:///www.example.com@@example.com:80",
                 fixupUrl(":www.example.com@@example.com:80"));
-        Assert.assertEquals("http://rtsp//www.example.com/media.mp4",
+        Assert.assertEquals(
+                "http://rtsp//www.example.com/media.mp4",
                 fixupUrl("rtsp://www.example.com/media.mp4"));
         Assert.assertEquals("http:///^", fixupUrl("^"));
         Assert.assertEquals("http:///.", fixupUrl("."));

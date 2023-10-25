@@ -44,9 +44,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.io.File;
 import java.util.concurrent.ExecutionException;
 
-/**
- * UI tests for the Components UI's fragment.
- */
+/** UI tests for the Components UI's fragment. */
 @RunWith(AwJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class ComponentsListFragmentTest {
@@ -71,12 +69,15 @@ public class ComponentsListFragmentTest {
     }
 
     private CallbackHelper getComponentInfoLoadedListener() throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(() -> {
-            final CallbackHelper helper = new CallbackHelper();
-            ComponentsListFragment.setComponentInfoLoadedListenerForTesting(
-                    () -> { helper.notifyCalled(); });
-            return helper;
-        });
+        return TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    final CallbackHelper helper = new CallbackHelper();
+                    ComponentsListFragment.setComponentInfoLoadedListenerForTesting(
+                            () -> {
+                                helper.notifyCalled();
+                            });
+                    return helper;
+                });
     }
 
     private void launchComponentsFragment() {

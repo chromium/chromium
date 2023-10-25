@@ -21,15 +21,15 @@ import org.chromium.android_webview.test.util.AwQuotaManagerBridgeTestUtil;
  */
 @RunWith(AwJUnit4ClassRunner.class)
 public class StandaloneAwQuotaManagerBridgeTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     @Test
     @SmallTest
     public void testStartup() throws Exception {
         // AwQuotaManager should run without any issue.
-        AwQuotaManagerBridge.Origins origins = AwQuotaManagerBridgeTestUtil.getOrigins(
-                mActivityTestRule.getAwBrowserContext().getQuotaManagerBridge());
+        AwQuotaManagerBridge.Origins origins =
+                AwQuotaManagerBridgeTestUtil.getOrigins(
+                        mActivityTestRule.getAwBrowserContext().getQuotaManagerBridge());
         Assert.assertEquals(origins.mOrigins.length, 0);
         Assert.assertEquals(AwContents.getNativeInstanceCount(), 0);
     }

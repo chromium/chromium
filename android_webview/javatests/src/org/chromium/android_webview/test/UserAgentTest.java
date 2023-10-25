@@ -18,13 +18,10 @@ import org.chromium.base.test.util.Feature;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Tests for User Agent implementation.
- */
+/** Tests for User Agent implementation. */
 @RunWith(AwJUnit4ClassRunner.class)
 public class UserAgentTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
@@ -32,8 +29,10 @@ public class UserAgentTest {
     @Before
     public void setUp() {
         mContentsClient = new TestAwContentsClient();
-        mAwContents = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient)
-                              .getAwContents();
+        mAwContents =
+                mActivityTestRule
+                        .createAwTestContainerViewOnMainSync(mContentsClient)
+                        .getAwContents();
     }
 
     /**
@@ -45,13 +44,16 @@ public class UserAgentTest {
     @Feature({"AndroidWebView"})
     public void testNoExtraSpaceBeforeBuildName() throws Throwable {
         mActivityTestRule.getAwSettingsOnUiThread(mAwContents).setJavaScriptEnabled(true);
-        mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+        mActivityTestRule.loadDataSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
                 // Spaces are replaced with underscores to avoid consecutive spaces compression.
                 "<html>"
                         + "<body onload='document.title=navigator.userAgent.replace(/ /g, \"_\")'>"
                         + "</body>"
                         + "</html>",
-                "text/html", false);
+                "text/html",
+                false);
         final String ua = mActivityTestRule.getTitleOnUiThread(mAwContents);
         Matcher matcher = Pattern.compile("Android_[^;]+;_[^_]").matcher(ua);
         Assert.assertTrue(matcher.find());

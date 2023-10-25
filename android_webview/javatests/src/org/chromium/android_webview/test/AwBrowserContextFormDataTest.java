@@ -17,15 +17,17 @@ import org.junit.runner.RunWith;
  */
 @RunWith(AwJUnit4ClassRunner.class)
 public class AwBrowserContextFormDataTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     @Test
     @SmallTest
     public void testSmoke() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            mActivityTestRule.getAwBrowserContext().clearFormData();
-            Assert.assertFalse(mActivityTestRule.getAwBrowserContext().hasFormData());
-        });
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () -> {
+                            mActivityTestRule.getAwBrowserContext().clearFormData();
+                            Assert.assertFalse(
+                                    mActivityTestRule.getAwBrowserContext().hasFormData());
+                        });
     }
 }

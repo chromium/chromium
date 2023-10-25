@@ -34,13 +34,10 @@ import org.chromium.net.test.util.TestWebServer;
 
 import java.util.concurrent.TimeUnit;
 
-/**
- * Test for getHitTestResult, requestFocusNodeHref, and requestImageRef methods
- */
+/** Test for getHitTestResult, requestFocusNodeHref, and requestImageRef methods */
 @RunWith(AwJUnit4ClassRunner.class)
 public class WebKitHitTestTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private TestAwContentsClient mContentsClient;
     private AwTestContainerView mTestView;
@@ -58,8 +55,10 @@ public class WebKitHitTestTest {
         mAwContents = mTestView.getAwContents();
         mWebServer = TestWebServer.start();
         final String imagePath = "/" + CommonResources.TEST_IMAGE_FILENAME;
-        mWebServer.setResponseBase64(imagePath,
-                CommonResources.FAVICON_DATA_BASE64, CommonResources.getImagePngHeaders(true));
+        mWebServer.setResponseBase64(
+                imagePath,
+                CommonResources.FAVICON_DATA_BASE64,
+                CommonResources.getImagePngHeaders(true));
     }
 
     @After
@@ -81,18 +80,42 @@ public class WebKitHitTestTest {
     }
 
     private static String fullPageLink(String href, String anchorText) {
-        return CommonResources.makeHtmlPageFrom("", "<a class=\"full_view\" href=\""
-                + href + "\" " + "onclick=\"return false;\">" + anchorText + "</a>");
+        return CommonResources.makeHtmlPageFrom(
+                "",
+                "<a class=\"full_view\" href=\""
+                        + href
+                        + "\" "
+                        + "onclick=\"return false;\">"
+                        + anchorText
+                        + "</a>");
     }
 
     private void simulateTabDownUpOnUiThread() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            long eventTime = SystemClock.uptimeMillis();
-            mAwContents.getWebContents().getEventForwarder().dispatchKeyEvent(new KeyEvent(
-                    eventTime, eventTime, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_TAB, 0));
-            mAwContents.getWebContents().getEventForwarder().dispatchKeyEvent(new KeyEvent(
-                    eventTime, eventTime, KeyEvent.ACTION_UP, KeyEvent.KEYCODE_TAB, 0));
-        });
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () -> {
+                            long eventTime = SystemClock.uptimeMillis();
+                            mAwContents
+                                    .getWebContents()
+                                    .getEventForwarder()
+                                    .dispatchKeyEvent(
+                                            new KeyEvent(
+                                                    eventTime,
+                                                    eventTime,
+                                                    KeyEvent.ACTION_DOWN,
+                                                    KeyEvent.KEYCODE_TAB,
+                                                    0));
+                            mAwContents
+                                    .getWebContents()
+                                    .getEventForwarder()
+                                    .dispatchKeyEvent(
+                                            new KeyEvent(
+                                                    eventTime,
+                                                    eventTime,
+                                                    KeyEvent.ACTION_UP,
+                                                    KeyEvent.KEYCODE_TAB,
+                                                    0));
+                        });
     }
 
     private void simulateInput(boolean byTouch) {
@@ -110,36 +133,42 @@ public class WebKitHitTestTest {
     }
 
     private void pollForHitTestDataOnUiThread(final int expectedType, final String expectedExtra) {
-        mActivityTestRule.pollUiThread(() -> {
-            AwContents.HitTestData data = mAwContents.getLastHitTestResult();
-            return expectedType == data.hitTestResultType
-                    && stringEquals(expectedExtra, data.hitTestResultExtraData);
-        });
+        mActivityTestRule.pollUiThread(
+                () -> {
+                    AwContents.HitTestData data = mAwContents.getLastHitTestResult();
+                    return expectedType == data.hitTestResultType
+                            && stringEquals(expectedExtra, data.hitTestResultExtraData);
+                });
     }
 
-    private void pollForHrefAndImageSrcOnUiThread(final String expectedHref,
-            final String expectedAnchorText, final String expectedImageSrc) {
-        mActivityTestRule.pollUiThread(() -> {
-            AwContents.HitTestData data = mAwContents.getLastHitTestResult();
-            return stringEquals(expectedHref, data.href)
-                    && stringEquals(expectedAnchorText, data.anchorText)
-                    && stringEquals(expectedImageSrc, data.imgSrc);
-        });
+    private void pollForHrefAndImageSrcOnUiThread(
+            final String expectedHref,
+            final String expectedAnchorText,
+            final String expectedImageSrc) {
+        mActivityTestRule.pollUiThread(
+                () -> {
+                    AwContents.HitTestData data = mAwContents.getLastHitTestResult();
+                    return stringEquals(expectedHref, data.href)
+                            && stringEquals(expectedAnchorText, data.anchorText)
+                            && stringEquals(expectedImageSrc, data.imgSrc);
+                });
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Handler dummyHandler = new Handler();
-            Message focusNodeHrefMsg = dummyHandler.obtainMessage();
-            Message imageRefMsg = dummyHandler.obtainMessage();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Handler dummyHandler = new Handler();
+                    Message focusNodeHrefMsg = dummyHandler.obtainMessage();
+                    Message imageRefMsg = dummyHandler.obtainMessage();
 
-            mAwContents.requestFocusNodeHref(focusNodeHrefMsg);
-            mAwContents.requestImageRef(imageRefMsg);
+                    mAwContents.requestFocusNodeHref(focusNodeHrefMsg);
+                    mAwContents.requestImageRef(imageRefMsg);
 
-            Assert.assertEquals(expectedHref, focusNodeHrefMsg.getData().getString("url"));
-            Assert.assertEquals(
-                    expectedAnchorText, focusNodeHrefMsg.getData().getString("title"));
-            Assert.assertEquals(expectedImageSrc, focusNodeHrefMsg.getData().getString("src"));
-            Assert.assertEquals(expectedImageSrc, imageRefMsg.getData().getString("url"));
-        });
+                    Assert.assertEquals(expectedHref, focusNodeHrefMsg.getData().getString("url"));
+                    Assert.assertEquals(
+                            expectedAnchorText, focusNodeHrefMsg.getData().getString("title"));
+                    Assert.assertEquals(
+                            expectedImageSrc, focusNodeHrefMsg.getData().getString("src"));
+                    Assert.assertEquals(expectedImageSrc, imageRefMsg.getData().getString("url"));
+                });
     }
 
     private void srcAnchorTypeTestBody(boolean byTouch) throws Throwable {
@@ -285,9 +314,14 @@ public class WebKitHitTestTest {
 
     private void srcImgeAnchorTypeTestBody(boolean byTouch) throws Throwable {
         String fullImageSrc = "http://foo.bar/nonexistent.jpg";
-        String page = CommonResources.makeHtmlPageFrom("", "<a class=\"full_view\" href=\""
-                + HREF + "\"onclick=\"return false;\"><img class=\"full_view\" src=\""
-                + fullImageSrc + "\"></a>");
+        String page =
+                CommonResources.makeHtmlPageFrom(
+                        "",
+                        "<a class=\"full_view\" href=\""
+                                + HREF
+                                + "\"onclick=\"return false;\"><img class=\"full_view\" src=\""
+                                + fullImageSrc
+                                + "\"></a>");
         setServerResponseAndLoad(page);
         simulateInput(byTouch);
         pollForHitTestDataOnUiThread(HitTestResult.SRC_IMAGE_ANCHOR_TYPE, fullImageSrc);
@@ -313,9 +347,14 @@ public class WebKitHitTestTest {
         String fullImageSrc = mWebServer.getResponseUrl(relImageSrc);
         String relPath = "/foo.html";
         String fullPath = mWebServer.getResponseUrl(relPath);
-        String page = CommonResources.makeHtmlPageFrom("", "<a class=\"full_view\" href=\""
-                + relPath + "\"onclick=\"return false;\"><img class=\"full_view\" src=\""
-                + relImageSrc + "\"></a>");
+        String page =
+                CommonResources.makeHtmlPageFrom(
+                        "",
+                        "<a class=\"full_view\" href=\""
+                                + relPath
+                                + "\"onclick=\"return false;\"><img class=\"full_view\" src=\""
+                                + relImageSrc
+                                + "\"></a>");
         setServerResponseAndLoad(page);
         simulateInput(byTouch);
         pollForHitTestDataOnUiThread(HitTestResult.SRC_IMAGE_ANCHOR_TYPE, fullImageSrc);
@@ -340,10 +379,11 @@ public class WebKitHitTestTest {
     @SmallTest
     @Feature({"AndroidWebView", "WebKitHitTest"})
     public void testImgeType() throws Throwable {
-        String relImageSrc = "/"  + CommonResources.TEST_IMAGE_FILENAME;
+        String relImageSrc = "/" + CommonResources.TEST_IMAGE_FILENAME;
         String fullImageSrc = mWebServer.getResponseUrl(relImageSrc);
-        String page = CommonResources.makeHtmlPageFrom("",
-                "<img class=\"full_view\" src=\"" + relImageSrc + "\">");
+        String page =
+                CommonResources.makeHtmlPageFrom(
+                        "", "<img class=\"full_view\" src=\"" + relImageSrc + "\">");
         setServerResponseAndLoad(page);
         AwTestTouchUtils.simulateTouchCenterOfView(mTestView);
         pollForHitTestDataOnUiThread(HitTestResult.IMAGE_TYPE, fullImageSrc);
@@ -351,8 +391,9 @@ public class WebKitHitTestTest {
     }
 
     private void editTextTypeTestBody(boolean byTouch) throws Throwable {
-        String page = CommonResources.makeHtmlPageFrom("",
-                "<form><input class=\"full_view\" type=\"text\" name=\"test\"></form>");
+        String page =
+                CommonResources.makeHtmlPageFrom(
+                        "", "<form><input class=\"full_view\" type=\"text\" name=\"test\"></form>");
         setServerResponseAndLoad(page);
         simulateInput(byTouch);
         pollForHitTestDataOnUiThread(HitTestResult.EDIT_TEXT_TYPE, null);
@@ -408,9 +449,9 @@ public class WebKitHitTestTest {
 
         final String title = "UNKNOWN_TYPE title";
 
-        String page = CommonResources.makeHtmlPageFrom(
-                "<title>" + title + "</title>",
-                "<div class=\"full_view\">div text</div>");
+        String page =
+                CommonResources.makeHtmlPageFrom(
+                        "<title>" + title + "</title>", "<div class=\"full_view\">div text</div>");
         setServerResponseAndLoad(page);
         AwTestTouchUtils.simulateTouchCenterOfView(mTestView);
         pollForHitTestDataOnUiThread(HitTestResult.UNKNOWN_TYPE, null);
@@ -423,17 +464,20 @@ public class WebKitHitTestTest {
         // Test when the touch and focus paths racing with setting different
         // results.
 
-        String relImageSrc = "/"  + CommonResources.TEST_IMAGE_FILENAME;
+        String relImageSrc = "/" + CommonResources.TEST_IMAGE_FILENAME;
         String fullImageSrc = mWebServer.getResponseUrl(relImageSrc);
-        String html = CommonResources.makeHtmlPageFrom(
-                "<meta name=\"viewport\" content=\"width=device-width,height=device-height\" />"
-                + "<style type=\"text/css\">"
-                + ".full_width { width:100%; position:absolute; }"
-                + "</style>",
-                "<form><input class=\"full_width\" style=\"height:25%;\" "
-                + "type=\"text\" name=\"test\"></form>"
-                + "<img class=\"full_width\" style=\"height:50%;top:25%;\" "
-                + "src=\"" + relImageSrc + "\">");
+        String html =
+                CommonResources.makeHtmlPageFrom(
+                        "<meta name=\"viewport\""
+                            + " content=\"width=device-width,height=device-height\" /><style"
+                            + " type=\"text/css\">.full_width { width:100%; position:absolute; }"
+                            + "</style>",
+                        "<form><input class=\"full_width\" style=\"height:25%;\" "
+                                + "type=\"text\" name=\"test\"></form>"
+                                + "<img class=\"full_width\" style=\"height:50%;top:25%;\" "
+                                + "src=\""
+                                + relImageSrc
+                                + "\">");
         setServerResponseAndLoad(html);
 
         // Focus on input element and check the hit test results.

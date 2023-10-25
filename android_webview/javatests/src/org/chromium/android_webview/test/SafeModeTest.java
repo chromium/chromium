@@ -67,9 +67,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Test WebView SafeMode.
- */
+/** Test WebView SafeMode. */
 @RunWith(AwJUnit4ClassRunner.class)
 public class SafeModeTest {
     // The package name of the test shell. This is acting both as the client app and the WebView
@@ -79,20 +77,78 @@ public class SafeModeTest {
     // This is the actual certificate hash we use to sign webview_instrumentation_apk (Signer #1
     // certificate SHA-256 digest). This can be obtained by running:
     // $ out/Default/bin/webview_instrumentation_apk print-certs
-    private static final byte[] TEST_WEBVIEW_CERT_HASH = new byte[] {(byte) 0x32, (byte) 0xa2,
-            (byte) 0xfc, (byte) 0x74, (byte) 0xd7, (byte) 0x31, (byte) 0x10, (byte) 0x58,
-            (byte) 0x59, (byte) 0xe5, (byte) 0xa8, (byte) 0x5d, (byte) 0xf1, (byte) 0x6d,
-            (byte) 0x95, (byte) 0xf1, (byte) 0x02, (byte) 0xd8, (byte) 0x5b, (byte) 0x22,
-            (byte) 0x09, (byte) 0x9b, (byte) 0x80, (byte) 0x64, (byte) 0xc5, (byte) 0xd8,
-            (byte) 0x91, (byte) 0x5c, (byte) 0x61, (byte) 0xda, (byte) 0xd1, (byte) 0xe0};
+    private static final byte[] TEST_WEBVIEW_CERT_HASH =
+            new byte[] {
+                (byte) 0x32,
+                (byte) 0xa2,
+                (byte) 0xfc,
+                (byte) 0x74,
+                (byte) 0xd7,
+                (byte) 0x31,
+                (byte) 0x10,
+                (byte) 0x58,
+                (byte) 0x59,
+                (byte) 0xe5,
+                (byte) 0xa8,
+                (byte) 0x5d,
+                (byte) 0xf1,
+                (byte) 0x6d,
+                (byte) 0x95,
+                (byte) 0xf1,
+                (byte) 0x02,
+                (byte) 0xd8,
+                (byte) 0x5b,
+                (byte) 0x22,
+                (byte) 0x09,
+                (byte) 0x9b,
+                (byte) 0x80,
+                (byte) 0x64,
+                (byte) 0xc5,
+                (byte) 0xd8,
+                (byte) 0x91,
+                (byte) 0x5c,
+                (byte) 0x61,
+                (byte) 0xda,
+                (byte) 0xd1,
+                (byte) 0xe0
+            };
 
     // Arbitrary sha256 digest which does not match TEST_WEBVIEW_PACKAGE_NAME's certificate.
-    private static final byte[] FAKE_CERT_HASH = new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
-            (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
-            (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
-            (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
-            (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
-            (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
+    private static final byte[] FAKE_CERT_HASH =
+            new byte[] {
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF
+            };
 
     private static final String SAFEMODE_ACTION_NAME = "some_action_name";
 
@@ -206,8 +262,9 @@ public class SafeModeTest {
             // Pretend the servers-side |serialNumber| equals |SAVED_VARIATIONS_SEED_SERIAL_NUMBER|
             // and return |HTTP_NOT_MODIFIED|
             if (currInfo != null
-                    && currInfo.getParsedVariationsSeed().getSerialNumber().equals(
-                            SAVED_VARIATIONS_SEED_SERIAL_NUMBER)) {
+                    && currInfo.getParsedVariationsSeed()
+                            .getSerialNumber()
+                            .equals(SAVED_VARIATIONS_SEED_SERIAL_NUMBER)) {
                 fetchInfo.seedInfo = currInfo;
                 fetchInfo.seedInfo.date = getDateTime().newDate().getTime();
                 fetchInfo.seedFetchResult = HTTP_NOT_MODIFIED;
@@ -218,8 +275,7 @@ public class SafeModeTest {
         }
     }
 
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     @Before
     public void setUp() throws Throwable {
@@ -232,10 +288,14 @@ public class SafeModeTest {
     public void tearDown() throws Throwable {
         // Reset component state back to the default.
         final Context context = ContextUtils.getApplicationContext();
-        ComponentName safeModeComponent = new ComponentName(
-                TEST_WEBVIEW_PACKAGE_NAME, SafeModeController.SAFE_MODE_STATE_COMPONENT);
-        context.getPackageManager().setComponentEnabledSetting(safeModeComponent,
-                PackageManager.COMPONENT_ENABLED_STATE_DEFAULT, PackageManager.DONT_KILL_APP);
+        ComponentName safeModeComponent =
+                new ComponentName(
+                        TEST_WEBVIEW_PACKAGE_NAME, SafeModeController.SAFE_MODE_STATE_COMPONENT);
+        context.getPackageManager()
+                .setComponentEnabledSetting(
+                        safeModeComponent,
+                        PackageManager.COMPONENT_ENABLED_STATE_DEFAULT,
+                        PackageManager.DONT_KILL_APP);
 
         SafeModeController.getInstance().unregisterActionsForTesting();
 
@@ -247,7 +307,8 @@ public class SafeModeTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testSafeModeState_disabledByDefault() throws Throwable {
-        Assert.assertFalse("SafeMode should be off by default",
+        Assert.assertFalse(
+                "SafeMode should be off by default",
                 SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
     }
 
@@ -257,12 +318,17 @@ public class SafeModeTest {
     public void testSafeModeState_readComponentState() throws Throwable {
         // Enable the component directly.
         final Context context = ContextUtils.getApplicationContext();
-        ComponentName safeModeComponent = new ComponentName(
-                TEST_WEBVIEW_PACKAGE_NAME, SafeModeController.SAFE_MODE_STATE_COMPONENT);
-        context.getPackageManager().setComponentEnabledSetting(safeModeComponent,
-                PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+        ComponentName safeModeComponent =
+                new ComponentName(
+                        TEST_WEBVIEW_PACKAGE_NAME, SafeModeController.SAFE_MODE_STATE_COMPONENT);
+        context.getPackageManager()
+                .setComponentEnabledSetting(
+                        safeModeComponent,
+                        PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                        PackageManager.DONT_KILL_APP);
 
-        Assert.assertTrue("SafeMode should be enabled",
+        Assert.assertTrue(
+                "SafeMode should be enabled",
                 SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
     }
 
@@ -271,7 +337,8 @@ public class SafeModeTest {
     @Feature({"AndroidWebView"})
     public void testSafeModeState_enableWithMethod() throws Throwable {
         SafeModeService.setSafeMode(Arrays.asList(SAFEMODE_ACTION_NAME));
-        Assert.assertTrue("SafeMode should be enabled",
+        Assert.assertTrue(
+                "SafeMode should be enabled",
                 SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
     }
 
@@ -280,11 +347,13 @@ public class SafeModeTest {
     @Feature({"AndroidWebView"})
     public void testSafeModeState_disableWithMethod() throws Throwable {
         SafeModeService.setSafeMode(Arrays.asList(SAFEMODE_ACTION_NAME));
-        Assert.assertTrue("SafeMode should be enabled",
+        Assert.assertTrue(
+                "SafeMode should be enabled",
                 SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
 
         SafeModeService.setSafeMode(Arrays.asList());
-        Assert.assertFalse("SafeMode should be re-disabled",
+        Assert.assertFalse(
+                "SafeMode should be re-disabled",
                 SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
     }
 
@@ -294,7 +363,8 @@ public class SafeModeTest {
     public void testSafeModeState_enableWithService() throws Throwable {
         setSafeMode(Arrays.asList(SAFEMODE_ACTION_NAME));
 
-        Assert.assertTrue("SafeMode should be enabled",
+        Assert.assertTrue(
+                "SafeMode should be enabled",
                 SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
     }
 
@@ -304,12 +374,14 @@ public class SafeModeTest {
     public void testSafeModeState_disableWithService() throws Throwable {
         setSafeMode(Arrays.asList(SAFEMODE_ACTION_NAME));
 
-        Assert.assertTrue("SafeMode should be enabled",
+        Assert.assertTrue(
+                "SafeMode should be enabled",
                 SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
 
         setSafeMode(Arrays.asList());
 
-        Assert.assertFalse("SafeMode should be re-disabled",
+        Assert.assertFalse(
+                "SafeMode should be re-disabled",
                 SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
     }
 
@@ -319,7 +391,8 @@ public class SafeModeTest {
     public void testQueryActions_disabled() throws Throwable {
         Assert.assertEquals(
                 "Querying the ContentProvider should yield empty set when SafeMode is disabled",
-                asSet(), SafeModeController.getInstance().queryActions(TEST_WEBVIEW_PACKAGE_NAME));
+                asSet(),
+                SafeModeController.getInstance().queryActions(TEST_WEBVIEW_PACKAGE_NAME));
     }
 
     @Test
@@ -329,9 +402,11 @@ public class SafeModeTest {
         final String variationsActionId = new VariationsSeedSafeModeAction().getId();
         setSafeMode(Arrays.asList(variationsActionId));
 
-        Assert.assertTrue("SafeMode should be enabled",
+        Assert.assertTrue(
+                "SafeMode should be enabled",
                 SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
-        Assert.assertEquals("Querying the ContentProvider should yield the action we set",
+        Assert.assertEquals(
+                "Querying the ContentProvider should yield the action we set",
                 asSet(variationsActionId),
                 SafeModeController.getInstance().queryActions(TEST_WEBVIEW_PACKAGE_NAME));
     }
@@ -343,9 +418,11 @@ public class SafeModeTest {
         final String variationsActionId = new VariationsSeedSafeModeAction().getId();
         setSafeMode(Arrays.asList(SAFEMODE_ACTION_NAME, variationsActionId));
 
-        Assert.assertTrue("SafeMode should be enabled",
+        Assert.assertTrue(
+                "SafeMode should be enabled",
                 SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
-        Assert.assertEquals("Querying the ContentProvider should yield the action we set",
+        Assert.assertEquals(
+                "Querying the ContentProvider should yield the action we set",
                 asSet(SAFEMODE_ACTION_NAME, variationsActionId),
                 SafeModeController.getInstance().queryActions(TEST_WEBVIEW_PACKAGE_NAME));
     }
@@ -356,28 +433,43 @@ public class SafeModeTest {
     public void testQueryActions_autoDisableAfter30Days() throws Throwable {
         final String variationsActionId = new VariationsSeedSafeModeAction().getId();
         final long initialStartTimeMs = 12345L;
-        SafeModeService.setClockForTesting(() -> { return initialStartTimeMs; });
+        SafeModeService.setClockForTesting(
+                () -> {
+                    return initialStartTimeMs;
+                });
         setSafeMode(Arrays.asList(variationsActionId));
 
         final long beforeTimeLimitMs =
                 initialStartTimeMs + SafeModeService.SAFE_MODE_ENABLED_TIME_LIMIT_MS - 1L;
-        SafeModeService.setClockForTesting(() -> { return beforeTimeLimitMs; });
+        SafeModeService.setClockForTesting(
+                () -> {
+                    return beforeTimeLimitMs;
+                });
 
-        Assert.assertTrue("SafeMode should be enabled (before timeout)",
+        Assert.assertTrue(
+                "SafeMode should be enabled (before timeout)",
                 SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
-        Assert.assertEquals("Querying the ContentProvider should yield the action we set",
+        Assert.assertEquals(
+                "Querying the ContentProvider should yield the action we set",
                 asSet(variationsActionId),
                 SafeModeController.getInstance().queryActions(TEST_WEBVIEW_PACKAGE_NAME));
 
         final long afterTimeLimitMs =
                 initialStartTimeMs + SafeModeService.SAFE_MODE_ENABLED_TIME_LIMIT_MS;
-        SafeModeService.setClockForTesting(() -> { return afterTimeLimitMs; });
+        SafeModeService.setClockForTesting(
+                () -> {
+                    return afterTimeLimitMs;
+                });
 
-        Assert.assertTrue("SafeMode should be enabled until querying ContentProvider",
+        Assert.assertTrue(
+                "SafeMode should be enabled until querying ContentProvider",
                 SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
-        Assert.assertEquals("ContentProvider should return empty set after timeout", asSet(),
+        Assert.assertEquals(
+                "ContentProvider should return empty set after timeout",
+                asSet(),
                 SafeModeController.getInstance().queryActions(TEST_WEBVIEW_PACKAGE_NAME));
-        Assert.assertFalse("SafeMode should be disabled after querying ContentProvider",
+        Assert.assertFalse(
+                "SafeMode should be disabled after querying ContentProvider",
                 SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
     }
 
@@ -387,19 +479,29 @@ public class SafeModeTest {
     public void testQueryActions_autoDisableIfTimestampInFuture() throws Throwable {
         final String variationsActionId = new VariationsSeedSafeModeAction().getId();
         final long initialStartTimeMs = 12345L;
-        SafeModeService.setClockForTesting(() -> { return initialStartTimeMs; });
+        SafeModeService.setClockForTesting(
+                () -> {
+                    return initialStartTimeMs;
+                });
         setSafeMode(Arrays.asList(variationsActionId));
 
         // If the user manually sets their clock backward in time, then the time delta will be
         // negative. This case should also be treated as expired.
         final long queryTime = initialStartTimeMs - 1L;
-        SafeModeService.setClockForTesting(() -> { return queryTime; });
+        SafeModeService.setClockForTesting(
+                () -> {
+                    return queryTime;
+                });
 
-        Assert.assertTrue("SafeMode should be enabled until querying ContentProvider",
+        Assert.assertTrue(
+                "SafeMode should be enabled until querying ContentProvider",
                 SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
-        Assert.assertEquals("ContentProvider should return empty set after timeout", asSet(),
+        Assert.assertEquals(
+                "ContentProvider should return empty set after timeout",
+                asSet(),
                 SafeModeController.getInstance().queryActions(TEST_WEBVIEW_PACKAGE_NAME));
-        Assert.assertFalse("SafeMode should be disabled after querying ContentProvider",
+        Assert.assertFalse(
+                "SafeMode should be disabled after querying ContentProvider",
                 SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
     }
 
@@ -409,18 +511,27 @@ public class SafeModeTest {
     public void testQueryActions_extendTimeoutWithDuplicateConfig() throws Throwable {
         final String variationsActionId = new VariationsSeedSafeModeAction().getId();
         final long initialStartTimeMs = 12345L;
-        SafeModeService.setClockForTesting(() -> { return initialStartTimeMs; });
+        SafeModeService.setClockForTesting(
+                () -> {
+                    return initialStartTimeMs;
+                });
         setSafeMode(Arrays.asList(variationsActionId));
 
         // Send a duplicate config after 1 day to extend the SafeMode timeout for another 30 days.
         final long duplicateConfigTimeMs = initialStartTimeMs + TimeUnit.DAYS.toMillis(1);
-        SafeModeService.setClockForTesting(() -> { return duplicateConfigTimeMs; });
+        SafeModeService.setClockForTesting(
+                () -> {
+                    return duplicateConfigTimeMs;
+                });
         setSafeMode(Arrays.asList(variationsActionId));
 
         // 30 days after the original timeout
         final long firstTimeLimitMs =
                 initialStartTimeMs + SafeModeService.SAFE_MODE_ENABLED_TIME_LIMIT_MS;
-        SafeModeService.setClockForTesting(() -> { return firstTimeLimitMs; });
+        SafeModeService.setClockForTesting(
+                () -> {
+                    return firstTimeLimitMs;
+                });
 
         Assert.assertEquals(
                 "Querying the ContentProvider should yield the action we set (timeout extended)",
@@ -429,9 +540,14 @@ public class SafeModeTest {
 
         final long secondTimeLimitMs =
                 duplicateConfigTimeMs + SafeModeService.SAFE_MODE_ENABLED_TIME_LIMIT_MS;
-        SafeModeService.setClockForTesting(() -> { return secondTimeLimitMs; });
+        SafeModeService.setClockForTesting(
+                () -> {
+                    return secondTimeLimitMs;
+                });
 
-        Assert.assertEquals("ContentProvider should return empty set after timeout", asSet(),
+        Assert.assertEquals(
+                "ContentProvider should return empty set after timeout",
+                asSet(),
                 SafeModeController.getInstance().queryActions(TEST_WEBVIEW_PACKAGE_NAME));
     }
 
@@ -446,11 +562,15 @@ public class SafeModeTest {
         // disable itself.
         SafeModeService.removeSharedPrefKeyForTesting(SafeModeService.LAST_MODIFIED_TIME_KEY);
 
-        Assert.assertTrue("SafeMode should be enabled until querying ContentProvider",
+        Assert.assertTrue(
+                "SafeMode should be enabled until querying ContentProvider",
                 SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
-        Assert.assertEquals("ContentProvider should return empty set after timeout", asSet(),
+        Assert.assertEquals(
+                "ContentProvider should return empty set after timeout",
+                asSet(),
                 SafeModeController.getInstance().queryActions(TEST_WEBVIEW_PACKAGE_NAME));
-        Assert.assertFalse("SafeMode should be disabled after querying ContentProvider",
+        Assert.assertFalse(
+                "SafeMode should be disabled after querying ContentProvider",
                 SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
     }
 
@@ -465,11 +585,15 @@ public class SafeModeTest {
         // SafeMode should disable itself.
         SafeModeService.removeSharedPrefKeyForTesting(SafeModeService.SAFEMODE_ACTIONS_KEY);
 
-        Assert.assertTrue("SafeMode should be enabled until querying ContentProvider",
+        Assert.assertTrue(
+                "SafeMode should be enabled until querying ContentProvider",
                 SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
-        Assert.assertEquals("ContentProvider should return empty set after timeout", asSet(),
+        Assert.assertEquals(
+                "ContentProvider should return empty set after timeout",
+                asSet(),
                 SafeModeController.getInstance().queryActions(TEST_WEBVIEW_PACKAGE_NAME));
-        Assert.assertFalse("SafeMode should be disabled after querying ContentProvider",
+        Assert.assertFalse(
+                "SafeMode should be disabled after querying ContentProvider",
                 SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
     }
 
@@ -561,8 +685,9 @@ public class SafeModeTest {
         SafeModeController.getInstance().registerActions(new SafeModeAction[] {testAction1});
         try {
             SafeModeController.getInstance().registerActions(new SafeModeAction[] {testAction2});
-            Assert.fail("SafeModeController should have thrown an exception when "
-                    + "re-registering actions");
+            Assert.fail(
+                    "SafeModeController should have thrown an exception when "
+                            + "re-registering actions");
         } catch (IllegalStateException e) {
             // Expected
         }
@@ -572,15 +697,16 @@ public class SafeModeTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testSafeModeAction_cannotRegisterDuplicateActionId() throws Throwable {
-        Assume.assumeTrue("This behavior is only in debug builds for performance reasons",
+        Assume.assumeTrue(
+                "This behavior is only in debug builds for performance reasons",
                 BuildConfig.ENABLE_ASSERTS);
         TestSafeModeAction testAction1 = new TestSafeModeAction("test1");
         TestSafeModeAction testAction2 = new TestSafeModeAction("test1");
         try {
-            SafeModeController.getInstance().registerActions(
-                    new SafeModeAction[] {testAction1, testAction2});
-            Assert.fail("SafeModeController should have thrown an exception for "
-                    + "a duplicate ID");
+            SafeModeController.getInstance()
+                    .registerActions(new SafeModeAction[] {testAction1, testAction2});
+            Assert.fail(
+                    "SafeModeController should have thrown an exception for " + "a duplicate ID");
         } catch (IllegalArgumentException e) {
             // Expected
         }
@@ -601,8 +727,9 @@ public class SafeModeTest {
         try {
             Set<String> actions = asSet("test");
             SafeModeController.getInstance().executeActions(actions);
-            Assert.fail("SafeModeController should have thrown an exception when "
-                    + "executing without registering");
+            Assert.fail(
+                    "SafeModeController should have thrown an exception when "
+                            + "executing without registering");
         } catch (IllegalStateException e) {
             // Expected
         }
@@ -617,7 +744,9 @@ public class SafeModeTest {
 
         Set<String> actions = asSet("test");
         SafeModeController.getInstance().executeActions(actions);
-        Assert.assertEquals("TestSafeModeAction should have been executed exactly 1 time", 1,
+        Assert.assertEquals(
+                "TestSafeModeAction should have been executed exactly 1 time",
+                1,
                 testAction.getCallCount());
     }
 
@@ -626,7 +755,8 @@ public class SafeModeTest {
     @Feature({"AndroidWebView"})
     public void testSafeModeAction_doesNotExecuteUnregisteredActions() throws Throwable {
         HistogramWatcher histogramExpectation =
-                HistogramWatcher.newSingleRecordWatcher("Android.WebView.SafeMode.ExecutionResult",
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.WebView.SafeMode.ExecutionResult",
                         SafeModeController.SafeModeExecutionResult.ACTION_UNKNOWN);
         TestSafeModeAction testAction = new TestSafeModeAction("test");
         SafeModeController.getInstance().registerActions(new SafeModeAction[] {testAction});
@@ -634,11 +764,15 @@ public class SafeModeTest {
         Set<String> actions = asSet(testAction.getId(), "unregistered1", "unregistered2");
         @SafeModeController.SafeModeExecutionResult
         int success = SafeModeController.getInstance().executeActions(actions);
-        Assert.assertEquals("TestSafeModeAction should have been executed exactly 1 time", 1,
+        Assert.assertEquals(
+                "TestSafeModeAction should have been executed exactly 1 time",
+                1,
                 testAction.getCallCount());
         Assert.assertEquals(
-                "Overall status should be unknown if at least one action is unrecognized and no actions failed",
-                success, SafeModeController.SafeModeExecutionResult.ACTION_UNKNOWN);
+                "Overall status should be unknown if at least one action is unrecognized and no"
+                        + " actions failed",
+                success,
+                SafeModeController.SafeModeExecutionResult.ACTION_UNKNOWN);
         histogramExpectation.assertExpected("Unregistered safemode actions should be logged");
         // If we got this far without crashing, we assume SafeModeController correctly ignored the
         // unregistered actions.
@@ -649,26 +783,37 @@ public class SafeModeTest {
     @Feature({"AndroidWebView"})
     public void testSafeModeAction_testStatusHierarchyEnforcedCorrectly() throws Throwable {
         HistogramWatcher histogramExpectation =
-                HistogramWatcher.newSingleRecordWatcher("Android.WebView.SafeMode.ExecutionResult",
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.WebView.SafeMode.ExecutionResult",
                         SafeModeController.SafeModeExecutionResult.ACTION_FAILED);
         TestSafeModeAction testActionFailed = new TestSafeModeAction("testFail", false);
         TestSafeModeAction testActionSuccess = new TestSafeModeAction("testSuccess");
-        SafeModeController.getInstance().registerActions(
-                new SafeModeAction[] {testActionSuccess, testActionFailed});
+        SafeModeController.getInstance()
+                .registerActions(new SafeModeAction[] {testActionSuccess, testActionFailed});
 
         // The possible execution statuses include SUCCESS, ACTION_FAILED, and ACTION_UNKNOWN.
         // The precedence is ACTION_FAILED, ACTION_UNKNOWN, and then SUCCESS in descending order.
-        Set<String> actions = asSet(testActionSuccess.getId(), testActionFailed.getId(),
-                "unregistered1", "unregistered2");
+        Set<String> actions =
+                asSet(
+                        testActionSuccess.getId(),
+                        testActionFailed.getId(),
+                        "unregistered1",
+                        "unregistered2");
         @SafeModeController.SafeModeExecutionResult
         int success = SafeModeController.getInstance().executeActions(actions);
-        Assert.assertEquals(testActionFailed.getId() + " should have been executed exactly 1 time",
-                1, testActionFailed.getCallCount());
-        Assert.assertEquals(testActionSuccess.getId() + " should have been executed exactly 1 time",
-                1, testActionSuccess.getCallCount());
-        Assert.assertEquals("Overall status should be failure if at least one"
+        Assert.assertEquals(
+                testActionFailed.getId() + " should have been executed exactly 1 time",
+                1,
+                testActionFailed.getCallCount());
+        Assert.assertEquals(
+                testActionSuccess.getId() + " should have been executed exactly 1 time",
+                1,
+                testActionSuccess.getCallCount());
+        Assert.assertEquals(
+                "Overall status should be failure if at least one"
                         + " action is unrecognized and at least one action is a failure",
-                success, SafeModeController.SafeModeExecutionResult.ACTION_FAILED);
+                success,
+                SafeModeController.SafeModeExecutionResult.ACTION_FAILED);
         histogramExpectation.assertExpected("Failed safemode actions should be logged");
         // If we got this far without crashing, we assume SafeModeController correctly ignored the
         // unregistered actions.
@@ -680,12 +825,14 @@ public class SafeModeTest {
     public void testSafeModeAction_onlyExecutesSpecifiedActions() throws Throwable {
         TestSafeModeAction testAction1 = new TestSafeModeAction("test1");
         TestSafeModeAction testAction2 = new TestSafeModeAction("test2");
-        SafeModeController.getInstance().registerActions(
-                new SafeModeAction[] {testAction1, testAction2});
+        SafeModeController.getInstance()
+                .registerActions(new SafeModeAction[] {testAction1, testAction2});
 
         Set<String> actions = asSet("test1");
         SafeModeController.getInstance().executeActions(actions);
-        Assert.assertEquals("testAction1 should have been executed exactly 1 time", 1,
+        Assert.assertEquals(
+                "testAction1 should have been executed exactly 1 time",
+                1,
                 testAction1.getCallCount());
         Assert.assertEquals(
                 "testAction2 should not have been executed", 0, testAction2.getCallCount());
@@ -701,8 +848,8 @@ public class SafeModeTest {
 
         Set<String> actions = asSet(testAction1.getId(), testAction2.getId(), testAction3.getId());
 
-        SafeModeController.getInstance().registerActions(
-                new SafeModeAction[] {testAction1, testAction2, testAction3});
+        SafeModeController.getInstance()
+                .registerActions(new SafeModeAction[] {testAction1, testAction2, testAction3});
         SafeModeController.getInstance().executeActions(actions);
         Assert.assertEquals(
                 "testAction1 should be executed first", 1, testAction1.getExecutionOrder());
@@ -714,14 +861,20 @@ public class SafeModeTest {
         // Unregister and re-register in the opposite order. Verify that they're executed in the new
         // registration order.
         SafeModeController.getInstance().unregisterActionsForTesting();
-        SafeModeController.getInstance().registerActions(
-                new SafeModeAction[] {testAction3, testAction2, testAction1});
+        SafeModeController.getInstance()
+                .registerActions(new SafeModeAction[] {testAction3, testAction2, testAction1});
         SafeModeController.getInstance().executeActions(actions);
-        Assert.assertEquals("testAction3 should be executed first the next time", 4,
+        Assert.assertEquals(
+                "testAction3 should be executed first the next time",
+                4,
                 testAction3.getExecutionOrder());
-        Assert.assertEquals("testAction2 should be executed second the next time", 5,
+        Assert.assertEquals(
+                "testAction2 should be executed second the next time",
+                5,
                 testAction2.getExecutionOrder());
-        Assert.assertEquals("testAction1 should be executed third the next time", 6,
+        Assert.assertEquals(
+                "testAction1 should be executed third the next time",
+                6,
                 testAction1.getExecutionOrder());
     }
 
@@ -730,42 +883,54 @@ public class SafeModeTest {
     @Feature({"AndroidWebView"})
     public void testSafeModeAction_overallSuccessStatus() throws Throwable {
         HistogramWatcher histogramExpectation =
-                HistogramWatcher.newSingleRecordWatcher("Android.WebView.SafeMode.ExecutionResult",
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.WebView.SafeMode.ExecutionResult",
                         SafeModeController.SafeModeExecutionResult.SUCCESS);
         TestSafeModeAction successAction1 = new TestSafeModeAction("successAction1");
         TestSafeModeAction successAction2 = new TestSafeModeAction("successAction2");
         Set<String> allSuccessful = asSet(successAction1.getId(), successAction2.getId());
-        SafeModeController.getInstance().registerActions(
-                new SafeModeAction[] {successAction1, successAction2});
+        SafeModeController.getInstance()
+                .registerActions(new SafeModeAction[] {successAction1, successAction2});
         @SafeModeController.SafeModeExecutionResult
         int success = SafeModeController.getInstance().executeActions(allSuccessful);
-        Assert.assertEquals("Overall status should be successful if all actions are successful",
-                success, SafeModeController.SafeModeExecutionResult.SUCCESS);
+        Assert.assertEquals(
+                "Overall status should be successful if all actions are successful",
+                success,
+                SafeModeController.SafeModeExecutionResult.SUCCESS);
         histogramExpectation.assertExpected(
                 "Overall status should be successful if all actions are successful");
-        Assert.assertEquals("successAction1 should have been executed exactly 1 time", 1,
+        Assert.assertEquals(
+                "successAction1 should have been executed exactly 1 time",
+                1,
                 successAction1.getCallCount());
-        Assert.assertEquals("successAction2 should have been executed exactly 1 time", 1,
+        Assert.assertEquals(
+                "successAction2 should have been executed exactly 1 time",
+                1,
                 successAction2.getCallCount());
 
         // Register a new set of actions where at least one indicates failure.
         histogramExpectation =
-                HistogramWatcher.newSingleRecordWatcher("Android.WebView.SafeMode.ExecutionResult",
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.WebView.SafeMode.ExecutionResult",
                         SafeModeController.SafeModeExecutionResult.ACTION_FAILED);
         SafeModeController.getInstance().unregisterActionsForTesting();
         TestSafeModeAction failAction = new TestSafeModeAction("failAction", false);
         Set<String> oneFailure =
                 asSet(successAction1.getId(), failAction.getId(), successAction2.getId());
-        SafeModeController.getInstance().registerActions(
-                new SafeModeAction[] {successAction1, failAction, successAction2});
+        SafeModeController.getInstance()
+                .registerActions(new SafeModeAction[] {successAction1, failAction, successAction2});
         success = SafeModeController.getInstance().executeActions(oneFailure);
-        Assert.assertEquals("Overall status should be failure if at least one action fails",
-                success, SafeModeController.SafeModeExecutionResult.ACTION_FAILED);
+        Assert.assertEquals(
+                "Overall status should be failure if at least one action fails",
+                success,
+                SafeModeController.SafeModeExecutionResult.ACTION_FAILED);
         histogramExpectation.assertExpected(
                 "Overall status should be failure if at least one action fails");
         Assert.assertEquals(
                 "successAction1 should have been executed again", 2, successAction1.getCallCount());
-        Assert.assertEquals("failAction should have been executed exactly 1 time", 1,
+        Assert.assertEquals(
+                "failAction should have been executed exactly 1 time",
+                1,
                 failAction.getCallCount());
         Assert.assertEquals(
                 "successAction2 should have been executed again", 2, successAction2.getCallCount());
@@ -821,8 +986,10 @@ public class SafeModeTest {
 
         // Mimic embedded data directory that lives separately from nonembedded data directory for
         // testing
-        File seedFileDirectory = new File(
-                PathUtils.getDataDirectory() + File.separator, "embedded-data-directory-for-test");
+        File seedFileDirectory =
+                new File(
+                        PathUtils.getDataDirectory() + File.separator,
+                        "embedded-data-directory-for-test");
         Assert.assertTrue("Seed file directory already exists", seedFileDirectory.mkdir());
         File embeddedSeedFile =
                 new File(seedFileDirectory.getPath() + File.separator, "variations_seed");
@@ -834,7 +1001,8 @@ public class SafeModeTest {
 
         try {
             boolean success = action.execute();
-            Assert.assertFalse("FastVariationsSeedSafeModeAction should indicate"
+            Assert.assertFalse(
+                    "FastVariationsSeedSafeModeAction should indicate"
                             + " failure with no variations seed",
                     success);
         } finally {
@@ -864,8 +1032,10 @@ public class SafeModeTest {
 
         // Mimic embedded data directory that lives separately from nonembedded data directory for
         // testing
-        File seedFileDirectory = new File(
-                PathUtils.getDataDirectory() + File.separator, "embedded-data-directory-for-test");
+        File seedFileDirectory =
+                new File(
+                        PathUtils.getDataDirectory() + File.separator,
+                        "embedded-data-directory-for-test");
         Assert.assertTrue("Seed file directory already exists", seedFileDirectory.mkdir());
         File embeddedSeedFile =
                 new File(seedFileDirectory.getPath() + File.separator, "variations_seed");
@@ -879,7 +1049,8 @@ public class SafeModeTest {
             setSafeMode(Arrays.asList(action.getId()));
 
             boolean success = action.execute();
-            Assert.assertTrue("FastVariationsSeedSafeModeAction should not indicate"
+            Assert.assertTrue(
+                    "FastVariationsSeedSafeModeAction should not indicate"
                             + " failure with variations seed in ContentProvider's data directory",
                     success);
         } finally {
@@ -930,7 +1101,8 @@ public class SafeModeTest {
         // does not have a valid seed to return to the FastVariationsSeedSafeModeAction,
         // it fails with no valid seed to load.
         boolean success = action.execute();
-        Assert.assertFalse("FastVariationsSeedSafeModeAction should indicate"
+        Assert.assertFalse(
+                "FastVariationsSeedSafeModeAction should indicate"
                         + " failure with no variations seed",
                 success);
         TestLoader loader = new TestLoader(new TestLoaderResult());
@@ -1008,19 +1180,23 @@ public class SafeModeTest {
     public void testTrustedPackage_invalidCert() throws Exception {
         TrustedPackage invalidPackage =
                 new TrustedPackage(TEST_WEBVIEW_PACKAGE_NAME, FAKE_CERT_HASH, null);
-        Assert.assertFalse("wrong certificate should not verify",
+        Assert.assertFalse(
+                "wrong certificate should not verify",
                 invalidPackage.verify(TEST_WEBVIEW_PACKAGE_NAME));
     }
 
     private static class TestTrustedPackage extends TrustedPackage {
         private boolean mIsDebug = true;
+
         TestTrustedPackage(String packageName, byte[] release, byte[] debug) {
             super(packageName, release, debug);
         }
+
         @Override
         protected boolean isDebugAndroid() {
             return mIsDebug;
         }
+
         void setDebugBuildForTesting(boolean debug) {
             mIsDebug = debug;
         }
@@ -1031,7 +1207,8 @@ public class SafeModeTest {
     public void testTrustedPackage_wrongPackageName() throws Exception {
         TrustedPackage webviewTestShell =
                 new TestTrustedPackage(TEST_WEBVIEW_PACKAGE_NAME, TEST_WEBVIEW_CERT_HASH, null);
-        Assert.assertFalse("Wrong pacakge name should not verify",
+        Assert.assertFalse(
+                "Wrong pacakge name should not verify",
                 webviewTestShell.verify("com.fake.package.name"));
     }
 
@@ -1040,13 +1217,16 @@ public class SafeModeTest {
     public void testTrustedPackage_eitherCertCanMatchOnDebugAndroid() throws Exception {
         TrustedPackage webviewTestShell =
                 new TrustedPackage(TEST_WEBVIEW_PACKAGE_NAME, TEST_WEBVIEW_CERT_HASH, null);
-        Assert.assertTrue("The WebView test shell should match itself",
+        Assert.assertTrue(
+                "The WebView test shell should match itself",
                 webviewTestShell.verify(TEST_WEBVIEW_PACKAGE_NAME));
         // Adding a non-matching certificate should not change anything (we should still trust
         // this).
-        webviewTestShell = new TestTrustedPackage(
-                TEST_WEBVIEW_PACKAGE_NAME, TEST_WEBVIEW_CERT_HASH, FAKE_CERT_HASH);
-        Assert.assertTrue("The WebView test shell should match itself",
+        webviewTestShell =
+                new TestTrustedPackage(
+                        TEST_WEBVIEW_PACKAGE_NAME, TEST_WEBVIEW_CERT_HASH, FAKE_CERT_HASH);
+        Assert.assertTrue(
+                "The WebView test shell should match itself",
                 webviewTestShell.verify(TEST_WEBVIEW_PACKAGE_NAME));
     }
 
@@ -1055,15 +1235,18 @@ public class SafeModeTest {
     public void testTrustedPackage_debugCertsOnlyTrustedOnDebugAndroid() throws Exception {
         // Use a fake release cert and real debug cert so this package can only be trusted on a
         // debug build.
-        TestTrustedPackage webviewTestShell = new TestTrustedPackage(
-                TEST_WEBVIEW_PACKAGE_NAME, FAKE_CERT_HASH, TEST_WEBVIEW_CERT_HASH);
+        TestTrustedPackage webviewTestShell =
+                new TestTrustedPackage(
+                        TEST_WEBVIEW_PACKAGE_NAME, FAKE_CERT_HASH, TEST_WEBVIEW_CERT_HASH);
 
         webviewTestShell.setDebugBuildForTesting(true);
-        Assert.assertTrue("Debug cert should be trusted on debug Android build",
+        Assert.assertTrue(
+                "Debug cert should be trusted on debug Android build",
                 webviewTestShell.verify(TEST_WEBVIEW_PACKAGE_NAME));
 
         webviewTestShell.setDebugBuildForTesting(false);
-        Assert.assertFalse("Debug cert should not be trusted on release Android build",
+        Assert.assertFalse(
+                "Debug cert should not be trusted on release Android build",
                 webviewTestShell.verify(TEST_WEBVIEW_PACKAGE_NAME));
     }
 
@@ -1072,7 +1255,8 @@ public class SafeModeTest {
     public void testTrustedPackage_verifyWebViewTestShell() throws Exception {
         TrustedPackage webviewTestShell =
                 new TestTrustedPackage(TEST_WEBVIEW_PACKAGE_NAME, TEST_WEBVIEW_CERT_HASH, null);
-        Assert.assertTrue("The WebView test shell should match itself",
+        Assert.assertTrue(
+                "The WebView test shell should match itself",
                 webviewTestShell.verify(TEST_WEBVIEW_PACKAGE_NAME));
     }
 
@@ -1095,21 +1279,25 @@ public class SafeModeTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void
-    testNonEmbeddedSafeModeActionList_executeNonEmbeddedActionWhenRegisteredAndDisabled()
-            throws Throwable {
+            testNonEmbeddedSafeModeActionList_executeNonEmbeddedActionWhenRegisteredAndDisabled()
+                    throws Throwable {
         TestNonEmbeddedSafeModeAction testAction = new TestNonEmbeddedSafeModeAction("test");
         SafeModeController.getInstance().registerActions(new SafeModeAction[] {testAction});
 
         // Enable test action
         setSafeMode(Arrays.asList(testAction.getId()));
-        Assert.assertEquals("Test action should be executed once when enabled", 1,
+        Assert.assertEquals(
+                "Test action should be executed once when enabled",
+                1,
                 testAction.getActivatedCallCount());
 
         // Disable test action
         setSafeMode(Arrays.asList());
-        Assert.assertEquals("Test action should be executed when previously "
+        Assert.assertEquals(
+                "Test action should be executed when previously "
                         + "enabled and current command is to disable it",
-                1, testAction.getDeactivatedCallCount());
+                1,
+                testAction.getDeactivatedCallCount());
     }
 
     @Test
@@ -1122,16 +1310,19 @@ public class SafeModeTest {
 
         // Enable test action
         setSafeMode(Arrays.asList(testAction.getId()));
-        Assert.assertEquals("Test action should be executed once when enabled", 1,
+        Assert.assertEquals(
+                "Test action should be executed once when enabled",
+                1,
                 testAction.getActivatedCallCount());
 
-        // Enable test action again
-        // Since test action was previously enabled and it is being enabled again,
-        // it will not execute again since there is no state change
+        // Enable test action again Since test action was previously enabled and it is being
+        // enabled again, it will not execute again since there is no state change
         setSafeMode(Arrays.asList(testAction.getId()));
-        Assert.assertEquals("Test action should not be executed when previously "
+        Assert.assertEquals(
+                "Test action should not be executed when previously "
                         + "enabled and current command is to enable it",
-                1, testAction.getActivatedCallCount());
+                1,
+                testAction.getActivatedCallCount());
     }
 
     @Test
@@ -1144,20 +1335,26 @@ public class SafeModeTest {
 
         // Enable test action
         setSafeMode(Arrays.asList(testAction.getId()));
-        Assert.assertEquals("Test action should be executed once when enabled", 1,
+        Assert.assertEquals(
+                "Test action should be executed once when enabled",
+                1,
                 testAction.getActivatedCallCount());
 
         // Disable test action
         setSafeMode(Arrays.asList());
-        Assert.assertEquals("Test action should be executed when previously "
+        Assert.assertEquals(
+                "Test action should be executed when previously "
                         + "enabled and current command is to disable it",
-                1, testAction.getDeactivatedCallCount());
+                1,
+                testAction.getDeactivatedCallCount());
 
         // Disable test action again
         setSafeMode(Arrays.asList());
-        Assert.assertEquals("Test action should not be executed when previously"
+        Assert.assertEquals(
+                "Test action should not be executed when previously"
                         + " disabled and current command is to disable it",
-                1, testAction.getDeactivatedCallCount());
+                1,
+                testAction.getDeactivatedCallCount());
     }
 
     @Test
@@ -1171,13 +1368,17 @@ public class SafeModeTest {
 
         // Enable test action
         setSafeMode(Arrays.asList(testAction.getId()));
-        Assert.assertEquals("Test action should not be executed when enabled and not registered", 0,
+        Assert.assertEquals(
+                "Test action should not be executed when enabled and not registered",
+                0,
                 testAction.getActivatedCallCount());
 
         // Disable test action
         setSafeMode(Arrays.asList());
-        Assert.assertEquals("Test action should not be executed when disabled and not registered",
-                0, testAction.getDeactivatedCallCount());
+        Assert.assertEquals(
+                "Test action should not be executed when disabled and not registered",
+                0,
+                testAction.getDeactivatedCallCount());
     }
 
     @Test
@@ -1189,28 +1390,33 @@ public class SafeModeTest {
                 new TestNonEmbeddedSafeModeAction("test", false);
         TestNonEmbeddedSafeModeAction passingTestAction =
                 new TestNonEmbeddedSafeModeAction("passingtest");
-        SafeModeController.getInstance().registerActions(
-                new SafeModeAction[] {failingTestAction, passingTestAction});
+        SafeModeController.getInstance()
+                .registerActions(new SafeModeAction[] {failingTestAction, passingTestAction});
 
-        Assert.assertFalse("Overall status is failure if mitigations indicate"
+        Assert.assertFalse(
+                "Overall status is failure if mitigations indicate"
                         + "failure when SafeMode is activated",
                 NonEmbeddedSafeModeActionsSetupCleanup.executeNonEmbeddedActionsOnStateChange(
                         new HashSet<>(Arrays.asList()),
                         new HashSet<>(Arrays.asList(failingTestAction.getId()))));
-        Assert.assertFalse("Overall status is failure if mitigations indicate"
+        Assert.assertFalse(
+                "Overall status is failure if mitigations indicate"
                         + "failure when SafeMode is deactivated",
                 NonEmbeddedSafeModeActionsSetupCleanup.executeNonEmbeddedActionsOnStateChange(
                         new HashSet<>(Arrays.asList(failingTestAction.getId())),
                         new HashSet<>(Arrays.asList())));
-        Assert.assertFalse("Overall status is failure if at least one mitigation indicates "
+        Assert.assertFalse(
+                "Overall status is failure if at least one mitigation indicates "
                         + "failure when SafeMode is activated",
                 NonEmbeddedSafeModeActionsSetupCleanup.executeNonEmbeddedActionsOnStateChange(
                         new HashSet<>(Arrays.asList()),
-                        new HashSet<>(Arrays.asList(
-                                failingTestAction.getId(), passingTestAction.getId()))));
+                        new HashSet<>(
+                                Arrays.asList(
+                                        failingTestAction.getId(), passingTestAction.getId()))));
 
         setSafeMode(Arrays.asList(passingTestAction.getId()));
-        Assert.assertTrue("Overall status is success if all mitigations success",
+        Assert.assertTrue(
+                "Overall status is success if all mitigations success",
                 NonEmbeddedSafeModeActionsSetupCleanup.executeNonEmbeddedActionsOnStateChange(
                         new HashSet<>(Arrays.asList()),
                         new HashSet<>(Arrays.asList(passingTestAction.getId()))));
@@ -1220,8 +1426,8 @@ public class SafeModeTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void
-    testNonEmbeddedSafeModeActionList_multipleNonEmbeddedActionsNotExecutedWhenNotRegistered()
-            throws Throwable {
+            testNonEmbeddedSafeModeActionList_multipleNonEmbeddedActionsNotExecutedWhenNotRegistered()
+                    throws Throwable {
         TestNonEmbeddedSafeModeAction testAction1 = new TestNonEmbeddedSafeModeAction("test1");
         TestNonEmbeddedSafeModeAction testAction2 = new TestNonEmbeddedSafeModeAction("test2");
         TestNonEmbeddedSafeModeAction testAction3 =
@@ -1237,8 +1443,8 @@ public class SafeModeTest {
                 "Test action 3 should not be executed", 0, testAction3.getActivatedCallCount());
 
         // Register all three actions
-        SafeModeController.getInstance().registerActions(
-                new SafeModeAction[] {testAction1, testAction2, testAction3});
+        SafeModeController.getInstance()
+                .registerActions(new SafeModeAction[] {testAction1, testAction2, testAction3});
 
         // turn off
         setSafeMode(Arrays.asList());
@@ -1251,14 +1457,16 @@ public class SafeModeTest {
 
         // Unregister test action 2
         SafeModeController.getInstance().unregisterActionsForTesting();
-        SafeModeController.getInstance().registerActions(
-                new SafeModeAction[] {testAction1, testAction3});
+        SafeModeController.getInstance()
+                .registerActions(new SafeModeAction[] {testAction1, testAction3});
 
         // turn on
         setSafeMode(Arrays.asList(testAction1.getId(), testAction2.getId(), testAction3.getId()));
         Assert.assertEquals(
                 "Test action 1 should be activated once", 1, testAction1.getActivatedCallCount());
-        Assert.assertEquals("Test action 2 should not be activated since it's not in the list", 0,
+        Assert.assertEquals(
+                "Test action 2 should not be activated since it's not in the list",
+                0,
                 testAction2.getActivatedCallCount());
         Assert.assertEquals(
                 "Test action 3 should be activated once", 1, testAction3.getActivatedCallCount());
@@ -1273,8 +1481,8 @@ public class SafeModeTest {
         TestNonEmbeddedSafeModeAction testAction2 = new TestNonEmbeddedSafeModeAction("test2");
         TestNonEmbeddedSafeModeAction testAction3 =
                 new TestNonEmbeddedSafeModeAction("test3", false);
-        SafeModeController.getInstance().registerActions(
-                new SafeModeAction[] {testAction1, testAction2, testAction3});
+        SafeModeController.getInstance()
+                .registerActions(new SafeModeAction[] {testAction1, testAction2, testAction3});
 
         Assert.assertEquals(
                 "Test action 1 should not be executed", 0, testAction1.getActivatedCallCount());
@@ -1287,15 +1495,21 @@ public class SafeModeTest {
         setSafeMode(Arrays.asList(testAction2.getId()));
         Assert.assertEquals(
                 "Test action 1 should be activated once", 1, testAction1.getActivatedCallCount());
-        Assert.assertEquals("Test action 1 should be deactivated once", 1,
+        Assert.assertEquals(
+                "Test action 1 should be deactivated once",
+                1,
                 testAction1.getDeactivatedCallCount());
         Assert.assertEquals(
                 "Test action 2 should be activated once", 1, testAction2.getActivatedCallCount());
-        Assert.assertEquals("Test action 2 should not be deactivated", 0,
+        Assert.assertEquals(
+                "Test action 2 should not be deactivated",
+                0,
                 testAction2.getDeactivatedCallCount());
         Assert.assertEquals(
                 "Test action 3 should be activated once", 1, testAction3.getActivatedCallCount());
-        Assert.assertEquals("Test action 3 should be deactivated once", 1,
+        Assert.assertEquals(
+                "Test action 3 should be deactivated once",
+                1,
                 testAction3.getDeactivatedCallCount());
     }
 
@@ -1324,7 +1538,7 @@ public class SafeModeTest {
     private void setSafeMode(List<String> actions) throws RemoteException {
         Intent intent = new Intent(ContextUtils.getApplicationContext(), SafeModeService.class);
         try (ServiceConnectionHelper helper =
-                        new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
+                new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
             ISafeModeService service = ISafeModeService.Stub.asInterface(helper.getBinder());
             service.setSafeMode(actions);
         }

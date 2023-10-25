@@ -27,18 +27,15 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * Test suite for the WebView.saveWebArchive feature.
- */
+/** Test suite for the WebView.saveWebArchive feature. */
 @RunWith(AwJUnit4ClassRunner.class)
 public class ArchiveTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private static final long TEST_TIMEOUT = scaleTimeout(20000L);
 
-    private static final String TEST_PAGE = UrlUtils.encodeHtmlDataUri(
-            "<html><head></head><body>test</body></html>");
+    private static final String TEST_PAGE =
+            UrlUtils.encodeHtmlDataUri("<html><head></head><body>test</body></html>");
 
     private TestAwContentsClient mContentsClient = new TestAwContentsClient();
     private AwTestContainerView mTestContainerView;
@@ -54,8 +51,12 @@ public class ArchiveTest {
         Assert.assertFalse(file.exists());
     }
 
-    private void doArchiveTest(final AwContents contents, final String path,
-            final boolean autoName, String expectedPath) throws InterruptedException {
+    private void doArchiveTest(
+            final AwContents contents,
+            final String path,
+            final boolean autoName,
+            String expectedPath)
+            throws InterruptedException {
         if (expectedPath != null) {
             deleteFile(expectedPath);
         }
@@ -63,10 +64,11 @@ public class ArchiveTest {
         // Set up a handler to handle the completion callback
         final Semaphore s = new Semaphore(0);
         final AtomicReference<String> msgPath = new AtomicReference<String>();
-        final Callback<String> callback = path1 -> {
-            msgPath.set(path1);
-            s.release();
-        };
+        final Callback<String> callback =
+                path1 -> {
+                    msgPath.set(path1);
+                    s.release();
+                };
 
         // Generate MHTML and wait for completion
         PostTask.runOrPostTask(
@@ -91,12 +93,15 @@ public class ArchiveTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testExplicitGoodPath() throws Throwable {
-        final String path = new File(mActivityTestRule.getActivity().getFilesDir(), "test.mht")
-                                    .getAbsolutePath();
+        final String path =
+                new File(mActivityTestRule.getActivity().getFilesDir(), "test.mht")
+                        .getAbsolutePath();
         deleteFile(path);
 
-        mActivityTestRule.loadUrlSync(mTestContainerView.getAwContents(),
-                mContentsClient.getOnPageFinishedHelper(), TEST_PAGE);
+        mActivityTestRule.loadUrlSync(
+                mTestContainerView.getAwContents(),
+                mContentsClient.getOnPageFinishedHelper(),
+                TEST_PAGE);
 
         doArchiveTest(mTestContainerView.getAwContents(), path, false, path);
     }
@@ -107,8 +112,10 @@ public class ArchiveTest {
     public void testAutoGoodPath() throws Throwable {
         final String path = mActivityTestRule.getActivity().getFilesDir().getAbsolutePath() + "/";
 
-        mActivityTestRule.loadUrlSync(mTestContainerView.getAwContents(),
-                mContentsClient.getOnPageFinishedHelper(), TEST_PAGE);
+        mActivityTestRule.loadUrlSync(
+                mTestContainerView.getAwContents(),
+                mContentsClient.getOnPageFinishedHelper(),
+                TEST_PAGE);
 
         // Create the first archive
         {
@@ -130,8 +137,10 @@ public class ArchiveTest {
         final String path = new File("/foo/bar/baz.mht").getAbsolutePath();
         deleteFile(path);
 
-        mActivityTestRule.loadUrlSync(mTestContainerView.getAwContents(),
-                mContentsClient.getOnPageFinishedHelper(), TEST_PAGE);
+        mActivityTestRule.loadUrlSync(
+                mTestContainerView.getAwContents(),
+                mContentsClient.getOnPageFinishedHelper(),
+                TEST_PAGE);
 
         doArchiveTest(mTestContainerView.getAwContents(), path, false, null);
     }
@@ -143,52 +152,56 @@ public class ArchiveTest {
         final String path = new File("/foo/bar/").getAbsolutePath();
         deleteFile(path);
 
-        mActivityTestRule.loadUrlSync(mTestContainerView.getAwContents(),
-                mContentsClient.getOnPageFinishedHelper(), TEST_PAGE);
+        mActivityTestRule.loadUrlSync(
+                mTestContainerView.getAwContents(),
+                mContentsClient.getOnPageFinishedHelper(),
+                TEST_PAGE);
 
         doArchiveTest(mTestContainerView.getAwContents(), path, true, null);
     }
 
-    /**
-     * Ensure passing a null callback to saveWebArchive doesn't cause a crash.
-     */
+    /** Ensure passing a null callback to saveWebArchive doesn't cause a crash. */
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testNullCallbackNullPath() throws Throwable {
-        mActivityTestRule.loadUrlSync(mTestContainerView.getAwContents(),
-                mContentsClient.getOnPageFinishedHelper(), TEST_PAGE);
+        mActivityTestRule.loadUrlSync(
+                mTestContainerView.getAwContents(),
+                mContentsClient.getOnPageFinishedHelper(),
+                TEST_PAGE);
 
-        saveWebArchiveAndWaitForUiPost(null, false /* autoname */, null /* callback */);
+        saveWebArchiveAndWaitForUiPost(null, /* autoname= */ false, /* callback= */ null);
     }
 
-    /**
-     * Ensure passing a null callback to saveWebArchive doesn't cause a crash.
-     */
+    /** Ensure passing a null callback to saveWebArchive doesn't cause a crash. */
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testNullCallbackGoodPath() throws Throwable {
-        final String path = new File(mActivityTestRule.getActivity().getFilesDir(), "test.mht")
-                .getAbsolutePath();
+        final String path =
+                new File(mActivityTestRule.getActivity().getFilesDir(), "test.mht")
+                        .getAbsolutePath();
         deleteFile(path);
 
-        mActivityTestRule.loadUrlSync(mTestContainerView.getAwContents(),
-                mContentsClient.getOnPageFinishedHelper(), TEST_PAGE);
+        mActivityTestRule.loadUrlSync(
+                mTestContainerView.getAwContents(),
+                mContentsClient.getOnPageFinishedHelper(),
+                TEST_PAGE);
 
-        saveWebArchiveAndWaitForUiPost(path, false /* autoname */, null /* callback */);
+        saveWebArchiveAndWaitForUiPost(path, /* autoname= */ false, /* callback= */ null);
     }
 
     private void saveWebArchiveAndWaitForUiPost(
             final String path, boolean autoname, final Callback<String> callback) {
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
                 () -> mTestContainerView.getAwContents().saveWebArchive(path, false, callback));
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                        // Just wait for this task to having been posted on the UI thread.
-                        // This ensures that if the implementation of saveWebArchive posts a
-                        // task to the UI
-                        // thread we will allow that task to run before finishing our test.
-                      });
+                    // Just wait for this task to having been posted on the UI thread.
+                    // This ensures that if the implementation of saveWebArchive posts a
+                    // task to the UI thread we will allow that task to run before finishing our
+                    // test.
+                });
     }
 }

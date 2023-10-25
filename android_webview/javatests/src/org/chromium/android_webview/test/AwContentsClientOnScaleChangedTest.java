@@ -18,13 +18,10 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CriteriaHelper;
 
-/**
- * Tests for the WebViewClient.onScaleChanged.
- */
+/** Tests for the WebViewClient.onScaleChanged. */
 @RunWith(AwJUnit4ClassRunner.class)
 public class AwContentsClientOnScaleChangedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
@@ -41,12 +38,15 @@ public class AwContentsClientOnScaleChangedTest {
     @SmallTest
     public void testScaleUp() throws Throwable {
         mActivityTestRule.getAwSettingsOnUiThread(mAwContents).setSupportZoom(true);
-        mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+        mActivityTestRule.loadDataSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
                 CommonResources.makeHtmlPageFrom(
                         "<meta name=\"viewport\" content=\"initial-scale=1.0, "
                                 + " minimum-scale=0.5, maximum-scale=2, user-scalable=yes\" />",
                         "testScaleUp test page body"),
-                "text/html", false);
+                "text/html",
+                false);
         CriteriaHelper.pollUiThread(() -> mAwContents.canZoomIn());
         int callCount = mContentsClient.getOnScaleChangedHelper().getCallCount();
         PostTask.runOrPostTask(

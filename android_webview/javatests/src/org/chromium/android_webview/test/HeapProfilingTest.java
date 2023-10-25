@@ -18,14 +18,11 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.components.heap_profiling.multi_process.HeapProfilingTestShim;
 
-/**
- * Tests suite for heap profiling.
- */
+/** Tests suite for heap profiling. */
 @RunWith(AwJUnit4ClassRunner.class)
 @OnlyRunIn(MULTI_PROCESS)
 public class HeapProfilingTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     @Before
     public void setUp() {}
@@ -33,10 +30,12 @@ public class HeapProfilingTest {
     @Test
     @MediumTest
     @DisabledTest(message = "https://crbug.com/1163744")
-    @CommandLineFlags.Add({"memlog=browser", "memlog-stack-mode=native-include-thread-names",
-            "memlog-sampling-rate=1"})
-    public void
-    testModeBrowser() {
+    @CommandLineFlags.Add({
+        "memlog=browser",
+        "memlog-stack-mode=native-include-thread-names",
+        "memlog-sampling-rate=1"
+    })
+    public void testModeBrowser() {
         HeapProfilingTestShim shim = new HeapProfilingTestShim();
         Assert.assertTrue(
                 shim.runTestForMode("browser", false, "native-include-thread-names", false, false));

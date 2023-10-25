@@ -19,13 +19,10 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.util.TestWebServer;
 
-/**
- * Tests for AwContentsClient.getVisitedHistory and AwContents.doUpdateVisitedHistory callbacks.
- */
+/** Tests for AwContentsClient.getVisitedHistory and AwContents.doUpdateVisitedHistory callbacks. */
 @RunWith(AwJUnit4ClassRunner.class)
 public class AwContentsClientVisitedHistoryTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private static class GetVisitedHistoryHelper extends CallbackHelper {
         private Callback<String[]> mCallback;
@@ -64,7 +61,6 @@ public class AwContentsClientVisitedHistoryTest {
         public void getVisitedHistory(Callback<String[]> callback) {
             getGetVisitedHistoryHelper().notifyCalled(callback);
         }
-
     }
 
     private VisitedHistoryTestAwContentsClient mContentsClient =
@@ -147,8 +143,7 @@ public class AwContentsClientVisitedHistoryTest {
     @Feature({"AndroidWebView"})
     @SmallTest
     public void testGetVisitedHistoryCallbackAfterDestroy() throws Throwable {
-        GetVisitedHistoryHelper visitedHistoryHelper =
-                mContentsClient.getGetVisitedHistoryHelper();
+        GetVisitedHistoryHelper visitedHistoryHelper = mContentsClient.getGetVisitedHistoryHelper();
         visitedHistoryHelper.setSaveCallback(true);
         final int callCount = visitedHistoryHelper.getCallCount();
         AwTestContainerView testView =

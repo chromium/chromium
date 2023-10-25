@@ -31,13 +31,10 @@ import org.chromium.net.ProxyChangeListener;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- *  Tests for ContentView methods that don't fall into any other category.
- */
+/** Tests for ContentView methods that don't fall into any other category. */
 @RunWith(AwJUnit4ClassRunner.class)
 public class ContentViewMiscTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
@@ -70,19 +67,27 @@ public class ContentViewMiscTest {
         final AtomicReference<BroadcastReceiver> receiverRef =
                 new AtomicReference<BroadcastReceiver>();
         final AdvancedMockContext appContext =
-                new AdvancedMockContext(InstrumentationRegistry.getInstrumentation()
-                                                .getTargetContext()
-                                                .getApplicationContext()) {
+                new AdvancedMockContext(
+                        InstrumentationRegistry.getInstrumentation()
+                                .getTargetContext()
+                                .getApplicationContext()) {
                     @Override
-                    public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter,
-                            String broadcastPermission, Handler scheduler) {
+                    public Intent registerReceiver(
+                            BroadcastReceiver receiver,
+                            IntentFilter filter,
+                            String broadcastPermission,
+                            Handler scheduler) {
                         receiverRef.set(receiver);
                         return null;
                     }
 
                     @Override
-                    public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter,
-                            String broadcastPermission, Handler scheduler, int flags) {
+                    public Intent registerReceiver(
+                            BroadcastReceiver receiver,
+                            IntentFilter filter,
+                            String broadcastPermission,
+                            Handler scheduler,
+                            int flags) {
                         receiverRef.set(receiver);
                         return null;
                     }

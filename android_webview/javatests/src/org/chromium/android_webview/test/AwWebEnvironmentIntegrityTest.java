@@ -46,8 +46,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(AwJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class AwWebEnvironmentIntegrityTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
@@ -57,8 +56,8 @@ public class AwWebEnvironmentIntegrityTest {
     private static final String ORIGIN_TRIAL_HEADER = "Origin-Trial";
     private static final String ORIGIN_TRIAL_TOKEN =
             "A1GBGCeaLBRlky1ITf9uRak5iluqLWnUdSTKVTO0Ce/I7a35nik6DKqPJNZSPd9KEAIuJKmi2dmL9HWThDWgdA"
-            + "cAAABheyJvcmlnaW4iOiAiaHR0cHM6Ly9leGFtcGxlLmNvbTo0NDMiLCAiZmVhdHVyZSI6ICJXZWJFbnZpcm"
-            + "9ubWVudEludGVncml0eSIsICJleHBpcnkiOiAyMDAwMDAwMDAwfQ==";
+                + "cAAABheyJvcmlnaW4iOiAiaHR0cHM6Ly9leGFtcGxlLmNvbTo0NDMiLCAiZmVhdHVyZSI6ICJXZWJFbnZpcm"
+                + "9ubWVudEludGVncml0eSIsICJleHBpcnkiOiAyMDAwMDAwMDAwfQ==";
 
     private static final long HANDLE = 123456789L;
 
@@ -90,12 +89,15 @@ public class AwWebEnvironmentIntegrityTest {
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), mWebServer.getBaseUrl());
         // Check that the 'getEnvironmentIntegrity' method is available.
         final String script = "'getEnvironmentIntegrity' in navigator ? 'available': 'missing'";
-        String result = mActivityTestRule.executeJavaScriptAndWaitForResult(
-                mAwContents, mContentsClient, script);
+        String result =
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        mAwContents, mContentsClient, script);
         // The result is expected to have extra quotes as a JSON-encoded string.
-        Assert.assertEquals("This test is expected to fail if runtime_enabled_features.json5"
+        Assert.assertEquals(
+                "This test is expected to fail if runtime_enabled_features.json5"
                         + " is updated to mark the feature as 'stable'.",
-                "\"missing\"", result);
+                "\"missing\"",
+                result);
     }
 
     @Test
@@ -108,8 +110,9 @@ public class AwWebEnvironmentIntegrityTest {
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), mWebServer.getBaseUrl());
         // Check that the 'getEnvironmentIntegrity' method is available.
         final String script = "'getEnvironmentIntegrity' in navigator ? 'available': 'missing'";
-        String result = mActivityTestRule.executeJavaScriptAndWaitForResult(
-                mAwContents, mContentsClient, script);
+        String result =
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        mAwContents, mContentsClient, script);
         // The result is expected to have extra quotes as a JSON-encoded string.
         Assert.assertEquals("\"available\"", result);
     }
@@ -124,8 +127,9 @@ public class AwWebEnvironmentIntegrityTest {
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), mWebServer.getBaseUrl());
         // Check that the 'getEnvironmentIntegrity' method is available.
         final String script = "'getEnvironmentIntegrity' in navigator ? 'available': 'missing'";
-        String result = mActivityTestRule.executeJavaScriptAndWaitForResult(
-                mAwContents, mContentsClient, script);
+        String result =
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        mAwContents, mContentsClient, script);
         // The result is expected to have extra quotes as a JSON-encoded string.
         Assert.assertEquals("\"missing\"", result);
     }
@@ -138,10 +142,17 @@ public class AwWebEnvironmentIntegrityTest {
         // Since origin trial tokens are tied to the origin, we use an request intercept to load
         // the content when making a request to the origin trial URL, instead of relying on the
         // server, which serves from an unknown port.
-        var body = new ByteArrayInputStream(
-                "<!DOCTYPE html><html><body>Hello, World".getBytes(StandardCharsets.UTF_8));
-        var responseInfo = new WebResourceResponseInfo("text/html", "utf-8", body, 200, "OK",
-                Map.of(ORIGIN_TRIAL_HEADER, ORIGIN_TRIAL_TOKEN));
+        var body =
+                new ByteArrayInputStream(
+                        "<!DOCTYPE html><html><body>Hello, World".getBytes(StandardCharsets.UTF_8));
+        var responseInfo =
+                new WebResourceResponseInfo(
+                        "text/html",
+                        "utf-8",
+                        body,
+                        200,
+                        "OK",
+                        Map.of(ORIGIN_TRIAL_HEADER, ORIGIN_TRIAL_TOKEN));
 
         final ShouldInterceptRequestHelper requestInterceptHelper =
                 mContentsClient.getShouldInterceptRequestHelper();
@@ -158,16 +169,18 @@ public class AwWebEnvironmentIntegrityTest {
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), ORIGIN_TRIAL_URL);
 
-        final String script = "(() => {"
-                + "if ('getEnvironmentIntegrity' in navigator) {"
-                + "  navigator.getEnvironmentIntegrity('contentBinding')"
-                + "    .then(s => testListener.result(s.encode()))"
-                + "    .catch(e => testListener.result('error: ' + e));"
-                + "  return 'available';"
-                + "} else {return 'unavailable';}"
-                + "})();";
-        String scriptResult = mActivityTestRule.executeJavaScriptAndWaitForResult(
-                mAwContents, mContentsClient, script);
+        final String script =
+                "(() => {"
+                        + "if ('getEnvironmentIntegrity' in navigator) {"
+                        + "  navigator.getEnvironmentIntegrity('contentBinding')"
+                        + "    .then(s => testListener.result(s.encode()))"
+                        + "    .catch(e => testListener.result('error: ' + e));"
+                        + "  return 'available';"
+                        + "} else {return 'unavailable';}"
+                        + "})();";
+        String scriptResult =
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        mAwContents, mContentsClient, script);
         // The result is expected to have extra quotes as a JSON-encoded string.
         Assert.assertEquals("\"available\"", scriptResult);
 

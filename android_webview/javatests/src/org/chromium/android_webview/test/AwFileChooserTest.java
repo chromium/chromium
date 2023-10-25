@@ -30,14 +30,11 @@ import org.chromium.net.test.util.TestWebServer;
 import java.io.File;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Integration tests for the WebChromeClient.onShowFileChooser method.
- */
+/** Integration tests for the WebChromeClient.onShowFileChooser method. */
 @RunWith(AwJUnit4ClassRunner.class)
 @DoNotBatch(reason = "Shared dependencies among the tests cause conflicts during batch testing.")
 public class AwFileChooserTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
     private AwTestContainerView mTestContainerView;
 
     private TestAwContentsClient mContentsClient = new TestAwContentsClient();
@@ -73,10 +70,12 @@ public class AwFileChooserTest {
         mTestFile2 = new File(mTestDirectory.getPath() + "/test2.txt");
         Assert.assertTrue(mTestFile2.createNewFile());
 
-        Assert.assertTrue("Test file 1 is an empty string!",
+        Assert.assertTrue(
+                "Test file 1 is an empty string!",
                 !EMPTY_STRING.equalsIgnoreCase(mTestFile1.getPath()));
         Assert.assertNotNull("Test File 1 is null!", mTestFile1.getPath());
-        Assert.assertTrue("Test file 2 is an empty string!",
+        Assert.assertTrue(
+                "Test file 2 is an empty string!",
                 !EMPTY_STRING.equalsIgnoreCase(mTestFile2.getPath()));
         Assert.assertNotNull("Test File 2 is null!", mTestFile2.getPath());
 
@@ -92,10 +91,12 @@ public class AwFileChooserTest {
     @Test
     @SmallTest
     public void testShowSingleFileChoice() throws Throwable {
-        final String singleFileUploadPageHtml = CommonResources.makeHtmlPageFrom(
-                /*headers=*/"",
-                /*body=*/"<input type='file' accept='.txt' id='" + FILE_CHOICE_BUTTON_ID
-                        + "' /><br><br>");
+        final String singleFileUploadPageHtml =
+                CommonResources.makeHtmlPageFrom(
+                        /* headers= */ "",
+                        /* body= */ "<input type='file' accept='.txt' id='"
+                                + FILE_CHOICE_BUTTON_ID
+                                + "' /><br><br>");
         final String url = mWebServer.setResponse(INDEX_HTML_ROUTE, singleFileUploadPageHtml, null);
 
         mShowFileChooserHelper.setChosenFilesToUpload(
@@ -110,14 +111,19 @@ public class AwFileChooserTest {
     @Test
     @SmallTest
     public void testShowMultipleFileChoice() throws Throwable {
-        final String multipleFileUploadPageHtml = CommonResources.makeHtmlPageFrom(/*headers=*/"",
-                /*body=*/"<input type='file' accept='.txt' id='" + FILE_CHOICE_BUTTON_ID
-                        + "' multiple/><br><br>");
+        final String multipleFileUploadPageHtml =
+                CommonResources.makeHtmlPageFrom(
+                        /* headers= */ "",
+                        /* body= */ "<input type='file' accept='.txt' id='"
+                                + FILE_CHOICE_BUTTON_ID
+                                + "' multiple/><br><br>");
         final String url =
                 mWebServer.setResponse(INDEX_HTML_ROUTE, multipleFileUploadPageHtml, null);
 
-        mShowFileChooserHelper.setChosenFilesToUpload(new String[] {
-                Uri.fromFile(mTestFile1).toString(), Uri.fromFile(mTestFile2).toString()});
+        mShowFileChooserHelper.setChosenFilesToUpload(
+                new String[] {
+                    Uri.fromFile(mTestFile1).toString(), Uri.fromFile(mTestFile2).toString()
+                });
         mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
 
         clickSelectFileButtonAndWaitForCallback("2");
@@ -128,14 +134,19 @@ public class AwFileChooserTest {
     @Test
     @SmallTest
     public void testShowDirectoryChoice() throws Throwable {
-        final String multipleFileUploadPageHtml = CommonResources.makeHtmlPageFrom(/*headers=*/"",
-                /*body=*/"<input type='file' accept='.txt' id='" + FILE_CHOICE_BUTTON_ID
-                        + "' webkitdirectory ><br><br>");
+        final String multipleFileUploadPageHtml =
+                CommonResources.makeHtmlPageFrom(
+                        /* headers= */ "",
+                        /* body= */ "<input type='file' accept='.txt' id='"
+                                + FILE_CHOICE_BUTTON_ID
+                                + "' webkitdirectory ><br><br>");
         final String url =
                 mWebServer.setResponse(INDEX_HTML_ROUTE, multipleFileUploadPageHtml, null);
 
-        mShowFileChooserHelper.setChosenFilesToUpload(new String[] {
-                Uri.fromFile(mTestFile1).toString(), Uri.fromFile(mTestFile2).toString()});
+        mShowFileChooserHelper.setChosenFilesToUpload(
+                new String[] {
+                    Uri.fromFile(mTestFile1).toString(), Uri.fromFile(mTestFile2).toString()
+                });
         mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
 
         clickSelectFileButtonAndWaitForCallback("2");
@@ -151,10 +162,14 @@ public class AwFileChooserTest {
         final String[] expectedIntentExtraTypes = {"application/pdf", "text/plain", "image/png"};
         final String expectedIntentType = expectedIntentExtraTypes[0];
         final String expectedAcceptTypesString = ".pdf,.txt,.png";
-        final String singleFileUploadPageHtml = CommonResources.makeHtmlPageFrom(
-                /*headers=*/"",
-                /*body=*/"<input type='file' accept='" + expectedAcceptTypesString + "' id='"
-                        + FILE_CHOICE_BUTTON_ID + "' /><br><br>");
+        final String singleFileUploadPageHtml =
+                CommonResources.makeHtmlPageFrom(
+                        /* headers= */ "",
+                        /* body= */ "<input type='file' accept='"
+                                + expectedAcceptTypesString
+                                + "' id='"
+                                + FILE_CHOICE_BUTTON_ID
+                                + "' /><br><br>");
         final String url = mWebServer.setResponse(INDEX_HTML_ROUTE, singleFileUploadPageHtml, null);
 
         mShowFileChooserHelper.setChosenFilesToUpload(
@@ -177,10 +192,12 @@ public class AwFileChooserTest {
     @SmallTest
     public void testIsCaptureEnabled() throws Throwable {
         final boolean captureEnabled = true;
-        final String singleFileUploadPageHtml = CommonResources.makeHtmlPageFrom(
-                /*headers=*/"",
-                /*body=*/"<input type='file' accept='.txt' id='" + FILE_CHOICE_BUTTON_ID
-                        + "' capture/><br><br>");
+        final String singleFileUploadPageHtml =
+                CommonResources.makeHtmlPageFrom(
+                        /* headers= */ "",
+                        /* body= */ "<input type='file' accept='.txt' id='"
+                                + FILE_CHOICE_BUTTON_ID
+                                + "' capture/><br><br>");
         final String url = mWebServer.setResponse(INDEX_HTML_ROUTE, singleFileUploadPageHtml, null);
 
         mShowFileChooserHelper.setChosenFilesToUpload(
@@ -196,10 +213,12 @@ public class AwFileChooserTest {
     @SmallTest
     public void testIsCaptureDisabled() throws Throwable {
         final boolean captureEnabled = false;
-        final String singleFileUploadPageHtml = CommonResources.makeHtmlPageFrom(
-                /*headers=*/"",
-                /*body=*/"<input type='file' accept='.txt' id='" + FILE_CHOICE_BUTTON_ID
-                        + "' /><br><br>");
+        final String singleFileUploadPageHtml =
+                CommonResources.makeHtmlPageFrom(
+                        /* headers= */ "",
+                        /* body= */ "<input type='file' accept='.txt' id='"
+                                + FILE_CHOICE_BUTTON_ID
+                                + "' /><br><br>");
         final String url = mWebServer.setResponse(INDEX_HTML_ROUTE, singleFileUploadPageHtml, null);
 
         mShowFileChooserHelper.setChosenFilesToUpload(
@@ -214,17 +233,18 @@ public class AwFileChooserTest {
     @Test
     @SmallTest
     public void testInvalidUriIsCanceled() throws Throwable {
-        final String singleFileUploadPageHtml = CommonResources.makeHtmlPageFrom(
-                /*headers=*/"",
-                /*body=*/"<input type='file' accept='.txt' id='" + FILE_CHOICE_BUTTON_ID
-                        + "' /><br><br>");
+        final String singleFileUploadPageHtml =
+                CommonResources.makeHtmlPageFrom(
+                        /* headers= */ "",
+                        /* body= */ "<input type='file' accept='.txt' id='"
+                                + FILE_CHOICE_BUTTON_ID
+                                + "' /><br><br>");
         final String url = mWebServer.setResponse(INDEX_HTML_ROUTE, singleFileUploadPageHtml, null);
 
         mShowFileChooserHelper.setChosenFilesToUpload(
                 // Using one real Uri and one invalid Uri because
                 // ActivityTestRule#executeJavaScriptAndWaitForResult
-                // waits for a DOM change to occur
-                // In order for the DOM to change, we must provide
+                // waits for a DOM change to occur In order for the DOM to change, we must provide
                 // at least one real Uri
                 new String[] {Uri.fromFile(mTestFile1).toString(), "/BadUri/ThatIsnt/Valid"});
         mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
@@ -232,14 +252,15 @@ public class AwFileChooserTest {
 
         // Using two real Uris and one invalid Uri
         mShowFileChooserHelper.setChosenFilesToUpload(
-                new String[] {Uri.fromFile(mTestFile1).toString(),
-                        Uri.fromFile(mTestFile2).toString(), "/BadUri/ThatIsnt/Valid"});
+                new String[] {
+                    Uri.fromFile(mTestFile1).toString(),
+                    Uri.fromFile(mTestFile2).toString(),
+                    "/BadUri/ThatIsnt/Valid"
+                });
         clickSelectFileButtonAndWaitForCallback("2");
     }
 
-    /**
-     *  Simulates user clicking Choose File button.
-     */
+    /** Simulates user clicking Choose File button. */
     private void clickSelectFileButton() throws Exception {
         JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), FILE_CHOICE_BUTTON_ID);
     }
@@ -249,13 +270,14 @@ public class AwFileChooserTest {
      *  value is in the DOM returned  by the JavaScript code
      */
     private void pollJavascriptResult(String script, String expectedResult) {
-        AwActivityTestRule.pollInstrumentationThread(() -> {
-            try {
-                return expectedResult.equals(executeJavaScriptAndWaitForResult(script));
-            } catch (Throwable t) {
-                throw new RuntimeException(t);
-            }
-        });
+        AwActivityTestRule.pollInstrumentationThread(
+                () -> {
+                    try {
+                        return expectedResult.equals(executeJavaScriptAndWaitForResult(script));
+                    } catch (Throwable t) {
+                        throw new RuntimeException(t);
+                    }
+                });
     }
 
     private String executeJavaScriptAndWaitForResult(String code) throws Throwable {

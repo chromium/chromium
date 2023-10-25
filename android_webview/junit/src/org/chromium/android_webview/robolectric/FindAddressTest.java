@@ -17,9 +17,7 @@ import org.chromium.base.test.util.Feature;
 
 import java.util.regex.MatchResult;
 
-/**
- * Tests for FindAddress implementation.
- */
+/** Tests for FindAddress implementation. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class FindAddressTest {
@@ -47,8 +45,9 @@ public class FindAddressTest {
         // Test US Google corporate addresses. Expects a full string match.
         assertIsAddress("1600 Amphitheatre Parkway Mountain View, CA 94043");
         assertIsAddress("201 S. Division St. Suite 500 Ann Arbor, MI 48104");
-        Assert.assertTrue(containsAddress(
-                "Millennium at Midtown 10 10th Street NE Suite 600 Atlanta, GA 30309"));
+        Assert.assertTrue(
+                containsAddress(
+                        "Millennium at Midtown 10 10th Street NE Suite 600 Atlanta, GA 30309"));
         assertIsAddress("9606 North MoPac Expressway Suite 400 Austin, TX 78759");
         assertIsAddress("2590 Pearl Street Suite 100 Boulder, CO 80302");
         assertIsAddress("5 Cambridge Center, Floors 3-6 Cambridge, MA 02142");
@@ -59,8 +58,10 @@ public class FindAddressTest {
         assertIsAddress("747 6th Street South, Kirkland, WA 98033");
         assertIsAddress("301 S. Blount St. Suite 301 Madison, WI 53703");
         assertIsAddress("76 Ninth Avenue 4th Floor New York, NY 10011");
-        Assert.assertTrue(containsAddress(
-                "Chelsea Markset Space, 75 Ninth Avenue 2nd and 4th Floors New York, NY 10011"));
+        Assert.assertTrue(
+                containsAddress(
+                        "Chelsea Markset Space, 75 Ninth Avenue 2nd and 4th Floors New York, NY "
+                                + "10011"));
         assertIsAddress("6425 Penn Ave. Suite 700 Pittsburgh, PA 15206");
         assertIsAddress("1818 Library Street Suite 400 Reston, VA 20190");
         assertIsAddress("345 Spear Street Floors 2-4 San Francisco, CA 94105");
@@ -74,18 +75,21 @@ public class FindAddressTest {
         assertIsAddress("308 Congress Street Boston, MA 02210");
         Assert.assertTrue(
                 containsAddress("Central Park West at 79th Street, New York, NY, 10024-5192"));
-        Assert.assertTrue(containsAddress(
-                "Lincoln Park | 100 34th Avenue • San Francisco, CA 94121 | 41575036"));
+        Assert.assertTrue(
+                containsAddress(
+                        "Lincoln Park | 100 34th Avenue • San Francisco, CA 94121 | 41575036"));
 
         Assert.assertEquals(
                 FindAddress.findAddress(
                         "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do "
-                        + "1600 Amphitheatre Parkway Mountain View, CA 94043 eiusmod "
-                        + "tempor incididunt ut labore et dolore magna aliqua."),
+                                + "1600 Amphitheatre Parkway Mountain View, CA 94043 eiusmod "
+                                + "tempor incididunt ut labore et dolore magna aliqua."),
                 "1600 Amphitheatre Parkway Mountain View, CA 94043");
 
-        Assert.assertEquals(FindAddress.findAddress("2590 Pearl Street Suite 100 Boulder, CO 80302 "
-                                    + "6425 Penn Ave. Suite 700 Pittsburgh, PA 15206"),
+        Assert.assertEquals(
+                FindAddress.findAddress(
+                        "2590 Pearl Street Suite 100 Boulder, CO 80302 "
+                                + "6425 Penn Ave. Suite 700 Pittsburgh, PA 15206"),
                 "2590 Pearl Street Suite 100 Boulder, CO 80302");
 
         assertIsAddress("5400 Preston Oaks Rd Dallas TX 75254");
@@ -105,8 +109,9 @@ public class FindAddressTest {
         Assert.assertTrue(containsAddress("1 this is ok: street, CA 90000"));
 
         Assert.assertFalse(
-                containsAddress("1 street I love verbosity, so I'm writing an address with "
-                        + "too many words CA 90000"));
+                containsAddress(
+                        "1 street I love verbosity, so I'm writing an address with "
+                                + "too many words CA 90000"));
         Assert.assertTrue(containsAddress("1 street 2 3 4 5 6 7 8 9 10 11 12, CA 90000"));
 
         assertIsAddress("79th Street 1st Floor New York City, NY 10024-5192");
@@ -153,7 +158,8 @@ public class FindAddressTest {
                 FindAddress.findAddress(
                         "Century City 15\n 10250 Santa Monica Boulevard Los Angeles, CA 90067"),
                 "10250 Santa Monica Boulevard Los Angeles, CA 90067");
-        Assert.assertEquals(FindAddress.findAddress("123 45\n67 My Street, Somewhere, NY 10000"),
+        Assert.assertEquals(
+                FindAddress.findAddress("123 45\n67 My Street, Somewhere, NY 10000"),
                 "67 My Street, Somewhere, NY 10000");
         assertIsAddress("123 4th Avenue, Somewhere in NY 10000");
     }
@@ -518,6 +524,7 @@ public class FindAddressTest {
         Assert.assertTrue(FindAddress.isValidZipCode("82000", "WY"));
         Assert.assertTrue(FindAddress.isValidZipCode("83000", "Wyoming"));
     }
+
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})

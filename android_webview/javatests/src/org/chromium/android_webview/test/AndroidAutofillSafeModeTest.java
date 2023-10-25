@@ -27,17 +27,14 @@ import org.chromium.base.test.util.MinAndroidSdkLevel;
 
 import java.util.Set;
 
-/**
- * Tests for WebView AndroidAutofillSafeMode.
- */
+/** Tests for WebView AndroidAutofillSafeMode. */
 @RunWith(AwJUnit4ClassRunner.class)
 @MinAndroidSdkLevel(Build.VERSION_CODES.O)
 @RequiresApi(Build.VERSION_CODES.O)
 public class AndroidAutofillSafeModeTest {
     public static final String TAG = "AndroidAutofillTest";
 
-    @Rule
-    public AwActivityTestRule mRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mRule = new AwActivityTestRule();
 
     @After
     public void tearDown() {
@@ -55,8 +52,9 @@ public class AndroidAutofillSafeModeTest {
         safeModeController.executeActions(Set.of(AndroidAutofillSafeModeAction.ID));
 
         // When
-        AwTestContainerView mTestContainerView = mRule.createAwTestContainerViewOnMainSync(
-                new TestAwContentsClient(), false, new TestDependencyFactory());
+        AwTestContainerView mTestContainerView =
+                mRule.createAwTestContainerViewOnMainSync(
+                        new TestAwContentsClient(), false, new TestDependencyFactory());
 
         // Then
         assertNull(mTestContainerView.getAwContents().getAutofillProviderForTesting());

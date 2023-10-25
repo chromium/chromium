@@ -53,13 +53,10 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Tests for the WebViewClient.shouldOverrideUrlLoading() method.
- */
+/** Tests for the WebViewClient.shouldOverrideUrlLoading() method. */
 @RunWith(AwJUnit4ClassRunner.class)
 public class AwContentsClientShouldOverrideUrlLoadingTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private static final String DATA_URL = "data:text/html,<div/>";
     private static final String REDIRECT_TARGET_PATH = "/redirect_target.html";
@@ -105,15 +102,20 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
 
     private void clickOnLinkUsingJs() {
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
-        JSUtils.clickOnLinkUsingJs(InstrumentationRegistry.getInstrumentation(), mAwContents,
-                mContentsClient.getOnEvaluateJavaScriptResultHelper(), "link");
+        JSUtils.clickOnLinkUsingJs(
+                InstrumentationRegistry.getInstrumentation(),
+                mAwContents,
+                mContentsClient.getOnEvaluateJavaScriptResultHelper(),
+                "link");
     }
 
     // Since this value is read on the UI thread, it's simpler to set it there too.
     void setShouldOverrideUrlLoadingReturnValueOnUiThread(final boolean value) {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> mShouldOverrideUrlLoadingHelper.setShouldOverrideUrlLoadingReturnValue(
-                        value));
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () ->
+                                mShouldOverrideUrlLoadingHelper
+                                        .setShouldOverrideUrlLoadingReturnValue(value));
     }
 
     private String getTestPageCommonHeaders() {
@@ -125,35 +127,46 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
     }
 
     private String getHtmlForPageWithJsAssignLinkTo(String url) {
-        return makeHtmlPageFrom("",
-                "<img onclick=\"location.href='" + url
+        return makeHtmlPageFrom(
+                "",
+                "<img onclick=\"location.href='"
+                        + url
                         + "'\" class=\"big\" id=\"link\" /><p>Text</p>");
     }
 
     private String getHtmlForPageWithJsReplaceLinkTo(String url) {
-        return makeHtmlPageFrom("",
-                "<img onclick=\"location.replace('" + url
+        return makeHtmlPageFrom(
+                "",
+                "<img onclick=\"location.replace('"
+                        + url
                         + "');\" class=\"big\" id=\"link\" /><p>Text</p>");
     }
 
     private String getHtmlForPageWithMetaRefreshRedirectTo(String url) {
-        return makeHtmlPageFrom("<meta http-equiv=\"refresh\" content=\"0;url=" + url + "\" />",
+        return makeHtmlPageFrom(
+                "<meta http-equiv=\"refresh\" content=\"0;url=" + url + "\" />",
                 "<div>Meta refresh redirect</div>");
     }
 
     @SuppressLint("DefaultLocale")
     private String getHtmlForPageWithJsRedirectTo(String url, String method, int timeout) {
-        return makeHtmlPageFrom(""
-                + "<script>"
-                +   "function doRedirectAssign() {"
-                +     "location.href = '" + url + "';"
-                +   "} "
-                +   "function doRedirectReplace() {"
-                +     "location.replace('" + url + "');"
-                +   "} "
-                + "</script>",
-                String.format("<iframe onLoad=\"setTimeout('doRedirect%s()', %d);\" />",
-                    method, timeout));
+        return makeHtmlPageFrom(
+                ""
+                        + "<script>"
+                        + "function doRedirectAssign() {"
+                        + "location.href = '"
+                        + url
+                        + "';"
+                        + "} "
+                        + "function doRedirectReplace() {"
+                        + "location.replace('"
+                        + url
+                        + "');"
+                        + "} "
+                        + "</script>",
+                String.format(
+                        "<iframe onLoad=\"setTimeout('doRedirect%s()', %d);\" />",
+                        method, timeout));
     }
 
     private String addPageToTestServer(String httpPath, String html) {
@@ -164,7 +177,8 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
     }
 
     private String createRedirectTargetPage() {
-        return addPageToTestServer(REDIRECT_TARGET_PATH,
+        return addPageToTestServer(
+                REDIRECT_TARGET_PATH,
                 makeHtmlPageFrom("", "<div>This is the end of the redirect chain</div>"));
     }
 
@@ -173,8 +187,12 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
     @Feature({"AndroidWebView", "Navigation"})
     public void testNotCalledOnLoadUrl() throws Throwable {
         standardSetup();
-        mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
-                CommonResources.makeHtmlPageWithSimpleLinkTo(DATA_URL), "text/html", false);
+        mActivityTestRule.loadDataSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                CommonResources.makeHtmlPageWithSimpleLinkTo(DATA_URL),
+                "text/html",
+                false);
 
         Assert.assertEquals(0, mShouldOverrideUrlLoadingHelper.getCallCount());
     }
@@ -184,16 +202,20 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
     @Feature({"AndroidWebView", "Navigation"})
     public void testNotCalledOnReload() throws Throwable {
         standardSetup();
-        mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
-                CommonResources.makeHtmlPageWithSimpleLinkTo(DATA_URL), "text/html", false);
+        mActivityTestRule.loadDataSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                CommonResources.makeHtmlPageWithSimpleLinkTo(DATA_URL),
+                "text/html",
+                false);
 
         int callCountBeforeReload = mShouldOverrideUrlLoadingHelper.getCallCount();
         mActivityTestRule.reloadSync(mAwContents, mContentsClient.getOnPageFinishedHelper());
         Assert.assertEquals(callCountBeforeReload, mShouldOverrideUrlLoadingHelper.getCallCount());
     }
 
-    private void waitForNavigationRunnableAndAssertTitleChanged(
-            Runnable navigationRunnable) throws Exception {
+    private void waitForNavigationRunnableAndAssertTitleChanged(Runnable navigationRunnable)
+            throws Exception {
         CallbackHelper onPageFinishedHelper = mContentsClient.getOnPageFinishedHelper();
         final int callCount = onPageFinishedHelper.getCallCount();
         final String oldTitle = mActivityTestRule.getTitleOnUiThread(mAwContents);
@@ -207,12 +229,15 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
     @Feature({"AndroidWebView", "Navigation"})
     public void testNotCalledOnBackForwardNavigation() throws Throwable {
         standardSetup();
-        final String[] pageTitles = new String[] { "page1", "page2", "page3" };
+        final String[] pageTitles = new String[] {"page1", "page2", "page3"};
 
         for (String title : pageTitles) {
-            mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+            mActivityTestRule.loadDataSync(
+                    mAwContents,
+                    mContentsClient.getOnPageFinishedHelper(),
                     CommonResources.makeHtmlPageFrom("<title>" + title + "</title>", ""),
-                    "text/html", false);
+                    "text/html",
+                    false);
         }
         Assert.assertEquals(0, mShouldOverrideUrlLoadingHelper.getCallCount());
 
@@ -236,9 +261,12 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
         standardSetup();
         setShouldOverrideUrlLoadingReturnValueOnUiThread(true);
 
-        mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+        mActivityTestRule.loadDataSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
                 CommonResources.makeHtmlPageWithSimpleLinkTo(getTestPageCommonHeaders(), DATA_URL),
-                "text/html", false);
+                "text/html",
+                false);
 
         Assert.assertEquals(TITLE, mActivityTestRule.getTitleOnUiThread(mAwContents));
     }
@@ -250,10 +278,13 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
         standardSetup();
         OnPageStartedHelper onPageStartedHelper = mContentsClient.getOnPageStartedHelper();
 
-        mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+        mActivityTestRule.loadDataSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
                 CommonResources.makeHtmlPageWithSimpleLinkTo(
                         ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL),
-                "text/html", false);
+                "text/html",
+                false);
 
         final int shouldOverrideUrlLoadingCallCount =
                 mShouldOverrideUrlLoadingHelper.getCallCount();
@@ -273,10 +304,13 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
         OnReceivedErrorHelper onReceivedErrorHelper = mContentsClient.getOnReceivedErrorHelper();
         final int onReceivedErrorCount = onReceivedErrorHelper.getCallCount();
 
-        mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+        mActivityTestRule.loadDataSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
                 CommonResources.makeHtmlPageWithSimpleLinkTo(
                         ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL),
-                "text/html", false);
+                "text/html",
+                false);
 
         final int shouldOverrideUrlLoadingCallCount =
                 mShouldOverrideUrlLoadingHelper.getCallCount();
@@ -312,15 +346,20 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
 
         final String anchorLinkPath = "/anchor_link.html";
         final String anchorLinkUrl = mWebServer.getResponseUrl(anchorLinkPath);
-        addPageToTestServer(anchorLinkPath,
+        addPageToTestServer(
+                anchorLinkPath,
                 CommonResources.makeHtmlPageWithSimpleLinkTo(anchorLinkUrl + "#anchor"));
 
         if (useLoadData) {
             final String html =
                     CommonResources.makeHtmlPageWithSimpleLinkTo("#anchor").replace("#", "%23");
             // Loading the html via a data URI requires us to encode '#' symbols as '%23'.
-            mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
-                    html, "text/html", false);
+            mActivityTestRule.loadDataSync(
+                    mAwContents,
+                    mContentsClient.getOnPageFinishedHelper(),
+                    html,
+                    "text/html",
+                    false);
         } else {
             mActivityTestRule.loadUrlSync(
                     mAwContents, mContentsClient.getOnPageFinishedHelper(), anchorLinkUrl);
@@ -333,7 +372,9 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
 
         // After we load this URL we're certain that any in-flight callbacks for the previous
         // navigation have been delivered.
-        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+        mActivityTestRule.loadUrlSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
         Assert.assertEquals(
@@ -346,17 +387,21 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
     public void testCalledWhenLinkClicked() throws Throwable {
         standardSetup();
 
-        mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+        mActivityTestRule.loadDataSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
                 CommonResources.makeHtmlPageWithSimpleLinkTo(
                         ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL),
-                "text/html", false);
+                "text/html",
+                false);
 
         int callCount = mShouldOverrideUrlLoadingHelper.getCallCount();
 
         clickOnLinkUsingJs();
 
         mShouldOverrideUrlLoadingHelper.waitForCallback(callCount);
-        Assert.assertEquals(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL,
+        Assert.assertEquals(
+                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL,
                 mShouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingUrl());
         Assert.assertFalse(mShouldOverrideUrlLoadingHelper.isRedirect());
         Assert.assertFalse(mShouldOverrideUrlLoadingHelper.hasUserGesture());
@@ -371,7 +416,8 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
 
         final String httpPath = "/page_with_about_blank_navigation";
         final String httpPathOnServer = mWebServer.getResponseUrl(httpPath);
-        addPageToTestServer(httpPath,
+        addPageToTestServer(
+                httpPath,
                 CommonResources.makeHtmlPageWithSimpleLinkTo(
                         ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
 
@@ -383,7 +429,8 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
         clickOnLinkUsingJs();
 
         mShouldOverrideUrlLoadingHelper.waitForCallback(callCount);
-        Assert.assertEquals(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL,
+        Assert.assertEquals(
+                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL,
                 mShouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingUrl());
     }
 
@@ -395,8 +442,8 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
 
         final String httpPath = "/page_with_link_to_self.html";
         final String httpPathOnServer = mWebServer.getResponseUrl(httpPath);
-        addPageToTestServer(httpPath,
-                CommonResources.makeHtmlPageWithSimpleLinkTo(httpPathOnServer));
+        addPageToTestServer(
+                httpPath, CommonResources.makeHtmlPageWithSimpleLinkTo(httpPathOnServer));
 
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), httpPathOnServer);
@@ -421,8 +468,12 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
 
         final String redirectTargetUrl = createRedirectTargetPage();
-        mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
-                getHtmlForPageWithJsAssignLinkTo(redirectTargetUrl), "text/html", false);
+        mActivityTestRule.loadDataSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                getHtmlForPageWithJsAssignLinkTo(redirectTargetUrl),
+                "text/html",
+                false);
 
         int callCount = mShouldOverrideUrlLoadingHelper.getCallCount();
         clickOnLinkUsingJs();
@@ -437,8 +488,12 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
 
         final String redirectTargetUrl = createRedirectTargetPage();
-        mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
-                getHtmlForPageWithJsReplaceLinkTo(redirectTargetUrl), "text/html", false);
+        mActivityTestRule.loadDataSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                getHtmlForPageWithJsReplaceLinkTo(redirectTargetUrl),
+                "text/html",
+                false);
 
         int callCount = mShouldOverrideUrlLoadingHelper.getCallCount();
         clickOnLinkUsingJs();
@@ -456,14 +511,18 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
         standardSetup();
 
         final String redirectTargetUrl = createRedirectTargetPage();
-        mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
-                CommonResources.makeHtmlPageWithSimpleLinkTo(redirectTargetUrl), "text/html",
+        mActivityTestRule.loadDataSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                CommonResources.makeHtmlPageWithSimpleLinkTo(redirectTargetUrl),
+                "text/html",
                 false);
 
         int callCount = mShouldOverrideUrlLoadingHelper.getCallCount();
         clickOnLinkUsingJs();
         mShouldOverrideUrlLoadingHelper.waitForCallback(callCount);
-        Assert.assertEquals(redirectTargetUrl,
+        Assert.assertEquals(
+                redirectTargetUrl,
                 mShouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingUrl());
         // It's not a server-side redirect.
         Assert.assertFalse(mShouldOverrideUrlLoadingHelper.isRedirect());
@@ -479,11 +538,15 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
 
         final String redirectTargetUrl = createRedirectTargetPage();
         final String pageWithLinkToIgnorePath = "/page_with_link_to_ignore.html";
-        final String pageWithLinkToIgnoreUrl = addPageToTestServer(pageWithLinkToIgnorePath,
-                CommonResources.makeHtmlPageWithSimpleLinkTo(redirectTargetUrl));
+        final String pageWithLinkToIgnoreUrl =
+                addPageToTestServer(
+                        pageWithLinkToIgnorePath,
+                        CommonResources.makeHtmlPageWithSimpleLinkTo(redirectTargetUrl));
         final String synchronizationPath = "/sync.html";
-        final String synchronizationUrl = addPageToTestServer(synchronizationPath,
-                CommonResources.makeHtmlPageWithSimpleLinkTo(redirectTargetUrl));
+        final String synchronizationUrl =
+                addPageToTestServer(
+                        synchronizationPath,
+                        CommonResources.makeHtmlPageWithSimpleLinkTo(redirectTargetUrl));
 
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), pageWithLinkToIgnoreUrl);
@@ -513,15 +576,19 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
     public void testCalledForUnsupportedSchemes() throws Throwable {
         standardSetup();
         final String unsupportedSchemeUrl = "foobar://resource/1";
-        mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
-                CommonResources.makeHtmlPageWithSimpleLinkTo(unsupportedSchemeUrl), "text/html",
+        mActivityTestRule.loadDataSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                CommonResources.makeHtmlPageWithSimpleLinkTo(unsupportedSchemeUrl),
+                "text/html",
                 false);
 
         int callCount = mShouldOverrideUrlLoadingHelper.getCallCount();
         clickOnLinkUsingJs();
 
         mShouldOverrideUrlLoadingHelper.waitForCallback(callCount);
-        Assert.assertEquals(unsupportedSchemeUrl,
+        Assert.assertEquals(
+                unsupportedSchemeUrl,
                 mShouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingUrl());
         Assert.assertFalse(mShouldOverrideUrlLoadingHelper.isRedirect());
         Assert.assertFalse(mShouldOverrideUrlLoadingHelper.hasUserGesture());
@@ -536,8 +603,10 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
         standardSetup();
 
         final String redirectTargetUrl = createRedirectTargetPage();
-        final String postLinkUrl = addPageToTestServer("/page_with_post_link.html",
-                CommonResources.makeHtmlPageWithSimplePostFormTo(redirectTargetUrl));
+        final String postLinkUrl =
+                addPageToTestServer(
+                        "/page_with_post_link.html",
+                        CommonResources.makeHtmlPageWithSimplePostFormTo(redirectTargetUrl));
 
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), postLinkUrl);
@@ -568,8 +637,10 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
 
         final String redirectTargetUrl = createRedirectTargetPage();
         final String postToGetRedirectUrl = mWebServer.setRedirect("/302.html", redirectTargetUrl);
-        final String postLinkUrl = addPageToTestServer("/page_with_post_link.html",
-                CommonResources.makeHtmlPageWithSimplePostFormTo(postToGetRedirectUrl));
+        final String postLinkUrl =
+                addPageToTestServer(
+                        "/page_with_post_link.html",
+                        CommonResources.makeHtmlPageWithSimplePostFormTo(postToGetRedirectUrl));
 
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), postLinkUrl);
@@ -583,7 +654,8 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
         AwActivityTestRule.pollInstrumentationThread(
                 () -> mWebServer.getRequestCount(REDIRECT_TARGET_PATH) == 1);
 
-        Assert.assertEquals(redirectTargetUrl,
+        Assert.assertEquals(
+                redirectTargetUrl,
                 mShouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingUrl());
         Assert.assertTrue(mShouldOverrideUrlLoadingHelper.isRedirect());
         Assert.assertFalse(mShouldOverrideUrlLoadingHelper.hasUserGesture());
@@ -600,7 +672,8 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
         final String iframeRedirectUrl =
                 mWebServer.setRedirect("/302.html", iframeRedirectTargetUrl);
         final String pageWithIframeUrl =
-                addPageToTestServer("/iframe_intercept.html",
+                addPageToTestServer(
+                        "/iframe_intercept.html",
                         makeHtmlPageFrom("", "<iframe src=\"" + iframeRedirectUrl + "\" />"));
 
         final int shouldOverrideUrlLoadingCallCount =
@@ -626,7 +699,8 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
 
         final String unsupportedSchemeUrl = "foobar://resource/1";
         final String pageWithIframeUrl =
-                addPageToTestServer("/iframe_intercept.html",
+                addPageToTestServer(
+                        "/iframe_intercept.html",
                         makeHtmlPageFrom("", "<iframe src=\"" + unsupportedSchemeUrl + "\" />"));
 
         final int shouldOverrideUrlLoadingCallCount =
@@ -636,7 +710,8 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), pageWithIframeUrl);
 
         mShouldOverrideUrlLoadingHelper.waitForCallback(shouldOverrideUrlLoadingCallCount);
-        Assert.assertEquals(unsupportedSchemeUrl,
+        Assert.assertEquals(
+                unsupportedSchemeUrl,
                 mShouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingUrl());
         Assert.assertFalse(mShouldOverrideUrlLoadingHelper.isRedirect());
         Assert.assertFalse(mShouldOverrideUrlLoadingHelper.hasUserGesture());
@@ -646,18 +721,21 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
     /**
      * Worker method for the various redirect tests.
      *
-     * Calling this will first load the redirect URL built from redirectFilePath, query and
-     * locationFilePath and assert that we get a override callback for the destination.
-     * The second part of the test loads a page that contains a link which points at the redirect
-     * URL. We expect two callbacks - one for the redirect link and another for the destination.
+     * <p>Calling this will first load the redirect URL built from redirectFilePath, query and
+     * locationFilePath and assert that we get a override callback for the destination. The second
+     * part of the test loads a page that contains a link which points at the redirect URL. We
+     * expect two callbacks - one for the redirect link and another for the destination.
      */
-    private void doTestCalledOnRedirect(String redirectUrl, String redirectTarget,
-            boolean serverSideRedirect) throws Throwable {
+    private void doTestCalledOnRedirect(
+            String redirectUrl, String redirectTarget, boolean serverSideRedirect)
+            throws Throwable {
         standardSetup();
         final String pageTitle = "doTestCalledOnRedirect page";
-        final String pageWithLinkToRedirectUrl = addPageToTestServer(
-                "/page_with_link_to_redirect.html", CommonResources.makeHtmlPageWithSimpleLinkTo(
-                        "<title>" + pageTitle + "</title>", redirectUrl));
+        final String pageWithLinkToRedirectUrl =
+                addPageToTestServer(
+                        "/page_with_link_to_redirect.html",
+                        CommonResources.makeHtmlPageWithSimpleLinkTo(
+                                "<title>" + pageTitle + "</title>", redirectUrl));
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
 
         // There is a slight difference between navigations caused by calling load and navigations
@@ -742,8 +820,10 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
     @Feature({"AndroidWebView", "Navigation"})
     public void testCalledOnMetaRefreshRedirect() throws Throwable {
         final String redirectTargetUrl = createRedirectTargetPage();
-        final String redirectUrl = addPageToTestServer("/meta_refresh.html",
-                getHtmlForPageWithMetaRefreshRedirectTo(redirectTargetUrl));
+        final String redirectUrl =
+                addPageToTestServer(
+                        "/meta_refresh.html",
+                        getHtmlForPageWithMetaRefreshRedirectTo(redirectTargetUrl));
         doTestCalledOnRedirect(redirectUrl, redirectTargetUrl, false);
     }
 
@@ -752,8 +832,10 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
     @Feature({"AndroidWebView", "Navigation"})
     public void testCalledOnJavaScriptLocationImmediateAssignRedirect() throws Throwable {
         final String redirectTargetUrl = createRedirectTargetPage();
-        final String redirectUrl = addPageToTestServer("/js_immediate_assign.html",
-                getHtmlForPageWithJsRedirectTo(redirectTargetUrl, "Assign", 0));
+        final String redirectUrl =
+                addPageToTestServer(
+                        "/js_immediate_assign.html",
+                        getHtmlForPageWithJsRedirectTo(redirectTargetUrl, "Assign", 0));
         doTestCalledOnRedirect(redirectUrl, redirectTargetUrl, false);
     }
 
@@ -762,8 +844,10 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
     @Feature({"AndroidWebView", "Navigation"})
     public void testCalledOnJavaScriptLocationImmediateReplaceRedirect() throws Throwable {
         final String redirectTargetUrl = createRedirectTargetPage();
-        final String redirectUrl = addPageToTestServer("/js_immediate_replace.html",
-                getHtmlForPageWithJsRedirectTo(redirectTargetUrl, "Replace", 0));
+        final String redirectUrl =
+                addPageToTestServer(
+                        "/js_immediate_replace.html",
+                        getHtmlForPageWithJsRedirectTo(redirectTargetUrl, "Replace", 0));
         doTestCalledOnRedirect(redirectUrl, redirectTargetUrl, false);
     }
 
@@ -772,8 +856,10 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
     @Feature({"AndroidWebView", "Navigation"})
     public void testCalledOnJavaScriptLocationDelayedAssignRedirect() throws Throwable {
         final String redirectTargetUrl = createRedirectTargetPage();
-        final String redirectUrl = addPageToTestServer("/js_delayed_assign.html",
-                getHtmlForPageWithJsRedirectTo(redirectTargetUrl, "Assign", 100));
+        final String redirectUrl =
+                addPageToTestServer(
+                        "/js_delayed_assign.html",
+                        getHtmlForPageWithJsRedirectTo(redirectTargetUrl, "Assign", 100));
         doTestCalledOnRedirect(redirectUrl, redirectTargetUrl, false);
     }
 
@@ -782,8 +868,10 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
     @Feature({"AndroidWebView", "Navigation"})
     public void testCalledOnJavaScriptLocationDelayedReplaceRedirect() throws Throwable {
         final String redirectTargetUrl = createRedirectTargetPage();
-        final String redirectUrl = addPageToTestServer("/js_delayed_replace.html",
-                getHtmlForPageWithJsRedirectTo(redirectTargetUrl, "Replace", 100));
+        final String redirectUrl =
+                addPageToTestServer(
+                        "/js_delayed_replace.html",
+                        getHtmlForPageWithJsRedirectTo(redirectTargetUrl, "Replace", 100));
         doTestCalledOnRedirect(redirectUrl, redirectTargetUrl, false);
     }
 
@@ -797,14 +885,19 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
         // Do a double navigagtion, the second being an effective no-op, in quick succession (i.e.
         // without yielding the main thread inbetween).
         int currentCallCount = mContentsClient.getOnPageFinishedHelper().getCallCount();
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            mAwContents.loadUrl(LoadUrlParams.createLoadDataParams(
-                    CommonResources.makeHtmlPageWithSimpleLinkTo(DATA_URL), "text/html",
-                    false));
-            mAwContents.loadUrl(new LoadUrlParams(jsUrl));
-        });
-        mContentsClient.getOnPageFinishedHelper().waitForCallback(currentCallCount, 1,
-                WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () -> {
+                            mAwContents.loadUrl(
+                                    LoadUrlParams.createLoadDataParams(
+                                            CommonResources.makeHtmlPageWithSimpleLinkTo(DATA_URL),
+                                            "text/html",
+                                            false));
+                            mAwContents.loadUrl(new LoadUrlParams(jsUrl));
+                        });
+        mContentsClient
+                .getOnPageFinishedHelper()
+                .waitForCallback(currentCallCount, 1, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
         Assert.assertEquals(0, mShouldOverrideUrlLoadingHelper.getCallCount());
     }
@@ -827,10 +920,13 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
         OnReceivedErrorHelper onReceivedErrorHelper = mContentsClient.getOnReceivedErrorHelper();
         int onReceivedErrorCount = onReceivedErrorHelper.getCallCount();
 
-        mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+        mActivityTestRule.loadDataSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
                 CommonResources.makeHtmlPageWithSimpleLinkTo(
                         ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL),
-                "text/html", false);
+                "text/html",
+                false);
 
         int shouldOverrideUrlLoadingCallCount = mShouldOverrideUrlLoadingHelper.getCallCount();
         setShouldOverrideUrlLoadingReturnValueOnUiThread(true);
@@ -882,8 +978,10 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
         shouldOverrideUrlLoadingCallCount = mShouldOverrideUrlLoadingHelper.getCallCount();
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> mAwContents.goBack());
         onPageFinishedHelper.waitForCallback(pageFinishedCount);
-        Assert.assertEquals("Should not invoke shouldOverrideUrlLoading() for history navigation",
-                shouldOverrideUrlLoadingCallCount, mShouldOverrideUrlLoadingHelper.getCallCount());
+        Assert.assertEquals(
+                "Should not invoke shouldOverrideUrlLoading() for history navigation",
+                shouldOverrideUrlLoadingCallCount,
+                mShouldOverrideUrlLoadingHelper.getCallCount());
 
         Assert.assertFalse("Should not be able to navigate backward", mAwContents.canGoBack());
         Assert.assertEquals(new GURL(firstUrl), mAwContents.getUrl());
@@ -910,24 +1008,31 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
         setupWithProvidedContentsClient(new StopInCallbackClient());
         mShouldOverrideUrlLoadingHelper = mContentsClient.getShouldOverrideUrlLoadingHelper();
 
-        mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
-                CommonResources.makeHtmlPageWithSimpleLinkTo("http://foo.com"), "text/html", false);
+        mActivityTestRule.loadDataSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                CommonResources.makeHtmlPageWithSimpleLinkTo("http://foo.com"),
+                "text/html",
+                false);
 
         int shouldOverrideUrlLoadingCallCount = mShouldOverrideUrlLoadingHelper.getCallCount();
         setShouldOverrideUrlLoadingReturnValueOnUiThread(true);
         clickOnLinkUsingJs();
         mShouldOverrideUrlLoadingHelper.waitForCallback(shouldOverrideUrlLoadingCallCount);
 
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            try {
-                String actual = JSUtils.executeJavaScriptAndWaitForResult(
-                        InstrumentationRegistry.getInstrumentation(), mAwContents,
-                        mContentsClient.getOnEvaluateJavaScriptResultHelper(), globalJsVar);
-                Criteria.checkThat(actual, Matchers.is("1"));
-            } catch (Exception e) {
-                throw new CriteriaNotSatisfiedException(e);
-            }
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        String actual =
+                                JSUtils.executeJavaScriptAndWaitForResult(
+                                        InstrumentationRegistry.getInstrumentation(), mAwContents,
+                                        mContentsClient.getOnEvaluateJavaScriptResultHelper(),
+                                                globalJsVar);
+                        Criteria.checkThat(actual, Matchers.is("1"));
+                    } catch (Exception e) {
+                        throw new CriteriaNotSatisfiedException(e);
+                    }
+                });
     }
 
     @Test
@@ -936,7 +1041,8 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
     public void testCallLoadInCallback() throws Throwable {
         final String httpPath = "/page_with_about_blank_navigation";
         final String httpPathOnServer = mWebServer.getResponseUrl(httpPath);
-        addPageToTestServer(httpPath,
+        addPageToTestServer(
+                httpPath,
                 CommonResources.makeHtmlPageWithSimpleLinkTo(
                         getTestPageCommonHeaders(), ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
         class StopInCallbackClient extends TestAwContentsClient {
@@ -948,8 +1054,12 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
         }
         setupWithProvidedContentsClient(new StopInCallbackClient());
         mShouldOverrideUrlLoadingHelper = mContentsClient.getShouldOverrideUrlLoadingHelper();
-        mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
-                CommonResources.makeHtmlPageWithSimpleLinkTo("http://foo.com"), "text/html", false);
+        mActivityTestRule.loadDataSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                CommonResources.makeHtmlPageWithSimpleLinkTo("http://foo.com"),
+                "text/html",
+                false);
         int shouldOverrideUrlLoadingCallCount = mShouldOverrideUrlLoadingHelper.getCallCount();
         int onPageFinishedCallCount = mContentsClient.getOnPageFinishedHelper().getCallCount();
         setShouldOverrideUrlLoadingReturnValueOnUiThread(true);
@@ -957,14 +1067,16 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
         mShouldOverrideUrlLoadingHelper.waitForCallback(shouldOverrideUrlLoadingCallCount);
         mContentsClient.getOnPageFinishedHelper().waitForCallback(onPageFinishedCallCount);
 
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            try {
-                Criteria.checkThat(
-                        mActivityTestRule.getTitleOnUiThread(mAwContents), Matchers.is(TITLE));
-            } catch (Exception e) {
-                throw new CriteriaNotSatisfiedException(e);
-            }
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        Criteria.checkThat(
+                                mActivityTestRule.getTitleOnUiThread(mAwContents),
+                                Matchers.is(TITLE));
+                    } catch (Exception e) {
+                        throw new CriteriaNotSatisfiedException(e);
+                    }
+                });
     }
 
     @Test
@@ -976,8 +1088,11 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
             // Need to temporarily suppress startActivity otherwise there will be a
             // handler selection window and the test can't dismiss that.
             mActivityTestRule.getActivity().setIgnoreStartActivity(true);
-            final String testUrl = mWebServer.setResponse("/" + CommonResources.ABOUT_FILENAME,
-                    CommonResources.ABOUT_HTML, CommonResources.getTextHtmlHeaders(true));
+            final String testUrl =
+                    mWebServer.setResponse(
+                            "/" + CommonResources.ABOUT_FILENAME,
+                            CommonResources.ABOUT_HTML,
+                            CommonResources.getTextHtmlHeaders(true));
             setupWithProvidedContentsClient(new TestDefaultContentsClient());
             mActivityTestRule.loadUrlSync(
                     mAwContents, mContentsClient.getOnPageFinishedHelper(), testUrl);
@@ -989,13 +1104,17 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
             final String path1 = "/from.html";
             final String path2 = "/to.html";
             final String fromUrl = mWebServer.setRedirect(path1, path2);
-            final String toUrl = mWebServer.setResponse(
-                    path2, CommonResources.ABOUT_HTML, CommonResources.getTextHtmlHeaders(true));
+            final String toUrl =
+                    mWebServer.setResponse(
+                            path2,
+                            CommonResources.ABOUT_HTML,
+                            CommonResources.getTextHtmlHeaders(true));
             mActivityTestRule.loadUrlAsync(mAwContents, fromUrl);
 
             mActivityTestRule.pollUiThread(
                     () -> mActivityTestRule.getActivity().getLastSentIntent() != null);
-            Assert.assertEquals(toUrl,
+            Assert.assertEquals(
+                    toUrl,
                     mActivityTestRule.getActivity().getLastSentIntent().getData().toString());
         } finally {
             mActivityTestRule.getActivity().setIgnoreStartActivity(false);
@@ -1014,11 +1133,18 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
             setupWithProvidedContentsClient(new TestDefaultContentsClient());
             AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
             final String pageTitle = "Click Title";
-            final String htmlWithLink = "<html><title>" + pageTitle + "</title>"
-                    + "<body><a id='link' href='" + ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL
-                    + "'>Click this!</a></body></html>";
-            final String urlWithLink = mWebServer.setResponse(
-                    "/html_with_link.html", htmlWithLink, CommonResources.getTextHtmlHeaders(true));
+            final String htmlWithLink =
+                    "<html><title>"
+                            + pageTitle
+                            + "</title>"
+                            + "<body><a id='link' href='"
+                            + ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL
+                            + "'>Click this!</a></body></html>";
+            final String urlWithLink =
+                    mWebServer.setResponse(
+                            "/html_with_link.html",
+                            htmlWithLink,
+                            CommonResources.getTextHtmlHeaders(true));
 
             mActivityTestRule.loadUrlSync(
                     mAwContents, mContentsClient.getOnPageFinishedHelper(), urlWithLink);
@@ -1026,8 +1152,9 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
             // Clicking on an about:blank link should always navigate to the page directly
             int currentCallCount = mContentsClient.getOnPageFinishedHelper().getCallCount();
             JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "link");
-            mContentsClient.getOnPageFinishedHelper().waitForCallback(
-                    currentCallCount, 1, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            mContentsClient
+                    .getOnPageFinishedHelper()
+                    .waitForCallback(currentCallCount, 1, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
             Assert.assertEquals(
                     new GURL(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL), mAwContents.getUrl());
@@ -1045,22 +1172,35 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
             // Need to temporarily suppress startActivity otherwise there will be a
             // handler selection window and the test can't dismiss that.
             mActivityTestRule.getActivity().setIgnoreStartActivity(true);
-            final String testUrl = mWebServer.setResponse("/" + CommonResources.ABOUT_FILENAME,
-                    CommonResources.ABOUT_HTML, CommonResources.getTextHtmlHeaders(true));
+            final String testUrl =
+                    mWebServer.setResponse(
+                            "/" + CommonResources.ABOUT_FILENAME,
+                            CommonResources.ABOUT_HTML,
+                            CommonResources.getTextHtmlHeaders(true));
             setupWithProvidedContentsClient(new TestDefaultContentsClient());
             AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
             final String pageTitle = "Click Title";
-            final String htmlWithLink = "<html><title>" + pageTitle + "</title>"
-                    + "<body><a id='link' href='" + testUrl + "'>Click this!</a></body></html>";
-            final String urlWithLink = mWebServer.setResponse(
-                    "/html_with_link.html", htmlWithLink, CommonResources.getTextHtmlHeaders(true));
+            final String htmlWithLink =
+                    "<html><title>"
+                            + pageTitle
+                            + "</title>"
+                            + "<body><a id='link' href='"
+                            + testUrl
+                            + "'>Click this!</a></body></html>";
+            final String urlWithLink =
+                    mWebServer.setResponse(
+                            "/html_with_link.html",
+                            htmlWithLink,
+                            CommonResources.getTextHtmlHeaders(true));
 
             mActivityTestRule.loadUrlSync(
                     mAwContents, mContentsClient.getOnPageFinishedHelper(), urlWithLink);
             // Executing JS code that tries to navigate somewhere should not create an intent.
-            Assert.assertEquals("\"" + testUrl + "\"",
+            Assert.assertEquals(
+                    "\"" + testUrl + "\"",
                     JSUtils.executeJavaScriptAndWaitForResult(
-                            InstrumentationRegistry.getInstrumentation(), mAwContents,
+                            InstrumentationRegistry.getInstrumentation(),
+                            mAwContents,
                             new OnEvaluateJavaScriptResultHelper(),
                             "document.location.href='" + testUrl + "'"));
             Assert.assertNull(mActivityTestRule.getActivity().getLastSentIntent());
@@ -1069,7 +1209,8 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
             JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "link");
             mActivityTestRule.pollUiThread(
                     () -> mActivityTestRule.getActivity().getLastSentIntent() != null);
-            Assert.assertEquals(testUrl,
+            Assert.assertEquals(
+                    testUrl,
                     mActivityTestRule.getActivity().getLastSentIntent().getData().toString());
         } finally {
             mActivityTestRule.getActivity().setIgnoreStartActivity(false);
@@ -1078,7 +1219,8 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
 
     private void setAppLinkPolicy(final AwPolicyProvider testProvider, String url) {
         final PolicyData[] policies = {
-                new PolicyData.Str(sEnterpriseAuthAppLinkPolicy, "[{ \"url\": \"" + url + "\"}]")};
+            new PolicyData.Str(sEnterpriseAuthAppLinkPolicy, "[{ \"url\": \"" + url + "\"}]")
+        };
 
         AbstractAppRestrictionsProvider.setTestRestrictions(
                 PolicyData.asBundle(Arrays.asList(policies)));
@@ -1103,8 +1245,11 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
             TestThreadUtils.runOnUiThreadBlocking(
                     () -> CombinedPolicyProvider.get().registerProvider(testProvider));
 
-            final String authenticationUrl = addPageToTestServer("/redirect" + REDIRECT_TARGET_PATH,
-                    makeHtmlPageFrom("", "<div>This is the end of the redirect chain</div>"));
+            final String authenticationUrl =
+                    addPageToTestServer(
+                            "/redirect" + REDIRECT_TARGET_PATH,
+                            makeHtmlPageFrom(
+                                    "", "<div>This is the end of the redirect chain</div>"));
             final String loginUrl = mWebServer.setRedirect("/login.html", authenticationUrl);
             // Set the policy for authentication url.
             setAppLinkPolicy(testProvider, authenticationUrl);
@@ -1114,7 +1259,8 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
 
             mActivityTestRule.pollUiThread(
                     () -> mActivityTestRule.getActivity().getLastSentIntent() != null);
-            Assert.assertEquals(authenticationUrl,
+            Assert.assertEquals(
+                    authenticationUrl,
                     mActivityTestRule.getActivity().getLastSentIntent().getData().toString());
         } finally {
             mActivityTestRule.getActivity().setIgnoreStartActivity(false);
@@ -1133,8 +1279,11 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
                     new AwPolicyProvider(mActivityTestRule.getActivity().getApplicationContext());
             TestThreadUtils.runOnUiThreadBlocking(
                     () -> CombinedPolicyProvider.get().registerProvider(testProvider));
-            final String authenticationUrl = addPageToTestServer("/redirect" + REDIRECT_TARGET_PATH,
-                    makeHtmlPageFrom("", "<div>This is the end of the redirect chain</div>"));
+            final String authenticationUrl =
+                    addPageToTestServer(
+                            "/redirect" + REDIRECT_TARGET_PATH,
+                            makeHtmlPageFrom(
+                                    "", "<div>This is the end of the redirect chain</div>"));
             final String loginUrl = mWebServer.setRedirect("/login.html", authenticationUrl);
 
             mActivityTestRule.loadUrlSync(
@@ -1222,8 +1371,11 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
         final String path1 = "/from.html";
         final String path2 = BAD_SCHEME + "to.html";
         final String fromUrl = mWebServer.setRedirect(path1, path2);
-        final String toUrl = mWebServer.setResponse(
-                path2, CommonResources.ABOUT_HTML, CommonResources.getTextHtmlHeaders(true));
+        final String toUrl =
+                mWebServer.setResponse(
+                        path2,
+                        CommonResources.ABOUT_HTML,
+                        CommonResources.getTextHtmlHeaders(true));
         mActivityTestRule.loadUrlAsync(mAwContents, fromUrl);
         client.waitForLatch();
         // Wait for an arbitrary amount of time to ensure onReceivedError is never called.
@@ -1238,7 +1390,8 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
             String popupPath, String expectedPathInShouldOVerrideUrlLoading) throws Throwable {
         TestAwContentsClient.ShouldOverrideUrlLoadingHelper popupShouldOverrideUrlLoadingHelper =
                 createPopUp(popupPath, false /* wait for onpagefinished */);
-        Assert.assertEquals(expectedPathInShouldOVerrideUrlLoading,
+        Assert.assertEquals(
+                expectedPathInShouldOVerrideUrlLoading,
                 popupShouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingUrl());
         Assert.assertEquals(false, popupShouldOverrideUrlLoadingHelper.isRedirect());
         Assert.assertFalse(popupShouldOverrideUrlLoadingHelper.hasUserGesture());
@@ -1248,13 +1401,23 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
     private TestAwContentsClient.ShouldOverrideUrlLoadingHelper createPopUp(
             String popupPath, boolean waitForTitle) throws Throwable {
         standardSetup();
-        final String parentPageHtml = CommonResources.makeHtmlPageFrom("",
-                "<script>"
-                        + "function tryOpenWindow() {"
-                        + "  var newWindow = window.open('" + popupPath + "');"
-                        + "}</script>");
-        mActivityTestRule.triggerPopup(mAwContents, mContentsClient, mWebServer, parentPageHtml,
-                null, null, "tryOpenWindow()");
+        final String parentPageHtml =
+                CommonResources.makeHtmlPageFrom(
+                        "",
+                        "<script>"
+                                + "function tryOpenWindow() {"
+                                + "  var newWindow = window.open('"
+                                + popupPath
+                                + "');"
+                                + "}</script>");
+        mActivityTestRule.triggerPopup(
+                mAwContents,
+                mContentsClient,
+                mWebServer,
+                parentPageHtml,
+                null,
+                null,
+                "tryOpenWindow()");
 
         final TestAwContentsClient popupContentsClient = new TestAwContentsClient();
         final AwTestContainerView popupContainerView =
@@ -1265,8 +1428,8 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
                 popupContentsClient.getShouldOverrideUrlLoadingHelper();
         int currentCallCount = popupShouldOverrideUrlLoadingHelper.getCallCount();
 
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> mAwContents.supplyContentsForPopup(popupContents));
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(() -> mAwContents.supplyContentsForPopup(popupContents));
 
         if (waitForTitle) {
             // Wait for popup to be loaded for about:blank. Turned out that in about:blank
@@ -1275,8 +1438,9 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
             // title changes.
             pollTitleAs("about:blank", popupContents);
         } else {
-            popupContentsClient.getOnPageFinishedHelper().waitForCallback(
-                    currentCallCount, 1, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            popupContentsClient
+                    .getOnPageFinishedHelper()
+                    .waitForCallback(currentCallCount, 1, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         }
         return popupShouldOverrideUrlLoadingHelper;
     }
