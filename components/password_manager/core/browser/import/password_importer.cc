@@ -20,8 +20,6 @@
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
 #include "components/password_manager/core/browser/import/import_results.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_manager_util.h"
-#include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
@@ -113,7 +111,7 @@ ImportEntry::Status GetConflictType(
 ImportEntry CreateFailedImportEntry(const CredentialUIEntry& credential,
                                     const ImportEntry::Status status) {
   ImportEntry result;
-  result.url = password_manager::GetShownOrigin(credential);
+  result.url = credential.GetAffiliatedDomains()[0].name;
   result.username = base::UTF16ToUTF8(credential.username);
   result.status = status;
   return result;
@@ -123,7 +121,7 @@ ImportEntry CreateValidImportEntry(const CredentialUIEntry& credential,
                                    int id) {
   ImportEntry result;
   result.id = id;
-  result.url = password_manager::GetShownOrigin(credential);
+  result.url = credential.GetAffiliatedDomains()[0].name;
   result.username = base::UTF16ToUTF8(credential.username);
   result.password = base::UTF16ToUTF8(credential.password);
   result.status = ImportEntry::VALID;

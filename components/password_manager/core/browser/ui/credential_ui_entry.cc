@@ -238,6 +238,7 @@ std::vector<CredentialUIEntry::DomainInfo>
 CredentialUIEntry::GetAffiliatedDomains() const {
   std::vector<CredentialUIEntry::DomainInfo> domains;
   std::set<std::string> unique_urls;
+  CHECK(!facets.empty());
   for (const auto& facet : facets) {
     CredentialUIEntry::DomainInfo domain;
     domain.signon_realm = facet.signon_realm;
