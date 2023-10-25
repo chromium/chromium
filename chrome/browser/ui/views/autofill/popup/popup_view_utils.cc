@@ -554,6 +554,7 @@ bool IsGroupFillingPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kFieldByFieldFilling:
     case PopupItemId::kFillEverythingFromAddressProfile:
     case PopupItemId::kFillExistingPlusAddress:
+    case PopupItemId::kFillFullEmail:
     case PopupItemId::kFillFullPhoneNumber:
     case PopupItemId::kGeneratePasswordEntry:
     case PopupItemId::kIbanEntry:
@@ -606,6 +607,7 @@ bool IsFooterPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kFillExistingPlusAddress:
     case PopupItemId::kFillFullAddress:
     case PopupItemId::kFillFullName:
+    case PopupItemId::kFillFullEmail:
     case PopupItemId::kFillFullPhoneNumber:
     case PopupItemId::kGeneratePasswordEntry:
     case PopupItemId::kIbanEntry:
@@ -628,6 +630,7 @@ bool IsExpandablePopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kAddressEntry:
     case PopupItemId::kFillFullAddress:
     case PopupItemId::kFillFullName:
+    case PopupItemId::kFillFullEmail:
     case PopupItemId::kFillFullPhoneNumber:
     case PopupItemId::kFieldByFieldFilling:
       return true;

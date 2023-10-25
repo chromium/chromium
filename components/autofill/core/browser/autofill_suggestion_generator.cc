@@ -299,17 +299,18 @@ void AddAddressChildSuggestions(FieldTypeGroup trigger_field_type_group,
 }
 
 // Adds contact related child suggestions (i.e email and phone number) to
-// build autofill popup submenu. The param `type` refers to the triggering field
-// type (clicked by the users) and is used to define  whether the phone number
-// suggestion will behave as `PopupItemId::kFieldByFieldFilling` or as
-// `PopupItemId::kFillFullPhoneNumber`.
+// build autofill popup submenu. The param `trigger_field_type_group` refers to
+// the triggering field group (clicked by the users) and is used to define
+// whether the phone number and email suggestions  will behave as
+// `PopupItemId::kFieldByFieldFilling` or as
+// `PopupItemId::kFillFullPhoneNumber`/`PopupItemId::kFillFullEmail`
+// respectively. When the triggering field group matches the type of the field
+// we are adding, the suggestion will be of group filling type, other field by
+// field.
 void AddContactChildSuggestions(FieldTypeGroup trigger_field_type_group,
                                 const AutofillProfile& profile,
                                 const std::string& app_locale,
                                 Suggestion& suggestion) {
-  // Creates a phone number suggestion for the autofill submenu. When triggered
-  // from a phone number field this suggestion will fill every phone number
-  // field. Otherwise it fills a specific field.
   bool phone_number_suggestion_added = false;
   if (profile.HasInfo(PHONE_HOME_WHOLE_NUMBER)) {
     Suggestion phone_number_suggestion(
@@ -323,9 +324,22 @@ void AddContactChildSuggestions(FieldTypeGroup trigger_field_type_group,
     suggestion.children.push_back(std::move(phone_number_suggestion));
     phone_number_suggestion_added = true;
   }
-  if (AddFieldByFieldSuggestions({EMAIL_ADDRESS}, profile, app_locale,
-                                 suggestion.children) ||
-      phone_number_suggestion_added) {
+
+  bool email_address_suggestion_added = false;
+  if (profile.HasInfo(EMAIL_ADDRESS)) {
+    Suggestion email_address_suggestion(
+        profile.GetInfo(EMAIL_ADDRESS, app_locale));
+    const bool is_email_field =
+        trigger_field_type_group == FieldTypeGroup::kEmail;
+    email_address_suggestion.popup_item_id =
+        is_email_field ? PopupItemId::kFillFullEmail
+                       : PopupItemId::kFieldByFieldFilling;
+    email_address_suggestion.payload = Suggestion::BackendId(profile.guid());
+    suggestion.children.push_back(std::move(email_address_suggestion));
+    email_address_suggestion_added = true;
+  }
+
+  if (email_address_suggestion_added || phone_number_suggestion_added) {
     suggestion.children.push_back(
         AutofillSuggestionGenerator::CreateSeparator());
   }
@@ -361,10 +375,10 @@ PopupItemId GetProfileSuggestionPopupItemId(
           features::kAutofillGranularFillingAvailable)) {
     return PopupItemId::kAddressEntry;
   }
-  const ServerFieldTypeSet& last_targeted_fields =
-      optional_last_targeted_fields.value_or(kAllServerFieldTypes);
 
-  if (AreFieldsGranularFillingGroup(last_targeted_fields)) {
+  // Lambda to return the expected `PopupItemId` when
+  // `optional_last_targeted_fields` matches one of the granular filling groups.
+  auto get_popup_item_id_for_group_filling = [&] {
     switch (triggering_field_type_group) {
       case FieldTypeGroup::kName:
         return PopupItemId::kFillFullName;
@@ -373,26 +387,28 @@ PopupItemId GetProfileSuggestionPopupItemId(
         return PopupItemId::kFillFullAddress;
       case FieldTypeGroup::kPhone:
         return PopupItemId::kFillFullPhoneNumber;
+      case FieldTypeGroup::kEmail:
+        return PopupItemId::kFillFullEmail;
       default:
         // If the 'current_granularity' is group filling, BUT the current
-        // focused field is not one for which group we offer group filling
-        // (kName, kAddress and kPhone), we default back to fill full form
-        // behaviour/pre-granular filling popup id.
+        // focused field is not one for which group we offer group filling,
+        // we default back to fill full form behaviour/pre-granular filling
+        // popup id.
         return PopupItemId::kAddressEntry;
     }
+  };
+
+  switch (GetFillingMethodFromTargetedFields(
+      optional_last_targeted_fields.value_or(kAllServerFieldTypes))) {
+    case AutofillFillingMethod::kGroupFilling:
+      return get_popup_item_id_for_group_filling();
+    case AutofillFillingMethod::kFullForm:
+      return PopupItemId::kAddressEntry;
+    case AutofillFillingMethod::kFieldByFieldFilling:
+      return PopupItemId::kFieldByFieldFilling;
+    case AutofillFillingMethod::kNone:
+      NOTREACHED_NORETURN();
   }
-  if (last_targeted_fields == kAllServerFieldTypes) {
-    return PopupItemId::kAddressEntry;
-  }
-  if (last_targeted_fields.size() == 1) {
-    // Note: This does not affect SingleFieldFormFillers such
-    // Autocomplete, IBANs and merchand promo. Even though they also fill only
-    // one field, they have different code paths, therefore their suggestions
-    // are not generated here. Furthermore, we do not store
-    // `last_targeted_fields` for them.
-    return PopupItemId::kFieldByFieldFilling;
-  }
-  NOTREACHED_NORETURN();
 }
 
 // Creates a specific granular filling label when the `last_filling_granularity`

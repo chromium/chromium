@@ -1302,6 +1302,32 @@ TEST_F(AutofillChildrenSuggestionsGenenarationTest,
       Field(&Suggestion::popup_item_id, PopupItemId::kFillFullPhoneNumber));
 }
 
+// Same as above but for email fields.
+TEST_F(AutofillChildrenSuggestionsGenenarationTest,
+       CreateSuggestionsFromProfiles_ChildrenSuggestionsEmailField) {
+  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
+      profile(), kAllServerFieldTypes, EMAIL_ADDRESS);
+
+  // The child suggestions should be:
+  //
+  // 1. first name
+  // 2. middle name
+  // 3. family name
+  // 4. line separator
+  // 5. address line 1
+  // 6. address line 2
+  // 7. Zip
+  // 8. line separator
+  // 9. phone number
+  // 10. email
+  // 11. line separator
+  // 12. edit profile
+  // 13. delete address
+  ASSERT_EQ(13U, suggestions[0].children.size());
+  EXPECT_THAT(suggestions[0].children[9],
+              Field(&Suggestion::popup_item_id, PopupItemId::kFillFullEmail));
+}
+
 TEST_F(AutofillChildrenSuggestionsGenenarationTest,
        CreateSuggestionsFromProfiles_ChildrenSuggestionsAddressField) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(

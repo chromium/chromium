@@ -35,13 +35,13 @@ enum class AutofillFillingMethod {
 ServerFieldTypeSet GetAddressFieldsForGroupFilling();
 
 // Returns true if `fields` matches one of granular filling groups, i.e.,
-// FieldTypeGroup::kName fields, FieldTypeGroup::kPhone fields or
-// `GetAddressFieldsForGroupFilling` (from the method above).
-bool AreFieldsGranularFillingGroup(const ServerFieldTypeSet& fields);
+// FieldTypeGroup::kName, FieldTypeGroup::kPhone, FieldTypeGroup::kEmail  or
+// `GetAddressFieldsForGroupFilling()`, see from the method above.
+bool AreFieldsGranularFillingGroup(const ServerFieldTypeSet& field_types);
 
 // Returns the autofill filling method corresponding to `targeted_fields`.
 AutofillFillingMethod GetFillingMethodFromTargetedFields(
-    const ServerFieldTypeSet& targeted_fields);
+    const ServerFieldTypeSet& targeted_field_types);
 
 // Returns a set of fields to be filled, given the last targeted fields and
 // the current trigger field type. For example, if the last targeted fields
@@ -49,7 +49,7 @@ AutofillFillingMethod GetFillingMethodFromTargetedFields(
 // matches the triggering field group. This is done so that the user stays at
 // the same granularity as the one previously chosen.
 ServerFieldTypeSet GetTargetServerFieldsForTypeAndLastTargetedFields(
-    const ServerFieldTypeSet& last_targeted_fields,
+    const ServerFieldTypeSet& last_targeted_field_types,
     ServerFieldType trigger_field_type);
 
 }  // namespace autofill

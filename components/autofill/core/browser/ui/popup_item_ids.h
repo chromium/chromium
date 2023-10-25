@@ -34,6 +34,9 @@ enum class PopupItemId : int {
   // When triggered from a phone number field this suggestion will fill every
   // phone number field.
   kFillFullPhoneNumber,
+  // Same as above, when triggered from an email address field this suggestion
+  // will fill every email field.
+  kFillFullEmail,
   kTitle,
   kEditAddressProfile,
   kDeleteAddressProfile,
