@@ -2956,43 +2956,6 @@
             ]
         }
     ],
-    "CacheTransparency": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "CacheTransparencyEnabled",
-                    "params": {
-                        "pervasive-payloads": "1,http://127.0.0.1:4353/pervasive.js,3790EEB37E2A761CFD3B274CCF45CE5AB86A34DF11E28FB7ED4D82AFBBC13BEB"
-                    },
-                    "enable_features": [
-                        "CacheTransparency",
-                        "PervasivePayloadsList"
-                    ]
-                },
-                {
-                    "name": "InputPervasivePayloadsList",
-                    "params": {
-                        "pervasive-payloads": "1,http://127.0.0.1:4353/pervasive.js,3790EEB37E2A761CFD3B274CCF45CE5AB86A34DF11E28FB7ED4D82AFBBC13BEB"
-                    },
-                    "enable_features": [
-                        "PervasivePayloadsList"
-                    ],
-                    "disable_features": [
-                        "CacheTransparency"
-                    ]
-                }
-            ]
-        }
-    ],
     "Canvas2DAutoFlushParams": [
         {
             "platforms": [
