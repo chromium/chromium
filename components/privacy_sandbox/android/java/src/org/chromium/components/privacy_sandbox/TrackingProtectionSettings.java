@@ -6,17 +6,23 @@ package org.chromium.components.privacy_sandbox;
 
 import static org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.SITE_WILDCARD;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Browser;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceClickListener;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.components.browser_ui.settings.CardPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
@@ -44,6 +50,19 @@ import java.util.Locale;
 /** Fragment to manage settings for tracking protection. */
 public class TrackingProtectionSettings extends PreferenceFragmentCompat
         implements CustomDividerFragment, OnPreferenceClickListener, SiteAddedCallback {
+
+    /**
+     * Functional interface to start a Chrome Custom Tab for the given intent, e.g. by using {@link
+     * org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent}.
+     * TODO(crbug.com/1181700): Update when LaunchIntentDispatcher is (partially-)modularized.
+     */
+    public interface CustomTabIntentHelper {
+        /**
+         * @see org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent
+         */
+        Intent createCustomTabActivityIntent(Context context, Intent intent);
+    }
+
     // Must match keys in tracking_protection_preferences.xml.
     private static final String OFFBOARDING_NOTICE = "offboarding_notice";
     private static final String PREF_BLOCK_ALL_TOGGLE = "block_all_3pcd_toggle";
@@ -51,6 +70,9 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
     private static final String PREF_BULLET_TWO = "bullet_point_two";
     private static final String ALLOWED_GROUP = "allowed_group";
     public static final String ADD_EXCEPTION_KEY = "add_exception";
+
+    public static final String LEARN_MORE_URL =
+            "https://support.google.com/chrome/?p=tracking_protection";
 
     // The number of sites that are on the Allowed list.
     private int mAllowedSiteCount;
@@ -60,6 +82,8 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
 
     private TrackingProtectionDelegate mDelegate;
     private CardPreference mOffboardingNoticeCard;
+
+    private CustomTabIntentHelper mCustomTabIntentHelper;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -205,7 +229,7 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
     }
 
     private void onLearnMoreClicked(View view) {
-        // TODO(b/295926938): Implement.
+        openUrlInCct(LEARN_MORE_URL);
     }
 
     private void maybeShowOffboardingCard() {
@@ -232,5 +256,24 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
 
     private void onOffboardingCardCloseClick(View button) {
         mOffboardingNoticeCard.setVisible(false);
+    }
+
+    public void setCustomTabIntentHelper(CustomTabIntentHelper helper) {
+        mCustomTabIntentHelper = helper;
+    }
+
+    private void openUrlInCct(String url) {
+        assert (mCustomTabIntentHelper != null)
+                : "CCT helpers must be set on TrackingProtectionSettings before opening a link";
+        CustomTabsIntent customTabIntent =
+                new CustomTabsIntent.Builder().setShowTitle(true).build();
+        customTabIntent.intent.setData(Uri.parse(url));
+        Intent intent =
+                mCustomTabIntentHelper.createCustomTabActivityIntent(
+                        getContext(), customTabIntent.intent);
+        intent.setPackage(getContext().getPackageName());
+        intent.putExtra(Browser.EXTRA_APPLICATION_ID, getContext().getPackageName());
+        IntentUtils.addTrustedIntentExtras(intent);
+        IntentUtils.safeStartActivity(getContext(), intent);
     }
 }

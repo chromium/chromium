@@ -586,8 +586,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             AutofillOptionsCoordinator.createFor((AutofillOptionsFragment) fragment);
         }
         if (fragment instanceof TrackingProtectionSettings) {
-            ((TrackingProtectionSettings) fragment)
-                    .setTrackingProtectionDelegate(new ChromeTrackingProtectionDelegate(mProfile));
+            TrackingProtectionSettings tpFragment = ((TrackingProtectionSettings) fragment);
+            tpFragment.setTrackingProtectionDelegate(
+                    new ChromeTrackingProtectionDelegate(mProfile));
+            tpFragment.setCustomTabIntentHelper(
+                    LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
     }
 
