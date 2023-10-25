@@ -4688,7 +4688,7 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
           Untrack this package
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_MODULE_HIDE_ALERT_TITLE" desc="Title for the alert dialog warning the user they are about to hide the parcel tracking module.">
-          Hiding this Card will Remove All Your Package Tracking Data
+          Hiding This Card Will Turn Off Package Tracking and Remove All Your Data
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_MODULE_HIDE_ALERT_CANCEL" desc="Title for the item to cancel disabling the Parcel Tracking feature. ">
           Cancel
