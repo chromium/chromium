@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">訊號微弱</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">正在更新 (已完成 <ph name="PERCENTAGE_VALUE" />%)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> 分鐘</translation>
 <translation id="1310380015393971138">無法連上<ph name="NETWORK_NAME" /></translation>
 <translation id="131421566576084655">無法取得上次重設數據用量的日期</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -946,6 +947,7 @@
 <translation id="8227119283605456246">附加檔案</translation>
 <translation id="8230672074305416752">無法連線偵測預設的網路閘道</translation>
 <translation id="8246209727385807362">不明電信業者</translation>
+<translation id="8262870577632766028">1 小時</translation>
 <translation id="827422111966801947">靛藍</translation>
 <translation id="8286154143153872371">如要查看桌布，請連上網路並重新載入網頁。</translation>
 <translation id="8291967909914612644">家用提供者國家/地區</translation>
@@ -1010,6 +1012,7 @@
 <translation id="8747900814994928677">確認變更</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google 相簿中的相簿</translation>
+<translation id="8775713578693478175">數據機 APN</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8789196995628578448">「<ph name="CONFLICT_ACCEL_NAME" />」正在使用快速鍵。請按下新的快速鍵。如要取代原始快速鍵，請再次按下這個快速鍵。</translation>
 <translation id="879568662008399081">這個網站可能有網頁認證入口</translation>

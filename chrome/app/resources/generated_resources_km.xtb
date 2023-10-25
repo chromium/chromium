@@ -1345,6 +1345,7 @@
 <translation id="2020183425253392403">បង្ហាញ​ការកំណត់​អាសយដ្ឋាន​បណ្តាញ</translation>
 <translation id="2020225359413970060">ស្កេន​ឯកសារ</translation>
 <translation id="2020779321517562133">ដកច្បាប់ចម្លងចេញ</translation>
+<translation id="2022953316617983419">​កូដ QR</translation>
 <translation id="2023042679320690325"><ph name="BRAND" /> មិន​អាច​ពិនិត្យមើល​ថាតើពាក្យសម្ងាត់​របស់​អ្នកមានក្នុង​ការបែកធ្លាយ​ទិន្នន័យ​ឬអត់នោះទេ។ សូមព្យាយាម​ម្ដងទៀត​ក្នុងរយៈពេល 24 ម៉ោង។</translation>
 <translation id="2023167225947895179">កូដ PIN អាចនឹងងាយស្រួលទាយ</translation>
 <translation id="202352106777823113">ការទាញយកចំណាយពេលយូរណាស់ ហើយត្រូវបានបញ្ឈប់ដោយបណ្តាញ។</translation>
@@ -1810,6 +1811,7 @@
 <translation id="236117173274098341">បង្កើន​ប្រសិទ្ធភាព</translation>
 <translation id="2361340419970998028">កំពុងផ្ញើមតិកែលម្អ...</translation>
 <translation id="236141728043665931">រារាំងការចូលប្រើម៉ៃក្រូហ្វូនជានិច្ច</translation>
+<translation id="2363475280045770326">មានបញ្ហាក្នុងការរក្សាទុកការកំណត់រចនាសម្ព័ន្ធ</translation>
 <translation id="2363744066037724557">&amp;ស្ដារវិនដូ</translation>
 <translation id="2364498172489649528">ជាប់</translation>
 <translation id="2365507699358342471">ទំព័រ​នេះ​អាច​មើល​ឃើញ​អត្ថបទ និង​រូបភាព​ដែល​បានចម្លង​ទៅ​អង្គចងចាំ។</translation>
@@ -3530,6 +3532,7 @@
 <translation id="3740396996321407665">ទទួលជំនួយ​តាមបរិបទ​ពី​មុខងារ​មួយចំនួន</translation>
 <translation id="3740945083753997630">បន្ថយ​ទំហំ​បង្ហាញ និង​អក្សរ</translation>
 <translation id="3741056951918180319">អ្នកអាច​ចុចកម្មវិធីបន្ថែម ដើម្បីប្រើវា​នៅលើគេហទំព័រ​ណាមួយបានជានិច្ច</translation>
+<translation id="3741510433331996336">ចាប់ផ្ដើមឧបករណ៍របស់អ្នកឡើងវិញ ដើម្បីបញ្ចប់ការដំឡើងកំណែ</translation>
 <translation id="3742235229730461951">ប្លង់​ក្តារចុច​កូរ៉េ</translation>
 <translation id="3742666961763734085">រក​មិន​ឃើញឯកតា​រៀបចំ​ដែលមាន​ឈ្មោះ​នោះទេ។ សូមព្យាយាមម្ដងទៀត។</translation>
 <translation id="3743842571276656710">បញ្ចូល​កូដ PIN ដើម្បី​ផ្គូផ្គងជាមួយ <ph name="DEVICE_NAME" /></translation>
@@ -5922,6 +5925,7 @@
 <translation id="5667293444945855280">មេរោគ</translation>
 <translation id="5667546120811588575">កំពុង​រៀបចំ Google Play...</translation>
 <translation id="5668351004957198136">បរាជ័យ</translation>
+<translation id="5669863904928111203">ChromeOS ហួសសម័យហើយ</translation>
 <translation id="56702779821643359">ចែករំលែកឯកសារ​ជាមួយ​មនុស្សនៅជុំវិញអ្នក។ <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
 <translation id="5671641761787789573">បានទប់ស្កាត់រូបភាព</translation>
 <translation id="5671658447180261823">លុបការ​ណែនាំ <ph name="SUGGESTION_NAME" /></translation>
@@ -8250,6 +8254,7 @@
 <translation id="7549250950481368089">ពាក្យសម្ងាត់ដែលបានរក្សាទុកនឹងបង្ហាញ​នៅទីនេះ។ <ph name="BEGIN_LINK" /> នាំចូល​ពាក្យសម្ងាត់<ph name="END_LINK" />ទៅក្នុង<ph name="BRAND" />។</translation>
 <translation id="7549434883223124329">ប្ដូរ​ភាសា​របស់​ឧបករណ៍ឬ?</translation>
 <translation id="7550830279652415241">ចំណាំ_<ph name="DATESTAMP" />.html</translation>
+<translation id="7550885994112799211">ទំហំផ្ទុក ថាមពល ភាសា</translation>
 <translation id="7551059576287086432">ការទាញយក <ph name="FILE_NAME" /> មិនជោគជ័យ</translation>
 <translation id="7551643184018910560">ដៅទៅធ្នើ</translation>
 <translation id="7552846755917812628">សាកល្បងធ្វើតាមគន្លឹះខាងក្រោម៖</translation>
@@ -8972,6 +8977,7 @@
     <ph name="BEGIN_PARAGRAPH3" />ទិន្នន័យ​កម្មវិធី​អាចជា​ទិន្នន័យ​ទាំងឡាយ​ដែលកម្មវិធី​បានរក្សា​ទុក (ផ្អែកលើ​ការកំណត់​របស់អ្នក​អភិវឌ្ឍន៍) រួមទាំង​ទិន្នន័យ​ដូចជា ទំនាក់​ទំនង សារ និង​រូបថត​ជាដើម។<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />ទិន្នន័យ​បម្រុងទុក​នឹងមិន​ពាក់ព័ន្ធ​ជាមួយ​ចំនួន​កំណត់នៃ​ទំហំផ្ទុក​នៅក្នុង​ថាស​របស់អ្នក​ទេ។<ph name="END_PARAGRAPH4" />
     <ph name="BEGIN_PARAGRAPH5" />អ្នកអាច​បិទសេវាកម្ម​នេះបាន​នៅក្នុង​ការកំណត់។<ph name="END_PARAGRAPH5" /></translation>
+<translation id="8095439028686936591">ChromeOS មាន​កំណែថ្មីបំផុតហើយ</translation>
 <translation id="8096740438774030488">អសកម្មពេលប្រើថ្ម</translation>
 <translation id="80974698889265265">កូដ PIN មិនត្រូវគ្នាទេ</translation>
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> កំពុង​ប្រើ​ការកំណត់​ប្រូកស៊ី​ពី​កម្មវិធី​បន្ថែម</translation>
@@ -9251,6 +9257,7 @@
 <translation id="8317965619823678157">ចម្លងពាក្យសម្ងាត់</translation>
 <translation id="8318266828739827371">ប្រើប្រាស់​ទិដ្ឋភាព​បំបែកអេក្រង់ ដើម្បីមើលឃើញ​តំបន់​ដែលបានពង្រីក​នៃអេក្រង់​របស់អ្នក។ ប្រើប្រាស់ Search + Ctrl + D ដើម្បីបើក និង​បិទ​កែវពង្រីក​ដាក់ពីលើ។</translation>
 <translation id="8319414634934645341">ការប្រើប្រាស់សោបន្ថែម</translation>
+<translation id="8321476692217554900">ការជូន​ដំណឹង</translation>
 <translation id="8321837372750396788"><ph name="DEVICE_TYPE" /> នេះនឹង​ស្ថិតក្រោម​ការគ្រប់គ្រង​របស់ <ph name="MANAGER" />។</translation>
 <translation id="8322814362483282060">ទំព័រនេះត្រូវបានរារាំងពីការចូលប្រើម៉ៃក្រូហ្វូនរបស់អ្នក។</translation>
 <translation id="8323167517179506834">វាយបញ្ចូល URL</translation>
@@ -10440,7 +10447,6 @@
 <translation id="950307215746360464">ការណែនាំអំពី​ការរៀបចំ</translation>
 <translation id="951991426597076286">បដិសេធ</translation>
 <translation id="952471655966876828">ឧបករណ៍​នឹងភ្ជាប់ដោយស្វ័យប្រវត្តិ នៅពេលបើក ឬកំពុង​ត្រូវបានប្រើប្រាស់</translation>
-<translation id="952880932803612259">អនុញ្ញាតឱ្យ​កម្មវិធី គេហទំព័រ និង​សេវាកម្ម​ប្រព័ន្ធ​ប្រើទីតាំង​របស់អ្នក។ ទីតាំង​អាចប្រើប្រាស់​ប្រភព​ផ្សេងៗ ដូចជា Wi‑Fi, បណ្ដាញទូរសព្ទចល័ត និងសេនស័រ ដើម្បី​ជួយ​ប៉ាន់ស្មាន​ទីតាំង​របស់ឧបករណ៍អ្នក។</translation>
 <translation id="953434574221655299">អនុញ្ញាតឱ្យដឹងថា នៅពេលណាដែល​អ្នកកំពុងប្រើ​ឧបករណ៍របស់អ្នកយ៉ាងសកម្ម</translation>
 <translation id="956500788634395331">អ្នក​ទទួលបាន​ការការពារពី​កម្មវិធីបន្ថែម​ដែលអាច​បង្កគ្រោះថ្នាក់</translation>
 <translation id="957179356621191750">6 ចំណុច</translation>

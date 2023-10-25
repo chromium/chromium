@@ -632,6 +632,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4371591986692297148">Inativo</translation>
 <translation id="4375040482473363939">Pesquisa de códigos QR</translation>
 <translation id="4378154925671717803">Telemóvel</translation>
+<translation id="4388983683160515185"><ph name="FULL_NAME" /> partilhou uma palavra-passe consigo para o Website <ph name="WEBSITE" /></translation>
 <translation id="4389019817280890563">Toque para alterar o idioma.</translation>
 <translation id="4405320213589929829">Use moradas em páginas Web para obter direções e informações locais.</translation>
 <translation id="4420409367264901497">Editar marcador</translation>
@@ -1370,6 +1371,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8197543752516192074">Traduzir página</translation>
 <translation id="8205564605687841303">Cancelar</translation>
 <translation id="8206354486702514201">Esta definição é aplicada pelo gestor.</translation>
+<translation id="8211030355252954494">Recebeu palavras-passe para o Website <ph name="WEBSITE" /></translation>
 <translation id="8214293972734702249">Afixado, <ph name="TAB_TITLE" /></translation>
 <translation id="8225985093977202398">Imagens e ficheiros em cache</translation>
 <translation id="823133356836493038">A Lista de leitura está oculta</translation>
@@ -1546,6 +1548,7 @@ Os seus dados foram encriptados com a sua frase de acesso a <ph name="TIME" />. 
 <translation id="9100610230175265781">Frase de acesso obrigatória</translation>
 <translation id="9106655997975673326">De "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Verifique a existência de palavras-passe comprometidas.</translation>
+<translation id="9109699888944026290">{count,plural, =1{Nova palavra-passe para este site}other{Novas palavras-passe para este site}}</translation>
 <translation id="9120217828624527905">Mudar para a Tradução da página inteira</translation>
 <translation id="9124387962554796433">A Google pode utilizar o seu histórico para personalizar a Pesquisa e outros serviços Google.</translation>
 <translation id="9137526406337347448">Serviços Google</translation>

@@ -173,6 +173,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="1876851015978093044">Mostra questo elemento</translation>
 <translation id="1882901927376062252">{count,plural, =1{Preferito salvato nel tuo Account Google {email}}other{{count} preferiti salvati nel tuo Account Google {email}}}</translation>
 <translation id="1883255238294161206">Comprimi elenco</translation>
+<translation id="1889872080060107187">Accederai al sito <ph name="URL" /></translation>
 <translation id="1890237935065108104">Questa impostazione non è disponibile.</translation>
 <translation id="1894023287452300670">Monitora qui il prezzo</translation>
 <translation id="189531189292803889">Il tuo iPad è stato ripristinato di recente e questo potrebbe aver modificato il tuo browser predefinito.</translation>
@@ -701,6 +702,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="47677902929517676">Per salvare le password nel tuo account, devi prima impostare un passcode sul dispositivo.</translation>
 <translation id="4775879719735953715">Browser predefinito</translation>
 <translation id="4778644898150334464">Utilizza un'altra password</translation>
+<translation id="4779732376610430319">Vai alle Impostazioni…</translation>
 <translation id="478808905805139173">Aprire in modalità di navigazione in incognito?</translation>
 <translation id="4803185665210547709">Gestito dalla tua organizzazione.
 <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>

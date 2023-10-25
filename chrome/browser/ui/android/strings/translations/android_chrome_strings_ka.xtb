@@ -135,6 +135,7 @@
 <translation id="1672586136351118594">აღარ გამოჩნდეს</translation>
 <translation id="1680919990519905526">ყიდვა Google Lens-ით <ph name="BEGIN_NEW" />სიახლე<ph name="END_NEW" /></translation>
 <translation id="1687482373098770139">მალე, სექციაში „თვალმიდევნებული“ იხილავთ <ph name="SITE_NAME" />-ის და მასთან დაკავშირებულ კონტენტს. საიტები და ძიებები, რომელთაც თვალს ადევნებთ, შენახულია თქვენს Google ანგარიშში. თვალის დევნების მართვა ნებისმიერ დროს შეგიძლიათ პარამეტრებიდან.</translation>
+<translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" />-თან მუშაობის გაგრძელების სხვა ხერხების ცდა შეგიძლიათ.</translation>
 <translation id="1702543251015153180">გსურთ, შეცვალოთ მუქი თემის პარამეტრები?</translation>
 <translation id="1702907158640575240">მართული ბრაუზერი</translation>
 <translation id="1710099199314114079">ჩანართების გადართვა ან დახურვა</translation>
@@ -151,6 +152,7 @@
 <translation id="1792959175193046959">ჩამოტვირთვის ნაგულისხმევი მდებარეობის შეცვლა ნებისმიერ დროს შეგიძლიათ</translation>
 <translation id="1807246157184219062">ნათელი</translation>
 <translation id="1810845389119482123">სინქრონიზაციის თავდაპირველი დაყენება არ დასრულებულა</translation>
+<translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> ვერ აგრძელებს <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ის გამოყენებას</translation>
 <translation id="1829244130665387512">გვერდზე ძებნა</translation>
 <translation id="1832459821645506983">დიახ, თანახმა ვარ</translation>
 <translation id="185383612275551373">შეასრულეთ სინქრონიზაცია, Google-ისგან ყველაზე სათანადო კონტენტი რომ მიიღოთ</translation>
@@ -316,6 +318,7 @@
 <translation id="2718846868787000099">კონტენტის თქვენთვის სასურველ ენებზე რომ გამოჩნდეს, თქვენ მიერ მონახულებული საიტებისთვის ხელმისაწვდომი იქნება თქვენი უპირატესი პარამეტრები</translation>
 <translation id="2722945394406572875">Privacy Sandbox-ის მოთხოვნა დახურულია</translation>
 <translation id="2723001399770238859">აუდიო</translation>
+<translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ამჟამად მიუწვდომელია.</translation>
 <translation id="2760805590727089264">თთ / წწ</translation>
 <translation id="2760989362628427051">მუქი თემის ჩართვა მოწყობილობაზე მუქი თემის ან ბატარეის დამზოგის გააქტიურებისას</translation>
 <translation id="2762000892062317888">ახლახან</translation>
@@ -474,6 +477,7 @@
 <translation id="3509330069915219067">ხაზგარეშეა. Chrome ვერ ახერხებს განახლებების შემოწმებას.</translation>
 <translation id="3513704683820682405">აუგმენტური რეალობა</translation>
 <translation id="3518985090088779359">მიღება და გაგრძელება</translation>
+<translation id="3521388823983121502"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-თან მუშაობის გაგრძელება ვერ ხერხდება</translation>
 <translation id="3522247891732774234">ხელმისაწვდომია განახლება. სხვა ვარიანტები</translation>
 <translation id="3524138585025253783">დეველოპერის UI</translation>
 <translation id="3524334353996115845">ნება დართეთ <ph name="ORIGIN" />-ს, რომ დაადასტუროს თქვენი ვინაობა</translation>
@@ -626,6 +630,7 @@
 <translation id="4355272626458588338">თქვენთვის მნიშვნელოვან გვერდზე დაბრუნება შესაძლებელია სანიშნეს დამატებით</translation>
 <translation id="4369735607080757018">საკუთარი რეკლამის ეფექტურობის გაზომვის მიზნით, საიტებს შორის შეზღუდული ტიპის მონაცემები ზიარდება — მაგალითად, ის, თუ დღის რომელ მონაკვეთში იყო რეკლამა ნაჩვენები თქვენთვის</translation>
 <translation id="4378154925671717803">ტელეფონი</translation>
+<translation id="4380055775103003110">თუ პრობლემა არ გვარდება, <ph name="SITE_ETLD_PLUS_ONE" />-თან მუშაობის გაგრძელების სხვა ხერხების ცდა შეგიძლიათ.</translation>
 <translation id="438319986296050901">მხოლოდ ბარათის გაზიარება</translation>
 <translation id="4384468725000734951">ძიებისთვის Sogou გამოიყენება</translation>
 <translation id="4387647248986092471">მანქანის პროფილის ჩაკეტვის მეთოდის შექმნა</translation>
@@ -884,7 +889,9 @@
 <translation id="569435661099256888">თქვენ შეგიძლიათ ნახოთ გვერდები, რომლებსაც ესტუმრეთ, ან წაშალოთ ისინი ისტორიიდან</translation>
 <translation id="569536719314091526">თარგმნეთ ეს გვერდი ნებისმიერ ენაზე „სხვა ვარიანტების“ ღილაკის მეშვეობით</translation>
 <translation id="5696597120588531049">Chromium დაგიცავთ პერსონალურ მონაცემთა გაჟონვის შემთხვევებისგან, არაუსაფრთხო ვებსაიტებისა და სხვა უსიამოვნებისგან</translation>
+<translation id="5698878456427040674">შეამოწმეთ, მხარდაჭერილია თუ არა არჩეული ანგარიში.</translation>
 <translation id="570347048394355941">ჩანართზე გადართვა</translation>
+<translation id="5715150588940290235">გსურთ, წაშალოთ უსაფრთხოების შენახული კოდები?</translation>
 <translation id="572328651809341494">ბოლო ჩანართები</translation>
 <translation id="5726692708398506830">გვერდზე ყველაფრის გადიდება</translation>
 <translation id="5748802427693696783">გადართულია სტანდარტულ ჩანართებზე</translation>
@@ -962,6 +969,7 @@
 <translation id="6108923351542677676">მიმდინარეობს დაყენება…</translation>
 <translation id="6112702117600201073">გვერდის განახლება</translation>
 <translation id="6122831415929794347">გსურთ Safe Browsing-ის გამორთვა?</translation>
+<translation id="6125864963080902918"><ph name="BEGIN_LINK" />დაწვრილებით<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">ერთეული ამოიშალა</translation>
 <translation id="6130303040046284160">ჩანართის ჩაკეცვა</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" />-ის ენა</translation>
@@ -1003,6 +1011,7 @@
 <translation id="6342069812937806050">ახლახან</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> სხვა}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> სხვა}}</translation>
 <translation id="6345878117466430440">წაკითხულად მონიშვნა</translation>
+<translation id="6356893102071098867">შეამოწმეთ, სწორი ანგარიში აირჩიეთ თუ არა</translation>
 <translation id="6357653805084533597">ამ ტელეფონის მეშვეობით შეგიძლიათ შეხვიდეთ მოწყობილობაში, რომელზეც ნაჩვენებია ეს QR კოდი.</translation>
 <translation id="6363990818884053551">სინქრონიზაციის დასაწყებად დაადასტურეთ, რომ ეს თქვენ ხართ</translation>
 <translation id="6364438453358674297">ამოიშალოს შემოთავაზება ისტორიიდან?</translation>
@@ -1135,6 +1144,7 @@
 <translation id="6908998565271542516">ვებსაიტის დადასტურების ან უარყოფის ვარიანტი გახსნილია სრულ სიმაღლეზე</translation>
 <translation id="6909589135458168665">წინასწარ ჩატვირთული გვერდები</translation>
 <translation id="6910211073230771657">წაშლილი</translation>
+<translation id="6918398787259831832">თუ პრობლემა არ გვარდება, <ph name="BEGIN_LINK" />მიიღეთ დამატებითი ინფორმაცია<ph name="END_LINK" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-დან.</translation>
 <translation id="6942665639005891494">ჩამოტვირთვის ნაგულისხმევი მდებარეობის შეცვლა ნებისმიერ დროს შეგიძლიათ მენიუს პარამეტრების ვარიანტის მეშვეობით</translation>
 <translation id="694267552845942083">ამჟამად სინქრონიზაციის პარამეტრების მორგებას ახორციელებთ. სინქრონიზაციის ჩართვის დასასრულებლად შეეხეთ დადასტურების ღილაკს ეკრანის ქვედა ნაწილთან. ნავიგაცია ზემოთ</translation>
 <translation id="6945221475159498467">არჩევა</translation>
@@ -1171,6 +1181,7 @@
 <translation id="7138678301420049075">სხვა</translation>
 <translation id="7140829094791862589">ხელით დალაგება</translation>
 <translation id="7146622961999026732">როგორც ჩანს, თქვენთვის მნიშვნელოვანია შემდეგი აპები და საიტები:</translation>
+<translation id="7148400116894863598"><ph name="BEGIN_LINK" />მიიღეთ დამატებითი ინფორმაცია<ph name="END_LINK" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-დან.</translation>
 <translation id="7149893636342594995">ბოლო 24 საათი</translation>
 <translation id="7168323970702333693">შესული ხართ, როგორც <ph name="USER_NAME" />. გახსნის პარამეტრებს.</translation>
 <translation id="7173114856073700355">პარამეტრების გახსნა</translation>
@@ -1197,6 +1208,7 @@
 <translation id="7274013316676448362">დაბლოკილი საიტი</translation>
 <translation id="7276100255011548441">Chrome ავტომატურად შლის 4 კვირაზე ძველ თემებს. თქვენ მიერ ვების დათვალიერების პარალელურად, ესა თუ ეს თემა შეიძლება ხელახლა გამოჩნდეს სიაში. სურვილისამებრ, შეგიძლიათ დაბლოკოთ თემები, რომლებიც არ გსურთ, Chrome-მა რომ გაუზიაროს საიტებს. შეიტყვეთ მეტი <ph name="BEGIN_LINK" />Chrome-ში რეკლამის კონფიდენციალურობის მართვის შესახებ.<ph name="END_LINK" /></translation>
 <translation id="7286703216224610554">მხოლოდ რეაქციის გაზიარება</translation>
+<translation id="7289303553784750393">თუ ონლაინ რეჟიმში ხართ, თუმცა პრობლემა არ გვარდება, <ph name="SITE_ETLD_PLUS_ONE" />-თან მუშაობის გაგრძელების სხვა ხერხების ცდა შეგიძლიათ.</translation>
 <translation id="7290209999329137901">გადარქმევის ფუნქცია მიუწვდომელია</translation>
 <translation id="7291910923717764901">ამ გვერდისთვის დამატებულია სურათების აღწერილობები</translation>
 <translation id="7293429513719260019">აირჩიეთ ენა</translation>
@@ -1251,6 +1263,7 @@
 <translation id="750228856503700085">განახლებები მიუწვდომელია</translation>
 <translation id="7507207699631365376">ამ პროვაიდერის <ph name="BEGIN_LINK" />კონფიდენციალურობის დებულების<ph name="END_LINK" /> ნახვა</translation>
 <translation id="7514365320538308">ჩამოტვირთვა</translation>
+<translation id="7518079994230200553">ეს ვარიანტი ამჟამად მიუწვდომელია.</translation>
 <translation id="751961395872307827">საიტთან დაკავშირება ვერ ხერხდება</translation>
 <translation id="752220631458524187">გათიშეთ, როცა დაასრულებთ</translation>
 <translation id="7523960634226602883">მოიძიეთ კონტენტი თქვენი კამერით, Google Lens-ის მეშვეობით</translation>

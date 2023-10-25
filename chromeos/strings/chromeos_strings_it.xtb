@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">Segnale debole</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Aggiornamento in corso (percentuale di completamento: <ph name="PERCENTAGE_VALUE" />%)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> minuti</translation>
 <translation id="1310380015393971138">Nessuna rete <ph name="NETWORK_NAME" /> disponibile</translation>
 <translation id="131421566576084655">La data dell'ultima reimpostazione dei dati non è disponibile</translation>
 <translation id="1314565355471455267">VPN Android</translation>
@@ -946,6 +947,7 @@
 <translation id="8227119283605456246">Allega file</translation>
 <translation id="8230672074305416752">impossibile eseguire il ping del gateway di rete predefinito</translation>
 <translation id="8246209727385807362">Operatore sconosciuto</translation>
+<translation id="8262870577632766028">1 ora</translation>
 <translation id="827422111966801947">Indaco</translation>
 <translation id="8286154143153872371">Connettiti a una rete e ricarica la pagina per visualizzare lo sfondo.</translation>
 <translation id="8291967909914612644">Paese del provider principale</translation>
@@ -1010,6 +1012,7 @@
 <translation id="8747900814994928677">Conferma modifica</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album di Google Foto</translation>
+<translation id="8775713578693478175">APN modem</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8789196995628578448">Scorciatoia utilizzata per "<ph name="CONFLICT_ACCEL_NAME" />". Premi una nuova scorciatoia. Per sostituire la scorciatoia originale, premi di nuovo questa scorciatoia.</translation>
 <translation id="879568662008399081">Questa rete potrebbe avere un captive portal</translation>

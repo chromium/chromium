@@ -757,7 +757,7 @@
 <translation id="6692996468359469499">Obtener información sobre tu selección</translation>
 <translation id="6694534975463174713">candado</translation>
 <translation id="6704062477274546131">Resolución de DNS</translation>
-<translation id="6723839937902243910">Batería</translation>
+<translation id="6723839937902243910">Encendido</translation>
 <translation id="6723847290197874913">Retroiluminación del teclado</translation>
 <translation id="672609503628871915">Consultar las novedades</translation>
 <translation id="6747215703636344499">Detenido: bandeja de salida llena</translation>
@@ -1010,6 +1010,7 @@
 <translation id="8747900814994928677">Confirmar cambio</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Álbum de Google Fotos</translation>
+<translation id="8775713578693478175">APN del módem</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8789196995628578448">Se está usando la combinación de teclas para "<ph name="CONFLICT_ACCEL_NAME" />". Pulsa una nueva combinación de teclas. Para reemplazar la combinación original, vuelve a pulsar esta combinación de teclas.</translation>
 <translation id="879568662008399081">Puede que esta red tenga un portal cautivo</translation>

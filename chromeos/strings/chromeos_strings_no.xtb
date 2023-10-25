@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">Svakt signal</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Oppdaterer (<ph name="PERCENTAGE_VALUE" /> % er fullført)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> minutter</translation>
 <translation id="1310380015393971138">Ingen tilgjengelige <ph name="NETWORK_NAME" />-nettverk</translation>
 <translation id="131421566576084655">Datoen for forrige tilbakestilling av data er ikke tilgjengelig</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -946,6 +947,7 @@
 <translation id="8227119283605456246">Legg ved fil</translation>
 <translation id="8230672074305416752">Kunne ikke pinge gatewayen for standardnettverket</translation>
 <translation id="8246209727385807362">Ukjent operatør</translation>
+<translation id="8262870577632766028">1 time</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Koble til et nettverk og last inn siden på nytt for å se bakgrunnsbildet.</translation>
 <translation id="8291967909914612644">Land for leverandøren av hjemmeenheten</translation>
@@ -1010,6 +1012,7 @@
 <translation id="8747900814994928677">Bekreft endringen</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Foto-album</translation>
+<translation id="8775713578693478175">APN for modem</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8789196995628578448">Hurtigtasten brukes til «<ph name="CONFLICT_ACCEL_NAME" />». Trykk på en ny hurtigtast. For å erstatte den opprinnelige hurtigtasten, trykk på denne hurtigtasten på nytt.</translation>
 <translation id="879568662008399081">Det kan hende dette nettverket har en obligatorisk side</translation>

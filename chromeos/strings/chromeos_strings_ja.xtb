@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">電波: 弱い</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">更新中（<ph name="PERCENTAGE_VALUE" />% 完了）</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> 分</translation>
 <translation id="1310380015393971138">利用できる <ph name="NETWORK_NAME" /> ネットワークがありません</translation>
 <translation id="131421566576084655">前回のデータリセット日は不明です</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -946,6 +947,7 @@
 <translation id="8227119283605456246">添付ファイル</translation>
 <translation id="8230672074305416752">デフォルトのネットワーク ゲートウェイに向けた ping が失敗しました</translation>
 <translation id="8246209727385807362">不明な携帯通信会社</translation>
+<translation id="8262870577632766028">1 時間</translation>
 <translation id="827422111966801947">インディゴ</translation>
 <translation id="8286154143153872371">壁紙を表示するには、ネットワークに接続してページを再読み込みしてください。</translation>
 <translation id="8291967909914612644">ホーム プロバイダの国</translation>
@@ -1001,7 +1003,7 @@
 <translation id="8675354002693747642">事前共有キー</translation>
 <translation id="8677859815076891398">アルバムはありません。<ph name="LINK_BEGIN" />Google フォト<ph name="LINK_END" />でアルバムを作成してください。</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> 左右矢印キーでこの機能を管理できます。</translation>
-<translation id="8712637175834984815">理解した</translation>
+<translation id="8712637175834984815">OK</translation>
 <translation id="871560550817059752">失敗 - インクがありません</translation>
 <translation id="8723108084122415655">デフォルト以外のネットワークの応答時間がしきい値を超えています</translation>
 <translation id="8725066075913043281">やり直し</translation>

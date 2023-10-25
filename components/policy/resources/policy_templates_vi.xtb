@@ -129,6 +129,7 @@ Việc không đặt chính sách này sẽ không cho phép trường hợp ngo
 
       Nếu bạn đặt chính sách này, người dùng sẽ không thể thay đổi được.</translation>
 <translation id="1123650965531933634">Từ chối cấp quyền kiểm soát Vị trí cửa sổ trên tất cả các trang web theo mặc định</translation>
+<translation id="1126037943895692096">Cho phép người dùng thêm dữ liệu gỡ lỗi cấp thấp Wi-Fi vào phản hồi của người dùng</translation>
 <translation id="1126456433590366966">Tự động hoá quy trình <ph name="CLOUD_UPLOAD_NAME" /> cho <ph name="GOOGLE_DRIVE_NAME" /> và <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="112794759469625182">Chính sách này đã bị loại bỏ trong phiên bản M118. Chính sách này được dùng để bật/tắt cơ chế Chứng thực từ xa cho người dùng nhưng cơ chế này đã được bật theo mặc định.
 

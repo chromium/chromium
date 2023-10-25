@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">कमजोर सिग्नल</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">अपडेट हुँदै छ (<ph name="PERCENTAGE_VALUE" />% पूरा भयो)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> मिनेट</translation>
 <translation id="1310380015393971138">कुनै पनि <ph name="NETWORK_NAME" /> नेटवर्क उपलब्ध छैन</translation>
 <translation id="131421566576084655">पछिल्लो पटक डेटा प्रयोग रिसेट गरिएको मिति उपलब्ध छैन</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -946,6 +947,7 @@
 <translation id="8227119283605456246">फाइल समावेश गर्नुहोस्</translation>
 <translation id="8230672074305416752">डिफल्ट नेटवर्कको गेटवे पिङ गर्न सकिएन</translation>
 <translation id="8246209727385807362">अज्ञात सेवा प्रदायक</translation>
+<translation id="8262870577632766028">१ घण्टा</translation>
 <translation id="827422111966801947">इन्डिगो</translation>
 <translation id="8286154143153872371">वालपेपर हेर्न कृपया इन्टरनेटमा कनेक्ट गर्नुहोस् र पेज रिलोड गर्नुहोस्।</translation>
 <translation id="8291967909914612644">गृह प्रदायकको देश</translation>

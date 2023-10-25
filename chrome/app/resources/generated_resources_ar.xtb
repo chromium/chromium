@@ -1331,6 +1331,7 @@
 <translation id="2020183425253392403">عرض إعدادات عنوان الشبكة</translation>
 <translation id="2020225359413970060">فحص الملف</translation>
 <translation id="2020779321517562133">إزالة نسخة البيانات</translation>
+<translation id="2022953316617983419">رمز الاستجابة السريعة</translation>
 <translation id="2023042679320690325">لا يستطيع "<ph name="BRAND" />" التأكد من أنّ كلمات مرورك لم تتعرض لعمليات اختراق للبيانات. يُرجی إعادة المحاولة بعد 24 ساعة.</translation>
 <translation id="2023167225947895179">قد يكون رقم التعريف الشخصي سهل التخمين</translation>
 <translation id="202352106777823113">استغرق التنزيل وقتًا طويلاً للغاية وتم إيقافه بواسطة الشبكة.</translation>
@@ -5716,6 +5717,7 @@
 <translation id="5526745900034778153">تسجيل الدخول مرة أخرى لاستئناف المزامنة</translation>
 <translation id="5527463195266282916">محاولة تثبيت إضافة ذات إصدار سابق.</translation>
 <translation id="5527474464531963247">يمكنك أيضا اختيار شبكة أخرى.</translation>
+<translation id="5527597176701279474">جارٍ تثبيت "<ph name="APP_NAME" />"</translation>
 <translation id="5528295196101251711">‏اسم الجهاز الافتراضي (VM)</translation>
 <translation id="5529554942700688235">ملخّص إخلاء مساحة التخزين: تم إخلاء <ph name="MEMORY_VALUE" /></translation>
 <translation id="5532223876348815659">عام</translation>
@@ -7698,6 +7700,7 @@
 <translation id="7131040479572660648">قراءة بياناتك على <ph name="WEBSITE_1" />، <ph name="WEBSITE_2" /> و<ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">إضافة &amp;صفحة...</translation>
 <translation id="7131431455372521159">انقطع اتصال كل عِصيّ التأشير.</translation>
+<translation id="7131896909366247105">جارٍ انتظار تثبيت "<ph name="APP_NAME" />"</translation>
 <translation id="7134098520442464001">لتصغير النص</translation>
 <translation id="7135729336746831607">هل تريد تفعيل البلوتوث؟</translation>
 <translation id="7136694880210472378">الضبط كمحرك البحث التلقائي
@@ -7746,6 +7749,7 @@
 <translation id="7180611975245234373">إعادة التحميل</translation>
 <translation id="7180865173735832675">تخصيص</translation>
 <translation id="7181117767881540376">إخفاء شريط الإشارات</translation>
+<translation id="7182063559013288142">نقطة اتصال فورية</translation>
 <translation id="7182791023900310535">نقل كلمة المرور الخاصة بك</translation>
 <translation id="718427252411067142">لمنع الآخرين من استخدام كلمة مرورك، عليك فتح التطبيق لتغييرها.</translation>
 <translation id="7186088072322679094">البقاء مثبتًا في شريط الأدوات</translation>
@@ -9204,6 +9208,7 @@
 <translation id="8317965619823678157">نسخ كلمات المرور</translation>
 <translation id="8318266828739827371">‏يمكنك استخدام طريقة عرض تقسيم الشاشة لرؤية المنطقة المكبَّرة من الشاشة. اضغط على مفتاح البحث ‏+ Ctrl ‏+ D لتفعيل ميزة "مكبِّر جزء من الشاشة" أو إيقافها.</translation>
 <translation id="8319414634934645341">استخدام المفتاح الموسع</translation>
+<translation id="8321476692217554900">الإشعارات</translation>
 <translation id="8321837372750396788">ستتم إدارة جهاز <ph name="DEVICE_TYPE" /> هذا من خلال <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">تم حظر دخول هذه الصفحة إلى الميكروفون التابع لك.</translation>
 <translation id="8323167517179506834">‏اكتب عنوان URL</translation>
@@ -10390,7 +10395,6 @@
 <translation id="950307215746360464">دليل عملية الإعداد</translation>
 <translation id="951991426597076286">رفض</translation>
 <translation id="952471655966876828">سيتصل الجهاز بالبلوتوث تلقائيًا عند تشغيله أو استخدامه.</translation>
-<translation id="952880932803612259">‏السماح للتطبيقات والمواقع الإلكترونية وخدمات النظام باستخدام خدمة الموقع الجغرافي التي بإمكانها استخدام مصادر كشبكة Wi-Fi وشبكات الجوّال وأجهزة الاستشعار للمساعدة في تقدير الموقع الجغرافي لجهازك</translation>
 <translation id="953434574221655299">المواقع الإلكترونية التي يُسمح لها بمعرفة متى تستخدم جهازك بشكل نشط</translation>
 <translation id="956500788634395331">تمت حمايتك من إضافات يُحتمل أن تكون ضارة.</translation>
 <translation id="957179356621191750">‫6 نقاط</translation>

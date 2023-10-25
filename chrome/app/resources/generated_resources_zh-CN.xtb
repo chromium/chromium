@@ -1321,6 +1321,7 @@
 <translation id="2020183425253392403">显示网络地址设置</translation>
 <translation id="2020225359413970060">扫描文件</translation>
 <translation id="2020779321517562133">移除副本</translation>
+<translation id="2022953316617983419">二维码</translation>
 <translation id="2023042679320690325"><ph name="BRAND" />无法检查您的密码是否遭遇了数据泄露。请在 24 小时后重试。</translation>
 <translation id="2023167225947895179">该 PIN 码可能很容易被猜到</translation>
 <translation id="202352106777823113">下载时间过长，网络已停止下载。</translation>
@@ -1478,6 +1479,7 @@
 <translation id="2140902257485550046">选择开启可阻止在此网站上使用所有扩展程序</translation>
 <translation id="2142328300403846845">以其他身份打开链接</translation>
 <translation id="2142582065325732898">您需要开启 <ph name="LINK1_BEGIN" />Chrome 同步<ph name="LINK1_END" />才能查看最近打开的 Chrome 标签页。<ph name="LINK2_BEGIN" />了解详情<ph name="LINK2_END" /></translation>
+<translation id="2143667386128949432">{COUNT,plural, =0{Chrome 将于今天再次屏蔽 Cookie}=1{Chrome 将于明天再次屏蔽 Cookie}other{# 天后 Cookie 将被再次屏蔽}}</translation>
 <translation id="2143765403545170146">在全屏模式下始终显示工具栏</translation>
 <translation id="2143778271340628265">手动配置代理</translation>
 <translation id="2143808295261240440">使用建议的密码</translation>
@@ -1927,6 +1929,7 @@
 <translation id="2471506181342525583">已允许使用位置信息</translation>
 <translation id="2473195200299095979">翻译此页</translation>
 <translation id="2475982808118771221">出现错误</translation>
+<translation id="247616523300581745">隐藏这些文件</translation>
 <translation id="2476901513051581836">在知道离线存储空间大小之前，无法清理存储空间。</translation>
 <translation id="2476974672882258506">请关闭 Windows 以卸载 <ph name="PARALLELS_DESKTOP" />。</translation>
 <translation id="2477065602824695373">由于您设置了多个开关，“自动扫描”功能已关闭。</translation>
@@ -2067,6 +2070,7 @@
 <translation id="2586672484245266891">请输入一个较短的网址</translation>
 <translation id="2587922766792651800">已超时</translation>
 <translation id="2588636910004461974">来自<ph name="VENDOR_NAME" />的设备</translation>
+<translation id="2589658397149952302">一律不显示云端硬盘文件</translation>
 <translation id="25899519884572181">退出阅读器模式</translation>
 <translation id="2593499352046705383">在开始之前，请确保已备份数据。安装 <ph name="DEVICE_OS" /> 会覆盖您的硬盘。如需了解详情，请访问 g.co/flex/InstallGuide。</translation>
 <translation id="2594999711683503743">使用 Google 执行搜索，或者输入网址</translation>
@@ -5083,6 +5087,7 @@
 <translation id="5020008942039547742">选择一个不同的窗口</translation>
 <translation id="5020651427400641814">启用语音登录功能</translation>
 <translation id="5021750053540820849">尚未更新</translation>
+<translation id="5022206631034207923">锁屏状态、控件</translation>
 <translation id="5024511550058813796">您将能够在所有已同步的设备上查看您的历史记录，以继续执行先前未完成的操作</translation>
 <translation id="5026492829171796515">登录后即可添加 Google 账号</translation>
 <translation id="5026806129670917316">开启 Wi-Fi</translation>
@@ -5702,6 +5707,7 @@
 <translation id="5526745900034778153">需重新登录才能继续同步</translation>
 <translation id="5527463195266282916">已尝试对扩展程序降级。</translation>
 <translation id="5527474464531963247">您也可以选择其他网络。</translation>
+<translation id="5527597176701279474"><ph name="APP_NAME" />，正在安装</translation>
 <translation id="5528295196101251711">虚拟机名称</translation>
 <translation id="5529554942700688235">内存节省摘要，已释放 <ph name="MEMORY_VALUE" /></translation>
 <translation id="5532223876348815659">全局</translation>
@@ -6336,6 +6342,7 @@
 <translation id="6053401458108962351">清除浏览数据(&amp;C)...</translation>
 <translation id="6053717018321787060">您的 Google 账号即您用于 Gmail、YouTube、Chrome 和其他 Google 产品的账号。
     使用该账号可轻松访问您的所有书签、文件和其他内容。如果您还没有 Google 账号，可在下一个界面上创建一个。</translation>
+<translation id="6054138466019582920">使用 Google 搜索此页面(&amp;C)…</translation>
 <translation id="6054284857788651331">最近关闭的标签页组</translation>
 <translation id="6054961935262556546">更改公开范围</translation>
 <translation id="6055171183283175969">您输入的密码不正确。</translation>
@@ -6928,6 +6935,7 @@
 <translation id="6539674013849300372">使用安全系数高的密码可让您在上网时更安全。系统会将它保存到 <ph name="EMAIL" /> 的 <ph name="GOOGLE_PASSWORD_MANAGER" />中。</translation>
 <translation id="653983593749614101">正在恢复…</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />除非您有意这么做或被要求这样做，否则请不要随意启用这项功能，因为收集数据可能会降低性能。</translation>
+<translation id="6540488083026747005">您已允许此网站使用第三方 Cookie</translation>
 <translation id="6541638731489116978">此网站已被禁止使用您的移动传感器。</translation>
 <translation id="6542417422899025860">自动移除大部分个人信息</translation>
 <translation id="6542521951477560771">正在投放到<ph name="RECEIVER_NAME" /></translation>
@@ -7671,6 +7679,7 @@
 <translation id="7131040479572660648">读取您在 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" /> 和 <ph name="WEBSITE_3" /> 上的数据</translation>
 <translation id="713122686776214250">添加网页(&amp;G)...</translation>
 <translation id="7131431455372521159">所有 TrackPoint 均已断开连接</translation>
+<translation id="7131896909366247105"><ph name="APP_NAME" />，正在等待…</translation>
 <translation id="7134098520442464001">缩小文字</translation>
 <translation id="7135729336746831607">要开启蓝牙吗？</translation>
 <translation id="7136694880210472378">设为默认选项</translation>
@@ -7718,6 +7727,7 @@
 <translation id="7180611975245234373">刷新</translation>
 <translation id="7180865173735832675">自定义</translation>
 <translation id="7181117767881540376">隐藏书签栏(&amp;H)</translation>
+<translation id="7182063559013288142">即时热点</translation>
 <translation id="7182791023900310535">移动您的密码</translation>
 <translation id="718427252411067142">为防止他人使用您的密码，请打开该应用更改密码</translation>
 <translation id="7186088072322679094">固定在工具栏中</translation>
@@ -8370,6 +8380,7 @@
 <translation id="7691163173018300413">“Hey Google”</translation>
 <translation id="7691698019618282776">Crostini 升级</translation>
 <translation id="7694246789328885917">荧光笔工具</translation>
+<translation id="7694895628076803349">不显示云端硬盘</translation>
 <translation id="7696063401938172191">在您的“<ph name="PHONE_NAME" />”上：</translation>
 <translation id="7697109152153663933">点击“密码和自动填充”</translation>
 <translation id="769824636077131955">此文档太大，无法进行安全检查。您只能打印不超过 50 MB 的文档。</translation>
@@ -8958,6 +8969,7 @@
 <translation id="8146793085009540321">登录失败，请与管理员联系或重试。</translation>
 <translation id="8147346945017130012">自动向 Google 发送崩溃报告以及诊断数据和使用情况数据，协助改进 Chrome 和 Chrome 操作系统的功能和性能。</translation>
 <translation id="8147900440966275470">找到了 <ph name="NUM" /> 个标签页</translation>
+<translation id="814870937590541483">可对 Google 云端硬盘文件执行的更多操作</translation>
 <translation id="8148760431881541277">限制登录</translation>
 <translation id="8149564499626272569">通过使用 USB 线连接手机进行验证</translation>
 <translation id="8149870652370242480">如需在手机上使用您已保存的密码，请下载 iOS 版 Chrome 并登录您的 Google 账号。</translation>
@@ -9174,6 +9186,7 @@
 <translation id="8317965619823678157">复制密码</translation>
 <translation id="8318266828739827371">使用分屏视图查看屏幕上放大的区域。使用搜索键 + Ctrl + D 可开启和关闭固定放大镜。</translation>
 <translation id="8319414634934645341">扩展密钥用法</translation>
+<translation id="8321476692217554900">通知</translation>
 <translation id="8321837372750396788">此 <ph name="DEVICE_TYPE" /> 将由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="8322814362483282060">系统已阻止此网页使用您的麦克风。</translation>
 <translation id="8323167517179506834">输入网址</translation>
@@ -10356,7 +10369,6 @@
 <translation id="950307215746360464">设置指南</translation>
 <translation id="951991426597076286">拒绝</translation>
 <translation id="952471655966876828">已开启且正被使用时，设备会自动连接</translation>
-<translation id="952880932803612259">允许应用、网站和系统服务使用您的位置信息。位置信息服务可能会根据 Wi-Fi、移动网络和传感器等来源提供的信息推测设备所在的位置。</translation>
 <translation id="953434574221655299">允许以下网站了解您何时在主动使用设备</translation>
 <translation id="956500788634395331">系统会保护您免受可能有害的扩展程序的威胁</translation>
 <translation id="957179356621191750">6 点式</translation>

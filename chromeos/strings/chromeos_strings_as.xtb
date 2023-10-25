@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">দুৰ্বল সংকেত</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">আপডে’ট কৰি থকা হৈছে (<ph name="PERCENTAGE_VALUE" />% সম্পূৰ্ণ হৈছে)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> মিনিট</translation>
 <translation id="1310380015393971138">কোনো <ph name="NETWORK_NAME" /> নেটৱৰ্ক উপলব্ধ নহয়</translation>
 <translation id="131421566576084655">অন্তিমবাৰ ডেটা ৰিছেট কৰাৰ তাৰিখ উপলব্ধ নহয়</translation>
 <translation id="1314565355471455267">Android ভিপিএন</translation>
@@ -946,6 +947,7 @@
 <translation id="8227119283605456246">ফাইল সংলগ্ন কৰক</translation>
 <translation id="8230672074305416752">ডিফ'ল্ট নেটৱৰ্কৰ গে’টৱে’টো পিং কৰাত বিফল হ'ল</translation>
 <translation id="8246209727385807362">অজ্ঞাত বাহক</translation>
+<translation id="8262870577632766028">১ ঘণ্টা</translation>
 <translation id="827422111966801947">ইণ্ডিগ'</translation>
 <translation id="8286154143153872371">অনুগ্ৰহ কৰি এটা নেটৱৰ্কৰ সৈতে সংযোগ কৰক আৰু ৱালপেপাৰ চাবলৈ পৃষ্ঠাখন পুনৰ ল’ড কৰক।</translation>
 <translation id="8291967909914612644">গৃহ প্ৰদানকাৰী দেশ</translation>
@@ -1010,6 +1012,7 @@
 <translation id="8747900814994928677">সলনি কৰাটো নিশ্চিত কৰক</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photosৰ এলবাম</translation>
+<translation id="8775713578693478175">আধুনিক এপিএন</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8789196995628578448">শ্বৰ্টকাটটো "<ph name="CONFLICT_ACCEL_NAME" />"ৰ বাবে ব্যৱহাৰ কৰি থকা হৈছে। এটা নতুন শ্বৰ্টকাট টিপক। মূল শ্বৰ্টকাটটো সলনি কৰিবলৈ, এই শ্বৰ্টকাটটো পুনৰ টিপক।</translation>
 <translation id="879568662008399081">এই নেটৱৰ্কটোৰ এটা কেপ্টিভ প’ৰ্টেল থাকিব পাৰে</translation>

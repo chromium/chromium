@@ -7372,6 +7372,19 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果此政策设为 False 或未设置，<ph name="PRODUCT_NAME" /> 会使用现有的在线撤消状态检查设置。
 
       在 <ph name="MAC_OS_NAME" /> 上，如果 <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> 政策设为 False，此政策不会产生任何影响。</translation>
+<translation id="7277031272747335531">此政策让管理员能在 <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" /> 处于启用状态时限制哪些账号可以登录 <ph name="MICROSOFT_ONE_DRIVE_NAME" />。
+
+如果此政策包含值“<ph name="COMMON_NAME" />”，任何账号都可用于登录。
+
+如果此政策包含值“<ph name="ORGANIZATIONS_NAME" />”，意味着可以使用工作账号或学校账号进行登录。
+
+如果此政策包含值“<ph name="CONSUMER_NAME" />”，意味着可以使用个人 <ph name="MICROSOFT_NAME" /> 账号登录。
+
+如果此政策包含域名或租户 ID，来自这些域名或租户 ID（请参阅 https://learn.microsoft.com/zh-cn/azure/active-directory/develop/v2-protocols#endpoints）的账号可以用于登录。
+
+如果此政策未设置或仅包含空值，它在行为上会与指定了“<ph name="ORGANIZATIONS_NAME" />”的情况一样。
+
+如果更改限制条件，则可能会导致不符合新限制条件的 <ph name="MICROSOFT_ONE_DRIVE_NAME" /> 账号的用户被强制退出该账号。</translation>
 <translation id="7278854311116092134">要从屏蔽名单中排除的本地消息传递主机名</translation>
 <translation id="7291084543582732020">如果您启用了此设置，用户将能够在满足相应要求的情况下使用 Smart Lock。
 
