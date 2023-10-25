@@ -113,10 +113,6 @@ class PrerenderManager : public content::WebContentsObserver,
   // Returns empty string otherwise.
   const GURL GetPrerenderCanonicalSearchURLForTesting() const;
 
-  void set_skip_template_url_service_for_testing() {
-    skip_template_url_service_for_testing_ = true;
-  }
-
  private:
   class SearchPrerenderTask;
 
@@ -147,8 +143,6 @@ class PrerenderManager : public content::WebContentsObserver,
   std::unique_ptr<content::PrerenderHandle> new_tab_page_prerender_handle_;
 
   std::unique_ptr<content::PrerenderHandle> direct_url_input_prerender_handle_;
-
-  bool skip_template_url_service_for_testing_ = false;
 
   base::WeakPtrFactory<PrerenderManager> weak_factory_{this};
 
