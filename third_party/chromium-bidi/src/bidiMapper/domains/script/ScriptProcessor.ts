@@ -19,6 +19,7 @@ import {
   type EmptyResult,
   Script,
   NoSuchScriptException,
+  InvalidArgumentException,
 } from '../../../protocol/protocol';
 import type {LoggerFn} from '../../../utils/log';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage';
@@ -50,6 +51,22 @@ export class ScriptProcessor {
   async addPreloadScript(
     params: Script.AddPreloadScriptParameters
   ): Promise<Script.AddPreloadScriptResult> {
+    if (params.contexts) {
+      // XXX: Remove once https://github.com/google/cddlconv/issues/16 is implemented
+      if (params.contexts.length === 0) {
+        throw new InvalidArgumentException('Contexts list is empty.');
+      }
+
+      for (const contextId of params.contexts) {
+        const context = this.#browsingContextStorage.getContext(contextId);
+        if (!context.isTopLevelContext()) {
+          throw new InvalidArgumentException(
+            `Non top-level context '${contextId}' given.`
+          );
+        }
+      }
+    }
+
     const preloadScript = new PreloadScript(params, this.#logger);
     this.#preloadScriptStorage.add(preloadScript);
 
