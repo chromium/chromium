@@ -270,6 +270,11 @@ SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
   if (features::IsChromeRefresh2023()) {
     browser_view_->unified_side_panel()->AddHeaderView(CreateHeader());
   }
+
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    model_observation_.Observe(
+        PinnedToolbarActionsModel::Get(browser_view_->GetProfile()));
+  }
 }
 
 SidePanelCoordinator::~SidePanelCoordinator() {
@@ -1217,4 +1222,18 @@ void SidePanelCoordinator::UpdatePanelIconAndTitle(const ui::ImageModel& icon,
 void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
                                                    views::View* starting_from) {
   UpdateToolbarButtonHighlight(observed_view->GetVisible());
+}
+
+void SidePanelCoordinator::OnActionAdded(const actions::ActionId& id) {
+  if (current_entry_ &&
+      id == SidePanelEntryIdToActionId(current_entry_->key().id())) {
+    UpdateHeaderPinButtonState();
+  }
+}
+
+void SidePanelCoordinator::OnActionRemoved(const actions::ActionId& id) {
+  if (current_entry_ &&
+      id == SidePanelEntryIdToActionId(current_entry_->key().id())) {
+    UpdateHeaderPinButtonState();
+  }
 }
