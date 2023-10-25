@@ -50,7 +50,8 @@ void ReportPageProcessesOnUIThread(
   std::vector<ash::ResourcedClient::Process> processes;
   for (const auto& page_process : page_processes) {
     processes.emplace_back(page_process.pid, page_process.host_protected_page,
-                           page_process.host_visible_page);
+                           page_process.host_visible_page,
+                           page_process.host_focused_page);
   }
 
   client->ReportBrowserProcesses(ash::ResourcedClient::Component::kAsh,
@@ -83,6 +84,7 @@ void ReportPageProcessesOnUIThread(
     process->pid = page_process.pid;
     process->host_protected_page = page_process.host_protected_page;
     process->host_visible_page = page_process.host_visible_page;
+    process->host_focused_page = page_process.host_focused_page;
     processes.push_back(std::move(process));
   }
 
@@ -173,7 +175,9 @@ void ReportPageProcessesPolicy::HandlePageNodeEvents() {
     bool is_protected = (can_discard_result ==
                          PageDiscardingHelper::CanDiscardResult::kProtected);
     bool is_visible = page_node->IsVisible();
+    bool is_focused = page_node->IsFocused();
     candidates.emplace_back(page_node, is_marked, is_visible, is_protected,
+                            is_focused,
                             page_node->GetTimeSinceLastVisibilityChange());
   }
 
@@ -207,7 +211,8 @@ void ReportPageProcessesPolicy::ListPageProcesses(
         continue;
       }
       page_processes.emplace_back(pid, candidate.is_protected(),
-                                  candidate.is_visible());
+                                  candidate.is_visible(),
+                                  candidate.is_focused());
     }
   }
 

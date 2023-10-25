@@ -29,13 +29,16 @@ class ReportPageProcessesPolicy : public GraphOwned,
   struct PageProcess {
     PageProcess(base::ProcessId pid,
                 bool host_protected_page,
-                bool host_visible_page)
+                bool host_visible_page,
+                bool host_focused_page)
         : pid(pid),
           host_protected_page(host_protected_page),
-          host_visible_page(host_visible_page) {}
+          host_visible_page(host_visible_page),
+          host_focused_page(host_focused_page) {}
     base::ProcessId pid;
     bool host_protected_page;
     bool host_visible_page;
+    bool host_focused_page;
   };
 
   ReportPageProcessesPolicy();
