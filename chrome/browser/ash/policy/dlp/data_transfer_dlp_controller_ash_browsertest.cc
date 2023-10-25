@@ -27,8 +27,10 @@
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/enterprise/data_controls/component.h"
 #include "components/enterprise/data_controls/dlp_histogram_helper.h"
 #include "components/enterprise/data_controls/dlp_policy_event.pb.h"
+#include "components/enterprise/data_controls/rule.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/cloud_policy.pb.h"
@@ -247,9 +249,10 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpAshBrowserTest, MAYBE_BlockComponent) {
                                 policy_prefs::kDlpRulesList);
     dlp_test_util::DlpRule rule(kRuleName, "Block Gmail", kRuleId);
     rule.AddSrcUrl(kMailUrl)
-        .AddDstComponent(dlp::kArc)
-        .AddDstComponent(dlp::kCrostini)
-        .AddRestriction(dlp::kClipboardRestriction, dlp::kBlockLevel);
+        .AddDstComponent(data_controls::kArc)
+        .AddDstComponent(data_controls::kCrostini)
+        .AddRestriction(data_controls::kRestrictionClipboard,
+                        data_controls::kLevelBlock);
     update->Append(rule.Create());
   }
 
@@ -308,10 +311,11 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpAshBrowserTest, MAYBE_WarnComponent) {
 
     dlp_test_util::DlpRule rule(kRuleName, "Block Gmail", kRuleId);
     rule.AddSrcUrl(kMailUrl)
-        .AddDstComponent(dlp::kArc)
-        .AddDstComponent(dlp::kCrostini)
-        .AddDstComponent(dlp::kPluginVm)
-        .AddRestriction(dlp::kClipboardRestriction, dlp::kWarnLevel);
+        .AddDstComponent(data_controls::kArc)
+        .AddDstComponent(data_controls::kCrostini)
+        .AddDstComponent(data_controls::kPluginVm)
+        .AddRestriction(data_controls::kRestrictionClipboard,
+                        data_controls::kLevelWarn);
     update->Append(rule.Create());
   }
 

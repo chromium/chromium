@@ -14,6 +14,20 @@
 
 namespace data_controls {
 
+// Constants used to parse sub-dictionaries of DLP policies that should map to
+// an AttributesCondition.
+inline constexpr char kRestrictionClipboard[] = "CLIPBOARD";
+inline constexpr char kRestrictionScreenshot[] = "SCREENSHOT";
+inline constexpr char kRestrictionPrinting[] = "PRINTING";
+inline constexpr char kRestrictionPrivacyScreen[] = "PRIVACY_SCREEN";
+inline constexpr char kRestrictionScreenShare[] = "SCREEN_SHARE";
+inline constexpr char kRestrictionFiles[] = "FILES";
+
+inline constexpr char kLevelAllow[] = "ALLOW";
+inline constexpr char kLevelBlock[] = "BLOCK";
+inline constexpr char kLevelWarn[] = "WARN";
+inline constexpr char kLevelReport[] = "REPORT";
+
 // Implementation of a Data Controls policy rule, which provides interfaces to
 // evaluate its conditions to obtain verdicts and access other rule attributes.
 // This class is a representation of the following JSON:
@@ -74,6 +88,12 @@ class Rule {
   static absl::optional<Rule> Create(const base::Value& value);
   static absl::optional<Rule> Create(const base::Value::Dict& value);
 
+  // Helpers to help conversions when parsing JSON.
+  static Restriction StringToRestriction(const std::string& restriction);
+  static Level StringToLevel(const std::string& level);
+  static const char* RestrictionToString(Restriction restriction);
+  static const char* LevelToString(Level level);
+
   Rule(Rule&& other);
   ~Rule();
 
@@ -105,12 +125,6 @@ class Rule {
   // still included in the output.
   static base::flat_map<Rule::Restriction, Rule::Level> GetRestrictions(
       const base::Value::Dict& value);
-
-  // Helpers to help conversions when parsing JSON.
-  static inline Restriction StringToRestriction(const std::string& restriction);
-  static inline Level StringToLevel(const std::string& level);
-  static inline const char* RestrictionToString(Restriction restriction);
-  static inline const char* LevelToString(Level level);
 
   // Metadata fields directly taken from the rule's JSON.
   const std::string name_;

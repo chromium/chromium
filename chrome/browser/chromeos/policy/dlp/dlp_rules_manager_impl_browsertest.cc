@@ -64,8 +64,8 @@ IN_PROC_BROWSER_TEST_F(DlpRulesPolicyTest, ParsePolicyPref) {
                                 policy_prefs::kDlpRulesList);
 
     dlp_test_util::DlpRule rule("rule #1", "Block", "testid1");
-    rule.AddSrcUrl(kUrlStr1).AddRestriction(dlp::kScreenshotRestriction,
-                                            dlp::kBlockLevel);
+    rule.AddSrcUrl(kUrlStr1).AddRestriction(
+        data_controls::kRestrictionScreenshot, data_controls::kLevelBlock);
 
     update->Append(rule.Create());
   }

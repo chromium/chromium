@@ -45,6 +45,7 @@ source_set("data_controls") {
       "component.cc",
       "component.h",
     ]
+    deps += [ "//chromeos/dbus/dlp:dlp_proto" ]
   }
 }
 

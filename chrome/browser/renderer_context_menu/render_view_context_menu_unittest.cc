@@ -745,8 +745,8 @@ class RenderViewContextMenuDlpPrefsTest
     policy::dlp_test_util::DlpRule rule("Rule #1", "Block", "testid1");
     rule.AddSrcUrl(PAGE_URL)
         .AddDstUrl(RESTRICTED_URL)
-        .AddRestriction(policy::dlp::kClipboardRestriction,
-                        policy::dlp::kBlockLevel);
+        .AddRestriction(data_controls::kRestrictionClipboard,
+                        data_controls::kLevelBlock);
 
     base::Value::List rules;
     rules.Append(rule.Create());
