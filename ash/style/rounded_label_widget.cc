@@ -20,6 +20,8 @@ RoundedLabelWidget::InitParams::InitParams() = default;
 
 RoundedLabelWidget::InitParams::InitParams(InitParams&& other) = default;
 
+RoundedLabelWidget::InitParams::~InitParams() = default;
+
 RoundedLabelWidget::RoundedLabelWidget() = default;
 
 RoundedLabelWidget::~RoundedLabelWidget() = default;
@@ -47,7 +49,10 @@ void RoundedLabelWidget::Init(InitParams params) {
 
   SetContentsView(std::make_unique<RoundedLabel>(
       params.horizontal_padding, params.vertical_padding, params.rounding_dp,
-      params.preferred_height, l10n_util::GetStringUTF16(params.message_id)));
+      params.preferred_height,
+      absl::holds_alternative<std::u16string>(params.message)
+          ? absl::get<std::u16string>(params.message)
+          : l10n_util::GetStringUTF16(absl::get<int>(params.message))));
   Show();
 }
 

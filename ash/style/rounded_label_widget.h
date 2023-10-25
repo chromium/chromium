@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
@@ -22,13 +23,17 @@ class RoundedLabelWidget : public views::Widget {
   struct InitParams {
     InitParams();
     InitParams(InitParams&& other);
+    ~InitParams();
 
     std::string name;
     int horizontal_padding;
     int vertical_padding;
     int rounding_dp;
     int preferred_height;
-    int message_id;
+    // A message string or the string ID.
+    // TODO(zxdan): change back to message ID if test string is no longer
+    // needed.
+    absl::variant<std::u16string, int> message;
     raw_ptr<aura::Window, ExperimentalAsh> parent;
     bool disable_default_visibility_animation = false;
   };
