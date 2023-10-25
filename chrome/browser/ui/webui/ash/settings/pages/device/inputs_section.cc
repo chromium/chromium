@@ -414,6 +414,8 @@ void InputsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_LANGUAGES_SEARCH_INPUT_METHODS_LABEL},
       {"inputMethodNotAllowed",
        IDS_OS_SETTINGS_LANGUAGES_INPUT_METHOD_NOT_ALLOWED},
+      {"inputMethodLanguagePacksGeneralError",
+       IDS_OS_SETTINGS_INPUT_METHOD_LANGUAGE_PACKS_GENERAL_ERROR},
       {"spellCheckTitle", IDS_OS_SETTINGS_LANGUAGES_SPELL_CHECK_TITLE},
       {"spellAndGrammarCheckTitle",
        IDS_OS_SETTINGS_LANGUAGES_SPELL_AND_GRAMMAR_CHECK_TITLE},

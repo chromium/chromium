@@ -499,6 +499,9 @@
   <message name="IDS_OS_SETTINGS_LANGUAGES_INPUT_METHOD_NOT_ALLOWED" desc="Tooltip for policy icon when an keyboard layout or input method editor is not allowed.">
     Your administrator doesn't allow this input method
   </message>
+  <message name="IDS_OS_SETTINGS_INPUT_METHOD_LANGUAGE_PACKS_GENERAL_ERROR" desc="Generic error message when a component of an input method could not be downloaded." translateable="false">
+    Couldn't add input method
+  </message>
   <message name="IDS_OS_SETTINGS_LANGUAGES_SPELL_CHECK_TITLE" desc="Title for the section containing all the options for spell check settings. The options include picking between using the system's spell check or using Google's web service and a list of the enabled languages which support spell checking.">
     Spell check
   </message>
