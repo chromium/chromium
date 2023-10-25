@@ -99,6 +99,11 @@ struct DescriptorB {
   string image_path;
 };
 
+union DescriptorDValue {
+  skia.mojom.SkColor color;
+  float hue;
+};
+
 struct Descriptors {
   array<DescriptorA> descriptor_a;
   array<DescriptorB> descriptor_b;
@@ -180,7 +185,8 @@ interface CustomizeChromePageHandler {
   // Returns list of sanitized image data.
   GetWallpaperSearchResults(string descriptor_a,
       string? descriptor_b, string? descriptor_c,
-      string? descriptor_d) => (array<WallpaperSearchResult> results);
+      DescriptorDValue? descriptor_d_value)
+        => (array<WallpaperSearchResult> results);
 
   // Sets wallpaper search result of index to background image.
   SetBackgroundToWallpaperSearchResult(mojo_base.mojom.Token result_id);

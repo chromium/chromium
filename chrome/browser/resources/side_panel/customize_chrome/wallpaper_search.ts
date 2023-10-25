@@ -10,19 +10,22 @@ import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';
+import 'chrome://resources/cr_components/theme_color_picker/theme_hue_slider_dialog.js';
 
 import {SpHeading} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
+import {ThemeHueSliderDialogElement} from 'chrome://resources/cr_components/theme_color_picker/theme_hue_slider_dialog.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CustomizeChromeCombobox} from './combobox/customize_chrome_combobox.js';
-import {CustomizeChromePageHandlerInterface, DescriptorA, Descriptors, WallpaperSearchResult} from './customize_chrome.mojom-webui.js';
+import {CustomizeChromePageHandlerInterface, DescriptorA, DescriptorDValue, Descriptors, WallpaperSearchResult} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import {getTemplate} from './wallpaper_search.html.js';
 
-export const DESCRIPTOR_C_VALUE =
+export const DESCRIPTOR_D_VALUE =
     ['#EF4837', '#0984E3', '#F9CC18', '#23CC6A', '#474747'];
 
 export interface WallpaperSearchElement {
@@ -32,6 +35,7 @@ export interface WallpaperSearchElement {
     descriptorMenuC: CrActionMenuElement,
     descriptorMenuD: CrActionMenuElement,
     heading: SpHeading,
+    hueSlider: ThemeHueSliderDialogElement,
     loading: HTMLElement,
     submitButton: CrButtonElement,
   };
@@ -61,7 +65,7 @@ export class WallpaperSearchElement extends PolymerElement {
       },
       descriptorD_: {
         type: Array,
-        value: DESCRIPTOR_C_VALUE,
+        value: DESCRIPTOR_D_VALUE,
       },
       emptyContainers_: Object,
       loading_: {
@@ -85,7 +89,7 @@ export class WallpaperSearchElement extends PolymerElement {
   private selectedDescriptorA_: string|null;
   private selectedDescriptorB_: string|null;
   private selectedDescriptorC_: string|null;
-  private selectedDescriptorD_: string|null;
+  private selectedDescriptorD_: DescriptorDValue|null;
   private submitBtnText_: string;
 
   private pageHandler_: CustomizeChromePageHandlerInterface;
@@ -113,14 +117,21 @@ export class WallpaperSearchElement extends PolymerElement {
     this.dispatchEvent(new Event('back-click'));
   }
 
+  private onCustomColorClick_(e: Event) {
+    this.$.hueSlider.showAt(e.target as HTMLElement);
+  }
+
+  private async onSelectedHueChanged_() {
+    this.selectedDescriptorD_ = {hue: this.$.hueSlider.selectedHue};
+  }
+
   private onDescriptorLabelClickC_(e: DomRepeatEvent<string>) {
     this.selectedDescriptorC_ = e.model.item;
     this.$.descriptorMenuC.close();
   }
 
   private onDescriptorLabelClickD_(e: DomRepeatEvent<string>) {
-    this.selectedDescriptorD_ = e.model.item;
-    this.$.descriptorMenuC.close();
+    this.selectedDescriptorD_ = {color: hexColorToSkColor(e.model.item)};
   }
 
   private onDescriptorMenuClickC_(e: Event) {

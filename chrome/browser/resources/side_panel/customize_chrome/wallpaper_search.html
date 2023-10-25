@@ -189,9 +189,12 @@
           </span>
         </cr-button>
       </template>
-      <cr-button id="customColorContainer">
+      <cr-button id="customColorContainer" on-click="onCustomColorClick_">
         <div id="colorPickerIcon"></div>
       </cr-button>
+      <cr-theme-hue-slider-dialog id="hueSlider"
+          on-selected-hue-changed="onSelectedHueChanged_">
+      </cr-theme-hue-slider-dialog>
     </div>
     <div id="btnContainer">
       <cr-button

@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 import 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.js';
+import 'chrome://customize-chrome-side-panel.top-chrome/strings.m.js';
 
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, Descriptors} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
-import {DESCRIPTOR_C_VALUE, WallpaperSearchElement} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {DESCRIPTOR_D_VALUE, WallpaperSearchElement} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.js';
+import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
@@ -141,28 +143,50 @@ suite('WallpaperSearchTest', () => {
       assertEquals('bar', handler.getArgs('getWallpaperSearchResults')[0][0]);
       assertEquals('foo', handler.getArgs('getWallpaperSearchResults')[0][1]);
       assertEquals('baz', handler.getArgs('getWallpaperSearchResults')[0][2]);
-      assertEquals(
-          DESCRIPTOR_C_VALUE[0],
+      assertDeepEquals(
+          {color: hexColorToSkColor(DESCRIPTOR_D_VALUE[0]!)},
           handler.getArgs('getWallpaperSearchResults')[0][3]);
     });
 
-    test('selects random descriptor', async () => {
+    test('sends hue to backend', async () => {
       handler.setResultFor(
           'getWallpaperSearchResults',
           Promise.resolve({results: ['123', '456']}));
-      createWallpaperSearchElement({
-        descriptorA: [{category: 'foo', labels: ['bar', 'baz']}],
-        descriptorB: [{label: 'foo', imagePath: 'bar.png'}],
-        descriptorC: ['baz'],
-      });
+      createWallpaperSearchElementWithDescriptors();
       await flushTasks();
 
+      $$<HTMLElement>(
+          wallpaperSearchElement, '#descriptorMenuD cr-button')!.click();
+
+      wallpaperSearchElement.$.hueSlider.selectedHue = 10;
+      wallpaperSearchElement.$.hueSlider.dispatchEvent(
+          new Event('selected-hue-changed'));
       wallpaperSearchElement.$.submitButton.click();
+      await flushTasks();
 
       assertEquals(1, handler.getCallCount('getWallpaperSearchResults'));
-      assertNotEquals(
-          undefined, handler.getArgs('getWallpaperSearchResults')[0][0]);
+      assertDeepEquals(
+          {hue: 10}, handler.getArgs('getWallpaperSearchResults')[0][3]);
     });
+
+    test(
+        'selects random descriptor a if user does not select one', async () => {
+          handler.setResultFor(
+              'getWallpaperSearchResults',
+              Promise.resolve({results: ['123', '456']}));
+          createWallpaperSearchElement({
+            descriptorA: [{category: 'foo', labels: ['bar', 'baz']}],
+            descriptorB: [{label: 'foo', imagePath: 'bar.png'}],
+            descriptorC: ['baz'],
+          });
+          await flushTasks();
+
+          wallpaperSearchElement.$.submitButton.click();
+
+          assertEquals(1, handler.getCallCount('getWallpaperSearchResults'));
+          assertNotEquals(
+              undefined, handler.getArgs('getWallpaperSearchResults')[0][0]);
+        });
 
     test('sends one descriptor value to the backend', async () => {
       handler.setResultFor(

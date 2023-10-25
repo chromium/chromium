@@ -137,9 +137,7 @@ void ThemeColorPickerHandler::SetSeedColor(
 }
 
 void ThemeColorPickerHandler::SetSeedColorFromHue(float hue) {
-  SetSeedColor(color_utils::HSLToSkColor(
-                   {std::clamp(hue / 360, 0.0f, 1.0f), 1, .5}, 255),
-               ui::mojom::BrowserColorVariant::kTonalSpot);
+  SetSeedColor(HueToSkColor(hue), ui::mojom::BrowserColorVariant::kTonalSpot);
 }
 
 void ThemeColorPickerHandler::GetChromeColors(

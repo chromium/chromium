@@ -1029,12 +1029,14 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
       CustomizeChromePageHandler::GetWallpaperSearchResultsCallback>
       callback;
 
-  handler().GetWallpaperSearchResults("foo", "bar", "baz", "qux",
-                                      callback.Get());
+  handler().GetWallpaperSearchResults(
+      "foo", "bar", "baz",
+      side_panel::mojom::DescriptorDValue::NewColor(SK_ColorWHITE),
+      callback.Get());
   EXPECT_EQ("foo", request.descriptors().descriptor_a());
   EXPECT_EQ("bar", request.descriptors().descriptor_b());
   EXPECT_EQ("baz", request.descriptors().descriptor_c());
-  EXPECT_EQ("qux", request.descriptors().descriptor_d());
+  EXPECT_EQ("#FFFFFF", request.descriptors().descriptor_d());
 
   chrome_intelligence_modelexecution_proto::WallpaperSearchResponse response;
 
@@ -1110,13 +1112,43 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
   testing::NiceMock<base::MockCallback<
       CustomizeChromePageHandler::GetWallpaperSearchResultsCallback>>
       callback;
-  handler().GetWallpaperSearchResults("foo", absl::nullopt, absl::nullopt,
-                                      "bar", callback.Get());
+  handler().GetWallpaperSearchResults(
+      "foo", absl::nullopt, absl::nullopt,
+      side_panel::mojom::DescriptorDValue::NewColor(SK_ColorRED),
+      callback.Get());
 
   EXPECT_EQ("foo", request.descriptors().descriptor_a());
   EXPECT_FALSE(request.descriptors().has_descriptor_b());
   EXPECT_FALSE(request.descriptors().has_descriptor_c());
-  EXPECT_EQ("bar", request.descriptors().descriptor_d());
+  EXPECT_EQ("#FF0000", request.descriptors().descriptor_d());
+}
+
+TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
+       GetWallpaperSearchResults_ConvertsHueToHex) {
+  chrome_intelligence_modelexecution_proto::WallpaperSearchRequest request;
+  base::OnceCallback<void(const gfx::Image&)> decoder_callback1;
+  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
+      .WillOnce(Invoke(
+          [&request](
+              optimization_guide::proto::ModelExecutionFeature feature_arg,
+              const google::protobuf::MessageLite& request_arg,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  done_callback_arg) {
+            ASSERT_EQ(request.GetTypeName(), request_arg.GetTypeName());
+            request.CheckTypeAndMergeFrom(request_arg);
+          }));
+
+  testing::NiceMock<base::MockCallback<
+      CustomizeChromePageHandler::GetWallpaperSearchResultsCallback>>
+      callback;
+  handler().GetWallpaperSearchResults(
+      "foo", absl::nullopt, absl::nullopt,
+      side_panel::mojom::DescriptorDValue::NewHue(0), callback.Get());
+
+  EXPECT_EQ("foo", request.descriptors().descriptor_a());
+  EXPECT_FALSE(request.descriptors().has_descriptor_b());
+  EXPECT_FALSE(request.descriptors().has_descriptor_c());
+  EXPECT_EQ("#FF0000", request.descriptors().descriptor_d());
 }
 
 TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
@@ -1142,7 +1174,7 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
       callback;
 
   handler().GetWallpaperSearchResults("foo", absl::nullopt, absl::nullopt,
-                                      absl::nullopt, callback.Get());
+                                      nullptr, callback.Get());
   EXPECT_EQ("foo", request.descriptors().descriptor_a());
   EXPECT_FALSE(request.descriptors().has_descriptor_b());
   EXPECT_FALSE(request.descriptors().has_descriptor_c());
@@ -1184,7 +1216,7 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
       callback;
 
   handler().GetWallpaperSearchResults("foo", absl::nullopt, absl::nullopt,
-                                      absl::nullopt, callback.Get());
+                                      nullptr, callback.Get());
   EXPECT_EQ("foo", request.descriptors().descriptor_a());
   EXPECT_FALSE(request.descriptors().has_descriptor_b());
   EXPECT_FALSE(request.descriptors().has_descriptor_c());
@@ -1245,7 +1277,7 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
       callback;
 
   handler().GetWallpaperSearchResults("foo", absl::nullopt, absl::nullopt,
-                                      absl::nullopt, callback.Get());
+                                      nullptr, callback.Get());
   EXPECT_EQ("foo", request.descriptors().descriptor_a());
   EXPECT_FALSE(request.descriptors().has_descriptor_b());
   EXPECT_FALSE(request.descriptors().has_descriptor_c());

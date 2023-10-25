@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/search/ntp_user_data_types.h"
+#include "chrome/browser/ui/webui/cr_components/theme_color_picker/customize_chrome_colors.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/common/pref_names.h"
@@ -51,6 +52,7 @@
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "skia/ext/image_operations.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
@@ -477,7 +479,7 @@ void CustomizeChromePageHandler::GetWallpaperSearchResults(
     const std::string& descriptor_a,
     const absl::optional<std::string>& descriptor_b,
     const absl::optional<std::string>& descriptor_c,
-    const absl::optional<std::string>& descriptor_d,
+    side_panel::mojom::DescriptorDValuePtr descriptor_d_value,
     GetWallpaperSearchResultsCallback callback) {
   callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback),
@@ -502,8 +504,14 @@ void CustomizeChromePageHandler::GetWallpaperSearchResults(
   if (descriptor_c.has_value()) {
     descriptors.set_descriptor_c(*descriptor_c);
   }
-  if (descriptor_d.has_value()) {
-    descriptors.set_descriptor_d(*descriptor_d);
+  if (descriptor_d_value) {
+    if (descriptor_d_value->is_color()) {
+      descriptors.set_descriptor_d(
+          skia::SkColorToHexString(descriptor_d_value->get_color()));
+    } else if (descriptor_d_value->is_hue()) {
+      descriptors.set_descriptor_d(skia::SkColorToHexString(
+          HueToSkColor(descriptor_d_value->get_hue())));
+    }
   }
   optimization_guide_keyed_service->ExecuteModel(
       optimization_guide::proto::ModelExecutionFeature::
