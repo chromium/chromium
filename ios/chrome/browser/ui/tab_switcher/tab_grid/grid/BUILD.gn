@@ -61,8 +61,6 @@ source_set("grid_ui_constants") {
 
 source_set("grid_ui") {
   sources = [
-    "base_grid_container_view_controller.h",
-    "base_grid_container_view_controller.mm",
     "base_grid_view_controller+private.h",
     "base_grid_view_controller.h",
     "base_grid_view_controller.mm",
@@ -72,6 +70,8 @@ source_set("grid_ui") {
     "grid_cell.mm",
     "grid_commands.h",
     "grid_consumer.h",
+    "grid_container_view_controller.h",
+    "grid_container_view_controller.mm",
     "grid_empty_state_view.h",
     "grid_empty_state_view.mm",
     "grid_empty_view.h",

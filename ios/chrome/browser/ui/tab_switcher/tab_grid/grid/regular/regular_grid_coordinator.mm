@@ -9,9 +9,9 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/tabs/features.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_container_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/disabled_grid_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_container_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_empty_state_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_theme.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/regular_grid_mediator.h"
@@ -27,7 +27,7 @@
 @property(nonatomic, readwrite, strong)
     UIViewController* disabledViewController;
 @property(nonatomic, readwrite, strong)
-    BaseGridContainerViewController* gridContainerViewController;
+    GridContainerViewController* gridContainerViewController;
 
 @end
 
@@ -79,8 +79,8 @@
   BOOL regularModeEnabled =
       !IsIncognitoModeForced(self.browser->GetBrowserState()->GetPrefs());
 
-  BaseGridContainerViewController* container =
-      [[BaseGridContainerViewController alloc] init];
+  GridContainerViewController* container =
+      [[GridContainerViewController alloc] init];
   self.gridContainerViewController = container;
 
   if (regularModeEnabled) {

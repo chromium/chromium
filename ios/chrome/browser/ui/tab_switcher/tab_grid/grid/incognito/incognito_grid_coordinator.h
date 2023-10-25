@@ -8,9 +8,9 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_mediator_delegate.h"
 
-@class BaseGridContainerViewController;
 @class BaseGridViewController;
 @protocol DisabledGridViewControllerDelegate;
+@class GridContainerViewController;
 @protocol GridCoordinatorAudience;
 @protocol GridMediatorDelegate;
 @protocol GridToolbarsMutator;
@@ -23,7 +23,7 @@
 
 // Grid view controller container.
 @property(nonatomic, readonly, strong)
-    BaseGridContainerViewController* gridContainerViewController;
+    GridContainerViewController* gridContainerViewController;
 // The Grid view controller.
 // TODO(crbug.com/1457146): Replace with IncognitoGridViewController when
 // possible.

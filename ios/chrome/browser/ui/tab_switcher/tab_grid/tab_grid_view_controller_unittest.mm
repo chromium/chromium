@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_container_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_container_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_bottom_toolbar.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_new_tab_button.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_top_toolbar.h"
@@ -64,9 +64,9 @@ class TabGridViewControllerTest : public PlatformTest {
     view_controller_.bottomToolbar =
         [[TabGridBottomToolbar alloc] initWithFrame:CGRectZero];
 
-    regular_grids_ = [[BaseGridContainerViewController alloc] init];
-    incognito_grids_ = [[BaseGridContainerViewController alloc] init];
-    remote_grids_ = [[BaseGridContainerViewController alloc] init];
+    regular_grids_ = [[GridContainerViewController alloc] init];
+    incognito_grids_ = [[GridContainerViewController alloc] init];
+    remote_grids_ = [[GridContainerViewController alloc] init];
     view_controller_.incognitoGridContainerViewController = incognito_grids_;
     view_controller_.regularGridContainerViewController = regular_grids_;
     view_controller_.remoteGridContainerViewController = remote_grids_;
@@ -91,9 +91,9 @@ class TabGridViewControllerTest : public PlatformTest {
   TabGridViewController* view_controller_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
-  BaseGridContainerViewController* regular_grids_;
-  BaseGridContainerViewController* incognito_grids_;
-  BaseGridContainerViewController* remote_grids_;
+  GridContainerViewController* regular_grids_;
+  GridContainerViewController* incognito_grids_;
+  GridContainerViewController* remote_grids_;
 };
 
 // Checks that TabGridViewController returns key commands.

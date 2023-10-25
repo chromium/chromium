@@ -7,8 +7,8 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-@class BaseGridContainerViewController;
 @class BaseGridViewController;
+@class GridContainerViewController;
 class Browser;
 @protocol DisabledGridViewControllerDelegate;
 @protocol GridMediatorDelegate;
@@ -22,7 +22,7 @@ class Browser;
 
 // Grid view controller container.
 @property(nonatomic, readonly, strong)
-    BaseGridContainerViewController* gridContainerViewController;
+    GridContainerViewController* gridContainerViewController;
 // Grid view controller.
 // TODO(crbug.com/1457146): Replace with RegularGridViewController when
 // possible.

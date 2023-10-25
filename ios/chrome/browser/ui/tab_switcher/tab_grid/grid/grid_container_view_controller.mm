@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_container_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_container_view_controller.h"
 
 #import "base/check_op.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
-@implementation BaseGridContainerViewController
+@implementation GridContainerViewController
 
 - (void)setContainedViewController:(UIViewController*)viewController {
   if (_containedViewController) {

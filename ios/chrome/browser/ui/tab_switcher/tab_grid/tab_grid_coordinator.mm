@@ -77,9 +77,9 @@
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/ui/snackbar/snackbar_coordinator.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_container_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_container_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_coordinator_audience.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_mediator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_coordinator.h"
@@ -183,7 +183,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   // Remote grid container.
   // TODO(crbug.com/1457146): To remove when remote coordinator handles it.
-  BaseGridContainerViewController* _remoteGridContainerViewController;
+  GridContainerViewController* _remoteGridContainerViewController;
 }
 
 // Browser that contain tabs from the main pane (i.e. non-incognito).
@@ -846,7 +846,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   baseViewController.remoteTabsViewController.presentationDelegate = self;
 
   _remoteGridContainerViewController =
-      [[BaseGridContainerViewController alloc] init];
+      [[GridContainerViewController alloc] init];
   self.baseViewController.remoteGridContainerViewController =
       _remoteGridContainerViewController;
 

@@ -17,8 +17,8 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_animation_layout_providing.h"
 
 @protocol ApplicationCommands;
-@class BaseGridContainerViewController;
 @class BaseGridViewController;
+@class GridContainerViewController;
 @protocol GridCommands;
 @protocol GridShareableItemsProvider;
 class GURL;
@@ -157,7 +157,7 @@ enum class TabGridPageConfiguration {
 @property(nonatomic, weak)
     UIViewController* incognitoGridContainerViewController;
 @property(nonatomic, weak)
-    BaseGridContainerViewController* remoteGridContainerViewController;
+    GridContainerViewController* remoteGridContainerViewController;
 
 // Init with tab grid view configuration, which decides which sub view
 // controller should be added.
