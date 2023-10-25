@@ -1193,12 +1193,6 @@ def _EnsureSystemSettings(device):
     logging.warning('Cannot sync the device date on "user" build')
     return
 
-  # Marshmallow AVD config has the network so won't have the date issue.
-  # Also the intent does not work well on M. So skip the date sync for M.
-  if device.build_version_sdk == version_codes.MARSHMALLOW:
-    logging.info('Skip sync the deivce date on Marshmallow')
-    return
-
   logging.info('Sync the device date.')
   timezone = device.RunShellCommand(['date', '+"%Z"'],
                                     single_line=True,
@@ -1215,10 +1209,6 @@ def _EnsureSystemSettings(device):
   strgmtime = time.strftime(set_date_format, time.gmtime())
   set_date_command.append(strgmtime)
   device.RunShellCommand(set_date_command, check_return=True, as_root=True)
-  device.RunShellCommand(
-      ['am', 'broadcast', '-a', 'android.intent.action.TIME_SET'],
-      check_return=True,
-      as_root=True)
 
 
 def _EnableNetwork(device):
