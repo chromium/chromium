@@ -58,13 +58,7 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
     PasswordDetailsMediatorDelegate,
     ReauthenticationCoordinatorDelegate,
     PasswordSharingCoordinatorDelegate,
-    PasswordSharingFirstRunCoordinatorDelegate> {
-  password_manager::AffiliatedGroup _affiliatedGroup;
-  password_manager::CredentialUIEntry _credential;
-
-  // The context in which the password details are accessed.
-  DetailsContext _context;
-}
+    PasswordSharingFirstRunCoordinatorDelegate>
 
 // Main view controller for this coordinator.
 @property(nonatomic, strong) PasswordDetailsTableViewController* viewController;
@@ -97,7 +91,13 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
 
 @end
 
-@implementation PasswordDetailsCoordinator
+@implementation PasswordDetailsCoordinator {
+  password_manager::AffiliatedGroup _affiliatedGroup;
+  password_manager::CredentialUIEntry _credential;
+
+  // The context in which the password details are accessed.
+  DetailsContext _context;
+}
 
 @synthesize baseNavigationController = _baseNavigationController;
 
