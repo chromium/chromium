@@ -733,6 +733,20 @@ void WebAppRegistrar::Start() {
   base::UmaHistogramCounts1000(
       "WebApp.InstalledCount.ByUserNotLocallyInstalled",
       num_non_locally_installed);
+
+#if BUILDFLAG(IS_MAC)
+  auto multi_profile_app_ids =
+      AppShimRegistry::Get()->GetAppsInstalledInMultipleProfiles();
+  int num_multi_profile_apps = 0;
+  for (const auto& app_id : multi_profile_app_ids) {
+    const WebApp* app = GetAppById(app_id);
+    if (app && app->is_locally_installed() && app->WasInstalledByUser()) {
+      num_multi_profile_apps++;
+    }
+  }
+  base::UmaHistogramCounts1000("WebApp.InstalledCount.ByUserInMultipleProfiles",
+                               num_multi_profile_apps);
+#endif
 }
 
 void WebAppRegistrar::Shutdown() {

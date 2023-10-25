@@ -67,6 +67,9 @@ class AppShimRegistry {
   std::set<std::string> GetInstalledAppsForProfile(
       const base::FilePath& profile) const;
 
+  // Returns all apps installed in multiple profiles. Used for metrics.
+  std::set<std::string> GetAppsInstalledInMultipleProfiles() const;
+
   // Called when the file and/or protocol handlers for an app are updated in a
   // specific profile. Used to calculate the union of all handlers for a app
   // when updating the app shim.

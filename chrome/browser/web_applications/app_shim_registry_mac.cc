@@ -174,6 +174,24 @@ std::set<std::string> AppShimRegistry::GetInstalledAppsForProfile(
   return result;
 }
 
+std::set<std::string> AppShimRegistry::GetAppsInstalledInMultipleProfiles()
+    const {
+  std::set<std::string> result;
+  if (!GetPrefService()) {
+    return result;
+  }
+  const base::Value::Dict& app_shims = GetPrefService()->GetDict(kAppShims);
+  for (const auto iter_app : app_shims) {
+    const base::Value::List* installed_profiles_list =
+        iter_app.second.GetDict().FindList(kInstalledProfiles);
+    if (!installed_profiles_list || installed_profiles_list->size() <= 1) {
+      continue;
+    }
+    result.insert(iter_app.first);
+  }
+  return result;
+}
+
 void AppShimRegistry::SaveFileHandlersForAppAndProfile(
     const std::string& app_id,
     const base::FilePath& profile,
