@@ -841,11 +841,10 @@ gfx::RectF AXTree::RelativeToTreeBoundsInternal(const AXNode* node,
     if (bounds.IsEmpty() && !GetTreeUpdateInProgressState() &&
         allow_recursion) {
       for (auto* child : node->children()) {
-        bool ignore_offscreen;
-        gfx::RectF child_bounds =
-            RelativeToTreeBoundsInternal(child, gfx::RectF(), &ignore_offscreen,
-                                         clip_bounds, skip_container_offset,
-                                         /* allow_recursion = */ false);
+        gfx::RectF child_bounds = RelativeToTreeBoundsInternal(
+            child, gfx::RectF(), /*offscreen=*/nullptr, clip_bounds,
+            skip_container_offset,
+            /*allow_recursion=*/false);
         bounds.Union(child_bounds);
       }
       if (bounds.width() > 0 && bounds.height() > 0) {
