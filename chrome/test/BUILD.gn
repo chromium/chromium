@@ -4066,6 +4066,8 @@ if (!is_android) {
       }
       deps += [
         ":test_support_ui",
+        "//chrome/browser/ui/actions:actions",
+        "//chrome/browser/ui/actions:actions_headers",
         "//components/commerce/core:shopping_service_test_support",
         "//components/page_info/core:proto",
         "//components/send_tab_to_self",
