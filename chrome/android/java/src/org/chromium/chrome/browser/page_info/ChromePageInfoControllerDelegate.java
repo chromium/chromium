@@ -350,4 +350,9 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
         return (UserPrefs.get(mProfile).getBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED)
                 || ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD));
     }
+
+    @Override
+    public boolean allThirdPartyCookiesBlockedTrackingProtection() {
+        return UserPrefs.get(mProfile).getBoolean(Pref.BLOCK_ALL3PC_TOGGLE_ENABLED);
+    }
 }

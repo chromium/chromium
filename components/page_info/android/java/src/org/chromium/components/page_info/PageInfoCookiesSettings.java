@@ -54,6 +54,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     private CharSequence mHostName;
     private FPSCookieInfo mFPSInfo;
     private boolean mTrackingProtectionUI;
+    private boolean mBlockAll3PC;
 
     /**  Parameters to configure the cookie controls view. */
     public static class PageInfoCookiesViewParams {
@@ -66,6 +67,8 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         public boolean disableCookieDeletion;
         public CharSequence hostName;
         public boolean showTrackingProtectionUI;
+        // Block all third-party cookies when Tracking Protection is on.
+        public boolean blockAll3PC;
     }
 
     @Override
@@ -99,15 +102,21 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
 
     public void setParams(PageInfoCookiesViewParams params) {
         mTrackingProtectionUI = params.showTrackingProtectionUI;
+        mBlockAll3PC = params.blockAll3PC;
         Preference cookieSummary = findPreference(COOKIE_SUMMARY_PREFERENCE);
         NoUnderlineClickableSpan linkSpan = new NoUnderlineClickableSpan(
                 getContext(), (view) -> { params.onCookieSettingsLinkClicked.run(); });
+        int summaryString;
+        if (mTrackingProtectionUI && mBlockAll3PC) {
+            summaryString = R.string.page_info_tracking_protection_blocked_cookies_description;
+        } else if (mTrackingProtectionUI) {
+            summaryString = R.string.page_info_tracking_protection_description;
+        } else {
+            summaryString = R.string.page_info_cookies_description;
+        }
         cookieSummary.setSummary(
                 SpanApplier.applySpans(
-                        getString(
-                                mTrackingProtectionUI
-                                        ? R.string.page_info_tracking_protection_description
-                                        : R.string.page_info_cookies_description),
+                        getString(summaryString),
                         new SpanApplier.SpanInfo("<link>", "</link>", linkSpan)));
 
         // TODO(crbug.com/1077766): Set a ManagedPreferenceDelegate?
@@ -338,9 +347,10 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         // TODO(crbug.com/1446230): Update the strings for when FPS are on.
         if (!mCookieSwitch.isChecked()) {
             if (mTrackingProtectionUI) {
-                mCookieSwitch.setSummary(
-                        getContext()
-                                .getString(R.string.page_info_tracking_protection_toggle_limited));
+                mCookieSwitch.setSummary(getContext().getString(
+                        mBlockAll3PC
+                        ? R.string.page_info_tracking_protection_toggle_blocked
+                        : R.string.page_info_tracking_protection_toggle_limited));
             } else {
                 mCookieSwitch.setSummary(
                         getContext()

@@ -264,6 +264,14 @@ public class PageInfoViewTest {
                 });
     }
 
+    private void blockAll3PC() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(Profile.getLastUsedRegularProfile())
+                            .setBoolean(Pref.BLOCK_ALL3PC_TOGGLE_ENABLED, true);
+                });
+    }
+
     private String runJavascriptAsync(String type) throws TimeoutException {
         return JavaScriptUtils.runJavascriptWithAsyncResult(
                 sActivityTestRule.getWebContents(), type);
@@ -698,6 +706,35 @@ public class PageInfoViewTest {
         onViewWaiting(allOf(withText(containsString("Third-party cookies")), isDisplayed()));
         onView(withText(containsString("Third-party cookies"))).perform(click());
         mRenderTestRule.render(getPageInfoView(), "PageInfo_TrackingProtectionSubpage_Toggle_On");
+    }
+
+    /** Tests the cookies page of the PageInfo UI with the Tracking Protection UI enabled. */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(PageInfoFeatures.USER_BYPASS_UI_NAME)
+    public void testShowCookiesSubpageTrackingProtectionBlockAll() throws IOException {
+        enableTrackingProtection();
+        blockAll3PC();
+        setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        onView(withId(R.id.page_info_cookies_row)).perform(click());
+        onViewWaiting(
+                allOf(withText(containsString("You blocked sites from using")), isDisplayed()));
+        // Verify that the pref was recorded successfully.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(
+                            UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                    .getBoolean(IN_CONTEXT_COOKIE_CONTROLS_OPENED));
+                });
+        mRenderTestRule.render(
+                getPageInfoView(), "PageInfo_TrackingProtectionSubpage_Block_All_Toggle_Off");
+        // Check that the cookie toggle is displayed and try clicking it.
+        onViewWaiting(allOf(withText(containsString("Third-party cookies")), isDisplayed()));
+        onView(withText(containsString("Third-party cookies"))).perform(click());
+        mRenderTestRule.render(
+                getPageInfoView(), "PageInfo_TrackingProtectionSubpage_Block_All_Toggle_On");
     }
 
     /** Tests the history page of the PageInfo UI. */

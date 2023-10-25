@@ -50,6 +50,7 @@ public class PageInfoCookiesController
     private int mConfidenceLevel;
     private Website mWebsite;
     private boolean mTrackingProtectionUI;
+    private boolean mBlockAll3PC;
 
     public PageInfoCookiesController(PageInfoMainController mainController, PageInfoRowView rowView,
             PageInfoControllerDelegate delegate) {
@@ -57,6 +58,7 @@ public class PageInfoCookiesController
 
         mTrackingProtectionUI =
                 PageInfoFeatures.USER_BYPASS_UI.isEnabled() && delegate.showTrackingProtectionUI();
+        mBlockAll3PC = delegate.allThirdPartyCookiesBlockedTrackingProtection();
 
         mMainController = mainController;
         mRowView = rowView;
@@ -122,6 +124,7 @@ public class PageInfoCookiesController
         params.disableCookieDeletion = isDeletionDisabled();
         params.hostName = mMainController.getURL().getHost();
         params.showTrackingProtectionUI = mTrackingProtectionUI;
+        params.blockAll3PC = mBlockAll3PC;
         mSubPage.setParams(params);
         if (PageInfoFeatures.USER_BYPASS_UI.isEnabled()) {
             mSubPage.setCookieStatus(mStatus, mIsEnforced, mExpiration);
@@ -245,7 +248,8 @@ public class PageInfoCookiesController
     }
 
     private boolean isDeletionDisabled() {
-        return WebsitePreferenceBridge.isCookieDeletionDisabled(mMainController.getBrowserContext(), mFullUrl);
+        return WebsitePreferenceBridge.isCookieDeletionDisabled(
+                mMainController.getBrowserContext(), mFullUrl);
     }
 
     private void updateRowViewSubtitle() {
@@ -257,7 +261,9 @@ public class PageInfoCookiesController
         }
         if (mTrackingProtectionUI) {
             mRowView.updateSubtitle(mRowView.getContext().getString(
-                    R.string.page_info_tracking_protection_subtitle_cookies_limited));
+                    mBlockAll3PC
+                    ? R.string.page_info_cookies_subtitle_blocked
+                    : R.string.page_info_tracking_protection_subtitle_cookies_limited));
             return;
         }
         mRowView.updateSubtitle(mRowView.getContext().getString(
