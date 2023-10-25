@@ -364,11 +364,18 @@ TEST_F(SearchEngineTableViewControllerTest,
   // Select another default engine by user interaction.
   [controller() tableView:controller().tableView
       didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
-  // We don't care about the value, we just need to check that something was
-  // written.
-  ASSERT_FALSE(
-      pref_service_->GetInt64(
-          prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp) == 0);
+  SInt64 written_pref = pref_service_->GetInt64(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp);
+  // We don't care about the specific value, we just need to check that
+  // something was written.
+  ASSERT_FALSE(written_pref == 0);
+  // Select another default engine by user interaction.
+  [controller() tableView:controller().tableView
+      didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:2 inSection:0]];
+  // This time make sure that the pref was not re-written.
+  ASSERT_EQ(written_pref,
+            pref_service_->GetInt64(
+                prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
 }
 
 // Tests that items are displayed correctly when TemplateURLService is filled

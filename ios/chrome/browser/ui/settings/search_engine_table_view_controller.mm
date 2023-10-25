@@ -400,12 +400,10 @@ const char kUmaSelectDefaultSearchEngine[] =
   [self recordUmaOfDefaultSearchEngine];
   self.updatingBackend = NO;
 
-  // For choice screen eligible users, set the corresponding timestamp pref.
-  if (_shouldShowUpdatedSettings) {
-    _prefService->SetInt64(
-        prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
-        [NSDate date].timeIntervalSince1970);
-  }
+  // For choice screen eligible users, set the corresponding timestamp pref if
+  // it wasn't already set before.
+  search_engines::RecordChoiceMade(
+      _prefService, search_engines::ChoiceMadeLocation::kSearchEngineSettings);
 }
 
 - (void)tableView:(UITableView*)tableView
