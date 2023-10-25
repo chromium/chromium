@@ -193,7 +193,7 @@ bn_mul_mont:
 	add	sp,sp,#2*4		@ skip over {r0,r2}
 	mov	r0,#1
 .Labrt:
-#if __ARM_ARCH__>=5
+#if __ARM_ARCH>=5
 	bx	lr				@ bx lr
 #else
 	tst	lr,#1

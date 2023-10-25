@@ -44,7 +44,7 @@ sha1_block_data_order:
 	mov	r6,r6,ror#30
 	mov	r7,r7,ror#30		@ [6]
 .L_00_15:
-#if __ARM_ARCH__<7
+#if __ARM_ARCH<7
 	ldrb	r10,[r1,#2]
 	ldrb	r9,[r1,#3]
 	ldrb	r11,[r1,#1]
@@ -69,7 +69,7 @@ sha1_block_data_order:
 	eor	r10,r10,r6,ror#2		@ F_00_19(B,C,D)
 	str	r9,[r14,#-4]!
 	add	r7,r7,r10			@ E+=F_00_19(B,C,D)
-#if __ARM_ARCH__<7
+#if __ARM_ARCH<7
 	ldrb	r10,[r1,#2]
 	ldrb	r9,[r1,#3]
 	ldrb	r11,[r1,#1]
@@ -94,7 +94,7 @@ sha1_block_data_order:
 	eor	r10,r10,r5,ror#2		@ F_00_19(B,C,D)
 	str	r9,[r14,#-4]!
 	add	r6,r6,r10			@ E+=F_00_19(B,C,D)
-#if __ARM_ARCH__<7
+#if __ARM_ARCH<7
 	ldrb	r10,[r1,#2]
 	ldrb	r9,[r1,#3]
 	ldrb	r11,[r1,#1]
@@ -119,7 +119,7 @@ sha1_block_data_order:
 	eor	r10,r10,r4,ror#2		@ F_00_19(B,C,D)
 	str	r9,[r14,#-4]!
 	add	r5,r5,r10			@ E+=F_00_19(B,C,D)
-#if __ARM_ARCH__<7
+#if __ARM_ARCH<7
 	ldrb	r10,[r1,#2]
 	ldrb	r9,[r1,#3]
 	ldrb	r11,[r1,#1]
@@ -144,7 +144,7 @@ sha1_block_data_order:
 	eor	r10,r10,r3,ror#2		@ F_00_19(B,C,D)
 	str	r9,[r14,#-4]!
 	add	r4,r4,r10			@ E+=F_00_19(B,C,D)
-#if __ARM_ARCH__<7
+#if __ARM_ARCH<7
 	ldrb	r10,[r1,#2]
 	ldrb	r9,[r1,#3]
 	ldrb	r11,[r1,#1]
@@ -177,7 +177,7 @@ sha1_block_data_order:
 #endif
 	bne	.L_00_15		@ [((11+4)*5+2)*3]
 	sub	sp,sp,#25*4
-#if __ARM_ARCH__<7
+#if __ARM_ARCH<7
 	ldrb	r10,[r1,#2]
 	ldrb	r9,[r1,#3]
 	ldrb	r11,[r1,#1]
@@ -475,7 +475,7 @@ sha1_block_data_order:
 	teq	r1,r2
 	bne	.Lloop			@ [+18], total 1307
 
-#if __ARM_ARCH__>=5
+#if __ARM_ARCH>=5
 	ldmia	sp!,{r4,r5,r6,r7,r8,r9,r10,r11,r12,pc}
 #else
 	ldmia	sp!,{r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
