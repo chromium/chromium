@@ -148,8 +148,11 @@ export class ComposeAppElement extends ComposeAppElementBase {
       this.loading_ = composeState.hasPendingRequest;
       this.submitted_ =
           composeState.hasPendingRequest || Boolean(composeState.response);
-      this.response_ = composeState.response;
-      this.undoEnabled_ = Boolean(this.response_?.undoAvailable);
+      if (!composeState.hasPendingRequest) {
+        // If there is a pending request, the existing response is outdated.
+        this.response_ = composeState.response;
+        this.undoEnabled_ = Boolean(this.response_?.undoAvailable);
+      }
 
       if (composeState.webuiState) {
         const appState: ComposeAppState = JSON.parse(composeState.webuiState);

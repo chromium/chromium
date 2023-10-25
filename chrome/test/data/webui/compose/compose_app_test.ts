@@ -235,6 +235,19 @@ suite('ComposeApp', () => {
       },
     });
     assertFalse(appWithUndo.$.undoButton.disabled);
+
+    // Already has a response but is loading another one.
+    const appWithResultAndLoading = await initializeNewAppWithState({
+      webuiState: JSON.stringify({input: 'some input'}),
+      hasPendingRequest: true,
+      response: {
+        status: ComposeStatus.kOk,
+        undoAvailable: false,
+        result: 'here is a result',
+      },
+    });
+    assertTrue(isVisible(appWithResultAndLoading.$.loading));
+    assertFalse(isVisible(appWithResultAndLoading.$.resultContainer));
   });
 
   test('SavesState', async () => {
