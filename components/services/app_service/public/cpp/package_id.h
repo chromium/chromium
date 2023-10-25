@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_PACKAGE_ID_H_
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_PACKAGE_ID_H_
 
+#include <iosfwd>
 #include <string>
 
 #include "base/strings/string_piece.h"
@@ -62,6 +63,9 @@ class COMPONENT_EXPORT(APP_TYPES) PackageId {
   AppType app_type_;
   std::string identifier_;
 };
+
+COMPONENT_EXPORT(APP_TYPES)
+std::ostream& operator<<(std::ostream& out, const PackageId& package_id);
 
 }  // namespace apps
 

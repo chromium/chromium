@@ -4,6 +4,7 @@
 
 #include "components/services/app_service/public/cpp/package_id.h"
 
+#include <ostream>
 #include <string>
 
 #include "base/notreached.h"
@@ -95,6 +96,10 @@ absl::optional<PackageId> PackageId::FromString(
 
 std::string PackageId::ToString() const {
   return base::StrCat({AppTypeToPlatformName(app_type_), ":", identifier_});
+}
+
+std::ostream& operator<<(std::ostream& out, const PackageId& package_id) {
+  return out << package_id.ToString();
 }
 
 }  // namespace apps
