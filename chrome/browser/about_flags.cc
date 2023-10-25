@@ -9020,6 +9020,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kChromeRefresh2023NTBVariations,
                                     "ChromeRefresh2023NTBVariations")},
 
+    {"chrome-refresh-2023-top-chrome-font",
+     flag_descriptions::kChromeRefresh2023TopChromeFontName,
+     flag_descriptions::kChromeRefresh2023TopChromeFontDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kChromeRefresh2023TopChromeFont)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"autofill-enable-offers-in-clank-keyboard-accessory",
      flag_descriptions::kAutofillEnableOffersInClankKeyboardAccessoryName,

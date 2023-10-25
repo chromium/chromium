@@ -1206,6 +1206,11 @@
     "expiry_milestone": 122
   },
   {
+    "name": "chrome-refresh-2023-top-chrome-font",
+    "owners": [ "chrome-desktop-ui-sea@google.com", "dpenning" ],
+    "expiry_milestone": 122
+  },
+  {
     "name": "chrome-root-store-enabled",
     "owners": ["hchao", "mattm", "davidben", "chrome-trusty-transport-core@google.com"],
     "expiry_milestone": 120

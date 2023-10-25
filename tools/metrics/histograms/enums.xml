@@ -62491,6 +62491,7 @@ from previous Chrome versions.
   <int value="-1334909143" label="NtpModulesDragAndDrop:disabled"/>
   <int value="-1334336593" label="SystemKoreanPhysicalTyping:disabled"/>
   <int value="-1334327410" label="ash-enable-touch-view-testing"/>
+  <int value="-1334258487" label="ChromeRefresh2023TopChromeFont:disabled"/>
   <int value="-1334028960" label="DockedMagnifierResizing:disabled"/>
   <int value="-1333946113" label="ContentIndexingDownloadHome:disabled"/>
   <int value="-1332267458" label="RemoveNavigationHistory:enabled"/>
@@ -68884,6 +68885,7 @@ from previous Chrome versions.
   <int value="1814671708" label="disable-password-manager-reauthentication"/>
   <int value="1814854881" label="NearbySharingSelfShareUI:disabled"/>
   <int value="1815186008" label="SearchResumptionModuleAndroid:enabled"/>
+  <int value="1815734544" label="ChromeRefresh2023TopChromeFont:enabled"/>
   <int value="1816174635" label="RequestUnbufferedDispatch:enabled"/>
   <int value="1816515324" label="BaselineGM3SurfaceColors:disabled"/>
   <int value="1816723085" label="SchemefulSameSite:enabled"/>
