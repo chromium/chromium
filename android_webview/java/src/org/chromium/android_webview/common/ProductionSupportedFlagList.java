@@ -490,6 +490,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(BlinkFeatures.HIT_TEST_OPAQUENESS),
         Flag.baseFeature(BlinkFeatures.INTERSECTION_OPTIMIZATION),
         Flag.baseFeature(BlinkFeatures.SOLID_COLOR_LAYERS),
+        Flag.baseFeature(BlinkFeatures.SCROLLBAR_COLOR),
         Flag.baseFeature(
                 BlinkFeatures.DELAY_OUT_OF_VIEWPORT_LAZY_IMAGES,
                 "Delays out-of-viewport lazy loaded images."),
