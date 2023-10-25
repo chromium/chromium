@@ -573,6 +573,24 @@
       milestone: 71,
     },
     {
+      name: "ThirdPartyCookieAccessError",
+      message: "Cookies marked with `SameSite=None; Secure` and not `Partitioned` are blocked in cross-site contexts.",
+      translation_note: "This error occurs when the website attempts to access third-party cookies and the browser blocks them.",
+      web_features: [
+        // This deprecation is used for Legacy Technology Report generation only.
+      ],
+      chrome_status_feature: 5133113939722240,
+    },
+    {
+      name: "ThirdPartyCookieAccessWarning",
+      message: "In a future version of the browser, cookies marked with `SameSite=None; Secure` and not `Partitioned` will be blocked in cross-site context.",
+      translation_note: "This warning occurs when the website attempts to access third-party cookies but the browser does not block them yet.",
+      web_features: [
+        // This deprecation is used for Legacy Technology Report generation only.
+      ],
+      chrome_status_feature: 5133113939722240,
+    },
+    {
       name: "V8SharedArrayBufferConstructedInExtensionWithoutIsolation",
       message: "Extensions should opt into cross-origin isolation to continue using `SharedArrayBuffer`. See https://developer.chrome.com/docs/extensions/mv3/cross-origin-isolation/.",
       translation_note: "A deprecation warning shown in the DevTools Issues tab. The placeholder is always the noun 'SharedArrayBuffer' which refers to a JavaScript construct. 'Extensions' refers to Chrome extensions. The warning is shown when Chrome Extensions attempt to use 'SharedArrayBuffer's under insecure circumstances.",
