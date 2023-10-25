@@ -93,6 +93,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 namespace {
 
 constexpr char kPasswordRe[] =

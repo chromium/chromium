@@ -23,6 +23,9 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
+
+using mojom::blink::FormControlType;
+
 namespace {
 
 #if DCHECK_IS_ON()
@@ -70,7 +73,7 @@ void AppendNodeToString(NGLayoutInputNode node,
 
 bool NGLayoutInputNode::IsSlider() const {
   if (const auto* input = DynamicTo<HTMLInputElement>(box_->GetNode()))
-    return input->type() == input_type_names::kRange;
+    return input->FormControlType() == FormControlType::kInputRange;
   return false;
 }
 

@@ -1160,7 +1160,8 @@ bool AXObject::CanHaveChildren(Element& element) {
 
   if (auto* input = DynamicTo<HTMLInputElement>(&element)) {
     // False for checkbox, radio and range.
-    return !input->IsCheckable() && input->type() != input_type_names::kRange;
+    return !input->IsCheckable() &&
+           input->FormControlType() != FormControlType::kInputRange;
   }
 
   if (IsA<HTMLOptionElement>(element)) {
@@ -2939,7 +2940,8 @@ AXObject* AXObject::GetTextFieldAncestor() {
 
 bool AXObject::IsPasswordField() const {
   auto* input_element = DynamicTo<HTMLInputElement>(GetNode());
-  return input_element && input_element->type() == input_type_names::kPassword;
+  return input_element &&
+         input_element->FormControlType() == FormControlType::kInputPassword;
 }
 
 bool AXObject::IsPasswordFieldAndShouldHideValue() const {
@@ -3877,10 +3879,10 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
     // platform accessibility code will instead incorrectly emit a caret moved
     // event for the AXPosition which follows the input.
     if (IsA<HTMLInputElement>(owner) &&
-        (DynamicTo<HTMLInputElement>(owner)->type() ==
-             input_type_names::kSearch ||
-         DynamicTo<HTMLInputElement>(owner)->type() ==
-             input_type_names::kNumber)) {
+        (DynamicTo<HTMLInputElement>(owner)->FormControlType() ==
+             FormControlType::kInputSearch ||
+         DynamicTo<HTMLInputElement>(owner)->FormControlType() ==
+             FormControlType::kInputNumber)) {
       return false;
     }
   }

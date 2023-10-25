@@ -104,6 +104,7 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
 using protocol::Maybe;
 
 namespace {
@@ -1466,8 +1467,9 @@ protocol::Response InspectorDOMAgent::setFileInputFiles(
 
   auto* html_input_element = DynamicTo<HTMLInputElement>(node);
   if (!html_input_element ||
-      html_input_element->type() != input_type_names::kFile)
+      html_input_element->FormControlType() != FormControlType::kInputFile) {
     return protocol::Response::ServerError("Node is not a file input element");
+  }
 
   Vector<String> paths;
   for (const String& file : *files)

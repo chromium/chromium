@@ -86,6 +86,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 namespace {
 
 inline bool HasInlineChildren(LayoutBlockFlow* block_flow) {
@@ -299,12 +301,13 @@ absl::optional<LayoutUnit> ContentMinimumInlineSize(
     return inline_size;
   }
   if (const auto* input_element = DynamicTo<HTMLInputElement>(node)) {
-    const AtomicString& type = input_element->type();
-    if (type == input_type_names::kFile && apply_form_sizing) {
+    FormControlType type = input_element->FormControlType();
+    if (type == FormControlType::kInputFile && apply_form_sizing) {
       return inline_size;
     }
-    if (type == input_type_names::kRange)
+    if (type == FormControlType::kInputRange) {
       return inline_size;
+    }
   }
   return absl::nullopt;
 }

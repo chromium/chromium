@@ -67,6 +67,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 namespace {
 
 // This function should match to the user-agent stylesheet.
@@ -217,7 +219,8 @@ ControlPart LayoutTheme::AdjustAppearanceWithElementType(
 
     case kTextFieldPart:
       if (const auto* input_element = DynamicTo<HTMLInputElement>(*element);
-          input_element && input_element->type() == input_type_names::kSearch) {
+          input_element &&
+          input_element->FormControlType() == FormControlType::kInputSearch) {
         return part;
       }
       return auto_appearance;

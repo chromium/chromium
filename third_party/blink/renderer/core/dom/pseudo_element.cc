@@ -51,6 +51,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 bool PseudoElementLayoutObjectIsNeeded(const DisplayStyle& pseudo_style,
                                        const Element* originating_element);
 
@@ -184,11 +186,11 @@ PseudoElement::PseudoElement(Element* parent,
     UseCounter::Count(parent->GetDocument(),
                       WebFeature::kPseudoBeforeAfterForInputElement);
     if (HTMLInputElement* input = DynamicTo<HTMLInputElement>(parent)) {
-      if (input->type() == input_type_names::kDate ||
-          input->type() == input_type_names::kDatetimeLocal ||
-          input->type() == input_type_names::kMonth ||
-          input->type() == input_type_names::kWeek ||
-          input->type() == input_type_names::kTime) {
+      if (input->FormControlType() == FormControlType::kInputDate ||
+          input->FormControlType() == FormControlType::kInputDatetimeLocal ||
+          input->FormControlType() == FormControlType::kInputMonth ||
+          input->FormControlType() == FormControlType::kInputWeek ||
+          input->FormControlType() == FormControlType::kInputTime) {
         UseCounter::Count(
             parent->GetDocument(),
             WebFeature::kPseudoBeforeAfterForDateTimeInputElement);

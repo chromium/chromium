@@ -83,6 +83,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 namespace {
 
 std::ostream& operator<<(std::ostream& os, PositionMoveType type) {
@@ -1475,8 +1477,8 @@ bool IsBlockFlowElement(const Node& node) {
 bool IsInPasswordField(const Position& position) {
   TextControlElement* text_control = EnclosingTextControl(position);
   auto* html_input_element = DynamicTo<HTMLInputElement>(text_control);
-  return html_input_element &&
-         html_input_element->type() == input_type_names::kPassword;
+  return html_input_element && html_input_element->FormControlType() ==
+                                   FormControlType::kInputPassword;
 }
 
 // If current position is at grapheme boundary, return 0; otherwise, return the

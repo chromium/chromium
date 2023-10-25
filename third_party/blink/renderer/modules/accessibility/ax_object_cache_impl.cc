@@ -129,6 +129,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 namespace {
 
 bool IsInitialEmptyDocument(const Document& document) {
@@ -267,7 +269,8 @@ bool CanIgnoreSpaceNextTo(LayoutObject* layout_object,
   // to detect CSS images, which don't have the same issue of changing layout.
   if (layout_object->IsLayoutImage() || IsA<HTMLImageElement>(elem) ||
       (IsA<HTMLInputElement>(elem) &&
-       To<HTMLInputElement>(elem)->type() == input_type_names::kImage)) {
+       To<HTMLInputElement>(elem)->FormControlType() ==
+           FormControlType::kInputImage)) {
     return false;
   }
 
@@ -1102,9 +1105,10 @@ AXObject* AXObjectCacheImpl::CreateFromRenderer(LayoutObject* layout_object) {
     return MakeGarbageCollected<AXListBoxOption>(layout_object, *this);
 
   if (auto* html_input_element = DynamicTo<HTMLInputElement>(node)) {
-    const AtomicString& type = html_input_element->type();
-    if (type == input_type_names::kRange)
+    FormControlType type = html_input_element->FormControlType();
+    if (type == FormControlType::kInputRange) {
       return MakeGarbageCollected<AXSlider>(layout_object, *this);
+    }
   }
 
   if (auto* select_element = DynamicTo<HTMLSelectElement>(node)) {

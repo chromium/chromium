@@ -113,7 +113,7 @@ class CORE_EXPORT HTMLInputElement
   bool ShouldAutoDirUseValue() const final;
   // Do not add type check predicates for concrete input types; e.g.  isImage,
   // isRadio, isFile.  If you want to check the input type, you may use
-  // |input->type() == input_type_names::kImage|, etc.
+  // |input->FormControlType() == FormControlType::kInputImage|, etc.
 
   // Returns whether this field is or has ever been a password field, or if
   // autofill classified the field as password by predictions, so that its value

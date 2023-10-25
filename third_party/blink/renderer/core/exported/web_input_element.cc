@@ -45,21 +45,26 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 bool WebInputElement::IsTextField() const {
   return ConstUnwrap<HTMLInputElement>()->IsTextField();
 }
 
 bool WebInputElement::IsText() const {
   return ConstUnwrap<HTMLInputElement>()->IsTextField() &&
-         ConstUnwrap<HTMLInputElement>()->type() != input_type_names::kNumber;
+         ConstUnwrap<HTMLInputElement>()->FormControlType() !=
+             FormControlType::kInputNumber;
 }
 
 bool WebInputElement::IsEmailField() const {
-  return ConstUnwrap<HTMLInputElement>()->type() == input_type_names::kEmail;
+  return ConstUnwrap<HTMLInputElement>()->FormControlType() ==
+         FormControlType::kInputEmail;
 }
 
 bool WebInputElement::IsPasswordField() const {
-  return ConstUnwrap<HTMLInputElement>()->type() == input_type_names::kPassword;
+  return ConstUnwrap<HTMLInputElement>()->FormControlType() ==
+         FormControlType::kInputPassword;
 }
 
 void WebInputElement::SetHasBeenPasswordField() {
@@ -72,19 +77,23 @@ bool WebInputElement::IsPasswordFieldForAutofill() const {
     return true;
   }
 
-  return ConstUnwrap<HTMLInputElement>()->type() == input_type_names::kPassword;
+  return ConstUnwrap<HTMLInputElement>()->FormControlType() ==
+         FormControlType::kInputPassword;
 }
 
 bool WebInputElement::IsImageButton() const {
-  return ConstUnwrap<HTMLInputElement>()->type() == input_type_names::kImage;
+  return ConstUnwrap<HTMLInputElement>()->FormControlType() ==
+         FormControlType::kInputImage;
 }
 
 bool WebInputElement::IsRadioButton() const {
-  return ConstUnwrap<HTMLInputElement>()->type() == input_type_names::kRadio;
+  return ConstUnwrap<HTMLInputElement>()->FormControlType() ==
+         FormControlType::kInputRadio;
 }
 
 bool WebInputElement::IsCheckbox() const {
-  return ConstUnwrap<HTMLInputElement>()->type() == input_type_names::kCheckbox;
+  return ConstUnwrap<HTMLInputElement>()->FormControlType() ==
+         FormControlType::kInputCheckbox;
 }
 
 void WebInputElement::SetActivatedSubmit(bool activated) {

@@ -116,6 +116,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 namespace {
 
 // Refetch the event target node if it is removed or currently is the shadow
@@ -431,7 +433,7 @@ gfx::Point EventHandler::DragDataTransferLocationForTesting() {
 static bool IsSubmitImage(const Node* node) {
   auto* html_input_element = DynamicTo<HTMLInputElement>(node);
   return html_input_element &&
-         html_input_element->type() == input_type_names::kImage;
+         html_input_element->FormControlType() == FormControlType::kInputImage;
 }
 
 bool EventHandler::UsesHandCursor(const Node* node) {

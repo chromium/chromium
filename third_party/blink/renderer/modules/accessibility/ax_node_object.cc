@@ -1856,8 +1856,10 @@ bool AXNodeObject::IsImageButton() const {
 
 bool AXNodeObject::IsInputImage() const {
   auto* html_input_element = DynamicTo<HTMLInputElement>(GetNode());
-  if (html_input_element && RoleValue() == ax::mojom::blink::Role::kButton)
-    return html_input_element->type() == input_type_names::kImage;
+  if (html_input_element && RoleValue() == ax::mojom::blink::Role::kButton) {
+    return html_input_element->FormControlType() ==
+           FormControlType::kInputImage;
+  }
 
   return false;
 }
@@ -1962,7 +1964,7 @@ bool AXNodeObject::IsNativeImage() const {
     return true;
 
   if (const auto* input = DynamicTo<HTMLInputElement>(*node))
-    return input->type() == input_type_names::kImage;
+    return input->FormControlType() == FormControlType::kInputImage;
 
   return false;
 }
@@ -1991,13 +1993,13 @@ bool AXNodeObject::IsSpinButton() const {
 
 bool AXNodeObject::IsNativeSlider() const {
   if (const auto* input = DynamicTo<HTMLInputElement>(GetNode()))
-    return input->type() == input_type_names::kRange;
+    return input->FormControlType() == FormControlType::kInputRange;
   return false;
 }
 
 bool AXNodeObject::IsNativeSpinButton() const {
   if (const auto* input = DynamicTo<HTMLInputElement>(GetNode()))
-    return input->type() == input_type_names::kNumber;
+    return input->FormControlType() == FormControlType::kInputNumber;
   return false;
 }
 
@@ -2648,8 +2650,10 @@ AXObject::AXObjectVector AXNodeObject::RadioButtonsInGroup() const {
 HeapVector<Member<HTMLInputElement>>
 AXNodeObject::FindAllRadioButtonsWithSameName(HTMLInputElement* radio_button) {
   HeapVector<Member<HTMLInputElement>> all_radio_buttons;
-  if (!radio_button || radio_button->type() != input_type_names::kRadio)
+  if (!radio_button ||
+      radio_button->FormControlType() != FormControlType::kInputRadio) {
     return all_radio_buttons;
+  }
 
   constexpr bool kTraverseForward = true;
   constexpr bool kTraverseBackward = false;
@@ -3479,15 +3483,16 @@ String AXNodeObject::GetValueForControl() const {
   // buttons which will return their name.
   // https://html.spec.whatwg.org/C/#dom-input-value
   if (const auto* input = DynamicTo<HTMLInputElement>(node)) {
-    if (input->type() == input_type_names::kFile)
+    if (input->FormControlType() == FormControlType::kInputFile) {
       return input->FileStatusText();
+    }
 
-    if (input->type() != input_type_names::kButton &&
-        input->type() != input_type_names::kCheckbox &&
-        input->type() != input_type_names::kImage &&
-        input->type() != input_type_names::kRadio &&
-        input->type() != input_type_names::kReset &&
-        input->type() != input_type_names::kSubmit) {
+    if (input->FormControlType() != FormControlType::kInputButton &&
+        input->FormControlType() != FormControlType::kInputCheckbox &&
+        input->FormControlType() != FormControlType::kInputImage &&
+        input->FormControlType() != FormControlType::kInputRadio &&
+        input->FormControlType() != FormControlType::kInputReset &&
+        input->FormControlType() != FormControlType::kInputSubmit) {
       return input->Value();
     }
   }
@@ -5920,8 +5925,10 @@ String AXNodeObject::NativeTextAlternative(
 String AXNodeObject::MaybeAppendFileDescriptionToName(
     const String& name) const {
   const auto* input_element = DynamicTo<HTMLInputElement>(GetNode());
-  if (!input_element || input_element->type() != input_type_names::kFile)
+  if (!input_element ||
+      input_element->FormControlType() != FormControlType::kInputFile) {
     return name;
+  }
 
   String displayed_file_path = GetValueForControl();
   if (!displayed_file_path.empty()) {

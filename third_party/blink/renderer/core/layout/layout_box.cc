@@ -121,6 +121,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 // Used by flexible boxes when flexing this element and by table cells.
 typedef WTF::HashMap<const LayoutBox*, LayoutUnit> OverrideSizeMap;
 
@@ -1345,12 +1347,13 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentInlineSize() const {
     if (input->IsTextField() && apply_fixed_size) {
       return TextFieldIntrinsicInlineSize(*input, *this);
     }
-    const AtomicString& type = input->type();
-    if (type == input_type_names::kFile && apply_fixed_size) {
+    FormControlType type = input->FormControlType();
+    if (type == FormControlType::kInputFile && apply_fixed_size) {
       return FileUploadControlIntrinsicInlineSize(*input, *this);
     }
-    if (type == input_type_names::kRange)
+    if (type == FormControlType::kInputRange) {
       return SliderIntrinsicInlineSize(*this);
+    }
     auto effective_appearance = StyleRef().EffectiveAppearance();
     if (effective_appearance == kCheckboxPart) {
       return ThemePartIntrinsicSize(*this, WebThemeEngine::kPartCheckbox)
@@ -3097,8 +3100,9 @@ bool LayoutBox::SkipContainingBlockForPercentHeightCalculation(
       // In web_tests/fast/forms/range/range-thumb-height-percentage.html, a
       // percent height for the slider thumb element should refer to the height
       // of the INPUT box.
-      if (input->type() == input_type_names::kRange)
+      if (input->FormControlType() == FormControlType::kInputRange) {
         return true;
+      }
     }
   }
 

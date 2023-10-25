@@ -79,6 +79,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 namespace {
 
 bool IsOverflowClipOrVisible(EOverflow overflow) {
@@ -117,7 +119,7 @@ bool HostIsInputFile(const Element* element) {
   }
   if (const Element* shadow_host = element->OwnerShadowHost()) {
     if (const auto* input = DynamicTo<HTMLInputElement>(shadow_host)) {
-      return input->type() == input_type_names::kFile;
+      return input->FormControlType() == FormControlType::kInputFile;
     }
   }
   return false;
@@ -620,7 +622,7 @@ bool StyleAdjuster::IsPasswordFieldWithUnrevealedPassword(Element* element) {
     return false;
   }
   if (auto* input = DynamicTo<HTMLInputElement>(element)) {
-    return (input->type() == input_type_names::kPassword) &&
+    return input->FormControlType() == FormControlType::kInputPassword &&
            !input->ShouldRevealPassword();
   }
   return false;

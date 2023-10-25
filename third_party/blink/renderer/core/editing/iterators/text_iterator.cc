@@ -55,6 +55,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 namespace {
 
 template <typename Strategy>
@@ -545,8 +547,9 @@ bool TextIteratorAlgorithm<Strategy>::SupportsAltText(const Node& node) {
 
   auto* html_input_element = DynamicTo<HTMLInputElement>(element);
   if (html_input_element &&
-      html_input_element->type() == input_type_names::kImage)
+      html_input_element->FormControlType() == FormControlType::kInputImage) {
     return true;
+  }
   return false;
 }
 
