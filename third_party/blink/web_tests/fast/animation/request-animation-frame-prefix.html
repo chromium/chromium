@@ -34,7 +34,7 @@
           assert_greater_than_equal(legacyFirstTimestamp, firstTimestamp);
           assert_greater_than_equal(legacySecondTimestamp, secondTimestamp);
           deltaError = Math.abs((legacySecondTimestamp - legacyFirstTimestamp) - (secondTimestamp - firstTimestamp));
-          assert_true(deltaError < 0.001);
+          assert_less_than(deltaError, 0.1);
         });
         t.done();
       });

@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/core/timing/time_clamper.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
@@ -49,6 +50,7 @@ namespace {
 // CalculateZeroTime() such that the animation time is never negative when
 // converted.
 base::TimeTicks CurrentAnimationTime(Document* document) {
+  static TimeClamper time_clamper;
   base::TimeTicks animation_time = document->GetAnimationClock().CurrentTime();
   base::TimeTicks document_zero_time = document->Timeline().CalculateZeroTime();
 
@@ -58,7 +60,11 @@ base::TimeTicks CurrentAnimationTime(Document* document) {
   if (animation_time < document_zero_time)
     return document_zero_time;
 
-  return animation_time;
+  base::TimeDelta time_since_zero = animation_time - document_zero_time;
+  return document_zero_time +
+         time_clamper.ClampTimeResolution(
+             time_since_zero,
+             document->domWindow()->CrossOriginIsolatedCapability());
 }
 
 }  // namespace

@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "cc/animation/animation_host.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
+#include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -99,14 +100,15 @@ void PageAnimator::ServiceScriptedAnimations(
         controller->GetExecutionContext()->IsContextFrozenOrPaused()) {
       continue;
     }
-    auto* loader = controller->GetWindow()->document()->Loader();
+
+    LocalDOMWindow* window = controller->GetWindow();
+    auto* loader = window->document()->Loader();
     if (!loader) {
       continue;
     }
+
     controller->SetCurrentFrameTimeMs(
-        loader->GetTiming()
-            .MonotonicTimeToZeroBasedDocumentTime(monotonic_time_now)
-            .InMillisecondsF());
+        window->document()->Timeline().CurrentTimeMilliseconds().value());
     controller->SetCurrentFrameLegacyTimeMs(
         loader->GetTiming()
             .MonotonicTimeToPseudoWallTime(monotonic_time_now)
