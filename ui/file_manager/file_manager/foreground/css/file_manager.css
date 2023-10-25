@@ -325,6 +325,23 @@ html.col-resize #directory-tree .tree-row > .file-row > .root-eject:hover {
   padding: 10px;
 }
 
+/* ::slotted() can't work with ::part(), so we can't define these rules inside
+   xf-tree-item. https://github.com/w3c/csswg-drafts/issues/3896 */
+#directory-tree xf-tree-item > .root-eject:hover::part(hoverBackground) {
+  background-color: var(--cros-sys-hover_on_subtle);
+  display: block;
+}
+
+#directory-tree xf-tree-item[selected] >
+    .root-eject:hover::part(hoverBackground) {
+  background-color: var(--cros-sys-hover_on_prominent);
+}
+
+html.pointer-active #directory-tree xf-tree-item >
+    .root-eject:not(:active):hover::part(hoverBackground) {
+  display: none;
+}
+
 /* Splitter. */
 /* Prevent the sudden flickering when opening the Files app. "div.splitter" is
   the legacy splitter DOM element. We need to maintain the existing DOM

@@ -71,6 +71,15 @@ export class DirectoryTreeNamingController {
       // directory item and current directory is changed to editing item.
       event.stopPropagation();
     });
+    // These events propagation needs to be stopped otherwise ripple will show
+    // on the tree item when the input is clicked.
+    // Note: 'up/down' are events from <paper-ripple> component.
+    const suppressedEvents = ['mouseup', 'mousedown', 'up', 'down'];
+    suppressedEvents.forEach(event => {
+      this.inputElement_.addEventListener(event, event => {
+        event.stopPropagation();
+      });
+    });
   }
 
   /**

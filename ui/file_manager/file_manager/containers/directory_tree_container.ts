@@ -542,6 +542,15 @@ export class DirectoryTreeContainer {
       ejectButton.className = 'root-eject align-right-icon';
       ejectButton.slot = 'trailingIcon';
       ejectButton.tabIndex = 0;
+      // These events propagation needs to be stopped otherwise ripple will show
+      // on the tree item when the button is pressed.
+      // Note: 'up/down' are events from <paper-ripple> component.
+      const suppressedEvents = ['mouseup', 'mousedown', 'up', 'down'];
+      suppressedEvents.forEach(event => {
+        ejectButton.addEventListener(event, event => {
+          event.stopPropagation();
+        });
+      });
       ejectButton.addEventListener('click', (event) => {
         event.stopPropagation();
         const command = document.querySelector('command#unmount') as Command;
