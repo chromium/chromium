@@ -294,7 +294,7 @@ void NGInlinePaintContext::SetLineBox(const InlineCursor& line_cursor) {
   //
   // Compute the offset of the non-existent anonymous inline box.
   PhysicalOffset offset = line_item.OffsetInContainerFragment();
-  const NGPhysicalLineBoxFragment* fragment = line_item.LineBoxFragment();
+  const PhysicalLineBoxFragment* fragment = line_item.LineBoxFragment();
   DCHECK(fragment);
   if (const SimpleFontData* font = style.GetFont().PrimaryFont()) {
     offset.top += fragment->Metrics().ascent;

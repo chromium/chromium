@@ -231,7 +231,7 @@ LayoutUnit CommitPendingEndOverhang(LineInfo* line_info) {
 }
 
 NGAnnotationMetrics ComputeAnnotationOverflow(
-    const NGLogicalLineItems& logical_line,
+    const LogicalLineItems& logical_line,
     const FontHeight& line_box_metrics,
     const ComputedStyle& line_style) {
   // Min/max position of content and annotations, ignoring line-height.
@@ -245,7 +245,7 @@ NGAnnotationMetrics ComputeAnnotationOverflow(
   const LayoutUnit line_under = line_over + line_box_metrics.LineHeight();
   bool has_over_emphasis = false;
   bool has_under_emphasis = false;
-  for (const NGLogicalLineItem& item : logical_line) {
+  for (const LogicalLineItem& item : logical_line) {
     if (!item.HasInFlowFragment())
       continue;
     if (item.IsControl())

@@ -258,7 +258,7 @@ NGInlineLayoutAlgorithm::~NGInlineLayoutAlgorithm() = default;
 NGInlineBoxState* NGInlineLayoutAlgorithm::HandleOpenTag(
     const InlineItem& item,
     const InlineItemResult& item_result,
-    NGLogicalLineItems* line_box,
+    LogicalLineItems* line_box,
     NGInlineLayoutStateStack* box_states) const {
   NGInlineBoxState* box = box_states->OnOpenTag(
       ConstraintSpace(), item, item_result, baseline_type_, line_box);
@@ -281,7 +281,7 @@ NGInlineBoxState* NGInlineLayoutAlgorithm::HandleOpenTag(
 NGInlineBoxState* NGInlineLayoutAlgorithm::HandleCloseTag(
     const InlineItem& item,
     const InlineItemResult& item_result,
-    NGLogicalLineItems* line_box,
+    LogicalLineItems* line_box,
     NGInlineBoxState* box) {
   if (UNLIKELY(quirks_mode_ && !item.IsEmptyItem()))
     box->EnsureTextMetrics(*item.Style(), *box->font, baseline_type_);
@@ -361,7 +361,7 @@ void NGInlineLayoutAlgorithm::RebuildBoxStates(
                                         &open_items);
 
   // Create box states for tags that are not closed yet.
-  NGLogicalLineItems& line_box = context_->AcquireTempLogicalLineItems();
+  LogicalLineItems& line_box = context_->AcquireTempLogicalLineItems();
   box_states->OnBeginPlaceItems(Node(), line_info.LineStyle(), baseline_type_,
                                 quirks_mode_, &line_box);
   for (const InlineItem* item : open_items) {
@@ -379,7 +379,7 @@ void NGInlineLayoutAlgorithm::CheckBoxStates(
     const NGInlineBreakToken* break_token) const {
   NGInlineLayoutStateStack rebuilt;
   RebuildBoxStates(line_info, break_token, &rebuilt);
-  NGLogicalLineItems& line_box = context_->AcquireTempLogicalLineItems();
+  LogicalLineItems& line_box = context_->AcquireTempLogicalLineItems();
   rebuilt.OnBeginPlaceItems(Node(), line_info.LineStyle(), baseline_type_,
                             quirks_mode_, &line_box);
   DCHECK(box_states_);
@@ -391,7 +391,7 @@ void NGInlineLayoutAlgorithm::CheckBoxStates(
 void NGInlineLayoutAlgorithm::CreateLine(
     const LineLayoutOpportunity& opportunity,
     LineInfo* line_info,
-    NGLogicalLineItems* line_box) {
+    LogicalLineItems* line_box) {
   // Needs MutableResults to move ShapeResult out of the LineInfo.
   InlineItemResults* line_items = line_info->MutableResults();
   // Clear the current line without releasing the buffer.
@@ -646,7 +646,7 @@ void NGInlineLayoutAlgorithm::CreateLine(
   }
 
   // Place out-of-flow positioned objects.
-  // This adjusts the NGLogicalLineItem::offset member to contain
+  // This adjusts the LogicalLineItem::offset member to contain
   // the static position of the OOF positioned children relative to the linebox.
   if (has_out_of_flow_positioned_items) {
     DCHECK(!line_info->IsBlockInInline());
@@ -654,7 +654,7 @@ void NGInlineLayoutAlgorithm::CreateLine(
   }
 
   // Place floating objects.
-  // This adjusts the  NGLogicalLineItem::offset member to
+  // This adjusts the  LogicalLineItem::offset member to
   // contain the position of the float relative to the linebox.
   // Additionally it will perform layout on any unpositioned floats which
   // needed the line height to correctly determine their final position.
@@ -729,7 +729,7 @@ void NGInlineLayoutAlgorithm::CreateLine(
       line_box->MoveInBlockDirection(adjusted_metrics.ascent);
     }
   } else if (LIKELY(!Node().IsSvgText())) {
-    // Convert baseline relative block offset of `NGLogicalLineItem::rect` to
+    // Convert baseline relative block offset of `LogicalLineItem::rect` to
     // to line box relative block offset.
     line_box->MoveInBlockDirection(line_box_metrics.ascent);
   }
@@ -740,7 +740,7 @@ void NGInlineLayoutAlgorithm::CreateLine(
 void NGInlineLayoutAlgorithm::PlaceControlItem(const InlineItem& item,
                                                const LineInfo& line_info,
                                                InlineItemResult* item_result,
-                                               NGLogicalLineItems* line_box,
+                                               LogicalLineItems* line_box,
                                                NGInlineBoxState* box) {
   DCHECK_EQ(item.Type(), InlineItem::kControl);
   DCHECK_GE(item.Length(), 1u);
@@ -771,7 +771,7 @@ void NGInlineLayoutAlgorithm::PlaceControlItem(const InlineItem& item,
 
 void NGInlineLayoutAlgorithm::PlaceHyphen(const InlineItemResult& item_result,
                                           LayoutUnit hyphen_inline_size,
-                                          NGLogicalLineItems* line_box,
+                                          LogicalLineItems* line_box,
                                           NGInlineBoxState* box) {
   DCHECK(item_result.item);
   DCHECK(item_result.is_hyphenated);
@@ -788,7 +788,7 @@ NGInlineBoxState* NGInlineLayoutAlgorithm::PlaceAtomicInline(
     const InlineItem& item,
     const LineInfo& line_info,
     InlineItemResult* item_result,
-    NGLogicalLineItems* line_box) {
+    LogicalLineItems* line_box) {
   DCHECK(item_result->layout_result);
 
   // Reset the ellipsizing state. Atomic inline is monolithic.
@@ -823,7 +823,7 @@ NGInlineBoxState* NGInlineLayoutAlgorithm::PlaceAtomicInline(
 
 // Place a NGLayoutResult into the line box.
 void NGInlineLayoutAlgorithm::PlaceLayoutResult(InlineItemResult* item_result,
-                                                NGLogicalLineItems* line_box,
+                                                LogicalLineItems* line_box,
                                                 NGInlineBoxState* box,
                                                 LayoutUnit inline_offset) {
   DCHECK(item_result->layout_result);
@@ -848,7 +848,7 @@ void NGInlineLayoutAlgorithm::PlaceLayoutResult(InlineItemResult* item_result,
 void NGInlineLayoutAlgorithm::PlaceBlockInInline(const InlineItem& item,
                                                  const LineInfo& line_info,
                                                  InlineItemResult* item_result,
-                                                 NGLogicalLineItems* line_box) {
+                                                 LogicalLineItems* line_box) {
   DCHECK_EQ(item.Type(), InlineItem::kBlockInInline);
   LayoutObject* layout_object = item.GetLayoutObject();
   DCHECK(layout_object);
@@ -891,7 +891,7 @@ void NGInlineLayoutAlgorithm::PlaceInitialLetterBox(
     const InlineItem& item,
     const LineInfo& line_info,
     InlineItemResult* item_result,
-    NGLogicalLineItems* line_box) {
+    LogicalLineItems* line_box) {
   DCHECK(item_result->layout_result);
   DCHECK(!IsA<LayoutTextCombine>(item.GetLayoutObject()));
   DCHECK(!item_result->spacing_before);
@@ -913,12 +913,12 @@ void NGInlineLayoutAlgorithm::PlaceInitialLetterBox(
 void NGInlineLayoutAlgorithm::PlaceOutOfFlowObjects(
     const LineInfo& line_info,
     const FontHeight& line_box_metrics,
-    NGLogicalLineItems* line_box) {
+    LogicalLineItems* line_box) {
   DCHECK(line_info.IsEmptyLine() || !line_box_metrics.IsEmpty())
       << "Non-empty lines must have a valid set of linebox metrics.";
 
   // All children within the linebox are positioned relative to the baseline,
-  // then shifted later using NGLineBoxFragmentBuilder::MoveInBlockDirection.
+  // then shifted later using LineBoxFragmentBuilder::MoveInBlockDirection.
   LayoutUnit baseline_adjustment =
       line_info.IsEmptyLine() ? LayoutUnit() : -line_box_metrics.ascent;
 
@@ -952,7 +952,7 @@ void NGInlineLayoutAlgorithm::PlaceOutOfFlowObjects(
   bool has_rtl_block_level_out_of_flow_objects = false;
   bool is_ltr = IsLtr(line_info.BaseDirection());
 
-  for (NGLogicalLineItem& child : *line_box) {
+  for (LogicalLineItem& child : *line_box) {
     has_preceding_inline_level_content |= child.HasInFlowFragment();
 
     const LayoutObject* box = child.out_of_flow_positioned_box;
@@ -991,7 +991,7 @@ void NGInlineLayoutAlgorithm::PlaceOutOfFlowObjects(
 
   if (UNLIKELY(has_rtl_block_level_out_of_flow_objects)) {
     has_preceding_inline_level_content = false;
-    for (NGLogicalLineItem& child : base::Reversed(*line_box)) {
+    for (LogicalLineItem& child : base::Reversed(*line_box)) {
       const LayoutObject* box = child.out_of_flow_positioned_box;
       if (!box) {
         has_preceding_inline_level_content |= child.HasInFlowFragment();
@@ -1010,12 +1010,12 @@ void NGInlineLayoutAlgorithm::PlaceFloatingObjects(
     const LineLayoutOpportunity& opportunity,
     LayoutUnit ruby_block_start_adjust,
     LineInfo* line_info,
-    NGLogicalLineItems* line_box) {
+    LogicalLineItems* line_box) {
   DCHECK(line_info->IsEmptyLine() || !line_box_metrics.IsEmpty())
       << "Non-empty lines must have a valid set of linebox metrics.";
 
   // All children within the linebox are positioned relative to the baseline,
-  // then shifted later using NGLineBoxFragmentBuilder::MoveInBlockDirection.
+  // then shifted later using LineBoxFragmentBuilder::MoveInBlockDirection.
   LayoutUnit baseline_adjustment =
       line_info->IsEmptyLine() ? LayoutUnit() : -line_box_metrics.ascent;
 
@@ -1033,7 +1033,7 @@ void NGInlineLayoutAlgorithm::PlaceFloatingObjects(
           ? ConstraintSpace().ExpectedBfcBlockOffset()
           : line_info->GetBfcOffset().block_offset + ruby_block_start_adjust;
 
-  for (NGLogicalLineItem& child : *line_box) {
+  for (LogicalLineItem& child : *line_box) {
     // We need to position any floats which should be on the "next" line now.
     // If this is an empty inline, all floats are positioned during the
     // PositionLeadingFloats step.
@@ -1085,7 +1085,7 @@ void NGInlineLayoutAlgorithm::PlaceFloatingObjects(
 }
 
 void NGInlineLayoutAlgorithm::PlaceRelativePositionedItems(
-    NGLogicalLineItems* line_box) {
+    LogicalLineItems* line_box) {
   for (auto& child : *line_box) {
     const auto* physical_fragment = child.PhysicalFragment();
     if (!physical_fragment)
@@ -1264,7 +1264,7 @@ LayoutUnit NGInlineLayoutAlgorithm::ApplyTextAlign(LineInfo* line_info) {
 
 LayoutUnit NGInlineLayoutAlgorithm::SetAnnotationOverflow(
     const LineInfo& line_info,
-    const NGLogicalLineItems& line_box,
+    const LogicalLineItems& line_box,
     const FontHeight& line_box_metrics) {
   NGAnnotationMetrics annotation_metrics = ComputeAnnotationOverflow(
       line_box, line_box_metrics, line_info.LineStyle());
@@ -1432,7 +1432,7 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
 
   FragmentItemsBuilder* const items_builder = context_->ItemsBuilder();
   DCHECK(items_builder);
-  NGLogicalLineItems* const line_box = items_builder->AcquireLogicalLineItems();
+  LogicalLineItems* const line_box = items_builder->AcquireLogicalLineItems();
   DCHECK(line_box);
   // Determine which line breaker to use.
   NGLineBreakStrategy line_break_strategy(context_, Node(), Style(),
@@ -1799,7 +1799,7 @@ NGPositionedFloat NGInlineLayoutAlgorithm::PositionFloat(
 }
 
 void NGInlineLayoutAlgorithm::BidiReorder(TextDirection base_direction,
-                                          NGLogicalLineItems* line_box) {
+                                          LogicalLineItems* line_box) {
   if (line_box->IsEmpty())
     return;
 
@@ -1825,7 +1825,7 @@ void NGInlineLayoutAlgorithm::BidiReorder(TextDirection base_direction,
   Vector<UBiDiLevel, 32> levels;
   levels.ReserveInitialCapacity(line_box->size());
   bool has_opaque_items = false;
-  for (NGLogicalLineItem& item : *line_box) {
+  for (LogicalLineItem& item : *line_box) {
     if (item.IsOpaqueToBidiReordering()) {
       levels.push_back(kOpaqueBidiLevel);
       has_opaque_items = true;
@@ -1857,7 +1857,7 @@ void NGInlineLayoutAlgorithm::BidiReorder(TextDirection base_direction,
   BidiParagraph::IndicesInVisualOrder(levels, &indices_in_visual_order);
 
   // Reorder to the visual order.
-  NGLogicalLineItems& visual_items = context_->AcquireTempLogicalLineItems();
+  LogicalLineItems& visual_items = context_->AcquireTempLogicalLineItems();
   visual_items.ReserveInitialCapacity(line_box->size());
   for (unsigned logical_index : indices_in_visual_order)
     visual_items.AddChild(std::move((*line_box)[logical_index]));

@@ -158,7 +158,7 @@ class FragmentTreeDumper {
       return;
     }
 
-    if (const auto* line_box = DynamicTo<NGPhysicalLineBoxFragment>(fragment)) {
+    if (const auto* line_box = DynamicTo<PhysicalLineBoxFragment>(fragment)) {
       if (flags_ & NGPhysicalFragment::DumpType) {
         builder_->Append("LineBox");
         has_content = true;
@@ -471,7 +471,7 @@ void NGPhysicalFragment::Dispose() {
       static_cast<NGPhysicalBoxFragment*>(this)->Dispose();
       break;
     case kFragmentLineBox:
-      static_cast<NGPhysicalLineBoxFragment*>(this)->Dispose();
+      static_cast<PhysicalLineBoxFragment*>(this)->Dispose();
       break;
   }
 }
@@ -734,7 +734,7 @@ void NGPhysicalFragment::Trace(Visitor* visitor) const {
           visitor);
       break;
     case kFragmentLineBox:
-      static_cast<const NGPhysicalLineBoxFragment*>(this)->TraceAfterDispatch(
+      static_cast<const PhysicalLineBoxFragment*>(this)->TraceAfterDispatch(
           visitor);
       break;
   }
@@ -1018,7 +1018,7 @@ void NGPhysicalFragment::AddOutlineRectsForDescendant(
   }
 
   if (const auto* descendant_line_box =
-          DynamicTo<NGPhysicalLineBoxFragment>(descendant.get())) {
+          DynamicTo<PhysicalLineBoxFragment>(descendant.get())) {
     descendant_line_box->AddOutlineRectsForNormalChildren(
         collector, additional_offset + descendant.Offset(), outline_type,
         containing_block);

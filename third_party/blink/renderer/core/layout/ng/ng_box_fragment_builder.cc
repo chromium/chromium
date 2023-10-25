@@ -32,14 +32,12 @@ const NGLayoutResult& NGBoxFragmentBuilder::LayoutResultForPropagation(
     return layout_result;
   }
 
-  const NGPhysicalLineBoxFragment* line =
-      DynamicTo<NGPhysicalLineBoxFragment>(&fragment);
+  const auto* line = DynamicTo<PhysicalLineBoxFragment>(&fragment);
   if (!line || !line->IsBlockInInline() || !items_builder_) {
     return layout_result;
   }
 
-  const NGLogicalLineItems& line_items =
-      items_builder_->LogicalLineItems(*line);
+  const auto& line_items = items_builder_->GetLogicalLineItems(*line);
   DCHECK(line_items.BlockInInlineLayoutResult());
   return *line_items.BlockInInlineLayoutResult();
 }
@@ -118,13 +116,11 @@ void NGBoxFragmentBuilder::AddResult(
   const NGLayoutResult* result_for_propagation = &child_layout_result;
 
   if (!fragment.IsBox() && items_builder_) {
-    if (const NGPhysicalLineBoxFragment* line =
-            DynamicTo<NGPhysicalLineBoxFragment>(&fragment)) {
+    if (const auto* line = DynamicTo<PhysicalLineBoxFragment>(&fragment)) {
       if (UNLIKELY(line->IsBlockInInline() && has_block_fragmentation_)) {
         // If this line box contains a block-in-inline, propagate break data
         // from the block-in-inline.
-        const NGLogicalLineItems& line_items =
-            items_builder_->LogicalLineItems(*line);
+        const auto& line_items = items_builder_->GetLogicalLineItems(*line);
         result_for_propagation = line_items.BlockInInlineLayoutResult();
         DCHECK(result_for_propagation);
       }
@@ -591,7 +587,7 @@ LogicalOffset NGBoxFragmentBuilder::GetChildOffset(
     // something with split inlines, and nested oof/fixed descendants maybe.
     if (child.fragment->IsLineBox()) {
       const auto& line_box_fragment =
-          To<NGPhysicalLineBoxFragment>(*child.fragment);
+          To<PhysicalLineBoxFragment>(*child.fragment);
       for (const auto& line_box_child : line_box_fragment.Children()) {
         if (line_box_child->GetLayoutObject() == object) {
           return child.offset + line_box_child.Offset().ConvertToLogical(

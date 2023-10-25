@@ -220,7 +220,7 @@ void NGLineBoxFragmentPainter::PaintBackgroundBorderShadow(
   // the height of inline box does not. The box "behaves similar to that of an
   // inline-level element".
   // https://drafts.csswg.org/css-pseudo-4/#first-line-styling
-  const NGPhysicalLineBoxFragment& line_box = PhysicalFragment();
+  const PhysicalLineBoxFragment& line_box = PhysicalFragment();
   const FontHeight line_metrics = line_box.Metrics();
   const FontHeight text_metrics = line_style_.GetFontHeight();
   const WritingMode writing_mode = line_style_.GetWritingMode();

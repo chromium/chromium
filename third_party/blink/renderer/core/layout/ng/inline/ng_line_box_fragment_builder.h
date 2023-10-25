@@ -20,27 +20,27 @@
 namespace blink {
 
 class ComputedStyle;
+class LogicalLineItems;
 class NGInlineBreakToken;
-class NGLogicalLineItems;
 
-class CORE_EXPORT NGLineBoxFragmentBuilder final : public NGFragmentBuilder {
+class CORE_EXPORT LineBoxFragmentBuilder final : public NGFragmentBuilder {
   STACK_ALLOCATED();
 
  public:
-  NGLineBoxFragmentBuilder(InlineNode node,
-                           const ComputedStyle* style,
-                           const NGConstraintSpace& space,
-                           WritingDirectionMode writing_direction)
+  LineBoxFragmentBuilder(InlineNode node,
+                         const ComputedStyle* style,
+                         const NGConstraintSpace& space,
+                         WritingDirectionMode writing_direction)
       : NGFragmentBuilder(
             node,
             style,
             space,
             // Always use LTR because line items are in visual order.
             {writing_direction.GetWritingMode(), TextDirection::kLtr}),
-        line_box_type_(NGPhysicalLineBoxFragment::kNormalLineBox),
+        line_box_type_(PhysicalLineBoxFragment::kNormalLineBox),
         base_direction_(TextDirection::kLtr) {}
-  NGLineBoxFragmentBuilder(const NGLineBoxFragmentBuilder&) = delete;
-  NGLineBoxFragmentBuilder& operator=(const NGLineBoxFragmentBuilder&) = delete;
+  LineBoxFragmentBuilder(const LineBoxFragmentBuilder&) = delete;
+  LineBoxFragmentBuilder& operator=(const LineBoxFragmentBuilder&) = delete;
 
   void Reset();
 
@@ -56,7 +56,7 @@ class CORE_EXPORT NGLineBoxFragmentBuilder final : public NGFragmentBuilder {
     hang_inline_size_ = hang_inline_size;
   }
 
-  // Mark this line box is an "empty" line box. See NGLineBoxType.
+  // Mark this line box is an "empty" line box. See LineBoxType.
   void SetIsEmptyLineBox();
 
   absl::optional<LayoutUnit> LineBoxBfcBlockOffset() const {
@@ -87,7 +87,7 @@ class CORE_EXPORT NGLineBoxFragmentBuilder final : public NGFragmentBuilder {
   // Propagate data in |ChildList| without adding them to this builder. When
   // adding children as fragment items, they appear in the container, but there
   // are some data that should be propagated through line box fragments.
-  void PropagateChildrenData(NGLogicalLineItems&);
+  void PropagateChildrenData(LogicalLineItems&);
 
   void SetClearanceAfterLine(LayoutUnit clearance) {
     clearance_after_line_ = clearance;
@@ -102,11 +102,11 @@ class CORE_EXPORT NGLineBoxFragmentBuilder final : public NGFragmentBuilder {
   FontHeight metrics_ = FontHeight::Empty();
   LayoutUnit hang_inline_size_;
   LayoutUnit clearance_after_line_;
-  NGPhysicalLineBoxFragment::NGLineBoxType line_box_type_;
+  PhysicalLineBoxFragment::LineBoxType line_box_type_;
   TextDirection base_direction_;
 
   friend class NGLayoutResult;
-  friend class NGPhysicalLineBoxFragment;
+  friend class PhysicalLineBoxFragment;
 };
 
 }  // namespace blink

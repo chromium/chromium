@@ -184,9 +184,9 @@ const ExclusionArea* CreateExclusionSpaceForInitialLetterBox(
 }  // namespace
 
 FontHeight AdjustInitialLetterInTextPosition(const FontHeight& line_box_metrics,
-                                             NGLogicalLineItems* line_box) {
+                                             LogicalLineItems* line_box) {
   FontHeight font_height = FontHeight::Empty();
-  for (NGLogicalLineItem& line_item : *line_box) {
+  for (LogicalLineItem& line_item : *line_box) {
     const ShapeResultView* const shape_result = line_item.shape_result.get();
     if (!shape_result || !line_item.inline_item ||
         line_item.inline_item->Type() != InlineItem::kText) {
@@ -248,10 +248,10 @@ LayoutUnit CalculateInitialLetterBoxInlineSize(const LineInfo& line_info) {
 const ExclusionArea* PostPlaceInitialLetterBox(
     const FontHeight& line_box_metrics,
     const BoxStrut& initial_letter_box_margins,
-    NGLogicalLineItems* line_box,
+    LogicalLineItems* line_box,
     const BfcOffset& line_origin,
     LineInfo* line_info) {
-  NGLogicalLineItem* const initial_letter_line_item = std::find_if(
+  LogicalLineItem* const initial_letter_line_item = std::find_if(
       line_box->begin(), line_box->end(),
       [](const auto& line_item) { return line_item.IsInitialLetterBox(); });
 

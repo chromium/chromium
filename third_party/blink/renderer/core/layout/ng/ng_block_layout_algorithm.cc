@@ -2947,7 +2947,7 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
 void NGBlockLayoutAlgorithm::PropagateBaselineFromLineBox(
     const NGPhysicalFragment& child,
     LayoutUnit block_offset) {
-  const auto& line_box = To<NGPhysicalLineBoxFragment>(child);
+  const auto& line_box = To<PhysicalLineBoxFragment>(child);
 
   // Skip over a line-box which is empty. These don't have any baselines
   // which should be added.
@@ -2961,8 +2961,8 @@ void NGBlockLayoutAlgorithm::PropagateBaselineFromLineBox(
   if (UNLIKELY(line_box.IsBlockInInline())) {
     // Block-in-inline may have different first/last baselines.
     DCHECK(container_builder_.ItemsBuilder());
-    const NGLogicalLineItems& items =
-        container_builder_.ItemsBuilder()->LogicalLineItems(line_box);
+    const auto& items =
+        container_builder_.ItemsBuilder()->GetLogicalLineItems(line_box);
     const NGLayoutResult* result = items.BlockInInlineLayoutResult();
     DCHECK(result);
     PropagateBaselineFromBlockChild(result->PhysicalFragment(),

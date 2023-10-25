@@ -157,8 +157,8 @@ void NGFragmentRepeater::CloneChildFragments(
         child.fragment = child_box;
       }
     } else if (child->IsLineBox()) {
-      child.fragment = NGPhysicalLineBoxFragment::Clone(
-          To<NGPhysicalLineBoxFragment>(*child.fragment.Get()));
+      child.fragment = PhysicalLineBoxFragment::Clone(
+          To<PhysicalLineBoxFragment>(*child.fragment.Get()));
     }
   }
 }

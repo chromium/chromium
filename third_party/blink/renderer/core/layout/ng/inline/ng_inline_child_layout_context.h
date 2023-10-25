@@ -39,10 +39,10 @@ class CORE_EXPORT NGInlineChildLayoutContext {
   LineInfo& GetLineInfo(const NGInlineBreakToken* break_token,
                         bool& is_cached_out);
 
-  // Acquire/release temporary |NGLogicalLineItems|, used for a short period of
+  // Acquire/release temporary |LogicalLineItems|, used for a short period of
   // time, but needed multiple times in a context.
-  NGLogicalLineItems& AcquireTempLogicalLineItems();
-  void ReleaseTempLogicalLineItems(NGLogicalLineItems&);
+  LogicalLineItems& AcquireTempLogicalLineItems();
+  void ReleaseTempLogicalLineItems(LogicalLineItems&);
 
   // Returns the NGInlineLayoutStateStack in this context.
   bool HasBoxStates() const { return box_states_.has_value(); }
@@ -91,7 +91,7 @@ class CORE_EXPORT NGInlineChildLayoutContext {
   LineInfo* line_info_ = nullptr;
   ScoreLineBreakContext* score_line_break_context_ = nullptr;
 
-  NGLogicalLineItems* temp_logical_line_items_ = nullptr;
+  LogicalLineItems* temp_logical_line_items_ = nullptr;
 
   absl::optional<NGInlineLayoutStateStack> box_states_;
 
@@ -148,18 +148,18 @@ inline LineInfo& NGInlineChildLayoutContext::GetLineInfo(
                                                           is_cached_out);
 }
 
-inline NGLogicalLineItems&
+inline LogicalLineItems&
 NGInlineChildLayoutContext::AcquireTempLogicalLineItems() {
-  if (NGLogicalLineItems* line_items = temp_logical_line_items_) {
+  if (LogicalLineItems* line_items = temp_logical_line_items_) {
     temp_logical_line_items_ = nullptr;
     DCHECK_EQ(line_items->size(), 0u);
     return *line_items;
   }
-  return *MakeGarbageCollected<NGLogicalLineItems>();
+  return *MakeGarbageCollected<LogicalLineItems>();
 }
 
 inline void NGInlineChildLayoutContext::ReleaseTempLogicalLineItems(
-    NGLogicalLineItems& line_items) {
+    LogicalLineItems& line_items) {
   DCHECK(&line_items);
   line_items.clear();
   temp_logical_line_items_ = &line_items;

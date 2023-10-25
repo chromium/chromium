@@ -30,13 +30,13 @@ TEST_F(FragmentItemsBuilderTest, MultipleLogicalLineItems) {
   LayoutBlockFlow* container =
       To<LayoutBlockFlow>(GetLayoutObjectByElementId("container"));
 
-  // Get |NGPhysicalLineBoxFragment|s to use for testing.
+  // Get |PhysicalLineBoxFragment|s to use for testing.
   InlineCursor cursor(*container);
   cursor.MoveToFirstLine();
-  const NGPhysicalLineBoxFragment* line_fragment1 =
+  const PhysicalLineBoxFragment* line_fragment1 =
       cursor.Current()->LineBoxFragment();
   cursor.MoveToNextLine();
-  const NGPhysicalLineBoxFragment* line_fragment2 =
+  const PhysicalLineBoxFragment* line_fragment2 =
       cursor.Current()->LineBoxFragment();
 
   InlineNode inline_node(container);
@@ -48,14 +48,14 @@ TEST_F(FragmentItemsBuilderTest, MultipleLogicalLineItems) {
     // 3. |AddLine|.
     FragmentItemsBuilder items_builder(
         inline_node, {WritingMode::kHorizontalTb, TextDirection::kLtr}, false);
-    NGLogicalLineItems* line_items1 = items_builder.AcquireLogicalLineItems();
+    LogicalLineItems* line_items1 = items_builder.AcquireLogicalLineItems();
     items_builder.AssociateLogicalLineItems(line_items1, *line_fragment1);
     items_builder.AddLine(*line_fragment1, LogicalOffset());
-    NGLogicalLineItems* line_items2 = items_builder.AcquireLogicalLineItems();
+    LogicalLineItems* line_items2 = items_builder.AcquireLogicalLineItems();
     items_builder.AssociateLogicalLineItems(line_items2, *line_fragment2);
     items_builder.AddLine(*line_fragment2, LogicalOffset());
 
-    // In this case, we should reuse one |NGLogicalLineItems| instance.
+    // In this case, we should reuse one |LogicalLineItems| instance.
     EXPECT_EQ(line_items1, line_items2);
 
     const auto& items = items_builder.Items(PhysicalSize());
@@ -69,9 +69,9 @@ TEST_F(FragmentItemsBuilderTest, MultipleLogicalLineItems) {
     // box.
     FragmentItemsBuilder items_builder(
         inline_node, {WritingMode::kHorizontalTb, TextDirection::kLtr}, false);
-    NGLogicalLineItems* line_items1 = items_builder.AcquireLogicalLineItems();
+    LogicalLineItems* line_items1 = items_builder.AcquireLogicalLineItems();
     items_builder.AssociateLogicalLineItems(line_items1, *line_fragment1);
-    NGLogicalLineItems* line_items2 = items_builder.AcquireLogicalLineItems();
+    LogicalLineItems* line_items2 = items_builder.AcquireLogicalLineItems();
     items_builder.AssociateLogicalLineItems(line_items2, *line_fragment2);
 
     // Because |AcquireLogicalLineItems| without |AddLine|, new instances should
@@ -90,9 +90,9 @@ TEST_F(FragmentItemsBuilderTest, MultipleLogicalLineItems) {
     // to the container box in the reverse order.
     FragmentItemsBuilder items_builder(
         inline_node, {WritingMode::kHorizontalTb, TextDirection::kLtr}, false);
-    NGLogicalLineItems* line_items1 = items_builder.AcquireLogicalLineItems();
+    LogicalLineItems* line_items1 = items_builder.AcquireLogicalLineItems();
     items_builder.AssociateLogicalLineItems(line_items1, *line_fragment1);
-    NGLogicalLineItems* line_items2 = items_builder.AcquireLogicalLineItems();
+    LogicalLineItems* line_items2 = items_builder.AcquireLogicalLineItems();
     items_builder.AssociateLogicalLineItems(line_items2, *line_fragment2);
 
     // Because |AcquireLogicalLineItems| without |AddLine|, new instances should
@@ -111,9 +111,9 @@ TEST_F(FragmentItemsBuilderTest, MultipleLogicalLineItems) {
     // Custom layout may not add all line boxes.
     FragmentItemsBuilder items_builder(
         inline_node, {WritingMode::kHorizontalTb, TextDirection::kLtr}, false);
-    NGLogicalLineItems* line_items1 = items_builder.AcquireLogicalLineItems();
+    LogicalLineItems* line_items1 = items_builder.AcquireLogicalLineItems();
     items_builder.AssociateLogicalLineItems(line_items1, *line_fragment1);
-    NGLogicalLineItems* line_items2 = items_builder.AcquireLogicalLineItems();
+    LogicalLineItems* line_items2 = items_builder.AcquireLogicalLineItems();
     items_builder.AssociateLogicalLineItems(line_items2, *line_fragment2);
 
     // Because |AcquireLogicalLineItems| without |AddLine|, new instances should

@@ -53,7 +53,7 @@ as in the following.
 
 * NGPhysicalBoxFragment
   - NGPhysicalBoxFragment (anonymous wrapper)
-    - NGPhysicalLineBoxFragment
+    - PhysicalLineBoxFragment
       - NGPhysicalBoxFragment (span, may be omitted)
         - NGPhysicalTextFragment ("Hello")
 |||---|||
@@ -73,11 +73,11 @@ Inline layout is performed in the following phases:
 |---|---|---|
 | Pre-layout | LayoutObject | [InlineItem] |
 | Line Breaking | [InlineItem] | [InlineItemResult] |
-| Line box construction | [InlineItemResult] | [NGLogicalLineItem] |
-| Generate fragments | [NGLogicalLineItem] | [NGPhysicalFragment] / [FragmentItem] |
+| Line box construction | [InlineItemResult] | [LogicalLineItem] |
+| Generate fragments | [LogicalLineItem] | [NGPhysicalFragment] / [FragmentItem] |
 
 Note: There is [an idea](https://docs.google.com/document/d/1dxzIHl1dwBtgeKgWd2cKcog8AyydN5rduQvXthMOMD0/edit?usp=sharing)
-to merge [InlineItemResult] and [NGLogicalLineItem], but this hasn't been happened yet.
+to merge [InlineItemResult] and [LogicalLineItem], but this hasn't been happened yet.
 
 This is similar to [CSS Text Processing Order of Operations],
 but not exactly the same,
@@ -150,11 +150,11 @@ This phase:
 [line Box Construction]: #line-box-construction
 
 `NGInlineLayoutAlgorithm::CreateLine()` takes a list of [InlineItemResult] and
-produces a list of [NGLogicalLineItem].
+produces a list of [LogicalLineItem].
 
 This phase consists of following sub-phases:
 
-1. Create a [NGLogicalLineItem] for each [InlineItemResult]
+1. Create a [LogicalLineItem] for each [InlineItemResult]
    and determine the positions.
 
    The inline size of each item was already determined by [LineBreaker],
@@ -162,7 +162,7 @@ This phase consists of following sub-phases:
    because [BiDi reordering](#bidi) may change them.
 
    In block direction,
-   [NGLogicalLineItem] is placed as if the baseline is at 0.
+   [LogicalLineItem] is placed as if the baseline is at 0.
    This is adjusted later, possibly multiple times,
    for [vertical-align] and the block offset of the parent inline box.
 
@@ -174,11 +174,11 @@ This phase consists of following sub-phases:
 
 2. Process all pending operations in [Inline Box Tree].
 3. [Bidirectional reordering](#bidi):
-   Reorder the list of [NGLogicalLineItem]
+   Reorder the list of [LogicalLineItem]
    according to [UAX#9 Reordering Resolved Levels].
    See [Bidirectional text] below.
 
-   After this point forward, the list of [NGLogicalLineItem] is
+   After this point forward, the list of [LogicalLineItem] is
    in _visual order_; which is from [line-left] to [line-right].
    The block direction is still logical,
    but the inline direction is physical.
@@ -250,15 +250,15 @@ creates [NGPhysicalBoxFragment] and add children to it.
 ### <a name="generate-fragments">Generate Fragments</a> ###
 [generate fragments]: #generate-fragments
 
-When all [NGLogicalLineItem]s are ordered and positioned,
+When all [LogicalLineItem]s are ordered and positioned,
 they are converted to fragments.
 
 Without [FragmentItem] enabled,
-each [NGLogicalLineItem] produces a [NGPhysicalFragment],
-added to the [NGPhysicalLineBoxFragment].
+each [LogicalLineItem] produces a [NGPhysicalFragment],
+added to the [PhysicalLineBoxFragment].
 
 With [FragmentItem] enabled,
-each [NGLogicalLineItem] produces a [FragmentItem],
+each [LogicalLineItem] produces a [FragmentItem],
 added to the [FragmentItems] in the containing block of the inline formatting context.
 
 ## Miscellaneous topics ##
@@ -294,7 +294,7 @@ and they are hard coded to derive from the CSS [writing-mode] property today.
 We plan to support more baseline types,
 and allow authors to specify the baseline type,
 as defined in the CSS [dominant-baseline] property in future.
-[NGPhysicalLineBoxFragment] and [NGPhysicalTextFragment] should be
+[PhysicalLineBoxFragment] and [NGPhysicalTextFragment] should be
 responsible for computing different baseline types from font metrics.
 
 [dominant-baseline]: https://drafts.csswg.org/css-inline/#dominant-baseline-property
@@ -377,6 +377,8 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [InlineItemResult]: ng_inline_item_result.h
 [InlineNode]: ng_inline_node.h
 [LineBreaker]: ng_line_breaker.h
+[LogicalLineItem]: ng_logical_line_item.h
+[LogicalLineItems]: ng_logical_line_items.h
 [NGBaselineAlgorithmType]: ng_baseline.h
 [NGBaselineRequest]: ng_baseline.h
 [NGBlockNode]: ../ng_block_node.h
@@ -387,12 +389,10 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [NGInlineBoxState]: ng_inline_box_state.h
 [NGInlineLayoutAlgorithm]: ng_inline_layout_algorithm.h
 [NGLayoutInputNode]: ../ng_layout_input_node.h
-[NGLogicalLineItem]: ng_logical_line_item.h
-[NGLogicalLineItems]: ng_logical_line_items.h
 [NGPhysicalBoxFragment]: ../ng_physical_box_fragment.h
 [NGPhysicalFragment]: ../ng_physical_fragment.h
-[NGPhysicalLineBoxFragment]: ng_physical_line_box_fragment.h
 [NGPhysicalTextFragment]: ng_physical_text_fragment.h
 [OffsetMapping]: ng_offset_mapping.h
+[PhysicalLineBoxFragment]: ng_physical_line_box_fragment.h
 [ShapeResult]: ../../../../platform/fonts/shaping/shape_result.h
 [ShapingLineBreaker]: ../../../../platform/fonts/shaping/shaping_line_breaker.h

@@ -12,7 +12,7 @@ namespace blink {
 
 class ComputedStyle;
 class LineInfo;
-class NGLogicalLineItems;
+class LogicalLineItems;
 class ShapeResultView;
 struct FontHeight;
 struct InlineItemResult;
@@ -70,7 +70,7 @@ struct NGAnnotationMetrics {
 
 // Compute over/under annotation overflow/space for the specified line.
 NGAnnotationMetrics ComputeAnnotationOverflow(
-    const NGLogicalLineItems& logical_line,
+    const LogicalLineItems& logical_line,
     const FontHeight& line_box_metrics,
     const ComputedStyle& line_style);
 

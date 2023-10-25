@@ -82,30 +82,30 @@ void FragmentItemsBuilder::MoveCurrentLogicalLineItemsToMap() {
   current_line_items_ = nullptr;
 }
 
-NGLogicalLineItems* FragmentItemsBuilder::AcquireLogicalLineItems() {
+LogicalLineItems* FragmentItemsBuilder::AcquireLogicalLineItems() {
   if (line_items_pool_ && !is_line_items_pool_acquired_) {
     is_line_items_pool_acquired_ = true;
     return line_items_pool_;
   }
   MoveCurrentLogicalLineItemsToMap();
   DCHECK(!current_line_items_);
-  current_line_items_ = MakeGarbageCollected<NGLogicalLineItems>();
+  current_line_items_ = MakeGarbageCollected<LogicalLineItems>();
   return current_line_items_;
 }
 
-const NGLogicalLineItems& FragmentItemsBuilder::LogicalLineItems(
-    const NGPhysicalLineBoxFragment& line_fragment) const {
+const LogicalLineItems& FragmentItemsBuilder::GetLogicalLineItems(
+    const PhysicalLineBoxFragment& line_fragment) const {
   if (&line_fragment == current_line_fragment_) {
     DCHECK(current_line_items_);
     return *current_line_items_;
   }
-  const NGLogicalLineItems* items = line_items_map_.at(&line_fragment);
+  const LogicalLineItems* items = line_items_map_.at(&line_fragment);
   DCHECK(items);
   return *items;
 }
 
 void FragmentItemsBuilder::AssociateLogicalLineItems(
-    NGLogicalLineItems* line_items,
+    LogicalLineItems* line_items,
     const NGPhysicalFragment& line_fragment) {
   DCHECK(!current_line_items_ || current_line_items_ == line_items);
   current_line_items_ = line_items;
@@ -113,9 +113,8 @@ void FragmentItemsBuilder::AssociateLogicalLineItems(
   current_line_fragment_ = &line_fragment;
 }
 
-void FragmentItemsBuilder::AddLine(
-    const NGPhysicalLineBoxFragment& line_fragment,
-    const LogicalOffset& offset) {
+void FragmentItemsBuilder::AddLine(const PhysicalLineBoxFragment& line_fragment,
+                                   const LogicalOffset& offset) {
   DCHECK(!is_converted_to_physical_);
   if (&line_fragment == current_line_fragment_) {
     DCHECK(current_line_items_);
@@ -126,7 +125,7 @@ void FragmentItemsBuilder::AddLine(
     current_line_items_ = line_items_map_.Take(&line_fragment);
     DCHECK(current_line_items_);
   }
-  NGLogicalLineItems* line_items = current_line_items_;
+  LogicalLineItems* line_items = current_line_items_;
 
   // Reserve the capacity for (children + line box item).
   const wtf_size_t size_before = items_.size();
@@ -155,13 +154,13 @@ void FragmentItemsBuilder::AddLine(
   DCHECK_LE(items_.size(), estimated_size);
 }
 
-void FragmentItemsBuilder::AddItems(NGLogicalLineItem* child_begin,
-                                    NGLogicalLineItem* child_end) {
+void FragmentItemsBuilder::AddItems(LogicalLineItem* child_begin,
+                                    LogicalLineItem* child_end) {
   DCHECK(!is_converted_to_physical_);
 
   const WritingMode writing_mode = GetWritingMode();
-  for (NGLogicalLineItem* child_iter = child_begin; child_iter != child_end;) {
-    NGLogicalLineItem& child = *child_iter;
+  for (LogicalLineItem* child_iter = child_begin; child_iter != child_end;) {
+    LogicalLineItem& child = *child_iter;
     // OOF children should have been added to their parent box fragments.
     DCHECK(!child.out_of_flow_positioned_box);
     if (!child.CanCreateFragmentItem()) {
@@ -185,7 +184,7 @@ void FragmentItemsBuilder::AddItems(NGLogicalLineItem* child_begin,
 
     // Add all children, including their desendants, skipping this item.
     CHECK_GE(children_count, 1u);  // 0 will loop infinitely.
-    NGLogicalLineItem* end_child_iter = child_iter + children_count;
+    LogicalLineItem* end_child_iter = child_iter + children_count;
     CHECK_LE(end_child_iter - child_begin, child_end - child_begin);
     AddItems(child_iter + 1, end_child_iter);
     child_iter = end_child_iter;
@@ -268,7 +267,7 @@ FragmentItemsBuilder::AddPreviousItems(const NGPhysicalBoxFragment& container,
       DCHECK(item.LineBoxFragment());
       if (end_item) {
         // Check if this line has valid item_index and offset.
-        const NGPhysicalLineBoxFragment* line_fragment = item.LineBoxFragment();
+        const PhysicalLineBoxFragment* line_fragment = item.LineBoxFragment();
         // Block-in-inline should have been prevented by |EndOfReusableItems|.
         DCHECK(!line_fragment->IsBlockInInline());
         const NGInlineBreakToken* break_token =

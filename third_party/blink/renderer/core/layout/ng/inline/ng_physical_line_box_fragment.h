@@ -13,11 +13,11 @@
 namespace blink {
 
 class FragmentItem;
-class NGLineBoxFragmentBuilder;
+class LineBoxFragmentBuilder;
 
-class CORE_EXPORT NGPhysicalLineBoxFragment final : public NGPhysicalFragment {
+class CORE_EXPORT PhysicalLineBoxFragment final : public NGPhysicalFragment {
  public:
-  enum NGLineBoxType {
+  enum LineBoxType {
     kNormalLineBox,
     // This is an "empty" line box, or "certain zero-height line boxes":
     // https://drafts.csswg.org/css2/visuren.html#phantom-line-box
@@ -27,23 +27,21 @@ class CORE_EXPORT NGPhysicalLineBoxFragment final : public NGPhysicalFragment {
     kEmptyLineBox
   };
 
-  static const NGPhysicalLineBoxFragment* Create(
-      NGLineBoxFragmentBuilder* builder);
+  static const PhysicalLineBoxFragment* Create(LineBoxFragmentBuilder* builder);
 
-  static const NGPhysicalLineBoxFragment* Clone(
-      const NGPhysicalLineBoxFragment&);
+  static const PhysicalLineBoxFragment* Clone(const PhysicalLineBoxFragment&);
 
-  using PassKey = base::PassKey<NGPhysicalLineBoxFragment>;
-  NGPhysicalLineBoxFragment(PassKey, NGLineBoxFragmentBuilder* builder);
-  NGPhysicalLineBoxFragment(PassKey, const NGPhysicalLineBoxFragment&);
-  ~NGPhysicalLineBoxFragment();
+  using PassKey = base::PassKey<PhysicalLineBoxFragment>;
+  PhysicalLineBoxFragment(PassKey, LineBoxFragmentBuilder* builder);
+  PhysicalLineBoxFragment(PassKey, const PhysicalLineBoxFragment&);
+  ~PhysicalLineBoxFragment();
 
   void TraceAfterDispatch(Visitor*) const;
 
-  NGLineBoxType LineBoxType() const {
-    return static_cast<NGLineBoxType>(sub_type_);
+  LineBoxType GetLineBoxType() const {
+    return static_cast<LineBoxType>(sub_type_);
   }
-  bool IsEmptyLineBox() const { return LineBoxType() == kEmptyLineBox; }
+  bool IsEmptyLineBox() const { return GetLineBoxType() == kEmptyLineBox; }
 
   // True if descendants were propagated to outside of this fragment.
   bool HasPropagatedDescendants() const { return has_propagated_descendants_; }
@@ -94,7 +92,7 @@ class CORE_EXPORT NGPhysicalLineBoxFragment final : public NGPhysicalFragment {
 };
 
 template <>
-struct DowncastTraits<NGPhysicalLineBoxFragment> {
+struct DowncastTraits<PhysicalLineBoxFragment> {
   static bool AllowFrom(const NGPhysicalFragment& fragment) {
     return fragment.Type() == NGPhysicalFragment::kFragmentLineBox;
   }

@@ -26,8 +26,8 @@ namespace blink {
 class FragmentItems;
 class NGInlineBreakToken;
 class NGInlinePaintContext;
+struct LogicalLineItem;
 struct NGTextFragmentPaintInfo;
-struct NGLogicalLineItem;
 
 // Data for SVG text in addition to FragmentItem.
 struct NGSvgFragmentData {
@@ -76,7 +76,7 @@ class CORE_EXPORT FragmentItem final {
 
    public:
     void Trace(Visitor* visitor) const { visitor->Trace(line_box_fragment); }
-    Member<const NGPhysicalLineBoxFragment> line_box_fragment;
+    Member<const PhysicalLineBoxFragment> line_box_fragment;
     wtf_size_t descendants_count;
   };
   // Represents a box fragment appeared in a line. This includes inline boxes
@@ -104,12 +104,12 @@ class CORE_EXPORT FragmentItem final {
   enum TracedType { kNone, kLineItem, kBoxItem };
 
   // Create appropriate type for |line_item|.
-  FragmentItem(NGLogicalLineItem&& line_item, WritingMode writing_mode);
+  FragmentItem(LogicalLineItem&& line_item, WritingMode writing_mode);
   // Create a box item.
   FragmentItem(const NGPhysicalBoxFragment& box,
                TextDirection resolved_direction);
   // Create a line item.
-  explicit FragmentItem(const NGPhysicalLineBoxFragment& line);
+  explicit FragmentItem(const PhysicalLineBoxFragment& line);
 
   // The copy/move constructors.
   FragmentItem(const FragmentItem&);
@@ -280,10 +280,10 @@ class CORE_EXPORT FragmentItem final {
   bool HasSelfPaintingLayer() const;
 
   // TODO(kojii): Avoid using this function in outside of this class as much as
-  // possible, because |NGPhysicalLineBoxFragment| is likely to be removed. Add
-  // functions to access data in |NGPhysicalLineBoxFragment| rather than using
+  // possible, because |PhysicalLineBoxFragment| is likely to be removed. Add
+  // functions to access data in |PhysicalLineBoxFragment| rather than using
   // this function. See |InlineBreakToken()| for example.
-  const NGPhysicalLineBoxFragment* LineBoxFragment() const {
+  const PhysicalLineBoxFragment* LineBoxFragment() const {
     if (Type() == kLine)
       return line_.line_box_fragment.Get();
     return nullptr;
@@ -292,18 +292,19 @@ class CORE_EXPORT FragmentItem final {
   // Returns |NGInlineBreakToken| associated with this line, for line items.
   // Calling this function for other types is not valid.
   const NGInlineBreakToken* InlineBreakToken() const {
-    if (const NGPhysicalLineBoxFragment* line_box = LineBoxFragment())
+    if (const PhysicalLineBoxFragment* line_box = LineBoxFragment()) {
       return To<NGInlineBreakToken>(line_box->BreakToken());
+    }
     NOTREACHED();
     return nullptr;
   }
 
-  using NGLineBoxType = NGPhysicalLineBoxFragment::NGLineBoxType;
-  NGLineBoxType LineBoxType() const {
+  using LineBoxType = PhysicalLineBoxFragment::LineBoxType;
+  LineBoxType GetLineBoxType() const {
     if (Type() == kLine)
-      return static_cast<NGLineBoxType>(sub_type_);
+      return static_cast<LineBoxType>(sub_type_);
     NOTREACHED() << this;
-    return NGLineBoxType::kNormalLineBox;
+    return LineBoxType::kNormalLineBox;
   }
 
   static PhysicalRect LocalVisualRectFor(const LayoutObject& layout_object);
@@ -606,7 +607,7 @@ class CORE_EXPORT FragmentItem final {
   // Note: We should not add |bidi_level_| because it is used only for layout.
   const unsigned const_traced_type_ : 2;  // TracedType
   unsigned type_ : 3;                     // ItemType
-  unsigned sub_type_ : 3;                 // TextItemType or NGLineBoxType
+  unsigned sub_type_ : 3;                 // TextItemType or LineBoxType
   unsigned style_variant_ : 2;            // NGStyleVariant
   unsigned is_hidden_for_paint_ : 1;
   // Note: For |TextItem| and |GeneratedTextItem|, |text_direction_| equals to

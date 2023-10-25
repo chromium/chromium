@@ -284,7 +284,7 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
   // @param physical_offset Physical offset of the line box fragment in paint
   // layer.
   bool HitTestLineBoxFragment(const HitTestContext& hit_test,
-                              const NGPhysicalLineBoxFragment& fragment,
+                              const PhysicalLineBoxFragment& fragment,
                               const InlineBackwardCursor& cursor,
                               const PhysicalOffset& physical_offset);
 

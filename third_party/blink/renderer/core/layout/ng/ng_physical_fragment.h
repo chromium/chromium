@@ -789,7 +789,7 @@ class CORE_EXPORT NGPhysicalFragment
   uint8_t depends_on_percentage_block_size_ : 1;    // NOLINT
   mutable uint8_t children_valid_ : 1;              // NOLINT
 
-  // The following bitfields are only to be used by NGPhysicalLineBoxFragment
+  // The following bitfields are only to be used by PhysicalLineBoxFragment
   // (it's defined here to save memory, since that class has no bitfields).
   uint8_t has_propagated_descendants_ : 1;             // NOLINT
   uint8_t has_hanging_ : 1;                            // NOLINT
@@ -813,7 +813,7 @@ class CORE_EXPORT NGPhysicalFragment
   const uint8_t has_out_of_flow_fragment_child_ : 1;            // NOLINT
   const uint8_t has_out_of_flow_in_fragmentainer_subtree_ : 1;  // NOLINT
 
-  // The following are only used by NGPhysicalLineBoxFragment.
+  // The following are only used by PhysicalLineBoxFragment.
   uint8_t base_direction_ : 1;  // NOLINT, TextDirection
 
   Member<const PropagatedData> propagated_data_;

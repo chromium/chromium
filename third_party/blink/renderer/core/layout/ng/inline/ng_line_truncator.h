@@ -13,9 +13,9 @@
 namespace blink {
 
 class LineInfo;
+class LogicalLineItems;
 class NGInlineLayoutStateStack;
-class NGLogicalLineItems;
-struct NGLogicalLineItem;
+struct LogicalLineItem;
 
 // A class to truncate lines and place ellipsis, invoked by the CSS
 // 'text-overflow: ellipsis' property.
@@ -32,11 +32,11 @@ class CORE_EXPORT NGLineTruncator final {
   // |line_box| should be after bidi reorder, but before box fragments are
   // created.
   LayoutUnit TruncateLine(LayoutUnit line_width,
-                          NGLogicalLineItems* line_box,
+                          LogicalLineItems* line_box,
                           NGInlineLayoutStateStack* box_states);
 
   LayoutUnit TruncateLineInTheMiddle(LayoutUnit line_width,
-                                     NGLogicalLineItems* line_box,
+                                     LogicalLineItems* line_box,
                                      NGInlineLayoutStateStack* box_states);
 
  private:
@@ -46,8 +46,8 @@ class CORE_EXPORT NGLineTruncator final {
   void SetupEllipsis();
 
   // Add a child for ellipsis next to |ellipsized_child|.
-  LayoutUnit PlaceEllipsisNextTo(NGLogicalLineItems* line_box,
-                                 NGLogicalLineItem* ellipsized_child);
+  LayoutUnit PlaceEllipsisNextTo(LogicalLineItems* line_box,
+                                 LogicalLineItem* ellipsized_child);
 
   static constexpr wtf_size_t kDidNotAddChild = WTF::kNotFound;
   // Add a child with truncated text of (*line_box)[source_index].
@@ -65,25 +65,25 @@ class CORE_EXPORT NGLineTruncator final {
                                bool leave_one_character,
                                LayoutUnit position,
                                TextDirection edge,
-                               NGLogicalLineItems* line_box,
+                               LogicalLineItems* line_box,
                                NGInlineLayoutStateStack* box_states);
   bool EllipsizeChild(LayoutUnit line_width,
                       LayoutUnit ellipsis_width,
                       bool is_first_child,
-                      NGLogicalLineItem*,
-                      absl::optional<NGLogicalLineItem>* truncated_child);
+                      LogicalLineItem*,
+                      absl::optional<LogicalLineItem>* truncated_child);
   bool TruncateChild(LayoutUnit space_for_this_child,
                      bool is_first_child,
-                     const NGLogicalLineItem& child,
-                     absl::optional<NGLogicalLineItem>* truncated_child);
-  // Create |NGLogicalLineItem| by truncating text |item| at |offset_to_fit|.
+                     const LogicalLineItem& child,
+                     absl::optional<LogicalLineItem>* truncated_child);
+  // Create |LogicalLineItem| by truncating text |item| at |offset_to_fit|.
   // |direction| specifies which side of the text is trimmed; if |kLtr|, it
   // keeps the left end and trims the right end.
-  NGLogicalLineItem TruncateText(const NGLogicalLineItem& item,
-                                 const ShapeResult& shape_result,
-                                 unsigned offset_to_fit,
-                                 TextDirection direction);
-  void HideChild(NGLogicalLineItem* child);
+  LogicalLineItem TruncateText(const LogicalLineItem& item,
+                               const ShapeResult& shape_result,
+                               unsigned offset_to_fit,
+                               TextDirection direction);
+  void HideChild(LogicalLineItem* child);
 
   const ComputedStyle* line_style_;
   LayoutUnit available_width_;

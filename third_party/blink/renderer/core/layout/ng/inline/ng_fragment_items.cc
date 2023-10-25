@@ -247,8 +247,7 @@ const FragmentItem* FragmentItems::EndOfReusableItems(
     if (!CanReuseAll(&line))
       return last_line_start;
 
-    const NGPhysicalLineBoxFragment& line_box_fragment =
-        *item.LineBoxFragment();
+    const PhysicalLineBoxFragment& line_box_fragment = *item.LineBoxFragment();
 
     // Abort if the line propagated its descendants to outside of the line.
     // They are propagated through NGLayoutResult, which we don't cache.

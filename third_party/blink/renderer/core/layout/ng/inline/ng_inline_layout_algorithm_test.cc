@@ -23,11 +23,11 @@
 namespace blink {
 namespace {
 
-const NGPhysicalLineBoxFragment* FindBlockInInlineLineBoxFragment(
+const PhysicalLineBoxFragment* FindBlockInInlineLineBoxFragment(
     Element* container) {
   InlineCursor cursor(*To<LayoutBlockFlow>(container->GetLayoutObject()));
   for (cursor.MoveToFirstLine(); cursor; cursor.MoveToNextLine()) {
-    const NGPhysicalLineBoxFragment* fragment =
+    const PhysicalLineBoxFragment* fragment =
         cursor.Current()->LineBoxFragment();
     DCHECK(fragment);
     if (fragment->IsBlockInInline())
@@ -624,14 +624,14 @@ TEST_F(NGInlineLayoutAlgorithmTest, BlockInInlineAppend) {
     </div>
   )HTML");
   Element* container_element = GetElementById("container");
-  const NGPhysicalLineBoxFragment* before_append =
+  const PhysicalLineBoxFragment* before_append =
       FindBlockInInlineLineBoxFragment(container_element);
   ASSERT_TRUE(before_append);
 
   Document& doc = GetDocument();
   container_element->appendChild(doc.createTextNode("12345678"));
   UpdateAllLifecyclePhasesForTest();
-  const NGPhysicalLineBoxFragment* after_append =
+  const PhysicalLineBoxFragment* after_append =
       FindBlockInInlineLineBoxFragment(container_element);
   EXPECT_NE(before_append, after_append);
 }

@@ -32,10 +32,10 @@
 namespace blink {
 
 class ExclusionSpace;
+class LineBoxFragmentBuilder;
 class NGBoxFragmentBuilder;
 class NGColumnSpannerPath;
 class NGFragmentBuilder;
-class NGLineBoxFragmentBuilder;
 
 // The NGLayoutResult stores the resulting data from layout. This includes
 // geometry information in form of a NGPhysicalFragment, which is kept around
@@ -593,12 +593,11 @@ class CORE_EXPORT NGLayoutResult final
                  const NGPhysicalFragment* physical_fragment,
                  NGBoxFragmentBuilder*);
 
-  using NGLineBoxFragmentBuilderPassKey =
-      base::PassKey<NGLineBoxFragmentBuilder>;
+  using LineBoxFragmentBuilderPassKey = base::PassKey<LineBoxFragmentBuilder>;
   // This constructor requires a non-null fragment and sets a success status.
-  NGLayoutResult(NGLineBoxFragmentBuilderPassKey,
+  NGLayoutResult(LineBoxFragmentBuilderPassKey,
                  const NGPhysicalFragment* physical_fragment,
-                 NGLineBoxFragmentBuilder*);
+                 LineBoxFragmentBuilder*);
 
   void Trace(Visitor*) const;
 

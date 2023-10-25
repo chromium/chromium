@@ -45,7 +45,7 @@ const NGLayoutResult* MathTokenLayoutAlgorithm::Layout() {
                                    /* column_spanner_path */ nullptr, &context);
 
   const auto& line_box =
-      To<NGPhysicalLineBoxFragment>(child_layout_result->PhysicalFragment());
+      To<PhysicalLineBoxFragment>(child_layout_result->PhysicalFragment());
   const FontHeight line_metrics = line_box.Metrics();
   container_builder_.AddResult(
       *child_layout_result,

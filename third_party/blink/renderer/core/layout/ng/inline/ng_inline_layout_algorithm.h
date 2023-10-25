@@ -40,7 +40,7 @@ struct NGLeadingFloats;
 // Uses LineBreaker to find InlineItems to form a line.
 class CORE_EXPORT NGInlineLayoutAlgorithm final
     : public NGLayoutAlgorithm<InlineNode,
-                               NGLineBoxFragmentBuilder,
+                               LineBoxFragmentBuilder,
                                NGInlineBreakToken> {
  public:
   NGInlineLayoutAlgorithm(InlineNode,
@@ -52,7 +52,7 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
 
   void CreateLine(const LineLayoutOpportunity&,
                   LineInfo*,
-                  NGLogicalLineItems* line_box);
+                  LogicalLineItems* line_box);
 
   const NGLayoutResult* Layout() override;
 
@@ -79,49 +79,49 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
 
   NGInlineBoxState* HandleOpenTag(const InlineItem&,
                                   const InlineItemResult&,
-                                  NGLogicalLineItems*,
+                                  LogicalLineItems*,
                                   NGInlineLayoutStateStack*) const;
   NGInlineBoxState* HandleCloseTag(const InlineItem&,
                                    const InlineItemResult&,
-                                   NGLogicalLineItems* line_box,
+                                   LogicalLineItems* line_box,
                                    NGInlineBoxState*);
 
-  void BidiReorder(TextDirection base_direction, NGLogicalLineItems* line_box);
+  void BidiReorder(TextDirection base_direction, LogicalLineItems* line_box);
 
   void PlaceControlItem(const InlineItem&,
                         const LineInfo&,
                         InlineItemResult*,
-                        NGLogicalLineItems* line_box,
+                        LogicalLineItems* line_box,
                         NGInlineBoxState*);
   void PlaceHyphen(const InlineItemResult&,
                    LayoutUnit hyphen_inline_size,
-                   NGLogicalLineItems* line_box,
+                   LogicalLineItems* line_box,
                    NGInlineBoxState*);
   NGInlineBoxState* PlaceAtomicInline(const InlineItem&,
                                       const LineInfo&,
                                       InlineItemResult*,
-                                      NGLogicalLineItems* line_box);
+                                      LogicalLineItems* line_box);
   void PlaceBlockInInline(const InlineItem&,
                           const LineInfo&,
                           InlineItemResult*,
-                          NGLogicalLineItems* line_box);
+                          LogicalLineItems* line_box);
   void PlaceInitialLetterBox(const InlineItem&,
                              const LineInfo&,
                              InlineItemResult*,
-                             NGLogicalLineItems* line_box);
+                             LogicalLineItems* line_box);
   void PlaceLayoutResult(InlineItemResult*,
-                         NGLogicalLineItems* line_box,
+                         LogicalLineItems* line_box,
                          NGInlineBoxState*,
                          LayoutUnit inline_offset = LayoutUnit());
   void PlaceOutOfFlowObjects(const LineInfo&,
                              const FontHeight&,
-                             NGLogicalLineItems* line_box);
+                             LogicalLineItems* line_box);
   void PlaceFloatingObjects(const FontHeight&,
                             const LineLayoutOpportunity&,
                             LayoutUnit ruby_block_start_adjust,
                             LineInfo*,
-                            NGLogicalLineItems* line_box);
-  void PlaceRelativePositionedItems(NGLogicalLineItems* line_box);
+                            LogicalLineItems* line_box);
+  void PlaceRelativePositionedItems(LogicalLineItems* line_box);
   void PlaceListMarker(const InlineItem&, InlineItemResult*, const LineInfo&);
 
   LayoutUnit ApplyTextAlign(LineInfo*);
@@ -134,7 +134,7 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
   bool AddAnyClearanceAfterLine(const LineInfo&);
 
   LayoutUnit SetAnnotationOverflow(const LineInfo& line_info,
-                                   const NGLogicalLineItems& line_box,
+                                   const LogicalLineItems& line_box,
                                    const FontHeight& line_box_metrics);
 
   NGInlineLayoutStateStack* box_states_;

@@ -10,7 +10,7 @@
 namespace blink {
 
 class LineInfo;
-class NGLogicalLineItems;
+class LogicalLineItems;
 struct BfcOffset;
 struct BoxStrut;
 struct ExclusionArea;
@@ -20,7 +20,7 @@ struct FontHeight;
 // `FontHeight` to fit initial letter box in block direction.
 // Note: `LineBreaker::NextLine()` adjust inline size.
 FontHeight AdjustInitialLetterInTextPosition(const FontHeight& line_box_metrics,
-                                             NGLogicalLineItems* line_box);
+                                             LogicalLineItems* line_box);
 
 // Calculate inline size of initial letter text.
 LayoutUnit CalculateInitialLetterBoxInlineSize(const LineInfo& line_info);
@@ -30,7 +30,7 @@ LayoutUnit CalculateInitialLetterBoxInlineSize(const LineInfo& line_info);
 const ExclusionArea* PostPlaceInitialLetterBox(
     const FontHeight& line_box_metrics,
     const BoxStrut& initial_letter_box_margins,
-    NGLogicalLineItems* line_box,
+    LogicalLineItems* line_box,
     const BfcOffset& line_origin,
     LineInfo* line_info);
 
