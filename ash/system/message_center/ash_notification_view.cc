@@ -1580,10 +1580,8 @@ void AshNotificationView::OnThemeChanged() {
        right_content()->height() - icon_view()->GetImageDrawingSize().height() >
            kSmallImageBackgroundThreshold)) {
     icon_view()->set_apply_rounded_corners(false);
-    right_content()->SetBackground(views::CreateRoundedRectBackground(
-        ash::AshColorProvider::Get()->GetControlsLayerColor(
-            ash::AshColorProvider::ControlsLayerType::
-                kControlBackgroundColorInactive),
+    right_content()->SetBackground(views::CreateThemedRoundedRectBackground(
+        kColorAshControlBackgroundColorInactive,
         message_center::kImageCornerRadius));
   }
 }
@@ -1805,36 +1803,32 @@ void AshNotificationView::UpdateMessageLabelInExpandedState(
 }
 
 void AshNotificationView::UpdateBackground(int top_radius, int bottom_radius) {
-  SkColor background_color = gfx::kPlaceholderColor;
-  // `color_provider` might be nullptr in tests.
-  const auto* color_provider = GetColorProvider();
-  if (shown_in_popup_) {
-    if (color_provider) {
-      background_color = color_provider->GetColor(kColorAshShieldAndBase80);
-    }
-  } else {
-    background_color =
-        chromeos::features::IsJellyEnabled() && color_provider
-            ? color_provider->GetColor(cros_tokens::kCrosSysSystemOnBase)
-            : AshColorProvider::Get()->GetControlsLayerColor(
-                  AshColorProvider::ControlsLayerType::
-                      kControlBackgroundColorInactive);
-  }
+  ui::ColorId background_color_id =
+      shown_in_popup_ ? static_cast<ui::ColorId>(kColorAshShieldAndBase80)
+                      : cros_tokens::kCrosSysSystemOnBase;
 
-  if (background_color == background_color_ && top_radius_ == top_radius &&
-      bottom_radius_ == bottom_radius) {
+  if (background_color_id == background_color_id_ &&
+      top_radius_ == top_radius && bottom_radius_ == bottom_radius) {
     return;
   }
 
-  if (!is_grouped_child_view_) {
-    background_color_ = background_color;
-  }
   top_radius_ = top_radius;
   bottom_radius_ = bottom_radius;
 
-  SetBackground(views::CreateBackgroundFromPainter(
-      std::make_unique<message_center::NotificationBackgroundPainter>(
-          top_radius_, bottom_radius_, background_color_)));
+  if (is_grouped_child_view_) {
+    // Grouped children are always transparent. Handle them separately.
+    SetBackground(views::CreateRoundedRectBackground(
+        SK_ColorTRANSPARENT,
+        gfx::RoundedCornersF(top_radius_, top_radius_, bottom_radius_,
+                             bottom_radius_),
+        /*border_thickness=*/0));
+    return;
+  }
+
+  background_color_id_ = background_color_id;
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      background_color_id_, top_radius_, bottom_radius_,
+      /*border_thickness=*/0));
 }
 
 int AshNotificationView::GetExpandedMessageLabelWidth() {

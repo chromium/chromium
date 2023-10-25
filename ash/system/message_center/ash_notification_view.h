@@ -352,8 +352,8 @@ class ASH_EXPORT AshNotificationView
   // shown in a collapsed grouped notification.
   int total_grouped_notifications_ = 0;
 
-  // Cached background color to avoid unnecessary update.
-  SkColor background_color_ = SK_ColorTRANSPARENT;
+  // Cached background color id to avoid unnecessary update.
+  ui::ColorId background_color_id_ = 0;
 
   // Used to prevent setting bounds in `AshNotificationView` while running
   // animations to resize this view.
