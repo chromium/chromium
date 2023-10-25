@@ -196,6 +196,15 @@ public class TouchToFillPasswordGenerationModuleTest {
     }
 
     @Test
+    public void testKeyboardIsHiddenWhenBottomSheetIsDisplayed() {
+        ViewAndroidDelegate viewAndroidDelegate = ViewAndroidDelegate.createBasicDelegate(mContent);
+        when(mWebContents.getViewAndroidDelegate()).thenReturn(viewAndroidDelegate);
+
+        mCoordinator.show(sGeneratedPassword, sTestEmailAddress);
+        verify(mKeyboardVisibilityDelegate).hideKeyboard(mContent);
+    }
+
+    @Test
     public void testBottomSheetIsHiddenAfterRejectingPassword() {
         mCoordinator.show(sGeneratedPassword, sTestEmailAddress);
 

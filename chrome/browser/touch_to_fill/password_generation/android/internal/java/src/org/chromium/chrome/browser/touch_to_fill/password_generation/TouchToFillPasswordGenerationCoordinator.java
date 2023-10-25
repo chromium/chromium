@@ -144,6 +144,7 @@ class TouchToFillPasswordGenerationCoordinator {
 
         mBottomSheetController.addObserver(mBottomSheetObserver);
         if (mBottomSheetController.requestShowContent(mTouchToFillPasswordGenerationView, true)) {
+            hideKeyboard();
             return true;
         }
         mBottomSheetController.removeObserver(mBottomSheetObserver);
@@ -186,6 +187,14 @@ class TouchToFillPasswordGenerationCoordinator {
         if (webContentView.requestFocus()) {
             mKeyboardVisibilityDelegate.showKeyboard(webContentView);
         }
+    }
+
+    private void hideKeyboard() {
+        if (mWebContents.getViewAndroidDelegate() == null) return;
+        View webContentView = mWebContents.getViewAndroidDelegate().getContainerView();
+        if (webContentView == null) return;
+
+        mKeyboardVisibilityDelegate.hideKeyboard(webContentView);
     }
 
     private void setPasswordGenerationBottomSheetDismissCount(
