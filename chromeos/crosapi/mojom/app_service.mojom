@@ -1,8 +1,6 @@
 // Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-//
-// Next MinVersion: 21
 
 module crosapi.mojom;
 
@@ -12,6 +10,8 @@ import "chromeos/crosapi/mojom/ui_constants.mojom";
 // Interacts with the app service. Implemented in ash-chrome.
 // This is a generic app-publisher interface that is used by the implementation
 // for both Web Apps and Chrome Apps in Lacros.
+// Next version: 3
+// Next method id: 3
 [Stable, Uuid="238dd8e0-480e-49f4-a3a0-28e610ef7119"]
 interface AppPublisher {
   // Publish a stream of apps from lacros-chrome.
@@ -32,6 +32,8 @@ interface AppPublisher {
 
 // Interacts with the app service. Implemented in lacros-chrome and called in
 // ash-chrome.
+// Next version: 21
+// Next method id: 21
 [Stable, Uuid="2031a614-3f0b-4111-8977-fd96fd780cb7"]
 interface AppController {
   // Directly uninstalls |app_id| without prompting the user.
@@ -144,6 +146,8 @@ interface AppController {
 // Interacts with the app service. Implemented in ash-chrome and called in
 // lacros-chrome. This interface will allow the browser to interact with
 // all types of apps installed in Chrome OS.
+// Next version: 20
+// Next method id: 8
 [Stable, Uuid="a8979226-04ab-4c29-bca6-1b487ca769f7"]
 interface AppServiceProxy {
   // Lacros exposes an AppServiceSubscriber interface to Ash. This allows Ash
@@ -209,6 +213,8 @@ interface AppServiceProxy {
 // ash-chrome. This interface will allow the app service to push updates to
 // the lacros-chrome so that the browser can access the app service info
 // in the same process.
+// Next version: 16
+// Next method id: 3
 [Stable, Uuid="d77d3b7e-ef90-4615-b81b-7e43482a4d5e"]
 interface AppServiceSubscriber {
   // Receives a stream of apps from ash-chrome from a publisher, and save to
