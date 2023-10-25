@@ -232,7 +232,8 @@ class CORE_EXPORT WebLocalFrameImpl final
   void SelectRange(const gfx::Point& base, const gfx::Point& extent) override;
   void SelectRange(const WebRange&,
                    HandleVisibilityBehavior,
-                   blink::mojom::SelectionMenuBehavior) override;
+                   blink::mojom::SelectionMenuBehavior,
+                   SelectionSetFocusBehavior) override;
   WebString RangeAsText(const WebRange&) override;
   void MoveRangeSelection(
       const gfx::Point& base,

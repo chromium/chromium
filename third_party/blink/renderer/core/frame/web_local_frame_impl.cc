@@ -1513,7 +1513,8 @@ void WebLocalFrameImpl::SelectRange(const gfx::Point& base_in_viewport,
 void WebLocalFrameImpl::SelectRange(
     const WebRange& web_range,
     HandleVisibilityBehavior handle_visibility_behavior,
-    blink::mojom::SelectionMenuBehavior selection_menu_behavior) {
+    blink::mojom::SelectionMenuBehavior selection_menu_behavior,
+    SelectionSetFocusBehavior selection_set_focus_behavior) {
   TRACE_EVENT0("blink", "WebLocalFrameImpl::selectRange");
 
   // TODO(editing-dev): The use of UpdateStyleAndLayout
@@ -1531,6 +1532,8 @@ void WebLocalFrameImpl::SelectRange(
       (handle_visibility_behavior == kPreserveHandleVisibility &&
        selection.IsHandleVisible());
   using blink::mojom::SelectionMenuBehavior;
+  const bool selection_not_set_focus =
+      selection_set_focus_behavior == kSelectionDoNotSetFocus;
   selection.SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(range)
@@ -1540,6 +1543,7 @@ void WebLocalFrameImpl::SelectRange(
           .SetShouldShowHandle(show_handles)
           .SetShouldShrinkNextTap(selection_menu_behavior ==
                                   SelectionMenuBehavior::kShow)
+          .SetDoNotSetFocus(selection_not_set_focus)
           .Build());
 
   if (selection_menu_behavior == SelectionMenuBehavior::kShow) {
