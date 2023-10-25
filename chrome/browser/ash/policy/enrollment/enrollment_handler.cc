@@ -498,8 +498,7 @@ void EnrollmentHandler::HandleRegistrationCertificateResult(
     ash::attestation::AttestationStatus status,
     const std::string& pem_certificate_chain) {
   if (status != ash::attestation::ATTESTATION_SUCCESS) {
-    ReportResult(EnrollmentStatus::ForEnrollmentCode(
-        EnrollmentStatus::Code::kRegistrationCertFetchFailed));
+    ReportResult(EnrollmentStatus::ForAttestationError(status));
     return;
   }
 

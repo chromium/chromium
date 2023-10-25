@@ -628,7 +628,25 @@ void EnrollmentLauncherImpl::ReportEnrollmentStatus(
       UMA(policy::kMetricEnrollmentAttributeUpdateFailed);
       break;
     case policy::EnrollmentStatus::Code::kRegistrationCertFetchFailed:
+      // Report general attestation-based registration error and granular per
+      // attestation failure.
       UMA(policy::kMetricEnrollmentRegistrationCertificateFetchFailed);
+      switch (status.attestation_status()) {
+        case attestation::ATTESTATION_SUCCESS:
+          NOTREACHED();
+          break;
+        case attestation::ATTESTATION_UNSPECIFIED_FAILURE:
+          UMA(policy::
+                  kMetricEnrollmentRegistrationCertificateFetchUnspecifiedFailure);
+          break;
+        case attestation::ATTESTATION_SERVER_BAD_REQUEST_FAILURE:
+          UMA(policy::kMetricEnrollmentRegistrationCertificateFetchBadRequest);
+          break;
+        case attestation::ATTESTATION_NOT_AVAILABLE:
+          UMA(policy::
+                  kMetricEnrollmentRegistrationCertificateFetchNotAvailable);
+          break;
+      }
       break;
     case policy::EnrollmentStatus::Code::kNoMachineIdentification:
       UMA(policy::kMetricEnrollmentNoDeviceIdentification);

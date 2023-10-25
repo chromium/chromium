@@ -7,6 +7,7 @@
 
 #include <ostream>
 
+#include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -62,6 +63,8 @@ class EnrollmentStatus {
 
   // Helpers for constructing errors for relevant cases.
   static EnrollmentStatus ForEnrollmentCode(Code code);
+  static EnrollmentStatus ForAttestationError(
+      ash::attestation::AttestationStatus attestation_status);
   static EnrollmentStatus ForRegistrationError(
       DeviceManagementStatus client_status);
   static EnrollmentStatus ForFetchError(DeviceManagementStatus client_status);
@@ -84,6 +87,9 @@ class EnrollmentStatus {
   ash::InstallAttributes::LockResult lock_status() const {
     return lock_status_;
   }
+  ash::attestation::AttestationStatus attestation_status() const {
+    return attestation_status_;
+  }
 
  private:
   Code enrollment_code_ = EnrollmentStatus::Code::kSuccess;
@@ -94,6 +100,8 @@ class EnrollmentStatus {
       CloudPolicyValidatorBase::Status::VALIDATION_OK;
   ash::InstallAttributes::LockResult lock_status_ =
       ash::InstallAttributes::LockResult::LOCK_SUCCESS;
+  ash::attestation::AttestationStatus attestation_status_ =
+      ash::attestation::ATTESTATION_SUCCESS;
 
   EnrollmentStatus();
 };

@@ -148,8 +148,17 @@ enum MetricEnrollment {
   kMetricEnrollmentMayNotBlockDevMode = 64,
   // Enrollment failed: Packaged license device invalid for KIOSK.
   kMetricEnrollmentInvalidPackagedDeviceForKIOSK = 65,
+  // A registration certificate could not be fetched from the PCA due to
+  // unspecified failure.
+  kMetricEnrollmentRegistrationCertificateFetchUnspecifiedFailure = 66,
+  // A registration certificate could not be fetched from the PCA due to
+  // bad request.
+  kMetricEnrollmentRegistrationCertificateFetchBadRequest = 67,
+  // A registration certificate could not be fetched from the PCA due to
+  // attestation not being available.
+  kMetricEnrollmentRegistrationCertificateFetchNotAvailable = 68,
   // Max value for use with enumeration histogram UMA functions.
-  kMaxValue = kMetricEnrollmentInvalidPackagedDeviceForKIOSK
+  kMaxValue = kMetricEnrollmentRegistrationCertificateFetchNotAvailable
 };
 
 // Events related to policy refresh.

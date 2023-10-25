@@ -56,6 +56,15 @@ EnrollmentStatus EnrollmentStatus::ForEnrollmentCode(Code enrollment_code) {
 }
 
 // static
+EnrollmentStatus EnrollmentStatus::ForAttestationError(
+    ash::attestation::AttestationStatus attestation_status) {
+  EnrollmentStatus status;
+  status.enrollment_code_ = Code::kRegistrationCertFetchFailed;
+  status.attestation_status_ = attestation_status;
+  return status;
+}
+
+// static
 EnrollmentStatus EnrollmentStatus::ForRegistrationError(
     DeviceManagementStatus client_status) {
   EnrollmentStatus status;

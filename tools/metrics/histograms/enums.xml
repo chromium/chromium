@@ -32958,7 +32958,8 @@ Called by update_document_policy_enum.py.-->
     Enrollment mode does not match already locked install attributes.
   </int>
   <int value="52" label="Registration certificate fetch fail">
-    A registration certificate could not be obtained from the PCA.
+    A registration certificate could not be obtained from the PCA. This value
+    aggregates other specific registration certificate errors.
   </int>
   <int value="53" label="Cannot sign enrollment request">
     The request to enroll could not be signed.
@@ -32998,6 +32999,19 @@ Called by update_document_policy_enum.py.-->
   </int>
   <int value="65" label="Invalid packaged device for kiosk">
     Packaged license device invalid for kiosk.
+  </int>
+  <int value="66"
+      label="Registration certificate fetch fail: unspecified failure">
+    A registration certificate could not be obtained from the PCA due to an
+    unspecified error.
+  </int>
+  <int value="67" label="Registration certificate fetch fail: bad request">
+    A registration certificate could not be obtained from the PCA due to a bad
+    request.
+  </int>
+  <int value="68" label="Registration certificate fetch fail: not available">
+    A registration certificate could not be obtained from the PCA due to the
+    attestation service not being available on the device.
   </int>
 </enum>
 
