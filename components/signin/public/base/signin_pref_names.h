@@ -37,6 +37,7 @@ extern const char kSigninInterceptionIDPCookiesUrl[];
 extern const char kProfileSeparationSettings[];
 extern const char kProfileSeparationDataMigrationSettings[];
 extern const char kProfileSeparationDomainExceptionList[];
+extern const char kUserCloudSigninPolicyResponseFromPolicyTestPage[];
 
 }  // namespace prefs
 

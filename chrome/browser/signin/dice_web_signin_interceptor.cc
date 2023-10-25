@@ -165,6 +165,8 @@ void DiceWebSigninInterceptor::RegisterProfilePrefs(
   registry->RegisterIntegerPref(prefs::kProfileSeparationDataMigrationSettings,
                                 1);
   registry->RegisterListPref(prefs::kProfileSeparationDomainExceptionList);
+  registry->RegisterStringPref(
+      prefs::kUserCloudSigninPolicyResponseFromPolicyTestPage, std::string());
 }
 
 absl::optional<SigninInterceptionHeuristicOutcome>
@@ -977,7 +979,9 @@ void DiceWebSigninInterceptor::
               ->GetSharedURLLoaderFactory());
   account_level_signin_restriction_policy_fetcher_
       ->GetManagedAccountsSigninRestriction(
-          identity_manager_, account_info.account_id, std::move(callback));
+          identity_manager_, account_info.account_id, std::move(callback),
+          std::make_unique<std::string>(profile_->GetPrefs()->GetString(
+              prefs::kUserCloudSigninPolicyResponseFromPolicyTestPage)));
 }
 
 void DiceWebSigninInterceptor::

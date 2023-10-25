@@ -125,4 +125,10 @@ const char kProfileSeparationDataMigrationSettings[] =
 const char kProfileSeparationDomainExceptionList[] =
     "profile_separation.domain_exception_list";
 
+// Response set by chrome://policy/test for
+// UserCloudSigninRestrictionPolicyFetcher::GetManagedAccountsSigninRestriction.
+// This is only used on Canary and for testing.
+const char kUserCloudSigninPolicyResponseFromPolicyTestPage[] =
+    "signin.user_cloud_signin_policy_response_from_policy_test_page";
+
 }  // namespace prefs

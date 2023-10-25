@@ -73,6 +73,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -281,7 +282,7 @@ void PolicyUIHandler::HandleCopyPoliciesJson(const base::Value::List& args) {
 
 void PolicyUIHandler::HandleSetLocalTestPolicies(
     const base::Value::List& args) {
-  std::string json_policies_string = args[1].GetString();
+  std::string policies = args[1].GetString();
 
   policy::LocalTestPolicyProvider* local_test_provider =
       static_cast<policy::LocalTestPolicyProvider*>(
@@ -290,17 +291,28 @@ void PolicyUIHandler::HandleSetLocalTestPolicies(
 
   CHECK(local_test_provider);
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+  std::string profile_separation_policy_response = args[2].GetString();
+  Profile::FromWebUI(web_ui())->GetPrefs()->SetString(
+      prefs::kUserCloudSigninPolicyResponseFromPolicyTestPage,
+      profile_separation_policy_response);
+#endif
+
   Profile::FromWebUI(web_ui())
       ->GetProfilePolicyConnector()
       ->UseLocalTestPolicyProvider();
 
-  local_test_provider->LoadJsonPolicies(json_policies_string);
+  local_test_provider->LoadJsonPolicies(policies);
   AllowJavascript();
   ResolveJavascriptCallback(args[0], true);
 }
 
 void PolicyUIHandler::HandleRevertLocalTestPolicies(
     const base::Value::List& args) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+  Profile::FromWebUI(web_ui())->GetPrefs()->ClearPref(
+      prefs::kUserCloudSigninPolicyResponseFromPolicyTestPage);
+#endif
   Profile::FromWebUI(web_ui())
       ->GetProfilePolicyConnector()
       ->RevertUseLocalTestPolicyProvider();

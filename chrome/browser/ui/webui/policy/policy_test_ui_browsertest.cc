@@ -34,6 +34,7 @@
 #include "components/policy/core/common/policy_utils.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -251,6 +252,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest,
 
   list_args.Append("setLocalTestPolicies");
   list_args.Append(jsonString);
+  list_args.Append("{}");
 
   web_ui()->HandleReceivedMessage("setLocalTestPolicies", list_args);
 
@@ -290,6 +292,12 @@ IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest,
     EXPECT_EQ(entry->source, policy::POLICY_SOURCE_CLOUD);
   }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(GetProfile()->GetPrefs()->GetString(
+                prefs::kUserCloudSigninPolicyResponseFromPolicyTestPage),
+            "{}");
+#endif
+
   list_args.clear();
   list_args.Append("revertLocalTestPolicies");
 
@@ -312,6 +320,11 @@ IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest,
         policy_map->Get(policy::key::kCloudReportingEnabled);
     EXPECT_FALSE(entry);
   }
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(GetProfile()->GetPrefs()->GetString(
+                prefs::kUserCloudSigninPolicyResponseFromPolicyTestPage),
+            "");
+#endif
 
   handler.reset();
 }
@@ -332,6 +345,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest, FilterSensitivePolicies) {
 
   list_args.Append("setLocalTestPolicies");
   list_args.Append(jsonString);
+  list_args.Append("");
 
   web_ui()->HandleReceivedMessage("setLocalTestPolicies", list_args);
 

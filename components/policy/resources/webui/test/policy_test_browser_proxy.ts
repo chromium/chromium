@@ -77,8 +77,9 @@ export const LevelNamesToValues: {[key: string]: PolicyLevel} = {
 let instance: PolicyTestBrowserProxy|null = null;
 
 export class PolicyTestBrowserProxy {
-  applyTestPolicies(jsonString: string) {
-    return sendWithPromise('setLocalTestPolicies', jsonString);
+  applyTestPolicies(policies: string, profileSeparationResponse: string) {
+    return sendWithPromise(
+        'setLocalTestPolicies', policies, profileSeparationResponse);
   }
 
   revertTestPolicies() {
