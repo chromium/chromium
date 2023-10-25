@@ -36,8 +36,8 @@ class CachedResultWriterTest : public testing::Test {
                                                  std::string());
 
     clock_.SetNow(base::Time::Now());
-    cached_result_writer_ =
-        std::make_unique<CachedResultWriter>(std::move(result_prefs_), &clock_);
+    cached_result_writer_ = std::make_unique<CachedResultWriter>(
+        client_result_prefs_.get(), &clock_);
   }
 
   proto::ClientResult CreateClientResult(

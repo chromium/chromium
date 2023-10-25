@@ -173,7 +173,8 @@ class TrainingDataCollectorImplTest
             .ToDeltaSinceWindowsEpoch()
             .InMicroseconds());
 
-    CachedResultWriter(std::make_unique<ClientResultPrefs>(&prefs_), &clock_)
+    result_prefs_ = std::make_unique<ClientResultPrefs>(&prefs_);
+    CachedResultWriter(result_prefs_.get(), &clock_)
         .UpdatePrefsIfExpired(configs_[1].get(), client_2_result,
                               PlatformOptions::CreateDefault());
     storage_service_ = std::make_unique<StorageService>(
@@ -184,7 +185,7 @@ class TrainingDataCollectorImplTest
         &ukm_data_manager_);
 
     cached_result_provider_ = std::make_unique<CachedResultProvider>(
-        &prefs_, storage_service_->config_holder()->configs());
+        result_prefs_.get(), storage_service_->config_holder()->configs());
 
     collector_ = std::make_unique<TrainingDataCollectorImpl>(
         PlatformOptions::CreateDefault(), &feature_list_processor_,
@@ -430,6 +431,7 @@ class TrainingDataCollectorImplTest
   std::vector<std::unique_ptr<Config>> configs_;
   NiceMock<MockUkmDataManager> ukm_data_manager_;
   std::unique_ptr<StorageService> storage_service_;
+  std::unique_ptr<ClientResultPrefs> result_prefs_;
   std::unique_ptr<CachedResultProvider> cached_result_provider_;
 };
 
@@ -1008,3 +1010,4 @@ TEST_P(TrainingDataCollectorImplTest,
 
 }  // namespace
 }  // namespace segmentation_platform
+

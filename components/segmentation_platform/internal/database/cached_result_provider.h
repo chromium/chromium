@@ -7,14 +7,11 @@
 
 #include <string>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "components/segmentation_platform/internal/database/client_result_prefs.h"
 #include "components/segmentation_platform/public/proto/prediction_result.pb.h"
-#include "components/segmentation_platform/public/result.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-class PrefService;
 
 namespace segmentation_platform {
 struct Config;
@@ -28,10 +25,7 @@ class ClientResultPrefs;
 // cache. The cache is only read once on startup and never updated thereafter.
 class CachedResultProvider {
  public:
-  CachedResultProvider(PrefService* pref_service,
-                       const std::vector<std::unique_ptr<Config>>& configs);
-
-  CachedResultProvider(std::unique_ptr<ClientResultPrefs> prefs,
+  CachedResultProvider(ClientResultPrefs* result_prefs,
                        const std::vector<std::unique_ptr<Config>>& configs);
   ~CachedResultProvider();
 
@@ -48,7 +42,7 @@ class CachedResultProvider {
   const raw_ref<const std::vector<std::unique_ptr<Config>>> configs_;
 
   // The underlying pref backed store to read the pref values from.
-  std::unique_ptr<ClientResultPrefs> result_prefs_;
+  const raw_ptr<ClientResultPrefs> result_prefs_;
 
   // Map to store unprocessed result from last session for all clients.
   std::map<std::string, proto::PredictionResult>

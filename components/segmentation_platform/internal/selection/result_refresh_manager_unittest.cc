@@ -80,7 +80,7 @@ class ResultRefreshManagerTest : public testing::Test {
     client_result_prefs_ = std::make_unique<ClientResultPrefs>(&pref_service);
     clock_.SetNow(base::Time::Now());
 
-    return std::make_unique<CachedResultWriter>(std::move(result_prefs),
+    return std::make_unique<CachedResultWriter>(client_result_prefs_.get(),
                                                 &clock_);
   }
 

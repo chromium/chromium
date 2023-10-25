@@ -25,8 +25,7 @@ class ClientResultPrefs;
 // results for the  client after model execution inorder to update it in prefs.
 class CachedResultWriter {
  public:
-  CachedResultWriter(std::unique_ptr<ClientResultPrefs> prefs,
-                     base::Clock* clock);
+  CachedResultWriter(ClientResultPrefs* prefs, base::Clock* clock);
 
   ~CachedResultWriter();
 
@@ -66,7 +65,7 @@ class CachedResultWriter {
                                     const proto::ClientResult& client_result);
 
   // Helper class to read/write results to the prefs.
-  std::unique_ptr<ClientResultPrefs> result_prefs_;
+  const raw_ptr<ClientResultPrefs> result_prefs_;
 
   // The time provider.
   const raw_ptr<base::Clock> clock_;

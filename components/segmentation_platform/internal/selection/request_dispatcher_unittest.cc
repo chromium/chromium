@@ -107,7 +107,7 @@ class RequestDispatcherTest : public testing::Test {
                                           std::string());
     client_result_prefs_ = std::make_unique<ClientResultPrefs>(&prefs_);
     auto cached_result_writer = std::make_unique<CachedResultWriter>(
-        std::make_unique<ClientResultPrefs>(&prefs_), &clock_);
+        client_result_prefs_.get(), &clock_);
     cached_result_writer_ = cached_result_writer.get();
     storage_service_ = std::make_unique<StorageService>(
         nullptr, nullptr, nullptr, nullptr, std::move(config_holder),

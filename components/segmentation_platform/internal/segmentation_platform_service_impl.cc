@@ -87,7 +87,8 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
   const auto* config_holder = storage_service_->config_holder();
 
   prefs_migrator_ = std::make_unique<PrefsMigrator>(
-      init_params->profile_prefs.get(), config_holder->configs());
+      init_params->profile_prefs.get(), storage_service_->client_result_prefs(),
+      config_holder->configs());
 
   // Construct signal processors.
   signal_handler_.Initialize(

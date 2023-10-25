@@ -14,9 +14,9 @@
 
 namespace segmentation_platform {
 
-CachedResultWriter::CachedResultWriter(std::unique_ptr<ClientResultPrefs> prefs,
+CachedResultWriter::CachedResultWriter(ClientResultPrefs* prefs,
                                        base::Clock* clock)
-    : result_prefs_(std::move(prefs)), clock_(clock) {}
+    : result_prefs_(prefs), clock_(clock) {}
 
 CachedResultWriter::~CachedResultWriter() = default;
 

@@ -14,6 +14,7 @@
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/segmentation_platform/internal/database/cached_result_provider.h"
 #include "components/segmentation_platform/internal/database/cached_result_writer.h"
+#include "components/segmentation_platform/internal/database/client_result_prefs.h"
 #include "components/segmentation_platform/internal/database/config_holder.h"
 #include "components/segmentation_platform/internal/execution/model_manager.h"
 #include "components/segmentation_platform/internal/execution/model_manager_impl.h"
@@ -145,6 +146,10 @@ class StorageService {
 
   UkmDataManager* ukm_data_manager() { return ukm_data_manager_; }
 
+  ClientResultPrefs* client_result_prefs() {
+    return client_result_prefs_.get();
+  }
+
   void set_cached_result_writer_for_testing(
       std::unique_ptr<CachedResultWriter> writer) {
     cached_result_writer_ = std::move(writer);
@@ -163,6 +168,8 @@ class StorageService {
 
   // All client Configs.
   std::unique_ptr<ConfigHolder> config_holder_;
+
+  std::unique_ptr<ClientResultPrefs> client_result_prefs_;
 
   // Result cache.
   std::unique_ptr<CachedResultProvider> cached_result_provider_;

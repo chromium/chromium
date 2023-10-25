@@ -18,13 +18,7 @@
 namespace segmentation_platform {
 
 CachedResultProvider::CachedResultProvider(
-    PrefService* pref_service,
-    const std::vector<std::unique_ptr<Config>>& configs)
-    : CachedResultProvider(std::make_unique<ClientResultPrefs>(pref_service),
-                           configs) {}
-
-CachedResultProvider::CachedResultProvider(
-    std::unique_ptr<ClientResultPrefs> prefs,
+    ClientResultPrefs* prefs,
     const std::vector<std::unique_ptr<Config>>& configs)
     : configs_(configs), result_prefs_(std::move(prefs)) {
   for (const auto& config : *configs_) {

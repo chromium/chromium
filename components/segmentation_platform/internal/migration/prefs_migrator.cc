@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/migration/prefs_migrator.h"
 
+#include "components/segmentation_platform/internal/database/client_result_prefs.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/migration/result_migration_utils.h"
 #include "components/segmentation_platform/public/config.h"
@@ -13,10 +14,10 @@ namespace segmentation_platform {
 
 PrefsMigrator::PrefsMigrator(
     PrefService* pref_service,
+    ClientResultPrefs* client_prefs,
     const std::vector<std::unique_ptr<Config>>& configs)
-    : configs_(configs) {
+    : configs_(configs), new_prefs_(client_prefs) {
   old_prefs_ = std::make_unique<SegmentationResultPrefs>(pref_service);
-  new_prefs_ = std::make_unique<ClientResultPrefs>(pref_service);
 }
 
 PrefsMigrator::~PrefsMigrator() = default;
