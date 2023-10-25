@@ -7,6 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -28,6 +29,8 @@ constexpr char kNameKey[] = "name";
 constexpr char kShortNameKey[] = "short_name";
 constexpr char kAdditionalSearchTermsKey[] = "additional_search_terms";
 constexpr char kIconResourceIdKey[] = "icon_resource_id";
+constexpr char kLastLaunchTimeKey[] = "last_launch_time";
+constexpr char kInstallTimeKey[] = "install_time";
 constexpr char kInstallReasonKey[] = "install_reason";
 constexpr char kInstallSourceKey[] = "install_source";
 constexpr char kIsPlatformAppKey[] = "is_platform_app";
@@ -154,6 +157,16 @@ base::Value AppStorageFileHandler::ConvertAppsToValue(
       app_details_dict.Set(kIconResourceIdKey, app->icon_key->resource_id);
     }
 
+    if (app->last_launch_time.has_value()) {
+      app_details_dict.Set(kLastLaunchTimeKey,
+                           base::TimeToValue(app->last_launch_time.value()));
+    }
+
+    if (app->install_time.has_value()) {
+      app_details_dict.Set(kInstallTimeKey,
+                           base::TimeToValue(app->install_time.value()));
+    }
+
     if (app->install_reason != InstallReason::kUnknown) {
       app_details_dict.Set(kInstallReasonKey,
                            static_cast<int>(app->install_reason));
@@ -238,6 +251,9 @@ std::unique_ptr<AppInfo> AppStorageFileHandler::ConvertValueToApps(
           apps::IconKey(apps::IconKey::kDoesNotChangeOverTime,
                         icon_resource_id.value(), apps::IconEffects::kNone);
     }
+
+    app->last_launch_time = base::ValueToTime(value->Find(kLastLaunchTimeKey));
+    app->install_time = base::ValueToTime(value->Find(kInstallTimeKey));
 
     auto* additional_search_terms = value->FindList(kAdditionalSearchTermsKey);
     if (additional_search_terms) {

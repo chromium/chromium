@@ -16,6 +16,7 @@
 #include "base/task/task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_effects.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
@@ -112,6 +113,8 @@ class AppStorageFileHandlerTest : public testing::Test {
     app2->icon_key =
         apps::IconKey(apps::IconKey::kDoesNotChangeOverTime,
                       /*resource_id=*/65535, apps::IconEffects::kNone);
+    app2->last_launch_time = base::Time() + base::Days(2);
+    app2->install_time = base::Time() + base::Days(1);
     app2->install_reason = InstallReason::kUser;
     app2->install_source = InstallSource::kBrowser;
     app2->is_platform_app = false;

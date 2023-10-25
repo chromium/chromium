@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_storage/app_storage_file_handler.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -160,6 +161,8 @@ class AppStorageTest : public testing::Test {
     app2->icon_key =
         apps::IconKey(apps::IconKey::kDoesNotChangeOverTime,
                       /*resource_id=*/65535, apps::IconEffects::kNone);
+    app2->last_launch_time = base::Time() + base::Days(2);
+    app2->install_time = base::Time() + base::Days(1);
     app2->install_reason = InstallReason::kUser;
     app2->install_source = InstallSource::kBrowser;
     app2->is_platform_app = false;
@@ -183,10 +186,8 @@ class AppStorageTest : public testing::Test {
   MODIFY_FIELD(name, kAppName2)
   MODIFY_FIELD(short_name, kAppShortName2)
   MODIFY_FIELD(additional_search_terms, {"term1"})
-  MODIFY_FIELD(icon_key,
-               apps::IconKey(apps::IconKey::kDoesNotChangeOverTime,
-                             /*resource_id=*/65535,
-                             apps::IconEffects::kNone))
+  MODIFY_FIELD(last_launch_time, base::Time() + base::Days(2))
+  MODIFY_FIELD(install_time, base::Time() + base::Days(1))
   MODIFY_FIELD(install_reason, InstallReason::kDefault)
   MODIFY_FIELD(install_source, InstallSource::kSync)
   MODIFY_FIELD(is_platform_app, true)
@@ -321,6 +322,9 @@ TEST_F(AppStorageTest, ReadAndWriteMultipleApps) {
 
   VERIFY_MODIFY_FIELD(name, kAppName2);
   VERIFY_MODIFY_FIELD(short_name, kAppShortName2);
+  VERIFY_MODIFY_FIELD(additional_search_terms, {"term1"});
+  VERIFY_MODIFY_FIELD(last_launch_time, base::Time() + base::Days(2));
+  VERIFY_MODIFY_FIELD(install_time, base::Time() + base::Days(1));
   VERIFY_MODIFY_FIELD(install_reason, InstallReason::kDefault);
   VERIFY_MODIFY_FIELD(install_source, InstallSource::kSync);
   VERIFY_MODIFY_FIELD(is_platform_app, true);

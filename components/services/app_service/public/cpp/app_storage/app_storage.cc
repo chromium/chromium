@@ -152,6 +152,9 @@ bool AppStorage::IsAppChanged(const apps::AppUpdate& update) {
     return true;
   }
 
+  IS_APP_VALUE_CHANGED(last_launch_time);
+  IS_APP_VALUE_CHANGED(install_time);
+
   IS_APP_VALUE_CHANGED_FOR_ENUM(install_reason, InstallReason::kUnknown)
   IS_APP_VALUE_CHANGED_FOR_ENUM(install_source, InstallSource::kUnknown)
 
