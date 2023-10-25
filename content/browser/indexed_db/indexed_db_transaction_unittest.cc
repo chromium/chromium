@@ -183,8 +183,7 @@ TEST_F(IndexedDBTransactionTest, Timeout) {
   const leveldb::Status commit_success = leveldb::Status::OK();
   std::unique_ptr<IndexedDBConnection> connection = CreateConnection();
   IndexedDBTransaction* transaction = connection->CreateTransaction(
-      mojo::NullAssociatedReceiver(), id, scope,
-      blink::mojom::IDBTransactionMode::ReadWrite,
+      id, scope, blink::mojom::IDBTransactionMode::ReadWrite,
       new IndexedDBFakeBackingStore::FakeTransaction(commit_success));
   db_->RegisterAndScheduleTransaction(transaction);
 
@@ -227,8 +226,7 @@ TEST_F(IndexedDBTransactionTest, TimeoutPreemptive) {
   const leveldb::Status commit_success = leveldb::Status::OK();
   std::unique_ptr<IndexedDBConnection> connection = CreateConnection();
   IndexedDBTransaction* transaction = connection->CreateTransaction(
-      mojo::NullAssociatedReceiver(), id, scope,
-      blink::mojom::IDBTransactionMode::ReadWrite,
+      id, scope, blink::mojom::IDBTransactionMode::ReadWrite,
       new IndexedDBFakeBackingStore::FakeTransaction(commit_success));
   db_->RegisterAndScheduleTransaction(transaction);
 
@@ -291,8 +289,7 @@ TEST_F(IndexedDBTransactionTest, NoTimeoutReadOnly) {
   const leveldb::Status commit_success = leveldb::Status::OK();
   std::unique_ptr<IndexedDBConnection> connection = CreateConnection();
   IndexedDBTransaction* transaction = connection->CreateTransaction(
-      mojo::NullAssociatedReceiver(), id, scope,
-      blink::mojom::IDBTransactionMode::ReadOnly,
+      id, scope, blink::mojom::IDBTransactionMode::ReadOnly,
       new IndexedDBFakeBackingStore::FakeTransaction(commit_success));
   db_->RegisterAndScheduleTransaction(transaction);
 
@@ -324,7 +321,7 @@ TEST_P(IndexedDBTransactionTestMode, ScheduleNormalTask) {
   const leveldb::Status commit_success = leveldb::Status::OK();
   std::unique_ptr<IndexedDBConnection> connection = CreateConnection();
   IndexedDBTransaction* transaction = connection->CreateTransaction(
-      mojo::NullAssociatedReceiver(), id, scope, GetParam(),
+      id, scope, GetParam(),
       new IndexedDBFakeBackingStore::FakeTransaction(commit_success));
 
   EXPECT_FALSE(transaction->HasPendingTasks());
@@ -376,7 +373,7 @@ TEST_P(IndexedDBTransactionTestMode, TaskFails) {
   const leveldb::Status commit_success = leveldb::Status::OK();
   std::unique_ptr<IndexedDBConnection> connection = CreateConnection();
   IndexedDBTransaction* transaction = connection->CreateTransaction(
-      mojo::NullAssociatedReceiver(), id, scope, GetParam(),
+      id, scope, GetParam(),
       new IndexedDBFakeBackingStore::FakeTransaction(commit_success));
 
   EXPECT_FALSE(transaction->HasPendingTasks());
@@ -431,8 +428,7 @@ TEST_F(IndexedDBTransactionTest, SchedulePreemptiveTask) {
   const leveldb::Status commit_failure = leveldb::Status::Corruption("Ouch.");
   std::unique_ptr<IndexedDBConnection> connection = CreateConnection();
   IndexedDBTransaction* transaction = connection->CreateTransaction(
-      mojo::NullAssociatedReceiver(), id, scope,
-      blink::mojom::IDBTransactionMode::VersionChange,
+      id, scope, blink::mojom::IDBTransactionMode::VersionChange,
       new IndexedDBFakeBackingStore::FakeTransaction(commit_failure));
 
   EXPECT_FALSE(transaction->HasPendingTasks());
@@ -483,7 +479,7 @@ TEST_P(IndexedDBTransactionTestMode, AbortTasks) {
   const leveldb::Status commit_failure = leveldb::Status::Corruption("Ouch.");
   std::unique_ptr<IndexedDBConnection> connection = CreateConnection();
   IndexedDBTransaction* transaction = connection->CreateTransaction(
-      mojo::NullAssociatedReceiver(), id, scope, GetParam(),
+      id, scope, GetParam(),
       new IndexedDBFakeBackingStore::FakeTransaction(commit_failure));
   db_->RegisterAndScheduleTransaction(transaction);
 
@@ -509,7 +505,7 @@ TEST_P(IndexedDBTransactionTestMode, AbortPreemptive) {
   const leveldb::Status commit_success = leveldb::Status::OK();
   std::unique_ptr<IndexedDBConnection> connection = CreateConnection();
   IndexedDBTransaction* transaction = connection->CreateTransaction(
-      mojo::NullAssociatedReceiver(), id, scope, GetParam(),
+      id, scope, GetParam(),
       new IndexedDBFakeBackingStore::FakeTransaction(commit_success));
   db_->RegisterAndScheduleTransaction(transaction);
 
@@ -568,8 +564,7 @@ TEST_F(IndexedDBTransactionTest, AbortCancelsLockRequest) {
   const std::set<int64_t> scope = {object_store_id};
   std::unique_ptr<IndexedDBConnection> connection = CreateConnection();
   IndexedDBTransaction* transaction = connection->CreateTransaction(
-      mojo::NullAssociatedReceiver(), id, scope,
-      blink::mojom::IDBTransactionMode::ReadWrite,
+      id, scope, blink::mojom::IDBTransactionMode::ReadWrite,
       new IndexedDBFakeBackingStore::FakeTransaction(leveldb::Status::OK()));
 
   // Acquire a lock to block the transaction's lock acquisition.
@@ -616,8 +611,7 @@ TEST_F(IndexedDBTransactionTest, PostedStartTaskRunAfterAbort) {
   std::unique_ptr<IndexedDBConnection> connection = CreateConnection();
 
   IndexedDBTransaction* transaction1 = connection->CreateTransaction(
-      mojo::NullAssociatedReceiver(), id, scope,
-      blink::mojom::IDBTransactionMode::ReadWrite,
+      id, scope, blink::mojom::IDBTransactionMode::ReadWrite,
       new IndexedDBFakeBackingStore::FakeTransaction(leveldb::Status::OK()));
 
   db_->RegisterAndScheduleTransaction(transaction1);
@@ -625,8 +619,7 @@ TEST_F(IndexedDBTransactionTest, PostedStartTaskRunAfterAbort) {
 
   // Register another transaction, which will block on the first transaction.
   IndexedDBTransaction* transaction2 = connection->CreateTransaction(
-      mojo::NullAssociatedReceiver(), ++id, scope,
-      blink::mojom::IDBTransactionMode::ReadWrite,
+      ++id, scope, blink::mojom::IDBTransactionMode::ReadWrite,
       new IndexedDBFakeBackingStore::FakeTransaction(leveldb::Status::OK()));
 
   db_->RegisterAndScheduleTransaction(transaction2);
@@ -659,8 +652,7 @@ TEST_F(IndexedDBTransactionTest, IsTransactionBlockingOthers) {
   const std::set<int64_t> scope = {object_store_id};
   std::unique_ptr<IndexedDBConnection> connection = CreateConnection();
   IndexedDBTransaction* transaction = connection->CreateTransaction(
-      mojo::NullAssociatedReceiver(), id, scope,
-      blink::mojom::IDBTransactionMode::ReadWrite,
+      id, scope, blink::mojom::IDBTransactionMode::ReadWrite,
       new IndexedDBFakeBackingStore::FakeTransaction(leveldb::Status::OK()));
   db_->RegisterAndScheduleTransaction(transaction);
 
@@ -671,8 +663,7 @@ TEST_F(IndexedDBTransactionTest, IsTransactionBlockingOthers) {
 
   const int64_t id2 = 1;
   IndexedDBTransaction* transaction2 = connection->CreateTransaction(
-      mojo::NullAssociatedReceiver(), id2, scope,
-      blink::mojom::IDBTransactionMode::ReadWrite,
+      id2, scope, blink::mojom::IDBTransactionMode::ReadWrite,
       new IndexedDBFakeBackingStore::FakeTransaction(leveldb::Status::OK()));
   db_->RegisterAndScheduleTransaction(transaction2);
 

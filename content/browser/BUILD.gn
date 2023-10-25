@@ -1138,6 +1138,8 @@ source_set("browser") {
     "indexed_db/list_set.h",
     "indexed_db/mock_browsertest_indexed_db_class_factory.cc",
     "indexed_db/mock_browsertest_indexed_db_class_factory.h",
+    "indexed_db/transaction_impl.cc",
+    "indexed_db/transaction_impl.h",
     "installedapp/installed_app_provider_impl.cc",
     "installedapp/installed_app_provider_impl.h",
     "interest_group/ad_auction_document_data.cc",

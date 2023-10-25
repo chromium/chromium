@@ -146,7 +146,7 @@ TEST_F(IndexedDBDatabaseTest, ConnectionLifecycle) {
   auto connection1 = std::make_unique<IndexedDBPendingConnection>(
       std::make_unique<ThunkFactoryClient>(request1), callbacks1,
       transaction_id1, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
-      mojo::NullAssociatedReceiver());
+      base::DoNothing());
   db_->ScheduleOpenConnection(std::move(connection1),
                               CreateTestClientStateWrapper());
   RunPostedTasks();
@@ -157,7 +157,7 @@ TEST_F(IndexedDBDatabaseTest, ConnectionLifecycle) {
   auto connection2 = std::make_unique<IndexedDBPendingConnection>(
       std::make_unique<ThunkFactoryClient>(request2), callbacks2,
       transaction_id2, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
-      mojo::NullAssociatedReceiver());
+      base::DoNothing());
   db_->ScheduleOpenConnection(std::move(connection2),
                               CreateTestClientStateWrapper());
   RunPostedTasks();
@@ -182,7 +182,7 @@ TEST_F(IndexedDBDatabaseTest, ForcedClose) {
   auto connection = std::make_unique<IndexedDBPendingConnection>(
       std::make_unique<ThunkFactoryClient>(request), callbacks,
       upgrade_transaction_id, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
-      mojo::NullAssociatedReceiver());
+      base::DoNothing());
   db_->ScheduleOpenConnection(std::move(connection),
                               CreateTestClientStateWrapper());
   RunPostedTasks();
@@ -192,8 +192,7 @@ TEST_F(IndexedDBDatabaseTest, ForcedClose) {
   const int64_t transaction_id = 123;
   const std::vector<int64_t> scope;
   IndexedDBTransaction* transaction = request.connection()->CreateTransaction(
-      mojo::NullAssociatedReceiver(), transaction_id,
-      std::set<int64_t>(scope.begin(), scope.end()),
+      transaction_id, std::set<int64_t>(scope.begin(), scope.end()),
       blink::mojom::IDBTransactionMode::ReadOnly,
       new IndexedDBBackingStore::Transaction(
           bucket_context_->backing_store()->AsWeakPtr(),
@@ -244,7 +243,7 @@ TEST_F(IndexedDBDatabaseTest, PendingDelete) {
   auto connection = std::make_unique<IndexedDBPendingConnection>(
       std::make_unique<ThunkFactoryClient>(request1), callbacks1,
       transaction_id1, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
-      mojo::NullAssociatedReceiver());
+      base::DoNothing());
   db_->ScheduleOpenConnection(std::move(connection),
                               CreateTestClientStateWrapper());
   RunPostedTasks();
@@ -288,7 +287,7 @@ TEST_F(IndexedDBDatabaseTest, OpenDeleteClear) {
   const int64_t transaction_id1 = 1;
   auto connection1 = std::make_unique<IndexedDBPendingConnection>(
       std::make_unique<ThunkFactoryClient>(request1), callbacks1,
-      transaction_id1, kDatabaseVersion, mojo::NullAssociatedReceiver());
+      transaction_id1, kDatabaseVersion, base::DoNothing());
   db_->ScheduleOpenConnection(std::move(connection1),
                               CreateTestClientStateWrapper());
   RunPostedTasks();
@@ -303,7 +302,7 @@ TEST_F(IndexedDBDatabaseTest, OpenDeleteClear) {
   const int64_t transaction_id2 = 2;
   auto connection2 = std::make_unique<IndexedDBPendingConnection>(
       std::make_unique<ThunkFactoryClient>(request2), callbacks2,
-      transaction_id2, kDatabaseVersion, mojo::NullAssociatedReceiver());
+      transaction_id2, kDatabaseVersion, base::DoNothing());
   db_->ScheduleOpenConnection(std::move(connection2),
                               CreateTestClientStateWrapper());
   RunPostedTasks();
@@ -318,7 +317,7 @@ TEST_F(IndexedDBDatabaseTest, OpenDeleteClear) {
   const int64_t transaction_id3 = 3;
   auto connection3 = std::make_unique<IndexedDBPendingConnection>(
       std::make_unique<ThunkFactoryClient>(request3), callbacks3,
-      transaction_id3, kDatabaseVersion, mojo::NullAssociatedReceiver());
+      transaction_id3, kDatabaseVersion, base::DoNothing());
   db_->ScheduleOpenConnection(std::move(connection3),
                               CreateTestClientStateWrapper());
   RunPostedTasks();
@@ -348,7 +347,7 @@ TEST_F(IndexedDBDatabaseTest, ForceDelete) {
   auto connection = std::make_unique<IndexedDBPendingConnection>(
       std::make_unique<ThunkFactoryClient>(request1), callbacks1,
       transaction_id1, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
-      mojo::NullAssociatedReceiver());
+      base::DoNothing());
   db_->ScheduleOpenConnection(std::move(connection),
                               CreateTestClientStateWrapper());
   RunPostedTasks();
@@ -381,7 +380,7 @@ TEST_F(IndexedDBDatabaseTest, ForceCloseWhileOpenPending) {
   auto connection1 = std::make_unique<IndexedDBPendingConnection>(
       std::make_unique<ThunkFactoryClient>(request1), callbacks1,
       transaction_id1, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
-      mojo::NullAssociatedReceiver());
+      base::DoNothing());
   db_->ScheduleOpenConnection(std::move(connection1),
                               CreateTestClientStateWrapper());
   RunPostedTasks();
@@ -396,7 +395,7 @@ TEST_F(IndexedDBDatabaseTest, ForceCloseWhileOpenPending) {
   const int64_t transaction_id2 = 2;
   auto connection2 = std::make_unique<IndexedDBPendingConnection>(
       std::make_unique<ThunkFactoryClient>(request1), callbacks1,
-      transaction_id2, 3, mojo::NullAssociatedReceiver());
+      transaction_id2, 3, base::DoNothing());
   db_->ScheduleOpenConnection(std::move(connection2),
                               CreateTestClientStateWrapper());
   RunPostedTasks();
@@ -419,7 +418,7 @@ TEST_F(IndexedDBDatabaseTest, ForceCloseWhileOpenAndDeletePending) {
   auto connection1 = std::make_unique<IndexedDBPendingConnection>(
       std::make_unique<ThunkFactoryClient>(request1), callbacks1,
       transaction_id1, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
-      mojo::NullAssociatedReceiver());
+      base::DoNothing());
   db_->ScheduleOpenConnection(std::move(connection1),
                               CreateTestClientStateWrapper());
   RunPostedTasks();
@@ -433,7 +432,7 @@ TEST_F(IndexedDBDatabaseTest, ForceCloseWhileOpenAndDeletePending) {
   const int64_t transaction_id2 = 2;
   auto connection2 = std::make_unique<IndexedDBPendingConnection>(
       std::make_unique<ThunkFactoryClient>(request1), callbacks2,
-      transaction_id2, 3, mojo::NullAssociatedReceiver());
+      transaction_id2, 3, base::DoNothing());
   db_->ScheduleOpenConnection(std::move(connection2),
                               CreateTestClientStateWrapper());
   RunPostedTasks();
@@ -508,7 +507,7 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
     auto connection = std::make_unique<IndexedDBPendingConnection>(
         std::make_unique<ThunkFactoryClient>(request_), std::move(callbacks_),
         transaction_id, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
-        mojo::NullAssociatedReceiver());
+        base::DoNothing());
     mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker> remote;
     db_->ScheduleOpenConnection(
         std::move(connection),
@@ -518,8 +517,9 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
     EXPECT_EQ(IndexedDBDatabaseMetadata::NO_VERSION, db_->metadata().version);
 
     EXPECT_TRUE(request_.connection());
-    transaction_ = request_.connection()->CreateVersionChangeTransaction(
+    transaction_ = request_.connection()->CreateTransaction(
         transaction_id, /*scope=*/std::set<int64_t>(),
+        blink::mojom::IDBTransactionMode::VersionChange,
         new IndexedDBFakeBackingStore::FakeTransaction(commit_success_));
     db_->RegisterAndScheduleTransaction(transaction_);
 

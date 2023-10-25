@@ -59,6 +59,7 @@
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
 #include "content/browser/indexed_db/indexed_db_tombstone_sweeper.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
+#include "content/browser/indexed_db/transaction_impl.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
@@ -299,9 +300,11 @@ void IndexedDBFactory::Open(
   const storage::BucketLocator bucket_locator = bucket->ToBucketLocator();
   const base::FilePath data_directory = context_->GetDataPath(bucket_locator);
 
+  auto create_transaction_callback = base::BindOnce(
+      &TransactionImpl::CreateAndBind, std::move(transaction_receiver));
   auto connection = std::make_unique<IndexedDBPendingConnection>(
       std::move(callbacks), std::move(database_callbacks), transaction_id,
-      version, std::move(transaction_receiver));
+      version, std::move(create_transaction_callback));
 
   IndexedDBDatabase::Identifier unique_identifier(bucket_locator, name);
   IndexedDBBucketContextHandle bucket_context_handle;

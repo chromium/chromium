@@ -63,14 +63,8 @@ class CONTENT_EXPORT IndexedDBConnection {
     return weak_factory_.GetWeakPtr();
   }
 
-  IndexedDBTransaction* CreateVersionChangeTransaction(
-      int64_t id,
-      const std::set<int64_t>& scope,
-      IndexedDBBackingStore::Transaction* backing_store_transaction);
-
+  // Creates a transaction for this connection.
   IndexedDBTransaction* CreateTransaction(
-      mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction>
-          transaction_receiver,
       int64_t id,
       const std::set<int64_t>& scope,
       blink::mojom::IDBTransactionMode mode,
