@@ -41,7 +41,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
-#include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace ash {
@@ -234,11 +234,11 @@ class GlanceablesTaskView::TaskTitleButton : public views::LabelButton {
 GlanceablesTaskView::GlanceablesTaskView(
     const GlanceablesTask* task,
     MarkAsCompletedCallback mark_as_completed_callback,
-    UpdateCallback update_callback)
-    : task_id_(task->id),
-      task_title_(base::UTF8ToUTF16(task->title)),
+    SaveCallback save_callback)
+    : task_id_(task ? task->id : ""),
+      task_title_(task ? base::UTF8ToUTF16(task->title) : u""),
       mark_as_completed_callback_(std::move(mark_as_completed_callback)),
-      update_callback_(std::move(update_callback)) {
+      save_callback_(std::move(save_callback)) {
   SetAccessibleRole(ax::mojom::Role::kListItem);
 
   SetBackground(views::CreateThemedRoundedRectBackground(
@@ -259,7 +259,12 @@ GlanceablesTaskView::GlanceablesTaskView(
                                views::MaximumFlexSizeRule::kUnbounded));
 
   tasks_title_view_ =
-      contents_view_->AddChildView(std::make_unique<views::BoxLayoutView>());
+      contents_view_->AddChildView(std::make_unique<views::FlexLayoutView>());
+  tasks_title_view_->SetDefault(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded));
+
   tasks_details_view_ =
       contents_view_->AddChildView(std::make_unique<views::FlexLayoutView>());
   tasks_details_view_->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
@@ -268,7 +273,7 @@ GlanceablesTaskView::GlanceablesTaskView(
   UpdateTaskTitleViewForState(TaskTitleViewState::kView);
 
   std::vector<std::u16string> details;
-  if (task->due.has_value()) {
+  if (task && task->due.has_value()) {
     tasks_details_view_->AddChildView(
         CreateSecondRowIcon(kGlanceablesTasksDueDateIcon));
 
@@ -290,14 +295,14 @@ GlanceablesTaskView::GlanceablesTaskView(
     due_date_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
   }
 
-  if (task->has_subtasks) {
+  if (task && task->has_subtasks) {
     details.push_back(l10n_util::GetStringUTF16(
         IDS_GLANCEABLES_TASKS_TASK_ITEM_HAS_SUBTASK_ACCESSIBLE_DESCRIPTION));
     tasks_details_view_->AddChildView(
         CreateSecondRowIcon(kGlanceablesSubtaskIcon));
   }
 
-  if (task->has_notes) {
+  if (task && task->has_notes) {
     details.push_back(l10n_util::GetStringUTF16(
         IDS_GLANCEABLES_TASKS_TASK_ITEM_HAS_DETAILS_ACCESSIBLE_DESCRIPTION));
     tasks_details_view_->AddChildView(
@@ -313,7 +318,7 @@ GlanceablesTaskView::GlanceablesTaskView(
   button_->SetProperty(views::kMarginsKey, double_row ? kDoubleRowButtonMargin
                                                       : kSingleRowButtonMargin);
 
-  auto a11y_description = base::UTF8ToUTF16(task->title);
+  auto a11y_description = task_title_;
   if (!details.empty()) {
     a11y_description += u". ";
     a11y_description += l10n_util::GetStringFUTF16(
@@ -332,28 +337,6 @@ const views::ImageButton* GlanceablesTaskView::GetButtonForTest() const {
 
 bool GlanceablesTaskView::GetCompletedForTest() const {
   return button_->checked();
-}
-
-void GlanceablesTaskView::CheckButtonPressed() {
-  bool target_state = !button_->checked();
-  // Visually mark the task as completed.
-  button_->SetChecked(target_state);
-  if (task_title_button_) {
-    task_title_button_->UpdateLabelForState(/*completed=*/target_state);
-  }
-  RecordTaskMarkedAsCompleted(target_state);
-  mark_as_completed_callback_.Run(task_id_, /*completed=*/target_state);
-}
-
-void GlanceablesTaskView::TaskTitleButtonPressed() {
-  // TODO(b/301253574): notify siblings to switch to `kView`.
-  UpdateTaskTitleViewForState(TaskTitleViewState::kEdit);
-}
-
-void GlanceablesTaskView::OnFinishedEditing(const std::u16string& title) {
-  task_title_ = title;
-  update_callback_.Run(task_id_, base::UTF16ToUTF8(task_title_));
-  UpdateTaskTitleViewForState(TaskTitleViewState::kView);
 }
 
 void GlanceablesTaskView::UpdateTaskTitleViewForState(
@@ -376,11 +359,32 @@ void GlanceablesTaskView::UpdateTaskTitleViewForState(
               task_title_,
               base::BindOnce(&GlanceablesTaskView::OnFinishedEditing,
                              base::Unretained(this))));
-      tasks_title_view_->SetFlexForView(text_field, /*flex=*/1);
       GetWidget()->widget_delegate()->SetCanActivate(true);
       text_field->RequestFocus();
       break;
   }
+}
+
+void GlanceablesTaskView::CheckButtonPressed() {
+  bool target_state = !button_->checked();
+  // Visually mark the task as completed.
+  button_->SetChecked(target_state);
+  if (task_title_button_) {
+    task_title_button_->UpdateLabelForState(/*completed=*/target_state);
+  }
+  RecordTaskMarkedAsCompleted(target_state);
+  mark_as_completed_callback_.Run(task_id_, /*completed=*/target_state);
+}
+
+void GlanceablesTaskView::TaskTitleButtonPressed() {
+  // TODO(b/301253574): notify siblings to switch to `kView`.
+  UpdateTaskTitleViewForState(TaskTitleViewState::kEdit);
+}
+
+void GlanceablesTaskView::OnFinishedEditing(const std::u16string& title) {
+  task_title_ = title;
+  UpdateTaskTitleViewForState(TaskTitleViewState::kView);
+  save_callback_.Run(task_id_, base::UTF16ToUTF8(task_title_));
 }
 
 BEGIN_METADATA(GlanceablesTaskView, views::View)

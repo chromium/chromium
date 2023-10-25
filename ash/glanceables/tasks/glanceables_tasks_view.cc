@@ -122,6 +122,10 @@ GlanceablesTasksView::GlanceablesTasksView(
   progress_bar_ = AddChildView(std::make_unique<GlanceablesProgressBarView>());
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
 
+  add_new_task_button_ = AddChildView(CreateAddNewTaskButton(
+      base::BindRepeating(&GlanceablesTasksView::AddNewTaskButtonPressed,
+                          base::Unretained(this))));
+
   task_items_container_view_ = AddChildView(std::make_unique<views::View>());
   task_items_container_view_->SetAccessibleRole(ax::mojom::Role::kList);
 
@@ -135,11 +139,6 @@ GlanceablesTasksView::GlanceablesTasksView(
       std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical));
   layout->set_between_child_spacing(2);
-
-  add_new_task_button_ =
-      AddChildView(CreateAddNewTaskButton(base::BindRepeating(
-          &GlanceablesTasksView::ActionButtonPressed, base::Unretained(this),
-          TasksLaunchSource::kAddNewTaskButton)));
 
   auto* const header_icon =
       tasks_header_view_->AddChildView(std::make_unique<IconButton>(
@@ -206,6 +205,29 @@ void GlanceablesTasksView::ActionButtonPressed(TasksLaunchSource source) {
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
+void GlanceablesTasksView::AddNewTaskButtonPressed() {
+  const auto* const active_task_list = tasks_combobox_model_->GetTaskListAt(
+      task_list_combo_box_view_->GetSelectedIndex().value());
+  // TODO(b/301253574): make sure there is only one view is in `kEdit` state.
+  auto* const pending_task = task_items_container_view_->AddChildViewAt(
+      CreateTaskView(active_task_list->id, /*task=*/nullptr),
+      /*index=*/0);
+  pending_task->UpdateTaskTitleViewForState(
+      GlanceablesTaskView::TaskTitleViewState::kEdit);
+  PreferredSizeChanged();
+}
+
+std::unique_ptr<GlanceablesTaskView> GlanceablesTasksView::CreateTaskView(
+    const std::string& task_list_id,
+    const GlanceablesTask* task) {
+  return std::make_unique<GlanceablesTaskView>(
+      task,
+      base::BindRepeating(&GlanceablesTasksView::MarkTaskAsCompleted,
+                          base::Unretained(this), task_list_id),
+      base::BindRepeating(&GlanceablesTasksView::SaveTask,
+                          base::Unretained(this), task_list_id));
+}
+
 void GlanceablesTasksView::SelectedTasksListChanged() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   tasks_requested_time_ = base::TimeTicks::Now();
@@ -247,12 +269,6 @@ void GlanceablesTasksView::UpdateTasksList(
 
   task_items_container_view_->RemoveAllChildViews();
 
-  auto mark_task_as_completed =
-      base::BindRepeating(&GlanceablesTasksView::MarkTaskAsCompleted,
-                          base::Unretained(this), task_list_id);
-  auto update_task = base::BindRepeating(&GlanceablesTasksView::UpdateTask,
-                                         base::Unretained(this), task_list_id);
-
   num_tasks_shown_ = 0;
   num_tasks_ = 0;
   for (const auto& task : *tasks) {
@@ -262,21 +278,12 @@ void GlanceablesTasksView::UpdateTasksList(
 
     if (num_tasks_shown_ < kMaximumTasks) {
       task_items_container_view_->AddChildView(
-          std::make_unique<GlanceablesTaskView>(
-              task.get(), mark_task_as_completed, update_task));
+          CreateTaskView(task_list_id, task.get()));
       ++num_tasks_shown_;
     }
     ++num_tasks_;
   }
   task_items_container_view_->SetVisible(num_tasks_shown_ > 0);
-
-  const bool add_new_task_button_visible = (num_tasks_shown_ == 0);
-  if (add_new_task_button_visible) {
-    RecordAddTaskButtonShown();
-    add_new_task_button_->SetVisible(true);
-  } else {
-    add_new_task_button_->SetVisible(false);
-  }
 
   list_footer_view_->UpdateItemsCount(num_tasks_shown_, num_tasks_);
   list_footer_view_->SetVisible(num_tasks_shown_ > 0);
@@ -315,11 +322,7 @@ void GlanceablesTasksView::UpdateTasksList(
 }
 
 void GlanceablesTasksView::AnnounceListStateOnComboBoxAccessibility() {
-  if (add_new_task_button_->GetVisible()) {
-    task_list_combo_box_view_->GetViewAccessibility().AnnounceText(
-        l10n_util::GetStringUTF16(
-            IDS_GLANCEABLES_TASKS_SELECTED_LIST_EMPTY_ACCESSIBLE_NAME));
-  } else if (list_footer_view_->items_count_label()->GetVisible()) {
+  if (list_footer_view_->items_count_label()->GetVisible()) {
     task_list_combo_box_view_->GetViewAccessibility().AnnounceText(
         list_footer_view_->items_count_label()->GetText());
   }
@@ -332,12 +335,16 @@ void GlanceablesTasksView::MarkTaskAsCompleted(const std::string& task_list_id,
       task_list_id, task_id, completed);
 }
 
-void GlanceablesTasksView::UpdateTask(const std::string& task_list_id,
-                                      const std::string& task_id,
-                                      const std::string& title) {
+void GlanceablesTasksView::SaveTask(const std::string& task_list_id,
+                                    const std::string& task_id,
+                                    const std::string& title) {
   // TODO(b/301253574): show/hide `progress_bar_` and/or an error message.
-  Shell::Get()->glanceables_controller()->GetTasksClient()->UpdateTask(
-      task_list_id, task_id, title, base::DoNothing());
+  auto* const client = Shell::Get()->glanceables_controller()->GetTasksClient();
+  if (task_id.empty()) {
+    client->AddTask(task_list_id, title);
+  } else {
+    client->UpdateTask(task_list_id, task_id, title, base::DoNothing());
+  }
 }
 
 BEGIN_METADATA(GlanceablesTasksView, views::View)

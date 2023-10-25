@@ -5,6 +5,8 @@
 #ifndef ASH_GLANCEABLES_TASKS_GLANCEABLES_TASKS_VIEW_H_
 #define ASH_GLANCEABLES_TASKS_GLANCEABLES_TASKS_VIEW_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
 #include "ash/glanceables/glanceables_metrics.h"
 #include "ash/glanceables/tasks/glanceables_tasks_types.h"
@@ -26,6 +28,7 @@ namespace ash {
 class Combobox;
 class GlanceablesListFooterView;
 class GlanceablesProgressBarView;
+class GlanceablesTaskView;
 class TasksComboboxModel;
 
 // Temporary interface to allow smooth migration from `TasksBubbleView` to
@@ -61,9 +64,17 @@ class ASH_EXPORT GlanceablesTasksView : public GlanceablesTasksViewBase,
   void OnViewFocused(views::View* view) override;
 
  private:
-  // Handles press behavior for the "See all" button in `list_footer_view_` and
-  // `add_new_task_button_`.
+  // Handles press behavior for the header icon in `tasks_header_view_` and the
+  // "See all" button in `list_footer_view_`.
   void ActionButtonPressed(TasksLaunchSource source);
+
+  // Handles press behavior for `add_new_task_button_`.
+  void AddNewTaskButtonPressed();
+
+  // Creates a `GlanceablesTaskView` instance with bound callbacks.
+  std::unique_ptr<GlanceablesTaskView> CreateTaskView(
+      const std::string& task_list_id,
+      const GlanceablesTask* task);
 
   // Handles switching between tasks lists.
   void SelectedTasksListChanged();
@@ -82,10 +93,10 @@ class ASH_EXPORT GlanceablesTasksView : public GlanceablesTasksViewBase,
                            const std::string& task_id,
                            bool completed);
 
-  // Updates the specified task.
-  void UpdateTask(const std::string& task_list_id,
-                  const std::string& task_id,
-                  const std::string& title);
+  // Saves the task (either creates or updates the existing one).
+  void SaveTask(const std::string& task_list_id,
+                const std::string& task_id,
+                const std::string& title);
 
   // Model for the combobox used to change the active task list.
   std::unique_ptr<TasksComboboxModel> tasks_combobox_model_;
