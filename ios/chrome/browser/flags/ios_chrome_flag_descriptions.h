@@ -750,6 +750,11 @@ extern const char kUseAnnotationsForLanguageDetectionDescription[];
 extern const char kPasswordReuseDetectionName[];
 extern const char kPasswordReuseDetectionDescription[];
 
+// Title and description for the flag to enable password sharing between the
+// members of the same family.
+extern const char kPasswordSharingName[];
+extern const char kPasswordSharingDescription[];
+
 // Title and description for the flag to enable the post restore default browser
 // promo.
 extern const char kPostRestoreDefaultBrowserPromoName[];

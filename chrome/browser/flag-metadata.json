@@ -6193,7 +6193,7 @@
   },
   {
     "name": "password-sharing",
-    "owners": ["mamir@chromium.org", "chrome-password-manager-team@google.com"],
+    "owners": ["mamir@chromium.org", "rgod@google.com", "chrome-password-manager-team@google.com"],
     "expiry_milestone": 125
   },
   {

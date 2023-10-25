@@ -679,6 +679,16 @@ constexpr FeatureEntry::FeatureVariation kOmniboxInspireMeVariants[] = {
      std::size(kOmniboxInspireMeWith20Total10Trends), "t3363285"},
 };
 
+const FeatureEntry::Choice kEnablePasswordSharingChoices[] = {
+    {"Default", "", ""},
+    {"Bootstraping Only", switches::kEnableFeatures,
+     "SharingOfferKeyPairBootstrap"},
+    {"Enabled", switches::kEnableFeatures,
+     "SharingOfferKeyPairBootstrap,SendPasswords,"
+     "PasswordManagerEnableSenderService,"
+     "PasswordManagerEnableReceiverService,SharedPasswordNotificationUI"},
+};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -1587,6 +1597,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"enable-save-to-drive", flag_descriptions::kIOSSaveToDriveName,
      flag_descriptions::kIOSSaveToDriveDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSSaveToDrive)},
+    {"password-sharing", flag_descriptions::kPasswordSharingName,
+     flag_descriptions::kPasswordSharingDescription, flags_ui::kOsIos,
+     MULTI_VALUE_TYPE(kEnablePasswordSharingChoices)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

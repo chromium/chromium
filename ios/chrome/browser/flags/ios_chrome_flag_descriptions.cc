@@ -854,6 +854,10 @@ const char kPasswordReuseDetectionDescription[] =
     "Displays warning when user types or pastes a saved password into a "
     "phishing website.";
 
+const char kPasswordSharingName[] = "Enables password sharing";
+const char kPasswordSharingDescription[] =
+    "Enables password sharing between members of the same family.";
+
 const char kPostRestoreDefaultBrowserPromoName[] =
     "Post Restore Default Browser Promo";
 const char kPostRestoreDefaultBrowserPromoDescription[] =
