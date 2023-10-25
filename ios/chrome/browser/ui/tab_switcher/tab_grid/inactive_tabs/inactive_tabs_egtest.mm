@@ -693,6 +693,16 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
   // Check that Inactive Tabs Settings are open.
   [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsSettings()]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Dismiss the settings screen.
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      performAction:grey_tap()];
+
+  // The Inactive Tabs grid should be visible again.
+  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsGrid()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::RegularTabGrid()]
+      assertWithMatcher:grey_notVisible()];
 }
 
 // Checks that changing settings when presented from the Inactive Tabs grid

@@ -136,11 +136,6 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 // Whether settings are currently presented.
 @property(nonatomic, getter=isPresetingSettings) BOOL presentingSettings;
 
-// Optional block called when settings are dismissed. This is because there
-// sometimes is work that needs to be delayed between the time the settings are
-// changed, and when the UI is updated.
-@property(nonatomic, copy) ProceduralBlock onSettingsDismissedBlock;
-
 // The optional user education coordinator shown the first time Inactive Tabs
 // are displayed.
 @property(nonatomic, strong)
@@ -345,19 +340,8 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 
 - (void)gridViewController:(BaseGridViewController*)gridViewController
         didChangeItemCount:(NSUInteger)count {
-  // Close the Inactive Tabs view when closing the last inactive tab.
-  if (count == 0 && self.showing) {
-    __weak __typeof(self) weakSelf = self;
-    ProceduralBlock didFinish = ^{
-      [weakSelf didFinish];
-    };
-
-    // Delay updating the UI if settings are presented.
-    if (self.presentingSettings) {
-      self.onSettingsDismissedBlock = didFinish;
-    } else {
-      didFinish();
-    }
+  if (!self.presentingSettings) {
+    [self popIfNeeded];
   }
 }
 
@@ -707,9 +691,14 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
   self.presentingSettings = NO;
   [_settingsController cleanUpSettings];
   _settingsController = nil;
-  if (self.onSettingsDismissedBlock) {
-    self.onSettingsDismissedBlock();
-    self.onSettingsDismissedBlock = nil;
+  [self popIfNeeded];
+}
+
+// Tells the delegate this coordinator did finish if it was showing its view
+// controller and had no item left.
+- (void)popIfNeeded {
+  if ([self.mediator numberOfItems] == 0 && self.showing) {
+    [self didFinish];
   }
 }
 
