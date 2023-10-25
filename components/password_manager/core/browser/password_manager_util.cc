@@ -454,4 +454,15 @@ bool IsSingleUsernameType(autofill::ServerFieldType type) {
               password_manager::features::kForgotPasswordFormSupport));
 }
 
+#if BUILDFLAG(IS_ANDROID)
+bool UsesUPMForLocalM2(PrefService* prefs) {
+  bool is_upm_local_enabled = base::FeatureList::IsEnabled(
+      password_manager::features::
+          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+  // TODO(crbug.com/1495626): Check the readiness pref.
+  // TODO(crbug.com/1491089): Check the GMSCore version.
+  return is_upm_local_enabled;
+}
+#endif
+
 }  // namespace password_manager_util
