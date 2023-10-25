@@ -229,7 +229,8 @@ void HotspotController::CompleteEnableRequest(
       result == HotspotControlResult::kSuccess);
 
   HotspotMetricsHelper::RecordSetTetheringEnabledResult(
-      /*enabled=*/true, result);
+      /*enabled=*/true,
+      current_enable_request_->abort ? HotspotControlResult::kAborted : result);
 
   NET_LOG(EVENT) << "Complete enable tethering request, result: " << result;
 

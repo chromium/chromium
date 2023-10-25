@@ -294,6 +294,24 @@ TEST_F(HotspotControllerTest, AbortEnableTethering) {
       HotspotMetricsHelper::HotspotMetricsSetEnabledResult::kAborted, 1);
 }
 
+TEST_F(HotspotControllerTest, ShillOperationFailureWhileAborting) {
+  SetHotspotAllowed();
+  AddActiveCellularServivce();
+  base::RunLoop().RunUntilIdle();
+
+  network_state_test_helper_.manager_test()->SetSimulateTetheringEnableResult(
+      FakeShillSimulatedResult::kSuccess,
+      shill::kTetheringEnableResultNetworkSetupFailure);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kAborted,
+            EnableHotspot(/*abort=*/true));
+
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotEnableResultHistogram,
+      HotspotMetricsHelper::HotspotMetricsSetEnabledResult::kAborted, 1);
+}
+
 TEST_F(HotspotControllerTest, EnableTetheringReadinessCheckFailure) {
   // Setup the hotspot capabilities so that the initial hotspot allowance
   // status is allowed.
