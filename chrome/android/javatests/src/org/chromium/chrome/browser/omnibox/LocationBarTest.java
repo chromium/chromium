@@ -519,11 +519,11 @@ public class LocationBarTest {
                     doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
                     // Updating the fraction once should query voice search visibility.
-                    mLocationBarMediator.setUrlFocusChangeFraction(.5f);
+                    mLocationBarMediator.setUrlFocusChangeFraction(.5f, .5f, .5f);
                     Mockito.verify(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
                     // Further updates to the fraction shouldn't trigger a button visibility update.
-                    mLocationBarMediator.setUrlFocusChangeFraction(.6f);
+                    mLocationBarMediator.setUrlFocusChangeFraction(.6f, .6f, .6f);
                     Mockito.verify(mVoiceRecognitionHandler, Mockito.times(1))
                             .isVoiceSearchEnabled();
                 });

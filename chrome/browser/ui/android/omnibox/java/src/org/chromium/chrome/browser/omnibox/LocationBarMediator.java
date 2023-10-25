@@ -135,7 +135,7 @@ class LocationBarMediator
 
                 @Override
                 public void setValue(LocationBarMediator object, float value) {
-                    setUrlFocusChangeFraction(value);
+                    setUrlFocusChangeFraction(value, value, value);
                 }
             };
 
@@ -357,13 +357,21 @@ class LocationBarMediator
         updateButtonVisibility();
     }
 
-    /* package */ void setUrlFocusChangeFraction(float fraction) {
+    /* package */ void setUrlFocusChangeFraction(
+            float ntpSearchBoxScrollFraction,
+            float startSurfaceScrollFraction,
+            float urlFocusChangeFraction) {
+        float fraction =
+                Math.max(
+                        Math.max(ntpSearchBoxScrollFraction, startSurfaceScrollFraction),
+                        urlFocusChangeFraction);
         mUrlFocusChangeFraction = fraction;
         if (mIsTablet) {
             mLocationBarDataProvider
                     .getNewTabPageDelegate()
                     .setUrlFocusChangeAnimationPercent(fraction);
-            mLocationBarLayout.setUrlFocusChangePercent(fraction);
+            mLocationBarLayout.setUrlFocusChangePercent(
+                    fraction, fraction, fraction, mIsUrlFocusChangeInProgress);
         } else {
             // Determine when the focus state changes as a result of ntp scrolling.
             boolean isLocationBarFocusedFromNtpScroll =
@@ -383,7 +391,11 @@ class LocationBarMediator
             }
 
             // Add expansion animation for the space besides status view in location bar.
-            mLocationBarLayout.setUrlFocusChangePercent(fraction);
+            mLocationBarLayout.setUrlFocusChangePercent(
+                    ntpSearchBoxScrollFraction,
+                    startSurfaceScrollFraction,
+                    urlFocusChangeFraction,
+                    mIsUrlFocusChangeInProgress);
             mStatusCoordinator.setUrlFocusChangePercent(fraction);
         }
     }
@@ -705,7 +717,12 @@ class LocationBarMediator
             mLocationBarLayout.setUrlActionContainerVisibility(View.GONE);
         }
         if (mIsTablet) {
-            mLocationBarLayout.setUrlFocusChangePercent(showExpandedState ? 1.0f : 0.0f);
+            float urlFocusChangeFraction = showExpandedState ? 1.0f : 0.0f;
+            mLocationBarLayout.setUrlFocusChangePercent(
+                    urlFocusChangeFraction,
+                    urlFocusChangeFraction,
+                    urlFocusChangeFraction,
+                    mIsUrlFocusChangeInProgress);
             mLocationBarLayout.updateLayoutParams(
                     MeasureSpec.makeMeasureSpec(
                             mLocationBarLayout.getMeasuredWidth(), MeasureSpec.EXACTLY));

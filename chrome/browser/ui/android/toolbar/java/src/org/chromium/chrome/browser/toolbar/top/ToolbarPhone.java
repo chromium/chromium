@@ -1087,8 +1087,10 @@ public class ToolbarPhone extends ToolbarLayout
         int currentLeftMargin = locationBarLayoutParams.leftMargin;
         int currentWidth = locationBarLayoutParams.width;
 
+        boolean isInNtpOrStartSurface =
+                mVisualState == VisualState.NEW_TAB_NORMAL || mIsShowingStartSurfaceHomepage;
         float locationBarBaseTranslationX =
-                (mIsSurfacePolishEnabled && mUrlFocusChangeInProgress
+                (mIsSurfacePolishEnabled && mUrlFocusChangeInProgress && isInNtpOrStartSurface
                                 ? getFocusedLeftPositionOfLocationBarBackground()
                                 : mUnfocusedLocationBarLayoutLeft)
                         - currentLeftMargin;
@@ -1165,7 +1167,10 @@ public class ToolbarPhone extends ToolbarLayout
                             isLocationBarRtl,
                             locationBarBaseTranslationX,
                             isUrlFocusChangeInProgressWithScrollCompleted));
-            mLocationBar.setUrlFocusChangeFraction(mUrlExpansionFraction);
+            mLocationBar.setUrlFocusChangeFraction(
+                    mNtpSearchBoxScrollFraction,
+                    mStartSurfaceScrollFraction,
+                    mUrlFocusChangeFraction);
 
             // Only transition theme colors if in static tab mode that is not the NTP. In practice
             // this only runs when you focus the omnibox on a web page.

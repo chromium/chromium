@@ -61,6 +61,7 @@ public class SearchEngineLogoUtils {
     // Lazy initialization for native-bound dependencies.
     private FaviconHelper mFaviconHelper;
     private RoundedIconGenerator mRoundedIconGenerator;
+    private boolean mDoesSearchProviderHaveLogo;
 
     /**
      * AndroidSearchEngineLogoEvents defined in tools/metrics/histograms/enums.xml. These values are
@@ -159,6 +160,8 @@ public class SearchEngineLogoUtils {
             @BrandedColorScheme int brandedColorScheme,
             @Nullable Profile profile,
             @Nullable TemplateUrlService templateUrlService) {
+        onDefaultSearchEngineChanged(templateUrlService);
+
         // In the following cases, we fallback to the search loupe:
         // - Either of the nullable dependencies are null.
         // - We still need to check for the search engine promo, which happens in rare cases when
@@ -397,5 +400,21 @@ public class SearchEngineLogoUtils {
         sInstance = null;
         sCachedComposedBackground = null;
         sCachedComposedBackgroundLogoUrl = null;
+    }
+
+    /*
+     * Changes the status of whether the current search provider has the logo.
+     */
+    void onDefaultSearchEngineChanged(TemplateUrlService templateUrlService) {
+        if (templateUrlService != null) {
+            mDoesSearchProviderHaveLogo = templateUrlService.doesDefaultSearchEngineHaveLogo();
+        }
+    }
+
+    /*
+     * Returns whether the current search provider is Google.
+     */
+    boolean isDefaultSearchEngineGoogle() {
+        return mDoesSearchProviderHaveLogo;
     }
 }
