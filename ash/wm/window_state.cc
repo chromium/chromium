@@ -551,7 +551,7 @@ void WindowState::OnWMEvent(const WMEvent* event) {
     UpdateSnapRatio();
   }
 
-  if (snap_event) {
+  if (snap_event && IsSnapped()) {
     const WindowSnapActionSource snap_action_source =
         snap_event->snap_action_source();
     if (features::IsFasterSplitScreenSetupEnabled()) {

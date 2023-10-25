@@ -14,6 +14,7 @@
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_positioning_utils.h"
+#include "ash/wm/window_util.h"
 #include "ash/wm/wm_metrics.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/client/aura_constants.h"
@@ -119,7 +120,8 @@ void BaseState::CycleSnap(WindowState* window_state, WMEventType event) {
       window_state->GetStateType() != desired_snap_state) {
     const bool is_desired_primary_snapped =
         desired_snap_state == WindowStateType::kPrimarySnapped;
-    if (shell->overview_controller()->InOverviewSession()) {
+    if (shell->overview_controller()->InOverviewSession() &&
+        !window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled()) {
       // |window| must already be in split view, and so we do not need to check
       // |SplitViewController::CanSnapWindow|, although in general it is more
       // restrictive than |WindowState::CanSnap|.

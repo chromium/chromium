@@ -261,19 +261,28 @@ TEST_F(FasterSplitScreenTest, Basic) {
   VerifySplitViewOverviewSession(w3.get());
 }
 
-TEST_F(FasterSplitScreenTest, EndSplitViewOverviewSession) {
+TEST_F(FasterSplitScreenTest, CycleSnap) {
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
-  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kSecondarySnapped);
+  auto* window_state = WindowState::Get(w1.get());
+
+  // Cycle snap to the left.
+  const WindowSnapWMEvent cycle_snap_primary(WM_EVENT_CYCLE_SNAP_PRIMARY);
+  window_state->OnWMEvent(&cycle_snap_primary);
   VerifySplitViewOverviewSession(w1.get());
 
-  // Drag `w1` out of split view. Test it ends overview.
-  const gfx::Rect window_bounds(w1->GetBoundsInScreen());
-  const gfx::Point drag_point(window_bounds.CenterPoint().x(),
-                              window_bounds.y() + 10);
-  auto* event_generator = GetEventGenerator();
-  event_generator->set_current_screen_location(drag_point);
-  event_generator->DragMouseBy(10, 10);
+  // Cycle snap to the right.
+  const WindowSnapWMEvent cycle_snap_secondary(WM_EVENT_CYCLE_SNAP_SECONDARY);
+  window_state->OnWMEvent(&cycle_snap_secondary);
+  VerifySplitViewOverviewSession(w1.get());
+
+  // Cycle snap to the right again. Test it ends overview.
+  window_state->OnWMEvent(&cycle_snap_secondary);
+  EXPECT_FALSE(window_state->IsSnapped());
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  // Cycle snap to the right again.
+  window_state->OnWMEvent(&cycle_snap_secondary);
+  VerifySplitViewOverviewSession(w1.get());
 }
 
 // Tests the histograms for the split view overview session exit points are
