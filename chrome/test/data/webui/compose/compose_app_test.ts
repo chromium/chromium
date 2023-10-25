@@ -222,6 +222,19 @@ suite('ComposeApp', () => {
     assertTrue(isVisible(appWithResult.$.resultContainer));
     assertTrue(appWithResult.$.resultContainer.textContent!.includes(
         'here is a result'));
+    assertTrue(appWithResult.$.undoButton.disabled);
+
+    // Input with response with undo available.
+    const appWithUndo = await initializeNewAppWithState({
+      webuiState: JSON.stringify({input: 'some input'}),
+      hasPendingRequest: false,
+      response: {
+        status: ComposeStatus.kOk,
+        undoAvailable: true,
+        result: 'here is a result',
+      },
+    });
+    assertFalse(appWithUndo.$.undoButton.disabled);
   });
 
   test('SavesState', async () => {

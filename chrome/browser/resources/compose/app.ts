@@ -36,6 +36,7 @@ export interface ComposeAppElement {
     errorFooter: HTMLElement,
     insertButton: CrButtonElement,
     loading: HTMLElement,
+    undoButton: CrButtonElement,
     refreshButton: HTMLElement,
     resultContainer: HTMLElement,
     submitButton: CrButtonElement,
@@ -123,6 +124,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
       this.submitted_ =
           composeState.hasPendingRequest || Boolean(composeState.response);
       this.response_ = composeState.response;
+      this.undoEnabled_ = Boolean(this.response_?.undoAvailable);
 
       if (composeState.webuiState) {
         const appState: ComposeAppState = JSON.parse(composeState.webuiState);
