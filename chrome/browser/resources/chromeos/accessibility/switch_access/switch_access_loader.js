@@ -8,7 +8,7 @@ import {InstanceChecker} from '../common/instance_checker.js';
 
 import {SACommands} from './commands.js';
 import {Navigator} from './navigator.js';
-import {PreferenceManager} from './preference_manager.js';
+import {SettingsManager} from './settings_manager.js';
 import {SwitchAccess} from './switch_access.js';
 
 InstanceChecker.closeExtraInstances();
@@ -22,7 +22,7 @@ async function initAll() {
   Navigator.initializeSingletonInstances(desktop);
 
   SACommands.init();
-  PreferenceManager.initialize();
+  SettingsManager.init();
 
   SwitchAccess.start();
 }
