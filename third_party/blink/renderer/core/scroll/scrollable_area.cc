@@ -34,6 +34,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "cc/input/main_thread_scrolling_reason.h"
+#include "cc/input/scroll_snap_data.h"
 #include "cc/input/scroll_utils.h"
 #include "cc/input/scrollbar.h"
 #include "cc/input/snap_selection_strategy.h"
@@ -480,13 +481,41 @@ void ScrollableArea::ScrollToScrollStartTarget(
       Behavior::kNoScroll, Behavior::kNoScroll, Behavior::kNoScroll);
   mojom::blink::ScrollAlignment align_y(
       Behavior::kNoScroll, Behavior::kNoScroll, Behavior::kNoScroll);
+  cc::ScrollSnapAlign snap_alignment =
+      scroll_start_target->Style()->GetScrollSnapAlign();
   if (axis == cc::SnapAxis::kY || axis == cc::SnapAxis::kBoth) {
-    align_y = GetLayoutBox()->HasTopOverflow() ? ScrollAlignment::BottomAlways()
-                                               : ScrollAlignment::TopAlways();
+    switch (snap_alignment.alignment_block) {
+      case cc::SnapAlignment::kStart:
+        align_y = ScrollAlignment::TopAlways();
+        break;
+      case cc::SnapAlignment::kCenter:
+        align_y = ScrollAlignment::CenterAlways();
+        break;
+      case cc::SnapAlignment::kEnd:
+        align_y = ScrollAlignment::BottomAlways();
+        break;
+      default:
+        align_y = GetLayoutBox()->HasTopOverflow()
+                      ? ScrollAlignment::BottomAlways()
+                      : ScrollAlignment::TopAlways();
+    }
   }
   if (axis == cc::SnapAxis::kX || axis == cc::SnapAxis::kBoth) {
-    align_x = GetLayoutBox()->HasLeftOverflow() ? ScrollAlignment::RightAlways()
-                                                : ScrollAlignment::LeftAlways();
+    switch (snap_alignment.alignment_inline) {
+      case cc::SnapAlignment::kStart:
+        align_x = ScrollAlignment::LeftAlways();
+        break;
+      case cc::SnapAlignment::kCenter:
+        align_x = ScrollAlignment::CenterAlways();
+        break;
+      case cc::SnapAlignment::kEnd:
+        align_x = ScrollAlignment::RightAlways();
+        break;
+      default:
+        align_x = GetLayoutBox()->HasLeftOverflow()
+                      ? ScrollAlignment::RightAlways()
+                      : ScrollAlignment::LeftAlways();
+    }
   }
   mojom::blink::ScrollIntoViewParamsPtr params =
       ScrollAlignment::CreateScrollIntoViewParams(align_x, align_y);
