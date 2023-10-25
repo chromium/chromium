@@ -32,6 +32,7 @@ lucicfg.config(
         "luci/commit-queue.cfg",
         "luci/cr-buildbucket.cfg",
         "luci/luci-analysis.cfg",
+        "luci/luci-bisection.cfg",
         "luci/luci-logdog.cfg",
         "luci/luci-milo.cfg",
         "luci/luci-notify.cfg",
@@ -67,6 +68,12 @@ lucicfg.emit(
 lucicfg.emit(
     dest = "luci/luci-analysis.cfg",
     data = io.read_file("luci-analysis.cfg"),
+)
+
+# Just copy LUCI Bisection config to generated outputs.
+lucicfg.emit(
+    dest = "luci/luci-bisection.cfg",
+    data = io.read_file("luci-bisection.cfg"),
 )
 
 luci.project(
