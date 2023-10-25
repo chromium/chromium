@@ -50,6 +50,7 @@ namespace ash {
 namespace {
 
 constexpr int kNoMediaTextFontSizeIncrease = 2;
+constexpr int kNoMediaTextFontSize = 14;
 constexpr int kTitleFontSizeIncrease = 4;
 constexpr int kTitleViewHeight = 56;
 
@@ -449,9 +450,15 @@ void MediaTray::ShowEmptyState() {
       AshColorProvider::ContentLayerType::kTextColorSecondary));
   no_media_label->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_GLOBAL_MEDIA_CONTROLS_NO_MEDIA_TEXT));
-  no_media_label->SetFontList(
-      views::Label::GetDefaultFontList().DeriveWithSizeDelta(
-          kNoMediaTextFontSizeIncrease));
+  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI)) {
+    no_media_label->SetFontList(
+        gfx::FontList({"Google Sans", "Roboto"}, gfx::Font::NORMAL,
+                      kNoMediaTextFontSize, gfx::Font::Weight::NORMAL));
+  } else {
+    no_media_label->SetFontList(
+        views::Label::GetDefaultFontList().DeriveWithSizeDelta(
+            kNoMediaTextFontSizeIncrease));
+  }
   empty_state_view->AddChildView(std::move(no_media_label));
 
   empty_state_view->SetPaintToLayer();

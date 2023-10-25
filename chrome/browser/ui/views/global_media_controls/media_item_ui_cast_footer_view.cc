@@ -15,10 +15,40 @@ namespace {
 
 constexpr int kButtonHeight = 32;
 constexpr int kIconSize = 20;
+constexpr int kFontSize = 12;
 constexpr int kImageLabelSpacing = 5;
 
 constexpr auto kViewInsets = gfx::Insets::VH(0, 5);
-constexpr auto kButtonInsets = gfx::Insets::VH(5, 8);
+constexpr auto kButtonInsets = gfx::Insets::TLBR(5, 8, 5, 12);
+
+class StopCastingButton : public views::LabelButton {
+ public:
+  StopCastingButton(PressedCallback callback,
+                    const std::u16string& text,
+                    ui::ColorId foreground_color_id,
+                    ui::ColorId background_color_id,
+                    ui::ColorId focus_ring_color_id)
+      : LabelButton(std::move(callback), text) {
+    label()->SetFontList(gfx::FontList({"Google Sans", "Roboto"},
+                                       gfx::Font::NORMAL, kFontSize,
+                                       gfx::Font::Weight::NORMAL));
+    SetTooltipText(text);
+    SetImageModel(
+        views::Button::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(media_message_center::kMediaCastStopIcon,
+                                       foreground_color_id, kIconSize));
+
+    SetEnabledTextColorIds(foreground_color_id);
+    SetElideBehavior(gfx::ElideBehavior::ELIDE_HEAD);
+    SetImageLabelSpacing(kImageLabelSpacing);
+    SetBorder(views::CreateEmptyBorder(kButtonInsets));
+
+    SetBackground(views::CreateThemedRoundedRectBackground(background_color_id,
+                                                           kButtonHeight / 2));
+    SetFocusRingCornerRadius(kButtonHeight / 2);
+    views::FocusRing::Get(this)->SetColorId(focus_ring_color_id);
+  }
+};
 
 }  // namespace
 
@@ -28,32 +58,14 @@ MediaItemUICastFooterView::MediaItemUICastFooterView(
     : stop_casting_callback_(std::move(stop_casting_callback)) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, kViewInsets));
-
-  stop_casting_button_ = AddChildView(std::make_unique<views::LabelButton>(
+  stop_casting_button_ = AddChildView(std::make_unique<StopCastingButton>(
       base::BindRepeating(&MediaItemUICastFooterView::StopCasting,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(
-          IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_STOP_CASTING)));
-  stop_casting_button_->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_STOP_CASTING));
-  stop_casting_button_->SetImageModel(
-      views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(
-          media_message_center::kMediaCastStopIcon,
-          media_color_theme.error_foreground_color_id, kIconSize));
-
-  stop_casting_button_->SetEnabledTextColorIds(
-      media_color_theme.error_foreground_color_id);
-  stop_casting_button_->SetElideBehavior(gfx::ElideBehavior::ELIDE_HEAD);
-  stop_casting_button_->SetImageLabelSpacing(kImageLabelSpacing);
-  stop_casting_button_->SetBorder(views::CreateEmptyBorder(kButtonInsets));
-
-  stop_casting_button_->SetBackground(views::CreateThemedRoundedRectBackground(
-      media_color_theme.error_container_color_id, kButtonHeight / 2));
-  stop_casting_button_->SetFocusRingCornerRadius(kButtonHeight / 2);
-  views::FocusRing::Get(stop_casting_button_)
-      ->SetColorId(media_color_theme.focus_ring_color_id);
-
+          IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_STOP_CASTING),
+      media_color_theme.error_foreground_color_id,
+      media_color_theme.error_container_color_id,
+      media_color_theme.focus_ring_color_id));
   layout->SetFlexForView(stop_casting_button_, 1);
 }
 
