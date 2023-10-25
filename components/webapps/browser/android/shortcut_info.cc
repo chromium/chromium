@@ -160,8 +160,7 @@ void ShortcutInfo::UpdateFromManifest(const blink::mojom::Manifest& manifest) {
     url = manifest.start_url;
 
   scope = manifest.scope;
-
-  manifest_id = blink::GetIdFromManifest(manifest);
+  manifest_id = manifest.id;
 
   // Set the display based on the manifest value, if any.
   if (manifest.display != DisplayMode::kUndefined)

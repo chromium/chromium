@@ -1217,7 +1217,9 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_DetailedInstallDialog,
   ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA));
   ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA));
 
-  EXPECT_EQ(1u, provider().command_manager().GetCommandCountForTesting());
+  EXPECT_EQ(1u, provider()
+                    .command_manager()
+                    .GetCommandsInstallingForWebContentsForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WindowsOffsetForMultiWindowPWA) {

@@ -83,10 +83,9 @@ class DlpContentManagerAsh : public DlpContentManager,
       ash::OnCaptureModeDlpRestrictionChecked callback);
 
   // DlpContentManager overrides:
-  void CheckScreenShareRestriction(
-      const content::DesktopMediaID& media_id,
-      const std::u16string& application_title,
-      OnDlpRestrictionCheckedCallback callback) override;
+  void CheckScreenShareRestriction(const content::DesktopMediaID& media_id,
+                                   const std::u16string& application_title,
+                                   WarningCallback callback) override;
   void OnScreenShareStarted(
       const std::string& label,
       std::vector<content::DesktopMediaID> screen_share_ids,

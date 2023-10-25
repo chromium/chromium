@@ -353,10 +353,10 @@ BASE_FEATURE(kEnableServiceWorkersForChromeScheme,
 // We enable it here by default to support use in origin trials.
 BASE_FEATURE(kFedCm, "FedCm", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables usage of the FedCM IdentityCredentialAutoSelectedFlag feature.
+// Enables usage of the FedCM AutoSelectedFlag feature.
 // ChromeStatus entry: https://chromestatus.com/feature/5384360374566912
-BASE_FEATURE(kFedCmIdentityCredentialAutoSelectedFlag,
-             "FedCmIdentityCredentialAutoSelectedFlag",
+BASE_FEATURE(kFedCmAutoSelectedFlag,
+             "FedCmAutoSelectedFlag",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables usage of the FedCM Authz API.
@@ -518,7 +518,7 @@ BASE_FEATURE(kLazyInitializeMediaControls,
 // technologies usage
 BASE_FEATURE(kLegacyTechReportTopLevelUrl,
              "LegacyTechReportTopLevelUrl",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Configures whether Blink on Windows 8.0 and below should use out of process
 // API font fallback calls to retrieve a fallback font family name as opposed to
@@ -770,6 +770,11 @@ BASE_FEATURE(kReduceSubresourceResponseStartedIPC,
 // Enable using the RenderDocument.
 BASE_FEATURE(kRenderDocument,
              "RenderDocument",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Reuse compositor instances with RenderDocument
+BASE_FEATURE(kRenderDocumentCompositorReuse,
+             "RenderDocumentCompositorReuse",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables retrying to obtain list of available cameras after restarting the

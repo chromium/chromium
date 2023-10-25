@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://w3c.github.io/mediacapture-region/
-[
-    Exposed = Window,
-    RuntimeEnabled = RegionCapture
-]
+// TODO(crbug.com/1247761): Remove `RuntimeEnabled = RegionCapture`
+// from the interface.
+[Exposed = Window, RuntimeEnabled = RegionCapture]
 interface BrowserCaptureMediaStreamTrack : MediaStreamTrack {
-  // 1. If |cropTarget| is a valid CropTarget, start cropping the track
-  //    to the coordinates of the element represented by |cropTarget|.
-  //    Return a Promise that resolves once cropping has been fully initiated
-  //    and the browser guarantees all subsequent frames produced on this track
-  //    will be cropped.
-  // 2. If |cropTarget| is |null| or |undefined|, stop cropping.
-  //    Return a Promise that resolves when this instruction has been fully
-  //    propagated and subsequent frames are guaranteed to be uncropped.
-  [CallWith = ScriptState, RaisesException, MeasureAs = RegionCapture]
+  // https://w3c.github.io/mediacapture-region/
+  [CallWith = ScriptState, RaisesException,
+   RuntimeEnabled = RegionCapture, MeasureAs = RegionCapture]
   Promise<void> cropTo(CropTarget? crop_id);
+
+  // https://screen-share.github.io/element-capture/
+  [
+    CallWith = ScriptState,
+    RaisesException,
+    RuntimeEnabled = ElementCapture,
+    MeasureAs = ElementCapture
+  ] Promise<void> restrictTo(RestrictionTarget? target);
 };

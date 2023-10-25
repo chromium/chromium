@@ -254,7 +254,9 @@ class OmniboxSuggestionsDropdownEmbedderImpl
                 Math.min(windowHeight - keyboardHeight, windowHeight - minSpaceAboveWindowBottom);
         // If content view is null, then omnibox might not be in the activity content.
         int contentSpace =
-                contentView == null ? Integer.MAX_VALUE : contentView.getMeasuredHeight();
+                contentView == null
+                        ? Integer.MAX_VALUE
+                        : contentView.getMeasuredHeight() - keyboardHeight;
         int height = Math.min(windowSpace, contentSpace) - top;
 
         // TODO(pnoland@, https://crbug.com/1416985): avoid pushing changes that are identical to

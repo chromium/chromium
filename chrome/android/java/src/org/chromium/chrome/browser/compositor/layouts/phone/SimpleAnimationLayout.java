@@ -192,7 +192,7 @@ public class SimpleAnimationLayout extends Layout {
         mTabCreatedForegroundAnimation.start();
 
         mTabModelSelector.selectModel(newIsIncognito);
-        startHiding(id, false);
+        startHiding(id);
     }
 
     /**
@@ -302,13 +302,14 @@ public class SimpleAnimationLayout extends Layout {
 
         AnimatorSet step3 = new AnimatorSet();
         step3.setStartDelay(BACKGROUND_STEP2_DURATION);
-        step3.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                // Once the animation has finished, we can switch layouts.
-                startHiding(sourceId, false);
-            }
-        });
+        step3.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        // Once the animation has finished, we can switch layouts.
+                        startHiding(sourceId);
+                    }
+                });
         step3.playTogether(animationList);
 
         mTabCreatedBackgroundAnimation = new AnimatorSet();

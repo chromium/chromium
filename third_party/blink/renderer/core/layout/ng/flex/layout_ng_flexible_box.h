@@ -17,20 +17,18 @@ namespace blink {
 // anywhere, because neither paint nor ancestor layout needs it. So the NG flex
 // layout algorithm will fill one of these in when devtools requests it.
 
-class CORE_EXPORT LayoutNGFlexibleBox : public LayoutBlock {
+class CORE_EXPORT LayoutFlexibleBox : public LayoutBlock {
  public:
-  explicit LayoutNGFlexibleBox(Element*);
+  explicit LayoutFlexibleBox(Element*);
 
   bool HasTopOverflow() const override;
   bool HasLeftOverflow() const override;
 
-  bool IsFlexibleBoxIncludingNG() const final {
-    NOT_DESTROYED();
-    return true;
-  }
   const char* GetName() const override {
     NOT_DESTROYED();
-    return "LayoutNGFlexibleBox";
+    // This string can affect a production behavior.
+    // See tool_highlight.ts in devtools-frontend.
+    return "LayoutFlexibleBox";
   }
 
   const DevtoolsFlexInfo* FlexLayoutData() const;
@@ -46,14 +44,14 @@ class CORE_EXPORT LayoutNGFlexibleBox : public LayoutBlock {
 
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();
-    return type == kLayoutObjectNGFlexibleBox || LayoutBlock::IsOfType(type);
+    return type == kLayoutObjectFlexibleBox || LayoutBlock::IsOfType(type);
   }
 };
 
 template <>
-struct DowncastTraits<LayoutNGFlexibleBox> {
+struct DowncastTraits<LayoutFlexibleBox> {
   static bool AllowFrom(const LayoutObject& object) {
-    return object.IsFlexibleBoxIncludingNG() && object.IsLayoutNGObject();
+    return object.IsFlexibleBox();
   }
 };
 

@@ -87,10 +87,10 @@ ObservationType GetObservationTypeForEditedField(
     return ObservationType::kEditedValueCleared;
   }
 
-  if (IsWithinLevenshteinDistance(
-          base::ToLowerASCII(profile.GetInfo(type, app_locale)),
-          base::ToLowerASCII(edited_value),
-          ProfileTokenQuality::kMaximumLevenshteinDistance)) {
+  if (LevenshteinDistance(base::ToLowerASCII(profile.GetInfo(type, app_locale)),
+                          base::ToLowerASCII(edited_value),
+                          ProfileTokenQuality::kMaximumLevenshteinDistance) <=
+      ProfileTokenQuality::kMaximumLevenshteinDistance) {
     return ObservationType::kEditedToSimilarValue;
   }
 
@@ -339,6 +339,20 @@ void ProfileTokenQuality::CopyObservationsForStoredType(
 void ProfileTokenQuality::ResetObservationsForStoredType(ServerFieldType type) {
   CHECK(IsStoredType(type));
   observations_.erase(type);
+}
+
+void ProfileTokenQuality::ResetObservationsForDifferingTokens(
+    const AutofillProfile& other) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillTrackProfileTokenQuality)) {
+    return;
+  }
+  for (ServerFieldType type :
+       AutofillTable::GetStoredTypesForAutofillProfile()) {
+    if (profile_->GetRawInfo(type) != other.GetRawInfo(type)) {
+      ResetObservationsForStoredType(type);
+    }
+  }
 }
 
 ProfileTokenQuality::FormSignatureHash

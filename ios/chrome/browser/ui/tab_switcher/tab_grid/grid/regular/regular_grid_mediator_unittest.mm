@@ -29,7 +29,8 @@ class RegularGridMediatorTest : public GridMediatorTestClass {
 
   void SetUp() override {
     GridMediatorTestClass::SetUp();
-    mediator_ = [[RegularGridMediator alloc] initWithConsumer:consumer_];
+    mediator_ = [[RegularGridMediator alloc] init];
+    mediator_.consumer = consumer_;
     mediator_.browser = browser_.get();
 
     tab_restore_service_ =

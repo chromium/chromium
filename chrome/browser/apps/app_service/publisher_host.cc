@@ -9,7 +9,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps.h"
 #include "chrome/browser/web_applications/app_service/web_apps.h"
-#include "chrome/common/chrome_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
@@ -24,6 +23,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/web_applications/app_service/browser_shortcuts.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #endif
 
@@ -149,7 +149,7 @@ void PublisherHost::Initialize() {
   // `web_apps_` can be initialized itself.
   web_apps_ = std::make_unique<web_app::WebApps>(proxy_);
 
-  if (base::FeatureList::IsEnabled(features::kCrosWebAppShortcutUiUpdate)) {
+  if (chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
     browser_shortcuts_ = std::make_unique<web_app::BrowserShortcuts>(proxy_);
   }
 #else

@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {isVolumeEntry, sortEntries} from '../../common/js/entry_utils.js';
+import {isSameEntry, isVolumeEntry, sortEntries} from '../../common/js/entry_utils.js';
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
-import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileKey, State} from '../../externs/ts/state.js';
 import {Slice} from '../../lib/base_store.js';
@@ -52,7 +51,7 @@ export function addUiEntryReducer(currentState: State, payload: {
         childEntry =>
             isVolumeEntry(childEntry) && childEntry.name === entry.name);
     const isUiEntryExistedInMyFiles =
-        !!children.find(childEntry => util.isSameEntry(childEntry, entry));
+        !!children.find(childEntry => isSameEntry(childEntry, entry));
     // We only add the UI entry here if:
     // 1. it is not existed in MyFiles entry
     // 2. its corresponding volume (which ui entry is a placeholder for) is not
@@ -109,7 +108,7 @@ export function removeUiEntryReducer(currentState: State, payload: {
     const {myFilesEntry} = getMyFiles(currentState);
     const children = myFilesEntry.getUIChildren();
     const isUiEntryExistedInMyFiles =
-        !!children.find(childEntry => util.isSameEntry(childEntry, entry));
+        !!children.find(childEntry => isSameEntry(childEntry, entry));
     if (isUiEntryExistedInMyFiles) {
       myFilesEntry.removeChildEntry(entry);
       const fileData = getFileData(currentState, myFilesEntry.toURL());

@@ -62,10 +62,6 @@ KAnonymityServiceFactory::~KAnonymityServiceFactory() = default;
 std::unique_ptr<KeyedService>
 KAnonymityServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  Profile* profile = Profile::FromBrowserContext(context);
-  if (!KAnonymityServiceClient::CanUseKAnonymityService(profile)) {
-    return nullptr;
-  }
   return std::make_unique<KAnonymityServiceClient>(
       Profile::FromBrowserContext(context));
 }

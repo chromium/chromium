@@ -91,11 +91,11 @@ const CSSStyleSheet* FindStyleSheet(const TreeScope* tree_scope_containing_rule,
                                     const StyleEngine& style_engine,
                                     const StyleRule* rule) {
   if (tree_scope_containing_rule) {
-    for (CSSStyleSheet* sheet :
+    for (const auto& [sheet, rule_set] :
          tree_scope_containing_rule->GetScopedStyleResolver()
-             ->GetStyleSheets()) {
-      if (FindStyleRule(sheet, rule) != nullptr) {
-        return sheet;
+             ->GetActiveStyleSheets()) {
+      if (FindStyleRule(sheet.Get(), rule) != nullptr) {
+        return sheet.Get();
       }
     }
   }
@@ -1044,10 +1044,10 @@ void ElementRuleCollector::AppendCSSOMWrapperForRule(
   CSSRule* css_rule = nullptr;
   StyleRule* rule = rule_data->Rule();
   if (tree_scope_containing_rule) {
-    for (CSSStyleSheet* parent_style_sheet :
+    for (const auto& [parent_style_sheet, rule_set] :
          tree_scope_containing_rule->GetScopedStyleResolver()
-             ->GetStyleSheets()) {
-      css_rule = FindStyleRule(parent_style_sheet, rule);
+             ->GetActiveStyleSheets()) {
+      css_rule = FindStyleRule(parent_style_sheet.Get(), rule);
       if (css_rule) {
         break;
       }

@@ -512,6 +512,10 @@ source_set("web_applications") {
     deps += [ "//chrome/browser/resources:preinstalled_web_apps_resources" ]
   }
 
+  if (is_mac) {
+    deps += [ "//components/os_crypt/sync:os_crypt" ]
+  }
+
   if (is_win) {
     deps += [
       "//chrome/browser/web_applications/chrome_pwa_launcher:util",
@@ -799,6 +803,7 @@ source_set("web_applications_unit_tests") {
     "//chrome/browser/web_applications/extensions:extensions",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//components/os_crypt/sync:test_support",
     "//components/services/app_service",
     "//components/user_manager",
     "//components/web_package",

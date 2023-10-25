@@ -19,6 +19,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/extension_set.h"
 
 class Profile;
 class PrefService;
@@ -71,6 +72,8 @@ class ExtensionTelemetryService : public KeyedService {
   // Convenience method to get the service for a profile.
   static ExtensionTelemetryService* Get(Profile* profile);
 
+  ExtensionTelemetryService(ExtensionTelemetryService&&) = delete;
+  ExtensionTelemetryService& operator=(ExtensionTelemetryService&&) = delete;
   ExtensionTelemetryService(
       Profile* profile,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
@@ -152,6 +155,11 @@ class ExtensionTelemetryService : public KeyedService {
   // uploads telemetry data. Runs on a delayed post task on startup.
   void StartUploadCheck();
 
+  // Collects information about any extensions present in the Chrome command
+  // line switch, --load-extension. Only creates an extension object to store
+  // this information without actually installing the extension.
+  void CollectCommandLineExtensionInfo();
+
   // Searches for offstore extensions, collects file data such as
   // hashes/manifest content, and saves the data to PrefService. Repeats every 2
   // hours. This method is repeated periodically (default 2 hours) to check if
@@ -165,8 +173,10 @@ class ExtensionTelemetryService : public KeyedService {
   // installed from components.
   void GetOffstoreExtensionDirs();
 
-  // Remove any data in the PrefService that from uninstalled extensions.
-  void RemoveUninstalledExtensionsFileDataFromPref();
+  // Remove any stale off-store file data stored in prefs. The data is
+  // considered stale if the associated off-store extension is no longer
+  // installed or no longer part of the --load-extension command line switch.
+  void RemoveStaleExtensionsFileDataFromPref();
 
   // Collect file data from an offstore extension by making a call to the
   // FileProcessor.
@@ -282,6 +292,13 @@ class ExtensionTelemetryService : public KeyedService {
       extensions::ExtensionId,
       std::unique_ptr<ExtensionTelemetryReportRequest_ExtensionInfo>>;
   ExtensionStore extension_store_;
+
+  // Stores extension objects for extensions that are included in the
+  // --load-extension command line switch.
+  extensions::ExtensionSet commandline_extensions_;
+  // Used to ensure that the information about command line extensions is only
+  // collected once.
+  bool collected_commandline_extension_info_ = false;
 
   // Maps offstore extension id to extension root path
   using OffstoreExtensionDirs =

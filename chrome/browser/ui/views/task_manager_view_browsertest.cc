@@ -137,6 +137,13 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, AllColumnsHaveStringIds) {
     EXPECT_NE("", GetColumnIdAsString(kColumns[i].id));
 }
 
+// Test that all defined columns can be sorted
+IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, AllColumnsHaveSortable) {
+  for (size_t i = 0; i < kColumnsSize; ++i) {
+    EXPECT_TRUE(kColumns[i].sortable);
+  }
+}
+
 // In the case of no settings stored in the user preferences local store, test
 // that the task manager table starts with the default columns visibility as
 // stored in |kColumns|.

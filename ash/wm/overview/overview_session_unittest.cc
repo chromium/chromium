@@ -49,6 +49,7 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_drop_target.h"
 #include "ash/wm/overview/overview_focus_cycler.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_grid_event_handler.h"
@@ -2593,8 +2594,8 @@ TEST_P(OverviewSessionTest, DropTargetStackedAtBottomForOverviewItem) {
   generator->PressLeftButton();
   generator->MoveMouseBy(5, 0);
   ASSERT_TRUE(GetDropTarget(0));
-  EXPECT_TRUE(window_util::IsStackedBelow(GetDropTarget(0)->GetWindow(),
-                                          window2.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(
+      GetDropTarget(0)->item_widget()->GetNativeWindow(), window2.get()));
   generator->ReleaseLeftButton();
   EXPECT_FALSE(GetDropTarget(0));
 }
@@ -9964,7 +9965,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   // On the grid where the drag starts (|grid2|), the drop target is inserted at
   // the index immediately following the dragged item (|item4|).
   ASSERT_EQ(4u, grid2->window_list().size());
-  EXPECT_EQ(grid2->GetDropTarget(), grid2->window_list()[2].get());
+  EXPECT_EQ(GetDropTarget(1), grid2->window_list()[2].get());
   // Drag over |grid1|.
   cursor_manager->SetDisplay(display_with_root1);
   GetOverviewSession()->Drag(item4, gfx::PointF(400.f, 0.f));
@@ -9972,7 +9973,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   // correct position according to MRU order (between the overview items for
   // |window3| and |window5|).
   ASSERT_EQ(4u, grid1->window_list().size());
-  EXPECT_EQ(grid1->GetDropTarget(), grid1->window_list()[2].get());
+  EXPECT_EQ(GetDropTarget(0), grid1->window_list()[2].get());
 }
 
 // Verify that the drop target in each overview grid has the correct bounds when
@@ -10004,8 +10005,10 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   // |OverviewItem::GetWindowDimensionsType|, because it does not work for drop
   // targets (and that is okay). The bounds of |drop_target|, minus the margin
   // should have an aspect ratio of 1 : 2.
-  gfx::RectF drop_target_bounds = drop_target->target_bounds();
-  EXPECT_EQ(0.5f, drop_target_bounds.width() / drop_target_bounds.height());
+  const gfx::Size drop_target_size =
+      drop_target->item_widget()->GetWindowBoundsInScreen().size();
+  EXPECT_EQ(0.5f, static_cast<float>(drop_target_size.width()) /
+                      drop_target_size.height());
 }
 
 // Verify that the drop target in each overview grid has bounds representing

@@ -21,23 +21,6 @@ sys.path.append(os.path.join(_SRC_PATH, 'third_party', 'node'))
 import node
 import node_modules
 
-# These files are already combined and minified.
-_BASE_EXCLUDES = []
-for excluded_file in [
-    'resources/mojo/mojo/public/js/bindings.js',
-    'resources/mojo/mojo/public/mojom/base/time.mojom-lite.js',
-    'resources/polymer/v3_0/polymer/polymer_bundled.min.js',
-    'resources/js/cr.js',  # This file relies on globals.
-    'resources/js/load_time_data.js',
-    'resources/ash/common/load_time_data.m.js',
-    'resources/mwc/lit/index.js',
-]:
-  # Exclude both the chrome://resources form and the scheme-relative form for
-  # files used in Polymer 3.
-  _BASE_EXCLUDES.append("chrome://" + excluded_file)
-  _BASE_EXCLUDES.append("//" + excluded_file)
-
-
 def _request_list_path(out_folder, target_name):
   # Using |target_name| as a prefix which is guaranteed to be unique within the
   # same folder, to avoid problems when multiple bundle_js() targets in the
@@ -217,7 +200,7 @@ def _optimize(in_folder, args):
   out_path = os.path.join(_CWD, args.out_folder).replace('\\', '/')
   manifest_out_path = _request_list_path(out_path, args.target_name)
 
-  excludes = _BASE_EXCLUDES + [
+  excludes = [
       # This file is dynamically created by C++. Should always be imported with
       # a relative path.
       'strings.m.js',

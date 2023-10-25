@@ -36,6 +36,7 @@
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
+#include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -56,7 +57,6 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
     const IsolatedWebAppLocation& location,
     const absl::optional<base::Version>& expected_version,
     std::unique_ptr<content::WebContents> web_contents,
-    std::unique_ptr<WebAppUrlLoader> url_loader,
     std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
     base::OnceCallback<void(base::expected<InstallIsolatedWebAppCommandSuccess,
@@ -71,7 +71,6 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
       location_(location),
       expected_version_(expected_version),
       web_contents_(std::move(web_contents)),
-      url_loader_(std::move(url_loader)),
       optional_keep_alive_(std::move(optional_keep_alive)),
       optional_profile_keep_alive_(std::move(optional_profile_keep_alive)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -117,6 +116,7 @@ void InstallIsolatedWebAppCommand::StartWithLock(
     std::unique_ptr<AppLock> lock) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   lock_ = std::move(lock);
+  url_loader_ = lock_->web_contents_manager().CreateUrlLoader();
 
   auto weak_ptr = weak_factory_.GetWeakPtr();
   RunChainedCallbacks(

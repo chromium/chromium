@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser.accessibility;
 
+import android.os.SystemClock;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.TraceEvent;
@@ -11,8 +13,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.ui.accessibility.AccessibilityState;
-
-import java.util.Calendar;
 
 /**
  * Helper class for recording UMA histograms of accessibility events
@@ -124,7 +124,7 @@ public class AccessibilityHistogramRecorder {
         // To disable accessibility, it needs to have been previously initialized.
         assert mTimeOfNativeInitialization > 0
             : "Accessibility onDisabled was called, but accessibility has not been initialized.";
-        long now = Calendar.getInstance().getTimeInMillis();
+        long now = SystemClock.elapsedRealtime();
 
         // As we disable accessibility, we want to record how long it had been enabled.
         if (initialCall) {
@@ -160,7 +160,7 @@ public class AccessibilityHistogramRecorder {
      */
     public void onReEnableCalled(boolean initialCall) {
         TraceEvent.begin("AccessibilityHistogramRecorder.onReEnabledCalled");
-        long now = Calendar.getInstance().getTimeInMillis();
+        long now = SystemClock.elapsedRealtime();
 
         // As we re-enable accessibility, we want to record how long it had been disabled.
         if (initialCall) {
@@ -228,29 +228,28 @@ public class AccessibilityHistogramRecorder {
      * Set the time this instance was shown to the current time in ms.
      */
     public void updateTimeOfFirstShown() {
-        mTimeOfFirstShown = Calendar.getInstance().getTimeInMillis();
+        mTimeOfFirstShown = SystemClock.elapsedRealtime();
     }
 
     /**
      * Set the time this instance had native initialization called to the current time in ms.
      */
     public void updateTimeOfNativeInitialization() {
-        mTimeOfNativeInitialization = Calendar.getInstance().getTimeInMillis();
+        mTimeOfNativeInitialization = SystemClock.elapsedRealtime();
     }
 
     /**
      * Notify the recorder that this instance was shown, and has previously been auto-disabled.
      */
     public void showAutoDisabledInstance() {
-        mTimeOfLastDisabledCall = Calendar.getInstance().getTimeInMillis();
+        mTimeOfLastDisabledCall = SystemClock.elapsedRealtime();
     }
 
     /**
      * Notify the recorder that this instance was hidden, and is currently auto-disabled.
      */
     public void hideAutoDisabledInstance() {
-        mOngoingSumOfTimeDisabled +=
-                Calendar.getInstance().getTimeInMillis() - mTimeOfLastDisabledCall;
+        mOngoingSumOfTimeDisabled += SystemClock.elapsedRealtime() - mTimeOfLastDisabledCall;
     }
 
     /**
@@ -352,7 +351,7 @@ public class AccessibilityHistogramRecorder {
         // If the Tab was not shown, the following histograms have no value.
         if (mTimeOfFirstShown < 0) return;
 
-        long now = Calendar.getInstance().getTimeInMillis();
+        long now = SystemClock.elapsedRealtime();
 
         // On activity recreate, or tab reparent, we can get quick succession of show/hide events,
         // and we do not want to record those, so limit to instances > 250ms.

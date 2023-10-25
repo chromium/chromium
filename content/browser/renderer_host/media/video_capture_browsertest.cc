@@ -55,8 +55,9 @@ class MockVideoCaptureControllerEventHandler
                void(const VideoCaptureControllerID&, int buffer_id));
   MOCK_METHOD1(OnCaptureConfigurationChanged,
                void(const VideoCaptureControllerID&));
-  MOCK_METHOD2(OnNewCropVersion,
-               void(const VideoCaptureControllerID&, uint32_t crop_version));
+  MOCK_METHOD2(OnNewSubCaptureTargetVersion,
+               void(const VideoCaptureControllerID&,
+                    uint32_t sub_capture_target_version));
   MOCK_METHOD2(OnBufferReady,
                void(const VideoCaptureControllerID& id,
                     const ReadyBuffer& fullsized_buffer));

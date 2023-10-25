@@ -153,14 +153,6 @@ def Main():
       print('A file at path %s already exists' % f, file=sys.stderr)
       return 2
 
-    # TODO(https://crbug.com/1375793): Remove this check.
-    if _IsIOSFile(f) and f.endswith('.js'):
-      print(
-          'Invalid file type for %s. (Please use \'.ts\' for new iOS scripts.)'
-          % f,
-          file=sys.stderr)
-      return 2
-
   for f in files:
     _CreateFile(f)
 

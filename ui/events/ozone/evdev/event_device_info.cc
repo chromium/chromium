@@ -95,6 +95,7 @@ constexpr auto kKeyboardBlocklist = base::MakeFixedFlatSet<DeviceId>({
     {0x046d, 0xc087},  // Logitech G703
     {0x046d, 0xc088},  // Logitech G Pro Wireless (USB)
     {0x046d, 0xc08b},  // Logitech G502 Hero
+    {0x046d, 0xc08c},  // Logitech G Pro Gaming Mouse (Wired)
     {0x046d, 0xc091},  // Logitech G903
     {0x046d, 0xc092},  // Logitech G203 LIGHTSYNC
     {0x046d, 0xc093},  // Logitech M500s

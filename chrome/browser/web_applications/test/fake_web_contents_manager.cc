@@ -64,6 +64,10 @@ class FakeWebContentsManager::FakeUrlLoader : public WebAppUrlLoader {
     const GURL& url = load_url_params.url;
     CHECK(manager_);
     DVLOG(1) << "FakeWebContentsManager::FakeUrlLoader::LoadUrl " << url.spec();
+
+    manager_->load_url_tracker_.Run(std::ref(load_url_params), web_contents,
+                                    url_comparison);
+
     auto page_it = manager_->page_state_.find(url);
     if (page_it == manager_->page_state_.end()) {
       DLOG(WARNING) << "No page state at url: " << url.spec();
@@ -417,6 +421,11 @@ FakeWebContentsManager::GetOrCreatePageState(const GURL& gurl) {
 }
 void FakeWebContentsManager::DeletePageState(const GURL& gurl) {
   page_state_.erase(gurl);
+}
+
+void FakeWebContentsManager::TrackLoadUrlCalls(
+    LoadUrlTracker load_url_tracker) {
+  load_url_tracker_ = std::move(load_url_tracker);
 }
 
 base::WeakPtr<FakeWebContentsManager> FakeWebContentsManager::GetWeakPtr() {

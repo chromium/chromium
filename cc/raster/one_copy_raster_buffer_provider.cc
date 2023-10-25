@@ -46,7 +46,7 @@ const int kMaxBytesPerCopyOperation = 1024 * 1024 * 4;
 
 BASE_FEATURE(kAlwaysUseMappableSIForOneCopyRaster,
              "AlwaysUseMappableSIForOneCopyRaster",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 

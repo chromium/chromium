@@ -1,0 +1,3 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[aria-live="polite", display="block", htmlTag="div", role="timer"]
+++++TextView text:"This test is for aria-role = timer" textSize:16.00 style:0 bundle:[display="", htmlTag=""]

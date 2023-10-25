@@ -504,9 +504,7 @@ bool DoIPv6AddressToNumber(const CHAR* spec,
                                 &num_ipv4_components)) {
       return false;
     }
-    if ((num_ipv4_components != 4 || trailing_dot) &&
-        base::FeatureList::IsEnabled(
-            url::kStrictIPv4EmbeddedIPv6AddressParsing)) {
+    if ((num_ipv4_components != 4 || trailing_dot)) {
       return false;
     }
   }

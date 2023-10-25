@@ -93,7 +93,7 @@ flex-start{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutNGFlexibleBox",
+    "layoutObjectName": "LayoutFlexibleBox",
     "showAccessibilityInfo": true
   },
   "flexInfo": [
@@ -270,7 +270,7 @@ flex-end{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutNGFlexibleBox",
+    "layoutObjectName": "LayoutFlexibleBox",
     "showAccessibilityInfo": true
   },
   "flexInfo": [
@@ -447,7 +447,7 @@ center{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutNGFlexibleBox",
+    "layoutObjectName": "LayoutFlexibleBox",
     "showAccessibilityInfo": true
   },
   "flexInfo": [
@@ -624,7 +624,7 @@ stretch{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutNGFlexibleBox",
+    "layoutObjectName": "LayoutFlexibleBox",
     "showAccessibilityInfo": true
   },
   "flexInfo": [
@@ -801,7 +801,7 @@ normal{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutNGFlexibleBox",
+    "layoutObjectName": "LayoutFlexibleBox",
     "showAccessibilityInfo": true
   },
   "flexInfo": [

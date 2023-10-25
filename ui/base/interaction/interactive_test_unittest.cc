@@ -1604,6 +1604,17 @@ TEST_F(InteractiveTestTest, PollingStateObserver) {
       WaitForState(kPollingTestState, 1));
 }
 
+// Tests that the callback is issued exactly once to determine its initial
+// state, and not triggered unnecessarily once the desired condition is met.
+TEST_F(InteractiveTestTest, PollingStateCalledOnce) {
+  UNCALLED_MOCK_CALLBACK(PollingStateObserver<int>::PollCallback, callback);
+  EXPECT_CALL(callback, Run).Times(1).WillOnce(testing::Return(1));
+  RunTestSequenceInContext(kTestContext1,
+                           PollState(kPollingTestState, callback.Get()),
+                           WaitForState(kPollingTestState, 1));
+  EXPECT_CALL(callback, Run).Times(0);
+}
+
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(PollingElementStateObserver<std::string>,
                                     kPollingElementTestState);
 

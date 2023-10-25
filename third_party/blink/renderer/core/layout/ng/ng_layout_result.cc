@@ -111,9 +111,9 @@ NGLayoutResult::NGLayoutResult(NGBoxFragmentBuilderPassKey passkey,
   }
 }
 
-NGLayoutResult::NGLayoutResult(NGLineBoxFragmentBuilderPassKey passkey,
+NGLayoutResult::NGLayoutResult(LineBoxFragmentBuilderPassKey passkey,
                                const NGPhysicalFragment* physical_fragment,
-                               NGLineBoxFragmentBuilder* builder)
+                               LineBoxFragmentBuilder* builder)
     : NGLayoutResult(std::move(physical_fragment),
                      static_cast<NGFragmentBuilder*>(builder)) {
   DCHECK_EQ(builder->bfc_block_offset_.has_value(),

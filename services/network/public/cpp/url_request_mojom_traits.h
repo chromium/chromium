@@ -399,6 +399,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.shared_dictionary_writer_enabled;
   }
+  static network::mojom::IPAddressSpace required_ip_address_space(
+      const network::ResourceRequest& request) {
+    return request.target_address_space;
+  }
 
 #if BUILDFLAG(IS_ANDROID)
   static const std::string& created_location(

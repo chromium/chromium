@@ -287,10 +287,6 @@ void WebURLRequest::SetRequestDestination(
   resource_request_->SetRequestDestination(destination);
 }
 
-bool WebURLRequest::PassResponsePipeToClient() const {
-  return resource_request_->DownloadToBlob();
-}
-
 bool WebURLRequest::UseStreamOnResponse() const {
   return resource_request_->UseStreamOnResponse();
 }

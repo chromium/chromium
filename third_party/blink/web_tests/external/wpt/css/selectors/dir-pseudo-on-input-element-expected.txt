@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[PASS] input element whose type attribute is in the telephone state
+[PASS] input element whose type attribute is in the telephone state in a RTL block
+[FAIL] input element whose type attribute is in the password state
+  assert_false: expected false got true
+[PASS] input element whose type attribute is in the text state
+[PASS] input element whose type attribute is in the search state
+[PASS] input element whose type attribute is in the url state
+[PASS] input element whose type attribute is in the email state
+[FAIL] input element whose type attribute is in the submit state
+  assert_false: expected false got true
+[FAIL] input element whose type attribute is in the reset state
+  assert_false: expected false got true
+[FAIL] input element whose type attribute is in the button state
+  assert_false: expected false got true
+[FAIL] dynamic changes to type of input elements affect whether value is used for dir=auto
+  assert_false: expected false got true
+[PASS] input element whose type attribute is in the date state
+[PASS] input element whose type attribute is in the time state
+[PASS] input element whose type attribute is in the number state
+[PASS] input element whose type attribute is in the range state
+[PASS] input element whose type attribute is in the color state
+[PASS] input element whose type attribute is in the checkbox state
+[PASS] input element whose type attribute is in the radio state
+[PASS] input element whose type attribute is in the image state
+Harness: the test ran to completion.
+

@@ -46,14 +46,14 @@ namespace {
 
 base::FilePath BlinkRootFilePath() {
   base::FilePath path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
   return base::MakeAbsoluteFilePath(
       path.Append(FILE_PATH_LITERAL("third_party/blink")));
 }
 
 base::FilePath WebTestsFilePath() {
   base::FilePath path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
   return base::MakeAbsoluteFilePath(
       path.Append(FILE_PATH_LITERAL("third_party/blink/web_tests")));
 }

@@ -4,9 +4,15 @@
 
 #include "chrome/browser/nearby_sharing/common/nearby_share_resource_getter.h"
 
-#include "base/memory/singleton.h"
-// This will eventually be conditionally included on unofficial Chrome builds.
+#include "build/branding_buildflags.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/nearby_sharing/internal/nearby_share_resource_utils.h"
+#else  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/nearby_sharing/common/nearby_share_resource_utils.h"
+#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 #include "ui/base/l10n/l10n_util.h"
 
 NearbyShareResourceGetter::NearbyShareResourceGetter() = default;
@@ -19,6 +25,9 @@ NearbyShareResourceGetter* NearbyShareResourceGetter::GetInstance() {
 
 std::u16string NearbyShareResourceGetter::GetStringWithFeatureName(
     int message_id) {
+  // Caller ensures feature flag is enabled.
+  CHECK(features::IsNameEnabled());
+
   // Replace the placeholder at index 0 of the placeholder list with the feature
   // name.
   return l10n_util::GetStringFUTF16(message_id, GetNearbyShareFeatureName());

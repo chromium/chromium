@@ -63,7 +63,8 @@ class CanvasVideoCapturerSource : public VideoCapturerSource {
   }
   void StartCapture(const media::VideoCaptureParams& params,
                     const blink::VideoCaptureDeliverFrameCB& frame_callback,
-                    const VideoCaptureCropVersionCB& crop_version_callback,
+                    const VideoCaptureSubCaptureTargetVersionCB&
+                        sub_capture_target_version_callback,
                     // Canvas capture does not report frame drops.
                     const VideoCaptureNotifyFrameDroppedCB&,
                     const RunningCallback& running_callback) override {

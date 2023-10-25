@@ -103,12 +103,12 @@ constexpr char kKrb5CCEnvName[] = "KRB5CCNAME";
 constexpr char kKrb5ConfEnvName[] = "KRB5_CONFIG";
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr char kKrb5CCFilePrefix[] = "FILE:";
 constexpr char kKrb5Directory[] = "kerberos";
 constexpr char kKrb5CCFile[] = "krb5cc";
 constexpr char kKrb5ConfFile[] = "krb5.conf";
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool g_force_create_network_service_directly = false;
 mojo::Remote<network::mojom::NetworkService>* g_network_service_remote =
@@ -338,7 +338,7 @@ scoped_refptr<base::SequencedTaskRunner>& GetNetworkTaskRunnerStorage() {
   return *storage;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 base::FilePath GetKerberosDir() {
   base::FilePath dir;
   base::PathService::Get(base::DIR_HOME, &dir);
@@ -352,7 +352,7 @@ std::string GetKrb5CCEnvValue() {
 std::string GetKrb5ConfEnvValue() {
   return GetKerberosDir().Append(kKrb5ConfFile).value();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void CreateInProcessNetworkService(
     mojo::PendingReceiver<network::mojom::NetworkService> receiver) {
@@ -416,7 +416,7 @@ network::mojom::NetworkServiceParamsPtr CreateNetworkServiceParams() {
 #if BUILDFLAG(IS_POSIX)
   // Send Kerberos environment variables to the network service.
   if (IsOutOfProcessNetworkService()) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
     network_service_params->environment.push_back(
         network::mojom::EnvironmentVariable::New(kKrb5CCEnvName,
                                                  GetKrb5CCEnvValue()));
@@ -436,7 +436,7 @@ network::mojom::NetworkServiceParamsPtr CreateNetworkServiceParams() {
       network_service_params->environment.push_back(
           network::mojom::EnvironmentVariable::New(kKrb5ConfEnvName, value));
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 #endif  // BUILDFLAG(IS_POSIX)
 

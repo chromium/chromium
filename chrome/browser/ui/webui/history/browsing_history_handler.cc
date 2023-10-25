@@ -214,8 +214,9 @@ base::Value::Dict HistoryEntryToValue(
   // Pass the timestamps in a list.
   base::Value::List timestamps;
   for (int64_t timestamp : entry.all_timestamps) {
-    timestamps.Append(base::Time::FromInternalValue(timestamp)
-                          .InMillisecondsFSinceUnixEpoch());
+    timestamps.Append(
+        base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(timestamp))
+            .InMillisecondsFSinceUnixEpoch());
   }
   result.Set("allTimestamps", std::move(timestamps));
 

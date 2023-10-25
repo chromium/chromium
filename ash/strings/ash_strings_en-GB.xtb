@@ -29,6 +29,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="109942774857561566">I'm bored</translation>
 <translation id="1104084341931202936">Show accessibility settings</translation>
 <translation id="1104621072296271835">Your devices work even better together</translation>
+<translation id="1106446201446919638">One device connected. While using hotspot, Wi-Fi will stay off.</translation>
 <translation id="1111021433905331574">You can change the colour of your keyboard backlight in Settings &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Toggle mobile data. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Autohide shelf</translation>
@@ -191,6 +192,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1737078180382804488">Dismiss setting up viewing your phone's notifications</translation>
 <translation id="174102739345480129">Marker is off.</translation>
 <translation id="1743570585616704562">Not recognised</translation>
+<translation id="1743927604032653654">Collapse <ph name="NOTIFICATION_TITLE" /> notification</translation>
 <translation id="1746730358044914197">Input methods are configured by your administrator.</translation>
 <translation id="1747336645387973286">due date <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">On-screen keyboard enabled</translation>
@@ -201,7 +203,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1757857692711134412">Off until sunset</translation>
 <translation id="1768366657309696705">The <ph name="LAUNCHER_KEY_NAME" /> + full stop keyboard shortcut has changed. To use the insert key, press the <ph name="LAUNCHER_KEY_NAME" /> key + shift + backspace.</translation>
 <translation id="1770726142253415363">Moved to row <ph name="ROW_NUMBER" />, column <ph name="COLUMN_NUMBER" />.</translation>
-<translation id="1771458705381257690">Open <ph name="NAME" /> to set up and customise your device</translation>
 <translation id="1771761307086386028">Scroll right</translation>
 <translation id="1774796056689732716">Calendar, <ph name="CURRENT_MONTH_YEAR" />, currently <ph name="DATE" /> is selected.</translation>
 <translation id="1775598828170459419">Showing <ph name="NUM_SHOWN_ITEMS" /> out of <ph name="NUM_TOTAL_ITEMS" /></translation>
@@ -306,7 +307,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="2258734398699965611">Suggested files</translation>
 <translation id="2268130516524549846">Bluetooth disabled</translation>
 <translation id="2268813581635650749">Sign out all</translation>
-<translation id="2269016722240250274">An application is using your microphone</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2277103315734023688">Seek forwards</translation>
 <translation id="2282073721614284166">Open link in tab</translation>
@@ -359,6 +359,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2465145153332031561">Battery health <ph name="BATTERY_HEALTH_PERCENTAGE" />%, cycle count <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Confirm resolution</translation>
 <translation id="2475982808118771221">An error occurred</translation>
+<translation id="2478076885740497414">Install app</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2484513351006226581">Hit <ph name="KEYBOARD_SHORTCUT" /> to switch keyboard layout.</translation>
 <translation id="2487915095798731898">Join</translation>
@@ -517,6 +518,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3160929076476941240">2 h</translation>
 <translation id="3161500364292033097">Close desk and windows</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> is rolling back your <ph name="DEVICE_TYPE" />. Your device will reset and all data will be deleted.</translation>
+<translation id="3170769098533255179">No devices connected. While using hotspot, Wi-Fi will stay off.</translation>
 <translation id="3171170659304083361">Input methods settings</translation>
 <translation id="3176221688814061633">Your Chromebook or Bluetooth device is using an older version of Bluetooth. Turn on the Bluetooth Super Resolution or use internal microphone for better audio quality.</translation>
 <translation id="3181441307743005334">Restart may take a while</translation>
@@ -530,6 +532,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3217205077783620295">Volume is on; toggling will mute audio.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> more</translation>
 <translation id="3227137524299004712">Microphone</translation>
+<translation id="3233611303007751344">Battery Saver turned off</translation>
 <translation id="324366796737464147">Noise cancellation</translation>
 <translation id="3249513730522716925">Window <ph name="WINDOW_TITLE" /> moved from Desk <ph name="ACTIVE_DESK" /> to Desk <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Classwork type: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -550,8 +553,10 @@ Here are some things that you can try to get started.</translation>
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> devices connected to <ph name="DEVICE_NAME" /> hotspot</translation>
 <translation id="3307642347673023554">Switched to laptop mode</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> can still sign in later.</translation>
+<translation id="3317779231018057649"><ph name="DEVICECOUNT" /> devices connected While using hotspot, Wi-Fi will stay off.</translation>
 <translation id="3321628682574733415">Incorrect parent code</translation>
 <translation id="332827762492701193">Notifications are hidden</translation>
+<translation id="3333674550998107387">Expand <ph name="NOTIFICATION_TITLE" /> notification</translation>
 <translation id="3339826665088060472">Screen capture, tools to take screenshots and screen recordings</translation>
 <translation id="3340978935015468852">settings</translation>
 <translation id="3341303451326249809">Screenshot captured</translation>
@@ -628,8 +633,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="3600061223661453002">Off</translation>
 <translation id="3604801046548457007">Desk <ph name="DESK_TITILE" /> created</translation>
 <translation id="3606978283550408104">Braille display connected.</translation>
-<translation id="3609301425104788351"><ph name="MIC" />,
-        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">Enabling mobile data will enable Bluetooth</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3616883743181209306">Menu moved to the top-right corner of the screen.</translation>
@@ -679,9 +682,7 @@ Connect your device to power.</translation>
 <translation id="3781910048497807059">Move focus to previous pane</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Lock</translation>
-<translation id="3789841737615482174">Install</translation>
 <translation id="3796215473395753611">alt + up arrow</translation>
-<translation id="3796746699333205839">An application is using your camera and microphone</translation>
 <translation id="3798670284305777884">Speaker (internal)</translation>
 <translation id="3799080171973636491">You pressed the keyboard shortcut for the full-screen magnifier. Do you want to turn it on?</translation>
 <translation id="380165613292957338">Hi, how can I help?</translation>
@@ -766,6 +767,8 @@ Connect your device to power.</translation>
 <translation id="4146671046252289537">Move to end of next word</translation>
 <translation id="4146833061457621061">Play music</translation>
 <translation id="4150201353443180367">Display</translation>
+<translation id="4156293514828496577"><ph name="PERCENTAGE" />% battery left (about <ph name="TIME_LEFT" />).
+Some features are limited to increase battery life.</translation>
 <translation id="4165275524535002941">Cable may not support displays</translation>
 <translation id="4177415338862979658">Click to check for details</translation>
 <translation id="4177913004758410636">{0,plural, =1{Update device within a day}other{Update device within # days}}</translation>
@@ -809,6 +812,7 @@ Connect your device to power.</translation>
 <translation id="428715201724021596">Connecting to profile. This may take a few minutes.</translation>
 <translation id="4294319844246081198">Good morning <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Clear all <ph name="COUNT" /> notifications</translation>
+<translation id="4300272766492248925">Open app</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> moved to folder <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Not available</translation>
 <translation id="4303223480529385476">Expand status area</translation>
@@ -874,6 +878,7 @@ Connect your device to power.</translation>
 <translation id="4566144812051858745">Not interested in any suggestions</translation>
 <translation id="4569753163207712681">View your phone's recent photos, media and apps</translation>
 <translation id="4573176682887762361">'Type [word / phrase]'</translation>
+<translation id="4577188182049003486">With hotspot on, Wi-Fi is off</translation>
 <translation id="4577274620589681794">Time's up · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Show previews</translation>
 <translation id="4578906031062871102">Settings menu opened</translation>
@@ -895,6 +900,7 @@ Connect your device to power.</translation>
 <translation id="4659419629803378708">ChromeVox enabled</translation>
 <translation id="4666911709726371538">More apps</translation>
 <translation id="4667099493359681081">Downloading <ph name="FILENAME" /></translation>
+<translation id="4672539464599646374">Battery Saver turned on</translation>
 <translation id="468293128311738995">Apps from your phone</translation>
 <translation id="4690510401873698237">Shelf on bottom</translation>
 <translation id="4696813013609194136">Unlock device with parent code</translation>
@@ -1055,6 +1061,8 @@ Connect your device to power.</translation>
 <translation id="5297704307811127955">Off</translation>
 <translation id="5300589172476337783">Show</translation>
 <translation id="5302048478445481009">Language</translation>
+<translation id="5303319262469238330"><ph name="PERCENTAGE" />% battery left.
+Some features are limited to increase battery life.</translation>
 <translation id="5308380583665731573">Connect</translation>
 <translation id="5313326810920013265">Bluetooth settings</translation>
 <translation id="5314219114274263156">Screen recording taken</translation>
@@ -1200,7 +1208,6 @@ Connect your device to power.</translation>
 <translation id="5876666360658629066">Enter parental code</translation>
 <translation id="5881540930187678962">Set up Phone Hub later</translation>
 <translation id="5881663018261910378">Off</translation>
-<translation id="5883017113634523865">Install the app for <ph name="NAME" /> from Google Play to see all available features</translation>
 <translation id="5887954372087850114">Window <ph name="WINDOW_TITLE" /> assigned to <ph name="DESK_TITLE" /> and unassigned from all other desks</translation>
 <translation id="588817334757907802">Open file in Chrome browser</translation>
 <translation id="5895138241574237353">Restart</translation>
@@ -1295,6 +1302,7 @@ Connect your device to power.</translation>
 <translation id="6231419273573514727">Peripheral performance may be limited</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> is currently using your camera and microphone</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="62380141479352646">Low battery. Battery Saver turned on.</translation>
 <translation id="6247728804802644171">Open notifications</translation>
 <translation id="6254629735336163724">Locked to horizontal</translation>
 <translation id="6259254695169772643">Use your stylus to select</translation>
@@ -1409,6 +1417,7 @@ New install</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Camera and microphone in use</translation>
 <translation id="6739144137573853180">GO TO SETTINGS</translation>
+<translation id="6747985245839783873">Battery at <ph name="PERCENTAGE" /> per cent. Battery Saver is on.</translation>
 <translation id="6751052314767925245">Enforced by your administrator</translation>
 <translation id="6751826523481687655">Performance tracing is turned on</translation>
 <translation id="6752912906630585008">Desk <ph name="REMOVED_DESK" /> removed and merged with Desk <ph name="RECEIVE_DESK" /></translation>
@@ -1508,6 +1517,7 @@ New install</translation>
 <translation id="7131634465328662194">You will automatically be signed out.</translation>
 <translation id="7143207342074048698">Connecting</translation>
 <translation id="7144942256906679589">Battery status</translation>
+<translation id="7145639536026937076">Battery at <ph name="PERCENTAGE" />% and charging. Battery Saver is on.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1518,6 +1528,7 @@ New install</translation>
 <translation id="7198435252016571249">Camera snapped to the bottom-right corner. Conflict with system surface.</translation>
 <translation id="7219573373513695352">No devices connected</translation>
 <translation id="7229029500464092426">Memory <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> total</translation>
+<translation id="7244725679040769470"><ph name="PERCENTAGE" />% battery left. Connect your device to power.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. This Chromebook needs to restart to apply an update. This can take up to one minute.</translation>
 <translation id="7256634071279256947">Rear microphone</translation>
 <translation id="7258828758145722155">Edited yesterday</translation>
@@ -1566,7 +1577,6 @@ New install</translation>
 <translation id="742594950370306541">Camera is in use.</translation>
 <translation id="742608627846767349">Good morning,</translation>
 <translation id="743058460480092004">Camera and microphone are in use.</translation>
-<translation id="7452560014878697800">An application is using your camera</translation>
 <translation id="7453330308669753048">Search history result removed</translation>
 <translation id="7459485586006128091">Due to an internal error, hotspot has been turned off. Try reconnecting in a few minutes.</translation>
 <translation id="7461924472993315131">Pin</translation>
@@ -1911,6 +1921,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8878886163241303700">Extending screen</translation>
 <translation id="888982883502837004">Firmware updates are available for your device. Click to review and update.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> will be permanently deleted</translation>
+<translation id="889790758758811533"><ph name="PERCENTAGE" />% battery left (about <ph name="TIME_LEFT" />). Connect your device to power.</translation>
 <translation id="88986195241502842">Page down</translation>
 <translation id="8905919797434099235">(No title)</translation>
 <translation id="890616557918890486">Change source</translation>

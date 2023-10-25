@@ -23,21 +23,21 @@
 namespace blink {
 
 class HarfBuzzShaper;
-class NGInlineItem;
+class InlineItem;
 
 // Represents a segment produced by |RunSegmenter|.
 //
 // |RunSegmenter| is forward-only that this class provides random access to the
 // result by keeping in memory. This class packs the data in a compact form to
 // minimize the memory impact.
-class CORE_EXPORT NGInlineItemSegment {
+class CORE_EXPORT InlineItemSegment {
   DISALLOW_NEW();
 
  public:
-  NGInlineItemSegment(unsigned end_offset, unsigned segment_data)
+  InlineItemSegment(unsigned end_offset, unsigned segment_data)
       : end_offset_(end_offset), segment_data_(segment_data) {}
-  NGInlineItemSegment(const RunSegmenter::RunSegmenterRange& range);
-  NGInlineItemSegment(unsigned end_offset, const NGInlineItem& item);
+  InlineItemSegment(const RunSegmenter::RunSegmenterRange& range);
+  InlineItemSegment(unsigned end_offset, const InlineItem& item);
 
   RunSegmenter::RunSegmenterRange ToRunSegmenterRange(
       unsigned start_offset,
@@ -60,11 +60,11 @@ class CORE_EXPORT NGInlineItemSegment {
   unsigned end_offset_;
   unsigned segment_data_ : kSegmentDataBits;
 
-  friend class NGInlineItemSegments;
+  friend class InlineItemSegments;
 };
 
-// Represents a set of |NGInlineItemSegment| for an inline formatting context
-// represented by |NGInlineItemsData|.
+// Represents a set of |InlineItemSegment| for an inline formatting context
+// represented by |InlineItemsData|.
 //
 // The segments/block ratio for Latin is 1.0 to 1.01 in average, while it
 // increases to 1.01 to 1.05 for most other writing systems because it is common
@@ -74,22 +74,22 @@ class CORE_EXPORT NGInlineItemSegment {
 // ratio jumps to 10-30, or sometimes 300 depends on the length of the block,
 // because the average characters/segment ratio in Japanese is 2-5. This class
 // builds internal indexes for faster access in such cases.
-class CORE_EXPORT NGInlineItemSegments {
-  USING_FAST_MALLOC(NGInlineItemSegments);
+class CORE_EXPORT InlineItemSegments {
+  USING_FAST_MALLOC(InlineItemSegments);
 
  public:
-  std::unique_ptr<NGInlineItemSegments> Clone() const;
+  std::unique_ptr<InlineItemSegments> Clone() const;
 
   unsigned size() const { return segments_.size(); }
   bool IsEmpty() const { return segments_.empty(); }
 
   // Start/end offset of each segment/entire segments.
-  unsigned OffsetForSegment(const NGInlineItemSegment& segment) const;
+  unsigned OffsetForSegment(const InlineItemSegment& segment) const;
   unsigned EndOffset() const { return segments_.back().EndOffset(); }
 
   void ReserveCapacity(unsigned capacity) { segments_.reserve(capacity); }
 
-  // Append a |NGInlineItemSegment| using one of its constructors.
+  // Append a |InlineItemSegment| using one of its constructors.
   template <class... Args>
   void Append(Args&&... args) {
     segments_.emplace_back(std::forward<Args>(args)...);
@@ -108,7 +108,7 @@ class CORE_EXPORT NGInlineItemSegments {
                                       unsigned segment_index);
 
   // Compute an internal items-to-segments index for faster access.
-  void ComputeItemIndex(const HeapVector<NGInlineItem>& items);
+  void ComputeItemIndex(const HeapVector<InlineItem>& items);
 
   using RunSegmenterRanges = Vector<RunSegmenter::RunSegmenterRange, 16>;
   void ToRanges(RunSegmenterRanges& ranges) const;
@@ -120,7 +120,7 @@ class CORE_EXPORT NGInlineItemSegments {
    public:
     Iterator(unsigned start_offset,
              unsigned end_offset,
-             const NGInlineItemSegment* segment);
+             const InlineItemSegment* segment);
 
     bool IsDone() const { return range_.start == end_offset_; }
 
@@ -134,7 +134,7 @@ class CORE_EXPORT NGInlineItemSegments {
 
    private:
     RunSegmenter::RunSegmenterRange range_;
-    const NGInlineItemSegment* segment_;
+    const InlineItemSegment* segment_;
     unsigned start_offset_;
     unsigned end_offset_;
   };
@@ -142,7 +142,7 @@ class CORE_EXPORT NGInlineItemSegments {
 
   // Returns an iterator for the given offsets.
   //
-  // |item_index| is the index of |NGInlineItem| for the |start_offset|.
+  // |item_index| is the index of |InlineItem| for the |start_offset|.
   const_iterator Ranges(unsigned start_offset,
                         unsigned end_offset,
                         unsigned item_index) const;
@@ -165,26 +165,25 @@ class CORE_EXPORT NGInlineItemSegments {
   void Split(unsigned index, unsigned offset);
 
 #if DCHECK_IS_ON()
-  void CheckOffset(unsigned offset, const NGInlineItemSegment* segment) const;
+  void CheckOffset(unsigned offset, const InlineItemSegment* segment) const;
 #else
-  void CheckOffset(unsigned offset, const NGInlineItemSegment* segment) const {}
+  void CheckOffset(unsigned offset, const InlineItemSegment* segment) const {}
 #endif
 
-  Vector<NGInlineItemSegment> segments_;
+  Vector<InlineItemSegment> segments_;
   Vector<unsigned> items_to_segments_;
 };
 
-inline NGInlineItemSegments::Iterator::Iterator(
-    unsigned start_offset,
-    unsigned end_offset,
-    const NGInlineItemSegment* segment)
+inline InlineItemSegments::Iterator::Iterator(unsigned start_offset,
+                                              unsigned end_offset,
+                                              const InlineItemSegment* segment)
     : segment_(segment), start_offset_(start_offset), end_offset_(end_offset) {
   DCHECK_LT(start_offset, end_offset);
   DCHECK_LT(start_offset, segment->EndOffset());
   range_ = segment->ToRunSegmenterRange(start_offset_, end_offset_);
 }
 
-inline void NGInlineItemSegments::Iterator::operator++() {
+inline void InlineItemSegments::Iterator::operator++() {
   DCHECK_LE(range_.end, end_offset_);
   if (range_.end == end_offset_) {
     range_.start = end_offset_;

@@ -56,7 +56,7 @@ class GraphInfoBuilder final {
   //   uint32_t groups;
   //   mojom::InputOperandLayout input_layout;
   //   absl::optional<uint64_t> bias_operand_id,
-  //   absl::optional<mojom::Operation::Tag> activation;
+  //   absl::optional<mojom::Activation::Tag> activation;
   //   absl::optional<ClampAttributes> clamp_attributes;
   // };
   template <typename Conv2dAttributes>
@@ -89,20 +89,29 @@ class GraphInfoBuilder final {
 
     if (attributes.activation.has_value()) {
       switch (attributes.activation.value()) {
-        case mojom::Operation::Tag::kRelu:
-          conv2d->activation = mojom::Operation::NewRelu(mojom::Relu::New());
-          break;
-        case mojom::Operation::Tag::kClamp: {
+        case mojom::Activation::Tag::kClamp: {
           auto clamp_attributes = attributes.clamp_attributes;
           CHECK_EQ(clamp_attributes.has_value(), true);
           auto clamp = mojom::Clamp::New();
           clamp->min_value = clamp_attributes->min_value;
           clamp->max_value = clamp_attributes->max_value;
-          conv2d->activation = mojom::Operation::NewClamp(std::move(clamp));
+          conv2d->activation = mojom::Activation::NewClamp(std::move(clamp));
           break;
         }
-        default:
-          NOTREACHED();
+        case mojom::Activation::Tag::kRelu:
+          conv2d->activation = mojom::Activation::NewRelu(mojom::Relu::New());
+          break;
+        case mojom::Activation::Tag::kSigmoid:
+          conv2d->activation =
+              mojom::Activation::NewSigmoid(mojom::Sigmoid::New());
+          break;
+        case mojom::Activation::Tag::kSoftmax:
+          conv2d->activation =
+              mojom::Activation::NewSoftmax(mojom::Softmax::New());
+          break;
+        case mojom::Activation::Tag::kTanh:
+          conv2d->activation = mojom::Activation::NewTanh(mojom::Tanh::New());
+          break;
       }
     }
 
@@ -210,11 +219,15 @@ class GraphInfoBuilder final {
 
   void BuildReshape(uint64_t input_operand_id, uint64_t output_operand_id);
 
+  void BuildSigmoid(uint64_t input_operand_id, uint64_t output_operand_id);
+
   void BuildSoftmax(uint64_t input_operand_id, uint64_t output_operand_id);
 
   void BuildSplit(uint64_t input_operand_id,
                   const std::vector<uint64_t>& output_operand_ids,
                   uint32_t axis);
+
+  void BuildTanh(uint64_t input_operand_id, uint64_t output_operand_id);
 
   void BuildTranspose(uint64_t input_operand_id,
                       uint64_t output_operand_id,

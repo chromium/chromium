@@ -145,7 +145,7 @@ void PageDiscardingHelper::DiscardMultiplePages(
       continue;
     }
     candidates.emplace_back(page_node, false, page_node->IsVisible(),
-                            is_protected,
+                            is_protected, page_node->IsFocused(),
                             page_node->GetTimeSinceLastVisibilityChange());
   }
   // Sorts with ascending importance.

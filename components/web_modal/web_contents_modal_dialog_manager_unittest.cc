@@ -112,6 +112,7 @@ class WebContentsModalDialogManagerTest
   }
 
   void TearDown() override {
+    manager = nullptr;
     test_api.reset();
     content::RenderViewHostTestHarness::TearDown();
   }
@@ -130,7 +131,7 @@ class WebContentsModalDialogManagerTest
 
   int next_dialog_id;
   std::unique_ptr<TestWebContentsModalDialogManagerDelegate> delegate;
-  raw_ptr<WebContentsModalDialogManager, DanglingUntriaged> manager;
+  raw_ptr<WebContentsModalDialogManager> manager;
   std::unique_ptr<WebContentsModalDialogManager::TestApi> test_api;
 };
 

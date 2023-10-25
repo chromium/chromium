@@ -23,13 +23,13 @@
 
 // Whether the mock module should return the mocked result when the
 // reauthentication request is made or wait for
-// `returnMockedReathenticationResult` to be invoked. Defaults to YES. Use it
+// `returnMockedReauthenticationResult` to be invoked. Defaults to YES. Use it
 // for testing some state while authentication is being requested.
 @property(nonatomic, assign) BOOL shouldReturnSynchronously;
 
 // Invokes the last handler passed to attemptReauthWithLocalizedReason with
 // `expectedResult`.
-- (void)returnMockedReathenticationResult;
+- (void)returnMockedReauthenticationResult;
 
 @end
 

@@ -46,7 +46,8 @@ media::VideoCaptureFormats LocalVideoCapturerSource::GetPreferredFormats() {
 void LocalVideoCapturerSource::StartCapture(
     const media::VideoCaptureParams& params,
     const VideoCaptureDeliverFrameCB& new_frame_callback,
-    const VideoCaptureCropVersionCB& crop_version_callback,
+    const VideoCaptureSubCaptureTargetVersionCB&
+        sub_capture_target_version_callback,
     const VideoCaptureNotifyFrameDroppedCB& frame_dropped_callback,
     const RunningCallback& running_callback) {
   DCHECK(params.requested_format.IsValid());
@@ -59,7 +60,8 @@ void LocalVideoCapturerSource::StartCapture(
           task_runner_, ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
                             &LocalVideoCapturerSource::OnStateUpdate,
                             weak_factory_.GetWeakPtr()))),
-      new_frame_callback, crop_version_callback, frame_dropped_callback);
+      new_frame_callback, sub_capture_target_version_callback,
+      frame_dropped_callback);
 }
 
 media::VideoCaptureFeedbackCB LocalVideoCapturerSource::GetFeedbackCallback()

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/constants/app_types.h"
+#include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
@@ -319,6 +320,19 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
                                const void* key,
                                intptr_t old) override {
     CHECK_EQ(floated_window_, window);
+
+    if (key == aura::client::kWindowWorkspaceKey &&
+        desks_util::IsZOrderTracked(window)) {
+      auto* desks_controller = Shell::Get()->desks_controller();
+      if (desks_util::IsWindowVisibleOnAllWorkspaces(window)) {
+        desks_controller->AddVisibleOnAllDesksWindow(window);
+      } else {
+        desks_controller->MaybeRemoveVisibleOnAllDesksWindow(window);
+      }
+
+      return;
+    }
+
     if (key != aura::client::kResizeBehaviorKey) {
       return;
     }
@@ -695,13 +709,16 @@ void FloatController::OnMovingFloatedWindowToDesk(aura::Window* floated_window,
                                          .id());
   }
 
-  // Update `floated_window` visibility based on target desk's activation
-  // status.
-  if (target_desk->is_active()) {
-    ShowFloatedWindow(floated_window);
-  } else {
-    HideFloatedWindow(floated_window);
+  if (!desks_util::IsWindowVisibleOnAllWorkspaces(floated_window)) {
+    // Update `floated_window` visibility based on target desk's activation
+    // status.
+    if (target_desk->is_active()) {
+      ShowFloatedWindow(floated_window);
+    } else {
+      HideFloatedWindow(floated_window);
+    }
   }
+
   active_desk->NotifyContentChanged();
   target_desk->NotifyContentChanged();
 }
@@ -965,8 +982,6 @@ void FloatController::FloatImpl(aura::Window* window) {
   if (floated_window_info_map_.contains(window))
     return;
 
-  // If a floated window already exists at current desk, unfloat it before
-  // floating `window`.
   auto* desk_controller = DesksController::Get();
   // Get the desk where the window belongs to before moving it to float
   // container.
@@ -975,14 +990,28 @@ void FloatController::FloatImpl(aura::Window* window) {
     return;
   }
 
-  // TODO(b/267363112): Allow a floated window to be assigned to all desks.
-  // If window is visible to all desks, unset it.
-  if (desks_util::IsWindowVisibleOnAllWorkspaces(window)) {
-    window->SetProperty(aura::client::kWindowWorkspaceKey,
-                        aura::client::kWindowWorkspaceUnassignedWorkspace);
+  // If the window we want to float is already visible on all desks, then we
+  // need to unfloat any other currently floated windows that exist on each
+  // desk, as there should only be one floated window per desk.
+  const bool reset_all_desks =
+      desks_util::IsWindowVisibleOnAllWorkspaces(window);
+  std::vector<aura::Window*> windows_to_reset;
+
+  for (const auto& [floated_window, info] : floated_window_info_map_) {
+    // Regardless if `window` is visible on all desks or not, if a floated
+    // window already exists at the current desk, then we also want to unfloat
+    // it.
+    if (reset_all_desks || info->desk() == desk) {
+      windows_to_reset.push_back(floated_window);
+    }
   }
 
-  auto* previously_floated_window = FindFloatedWindowOfDesk(desk);
+  // Since a floated window is always on top, we don't want to track its
+  // z-ordering.
+  if (reset_all_desks && features::IsPerDeskZOrderEnabled()) {
+    desk_controller->UntrackWindowFromAllDesks(window);
+  }
+
   // Add floated window to `floated_window_info_map_`.
   // Note: this has to be called before `ResetFloatedWindow`. Because in the
   // call sequence of `ResetFloatedWindow` we will access
@@ -990,8 +1019,9 @@ void FloatController::FloatImpl(aura::Window* window) {
   // `IsFloated()` returns true, but `FindDeskOfFloatedWindow` returns nullptr.
   floated_window_info_map_.emplace(
       window, std::make_unique<FloatedWindowInfo>(window, desk));
-  if (previously_floated_window)
-    ResetFloatedWindow(previously_floated_window);
+  for (auto* reset_window : windows_to_reset) {
+    ResetFloatedWindow(reset_window);
+  }
 
   aura::Window* floated_container =
       window->GetRootWindow()->GetChildById(kShellWindowId_FloatContainer);
@@ -1037,6 +1067,13 @@ void FloatController::UnfloatImpl(aura::Window* window) {
     desks_controller_observation_.Reset();
     tablet_mode_observation_.Reset();
     display_observer_.reset();
+  }
+
+  // A floated window does not have per-desk z-order, so we need to start
+  // tracking the window again after it is unfloated.
+  if (desks_util::IsWindowVisibleOnAllWorkspaces(window) &&
+      features::IsPerDeskZOrderEnabled()) {
+    DesksController::Get()->TrackWindowOnAllDesks(window);
   }
 }
 

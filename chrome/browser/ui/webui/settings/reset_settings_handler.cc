@@ -51,8 +51,6 @@ ResetRequestOriginFromString(const std::string& request_origin) {
   static const char kOriginUserClick[] = "userclick";
   static const char kOriginTriggeredReset[] = "triggeredreset";
 
-  if (request_origin == ResetSettingsHandler::kCctResetSettingsHash)
-    return reset_report::ChromeResetReport::RESET_REQUEST_ORIGIN_CCT;
   if (request_origin == kOriginUserClick)
     return reset_report::ChromeResetReport::RESET_REQUEST_ORIGIN_USER_CLICK;
   if (request_origin == kOriginTriggeredReset) {
@@ -66,9 +64,6 @@ ResetRequestOriginFromString(const std::string& request_origin) {
 }
 
 }  // namespace
-
-// static
-const char ResetSettingsHandler::kCctResetSettingsHash[] = "cct";
 
 // static
 bool ResetSettingsHandler::ShouldShowResetProfileBanner(Profile* profile) {

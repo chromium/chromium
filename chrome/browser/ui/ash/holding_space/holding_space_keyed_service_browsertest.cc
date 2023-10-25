@@ -782,24 +782,29 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceFlexibleFsBrowserTest,
 
 // HoldingSpaceKeyedServiceLacrosBrowserTest -----------------------------------
 
+// TODO(http://b/306459683): Remove the code that relates to the download
+// controller when the downloads integration V2 feature is enabled.
 class HoldingSpaceKeyedServiceLacrosBrowserTest
     : public HoldingSpaceKeyedServiceBrowserTest,
       public ::testing::WithParamInterface<
           std::tuple<FileSystemType,
                      /*from_incognito_profile=*/bool,
-                     /*in_progress_downloads_eligible_client=*/bool>> {
+                     /*in_progress_downloads_eligible_client=*/bool,
+                     /*enable_downloads_integration_v2=*/bool>> {
  public:
   HoldingSpaceKeyedServiceLacrosBrowserTest()
       : HoldingSpaceKeyedServiceBrowserTest(std::get<0>(GetParam())) {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    scoped_feature_list.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list.InitWithFeatureState(
+        features::kSysUiDownloadsIntegrationV2,
+        IsDownloadsIntegrationV2Enabled());
   }
 
   bool FromIncognitoProfile() const { return std::get<1>(GetParam()); }
   bool InProgressDownloadsEligibleClient() const {
     return std::get<2>(GetParam());
+  }
+  bool IsDownloadsIntegrationV2Enabled() const {
+    return std::get<3>(GetParam());
   }
 
   crosapi::DownloadControllerAsh* download_controller() {
@@ -818,7 +823,8 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(
         ::testing::Values(FileSystemType::kDownloads, FileSystemType::kDriveFs),
         /*from_incognito_profile=*/::testing::Bool(),
-        /*in_progress_downloads_eligible_client=*/::testing::Bool()));
+        /*in_progress_downloads_eligible_client=*/::testing::Bool(),
+        /*enable_downloads_integration_v2=*/::testing::Bool()));
 
 // Tests -----------------------------------------------------------------------
 
@@ -856,13 +862,14 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceLacrosBrowserTest,
 
   // In-progress downloads should only be added to holding space if the Lacros
   // client owning the download is supported.
-  if (InProgressDownloadsEligibleClient()) {
+  if (!IsDownloadsIntegrationV2Enabled() &&
+      InProgressDownloadsEligibleClient()) {
     ASSERT_EQ(1u, model->items().size());
     const auto& download_item = model->items().front();
     EXPECT_EQ(download_item->type(), HoldingSpaceItem::Type::kLacrosDownload);
     EXPECT_EQ(download_item->file().file_path, download->full_path);
   } else {
-    ASSERT_EQ(0u, model->items().size());
+    EXPECT_EQ(0u, model->items().size());
   }
 
   // Complete `download` and notify observers.
@@ -870,10 +877,14 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceLacrosBrowserTest,
   download->full_path = download->target_file_path;
   download_controller()->OnDownloadUpdated(download.Clone());
 
-  // Completed downloads should always be added to holding space.
-  const auto& download_item = model->items().front();
-  EXPECT_EQ(download_item->type(), HoldingSpaceItem::Type::kLacrosDownload);
-  EXPECT_EQ(download_item->file().file_path, download->full_path);
+  if (!IsDownloadsIntegrationV2Enabled()) {
+    // Completed downloads should always be added to holding space.
+    const auto& download_item = model->items().front();
+    EXPECT_EQ(download_item->type(), HoldingSpaceItem::Type::kLacrosDownload);
+    EXPECT_EQ(download_item->file().file_path, download->full_path);
+  } else {
+    EXPECT_EQ(0u, model->items().size());
+  }
 }
 
 }  // namespace ash

@@ -69,7 +69,7 @@ ConsoleMessage::ConsoleMessage(mojom::blink::ConsoleMessageSource source,
       level_(level),
       message_(message),
       location_(std::move(location)),
-      timestamp_(base::Time::Now().InSecondsFSinceUnixEpoch() * 1000.0),
+      timestamp_(base::Time::Now().InMillisecondsFSinceUnixEpoch()),
       frame_(nullptr) {
   DCHECK(location_);
 }
@@ -88,11 +88,11 @@ double ConsoleMessage::Timestamp() const {
   return timestamp_;
 }
 
-mojom::blink::ConsoleMessageSource ConsoleMessage::Source() const {
+ConsoleMessage::Source ConsoleMessage::GetSource() const {
   return source_;
 }
 
-mojom::blink::ConsoleMessageLevel ConsoleMessage::Level() const {
+ConsoleMessage::Level ConsoleMessage::GetLevel() const {
   return level_;
 }
 

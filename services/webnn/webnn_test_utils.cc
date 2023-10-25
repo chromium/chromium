@@ -176,6 +176,15 @@ void GraphInfoBuilder::BuildReshape(uint64_t input_operand_id,
       mojom::Operation::NewReshape(std::move(reshape)));
 }
 
+void GraphInfoBuilder::BuildSigmoid(uint64_t input_operand_id,
+                                    uint64_t output_operand_id) {
+  mojom::SigmoidPtr sigmoid = mojom::Sigmoid::New();
+  sigmoid->input_operand_id = input_operand_id;
+  sigmoid->output_operand_id = output_operand_id;
+  graph_info_->operations.push_back(
+      mojom::Operation::NewSigmoid(std::move(sigmoid)));
+}
+
 void GraphInfoBuilder::BuildSoftmax(uint64_t input_operand_id,
                                     uint64_t output_operand_id) {
   mojom::SoftmaxPtr softmax = mojom::Softmax::New();
@@ -183,6 +192,14 @@ void GraphInfoBuilder::BuildSoftmax(uint64_t input_operand_id,
   softmax->output_operand_id = output_operand_id;
   graph_info_->operations.push_back(
       mojom::Operation::NewSoftmax(std::move(softmax)));
+}
+
+void GraphInfoBuilder::BuildTanh(uint64_t input_operand_id,
+                                 uint64_t output_operand_id) {
+  mojom::TanhPtr tanh = mojom::Tanh::New();
+  tanh->input_operand_id = input_operand_id;
+  tanh->output_operand_id = output_operand_id;
+  graph_info_->operations.push_back(mojom::Operation::NewTanh(std::move(tanh)));
 }
 
 void GraphInfoBuilder::BuildTranspose(uint64_t input_operand_id,

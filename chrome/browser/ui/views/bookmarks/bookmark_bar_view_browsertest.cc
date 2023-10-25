@@ -635,8 +635,9 @@ class PrerenderBookmarkBarOnHoverNavigationTest
       ukm_entry_builder_;
 };
 
-// TODO(https://crbug.com/1491974): Times out on Win, Mac and Linux.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+// TODO(https://crbug.com/1491974): Times out on Win, Mac, Linux and ChromeOS.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_PrerenderActivation DISABLED_PrerenderActivation
 #else
 #define MAYBE_PrerenderActivation PrerenderActivation

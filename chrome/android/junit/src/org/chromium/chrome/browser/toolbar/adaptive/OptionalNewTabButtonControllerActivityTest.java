@@ -34,6 +34,8 @@ import org.chromium.chrome.browser.ChromeRobolectricTestRunner;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -100,6 +102,11 @@ public class OptionalNewTabButtonControllerActivityTest {
 
     @Before
     public void setUp() {
+        // TODO(crbug/1494442): Remove when MockTab requires a Profile reference that can avoid
+        //                      TabHelpers from needing to use getLastUsedRegularProfile.
+        Profile.setLastUsedProfileForTesting(Mockito.mock(Profile.class));
+        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+
         // Avoid leaking state from the previous test.
         AdaptiveToolbarStatePredictor.setToolbarStateForTesting(
                 AdaptiveToolbarButtonVariant.NEW_TAB);

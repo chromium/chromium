@@ -13,7 +13,7 @@ GEN('#include "content/public/test/browser_test.h"');
 var CrostiniUpgraderBrowserTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://crostini-upgrader/test_loader.html?module=chromeos/crostini_upgrader_app_test.js&host=test';
+    return 'chrome://crostini-upgrader/test_loader.html?module=chromeos/crostini_upgrader_app_test.js';
   }
 };
 

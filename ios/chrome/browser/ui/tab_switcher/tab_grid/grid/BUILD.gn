@@ -6,6 +6,7 @@ source_set("grid") {
   sources = [
     "base_grid_mediator.h",
     "base_grid_mediator.mm",
+    "grid_coordinator_audience.h",
   ]
   deps = [
     ":grid_mediator_delegate",
@@ -60,10 +61,19 @@ source_set("grid_ui_constants") {
 
 source_set("grid_ui") {
   sources = [
+    "base_grid_container_view_controller.h",
+    "base_grid_container_view_controller.mm",
+    "base_grid_view_controller+private.h",
+    "base_grid_view_controller.h",
+    "base_grid_view_controller.mm",
+    "disabled_grid_view_controller.h",
+    "disabled_grid_view_controller.mm",
     "grid_cell.h",
     "grid_cell.mm",
     "grid_commands.h",
     "grid_consumer.h",
+    "grid_empty_state_view.h",
+    "grid_empty_state_view.mm",
     "grid_empty_view.h",
     "grid_header.h",
     "grid_header.mm",
@@ -73,21 +83,20 @@ source_set("grid_ui") {
     "grid_layout.mm",
     "grid_shareable_items_provider.h",
     "grid_theme.h",
-    "grid_view_controller+private.h",
-    "grid_view_controller.h",
-    "grid_view_controller.mm",
   ]
 
   deps = [
     ":grid_ui_constants",
+    "resources:tab_grid_incognito_tabs_empty",
+    "resources:tab_grid_regular_tabs_empty",
     "//base",
-    "//components/bookmarks/common",
-    "//components/prefs",
+    "//components/supervised_user/core/common:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/commerce/model:model",
     "//ios/chrome/browser/drag_and_drop/model",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements",
@@ -99,21 +108,27 @@ source_set("grid_ui") {
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_commands",
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_ui",
     "//ios/chrome/browser/ui/menu",
+    "//ios/chrome/browser/ui/recent_tabs:recent_tabs_ui",
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/browser/ui/tab_switcher:tab_utils",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_collection_commands",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_paging",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui_constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs:inactive_tabs_button_ui",
-    "//ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs:inactive_tabs_button_ui_swift",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu:tab_item",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/transitions",
+    "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/modals:modals_api",
     "//ios/third_party/material_components_ios",
+    "//ios/web/public",
+    "//net",
     "//ui/base",
+    "//ui/gfx/ios:uikit_util",
+    "//url",
   ]
 }
 

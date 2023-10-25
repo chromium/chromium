@@ -5960,8 +5960,9 @@ class MediaWatchTimeChangedDelegate : public WebContentsDelegate {
 
 // Tests that a media in a fenced frame reports the watch time with the url from
 // the top level frame.
+// Disabled due to https://crbug.com/1494577.
 IN_PROC_BROWSER_TEST_F(WebContentsFencedFrameBrowserTest,
-                       MediaWatchTimeCallback) {
+                       DISABLED_MediaWatchTimeCallback) {
   using UkmEntry = ukm::builders::Media_WebMediaPlayerState;
   ukm::TestAutoSetUkmRecorder test_recorder_;
 

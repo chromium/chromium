@@ -36,6 +36,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.TraceEvent;
@@ -484,11 +485,16 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
                             defaultNetwork = null;
                         }
                     }
-                    // There should not be multiple connected networks of the
-                    // same type. At least as of Android Marshmallow this is
-                    // not supported. If this becomes supported this assertion
-                    // may trigger.
-                    assert defaultNetwork == null;
+                    if (defaultNetwork != null) {
+                        // TODO(https://crbug.com/1361170): Investigate why there are multiple
+                        // connected networks.
+                        Log.e(
+                                TAG,
+                                "There should not be multiple connected "
+                                        + "networks of the same type. At least as of Android "
+                                        + "Marshmallow this is not supported. If this becomes "
+                                        + "supported this assertion may trigger.");
+                    }
                     defaultNetwork = network;
                 }
             }

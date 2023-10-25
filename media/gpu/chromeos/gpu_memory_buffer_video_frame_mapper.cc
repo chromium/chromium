@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "media/gpu/chromeos/chromeos_compressed_gpu_memory_buffer_video_frame_utils.h"
 #include "media/gpu/macros.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
@@ -39,6 +40,12 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFrameMapper::Map(
       VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER) {
     VLOGF(1) << "VideoFrame's storage type is not GPU_MEMORY_BUFFER: "
              << video_frame->storage_type();
+    return nullptr;
+  }
+
+  if (IsIntelMediaCompressedModifier(video_frame->layout().modifier())) {
+    VLOGF(1)
+        << "This mapper doesn't support Intel media compressed VideoFrames";
     return nullptr;
   }
 

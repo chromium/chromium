@@ -9,6 +9,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';
 
 import {SpHeading} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -26,12 +27,12 @@ export const DESCRIPTOR_C_VALUE =
 
 export interface WallpaperSearchElement {
   $: {
-    combobox: CustomizeChromeCombobox,
-    descriptorMenuA: CrActionMenuElement,
+    descriptorComboboxA: CustomizeChromeCombobox,
     descriptorMenuB: CrActionMenuElement,
     descriptorMenuC: CrActionMenuElement,
     descriptorMenuD: CrActionMenuElement,
     heading: SpHeading,
+    loading: HTMLElement,
     submitButton: CrButtonElement,
   };
 }
@@ -63,6 +64,10 @@ export class WallpaperSearchElement extends PolymerElement {
         value: DESCRIPTOR_C_VALUE,
       },
       emptyContainers_: Object,
+      loading_: {
+        type: Boolean,
+        value: false,
+      },
       results_: Object,
       submitBtnText_: {
         type: String,
@@ -75,6 +80,7 @@ export class WallpaperSearchElement extends PolymerElement {
   private descriptors_: Descriptors|null;
   private descriptorD_: string[];
   private emptyContainers_: number[];
+  private loading_: boolean;
   private results_: WallpaperSearchResult[];
   private selectedDescriptorA_: string|null;
   private selectedDescriptorB_: string|null;
@@ -107,15 +113,6 @@ export class WallpaperSearchElement extends PolymerElement {
     this.dispatchEvent(new Event('back-click'));
   }
 
-  private onComboboxDemoChange_() {
-    this.selectedDescriptorA_ = this.$.combobox.value || null;
-  }
-
-  private onDescriptorLabelClickA_(e: DomRepeatEvent<string>) {
-    this.selectedDescriptorA_ = e.model.item;
-    this.$.descriptorMenuA.close();
-  }
-
   private onDescriptorLabelClickB_(e: DomRepeatEvent<DescriptorB>) {
     this.selectedDescriptorB_ = e.model.item.label;
     this.$.descriptorMenuB.close();
@@ -131,10 +128,6 @@ export class WallpaperSearchElement extends PolymerElement {
     this.$.descriptorMenuC.close();
   }
 
-  private onDescriptorMenuClickA_(e: Event) {
-    this.$.descriptorMenuA.showAt(e.target as HTMLElement);
-  }
-
   private onDescriptorMenuClickB_(e: Event) {
     this.$.descriptorMenuB.showAt(e.target as HTMLElement);
   }
@@ -143,17 +136,15 @@ export class WallpaperSearchElement extends PolymerElement {
     this.$.descriptorMenuC.showAt(e.target as HTMLElement);
   }
 
-  private onDescriptorMenuClickD_(e: Event) {
-    this.$.descriptorMenuD.showAt(e.target as HTMLElement);
-  }
-
   private async onSearchClick_() {
     assert(this.descriptors_);
     const descriptorA = this.selectedDescriptorA_ ||
         getRandomDescriptorA(this.descriptors_.descriptorA);
+    this.loading_ = true;
     const {results} = await this.pageHandler_.getWallpaperSearchResults(
         descriptorA, this.selectedDescriptorB_, this.selectedDescriptorC_,
         this.selectedDescriptorD_);
+    this.loading_ = false;
     this.results_ = results;
     this.emptyContainers_ = Array.from(
         {length: results.length > 0 ? 6 - results.length : 0}, () => 0);

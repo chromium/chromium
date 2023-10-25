@@ -61,6 +61,8 @@ Study::FormFactor VariationsServiceClient::GetCurrentFormFactor() {
       return Study::TV;
     case ui::DEVICE_FORM_FACTOR_AUTOMOTIVE:
       return Study::AUTOMOTIVE;
+    case ui::DEVICE_FORM_FACTOR_FOLDABLE:
+      return Study::FOLDABLE;
   }
   NOTREACHED();
   return Study::DESKTOP;

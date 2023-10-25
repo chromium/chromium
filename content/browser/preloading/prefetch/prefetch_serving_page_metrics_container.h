@@ -27,7 +27,6 @@ class PrefetchServingPageMetricsContainer
   // Setters that set the metrics in |serving_page_metrics_|.
   void SetPrefetchStatus(PrefetchStatus prefetch_status);
   void SetRequiredPrivatePrefetchProxy(bool required_private_prefetch_proxy);
-  void SetSameTabAsPrefetchingTab(bool same_tab_as_prefetching_tab);
   void SetPrefetchHeaderLatency(
       const absl::optional<base::TimeDelta>& prefetch_header_latency);
   void SetProbeLatency(const base::TimeDelta& probe_latency);

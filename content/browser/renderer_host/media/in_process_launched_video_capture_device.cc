@@ -118,7 +118,7 @@ void InProcessLaunchedVideoCaptureDevice::ResumeDevice() {
 
 void InProcessLaunchedVideoCaptureDevice::Crop(
     const base::Token& crop_id,
-    uint32_t crop_version,
+    uint32_t sub_capture_target_version,
     base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
         callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -131,7 +131,8 @@ void InProcessLaunchedVideoCaptureDevice::Crop(
   device_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&media::VideoCaptureDevice::Crop,
-                     base::Unretained(device_.get()), crop_id, crop_version,
+                     base::Unretained(device_.get()), crop_id,
+                     sub_capture_target_version,
                      base::BindPostTask(content::GetIOThreadTaskRunner({}),
                                         std::move(callback))));
 }

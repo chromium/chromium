@@ -1795,7 +1795,7 @@ const CSSValue* ClipPath::CSSValueFromComputedStyleInternal(
     }
     if (operation->GetType() == ClipPathOperation::kReference) {
       AtomicString url = To<ReferenceClipPathOperation>(operation)->Url();
-      return MakeGarbageCollected<cssvalue::CSSURIValue>(url);
+      return MakeGarbageCollected<cssvalue::CSSURIValue>(CSSUrlData(url));
     }
   }
   return CSSIdentifierValue::Create(CSSValueID::kNone);
@@ -4041,7 +4041,7 @@ const CSSValue* GridTemplateColumns::ParseSingleValue(
 
 bool GridTemplateColumns::IsLayoutDependent(const ComputedStyle* style,
                                             LayoutObject* layout_object) const {
-  return layout_object && layout_object->IsLayoutNGGrid();
+  return layout_object && layout_object->IsLayoutGrid();
 }
 
 const CSSValue* GridTemplateColumns::CSSValueFromComputedStyleInternal(
@@ -4065,7 +4065,7 @@ const CSSValue* GridTemplateRows::ParseSingleValue(
 
 bool GridTemplateRows::IsLayoutDependent(const ComputedStyle* style,
                                          LayoutObject* layout_object) const {
-  return layout_object && layout_object->IsLayoutNGGrid();
+  return layout_object && layout_object->IsLayoutGrid();
 }
 
 const CSSValue* GridTemplateRows::CSSValueFromComputedStyleInternal(
@@ -5697,7 +5697,7 @@ const CSSValue* OffsetPath::CSSValueFromComputedStyleInternal(
         To<ReferenceOffsetPathOperation>(*operation);
     CSSValueList* list = CSSValueList::CreateSpaceSeparated();
     AtomicString url = reference_operation.Url();
-    list->Append(*MakeGarbageCollected<cssvalue::CSSURIValue>(url));
+    list->Append(*MakeGarbageCollected<cssvalue::CSSURIValue>(CSSUrlData(url)));
     CoordBox coord_box = reference_operation.GetCoordBox();
     if (coord_box != CoordBox::kBorderBox) {
       list->Append(*CSSIdentifierValue::Create(coord_box));
@@ -9286,12 +9286,38 @@ const CSSValue* WebkitMaskClip::CSSValueFromComputedStyleInternal(
   return list;
 }
 
+const CSSValue* MaskComposite::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext&,
+    const CSSParserLocalContext& local_context) const {
+  CHECK(RuntimeEnabledFeatures::CSSMaskingInteropEnabled());
+  if (local_context.UseAliasParsing()) {
+    return css_parsing_utils::ConsumeCommaSeparatedList(
+        css_parsing_utils::ConsumePrefixedMaskComposite, range);
+  }
+  return css_parsing_utils::ConsumeCommaSeparatedList(
+      css_parsing_utils::ConsumeMaskComposite, range);
+}
+
+const CSSValue* MaskComposite::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  const FillLayer* curr_layer = &style.MaskLayers();
+  for (; curr_layer; curr_layer = curr_layer->Next()) {
+    list->Append(
+        *CSSIdentifierValue::Create(curr_layer->CompositingOperator()));
+  }
+  return list;
+}
+
 const CSSValue* WebkitMaskComposite::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext&,
     const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumeBackgroundComposite, range);
+      css_parsing_utils::ConsumePrefixedMaskComposite, range);
 }
 
 const CSSValue* WebkitMaskComposite::CSSValueFromComputedStyleInternal(
@@ -9301,7 +9327,8 @@ const CSSValue* WebkitMaskComposite::CSSValueFromComputedStyleInternal(
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
   const FillLayer* curr_layer = &style.MaskLayers();
   for (; curr_layer; curr_layer = curr_layer->Next()) {
-    list->Append(*CSSIdentifierValue::Create(curr_layer->Composite()));
+    list->Append(
+        *CSSIdentifierValue::Create(curr_layer->CompositingOperator()));
   }
   return list;
 }
@@ -9443,6 +9470,20 @@ const CSSValue* WebkitMaskSize::CSSValueFromComputedStyleInternal(
     bool allow_visited_style) const {
   const FillLayer& fill_layer = style.MaskLayers();
   return ComputedStyleUtils::BackgroundImageOrWebkitMaskSize(style, fill_layer);
+}
+
+const CSSValue* MaskRepeat::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context) const {
+  return css_parsing_utils::ParseRepeatStyle(range);
+}
+
+const CSSValue* MaskRepeat::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  return ComputedStyleUtils::RepeatStyle(&style.MaskLayers());
 }
 
 const CSSValue* WebkitMaskRepeat::ParseSingleValue(

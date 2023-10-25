@@ -146,8 +146,9 @@ void AccessibilityTreeFormatterAndroid::RecursiveBuildTree(
   const BrowserAccessibilityAndroid* android_node =
       static_cast<const BrowserAccessibilityAndroid*>(&node);
 
-  for (size_t i = 0; i < node.GetChildCount(); ++i) {
+  for (size_t i = 0; i < android_node->PlatformChildCount(); ++i) {
     BrowserAccessibility* child_node = android_node->PlatformGetChild(i);
+    CHECK(child_node);
     base::Value::Dict child_dict;
     RecursiveBuildTree(*child_node, &child_dict);
     children.Append(std::move(child_dict));

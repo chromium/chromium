@@ -43,7 +43,8 @@ VisualSearchSuggestionsServiceFactory::GetInstance() {
   return instance.get();
 }
 
-KeyedService* VisualSearchSuggestionsServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+VisualSearchSuggestionsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!base::FeatureList::IsEnabled(
           companion::visual_search::features::kVisualSearchSuggestions)) {
@@ -58,8 +59,8 @@ KeyedService* VisualSearchSuggestionsServiceFactory::BuildServiceInstanceFor(
     scoped_refptr<base::SequencedTaskRunner> background_task_runner =
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
-    return new VisualSearchSuggestionsService(opt_guide,
-                                              background_task_runner);
+    return std::make_unique<VisualSearchSuggestionsService>(
+        opt_guide, background_task_runner);
   }
   return nullptr;
 }

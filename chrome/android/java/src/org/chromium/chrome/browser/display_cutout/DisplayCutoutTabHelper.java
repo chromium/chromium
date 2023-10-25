@@ -20,8 +20,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController;
-import org.chromium.components.browser_ui.widget.InsetObserverView;
-import org.chromium.components.browser_ui.widget.InsetObserverViewSupplier;
+import org.chromium.components.browser_ui.widget.InsetObserver;
+import org.chromium.components.browser_ui.widget.InsetObserverSupplier;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
@@ -87,9 +87,10 @@ public class DisplayCutoutTabHelper implements UserData {
         public WebContents getWebContents() {
             return mTab.getWebContents();
         }
+
         @Override
-        public InsetObserverView getInsetObserverView() {
-            return InsetObserverViewSupplier.getValueOrNullFrom(mTab.getWindowAndroid());
+        public InsetObserver getInsetObserverView() {
+            return InsetObserverSupplier.getValueOrNullFrom(mTab.getWindowAndroid());
         }
         @Override
         public ObservableSupplier<Integer> getBrowserDisplayCutoutModeSupplier() {

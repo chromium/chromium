@@ -206,6 +206,8 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
 
   virtual AXObject* ObjectFromAXID(AXID) const = 0;
 
+  virtual AXObject* Root() = 0;
+
   virtual AXID GenerateAXID() const = 0;
 
   virtual void AddAriaNotification(Node*,

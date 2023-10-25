@@ -104,14 +104,25 @@ cargo_crate("{{this.0}}") {
   {{/if}}
   {{#if build_root}}
   build_root = "{{build_root}}"
-  build_sources = [ "{{build_root}}" ]
-  {{#if build_script_outputs}}
-  build_script_outputs = [
-    {{#each build_script_outputs}}
+  build_sources = [
+    {{#each build_script_sources}}
     "{{this}}",
     {{/each}}
   ]
-  {{/if}}
+  {{#with build_script_inputs}}
+  build_script_inputs = [
+    {{#each this}}
+    "{{this}}",
+    {{/each}}
+  ]
+  {{/with}}
+  {{#with build_script_outputs}}
+  build_script_outputs = [
+    {{#each this}}
+    "{{this}}",
+    {{/each}}
+  ]
+  {{/with}}
   {{/if}}
   {{#if rustenv}}
   rustenv = [

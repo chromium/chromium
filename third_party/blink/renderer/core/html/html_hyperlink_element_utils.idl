@@ -14,7 +14,7 @@ interface mixin HTMLHyperlinkElementUtils {
     [CEReactions] attribute USVString password;
     [CEReactions] attribute USVString host;
     [CEReactions] attribute USVString hostname;
-    [SetterCallWith=ScriptState, CEReactions] attribute USVString port;
+    [CEReactions] attribute USVString port;
     [CEReactions] attribute USVString pathname;
     [CEReactions] attribute USVString search;
     [CEReactions] attribute USVString hash;

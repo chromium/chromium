@@ -75,7 +75,8 @@ class TouchToFillKeyboardSuppressor
       ContentAutofillClient* autofill_client,
       base::RepeatingCallback<bool(AutofillManager&)> is_showing,
       base::RepeatingCallback<
-          bool(AutofillManager&, FormGlobalId, FieldGlobalId)> intends_to_show,
+          bool(AutofillManager&, FormGlobalId, FieldGlobalId, const FormData&)>
+          intends_to_show,
       base::TimeDelta timeout);
   TouchToFillKeyboardSuppressor(const TouchToFillKeyboardSuppressor&) = delete;
   TouchToFillKeyboardSuppressor& operator=(
@@ -95,7 +96,8 @@ class TouchToFillKeyboardSuppressor
   void OnAutofillManagerDestroyed(AutofillManager& manager) override;
   void OnBeforeAskForValuesToFill(AutofillManager& manager,
                                   FormGlobalId form_id,
-                                  FieldGlobalId field_id) override;
+                                  FieldGlobalId field_id,
+                                  const FormData& form_data) override;
   void OnAfterAskForValuesToFill(AutofillManager& manager,
                                  FormGlobalId form_id,
                                  FieldGlobalId field_id) override;
@@ -112,7 +114,8 @@ class TouchToFillKeyboardSuppressor
   void Suppress(AutofillManager& manager);
 
   base::RepeatingCallback<bool(AutofillManager&)> is_showing_;
-  base::RepeatingCallback<bool(AutofillManager&, FormGlobalId, FieldGlobalId)>
+  base::RepeatingCallback<
+      bool(AutofillManager&, FormGlobalId, FieldGlobalId, const FormData&)>
       intends_to_show_;
 
   base::ScopedObservation<ContentAutofillDriverFactory,

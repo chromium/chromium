@@ -489,9 +489,6 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // The current applcation locale of Chrome.
   const std::string application_locale_;
 
-  // The set of OAuth scopes to use for personalized metadata.
-  std::set<std::string> oauth_scopes_;
-
   // A reference to the PrefService for this profile. Not owned.
   raw_ptr<PrefService> pref_service_ = nullptr;
 

@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/extensions/file_handlers/web_file_handlers_permission_handler.h"
 #include "chrome/browser/lacros/for_which_extension_type.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -19,11 +20,13 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+class LacrosExtensionAppsPublisher;
+class Profile;
+
 namespace apps {
 class ExtensionAppsEnableFlow;
-}
-
-class LacrosExtensionAppsPublisher;
+struct AppLaunchParams;
+}  // namespace apps
 
 // This class is responsible for receiving AppController events from Ash, and
 // implementing their effects. Distinct instances should be used to handle
@@ -107,6 +110,25 @@ class LacrosExtensionAppsController : public crosapi::mojom::AppController {
       LaunchCallback callback,
       bool success);
 
+  // This is called after maybe presenting a file dialog permission UI to ensure
+  // that the extension is confirmed to be able to open the relevant file type.
+  //
+  // LacrosExtensionAppsController::LaunchAppWithIntentCallback() copied the
+  // idea from ExtensionAppsChromeOs::LaunchAppWithIntentCallback(). The Ash
+  // version is implemented using intents, but the Lacros version uses params to
+  // be able to reuse an existing window with ease. Ash also reuses the existing
+  // window, but does so in a different location. They have the same name to
+  // make them easier to find in search, even though the name for the Lacros
+  // version could probably replace `Intent` with `Params`.
+  //
+  // TODO(crbug.com1448893): Rename these methods to something more generic to
+  // better fit both Ash and Lacros (e.g. Intent vs Params in the name).
+  void LaunchAppWithIntentCallback(Profile* profile,
+                                   apps::AppLaunchParams params,
+                                   LaunchCallback callback,
+                                   crosapi::mojom::LaunchResultPtr result,
+                                   bool should_open);
+
   // State to decide which extension type (e.g., Chrome Apps vs. Extensions)
   // to support.
   const ForWhichExtensionType which_type_;
@@ -124,6 +146,9 @@ class LacrosExtensionAppsController : public crosapi::mojom::AppController {
 
   // Mojo endpoint that's responsible for receiving messages from Ash.
   mojo::Receiver<crosapi::mojom::AppController> controller_;
+
+  std::unique_ptr<extensions::WebFileHandlersPermissionHandler>
+      web_file_handlers_permission_handler_;
 
   base::WeakPtrFactory<LacrosExtensionAppsController> weak_factory_{this};
 };

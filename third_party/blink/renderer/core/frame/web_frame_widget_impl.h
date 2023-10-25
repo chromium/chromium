@@ -693,6 +693,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   void DidBeginMainFrame() override;
   std::unique_ptr<cc::LayerTreeFrameSink> AllocateNewLayerTreeFrameSink()
       override;
+  void WasShown(bool was_evicted) override;
 
   // Whether compositing to LCD text should be auto determined. This can be
   // overridden by tests to disable this.
@@ -761,7 +762,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   absl::optional<display::mojom::blink::ScreenOrientation>
   ScreenOrientationOverride() override;
   void WasHidden() override;
-  void WasShown(bool was_evicted) override;
   void RunPaintBenchmark(int repeat_count,
                          cc::PaintBenchmarkResult& result) override;
   KURL GetURLForDebugTrace() override;

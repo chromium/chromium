@@ -854,6 +854,14 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
+    public void testActivityScrollContentResize() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_ACTIVITY_SCROLL_CONTENT_RESIZE, true);
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertTrue("scroll-content-resize was not set", dataProvider.contentScrollMayResizeTab());
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB)
     public void chromePihEnabled_pihOverflowMenuItemExtraAdded_pihOverflowMenuItemNotFound() {
         String pihOverflowMenuItem = "View Page Insights";

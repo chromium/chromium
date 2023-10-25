@@ -195,13 +195,13 @@ ResizeCompatMode PredictCurrentMode(const aura::Window* window) {
     return ResizeCompatMode::kResizable;
   }
 
-  const int width = window->bounds().width();
-  const int height = window->bounds().height();
+  const auto& bounds = window->bounds();
   // We don't use the exact size here to predict tablet or phone size because
   // the window size might be bigger than it due to the ARC app-side minimum
   // size constraints.
-  if (width <= height)
+  if (bounds.width() <= bounds.height()) {
     return ResizeCompatMode::kPhone;
+  }
 
   return ResizeCompatMode::kTablet;
 }

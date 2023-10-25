@@ -45,6 +45,8 @@ const char kUMAMediumConfidenceShown[] =
     "CookieControls.MediumConfidence.Shown";
 const char kUMAMediumConfidenceOpened[] =
     "CookieControls.MediumConfidence.Opened";
+const char kUMALowConfidenceShown[] = "CookieControls.LowConfidence.Shown";
+const char kUMALowConfidenceOpened[] = "CookieControls.LowConfidence.Opened";
 const char kUMABubbleOpenedBlocked[] =
     "CookieControls.Bubble.CookiesBlocked.Opened";
 const char kUMABubbleOpenedAllowed[] =
@@ -126,6 +128,7 @@ class CookieControlsIconViewUnitTest
 INSTANTIATE_TEST_SUITE_P(All,
                          CookieControlsIconViewUnitTest,
                          testing::Values(CookieBlocking3pcdStatus::kNotIn3pcd,
+                                         CookieBlocking3pcdStatus::kLimited,
                                          CookieBlocking3pcdStatus::kAll));
 
 /// Enabled third-party cookie blocking.
@@ -189,6 +192,9 @@ TEST_P(CookieControlsIconViewUnitTest,
 #if !OS_MAC && !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 1);
 #endif
+
+  // Low confidence isn't currently shown.
+  EXPECT_EQ(user_actions_.GetActionCount(kUMALowConfidenceShown), 0);
 }
 
 TEST_P(CookieControlsIconViewUnitTest, MediumConfidenceEnabled) {
@@ -227,9 +233,11 @@ TEST_P(CookieControlsIconViewUnitTest, LowConfidenceEnabled) {
 #endif
   EXPECT_EQ(user_actions_.GetActionCount(kUMAHighConfidenceShown), 0);
   EXPECT_EQ(user_actions_.GetActionCount(kUMAMediumConfidenceShown), 0);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMALowConfidenceShown), 0);
   ExecuteIcon();
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedBlocked), 1);
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedAllowed), 0);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMALowConfidenceOpened), 1);
 }
 
 //// Default third-party cookie blocking disabled.

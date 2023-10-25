@@ -25,6 +25,7 @@ component("standalone_browser") {
     "//ash/constants:constants",
     "//base",
     "//components/account_id",
+    "//components/policy:generated",
     "//components/policy/core/common",
     "//components/prefs",
     "//components/user_manager:user_manager",

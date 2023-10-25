@@ -13,6 +13,8 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
+#include "chrome/browser/ash/input_method/editor_metrics_enums.h"
+#include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -21,7 +23,6 @@
 namespace ash::input_method {
 namespace {
 
-EditorMediator* g_instance_ = nullptr;
 constexpr auto striped_symbols =
     base::MakeFixedFlatSet<char>({' ', '\t', '\n', '.', ','});
 
@@ -50,32 +51,11 @@ EditorMediator::EditorMediator(Profile* profile, std::string_view country_code)
       editor_switch_(std::make_unique<EditorSwitch>(profile, country_code)),
       consent_store_(
           std::make_unique<EditorConsentStore>(profile->GetPrefs())) {
-  DCHECK(!g_instance_);
-  g_instance_ = this;
-
-  user_manager::UserManager::Get()->AddSessionStateObserver(this);
-  profile_observation_.Observe(profile_);
   tablet_mode_observation_.Observe(TabletMode::Get());
-
   editor_switch_->OnTabletModeUpdated(ash::TabletMode::IsInTabletMode());
 }
 
-EditorMediator::~EditorMediator() {
-  DCHECK_EQ(g_instance_, this);
-  g_instance_ = nullptr;
-
-  if (user_manager::UserManager::IsInitialized()) {
-    user_manager::UserManager::Get()->RemoveSessionStateObserver(this);
-  }
-}
-
-EditorMediator* EditorMediator::Get() {
-  return g_instance_;
-}
-
-bool EditorMediator::HasInstance() {
-  return g_instance_ != nullptr;
-}
+EditorMediator::~EditorMediator() = default;
 
 void EditorMediator::BindEditorClient(
     mojo::PendingReceiver<orca::mojom::EditorClient> pending_receiver) {
@@ -101,7 +81,7 @@ void EditorMediator::SetUpNewEditorService() {
         text_actuator_remote.InitWithNewEndpointAndPassReceiver(), this);
     text_query_provider_ = std::make_unique<EditorTextQueryProvider>(
         text_query_provider_remote.InitWithNewEndpointAndPassReceiver(),
-        profile_);
+        profile_, editor_switch_.get());
     editor_client_connector_ = std::make_unique<EditorClientConnector>(
         editor_client_connector_receiver.InitWithNewEndpointAndPassRemote());
     editor_event_proxy_ = std::make_unique<EditorEventProxy>(
@@ -177,9 +157,8 @@ void EditorMediator::OnSurroundingTextChanged(const std::u16string& text,
     return;
   }
 
-  if (editor_event_proxy_ != nullptr) {
-    editor_event_proxy_->OnSurroundingTextChanged(text, selection_range);
-  }
+  surrounding_text_ = {.text = text, .selection_range = selection_range};
+
   size_t selected_length = NonWhitespaceAndSymbolsLength(text, selection_range);
   editor_switch_->OnTextSelectionLengthChanged(selected_length);
 }
@@ -198,6 +177,10 @@ void EditorMediator::CloseUI() {
   mako_bubble_coordinator_.CloseUI();
 }
 
+size_t EditorMediator::GetSelectedTextLength() {
+  return surrounding_text_.selection_range.length();
+}
+
 void EditorMediator::OnPromoCardDeclined() {
   consent_store_->ProcessPromoCardAction(PromoCardAction::kDeclined);
 }
@@ -209,10 +192,12 @@ void EditorMediator::HandleTrigger(
     case EditorMode::kRewrite:
       mako_bubble_coordinator_.LoadEditorUI(profile_, MakoEditorMode::kRewrite,
                                             preset_query_id, freeform_text);
+      LogEditorState(EditorStates::kRequest, EditorMode::kRewrite);
       break;
     case EditorMode::kWrite:
       mako_bubble_coordinator_.LoadEditorUI(profile_, MakoEditorMode::kWrite,
                                             preset_query_id, freeform_text);
+      LogEditorState(EditorStates::kRequest, EditorMode::kWrite);
       break;
     case EditorMode::kConsentNeeded:
       mako_bubble_coordinator_.LoadConsentUI(profile_);
@@ -225,8 +210,12 @@ void EditorMediator::HandleTrigger(
   }
 }
 
-void EditorMediator::CacheContextCaretBounds() {
+void EditorMediator::CacheContext() {
   mako_bubble_coordinator_.CacheContextCaretBounds();
+  if (editor_event_proxy_ != nullptr) {
+    editor_event_proxy_->OnSurroundingTextChanged(
+        surrounding_text_.text, surrounding_text_.selection_range);
+  }
 }
 
 void EditorMediator::OnTextInserted() {
@@ -249,30 +238,15 @@ EditorMode EditorMediator::GetEditorMode() const {
   return editor_switch_->GetEditorMode();
 }
 
-void EditorMediator::ActiveUserChanged(user_manager::User* user) {
-  if (user) {
-    user->AddProfileCreatedObserver(
-        base::BindOnce(&EditorMediator::SetProfileByUser,
-                       weak_ptr_factory_.GetWeakPtr(), user));
-  }
-}
-
-void EditorMediator::SetProfileByUser(user_manager::User* user) {
-  profile_ = ProfileHelper::Get()->GetProfileByUser(user);
-  profile_observation_.Reset();
-  profile_observation_.Observe(profile_);
-  editor_switch_->SetProfile(profile_);
-  consent_store_->SetPrefService(profile_->GetPrefs());
-  if (text_query_provider_ != nullptr) {
-    text_query_provider_->OnProfileChanged(profile_);
-  }
-}
-
-void EditorMediator::OnProfileWillBeDestroyed(Profile* profile) {
-  profile_observation_.Reset();
-
+void EditorMediator::Shutdown() {
+  // Note that this method is part of the two-phase shutdown completed by a
+  // KeyedService. This method is invoked as the first phase, and is called
+  // prior to the destruction of the keyed profile (this allows us to cleanup
+  // any resources that depend on a valid profile instance - ie WebUI). The
+  // second phase is the destruction of the eKeyedService itself.
   mako_bubble_coordinator_.CloseUI();
   profile_ = nullptr;
+  text_query_provider_ = nullptr;
   consent_store_ = nullptr;
   editor_switch_ = nullptr;
 }

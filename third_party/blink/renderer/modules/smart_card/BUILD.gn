@@ -20,3 +20,22 @@ blink_modules_sources("smart_card") {
     "smart_card_util.h",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "smart_card_error_unittest.cc" ]
+
+  configs += [
+    "//third_party/blink/renderer:config",
+    "//third_party/blink/renderer:inside_blink",
+    "//third_party/blink/renderer/core:blink_core_pch",
+  ]
+
+  deps = [
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//third_party/blink/renderer/core:testing",
+    "//third_party/blink/renderer/modules",
+  ]
+}

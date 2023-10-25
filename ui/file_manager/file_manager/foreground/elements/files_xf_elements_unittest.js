@@ -6,7 +6,6 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {waitUntil} from '../../common/js/test_error_reporting.js';
-import {util} from '../../common/js/util.js';
 
 import {DisplayPanel} from './xf_display_panel.js';
 
@@ -334,11 +333,6 @@ export async function testFilesDisplayPanelInfo(done) {
 
   done();
 }
-
-// Override the formatting function for unit testing.
-util.strf = (end, option) => {
-  return option + end;
-};
 
 export function testFilesDisplayPanelErrorMarker() {
   // Get the host display panel container element.

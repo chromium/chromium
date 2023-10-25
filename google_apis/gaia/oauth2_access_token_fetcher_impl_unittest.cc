@@ -13,7 +13,6 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
@@ -226,30 +225,12 @@ TEST_F(OAuth2AccessTokenFetcherImplTest, CancelOngoingRequest) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(OAuth2AccessTokenFetcherImplTest, GetAccessTokenRaptRequiredFailure) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kIgnoreRaptErrors);
   SetupGetAccessToken(net::OK, net::HTTP_BAD_REQUEST,
                       kRaptRequiredErrorResponse);
   EXPECT_CALL(consumer_,
               OnGetTokenFailure(
                   GoogleServiceAuthError::FromScopeLimitedUnrecoverableError(
                       "reauth related error")))
-      .Times(1);
-  fetcher_->Start("client_id", "client_secret", ScopeList());
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(OAuth2AccessTokenFetcherImplTest,
-       GetAccessTokenRaptRequiredFailureIfIgnoreRaptErrorsIsDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kIgnoreRaptErrors);
-  SetupGetAccessToken(net::OK, net::HTTP_BAD_REQUEST,
-                      kRaptRequiredErrorResponse);
-  EXPECT_CALL(consumer_,
-              OnGetTokenFailure(
-                  GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-                      GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                          CREDENTIALS_REJECTED_BY_SERVER)))
       .Times(1);
   fetcher_->Start("client_id", "client_secret", ScopeList());
   base::RunLoop().RunUntilIdle();

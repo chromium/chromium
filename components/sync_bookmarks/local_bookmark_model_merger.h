@@ -11,11 +11,12 @@
 #include "base/uuid.h"
 
 namespace bookmarks {
-class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
 
 namespace sync_bookmarks {
+
+class BookmarkModelView;
 
 // Class responsible for implementing the merge algorithm that allows moving all
 // bookmarks from the local BookmarkModel instance to the account one.
@@ -23,8 +24,8 @@ class LocalBookmarkModelMerger {
  public:
   // All parameters must not be null and must outlive this object.
   // The observer should itself take care.
-  LocalBookmarkModelMerger(const bookmarks::BookmarkModel* local_model,
-                           bookmarks::BookmarkModel* account_model);
+  LocalBookmarkModelMerger(const BookmarkModelView* local_model,
+                           BookmarkModelView* account_model);
 
   LocalBookmarkModelMerger(const LocalBookmarkModelMerger&) = delete;
   LocalBookmarkModelMerger& operator=(const LocalBookmarkModelMerger&) = delete;
@@ -47,8 +48,8 @@ class LocalBookmarkModelMerger {
   // Computes bookmark pairs that should be matched by UUID. Note that matches
   // may be incompatible, that is, if only one of the two is a folder.
   static std::unordered_map<base::Uuid, GuidMatch, base::UuidHash>
-  FindGuidMatches(const bookmarks::BookmarkModel* local_model,
-                  const bookmarks::BookmarkModel* account_model);
+  FindGuidMatches(const BookmarkModelView* local_model,
+                  const BookmarkModelView* account_model);
 
   // Merges a local and a account subtrees. The input nodes are two equivalent
   // local and remote nodes. This method tries to recursively match their
@@ -82,8 +83,8 @@ class LocalBookmarkModelMerger {
   const bookmarks::BookmarkNode* FindMatchingAccountNodeByUuid(
       const bookmarks::BookmarkNode* local_node) const;
 
-  const raw_ptr<const bookmarks::BookmarkModel> local_model_;
-  const raw_ptr<bookmarks::BookmarkModel> account_model_;
+  const raw_ptr<const BookmarkModelView> local_model_;
+  const raw_ptr<BookmarkModelView> account_model_;
   const std::unordered_map<base::Uuid, GuidMatch, base::UuidHash>
       uuid_to_match_map_;
 };

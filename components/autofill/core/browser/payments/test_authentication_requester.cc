@@ -82,4 +82,14 @@ void TestAuthenticationRequester::OnRiskBasedAuthenticationResponseReceived(
   }
 }
 
+void TestAuthenticationRequester::
+    OnVirtualCardRiskBasedAuthenticationResponseReceived(
+        AutofillClient::PaymentsRpcResult result,
+        payments::PaymentsClient::UnmaskResponseDetails& response_details) {
+  did_succeed_ = (result == AutofillClient::PaymentsRpcResult::kSuccess);
+  if (*did_succeed_) {
+    response_details_ = response_details;
+  }
+}
+
 }  // namespace autofill

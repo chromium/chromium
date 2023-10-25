@@ -46,9 +46,9 @@
 namespace blink {
 
 class FlexItem;
-class FlexLine;
 class FlexLayoutAlgorithm;
-class NGFlexLayoutAlgorithm;
+class FlexLine;
+class FlexibleBoxAlgorithm;
 struct MinMaxSizes;
 struct NGFlexLine;
 
@@ -76,7 +76,7 @@ class FlexItem {
   //   main axis direction (not intrinsic widths). It does not include
   //   border/padding.
   //   |min_max_cross_sizes| does include cross_axis_border_padding.
-  FlexItem(const FlexLayoutAlgorithm*,
+  FlexItem(const FlexibleBoxAlgorithm*,
            const ComputedStyle& style,
            LayoutUnit flex_base_content_size,
            MinMaxSizes min_max_main_sizes,
@@ -149,7 +149,7 @@ class FlexItem {
 
   void Trace(Visitor*) const;
 
-  const FlexLayoutAlgorithm* algorithm_;
+  const FlexibleBoxAlgorithm* algorithm_;
   wtf_size_t line_number_;
   Member<const ComputedStyle> style_;
   const LayoutUnit flex_base_content_size_;
@@ -215,7 +215,7 @@ class FlexLine {
   typedef Vector<FlexItem*, 8> ViolationsVector;
 
   // This will std::move the passed-in line_items.
-  FlexLine(FlexLayoutAlgorithm* algorithm,
+  FlexLine(FlexibleBoxAlgorithm* algorithm,
            FlexItemVectorView line_items,
            LayoutUnit container_logical_width,
            LayoutUnit sum_flex_base_size,
@@ -266,7 +266,7 @@ class FlexLine {
                                 LayoutUnit main_axis_end_offset,
                                 LayoutUnit& cross_axis_offset);
 
-  FlexLayoutAlgorithm* algorithm_;
+  FlexibleBoxAlgorithm* algorithm_;
   FlexItemVectorView line_items_;
   const LayoutUnit container_logical_width_;
   const LayoutUnit sum_flex_base_size_;
@@ -302,7 +302,7 @@ class FlexLine {
 //   https://drafts.csswg.org/css-flexbox/
 //
 // Expected usage is as follows:
-//     FlexLayoutAlgorithm algorithm(Style(), MainAxisLength());
+//     FlexibleBoxAlgorithm algorithm(Style(), MainAxisLength());
 //     for (each child) {
 //       algorithm.emplace_back(...caller must compute these values...)
 //     }
@@ -320,18 +320,18 @@ class FlexLine {
 //        line->ComputeLineItemsPosition(main_axis_offset, cross_axis_offset);
 //     }
 // The final position of each flex item is in item.offset
-class CORE_EXPORT FlexLayoutAlgorithm {
+class CORE_EXPORT FlexibleBoxAlgorithm {
   DISALLOW_NEW();
 
  public:
-  FlexLayoutAlgorithm(const ComputedStyle*,
-                      LayoutUnit line_break_length,
-                      LogicalSize percent_resolution_sizes,
-                      Document*);
-  FlexLayoutAlgorithm(const FlexLayoutAlgorithm&) = delete;
+  FlexibleBoxAlgorithm(const ComputedStyle*,
+                       LayoutUnit line_break_length,
+                       LogicalSize percent_resolution_sizes,
+                       Document*);
+  FlexibleBoxAlgorithm(const FlexibleBoxAlgorithm&) = delete;
 
-  ~FlexLayoutAlgorithm() { all_items_.clear(); }
-  FlexLayoutAlgorithm& operator=(const FlexLayoutAlgorithm&) = delete;
+  ~FlexibleBoxAlgorithm() { all_items_.clear(); }
+  FlexibleBoxAlgorithm& operator=(const FlexibleBoxAlgorithm&) = delete;
 
   template <typename... Args>
   FlexItem& emplace_back(Args&&... args) {
@@ -427,7 +427,7 @@ class CORE_EXPORT FlexLayoutAlgorithm {
   const LayoutUnit gap_between_lines_;
 
  private:
-  friend class NGFlexLayoutAlgorithm;
+  friend class FlexLayoutAlgorithm;
   EOverflow MainAxisOverflowForChild(const LayoutBox& child) const;
 
   Member<const ComputedStyle> style_;

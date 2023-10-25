@@ -206,6 +206,8 @@ void AddGeneratedThemeComprehensiveColors(ui::ColorMixer& mixer) {
 
   mixer[kColorNewTabPageModuleControlBorder] = SelectBasedOnWhiteNtpBackground(
       gfx::kGoogleGrey300, kColorNewTabPageBackground);
+  mixer[kColorNewTabPageModuleElementDivider] = {
+      kColorNewTabPageModuleBackground};
   mixer[kColorNewTabPageMostVisitedForeground] = SelectBasedOnDarkInput(
       element_background_color, SK_ColorWHITE, gfx::kGoogleGrey800);
   mixer[kColorNewTabPageMostVisitedTileBackground] =
@@ -492,6 +494,8 @@ void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {
   }
 
   mixer[kColorNewTabPageModuleContextMenuDivider] = {
+      {dark_mode ? SK_ColorWHITE : gfx::kGoogleGrey600}};
+  mixer[kColorNewTabPageModuleElementDivider] = {
       {dark_mode ? SK_ColorWHITE : gfx::kGoogleGrey600}};
   mixer[kColorNewTabPageModuleItemBackground] = {
       kColorNewTabPageBackgroundOverride};

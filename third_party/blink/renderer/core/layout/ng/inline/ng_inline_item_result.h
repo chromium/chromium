@@ -20,38 +20,38 @@
 
 namespace blink {
 
-class NGInlineItem;
+class InlineItem;
 class NGLayoutResult;
 class ShapeResult;
 class ShapeResultView;
 struct NGPositionedFloat;
 
-// The result of measuring NGInlineItem.
+// The result of measuring InlineItem.
 //
 // This is a transient context object only while building line boxes.
 // Produced while determining the line break points, but these data are needed
 // to create line boxes.
 //
-// NGLineBreaker produces, and NGInlineLayoutAlgorithm consumes.
-struct CORE_EXPORT NGInlineItemResult {
+// LineBreaker produces, and NGInlineLayoutAlgorithm consumes.
+struct CORE_EXPORT InlineItemResult {
   DISALLOW_NEW();
 
  public:
-  NGInlineItemResult() = default;
-  NGInlineItemResult(const NGInlineItem*,
-                     unsigned index,
-                     const NGTextOffsetRange& text_offset,
-                     bool break_anywhere_if_overflow,
-                     bool should_create_line_box,
-                     bool has_unpositioned_floats);
+  InlineItemResult() = default;
+  InlineItemResult(const InlineItem*,
+                   unsigned index,
+                   const NGTextOffsetRange& text_offset,
+                   bool break_anywhere_if_overflow,
+                   bool should_create_line_box,
+                   bool has_unpositioned_floats);
 
   const NGTextOffsetRange& TextOffset() const { return text_offset; }
   wtf_size_t StartOffset() const { return text_offset.start; }
   wtf_size_t EndOffset() const { return text_offset.end; }
   wtf_size_t Length() const { return text_offset.Length(); }
 
-  NGInlineItemTextIndex Start() const { return {item_index, StartOffset()}; }
-  NGInlineItemTextIndex End() const { return {item_index, EndOffset()}; }
+  InlineItemTextIndex Start() const { return {item_index, StartOffset()}; }
+  InlineItemTextIndex End() const { return {item_index, EndOffset()}; }
 
   // Compute/clear |hyphen_string| and |hyphen_shape_result|.
   void ShapeHyphen();
@@ -61,8 +61,8 @@ struct CORE_EXPORT NGInlineItemResult {
   void CheckConsistency(bool allow_null_shape_result = false) const;
 #endif
 
-  // The NGInlineItem and its index.
-  const NGInlineItem* item = nullptr;
+  // The InlineItem and its index.
+  const InlineItem* item = nullptr;
   unsigned item_index = 0;
 
   // The range of text content for this item.
@@ -79,7 +79,7 @@ struct CORE_EXPORT NGInlineItemResult {
   // This is committed if a following item meets conditions.
   LayoutUnit pending_end_overhang;
 
-  // ShapeResult for text items. Maybe different from NGInlineItem if re-shape
+  // ShapeResult for text items. Maybe different from InlineItem if re-shape
   // is needed in the line breaker.
   scoped_refptr<const ShapeResultView> shape_result;
 
@@ -121,7 +121,7 @@ struct CORE_EXPORT NGInlineItemResult {
   bool has_only_trailing_spaces = false;
 
   // The previous value of |break_anywhere_if_overflow| in the
-  // NGInlineItemResults list. Like |should_create_line_box|, this value is used
+  // InlineItemResults list. Like |should_create_line_box|, this value is used
   // to rewind properly.
   bool break_anywhere_if_overflow = false;
 
@@ -132,7 +132,7 @@ struct CORE_EXPORT NGInlineItemResult {
   // https://drafts.csswg.org/css2/box.html#collapsing-margins
   //
   // This field should be initialized to the previous value in the
-  // NGInlineItemResults list. If line breaker rewinds NGInlineItemResults
+  // InlineItemResults list. If line breaker rewinds InlineItemResults
   // list, we can still look at the last value in the list to determine if we
   // need a line box. E.g.
   // [float should_create_line_box: false], [text should_create_line_box: true]
@@ -151,11 +151,11 @@ struct CORE_EXPORT NGInlineItemResult {
   bool is_hyphenated = false;
 };
 
-// Represents a set of NGInlineItemResult that form a line box.
-using NGInlineItemResults = HeapVector<NGInlineItemResult, 32>;
+// Represents a set of InlineItemResult that form a line box.
+using InlineItemResults = HeapVector<InlineItemResult, 32>;
 
 }  // namespace blink
 
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::NGInlineItemResult)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::InlineItemResult)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_INLINE_ITEM_RESULT_H_

@@ -17,17 +17,18 @@
             },
             "webview_instrumentation_test_apk": {
                 "debug": {
-                    "avg_num_builds_per_peak_hour": "85.0",
-                    "estimated_bot_hour_delta": "3.25",
-                    "prev_avg_pending_time_sec": "73.9",
+                    "avg_num_builds_per_peak_hour": "82.0",
+                    "estimated_bot_hour_delta": "-5.97",
+                    "prev_avg_pending_time_sec": "19.6",
                     "prev_p50_pending_time_sec": "2.0",
-                    "prev_p90_pending_time_sec": "219.0",
-                    "prev_percentile_duration_minutes": "15.14",
-                    "prev_shard_count": "13",
-                    "simulated_max_shard_duration": "14.06",
+                    "prev_p90_pending_time_sec": "60.0",
+                    "prev_percentile_duration_minutes": "13.68",
+                    "prev_shard_count": "14",
+                    "simulated_max_shard_duration": "14.73",
+                    "test_overhead_min": "4.37",
                     "try_builder": "android-12-x64-rel"
                 },
-                "shards": "14"
+                "shards": "13"
             },
             "webview_trichrome_64_cts_tests full_mode": {
                 "debug": {

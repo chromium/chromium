@@ -619,7 +619,11 @@ void AXObject::SetHasDirtyDescendants(bool dirty) const {
 void AXObject::SetAncestorsHaveDirtyDescendants() const {
   CHECK(!IsDetached());
   CHECK(!AXObjectCache().HasBeenDisposed());
-  CHECK(!AXObjectCache().IsFrozen());
+  if (AXObjectCache().IsFrozen()) {
+    // TODO(accessibility): Restore as CHECK(), remove early return.
+    DCHECK(false) << "Attempt to update frozen tree: " << ToString(true, true);
+    return;
+  }
   CHECK(!AXObjectCache().UpdatingTree());
 
   if (!RuntimeEnabledFeatures::AccessibilityEagerAXTreeUpdateEnabled()) {
@@ -4219,12 +4223,8 @@ bool AXObject::ComputeCanSetFocusAttribute() const {
     return false;
   }
 
-  // We should not need layout/style updates at this point.
+  // We should not need style updates at this point.
   CHECK(!elem->NeedsStyleRecalc())
-      << "\n* Element: " << elem << "\n* Object: " << ToString(true, true)
-      << "\n* LayoutObject: " << GetLayoutObject();
-  CHECK(
-      !GetDocument()->NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(*elem))
       << "\n* Element: " << elem << "\n* Object: " << ToString(true, true)
       << "\n* LayoutObject: " << GetLayoutObject();
 
@@ -4238,13 +4238,13 @@ bool AXObject::IsKeyboardFocusable() const {
   }
 
   Element& element = *GetElement();
-  Document& document = *GetDocument();
   CHECK(!element.NeedsStyleRecalc())
       << "\n* Element: " << element << "\n* Object: " << ToString(true, true)
       << "\n* LayoutObject: " << GetLayoutObject();
-  CHECK(!document.NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(element))
-      << "\n* Element: " << element << "\n* Object: " << ToString(true, true)
-      << "\n* LayoutObject: " << GetLayoutObject();
+  if (!element.IsFocusable(
+          /*disallow_layout_updates_for_accessibility_only*/ true)) {
+    return false;
+  }
   return element.IsKeyboardFocusable();
 }
 
@@ -7632,9 +7632,10 @@ const AXObject* AXObject::LowestCommonAncestor(const AXObject& first,
 void AXObject::PreSerializationConsistencyCheck() {
   CHECK(!IsDetached()) << "Do not serialize detached nodes: "
                        << ToString(true, true);
-  CHECK(AXObjectCache().IsFrozen());
-  CHECK(!NeedsToUpdateCachedValues());
-  CHECK(AccessibilityIsIncludedInTree())
+  // TODO(https://crbug.com/1480627): convert to CHECKs.
+  DCHECK(AXObjectCache().IsFrozen());
+  DCHECK(!NeedsToUpdateCachedValues());
+  DCHECK(AccessibilityIsIncludedInTree())
       << "Do not serialize unincluded nodes: " << ToString(true, true);
 #if defined(AX_FAIL_FAST_BUILD)
   // A bit more expensive, so only check in builds used for testing.

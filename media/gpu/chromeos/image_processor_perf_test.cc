@@ -11,6 +11,7 @@
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "media/gpu/chromeos/chromeos_compressed_gpu_memory_buffer_video_frame_utils.h"
 #include "media/gpu/chromeos/image_processor_factory.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/test/image.h"
@@ -132,10 +133,18 @@ scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
 
   scoped_refptr<VideoFrame> mapped_frame;
   if (type != VideoFrame::STORAGE_OWNED_MEMORY) {
+    // The MM21 path only makes sense for V4L2, so we should never get an Intel
+    // media compressed buffer here.
+    CHECK(!IsIntelMediaCompressedModifier(frame->layout().modifier()));
     std::unique_ptr<VideoFrameMapper> frame_mapper =
         VideoFrameMapperFactory::CreateMapper(
             VideoPixelFormat::PIXEL_FORMAT_NV12, type,
-            /*force_linear_buffer_mapper=*/true);
+            /*force_linear_buffer_mapper=*/true,
+            /*must_support_intel_media_compressed_buffers=*/false);
+    if (!frame_mapper) {
+      LOG(ERROR) << "Unable to create a VideoFrameMapper";
+      return nullptr;
+    }
     mapped_frame = frame_mapper->Map(frame, PROT_READ | PROT_WRITE);
     if (!mapped_frame) {
       LOG(ERROR) << "Unable to map MM21 frame";

@@ -5,8 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_EVENTS_EVENT_REWRITER_DELEGATE_IMPL_H_
 #define CHROME_BROWSER_ASH_EVENTS_EVENT_REWRITER_DELEGATE_IMPL_H_
 
+#include <utility>
+
 #include "ash/public/cpp/input_device_settings_controller.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/ash/event_rewriter_ash.h"
 #include "ui/events/ash/mojom/extended_fkeys_modifier.mojom-shared.h"
 #include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
@@ -77,10 +81,28 @@ class EventRewriterDelegateImpl : public ui::EventRewriterAsh::Delegate {
       int device_id,
       ui::KeyboardCode key_code) override;
 
+  // Workaround for test behavior injection.
+  // Currently, there's no easier way to inject
+  // ExtensionCommandsGlobalRegistry's behavior, so difficult to test
+  // EventRewriterAsh with changing IsExtensionCommandRegistered's behavior.
+  // Introducing a fake class of Delegate implementation can solve the issue,
+  // but without further larger refactoring some testing coverage will be lost.
+  // This API is for the mitigation for short term.
+  // TODO(crbug.com/1440147): Consider clear separation of EventRewriterAsh's
+  // test and Delegate's test, then to remove this API.
+  void SetExtensionCommandsOverrideForTesting(
+      absl::optional<base::flat_set<std::pair<ui::KeyboardCode, int>>>
+          commands) {
+    extension_commands_override_for_testing_ = std::move(commands);
+  }
+
  private:
   PrefService* GetPrefService() const;
 
   raw_ptr<PrefService, ExperimentalAsh> pref_service_for_testing_;
+
+  absl::optional<base::flat_set<std::pair<ui::KeyboardCode, int>>>
+      extension_commands_override_for_testing_;
 
   raw_ptr<wm::ActivationClient, DanglingUntriaged | ExperimentalAsh>
       activation_client_;

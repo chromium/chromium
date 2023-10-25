@@ -15,18 +15,25 @@
   }
 
   #title {
-    color: var(--cros-text-color-primary);
+    color: var(--cros-sys-on_surface);
     font: var(--cros-display-6-font);
   }
 
   .normal-text {
-    color: var(--cros-text-color-secondary);
+    color: var(--cros-sys-on_surface_variant);
     font: var(--cros-body-1-font);
     margin-block-start: 16px;
   }
 
   cr-checkbox {
+    --cr-checkbox-checked-box-color: var(--cros-sys-primary);
+    --cr-checkbox-label-color: var(--cros-sys-on_surface);
     --cr-checkbox-label-padding-start: 14px;
+    --cr-checkbox-mark-color: var(--cros-sys-on_primary);
+    --cr-checkbox-ripple-checked-color: var(--cros-sys-ripple_primary);
+    --cr-checkbox-ripple-opacity: 1;
+    --cr-checkbox-ripple-unchecked-color: var(--cros-sys-ripple_primary);
+    --cr-checkbox-unchecked-box-color: var(--cros-sys-on_surface);
     height: 20px;
     margin-inline-start: 2px;
     margin-top: 16px;
@@ -34,23 +41,12 @@
     padding-top: 8px;
   }
 
-  :host-context([theme='refresh23']) cr-checkbox {
-    --cr-checkbox-checked-box-color: var(--cros-sys-primary);
-    --cr-checkbox-label-color: var(--cros-sys-on_surface);
-    --cr-checkbox-mark-color: var(--cros-sys-on_primary);
-    --cr-checkbox-ripple-checked-color: var(--cros-sys-ripple_primary);
-    --cr-checkbox-ripple-opacity: 1;
-    --cr-checkbox-ripple-unchecked-color: var(--cros-sys-ripple_primary);
-    --cr-checkbox-unchecked-box-color: var(--cros-sys-on_surface);
-  }
-
-  :host-context([theme='refresh23']):host-context(.focus-outline-visible)
-      cr-checkbox:focus-within {
+  :host-context(.focus-outline-visible) cr-checkbox:focus-within {
     --cr-checkbox-ripple-ring: 2px solid var(--cros-sys-focus_ring);
   }
 
   .checkbox-text {
-    color: var(--cros-text-color-secondary);
+    color: var(--cros-sys-on_surface_variant);
     font: var(--cros-body-1-font);
   }
 
@@ -66,18 +62,7 @@
     width: 100%;
   }
 
-  :host-context([theme='legacy']) cr-button {
-    border-radius: 16px;
-  }
-
-  :host-context([theme='legacy']) cr-button:focus-visible {
-    /* disable cr-button default keyboard focus style */
-    box-shadow: none;
-    outline: 2px solid var(--cros-focus-ring-color);
-    outline-offset: 2px;
-  }
-
-  :host-context([theme='refresh23']) cr-button {
+  cr-button {
     --active-bg: transparent;
     --active-shadow: none;
     --active-shadow-action: none;
@@ -101,24 +86,21 @@
     box-shadow: none;
   }
 
-  :host-context([theme='refresh23']) cr-button.cancel-button {
+  cr-button.cancel-button {
     background-color: var(--cros-sys-primary_container);
   }
 
-  :host-context([theme='refresh23'])
-      cr-button.cancel-button:hover::part(hoverBackground) {
+  cr-button.cancel-button:hover::part(hoverBackground) {
     background-color: var(--cros-sys-hover_on_subtle);
     display: block;
   }
 
-  :host-context([theme='refresh23'])
-      cr-button.action-button:hover::part(hoverBackground) {
+   cr-button.action-button:hover::part(hoverBackground) {
     background-color: var(--cros-sys-hover_on_prominent);
     display: block;
   }
 
-  :host-context([theme='refresh23']):host-context(.focus-outline-visible)
-      cr-button:focus {
+  :host-context(.focus-outline-visible) cr-button:focus {
     outline: 2px solid var(--cros-sys-focus_ring);
     outline-offset: 2px;
   }

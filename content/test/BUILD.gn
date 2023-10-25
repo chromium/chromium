@@ -2296,7 +2296,7 @@ test("content_unittests") {
     "../browser/attribution_reporting/attribution_storage_sql_unittest.cc",
     "../browser/attribution_reporting/attribution_storage_unittest.cc",
     "../browser/attribution_reporting/attribution_utils_unittest.cc",
-    "../browser/attribution_reporting/combinatorics_unittest.cc",
+    "../browser/attribution_reporting/privacy_math_unittest.cc",
     "../browser/attribution_reporting/rate_limit_table_unittest.cc",
     "../browser/background_fetch/background_fetch_cross_origin_filter_unittest.cc",
     "../browser/background_fetch/background_fetch_data_manager_unittest.cc",
@@ -2319,7 +2319,8 @@ test("content_unittests") {
     "../browser/background_sync/one_shot_background_sync_service_impl_unittest.cc",
     "../browser/background_sync/periodic_background_sync_service_impl_unittest.cc",
     "../browser/blob_storage/blob_url_unittest.cc",
-    "../browser/blob_storage/file_backed_blob_factory_impl_unittest.cc",
+    "../browser/blob_storage/file_backed_blob_factory_frame_impl_unittest.cc",
+    "../browser/blob_storage/file_backed_blob_factory_worker_impl_unittest.cc",
     "../browser/bluetooth/bluetooth_allowed_devices_unittest.cc",
     "../browser/bluetooth/bluetooth_blocklist_unittest.cc",
     "../browser/bluetooth/bluetooth_device_chooser_controller_unittest.cc",
@@ -2819,6 +2820,12 @@ test("content_unittests") {
       "../browser/web_contents/web_drag_source_mac_unittest.mm",
       "../common/mac/attributed_string_type_converters_unittest.mm",
       "../renderer/sandbox_mac_v2_unittest.mm",
+    ]
+  }
+
+  if (is_ios) {
+    sources += [
+      "../browser/date_time_chooser/ios/date_time_chooser_util_unittest.mm",
     ]
   }
 

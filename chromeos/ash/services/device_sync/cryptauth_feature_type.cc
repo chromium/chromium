@@ -25,6 +25,8 @@ const char kEasyUnlockClientSupportedString[] = "EASY_UNLOCK_CLIENT_SUPPORTED";
 const char kMagicTetherHostSupportedString[] = "MAGIC_TETHER_HOST_SUPPORTED";
 const char kMagicTetherClientSupportedString[] =
     "MAGIC_TETHER_CLIENT_SUPPORTED";
+const char kSmsConnectHostSupportedString[] = "SMS_CONNECT_HOST_SUPPORTED";
+const char kSmsConnectClientSupportedString[] = "SMS_CONNECT_CLIENT_SUPPORTED";
 const char kPhoneHubHostSupportedString[] = "PHONE_HUB_HOST_SUPPORTED";
 const char kPhoneHubClientSupportedString[] = "PHONE_HUB_CLIENT_SUPPORTED";
 const char kWifiSyncHostSupportedString[] = "WIFI_SYNC_HOST_SUPPORTED";
@@ -42,6 +44,8 @@ const char kEasyUnlockHostEnabledString[] = "EASY_UNLOCK_HOST";
 const char kEasyUnlockClientEnabledString[] = "EASY_UNLOCK_CLIENT";
 const char kMagicTetherHostEnabledString[] = "MAGIC_TETHER_HOST";
 const char kMagicTetherClientEnabledString[] = "MAGIC_TETHER_CLIENT";
+const char kSmsConnectHostEnabledString[] = "SMS_CONNECT_HOST";
+const char kSmsConnectClientEnabledString[] = "SMS_CONNECT_CLIENT";
 const char kPhoneHubHostEnabledString[] = "PHONE_HUB_HOST";
 const char kPhoneHubClientEnabledString[] = "PHONE_HUB_CLIENT";
 const char kWifiSyncHostEnabledString[] = "WIFI_SYNC_HOST";
@@ -65,12 +69,16 @@ const base::flat_set<CryptAuthFeatureType>& GetAllCryptAuthFeatureTypes() {
             CryptAuthFeatureType::kEasyUnlockClientSupported,
             CryptAuthFeatureType::kMagicTetherHostSupported,
             CryptAuthFeatureType::kMagicTetherClientSupported,
+            CryptAuthFeatureType::kSmsConnectHostSupported,
+            CryptAuthFeatureType::kSmsConnectClientSupported,
             CryptAuthFeatureType::kBetterTogetherHostEnabled,
             CryptAuthFeatureType::kBetterTogetherClientEnabled,
             CryptAuthFeatureType::kEasyUnlockHostEnabled,
             CryptAuthFeatureType::kEasyUnlockClientEnabled,
             CryptAuthFeatureType::kMagicTetherHostEnabled,
-            CryptAuthFeatureType::kMagicTetherClientEnabled};
+            CryptAuthFeatureType::kMagicTetherClientEnabled,
+            CryptAuthFeatureType::kSmsConnectHostEnabled,
+            CryptAuthFeatureType::kSmsConnectClientEnabled};
         if (features::IsPhoneHubEnabled()) {
           feature_set.insert(CryptAuthFeatureType::kPhoneHubClientSupported);
           feature_set.insert(CryptAuthFeatureType::kPhoneHubClientEnabled);
@@ -115,7 +123,9 @@ GetSupportedCryptAuthFeatureTypes() {
             CryptAuthFeatureType::kEasyUnlockHostSupported,
             CryptAuthFeatureType::kEasyUnlockClientSupported,
             CryptAuthFeatureType::kMagicTetherHostSupported,
-            CryptAuthFeatureType::kMagicTetherClientSupported};
+            CryptAuthFeatureType::kMagicTetherClientSupported,
+            CryptAuthFeatureType::kSmsConnectHostSupported,
+            CryptAuthFeatureType::kSmsConnectClientSupported};
         if (features::IsPhoneHubEnabled()) {
           supported_set.insert(CryptAuthFeatureType::kPhoneHubHostSupported);
           supported_set.insert(CryptAuthFeatureType::kPhoneHubClientSupported);
@@ -149,7 +159,9 @@ const base::flat_set<CryptAuthFeatureType>& GetEnabledCryptAuthFeatureTypes() {
             CryptAuthFeatureType::kEasyUnlockHostEnabled,
             CryptAuthFeatureType::kEasyUnlockClientEnabled,
             CryptAuthFeatureType::kMagicTetherHostEnabled,
-            CryptAuthFeatureType::kMagicTetherClientEnabled};
+            CryptAuthFeatureType::kMagicTetherClientEnabled,
+            CryptAuthFeatureType::kSmsConnectHostEnabled,
+            CryptAuthFeatureType::kSmsConnectClientEnabled};
         if (features::IsPhoneHubEnabled()) {
           enabled_set.insert(CryptAuthFeatureType::kPhoneHubHostEnabled);
           enabled_set.insert(CryptAuthFeatureType::kPhoneHubClientEnabled);
@@ -212,6 +224,14 @@ const char* CryptAuthFeatureTypeToString(CryptAuthFeatureType feature_type) {
       return kMagicTetherClientSupportedString;
     case CryptAuthFeatureType::kMagicTetherClientEnabled:
       return kMagicTetherClientEnabledString;
+    case CryptAuthFeatureType::kSmsConnectHostSupported:
+      return kSmsConnectHostSupportedString;
+    case CryptAuthFeatureType::kSmsConnectHostEnabled:
+      return kSmsConnectHostEnabledString;
+    case CryptAuthFeatureType::kSmsConnectClientSupported:
+      return kSmsConnectClientSupportedString;
+    case CryptAuthFeatureType::kSmsConnectClientEnabled:
+      return kSmsConnectClientEnabledString;
     case CryptAuthFeatureType::kPhoneHubHostSupported:
       return kPhoneHubHostSupportedString;
     case CryptAuthFeatureType::kPhoneHubHostEnabled:
@@ -273,6 +293,14 @@ absl::optional<CryptAuthFeatureType> CryptAuthFeatureTypeFromString(
     return CryptAuthFeatureType::kMagicTetherClientSupported;
   if (feature_type_string == kMagicTetherClientEnabledString)
     return CryptAuthFeatureType::kMagicTetherClientEnabled;
+  if (feature_type_string == kSmsConnectHostSupportedString)
+    return CryptAuthFeatureType::kSmsConnectHostSupported;
+  if (feature_type_string == kSmsConnectHostEnabledString)
+    return CryptAuthFeatureType::kSmsConnectHostEnabled;
+  if (feature_type_string == kSmsConnectClientSupportedString)
+    return CryptAuthFeatureType::kSmsConnectClientSupported;
+  if (feature_type_string == kSmsConnectClientEnabledString)
+    return CryptAuthFeatureType::kSmsConnectClientEnabled;
   if (feature_type_string == kPhoneHubHostSupportedString)
     return CryptAuthFeatureType::kPhoneHubHostSupported;
   if (feature_type_string == kPhoneHubHostEnabledString)
@@ -381,6 +409,16 @@ multidevice::SoftwareFeature CryptAuthFeatureTypeToSoftwareFeature(
     case CryptAuthFeatureType::kMagicTetherClientEnabled:
       return multidevice::SoftwareFeature::kInstantTetheringClient;
 
+    case CryptAuthFeatureType::kSmsConnectHostSupported:
+      [[fallthrough]];
+    case CryptAuthFeatureType::kSmsConnectHostEnabled:
+      return multidevice::SoftwareFeature::kMessagesForWebHost;
+
+    case CryptAuthFeatureType::kSmsConnectClientSupported:
+      [[fallthrough]];
+    case CryptAuthFeatureType::kSmsConnectClientEnabled:
+      return multidevice::SoftwareFeature::kMessagesForWebClient;
+
     case CryptAuthFeatureType::kPhoneHubHostSupported:
       [[fallthrough]];
     case CryptAuthFeatureType::kPhoneHubHostEnabled:
@@ -438,6 +476,10 @@ CryptAuthFeatureType CryptAuthFeatureTypeFromSoftwareFeature(
       return CryptAuthFeatureType::kMagicTetherHostEnabled;
     case multidevice::SoftwareFeature::kInstantTetheringClient:
       return CryptAuthFeatureType::kMagicTetherClientEnabled;
+    case multidevice::SoftwareFeature::kMessagesForWebHost:
+      return CryptAuthFeatureType::kSmsConnectHostEnabled;
+    case multidevice::SoftwareFeature::kMessagesForWebClient:
+      return CryptAuthFeatureType::kSmsConnectClientEnabled;
     case multidevice::SoftwareFeature::kPhoneHubHost:
       return CryptAuthFeatureType::kPhoneHubHostEnabled;
     case multidevice::SoftwareFeature::kPhoneHubClient:

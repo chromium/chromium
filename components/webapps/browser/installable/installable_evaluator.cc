@@ -240,7 +240,7 @@ InstallableEvaluator::CheckInstallability() const {
   return errors;
 }
 
-std::vector<InstallableStatusCode> InstallableEvaluator::CheckEligiblity(
+std::vector<InstallableStatusCode> InstallableEvaluator::CheckEligibility(
     content::WebContents* web_contents) const {
   std::vector<InstallableStatusCode> errors;
   if (web_contents->GetBrowserContext()->IsOffTheRecord()) {

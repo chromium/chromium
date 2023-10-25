@@ -26,6 +26,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/system/sys_info.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -1909,17 +1910,7 @@ void RenderViewContextMenu::AppendSearchWebForImageItems() {
     menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
   }
 
-  if (search::DefaultSearchProviderIsGoogle(GetProfile())) {
-    if (companion::IsSearchImageInCompanionSidePanelSupported(GetBrowser()) &&
-        companion::GetShouldIssuePreconnectForCompanion()) {
-      IssuePreconnectionToUrl(companion::GetPreconnectKeyForCompanion(),
-                              companion::GetImageUploadURLForCompanion());
-    } else if (base::FeatureList::IsEnabled(lens::features::kLensStandalone) &&
-               lens::features::GetShouldIssuePreconnectForLens()) {
-      IssuePreconnectionToUrl(lens::features::GetPreconnectKeyForLens(),
-                              lens::features::GetHomepageURLForLens());
-    }
-  }
+  MaybePrepareForLensQuery();
 
   if (base::FeatureList::IsEnabled(lens::features::kLensStandalone) &&
       base::FeatureList::IsEnabled(lens::features::kEnableImageTranslate) &&
@@ -2527,18 +2518,7 @@ void RenderViewContextMenu::AppendRegionSearchItem() {
       menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
     }
 
-    if (search::DefaultSearchProviderIsGoogle(GetProfile())) {
-      if (companion::IsSearchImageInCompanionSidePanelSupported(GetBrowser()) &&
-          companion::GetShouldIssuePreconnectForCompanion()) {
-        IssuePreconnectionToUrl(companion::GetPreconnectKeyForCompanion(),
-                                companion::GetImageUploadURLForCompanion());
-      } else if (base::FeatureList::IsEnabled(
-                     lens::features::kLensStandalone) &&
-                 lens::features::GetShouldIssuePreconnectForLens()) {
-        IssuePreconnectionToUrl(lens::features::GetPreconnectKeyForLens(),
-                                lens::features::GetHomepageURLForLens());
-      }
-    }
+    MaybePrepareForLensQuery();
   }
 }
 
@@ -4074,7 +4054,7 @@ void RenderViewContextMenu::ExecRegionSearch(
 
   if (!lens_region_search_controller_) {
     lens_region_search_controller_ =
-        std::make_unique<lens::LensRegionSearchController>(browser);
+        std::make_unique<lens::LensRegionSearchController>();
   }
   const lens::AmbientSearchEntryPoint entry_point =
       is_google_default_search_provider
@@ -4347,6 +4327,40 @@ bool RenderViewContextMenu::CanTranslate(bool menu_logging) {
   return chrome_translate_client &&
          chrome_translate_client->GetTranslateManager()->CanManuallyTranslate(
              menu_logging);
+}
+
+void RenderViewContextMenu::MaybePrepareForLensQuery() {
+  if (!search::DefaultSearchProviderIsGoogle(GetProfile())) {
+    return;
+  }
+
+  // Chrome Search Companion preparation
+  if (companion::IsSearchImageInCompanionSidePanelSupported(GetBrowser())) {
+    if (companion::GetShouldIssuePreconnectForCompanion()) {
+      IssuePreconnectionToUrl(companion::GetPreconnectKeyForCompanion(),
+                              companion::GetImageUploadURLForCompanion());
+    }
+    if (companion::GetShouldIssueProcessPrewarmingForCompanion() &&
+        !base::SysInfo::IsLowEndDevice()) {
+      content::RenderProcessHost::WarmupSpareRenderProcessHost(
+          browser_context_);
+    }
+    return;
+  }
+
+  // Lens Side Panel preparation
+  if (lens::features::IsLensSidePanelEnabled()) {
+    if (lens::features::GetShouldIssuePreconnectForLens()) {
+      IssuePreconnectionToUrl(lens::features::GetPreconnectKeyForLens(),
+                              lens::features::GetHomepageURLForLens());
+    }
+    if (lens::features::GetShouldIssueProcessPrewarmingForLens() &&
+        !base::SysInfo::IsLowEndDevice()) {
+      content::RenderProcessHost::WarmupSpareRenderProcessHost(
+          browser_context_);
+    }
+    return;
+  }
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

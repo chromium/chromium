@@ -47,6 +47,7 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
+#include "chrome/browser/chromeos/extensions/web_file_handlers/intent_util.h"
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
@@ -334,23 +335,10 @@ void ExtensionAppsChromeOs::LaunchAppWithIntent(const std::string& app_id,
     return;
   }
 
-  bool supports_web_file_handlers =
-      extensions::WebFileHandlers::SupportsWebFileHandlers(*extension);
-
-  // Launch Web File Handlers.
-  if (supports_web_file_handlers) {
-    // Get all names that were selected when the intent to open was initiated.
-    std::vector<base::SafeBaseName> base_names;
-    for (const auto& file : intent->files) {
-      auto optional_base_name = base::SafeBaseName::Create(file->url.path());
-      // Launch requires that every file have a base name.
-      if (!optional_base_name.has_value()) {
-        base_names.clear();
-        break;
-      }
-
-      base_names.emplace_back(optional_base_name.value());
-    }
+  // Launch Web File Handlers if they're supported by the extension.
+  if (extensions::WebFileHandlers::SupportsWebFileHandlers(*extension)) {
+    std::vector<base::SafeBaseName> base_names =
+        extensions::GetBaseNamesForIntent(*intent);
 
     // This vector cannot be empty because this is reached after explicitly
     // opening one or more files.
@@ -980,14 +968,8 @@ AppPtr ExtensionAppsChromeOs::CreateApp(const extensions::Extension* extension,
   app->has_badge = app_notifications_.HasNotification(extension->id());
   app->paused = paused;
 
-  // Legacy versions of the QuickOffice extension are treated as a Chrome App,
-  // to allow file handling. Once QuickOffice supports MV3, it can use the Web
-  // File Handlers extension API instead.
-  bool is_legacy_quick_office_extension =
-      extension_misc::IsQuickOfficeExtension(extension->id()) &&
-      !extensions::WebFileHandlers::SupportsWebFileHandlers(*extension);
-
-  if (extension->is_app() || is_legacy_quick_office_extension) {
+  if (extension->is_app() ||
+      extensions::IsLegacyQuickOfficeExtension(*extension)) {
     app->intent_filters = apps_util::CreateIntentFiltersForChromeApp(extension);
   } else if (extension->is_extension()) {
     app->intent_filters = apps_util::CreateIntentFiltersForExtension(extension);

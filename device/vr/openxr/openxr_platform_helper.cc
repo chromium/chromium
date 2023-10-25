@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "components/version_info/version_info.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
-#include "device/vr/openxr/openxr_defs.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_graphics_binding.h"
 
@@ -137,9 +136,9 @@ XrResult OpenXrPlatformHelper::CreateInstance(XrInstance* instance,
 
   // Input extensions. These enable interaction profiles not defined in the core
   // spec
-  EnableExtensionIfSupported(kExtSamsungOdysseyControllerExtensionName);
-  EnableExtensionIfSupported(kExtHPMixedRealityControllerExtensionName);
-  EnableExtensionIfSupported(kMSFTHandInteractionExtensionName);
+  EnableExtensionIfSupported(XR_EXT_SAMSUNG_ODYSSEY_CONTROLLER_EXTENSION_NAME);
+  EnableExtensionIfSupported(XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME);
+  EnableExtensionIfSupported(XR_MSFT_HAND_INTERACTION_EXTENSION_NAME);
   EnableExtensionIfSupported(
       XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME);
 

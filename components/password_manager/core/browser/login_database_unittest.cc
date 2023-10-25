@@ -2192,6 +2192,8 @@ PasswordForm LoginDatabaseUndecryptableLoginsTest::AddDummyLogin(
 }
 
 TEST_F(LoginDatabaseUndecryptableLoginsTest, DeleteUndecryptableLoginsTest) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kSkipUndecryptablePasswords);
   auto form1 =
       AddDummyLogin("foo1", GURL("https://foo1.com/"),
                     /*should_be_corrupted=*/false, /*blocklisted=*/false);
@@ -2234,6 +2236,8 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, DeleteUndecryptableLoginsTest) {
 
 TEST_F(LoginDatabaseUndecryptableLoginsTest,
        PasswordRecoveryDisabledGetLogins) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kSkipUndecryptablePasswords);
   AddDummyLogin("foo1", GURL("https://foo1.com/"), false,
                 /*blocklisted=*/false);
   AddDummyLogin("foo2", GURL("https://foo2.com/"), true, /*blocklisted=*/false);
@@ -2270,7 +2274,6 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, KeychainLockedTest) {
 // Test getting auto sign in logins when there are undecryptable ones
 TEST_F(LoginDatabaseUndecryptableLoginsTest, GetAutoSignInLogins) {
   std::vector<PasswordForm> forms;
-
   auto form1 =
       AddDummyLogin("foo1", GURL("https://foo1.com/"),
                     /*should_be_corrupted=*/false, /*blocklisted=*/false);
@@ -2280,18 +2283,23 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, GetAutoSignInLogins) {
   auto form3 =
       AddDummyLogin("foo3", GURL("https://foo3.com/"),
                     /*should_be_corrupted=*/false, /*blocklisted=*/false);
-
   LoginDatabase db(database_path(), IsAccountStore(false));
   ASSERT_TRUE(db.Init());
 
-  EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(features::kSkipUndecryptablePasswords);
 
-  base::test::ScopedFeatureList feature_list(
-      features::kSkipUndecryptablePasswords);
+    EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
+  }
+  {
+    base::test::ScopedFeatureList feature_list(
+        features::kSkipUndecryptablePasswords);
 
-  EXPECT_TRUE(db.GetAutoSignInLogins(&forms));
-  EXPECT_THAT(forms, UnorderedElementsAre(HasPrimaryKeyAndEquals(form1),
-                                          HasPrimaryKeyAndEquals(form3)));
+    EXPECT_TRUE(db.GetAutoSignInLogins(&forms));
+    EXPECT_THAT(forms, UnorderedElementsAre(HasPrimaryKeyAndEquals(form1),
+                                            HasPrimaryKeyAndEquals(form3)));
+  }
 }
 
 // Test getting logins when there are undecryptable ones
@@ -2307,16 +2315,19 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, GetLogins) {
   std::vector<PasswordForm> result;
 
   PasswordForm form = GenerateExamplePasswordForm();
-  EXPECT_FALSE(db.GetLogins(PasswordFormDigest(form),
-                            /*should_PSL_matching_apply=*/false, &result));
-
-  base::test::ScopedFeatureList feature_list(
-      features::kSkipUndecryptablePasswords);
-  result.clear();
-
-  EXPECT_TRUE(db.GetLogins(PasswordFormDigest(form),
-                           /*should_PSL_matching_apply=*/false, &result));
-  EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form1)));
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(features::kSkipUndecryptablePasswords);
+    EXPECT_FALSE(db.GetLogins(PasswordFormDigest(form),
+                              /*should_PSL_matching_apply=*/false, &result));
+  }
+  {
+    base::test::ScopedFeatureList feature_list(
+        features::kSkipUndecryptablePasswords);
+    EXPECT_TRUE(db.GetLogins(PasswordFormDigest(form),
+                             /*should_PSL_matching_apply=*/false, &result));
+    EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form1)));
+  }
 }
 
 // Test getting auto fillable logins when there are undecryptable ones
@@ -2336,13 +2347,17 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, GetAutofillableLogins) {
   LoginDatabase db(database_path(), IsAccountStore(false));
   ASSERT_TRUE(db.Init());
 
-  EXPECT_FALSE(db.GetAutofillableLogins(&result));
-
-  base::test::ScopedFeatureList feature_list(
-      features::kSkipUndecryptablePasswords);
-
-  EXPECT_TRUE(db.GetAutofillableLogins(&result));
-  EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form1)));
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(features::kSkipUndecryptablePasswords);
+    EXPECT_FALSE(db.GetAutofillableLogins(&result));
+  }
+  {
+    base::test::ScopedFeatureList feature_list(
+        features::kSkipUndecryptablePasswords);
+    EXPECT_TRUE(db.GetAutofillableLogins(&result));
+    EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form1)));
+  }
 }
 #endif  // #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_IOS)
 

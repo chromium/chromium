@@ -60,6 +60,8 @@ void SystemPreferencesSection::AddLoadTimeData(
       {"storageAndPowerTitle",
        IDS_OS_SETTINGS_SYSTEM_PREFERENCES_STORAGE_AND_POWER_TITLE},
       {"systemPreferencesTitle", IDS_OS_SETTINGS_SYSTEM_PREFERENCES_TITLE},
+      {"systemPreferencesMenuItemDescription",
+       IDS_OS_SETTINGS_SYSTEM_PREFERENCES_MENU_ITEM_DESCRIPTION},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }

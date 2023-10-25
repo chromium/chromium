@@ -66,16 +66,22 @@ void SearchEngineChoiceTabHelper::MaybeShowDialog() {
     return;
   }
 
-  Browser& browser = CHECK_DEREF(chrome::FindBrowserWithTab(web_contents()));
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
+  // The browser will be null if the web contents are rendered in a portal, in
+  // devtools or if the renderer crashes.
+  if (!browser) {
+    return;
+  }
+
   SearchEngineChoiceService* search_engine_choice_service =
-      SearchEngineChoiceServiceFactory::GetForProfile(browser.profile());
+      SearchEngineChoiceServiceFactory::GetForProfile(browser->profile());
   if (!search_engine_choice_service ||
-      !search_engine_choice_service->CanShowDialog(browser) ||
+      !search_engine_choice_service->CanShowDialog(*browser) ||
       !search_engine_choice_service->IsUrlSuitableForDialog(
           navigation_controller.GetLastCommittedEntry()->GetURL())) {
     return;
   }
-  ShowSearchEngineChoiceDialog(browser);
+  ShowSearchEngineChoiceDialog(*browser);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchEngineChoiceTabHelper);

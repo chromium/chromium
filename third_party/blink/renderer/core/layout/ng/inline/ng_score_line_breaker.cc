@@ -16,15 +16,15 @@ namespace blink {
 
 namespace {
 
-// Determines whether `NGScoreLineBreaker` should be applied or not from the
-// greedy line break results. Because the `NGScoreLineBreaker` is expensive,
+// Determines whether `ScoreLineBreaker` should be applied or not from the
+// greedy line break results. Because the `ScoreLineBreaker` is expensive,
 // and it often produces the similar results to the greedy algorithm, apply
 // it only when its benefit is obvious.
-ALWAYS_INLINE bool ShouldOptimize(const NGLineInfoList& line_info_list,
-                                  NGLineBreaker& line_breaker) {
+ALWAYS_INLINE bool ShouldOptimize(const LineInfoList& line_info_list,
+                                  LineBreaker& line_breaker) {
   // The optimization benefit is most visible when the last line is short.
   // Otherwise, the improvement is not worth the performance impact.
-  const NGLineInfo& last_line = line_info_list.Back();
+  const LineInfo& last_line = line_info_list.Back();
   constexpr int kShortLineDenominator = 3;
   if (last_line.Width() < last_line.AvailableWidth() / kShortLineDenominator &&
       // Similarly, optimize only when the last line has a single word; i.e.,
@@ -50,18 +50,17 @@ ALWAYS_INLINE bool ShouldOptimize(const NGLineInfoList& line_info_list,
 
 }  // namespace
 
-void NGScoreLineBreaker::SetScoresOutForTesting(Vector<float>* scores_out) {
+void ScoreLineBreaker::SetScoresOutForTesting(Vector<float>* scores_out) {
   scores_out_for_testing_ = scores_out;
 }
 
-void NGScoreLineBreaker::OptimalBreakPoints(
-    const NGLeadingFloats& leading_floats,
-    NGScoreLineBreakContext& context) {
+void ScoreLineBreaker::OptimalBreakPoints(const NGLeadingFloats& leading_floats,
+                                          ScoreLineBreakContext& context) {
   DCHECK(!is_balanced_ || !break_token_);
-  DCHECK(context.LineBreakPoints().empty());
+  DCHECK(context.GetLineBreakPoints().empty());
   DCHECK(!node_.IsScoreLineBreakDisabled());
   DCHECK(context.IsActive());
-  NGLineInfoList& line_info_list = context.LineInfoList();
+  LineInfoList& line_info_list = context.GetLineInfoList();
   const wtf_size_t max_lines = MaxLines();
   DCHECK_GE(line_info_list.MaxLines(), max_lines);
   DCHECK_LT(line_info_list.Size(), max_lines);
@@ -70,23 +69,23 @@ void NGScoreLineBreaker::OptimalBreakPoints(
     line_index = line_info_list.Size();
     // To compute the next line after the last cached line, update
     // `break_token_` to the last cached break token.
-    const NGLineInfo& last_line = line_info_list.Back();
+    const LineInfo& last_line = line_info_list.Back();
     break_token_ = last_line.BreakToken();
     // The last line should not be the end of paragraph.
     // `SuspendUntilConsumed()` should have prevented this from happening.
     DCHECK(break_token_ && !last_line.HasForcedBreak());
   }
 
-  // Compute line breaks and cache the results (`NGLineInfo`) up to
-  // `NGLineInfoList::kCapacity` lines.
+  // Compute line breaks and cache the results (`LineInfo`) up to
+  // `LineInfoList::kCapacity` lines.
   LayoutUnit line_width = line_widths_[line_index];
-  NGLineBreaker line_breaker(
-      node_, NGLineBreakerMode::kContent, ConstraintSpace(),
-      LineLayoutOpportunity(line_width), leading_floats, break_token_,
-      /* column_spanner_path */ nullptr, exclusion_space_);
+  LineBreaker line_breaker(node_, LineBreakerMode::kContent, ConstraintSpace(),
+                           LineLayoutOpportunity(line_width), leading_floats,
+                           break_token_,
+                           /* column_spanner_path */ nullptr, exclusion_space_);
   const int lines_until_clamp = space_.LinesUntilClamp().value_or(0);
   for (;;) {
-    NGLineInfo& line_info = line_info_list.Append();
+    LineInfo& line_info = line_info_list.Append();
     line_breaker.NextLine(&line_info);
     break_token_ = line_info.BreakToken();
     if (UNLIKELY(line_breaker.ShouldDisableScoreLineBreak())) {
@@ -125,7 +124,7 @@ void NGScoreLineBreaker::OptimalBreakPoints(
     }
   }
 
-  NGLineBreakPoints& break_points = context.LineBreakPoints();
+  LineBreakPoints& break_points = context.GetLineBreakPoints();
   if (!Optimize(line_info_list, line_breaker, break_points)) {
     DCHECK(break_points.empty());
     return;
@@ -136,7 +135,7 @@ void NGScoreLineBreaker::OptimalBreakPoints(
   // break points are different.
   DCHECK_EQ(line_info_list.Size(), break_points.size());
   for (wtf_size_t i = 0; i < line_info_list.Size(); ++i) {
-    const NGLineInfo& line_info = line_info_list[i];
+    const LineInfo& line_info = line_info_list[i];
     if (line_info.End() != break_points[i].offset) {
       line_info_list.Shrink(i);
       break;
@@ -144,22 +143,21 @@ void NGScoreLineBreaker::OptimalBreakPoints(
   }
 }
 
-void NGScoreLineBreaker::BalanceBreakPoints(
-    const NGLeadingFloats& leading_floats,
-    NGScoreLineBreakContext& context) {
+void ScoreLineBreaker::BalanceBreakPoints(const NGLeadingFloats& leading_floats,
+                                          ScoreLineBreakContext& context) {
   is_balanced_ = true;
   OptimalBreakPoints(leading_floats, context);
 }
 
-bool NGScoreLineBreaker::Optimize(const NGLineInfoList& line_info_list,
-                                  NGLineBreaker& line_breaker,
-                                  NGLineBreakPoints& break_points) {
+bool ScoreLineBreaker::Optimize(const LineInfoList& line_info_list,
+                                LineBreaker& line_breaker,
+                                LineBreakPoints& break_points) {
   DCHECK(break_points.empty());
 
   SetupParameters();
 
   // Compute all break opportunities and their penalties.
-  NGLineBreakCandidates candidates;
+  LineBreakCandidates candidates;
   if (!ComputeCandidates(line_info_list, line_breaker, candidates)) {
     DCHECK(break_points.empty());
     return false;
@@ -184,7 +182,7 @@ bool NGScoreLineBreaker::Optimize(const NGLineInfoList& line_info_list,
   ComputeLineWidths(line_info_list);
 
   // Compute score for each break opportunity.
-  NGLineBreakScores scores;
+  LineBreakScores scores;
   scores.ReserveInitialCapacity(candidates.size());
   ComputeScores(candidates, scores);
   DCHECK_EQ(candidates.size(), scores.size());
@@ -194,7 +192,7 @@ bool NGScoreLineBreaker::Optimize(const NGLineInfoList& line_info_list,
 
   // Copy data for testing.
   if (UNLIKELY(scores_out_for_testing_)) {
-    for (const NGLineBreakScore& score : scores) {
+    for (const LineBreakScore& score : scores) {
       scores_out_for_testing_->push_back(score.score);
     }
   }
@@ -202,17 +200,17 @@ bool NGScoreLineBreaker::Optimize(const NGLineInfoList& line_info_list,
   return true;
 }
 
-bool NGScoreLineBreaker::ComputeCandidates(const NGLineInfoList& line_info_list,
-                                           NGLineBreaker& line_breaker,
-                                           NGLineBreakCandidates& candidates) {
+bool ScoreLineBreaker::ComputeCandidates(const LineInfoList& line_info_list,
+                                         LineBreaker& line_breaker,
+                                         LineBreakCandidates& candidates) {
   // The first entry is a sentinel at the start of the line.
   DCHECK(candidates.empty());
-  NGLineBreakCandidateContext context(candidates);
+  LineBreakCandidateContext context(candidates);
   context.SetHyphenPenalty(hyphen_penalty_);
   context.EnsureFirstSentinel(line_info_list.Front());
 
   for (wtf_size_t i = 0; i < line_info_list.Size(); ++i) {
-    const NGLineInfo& line_info = line_info_list[i];
+    const LineInfo& line_info = line_info_list[i];
     if (!context.AppendLine(line_info, line_breaker)) {
       candidates.clear();
       return false;
@@ -224,7 +222,7 @@ bool NGScoreLineBreaker::ComputeCandidates(const NGLineInfoList& line_info_list,
   return true;
 }
 
-LayoutUnit NGScoreLineBreaker::AvailableWidth(wtf_size_t line_index) const {
+LayoutUnit ScoreLineBreaker::AvailableWidth(wtf_size_t line_index) const {
   LayoutUnit available_width = line_widths_[line_index];
   if (line_index == 0) {
     available_width -= first_line_indent_;
@@ -232,8 +230,7 @@ LayoutUnit NGScoreLineBreaker::AvailableWidth(wtf_size_t line_index) const {
   return available_width.ClampNegativeToZero();
 }
 
-void NGScoreLineBreaker::ComputeLineWidths(
-    const NGLineInfoList& line_info_list) {
+void ScoreLineBreaker::ComputeLineWidths(const LineInfoList& line_info_list) {
   first_line_indent_ = line_info_list.Front().TextIndent();
 #if EXPENSIVE_DCHECKS_ARE_ON()
   // Only the first line may have an indent.
@@ -243,7 +240,7 @@ void NGScoreLineBreaker::ComputeLineWidths(
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
 }
 
-void NGScoreLineBreaker::SetupParameters() {
+void ScoreLineBreaker::SetupParameters() {
   // Use the same heuristic parameters as Minikin's `computePenalties()`.
   // https://cs.android.com/android/platform/superproject/+/master:frameworks/minikin/libs/minikin/OptimalLineBreaker.cpp
   const LayoutUnit available_width =
@@ -267,16 +264,16 @@ void NGScoreLineBreaker::SetupParameters() {
   }
 }
 
-void NGScoreLineBreaker::ComputeScores(const NGLineBreakCandidates& candidates,
-                                       NGLineBreakScores& scores) {
+void ScoreLineBreaker::ComputeScores(const LineBreakCandidates& candidates,
+                                     LineBreakScores& scores) {
   DCHECK_GE(candidates.size(), 2u);
   DCHECK(scores.empty());
-  scores.push_back(NGLineBreakScore{0, 0, 0});
+  scores.push_back(LineBreakScore{0, 0, 0});
   wtf_size_t active = 0;
 
   // `end` iterates through candidates for the end of the line.
   for (wtf_size_t end = 1; end < candidates.size(); ++end) {
-    const NGLineBreakCandidate& end_candidate = candidates[end];
+    const LineBreakCandidate& end_candidate = candidates[end];
     const bool is_end_last_candidate = end == candidates.size() - 1;
     float best = kScoreInfinity;
     wtf_size_t best_prev_index = 0;
@@ -289,7 +286,7 @@ void NGScoreLineBreaker::ComputeScores(const NGLineBreakCandidates& candidates,
     // `start` iterates through candidates for the beginning of the line, to
     // determine the best score for the `end`.
     for (wtf_size_t start = active; start < end; ++start) {
-      const NGLineBreakScore& start_score = scores[start];
+      const LineBreakScore& start_score = scores[start];
       const wtf_size_t line_index = start_score.line_index;
       if (line_index != last_line_index) {
         last_line_index = line_index;
@@ -304,7 +301,7 @@ void NGScoreLineBreaker::ComputeScores(const NGLineBreakCandidates& candidates,
       if (start_score_value + best_hope >= best) {
         continue;
       }
-      const NGLineBreakCandidate& start_candidate = candidates[start];
+      const LineBreakCandidate& start_candidate = candidates[start];
       const float delta = start_candidate.pos_no_break - start_edge;
 
       // Compute width score for line.
@@ -340,16 +337,15 @@ void NGScoreLineBreaker::ComputeScores(const NGLineBreakCandidates& candidates,
       }
     }
 
-    scores.push_back(NGLineBreakScore{
+    scores.push_back(LineBreakScore{
         best + end_candidate.penalty + line_penalty_, best_prev_index,
         scores[best_prev_index].line_index + 1});
   }
 }
 
-void NGScoreLineBreaker::ComputeBreakPoints(
-    const NGLineBreakCandidates& candidates,
-    const NGLineBreakScores& scores,
-    NGLineBreakPoints& break_points) {
+void ScoreLineBreaker::ComputeBreakPoints(const LineBreakCandidates& candidates,
+                                          const LineBreakScores& scores,
+                                          LineBreakPoints& break_points) {
   DCHECK_GE(candidates.size(), 3u);
   DCHECK_EQ(candidates.size(), scores.size());
   DCHECK(break_points.empty());
@@ -357,10 +353,10 @@ void NGScoreLineBreaker::ComputeBreakPoints(
 
   for (wtf_size_t i = scores.size() - 1, prev_index; i > 0; i = prev_index) {
     prev_index = scores[i].prev_index;
-    const NGLineBreakCandidate& candidate = candidates[i];
+    const LineBreakCandidate& candidate = candidates[i];
     break_points.push_back(candidate);
 #if EXPENSIVE_DCHECKS_ARE_ON()
-    const NGLineBreakCandidate& prev_candidate = candidates[prev_index];
+    const LineBreakCandidate& prev_candidate = candidates[prev_index];
     const LayoutUnit line_width = LayoutUnit::FromFloatCeil(
         candidate.pos_if_break - prev_candidate.pos_no_break);
     DCHECK_GE(line_width, 0);

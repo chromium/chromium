@@ -17,6 +17,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/ui_base_features.h"
 
 class TabMenuModelTest : public MenuModelTest,
                          public BrowserWithTestWindowTest {
@@ -36,6 +37,19 @@ TEST_F(TabMenuModelTest, Basics) {
   EXPECT_GT(item_count, 0);
   EXPECT_EQ(item_count, delegate_.execute_count_);
   EXPECT_EQ(item_count, delegate_.enable_count_);
+}
+
+TEST_F(TabMenuModelTest, OrganizeTabs) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kTabOrganization, features::kChromeRefresh2023}, {});
+  chrome::NewTab(browser());
+  TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
+                     browser()->tab_strip_model(), 0);
+
+  // Verify that CommandOrganizeTabs is in the menu.
+  EXPECT_TRUE(model.GetIndexOfCommandId(TabStripModel::CommandOrganizeTabs)
+                  .has_value());
 }
 
 TEST_F(TabMenuModelTest, MoveToNewWindow) {

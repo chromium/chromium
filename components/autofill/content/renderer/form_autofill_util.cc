@@ -1684,7 +1684,7 @@ bool ScriptModifiedUsernameAcceptable(
 
   // If the page-generated value comes from user typed or autofilled values in
   // other fields, that's also likely OK.
-  return field_data_manager->FindMachedValue(value);
+  return field_data_manager->FindMatchedValue(value);
 }
 
 // Build a map from entries in |form_control_renderer_ids| to their indices,

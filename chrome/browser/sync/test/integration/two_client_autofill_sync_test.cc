@@ -12,6 +12,8 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/profile_token_quality.h"
+#include "components/autofill/core/browser/profile_token_quality_test_api.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
@@ -481,6 +483,54 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest,
   EXPECT_TRUE(AutofillProfileChecker(
                   0, 1, /*expected_count=*/init_autofill_profiles_count + 1)
                   .Wait());
+}
+
+class TwoClientProfileTokenQualityAutofillProfileSyncTest : public SyncTest {
+ public:
+  TwoClientProfileTokenQualityAutofillProfileSyncTest()
+      : SyncTest(TWO_CLIENT) {}
+
+ private:
+  base::test::ScopedFeatureList feature_{
+      autofill::features::kAutofillTrackProfileTokenQuality};
+};
+
+// ProfileTokenQuality observations are not synced. This test ensures that for
+// incoming updates through sync, local observations are reset only when the
+// value of the corresponding token has changed.
+IN_PROC_BROWSER_TEST_F(TwoClientProfileTokenQualityAutofillProfileSyncTest,
+                       ProfileTokenQuality) {
+  ASSERT_TRUE(SetupSync());
+
+  // Create a profile with observations on client 0 and sync it to client 1.
+  autofill::AutofillProfile profile = autofill::test::GetFullProfile();
+  autofill::test_api(profile.token_quality())
+      .AddObservation(
+          autofill::NAME_FIRST,
+          autofill::ProfileTokenQuality::ObservationType::kAccepted);
+  autofill::test_api(profile.token_quality())
+      .AddObservation(
+          autofill::NAME_LAST,
+          autofill::ProfileTokenQuality::ObservationType::kEditedFallback);
+  autofill_helper::AddProfile(0, profile);
+  ASSERT_TRUE(AutofillProfileChecker(0, 1, /*expected_count=*/1u).Wait());
+
+  // Modify the NAME_FIRST on client 1, triggering a resync to client 0.
+  autofill_helper::UpdateProfile(
+      1, profile.guid(), autofill::AutofillType(autofill::NAME_FIRST),
+      u"new " + profile.GetRawInfo(autofill::NAME_FIRST));
+  ASSERT_TRUE(AutofillProfileChecker(0, 1, /*expected_count=*/1u).Wait());
+
+  // Expect that only the observations for NAME_FIRST were reset on client 0.
+  const autofill::ProfileTokenQuality& token_quality =
+      GetPersonalDataManager(0)->GetProfiles()[0]->token_quality();
+  EXPECT_TRUE(
+      token_quality.GetObservationTypesForFieldType(autofill::NAME_FIRST)
+          .empty());
+  EXPECT_THAT(
+      token_quality.GetObservationTypesForFieldType(autofill::NAME_LAST),
+      testing::UnorderedElementsAre(
+          autofill::ProfileTokenQuality::ObservationType::kEditedFallback));
 }
 
 }  // namespace

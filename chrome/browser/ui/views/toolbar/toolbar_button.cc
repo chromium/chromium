@@ -93,7 +93,8 @@ ToolbarButton::ToolbarButton(PressedCallback callback,
   // allocate the property once and modify the value.
   SetProperty(views::kInternalPaddingKey, gfx::Insets());
 
-  if (features::IsChromeRefresh2023()) {
+  if (features::IsChromeRefresh2023() &&
+      base::FeatureList::IsEnabled(features::kChromeRefresh2023TopChromeFont)) {
     label()->SetTextStyle(views::style::STYLE_BODY_4_EMPHASIS);
   }
 

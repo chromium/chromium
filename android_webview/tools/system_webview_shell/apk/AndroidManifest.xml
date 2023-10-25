@@ -159,6 +159,13 @@
         <property android:name="android.adservices.AD_SERVICES_CONFIG"
             android:resource="@xml/ad_services_config" />
 
+        <service android:name="android.webkit.MetaDataHolderService"
+                 android:enabled="false"
+                 android:exported="false">
+            <meta-data android:name="android.webkit.WebView.MultiProfileNameTagKey"
+                android:resource="@id/multi_profile_name_tag_key" />
+        </service>
+
         <uses-library android:name="android.test.runner" />
     </application>
 </manifest>

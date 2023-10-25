@@ -175,6 +175,12 @@ class InterestGroupAuctionReporterTest
 
   ~InterestGroupAuctionReporterTest() override = default;
 
+  void SetUp() override {
+    RenderViewHostTestHarness::SetUp();
+    auction_worklet_manager_ = std::make_unique<AuctionWorkletManager>(
+        &auction_process_manager_, kTopFrameOrigin, kFrameOrigin, this);
+  }
+
   void TearDown() override {
     // All private aggregation requests should have been accounted for.
     EXPECT_THAT(private_aggregation_manager_.TakePrivateAggregationRequests(),
@@ -195,6 +201,7 @@ class InterestGroupAuctionReporterTest
     interest_group_manager_impl_->ExpectReports({});
 
     interest_group_manager_impl_.reset();
+    auction_worklet_manager_.reset();
 
     RenderViewHostTestHarness::TearDown();
   }
@@ -228,7 +235,7 @@ class InterestGroupAuctionReporterTest
   void SetUpReporterAndStart() {
     interest_group_auction_reporter_ =
         std::make_unique<InterestGroupAuctionReporter>(
-            interest_group_manager_impl_.get(), &auction_worklet_manager_,
+            interest_group_manager_impl_.get(), auction_worklet_manager_.get(),
             /*browser_context=*/browser_context(),
             &private_aggregation_manager_,
             private_aggregation_manager_
@@ -628,8 +635,7 @@ class InterestGroupAuctionReporterTest
               nullptr);
 
   MockAuctionProcessManager auction_process_manager_;
-  AuctionWorkletManager auction_worklet_manager_{
-      &auction_process_manager_, kTopFrameOrigin, kFrameOrigin, this};
+  std::unique_ptr<AuctionWorkletManager> auction_worklet_manager_;
 
   std::unique_ptr<blink::AuctionConfig> auction_config_ =
       std::make_unique<blink::AuctionConfig>();

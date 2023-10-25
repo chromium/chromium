@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Note: The following chrome://interstitials/ URLs do not actually exist at
-// runtime. They are handled in
+// Note: The following chrome:// URLs are not actually fetched at runtime. They
+// are handled in
 // components/security_interstitials/core/browser/resources:bundle_js, which
 // finds the correct files and inlines them.
 import {HIDDEN_CLASS, preventDefaultOnPoundLinkClicks, SecurityInterstitialCommandId, sendCommand} from 'chrome://interstitials/common/resources/interstitial_common.js';
 import {mobileNav} from 'chrome://interstitials/common/resources/interstitial_mobile_nav.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {setupEnhancedProtectionMessage} from './enhanced_protection_message.js';
 import {setupExtendedReportingCheckbox} from './extended_reporting.js';
@@ -60,6 +61,9 @@ function handleKeypress(e) {
 }
 
 function setupEvents() {
+  // `loadTimeDataRaw` is injected to the `window` scope from C++.
+  loadTimeData.data = window.loadTimeDataRaw;
+
   const overridable = loadTimeData.getBoolean('overridable');
   const interstitialType = loadTimeData.getString('type');
   const ssl = interstitialType === 'SSL';

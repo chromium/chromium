@@ -26,6 +26,14 @@ class FieldFiller {
               AddressNormalizer* address_normalizer);
   ~FieldFiller();
 
+  // Returns the appropriate `profile` value based on `field_type` to fill
+  // into `field_data`.
+  static std::u16string GetValueForProfile(const AutofillProfile& profile,
+                                           const std::string& app_locale,
+                                           const AutofillType& field_type,
+                                           FormFieldData* field_data,
+                                           std::string* failure_to_fill);
+
   // Based on |field.Type()|, returns value that is supposed to be filled in the
   // |field_data|.
   std::u16string GetValueForFilling(

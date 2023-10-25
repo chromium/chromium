@@ -40,7 +40,7 @@ export function testEveryRootTypeHasAVolumeType() {
 
     // The "Recent" view and "Google Drive" parent entry are not handled in the
     // switch because they do not have a corresponding volume.
-    // TODO(tapted): Validate this against util.isFakeEntry(..) when
+    // TODO(tapted): Validate this against isFakeEntry(..) when
     // files_app_entry_types is moved to file_manager/base.
     if (rootType.startsWith('DEPRECATED_') ||
         rootType === VolumeManagerCommon.RootType.RECENT ||

@@ -9,15 +9,24 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
@@ -58,6 +67,11 @@ TabSearchBubbleHost::TabSearchBubbleHost(views::Button* button,
         base::UmaHistogramMediumTimes("Tabs.TabSearch.WindowDisplayedDuration3",
                                       time_elapsed);
       })) {
+  if (features::IsTabOrganization()) {
+    auto* const tab_organization_service =
+        TabOrganizationServiceFactory::GetForProfile(profile);
+    tab_organization_service->AddObserver(this);
+  }
   auto menu_button_controller = std::make_unique<views::MenuButtonController>(
       button,
       base::BindRepeating(&TabSearchBubbleHost::ButtonPressed,
@@ -67,7 +81,13 @@ TabSearchBubbleHost::TabSearchBubbleHost(views::Button* button,
   button->SetButtonController(std::move(menu_button_controller));
 }
 
-TabSearchBubbleHost::~TabSearchBubbleHost() = default;
+TabSearchBubbleHost::~TabSearchBubbleHost() {
+  if (features::IsTabOrganization()) {
+    auto* const tab_organization_service =
+        TabOrganizationServiceFactory::GetForProfile(profile_);
+    tab_organization_service->RemoveObserver(this);
+  }
+}
 
 void TabSearchBubbleHost::OnWidgetVisibilityChanged(views::Widget* widget,
                                                     bool visible) {
@@ -97,6 +117,13 @@ void TabSearchBubbleHost::OnWidgetDestroying(views::Widget* widget) {
       webui_bubble_manager_.GetBubbleWidget()));
   bubble_widget_observation_.Reset();
   pressed_lock_.reset();
+}
+
+void TabSearchBubbleHost::OnStartRequest(const Browser* browser) {
+  if (browser == GetBrowser()) {
+    profile_->GetPrefs()->SetInteger(tab_search_prefs::kTabSearchTabIndex, 1);
+    ShowTabSearchBubble(false);
+  }
 }
 
 bool TabSearchBubbleHost::ShowTabSearchBubble(
@@ -157,6 +184,16 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
 
 void TabSearchBubbleHost::CloseTabSearchBubble() {
   webui_bubble_manager_.CloseBubble();
+}
+
+const Browser* TabSearchBubbleHost::GetBrowser() const {
+  for (const Browser* browser : chrome::FindAllBrowsersWithProfile(profile_)) {
+    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+    if (browser_view->GetTabSearchBubbleHost() == this) {
+      return browser;
+    }
+  }
+  return nullptr;
 }
 
 void TabSearchBubbleHost::ButtonPressed(const ui::Event& event) {

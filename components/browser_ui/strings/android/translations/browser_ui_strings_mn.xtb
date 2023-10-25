@@ -169,6 +169,7 @@
 <translation id="3918378745482005425">Зарим онцлог ажиллахгүй байж магадгүй. Холбоотой сайтууд гуравдагч талын күүки ашиглах боломжтой хэвээр байна.</translation>
 <translation id="3955193568934677022">Сайтад хамгаалсан агуулгыг тоглохыг зөвшөөрөх (санал болгосон)</translation>
 <translation id="3967822245660637423">Татаж авч дууслаа</translation>
+<translation id="3974105241379491420">Сайтууд таны талаар хадгалсан мэдээллээ ашиглахыг хүсэх боломжтой</translation>
 <translation id="3987993985790029246">Холбоосыг хуулах</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992684624889376114">Энэ хуудасны тухай</translation>
@@ -243,6 +244,7 @@
 <translation id="5335288049665977812">Сайтад JavaScript-г ажиллуулахыг зөвшөөрөх (санал болгосон)</translation>
 <translation id="534295439873310000">NFC төхөөрөмжүүд</translation>
 <translation id="5344522958567249764">Зарын нууцлалыг удирдах</translation>
+<translation id="5389626883706033615">Сайтуудыг танаас таны талаар хадгалсан мэдээллээ ашиглахыг хүсэхийг блоклосон</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(бусад + 1)}other{(бусад + #)}}</translation>
 <translation id="5403592356182871684">Нэр</translation>
 <translation id="5438097262470833822">Энэ сонголт <ph name="WEBSITE" />-н зөвшөөрлийг шинэчилнэ</translation>

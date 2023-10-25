@@ -184,13 +184,14 @@ const ExclusionArea* CreateExclusionSpaceForInitialLetterBox(
 }  // namespace
 
 FontHeight AdjustInitialLetterInTextPosition(const FontHeight& line_box_metrics,
-                                             NGLogicalLineItems* line_box) {
+                                             LogicalLineItems* line_box) {
   FontHeight font_height = FontHeight::Empty();
-  for (NGLogicalLineItem& line_item : *line_box) {
+  for (LogicalLineItem& line_item : *line_box) {
     const ShapeResultView* const shape_result = line_item.shape_result.get();
     if (!shape_result || !line_item.inline_item ||
-        line_item.inline_item->Type() != NGInlineItem::kText)
+        line_item.inline_item->Type() != InlineItem::kText) {
       continue;
+    }
 
     LayoutUnit baseline;
     const ComputedStyle& style = *line_item.Style();
@@ -220,11 +221,11 @@ FontHeight AdjustInitialLetterInTextPosition(const FontHeight& line_box_metrics,
   return font_height;
 }
 
-LayoutUnit CalculateInitialLetterBoxInlineSize(const NGLineInfo& line_info) {
+LayoutUnit CalculateInitialLetterBoxInlineSize(const LineInfo& line_info) {
   LayoutUnit inline_size = line_info.TextIndent();
-  for (const NGInlineItemResult& item_result : line_info.Results()) {
+  for (const InlineItemResult& item_result : line_info.Results()) {
     const ShapeResultView* const shape_result = item_result.shape_result.get();
-    if (!shape_result || item_result.item->Type() != NGInlineItem::kText) {
+    if (!shape_result || item_result.item->Type() != InlineItem::kText) {
       inline_size += item_result.inline_size;
       continue;
     }
@@ -247,10 +248,10 @@ LayoutUnit CalculateInitialLetterBoxInlineSize(const NGLineInfo& line_info) {
 const ExclusionArea* PostPlaceInitialLetterBox(
     const FontHeight& line_box_metrics,
     const BoxStrut& initial_letter_box_margins,
-    NGLogicalLineItems* line_box,
+    LogicalLineItems* line_box,
     const BfcOffset& line_origin,
-    NGLineInfo* line_info) {
-  NGLogicalLineItem* const initial_letter_line_item = std::find_if(
+    LineInfo* line_info) {
+  LogicalLineItem* const initial_letter_line_item = std::find_if(
       line_box->begin(), line_box->end(),
       [](const auto& line_item) { return line_item.IsInitialLetterBox(); });
 

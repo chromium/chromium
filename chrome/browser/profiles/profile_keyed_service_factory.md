@@ -8,7 +8,8 @@ more efficiently and with more control for each profile types.
 
 ## Purpose and implementation decisions
 
-[go/profile-keyed-services](go/profile-keyed-services) (Google Internal)
+[go/profile-keyed-services](https://goto.google.com/profile-keyed-services)
+(Google Internal)
 
 ## Description
 

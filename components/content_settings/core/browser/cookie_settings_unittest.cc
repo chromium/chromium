@@ -1560,7 +1560,6 @@ TEST_P(CookieSettingsTest, GetCookieSetting3pcdMetadataGrants) {
 TEST_P(CookieSettingsTest, GetCookieSetting3pcdHeuristicsGrants) {
   const GURL first_party_url(kFirstPartySite);
   const GURL third_party_url(kAllowedSite);
-  const GURL third_url(kBlockedSite);
   const base::TimeDelta expiration = base::Seconds(5);
 
   base::HistogramTester histogram_tester;
@@ -1595,6 +1594,58 @@ TEST_P(CookieSettingsTest, GetCookieSetting3pcdHeuristicsGrants) {
   FastForwardTime(expiration + base::Seconds(1));
 
   // Expect that cookies are blocked again after the grant expires.
+  EXPECT_EQ(
+      cookie_settings_->GetCookieSetting(third_party_url, first_party_url,
+                                         GetCookieSettingOverrides(), nullptr),
+      CONTENT_SETTING_BLOCK);
+}
+
+TEST_P(CookieSettingsTest, SetTemporaryCookieGrantForHeuristicOverrides) {
+  const GURL first_party_url(kFirstPartySite);
+  const GURL third_party_url(kAllowedSite);
+  const base::TimeDelta expiration_short = base::Seconds(5);
+  const base::TimeDelta expiration_long = base::Seconds(60);
+
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kBlockThirdParty));
+  prefs_.SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
+
+  // Expect that cookies are blocked before setting the temporary grant.
+  EXPECT_EQ(
+      cookie_settings_->GetCookieSetting(third_party_url, first_party_url,
+                                         GetCookieSettingOverrides(), nullptr),
+      CONTENT_SETTING_BLOCK);
+
+  // Create a grant and verify that cookies are now allowed.
+  cookie_settings_->SetTemporaryCookieGrantForHeuristic(
+      third_party_url, first_party_url, expiration_short);
+  EXPECT_EQ(
+      cookie_settings_->GetCookieSetting(third_party_url, first_party_url,
+                                         GetCookieSettingOverrides(), nullptr),
+      CONTENT_SETTING_ALLOW);
+
+  // Create a longer grant and verify that this extends the TTL of the first
+  // grant.
+  cookie_settings_->SetTemporaryCookieGrantForHeuristic(
+      third_party_url, first_party_url, expiration_long);
+  FastForwardTime(expiration_short + base::Seconds(1));
+  EXPECT_EQ(
+      cookie_settings_->GetCookieSetting(third_party_url, first_party_url,
+                                         GetCookieSettingOverrides(), nullptr),
+      CONTENT_SETTING_ALLOW);
+
+  // Create a shorter grant and verify that this does NOT shorten the TTL of the
+  // longer grant.
+  cookie_settings_->SetTemporaryCookieGrantForHeuristic(
+      third_party_url, first_party_url, expiration_short);
+  FastForwardTime(expiration_short + base::Seconds(1));
+  EXPECT_EQ(
+      cookie_settings_->GetCookieSetting(third_party_url, first_party_url,
+                                         GetCookieSettingOverrides(), nullptr),
+      CONTENT_SETTING_ALLOW);
+
+  // Expect that cookies are blocked again after the longer grant expires.
+  FastForwardTime(expiration_long + base::Seconds(1));
   EXPECT_EQ(
       cookie_settings_->GetCookieSetting(third_party_url, first_party_url,
                                          GetCookieSettingOverrides(), nullptr),

@@ -55,23 +55,6 @@ bool AndroidAutofillManager::ShouldClearPreviewedForm() {
   return false;
 }
 
-void AndroidAutofillManager::FillCreditCardFormImpl(
-    const FormData& form,
-    const FormFieldData& field,
-    const CreditCard& credit_card,
-    const std::u16string& cvc,
-    const AutofillTriggerDetails& trigger_details) {
-  NOTREACHED();
-}
-
-void AndroidAutofillManager::FillProfileFormImpl(
-    const FormData& form,
-    const FormFieldData& field,
-    const autofill::AutofillProfile& profile,
-    const AutofillTriggerDetails& trigger_details) {
-  NOTREACHED();
-}
-
 void AndroidAutofillManager::OnFormSubmittedImpl(
     const FormData& form,
     bool known_success,

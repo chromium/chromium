@@ -92,7 +92,6 @@
 <translation id="1643449475550628585">Modifier le fond d'écran tous les jours</translation>
 <translation id="1644574205037202324">Historique</translation>
 <translation id="1651925268237749928">Vous avez sélectionné un album partagé. D'autres personnes peuvent ajouter ou modifier des photos. Votre fond d'écran peut utiliser des photos qui ne figurent pas dans cet album à l'heure actuelle.</translation>
-<translation id="1658834457013045127">Indéfiniment</translation>
 <translation id="1661865805917886535">Certains renseignements sur le compte et le système peuvent être envoyés à Google. Nous utilisons ces renseignements pour résoudre des problèmes techniques et améliorer nos services, sous réserve de notre politique de confidentialité (<ph name="PRIVACYPOLICYURL" />) et de nos conditions d'utilisation (<ph name="TERMSOFSERVICEURL" />). Pour demander des modifications de contenu, accédez à l'aide juridique (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Tâchez arrêtée : à court d'encre</translation>
 <translation id="1664796644829245314">Aperçu de <ph name="PREVIEW_OBJECT" /></translation>
@@ -120,6 +119,7 @@
 <translation id="1768959921651994223">Type d'authentification</translation>
 <translation id="1776228893584526149">Ton de fond d'écran</translation>
 <translation id="1782199038061388045">traduction</translation>
+<translation id="1788485524395674731">Cette application est gérée par votre administrateur</translation>
 <translation id="1792647875738159689">Annulation de la numérisation en cours…</translation>
 <translation id="1801418420130173017">Désactiver le thème sombre</translation>
 <translation id="1807246157184219062">Clair</translation>
@@ -321,7 +321,6 @@
 <translation id="3484914941826596830">Pendant la mise à jour du micrologiciel, ne débranchez pas cet appareil externe et n'éteignez pas votre ordinateur. Vous pouvez réduire cette fenêtre. Cette mise à jour peut prendre quelques minutes, et votre appareil externe peut ne pas fonctionner pendant ce temps.</translation>
 <translation id="3486220673238053218">définition</translation>
 <translation id="3488065109653206955">Partiellement activé</translation>
-<translation id="349491921221892984"><ph name="MINUTES" /> min</translation>
 <translation id="3502426834823382181">afficher toutes les applications</translation>
 <translation id="3510890413042482857">Envoyer des <ph name="BEGIN_LINK1" />données de suivi des performances<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Mise à jour Chrome OS</translation>
@@ -482,7 +481,6 @@
 <translation id="473775607612524610">Mise à jour</translation>
 <translation id="4771607256327216405">augmenter la luminosité du clavier</translation>
 <translation id="4773299976671772492">Arrêté</translation>
-<translation id="4782003517030001304">1 h</translation>
 <translation id="4782311465517282004">Obtenez des définitions, des traductions ou des conversions d'unités lorsque vous faites un clic droit ou que vous maintenez le doigt sur le texte</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> photo</translation>
 <translation id="4793710386569335688">Pour obtenir de l'aide supplémentaire, accédez au <ph name="BEGIN_LINK" />centre d'aide<ph name="END_LINK" />.</translation>
@@ -633,6 +631,7 @@
 <translation id="584953448295717128">Le nom de point d'accès (APN) est automatiquement détecté.</translation>
 <translation id="5849570051105887917">Code de propriétaire</translation>
 <translation id="5859603669299126575">Album de galerie d'art</translation>
+<translation id="5859969039821714932">Raccourci non accessible. Appuyez sur un nouveau raccourci sans <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Désactivé</translation>
 <translation id="5860491529813859533">Activer</translation>
 <translation id="5876385649737594562">Activez pour sélectionner les options</translation>
@@ -696,6 +695,7 @@
 <translation id="629550705077076970">assombrissement du clavier</translation>
 <translation id="6302401976930124515">Le test <ph name="TEST_NAME" /> a été annulé</translation>
 <translation id="631063167932043783">Application Explorer</translation>
+<translation id="6318437367327684789">indéfiniment</translation>
 <translation id="6319207335391420837">Mettre à jour le micrologiciel de <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Activer l'écran de veille</translation>
 <translation id="6324916366299863871">Modifier un raccourci</translation>

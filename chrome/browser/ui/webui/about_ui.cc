@@ -791,7 +791,7 @@ bool AboutUI::OverrideHandleWebUIMessage(const GURL& source_url,
     return false;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  lacros_url_handling::NavigateInAsh(GURL(chrome::kOsUIAboutURL));
+  lacros_url_handling::NavigateInAsh(GURL(chrome::kChromeUIAboutURL));
 #else
   // Note: This will only be called by the UI when Lacros is available.
   DCHECK(crosapi::BrowserManager::Get());

@@ -18,9 +18,9 @@ struct SvgTextContentRange {
 
   void Trace(Visitor* visitor) const { visitor->Trace(layout_object); }
 
-  // This must be a LayoutSVGTextPath for |SVGInlineNodeData::
+  // This must be a LayoutSVGTextPath for |SvgInlineNodeData::
   // text_path_range_list|, and must be a LayoutObject for SVGTextContentElement
-  // for SVGInlineNodeData::text_length_range_list
+  // for SvgInlineNodeData::text_length_range_list
   Member<const LayoutObject> layout_object;
   unsigned start_index;
   unsigned end_index;
@@ -35,7 +35,7 @@ namespace blink {
 using SvgTextChunkOffsets =
     HeapHashMap<Member<const LayoutText>, Vector<unsigned>>;
 
-// SVG-specific data stored in NGInlineNodeData.
+// SVG-specific data stored in InlineNodeData.
 struct SvgInlineNodeData final : public GarbageCollected<SvgInlineNodeData> {
   void Trace(Visitor* visitor) const {
     visitor->Trace(text_length_range_list);

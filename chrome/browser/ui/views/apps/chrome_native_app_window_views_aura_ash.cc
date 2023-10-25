@@ -43,6 +43,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -63,7 +64,7 @@ class ChromeAppNonClientFrameView : public ash::NonClientFrameViewAsh {
   ChromeAppNonClientFrameView& operator=(const ChromeAppNonClientFrameView&) =
       delete;
 
-  ~ChromeAppNonClientFrameView() override = default;
+  ~ChromeAppNonClientFrameView() override { app_window_ = nullptr; }
 
   // views::NonClientFrameView
   void UpdateWindowRoundedCorners() override {
@@ -77,6 +78,51 @@ class ChromeAppNonClientFrameView : public ash::NonClientFrameViewAsh {
 
     app_window_->web_view()->holder()->SetCornerRadii(
         gfx::RoundedCornersF(0, 0, corner_radius, corner_radius));
+  }
+
+ private:
+  raw_ptr<ChromeNativeAppWindowViewsAuraAsh, DisableDanglingPtrDetection>
+      app_window_;
+};
+
+class AppWindowFrameViewAsh : public apps::AppWindowFrameView {
+ public:
+  AppWindowFrameViewAsh(views::Widget* widget,
+                        ChromeNativeAppWindowViewsAuraAsh* app_window,
+                        bool draw_frame,
+                        const SkColor& active_frame_color,
+                        const SkColor& inactive_frame_color)
+      : apps::AppWindowFrameView(widget,
+                                 app_window,
+                                 draw_frame,
+                                 active_frame_color,
+                                 inactive_frame_color),
+        app_window_(app_window) {}
+
+  AppWindowFrameViewAsh(const AppWindowFrameViewAsh&) = delete;
+  AppWindowFrameViewAsh& operator=(const AppWindowFrameViewAsh&) = delete;
+
+  ~AppWindowFrameViewAsh() override { app_window_ = nullptr; }
+
+  // views::NonClientFrameView
+  void UpdateWindowRoundedCorners() override {
+    if (!GetWidget() || !chromeos::features::IsRoundedWindowsEnabled()) {
+      return;
+    }
+
+    const int corner_radius =
+        chromeos::GetFrameCornerRadius(GetWidget()->GetNativeWindow());
+
+    // If the frame is not drawn, then round all four corners of web contents to
+    // achieve a rounded window. Otherwise, round the two corners of the frame
+    // and the bottom two corners of the web content.
+    if (draw_frame()) {
+      SetFrameCornerRadius(corner_radius);
+    }
+
+    app_window_->web_view()->holder()->SetCornerRadii(gfx::RoundedCornersF(
+        draw_frame() ? 0 : corner_radius, draw_frame() ? 0 : corner_radius,
+        corner_radius, corner_radius));
   }
 
  private:
@@ -168,7 +214,7 @@ void ChromeNativeAppWindowViewsAuraAsh::OnBeforeWidgetInit(
 
 std::unique_ptr<views::NonClientFrameView>
 ChromeNativeAppWindowViewsAuraAsh::CreateNonStandardAppFrame() {
-  auto frame = std::make_unique<apps::AppWindowFrameView>(
+  auto frame = std::make_unique<AppWindowFrameViewAsh>(
       widget(), this, HasFrameColor(), ActiveFrameColor(),
       InactiveFrameColor());
   frame->Init();

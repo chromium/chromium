@@ -10,5 +10,4 @@ include_rules = [
     "+third_party/blink/renderer/platform/json",
     "+third_party/blink/renderer/platform/platform_export.h",
     "+third_party/blink/renderer/platform/wtf",
-    "+ui/gfx/geometry",
 ]

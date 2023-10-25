@@ -548,7 +548,10 @@ if (is_win || is_linux || is_mac) {
       "//build/win:default_exe_manifest",
       "//components/sync/protocol:protocol",
       "//device/fido",
-      "//net",
+      "//mojo/public/cpp/bindings",
+      "//services/cert_verifier:lib",
+      "//services/network:network_service",
+      "//services/network/public/cpp",
     ]
   }
 }

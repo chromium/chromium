@@ -423,9 +423,9 @@ TEST(BlinkColor, toSkColor4fValidation) {
       {Color::ColorSpace::kXYZD50, 1.0f, 0.7f, 0.2f},
       {Color::ColorSpace::kXYZD65, 1.0f, 0.7f, 0.2f},
       {Color::ColorSpace::kLab, 87.82f, -79.3f, 80.99f},
-      {Color::ColorSpace::kOklab, 0.421f, 0.165f, -0.1f},
+      {Color::ColorSpace::kOklab, 42.1f, 0.165f, -0.1f},
       {Color::ColorSpace::kLch, 29.69f, 56.11f, 327.1f},
-      {Color::ColorSpace::kOklch, 0.628f, 0.225f, 0.126f},
+      {Color::ColorSpace::kOklch, 62.8f, 0.225f, 0.126f},
       {Color::ColorSpace::kSRGBLegacy, 0.7f, 0.5f, 0.0f},
       {Color::ColorSpace::kHSL, 4.0f, 0.5f, 0.0f},
       {Color::ColorSpace::kHWB, 4.0f, 0.5f, 0.0f}};

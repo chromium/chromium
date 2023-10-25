@@ -283,8 +283,8 @@ std::unique_ptr<views::View> SaveIbanBubbleView::CreateLegalMessageView() {
           DISTANCE_RELATED_CONTROL_VERTICAL_SMALL));
 
   legal_message_view->AddChildView(std::make_unique<LegalMessageView>(
-      message_lines, /*user_email=*/absl::nullopt,
-      /*user_avatar=*/absl::nullopt,
+      message_lines, base::UTF8ToUTF16(controller()->GetAccountInfo().email),
+      GetProfileAvatar(controller()->GetAccountInfo()),
       base::BindRepeating(&SaveIbanBubbleView::LinkClicked,
                           base::Unretained(this))));
 

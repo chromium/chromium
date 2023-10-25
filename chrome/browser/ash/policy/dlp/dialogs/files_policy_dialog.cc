@@ -173,7 +173,7 @@ FilesPolicyDialog::FilesPolicyDialog(size_t file_count,
 FilesPolicyDialog::~FilesPolicyDialog() = default;
 
 views::Widget* FilesPolicyDialog::CreateWarnDialog(
-    OnDlpRestrictionCheckedWithJustificationCallback callback,
+    WarningWithJustificationCallback callback,
     dlp::FileAction action,
     gfx::NativeWindow modal_parent,
     Info dialog_info,

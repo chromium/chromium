@@ -5,7 +5,7 @@
 [
     Exposed=Window,
     RuntimeEnabled=CSSScope
-] interface CSSScopeRule : CSSConditionRule {
+] interface CSSScopeRule : CSSGroupingRule {
     readonly attribute CSSOMString? start;
     readonly attribute CSSOMString? end;
 };

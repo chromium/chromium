@@ -208,6 +208,9 @@ CHAR_LIMIT guidelines:
       <message name="IDS_COOKIE_CONTROLS_IPH_MESSAGE" desc="In-context Product Help - Appears right under the page info icon to highlight the Cookie Controls entrypoint.">
         Site not working? Third-party cookies are blocked
       </message>
+      <message name="IDS_COOKIE_CONTROLS_REMINDER_IPH_MESSAGE" desc="In-context Product Help - Appears right under the page info icon to highlight the Cookie Controls entrypoint. This message is a reminder.">
+        Site not working? Try temporarily allowing third-party cookies
+      </message>
 
       <!-- Main Preferences -->
       <message name="IDS_PREFS_SECTION_BASICS" desc='Title of "Basics" section of preferences. [CHAR_LIMIT=32]'>
@@ -597,6 +600,15 @@ CHAR_LIMIT guidelines:
       <!-- TODO(crbug.com/1425882): Use finalized string.-->
       <message translateable="false" name="IDS_AUTOFILL_OPTIONS_TITLE" desc="Description below switch toggling the use of third-party autofill in Chrome." formatter_data="android_java">
         Autofill Options
+      </message>
+      <message name="IDS_AUTOFILL_DELETE_SAVED_CVCS_CONFIRMATION_DIALOG_TITLE" desc="Title for the dialog where the user confirms their intention to delete the saved CVCs.">
+        Delete saved security codes?
+      </message>
+      <message name="IDS_AUTOFILL_DELETE_SAVED_CVCS_CONFIRMATION_DIALOG_MESSAGE" desc="Message for the dialog where the user confirms their intention to delete the saved CVCs.">
+        All security codes saved on your device and in your Google Account will be deleted
+      </message>
+      <message name="IDS_AUTOFILL_DELETE_SAVED_CVCS_CONFIRMATION_DIALOG_DELETE_BUTTON_LABEL" desc="Label shown on the button that the user clicks on to delete the saved CVCs.">
+        Delete
       </message>
 
        <!-- Payment Request section preview strings -->
@@ -5784,10 +5796,10 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Always use secure connections
       </message>
       <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_SUMMARY" desc="Secondary, continued explanation of HTTPS-First Mode in settings.">
-        Upgrade navigations to HTTPS and warn you before loading sites that don’t support it
+        Use HTTPS whenever possible and get warned before loading sites that don’t support it
       </message>
       <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_WITH_ADVANCED_PROTECTION_SUMMARY" desc="Secondary, continued explanation of HTTPS-Only Mode in Security settings when the user can't change the setting">
-        Upgrade navigations to HTTPS and warn you before loading sites that don’t support it. You can’t change this setting because you have Advanced Protection enabled.
+        Use HTTPS whenever possible and get warned before loading sites that don’t support it. You can’t change this setting because you have Advanced Protection enabled.
       </message>
 
       <!-- Auto-darken web content -->

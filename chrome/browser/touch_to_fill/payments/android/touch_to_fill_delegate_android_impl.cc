@@ -25,6 +25,20 @@
 
 namespace autofill {
 
+namespace {
+
+// Checks if the field is focusable and empty.
+bool IsFieldFocusableAndEmpty(const FormData& received_form,
+                              FieldGlobalId field_id) {
+  // form_field->value extracted from FormData represents field's *current*
+  // value, not the original value.
+  const FormFieldData* form_field = received_form.FindFieldByGlobalId(field_id);
+  return form_field && form_field->IsFocusable() &&
+         SanitizedFieldIsEmpty(form_field->value);
+}
+
+}  // namespace
+
 TouchToFillDelegateAndroidImpl::DryRunResult::DryRunResult(
     TriggerOutcome outcome,
     std::vector<CreditCard> cards_to_suggest)
@@ -51,10 +65,11 @@ TouchToFillDelegateAndroidImpl::~TouchToFillDelegateAndroidImpl() {
   HideTouchToFill();
 }
 
+// TODO(crbug.com/1485693): Remove received FormData
 TouchToFillDelegateAndroidImpl::DryRunResult
 TouchToFillDelegateAndroidImpl::DryRun(FormGlobalId form_id,
                                        FieldGlobalId field_id,
-                                       const FormData* optional_received_form) {
+                                       const FormData& received_form) {
   // Trigger only on supported platforms.
   if (!manager_->client().IsTouchToFillCreditCardSupported()) {
     return {TriggerOutcome::kUnsupportedFieldType, {}};
@@ -77,8 +92,7 @@ TouchToFillDelegateAndroidImpl::DryRun(FormGlobalId form_id,
   if (!FormHasAllCreditCardFields(*form)) {
     return {TriggerOutcome::kIncompleteForm, {}};
   }
-  if (optional_received_form != nullptr &&
-      IsFormPrefilled(*optional_received_form)) {
+  if (IsFormPrefilled(received_form)) {
     return {TriggerOutcome::kFormAlreadyFilled, {}};
   }
   // Trigger only if not shown before.
@@ -90,9 +104,7 @@ TouchToFillDelegateAndroidImpl::DryRun(FormGlobalId form_id,
     return {TriggerOutcome::kFormOrClientNotSecure, {}};
   }
   // Trigger only on focusable empty field.
-  // TODO(crbug.com/1331312): This should be the field's *current* value, not
-  // the original value.
-  if (!field->IsFocusable() || !SanitizedFieldIsEmpty(field->value)) {
+  if (!IsFieldFocusableAndEmpty(received_form, field_id)) {
     return {TriggerOutcome::kFieldNotEmptyOrNotFocusable, {}};
   }
   // Trigger only if Fast Checkout was not shown before.
@@ -131,11 +143,12 @@ TouchToFillDelegateAndroidImpl::DryRun(FormGlobalId form_id,
   return {TriggerOutcome::kShown, std::move(real_and_virtual_cards)};
 }
 
+// TODO(crbug.com/1485693): Remove received FormData
 bool TouchToFillDelegateAndroidImpl::IntendsToShowTouchToFill(
     FormGlobalId form_id,
-    FieldGlobalId field_id) {
-  // optional_received_form is not available to pass here.
-  TriggerOutcome outcome = DryRun(form_id, field_id).outcome;
+    FieldGlobalId field_id,
+    const FormData& form) {
+  TriggerOutcome outcome = DryRun(form_id, field_id, form).outcome;
   LOG_AF(manager_->client().GetLogManager())
       << LoggingScope::kTouchToFill << LogMessage::kTouchToFill
       << "dry run before parsing for form " << form_id << " and field "
@@ -152,7 +165,7 @@ bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
   // bottomsheet being open.
   query_form_ = form;
   query_field_ = field;
-  DryRunResult dry_run = DryRun(form.global_id(), field.global_id(), &form);
+  DryRunResult dry_run = DryRun(form.global_id(), field.global_id(), form);
   if (dry_run.outcome == TriggerOutcome::kShown &&
       !manager_->client().ShowTouchToFillCreditCard(
           GetWeakPtr(), std::move(dry_run.cards_to_suggest))) {
@@ -223,7 +236,7 @@ void TouchToFillDelegateAndroidImpl::ScanCreditCard() {
 void TouchToFillDelegateAndroidImpl::OnCreditCardScanned(
     const CreditCard& card) {
   HideTouchToFill();
-  manager_->FillCreditCardFormImpl(
+  manager_->FillCreditCardForm(
       query_form_, query_field_, card, std::u16string(),
       {.trigger_source = AutofillTriggerSource::kTouchToFillCreditCard});
 }

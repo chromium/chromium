@@ -16,7 +16,6 @@ import androidx.annotation.NonNull;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ChromeKeyboardVisibilityDelegate;
 import org.chromium.chrome.browser.ChromeWindow;
-import org.chromium.components.browser_ui.widget.InsetObserverView;
 
 import java.lang.ref.WeakReference;
 
@@ -97,19 +96,5 @@ public class FakeKeyboard extends ChromeKeyboardVisibilityDelegate {
     @Override
     public int calculateKeyboardHeight(View rootView) {
         return mIsShowing ? getStaticKeyboardHeight() : 0;
-    }
-
-    /**
-     * Creates an inset observer view calculating the bottom inset based on the fake keyboard.
-     * @param context Context used to instantiate this view.
-     * @return a {@link InsetObserverView}
-     */
-    InsetObserverView createInsetObserver(Context context) {
-        return new InsetObserverView(context) {
-            @Override
-            public int getSystemWindowInsetsBottom() {
-                return mIsShowing ? getStaticKeyboardHeight() : 0;
-            }
-        };
     }
 }

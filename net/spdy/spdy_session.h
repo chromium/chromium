@@ -1043,7 +1043,7 @@ class NET_EXPORT SpdySession
   PendingStreamRequestQueue pending_create_stream_queues_[NUM_PRIORITIES];
 
   // Map from stream id to all active streams.  Streams are active in the sense
-  // that they have a consumer (typically SpdyNetworkTransaction and regardless
+  // that they have a consumer (typically HttpNetworkTransaction and regardless
   // of whether or not there is currently any ongoing IO) or there are still
   // network events incoming even though the consumer has already gone away
   // (cancellation).

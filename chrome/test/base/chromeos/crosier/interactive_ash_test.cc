@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/json/string_escape.h"
 #include "base/test/test_switches.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
@@ -169,4 +170,22 @@ InteractiveAshTest::WaitForElementDoesNotExist(
   does_not_exist.event = kElementDoesNotExist;
   does_not_exist.where = query;
   return WaitForStateChange(element_id, does_not_exist);
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::WaitForElementTextContains(
+    const ui::ElementIdentifier& element_id,
+    const WebContentsInteractionTestUtil::DeepQuery& query,
+    const std::string& expected) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kTextFound);
+
+  WebContentsInteractionTestUtil::StateChange state_change;
+  state_change.type = WebContentsInteractionTestUtil::StateChange::Type::
+      kExistsAndConditionTrue;
+  state_change.where = query;
+  state_change.test_function = "function(el) { return el.innerText.indexOf(" +
+                               base::GetQuotedJSONString(expected) +
+                               ") >= 0; }";
+  state_change.event = kTextFound;
+  return WaitForStateChange(element_id, state_change);
 }

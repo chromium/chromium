@@ -5714,7 +5714,6 @@ TEST_P(WallpaperControllerDailyRefreshSchedulerTest,
 
 TEST_P(WallpaperControllerDailyRefreshSchedulerTest,
        UpdateDailyRefreshWallpaper_OnLogin) {
-  base::test::ScopedFeatureList feature_list(features::kWallpaperRefreshRevamp);
   SimulateUserLogin(kAccountId1);
 
   WallpaperInfo info = WallpaperInfo(OnlineWallpaperParams(
@@ -5742,7 +5741,6 @@ TEST_P(WallpaperControllerDailyRefreshSchedulerTest,
 
 TEST_P(WallpaperControllerDailyRefreshSchedulerTest,
        UpdateDailyRefreshWallpaper_OnCheckpointChanged) {
-  base::test::ScopedFeatureList feature_list(features::kWallpaperRefreshRevamp);
   auto images = ImageSet();
   std::string collection_id{"my_wallpaper_collection"};
   client_.AddCollection(collection_id, images);
@@ -5784,7 +5782,6 @@ TEST_P(WallpaperControllerDailyRefreshSchedulerTest,
 
 TEST_P(WallpaperControllerDailyRefreshSchedulerTest,
        CheckGooglePhotosStaleness_OnCheckpointChanged) {
-  base::test::ScopedFeatureList feature_list(features::kWallpaperRefreshRevamp);
   SimulateUserLogin(kAccountId1);
 
   WallpaperInfo info = {kFakeGooglePhotosPhotoId, WALLPAPER_LAYOUT_CENTER,

@@ -40,14 +40,40 @@ import java.lang.annotation.RetentionPolicy;
  * A base class for dealing with website settings categories.
  */
 public class SiteSettingsCategory {
-    @IntDef({Type.ALL_SITES, Type.ADS, Type.AUGMENTED_REALITY, Type.AUTOMATIC_DOWNLOADS,
-            Type.BACKGROUND_SYNC, Type.BLUETOOTH, Type.BLUETOOTH_SCANNING, Type.CAMERA,
-            Type.CLIPBOARD, Type.COOKIES, Type.IDLE_DETECTION, Type.DEVICE_LOCATION,
-            Type.JAVASCRIPT, Type.MICROPHONE, Type.NFC, Type.NOTIFICATIONS, Type.POPUPS,
-            Type.PROTECTED_MEDIA, Type.SENSORS, Type.SOUND, Type.USB, Type.VIRTUAL_REALITY,
-            Type.USE_STORAGE, Type.AUTO_DARK_WEB_CONTENT, Type.REQUEST_DESKTOP_SITE,
-            Type.FEDERATED_IDENTITY_API, Type.THIRD_PARTY_COOKIES, Type.SITE_DATA, Type.ANTI_ABUSE,
-            Type.ZOOM, Type.NUM_ENTRIES})
+    @IntDef({
+        Type.ALL_SITES,
+        Type.ADS,
+        Type.AUGMENTED_REALITY,
+        Type.AUTOMATIC_DOWNLOADS,
+        Type.BACKGROUND_SYNC,
+        Type.BLUETOOTH,
+        Type.BLUETOOTH_SCANNING,
+        Type.CAMERA,
+        Type.CLIPBOARD,
+        Type.COOKIES,
+        Type.IDLE_DETECTION,
+        Type.DEVICE_LOCATION,
+        Type.JAVASCRIPT,
+        Type.MICROPHONE,
+        Type.NFC,
+        Type.NOTIFICATIONS,
+        Type.POPUPS,
+        Type.PROTECTED_MEDIA,
+        Type.SENSORS,
+        Type.SOUND,
+        Type.USB,
+        Type.VIRTUAL_REALITY,
+        Type.USE_STORAGE,
+        Type.AUTO_DARK_WEB_CONTENT,
+        Type.REQUEST_DESKTOP_SITE,
+        Type.FEDERATED_IDENTITY_API,
+        Type.THIRD_PARTY_COOKIES,
+        Type.SITE_DATA,
+        Type.ANTI_ABUSE,
+        Type.ZOOM,
+        Type.STORAGE_ACCESS,
+        Type.NUM_ENTRIES
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Type {
         // All updates here must also be reflected in {@link #preferenceKey(int)

@@ -395,7 +395,7 @@
         "swarming": {
           "dimensions": {
             "os": "Windows-10-19045",
-            "pool": "chrome.tests"
+            "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -413,7 +413,7 @@
         "swarming": {
           "dimensions": {
             "os": "Windows-10-19045",
-            "pool": "chrome.tests"
+            "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -428,7 +428,7 @@
         "swarming": {
           "dimensions": {
             "os": "Windows-10-19045",
-            "pool": "chrome.tests"
+            "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -449,7 +449,7 @@
         "swarming": {
           "dimensions": {
             "os": "Windows-10-19045",
-            "pool": "chrome.tests"
+            "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -469,7 +469,7 @@
         "swarming": {
           "dimensions": {
             "os": "Windows-10-19045",
-            "pool": "chrome.tests"
+            "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },

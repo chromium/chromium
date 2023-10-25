@@ -102,7 +102,6 @@ const std::string GetFontCssClass(mojom::FontFamily font_family) {
 }
 
 void EnsureNonEmptyContent(std::string* content) {
-  UMA_HISTOGRAM_BOOLEAN("DomDistiller.PageHasDistilledData", !content->empty());
   if (content->empty()) {
     *content =
         l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_NO_DATA_CONTENT);

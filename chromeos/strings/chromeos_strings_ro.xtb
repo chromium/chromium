@@ -93,7 +93,6 @@
 <translation id="1643449475550628585">Schimbă zilnic imaginea de fundal</translation>
 <translation id="1644574205037202324">Istoric</translation>
 <translation id="1651925268237749928">Ai selectat un album comun. Alte persoane pot să adauge sau să schimbe fotografii. Imaginea de fundal poate folosi fotografii care nu se află momentan în acest album.</translation>
-<translation id="1658834457013045127">Permanent</translation>
 <translation id="1661865805917886535">Unele informații despre cont și sistem pot fi trimise la Google. Folosim aceste informații pentru a rezolva problemele tehnice și pentru a îmbunătăți serviciile, în conformitate cu Politica de confidențialitate (<ph name="PRIVACYPOLICYURL" />) și Termenii și condițiile (<ph name="TERMSOFSERVICEURL" />). Pentru a solicita modificări ale conținutului, accesează Ajutor juridic (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Oprită – Cerneală epuizată</translation>
 <translation id="1664796644829245314">Previzualizează <ph name="PREVIEW_OBJECT" /></translation>
@@ -323,7 +322,6 @@
 <translation id="3484914941826596830">Nu deconecta dispozitivul extern și nu închide computerul în timpul actualizării firmware-ului. Poți să minimizezi fereastra. Actualizarea poate să dureze câteva minute și este posibil ca dispozitivul extern să nu funcționeze în această perioadă.</translation>
 <translation id="3486220673238053218">definiție</translation>
 <translation id="3488065109653206955">Activat parțial</translation>
-<translation id="349491921221892984"><ph name="MINUTES" /> min.</translation>
 <translation id="3502426834823382181">vezi toate aplicațiile</translation>
 <translation id="3510890413042482857">Trimite <ph name="BEGIN_LINK1" />datele privind urmărirea performanței<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Actualizare SO Chrome</translation>
@@ -484,7 +482,6 @@
 <translation id="473775607612524610">Actualizează</translation>
 <translation id="4771607256327216405">mărirea luminozității tastaturii</translation>
 <translation id="4773299976671772492">Oprit</translation>
-<translation id="4782003517030001304">O oră</translation>
 <translation id="4782311465517282004">Obții definiții, traduceri sau conversii ale unităților când dai clic dreapta sau apeși lung pe text</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotografie</translation>
 <translation id="4793710386569335688">Pentru mai mult ajutor, accesează <ph name="BEGIN_LINK" />Centrul de ajutor<ph name="END_LINK" /></translation>
@@ -699,6 +696,7 @@
 <translation id="629550705077076970">reducerea luminozității tastaturii</translation>
 <translation id="6302401976930124515">Testul <ph name="TEST_NAME" /> a fost anulat</translation>
 <translation id="631063167932043783">Explorează aplicația</translation>
+<translation id="6318437367327684789">întotdeauna</translation>
 <translation id="6319207335391420837">Actualizează firmware-ul pentru <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Activează screensaverul</translation>
 <translation id="6324916366299863871">Editează o comandă rapidă</translation>

@@ -82,7 +82,7 @@ class COMPONENT_EXPORT(X11) Shape {
   };
 
   struct NotifyEvent {
-    static constexpr int type_id = 6;
+    static constexpr uint8_t type_id = 6;
     static constexpr uint8_t opcode = 0;
     Sk shape_kind{};
     uint16_t sequence{};

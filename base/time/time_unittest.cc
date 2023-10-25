@@ -14,6 +14,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/environment.h"
+#include "base/strings/to_string.h"
 #include "base/test/gtest_util.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time_override.h"
@@ -1876,15 +1877,6 @@ TEST(TimeDelta, Hz) {
   EXPECT_EQ(base::ClampRound(Hertz(60).ToHz()), 60);
 }
 
-// We could define this separately for Time, TimeTicks and TimeDelta but the
-// definitions would be identical anyway.
-template <class Any>
-std::string AnyToString(Any any) {
-  std::ostringstream oss;
-  oss << any;
-  return oss.str();
-}
-
 TEST(TimeDelta, Magnitude) {
   constexpr int64_t zero = 0;
   static_assert(Microseconds(zero) == Microseconds(zero).magnitude());
@@ -2456,17 +2448,17 @@ TEST(TimeDeltaLogging, DCheckEqCompiles) {
 
 TEST(TimeDeltaLogging, EmptyIsZero) {
   constexpr TimeDelta kZero;
-  EXPECT_EQ("0 s", AnyToString(kZero));
+  EXPECT_EQ("0 s", ToString(kZero));
 }
 
 TEST(TimeDeltaLogging, FiveHundredMs) {
   constexpr TimeDelta kFiveHundredMs = Milliseconds(500);
-  EXPECT_EQ("0.5 s", AnyToString(kFiveHundredMs));
+  EXPECT_EQ("0.5 s", ToString(kFiveHundredMs));
 }
 
 TEST(TimeDeltaLogging, MinusTenSeconds) {
   constexpr TimeDelta kMinusTenSeconds = Seconds(-10);
-  EXPECT_EQ("-10 s", AnyToString(kMinusTenSeconds));
+  EXPECT_EQ("-10 s", ToString(kMinusTenSeconds));
 }
 
 TEST(TimeDeltaLogging, DoesNotMessUpFormattingFlags) {
@@ -2489,7 +2481,7 @@ TEST(TimeLogging, DCheckEqCompiles) {
 TEST(TimeLogging, ChromeBirthdate) {
   Time birthdate;
   ASSERT_TRUE(Time::FromString("Tue, 02 Sep 2008 09:42:18 GMT", &birthdate));
-  EXPECT_EQ("2008-09-02 09:42:18.000 UTC", AnyToString(birthdate));
+  EXPECT_EQ("2008-09-02 09:42:18.000 UTC", ToString(birthdate));
 }
 
 TEST(TimeLogging, DoesNotMessUpFormattingFlags) {
@@ -2511,13 +2503,12 @@ TEST(TimeTicksLogging, DCheckEqCompiles) {
 
 TEST(TimeTicksLogging, ZeroTime) {
   TimeTicks zero;
-  EXPECT_EQ("0 bogo-microseconds", AnyToString(zero));
+  EXPECT_EQ("0 bogo-microseconds", ToString(zero));
 }
 
 TEST(TimeTicksLogging, FortyYearsLater) {
   TimeTicks forty_years_later = TimeTicks() + Days(365.25 * 40);
-  EXPECT_EQ("1262304000000000 bogo-microseconds",
-            AnyToString(forty_years_later));
+  EXPECT_EQ("1262304000000000 bogo-microseconds", ToString(forty_years_later));
 }
 
 TEST(TimeTicksLogging, DoesNotMessUpFormattingFlags) {

@@ -34,9 +34,9 @@ extern const int kMaxCardsInFeed;
 // Stores the time when the user visits an article on the feed.
 extern NSString* const kArticleVisitTimestampKey;
 // Stores the time elapsed on the feed when the user leaves.
-extern NSString* const kLongFeedVisitTimeAggregateKey;
-extern NSString* const kLongFollowingFeedVisitTimeAggregateKey;
-extern NSString* const kLongDiscoverFeedVisitTimeAggregateKey;
+extern const char kLongFeedVisitTimeAggregateKey[];
+extern const char kLongFollowingFeedVisitTimeAggregateKey[];
+extern const char kLongDiscoverFeedVisitTimeAggregateKey[];
 extern NSString* const kLastUsedFeedForGoodVisitsKey;
 // Stores the last interaction time for Good Visits (NSDate).
 extern const char kLastInteractionTimeForGoodVisits[];

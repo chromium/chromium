@@ -33,6 +33,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
+#include "third_party/blink/public/mojom/mediastream/media_devices.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "url/origin.h"
 
@@ -92,11 +93,12 @@ WebContents* GetMainFrameWebContents(const GlobalRoutingID& global_routing_id) {
 }
 
 // Checks whether a track living in the WebContents indicated by
-// (render_process_id, render_frame_id) may be cropped to the crop-target
-// indicated by |crop_id|.
-bool MayCrop(const GlobalRoutingID& capturing_id,
-             const GlobalRoutingID& captured_id,
-             const base::Token& crop_id) {
+// (render_process_id, render_frame_id) may be cropped or restricted
+// to the target indicated by |target|.
+bool MayApplySubCaptureTarget(const GlobalRoutingID& capturing_id,
+                              const GlobalRoutingID& captured_id,
+                              blink::mojom::SubCaptureTargetType type,
+                              const base::Token& target) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   WebContents* const capturing_wc = GetMainFrameWebContents(capturing_id);
@@ -112,31 +114,31 @@ bool MayCrop(const GlobalRoutingID& capturing_id,
   SubCaptureTargetIdWebContentsHelper* const helper =
       SubCaptureTargetIdWebContentsHelper::FromWebContents(captured_wc);
   if (!helper) {
-    // No crop-IDs were ever produced on this WebContents.
-    // Any non-zero crop-ID should be rejected on account of being
-    // invalid. A zero crop-ID would ultimately be rejected on account
-    // of the track being uncropped, so we can unconditionally reject.
+    // No sub-capture target IDs of this type were produced on this WebContents.
+    // Any non-zero ID should be rejected on account of being invalid.
+    // A zero ID would ultimately be rejected on account of the track
+    // being uncropped/unrestricted, so we can unconditionally reject.
     return false;
   }
 
-  // * crop_id.is_zero() = uncrop-request.
-  // * !crop_id.is_zero() = crop-request.
+  // * target.is_zero() = uncrop-request.
+  // * !target.is_zero() = crop-request.
   // TODO(crbug.com/1418194): Extend to support other types.
-  return crop_id.is_zero() ||
-         helper->IsAssociatedWith(
-             crop_id, SubCaptureTargetIdWebContentsHelper::Type::kCropTarget);
+  return target.is_zero() || helper->IsAssociatedWith(target, type);
 }
 
-MediaStreamDispatcherHost::CropCallback WrapCropCallback(
-    MediaStreamDispatcherHost::CropCallback callback,
+MediaStreamDispatcherHost::ApplySubCaptureTargetCallback
+WrapApplySubCaptureTarget(
+    MediaStreamDispatcherHost::ApplySubCaptureTargetCallback callback,
     mojo::ReportBadMessageCallback bad_message_callback) {
   return base::BindOnce(
-      [](MediaStreamDispatcherHost::CropCallback callback,
+      [](MediaStreamDispatcherHost::ApplySubCaptureTargetCallback callback,
          mojo::ReportBadMessageCallback bad_message_callback,
          media::mojom::ApplySubCaptureTargetResult result) {
         if (result ==
             media::mojom::ApplySubCaptureTargetResult::kNonIncreasingVersion) {
-          std::move(bad_message_callback).Run("Non-increasing crop-version.");
+          std::move(bad_message_callback)
+              .Run("Non-increasing sub-capture-target-version.");
           // Intentionally avoid returning. Instead, continue execution and
           // invoke the callback. If the callback were allowed to "drop" that
           // would trigger a DCHECK in the mojom pipe.
@@ -658,50 +660,63 @@ void MediaStreamDispatcherHost::FocusCapturedSurface(const std::string& label,
       /*is_from_timer=*/false);
 }
 
-void MediaStreamDispatcherHost::Crop(const base::UnguessableToken& device_id,
-                                     const base::Token& crop_id,
-                                     uint32_t crop_version,
-                                     CropCallback callback) {
+void MediaStreamDispatcherHost::ApplySubCaptureTarget(
+    const base::UnguessableToken& device_id,
+    blink::mojom::SubCaptureTargetType type,
+    const base::Token& sub_capture_target,
+    uint32_t sub_capture_target_version,
+    ApplySubCaptureTargetCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   const GlobalRoutingID captured_id =
       media_stream_manager_->video_capture_manager()->GetGlobalRoutingID(
           device_id);
 
-  // Hop to the UI thread to verify that cropping to |crop_id| is permitted
-  // from this particular context. Namely, cropping is currently only allowed
-  // for self-capture, so the crop_id has to be associated with the top-level
-  // WebContents belonging to this very tab.
+  // Hop to the UI thread to verify that cropping or restricting to
+  // |sub_capture_target| is permitted from this particular context.
+  // Namely, cropping and restricting are currently only allowed
+  // for self-capture, so the sub_capture_target has to be associated with the
+  // top-level WebContents belonging to this very tab.
   // TODO(crbug.com/1299008): Switch away from the free function version
   // when SelfOwnedReceiver properly supports this.
   GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&MayCrop,
+      base::BindOnce(&MayApplySubCaptureTarget,
                      GlobalRoutingID(render_process_id_, render_frame_id_),
-                     captured_id, crop_id),
-      base::BindOnce(&MediaStreamDispatcherHost::OnCropValidationComplete,
-                     weak_factory_.GetWeakPtr(), device_id, crop_id,
-                     crop_version,
-                     WrapCropCallback(std::move(callback),
-                                      mojo::GetBadMessageCallback())));
+                     captured_id, type, sub_capture_target),
+      base::BindOnce(
+          &MediaStreamDispatcherHost::OnSubCaptureTargetValidationComplete,
+          weak_factory_.GetWeakPtr(), device_id, type, sub_capture_target,
+          sub_capture_target_version,
+          WrapApplySubCaptureTarget(std::move(callback),
+                                    mojo::GetBadMessageCallback())));
 }
 
-void MediaStreamDispatcherHost::OnCropValidationComplete(
+void MediaStreamDispatcherHost::OnSubCaptureTargetValidationComplete(
     const base::UnguessableToken& device_id,
-    const base::Token& crop_id,
-    uint32_t crop_version,
-    CropCallback callback,
-    bool crop_id_passed_validation) {
+    blink::mojom::SubCaptureTargetType type,
+    const base::Token& target,
+    uint32_t sub_capture_target_version,
+    ApplySubCaptureTargetCallback callback,
+    bool target_passed_validation) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  if (!crop_id_passed_validation) {
+  if (!target_passed_validation) {
     std::move(callback).Run(
         media::mojom::ApplySubCaptureTargetResult::kInvalidTarget);
     return;
   }
 
-  media_stream_manager_->video_capture_manager()->Crop(
-      device_id, crop_id, crop_version, std::move(callback));
+  switch (type) {
+    case blink::mojom::SubCaptureTargetType::kCropTarget:
+      media_stream_manager_->video_capture_manager()->Crop(
+          device_id, target, sub_capture_target_version, std::move(callback));
+      break;
+    case blink::mojom::SubCaptureTargetType::kRestrictionTarget:
+      // TODO(crbug.com/1418194): Implement.
+      NOTIMPLEMENTED();
+      break;
+  }
 }
 #endif
 

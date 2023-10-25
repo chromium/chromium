@@ -684,13 +684,13 @@ TEST(TextEliderTest, FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains) {
       url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
           GURL("chrome://version")));
   EXPECT_EQ(
-      u"äää.de",
+      u"äpple.de",
       url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-          GURL("https://äää.de")));
+          GURL("https://äpple.de")));
   EXPECT_EQ(
-      u"xn--4caaa.com",
+      u"xn--pple-koa.com",
       url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-          GURL("https://äää.com")));
+          GURL("https://äpple.com")));
   EXPECT_EQ(
       u"مثال.إختبار",
       url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(

@@ -85,12 +85,14 @@ BASE_FEATURE(kTrackingProtection3pcd,
              "TrackingProtection3pcd",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kTpcdReadHeuristicsGrantsName[] = "TpcdReadHeuristicsGrants";
+
 BASE_FEATURE(kTpcdHeuristicsGrants,
              "TpcdHeuristicsGrants",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kTpcdReadHeuristicsGrants{
-    &kTpcdHeuristicsGrants, /*name=*/"TpcdReadHeuristicsGrants", false};
+    &kTpcdHeuristicsGrants, kTpcdReadHeuristicsGrantsName, false};
 
 }  // namespace features
 }  // namespace content_settings

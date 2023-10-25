@@ -1,0 +1,4 @@
+# ChromeOS > Software > System Services > Peripherals
+buganizer {
+  component_id: 1150827
+}

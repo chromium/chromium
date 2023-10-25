@@ -69,20 +69,20 @@
 
 <div id="inputContainer" hidden$="[[readonly]]">
   <textarea id="input"
-      placeholder="Some placeholder text"
+      placeholder="$i18n{inputPlaceholder}"
       value="{{value::input}}"
       rows="4"
       required>
   </textarea>
   <div id="error" hidden$="[[!tooLong_]]">
-    This is too long. Shorten and try again.
+    $i18n{errorTooLong}
   </div>
 </div>
 
 <div id="readonlyContainer" hidden$="[[!readonly]]">
   <div id="readonlyText">[[value]]</div>
   <div id="editButtonContainer"
-      hidden$="[[!shouldShowEditIcon_(allowExitingReadonlyMode)]]">
-    <cr-icon-button iron-icon="cr:create" title="Edit"></cr-icon-button>
+      hidden$="[[!shouldShowEditIcon_(allowExitingReadonlyMode, readonly)]]">
+    <cr-icon-button iron-icon="compose:edit" title="Edit"></cr-icon-button>
   </div>
 </div>

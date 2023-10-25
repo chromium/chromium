@@ -161,7 +161,8 @@ class NET_EXPORT_PRIVATE ProxyList {
   // List of ProxyServers, or nullopt if any chains in `proxy_chains_` are
   // multi-proxy. This is kept in sync with `proxy_chains_`. This begins as an
   // empty vector and becomes `nullopt` when a multi-proxy chain is added.
-  absl::optional<std::vector<ProxyServer>> proxy_servers_ = {{}};
+  absl::optional<std::vector<ProxyServer>> proxy_servers_ =
+      std::vector<ProxyServer>();
 };
 
 }  // namespace net

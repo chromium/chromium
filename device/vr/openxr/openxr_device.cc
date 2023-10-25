@@ -13,7 +13,6 @@
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
-#include "device/vr/openxr/openxr_defs.h"
 #include "device/vr/openxr/openxr_render_loop.h"
 #include "device/vr/public/cpp/features.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -49,7 +48,7 @@ bool AreAllRequiredFeaturesSupported(
                 XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
           case device::mojom::XRSessionFeature::HAND_INPUT:
             return extension_enum->ExtensionSupported(
-                kMSFTHandInteractionExtensionName);
+                XR_MSFT_HAND_INTERACTION_EXTENSION_NAME);
           case device::mojom::XRSessionFeature::HIT_TEST:
             return extension_enum->ExtensionSupported(
                 XR_MSFT_SCENE_UNDERSTANDING_EXTENSION_NAME);

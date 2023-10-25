@@ -18,7 +18,7 @@ import {getTemplate} from './multi_page_checkbox.html.js';
 
 const MultiPageCheckboxElementBase = I18nMixin(PolymerElement);
 
-class MultiPageCheckboxElement extends MultiPageCheckboxElementBase {
+export class MultiPageCheckboxElement extends MultiPageCheckboxElementBase {
   static get is() {
     return 'multi-page-checkbox' as const;
   }

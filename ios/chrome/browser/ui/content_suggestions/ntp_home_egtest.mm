@@ -991,6 +991,11 @@ id<GREYMatcher> notPracticallyVisible() {
 }
 
 - (void)testMinimumHeight {
+  // TODO(crbug.com/1493412): Re-enable on iPad
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
+  }
+
   [ChromeEarlGreyAppInterface
       setBoolValue:NO
        forUserPref:base::SysUTF8ToNSString(prefs::kArticlesForYouEnabled)];

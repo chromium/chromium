@@ -16,8 +16,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
-#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_session.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_tab.h"
@@ -92,12 +90,6 @@ void TabPickupInfobarDelegate::OpenDistantTab() {
         (WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE),
         WebStateOpener());
   }
-}
-
-void TabPickupInfobarDelegate::OpenTabPickupSettings() {
-  id<ApplicationCommands> application_handler =
-      HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
-  [application_handler showTabPickupSettings];
 }
 
 #pragma mark - ConfirmInfoBarDelegate methods

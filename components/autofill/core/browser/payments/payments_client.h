@@ -365,6 +365,20 @@ class PaymentsClient {
     std::vector<ClientBehaviorConstants> client_behavior_signals;
   };
 
+  // A collection of information required to make an IBAN upload request.
+  struct UploadIbanRequestDetails {
+    UploadIbanRequestDetails();
+    UploadIbanRequestDetails(const UploadIbanRequestDetails& other);
+    ~UploadIbanRequestDetails();
+
+    std::string app_locale;
+    int billable_service_number = 0;
+    int64_t billing_customer_number = 0;
+    std::u16string context_token;
+    std::u16string value;
+    std::string nickname;
+  };
+
   // An enum set in the GetUploadDetailsRequest indicating the source of the
   // request when uploading a card to Google Payments. It should stay consistent
   // with the same enum in Google Payments server code.
@@ -498,6 +512,34 @@ class PaymentsClient {
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                               const PaymentsClient::UploadCardResponseDetails&)>
           callback);
+
+  // Determine if the user meets the Payments service conditions for upload.
+  // The service uses `app_locale` and `billing_customer_number` to determine
+  // which legal message to display. `billable_service_number` is defined in
+  // the Payments server to distinguish different requests and is set in the
+  // GetIbanUploadDetails request. `callback` is the callback function that is
+  // triggered when a response is received from the server, and the callback is
+  // triggered with that response's result. The legal message will always be
+  // returned upon a successful response via `callback`. A successful response
+  // does not guarantee that the legal message is valid, callers should parse
+  // the legal message and use it to decide if IBAN upload save should be
+  // offered.
+  void GetIbanUploadDetails(
+      const std::string& app_locale,
+      int64_t billing_customer_number,
+      int billable_service_number,
+      base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+                              const std::u16string&,
+                              std::unique_ptr<base::Value::Dict>)> callback);
+
+  // The user has indicated that they would like to upload an IBAN. This request
+  // will fail server-side if a successful call to GetIbanUploadDetails has not
+  // already been made. `details` contains all necessary information to build
+  // an `UploadIbanRequest`. `callback` is the callback function that is
+  // triggered when a response is received from the server.
+  void UploadIban(
+      const UploadIbanRequestDetails& details,
+      base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // The user has indicated that they would like to migrate their local credit

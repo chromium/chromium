@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/manta/manta_status.h"
+#include "components/manta/proto/rpc_status.pb.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -163,14 +164,13 @@ TEST_F(OrcaProviderTest, CaptureNetError) {
                           net::HTTP_OK, net::ERR_FAILED);
 
   orca_provider->Call(
-      input, base::BindLambdaForTesting([quit_closure =
-                                             task_environment_.QuitClosure()](
-                                            base::Value::Dict response,
-                                            MantaStatus manta_status) {
-        EXPECT_EQ(manta_status.status_code, MantaStatusCode::kBackendFailure);
-        EXPECT_EQ(manta_status.message, "There was a response error");
-        quit_closure.Run();
-      }));
+      input, base::BindLambdaForTesting(
+                 [quit_closure = task_environment_.QuitClosure()](
+                     base::Value::Dict response, MantaStatus manta_status) {
+                   EXPECT_EQ(manta_status.status_code,
+                             MantaStatusCode::kBackendFailure);
+                   quit_closure.Run();
+                 }));
   task_environment_.RunUntilQuit();
 }
 
@@ -197,19 +197,52 @@ TEST_F(OrcaProviderTest, ParseMalformedSerializedProto) {
   task_environment_.RunUntilQuit();
 }
 
-// Test a successful response can be parsed as base::Value::Dict.
-TEST_F(OrcaProviderTest, ParseSuccessfulResponse) {
-  proto::Response response;
-  proto::OutputData& output_data = *response.add_output_data();
-  output_data.set_text("foo");
-  std::string response_data;
-  response.SerializeToString(&response_data);
+// Test that an unexpected response with a serialized RpcStatus proto can be
+// handled properly.
+TEST_F(OrcaProviderTest, ParseRpcStatusFromFailedResponse) {
+  proto::RpcStatus rpc_status;
+  rpc_status.set_code(403);
+  rpc_status.set_message("foo");
+
+  proto::RpcLocalizedMessage localize_message;
+  localize_message.set_message("bar");
+  auto* detail = rpc_status.add_details();
+  detail->set_type_url("type.googleapis.com/google.rpc.LocalizedMessage");
+  detail->set_value(localize_message.SerializeAsString());
 
   std::map<std::string, std::string> input = {{"data", "simple post data"},
                                               {"tone", "SHORTEN"}};
   std::unique_ptr<FakeOrcaProvider> orca_provider = CreateOrcaProvider();
 
-  SetEndpointMockResponse(GURL{kMockEndpoint}, /*response_data=*/response_data,
+  SetEndpointMockResponse(GURL{kMockEndpoint},
+                          /*response_data=*/rpc_status.SerializeAsString(),
+                          net::HTTP_FORBIDDEN, net::OK);
+
+  orca_provider->Call(
+      input, base::BindLambdaForTesting(
+                 [quit_closure = task_environment_.QuitClosure()](
+                     base::Value::Dict response, MantaStatus manta_status) {
+                   EXPECT_EQ(manta_status.status_code,
+                             MantaStatusCode::kBackendFailure);
+                   EXPECT_EQ(manta_status.message, "bar");
+                   quit_closure.Run();
+                 }));
+
+  task_environment_.RunUntilQuit();
+}
+
+// Test a successful response can be parsed as base::Value::Dict.
+TEST_F(OrcaProviderTest, ParseSuccessfulResponse) {
+  proto::Response response;
+  proto::OutputData& output_data = *response.add_output_data();
+  output_data.set_text("foo");
+
+  std::map<std::string, std::string> input = {{"data", "simple post data"},
+                                              {"tone", "SHORTEN"}};
+  std::unique_ptr<FakeOrcaProvider> orca_provider = CreateOrcaProvider();
+
+  SetEndpointMockResponse(GURL{kMockEndpoint},
+                          /*response_data=*/response.SerializeAsString(),
                           net::HTTP_OK, net::OK);
 
   orca_provider->Call(

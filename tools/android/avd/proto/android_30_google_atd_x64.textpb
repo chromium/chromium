@@ -1,0 +1,25 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for an Android-11 (R, API 30) AVD on google_atd on x86_64
+
+emulator_package {
+  package_name: "chromium/third_party/android_sdk/public/emulator"
+  version: "N2X90_ADQtGKgoxkXZH3-TM5dbrynU-zGC4mj0B5KMIC"  # 32.1.15
+  dest_path: "android_30_google_atd_x64"
+}
+
+system_image_package {
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-30/google_atd/x86_64"
+  version: "u_SH3n7SZWYQy6D3E7e28PouioZlBTsA5aXv1CqYnkIC"  # r2, RSR1.210722.030
+  dest_path: "android_30_google_atd_x64"
+}
+system_image_name: "system-images;android-30;google_atd;x86_64"
+
+avd_package {
+  package_name: "chromium/third_party/android_sdk/public/avds/android-30/google_atd/x86_64"
+  version: "b4Lui1qVTkemvr5S8zKUkrVmRcCAoAqJsFSIG1uqhMgC"  # created in bb_id 8766404824771201713
+  dest_path: "android_30_google_atd_x64"
+}
+avd_name: "android_30_google_atd_x64"

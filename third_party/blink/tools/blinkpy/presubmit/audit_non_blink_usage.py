@@ -1230,6 +1230,15 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h',
+        ],
+        # This class needs to pass gpu::Capabilities() to a //media function.
+        'allowed': [
+            'gpu::Capabilities',
+        ],
+    },
+   {
+        'paths': [
             'third_party/blink/renderer/core/html/media/',
         ],
         # This module needs access to the following for media's base::Feature

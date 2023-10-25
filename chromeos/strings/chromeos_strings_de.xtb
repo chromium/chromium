@@ -75,6 +75,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> verwaltet diesen Nutzer und kann per Remotezugriff Einstellungen ändern und die Nutzeraktivität überwachen.</translation>
 <translation id="150962533380566081">Ungültiger PUK.</translation>
 <translation id="1510238584712386396">Launcher</translation>
+<translation id="1515129336378114413">Browser-Startseite</translation>
 <translation id="1526389707933164996">Bildschirmschoneranimation</translation>
 <translation id="152892567002884378">Lauter</translation>
 <translation id="1555130319947370107">Blau</translation>
@@ -92,7 +93,6 @@
 <translation id="1643449475550628585">Hintergrundbild täglich ändern</translation>
 <translation id="1644574205037202324">Verlauf</translation>
 <translation id="1651925268237749928">Du hast ein geteiltes Album ausgewählt. Andere Personen können Fotos hinzufügen oder ändern. Für deinen Hintergrund können Fotos verwendet werden, die sich derzeit nicht in diesem Album befinden.</translation>
-<translation id="1658834457013045127">immer anzeigen</translation>
 <translation id="1661865805917886535">Einige Konto- und Systeminformationen werden möglicherweise an Google gesendet. Wir verwenden diese Daten unter Einhaltung unserer Datenschutzerklärung (<ph name="PRIVACYPOLICYURL" />) und Nutzungsbedingungen (<ph name="TERMSOFSERVICEURL" />) dazu, technische Probleme zu beheben und unsere Dienste zu optimieren. Inhaltsänderungen kannst du in der Rechtliche Hinweise-Hilfe (<ph name="LEGALHELPPAGEURL" />) anfragen.</translation>
 <translation id="1662989795263954667">Angehalten – Keine Tinte</translation>
 <translation id="1664796644829245314">Vorschau anzeigen für „<ph name="PREVIEW_OBJECT" />“</translation>
@@ -321,7 +321,6 @@
 <translation id="3484914941826596830">Während die Firmware aktualisiert wird, darf dieses externe Gerät nicht getrennt oder der Computer heruntergefahren werden. Du kannst dieses Fenster minimieren. Die Aktualisierung dauert einige Minuten und dein externes Gerät funktioniert während dieser Zeit eventuell nicht.</translation>
 <translation id="3486220673238053218">Definition</translation>
 <translation id="3488065109653206955">Teilweise aktiviert</translation>
-<translation id="349491921221892984"><ph name="MINUTES" /> Min. anzeigen</translation>
 <translation id="3502426834823382181">Alle Apps anzeigen</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Leistungs-Trace-Daten<ph name="END_LINK1" /> senden</translation>
 <translation id="3517001332549868749">Chrome OS-Update</translation>
@@ -482,7 +481,6 @@
 <translation id="473775607612524610">Aktualisieren</translation>
 <translation id="4771607256327216405">Tastatur aufhellen</translation>
 <translation id="4773299976671772492">Angehalten</translation>
-<translation id="4782003517030001304">1 Std. anzeigen</translation>
 <translation id="4782311465517282004">Du kannst Definitionen oder Übersetzungen anzeigen oder Einheiten umrechnen lassen, indem du Text gedrückt hältst oder mit der rechten Maustaste darauf klickst</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> Foto(s)</translation>
 <translation id="4793710386569335688"><ph name="BEGIN_LINK" />Weitere Informationen findest du in der Hilfe.<ph name="END_LINK" /></translation>
@@ -697,6 +695,7 @@
 <translation id="629550705077076970">Dimmen der Tastatur</translation>
 <translation id="6302401976930124515">Test „<ph name="TEST_NAME" />“ wurde abgebrochen</translation>
 <translation id="631063167932043783">Entdecken</translation>
+<translation id="6318437367327684789">dauerhaft</translation>
 <translation id="6319207335391420837">Firmware von <ph name="DEVICE_NAME" /> aktualisieren</translation>
 <translation id="6321407676395378991">Bildschirmschoner aktivieren</translation>
 <translation id="6324916366299863871">Verknüpfung bearbeiten</translation>
@@ -755,6 +754,7 @@
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6673898378497337661">Tastaturhelligkeit erhöhen</translation>
 <translation id="6692996468359469499">Informationen zu deiner Auswahl erhalten</translation>
+<translation id="6694534975463174713">Schloss</translation>
 <translation id="6704062477274546131">DNS-Auflösung</translation>
 <translation id="6723839937902243910">Leistung</translation>
 <translation id="6723847290197874913">Hintergrundbeleuchtung der Tastatur</translation>

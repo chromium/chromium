@@ -111,10 +111,7 @@ if (enable_vr) {
 
   if (enable_openxr) {
     source_set("openxr_data") {
-      sources = [
-        "openxr/openxr_defs.h",
-        "openxr/openxr_interaction_profile_type.h",
-      ]
+      sources = [ "openxr/openxr_interaction_profile_type.h" ]
 
       deps = [
         "//base",
@@ -352,6 +349,8 @@ if (enable_openxr) {
       sources = [
         "openxr/openxr_extension_helper.cc",
         "openxr/openxr_extension_helper.h",
+        "openxr/openxr_interaction_profiles.cc",
+        "openxr/openxr_interaction_profiles.h",
         "openxr/openxr_platform.h",
         "openxr/openxr_util.cc",
         "openxr/openxr_util.h",
@@ -373,6 +372,7 @@ if (enable_openxr) {
       deps = [
         "//base",
         "//components/version_info",
+        "//device/gamepad/public/cpp:shared_with_blink",
         "//device/vr/public/mojom:test_mojom",
         "//third_party/openxr:openxr_headers",
       ]

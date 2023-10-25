@@ -245,6 +245,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PerformanceMonitor.EnergyImpact2.Total{UsageScenario}"
     units="ScaledUnits" expires_after="2024-03-31">
+  <obsolete>
+    Removed 10/2023
+  </obsolete>
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -259,6 +262,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PerformanceMonitor.EnergyImpact2.{ProcessName}"
     units="ScaledUnits" expires_after="2024-03-31">
+  <obsolete>
+    Removed 10/2023
+  </obsolete>
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

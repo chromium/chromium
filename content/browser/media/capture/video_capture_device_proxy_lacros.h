@@ -67,7 +67,7 @@ class CONTENT_EXPORT VideoCaptureDeviceProxyLacros
   void MaybeSuspend() final;
   void Resume() final;
   void Crop(const base::Token& crop_id,
-            uint32_t crop_version,
+            uint32_t sub_capture_target_version,
             base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
                 callback) override;
   void StopAndDeAllocate() final;

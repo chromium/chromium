@@ -141,12 +141,14 @@ class BrowserAutofillManager : public AutofillManager,
                                  const FormFieldData& field,
                                  Suggestion::BackendId backend_id,
                                  const AutofillTriggerDetails& trigger_details);
-  void FillCreditCardFormImpl(
+
+  virtual void FillCreditCardForm(
       const FormData& form,
       const FormFieldData& field,
       const CreditCard& credit_card,
       const std::u16string& cvc,
-      const AutofillTriggerDetails& trigger_details) override;
+      const AutofillTriggerDetails& trigger_details);
+
   // Reverts the last autofill operation on `form` that affected
   // `trigger_field`, virtual for testing. `renderer_action` denotes whether
   // this is an actual filling or a preview operation on the renderer side.
@@ -158,6 +160,16 @@ class BrowserAutofillManager : public AutofillManager,
                                   const FormData& form,
                                   const FormFieldData& field);
 
+  // Fills or previews the profile form.
+  // Assumes the form and field are valid.
+  // TODO(crbug.com/1330108): Clean up the API.
+  virtual void FillOrPreviewProfileForm(
+      mojom::ActionPersistence action_persistence,
+      const FormData& form,
+      const FormFieldData& field,
+      const AutofillProfile& profile,
+      const AutofillTriggerDetails& trigger_details);
+
   // Fills or previews the credit card form.
   // Assumes the form and field are valid.
   // Asks for authentication via CVC before filling with server card data.
@@ -168,13 +180,6 @@ class BrowserAutofillManager : public AutofillManager,
       const FormFieldData& field,
       const CreditCard* credit_card,
       const AutofillTriggerDetails& trigger_details);
-
-  // TODO(crbug.com/1330108): Clean up the API.
-  void FillProfileFormImpl(
-      const FormData& form,
-      const FormFieldData& field,
-      const AutofillProfile& profile,
-      const AutofillTriggerDetails& trigger_details) override;
 
   // Fetches the related virtual card information given the related actual card
   // |guid| and fills the information into the form.
@@ -496,15 +501,6 @@ class BrowserAutofillManager : public AutofillManager,
   // will need to unmask a card.
   bool WillFillCreditCardNumber(const FormData& form,
                                 const FormFieldData& triggered_field);
-
-  // Fills or previews the profile form.
-  // Assumes the form and field are valid.
-  // TODO(crbug.com/1330108): Clean up the API.
-  void FillOrPreviewProfileForm(mojom::ActionPersistence action_persistence,
-                                const FormData& form,
-                                const FormFieldData& field,
-                                const AutofillProfile& profile,
-                                const AutofillTriggerDetails& trigger_details);
 
   // Fills or previews |data_model| in the |form|.
   // TODO(crbug.com/1330108): Clean up the API.

@@ -312,11 +312,10 @@ std::string Section::ToString() const {
     // suffix to fields without a `HtmlFieldMode`. Without this, 'autocomplete'
     // attribute values "section--shipping street-address" and "shipping
     // street-address" would have the same prefix.
-    section_name =
-        autocomplete->section +
-        (autocomplete->mode != HtmlFieldMode::kNone
-             ? "-" + std::string(HtmlFieldModeToStringPiece(autocomplete->mode))
-             : kDefaultSection);
+    section_name = autocomplete->section +
+                   (autocomplete->mode != HtmlFieldMode::kNone
+                        ? "-" + HtmlFieldModeToString(autocomplete->mode)
+                        : kDefaultSection);
   } else if (const FieldIdentifier* f =
                  absl::get_if<FieldIdentifier>(&value_)) {
     FieldIdentifier field_identifier = *f;

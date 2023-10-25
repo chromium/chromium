@@ -8,48 +8,36 @@ found in the LICENSE file.
 
 <histograms>
 
-<variants name="GameTypes">
-  <variant name="Arc" summary="ARC app classified as Game"/>
-  <variant name="Borealis" summary="Borealis app"/>
-</variants>
-
-<histogram name="GameMode.Result.{GameTypes}" enum="GameModeResult"
+<histogram name="GameMode.Result.Borealis" enum="GameModeResult"
     expires_after="2024-09-01">
   <owner>lqu@google.com</owner>
   <owner>src/chrome/browser/ash/game_mode/OWNERS</owner>
   <summary>
-    Records events of two types, when they occur. `Attempted` indicates the game
-    mode of type {GameTypes} is entered. `Failed` indicates the previous attempt
-    to enter game mode timed out or failed. They will only be recorded the first
-    time we detect that game mode is entered/failed for each time that game mode
-    is initially entered.
+    Records events of two types, when they occur. `Attempted` indicates game
+    mode is entered. `Failed` indicates the previous attempt to enter game mode
+    timed out or failed. They will only be recorded the first time we detect
+    that game mode is entered/failed for each time that game mode is initially
+    entered.
   </summary>
-  <token key="GameTypes" variants="GameTypes"/>
 </histogram>
 
-<histogram name="GameMode.TimeInGameMode.{GameTypes}" units="ms"
+<histogram name="GameMode.TimeInGameMode.Borealis" units="ms"
     expires_after="2024-09-10">
   <owner>matvore@google.com</owner>
   <owner>src/chrome/browser/ash/game_mode/OWNERS</owner>
   <summary>
-    Time spent in a fullscreen {GameTypes} game. Recorded when leaving game mode
-    (i.e. closing, un-fullscreening, or switching focus away from a game app
-    which the user is immersed in.)
+    Time spent in a fullscreen Borealis game. Recorded when leaving game mode
+    (i.e. closing, un-fullscreening, or switching focus away from a game which
+    the user is immersed in.)
 
     There are two purposes for this metric:
 
-    (primarily) For determining if there is a significant number of users
-    spending little time in Game Mode. A significant number not in the top
-    bucket would indicate we need hysteresis to avoid shutting down background
-    tabs too early. This has a small granularity so we can determine the most
-    effective cut-off point.
-
-    (secondarily) For grasping changes in engagement caused by Game Mode
-    optimizations. Note that increasing engagement is not necessarily the main
-    goal. It is to increase FPS and render quality, for which in ARC we have
-    such metrics - see https://crbug.com/1358755
+    For determining if there is a significant number of users spending little
+    time in Game Mode. A significant number not in the top bucket would indicate
+    we need hysteresis to avoid shutting down background tabs too early. This
+    has a small granularity so we can determine the most effective cut-off
+    point.
   </summary>
-  <token key="GameTypes" variants="GameTypes"/>
 </histogram>
 
 </histograms>

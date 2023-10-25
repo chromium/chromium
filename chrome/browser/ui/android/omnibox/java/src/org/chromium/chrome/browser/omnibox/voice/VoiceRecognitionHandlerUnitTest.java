@@ -529,7 +529,7 @@ public class VoiceRecognitionHandlerUnitTest {
         // Needed to interact with classifier, which requires a valid profile.
         mProfileSupplier.set(mProfile);
 
-        doReturn(mMatch).when(mAutocompleteController).classify(any(), anyBoolean());
+        doReturn(mMatch).when(mAutocompleteController).classify(any());
 
         String[] texts = new String[] {"a", "www. b .co .uk", "engadget .com", "www.google.com"};
         float[] confidences = new float[] {1.0f, 1.0f, 1.0f, 1.0f};

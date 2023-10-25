@@ -915,8 +915,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.CharactersPerSession{InputModality}"
-    units="characters" expires_after="2023-05-01">
-  <owner>keithlee@chromium.org</owner>
+    units="characters" expires_after="2024-04-01">
+  <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
     Number of characters entered in a single user session on ChromeOS. A user
@@ -1104,6 +1104,30 @@ chromium-metrics-reviews@google.com.
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>Time taken by the engine to handle a key event.</summary>
+</histogram>
+
+<histogram name="InputMethod.Manta.Orca.States.{Mode}" enum="IMEEditorStates"
+    expires_after="2024-10-19">
+  <owner>zacpartridge@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    The histogram captures user interactions with the editor, focusing on key
+    actions. The metric logs specific actions once for each feature
+    instantiation if initiated by the user. These actions include the initiation
+    of a new request, content insertion, display of the native UI, dismissal of
+    the editor, a refining request, errors from the backend, receiving a
+    successful responses from the backend or a user toggling the thumbs up and
+    down buttons. Additionally, this metric keeps track of character-related
+    data when users perform insertions. This includes the number of characters
+    inserted, the number of characters initially selected by the user, or the
+    number of characters utilized for freeform prompts (if applicable).
+  </summary>
+  <token key="Mode">
+    <variant name="Rewrite"
+        summary="There is selected text and the user is rewriting it with the
+                 editor"/>
+    <variant name="Write" summary="The editor is in freeform write mode"/>
+  </token>
 </histogram>
 
 <histogram name="InputMethod.ModeChangeKeyAction" enum="ModeChangeKeyAction"
@@ -1518,8 +1542,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.VirtualKeyboard.CharactersPerMinute{InputModality}"
-    units="charactersPerMinute" expires_after="2023-05-01">
-  <owner>keithlee@chromium.org</owner>
+    units="charactersPerMinute" expires_after="2024-04-01">
+  <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
     Typing speed in each user session on ChromeOS when using the virtual
@@ -1538,8 +1562,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.VirtualKeyboard.CharactersPerSession{InputModality}"
-    units="characters" expires_after="2023-05-01">
-  <owner>keithlee@chromium.org</owner>
+    units="characters" expires_after="2024-04-01">
+  <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
     Number of characters entered in a single user session on ChromeOS when using

@@ -6,12 +6,14 @@
 
 #include <tuple>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
+#include "services/accessibility/public/mojom/autoclick.mojom.h"
 #include "services/accessibility/public/mojom/tts.mojom.h"
 #include "services/accessibility/public/mojom/user_interface.mojom.h"
 
@@ -53,6 +55,22 @@ void FakeAccessibilityService::BindAnotherTts() {
   mojo::PendingReceiver<ax::mojom::Tts> tts_receiver;
   tts_remotes_.Add(tts_receiver.InitWithNewPipeAndPassRemote());
   accessibility_service_client_remote_->BindTts(std::move(tts_receiver));
+}
+
+void FakeAccessibilityService::BindAnotherAutoclickClient() {
+  mojo::PendingReceiver<ax::mojom::AutoclickClient> autoclick_client_receiver;
+  autoclick_client_remotes_.Add(
+      autoclick_client_receiver.InitWithNewPipeAndPassRemote());
+  accessibility_service_client_remote_->BindAutoclickClient(
+      std::move(autoclick_client_receiver));
+
+  // Now connect the autoclick remote in the service back to the client in the
+  // browser by getting a PendingReceiver<Autoclick> from the browser.
+  for (auto& remote : autoclick_client_remotes_) {
+    remote->BindAutoclick(
+        base::BindOnce(&FakeAccessibilityService::OnAutoclickBoundCallback,
+                       base::Unretained(this)));
+  }
 }
 
 void FakeAccessibilityService::BindAnotherUserInterface() {
@@ -125,6 +143,13 @@ void FakeAccessibilityService::EnableAssistiveTechnology(
   if (change_ATs_closure_ && at_change_count_ == expected_count_) {
     expected_count_ = 0;
     std::move(change_ATs_closure_).Run();
+  }
+}
+
+void FakeAccessibilityService::RequestScrollableBoundsForPoint(
+    const gfx::Point& point) {
+  for (auto& remote : autoclick_client_remotes_) {
+    remote->HandleScrollableBoundsForPointFound(autoclick_scrollable_bounds_);
   }
 }
 
@@ -275,6 +300,11 @@ void FakeAccessibilityService::RequestLoadFile(
     base::FilePath relative_path,
     ax::mojom::AccessibilityFileLoader::LoadCallback callback) {
   file_loader_remote_->Load(relative_path, std::move(callback));
+}
+
+void FakeAccessibilityService::OnAutoclickBoundCallback(
+    mojo::PendingReceiver<ax::mojom::Autoclick> autoclick_receiver) {
+  autoclick_receivers_.Add(this, std::move(autoclick_receiver));
 }
 
 }  // namespace ash

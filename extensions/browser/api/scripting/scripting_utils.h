@@ -112,6 +112,7 @@ std::unique_ptr<UserScriptList> UpdateScripts(
     CHECK(base::Contains(loaded_scripts_metadata, new_script.id));
     Script& existent_script = loaded_scripts_metadata[new_script.id];
 
+    // Note: `new_script` and `existent_script` may be unsafe to use after this.
     std::unique_ptr<UserScript> script =
         apply_update_callback.Run(new_script, existent_script, &parse_error);
     if (!script) {

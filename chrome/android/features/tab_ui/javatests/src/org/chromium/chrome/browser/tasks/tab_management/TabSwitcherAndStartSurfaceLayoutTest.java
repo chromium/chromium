@@ -280,6 +280,10 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     })
     @DisableAnimationsTestRule.EnsureAnimationsOn
     @CommandLineFlags.Add({BASE_PARAMS})
+    @DisableIf.Build(
+            message = "crbug.com/1473722",
+            supported_abis_includes = "x86",
+            sdk_is_less_than = VERSION_CODES.P)
     public void testRenderGrid_3WebTabs_ThumbnailCacheRefactor(
             boolean isStartSurfaceRefactorEnabled) throws IOException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();

@@ -25,13 +25,13 @@ namespace blink {
   EXPECT_EQ(start, (item).StartOffset());          \
   EXPECT_EQ(end, (item).EndOffset());
 
-class NGInlineItemsBuilderTest : public RenderingTest {
+class InlineItemsBuilderTest : public RenderingTest {
  protected:
   void SetUp() override {
     RenderingTest::SetUp();
     style_ = &GetDocument().GetStyleResolver().InitialStyle();
     block_flow_ = LayoutBlockFlow::CreateAnonymous(&GetDocument(), style_);
-    items_ = MakeGarbageCollected<HeapVector<NGInlineItem>>();
+    items_ = MakeGarbageCollected<HeapVector<InlineItem>>();
     anonymous_objects_ =
         MakeGarbageCollected<HeapVector<Member<LayoutObject>>>();
     anonymous_objects_->push_back(block_flow_);
@@ -61,32 +61,32 @@ class NGInlineItemsBuilderTest : public RenderingTest {
     return builder.TakeStyle();
   }
 
-  bool HasRuby(const NGInlineItemsBuilder& builder) const {
+  bool HasRuby(const InlineItemsBuilder& builder) const {
     return builder.has_ruby_;
   }
 
-  void AppendText(const String& text, NGInlineItemsBuilder* builder) {
+  void AppendText(const String& text, InlineItemsBuilder* builder) {
     LayoutText* layout_text =
         LayoutText::CreateEmptyAnonymous(GetDocument(), style_);
     anonymous_objects_->push_back(layout_text);
     builder->AppendText(text, layout_text);
   }
 
-  void AppendAtomicInline(NGInlineItemsBuilder* builder) {
+  void AppendAtomicInline(InlineItemsBuilder* builder) {
     LayoutBlockFlow* layout_block_flow =
         LayoutBlockFlow::CreateAnonymous(&GetDocument(), style_);
     anonymous_objects_->push_back(layout_block_flow);
     builder->AppendAtomicInline(layout_block_flow);
   }
 
-  void AppendBlockInInline(NGInlineItemsBuilder* builder) {
+  void AppendBlockInInline(InlineItemsBuilder* builder) {
     LayoutBlockFlow* layout_block_flow =
         LayoutBlockFlow::CreateAnonymous(&GetDocument(), style_);
     anonymous_objects_->push_back(layout_block_flow);
     builder->AppendBlockInInline(layout_block_flow);
   }
 
-  void AppendRubyColumn(NGInlineItemsBuilder* builder) {
+  void AppendRubyColumn(InlineItemsBuilder* builder) {
     auto* ruby_column = MakeGarbageCollected<LayoutRubyColumn>();
     ruby_column->SetDocumentForAnonymous(&GetDocument());
     ruby_column->SetStyle(style_);
@@ -103,7 +103,7 @@ class NGInlineItemsBuilderTest : public RenderingTest {
   const String& TestAppend(Vector<Input> inputs) {
     items_->clear();
     HeapVector<Member<LayoutText>> anonymous_objects;
-    NGInlineItemsBuilder builder(GetLayoutBlockFlow(), items_);
+    InlineItemsBuilder builder(GetLayoutBlockFlow(), items_);
     for (Input& input : inputs) {
       if (!input.layout_text) {
         input.layout_text = LayoutText::CreateEmptyAnonymous(
@@ -139,7 +139,7 @@ class NGInlineItemsBuilderTest : public RenderingTest {
   void ValidateItems() {
     unsigned current_offset = 0;
     for (unsigned i = 0; i < items_->size(); i++) {
-      const NGInlineItem& item = items_->at(i);
+      const InlineItem& item = items_->at(i);
       EXPECT_EQ(current_offset, item.StartOffset());
       EXPECT_LE(item.StartOffset(), item.EndOffset());
       current_offset = item.EndOffset();
@@ -149,13 +149,13 @@ class NGInlineItemsBuilderTest : public RenderingTest {
 
   void CheckReuseItemsProducesSameResult(Vector<Input> inputs,
                                          bool has_bidi_controls) {
-    NGInlineNodeData& fake_data = *MakeGarbageCollected<NGInlineNodeData>();
+    InlineNodeData& fake_data = *MakeGarbageCollected<InlineNodeData>();
     fake_data.text_content = text_;
     fake_data.is_bidi_enabled_ = has_bidi_controls;
 
-    HeapVector<NGInlineItem> reuse_items;
-    NGInlineItemsBuilder reuse_builder(GetLayoutBlockFlow(), &reuse_items);
-    NGInlineItemsData* data = MakeGarbageCollected<NGInlineItemsData>();
+    HeapVector<InlineItem> reuse_items;
+    InlineItemsBuilder reuse_builder(GetLayoutBlockFlow(), &reuse_items);
+    InlineItemsData* data = MakeGarbageCollected<InlineItemsData>();
     data->items = *items_;
     for (Input& input : inputs) {
       // Collect items for this LayoutObject.
@@ -188,7 +188,7 @@ class NGInlineItemsBuilderTest : public RenderingTest {
   }
 
   Persistent<LayoutBlockFlow> block_flow_;
-  Persistent<HeapVector<NGInlineItem>> items_;
+  Persistent<HeapVector<InlineItem>> items_;
   String text_;
   Persistent<const ComputedStyle> style_;
   Persistent<HeapVector<Member<LayoutObject>>> anonymous_objects_;
@@ -198,7 +198,7 @@ class NGInlineItemsBuilderTest : public RenderingTest {
   SetWhiteSpace(whitespace);                                  \
   EXPECT_EQ(expected_text, TestAppend(input)) << "white-space: " #whitespace;
 
-TEST_F(NGInlineItemsBuilderTest, CollapseSpaces) {
+TEST_F(InlineItemsBuilderTest, CollapseSpaces) {
   String input("text text  text   text");
   String collapsed("text text text text");
   TestWhitespaceValue(collapsed, input, EWhiteSpace::kNormal);
@@ -208,7 +208,7 @@ TEST_F(NGInlineItemsBuilderTest, CollapseSpaces) {
   TestWhitespaceValue(input, input, EWhiteSpace::kPreWrap);
 }
 
-TEST_F(NGInlineItemsBuilderTest, CollapseTabs) {
+TEST_F(InlineItemsBuilderTest, CollapseTabs) {
   String input("text text  text   text");
   String collapsed("text text text text");
   TestWhitespaceValue(collapsed, input, EWhiteSpace::kNormal);
@@ -218,7 +218,7 @@ TEST_F(NGInlineItemsBuilderTest, CollapseTabs) {
   TestWhitespaceValue(input, input, EWhiteSpace::kPreWrap);
 }
 
-TEST_F(NGInlineItemsBuilderTest, CollapseNewLines) {
+TEST_F(InlineItemsBuilderTest, CollapseNewLines) {
   String input("text\ntext \ntext\n\ntext");
   String collapsed("text text text text");
   TestWhitespaceValue(collapsed, input, EWhiteSpace::kNormal);
@@ -228,38 +228,38 @@ TEST_F(NGInlineItemsBuilderTest, CollapseNewLines) {
   TestWhitespaceValue(input, input, EWhiteSpace::kPreWrap);
 }
 
-TEST_F(NGInlineItemsBuilderTest, CollapseNewlinesAsSpaces) {
+TEST_F(InlineItemsBuilderTest, CollapseNewlinesAsSpaces) {
   EXPECT_EQ("text text", TestAppend("text\ntext"));
   EXPECT_EQ("text text", TestAppend("text\n\ntext"));
   EXPECT_EQ("text text", TestAppend("text \n\n text"));
   EXPECT_EQ("text text", TestAppend("text \n \n text"));
 }
 
-TEST_F(NGInlineItemsBuilderTest, CollapseAcrossElements) {
+TEST_F(InlineItemsBuilderTest, CollapseAcrossElements) {
   EXPECT_EQ("text text", TestAppend("text ", " text"))
       << "Spaces are collapsed even when across elements.";
 }
 
-TEST_F(NGInlineItemsBuilderTest, CollapseLeadingSpaces) {
+TEST_F(InlineItemsBuilderTest, CollapseLeadingSpaces) {
   EXPECT_EQ("text", TestAppend("  text"));
   EXPECT_EQ("text", TestAppend(" ", "text"));
   EXPECT_EQ("text", TestAppend(" ", " text"));
 }
 
-TEST_F(NGInlineItemsBuilderTest, CollapseTrailingSpaces) {
+TEST_F(InlineItemsBuilderTest, CollapseTrailingSpaces) {
   EXPECT_EQ("text", TestAppend("text  "));
   EXPECT_EQ("text", TestAppend("text", " "));
   EXPECT_EQ("text", TestAppend("text ", " "));
 }
 
-TEST_F(NGInlineItemsBuilderTest, CollapseAllSpaces) {
+TEST_F(InlineItemsBuilderTest, CollapseAllSpaces) {
   EXPECT_EQ("", TestAppend("  "));
   EXPECT_EQ("", TestAppend("  ", "  "));
   EXPECT_EQ("", TestAppend("  ", "\n"));
   EXPECT_EQ("", TestAppend("\n", "  "));
 }
 
-TEST_F(NGInlineItemsBuilderTest, CollapseLeadingNewlines) {
+TEST_F(InlineItemsBuilderTest, CollapseLeadingNewlines) {
   EXPECT_EQ("text", TestAppend("\ntext"));
   EXPECT_EQ("text", TestAppend("\n\ntext"));
   EXPECT_EQ("text", TestAppend("\n", "text"));
@@ -273,7 +273,7 @@ TEST_F(NGInlineItemsBuilderTest, CollapseLeadingNewlines) {
   EXPECT_EQ("text", TestAppend(" \n", "\ntext"));
 }
 
-TEST_F(NGInlineItemsBuilderTest, CollapseTrailingNewlines) {
+TEST_F(InlineItemsBuilderTest, CollapseTrailingNewlines) {
   EXPECT_EQ("text", TestAppend("text\n"));
   EXPECT_EQ("text", TestAppend("text", "\n"));
   EXPECT_EQ("text", TestAppend("text\n", "\n"));
@@ -281,19 +281,19 @@ TEST_F(NGInlineItemsBuilderTest, CollapseTrailingNewlines) {
   EXPECT_EQ("text", TestAppend("text ", "\n"));
 }
 
-TEST_F(NGInlineItemsBuilderTest, CollapseNewlineAcrossElements) {
+TEST_F(InlineItemsBuilderTest, CollapseNewlineAcrossElements) {
   EXPECT_EQ("text text", TestAppend("text ", "\ntext"));
   EXPECT_EQ("text text", TestAppend("text ", "\n text"));
   EXPECT_EQ("text text", TestAppend("text", " ", "\ntext"));
 }
 
-TEST_F(NGInlineItemsBuilderTest, CollapseBeforeAndAfterNewline) {
+TEST_F(InlineItemsBuilderTest, CollapseBeforeAndAfterNewline) {
   SetWhiteSpace(EWhiteSpace::kPreLine);
   EXPECT_EQ("text\ntext", TestAppend("text  \n  text"))
       << "Spaces before and after newline are removed.";
 }
 
-TEST_F(NGInlineItemsBuilderTest,
+TEST_F(InlineItemsBuilderTest,
        CollapsibleSpaceAfterNonCollapsibleSpaceAcrossElements) {
   EXPECT_EQ("text  text",
             TestAppend({"text ", EWhiteSpace::kPreWrap}, {" text"}))
@@ -301,7 +301,7 @@ TEST_F(NGInlineItemsBuilderTest,
          "pre-wrap\">text <span><span> text</span>' does not collapse.";
 }
 
-TEST_F(NGInlineItemsBuilderTest, CollapseZeroWidthSpaces) {
+TEST_F(InlineItemsBuilderTest, CollapseZeroWidthSpaces) {
   EXPECT_EQ(String(u"text\u200Btext"), TestAppend(u"text\u200B\ntext"))
       << "Newline is removed if the character before is ZWS.";
   EXPECT_EQ(String(u"text\u200Btext"), TestAppend(u"text\n\u200Btext"))
@@ -326,13 +326,13 @@ TEST_F(NGInlineItemsBuilderTest, CollapseZeroWidthSpaces) {
          "a zero width space is collapsed to a zero width space.";
 }
 
-TEST_F(NGInlineItemsBuilderTest, CollapseZeroWidthSpaceAndNewLineAtEnd) {
+TEST_F(InlineItemsBuilderTest, CollapseZeroWidthSpaceAndNewLineAtEnd) {
   EXPECT_EQ(String(u"\u200B"), TestAppend(u"\u200B\n"));
-  EXPECT_EQ(NGInlineItem::kNotCollapsible, items_->at(0).EndCollapseType());
+  EXPECT_EQ(InlineItem::kNotCollapsible, items_->at(0).EndCollapseType());
 }
 
 #if SEGMENT_BREAK_TRANSFORMATION_FOR_EAST_ASIAN_WIDTH
-TEST_F(NGInlineItemsBuilderTest, CollapseEastAsianWidth) {
+TEST_F(InlineItemsBuilderTest, CollapseEastAsianWidth) {
   EXPECT_EQ(String(u"\u4E00\u4E00"), TestAppend(u"\u4E00\n\u4E00"))
       << "Newline is removed when both sides are Wide.";
 
@@ -349,57 +349,55 @@ TEST_F(NGInlineItemsBuilderTest, CollapseEastAsianWidth) {
 }
 #endif
 
-TEST_F(NGInlineItemsBuilderTest, OpaqueToSpaceCollapsing) {
-  NGInlineItemsBuilder builder(GetLayoutBlockFlow(), items_);
+TEST_F(InlineItemsBuilderTest, OpaqueToSpaceCollapsing) {
+  InlineItemsBuilder builder(GetLayoutBlockFlow(), items_);
   AppendText("Hello ", &builder);
-  builder.AppendOpaque(NGInlineItem::kBidiControl,
-                       kFirstStrongIsolateCharacter);
+  builder.AppendOpaque(InlineItem::kBidiControl, kFirstStrongIsolateCharacter);
   AppendText(" ", &builder);
-  builder.AppendOpaque(NGInlineItem::kBidiControl,
-                       kFirstStrongIsolateCharacter);
+  builder.AppendOpaque(InlineItem::kBidiControl, kFirstStrongIsolateCharacter);
   AppendText(" World", &builder);
   EXPECT_EQ(String(u"Hello \u2068\u2068World"), builder.ToString());
 }
 
-TEST_F(NGInlineItemsBuilderTest, CollapseAroundReplacedElement) {
-  NGInlineItemsBuilder builder(GetLayoutBlockFlow(), items_);
+TEST_F(InlineItemsBuilderTest, CollapseAroundReplacedElement) {
+  InlineItemsBuilder builder(GetLayoutBlockFlow(), items_);
   AppendText("Hello ", &builder);
   AppendAtomicInline(&builder);
   AppendText(" World", &builder);
   EXPECT_EQ(String(u"Hello \uFFFC World"), builder.ToString());
 }
 
-TEST_F(NGInlineItemsBuilderTest, CollapseNewlineAfterObject) {
-  NGInlineItemsBuilder builder(GetLayoutBlockFlow(), items_);
+TEST_F(InlineItemsBuilderTest, CollapseNewlineAfterObject) {
+  InlineItemsBuilder builder(GetLayoutBlockFlow(), items_);
   AppendAtomicInline(&builder);
   AppendText("\n", &builder);
   AppendAtomicInline(&builder);
   EXPECT_EQ(String(u"\uFFFC \uFFFC"), builder.ToString());
   EXPECT_EQ(3u, items_->size());
-  EXPECT_ITEM_OFFSET(items_->at(0), NGInlineItem::kAtomicInline, 0u, 1u);
-  EXPECT_ITEM_OFFSET(items_->at(1), NGInlineItem::kText, 1u, 2u);
-  EXPECT_ITEM_OFFSET(items_->at(2), NGInlineItem::kAtomicInline, 2u, 3u);
+  EXPECT_ITEM_OFFSET(items_->at(0), InlineItem::kAtomicInline, 0u, 1u);
+  EXPECT_ITEM_OFFSET(items_->at(1), InlineItem::kText, 1u, 2u);
+  EXPECT_ITEM_OFFSET(items_->at(2), InlineItem::kAtomicInline, 2u, 3u);
 }
 
-TEST_F(NGInlineItemsBuilderTest, AppendEmptyString) {
+TEST_F(InlineItemsBuilderTest, AppendEmptyString) {
   EXPECT_EQ("", TestAppend(""));
   EXPECT_EQ(1u, items_->size());
-  EXPECT_ITEM_OFFSET(items_->at(0), NGInlineItem::kText, 0u, 0u);
+  EXPECT_ITEM_OFFSET(items_->at(0), InlineItem::kText, 0u, 0u);
 }
 
-TEST_F(NGInlineItemsBuilderTest, NewLines) {
+TEST_F(InlineItemsBuilderTest, NewLines) {
   SetWhiteSpace(EWhiteSpace::kPre);
   EXPECT_EQ("apple\norange\ngrape\n", TestAppend("apple\norange\ngrape\n"));
   EXPECT_EQ(6u, items_->size());
-  EXPECT_EQ(NGInlineItem::kText, items_->at(0).Type());
-  EXPECT_EQ(NGInlineItem::kControl, items_->at(1).Type());
-  EXPECT_EQ(NGInlineItem::kText, items_->at(2).Type());
-  EXPECT_EQ(NGInlineItem::kControl, items_->at(3).Type());
-  EXPECT_EQ(NGInlineItem::kText, items_->at(4).Type());
-  EXPECT_EQ(NGInlineItem::kControl, items_->at(5).Type());
+  EXPECT_EQ(InlineItem::kText, items_->at(0).Type());
+  EXPECT_EQ(InlineItem::kControl, items_->at(1).Type());
+  EXPECT_EQ(InlineItem::kText, items_->at(2).Type());
+  EXPECT_EQ(InlineItem::kControl, items_->at(3).Type());
+  EXPECT_EQ(InlineItem::kText, items_->at(4).Type());
+  EXPECT_EQ(InlineItem::kControl, items_->at(5).Type());
 }
 
-TEST_F(NGInlineItemsBuilderTest, IgnorablePre) {
+TEST_F(InlineItemsBuilderTest, IgnorablePre) {
   SetWhiteSpace(EWhiteSpace::kPre);
   EXPECT_EQ(
       "apple"
@@ -413,16 +411,16 @@ TEST_F(NGInlineItemsBuilderTest, IgnorablePre) {
                  "\n"
                  "grape"));
   EXPECT_EQ(5u, items_->size());
-  EXPECT_ITEM_OFFSET(items_->at(0), NGInlineItem::kText, 0u, 5u);
-  EXPECT_ITEM_OFFSET(items_->at(1), NGInlineItem::kControl, 5u, 6u);
-  EXPECT_ITEM_OFFSET(items_->at(2), NGInlineItem::kText, 6u, 12u);
-  EXPECT_ITEM_OFFSET(items_->at(3), NGInlineItem::kControl, 12u, 13u);
-  EXPECT_ITEM_OFFSET(items_->at(4), NGInlineItem::kText, 13u, 18u);
+  EXPECT_ITEM_OFFSET(items_->at(0), InlineItem::kText, 0u, 5u);
+  EXPECT_ITEM_OFFSET(items_->at(1), InlineItem::kControl, 5u, 6u);
+  EXPECT_ITEM_OFFSET(items_->at(2), InlineItem::kText, 6u, 12u);
+  EXPECT_ITEM_OFFSET(items_->at(3), InlineItem::kControl, 12u, 13u);
+  EXPECT_ITEM_OFFSET(items_->at(4), InlineItem::kText, 13u, 18u);
 }
 
-TEST_F(NGInlineItemsBuilderTest, Empty) {
-  HeapVector<NGInlineItem> items;
-  NGInlineItemsBuilder builder(GetLayoutBlockFlow(), &items);
+TEST_F(InlineItemsBuilderTest, Empty) {
+  HeapVector<InlineItem> items;
+  InlineItemsBuilder builder(GetLayoutBlockFlow(), &items);
   const ComputedStyle* block_style =
       &GetDocument().GetStyleResolver().InitialStyle();
   builder.EnterBlock(block_style);
@@ -431,10 +429,10 @@ TEST_F(NGInlineItemsBuilderTest, Empty) {
   EXPECT_EQ("", builder.ToString());
 }
 
-class CollapsibleSpaceTest : public NGInlineItemsBuilderTest,
+class CollapsibleSpaceTest : public InlineItemsBuilderTest,
                              public testing::WithParamInterface<UChar> {};
 
-INSTANTIATE_TEST_SUITE_P(NGInlineItemsBuilderTest,
+INSTANTIATE_TEST_SUITE_P(InlineItemsBuilderTest,
                          CollapsibleSpaceTest,
                          testing::Values(kSpaceCharacter,
                                          kTabulationCharacter,
@@ -449,7 +447,7 @@ TEST_P(CollapsibleSpaceTest, CollapsedSpaceAfterNoWrap) {
       TestAppend({String("nowrap") + space, EWhiteSpace::kNowrap}, {" wrap"}));
 }
 
-TEST_F(NGInlineItemsBuilderTest, GenerateBreakOpportunityAfterLeadingSpaces) {
+TEST_F(InlineItemsBuilderTest, GenerateBreakOpportunityAfterLeadingSpaces) {
   EXPECT_EQ(String(" "
                    u"\u200B"
                    "a"),
@@ -463,9 +461,9 @@ TEST_F(NGInlineItemsBuilderTest, GenerateBreakOpportunityAfterLeadingSpaces) {
             TestAppend({{"a\n ", EWhiteSpace::kPreWrap}}));
 }
 
-TEST_F(NGInlineItemsBuilderTest, BidiBlockOverride) {
-  HeapVector<NGInlineItem> items;
-  NGInlineItemsBuilder builder(GetLayoutBlockFlow(), &items);
+TEST_F(InlineItemsBuilderTest, BidiBlockOverride) {
+  HeapVector<InlineItem> items;
+  InlineItemsBuilder builder(GetLayoutBlockFlow(), &items);
   ComputedStyleBuilder block_style_builder(
       GetDocument().GetStyleResolver().InitialStyle());
   block_style_builder.SetUnicodeBidi(UnicodeBidi::kBidiOverride);
@@ -495,9 +493,9 @@ static LayoutInline* CreateLayoutInline(
   return node;
 }
 
-TEST_F(NGInlineItemsBuilderTest, BidiIsolate) {
-  HeapVector<NGInlineItem> items;
-  NGInlineItemsBuilder builder(GetLayoutBlockFlow(), &items);
+TEST_F(InlineItemsBuilderTest, BidiIsolate) {
+  HeapVector<InlineItem> items;
+  InlineItemsBuilder builder(GetLayoutBlockFlow(), &items);
   AppendText("Hello ", &builder);
   LayoutInline* const isolate_rtl =
       CreateLayoutInline(&GetDocument(), [](ComputedStyleBuilder& builder) {
@@ -520,9 +518,9 @@ TEST_F(NGInlineItemsBuilderTest, BidiIsolate) {
   isolate_rtl->Destroy();
 }
 
-TEST_F(NGInlineItemsBuilderTest, BidiIsolateOverride) {
-  HeapVector<NGInlineItem> items;
-  NGInlineItemsBuilder builder(GetLayoutBlockFlow(), &items);
+TEST_F(InlineItemsBuilderTest, BidiIsolateOverride) {
+  HeapVector<InlineItem> items;
+  InlineItemsBuilder builder(GetLayoutBlockFlow(), &items);
   AppendText("Hello ", &builder);
   LayoutInline* const isolate_override_rtl =
       CreateLayoutInline(&GetDocument(), [](ComputedStyleBuilder& builder) {
@@ -545,9 +543,9 @@ TEST_F(NGInlineItemsBuilderTest, BidiIsolateOverride) {
   isolate_override_rtl->Destroy();
 }
 
-TEST_F(NGInlineItemsBuilderTest, BlockInInline) {
-  HeapVector<NGInlineItem> items;
-  NGInlineItemsBuilder builder(GetLayoutBlockFlow(), &items);
+TEST_F(InlineItemsBuilderTest, BlockInInline) {
+  HeapVector<InlineItem> items;
+  InlineItemsBuilder builder(GetLayoutBlockFlow(), &items);
   AppendText("Hello ", &builder);
   AppendBlockInInline(&builder);
   AppendText(" World", &builder);
@@ -555,9 +553,9 @@ TEST_F(NGInlineItemsBuilderTest, BlockInInline) {
   EXPECT_EQ(String(u"Hello\uFFFCWorld"), builder.ToString());
 }
 
-TEST_F(NGInlineItemsBuilderTest, HasRuby) {
-  HeapVector<NGInlineItem> items;
-  NGInlineItemsBuilder builder(GetLayoutBlockFlow(), &items);
+TEST_F(InlineItemsBuilderTest, HasRuby) {
+  HeapVector<InlineItem> items;
+  InlineItemsBuilder builder(GetLayoutBlockFlow(), &items);
   EXPECT_FALSE(HasRuby(builder)) << "has_ruby_ should be false initially.";
 
   AppendText("Hello ", &builder);

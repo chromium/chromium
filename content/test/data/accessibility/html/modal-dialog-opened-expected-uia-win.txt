@@ -1,5 +1,5 @@
 Document
-++Window IsControlElement=false Window.IsModal=true
+++Window Window.IsModal=true
 ++++Text Name='The dialog subtree should be the only text content in the accessibility tree. '
 ++++Hyperlink Name='Link inside the dialog.'
 ++++++Text Name='Link inside the dialog.' IsControlElement=false

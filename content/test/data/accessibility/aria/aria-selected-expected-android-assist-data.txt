@@ -1,0 +1,6 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++ListView textSize:16.00 style:0 bundle:[display="block", htmlTag="div", onclick="console.log('hi')", role="listbox"]
+++++View text:"1" textSize:16.00 style:0 bundle:[aria-label="1", aria-selected="true", display="block", htmlTag="div", role="option", tabindex="-1"]
+++++++TextView text:"Item 1" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++View text:"2" textSize:16.00 style:0 bundle:[aria-label="2", aria-selected="false", display="block", htmlTag="div", role="option", tabindex="-1"]
+++++++TextView text:"Item 2" textSize:16.00 style:0 bundle:[display="", htmlTag=""]

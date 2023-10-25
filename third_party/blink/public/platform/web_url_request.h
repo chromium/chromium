@@ -178,13 +178,6 @@ class BLINK_PLATFORM_EXPORT WebURLRequest {
   int RequestorID() const;
   void SetRequestorID(int);
 
-  // If true, the client expects to receive the raw response pipe. Similar to
-  // UseStreamOnResponse but the stream will be a mojo DataPipe rather than a
-  // WebDataConsumerHandle.
-  // If the request is fetched synchronously the response will instead be piped
-  // to a blob if this flag is set to true.
-  bool PassResponsePipeToClient() const;
-
   // True if the requestor wants to receive the response body as a stream.
   bool UseStreamOnResponse() const;
   void SetUseStreamOnResponse(bool);

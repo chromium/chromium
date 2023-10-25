@@ -7,8 +7,9 @@ import {dispatchSimpleEvent, getPropertyDescriptor, PropertyKind} from 'chrome:/
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
-import {isEntryInsideDrive} from '../../../common/js/entry_utils.js';
+import {compareLabelAndGroupBottomEntries, compareName, isComputersEntry, isDescendantEntry, isEntryInsideDrive, isOneDrive, isOneDriveId, isRecentRootType, isSameEntry, isSharedDriveEntry} from '../../../common/js/entry_utils.js';
 import {FileType} from '../../../common/js/file_type.js';
+import {isJellyEnabled} from '../../../common/js/flags.js';
 import {vmTypeToIconName} from '../../../common/js/icon_util.js';
 import {recordEnum, recordInterval, recordSmallCount, recordUserAction, startInterval} from '../../../common/js/metrics.js';
 import {str, strf, util} from '../../../common/js/util.js';
@@ -59,7 +60,7 @@ DirectoryItemTreeBaseMethods.getItemByEntry = function(entry) {
     if (!item.entry) {
       continue;
     }
-    if (util.isSameEntry(item.entry, entry)) {
+    if (isSameEntry(item.entry, entry)) {
       // The Drive root volume item "Google Drive" and its child "My Drive" have
       // the same entry. When we look for a tree item of Drive's root directory,
       // "My Drive" should be returned, as we use "Google Drive" for grouping
@@ -74,15 +75,15 @@ DirectoryItemTreeBaseMethods.getItemByEntry = function(entry) {
     // Team drives are descendants of the Drive root volume item "Google Drive".
     // When we looking for an item in team drives, recursively search inside the
     // "Google Drive" root item.
-    if (util.isSharedDriveEntry(entry) && item instanceof DriveVolumeItem) {
+    if (isSharedDriveEntry(entry) && item instanceof DriveVolumeItem) {
       return item.getItemByEntry(entry);
     }
 
-    if (util.isComputersEntry(entry) && item instanceof DriveVolumeItem) {
+    if (isComputersEntry(entry) && item instanceof DriveVolumeItem) {
       return item.getItemByEntry(entry);
     }
 
-    if (util.isDescendantEntry(item.entry, entry)) {
+    if (isDescendantEntry(item.entry, entry)) {
       return item.getItemByEntry(entry);
     }
   }
@@ -114,18 +115,18 @@ DirectoryItemTreeBaseMethods.searchAndSelectByEntry = async function(entry) {
     // Team drives are descendants of the Drive root volume item "Google Drive".
     // When we looking for an item in team drives, recursively search inside the
     // "Google Drive" root item.
-    if (util.isSharedDriveEntry(entry) && item instanceof DriveVolumeItem) {
+    if (isSharedDriveEntry(entry) && item instanceof DriveVolumeItem) {
       await item.selectByEntry(entry);
       return true;
     }
 
-    if (util.isComputersEntry(entry) && item instanceof DriveVolumeItem) {
+    if (isComputersEntry(entry) && item instanceof DriveVolumeItem) {
       await item.selectByEntry(entry);
       return true;
     }
 
-    if (util.isDescendantEntry(item.entry, entry) ||
-        util.isSameEntry(item.entry, entry)) {
+    if (isDescendantEntry(item.entry, entry) ||
+        isSameEntry(item.entry, entry)) {
       await item.selectByEntry(entry);
       return true;
     }
@@ -206,7 +207,7 @@ directorytree.styleRowElementDepth = (item, depth) => {
   // 'TreeItem'.
   const fileRowElement = item.rowElement.firstElementChild;
 
-  const indent = depth * (util.isJellyEnabled() ? 20 : 22);
+  const indent = depth * (isJellyEnabled() ? 20 : 22);
   let style = 'padding-inline-start: ' + indent + 'px';
   const width = indent + 60;
   style += '; min-width: ' + width + 'px;';
@@ -497,7 +498,7 @@ export class DirectoryItem extends FilesTreeItem {
         // 'DirectoryItem'.
         this.add(item);
         index++;
-      } else if (util.isSameEntry(currentEntry, currentElement.entry)) {
+      } else if (isSameEntry(currentEntry, currentElement.entry)) {
         currentElement.updateDriveSpecificIcons();
         if (recursive && this.expanded) {
           if (this.delayExpansion) {
@@ -705,7 +706,7 @@ export class DirectoryItem extends FilesTreeItem {
    * @returns {!Array<!Entry>}
    */
   sortEntries(entries) {
-    entries.sort(util.compareName);
+    entries.sort(compareName);
     const filter = this.fileFilter_.filter.bind(this.fileFilter_);
     return entries.filter(filter);
   }
@@ -813,7 +814,7 @@ export class DirectoryItem extends FilesTreeItem {
     // @ts-ignore: error TS2345: Argument of type 'Object |
     // FileSystemDirectoryEntry' is not assignable to parameter of type
     // 'FileSystemEntry | FilesAppEntry | null | undefined'.
-    if (util.isSameEntry(changedDirectoryEntry, this.entry)) {
+    if (isSameEntry(changedDirectoryEntry, this.entry)) {
       this.updateSubDirectories(false /* recursive */);
       return;
     }
@@ -828,8 +829,8 @@ export class DirectoryItem extends FilesTreeItem {
       if (!item.entry) {
         continue;
       }
-      if (util.isDescendantEntry(item.entry, changedDirectoryEntry) ||
-          util.isSameEntry(item.entry, changedDirectoryEntry)) {
+      if (isDescendantEntry(item.entry, changedDirectoryEntry) ||
+          isSameEntry(item.entry, changedDirectoryEntry)) {
         item.updateItemByEntry(changedDirectoryEntry);
         break;
       }
@@ -851,7 +852,7 @@ export class DirectoryItem extends FilesTreeItem {
     // @ts-ignore: error TS2345: Argument of type 'Object |
     // FileSystemDirectoryEntry' is not assignable to parameter of type
     // 'FileSystemEntry | FilesAppEntry | null | undefined'.
-    if (util.isSameEntry(entry, this.entry)) {
+    if (isSameEntry(entry, this.entry)) {
       this.selected = true;
       return;
     }
@@ -1198,7 +1199,7 @@ export class EntryListItem extends DirectoryItem {
         // undefined' is not assignable to parameter of type 'FileSystemEntry |
         // FilesAppEntry'.
         this.parentTree_.volumeManager_.getLocationInfo(entries[0]);
-    const compareFunction = util.compareLabelAndGroupBottomEntries(
+    const compareFunction = compareLabelAndGroupBottomEntries(
         // @ts-ignore: error TS2339: Property 'getUIChildren' does not exist on
         // type 'FileSystemDirectoryEntry'.
         locationInfo, this.entry.getUIChildren());
@@ -1319,7 +1320,7 @@ class VolumeItem extends DirectoryItem {
     // @ts-ignore: error TS2345: Argument of type 'Element | null' is not
     // assignable to parameter of type 'Element'.
     this.setupIcon_(this.querySelector('.icon'), this.volumeInfo_);
-    if (util.isOneDrive(modelItem.volumeInfo)) {
+    if (isOneDrive(modelItem.volumeInfo)) {
       this.toggleAttribute('one-drive', true);
     }
 
@@ -1403,7 +1404,7 @@ class VolumeItem extends DirectoryItem {
     const onEntryResolved = (entry) => {
       this.resolved_ = true;
       // Changes directory to the model item's root directory if needed.
-      if (!util.isSameEntry(directoryModel.getCurrentDirEntry(), entry)) {
+      if (!isSameEntry(directoryModel.getCurrentDirEntry(), entry)) {
         directoryModel.changeDirectoryEntry(entry);
       }
       // In case of failure in resolveDisplayRoot() in the volume's constructor,
@@ -1569,7 +1570,7 @@ export class DriveVolumeItem extends VolumeItem {
         // @ts-ignore: error TS2339: Property 'items' does not exist on type
         // 'DriveVolumeItem'.
         const entry = this.items[i] && this.items[i].entry;
-        if (entry && util.isSameEntry(entry, sharedDriveGrandRoot)) {
+        if (entry && isSameEntry(entry, sharedDriveGrandRoot)) {
           index = i;
           break;
         }
@@ -1662,7 +1663,7 @@ export class DriveVolumeItem extends VolumeItem {
         // @ts-ignore: error TS2339: Property 'items' does not exist on type
         // 'DriveVolumeItem'.
         const entry = this.items[i] && this.items[i].entry;
-        if (entry && util.isSameEntry(entry, computerGrandRoot)) {
+        if (entry && isSameEntry(entry, computerGrandRoot)) {
           index = i;
           break;
         }
@@ -1840,7 +1841,7 @@ export class DriveVolumeItem extends VolumeItem {
    * @override
    */
   updateItemByEntry(changedDirectoryEntry) {
-    const isTeamDriveChild = util.isSharedDriveEntry(changedDirectoryEntry);
+    const isTeamDriveChild = isSharedDriveEntry(changedDirectoryEntry);
 
     // If Shared Drive grand root has been removed and we receive an update for
     // an team drive, we need to create the Shared Drive grand root.
@@ -1853,7 +1854,7 @@ export class DriveVolumeItem extends VolumeItem {
       return;
     }
 
-    const isComputersChild = util.isComputersEntry(changedDirectoryEntry);
+    const isComputersChild = isComputersEntry(changedDirectoryEntry);
     // If Computers grand root has been removed and we receive an update for an
     // computer, we need to create the Computers grand root.
     if (isComputersChild) {
@@ -1909,7 +1910,7 @@ export class DriveVolumeItem extends VolumeItem {
       if (!item.entry) {
         continue;
       }
-      if (util.isSharedDriveEntry(item.entry)) {
+      if (isSharedDriveEntry(item.entry)) {
         return 2;
       }
     }
@@ -2026,7 +2027,7 @@ export class ShortcutItem extends FilesTreeItem {
    * @param {!DirectoryEntry} entry The directory entry to be selected.
    */
   selectByEntry(entry) {
-    if (util.isSameEntry(entry, this.entry)) {
+    if (isSameEntry(entry, this.entry)) {
       this.selected = true;
     }
   }
@@ -2049,7 +2050,7 @@ export class ShortcutItem extends FilesTreeItem {
     // @ts-ignore: error TS7006: Parameter 'entry' implicitly has an 'any' type.
     const onEntryResolved = (entry) => {
       // Changes directory to the model item's root directory if needed.
-      if (!util.isSameEntry(directoryModel.getCurrentDirEntry(), entry)) {
+      if (!isSameEntry(directoryModel.getCurrentDirEntry(), entry)) {
         recordUserAction('FolderShortcut.Navigate');
         directoryModel.changeDirectoryEntry(entry);
       }
@@ -2208,7 +2209,7 @@ export class FakeItem extends FilesTreeItem {
       icon.setAttribute('root-type-icon', rootType);
     }
 
-    if (util.isRecentRootType(rootType)) {
+    if (isRecentRootType(rootType)) {
       // @ts-ignore: error TS2339: Property 'fileCategory' does not exist on
       // type 'FilesAppEntry'.
       if (this.dirEntry_.fileCategory) {
@@ -2253,7 +2254,7 @@ export class FakeItem extends FilesTreeItem {
    * @param {!DirectoryEntry} entry
    */
   selectByEntry(entry) {
-    if (util.isSameEntry(entry, this.entry)) {
+    if (isSameEntry(entry, this.entry)) {
       this.selected = true;
     }
   }
@@ -2464,7 +2465,7 @@ export class DirectoryTree extends Tree {
     const odfsDisabledUpdated =
         Object.values(state.volumes)
             .some(
-                volume => volume && util.isOneDriveId(volume.providerId) &&
+                volume => volume && isOneDriveId(volume.providerId) &&
                     !!volume.isDisabled !== this.isODFSVolumeDisabled_);
     if (odfsDisabledUpdated) {
       this.isODFSVolumeDisabled_ = !this.isODFSVolumeDisabled_;
@@ -2478,7 +2479,7 @@ export class DirectoryTree extends Tree {
         // @ts-ignore: error TS2339: Property 'items' does not exist on type
         // 'DirectoryTree'.
         const treeItem = this.items[i];
-        if (util.isOneDrive(treeItem.modelItem.volumeInfo)) {
+        if (isOneDrive(treeItem.modelItem.volumeInfo)) {
           // @ts-ignore: error TS2554: Expected 0 arguments, but got 1.
           this.remove(treeItem);
           // Decrement to account for the removed item.
@@ -2531,7 +2532,7 @@ export class DirectoryTree extends Tree {
       // @ts-ignore: error TS2339: Property 'items' does not exist on type
       // 'DirectoryItem'.
       const item = parentItem.items[i];
-      if (util.isSameEntry(item.entry, newDirectory)) {
+      if (isSameEntry(item.entry, newDirectory)) {
         this.selectedItem = item;
         return;
       }
@@ -2547,7 +2548,7 @@ export class DirectoryTree extends Tree {
     while (addAt < parentItem.items.length &&
            // @ts-ignore: error TS2339: Property 'items' does not exist on type
            // 'DirectoryItem'.
-           util.compareName(parentItem.items[addAt].entry, newDirectory) < 0) {
+           compareName(parentItem.items[addAt].entry, newDirectory) < 0) {
       addAt++;
     }
 
@@ -2667,7 +2668,7 @@ export class DirectoryTree extends Tree {
         continue;
       }
 
-      if (util.isSameEntry(item.entry, entry)) {
+      if (isSameEntry(item.entry, entry)) {
         await item.selectByEntry(entry);
         return true;
       }
@@ -2686,7 +2687,7 @@ export class DirectoryTree extends Tree {
    * @return {!Promise<void>}
    */
   async selectByEntry(entry) {
-    if (this.selectedItem && util.isSameEntry(entry, this.selectedItem.entry)) {
+    if (this.selectedItem && isSameEntry(entry, this.selectedItem.entry)) {
       return;
     }
 

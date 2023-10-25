@@ -606,6 +606,8 @@
   <message name="IDS_EXTENSIONS_INCLUDE_START_MODIFIER" desc="Error message explaining that shortcuts must start with either the Control, Alt, or Search key.">
     Include Ctrl, Alt, or Search
   </message>
+</if>
+<if expr="is_chromeos">
   <message name="IDS_EXTENSIONS_WFH_PERMISSION_HANDLER_FILES" desc="Label showing file names in singular or plural form.">
     {FILE_COUNT, plural,
       =1 {Open and edit <ph name="FILE1">{FILE1}<ex>1.txt</ex></ph> in this extension}

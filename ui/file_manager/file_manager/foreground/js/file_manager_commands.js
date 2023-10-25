@@ -10,8 +10,10 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {getDlpRestrictionDetails, getHoldingSpaceState, startIOTask} from '../../common/js/api.js';
 import {DialogType, isModal} from '../../common/js/dialog_type.js';
 import {getFocusedTreeItem, isDirectoryTree, isDirectoryTreeItem} from '../../common/js/dom_utils.js';
+import {entriesToURLs, isFakeEntry, isInteractiveVolume, isNonModifiable, isRecentRootType, isSameEntry, isSameVolume, isTeamDriveRoot, isTeamDrivesGrandRoot, isTrashEntry, isTrashRoot, isTrashRootType, unwrapEntry} from '../../common/js/entry_utils.js';
 import {FileType} from '../../common/js/file_type.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
+import {isDlpEnabled, isDriveFsBulkPinningEnabled, isMirrorSyncEnabled, isNewDirectoryTreeEnabled, isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
 import {recordEnum, recordUserAction} from '../../common/js/metrics.js';
 import {deleteIsForever, RestoreFailedType, RestoreFailedTypesUMA, RestoreFailedUMA, shouldMoveToTrash, TrashEntry} from '../../common/js/trash.js';
 import {str, strf, util} from '../../common/js/util.js';
@@ -150,7 +152,7 @@ CommandUtil.getCommandEntries = (fileManager, element) => {
 
   // The event target could still be a descendant of a DirectoryItem element
   // (e.g. the eject button).
-  if (util.isNewDirectoryTreeEnabled()) {
+  if (isNewDirectoryTreeEnabled()) {
     // Handle eject button in the new directory tree.
     // @ts-ignore: error TS2339: Property 'classList' does not exist on type
     // 'EventTarget'.
@@ -352,7 +354,7 @@ CommandUtil.createVolumeSwitchCommand = index =>
       // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
       // 'any' type.
       execute(event, fileManager) {
-        if (util.isNewDirectoryTreeEnabled()) {
+        if (isNewDirectoryTreeEnabled()) {
           const items = fileManager.ui.directoryTree.items;
           if (items[index - 1]?.entry) {
             getStore().dispatch(
@@ -404,7 +406,7 @@ CommandUtil.isRootEntry = (volumeManager, entry) => {
   }
 
   const volumeInfo = volumeManager.getVolumeInfo(entry);
-  return !!volumeInfo && util.isSameEntry(volumeInfo.displayRoot, entry);
+  return !!volumeInfo && isSameEntry(volumeInfo.displayRoot, entry);
 };
 
 /**
@@ -427,7 +429,7 @@ CommandUtil.isFromSelectionMenu = event => {
  */
 CommandUtil.shouldShowMenuItemsForEntry = (volumeManager, entry) => {
   // If the entry is fake entry, hide context menu entries.
-  if (util.isFakeEntry(entry)) {
+  if (isFakeEntry(entry)) {
     return false;
   }
 
@@ -443,18 +445,18 @@ CommandUtil.shouldShowMenuItemsForEntry = (volumeManager, entry) => {
 
   // If the entry belongs to a non-interactive volume, hide context menu
   // entries.
-  if (!util.isInteractiveVolume(volumeInfo)) {
+  if (!isInteractiveVolume(volumeInfo)) {
     return false;
   }
 
   // If the entry is root entry of its volume (but not a team drive root),
   // hide context menu entries.
   if (CommandUtil.isRootEntry(volumeManager, entry) &&
-      !util.isTeamDriveRoot(entry)) {
+      !isTeamDriveRoot(entry)) {
     return false;
   }
 
-  if (util.isTeamDrivesGrandRoot(entry)) {
+  if (isTeamDrivesGrandRoot(entry)) {
     return false;
   }
 
@@ -527,7 +529,7 @@ CommandUtil.isDriveEntries = (entries, volumeManager) => {
   }
 
   if (volumeInfo.volumeType === VolumeManagerCommon.VolumeType.DRIVE &&
-      util.isSameVolume(entries, volumeManager)) {
+      isSameVolume(entries, volumeManager)) {
     return true;
   }
 
@@ -573,7 +575,7 @@ CommandUtil.isOnTrashRoot = fileManager => {
   if (!currentRootType) {
     return false;
   }
-  return util.isTrashRootType(currentRootType);
+  return isTrashRootType(currentRootType);
 };
 
 
@@ -614,7 +616,7 @@ CommandUtil.currentVolumeIsInteractive = fileManager => {
   if (!volumeInfo) {
     return true;
   }
-  return util.isInteractiveVolume(volumeInfo);
+  return isInteractiveVolume(volumeInfo);
 };
 
 
@@ -631,7 +633,7 @@ CommandUtil.containsNonInteractiveEntry = (entries, fileManager) => {
     if (!volumeInfo) {
       return false;
     }
-    return util.isInteractiveVolume(volumeInfo);
+    return isInteractiveVolume(volumeInfo);
   });
 };
 
@@ -1050,7 +1052,7 @@ CommandHandler.COMMANDS_['format'] = new (class extends FilesCommand {
         location.rootType === VolumeManagerCommon.RootType.REMOVABLE;
     event.canExecute = removableRoot && (isUnrecognizedVolume || writable);
 
-    if (util.isSinglePartitionFormatEnabled()) {
+    if (isSinglePartitionFormatEnabled()) {
       let isDevice = false;
       if (root && root instanceof EntryList) {
         // root entry is device node if it has child (partition).
@@ -1087,7 +1089,7 @@ CommandHandler.COMMANDS_['erase-device'] = new (class extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   canExecute(event, fileManager) {
-    if (!util.isSinglePartitionFormatEnabled()) {
+    if (!isSinglePartitionFormatEnabled()) {
       event.canExecute = false;
       event.command.setHidden(true);
       return;
@@ -1182,7 +1184,7 @@ CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
                 // @ts-ignore: error TS7005: Variable
                 // 'executedFromDirectoryTree' implicitly has an 'any' type.
                 if (executedFromDirectoryTree) {
-                  if (util.isNewDirectoryTreeEnabled()) {
+                  if (isNewDirectoryTreeEnabled()) {
                     // After new directory is created on parent directory, we
                     // need to trigger a re-read for the parent directory to the
                     // store.
@@ -1285,8 +1287,7 @@ CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
     }
     if (isDirectoryTree(event.target) || isDirectoryTreeItem(event.target)) {
       const entry = entries[0];
-      if (!entry || util.isFakeEntry(entry) ||
-          util.isTeamDrivesGrandRoot(entry)) {
+      if (!entry || isFakeEntry(entry) || isTeamDrivesGrandRoot(entry)) {
         event.canExecute = false;
         event.command.setHidden(true);
         return;
@@ -1667,7 +1668,7 @@ export class DeleteCommand extends FilesCommand {
     return entries.some(entry => {
       const locationInfo = fileManager.volumeManager.getLocationInfo(entry);
       return (locationInfo && locationInfo.isReadOnly) ||
-          util.isNonModifiable(fileManager.volumeManager, entry);
+          isNonModifiable(fileManager.volumeManager, entry);
     });
   }
 }
@@ -1778,8 +1779,8 @@ CommandHandler
   canExecute(event, fileManager) {
     const entries = CommandUtil.getCommandEntries(fileManager, event.target);
 
-    const enabled = entries.length > 0 &&
-        entries.every(e => util.isTrashEntry(e)) && fileManager.trashEnabled;
+    const enabled = entries.length > 0 && entries.every(e => isTrashEntry(e)) &&
+        fileManager.trashEnabled;
     event.canExecute = enabled;
     event.command.setHidden(!enabled);
   }
@@ -1838,10 +1839,10 @@ CommandHandler.COMMANDS_['empty-trash'] = new (class extends FilesCommand {
     const entries = CommandUtil.getCommandEntries(fileManager, event.target);
     // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry | undefined'
     // is not assignable to parameter of type 'FileSystemEntry | FilesAppEntry'.
-    const isTrashRoot = entries.length === 1 && util.isTrashRoot(entries[0]) &&
+    const trashRoot = entries.length === 1 && isTrashRoot(entries[0]) &&
         fileManager.trashEnabled;
-    event.canExecute = isTrashRoot || CommandUtil.isOnTrashRoot(fileManager);
-    event.command.setHidden(!isTrashRoot);
+    event.canExecute = trashRoot || CommandUtil.isOnTrashRoot(fileManager);
+    event.command.setHidden(!trashRoot);
   }
 })();
 
@@ -2067,12 +2068,12 @@ CommandHandler.cutCopyCommand_ = new (class extends FilesCommand {
       }
 
       // For MyFiles/Downloads and MyFiles/PluginVm we only allow copy.
-      if (isMove && util.isNonModifiable(volumeManager, entry)) {
+      if (isMove && isNonModifiable(volumeManager, entry)) {
         return false;
       }
 
       // Cut is unavailable on Shared Drive roots.
-      if (util.isTeamDriveRoot(entry)) {
+      if (isTeamDriveRoot(entry)) {
         return false;
       }
 
@@ -2118,7 +2119,7 @@ CommandHandler.cutCopyCommand_ = new (class extends FilesCommand {
       // For MyFiles/Downloads we only allow copy.
       if (isMove &&
           fileManager.getSelection().entries.some(
-              util.isNonModifiable.bind(null, volumeManager))) {
+              isNonModifiable.bind(null, volumeManager))) {
         return false;
       }
 
@@ -2152,7 +2153,7 @@ CommandHandler.COMMANDS_['rename'] = new (class extends FilesCommand {
   // type.
   execute(event, fileManager) {
     const entry = CommandUtil.getCommandEntry(fileManager, event.target);
-    if (util.isNonModifiable(fileManager.volumeManager, entry)) {
+    if (isNonModifiable(fileManager.volumeManager, entry)) {
       return;
     }
     if (CommandUtil.isOnTrashRoot(fileManager)) {
@@ -2249,8 +2250,7 @@ CommandHandler.COMMANDS_['rename'] = new (class extends FilesCommand {
             // undefined' is not assignable to parameter of type
             // 'FileSystemEntry | FakeEntry'.
             fileManager.volumeManager, entries[0]) ||
-        entries.some(
-            util.isNonModifiable.bind(null, fileManager.volumeManager))) {
+        entries.some(isNonModifiable.bind(null, fileManager.volumeManager))) {
       event.canExecute = false;
       event.command.setHidden(true);
       return;
@@ -2458,8 +2458,7 @@ CommandHandler
                               .map(m => m.sourceUrl || '');
     chrome.fileManagerPrivate.invokeSharesheet(
         // @ts-ignore: error TS7006: Parameter 'e' implicitly has an 'any' type.
-        entries.map(e => util.unwrapEntry(e)), launchSource, dlpSourceUrls,
-        () => {
+        entries.map(e => unwrapEntry(e)), launchSource, dlpSourceUrls, () => {
           if (chrome.runtime.lastError) {
             console.warn(chrome.runtime.lastError.message);
             return;
@@ -2499,7 +2498,7 @@ CommandHandler
 
     chrome.fileManagerPrivate.sharesheetHasTargets(
         // @ts-ignore: error TS7006: Parameter 'e' implicitly has an 'any' type.
-        entries.map(e => util.unwrapEntry(e)), hasTargets => {
+        entries.map(e => unwrapEntry(e)), hasTargets => {
           if (chrome.runtime.lastError) {
             console.warn(chrome.runtime.lastError.message);
             return;
@@ -2566,7 +2565,7 @@ CommandHandler.COMMANDS_['toggle-holding-space'] =
 
         const allowedVolumeTypes = HoldingSpaceUtil.getAllowedVolumeTypes();
         const currentRootType = fileManager.directoryModel.getCurrentRootType();
-        if (!util.isRecentRootType(currentRootType)) {
+        if (!isRecentRootType(currentRootType)) {
           const volumeInfo = fileManager.directoryModel.getCurrentVolumeInfo();
           if (!volumeInfo ||
               !allowedVolumeTypes.includes(volumeInfo.volumeType)) {
@@ -2627,7 +2626,7 @@ CommandHandler.COMMANDS_['toggle-holding-space'] =
         // @ts-ignore: error TS2345: Argument of type '(FileSystemEntry |
         // FilesAppEntry)[]' is not assignable to parameter of type
         // 'FileSystemEntry[]'.
-        const selectedUrls = util.entriesToURLs(entries);
+        const selectedUrls = entriesToURLs(entries);
         // @ts-ignore: error TS7053: Element implicitly has an 'any' type
         // because expression of type 'string' can't be used to index type '{}'.
         this.addsItems_ = selectedUrls.some(url => !itemsSet[url]);
@@ -2677,7 +2676,7 @@ CommandHandler.COMMANDS_['go-to-file-location'] =
       // 'any' type.
       canExecute(event, fileManager) {
         // Available in Recents, Audio, Images, and Videos.
-        if (!util.isRecentRootType(
+        if (!isRecentRootType(
                 fileManager.directoryModel.getCurrentRootType())) {
           event.canExecute = false;
           event.command.setHidden(true);
@@ -2760,7 +2759,7 @@ CommandHandler.COMMANDS_['dlp-restriction-details'] =
       // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
       // 'any' type.
       canExecute(event, fileManager) {
-        if (!util.isDlpEnabled()) {
+        if (!isDlpEnabled()) {
           event.canExecute = false;
           event.command.setHidden(true);
           return;
@@ -2909,7 +2908,7 @@ CommandHandler.COMMANDS_['toggle-pinned'] = new (class extends FilesCommand {
     // When the bulk pinning panel is enabled, the "Available offline" toggle
     // should not be visible as the underlying functionality is handled
     // automatically.
-    if (util.isDriveFsBulkPinningEnabled()) {
+    if (isDriveFsBulkPinningEnabled()) {
       const state = /** @type {State} */ (getStore().getState());
       // @ts-ignore: error TS18048: 'state.preferences' is possibly 'undefined'.
       const bulkPinningPref = state.preferences.driveFsBulkPinningEnabled;
@@ -3257,7 +3256,7 @@ CommandHandler.COMMANDS_['manage-mirrorsync'] =
         event.canExecute =
             (currentRootType === VolumeManagerCommon.RootType.MY_FILES ||
              currentRootType === VolumeManagerCommon.RootType.DOWNLOADS) &&
-            util.isMirrorSyncEnabled();
+            isMirrorSyncEnabled();
         event.command.setHidden(!event.canExecute);
       }
     })();
@@ -3327,7 +3326,7 @@ class GuestOsShareCommand extends FilesCommand {
       chrome.fileManagerPrivate.sharePathsWithCrostini(
           // @ts-ignore: error TS2322: Type 'FileSystemEntry | FilesAppEntry' is
           // not assignable to type 'FileSystemEntry'.
-          this.vmName_, [util.unwrapEntry(entry)], true /* persist */, () => {
+          this.vmName_, [unwrapEntry(entry)], true /* persist */, () => {
             if (chrome.runtime.lastError) {
               console.warn(
                   'Error sharing with guest: ' +

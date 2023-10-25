@@ -1,5 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.3.0-alpha06" type="baseline" client="" dependencies="true" name="" variant="all" version="8.3.0-alpha06">
+<issues format="6" by="lint 8.3.0-alpha09" type="baseline" client="" dependencies="true" name="" variant="all" version="8.3.0-alpha09">
+
+    <issue
+        id="WrongCommentType"
+        message="This block comment looks like it was intended to be a KDoc comment"
+        errorLine1="     * @param executor The executor on which the observations are reported."
+        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/TestNetworkQualityRttListener.java"
+            line="31"
+            column="8"/>
+    </issue>
+
+    <issue
+        id="WrongCommentType"
+        message="This block comment looks like it was intended to be a KDoc comment"
+        errorLine1="     * @param executor The executor on which the observations are reported."
+        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/TestNetworkQualityThroughputListener.java"
+            line="25"
+            column="8"/>
+    </issue>
 
     <issue
         id="SupportAnnotationUsage"
@@ -19,7 +41,7 @@
         errorLine2="~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java"
-            line="46"
+            line="47"
             column="1"/>
     </issue>
 
@@ -30,7 +52,7 @@
         errorLine2="~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java"
-            line="31"
+            line="32"
             column="1"/>
     </issue>
 
@@ -63,7 +85,7 @@
         errorLine2="~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java"
-            line="39"
+            line="40"
             column="1"/>
     </issue>
 
@@ -74,7 +96,7 @@
         errorLine2="~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java"
-            line="54"
+            line="55"
             column="1"/>
     </issue>
 
@@ -85,7 +107,7 @@
         errorLine2="~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java"
-            line="57"
+            line="58"
             column="1"/>
     </issue>
 

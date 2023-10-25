@@ -45,11 +45,15 @@ constexpr char kPackageName1[] = "fake.package.name1";
 constexpr char kPackageName2[] = "fake.package.name2";
 constexpr char kPackageName3[] = "fake.package.name3";
 constexpr char kPackageName4[] = "fake.package.name4";
+constexpr char kPackageName5[] = "fake.package.name5";
 
 constexpr char kWebAppInfoTitle4[] = "package4";
 constexpr char kWebAppInfoStartURL4[] = "https://example.com/app?start";
 constexpr char kWebAppInfoScope4[] = "https://example.com/app";
 constexpr char kWebAppInfoCertificateFingerprint4[] = "abc";
+
+const std::vector<std::string> kSupportedLocales5 = {"en-US", "ja"};
+constexpr char kSelectedLocale5[] = "en-US";
 
 }  // namespace
 
@@ -283,6 +287,18 @@ void ArcAppTest::CreateFakeAppsAndPackages() {
       /*permission_states=*/std::move(permissions4),
       /*version_name=*/absl::nullopt,
       /*preinstalled=*/false));
+
+  base::flat_map<arc::mojom::AppPermission, arc::mojom::PermissionStatePtr>
+      permissions5;
+  fake_packages_.emplace_back(arc::mojom::ArcPackageInfo::New(
+      kPackageName5 /* package_name */, 5 /* package_version */,
+      5 /* last_backup_android_id */, 5 /* last_backup_time */,
+      false /* sync */, false /* system */, false /* vpn_provider */,
+      nullptr /* web_app_info */, absl::nullopt, std::move(permissions5),
+      absl::nullopt /* version_name */, false /* preinstalled */,
+      arc::mojom::InstallPriority::kUndefined /* priority */,
+      arc::mojom::PackageLocaleInfo::New(kSupportedLocales5,
+                                         kSelectedLocale5)));
 
   for (int i = 0; i < 3; ++i) {
     arc::mojom::ShortcutInfo shortcut_info;

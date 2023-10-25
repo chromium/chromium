@@ -1074,7 +1074,7 @@ void TestRepeatStylesParsing(const String& testValue,
   TestRepeatStyleParsing(testValue, expectedCssText,
                          CSSPropertyID::kBackgroundRepeat);
   TestRepeatStyleParsing(testValue, expectedCssText,
-                         CSSPropertyID::kWebkitMaskRepeat);
+                         CSSPropertyID::kMaskRepeat);
 }
 
 TEST(CSSPropertyParserTest, RepeatStyleRepeatX1) {

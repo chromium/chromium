@@ -80,15 +80,16 @@ void MockMediaStreamVideoSource::DoChangeSource(
 void MockMediaStreamVideoSource::StartSourceImpl(
     VideoCaptureDeliverFrameCB frame_callback,
     EncodedVideoFrameCB encoded_frame_callback,
-    VideoCaptureCropVersionCB crop_version_callback,
+    VideoCaptureSubCaptureTargetVersionCB sub_capture_target_version_callback,
     VideoCaptureNotifyFrameDroppedCB frame_dropped_callback) {
   DCHECK(frame_callback_.is_null());
   DCHECK(encoded_frame_callback_.is_null());
-  DCHECK(crop_version_callback_.is_null());
+  DCHECK(sub_capture_target_version_callback_.is_null());
   attempted_to_start_ = true;
   frame_callback_ = std::move(frame_callback);
   encoded_frame_callback_ = std::move(encoded_frame_callback);
-  crop_version_callback_ = std::move(crop_version_callback);
+  sub_capture_target_version_callback_ =
+      std::move(sub_capture_target_version_callback);
   frame_dropped_callback_ = std::move(frame_dropped_callback);
 }
 
@@ -127,11 +128,12 @@ void MockMediaStreamVideoSource::DropFrame(
                       CrossThreadBindOnce(frame_dropped_callback_, reason));
 }
 
-void MockMediaStreamVideoSource::DeliverNewCropVersion(uint32_t crop_version) {
-  DCHECK(!crop_version_callback_.is_null());
-  PostCrossThreadTask(
-      *video_task_runner(), FROM_HERE,
-      CrossThreadBindOnce(crop_version_callback_, crop_version));
+void MockMediaStreamVideoSource::DeliverNewSubCaptureTargetVersion(
+    uint32_t sub_capture_target_version) {
+  DCHECK(!sub_capture_target_version_callback_.is_null());
+  PostCrossThreadTask(*video_task_runner(), FROM_HERE,
+                      CrossThreadBindOnce(sub_capture_target_version_callback_,
+                                          sub_capture_target_version));
 }
 
 void MockMediaStreamVideoSource::StopSourceForRestartImpl() {

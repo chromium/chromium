@@ -4,9 +4,8 @@
 
 #include <stdint.h>
 
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "media/base/media_switches.h"
+#include "media/base/platform_features.h"
 #include "media/base/video_codecs.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
 #include "media/video/video_decode_accelerator.h"
@@ -98,18 +97,6 @@ typedef webrtc::SdpVideoFormat::Parameters Params;
 
 class RTCVideoDecoderFactoryTest : public ::testing::Test {
  public:
-  void SetUp() override { DisableFeature(media::kVp9kSVCHWDecoding); }
-
-  void EnableFeature(const base::Feature& feature) {
-    feature_.Reset();
-    feature_.InitAndEnableFeature(feature);
-  }
-
-  void DisableFeature(const base::Feature& feature) {
-    feature_.Reset();
-    feature_.InitAndDisableFeature(feature);
-  }
-
   RTCVideoDecoderFactoryTest()
       : decoder_factory_(&mock_gpu_factories_, nullptr, nullptr, {}) {}
 
@@ -117,9 +104,6 @@ class RTCVideoDecoderFactoryTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   MockGpuVideoDecodeAcceleratorFactories mock_gpu_factories_;
   RTCVideoDecoderFactory decoder_factory_;
-
- private:
-  base::test::ScopedFeatureList feature_;
 };
 
 TEST_F(RTCVideoDecoderFactoryTest, QueryCodecSupportReturnsExpectedResults) {
@@ -158,10 +142,14 @@ TEST_F(RTCVideoDecoderFactoryTest, QueryCodecSupportReturnsExpectedResults) {
                          Sdp("AV1"), true /*reference_scaling*/),
                      kSupportedPowerEfficient));
 
-  // VP9 & H264 decode not supported with reference scaling.
+  // VP9 decode supported depending on platform.
   EXPECT_TRUE(Equals(decoder_factory_.QueryCodecSupport(
                          Sdp("VP9"), true /*reference_scaling*/),
-                     kUnsupported));
+                     media::IsVp9kSVCHWDecodingEnabled()
+                         ? kSupportedPowerEfficient
+                         : kUnsupported));
+
+  // H264 decode not supported with reference scaling.
   EXPECT_TRUE(Equals(decoder_factory_.QueryCodecSupport(
                          Sdp("H264", Params{{"level-asymmetry-allowed", "1"},
                                             {"packetization-mode", "1"},

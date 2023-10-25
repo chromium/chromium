@@ -30,9 +30,11 @@ class FastCheckoutDelegate {
 
   // Returns whether the FC surface is supported to trigger on a particular form
   // and field. Only if this is true, the client will show the view.
-  virtual bool IntendsToShowFastCheckout(AutofillManager& manager,
-                                         FormGlobalId form_id,
-                                         FieldGlobalId field_id) const = 0;
+  virtual bool IntendsToShowFastCheckout(
+      AutofillManager& manager,
+      FormGlobalId form_id,
+      FieldGlobalId field_id,
+      const autofill::FormData& form_data) const = 0;
 
   // Returns whether the FC surface is currently being shown.
   virtual bool IsShowingFastCheckoutUI() const = 0;

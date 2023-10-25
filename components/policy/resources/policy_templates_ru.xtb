@@ -608,7 +608,6 @@ Kyber поддерживает обратную совместимость. Су
       Подробнее о допустимых шаблонах URL: https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Разрешается использовать подстановочные знаки (<ph name="WILDCARD_VALUE" />). Это правило работает только с адресами сайтов-источников, поэтому пути в шаблонах URL не учитываются.
 
       Если значение не задано, то для сайта применяется правило <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> (если оно настроено), в противном случае действуют параметры браузера по умолчанию, а пользователи сами выбирают, каким сайтам предоставлять разрешение.</translation>
-<translation id="1573640116113281811">Allow users to include WiFi firmware dump in user feedback</translation>
 <translation id="1574258262373444557">Не использовать <ph name="AES_KL_NAME" /> в качестве алгоритма шифрования для пользовательских данных</translation>
 <translation id="1575015449587326319">Настройки коннектора OnFileDownloaded для Chrome Enterprise</translation>
 <translation id="1583248206450240930">Использовать <ph name="PRODUCT_FRAME_NAME" /> по умолчанию</translation>

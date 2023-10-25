@@ -5,6 +5,8 @@
 import {assert, assertInstanceof} from 'chrome://resources/ash/common/assert.js';
 
 import {queryRequiredElement, queryRequiredExactlyOne} from '../../common/js/dom_utils.js';
+import {isNonModifiable} from '../../common/js/entry_utils.js';
+import {isCrosComponentsEnabled, isDriveFsBulkPinningEnabled} from '../../common/js/flags.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
@@ -301,7 +303,7 @@ export class ToolbarController {
     this.sharesheetButton_.addEventListener(
         'click', this.onSharesheetButtonClicked_.bind(this));
 
-    if (util.isDriveFsBulkPinningEnabled()) {
+    if (isDriveFsBulkPinningEnabled()) {
       const cloudPanel = queryRequiredElement('xf-cloud-panel');
       this.cloudButton_.addEventListener('click', () => {
         this.cloudButton_.toggleAttribute('menu-shown', true);
@@ -423,7 +425,7 @@ export class ToolbarController {
          !this.directoryModel_.canDeleteEntries() ||
          selection.hasReadOnlyEntry() ||
          selection.entries.some(
-             entry => util.isNonModifiable(this.volumeManager_, entry)));
+             entry => isNonModifiable(this.volumeManager_, entry)));
     // Show 'Move to Trash' rather than 'Delete' if possible. The
     // `moveToTrashCommand` needs to be set to hidden to ensure the
     // `canExecuteChange` invokes the `hiddenChange` event in the case where
@@ -520,7 +522,7 @@ export class ToolbarController {
   /** @private */
   updatePinnedToggle_() {
     this.pinnedToggleWrapper_.hidden = this.togglePinnedCommand_.hidden;
-    if (util.isCrosComponentsEnabled()) {
+    if (isCrosComponentsEnabled()) {
       // @ts-ignore: error TS2339: Property 'pinnedToggleJelly_' does not exist
       // on type 'ToolbarController'.
       this.pinnedToggleJelly_.selected = this.togglePinnedCommand_.checked;
@@ -543,7 +545,7 @@ export class ToolbarController {
 
     // Optimistally update the command's properties so we get notified if they
     // change back.
-    this.togglePinnedCommand_.checked = util.isCrosComponentsEnabled() ?
+    this.togglePinnedCommand_.checked = isCrosComponentsEnabled() ?
         // @ts-ignore: error TS2339: Property 'pinnedToggleJelly_' does not
         // exist on type 'ToolbarController'.
         this.pinnedToggleJelly_.selected :

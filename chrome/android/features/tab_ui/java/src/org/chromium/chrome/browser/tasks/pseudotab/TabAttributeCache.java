@@ -295,9 +295,7 @@ public class TabAttributeCache {
         NavigationController controller = tab.getWebContents().getNavigationController();
         NavigationHistory history = controller.getNavigationHistory();
 
-        Profile profile = Profile.fromWebContents(tab.getWebContents());
-        if (profile == null) return null;
-
+        Profile profile = tab.getProfile();
         TemplateUrlService templateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
         if (!TextUtils.isEmpty(templateUrlService.getSearchQueryForUrl(tab.getUrl()))) {
             // If we are already at a search result page, do not show the last search term.

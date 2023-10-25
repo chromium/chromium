@@ -198,6 +198,7 @@ class WPTAdapter:
             install_webdriver=False,
             channel='nightly',
             affected=None,
+            logcat_dir=None,
         )
 
         # Install customized versions of `mozlog` formatters.

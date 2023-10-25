@@ -4106,10 +4106,6 @@
       default_value: "visible",
       typedom_types: ["Keyword"],
       computable: false,
-      // DisplayLockContext::AdjustElementStyle() can do SetSkipsContents(),
-      // but that value is not unset if the inline style is set incrementally
-      // back to content-visibility: visible.
-      supports_incremental_style: false,
     },
     {
       name: "resize",
@@ -5840,11 +5836,26 @@
       },
     },
     {
+      name: "mask-composite",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      style_builder_template: "mask_layer",
+      style_builder_template_args: {
+        fill_type: "CompositingOperator",
+      },
+      runtime_flag: "CSSMaskingInterop",
+    },
+    {
+      name: "-webkit-alternative-mask-composite",
+      alternative_of: "-webkit-mask-composite",
+      alias_for: "mask-composite",
+      runtime_flag: "CSSMaskingInterop",
+    },
+    {
       name: "-webkit-mask-composite",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       style_builder_template: "mask_layer",
       style_builder_template_args: {
-        fill_type: "Composite",
+        fill_type: "CompositingOperator",
       },
     },
     {
@@ -5915,6 +5926,21 @@
         fill_type: "PositionY",
       },
       computable: false,
+    },
+    {
+      name: "mask-repeat",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      style_builder_template: "mask_layer",
+      style_builder_template_args: {
+        fill_type: "Repeat",
+      },
+      runtime_flag: "CSSMaskingInterop",
+    },
+    {
+      name: "-webkit-alternative-mask-repeat",
+      alternative_of: "-webkit-mask-repeat",
+      alias_for: "mask-repeat",
+      runtime_flag: "CSSMaskingInterop",
     },
     {
       name: "-webkit-mask-repeat",
@@ -7550,7 +7576,7 @@
       alternative_of: "-webkit-mask",
       longhands: [
         "mask-image", "-webkit-mask-position-x",
-        "-webkit-mask-position-y", "mask-size", "-webkit-mask-repeat",
+        "-webkit-mask-position-y", "mask-size", "mask-repeat",
         "mask-origin", "mask-clip"
       ],
       property_methods: ["ParseShorthand"],

@@ -4,12 +4,25 @@
 
 #include "content/browser/preloading/prefetch/prefetch_serving_page_metrics_container.h"
 
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/navigation_handle_user_data.h"
+#include "content/public/browser/web_contents.h"
 
 namespace content {
 
 PrefetchServingPageMetricsContainer::PrefetchServingPageMetricsContainer(
-    NavigationHandle& navigation_handle) {}
+    NavigationHandle& navigation_handle) {
+  WebContents* initiator_web_contents =
+      navigation_handle.GetInitiatorFrameToken()
+          ? WebContents::FromRenderFrameHost(
+                RenderFrameHostImpl::FromFrameToken(
+                    navigation_handle.GetInitiatorProcessId(),
+                    *navigation_handle.GetInitiatorFrameToken()))
+          : nullptr;
+  serving_page_metrics_.same_tab_as_prefetching_tab =
+      initiator_web_contents &&
+      initiator_web_contents == navigation_handle.GetWebContents();
+}
 
 PrefetchServingPageMetricsContainer::~PrefetchServingPageMetricsContainer() =
     default;
@@ -23,12 +36,6 @@ void PrefetchServingPageMetricsContainer::SetRequiredPrivatePrefetchProxy(
     bool required_private_prefetch_proxy) {
   serving_page_metrics_.required_private_prefetch_proxy =
       required_private_prefetch_proxy;
-}
-
-void PrefetchServingPageMetricsContainer::SetSameTabAsPrefetchingTab(
-    bool same_tab_as_prefetching_tab) {
-  serving_page_metrics_.same_tab_as_prefetching_tab =
-      same_tab_as_prefetching_tab;
 }
 
 void PrefetchServingPageMetricsContainer::SetPrefetchHeaderLatency(

@@ -412,6 +412,11 @@ bool ClientSidePhishingModel::IsModelMetadataImageEmbeddingVersionMatching() {
          trigger_model_version_.value() == embedding_model_version_.value();
 }
 
+int ClientSidePhishingModel::GetTriggerModelVersion() {
+  return trigger_model_version_.has_value() ? trigger_model_version_.value()
+                                            : 0;
+}
+
 ClientSidePhishingModel::~ClientSidePhishingModel() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

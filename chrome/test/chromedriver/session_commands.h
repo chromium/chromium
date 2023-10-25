@@ -60,6 +60,11 @@ Status ExecuteQuit(bool allow_detach,
                    const base::Value::Dict& params,
                    std::unique_ptr<base::Value>* value);
 
+// Quits a session.
+Status ExecuteBidiSessionEnd(Session* session,
+                             const base::Value::Dict& params,
+                             std::unique_ptr<base::Value>* value);
+
 // Gets the capabilities of a particular session.
 Status ExecuteGetSessionCapabilities(Session* session,
                                      const base::Value::Dict& params,
@@ -180,8 +185,8 @@ Status ExecuteSetTimeZone(Session* session,
                           const base::Value::Dict& params,
                           std::unique_ptr<base::Value>* value);
 
-// Run a BiDi command
-Status ExecuteBidiCommand(Session* session,
+// Forwards a BiDi command to BiDiMapper
+Status ForwardBidiCommand(Session* session,
                           const base::Value::Dict& params,
                           std::unique_ptr<base::Value>* value);
 

@@ -6,8 +6,6 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
-#include "chromeos/ui/base/window_properties.h"
-#include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/desks/move_to_desks_menu_model.h"
 #include "chromeos/ui/wm/desks/chromeos_desks_histogram_enums.h"
 #include "chromeos/ui/wm/desks/desks_helper.h"
@@ -57,11 +55,7 @@ bool MoveToDesksMenuDelegate::IsCommandIdChecked(int command_id) const {
 
 bool MoveToDesksMenuDelegate::IsCommandIdEnabled(int command_id) const {
   if (IsAssignToAllDesksCommand(command_id)) {
-    // TODO(b/267363112): Allow a floated window to be assigned to all desks.
-    // If the window is floated, do not execute the command.
-    return widget_->GetNativeWindow()->GetProperty(
-               chromeos::kWindowStateTypeKey) !=
-           chromeos::WindowStateType::kFloated;
+    return true;
   }
 
   if (!IsMoveToDeskCommand(command_id))

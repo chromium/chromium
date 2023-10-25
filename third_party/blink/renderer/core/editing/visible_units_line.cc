@@ -54,10 +54,10 @@ static PositionWithAffinity AdjustForSoftLineWrap(
       !line_box.HasSoftWrapToNextLine())
     return position;
   // Returns a position after first space causing soft line wrap for editable.
-  if (!NGOffsetMapping::AcceptsPosition(position.GetPosition()))
+  if (!OffsetMapping::AcceptsPosition(position.GetPosition())) {
     return position;
-  const NGOffsetMapping* mapping =
-      NGOffsetMapping::GetFor(position.GetPosition());
+  }
+  const OffsetMapping* mapping = OffsetMapping::GetFor(position.GetPosition());
   if (!mapping) {
     // When |line_box| width has numeric overflow, |position| doesn't have
     // mapping. See http://crbug.com/1098795

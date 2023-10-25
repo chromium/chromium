@@ -93,7 +93,6 @@
 <translation id="1643449475550628585">Тушкагаздын сүрөтүн күн сайын өзгөртүү</translation>
 <translation id="1644574205037202324">Таржымал</translation>
 <translation id="1651925268237749928">Жалпы альбомду тандадыңыз. Башка адамдар сүрөттөрдү кошуп же өзгөртө алышат. Учурда бул альбомдо жок сүрөттөр тушкагаз катары көрсөтүлүшү мүмкүн.</translation>
-<translation id="1658834457013045127">Ар дайым</translation>
 <translation id="1661865805917886535">Аккаунт жана тутум жөнүндө айрым маалымат Google'га жөнөтүлүшү мүмкүн. Бул маалыматты Купуялык саясаты (<ph name="PRIVACYPOLICYURL" />) жана Тейлөө шарттарына (<ph name="TERMSOFSERVICEURL" />) ылайык техникалык маселелерди чечүү жана кызматтарыбызды жакшыртуу үчүн колдонобуз. Контентке өзгөртүүлөрдү киргизүүнү сурануу үчүн Юридикалык жардам (<ph name="LEGALHELPPAGEURL" />) барагына өтүңүз.</translation>
 <translation id="1662989795263954667">Токтоду – Сыя түгөнүп калды</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> алдын ала көрүү</translation>
@@ -323,7 +322,6 @@
 <translation id="3484914941826596830">Орнотулган программа жаңыртылып жатканда, тышкы түзмөктү ажыратпаңыз же компьютерди өчүрбөңүз. Бул терезени кичирейтип койсоңуз болот. Жаңыртуу бир нече мүнөткө созулуп, ал эми тышкы түзмөгүңүз бул убакытта иштебеши мүмкүн.</translation>
 <translation id="3486220673238053218">аныктама</translation>
 <translation id="3488065109653206955">Жарым-жартылай жандырылган</translation>
-<translation id="349491921221892984"><ph name="MINUTES" /> мүн.</translation>
 <translation id="3502426834823382181">бардык колдонмолорду көрүү</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Жаздырылган майнаптуулук маалыматын<ph name="END_LINK1" /> жөнөтүү</translation>
 <translation id="3517001332549868749">ChromeOS жаңыртуусу</translation>
@@ -484,7 +482,6 @@
 <translation id="473775607612524610">Жаңыртуу</translation>
 <translation id="4771607256327216405">баскычтопту жарыгыраак кылуу</translation>
 <translation id="4773299976671772492">Токтотулду</translation>
-<translation id="4782003517030001304">1 с.</translation>
 <translation id="4782311465517282004">Текстти коё бербей басып же оң баскычты чыкылдатканыңызда бирдиктер которулуп же аныктамаларды жана котормолорду аласыз</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> сүрөт</translation>
 <translation id="4793710386569335688">Кеңири маалымат алуу үчүн <ph name="BEGIN_LINK" />Жардам борборуна<ph name="END_LINK" /> өтүңүз.</translation>
@@ -699,6 +696,7 @@
 <translation id="629550705077076970">баскычтопту күңүрт кылуу</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> сыноосу жокко чыгарылды</translation>
 <translation id="631063167932043783">Мүмкүнчүлүктөр колдонмосу</translation>
+<translation id="6318437367327684789">ар дайым</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> түзмөгүндө орнотулган программаны жаңыртуу</translation>
 <translation id="6321407676395378991">Көшөгөнү күйгүзүү</translation>
 <translation id="6324916366299863871">Кыска жолду түзөтүү</translation>
@@ -1012,6 +1010,7 @@
 <translation id="8747900814994928677">Өзгөртүүнү ырастоо</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Фотодогу альбом</translation>
+<translation id="8775713578693478175">Модемдин APN'ни</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8789196995628578448">"<ph name="CONFLICT_ACCEL_NAME" />" үчүн колдонулган ыкчам баскыч. Жаңы ыкчам баскычты басыңыз. Баштапкы ыкчам баскычты алмаштыруу үчүн жаңысын кайра басыңыз.</translation>
 <translation id="879568662008399081">Бул тармактын кирүү бети болушу мүмкүн</translation>

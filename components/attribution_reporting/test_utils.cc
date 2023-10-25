@@ -22,6 +22,7 @@
 #include "components/attribution_reporting/source_type.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "components/attribution_reporting/trigger_config.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -97,10 +98,11 @@ std::ostream& operator<<(std::ostream& out,
 
 bool operator==(const SourceRegistration& a, const SourceRegistration& b) {
   auto tie = [](const SourceRegistration& s) {
-    return std::make_tuple(
-        s.source_event_id, s.destination_set, s.expiry, s.event_report_windows,
-        s.aggregatable_report_window, s.priority, s.filter_data, s.debug_key,
-        s.aggregation_keys, s.debug_reporting, s.max_event_level_reports);
+    return std::make_tuple(s.source_event_id, s.destination_set, s.expiry,
+                           s.event_report_windows, s.aggregatable_report_window,
+                           s.priority, s.filter_data, s.debug_key,
+                           s.aggregation_keys, s.debug_reporting,
+                           s.max_event_level_reports, s.trigger_config);
   };
   return tie(a) == tie(b);
 }
@@ -187,6 +189,16 @@ bool operator==(const OsRegistrationItem& a, const OsRegistrationItem& b) {
 std::ostream& operator<<(std::ostream& out, const OsRegistrationItem& item) {
   return out << "{url=" << item.url
              << ", debug_reporting=" << item.debug_reporting << "}";
+}
+
+bool operator==(const TriggerConfig& a, const TriggerConfig& b) {
+  return a.trigger_data_matching() == b.trigger_data_matching();
+}
+
+std::ostream& operator<<(std::ostream& out, const TriggerConfig& config) {
+  base::Value::Dict dict;
+  config.SerializeForTesting(dict);
+  return out << dict;
 }
 
 }  // namespace attribution_reporting

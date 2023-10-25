@@ -7,18 +7,16 @@ option optimize_for = LITE_RUNTIME;
 
 package chrome_intelligence_modelexecution_proto;
 
-message Descriptor {
-  required string descriptor1 = 1;
-  required string descriptor2 = 2;
-  optional string descriptor3 = 3;
-  optional string descriptor4 = 4;
+message Descriptors {
+  optional string descriptor_a = 1;
+  optional string descriptor_b = 2;
+  optional string descriptor_c = 3;
+  optional string descriptor_d = 4;
 }
 
 message WallpaperSearchRequest {
-  oneof info {
-    string query = 1;
-    Descriptor selector = 2;
-  }
+  reserved 1;
+  optional Descriptors descriptors = 2;
 }
 
 message WallpaperSearchResponse {

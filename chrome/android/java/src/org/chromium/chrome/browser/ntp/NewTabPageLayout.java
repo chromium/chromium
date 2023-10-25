@@ -264,7 +264,7 @@ public class NewTabPageLayout extends LinearLayout {
                         R.dimen.ntp_search_box_transition_length_polish_offset)
                 : 0;
 
-        if (mIsNtpAsHomeSurfaceEnabled && !mIsSurfacePolishEnabled) {
+        if (mIsNtpAsHomeSurfaceEnabled && isTablet && !mIsSurfacePolishEnabled) {
             // We add extra side margins to the fake search box when multiple column Feeds are
             // shown. There is only one exception that we don't shorten the width of the fake search
             // box: one row of MV tiles in portrait mode.
@@ -1173,7 +1173,7 @@ public class NewTabPageLayout extends LinearLayout {
             } else {
                 mIsHalfMvtPortrait = null;
             }
-        } else if (mIsNtpAsHomeSurfaceEnabled) {
+        } else if (mIsNtpAsHomeSurfaceEnabled && mIsTablet) {
             mSearchBoxTwoSideMargin =
                     getResources()
                                     .getDimensionPixelSize(

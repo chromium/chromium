@@ -169,6 +169,7 @@
 <translation id="3918378745482005425">Որոշ գործառույթներ կարող են չաշխատել։ Առնչվող կայքերը կարող են նախկինի պես օգտագործել երրորդ կողմի քուքիներ։</translation>
 <translation id="3955193568934677022">Թույլ տալ կայքերին նվագարկել պաշտպանված բովանդակությունը (խորհուրդ է տրվում)</translation>
 <translation id="3967822245660637423">Ներբեռնումն ավարտվեց</translation>
+<translation id="3974105241379491420">Կայքերը կարող են ձեր մասին իրենց պահած տեղեկություններն օգտագործելու թույլտվություն խնդրել</translation>
 <translation id="3987993985790029246">Պատճենել հղումը</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
 <translation id="3992684624889376114">Այս էջի մասին</translation>
@@ -243,6 +244,7 @@
 <translation id="5335288049665977812">Թույլ տալ կայքերին գործարկել JavaScript-ը (խորհուրդ է տրվում)</translation>
 <translation id="534295439873310000">NFC սարքեր</translation>
 <translation id="5344522958567249764">Գովազդի գաղտնիության կառավարում</translation>
+<translation id="5389626883706033615">Կայքերը չեն կարող ձեզնից խնդրել թույլտվություն՝ օգտագործելու ձեր մասին իրենց պահած տեղեկությունները</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(ու ևս 1)}one{(ու ևս #)}other{(ու ևս #)}}</translation>
 <translation id="5403592356182871684">Անուններ</translation>
 <translation id="5438097262470833822">Այս կայքի (<ph name="WEBSITE" />) թույլտվությունները կզրոյացվեն</translation>

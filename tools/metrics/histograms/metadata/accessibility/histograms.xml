@@ -2214,7 +2214,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ScreenAI.AnnotateScreenshotTime.{Result}"
-    units="ms" expires_after="2023-11-30">
+    units="ms" expires_after="2024-05-30">
   <owner>kyungjunlee@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -2517,12 +2517,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DomDistiller.PageHasDistilledData"
-    enum="BooleanHasDistilledData" expires_after="M85">
-  <owner>kuan@chromium.org</owner>
-  <summary>Records whether a page has distilled data.</summary>
-</histogram>
-
 <histogram name="DomDistiller.ReaderMode.EntryPoint"
     enum="ReaderModeEntryPoint" expires_after="2023-11-30">
   <owner>katie@chromium.org</owner>
@@ -2628,14 +2622,6 @@ chromium-metrics-reviews@google.com.
   <owner>yfriedman@chromium.org</owner>
   <summary>
     Time spent in DomDistiller's processing of article metadata.
-  </summary>
-</histogram>
-
-<histogram name="DomDistiller.Time.ViewerLoading" units="ms"
-    expires_after="M77">
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    Records the time from the Reader Mode panel opening to the viewer loaded.
   </summary>
 </histogram>
 

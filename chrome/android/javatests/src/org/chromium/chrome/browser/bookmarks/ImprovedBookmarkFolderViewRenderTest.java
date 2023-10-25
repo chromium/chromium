@@ -12,7 +12,6 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Pair;
-import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -98,6 +97,7 @@ public class ImprovedBookmarkFolderViewRenderTest {
     private BitmapDrawable mPrimaryDrawable;
     private BitmapDrawable mSecondaryDrawable;
     private LinearLayout mContentView;
+    private ImprovedBookmarkFolderView mFolderView;
 
     public ImprovedBookmarkFolderViewRenderTest(boolean nightModeEnabled) {
         // Sets a fake background color to make the screenshots easier to compare with bare eyes.
@@ -132,18 +132,15 @@ public class ImprovedBookmarkFolderViewRenderTest {
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
                     mActivityTestRule.getActivity().setContentView(mContentView, params);
 
-                    mView =
-                            (ImprovedBookmarkFolderView)
-                                    LayoutInflater.from(mActivityTestRule.getActivity())
-                                            .inflate(
-                                                    R.layout.improved_bookmark_folder_view_layout,
-                                                    null);
-                    mContentView.addView(mView);
+                    ImprovedBookmarkRow row =
+                            ImprovedBookmarkRow.buildView(mActivityTestRule.getActivity(), true);
+                    mFolderView = row.getFolderView();
+                    mContentView.addView(row);
 
-                    mModel = new PropertyModel(ImprovedBookmarkFolderViewProperties.ALL_KEYS);
+                    mModel = new PropertyModel(ImprovedBookmarkRowProperties.ALL_KEYS);
                     PropertyModelChangeProcessor.create(
-                            mModel, mView, ImprovedBookmarkFolderViewBinder::bind);
-                    mModel.set(ImprovedBookmarkFolderViewProperties.FOLDER_CHILD_COUNT, 5);
+                            mModel, row, ImprovedBookmarkRowViewBinder::bind);
+                    mModel.set(ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT, 5);
                 });
     }
 
@@ -161,26 +158,26 @@ public class ImprovedBookmarkFolderViewRenderTest {
                                 }
                             };
                     mModel.set(
-                            ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES,
+                            ImprovedBookmarkRowProperties.FOLDER_START_IMAGE_FOLDER_DRAWABLES,
                             imageSupplier);
                     mModel.set(
-                            ImprovedBookmarkFolderViewProperties.START_ICON_DRAWABLE,
+                            ImprovedBookmarkRowProperties.FOLDER_START_ICON_DRAWABLE,
                             BookmarkUtils.getFolderIcon(
                                     mActivityTestRule.getActivity(),
                                     new BookmarkId(0, BookmarkType.NORMAL),
                                     mBookmarkModel,
                                     BookmarkRowDisplayPref.VISUAL));
                     mModel.set(
-                            ImprovedBookmarkFolderViewProperties.START_AREA_BACKGROUND_COLOR,
+                            ImprovedBookmarkRowProperties.FOLDER_START_AREA_BACKGROUND_COLOR,
                             ChromeColors.getSurfaceColor(
                                     mActivityTestRule.getActivity(), R.dimen.default_elevation_1));
                     mModel.set(
-                            ImprovedBookmarkFolderViewProperties.START_ICON_TINT,
+                            ImprovedBookmarkRowProperties.FOLDER_START_ICON_TINT,
                             AppCompatResources.getColorStateList(
                                     mActivityTestRule.getActivity(),
                                     R.color.default_icon_color_secondary_tint_list));
                 });
-        mRenderTestRule.render(mContentView, "no_image");
+        mRenderTestRule.render(mFolderView, "no_image");
     }
 
     @Test
@@ -194,7 +191,7 @@ public class ImprovedBookmarkFolderViewRenderTest {
                     doReturn(bookmarksBarId).when(mBookmarkModel).getDesktopFolderId();
 
                     mModel.set(
-                            ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES,
+                            ImprovedBookmarkRowProperties.FOLDER_START_IMAGE_FOLDER_DRAWABLES,
                             new LazyOneshotSupplierImpl<>() {
                                 @Override
                                 public void doSet() {
@@ -202,23 +199,23 @@ public class ImprovedBookmarkFolderViewRenderTest {
                                 }
                             });
                     mModel.set(
-                            ImprovedBookmarkFolderViewProperties.START_ICON_DRAWABLE,
+                            ImprovedBookmarkRowProperties.FOLDER_START_ICON_DRAWABLE,
                             BookmarkUtils.getFolderIcon(
                                     mActivityTestRule.getActivity(),
                                     bookmarksBarId,
                                     mBookmarkModel,
                                     BookmarkRowDisplayPref.VISUAL));
                     mModel.set(
-                            ImprovedBookmarkFolderViewProperties.START_AREA_BACKGROUND_COLOR,
-                            ChromeColors.getSurfaceColor(
-                                    mActivityTestRule.getActivity(), R.dimen.default_elevation_1));
+                            ImprovedBookmarkRowProperties.FOLDER_START_AREA_BACKGROUND_COLOR,
+                            SemanticColorUtils.getColorPrimaryContainer(
+                                    mActivityTestRule.getActivity()));
                     mModel.set(
-                            ImprovedBookmarkFolderViewProperties.START_ICON_TINT,
-                            AppCompatResources.getColorStateList(
-                                    mActivityTestRule.getActivity(),
-                                    R.color.default_icon_color_secondary_tint_list));
+                            ImprovedBookmarkRowProperties.FOLDER_START_ICON_TINT,
+                            ColorStateList.valueOf(
+                                    SemanticColorUtils.getDefaultIconColorAccent1(
+                                            mActivityTestRule.getActivity())));
                 });
-        mRenderTestRule.render(mContentView, "no_image_bookmarks_bar");
+        mRenderTestRule.render(mFolderView, "no_image_bookmarks_bar");
     }
 
     @Test
@@ -228,7 +225,7 @@ public class ImprovedBookmarkFolderViewRenderTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(
-                            ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES,
+                            ImprovedBookmarkRowProperties.FOLDER_START_IMAGE_FOLDER_DRAWABLES,
                             new LazyOneshotSupplierImpl<>() {
                                 @Override
                                 public void doSet() {
@@ -236,23 +233,23 @@ public class ImprovedBookmarkFolderViewRenderTest {
                                 }
                             });
                     mModel.set(
-                            ImprovedBookmarkFolderViewProperties.START_ICON_DRAWABLE,
+                            ImprovedBookmarkRowProperties.FOLDER_START_ICON_DRAWABLE,
                             BookmarkUtils.getFolderIcon(
                                     mActivityTestRule.getActivity(),
                                     new BookmarkId(0, BookmarkType.READING_LIST),
                                     mBookmarkModel,
                                     BookmarkRowDisplayPref.VISUAL));
                     mModel.set(
-                            ImprovedBookmarkFolderViewProperties.START_AREA_BACKGROUND_COLOR,
+                            ImprovedBookmarkRowProperties.FOLDER_START_AREA_BACKGROUND_COLOR,
                             SemanticColorUtils.getColorPrimaryContainer(
                                     mActivityTestRule.getActivity()));
                     mModel.set(
-                            ImprovedBookmarkFolderViewProperties.START_ICON_TINT,
+                            ImprovedBookmarkRowProperties.FOLDER_START_ICON_TINT,
                             ColorStateList.valueOf(
                                     SemanticColorUtils.getDefaultIconColorAccent1(
                                             mActivityTestRule.getActivity())));
                 });
-        mRenderTestRule.render(mContentView, "no_image_reading_list");
+        mRenderTestRule.render(mFolderView, "no_image_reading_list");
     }
 
     @Test
@@ -269,10 +266,10 @@ public class ImprovedBookmarkFolderViewRenderTest {
                                 }
                             };
                     mModel.set(
-                            ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES,
+                            ImprovedBookmarkRowProperties.FOLDER_START_IMAGE_FOLDER_DRAWABLES,
                             imageSupplier);
                 });
-        mRenderTestRule.render(mContentView, "one_image");
+        mRenderTestRule.render(mFolderView, "one_image");
     }
 
     @Test
@@ -291,10 +288,10 @@ public class ImprovedBookmarkFolderViewRenderTest {
                                 }
                             };
                     mModel.set(
-                            ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES,
+                            ImprovedBookmarkRowProperties.FOLDER_START_IMAGE_FOLDER_DRAWABLES,
                             imageSupplier);
                 });
-        mRenderTestRule.render(mContentView, "two_images");
+        mRenderTestRule.render(mFolderView, "two_images");
     }
 
     @Test
@@ -312,12 +309,12 @@ public class ImprovedBookmarkFolderViewRenderTest {
                                                     mPrimaryDrawable, mSecondaryDrawable));
                                 }
                             };
-                    mModel.set(ImprovedBookmarkFolderViewProperties.FOLDER_CHILD_COUNT, 99);
+                    mModel.set(ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT, 99);
                     mModel.set(
-                            ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES,
+                            ImprovedBookmarkRowProperties.FOLDER_START_IMAGE_FOLDER_DRAWABLES,
                             imageSupplier);
                 });
-        mRenderTestRule.render(mContentView, "two_images_99_children");
+        mRenderTestRule.render(mFolderView, "two_images_99_children");
     }
 
     @Test
@@ -335,11 +332,11 @@ public class ImprovedBookmarkFolderViewRenderTest {
                                                     mPrimaryDrawable, mSecondaryDrawable));
                                 }
                             };
-                    mModel.set(ImprovedBookmarkFolderViewProperties.FOLDER_CHILD_COUNT, 999);
+                    mModel.set(ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT, 999);
                     mModel.set(
-                            ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES,
+                            ImprovedBookmarkRowProperties.FOLDER_START_IMAGE_FOLDER_DRAWABLES,
                             imageSupplier);
                 });
-        mRenderTestRule.render(mContentView, "two_images_999_children");
+        mRenderTestRule.render(mFolderView, "two_images_999_children");
     }
 }

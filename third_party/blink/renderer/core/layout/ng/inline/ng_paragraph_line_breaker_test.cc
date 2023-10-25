@@ -11,21 +11,20 @@
 
 namespace blink {
 
-class NGParagraphLineBreakerTest : public RenderingTest {
+class ParagraphLineBreakerTest : public RenderingTest {
  public:
-  absl::optional<LayoutUnit> AttemptParagraphBalancing(
-      const NGInlineNode& node) {
+  absl::optional<LayoutUnit> AttemptParagraphBalancing(const InlineNode& node) {
     const NGPhysicalBoxFragment* fragment =
         node.GetLayoutBox()->GetPhysicalFragment(0);
     const LayoutUnit width = fragment->Size().width;
     NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
     LineLayoutOpportunity line_opportunity(width);
-    return NGParagraphLineBreaker::AttemptParagraphBalancing(node, space,
-                                                             line_opportunity);
+    return ParagraphLineBreaker::AttemptParagraphBalancing(node, space,
+                                                           line_opportunity);
   }
 };
 
-TEST_F(NGParagraphLineBreakerTest, IsDisabledByBlockInInline) {
+TEST_F(ParagraphLineBreakerTest, IsDisabledByBlockInInline) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -44,13 +43,13 @@ TEST_F(NGParagraphLineBreakerTest, IsDisabledByBlockInInline) {
       </span>
     </div>
   )HTML");
-  const NGInlineNode target = GetInlineNodeByElementId("target");
+  const InlineNode target = GetInlineNodeByElementId("target");
   EXPECT_TRUE(target.IsBisectLineBreakDisabled());
   EXPECT_FALSE(target.IsScoreLineBreakDisabled());
   EXPECT_FALSE(AttemptParagraphBalancing(target));
 }
 
-TEST_F(NGParagraphLineBreakerTest, IsDisabledByFirstLine) {
+TEST_F(ParagraphLineBreakerTest, IsDisabledByFirstLine) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -67,13 +66,13 @@ TEST_F(NGParagraphLineBreakerTest, IsDisabledByFirstLine) {
       1234 6789
     </div>
   )HTML");
-  const NGInlineNode target = GetInlineNodeByElementId("target");
+  const InlineNode target = GetInlineNodeByElementId("target");
   EXPECT_FALSE(target.IsBisectLineBreakDisabled());
   EXPECT_TRUE(target.IsScoreLineBreakDisabled());
   EXPECT_TRUE(AttemptParagraphBalancing(target));
 }
 
-TEST_F(NGParagraphLineBreakerTest, IsDisabledByFloatLeading) {
+TEST_F(ParagraphLineBreakerTest, IsDisabledByFloatLeading) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -89,13 +88,13 @@ TEST_F(NGParagraphLineBreakerTest, IsDisabledByFloatLeading) {
       1234 6789
     </div>
   )HTML");
-  const NGInlineNode target = GetInlineNodeByElementId("target");
+  const InlineNode target = GetInlineNodeByElementId("target");
   EXPECT_TRUE(target.IsBisectLineBreakDisabled());
   EXPECT_FALSE(target.IsScoreLineBreakDisabled());
   EXPECT_FALSE(AttemptParagraphBalancing(target));
 }
 
-TEST_F(NGParagraphLineBreakerTest, IsDisabledByFloat) {
+TEST_F(ParagraphLineBreakerTest, IsDisabledByFloat) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -111,13 +110,13 @@ TEST_F(NGParagraphLineBreakerTest, IsDisabledByFloat) {
       1234 6789
     </div>
   )HTML");
-  const NGInlineNode target = GetInlineNodeByElementId("target");
+  const InlineNode target = GetInlineNodeByElementId("target");
   EXPECT_TRUE(target.IsBisectLineBreakDisabled());
   EXPECT_FALSE(target.IsScoreLineBreakDisabled());
   EXPECT_FALSE(AttemptParagraphBalancing(target));
 }
 
-TEST_F(NGParagraphLineBreakerTest, IsDisabledByForcedBreak) {
+TEST_F(ParagraphLineBreakerTest, IsDisabledByForcedBreak) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -132,13 +131,13 @@ TEST_F(NGParagraphLineBreakerTest, IsDisabledByForcedBreak) {
       1234 6789
     </div>
   )HTML");
-  const NGInlineNode target = GetInlineNodeByElementId("target");
+  const InlineNode target = GetInlineNodeByElementId("target");
   EXPECT_TRUE(target.IsBisectLineBreakDisabled());
   EXPECT_FALSE(target.IsScoreLineBreakDisabled());
   EXPECT_FALSE(AttemptParagraphBalancing(target));
 }
 
-TEST_F(NGParagraphLineBreakerTest, IsDisabledByForcedBreakReusing) {
+TEST_F(ParagraphLineBreakerTest, IsDisabledByForcedBreakReusing) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -152,7 +151,7 @@ TEST_F(NGParagraphLineBreakerTest, IsDisabledByForcedBreakReusing) {
 1234
     </div>
   )HTML");
-  const NGInlineNode target = GetInlineNodeByElementId("target");
+  const InlineNode target = GetInlineNodeByElementId("target");
   Element* target_node = To<Element>(target.GetDOMNode());
   target_node->AppendChild(GetDocument().createTextNode(" 6789"));
   UpdateAllLifecyclePhasesForTest();
@@ -161,7 +160,7 @@ TEST_F(NGParagraphLineBreakerTest, IsDisabledByForcedBreakReusing) {
   EXPECT_FALSE(AttemptParagraphBalancing(target));
 }
 
-TEST_F(NGParagraphLineBreakerTest, IsDisabledByInitialLetter) {
+TEST_F(ParagraphLineBreakerTest, IsDisabledByInitialLetter) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -178,13 +177,13 @@ TEST_F(NGParagraphLineBreakerTest, IsDisabledByInitialLetter) {
       1234 6789
     </div>
   )HTML");
-  const NGInlineNode target = GetInlineNodeByElementId("target");
+  const InlineNode target = GetInlineNodeByElementId("target");
   EXPECT_TRUE(target.IsBisectLineBreakDisabled());
   EXPECT_TRUE(target.IsScoreLineBreakDisabled());
   EXPECT_FALSE(AttemptParagraphBalancing(target));
 }
 
-TEST_F(NGParagraphLineBreakerTest, IsDisabledByTabulationCharacters) {
+TEST_F(ParagraphLineBreakerTest, IsDisabledByTabulationCharacters) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -196,7 +195,7 @@ TEST_F(NGParagraphLineBreakerTest, IsDisabledByTabulationCharacters) {
     </style>
     <div id="target">1234 6789&#0009;1234 6789</div>
   )HTML");
-  const NGInlineNode target = GetInlineNodeByElementId("target");
+  const InlineNode target = GetInlineNodeByElementId("target");
   EXPECT_FALSE(target.IsBisectLineBreakDisabled());
   EXPECT_TRUE(target.IsScoreLineBreakDisabled());
   EXPECT_TRUE(AttemptParagraphBalancing(target));

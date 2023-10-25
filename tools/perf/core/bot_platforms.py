@@ -597,7 +597,7 @@ MAC_LOW_END_LAPTOP = PerfPlatform(
     'mac-laptop_low_end-perf',
     'MacBook Air, Core i5 1.8 GHz, 8GB RAM, 128GB SSD, HD Graphics',
     _MAC_LOW_END_BENCHMARK_CONFIGS,
-    26,
+    20,
     'mac',
     executables=_MAC_LOW_END_EXECUTABLE_CONFIGS)
 MAC_LOW_END_LAPTOP_PGO = PerfPlatform(

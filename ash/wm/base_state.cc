@@ -14,6 +14,7 @@
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_positioning_utils.h"
+#include "ash/wm/wm_metrics.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -213,17 +214,20 @@ gfx::Rect BaseState::GetSnappedWindowBoundsInParent(
   return bounds_in_parent;
 }
 
-void BaseState::HandleWindowSnapping(WindowState* window_state,
-                                     WMEventType event_type) {
+void BaseState::HandleWindowSnapping(
+    WindowState* window_state,
+    WMEventType event_type,
+    WindowSnapActionSource snap_action_source) {
   DCHECK(event_type == WM_EVENT_SNAP_PRIMARY ||
          event_type == WM_EVENT_SNAP_SECONDARY);
   DCHECK(window_state->CanSnap());
 
   window_state->set_bounds_changed_by_user(true);
   aura::Window* window = window_state->window();
-  // SplitViewController will decide if the window needs to be snapped in split
-  // view.
-  SplitViewController::Get(window)->OnWMEvent(window, event_type);
+  // `SplitViewController` will decide if the window needs to be snapped in
+  // split view.
+  SplitViewController::Get(window)->OnSnapEvent(window, event_type,
+                                                snap_action_source);
 }
 
 }  // namespace ash

@@ -29,6 +29,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
@@ -896,9 +897,10 @@ PrivacySandboxSettingsImpl::GetM1PrivacySandboxApiEnabledStatus(
   return status;
 }
 
-bool PrivacySandboxSettingsImpl::
-    IsCookieDeprecationExperimentCurrentlyEligible() const {
-  return delegate_->IsCookieDeprecationExperimentCurrentlyEligible();
+TpcdExperimentEligibility
+PrivacySandboxSettingsImpl::GetCookieDeprecationExperimentCurrentEligibility()
+    const {
+  return delegate_->GetCookieDeprecationExperimentCurrentEligibility();
 }
 
 bool PrivacySandboxSettingsImpl::IsCookieDeprecationLabelAllowed() const {

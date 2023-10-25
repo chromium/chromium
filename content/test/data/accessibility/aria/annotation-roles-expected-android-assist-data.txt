@@ -1,0 +1,8 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View text:"comment" textSize:16.00 style:0 bundle:[aria-label="comment", display="block", htmlTag="div", role="comment"]
+++View text:"suggestion" textSize:16.00 style:0 bundle:[aria-label="suggestion", display="block", htmlTag="div", role="suggestion"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="p"]
+++++TextView text:"This is " textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++View textSize:16.00 style:0 bundle:[display="inline", htmlTag="span", role="mark"]
+++++++TextView text:"highlighted" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++TextView text:"." textSize:16.00 style:0 bundle:[display="", htmlTag=""]

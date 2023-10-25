@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/automation_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -44,10 +45,15 @@ void TurnOnSelectToSpeakForTest(Profile* profile) {
   CHECK_EQ("ready", result);
 }
 
-void StartSelectToSpeakInBrowserWindow(Browser* browser,
-                                       ui::test::EventGenerator* generator) {
-  gfx::Rect bounds = browser->window()->GetBounds();
-  bounds.Inset(gfx::Insets::TLBR(8, 8, 8, 75));
+void StartSelectToSpeakInBrowserWithUrl(const std::string& url,
+                                        AutomationTestUtils* test_utils,
+                                        ui::test::EventGenerator* generator) {
+  gfx::Rect bounds = test_utils->GetBoundsOfRootWebArea(url);
+  StartSelectToSpeakWithBounds(bounds, generator);
+}
+
+void StartSelectToSpeakWithBounds(const gfx::Rect& bounds,
+                                  ui::test::EventGenerator* generator) {
   generator->PressKey(ui::VKEY_LWIN, 0 /* flags */);
   generator->MoveMouseTo(bounds.x(), bounds.y());
   generator->PressLeftButton();

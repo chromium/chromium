@@ -157,6 +157,8 @@ TEST_F(RenderWidgetHostViewMacEditCommandHelperWithTaskEnvTest,
     std::unique_ptr<RenderWidgetHostImpl> render_widget =
         RenderWidgetHostImpl::Create(
             /*frame_tree=*/nullptr, &delegate,
+            RenderWidgetHostImpl::DefaultFrameSinkId(*site_instance_group,
+                                                     routing_id),
             site_instance_group->GetSafeRef(), routing_id,
             /*hidden=*/false, /*renderer_initiated_creation=*/false,
             std::make_unique<FrameTokenMessageQueue>());

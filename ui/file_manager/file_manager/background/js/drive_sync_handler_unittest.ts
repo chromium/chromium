@@ -4,13 +4,13 @@
 
 import '../../definitions/file_manager_private.js';
 
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockProgressCenter} from '../../background/js/mock_progress_center.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {ProgressItemState} from '../../common/js/progress_center_common.js';
 import {toFilesAppURL} from '../../common/js/url_constants.js';
-import {util} from '../../common/js/util.js';
 
 import {DriveSyncHandlerImpl} from './drive_sync_handler.js';
 
@@ -35,8 +35,6 @@ function asFileURL(name: string) {
  * Mock chrome APIs.
  */
 const mockChrome: any = {};
-
-util.isInlineSyncStatusEnabled = () => false;
 
 mockChrome.fileManagerPrivate = {
   onFileTransfersUpdated: {
@@ -156,6 +154,8 @@ window.webkitResolveLocalFileSystemURL =
 
 // Set up the test components.
 export function setUp() {
+  loadTimeData.overrideValues({INLINE_SYNC_STATUS: false});
+
   // Install mock chrome APIs.
   installMockChrome(mockChrome);
 

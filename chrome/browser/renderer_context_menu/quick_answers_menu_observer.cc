@@ -35,7 +35,8 @@ void QuickAnswersMenuObserver::OnContextMenuShown(
       chromeos::ReadWriteCardsManager::Get();
   CHECK(cards_manager);
 
-  read_write_card_controller_ = cards_manager->GetController(params);
+  read_write_card_controller_ =
+      cards_manager->GetController(params, proxy_->GetBrowserContext());
   if (!read_write_card_controller_) {
     return;
   }

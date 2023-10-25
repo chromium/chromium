@@ -11,6 +11,7 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {executeTask, getDirectory, getFileTasks} from '../../common/js/api.js';
 import {AsyncQueue} from '../../common/js/async_util.js';
+import {entriesToURLs, isFakeEntry} from '../../common/js/entry_utils.js';
 import {type AnnotatedTask, annotateTasks, getDefaultTask, INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR, isFilesAppId, parseActionId} from '../../common/js/file_tasks.js';
 import {FileType} from '../../common/js/file_type.js';
 import {recordEnum, recordTime} from '../../common/js/metrics.js';
@@ -88,7 +89,7 @@ export class FileTasks {
     };
 
     // Cannot use fake entries with getFileTasks.
-    entries = entries.filter(e => !util.isFakeEntry(e));
+    entries = entries.filter(e => !isFakeEntry(e));
     const dlpSourceUrls = metadataModel.getCache(entries, ['sourceUrl'])
                               .map(m => m.sourceUrl || '');
     if (entries.length !== 0) {
@@ -799,7 +800,7 @@ export class FileTasks {
     try {
       // TODO(mtomasz): Move conversion from entry to url to custom bindings.
       // crbug.com/345527.
-      const urls = util.entriesToURLs(this.entries_);
+      const urls = entriesToURLs(this.entries_);
       const promises =
           urls.map(url => this.mountArchiveAndChangeDirectory_(tracker, url));
       await Promise.all(promises);

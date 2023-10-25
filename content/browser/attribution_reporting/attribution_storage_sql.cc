@@ -50,6 +50,8 @@
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "components/attribution_reporting/trigger_config.h"
+#include "components/attribution_reporting/trigger_data_matching.mojom.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
@@ -95,6 +97,7 @@ using ::attribution_reporting::EventReportWindows;
 using ::attribution_reporting::SuitableOrigin;
 using ::attribution_reporting::mojom::SourceRegistrationTimeConfig;
 using ::attribution_reporting::mojom::SourceType;
+using ::attribution_reporting::mojom::TriggerDataMatching;
 
 const base::FilePath::CharType kDatabasePath[] =
     FILE_PATH_LITERAL("Conversions");
@@ -611,6 +614,16 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
     return absl::nullopt;
   }
 
+  TriggerDataMatching trigger_data_matching;
+  switch (read_only_source_data_msg->trigger_data_matching()) {
+    case proto::AttributionReadOnlySourceData::EXACT:
+      trigger_data_matching = TriggerDataMatching::kExact;
+      break;
+    case proto::AttributionReadOnlySourceData::MODULUS:
+      trigger_data_matching = TriggerDataMatching::kModulus;
+      break;
+  }
+
   absl::optional<StoredSource> stored_source = StoredSource::Create(
       CommonSourceInfo(std::move(*source_origin), std::move(*reporting_origin),
                        *source_type),
@@ -618,7 +631,8 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
       std::move(*event_report_windows), aggregatable_report_window_time,
       max_event_level_reports, priority, std::move(*filter_data), debug_key,
       std::move(*aggregation_keys), *attribution_logic, *active_state,
-      source_id, aggregatable_budget_consumed, randomized_response_rate);
+      source_id, aggregatable_budget_consumed, randomized_response_rate,
+      attribution_reporting::TriggerConfig(trigger_data_matching));
   if (!stored_source.has_value()) {
     return absl::nullopt;
   }
@@ -873,10 +887,10 @@ StoreSourceResult AttributionStorageSql::StoreSource(
 
   statement.BindBlob(14, SerializeAggregationKeys(reg.aggregation_keys));
   statement.BindBlob(15, SerializeFilterData(reg.filter_data));
-  statement.BindBlob(
-      16, SerializeReadOnlySourceData(reg.event_report_windows,
-                                      reg.max_event_level_reports,
-                                      randomized_response_data.rate()));
+  statement.BindBlob(16,
+                     SerializeReadOnlySourceData(
+                         reg.event_report_windows, reg.max_event_level_reports,
+                         randomized_response_data.rate(), &reg.trigger_config));
 
   if (!statement.Run()) {
     return StoreSourceResult(StorableSource::Result::kInternalError);
@@ -904,7 +918,8 @@ StoreSourceResult AttributionStorageSql::StoreSource(
       aggregatable_report_window_time, reg.max_event_level_reports,
       reg.priority, reg.filter_data, reg.debug_key, reg.aggregation_keys,
       attribution_logic, *active_state, source_id,
-      /*aggregatable_budget_consumed=*/0, randomized_response_data.rate());
+      /*aggregatable_budget_consumed=*/0, randomized_response_data.rate(),
+      reg.trigger_config);
 
   if (!stored_source.has_value() ||
       !rate_limit_table_.AddRateLimitForSource(&db_, *stored_source)) {
@@ -1537,6 +1552,22 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
       return EventLevelResult::kInternalError;
   }
 
+  uint64_t trigger_data;
+  switch (source.trigger_config().trigger_data_matching()) {
+    case TriggerDataMatching::kExact: {
+      uint64_t cardinality =
+          attribution_reporting::DefaultTriggerDataCardinality(source_type);
+      if (event_trigger->data >= cardinality) {
+        return EventLevelResult::kNoMatchingTriggerData;
+      }
+      trigger_data = event_trigger->data;
+      break;
+    }
+    case TriggerDataMatching::kModulus:
+      trigger_data = SanitizeTriggerData(event_trigger->data, source_type);
+      break;
+  }
+
   switch (
       CapacityForStoringReport(trigger, AttributionReport::Type::kEventLevel)) {
     case ConversionCapacityStatus::kHasCapacity:
@@ -1562,9 +1593,8 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
       attribution_info, AttributionReport::Id(kUnsetRecordId), report_time,
       /*initial_report_time=*/report_time, delegate_->NewReportID(),
       /*failed_send_attempts=*/0,
-      AttributionReport::EventLevelData(
-          SanitizeTriggerData(event_trigger->data, source_type),
-          event_trigger->priority, source));
+      AttributionReport::EventLevelData(trigger_data, event_trigger->priority,
+                                        source));
 
   dedup_key = event_trigger->dedup_key;
 

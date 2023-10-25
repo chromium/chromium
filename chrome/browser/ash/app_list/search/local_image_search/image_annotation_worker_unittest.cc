@@ -58,7 +58,8 @@ class ImageAnnotationWorkerTest : public testing::Test {
     std::vector<base::FilePath> excluded_paths = {
         test_directory_.AppendASCII("TrashBin")};
     annotation_worker_ = std::make_unique<ImageAnnotationWorker>(
-        test_directory_, std::move(excluded_paths), /*use_ocr=*/false,
+        test_directory_, std::move(excluded_paths), /*use_file_watchers=*/false,
+        /*use_ocr=*/false,
         /*use_ica=*/false);
     bar_image_path_ = test_directory_.AppendASCII("bar.jpg");
     const base::FilePath test_db = test_directory_.AppendASCII("test.db");
@@ -227,6 +228,29 @@ TEST_F(ImageAnnotationWorkerTest, MustRemoveOnFileDeleteTest) {
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(storage_->GetAllAnnotations().empty());
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(ImageAnnotationWorkerTest, GetAllFilesTest) {
+  storage_->Initialize();
+  annotation_worker_->Initialize(storage_.get());
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(storage_->GetAllFiles().empty());
+
+  base::WriteFile(bar_image_path_, kJpeg_image);
+  annotation_worker_->TriggerOnFileChangeForTests(bar_image_path_,
+                                                  /*error=*/false);
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(storage_->GetAllFiles(),
+              testing::ElementsAreArray({bar_image_path_}));
+
+  base::DeleteFile(bar_image_path_);
+  annotation_worker_->TriggerOnFileChangeForTests(bar_image_path_,
+                                                  /*error=*/false);
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(storage_->GetAllFiles().empty());
 
   task_environment_.RunUntilIdle();
 }

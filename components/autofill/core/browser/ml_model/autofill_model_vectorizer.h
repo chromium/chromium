@@ -6,13 +6,12 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_AUTOFILL_MODEL_VECTORIZER_H_
 
 #include <stdint.h>
-#include <memory>
 #include <string>
 #include <string_view>
 
 #include "base/containers/flat_map.h"
-#include "base/files/file_path.h"
 #include "base/types/strong_alias.h"
+#include "third_party/protobuf/src/google/protobuf/repeated_ptr_field.h"
 
 namespace autofill {
 
@@ -31,12 +30,11 @@ class AutofillModelVectorizer {
   static constexpr char16_t kSpecialChars[] =
       uR"(!"#$%&()\*+,-./:;<=>?@[]^_`{|}~')";
 
-  // Factory function returns instance of the vectorizer if initialized.
-  // If dictionary file path is not found, initialization fails and
-  // a nullptr is returned instead.
-  static std::unique_ptr<AutofillModelVectorizer> CreateVectorizer(
-      const base::FilePath& dictionary_filepath);
+  explicit AutofillModelVectorizer(
+      const google::protobuf::RepeatedPtrField<std::string>& tokens);
 
+  AutofillModelVectorizer();
+  AutofillModelVectorizer(const AutofillModelVectorizer&);
   ~AutofillModelVectorizer();
 
   // Standardize the field label by changing it lower case and stripping
@@ -47,14 +45,8 @@ class AutofillModelVectorizer {
       std::u16string_view input) const;
   TokenId TokenToId(std::u16string_view token) const;
 
-  size_t GetDictionarySize() const;
-
  private:
-  explicit AutofillModelVectorizer(
-      std::vector<std::pair<std::u16string, TokenId>> entries);
-  AutofillModelVectorizer(const AutofillModelVectorizer& vectorizer);
-
-  const base::flat_map<std::u16string, TokenId> token_to_id_;
+  base::flat_map<std::u16string, TokenId> token_to_id_;
 };
 
 }  // namespace autofill

@@ -1,4 +1,4 @@
 ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
-++ROLE_SYSTEM_DIALOG IA2_STATE_MODAL
+++ROLE_SYSTEM_DIALOG FOCUSABLE IA2_STATE_MODAL
 ++++ROLE_SYSTEM_STATICTEXT name='This is the now active dialog. Of course it should be in the tree. '
 ++++ROLE_SYSTEM_PUSHBUTTON name='This is in the active dialog and should be in the tree.' FOCUSABLE

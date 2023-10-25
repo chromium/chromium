@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">လိုင်းအား မကောင်းပါ</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">အပ်ဒိတ်လုပ်နေသည် (<ph name="PERCENTAGE_VALUE" />% ပြီးပါပြီ)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> မိနစ်</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" /> ကွန်ရက်ကို မရနိုင်ပါ</translation>
 <translation id="131421566576084655">နောက်ဆုံး ဒေတာပြင်ဆင်သတ်မှတ်သည့်ရက်စွဲ ရှာမတွေ့ပါ</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -93,7 +94,6 @@
 <translation id="1643449475550628585">နောက်ခံပုံကို နေ့စဉ်ပြောင်းရန်</translation>
 <translation id="1644574205037202324">မှတ်တမ်း</translation>
 <translation id="1651925268237749928">မျှဝေထားသော အယ်လ်ဘမ်ကို ရွေးထားသည်။ အခြားလူများက ဓာတ်ပုံများ ထည့်နိုင်၊ ပြောင်းနိုင်သည်။ ဤအယ်လ်ဘမ်တွင် လောလောဆယ် မရှိသော ဓာတ်ပုံများကို သင့်နောက်ခံက သုံးနိုင်လောက်သည်။</translation>
-<translation id="1658834457013045127">ထာဝရ</translation>
 <translation id="1661865805917886535">အကောင့်နှင့် စနစ်အချက်အလက် အချို့ကို Google သို့ ပို့နိုင်သည်။ ကျွန်ုပ်တို့၏ ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ (<ph name="PRIVACYPOLICYURL" />) နှင့် ဝန်ဆောင်မှုစည်းမျဉ်းများ (<ph name="TERMSOFSERVICEURL" />) အရ ဝန်ဆောင်မှုများ ပိုကောင်းမွန်စေရန်နှင့် နည်းပညာဆိုင်ရာ ပြဿနာများ ကူညီဖြေရှင်းပေးနိုင်ရန် ဤအချက်အလက်များကို ကျွန်ုပ်တို့ အသုံးပြုပါသည်။ အကြောင်းအရာ အပြောင်းအလဲများ တောင်းဆိုရန် ‘ဥပဒေဆိုင်ရာ အကူအညီ’ (<ph name="LEGALHELPPAGEURL" />) သို့ သွားပါ။</translation>
 <translation id="1662989795263954667">ရပ်သွားသည် - မင်ကုန်နေသည်</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> ကို အစမ်းကြည့်ရန်</translation>
@@ -323,7 +323,6 @@
 <translation id="3484914941826596830">ဖားမ်ဝဲအပ်ဒိတ်လုပ်နေစဉ် ဤပြင်ပကိရိယာကို ပလတ်မဖြုတ်ပါနှင့် (သို့) သင်၏ကွန်ပျူတာကို အပြီးမပိတ်ပါနှင့်။ ဤဝင်းဒိုးကို ချုံ့နိုင်သည်။ ယခုအပ်ဒိတ်သည် မိနစ်အနည်းငယ်ကြာနိုင်ပြီး ဤအချိန်အတွင်း သင်၏ပြင်ပကိရိယာ အလုပ်လုပ်နိုင်မည်မဟုတ်ပါ။</translation>
 <translation id="3486220673238053218">အဓိပ္ပါယ် ဖွင့်ဆိုချက်</translation>
 <translation id="3488065109653206955">တစ်စိတ်တစ်ဒေသ ဖွင့်သုံးနေ</translation>
-<translation id="349491921221892984"><ph name="MINUTES" /> မိနစ်</translation>
 <translation id="3502426834823382181">အက်ပ်အားလုံး ကြည့်ရန်</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />စွမ်းဆောင်ရည် မှတ်တမ်းဒေတာ<ph name="END_LINK1" /> ပို့ရန်</translation>
 <translation id="3517001332549868749">ChromeOS အပ်ဒိတ်</translation>
@@ -484,7 +483,6 @@
 <translation id="473775607612524610">အပ်ဒိတ်လုပ်ရန်</translation>
 <translation id="4771607256327216405">ကီးဘုတ် လင်းသွားခြင်း</translation>
 <translation id="4773299976671772492">ဆိုင်းငံ့ထား</translation>
-<translation id="4782003517030001304">၁ နာရီ</translation>
 <translation id="4782311465517282004">ညာဘက်ခလုတ်ကို နှိပ်ချိန် (သို့) စာသားကိုတို့ထိ၍ ဖိထားချိန်တွင် အဓိပ္ပာယ်ဖွင့်ဆိုချက်၊ ဘာသာပြန်ဆိုချက် (သို့) ယူနစ်ပြောင်းလဲချက်များကို ရယူနိုင်သည်</translation>
 <translation id="4791000909649665275">ဓာတ်ပုံ <ph name="NUMBER" /> ပုံ</translation>
 <translation id="4793710386569335688">နောက်ထပ်အကူအညီအတွက် <ph name="BEGIN_LINK" />ကူညီရေးဌာန<ph name="END_LINK" /> သို့ သွားနိုင်သည်။</translation>
@@ -699,6 +697,7 @@
 <translation id="629550705077076970">ကီးဘုတ် မှိန်သွားခြင်း</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> စစ်ဆေးမှုကို ပယ်ဖျက်လိုက်သည်</translation>
 <translation id="631063167932043783">Explore အက်ပ်</translation>
+<translation id="6318437367327684789">အမြဲတမ်း</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> တွင် ဖာမ်းဝဲအပ်ဒိတ်လုပ်ရန်</translation>
 <translation id="6321407676395378991">စခရင်နားချိန်ပုံ ဖွင့်ရန်</translation>
 <translation id="6324916366299863871">ဖြတ်လမ်းလင့်ခ်ကို တည်းဖြတ်ခြင်း</translation>
@@ -948,6 +947,7 @@
 <translation id="8227119283605456246">ပူးတွဲဖိုင်</translation>
 <translation id="8230672074305416752">မူလကွန်ရက်ဂိတ်ဝကို ပင်လုပ်၍မရပါ</translation>
 <translation id="8246209727385807362">အမျိုးအမည်မသိရသော ဝန်ဆောင်မှုပေးသူ</translation>
+<translation id="8262870577632766028">၁ နာရီ</translation>
 <translation id="827422111966801947">မဲနယ်</translation>
 <translation id="8286154143153872371">နောက်ခံကိုကြည့်ရန် ကွန်ရက်ချိတ်ဆက်၍ စာမျက်နှာကို ပြန်လည် စတင်ပါ။</translation>
 <translation id="8291967909914612644">ပင်မထောက်ပံ့သူ နိုင်ငံ</translation>
@@ -1012,6 +1012,7 @@
 <translation id="8747900814994928677">ပြောင်းလဲမှုကို အတည်ပြုခြင်း</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos အယ်လ်ဘမ်</translation>
+<translation id="8775713578693478175">မိုဒမ် APN</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8789196995628578448">ဖြတ်လမ်းလင့်ခ်ကို “<ph name="CONFLICT_ACCEL_NAME" />” အတွက် သုံးထားသည်။ ဖြတ်လမ်းလင့်ခ်အသစ်တစ်ခုကို နှိပ်ပါ။ မူရင်းဖြတ်လမ်းလင့်ခ်ကို အစားထိုးရန် ဤဖြတ်လမ်းလင့်ခ်ကို ထပ်နှိပ်ပါ။</translation>
 <translation id="879568662008399081">ဤကွန်ရက်တွင် စတင်ဝင်ရန်စာမျက်နှာ ရှိနိုင်သည်</translation>

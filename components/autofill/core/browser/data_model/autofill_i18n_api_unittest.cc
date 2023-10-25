@@ -196,7 +196,7 @@ TEST_F(AutofillI18nApiTest, IsTypeEnabledForCountry) {
         continue;
       }
       SCOPED_TRACE(testing::Message()
-                   << "Testing type " << FieldTypeToStringPiece(field_type)
+                   << "Testing type " << FieldTypeToStringView(field_type)
                    << " in country " << address_country_code);
 
       if (!kAutofillModelRules.contains(country_code)) {

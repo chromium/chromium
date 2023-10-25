@@ -242,6 +242,7 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
             int windowDisposition) {
         if (mIsDestroyed) return;
         RecordUserAction.record("MobileRecentTabManagerTabFromOtherDeviceOpened");
+        RecordUserAction.record("MobileCrossDeviceTabOpenedOrSent");
         mForeignSessionHelper.openForeignSessionTab(mActiveTab, session, tab, windowDisposition);
     }
 

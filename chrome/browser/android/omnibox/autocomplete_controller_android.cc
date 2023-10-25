@@ -201,14 +201,12 @@ void AutocompleteControllerAndroid::StartPrefetch(
 
 ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::Classify(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_text,
-    bool focused_from_fakebox) {
+    const JavaParamRef<jstring>& j_text) {
   // The old AutocompleteResult is about to be invalidated.
   autocomplete_controller_->result().DestroyJavaObject();
 
   inside_synchronous_start_ = true;
-  Start(env, j_text, -1, nullptr, nullptr, true, false, false, false,
-        focused_from_fakebox);
+  Start(env, j_text, -1, nullptr, nullptr, true, false, false, false, false);
   inside_synchronous_start_ = false;
   DCHECK(autocomplete_controller_->done());
   const AutocompleteResult& result = autocomplete_controller_->result();

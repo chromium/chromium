@@ -26,6 +26,7 @@ module.exports = {
         allowedNames: ['is', 'template', 'properties', 'observers'],
       },
     ],
+    'quote-props': ['error', 'consistent-as-needed'],
   },
   // clang-format on
 };

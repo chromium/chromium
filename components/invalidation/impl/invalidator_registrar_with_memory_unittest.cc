@@ -9,7 +9,6 @@
 #include "base/json/json_reader.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/values.h"
 #include "components/invalidation/impl/fake_invalidation_handler.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_util.h"
@@ -40,24 +39,16 @@ std::map<Topic, Invalidation> ExpectedInvalidations(Inv... inv) {
 
 constexpr char kTopicsToHandler[] = "invalidation.per_sender_topics_to_handler";
 
-base::Value MakeStoredTopicMetadata(const InvalidationHandler* handler,
-                                    TopicMetadata topic_metadata) {
-  base::Value::Dict stored_topic_metadata;
-  stored_topic_metadata.Set("handler", handler->GetOwnerName());
-  stored_topic_metadata.Set("is_public", topic_metadata.is_public);
-  return base::Value(std::move(stored_topic_metadata));
-}
-
 class InvalidatorRegistrarWithMemoryTest : public testing::Test {
  protected:
   const TopicData kTopic1 = {/*name=*/"topic_1", /*is_public=*/false};
   const TopicData kTopic2 = {/*name=*/"topic_2", /*is_public=*/false};
   const TopicData kTopic3 = {/*name=*/"topic_3", /*is_public=*/false};
   const TopicData kTopic4 = {/*name=*/"topic_4", /*is_public=*/false};
-  const Invalidation kInv1 = Invalidation::Init(kTopic1.name, 1, "1");
-  const Invalidation kInv2 = Invalidation::Init(kTopic2.name, 2, "2");
-  const Invalidation kInv3 = Invalidation::Init(kTopic3.name, 3, "3");
-  const Invalidation kInv4 = Invalidation::Init(kTopic4.name, 4, "4");
+  const Invalidation kInv1 = Invalidation(kTopic1.name, 1, "1");
+  const Invalidation kInv2 = Invalidation(kTopic2.name, 2, "2");
+  const Invalidation kInv3 = Invalidation(kTopic3.name, 3, "3");
+  const Invalidation kInv4 = Invalidation(kTopic4.name, 4, "4");
 };
 
 // Initialize the invalidator, register a handler, register some topics for that
@@ -73,10 +64,6 @@ TEST_F(InvalidatorRegistrarWithMemoryTest, Basic) {
 
   FakeInvalidationHandler handler("owner");
   invalidator->RegisterHandler(&handler);
-
-  const auto kInv1 = Invalidation::Init(this->kTopic1.name, 1, "1");
-  const auto kInv2 = Invalidation::Init(kTopic2.name, 2, "2");
-  const auto kInv3 = Invalidation::Init(kTopic3.name, 3, "3");
 
   // Should be ignored since no topics are registered to |handler|.
   Dispatch(*invalidator, kInv1, kInv2, kInv3);
@@ -153,11 +140,6 @@ TEST_F(InvalidatorRegistrarWithMemoryTest, MultipleHandlers) {
   EXPECT_EQ(INVALIDATIONS_ENABLED, handler2.GetInvalidatorState());
   EXPECT_EQ(INVALIDATIONS_ENABLED, handler3.GetInvalidatorState());
   EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler4.GetInvalidatorState());
-
-  const auto kInv1 = Invalidation::Init(kTopic1.name, 1, "1");
-  const auto kInv2 = Invalidation::Init(kTopic2.name, 2, "2");
-  const auto kInv3 = Invalidation::Init(kTopic3.name, 3, "3");
-  const auto kInv4 = Invalidation::Init(kTopic4.name, 4, "4");
 
   Dispatch(*invalidator, kInv1, kInv2, kInv3, kInv4);
 
@@ -244,10 +226,6 @@ TEST_F(InvalidatorRegistrarWithMemoryTest, EmptySetUnregisters) {
   EXPECT_EQ(INVALIDATIONS_ENABLED, handler2.GetInvalidatorState());
 
   {
-    const auto kInv1 = Invalidation::Init(kTopic1.name, 1, "1");
-    const auto kInv2 = Invalidation::Init(kTopic2.name, 2, "2");
-    const auto kInv3 = Invalidation::Init(kTopic3.name, 3, "3");
-
     Dispatch(*invalidator, kInv1, kInv2, kInv3);
 
     EXPECT_EQ(0, handler1.GetInvalidationCount());
@@ -359,86 +337,6 @@ TEST_F(InvalidatorRegistrarWithMemoryTest,
   EXPECT_THAT(invalidator->GetRegisteredTopics(&handler),
               UnorderedElementsAre(
                   Pair(kTopic1.name, TopicMetadata{kTopic1.is_public})));
-  EXPECT_THAT(invalidator->GetAllSubscribedTopics(),
-              UnorderedElementsAre(
-                  Pair(kTopic1.name, TopicMetadata{kTopic1.is_public})));
-
-  invalidator->UnregisterHandler(&handler);
-}
-
-TEST_F(InvalidatorRegistrarWithMemoryTest, ShouldRemoveAllTopics) {
-  const std::string kSenderId = "sender_id";
-  TestingPrefServiceSimple pref_service;
-  InvalidatorRegistrarWithMemory::RegisterProfilePrefs(pref_service.registry());
-
-  FakeInvalidationHandler handler("handler");
-
-  // Set up some previously-registered topics in the pref.
-  base::Value::Dict sender_id_topics;
-  sender_id_topics.Set(
-      kTopic1.name,
-      MakeStoredTopicMetadata(&handler, TopicMetadata{kTopic1.is_public}));
-  sender_id_topics.Set(
-      kTopic2.name,
-      MakeStoredTopicMetadata(&handler, TopicMetadata{kTopic2.is_public}));
-  base::Value::Dict stored_topics;
-  stored_topics.Set(kSenderId, std::move(sender_id_topics));
-  pref_service.Set(kTopicsToHandler, base::Value(std::move(stored_topics)));
-
-  auto invalidator = std::make_unique<InvalidatorRegistrarWithMemory>(
-      &pref_service, kSenderId);
-  invalidator->RegisterHandler(&handler);
-
-  // Verify that all topics are successfully subscribed but not registered by
-  // the |handler|.
-  ASSERT_THAT(invalidator->GetRegisteredTopics(&handler), IsEmpty());
-  ASSERT_THAT(invalidator->GetAllSubscribedTopics(),
-              UnorderedElementsAre(
-                  Pair(kTopic1.name, TopicMetadata{kTopic1.is_public}),
-                  Pair(kTopic2.name, TopicMetadata{kTopic2.is_public})));
-
-  // Unregister from all topics.
-  invalidator->RemoveUnregisteredTopics(&handler);
-  EXPECT_THAT(invalidator->GetAllSubscribedTopics(), IsEmpty());
-
-  invalidator->UnregisterHandler(&handler);
-}
-
-TEST_F(InvalidatorRegistrarWithMemoryTest, ShouldRemoveUnregisteredTopics) {
-  const std::string kSenderId = "sender_id";
-
-  TestingPrefServiceSimple pref_service;
-  InvalidatorRegistrarWithMemory::RegisterProfilePrefs(pref_service.registry());
-
-  FakeInvalidationHandler handler("handler");
-
-  // Set up some previously-registered topics in the pref.
-  base::Value::Dict sender_id_topics;
-  sender_id_topics.Set(
-      kTopic1.name,
-      MakeStoredTopicMetadata(&handler, TopicMetadata{kTopic1.is_public}));
-  sender_id_topics.Set(
-      kTopic2.name,
-      MakeStoredTopicMetadata(&handler, TopicMetadata{kTopic2.is_public}));
-  base::Value::Dict stored_topics;
-  stored_topics.Set(kSenderId, std::move(sender_id_topics));
-  pref_service.Set(kTopicsToHandler, base::Value(std::move(stored_topics)));
-
-  auto invalidator = std::make_unique<InvalidatorRegistrarWithMemory>(
-      &pref_service, kSenderId);
-  invalidator->RegisterHandler(&handler);
-
-  // Verify that all topics are successfully subscribed but not registered by
-  // the |handler|.
-  ASSERT_THAT(invalidator->GetRegisteredTopics(&handler), IsEmpty());
-  ASSERT_THAT(invalidator->GetAllSubscribedTopics(),
-              UnorderedElementsAre(
-                  Pair(kTopic1.name, TopicMetadata{kTopic1.is_public}),
-                  Pair(kTopic2.name, TopicMetadata{kTopic2.is_public})));
-
-  // Register to only one topic and unregister from another.
-  ASSERT_TRUE(invalidator->UpdateRegisteredTopics(&handler, {kTopic1}));
-  invalidator->RemoveUnregisteredTopics(&handler);
   EXPECT_THAT(invalidator->GetAllSubscribedTopics(),
               UnorderedElementsAre(
                   Pair(kTopic1.name, TopicMetadata{kTopic1.is_public})));

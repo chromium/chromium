@@ -22,7 +22,7 @@ TestDocumentLoader::TestDocumentLoader(
     const base::FilePath::StringType& pdf_name)
     : client_(client) {
   base::FilePath pdf_path;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &pdf_path));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &pdf_path));
   pdf_path = pdf_path.Append(FILE_PATH_LITERAL("pdf"))
                  .Append(FILE_PATH_LITERAL("test"))
                  .Append(FILE_PATH_LITERAL("data"))

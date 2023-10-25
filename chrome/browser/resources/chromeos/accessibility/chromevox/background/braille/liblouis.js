@@ -142,16 +142,16 @@ export class LibLouis {
     }
     const message = /** @type {!Object} */ (JSON.parse(e.data));
     const messageId = message['in_reply_to'];
-    if (!goog.isDef(messageId)) {
+    if (messageId === undefined) {
       globalThis.console.warn(
           'liblouis Web Assembly module sent message with no ID', message);
       return;
     }
-    if (goog.isDef(message['error'])) {
+    if (message['error'] !== undefined) {
       globalThis.console.error('liblouis Web Assembly error', message['error']);
     }
     const callback = this.pendingRpcCallbacks_[messageId];
-    if (goog.isDef(callback)) {
+    if (callback !== undefined) {
       delete this.pendingRpcCallbacks_[messageId];
       callback(message);
     }
@@ -248,10 +248,10 @@ LibLouis.Translator = class {
       let brailleToText = null;
       if (reply['success'] && goog.isString(reply['cells'])) {
         cells = LibLouis.Translator.decodeHexString_(reply['cells']);
-        if (goog.isDef(reply['text_to_braille'])) {
+        if (reply['text_to_braille'] !== undefined) {
           textToBraille = reply['text_to_braille'];
         }
-        if (goog.isDef(reply['braille_to_text'])) {
+        if (reply['braille_to_text'] !== undefined) {
           brailleToText = reply['braille_to_text'];
         }
       } else if (text.length > 0) {

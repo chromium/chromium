@@ -1,0 +1,4 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="div"]
+++++View text:"b" textSize:16.00 style:0 bundle:[aria-description="b", display="inline", htmlTag="span"]
+++++View text:"c" textSize:16.00 style:0 bundle:[aria-description="c", display="inline", htmlTag="span"]

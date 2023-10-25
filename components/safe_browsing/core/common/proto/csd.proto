@@ -1490,7 +1490,7 @@ message DownloadMetadata {
 // A Detailed Safebrowsing Report from clients. Chrome safebrowsing reports are
 // only sent by Chrome users who have opted into extended Safe Browsing.
 // This proto is replacing ClientMalwareReportRequest.
-// Next tag: 32
+// Next tag: 33
 message ClientSafeBrowsingReportRequest {
   // Note: A lot of the "optional" fields would make sense to be
   // "required" instead.  However, having them as optional allows the
@@ -1628,6 +1628,8 @@ message ClientSafeBrowsingReportRequest {
     PVER5_NATIVE_REAL_TIME = 6;
     // The Android Safe Browsing API hit in real time.
     ANDROID_SAFEBROWSING_REAL_TIME = 7;
+    // The Android Safe Browsing API hit in local blocklist.
+    ANDROID_SAFEBROWSING = 8;
   }
 
   // The information propagated from the client about various environment
@@ -1904,6 +1906,9 @@ message ClientSafeBrowsingReportRequest {
 
   // List of user interactions that the user performs with a phishy site.
   repeated PhishySiteInteraction phishy_site_interactions = 31;
+
+  // Timestamp of when the warning was first shown to the user.
+  optional int64 warning_shown_timestamp_msec = 32;
 }
 
 // An HTML Element on the page (eg: iframe, div, script, etc).

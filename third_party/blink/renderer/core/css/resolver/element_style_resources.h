@@ -82,6 +82,8 @@ class ElementStyleResources {
   bool IsPending(const CSSValue&) const;
   StyleImage* CachedStyleImage(const CSSValue&) const;
 
+  StyleImage* LoadMaskSource(CSSValue&);
+
   void LoadPendingSVGResources(ComputedStyleBuilder&);
   void LoadPendingImages(ComputedStyleBuilder&);
 

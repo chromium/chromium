@@ -46,12 +46,13 @@ def _process_build_metadata_json(bm_file, input_roots, output_root, re_outputs,
 
   # All sources and corresponding module files are inputs.
   for s in bm["sources"]:
-    src = os.path.normpath(os.path.join(bm_dir, s))
+    src = os.path.normpath(os.path.join(bm_dir, s)).replace("\\", "/")
     if src not in processed_inputs and os.path.exists(src):
       processed_inputs.add(src)
     src_module = os.path.join(
         output_root,
-        RebaseAbsolutePath(os.path.abspath(src), input_roots) + "-module")
+        RebaseAbsolutePath(os.path.abspath(src), input_roots) +
+        "-module").replace("\\", "/")
     if src_module in re_outputs:
       continue
     if src_module not in processed_inputs and os.path.exists(src_module):

@@ -24,6 +24,7 @@
 #include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -207,7 +208,10 @@ CreateAppShimRequirement() {
 // tailored for the app shim based on the framework bundle's requirement.
 // - False otherwise (|app_shim_pid| does not satisfy the constructed designated
 // requirement).
-bool IsAcceptablyCodeSignedInternal(pid_t app_shim_pid) {
+//
+// This is used prior to macOS 11.7 where it is not possible to ad-hoc code sign
+// the app shim at runtime.
+bool IsAcceptablyCodeSignedLegacy(pid_t app_shim_pid) {
   static base::NoDestructor<
       absl::optional<base::apple::ScopedCFTypeRef<SecRequirementRef>>>
       app_shim_requirement(CreateAppShimRequirement());
@@ -250,6 +254,72 @@ bool IsAcceptablyCodeSignedInternal(pid_t app_shim_pid) {
     return false;
   }
   return true;
+}
+
+// Returns whether |app_shim_code|'s code directory hash matches the value
+// that was saved when the app was signed.
+bool VerifyCodeDirectoryHash(
+    base::apple::ScopedCFTypeRef<SecCodeRef> app_shim_code) {
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> app_shim_info;
+  OSStatus status = SecCodeCopySigningInformation(
+      app_shim_code, kSecCSSigningInformation, app_shim_info.InitializeInto());
+  if (status != errSecSuccess) {
+    DumpOSStatusError(status, "SecCodeCopySigningInformation");
+    return false;
+  }
+
+  CFDataRef cd_hash =
+      GetValueFromDictionary<CFDataRef>(app_shim_info, kSecCodeInfoUnique);
+
+  CFDictionaryRef info_plist =
+      base::apple::GetValueFromDictionary<CFDictionaryRef>(app_shim_info,
+                                                           kSecCodeInfoPList);
+  if (!info_plist) {
+    return false;
+  }
+
+  CFStringRef app_id = base::apple::GetValueFromDictionary<CFStringRef>(
+      info_plist, CFSTR("CrAppModeShortcutID"));
+  if (!app_id) {
+    return false;
+  }
+
+  return AppShimRegistry::Get()->VerifyCdHashForApp(
+      base::SysCFStringRefToUTF8(app_id),
+      base::make_span(CFDataGetBytePtr(cd_hash),
+                      base::checked_cast<size_t>(CFDataGetLength(cd_hash))));
+}
+
+// Returns whether |app_shim_pid|'s code signature is trusted. Since an ad-hoc
+// code signature is used on macOS 11.7 and above, the verification consists of:
+//  - verifying the signature is valid.
+//  - verifying the code directory hash in the signature matches the value
+//    stored for this app at signing time.
+bool IsAcceptablyAdHocCodeSigned(pid_t app_shim_pid) {
+  base::apple::ScopedCFTypeRef<CFNumberRef> app_shim_pid_cf(
+      CFNumberCreate(nullptr, kCFNumberIntType, &app_shim_pid));
+  const void* app_shim_attribute_keys[] = {kSecGuestAttributePid};
+  const void* app_shim_attribute_values[] = {app_shim_pid_cf};
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> app_shim_attributes(
+      CFDictionaryCreate(
+          nullptr, app_shim_attribute_keys, app_shim_attribute_values,
+          std::size(app_shim_attribute_keys), &kCFTypeDictionaryKeyCallBacks,
+          &kCFTypeDictionaryValueCallBacks));
+  base::apple::ScopedCFTypeRef<SecCodeRef> app_shim_code;
+  OSStatus status = SecCodeCopyGuestWithAttributes(
+      nullptr, app_shim_attributes, kSecCSDefaultFlags,
+      app_shim_code.InitializeInto());
+  if (status != errSecSuccess) {
+    DumpOSStatusError(status, "SecCodeCopyGuestWithAttributes");
+    return false;
+  }
+  status = SecCodeCheckValidity(app_shim_code, kSecCSDefaultFlags, nullptr);
+  if (status != errSecSuccess) {
+    DumpOSStatusError(status, "SecCodeCheckValidity");
+    return false;
+  }
+
+  return VerifyCodeDirectoryHash(app_shim_code);
 }
 
 bool ProfileMenuItemComparator(const chrome::mojom::ProfileMenuItemPtr& a,
@@ -1112,8 +1182,52 @@ void AppShimManager::LoadProfileAndApp_OnAppEnabled(
   std::move(callback).Run(ProfileForPath(profile_path));
 }
 
+// UMA metric name for result of validating app shim signature.
+constexpr const char* kAppShimSignatureValidationResult =
+    "Apps.AppShimSignatureValidationResult";
+
+// Result of validating app shim signature.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SignatureValidationResult {
+  kInvalidSignature = 0,
+  kSuccessAdHoc = 1,
+  kSuccessLegacy = 2,
+  kExpectedAdHocGotLegacy = 3,
+  kMaxValue = kExpectedAdHocGotLegacy,
+};
+
+// Records the result of validating the app shim code signature to UMA.
+void RecordSignatureValidationResult(SignatureValidationResult result) {
+  base::UmaHistogramEnumeration(kAppShimSignatureValidationResult, result);
+}
+
 bool AppShimManager::IsAcceptablyCodeSigned(pid_t pid) const {
-  return IsAcceptablyCodeSignedInternal(pid);
+  static const bool requires_adhoc_signature =
+      web_app::UseAdHocSigningForWebAppShims();
+
+  if (requires_adhoc_signature && IsAcceptablyAdHocCodeSigned(pid)) {
+    RecordSignatureValidationResult(SignatureValidationResult::kSuccessAdHoc);
+    return true;
+  }
+
+  if (IsAcceptablyCodeSignedLegacy(pid)) {
+    if (requires_adhoc_signature) {
+      RecordSignatureValidationResult(
+          SignatureValidationResult::kExpectedAdHocGotLegacy);
+
+      // Returning false to indicate that the signature is invalid will trigger
+      // the recreation of the app shim app bundle. This will result in it
+      // being re-signed with an ad-hoc signature as expected.
+      return false;
+    }
+
+    RecordSignatureValidationResult(SignatureValidationResult::kSuccessLegacy);
+    return true;
+  }
+
+  RecordSignatureValidationResult(SignatureValidationResult::kInvalidSignature);
+  return false;
 }
 
 Profile* AppShimManager::ProfileForPath(const base::FilePath& full_path) {

@@ -498,7 +498,10 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
             // sWebLayerRunningInSameProcess may have been set before initialize().
             if (sWebLayerRunningInSameProcess) {
-                addTask(() -> { getBrowserContextOnUiThread().setWebLayerRunningInSameProcess(); });
+                addTask(
+                        () -> {
+                            getDefaultBrowserContextOnUiThread().setWebLayerRunningInSameProcess();
+                        });
             }
         }
 
@@ -771,7 +774,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     }
 
     // Only on UI thread.
-    AwBrowserContext getBrowserContextOnUiThread() {
+    AwBrowserContext getDefaultBrowserContextOnUiThread() {
         return mAwInit.getDefaultBrowserContextOnUiThread();
     }
 
@@ -839,9 +842,13 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 return;
             }
         }
-        getSingleton().addTask(() -> {
-            getSingleton().getBrowserContextOnUiThread().setWebLayerRunningInSameProcess();
-        });
+        getSingleton()
+                .addTask(
+                        () -> {
+                            getSingleton()
+                                    .getDefaultBrowserContextOnUiThread()
+                                    .setWebLayerRunningInSameProcess();
+                        });
     }
 
     @RequiresApi(Build.VERSION_CODES.R)

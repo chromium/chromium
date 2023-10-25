@@ -79,7 +79,7 @@ TEST_F(RecommendedArcAppFetcherTest, OnLoadSuccess) {
         ASSERT_EQ(error, DiscoveryError::kSuccess);
         ASSERT_EQ(results.size(), 1u);
         EXPECT_EQ(results[0].GetAppSource(), AppSource::kPlay);
-        EXPECT_EQ(results[0].GetAppId(), "com.game.name");
+        EXPECT_EQ(results[0].GetIconId(), "com.game.name");
         EXPECT_EQ(results[0].GetAppTitle(), u"NameOfFunGame");
         EXPECT_TRUE(results[0].GetSourceExtras());
         auto* play_extras = results[0].GetSourceExtras()->AsPlayExtras();

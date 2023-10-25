@@ -12,7 +12,7 @@
 
 namespace blink {
 
-void NGLineInfo::Reset() {
+void LineInfo::Reset() {
   items_data_ = nullptr;
   line_style_ = nullptr;
   results_.Shrink(0);
@@ -55,9 +55,9 @@ void NGLineInfo::Reset() {
   allow_hang_for_alignment_ = false;
 }
 
-void NGLineInfo::SetLineStyle(const NGInlineNode& node,
-                              const NGInlineItemsData& items_data,
-                              bool use_first_line_style) {
+void LineInfo::SetLineStyle(const InlineNode& node,
+                            const InlineItemsData& items_data,
+                            bool use_first_line_style) {
   use_first_line_style_ = use_first_line_style;
   items_data_ = &items_data;
   const LayoutBox* box = node.GetLayoutBox();
@@ -72,7 +72,7 @@ void NGLineInfo::SetLineStyle(const NGInlineNode& node,
   initial_letter_box_block_size_ = LayoutUnit();
 }
 
-ETextAlign NGLineInfo::GetTextAlign(bool is_last_line) const {
+ETextAlign LineInfo::GetTextAlign(bool is_last_line) const {
   // See LayoutRubyBase::TextAlignmentForLine().
   if (is_ruby_base_)
     return ETextAlign::kJustify;
@@ -85,7 +85,7 @@ ETextAlign NGLineInfo::GetTextAlign(bool is_last_line) const {
   return LineStyle().GetTextAlign(is_last_line);
 }
 
-bool NGLineInfo::ComputeNeedsAccurateEndPosition() const {
+bool LineInfo::ComputeNeedsAccurateEndPosition() const {
   // Some 'text-align' values need accurate end position. At this point, we
   // don't know if this is the last line or not, and thus we don't know whether
   // 'text-align' is used or 'text-align-last' is used.
@@ -137,28 +137,29 @@ bool NGLineInfo::ComputeNeedsAccurateEndPosition() const {
   return false;
 }
 
-NGInlineItemTextIndex NGLineInfo::End() const {
+InlineItemTextIndex LineInfo::End() const {
   return BreakToken() ? BreakToken()->Start() : ItemsData().End();
 }
 
-unsigned NGLineInfo::EndTextOffset() const {
+unsigned LineInfo::EndTextOffset() const {
   return BreakToken() ? BreakToken()->StartTextOffset()
                       : ItemsData().text_content.length();
 }
 
-unsigned NGLineInfo::InflowEndOffset() const {
+unsigned LineInfo::InflowEndOffset() const {
   for (const auto& item_result : base::Reversed(Results())) {
     DCHECK(item_result.item);
-    const NGInlineItem& item = *item_result.item;
-    if (item.Type() == NGInlineItem::kText ||
-        item.Type() == NGInlineItem::kControl ||
-        item.Type() == NGInlineItem::kAtomicInline)
+    const InlineItem& item = *item_result.item;
+    if (item.Type() == InlineItem::kText ||
+        item.Type() == InlineItem::kControl ||
+        item.Type() == InlineItem::kAtomicInline) {
       return item_result.EndOffset();
+    }
   }
   return StartOffset();
 }
 
-bool NGLineInfo::ShouldHangTrailingSpaces() const {
+bool LineInfo::ShouldHangTrailingSpaces() const {
   if (RuntimeEnabledFeatures::
           HangingWhitespaceDoesNotDependOnAlignmentEnabled()) {
     return true;
@@ -187,8 +188,8 @@ bool NGLineInfo::ShouldHangTrailingSpaces() const {
   NOTREACHED();
 }
 
-bool NGLineInfo::IsHyphenated() const {
-  for (const NGInlineItemResult& item_result : base::Reversed(Results())) {
+bool LineInfo::IsHyphenated() const {
+  for (const InlineItemResult& item_result : base::Reversed(Results())) {
     if (item_result.Length()) {
       return item_result.is_hyphenated;
     }
@@ -196,7 +197,7 @@ bool NGLineInfo::IsHyphenated() const {
   return false;
 }
 
-void NGLineInfo::UpdateTextAlign() {
+void LineInfo::UpdateTextAlign() {
   text_align_ = GetTextAlign(IsLastLine());
 
   if (RuntimeEnabledFeatures::
@@ -251,8 +252,7 @@ void NGLineInfo::UpdateTextAlign() {
     end_offset_for_justify_ = InflowEndOffset();
 }
 
-LayoutUnit NGLineInfo::ComputeTrailingSpaceWidth(
-    unsigned* end_offset_out) const {
+LayoutUnit LineInfo::ComputeTrailingSpaceWidth(unsigned* end_offset_out) const {
   if (!has_trailing_spaces_) {
     if (end_offset_out)
       *end_offset_out = InflowEndOffset();
@@ -262,19 +262,19 @@ LayoutUnit NGLineInfo::ComputeTrailingSpaceWidth(
   LayoutUnit trailing_spaces_width;
   for (const auto& item_result : base::Reversed(Results())) {
     DCHECK(item_result.item);
-    const NGInlineItem& item = *item_result.item;
+    const InlineItem& item = *item_result.item;
 
     // If this item is opaque to whitespace collapsing, whitespace before this
     // item maybe collapsed. Keep looking for previous items.
-    if (item.EndCollapseType() == NGInlineItem::kOpaqueToCollapsing) {
+    if (item.EndCollapseType() == InlineItem::kOpaqueToCollapsing) {
       continue;
     }
     // These items should be opaque-to-collapsing.
-    DCHECK(item.Type() != NGInlineItem::kFloating &&
-           item.Type() != NGInlineItem::kOutOfFlowPositioned &&
-           item.Type() != NGInlineItem::kBidiControl);
+    DCHECK(item.Type() != InlineItem::kFloating &&
+           item.Type() != InlineItem::kOutOfFlowPositioned &&
+           item.Type() != InlineItem::kBidiControl);
 
-    if (item.Type() == NGInlineItem::kControl ||
+    if (item.Type() == InlineItem::kControl ||
         item_result.has_only_trailing_spaces) {
       trailing_spaces_width += item_result.inline_size;
       continue;
@@ -284,9 +284,9 @@ LayoutUnit NGLineInfo::ComputeTrailingSpaceWidth(
     // has a forced break, or is 'white-space: pre'.
     unsigned end_offset = item_result.EndOffset();
     DCHECK(end_offset);
-    if (item.Type() == NGInlineItem::kText) {
+    if (item.Type() == InlineItem::kText) {
       if (!item_result.Length()) {
-        continue;  // Skip empty items. See `NGLineBreaker::HandleEmptyText`.
+        continue;  // Skip empty items. See `LineBreaker::HandleEmptyText`.
       }
       const String& text = items_data_->text_content;
       if (end_offset && text[end_offset - 1] == kSpaceCharacter) {
@@ -330,19 +330,21 @@ LayoutUnit NGLineInfo::ComputeTrailingSpaceWidth(
   return trailing_spaces_width;
 }
 
-LayoutUnit NGLineInfo::ComputeWidth() const {
+LayoutUnit LineInfo::ComputeWidth() const {
   LayoutUnit inline_size = TextIndent();
-  for (const NGInlineItemResult& item_result : Results())
+  for (const InlineItemResult& item_result : Results()) {
     inline_size += item_result.inline_size;
+  }
 
   return inline_size;
 }
 
 #if DCHECK_IS_ON()
-float NGLineInfo::ComputeWidthInFloat() const {
+float LineInfo::ComputeWidthInFloat() const {
   float inline_size = TextIndent();
-  for (const NGInlineItemResult& item_result : Results())
+  for (const InlineItemResult& item_result : Results()) {
     inline_size += item_result.inline_size.ToFloat();
+  }
 
   return inline_size;
 }
@@ -404,7 +406,7 @@ float NGLineInfo::ComputeWidthInFloat() const {
 // [7]
 // https://wpt.live/css/css-inline/initial-letter/initial-letter-block-position-drop-under-ruby.html
 
-LayoutUnit NGLineInfo::ComputeAnnotationBlockOffsetAdjustment() const {
+LayoutUnit LineInfo::ComputeAnnotationBlockOffsetAdjustment() const {
   if (annotation_block_start_adjustment_ < 0) {
     // Test[1] or `ruby-position:under` reach here.
     // [1] https://wpt.live/css/css-ruby/line-spacing.html
@@ -419,7 +421,7 @@ LayoutUnit NGLineInfo::ComputeAnnotationBlockOffsetAdjustment() const {
                   LayoutUnit());
 }
 
-LayoutUnit NGLineInfo::ComputeBlockStartAdjustment() const {
+LayoutUnit LineInfo::ComputeBlockStartAdjustment() const {
   if (annotation_block_start_adjustment_ < 0) {
     // Test[1] or `ruby-position:under` reaches here.
     // [1] https://wpt.live/css/css-ruby/line-spacing.html
@@ -433,7 +435,7 @@ LayoutUnit NGLineInfo::ComputeBlockStartAdjustment() const {
                   initial_letter_box_block_start_adjustment_);
 }
 
-LayoutUnit NGLineInfo::ComputeInitialLetterBoxBlockStartAdjustment() const {
+LayoutUnit LineInfo::ComputeInitialLetterBoxBlockStartAdjustment() const {
   if (!annotation_block_start_adjustment_)
     return LayoutUnit();
   if (annotation_block_start_adjustment_ < 0) {
@@ -446,7 +448,7 @@ LayoutUnit NGLineInfo::ComputeInitialLetterBoxBlockStartAdjustment() const {
                   LayoutUnit());
 }
 
-LayoutUnit NGLineInfo::ComputeTotalBlockSize(
+LayoutUnit LineInfo::ComputeTotalBlockSize(
     LayoutUnit line_height,
     LayoutUnit annotation_overflow_block_end) const {
   DCHECK_GE(annotation_overflow_block_end, LayoutUnit());
@@ -456,9 +458,9 @@ LayoutUnit NGLineInfo::ComputeTotalBlockSize(
   return std::max(initial_letter_box_block_size_, line_height_with_annotation);
 }
 
-std::ostream& operator<<(std::ostream& ostream, const NGLineInfo& line_info) {
+std::ostream& operator<<(std::ostream& ostream, const LineInfo& line_info) {
   // Feel free to add more NGLneInfo members.
-  ostream << "NGLineInfo available_width_=" << line_info.AvailableWidth()
+  ostream << "LineInfo available_width_=" << line_info.AvailableWidth()
           << " width_=" << line_info.Width() << " Results=[\n";
   for (const auto& result : line_info.Results()) {
     ostream << "\t" << result.item->ToString() << "\n";

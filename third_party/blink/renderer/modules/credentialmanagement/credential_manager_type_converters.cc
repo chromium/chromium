@@ -25,6 +25,9 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_values.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authenticator_selection_criteria.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cable_authentication_data.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_field_requirement.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_provider.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_selector.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_logout_r_ps_request.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options_context.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options_mode.h"
@@ -37,10 +40,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_rp_entity.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_user_entity.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_remote_desktop_client_override.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_string_walletfieldrequirement.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_wallet_field_requirement.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_wallet_provider.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_wallet_selector.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_digitalcredentialfieldrequirement_string.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/federated_credential.h"
@@ -67,6 +67,12 @@ using blink::mojom::blink::CredentialInfoPtr;
 using blink::mojom::blink::CredentialType;
 using blink::mojom::blink::DevicePublicKeyRequest;
 using blink::mojom::blink::DevicePublicKeyRequestPtr;
+using blink::mojom::blink::DigitalCredentialFieldRequirement;
+using blink::mojom::blink::DigitalCredentialFieldRequirementPtr;
+using blink::mojom::blink::DigitalCredentialProvider;
+using blink::mojom::blink::DigitalCredentialProviderPtr;
+using blink::mojom::blink::DigitalCredentialSelector;
+using blink::mojom::blink::DigitalCredentialSelectorPtr;
 using blink::mojom::blink::IdentityProvider;
 using blink::mojom::blink::IdentityProviderConfig;
 using blink::mojom::blink::IdentityProviderConfigPtr;
@@ -95,12 +101,6 @@ using blink::mojom::blink::ResidentKeyRequirement;
 using blink::mojom::blink::RpContext;
 using blink::mojom::blink::RpMode;
 using blink::mojom::blink::UserVerificationRequirement;
-using blink::mojom::blink::WalletFieldRequirement;
-using blink::mojom::blink::WalletFieldRequirementPtr;
-using blink::mojom::blink::WalletProvider;
-using blink::mojom::blink::WalletProviderPtr;
-using blink::mojom::blink::WalletSelector;
-using blink::mojom::blink::WalletSelectorPtr;
 
 namespace {
 
@@ -868,7 +868,7 @@ TypeConverter<IdentityProviderPtr, blink::IdentityProviderConfig>::Convert(
       // TODO(https://crbug.com/1416939): make sure the Digital Credentials API
       // works well with the Multiple IdP API.
       !blink::RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled()) {
-    auto mojo_provider = WalletProvider::New();
+    auto mojo_provider = DigitalCredentialProvider::New();
     if (provider.holder()->hasParams()) {
       HashMap<String, String> params;
       for (const auto& pair : provider.holder()->params()) {
@@ -876,7 +876,7 @@ TypeConverter<IdentityProviderPtr, blink::IdentityProviderConfig>::Convert(
       }
       mojo_provider->params = std::move(params);
     }
-    mojo_provider->selector = WalletSelector::New();
+    mojo_provider->selector = DigitalCredentialSelector::New();
     if (provider.holder()->hasSelector()) {
       if (provider.holder()->selector()->hasFormat()) {
         mojo_provider->selector->format =
@@ -887,17 +887,18 @@ TypeConverter<IdentityProviderPtr, blink::IdentityProviderConfig>::Convert(
             provider.holder()->selector()->doctype();
       }
       if (provider.holder()->selector()->hasFields()) {
-        WTF::Vector<WalletFieldRequirementPtr> fields;
+        WTF::Vector<DigitalCredentialFieldRequirementPtr> fields;
         for (auto element : provider.holder()->selector()->fields()) {
-          auto requested_element = WalletFieldRequirement::New();
+          auto requested_element = DigitalCredentialFieldRequirement::New();
           if (element->IsString()) {
             requested_element->name = element->GetAsString();
           } else {
             requested_element->name =
-                element->GetAsWalletFieldRequirement()->name();
-            if (element->GetAsWalletFieldRequirement()->hasEquals()) {
+                element->GetAsDigitalCredentialFieldRequirement()->name();
+            if (element->GetAsDigitalCredentialFieldRequirement()
+                    ->hasEquals()) {
               requested_element->equals =
-                  element->GetAsWalletFieldRequirement()->equals();
+                  element->GetAsDigitalCredentialFieldRequirement()->equals();
             }
           }
 

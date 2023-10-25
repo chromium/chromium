@@ -37,9 +37,6 @@ class TabPickupInfobarDelegate : public ConfirmInfoBarDelegate {
   // Opens the last synced tab from another device.
   void OpenDistantTab();
 
-  // Opens the tab pickup settings screen.
-  void OpenTabPickupSettings();
-
   // Getters.
   const std::string GetSessionName() const { return session_name_; }
   const GURL& GetTabURL() const { return tab_url_; }

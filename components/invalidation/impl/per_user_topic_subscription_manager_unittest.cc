@@ -68,19 +68,19 @@ std::string IndexToName(size_t index) {
   return name;
 }
 
-Topics GetSequenceOfTopicsStartingAt(size_t start, size_t count) {
-  Topics topics;
+TopicMap GetSequenceOfTopicsStartingAt(size_t start, size_t count) {
+  TopicMap topics;
   for (size_t i = start; i < start + count; ++i) {
     topics.emplace(IndexToName(i), TopicMetadata{false});
   }
   return topics;
 }
 
-Topics GetSequenceOfTopics(size_t count) {
+TopicMap GetSequenceOfTopics(size_t count) {
   return GetSequenceOfTopicsStartingAt(0, count);
 }
 
-TopicSet TopicSetFromTopics(const Topics& topics) {
+TopicSet TopicSetFromTopics(const TopicMap& topics) {
   TopicSet topic_set;
   for (auto& topic : topics) {
     topic_set.insert(topic.first);
@@ -232,7 +232,7 @@ class PerUserTopicSubscriptionManagerTest : public testing::Test {
   }
 
   void WaitForTopics(const PerUserTopicSubscriptionManager& manager,
-                     const Topics& expected_topics) {
+                     const TopicMap& expected_topics) {
     while (manager.GetSubscribedTopicsForTest() !=
            TopicSetFromTopics(expected_topics)) {
       pref_service()->user_prefs_store()->WaitUntilValueChanges(
@@ -835,7 +835,7 @@ TEST_F(PerUserTopicSubscriptionManagerTest, ShouldRecordTokenStateHistogram) {
     kTokenCleared = 3,
   };
 
-  const Topics topics = GetSequenceOfTopics(kInvalidationTopicsCount);
+  const TopicMap topics = GetSequenceOfTopics(kInvalidationTopicsCount);
   auto per_user_topic_subscription_manager = BuildRegistrationManager();
 
   // Subscribe to some topics (and provide an InstanceID token).

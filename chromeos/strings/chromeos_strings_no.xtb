@@ -169,7 +169,9 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> bilder</translation>
 <translation id="2157660087437850958">emojivelger</translation>
 <translation id="2157959690810728433">I KØ</translation>
+<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Administratoren din har angitt at <ph name="APP_NAME_1" /> skal startes automatisk hver gang du logger på.}=2{Administratoren din har angitt at <ph name="APP_NAME_1" /> og <ph name="APP_NAME_2" /> skal startes automatisk hver gang du logger på.}=3{Administratoren din har angitt at <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> og <ph name="APP_NAME_3" /> skal startes automatisk hver gang du logger på.}other{Administratoren din har angitt at <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> og # apper til skal startes automatisk hver gang du logger på.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Prøv på nytt</translation>
+<translation id="215916044711630446">Legg til APN-knappen er nå deaktivert</translation>
 <translation id="2161394479394250669">Avbryt utskriftsjobben</translation>
 <translation id="2161656808144014275">Tekst</translation>
 <translation id="2163937499206714165">Slå på mørk modus</translation>
@@ -399,6 +401,7 @@
 <translation id="4117637339509843559">Mørk modus</translation>
 <translation id="4130035430755296270">Hold markøren i ro for å se flere oppsettsalternativer</translation>
 <translation id="4131410914670010031">Svarthvitt</translation>
+<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> ble startet automatisk}other{# apper ble startet automatisk}}</translation>
 <translation id="4145784616224233563">HTTP-brannmur</translation>
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4150201353443180367">Skjerm</translation>
@@ -444,6 +447,7 @@
 <translation id="445059817448385655">Gammelt passord</translation>
 <translation id="4453205916657964690">Nettverksmaske</translation>
 <translation id="4454245904991689773">Skann til</translation>
+<translation id="4456812688969919973">Lagre APN-knappen er nå deaktivert</translation>
 <translation id="4469288414739283461">Skjermsparer: Jordflyt</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kunne ikke pinge gatewayen for ikke-standardnettverket</translation>
@@ -688,9 +692,11 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Slå på mørkt tema</translation>
 <translation id="628726841779494414">Administrer skriverne dine i skriverinnstillingene</translation>
+<translation id="6292095526077353682">Under lading: Vis skjermsparer</translation>
 <translation id="629550705077076970">tastaturdimming</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />testen er avbrutt</translation>
 <translation id="631063167932043783">Utforsk-appen</translation>
+<translation id="6318437367327684789">for alltid</translation>
 <translation id="6319207335391420837">Oppdater fastvaren på <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Slå på skjermspareren</translation>
 <translation id="6324916366299863871">Endre snarvei</translation>
@@ -714,6 +720,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Svak (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Gå til kontoinnstillingene</translation>
+<translation id="6462978824459367242">Legg til APN-knappen er nå aktivert</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Vil du skanne siden på nytt?}=1{Vil du skanne side {PAGE_NUMBER} på nytt?}other{Vil du skanne side {PAGE_NUMBER} på nytt?}}</translation>
 <translation id="6472207088655375767">Engangspassord</translation>
 <translation id="6480327114083866287">Administreres av <ph name="MANAGER" /></translation>
@@ -1052,6 +1059,7 @@
 <translation id="902638246363752736">Tastaturinnstillinger</translation>
 <translation id="9028832514430399253">Slå på av/på-knappen for å velge skjermspareralternativene</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9049868303458988905">Lagre APN-knappen er nå aktivert</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS-oppslag har høy tidsforsinkelse</translation>
 <translation id="9065203028668620118">Endre</translation>

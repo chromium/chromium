@@ -211,7 +211,8 @@ public class ClientHintsTest {
         Assert.assertEquals("HEADER_NOT_FOUND", jsonObject.getString("sec-ch-ua-wow64"));
         // This client hint isn't sent when data-saver is off.
         Assert.assertEquals("HEADER_NOT_FOUND", jsonObject.getString("save-data"));
-        Assert.assertNotEquals("HEADER_NOT_FOUND", jsonObject.getString("sec-ch-prefers-reduced-motion"));
+        Assert.assertNotEquals(
+                "HEADER_NOT_FOUND", jsonObject.getString("sec-ch-prefers-reduced-motion"));
         Assert.assertEquals("HEADER_NOT_FOUND", jsonObject.getString("sec-ch-ua-form-factor"));
         Assert.assertNotEquals(
                 "HEADER_NOT_FOUND", jsonObject.getString("sec-ch-prefers-reduced-transparency"));
@@ -852,7 +853,8 @@ public class ClientHintsTest {
         Assert.assertEquals("?1", clientHintsMap.get("sec-ch-ua-mobile"));
         Assert.assertEquals("\"128\"", clientHintsMap.get("sec-ch-ua-bitness"));
         Assert.assertEquals("?1", clientHintsMap.get("sec-ch-ua-wow64"));
-        Assert.assertEquals("\"fake_mobile\"", clientHintsMap.get("sec-ch-ua-form-factor"));
+        Assert.assertEquals(
+                "\"Automotive\", \"Tablet\"", clientHintsMap.get("sec-ch-ua-form-factor"));
 
         // Verify js client hints result.
         JSONObject jsClientHints = clientHintsResult.mJsClientHints;
@@ -870,7 +872,7 @@ public class ClientHintsTest {
         Assert.assertTrue(jsClientHints.getBoolean("mobile"));
         Assert.assertEquals("128", jsClientHints.getString("bitness"));
         Assert.assertTrue(jsClientHints.getBoolean("wow64"));
-        Assert.assertEquals("fake_mobile", jsClientHints.getString("formFactor"));
+        Assert.assertEquals("[\"Automotive\",\"Tablet\"]", jsClientHints.getString("formFactor"));
     }
 
     private Map<String, Object> makeFakeMetadata() {
@@ -885,7 +887,9 @@ public class ClientHintsTest {
         settings.put(AwUserAgentMetadata.MetadataKeys.MOBILE, true);
         settings.put(AwUserAgentMetadata.MetadataKeys.BITNESS, 128);
         settings.put(AwUserAgentMetadata.MetadataKeys.WOW64, true);
-        settings.put(AwUserAgentMetadata.MetadataKeys.FORM_FACTOR, "fake_mobile");
+        settings.put(
+                AwUserAgentMetadata.MetadataKeys.FORM_FACTOR,
+                new String[] {"Automotive", "Tablet"});
         return settings;
     }
 

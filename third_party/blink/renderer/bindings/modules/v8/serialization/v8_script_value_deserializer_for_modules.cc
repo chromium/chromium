@@ -585,7 +585,7 @@ MediaStreamTrack* V8ScriptValueDeserializerForModules::ReadMediaStreamTrack() {
     return nullptr;
   }
 
-  absl::optional<uint32_t> crop_version;
+  absl::optional<uint32_t> sub_capture_target_version;
   // Using `switch` to ensure new enum values are handled.
   switch (track_impl_subtype) {
     case SerializedTrackImplSubtype::kTrackImplSubtypeBase:
@@ -596,11 +596,11 @@ MediaStreamTrack* V8ScriptValueDeserializerForModules::ReadMediaStreamTrack() {
       NOTREACHED();
       return nullptr;
     case SerializedTrackImplSubtype::kTrackImplSubtypeBrowserCapture:
-      uint32_t read_crop_version;
-      if (!ReadUint32(&read_crop_version)) {
+      uint32_t read_sub_capture_target_version;
+      if (!ReadUint32(&read_sub_capture_target_version)) {
         return nullptr;
       }
-      crop_version = read_crop_version;
+      sub_capture_target_version = read_sub_capture_target_version;
       break;
   }
 
@@ -617,7 +617,7 @@ MediaStreamTrack* V8ScriptValueDeserializerForModules::ReadMediaStreamTrack() {
           .muted = static_cast<bool>(muted),
           .content_hint = DeserializeContentHint(contentHint),
           .ready_state = DeserializeReadyState(readyState),
-          .crop_version = crop_version});
+          .sub_capture_target_version = sub_capture_target_version});
 }
 
 CropTarget* V8ScriptValueDeserializerForModules::ReadCropTarget() {

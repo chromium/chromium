@@ -110,7 +110,7 @@ function registerTest(testName, module, caseName) {
     /** @override */
     get browsePreload() {
       return `chrome://shimless-rma/test_loader.html` +
-          `?module=chromeos/shimless_rma/${module}&host=test`;
+          `?module=chromeos/shimless_rma/${module}`;
     }
   };
   TEST_F(className, caseName || 'All', () => mocha.run());

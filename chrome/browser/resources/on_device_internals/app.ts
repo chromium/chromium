@@ -12,7 +12,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {getTemplate} from './app.html.js';
 import {BrowserProxy} from './browser_proxy.js';
-import {OnDeviceModelRemote, StreamingResponderCallbackRouter} from './on_device_model.mojom-webui.js';
+import {OnDeviceModelRemote, PerformanceClass, StreamingResponderCallbackRouter} from './on_device_model.mojom-webui.js';
 
 interface Response {
   text: string;
@@ -24,6 +24,23 @@ interface OnDeviceInternalsAppElement {
     modelInput: CrInputElement,
     textInput: CrInputElement,
   };
+}
+
+function getPerformanceClassText(performanceClass: PerformanceClass): string {
+  switch (performanceClass) {
+    case PerformanceClass.kVeryLow:
+      return 'Very Low';
+    case PerformanceClass.kLow:
+      return 'Low';
+    case PerformanceClass.kMedium:
+      return 'Medium';
+    case PerformanceClass.kHigh:
+      return 'High';
+    case PerformanceClass.kVeryHigh:
+      return 'Very High';
+    default:
+      return 'Error';
+  }
 }
 
 class OnDeviceInternalsAppElement extends PolymerElement {
@@ -59,6 +76,10 @@ class OnDeviceInternalsAppElement extends PolymerElement {
         type: Object,
         value: null,
       },
+      performanceClassText_: {
+        type: String,
+        value: 'Loading...',
+      },
     };
   }
 
@@ -74,10 +95,22 @@ class OnDeviceInternalsAppElement extends PolymerElement {
   private loadModelStart_: number;
   private modelPath_: string;
   private model_: OnDeviceModelRemote|null;
+  private performanceClassText_: string;
   private responses_: Response[];
   private text_: string;
 
   private proxy_: BrowserProxy = BrowserProxy.getInstance();
+
+  override ready() {
+    super.ready();
+    this.getPerformanceClass_();
+  }
+
+  private async getPerformanceClass_() {
+    this.performanceClassText_ = getPerformanceClassText(
+        (await this.proxy_.handler.getEstimatedPerformanceClass())
+            .performanceClass);
+  }
 
   private onModelOrErrorChanged_() {
     if (this.model_ !== null) {
@@ -103,8 +136,7 @@ class OnDeviceInternalsAppElement extends PolymerElement {
     // <if expr="not is_win">
     const processedPath = modelPath;
     // </if>
-    const {result} =
-        await this.proxy_.handler.loadModel({path: {path: processedPath}});
+    const {result} = await this.proxy_.handler.loadModel({path: processedPath});
     if (result.error) {
       this.error_ = result.error;
     } else {

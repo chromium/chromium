@@ -403,9 +403,6 @@ InspectorOverlayAgent::InspectorOverlayAgent(
       v8_session_(v8_session),
       dom_agent_(dom_agent),
       swallow_next_mouse_up_(false),
-      original_layer_tree_debug_state_(
-          std::make_unique<cc::LayerTreeDebugState>(
-              GetFrame()->GetWidgetForLocalRoot()->GetLayerTreeDebugState())),
       backend_node_id_to_inspect_(0),
       enabled_(&agent_state_, false),
       show_ad_highlights_(&agent_state_, false),
@@ -421,6 +418,14 @@ InspectorOverlayAgent::InspectorOverlayAgent(
       inspect_mode_(&agent_state_, protocol::Overlay::InspectModeEnum::None),
       inspect_mode_protocol_config_(&agent_state_, std::vector<uint8_t>()) {
   DCHECK(dom_agent);
+
+  frame_impl_->GetFrame()->GetProbeSink()->AddInspectorOverlayAgent(this);
+
+  if (GetFrame()->GetWidgetForLocalRoot()) {
+    original_layer_tree_debug_state_ =
+        std::make_unique<cc::LayerTreeDebugState>(
+            GetFrame()->GetWidgetForLocalRoot()->GetLayerTreeDebugState());
+  }
 }
 
 InspectorOverlayAgent::~InspectorOverlayAgent() {
@@ -466,6 +471,8 @@ void InspectorOverlayAgent::Restore() {
 void InspectorOverlayAgent::Dispose() {
   InspectorBaseAgent::Dispose();
   disposed_ = true;
+
+  frame_impl_->GetFrame()->GetProbeSink()->RemoveInspectorOverlayAgent(this);
 }
 
 protocol::Response InspectorOverlayAgent::enable() {
@@ -498,8 +505,10 @@ protocol::Response InspectorOverlayAgent::disable() {
   inspect_mode_.Set(protocol::Overlay::InspectModeEnum::None);
   inspect_mode_protocol_config_.Set(std::vector<uint8_t>());
 
-  GetFrame()->GetWidgetForLocalRoot()->SetLayerTreeDebugState(
-      *original_layer_tree_debug_state_);
+  if (FrameWidgetInitialized()) {
+    GetFrame()->GetWidgetForLocalRoot()->SetLayerTreeDebugState(
+        *original_layer_tree_debug_state_);
+  }
 
   if (overlay_page_) {
     overlay_page_->WillBeDestroyed();
@@ -536,14 +545,16 @@ protocol::Response InspectorOverlayAgent::setShowDebugBorders(bool show) {
       return response;
     }
   }
-  FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
-  cc::LayerTreeDebugState debug_state = widget->GetLayerTreeDebugState();
-  if (show) {
-    debug_state.show_debug_borders.set();
-  } else {
-    debug_state.show_debug_borders.reset();
+  if (FrameWidgetInitialized()) {
+    FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
+    cc::LayerTreeDebugState debug_state = widget->GetLayerTreeDebugState();
+    if (show) {
+      debug_state.show_debug_borders.set();
+    } else {
+      debug_state.show_debug_borders.reset();
+    }
+    widget->SetLayerTreeDebugState(debug_state);
   }
-  widget->SetLayerTreeDebugState(debug_state);
   return protocol::Response::Success();
 }
 
@@ -555,10 +566,12 @@ protocol::Response InspectorOverlayAgent::setShowFPSCounter(bool show) {
       return response;
     }
   }
-  FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
-  cc::LayerTreeDebugState debug_state = widget->GetLayerTreeDebugState();
-  debug_state.show_fps_counter = show;
-  widget->SetLayerTreeDebugState(debug_state);
+  if (FrameWidgetInitialized()) {
+    FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
+    cc::LayerTreeDebugState debug_state = widget->GetLayerTreeDebugState();
+    debug_state.show_fps_counter = show;
+    widget->SetLayerTreeDebugState(debug_state);
+  }
   return protocol::Response::Success();
 }
 
@@ -570,10 +583,12 @@ protocol::Response InspectorOverlayAgent::setShowPaintRects(bool show) {
       return response;
     }
   }
-  FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
-  cc::LayerTreeDebugState debug_state = widget->GetLayerTreeDebugState();
-  debug_state.show_paint_rects = show;
-  widget->SetLayerTreeDebugState(debug_state);
+  if (FrameWidgetInitialized()) {
+    FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
+    cc::LayerTreeDebugState debug_state = widget->GetLayerTreeDebugState();
+    debug_state.show_paint_rects = show;
+    widget->SetLayerTreeDebugState(debug_state);
+  }
   return protocol::Response::Success();
 }
 
@@ -585,10 +600,12 @@ protocol::Response InspectorOverlayAgent::setShowLayoutShiftRegions(bool show) {
       return response;
     }
   }
-  FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
-  cc::LayerTreeDebugState debug_state = widget->GetLayerTreeDebugState();
-  debug_state.show_layout_shift_regions = show;
-  widget->SetLayerTreeDebugState(debug_state);
+  if (FrameWidgetInitialized()) {
+    FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
+    cc::LayerTreeDebugState debug_state = widget->GetLayerTreeDebugState();
+    debug_state.show_layout_shift_regions = show;
+    widget->SetLayerTreeDebugState(debug_state);
+  }
   return protocol::Response::Success();
 }
 
@@ -601,13 +618,15 @@ protocol::Response InspectorOverlayAgent::setShowScrollBottleneckRects(
       return response;
     }
   }
-  FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
-  cc::LayerTreeDebugState debug_state = widget->GetLayerTreeDebugState();
-  debug_state.show_touch_event_handler_rects = show;
-  debug_state.show_wheel_event_handler_rects = show;
-  debug_state.show_non_fast_scrollable_rects = show;
-  debug_state.show_main_thread_scrolling_reason_rects = show;
-  widget->SetLayerTreeDebugState(debug_state);
+  if (FrameWidgetInitialized()) {
+    FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
+    cc::LayerTreeDebugState debug_state = widget->GetLayerTreeDebugState();
+    debug_state.show_touch_event_handler_rects = show;
+    debug_state.show_wheel_event_handler_rects = show;
+    debug_state.show_non_fast_scrollable_rects = show;
+    debug_state.show_main_thread_scrolling_reason_rects = show;
+    widget->SetLayerTreeDebugState(debug_state);
+  }
   return protocol::Response::Success();
 }
 
@@ -630,10 +649,12 @@ protocol::Response InspectorOverlayAgent::setShowWebVitals(bool show) {
       return response;
     }
   }
-  FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
-  cc::LayerTreeDebugState debug_state = widget->GetLayerTreeDebugState();
-  debug_state.show_web_vital_metrics = show;
-  widget->SetLayerTreeDebugState(debug_state);
+  if (FrameWidgetInitialized()) {
+    FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
+    cc::LayerTreeDebugState debug_state = widget->GetLayerTreeDebugState();
+    debug_state.show_web_vital_metrics = show;
+    widget->SetLayerTreeDebugState(debug_state);
+  }
   return protocol::Response::Success();
 }
 
@@ -1257,6 +1278,20 @@ float InspectorOverlayAgent::EmulationScaleFactor() const {
       ->GetPage()
       ->GetChromeClient()
       .InputEventsScaleForEmulation();
+}
+
+void InspectorOverlayAgent::DidInitializeFrameWidget() {
+  if (original_layer_tree_debug_state_) {
+    return;
+  }
+
+  original_layer_tree_debug_state_ = std::make_unique<cc::LayerTreeDebugState>(
+      GetFrame()->GetWidgetForLocalRoot()->GetLayerTreeDebugState());
+  Restore();
+}
+
+bool InspectorOverlayAgent::FrameWidgetInitialized() const {
+  return !!original_layer_tree_debug_state_;
 }
 
 static std::unique_ptr<protocol::DictionaryValue> BuildObjectForSize(

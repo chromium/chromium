@@ -295,11 +295,6 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
   if (specifics.has_profile_label())
     profile->set_profile_label(specifics.profile_label());
 
-  // TODO(crbug.com/1453650): `kLocalOrSyncable` profiles don't sync
-  // `ProfileTokenQuality` observations. Since the AUTOFILL_PROFILE sync bridge
-  // simply overwrites the existing profiles in the database, whenever changes
-  // are synced, all observations are lost.
-
   // Set repeated fields.
   profile->SetRawInfoWithVerificationStatus(
       NAME_HONORIFIC_PREFIX,

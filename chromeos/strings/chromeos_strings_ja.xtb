@@ -93,7 +93,6 @@
 <translation id="1643449475550628585">壁紙画像を毎日変更する</translation>
 <translation id="1644574205037202324">履歴</translation>
 <translation id="1651925268237749928">共有アルバムを選択しました。他のユーザーも写真を追加、変更できます。現在このアルバムに含まれていない写真が壁紙に使用される可能性があります。</translation>
-<translation id="1658834457013045127">ずっと</translation>
 <translation id="1661865805917886535">アカウント情報とシステム情報の一部が Google に送信されます。この情報は、技術的な問題への対処やサービス改善のために、Google のプライバシー ポリシー（<ph name="PRIVACYPOLICYURL" />）と利用規約（<ph name="TERMSOFSERVICEURL" />）に沿って使用されます。コンテンツの変更をリクエストするには、法的事項に関するヘルプ（<ph name="LEGALHELPPAGEURL" />）に移動してください。</translation>
 <translation id="1662989795263954667">停止 - インク切れ</translation>
 <translation id="1664796644829245314">「<ph name="PREVIEW_OBJECT" />」をプレビュー</translation>
@@ -323,7 +322,6 @@
 <translation id="3484914941826596830">ファームウェアのアップデート中、この外部デバイスを電源から外したり、パソコンをシャットダウンしたりしないでください。このウィンドウは最小化できます。アップデートには数分かかることがあります。その間、外部デバイスは動作しない可能性があります。</translation>
 <translation id="3486220673238053218">定義</translation>
 <translation id="3488065109653206955">一部有効</translation>
-<translation id="349491921221892984"><ph name="MINUTES" /> 分</translation>
 <translation id="3502426834823382181">すべてのアプリを表示</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />パフォーマンス追跡データ<ph name="END_LINK1" />を送信する</translation>
 <translation id="3517001332549868749">ChromeOS の更新</translation>
@@ -484,7 +482,6 @@
 <translation id="473775607612524610">更新</translation>
 <translation id="4771607256327216405">キーボードを明るく</translation>
 <translation id="4773299976671772492">停止しました</translation>
-<translation id="4782003517030001304">1 時間</translation>
 <translation id="4782311465517282004">テキストを右クリックまたは長押しすると、定義、翻訳、単位変換を確認できます</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> 枚の写真</translation>
 <translation id="4793710386569335688">その他ご不明な点がある場合は、<ph name="BEGIN_LINK" />ヘルプセンター<ph name="END_LINK" />をご覧ください。</translation>
@@ -699,6 +696,7 @@
 <translation id="629550705077076970">キーボードを薄暗くする</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> テストがキャンセルされました</translation>
 <translation id="631063167932043783">アプリについてもっと知る</translation>
+<translation id="6318437367327684789">ずっと</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> のファームウェアをアップデート</translation>
 <translation id="6321407676395378991">スクリーン セーバーをオンにする</translation>
 <translation id="6324916366299863871">ショートカットの編集</translation>
@@ -1012,6 +1010,7 @@
 <translation id="8747900814994928677">変更を確認</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google フォトのアルバム</translation>
+<translation id="8775713578693478175">モデムの APN</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8789196995628578448">ショートカットは「<ph name="CONFLICT_ACCEL_NAME" />」で使用しています。新しいショートカットを押してください。元のショートカットを置き換えるには、このショートカットをもう一度押します。</translation>
 <translation id="879568662008399081">このネットワークにはキャプティブ ポータルがある可能性があります</translation>

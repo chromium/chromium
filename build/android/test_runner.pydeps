@@ -67,7 +67,6 @@
 ../../third_party/catapult/devil/devil/android/sdk/shared_prefs.py
 ../../third_party/catapult/devil/devil/android/sdk/split_select.py
 ../../third_party/catapult/devil/devil/android/sdk/version_codes.py
-../../third_party/catapult/devil/devil/android/settings.py
 ../../third_party/catapult/devil/devil/android/tools/__init__.py
 ../../third_party/catapult/devil/devil/android/tools/device_recovery.py
 ../../third_party/catapult/devil/devil/android/tools/device_status.py

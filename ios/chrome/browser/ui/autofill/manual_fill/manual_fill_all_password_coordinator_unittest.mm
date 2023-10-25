@@ -153,7 +153,7 @@ TEST_F(ManualFillAllPasswordCoordinatorTest,
   // Passwords should be covered until auth is passed.
   ASSERT_FALSE(ArePasswordsVisible());
 
-  [mock_reauth_module_ returnMockedReathenticationResult];
+  [mock_reauth_module_ returnMockedReauthenticationResult];
 
   // Successful auth should leave Passwords visible.
   ASSERT_TRUE(ArePasswordsVisible());

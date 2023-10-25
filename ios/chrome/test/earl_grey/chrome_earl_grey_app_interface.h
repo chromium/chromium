@@ -592,6 +592,10 @@
 // contains the preferences that are shared between all browser states.
 + (void)setStringValue:(NSString*)value forLocalStatePref:(NSString*)prefName;
 
+// Sets the bool value for the local state pref with `prefName`. Local State
+// contains the preferences that are shared between all browser states.
++ (void)setBoolValue:(BOOL)value forLocalStatePref:(NSString*)prefName;
+
 // Gets the value of a user pref in the original browser state. Returns a
 // base::Value encoded as a JSON string. If the pref was not registered,
 // returns a Value of type NONE.

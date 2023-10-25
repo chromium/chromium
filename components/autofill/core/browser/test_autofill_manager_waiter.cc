@@ -148,7 +148,8 @@ void TestAutofillManagerWaiter::OnAfterSelectControlDidChange(
 void TestAutofillManagerWaiter::OnBeforeAskForValuesToFill(
     AutofillManager& manager,
     FormGlobalId form,
-    FieldGlobalId field) {
+    FieldGlobalId field,
+    const FormData& form_data) {
   Increment(Event::kAskForValuesToFill);
 }
 

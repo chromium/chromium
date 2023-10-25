@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_index_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_load_op.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_mipmap_filter_mode.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_pipeline_statistic_name.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_primitive_topology.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_query_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_sampler_binding_type.h"
@@ -110,8 +109,6 @@ WGPUQueryType AsDawnEnum(const V8GPUQueryType& webgpu_enum) {
   switch (webgpu_enum.AsEnum()) {
     case V8GPUQueryType::Enum::kOcclusion:
       return WGPUQueryType_Occlusion;
-    case V8GPUQueryType::Enum::kPipelineStatistics:
-      return WGPUQueryType_PipelineStatistics;
     case V8GPUQueryType::Enum::kTimestamp:
       return WGPUQueryType_Timestamp;
   }
@@ -123,28 +120,11 @@ const char* FromDawnEnum(WGPUQueryType dawn_enum) {
       return "occlusion";
     case WGPUQueryType_Timestamp:
       return "timestamp";
-    case WGPUQueryType_PipelineStatistics:
-      return "pipeline-statistics";
     case WGPUQueryType_Force32:
+    default:
       NOTREACHED();
   }
   return "";
-}
-
-WGPUPipelineStatisticName AsDawnEnum(
-    const V8GPUPipelineStatisticName& webgpu_enum) {
-  switch (webgpu_enum.AsEnum()) {
-    case V8GPUPipelineStatisticName::Enum::kVertexShaderInvocations:
-      return WGPUPipelineStatisticName_VertexShaderInvocations;
-    case V8GPUPipelineStatisticName::Enum::kClipperInvocations:
-      return WGPUPipelineStatisticName_ClipperInvocations;
-    case V8GPUPipelineStatisticName::Enum::kClipperPrimitivesOut:
-      return WGPUPipelineStatisticName_ClipperPrimitivesOut;
-    case V8GPUPipelineStatisticName::Enum::kFragmentShaderInvocations:
-      return WGPUPipelineStatisticName_FragmentShaderInvocations;
-    case V8GPUPipelineStatisticName::Enum::kComputeShaderInvocations:
-      return WGPUPipelineStatisticName_ComputeShaderInvocations;
-  }
 }
 
 WGPUTextureFormat AsDawnEnum(const V8GPUTextureFormat& webgpu_enum) {
@@ -672,8 +652,6 @@ WGPUIndexFormat AsDawnEnum(const V8GPUIndexFormat& webgpu_enum) {
 
 WGPUFeatureName AsDawnEnum(const V8GPUFeatureName& webgpu_enum) {
   switch (webgpu_enum.AsEnum()) {
-    case V8GPUFeatureName::Enum::kChromiumExperimentalPipelineStatisticsQuery:
-      return WGPUFeatureName_ChromiumExperimentalPipelineStatisticsQuery;
     case V8GPUFeatureName::Enum::kTextureCompressionBc:
       return WGPUFeatureName_TextureCompressionBC;
     case V8GPUFeatureName::Enum::kTextureCompressionEtc2:

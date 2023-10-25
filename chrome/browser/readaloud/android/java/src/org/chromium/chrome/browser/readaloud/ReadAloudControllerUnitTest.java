@@ -37,6 +37,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.player.PlayerCoordinator;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
@@ -100,6 +101,11 @@ public class ReadAloudControllerUnitTest {
 
         when(mMockProfile.isOffTheRecord()).thenReturn(false);
         UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(true);
+
+        // TODO(crbug/1494442): Remove when MockTab requires a Profile reference that can avoid
+        //                      TabHelpers from needing to use getLastUsedRegularProfile.
+        Profile.setLastUsedProfileForTesting(mMockProfile);
+        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
 
         mContext = ApplicationProvider.getApplicationContext();
         mFakeTranslateBridge = new FakeTranslateBridgeJni();

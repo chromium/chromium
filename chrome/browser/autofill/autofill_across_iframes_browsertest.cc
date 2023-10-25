@@ -126,7 +126,7 @@ void FillCard(content::RenderFrameHost* rfh,
   test::SetCreditCardInfo(&card, kNameFull, kNumber, kExpMonth, kExpYear, "",
                           base::ASCIIToUTF16(base::StringPiece(kCvc)));
   auto& manager = TestAutofillManager::GetForRenderFrameHost(rfh);
-  manager.FillCreditCardFormImpl(
+  manager.FillCreditCardForm(
       form, triggered_field, card, base::ASCIIToUTF16(base::StringPiece(kCvc)),
       AutofillTriggerDetails(AutofillTriggerSource::kPopup));
 }

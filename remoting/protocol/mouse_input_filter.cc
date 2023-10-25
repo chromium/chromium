@@ -20,6 +20,13 @@ MouseInputFilter::MouseInputFilter(InputStub* input_stub)
 MouseInputFilter::~MouseInputFilter() = default;
 
 void MouseInputFilter::InjectMouseEvent(const MouseEvent& event) {
+  // Pass unchanged any event which has fractional-coordinates. These events
+  // will be handled by FractionalInputFilter.
+  if (event.has_fractional_coordinate()) {
+    InputFilter::InjectMouseEvent(event);
+    return;
+  }
+
   if (input_bounds_.is_zero()) {
     HOST_LOG << "Dropping mouse event because input bounds are unset";
     return;

@@ -17,13 +17,13 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/files/safe_base_name.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if !BUILDFLAG(ENABLE_EXTENSIONS)
 #error "Extensions must be enabled"
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/files/safe_base_name.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class Browser;
 class SettingsOverriddenDialogController;
@@ -129,7 +129,7 @@ void ShowPrintJobConfirmationDialog(gfx::NativeWindow parent,
 
 namespace file_handlers {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Show the pre-launch dialog for Web File Handlers. The choice to open or not
 // is presented if the extension doesn't already have permission (by default or
 // remembered). The dialog is not presented if "Don't open" was remembered.
@@ -141,7 +141,7 @@ void ShowWebFileHandlersFileLaunchDialog(
     const std::vector<std::u16string>& file_types,
     base::OnceCallback<void(/*should_open=*/bool, /*should_remember=*/bool)>
         callback);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace file_handlers
 

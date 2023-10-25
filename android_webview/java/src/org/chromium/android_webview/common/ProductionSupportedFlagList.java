@@ -753,6 +753,10 @@ public final class ProductionSupportedFlagList {
                 CcFeatures.USE_MAP_RECT_FOR_PIXEL_MOVEMENT,
                 "Enables the usage of MapRect for computing filter pixel movement."),
         Flag.baseFeature("UseRustJsonParser"),
+        Flag.baseFeature("V8FlushCodeBasedOnTime"),
+        Flag.baseFeature("V8FlushCodeBasedOnTabVisibility"),
+        Flag.baseFeature("V8SingleThreadedGCInBackground"),
+        Flag.baseFeature("V8MemoryReducer"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

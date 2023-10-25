@@ -194,9 +194,7 @@ void TabResumptionHelper::OpenDistantTab() {
         session_util::CreateWebStateWithNavigationEntries(
             browser_state, session_tab->current_navigation_index,
             session_tab->navigations);
-    web_state_list->InsertWebState(
-        web_state_list->count(), std::move(web_state),
-        (WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE),
-        WebStateOpener());
+    web_state_list->ReplaceWebStateAt(web_state_list->active_index(),
+                                      std::move(web_state));
   }
 }

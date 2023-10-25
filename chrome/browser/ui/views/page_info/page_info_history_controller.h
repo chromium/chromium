@@ -5,8 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_HISTORY_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_HISTORY_CONTROLLER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "ui/views/view_tracker.h"
 #include "url/gurl.h"
+
+namespace base {
+class Time;
+}
 
 namespace content {
 class WebContents;

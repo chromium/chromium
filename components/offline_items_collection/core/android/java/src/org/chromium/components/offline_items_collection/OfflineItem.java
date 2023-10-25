@@ -96,6 +96,7 @@ public class OfflineItem implements Cloneable {
     public GURL originalUrl;
     public boolean isOffTheRecord;
     public String otrProfileId;
+    public GURL referrerUrl;
 
     // In Progress Metadata.
     @OfflineItemState
@@ -143,6 +144,7 @@ public class OfflineItem implements Cloneable {
         clone.originalUrl = originalUrl;
         clone.isOffTheRecord = isOffTheRecord;
         clone.otrProfileId = otrProfileId;
+        clone.referrerUrl = referrerUrl;
         clone.state = state;
         clone.isResumable = isResumable;
         clone.allowMetered = allowMetered;

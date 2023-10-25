@@ -44,20 +44,10 @@ class LockScreenBaseTest : public LoginManagerTest {
 class LockScreenInputsTest : public LockScreenBaseTest {
  public:
   LockScreenInputsTest() {
-    // TODO(b/241259026): This test currently relies on StubAuthenticator,
-    // which doesn't work well with UseAuthFactors. We should instead use
-    // FakeUserDataAuth, which is a mock at a lower level.
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{features::kUseAuthFactors});
-
     login_manager_.AppendRegularUsers(2);
     user_input_methods_.push_back("xkb:fr::fra");
     user_input_methods_.push_back("xkb:de::ger");
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(LockScreenInputsTest, CheckIMESwitches) {

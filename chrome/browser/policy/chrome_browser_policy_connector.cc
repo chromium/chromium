@@ -185,6 +185,18 @@ void ChromeBrowserPolicyConnector::SetLocalTestPolicyProviderForTesting(
 
 void ChromeBrowserPolicyConnector::MaybeApplyLocalTestPolicies(
     PrefService* local_state) {
+  // Early return if the policy test page is disabled by any policy. This is
+  // done because that policy is a profile level policy and we have not yet
+  // loaded any profile to access its prefs.
+  const auto& chrome_policies =
+      GetPolicyService()->GetPolicies(policy::PolicyNamespace(
+          policy::PolicyDomain::POLICY_DOMAIN_CHROME, std::string()));
+  if (auto* policy_test_page_enabled = chrome_policies.GetValue(
+          policy::key::kPolicyTestPageEnabled, base::Value::Type::BOOLEAN);
+      policy_test_page_enabled && !policy_test_page_enabled->GetBool()) {
+    return;
+  }
+
   std::string policies_to_apply =
       local_state->GetString(policy_prefs::kLocalTestPoliciesForNextStartup);
   if (policies_to_apply.empty()) {

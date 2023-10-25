@@ -377,10 +377,14 @@ double AudioDevicesPrefHandlerImpl::GetInputGainPrefValue(
 
 double AudioDevicesPrefHandlerImpl::GetDeviceDefaultOutputVolume(
     const AudioDevice& device) {
-  if (device.type == AudioDeviceType::kHdmi)
-    return kDefaultHdmiOutputVolumePercent;
-  else
-    return kDefaultOutputVolumePercent;
+  switch (device.type) {
+    case AudioDeviceType::kBluetooth:
+      return kDefaultBluetoothOutputVolumePercent;
+    case AudioDeviceType::kHdmi:
+      return kDefaultHdmiOutputVolumePercent;
+    default:
+      return kDefaultOutputVolumePercent;
+  }
 }
 
 bool AudioDevicesPrefHandlerImpl::GetNoiseCancellationState() {
@@ -531,9 +535,9 @@ void AudioDevicesPrefHandlerImpl::MigrateDeviceVolumeGainSettings(
   if (!MigrateDeviceIdInSettings(&device_volume_settings_, device_key,
                                  device)) {
     // If there was no recorded value for deprecated device ID, use value from
-    // global vloume pref.
-    double old_volume = local_state_->GetDouble(prefs::kAudioVolumePercent);
-    device_volume_settings_.Set(device_key, old_volume);
+    // default volume associated to device type.
+    double default_volume = GetDeviceDefaultOutputVolume(device);
+    device_volume_settings_.Set(device_key, default_volume);
   }
   SaveDevicesVolumePref();
 }

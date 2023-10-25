@@ -66,8 +66,10 @@ class ProfileTokenQualityTest : public testing::Test {
   void FillForm(const FormData& form,
                 const AutofillProfile& profile,
                 size_t triggering_field_index = 0) {
-    bam_.FillProfileForm(profile, form, form.fields[triggering_field_index],
-                         {.trigger_source = AutofillTriggerSource::kPopup});
+    bam_.FillOrPreviewProfileForm(
+        mojom::ActionPersistence::kFill, form,
+        form.fields[triggering_field_index], profile,
+        {.trigger_source = AutofillTriggerSource::kPopup});
   }
 
  protected:

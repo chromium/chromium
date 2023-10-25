@@ -87,7 +87,6 @@ class PageTimingMetricsSender {
   void OnMainFrameImageAdRectangleChanged(int element_id,
                                           const gfx::Rect& image_ad_rect);
 
-  void DidObserveInputDelay(base::TimeDelta input_delay);
   void DidObserveUserInteraction(base::TimeTicks max_event_start,
                                  base::TimeTicks max_event_end,
                                  blink::UserInteractionType interaction_type);

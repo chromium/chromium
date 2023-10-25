@@ -16,7 +16,6 @@
 #import "ios/web/common/features.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/resource/resource_bundle.h"
-#import "ui/base/webui/jstemplate_builder.h"
 #import "ui/base/webui/web_ui_util.h"
 
 namespace security_interstitials {
@@ -64,7 +63,7 @@ std::string IOSSecurityInterstitialPage::GetHtmlContents() const {
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_SECURITY_INTERSTITIAL_HTML);
   webui::AppendWebUiCssTextDefaults(&html);
-  return webui::GetI18nTemplateHtml(html, load_time_data);
+  return common_string_util::GetLocalizedHtml(html, load_time_data);
 }
 
 bool IOSSecurityInterstitialPage::ShouldDisplayURL() const {

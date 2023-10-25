@@ -252,6 +252,13 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /**
+     * @return Whether scroll on content view may drag/resize the custom tab.
+     */
+    public boolean contentScrollMayResizeTab() {
+        return false;
+    }
+
+    /**
      * @return ColorProvider to be used.
      */
     public abstract @NonNull ColorProvider getColorProvider();

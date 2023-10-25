@@ -273,8 +273,10 @@ markerMid
 markerStart
 mask
 maskClip
+maskComposite
 maskImage
 maskOrigin
+maskRepeat
 maskSize
 maskType
 mathDepth

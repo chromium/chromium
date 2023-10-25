@@ -9,6 +9,7 @@
 #import "base/check.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/ui/unit_conversion/unit_conversion_constants.h"
 #import "ios/chrome/browser/ui/unit_conversion/unit_conversion_mutator.h"
 #import "ios/chrome/browser/ui/unit_conversion/unit_conversion_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/unit_conversion/unit_type_cell.h"
@@ -48,14 +49,6 @@ const CGFloat kUnitTitlePadding = 4;
 // Cells identifiers.
 NSString* kUnitTypeCellIdentifier = @"UnitTypeCell";
 NSString* kUnitTypeFieldCellIdentifier = @"UnitTypeValueFieldCell";
-
-// Accessibility identifiers.
-NSString* kUnitConversionTableViewIdentifier =
-    @"UnitConversionTableViewIdentifier";
-NSString* kSourceUnitLabelIdentifier = @"sourceUnitLabelIdentifier";
-NSString* kTargetUnitLabelIdentifier = @"targetUnitLabelIdentifier";
-NSString* kSourceUnitFieldIdentifier = @"sourceUnitFieldIdentifier";
-NSString* kTargetUnitFieldIdentifier = @"targetUnitFieldIdentifier";
 
 // Source and target sections indexes.
 const NSInteger kSourceSection = 0;
@@ -463,9 +456,13 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
     if (indexPath.section == kSourceSection) {
       cell.unitTypeLabel.text = _formattedSourceUnit;
       cell.unitTypeLabel.accessibilityIdentifier = kSourceUnitLabelIdentifier;
+      cell.unitMenuButton.accessibilityIdentifier =
+          kSourceUnitMenuButtonIdentifier;
     } else if (indexPath.section == kTargetSection) {
       cell.unitTypeLabel.text = _formattedTargetUnit;
       cell.unitTypeLabel.accessibilityIdentifier = kTargetUnitLabelIdentifier;
+      cell.unitMenuButton.accessibilityIdentifier =
+          kTargetUnitMenuButtonIdentifier;
     } else {
       NOTREACHED_NORETURN();
     }

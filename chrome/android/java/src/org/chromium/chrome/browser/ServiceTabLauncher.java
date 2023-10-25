@@ -21,7 +21,7 @@ import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
-import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
+import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.chrome.browser.webapps.ChromeWebApkHost;
 import org.chromium.chrome.browser.webapps.WebappDataStorage;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
@@ -125,7 +125,7 @@ public class ServiceTabLauncher {
         // Launch WebappActivity if one matches the target URL and was opened recently.
         // Otherwise, open the URL in a tab.
         WebappDataStorage storage = WebappRegistry.getInstance().getWebappDataStorageForUrl(url);
-        TabDelegate tabDelegate = new TabDelegate(incognito);
+        ChromeAsyncTabLauncher chromeAsyncTabLauncher = new ChromeAsyncTabLauncher(incognito);
 
         // Launch into a TrustedWebActivity if one exists for the URL.
         Context appContext = ContextUtils.getApplicationContext();
@@ -151,7 +151,8 @@ public class ServiceTabLauncher {
 
             AsyncTabCreationParams asyncParams = new AsyncTabCreationParams(loadUrlParams,
                     requestId);
-            tabDelegate.createNewTab(asyncParams, TabLaunchType.FROM_CHROME_UI, Tab.INVALID_TAB_ID);
+            chromeAsyncTabLauncher.launchNewTab(
+                    asyncParams, TabLaunchType.FROM_CHROME_UI, Tab.INVALID_TAB_ID);
         } else {
             // The URL is within the scope of a recently launched standalone-capable web app
             // on the home screen, so open it a standalone web app frame.
@@ -164,7 +165,7 @@ public class ServiceTabLauncher {
             intent.putExtra(WebappConstants.EXTRA_URL, url);
             intent.putExtra(WebappConstants.EXTRA_SOURCE, ShortcutSource.NOTIFICATION);
             intent.putExtra(WebappConstants.EXTRA_FORCE_NAVIGATION, true);
-            tabDelegate.createNewStandaloneFrame(intent);
+            chromeAsyncTabLauncher.launchNewStandaloneFrame(intent);
         }
     }
 

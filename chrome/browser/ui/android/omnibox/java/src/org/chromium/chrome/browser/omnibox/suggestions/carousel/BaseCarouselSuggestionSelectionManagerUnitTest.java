@@ -59,22 +59,27 @@ public class BaseCarouselSuggestionSelectionManagerUnitTest {
         Assert.assertEquals(RecyclerView.NO_POSITION, mSelectionManager.getSelectedItemForTest());
         mSelectionManager.selectNextItem();
         Assert.assertEquals(0, mSelectionManager.getSelectedItemForTest());
+        Assert.assertEquals(mChildView1, mSelectionManager.getSelectedView());
     }
 
     @Test
     public void selectNextItem_fromPrevious() {
         mSelectionManager.setSelectedItem(1, false);
         Assert.assertEquals(1, mSelectionManager.getSelectedItemForTest());
+        Assert.assertEquals(mChildView2, mSelectionManager.getSelectedView());
         mSelectionManager.selectNextItem();
         Assert.assertEquals(2, mSelectionManager.getSelectedItemForTest());
+        Assert.assertEquals(mChildView3, mSelectionManager.getSelectedView());
     }
 
     @Test
     public void selectNextItem_fromLast() {
         mSelectionManager.setSelectedItem(2, false);
         Assert.assertEquals(2, mSelectionManager.getSelectedItemForTest());
+        Assert.assertEquals(mChildView3, mSelectionManager.getSelectedView());
         mSelectionManager.selectNextItem();
         Assert.assertEquals(2, mSelectionManager.getSelectedItemForTest());
+        Assert.assertEquals(mChildView3, mSelectionManager.getSelectedView());
     }
 
     @Test
@@ -83,22 +88,27 @@ public class BaseCarouselSuggestionSelectionManagerUnitTest {
         mSelectionManager.selectPreviousItem();
         // Jump to the last element on the list.
         Assert.assertEquals(2, mSelectionManager.getSelectedItemForTest());
+        Assert.assertEquals(mChildView3, mSelectionManager.getSelectedView());
     }
 
     @Test
     public void selectPreviousItem_fromPrevious() {
         mSelectionManager.setSelectedItem(1, false);
         Assert.assertEquals(1, mSelectionManager.getSelectedItemForTest());
+        Assert.assertEquals(mChildView2, mSelectionManager.getSelectedView());
         mSelectionManager.selectPreviousItem();
         Assert.assertEquals(0, mSelectionManager.getSelectedItemForTest());
+        Assert.assertEquals(mChildView1, mSelectionManager.getSelectedView());
     }
 
     @Test
     public void selectPreviousItem_fromFirst() {
         mSelectionManager.setSelectedItem(0, false);
         Assert.assertEquals(0, mSelectionManager.getSelectedItemForTest());
+        Assert.assertEquals(mChildView1, mSelectionManager.getSelectedView());
         mSelectionManager.selectPreviousItem();
         Assert.assertEquals(0, mSelectionManager.getSelectedItemForTest());
+        Assert.assertEquals(mChildView1, mSelectionManager.getSelectedView());
     }
 
     @Test

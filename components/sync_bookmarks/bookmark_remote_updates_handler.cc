@@ -17,7 +17,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
-#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/sync/base/unique_position.h"
@@ -25,6 +24,7 @@
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/unique_position.pb.h"
+#include "components/sync_bookmarks/bookmark_model_view.h"
 #include "components/sync_bookmarks/bookmark_specifics_conversions.h"
 #include "components/sync_bookmarks/switches.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker_entity.h"
@@ -182,7 +182,7 @@ void ApplyRemoteUpdate(
     const syncer::UpdateResponseData& update,
     const SyncedBookmarkTrackerEntity* tracked_entity,
     const SyncedBookmarkTrackerEntity* new_parent_tracked_entity,
-    bookmarks::BookmarkModel* model,
+    BookmarkModelView* model,
     SyncedBookmarkTracker* tracker,
     favicon::FaviconService* favicon_service) {
   const syncer::EntityData& update_entity = update.entity;
@@ -238,7 +238,7 @@ void ApplyRemoteUpdate(
 }  // namespace
 
 BookmarkRemoteUpdatesHandler::BookmarkRemoteUpdatesHandler(
-    bookmarks::BookmarkModel* bookmark_model,
+    BookmarkModelView* bookmark_model,
     favicon::FaviconService* favicon_service,
     SyncedBookmarkTracker* bookmark_tracker)
     : bookmark_model_(bookmark_model),
@@ -669,7 +669,7 @@ void BookmarkRemoteUpdatesHandler::ProcessDelete(
   // Remove the entities of |node| and its children.
   RemoveEntityAndChildrenFromTracker(node);
   // Remove the node and its children from the model.
-  bookmark_model_->Remove(node, bookmarks::metrics::BookmarkEditSource::kOther);
+  bookmark_model_->Remove(node);
 }
 
 // This method doesn't explicitly handle conflicts as a result of re-encryption:

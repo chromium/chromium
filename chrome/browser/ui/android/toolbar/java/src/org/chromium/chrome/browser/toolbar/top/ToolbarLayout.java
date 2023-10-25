@@ -49,7 +49,6 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider.ThemeColorObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.ButtonData;
-import org.chromium.chrome.browser.toolbar.HomeButton;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
@@ -834,9 +833,9 @@ public abstract class ToolbarLayout
     void setTabModelSelector(TabModelSelector selector) {}
 
     /**
-     * @return {@link HomeButton} this {@link ToolbarLayout} contains.
+     * @return Home button this {@link ToolbarLayout} contains, if any.
      */
-    public HomeButton getHomeButton() {
+    public ImageView getHomeButton() {
         return null;
     }
 

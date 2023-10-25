@@ -357,8 +357,8 @@ class BrowserDataMigratorMoveMigrateOnRestartInSessionByPolicy
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(
-        crosapi::browser_util::kLacrosAvailabilityPolicySwitch,
-        crosapi::browser_util::kLacrosAvailabilityPolicyLacrosOnly);
+        ash::standalone_browser::kLacrosAvailabilityPolicySwitch,
+        ash::standalone_browser::kLacrosAvailabilityPolicyLacrosOnly);
     BrowserDataMigratorRestartInSession::SetUpCommandLine(command_line);
   }
 };

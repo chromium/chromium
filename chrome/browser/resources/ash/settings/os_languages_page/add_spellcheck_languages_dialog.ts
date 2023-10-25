@@ -9,7 +9,6 @@
 
 import './add_items_dialog.js';
 
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {recordSettingChange} from '../metrics_recorder.js';
@@ -18,12 +17,7 @@ import {Item} from './add_items_dialog.js';
 import {getTemplate} from './add_spellcheck_languages_dialog.html.js';
 import {LanguageHelper, LanguagesModel} from './languages_types.js';
 
-// TODO(b/265559727): Remove PrefsMixin as it is unused.
-const OsSettingsAddSpellcheckLanguagesDialogElementBase =
-    PrefsMixin(PolymerElement);
-
-class OsSettingsAddSpellcheckLanguagesDialogElement extends
-    OsSettingsAddSpellcheckLanguagesDialogElementBase {
+class OsSettingsAddSpellcheckLanguagesDialogElement extends PolymerElement {
   static get is() {
     return 'os-settings-add-spellcheck-languages-dialog' as const;
   }
@@ -39,9 +33,6 @@ class OsSettingsAddSpellcheckLanguagesDialogElement extends
       languageHelper: Object,
     };
   }
-
-  // Public API: Bidirectional data flow.
-  // override prefs: unknown;  // From PrefsMixin.
 
   // Public API: Downwards data flow.
   languages: LanguagesModel|undefined;

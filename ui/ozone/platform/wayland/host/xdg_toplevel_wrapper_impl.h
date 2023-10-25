@@ -124,9 +124,6 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
                             uint32_t serial,
                             uint32_t direction,
                             uint32_t restart);
-  static void OnOverviewChange(void* data,
-                               zaura_toplevel* aura_toplevel,
-                               uint32_t in_overview_as_uint);
 
   // Send request to wayland compositor to enable a requested decoration mode.
   void SetTopLevelDecorationMode(DecorationMode requested_mode);

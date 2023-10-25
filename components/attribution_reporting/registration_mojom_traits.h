@@ -24,8 +24,8 @@
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/registration.mojom-shared.h"
 #include "components/attribution_reporting/source_registration.h"
-#include "components/attribution_reporting/source_registration_error.mojom-shared.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "components/attribution_reporting/trigger_config.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "mojo/public/cpp/base/int128_mojom_traits.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
@@ -156,6 +156,19 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
 
 template <>
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
+    StructTraits<attribution_reporting::mojom::TriggerConfigDataView,
+                 attribution_reporting::TriggerConfig> {
+  static attribution_reporting::mojom::TriggerDataMatching
+  trigger_data_matching(const attribution_reporting::TriggerConfig& config) {
+    return config.trigger_data_matching();
+  }
+
+  static bool Read(attribution_reporting::mojom::TriggerConfigDataView data,
+                   attribution_reporting::TriggerConfig* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
                  attribution_reporting::SourceRegistration> {
   static const attribution_reporting::DestinationSet& destinations(
@@ -211,6 +224,11 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
   static bool debug_reporting(
       const attribution_reporting::SourceRegistration& source) {
     return source.debug_reporting;
+  }
+
+  static const attribution_reporting::TriggerConfig& trigger_config(
+      const attribution_reporting::SourceRegistration& source) {
+    return source.trigger_config;
   }
 
   static bool Read(

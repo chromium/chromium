@@ -115,7 +115,9 @@ std::u16string GetBlockReasonMessage(FilesPolicyDialog::BlockReason reason,
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData:
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware:
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectors:
-      // TODO(b/300705572): provide a proper message for every switch case.
+      // There is not a specific default message for unknown scan result,
+      // sensitive data and malware. We are thus using a generic "blocked
+      // because of content" message.
       message_id = file_count == 1
                        ? IDS_POLICY_DLP_FILES_CONTENT_BLOCK_SINGLE_FILE_MESSAGE
                        : IDS_POLICY_DLP_FILES_CONTENT_BLOCK_MESSAGE;
@@ -150,7 +152,9 @@ std::u16string GetBlockReasonMessage(FilesPolicyDialog::BlockReason reason,
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData:
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware:
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectors:
-      // TODO(b/300705572): provide a proper message for every switch case.
+      // There is not a specific default message for unknown scan result,
+      // sensitive data and malware. We are thus using a generic "blocked
+      // because of content" message.
       message_id = IDS_POLICY_DLP_FILES_CONTENT_BLOCK_MESSAGE;
       break;
   }

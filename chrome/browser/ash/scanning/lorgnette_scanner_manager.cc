@@ -176,16 +176,21 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
   void GetScannerNames(GetScannerNamesCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     GetLorgnetteManagerClient()->ListScanners(
+        /*local_only=*/false,
         base::BindOnce(&LorgnetteScannerManagerImpl::OnListScannerNamesResponse,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
   // LorgnetteScannerManager:
-  void GetScannerInfoList(GetScannerInfoListCallback callback) override {
+  void GetScannerInfoList(LocalScannerFilter local_only,
+                          SecureScannerFilter secure_only,
+                          GetScannerInfoListCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     GetLorgnetteManagerClient()->ListScanners(
+        (local_only == LocalScannerFilter::kLocalScannersOnly),
         base::BindOnce(&LorgnetteScannerManagerImpl::OnListScannerInfoResponse,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                       local_only, secure_only));
   }
 
   // LorgnetteScannerManager:
@@ -373,11 +378,14 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
   // GetScannerInfoList.
   void OnListScannerInfoResponse(
       GetScannerInfoListCallback callback,
+      LocalScannerFilter local_only,
+      SecureScannerFilter secure_only,
       absl::optional<lorgnette::ListScannersResponse> response) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
 
     // Combine zeroconf scanners and lorgnette scanners and send in callback.
-    CreateCombinedScanners(response.value_or(lorgnette::ListScannersResponse()),
+    CreateCombinedScanners(local_only, secure_only,
+                           response.value_or(lorgnette::ListScannersResponse()),
                            std::move(callback));
   }
 
@@ -428,11 +436,31 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
     std::move(callback).Run(response);
   }
 
+  // Return true if |scanner| should be included in the results based on
+  // |local_only| and |secure_only|, false if not.
+  bool ShouldIncludeScanner(const lorgnette::ScannerInfo& scanner,
+                            LocalScannerFilter local_only,
+                            SecureScannerFilter secure_only) {
+    if (local_only == LocalScannerFilter::kLocalScannersOnly &&
+        scanner.connection_type() != lorgnette::CONNECTION_USB) {
+      return false;
+    }
+
+    if (secure_only == SecureScannerFilter::kSecureScannersOnly &&
+        !scanner.secure()) {
+      return false;
+    }
+
+    return true;
+  }
+
   // For a given |scanner| return a list of ScannerInfo objects.  One |scanner|
   // may have multiple device_names where each one corresponds to a new
   // ScannerInfo object.
   std::vector<lorgnette::ScannerInfo> CreateScannerInfosFromScanner(
-      const Scanner& scanner) {
+      const Scanner& scanner,
+      LocalScannerFilter local_only,
+      SecureScannerFilter secure_only) {
     std::vector<lorgnette::ScannerInfo> retval;
 
     // TODO(nmuggli): Scanner class should get updated to include this.
@@ -485,7 +513,9 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
         // look for pdl key.
         info.add_image_format("image/jpeg");
         info.add_image_format("image/png");
-        retval.emplace_back(std::move(info));
+        if (ShouldIncludeScanner(info, local_only, secure_only)) {
+          retval.emplace_back(std::move(info));
+        }
       }
     }
 
@@ -493,14 +523,25 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
   }
 
   // Use |response| and |zeroconf_scanners_| to build a combined
-  // ListScannersResponse that will be sent in |callback|.
-  void CreateCombinedScanners(const lorgnette::ListScannersResponse& response,
+  // ListScannersResponse that will be sent in |callback|.  |local_only| and
+  // |secure_only| are used to filter out network scanners and/or non-secure
+  // scanners.
+  void CreateCombinedScanners(LocalScannerFilter local_only,
+                              SecureScannerFilter secure_only,
+                              const lorgnette::ListScannersResponse& response,
                               GetScannerInfoListCallback callback) {
-    lorgnette::ListScannersResponse scanners = response;
+    lorgnette::ListScannersResponse combined_results;
+
+    for (const auto& scanner : response.scanners()) {
+      if (ShouldIncludeScanner(scanner, local_only, secure_only)) {
+        *combined_results.add_scanners() = scanner;
+      }
+    }
 
     for (const Scanner& scanner : zeroconf_scanners_) {
-      for (auto& info : CreateScannerInfosFromScanner(scanner)) {
-        *scanners.add_scanners() = std::move(info);
+      for (auto& info :
+           CreateScannerInfosFromScanner(scanner, local_only, secure_only)) {
+        *combined_results.add_scanners() = std::move(info);
       }
     }
 
@@ -509,14 +550,14 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
     // ScannerInfo objects should have the same device_uuid.  For now, just
     // ensure each ScannerInfo has a device_uuid (the lorgnette backend is not
     // yet populating the device_uuid).
-    for (lorgnette::ScannerInfo& info : *scanners.mutable_scanners()) {
+    for (lorgnette::ScannerInfo& info : *combined_results.mutable_scanners()) {
       if (info.device_uuid().empty()) {
         info.set_device_uuid(
             base::Uuid::GenerateRandomV4().AsLowercaseString());
       }
     }
 
-    std::move(callback).Run(scanners);
+    std::move(callback).Run(combined_results);
   }
 
   void OnReadScanDataResponse(

@@ -197,12 +197,10 @@ class FormField {
   static bool MatchesFormControlType(base::StringPiece type,
                                      DenseSet<MatchFieldType> match_type);
 
-  // TODO(crbug.com/1352826) Undo making this temporarily a public function.
- public:
+ protected:
   // Returns true if |field_type| is a single field parseable type.
   static bool IsSingleFieldParseableType(ServerFieldType field_type);
 
- protected:
   // Derived classes must implement this interface to supply field type
   // information.  |ParseFormFields| coordinates the parsing and extraction
   // of types from an input vector of |AutofillField| objects and delegates

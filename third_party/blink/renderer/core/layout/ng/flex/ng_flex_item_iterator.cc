@@ -9,9 +9,9 @@
 
 namespace blink {
 
-NGFlexItemIterator::NGFlexItemIterator(const HeapVector<NGFlexLine>& flex_lines,
-                                       const NGBlockBreakToken* break_token,
-                                       bool is_column)
+FlexItemIterator::FlexItemIterator(const HeapVector<NGFlexLine>& flex_lines,
+                                   const NGBlockBreakToken* break_token,
+                                   bool is_column)
     : flex_lines_(flex_lines),
       break_token_(break_token),
       is_column_(is_column) {
@@ -37,7 +37,7 @@ NGFlexItemIterator::NGFlexItemIterator(const HeapVector<NGFlexLine>& flex_lines,
   }
 }
 
-NGFlexItemIterator::Entry NGFlexItemIterator::NextItem(bool broke_before_row) {
+FlexItemIterator::Entry FlexItemIterator::NextItem(bool broke_before_row) {
   DCHECK(!is_column_ || !broke_before_row);
 
   const NGBlockBreakToken* current_child_break_token = nullptr;
@@ -108,7 +108,7 @@ NGFlexItemIterator::Entry NGFlexItemIterator::NextItem(bool broke_before_row) {
                current_child_break_token);
 }
 
-NGFlexItem* NGFlexItemIterator::FindNextItem(
+NGFlexItem* FlexItemIterator::FindNextItem(
     const NGBlockBreakToken* item_break_token) {
   while (flex_line_idx_ < flex_lines_.size()) {
     const auto& flex_line = flex_lines_[flex_line_idx_];
@@ -145,7 +145,7 @@ NGFlexItem* NGFlexItemIterator::FindNextItem(
   return nullptr;
 }
 
-void NGFlexItemIterator::NextLine() {
+void FlexItemIterator::NextLine() {
   if (flex_item_idx_ == 0)
     return;
   flex_line_idx_++;
@@ -154,7 +154,7 @@ void NGFlexItemIterator::NextLine() {
     next_unstarted_item_ = FindNextItem();
 }
 
-void NGFlexItemIterator::AdjustItemIndexForNewLine() {
+void FlexItemIterator::AdjustItemIndexForNewLine() {
   if (flex_line_idx_ < next_item_idx_for_line_.size())
     flex_item_idx_ = next_item_idx_for_line_[flex_line_idx_];
   else

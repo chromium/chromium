@@ -17,7 +17,7 @@ namespace {
 void LogFieldFillingStats(FormType form_type,
                           const FormGroupFillingStats& filling_stats) {
   std::string histogram_prefix = base::StrCat(
-      {"Autofill.FieldFillingStats.", FormTypeToStringPiece(form_type), "."});
+      {"Autofill.FieldFillingStats.", FormTypeToStringView(form_type), "."});
 
   // Do not acquire metrics if autofill was not used in this form group.
   if (filling_stats.TotalFilled() == 0) {
@@ -102,7 +102,7 @@ void LogFormFillingScore(FormType form_type,
   // a histogram with equally distributed 201 buckets.
   base::UmaHistogramCustomCounts(
       base::StrCat(
-          {"Autofill.FormFillingScore.", FormTypeToStringPiece(form_type)}),
+          {"Autofill.FormFillingScore.", FormTypeToStringView(form_type)}),
       std::clamp(score, 1, 200), 1, 200, 200);
 }
 
@@ -136,7 +136,7 @@ void LogFormFillingComplexScore(FormType form_type,
   // The metric is tracked to an histogram with 199 equally distributed buckets.
   base::UmaHistogramCustomCounts(
       base::StrCat({"Autofill.FormFillingComplexScore.",
-                    FormTypeToStringPiece(form_type)}),
+                    FormTypeToStringView(form_type)}),
       complex_score, 1, 199, 199);
 }
 

@@ -319,6 +319,10 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
     this.navigateToMicrophoneSubpage_();
     e.stopPropagation();
   }
+
+  private onGeolocationAreaClick_(): void {
+    Router.getInstance().navigateTo(routes.PRIVACY_HUB_GEOLOCATION);
+  }
 }
 
 declare global {

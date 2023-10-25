@@ -65,6 +65,7 @@ constexpr char kConfidentialContentsCount[] = "ConfidentialContentsCount";
 constexpr char kActiveFileEventsCount[] = "ActiveFileEventsCount";
 constexpr char kErrorsReportQueueNotReady[] = "Errors.ReportQueueNotReady";
 constexpr char kErrorsFilesPolicySetup[] = "Errors.FilesPolicySetup";
+constexpr char kFilesUnknownAccessLevel[] = "FilesUnknownAccessLevel";
 
 }  // namespace dlp
 

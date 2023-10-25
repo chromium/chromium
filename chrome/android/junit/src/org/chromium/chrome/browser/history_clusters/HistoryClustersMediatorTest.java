@@ -13,7 +13,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.AdditionalMatchers.geq;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -74,7 +73,7 @@ import org.chromium.chrome.browser.history_clusters.HistoryClustersItemPropertie
 import org.chromium.chrome.browser.history_clusters.HistoryClustersMetricsLogger.VisitAction;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.AsyncTabLauncher;
 import org.chromium.components.browser_ui.widget.MoreProgressButton.State;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -119,8 +118,8 @@ public class HistoryClustersMediatorTest {
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private RecyclerView mRecyclerView;
     @Mock private LinearLayoutManager mLayoutManager;
-    @Mock private TabCreator mTabCreator;
-    @Mock private TabCreator mIncognitoTabCreator;
+    @Mock private AsyncTabLauncher mTabLauncher;
+    @Mock private AsyncTabLauncher mIncognitoTabLauncher;
     @Mock private HistoryClustersMetricsLogger mMetricsLogger;
     @Mock private AccessibilityManager mAccessibilityManager;
     @Mock private Configuration mConfiguration;
@@ -211,8 +210,8 @@ public class HistoryClustersMediatorTest {
                     }
 
                     @Override
-                    public TabCreator getTabCreator(boolean isIncognito) {
-                        return isIncognito ? mIncognitoTabCreator : mTabCreator;
+                    public AsyncTabLauncher getTabLauncher(boolean isIncognito) {
+                        return isIncognito ? mIncognitoTabLauncher : mTabLauncher;
                     }
 
                     @Nullable
@@ -934,31 +933,29 @@ public class HistoryClustersMediatorTest {
         assertEquals(true, mIntent.getBooleanExtra(INCOGNITO_EXTRA, true));
 
         mIsSeparateActivity = false;
-        doReturn(mTab2).when(mTabCreator).createNewTab(any(), anyInt(), any());
         mMediator.openVisitsInNewTabs(Arrays.asList(mVisit1, mVisit2), false, false);
-        verify(mTabCreator)
-                .createNewTab(
+        verify(mTabLauncher)
+                .launchNewTab(
                         argThat(hasSameUrl(mGurl1.getSpec())),
                         eq(TabLaunchType.FROM_CHROME_UI),
                         eq(null));
-        verify(mTabCreator)
-                .createNewTab(
+        verify(mTabLauncher)
+                .launchNewTab(
                         argThat(hasSameUrl(mGurl2.getSpec())),
                         eq(TabLaunchType.FROM_CHROME_UI),
-                        eq(mTab2));
+                        eq(null));
 
-        doReturn(mTab2).when(mIncognitoTabCreator).createNewTab(any(), anyInt(), any());
         mMediator.openVisitsInNewTabs(Arrays.asList(mVisit1, mVisit2), true, false);
-        verify(mIncognitoTabCreator)
-                .createNewTab(
+        verify(mIncognitoTabLauncher)
+                .launchNewTab(
                         argThat(hasSameUrl(mGurl1.getSpec())),
                         eq(TabLaunchType.FROM_CHROME_UI),
                         eq(null));
-        verify(mIncognitoTabCreator)
-                .createNewTab(
+        verify(mIncognitoTabLauncher)
+                .launchNewTab(
                         argThat(hasSameUrl(mGurl2.getSpec())),
                         eq(TabLaunchType.FROM_CHROME_UI),
-                        eq(mTab2));
+                        eq(null));
     }
 
     @Test
@@ -974,18 +971,17 @@ public class HistoryClustersMediatorTest {
                 ((List<String>) mIntent.getSerializableExtra(ADDTIONAL_URLS_EXTRA)).get(0));
 
         mIsSeparateActivity = false;
-        doReturn(mTab2).when(mTabCreator).createNewTab(any(), anyInt(), any());
         mMediator.openVisitsInNewTabs(Arrays.asList(mVisit1, mVisit2), false, true);
-        verify(mTabCreator)
-                .createNewTab(
+        verify(mTabLauncher)
+                .launchNewTab(
                         argThat(hasSameUrl(mGurl1.getSpec())),
                         eq(TabLaunchType.FROM_CHROME_UI),
                         eq(null));
-        verify(mTabCreator)
-                .createNewTab(
+        verify(mTabLauncher)
+                .launchNewTab(
                         argThat(hasSameUrl(mGurl2.getSpec())),
                         eq(TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP),
-                        eq(mTab2));
+                        eq(null));
     }
 
     @Test

@@ -199,7 +199,6 @@ void RemoveWebAppJob::OnOsHooksUninstalled(OsHooksErrors errors) {
   CHECK(!primary_removal_result_.has_value());
   CHECK(!hooks_uninstalled_);
   hooks_uninstalled_ = true;
-  base::UmaHistogramBoolean("WebApp.Uninstall.OsHookSuccess", errors.none());
   errors_ = errors_ || errors.any();
   MaybeFinishPrimaryRemoval();
 }
@@ -208,7 +207,6 @@ void RemoveWebAppJob::OnIconDataDeleted(bool success) {
   CHECK(!primary_removal_result_.has_value());
   CHECK(!app_data_deleted_);
   app_data_deleted_ = true;
-  base::UmaHistogramBoolean("WebApp.Uninstall.IconDataSuccess", success);
   errors_ = errors_ || !success;
   MaybeFinishPrimaryRemoval();
 }

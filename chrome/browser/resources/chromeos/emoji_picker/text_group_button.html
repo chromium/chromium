@@ -5,11 +5,15 @@
       border-radius: 0;
       color: var(--emoji-picker-tab-unselected-color);
       font-size: 12px;
+      font: var(--cros-button-1-font);
       margin: 0;
       margin-inline: var(--tab-button-margin);
       min-width: unset;
-      padding: var(--text-group-button-padding);
       width: max-content;
+      --cr-button-height: var(--emoji-picker-group-button-height, 32px);
+      padding-left: var(--emoji-picker-group-button-padding, 0px);
+      padding-right: var(--emoji-picker-group-button-padding, 0px);
+      border-radius: var(--emoji-picker-group-button-border-radius, 0px);
     }
 
     #group-button:hover {

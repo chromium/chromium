@@ -247,7 +247,6 @@
 <translation id="1446396933673057385">صحت‌سنجی</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1452803302401719440">تنظیماتی که ولی‌تان برایتان انتخاب کرده است اکنون ایمنی شما را در فضای آنلاین بیشتر حفظ می‌کند</translation>
-<translation id="1453974140256777690">‏نوشتاری که جای‌گذاری یا پیوست می‌کنید برای تجزیه‌وتحلیل به Google Cloud یا اشخاص ثالث ارسال می‌شود. مثلاً ممکن است ازنظر وجود داده‌های حساس اسکن شوند.</translation>
 <translation id="1455413310270022028">پاک‌کن</translation>
 <translation id="1458140305240870199">لباس زیر</translation>
 <translation id="1459693405370120464">آب‌وهوا</translation>
@@ -274,6 +273,7 @@
 <translation id="1507780850870535225">طراحی چشم‌انداز</translation>
 <translation id="1513706915089223971">فهرست ورودی‌های سابقه</translation>
 <translation id="1516097932025103760">رمزگذاری خواهد شد، به‌طور ایمن ذخیره خواهد شد، و کد تأیید کارت هرگز ذخیره نمی‌شود.</translation>
+<translation id="151720253492607760">همچنان مجاز نباشد</translation>
 <translation id="1517433312004943670">شماره تلفن ضروری است</translation>
 <translation id="1519264250979466059">تاریخ ساخت</translation>
 <translation id="1521159554480556801">هنر نساجی و بافت</translation>
@@ -542,6 +542,7 @@
 <translation id="205212645995975601">کبابی و بریانی</translation>
 <translation id="2053111141626950936">صفحه‌های <ph name="LANGUAGE" /> ترجمه نخواهند شد.</translation>
 <translation id="2056658168519009885">‏سایت‌ها می‌توانند برای کمک به شخصی‌سازی آگهی‌هایی که می‌بینید اطلاعاتی از Chrome درخواست کنند.</translation>
+<translation id="2059166748188874810">شهرداری</translation>
 <translation id="2059202684901022309">۳۴ × ۲۲ اینچ</translation>
 <translation id="2064568741209980952">اعتبار و وام</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{۱ پیشنهاد}one{# پیشنهاد}other{# پیشنهاد}}</translation>
@@ -877,6 +878,7 @@
 <translation id="2765217105034171413">کوچک</translation>
 <translation id="2770159525358613612">فایل‌ها را دوباره بارگذاری کنید</translation>
 <translation id="277133753123645258">روش ارسال</translation>
+<translation id="2773388851563527404">‏‫Chrome استفاده از کوکی‌های شخص ثالث را برای اکثر سایت‌ها محدود می‌کند. اما کوکی‌های شخص ثالث در این سایت مجاز است چون این سایت برای ارائه خدمات اولیه بر کوکی‌ها متکی است. برای <ph name="LINK" />، به تنظیمات بروید.</translation>
 <translation id="277499241957683684">ثبت دستگاه موجود نیست</translation>
 <translation id="2775884851269838147">صفحه چاپ اول</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -1352,7 +1354,6 @@
 <translation id="3743765582345153106">همیشه هنگام استفاده از تکمیل خودکار تأیید شود</translation>
 <translation id="3744111561329211289">همگام‌سازی پس‌زمینه</translation>
 <translation id="3744212718085287312">می‌خواهید آن را دفعه بعدی با کارت مجازی ایمن‌تر کنیم؟</translation>
-<translation id="3744286742364977428">‏فایل‌هایی که بارگیری می‌کنید برای تجریه‌وتحلیل به Google Cloud یا اشخاص ثالث ارسال می‌شود. مثلاً ممکن است این فایل‌ها ازنظر وجود داده‌های حساس یا بدافزار اسکن شود و براساس خط‌مشی‌های شرکت ذخیره شود.</translation>
 <translation id="3744899669254331632">‏نمی‌توانید اکنون از <ph name="SITE" /> دیدن کنید زیرا وب‌سایت اعتبارنامه‌های درهمی ارسال کرده که Chromium نمی‌تواند پردازش کند. خطاها و حمله‌های شبکه معمولاً موقتی هستند، بنابراین احتمالاً این صفحه بعداً کار می‌کند.</translation>
 <translation id="3748009735914587286">فلز (خیلی براق)</translation>
 <translation id="3748148204939282805">ممکن است مهاجم‌ها در <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> شما را فریب دهند تا اقدام خطرناکی همچون نصب نرم‌افزار یا افشای اطلاعات شخصی (مانند گذرواژه‌ها، پیام‌ها یا کارت‌های اعتباری) انجام دهید. <ph name="BEGIN_LEARN_MORE_LINK" />بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1728,6 +1729,7 @@
 <translation id="4521280267704259211">پاکت شاهی</translation>
 <translation id="4521916730539354575">سینی چپ</translation>
 <translation id="4522570452068850558">جزئیات</translation>
+<translation id="4522821696628398940">‏شماره IBAN در «حساب Google» ذخیره شود؟</translation>
 <translation id="4523643381056109546">تابلوساز</translation>
 <translation id="4524138615196389145">‏ازاین‌پس، با استفاده از WebAuthn کارت‌هایتان را سریع‌تر به‌تأیید برسانید</translation>
 <translation id="45243788195988825">مسدود کردن <ph name="TOPIC" /></translation>
@@ -2311,7 +2313,6 @@
 <translation id="5720705177508910913">کاربر کنونی</translation>
 <translation id="572328651809341494">برگه‌های اخیر</translation>
 <translation id="5723287205918986743">صنایع دفاعی</translation>
-<translation id="5725567311035061582">مدیریت کوکی‌ها و داده‌های سایت</translation>
 <translation id="5730040223043577876">‏Chrome توصیه می‌کند اگر از گذرواژه‌تان در سایت‌های دیگری استفاده کردید آن را بازنشانی کنید.</translation>
 <translation id="5732392974455271431">والدینتان می‌توانند این سایت را برای شما بگشایند</translation>
 <translation id="573555826359077410">‏دکمه ایجاد فرم؛ برای ایجاد سریع فرم جدید در «فرم‌نگار Google»، آن را فعال کنید</translation>
@@ -2409,7 +2410,6 @@
 <translation id="5938153366081463283">افزودن کارت مجازی</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5944297261866530437">پارچه (خیلی براق)</translation>
-<translation id="5947508410139465809">‏فایل‌هایی که بارگذاری یا پیوست می‌کنید برای تجریه‌وتحلیل به Google Cloud یا اشخاص ثالث ارسال می‌شود. مثلاً ممکن است این فایل‌ها ازنظر وجود داده‌های حساس یا بدافزار اسکن شود و براساس خط‌مشی‌های شرکت ذخیره شود.</translation>
 <translation id="5951495562196540101">نمی‌توان با حساب مصرف‌کننده ثبت‌نام کرد (مجوز بسته‌بندی دردسترس است).</translation>
 <translation id="5953516610448771166">«زیرنویس ناشنوایان زنده» برای این رسانه دردسترس نیست. برای دریافت زیرنویس ناشنوایان، <ph name="CONTENT_SETTINGS" /> را برای این سایت مسدود کنید.</translation>
 <translation id="5955063559762970069">هتل و اقامتگاه</translation>
@@ -3165,6 +3165,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7461924472993315131">پین</translation>
 <translation id="7463075493919226237">فوتبال استرالیایی</translation>
+<translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> متوجه خواهد شد که شما از <ph name="TOP_LEVEL_URL" /> بازدید کرده‌اید</translation>
 <translation id="7465963048299965912">۱۳ × ۱۰ اینچ</translation>
 <translation id="7469935732330206581">فرم ایمن نیست</translation>
 <translation id="7473891865547856676">نه متشکرم</translation>
@@ -3623,7 +3624,6 @@
 <translation id="8347658365704983341">آموزش ازراه‌دور</translation>
 <translation id="8349305172487531364">نوار نشانک‌ها</translation>
 <translation id="8351131234907093545">یادداشت ایجاد کنید</translation>
-<translation id="835203957414790336">‏محتوای صفحه‌هایی که چاپ می‌کنید و اطلاعاتی درباره چاپگرتان برای تجزیه‌وتحلیل به Google Cloud یا اشخاص ثالث ارسال می‌شوند. مثلاً ممکن است این محتوا ازنظر وجود داده‌های حساس بررسی شود.</translation>
 <translation id="8352849934814541340">سرپرست این دستگاه برنامه‌هایی را برای افزودن عملکردهای بیشتر نصب کرده است. این برنامه‌ها به برخی‌از داده‌های شما دسترسی دارند.</translation>
 <translation id="8355270400102541638">بافت خرابی محلی:</translation>
 <translation id="8363502534493474904">خاموش کردن حالت هواپیما</translation>
@@ -3659,11 +3659,13 @@
 <translation id="8416874502399604126">میکروفون این بار مجاز شد</translation>
 <translation id="8422228580902424274">مهاجمان در سایتی که می‌خواهید از آن بازدید کنید ممکن است شما را فریب دهند تا نرم‌افزاری را نصب کنید یا مواردی مثل گذرواژه، تلفن، یا شماره کارت اعتباری‌تان را دراختیار آن‌ها قرار دهید.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
+<translation id="8425213833346101688">تغییر</translation>
 <translation id="8427848540066057481">۷۵۰ × ۵۰۰ میلی‌متر</translation>
 <translation id="8428213095426709021">تنظیمات</translation>
 <translation id="8428634594422941299">متوجه شدم</translation>
 <translation id="8431194080598727332">‏<ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />، کلید «جهش» و سپس «ورود» را فشار دهید تا اولویت‌های کوکی را در تنظیمات Chrome مدیریت کنید</translation>
 <translation id="8433057134996913067">با این کار از سیستم بیشتر وب‌سایت‌ها خارج می‌شوید.</translation>
+<translation id="8434014327286137412">‏برای اینکه دفعه بعد پرداخت سریع‌تری داشته باشید، شماره IBAN را در «حساب Google» خود ذخیره کنید</translation>
 <translation id="8434840396568290395">حیوان خانگی</translation>
 <translation id="8436623588884785770">افزودن خط‌مشی</translation>
 <translation id="8437238597147034694">&amp;واگرد انتقال</translation>
@@ -3762,6 +3764,7 @@
 <translation id="865032292777205197">حسگرهای حرکتی</translation>
 <translation id="865255447216708819">فیلم چاپ معکوس</translation>
 <translation id="8654126188050905496">۹۱ × ۵۵ میلی‌متر</translation>
+<translation id="8655930295668719549"><ph name="PERMISSION" /> را قبلاً در <ph name="ORIGIN" /> مجاز نکردید</translation>
 <translation id="8662463432865928030">املاک تجاری</translation>
 <translation id="8663226718884576429">خلاصه سفارش، <ph name="TOTAL_LABEL" />، جزئيات بیشتر</translation>
 <translation id="8663909737634214500">لوح نوری</translation>

@@ -64,6 +64,8 @@ std::string GetStringNameForRequestContext(
       return "NewTabPage";
     case proto::RequestContext::CONTEXT_PAGE_INSIGHTS_HUB:
       return "PageInsightsHub";
+    case proto::RequestContext::CONTEXT_NON_PERSONALIZED_PAGE_INSIGHTS_HUB:
+      return "NonPersonalizedPageInsightsHub";
   }
   NOTREACHED();
   return std::string();

@@ -7,6 +7,16 @@
 
 #include "base/auto_reset.h"
 #include "base/component_export.h"
+#include "chromeos/ash/components/standalone_browser/lacros_availability.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace policy {
+class PolicyMap;
+}  // namespace policy
+
+namespace user_manager {
+class User;
+}  // namespace user_manager
 
 namespace ash::standalone_browser {
 
@@ -14,17 +24,43 @@ namespace ash::standalone_browser {
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
     BrowserSupport {
  public:
-  // Initializes the global instance of BrowserSupport.
-  static void Initialize();
+  BrowserSupport(const BrowserSupport&) = delete;
+  BrowserSupport& operator=(const BrowserSupport&) = delete;
+
+  // Initializes the global instance of BrowserSupport for the Primary User.
+  static void InitializeForPrimaryUser(const policy::PolicyMap& policy_map);
+
   // Destroys the global instance of BrowserSupport.
   static void Shutdown();
 
-  // Returns the global instance of BrowserSupport.
-  static BrowserSupport* Get();
+  // Returns true if BrowserSupport instance is initialized for the Primary
+  // User.
+  static bool IsInitializedForPrimaryUser();
+
+  // Returns the global instance of BrowserSupport for the Primary User.
+  static BrowserSupport* GetForPrimaryUser();
+
+  // Returns whether CPU of this device is capable to run standalone browser.
+  // Can be called even before Initialize() is called.
+  static bool IsCpuSupported();
+
+  // Directly sets the value to be returned by IsCpuSupported for testing.
+  // Setting nullopt unsets the overridden behavior of IsCpuSupported.
+  static void SetCpuSupportedForTesting(absl::optional<bool> value);
+
+  // Returns true if the standalone browser is allowed to be enabled.
+  bool IsAllowed() const { return is_allowed_; }
+
+  // Temporarily exposing internal function for transition period.
+  // TODO(crbug.com/1494005): Hide the function along with refactoring.
+  static bool IsAllowedInternal(const user_manager::User* user,
+                                LacrosAvailability lacros_availability);
 
  private:
-  BrowserSupport();
+  BrowserSupport(bool is_allowed);
   ~BrowserSupport();
+
+  const bool is_allowed_;
 };
 
 }  // namespace ash::standalone_browser

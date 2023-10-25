@@ -84,7 +84,7 @@ TEST(MemorySafetyCheckTest, AllocatorFunctions) {
   delete ptr3;
 
   // void* operator new(std::size_t, void* ptr)
-  char data[32];
+  alignas(AlignedAdvancedChecks) char data[32];
   ptr1 = new (data) DefaultChecks();
   ptr2 = new (data) AdvancedChecks();
   ptr3 = new (data) AlignedAdvancedChecks();

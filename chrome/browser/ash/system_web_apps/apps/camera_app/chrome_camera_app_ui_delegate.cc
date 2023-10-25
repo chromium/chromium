@@ -330,8 +330,6 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
                     DeviceTypeToString(chromeos::GetDeviceType()));
   source->AddBoolean("timeLapse", base::FeatureList::IsEnabled(
                                       ash::features::kCameraAppTimeLapse));
-  source->AddBoolean("jelly",
-                     base::FeatureList::IsEnabled(chromeos::features::kJelly));
 
   const PrefService* prefs = Profile::FromWebUI(web_ui_)->GetPrefs();
   source->AddBoolean("video_capture_disallowed",

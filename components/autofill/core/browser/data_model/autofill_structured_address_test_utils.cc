@@ -60,10 +60,10 @@ void SetTestValues(AddressComponent* component,
 void VerifyTestValues(AddressComponent* component,
                       const AddressComponentTestValues test_values) {
   for (const auto& test_value : test_values) {
-    SCOPED_TRACE(base::StringPrintf(
-        "Failed type=%s, value=%s, status=%d",
-        std::string(FieldTypeToStringPiece(test_value.type)).c_str(),
-        test_value.value.c_str(), static_cast<int>(test_value.status)));
+    SCOPED_TRACE(base::StringPrintf("Failed type=%s, value=%s, status=%d",
+                                    FieldTypeToString(test_value.type).c_str(),
+                                    test_value.value.c_str(),
+                                    static_cast<int>(test_value.status)));
 
     EXPECT_EQ(base::UTF16ToUTF8(component->GetValueForType(test_value.type)),
               test_value.value);

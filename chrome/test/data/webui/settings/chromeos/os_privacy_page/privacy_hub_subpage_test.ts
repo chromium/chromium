@@ -203,26 +203,27 @@ async function parametrizedPrivacyHubSubpageTestsuite(
     assertTrue(suggestedContent.checked);
   });
 
-  test('Deep link to Geolocation toggle on privacy hub', async () => {
+  test('Deep link to Geolocation area on privacy hub', async () => {
     const params = new URLSearchParams();
-    params.append('settingId', '1118');
+    const settingId = settingMojom.Setting.kGeolocationOnOff;
+    params.append('settingId', settingId.toString());
     Router.getInstance().navigateTo(routes.PRIVACY_HUB, params);
 
     flush();
 
-    const toggleElement =
-        privacyHubSubpage.shadowRoot!.querySelector('#geolocationToggle');
+    const linkRowElement =
+        privacyHubSubpage.shadowRoot!.querySelector('#geolocationAreaLinkRow');
     if (privacyHubVersion === PrivacyHubVersion.V0) {
-      assertEquals(null, toggleElement);
+      assertEquals(null, linkRowElement);
     } else if (privacyHubVersion === PrivacyHubVersion.V0AndLocation) {
-      assert(toggleElement);
+      assert(linkRowElement);
       const deepLinkElement =
-          toggleElement.shadowRoot!.querySelector('cr-toggle');
+          linkRowElement.shadowRoot!.querySelector('cr-icon-button');
       assert(deepLinkElement);
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
-          'Geolocation toggle should be focused for settingId=1118.');
+          `Geolocation link row should be focused for settingId=${settingId}`);
     }
   });
 

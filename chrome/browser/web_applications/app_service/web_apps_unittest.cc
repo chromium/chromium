@@ -15,11 +15,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/constants/chromeos_features.h"
+#endif
 
 namespace web_app {
 
@@ -80,7 +83,7 @@ class WebAppsTest : public testing::Test {
 TEST_F(WebAppsTest, ShortcutNotPublishedAsWebApp) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      features::kCrosWebAppShortcutUiUpdate);
+      chromeos::features::kCrosWebAppShortcutUiUpdate);
   apps::AppServiceTest app_service_test;
   app_service_test.SetUp(profile());
   auto app_id = CreateWebApp(GURL("https://example.com/"), "App");
@@ -114,7 +117,7 @@ TEST_F(WebAppsTest, ShortcutPublishedAsWebApp) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
-      features::kCrosWebAppShortcutUiUpdate);
+      chromeos::features::kCrosWebAppShortcutUiUpdate);
 #endif
   auto app_id = CreateWebApp(GURL("https://example.com/"), "App");
   auto shortcut_id =
@@ -146,7 +149,7 @@ TEST_F(WebAppsTest, ShortcutPublishedAsWebApp) {
 TEST_F(WebAppsTest, UninstallWebApp_AppServiceShortcutEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      features::kCrosWebAppShortcutUiUpdate);
+      chromeos::features::kCrosWebAppShortcutUiUpdate);
 
   apps::AppServiceTest app_service_test;
   app_service_test.SetUp(profile());

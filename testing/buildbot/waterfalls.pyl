@@ -6849,7 +6849,7 @@
       },
       'optimization_guide-win32': {
         'mixins': [
-          'chrome-swarming-pool',
+          'chrome-intelligence-swarming-pool',
           'win10',
         ],
         'test_suites': {

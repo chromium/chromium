@@ -6,8 +6,10 @@ import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
 import {DialogType} from '../../common/js/dialog_type.js';
+import {isOneDrive} from '../../common/js/entry_utils.js';
 import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';
-import {str, util} from '../../common/js/util.js';
+import {isArcVmEnabled, isGuestOsEnabled, isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
+import {str} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
@@ -783,7 +785,7 @@ export class NavigationListModel extends EventTarget {
     // TODO(crbug/1293229): To start with, we only support listing and not
     // mounting, which means we're just dealing with fake entries here. This
     // gets updated to handle real volumes once we support mounting them.
-    if (util.isGuestOsEnabled()) {
+    if (isGuestOsEnabled()) {
       // Remove all GuestOs placeholders, we readd any if they're needed.
       // @ts-ignore: error TS2339: Property 'removeAllByRootType' does not exist
       // on type 'FilesAppEntry | EntryList | VolumeEntry'.
@@ -791,7 +793,7 @@ export class NavigationListModel extends EventTarget {
 
       // For each volume, add any which aren't already in the list.
       let guestOsVolumes = getVolumes(VolumeManagerCommon.VolumeType.GUEST_OS);
-      if (util.isArcVmEnabled()) {
+      if (isArcVmEnabled()) {
         // Remove GuestOs Android placeholder, similar to what we did for
         // GuestOs placeholders. This should be readded if needed.
         // @ts-ignore: error TS2339: Property 'removeAllByRootType' does not
@@ -869,7 +871,7 @@ export class NavigationListModel extends EventTarget {
     // Add ODFS.
     for (const provided of getVolumes(
              VolumeManagerCommon.VolumeType.PROVIDED)) {
-      if (util.isOneDrive(provided.volumeInfo)) {
+      if (isOneDrive(provided.volumeInfo)) {
         provided.section = NavigationSection.ODFS;
         const {volumes} = getStore().getState();
         const volume = volumes[provided.volumeInfo.volumeId];
@@ -892,7 +894,7 @@ export class NavigationListModel extends EventTarget {
     for (const provided of getVolumes(
              VolumeManagerCommon.VolumeType.PROVIDED)) {
       // ODFS added already.
-      if (util.isOneDrive(provided.volumeInfo)) {
+      if (isOneDrive(provided.volumeInfo)) {
         continue;
       }
       this.navigationItems_.push(provided);
@@ -911,8 +913,7 @@ export class NavigationListModel extends EventTarget {
     const disableRemovables = this.volumeManager_.isDisabled(
         VolumeManagerCommon.VolumeType.REMOVABLE);
     for (const [devicePath, removableGroup] of groupRemovables().entries()) {
-      if (removableGroup.length == 1 &&
-          !util.isSinglePartitionFormatEnabled()) {
+      if (removableGroup.length == 1 && !isSinglePartitionFormatEnabled()) {
         // Add unpartitioned removable device as a regular volume.
         this.navigationItems_.push(removableGroup[0]);
         removableGroup[0].section = NavigationSection.REMOVABLE;

@@ -96,12 +96,16 @@ class FederatedAuthRequestImplRegistryTest
         base::TimeDelta());
   }
 
+  void TearDown() override {
+    federated_auth_request_impl_ = nullptr;
+    RenderViewHostImplTestHarness::TearDown();
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
 
   mojo::Remote<blink::mojom::FederatedAuthRequest> request_remote_;
-  raw_ptr<FederatedAuthRequestImpl, DanglingUntriaged>
-      federated_auth_request_impl_;
+  raw_ptr<FederatedAuthRequestImpl> federated_auth_request_impl_;
 
   std::unique_ptr<TestApiPermissionDelegate> test_api_permission_delegate_;
   std::unique_ptr<StrictMock<MockPermissionDelegate>> mock_permission_delegate_;

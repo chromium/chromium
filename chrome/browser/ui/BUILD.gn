@@ -14,6 +14,7 @@ import("//chrome/common/features.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
 import("//chromeos/dbus/config/use_real_dbus_clients.gni")
 import("//components/compose/features.gni")
+import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/feed/features.gni")
 import("//components/lens/features.gni")
 import("//components/nacl/features.gni")
@@ -729,6 +730,10 @@ static_library("ui") {
     ]
   }
 
+  if (enterprise_data_controls) {
+    deps += [ "//chrome/browser/enterprise/data_controls" ]
+  }
+
   if (enable_search_engine_choice) {
     deps += [ "//chrome/browser/ui/webui/search_engine_choice:mojo_bindings" ]
     sources += [
@@ -758,6 +763,7 @@ static_library("ui") {
       "//chromeos/constants",
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/cpp:crosapi_constants",
+      "//components/enterprise/data_controls:data_controls",
     ]
   }
 
@@ -797,6 +803,8 @@ static_library("ui") {
       "android/autofill/card_unmask_prompt_view_android.h",
       "android/autofill/credit_card_scanner_view_android.cc",
       "android/autofill/credit_card_scanner_view_android.h",
+      "android/autofill/facilitated_payment_bottom_sheet_bridge.cc",
+      "android/autofill/facilitated_payment_bottom_sheet_bridge.h",
       "android/autofill/otp_verification_dialog_view_android.cc",
       "android/autofill/otp_verification_dialog_view_android.h",
       "android/autofill/save_update_address_profile_flow_manager.cc",
@@ -959,6 +967,7 @@ static_library("ui") {
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/image_decoder",
       "//chrome/browser/notifications/scheduler/public",
+      "//chrome/browser/password_manager/android:backend",
       "//chrome/browser/touch_to_fill/payments/android",
       "//chrome/browser/ui/android/autofill/internal:jni_headers",
       "//chrome/browser/ui/android/page_insights:jni_headers",
@@ -1658,8 +1667,6 @@ static_library("ui") {
       "webui/feed/feed_ui.h",
       "webui/feed/feed_ui_config.cc",
       "webui/feed/feed_ui_config.h",
-      "webui/feedback/child_web_dialog.cc",
-      "webui/feedback/child_web_dialog.h",
       "webui/feedback/feedback_dialog.cc",
       "webui/feedback/feedback_dialog.h",
       "webui/feedback/feedback_handler.cc",
@@ -1971,6 +1978,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/internals/user_education:mojo_bindings",
       "//chrome/browser/ui/webui/new_tab_page:mojo_bindings",
       "//chrome/browser/ui/webui/new_tab_page_third_party:mojo_bindings",
+      "//chrome/browser/ui/webui/on_device_internals:mojom",
       "//chrome/browser/ui/webui/side_panel/bookmarks:mojo_bindings",
       "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings",
       "//chrome/browser/ui/webui/side_panel/performance_controls:mojo_bindings",
@@ -2031,6 +2039,7 @@ static_library("ui") {
       "//services/device/public/cpp/hid",
       "//services/device/public/mojom",
       "//services/metrics/public/cpp:metrics_cpp",
+      "//services/on_device_model/public/cpp",
       "//services/on_device_model/public/mojom",
       "//services/preferences/public/mojom:mojom",
       "//third_party/blink/public/common:headers",
@@ -2323,6 +2332,8 @@ static_library("ui") {
       "../ash/app_list/search/local_image_search/file_search_result.h",
       "../ash/app_list/search/local_image_search/image_annotation_worker.cc",
       "../ash/app_list/search/local_image_search/image_annotation_worker.h",
+      "../ash/app_list/search/local_image_search/image_content_annotator.cc",
+      "../ash/app_list/search/local_image_search/image_content_annotator.h",
       "../ash/app_list/search/local_image_search/inverted_index_table.cc",
       "../ash/app_list/search/local_image_search/inverted_index_table.h",
       "../ash/app_list/search/local_image_search/local_image_search_provider.cc",
@@ -2331,6 +2342,8 @@ static_library("ui") {
       "../ash/app_list/search/local_image_search/local_image_search_service.h",
       "../ash/app_list/search/local_image_search/local_image_search_service_factory.cc",
       "../ash/app_list/search/local_image_search/local_image_search_service_factory.h",
+      "../ash/app_list/search/local_image_search/optical_character_recognizer.cc",
+      "../ash/app_list/search/local_image_search/optical_character_recognizer.h",
       "../ash/app_list/search/local_image_search/search_utils.cc",
       "../ash/app_list/search/local_image_search/search_utils.h",
       "../ash/app_list/search/local_image_search/sql_database.cc",
@@ -2828,8 +2841,6 @@ static_library("ui") {
       "views/crostini/crostini_uninstaller_view.h",
       "views/crostini/crostini_update_filesystem_view.cc",
       "views/crostini/crostini_update_filesystem_view.h",
-      "views/extensions/web_file_handlers/web_file_handlers_file_launch_dialog.cc",
-      "views/extensions/web_file_handlers/web_file_handlers_file_launch_dialog.h",
       "views/frame/browser_frame_ash.cc",
       "views/frame/browser_frame_ash.h",
       "views/frame/custom_tab_browser_frame.cc",
@@ -3123,6 +3134,8 @@ static_library("ui") {
       "webui/ash/login/password_selection_screen_handler.h",
       "webui/ash/login/pin_setup_screen_handler.cc",
       "webui/ash/login/pin_setup_screen_handler.h",
+      "webui/ash/login/remote_activity_notification_screen_handler.cc",
+      "webui/ash/login/remote_activity_notification_screen_handler.h",
       "webui/ash/os_feedback_dialog.cc",
       "webui/ash/os_feedback_dialog.h",
 
@@ -3738,6 +3751,7 @@ static_library("ui") {
       "//google_apis/tasks",
       "//media/capture:capture_lib",
       "//mojo/public/js:resources_grit",
+      "//remoting/host/chromeos:features",
       "//services/audio/public/mojom",
       "//services/data_decoder/public/cpp",
       "//services/device/public/cpp:device_features",
@@ -3804,6 +3818,8 @@ static_library("ui") {
       "tabs/existing_window_sub_menu_model_chromeos.h",
       "views/extensions/print_job_confirmation_dialog.cc",
       "views/extensions/request_file_system_dialog.cc",
+      "views/extensions/web_file_handlers/web_file_handlers_file_launch_dialog.cc",
+      "views/extensions/web_file_handlers/web_file_handlers_file_launch_dialog.h",
       "views/frame/browser_frame_header_chromeos.cc",
       "views/frame/browser_frame_header_chromeos.h",
       "views/frame/browser_non_client_frame_view_chromeos.cc",
@@ -6329,6 +6345,8 @@ static_library("ui") {
       "extensions/settings_overridden_dialog_controller.h",
       "extensions/settings_overridden_params_providers.cc",
       "extensions/settings_overridden_params_providers.h",
+      "extensions/web_file_handlers/multiclient_util.cc",
+      "extensions/web_file_handlers/multiclient_util.h",
       "views/chrome_javascript_app_modal_view_factory_views.cc",
       "views/extensions/browser_action_drag_data.cc",
       "views/extensions/browser_action_drag_data.h",

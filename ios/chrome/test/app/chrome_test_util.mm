@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/main/bvc_container_view_controller.h"
@@ -131,10 +132,13 @@ UIViewController* GetActiveViewController() {
   return active_view_controller;
 }
 
-id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands>
+id<ApplicationCommands,
+   BrowserCommands,
+   BrowserCoordinatorCommands,
+   UnitConversionCommands>
 HandlerForActiveBrowser() {
-  return static_cast<
-      id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands>>(
+  return static_cast<id<ApplicationCommands, BrowserCommands,
+                        BrowserCoordinatorCommands, UnitConversionCommands>>(
       GetMainBrowser()->GetCommandDispatcher());
 }
 

@@ -42,29 +42,29 @@ enum class PrefetchStatus {
   //
   // The url was not eligible to be prefetched because it is a Google-owned
   // domain.
-  // kPrefetchNotEligibleGoogleDomain = 4,
+  // kPrefetchIneligibleGoogleDomain = 4,
 
   // The url was not eligible to be prefetched because the user had cookies for
   // that origin.
-  kPrefetchNotEligibleUserHasCookies = 5,
+  kPrefetchIneligibleUserHasCookies = 5,
 
   // The url was not eligible to be prefetched because there was a registered
   // service worker for that origin.
-  kPrefetchNotEligibleUserHasServiceWorker = 6,
+  kPrefetchIneligibleUserHasServiceWorker = 6,
 
   // The url was not eligible to be prefetched because its scheme was not
   // https://.
-  kPrefetchNotEligibleSchemeIsNotHttps = 7,
+  kPrefetchIneligibleSchemeIsNotHttps = 7,
 
   // Deprecated. No longer a reason for ineligibility.
   //
   // The url was not eligible to be prefetched because its host was an IP
   // address.
-  // kPrefetchNotEligibleHostIsIPAddress = 8,
+  // kPrefetchIneligibleHostIsIPAddress = 8,
 
   // The url was not eligible to be prefetched because it uses a non-default
   // storage partition.
-  kPrefetchNotEligibleNonDefaultStoragePartition = 9,
+  kPrefetchIneligibleNonDefaultStoragePartition = 9,
 
   // The network request was cancelled before it finished. This happens when
   // there is a new navigation.
@@ -131,7 +131,7 @@ enum class PrefetchStatus {
   // A network error or intentional loadshed was previously encountered when
   // trying to setup a connection to the proxy and a prefetch should not be done
   // right now.
-  kPrefetchProxyNotAvailable = 28,
+  kPrefetchIneligiblePrefetchProxyNotAvailable = 28,
 
   // The prefetch was not eligible, but was put on the network anyways and not
   // used to disguise that the user had some kind of previous relationship with
@@ -160,18 +160,18 @@ enum class PrefetchStatus {
   // The url was not eligible to be prefetched because its host was not unique
   // (e.g., a non publicly routable IP address or a hostname which is not
   // registry-controlled) but the prefetch was to be proxied.
-  kPrefetchNotEligibleHostIsNonUnique = 36,
+  kPrefetchIneligibleHostIsNonUnique = 36,
 
   // The prefetch was not made because the user requested that the browser use
   // less data.
-  kPrefetchNotEligibleDataSaverEnabled = 37,
+  kPrefetchIneligibleDataSaverEnabled = 37,
 
   // The URL is not eligible to be prefetched, because in the default network
   // context it is configured to use a proxy server.
-  kPrefetchNotEligibleExistingProxy = 38,
+  kPrefetchIneligibleExistingProxy = 38,
 
   // Prefetch not supported in Guest or Incognito mode.
-  kPrefetchNotEligibleBrowserContextOffTheRecord = 39,
+  kPrefetchIneligibleBrowserContextOffTheRecord = 39,
 
   // Whether this prefetch is heldback for counterfactual logging.
   kPrefetchHeldback = 40,
@@ -198,13 +198,13 @@ enum class PrefetchStatus {
   // prefetch request.
   // TODO(https://crbug.com/1439986): Allow same-site cross-origin prefetches
   // that require the prefetch proxy to be made.
-  kPrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy = 46,
+  kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy = 46,
 
   // The prefetch was not made because the `Battery Saver` setting was enabled.
-  kPrefetchNotEligibleBatterySaverEnabled = 47,
+  kPrefetchIneligibleBatterySaverEnabled = 47,
 
   // The prefetch was not made because preloading was disabled.
-  kPrefetchNotEligiblePreloadingDisabled = 48,
+  kPrefetchIneligiblePreloadingDisabled = 48,
 
   // The prefetch was evicted to make room for a newer prefetch. This currently
   // only happens when |kPrefetchNewLimits| is enabled.

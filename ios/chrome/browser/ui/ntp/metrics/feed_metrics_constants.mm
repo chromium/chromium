@@ -11,12 +11,11 @@ const int kMinutesBetweenSessions = 5;
 const int kMaxCardsInFeed = 50;
 
 NSString* const kArticleVisitTimestampKey = @"ShortClickInteractionTimestamp";
-NSString* const kLongFeedVisitTimeAggregateKey =
-    @"LongFeedInteractionTimeDelta";
-NSString* const kLongDiscoverFeedVisitTimeAggregateKey =
-    @"LongDiscoverFeedInteractionTimeDelta";
-NSString* const kLongFollowingFeedVisitTimeAggregateKey =
-    @"LongFollowingFeedInteractionTimeDelta";
+const char kLongFeedVisitTimeAggregateKey[] = "LongFeedInteractionTimeDelta";
+const char kLongDiscoverFeedVisitTimeAggregateKey[] =
+    "LongDiscoverFeedInteractionTimeDelta";
+const char kLongFollowingFeedVisitTimeAggregateKey[] =
+    "LongFollowingFeedInteractionTimeDelta";
 NSString* const kLastUsedFeedForGoodVisitsKey = @"LastUsedFeedForGoodVisits";
 const char kLastInteractionTimeForGoodVisits[] =
     "LastInteractionTimeForGoodVisits";

@@ -90,6 +90,27 @@
 #include "base/process/launch.h"
 #endif
 
+// <https://github.com/apple-oss-distributions/Security/blob/Security-60420.101.4/OSX/libsecurity_codesigning/lib/SecCodeSigner.h>
+extern "C" {
+
+extern const CFStringRef kSecCodeSignerFlags;
+extern const CFStringRef kSecCodeSignerIdentity;
+extern const CFStringRef kSecCodeSignerEntitlements;
+
+const uint32_t kSecCodeMagicEntitlement = 0xfade7171;
+
+typedef struct __SecCodeSigner* SecCodeSignerRef;
+
+OSStatus SecCodeSignerCreate(CFDictionaryRef parameters,
+                             SecCSFlags flags,
+                             SecCodeSignerRef* signer);
+
+OSStatus SecCodeSignerAddSignatureWithErrors(SecCodeSignerRef signer,
+                                             SecStaticCodeRef code,
+                                             SecCSFlags flags,
+                                             CFErrorRef* errors);
+}  // extern "C"
+
 // A TerminationObserver observes a NSRunningApplication for when it
 // terminates. On termination, it will run the specified callback on the UI
 // thread and release itself.
@@ -208,6 +229,10 @@ BASE_FEATURE(kWebAppMaskableIconsOnMac,
              "WebAppMaskableIconsOnMac",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kUseAdHocSigningForWebAppShims,
+             "UseAdHocSigningForWebAppShims",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 
 WebAppAutoLoginUtil* g_auto_login_util_for_testing = nullptr;
@@ -234,7 +259,8 @@ enum class CreateShortcutResult {
   kFailToUpdateIcon = 12,
   kFailToCreateParentDir = 13,
   kFailToCopyApp = 14,
-  kMaxValue = kFailToCopyApp
+  kFailToSign = 15,
+  kMaxValue = kFailToSign,
 };
 
 // Records the result of creating shortcut to UMA.
@@ -1093,6 +1119,30 @@ gfx::Image MaskedIcon(const gfx::Image& base_icon) {
   return gfx::Image::CreateFrom1xBitmap(bitmap);
 }
 
+NSData* AppShimEntitlements() {
+  // Entitlement data to disable library validation with the hardened runtime.
+  // The first 8 bytes of the entitlement data consists of two 32-bit values:
+  // a magic constant and the length of the data. They are populated below.
+  char entitlement_bytes[] =
+      R"xml(12345678<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>com.apple.security.cs.disable-library-validation</key>
+    <true/>
+</dict>
+</plist>
+)xml";
+
+  // The magic constant and length are expected to be big endian.
+  uint32_t* entitlement_header = reinterpret_cast<uint32_t*>(entitlement_bytes);
+  entitlement_header[0] = CFSwapInt32HostToBig(kSecCodeMagicEntitlement);
+  entitlement_header[1] = CFSwapInt32HostToBig(sizeof(entitlement_bytes) - 1);
+
+  return [NSData dataWithBytes:static_cast<void*>(entitlement_bytes)
+                        length:sizeof(entitlement_bytes) - 1];
+}
+
 }  // namespace
 
 bool AppShimCreationAndLaunchDisabledForTest() {
@@ -1345,6 +1395,10 @@ bool WebAppShortcutCreator::BuildShortcut(
   result = UpdateIcon(staging_path);
   if (!result) {
     RecordCreateShortcut(CreateShortcutResult::kFailToUpdateIcon);
+  }
+  result = UpdateSignature(staging_path);
+  if (!result) {
+    RecordCreateShortcut(CreateShortcutResult::kFailToSign);
   }
   return result;
 }
@@ -1724,6 +1778,81 @@ bool WebAppShortcutCreator::UpdateIcon(const base::FilePath& app_path) const {
   }
 
   return icns_encoder.WriteToFile(resources_path.Append("app.icns"));
+}
+
+bool UseAdHocSigningForWebAppShims() {
+  if (@available(macOS 11.7, *)) {
+    // macOS 11.7 and above can code sign at runtime without requiring that the
+    // developer tools be installed.
+    return base::FeatureList::IsEnabled(kUseAdHocSigningForWebAppShims);
+  }
+
+  // Code signing on older macOS versions invokes `codesign_allocate` from the
+  // developer tools, so we can't do it at runtime.
+  return false;
+}
+
+bool WebAppShortcutCreator::UpdateSignature(
+    const base::FilePath& app_path) const {
+  if (!UseAdHocSigningForWebAppShims()) {
+    return true;
+  }
+
+  base::apple::ScopedCFTypeRef<CFURLRef> app_url =
+      base::apple::FilePathToCFURL(app_path);
+  base::apple::ScopedCFTypeRef<SecStaticCodeRef> app_code;
+  if (SecStaticCodeCreateWithPath(app_url, kSecCSDefaultFlags,
+                                  app_code.InitializeInto()) != errSecSuccess) {
+    return false;
+  }
+
+  // Use the most restrictive flags possible. Library validation cannot be
+  // enabled as an adhoc binary's signing identity inherently does not match the
+  // signing identity of the non-system libraries that the app shim loads.
+  uint32_t code_signer_flags = kSecCodeSignatureRestrict |
+                               kSecCodeSignatureForceKill |
+                               kSecCodeSignatureRuntime;
+
+  auto* signer_params = @{
+    static_cast<id>(kSecCodeSignerFlags) : @(code_signer_flags),
+    static_cast<id>(kSecCodeSignerIdentity) : [NSNull null],
+    static_cast<id>(kSecCodeSignerEntitlements) : AppShimEntitlements(),
+  };
+  base::apple::ScopedCFTypeRef<SecCodeSignerRef> signer;
+  if (SecCodeSignerCreate(base::apple::NSToCFPtrCast(signer_params),
+                          kSecCSDefaultFlags,
+                          signer.InitializeInto()) != errSecSuccess) {
+    return false;
+  }
+
+  base::apple::ScopedCFTypeRef<CFErrorRef> errors;
+  if (SecCodeSignerAddSignatureWithErrors(signer, app_code, kSecCSDefaultFlags,
+                                          errors.InitializeInto()) !=
+      errSecSuccess) {
+    LOG(ERROR) << "Failed to sign web app shim: " << errors;
+    return false;
+  }
+
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> app_shim_info;
+  if (SecCodeCopySigningInformation(app_code, kSecCSSigningInformation,
+                                    app_shim_info.InitializeInto()) !=
+      errSecSuccess) {
+    LOG(ERROR) << "Failed to copy signing information from web app shim";
+    return false;
+  }
+
+  CFDataRef cd_hash_data =
+      GetValueFromDictionary<CFDataRef>(app_shim_info, kSecCodeInfoUnique);
+  std::vector<uint8_t> cd_hash(
+      CFDataGetBytePtr(cd_hash_data),
+      CFDataGetBytePtr(cd_hash_data) + CFDataGetLength(cd_hash_data));
+
+  content::GetUIThreadTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&AppShimRegistry::SaveCdHashForApp,
+                                base::Unretained(AppShimRegistry::Get()),
+                                info_->app_id, std::move(cd_hash)));
+
+  return true;
 }
 
 std::vector<base::FilePath> WebAppShortcutCreator::GetAppBundlesByIdUnsorted()

@@ -208,14 +208,14 @@ Preload::PrefetchStatus PrefetchStatusToProtocol(PrefetchStatus status) {
       return Preload::PrefetchStatusEnum::PrefetchNotUsedProbeFailed;
     case PrefetchStatus::kPrefetchNotStarted:
       return Preload::PrefetchStatusEnum::PrefetchNotStarted;
-    case PrefetchStatus::kPrefetchNotEligibleUserHasCookies:
+    case PrefetchStatus::kPrefetchIneligibleUserHasCookies:
       return Preload::PrefetchStatusEnum::PrefetchNotEligibleUserHasCookies;
-    case PrefetchStatus::kPrefetchNotEligibleUserHasServiceWorker:
+    case PrefetchStatus::kPrefetchIneligibleUserHasServiceWorker:
       return Preload::PrefetchStatusEnum::
           PrefetchNotEligibleUserHasServiceWorker;
-    case PrefetchStatus::kPrefetchNotEligibleSchemeIsNotHttps:
+    case PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps:
       return Preload::PrefetchStatusEnum::PrefetchNotEligibleSchemeIsNotHttps;
-    case PrefetchStatus::kPrefetchNotEligibleNonDefaultStoragePartition:
+    case PrefetchStatus::kPrefetchIneligibleNonDefaultStoragePartition:
       return Preload::PrefetchStatusEnum::
           PrefetchNotEligibleNonDefaultStoragePartition;
     case PrefetchStatus::kPrefetchNotFinishedInTime:
@@ -230,7 +230,7 @@ Preload::PrefetchStatus PrefetchStatusToProtocol(PrefetchStatus status) {
       return Preload::PrefetchStatusEnum::PrefetchSuccessfulButNotUsed;
     case PrefetchStatus::kPrefetchIneligibleRetryAfter:
       return Preload::PrefetchStatusEnum::PrefetchIneligibleRetryAfter;
-    case PrefetchStatus::kPrefetchProxyNotAvailable:
+    case PrefetchStatus::kPrefetchIneligiblePrefetchProxyNotAvailable:
       return Preload::PrefetchStatusEnum::PrefetchProxyNotAvailable;
     case PrefetchStatus::kPrefetchIsPrivacyDecoy:
       return Preload::PrefetchStatusEnum::PrefetchIsPrivacyDecoy;
@@ -238,18 +238,18 @@ Preload::PrefetchStatus PrefetchStatusToProtocol(PrefetchStatus status) {
       return Preload::PrefetchStatusEnum::PrefetchIsStale;
     case PrefetchStatus::kPrefetchNotUsedCookiesChanged:
       return Preload::PrefetchStatusEnum::PrefetchNotUsedCookiesChanged;
-    case PrefetchStatus::kPrefetchNotEligibleHostIsNonUnique:
+    case PrefetchStatus::kPrefetchIneligibleHostIsNonUnique:
       return Preload::PrefetchStatusEnum::PrefetchNotEligibleHostIsNonUnique;
-    case PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled:
+    case PrefetchStatus::kPrefetchIneligibleDataSaverEnabled:
       return Preload::PrefetchStatusEnum::PrefetchNotEligibleDataSaverEnabled;
-    case PrefetchStatus::kPrefetchNotEligibleExistingProxy:
+    case PrefetchStatus::kPrefetchIneligibleExistingProxy:
       return Preload::PrefetchStatusEnum::PrefetchNotEligibleExistingProxy;
-    case PrefetchStatus::kPrefetchNotEligibleBrowserContextOffTheRecord:
+    case PrefetchStatus::kPrefetchIneligibleBrowserContextOffTheRecord:
       return Preload::PrefetchStatusEnum::
           PrefetchNotEligibleBrowserContextOffTheRecord;
-    case PrefetchStatus::kPrefetchNotEligiblePreloadingDisabled:
+    case PrefetchStatus::kPrefetchIneligiblePreloadingDisabled:
       return Preload::PrefetchStatusEnum::PrefetchNotEligiblePreloadingDisabled;
-    case PrefetchStatus::kPrefetchNotEligibleBatterySaverEnabled:
+    case PrefetchStatus::kPrefetchIneligibleBatterySaverEnabled:
       return Preload::PrefetchStatusEnum::
           PrefetchNotEligibleBatterySaverEnabled;
     case PrefetchStatus::kPrefetchHeldback:
@@ -265,7 +265,7 @@ Preload::PrefetchStatus PrefetchStatusToProtocol(PrefetchStatus status) {
     case PrefetchStatus::kPrefetchFailedPerPageLimitExceeded:
       return Preload::PrefetchStatusEnum::PrefetchFailedPerPageLimitExceeded;
     case PrefetchStatus::
-        kPrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy:
+        kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy:
       return Preload::PrefetchStatusEnum::
           PrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy;
     case PrefetchStatus::kPrefetchEvicted:

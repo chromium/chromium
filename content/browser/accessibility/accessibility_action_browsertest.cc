@@ -30,6 +30,7 @@
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_position.h"
+#include "ui/accessibility/mojom/ax_tree_data.mojom-shared-internal.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
 
@@ -1213,6 +1214,108 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, ScrollIntoView) {
   }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, StitchChildTree) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+      <html>
+      <body>
+        <a href="#" aria-label="Link">
+          <p>Text that is replaced by child tree.</p>
+        </a>
+      </body>
+      </html>"
+      )HTML");
+
+  BrowserAccessibility* link = FindNode(ax::mojom::Role::kLink,
+                                        /*name_or_value=*/"Link");
+  ASSERT_NE(nullptr, link);
+  ASSERT_EQ(1u, link->PlatformChildCount());
+  BrowserAccessibility* paragraph = link->PlatformGetChild(0u);
+  ASSERT_NE(nullptr, paragraph);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, paragraph->node()->GetRole());
+
+  //
+  // Set up a child tree that will be stitched into the link making the
+  // enclosed content invisible.
+  //
+
+  ui::AXNodeData root;
+  root.id = 1;
+  ui::AXNodeData button;
+  button.id = 2;
+  ui::AXNodeData static_text;
+  static_text.id = 3;
+  ui::AXNodeData inline_box;
+  inline_box.id = 4;
+
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  root.child_ids = {button.id};
+
+  button.role = ax::mojom::Role::kButton;
+  button.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                          true);
+  button.SetName("Button");
+  // Name is not visible in the tree's text representation, i.e. it may be
+  // coming from an aria-label.
+  button.SetNameFrom(ax::mojom::NameFrom::kAttribute);
+  button.relative_bounds.bounds = gfx::RectF(20, 20, 200, 30);
+  button.child_ids = {static_text.id};
+
+  static_text.role = ax::mojom::Role::kStaticText;
+  static_text.SetName("Button's visible text");
+  static_text.child_ids = {inline_box.id};
+
+  inline_box.role = ax::mojom::Role::kInlineTextBox;
+  inline_box.SetName("Button's visible text");
+
+  ui::AXTreeUpdate update;
+  update.root_id = root.id;
+  update.nodes = {root, button, static_text, inline_box};
+  update.has_tree_data = true;
+  update.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  ASSERT_NE(nullptr, link->manager());
+  update.tree_data.parent_tree_id = link->manager()->GetTreeID();
+  update.tree_data.title = "Generated content";
+
+  auto child_tree = std::make_unique<ui::AXTree>(update);
+  ui::AXTreeManager child_tree_manager(std::move(child_tree));
+
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kStitchChildTree;
+  ASSERT_NE(nullptr, GetManager());
+  action_data.target_tree_id = GetManager()->GetTreeID();
+  action_data.target_node_id = link->node()->id();
+  action_data.child_tree_id = update.tree_data.tree_id;
+
+  AccessibilityNotificationWaiter waiter(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ui::AXEventGenerator::Event::CHILDREN_CHANGED);
+  link->AccessibilityPerformAction(action_data);
+  ASSERT_TRUE(waiter.WaitForNotification());
+
+  // TODO(crbug.com/1468416): Platform nodes are not yet supported in
+  // stitched child trees but will be after the AX Views project is completed.
+  // For now, we compare with `ui::AXNode`s.
+  const ui::AXNode* child_tree_root_node =
+      link->node()->GetFirstChildCrossingTreeBoundary();
+  ASSERT_NE(nullptr, child_tree_root_node);
+  ASSERT_NE(nullptr, child_tree_root_node->tree())
+      << "All nodes must be attached to an accessibility tree.";
+  EXPECT_EQ(ax::mojom::Role::kRootWebArea, child_tree_root_node->GetRole())
+      << "The paragraph in the original HTML must have been hidden by the "
+         "child tree.";
+  const ui::AXNode* button_node = child_tree_root_node->GetFirstChild();
+  ASSERT_NE(nullptr, button_node);
+  EXPECT_EQ(ax::mojom::Role::kButton, button_node->GetRole());
+  const ui::AXNode* static_text_node = button_node->GetFirstChild();
+  ASSERT_NE(nullptr, static_text_node);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, static_text_node->GetRole());
+  const ui::AXNode* inline_box_node = static_text_node->GetFirstChild();
+  ASSERT_NE(nullptr, inline_box_node);
+  EXPECT_EQ(ax::mojom::Role::kInlineTextBox, inline_box_node->GetRole());
+}
 
 IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, ClickSVG) {
   // Create an svg link element that has the shape of a small, red square.

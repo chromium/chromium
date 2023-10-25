@@ -154,16 +154,4 @@ absl::optional<PolicyDataType> NameToPolicyDataType(
   return it->second;
 }
 
-bool IsPolicyDependencyEnabled() {
-  // Check that FeatureList is available as a protection against early startup
-  // crashes. Some policy providers are initialized very early even before
-  // base::FeatureList is available, but when policies are finally applied, the
-  // feature stack is fully initialized. The instance check ensures that the
-  // final decision is delayed until all features are initalized, without any
-  // other downstream effect.
-  return base::FeatureList::GetInstance() &&
-         base::FeatureList::IsEnabled(
-             features::kDataRetentionPoliciesDisableSyncTypesNeeded);
-}
-
 }  // namespace browsing_data

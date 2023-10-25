@@ -1,0 +1,6 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++ListView textSize:16.00 style:0 bundle:[aria-owns="one two", display="block", htmlTag="div", role="list"]
+++++View textSize:16.00 style:0 bundle:[display="block", htmlTag="div", id="one", role="listitem"]
+++++++TextView text:"One" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++View textSize:16.00 style:0 bundle:[display="block", htmlTag="div", id="two", role="listitem"]
+++++++TextView text:"Two" textSize:16.00 style:0 bundle:[display="", htmlTag=""]

@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.modelutil.PropertyModel;
 
 public class ExpandedPlayerSheetContent implements BottomSheetContent {
     private static final String TAG = "RAPlayerSheet";
@@ -30,24 +31,34 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
 
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
+    private final PropertyModel mModel;
     private View mContentView;
+    private OptionsMenuSheetContent mOptionsMenu;
 
     public ExpandedPlayerSheetContent(
-            Context context, BottomSheetController bottomSheetController) {
+            Context context, BottomSheetController bottomSheetController, PropertyModel model) {
         this(
                 context,
                 bottomSheetController,
                 LayoutInflater.from(context)
-                        .inflate(R.layout.readaloud_expanded_player_layout, null));
+                        .inflate(R.layout.readaloud_expanded_player_layout, null),
+                model);
+        mOptionsMenu =
+                new OptionsMenuSheetContent(
+                        mContext, /* parent= */ this, mBottomSheetController, mModel);
     }
 
     @SuppressWarnings("SetTextI18n")
     @VisibleForTesting
     ExpandedPlayerSheetContent(
-            Context context, BottomSheetController bottomSheetController, View contentView) {
+            Context context,
+            BottomSheetController bottomSheetController,
+            View contentView,
+            PropertyModel model) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         mContentView = contentView;
+        mModel = model;
         ((TextView) mContentView.findViewById(R.id.readaloud_expanded_player_title))
                 .setText("Page title");
         ((TextView) mContentView.findViewById(R.id.readaloud_expanded_player_publisher))
@@ -81,18 +92,13 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
                 .setText(publisher);
     }
 
-    void setCloseButtonHandler(View.OnClickListener onClick) {
-        mContentView
-                .findViewById(R.id.readaloud_expanded_player_close_button)
-                .setOnClickListener(onClick);
-    }
-
     void setInteractionHandler(InteractionHandler handler) {
         setOnClickListener(R.id.readaloud_expanded_player_close_button, handler::onCloseClick);
         setOnClickListener(R.id.readaloud_play_pause_button, handler::onPlayPauseClick);
         setOnClickListener(R.id.readaloud_seek_back_button, handler::onSeekBackClick);
         setOnClickListener(R.id.readaloud_seek_forward_button, handler::onSeekForwardClick);
         setOnClickListener(R.id.readaloud_expanded_player_publisher, handler::onPublisherClick);
+        setOnClickListener(R.id.readaloud_more_button, this::showOptionsMenu);
     }
 
     @SuppressWarnings({"SetTextI18n", "DefaultLocale"})
@@ -119,6 +125,20 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
             playButton.setContentDescription(
                     mContext.getResources().getString(R.string.readaloud_play));
         }
+    }
+
+    @Nullable
+    OptionsMenuSheetContent getOptionsMenu() {
+        return mOptionsMenu;
+    }
+
+    public void showOptionsMenu() {
+        mBottomSheetController.hideContent(this, /* animate= */ false);
+        mBottomSheetController.requestShowContent(mOptionsMenu, /* animate= */ true);
+    }
+
+    public void notifySheetClosed() {
+        mOptionsMenu.notifySheetClosed();
     }
 
     // BottomSheetContent implementation
@@ -220,5 +240,10 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
                         (view) -> {
                             onClick.run();
                         });
+    }
+
+    @VisibleForTesting
+    public void setOptionsMenu(OptionsMenuSheetContent optionsMenu) {
+        mOptionsMenu = optionsMenu;
     }
 }

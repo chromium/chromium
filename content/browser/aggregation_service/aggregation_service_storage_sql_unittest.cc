@@ -55,7 +55,7 @@ const char kExampleUrl[] =
     "https://helper.test/.well-known/aggregation-service/keys.json";
 
 const std::vector<PublicKey> kExampleKeys{
-    aggregation_service::GenerateKey("dummy_id").public_key};
+    aggregation_service::TestHpkeKey("dummy_id").GetPublicKey()};
 
 std::string RemoveQuotes(base::StringPiece input) {
   std::string output;
@@ -205,8 +205,8 @@ TEST_F(AggregationServiceStorageSqlTest, SetPublicKeys_ExpectedResult) {
   OpenDatabase();
 
   std::vector<PublicKey> expected_keys{
-      aggregation_service::GenerateKey("abcd").public_key,
-      aggregation_service::GenerateKey("bcde").public_key};
+      aggregation_service::TestHpkeKey("abcd").GetPublicKey(),
+      aggregation_service::TestHpkeKey("bcde").GetPublicKey()};
 
   GURL url(kExampleUrl);
   PublicKeyset keyset(expected_keys, /*fetch_time=*/clock_.Now(),
@@ -223,8 +223,8 @@ TEST_F(AggregationServiceStorageSqlTest, GetPublicKeysExpired_EmptyResult) {
   OpenDatabase();
 
   std::vector<PublicKey> keys{
-      aggregation_service::GenerateKey("abcd").public_key,
-      aggregation_service::GenerateKey("bcde").public_key};
+      aggregation_service::TestHpkeKey("abcd").GetPublicKey(),
+      aggregation_service::TestHpkeKey("bcde").GetPublicKey()};
 
   base::Time now = clock_.Now();
   GURL url(kExampleUrl);
@@ -242,8 +242,8 @@ TEST_F(AggregationServiceStorageSqlTest, ClearPublicKeys) {
   OpenDatabase();
 
   std::vector<PublicKey> keys{
-      aggregation_service::GenerateKey("abcd").public_key,
-      aggregation_service::GenerateKey("bcde").public_key};
+      aggregation_service::TestHpkeKey("abcd").GetPublicKey(),
+      aggregation_service::TestHpkeKey("bcde").GetPublicKey()};
 
   GURL url(kExampleUrl);
   PublicKeyset keyset(std::move(keys), /*fetch_time=*/clock_.Now(),
@@ -263,8 +263,8 @@ TEST_F(AggregationServiceStorageSqlTest, ReplacePublicKeys) {
   GURL url(kExampleUrl);
 
   std::vector<PublicKey> old_keys{
-      aggregation_service::GenerateKey("abcd").public_key,
-      aggregation_service::GenerateKey("bcde").public_key};
+      aggregation_service::TestHpkeKey("abcd").GetPublicKey(),
+      aggregation_service::TestHpkeKey("bcde").GetPublicKey()};
 
   PublicKeyset old_keyset(old_keys, /*fetch_time=*/clock_.Now(),
                           /*expiry_time=*/base::Time::Max());
@@ -273,8 +273,8 @@ TEST_F(AggregationServiceStorageSqlTest, ReplacePublicKeys) {
       old_keys, storage_->GetPublicKeys(url)));
 
   std::vector<PublicKey> expected_keys{
-      aggregation_service::GenerateKey("efgh").public_key,
-      aggregation_service::GenerateKey("fghi").public_key};
+      aggregation_service::TestHpkeKey("efgh").GetPublicKey(),
+      aggregation_service::TestHpkeKey("fghi").GetPublicKey()};
 
   PublicKeyset expected_keyset(expected_keys, /*fetch_time=*/clock_.Now(),
                                /*expiry_time=*/base::Time::Max());
@@ -291,8 +291,8 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   GURL url_1("https://a.com/keys");
   std::vector<PublicKey> keys_1{
-      aggregation_service::GenerateKey("abcd").public_key,
-      aggregation_service::GenerateKey("bcde").public_key};
+      aggregation_service::TestHpkeKey("abcd").GetPublicKey(),
+      aggregation_service::TestHpkeKey("bcde").GetPublicKey()};
   storage_->SetPublicKeys(url_1,
                           PublicKeyset(keys_1, /*fetch_time=*/clock_.Now(),
                                        /*expiry_time=*/base::Time::Max()));
@@ -301,8 +301,8 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   GURL url_2("https://b.com/keys");
   std::vector<PublicKey> keys_2{
-      aggregation_service::GenerateKey("abcd").public_key,
-      aggregation_service::GenerateKey("efgh").public_key};
+      aggregation_service::TestHpkeKey("abcd").GetPublicKey(),
+      aggregation_service::TestHpkeKey("efgh").GetPublicKey()};
   storage_->SetPublicKeys(url_2,
                           PublicKeyset(keys_2, /*fetch_time=*/clock_.Now(),
                                        /*expiry_time=*/base::Time::Max()));
@@ -330,8 +330,8 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   GURL url_1("https://a.com/keys");
   std::vector<PublicKey> keys_1{
-      aggregation_service::GenerateKey("abcd").public_key,
-      aggregation_service::GenerateKey("bcde").public_key};
+      aggregation_service::TestHpkeKey("abcd").GetPublicKey(),
+      aggregation_service::TestHpkeKey("bcde").GetPublicKey()};
   storage_->SetPublicKeys(url_1,
                           PublicKeyset(keys_1, /*fetch_time=*/clock_.Now(),
                                        /*expiry_time=*/base::Time::Max()));
@@ -340,8 +340,8 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   GURL url_2("https://b.com/keys");
   std::vector<PublicKey> keys_2{
-      aggregation_service::GenerateKey("abcd").public_key,
-      aggregation_service::GenerateKey("efgh").public_key};
+      aggregation_service::TestHpkeKey("abcd").GetPublicKey(),
+      aggregation_service::TestHpkeKey("efgh").GetPublicKey()};
   storage_->SetPublicKeys(url_2,
                           PublicKeyset(keys_2, /*fetch_time=*/clock_.Now(),
                                        /*expiry_time=*/base::Time::Max()));
@@ -367,8 +367,8 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   GURL url_1("https://a.com/keys");
   std::vector<PublicKey> keys_1{
-      aggregation_service::GenerateKey("abcd").public_key,
-      aggregation_service::GenerateKey("bcde").public_key};
+      aggregation_service::TestHpkeKey("abcd").GetPublicKey(),
+      aggregation_service::TestHpkeKey("bcde").GetPublicKey()};
   storage_->SetPublicKeys(url_1,
                           PublicKeyset(keys_1, /*fetch_time=*/clock_.Now(),
                                        /*expiry_time=*/base::Time::Max()));
@@ -377,8 +377,8 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   GURL url_2("https://b.com/keys");
   std::vector<PublicKey> keys_2{
-      aggregation_service::GenerateKey("abcd").public_key,
-      aggregation_service::GenerateKey("efgh").public_key};
+      aggregation_service::TestHpkeKey("abcd").GetPublicKey(),
+      aggregation_service::TestHpkeKey("efgh").GetPublicKey()};
   storage_->SetPublicKeys(url_2,
                           PublicKeyset(keys_2, /*fetch_time=*/clock_.Now(),
                                        /*expiry_time=*/base::Time::Max()));
@@ -403,16 +403,16 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   GURL url_1("https://a.com/keys");
   std::vector<PublicKey> keys_1{
-      aggregation_service::GenerateKey("abcd").public_key,
-      aggregation_service::GenerateKey("bcde").public_key};
+      aggregation_service::TestHpkeKey("abcd").GetPublicKey(),
+      aggregation_service::TestHpkeKey("bcde").GetPublicKey()};
   storage_->SetPublicKeys(url_1,
                           PublicKeyset(keys_1, /*fetch_time=*/now,
                                        /*expiry_time=*/now + base::Days(1)));
 
   GURL url_2("https://b.com/keys");
   std::vector<PublicKey> keys_2{
-      aggregation_service::GenerateKey("abcd").public_key,
-      aggregation_service::GenerateKey("efgh").public_key};
+      aggregation_service::TestHpkeKey("abcd").GetPublicKey(),
+      aggregation_service::TestHpkeKey("efgh").GetPublicKey()};
   storage_->SetPublicKeys(url_2,
                           PublicKeyset(keys_2, /*fetch_time=*/now,
                                        /*expiry_time=*/now + base::Days(3)));
@@ -695,7 +695,7 @@ TEST_F(AggregationServiceStorageSqlTest,
        MultipleRequests_ReturnValuesAlignsWithReportTime) {
   OpenDatabase();
 
-  constexpr base::Time kExampleTime =
+  constexpr auto kExampleTime =
       base::Time::FromMillisecondsSinceUnixEpoch(1652984901234);
 
   std::vector<base::Time> scheduled_report_times = {
@@ -781,7 +781,7 @@ TEST_F(AggregationServiceStorageSqlTest,
        ClearDataBetween_RequestsTimeRangeDeleted) {
   OpenDatabase();
 
-  constexpr base::Time kExampleTime =
+  constexpr auto kExampleTime =
       base::Time::FromMillisecondsSinceUnixEpoch(1652984901234);
 
   clock_.SetNow(kExampleTime);
@@ -965,7 +965,7 @@ TEST_F(AggregationServiceStorageSqlTest,
        AdjustOfflineReportTimes_MultipleReports) {
   OpenDatabase();
 
-  constexpr base::Time kExampleTime =
+  constexpr auto kExampleTime =
       base::Time::FromMillisecondsSinceUnixEpoch(1652984901234);
 
   std::vector<base::Time> scheduled_report_times = {

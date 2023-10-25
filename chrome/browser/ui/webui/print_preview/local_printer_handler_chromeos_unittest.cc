@@ -40,7 +40,7 @@ using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::WithArg;
 
-constexpr base::Time kStatusTimestamp =
+constexpr auto kStatusTimestamp =
     base::Time::FromMillisecondsSinceUnixEpoch(1e12);
 
 // A `LocalPrinter` implementation where all functions run callbacks with

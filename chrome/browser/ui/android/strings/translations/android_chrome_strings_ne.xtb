@@ -135,6 +135,7 @@
 <translation id="1672586136351118594">फेरि नदेखाउनुहोस्</translation>
 <translation id="1680919990519905526">Google लेन्समार्फत फोटो किन्नुहोस्<ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /></translation>
 <translation id="1687482373098770139">तपाईं चाँडै नै "फलो गरिएका" ट्याबमा <ph name="SITE_NAME" /> का तथा सो च्यानलसम्बन्धी सामग्री देख्नु हुने छ। तपाईंले फलो गर्ने साइट तथा खोजहरू तपाईंको Google खातामा सेभ गरिन्छन्। तपाईं सेटिङमा गई आफूले फलो गरेका कुराहरू जुनसुकै बेला व्यवस्थापन गर्न सक्नुहुन्छ।</translation>
+<translation id="1696555181932908973">तपाईं <ph name="SITE_ETLD_PLUS_ONE" /> मा जाने अन्य तरिका अपनाई हेर्न सक्नुहुन्छ।</translation>
 <translation id="1702543251015153180">अँध्यारो थिमसम्बन्धी सेटिङ बदल्ने हो?</translation>
 <translation id="1702907158640575240">व्यवस्थापन गरिएको ब्राउजर</translation>
 <translation id="1710099199314114079">ट्याबहरू बदल्नुहोस् वा बन्द गर्नुहोस्</translation>
@@ -151,6 +152,7 @@
 <translation id="1792959175193046959">डिफल्ट डाउनलोड स्थान जुनसुकै बेला परिवर्तन गर्नुहोस्</translation>
 <translation id="1807246157184219062">हल्का</translation>
 <translation id="1810845389119482123">सिंक गर्ने कार्यको प्रारम्भिक सेटअप पूरा भएको छैन</translation>
+<translation id="1812027881030482584"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> मा <ph name="SITE_ETLD_PLUS_ONE" /> प्रयोग गरिराख्न मिल्दैन</translation>
 <translation id="1829244130665387512">पृष्ठमा फेला पार्नुहोस्</translation>
 <translation id="1832459821645506983">अँ, म सहमत छु</translation>
 <translation id="185383612275551373">तपाईं Google बाट सबैभन्दा बढी सान्दर्भिक सामग्री प्राप्त गर्न चाहनुहुन्छ भने सिंक गर्नुहोस्</translation>
@@ -221,7 +223,6 @@
 <translation id="2200113223741723867">प्रयोगसम्बन्धी डेटा सेयर गर्ने सेटिङ व्यवस्थापन गर्नुहोस्</translation>
 <translation id="22091350895006575">युजरनेम हाल्नुहोस्</translation>
 <translation id="221494669172414749">तपाईंले प्रोफाइल लकविनै Chrome खोल्नुभयो भने तपाईंले सेभ गरेका पासवर्ड तथा भुक्तानी विधिहरू कारबाट हट्ने छन्। प्रोफाइल लक प्रयोग गर्दा यो जानकारी सुरक्षित रहन्छ।</translation>
-<translation id="2218567645332692482">वेबपेजहरू लोड गर्न HTTPS प्रयोग गरियोस् र HTTPS प्रयोग गर्न नमिल्ने साइटहरू लोड गर्नुअघि मलाई चेतावनी दिइयोस्</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> का रूपमा जारी राख्नुहोस्</translation>
 <translation id="2230777942707397948">खाली विन्डो</translation>
 <translation id="223356358902285214">वेब तथा एपसम्बन्धी गतिविधि</translation>
@@ -317,6 +318,7 @@
 <translation id="2718846868787000099">तपाईंले चाहेको भाषामा सामग्री देखाउन तपाईंले प्रयोग गर्ने साइटहरूले तपाईंका प्राथमिकताहरू देख्न सक्छन्</translation>
 <translation id="2722945394406572875">प्राइभेसी स्यान्डबक्ससम्बन्धी प्रोम्प्ट बन्द छ</translation>
 <translation id="2723001399770238859">अडियो</translation>
+<translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> अहिले उपलब्ध छैन।</translation>
 <translation id="2760805590727089264">महिना / साल</translation>
 <translation id="2760989362628427051">तपाईंको डिभाइसमा अँध्यारो थिम वा ब्याट्री सेभर मोड अन हुँदा अँध्यारो थिम अन गर्नुहोस्</translation>
 <translation id="2762000892062317888">भर्खरै</translation>
@@ -475,6 +477,7 @@
 <translation id="3509330069915219067">अफलाइन छ। Chrome ले अपडेट उपलब्ध छन् कि छैनन् भन्ने कुरा जाँच गर्न सकेन।</translation>
 <translation id="3513704683820682405">अग्मेन्टेड रियालिटी</translation>
 <translation id="3518985090088779359">स्वीकार र जारी</translation>
+<translation id="3521388823983121502"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> मार्फत जारी राख्न मिल्दैन</translation>
 <translation id="3522247891732774234">अद्यावधिक उपलब्ध छ। थप विकल्पहरू</translation>
 <translation id="3524138585025253783">विकासकर्ताको UI</translation>
 <translation id="3524334353996115845"><ph name="ORIGIN" /> लाई कोड पेस गर्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्न दिनुहोस्</translation>
@@ -627,6 +630,7 @@
 <translation id="4355272626458588338">कुनै महत्त्वपूर्ण पेजमा सजिलैसँग फर्कन उक्त पेज बुकमार्क गर्नुहोस्</translation>
 <translation id="4369735607080757018">साइटहरूमा देखाइने विज्ञापनको पर्फर्मेन्स मापन गर्न साइटहरूका बिचमा तपाईंलाई कुनै विज्ञापन देखाइएको समयलगायतका सीमित प्रकारका डेटा सेयर गरिन्छ</translation>
 <translation id="4378154925671717803">फोन</translation>
+<translation id="4380055775103003110">यो समस्या अझै पनि देखिएको खण्डमा तपाईं <ph name="SITE_ETLD_PLUS_ONE" /> मा जाने अन्य तरिका अपनाई हेर्न सक्नुहुन्छ।</translation>
 <translation id="438319986296050901">कार्ड मात्र सेयर गरियोस्</translation>
 <translation id="4384468725000734951">खोजीका लागि Sogou प्रयोग गर्दै</translation>
 <translation id="4387647248986092471">कार प्रोफाइल लक बनाउनुहोस्</translation>
@@ -884,6 +888,7 @@
 <translation id="569435661099256888">तपाईं आफूले खोलेका पेजहरू हेर्न वा ब्राउजिङ हिस्ट्रीबाट ती पेजहरू हटाउन सक्नुहुन्छ</translation>
 <translation id="569536719314091526">थप विकल्पहरू नामक बटनबाट यस पृष्ठलाई जुनसुकै भाषामा अनुवाद गर्नुहोस्</translation>
 <translation id="5696597120588531049">Chrome ले तपाईंलाई डेटा चोरीका घटना, असुरक्षित वेबसाइटहरू र थप समस्याहरूबाट जोगिन मद्दत गर्न सक्छ</translation>
+<translation id="5698878456427040674">चयन गरिएको खाता प्रयोग गर्न मिल्छ कि मिल्दैन भन्ने कुरा जाँच्नुहोस्।</translation>
 <translation id="570347048394355941">ट्याब प्रयोग गर्न थाल्नुहोस्</translation>
 <translation id="572328651809341494">हालका ट्याबहरू</translation>
 <translation id="5726692708398506830">पृष्ठमा रहेको सबै कुरालाई अझ ठुलो बनाउनुहोस्</translation>
@@ -962,6 +967,7 @@
 <translation id="6108923351542677676">सेटअप प्रगतिमा छ...</translation>
 <translation id="6112702117600201073">पृष्ठ पुनः ताजा गर्दै</translation>
 <translation id="6122831415929794347">सुरक्षित ब्राउजिङ निष्क्रिय पार्ने हो?</translation>
+<translation id="6125864963080902918"><ph name="BEGIN_LINK" />थप विवरणहरू<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">वस्तुलाई हटाइयो</translation>
 <translation id="6130303040046284160">ट्याब मिनिमाइज गर्नुहोस्</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" /> को भाषा</translation>
@@ -1003,6 +1009,7 @@
 <translation id="6342069812937806050">अहिले भर्खर</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> थप}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> थप}}</translation>
 <translation id="6345878117466430440">पढिसकिएको सामग्रीका रूपमा चिन्ह लगाउनुहोस्</translation>
+<translation id="6356893102071098867">तपाईंले सही खाता छनौट गर्नुभएको छ भन्ने कुरा पुष्टि गर्नुहोस्</translation>
 <translation id="6357653805084533597">तपाईं यो QR कोड देखिइरहेको डिभाइसमा साइन इन गर्न यो फोन प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="6363990818884053551">सिंक गर्ने कार्य सुरु गर्न यो काम गर्न खोज्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्नुहोस्</translation>
 <translation id="6364438453358674297">इतिहासबाट सुझाव हटाउने?</translation>
@@ -1135,6 +1142,7 @@
 <translation id="6908998565271542516">कुनै वेबसाइट अनुमोदन गर्ने वा नगर्ने विकल्प फुल स्ट्रिनमा खुलिएको छ</translation>
 <translation id="6909589135458168665">पेजहरू प्रिलोड गरियोस्</translation>
 <translation id="6910211073230771657">मेटाइएको</translation>
+<translation id="6918398787259831832">यो समस्या अझै पनि देखिएको खण्डमा <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> बाट <ph name="BEGIN_LINK" />थप जानकारी प्राप्त गर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="6942665639005891494">सेटिङहरू नामक मेनुको विकल्प प्रयोग गरी डिफल्ट डाउनलोड स्थान जुनसुकै बेला परिवर्तन गर्नुहोस्</translation>
 <translation id="694267552845942083">तपाईं हाल सिंकसम्बन्धी तपाईंका सेटिङ आफ्नो आवश्यकता अनुकूल पार्दै हुनुहुन्छ। सिंक गर्ने सुविधा अन गर्ने प्रक्रिया पूरा गर्न स्क्रिनको फेदको छेवैमा रहेको 'पुष्टि गर्नुहोस्' नामक बटनमा ट्याप गर्नुहोस्। माथि जानुहोस्</translation>
 <translation id="6945221475159498467">चयन गर्नुहोस्</translation>
@@ -1171,6 +1179,7 @@
 <translation id="7138678301420049075">अन्य</translation>
 <translation id="7140829094791862589">म्यानुअल तरिकाले क्रमबद्ध गरियोस्</translation>
 <translation id="7146622961999026732">यी साइट र एपहरू तपाईंका लागि महत्त्वपूर्ण हुन सक्छन्:</translation>
+<translation id="7148400116894863598"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> बाट <ph name="BEGIN_LINK" />थप जानकारी प्राप्त गर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="7149893636342594995">पछिल्ला २४ घन्टा</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> का रूपमा साइन इन गरिएको छ। सेटिङ खोल्छ।</translation>
 <translation id="7173114856073700355">सेटिङहरू खोल्नुहोस्</translation>
@@ -1197,6 +1206,7 @@
 <translation id="7274013316676448362">रोक लगाइएका साइटहरू</translation>
 <translation id="7276100255011548441">Chrome ले ४ हप्ताभन्दा पुराना विषयहरू स्वतः मेटाउँछ। तपाईंले विभिन्न साइटहरू ब्राउज गरिराख्ने क्रममा कुनै विषय यो सूचीमा फेरि देखिन सक्छ। अथवा तपाईं Chrome ले कुनै विषय साइटहरूसँग सेयर नगरोस् भन्ने चाहनुहुन्छ भने तपाईं उक्त विषय ब्लक गर्न सक्नुहुन्छ। <ph name="BEGIN_LINK" />Chrome मा विज्ञापनको गोपनीयता व्यवस्थापन गर्ने<ph name="END_LINK" /> सम्बन्धमा थप जान्नुहोस्।</translation>
 <translation id="7286703216224610554">प्रतिक्रिया मात्र सेयर गरियोस्</translation>
+<translation id="7289303553784750393">तपाईं अनलाइन भए तापनि यो समस्या अझै पनि देखिएको खण्डमा तपाईं <ph name="SITE_ETLD_PLUS_ONE" /> मा जाने अन्य तरिका अपनाई हेर्न सक्नुहुन्छ।</translation>
 <translation id="7290209999329137901">नाम बदल्ने सुविधा उपलब्ध छैन</translation>
 <translation id="7291910923717764901">यो पेजमा फोटोसम्बन्धी विवरण हालिएको छ</translation>
 <translation id="7293429513719260019">भाषा चयन गर्नुहोस्</translation>
@@ -1251,6 +1261,7 @@
 <translation id="750228856503700085">अपडेट उपलब्ध छैनन्</translation>
 <translation id="7507207699631365376">यो प्रदायकको <ph name="BEGIN_LINK" />गोपनीयता नीति<ph name="END_LINK" /> हेर्नुहोस्</translation>
 <translation id="7514365320538308">डाउनलोड गर्नुहोस्</translation>
+<translation id="7518079994230200553">यो विकल्प अहिले उपलब्ध छैन।</translation>
 <translation id="751961395872307827">साइटमा जडान गर्न सकिँदैन</translation>
 <translation id="752220631458524187">आफ्नो काम सकिएपछि डिस्कनेक्ट गर्नुहोस्</translation>
 <translation id="7523960634226602883">Google लेन्स प्रयोग गरी आफ्नो क्यामेरामार्फत खोज्नुहोस्</translation>
@@ -1294,7 +1305,6 @@
 <translation id="7702388902581909985">तपाईंले आफ्नो ब्राउजिङ डेटा मेटाउनुभयो भने तपाईं आफ्नो Google खाताबाट साइन आउट हुनु हुने छैन। त्यसो गर्न <ph name="BEGIN_LINK1" />Chrome बाट साइन आउट गर्नुहोस्<ph name="END_LINK1" />।</translation>
 <translation id="7707922173985738739">मोबाइल डेटा प्रयोग गर्नुहोस्‌</translation>
 <translation id="7709918231054955894">डिभाइसमा खोलिएका सबै ट्याबहरू हेर्नुहोस्</translation>
-<translation id="772434085369393266">वेबपेजहरू लोड गर्न HTTPS प्रयोग गरियोस् र HTTPS प्रयोग गर्न नमिल्ने साइटहरू लोड गर्नुअघि मलाई चेतावनी दिइयोस्। तपाईंले सुरक्षासम्बन्धी उन्नत सुविधा अन गर्नुभएको हुनाले तपाईं यो सेटिङ परिवर्तन गर्न सक्नुहुन्न।</translation>
 <translation id="7725024127233776428">तपाईंले पुस्तक चिन्ह लगाउनुभएका पृष्ठहरू यहाँ देखिन्छन्</translation>
 <translation id="7733878270780732638">डिभाइसमा पर्याप्त खाली ठाउँ छैन।</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> ले आदान प्रदान गरेको पाठ</translation>

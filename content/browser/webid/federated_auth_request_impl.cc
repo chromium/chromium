@@ -120,17 +120,15 @@ std::string ComputeUrlEncodedTokenPostData(
   }
   query += "disclosure_text_shown=" + disclosure_text_shown;
 
-  if (IsFedCmIdentityCredentialAutoSelectedFlagEnabled()) {
+  if (IsFedCmAutoSelectedFlagEnabled()) {
     // Shares with IdP that whether the identity credential was automatically
     // selected. This could help developers to better comprehend the token
     // request and segment metrics accordingly.
-    std::string is_identity_credential_auto_selected =
-        is_auto_reauthn ? "true" : "false";
+    std::string is_auto_selected = is_auto_reauthn ? "true" : "false";
     if (!query.empty()) {
       query += "&";
     }
-    query += "is_identity_credential_auto_selected=" +
-             is_identity_credential_auto_selected;
+    query += "is_auto_selected=" + is_auto_selected;
   }
 
   if (IsFedCmAuthzEnabled()) {
@@ -552,7 +550,7 @@ void FederatedAuthRequestImpl::CompleteDigitalCredentialRequest(
   if (!digital_credential_provider_) {
     std::move(digital_credential_request_callback_)
         .Run(RequestTokenStatus::kError, absl::nullopt, "", /*error=*/nullptr,
-             /*is_identity_credential_auto_selected=*/false);
+             /*is_auto_selected=*/false);
     return;
   }
 
@@ -560,16 +558,16 @@ void FederatedAuthRequestImpl::CompleteDigitalCredentialRequest(
     std::move(digital_credential_request_callback_)
         .Run(RequestTokenStatus::kSuccess, absl::nullopt, response,
              /*error=*/nullptr,
-             /*is_identity_credential_auto_selected=*/false);
+             /*is_auto_selected=*/false);
   } else {
     std::move(digital_credential_request_callback_)
         .Run(RequestTokenStatus::kError, absl::nullopt, "", /*error=*/nullptr,
-             /*is_identity_credential_auto_selected=*/false);
+             /*is_auto_selected=*/false);
   }
 }
 
 base::Value::Dict BuildDigitalCredentialRequest(
-    blink::mojom::WalletProviderPtr provider) {
+    blink::mojom::DigitalCredentialProviderPtr provider) {
   auto formats = Value::List();
   for (auto& format : provider->selector->format) {
     formats.Append(format);
@@ -640,7 +638,7 @@ void FederatedAuthRequestImpl::RequestToken(
   if (is_multi_idp_input && !IsFedCmMultipleIdentityProvidersEnabled()) {
     std::move(callback).Run(RequestTokenStatus::kError, absl::nullopt, "",
                             /*error=*/nullptr,
-                            /*is_identity_credential_auto_selected=*/false);
+                            /*is_auto_selected=*/false);
     return;
   }
 
@@ -652,7 +650,7 @@ void FederatedAuthRequestImpl::RequestToken(
       //  API with the Multi IdP API support.
       std::move(callback).Run(RequestTokenStatus::kError, absl::nullopt, "",
                               /*error=*/nullptr,
-                              /*is_identity_credential_auto_selected=*/false);
+                              /*is_auto_selected=*/false);
       return;
     }
 
@@ -662,7 +660,7 @@ void FederatedAuthRequestImpl::RequestToken(
       // requests.
       std::move(callback).Run(RequestTokenStatus::kErrorTooManyRequests,
                               absl::nullopt, "", /*error=*/nullptr,
-                              /*is_identity_credential_auto_selected=*/false);
+                              /*is_auto_selected=*/false);
       return;
     }
 
@@ -675,7 +673,7 @@ void FederatedAuthRequestImpl::RequestToken(
     if (!digital_credential_provider_) {
       std::move(digital_credential_request_callback_)
           .Run(RequestTokenStatus::kError, absl::nullopt, "", /*error=*/nullptr,
-               /*is_identity_credential_auto_selected=*/false);
+               /*is_auto_selected=*/false);
       return;
     }
 
@@ -724,7 +722,7 @@ void FederatedAuthRequestImpl::RequestToken(
 
     std::move(callback).Run(RequestTokenStatus::kErrorTooManyRequests,
                             absl::nullopt, "", /*error=*/nullptr,
-                            /*is_identity_credential_auto_selected=*/false);
+                            /*is_auto_selected=*/false);
     return;
   }
 
@@ -2178,9 +2176,8 @@ void FederatedAuthRequestImpl::CompleteRequest(
     }
   }
 
-  bool is_identity_credential_auto_selected =
-      IsFedCmIdentityCredentialAutoSelectedFlagEnabled() &&
-      dialog_type_ == kAutoReauth;
+  bool is_auto_selected =
+      IsFedCmAutoSelectedFlagEnabled() && dialog_type_ == kAutoReauth;
 
   CleanUp();
 
@@ -2198,7 +2195,7 @@ void FederatedAuthRequestImpl::CompleteRequest(
         FederatedAuthRequestResultToRequestTokenStatus(result);
     std::move(auth_request_token_callback_)
         .Run(status, selected_idp_config_url, id_token, std::move(error),
-             is_identity_credential_auto_selected);
+             is_auto_selected);
     auth_request_token_callback_.Reset();
   } else {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(

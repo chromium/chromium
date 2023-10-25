@@ -494,10 +494,17 @@ void CustomizeChromePageHandler::GetWallpaperSearchResults(
     return;
   }
   chrome_intelligence_modelexecution_proto::WallpaperSearchRequest request;
-  request.set_query(base::StrCat(
-      {descriptor_a, descriptor_b ? " " : "", descriptor_b.value_or(""),
-       descriptor_c ? " " : "", descriptor_c.value_or(""),
-       descriptor_d ? " " : "", descriptor_d.value_or("")}));
+  auto& descriptors = *request.mutable_descriptors();
+  descriptors.set_descriptor_a(descriptor_a);
+  if (descriptor_b.has_value()) {
+    descriptors.set_descriptor_b(*descriptor_b);
+  }
+  if (descriptor_c.has_value()) {
+    descriptors.set_descriptor_c(*descriptor_c);
+  }
+  if (descriptor_d.has_value()) {
+    descriptors.set_descriptor_d(*descriptor_d);
+  }
   optimization_guide_keyed_service->ExecuteModel(
       optimization_guide::proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH,

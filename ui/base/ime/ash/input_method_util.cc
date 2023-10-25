@@ -433,7 +433,7 @@ InputMethodUtil::InputMethodUtil(InputMethodDelegate* delegate)
 InputMethodUtil::~InputMethodUtil() = default;
 
 std::string InputMethodUtil::GetLocalizedDisplayName(
-    const InputMethodDescriptor& descriptor) const {
+    const InputMethodDescriptor& descriptor) {
   // Localizes the input method name.
   const std::string& disp = descriptor.name();
   if (base::StartsWith(disp, "__MSG_", base::CompareCase::SENSITIVE)) {
@@ -550,7 +550,7 @@ bool InputMethodUtil::GetInputMethodIdsFromLanguageCodeInternal(
     const LanguageCodeToIdsMap& language_code_to_ids,
     std::string_view normalized_language_code,
     InputMethodType type,
-    std::vector<std::string>* out_input_method_ids) const {
+    std::vector<std::string>* out_input_method_ids) {
   DCHECK(out_input_method_ids);
   out_input_method_ids->clear();
 

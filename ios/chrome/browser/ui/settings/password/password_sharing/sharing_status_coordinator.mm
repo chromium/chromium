@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_coordinator.h"
 
+#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -15,6 +16,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_view_controller_presentation_delegate.h"
+#import "url/gurl.h"
 
 @interface SharingStatusCoordinator () <
     SharingStatusViewControllerPresentationDelegate,
@@ -35,17 +37,22 @@
 
   // Website for which the password is being shared.
   NSString* _website;
+
+  // Url of the site for which the password is being shared.
+  GURL _URL;
 }
 
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
                     recipients:(NSArray<RecipientInfoForIOSDisplay*>*)recipients
-                       website:(NSString*)website {
+                       website:(NSString*)website
+                           URL:(const GURL&)URL {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _recipients = recipients;
     _website = website;
+    _URL = URL;
   }
   return self;
 }
@@ -63,9 +70,13 @@
                                 browserState)
       accountManagerService:ChromeAccountManagerServiceFactory::
                                 GetForBrowserState(browserState)
+              faviconLoader:IOSChromeFaviconLoaderFactory::GetForBrowserState(
+                                browserState)
                  recipients:_recipients
-                    website:_website];
+                    website:_website
+                        URL:_URL];
   self.mediator.consumer = self.viewController;
+  self.viewController.imageDataSource = self.mediator;
 
   self.viewController.sheetPresentationController.detents =
       @[ [UISheetPresentationControllerDetent mediumDetent] ];

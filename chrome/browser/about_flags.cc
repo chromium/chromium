@@ -279,6 +279,7 @@
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/components/login/hibernate/hibernate_manager.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
+#include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "components/app_restore/features.h"
@@ -1123,15 +1124,15 @@ const char kLacrosSelectionPolicyIgnoreInternalName[] =
 
 const FeatureEntry::Choice kLacrosAvailabilityPolicyChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {crosapi::browser_util::kLacrosAvailabilityPolicyUserChoice,
-     crosapi::browser_util::kLacrosAvailabilityPolicySwitch,
-     crosapi::browser_util::kLacrosAvailabilityPolicyUserChoice},
-    {crosapi::browser_util::kLacrosAvailabilityPolicyLacrosDisabled,
-     crosapi::browser_util::kLacrosAvailabilityPolicySwitch,
-     crosapi::browser_util::kLacrosAvailabilityPolicyLacrosDisabled},
-    {crosapi::browser_util::kLacrosAvailabilityPolicyLacrosOnly,
-     crosapi::browser_util::kLacrosAvailabilityPolicySwitch,
-     crosapi::browser_util::kLacrosAvailabilityPolicyLacrosOnly},
+    {ash::standalone_browser::kLacrosAvailabilityPolicyUserChoice,
+     ash::standalone_browser::kLacrosAvailabilityPolicySwitch,
+     ash::standalone_browser::kLacrosAvailabilityPolicyUserChoice},
+    {ash::standalone_browser::kLacrosAvailabilityPolicyLacrosDisabled,
+     ash::standalone_browser::kLacrosAvailabilityPolicySwitch,
+     ash::standalone_browser::kLacrosAvailabilityPolicyLacrosDisabled},
+    {ash::standalone_browser::kLacrosAvailabilityPolicyLacrosOnly,
+     ash::standalone_browser::kLacrosAvailabilityPolicySwitch,
+     ash::standalone_browser::kLacrosAvailabilityPolicyLacrosOnly},
 };
 
 const FeatureEntry::Choice kLacrosDataBackwardMigrationModePolicyChoices[] = {
@@ -3053,8 +3054,6 @@ constexpr char kWallpaperFastRefreshInternalName[] = "wallpaper-fast-refresh";
 constexpr char kWallpaperGooglePhotosSharedAlbumsInternalName[] =
     "wallpaper-google-photos-shared-albums";
 constexpr char kWallpaperPerDeskName[] = "per-desk-wallpaper";
-constexpr char kWallpaperRefreshRevampInternalName[] =
-    "wallpaper-refresh-revamp";
 constexpr char kLibAssistantV2MigrationInternalName[] =
     "cros-libassistant-v2-migration";
 constexpr char kTimeOfDayWallpaperInternalName[] = "time-of-day-wallpaper";
@@ -3660,6 +3659,29 @@ const FeatureEntry::FeatureVariation
          std::size(kTPCPhaseOutFacilitatedTestingForceControl2), nullptr},
 };
 
+const FeatureEntry::FeatureParam kTpcdHeuristicsGrantsControl[] = {
+    {content_settings::features::kTpcdReadHeuristicsGrantsName, "false"}};
+const FeatureEntry::FeatureParam kTpcdHeuristicsGrantsCurrentInteraction[] = {
+    {content_settings::features::kTpcdReadHeuristicsGrantsName, "true"},
+    {tpcd::experiment::kTpcdWritePopupCurrentInteractionHeuristicsGrantsName,
+     "30d"}};
+const FeatureEntry::FeatureParam
+    kTpcdHeuristicsGrantsCurrentInteractionWithBackfill[] = {
+        {content_settings::features::kTpcdReadHeuristicsGrantsName, "true"},
+        {tpcd::experiment::
+             kTpcdWritePopupCurrentInteractionHeuristicsGrantsName,
+         "30d"},
+        {tpcd::experiment::kTpcdBackfillPopupHeuristicsGrantsName, "30d"}};
+
+const FeatureEntry::FeatureVariation kTpcdHeuristicsGrantsVariations[] = {
+    {"Control", kTpcdHeuristicsGrantsControl,
+     std::size(kTpcdHeuristicsGrantsControl), nullptr},
+    {"Current Interaction", kTpcdHeuristicsGrantsCurrentInteraction,
+     std::size(kTpcdHeuristicsGrantsCurrentInteraction), nullptr},
+    {"Current Interaction With Backfill",
+     kTpcdHeuristicsGrantsCurrentInteractionWithBackfill,
+     std::size(kTpcdHeuristicsGrantsCurrentInteractionWithBackfill), nullptr}};
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const FeatureEntry::FeatureParam kVcSegmentationModelHighResolution[] = {
     {"segmentation_model", "high_resolution"},
@@ -4182,6 +4204,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"audio-flexible-loopback", flag_descriptions::kAudioFlexibleLoopbackName,
      flag_descriptions::kAudioFlexibleLoopbackDescription, kOsCrOS,
      PLATFORM_FEATURE_NAME_TYPE("CrOSLateBootAudioFlexibleLoopback")},
+    {"audio-flexible-loopback-for-system-loopback",
+     flag_descriptions::kAudioFlexibleLoopbackForSystemLoopbackName,
+     flag_descriptions::kAudioFlexibleLoopbackForSystemLoopbackDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(media::kAudioFlexibleLoopbackForSystemLoopback)},
     {"audio-hfp-mic-sr", flag_descriptions::kAudioHFPMicSRName,
      flag_descriptions::kAudioHFPMicSRDescription, kOsCrOS,
      PLATFORM_FEATURE_NAME_TYPE("CrOSLateBootAudioHFPMicSR")},
@@ -4242,6 +4269,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAshEnableUnifiedDesktopName,
      flag_descriptions::kAshEnableUnifiedDesktopDescription, kOsCrOS,
      SINGLE_VALUE_TYPE(switches::kEnableUnifiedDesktop)},
+    {"ash-faster-split-screen-setup",
+     flag_descriptions::kFasterSplitScreenSetupName,
+     flag_descriptions::kFasterSplitScreenSetupDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kFasterSplitScreenSetup)},
     {"rounded-display", flag_descriptions::kRoundedDisplay,
      flag_descriptions::kRoundedDisplayDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(display::features::kRoundedDisplay)},
@@ -4359,7 +4390,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableSuspendToDiskAllowS4Description, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSuspendToDiskAllowS4)},
     // Used to carry the policy value crossing the Chrome process lifetime.
-    {crosapi::browser_util::kLacrosAvailabilityPolicyInternalName, "", "",
+    {ash::standalone_browser::kLacrosAvailabilityPolicyInternalName, "", "",
      kOsCrOS, MULTI_VALUE_TYPE(kLacrosAvailabilityPolicyChoices)},
     // Used to carry the policy value crossing the Chrome process lifetime.
     {crosapi::browser_util::kLacrosDataBackwardMigrationModePolicyInternalName,
@@ -4683,6 +4714,13 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(
          password_manager::features::kUsernameFirstFlowWithIntermediateValues)},
+    {"username-first-flow-with-intermediate-values-voting",
+     flag_descriptions::kUsernameFirstFlowWithIntermediateValuesVotingName,
+     flag_descriptions::
+         kUsernameFirstFlowWithIntermediateValuesVotingDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(password_manager::features::
+                            kUsernameFirstFlowWithIntermediateValuesVoting)},
     {"enable-show-autofill-signatures",
      flag_descriptions::kShowAutofillSignaturesName,
      flag_descriptions::kShowAutofillSignaturesDescription, kOsAll,
@@ -5739,9 +5777,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kArcFilePickerExperimentName,
      flag_descriptions::kArcFilePickerExperimentDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(arc::kFilePickerExperimentFeature)},
-    {"arc-game-mode", flag_descriptions::kArcGameModeName,
-     flag_descriptions::kArcGameModeDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(arc::kGameModeFeature)},
     {"arc-instant-response-window-open",
      flag_descriptions::kArcInstantResponseWindowOpenName,
      flag_descriptions::kArcInstantResponseWindowOpenDescription, kOsCrOS,
@@ -5770,10 +5805,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kArcTouchscreenEmulationName,
      flag_descriptions::kArcTouchscreenEmulationDesc, kOsCrOS,
      FEATURE_VALUE_TYPE(arc::kTouchscreenEmulation)},
-    {"arc-trackpad-scroll-touchscreen-emulation",
-     flag_descriptions::kArcTrackpadScrollTouchscreenEmulationName,
-     flag_descriptions::kArcTrackpadScrollTouchscreenEmulationDesc, kOsCrOS,
-     FEATURE_VALUE_TYPE(arc::kTrackpadScrollTouchscreenEmulation)},
     {"arc-switch-to-keymint-daemon",
      flag_descriptions::kArcSwitchToKeyMintDaemonName,
      flag_descriptions::kArcSwitchToKeyMintDaemonDesc, kOsCrOS,
@@ -5902,9 +5933,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFilesSinglePartitionFormatName,
      flag_descriptions::kFilesSinglePartitionFormatDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFilesSinglePartitionFormat)},
-    {"files-search-v2", flag_descriptions::kFilesSearchV2Name,
-     flag_descriptions::kFilesSearchV2Description, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kFilesSearchV2)},
     {"files-trash-drive", flag_descriptions::kFilesTrashDriveName,
      flag_descriptions::kFilesTrashDriveDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFilesTrashDrive)},
@@ -6540,6 +6568,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          network::features::kPrivateNetworkAccessPreflightShortTimeout)},
 
+    {"private-network-access-permission-prompt",
+     flag_descriptions::kPrivateNetworkAccessPermissionPromptName,
+     flag_descriptions::kPrivateNetworkAccessPermissionPromptDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         network::features::kPrivateNetworkAccessPermissionPrompt)},
+
     {"main-thread-compositing-priority",
      flag_descriptions::kMainThreadCompositingPriorityName,
      flag_descriptions::kMainThreadCompositingPriorityDescription, kOsAll,
@@ -6832,6 +6867,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"ntp-realbox-is-tall", flag_descriptions::kNtpRealboxIsTallName,
      flag_descriptions::kNtpRealboxIsTallDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kRealboxIsTall)},
+
+    {"ntp-realbox-cr23-all", flag_descriptions::kNtpRealboxCr23AllName,
+     flag_descriptions::kNtpRealboxCr23AllDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kRealboxCr23All)},
 
     {"ntp-realbox-match-searchbox-theme",
      flag_descriptions::kNtpRealboxMatchSearchboxThemeName,
@@ -7566,11 +7605,13 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if !BUILDFLAG(USE_VAAPI)
     {"chromeos-direct-video-decoder",
      flag_descriptions::kChromeOSDirectVideoDecoderName,
      flag_descriptions::kChromeOSDirectVideoDecoderDescription,
      kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(media::kUseChromeOSDirectVideoDecoder)},
+#endif  // !BUILDFLAG(USE_VAAPI)
 
     {"enable-vbr-encode-acceleration",
      flag_descriptions::kChromeOSHWVBREncodingName,
@@ -8794,6 +8835,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kChromeRefresh2023NTBVariations,
                                     "ChromeRefresh2023NTBVariations")},
 
+    {"chrome-refresh-2023-top-chrome-font",
+     flag_descriptions::kChromeRefresh2023TopChromeFontName,
+     flag_descriptions::kChromeRefresh2023TopChromeFontDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kChromeRefresh2023TopChromeFont)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"autofill-enable-offers-in-clank-keyboard-accessory",
      flag_descriptions::kAutofillEnableOffersInClankKeyboardAccessoryName,
@@ -8871,10 +8917,6 @@ const FeatureEntry kFeatureEntries[] = {
     {kWallpaperPerDeskName, flag_descriptions::kWallpaperPerDeskName,
      flag_descriptions::kWallpaperPerDeskDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kWallpaperPerDesk)},
-    {kWallpaperRefreshRevampInternalName,
-     flag_descriptions::kWallpaperRefreshRevampName,
-     flag_descriptions::kWallpaperRefreshRevampDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kWallpaperRefreshRevamp)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
@@ -8912,24 +8954,10 @@ const FeatureEntry kFeatureEntries[] = {
          "PreinstalledWebAppWindowExperimentVariations")},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
-    // TODO(b/214589754): revisit the need for this flag when the final design
-    // for HW encoding is implemented for lacros-chrome.
-    {"enable-vaapi-vp9-kSVC-encode-acceleration",
-     flag_descriptions::kVaapiVP9kSVCEncoderName,
-     flag_descriptions::kVaapiVP9kSVCEncoderDescription, kOsCrOS | kOsLacros,
-     FEATURE_VALUE_TYPE(media::kVaapiVp9kSVCHWEncoding)},
-#endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
-
     {"enable-global-vaapi-lock", flag_descriptions::kGlobalVaapiLockName,
      flag_descriptions::kGlobalVaapiLockDescription,
      kOsCrOS | kOsLinux | kOsLacros,
      FEATURE_VALUE_TYPE(media::kGlobalVaapiLock)},
-
-    {"enable-vp9-kSVC-decode-acceleration",
-     flag_descriptions::kVp9kSVCHWDecodingName,
-     flag_descriptions::kVp9kSVCHWDecodingDescription, kOsAll,
-     FEATURE_VALUE_TYPE(media::kVp9kSVCHWDecoding)},
 
 #if BUILDFLAG(IS_WIN) ||                                      \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
@@ -8998,6 +9026,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmAuthzDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kFedCmAuthz)},
 
+    {"fedcm-auto-selected-flag", flag_descriptions::kFedCmAutoSelectedFlagName,
+     flag_descriptions::kFedCmAutoSelectedFlagDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kFedCmAutoSelectedFlag)},
+
     {"fedcm-error", flag_descriptions::kFedCmErrorName,
      flag_descriptions::kFedCmErrorDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmError)},
@@ -9005,12 +9037,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"fedcm-hosted-domain", flag_descriptions::kFedCmHostedDomainName,
      flag_descriptions::kFedCmHostedDomainDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmHostedDomain)},
-
-    {"fedcm-identity-credential-auto-selected-flag",
-     flag_descriptions::kFedCmIdentityCredentialAutoSelectedFlagName,
-     flag_descriptions::kFedCmIdentityCredentialAutoSelectedFlagDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmIdentityCredentialAutoSelectedFlag)},
 
     {"fedcm-idp-registration", flag_descriptions::kFedCmIdPRegistrationName,
      flag_descriptions::kFedCmIdPRegistrationDescription, kOsDesktop,
@@ -9294,6 +9320,13 @@ const FeatureEntry kFeatureEntries[] = {
          features::kCookieDeprecationFacilitatedTesting,
          kTPCPhaseOutFacilitatedTestingVariations,
          "TPCPhaseOutFacilitatedTesting")},
+
+    {"tpcd-heuristics-grants", flag_descriptions::kTpcdHeuristicsGrantsName,
+     flag_descriptions::kTpcdHeuristicsGrantsDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         content_settings::features::kTpcdHeuristicsGrants,
+         kTpcdHeuristicsGrantsVariations,
+         "TpcdHeuristicsGrants")},
 
     {"bounce-tracking-mitigations", flag_descriptions::kDIPSName,
      flag_descriptions::kDIPSDescription, kOsAll,
@@ -10157,15 +10190,6 @@ const FeatureEntry kFeatureEntries[] = {
          password_manager::features::kEnablePasswordsAccountStorage)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"safe-sites-filter-behavior-policy-android",
-     flag_descriptions::kSafeSitesFilterBehaviorPolicyAndroidName,
-     flag_descriptions::kSafeSitesFilterBehaviorPolicyAndroidDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         policy::features::kSafeSitesFilterBehaviorPolicyAndroid)},
-#endif
-
 #if BUILDFLAG(IS_WIN)
     {"cloud-ap-auth-attach-as-header",
      flag_descriptions::kCloudApAuthAttachAsHeaderName,
@@ -10251,16 +10275,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"printing-ppd-channel", flag_descriptions::kPrintingPpdChannelName,
      flag_descriptions::kPrintingPpdChannelDescription, kOsCrOS,
      MULTI_VALUE_TYPE(kPrintingPpdChannelChoices)},
-#endif
-
-#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) || \
-    BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-    {"data-retention-policies-disable-sync-types-needed",
-     flag_descriptions::kDataRetentionPoliciesDisableSyncTypesNeededName,
-     flag_descriptions::kDataRetentionPoliciesDisableSyncTypesNeededDescription,
-     kOsLinux | kOsWin | kOsMac | kOsCrOS | kOsAndroid,
-     FEATURE_VALUE_TYPE(browsing_data::features::
-                            kDataRetentionPoliciesDisableSyncTypesNeeded)},
 #endif
 
     {"storage-buckets", flag_descriptions::kStorageBucketsName,
@@ -10580,7 +10594,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"cros-web-app-shortcut-ui-update",
      flag_descriptions::kCrosWebAppShortcutUiUpdateName,
      flag_descriptions::kCrosWebAppShortcutUiUpdateDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kCrosWebAppShortcutUiUpdate)},
+     FEATURE_VALUE_TYPE(chromeos::features::kCrosWebAppShortcutUiUpdate)},
     {"enable-audio-focus-enforcement",
      flag_descriptions::kEnableAudioFocusEnforcementName,
      flag_descriptions::kEnableAudioFocusEnforcementDescription, kOsCrOS,
@@ -11082,6 +11096,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kTheoraVideoCodec)},
 #endif
 
+    {"sync-session-on-visibility-changed",
+     flag_descriptions::kSyncSessionOnVisibilityChangedName,
+     flag_descriptions::kSyncSessionOnVisibilityChangedDescription, kOsAll,
+     FEATURE_VALUE_TYPE(syncer::kSyncSessionOnVisibilityChanged)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
@@ -11200,7 +11219,7 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
 
   // Skip lacros-availability-policy always. This is a pseudo entry
   // and used to carry the policy value crossing the Chrome's lifetime.
-  if (!strcmp(crosapi::browser_util::kLacrosAvailabilityPolicyInternalName,
+  if (!strcmp(ash::standalone_browser::kLacrosAvailabilityPolicyInternalName,
               entry.internal_name)) {
     return true;
   }

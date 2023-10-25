@@ -24,6 +24,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_origin_clean.h"
+#include "third_party/blink/renderer/core/css/css_url_data.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
@@ -33,13 +34,12 @@
 namespace blink {
 
 class Document;
-class KURL;
+class ProxySVGResourceClient;
 class StyleImage;
 
 class CORE_EXPORT CSSImageValue : public CSSValue {
  public:
-  CSSImageValue(const AtomicString& raw_value,
-                const KURL&,
+  CSSImageValue(CSSUrlData url_data,
                 const Referrer&,
                 OriginClean origin_clean,
                 bool is_ad_related,
@@ -60,7 +60,9 @@ class CORE_EXPORT CSSImageValue : public CSSValue {
       CrossOriginAttributeValue = kCrossOriginAttributeNotSet,
       const float override_image_resolution = 0.0f);
 
-  const String& RelativeUrl() const { return relative_url_; }
+  const String& RelativeUrl() const { return url_data_.UnresolvedUrl(); }
+  bool IsLocal(const Document&) const;
+  AtomicString NormalizedFragmentIdentifier() const;
 
   void ReResolveURL(const Document&) const;
 
@@ -72,14 +74,15 @@ class CORE_EXPORT CSSImageValue : public CSSValue {
 
   CSSImageValue* ComputedCSSValue() const {
     return MakeGarbageCollected<CSSImageValue>(
-        absolute_url_, KURL(absolute_url_), Referrer(), origin_clean_,
-        is_ad_related_, cached_image_.Get());
+        url_data_.MakeAbsolute(), Referrer(), origin_clean_, is_ad_related_,
+        cached_image_.Get());
   }
+  CSSImageValue* ComputedCSSValueMaybeLocal() const;
 
   CSSImageValue* Clone() const {
-    return MakeGarbageCollected<CSSImageValue>(
-        relative_url_, KURL(absolute_url_), Referrer(), origin_clean_,
-        is_ad_related_, cached_image_.Get());
+    return MakeGarbageCollected<CSSImageValue>(url_data_, Referrer(),
+                                               origin_clean_, is_ad_related_,
+                                               cached_image_.Get());
   }
 
   void SetInitiator(const AtomicString& name) { initiator_name_ = name; }
@@ -87,14 +90,16 @@ class CORE_EXPORT CSSImageValue : public CSSValue {
   void TraceAfterDispatch(blink::Visitor*) const;
   void RestoreCachedResourceIfNeeded(const Document&) const;
 
+  ProxySVGResourceClient* GetSVGResourceClient();
+
  private:
-  AtomicString relative_url_;
+  CSSUrlData url_data_;
   Referrer referrer_;
   AtomicString initiator_name_;
 
   // Cached image data.
-  mutable AtomicString absolute_url_;
   mutable Member<StyleImage> cached_image_;
+  Member<ProxySVGResourceClient> proxy_svg_resource_client_;
 
   // Whether the stylesheet that requested this image is origin-clean:
   // https://drafts.csswg.org/cssom-1/#concept-css-style-sheet-origin-clean-flag
@@ -102,11 +107,6 @@ class CORE_EXPORT CSSImageValue : public CSSValue {
 
   // Whether this was created by an ad-related CSSParserContext.
   const bool is_ad_related_;
-
-  // The url passed into the constructor had the PotentiallyDanglingMarkup flag
-  // set. That information needs to be passed on to the fetch code to block such
-  // resources from loading.
-  const bool potentially_dangling_markup_;
 };
 
 template <>

@@ -25,15 +25,17 @@ namespace {
 
 base::FilePath GetPdfTestData(const base::FilePath::StringType& filename) {
   base::FilePath root_path;
-  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &root_path))
+  if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_path)) {
     return base::FilePath();
+  }
   return root_path.Append("pdf").Append("test").Append("data").Append(filename);
 }
 
 base::FilePath GetPrintingTestData(const base::FilePath::StringType& filename) {
   base::FilePath root_path;
-  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &root_path))
+  if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_path)) {
     return base::FilePath();
+  }
   return root_path.Append("printing")
       .Append("test")
       .Append("data")

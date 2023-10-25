@@ -38,10 +38,21 @@ public class BookmarkMetrics {
                 BookmarkRowDisplayPref.COUNT);
     }
 
+    /** Report a filter was shown in the bookmarks manager. */
+    public static void reportBookmarkManagerFilterShown(
+            @BookmarkManagerFilter int bookmarkManagerFilter) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Bookmarks.MobileBookmarkManager.FilterShown",
+                bookmarkManagerFilter,
+                BookmarkManagerFilter.COUNT);
+    }
+
     /** Report a filter was used in the bookmarks manager. */
     public static void reportBookmarkManagerFilterUsed(
             @BookmarkManagerFilter int bookmarkManagerFilter) {
-        RecordHistogram.recordEnumeratedHistogram("Bookmarks.MobileBookmarkManager.FilterUsed",
-                bookmarkManagerFilter, BookmarkManagerFilter.COUNT);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Bookmarks.MobileBookmarkManager.FilterUsed2",
+                bookmarkManagerFilter,
+                BookmarkManagerFilter.COUNT);
     }
 }

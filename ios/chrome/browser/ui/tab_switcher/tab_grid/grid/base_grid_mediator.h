@@ -51,11 +51,6 @@ class WebStateList;
 // Delegate to handle presenting tab UI.
 @property(nonatomic, weak) id<TabPresentationDelegate> tabPresentationDelegate;
 
-// Initializer with `consumer` as the receiver of model layer updates.
-- (instancetype)initWithConsumer:(id<TabCollectionConsumer>)consumer
-    NS_DESIGNATED_INITIALIZER;
-- (instancetype)init NS_UNAVAILABLE;
-
 @end
 
 @interface BaseGridMediator (Subclassing)

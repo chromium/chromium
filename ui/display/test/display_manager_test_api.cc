@@ -84,7 +84,8 @@ void DisplayManagerTestApi::ResetMaximumDisplay() {
   maximum_support_display_ = kDefaultMaxSupportDisplayTest;
 }
 
-void DisplayManagerTestApi::UpdateDisplay(const std::string& display_specs) {
+void DisplayManagerTestApi::UpdateDisplay(const std::string& display_specs,
+                                          bool from_native_platform) {
   DisplayInfoList display_info_list =
       CreateDisplayInfoListFromString(display_specs, display_manager_);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -119,16 +120,19 @@ void DisplayManagerTestApi::UpdateDisplay(const std::string& display_specs) {
       next_y += bounds.height();
       info.SetBounds(bounds);
     }
+    info.set_from_native_platform(from_native_platform);
 
     // Overscan and native resolution are excluded for now as they require
     // special handing (has_overscan flag. resolution change makes sense
     // only on external).
-    display_manager_->RegisterDisplayProperty(
-        info.id(), info.GetRotation(Display::RotationSource::USER),
-        /*overscan_insets=*/nullptr,
-        /*resolution_in_pixels=*/gfx::Size(), info.device_scale_factor(),
-        info.zoom_factor(), info.refresh_rate(), info.is_interlaced(),
-        info.variable_refresh_rate_state(), info.vsync_rate_min());
+    if (!from_native_platform) {
+      display_manager_->RegisterDisplayProperty(
+          info.id(), info.GetRotation(Display::RotationSource::USER),
+          /*overscan_insets=*/nullptr,
+          /*resolution_in_pixels=*/gfx::Size(), info.device_scale_factor(),
+          info.zoom_factor(), info.refresh_rate(), info.is_interlaced(),
+          info.variable_refresh_rate_state(), info.vsync_rate_min());
+    }
   }
 
   display_manager_->OnNativeDisplaysChanged(display_info_list);

@@ -22,6 +22,7 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/test/test_gles2_interface.h"
 #include "components/viz/test/test_raster_interface.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/raster_implementation_gles.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/config/skia_limits.h"
@@ -171,7 +172,8 @@ gpu::Mailbox TestSharedImageInterface::CreateSharedImage(
   return mailbox;
 }
 
-gpu::Mailbox TestSharedImageInterface::CreateSharedImage(
+scoped_refptr<gpu::ClientSharedImage>
+TestSharedImageInterface::CreateSharedImage(
     SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
@@ -183,7 +185,7 @@ gpu::Mailbox TestSharedImageInterface::CreateSharedImage(
   base::AutoLock locked(lock_);
   auto mailbox = gpu::Mailbox::GenerateForSharedImage();
   shared_images_.insert(mailbox);
-  return mailbox;
+  return base::MakeRefCounted<gpu::ClientSharedImage>(mailbox);
 }
 
 gpu::Mailbox TestSharedImageInterface::CreateSharedImage(
@@ -204,8 +206,10 @@ gpu::Mailbox TestSharedImageInterface::CreateSharedImage(
 
   auto gmb_handle = CreateGMBHandle(format, size, buffer_usage);
 
-  mailbox_to_gmb_handle_info_map_[mailbox] = gpu::GpuMemoryBufferHandleInfo(
-      std::move(gmb_handle), format, size, buffer_usage);
+  mailbox_to_gmb_map_[mailbox] =
+      gpu::SharedImageInterface::CreateGpuMemoryBufferForUseByScopedMapping(
+          gpu::GpuMemoryBufferHandleInfo(std::move(gmb_handle), format, size,
+                                         buffer_usage));
 
   return mailbox;
 }
@@ -269,7 +273,7 @@ void TestSharedImageInterface::DestroySharedImage(
     const gpu::Mailbox& mailbox) {
   base::AutoLock locked(lock_);
   shared_images_.erase(mailbox);
-  mailbox_to_gmb_handle_info_map_.erase(mailbox);
+  mailbox_to_gmb_map_.erase(mailbox);
   most_recent_destroy_token_ = sync_token;
 }
 
@@ -334,14 +338,12 @@ scoped_refptr<gfx::NativePixmap> TestSharedImageInterface::GetNativePixmap(
 
 std::unique_ptr<gpu::SharedImageInterface::ScopedMapping>
 TestSharedImageInterface::MapSharedImage(const gpu::Mailbox& mailbox) {
-  auto it = mailbox_to_gmb_handle_info_map_.find(mailbox);
+  auto it = mailbox_to_gmb_map_.find(mailbox);
   // The mailbox for which the query is made must be present.
-  CHECK(it != mailbox_to_gmb_handle_info_map_.end());
+  CHECK(it != mailbox_to_gmb_map_.end());
 
-  auto handle_info = it->second;
-  // NOTE: We pass `handle_info` by copy here to ensure that the handle is
-  // cloned and hence can be reused by subsequent calls to MapSharedImage().
-  return SharedImageInterface::ScopedMapping::Create(handle_info);
+  auto* gmb = it->second.get();
+  return SharedImageInterface::ScopedMapping::Create(gmb);
 }
 
 bool TestSharedImageInterface::CheckSharedImageExists(

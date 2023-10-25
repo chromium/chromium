@@ -5,6 +5,8 @@
 #ifndef UI_EVENTS_GESTURE_DETECTION_SCALE_GESTURE_DETECTOR_H_
 #define UI_EVENTS_GESTURE_DETECTION_SCALE_GESTURE_DETECTOR_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "ui/events/gesture_detection/gesture_detection_export.h"
@@ -80,6 +82,7 @@ class GESTURE_DETECTION_EXPORT ScaleGestureDetector {
   float GetPreviousSpanX() const;
   float GetPreviousSpanY() const;
   float GetScaleFactor() const;
+  float GetAngleChange() const;
   base::TimeDelta GetTimeDelta() const;
   base::TimeTicks GetEventTime() const;
 
@@ -91,12 +94,24 @@ class GESTURE_DETECTION_EXPORT ScaleGestureDetector {
   };
 
   void ResetScaleWithSpan(float span);
+  float CalculateAngle(const MotionEvent& event,
+                       int action_index,
+                       float focus_x,
+                       float focus_y) const;
 
   const raw_ptr<ScaleGestureListener> listener_;
   bool stylus_scale_enabled_;
 
   float focus_x_;
   float focus_y_;
+
+  // `angles` are the angles between the horizontal axis and the lines
+  // connecting each individual finger locations to the focal point.
+  // They are stored so that their `ActionIndex` matches the index of
+  // the vector.
+  std::vector<float> curr_angles_;
+  std::vector<float> prev_angles_;
+
   float curr_span_;
   float prev_span_;
   float initial_span_;

@@ -9,11 +9,10 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/files/file_util.h"
-#include "base/memory/ptr_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "third_party/protobuf/src/google/protobuf/repeated_ptr_field.h"
 
 namespace autofill {
 
@@ -25,44 +24,29 @@ constexpr AutofillModelVectorizer::TokenId kUnknownTokenId =
 }  // namespace
 
 AutofillModelVectorizer::AutofillModelVectorizer(
-    std::vector<std::pair<std::u16string, TokenId>> entries)
-    : token_to_id_(
-          base::MakeFlatMap<std::u16string, TokenId>(std::move(entries))) {}
-
-AutofillModelVectorizer::AutofillModelVectorizer(
-    const AutofillModelVectorizer& vectorizer) = default;
-AutofillModelVectorizer::~AutofillModelVectorizer() = default;
-
-// static
-std::unique_ptr<AutofillModelVectorizer>
-AutofillModelVectorizer::CreateVectorizer(
-    const base::FilePath& dictionary_filepath) {
-  std::string dictionary_content;
-  if (!base::ReadFileToString(dictionary_filepath, &dictionary_content)) {
-    return nullptr;
-  }
-  std::vector<std::string> tokens = base::SplitString(
-      dictionary_content, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  std::vector<std::pair<std::u16string, TokenId>> entries;
-  // First 2 indices are reserved.
-  CHECK(tokens.size() > 1);
-  // Index 0 is reserved for padding. For example, if the field
-  // label "first name" and the token index for "first" = 8, "name" = 2 and
-  // if the `kOutputSequenceLength` = 5 then the output should be [8,2,0,0,0].
-  CHECK(tokens[0].empty());
-  // Index 1 is reserved for words not in the dictionary. For example,
-  // if the word "last" is not in the dictionary, then its token index is 1.
-  CHECK(tokens[1] == "[UNK]");
+    const google::protobuf::RepeatedPtrField<std::string>& tokens) {
+  std::vector<std::pair<std::u16string, AutofillModelVectorizer::TokenId>>
+      entries = {
+          // Index 0 is reserved for padding to `kOutputSequenceLength`.
+          // For example, a label "first name" is encoded as [?, ?, 0] if the
+          // output sequence length is 3.
+          {u"", AutofillModelVectorizer::TokenId(0)},
+          // Index 1 is reserved for words not in the dictionary.
+          {u"", kUnknownTokenId},
+      };
+  entries.reserve(2 + tokens.size());
+  size_t i = 2;
   for (const std::string& token : tokens) {
-    AutofillModelVectorizer::TokenId id(entries.size());
-    entries.emplace_back(base::UTF8ToUTF16(token), id);
+    entries.emplace_back(base::UTF8ToUTF16(token),
+                         AutofillModelVectorizer::TokenId(i++));
   }
-  return base::WrapUnique(new AutofillModelVectorizer(std::move(entries)));
+  token_to_id_ = base::flat_map<std::u16string, TokenId>(std::move(entries));
 }
 
-size_t AutofillModelVectorizer::GetDictionarySize() const {
-  return token_to_id_.size();
-}
+AutofillModelVectorizer::AutofillModelVectorizer() = default;
+AutofillModelVectorizer::AutofillModelVectorizer(
+    const AutofillModelVectorizer&) = default;
+AutofillModelVectorizer::~AutofillModelVectorizer() = default;
 
 AutofillModelVectorizer::TokenId AutofillModelVectorizer::TokenToId(
     std::u16string_view token) const {

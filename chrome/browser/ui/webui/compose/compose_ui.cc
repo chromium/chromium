@@ -4,20 +4,28 @@
 
 #include "chrome/browser/ui/webui/compose/compose_ui.h"
 
+#include <string>
 #include <utility>
 
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/compose/chrome_compose_client.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/compose_resources.h"
 #include "chrome/grit/compose_resources_map.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+
+namespace {
+inline constexpr char16_t kLearnMoreURL[] = u"https://www.google.com";
+}  // namespace
 
 ComposeUI::ComposeUI(content::WebUI* web_ui)
     : ui::MojoBubbleWebUIController(web_ui) {
@@ -28,6 +36,27 @@ ComposeUI::ComposeUI(content::WebUI* web_ui)
       source, base::make_span(kComposeResources, kComposeResourcesSize),
       IDR_COMPOSE_COMPOSE_HTML);
   webui::SetupChromeRefresh2023(source);
+
+  // Localized strings.
+  static constexpr webui::LocalizedString kStrings[] = {
+      {"dialogTitle", IDS_COMPOSE_TITLE},
+      {"inputPlaceholder", IDS_COMPOSE_INPUT_PLACEHOLDER},
+      {"inputFooter", IDS_COMPOSE_INPUT_FOOTER},
+      {"submitButton", IDS_COMPOSE_SUBMIT_BUTTON},
+      {"insertButton", IDS_COMPOSE_INSERT_BUTTON},
+      {"menu1Title", IDS_COMPOSE_MENU_1_TITLE},
+      {"menu2Title", IDS_COMPOSE_MENU_2_TITLE},
+      {"errorTooLong", IDS_COMPOSE_ERROR_TOO_LONG},
+      {"errorTryAgain", IDS_COMPOSE_ERROR_TRY_AGAIN},
+      {"errorTryAgainLater", IDS_COMPOSE_ERROR_TRY_AGAIN_LATER},
+      {"errorRequestNotSuccessful", IDS_COMPOSE_ERROR_REQUEST_NOT_SUCCESSFUL},
+      {"errorPermissionDenied", IDS_COMPOSE_ERROR_REQUEST_NOT_SUCCESSFUL},
+      {"errorGeneric", IDS_COMPOSE_ERROR_GENERIC},
+  };
+  source->AddLocalizedStrings(kStrings);
+  source->AddString(
+      "resultFooter",
+      l10n_util::GetStringFUTF16(IDS_COMPOSE_RESULT_FOOTER, kLearnMoreURL));
 }
 
 ComposeUI::~ComposeUI() = default;

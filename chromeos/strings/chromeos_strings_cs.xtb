@@ -93,7 +93,6 @@
 <translation id="1643449475550628585">Denně měnit tapetu</translation>
 <translation id="1644574205037202324">Historie</translation>
 <translation id="1651925268237749928">Vybrali jste sdílené album. Ostatní lidé mohou přidávat nebo měnit fotografie. Jako tapeta se mohou zobrazit fotografie, které v tomto albu aktuálně nejsou.</translation>
-<translation id="1658834457013045127">Neomezeně dlouho</translation>
 <translation id="1661865805917886535">Některé údaje o účtu a systému mohou být předány společnosti Google. Tyto informace používáme k řešení technických problémů a zlepšování našich služeb v souladu s našimi zásadami ochrany soukromí (<ph name="PRIVACYPOLICYURL" />) a smluvními podmínkami (<ph name="TERMSOFSERVICEURL" />). Pokud chcete požádat o změny obsahu, přejděte na stránku Právní nápověda (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Zastaveno – došel inkoust</translation>
 <translation id="1664796644829245314">Náhled <ph name="PREVIEW_OBJECT" /></translation>
@@ -323,7 +322,6 @@
 <translation id="3484914941826596830">Během aktualizace firmwaru neodpojujte externí zařízení ani nevypínejte počítač. Toto okno můžete minimalizovat. Aktualizace může trvat několik minut a externí zařízení po tuto dobu nemusí fungovat.</translation>
 <translation id="3486220673238053218">definice</translation>
 <translation id="3488065109653206955">Částečně aktivováno</translation>
-<translation id="349491921221892984"><ph name="MINUTES" /> min</translation>
 <translation id="3502426834823382181">zobrazit všechny aplikace</translation>
 <translation id="3510890413042482857">Odesílat <ph name="BEGIN_LINK1" />údaje sledování výkonu<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Aktualizace ChromeOS</translation>
@@ -484,7 +482,6 @@
 <translation id="473775607612524610">Aktualizovat</translation>
 <translation id="4771607256327216405">zvýšení jasu klávesnice</translation>
 <translation id="4773299976671772492">Zastaveno</translation>
-<translation id="4782003517030001304">1 h</translation>
 <translation id="4782311465517282004">Když podržíte text nebo na něj kliknete pravým tlačítkem, mohou se zobrazit definice, překlad nebo převod jednotek</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotka</translation>
 <translation id="4793710386569335688">Další informace naleznete v <ph name="BEGIN_LINK" />centru nápovědy<ph name="END_LINK" />.</translation>
@@ -699,6 +696,7 @@
 <translation id="629550705077076970">stmívání klávesnice</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> byl zrušen</translation>
 <translation id="631063167932043783">Prozkoumat aplikaci</translation>
+<translation id="6318437367327684789">navždy</translation>
 <translation id="6319207335391420837">Aktualizace firmwaru v zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Zapnout spořič obrazovky</translation>
 <translation id="6324916366299863871">Upravit zkratku</translation>

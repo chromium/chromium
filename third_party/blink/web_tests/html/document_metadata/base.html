@@ -29,7 +29,7 @@ shouldBeTrue("endsWith(document.querySelector('base').href, '/null')");
 var documentWithoutAView = document.implementation.createHTMLDocument('');
 base = documentWithoutAView.head.appendChild(documentWithoutAView.createElement('base'));
 base.setAttribute('href', 'foo/bar/');
-shouldBeTrue("endsWith(documentWithoutAView.querySelector('base').href, 'foo/bar/')");
+shouldBeTrue("endsWith(documentWithoutAView.querySelector('base').href, '')");
 base.setAttribute('href', 'http://webkit.org/');
 shouldBeEqualToString("documentWithoutAView.querySelector('base').href", 'http://webkit.org/');
 

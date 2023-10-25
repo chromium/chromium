@@ -519,6 +519,7 @@ class AccessibilityPrivateJSApiTest : public AtpJSApiTest {
         "services/accessibility/public/mojom/"
         "assistive_technology_type.mojom-lite.js",
         "services/accessibility/public/mojom/user_interface.mojom-lite.js",
+        "services/accessibility/features/javascript/chrome_event.js",
         "services/accessibility/features/javascript/accessibility_private.js",
     };
   }
@@ -703,6 +704,55 @@ TEST_F(AccessibilityPrivateJSApiTest, SetHighlightsEmptyRects) {
   waiter.Run();
 }
 
+class AutoclickA11yPrivateJSApiTest : public AtpJSApiTest {
+ public:
+  AutoclickA11yPrivateJSApiTest() = default;
+  AutoclickA11yPrivateJSApiTest(const AutoclickA11yPrivateJSApiTest&) = delete;
+  AutoclickA11yPrivateJSApiTest& operator=(
+      const AutoclickA11yPrivateJSApiTest&) = delete;
+  ~AutoclickA11yPrivateJSApiTest() override = default;
+
+  mojom::AssistiveTechnologyType GetATTypeForTest() const override {
+    return mojom::AssistiveTechnologyType::kAutoClick;
+  }
+
+  const std::vector<std::string> GetJSFilePathsToLoad() const override {
+    return std::vector<std::string>{
+        "services/accessibility/features/mojo/test/mojom_test_support.js",
+        "ui/gfx/geometry/mojom/geometry.mojom-lite.js",
+        "services/accessibility/public/mojom/autoclick.mojom-lite.js",
+        "services/accessibility/features/javascript/chrome_event.js",
+        "services/accessibility/features/javascript/accessibility_private.js",
+    };
+  }
+};
+
+TEST_F(AutoclickA11yPrivateJSApiTest, AutoclickApis) {
+  base::RunLoop waiter;
+  client_->SetScrollableBoundsForPointFoundCallback(
+      base::BindLambdaForTesting([&waiter](const gfx::Rect& rect) {
+        waiter.Quit();
+        ASSERT_EQ(rect, gfx::Rect(2, 4, 6, 8));
+      }));
+  ExecuteJS(R"JS(
+    const remote = axtest.mojom.TestBindingInterface.getRemote();
+    chrome.accessibilityPrivate.onScrollableBoundsForPointRequested.addListener(
+      (point) => {
+        if (point.x !== 42 || point.y !== 84) {
+          remote.testComplete(/*success=*/false);
+        }
+        const rect = {left: 2, top: 4, width: 6, height: 8};
+        chrome.accessibilityPrivate.handleScrollableBoundsForPointFound(rect);
+    });
+    // Exit the JS portion of the test; the callback created above will
+    // run after the test C++ executes RequestScrollableBoundsForPoint.
+    remote.testComplete(/*success=*/true);
+  )JS");
+  WaitForJSTestComplete();
+  client_->RequestScrollableBoundsForPoint(gfx::Point(42, 84));
+  waiter.Run();
+}
+
 TEST_F(AccessibilityPrivateJSApiTest, SetVirtualKeyboardVisible) {
   base::RunLoop waiter;
   client_->SetVirtualKeyboardVisibleCallback(
@@ -748,6 +798,7 @@ class SpeechRecognitionJSApiTest : public AtpJSApiTest {
     return std::vector<std::string>{
         "services/accessibility/features/mojo/test/mojom_test_support.js",
         "services/accessibility/public/mojom/speech_recognition.mojom-lite.js",
+        "services/accessibility/features/javascript/chrome_event.js",
         "services/accessibility/features/javascript/speech_recognition.js",
     };
   }
@@ -801,6 +852,21 @@ TEST_F(SpeechRecognitionJSApiTest, StopEvent) {
   WaitForJSTestComplete();
 }
 
-// TODO(b:304305202): Add test that has non-empty start options.
+TEST_F(SpeechRecognitionJSApiTest, ResultEvent) {
+  client_->SetSpeechRecognitionStartCallback(base::BindLambdaForTesting(
+      [this]() { client_->SendSpeechRecognitionResultEvent(); }));
+  ExecuteJS(R"JS(
+    const remote = axtest.mojom.TestBindingInterface.getRemote();
+    chrome.speechRecognitionPrivate.onResult.addListener((event) => {
+      if (event.transcript === 'Hello world' && event.isFinal) {
+        remote.testComplete(/*success=*/true);
+      }
+    });
+
+    const options = {};
+    chrome.speechRecognitionPrivate.start(options, (type) => {});
+  )JS");
+  WaitForJSTestComplete();
+}
 
 }  // namespace ax

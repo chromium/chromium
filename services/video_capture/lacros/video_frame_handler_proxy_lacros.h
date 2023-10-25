@@ -53,7 +53,9 @@ class VideoFrameHandlerProxyLacros : public crosapi::mojom::VideoFrameHandler {
                                 scaled_buffers) override;
   void OnBufferRetired(int buffer_id) override;
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
-  void OnNewCropVersion(uint32_t crop_version) override;
+  void DEPRECATED_OnNewCropVersion(uint32_t crop_version) override;
+  void OnNewSubCaptureTargetVersion(
+      uint32_t sub_capture_target_version) override;
   void OnFrameWithEmptyRegionCapture() override;
   void OnStarted() override;
   void OnStartedUsingGpuDecode() override;

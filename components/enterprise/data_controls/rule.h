@@ -58,6 +58,8 @@ class Rule {
 
   // The enforcement level of the restriction set by Data Controls.
   // Should be listed in the order of increased priority.
+  // When new entries are added, EnterpriseDlpPolicyLevel enum in
+  // histograms/enums.xml should be updated.
   // TODO(b/280449704): Merge this enum with the one in dlp_rules_manager_base.h
   enum class Level {
     kNotSet = 0,  // Restriction level is not set.

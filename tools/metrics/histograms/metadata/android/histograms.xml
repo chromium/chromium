@@ -3636,6 +3636,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.RequestDesktopSite.WindowSettingChanged"
+    enum="Boolean" expires_after="2024-02-20">
+  <owner>shuyng@google.com</owner>
+  <owner>skavuluru@google.com</owner>
+  <summary>
+    Records the new Request Desktop window setting when changed. If the setting
+    is true, Chrome will request mobile view when the window is narrow. This is
+    recorded when a user manually changes the Request Desktop window setting
+    from the site settings.
+  </summary>
+</histogram>
+
 <histogram name="Android.RestoreResult" enum="AndroidRestoreResult"
     expires_after="2024-01-14">
   <owner>triploblastic@chromium.org</owner>

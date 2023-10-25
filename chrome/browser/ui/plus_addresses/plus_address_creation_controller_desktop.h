@@ -40,12 +40,16 @@ class PlusAddressCreationControllerDesktop
   friend class content::WebContentsUserData<
       PlusAddressCreationControllerDesktop>;
 
-  // Creates and shows the modal  with `primary_email_address` and
-  // `plus_address`, and also stores the latter to be used in OnConfirmed().
+  // When `maybe_plus_profile` is a PlusProfile `profile`:
+  // - if `profile.is_confirmed` is true, closes the modal & autofills
+  //   `profile.plus_address`.
+  // - if not, stores the reserved plus address and shows a the modal with
+  //   `primary_email_address` and profile.plus_address.
+  // TODO(crbug.com/1467623): Handle case where `maybe_plus_profile` is error.
   void OnPlusAddressReserved(const std::string& primary_email_address,
-                             const std::string& plus_address);
+                             const PlusProfileOrError& maybe_plus_profile);
   // Autofills `plus_address` in the targeted field by running callback_.
-  void OnPlusAddressConfirmed(const std::string& plus_address);
+  void OnPlusAddressConfirmed(const PlusProfileOrError& maybe_plus_profile);
 
   base::WeakPtr<PlusAddressCreationControllerDesktop> GetWeakPtr();
 

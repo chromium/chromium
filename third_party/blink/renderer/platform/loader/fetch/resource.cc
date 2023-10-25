@@ -538,10 +538,6 @@ void Resource::SetSerializedCachedMetadata(mojo_base::BigBuffer data) {
   DCHECK(!is_revalidating_);
 }
 
-bool Resource::CodeCacheHashRequired() const {
-  return false;
-}
-
 String Resource::ReasonNotDeletable() const {
   StringBuilder builder;
   if (HasClientsOrObservers()) {

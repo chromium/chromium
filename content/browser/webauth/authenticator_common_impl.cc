@@ -16,7 +16,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "components/webauthn/json/value_conversions.h"
@@ -520,6 +519,7 @@ struct AuthenticatorCommonImpl::RequestState {
   bool awaiting_attestation_response = false;
   blink::mojom::AuthenticatorStatus error_awaiting_user_acknowledgement =
       blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR;
+  absl::optional<GetAssertionResult> get_assertion_result;
   bool discoverable_credential_request = false;
   // no_cable_linking requests that both QR-linked and pre-linked phones be
   // ignored for this request.
@@ -631,6 +631,7 @@ void AuthenticatorCommonImpl::StartMakeCredentialRequest(
 
 void AuthenticatorCommonImpl::StartGetAssertionRequest(
     bool allow_skipping_pin_touch) {
+  req_state_->get_assertion_result.reset();
   InitDiscoveryFactory();
 
   discovery_factory()->no_cable_linking = req_state_->no_cable_linking;
@@ -1699,6 +1700,51 @@ void AuthenticatorCommonImpl::OnSignResponse(
     return;
   }
 
+  switch (authenticator->GetType()) {
+    case device::AuthenticatorType::kChromeOS:
+      req_state_->get_assertion_result =
+          status_code == device::GetAssertionStatus::kSuccess
+              ? GetAssertionResult::kChromeOSSuccess
+              : GetAssertionResult::kChromeOSError;
+      break;
+    case device::AuthenticatorType::kEnclave:
+      req_state_->get_assertion_result =
+          status_code == device::GetAssertionStatus::kSuccess
+              ? GetAssertionResult::kEnclaveSuccess
+              : GetAssertionResult::kEnclaveError;
+      break;
+    case device::AuthenticatorType::kICloudKeychain:
+      req_state_->get_assertion_result =
+          status_code == device::GetAssertionStatus::kSuccess
+              ? GetAssertionResult::kICloudKeychainSuccess
+              : GetAssertionResult::kICloudKeychainError;
+      break;
+    case device::AuthenticatorType::kOther:
+      req_state_->get_assertion_result =
+          status_code == device::GetAssertionStatus::kSuccess
+              ? GetAssertionResult::kOtherSuccess
+              : GetAssertionResult::kOtherError;
+      break;
+    case device::AuthenticatorType::kPhone:
+      req_state_->get_assertion_result =
+          status_code == device::GetAssertionStatus::kSuccess
+              ? GetAssertionResult::kPhoneSuccess
+              : GetAssertionResult::kPhoneError;
+      break;
+    case device::AuthenticatorType::kTouchID:
+      req_state_->get_assertion_result =
+          status_code == device::GetAssertionStatus::kSuccess
+              ? GetAssertionResult::kTouchIDSuccess
+              : GetAssertionResult::kTouchIDError;
+      break;
+    case device::AuthenticatorType::kWinNative:
+      req_state_->get_assertion_result =
+          status_code == device::GetAssertionStatus::kSuccess
+              ? GetAssertionResult::kWinNativeSuccess
+              : GetAssertionResult::kWinNativeError;
+      break;
+  }
+
   switch (status_code) {
     case device::GetAssertionStatus::kUserConsentButCredentialNotRecognized:
       SignalFailureToRequestDelegate(
@@ -1856,6 +1902,9 @@ void AuthenticatorCommonImpl::OnTimeout() {
   }
 
   DCHECK(req_state_->request_delegate);
+  if (req_state_->get_assertion_response_callback) {
+    req_state_->get_assertion_result = GetAssertionResult::kTimeout;
+  }
   SignalFailureToRequestDelegate(
       AuthenticatorRequestClientDelegate::InterestingFailureReason::kTimeout,
       blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
@@ -1889,6 +1938,11 @@ void AuthenticatorCommonImpl::CancelWithStatus(
 }
 
 void AuthenticatorCommonImpl::OnCancelFromUI() {
+  if (!req_state_->get_assertion_result &&
+      req_state_->get_assertion_response_callback) {
+    // The user cancelled before the request finished.
+    req_state_->get_assertion_result = GetAssertionResult::kUserCancelled;
+  }
   CancelWithStatus(req_state_->error_awaiting_user_acknowledgement);
 }
 
@@ -2217,6 +2271,11 @@ void AuthenticatorCommonImpl::CompleteGetAssertionRequest(
     blink::mojom::GetAssertionAuthenticatorResponsePtr response,
     blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details) {
   DCHECK(req_state_->get_assertion_response_callback);
+
+  if (req_state_->get_assertion_result) {
+    UMA_HISTOGRAM_ENUMERATION("WebAuthentication.GetAssertion.Result",
+                              *req_state_->get_assertion_result);
+  }
 
   if (status == blink::mojom::AuthenticatorStatus::SUCCESS) {
     static_cast<RenderFrameHostImpl*>(GetRenderFrameHost())

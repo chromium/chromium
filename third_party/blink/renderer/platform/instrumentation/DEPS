@@ -6,12 +6,8 @@ include_rules = [
     "+third_party/blink/renderer/platform/instrumentation",
 
     # Dependencies.
-    "+base/json",
-    "+base/memory",
     "+base/strings",
-    "+base/values.h",
     "+components/performance_manager/public/mojom",
-    "+skia/ext/skia_trace_memory_dump_impl.h",
 
     "+third_party/blink/renderer/platform/fonts/font_global_context.h",
     "+third_party/blink/renderer/platform/graphics/image_decoding_store.h",

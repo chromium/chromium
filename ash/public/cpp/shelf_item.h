@@ -37,6 +37,10 @@ struct ASH_PUBLIC_EXPORT ShelfItem {
   // The title to display for tooltips, etc.
   std::u16string title;
 
+  // Text to be announced by the screenreader. If this is not explicitly set,
+  // the default value will be `title`.
+  std::u16string accessible_name;
+
   SkColor notification_badge_color = SK_ColorWHITE;
 
   // App status.

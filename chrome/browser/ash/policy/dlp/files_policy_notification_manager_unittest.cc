@@ -311,7 +311,7 @@ class FPNMIOTaskTest : public FilesPolicyNotificationManagerTest {
   // task to later show notifications/dialogs.
   void AddWarnedFiles(
       Policy policy,
-      OnDlpRestrictionCheckedWithJustificationCallback cb,
+      WarningWithJustificationCallback cb,
       file_manager::io_task::IOTaskId task_id,
       std::vector<base::FilePath> warned_files,
       dlp::FileAction action,
@@ -585,7 +585,7 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsWarningTest,
                       pause_params))))
       .Times(::testing::AtLeast(1));
 
-  base::MockCallback<OnDlpRestrictionCheckedWithJustificationCallback> mock_cb;
+  base::MockCallback<WarningWithJustificationCallback> mock_cb;
 
   AddWarnedFiles(GetPolicy(), mock_cb.Get(), task_id,
                  std::vector<base::FilePath>{src_file_path},
@@ -660,8 +660,7 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsWarningTest,
                 Field(&file_manager::io_task::ProgressStatus::pause_params,
                       pause_params))))
       .Times(::testing::AtLeast(1));
-  testing::StrictMock<
-      base::MockCallback<OnDlpRestrictionCheckedWithJustificationCallback>>
+  testing::StrictMock<base::MockCallback<WarningWithJustificationCallback>>
       mock_cb;
   AddWarnedFiles(GetPolicy(), mock_cb.Get(), task_id,
                  std::vector<base::FilePath>{src_file_path},
@@ -732,8 +731,7 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsWarningTest,
                       pause_params))))
       .Times(::testing::AtLeast(1));
 
-  testing::StrictMock<
-      base::MockCallback<OnDlpRestrictionCheckedWithJustificationCallback>>
+  testing::StrictMock<base::MockCallback<WarningWithJustificationCallback>>
       mock_cb;
 
   AddWarnedFiles(GetPolicy(), mock_cb.Get(), task_id,
@@ -799,8 +797,7 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsWarningTest,
                       pause_params))))
       .Times(::testing::AtLeast(1));
 
-  testing::StrictMock<
-      base::MockCallback<OnDlpRestrictionCheckedWithJustificationCallback>>
+  testing::StrictMock<base::MockCallback<WarningWithJustificationCallback>>
       mock_cb;
   fpnm_ = std::make_unique<FilesPolicyNotificationManager>(profile_);
   ASSERT_FALSE(fpnm_->HasIOTask(task_id));
@@ -1413,8 +1410,7 @@ TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Single) {
 
   EXPECT_FALSE(display_service_tester.GetNotification(kNotificationId));
   auto src_file_path = base::FilePath(kFile1);
-  testing::StrictMock<
-      base::MockCallback<OnDlpRestrictionCheckedWithJustificationCallback>>
+  testing::StrictMock<base::MockCallback<WarningWithJustificationCallback>>
       mock_cb;
   fpnm_->ShowDlpWarning(
       mock_cb.Get(), /*task_id=*/absl::nullopt, {src_file_path},
@@ -1454,8 +1450,7 @@ TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Multi) {
   NotificationDisplayServiceTester display_service_tester(profile_.get());
 
   EXPECT_FALSE(display_service_tester.GetNotification(kNotificationId));
-  testing::StrictMock<
-      base::MockCallback<OnDlpRestrictionCheckedWithJustificationCallback>>
+  testing::StrictMock<base::MockCallback<WarningWithJustificationCallback>>
       mock_cb;
   fpnm_->ShowDlpWarning(mock_cb.Get(), /*task_id=*/absl::nullopt,
                         {base::FilePath(kFile1), base::FilePath(kFile2)},

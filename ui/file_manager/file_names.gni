@@ -55,7 +55,6 @@ static_js_files = [
   "file_manager/externs/background/progress_center.js",
   "file_manager/externs/command_handler_deps.js",
   "file_manager/externs/directory_change_event.js",
-  "file_manager/externs/entries_changed_event.js",
   "file_manager/externs/entry_location.js",
   "file_manager/externs/exif_entry.js",
   "file_manager/externs/files_app_entry_interfaces.js",
@@ -201,10 +200,11 @@ ts_files = [
   "file_manager/common/js/api.ts",
   "file_manager/common/js/cr_ui.ts",
   "file_manager/common/js/dom_utils.ts",
-  "file_manager/common/js/entry_utils.ts",
   "file_manager/common/js/dialog_type.ts",
+  "file_manager/common/js/entry_utils.ts",
   "file_manager/common/js/file_tasks.ts",
   "file_manager/common/js/file_types_base.ts",
+  "file_manager/common/js/flags.ts",
   "file_manager/common/js/icon_util.ts",
   "file_manager/common/js/metrics.ts",
   "file_manager/common/js/lru_cache.ts",
@@ -365,7 +365,6 @@ ts_test_files = [
   "file_manager/common/js/entry_utils_unittest.ts",
   "file_manager/common/js/file_types_base_unittest.ts",
   "file_manager/common/js/lru_cache_unittest.ts",
-  "file_manager/common/js/mock_util.ts",
 
   # Containers
   "file_manager/containers/breadcrumb_container_unittest.ts",

@@ -188,7 +188,7 @@ bool AppBannerManagerAndroid::IsWebAppConsideredInstalled() const {
   return WebappsUtils::IsWebApkInstalled(web_contents()->GetBrowserContext(),
                                          manifest().start_url) ||
          WebappsClient::Get()->IsInstallationInProgress(web_contents(),
-                                                        manifest_id_);
+                                                        manifest().id);
 }
 
 void AppBannerManagerAndroid::ResetCurrentPageData() {
@@ -555,6 +555,10 @@ bool AppBannerManagerAndroid::IsAppFullyInstalledForSiteUrl(
 
 bool AppBannerManagerAndroid::IsAppPartiallyInstalledForSiteUrl(
     const GURL& site_url) const {
+  return false;
+}
+
+bool AppBannerManagerAndroid::IsInAppBrowsingContext() const {
   return false;
 }
 

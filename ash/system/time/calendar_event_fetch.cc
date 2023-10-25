@@ -6,6 +6,7 @@
 
 #include "ash/calendar/calendar_client.h"
 #include "ash/calendar/calendar_controller.h"
+#include "ash/glanceables/post_login_glanceables_metrics_recorder.h"
 #include "ash/shell.h"
 #include "ash/system/time/calendar_utils.h"
 #include "base/check.h"
@@ -31,6 +32,9 @@ CalendarEventFetch::CalendarEventFetch(
       fetch_start_time_(base::Time::Now()),
       timeout_(tick_clock) {
   SendFetchRequest();
+  Shell::Get()
+      ->post_login_glanceables_metrics_reporter()
+      ->RecordCalendarFetch();
 }
 
 CalendarEventFetch::~CalendarEventFetch() = default;

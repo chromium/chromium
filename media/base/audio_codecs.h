@@ -7,6 +7,7 @@
 
 #include <string>
 #include "media/base/media_export.h"
+#include "media/media_buildflags.h"
 
 namespace media {
 
@@ -36,13 +37,14 @@ enum class AudioCodec {
   kDTS = 18,
   kDTSXP2 = 19,
   kDTSE = 20,
+  kAC4 = 21,
   // DO NOT ADD RANDOM AUDIO CODECS!
   //
   // The only acceptable time to add a new codec is if there is production code
   // that uses said codec in the same CL.
 
   // Must always be equal to the largest entry ever logged.
-  kMaxValue = kDTSE,
+  kMaxValue = kAC4,
 };
 
 enum class AudioCodecProfile {
@@ -61,6 +63,12 @@ std::string MEDIA_EXPORT GetProfileName(AudioCodecProfile profile);
 MEDIA_EXPORT std::ostream& operator<<(std::ostream& os,
                                       const AudioCodec& codec);
 MEDIA_EXPORT AudioCodec StringToAudioCodec(const std::string& codec_id);
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+MEDIA_EXPORT bool ParseDolbyAc4CodecId(const std::string& codec_id,
+                                       uint8_t* bitstream_version,
+                                       uint8_t* presentation_version,
+                                       uint8_t* presentation_level);
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
 
 }  // namespace media
 

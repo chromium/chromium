@@ -32,9 +32,9 @@ void VideoSourceProviderImpl::AddClient(
 }
 
 void VideoSourceProviderImpl::GetSourceInfos(GetSourceInfosCallback callback) {
-  // The service might be shut down before the callback has the change to be
+  // The service might be shut down before the callback has a chance to be
   // executed. This triggers the CHECK in mojo code, which assumes that
-  // callbacks are either executed or or the underlying channel is closed. Wrap
+  // callbacks are either executed or the underlying channel is closed. Wrap
   // the callback to ensure it will be executed on destruction.
   device_factory_->GetDeviceInfos(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), std::vector<media::VideoCaptureDeviceInfo>()));

@@ -44,6 +44,7 @@
 #include "ui/events/ash/event_rewriter_ash.h"
 #include "ui/events/ash/event_rewriter_metrics.h"
 #include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/ash/keyboard_device_id_event_rewriter.h"
 #include "ui/events/ash/mojom/extended_fkeys_modifier.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom.h"
@@ -65,6 +66,7 @@
 #include "ui/events/test/events_test_utils.h"
 #include "ui/events/test/test_event_processor.h"
 #include "ui/events/test/test_event_rewriter_continuation.h"
+#include "ui/events/test/test_event_source.h"
 #include "ui/events/types/event_type.h"
 #include "ui/message_center/fake_message_center.h"
 #include "ui/wm/core/window_util.h"
@@ -91,6 +93,28 @@ constexpr int kTouchpadId2 = 11;
 // in the top row, which maps to F-Keys.
 constexpr char kKbdDefaultCustomTopRowLayout[] =
     "01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f";
+
+class TestEventSink : public ui::EventSink {
+ public:
+  TestEventSink() = default;
+  TestEventSink(const TestEventSink&) = delete;
+  TestEventSink& operator=(const TestEventSink&) = delete;
+  ~TestEventSink() override = default;
+
+  // Returns the recorded events.
+  std::vector<std::unique_ptr<ui::Event>> TakeEvents() {
+    return std::move(events_);
+  }
+
+  // ui::EventSink:
+  ui::EventDispatchDetails OnEventFromSource(ui::Event* event) override {
+    events_.emplace_back(event->Clone());
+    return ui::EventDispatchDetails();
+  }
+
+ private:
+  std::vector<std::unique_ptr<ui::Event>> events_;
+};
 
 class TestEventRewriterContinuation
     : public ui::test::TestEventRewriterContinuation {
@@ -139,7 +163,7 @@ std::string GetKeyEventAsString(const ui::KeyEvent& keyevent) {
                                    keyevent.GetDomKey(), keyevent.scan_code());
 }
 
-std::string GetRewrittenEventAsString(ui::EventRewriter* const rewriter,
+std::string GetRewrittenEventAsString(ui::test::TestEventSource& source,
                                       ui::EventType ui_type,
                                       ui::KeyboardCode ui_keycode,
                                       ui::DomCode code,
@@ -151,11 +175,14 @@ std::string GetRewrittenEventAsString(ui::EventRewriter* const rewriter,
                      ui::EventTimeForNow());
   event.set_scan_code(scan_code);
   event.set_source_device_id(device_id);
-  TestEventRewriterContinuation continuation;
-  rewriter->RewriteEvent(event, continuation.weak_ptr_factory_.GetWeakPtr());
-  if (!continuation.rewritten_events.empty())
-    return GetKeyEventAsString(*continuation.rewritten_events[0]->AsKeyEvent());
-  return GetKeyEventAsString(event);
+  source.Send(&event);
+
+  auto events =
+      static_cast<TestEventSink*>(source.GetEventSink())->TakeEvents();
+  if (events.empty()) {
+    return GetKeyEventAsString(event);
+  }
+  return GetKeyEventAsString(*events[0]->AsKeyEvent());
 }
 
 // Table entry for simple single key event rewriting tests.
@@ -179,11 +206,11 @@ std::string GetTestCaseAsString(ui::EventType ui_type,
 }
 
 // Tests a single stateless key rewrite operation.
-void CheckKeyTestCase(ui::EventRewriter* const rewriter,
+void CheckKeyTestCase(ui::test::TestEventSource& source,
                       const KeyTestCase& test) {
   SCOPED_TRACE("\nSource:    " + GetTestCaseAsString(test.type, test.input));
   EXPECT_EQ(GetTestCaseAsString(test.type, test.expected),
-            GetRewrittenEventAsString(rewriter, test.type, test.input.key_code,
+            GetRewrittenEventAsString(source, test.type, test.input.key_code,
                                       test.input.code, test.input.flags,
                                       test.input.key, test.input.scan_code,
                                       test.device_id));
@@ -234,12 +261,21 @@ class EventRewriterTest : public ChromeAshTestBase {
         input_device_settings_controller_mock_.get());
     delegate_->set_pref_service_for_testing(prefs());
     device_data_manager_test_api_.SetKeyboardDevices({});
-    rewriter_ = std::make_unique<ui::EventRewriterAsh>(
+    keyboard_device_id_event_rewriter_ =
+        std::make_unique<ui::KeyboardDeviceIdEventRewriter>(
+            keyboard_capability_.get());
+    event_rewriter_ash_ = std::make_unique<ui::EventRewriterAsh>(
         delegate_.get(), keyboard_capability_.get(), nullptr, false,
         &fake_ime_keyboard_);
+
+    source_.AddEventRewriter(keyboard_device_id_event_rewriter_.get());
+    source_.AddEventRewriter(event_rewriter_ash_.get());
   }
 
   void TearDown() override {
+    source_.RemoveEventRewriter(event_rewriter_ash_.get());
+    source_.RemoveEventRewriter(keyboard_device_id_event_rewriter_.get());
+
     input_device_settings_controller_mock_.reset();
     input_device_settings_controller_resetter_.reset();
     ChromeAshTestBase::TearDown();
@@ -247,7 +283,7 @@ class EventRewriterTest : public ChromeAshTestBase {
     input_method::Shutdown();
   }
 
-  ui::EventRewriter* rewriter() { return rewriter_.get(); }
+  ui::test::TestEventSource& source() { return source_; }
 
  protected:
   void TestRewriteNumPadKeys();
@@ -260,7 +296,7 @@ class EventRewriterTest : public ChromeAshTestBase {
 
   ui::MouseEvent RewriteMouseButtonEvent(const ui::MouseEvent& event) {
     TestEventRewriterContinuation continuation;
-    rewriter_->RewriteMouseButtonEventForTesting(
+    event_rewriter_ash_->RewriteMouseButtonEventForTesting(
         event, continuation.weak_ptr_factory_.GetWeakPtr());
     if (!continuation.rewritten_events.empty())
       return ui::MouseEvent(*continuation.rewritten_events[0]->AsMouseEvent());
@@ -326,8 +362,9 @@ class EventRewriterTest : public ChromeAshTestBase {
     device_data_manager_test_api_.SetKeyboardDevices({keyboard});
 
     // Reset the state of the EventRewriter.
-    rewriter_->ResetStateForTesting();
-    rewriter_->set_last_keyboard_device_id_for_testing(kKeyboardDeviceId);
+    event_rewriter_ash_->ResetStateForTesting();
+    event_rewriter_ash_->set_last_keyboard_device_id_for_testing(
+        kKeyboardDeviceId);
 
     return keyboard;
   }
@@ -339,7 +376,7 @@ class EventRewriterTest : public ChromeAshTestBase {
                     const std::vector<KeyTestCase>& tests) {
     SetupKeyboard(name, layout, type, has_custom_top_row);
     for (const auto& test : tests) {
-      CheckKeyTestCase(rewriter(), test);
+      CheckKeyTestCase(source(), test);
       const size_t expected_notification_count =
           test.triggers_notification ? 1 : 0;
       EXPECT_EQ(message_center_.NotificationCount(),
@@ -436,7 +473,11 @@ class EventRewriterTest : public ChromeAshTestBase {
   std::unique_ptr<EventRewriterDelegateImpl> delegate_;
   std::unique_ptr<ui::KeyboardCapability> keyboard_capability_;
   input_method::FakeImeKeyboard fake_ime_keyboard_;
-  std::unique_ptr<ui::EventRewriterAsh> rewriter_;
+  std::unique_ptr<ui::KeyboardDeviceIdEventRewriter>
+      keyboard_device_id_event_rewriter_;
+  std::unique_ptr<ui::EventRewriterAsh> event_rewriter_ash_;
+  TestEventSink sink_;
+  ui::test::TestEventSource source_{&sink_};
   message_center::FakeMessageCenter message_center_;
   raw_ptr<DeprecationNotificationController, ExperimentalAsh>
       deprecation_controller_;  // Not owned.
@@ -448,13 +489,13 @@ class EventRewriterTest : public ChromeAshTestBase {
 // publishes a latency metric every time a key is pressed.
 TEST_F(EventRewriterTest, TestKeyRewriteLatency) {
   base::HistogramTester histogram_tester;
-  CheckKeyTestCase(rewriter(),
+  CheckKeyTestCase(source(),
                    {ui::ET_KEY_PRESSED,
                     {ui::VKEY_B, ui::DomCode::US_B, ui::EF_CONTROL_DOWN,
                      ui::DomKey::Constant<'b'>::Character},
                     {ui::VKEY_B, ui::DomCode::US_B, ui::EF_CONTROL_DOWN,
                      ui::DomKey::Constant<'b'>::Character}});
-  CheckKeyTestCase(rewriter(),
+  CheckKeyTestCase(source(),
                    {ui::ET_KEY_PRESSED,
                     {ui::VKEY_B, ui::DomCode::US_B, ui::EF_CONTROL_DOWN,
                      ui::DomKey::Constant<'b'>::Character},
@@ -596,7 +637,7 @@ TEST_F(EventRewriterTest, ModifiersNotRemappedWhenSuppressed) {
   delegate_->SuppressModifierKeyRewrites(false);
 
   // Pressing Control + B should now be remapped to Alt + B.
-  CheckKeyTestCase(rewriter(),
+  CheckKeyTestCase(source(),
                    {ui::ET_KEY_PRESSED,
                     {ui::VKEY_B, ui::DomCode::US_B, ui::EF_CONTROL_DOWN,
                      ui::DomKey::Constant<'b'>::Character},
@@ -606,7 +647,7 @@ TEST_F(EventRewriterTest, ModifiersNotRemappedWhenSuppressed) {
   delegate_->SuppressModifierKeyRewrites(true);
 
   // Pressing Control + B should no longer be remapped.
-  CheckKeyTestCase(rewriter(),
+  CheckKeyTestCase(source(),
                    {ui::ET_KEY_PRESSED,
                     {ui::VKEY_B, ui::DomCode::US_B, ui::EF_CONTROL_DOWN,
                      ui::DomKey::Constant<'b'>::Character},
@@ -1456,7 +1497,7 @@ TEST_F(EventRewriterTest,
       GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_MENU,
                                 ui::DomCode::ALT_LEFT, ui::EF_ALT_DOWN,
                                 ui::DomKey::ALT, kNoScanCode),
-      GetRewrittenEventAsString(rewriter(), ui::ET_KEY_PRESSED, ui::VKEY_ESCAPE,
+      GetRewrittenEventAsString(source(), ui::ET_KEY_PRESSED, ui::VKEY_ESCAPE,
                                 ui::DomCode::ESCAPE, ui::EF_NONE,
                                 ui::DomKey::ESCAPE, kNoScanCode));
 
@@ -1470,27 +1511,27 @@ TEST_F(EventRewriterTest,
       GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_ESCAPE,
                                 ui::DomCode::ESCAPE, ui::EF_NONE,
                                 ui::DomKey::ESCAPE, kNoScanCode),
-      GetRewrittenEventAsString(rewriter(), ui::ET_KEY_RELEASED,
-                                ui::VKEY_ESCAPE, ui::DomCode::ESCAPE,
-                                ui::EF_NONE, ui::DomKey::ESCAPE, kNoScanCode));
+      GetRewrittenEventAsString(source(), ui::ET_KEY_RELEASED, ui::VKEY_ESCAPE,
+                                ui::DomCode::ESCAPE, ui::EF_NONE,
+                                ui::DomKey::ESCAPE, kNoScanCode));
 
   // Press A, expect that Alt is not stickied.
-  EXPECT_EQ(
-      GetExpectedResultAsString(
-          ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A, ui::EF_NONE,
-          ui::DomKey::Constant<'a'>::Character, kNoScanCode),
-      GetRewrittenEventAsString(
-          rewriter(), ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
-          ui::EF_NONE, ui::DomKey::Constant<'a'>::Character, kNoScanCode));
+  EXPECT_EQ(GetExpectedResultAsString(
+                ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A, ui::EF_NONE,
+                ui::DomKey::Constant<'a'>::Character, kNoScanCode),
+            GetRewrittenEventAsString(source(), ui::ET_KEY_PRESSED, ui::VKEY_A,
+                                      ui::DomCode::US_A, ui::EF_NONE,
+                                      ui::DomKey::Constant<'a'>::Character,
+                                      kNoScanCode));
 
   // Release A.
-  EXPECT_EQ(
-      GetExpectedResultAsString(
-          ui::ET_KEY_RELEASED, ui::VKEY_A, ui::DomCode::US_A, ui::EF_NONE,
-          ui::DomKey::Constant<'a'>::Character, kNoScanCode),
-      GetRewrittenEventAsString(
-          rewriter(), ui::ET_KEY_RELEASED, ui::VKEY_A, ui::DomCode::US_A,
-          ui::EF_NONE, ui::DomKey::Constant<'a'>::Character, kNoScanCode));
+  EXPECT_EQ(GetExpectedResultAsString(
+                ui::ET_KEY_RELEASED, ui::VKEY_A, ui::DomCode::US_A, ui::EF_NONE,
+                ui::DomKey::Constant<'a'>::Character, kNoScanCode),
+            GetRewrittenEventAsString(source(), ui::ET_KEY_RELEASED, ui::VKEY_A,
+                                      ui::DomCode::US_A, ui::EF_NONE,
+                                      ui::DomKey::Constant<'a'>::Character,
+                                      kNoScanCode));
 }
 
 TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
@@ -1510,7 +1551,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
                                 ui::DomCode::CAPS_LOCK,
                                 ui::EF_MOD3_DOWN | ui::EF_CAPS_LOCK_ON,
                                 ui::DomKey::CAPS_LOCK, kNoScanCode),
-      GetRewrittenEventAsString(rewriter(), ui::ET_KEY_PRESSED, ui::VKEY_LWIN,
+      GetRewrittenEventAsString(source(), ui::ET_KEY_PRESSED, ui::VKEY_LWIN,
                                 ui::DomCode::META_LEFT, ui::EF_COMMAND_DOWN,
                                 ui::DomKey::META, kNoScanCode));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
@@ -1520,7 +1561,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
       GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
                                 ui::DomCode::CAPS_LOCK, ui::EF_NONE,
                                 ui::DomKey::CAPS_LOCK, kNoScanCode),
-      GetRewrittenEventAsString(rewriter(), ui::ET_KEY_RELEASED, ui::VKEY_LWIN,
+      GetRewrittenEventAsString(source(), ui::ET_KEY_RELEASED, ui::VKEY_LWIN,
                                 ui::DomCode::META_LEFT, ui::EF_NONE,
                                 ui::DomKey::META, kNoScanCode));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
@@ -1530,7 +1571,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
                                       ui::DomCode::CAPS_LOCK,
                                       ui::EF_CAPS_LOCK_ON | ui::EF_MOD3_DOWN,
                                       ui::DomKey::CAPS_LOCK, kNoScanCode),
-            GetRewrittenEventAsString(rewriter(), ui::ET_KEY_PRESSED,
+            GetRewrittenEventAsString(source(), ui::ET_KEY_PRESSED,
                                       ui::VKEY_LWIN, ui::DomCode::META_LEFT,
                                       ui::EF_COMMAND_DOWN | ui::EF_CAPS_LOCK_ON,
                                       ui::DomKey::META, kNoScanCode));
@@ -1541,7 +1582,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
       GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
                                 ui::DomCode::CAPS_LOCK, ui::EF_NONE,
                                 ui::DomKey::CAPS_LOCK, kNoScanCode),
-      GetRewrittenEventAsString(rewriter(), ui::ET_KEY_RELEASED, ui::VKEY_LWIN,
+      GetRewrittenEventAsString(source(), ui::ET_KEY_RELEASED, ui::VKEY_LWIN,
                                 ui::DomCode::META_LEFT, ui::EF_NONE,
                                 ui::DomKey::META, kNoScanCode));
   EXPECT_FALSE(fake_ime_keyboard_.IsCapsLockEnabled());
@@ -1556,7 +1597,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
                                 ui::DomCode::CAPS_LOCK,
                                 ui::EF_MOD3_DOWN | ui::EF_CAPS_LOCK_ON,
                                 ui::DomKey::CAPS_LOCK, kNoScanCode),
-      GetRewrittenEventAsString(rewriter(), ui::ET_KEY_PRESSED, ui::VKEY_LWIN,
+      GetRewrittenEventAsString(source(), ui::ET_KEY_PRESSED, ui::VKEY_LWIN,
                                 ui::DomCode::META_LEFT, ui::EF_COMMAND_DOWN,
                                 ui::DomKey::META, kNoScanCode));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
@@ -1566,7 +1607,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
       GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
                                 ui::DomCode::CAPS_LOCK, ui::EF_NONE,
                                 ui::DomKey::CAPS_LOCK, kNoScanCode),
-      GetRewrittenEventAsString(rewriter(), ui::ET_KEY_RELEASED, ui::VKEY_LWIN,
+      GetRewrittenEventAsString(source(), ui::ET_KEY_RELEASED, ui::VKEY_LWIN,
                                 ui::DomCode::META_LEFT, ui::EF_NONE,
                                 ui::DomKey::META, kNoScanCode));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
@@ -1576,7 +1617,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
                                       ui::DomCode::CAPS_LOCK,
                                       ui::EF_CAPS_LOCK_ON | ui::EF_MOD3_DOWN,
                                       ui::DomKey::CAPS_LOCK, kNoScanCode),
-            GetRewrittenEventAsString(rewriter(), ui::ET_KEY_PRESSED,
+            GetRewrittenEventAsString(source(), ui::ET_KEY_PRESSED,
                                       ui::VKEY_LWIN, ui::DomCode::META_LEFT,
                                       ui::EF_COMMAND_DOWN | ui::EF_CAPS_LOCK_ON,
                                       ui::DomKey::META, kNoScanCode));
@@ -1587,7 +1628,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
       GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
                                 ui::DomCode::CAPS_LOCK, ui::EF_NONE,
                                 ui::DomKey::CAPS_LOCK, kNoScanCode),
-      GetRewrittenEventAsString(rewriter(), ui::ET_KEY_RELEASED, ui::VKEY_LWIN,
+      GetRewrittenEventAsString(source(), ui::ET_KEY_RELEASED, ui::VKEY_LWIN,
                                 ui::DomCode::META_LEFT, ui::EF_NONE,
                                 ui::DomKey::META, kNoScanCode));
   EXPECT_FALSE(fake_ime_keyboard_.IsCapsLockEnabled());
@@ -1601,20 +1642,20 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
                                       ui::DomCode::CAPS_LOCK,
                                       ui::EF_CAPS_LOCK_ON | ui::EF_MOD3_DOWN,
                                       ui::DomKey::CAPS_LOCK, kNoScanCode),
-            GetRewrittenEventAsString(rewriter(), ui::ET_KEY_PRESSED,
+            GetRewrittenEventAsString(source(), ui::ET_KEY_PRESSED,
                                       ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
                                       ui::EF_CAPS_LOCK_ON | ui::EF_MOD3_DOWN,
                                       ui::DomKey::CAPS_LOCK, kNoScanCode));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Release Caps Lock.
-  EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
-                                      ui::DomCode::CAPS_LOCK, ui::EF_NONE,
-                                      ui::DomKey::CAPS_LOCK, kNoScanCode),
-            GetRewrittenEventAsString(rewriter(), ui::ET_KEY_RELEASED,
-                                      ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
-                                      ui::EF_NONE, ui::DomKey::CAPS_LOCK,
-                                      kNoScanCode));
+  EXPECT_EQ(
+      GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
+                                ui::DomCode::CAPS_LOCK, ui::EF_NONE,
+                                ui::DomKey::CAPS_LOCK, kNoScanCode),
+      GetRewrittenEventAsString(source(), ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
+                                ui::DomCode::CAPS_LOCK, ui::EF_NONE,
+                                ui::DomKey::CAPS_LOCK, kNoScanCode));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 }
 
@@ -1626,23 +1667,23 @@ TEST_F(EventRewriterTest, TestRewriteCapsLock) {
   EXPECT_FALSE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // On Chrome OS, CapsLock is mapped to CapsLock with Mod3Mask.
-  EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_CAPITAL,
-                                      ui::DomCode::CAPS_LOCK,
-                                      ui::EF_CAPS_LOCK_ON | ui::EF_MOD3_DOWN,
-                                      ui::DomKey::CAPS_LOCK, kNoScanCode),
-            GetRewrittenEventAsString(rewriter(), ui::ET_KEY_PRESSED,
-                                      ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
-                                      ui::EF_MOD3_DOWN, ui::DomKey::CAPS_LOCK,
-                                      kNoScanCode));
+  EXPECT_EQ(
+      GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_CAPITAL,
+                                ui::DomCode::CAPS_LOCK,
+                                ui::EF_CAPS_LOCK_ON | ui::EF_MOD3_DOWN,
+                                ui::DomKey::CAPS_LOCK, kNoScanCode),
+      GetRewrittenEventAsString(source(), ui::ET_KEY_PRESSED, ui::VKEY_CAPITAL,
+                                ui::DomCode::CAPS_LOCK, ui::EF_MOD3_DOWN,
+                                ui::DomKey::CAPS_LOCK, kNoScanCode));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
-  EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
-                                      ui::DomCode::CAPS_LOCK, ui::EF_NONE,
-                                      ui::DomKey::CAPS_LOCK, kNoScanCode),
-            GetRewrittenEventAsString(rewriter(), ui::ET_KEY_RELEASED,
-                                      ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
-                                      ui::EF_MOD3_DOWN, ui::DomKey::CAPS_LOCK,
-                                      kNoScanCode));
+  EXPECT_EQ(
+      GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
+                                ui::DomCode::CAPS_LOCK, ui::EF_NONE,
+                                ui::DomKey::CAPS_LOCK, kNoScanCode),
+      GetRewrittenEventAsString(source(), ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
+                                ui::DomCode::CAPS_LOCK, ui::EF_MOD3_DOWN,
+                                ui::DomKey::CAPS_LOCK, kNoScanCode));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Remap Caps Lock to Control.
@@ -1658,7 +1699,7 @@ TEST_F(EventRewriterTest, TestRewriteCapsLock) {
                                       ui::DomCode::CONTROL_LEFT,
                                       ui::EF_CONTROL_DOWN | ui::EF_CAPS_LOCK_ON,
                                       ui::DomKey::CONTROL, kNoScanCode),
-            GetRewrittenEventAsString(rewriter(), ui::ET_KEY_PRESSED,
+            GetRewrittenEventAsString(source(), ui::ET_KEY_PRESSED,
                                       ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
                                       ui::EF_CAPS_LOCK_ON | ui::EF_MOD3_DOWN,
                                       ui::DomKey::CAPS_LOCK, kNoScanCode));
@@ -1669,10 +1710,9 @@ TEST_F(EventRewriterTest, TestRewriteCapsLock) {
       GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_CONTROL,
                                 ui::DomCode::CONTROL_LEFT, ui::EF_CAPS_LOCK_ON,
                                 ui::DomKey::CONTROL, kNoScanCode),
-      GetRewrittenEventAsString(rewriter(), ui::ET_KEY_RELEASED,
-                                ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
-                                ui::EF_CAPS_LOCK_ON, ui::DomKey::CAPS_LOCK,
-                                kNoScanCode));
+      GetRewrittenEventAsString(source(), ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
+                                ui::DomCode::CAPS_LOCK, ui::EF_CAPS_LOCK_ON,
+                                ui::DomKey::CAPS_LOCK, kNoScanCode));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 }
 
@@ -1684,24 +1724,24 @@ TEST_F(EventRewriterTest, TestRewriteExternalCapsLockWithDifferentScenarios) {
   EXPECT_FALSE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Turn on CapsLock.
-  EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_CAPITAL,
-                                      ui::DomCode::CAPS_LOCK,
-                                      ui::EF_CAPS_LOCK_ON | ui::EF_MOD3_DOWN,
-                                      ui::DomKey::CAPS_LOCK, kNoScanCode),
-            GetRewrittenEventAsString(rewriter(), ui::ET_KEY_PRESSED,
-                                      ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
-                                      ui::EF_MOD3_DOWN, ui::DomKey::CAPS_LOCK,
-                                      kNoScanCode));
+  EXPECT_EQ(
+      GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_CAPITAL,
+                                ui::DomCode::CAPS_LOCK,
+                                ui::EF_CAPS_LOCK_ON | ui::EF_MOD3_DOWN,
+                                ui::DomKey::CAPS_LOCK, kNoScanCode),
+      GetRewrittenEventAsString(source(), ui::ET_KEY_PRESSED, ui::VKEY_CAPITAL,
+                                ui::DomCode::CAPS_LOCK, ui::EF_MOD3_DOWN,
+                                ui::DomKey::CAPS_LOCK, kNoScanCode));
 
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
-  EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
-                                      ui::DomCode::CAPS_LOCK, ui::EF_NONE,
-                                      ui::DomKey::CAPS_LOCK, kNoScanCode),
-            GetRewrittenEventAsString(rewriter(), ui::ET_KEY_RELEASED,
-                                      ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
-                                      ui::EF_MOD3_DOWN, ui::DomKey::CAPS_LOCK,
-                                      kNoScanCode));
+  EXPECT_EQ(
+      GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
+                                ui::DomCode::CAPS_LOCK, ui::EF_NONE,
+                                ui::DomKey::CAPS_LOCK, kNoScanCode),
+      GetRewrittenEventAsString(source(), ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
+                                ui::DomCode::CAPS_LOCK, ui::EF_MOD3_DOWN,
+                                ui::DomKey::CAPS_LOCK, kNoScanCode));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Remap CapsLock to Search.
@@ -1712,23 +1752,23 @@ TEST_F(EventRewriterTest, TestRewriteExternalCapsLockWithDifferentScenarios) {
 
   // Now that CapsLock is enabled, press the remapped CapsLock button again
   // and expect to not disable CapsLock.
-  EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_LWIN,
-                                      ui::DomCode::META_LEFT,
-                                      ui::EF_COMMAND_DOWN | ui::EF_CAPS_LOCK_ON,
-                                      ui::DomKey::META, kNoScanCode),
-            GetRewrittenEventAsString(rewriter(), ui::ET_KEY_PRESSED,
-                                      ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
-                                      ui::EF_CAPS_LOCK_ON,
-                                      ui::DomKey::CAPS_LOCK, kNoScanCode));
+  EXPECT_EQ(
+      GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_LWIN,
+                                ui::DomCode::META_LEFT,
+                                ui::EF_COMMAND_DOWN | ui::EF_CAPS_LOCK_ON,
+                                ui::DomKey::META, kNoScanCode),
+      GetRewrittenEventAsString(source(), ui::ET_KEY_PRESSED, ui::VKEY_CAPITAL,
+                                ui::DomCode::CAPS_LOCK, ui::EF_CAPS_LOCK_ON,
+                                ui::DomKey::CAPS_LOCK, kNoScanCode));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
-  EXPECT_EQ(GetExpectedResultAsString(
-                ui::ET_KEY_RELEASED, ui::VKEY_LWIN, ui::DomCode::META_LEFT,
-                ui::EF_CAPS_LOCK_ON, ui::DomKey::META, kNoScanCode),
-            GetRewrittenEventAsString(rewriter(), ui::ET_KEY_RELEASED,
-                                      ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
-                                      ui::EF_CAPS_LOCK_ON,
-                                      ui::DomKey::CAPS_LOCK, kNoScanCode));
+  EXPECT_EQ(
+      GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_LWIN,
+                                ui::DomCode::META_LEFT, ui::EF_CAPS_LOCK_ON,
+                                ui::DomKey::META, kNoScanCode),
+      GetRewrittenEventAsString(source(), ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
+                                ui::DomCode::CAPS_LOCK, ui::EF_CAPS_LOCK_ON,
+                                ui::DomKey::CAPS_LOCK, kNoScanCode));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Remap CapsLock key back to CapsLock.
@@ -1739,14 +1779,14 @@ TEST_F(EventRewriterTest, TestRewriteExternalCapsLockWithDifferentScenarios) {
 
   // Now press CapsLock again and now expect that the CapsLock modifier is
   // removed and the key is disabled.
-  EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_CAPITAL,
-                                      ui::DomCode::CAPS_LOCK,
-                                      ui::EF_CAPS_LOCK_ON | ui::EF_MOD3_DOWN,
-                                      ui::DomKey::CAPS_LOCK, kNoScanCode),
-            GetRewrittenEventAsString(rewriter(), ui::ET_KEY_PRESSED,
-                                      ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
-                                      ui::EF_MOD3_DOWN, ui::DomKey::CAPS_LOCK,
-                                      kNoScanCode));
+  EXPECT_EQ(
+      GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_CAPITAL,
+                                ui::DomCode::CAPS_LOCK,
+                                ui::EF_CAPS_LOCK_ON | ui::EF_MOD3_DOWN,
+                                ui::DomKey::CAPS_LOCK, kNoScanCode),
+      GetRewrittenEventAsString(source(), ui::ET_KEY_PRESSED, ui::VKEY_CAPITAL,
+                                ui::DomCode::CAPS_LOCK, ui::EF_MOD3_DOWN,
+                                ui::DomKey::CAPS_LOCK, kNoScanCode));
   EXPECT_FALSE(fake_ime_keyboard_.IsCapsLockEnabled());
 }
 
@@ -1799,13 +1839,13 @@ TEST_F(EventRewriterTest, TestRewriteCapsLockMod3InUse) {
 
   // Press CapsLock+a. Confirm that Mod3Mask is NOT rewritten to ControlMask
   // when Mod3Mask is already in use by the current XKB layout.
-  EXPECT_EQ(
-      GetExpectedResultAsString(
-          ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A, ui::EF_NONE,
-          ui::DomKey::Constant<'a'>::Character, kNoScanCode),
-      GetRewrittenEventAsString(
-          rewriter(), ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
-          ui::EF_NONE, ui::DomKey::Constant<'a'>::Character, kNoScanCode));
+  EXPECT_EQ(GetExpectedResultAsString(
+                ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A, ui::EF_NONE,
+                ui::DomKey::Constant<'a'>::Character, kNoScanCode),
+            GetRewrittenEventAsString(source(), ui::ET_KEY_PRESSED, ui::VKEY_A,
+                                      ui::DomCode::US_A, ui::EF_NONE,
+                                      ui::DomKey::Constant<'a'>::Character,
+                                      kNoScanCode));
 
   input_method_manager_mock_->set_mod3_used(false);
 }
@@ -3612,23 +3652,23 @@ TEST_F(EventRewriterTest, TestRewriteFunctionKeysWilcoLayouts) {
   SetupKeyboard("Wilco Keyboard", kKbdTopRowLayoutWilcoTag);
   // Standard key tests using Wilco 1.0 keyboard
   for (const auto& test : wilco_standard_tests)
-    CheckKeyTestCase(rewriter(), test);
-  CheckKeyTestCase(rewriter(), wilco_1_test);
+    CheckKeyTestCase(source(), test);
+  CheckKeyTestCase(source(), wilco_1_test);
 
   // Set keyboard layout to Drallion (Wilco 1.5)
   SetupKeyboard("Drallion Keyboard", kKbdTopRowLayoutDrallionTag);
 
   // Run key tests using Drallion keyboard layout (no privacy screen)
-  rewriter_->set_privacy_screen_for_testing(false);
+  event_rewriter_ash_->set_privacy_screen_for_testing(false);
   for (const auto& test : wilco_standard_tests)
-    CheckKeyTestCase(rewriter(), test);
-  CheckKeyTestCase(rewriter(), drallion_test_no_privacy_screen);
+    CheckKeyTestCase(source(), test);
+  CheckKeyTestCase(source(), drallion_test_no_privacy_screen);
 
   // Run key tests using Drallion keyboard layout (privacy screen supported)
-  rewriter_->set_privacy_screen_for_testing(true);
+  event_rewriter_ash_->set_privacy_screen_for_testing(true);
   for (const auto& test : wilco_standard_tests)
-    CheckKeyTestCase(rewriter(), test);
-  CheckKeyTestCase(rewriter(), drallion_test_privacy_screen);
+    CheckKeyTestCase(source(), test);
+  CheckKeyTestCase(source(), drallion_test_privacy_screen);
 }
 
 TEST_F(EventRewriterTest, TestRewriteActionKeysWilcoLayouts) {
@@ -3804,27 +3844,27 @@ TEST_F(EventRewriterTest, TestRewriteActionKeysWilcoLayouts) {
   SetupKeyboard("Wilco Keyboard", kKbdTopRowLayoutWilcoTag);
   // Standard key tests using Wilco 1.0 keyboard
   for (const auto& test : wilco_standard_tests)
-    CheckKeyTestCase(rewriter(), test);
+    CheckKeyTestCase(source(), test);
   // Wilco 1.0 specific key tests
   for (const auto& test : wilco_1_tests)
-    CheckKeyTestCase(rewriter(), test);
+    CheckKeyTestCase(source(), test);
 
   // Set keyboard layout to Drallion (Wilco 1.5)
   SetupKeyboard("Drallion Keyboard", kKbdTopRowLayoutDrallionTag);
 
   // Standard key tests using Drallion keyboard layout
   for (const auto& test : wilco_standard_tests)
-    CheckKeyTestCase(rewriter(), test);
+    CheckKeyTestCase(source(), test);
 
   // Drallion specific key tests (no privacy screen)
-  rewriter_->set_privacy_screen_for_testing(false);
+  event_rewriter_ash_->set_privacy_screen_for_testing(false);
   for (const auto& test : drallion_tests_no_privacy_screen)
-    CheckKeyTestCase(rewriter(), test);
+    CheckKeyTestCase(source(), test);
 
   // Drallion specific key tests (privacy screen supported)
-  rewriter_->set_privacy_screen_for_testing(true);
+  event_rewriter_ash_->set_privacy_screen_for_testing(true);
   for (const auto& test : drallion_tests_privacy_screen)
-    CheckKeyTestCase(rewriter(), test);
+    CheckKeyTestCase(source(), test);
 }
 
 TEST_F(EventRewriterTest,
@@ -3935,11 +3975,11 @@ TEST_F(EventRewriterTest,
   SetupKeyboard("Wilco Keyboard", kKbdTopRowLayoutWilcoTag);
   // Standard key tests using Wilco 1.0 keyboard
   for (const auto& test : wilco_standard_tests) {
-    CheckKeyTestCase(rewriter(), test);
+    CheckKeyTestCase(source(), test);
   }
   // Wilco 1.0 specific key tests
   for (const auto& test : wilco_1_tests) {
-    CheckKeyTestCase(rewriter(), test);
+    CheckKeyTestCase(source(), test);
   }
 
   // Set keyboard layout to Drallion (Wilco 1.5)
@@ -3947,19 +3987,19 @@ TEST_F(EventRewriterTest,
 
   // Standard key tests using Drallion keyboard layout
   for (const auto& test : wilco_standard_tests) {
-    CheckKeyTestCase(rewriter(), test);
+    CheckKeyTestCase(source(), test);
   }
 
   // Drallion specific key tests (no privacy screen)
-  rewriter_->set_privacy_screen_for_testing(false);
+  event_rewriter_ash_->set_privacy_screen_for_testing(false);
   for (const auto& test : drallion_tests_no_privacy_screen) {
-    CheckKeyTestCase(rewriter(), test);
+    CheckKeyTestCase(source(), test);
   }
 
   // Drallion specific key tests (privacy screen supported)
-  rewriter_->set_privacy_screen_for_testing(true);
+  event_rewriter_ash_->set_privacy_screen_for_testing(true);
   for (const auto& test : drallion_tests_privacy_screen) {
-    CheckKeyTestCase(rewriter(), test);
+    CheckKeyTestCase(source(), test);
   }
 }
 
@@ -4058,11 +4098,11 @@ TEST_F(
   SetupKeyboard("Wilco Keyboard", kKbdTopRowLayoutWilcoTag);
   // Standard key tests using Wilco 1.0 keyboard
   for (const auto& test : wilco_standard_tests) {
-    CheckKeyTestCase(rewriter(), test);
+    CheckKeyTestCase(source(), test);
   }
   // Wilco 1.0 specific key tests
   for (const auto& test : wilco_1_tests) {
-    CheckKeyTestCase(rewriter(), test);
+    CheckKeyTestCase(source(), test);
   }
 
   // Set keyboard layout to Drallion (Wilco 1.5)
@@ -4070,19 +4110,19 @@ TEST_F(
 
   // Standard key tests using Drallion keyboard layout
   for (const auto& test : wilco_standard_tests) {
-    CheckKeyTestCase(rewriter(), test);
+    CheckKeyTestCase(source(), test);
   }
 
   // Drallion specific key tests (no privacy screen)
-  rewriter_->set_privacy_screen_for_testing(false);
+  event_rewriter_ash_->set_privacy_screen_for_testing(false);
   for (const auto& test : drallion_tests_no_privacy_screen) {
-    CheckKeyTestCase(rewriter(), test);
+    CheckKeyTestCase(source(), test);
   }
 
   // Drallion specific key tests (privacy screen supported)
-  rewriter_->set_privacy_screen_for_testing(true);
+  event_rewriter_ash_->set_privacy_screen_for_testing(true);
   for (const auto& test : drallion_tests_privacy_screen) {
-    CheckKeyTestCase(rewriter(), test);
+    CheckKeyTestCase(source(), test);
   }
 }
 
@@ -4256,26 +4296,26 @@ TEST_F(EventRewriterTest, TestTopRowAsFnKeysForKeyboardWilcoLayouts) {
   SetupKeyboard("Wilco Keyboard", kKbdTopRowLayoutWilcoTag);
   // Standard key tests using Wilco 1.0 keyboard
   for (const auto& test : wilco_standard_tests)
-    CheckKeyTestCase(rewriter(), test);
+    CheckKeyTestCase(source(), test);
   // Wilco 1.0 specific key tests
   for (const auto& test : wilco_1_tests)
-    CheckKeyTestCase(rewriter(), test);
+    CheckKeyTestCase(source(), test);
 
   // Run key test cases for Drallion (Wilco 1.5) keyboard layout
   SetupKeyboard("Drallion Keyboard", kKbdTopRowLayoutDrallionTag);
   // Standard key tests using Drallion keyboard layout
   for (const auto& test : wilco_standard_tests)
-    CheckKeyTestCase(rewriter(), test);
+    CheckKeyTestCase(source(), test);
 
   // Drallion specific key tests (no privacy screen)
-  rewriter_->set_privacy_screen_for_testing(false);
+  event_rewriter_ash_->set_privacy_screen_for_testing(false);
   for (const auto& test : drallion_tests_no_privacy_screen)
-    CheckKeyTestCase(rewriter(), test);
+    CheckKeyTestCase(source(), test);
 
   // Drallion specific key tests (privacy screen supported)
-  rewriter_->set_privacy_screen_for_testing(true);
+  event_rewriter_ash_->set_privacy_screen_for_testing(true);
   for (const auto& test : drallion_tests_privacy_screen)
-    CheckKeyTestCase(rewriter(), test);
+    CheckKeyTestCase(source(), test);
 }
 
 TEST_F(EventRewriterTest, TestRewriteFunctionKeysInvalidLayout) {
@@ -4308,7 +4348,7 @@ TEST_F(EventRewriterTest, TestRewriteFunctionKeysInvalidLayout) {
   };
 
   for (const auto& test : invalid_layout_tests)
-    CheckKeyTestCase(rewriter(), test);
+    CheckKeyTestCase(source(), test);
 
   // Adding a keyboard with a valid layout will take effect.
   const std::vector<KeyTestCase> layout2_tests({
@@ -4380,15 +4420,13 @@ TEST_F(EventRewriterTest, TestRewriteKeyEventSentByXSendEvent) {
     ui::KeyEvent keyevent(ui::ET_KEY_PRESSED, ui::VKEY_CONTROL,
                           ui::DomCode::CONTROL_LEFT, ui::EF_FINAL,
                           ui::DomKey::CONTROL, ui::EventTimeForNow());
-    TestEventRewriterContinuation continuation;
+    source().Send(&keyevent);
+    auto events =
+        static_cast<TestEventSink*>(source().GetEventSink())->TakeEvents();
     // Control should NOT be remapped to Alt if EF_FINAL is set.
-    rewriter()->RewriteEvent(keyevent,
-                             continuation.weak_ptr_factory_.GetWeakPtr());
-    EXPECT_TRUE(continuation.rewritten_events.empty());
-    EXPECT_EQ(1u, continuation.passthrough_events.size());
-    EXPECT_TRUE(continuation.passthrough_events[0]->IsKeyEvent());
-    const auto* result = continuation.passthrough_events[0]->AsKeyEvent();
-    EXPECT_EQ(ui::VKEY_CONTROL, result->key_code());
+    ASSERT_EQ(1u, events.size());
+    ASSERT_TRUE(events[0]->IsKeyEvent());
+    EXPECT_EQ(ui::VKEY_CONTROL, events[0]->AsKeyEvent()->key_code());
   }
 }
 
@@ -4409,59 +4447,20 @@ TEST_F(EventRewriterTest, TestRewriteNonNativeEvent) {
       ui::PointerDetails(ui::EventPointerType::kTouch, kTouchId));
   press.set_flags(ui::EF_CONTROL_DOWN);
 
-  TestEventRewriterContinuation continuation;
-  rewriter()->RewriteEvent(press, continuation.weak_ptr_factory_.GetWeakPtr());
-  EXPECT_TRUE(continuation.passthrough_events.empty());
-  EXPECT_EQ(1u, continuation.rewritten_events.size());
+  source().Send(&press);
+  auto events =
+      static_cast<TestEventSink*>(source().GetEventSink())->TakeEvents();
+  ASSERT_EQ(1u, events.size());
   // Control should be remapped to Alt.
-  EXPECT_EQ(ui::EF_ALT_DOWN, continuation.rewritten_events[0]->flags() &
-                                 (ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN));
+  EXPECT_EQ(ui::EF_ALT_DOWN,
+            events[0]->flags() & (ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN));
 }
-
-// Keeps a buffer of handled events.
-class EventBuffer : public ui::test::TestEventProcessor {
- public:
-  EventBuffer() {}
-
-  EventBuffer(const EventBuffer&) = delete;
-  EventBuffer& operator=(const EventBuffer&) = delete;
-
-  ~EventBuffer() override {}
-
-  void PopEvents(std::vector<std::unique_ptr<ui::Event>>* events) {
-    events->clear();
-    events->swap(events_);
-  }
-
- private:
-  // ui::EventSink overrides:
-  ui::EventDispatchDetails OnEventFromSource(ui::Event* event) override {
-    events_.push_back(event->Clone());
-    return ui::EventDispatchDetails();
-  }
-
-  std::vector<std::unique_ptr<ui::Event>> events_;
-};
-
-// Trivial EventSource that does nothing but send events.
-class TestEventSource : public ui::EventSource {
- public:
-  explicit TestEventSource(ui::EventProcessor* processor)
-      : processor_(processor) {}
-  ui::EventSink* GetEventSink() override { return processor_; }
-  ui::EventDispatchDetails Send(ui::Event* event) {
-    return SendEventToSink(event);
-  }
-
- private:
-  raw_ptr<ui::EventProcessor, ExperimentalAsh> processor_;
-};
 
 // Tests of event rewriting that depend on the Ash window manager.
 class EventRewriterAshTest : public ChromeAshTestBase {
  public:
   EventRewriterAshTest()
-      : source_(&buffer_),
+      : source_(&sink_),
         fake_user_manager_(new FakeChromeUserManager),
         user_manager_enabler_(base::WrapUnique(fake_user_manager_.get())) {}
 
@@ -4522,12 +4521,13 @@ class EventRewriterAshTest : public ChromeAshTestBase {
     keyboard_settings->modifier_remappings[remap_from] = remap_to;
   }
 
-  void PopEvents(std::vector<std::unique_ptr<ui::Event>>* events) {
-    buffer_.PopEvents(events);
+  std::vector<std::unique_ptr<ui::Event>> TakeEvents() {
+    return sink_.TakeEvents();
   }
 
   void SetUp() override {
     ChromeAshTestBase::SetUp();
+
     input_device_settings_controller_resetter_ = std::make_unique<
         InputDeviceSettingsController::ScopedResetterForTest>();
     input_device_settings_controller_mock_ =
@@ -4555,6 +4555,9 @@ class EventRewriterAshTest : public ChromeAshTestBase {
     ChromeAshTestBase::TearDown();
   }
 
+  ui::test::TestEventSource& source() { return source_; }
+  EventRewriterDelegateImpl* delegate() { return delegate_.get(); }
+
  protected:
   raw_ptr<StickyKeysController, DanglingUntriaged | ExperimentalAsh>
       sticky_keys_controller_;
@@ -4570,8 +4573,8 @@ class EventRewriterAshTest : public ChromeAshTestBase {
   std::unique_ptr<InputDeviceSettingsController::ScopedResetterForTest>
       input_device_settings_controller_resetter_;
 
-  EventBuffer buffer_;
-  TestEventSource source_;
+  TestEventSink sink_;
+  ui::test::TestEventSource source_;
 
   raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
       fake_user_manager_;  // Not owned.
@@ -4582,7 +4585,6 @@ class EventRewriterAshTest : public ChromeAshTestBase {
 TEST_F(EventRewriterAshTest, TopRowKeysAreFunctionKeys) {
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(1));
   wm::ActivateWindow(window.get());
-  std::vector<std::unique_ptr<ui::Event>> events;
 
   // Create a simulated keypress of F1 targetted at the window.
   ui::KeyEvent press_f1(ui::ET_KEY_PRESSED, ui::VKEY_F1, ui::DomCode::F1,
@@ -4596,25 +4598,29 @@ TEST_F(EventRewriterAshTest, TopRowKeysAreFunctionKeys) {
   keyboard_settings->top_row_are_fkeys = true;
   ui::EventDispatchDetails details = Send(&press_f1);
   ASSERT_FALSE(details.dispatcher_destroyed);
-  PopEvents(&events);
-  EXPECT_EQ(1u, events.size());
-  EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_F1,
-                                      ui::DomCode::F1, ui::EF_NONE,
-                                      ui::DomKey::F1, kNoScanCode),
-            GetKeyEventAsString(*static_cast<ui::KeyEvent*>(events[0].get())));
-
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(1u, events.size());
+    EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_F1,
+                                        ui::DomCode::F1, ui::EF_NONE,
+                                        ui::DomKey::F1, kNoScanCode),
+              GetKeyEventAsString(*events[0]->AsKeyEvent()));
+  }
   // If the pref isn't set when an event is sent to a regular window, F1 is
   // rewritten to the back key.
   send_function_keys_pref.SetValue(false);
   keyboard_settings->top_row_are_fkeys = false;
   details = Send(&press_f1);
   ASSERT_FALSE(details.dispatcher_destroyed);
-  PopEvents(&events);
-  EXPECT_EQ(1u, events.size());
-  EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_BROWSER_BACK,
-                                      ui::DomCode::BROWSER_BACK, ui::EF_NONE,
-                                      ui::DomKey::BROWSER_BACK, kNoScanCode),
-            GetKeyEventAsString(*static_cast<ui::KeyEvent*>(events[0].get())));
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(1u, events.size());
+    EXPECT_EQ(
+        GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_BROWSER_BACK,
+                                  ui::DomCode::BROWSER_BACK, ui::EF_NONE,
+                                  ui::DomKey::BROWSER_BACK, kNoScanCode),
+        GetKeyEventAsString(*events[0]->AsKeyEvent()));
+  }
 }
 
 // Parameterized version of test with the same name that accepts the
@@ -4898,15 +4904,14 @@ TEST_F(EventRewriterTest, DeprecatedAltClickGeneratesNotification) {
 
 TEST_F(EventRewriterAshTest, StickyKeyEventDispatchImpl) {
   // Test the actual key event dispatch implementation.
-  std::vector<std::unique_ptr<ui::Event>> events;
-
   SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
                                ui::DomKey::CONTROL);
-  PopEvents(&events);
-  EXPECT_EQ(1u, events.size());
-  EXPECT_EQ(ui::ET_KEY_PRESSED, events[0]->type());
-  EXPECT_EQ(ui::VKEY_CONTROL,
-            static_cast<ui::KeyEvent*>(events[0].get())->key_code());
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(1u, events.size());
+    ASSERT_EQ(ui::ET_KEY_PRESSED, events[0]->type());
+    EXPECT_EQ(ui::VKEY_CONTROL, events[0]->AsKeyEvent()->key_code());
+  }
 
   // Test key press event is correctly modified and modifier release
   // event is sent.
@@ -4914,15 +4919,16 @@ TEST_F(EventRewriterAshTest, StickyKeyEventDispatchImpl) {
                      ui::EF_NONE, ui::DomKey::Constant<'c'>::Character,
                      ui::EventTimeForNow());
   ui::EventDispatchDetails details = Send(&press);
-  PopEvents(&events);
-  EXPECT_EQ(2u, events.size());
-  EXPECT_EQ(ui::ET_KEY_PRESSED, events[0]->type());
-  EXPECT_EQ(ui::VKEY_C,
-            static_cast<ui::KeyEvent*>(events[0].get())->key_code());
-  EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, events[1]->type());
-  EXPECT_EQ(ui::VKEY_CONTROL,
-            static_cast<ui::KeyEvent*>(events[1].get())->key_code());
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(2u, events.size());
+    ASSERT_EQ(ui::ET_KEY_PRESSED, events[0]->type());
+    EXPECT_EQ(ui::VKEY_C, events[0]->AsKeyEvent()->key_code());
+    EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+
+    ASSERT_EQ(ui::ET_KEY_RELEASED, events[1]->type());
+    EXPECT_EQ(ui::VKEY_CONTROL, events[1]->AsKeyEvent()->key_code());
+  }
 
   // Test key release event is not modified.
   ui::KeyEvent release(ui::ET_KEY_RELEASED, ui::VKEY_C, ui::DomCode::US_C,
@@ -4930,20 +4936,19 @@ TEST_F(EventRewriterAshTest, StickyKeyEventDispatchImpl) {
                        ui::EventTimeForNow());
   details = Send(&release);
   ASSERT_FALSE(details.dispatcher_destroyed);
-  PopEvents(&events);
-  EXPECT_EQ(1u, events.size());
-  EXPECT_EQ(ui::ET_KEY_RELEASED, events[0]->type());
-  EXPECT_EQ(ui::VKEY_C,
-            static_cast<ui::KeyEvent*>(events[0].get())->key_code());
-  EXPECT_FALSE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(1u, events.size());
+    ASSERT_EQ(ui::ET_KEY_RELEASED, events[0]->type());
+    ASSERT_EQ(ui::VKEY_C, events[0]->AsKeyEvent()->key_code());
+    EXPECT_FALSE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+  }
 }
 
 TEST_F(EventRewriterAshTest, MouseEventDispatchImpl) {
-  std::vector<std::unique_ptr<ui::Event>> events;
-
   SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
                                ui::DomKey::CONTROL);
-  PopEvents(&events);
+  std::ignore = TakeEvents();
 
   // Test mouse press event is correctly modified.
   gfx::Point location(0, 0);
@@ -4952,10 +4957,12 @@ TEST_F(EventRewriterAshTest, MouseEventDispatchImpl) {
                        ui::EF_LEFT_MOUSE_BUTTON);
   ui::EventDispatchDetails details = Send(&press);
   ASSERT_FALSE(details.dispatcher_destroyed);
-  PopEvents(&events);
-  EXPECT_EQ(1u, events.size());
-  EXPECT_EQ(ui::ET_MOUSE_PRESSED, events[0]->type());
-  EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(1u, events.size());
+    EXPECT_EQ(ui::ET_MOUSE_PRESSED, events[0]->type());
+    EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+  }
 
   // Test mouse release event is correctly modified and modifier release
   // event is sent. The mouse event should have the correct DIP location.
@@ -4964,23 +4971,24 @@ TEST_F(EventRewriterAshTest, MouseEventDispatchImpl) {
                          ui::EF_LEFT_MOUSE_BUTTON);
   details = Send(&release);
   ASSERT_FALSE(details.dispatcher_destroyed);
-  PopEvents(&events);
-  EXPECT_EQ(2u, events.size());
-  EXPECT_EQ(ui::ET_MOUSE_RELEASED, events[0]->type());
-  EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, events[1]->type());
-  EXPECT_EQ(ui::VKEY_CONTROL,
-            static_cast<ui::KeyEvent*>(events[1].get())->key_code());
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(2u, events.size());
+    EXPECT_EQ(ui::ET_MOUSE_RELEASED, events[0]->type());
+    EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+
+    ASSERT_EQ(ui::ET_KEY_RELEASED, events[1]->type());
+    EXPECT_EQ(ui::VKEY_CONTROL, events[1]->AsKeyEvent()->key_code());
+  }
 }
 
 TEST_F(EventRewriterAshTest, MouseWheelEventDispatchImpl) {
-  std::vector<std::unique_ptr<ui::Event>> events;
-
   // Test positive mouse wheel event is correctly modified and modifier release
   // event is sent.
   SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
                                ui::DomKey::CONTROL);
-  PopEvents(&events);
+  std::ignore = TakeEvents();
+
   gfx::Point location(0, 0);
   ui::MouseWheelEvent positive(
       gfx::Vector2d(0, ui::MouseWheelEvent::kWheelDelta), location, location,
@@ -4988,32 +4996,37 @@ TEST_F(EventRewriterAshTest, MouseWheelEventDispatchImpl) {
       ui::EF_LEFT_MOUSE_BUTTON);
   ui::EventDispatchDetails details = Send(&positive);
   ASSERT_FALSE(details.dispatcher_destroyed);
-  PopEvents(&events);
-  EXPECT_EQ(2u, events.size());
-  EXPECT_TRUE(events[0]->IsMouseWheelEvent());
-  EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, events[1]->type());
-  EXPECT_EQ(ui::VKEY_CONTROL,
-            static_cast<ui::KeyEvent*>(events[1].get())->key_code());
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(2u, events.size());
+    EXPECT_TRUE(events[0]->IsMouseWheelEvent());
+    EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+
+    ASSERT_EQ(ui::ET_KEY_RELEASED, events[1]->type());
+    EXPECT_EQ(ui::VKEY_CONTROL, events[1]->AsKeyEvent()->key_code());
+  }
 
   // Test negative mouse wheel event is correctly modified and modifier release
   // event is sent.
   SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
                                ui::DomKey::CONTROL);
-  PopEvents(&events);
+  std::ignore = TakeEvents();
+
   ui::MouseWheelEvent negative(
       gfx::Vector2d(0, -ui::MouseWheelEvent::kWheelDelta), location, location,
       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
       ui::EF_LEFT_MOUSE_BUTTON);
   details = Send(&negative);
   ASSERT_FALSE(details.dispatcher_destroyed);
-  PopEvents(&events);
-  EXPECT_EQ(2u, events.size());
-  EXPECT_TRUE(events[0]->IsMouseWheelEvent());
-  EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, events[1]->type());
-  EXPECT_EQ(ui::VKEY_CONTROL,
-            static_cast<ui::KeyEvent*>(events[1].get())->key_code());
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(2u, events.size());
+    EXPECT_TRUE(events[0]->IsMouseWheelEvent());
+    EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+
+    ASSERT_EQ(ui::ET_KEY_RELEASED, events[1]->type());
+    EXPECT_EQ(ui::VKEY_CONTROL, events[1]->AsKeyEvent()->key_code());
+  }
 }
 
 // Tests that if modifier keys are remapped, the flags of a mouse wheel event
@@ -5021,7 +5034,6 @@ TEST_F(EventRewriterAshTest, MouseWheelEventDispatchImpl) {
 TEST_F(EventRewriterAshTest, MouseWheelEventModifiersRewritten) {
   // Generate a mouse wheel event that has a CONTROL_DOWN modifier flag and
   // expect that no rewriting happens as no modifier remapping is active.
-  std::vector<std::unique_ptr<ui::Event>> events;
   gfx::Point location(0, 0);
   ui::MouseWheelEvent positive(
       gfx::Vector2d(0, ui::MouseWheelEvent::kWheelDelta), location, location,
@@ -5029,10 +5041,12 @@ TEST_F(EventRewriterAshTest, MouseWheelEventModifiersRewritten) {
       ui::EF_LEFT_MOUSE_BUTTON);
   ui::EventDispatchDetails details = Send(&positive);
   ASSERT_FALSE(details.dispatcher_destroyed);
-  PopEvents(&events);
-  EXPECT_EQ(1u, events.size());
-  EXPECT_TRUE(events[0]->IsMouseWheelEvent());
-  EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(1u, events.size());
+    EXPECT_TRUE(events[0]->IsMouseWheelEvent());
+    EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+  }
 
   // Remap Control to Alt.
   IntegerPrefMember control;
@@ -5044,11 +5058,13 @@ TEST_F(EventRewriterAshTest, MouseWheelEventModifiersRewritten) {
   // ALT_DOWN.
   details = Send(&positive);
   ASSERT_FALSE(details.dispatcher_destroyed);
-  PopEvents(&events);
-  EXPECT_EQ(1u, events.size());
-  EXPECT_TRUE(events[0]->IsMouseWheelEvent());
-  EXPECT_FALSE(events[0]->flags() & ui::EF_CONTROL_DOWN);
-  EXPECT_TRUE(events[0]->flags() & ui::EF_ALT_DOWN);
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(1u, events.size());
+    EXPECT_TRUE(events[0]->IsMouseWheelEvent());
+    EXPECT_FALSE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+    EXPECT_TRUE(events[0]->flags() & ui::EF_ALT_DOWN);
+  }
 }
 
 // Tests edge cases of key event rewriting (see https://crbug.com/913209).
@@ -5056,7 +5072,6 @@ TEST_F(EventRewriterAshTest, KeyEventRewritingEdgeCases) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       features::kAltClickAndSixPackCustomization);
-  std::vector<std::unique_ptr<ui::Event>> events;
 
   // Edge case 1: Press the Launcher button first. Then press the Up Arrow
   // button.
@@ -5064,52 +5079,48 @@ TEST_F(EventRewriterAshTest, KeyEventRewritingEdgeCases) {
                ui::DomKey::META);
   SendKeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_UP, ui::DomCode::ARROW_UP,
                ui::DomKey::ARROW_UP, ui::EF_COMMAND_DOWN);
-
-  PopEvents(&events);
-  EXPECT_EQ(2u, events.size());
-  events.clear();
-
-  SendKeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_COMMAND, ui::DomCode::META_LEFT,
-               ui::DomKey::META);
-  PopEvents(&events);
+  {
+    auto events = TakeEvents();
+    EXPECT_EQ(2u, events.size());
+  }
 
   // When releasing the Launcher button, the rewritten event should be released
   // as well.
-  EXPECT_EQ(2u, events.size());
-  EXPECT_EQ(ui::VKEY_COMMAND,
-            static_cast<ui::KeyEvent*>(events[0].get())->key_code());
-  EXPECT_EQ(ui::VKEY_PRIOR,
-            static_cast<ui::KeyEvent*>(events[1].get())->key_code());
-
-  events.clear();
+  SendKeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_COMMAND, ui::DomCode::META_LEFT,
+               ui::DomKey::META);
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(2u, events.size());
+    EXPECT_EQ(ui::VKEY_COMMAND, events[0]->AsKeyEvent()->key_code());
+    EXPECT_EQ(ui::VKEY_PRIOR, events[1]->AsKeyEvent()->key_code());
+  }
 
   // Edge case 2: Press the Up Arrow button first. Then press the Launch button.
   SendKeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_UP, ui::DomCode::ARROW_UP,
                ui::DomKey::ARROW_UP);
   SendKeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_COMMAND, ui::DomCode::META_LEFT,
                ui::DomKey::META);
-
-  PopEvents(&events);
-  EXPECT_EQ(2u, events.size());
-  events.clear();
-
-  SendKeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_UP, ui::DomCode::ARROW_UP,
-               ui::DomKey::ARROW_UP, ui::EF_COMMAND_DOWN);
-  PopEvents(&events);
+  {
+    auto events = TakeEvents();
+    EXPECT_EQ(2u, events.size());
+  }
 
   // When releasing the Up Arrow button, the rewritten event should be blocked.
-  EXPECT_EQ(1u, events.size());
-  EXPECT_EQ(ui::VKEY_UP,
-            static_cast<ui::KeyEvent*>(events[0].get())->key_code());
+  SendKeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_UP, ui::DomCode::ARROW_UP,
+               ui::DomKey::ARROW_UP, ui::EF_COMMAND_DOWN);
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(1u, events.size());
+    EXPECT_EQ(ui::VKEY_UP, events[0]->AsKeyEvent()->key_code());
+  }
 }
 
 TEST_F(EventRewriterAshTest, ScrollEventDispatchImpl) {
-  std::vector<std::unique_ptr<ui::Event>> events;
-
   // Test scroll event is correctly modified.
   SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
                                ui::DomKey::CONTROL);
-  PopEvents(&events);
+  std::ignore = TakeEvents();
+
   gfx::PointF location(0, 0);
   ui::ScrollEvent scroll(ui::ET_SCROLL, location, location,
                          ui::EventTimeForNow(), 0 /* flag */, 0 /* x_offset */,
@@ -5117,10 +5128,12 @@ TEST_F(EventRewriterAshTest, ScrollEventDispatchImpl) {
                          1 /* y_offset_ordinal */, 2 /* finger */);
   ui::EventDispatchDetails details = Send(&scroll);
   ASSERT_FALSE(details.dispatcher_destroyed);
-  PopEvents(&events);
-  EXPECT_EQ(1u, events.size());
-  EXPECT_TRUE(events[0]->IsScrollEvent());
-  EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(1u, events.size());
+    EXPECT_TRUE(events[0]->IsScrollEvent());
+    EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+  }
 
   // Test FLING_START event deactivates the sticky key, but is modified.
   ui::ScrollEvent fling_start(
@@ -5128,20 +5141,22 @@ TEST_F(EventRewriterAshTest, ScrollEventDispatchImpl) {
       0 /* flag */, 0 /* x_offset */, 0 /* y_offset */,
       0 /* x_offset_ordinal */, 0 /* y_offset_ordinal */, 2 /* finger */);
   details = Send(&fling_start);
-  PopEvents(&events);
-  EXPECT_EQ(2u, events.size());
-  EXPECT_TRUE(events[0]->IsScrollEvent());
-  EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, events[1]->type());
-  EXPECT_EQ(ui::VKEY_CONTROL,
-            static_cast<ui::KeyEvent*>(events[1].get())->key_code());
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(2u, events.size());
+    EXPECT_TRUE(events[0]->IsScrollEvent());
+    EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+
+    ASSERT_EQ(ui::ET_KEY_RELEASED, events[1]->type());
+    EXPECT_EQ(ui::VKEY_CONTROL, events[1]->AsKeyEvent()->key_code());
+  }
 
   // Test scroll direction change causes that modifier release event is sent.
   SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
                                ui::DomKey::CONTROL);
   details = Send(&scroll);
   ASSERT_FALSE(details.dispatcher_destroyed);
-  PopEvents(&events);
+  std::ignore = TakeEvents();
 
   ui::ScrollEvent scroll2(ui::ET_SCROLL, location, location,
                           ui::EventTimeForNow(), 0 /* flag */, 0 /* x_offset */,
@@ -5149,13 +5164,15 @@ TEST_F(EventRewriterAshTest, ScrollEventDispatchImpl) {
                           -1 /* y_offset_ordinal */, 2 /* finger */);
   details = Send(&scroll2);
   ASSERT_FALSE(details.dispatcher_destroyed);
-  PopEvents(&events);
-  EXPECT_EQ(2u, events.size());
-  EXPECT_TRUE(events[0]->IsScrollEvent());
-  EXPECT_FALSE(events[0]->flags() & ui::EF_CONTROL_DOWN);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, events[1]->type());
-  EXPECT_EQ(ui::VKEY_CONTROL,
-            static_cast<ui::KeyEvent*>(events[1].get())->key_code());
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(2u, events.size());
+    EXPECT_TRUE(events[0]->IsScrollEvent());
+    EXPECT_FALSE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+
+    ASSERT_EQ(ui::ET_KEY_RELEASED, events[1]->type());
+    EXPECT_EQ(ui::VKEY_CONTROL, events[1]->AsKeyEvent()->key_code());
+  }
 }
 
 class StickyKeysOverlayTest : public EventRewriterAshTest {
@@ -5372,119 +5389,36 @@ TEST_F(StickyKeysOverlayTest, ModifierVisibility) {
   EXPECT_FALSE(overlay_->GetModifierVisible(ui::EF_MOD3_DOWN));
 }
 
-class ExtensionRewriterInputTest : public EventRewriterAshTest,
-                                   public ui::EventRewriterAsh::Delegate {
+class ExtensionRewriterInputTest : public EventRewriterAshTest {
  public:
   ExtensionRewriterInputTest() = default;
   ExtensionRewriterInputTest(const ExtensionRewriterInputTest&) = delete;
   ExtensionRewriterInputTest& operator=(const ExtensionRewriterInputTest&) =
       delete;
-  ~ExtensionRewriterInputTest() override {}
+  ~ExtensionRewriterInputTest() override = default;
 
-  void SetUp() override {
-    EventRewriterAshTest::SetUp();
-    event_rewriter_ash_ = std::make_unique<ui::EventRewriterAsh>(
-        this, Shell::Get()->keyboard_capability(), nullptr, false,
-        &fake_ime_keyboard_);
+  void SetModifierRemapping(ui::mojom::ModifierKey remap_from,
+                            ui::mojom::ModifierKey remap_to) {
+    keyboard_settings->modifier_remappings[remap_from] = remap_to;
   }
 
-  void SetModifierRemapping(const std::string& pref_name,
-                            ui::mojom::ModifierKey value) {
-    modifier_remapping_[pref_name] = value;
-  }
-
-  void RegisterExtensionShortcut(ui::KeyboardCode key_code, int flags) {
-    constexpr int kModifierMasks = ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN |
-                                   ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN;
-    // No other masks should be present aside from the ones speicifed in
-    // kModifierMasks.
-    DCHECK((flags & kModifierMasks) == flags);
-    registered_extension_shortcuts_.emplace(key_code, flags);
+  void SetExtensionCommands(
+      base::flat_set<std::pair<ui::KeyboardCode, int>> commands) {
+    delegate()->SetExtensionCommandsOverrideForTesting(std::move(commands));
   }
 
   void RemoveAllExtensionShortcuts() {
-    registered_extension_shortcuts_.clear();
+    delegate()->SetExtensionCommandsOverrideForTesting(absl::nullopt);
   }
 
   void ExpectEventRewrittenTo(const KeyTestCase& test) {
-    CheckKeyTestCase(event_rewriter_ash_.get(), test);
+    CheckKeyTestCase(source(), test);
   }
-
- protected:
-  sync_preferences::TestingPrefServiceSyncable prefs_;
-  input_method::FakeImeKeyboard fake_ime_keyboard_;
-  std::unique_ptr<ui::EventRewriterAsh> event_rewriter_ash_;
-
- private:
-  // ui::EventRewriterAsh::Delegate:
-  bool RewriteModifierKeys() override { return true; }
-  bool RewriteMetaTopRowKeyComboEvents(int device_id) const override {
-    return true;
-  }
-
-  absl::optional<ui::mojom::ModifierKey> GetKeyboardRemappedModifierValue(
-      int device_id,
-      ui::mojom::ModifierKey modifier_key,
-      const std::string& pref_name) const override {
-    auto it = modifier_remapping_.find(pref_name);
-    if (it == modifier_remapping_.end()) {
-      return absl::nullopt;
-    }
-    return it->second;
-  }
-
-  bool TopRowKeysAreFunctionKeys(int device_id) const override { return false; }
-
-  bool IsExtensionCommandRegistered(ui::KeyboardCode key_code,
-                                    int flags) const override {
-    return base::Contains(registered_extension_shortcuts_,
-                          ui::Accelerator(key_code, flags));
-  }
-
-  bool IsSearchKeyAcceleratorReserved() const override { return false; }
-  bool NotifyDeprecatedRightClickRewrite() override { return false; }
-  bool NotifyDeprecatedSixPackKeyRewrite(ui::KeyboardCode key_code) override {
-    return false;
-  }
-  void SuppressModifierKeyRewrites(bool should_suppress) override {}
-  void SuppressMetaTopRowKeyComboRewrites(bool should_suppress) override {}
-  void RecordEventRemappedToRightClick(bool alt_based_right_click) override {}
-  void RecordSixPackEventRewrite(ui::KeyboardCode key_code,
-                                 bool alt_based) override {}
-  absl::optional<ui::mojom::SimulateRightClickModifier>
-  GetRemapRightClickModifier(int device_id) override {
-    return absl::nullopt;
-  }
-
-  absl::optional<ui::mojom::SixPackShortcutModifier>
-  GetShortcutModifierForSixPackKey(int device_id,
-                                   ui::KeyboardCode key_code) override {
-    return absl::nullopt;
-  }
-
-  void NotifyRightClickRewriteBlockedBySetting(
-      ui::mojom::SimulateRightClickModifier blocked_modifier,
-      ui::mojom::SimulateRightClickModifier active_modifier) override {}
-
-  void NotifySixPackRewriteBlockedBySetting(
-      ui::KeyboardCode key_code,
-      ui::mojom::SixPackShortcutModifier blocked_modifier,
-      ui::mojom::SixPackShortcutModifier active_modifier,
-      int device_id) override {}
-
-  absl::optional<ui::mojom::ExtendedFkeysModifier> GetExtendedFkeySetting(
-      int device_id,
-      ui::KeyboardCode key_code) override {
-    return absl::nullopt;
-  }
-
-  std::map<std::string, ui::mojom::ModifierKey> modifier_remapping_;
-  base::flat_set<ui::Accelerator> registered_extension_shortcuts_;
 };
 
 TEST_F(ExtensionRewriterInputTest, RewrittenModifier) {
   // Register Control + B as an extension shortcut.
-  RegisterExtensionShortcut(ui::VKEY_B, ui::EF_CONTROL_DOWN);
+  SetExtensionCommands({{ui::VKEY_B, ui::EF_CONTROL_DOWN}});
 
   // Check that standard extension input has no rewritten modifiers.
   ExpectEventRewrittenTo({ui::ET_KEY_PRESSED,
@@ -5494,7 +5428,7 @@ TEST_F(ExtensionRewriterInputTest, RewrittenModifier) {
                            ui::DomKey::Constant<'b'>::Character}});
 
   // Remap Control -> Alt.
-  SetModifierRemapping(::prefs::kLanguageRemapControlKeyTo,
+  SetModifierRemapping(ui::mojom::ModifierKey::kControl,
                        ui::mojom::ModifierKey::kAlt);
   // Pressing Control + B should now be remapped to Alt + B.
   ExpectEventRewrittenTo({ui::ET_KEY_PRESSED,
@@ -5504,7 +5438,7 @@ TEST_F(ExtensionRewriterInputTest, RewrittenModifier) {
                            ui::DomKey::Constant<'b'>::Character}});
 
   // Remap Alt -> Control.
-  SetModifierRemapping(::prefs::kLanguageRemapAltKeyTo,
+  SetModifierRemapping(ui::mojom::ModifierKey::kAlt,
                        ui::mojom::ModifierKey::kControl);
   // Pressing Alt + B should now be remapped to Control + B.
   ExpectEventRewrittenTo({ui::ET_KEY_PRESSED,
@@ -5530,7 +5464,7 @@ TEST_F(ExtensionRewriterInputTest, RewrittenModifier) {
 
 TEST_F(ExtensionRewriterInputTest, RewriteNumpadExtensionCommand) {
   // Register Control + NUMPAD1 as an extension shortcut.
-  RegisterExtensionShortcut(ui::VKEY_NUMPAD1, ui::EF_CONTROL_DOWN);
+  SetExtensionCommands({{ui::VKEY_NUMPAD1, ui::EF_CONTROL_DOWN}});
   // Check that extension shortcuts that involve numpads keys are properly
   // rewritten. Note that VKEY_END is associated with NUMPAD1 if Num Lock is
   // disabled. The result should be "NumPad 1 with Control".

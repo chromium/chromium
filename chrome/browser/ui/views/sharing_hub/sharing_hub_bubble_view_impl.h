@@ -7,15 +7,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "chrome/browser/share/share_attempt.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-
-namespace gfx {
-class Canvas;
-}  // namespace gfx
 
 namespace sharing_hub {
 
@@ -50,11 +45,7 @@ class SharingHubBubbleViewImpl : public SharingHubBubbleView,
 
   // LocationBarBubbleDelegateView:
   std::u16string GetAccessibleWindowTitle() const override;
-  void OnPaint(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
-
-  // Shows the bubble view.
-  void Show(DisplayReason reason);
 
   void OnActionSelected(SharingHubBubbleActionButton* button);
 
@@ -87,11 +78,6 @@ class SharingHubBubbleViewImpl : public SharingHubBubbleView,
   // The "Share link to" annotation text, which indicates to the user what
   // the 3P target options do.
   raw_ptr<views::Label> share_link_label_ = nullptr;
-
-  // The time that Show() was called. This is reset after the first time the
-  // sharing hub is painted to avoid repeatedly collecting the metric it is used
-  // for.
-  absl::optional<base::Time> show_time_;
 
   // The share attempt this bubble was opened for.
   const share::ShareAttempt attempt_;

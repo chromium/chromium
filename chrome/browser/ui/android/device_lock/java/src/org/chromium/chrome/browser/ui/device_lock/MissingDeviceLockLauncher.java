@@ -64,6 +64,7 @@ public class MissingDeviceLockLauncher {
             if (mMissingDeviceLockCoordinator != null) {
                 mMissingDeviceLockCoordinator.hideDialog(
                         DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED);
+                mMissingDeviceLockCoordinator = null;
             }
             ChromeSharedPreferences.getInstance().writeBoolean(
                     ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, true);
@@ -71,8 +72,10 @@ public class MissingDeviceLockLauncher {
         }
 
         // If the device lock has been removed, prompt the user with the missing device lock UI.
-        if (ChromeSharedPreferences.getInstance().readBoolean(
-                    ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, false)) {
+        if (mMissingDeviceLockCoordinator == null
+                && ChromeSharedPreferences.getInstance()
+                        .readBoolean(
+                                ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, false)) {
             Callback<Boolean> onContinueWithoutDeviceLock = (wipeAllData)
                     -> ensureSignOutAndDeleteSensitiveData(
                             ()

@@ -93,7 +93,6 @@
 <translation id="1643449475550628585">Skift baggrundsbillede dagligt</translation>
 <translation id="1644574205037202324">Historik</translation>
 <translation id="1651925268237749928">Du har valgt et delt album. Andre personer kan tilføje eller skifte billeder. Din baggrund anvender muligvis billeder, der ikke er i dette album på nuværende tidspunkt.</translation>
-<translation id="1658834457013045127">For evigt</translation>
 <translation id="1661865805917886535">Visse konto- og systemoplysninger kan blive sendt til Google. Vi bruger disse oplysninger til at løse tekniske problemer og forbedre vores tjenester i overensstemmelse med vores privatlivspolitik (<ph name="PRIVACYPOLICYURL" />) og servicevilkår (<ph name="TERMSOFSERVICEURL" />). Hvis du vil anmode om indholdsændringer, skal du gå til Hjælp til Juridisk (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Stoppet – Mangler blæk</translation>
 <translation id="1664796644829245314">Se forhåndsvisning af <ph name="PREVIEW_OBJECT" /></translation>
@@ -170,7 +169,9 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> billeder</translation>
 <translation id="2157660087437850958">emojivælger</translation>
 <translation id="2157959690810728433">SAT I KØ</translation>
+<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Din administrator har indstillet <ph name="APP_NAME_1" /> til at starte automatisk, hver gang du logger ind.}=2{Din administrator har indstillet <ph name="APP_NAME_1" /> og <ph name="APP_NAME_2" /> til at starte automatisk, hver gang du logger ind.}=3{Din administrator har indstillet <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> og <ph name="APP_NAME_3" /> til at starte automatisk, hver gang du logger ind.}one{Din administrator har indstillet <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> og # anden app til at starte automatisk, hver gang du logger ind.}other{Din administrator har indstillet <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> og # andre apps til at starte automatisk, hver gang du logger ind.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Prøv igen</translation>
+<translation id="215916044711630446">Knappen Tilføj APN er nu deaktiveret</translation>
 <translation id="2161394479394250669">Annuller udskriftsjob</translation>
 <translation id="2161656808144014275">Tekst</translation>
 <translation id="2163937499206714165">Aktivér mørkt tilstand</translation>
@@ -321,7 +322,6 @@
 <translation id="3484914941826596830">Du må ikke frakoble den eksterne enhed eller slukke din computer, mens firmwaren opdaterer. Du kan minimere dette vindue. Denne opdatering kan tage et par minutter, og din eksterne enhed fungerer muligvis ikke under opdateringen.</translation>
 <translation id="3486220673238053218">definition</translation>
 <translation id="3488065109653206955">Delvist aktiveret</translation>
-<translation id="349491921221892984"><ph name="MINUTES" /> minutter</translation>
 <translation id="3502426834823382181">se alle apps</translation>
 <translation id="3510890413042482857">Send <ph name="BEGIN_LINK1" />data om ydeevne<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">ChromeOS-opdatering</translation>
@@ -401,6 +401,7 @@
 <translation id="4117637339509843559">Mørk tilstand</translation>
 <translation id="4130035430755296270">Bliv ved med at holde markøren over menuen for at se flere layoutmuligheder</translation>
 <translation id="4131410914670010031">Sort/hvid</translation>
+<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> blev startet automatisk}one{# app blev startet automatisk}other{# apps blev startet automatisk}}</translation>
 <translation id="4145784616224233563">HTTP-firewall</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4150201353443180367">Skærm</translation>
@@ -446,6 +447,7 @@
 <translation id="445059817448385655">Gammel adgangskode</translation>
 <translation id="4453205916657964690">Undernetmaske</translation>
 <translation id="4454245904991689773">Scan til</translation>
+<translation id="4456812688969919973">Knappen Gem APN er nu deaktiveret</translation>
 <translation id="4469288414739283461">Pauseskærmen Flow med Jorden</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kunne ikke pinge gatewayen for det netværk, der ikke er angivet som standardnetværk</translation>
@@ -480,7 +482,6 @@
 <translation id="473775607612524610">Opdater</translation>
 <translation id="4771607256327216405">skru op for tastaturlys</translation>
 <translation id="4773299976671772492">Stoppet</translation>
-<translation id="4782003517030001304">1 t.</translation>
 <translation id="4782311465517282004">Få definitioner, oversættelser eller enhedsomregninger, når du højreklikker på eller holder tekst nede</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> billede</translation>
 <translation id="4793710386569335688">Få yderligere hjælp ved at gå til <ph name="BEGIN_LINK" />Hjælp<ph name="END_LINK" />.</translation>
@@ -695,6 +696,7 @@
 <translation id="629550705077076970">dæmp tastaturlys</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />-testen er annulleret</translation>
 <translation id="631063167932043783">Appen Udforsk</translation>
+<translation id="6318437367327684789">hele tiden</translation>
 <translation id="6319207335391420837">Opdater firmware på <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Aktivér Pauseskærm</translation>
 <translation id="6324916366299863871">Rediger genvej</translation>
@@ -718,6 +720,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Svagt (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Gå til kontoindstillinger</translation>
+<translation id="6462978824459367242">Knappen Tilføj APN er nu aktiveret</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Vil du scanne siden igen?}=1{Vil du scanne side {PAGE_NUMBER} igen?}one{Rescan page {PAGE_NUMBER}?}other{Vil du scanne side {PAGE_NUMBER} igen?}}</translation>
 <translation id="6472207088655375767">Engangskode</translation>
 <translation id="6480327114083866287">Administreres af <ph name="MANAGER" /></translation>
@@ -1056,6 +1059,7 @@
 <translation id="902638246363752736">Indstillinger for tastatur</translation>
 <translation id="9028832514430399253">Aktivér kontakten for at vælge en pauseskærm</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9049868303458988905">Knappen Gem APN er nu aktiveret</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">Der er stor forsinkelse på DNS-oversættelse</translation>
 <translation id="9065203028668620118">Rediger</translation>

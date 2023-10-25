@@ -460,6 +460,26 @@ SpeculationRuleSet::Source* SpeculationRuleSet::Source::FromRequest(
                                       request_id);
 }
 
+SpeculationRuleSet::Source* SpeculationRuleSet::Source::FromBrowserInjected(
+    const String& source_text,
+    const KURL& base_url) {
+  return MakeGarbageCollected<Source>(base::PassKey<Source>(), source_text,
+                                      nullptr, absl::nullopt, base_url,
+                                      absl::nullopt);
+}
+
+bool SpeculationRuleSet::Source::IsFromInlineScript() const {
+  return node_id_.has_value();
+}
+
+bool SpeculationRuleSet::Source::IsFromRequest() const {
+  return request_id_.has_value();
+}
+
+bool SpeculationRuleSet::Source::IsFromBrowserInjected() const {
+  return !IsFromInlineScript() && !IsFromRequest();
+}
+
 const String& SpeculationRuleSet::Source::GetSourceText() const {
   return source_text_;
 }
@@ -468,8 +488,12 @@ const absl::optional<DOMNodeId>& SpeculationRuleSet::Source::GetNodeId() const {
   return node_id_;
 }
 
-const absl::optional<KURL>& SpeculationRuleSet::Source::GetSourceURL() const {
-  return base_url_;
+const absl::optional<KURL> SpeculationRuleSet::Source::GetSourceURL() const {
+  if (IsFromRequest()) {
+    CHECK(base_url_.has_value());
+    return base_url_;
+  }
+  return absl::nullopt;
 }
 
 const absl::optional<uint64_t>& SpeculationRuleSet::Source::GetRequestId()

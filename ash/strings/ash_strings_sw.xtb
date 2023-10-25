@@ -203,7 +203,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1757857692711134412">Umezimwa hadi machweo</translation>
 <translation id="1768366657309696705">Mikato ya kibodi ya <ph name="LAUNCHER_KEY_NAME" /> + Kitone imebadilika. Ili utumie kitufe cha Insert, bonyeza kitufe cha <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Imehamishiwa kwenye safu mlalo ya <ph name="ROW_NUMBER" />, safu wima ya <ph name="COLUMN_NUMBER" />.</translation>
-<translation id="1771458705381257690">Fungua <ph name="NAME" /> ili uweke na ubadilishe upendavyo mipangilio ya kifaa chako</translation>
 <translation id="1771761307086386028">Sogeza kulia</translation>
 <translation id="1774796056689732716">Kalenda, <ph name="CURRENT_MONTH_YEAR" />, kwa sasa umechagua <ph name="DATE" />.</translation>
 <translation id="1775598828170459419">Inaonyesha <ph name="NUM_SHOWN_ITEMS" /> kati ya <ph name="NUM_TOTAL_ITEMS" /></translation>
@@ -308,7 +307,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2258734398699965611">Faili zinazopendekezwa</translation>
 <translation id="2268130516524549846">Bluetooth imelemazwa</translation>
 <translation id="2268813581635650749">Ondoa wote</translation>
-<translation id="2269016722240250274">Kuna programu inayotumia maikrofoni yako</translation>
 <translation id="2276987123919776440">Dakika 15</translation>
 <translation id="2277103315734023688">Sogeza Mbele</translation>
 <translation id="2282073721614284166">Fungua kiungo katika kichupo</translation>
@@ -361,6 +359,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2465145153332031561">Muda wa kudumu wa betri ni asilimia <ph name="BATTERY_HEALTH_PERCENTAGE" />, mara ambazo betri imechajiwa na kutumia chaji ni <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Thibitisha Ubora</translation>
 <translation id="2475982808118771221">Hitilafu fulani imetokea</translation>
+<translation id="2478076885740497414">Sakinisha programu</translation>
 <translation id="2482878487686419369">Arifa</translation>
 <translation id="2484513351006226581">Gusa <ph name="KEYBOARD_SHORTCUT" /> ili ubadilishe mpangilio wa kibodi.</translation>
 <translation id="2487915095798731898">Jiunge</translation>
@@ -634,8 +633,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3600061223661453002">Zima</translation>
 <translation id="3604801046548457007">Kiolesura cha <ph name="DESK_TITILE" /> kimeanzishwa</translation>
 <translation id="3606978283550408104">Onyesho la breli limeunganishwa.</translation>
-<translation id="3609301425104788351"><ph name="MIC" />,
-<ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">Hatua ya kuwasha data ya mtandao wa simu itawasha Bluetooth</translation>
 <translation id="3616113530831147358">Sauti</translation>
 <translation id="3616883743181209306">Menyu imehamishiwa kwenye kona ya juu kulia mwa skrini.</translation>
@@ -685,9 +682,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="3781910048497807059">Sogeza uangaziaji hadi kwenye kijisehemu kilichotangulia</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Imefungwa</translation>
-<translation id="3789841737615482174">Sakinisha</translation>
 <translation id="3796215473395753611">alt + kishale cha juu</translation>
-<translation id="3796746699333205839">Kuna programu inayotumia kamera na maikrofoni yako</translation>
 <translation id="3798670284305777884">Spika (ya ndani)</translation>
 <translation id="3799080171973636491">Umebofya mikato ya kibodi ya kikuzaji cha skrini nzima. Ungependa kukiwasha?</translation>
 <translation id="380165613292957338">Hujambo, ungependa nikusaidie vipi?</translation>
@@ -817,6 +812,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="428715201724021596">Inaunganisha kwenye wasifu. Hatua hii inaweza kuchukua dakika kadhaa.</translation>
 <translation id="4294319844246081198">Habari za asubuhi <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Futa arifa zote <ph name="COUNT" /></translation>
+<translation id="4300272766492248925">Fungua programu</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> imehamishiwa kwenye folda ya <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Haipatikani</translation>
 <translation id="4303223480529385476">Panua eneo la hali</translation>
@@ -1212,7 +1208,6 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="5876666360658629066">Weka msimbo wa mzazi</translation>
 <translation id="5881540930187678962">Weka mipangillio ya Kituo cha Kudhibiti Simu baadaye</translation>
 <translation id="5881663018261910378">Umezimwa</translation>
-<translation id="5883017113634523865">Sakinisha programu ya <ph name="NAME" /> kutoka Google Play ili uone vipengele vyote vinavyopatikana</translation>
 <translation id="5887954372087850114">Dirisha la <ph name="WINDOW_TITLE" /> limewekwa kwenye <ph name="DESK_TITLE" /> na limeondolewa kwenye maeneokazi mengine yote</translation>
 <translation id="588817334757907802">Fungua faili katika kivinjari cha Chrome</translation>
 <translation id="5895138241574237353">Zima na uwashe</translation>
@@ -1582,7 +1577,6 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="742594950370306541">Kamera inatumika.</translation>
 <translation id="742608627846767349">Habari za asubuhi,</translation>
 <translation id="743058460480092004">Kamera na maikrofoni zinatumiwa.</translation>
-<translation id="7452560014878697800">Kuna proramu inayotumia kamera yako</translation>
 <translation id="7453330308669753048">Matokeo ya historia ya mambo uliyotafuta imeondolewa</translation>
 <translation id="7459485586006128091">Kutokana na hitilafu ya ndani, mtandao pepe umezimwa. Jaribu kuunganisha tena baada ya dakika chache.</translation>
 <translation id="7461924472993315131">Bana</translation>

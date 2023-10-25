@@ -1874,16 +1874,25 @@ config("default_warnings") {
 
           # TODO(https://crbug.com/1491833): Fix and re-enable.
           "-Wno-invalid-offsetof",
+
+          # TODO(crbug.com/1494809): Evaluate and possibly enable.
+          "-Wno-vla-extension",
         ]
 
         if (llvm_force_head_revision) {
           # TODO(https://crbug.com/1490607): Fix and re-enable.
-          cflags += [ "-Wno-thread-safety-reference" ]
+          cflags_cc += [ "-Wno-thread-safety-reference-return" ]
         }
 
-        if (enable_precompiled_headers && !is_win) {
+        if (llvm_force_head_revision && is_win) {
+          # TODO(crbug.com/1495100): Evaluate and possibly enable.
+          cflags_cc += [ "-Wno-delayed-template-parsing-in-cxx20" ]
+        }
+
+        if (enable_precompiled_headers && !is_win &&
+            !llvm_force_head_revision) {
           cflags += [
-            # TODO(crbug.com/1486799) Find a long-term solution.
+            # TODO(crbug.com/1486799) Remove in next clang roll.
             "-Wno-deprecated-include-gch",
           ]
         }

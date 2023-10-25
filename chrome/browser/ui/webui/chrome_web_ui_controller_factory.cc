@@ -1260,13 +1260,8 @@ ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
 }
 
 bool ChromeWebUIControllerFactory::CanHandleUrl(const GURL& url) {
-  return crosapi::gurl_os_handler_utils::IsUrlInList(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      crosapi::gurl_os_handler_utils::GetTargetURLFromLacrosURL(url),
-#else
-      crosapi::gurl_os_handler_utils::SanitizeAshURL(url),
-#endif
-      GetListOfAcceptableURLs());
+  return crosapi::gurl_os_handler_utils::IsAshUrlInList(
+      url, GetListOfAcceptableURLs());
 }
 
 #endif

@@ -1028,6 +1028,11 @@
     'disk_cache': {
       'filepath': 'net/disk_cache/|http_cache',
     },
+    'display': {
+      'filepath': 'ui/display/|'\
+                  'ash/display/|'\
+                  'chrome/browser/ui/webui/ash/settings/pages/device/display_settings/',
+    },
     'dom_storage': {
       'filepath': 'content/common/dom_storage/|'\
                   'content/browser/dom_storage/|'\
@@ -2432,7 +2437,8 @@
                           'jsaul+autofillwatch@google.com',
                           'shgar+autofillwatch@google.com',
                           'siashah+autofillwatch@chromium.org',
-                          'siyua+autofillwatch@chromium.org'],
+                          'siyua+autofillwatch@chromium.org',
+                          'vinnypersky+autofillwatch@google.com'],
     'background_fetch': ['peter@chromium.org',
                          'rayankans+watch@chromium.org',
                          'nator+watch@chromium.org'],
@@ -2776,6 +2782,7 @@
              'wanderview+watch-dips@chromium.org'],
     'discardable_memory': ['thiabaud+watch-discardable-memory@google.com'],
     'disk_cache': ['gavinp+disk@chromium.org'],
+    'display': ['zhangwenyu+watch@google.com'],
     'dom_storage': ['dmurph+watchingdomstorage@chromium.org'],
     'download': ['dtrainor+watch@chromium.org'],
     'download_bubble': ['xinghuilu+watch@chromium.org',

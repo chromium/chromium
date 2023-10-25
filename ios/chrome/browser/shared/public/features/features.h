@@ -202,10 +202,18 @@ extern const char kBottomOmniboxDefaultSettingParamSafariSwitcher[];
 // Feature flag to change the default position of the omnibox.
 BASE_DECLARE_FEATURE(kBottomOmniboxDefaultSetting);
 
+// Feature flag to retrieve device switcher results for omnibox default
+// position. Enabled by default.
+BASE_DECLARE_FEATURE(kBottomOmniboxDeviceSwitcherResults);
+
 // Returns true if `kBottomOmniboxSteadyState` feature flag is enabled and the
 // current device is a phone. This checks that the flag is enabled, not that the
 // omnibox is currently at the bottom.
 bool IsBottomOmniboxSteadyStateEnabled();
+
+// Returns true if `kBottomOmniboxDeviceSwitcherResults` feature flag is
+// enabled.
+bool IsBottomOmniboxDeviceSwitcherResultsEnabled();
 
 // Feature flag to put all clipboard access onto a background thread. Any
 // synchronous clipboard access will always return nil/false.

@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/base64.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
@@ -241,7 +240,7 @@ TEST_F(NetworkServiceProxyDelegateTest, AddsTokenToTunnelRequest) {
   auto delegate = CreateDelegate(std::move(config));
 
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
-  ipp_config_cache->SetNextAuthToken(MakeAuthToken("a-token"));
+  ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
   ipp_config_cache->SetProxyList({"proxy"});
   delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
 
@@ -250,10 +249,7 @@ TEST_F(NetworkServiceProxyDelegateTest, AddsTokenToTunnelRequest) {
       net::ProxyServer::SCHEME_HTTPS, "proxy", absl::nullopt);
   delegate->OnBeforeTunnelRequest(proxy_chain, /*chain_index=*/0, &headers);
 
-  std::string encoded_token;
-  base::Base64Encode("a-token", &encoded_token);
-  EXPECT_THAT(headers, Contain("Authorization",
-                               base::StrCat({"Bearer ", encoded_token})));
+  EXPECT_THAT(headers, Contain("Authorization", "Bearer: a-token"));
 }
 
 TEST_F(NetworkServiceProxyDelegateTest, NoTokenIfNotIpProtection) {
@@ -262,7 +258,7 @@ TEST_F(NetworkServiceProxyDelegateTest, NoTokenIfNotIpProtection) {
   auto delegate = CreateDelegate(std::move(config));
 
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
-  ipp_config_cache->SetNextAuthToken(MakeAuthToken("a-token"));
+  ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
   delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
 
   net::HttpRequestHeaders headers;
@@ -623,7 +619,7 @@ TEST_F(NetworkServiceProxyDelegateTest,
       CreateDelegate(std::move(config), &network_service_proxy_allow_list);
 
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
-  ipp_config_cache->SetNextAuthToken(MakeAuthToken("a-token"));
+  ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
   ipp_config_cache->SetProxyList({"ippro-1", "ippro-2"});
   delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
 
@@ -667,7 +663,7 @@ TEST_F(NetworkServiceProxyDelegateTest,
       CreateDelegate(std::move(config), &network_service_proxy_allow_list);
 
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
-  ipp_config_cache->SetNextAuthToken(MakeAuthToken("a-token"));
+  ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
   ipp_config_cache->SetProxyList({"foo"});
   delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
 
@@ -698,7 +694,7 @@ TEST_F(
       CreateDelegate(std::move(config), &network_service_proxy_allow_list);
 
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
-  ipp_config_cache->SetNextAuthToken(MakeAuthToken("a-token"));
+  ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
   ipp_config_cache->SetProxyList({"ippro-1", "ippro-2"});
   delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
 
@@ -768,7 +764,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxy_NoProxyList) {
       CreateDelegate(std::move(config), &network_service_proxy_allow_list);
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
   // No proxy list is added to the cache, so the result will be direct.
-  ipp_config_cache->SetNextAuthToken(MakeAuthToken("a-token"));
+  ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
   delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
 
   net::ProxyInfo result;
@@ -796,7 +792,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxy_AllowListDisabled) {
       CreateDelegate(std::move(config), &network_service_proxy_allow_list);
 
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
-  ipp_config_cache->SetNextAuthToken(MakeAuthToken("a-token"));
+  ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
   ipp_config_cache->SetProxyList({"proxy"});
   delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
 
@@ -823,7 +819,7 @@ TEST_F(
       CreateDelegate(std::move(config), &network_service_proxy_allow_list);
 
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
-  ipp_config_cache->SetNextAuthToken(MakeAuthToken("a-token"));
+  ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
   ipp_config_cache->SetProxyList({"ippro-1", "ippro-2"});
   delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
 
@@ -844,7 +840,7 @@ TEST_F(NetworkServiceProxyDelegateTest,
   auto delegate = CreateDelegate(std::move(config));
 
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
-  ipp_config_cache->SetNextAuthToken(MakeAuthToken("a-token"));
+  ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
   ipp_config_cache->SetProxyList({"ippro-1", "ippro-2"});
   delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
 
@@ -869,7 +865,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyIpProtectionNoMatch) {
       CreateDelegate(std::move(config), &network_service_proxy_allow_list);
 
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
-  ipp_config_cache->SetNextAuthToken(MakeAuthToken("a-token"));
+  ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
   ipp_config_cache->SetProxyList({"ippro-1", "ippro-2"});
   delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
 
@@ -895,7 +891,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyMayNeedAuthTokenSoon) {
       CreateDelegate(std::move(config), &network_service_proxy_allow_list);
 
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
-  ipp_config_cache->SetNextAuthToken(MakeAuthToken("a-token"));
+  ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
   ipp_config_cache->SetProxyList({"proxy"});
   delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
 

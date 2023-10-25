@@ -639,4 +639,70 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTestForRequestFileSystem, DlpOpenFileDeny) {
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(FileSystemApiTestForRequestFileSystem,
+                       AllowlistedComponentBackgroundDlpAllow) {
+  file_access::MockScopedFileAccessDelegate file_access;
+  base::MockRepeatingCallback<void(
+      const std::vector<base::FilePath>&,
+      base::OnceCallback<void(file_access::ScopedFileAccess)>)>
+      create;
+  EXPECT_CALL(
+      file_access,
+      CreateFileAccessCallback(testing::Property(
+          &GURL::spec,
+          testing::MatchesRegex(
+              "chrome-extension://.*/_generated_background_page\\.html"))))
+      .WillOnce(testing::Return(base::BindPostTask(
+          content::GetIOThreadTaskRunner({}), create.Get())));
+  EXPECT_CALL(create, Run)
+      .WillOnce(base::test::RunOnceCallback<1>(
+          file_access::ScopedFileAccess(true, base::ScopedFD())));
+
+  ScopedSkipRequestFileSystemDialog dialog_skipper(ui::DIALOG_BUTTON_CANCEL);
+  const base::FilePath test_file = temp_dir_.GetPath()
+                                       .Append(kReadOnlyMountPointName)
+                                       .AppendASCII("open_existing.txt");
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::WriteFile(test_file, "Can you see me?");
+  }
+  EXPECT_TRUE(RunExtensionTest(
+      "api_test/file_system/request_file_system_allowed_component_background",
+      {.launch_as_platform_app = true}, {.load_as_component = true}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemApiTestForRequestFileSystem,
+                       AllowlistedComponentBackgroundDlpDeny) {
+  file_access::MockScopedFileAccessDelegate file_access;
+  base::MockRepeatingCallback<void(
+      const std::vector<base::FilePath>&,
+      base::OnceCallback<void(file_access::ScopedFileAccess)>)>
+      create;
+  EXPECT_CALL(
+      file_access,
+      CreateFileAccessCallback(testing::Property(
+          &GURL::spec,
+          testing::MatchesRegex(
+              "chrome-extension://.*/_generated_background_page\\.html"))))
+      .WillOnce(testing::Return(base::BindPostTask(
+          content::GetIOThreadTaskRunner({}), create.Get())));
+  EXPECT_CALL(create, Run)
+      .WillOnce(base::test::RunOnceCallback<1>(
+          file_access::ScopedFileAccess(false, base::ScopedFD())));
+
+  ScopedSkipRequestFileSystemDialog dialog_skipper(ui::DIALOG_BUTTON_CANCEL);
+  const base::FilePath test_file = temp_dir_.GetPath()
+                                       .Append(kReadOnlyMountPointName)
+                                       .AppendASCII("open_existing.txt");
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::WriteFile(test_file, "Can you see me?");
+  }
+  EXPECT_FALSE(RunExtensionTest(
+      "api_test/file_system/request_file_system_allowed_component_background",
+      {.launch_as_platform_app = true}, {.load_as_component = true}))
+      << message_;
+}
+
 }  // namespace extensions

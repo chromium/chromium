@@ -89,12 +89,7 @@ class StyleEngineTest : public PageTestBase {
     return !GetStyleEngine().ShouldUpdateDocumentStyleSheetCollection();
   }
 
-  enum RuleSetInvalidation {
-    kRuleSetInvalidationsScheduled,
-    kRuleSetInvalidationFullRecalc
-  };
-  RuleSetInvalidation ScheduleInvalidationsForRules(TreeScope&,
-                                                    const String& css_text);
+  void ApplyRuleSetInvalidation(TreeScope&, const String& css_text);
 
   // A wrapper to add a reason for UpdateAllLifecyclePhases
   void UpdateAllLifecyclePhases() {
@@ -158,8 +153,7 @@ class StyleEngineTest : public PageTestBase {
 
 class StyleEngineContainerQueryTest : public StyleEngineTest {};
 
-StyleEngineTest::RuleSetInvalidation
-StyleEngineTest::ScheduleInvalidationsForRules(TreeScope& tree_scope,
+void StyleEngineTest::ApplyRuleSetInvalidation(TreeScope& tree_scope,
                                                const String& css_text) {
   auto* sheet = MakeGarbageCollected<StyleSheetContents>(
       MakeGarbageCollected<CSSParserContext>(
@@ -169,15 +163,11 @@ StyleEngineTest::ScheduleInvalidationsForRules(TreeScope& tree_scope,
   RuleSet& rule_set =
       sheet->EnsureRuleSet(MediaQueryEvaluator(GetDocument().GetFrame()));
   rule_set.CompactRulesIfNeeded();
-  if (rule_set.NeedsFullRecalcForRuleSetInvalidation()) {
-    return kRuleSetInvalidationFullRecalc;
-  }
   rule_sets.insert(&rule_set);
   SelectorFilter selector_filter;
   selector_filter.PushAllParentsOf(tree_scope);
   GetStyleEngine().ApplyRuleSetInvalidation(tree_scope, tree_scope.RootNode(),
                                             selector_filter, rule_sets);
-  return kRuleSetInvalidationsScheduled;
 }
 
 TEST_F(StyleEngineTest, DocumentDirtyAfterInject) {
@@ -866,30 +856,25 @@ TEST_F(StyleEngineTest, RuleSetInvalidationTypeSelectors) {
   UpdateAllLifecyclePhases();
 
   unsigned before_count = GetStyleEngine().StyleForElementCount();
-  EXPECT_EQ(kRuleSetInvalidationsScheduled,
-            ScheduleInvalidationsForRules(GetDocument(),
-                                          "span { background: green}"));
+  ApplyRuleSetInvalidation(GetDocument(), "span { background: green}");
   UpdateAllLifecyclePhases();
   unsigned after_count = GetStyleEngine().StyleForElementCount();
   EXPECT_EQ(1u, after_count - before_count);
 
   before_count = after_count;
-  EXPECT_EQ(kRuleSetInvalidationsScheduled,
-            ScheduleInvalidationsForRules(GetDocument(),
-                                          "body div { background: green}"));
+  ApplyRuleSetInvalidation(GetDocument(), "body div { background: green}");
   UpdateAllLifecyclePhases();
   after_count = GetStyleEngine().StyleForElementCount();
   EXPECT_EQ(2u, after_count - before_count);
 
-  EXPECT_EQ(kRuleSetInvalidationFullRecalc,
-            ScheduleInvalidationsForRules(GetDocument(),
-                                          "div * { background: green}"));
+  before_count = after_count;
+  ApplyRuleSetInvalidation(GetDocument(), "div * { background: green}");
   UpdateAllLifecyclePhases();
+  after_count = GetStyleEngine().StyleForElementCount();
+  EXPECT_EQ(2u, after_count - before_count);
 
   before_count = GetStyleEngine().StyleForElementCount();
-  EXPECT_EQ(kRuleSetInvalidationsScheduled,
-            ScheduleInvalidationsForRules(GetDocument(),
-                                          "#i b { background: green}"));
+  ApplyRuleSetInvalidation(GetDocument(), "#i b { background: green}");
   UpdateAllLifecyclePhases();
   after_count = GetStyleEngine().StyleForElementCount();
   EXPECT_EQ(1u, after_count - before_count);
@@ -905,9 +890,8 @@ TEST_F(StyleEngineTest, RuleSetInvalidationCustomPseudo) {
   UpdateAllLifecyclePhases();
 
   unsigned before_count = GetStyleEngine().StyleForElementCount();
-  EXPECT_EQ(ScheduleInvalidationsForRules(
-                GetDocument(), "::-webkit-progress-bar { background: green }"),
-            kRuleSetInvalidationsScheduled);
+  ApplyRuleSetInvalidation(GetDocument(),
+                           "::-webkit-progress-bar { background: green }");
   UpdateAllLifecyclePhases();
   unsigned after_count = GetStyleEngine().StyleForElementCount();
   EXPECT_EQ(1u, after_count - before_count);
@@ -926,30 +910,35 @@ TEST_F(StyleEngineTest, RuleSetInvalidationHost) {
   UpdateAllLifecyclePhases();
 
   unsigned before_count = GetStyleEngine().StyleForElementCount();
-  EXPECT_EQ(ScheduleInvalidationsForRules(
-                shadow_root, ":host(#nohost), #nohost { background: green}"),
-            kRuleSetInvalidationsScheduled);
+  ApplyRuleSetInvalidation(shadow_root,
+                           ":host(#nohost), #nohost { background: green}");
   UpdateAllLifecyclePhases();
   unsigned after_count = GetStyleEngine().StyleForElementCount();
   EXPECT_EQ(0u, after_count - before_count);
 
   before_count = after_count;
-  EXPECT_EQ(ScheduleInvalidationsForRules(shadow_root,
-                                          ":host(#host) { background: green}"),
-            kRuleSetInvalidationsScheduled);
+  ApplyRuleSetInvalidation(shadow_root, ":host(#host) { background: green}");
   UpdateAllLifecyclePhases();
   after_count = GetStyleEngine().StyleForElementCount();
   EXPECT_EQ(1u, after_count - before_count);
-  EXPECT_EQ(ScheduleInvalidationsForRules(shadow_root,
-                                          ":host(div) { background: green}"),
-            kRuleSetInvalidationsScheduled);
 
-  EXPECT_EQ(ScheduleInvalidationsForRules(shadow_root,
-                                          ":host(*) { background: green}"),
-            kRuleSetInvalidationFullRecalc);
-  EXPECT_EQ(ScheduleInvalidationsForRules(
-                shadow_root, ":host(*) :hover { background: green}"),
-            kRuleSetInvalidationFullRecalc);
+  before_count = after_count;
+  ApplyRuleSetInvalidation(shadow_root, ":host(div) { background: green}");
+  UpdateAllLifecyclePhases();
+  after_count = GetStyleEngine().StyleForElementCount();
+  EXPECT_EQ(1u, after_count - before_count);
+
+  before_count = after_count;
+  ApplyRuleSetInvalidation(shadow_root, ":host(*) { background: green}");
+  UpdateAllLifecyclePhases();
+  after_count = GetStyleEngine().StyleForElementCount();
+  EXPECT_EQ(1u, after_count - before_count);
+
+  before_count = after_count;
+  ApplyRuleSetInvalidation(shadow_root, ":host(*) :hover { background: green}");
+  UpdateAllLifecyclePhases();
+  after_count = GetStyleEngine().StyleForElementCount();
+  EXPECT_EQ(3u, after_count - before_count);
 }
 
 TEST_F(StyleEngineTest, RuleSetInvalidationSlotted) {
@@ -972,16 +961,16 @@ TEST_F(StyleEngineTest, RuleSetInvalidationSlotted) {
   UpdateAllLifecyclePhases();
 
   unsigned before_count = GetStyleEngine().StyleForElementCount();
-  EXPECT_EQ(ScheduleInvalidationsForRules(
-                shadow_root, "::slotted(.s1) { background: green}"),
-            kRuleSetInvalidationsScheduled);
+  ApplyRuleSetInvalidation(shadow_root, "::slotted(.s1) { background: green}");
   UpdateAllLifecyclePhases();
   unsigned after_count = GetStyleEngine().StyleForElementCount();
   EXPECT_EQ(4u, after_count - before_count);
 
-  EXPECT_EQ(ScheduleInvalidationsForRules(shadow_root,
-                                          "::slotted(*) { background: green}"),
-            kRuleSetInvalidationFullRecalc);
+  before_count = GetStyleEngine().StyleForElementCount();
+  ApplyRuleSetInvalidation(shadow_root, "::slotted(*) { background: green}");
+  UpdateAllLifecyclePhases();
+  after_count = GetStyleEngine().StyleForElementCount();
+  EXPECT_EQ(4u, after_count - before_count);
 }
 
 TEST_F(StyleEngineTest, RuleSetInvalidationHostContext) {
@@ -997,27 +986,32 @@ TEST_F(StyleEngineTest, RuleSetInvalidationHostContext) {
   UpdateAllLifecyclePhases();
 
   unsigned before_count = GetStyleEngine().StyleForElementCount();
-  EXPECT_EQ(ScheduleInvalidationsForRules(
-                shadow_root, ":host-context(.nomatch) .a { background: green}"),
-            kRuleSetInvalidationsScheduled);
+  ApplyRuleSetInvalidation(shadow_root,
+                           ":host-context(.nomatch) .a { background: green}");
   UpdateAllLifecyclePhases();
   unsigned after_count = GetStyleEngine().StyleForElementCount();
   EXPECT_EQ(0u, after_count - before_count);
 
   before_count = after_count;
-  EXPECT_EQ(ScheduleInvalidationsForRules(
-                shadow_root, ":host-context(.match) .a { background: green}"),
-            kRuleSetInvalidationsScheduled);
+  ApplyRuleSetInvalidation(shadow_root,
+                           ":host-context(.match) .a { background: green}");
   UpdateAllLifecyclePhases();
   after_count = GetStyleEngine().StyleForElementCount();
   EXPECT_EQ(1u, after_count - before_count);
 
-  EXPECT_EQ(ScheduleInvalidationsForRules(
-                shadow_root, ":host-context(:hover) { background: green}"),
-            kRuleSetInvalidationFullRecalc);
-  EXPECT_EQ(ScheduleInvalidationsForRules(
-                shadow_root, ":host-context(#host) { background: green}"),
-            kRuleSetInvalidationFullRecalc);
+  before_count = after_count;
+  ApplyRuleSetInvalidation(shadow_root,
+                           ":host-context(:hover) { background: green}");
+  UpdateAllLifecyclePhases();
+  after_count = GetStyleEngine().StyleForElementCount();
+  EXPECT_EQ(1u, after_count - before_count);
+
+  before_count = after_count;
+  ApplyRuleSetInvalidation(shadow_root,
+                           ":host-context(#host) { background: green}");
+  UpdateAllLifecyclePhases();
+  after_count = GetStyleEngine().StyleForElementCount();
+  EXPECT_EQ(1u, after_count - before_count);
 }
 
 TEST_F(StyleEngineTest, HasViewportDependentMediaQueries) {

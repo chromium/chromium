@@ -9,7 +9,6 @@
 
 #include <memory>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "content/common/content_export.h"
@@ -19,8 +18,6 @@
 #include "content/public/browser/web_authentication_request_proxy.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
-#include "device/fido/ctap_get_assertion_request.h"
-#include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/make_credential_request_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
@@ -60,6 +57,36 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
     // kWebContents is for typical cases where Javascript is making a
     // `navigator.credentials` call.
     kWebContents,
+  };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class GetAssertionResult {
+    kTimeout = 0,
+    kUserCancelled = 1,
+
+    kWinNativeSuccess = 2,
+    kWinNativeError = 3,
+
+    kTouchIDSuccess = 4,
+    kTouchIDError = 5,
+
+    kChromeOSSuccess = 6,
+    kChromeOSError = 7,
+
+    kPhoneSuccess = 8,
+    kPhoneError = 9,
+
+    kICloudKeychainSuccess = 10,
+    kICloudKeychainError = 11,
+
+    kEnclaveSuccess = 12,
+    kEnclaveError = 13,
+
+    kOtherSuccess = 14,
+    kOtherError = 15,
+
+    kMaxValue = kOtherError,
   };
 
   // Creates a new AuthenticatorCommonImpl. Callers must ensure that this

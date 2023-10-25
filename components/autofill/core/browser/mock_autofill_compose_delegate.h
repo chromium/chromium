@@ -26,6 +26,7 @@ class MockAutofillComposeDelegate : public AutofillComposeDelegate {
                std::optional<AutofillClient::PopupScreenLocation>,
                ComposeCallback),
               (override));
+  MOCK_METHOD(bool, HasSavedState, (const FieldGlobalId&), (override));
 };
 
 }  // namespace autofill

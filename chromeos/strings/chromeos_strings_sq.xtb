@@ -93,7 +93,6 @@
 <translation id="1643449475550628585">Ndryshoje çdo ditë imazhin e sfondit</translation>
 <translation id="1644574205037202324">Historiku</translation>
 <translation id="1651925268237749928">Ke zgjedhur një album të ndarë. Të tjerët mund të shtojnë ose të ndryshojnë fotografitë. Imazhi yt i sfondit mund të përdorë fotografi që nuk janë aktualisht në këtë album.</translation>
-<translation id="1658834457013045127">Përgjithmonë</translation>
 <translation id="1661865805917886535">Disa prej informacioneve të llogarisë dhe të sistemit mund të dërgohen te Google. Në e përdorim këtë informacion për të ndihmuar në zgjidhjen e problemeve teknike dhe për të përmirësuar shërbimet tona, sipas "Politikës së privatësisë" (<ph name="PRIVACYPOLICYURL" />) dhe "Kushteve të shërbimit" (<ph name="TERMSOFSERVICEURL" />). Për të kërkuar ndryshime të përmbajtjes, shko te "Ndihma ligjore" (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Ndaloi - Nuk ka bojë</translation>
 <translation id="1664796644829245314">Shiko paraprakisht <ph name="PREVIEW_OBJECT" /></translation>
@@ -323,7 +322,6 @@
 <translation id="3484914941826596830">Mos e shkëput këtë pajisje të jashtme dhe mos e fik kompjuterin gjatë përditësimit të firmuerit. Mund ta minimizosh këtë dritare. Ky përditësim mund të zgjasë disa minuta dhe pajisja jote e jashtme mund të mos funksionojë gjatë kësaj kohe.</translation>
 <translation id="3486220673238053218">përkufizimi</translation>
 <translation id="3488065109653206955">I aktivizuar pjesërisht</translation>
-<translation id="349491921221892984"><ph name="MINUTES" /> minuta</translation>
 <translation id="3502426834823382181">shiko të gjitha aplikacionet</translation>
 <translation id="3510890413042482857">Dërgo <ph name="BEGIN_LINK1" />të dhënat e gjurmimit të performancës<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Përditësim: ChromeOS</translation>
@@ -484,7 +482,6 @@
 <translation id="473775607612524610">Përditësoje</translation>
 <translation id="4771607256327216405">ndriço tastierën</translation>
 <translation id="4773299976671772492">Ndaloi</translation>
-<translation id="4782003517030001304">1 orë</translation>
 <translation id="4782311465517282004">Merr përkufizime, përkthime ose konvertime të njësive kur klikon me të djathtin ose prek e mban shtypur tekstin</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotografi</translation>
 <translation id="4793710386569335688">Për më shumë ndihmë, shko te <ph name="BEGIN_LINK" />Qendra e ndihmës<ph name="END_LINK" />.</translation>
@@ -699,6 +696,7 @@
 <translation id="629550705077076970">zbehja e tastierës</translation>
 <translation id="6302401976930124515">Testi "<ph name="TEST_NAME" />" është anuluar</translation>
 <translation id="631063167932043783">Aplikacioni "Eksploro"</translation>
+<translation id="6318437367327684789">përgjithmonë</translation>
 <translation id="6319207335391420837">Përditëso firmuerin në <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Aktivizo mbrojtësin e ekranit</translation>
 <translation id="6324916366299863871">Modifiko shkurtoren</translation>

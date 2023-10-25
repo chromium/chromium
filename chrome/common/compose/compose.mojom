@@ -31,7 +31,18 @@ enum Length {
 // Status code used in compose responses.
 enum ComposeStatus {
   kOk,
+  // Generic error, not specified.
   kError,
+  // Request was unable to be processed.
+  kNotSuccessful,
+  // Server may have not responded.
+  kTryAgain,
+  // Server is likely overloaded, cannot handle a response right now.
+  kTryAgainLater,
+  // If the feature is somehow disabled.
+  kMisconfiguration,
+  // If permission is denied (e.g. user is not logged in.)
+  kPermissionDenied,
 };
 
 // Configuration parameters used in compose requests.
@@ -45,6 +56,8 @@ struct StyleModifiers {
 struct ComposeResponse {
   ComposeStatus status;
   string result;
+  // Whether undo is possible to a prior state before this response.
+  bool undo_available;
 };
 
 // Snapshot of state that can describe current state or be used to
@@ -102,6 +115,15 @@ interface ComposeDialogPageHandler {
   // Asks the native handler for state information needed for opening the
   // compose dialog for the last field the user selected compose on.
   RequestInitialState() => (OpenMetadata initial_state);
+
+  // Asks the native handler to return the `last_state`. A null return means
+  // that there are no undoable states remaining. Calling `Undo()` and
+  // simultaneously closing the dialog (i.e., disconnecting the IPC pipe) may
+  // result in the state being undone, or remaining the same. This depends on
+  // which action executes first. If the IPC pipe disconnects, the Promise will
+  // reject/fail, which should not be confused with a null return. In that case,
+  // an undoable state may exist, but the call failed due to the broken pipe.
+  Undo() => (ComposeState? last_state);
 };
 
 // Interface for calls from Compose dialog JS into the Browser process.

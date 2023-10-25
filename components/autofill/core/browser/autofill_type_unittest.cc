@@ -129,9 +129,9 @@ TEST_P(AutofillTypeTestForHtmlFieldTypes, GroupsOfHtmlFieldTypes) {
   }
   AutofillType t(html_field_type());
   SCOPED_TRACE(testing::Message()
-               << "html_field_type="
-               << FieldTypeToStringPiece(html_field_type()) << " "
-               << "field_type=" << FieldTypeToStringPiece(t.GetStorableType()));
+               << "html_field_type=" << FieldTypeToStringView(html_field_type())
+               << " "
+               << "field_type=" << FieldTypeToStringView(t.GetStorableType()));
   EXPECT_EQ(t.group(), GroupTypeOfServerFieldType(t.GetStorableType()));
 }
 

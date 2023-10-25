@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
-#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/android/plus_addresses/plus_address_creation_controller_android.h"
@@ -75,12 +74,14 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest, OfferUi) {
   PlusAddressCreationControllerAndroid* controller =
       PlusAddressCreationControllerAndroid::FromWebContents(
           chrome_test_utils::GetActiveWebContents(this));
-  base::MockOnceCallback<void(const std::string&)> callback;
+  base::test::TestFuture<const std::string&> future;
   controller->OfferCreation(
-      url::Origin::Create(GURL("https://mattwashere.com")), callback.Get());
+      url::Origin::Create(GURL("https://mattwashere.com")),
+      future.GetCallback());
 
-  EXPECT_CALL(callback, Run(kFakeEmailAddressForCallback)).Times(1);
+  EXPECT_FALSE(future.IsReady());
   controller->OnConfirmed();
+  EXPECT_TRUE(future.IsReady());
 }
 
 IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest,
@@ -92,19 +93,21 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest,
           chrome_test_utils::GetActiveWebContents(this));
 
   // First, offer creation like normal.
-  base::MockOnceCallback<void(const std::string&)> callback;
-  controller->OfferCreation(
-      url::Origin::Create(GURL("https://mattwashere.com")), callback.Get());
-
-  // Then, offer creation a second time, without first dismissing the UI.
-  base::MockOnceCallback<void(const std::string&)> second_callback;
+  base::test::TestFuture<const std::string&> future;
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.com")),
-      second_callback.Get());
+      future.GetCallback());
 
-  EXPECT_CALL(callback, Run(kFakeEmailAddressForCallback)).Times(1);
-  EXPECT_CALL(second_callback, Run).Times(0);
+  // Then, offer creation a second time, without first dismissing the UI.
+  base::test::TestFuture<const std::string&> second_future;
+  controller->OfferCreation(
+      url::Origin::Create(GURL("https://mattwashere.com")),
+      second_future.GetCallback());
+
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_FALSE(second_future.IsReady());
   controller->OnConfirmed();
+  EXPECT_TRUE(future.IsReady());
 }
 
 IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest, Cancel) {
@@ -115,12 +118,14 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest, Cancel) {
           chrome_test_utils::GetActiveWebContents(this));
 
   // First, offer creation.
-  base::MockOnceCallback<void(const std::string&)> callback;
+  base::test::TestFuture<const std::string&> future;
   controller->OfferCreation(
-      url::Origin::Create(GURL("https://mattwashere.com")), callback.Get());
-  // Then, cancel, and ensure that `callback` is not run.
-  EXPECT_CALL(callback, Run).Times(0);
+      url::Origin::Create(GURL("https://mattwashere.com")),
+      future.GetCallback());
+  // Then, cancel, and ensure that `future.GetCallback()` is not run.
+  EXPECT_FALSE(future.IsReady());
   controller->OnCanceled();
+  EXPECT_FALSE(future.IsReady());
 }
 
 IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest,
@@ -132,21 +137,25 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest,
           chrome_test_utils::GetActiveWebContents(this));
 
   // First, offer creation.
-  base::MockOnceCallback<void(const std::string&)> callback;
-  controller->OfferCreation(
-      url::Origin::Create(GURL("https://mattwashere.com")), callback.Get());
-  // Then, cancel, destroy, and ensure that `callback` is not run.
-  EXPECT_CALL(callback, Run).Times(0);
-  controller->OnCanceled();
-  controller->OnDialogDestroyed();
-
-  // After re-showing, confirmation should run `second_callback`.
-  base::MockOnceCallback<void(const std::string&)> second_callback;
+  base::test::TestFuture<const std::string&> future;
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.com")),
-      second_callback.Get());
-  EXPECT_CALL(second_callback, Run(kFakeEmailAddressForCallback)).Times(1);
+      future.GetCallback());
+  // Then, cancel, destroy, and ensure that `future.GetCallback()` is not run.
+  EXPECT_FALSE(future.IsReady());
+  controller->OnCanceled();
+  controller->OnDialogDestroyed();
+  EXPECT_FALSE(future.IsReady());
+
+  // After re-showing, confirmation should run `second_future.GetCallback()`.
+  base::test::TestFuture<const std::string&> second_future;
+  controller->OfferCreation(
+      url::Origin::Create(GURL("https://mattwashere.com")),
+      second_future.GetCallback());
+  EXPECT_FALSE(second_future.IsReady());
   controller->OnConfirmed();
+  EXPECT_TRUE(second_future.IsReady());
+  EXPECT_EQ(second_future.Get(), kFakeEmailAddressForCallback);
 }
 
 }  //  namespace plus_addresses

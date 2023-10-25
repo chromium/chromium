@@ -69,7 +69,7 @@ export class BrailleDisplayManager extends BrailleCaptionsListener {
     this.updatePanStrategy_(SettingsManager.getBoolean('brailleWordWrap'));
 
     BrailleCaptionsBackground.init(this);
-    if (goog.isDef(chrome.brailleDisplayPrivate)) {
+    if (chrome.brailleDisplayPrivate !== undefined) {
       const onDisplayStateChanged = newState =>
           this.refreshDisplayState_(newState);
       chrome.brailleDisplayPrivate.getDisplayState(onDisplayStateChanged);

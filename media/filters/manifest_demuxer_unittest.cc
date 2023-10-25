@@ -245,6 +245,46 @@ TEST_F(ManifestDemuxerTest, OnTimeUpdateUninterruptedBySeek) {
   ASSERT_FALSE(manifest_demuxer_->has_next_task_for_testing());
 }
 
+TEST_F(ManifestDemuxerTest, SeekInterruptedByError) {
+  ManifestDemuxer::DelayCallback delay_cb;
+  EXPECT_CALL(*mock_engine_, OnTimeUpdate(_, _, _))
+      .WillRepeatedly([&delay_cb](base::TimeDelta, double,
+                                  ManifestDemuxer::DelayCallback cb) {
+        delay_cb = std::move(cb);
+      });
+  InitializeDemuxer();
+  ASSERT_TRUE(!!delay_cb);
+  ASSERT_FALSE(manifest_demuxer_->has_pending_seek_for_testing());
+  ASSERT_TRUE(manifest_demuxer_->has_pending_event_for_testing());
+
+  // Seek won't be called until we post delay_cb.
+  EXPECT_CALL(*mock_engine_, StartWaitingForSeek());
+  EXPECT_CALL(*mock_engine_, Seek(_, _)).Times(0);
+  EXPECT_CALL(*this, MockSeekComplete(_)).Times(0);
+  manifest_demuxer_->StartWaitingForSeek(base::Seconds(100));
+  manifest_demuxer_->Seek(base::Seconds(100),
+                          base::BindOnce(&ManifestDemuxerTest::MockSeekComplete,
+                                         base::Unretained(this)));
+  task_environment_.RunUntilIdle();
+
+  // respond that data is needed, this will set chunk demuxer waiting for data.
+  EXPECT_CALL(*mock_engine_, Seek(_, _))
+      .WillOnce(RunOnceCallback<1>(ManifestDemuxer::SeekState::kNeedsData));
+  std::move(delay_cb).Run(kNoTimestamp);
+  task_environment_.RunUntilIdle();
+
+  // Send some generic pipeline error while the pipeline is still waiting for
+  // data.
+  EXPECT_CALL(*this, MockSeekComplete(_));
+  manifest_demuxer_->OnError(PIPELINE_ERROR_ABORT);
+  task_environment_.RunUntilIdle();
+
+  // Now let the delay_cb "execute", even though the error handler should have
+  // shut down all weak_ptrs and canceled all callbacks.
+  std::move(delay_cb).Run(kNoTimestamp);
+  task_environment_.RunUntilIdle();
+}
+
 TEST_F(ManifestDemuxerTest, CancelSeekAfterDemuxerBeforeEngine) {
   // What happens if we seek, the demuxer replies, and while waiting for the
   // engine to reply, we get a notice to cancel pending seek?

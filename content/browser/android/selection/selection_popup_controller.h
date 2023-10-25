@@ -53,7 +53,10 @@ class SelectionPopupController : public RenderWidgetHostConnector {
   bool ShowSelectionMenu(RenderFrameHost* render_frame_host,
                          const ContextMenuParams& params,
                          int handle_height);
-  void OnSelectAroundCaretAck(blink::mojom::SelectAroundCaretResultPtr result);
+  void OnSelectAroundCaretAck(int startOffset,
+                              int endOffset,
+                              int surroundingTextLength,
+                              blink::mojom::SelectAroundCaretResultPtr result);
   void HidePopupsAndPreserveSelection();
   void RestoreSelectionPopupsIfNecessary();
   void ChildLocalSurfaceIdChanged();

@@ -714,7 +714,7 @@ class CopyOrMoveIOTaskWithScansTest
   raw_ptr<policy::MockFilesPolicyNotificationManager,
           DanglingUntriaged | ExperimentalAsh>
       fpnm_;
-  policy::OnDlpRestrictionCheckedWithJustificationCallback warning_callback_;
+  policy::WarningWithJustificationCallback warning_callback_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1469,10 +1469,7 @@ class CopyOrMoveIOTaskWithDLPTest : public testing::Test {
   ~CopyOrMoveIOTaskWithDLPTest() override = default;
 
  protected:
-  CopyOrMoveIOTaskWithDLPTest()
-      : profile_(std::make_unique<TestingProfile>()),
-        user_manager_(new ash::FakeChromeUserManager()),
-        scoped_user_manager_(base::WrapUnique(user_manager_.get())) {}
+  CopyOrMoveIOTaskWithDLPTest() = default;
 
   std::unique_ptr<KeyedService> SetDlpRulesManager(
       content::BrowserContext* context) {
@@ -1499,13 +1496,13 @@ class CopyOrMoveIOTaskWithDLPTest : public testing::Test {
     AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);
     profile_->SetIsNewProfile(true);
     user_manager::User* user =
-        user_manager_->AddUserWithAffiliationAndTypeAndProfile(
+        fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
             account_id, /*is_affiliated=*/false,
             user_manager::USER_TYPE_REGULAR, profile_.get());
-    user_manager_->UserLoggedIn(account_id, user->username_hash(),
-                                /*browser_restart=*/false,
-                                /*is_child=*/false);
-    user_manager_->SimulateUserProfileLoad(account_id);
+    fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
+                                     /*browser_restart=*/false,
+                                     /*is_child=*/false);
+    fake_user_manager_->SimulateUserProfileLoad(account_id);
 
     // DLP Setup.
     policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
@@ -1539,15 +1536,15 @@ class CopyOrMoveIOTaskWithDLPTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   ash::disks::FakeDiskMountManager disk_mount_manager_;
-  const std::unique_ptr<TestingProfile> profile_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
+  const std::unique_ptr<TestingProfile> profile_{
+      std::make_unique<TestingProfile>()};
   raw_ptr<policy::MockDlpRulesManager, DanglingUntriaged | ExperimentalAsh>
       mock_rules_manager_ = nullptr;
   std::unique_ptr<policy::MockDlpFilesControllerAsh> files_controller_;
   base::ScopedTempDir temp_dir_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      user_manager_;
-  user_manager::ScopedUserManager scoped_user_manager_;
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFromStringForTesting("chrome-extension://abc");
 };

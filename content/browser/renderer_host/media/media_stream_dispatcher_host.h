@@ -23,6 +23,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/mediastream/media_stream_controls.h"
+#include "third_party/blink/public/mojom/mediastream/media_devices.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 namespace content {
@@ -130,16 +131,19 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
       KeepDeviceAliveForTransferCallback callback) override;
 #if !BUILDFLAG(IS_ANDROID)
   void FocusCapturedSurface(const std::string& label, bool focus) override;
-  void Crop(const base::UnguessableToken& device_id,
-            const base::Token& crop_id,
-            uint32_t crop_version,
-            CropCallback callback) override;
+  void ApplySubCaptureTarget(const base::UnguessableToken& device_id,
+                             blink::mojom::SubCaptureTargetType type,
+                             const base::Token& sub_capture_target,
+                             uint32_t sub_capture_target_version,
+                             ApplySubCaptureTargetCallback callback) override;
 
-  void OnCropValidationComplete(const base::UnguessableToken& device_id,
-                                const base::Token& crop_id,
-                                uint32_t crop_version,
-                                CropCallback callback,
-                                bool crop_id_passed_validation);
+  void OnSubCaptureTargetValidationComplete(
+      const base::UnguessableToken& device_id,
+      blink::mojom::SubCaptureTargetType type,
+      const base::Token& target,
+      uint32_t sub_capture_target_version,
+      ApplySubCaptureTargetCallback callback,
+      bool target_passed_validation);
 #endif
   void GetOpenDevice(int32_t page_request_id,
                      const base::UnguessableToken& session_id,

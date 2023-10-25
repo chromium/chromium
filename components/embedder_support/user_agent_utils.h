@@ -22,9 +22,6 @@ class WebContents;
 
 namespace embedder_support {
 
-// Value of the Sec-CH-UA-Form-Factor header for the mobile form-factor.
-constexpr char kMobileFormFactor[] = "Mobile";
-
 // TODO(crbug.com/1330890): Remove this enum along with policy.
 enum class UserAgentReductionEnterprisePolicyState {
   kDefault = 0,

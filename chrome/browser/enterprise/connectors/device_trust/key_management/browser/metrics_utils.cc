@@ -77,6 +77,16 @@ DTKeyRotationResult ResultFromStatus(KeyRotationCommand::Status status) {
       return DTKeyRotationResult::kFailedInvalidPermissions;
     case KeyRotationCommand::Status::FAILED_INVALID_INSTALLATION:
       return DTKeyRotationResult::kFailedInvalidInstallation;
+    case KeyRotationCommand::Status::FAILED_INVALID_DMTOKEN_STORAGE:
+      return DTKeyRotationResult::kFailedInvalidDmTokenStorage;
+    case KeyRotationCommand::Status::FAILED_INVALID_DMTOKEN:
+      return DTKeyRotationResult::kFailedInvalidDmToken;
+    case KeyRotationCommand::Status::FAILED_INVALID_MANAGEMENT_SERVICE:
+      return DTKeyRotationResult::kFailedInvalidManagementService;
+    case KeyRotationCommand::Status::FAILED_INVALID_DMSERVER_URL:
+      return DTKeyRotationResult::kFailedInvalidDmServerUrl;
+    case KeyRotationCommand::Status::FAILED_INVALID_COMMAND:
+      return DTKeyRotationResult::kFailedInvalidCommand;
   }
 }
 

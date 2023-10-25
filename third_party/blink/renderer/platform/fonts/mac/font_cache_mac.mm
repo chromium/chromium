@@ -267,9 +267,8 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
       RuntimeEnabledFeatures::FontSrcLocalMatchingEnabled()) {
     matched_font = MatchUniqueFont(creation_params.Family(), size);
   } else {
-    matched_font = MatchNSFontFamily(
-        creation_params.Family(), traits, font_description.Weight(),
-        font_description.Style(), font_description.Stretch(), size);
+    matched_font = MatchNSFontFamily(creation_params.Family(), traits,
+                                     font_description.Weight(), size);
   }
   if (!matched_font)
     return nullptr;

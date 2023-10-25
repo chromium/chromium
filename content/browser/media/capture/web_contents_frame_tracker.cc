@@ -433,13 +433,13 @@ void WebContentsFrameTracker::SetWebContentsAndContextFromRoutingId(
 
 void WebContentsFrameTracker::Crop(
     const base::Token& crop_id,
-    uint32_t crop_version,
+    uint32_t sub_capture_target_version,
     base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
 
-  if (crop_version_ >= crop_version) {
+  if (sub_capture_target_version_ >= sub_capture_target_version) {
     // This will trigger a BadMessage from MediaStreamDispatcherHost.
     // (MediaStreamDispatcherHost knows the capturer, whereas here we know
     // the capturee.)
@@ -449,7 +449,7 @@ void WebContentsFrameTracker::Crop(
   }
 
   crop_id_ = crop_id;
-  crop_version_ = crop_version;
+  sub_capture_target_version_ = sub_capture_target_version;
 
   // If we don't have a target yet, we can store the crop ID but cannot actually
   // crop yet.
@@ -462,7 +462,8 @@ void WebContentsFrameTracker::Crop(
   device_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](const viz::VideoCaptureTarget& target, uint32_t crop_version,
+          [](const viz::VideoCaptureTarget& target,
+             uint32_t sub_capture_target_version,
              base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
                  callback,
              base::WeakPtr<WebContentsVideoCaptureDevice> device) {
@@ -471,11 +472,11 @@ void WebContentsFrameTracker::Crop(
                   media::mojom::ApplySubCaptureTargetResult::kErrorGeneric);
               return;
             }
-            device->OnTargetChanged(target, crop_version);
+            device->OnTargetChanged(target, sub_capture_target_version);
             std::move(callback).Run(
                 media::mojom::ApplySubCaptureTargetResult::kSuccess);
           },
-          target, crop_version_, std::move(callback), device_));
+          target, sub_capture_target_version_, std::move(callback), device_));
 }
 
 void WebContentsFrameTracker::SetWebContentsAndContextForTesting(
@@ -518,7 +519,7 @@ void WebContentsFrameTracker::OnPossibleTargetChange() {
     device_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&WebContentsVideoCaptureDevice::OnTargetChanged, device_,
-                       std::move(target), crop_version_));
+                       std::move(target), sub_capture_target_version_));
   }
 
   // Note: MouseCursorOverlayController runs on the UI thread. SetTargetView()

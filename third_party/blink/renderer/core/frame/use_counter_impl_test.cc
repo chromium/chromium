@@ -328,7 +328,7 @@ TEST_F(UseCounterImplTest, CSSFlexibleBoxInline) {
 }
 
 TEST_F(UseCounterImplTest, CSSFlexibleBoxButton) {
-  // LayoutNGButton is a subclass of LayoutNGFlexibleBox, however we don't want
+  // LayoutButton is a subclass of LayoutFlexibleBox, however we don't want
   // it to be counted as usage of flexboxes as it's an implementation detail.
   auto dummy_page_holder =
       std::make_unique<DummyPageHolder>(gfx::Size(800, 600));

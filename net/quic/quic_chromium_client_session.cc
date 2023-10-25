@@ -3748,10 +3748,6 @@ handles::NetworkHandle QuicChromiumClientSession::GetCurrentNetwork() const {
              : default_network_;
 }
 
-bool QuicChromiumClientSession::IsAuthorized(const std::string& hostname) {
-  return CanPool(hostname, session_key_);
-}
-
 void QuicChromiumClientSession::OnServerPreferredAddressAvailable(
     const quic::QuicSocketAddress& server_preferred_address) {
   current_migration_cause_ = ON_SERVER_PREFERRED_ADDRESS_AVAILABLE;

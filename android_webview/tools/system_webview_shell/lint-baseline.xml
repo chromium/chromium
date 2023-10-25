@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.3.0-alpha06" type="baseline" client="" dependencies="true" name="" variant="all" version="8.3.0-alpha06">
+<issues format="6" by="lint 8.3.0-alpha09" type="baseline" client="" dependencies="true" name="" variant="all" version="8.3.0-alpha09">
 
     <issue
         id="MissingClass"
@@ -19,7 +19,7 @@
         errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="174"
+            line="189"
             column="51"/>
     </issue>
 
@@ -30,7 +30,7 @@
         errorLine2="            ^">
         <location
             file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="195"
+            line="210"
             column="13"/>
     </issue>
 
@@ -41,7 +41,7 @@
         errorLine2="            ^">
         <location
             file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="200"
+            line="215"
             column="13"/>
     </issue>
 
@@ -52,7 +52,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="205"
+            line="220"
             column="13"/>
     </issue>
 
@@ -96,7 +96,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../base/android/java/src/org/chromium/base/ContextUtils.java"
-            line="304"
+            line="305"
             column="20"/>
     </issue>
 
@@ -107,7 +107,7 @@
         errorLine2="                       ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
-            line="193"
+            line="189"
             column="24"/>
     </issue>
 
@@ -129,7 +129,7 @@
         errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../base/android/java/src/org/chromium/base/ApplicationStatus.java"
-            line="384"
+            line="385"
             column="28"/>
     </issue>
 
@@ -140,7 +140,7 @@
         errorLine2="               ~~~~~~~~~~~~~">
         <location
             file="../../base/android/java/src/org/chromium/base/RadioUtils.java"
-            line="80"
+            line="81"
             column="16"/>
     </issue>
 
@@ -151,7 +151,7 @@
         errorLine2="               ~~~~~~~~~~~~~">
         <location
             file="../../base/android/java/src/org/chromium/base/RadioUtils.java"
-            line="105"
+            line="106"
             column="16"/>
     </issue>
 
@@ -162,7 +162,7 @@
         errorLine2="               ~~~~~~~~~~~~~">
         <location
             file="../../base/android/java/src/org/chromium/base/RadioUtils.java"
-            line="131"
+            line="132"
             column="16"/>
     </issue>
 
@@ -171,6 +171,15 @@
         message="Missing density variation folders in `../../android_webview/tools/system_webview_shell/apk/res`: drawable-hdpi, drawable-xhdpi, drawable-xxhdpi">
         <location
             file="../../android_webview/tools/system_webview_shell/apk/res"/>
+    </issue>
+
+    <issue
+        id="ForegroundServiceType"
+        message="To call Service.startForeground(), the <service> element of manifest file must have the foregroundServiceType attribute specified [ForegroundServiceType]&#xA; service.startForeground(id, notification, foregroundServiceType);">
+        <location
+            file="../../android_webview/tools/system_webview_shell/apk/AndroidManifest.xml"
+            line="162"
+            column="9"/>
     </issue>
 
 </issues>

@@ -623,6 +623,10 @@
       status: "stable",
     },
     {
+      name: "ClipboardSupportedTypes",
+      status: "experimental",
+    },
+    {
       name: "ClipboardSvg",
       status: "experimental",
       base_feature: "none",
@@ -1165,6 +1169,7 @@
       status: "stable",
     },
     {
+      // The AccentColor And AccentColorText CSS system color keywords
       name: "CSSSystemAccentColor",
       status: "experimental",
     },
@@ -1442,6 +1447,14 @@
       public: true,
     },
     {
+      // Makes document's fallback base URL use about:blank instead of the base
+      // URL of whatever execution context created it in order to match the
+      // HTML spec and the behavior already shipped in all other browsers. This
+      // behavior is reflected by document.baseURI.
+      name: "DocumentBaseURIFix",
+      status: "stable",
+    },
+    {
       name: "DocumentCookie",
       base_feature: "none",
     },
@@ -1631,6 +1644,13 @@
       base_feature: "none",
     },
     {
+      name: "FedCmAutoSelectedFlag",
+      depends_on: ["FedCm"],
+      public: true,
+      status: "test",
+      base_feature: "none",
+    },
+    {
       name: "FedCmError",
       depends_on: ["FedCm"],
       public: true,
@@ -1639,13 +1659,6 @@
     },
     {
       name: "FedCmHostedDomain",
-      depends_on: ["FedCm"],
-      public: true,
-      status: "test",
-      base_feature: "none",
-    },
-    {
-      name: "FedCmIdentityCredentialAutoSelectedFlag",
       depends_on: ["FedCm"],
       public: true,
       status: "test",
@@ -2185,6 +2198,12 @@
       name: "InterruptComposedScrollbarDisappearance",
       status: "stable",
     },
+    // A killswitch for the change. Will remove after M120 or M121 becomes
+    // stable without no blocking bugs.
+    {
+      name: "IntersectionObserverIgnoreFilters",
+      status: "stable",
+    },
     {
       // If enabled, IntersectionObserverScrollMargin will be parsed.
       name: "IntersectionObserverScrollMargin",
@@ -2214,7 +2233,7 @@
     },
     {
       name: "KeyboardFocusableScrollers",
-      status: "stable",
+      status: "test",
     },
     {
       name: "LangAttributeAwareFormControlUI",
@@ -3392,7 +3411,9 @@
       // Allows the HTML parser to put <hr> tags inside <select> tags.
       // https://chromestatus.com/feature/6198448366026752
       name: "SelectHr",
-      status: "stable",
+      // Android currently renders <hr>s as empty selectable options:
+      // http://crbug.com/1494927
+      status: {"Android": "", "default": "stable"},
     },
     {
       name: "SendBeaconThrowForBlobWithNonSimpleType",
@@ -3913,6 +3934,13 @@
       base_feature: "none",
       origin_trial_feature_name: "UnrestrictedSharedArrayBuffer",
       origin_trial_os: ["win", "mac", "linux", "fuchsia", "chromeos"],
+    },
+    {
+      // This flag makes IDL reflected attributes with the "URL" IDL attribute
+      // return the original string of the attribute when a complete URL can't
+      // be created instead of an empty string.
+      name: "URLAttributeFix",
+      status: "stable",
     },
     {
       name: "URLCanParse",

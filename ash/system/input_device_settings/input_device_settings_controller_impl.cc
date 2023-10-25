@@ -304,7 +304,7 @@ bool ValidateButtonRemappingList(
         break;
       }
     }
-    if (!found || new_remapping->name.size() >= kMaxButtonNameLength) {
+    if (!found || new_remapping->name.size() > kMaxButtonNameLength) {
       return false;
     }
   }
@@ -1040,7 +1040,7 @@ InputDeviceSettingsControllerImpl::GetConnectedGraphicsTablets() {
   return graphics_tablet_vector;
 }
 
-void InputDeviceSettingsControllerImpl::SetKeyboardSettings(
+bool InputDeviceSettingsControllerImpl::SetKeyboardSettings(
     DeviceId id,
     mojom::KeyboardSettingsPtr settings) {
   DCHECK(active_pref_service_);
@@ -1049,14 +1049,14 @@ void InputDeviceSettingsControllerImpl::SetKeyboardSettings(
   auto found_keyboard_iter = keyboards_.find(id);
   if (found_keyboard_iter == keyboards_.end()) {
     RecordSetKeyboardSettingsValidMetric(/*is_valid=*/false);
-    return;
+    return false;
   }
   auto& found_keyboard = *found_keyboard_iter->second;
 
   if (!KeyboardSettingsAreValid(found_keyboard, *settings,
                                 policy_handler_->keyboard_policies())) {
     RecordSetKeyboardSettingsValidMetric(/*is_valid=*/false);
-    return;
+    return false;
   }
   RecordSetKeyboardSettingsValidMetric(/*is_valid=*/true);
 
@@ -1074,9 +1074,10 @@ void InputDeviceSettingsControllerImpl::SetKeyboardSettings(
           &InputDeviceSettingsControllerImpl::DispatchKeyboardSettingsChanged,
           base::Unretained(this)));
   RefreshCachedKeyboardSettings();
+  return true;
 }
 
-void InputDeviceSettingsControllerImpl::SetTouchpadSettings(
+bool InputDeviceSettingsControllerImpl::SetTouchpadSettings(
     DeviceId id,
     mojom::TouchpadSettingsPtr settings) {
   DCHECK(active_pref_service_);
@@ -1085,13 +1086,13 @@ void InputDeviceSettingsControllerImpl::SetTouchpadSettings(
   auto found_touchpad_iter = touchpads_.find(id);
   if (found_touchpad_iter == touchpads_.end()) {
     RecordSetTouchpadSettingsValidMetric(/*is_valid=*/false);
-    return;
+    return false;
   }
 
   auto& found_touchpad = *found_touchpad_iter->second;
   if (!TouchpadSettingsAreValid(found_touchpad, *settings)) {
     RecordSetTouchpadSettingsValidMetric(/*is_valid=*/false);
-    return;
+    return false;
   }
   RecordSetTouchpadSettingsValidMetric(/*is_valid=*/true);
 
@@ -1108,9 +1109,10 @@ void InputDeviceSettingsControllerImpl::SetTouchpadSettings(
           &InputDeviceSettingsControllerImpl::DispatchTouchpadSettingsChanged,
           base::Unretained(this)));
   RefreshCachedTouchpadSettings();
+  return true;
 }
 
-void InputDeviceSettingsControllerImpl::SetMouseSettings(
+bool InputDeviceSettingsControllerImpl::SetMouseSettings(
     DeviceId id,
     mojom::MouseSettingsPtr settings) {
   DCHECK(active_pref_service_);
@@ -1119,13 +1121,13 @@ void InputDeviceSettingsControllerImpl::SetMouseSettings(
   auto found_mouse_iter = mice_.find(id);
   if (found_mouse_iter == mice_.end()) {
     RecordSetMouseSettingsValidMetric(/*is_valid=*/false);
-    return;
+    return false;
   }
 
   auto& found_mouse = *found_mouse_iter->second;
   if (!MouseSettingsAreValid(found_mouse, *settings)) {
     RecordSetMouseSettingsValidMetric(/*is_valid=*/false);
-    return;
+    return false;
   }
   RecordSetMouseSettingsValidMetric(/*is_valid=*/true);
 
@@ -1142,9 +1144,10 @@ void InputDeviceSettingsControllerImpl::SetMouseSettings(
           &InputDeviceSettingsControllerImpl::DispatchMouseSettingsChanged,
           base::Unretained(this)));
   RefreshCachedMouseSettings();
+  return true;
 }
 
-void InputDeviceSettingsControllerImpl::SetPointingStickSettings(
+bool InputDeviceSettingsControllerImpl::SetPointingStickSettings(
     DeviceId id,
     mojom::PointingStickSettingsPtr settings) {
   DCHECK(active_pref_service_);
@@ -1153,7 +1156,7 @@ void InputDeviceSettingsControllerImpl::SetPointingStickSettings(
   auto found_pointing_stick_iter = pointing_sticks_.find(id);
   if (found_pointing_stick_iter == pointing_sticks_.end()) {
     RecordSetPointingStickSettingsValidMetric(/*is_valid=*/false);
-    return;
+    return false;
   }
   RecordSetPointingStickSettingsValidMetric(/*is_valid=*/true);
 
@@ -1176,9 +1179,10 @@ void InputDeviceSettingsControllerImpl::SetPointingStickSettings(
   }
 
   RefreshStoredLoginScreenPointingStickSettings();
+  return true;
 }
 
-void InputDeviceSettingsControllerImpl::SetGraphicsTabletSettings(
+bool InputDeviceSettingsControllerImpl::SetGraphicsTabletSettings(
     DeviceId id,
     mojom::GraphicsTabletSettingsPtr settings) {
   DCHECK(active_pref_service_);
@@ -1186,12 +1190,12 @@ void InputDeviceSettingsControllerImpl::SetGraphicsTabletSettings(
   // If a device with the given id does not exist, do nothing.
   auto found_graphics_tablet_iter = graphics_tablets_.find(id);
   if (found_graphics_tablet_iter == graphics_tablets_.end()) {
-    return;
+    return false;
   }
 
   auto& found_graphics_tablet = *found_graphics_tablet_iter->second;
   if (!GraphicsTabletSettingsAreValid(found_graphics_tablet, *settings)) {
-    return;
+    return false;
   }
 
   const auto old_settings = std::move(found_graphics_tablet.settings);
@@ -1208,6 +1212,7 @@ void InputDeviceSettingsControllerImpl::SetGraphicsTabletSettings(
                               DispatchGraphicsTabletSettingsChanged,
                           base::Unretained(this)));
   RefreshStoredLoginScreenGraphicsTabletSettings();
+  return true;
 }
 
 void InputDeviceSettingsControllerImpl::AddObserver(Observer* observer) {

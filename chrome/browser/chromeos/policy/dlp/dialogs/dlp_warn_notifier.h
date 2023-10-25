@@ -32,20 +32,20 @@ class DlpWarnNotifier : public views::WidgetObserver {
   // Shows a warning dialog that informs the user that printing is not
   // recommended. Calls `callback` and passes user's choice of whether to
   // proceed or not.
-  void ShowDlpPrintWarningDialog(OnDlpRestrictionCheckedCallback callback);
+  void ShowDlpPrintWarningDialog(WarningCallback callback);
 
   // Shows a warning dialog that informs the user that screen capture is not
   // recommended due to `confidential_contents` visible. Calls `callback` and
   // passes user's choice of whether to proceed or not.
   void ShowDlpScreenCaptureWarningDialog(
-      OnDlpRestrictionCheckedCallback callback,
+      WarningCallback callback,
       const DlpConfidentialContents& confidential_contents);
 
   // Shows a warning dialog that informs the user that video capture is not
   // recommended due to `confidential_contents` visible. Calls `callback` and
   // passes user's choice of whether to proceed or not.
   void ShowDlpVideoCaptureWarningDialog(
-      OnDlpRestrictionCheckedCallback callback,
+      WarningCallback callback,
       const DlpConfidentialContents& confidential_contents);
 
   // Shows a warning dialog that informs the user that screen sharing is not
@@ -53,7 +53,7 @@ class DlpWarnNotifier : public views::WidgetObserver {
   // passes user's choice of whether to proceed or not.
   // Returns a pointer to the widget that owns the created dialog.
   base::WeakPtr<views::Widget> ShowDlpScreenShareWarningDialog(
-      OnDlpRestrictionCheckedCallback callback,
+      WarningCallback callback,
       const DlpConfidentialContents& confidential_contents,
       const std::u16string& application_title);
 
@@ -67,7 +67,7 @@ class DlpWarnNotifier : public views::WidgetObserver {
 
   // Helper method to create and show a DlpWarnDialog.
   virtual base::WeakPtr<views::Widget> ShowDlpWarningDialog(
-      OnDlpRestrictionCheckedCallback callback,
+      WarningCallback callback,
       DlpWarnDialog::DlpWarnDialogOptions options);
 
   // Helper method to show the `widget`.

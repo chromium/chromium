@@ -15,10 +15,18 @@
     margin-bottom: var(--cr-section-vertical-margin);
   }
 
-  .explain-selected {
-    color: var(--cros-text-color-positive);
+  .explain-selected,
+  .language-packs-error {
     font-weight: initial;
     margin-top: 4px;
+  }
+
+  .explain-selected {
+    color: var(--cros-text-color-positive);
+  }
+
+  .language-packs-error {
+    color: var(--cros-text-color-alert);
   }
 
   .icon-external {
@@ -39,11 +47,20 @@
     margin-top: 8px;
   }
 
-  iron-icon[icon='cr:error'] {
+  iron-icon[icon='cr:error'],
+  iron-icon[icon='os-settings:multidevice-error'] {
     --iron-icon-fill-color: var(--cros-icon-color-alert);
-    height: var(--cr-icon-size);
     margin-inline-end: 4px;
+  }
+
+  iron-icon[icon='cr:error'] {
+    height: var(--cr-icon-size);
     width: var(--cr-icon-size);
+  }
+
+  iron-icon[icon='os-settings:multidevice-error'] {
+    height: 16px;
+    width: 16px;
   }
 
   iron-icon[icon='cr20:domain'] {
@@ -162,6 +179,15 @@
                   item.id, languages.inputMethods.currentId)]]">
             $i18n{inputMethodEnabled}
           </div>
+          <template is="dom-if" if="[[shouldShowLanguagePackError_(
+                  item.id, languagePacksInSettingsEnabled_,
+                  languages.inputMethods.imeLanguagePackStatus.*)]]">
+            <div class="language-packs-error">
+              <iron-icon id="failure-icon" icon="os-settings:multidevice-error">
+              </iron-icon>
+              <span>$i18n{inputMethodLanguagePacksGeneralError}</span>
+            </div>
+          </template>
         </div>
         <template is="dom-if"
             if="[[shouldShowSpinner_(item.id, languagePacksInSettingsEnabled_,
@@ -313,13 +339,13 @@
     <h2>$i18n{suggestionsTitle}</h2>
     <div class="subsection">
       <template is="dom-if" if="[[allowOrca_]]">
-        <!-- TODO(b/304894074): add the learn-more-url. -->
         <settings-toggle-button id="orcaToggle"
             pref="{{prefs.assistive_input.orca_enabled}}"
             label="$i18n{orcaTitle}"
             sub-label="$i18n{orcaDescription}"
             aria-label="$i18n{orcaTitle}"
-            deep-link-focus-id$="[[Setting.kShowOrca]]">
+            deep-link-focus-id$="[[Setting.kShowOrca]]"
+            learn-more-url="$i18n{orcaLearnMoreUrl}">
         </settings-toggle-button>
       </template>
 
@@ -343,7 +369,7 @@
 
 <template is="dom-if" if="[[showAddSpellcheckLanguagesDialog_]]" restamp>
   <os-settings-add-spellcheck-languages-dialog languages="[[languages]]"
-      language-helper="[[languageHelper]]" prefs="{{prefs}}"
+      language-helper="[[languageHelper]]"
       on-close="onAddSpellcheckLanguagesDialogClose_">
   </os-settings-add-spellcheck-languages-dialog>
 </template>

@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -52,9 +53,11 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.content_settings.CookieBlocking3pcdStatus;
 import org.chromium.components.content_settings.CookieControlsBreakageConfidenceLevel;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsBridgeJni;
+import org.chromium.components.content_settings.CookieControlsStatus;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
@@ -615,6 +618,63 @@ public final class StatusMediatorUnitTest {
         // explicitly reported.
         mMediator.onPageLoadStopped();
         Assert.assertNotEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void iphReminder3pcd_trackingProtectionsEnabled_cookieBlockingEnabled() {
+        mMediator.setUrlHasFocus(true);
+        mMediator.setCookieControlsBridge(mCookieControlsBridge);
+
+        mMediator.onStatusChanged(
+                CookieControlsStatus.ENABLED,
+                /* enforcement= */ 0,
+                CookieBlocking3pcdStatus.LIMITED,
+                /* expiration= */ 0);
+        Assert.assertNotEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
+
+        // IPH should be shown
+        mMediator.onPageLoadStopped();
+        verify(mPageInfoIPHController, times(1))
+                .showCookieControlsReminderIPH(anyInt(), anyInt(), any(Runnable.class));
+    }
+
+    @Test
+    @SmallTest
+    public void iphReminder3pcd_trackingProtectionsEnabled_cookieBlockingDisabled() {
+        mMediator.setUrlHasFocus(true);
+        mMediator.setCookieControlsBridge(mCookieControlsBridge);
+
+        mMediator.onStatusChanged(
+                CookieControlsStatus.DISABLED,
+                /* enforcement= */ 0,
+                CookieBlocking3pcdStatus.LIMITED,
+                /* expiration= */ 0);
+        Assert.assertNotEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
+
+        // IPH should NOT be shown
+        mMediator.onPageLoadStopped();
+        verify(mPageInfoIPHController, never())
+                .showCookieControlsReminderIPH(anyInt(), anyInt(), any(Runnable.class));
+    }
+
+    @Test
+    @SmallTest
+    public void iphReminder3pcd_trackingProtectionsDisabled_cookieBlockingEnabled() {
+        mMediator.setUrlHasFocus(true);
+        mMediator.setCookieControlsBridge(mCookieControlsBridge);
+
+        mMediator.onStatusChanged(
+                CookieControlsStatus.ENABLED,
+                /* enforcement= */ 0,
+                CookieBlocking3pcdStatus.NOT_IN3PCD,
+                /* expiration= */ 0);
+        Assert.assertNotEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
+
+        // IPH should NOT be shown
+        mMediator.onPageLoadStopped();
+        verify(mPageInfoIPHController, never())
+                .showCookieControlsReminderIPH(anyInt(), anyInt(), any(Runnable.class));
     }
 
     @Test

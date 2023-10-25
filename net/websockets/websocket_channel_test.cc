@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <string.h>
 
+#include <algorithm>
 #include <iostream>
 #include <iterator>
 #include <string>
@@ -369,7 +370,8 @@ std::vector<std::unique_ptr<WebSocketFrame>> CreateFrameVector(
     if (source_frame.data) {
       auto buffer = base::MakeRefCounted<IOBuffer>(frame_length);
       result_frame_data->push_back(buffer);
-      memcpy(buffer->data(), source_frame.data, frame_length);
+      std::copy(source_frame.data, source_frame.data + frame_length,
+                buffer->data());
       result_frame->payload = buffer->data();
     }
     result_frames.push_back(std::move(result_frame));
@@ -605,7 +607,8 @@ class EchoeyFakeWebSocketStream : public FakeWebSocketStream {
     for (const auto& frame : *frames) {
       auto buffer = base::MakeRefCounted<IOBuffer>(
           static_cast<size_t>(frame->header.payload_length));
-      memcpy(buffer->data(), frame->payload, frame->header.payload_length);
+      std::copy(frame->payload, frame->payload + frame->header.payload_length,
+                buffer->data());
       frame->payload = buffer->data();
       buffers_.push_back(buffer);
     }

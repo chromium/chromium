@@ -71,10 +71,12 @@ static_library("internal") {
     "tracker_impl.h",
   ]
 
-  public_deps = [ "//components/feature_engagement/internal/proto" ]
+  public_deps = [
+    "//base",
+    "//components/feature_engagement/internal/proto",
+  ]
 
   deps = [
-    "//base",
     "//components/feature_engagement/public",
     "//components/keyed_service/core",
     "//components/leveldb_proto",

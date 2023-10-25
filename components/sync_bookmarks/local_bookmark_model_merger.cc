@@ -12,8 +12,8 @@
 #include "base/hash/hash.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
-#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/sync_bookmarks/bookmark_model_view.h"
 #include "components/sync_bookmarks/bookmark_specifics_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/tree_node_iterator.h"
@@ -85,8 +85,8 @@ bool NodesCompatibleForMatchByUuid(const bookmarks::BookmarkNode* node1,
 }  // namespace
 
 LocalBookmarkModelMerger::LocalBookmarkModelMerger(
-    const bookmarks::BookmarkModel* local_model,
-    bookmarks::BookmarkModel* account_model)
+    const BookmarkModelView* local_model,
+    BookmarkModelView* account_model)
     : local_model_(local_model),
       account_model_(account_model),
       uuid_to_match_map_(FindGuidMatches(local_model, account_model)) {}
@@ -119,8 +119,8 @@ std::unordered_map<base::Uuid,
                    LocalBookmarkModelMerger::GuidMatch,
                    base::UuidHash>
 LocalBookmarkModelMerger::FindGuidMatches(
-    const bookmarks::BookmarkModel* local_model,
-    const bookmarks::BookmarkModel* account_model) {
+    const BookmarkModelView* local_model,
+    const BookmarkModelView* account_model) {
   CHECK(local_model);
   CHECK(account_model);
 
@@ -135,9 +135,11 @@ LocalBookmarkModelMerger::FindGuidMatches(
     const bookmarks::BookmarkNode* const local_node = local_iterator.Next();
     CHECK(local_node->uuid().is_valid());
 
-    // Exclude managed nodes.
+    // Exclude non-syncable nodes (e.g. managed nodes).
+    // TODO(crbug.com/1494120): Revisit if permanent nodes need to be
+    // special-cased.
     if (!local_node->is_permanent_node() &&
-        local_model->client()->IsNodeManaged(local_node)) {
+        !local_model->IsNodeSyncable(local_node)) {
       continue;
     }
 
@@ -179,9 +181,9 @@ void LocalBookmarkModelMerger::MergeSubtree(
     const bookmarks::BookmarkNode* const account_child =
         account_child_ptr.get();
 
-    // Managed nodes are not expected to exist in the account BookmarkModel
-    // instance.
-    CHECK(!account_model_->client()->IsNodeManaged(account_child));
+    // Non-syncable nodes (e.g. managed nodes) are not expected to exist in the
+    // account BookmarkModel instance.
+    CHECK(account_model_->IsNodeSyncable(account_child));
 
     // If a UUID match exists, it takes precedence over semantic matching.
     if (FindMatchingLocalNodeByUuid(account_child)) {
@@ -201,9 +203,9 @@ void LocalBookmarkModelMerger::MergeSubtree(
   for (const auto& local_child_ptr : local_subtree_root->children()) {
     const bookmarks::BookmarkNode* const local_child = local_child_ptr.get();
 
-    // Special-case managed bookmarks, which don't need merging into the account
-    // model.
-    if (local_model_->client()->IsNodeManaged(local_child)) {
+    // Ignore non-syncable nodes (e.g. managed bookmarks), which don't need
+    // merging into the account model.
+    if (!local_model_->IsNodeSyncable(local_child)) {
       continue;
     }
 
@@ -266,8 +268,7 @@ void LocalBookmarkModelMerger::UpdateAccountNodeFromMatchingLocalNode(
   }
 
   // For the title, use the local one.
-  account_model_->SetTitle(account_node, local_node->GetTitle(),
-                           bookmarks::metrics::BookmarkEditSource::kOther);
+  account_model_->SetTitle(account_node, local_node->GetTitle());
 }
 
 const bookmarks::BookmarkNode*

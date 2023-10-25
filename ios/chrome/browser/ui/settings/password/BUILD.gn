@@ -204,6 +204,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:password_form",
     "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/browser/leak_detection:test_support",
     "//components/password_manager/core/common:features",
     "//components/signin/public/identity_manager/objc",
     "//components/strings",

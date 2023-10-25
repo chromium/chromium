@@ -316,6 +316,10 @@ class CORE_EXPORT HTMLElement : public Element {
   void AddHTMLColorToStyle(MutableCSSPropertyValueSet*,
                            CSSPropertyID,
                            const String& color);
+  void AddHTMLBackgroundImageToStyle(
+      MutableCSSPropertyValueSet*,
+      const String& url_value,
+      const AtomicString& initiator_name = g_null_atom);
 
   // This corresponds to:
   //  'map to the aspect-ratio property (using dimension rules)'

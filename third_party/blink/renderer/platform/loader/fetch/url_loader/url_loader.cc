@@ -100,7 +100,7 @@ class URLLoader::Context : public ResourceRequestClient {
                          int intra_priority_value);
   void Start(std::unique_ptr<network::ResourceRequest> request,
              scoped_refptr<const SecurityOrigin> top_frame_origin,
-             bool pass_response_pipe_to_client,
+             bool download_to_blob,
              bool no_mime_sniffing,
              base::TimeDelta timeout_interval,
              SyncLoadResponse* sync_load_response,
@@ -234,7 +234,7 @@ void URLLoader::Context::DidChangePriority(WebURLRequest::Priority new_priority,
 void URLLoader::Context::Start(
     std::unique_ptr<network::ResourceRequest> request,
     scoped_refptr<const SecurityOrigin> top_frame_origin,
-    bool pass_response_pipe_to_client,
+    bool download_to_blob,
     bool no_mime_sniffing,
     base::TimeDelta timeout_interval,
     SyncLoadResponse* sync_load_response,
@@ -271,7 +271,7 @@ void URLLoader::Context::Start(
     request->load_flags |= net::LOAD_IGNORE_LIMITS;
 
     mojo::PendingRemote<mojom::blink::BlobRegistry> download_to_blob_registry;
-    if (pass_response_pipe_to_client) {
+    if (download_to_blob) {
       Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
           download_to_blob_registry.InitWithNewPipeAndPassReceiver());
     }
@@ -428,7 +428,7 @@ URLLoader::~URLLoader() {
 void URLLoader::LoadSynchronously(
     std::unique_ptr<network::ResourceRequest> request,
     scoped_refptr<const SecurityOrigin> top_frame_origin,
-    bool pass_response_pipe_to_client,
+    bool download_to_blob,
     bool no_mime_sniffing,
     base::TimeDelta timeout_interval,
     URLLoaderClient* client,
@@ -452,8 +452,8 @@ void URLLoader::LoadSynchronously(
 
   const bool has_devtools_request_id = request->devtools_request_id.has_value();
   context_->Start(std::move(request), std::move(top_frame_origin),
-                  pass_response_pipe_to_client, no_mime_sniffing,
-                  timeout_interval, &sync_load_response,
+                  download_to_blob, no_mime_sniffing, timeout_interval,
+                  &sync_load_response,
                   std::move(resource_load_info_notifier_wrapper),
                   /*code_cache_host=*/nullptr);
 
@@ -522,7 +522,7 @@ void URLLoader::LoadAsynchronously(
 
   context_->set_client(client);
   context_->Start(std::move(request), std::move(top_frame_origin),
-                  /*pass_response_pipe_to_client=*/false, no_mime_sniffing,
+                  /*download_to_blob=*/false, no_mime_sniffing,
                   base::TimeDelta(), /*sync_load_response=*/nullptr,
                   std::move(resource_load_info_notifier_wrapper),
                   code_cache_host);

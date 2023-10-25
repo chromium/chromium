@@ -29,42 +29,31 @@ net::HttpNoVarySearchData ParseHttpNoVarySearchDataFromMojom(
       no_vary_search_ptr->vary_on_key_order);
 }
 
-void SetNoVarySearchData(base::WeakPtr<PrefetchContainer> prefetch_container) {
-  DCHECK(
-      base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch));
-  // Check if the prefetched response has a No-Vary-Search header and
-  // call SetNoVarySearchData() so that it can be looked up by
-  // IterateCandidates().
-  const network::mojom::URLResponseHead& head = *prefetch_container->GetHead();
-  if (!(head.parsed_headers &&
-        head.parsed_headers->no_vary_search_with_parse_error)) {
-    return;
-  }
-  if (head.parsed_headers->no_vary_search_with_parse_error->is_parse_error()) {
-    return;
-  }
-  auto no_vary_search_data = ParseHttpNoVarySearchDataFromMojom(
-      head.parsed_headers->no_vary_search_with_parse_error
-          ->get_no_vary_search());
-  prefetch_container->SetNoVarySearchData(std::move(no_vary_search_data));
-}
+absl::optional<net::HttpNoVarySearchData> ProcessHead(
+    const network::mojom::URLResponseHead& head,
+    const GURL& url,
+    RenderFrameHost* rfh) {
+  CHECK(base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch));
 
-void MaybeSendErrorsToConsole(const GURL& url,
-                              const network::mojom::URLResponseHead& head,
-                              RenderFrameHost& rfh) {
-  DCHECK(
-      base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch));
+  // No No-Vary-Search headers.
   if (!(head.parsed_headers &&
         head.parsed_headers->no_vary_search_with_parse_error)) {
-    return;
+    return absl::nullopt;
   }
+
+  // Success.
   if (!head.parsed_headers->no_vary_search_with_parse_error->is_parse_error()) {
-    return;
+    return ParseHttpNoVarySearchDataFromMojom(
+        head.parsed_headers->no_vary_search_with_parse_error
+            ->get_no_vary_search());
   }
+
+  // Parse error.
   const auto parse_error =
       head.parsed_headers->no_vary_search_with_parse_error->get_parse_error();
+  // TODO(crbug.com/1494916): Maybe `CHECK_NE(parse_error, kOk)`.
   if (parse_error == network::mojom::NoVarySearchParseError::kOk) {
-    return;
+    return absl::nullopt;
   }
   blink::mojom::ConsoleMessageLevel error_level =
       parse_error == network::mojom::NoVarySearchParseError::kDefaultValue
@@ -72,7 +61,10 @@ void MaybeSendErrorsToConsole(const GURL& url,
           : blink::mojom::ConsoleMessageLevel::kError;
   auto error_message = network::GetNoVarySearchConsoleMessage(parse_error, url);
   CHECK(error_message);
-  rfh.AddMessageToConsole(error_level, error_message.value());
+  if (rfh) {
+    rfh->AddMessageToConsole(error_level, error_message.value());
+  }
+  return absl::nullopt;
 }
 
 }  // namespace no_vary_search

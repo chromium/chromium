@@ -66,8 +66,6 @@ void FCMInvalidationServiceBase::RegisterInvalidationHandler(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << "Registering an invalidation handler";
   invalidator_registrar_.RegisterHandler(handler);
-  // Populate the id for newly registered handlers.
-  handler->OnInvalidatorClientIdChange(client_id_);
 }
 
 bool FCMInvalidationServiceBase::UpdateInterestedTopics(
@@ -88,14 +86,6 @@ bool FCMInvalidationServiceBase::UpdateInterestedTopics(
   }
   DoUpdateSubscribedTopicsIfNeeded();
   return true;
-}
-
-void FCMInvalidationServiceBase::UnsubscribeFromUnregisteredTopics(
-    InvalidationHandler* handler) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(2) << "Unsubscribing from unregistered topics";
-  invalidator_registrar_.RemoveUnregisteredTopics(handler);
-  DoUpdateSubscribedTopicsIfNeeded();
 }
 
 void FCMInvalidationServiceBase::UnregisterInvalidationHandler(
@@ -199,10 +189,6 @@ void FCMInvalidationServiceBase::PopulateClientID() {
           .FindString(sender_id_);
   client_id_ = client_id_pref ? *client_id_pref : "";
 
-  // There might already be clients (handlers) registered, so tell them about
-  // the client ID.
-  invalidator_registrar_.UpdateInvalidatorInstanceId(client_id_);
-
   // Also retrieve a fresh (or validated) client ID. If the |client_id_| just
   // retrieved from prefs is non-empty, then the fresh/validated one will
   // typically be equal to it, but it's not completely guaranteed. OTOH, if
@@ -230,10 +216,6 @@ void FCMInvalidationServiceBase::ResetClientID() {
   ScopedDictPrefUpdate update(pref_service_, prefs::kInvalidationClientIDCache);
   update->Remove(sender_id_);
 
-  // Also let the registrar (and its observers) know that the instance ID is
-  // gone.
-  invalidator_registrar_.UpdateInvalidatorInstanceId(std::string());
-
   // This will also delete all Instance ID *tokens*; we need to let the
   // FCMInvalidationListener know.
   if (invalidation_listener_) {
@@ -249,7 +231,6 @@ void FCMInvalidationServiceBase::OnInstanceIDReceived(
     ScopedDictPrefUpdate update(pref_service_,
                                 prefs::kInvalidationClientIDCache);
     update->Set(sender_id_, instance_id);
-    invalidator_registrar_.UpdateInvalidatorInstanceId(instance_id);
   }
 }
 

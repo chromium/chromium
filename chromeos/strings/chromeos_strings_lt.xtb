@@ -93,7 +93,6 @@
 <translation id="1643449475550628585">Kasdien keisti ekrano fono vaizdą</translation>
 <translation id="1644574205037202324">Istorija</translation>
 <translation id="1651925268237749928">Pasirinkote bendrinamą albumą. Kiti žmonės gali pridėti ar keisti nuotraukas. Ekrano fonui gali būti naudojamos nuotraukos, kurių šiuo metu nėra šiame albume.</translation>
-<translation id="1658834457013045127">Visada</translation>
 <translation id="1661865805917886535">Dalis informacijos apie paskyrą ir sistemą gali būti išsiųsta „Google“. Šią informaciją naudojame spręsdami technines problemas ir tobulindami paslaugas, kurioms taikoma privatumo politika (<ph name="PRIVACYPOLICYURL" />) ir paslaugų teikimo sąlygos (<ph name="TERMSOFSERVICEURL" />). Jei norite pateikti turinio pakeitimų užklausą, eikite į puslapį „Teisinė pagalba“ (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Sustabdyta – baigėsi rašalas</translation>
 <translation id="1664796644829245314">Peržiūrėti kalendorių „<ph name="PREVIEW_OBJECT" />“</translation>
@@ -323,7 +322,6 @@
 <translation id="3484914941826596830">Kol programinė aparatinė įranga atnaujinama, neatjunkite išorinio įrenginio ir neišjunkite kompiuterio. Galite sumažinti šį langą. Šis atnaujinimo procesas gali užtrukti kelias minutes ir tuo metu jūsų išorinis įrenginys gali neveikti.</translation>
 <translation id="3486220673238053218">apibrėžimas</translation>
 <translation id="3488065109653206955">Iš dalies suaktyvinta</translation>
-<translation id="349491921221892984"><ph name="MINUTES" /> min.</translation>
 <translation id="3502426834823382181">žr. visas programas</translation>
 <translation id="3510890413042482857">Siųsti <ph name="BEGIN_LINK1" />našumo stebėjimo duomenis<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">„Chrome“ OS naujinys</translation>
@@ -484,7 +482,6 @@
 <translation id="473775607612524610">Atnaujinti</translation>
 <translation id="4771607256327216405">klaviatūros pašviesinimas</translation>
 <translation id="4773299976671772492">Sustabdyta</translation>
-<translation id="4782003517030001304">1 val.</translation>
 <translation id="4782311465517282004">Spustelėkite dešiniuoju klavišu arba palieskite ir palaikykite tekstą, kad būtų pateiktos apibrėžtys, vertimai ar vienetų konvertavimas.</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> nuotrauk.</translation>
 <translation id="4793710386569335688">Daugiau pagalbos galite gauti <ph name="BEGIN_LINK" />pagalbos centre<ph name="END_LINK" />.</translation>
@@ -699,6 +696,7 @@
 <translation id="629550705077076970">klaviatūros pritemdymas</translation>
 <translation id="6302401976930124515">Bandymas „<ph name="TEST_NAME" />“ atšauktas</translation>
 <translation id="631063167932043783">Programa „Explore“</translation>
+<translation id="6318437367327684789">visada</translation>
 <translation id="6319207335391420837">„<ph name="DEVICE_NAME" />“ programinės aparatinės įrangos naujinys</translation>
 <translation id="6321407676395378991">Įjungti ekrano užsklandą</translation>
 <translation id="6324916366299863871">Redaguoti spartųjį klavišą</translation>

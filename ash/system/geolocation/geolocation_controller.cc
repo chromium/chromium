@@ -158,38 +158,43 @@ void GeolocationController::OnSystemGeolocationPermissionChanged(bool enabled) {
 // static
 base::TimeDelta
 GeolocationController::GetNextRequestDelayAfterSuccessForTesting() {
-  return kNextRequestDelayAfterSuccess;
+  return kNextRequestDelayAfterSuccess;  // IN-TEST
 }
 
 network::SharedURLLoaderFactory*
 GeolocationController::GetSharedURLLoaderFactoryForTesting() {
-  return simple_geolocation_provider_->GetSharedURLLoaderFactoryForTesting();
+  return simple_geolocation_provider_
+      ->GetSharedURLLoaderFactoryForTesting();  // IN-TEST
 }
 
 void GeolocationController::SetTimerForTesting(
     std::unique_ptr<base::OneShotTimer> timer) {
-  timer_ = std::move(timer);
+  timer_ = std::move(timer);  // IN-TEST
 }
 
 void GeolocationController::SetClockForTesting(base::Clock* clock) {
-  clock_ = clock;
+  clock_ = clock;  // IN-TEST
 }
 
 void GeolocationController::SetLocalTimeConverterForTesting(
     const LocalTimeConverter* local_time_converter) {
-  local_time_converter_ = local_time_converter;
+  local_time_converter_ = local_time_converter;  // IN-TEST
 }
 
 void GeolocationController::SetGeolocationProviderForTesting(
     std::unique_ptr<SimpleGeolocationProvider> simple_geolocation_provider) {
   simple_geolocation_provider_ = std::move(simple_geolocation_provider);
   // Immediately schedule a new request to receive a geoposition event.
-  ScheduleNextRequest(base::Seconds(0));
+  RequestImmediateGeopositionForTesting();  // IN-TEST
 }
 
 void GeolocationController::SetCurrentTimezoneIdForTesting(
     const std::u16string& timezone_id) {
-  current_timezone_id_ = timezone_id;
+  current_timezone_id_ = timezone_id;  // IN-TEST
+}
+
+void GeolocationController::RequestImmediateGeopositionForTesting() {
+  ScheduleNextRequest(base::Seconds(0));  // IN-TEST
 }
 
 void GeolocationController::OnGeoposition(const Geoposition& position,

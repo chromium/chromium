@@ -650,7 +650,7 @@ ThreadDebuggerCommonImpl::descriptionForValueSubtype(
 }
 
 double ThreadDebuggerCommonImpl::currentTimeMS() {
-  return base::Time::Now().InSecondsFSinceUnixEpoch() * 1000.0;
+  return base::Time::Now().InMillisecondsFSinceUnixEpoch();
 }
 
 bool ThreadDebuggerCommonImpl::isInspectableHeapObject(

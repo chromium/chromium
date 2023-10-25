@@ -170,8 +170,8 @@ chrome.test.runTests([
 Here, we want to have `step1()` finish after both the new tab has been created
 and a storage value has been set (again, this is admittedly contrived).  There
 is no hard guarantee about which function will finish first, so putting a
-chrome.test.succeed() call in either may result in succeeding and continuing to
-the next step too early.  Putting a `chrome.test.succeed()` call in both will
+`chrome.test.succeed()` call in either may result in succeeding and continuing
+to the next step too early.  Putting a `chrome.test.succeed()` call in both will
 result in badness (see the [Do's And Don't's]).
 
 `callbackPass()` lets the testing infrastructure handle this.  `callbackPass()`
@@ -387,7 +387,7 @@ unless the use of it is explicitly necessary for the test.)
 ### **Don't** Mix chrome.test.notifyPass() and chrome.test.runTests()
 `chrome.test.notifyPass()` (or `chrome.test.notifyFail()`) will finish the
 entire suite.  It should not be used with `chrome.test.runTests()`.  Instead,
-use chrome.test.succeed().
+use `chrome.test.succeed()`.
 
 ### **Don't** Mix chrome.test.callbackPass() et al. and chrome.test.succeed()
 If the callback counter is incremented anywhere in a test function, the test

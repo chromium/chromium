@@ -4,7 +4,6 @@
 
 css_files = [
   "button.css",
-  "colors_default.css",
   "custom_toast.css",
   "flash.css",
   "inkdrop.css",

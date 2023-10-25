@@ -210,8 +210,8 @@ void ResultAnalyzer::AnalyzeClassification(const FormStructure& form_structure,
     }
 
     // Determine the type assigned to the field by the heuristic classification.
-    std::string heuristic_type = std::string(FieldTypeToStringPiece(
-        form_structure.field(i)->Type().GetStorableType()));
+    std::string heuristic_type =
+        FieldTypeToString(form_structure.field(i)->Type().GetStorableType());
 
     // Record metrics on the divergence between tester and heuristics.
     if (fields_in_scope_.contains(tester_type)) {

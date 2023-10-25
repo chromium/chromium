@@ -403,6 +403,29 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultiRenditionCheckState) {
       }));
 }
 
+TEST_F(HlsManifestDemuxerEngineTest, SeekAfterErrorFails) {
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+      "http://media.example.com/manifest.m3u8", kInvalidMediaPlaylist);
+  EXPECT_CALL(*mock_mdeh_,
+              OnError(HasStatusCode(DEMUXER_ERROR_COULD_NOT_PARSE)));
+  EXPECT_CALL(*this, MockInitComplete(_)).Times(0);
+  InitializeEngine();
+  task_environment_.RunUntilIdle();
+
+  // When one of the renditions surfaces an error, ManifestDemuxer will request
+  // that the engine stop. Mimic that here.
+  engine_->Stop();
+  task_environment_.RunUntilIdle();
+
+  // Now if we try to seek, the response should be an instant aborted error.
+  engine_->Seek(base::Seconds(10),
+                base::BindOnce([](ManifestDemuxer::SeekResponse resp) {
+                  ASSERT_FALSE(resp.has_value());
+                  ASSERT_EQ(std::move(resp).error(), PIPELINE_ERROR_ABORT);
+                }));
+  task_environment_.RunUntilIdle();
+}
+
 TEST_F(HlsManifestDemuxerEngineTest, TestEndOfStreamAfterAllFetched) {
   // All the expectations set during the initialization process.
   EXPECT_CALL(*mock_mdeh_, SetSequenceMode(base::StringPiece("primary"), true));

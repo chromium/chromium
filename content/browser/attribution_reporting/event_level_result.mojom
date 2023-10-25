@@ -31,4 +31,5 @@ enum EventLevelResult {
   kReportWindowPassed = 15,
   kNotRegistered = 16,
   kReportWindowNotStarted = 17,
+  kNoMatchingTriggerData = 18,
 };

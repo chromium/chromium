@@ -18,20 +18,6 @@ namespace webnn {
 
 namespace {
 
-bool IsFloatingPointType(Operand::DataType data_type) {
-  switch (data_type) {
-    case Operand::DataType::kFloat32:
-    case Operand::DataType::kFloat16:
-      return true;
-    case Operand::DataType::kInt32:
-    case Operand::DataType::kUint32:
-    case Operand::DataType::kInt8:
-    case Operand::DataType::kUint8:
-      return false;
-  }
-  NOTREACHED_NORETURN();
-}
-
 // Calculate the output size for conv2d based on WebNN spec:
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-conv2d
 // Return the calculated output size if no error.
@@ -889,6 +875,20 @@ absl::optional<PaddingSizes> CalculateConv2dPadding(AutoPad auto_pad,
     return absl::nullopt;
   }
   return PaddingSizes({.begin = padding_begin, .end = padding_end});
+}
+
+bool IsFloatingPointType(Operand::DataType data_type) {
+  switch (data_type) {
+    case Operand::DataType::kFloat32:
+    case Operand::DataType::kFloat16:
+      return true;
+    case Operand::DataType::kInt32:
+    case Operand::DataType::kUint32:
+    case Operand::DataType::kInt8:
+    case Operand::DataType::kUint8:
+      return false;
+  }
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace webnn

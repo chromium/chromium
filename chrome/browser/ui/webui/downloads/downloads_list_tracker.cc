@@ -125,8 +125,7 @@ std::string TimeFormatLongDate(const base::Time& time) {
   std::unique_ptr<icu::DateFormat> formatter(
       icu::DateFormat::createDateInstance(icu::DateFormat::kLong));
   icu::UnicodeString date_string;
-  formatter->format(static_cast<UDate>(time.InSecondsFSinceUnixEpoch() * 1000),
-                    date_string);
+  formatter->format(time.InSecondsFSinceUnixEpoch() * 1000, date_string);
   return base::UTF16ToUTF8(base::i18n::UnicodeStringToString16(date_string));
 }
 

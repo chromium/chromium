@@ -207,7 +207,8 @@ class VideoCaptureImplTest : public ::testing::Test {
 
     video_capture_impl_->StartCapture(
         client_id, params, state_update_callback, frame_ready_callback,
-        /*crop_version_cb=*/base::DoNothing(), frame_dropped_callback);
+        /*sub_capture_target_version_cb=*/base::DoNothing(),
+        frame_dropped_callback);
   }
 
   void StopCapture(int client_id) {

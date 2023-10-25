@@ -103,6 +103,7 @@
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/recommend_apps_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/recovery_eligibility_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/remote_activity_notification_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/saml_confirm_password_handler.h"
 #include "chrome/browser/ui/webui/ash/login/signin_fatal_error_screen_handler.h"
@@ -151,6 +152,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "remoting/host/chromeos/features.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -344,6 +346,10 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
 
   source->AddBoolean("isPasswordlessGaiaEnabledForConsumers",
                      features::IsPasswordlessGaiaEnabledForConsumers());
+
+  source->AddBoolean("isRemoteActivityNotificationEnabled",
+                     base::FeatureList::IsEnabled(
+                         remoting::features::kEnableCrdAdminRemoteAccessV2));
 
   // Configure shared resources
   AddProductLogoResources(source);
@@ -567,6 +573,12 @@ void OobeUI::ConfigureOobeDisplay() {
   AddScreenHandler(std::make_unique<LocalStateErrorScreenHandler>());
 
   AddScreenHandler(std::make_unique<CryptohomeRecoveryScreenHandler>());
+
+  if (base::FeatureList::IsEnabled(
+          remoting::features::kEnableCrdAdminRemoteAccessV2)) {
+    AddScreenHandler(
+        std::make_unique<RemoteActivityNotificationScreenHandler>());
+  }
 
   Profile* const profile = Profile::FromWebUI(web_ui());
   // Set up the chrome://theme/ source, for Chrome logo.

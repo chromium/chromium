@@ -110,25 +110,6 @@ using CreditCardChange = AutofillDataModelChange<CreditCard>;
 using IbanChange = AutofillDataModelChange<Iban>;
 using ServerCvcChange = AutofillDataModelChange<ServerCvc>;
 
-class AutofillProfileDeepChange : public AutofillProfileChange {
- public:
-  AutofillProfileDeepChange(Type type, const AutofillProfile& profile)
-      : AutofillProfileChange(type, profile.guid(), profile) {}
-
-  const AutofillProfile& profile() const {
-    return static_cast<const AutofillProfile&>(data_model());
-  }
-  bool is_ongoing_on_background() const { return is_ongoing_on_background_; }
-  void set_is_ongoing_on_background() const {
-    is_ongoing_on_background_ = true;
-  }
-
- private:
-  // Is true when the change is taking place on the database side on the
-  // background.
-  mutable bool is_ongoing_on_background_ = false;
-};
-
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOFILL_CHANGE_H__

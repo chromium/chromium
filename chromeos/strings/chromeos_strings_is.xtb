@@ -93,7 +93,6 @@
 <translation id="1643449475550628585">Skipta daglega um veggfóðursmynd</translation>
 <translation id="1644574205037202324">Ferill</translation>
 <translation id="1651925268237749928">Þú valdir sameiginlegt albúm. Aðrir notendur geta bætt við eða breytt myndum. Veggfóðrið þitt kann að nota myndir sem eru ekki í þessu albúmi.</translation>
-<translation id="1658834457013045127">endalaust</translation>
 <translation id="1661865805917886535">Sumar reiknings- og kerfisupplýsingar gætu verið sendar til Google. Við notum þessar upplýsingar til að bregðast við tæknilegum vandamálum og bæta þjónustur okkar, í samræmi við persónuverndarstefnu okkar (<ph name="PRIVACYPOLICYURL" />) og þjónustuskilmála (<ph name="TERMSOFSERVICEURL" />). Til að óska eftir efnislegum breytingum skaltu fara í lagalega aðstoð (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Stöðvað – blekið er búið</translation>
 <translation id="1664796644829245314">Forskoða <ph name="PREVIEW_OBJECT" /></translation>
@@ -323,7 +322,6 @@
 <translation id="3484914941826596830">Ekki taka þetta ytra tæki úr sambandi eða slökkva á tölvunni þinni á meðan fastbúnaðurinn uppfærist. Þú getur minnkað þennan glugga. Uppfærslan gæti tekið nokkrar mínútur og óvíst er að ytra tækið virki á meðan.</translation>
 <translation id="3486220673238053218">skilgreining</translation>
 <translation id="3488065109653206955">Virkjað að hluta</translation>
-<translation id="349491921221892984">í <ph name="MINUTES" /> mín.</translation>
 <translation id="3502426834823382181">skoða öll forrit</translation>
 <translation id="3510890413042482857">Senda <ph name="BEGIN_LINK1" />rakningargögn um afköst<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">ChromeOS uppfærsla</translation>
@@ -484,7 +482,6 @@
 <translation id="473775607612524610">Uppfæra</translation>
 <translation id="4771607256327216405">lýsa lyklaborð</translation>
 <translation id="4773299976671772492">Stöðvað</translation>
-<translation id="4782003517030001304">í 1 klst.</translation>
 <translation id="4782311465517282004">Fáðu skilgreiningar, þýðingar eða umreikninga mæligilda þegar þú hægrismellir eða heldur texta inni</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> mynd</translation>
 <translation id="4793710386569335688">Opnaðu <ph name="BEGIN_LINK" />hjálparmiðstöðina<ph name="END_LINK" /> til að fá frekari aðstoð.</translation>
@@ -699,6 +696,7 @@
 <translation id="629550705077076970">lyklaborð dekkt</translation>
 <translation id="6302401976930124515">Hætt var við prófunina: <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">Skoða forrit</translation>
+<translation id="6318437367327684789">endalaust</translation>
 <translation id="6319207335391420837">Uppfæra fastbúnað í <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Kveikja á skjávara</translation>
 <translation id="6324916366299863871">Breyta flýtileið</translation>
@@ -1012,6 +1010,7 @@
 <translation id="8747900814994928677">Staðfesta breytingu</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Albúm í Google myndum</translation>
+<translation id="8775713578693478175">Aðgangsstaður mótalds</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8789196995628578448">Flýtilykillinn er notaður fyrir „<ph name="CONFLICT_ACCEL_NAME" />“. Ýttu á nýjan flýtilykil. Ýttu aftur á þennan flýtilykil til að skipta upprunalega flýtilyklinum út.</translation>
 <translation id="879568662008399081">Þetta netkerfi kann að innihalda innskráningarsíðu</translation>

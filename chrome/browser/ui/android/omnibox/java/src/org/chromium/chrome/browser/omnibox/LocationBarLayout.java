@@ -24,6 +24,7 @@ import androidx.core.view.MarginLayoutParamsCompat;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.MathUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusView;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -61,6 +62,7 @@ public class LocationBarLayout extends FrameLayout {
     protected SearchEngineLogoUtils mSearchEngineLogoUtils;
     private float mUrlFocusPercentage;
     private boolean mUrlBarLaidOutAtFocusedWidth;
+    private final boolean mIsSurfacePolishEnabled;
     private int mUrlActionContainerEndMargin;
 
     public LocationBarLayout(Context context, AttributeSet attrs) {
@@ -84,6 +86,7 @@ public class LocationBarLayout extends FrameLayout {
         mStatusViewRightSpace = findViewById(R.id.location_bar_status_view_right_space);
         mMinimumUrlBarWidthPx =
                 context.getResources().getDimensionPixelSize(R.dimen.location_bar_min_url_width);
+        mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
         mUrlActionContainerEndMargin =
                 getResources().getDimensionPixelOffset(R.dimen.location_bar_url_action_offset);
     }
@@ -277,7 +280,10 @@ public class LocationBarLayout extends FrameLayout {
 
         ViewGroup.MarginLayoutParams urlActionContainerParams =
                 (ViewGroup.MarginLayoutParams) mUrlActionContainer.getLayoutParams();
-        urlActionContainerParams.setMarginEnd(mUrlActionContainerEndMargin);
+        if (mIsSurfacePolishEnabled
+                && urlActionContainerParams.getMarginEnd() != mUrlActionContainerEndMargin) {
+            urlActionContainerParams.setMarginEnd(mUrlActionContainerEndMargin);
+        }
 
         int urlActionContainerWidth = getUrlActionContainerWidth();
         int allocatedWidth = MeasureSpec.getSize(parentWidthMeasureSpec);

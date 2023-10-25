@@ -4,7 +4,7 @@
 
 import("//third_party/protobuf/proto_library.gni")
 
-if (is_win) {
+if (is_win || is_linux || is_chromeos) {
   proto_library("stability_report_proto") {
     sources = [ "stability_report.proto" ]
   }
@@ -13,9 +13,12 @@ if (is_win) {
   # on Windows.
   static_library("stability_report") {
     sources = [
+      "stability_report_data_source.cc",
+      "stability_report_data_source.h",
       "user_stream_data_source.cc",
       "user_stream_data_source.h",
     ]
+
     deps = [
       ":stability_report_proto",
       "//base",
@@ -23,11 +26,30 @@ if (is_win) {
       "//third_party/crashpad/crashpad/minidump",
       "//third_party/crashpad/crashpad/snapshot",
     ]
+
+    if (is_win) {
+      sources += [
+        "user_stream_data_source_win.cc",
+        "user_stream_data_source_win.h",
+      ]
+    }
+
+    if (is_linux || is_chromeos) {
+      sources += [
+        "user_stream_data_source_posix.cc",
+        "user_stream_data_source_posix.h",
+      ]
+    }
   }
 
   source_set("unit_tests") {
     testonly = true
-    sources = [ "user_stream_data_source_unittest.cc" ]
+
+    sources = [
+      "test/stability_report_reader.cc",
+      "test/stability_report_reader.h",
+    ]
+
     deps = [
       ":stability_report",
       ":stability_report_proto",
@@ -36,5 +58,15 @@ if (is_win) {
       "//third_party/crashpad/crashpad/minidump",
       "//third_party/crashpad/crashpad/snapshot:test_support",
     ]
+
+    if (is_win) {
+      sources += [ "user_stream_data_source_win_unittest.cc" ]
+    }
+
+    if (is_linux || is_chromeos) {
+      sources += [ "user_stream_data_source_posix_unittest.cc" ]
+
+      deps += [ "//base/test:test_support" ]
+    }
   }
 }

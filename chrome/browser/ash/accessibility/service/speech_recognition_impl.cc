@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/accessibility/service/speech_recognition_impl.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/extensions/speech/speech_recognition_private_manager.h"
 #include "chrome/browser/ash/extensions/speech/speech_recognition_private_recognizer.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,6 +34,11 @@ SpeechRecognitionImpl::SpeechRecognitionEventObserverWrapper::
 
 void SpeechRecognitionImpl::SpeechRecognitionEventObserverWrapper::OnStop() {
   observer_->OnStop();
+}
+
+void SpeechRecognitionImpl::SpeechRecognitionEventObserverWrapper::OnResult(
+    ax::mojom::SpeechRecognitionResultEventPtr event) {
+  observer_->OnResult(std::move(event));
 }
 
 mojo::PendingReceiver<ax::mojom::SpeechRecognitionEventObserver>
@@ -96,10 +102,23 @@ void SpeechRecognitionImpl::Stop(ax::mojom::StopOptionsPtr options,
 void SpeechRecognitionImpl::HandleSpeechRecognitionStopped(
     const std::string& key) {
   auto* observer = GetEventObserverWrapper(key);
-  if (observer) {
-    observer->OnStop();
-    RemoveEventObserverWrapper(key);
-  }
+  CHECK(observer);
+
+  observer->OnStop();
+  RemoveEventObserverWrapper(key);
+}
+
+void SpeechRecognitionImpl::HandleSpeechRecognitionResult(
+    const std::string& key,
+    const std::u16string& transcript,
+    bool is_final) {
+  auto* observer = GetEventObserverWrapper(key);
+  CHECK(observer);
+
+  auto result = ax::mojom::SpeechRecognitionResultEvent::New();
+  result->transcript = base::UTF16ToUTF8(transcript);
+  result->is_final = is_final;
+  observer->OnResult(std::move(result));
 }
 
 void SpeechRecognitionImpl::StartHelper(StartCallback callback,

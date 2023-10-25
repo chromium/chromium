@@ -38,18 +38,28 @@ bool IsSameOriginWithAncestors(const url::Origin& origin,
   return true;
 }
 
-void SetIdpSigninStatus(
-    content::BrowserContext* context,
-    absl::optional<base::SafeRef<FrameTreeNode>> frame_tree_node,
-    const url::Origin& origin,
-    blink::mojom::IdpSigninStatus status) {
+void SetIdpSigninStatus(content::BrowserContext* context,
+                        int frame_tree_node_id,
+                        const url::Origin& origin,
+                        blink::mojom::IdpSigninStatus status) {
+  FrameTreeNode* frame_tree_node = nullptr;
+  // frame_tree_node_id may be invalid if we are loading the first frame
+  // of the tab.
+  if (frame_tree_node_id != FrameTreeNode::kFrameTreeNodeInvalidId) {
+    frame_tree_node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+    // If the id was not kFrameTreeNodeInvalidId, but the lookup failed, we
+    // ignore the load because we cannot do same-origin checks.
+    if (!frame_tree_node) {
+      return;
+    }
+  }
   // Make sure we're same-origin with our ancestors.
   if (frame_tree_node) {
-    if ((*frame_tree_node)->IsInFencedFrameTree()) {
+    if (frame_tree_node->IsInFencedFrameTree()) {
       return;
     }
 
-    if (!IsSameOriginWithAncestors(origin, (*frame_tree_node)->parent())) {
+    if (!IsSameOriginWithAncestors(origin, frame_tree_node->parent())) {
       return;
     }
   }

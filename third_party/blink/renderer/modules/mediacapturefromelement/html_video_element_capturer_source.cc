@@ -73,7 +73,8 @@ HtmlVideoElementCapturerSource::GetPreferredFormats() {
 void HtmlVideoElementCapturerSource::StartCapture(
     const media::VideoCaptureParams& params,
     const VideoCaptureDeliverFrameCB& new_frame_callback,
-    const VideoCaptureCropVersionCB& crop_version_callback,
+    const VideoCaptureSubCaptureTargetVersionCB&
+        sub_capture_target_version_callback,
     // The HTML element does not report frame drops.
     const VideoCaptureNotifyFrameDroppedCB&,
     const RunningCallback& running_callback) {

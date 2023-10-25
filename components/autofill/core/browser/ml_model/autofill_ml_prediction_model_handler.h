@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_AUTOFILL_ML_PREDICTION_MODEL_HANDLER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_AUTOFILL_ML_PREDICTION_MODEL_HANDLER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -12,9 +13,11 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/ml_model/autofill_model_executor.h"
+#include "components/autofill/core/browser/ml_model/autofill_model_vectorizer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/model_handler.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
+#include "components/optimization_guide/proto/autofill_field_classification_model_metadata.pb.h"
 
 namespace autofill {
 
@@ -58,11 +61,6 @@ class AutofillMlPredictionModelHandler
       override;
 
  private:
-  // Initializes the `vectorizer_`. This happens asynchronously, since it needs
-  // to read the dictionary from a file.
-  // TODO(crbug.com/1465926): Use model metadata and do it synchronously.
-  void InitializeVectorizer();
-
   // Encodes the `form` into the `ModelInput` representation understood by the
   // `AutofillModelExecutor`. This is done by vectorizing the labels of the
   // form's fields using the `vectorizer_`.
@@ -81,8 +79,14 @@ class AutofillMlPredictionModelHandler
   ServerFieldType GetMostLikelyType(
       const std::vector<float>& model_output) const;
 
-  // Initialized once the model is loaded.
-  std::unique_ptr<AutofillModelVectorizer> vectorizer_;
+  struct ModelState {
+    optimization_guide::proto::AutofillFieldClassificationModelMetadata
+        metadata;
+    AutofillModelVectorizer vectorizer;
+  };
+  // Initialized once the model was loaded and successfully initialized using
+  // the model's metadata.
+  std::optional<ModelState> state_;
 
   base::WeakPtrFactory<AutofillMlPredictionModelHandler> weak_ptr_factory_{
       this};

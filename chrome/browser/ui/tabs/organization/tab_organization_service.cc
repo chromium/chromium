@@ -30,10 +30,27 @@ void TabOrganizationService::OnTriggerOccured(const Browser* browser) {
   }
 
   browser_session_map_.emplace(
-      browser, TabOrganizationSession::CreateSessionForBrowser(browser));
+      browser, TabOrganizationSession::CreateSessionForBrowser(browser, this));
 
   for (TabOrganizationObserver& observer : observers_) {
     observer.OnToggleActionUIState(browser, true);
+  }
+}
+
+void TabOrganizationService::OnStartRequest(
+    TabOrganizationSession::ID session_id) const {
+  const Browser* browser = nullptr;
+  for (const auto& it : browser_session_map_) {
+    if (it.second->session_id() == session_id) {
+      browser = it.first;
+      break;
+    }
+  }
+  if (!browser) {
+    return;
+  }
+  for (TabOrganizationObserver& observer : observers_) {
+    observer.OnStartRequest(browser);
   }
 }
 
@@ -59,7 +76,19 @@ TabOrganizationSession* TabOrganizationService::CreateSessionForBrowser(
 
   std::pair<BrowserSessionMap::iterator, bool> pair =
       browser_session_map_.emplace(
-          browser, TabOrganizationSession::CreateSessionForBrowser(browser));
+          browser,
+          TabOrganizationSession::CreateSessionForBrowser(browser, this));
 
   return pair.first->second.get();
+}
+
+void TabOrganizationService::StartRequest(const Browser* browser) {
+  TabOrganizationSession* session = GetSessionForBrowser(browser);
+  if (!session) {
+    session = CreateSessionForBrowser(browser);
+  }
+  if (session->request()->state() ==
+      TabOrganizationRequest::State::NOT_STARTED) {
+    session->StartRequest();
+  }
 }

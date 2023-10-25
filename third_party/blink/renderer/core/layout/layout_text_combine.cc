@@ -45,8 +45,8 @@ LayoutTextCombine* LayoutTextCombine::CreateAnonymous(LayoutText* text_child) {
 }
 
 String LayoutTextCombine::GetTextContent() const {
-  DCHECK(!NeedsCollectInlines() && GetNGInlineNodeData()) << this;
-  return GetNGInlineNodeData()->ItemsData(false).text_content;
+  DCHECK(!NeedsCollectInlines() && GetInlineNodeData()) << this;
+  return GetInlineNodeData()->ItemsData(false).text_content;
 }
 
 // static

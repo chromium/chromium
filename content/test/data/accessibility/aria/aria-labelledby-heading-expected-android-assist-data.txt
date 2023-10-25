@@ -1,0 +1,5 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++EditText text:"h2" textSize:13.33 style:0 bundle:[aria-labelledby="h2", display="inline-block", htmlTag="input"]
+++++View textSize:13.33 style:0 bundle:[display="flow-root", htmlTag="div"]
+++View textSize:24.00 style:1 bundle:[display="block", htmlTag="h2", id="h2"]
+++++TextView text:"h2" textSize:24.00 style:1 bundle:[display="", htmlTag=""]

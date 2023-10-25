@@ -16,7 +16,7 @@ namespace blink {
 
 class FragmentItem;
 class FragmentItems;
-class NGInlineNode;
+class InlineNode;
 
 // This class builds |FragmentItems|.
 //
@@ -26,7 +26,7 @@ class CORE_EXPORT FragmentItemsBuilder {
 
  public:
   explicit FragmentItemsBuilder(WritingDirectionMode writing_direction);
-  FragmentItemsBuilder(const NGInlineNode& node,
+  FragmentItemsBuilder(const InlineNode& node,
                        WritingDirectionMode writing_direction,
                        bool is_block_fragmented);
   ~FragmentItemsBuilder();
@@ -57,13 +57,13 @@ class CORE_EXPORT FragmentItemsBuilder {
   // creates and positions children within a line box, but its parent algorithm
   // positions the line box.
   //
-  // 1. |AcquireLogicalLineItems| to get an instance of |NGLogicalLineItems|.
-  // 2. Add items to |NGLogicalLineItems| and create |NGPhysicalFragment|,
+  // 1. |AcquireLogicalLineItems| to get an instance of |LogicalLineItems|.
+  // 2. Add items to |LogicalLineItems| and create |NGPhysicalFragment|,
   //    then associate them by |AssociateLogicalLineItems|.
-  // 3. |AddLine| adds the |NGPhysicalLineBoxFragment|.
+  // 3. |AddLine| adds the |PhysicalLineBoxFragment|.
   //
   // |NGBlockLayoutAlgorithm| runs these phases in the order for each line. In
-  // this case, one instance of |NGLogicalLineItems| is reused for all lines to
+  // this case, one instance of |LogicalLineItems| is reused for all lines to
   // reduce memory allocations.
   //
   // Custom layout produces all line boxes first by running only 1 and 2 (in
@@ -71,13 +71,13 @@ class CORE_EXPORT FragmentItemsBuilder {
   // the order of line boxes, it runs 3 for each line. In this case,
   // |FragmentItemsBuilder| allocates new instance for each line, and keeps
   // them alive until |AddLine|.
-  NGLogicalLineItems* AcquireLogicalLineItems();
+  LogicalLineItems* AcquireLogicalLineItems();
   void ReleaseCurrentLogicalLineItems();
-  const NGLogicalLineItems& LogicalLineItems(
-      const NGPhysicalLineBoxFragment&) const;
-  void AssociateLogicalLineItems(NGLogicalLineItems* line_items,
+  const LogicalLineItems& GetLogicalLineItems(
+      const PhysicalLineBoxFragment&) const;
+  void AssociateLogicalLineItems(LogicalLineItems* line_items,
                                  const NGPhysicalFragment& line_fragment);
-  void AddLine(const NGPhysicalLineBoxFragment& line,
+  void AddLine(const PhysicalLineBoxFragment& line,
                const LogicalOffset& offset);
 
   // Add a list marker to the current line.
@@ -151,7 +151,7 @@ class CORE_EXPORT FragmentItemsBuilder {
  private:
   void MoveCurrentLogicalLineItemsToMap();
 
-  void AddItems(NGLogicalLineItem* child_begin, NGLogicalLineItem* child_end);
+  void AddItems(LogicalLineItem* child_begin, LogicalLineItem* child_end);
 
   void ConvertToPhysical(const PhysicalSize& outer_size);
 
@@ -160,15 +160,15 @@ class CORE_EXPORT FragmentItemsBuilder {
   String first_line_text_content_;
 
   // Keeps children of a line until the offset is determined. See |AddLine|.
-  NGLogicalLineItems* current_line_items_ = nullptr;
+  LogicalLineItems* current_line_items_ = nullptr;
   const NGPhysicalFragment* current_line_fragment_ = nullptr;
 
-  HeapHashMap<Member<const NGPhysicalFragment>, Member<NGLogicalLineItems>>
+  HeapHashMap<Member<const NGPhysicalFragment>, Member<LogicalLineItems>>
       line_items_map_;
-  NGLogicalLineItems* const line_items_pool_ =
-      MakeGarbageCollected<NGLogicalLineItems>();
+  LogicalLineItems* const line_items_pool_ =
+      MakeGarbageCollected<LogicalLineItems>();
 
-  NGInlineNode node_;
+  InlineNode node_;
 
   WritingDirectionMode writing_direction_;
 

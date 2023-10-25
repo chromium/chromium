@@ -25,6 +25,10 @@ BASE_FEATURE(kAdSamplerTriggerFeature,
              "SafeBrowsingAdSamplerTrigger",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAddWarningShownTSToClientSafeBrowsingReport,
+             "AddWarningShownTSToClientSafeBrowsingReport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAntiPhishingTelemetry,
              "AntiPhishingTelemetry",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -108,6 +112,10 @@ const base::FeatureParam<int>
 const base::FeatureParam<int> kExtensionTelemetryFileDataStartupDelaySeconds{
     &kExtensionTelemetryFileData, "StartupDelaySeconds",
     /*default_value=*/300};
+
+BASE_FEATURE(kExtensionTelemetryFileDataForCommandLineExtensions,
+             "SafeBrowsingExtensionTelemetryFileDataForCommandLineExtensions",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtensionTelemetryPotentialPasswordTheft,
              "SafeBrowsingExtensionTelemetryPotentialPasswordTheft",
@@ -339,6 +347,7 @@ constexpr struct {
   bool show_state;
 } kExperimentalFeatures[]{
     {&kAdSamplerTriggerFeature, false},
+    {&kAddWarningShownTSToClientSafeBrowsingReport, false},
     {&kAntiPhishingTelemetry, false},
     {&kClientSideDetectionKillswitch, true},
     {&kClientSideDetectionModelIsFlatBuffer, true},

@@ -16,18 +16,14 @@ namespace invalidation {
 // invalidation ack handles to avoid unnecessary dependencies.
 class INVALIDATION_EXPORT AckHandle {
  public:
-  static AckHandle CreateUnique();
-
-  bool Equals(const AckHandle& other) const;
-
-  // Explicitly copyable and assignable for STL containers.
+  AckHandle();
   AckHandle(const AckHandle& other);
   AckHandle& operator=(const AckHandle& other);
   ~AckHandle();
 
- private:
-  AckHandle(const std::string& state, base::Time timestamp);
+  bool Equals(const AckHandle& other) const;
 
+ private:
   std::string state_;
   base::Time timestamp_;
 };

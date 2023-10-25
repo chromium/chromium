@@ -21,9 +21,9 @@ namespace blink {
 class LayoutBlockFlow;
 class LayoutObject;
 
-enum class NGOffsetMappingUnitType { kIdentity, kCollapsed };
+enum class OffsetMappingUnitType { kIdentity, kCollapsed };
 
-// An NGOffsetMappingUnit indicates a "simple" offset mapping between dom offset
+// An OffsetMappingUnit indicates a "simple" offset mapping between dom offset
 // range [dom_start, dom_end] on node |owner| and text content offset range
 // [text_content_start, text_content_end]. The mapping between them falls in one
 // of the following categories, depending on |type|:
@@ -37,21 +37,21 @@ enum class NGOffsetMappingUnitType { kIdentity, kCollapsed };
 //   |text_content_end > text_content_start + 1|, indicating that the character
 //   in the dom range is expanded into multiple characters.
 // See design doc https://goo.gl/CJbxky for details.
-class CORE_EXPORT NGOffsetMappingUnit {
+class CORE_EXPORT OffsetMappingUnit {
   DISALLOW_NEW();
 
  public:
-  NGOffsetMappingUnit(NGOffsetMappingUnitType,
-                      const LayoutObject&,
-                      unsigned dom_start,
-                      unsigned dom_end,
-                      unsigned text_content_start,
-                      unsigned text_content_end);
+  OffsetMappingUnit(OffsetMappingUnitType,
+                    const LayoutObject&,
+                    unsigned dom_start,
+                    unsigned dom_end,
+                    unsigned text_content_start,
+                    unsigned text_content_end);
 
   // Returns associated node for this unit or null if this unit is associated
   // to generated content.
   const Node* AssociatedNode() const;
-  NGOffsetMappingUnitType GetType() const { return type_; }
+  OffsetMappingUnitType GetType() const { return type_; }
   const LayoutObject& GetLayoutObject() const { return *layout_object_; }
   // Returns |Node| for this unit. If this unit comes from CSS generated
   // content, we can't use this function.
@@ -64,7 +64,7 @@ class CORE_EXPORT NGOffsetMappingUnit {
 
   // If the passed unit can be concatenated to |this| to create a bigger unit,
   // replaces |this| by the result and returns true; Returns false otherwise.
-  bool Concatenate(const NGOffsetMappingUnit&);
+  bool Concatenate(const OffsetMappingUnit&);
 
   unsigned ConvertDOMOffsetToTextContent(unsigned) const;
 
@@ -76,7 +76,7 @@ class CORE_EXPORT NGOffsetMappingUnit {
   void Trace(Visitor*) const;
 
  private:
-  NGOffsetMappingUnitType type_ = NGOffsetMappingUnitType::kIdentity;
+  OffsetMappingUnitType type_ = OffsetMappingUnitType::kIdentity;
 
   Member<const LayoutObject> layout_object_;
   // TODO(yosin): We should rename |dom_start_| and |dom_end_| to appropriate
@@ -86,29 +86,28 @@ class CORE_EXPORT NGOffsetMappingUnit {
   unsigned dom_end_;
 
   // |text_content_start_| and |text_content_end_| are offsets in
-  // |NGOffsetMapping::text_|. These values are in [0, |text_.length()] to
+  // |OffsetMapping::text_|. These values are in [0, |text_.length()] to
   // represent collapsed spaces at the end of block.
   unsigned text_content_start_;
   unsigned text_content_end_;
 
-  friend class NGOffsetMappingBuilder;
+  friend class OffsetMappingBuilder;
 };
 
-// Each inline formatting context laid out with LayoutNG has an NGOffsetMapping
+// Each inline formatting context laid out with LayoutNG has an OffsetMapping
 // object that stores the mapping information between DOM positions and offsets
 // in the text content string of the context.
 // See design doc https://goo.gl/CJbxky for details.
-class CORE_EXPORT NGOffsetMapping final
-    : public GarbageCollected<NGOffsetMapping> {
+class CORE_EXPORT OffsetMapping final : public GarbageCollected<OffsetMapping> {
  public:
-  using UnitVector = HeapVector<NGOffsetMappingUnit>;
+  using UnitVector = HeapVector<OffsetMappingUnit>;
   using RangeMap =
       HeapHashMap<Member<const Node>, std::pair<unsigned, unsigned>>;
 
-  NGOffsetMapping(UnitVector&&, RangeMap&&, String);
-  NGOffsetMapping(const NGOffsetMapping&) = delete;
-  NGOffsetMapping& operator=(const NGOffsetMapping&) = delete;
-  ~NGOffsetMapping();
+  OffsetMapping(UnitVector&&, RangeMap&&, String);
+  OffsetMapping(const OffsetMapping&) = delete;
+  OffsetMapping& operator=(const OffsetMapping&) = delete;
+  ~OffsetMapping();
 
   const UnitVector& GetUnits() const { return units_; }
   const RangeMap& GetRanges() const { return ranges_; }
@@ -119,32 +118,32 @@ class CORE_EXPORT NGOffsetMapping final
   // TODO(xiaochengh): Unify the following getters and make them work on both
   // legacy and LayoutNG.
 
-  // NGOffsetMapping APIs only accept the following positions:
+  // OffsetMapping APIs only accept the following positions:
   // 1. Offset-in-anchor in a text node;
   // 2. Before/After-anchor of an atomic inline or a text-like node like <br>.
   static bool AcceptsPosition(const Position&);
 
   // Returns the mapping object of the inline formatting context laying out the
   // given position.
-  static const NGOffsetMapping* GetFor(const Position&);
+  static const OffsetMapping* GetFor(const Position&);
 
   // Returns the mapping object of the inline formatting context laying out the
   // given position even if legacy layout tree.
   // TODO(yosin): Once we get rid of legacy layout, we should get rid of
   // |ForceGetFor()|.
-  static const NGOffsetMapping* ForceGetFor(const Position&);
+  static const OffsetMapping* ForceGetFor(const Position&);
 
   // Returns the mapping object of the inline formatting context containing the
   // given LayoutObject, if it's laid out with LayoutNG. If the LayoutObject is
   // itself an inline formatting context, returns its own offset mapping object.
   // This makes the retrieval of the mapping object easier when we already have
   // a LayoutObject at hand.
-  static const NGOffsetMapping* GetFor(const LayoutObject*);
+  static const OffsetMapping* GetFor(const LayoutObject*);
 
   // Returns the inline formatting context (which is a block flow) where the
   // given object is laid out -- this is the block flow whose offset mapping
   // contains the given object. Note that the object can be in either legacy or
-  // NG layout, while NGOffsetMapping is supported on both of them.
+  // NG layout, while OffsetMapping is supported on both of them.
   static LayoutBlockFlow* GetInlineFormattingContextOf(const LayoutObject&);
 
   // Variants taking position instead of |LayoutObject|.
@@ -152,30 +151,30 @@ class CORE_EXPORT NGOffsetMapping final
 
   // ------ Mapping APIs from DOM to text content ------
 
-  // Returns the NGOffsetMappingUnit whose DOM range contains the position.
+  // Returns the OffsetMappingUnit whose DOM range contains the position.
   // If there are multiple qualifying units, returns the last one.
-  const NGOffsetMappingUnit* GetMappingUnitForPosition(const Position&) const;
+  const OffsetMappingUnit* GetMappingUnitForPosition(const Position&) const;
 
-  // Returns all NGOffsetMappingUnits whose DOM ranges has non-empty (but
+  // Returns all OffsetMappingUnits whose DOM ranges has non-empty (but
   // possibly collapsed) intersections with the passed in DOM range. If a unit
   // partially intersects the range, it is clamped with only the part within the
   // range returned. This API only accepts ranges whose start and end have the
   // same anchor node.
   UnitVector GetMappingUnitsForDOMRange(const EphemeralRange&) const;
 
-  // Returns all NGOffsetMappingUnits associated to |node|. When |node| is
+  // Returns all OffsetMappingUnits associated to |node|. When |node| is
   // laid out with ::first-letter, this function returns both first-letter part
   // and remaining part. Note: |node| should have associated mapping.
-  base::span<const NGOffsetMappingUnit> GetMappingUnitsForNode(
+  base::span<const OffsetMappingUnit> GetMappingUnitsForNode(
       const Node& node) const;
 
-  // Returns all NGOffsetMappingUnits associated to |layout_object|. This
+  // Returns all OffsetMappingUnits associated to |layout_object|. This
   // function works even if |layout_object| is for CSS generated content
   // ("content" property in ::before/::after, etc.)
   // Note: Unlike |GetMappingUnitsForNode()|, this function returns units
   // for first-letter or remaining part only instead of both parts.
   // Note: |layout_object| should have associated mapping.
-  base::span<const NGOffsetMappingUnit> GetMappingUnitsForLayoutObject(
+  base::span<const OffsetMappingUnit> GetMappingUnitsForLayoutObject(
       const LayoutObject& layout_object) const;
 
   // Returns the text content offset corresponding to the given position.
@@ -216,20 +215,21 @@ class CORE_EXPORT NGOffsetMapping final
   Position GetFirstPosition(unsigned) const;
   Position GetLastPosition(unsigned) const;
 
-  // Returns all NGOffsetMappingUnits whose text content ranges has non-empty
+  // Returns all OffsetMappingUnits whose text content ranges has non-empty
   // (but possibly collapsed) intersection with (start, end). Note that units
   // that only "touch" |start| or |end| are excluded.
   // Note: Returned range may include units for generated content.
-  base::span<const NGOffsetMappingUnit>
-  GetMappingUnitsForTextContentOffsetRange(unsigned start, unsigned end) const;
+  base::span<const OffsetMappingUnit> GetMappingUnitsForTextContentOffsetRange(
+      unsigned start,
+      unsigned end) const;
 
-  // Returns the first |NGOffsetMappingUnit| where |TextContentStart() >=
+  // Returns the first |OffsetMappingUnit| where |TextContentStart() >=
   // offset| including unit for generated content.
-  const NGOffsetMappingUnit* GetFirstMappingUnit(unsigned offset) const;
+  const OffsetMappingUnit* GetFirstMappingUnit(unsigned offset) const;
 
-  // Returns the last |NGOffsetMappingUnit| where |TextContentStart() >= offset|
+  // Returns the last |OffsetMappingUnit| where |TextContentStart() >= offset|
   // including unit for generated content.
-  const NGOffsetMappingUnit* GetLastMappingUnit(unsigned offset) const;
+  const OffsetMappingUnit* GetLastMappingUnit(unsigned offset) const;
 
   // ------ APIs inspecting the text content string ------
 
@@ -243,14 +243,14 @@ class CORE_EXPORT NGOffsetMapping final
   }
 
  private:
-  // The NGOffsetMappingUnits of the inline formatting context in osrted order.
+  // The OffsetMappingUnits of the inline formatting context in osrted order.
   UnitVector units_;
 
   // Stores the unit range for each node in inline formatting context.
   RangeMap ranges_;
 
   // The text content string of the inline formatting context. Same string as
-  // |NGInlineNodeData::text_content_|.
+  // |InlineNodeData::text_content_|.
   String text_;
 };
 
@@ -261,8 +261,8 @@ CORE_EXPORT LayoutBlockFlow* NGInlineFormattingContextOf(const Position&);
 namespace WTF {
 
 template <>
-struct VectorTraits<blink::NGOffsetMappingUnit>
-    : VectorTraitsBase<blink::NGOffsetMappingUnit> {
+struct VectorTraits<blink::OffsetMappingUnit>
+    : VectorTraitsBase<blink::OffsetMappingUnit> {
   static constexpr bool kCanClearUnusedSlotsWithMemset = true;
   static constexpr bool kCanTraceConcurrently = true;
 };

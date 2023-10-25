@@ -11,84 +11,16 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/ml_model/autofill_model_executor.h"
-#include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/browser/ml_model/autofill_model_vectorizer.h"
 #include "components/optimization_guide/core/model_handler.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
+#include "components/optimization_guide/proto/autofill_field_classification_model_metadata.pb.h"
 
 namespace autofill {
-
-namespace {
-
-// Array describing how the output of the ML model is interpreted.
-// Some of the types that the model was trained on are not supported by the
-// client. Index 0 is UNKNOWN_TYPE, while the others are non-supported types.
-// TODO(crbug.com/1465926): Retrieve from model metadata.
-constexpr std::array<ServerFieldType, 57> kSupportedFieldTypes = {
-    UNKNOWN_TYPE,
-    EMAIL_ADDRESS,
-    UNKNOWN_TYPE,
-    UNKNOWN_TYPE,
-    UNKNOWN_TYPE,
-    UNKNOWN_TYPE,
-    CREDIT_CARD_NUMBER,
-    CONFIRMATION_PASSWORD,
-    UNKNOWN_TYPE,
-    PHONE_HOME_EXTENSION,
-    PHONE_HOME_WHOLE_NUMBER,
-    PHONE_HOME_COUNTRY_CODE,
-    UNKNOWN_TYPE,
-    NAME_FIRST,
-    ADDRESS_HOME_DEPENDENT_LOCALITY,
-    ADDRESS_HOME_CITY,
-    ADDRESS_HOME_STREET_ADDRESS,
-    PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX,
-    UNKNOWN_TYPE,
-    NAME_HONORIFIC_PREFIX,
-    CREDIT_CARD_EXP_2_DIGIT_YEAR,
-    ADDRESS_HOME_STATE,
-    UNKNOWN_TYPE,
-    CREDIT_CARD_NAME_LAST,
-    ACCOUNT_CREATION_PASSWORD,
-    ADDRESS_HOME_HOUSE_NUMBER,
-    PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX,
-    CREDIT_CARD_TYPE,
-    CREDIT_CARD_NAME_FULL,
-    ADDRESS_HOME_APT_NUM,
-    CREDIT_CARD_NAME_FIRST,
-    ADDRESS_HOME_FLOOR,
-    UNKNOWN_TYPE,
-    ADDRESS_HOME_LANDMARK,
-    UNKNOWN_TYPE,
-    ADDRESS_HOME_STREET_NAME,
-    ADDRESS_HOME_COUNTRY,
-    CREDIT_CARD_EXP_4_DIGIT_YEAR,
-    DELIVERY_INSTRUCTIONS,
-    PHONE_HOME_NUMBER,
-    CREDIT_CARD_VERIFICATION_CODE,
-    NAME_LAST,
-    CREDIT_CARD_EXP_MONTH,
-    ADDRESS_HOME_OVERFLOW,
-    UNKNOWN_TYPE,
-    NAME_FULL,
-    COMPANY_NAME,
-    CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
-    PHONE_HOME_CITY_AND_NUMBER,
-    PHONE_HOME_CITY_CODE,
-    ADDRESS_HOME_LINE2,
-    ADDRESS_HOME_STREET_LOCATION,
-    ADDRESS_HOME_ZIP,
-    CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
-    ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
-    ADDRESS_HOME_LINE3,
-    ADDRESS_HOME_LINE1};
-
-}  // namespace
 
 AutofillMlPredictionModelHandler::AutofillMlPredictionModelHandler(
     optimization_guide::OptimizationGuideModelProvider* model_provider)
@@ -115,7 +47,7 @@ AutofillMlPredictionModelHandler::~AutofillMlPredictionModelHandler() = default;
 void AutofillMlPredictionModelHandler::GetModelPredictionsForForm(
     std::unique_ptr<FormStructure> form_structure,
     base::OnceCallback<void(std::unique_ptr<FormStructure>)> callback) {
-  if (!ModelAvailable() || !vectorizer_) {
+  if (!ModelAvailable() || !state_) {
     // No model, no predictions.
     std::move(callback).Run(std::move(form_structure));
     return;
@@ -166,35 +98,26 @@ void AutofillMlPredictionModelHandler::OnModelUpdated(
     return;
   }
   // The model was loaded or updated.
-  InitializeVectorizer();
-}
-
-void AutofillMlPredictionModelHandler::InitializeVectorizer() {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-      base::BindOnce([] {
-        return AutofillModelVectorizer::CreateVectorizer(
-            base::FilePath::FromASCII(
-                features::kAutofillModelDictionaryFilePath.Get()));
-      }),
-      base::BindOnce(
-          [](base::WeakPtr<AutofillMlPredictionModelHandler> handler,
-             std::unique_ptr<AutofillModelVectorizer> vectorizer) {
-            if (handler) {
-              CHECK(vectorizer);
-              handler->vectorizer_ = std::move(vectorizer);
-            }
-          },
-          weak_ptr_factory_.GetWeakPtr()));
+  state_.reset();
+  ModelState state;
+  if (!model_info->GetModelMetadata() ||
+      !state.metadata.ParseFromString(
+          model_info->GetModelMetadata()->value())) {
+    // The model should always come with metadata - but since this comes from
+    // the server-side and might change in the future, it might fail.
+    return;
+  }
+  state.vectorizer = AutofillModelVectorizer(state.metadata.input_token());
+  state_.emplace(std::move(state));
 }
 
 AutofillModelExecutor::ModelInput
 AutofillMlPredictionModelHandler::VectorizeForm(
     const FormStructure& form) const {
-  CHECK(vectorizer_);
+  CHECK(state_);
   AutofillModelExecutor::ModelInput vectorized_form(form.fields().size());
   for (size_t i = 0; i < form.field_count(); ++i) {
-    vectorized_form[i] = vectorizer_->Vectorize(form.field(i)->label);
+    vectorized_form[i] = state_->vectorizer.Vectorize(form.field(i)->label);
   }
   return vectorized_form;
 }
@@ -214,9 +137,12 @@ void AutofillMlPredictionModelHandler::AssignMostLikelyTypes(
 
 ServerFieldType AutofillMlPredictionModelHandler::GetMostLikelyType(
     const std::vector<float>& model_output) const {
-  size_t max_index =
+  CHECK(state_);
+  int max_index =
       base::ranges::max_element(model_output) - model_output.begin();
-  return kSupportedFieldTypes[max_index];
+  CHECK_LT(max_index, state_->metadata.output_type_size());
+  return ToSafeServerFieldType(state_->metadata.output_type(max_index),
+                               UNKNOWN_TYPE);
 }
 
 }  // namespace autofill

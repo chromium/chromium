@@ -579,7 +579,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Renderer.AnimationUpdateOnMissingPropertyNode"
-    units="boolean" expires_after="2023-12-02">
+    units="boolean" expires_after="2024-12-02">
   <owner>awogbemila@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -842,7 +842,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.SurfaceManager.MarkForDestructionToDestroy"
-    units="ms" expires_after="2023-12-01">
+    units="ms" expires_after="2024-10-20">
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1168,59 +1168,6 @@ chromium-metrics-reviews@google.com.
     100) frames available in total.
   </summary>
   <token key="Sequence" variants="SmoothnessSequence"/>
-</histogram>
-
-<histogram name="Graphics.Smoothness.Jank" units="%" expires_after="2023-10-08">
-  <owner>jonross@chromium.org</owner>
-  <owner>mjzhang@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    Tracks the percent of janks for a particular sequence of frames (e.g. during
-    scroll, animation, etc.). This is reported in various sub-metrics with
-    suffixes describing the type of the sequence (e.g. TouchScroll etc.).
-
-    Jank is measured by tracking the number of abrupt increases in frame
-    presentation interval, divided by the total number of frames expected to be
-    produced and displayed. The lower this number is, the less the smoothness
-    varies over time.
-
-    Note that this metric is reported only when there are sufficient number of
-    frames (&gt;= 100). If there are sequences with fewer frames, then these are
-    aggregated until there are enough frames to produce the metric.
-  </summary>
-</histogram>
-
-<histogram name="Graphics.Smoothness.Jank.All{Type}" units="%"
-    expires_after="2024-06-01">
-  <owner>jonross@chromium.org</owner>
-  <owner>mjzhang@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    Tracks the percent of janks for a particular frame sequence. {Type}
-
-    Jank is measured by tracking the number of abrupt increases in frame
-    presentation interval, divided by the total number of frames expected to be
-    produced and displayed. The lower this number is, the less the smoothness
-    varies over time.
-
-    Note that this metric is reported only when there are sufficient number of
-    frames (&gt;= 100). If there are sequences with fewer frames, then these are
-    aggregated until there are enough frames to produce the metric.
-  </summary>
-  <token key="Type">
-    <variant name="Animations"
-        summary="This metric aggregates data reported from all types of
-                 animations (e.g. comositor-driven animations, main-thread
-                 driven animations, and raf-driven animations, etc.)."/>
-    <variant name="Interactions"
-        summary="This metric aggregates data reported for all supported
-                 combinations of interaction types (e.g. scrolling, pinching,
-                 etc.) and input device types (e.g. touchscreen, touchpad,
-                 mousewheel, etc.)."/>
-    <variant name="Sequences"
-        summary="This metric aggregates data from all animations and all
-                 interactions."/>
-  </token>
 </histogram>
 
 <histogram name="Graphics.Smoothness.Jank3.All{Type}" units="%"

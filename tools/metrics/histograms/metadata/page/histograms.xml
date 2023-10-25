@@ -1257,6 +1257,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PageLoad.Clients.ThirdPartyCookieAccessBlockedByExperiment"
+    enum="Boolean" expires_after="2024-07-01">
+  <owner>victortan@chromium.org</owner>
+  <owner>src/chrome/browser/tpcd/OWNERS</owner>
+  <summary>
+    Record when a third party accesses(read|change) cookies either via resource
+    request headers or document.cookie. True means the third party cookie
+    deprecation experiment is trying to block third party cookies access, while
+    False means experiment is not trying to block.
+  </summary>
+</histogram>
+
 <histogram
     name="PageLoad.Clients.UseCounter.Experimental.MetricsReplayAtActivationDuration"
     units="ms" expires_after="2023-09-03">

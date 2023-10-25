@@ -12,6 +12,7 @@
 class QuickAnswersControllerImpl;
 
 namespace content {
+class BrowserContext;
 struct ContextMenuParams;
 }  // namespace content
 
@@ -36,7 +37,8 @@ class ReadWriteCardsManagerImpl : public ReadWriteCardsManager {
 
   // ReadWriteCardController:
   ReadWriteCardController* GetController(
-      const content::ContextMenuParams& params) override;
+      const content::ContextMenuParams& params,
+      content::BrowserContext* context) override;
 
   chromeos::editor_menu::EditorMenuControllerImpl* editor_menu_for_testing() {
     return editor_menu_controller_.get();

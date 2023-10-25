@@ -6,30 +6,20 @@
 
 #include <ostream>
 
-#include "base/check.h"
-#include "base/strings/string_piece.h"
 #include "components/grit/components_resources.h"
 #include "components/security_interstitials/core/common_string_util.h"
 #include "components/strings/grit/components_strings.h"
-#include "third_party/zlib/google/compression_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/webui/jstemplate_builder.h"
 #include "ui/base/webui/web_ui_util.h"
 
 namespace heavy_ad_intervention {
 
 std::string PrepareHeavyAdPage(const std::string& application_locale) {
-  int resource_id = IDR_SECURITY_INTERSTITIAL_QUIET_HTML;
-  std::string uncompressed;
-  base::StringPiece template_html(
-      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(resource_id));
-  if (ui::ResourceBundle::GetSharedInstance().IsGzipped(resource_id)) {
-    bool success = compression::GzipUncompress(template_html, &uncompressed);
-    DCHECK(success);
-    template_html = base::StringPiece(uncompressed);
-  }
-  DCHECK(!template_html.empty()) << "unable to load template.";
+  std::string html =
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+          IDR_SECURITY_INTERSTITIAL_QUIET_HTML);
+  DCHECK(!html.empty()) << "unable to load template.";
 
   // Populate load time data.
   base::Value::Dict load_time_data;
@@ -50,12 +40,9 @@ std::string PrepareHeavyAdPage(const std::string& application_locale) {
 
   webui::SetLoadTimeDataDefaults(application_locale, &load_time_data);
 
-  // "body" is the id of the template's root node.
-  std::string heavy_ad_html =
-      webui::GetTemplatesHtml(template_html, load_time_data, "body");
-  webui::AppendWebUiCssTextDefaults(&heavy_ad_html);
-
-  return heavy_ad_html;
+  webui::AppendWebUiCssTextDefaults(&html);
+  return security_interstitials::common_string_util::GetLocalizedHtml(
+      html, load_time_data);
 }
 
 }  // namespace heavy_ad_intervention

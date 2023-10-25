@@ -2033,7 +2033,9 @@ TEST_F(ThreatDetailsTest, ThreatSourceToUrlApiType) {
       {ThreatSource::NATIVE_PVER5_REAL_TIME,
        ClientSafeBrowsingReportRequest::PVER5_NATIVE_REAL_TIME},
       {ThreatSource::ANDROID_SAFEBROWSING_REAL_TIME,
-       ClientSafeBrowsingReportRequest::ANDROID_SAFEBROWSING_REAL_TIME}};
+       ClientSafeBrowsingReportRequest::ANDROID_SAFEBROWSING_REAL_TIME},
+      {ThreatSource::ANDROID_SAFEBROWSING,
+       ClientSafeBrowsingReportRequest::ANDROID_SAFEBROWSING}};
 
   for (const auto& test_case : test_cases) {
     auto navigation = content::NavigationSimulator::CreateBrowserInitiated(

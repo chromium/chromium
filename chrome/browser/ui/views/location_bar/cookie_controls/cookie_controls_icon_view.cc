@@ -44,6 +44,12 @@ void RecordShownActionForConfidence(
   } else if (confidence == CookieControlsBreakageConfidenceLevel::kMedium) {
     base::RecordAction(
         base::UserMetricsAction("CookieControls.MediumConfidence.Shown"));
+  } else if (confidence == CookieControlsBreakageConfidenceLevel::kLow) {
+    base::RecordAction(
+        base::UserMetricsAction("CookieControls.LowConfidence.Shown"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("CookieControls.OtherConfidence.Shown"));
   }
 }
 
@@ -55,6 +61,12 @@ void RecordOpenedActionForConfidence(
   } else if (confidence == CookieControlsBreakageConfidenceLevel::kMedium) {
     base::RecordAction(
         base::UserMetricsAction("CookieControls.MediumConfidence.Opened"));
+  } else if (confidence == CookieControlsBreakageConfidenceLevel::kLow) {
+    base::RecordAction(
+        base::UserMetricsAction("CookieControls.LowConfidence.Opened"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("CookieControls.OtherConfidence.Opened"));
   }
 }
 
@@ -172,13 +184,15 @@ void CookieControlsIconView::OnIPHClosed() {
 
 void CookieControlsIconView::SetLabelAndTooltip() {
   auto icon_label = GetLabelForStatus().value_or(IDS_COOKIE_CONTROLS_TOOLTIP);
-  if (blocking_status_ != CookieBlocking3pcdStatus::kNotIn3pcd) {
+  // Only use "Tracking Protection" and verbose accessibility description if the
+  // label is hidden.
+  if (blocking_status_ != CookieBlocking3pcdStatus::kNotIn3pcd &&
+      !label()->GetVisible()) {
     // Set the accessible description to whatever the 3PC blocking state is.
     SetAccessibleDescription(l10n_util::GetStringUTF16(icon_label));
-    // Don't show "Tracking Protection" if the label is visible.
-    if (!label()->GetVisible()) {
-      icon_label = IDS_TRACKING_PROTECTION_PAGE_ACTION_LABEL;
-    }
+    icon_label = IDS_TRACKING_PROTECTION_PAGE_ACTION_LABEL;
+  } else {
+    SetAccessibleDescription(u"");
   }
   SetTooltipText(l10n_util::GetStringUTF16(icon_label));
   SetLabel(l10n_util::GetStringUTF16(icon_label));

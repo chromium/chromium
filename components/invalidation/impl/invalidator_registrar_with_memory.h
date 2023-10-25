@@ -72,13 +72,8 @@ class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
   [[nodiscard]] bool UpdateRegisteredTopics(InvalidationHandler* handler,
                                             const std::set<TopicData>& topics);
 
-  // Unsubscribes from all topics which are associated with |handler| but were
-  // not added using UpdateRegisteredTopics(). It's useful to unsubscribe from
-  // all topics even if they were added before browser restart.
-  void RemoveUnregisteredTopics(InvalidationHandler* handler);
-
   // Returns all topics currently registered to |handler|.
-  Topics GetRegisteredTopics(InvalidationHandler* handler) const;
+  TopicMap GetRegisteredTopics(InvalidationHandler* handler) const;
 
   // Returns the set of all topics that (we think) we are subscribed to on the
   // server. This is the set of topics which were registered to some handler and
@@ -86,7 +81,7 @@ class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
   // *handler* has been unregistered without unregistering the topic itself
   // first (e.g. because Chrome was restarted and the handler hasn't registered
   // itself again yet).
-  Topics GetAllSubscribedTopics() const;
+  TopicMap GetAllSubscribedTopics() const;
 
   // Dispatches incoming invalidation to the corresponding handler based on its
   // topic.
@@ -102,9 +97,6 @@ class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
   // InvalidationHandler::OnInvalidatorStateChange(), this returns the
   // updated state.
   InvalidatorState GetInvalidatorState() const;
-
-  // Notifies all handlers about the new instance ID.
-  void UpdateInvalidatorInstanceId(const std::string& instance_id);
 
  private:
   // Checks if any of the |topics| is already registered for a *different*

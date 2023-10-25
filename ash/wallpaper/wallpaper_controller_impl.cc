@@ -1569,9 +1569,6 @@ void WallpaperControllerImpl::OnCheckpointChanged(
     for (auto& observer : observers_) {
       observer.OnDailyRefreshCheckpointChanged();
     }
-    if (!features::IsWallpaperRefreshRevampEnabled()) {
-      return;
-    }
     if (daily_refresh_scheduler_->ShouldRefreshWallpaper(info)) {
       UpdateDailyRefreshWallpaper();
     }

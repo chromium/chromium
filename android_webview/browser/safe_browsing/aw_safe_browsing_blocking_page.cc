@@ -86,6 +86,7 @@ AwSafeBrowsingBlockingPage::AwSafeBrowsingBlockingPage(
                 /*referrer_chain_provider*/ nullptr,
                 sb_error_ui()->get_error_display_options());
   }
+  warning_shown_ts_ = base::Time::Now().InMillisecondsSinceUnixEpoch();
 }
 
 AwSafeBrowsingBlockingPage* AwSafeBrowsingBlockingPage::CreateBlockingPage(
@@ -163,13 +164,14 @@ void AwSafeBrowsingBlockingPage::FinishThreatDetails(
 
   // Finish computing threat details. TriggerManager will decide if it is safe
   // to send the report.
-  auto result = AwBrowserProcess::GetInstance()
-                    ->GetSafeBrowsingTriggerManager()
-                    ->FinishCollectingThreatDetails(
-                        safe_browsing::TriggerType::SECURITY_INTERSTITIAL,
-                        safe_browsing::GetWebContentsKey(web_contents()), delay,
-                        did_proceed, num_visits,
-                        sb_error_ui()->get_error_display_options());
+  auto result =
+      AwBrowserProcess::GetInstance()
+          ->GetSafeBrowsingTriggerManager()
+          ->FinishCollectingThreatDetails(
+              safe_browsing::TriggerType::SECURITY_INTERSTITIAL,
+              safe_browsing::GetWebContentsKey(web_contents()), delay,
+              did_proceed, num_visits,
+              sb_error_ui()->get_error_display_options(), warning_shown_ts_);
   bool report_sent = result.IsReportSent();
 
   if (report_sent) {

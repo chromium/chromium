@@ -209,18 +209,18 @@ void PlusAddressClient::CreatePlusAddress(const std::string& site,
   // TODO(b/301984623) - Measure average downloadsize and change this.
   loader_ptr->DownloadToString(
       url_loader_factory_.get(),
-      base::BindOnce(&PlusAddressClient::OnCreateOrReservePlusAddressComplete,
+      base::BindOnce(&PlusAddressClient::OnCreatePlusAddressComplete,
                      // Safe since this class owns the list of loaders.
                      base::Unretained(this),
                      loaders_for_creation_.insert(loaders_for_creation_.begin(),
                                                   std::move(loader)),
-                     PlusAddressNetworkRequestType::kGetOrCreate, clock_->Now(),
-                     std::move(callback)),
+                     clock_->Now(), std::move(callback)),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
 
-void PlusAddressClient::ReservePlusAddress(const std::string& site,
-                                           PlusAddressCallback callback) {
+void PlusAddressClient::ReservePlusAddress(
+    const std::string& site,
+    PlusAddressRequestCallback on_completed) {
   if (!server_url_) {
     return;
   }
@@ -228,7 +228,7 @@ void PlusAddressClient::ReservePlusAddress(const std::string& site,
   if (access_token_info_.expiration_time < clock_->Now()) {
     GetAuthToken(base::BindOnce(&PlusAddressClient::ReservePlusAddress,
                                 base::Unretained(this), site,
-                                std::move(callback)));
+                                std::move(on_completed)));
     return;
   }
 
@@ -256,19 +256,20 @@ void PlusAddressClient::ReservePlusAddress(const std::string& site,
   // TODO(b/301984623) - Measure average downloadsize and change this.
   loader_ptr->DownloadToString(
       url_loader_factory_.get(),
-      base::BindOnce(&PlusAddressClient::OnCreateOrReservePlusAddressComplete,
+      base::BindOnce(&PlusAddressClient::OnReserveOrConfirmPlusAddressComplete,
                      // Safe since this class owns the list of loaders.
                      base::Unretained(this),
                      loaders_for_creation_.insert(loaders_for_creation_.begin(),
                                                   std::move(loader)),
                      PlusAddressNetworkRequestType::kReserve, clock_->Now(),
-                     std::move(callback)),
+                     std::move(on_completed)),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
 
-void PlusAddressClient::ConfirmPlusAddress(const std::string& site,
-                                           const std::string& plus_address,
-                                           PlusAddressCallback callback) {
+void PlusAddressClient::ConfirmPlusAddress(
+    const std::string& site,
+    const std::string& plus_address,
+    PlusAddressRequestCallback on_completed) {
   if (!server_url_) {
     return;
   }
@@ -276,7 +277,7 @@ void PlusAddressClient::ConfirmPlusAddress(const std::string& site,
   if (access_token_info_.expiration_time < clock_->Now()) {
     GetAuthToken(base::BindOnce(&PlusAddressClient::ConfirmPlusAddress,
                                 base::Unretained(this), plus_address, site,
-                                std::move(callback)));
+                                std::move(on_completed)));
     return;
   }
 
@@ -305,13 +306,13 @@ void PlusAddressClient::ConfirmPlusAddress(const std::string& site,
   // TODO(b/301984623) - Measure average downloadsize and change this.
   loader_ptr->DownloadToString(
       url_loader_factory_.get(),
-      base::BindOnce(&PlusAddressClient::OnCreateOrReservePlusAddressComplete,
+      base::BindOnce(&PlusAddressClient::OnReserveOrConfirmPlusAddressComplete,
                      // Safe since this class owns the list of loaders.
                      base::Unretained(this),
                      loaders_for_creation_.insert(loaders_for_creation_.begin(),
                                                   std::move(loader)),
                      PlusAddressNetworkRequestType::kCreate, clock_->Now(),
-                     std::move(callback)),
+                     std::move(on_completed)),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
 
@@ -355,26 +356,28 @@ void PlusAddressClient::GetAllPlusAddresses(PlusAddressMapCallback callback) {
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
 
-void PlusAddressClient::OnCreateOrReservePlusAddressComplete(
+void PlusAddressClient::OnCreatePlusAddressComplete(
     UrlLoaderList::iterator it,
-    PlusAddressNetworkRequestType type,
     base::Time request_start,
     PlusAddressCallback callback,
     std::unique_ptr<std::string> response) {
   // Record relevant metrics.
   std::unique_ptr<network::SimpleURLLoader> loader = std::move(*it);
   PlusAddressMetrics::RecordNetworkRequestLatency(
-      type, clock_->Now() - request_start);
+      PlusAddressNetworkRequestType::kGetOrCreate,
+      clock_->Now() - request_start);
   if (loader && loader->ResponseInfo() && loader->ResponseInfo()->headers) {
     PlusAddressMetrics::RecordNetworkRequestResponseCode(
-        type, loader->ResponseInfo()->headers->response_code());
+        PlusAddressNetworkRequestType::kGetOrCreate,
+        loader->ResponseInfo()->headers->response_code());
   }
   // Destroy the loader before returning.
   loaders_for_creation_.erase(it);
   if (!response) {
     return;
   }
-  PlusAddressMetrics::RecordNetworkRequestResponseSize(type, response->size());
+  PlusAddressMetrics::RecordNetworkRequestResponseSize(
+      PlusAddressNetworkRequestType::kGetOrCreate, response->size());
   // Parse the response & return it via callback.
   data_decoder::DataDecoder::ParseJsonIsolated(
       *response,
@@ -387,6 +390,47 @@ void PlusAddressClient::OnCreateOrReservePlusAddressComplete(
                 }
               },
               std::move(callback))));
+}
+
+void PlusAddressClient::OnReserveOrConfirmPlusAddressComplete(
+    UrlLoaderList::iterator it,
+    PlusAddressNetworkRequestType type,
+    base::Time request_start,
+    PlusAddressRequestCallback on_completed,
+    std::unique_ptr<std::string> response) {
+  // Record relevant metrics.
+  std::unique_ptr<network::SimpleURLLoader> loader = std::move(*it);
+  PlusAddressMetrics::RecordNetworkRequestLatency(
+      type, clock_->Now() - request_start);
+  if (loader && loader->ResponseInfo() && loader->ResponseInfo()->headers) {
+    PlusAddressMetrics::RecordNetworkRequestResponseCode(
+        type, loader->ResponseInfo()->headers->response_code());
+  }
+  // Destroy the loader before returning.
+  loaders_for_creation_.erase(it);
+  if (!response) {
+    std::move(on_completed)
+        .Run(base::unexpected(PlusAddressRequestError(
+            PlusAddressRequestErrorType::kNetworkError)));
+    return;
+  }
+  PlusAddressMetrics::RecordNetworkRequestResponseSize(type, response->size());
+  // Parse the response & return it via callback.
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      *response,
+      base::BindOnce(&PlusAddressParser::ParsePlusProfileFromV1Create)
+          .Then(base::BindOnce(
+              [](PlusAddressRequestCallback callback,
+                 absl::optional<PlusProfile> result) {
+                if (!result.has_value()) {
+                  std::move(callback).Run(
+                      base::unexpected(PlusAddressRequestError(
+                          PlusAddressRequestErrorType::kParsingError)));
+                  return;
+                }
+                std::move(callback).Run(result.value());
+              },
+              std::move(on_completed))));
 }
 
 void PlusAddressClient::OnGetAllPlusAddressesComplete(

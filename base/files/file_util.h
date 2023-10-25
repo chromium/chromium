@@ -420,6 +420,12 @@ BASE_EXPORT ScopedFILE CreateAndOpenTemporaryStreamInDir(const FilePath& dir,
 // Both paths are only accessible to admin and system processes, and are
 // therefore secure.
 BASE_EXPORT bool GetSecureSystemTemp(FilePath* temp);
+
+// Set whether or not the use of %systemroot%\SystemTemp or %programfiles% is
+// permitted for testing. This is so tests that run as admin will still continue
+// to use %TMP% so their files will be correctly cleaned up by the test
+// launcher.
+BASE_EXPORT void SetDisableSecureSystemTempForTesting(bool disabled);
 #endif  // BUILDFLAG(IS_WIN)
 
 // Do NOT USE in new code. Use ScopedTempDir instead.

@@ -201,7 +201,9 @@ class UsbPeripheralNotificationController;
 class PeripheralBatteryListener;
 class PeripheralBatteryNotifier;
 class PersistentWindowController;
+class PipController;
 class PolicyRecommendationRestorer;
+class PostLoginGlanceablesMetricsRecorder;
 class PowerButtonController;
 class PowerEventObserver;
 class PowerPrefs;
@@ -554,6 +556,10 @@ class ASH_EXPORT Shell : public SessionObserver,
   GlanceablesController* glanceables_controller() {
     return glanceables_controller_.get();
   }
+  PostLoginGlanceablesMetricsRecorder*
+  post_login_glanceables_metrics_reporter() {
+    return post_login_glanceables_metrics_reporter_.get();
+  }
   ColorEnhancementController* color_enhancement_controller() {
     return color_enhancement_controller_.get();
   }
@@ -642,6 +648,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   PeripheralBatteryListener* peripheral_battery_listener() {
     return peripheral_battery_listener_.get();
   }
+  PipController* pip_controller() { return pip_controller_.get(); }
   PolicyRecommendationRestorer* policy_recommendation_restorer() {
     return policy_recommendation_restorer_.get();
   }
@@ -980,6 +987,8 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<GeolocationController> geolocation_controller_;
   std::unique_ptr<BootingAnimationController> booting_animation_controller_;
   std::unique_ptr<GlanceablesController> glanceables_controller_;
+  std::unique_ptr<PostLoginGlanceablesMetricsRecorder>
+      post_login_glanceables_metrics_reporter_;
   std::unique_ptr<HoldingSpaceController> holding_space_controller_;
   std::unique_ptr<PowerPrefs> power_prefs_;
   std::unique_ptr<SnapGroupController> snap_group_controller_;
@@ -1026,6 +1035,7 @@ class ASH_EXPORT Shell : public SessionObserver,
       feature_discover_reporter_;
   std::unique_ptr<AshColorProvider> ash_color_provider_;
   std::unique_ptr<NightLightControllerImpl> night_light_controller_;
+  std::unique_ptr<PipController> pip_controller_;
   std::unique_ptr<PrivacyScreenController> privacy_screen_controller_;
   std::unique_ptr<PolicyRecommendationRestorer> policy_recommendation_restorer_;
   std::unique_ptr<ScreenSwitchCheckController> screen_switch_check_controller_;

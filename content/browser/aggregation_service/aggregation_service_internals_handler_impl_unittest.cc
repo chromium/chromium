@@ -225,11 +225,10 @@ TEST_F(AggregationServiceInternalsHandlerImplTest, NotifyReportHandled) {
       aggregation_service::CreateExampleRequest();
   AggregationServiceStorage::RequestId id{5};
 
-  aggregation_service::TestHpkeKey hpke_key =
-      aggregation_service::GenerateKey("id123");
+  aggregation_service::TestHpkeKey hpke_key{/*key_id=*/"id123"};
   absl::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
-          request, {hpke_key.public_key});
+          request, {hpke_key.GetPublicKey()});
 
   base::Time now = base::Time::Now();
 
@@ -253,11 +252,10 @@ TEST_F(AggregationServiceInternalsHandlerImplTest, NotifyReportHandled_NoId) {
   AggregatableReportRequest request =
       aggregation_service::CreateExampleRequest();
 
-  aggregation_service::TestHpkeKey hpke_key =
-      aggregation_service::GenerateKey("id123");
+  aggregation_service::TestHpkeKey hpke_key{/*key_id=*/"id123"};
   absl::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
-          request, {hpke_key.public_key});
+          request, {hpke_key.GetPublicKey()});
 
   base::Time now = base::Time::Now();
 

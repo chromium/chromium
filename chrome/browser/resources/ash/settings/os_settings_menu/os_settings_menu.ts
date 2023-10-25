@@ -19,7 +19,6 @@ import {getDeviceName} from 'chrome://resources/ash/common/bluetooth/bluetooth_u
 import {getBluetoothConfig} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {BluetoothSystemProperties, DeviceConnectionState, PairedBluetoothDeviceProperties, SystemPropertiesObserverReceiver as BluetoothPropertiesObserverReceiver} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -370,12 +369,14 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
           path: `/${routesMojom.SYSTEM_PREFERENCES_SECTION_PATH}`,
           icon: 'os-settings:system-preferences',
           label: this.i18n('systemPreferencesTitle'),
+          sublabel: this.i18n('systemPreferencesMenuItemDescription'),
         },
         {
           section: Section.kAboutChromeOs,
           path: this.aboutMenuItemPath_,
           icon: 'os-settings:chrome',
           label: this.i18n('aboutOsPageTitle'),
+          sublabel: this.i18n('aboutChromeOsMenuItemDescription'),
         },
       ];
     } else {
@@ -737,11 +738,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
         this.i18n('deviceMenuItemDescriptionDisplay'));
 
     const words = wordOptions.slice(0, 3);
-    assert(words.length === 2 || words.length === 3);
-    return capitalize(this.i18n(
-        words.length === 2 ? 'deviceMenuItemDescription2Words' :
-                             'deviceMenuItemDescription3Words',
-        ...words));
+    return capitalize(words.join(this.i18n('listSeparator')));
   }
 }
 

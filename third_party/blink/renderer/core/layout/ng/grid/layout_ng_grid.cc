@@ -8,10 +8,9 @@
 
 namespace blink {
 
-LayoutNGGrid::LayoutNGGrid(Element* element) : LayoutBlock(element) {}
+LayoutGrid::LayoutGrid(Element* element) : LayoutBlock(element) {}
 
-void LayoutNGGrid::AddChild(LayoutObject* new_child,
-                            LayoutObject* before_child) {
+void LayoutGrid::AddChild(LayoutObject* new_child, LayoutObject* before_child) {
   NOT_DESTROYED();
   LayoutBlock::AddChild(new_child, before_child);
 
@@ -20,7 +19,7 @@ void LayoutNGGrid::AddChild(LayoutObject* new_child,
     SetGridPlacementDirty(true);
 }
 
-void LayoutNGGrid::RemoveChild(LayoutObject* child) {
+void LayoutGrid::RemoveChild(LayoutObject* child) {
   NOT_DESTROYED();
   LayoutBlock::RemoveChild(child);
 
@@ -60,8 +59,8 @@ bool NamedGridLinesDefinitionDidChange(const ComputedStyle& new_style,
 
 }  // namespace
 
-void LayoutNGGrid::StyleDidChange(StyleDifference diff,
-                                  const ComputedStyle* old_style) {
+void LayoutGrid::StyleDidChange(StyleDifference diff,
+                                const ComputedStyle* old_style) {
   NOT_DESTROYED();
   LayoutBlock::StyleDidChange(diff, old_style);
   if (!old_style)
@@ -93,23 +92,22 @@ void LayoutNGGrid::StyleDidChange(StyleDifference diff,
   }
 }
 
-bool LayoutNGGrid::HasCachedPlacementData() const {
+bool LayoutGrid::HasCachedPlacementData() const {
   return cached_placement_data_ && !IsGridPlacementDirty();
 }
 
-const NGGridPlacementData& LayoutNGGrid::CachedPlacementData() const {
+const NGGridPlacementData& LayoutGrid::CachedPlacementData() const {
   DCHECK(HasCachedPlacementData());
   return *cached_placement_data_;
 }
 
-void LayoutNGGrid::SetCachedPlacementData(
-    NGGridPlacementData&& placement_data) {
+void LayoutGrid::SetCachedPlacementData(NGGridPlacementData&& placement_data) {
   cached_placement_data_ =
       std::make_unique<NGGridPlacementData>(std::move(placement_data));
   SetGridPlacementDirty(false);
 }
 
-const NGGridLayoutData* LayoutNGGrid::GridLayoutData() const {
+const NGGridLayoutData* LayoutGrid::GridLayoutData() const {
   // Retrieve the layout data from the last fragment as it has the most
   // up-to-date grid geometry.
   const wtf_size_t fragment_count = PhysicalFragmentCount();
@@ -118,7 +116,7 @@ const NGGridLayoutData* LayoutNGGrid::GridLayoutData() const {
   return GetLayoutResult(fragment_count - 1)->GridLayoutData();
 }
 
-wtf_size_t LayoutNGGrid::AutoRepeatCountForDirection(
+wtf_size_t LayoutGrid::AutoRepeatCountForDirection(
     const GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
   if (!HasCachedPlacementData())
@@ -127,7 +125,7 @@ wtf_size_t LayoutNGGrid::AutoRepeatCountForDirection(
   return cached_placement_data_->AutoRepeatTrackCount(track_direction);
 }
 
-wtf_size_t LayoutNGGrid::ExplicitGridStartForDirection(
+wtf_size_t LayoutGrid::ExplicitGridStartForDirection(
     const GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
   if (!HasCachedPlacementData())
@@ -137,7 +135,7 @@ wtf_size_t LayoutNGGrid::ExplicitGridStartForDirection(
              : cached_placement_data_->row_start_offset;
 }
 
-wtf_size_t LayoutNGGrid::ExplicitGridEndForDirection(
+wtf_size_t LayoutGrid::ExplicitGridEndForDirection(
     const GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
   if (!HasCachedPlacementData())
@@ -148,7 +146,7 @@ wtf_size_t LayoutNGGrid::ExplicitGridEndForDirection(
       cached_placement_data_->ExplicitGridTrackCount(track_direction));
 }
 
-LayoutUnit LayoutNGGrid::GridGap(
+LayoutUnit LayoutGrid::GridGap(
     const GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
   const auto* grid_layout_data = GridLayoutData();
@@ -160,14 +158,14 @@ LayoutUnit LayoutNGGrid::GridGap(
              : grid_layout_data->Rows().GutterSize();
 }
 
-LayoutUnit LayoutNGGrid::GridItemOffset(
+LayoutUnit LayoutGrid::GridItemOffset(
     const GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
   // Distribution offset is baked into the gutter_size in GridNG.
   return LayoutUnit();
 }
 
-Vector<LayoutUnit, 1> LayoutNGGrid::TrackSizesForComputedStyle(
+Vector<LayoutUnit, 1> LayoutGrid::TrackSizesForComputedStyle(
     const GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
   Vector<LayoutUnit, 1> track_sizes;
@@ -202,17 +200,17 @@ Vector<LayoutUnit, 1> LayoutNGGrid::TrackSizesForComputedStyle(
   return track_sizes;
 }
 
-Vector<LayoutUnit> LayoutNGGrid::RowPositions() const {
+Vector<LayoutUnit> LayoutGrid::RowPositions() const {
   NOT_DESTROYED();
   return ComputeExpandedPositions(kForRows);
 }
 
-Vector<LayoutUnit> LayoutNGGrid::ColumnPositions() const {
+Vector<LayoutUnit> LayoutGrid::ColumnPositions() const {
   NOT_DESTROYED();
   return ComputeExpandedPositions(kForColumns);
 }
 
-Vector<LayoutUnit> LayoutNGGrid::ComputeTrackSizeRepeaterForRange(
+Vector<LayoutUnit> LayoutGrid::ComputeTrackSizeRepeaterForRange(
     const NGGridLayoutTrackCollection& track_collection,
     wtf_size_t range_index) const {
   const wtf_size_t range_set_count =
@@ -248,7 +246,7 @@ Vector<LayoutUnit> LayoutNGGrid::ComputeTrackSizeRepeaterForRange(
   return track_sizes;
 }
 
-Vector<LayoutUnit> LayoutNGGrid::ComputeExpandedPositions(
+Vector<LayoutUnit> LayoutGrid::ComputeExpandedPositions(
     const GridTrackSizingDirection track_direction) const {
   Vector<LayoutUnit> expanded_positions;
   const auto* grid_layout_data = GridLayoutData();

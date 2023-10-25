@@ -132,6 +132,7 @@ class V8Manager {
   void ConfigureAutomation(
       mojo::PendingAssociatedReceiver<mojom::Automation> automation,
       mojo::PendingRemote<mojom::AutomationClient> automation_client);
+  void ConfigureAutoclick(mojom::AccessibilityServiceClient* ax_service_client);
   void ConfigureSpeechRecognition(
       mojom::AccessibilityServiceClient* ax_service_client);
   void ConfigureTts(mojom::AccessibilityServiceClient* ax_service_client);

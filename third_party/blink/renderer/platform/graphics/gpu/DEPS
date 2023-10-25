@@ -1,7 +1,5 @@
 include_rules = [
     "+components/viz/test/test_context_provider.h",
-    "+mojo/public/cpp/system/platform_handle.h",
-    "+device/vr/public/mojom/vr_service.mojom-blink.h",
     "+gpu/command_buffer/client/gles2_interface.h",
     "+gpu/command_buffer/client/gles2_interface_stub.h",
     "+gpu/command_buffer/client/shared_image_interface.h",
@@ -14,6 +12,5 @@ include_rules = [
     "+gpu/config/gpu_driver_bug_workaround_type.h",
     "+gpu/config/gpu_feature_info.h",
     "+gpu/webgpu/callback.h",
-    "+ui/gfx/gpu_fence.h",
     "+ui/gl/gpu_preference.h",
 ]

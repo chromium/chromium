@@ -25,12 +25,14 @@ import org.chromium.base.TraceEvent;
 /**
  * An implementation of ViewStub that inflates the view in a background thread. Callbacks are still
  * called on the UI thread.
+ *
+ * <p>TODO(crbug.com/1495457): Deprecate AsyncViewStub or make it per activity.
  */
 public class AsyncViewStub extends View implements AsyncLayoutInflater.OnInflateFinishedListener {
     private int mLayoutResource;
     private View mInflatedView;
 
-    private static AsyncLayoutInflater sAsyncLayoutInflater;
+    private AsyncLayoutInflater mAsyncLayoutInflater;
 
     private final ObserverList<Callback<View>> mListeners = new ObserverList<>();
     private boolean mOnBackground;
@@ -44,9 +46,7 @@ public class AsyncViewStub extends View implements AsyncLayoutInflater.OnInflate
         setVisibility(GONE);
         setWillNotDraw(true);
 
-        if (sAsyncLayoutInflater == null) {
-            sAsyncLayoutInflater = new AsyncLayoutInflater(getContext());
-        }
+        mAsyncLayoutInflater = new AsyncLayoutInflater(getContext());
     }
 
     /**
@@ -93,7 +93,7 @@ public class AsyncViewStub extends View implements AsyncLayoutInflater.OnInflate
                 // AsyncLayoutInflater uses its own thread and cannot inflate <merge> elements. It
                 // might be a good idea to write our own version to use our scheduling primitives
                 // and to handle <merge> inflations.
-                sAsyncLayoutInflater.inflate(mLayoutResource, (ViewGroup) viewParent, this);
+                mAsyncLayoutInflater.inflate(mLayoutResource, (ViewGroup) viewParent, this);
             } else {
                 ViewGroup inflatedView =
                         (ViewGroup) LayoutInflater.from(getContext())

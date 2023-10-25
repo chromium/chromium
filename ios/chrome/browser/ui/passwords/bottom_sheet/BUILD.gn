@@ -18,6 +18,7 @@ source_set("bottom_sheet") {
     "//components/autofill/ios/form_util",
     "//components/keyed_service/core",
     "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/ios",
     "//components/prefs",
     "//ios/chrome/app/strings",
@@ -89,6 +90,7 @@ source_set("eg2_tests") {
   sources = [ "password_suggestion_bottom_sheet_egtest.mm" ]
   deps = [
     ":eg_test_support+eg2",
+    "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common:features",
     "//components/url_formatter",
     "//ios/chrome/app/strings",

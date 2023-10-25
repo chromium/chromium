@@ -17,6 +17,7 @@ import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceClickListener;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.components.browser_ui.settings.CardPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup;
@@ -44,6 +45,7 @@ import java.util.Locale;
 public class TrackingProtectionSettings extends PreferenceFragmentCompat
         implements CustomDividerFragment, OnPreferenceClickListener, SiteAddedCallback {
     // Must match keys in tracking_protection_preferences.xml.
+    private static final String OFFBOARDING_NOTICE = "offboarding_notice";
     private static final String PREF_BLOCK_ALL_TOGGLE = "block_all_3pcd_toggle";
     private static final String PREF_DNT_TOGGLE = "dnt_toggle";
     private static final String PREF_BULLET_TWO = "bullet_point_two";
@@ -57,11 +59,14 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
     private boolean mAllowListExpanded = true;
 
     private TrackingProtectionDelegate mDelegate;
+    private CardPreference mOffboardingNoticeCard;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.tracking_protection_preferences);
         getActivity().setTitle(R.string.privacy_sandbox_tracking_protection_title);
+
+        maybeShowOffboardingCard();
 
         // Format the Learn More link in the second bullet point.
         TextMessagePreference bulletTwo = (TextMessagePreference) findPreference(PREF_BULLET_TWO);
@@ -201,5 +206,31 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
 
     private void onLearnMoreClicked(View view) {
         // TODO(b/295926938): Implement.
+    }
+
+    private void maybeShowOffboardingCard() {
+        // TODO(b/307275613): Check the user is kOffboarded.
+        if (mDelegate.shouldShowSettingsOffboardingNotice()) {
+            mOffboardingNoticeCard = (CardPreference) findPreference(OFFBOARDING_NOTICE);
+            mOffboardingNoticeCard.setVisible(true);
+            mOffboardingNoticeCard.setSummary(
+                    SpanApplier.applySpans(
+                            getResources()
+                                    .getString(
+                                            R.string.tracking_protection_settings_rollback_notice),
+                            new SpanApplier.SpanInfo(
+                                    "<link>",
+                                    "</link>",
+                                    new NoUnderlineClickableSpan(
+                                            getContext(), this::onLearnMoreClicked))));
+            mOffboardingNoticeCard.setIconDrawable(
+                    SettingsUtils.getTintedIcon(getContext(), R.drawable.infobar_warning));
+            mOffboardingNoticeCard.setCloseIconVisibility(View.VISIBLE);
+            mOffboardingNoticeCard.setOnCloseClickListener(this::onOffboardingCardCloseClick);
+        }
+    }
+
+    private void onOffboardingCardCloseClick(View button) {
+        mOffboardingNoticeCard.setVisible(false);
     }
 }

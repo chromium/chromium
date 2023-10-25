@@ -144,8 +144,7 @@ int HostResolverNat64Task::DoSynthesizeToIpv6() {
           ipv4_address, ipv4onlyarpa_AAAA_address, pref64_length);
 
       IPEndPoint converted_ip_endpoint(converted_address, 0);
-      if (std::find(converted_addresses.begin(), converted_addresses.end(),
-                    converted_ip_endpoint) == converted_addresses.end()) {
+      if (!base::Contains(converted_addresses, converted_ip_endpoint)) {
         converted_addresses.push_back(std::move(converted_ip_endpoint));
       }
     }

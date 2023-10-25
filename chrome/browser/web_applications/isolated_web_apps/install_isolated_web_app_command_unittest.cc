@@ -40,9 +40,10 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_fake_response_reader_factory.h"
 #include "chrome/browser/web_applications/locks/lock.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/mock_data_retriever.h"
-#include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -54,14 +55,12 @@
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
-#include "content/public/test/browser_task_environment.h"
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -103,11 +102,8 @@ using ::testing::WithArg;
 IsolatedWebAppUrlInfo CreateRandomIsolatedWebAppUrlInfo() {
   web_package::SignedWebBundleId signed_web_bundle_id =
       web_package::SignedWebBundleId::CreateRandomForDevelopment();
-  base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
-      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(signed_web_bundle_id);
-  CHECK(url_info.has_value())
-      << "Failed to create testing web app url info: " << url_info.error();
-  return url_info.value();
+  return IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+      signed_web_bundle_id);
 }
 
 IsolatedWebAppUrlInfo CreateEd25519IsolatedWebAppUrlInfo() {
@@ -115,11 +111,8 @@ IsolatedWebAppUrlInfo CreateEd25519IsolatedWebAppUrlInfo() {
       web_package::SignedWebBundleId::CreateForEd25519PublicKey(
           web_package::Ed25519PublicKey::Create(
               base::make_span(kTestPublicKey)));
-  base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
-      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(signed_web_bundle_id);
-  CHECK(url_info.has_value())
-      << "Failed to create testing web app url info: " << url_info.error();
-  return url_info.value();
+  return IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+      signed_web_bundle_id);
 }
 
 IsolatedWebAppLocation CreateDevProxyLocation(
@@ -186,39 +179,36 @@ std::unique_ptr<MockDataRetriever> CreateDefaultDataRetriever(
 // TODO(b/288395295): Refactor this test to use `FakeWebContentsManager` and
 // `provider()->command_scheduler().InstallIsolatedWebApp(...)` instead of
 // constructing the `InstallIsolatedWebAppCommand` manually.
-class InstallIsolatedWebAppCommandTest : public ::testing::Test {
+class InstallIsolatedWebAppCommandTest : public WebAppTest {
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode}, {});
+    WebAppTest::SetUp();
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
-  WebAppProvider& web_app_provider() {
-    auto* web_app_provider = WebAppProvider::GetForTest(profile());
-    DCHECK(web_app_provider != nullptr);
-    return *web_app_provider;
-  }
-
   WebAppRegistrar& web_app_registrar() {
-    return web_app_provider().registrar_unsafe();
+    return fake_provider().registrar_unsafe();
   }
 
   WebAppIconManager& web_app_icon_manager() {
-    return web_app_provider().icon_manager();
+    return fake_provider().icon_manager();
   }
 
-  WebAppCommandManager& command_manager() {
-    return web_app_provider().command_manager();
+  FakeWebContentsManager& web_contents_manager() {
+    return static_cast<FakeWebContentsManager&>(
+        fake_provider().web_contents_manager());
   }
 
   void ScheduleCommand(std::unique_ptr<WebAppCommand> command) {
-    command_manager().ScheduleCommand(std::move(command));
+    fake_provider().command_manager().ScheduleCommand(std::move(command));
   }
 
   struct Parameters {
     IsolatedWebAppUrlInfo url_info;
-    std::unique_ptr<WebAppUrlLoader> url_loader;
+    WebAppUrlLoader::Result install_page_url_loader_result =
+        WebAppUrlLoader::Result::kUrlLoaded;
     std::unique_ptr<content::WebContents> web_contents;
     absl::optional<IsolatedWebAppLocation> location;
     absl::optional<base::Version> expected_version;
@@ -242,23 +232,15 @@ class InstallIsolatedWebAppCommandTest : public ::testing::Test {
           content::WebContents::CreateParams(profile()));
     }
 
-    std::unique_ptr<WebAppUrlLoader> url_loader =
-        std::move(parameters.url_loader);
-    if (url_loader == nullptr) {
-      auto test_url_loader = std::make_unique<TestWebAppUrlLoader>();
-      test_url_loader->SetNextLoadUrlResult(
-          parameters.url_info.origin().GetURL().Resolve(
-              ".well-known/_generated_install_page.html"),
-          WebAppUrlLoader::Result::kUrlLoaded);
-
-      url_loader = std::move(test_url_loader);
-    }
+    auto& page_state = web_contents_manager().GetOrCreatePageState(
+        parameters.url_info.origin().GetURL().Resolve(
+            ".well-known/_generated_install_page.html"));
+    page_state.url_load_result = parameters.install_page_url_loader_result;
 
     auto command = CreateCommand(
         parameters.url_info, std::move(web_contents), parameters.location,
-        parameters.expected_version, std::move(url_loader),
-        std::move(data_retriever), test_future.GetCallback(),
-        std::move(parameters.bundle_status));
+        parameters.expected_version, std::move(data_retriever),
+        test_future.GetCallback(), std::move(parameters.bundle_status));
 
     ScheduleCommand(std::move(command));
     return test_future.Get();
@@ -269,7 +251,6 @@ class InstallIsolatedWebAppCommandTest : public ::testing::Test {
       std::unique_ptr<content::WebContents> web_contents,
       absl::optional<IsolatedWebAppLocation> location,
       absl::optional<base::Version> expected_version,
-      std::unique_ptr<WebAppUrlLoader> url_loader,
       std::unique_ptr<WebAppDataRetriever> data_retriever,
       base::OnceCallback<
           void(base::expected<InstallIsolatedWebAppCommandSuccess,
@@ -289,7 +270,6 @@ class InstallIsolatedWebAppCommandTest : public ::testing::Test {
 
     return std::make_unique<InstallIsolatedWebAppCommand>(
         url_info, location.value(), expected_version, std::move(web_contents),
-        std::move(url_loader),
         /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr, std::move(callback),
         std::move(command_helper));
@@ -317,38 +297,16 @@ class InstallIsolatedWebAppCommandTest : public ::testing::Test {
         std::move(fake_data_retriever));
   }
 
-  TestingProfile* profile() const { return profile_.get(); }
-
  private:
-  // Task environment allow to |base::OnceCallback| work in unit test.
-  //
-  // See details in //docs/threading_and_tasks_testing.md.
-  content::BrowserTaskEnvironment browser_task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  std::unique_ptr<TestingProfile> profile_ = []() {
-    TestingProfile::Builder builder;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    builder.SetIsMainProfile(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-    return builder.Build();
-  }();
 };
 
 TEST_F(InstallIsolatedWebAppCommandTest, PropagateErrorWhenURLLoaderFails) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  auto url_loader = std::make_unique<TestWebAppUrlLoader>();
-  url_loader->SetNextLoadUrlResult(
-      url_info.origin().GetURL().Resolve(
-          ".well-known/_generated_install_page.html"),
-      WebAppUrlLoader::Result::kFailedErrorPageLoaded);
-
   EXPECT_THAT(ExecuteCommand(Parameters{
                   .url_info = url_info,
-                  .url_loader = std::move(url_loader),
-              }),
+                  .install_page_url_loader_result =
+                      WebAppUrlLoader::Result::kFailedErrorPageLoaded}),
               ErrorIs(Field(&InstallIsolatedWebAppCommandError::message,
                             HasSubstr("Error during URL loading: "))));
 }
@@ -356,16 +314,11 @@ TEST_F(InstallIsolatedWebAppCommandTest, PropagateErrorWhenURLLoaderFails) {
 TEST_F(InstallIsolatedWebAppCommandTest,
        PropagateErrorWhenURLLoaderFailsWithDestroyedWebContentsError) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  auto url_loader = std::make_unique<TestWebAppUrlLoader>();
-  url_loader->SetNextLoadUrlResult(
-      url_info.origin().GetURL().Resolve(
-          ".well-known/_generated_install_page.html"),
-      WebAppUrlLoaderResult::kFailedWebContentsDestroyed);
-
   EXPECT_THAT(
       ExecuteCommand(Parameters{
           .url_info = url_info,
-          .url_loader = std::move(url_loader),
+          .install_page_url_loader_result =
+              WebAppUrlLoaderResult::kFailedWebContentsDestroyed,
       }),
       ErrorIs(Field(
           &InstallIsolatedWebAppCommandError::message,
@@ -482,7 +435,6 @@ TEST_F(InstallIsolatedWebAppCommandTest, CommandLocksOnAppId) {
                         content::WebContents::CreateParams(profile())),
                     CreateDevProxyLocation(),
                     /*expected_version=*/absl::nullopt,
-                    std::make_unique<TestWebAppUrlLoader>(),
                     /*data_retriever=*/nullptr, test_future.GetCallback());
   EXPECT_THAT(
       command->lock_description(),
@@ -518,15 +470,8 @@ TEST_F(InstallIsolatedWebAppCommandTest, LocationSentToFinalizer) {
 TEST_F(InstallIsolatedWebAppCommandTest,
        CreatesStorageParitionDuringInstallation) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  auto url_loader = std::make_unique<TestWebAppUrlLoader>();
-  url_loader->SetNextLoadUrlResult(
-      url_info.origin().GetURL().Resolve(
-          ".well-known/_generated_install_page.html"),
-      WebAppUrlLoader::Result::kUrlLoaded);
 
-  EXPECT_TRUE(ExecuteCommand(Parameters{.url_info = url_info,
-                                        .url_loader = std::move(url_loader)})
-                  .has_value());
+  EXPECT_TRUE(ExecuteCommand(Parameters{.url_info = url_info}).has_value());
 
   EXPECT_THAT(profile()->GetStoragePartition(
                   url_info.storage_partition_config(profile()),
@@ -549,16 +494,15 @@ TEST_F(InstallIsolatedWebAppCommandTest, UsersCanDeleteIsolatedApp) {
 TEST_F(InstallIsolatedWebAppCommandTest,
        CreatesStoragePartitionBeforeUrlLoading) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  auto url_loader = std::make_unique<TestWebAppUrlLoader>();
-  url_loader->SetNextLoadUrlResult(
-      url_info.origin().GetURL().Resolve(
-          ".well-known/_generated_install_page.html"),
-      WebAppUrlLoader::Result::kUrlLoaded);
 
   content::StoragePartition* storage_partition_during_url_loading = nullptr;
-  url_loader->TrackLoadUrlCalls(base::BindLambdaForTesting(
-      [&](const GURL& unused_url, content::WebContents* unused_web_contents,
+  web_contents_manager().TrackLoadUrlCalls(base::BindLambdaForTesting(
+      [&](content::NavigationController::LoadURLParams& load_url_params,
+          content::WebContents* unused_web_contents,
           WebAppUrlLoader::UrlComparison unused_url_comparison) {
+        EXPECT_THAT(load_url_params.url,
+                    Eq(url_info.origin().GetURL().Resolve(
+                        ".well-known/_generated_install_page.html")));
         storage_partition_during_url_loading = profile()->GetStoragePartition(
             url_info.storage_partition_config(profile()),
             /*can_create=*/false);
@@ -571,7 +515,6 @@ TEST_F(InstallIsolatedWebAppCommandTest,
 
   EXPECT_TRUE(ExecuteCommand({
                                  .url_info = url_info,
-                                 .url_loader = std::move(url_loader),
                              })
                   .has_value());
 
@@ -835,17 +778,13 @@ TEST_F(InstallIsolatedWebAppCommandMetricsTest,
 
 TEST_F(InstallIsolatedWebAppCommandMetricsTest, ReportErrorWhenUrlLoaderFails) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  auto url_loader = std::make_unique<TestWebAppUrlLoader>();
-  url_loader->SetNextLoadUrlResult(
-      url_info.origin().GetURL().Resolve(
-          ".well-known/_generated_install_page.html"),
-      WebAppUrlLoader::Result::kFailedErrorPageLoaded);
 
   base::HistogramTester histogram_tester;
 
   EXPECT_THAT(ExecuteCommand(Parameters{
                   .url_info = url_info,
-                  .url_loader = std::move(url_loader),
+                  .install_page_url_loader_result =
+                      WebAppUrlLoader::Result::kFailedErrorPageLoaded,
               }),
               Not(HasValue()));
 

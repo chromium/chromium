@@ -89,22 +89,35 @@ PlusAddressCreationControllerDesktop::GetWeakPtr() {
 
 void PlusAddressCreationControllerDesktop::OnPlusAddressReserved(
     const std::string& primary_email_address,
-    const std::string& plus_address) {
+    const PlusProfileOrError& maybe_plus_profile) {
+  if (!maybe_plus_profile.has_value()) {
+    // TODO: crbug.com/1467623 - Handle error case.
+    return;
+  }
+  plus_address_ = maybe_plus_profile->plus_address;
+  // Autofill the callback and save `plus_address` in the service.
+  if (maybe_plus_profile->is_confirmed) {
+    // TODO: crbug.com/1467623 - Add metrics here?
+    std::move(callback_).Run(maybe_plus_profile->plus_address);
+    return;
+  }
   PlusAddressMetrics::RecordModalEvent(
       PlusAddressMetrics::PlusAddressModalEvent::kModalShown);
-  // TODO: crbug.com/1467623 - Check the state of the reserved plus address to
-  // possibly shortcircuit the modal flow and eagerly autofill.
-  plus_address_ = plus_address;
   if (!suppress_ui_for_testing_) {
     ShowPlusAddressCreationDialogView(&GetWebContents(), GetWeakPtr(),
-                                      primary_email_address, plus_address);
+                                      primary_email_address,
+                                      maybe_plus_profile->plus_address);
     ui_modal_showing_ = true;
   }
 }
 
 void PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed(
-    const std::string& plus_address) {
-  std::move(callback_).Run(plus_address);
+    const PlusProfileOrError& maybe_plus_profile) {
+  if (!maybe_plus_profile.has_value()) {
+    // TODO: crbug.com/1467623 - Handle error case.
+    return;
+  }
+  std::move(callback_).Run(maybe_plus_profile->plus_address);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PlusAddressCreationControllerDesktop);

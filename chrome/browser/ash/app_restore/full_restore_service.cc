@@ -6,7 +6,9 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/glanceables/post_login_glanceables_metrics_recorder.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/shell.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/wm/desks/templates/saved_desk_controller.h"
 #include "base/command_line.h"
@@ -507,6 +509,12 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id,
                                         *notification_,
                                         /*metadata=*/nullptr);
   show_notification = true;
+
+  if (Shell::HasInstance()) {
+    Shell::Get()
+        ->post_login_glanceables_metrics_reporter()
+        ->RecordPostLoginFullRestoreShown();
+  }
 }
 
 void FullRestoreService::RecordRestoreAction(const std::string& notification_id,

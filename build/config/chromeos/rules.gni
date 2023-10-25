@@ -639,7 +639,10 @@ template("lacros_tast_tests") {
 
   if (is_skylab) {
     generate_skylab_tast_filter(target_name) {
-      data = _lacros_data + [ "//third_party/chromite/" ]
+      data = _lacros_data + [
+               "//.vpython3",
+               "//third_party/chromite/",
+             ]
       data_deps = _lacros_data_deps
 
       # To disable a test on specific milestones, add it to the appropriate

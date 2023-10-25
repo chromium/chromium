@@ -17,6 +17,7 @@ import {EventReportWindows} from './registration.mojom-webui.js';
 import {SourceType} from './source_type.mojom-webui.js';
 import {StoreSourceResult} from './store_source_result.mojom-webui.js';
 import {Column, TableModel} from './table_model.js';
+import {TriggerDataMatching} from './trigger_data_matching.mojom-webui.js';
 
 // If kAttributionAggregatableBudgetPerSource changes, update this value
 const BUDGET_PER_SOURCE = 65536;
@@ -248,6 +249,7 @@ class Source {
   status: string;
   aggregatableBudgetConsumed: bigint;
   aggregatableDedupKeys: bigint[];
+  triggerDataMatching: string;
 
   constructor(mojo: WebUISource) {
     this.sourceEventId = mojo.sourceEventId;
@@ -271,6 +273,8 @@ class Source {
     this.dedupKeys = mojo.dedupKeys;
     this.aggregatableBudgetConsumed = mojo.aggregatableBudgetConsumed;
     this.aggregatableDedupKeys = mojo.aggregatableDedupKeys;
+    this.triggerDataMatching =
+        triggerDataMatchingText[mojo.triggerConfig.triggerDataMatching];
     this.status = attributabilityText[mojo.attributability];
   }
 }
@@ -320,6 +324,8 @@ class SourceTableModel extends TableModel<Source> {
           new ValueColumn<Source, bigint>('Priority', (e) => e.priority),
           new CodeColumn<Source>('Filter Data', (e) => e.filterData),
           new CodeColumn<Source>('Aggregation Keys', (e) => e.aggregationKeys),
+          new ValueColumn<Source, string>(
+              'Trigger Data Matching', (e) => e.triggerDataMatching),
           new ValueColumn<Source, string>(
               'Aggregatable Budget Consumed',
               (e) => `${e.aggregatableBudgetConsumed} / ${BUDGET_PER_SOURCE}`),
@@ -911,6 +917,11 @@ const sourceTypeText: Readonly<Record<SourceType, string>> = {
   [SourceType.kEvent]: 'Event',
 };
 
+const triggerDataMatchingText: Readonly<Record<TriggerDataMatching, string>> = {
+  [TriggerDataMatching.kModulus]: 'modulus',
+  [TriggerDataMatching.kExact]: 'exact',
+};
+
 const attributabilityText:
     Readonly<Record<WebUISource_Attributability, string>> = {
       [WebUISource_Attributability.kAttributable]: 'Attributable',
@@ -987,6 +998,8 @@ const eventLevelResultText: Readonly<Record<EventLevelResult, string>> = {
   [EventLevelResult.kNoMatchingConfigurations]:
       'Failure: no matching event-level configurations',
   [EventLevelResult.kExcessiveReports]: commonResult.excessiveReports,
+  [EventLevelResult.kNoMatchingTriggerData]:
+      'Failure: no matching trigger data',
 };
 
 const aggregatableResultText: Readonly<Record<AggregatableResult, string>> = {

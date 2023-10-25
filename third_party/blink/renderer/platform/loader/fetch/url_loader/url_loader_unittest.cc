@@ -596,16 +596,15 @@ TEST_F(URLLoaderTest, SyncLengths) {
   scoped_refptr<BlobDataHandle> downloaded_blob;
 
   client()->loader()->LoadSynchronously(
-      std::move(request), /*url_request_extra_data=*/nullptr,
-      /*pass_response_pipe_to_client=*/false, /*no_mime_sniffing=*/false,
-      base::TimeDelta(), nullptr, response, error, data, encoded_data_length,
-      encoded_body_length, downloaded_blob,
+      std::move(request), /*top_frame_origin=*/nullptr,
+      /*download_to_blob=*/false,
+      /*no_mime_sniffing=*/false, base::TimeDelta(), nullptr, response, error,
+      data, encoded_data_length, encoded_body_length, downloaded_blob,
       std::make_unique<ResourceLoadInfoNotifierWrapper>(
           /*resource_load_info_notifier=*/nullptr));
 
   EXPECT_EQ(kEncodedBodyLength, encoded_body_length);
   EXPECT_EQ(kEncodedDataLength, encoded_data_length);
-  EXPECT_FALSE(downloaded_blob);
 }
 
 // Verifies that WebURLResponse::Create() copies AuthChallengeInfo to the

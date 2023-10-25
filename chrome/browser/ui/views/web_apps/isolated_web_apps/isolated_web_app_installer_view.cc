@@ -6,19 +6,23 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/vector_icons/vector_icons.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/views/controls/label.h"
+#include "ui/gfx/range/range.h"
 #include "ui/views/controls/progress_bar.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
@@ -39,14 +43,17 @@ void ConfigureBoxLayoutView(views::BoxLayoutView* view) {
   view->SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter);
 }
 
-std::unique_ptr<views::Label> CreateLabelWithContextAndStyle(
-    const std::u16string& text,
-    views::style::TextContext text_context = views::style::CONTEXT_LABEL,
-    views::style::TextStyle text_style = views::style::STYLE_PRIMARY) {
-  auto label = std::make_unique<views::Label>(text, text_context, text_style);
+std::unique_ptr<views::StyledLabel> CreateLabelWithContextAndStyle(
+    views::style::TextContext text_context,
+    views::style::TextStyle text_style,
+    absl::optional<std::u16string> text = absl::nullopt) {
+  auto label = std::make_unique<views::StyledLabel>();
+  label->SetTextContext(text_context);
+  label->SetDefaultTextStyle(text_style);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetCollapseWhenHidden(true);
-  label->SetMultiLine(true);
+  if (text) {
+    label->SetText(*text);
+  }
   return label;
 }
 
@@ -58,25 +65,45 @@ class InstallerScreenView : public views::BoxLayoutView {
  public:
   METADATA_HEADER(InstallerScreenView);
 
-  InstallerScreenView(const ui::ImageModel& icon_model,
-                      const std::u16string& title,
-                      const std::u16string& subtitle) {
+  explicit InstallerScreenView(const ui::ImageModel& icon_model) {
     ConfigureBoxLayoutView(this);
 
     auto* icon = AddChildView(std::make_unique<NonAccessibleImageView>());
     icon->SetImage(icon_model);
     icon->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
 
-    AddChildView(CreateLabelWithContextAndStyle(
-        title, views::style::CONTEXT_DIALOG_TITLE,
-        views::style::STYLE_PRIMARY));
-    AddChildView(CreateLabelWithContextAndStyle(
-        subtitle, views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
+    title_ = AddChildView(CreateLabelWithContextAndStyle(
+        views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY));
+    subtitle_ = AddChildView(CreateLabelWithContextAndStyle(
+        views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
+  }
+
+  InstallerScreenView(const ui::ImageModel& icon_model,
+                      const std::u16string& title,
+                      const std::u16string& subtitle)
+      : InstallerScreenView(icon_model) {
+    SetTitle(title);
+    SetSubtitle(subtitle);
   }
 
   virtual void SetProgress(double percent, int minutes_remaining) {}
 
  protected:
+  void SetTitle(const std::u16string& title) { title_->SetText(title); }
+
+  void SetSubtitle(const std::u16string& subtitle) {
+    subtitle_->SetText(subtitle);
+  }
+
+  void SetSubtitleWithLink(const std::u16string& subtitle,
+                           const gfx::Range& link_range,
+                           base::RepeatingClosure link_handler) {
+    SetSubtitle(subtitle);
+    subtitle_->AddStyleRange(
+        link_range,
+        views::StyledLabel::RangeStyleInfo::CreateForLink(link_handler));
+  }
+
   void SetContentsView(std::unique_ptr<views::View> contents) {
     CHECK(!contents_);
     contents_ = AddChildView(std::move(contents));
@@ -84,6 +111,8 @@ class InstallerScreenView : public views::BoxLayoutView {
   }
 
  private:
+  raw_ptr<views::StyledLabel> title_;
+  raw_ptr<views::StyledLabel> subtitle_;
   raw_ptr<views::View> contents_;
 };
 BEGIN_METADATA(InstallerScreenView, views::BoxLayoutView)
@@ -118,15 +147,39 @@ class GetMetadataScreen : public InstallerScreenView {
     progress_bar_ =
         progress_view->AddChildView(std::make_unique<views::ProgressBar>());
     progress_view->AddChildView(CreateLabelWithContextAndStyle(
+        views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY,
         l10n_util::GetPluralStringFUTF16(IDS_IWA_INSTALLER_VERIFICATION_STATUS,
-                                         0),
-        views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
+                                         0)));
     return progress_view;
   }
 
   raw_ptr<views::ProgressBar> progress_bar_;
 };
 BEGIN_METADATA(GetMetadataScreen, InstallerScreenView)
+END_METADATA
+
+class DisabledScreen : public InstallerScreenView {
+ public:
+  METADATA_HEADER(DisabledScreen);
+
+  explicit DisabledScreen(base::RepeatingClosure change_preference_handler)
+      : InstallerScreenView(
+            ui::ImageModel::FromVectorIcon(vector_icons::kErrorOutlineIcon,
+                                           ui::kColorAlertMediumSeverityIcon,
+                                           kIconSize)) {
+    SetTitle(l10n_util::GetStringUTF16(IDS_IWA_INSTALLER_DISABLED_TITLE));
+
+    std::u16string change_preference =
+        l10n_util::GetStringUTF16(IDS_IWA_INSTALLER_DISABLED_CHANGE_PREFERENCE);
+    size_t offset;
+    std::u16string subtitle = l10n_util::GetStringFUTF16(
+        IDS_IWA_INSTALLER_DISABLED_SUBTITLE, change_preference, &offset);
+    SetSubtitleWithLink(subtitle,
+                        gfx::Range(offset, offset + change_preference.length()),
+                        change_preference_handler);
+  }
+};
+BEGIN_METADATA(DisabledScreen, InstallerScreenView)
 END_METADATA
 
 IsolatedWebAppInstallerView::IsolatedWebAppInstallerView(Delegate* delegate)
@@ -139,7 +192,8 @@ IsolatedWebAppInstallerView::IsolatedWebAppInstallerView(Delegate* delegate)
 IsolatedWebAppInstallerView::~IsolatedWebAppInstallerView() = default;
 
 void IsolatedWebAppInstallerView::ShowDisabledScreen() {
-  // TODO(crbug.com/1479140): Implement
+  ShowScreen(std::make_unique<DisabledScreen>(base::BindRepeating(
+      &Delegate::OnSettingsLinkClicked, base::Unretained(delegate_))));
 }
 
 void IsolatedWebAppInstallerView::ShowGetMetadataScreen() {

@@ -87,6 +87,7 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"decreaseFontSizeLabel",
        IDS_READING_MODE_DECREASE_FONT_SIZE_BUTTON_LABEL},
       {"readingModeToolbarLabel", IDS_READING_MODE_TOOLBAR_LABEL},
+      {"readingModeVoicePreviewText", IDS_READING_MODE_VOICE_PREVIEW_STRING},
   };
   for (const auto& str : kLocalizedStrings) {
     webui::AddLocalizedString(source, str.name, str.id);

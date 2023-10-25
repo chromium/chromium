@@ -133,20 +133,26 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   // The direct VideoDecoder is disallowed on some particular SoC/platforms.
   const bool should_use_direct_video_decoder =
+#if BUILDFLAG(USE_VAAPI)
+      true;
+#else
       !command_line->HasSwitch(
           switches::kPlatformDisallowsChromeOSDirectVideoDecoder) &&
       base::FeatureList::IsEnabled(media::kUseChromeOSDirectVideoDecoder);
+#endif  // BUILDFLAG(USE_VAAPI)
 
-  // For testing purposes, the following flag allows using the "other" video
-  // decoder implementation.
-  if (base::FeatureList::IsEnabled(
-          media::kUseAlternateVideoDecoderImplementation)) {
-    gpu_preferences.enable_chromeos_direct_video_decoder =
-        !should_use_direct_video_decoder;
-  } else {
-    gpu_preferences.enable_chromeos_direct_video_decoder =
-        should_use_direct_video_decoder;
-  }
+  gpu_preferences.enable_chromeos_direct_video_decoder =
+#if BUILDFLAG(USE_VAAPI)
+      should_use_direct_video_decoder;
+#else
+      // For testing purposes, the following flag allows using the "other" video
+      // decoder implementation.
+      base::FeatureList::IsEnabled(
+          media::kUseAlternateVideoDecoderImplementation)
+          ? !should_use_direct_video_decoder
+          : should_use_direct_video_decoder;
+#endif  // BUILDFLAG(USE_VAAPI)
+
 #if BUILDFLAG(USE_VAAPI)
   CHECK(gpu_preferences.enable_chromeos_direct_video_decoder);
 #endif  // BUILDFLAG(USE_VAAPI)

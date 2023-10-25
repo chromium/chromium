@@ -70,15 +70,15 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
       DeviceId id) override;
   const mojom::KeyboardPolicies& GetKeyboardPolicies() override;
   const mojom::MousePolicies& GetMousePolicies() override;
-  void SetKeyboardSettings(DeviceId id,
+  bool SetKeyboardSettings(DeviceId id,
                            mojom::KeyboardSettingsPtr settings) override;
-  void SetTouchpadSettings(DeviceId id,
+  bool SetTouchpadSettings(DeviceId id,
                            mojom::TouchpadSettingsPtr settings) override;
-  void SetMouseSettings(DeviceId id, mojom::MouseSettingsPtr settings) override;
-  void SetPointingStickSettings(
+  bool SetMouseSettings(DeviceId id, mojom::MouseSettingsPtr settings) override;
+  bool SetPointingStickSettings(
       DeviceId id,
       mojom::PointingStickSettingsPtr settings) override;
-  void SetGraphicsTabletSettings(
+  bool SetGraphicsTabletSettings(
       DeviceId id,
       mojom::GraphicsTabletSettingsPtr settings) override;
   void OnLoginScreenFocusedPodChanged(const AccountId& account_id) override;

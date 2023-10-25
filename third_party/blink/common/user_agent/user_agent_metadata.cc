@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 
+#include "base/containers/contains.h"
 #include "base/pickle.h"
 #include "net/http/structured_headers.h"
 #include "third_party/blink/public/common/features.h"
@@ -11,7 +14,7 @@
 namespace blink {
 
 namespace {
-constexpr uint32_t kVersion = 2u;
+constexpr uint32_t kVersion = 3u;
 }  // namespace
 
 UserAgentBrandVersion::UserAgentBrandVersion(const std::string& ua_brand,
@@ -50,6 +53,15 @@ const std::string UserAgentMetadata::SerializeBrandMajorVersionList() {
   return SerializeBrandVersionList(brand_version_list);
 }
 
+const std::string UserAgentMetadata::SerializeFormFactor() {
+  net::structured_headers::List structured;
+  for (auto& ff : form_factor) {
+    structured.push_back(net::structured_headers::ParameterizedMember(
+        net::structured_headers::Item(ff), {}));
+  }
+  return SerializeList(structured).value_or("");
+}
+
 // static
 absl::optional<std::string> UserAgentMetadata::Marshal(
     const absl::optional<UserAgentMetadata>& in) {
@@ -78,7 +90,11 @@ absl::optional<std::string> UserAgentMetadata::Marshal(
   out.WriteBool(in->mobile);
   out.WriteString(in->bitness);
   out.WriteBool(in->wow64);
-  out.WriteString(in->form_factor);
+
+  out.WriteUInt32(in->form_factor.size());
+  for (const auto& form_factor : in->form_factor) {
+    out.WriteString(form_factor);
+  }
   return std::string(reinterpret_cast<const char*>(out.data()), out.size());
 }
 
@@ -136,8 +152,17 @@ absl::optional<UserAgentMetadata> UserAgentMetadata::Demarshal(
     return absl::nullopt;
   if (!in.ReadBool(&out.wow64))
     return absl::nullopt;
-  if (!in.ReadString(&out.form_factor)) {
+  uint32_t form_factor_size;
+  if (!in.ReadUInt32(&form_factor_size)) {
     return absl::nullopt;
+  }
+  std::string form_factor;
+  form_factor.reserve(form_factor_size);
+  for (uint32_t i = 0; i < form_factor_size; i++) {
+    if (!in.ReadString(&form_factor)) {
+      return absl::nullopt;
+    }
+    out.form_factor.push_back(std::move(form_factor));
   }
   return absl::make_optional(std::move(out));
 }

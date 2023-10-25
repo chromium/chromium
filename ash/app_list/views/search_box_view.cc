@@ -67,6 +67,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/context_menu_controller.h"
@@ -500,7 +501,8 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
     filter_button->SetFlipCanvasOnPaintForRTLUI(false);
     std::u16string filter_button_label(
         l10n_util::GetStringUTF16(IDS_ASH_SEARCH_BOX_FILTER_BUTTON_TOOLTIP));
-    filter_button->SetAccessibleName(filter_button_label);
+    filter_button->SetAccessibleName(
+        l10n_util::GetStringUTF16(IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_TITLE));
     filter_button->SetTooltipText(filter_button_label);
   }
 

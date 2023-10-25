@@ -1057,9 +1057,17 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, LinkClickOnCompanionPage) {
                    static_cast<int>(SidePanelOpenTrigger::kComboboxSelected));
 }
 
+// TODO(crbug.com/1495434): Test is flaking on Linux MSAN bot
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_LinkClickOnCompanionPageNotifiesNewTabSidePanelViaPostMessage \
+  DISABLED_LinkClickOnCompanionPageNotifiesNewTabSidePanelViaPostMessage
+#else
+#define MAYBE_LinkClickOnCompanionPageNotifiesNewTabSidePanelViaPostMessage \
+  LinkClickOnCompanionPageNotifiesNewTabSidePanelViaPostMessage
+#endif
 IN_PROC_BROWSER_TEST_F(
     CompanionPageBrowserTest,
-    LinkClickOnCompanionPageNotifiesNewTabSidePanelViaPostMessage) {
+    MAYBE_LinkClickOnCompanionPageNotifiesNewTabSidePanelViaPostMessage) {
   const GURL clicked_url = CreateUrl(kHost, "/clicked.html");
   // EnableSignInMsbbExps(/*signed_in=*/true, /*msbb=*/true, /*exps=*/true);
 

@@ -128,11 +128,9 @@ BASE_DECLARE_FEATURE(kWebAuthnCableViaCredMan);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnLinkingExperimentation);
 
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 // Enable use of a cloud enclave authenticator service.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnEnclaveAuthenticator);
-#endif
 
 // Serialize WebAuthn requests to JSON on the desktop. Useful for future
 // projects but only concretely used for better logging at the time of writing.

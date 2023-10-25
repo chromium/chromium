@@ -17,7 +17,6 @@
 #include "components/reporting/util/backoff_settings.h"
 #include "components/reporting/util/rate_limiter_interface.h"
 #include "net/base/backoff_entry.h"
-#include "report_queue_configuration.h"
 
 #define LOG_WITH_STATUS(LEVEL, MESSAGE, STATUS) \
   VLOG(LEVEL) << MESSAGE << " status=" << STATUS.status();

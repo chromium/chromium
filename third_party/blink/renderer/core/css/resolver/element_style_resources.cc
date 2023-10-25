@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/style/style_image.h"
 #include "third_party/blink/renderer/core/style/style_image_set.h"
 #include "third_party/blink/renderer/core/style/style_pending_image.h"
+#include "third_party/blink/renderer/core/style/style_svg_mask_reference_image.h"
 #include "third_party/blink/renderer/core/svg/svg_resource.h"
 #include "third_party/blink/renderer/core/svg/svg_tree_scope_resources.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
@@ -326,6 +327,25 @@ static CSSValue* PendingCssValue(StyleImage* style_image) {
   return nullptr;
 }
 
+StyleImage* ElementStyleResources::LoadMaskSource(CSSValue& pending_value) {
+  if (!RuntimeEnabledFeatures::CSSMaskingInteropEnabled()) {
+    return nullptr;
+  }
+  auto* image_value = DynamicTo<CSSImageValue>(pending_value);
+  if (!image_value) {
+    return nullptr;
+  }
+  if (image_value->IsLocal(element_.GetDocument())) {
+    SVGTreeScopeResources& tree_scope_resources =
+        element_.OriginatingTreeScope().EnsureSVGTreeScopedResources();
+    SVGResource* resource = tree_scope_resources.ResourceForId(
+        image_value->NormalizedFragmentIdentifier());
+    return MakeGarbageCollected<StyleSVGMaskReferenceImage>(resource,
+                                                            image_value);
+  }
+  return nullptr;
+}
+
 void ElementStyleResources::LoadPendingImages(ComputedStyleBuilder& builder) {
   // We must loop over the properties and then look at the style to see if
   // a pending image exists, and only load that image. For example:
@@ -427,9 +447,16 @@ void ElementStyleResources::LoadPendingImages(ComputedStyleBuilder& builder) {
         for (FillLayer* mask_layer = &builder.AccessMaskLayers(); mask_layer;
              mask_layer = mask_layer->Next()) {
           if (auto* pending_value = PendingCssValue(mask_layer->GetImage())) {
-            mask_layer->SetImage(loader.Load(
-                *pending_value, FetchParameters::ImageRequestBehavior::kNone,
-                kCrossOriginAttributeAnonymous));
+            StyleImage* image = nullptr;
+            if (property == CSSPropertyID::kMaskImage) {
+              image = LoadMaskSource(*pending_value);
+            }
+            if (!image) {
+              image = loader.Load(*pending_value,
+                                  FetchParameters::ImageRequestBehavior::kNone,
+                                  kCrossOriginAttributeAnonymous);
+            }
+            mask_layer->SetImage(image);
           }
         }
         break;

@@ -33,7 +33,7 @@ class PartialCustomTabHandleStrategy
 
     private static final int FLING_THRESHOLD_PX = 100;
 
-    private static final int FLING_VELOCITY_PIXELS_PER_MS = 1000;
+    static final int FLING_VELOCITY_PIXELS_PER_MS = 1000;
 
     private final GestureDetector mGestureDetector;
     private final SimpleHandleStrategy mCloseHandler;

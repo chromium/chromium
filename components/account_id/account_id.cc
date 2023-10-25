@@ -96,7 +96,9 @@ bool AccountId::empty() const {
 bool AccountId::is_valid() const {
   switch (account_type_) {
     case AccountType::GOOGLE:
-      return /* !id_.empty() && */ !user_email_.empty();
+      // TODO(http://b/279005619): Add an additional check for empty account ids
+      // when this bug is fixed.
+      return !user_email_.empty();
     case AccountType::ACTIVE_DIRECTORY:
       return !id_.empty() && !user_email_.empty();
     case AccountType::UNKNOWN:

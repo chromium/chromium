@@ -163,20 +163,6 @@ enum ItemType {
   return cell;
 }
 
-#pragma mark - UITableViewDelegate
-
-- (UIView*)tableView:(UITableView*)tableView
-    viewForHeaderInSection:(NSInteger)section {
-  UIView* headerView = [super tableView:tableView
-                 viewForHeaderInSection:section];
-  TableViewLinkHeaderFooterView* header =
-      base::apple::ObjCCast<TableViewLinkHeaderFooterView>(headerView);
-  if (header) {
-    header.delegate = self;
-  }
-  return headerView;
-}
-
 #pragma mark - Private
 
 // Updates the switch item value and informs the model.

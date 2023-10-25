@@ -22,6 +22,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
@@ -30,7 +31,9 @@
 #include "chrome/test/chromedriver/chrome/adb_impl.h"
 #include "chrome/test/chromedriver/chrome/device_manager.h"
 #include "chrome/test/chromedriver/chrome/status.h"
+#include "chrome/test/chromedriver/command.h"
 #include "chrome/test/chromedriver/commands.h"
+#include "chrome/test/chromedriver/connection_session_map.h"
 #include "chrome/test/chromedriver/constants/version.h"
 #include "chrome/test/chromedriver/fedcm_commands.h"
 #include "chrome/test/chromedriver/net/url_request_context_getter.h"
@@ -39,6 +42,7 @@
 #include "chrome/test/chromedriver/session_thread_map.h"
 #include "chrome/test/chromedriver/util.h"
 #include "chrome/test/chromedriver/webauthn_commands.h"
+#include "chrome/test/chromedriver/window_commands.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/server/http_server_request_info.h"
@@ -64,6 +68,44 @@ const char kLocalStorage[] = "localStorage";
 const char kSessionStorage[] = "sessionStorage";
 const char kShutdownPath[] = "shutdown";
 
+// The commands are in the order as they ordered in the WebDriver BiDi
+// specification.
+base::flat_set<std::string> kKnownBidiSessionCommands = {
+    // session
+    "session.end",
+    "session.subscribe",
+    "session.unsubscribe",
+    // browsingContext
+    "browsingContext.activate",
+    "browsingContext.captureScreenshot",
+    "browsingContext.close",
+    "browsingContext.create",
+    "browsingContext.getTree",
+    "browsingContext.handleUserPropmpt",
+    "browsingContext.navigate",
+    "browsingContext.print",
+    "browsingContext.reload",
+    "browsingContext.setViewport",
+    // network
+    "network.addIntercept",
+    "network.continueRequest",
+    "network.continueResponse",
+    "network.continueWithAuth",
+    "network.failRequest",
+    "network.provideResponse",
+    "network.removeIntercept",
+    // script
+    "script.addPreloadScript",
+    "script.disown",
+    "script.callFunction",
+    "script.evaluate",
+    "script.getRealms",
+    "script.removePreloadScript",
+    // input
+    "input.performActions",
+    "input.releaseActions",
+};
+
 bool w3cMode(const std::string& session_id,
              const SessionThreadMap& session_thread_map) {
   if (session_id.length() > 0 && session_thread_map.count(session_id) > 0)
@@ -77,42 +119,6 @@ net::HttpServerResponseInfo CreateWebSocketRejectResponse(
   net::HttpServerResponseInfo response(code);
   response.AddHeader("X-WebSocket-Reject-Reason", msg);
   return response;
-}
-
-void SendWebSocketResponseOnCmdThread(
-    base::RepeatingCallback<void(int, std::string)> send_response_on_io_func,
-    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-    int connection_id,
-    std::string data) {
-  io_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(send_response_on_io_func, connection_id, std::move(data)));
-}
-
-void SendWebSocketResponseOnSessionThread(
-    base::RepeatingCallback<void(int, std::string)> send_response_on_cmd_func,
-    scoped_refptr<base::SingleThreadTaskRunner> cmd_task_runner,
-    int connection_id,
-    std::string data) {
-  cmd_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(send_response_on_cmd_func, connection_id,
-                                std::move(data)));
-}
-
-void CloseWebSocketOnCmdThread(
-    base::RepeatingCallback<void(int)> close_connection_on_io_func,
-    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-    int connection_id) {
-  io_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(close_connection_on_io_func, connection_id));
-}
-
-void CloseWebSocketOnSessionThread(
-    base::RepeatingCallback<void(int)> close_connection_on_cmd_func,
-    scoped_refptr<base::SingleThreadTaskRunner> cmd_task_runner,
-    int connection_id) {
-  cmd_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(close_connection_on_cmd_func, connection_id));
 }
 
 void AddBidiConnectionOnSessionThread(int connection_id,
@@ -224,7 +230,7 @@ HttpHandler::HttpHandler(const std::string& url_base)
     : url_base_(url_base),
       received_shutdown_(false),
       command_map_(new CommandMap()) {
-  session_connection_map_.insert(std::make_pair("", std::vector<int>()));
+  session_connection_map_.emplace("", std::vector<int>());
 }
 
 HttpHandler::HttpHandler(
@@ -251,26 +257,28 @@ HttpHandler::HttpHandler(
 
   wrapper_url_loader_factory_ = std::make_unique<WrapperURLLoaderFactory>(
       url_loader_factory_owner_->GetURLLoaderFactory());
-  session_connection_map_.insert(std::make_pair("", std::vector<int>()));
+  session_connection_map_.emplace("", std::vector<int>());
+
+  Command init_session_cmd = WrapToCommand(
+      "InitSession",
+      base::BindRepeating(
+          &ExecuteInitSession,
+          InitSessionParams(wrapper_url_loader_factory_.get(), socket_factory_,
+                            device_manager_.get(), cmd_task_runner,
+                            &session_connection_map_)));
+  Command create_and_init_session = base::BindRepeating(
+      &ExecuteCreateSession, &session_thread_map_, init_session_cmd);
+
   CommandMapping commands[] = {
       //
       // W3C standard endpoints
       //
-      CommandMapping(
-          kPost, internal::kNewSessionPathPattern,
-          base::BindRepeating(
-              &ExecuteCreateSession, &session_thread_map_,
-              WrapToCommand(
-                  "InitSession",
-                  base::BindRepeating(
-                      &ExecuteInitSession,
-                      InitSessionParams(wrapper_url_loader_factory_.get(),
-                                        socket_factory_, device_manager_.get(),
-                                        cmd_task_runner,
-                                        &session_connection_map_))))),
+      CommandMapping(kPost, internal::kNewSessionPathPattern,
+                     WrapCreateNewSessionCommand(create_and_init_session)),
       CommandMapping(kDelete, "session/:sessionId",
                      base::BindRepeating(
-                         &ExecuteSessionCommand, &session_thread_map_, "Quit",
+                         &ExecuteSessionCommand, &session_thread_map_,
+                         &session_connection_map_, "Quit",
                          base::BindRepeating(&ExecuteQuit, false), true, true)),
       CommandMapping(kGet, "status", base::BindRepeating(&ExecuteGetStatus)),
       CommandMapping(kGet, "session/:sessionId/timeouts",
@@ -1149,13 +1157,22 @@ HttpHandler::HttpHandler(
   command_map_ =
       std::make_unique<CommandMap>(commands, commands + std::size(commands));
 
-  static_bidi_command_map_.insert(std::make_pair(
-      "session.status", base::BindRepeating(&ExecuteBidiGetStatus)));
-  static_bidi_command_map_.insert(std::make_pair(
-      "session.new", base::BindRepeating(&ExecuteBidiCreateSession)));
+  static_bidi_command_map_.emplace(
+      "session.status", base::BindRepeating(&ExecuteBidiSessionStatus));
+  static_bidi_command_map_.emplace(
+      "session.new",
+      base::BindRepeating(&ExecuteBidiSessionNew, &session_thread_map_,
+                          init_session_cmd));
 
-  execute_session_command_ = WrapToCommand(
-      "ExecuteBidiCommand", base::BindRepeating(&ExecuteBidiCommand));
+  session_bidi_command_map_.emplace(
+      "session.end",
+      base::BindRepeating(&ExecuteSessionCommand, &session_thread_map_,
+                          &session_connection_map_, "Quit",
+                          base::BindRepeating(&ExecuteBidiSessionEnd), true,
+                          true));
+
+  forward_session_command_ = WrapToCommand(
+      "ForwardBidiCommand", base::BindRepeating(&ForwardBidiCommand));
 }
 
 HttpHandler::~HttpHandler() = default;
@@ -1191,8 +1208,9 @@ base::WeakPtr<HttpHandler> HttpHandler::WeakPtr() {
 Command HttpHandler::WrapToCommand(const char* name,
                                    const SessionCommand& session_command,
                                    bool w3c_standard_command) {
-  return base::BindRepeating(&ExecuteSessionCommand, &session_thread_map_, name,
-                             session_command, w3c_standard_command, false);
+  return base::BindRepeating(&ExecuteSessionCommand, &session_thread_map_,
+                             &session_connection_map_, name, session_command,
+                             w3c_standard_command, false);
 }
 
 Command HttpHandler::WrapToCommand(const char* name,
@@ -1547,6 +1565,30 @@ void HttpHandler::OnWebSocketRequest(HttpServerInterface* http_server,
       connection_id, net::HTTP_BAD_REQUEST, err_msg);
 }
 
+void HttpHandler::CloseConnectionOnCommandThread(
+    HttpServerInterface* http_server,
+    int connection_id) {
+  auto close_connection_on_io_func = base::BindRepeating(
+      &HttpServerInterface::Close, base::Unretained(http_server));
+  io_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(close_connection_on_io_func, connection_id));
+}
+
+void HttpHandler::SendForwardedResponseOnCommandThread(
+    HttpServerInterface* http_server,
+    int connection_id,
+    std::string message) {
+  auto send_response_on_io_func = base::BindRepeating(
+      [](HttpServerInterface* http_server, int connection_id,
+         std::string data) {
+        http_server->SendOverWebSocket(connection_id, data);
+      },
+      base::Unretained(http_server));
+  io_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(send_response_on_io_func, connection_id,
+                                std::move(message)));
+}
+
 void HttpHandler::OnWebSocketAttachToSessionRequest(
     HttpServerInterface* http_server,
     int connection_id,
@@ -1566,38 +1608,24 @@ void HttpHandler::OnWebSocketAttachToSessionRequest(
   session_connection_map_[session_id].push_back(connection_id);
   connection_session_map_[connection_id] = session_id;
 
-  auto send_response_on_io_func = base::BindRepeating(
-      [](HttpServerInterface* http_server, int connection_id,
-         std::string data) {
-        http_server->SendOverWebSocket(connection_id, data);
-      },
-      base::Unretained(http_server));
-  auto send_response_on_cmd_func =
-      base::BindRepeating(&SendWebSocketResponseOnCmdThread,
-                          std::move(send_response_on_io_func), io_task_runner_);
-
-  auto close_connection_on_io_func = base::BindRepeating(
-      &HttpServerInterface::Close, base::Unretained(http_server));
-  auto close_connection_on_cmd_func = base::BindRepeating(
-      &CloseWebSocketOnCmdThread, std::move(close_connection_on_io_func),
-      io_task_runner_);
-
   auto thread_it = session_thread_map_.find(session_id);
   // check first that the session thread is still alive
   if (thread_it != session_thread_map_.end()) {
-    auto send_response_from_seq = base::BindRepeating(
-        &SendWebSocketResponseOnSessionThread, send_response_on_cmd_func,
-        cmd_task_runner_, connection_id);
-
-    auto close_from_seq = base::BindRepeating(&CloseWebSocketOnSessionThread,
-                                              close_connection_on_cmd_func,
-                                              cmd_task_runner_, connection_id);
-
+    auto reply_on_command_thread = base::BindRepeating(
+        &HttpHandler::SendForwardedResponseOnCommandThread,
+        weak_ptr_factory_.GetWeakPtr(), http_server, connection_id);
+    auto close_on_command_thread = base::BindRepeating(
+        &HttpHandler::CloseConnectionOnCommandThread,
+        weak_ptr_factory_.GetWeakPtr(), http_server, connection_id);
     thread_it->second->thread()->task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(&AddBidiConnectionOnSessionThread, connection_id,
-                       std::move(send_response_from_seq),
-                       std::move(close_from_seq)));
+                       base::BindPostTask(
+                           base::SingleThreadTaskRunner::GetCurrentDefault(),
+                           std::move(reply_on_command_thread)),
+                       base::BindPostTask(
+                           base::SingleThreadTaskRunner::GetCurrentDefault(),
+                           std::move(close_on_command_thread))));
 
     io_task_runner_->PostTask(
         FROM_HERE,
@@ -1669,6 +1697,77 @@ void HttpHandler::SendResponseOverWebSocket(HttpServerInterface* http_server,
   }
 }
 
+Command HttpHandler::WrapCreateNewSessionCommand(Command command) {
+  using CommandCallbackWrapper = base::RepeatingCallback<void(
+      const CommandCallback&, const Status&, std::unique_ptr<base::Value>,
+      const std::string&, bool)>;
+  return base::BindRepeating(
+      [](Command create_and_init, CommandCallbackWrapper callback_to_prepend,
+         const base::Value::Dict& params, const std::string& session_id,
+         const CommandCallback& callback) {
+        create_and_init.Run(params, session_id,
+                            base::BindRepeating(callback_to_prepend, callback));
+      },
+      command,
+      base::BindRepeating(&HttpHandler::OnNewSessionCreated,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void HttpHandler::OnNewSessionCreated(const CommandCallback& next_callback,
+                                      const Status& status,
+                                      std::unique_ptr<base::Value> result,
+                                      const std::string& session_id,
+                                      bool w3c) {
+  base::Value::Dict* dict = result ? result->GetIfDict() : nullptr;
+  if (status.IsOk() && dict &&
+      dict->FindByDottedPath("capabilities.webSocketUrl")) {
+    session_connection_map_.emplace(session_id, std::vector<int>{});
+  }
+  next_callback.Run(status, std::move(result), session_id, w3c);
+}
+
+void HttpHandler::OnNewBidiSessionOnCmdThread(
+    HttpServerInterface* http_server,
+    int connection_id,
+    absl::optional<double> maybe_id,
+    const Status& status,
+    std::unique_ptr<base::Value> result,
+    const std::string& session_id,
+    bool w3c) {
+  std::vector<int>& unbound_connections = session_connection_map_[""];
+  auto conn_it = std::find(unbound_connections.begin(),
+                           unbound_connections.end(), connection_id);
+  if (conn_it != unbound_connections.end()) {
+    unbound_connections.erase(conn_it);
+  }
+  session_connection_map_.emplace(session_id, std::vector<int>{connection_id});
+  connection_session_map_.insert_or_assign(connection_id, session_id);
+  auto reply_on_command_thread = base::BindRepeating(
+      &HttpHandler::SendForwardedResponseOnCommandThread,
+      weak_ptr_factory_.GetWeakPtr(), http_server, connection_id);
+  auto close_on_command_thread = base::BindRepeating(
+      &HttpHandler::CloseConnectionOnCommandThread,
+      weak_ptr_factory_.GetWeakPtr(), http_server, connection_id);
+
+  auto thread_it = session_thread_map_.find(session_id);
+  if (thread_it != session_thread_map_.end()) {
+    thread_it->second->thread()->task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&AddBidiConnectionOnSessionThread, connection_id,
+                       base::BindPostTask(
+                           base::SingleThreadTaskRunner::GetCurrentDefault(),
+                           std::move(reply_on_command_thread)),
+                       base::BindPostTask(
+                           base::SingleThreadTaskRunner::GetCurrentDefault(),
+                           std::move(close_on_command_thread))));
+  } else {
+    VLOG(0) << "session thread is not found";
+  }
+
+  SendResponseOverWebSocket(http_server, connection_id, maybe_id, status,
+                            std::move(result), session_id, w3c);
+}
+
 void HttpHandler::OnWebSocketMessage(HttpServerInterface* http_server,
                                      int connection_id,
                                      const std::string& data) {
@@ -1695,25 +1794,52 @@ void HttpHandler::OnWebSocketMessage(HttpServerInterface* http_server,
     return;
   }
 
+  std::string session_id = it->second;
+
   // Static command is handled first.
   auto cmd_it = static_bidi_command_map_.find(*method);
   if (cmd_it != static_bidi_command_map_.end()) {
-    cmd_it->second.Run(
-        parsed, "",
-        base::BindRepeating(&HttpHandler::SendResponseOverWebSocket,
-                            weak_ptr_factory_.GetWeakPtr(), http_server,
-                            connection_id, maybe_id));
+    CommandCallback callback = base::BindRepeating(
+        &HttpHandler::SendResponseOverWebSocket, weak_ptr_factory_.GetWeakPtr(),
+        http_server, connection_id, maybe_id);
+
+    if (*method == "session.new") {
+      callback = base::BindRepeating(&HttpHandler::OnNewBidiSessionOnCmdThread,
+                                     weak_ptr_factory_.GetWeakPtr(),
+                                     base::Unretained(http_server),
+                                     connection_id, maybe_id);
+    }
+
+    cmd_it->second.Run(parsed, session_id, std::move(callback));
+
     return;
   }
 
-  std::string session_id = it->second;
+  // The case #6 "Match parsed against the remote end definition" of
+  // https://w3c.github.io/webdriver-bidi/#handle-an-incoming-message is
+  // conducted in ChromeDriver only if there is no active session.
+  // Otherwise it is delegated to BiDiMapper.
   if (session_id.empty()) {
-    // Only static commands can be handled without session information.
-    // The user provided static command is not recognized.
-    Status unknown_static_command = {kUnknownCommand, *method};
-    SendResponseOverWebSocket(http_server, connection_id, maybe_id,
-                              unknown_static_command, nullptr, session_id,
-                              true);
+    if (kKnownBidiSessionCommands.contains(*method)) {
+      Status invalid_session_error{kInvalidSessionId, "session not found"};
+      SendResponseOverWebSocket(http_server, connection_id,
+                                parsed.FindDouble("id"), invalid_session_error,
+                                nullptr, "", true);
+    } else {
+      Status unknown_static_command = {kUnknownCommand, *method};
+      SendResponseOverWebSocket(http_server, connection_id, maybe_id,
+                                unknown_static_command, nullptr, session_id,
+                                true);
+    }
+    return;
+  }
+
+  cmd_it = session_bidi_command_map_.find(*method);
+  if (cmd_it != session_bidi_command_map_.end()) {
+    CommandCallback callback = base::BindRepeating(
+        &HttpHandler::SendResponseOverWebSocket, weak_ptr_factory_.GetWeakPtr(),
+        http_server, connection_id, maybe_id);
+    cmd_it->second.Run(parsed, session_id, std::move(callback));
     return;
   }
 
@@ -1722,7 +1848,7 @@ void HttpHandler::OnWebSocketMessage(HttpServerInterface* http_server,
   params.Set("bidiCommand", std::move(parsed));
   params.Set("connectionId", connection_id);
 
-  execute_session_command_.Run(
+  forward_session_command_.Run(
       params, session_id,
       base::BindRepeating(&HttpHandler::SendResponseOverWebSocket,
                           weak_ptr_factory_.GetWeakPtr(), http_server,

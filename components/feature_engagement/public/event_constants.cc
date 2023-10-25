@@ -37,6 +37,8 @@ const char kTabSearchOpened[] = "tab_search_opened";
 const char kWebUITabStripClosed[] = "webui_tab_strip_closed";
 const char kWebUITabStripOpened[] = "webui_tab_strip_opened";
 
+const char kDesktopNTPModuleUsed[] = "desktop_new_tab_page_modules_used";
+
 const char kDesktopPwaInstalled[] = "desktop_pwa_installed";
 
 const char kFocusHelpBubbleAcceleratorPressed[] =

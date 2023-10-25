@@ -625,21 +625,23 @@ std::string GetParseError(ParseResult error_reason, int rule_id) {
     case ParseResult::ERROR_INVALID_REGEX_FILTER:
       return ErrorUtils::FormatErrorMessage(
           kErrorInvalidKey, base::NumberToString(rule_id), kRegexFilterKey);
-    case ParseResult::ERROR_NO_HEADERS_SPECIFIED:
+    case ParseResult::ERROR_NO_HEADERS_TO_MODIFY_SPECIFIED:
       return ErrorUtils::FormatErrorMessage(
           kErrorNoHeaderListsSpecified, base::NumberToString(rule_id),
-          kRequestHeadersPath, kResponseHeadersPath);
-    case ParseResult::ERROR_EMPTY_REQUEST_HEADERS_LIST:
-      return ErrorUtils::FormatErrorMessage(
-          kErrorEmptyList, base::NumberToString(rule_id), kRequestHeadersPath);
-    case ParseResult::ERROR_EMPTY_RESPONSE_HEADERS_LIST:
-      return ErrorUtils::FormatErrorMessage(
-          kErrorEmptyList, base::NumberToString(rule_id), kResponseHeadersPath);
-    case ParseResult::ERROR_INVALID_HEADER_NAME:
-      return ErrorUtils::FormatErrorMessage(kErrorInvalidHeaderName,
+          kModifyRequestHeadersPath, kModifyResponseHeadersPath);
+    case ParseResult::ERROR_EMPTY_MODIFY_REQUEST_HEADERS_LIST:
+      return ErrorUtils::FormatErrorMessage(kErrorEmptyList,
+                                            base::NumberToString(rule_id),
+                                            kModifyRequestHeadersPath);
+    case ParseResult::ERROR_EMPTY_MODIFY_RESPONSE_HEADERS_LIST:
+      return ErrorUtils::FormatErrorMessage(kErrorEmptyList,
+                                            base::NumberToString(rule_id),
+                                            kModifyResponseHeadersPath);
+    case ParseResult::ERROR_INVALID_HEADER_TO_MODIFY_NAME:
+      return ErrorUtils::FormatErrorMessage(kErrorInvalidModifyHeaderName,
                                             base::NumberToString(rule_id));
-    case ParseResult::ERROR_INVALID_HEADER_VALUE:
-      return ErrorUtils::FormatErrorMessage(kErrorInvalidHeaderValue,
+    case ParseResult::ERROR_INVALID_HEADER_TO_MODIFY_VALUE:
+      return ErrorUtils::FormatErrorMessage(kErrorInvalidModifyHeaderValue,
                                             base::NumberToString(rule_id));
     case ParseResult::ERROR_HEADER_VALUE_NOT_SPECIFIED:
       return ErrorUtils::FormatErrorMessage(kErrorNoHeaderValueSpecified,

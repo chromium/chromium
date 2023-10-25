@@ -379,7 +379,10 @@ source_set("tests") {
   }
 
   if (is_mac) {
-    sources += [ "compute_pressure/cpu_probe_mac_unittest.cc" ]
+    sources += [
+      "compute_pressure/core_times_unittest.cc",
+      "compute_pressure/cpu_probe_mac_unittest.cc",
+    ]
   }
 
   # UsbContext is a libusb-specific object.

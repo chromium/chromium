@@ -6,10 +6,26 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [ "on_device_model.mojom" ]
-  deps = [
+  public_deps = [
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
   ]
   webui_module_path = "/"
   use_typescript_sources = true
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "on_device_model.mojom.ModelAssets"
+          cpp = "on_device_model::ModelAssets"
+          move_only = true
+        },
+      ]
+      traits_headers = [
+        "//services/on_device_model/public/cpp/model_assets_mojom_traits.h",
+      ]
+      traits_public_deps = [ "//services/on_device_model/public/cpp" ]
+    },
+  ]
 }

@@ -11,7 +11,7 @@
 namespace blink {
 
 enum class NGBaselineAlgorithmType;
-struct NGInlineNodeData;
+struct InlineNodeData;
 
 // This overrides the default layout block algorithm to use Layout NG.
 class CORE_EXPORT LayoutNGBlockFlow : public LayoutBlockFlow {
@@ -33,10 +33,10 @@ class CORE_EXPORT LayoutNGBlockFlow : public LayoutBlockFlow {
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
 
   // LayoutBlockFlow overrides:
-  NGInlineNodeData* TakeNGInlineNodeData() final;
-  NGInlineNodeData* GetNGInlineNodeData() const final;
-  void ResetNGInlineNodeData() final;
-  void ClearNGInlineNodeData() final;
+  InlineNodeData* TakeInlineNodeData() final;
+  InlineNodeData* GetInlineNodeData() const final;
+  void ResetInlineNodeData() final;
+  void ClearInlineNodeData() final;
 
  protected:
   bool IsOfType(LayoutObjectType) const override;
@@ -49,7 +49,7 @@ class CORE_EXPORT LayoutNGBlockFlow : public LayoutBlockFlow {
 
   void DirtyLinesFromChangedChild(LayoutObject* child) final;
 
-  Member<NGInlineNodeData> ng_inline_node_data_;
+  Member<InlineNodeData> ng_inline_node_data_;
 
   friend class NGBaseLayoutAlgorithmTest;
 };

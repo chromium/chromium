@@ -106,7 +106,7 @@ base::CallbackListSubscription AlmanacFetcher::RegisterForAppUpdates(
 }
 
 // Method calls the icon cache for the given url.
-void AlmanacFetcher::GetIcon(const std::string& app_id,
+void AlmanacFetcher::GetIcon(const std::string& icon_id,
                              int32_t size_hint_in_dip,
                              GetIconCallback callback) {
   // Do not use the icon cache if the environment isn't setup correctly.
@@ -117,7 +117,7 @@ void AlmanacFetcher::GetIcon(const std::string& app_id,
   }
   // We ignore the size as it's hard-coded to kAppIconDimension in:
   // //chrome/browser/ash/app_list/search/common/icon_constants.h
-  icon_cache_->GetIcon(GURL(app_id),
+  icon_cache_->GetIcon(GURL(icon_id),
                        base::BindOnce(&OnIconDownloaded, std::move(callback)));
 }
 

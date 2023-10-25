@@ -252,11 +252,12 @@ AboutSigninInternals::AboutSigninInternals(
       account_reconcilor_(account_reconcilor),
       account_consistency_(account_consistency) {
   RefreshSigninPrefs();
-  client_->AddContentSettingsObserver(this);
-  signin_error_controller_->AddObserver(this);
-  identity_manager_->AddObserver(this);
-  identity_manager_->AddDiagnosticsObserver(this);
-  account_reconcilor_->AddObserver(this);
+
+  identity_manager_observeration_.Observe(identity_manager_);
+  diganostics_observeration_.Observe(identity_manager_);
+  client_observeration_.Observe(client_);
+  signin_error_observeration_.Observe(signin_error_controller_);
+  account_reconcilor_observeration_.Observe(account_reconcilor_);
 }
 
 AboutSigninInternals::~AboutSigninInternals() {}
@@ -296,12 +297,12 @@ void AboutSigninInternals::RegisterPrefs(PrefRegistrySimple* user_prefs) {
   }
 }
 
-void AboutSigninInternals::AddSigninObserver(
+void AboutSigninInternals::AddObserver(
     AboutSigninInternals::Observer* observer) {
   signin_observers_.AddObserver(observer);
 }
 
-void AboutSigninInternals::RemoveSigninObserver(
+void AboutSigninInternals::RemoveObserver(
     AboutSigninInternals::Observer* observer) {
   signin_observers_.RemoveObserver(observer);
 }
@@ -356,11 +357,11 @@ void AboutSigninInternals::RefreshSigninPrefs() {
 }
 
 void AboutSigninInternals::Shutdown() {
-  client_->RemoveContentSettingsObserver(this);
-  signin_error_controller_->RemoveObserver(this);
-  identity_manager_->RemoveObserver(this);
-  identity_manager_->RemoveDiagnosticsObserver(this);
-  account_reconcilor_->RemoveObserver(this);
+  identity_manager_observeration_.Reset();
+  diganostics_observeration_.Reset();
+  client_observeration_.Reset();
+  signin_error_observeration_.Reset();
+  account_reconcilor_observeration_.Reset();
 }
 
 void AboutSigninInternals::OnContentSettingChanged(

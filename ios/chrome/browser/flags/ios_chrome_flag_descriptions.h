@@ -152,6 +152,11 @@ extern const char kAutofillUseTwoDotsForLastFourDigitsDescription[];
 extern const char kBottomOmniboxDefaultSettingName[];
 extern const char kBottomOmniboxDefaultSettingDescription[];
 
+// Title and description for the flag that retrieves device switcher result for
+// the default omnibox position.
+extern const char kBottomOmniboxDeviceSwitcherResultsName[];
+extern const char kBottomOmniboxDeviceSwitcherResultsDescription[];
+
 // Title and description for the flag that moves the omnibox to the bottom in
 // the steady state.
 extern const char kBottomOmniboxSteadyStateName[];
@@ -847,6 +852,11 @@ extern const char kStartSurfaceDescription[];
 // sandbox servers.
 extern const char kSyncSandboxName[];
 extern const char kSyncSandboxDescription[];
+
+// Title and description for the flag that enables session syncing when the
+// visibility of a tab changes.
+extern const char kSyncSessionOnVisibilityChangedName[];
+extern const char kSyncSessionOnVisibilityChangedDescription[];
 
 // Title and description for the flag to control if history's segments should
 // include foreign visits from syncing devices.

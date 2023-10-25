@@ -738,17 +738,44 @@ reviewer.
 </histogram>
 
 <histogram
-    name="PrivacySandbox.CookieDeprecationFacilitatedTesting.ProfileEligibility"
+    name="PrivacySandbox.CookieDeprecationFacilitatedTesting.ReasonForComputedEligibilityForProfile"
     enum="CookieDeprecationFacilitatedTestingProfileEligibility"
     expires_after="2024-10-25">
   <owner>anthonygarant@chromium.org</owner>
   <owner>linan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
-    Records the profile eligibility to cookie deprecation facilitated testing.
+    Records a profile computed eligibility to cookie deprecation facilitated
+    testing.
 
-    The metric is only recorded when the client eligibility has not been
-    determined and then the profile eligibility is computed.
+    Recorded each time a profile is first loaded in a browser session.
+
+    We define the computed eligibility as the actual eligibility of the profile
+    regardless of the profile's used/effective eligibility.
+
+    There might be a mismatches between the computed and used/effective
+    eligibility of a profile as all profiles on a client share a single
+    eligibility value.
+
+    For data on mismatches, see: Privacy.3pcd.ProfileEligibilityMismatch.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.CookieDeprecationFacilitatedTesting.ReasonForEligibilityStoredInPrefs"
+    enum="CookieDeprecationFacilitatedTestingProfileEligibility"
+    expires_after="2024-10-25">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>linan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the profile's computed eligibility which was used to set the
+    client's eligibility to cookie deprecation facilitated testing.
+
+    Once set, the eligibility is stored in the pref service local state.
+
+    For a given client, the metric will not be recorded again so long as the set
+    eligibility is available from the pref service local state.
   </summary>
 </histogram>
 
@@ -912,7 +939,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.TrackingProtection.Onboarding.DidNoticeActionAckowledge"
-    enum="BooleanShown" expires_after="2024-09-30">
+    enum="Boolean" expires_after="2024-09-30">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -923,7 +950,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.TrackingProtection.Onboarding.DidNoticeShownOnboard"
-    enum="BooleanShown" expires_after="2024-09-30">
+    enum="Boolean" expires_after="2024-09-30">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -956,7 +983,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.TrackingProtection.Onboarding.MarkedEligibleDueToForcedFlag"
-    enum="BooleanShown" expires_after="2024-09-30">
+    enum="Boolean" expires_after="2024-09-30">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -967,7 +994,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.TrackingProtection.Onboarding.MaybeMarkEligible"
-    enum="BooleanShown" expires_after="2024-09-30">
+    enum="Boolean" expires_after="2024-09-30">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -978,7 +1005,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.TrackingProtection.Onboarding.MaybeMarkIneligible"
-    enum="BooleanShown" expires_after="2024-09-30">
+    enum="Boolean" expires_after="2024-09-30">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>

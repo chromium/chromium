@@ -17,24 +17,24 @@ PlayExtras* SourceExtras::AsPlayExtras() {
 }
 
 Result::Result(AppSource app_source,
-               const std::string& app_id,
+               const std::string& icon_id,
                const std::u16string& app_title,
                std::unique_ptr<SourceExtras> source_extras)
     : app_source_(app_source),
-      app_id_(app_id),
+      icon_id_(icon_id),
       app_title_(app_title),
       source_extras_(std::move(source_extras)) {}
 
 Result::Result(const Result& other)
     : app_source_(other.app_source_),
-      app_id_(other.app_id_),
+      icon_id_(other.icon_id_),
       app_title_(other.app_title_),
       source_extras_(other.source_extras_ ? other.source_extras_->Clone()
                                           : nullptr) {}
 
 Result& Result::operator=(const Result& other) {
   app_source_ = other.app_source_;
-  app_id_ = other.app_id_;
+  icon_id_ = other.icon_id_;
   app_title_ = other.app_title_;
   source_extras_ =
       other.source_extras_ ? other.source_extras_->Clone() : nullptr;
@@ -51,8 +51,8 @@ AppSource Result::GetAppSource() const {
   return app_source_;
 }
 
-const std::string& Result::GetAppId() const {
-  return app_id_;
+const std::string& Result::GetIconId() const {
+  return icon_id_;
 }
 
 const std::u16string& Result::GetAppTitle() const {

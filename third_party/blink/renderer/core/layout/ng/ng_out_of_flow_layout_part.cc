@@ -476,8 +476,9 @@ NGOutOfFlowLayoutPart::GetContainingBlockInfo(
   const auto& node_style = candidate.Node().Style();
 
   auto IsPlacedWithinGridArea = [&](const auto* containing_block) {
-    if (!containing_block->IsLayoutNGGrid())
+    if (!containing_block->IsLayoutGrid()) {
       return false;
+    }
 
     return !node_style.GridColumnStart().IsAuto() ||
            !node_style.GridColumnEnd().IsAuto() ||
@@ -485,7 +486,7 @@ NGOutOfFlowLayoutPart::GetContainingBlockInfo(
            !node_style.GridRowEnd().IsAuto();
   };
 
-  auto GridAreaContainingBlockInfo = [&](const LayoutNGGrid& containing_grid,
+  auto GridAreaContainingBlockInfo = [&](const LayoutGrid& containing_grid,
                                          const NGGridLayoutData& layout_data,
                                          const BoxStrut& borders,
                                          const LogicalSize& size)
@@ -539,9 +540,8 @@ NGOutOfFlowLayoutPart::GetContainingBlockInfo(
 
       if (is_placed_within_grid_area) {
         return GridAreaContainingBlockInfo(
-            *To<LayoutNGGrid>(containing_block),
-            *To<LayoutNGGrid>(containing_block)->GridLayoutData(), border,
-            size);
+            *To<LayoutGrid>(containing_block),
+            *To<LayoutGrid>(containing_block)->GridLayoutData(), border, size);
       }
 
       LogicalSize content_size = ShrinkLogicalSize(size, border);
@@ -562,8 +562,8 @@ NGOutOfFlowLayoutPart::GetContainingBlockInfo(
 
   if (IsPlacedWithinGridArea(container_object)) {
     return GridAreaContainingBlockInfo(
-        *To<LayoutNGGrid>(container_object),
-        container_builder_->GridLayoutData(), container_builder_->Borders(),
+        *To<LayoutGrid>(container_object), container_builder_->GridLayoutData(),
+        container_builder_->Borders(),
         {container_builder_->InlineSize(),
          container_builder_->FragmentBlockSize()});
   }

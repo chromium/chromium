@@ -9,11 +9,12 @@ import {fakeDriveVolumeId, MockVolumeManager} from '../../background/js/mock_vol
 import {VolumeInfoImpl} from '../../background/js/volume_info_impl.js';
 import {DialogType} from '../../common/js/dialog_type.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from '../../common/js/files_app_entry_types.js';
+import {isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
 import {MockCommandLinePrivate} from '../../common/js/mock_chrome.js';
 import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {reportPromise, waitUntil} from '../../common/js/test_error_reporting.js';
 import {TrashRootEntry} from '../../common/js/trash.js';
-import {str, util} from '../../common/js/util.js';
+import {str} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 
@@ -297,7 +298,7 @@ export function testAddAndRemoveVolumes() {
   assertEquals(
       fakeDriveVolumeId, /** @type {!NavigationModelVolumeItem} */
       (model.item(2)).volumeInfo.volumeId);
-  if (util.isSinglePartitionFormatEnabled()) {
+  if (isSinglePartitionFormatEnabled()) {
     const drive = model.item(3);
     // @ts-ignore: error TS18048: 'drive' is possibly 'undefined'.
     assertEquals('External Drive', drive.label);
@@ -327,7 +328,7 @@ export function testAddAndRemoveVolumes() {
   assertEquals(
       fakeDriveVolumeId, /** @type {!NavigationModelVolumeItem} */
       (model.item(2)).volumeInfo.volumeId);
-  if (util.isSinglePartitionFormatEnabled()) {
+  if (isSinglePartitionFormatEnabled()) {
     const drive1 = model.item(3);
     const drive2 = model.item(4);
     // @ts-ignore: error TS18048: 'drive1' is possibly 'undefined'.
@@ -368,7 +369,7 @@ export function testAddAndRemoveVolumes() {
   assertEquals(
       fakeDriveVolumeId, /** @type {!NavigationModelVolumeItem} */
       (model.item(3)).volumeInfo.volumeId);
-  if (util.isSinglePartitionFormatEnabled()) {
+  if (isSinglePartitionFormatEnabled()) {
     // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     assertEquals('External Drive', model.item(4).label);
     // @ts-ignore: error TS2532: Object is possibly 'undefined'.
@@ -488,7 +489,7 @@ export function testOrderAndNestItems() {
   // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('provided:prov2', model.item(8).label);
 
-  if (util.isSinglePartitionFormatEnabled()) {
+  if (isSinglePartitionFormatEnabled()) {
     // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     assertEquals('External Drive', model.item(9).label);
     // @ts-ignore: error TS2532: Object is possibly 'undefined'.

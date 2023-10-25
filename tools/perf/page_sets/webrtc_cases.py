@@ -291,6 +291,25 @@ class NegotiateTiming(WebrtcPage):
         description='Number of late audio samples concealed during negotiation')
 
 
+class EncodedInsertableStreams(WebrtcPage):
+  """Why: Performs encoded insertable streams."""
+  def __init__(self, page_set, tags):
+    super(EncodedInsertableStreams, self).__init__(
+        url='file://webrtc_cases/encoded-insertable-streams.html',
+        name='encoded_insertable_streams',
+        page_set=page_set,
+        tags=tags)
+
+  def ExecuteTest(self, action_runner):
+    with action_runner.CreateInteraction('Action_Create_PeerConnection',
+                                         repeatable=False):
+      # Set the number of peer connections to create to 10.
+      action_runner.ExecuteJavaScript(
+          'document.getElementById("num-peerconnections").value=10')
+      action_runner.ClickElement('button[id="start-test"]')
+      action_runner.Wait(20)
+
+
 class WebrtcPageSet(story.StorySet):
   def __init__(self):
     super(WebrtcPageSet, self).__init__(
@@ -343,3 +362,4 @@ class WebrtcPageSet(story.StorySet):
                                          'pc',
                                          tags=['insertableStreams']))
     self.AddStory(NegotiateTiming(self, tags=['sdp']))
+    self.AddStory(EncodedInsertableStreams(self, tags=['stress']))

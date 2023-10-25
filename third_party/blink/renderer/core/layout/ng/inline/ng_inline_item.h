@@ -25,11 +25,11 @@ class LayoutObject;
 // priority (text, symbol, emoji, etc), and script (but not by font).
 // In this representation TextNodes are merged up into their parent inline
 // element where possible.
-class CORE_EXPORT NGInlineItem {
+class CORE_EXPORT InlineItem {
   DISALLOW_NEW();
 
  public:
-  enum NGInlineItemType {
+  enum InlineItemType {
     kText,
     kControl,
     kAtomicInline,
@@ -56,20 +56,20 @@ class CORE_EXPORT NGInlineItem {
 
   // The constructor and destructor can't be implicit or inlined, because they
   // require full definition of ComputedStyle.
-  NGInlineItem(NGInlineItemType type,
-               unsigned start,
-               unsigned end,
-               LayoutObject* layout_object);
-  ~NGInlineItem();
+  InlineItem(InlineItemType type,
+             unsigned start,
+             unsigned end,
+             LayoutObject* layout_object);
+  ~InlineItem();
 
   // Copy constructor adjusting start/end and shape results.
-  NGInlineItem(const NGInlineItem&,
-               unsigned adjusted_start,
-               unsigned adjusted_end,
-               scoped_refptr<const ShapeResult>);
+  InlineItem(const InlineItem&,
+             unsigned adjusted_start,
+             unsigned adjusted_end,
+             scoped_refptr<const ShapeResult>);
 
-  NGInlineItemType Type() const { return type_; }
-  const char* NGInlineItemTypeToString(NGInlineItemType val) const;
+  InlineItemType Type() const { return type_; }
+  const char* InlineItemTypeToString(InlineItemType val) const;
 
   TextItemType TextType() const {
     return static_cast<TextItemType>(text_type_);
@@ -140,7 +140,7 @@ class CORE_EXPORT NGInlineItem {
   UBiDiLevel BidiLevelForReorder() const {
     // List markers should not be reordered to protect it from being included
     // into unclosed inline boxes.
-    return Type() != NGInlineItem::kListMarker ? BidiLevel() : 0;
+    return Type() != InlineItem::kListMarker ? BidiLevel() : 0;
   }
 
   LayoutObject* GetLayoutObject() const { return layout_object_.Get(); }
@@ -192,22 +192,22 @@ class CORE_EXPORT NGInlineItem {
   }
   void SetEndCollapseType(NGCollapseType type) {
     // |kText| can set any types.
-    DCHECK(Type() == NGInlineItem::kText ||
+    DCHECK(Type() == InlineItem::kText ||
            // |kControl| and |kBlockInInline| are always |kCollapsible|.
-           ((Type() == NGInlineItem::kControl ||
-             Type() == NGInlineItem::kBlockInInline) &&
+           ((Type() == InlineItem::kControl ||
+             Type() == InlineItem::kBlockInInline) &&
             type == kCollapsible) ||
            // Other types are |kOpaqueToCollapsing|.
            type == kOpaqueToCollapsing);
     end_collapse_type_ = type;
   }
   bool IsCollapsibleSpaceOnly() const {
-    return Type() == NGInlineItem::kText &&
-           end_collapse_type_ == kCollapsible && Length() == 1u;
+    return Type() == InlineItem::kText && end_collapse_type_ == kCollapsible &&
+           Length() == 1u;
   }
 
   // True if this item was generated (not in DOM).
-  // NGInlineItemsBuilder may generate break opportunitites to express the
+  // InlineItemsBuilder may generate break opportunitites to express the
   // context that are lost during the whitespace collapsing. This item is used
   // during the line breaking and layout, but is not supposed to generate
   // fragments.
@@ -222,22 +222,22 @@ class CORE_EXPORT NGInlineItem {
     is_end_collapsible_newline_ = is_newline;
   }
 
-  static void Split(HeapVector<NGInlineItem>&, unsigned index, unsigned offset);
+  static void Split(HeapVector<InlineItem>&, unsigned index, unsigned offset);
 
   // RunSegmenter properties.
   unsigned SegmentData() const { return segment_data_; }
   static void SetSegmentData(const RunSegmenter::RunSegmenterRange& range,
-                             HeapVector<NGInlineItem>* items);
+                             HeapVector<InlineItem>* items);
 
   RunSegmenter::RunSegmenterRange CreateRunSegmenterRange() const {
-    // Only `kText` has the `segment_data_`, see `NGInlineItem::SetSegmentData`.
+    // Only `kText` has the `segment_data_`, see `InlineItem::SetSegmentData`.
     DCHECK_EQ(Type(), kText);
-    return NGInlineItemSegment::UnpackSegmentData(start_offset_, end_offset_,
-                                                  segment_data_);
+    return InlineItemSegment::UnpackSegmentData(start_offset_, end_offset_,
+                                                segment_data_);
   }
 
   // Whether the other item has the same RunSegmenter properties or not.
-  bool EqualsRunSegment(const NGInlineItem& other) const {
+  bool EqualsRunSegment(const InlineItem& other) const {
     return segment_data_ == other.segment_data_;
   }
 
@@ -247,7 +247,7 @@ class CORE_EXPORT NGInlineItem {
       shape_result_ = nullptr;
     bidi_level_ = level;
   }
-  static unsigned SetBidiLevel(HeapVector<NGInlineItem>&,
+  static unsigned SetBidiLevel(HeapVector<InlineItem>&,
                                unsigned index,
                                unsigned end_offset,
                                UBiDiLevel);
@@ -267,28 +267,28 @@ class CORE_EXPORT NGInlineItem {
   scoped_refptr<const ShapeResult> shape_result_;
   Member<LayoutObject> layout_object_;
 
-  NGInlineItemType type_;
+  InlineItemType type_;
   unsigned text_type_ : 3;          // TextItemType
   unsigned style_variant_ : 2;      // NGStyleVariant
   unsigned end_collapse_type_ : 2;  // NGCollapseType
   unsigned bidi_level_ : 8;         // UBiDiLevel is defined as uint8_t.
-  // |segment_data_| is valid only for |type_ == NGInlineItem::kText|.
-  unsigned segment_data_ : NGInlineItemSegment::kSegmentDataBits;
+  // |segment_data_| is valid only for |type_ == InlineItem::kText|.
+  unsigned segment_data_ : InlineItemSegment::kSegmentDataBits;
   unsigned is_empty_item_ : 1;
   unsigned is_block_level_ : 1;
   unsigned is_end_collapsible_newline_ : 1;
   unsigned is_generated_for_line_break_ : 1;
   unsigned is_unsafe_to_reuse_shape_result_ : 1;
-  friend class NGInlineNode;
-  friend class NGInlineNodeDataEditor;
+  friend class InlineNode;
+  friend class InlineNodeDataEditor;
 };
 
-inline bool NGInlineItem::IsValidOffset(unsigned offset) const {
+inline bool InlineItem::IsValidOffset(unsigned offset) const {
   return (offset >= start_offset_ && offset < end_offset_) ||
          (start_offset_ == end_offset_ && offset == start_offset_);
 }
 
-inline void NGInlineItem::AssertEndOffset(unsigned offset) const {
+inline void InlineItem::AssertEndOffset(unsigned offset) const {
   DCHECK_GE(offset, start_offset_);
   DCHECK_LE(offset, end_offset_);
 }
@@ -298,8 +298,7 @@ inline void NGInlineItem::AssertEndOffset(unsigned offset) const {
 namespace WTF {
 
 template <>
-struct VectorTraits<blink::NGInlineItem>
-    : VectorTraitsBase<blink::NGInlineItem> {
+struct VectorTraits<blink::InlineItem> : VectorTraitsBase<blink::InlineItem> {
   static constexpr bool kCanClearUnusedSlotsWithMemset = true;
   static constexpr bool kCanTraceConcurrently = true;
 };

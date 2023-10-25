@@ -18,15 +18,14 @@ namespace policy {
 // The callback to be executed when the user addresses the dialog. When
 // `should_proceed` is set to true, the action continues and is aborted
 // otherwise.
-using OnDlpRestrictionCheckedCallback =
-    base::OnceCallback<void(bool should_proceed)>;
+using WarningCallback = base::OnceCallback<void(bool should_proceed)>;
 
 // The callback to be executed when the user addresses the dialog. When
 // `should_proceed` is set to true, the action continues and the
 // `user_justification` is forwarded to the server side for admins to review.
 // Currently, `user_justification` may contain a valid value only for Enterprise
 // Connectors.
-using OnDlpRestrictionCheckedWithJustificationCallback =
+using WarningWithJustificationCallback =
     base::OnceCallback<void(absl::optional<std::u16string> user_justification,
                             bool should_proceed)>;
 
@@ -71,10 +70,6 @@ class PolicyDialogBase : public views::DialogDelegateView {
   ~PolicyDialogBase() override;
 
  protected:
-  // Splits `callback` and assigns to accept and cancel callbacks.
-  void SetOnDlpRestrictionCheckedCallback(
-      OnDlpRestrictionCheckedCallback callback);
-
   // Sets up the dialog's upper panel and adds the managed icon and container
   // for the title and message. To add the text, use `AddTitle()` and
   // `AddMessage()` after this method.

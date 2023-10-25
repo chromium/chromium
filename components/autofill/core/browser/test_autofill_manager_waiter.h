@@ -183,7 +183,9 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
 
   void OnBeforeAskForValuesToFill(AutofillManager& manager,
                                   FormGlobalId form,
-                                  FieldGlobalId field) override;
+                                  FieldGlobalId field,
+                                  const FormData& form_data) override;
+
   void OnAfterAskForValuesToFill(AutofillManager& manager,
                                  FormGlobalId form,
                                  FieldGlobalId field) override;
@@ -318,8 +320,10 @@ class AutofillManagerSingleEventWaiter : public AutofillManager::Observer {
   }
   void OnBeforeAskForValuesToFill(AutofillManager& manager,
                                   FormGlobalId form,
-                                  FieldGlobalId field) override {
-    MaybeQuit(&Observer::OnBeforeAskForValuesToFill, manager, form, field);
+                                  FieldGlobalId field,
+                                  const FormData& form_data) override {
+    MaybeQuit(&Observer::OnBeforeAskForValuesToFill, manager, form, field,
+              form_data);
   }
   void OnAfterAskForValuesToFill(AutofillManager& manager,
                                  FormGlobalId form,

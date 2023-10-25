@@ -111,6 +111,14 @@ the global scope.
 .. js:autofunction:: test_driver.reset_fedcm_cooldown
 ```
 
+### Sensors ###
+```eval_rst
+.. js:autofunction:: test_driver.create_virtual_sensor
+.. js:autofunction:: test_driver.update_virtual_sensor
+.. js:autofunction:: test_driver.remove_virtual_sensor
+.. js:autofunction:: test_driver.get_virtual_sensor_information
+```
+
 ### Using test_driver in other browsing contexts ###
 
 Testdriver can be used in browsing contexts (i.e. windows or frames)

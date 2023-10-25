@@ -27,10 +27,10 @@ unsigned GetAssociatedStartOffset(const LayoutObject* layout_object) {
 
 }  // namespace
 
-NGOffsetMappingBuilder::NGOffsetMappingBuilder() = default;
+OffsetMappingBuilder::OffsetMappingBuilder() = default;
 
-NGOffsetMappingBuilder::SourceNodeScope::SourceNodeScope(
-    NGOffsetMappingBuilder* builder,
+OffsetMappingBuilder::SourceNodeScope::SourceNodeScope(
+    OffsetMappingBuilder* builder,
     const LayoutObject* node)
     : builder_(builder),
       layout_object_auto_reset_(&builder->current_layout_object_, node),
@@ -46,7 +46,7 @@ NGOffsetMappingBuilder::SourceNodeScope::SourceNodeScope(
 #endif
 }
 
-NGOffsetMappingBuilder::SourceNodeScope::~SourceNodeScope() {
+OffsetMappingBuilder::SourceNodeScope::~SourceNodeScope() {
   builder_->has_open_unit_ = false;
 #if DCHECK_IS_ON()
   if (builder_->current_layout_object_)
@@ -54,12 +54,12 @@ NGOffsetMappingBuilder::SourceNodeScope::~SourceNodeScope() {
 #endif
 }
 
-void NGOffsetMappingBuilder::ReserveCapacity(unsigned capacity) {
+void OffsetMappingBuilder::ReserveCapacity(unsigned capacity) {
   unit_ranges_.ReserveCapacityForSize(capacity);
   mapping_units_.reserve(capacity * 1.5);
 }
 
-void NGOffsetMappingBuilder::AppendIdentityMapping(unsigned length) {
+void OffsetMappingBuilder::AppendIdentityMapping(unsigned length) {
   DCHECK_GT(length, 0u);
   const unsigned dom_start = current_offset_;
   const unsigned dom_end = dom_start + length;
@@ -72,7 +72,7 @@ void NGOffsetMappingBuilder::AppendIdentityMapping(unsigned length) {
     return;
 
   if (has_open_unit_ &&
-      mapping_units_.back().GetType() == NGOffsetMappingUnitType::kIdentity) {
+      mapping_units_.back().GetType() == OffsetMappingUnitType::kIdentity) {
     DCHECK_EQ(mapping_units_.back().GetLayoutObject(), current_layout_object_);
     DCHECK_EQ(mapping_units_.back().DOMEnd(), dom_start);
     mapping_units_.back().dom_end_ += length;
@@ -80,13 +80,13 @@ void NGOffsetMappingBuilder::AppendIdentityMapping(unsigned length) {
     return;
   }
 
-  mapping_units_.emplace_back(NGOffsetMappingUnitType::kIdentity,
+  mapping_units_.emplace_back(OffsetMappingUnitType::kIdentity,
                               *current_layout_object_, dom_start, dom_end,
                               text_content_start, text_content_end);
   has_open_unit_ = true;
 }
 
-void NGOffsetMappingBuilder::AppendCollapsedMapping(unsigned length) {
+void OffsetMappingBuilder::AppendCollapsedMapping(unsigned length) {
   DCHECK_GT(length, 0u);
   const unsigned dom_start = current_offset_;
   const unsigned dom_end = dom_start + length;
@@ -98,26 +98,26 @@ void NGOffsetMappingBuilder::AppendCollapsedMapping(unsigned length) {
     return;
 
   if (has_open_unit_ &&
-      mapping_units_.back().GetType() == NGOffsetMappingUnitType::kCollapsed) {
+      mapping_units_.back().GetType() == OffsetMappingUnitType::kCollapsed) {
     DCHECK_EQ(mapping_units_.back().GetLayoutObject(), current_layout_object_);
     DCHECK_EQ(mapping_units_.back().DOMEnd(), dom_start);
     mapping_units_.back().dom_end_ += length;
     return;
   }
 
-  mapping_units_.emplace_back(NGOffsetMappingUnitType::kCollapsed,
+  mapping_units_.emplace_back(OffsetMappingUnitType::kCollapsed,
                               *current_layout_object_, dom_start, dom_end,
                               text_content_start, text_content_end);
   has_open_unit_ = true;
 }
 
-void NGOffsetMappingBuilder::CollapseTrailingSpace(unsigned space_offset) {
+void OffsetMappingBuilder::CollapseTrailingSpace(unsigned space_offset) {
   DCHECK_LT(space_offset, destination_length_);
   --destination_length_;
 
-  NGOffsetMappingUnit* container_unit = nullptr;
+  OffsetMappingUnit* container_unit = nullptr;
   for (unsigned i = mapping_units_.size(); i;) {
-    NGOffsetMappingUnit& unit = mapping_units_[--i];
+    OffsetMappingUnit& unit = mapping_units_[--i];
     if (unit.TextContentStart() > space_offset) {
       --unit.text_content_start_;
       --unit.text_content_end_;
@@ -133,27 +133,27 @@ void NGOffsetMappingBuilder::CollapseTrailingSpace(unsigned space_offset) {
   // container_unit->TextContentStart()
   // <= space_offset <
   // container_unit->TextContentEnd()
-  DCHECK_EQ(NGOffsetMappingUnitType::kIdentity, container_unit->GetType());
+  DCHECK_EQ(OffsetMappingUnitType::kIdentity, container_unit->GetType());
   const LayoutObject& layout_object = container_unit->GetLayoutObject();
   unsigned dom_offset = container_unit->DOMStart();
   unsigned text_content_offset = container_unit->TextContentStart();
   unsigned offset_to_collapse = space_offset - text_content_offset;
 
-  HeapVector<NGOffsetMappingUnit, 3> new_units;
+  HeapVector<OffsetMappingUnit, 3> new_units;
   if (offset_to_collapse) {
-    new_units.emplace_back(NGOffsetMappingUnitType::kIdentity, layout_object,
+    new_units.emplace_back(OffsetMappingUnitType::kIdentity, layout_object,
                            dom_offset, dom_offset + offset_to_collapse,
                            text_content_offset,
                            text_content_offset + offset_to_collapse);
     dom_offset += offset_to_collapse;
     text_content_offset += offset_to_collapse;
   }
-  new_units.emplace_back(NGOffsetMappingUnitType::kCollapsed, layout_object,
+  new_units.emplace_back(OffsetMappingUnitType::kCollapsed, layout_object,
                          dom_offset, dom_offset + 1, text_content_offset,
                          text_content_offset);
   ++dom_offset;
   if (dom_offset < container_unit->DOMEnd()) {
-    new_units.emplace_back(NGOffsetMappingUnitType::kIdentity, layout_object,
+    new_units.emplace_back(OffsetMappingUnitType::kIdentity, layout_object,
                            dom_offset, container_unit->DOMEnd(),
                            text_content_offset,
                            container_unit->TextContentEnd() - 1);
@@ -176,7 +176,7 @@ void NGOffsetMappingBuilder::CollapseTrailingSpace(unsigned space_offset) {
   }
 }
 
-void NGOffsetMappingBuilder::RestoreTrailingCollapsibleSpace(
+void OffsetMappingBuilder::RestoreTrailingCollapsibleSpace(
     const LayoutText& layout_text,
     unsigned offset) {
   ++destination_length_;
@@ -193,9 +193,9 @@ void NGOffsetMappingBuilder::RestoreTrailingCollapsibleSpace(
       ++unit.text_content_end_;
       continue;
     }
-    DCHECK_EQ(unit.type_, NGOffsetMappingUnitType::kCollapsed);
+    DCHECK_EQ(unit.type_, OffsetMappingUnitType::kCollapsed);
     const unsigned original_dom_end = unit.dom_end_;
-    unit.type_ = NGOffsetMappingUnitType::kIdentity;
+    unit.type_ = OffsetMappingUnitType::kIdentity;
     unit.dom_end_ = unit.dom_start_ + 1;
     unit.text_content_end_ = unit.text_content_start_ + 1;
     if (original_dom_end - unit.dom_start_ == 1)
@@ -204,21 +204,21 @@ void NGOffsetMappingBuilder::RestoreTrailingCollapsibleSpace(
     mapping_units_.insert(
         base::checked_cast<wtf_size_t>(
             std::distance(mapping_units_.begin(), &unit) + 1),
-        NGOffsetMappingUnit(NGOffsetMappingUnitType::kCollapsed, layout_text,
-                            unit.dom_end_, original_dom_end,
-                            unit.text_content_end_, unit.text_content_end_));
+        OffsetMappingUnit(OffsetMappingUnitType::kCollapsed, layout_text,
+                          unit.dom_end_, original_dom_end,
+                          unit.text_content_end_, unit.text_content_end_));
     return;
   }
   NOTREACHED();
   return;
 }
 
-void NGOffsetMappingBuilder::SetDestinationString(String string) {
+void OffsetMappingBuilder::SetDestinationString(String string) {
   DCHECK_EQ(destination_length_, string.length());
   destination_string_ = string;
 }
 
-NGOffsetMapping* NGOffsetMappingBuilder::Build() {
+OffsetMapping* OffsetMappingBuilder::Build() {
   // All mapping units are already built. Scan them to build mapping ranges.
   for (unsigned range_start = 0; range_start < mapping_units_.size();) {
     const LayoutObject& layout_object =
@@ -241,7 +241,7 @@ NGOffsetMapping* NGOffsetMappingBuilder::Build() {
     range_start = range_end;
   }
 
-  return MakeGarbageCollected<NGOffsetMapping>(
+  return MakeGarbageCollected<OffsetMapping>(
       std::move(mapping_units_), std::move(unit_ranges_), destination_string_);
 }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {util} from '../../common/js/util.js';
+import {isRecentRootType} from '../../common/js/entry_utils.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {EntryLocation} from '../../externs/entry_location.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
@@ -29,7 +29,7 @@ export class EntryLocationImpl implements EntryLocation {
         this.rootType === VolumeManagerCommon.RootType.DRIVE_OFFLINE ||
         this.rootType === VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME ||
         this.rootType === VolumeManagerCommon.RootType.DRIVE_RECENT ||
-        util.isRecentRootType(this.rootType);
+        isRecentRootType(this.rootType);
 
 
     this.isDriveBased = this.rootType === VolumeManagerCommon.RootType.DRIVE ||

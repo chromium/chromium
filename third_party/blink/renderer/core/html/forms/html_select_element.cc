@@ -413,7 +413,7 @@ bool HTMLSelectElement::CanSelectAll() const {
 LayoutObject* HTMLSelectElement::CreateLayoutObject(
     const ComputedStyle& style) {
   if (UsesMenuList()) {
-    return MakeGarbageCollected<LayoutNGFlexibleBox>(this);
+    return MakeGarbageCollected<LayoutFlexibleBox>(this);
   }
   return MakeGarbageCollected<LayoutNGBlockFlow>(this);
 }

@@ -31,6 +31,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/base/test_signin_client.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -53,18 +54,24 @@ struct ExpectedAccessPoints {
 class PrimaryAccountManagerTest : public testing::Test,
                                   public PrimaryAccountManager::Observer {
  public:
-  PrimaryAccountManagerTest()
-      : test_signin_client_(&user_prefs_),
-        token_service_(
-            &user_prefs_,
-            std::make_unique<FakeProfileOAuth2TokenServiceDelegate>()) {
+  PrimaryAccountManagerTest() : test_signin_client_(&user_prefs_) {
+#if BUILDFLAG(IS_ANDROID)
+    // Mock AccountManagerFacade in java code for tests that require its
+    // initialization.
+    signin::SetUpMockAccountManagerFacade();
+#endif
     AccountFetcherService::RegisterPrefs(user_prefs_.registry());
     AccountTrackerService::RegisterPrefs(user_prefs_.registry());
     ProfileOAuth2TokenService::RegisterProfilePrefs(user_prefs_.registry());
     PrimaryAccountManager::RegisterProfilePrefs(user_prefs_.registry());
-    account_tracker_.Initialize(&user_prefs_, base::FilePath());
-    account_fetcher_.Initialize(
-        &test_signin_client_, &token_service_, &account_tracker_,
+    account_tracker_ = std::make_unique<AccountTrackerService>();
+    account_tracker_->Initialize(&user_prefs_, base::FilePath());
+    token_service_ = std::make_unique<ProfileOAuth2TokenService>(
+        &user_prefs_,
+        std::make_unique<FakeProfileOAuth2TokenServiceDelegate>());
+    account_fetcher_ = std::make_unique<AccountFetcherService>();
+    account_fetcher_->Initialize(
+        &test_signin_client_, token_service_.get(), account_tracker_.get(),
         std::make_unique<image_fetcher::FakeImageDecoder>(),
         std::make_unique<FakeAccountCapabilitiesFetcherFactory>());
   }
@@ -77,8 +84,8 @@ class PrimaryAccountManagerTest : public testing::Test,
 
   TestSigninClient* signin_client() { return &test_signin_client_; }
 
-  AccountTrackerService* account_tracker() { return &account_tracker_; }
-  AccountFetcherService* account_fetcher() { return &account_fetcher_; }
+  AccountTrackerService* account_tracker() { return account_tracker_.get(); }
+  AccountFetcherService* account_fetcher() { return account_fetcher_.get(); }
   PrefService* prefs() { return &user_prefs_; }
 
   // Seed the account tracker with information from logged in user.  Normally
@@ -86,8 +93,8 @@ class PrimaryAccountManagerTest : public testing::Test,
   // Returns the string to use as the account_id.
   CoreAccountId AddToAccountTracker(const std::string& gaia_id,
                                     const std::string& email) {
-    account_tracker_.SeedAccountInfo(gaia_id, email);
-    return account_tracker_.PickAccountIdForAccount(gaia_id, email);
+    account_tracker_->SeedAccountInfo(gaia_id, email);
+    return account_tracker_->PickAccountIdForAccount(gaia_id, email);
   }
 
   void CheckSigninMetrics(ExpectedAccessPoints access_points) {
@@ -124,7 +131,7 @@ class PrimaryAccountManagerTest : public testing::Test,
   void CreatePrimaryAccountManager() {
     DCHECK(!manager_);
     manager_ = std::make_unique<PrimaryAccountManager>(
-        &test_signin_client_, &token_service_, &account_tracker_);
+        &test_signin_client_, token_service_.get(), account_tracker_.get());
     manager_->Initialize();
     manager_->AddObserver(this);
   }
@@ -167,9 +174,9 @@ class PrimaryAccountManagerTest : public testing::Test,
   base::test::TaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
   TestSigninClient test_signin_client_;
-  ProfileOAuth2TokenService token_service_;
-  AccountTrackerService account_tracker_;
-  AccountFetcherService account_fetcher_;
+  std::unique_ptr<AccountTrackerService> account_tracker_;
+  std::unique_ptr<ProfileOAuth2TokenService> token_service_;
+  std::unique_ptr<AccountFetcherService> account_fetcher_;
   std::unique_ptr<PrimaryAccountManager> manager_;
   std::vector<std::string> oauth_tokens_fetched_;
   std::vector<std::string> cookies_;
@@ -219,8 +226,8 @@ TEST_F(PrimaryAccountManagerTest, SignOutRevoke) {
       AddToAccountTracker("main_id", "user@gmail.com");
   CoreAccountId other_account_id =
       AddToAccountTracker("other_id", "other@gmail.com");
-  token_service_.UpdateCredentials(main_account_id, "token");
-  token_service_.UpdateCredentials(other_account_id, "token");
+  token_service_->UpdateCredentials(main_account_id, "token");
+  token_service_->UpdateCredentials(other_account_id, "token");
   manager_->SetPrimaryAccountInfo(
       account_tracker()->GetAccountInfo(main_account_id), ConsentLevel::kSync,
       AccessPoint::ACCESS_POINT_UNKNOWN);
@@ -240,7 +247,7 @@ TEST_F(PrimaryAccountManagerTest, SignOutRevoke) {
   // Tokens are revoked.
   EXPECT_EQ(1, num_successful_signouts_);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
-  EXPECT_TRUE(token_service_.GetAccounts().empty());
+  EXPECT_TRUE(token_service_->GetAccounts().empty());
 }
 
 TEST_F(PrimaryAccountManagerTest, SignOutWhileProhibited) {
@@ -669,9 +676,8 @@ TEST_F(PrimaryAccountManagerTest,
       /*expected_count=*/0);
 }
 
-// TODO(crbug.com/1484870): The test was failing on android-12-x64-rel.
 TEST_F(PrimaryAccountManagerTest,
-       DISABLED_DoNotRecordExistingPreviousSyncAccountIfCurrentlyConsented) {
+       DoNotRecordExistingPreviousSyncAccountIfCurrentlyConsented) {
   user_prefs_.SetString(prefs::kGoogleServicesLastSyncingGaiaId,
                         "previous_gaia_id");
   CoreAccountId account_id = AddToAccountTracker("gaia_id", "user@gmail.com");

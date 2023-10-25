@@ -38,6 +38,14 @@ const char kSodaFrFrConfigPath[] =
 const char kSodaItItConfigPath[] =
     "accessibility.captions.soda_it_it_config_path";
 
+// The file path of the hi-IN Speech On-Device API (SODA) configuration file.
+const char kSodaHiInConfigPath[] =
+    "accessibility.captions.soda_hi_in_config_path";
+
+// The file path of the pt-BR Speech On-Device API (SODA) configuration file.
+const char kSodaPtBrConfigPath[] =
+    "accessibility.captions.soda_pt_br_config_path";
+
 // The list of Speech On-Device API (SODA) language packs installed or
 // registered to be installed.
 const char kSodaRegisteredLanguagePacks[] =

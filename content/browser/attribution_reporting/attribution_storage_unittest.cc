@@ -38,6 +38,8 @@
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
+#include "components/attribution_reporting/trigger_config.h"
+#include "components/attribution_reporting/trigger_data_matching.mojom.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -83,6 +85,7 @@ using ::attribution_reporting::FilterConfig;
 using ::attribution_reporting::FilterPair;
 using ::attribution_reporting::SuitableOrigin;
 using ::attribution_reporting::mojom::SourceType;
+using ::attribution_reporting::mojom::TriggerDataMatching;
 
 // Default max number of conversions for a single impression for testing.
 const int kMaxConversions = 3;
@@ -3872,6 +3875,55 @@ TEST_F(AttributionStorageTest, MaxSourceReportingOriginsPerSite) {
   EXPECT_EQ(store_source("https://a.test", "https://reporter.test"),
             StorableSource::Result::kReportingOriginsPerSiteLimitReached);
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(4));
+}
+
+TEST_F(AttributionStorageTest, TriggerDataMatching) {
+  const struct {
+    const char* desc;
+    TriggerDataMatching trigger_data_matching;
+    uint64_t trigger_data;
+    absl::optional<uint64_t> expected_trigger_data;
+  } kTestCases[] = {
+      {"modulus-0", TriggerDataMatching::kModulus, 0, 0},
+      {"modulus-7", TriggerDataMatching::kModulus, 7, 7},
+      {"modulus-8", TriggerDataMatching::kModulus, 8, 0},
+      {"modulus-9", TriggerDataMatching::kModulus, 9, 1},
+      {"exact-0", TriggerDataMatching::kExact, 0, 0},
+      {"exact-7", TriggerDataMatching::kExact, 7, 7},
+      {"exact-8", TriggerDataMatching::kExact, 8, absl::nullopt},
+      {"exact-9", TriggerDataMatching::kExact, 9, absl::nullopt},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.desc);
+
+    storage()->StoreSource(
+        SourceBuilder()
+            .SetSourceType(
+                SourceType::kNavigation)  // valid trigger data [0, 7]
+            .SetTriggerConfig(attribution_reporting::TriggerConfig(
+                test_case.trigger_data_matching))
+            .Build());
+
+    EXPECT_EQ(
+        test_case.expected_trigger_data.has_value()
+            ? AttributionTrigger::EventLevelResult::kSuccess
+            : AttributionTrigger::EventLevelResult::kNoMatchingTriggerData,
+        MaybeCreateAndStoreEventLevelReport(
+            TriggerBuilder().SetTriggerData(test_case.trigger_data).Build()));
+
+    auto reports = storage()->GetAttributionReports(base::Time::Max());
+
+    if (absl::optional<uint64_t> expected = test_case.expected_trigger_data) {
+      EXPECT_THAT(reports,
+                  ElementsAre(EventLevelDataIs(TriggerDataIs(*expected))));
+    } else {
+      EXPECT_THAT(reports, IsEmpty());
+    }
+
+    storage()->ClearData(base::Time::Min(), base::Time::Max(),
+                         base::NullCallback());
+  }
 }
 
 }  // namespace content

@@ -164,22 +164,7 @@ void DictationTestUtils::EnableDictation(
     AccessibilityManager::Get()->SetDictationEnabled(true);
   }
 
-  std::string url;
-  switch (editable_type_) {
-    case EditableType::kTextArea:
-      url = kTextAreaUrl;
-      break;
-    case EditableType::kFormattedContentEditable:
-      url = kFormattedContentEditableUrl;
-      break;
-    case EditableType::kInput:
-      url = kInputUrl;
-      break;
-    case EditableType::kContentEditable:
-      url = kContentEditableUrl;
-      break;
-  }
-
+  std::string url = GetUrlForEditableType();
   std::move(navigate_to_url).Run(GURL(url));
 
   // Dictation test support references the main Dictation object, so wait for
@@ -283,6 +268,19 @@ void DictationTestUtils::ExecuteAccessibilityCommonScript(
 void DictationTestUtils::DisablePumpkin() {
   std::string script = "dictationTestSupport.disablePumpkin();";
   ExecuteAccessibilityCommonScript(script);
+}
+
+std::string DictationTestUtils::GetUrlForEditableType() {
+  switch (editable_type_) {
+    case EditableType::kTextArea:
+      return kTextAreaUrl;
+    case EditableType::kFormattedContentEditable:
+      return kFormattedContentEditableUrl;
+    case EditableType::kInput:
+      return kInputUrl;
+    case EditableType::kContentEditable:
+      return kContentEditableUrl;
+  }
 }
 
 std::string DictationTestUtils::GetEditableValue() {

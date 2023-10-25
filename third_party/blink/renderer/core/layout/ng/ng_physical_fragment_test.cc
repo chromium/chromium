@@ -89,8 +89,8 @@ TEST_F(NGPhysicalFragmentTest, DumpFragmentTreeWithGrid) {
   Box (out-of-flow-positioned block-flow)(self paint) offset:unplaced size:800x600 LayoutView #document
     Box (block-flow-root block-flow)(self paint) offset:0,0 size:800x16 LayoutNGBlockFlow HTML
       Box (block-flow) offset:8,8 size:784x0 LayoutNGBlockFlow BODY
-        Box (block-flow-root) offset:0,0 size:784x0 LayoutNGGrid DIV id='outer-grid'
-          Box (block-flow-root) offset:0,0 size:784x0 LayoutNGGrid DIV id='grid-as-item'
+        Box (block-flow-root) offset:0,0 size:784x0 LayoutGrid DIV id='outer-grid'
+          Box (block-flow-root) offset:0,0 size:784x0 LayoutGrid DIV id='grid-as-item'
             Box (block-flow-root block-flow) offset:0,0 size:784x0 LayoutNGBlockFlow DIV id='inner-grid-item'
               Box (block-flow) offset:0,0 size:784x0 LayoutNGBlockFlow DIV id='foo'
           Box (block-flow-root block-flow) offset:0,0 size:784x0 LayoutNGBlockFlow DIV id='block-container-item'

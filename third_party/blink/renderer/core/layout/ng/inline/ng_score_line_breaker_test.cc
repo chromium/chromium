@@ -18,13 +18,13 @@ namespace blink {
 
 namespace {
 
-LayoutUnit FragmentWidth(const NGInlineNode& node) {
+LayoutUnit FragmentWidth(const InlineNode& node) {
   const NGPhysicalBoxFragment* fragment =
       node.GetLayoutBox()->GetPhysicalFragment(0);
   return fragment->Size().width;
 }
 
-void TestLinesAreContiguous(const NGLineInfoList& line_info_list) {
+void TestLinesAreContiguous(const LineInfoList& line_info_list) {
   for (wtf_size_t i = 1; i < line_info_list.Size(); ++i) {
     EXPECT_EQ(line_info_list[i].Start(),
               line_info_list[i - 1].BreakToken()->Start());
@@ -33,13 +33,13 @@ void TestLinesAreContiguous(const NGLineInfoList& line_info_list) {
 
 }  // namespace
 
-class NGScoreLineBreakerTest : public RenderingTest {
+class ScoreLineBreakerTest : public RenderingTest {
  public:
-  void RunUntilSuspended(NGScoreLineBreaker& breaker,
-                         NGScoreLineBreakContext& context) {
-    NGLineInfoList& line_info_list = context.LineInfoList();
+  void RunUntilSuspended(ScoreLineBreaker& breaker,
+                         ScoreLineBreakContext& context) {
+    LineInfoList& line_info_list = context.GetLineInfoList();
     line_info_list.Clear();
-    NGLineBreakPoints& break_points = context.LineBreakPoints();
+    LineBreakPoints& break_points = context.GetLineBreakPoints();
     break_points.clear();
     context.DidCreateLine(/*is_end_paragraph*/ true);
     NGLeadingFloats empty_leading_floats;
@@ -51,31 +51,31 @@ class NGScoreLineBreakerTest : public RenderingTest {
       }
 
       // Consume the first line in `line_info_list`.
-      const NGLineInfo& line_info = line_info_list.Front();
+      const LineInfo& line_info = line_info_list.Front();
       const bool is_end_paragraph = line_info.IsEndParagraph();
       line_info_list.RemoveFront();
       context.DidCreateLine(is_end_paragraph);
     }
   }
 
-  Vector<float> ComputeScores(const NGInlineNode& node) {
+  Vector<float> ComputeScores(const InlineNode& node) {
     const LayoutUnit width = FragmentWidth(node);
     NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
-    NGLineWidths line_widths(width);
+    LineWidths line_widths(width);
     const NGInlineBreakToken* break_token = nullptr;
     ExclusionSpace exclusion_space;
-    NGScoreLineBreaker optimizer(node, space, line_widths, break_token,
-                                 &exclusion_space);
+    ScoreLineBreaker optimizer(node, space, line_widths, break_token,
+                               &exclusion_space);
     Vector<float> scores;
     optimizer.SetScoresOutForTesting(&scores);
     NGLeadingFloats empty_leading_floats;
-    NGScoreLineBreakContextOf<kMaxLinesForOptimal> context;
+    ScoreLineBreakContextOf<kMaxLinesForOptimal> context;
     optimizer.OptimalBreakPoints(empty_leading_floats, context);
     return scores;
   }
 };
 
-TEST_F(NGScoreLineBreakerTest, LastLines) {
+TEST_F(ScoreLineBreakerTest, LastLines) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
@@ -95,16 +95,16 @@ TEST_F(NGScoreLineBreakerTest, LastLines) {
       678 012 45
     </div>
   )HTML");
-  const NGInlineNode node = GetInlineNodeByElementId("target");
+  const InlineNode node = GetInlineNodeByElementId("target");
   const LayoutUnit width = FragmentWidth(node);
   NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
-  NGLineWidths line_widths(width);
-  NGScoreLineBreakContextOf<kMaxLinesForOptimal> context;
-  NGLineInfoList& line_info_list = context.LineInfoList();
+  LineWidths line_widths(width);
+  ScoreLineBreakContextOf<kMaxLinesForOptimal> context;
+  LineInfoList& line_info_list = context.GetLineInfoList();
   const NGInlineBreakToken* break_token = nullptr;
   ExclusionSpace exclusion_space;
-  NGScoreLineBreaker optimizer(node, space, line_widths, break_token,
-                               &exclusion_space);
+  ScoreLineBreaker optimizer(node, space, line_widths, break_token,
+                             &exclusion_space);
 
   // Run the optimizer from the beginning of the `target`. This should cache
   // `optimizer.MaxLines()` lines.
@@ -113,12 +113,12 @@ TEST_F(NGScoreLineBreakerTest, LastLines) {
   EXPECT_EQ(line_info_list.Size(), optimizer.MaxLines());
   TestLinesAreContiguous(line_info_list);
 
-  // Then continue until `NGScoreLineBreaker` consumes all lines in the block.
+  // Then continue until `ScoreLineBreaker` consumes all lines in the block.
   wtf_size_t count = 0;
   for (; context.IsActive(); ++count) {
     // Consume the first line in `line_info_list`.
     bool is_cached = false;
-    const NGLineInfo& line_info0 = line_info_list.Get(break_token, is_cached);
+    const LineInfo& line_info0 = line_info_list.Get(break_token, is_cached);
     EXPECT_TRUE(is_cached);
     EXPECT_EQ(line_info_list.Size(), optimizer.MaxLines() - 1);
     break_token = line_info0.BreakToken();
@@ -133,7 +133,7 @@ TEST_F(NGScoreLineBreakerTest, LastLines) {
   EXPECT_EQ(count, target_num_lines - optimizer.MaxLines());
 }
 
-TEST_F(NGScoreLineBreakerTest, BalanceMaxLinesExceeded) {
+TEST_F(ScoreLineBreakerTest, BalanceMaxLinesExceeded) {
   ScopedCSSTextWrapBalanceByScoreForTest balance_by_score(true);
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
@@ -164,9 +164,9 @@ TEST_F(NGScoreLineBreakerTest, BalanceMaxLinesExceeded) {
   EXPECT_EQ(cursor.Current()->TextLength(), 1u);
 }
 
-class BlockInInlineTest : public NGScoreLineBreakerTest,
+class BlockInInlineTest : public ScoreLineBreakerTest,
                           public testing::WithParamInterface<int> {};
-INSTANTIATE_TEST_SUITE_P(NGScoreLineBreakerTest,
+INSTANTIATE_TEST_SUITE_P(ScoreLineBreakerTest,
                          BlockInInlineTest,
                          testing::Range(0, 4));
 
@@ -193,17 +193,17 @@ TEST_P(BlockInInlineTest, BeforeAfter) {
   )HTML",
       has_before ? "Before 89 1234 6789 1234 6789 1234 6789 12" : "",
       has_after ? "After 789 1234 6789 1234 6789 1234 6789 12" : ""));
-  const NGInlineNode node = GetInlineNodeByElementId("target");
+  const InlineNode node = GetInlineNodeByElementId("target");
   const LayoutUnit width = FragmentWidth(node);
   NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
-  NGLineWidths line_widths(width);
-  NGScoreLineBreakContextOf<kMaxLinesForOptimal> context;
-  NGLineInfoList& line_info_list = context.LineInfoList();
-  NGLineBreakPoints& break_points = context.LineBreakPoints();
+  LineWidths line_widths(width);
+  ScoreLineBreakContextOf<kMaxLinesForOptimal> context;
+  LineInfoList& line_info_list = context.GetLineInfoList();
+  LineBreakPoints& break_points = context.GetLineBreakPoints();
   ExclusionSpace exclusion_space;
-  NGScoreLineBreaker optimizer(node, space, line_widths,
-                               /*break_token*/ nullptr, &exclusion_space);
-  // The `NGScoreLineBreaker` should suspend at before the block-in-inline.
+  ScoreLineBreaker optimizer(node, space, line_widths,
+                             /*break_token*/ nullptr, &exclusion_space);
+  // The `ScoreLineBreaker` should suspend at before the block-in-inline.
   RunUntilSuspended(optimizer, context);
   if (has_before) {
     // The content before the block-in-inline should be optimized.
@@ -233,7 +233,7 @@ TEST_P(BlockInInlineTest, BeforeAfter) {
   }
 }
 
-TEST_F(NGScoreLineBreakerTest, ForcedBreak) {
+TEST_F(ScoreLineBreakerTest, ForcedBreak) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
@@ -251,24 +251,24 @@ TEST_F(NGScoreLineBreakerTest, ForcedBreak) {
       12
     </div>
   )HTML");
-  const NGInlineNode node = GetInlineNodeByElementId("target");
+  const InlineNode node = GetInlineNodeByElementId("target");
   const LayoutUnit width = FragmentWidth(node);
   NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
-  NGLineWidths line_widths(width);
-  NGScoreLineBreakContextOf<kMaxLinesForOptimal> context;
-  NGLineInfoList& line_info_list = context.LineInfoList();
-  NGLineBreakPoints& break_points = context.LineBreakPoints();
+  LineWidths line_widths(width);
+  ScoreLineBreakContextOf<kMaxLinesForOptimal> context;
+  LineInfoList& line_info_list = context.GetLineInfoList();
+  LineBreakPoints& break_points = context.GetLineBreakPoints();
   const NGInlineBreakToken* break_token = nullptr;
   ExclusionSpace exclusion_space;
-  NGScoreLineBreaker optimizer(node, space, line_widths, break_token,
-                               &exclusion_space);
+  ScoreLineBreaker optimizer(node, space, line_widths, break_token,
+                             &exclusion_space);
 
   // Run the optimizer from the beginning of the `target`. This should stop at
   // `<br>` so that paragraphs separated by forced breaks are optimized
   // separately.
   //
   // Since the paragraphs has only 2 break candidates, it should return two
-  // `NGLineInfo` without the optimization.
+  // `LineInfo` without the optimization.
   NGLeadingFloats empty_leading_floats;
   optimizer.OptimalBreakPoints(empty_leading_floats, context);
   EXPECT_EQ(break_points.size(), 0u);
@@ -359,10 +359,10 @@ struct DisabledByLineBreakerData {
     )HTML"}};
 
 class DisabledByLineBreakerTest
-    : public NGScoreLineBreakerTest,
+    : public ScoreLineBreakerTest,
       public testing::WithParamInterface<DisabledByLineBreakerData> {};
 
-INSTANTIATE_TEST_SUITE_P(NGScoreLineBreakerTest,
+INSTANTIATE_TEST_SUITE_P(ScoreLineBreakerTest,
                          DisabledByLineBreakerTest,
                          testing::ValuesIn(disabled_by_line_breaker_data));
 
@@ -384,28 +384,28 @@ TEST_P(DisabledByLineBreakerTest, Data) {
   EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kTextWrapBalance));
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kTextWrapPretty));
 
-  const NGInlineNode node = GetInlineNodeByElementId("target");
+  const InlineNode node = GetInlineNodeByElementId("target");
   const LayoutUnit width = FragmentWidth(node);
   NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
-  NGLineWidths line_widths(width);
-  NGScoreLineBreakContextOf<kMaxLinesForOptimal> context;
+  LineWidths line_widths(width);
+  ScoreLineBreakContextOf<kMaxLinesForOptimal> context;
   const NGInlineBreakToken* break_token = nullptr;
   ExclusionSpace exclusion_space;
-  NGScoreLineBreaker optimizer(node, space, line_widths, break_token,
-                               &exclusion_space);
+  ScoreLineBreaker optimizer(node, space, line_widths, break_token,
+                             &exclusion_space);
   NGLeadingFloats empty_leading_floats;
   optimizer.OptimalBreakPoints(empty_leading_floats, context);
   EXPECT_FALSE(context.IsActive());
   if (data.disabled) {
-    EXPECT_EQ(context.LineBreakPoints().size(), 0u);
+    EXPECT_EQ(context.GetLineBreakPoints().size(), 0u);
   } else {
-    EXPECT_NE(context.LineBreakPoints().size(), 0u);
+    EXPECT_NE(context.GetLineBreakPoints().size(), 0u);
   }
 }
 
-// Test when `NGInlineLayoutAlgorithm::Layout` runs `NGLineBreaker` twice for
+// Test when `NGInlineLayoutAlgorithm::Layout` runs `LineBreaker` twice for
 // the same line, to retry line breaking due to float placements.
-TEST_F(NGScoreLineBreakerTest, FloatRetry) {
+TEST_F(ScoreLineBreakerTest, FloatRetry) {
   ScopedCSSTextWrapPrettyForTest enable(true);
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
@@ -431,7 +431,7 @@ TEST_F(NGScoreLineBreakerTest, FloatRetry) {
   // Test pass if it doesn't crash.
 }
 
-TEST_F(NGScoreLineBreakerTest, Zoom) {
+TEST_F(ScoreLineBreakerTest, Zoom) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
@@ -449,7 +449,7 @@ TEST_F(NGScoreLineBreakerTest, Zoom) {
       012
     </div>
   )HTML");
-  const NGInlineNode target = GetInlineNodeByElementId("target");
+  const InlineNode target = GetInlineNodeByElementId("target");
   Vector<float> scores = ComputeScores(target);
 
   constexpr float zoom = 2;
@@ -468,7 +468,7 @@ TEST_F(NGScoreLineBreakerTest, Zoom) {
   }
 }
 
-TEST_F(NGScoreLineBreakerTest, UseCountNotCountedForWrap) {
+TEST_F(ScoreLineBreakerTest, UseCountNotCountedForWrap) {
   ScopedCSSTextWrapPrettyForTest enable(true);
   SetBodyInnerHTML(R"HTML(
     <div>012</div>
@@ -477,7 +477,7 @@ TEST_F(NGScoreLineBreakerTest, UseCountNotCountedForWrap) {
   EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kTextWrapPretty));
 }
 
-TEST_F(NGScoreLineBreakerTest, UseCountNotCountedForBalance) {
+TEST_F(ScoreLineBreakerTest, UseCountNotCountedForBalance) {
   ScopedCSSTextWrapPrettyForTest enable(true);
   SetBodyInnerHTML(R"HTML(
     <div style="text-wrap: balance">012</div>

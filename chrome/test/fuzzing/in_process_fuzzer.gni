@@ -63,7 +63,7 @@ template("in_process_fuzzer") {
       centipede_options = [
         # Provide plenty of capacity for test cases to flow between centipede
         # and the fuzz target.
-        "shmem_size=4096",
+        "shmem_size_mb=4096",
 
         # Browser tests are big
         "address_space_limit_mb=0",

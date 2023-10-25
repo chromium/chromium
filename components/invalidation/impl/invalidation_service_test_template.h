@@ -120,9 +120,9 @@ TYPED_TEST_P(InvalidationServiceTest, Basic) {
 
   invalidator->RegisterInvalidationHandler(&handler);
 
-  const auto inv1 = Invalidation::Init(this->topic1, 1, "1");
-  const auto inv2 = Invalidation::Init(this->topic2, 2, "2");
-  const auto inv3 = Invalidation::Init(this->topic3, 3, "3");
+  const auto inv1 = Invalidation(this->topic1, 1, "1");
+  const auto inv2 = Invalidation(this->topic2, 2, "2");
+  const auto inv3 = Invalidation(this->topic3, 3, "3");
 
   // Should be ignored since no IDs are registered to |handler|.
   TriggerOnIncomingInvalidation(this->delegate_, inv1, inv2, inv3);
@@ -215,10 +215,10 @@ TYPED_TEST_P(InvalidationServiceTest, MultipleHandlers) {
   EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler4.GetInvalidatorState());
 
   {
-    const auto inv1 = Invalidation::Init(this->topic1, 1, "1");
-    const auto inv2 = Invalidation::Init(this->topic2, 2, "2");
-    const auto inv3 = Invalidation::Init(this->topic3, 3, "3");
-    const auto inv4 = Invalidation::Init(this->topic4, 4, "4");
+    const auto inv1 = Invalidation(this->topic1, 1, "1");
+    const auto inv2 = Invalidation(this->topic2, 2, "2");
+    const auto inv3 = Invalidation(this->topic3, 3, "3");
+    const auto inv4 = Invalidation(this->topic4, 4, "4");
     TriggerOnIncomingInvalidation(this->delegate_, inv1, inv2, inv3, inv4);
 
     EXPECT_EQ(2, handler1.GetInvalidationCount());
@@ -302,9 +302,9 @@ TYPED_TEST_P(InvalidationServiceTest, EmptySetUnregisters) {
   EXPECT_EQ(INVALIDATIONS_ENABLED, handler2.GetInvalidatorState());
 
   {
-    const auto inv1 = Invalidation::Init(this->topic1, 1, "1");
-    const auto inv2 = Invalidation::Init(this->topic2, 2, "2");
-    const auto inv3 = Invalidation::Init(this->topic3, 3, "3");
+    const auto inv1 = Invalidation(this->topic1, 1, "1");
+    const auto inv2 = Invalidation(this->topic2, 2, "2");
+    const auto inv3 = Invalidation(this->topic3, 3, "3");
     TriggerOnIncomingInvalidation(this->delegate_, inv1, inv2, inv3);
     EXPECT_EQ(0, handler1.GetInvalidationCount());
     EXPECT_EQ(1, handler2.GetInvalidationCount());

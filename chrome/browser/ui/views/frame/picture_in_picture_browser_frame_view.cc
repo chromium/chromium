@@ -788,7 +788,9 @@ void PictureInPictureBrowserFrameView::AddedToWidget() {
 
   // If the AutoPiP setting overlay is set, show the permission settings bubble.
   if (auto_pip_setting_overlay_) {
-    auto_pip_setting_overlay_->ShowBubble(GetWidget()->GetNativeView());
+    auto_pip_setting_overlay_->ShowBubble(
+        GetWidget()->GetNativeView(),
+        AutoPipSettingOverlayView::PipWindowType::kDocumentPip);
   }
 
   BrowserNonClientFrameView::AddedToWidget();

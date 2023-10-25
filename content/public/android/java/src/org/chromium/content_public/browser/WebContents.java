@@ -311,12 +311,22 @@ public interface WebContents extends Parcelable {
      * Selects at the specified granularity around the caret and potentially shows the selection
      * handles and context menu. The caller can check if selection actually occurred by listening to
      * OnSelectionChanged.
+     *
      * @param granularity The granularity at which the selection should happen.
      * @param shouldShowHandle Whether the selection handles should be shown after selection.
      * @param shouldShowContextMenu Whether the context menu should be shown after selection.
+     * @param startOffset The start offset of the selection.
+     * @param endOffset The end offset of the selection.
+     * @param surroundingTextLength The length of the text surrounding the selection (including the
+     *     selection).
      */
-    void selectAroundCaret(@SelectionGranularity int granularity, boolean shouldShowHandle,
-            boolean shouldShowContextMenu);
+    void selectAroundCaret(
+            @SelectionGranularity int granularity,
+            boolean shouldShowHandle,
+            boolean shouldShowContextMenu,
+            int startOffset,
+            int endOffset,
+            int surroundingTextLength);
 
     /**
      * Adjusts the selection starting and ending points by the given amount.

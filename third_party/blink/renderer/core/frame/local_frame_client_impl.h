@@ -152,7 +152,6 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
           soft_navigation_heuristics_task_id) const override;
   void DidDispatchPingLoader(const KURL&) override;
   void DidChangePerformanceTiming() override;
-  void DidObserveInputDelay(base::TimeDelta) override;
   void DidObserveUserInteraction(base::TimeTicks max_event_start,
                                  base::TimeTicks max_event_end,
                                  UserInteractionType interaction_type) override;

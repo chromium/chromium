@@ -389,6 +389,7 @@ data/accessibility/aom/aom-modal-dialog-expected-uia-win.txt
 data/accessibility/aom/aom-modal-dialog-expected-win.txt
 data/accessibility/aom/aom-modal-dialog.html
 data/accessibility/aom/event-listener-on-virtual-node.html
+data/accessibility/aria/annotation-roles-expected-android-assist-data.txt
 data/accessibility/aria/annotation-roles-expected-android-external.txt
 data/accessibility/aria/annotation-roles-expected-android.txt
 data/accessibility/aria/annotation-roles-expected-auralinux.txt
@@ -401,6 +402,7 @@ data/accessibility/aria/aria-activedescendant-expected-auralinux.txt
 data/accessibility/aria/aria-activedescendant-expected-blink.txt
 data/accessibility/aria/aria-activedescendant-expected-mac.txt
 data/accessibility/aria/aria-activedescendant.html
+data/accessibility/aria/aria-alert-expected-android-assist-data.txt
 data/accessibility/aria/aria-alert-expected-android-external.txt
 data/accessibility/aria/aria-alert-expected-android.txt
 data/accessibility/aria/aria-alert-expected-auralinux.txt
@@ -408,6 +410,7 @@ data/accessibility/aria/aria-alert-expected-blink.txt
 data/accessibility/aria/aria-alert-expected-mac.txt
 data/accessibility/aria/aria-alert-expected-win.txt
 data/accessibility/aria/aria-alert.html
+data/accessibility/aria/aria-alertdialog-expected-android-assist-data.txt
 data/accessibility/aria/aria-alertdialog-expected-android-external.txt
 data/accessibility/aria/aria-alertdialog-expected-android.txt
 data/accessibility/aria/aria-alertdialog-expected-auralinux.txt
@@ -417,6 +420,7 @@ data/accessibility/aria/aria-alertdialog-expected-win.txt
 data/accessibility/aria/aria-alertdialog.html
 data/accessibility/aria/aria-any-unignored-expected-blink.txt
 data/accessibility/aria/aria-any-unignored.html
+data/accessibility/aria/aria-application-expected-android-assist-data.txt
 data/accessibility/aria/aria-application-expected-android-external.txt
 data/accessibility/aria/aria-application-expected-android.txt
 data/accessibility/aria/aria-application-expected-auralinux.txt
@@ -424,6 +428,7 @@ data/accessibility/aria/aria-application-expected-blink.txt
 data/accessibility/aria/aria-application-expected-mac.txt
 data/accessibility/aria/aria-application-expected-win.txt
 data/accessibility/aria/aria-application.html
+data/accessibility/aria/aria-article-expected-android-assist-data.txt
 data/accessibility/aria/aria-article-expected-android-external.txt
 data/accessibility/aria/aria-article-expected-android.txt
 data/accessibility/aria/aria-article-expected-auralinux.txt
@@ -433,6 +438,7 @@ data/accessibility/aria/aria-article-expected-win.txt
 data/accessibility/aria/aria-article-posinset-setsize-expected-blink.txt
 data/accessibility/aria/aria-article-posinset-setsize.html
 data/accessibility/aria/aria-article.html
+data/accessibility/aria/aria-atomic-expected-android-assist-data.txt
 data/accessibility/aria/aria-atomic-expected-android-external.txt
 data/accessibility/aria/aria-atomic-expected-android.txt
 data/accessibility/aria/aria-atomic-expected-auralinux.txt
@@ -440,6 +446,7 @@ data/accessibility/aria/aria-atomic-expected-blink.txt
 data/accessibility/aria/aria-atomic-expected-mac.txt
 data/accessibility/aria/aria-atomic-expected-win.txt
 data/accessibility/aria/aria-atomic.html
+data/accessibility/aria/aria-autocomplete-expected-android-assist-data.txt
 data/accessibility/aria/aria-autocomplete-expected-android-external.txt
 data/accessibility/aria/aria-autocomplete-expected-android.txt
 data/accessibility/aria/aria-autocomplete-expected-auralinux.txt
@@ -447,6 +454,7 @@ data/accessibility/aria/aria-autocomplete-expected-blink.txt
 data/accessibility/aria/aria-autocomplete-expected-mac.txt
 data/accessibility/aria/aria-autocomplete-expected-win.txt
 data/accessibility/aria/aria-autocomplete.html
+data/accessibility/aria/aria-banner-expected-android-assist-data.txt
 data/accessibility/aria/aria-banner-expected-android-external.txt
 data/accessibility/aria/aria-banner-expected-android.txt
 data/accessibility/aria/aria-banner-expected-auralinux.txt
@@ -460,6 +468,7 @@ data/accessibility/aria/aria-blockquote-expected-mac.txt
 data/accessibility/aria/aria-blockquote-expected-uia-win.txt
 data/accessibility/aria/aria-blockquote-expected-win.txt
 data/accessibility/aria/aria-blockquote.html
+data/accessibility/aria/aria-braillelabel-expected-android-assist-data.txt
 data/accessibility/aria/aria-braillelabel-expected-android-external.txt
 data/accessibility/aria/aria-braillelabel-expected-android.txt
 data/accessibility/aria/aria-braillelabel-expected-auralinux.txt
@@ -467,6 +476,7 @@ data/accessibility/aria/aria-braillelabel-expected-blink.txt
 data/accessibility/aria/aria-braillelabel-expected-mac.txt
 data/accessibility/aria/aria-braillelabel-expected-win.txt
 data/accessibility/aria/aria-braillelabel.html
+data/accessibility/aria/aria-brailleroledescription-expected-android-assist-data.txt
 data/accessibility/aria/aria-brailleroledescription-expected-android-external.txt
 data/accessibility/aria/aria-brailleroledescription-expected-android.txt
 data/accessibility/aria/aria-brailleroledescription-expected-auralinux.txt
@@ -474,6 +484,7 @@ data/accessibility/aria/aria-brailleroledescription-expected-blink.txt
 data/accessibility/aria/aria-brailleroledescription-expected-mac.txt
 data/accessibility/aria/aria-brailleroledescription-expected-win.txt
 data/accessibility/aria/aria-brailleroledescription.html
+data/accessibility/aria/aria-busy-expected-android-assist-data.txt
 data/accessibility/aria/aria-busy-expected-android-external.txt
 data/accessibility/aria/aria-busy-expected-android.txt
 data/accessibility/aria/aria-busy-expected-auralinux.txt
@@ -481,6 +492,7 @@ data/accessibility/aria/aria-busy-expected-blink.txt
 data/accessibility/aria/aria-busy-expected-mac.txt
 data/accessibility/aria/aria-busy-expected-win.txt
 data/accessibility/aria/aria-busy.html
+data/accessibility/aria/aria-button-expected-android-assist-data.txt
 data/accessibility/aria/aria-button-expected-android-external.txt
 data/accessibility/aria/aria-button-expected-android.txt
 data/accessibility/aria/aria-button-expected-auralinux.txt
@@ -494,11 +506,13 @@ data/accessibility/aria/aria-caption-expected-auralinux.txt
 data/accessibility/aria/aria-caption-expected-mac.txt
 data/accessibility/aria/aria-caption-expected-win.txt
 data/accessibility/aria/aria-caption.html
+data/accessibility/aria/aria-cell-expected-android-assist-data.txt
 data/accessibility/aria/aria-cell-expected-android-external.txt
 data/accessibility/aria/aria-cell-expected-auralinux.txt
 data/accessibility/aria/aria-cell-expected-blink.txt
 data/accessibility/aria/aria-cell-expected-win.txt
 data/accessibility/aria/aria-cell.html
+data/accessibility/aria/aria-checkbox-expected-android-assist-data.txt
 data/accessibility/aria/aria-checkbox-expected-android-external.txt
 data/accessibility/aria/aria-checkbox-expected-android.txt
 data/accessibility/aria/aria-checkbox-expected-auralinux.txt
@@ -506,6 +520,7 @@ data/accessibility/aria/aria-checkbox-expected-blink.txt
 data/accessibility/aria/aria-checkbox-expected-mac.txt
 data/accessibility/aria/aria-checkbox-expected-win.txt
 data/accessibility/aria/aria-checkbox.html
+data/accessibility/aria/aria-checked-expected-android-assist-data.txt
 data/accessibility/aria/aria-checked-expected-android-external.txt
 data/accessibility/aria/aria-checked-expected-android.txt
 data/accessibility/aria/aria-checked-expected-auralinux.txt
@@ -513,6 +528,7 @@ data/accessibility/aria/aria-checked-expected-blink.txt
 data/accessibility/aria/aria-checked-expected-mac.txt
 data/accessibility/aria/aria-checked-expected-win.txt
 data/accessibility/aria/aria-checked.html
+data/accessibility/aria/aria-code-expected-android-assist-data.txt
 data/accessibility/aria/aria-code-expected-android-external.txt
 data/accessibility/aria/aria-code-expected-android.txt
 data/accessibility/aria/aria-code-expected-auralinux.txt
@@ -521,6 +537,7 @@ data/accessibility/aria/aria-code-expected-mac.txt
 data/accessibility/aria/aria-code-expected-uia-win.txt
 data/accessibility/aria/aria-code-expected-win.txt
 data/accessibility/aria/aria-code.html
+data/accessibility/aria/aria-col-attr-expected-android-assist-data.txt
 data/accessibility/aria/aria-col-attr-expected-android-external.txt
 data/accessibility/aria/aria-col-attr-expected-android.txt
 data/accessibility/aria/aria-col-attr-expected-auralinux.txt
@@ -529,12 +546,14 @@ data/accessibility/aria/aria-col-attr-expected-mac.txt
 data/accessibility/aria/aria-col-attr-expected-uia-win.txt
 data/accessibility/aria/aria-col-attr-expected-win.txt
 data/accessibility/aria/aria-col-attr.html
+data/accessibility/aria/aria-col-row-index-expected-android-assist-data.txt
 data/accessibility/aria/aria-col-row-index-expected-android-external.txt
 data/accessibility/aria/aria-col-row-index-expected-auralinux.txt
 data/accessibility/aria/aria-col-row-index-expected-blink.txt
 data/accessibility/aria/aria-col-row-index-expected-mac.txt
 data/accessibility/aria/aria-col-row-index-expected-uia-win.txt
 data/accessibility/aria/aria-col-row-index-expected-win.txt
+data/accessibility/aria/aria-col-row-index-undefined-expected-android-assist-data.txt
 data/accessibility/aria/aria-col-row-index-undefined-expected-android-external.txt
 data/accessibility/aria/aria-col-row-index-undefined-expected-auralinux.txt
 data/accessibility/aria/aria-col-row-index-undefined-expected-blink.txt
@@ -543,6 +562,7 @@ data/accessibility/aria/aria-col-row-index-undefined-expected-uia-win.txt
 data/accessibility/aria/aria-col-row-index-undefined-expected-win.txt
 data/accessibility/aria/aria-col-row-index-undefined.html
 data/accessibility/aria/aria-col-row-index.html
+data/accessibility/aria/aria-columnheader-expected-android-assist-data.txt
 data/accessibility/aria/aria-columnheader-expected-android-external.txt
 data/accessibility/aria/aria-columnheader-expected-android.txt
 data/accessibility/aria/aria-columnheader-expected-auralinux.txt
@@ -552,18 +572,21 @@ data/accessibility/aria/aria-columnheader-expected-win.txt
 data/accessibility/aria/aria-columnheader.html
 data/accessibility/aria/aria-combobox-dynamic-expected-blink.txt
 data/accessibility/aria/aria-combobox-dynamic.html
+data/accessibility/aria/aria-combobox-expected-android-assist-data.txt
 data/accessibility/aria/aria-combobox-expected-android-external.txt
 data/accessibility/aria/aria-combobox-expected-android.txt
 data/accessibility/aria/aria-combobox-expected-auralinux.txt
 data/accessibility/aria/aria-combobox-expected-blink.txt
 data/accessibility/aria/aria-combobox-expected-mac.txt
 data/accessibility/aria/aria-combobox-expected-win.txt
+data/accessibility/aria/aria-combobox-implicit-haspopup-expected-android-assist-data.txt
 data/accessibility/aria/aria-combobox-implicit-haspopup-expected-android-external.txt
 data/accessibility/aria/aria-combobox-implicit-haspopup-expected-auralinux.txt
 data/accessibility/aria/aria-combobox-implicit-haspopup-expected-blink.txt
 data/accessibility/aria/aria-combobox-implicit-haspopup-expected-mac.txt
 data/accessibility/aria/aria-combobox-implicit-haspopup-expected-win.txt
 data/accessibility/aria/aria-combobox-implicit-haspopup.html
+data/accessibility/aria/aria-combobox-uneditable-expected-android-assist-data.txt
 data/accessibility/aria/aria-combobox-uneditable-expected-android-external.txt
 data/accessibility/aria/aria-combobox-uneditable-expected-android.txt
 data/accessibility/aria/aria-combobox-uneditable-expected-auralinux.txt
@@ -575,6 +598,7 @@ data/accessibility/aria/aria-combobox-uneditable.html
 data/accessibility/aria/aria-combobox.html
 data/accessibility/aria/aria-comment-expected-blink.txt
 data/accessibility/aria/aria-comment.html
+data/accessibility/aria/aria-complementary-expected-android-assist-data.txt
 data/accessibility/aria/aria-complementary-expected-android-external.txt
 data/accessibility/aria/aria-complementary-expected-android.txt
 data/accessibility/aria/aria-complementary-expected-auralinux.txt
@@ -582,6 +606,7 @@ data/accessibility/aria/aria-complementary-expected-blink.txt
 data/accessibility/aria/aria-complementary-expected-mac.txt
 data/accessibility/aria/aria-complementary-expected-win.txt
 data/accessibility/aria/aria-complementary.html
+data/accessibility/aria/aria-contentinfo-expected-android-assist-data.txt
 data/accessibility/aria/aria-contentinfo-expected-android-external.txt
 data/accessibility/aria/aria-contentinfo-expected-android.txt
 data/accessibility/aria/aria-contentinfo-expected-auralinux.txt
@@ -590,6 +615,7 @@ data/accessibility/aria/aria-contentinfo-expected-mac.txt
 data/accessibility/aria/aria-contentinfo-expected-uia-win.txt
 data/accessibility/aria/aria-contentinfo-expected-win.txt
 data/accessibility/aria/aria-contentinfo.html
+data/accessibility/aria/aria-controls-expected-android-assist-data.txt
 data/accessibility/aria/aria-controls-expected-android-external.txt
 data/accessibility/aria/aria-controls-expected-android.txt
 data/accessibility/aria/aria-controls-expected-auralinux.txt
@@ -599,6 +625,7 @@ data/accessibility/aria/aria-controls-expected-win.txt
 data/accessibility/aria/aria-controls-many-paragraphs-between-expected-blink.txt
 data/accessibility/aria/aria-controls-many-paragraphs-between.html
 data/accessibility/aria/aria-controls.html
+data/accessibility/aria/aria-current-expected-android-assist-data.txt
 data/accessibility/aria/aria-current-expected-android-external.txt
 data/accessibility/aria/aria-current-expected-android.txt
 data/accessibility/aria/aria-current-expected-auralinux.txt
@@ -606,6 +633,7 @@ data/accessibility/aria/aria-current-expected-blink.txt
 data/accessibility/aria/aria-current-expected-mac.txt
 data/accessibility/aria/aria-current-expected-win.txt
 data/accessibility/aria/aria-current.html
+data/accessibility/aria/aria-definition-expected-android-assist-data.txt
 data/accessibility/aria/aria-definition-expected-android-external.txt
 data/accessibility/aria/aria-definition-expected-android.txt
 data/accessibility/aria/aria-definition-expected-auralinux.txt
@@ -613,6 +641,7 @@ data/accessibility/aria/aria-definition-expected-blink.txt
 data/accessibility/aria/aria-definition-expected-mac.txt
 data/accessibility/aria/aria-definition-expected-win.txt
 data/accessibility/aria/aria-definition.html
+data/accessibility/aria/aria-describedby-expected-android-assist-data.txt
 data/accessibility/aria/aria-describedby-expected-android-external.txt
 data/accessibility/aria/aria-describedby-expected-android.txt
 data/accessibility/aria/aria-describedby-expected-auralinux.txt
@@ -624,6 +653,7 @@ data/accessibility/aria/aria-describedby-expected-win.txt
 data/accessibility/aria/aria-describedby-updates-expected-blink.txt
 data/accessibility/aria/aria-describedby-updates.html
 data/accessibility/aria/aria-describedby.html
+data/accessibility/aria/aria-description-expected-android-assist-data.txt
 data/accessibility/aria/aria-description-expected-android-external.txt
 data/accessibility/aria/aria-description-expected-auralinux.txt
 data/accessibility/aria/aria-description-expected-blink.txt
@@ -631,11 +661,14 @@ data/accessibility/aria/aria-description-expected-mac.txt
 data/accessibility/aria/aria-description-expected-uia-win.txt
 data/accessibility/aria/aria-description-expected-win.txt
 data/accessibility/aria/aria-description.html
+data/accessibility/aria/aria-details-expected-android-assist-data.txt
 data/accessibility/aria/aria-details-expected-android-external.txt
 data/accessibility/aria/aria-details-expected-auralinux.txt
 data/accessibility/aria/aria-details-expected-blink.txt
 data/accessibility/aria/aria-details-expected-mac.txt
+data/accessibility/aria/aria-details-expected-uia-win.txt
 data/accessibility/aria/aria-details-expected-win.txt
+data/accessibility/aria/aria-details-multiple-expected-android-assist-data.txt
 data/accessibility/aria/aria-details-multiple-expected-android-external.txt
 data/accessibility/aria/aria-details-multiple-expected-auralinux.txt
 data/accessibility/aria/aria-details-multiple-expected-blink.txt
@@ -648,6 +681,7 @@ data/accessibility/aria/aria-details-roles-expected-mac.txt
 data/accessibility/aria/aria-details-roles-expected-win.txt
 data/accessibility/aria/aria-details-roles.html
 data/accessibility/aria/aria-details.html
+data/accessibility/aria/aria-dialog-expected-android-assist-data.txt
 data/accessibility/aria/aria-dialog-expected-android-external.txt
 data/accessibility/aria/aria-dialog-expected-android.txt
 data/accessibility/aria/aria-dialog-expected-auralinux.txt
@@ -658,6 +692,7 @@ data/accessibility/aria/aria-dialog.html
 data/accessibility/aria/aria-directory-children-expected-auralinux.txt
 data/accessibility/aria/aria-directory-children-expected-blink.txt
 data/accessibility/aria/aria-directory-children.html
+data/accessibility/aria/aria-directory-expected-android-assist-data.txt
 data/accessibility/aria/aria-directory-expected-android-external.txt
 data/accessibility/aria/aria-directory-expected-android.txt
 data/accessibility/aria/aria-directory-expected-auralinux.txt
@@ -665,6 +700,7 @@ data/accessibility/aria/aria-directory-expected-blink.txt
 data/accessibility/aria/aria-directory-expected-mac.txt
 data/accessibility/aria/aria-directory-expected-win.txt
 data/accessibility/aria/aria-directory.html
+data/accessibility/aria/aria-disabled-expected-android-assist-data.txt
 data/accessibility/aria/aria-disabled-expected-android-external.txt
 data/accessibility/aria/aria-disabled-expected-android.txt
 data/accessibility/aria/aria-disabled-expected-auralinux.txt
@@ -672,6 +708,7 @@ data/accessibility/aria/aria-disabled-expected-blink.txt
 data/accessibility/aria/aria-disabled-expected-mac.txt
 data/accessibility/aria/aria-disabled-expected-win.txt
 data/accessibility/aria/aria-disabled.html
+data/accessibility/aria/aria-document-expected-android-assist-data.txt
 data/accessibility/aria/aria-document-expected-android-external.txt
 data/accessibility/aria/aria-document-expected-android.txt
 data/accessibility/aria/aria-document-expected-auralinux.txt
@@ -679,6 +716,7 @@ data/accessibility/aria/aria-document-expected-blink.txt
 data/accessibility/aria/aria-document-expected-mac.txt
 data/accessibility/aria/aria-document-expected-win.txt
 data/accessibility/aria/aria-document.html
+data/accessibility/aria/aria-emphasis-expected-android-assist-data.txt
 data/accessibility/aria/aria-emphasis-expected-android-external.txt
 data/accessibility/aria/aria-emphasis-expected-android.txt
 data/accessibility/aria/aria-emphasis-expected-auralinux.txt
@@ -689,6 +727,7 @@ data/accessibility/aria/aria-emphasis-expected-win.txt
 data/accessibility/aria/aria-emphasis.html
 data/accessibility/aria/aria-empty-string-expected-blink.txt
 data/accessibility/aria/aria-empty-string.html
+data/accessibility/aria/aria-errormessage-expected-android-assist-data.txt
 data/accessibility/aria/aria-errormessage-expected-android-external.txt
 data/accessibility/aria/aria-errormessage-expected-auralinux-xenial.txt
 data/accessibility/aria/aria-errormessage-expected-auralinux.txt
@@ -697,6 +736,7 @@ data/accessibility/aria/aria-errormessage-expected-mac.txt
 data/accessibility/aria/aria-errormessage-expected-uia-win.txt
 data/accessibility/aria/aria-errormessage-expected-win.txt
 data/accessibility/aria/aria-errormessage.html
+data/accessibility/aria/aria-expanded-expected-android-assist-data.txt
 data/accessibility/aria/aria-expanded-expected-android-external.txt
 data/accessibility/aria/aria-expanded-expected-android.txt
 data/accessibility/aria/aria-expanded-expected-auralinux.txt
@@ -710,12 +750,14 @@ data/accessibility/aria/aria-feed-expected-auralinux.txt
 data/accessibility/aria/aria-feed-expected-mac.txt
 data/accessibility/aria/aria-feed-expected-win.txt
 data/accessibility/aria/aria-feed.html
+data/accessibility/aria/aria-figure-expected-android-assist-data.txt
 data/accessibility/aria/aria-figure-expected-android-external.txt
 data/accessibility/aria/aria-figure-expected-auralinux.txt
 data/accessibility/aria/aria-figure-expected-blink.txt
 data/accessibility/aria/aria-figure-expected-mac.txt
 data/accessibility/aria/aria-figure-expected-win.txt
 data/accessibility/aria/aria-figure.html
+data/accessibility/aria/aria-flowto-expected-android-assist-data.txt
 data/accessibility/aria/aria-flowto-expected-android-external.txt
 data/accessibility/aria/aria-flowto-expected-blink.txt
 data/accessibility/aria/aria-flowto-expected-mac.txt
@@ -727,6 +769,7 @@ data/accessibility/aria/aria-flowto.html
 data/accessibility/aria/aria-focusable-subwidget-not-editable-expected-win.txt
 data/accessibility/aria/aria-focusable-subwidget-not-editable.html
 data/accessibility/aria/aria-focusable-subwidget-not-goog-editable.html
+data/accessibility/aria/aria-form-expected-android-assist-data.txt
 data/accessibility/aria/aria-form-expected-android-external.txt
 data/accessibility/aria/aria-form-expected-android.txt
 data/accessibility/aria/aria-form-expected-auralinux.txt
@@ -734,6 +777,7 @@ data/accessibility/aria/aria-form-expected-blink.txt
 data/accessibility/aria/aria-form-expected-mac.txt
 data/accessibility/aria/aria-form-expected-win.txt
 data/accessibility/aria/aria-form.html
+data/accessibility/aria/aria-generic-expected-android-assist-data.txt
 data/accessibility/aria/aria-generic-expected-android-external.txt
 data/accessibility/aria/aria-generic-expected-android.txt
 data/accessibility/aria/aria-generic-expected-auralinux.txt
@@ -746,6 +790,7 @@ data/accessibility/aria/aria-global-expected-blink.txt
 data/accessibility/aria/aria-global.html
 data/accessibility/aria/aria-grid-dynamic-add-row-expected-blink.txt
 data/accessibility/aria/aria-grid-dynamic-add-row.html
+data/accessibility/aria/aria-grid-expected-android-assist-data.txt
 data/accessibility/aria/aria-grid-expected-android-external.txt
 data/accessibility/aria/aria-grid-expected-android.txt
 data/accessibility/aria/aria-grid-expected-auralinux.txt
@@ -756,6 +801,7 @@ data/accessibility/aria/aria-grid-expected-win.txt
 data/accessibility/aria/aria-grid-extra-wrap-elems-expected-blink.txt
 data/accessibility/aria/aria-grid-extra-wrap-elems.html
 data/accessibility/aria/aria-grid.html
+data/accessibility/aria/aria-gridcell-expected-android-assist-data.txt
 data/accessibility/aria/aria-gridcell-expected-android-external.txt
 data/accessibility/aria/aria-gridcell-expected-android.txt
 data/accessibility/aria/aria-gridcell-expected-auralinux.txt
@@ -770,6 +816,7 @@ data/accessibility/aria/aria-gridcell-focused-only-expected-uia-win.txt
 data/accessibility/aria/aria-gridcell-focused-only-expected-win.txt
 data/accessibility/aria/aria-gridcell-focused-only.html
 data/accessibility/aria/aria-gridcell.html
+data/accessibility/aria/aria-group-expected-android-assist-data.txt
 data/accessibility/aria/aria-group-expected-android-external.txt
 data/accessibility/aria/aria-group-expected-android.txt
 data/accessibility/aria/aria-group-expected-auralinux.txt
@@ -777,6 +824,7 @@ data/accessibility/aria/aria-group-expected-blink.txt
 data/accessibility/aria/aria-group-expected-mac.txt
 data/accessibility/aria/aria-group-expected-win.txt
 data/accessibility/aria/aria-group.html
+data/accessibility/aria/aria-haspopup-expected-android-assist-data.txt
 data/accessibility/aria/aria-haspopup-expected-android-external.txt
 data/accessibility/aria/aria-haspopup-expected-android.txt
 data/accessibility/aria/aria-haspopup-expected-auralinux.txt
@@ -784,6 +832,7 @@ data/accessibility/aria/aria-haspopup-expected-blink.txt
 data/accessibility/aria/aria-haspopup-expected-mac.txt
 data/accessibility/aria/aria-haspopup-expected-win.txt
 data/accessibility/aria/aria-haspopup.html
+data/accessibility/aria/aria-heading-expected-android-assist-data.txt
 data/accessibility/aria/aria-heading-expected-android-external.txt
 data/accessibility/aria/aria-heading-expected-android.txt
 data/accessibility/aria/aria-heading-expected-auralinux.txt
@@ -797,11 +846,13 @@ data/accessibility/aria/aria-hidden-descendant-tabindex-change-expected-blink.tx
 data/accessibility/aria/aria-hidden-descendant-tabindex-change.html
 data/accessibility/aria/aria-hidden-descendants-expected-blink.txt
 data/accessibility/aria/aria-hidden-descendants.html
+data/accessibility/aria/aria-hidden-described-by-expected-android-assist-data.txt
 data/accessibility/aria/aria-hidden-described-by-expected-android-external.txt
 data/accessibility/aria/aria-hidden-described-by-expected-blink.txt
 data/accessibility/aria/aria-hidden-described-by-expected-uia-win.txt
 data/accessibility/aria/aria-hidden-described-by-expected-win.txt
 data/accessibility/aria/aria-hidden-described-by.html
+data/accessibility/aria/aria-hidden-expected-android-assist-data.txt
 data/accessibility/aria/aria-hidden-expected-android-external.txt
 data/accessibility/aria/aria-hidden-expected-android.txt
 data/accessibility/aria/aria-hidden-expected-auralinux.txt
@@ -832,6 +883,7 @@ data/accessibility/aria/aria-hidden-iframe-expected-android-external.txt
 data/accessibility/aria/aria-hidden-iframe-expected-android.txt
 data/accessibility/aria/aria-hidden-iframe-expected-blink.txt
 data/accessibility/aria/aria-hidden-iframe.html
+data/accessibility/aria/aria-hidden-labelled-by-expected-android-assist-data.txt
 data/accessibility/aria/aria-hidden-labelled-by-expected-android-external.txt
 data/accessibility/aria/aria-hidden-labelled-by-expected-blink.txt
 data/accessibility/aria/aria-hidden-labelled-by-expected-uia-win.txt
@@ -844,15 +896,18 @@ data/accessibility/aria/aria-hidden-single-descendant-visibility-hidden-expected
 data/accessibility/aria/aria-hidden-single-descendant-visibility-hidden.html
 data/accessibility/aria/aria-hidden-single-descendant.html
 data/accessibility/aria/aria-hidden.html
+data/accessibility/aria/aria-illegal-val-expected-android-assist-data.txt
 data/accessibility/aria/aria-illegal-val-expected-android-external.txt
 data/accessibility/aria/aria-illegal-val-expected-auralinux.txt
 data/accessibility/aria/aria-illegal-val-expected-blink.txt
 data/accessibility/aria/aria-illegal-val-expected-win.txt
 data/accessibility/aria/aria-illegal-val.html
+data/accessibility/aria/aria-img-child-expected-android-assist-data.txt
 data/accessibility/aria/aria-img-child-expected-android-external.txt
 data/accessibility/aria/aria-img-child-expected-auralinux.txt
 data/accessibility/aria/aria-img-child-expected-blink.txt
 data/accessibility/aria/aria-img-child.html
+data/accessibility/aria/aria-img-expected-android-assist-data.txt
 data/accessibility/aria/aria-img-expected-android-external.txt
 data/accessibility/aria/aria-img-expected-android.txt
 data/accessibility/aria/aria-img-expected-auralinux.txt
@@ -860,6 +915,7 @@ data/accessibility/aria/aria-img-expected-blink.txt
 data/accessibility/aria/aria-img-expected-mac.txt
 data/accessibility/aria/aria-img-expected-win.txt
 data/accessibility/aria/aria-img.html
+data/accessibility/aria/aria-insertion-deletion-expected-android-assist-data.txt
 data/accessibility/aria/aria-insertion-deletion-expected-android-external.txt
 data/accessibility/aria/aria-insertion-deletion-expected-android.txt
 data/accessibility/aria/aria-insertion-deletion-expected-auralinux.txt
@@ -868,12 +924,14 @@ data/accessibility/aria/aria-insertion-deletion-expected-mac.txt
 data/accessibility/aria/aria-insertion-deletion-expected-uia-win.txt
 data/accessibility/aria/aria-insertion-deletion-expected-win.txt
 data/accessibility/aria/aria-insertion-deletion.html
+data/accessibility/aria/aria-keyshortcuts-expected-android-assist-data.txt
 data/accessibility/aria/aria-keyshortcuts-expected-android-external.txt
 data/accessibility/aria/aria-keyshortcuts-expected-auralinux.txt
 data/accessibility/aria/aria-keyshortcuts-expected-blink.txt
 data/accessibility/aria/aria-keyshortcuts-expected-mac.txt
 data/accessibility/aria/aria-keyshortcuts-expected-win.txt
 data/accessibility/aria/aria-keyshortcuts.html
+data/accessibility/aria/aria-label-expected-android-assist-data.txt
 data/accessibility/aria/aria-label-expected-android-external.txt
 data/accessibility/aria/aria-label-expected-android.txt
 data/accessibility/aria/aria-label-expected-auralinux.txt
@@ -881,6 +939,7 @@ data/accessibility/aria/aria-label-expected-blink.txt
 data/accessibility/aria/aria-label-expected-mac.txt
 data/accessibility/aria/aria-label-expected-win.txt
 data/accessibility/aria/aria-label.html
+data/accessibility/aria/aria-labelledby-heading-expected-android-assist-data.txt
 data/accessibility/aria/aria-labelledby-heading-expected-android-external.txt
 data/accessibility/aria/aria-labelledby-heading-expected-blink.txt
 data/accessibility/aria/aria-labelledby-heading-expected-mac.txt
@@ -903,6 +962,7 @@ data/accessibility/aria/aria-link-expected-auralinux.txt
 data/accessibility/aria/aria-link-expected-mac.txt
 data/accessibility/aria/aria-link-expected-win.txt
 data/accessibility/aria/aria-link.html
+data/accessibility/aria/aria-list-expected-android-assist-data.txt
 data/accessibility/aria/aria-list-expected-android-external.txt
 data/accessibility/aria/aria-list-expected-android.txt
 data/accessibility/aria/aria-list-expected-auralinux.txt
@@ -913,6 +973,7 @@ data/accessibility/aria/aria-list.html
 data/accessibility/aria/aria-listbox-activedescendant-expected-blink.txt
 data/accessibility/aria/aria-listbox-activedescendant-expected-mac.txt
 data/accessibility/aria/aria-listbox-activedescendant.html
+data/accessibility/aria/aria-listbox-aria-selected-expected-android-assist-data.txt
 data/accessibility/aria/aria-listbox-aria-selected-expected-android-external.txt
 data/accessibility/aria/aria-listbox-aria-selected-expected-blink.txt
 data/accessibility/aria/aria-listbox-aria-selected-expected-mac.txt
@@ -920,6 +981,7 @@ data/accessibility/aria/aria-listbox-aria-selected.html
 data/accessibility/aria/aria-listbox-childfocus-expected-blink.txt
 data/accessibility/aria/aria-listbox-childfocus-expected-mac.txt
 data/accessibility/aria/aria-listbox-childfocus.html
+data/accessibility/aria/aria-listbox-disabled-expected-android-assist-data.txt
 data/accessibility/aria/aria-listbox-disabled-expected-android-external.txt
 data/accessibility/aria/aria-listbox-disabled-expected-android.txt
 data/accessibility/aria/aria-listbox-disabled-expected-auralinux.txt
@@ -928,6 +990,7 @@ data/accessibility/aria/aria-listbox-disabled-expected-mac.txt
 data/accessibility/aria/aria-listbox-disabled-expected-uia-win.txt
 data/accessibility/aria/aria-listbox-disabled-expected-win.txt
 data/accessibility/aria/aria-listbox-disabled.html
+data/accessibility/aria/aria-listbox-expected-android-assist-data.txt
 data/accessibility/aria/aria-listbox-expected-android-external.txt
 data/accessibility/aria/aria-listbox-expected-android.txt
 data/accessibility/aria/aria-listbox-expected-auralinux.txt
@@ -935,6 +998,7 @@ data/accessibility/aria/aria-listbox-expected-blink.txt
 data/accessibility/aria/aria-listbox-expected-mac.txt
 data/accessibility/aria/aria-listbox-expected-win.txt
 data/accessibility/aria/aria-listbox.html
+data/accessibility/aria/aria-listitem-expected-android-assist-data.txt
 data/accessibility/aria/aria-listitem-expected-android-external.txt
 data/accessibility/aria/aria-listitem-expected-android.txt
 data/accessibility/aria/aria-listitem-expected-auralinux.txt
@@ -942,6 +1006,7 @@ data/accessibility/aria/aria-listitem-expected-blink.txt
 data/accessibility/aria/aria-listitem-expected-mac.txt
 data/accessibility/aria/aria-listitem-expected-win.txt
 data/accessibility/aria/aria-listitem.html
+data/accessibility/aria/aria-live-expected-android-assist-data.txt
 data/accessibility/aria/aria-live-expected-android-external.txt
 data/accessibility/aria/aria-live-expected-android.txt
 data/accessibility/aria/aria-live-expected-auralinux.txt
@@ -950,17 +1015,20 @@ data/accessibility/aria/aria-live-expected-mac.txt
 data/accessibility/aria/aria-live-expected-win.txt
 data/accessibility/aria/aria-live-nested-expected-blink.txt
 data/accessibility/aria/aria-live-nested.html
+data/accessibility/aria/aria-live-with-content-expected-android-assist-data.txt
 data/accessibility/aria/aria-live-with-content-expected-android-external.txt
 data/accessibility/aria/aria-live-with-content-expected-blink.txt
 data/accessibility/aria/aria-live-with-content-expected-mac.txt
 data/accessibility/aria/aria-live-with-content.html
 data/accessibility/aria/aria-live.html
+data/accessibility/aria/aria-log-expected-android-assist-data.txt
 data/accessibility/aria/aria-log-expected-android-external.txt
 data/accessibility/aria/aria-log-expected-auralinux.txt
 data/accessibility/aria/aria-log-expected-blink.txt
 data/accessibility/aria/aria-log-expected-mac.txt
 data/accessibility/aria/aria-log-expected-win.txt
 data/accessibility/aria/aria-log.html
+data/accessibility/aria/aria-main-expected-android-assist-data.txt
 data/accessibility/aria/aria-main-expected-android-external.txt
 data/accessibility/aria/aria-main-expected-android.txt
 data/accessibility/aria/aria-main-expected-auralinux.txt
@@ -968,12 +1036,14 @@ data/accessibility/aria/aria-main-expected-blink.txt
 data/accessibility/aria/aria-main-expected-mac.txt
 data/accessibility/aria/aria-main-expected-win.txt
 data/accessibility/aria/aria-main.html
+data/accessibility/aria/aria-marquee-expected-android-assist-data.txt
 data/accessibility/aria/aria-marquee-expected-android-external.txt
 data/accessibility/aria/aria-marquee-expected-auralinux.txt
 data/accessibility/aria/aria-marquee-expected-blink.txt
 data/accessibility/aria/aria-marquee-expected-mac.txt
 data/accessibility/aria/aria-marquee-expected-win.txt
 data/accessibility/aria/aria-marquee.html
+data/accessibility/aria/aria-math-expected-android-assist-data.txt
 data/accessibility/aria/aria-math-expected-android-external.txt
 data/accessibility/aria/aria-math-expected-android.txt
 data/accessibility/aria/aria-math-expected-auralinux.txt
@@ -981,6 +1051,7 @@ data/accessibility/aria/aria-math-expected-blink.txt
 data/accessibility/aria/aria-math-expected-mac.txt
 data/accessibility/aria/aria-math-expected-win.txt
 data/accessibility/aria/aria-math.html
+data/accessibility/aria/aria-menu-expected-android-assist-data.txt
 data/accessibility/aria/aria-menu-expected-android-external.txt
 data/accessibility/aria/aria-menu-expected-android.txt
 data/accessibility/aria/aria-menu-expected-auralinux.txt
@@ -988,6 +1059,7 @@ data/accessibility/aria/aria-menu-expected-blink.txt
 data/accessibility/aria/aria-menu-expected-mac.txt
 data/accessibility/aria/aria-menu-expected-win.txt
 data/accessibility/aria/aria-menu.html
+data/accessibility/aria/aria-menubar-expected-android-assist-data.txt
 data/accessibility/aria/aria-menubar-expected-android-external.txt
 data/accessibility/aria/aria-menubar-expected-android.txt
 data/accessibility/aria/aria-menubar-expected-auralinux.txt
@@ -995,12 +1067,14 @@ data/accessibility/aria/aria-menubar-expected-blink.txt
 data/accessibility/aria/aria-menubar-expected-mac.txt
 data/accessibility/aria/aria-menubar-expected-win.txt
 data/accessibility/aria/aria-menubar.html
+data/accessibility/aria/aria-menuitem-expected-android-assist-data.txt
 data/accessibility/aria/aria-menuitem-expected-android-external.txt
 data/accessibility/aria/aria-menuitem-expected-android.txt
 data/accessibility/aria/aria-menuitem-expected-auralinux.txt
 data/accessibility/aria/aria-menuitem-expected-blink.txt
 data/accessibility/aria/aria-menuitem-expected-mac.txt
 data/accessibility/aria/aria-menuitem-expected-win.txt
+data/accessibility/aria/aria-menuitem-in-group-expected-android-assist-data.txt
 data/accessibility/aria/aria-menuitem-in-group-expected-android-external.txt
 data/accessibility/aria/aria-menuitem-in-group-expected-android.txt
 data/accessibility/aria/aria-menuitem-in-group-expected-auralinux.txt
@@ -1010,6 +1084,7 @@ data/accessibility/aria/aria-menuitem-in-group-expected-uia-win.txt
 data/accessibility/aria/aria-menuitem-in-group-expected-win.txt
 data/accessibility/aria/aria-menuitem-in-group.html
 data/accessibility/aria/aria-menuitem.html
+data/accessibility/aria/aria-menuitemcheckbox-expected-android-assist-data.txt
 data/accessibility/aria/aria-menuitemcheckbox-expected-android-external.txt
 data/accessibility/aria/aria-menuitemcheckbox-expected-android.txt
 data/accessibility/aria/aria-menuitemcheckbox-expected-auralinux.txt
@@ -1017,6 +1092,7 @@ data/accessibility/aria/aria-menuitemcheckbox-expected-blink.txt
 data/accessibility/aria/aria-menuitemcheckbox-expected-mac.txt
 data/accessibility/aria/aria-menuitemcheckbox-expected-win.txt
 data/accessibility/aria/aria-menuitemcheckbox.html
+data/accessibility/aria/aria-menuitemradio-expected-android-assist-data.txt
 data/accessibility/aria/aria-menuitemradio-expected-android-external.txt
 data/accessibility/aria/aria-menuitemradio-expected-android.txt
 data/accessibility/aria/aria-menuitemradio-expected-auralinux.txt
@@ -1024,6 +1100,7 @@ data/accessibility/aria/aria-menuitemradio-expected-blink.txt
 data/accessibility/aria/aria-menuitemradio-expected-mac.txt
 data/accessibility/aria/aria-menuitemradio-expected-win.txt
 data/accessibility/aria/aria-menuitemradio.html
+data/accessibility/aria/aria-meter-expected-android-assist-data.txt
 data/accessibility/aria/aria-meter-expected-android-external.txt
 data/accessibility/aria/aria-meter-expected-android.txt
 data/accessibility/aria/aria-meter-expected-auralinux.txt
@@ -1031,6 +1108,7 @@ data/accessibility/aria/aria-meter-expected-blink.txt
 data/accessibility/aria/aria-meter-expected-mac.txt
 data/accessibility/aria/aria-meter-expected-win.txt
 data/accessibility/aria/aria-meter.html
+data/accessibility/aria/aria-mismatched-table-attr-expected-android-assist-data.txt
 data/accessibility/aria/aria-mismatched-table-attr-expected-android-external.txt
 data/accessibility/aria/aria-mismatched-table-attr-expected-blink.txt
 data/accessibility/aria/aria-mismatched-table-attr-expected-mac.txt
@@ -1052,6 +1130,7 @@ data/accessibility/aria/aria-modal-unhidden-expected-auralinux.txt
 data/accessibility/aria/aria-modal-unhidden-expected-mac.txt
 data/accessibility/aria/aria-modal-unhidden.html
 data/accessibility/aria/aria-modal.html
+data/accessibility/aria/aria-multiline-expected-android-assist-data.txt
 data/accessibility/aria/aria-multiline-expected-android-external.txt
 data/accessibility/aria/aria-multiline-expected-android.txt
 data/accessibility/aria/aria-multiline-expected-auralinux.txt
@@ -1059,6 +1138,7 @@ data/accessibility/aria/aria-multiline-expected-blink.txt
 data/accessibility/aria/aria-multiline-expected-mac.txt
 data/accessibility/aria/aria-multiline-expected-win.txt
 data/accessibility/aria/aria-multiline.html
+data/accessibility/aria/aria-multiselectable-expected-android-assist-data.txt
 data/accessibility/aria/aria-multiselectable-expected-android-external.txt
 data/accessibility/aria/aria-multiselectable-expected-android.txt
 data/accessibility/aria/aria-multiselectable-expected-auralinux.txt
@@ -1066,6 +1146,7 @@ data/accessibility/aria/aria-multiselectable-expected-blink.txt
 data/accessibility/aria/aria-multiselectable-expected-mac.txt
 data/accessibility/aria/aria-multiselectable-expected-win.txt
 data/accessibility/aria/aria-multiselectable.html
+data/accessibility/aria/aria-navigation-expected-android-assist-data.txt
 data/accessibility/aria/aria-navigation-expected-android-external.txt
 data/accessibility/aria/aria-navigation-expected-android.txt
 data/accessibility/aria/aria-navigation-expected-auralinux.txt
@@ -1073,6 +1154,7 @@ data/accessibility/aria/aria-navigation-expected-blink.txt
 data/accessibility/aria/aria-navigation-expected-mac.txt
 data/accessibility/aria/aria-navigation-expected-win.txt
 data/accessibility/aria/aria-navigation.html
+data/accessibility/aria/aria-none-expected-android-assist-data.txt
 data/accessibility/aria/aria-none-expected-android-external.txt
 data/accessibility/aria/aria-none-expected-android.txt
 data/accessibility/aria/aria-none-expected-auralinux.txt
@@ -1080,6 +1162,7 @@ data/accessibility/aria/aria-none-expected-blink.txt
 data/accessibility/aria/aria-none-expected-mac.txt
 data/accessibility/aria/aria-none-expected-win.txt
 data/accessibility/aria/aria-none.html
+data/accessibility/aria/aria-note-expected-android-assist-data.txt
 data/accessibility/aria/aria-note-expected-android-external.txt
 data/accessibility/aria/aria-note-expected-android.txt
 data/accessibility/aria/aria-note-expected-auralinux.txt
@@ -1087,10 +1170,12 @@ data/accessibility/aria/aria-note-expected-blink.txt
 data/accessibility/aria/aria-note-expected-mac.txt
 data/accessibility/aria/aria-note-expected-win.txt
 data/accessibility/aria/aria-note.html
+data/accessibility/aria/aria-option-complex-children-expected-android-assist-data.txt
 data/accessibility/aria/aria-option-complex-children-expected-android-external.txt
 data/accessibility/aria/aria-option-complex-children-expected-blink.txt
 data/accessibility/aria/aria-option-complex-children-expected-mac.txt
 data/accessibility/aria/aria-option-complex-children.html
+data/accessibility/aria/aria-option-expected-android-assist-data.txt
 data/accessibility/aria/aria-option-expected-android-external.txt
 data/accessibility/aria/aria-option-expected-android.txt
 data/accessibility/aria/aria-option-expected-auralinux.txt
@@ -1098,6 +1183,7 @@ data/accessibility/aria/aria-option-expected-blink.txt
 data/accessibility/aria/aria-option-expected-mac.txt
 data/accessibility/aria/aria-option-expected-win.txt
 data/accessibility/aria/aria-option.html
+data/accessibility/aria/aria-orientation-expected-android-assist-data.txt
 data/accessibility/aria/aria-orientation-expected-android-external.txt
 data/accessibility/aria/aria-orientation-expected-android.txt
 data/accessibility/aria/aria-orientation-expected-auralinux.txt
@@ -1109,16 +1195,19 @@ data/accessibility/aria/aria-owns-crash-2-expected-blink.txt
 data/accessibility/aria/aria-owns-crash-2.html
 data/accessibility/aria/aria-owns-crash-expected-blink.txt
 data/accessibility/aria/aria-owns-crash.html
+data/accessibility/aria/aria-owns-expected-android-assist-data.txt
 data/accessibility/aria/aria-owns-expected-android-external.txt
 data/accessibility/aria/aria-owns-expected-auralinux.txt
 data/accessibility/aria/aria-owns-expected-blink.txt
 data/accessibility/aria/aria-owns-expected-mac.txt
+data/accessibility/aria/aria-owns-from-display-none-expected-android-assist-data.txt
 data/accessibility/aria/aria-owns-from-display-none-expected-android-external.txt
 data/accessibility/aria/aria-owns-from-display-none-expected-auralinux.txt
 data/accessibility/aria/aria-owns-from-display-none-expected-blink.txt
 data/accessibility/aria/aria-owns-from-display-none.html
 data/accessibility/aria/aria-owns-grid-expected-blink.txt
 data/accessibility/aria/aria-owns-grid.html
+data/accessibility/aria/aria-owns-ignored-expected-android-assist-data.txt
 data/accessibility/aria/aria-owns-ignored-expected-android-external.txt
 data/accessibility/aria/aria-owns-ignored-expected-auralinux.txt
 data/accessibility/aria/aria-owns-ignored-expected-blink.txt
@@ -1126,6 +1215,7 @@ data/accessibility/aria/aria-owns-ignored.html
 data/accessibility/aria/aria-owns-included-in-tree-expected-auralinux.txt
 data/accessibility/aria/aria-owns-included-in-tree-expected-blink.txt
 data/accessibility/aria/aria-owns-included-in-tree.html
+data/accessibility/aria/aria-owns-list-expected-android-assist-data.txt
 data/accessibility/aria/aria-owns-list-expected-android-external.txt
 data/accessibility/aria/aria-owns-list-expected-blink.txt
 data/accessibility/aria/aria-owns-list-expected-mac.txt
@@ -1146,6 +1236,7 @@ data/accessibility/aria/aria-posinset-expected-blink.txt
 data/accessibility/aria/aria-posinset-expected-mac.txt
 data/accessibility/aria/aria-posinset-expected-win.txt
 data/accessibility/aria/aria-posinset.html
+data/accessibility/aria/aria-presentation-expected-android-assist-data.txt
 data/accessibility/aria/aria-presentation-expected-android-external.txt
 data/accessibility/aria/aria-presentation-expected-android.txt
 data/accessibility/aria/aria-presentation-expected-auralinux.txt
@@ -1153,6 +1244,7 @@ data/accessibility/aria/aria-presentation-expected-blink.txt
 data/accessibility/aria/aria-presentation-expected-mac.txt
 data/accessibility/aria/aria-presentation-expected-uia-win.txt
 data/accessibility/aria/aria-presentation-expected-win.txt
+data/accessibility/aria/aria-presentation-in-list-expected-android-assist-data.txt
 data/accessibility/aria/aria-presentation-in-list-expected-android-external.txt
 data/accessibility/aria/aria-presentation-in-list-expected-android.txt
 data/accessibility/aria/aria-presentation-in-list-expected-auralinux.txt
@@ -1162,6 +1254,7 @@ data/accessibility/aria/aria-presentation-in-list-expected-uia-win.txt
 data/accessibility/aria/aria-presentation-in-list-expected-win.txt
 data/accessibility/aria/aria-presentation-in-list.html
 data/accessibility/aria/aria-presentation.html
+data/accessibility/aria/aria-pressed-expected-android-assist-data.txt
 data/accessibility/aria/aria-pressed-expected-android-external.txt
 data/accessibility/aria/aria-pressed-expected-android.txt
 data/accessibility/aria/aria-pressed-expected-auralinux.txt
@@ -1169,6 +1262,7 @@ data/accessibility/aria/aria-pressed-expected-blink.txt
 data/accessibility/aria/aria-pressed-expected-mac.txt
 data/accessibility/aria/aria-pressed-expected-win.txt
 data/accessibility/aria/aria-pressed.html
+data/accessibility/aria/aria-progressbar-expected-android-assist-data.txt
 data/accessibility/aria/aria-progressbar-expected-android-external.txt
 data/accessibility/aria/aria-progressbar-expected-android.txt
 data/accessibility/aria/aria-progressbar-expected-auralinux.txt
@@ -1176,6 +1270,7 @@ data/accessibility/aria/aria-progressbar-expected-blink.txt
 data/accessibility/aria/aria-progressbar-expected-mac.txt
 data/accessibility/aria/aria-progressbar-expected-win.txt
 data/accessibility/aria/aria-progressbar.html
+data/accessibility/aria/aria-radio-expected-android-assist-data.txt
 data/accessibility/aria/aria-radio-expected-android-external.txt
 data/accessibility/aria/aria-radio-expected-android.txt
 data/accessibility/aria/aria-radio-expected-auralinux.txt
@@ -1186,6 +1281,7 @@ data/accessibility/aria/aria-radio-in-shadow-root-expected-blink.txt
 data/accessibility/aria/aria-radio-in-shadow-root-expected-mac.txt
 data/accessibility/aria/aria-radio-in-shadow-root.html
 data/accessibility/aria/aria-radio.html
+data/accessibility/aria/aria-radiogroup-expected-android-assist-data.txt
 data/accessibility/aria/aria-radiogroup-expected-android-external.txt
 data/accessibility/aria/aria-radiogroup-expected-android.txt
 data/accessibility/aria/aria-radiogroup-expected-auralinux.txt
@@ -1193,6 +1289,7 @@ data/accessibility/aria/aria-radiogroup-expected-blink.txt
 data/accessibility/aria/aria-radiogroup-expected-mac.txt
 data/accessibility/aria/aria-radiogroup-expected-win.txt
 data/accessibility/aria/aria-radiogroup.html
+data/accessibility/aria/aria-readonly-expected-android-assist-data.txt
 data/accessibility/aria/aria-readonly-expected-android-external.txt
 data/accessibility/aria/aria-readonly-expected-android.txt
 data/accessibility/aria/aria-readonly-expected-auralinux.txt
@@ -1201,6 +1298,7 @@ data/accessibility/aria/aria-readonly-expected-mac.txt
 data/accessibility/aria/aria-readonly-expected-uia-win.txt
 data/accessibility/aria/aria-readonly-expected-win.txt
 data/accessibility/aria/aria-readonly.html
+data/accessibility/aria/aria-region-expected-android-assist-data.txt
 data/accessibility/aria/aria-region-expected-android-external.txt
 data/accessibility/aria/aria-region-expected-android.txt
 data/accessibility/aria/aria-region-expected-auralinux.txt
@@ -1208,6 +1306,7 @@ data/accessibility/aria/aria-region-expected-blink.txt
 data/accessibility/aria/aria-region-expected-mac.txt
 data/accessibility/aria/aria-region-expected-win.txt
 data/accessibility/aria/aria-region.html
+data/accessibility/aria/aria-relevant-expected-android-assist-data.txt
 data/accessibility/aria/aria-relevant-expected-android-external.txt
 data/accessibility/aria/aria-relevant-expected-android.txt
 data/accessibility/aria/aria-relevant-expected-auralinux.txt
@@ -1217,6 +1316,7 @@ data/accessibility/aria/aria-relevant-expected-win.txt
 data/accessibility/aria/aria-relevant.html
 data/accessibility/aria/aria-required-empty-input-expected-blink.txt
 data/accessibility/aria/aria-required-empty-input.html
+data/accessibility/aria/aria-required-expected-android-assist-data.txt
 data/accessibility/aria/aria-required-expected-android-external.txt
 data/accessibility/aria/aria-required-expected-android.txt
 data/accessibility/aria/aria-required-expected-auralinux.txt
@@ -1224,6 +1324,7 @@ data/accessibility/aria/aria-required-expected-blink.txt
 data/accessibility/aria/aria-required-expected-mac.txt
 data/accessibility/aria/aria-required-expected-win.txt
 data/accessibility/aria/aria-required.html
+data/accessibility/aria/aria-roledescription-expected-android-assist-data.txt
 data/accessibility/aria/aria-roledescription-expected-android-external.txt
 data/accessibility/aria/aria-roledescription-expected-auralinux.txt
 data/accessibility/aria/aria-roledescription-expected-blink.txt
@@ -1231,6 +1332,7 @@ data/accessibility/aria/aria-roledescription-expected-mac.txt
 data/accessibility/aria/aria-roledescription-expected-uia-win.txt
 data/accessibility/aria/aria-roledescription-expected-win.txt
 data/accessibility/aria/aria-roledescription.html
+data/accessibility/aria/aria-row-attr-expected-android-assist-data.txt
 data/accessibility/aria/aria-row-attr-expected-android-external.txt
 data/accessibility/aria/aria-row-attr-expected-android.txt
 data/accessibility/aria/aria-row-attr-expected-auralinux.txt
@@ -1239,6 +1341,7 @@ data/accessibility/aria/aria-row-attr-expected-mac.txt
 data/accessibility/aria/aria-row-attr-expected-uia-win.txt
 data/accessibility/aria/aria-row-attr-expected-win.txt
 data/accessibility/aria/aria-row-attr.html
+data/accessibility/aria/aria-row-expected-android-assist-data.txt
 data/accessibility/aria/aria-row-expected-android-external.txt
 data/accessibility/aria/aria-row-expected-android.txt
 data/accessibility/aria/aria-row-expected-auralinux.txt
@@ -1246,6 +1349,7 @@ data/accessibility/aria/aria-row-expected-blink.txt
 data/accessibility/aria/aria-row-expected-mac.txt
 data/accessibility/aria/aria-row-expected-win.txt
 data/accessibility/aria/aria-row.html
+data/accessibility/aria/aria-rowgroup-expected-android-assist-data.txt
 data/accessibility/aria/aria-rowgroup-expected-android-external.txt
 data/accessibility/aria/aria-rowgroup-expected-android.txt
 data/accessibility/aria/aria-rowgroup-expected-auralinux.txt
@@ -1253,6 +1357,7 @@ data/accessibility/aria/aria-rowgroup-expected-blink.txt
 data/accessibility/aria/aria-rowgroup-expected-mac.txt
 data/accessibility/aria/aria-rowgroup-expected-win.txt
 data/accessibility/aria/aria-rowgroup.html
+data/accessibility/aria/aria-rowheader-expected-android-assist-data.txt
 data/accessibility/aria/aria-rowheader-expected-android-external.txt
 data/accessibility/aria/aria-rowheader-expected-android.txt
 data/accessibility/aria/aria-rowheader-expected-auralinux.txt
@@ -1263,6 +1368,7 @@ data/accessibility/aria/aria-rowheader.html
 data/accessibility/aria/aria-rowtext-expected-auralinux.txt
 data/accessibility/aria/aria-rowtext-expected-win.txt
 data/accessibility/aria/aria-rowtext.html
+data/accessibility/aria/aria-scrollbar-expected-android-assist-data.txt
 data/accessibility/aria/aria-scrollbar-expected-android-external.txt
 data/accessibility/aria/aria-scrollbar-expected-android.txt
 data/accessibility/aria/aria-scrollbar-expected-auralinux.txt
@@ -1275,6 +1381,7 @@ data/accessibility/aria/aria-scrollbar-node-expected-blink.txt
 data/accessibility/aria/aria-scrollbar-node-expected-mac.txt
 data/accessibility/aria/aria-scrollbar-node-expected-win.txt
 data/accessibility/aria/aria-scrollbar.html
+data/accessibility/aria/aria-search-expected-android-assist-data.txt
 data/accessibility/aria/aria-search-expected-android-external.txt
 data/accessibility/aria/aria-search-expected-android.txt
 data/accessibility/aria/aria-search-expected-auralinux.txt
@@ -1297,6 +1404,7 @@ data/accessibility/aria/aria-searchbox-with-selection-expected-mac.txt
 data/accessibility/aria/aria-searchbox-with-selection-expected-win.txt
 data/accessibility/aria/aria-searchbox-with-selection.html
 data/accessibility/aria/aria-searchbox.html
+data/accessibility/aria/aria-selected-expected-android-assist-data.txt
 data/accessibility/aria/aria-selected-expected-android-external.txt
 data/accessibility/aria/aria-selected-expected-android.txt
 data/accessibility/aria/aria-selected-expected-auralinux.txt
@@ -1304,6 +1412,7 @@ data/accessibility/aria/aria-selected-expected-blink.txt
 data/accessibility/aria/aria-selected-expected-mac.txt
 data/accessibility/aria/aria-selected-expected-win.txt
 data/accessibility/aria/aria-selected.html
+data/accessibility/aria/aria-separator-expected-android-assist-data.txt
 data/accessibility/aria/aria-separator-expected-android-external.txt
 data/accessibility/aria/aria-separator-expected-android.txt
 data/accessibility/aria/aria-separator-expected-auralinux.txt
@@ -1315,6 +1424,7 @@ data/accessibility/aria/aria-set-counts-with-hidden-items-expected-blink.txt
 data/accessibility/aria/aria-set-counts-with-hidden-items.html
 data/accessibility/aria/aria-set-counts-with-tree-levels-expected-blink.txt
 data/accessibility/aria/aria-set-counts-with-tree-levels.html
+data/accessibility/aria/aria-setsize-expected-android-assist-data.txt
 data/accessibility/aria/aria-setsize-expected-android-external.txt
 data/accessibility/aria/aria-setsize-expected-android.txt
 data/accessibility/aria/aria-setsize-expected-auralinux.txt
@@ -1322,6 +1432,7 @@ data/accessibility/aria/aria-setsize-expected-blink.txt
 data/accessibility/aria/aria-setsize-expected-mac.txt
 data/accessibility/aria/aria-setsize-expected-win.txt
 data/accessibility/aria/aria-setsize.html
+data/accessibility/aria/aria-slider-expected-android-assist-data.txt
 data/accessibility/aria/aria-slider-expected-android-external.txt
 data/accessibility/aria/aria-slider-expected-android.txt
 data/accessibility/aria/aria-slider-expected-auralinux.txt
@@ -1329,6 +1440,7 @@ data/accessibility/aria/aria-slider-expected-blink.txt
 data/accessibility/aria/aria-slider-expected-mac.txt
 data/accessibility/aria/aria-slider-expected-win.txt
 data/accessibility/aria/aria-slider.html
+data/accessibility/aria/aria-sort-aria-grid-expected-android-assist-data.txt
 data/accessibility/aria/aria-sort-aria-grid-expected-android-external.txt
 data/accessibility/aria/aria-sort-aria-grid-expected-android.txt
 data/accessibility/aria/aria-sort-aria-grid-expected-auralinux.txt
@@ -1336,6 +1448,7 @@ data/accessibility/aria/aria-sort-aria-grid-expected-blink.txt
 data/accessibility/aria/aria-sort-aria-grid-expected-mac.txt
 data/accessibility/aria/aria-sort-aria-grid-expected-win.txt
 data/accessibility/aria/aria-sort-aria-grid.html
+data/accessibility/aria/aria-sort-html-table-expected-android-assist-data.txt
 data/accessibility/aria/aria-sort-html-table-expected-android-external.txt
 data/accessibility/aria/aria-sort-html-table-expected-android.txt
 data/accessibility/aria/aria-sort-html-table-expected-auralinux.txt
@@ -1349,6 +1462,7 @@ data/accessibility/aria/aria-spinbutton-expected-mac.txt
 data/accessibility/aria/aria-spinbutton-expected-uia-win.txt
 data/accessibility/aria/aria-spinbutton-expected-win.txt
 data/accessibility/aria/aria-spinbutton.html
+data/accessibility/aria/aria-status-expected-android-assist-data.txt
 data/accessibility/aria/aria-status-expected-android-external.txt
 data/accessibility/aria/aria-status-expected-android.txt
 data/accessibility/aria/aria-status-expected-auralinux.txt
@@ -1356,6 +1470,7 @@ data/accessibility/aria/aria-status-expected-blink.txt
 data/accessibility/aria/aria-status-expected-mac.txt
 data/accessibility/aria/aria-status-expected-win.txt
 data/accessibility/aria/aria-status.html
+data/accessibility/aria/aria-strong-expected-android-assist-data.txt
 data/accessibility/aria/aria-strong-expected-android-external.txt
 data/accessibility/aria/aria-strong-expected-android.txt
 data/accessibility/aria/aria-strong-expected-auralinux.txt
@@ -1364,6 +1479,7 @@ data/accessibility/aria/aria-strong-expected-mac.txt
 data/accessibility/aria/aria-strong-expected-uia-win.txt
 data/accessibility/aria/aria-strong-expected-win.txt
 data/accessibility/aria/aria-strong.html
+data/accessibility/aria/aria-subscript-expected-android-assist-data.txt
 data/accessibility/aria/aria-subscript-expected-android-external.txt
 data/accessibility/aria/aria-subscript-expected-android.txt
 data/accessibility/aria/aria-subscript-expected-auralinux.txt
@@ -1372,6 +1488,7 @@ data/accessibility/aria/aria-subscript-expected-mac.txt
 data/accessibility/aria/aria-subscript-expected-uia-win.txt
 data/accessibility/aria/aria-subscript-expected-win.txt
 data/accessibility/aria/aria-subscript.html
+data/accessibility/aria/aria-superscript-expected-android-assist-data.txt
 data/accessibility/aria/aria-superscript-expected-android-external.txt
 data/accessibility/aria/aria-superscript-expected-android.txt
 data/accessibility/aria/aria-superscript-expected-auralinux.txt
@@ -1380,6 +1497,7 @@ data/accessibility/aria/aria-superscript-expected-mac.txt
 data/accessibility/aria/aria-superscript-expected-uia-win.txt
 data/accessibility/aria/aria-superscript-expected-win.txt
 data/accessibility/aria/aria-superscript.html
+data/accessibility/aria/aria-switch-expected-android-assist-data.txt
 data/accessibility/aria/aria-switch-expected-android-external.txt
 data/accessibility/aria/aria-switch-expected-android.txt
 data/accessibility/aria/aria-switch-expected-auralinux.txt
@@ -1387,12 +1505,14 @@ data/accessibility/aria/aria-switch-expected-blink.txt
 data/accessibility/aria/aria-switch-expected-mac.txt
 data/accessibility/aria/aria-switch-expected-win.txt
 data/accessibility/aria/aria-switch.html
+data/accessibility/aria/aria-tab-expected-android-assist-data.txt
 data/accessibility/aria/aria-tab-expected-android-external.txt
 data/accessibility/aria/aria-tab-expected-android.txt
 data/accessibility/aria/aria-tab-expected-auralinux.txt
 data/accessibility/aria/aria-tab-expected-blink.txt
 data/accessibility/aria/aria-tab-expected-mac.txt
 data/accessibility/aria/aria-tab-expected-win.txt
+data/accessibility/aria/aria-tab-nested-in-lists-expected-android-assist-data.txt
 data/accessibility/aria/aria-tab-nested-in-lists-expected-android-external.txt
 data/accessibility/aria/aria-tab-nested-in-lists-expected-android.txt
 data/accessibility/aria/aria-tab-nested-in-lists-expected-auralinux.txt
@@ -1401,12 +1521,14 @@ data/accessibility/aria/aria-tab-nested-in-lists-expected-mac.txt
 data/accessibility/aria/aria-tab-nested-in-lists-expected-win.txt
 data/accessibility/aria/aria-tab-nested-in-lists.html
 data/accessibility/aria/aria-tab.html
+data/accessibility/aria/aria-table-expected-android-assist-data.txt
 data/accessibility/aria/aria-table-expected-android-external.txt
 data/accessibility/aria/aria-table-expected-auralinux.txt
 data/accessibility/aria/aria-table-expected-blink.txt
 data/accessibility/aria/aria-table-expected-mac.txt
 data/accessibility/aria/aria-table-expected-win.txt
 data/accessibility/aria/aria-table.html
+data/accessibility/aria/aria-tablist-aria-level-expected-android-assist-data.txt
 data/accessibility/aria/aria-tablist-aria-level-expected-android-external.txt
 data/accessibility/aria/aria-tablist-aria-level-expected-android.txt
 data/accessibility/aria/aria-tablist-aria-level-expected-auralinux.txt
@@ -1414,6 +1536,7 @@ data/accessibility/aria/aria-tablist-aria-level-expected-blink.txt
 data/accessibility/aria/aria-tablist-aria-level-expected-mac.txt
 data/accessibility/aria/aria-tablist-aria-level-expected-win.txt
 data/accessibility/aria/aria-tablist-aria-level.html
+data/accessibility/aria/aria-tablist-expected-android-assist-data.txt
 data/accessibility/aria/aria-tablist-expected-android-external.txt
 data/accessibility/aria/aria-tablist-expected-android.txt
 data/accessibility/aria/aria-tablist-expected-auralinux.txt
@@ -1421,6 +1544,7 @@ data/accessibility/aria/aria-tablist-expected-blink.txt
 data/accessibility/aria/aria-tablist-expected-mac.txt
 data/accessibility/aria/aria-tablist-expected-win.txt
 data/accessibility/aria/aria-tablist.html
+data/accessibility/aria/aria-tabpanel-expected-android-assist-data.txt
 data/accessibility/aria/aria-tabpanel-expected-android-external.txt
 data/accessibility/aria/aria-tabpanel-expected-android.txt
 data/accessibility/aria/aria-tabpanel-expected-auralinux.txt
@@ -1428,18 +1552,21 @@ data/accessibility/aria/aria-tabpanel-expected-blink.txt
 data/accessibility/aria/aria-tabpanel-expected-mac.txt
 data/accessibility/aria/aria-tabpanel-expected-win.txt
 data/accessibility/aria/aria-tabpanel.html
+data/accessibility/aria/aria-term-expected-android-assist-data.txt
 data/accessibility/aria/aria-term-expected-android-external.txt
 data/accessibility/aria/aria-term-expected-auralinux.txt
 data/accessibility/aria/aria-term-expected-blink.txt
 data/accessibility/aria/aria-term-expected-mac.txt
 data/accessibility/aria/aria-term-expected-win.txt
 data/accessibility/aria/aria-term.html
+data/accessibility/aria/aria-textbox-expected-android-assist-data.txt
 data/accessibility/aria/aria-textbox-expected-android-external.txt
 data/accessibility/aria/aria-textbox-expected-android.txt
 data/accessibility/aria/aria-textbox-expected-auralinux.txt
 data/accessibility/aria/aria-textbox-expected-blink.txt
 data/accessibility/aria/aria-textbox-expected-mac.txt
 data/accessibility/aria/aria-textbox-expected-win.txt
+data/accessibility/aria/aria-textbox-with-aria-textbox-child-expected-android-assist-data.txt
 data/accessibility/aria/aria-textbox-with-aria-textbox-child-expected-android-external.txt
 data/accessibility/aria/aria-textbox-with-aria-textbox-child-expected-auralinux.txt
 data/accessibility/aria/aria-textbox-with-aria-textbox-child-expected-blink.txt
@@ -1447,6 +1574,7 @@ data/accessibility/aria/aria-textbox-with-aria-textbox-child-expected-mac.txt
 data/accessibility/aria/aria-textbox-with-aria-textbox-child-expected-uia-win.txt
 data/accessibility/aria/aria-textbox-with-aria-textbox-child-expected-win.txt
 data/accessibility/aria/aria-textbox-with-aria-textbox-child.html
+data/accessibility/aria/aria-textbox-with-non-text-children-expected-android-assist-data.txt
 data/accessibility/aria/aria-textbox-with-non-text-children-expected-android-external.txt
 data/accessibility/aria/aria-textbox-with-non-text-children-expected-auralinux.txt
 data/accessibility/aria/aria-textbox-with-non-text-children-expected-blink.txt
@@ -1465,6 +1593,7 @@ data/accessibility/aria/aria-textbox-with-selection-expected-mac.txt
 data/accessibility/aria/aria-textbox-with-selection-expected-win.txt
 data/accessibility/aria/aria-textbox-with-selection.html
 data/accessibility/aria/aria-textbox.html
+data/accessibility/aria/aria-time-expected-android-assist-data.txt
 data/accessibility/aria/aria-time-expected-android-external.txt
 data/accessibility/aria/aria-time-expected-android.txt
 data/accessibility/aria/aria-time-expected-auralinux.txt
@@ -1473,6 +1602,7 @@ data/accessibility/aria/aria-time-expected-mac.txt
 data/accessibility/aria/aria-time-expected-uia-win.txt
 data/accessibility/aria/aria-time-expected-win.txt
 data/accessibility/aria/aria-time.html
+data/accessibility/aria/aria-timer-expected-android-assist-data.txt
 data/accessibility/aria/aria-timer-expected-android-external.txt
 data/accessibility/aria/aria-timer-expected-android.txt
 data/accessibility/aria/aria-timer-expected-auralinux.txt
@@ -1480,6 +1610,7 @@ data/accessibility/aria/aria-timer-expected-blink.txt
 data/accessibility/aria/aria-timer-expected-mac.txt
 data/accessibility/aria/aria-timer-expected-win.txt
 data/accessibility/aria/aria-timer.html
+data/accessibility/aria/aria-togglebutton-expected-android-assist-data.txt
 data/accessibility/aria/aria-togglebutton-expected-android-external.txt
 data/accessibility/aria/aria-togglebutton-expected-android.txt
 data/accessibility/aria/aria-togglebutton-expected-auralinux.txt
@@ -1487,6 +1618,7 @@ data/accessibility/aria/aria-togglebutton-expected-blink.txt
 data/accessibility/aria/aria-togglebutton-expected-mac.txt
 data/accessibility/aria/aria-togglebutton-expected-win.txt
 data/accessibility/aria/aria-togglebutton.html
+data/accessibility/aria/aria-toolbar-expected-android-assist-data.txt
 data/accessibility/aria/aria-toolbar-expected-android-external.txt
 data/accessibility/aria/aria-toolbar-expected-android.txt
 data/accessibility/aria/aria-toolbar-expected-auralinux.txt
@@ -1494,6 +1626,7 @@ data/accessibility/aria/aria-toolbar-expected-blink.txt
 data/accessibility/aria/aria-toolbar-expected-mac.txt
 data/accessibility/aria/aria-toolbar-expected-win.txt
 data/accessibility/aria/aria-toolbar.html
+data/accessibility/aria/aria-tooltip-expected-android-assist-data.txt
 data/accessibility/aria/aria-tooltip-expected-android-external.txt
 data/accessibility/aria/aria-tooltip-expected-android.txt
 data/accessibility/aria/aria-tooltip-expected-auralinux.txt
@@ -1502,6 +1635,7 @@ data/accessibility/aria/aria-tooltip-expected-mac-before-11.txt
 data/accessibility/aria/aria-tooltip-expected-mac.txt
 data/accessibility/aria/aria-tooltip-expected-win.txt
 data/accessibility/aria/aria-tooltip.html
+data/accessibility/aria/aria-tree-discontinuous-expected-android-assist-data.txt
 data/accessibility/aria/aria-tree-discontinuous-expected-android-external.txt
 data/accessibility/aria/aria-tree-discontinuous-expected-android.txt
 data/accessibility/aria/aria-tree-discontinuous-expected-auralinux.txt
@@ -1510,6 +1644,7 @@ data/accessibility/aria/aria-tree-discontinuous-expected-mac.txt
 data/accessibility/aria/aria-tree-discontinuous-expected-uia-win.txt
 data/accessibility/aria/aria-tree-discontinuous-expected-win.txt
 data/accessibility/aria/aria-tree-discontinuous.html
+data/accessibility/aria/aria-tree-expected-android-assist-data.txt
 data/accessibility/aria/aria-tree-expected-android-external.txt
 data/accessibility/aria/aria-tree-expected-android.txt
 data/accessibility/aria/aria-tree-expected-auralinux.txt
@@ -1517,6 +1652,7 @@ data/accessibility/aria/aria-tree-expected-blink.txt
 data/accessibility/aria/aria-tree-expected-mac.txt
 data/accessibility/aria/aria-tree-expected-win.txt
 data/accessibility/aria/aria-tree.html
+data/accessibility/aria/aria-treegrid-expected-android-assist-data.txt
 data/accessibility/aria/aria-treegrid-expected-android-external.txt
 data/accessibility/aria/aria-treegrid-expected-android.txt
 data/accessibility/aria/aria-treegrid-expected-auralinux.txt
@@ -1525,6 +1661,7 @@ data/accessibility/aria/aria-treegrid-expected-mac.txt
 data/accessibility/aria/aria-treegrid-expected-uia-win.txt
 data/accessibility/aria/aria-treegrid-expected-win.txt
 data/accessibility/aria/aria-treegrid.html
+data/accessibility/aria/aria-treeitem-nested-in-lists-expected-android-assist-data.txt
 data/accessibility/aria/aria-treeitem-nested-in-lists-expected-android-external.txt
 data/accessibility/aria/aria-treeitem-nested-in-lists-expected-android.txt
 data/accessibility/aria/aria-treeitem-nested-in-lists-expected-auralinux.txt
@@ -1550,6 +1687,7 @@ data/accessibility/aria/aria-valuemin-expected-auralinux.txt
 data/accessibility/aria/aria-valuemin-expected-mac.txt
 data/accessibility/aria/aria-valuemin-expected-win.txt
 data/accessibility/aria/aria-valuemin.html
+data/accessibility/aria/aria-valuenow-expected-android-assist-data.txt
 data/accessibility/aria/aria-valuenow-expected-android-external.txt
 data/accessibility/aria/aria-valuenow-expected-android.txt
 data/accessibility/aria/aria-valuenow-expected-auralinux.txt
@@ -1557,6 +1695,7 @@ data/accessibility/aria/aria-valuenow-expected-blink.txt
 data/accessibility/aria/aria-valuenow-expected-mac.txt
 data/accessibility/aria/aria-valuenow-expected-win.txt
 data/accessibility/aria/aria-valuenow.html
+data/accessibility/aria/aria-valuetext-expected-android-assist-data.txt
 data/accessibility/aria/aria-valuetext-expected-android-external.txt
 data/accessibility/aria/aria-valuetext-expected-android.txt
 data/accessibility/aria/aria-valuetext-expected-auralinux.txt
@@ -1564,6 +1703,7 @@ data/accessibility/aria/aria-valuetext-expected-blink.txt
 data/accessibility/aria/aria-valuetext-expected-mac.txt
 data/accessibility/aria/aria-valuetext-expected-win.txt
 data/accessibility/aria/aria-valuetext.html
+data/accessibility/aria/aria-virtualcontent-expected-android-assist-data.txt
 data/accessibility/aria/aria-virtualcontent-expected-android-external.txt
 data/accessibility/aria/aria-virtualcontent-expected-blink.txt
 data/accessibility/aria/aria-virtualcontent-expected-uia-win.txt
@@ -1576,6 +1716,7 @@ data/accessibility/aria/aria1.1-combobox-expected-win.txt
 data/accessibility/aria/aria1.1-combobox.html
 data/accessibility/aria/dpub-roles-computed-expected-blink.txt
 data/accessibility/aria/dpub-roles-computed.html
+data/accessibility/aria/dpub-roles-expected-android-assist-data.txt
 data/accessibility/aria/dpub-roles-expected-android-external.txt
 data/accessibility/aria/dpub-roles-expected-android.txt
 data/accessibility/aria/dpub-roles-expected-auralinux.txt
@@ -1586,6 +1727,7 @@ data/accessibility/aria/dpub-roles.html
 data/accessibility/aria/frames/aria-hidden-1.html
 data/accessibility/aria/frames/aria-hidden-2.html
 data/accessibility/aria/frames/inner.html
+data/accessibility/aria/graphics-roles-expected-android-assist-data.txt
 data/accessibility/aria/graphics-roles-expected-android-external.txt
 data/accessibility/aria/graphics-roles-expected-android.txt
 data/accessibility/aria/graphics-roles-expected-auralinux.txt
@@ -1594,21 +1736,25 @@ data/accessibility/aria/graphics-roles-expected-mac.txt
 data/accessibility/aria/graphics-roles-expected-uia-win.txt
 data/accessibility/aria/graphics-roles-expected-win.txt
 data/accessibility/aria/graphics-roles.html
+data/accessibility/aria/hidden-described-by-expected-android-assist-data.txt
 data/accessibility/aria/hidden-described-by-expected-android-external.txt
 data/accessibility/aria/hidden-described-by-expected-blink.txt
 data/accessibility/aria/hidden-described-by-expected-uia-win.txt
 data/accessibility/aria/hidden-described-by-expected-win.txt
 data/accessibility/aria/hidden-described-by.html
+data/accessibility/aria/hidden-expected-android-assist-data.txt
 data/accessibility/aria/hidden-expected-android-external.txt
 data/accessibility/aria/hidden-expected-blink.txt
 data/accessibility/aria/hidden-expected-uia-win.txt
 data/accessibility/aria/hidden-expected-win.txt
+data/accessibility/aria/hidden-labelled-by-expected-android-assist-data.txt
 data/accessibility/aria/hidden-labelled-by-expected-android-external.txt
 data/accessibility/aria/hidden-labelled-by-expected-blink.txt
 data/accessibility/aria/hidden-labelled-by-expected-uia-win.txt
 data/accessibility/aria/hidden-labelled-by-expected-win.txt
 data/accessibility/aria/hidden-labelled-by.html
 data/accessibility/aria/hidden.html
+data/accessibility/aria/input-text-aria-placeholder-expected-android-assist-data.txt
 data/accessibility/aria/input-text-aria-placeholder-expected-android-external.txt
 data/accessibility/aria/input-text-aria-placeholder-expected-android.txt
 data/accessibility/aria/input-text-aria-placeholder-expected-blink.txt
@@ -1620,6 +1766,7 @@ data/accessibility/aria/label-with-selected-option-expected-blink.txt
 data/accessibility/aria/label-with-selected-option.html
 data/accessibility/aria/missing-relation-targets-added-later-expected-blink.txt
 data/accessibility/aria/missing-relation-targets-added-later.html
+data/accessibility/aria/presentational-expected-android-assist-data.txt
 data/accessibility/aria/presentational-expected-android-external.txt
 data/accessibility/aria/presentational-expected-auralinux.txt
 data/accessibility/aria/presentational-expected-blink.txt
@@ -1639,6 +1786,7 @@ data/accessibility/aria/table-column-hidden-expected-mac.txt
 data/accessibility/aria/table-column-hidden-expected-uia-win.txt
 data/accessibility/aria/table-column-hidden-expected-win.txt
 data/accessibility/aria/table-column-hidden.html
+data/accessibility/aria/toggle-button-expand-collapse-expected-android-assist-data.txt
 data/accessibility/aria/toggle-button-expand-collapse-expected-android-external.txt
 data/accessibility/aria/toggle-button-expand-collapse-expected-blink.txt
 data/accessibility/aria/toggle-button-expand-collapse-expected-uia-win.txt
@@ -5222,6 +5370,7 @@ data/attribution_reporting/interop/source_storage_limit.json
 data/attribution_reporting/interop/success_debug_aggregatable.json
 data/attribution_reporting/interop/success_debug_event_level.json
 data/attribution_reporting/interop/top_level_filter_data.json
+data/attribution_reporting/interop/trigger_data_matching.json
 data/attribution_reporting/interop/trigger_data_sanitization.json
 data/attribution_reporting/interop/verbose_debug_report_multiple_data.json
 data/attribution_reporting/page_with_ads_apis_ot.html

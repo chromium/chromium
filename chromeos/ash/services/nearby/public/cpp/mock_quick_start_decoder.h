@@ -33,48 +33,6 @@ class MockQuickStartDecoder
           pending_receiver);
 
   MOCK_METHOD(void,
-              DecodeBootstrapConfigurations,
-              (const absl::optional<std::vector<uint8_t>>& data,
-               DecodeBootstrapConfigurationsCallback callback),
-              (override));
-
-  MOCK_METHOD(void,
-              DecodeGetAssertionResponse,
-              (const absl::optional<std::vector<uint8_t>>& data,
-               DecodeGetAssertionResponseCallback callback),
-              (override));
-
-  MOCK_METHOD(void,
-              DecodeWifiCredentialsResponse,
-              (const absl::optional<std::vector<uint8_t>>& data,
-               DecodeWifiCredentialsResponseCallback callback),
-              (override));
-
-  MOCK_METHOD(void,
-              DecodeNotifySourceOfUpdateResponse,
-              (const absl::optional<std::vector<uint8_t>>& data,
-               DecodeNotifySourceOfUpdateResponseCallback callback),
-              (override));
-
-  MOCK_METHOD(void,
-              DecodeUserVerificationMethod,
-              (const absl::optional<std::vector<uint8_t>>& data,
-               DecodeUserVerificationMethodCallback callback),
-              (override));
-
-  MOCK_METHOD(void,
-              DecodeUserVerificationResult,
-              (const absl::optional<std::vector<uint8_t>>& data,
-               DecodeUserVerificationResultCallback callback),
-              (override));
-
-  MOCK_METHOD(void,
-              DecodeUserVerificationRequested,
-              (const absl::optional<std::vector<uint8_t>>& data,
-               DecodeUserVerificationRequestedCallback callback),
-              (override));
-
-  MOCK_METHOD(void,
               DecodeQuickStartMessage,
               (const absl::optional<std::vector<uint8_t>>& data,
                DecodeQuickStartMessageCallback callback),

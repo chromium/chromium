@@ -511,6 +511,9 @@ const char kSyncSettingsURL[] = "settings://open_sync";
     case ItemTypeLockdownMode:
       [self.handler showLockdownMode];
       break;
+    case ItemTypePrivacyGuide:
+      [self.handler showPrivacyGuide];
+      break;
     default:
       break;
   }

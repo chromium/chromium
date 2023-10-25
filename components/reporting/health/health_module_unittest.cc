@@ -10,14 +10,14 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/reporting/util/test_support_callbacks.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#include "components/reporting/util/test_support_callbacks.h"
-#include "components/reporting/util/test_util.h"
-
+using ::base::EqualsProto;
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::Invoke;

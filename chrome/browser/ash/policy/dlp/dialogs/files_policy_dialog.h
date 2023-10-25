@@ -164,7 +164,7 @@ class FilesPolicyDialog : public PolicyDialogBase {
   // Creates and shows an instance of FilesPolicyWarnDialog. Returns owning
   // Widget.
   static views::Widget* CreateWarnDialog(
-      OnDlpRestrictionCheckedWithJustificationCallback callback,
+      WarningWithJustificationCallback callback,
       dlp::FileAction action,
       gfx::NativeWindow modal_parent,
       Info dialog_info,
@@ -202,7 +202,7 @@ class FilesPolicyDialogFactory {
   virtual ~FilesPolicyDialogFactory() = default;
 
   virtual views::Widget* CreateWarnDialog(
-      OnDlpRestrictionCheckedWithJustificationCallback callback,
+      WarningWithJustificationCallback callback,
       dlp::FileAction action,
       gfx::NativeWindow modal_parent,
       absl::optional<DlpFileDestination> destination,

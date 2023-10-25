@@ -5,6 +5,8 @@
 #ifndef UI_OZONE_PUBLIC_PLATFORM_MENU_UTILS_H_
 #define UI_OZONE_PUBLIC_PLATFORM_MENU_UTILS_H_
 
+#include <stdint.h>
+
 #include <string>
 
 #include "base/component_export.h"

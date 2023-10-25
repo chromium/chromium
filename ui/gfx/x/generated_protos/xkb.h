@@ -1177,7 +1177,7 @@ class COMPONENT_EXPORT(X11) Xkb {
   static_assert(std::is_trivially_copyable<Action>::value, "");
 
   struct NewKeyboardNotifyEvent {
-    static constexpr int type_id = 32;
+    static constexpr uint8_t type_id = 32;
     static constexpr uint8_t opcode = 0;
     uint8_t xkbType{};
     uint16_t sequence{};
@@ -1194,7 +1194,7 @@ class COMPONENT_EXPORT(X11) Xkb {
   };
 
   struct MapNotifyEvent {
-    static constexpr int type_id = 33;
+    static constexpr uint8_t type_id = 33;
     static constexpr uint8_t opcode = 1;
     uint8_t xkbType{};
     uint16_t sequence{};
@@ -1222,7 +1222,7 @@ class COMPONENT_EXPORT(X11) Xkb {
   };
 
   struct StateNotifyEvent {
-    static constexpr int type_id = 34;
+    static constexpr uint8_t type_id = 34;
     static constexpr uint8_t opcode = 2;
     uint8_t xkbType{};
     uint16_t sequence{};
@@ -1250,7 +1250,7 @@ class COMPONENT_EXPORT(X11) Xkb {
   };
 
   struct ControlsNotifyEvent {
-    static constexpr int type_id = 35;
+    static constexpr uint8_t type_id = 35;
     static constexpr uint8_t opcode = 3;
     uint8_t xkbType{};
     uint16_t sequence{};
@@ -1267,7 +1267,7 @@ class COMPONENT_EXPORT(X11) Xkb {
   };
 
   struct IndicatorStateNotifyEvent {
-    static constexpr int type_id = 36;
+    static constexpr uint8_t type_id = 36;
     static constexpr uint8_t opcode = 4;
     uint8_t xkbType{};
     uint16_t sequence{};
@@ -1278,7 +1278,7 @@ class COMPONENT_EXPORT(X11) Xkb {
   };
 
   struct IndicatorMapNotifyEvent {
-    static constexpr int type_id = 37;
+    static constexpr uint8_t type_id = 37;
     static constexpr uint8_t opcode = 5;
     uint8_t xkbType{};
     uint16_t sequence{};
@@ -1289,7 +1289,7 @@ class COMPONENT_EXPORT(X11) Xkb {
   };
 
   struct NamesNotifyEvent {
-    static constexpr int type_id = 38;
+    static constexpr uint8_t type_id = 38;
     static constexpr uint8_t opcode = 6;
     uint8_t xkbType{};
     uint16_t sequence{};
@@ -1310,7 +1310,7 @@ class COMPONENT_EXPORT(X11) Xkb {
   };
 
   struct CompatMapNotifyEvent {
-    static constexpr int type_id = 39;
+    static constexpr uint8_t type_id = 39;
     static constexpr uint8_t opcode = 7;
     uint8_t xkbType{};
     uint16_t sequence{};
@@ -1323,7 +1323,7 @@ class COMPONENT_EXPORT(X11) Xkb {
   };
 
   struct BellNotifyEvent {
-    static constexpr int type_id = 40;
+    static constexpr uint8_t type_id = 40;
     static constexpr uint8_t opcode = 8;
     uint8_t xkbType{};
     uint16_t sequence{};
@@ -1340,7 +1340,7 @@ class COMPONENT_EXPORT(X11) Xkb {
   };
 
   struct ActionMessageEvent {
-    static constexpr int type_id = 41;
+    static constexpr uint8_t type_id = 41;
     static constexpr uint8_t opcode = 9;
     uint8_t xkbType{};
     uint16_t sequence{};
@@ -1355,7 +1355,7 @@ class COMPONENT_EXPORT(X11) Xkb {
   };
 
   struct AccessXNotifyEvent {
-    static constexpr int type_id = 42;
+    static constexpr uint8_t type_id = 42;
     static constexpr uint8_t opcode = 10;
     uint8_t xkbType{};
     uint16_t sequence{};
@@ -1368,7 +1368,7 @@ class COMPONENT_EXPORT(X11) Xkb {
   };
 
   struct ExtensionDeviceNotifyEvent {
-    static constexpr int type_id = 43;
+    static constexpr uint8_t type_id = 43;
     static constexpr uint8_t opcode = 11;
     uint8_t xkbType{};
     uint16_t sequence{};

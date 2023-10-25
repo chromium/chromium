@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
+#include "third_party/blink/renderer/core/css/css_image_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
@@ -2789,6 +2790,26 @@ void HTMLElement::AddHTMLColorToStyle(MutableCSSPropertyValueSet* style,
     return;
 
   style->SetProperty(property_id, *cssvalue::CSSColor::Create(parsed_color));
+}
+
+void HTMLElement::AddHTMLBackgroundImageToStyle(
+    MutableCSSPropertyValueSet* style,
+    const String& url_value,
+    const AtomicString& initiator_name) {
+  String url = StripLeadingAndTrailingHTMLSpaces(url_value);
+  if (url.empty()) {
+    return;
+  }
+  auto* image_value = MakeGarbageCollected<CSSImageValue>(
+      CSSUrlData(AtomicString(url), GetDocument().CompleteURL(url)),
+      Referrer(GetExecutionContext()->OutgoingReferrer(),
+               GetExecutionContext()->GetReferrerPolicy()),
+      OriginClean::kTrue, false /* is_ad_related */);
+  if (initiator_name) {
+    image_value->SetInitiator(initiator_name);
+  }
+  style->SetLonghandProperty(CSSPropertyValue(
+      CSSPropertyName(CSSPropertyID::kBackgroundImage), *image_value));
 }
 
 LabelsNodeList* HTMLElement::labels() {

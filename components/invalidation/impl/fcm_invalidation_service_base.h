@@ -66,7 +66,6 @@ class FCMInvalidationServiceBase : public InvalidationService,
   void RegisterInvalidationHandler(InvalidationHandler* handler) override;
   bool UpdateInterestedTopics(InvalidationHandler* handler,
                               const TopicSet& topics) override;
-  void UnsubscribeFromUnregisteredTopics(InvalidationHandler* handler) override;
   void UnregisterInvalidationHandler(InvalidationHandler* handler) override;
   InvalidatorState GetInvalidatorState() const override;
   std::string GetInvalidatorClientId() const override;

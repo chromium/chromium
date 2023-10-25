@@ -40,11 +40,11 @@ class StateObserver {
   virtual T GetStateObserverInitialState() const { return T(); }
 
   // Used by the owning test to set the state change callback. Do not call
-  // directly.
+  // directly. The caller should ensure the the new callback is issued with the
+  // current state.
   void SetStateObserverStateChangedCallback(StateChangedCallback callback) {
     CHECK(!state_changed_callback_);
     state_changed_callback_ = std::move(callback);
-    state_changed_callback_.Run(GetStateObserverInitialState());
   }
 
  protected:

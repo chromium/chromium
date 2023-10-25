@@ -102,6 +102,7 @@ chrome_ios_eg2_test("ios_chrome_integration_eg2tests_module") {
     "//ios/chrome/browser/ui/content_suggestions/tab_resumption:eg2_tests",
     "//ios/chrome/browser/ui/context_menu:eg2_tests",
     "//ios/chrome/browser/ui/default_promo:eg2_tests",
+    "//ios/chrome/browser/ui/incognito_reauth:eg2_tests",
     "//ios/chrome/browser/ui/integration_tests:eg2_tests",
     "//ios/chrome/browser/variations/model:eg2_tests",
   ]
@@ -223,6 +224,7 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/ui/tabs/tab_pickup:eg2_tests",
     "//ios/chrome/browser/ui/text_fragments:eg2_tests",
     "//ios/chrome/browser/ui/toolbar:eg2_tests",
+    "//ios/chrome/browser/ui/unit_conversion:eg2_tests",
     "//ios/chrome/browser/ui/webui:eg2_tests",
     "//ios/chrome/browser/ui/webui/interstitials:eg2_tests",
     "//ios/chrome/browser/ui/webui/optimization_guide_internals:eg2_tests",

@@ -25,6 +25,10 @@
   <message name="IDS_OS_SETTINGS_OPENS_IN_NEW_TAB_A11Y_LABEL" desc="ARIA (accessibility) label describing an external link which opens in a new tab.">
     Opens in new tab
   </message>
+  <!-- IDS_OS_SETTINGS_LIST_SEPARATOR should include a space after the comma. This is achieved by adding ''' after the space. -->
+  <message name="IDS_OS_SETTINGS_LIST_SEPARATOR" desc="Text/punctuation that separates items in a list. For example, this is used in a list of words, e.g. 'Keyboard, mouse, print'.">
+    , '''
+  </message>
 
   <!--Main Page-->
   <message name="IDS_SETTINGS_SECONDARY_USER_BANNER" desc="Banner displayed in settings page when the user is secondary in a multi-profile session.">
@@ -51,6 +55,9 @@
   </message>
 
   <!-- About (OS Settings) -->
+  <message name="IDS_OS_SETTINGS_ABOUT_CHROMEOS_MENU_ITEM_DESCRIPTION" desc="Description for the About ChromeOS menu item in the left menu.">
+    Updates, help, developer options
+  </message>
   <message name="IDS_OS_SETTINGS_ABOUT_PAGE_BUILD_DETAILS" desc="Label of the row button that clicks into Build details">
     Build details
   </message>
@@ -492,6 +499,9 @@
   <message name="IDS_OS_SETTINGS_LANGUAGES_INPUT_METHOD_NOT_ALLOWED" desc="Tooltip for policy icon when an keyboard layout or input method editor is not allowed.">
     Your administrator doesn't allow this input method
   </message>
+  <message name="IDS_OS_SETTINGS_INPUT_METHOD_LANGUAGE_PACKS_GENERAL_ERROR" desc="Generic error message when a component of an input method could not be downloaded." translateable="false">
+    Couldn't add input method
+  </message>
   <message name="IDS_OS_SETTINGS_LANGUAGES_SPELL_CHECK_TITLE" desc="Title for the section containing all the options for spell check settings. The options include picking between using the system's spell check or using Google's web service and a list of the enabled languages which support spell checking.">
     Spell check
   </message>
@@ -897,12 +907,6 @@
   </message>
   <message name="IDS_SETTINGS_DEVICE_TITLE" desc="Name of the settings page which displays device and peripheral settings.">
     Device
-  </message>
-  <message name="IDS_OS_SETTINGS_DEVICE_MENU_ITEM_DESCRIPTION_2_WORDS" desc="Description for the Device menu item in the left menu which lists relevant settings in this page. This includes 2 words from a predefined set of words.">
-    <ph name="DESCRIPTION_ITEM_1">$1<ex>Keyboard</ex></ph>, <ph name="DESCRIPTION_ITEM_2">$2<ex>mouse</ex></ph>
-  </message>
-  <message name="IDS_OS_SETTINGS_DEVICE_MENU_ITEM_DESCRIPTION_3_WORDS" desc="Description for the Device menu item in the left menu which lists relevant settings in this page. This includes 3 words from a predefined set of words.">
-    <ph name="DESCRIPTION_ITEM_1">$1<ex>Keyboard</ex></ph>, <ph name="DESCRIPTION_ITEM_2">$2<ex>mouse</ex></ph>, <ph name="DESCRIPTION_ITEM_3">$3<ex>print</ex></ph>
   </message>
   <message name="IDS_OS_SETTINGS_DEVICE_MENU_ITEM_DESCRIPTION_KEYBOARD" desc="Description for keyboard settings in the Device menu item description in the left menu.">
     keyboard
@@ -2876,6 +2880,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_NEXT_PAGE_OPTION_LABEL" desc="Label of Next page option in the button remapping action dropdown menu.">
     Next page
   </message>
+  <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_REMAPPING_DROPDOWN_ARIA_LABEL" desc="Aria label for the button remapping dropdown in the customize button row.">
+    <ph name="BUTTON_NAME">$1<ex>Side button</ex></ph> remapped to <ph name="REMAPPING_OPTION">$2<ex>Copy</ex></ph>.
+  </message>
 
   <!-- Bluetooth page (OS settings) -->
   <message name="IDS_SETTINGS_BLUETOOTH_CONNECTED" desc="In Bluetooth device list, this label is shown below a device which is already connected.">
@@ -4033,6 +4040,9 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_CANCEL_BUTTON" desc="Settings > Network > Hotspot > Configure hotspot dialog: Text for the button to cancel hotspot configuration dialog.">
     Cancel
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_GENERAL_ERROR_MESSAGE" desc="Settings > Network > Hotspot > Configure hotspot dialog: Error message shown when save configuration failed.">
+    Error saving the configuration
   </message>
   <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_INVALID_CONFIGURATION_ERROR_MESSAGE" desc="Settings > Network > Hotspot > Configure hotspot dialog: Error message shown when save configuration failed because of invalid configuration.">
     Invalid hotspot configuration
@@ -6228,11 +6238,11 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SPEAK_ON_MUTE_DETECTION_TOGGLE_SUBTEXT" desc="Sub-label for the microphone access toggle in the Privacy controls (aka Privacy Hub) os-settings page.">
     You'll get notified if you talk while your mic is muted when using certain apps, like video chat apps. Audio never leaves your device.
   </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_TOGGLE_TITLE" desc="The title of the toggle to enable/disable geolocation from the privacy hub.">
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_AREA_TITLE" desc="The title of the geolocation row under the Privacy controls (aka Privacy Hub) os-settings page.">
     Location access
   </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_TOGGLE_DESC" desc="The title of the toggle to enable/disable geolocation from the privacy hub.">
-    Allow apps, websites, and system services to use your location. Location may use sources like Wi-Fi, mobile networks, and sensors to help estimate your device’s location.
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_AREA_DESCRIPTION" desc="The description of the geolocation row under the Privacy controls (aka Privacy Hub) os-settings page. Displays the system overivew for geolocation usage.">
+    Allow apps, websites, and system services to use your location. Location may use sources like Wi-Fi, mobile networks, and sensors to help estimate your device’s location. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_OS_SETTINGS_HW_DATA_USAGE_TOGGLE_TITLE" desc="The label of the checkbox to enable/disable device hardware data collection and usage in ChromeOS Flex.">
     <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> hardware support and stability
@@ -6298,8 +6308,19 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_TITLE" desc="The title of the System Preferences page and respective menu item.">
     System preferences
   </message>
+  <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_MENU_ITEM_DESCRIPTION" desc="Description for the System Preferences menu item in the left menu.">
+    Storage, power, language
+  </message>
   <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_STORAGE_AND_POWER_TITLE" desc="The title of the Storage and Power settings card in the System Preferences page.">
     Storage and power
+  </message>
+
+  <!-- Safety Hub -->
+  <message name="IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_HEADER_RESTART" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. The version card, which this text is a part of, informs the user whether their Chrome is up to date. This title of the card is shown when Chrome is not up to date but there is an update available and the user needs to restart their browser to finish the update. Shown above the subtitle 'Relaunch to finish update. Your tabs will reopen'.">
+    ChromeOS is out of date
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_HEADER_UPDATED" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. The version card, which this text is a part of, informs the user whether their Chrome is up to date. This title of the card is shown when Chrome is up to date and the user does not need to take any action. Shown above the subtitle that is the Chrome version.">
+    ChromeOS is up to date
   </message>
 </if>
 </grit-part>

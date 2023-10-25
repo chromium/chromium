@@ -43,6 +43,7 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_drop_target.h"
 #include "ash/wm/overview/overview_focus_cycler.h"
 #include "ash/wm/overview/overview_focusable_view.h"
 #include "ash/wm/overview/overview_grid_event_handler.h"
@@ -67,6 +68,7 @@
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "ash/wm/workspace_controller.h"
 #include "base/containers/adapters.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -85,8 +87,6 @@
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/views/animation/animation_builder.h"
-#include "ui/views/background.h"
-#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -139,8 +139,6 @@ constexpr base::TimeDelta kOcclusionUnpauseDurationForRotation =
 // that is visible on all desks to another desk.
 constexpr char kMoveVisibleOnAllDesksWindowToastId[] =
     "ash.wm.overview.move_visible_on_all_desks_window_toast";
-
-constexpr int kDropTargetBorderThickness = 2;
 
 // Histogram names for overview enter/exit smoothness in clamshell,
 // tablet mode and splitview.
@@ -271,72 +269,6 @@ class ShutdownAnimationMetricsTrackerObserver : public OverviewObserver,
   raw_ptr<ui::Compositor, ExperimentalAsh> compositor_;
   OverviewExitMetricsTracker metrics_tracker_;
 };
-
-// DropTargetView represents a transparent view with border in overview. It
-// includes a background view. Dragged window in tablet mode can be dragged
-// into it and then dropped into overview.
-class DropTargetView : public views::View {
- public:
-  METADATA_HEADER(DropTargetView);
-  DropTargetView() {
-    SetUseDefaultFillLayout(true);
-
-    const int corner_radius =
-        chromeos::features::IsJellyrollEnabled()
-            ? kOverviewItemCornerRadius
-            : views::LayoutProvider::Get()->GetCornerRadiusMetric(
-                  views::Emphasis::kLow);
-
-    background_view_ = AddChildView(std::make_unique<views::View>());
-    // TODO(b/280330100): Replace the color token once the new color token is
-    // added.
-    background_view_->SetBackground(views::CreateThemedRoundedRectBackground(
-        kColorAshShieldAndBase20, corner_radius, /*for_border_thickness=*/0));
-
-    SetBorder(views::CreateThemedRoundedRectBorder(
-        kDropTargetBorderThickness, corner_radius,
-        cros_tokens::kCrosSysSystemBaseElevated));
-  }
-  DropTargetView(const DropTargetView&) = delete;
-  DropTargetView& operator=(const DropTargetView&) = delete;
-  ~DropTargetView() override = default;
-
-  // Updates the visibility of `background_view_` since it is only shown when
-  // drop target is selected in overview.
-  void UpdateBackgroundVisibility(bool visible) {
-    background_view_->SetVisible(visible);
-  }
-
-  raw_ptr<views::View, ExperimentalAsh> background_view_ = nullptr;
-};
-
-BEGIN_METADATA(DropTargetView, views::View)
-END_METADATA
-
-// Creates |drop_target_widget_|. It's created when a window or overview item is
-// dragged around, and destroyed when the drag ends.
-std::unique_ptr<views::Widget> CreateDropTargetWidget(
-    aura::Window* root_window) {
-  views::Widget::InitParams params;
-  params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  params.activatable = views::Widget::InitParams::Activatable::kNo;
-  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.name = "OverviewDropTarget";
-  params.accept_events = false;
-  params.parent = desks_util::GetActiveDeskContainerForRoot(root_window);
-  params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
-  auto widget = std::make_unique<views::Widget>();
-  widget->set_focus_on_creation(false);
-  widget->Init(std::move(params));
-  widget->SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
-
-  widget->SetContentsView(std::make_unique<DropTargetView>());
-  aura::Window* drop_target_window = widget->GetNativeWindow();
-  drop_target_window->parent()->StackChildAtBottom(drop_target_window);
-  widget->Show();
-  return widget;
-}
 
 // Creates `save_desk_button_container_widget_`. It contains SaveDeskAsTemplate
 // button and save for later button.
@@ -600,6 +532,7 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
         single_animation_in_clamshell, minimized_in_tablet);
   }
 
+  drop_target_ = nullptr;
   window_list_.clear();
 
   overview_session_ = nullptr;
@@ -973,40 +906,45 @@ void OverviewGrid::RemoveAllItemsForSavedDeskLaunch() {
 
 void OverviewGrid::AddDropTargetForDraggingFromThisGrid(
     OverviewItemBase* dragged_item) {
-  CHECK(!drop_target_widget_);
-  drop_target_widget_ = CreateDropTargetWidget(root_window_);
   const size_t position = GetOverviewItemIndex(dragged_item) + 1u;
-  // TODO(b/277979324): Consider avoid creating overview item for drop target
-  // widget.
-  overview_session_->AddItem(drop_target_widget_->GetNativeWindow(),
-                             /*reposition=*/true, /*animate=*/false,
-                             /*ignored_items=*/{dragged_item}, position);
+  AddDropTargetImpl(dragged_item, position, /*animate=*/false);
 }
 
 void OverviewGrid::AddDropTargetNotForDraggingFromThisGrid(
     aura::Window* dragged_window,
     bool animate) {
-  DCHECK(!drop_target_widget_);
-  drop_target_widget_ = CreateDropTargetWidget(root_window_);
-  aura::Window* drop_target_window = drop_target_widget_->GetNativeWindow();
-  if (animate) {
-    drop_target_widget_->SetOpacity(0.f);
-    ScopedOverviewAnimationSettings settings(
-        OVERVIEW_ANIMATION_DROP_TARGET_FADE, drop_target_window);
-    drop_target_widget_->SetOpacity(1.f);
-  }
   const size_t position = FindInsertionIndex(dragged_window);
-  // TODO(b/277979324): Consider avoid creating overview item for drop target
-  // widget.
-  overview_session_->AddItem(drop_target_window, /*reposition=*/true, animate,
-                             /*ignored_items=*/{}, position);
+  AddDropTargetImpl(nullptr, position, /*animate=*/false);
+
+  if (!animate) {
+    return;
+  }
+
+  views::Widget* drop_target_widget = drop_target_->item_widget();
+  drop_target_widget->SetOpacity(0.f);
+  ScopedOverviewAnimationSettings settings(
+      OVERVIEW_ANIMATION_DROP_TARGET_FADE,
+      drop_target_widget->GetNativeWindow());
+  drop_target_widget->SetOpacity(1.f);
 }
 
 void OverviewGrid::RemoveDropTarget() {
-  DCHECK(drop_target_widget_);
-  OverviewItemBase* drop_target = GetDropTarget();
-  overview_session_->RemoveItem(drop_target);
-  drop_target_widget_.reset();
+  CHECK(drop_target_);
+
+  // Copy to a local first to avoid a dangling pointer.
+  OverviewDropTarget* drop_target_ptr = drop_target_;
+  drop_target_ = nullptr;
+
+  size_t erased_count = base::EraseIf(
+      window_list_, base::MatchesUniquePtr<OverviewItemBase>(drop_target_ptr));
+  CHECK_EQ(1u, erased_count);
+
+  const size_t num_items = overview_session_->num_items();
+  CHECK_GT(num_items, 0u);
+  overview_session_->set_num_items(num_items - 1u);
+
+  // Skip repositioning here. The caller is expected to call `PositionWindows()`
+  // after more drag-ending cleanup in `OverviewWindowDragController`.
 }
 
 void OverviewGrid::SetBoundsAndUpdatePositions(
@@ -1025,14 +963,14 @@ void OverviewGrid::SetBoundsAndUpdatePositions(
 void OverviewGrid::RearrangeDuringDrag(
     OverviewItemBase* dragged_item,
     SplitViewDragIndicators::WindowDraggingState window_dragging_state) {
-  OverviewItemBase* drop_target = GetDropTarget();
-
-  // Update the drop target visibility according to |window_dragging_state|.
-  if (drop_target) {
+  // Update the drop target visibility according to `window_dragging_state`.
+  if (drop_target_) {
+    views::Widget* drop_target_widget = drop_target_->item_widget();
     ScopedOverviewAnimationSettings settings(
         OVERVIEW_ANIMATION_DROP_TARGET_FADE,
-        drop_target_widget_->GetNativeWindow());
-    drop_target->SetOpacity(GetWantedDropTargetOpacity(window_dragging_state));
+        drop_target_widget->GetNativeWindow());
+    drop_target_widget->SetOpacity(
+        GetWantedDropTargetOpacity(window_dragging_state));
   }
 
   // Update the grid's bounds.
@@ -1086,14 +1024,9 @@ bool OverviewGrid::MaybeUpdateDesksWidgetBounds() {
 void OverviewGrid::UpdateDropTargetBackgroundVisibility(
     OverviewItemBase* dragged_item,
     const gfx::PointF& location_in_screen) {
-  CHECK(drop_target_widget_);
-  DropTargetView* drop_target_view =
-      static_cast<DropTargetView*>(drop_target_widget_->GetContentsView());
-  CHECK(drop_target_view);
-  aura::Window* target_window =
-      GetTargetWindowOnLocation(location_in_screen, dragged_item);
-  drop_target_view->UpdateBackgroundVisibility(
-      target_window && target_window == drop_target_widget_->GetNativeWindow());
+  CHECK(drop_target_);
+  drop_target_->UpdateBackgroundVisibility(
+      gfx::ToRoundedPoint(location_in_screen));
 }
 
 void OverviewGrid::OnOverviewItemDragStarted(OverviewItemBase* item) {
@@ -1134,7 +1067,7 @@ void OverviewGrid::OnWindowDragEnded(aura::Window* dragged_window,
                                      bool snap) {
   DCHECK_EQ(dragged_window_, dragged_window);
   DCHECK_EQ(dragged_window->GetRootWindow(), root_window_);
-  DCHECK(drop_target_widget_.get());
+  CHECK(drop_target_);
   dragged_window_ = nullptr;
 
   // Add the dragged window into drop target in overview if
@@ -1181,17 +1114,6 @@ void OverviewGrid::SetVisibleDuringWindowDragging(bool visible, bool animate) {
       layer->SetOpacity(new_opacity);
     }
   }
-}
-
-bool OverviewGrid::IsDropTargetItem(OverviewItemBase* item) const {
-  return item && drop_target_widget_ &&
-         item->Contains(drop_target_widget_->GetNativeWindow());
-}
-
-OverviewItemBase* OverviewGrid::GetDropTarget() {
-  return drop_target_widget_
-             ? GetOverviewItemContaining(drop_target_widget_->GetNativeWindow())
-             : nullptr;
 }
 
 void OverviewGrid::OnDisplayMetricsChanged() {
@@ -1249,7 +1171,8 @@ void OverviewGrid::CalculateWindowListAnimationStates(
   // On top items are items that are higher up on the z-order, or in the always
   // on top or float containers.
   auto is_on_top_item = [](OverviewItemBase* item) -> bool {
-    DCHECK(item);
+    CHECK(item);
+
     if (item->GetWindow()->GetProperty(aura::client::kZOrderingKey) !=
         ui::ZOrderLevel::kNormal) {
       return true;
@@ -1268,9 +1191,12 @@ void OverviewGrid::CalculateWindowListAnimationStates(
   for (const std::unique_ptr<OverviewItemBase>& item : window_list_) {
     OverviewItemBase* item_ptr = item.get();
     CHECK(item_ptr);
-    // Skip the selected item, it will be inserted into the front.
-    if (item_ptr == selected_item)
+    // Skip the selected item; it will be inserted into the front. Skip the drop
+    // target, it is translucent and doesn't factor into any of these
+    // calculations.
+    if (item_ptr == selected_item || item_ptr == drop_target_) {
       continue;
+    }
 
     if (is_on_top_item(item_ptr))
       on_top_items.push_back(item_ptr);
@@ -1783,7 +1709,7 @@ int OverviewGrid::CalculateWidthAndMaybeSetUnclippedBounds(
   // The drop target, unlike the other windows has its bounds set directly, so
   // `GetWindowsUnionScreenBounds()` won't return the value we want. Instead,
   // get the scale from the window(s) it was meant to be a placeholder for.
-  if (IsDropTargetItem(item)) {
+  if (drop_target_ == item) {
     auto* window_drag_controller = overview_session_->window_drag_controller();
     OverviewItemBase* grid_dragged_item =
         window_drag_controller ? window_drag_controller->item() : nullptr;
@@ -1833,6 +1759,10 @@ int OverviewGrid::CalculateWidthAndMaybeSetUnclippedBounds(
       break;
     default:
       break;
+  }
+
+  if (drop_target_ == item) {
+    return width;
   }
 
   // Get the bounds of the item if there is a snapped window or a window
@@ -2711,7 +2641,7 @@ size_t OverviewGrid::FindInsertionIndex(const aura::Window* window) {
   while (grid_item_index < size() && mru_window_index < mru_windows.size()) {
     OverviewItemBase* grid_item = window_list_[grid_item_index].get();
     aura::Window* mru_window = mru_windows[mru_window_index];
-    if (IsDropTargetItem(grid_item) || mru_window == window) {
+    if (grid_item == drop_target_ || mru_window == window) {
       return grid_item_index;
     }
 
@@ -2842,6 +2772,25 @@ bool OverviewGrid::ShouldUseScrollingLayout(size_t ignored_items_size) const {
   }
 
   return false;
+}
+
+void OverviewGrid::AddDropTargetImpl(OverviewItemBase* dragged_item,
+                                     size_t position,
+                                     bool animate) {
+  CHECK(!drop_target_);
+
+  auto drop_target = std::make_unique<OverviewDropTarget>(this);
+  drop_target_ = drop_target.get();
+  window_list_.insert(window_list_.begin() + position, std::move(drop_target));
+
+  const size_t num_items = overview_session_->num_items();
+  overview_session_->set_num_items(num_items + 1u);
+
+  base::flat_set<OverviewItemBase*> ignored_items;
+  if (dragged_item) {
+    ignored_items.insert(dragged_item);
+  }
+  PositionWindows(animate, ignored_items);
 }
 
 }  // namespace ash

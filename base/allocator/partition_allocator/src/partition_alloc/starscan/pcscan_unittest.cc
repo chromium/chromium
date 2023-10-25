@@ -9,6 +9,7 @@
 #include "base/allocator/partition_allocator/src/partition_alloc/starscan/pcscan.h"
 
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc-inl.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/cpu.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/logging.h"
@@ -674,7 +675,9 @@ TEST_F(PartitionAllocPCScanTest, DontScanUnusedRawSize) {
   // This not only points past the object, but past all extras around it.
   // However, there should be enough space between this and the end of slot, to
   // store some data.
-  uintptr_t source_end = slot_start + slot_span->GetRawSize();
+  uintptr_t source_end =
+      slot_start +
+      base::bits::AlignUp(slot_span->GetRawSize(), alignof(ValueList*));
   // Write the pointer.
   // Since we stripped the MTE-tag to get |slot_start|, we need to retag it.
   *static_cast<ValueList**>(TagAddr(source_end)) = value;

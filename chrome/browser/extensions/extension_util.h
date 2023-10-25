@@ -75,6 +75,10 @@ std::vector<content::BrowserContext*> GetAllRelatedProfiles(
     Profile* profile,
     const Extension& extension);
 
+// Sets whether the given `profile` is in developer mode and notifies
+// relevant subsystems.
+void SetDeveloperModeForProfile(Profile* profile, bool in_developer_mode);
+
 }  // namespace util
 }  // namespace extensions
 

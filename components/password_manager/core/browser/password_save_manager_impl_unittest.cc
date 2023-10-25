@@ -314,7 +314,8 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
       const PasswordSaveManagerImplTestBase&) = delete;
 
   PasswordForm Parse(const FormData& form_data) {
-    return *FormDataParser().Parse(form_data, FormDataParser::Mode::kSaving);
+    return *FormDataParser().Parse(form_data, FormDataParser::Mode::kSaving,
+                                   /*stored_usernames=*/{});
   }
 
   void DestroySaveManagerAndMetricsRecorder() {

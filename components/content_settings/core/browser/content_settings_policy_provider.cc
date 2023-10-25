@@ -9,9 +9,11 @@
 #include <string>
 
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
@@ -23,6 +25,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "net/cookies/cookie_constants.h"
 
 namespace {
 
@@ -191,6 +194,32 @@ constexpr const char* kManagedDefaultPrefs[] = {
     prefs::kManagedDefaultMidi,
 };
 
+void ReportCookiesAllowedForUrlsUsage(bool has_pattern_with_wildcard_primary,
+                                      bool has_pattern_with_wildcard_secondary,
+                                      bool has_pattern_with_no_wildcard) {
+  if (!has_pattern_with_wildcard_primary &&
+      !has_pattern_with_wildcard_secondary && !has_pattern_with_no_wildcard) {
+    return;
+  }
+  constexpr auto usage_map =
+      base::MakeFixedFlatMap<size_t, net::CookiesAllowedForUrlsUsage>({
+          {0b001, net::CookiesAllowedForUrlsUsage::kWildcardPrimaryOnly},
+          {0b010, net::CookiesAllowedForUrlsUsage::kWildcardSecondaryOnly},
+          {0b011, net::CookiesAllowedForUrlsUsage::kWildcardOnly},
+          {0b100, net::CookiesAllowedForUrlsUsage::kExplicitOnly},
+          {0b101, net::CookiesAllowedForUrlsUsage::kExplicitAndPrimaryWildcard},
+          {0b110,
+           net::CookiesAllowedForUrlsUsage::kExplicitAndSecondaryWildcard},
+          {0b111, net::CookiesAllowedForUrlsUsage::kAllPresent},
+      });
+  base::UmaHistogramEnumeration(
+      "Cookie.Experimental.CookiesAllowedForUrlsUsage",
+      usage_map.at(
+          static_cast<size_t>(has_pattern_with_wildcard_primary) +
+          2 * static_cast<size_t>(has_pattern_with_wildcard_secondary) +
+          4 * static_cast<size_t>(has_pattern_with_no_wildcard)));
+}
+
 }  // namespace
 
 namespace content_settings {
@@ -273,6 +302,34 @@ PolicyProvider::PolicyProvider(PrefService* prefs) : prefs_(prefs) {
 
   for (const char* pref : kManagedDefaultPrefs)
     pref_change_registrar_.Add(pref, callback);
+
+  bool has_pattern_with_wildcard_primary = false;
+  bool has_pattern_with_wildcard_secondary = false;
+  bool has_pattern_with_no_wildcard = false;
+
+  auto it = value_map_.find(ContentSettingsType::COOKIES);
+  if (it == value_map_.end()) {
+    return;
+  }
+  for (auto jt = it->second.begin(); jt != it->second.end(); ++jt) {
+    if (static_cast<ContentSetting>(jt->second.value.GetIfInt().value()) !=
+        CONTENT_SETTING_ALLOW) {
+      continue;
+    }
+    const auto& pattern_pair = jt->first;
+    if (pattern_pair.primary_pattern == ContentSettingsPattern::Wildcard()) {
+      has_pattern_with_wildcard_primary = true;
+    } else if (pattern_pair.secondary_pattern ==
+               ContentSettingsPattern::Wildcard()) {
+      has_pattern_with_wildcard_secondary = true;
+    } else {
+      has_pattern_with_no_wildcard = true;
+    }
+  }
+
+  ReportCookiesAllowedForUrlsUsage(has_pattern_with_wildcard_primary,
+                                   has_pattern_with_wildcard_secondary,
+                                   has_pattern_with_no_wildcard);
 }
 
 PolicyProvider::~PolicyProvider() {

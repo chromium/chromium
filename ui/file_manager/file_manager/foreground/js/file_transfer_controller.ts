@@ -14,9 +14,10 @@ import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
 import {getDisallowedTransfers, grantAccess, startIOTask} from '../../common/js/api.js';
 import {getFocusedTreeItem, htmlEscape, isDirectoryTree, queryRequiredElement} from '../../common/js/dom_utils.js';
-import {getRootType} from '../../common/js/entry_utils.js';
+import {convertURLsToEntries, entriesToURLs, getRootType, getTeamDriveName, isNonModifiable, isRecentRoot, isSameEntry, isSharedDriveEntry, isSiblingEntry, isTeamDriveRoot, isTrashEntry, isTrashRoot, unwrapEntry} from '../../common/js/entry_utils.js';
 import {FileType} from '../../common/js/file_type.js';
 import {getFileTypeForName} from '../../common/js/file_types_base.js';
+import {isDlpEnabled} from '../../common/js/flags.js';
 import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_center_common.js';
 import {getEnabledTrashVolumeURLs, isAllTrashEntries, TrashEntry} from '../../common/js/trash.js';
 import {str, strf, util} from '../../common/js/util.js';
@@ -251,9 +252,9 @@ export class FileTransferController {
       return;
     }
     let entry: Entry|FakeEntry|FilesAppDirEntry = currentDirEntry;
-    if (util.isRecentRoot(currentDirEntry)) {
+    if (isRecentRoot(currentDirEntry)) {
       entry = this.selectionHandler_.selection.entries[0]!;
-    } else if (util.isTrashRoot(currentDirEntry)) {
+    } else if (isTrashRoot(currentDirEntry)) {
       // In the event the entry resides in the Trash root, delegate to the item
       // in .Trash/files to get the source filesystem.
       const trashEntry =
@@ -291,7 +292,7 @@ export class FileTransferController {
     // In the event a cut event has begun from the TrashRoot, the sources should
     // be delegated to the underlying files to ensure any validation done
     // onDrop_ (e.g. DLP scanning) is done on the actual file.
-    if (entries.every(util.isTrashEntry)) {
+    if (entries.every(isTrashEntry)) {
       entries = entries.map(e => (e as TrashEntry).filesEntry);
     }
 
@@ -302,7 +303,7 @@ export class FileTransferController {
                                       entries[i]!, metadata.contentMimeType) :
                                   false);
 
-    const sourceURLs = util.entriesToURLs(entries);
+    const sourceURLs = entriesToURLs(entries);
     clipboardData.setData('fs/sources', sourceURLs.join('\n'));
 
     clipboardData.effectAllowed = effectAllowed;
@@ -399,9 +400,8 @@ export class FileTransferController {
     const sourceEntries = await pastePlan.resolveEntries();
     let disallowedTransfers: Entry[] = [];
     try {
-      if (util.isDlpEnabled()) {
-        const destinationDir =
-            util.unwrapEntry(pastePlan.destinationEntry) as DirectoryEntry;
+      if (isDlpEnabled()) {
+        const destinationDir = unwrapEntry(pastePlan.destinationEntry);
         disallowedTransfers = await getDisallowedTransfers(
             sourceEntries, destinationDir, pastePlan.isMove);
       }
@@ -790,14 +790,15 @@ export class FileTransferController {
       event.preventDefault();
       const sourceURLs =
           (event?.dataTransfer?.getData('fs/sources') || '').split('\n');
-      const {entries, failureUrls} = await URLsToEntriesWithAccess(sourceURLs);
+      const {entries, failureUrls} =
+          await convertURLsToEntriesWithAccess(sourceURLs);
 
       // The list of entries should not be special entries (e.g. Camera, Linux
       // files) and should not already exist in Trash (i.e. you can't trash
       // something that's already trashed).
       const isModifiableAndNotInTrashRoot = (entry: Entry) => {
-        return !util.isNonModifiable(this.volumeManager_, entry) &&
-            !util.isTrashEntry(entry);
+        return !isNonModifiable(this.volumeManager_, entry) &&
+            !isTrashEntry(entry);
       };
       const canTrashEntries = entries && entries.length > 0 &&
           entries.every(isModifiableAndNotInTrashRoot);
@@ -862,7 +863,7 @@ export class FileTransferController {
     // Disallow dropping a directory on itself.
     const entries = this.selectionHandler_.selection.entries;
     for (const entry of entries) {
-      if (util.isSameEntry(entry, destinationEntry)) {
+      if (isSameEntry(entry, destinationEntry)) {
         return;
       }
     }
@@ -1034,7 +1035,7 @@ export class FileTransferController {
     }
     // Trash entries are only allowed to be restored which is analogous to a
     // cut event, so disallow the copy.
-    if (this.selectionHandler_.selection.entries.every(util.isTrashEntry)) {
+    if (this.selectionHandler_.selection.entries.every(isTrashEntry)) {
       return false;
     }
     const entries = this.selectionHandler_.selection.entries;
@@ -1042,12 +1043,12 @@ export class FileTransferController {
       if (!entries[i]) {
         continue;
       }
-      if (util.isTeamDriveRoot(entries[i]!)) {
+      if (isTeamDriveRoot(entries[i]!)) {
         return false;
       }
       // If selected entries are not in the same directory, we can't copy them
       // by a single operation at this moment.
-      if (i > 0 && !util.isSiblingEntry(entries[0]!, entries[i]!)) {
+      if (i > 0 && !isSiblingEntry(entries[0]!, entries[i]!)) {
         return false;
       }
     }
@@ -1081,8 +1082,7 @@ export class FileTransferController {
     }
 
     for (let i = 0; i < entries.length; i++) {
-      if (entries[i] &&
-          util.isNonModifiable(this.volumeManager_, entries[i]!)) {
+      if (entries[i] && isNonModifiable(this.volumeManager_, entries[i]!)) {
         return false;
       }
     }
@@ -1432,7 +1432,7 @@ export class FileTransferController {
     const {entries} = this.selectionHandler_.selection;
     if (entries && entries.length > 0) {
       for (const entry of entries) {
-        if (util.isNonModifiable(this.volumeManager_, entry)) {
+        if (isNonModifiable(this.volumeManager_, entry)) {
           return false;
         }
         const entryURL = entry.toURL();
@@ -1504,7 +1504,7 @@ export class PastePlan {
    */
   async resolveEntries() {
     if (!this.sourceEntries.length) {
-      const result = await URLsToEntriesWithAccess(this.sourceURLs);
+      const result = await convertURLsToEntriesWithAccess(this.sourceURLs);
       this.sourceEntries = result.entries;
       this.failureUrls = result.failureUrls;
     }
@@ -1537,12 +1537,12 @@ export class PastePlan {
 
     // Confirmation type for team drives.
     const source = {
-      isTeamDrive: util.isSharedDriveEntry(this.sourceEntries[0]),
-      teamDriveName: util.getTeamDriveName(this.sourceEntries[0]),
+      isTeamDrive: isSharedDriveEntry(this.sourceEntries[0]),
+      teamDriveName: getTeamDriveName(this.sourceEntries[0]),
     };
     const destination = {
-      isTeamDrive: util.isSharedDriveEntry(this.destinationEntry),
-      teamDriveName: util.getTeamDriveName(this.destinationEntry),
+      isTeamDrive: isSharedDriveEntry(this.destinationEntry),
+      teamDriveName: getTeamDriveName(this.destinationEntry),
     };
     if (this.isMove) {
       if (source.isTeamDrive) {
@@ -1578,8 +1578,8 @@ export class PastePlan {
    */
   getConfirmationMessages(confirmationType: TransferConfirmationType) {
     assert(this.sourceEntries.length != 0);
-    const sourceName = util.getTeamDriveName(this.sourceEntries[0]!);
-    const destinationName = util.getTeamDriveName(this.destinationEntry);
+    const sourceName = getTeamDriveName(this.sourceEntries[0]!);
+    const destinationName = getTeamDriveName(this.destinationEntry);
     switch (confirmationType) {
       case TransferConfirmationType.COPY_TO_SHARED_DRIVE:
         return [strf(
@@ -1617,9 +1617,9 @@ export class PastePlan {
  * Converts list of urls to list of Entries with granting R/W permissions to
  * them, which is essential when pasting files from a different profile.
  */
-const URLsToEntriesWithAccess = async (urls: string[]) => {
+const convertURLsToEntriesWithAccess = async (urls: string[]) => {
   await grantAccess(urls);
-  return util.URLsToEntries(urls);
+  return convertURLsToEntries(urls);
 };
 
 

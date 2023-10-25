@@ -194,8 +194,14 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
                    "PaymentsUserAuthSuccessfulForMandatoryAuthToggle"));
 }
 
+// TODO(1495229): Flaking on Mac, Linux and ChromeOS bots
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_showEditCardDialogForLocalCard_ReauthOn DISABLED_showEditCardDialogForLocalCard_ReauthOn
+#else
+#define MAYBE_showEditCardDialogForLocalCard_ReauthOn showEditCardDialogForLocalCard_ReauthOn
+#endif
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
-                       authenticateUserToEditLocalCard) {
+                       MAYBE_showEditCardDialogForLocalCard_ReauthOn) {
   base::UserActionTester user_action_tester;
 
   autofill_client()
@@ -216,13 +222,39 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
                   mock_mandatory_reauth_manager),
               AuthenticateWithMessage)
       .Times(1);
-  EXPECT_TRUE(RunAutofillSubtest("authenticateUserToEditLocalCard"))
-      << message_;
+  EXPECT_TRUE(RunAutofillSubtest("getLocalCard")) << message_;
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "PaymentsUserAuthTriggeredToShowEditLocalCardDialog"));
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "PaymentsUserAuthSuccessfulToShowEditLocalCardDialog"));
 }
 #endif
+
+// TODO(1495229): Flaking on Mac, Linux and ChromeOS bots
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_showEditCardDialogForLocalCard_ReauthOff DISABLED_showEditCardDialogForLocalCard_ReauthOff
+#else
+#define MAYBE_showEditCardDialogForLocalCard_ReauthOff showEditCardDialogForLocalCard_ReauthOff
+#endif
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
+                       MAYBE_showEditCardDialogForLocalCard_ReauthOff) {
+  base::UserActionTester user_action_tester;
+
+  autofill_client()
+      ->GetPersonalDataManager()
+      ->SetPaymentMethodsMandatoryReauthEnabled(false);
+  auto* mock_mandatory_reauth_manager =
+      autofill_client()->GetOrCreatePaymentsMandatoryReauthManager();
+
+  EXPECT_CALL(*static_cast<autofill::payments::MockMandatoryReauthManager*>(
+                  mock_mandatory_reauth_manager),
+              AuthenticateWithMessage)
+      .Times(0);
+  EXPECT_TRUE(RunAutofillSubtest("getLocalCard")) << message_;
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "PaymentsUserAuthTriggeredToShowEditLocalCardDialog"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "PaymentsUserAuthSuccessfulToShowEditLocalCardDialog"));
+}
 
 }  // namespace extensions

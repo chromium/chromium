@@ -41,8 +41,8 @@ bool IsFedCmWithoutWellKnownEnforcementEnabled();
 // Whether the Web Identity Digital Credentials API is enabled.
 bool IsWebIdentityDigitalCredentialsEnabled();
 
-// Whether the IdentityCredentialAutoSelected feature is enabled.
-bool IsFedCmIdentityCredentialAutoSelectedFlagEnabled();
+// Whether the AutoSelected feature is enabled.
+bool IsFedCmAutoSelectedFlagEnabled();
 
 // Whether the HostedDomain feature is enabled.
 bool IsFedCmHostedDomainEnabled();

@@ -62,7 +62,8 @@ void MediaStreamVideoSource::AddTrack(
     const VideoCaptureDeliverFrameCB& frame_callback,
     const VideoCaptureNotifyFrameDroppedCB& notify_frame_dropped_callback,
     const EncodedVideoFrameCB& encoded_frame_callback,
-    const VideoCaptureCropVersionCB& crop_version_callback,
+    const VideoCaptureSubCaptureTargetVersionCB&
+        sub_capture_target_version_callback,
     const VideoTrackSettingsCallback& settings_callback,
     const VideoTrackFormatCallback& format_callback,
     ConstraintsOnceCallback callback) {
@@ -73,8 +74,8 @@ void MediaStreamVideoSource::AddTrack(
 
   pending_tracks_.push_back(PendingTrackInfo{
       track, frame_callback, notify_frame_dropped_callback,
-      encoded_frame_callback, crop_version_callback, settings_callback,
-      format_callback,
+      encoded_frame_callback, sub_capture_target_version_callback,
+      settings_callback, format_callback,
       std::make_unique<VideoTrackAdapterSettings>(track_adapter_settings),
       std::move(callback)});
 
@@ -89,9 +90,9 @@ void MediaStreamVideoSource::AddTrack(
           ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
               &VideoTrackAdapter::DeliverEncodedVideoFrameOnVideoTaskRunner,
               GetTrackAdapter()));
-      auto new_crop_version_on_video_callback =
+      auto new_sub_capture_target_version_on_video_callback =
           ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-              &VideoTrackAdapter::NewCropVersionOnVideoTaskRunner,
+              &VideoTrackAdapter::NewSubCaptureTargetVersionOnVideoTaskRunner,
               GetTrackAdapter()));
       VideoCaptureNotifyFrameDroppedCB frame_dropped_callback =
           ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
@@ -109,15 +110,17 @@ void MediaStreamVideoSource::AddTrack(
             base::BindPostTask(
                 video_task_runner(),
                 std::move(deliver_encoded_frame_on_video_callback)),
-            base::BindPostTask(video_task_runner(),
-                               std::move(new_crop_version_on_video_callback)),
+            base::BindPostTask(
+                video_task_runner(),
+                std::move(new_sub_capture_target_version_on_video_callback)),
             base::BindPostTask(video_task_runner(),
                                std::move(frame_dropped_callback)));
       } else {
-        StartSourceImpl(std::move(deliver_frame_on_video_callback),
-                        std::move(deliver_encoded_frame_on_video_callback),
-                        std::move(new_crop_version_on_video_callback),
-                        std::move(frame_dropped_callback));
+        StartSourceImpl(
+            std::move(deliver_frame_on_video_callback),
+            std::move(deliver_encoded_frame_on_video_callback),
+            std::move(new_sub_capture_target_version_on_video_callback),
+            std::move(frame_dropped_callback));
       }
       break;
     }
@@ -491,7 +494,8 @@ void MediaStreamVideoSource::FinalizeAddPendingTracks(
       GetTrackAdapter()->AddTrack(
           track_info.track, track_info.frame_callback,
           track_info.notify_frame_dropped_callback,
-          track_info.encoded_frame_callback, track_info.crop_version_callback,
+          track_info.encoded_frame_callback,
+          track_info.sub_capture_target_version_callback,
           track_info.settings_callback, track_info.format_callback,
           *track_info.adapter_settings);
       UpdateTrackSettings(track_info.track, *track_info.adapter_settings);
@@ -565,21 +569,23 @@ bool MediaStreamVideoSource::SupportsEncodedOutput() const {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-void MediaStreamVideoSource::Crop(
-    const base::Token& crop_id,
-    uint32_t crop_version,
+void MediaStreamVideoSource::ApplySubCaptureTarget(
+    mojom::blink::SubCaptureTargetType type,
+    const base::Token& sub_capture_target,
+    uint32_t sub_capture_target_version,
     base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
         callback) {
   std::move(callback).Run(
       media::mojom::ApplySubCaptureTargetResult::kErrorGeneric);
 }
 
-absl::optional<uint32_t> MediaStreamVideoSource::GetNextCropVersion() {
+absl::optional<uint32_t>
+MediaStreamVideoSource::GetNextSubCaptureTargetVersion() {
   return absl::nullopt;
 }
 #endif
 
-uint32_t MediaStreamVideoSource::GetCropVersion() const {
+uint32_t MediaStreamVideoSource::GetSubCaptureTargetVersion() const {
   return 0;
 }
 

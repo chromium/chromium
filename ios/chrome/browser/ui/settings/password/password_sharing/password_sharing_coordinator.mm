@@ -287,14 +287,18 @@ using password_manager::FetchFamilyMembersRequestStatus;
 
 - (void)startSharingStatusCoordinator {
   [self.sharingStatusCoordinator stop];
+  // TODO(crbug.com/1463882): Remove multiple credential selection, before it's
+  // done use the first one.
+  password_manager::CredentialUIEntry credential =
+      self.mediator.selectedCredentials[0];
   self.sharingStatusCoordinator = [[SharingStatusCoordinator alloc]
       initWithBaseViewController:self.navigationController
                          browser:self.browser
                       recipients:self.mediator.selectedRecipients
                          website:base::SysUTF8ToNSString(
                                      password_manager::GetShownOrigin(
-                                         self.mediator
-                                             .selectedCredentials[0]))];
+                                         credential))
+                             URL:credential.GetURL()];
   self.sharingStatusCoordinator.delegate = self;
   [self.sharingStatusCoordinator start];
 }

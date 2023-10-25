@@ -96,11 +96,12 @@ void CSSToStyleMap::MapFillClip(StyleResolverState&,
   layer->SetClip(identifier_value->ConvertTo<EFillBox>());
 }
 
-void CSSToStyleMap::MapFillComposite(StyleResolverState&,
-                                     FillLayer* layer,
-                                     const CSSValue& value) {
+void CSSToStyleMap::MapFillCompositingOperator(StyleResolverState&,
+                                               FillLayer* layer,
+                                               const CSSValue& value) {
   if (value.IsInitialValue()) {
-    layer->SetComposite(FillLayer::InitialFillComposite(layer->GetType()));
+    layer->SetCompositingOperator(
+        FillLayer::InitialFillCompositingOperator(layer->GetType()));
     return;
   }
 
@@ -109,7 +110,8 @@ void CSSToStyleMap::MapFillComposite(StyleResolverState&,
     return;
   }
 
-  layer->SetComposite(identifier_value->ConvertTo<CompositeOperator>());
+  layer->SetCompositingOperator(
+      identifier_value->ConvertTo<CompositingOperator>());
 }
 
 void CSSToStyleMap::MapFillBlendMode(StyleResolverState&,

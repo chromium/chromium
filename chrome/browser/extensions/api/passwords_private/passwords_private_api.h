@@ -8,7 +8,7 @@
 #include <string>
 
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
-#include "components/password_manager/core/browser/bulk_leak_check_service.h"
+#include "components/password_manager/core/browser/leak_detection/bulk_leak_check_service.h"
 #include "extensions/browser/extension_function.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

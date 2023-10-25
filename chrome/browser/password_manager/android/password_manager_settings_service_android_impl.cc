@@ -82,11 +82,12 @@ bool IsUnenrolledFromUPM(PrefService* pref_service) {
 // In error cases, the UPM can set the kSavePasswordsSuspendedByError
 // pref to temporarily prevent password saves. If the user doesn't use GMS,
 // saving keeps working and only the syncing of changes is delayed.
-bool ShouldSuspendPasswordSavingDueToError(PrefService* pref_service) {
+bool ShouldSuspendPasswordSavingDueToError(PrefService* pref_service,
+                                           syncer::SyncService* sync_service) {
   // Ensure the user is still enrolled. Evicted users can still save normally.
-  // TODO(crbug.com/1443356): possibly auth error disables password saving
-  // after pwd sync is turned off.
-  return !IsUnenrolledFromUPM(pref_service) &&
+  bool is_pwd_sync_enabled =
+      IsSyncFeatureEnabledIncludingPasswords(sync_service);
+  return is_pwd_sync_enabled && !IsUnenrolledFromUPM(pref_service) &&
          pref_service->GetBoolean(
              password_manager::prefs::kSavePasswordsSuspendedByError);
 }
@@ -134,7 +135,7 @@ PasswordManagerSettingsServiceAndroidImpl::
 bool PasswordManagerSettingsServiceAndroidImpl::IsSettingEnabled(
     PasswordManagerSetting setting) const {
   if (setting == PasswordManagerSetting::kOfferToSavePasswords &&
-      ShouldSuspendPasswordSavingDueToError(pref_service_)) {
+      ShouldSuspendPasswordSavingDueToError(pref_service_, sync_service_)) {
     return false;
   }
   const PrefService::Preference* regular_pref =

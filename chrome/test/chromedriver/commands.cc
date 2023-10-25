@@ -66,16 +66,16 @@ void ExecuteGetStatus(const base::Value::Dict& params,
                std::string(), kW3CDefault);
 }
 
-void ExecuteBidiGetStatus(const base::Value::Dict& params,
-                          const std::string& session_id,
-                          const CommandCallback& callback) {
+void ExecuteBidiSessionStatus(const base::Value::Dict& params,
+                              const std::string& session_id,
+                              const CommandCallback& callback) {
   base::Value::Dict info;
-  info.Set("ready", false);
   if (session_id.empty()) {
-    info.Set("message",
-             base::StringPrintf("%s does not yet support BiDi-only sessions.",
-                                kChromeDriverProductShortName));
+    info.Set("ready", true);
+    info.Set("message", base::StringPrintf("%s ready for new sessions.",
+                                           kChromeDriverProductShortName));
   } else {
+    info.Set("ready", false);
     // The error message is borrowed from BiDiMapper code.
     // See bidiMapper/domains/session/SessionProcessor.ts of chromium-bidi
     // repository.
@@ -108,18 +108,24 @@ void ExecuteCreateSession(SessionThreadMap* session_thread_map,
 
   thread_info->thread()->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&SetThreadLocalSession, std::move(session)));
-  session_thread_map->insert(std::make_pair(new_id, std::move(thread_info)));
+  session_thread_map->emplace(new_id, std::move(thread_info));
   init_session_cmd.Run(params, new_id, callback);
 }
 
-void ExecuteBidiCreateSession(const base::Value::Dict& params,
-                              const std::string& session_id,
-                              const CommandCallback& callback) {
-  Status new_session_not_supported = {
-      kSessionNotCreated,
-      base::StringPrintf("%s does not yet support BiDi-only sessions.",
-                         kChromeDriverProductShortName)};
-  callback.Run(new_session_not_supported, nullptr, session_id, kW3CDefault);
+void ExecuteBidiSessionNew(SessionThreadMap* session_thread_map,
+                           const Command& init_session_cmd,
+                           const base::Value::Dict& params,
+                           const std::string& resource,
+                           const CommandCallback& callback) {
+  if (!resource.empty()) {
+    callback.Run(Status{kSessionNotCreated, "session already exists"}, nullptr,
+                 resource, kW3CDefault);
+    return;
+  }
+  base::Value::Dict new_params = params.Clone();
+  new_params.SetByDottedPath("capabilities.alwaysMatch.webSocketUrl", true);
+  ExecuteCreateSession(session_thread_map, init_session_cmd, new_params,
+                       resource, callback);
 }
 
 namespace {
@@ -235,9 +241,12 @@ void ExecuteQuitAll(const Command& quit_command,
 
 namespace {
 
-void TerminateSessionThreadOnCommandThread(SessionThreadMap* session_thread_map,
-                                           const std::string& session_id) {
+void TerminateSessionThreadOnCommandThread(
+    SessionThreadMap* session_thread_map,
+    SessionConnectionMap* session_connection_map,
+    const std::string& session_id) {
   session_thread_map->erase(session_id);
+  session_connection_map->erase(session_id);
 }
 
 void ExecuteSessionCommandOnSessionThread(
@@ -369,6 +378,7 @@ void ExecuteSessionCommandOnSessionThread(
 }  // namespace
 
 void ExecuteSessionCommand(SessionThreadMap* session_thread_map,
+                           SessionConnectionMap* session_connection_map,
                            const char* command_name,
                            const SessionCommand& command,
                            bool w3c_standard_command,
@@ -390,7 +400,8 @@ void ExecuteSessionCommand(SessionThreadMap* session_thread_map,
             params.Clone(), base::SingleThreadTaskRunner::GetCurrentDefault(),
             callback,
             base::BindRepeating(&TerminateSessionThreadOnCommandThread,
-                                session_thread_map, session_id)));
+                                session_thread_map, session_connection_map,
+                                session_id)));
   }
 }
 

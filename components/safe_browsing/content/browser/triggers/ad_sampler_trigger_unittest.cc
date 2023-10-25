@@ -108,7 +108,7 @@ TEST_F(AdSamplerTriggerTest, TriggerDisabledBySamplingFrequency) {
               StartCollectingThreatDetails(_, _, _, _, _, _, _))
       .Times(0);
   EXPECT_CALL(*get_trigger_manager(),
-              FinishCollectingThreatDetails(_, _, _, _, _, _, _))
+              FinishCollectingThreatDetails(_, _, _, _, _, _, _, _))
       .Times(0);
 
   // This page contains two ads - one identifiable by its URL, the other by the
@@ -135,7 +135,7 @@ TEST_F(AdSamplerTriggerTest, PageWithNoAds) {
               StartCollectingThreatDetails(_, _, _, _, _, _, _))
       .Times(0);
   EXPECT_CALL(*get_trigger_manager(),
-              FinishCollectingThreatDetails(_, _, _, _, _, _, _))
+              FinishCollectingThreatDetails(_, _, _, _, _, _, _, _))
       .Times(0);
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
@@ -159,8 +159,8 @@ TEST_F(AdSamplerTriggerTest, PageWithMultipleAds) {
       .Times(2)
       .WillRepeatedly(Return(true));
   EXPECT_CALL(*get_trigger_manager(),
-              FinishCollectingThreatDetails(TriggerType::AD_SAMPLE,
-                                            web_contents_key(), _, _, _, _, _))
+              FinishCollectingThreatDetails(
+                  TriggerType::AD_SAMPLE, web_contents_key(), _, _, _, _, _, _))
       .Times(2)
       .WillRepeatedly(Return(
           MockTriggerManager::FinishCollectingThreatDetailsResult(true, true)));
@@ -194,8 +194,8 @@ TEST_F(AdSamplerTriggerTest, ReportRejectedByTriggerManager) {
       .Times(1)
       .WillOnce(Return(false));
   EXPECT_CALL(*get_trigger_manager(),
-              FinishCollectingThreatDetails(TriggerType::AD_SAMPLE,
-                                            web_contents_key(), _, _, _, _, _))
+              FinishCollectingThreatDetails(
+                  TriggerType::AD_SAMPLE, web_contents_key(), _, _, _, _, _, _))
       .Times(0);
 
   // One ad on the page, identified by its URL.

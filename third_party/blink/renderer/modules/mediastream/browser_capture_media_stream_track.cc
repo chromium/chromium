@@ -13,6 +13,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/modules/mediastream/crop_target.h"
+#include "third_party/blink/renderer/modules/mediastream/restriction_target.h"
+#include "third_party/blink/renderer/modules/mediastream/sub_capture_target.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/region_capture_crop_id.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -135,20 +138,62 @@ void BrowserCaptureMediaStreamTrack::Trace(Visitor* visitor) const {
 
 ScriptPromise BrowserCaptureMediaStreamTrack::cropTo(
     ScriptState* script_state,
-    CropTarget* crop_target,
+    CropTarget* target,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
+  return ApplySubCaptureTarget(script_state,
+                               SubCaptureTarget::Type::kCropTarget, target,
+                               exception_state);
+}
 
-  const String crop_id(crop_target ? crop_target->GetId() : String());
+ScriptPromise BrowserCaptureMediaStreamTrack::restrictTo(
+    ScriptState* script_state,
+    RestrictionTarget* target,
+    ExceptionState& exception_state) {
+  DCHECK(IsMainThread());
+  return ApplySubCaptureTarget(script_state,
+                               SubCaptureTarget::Type::kRestrictionTarget,
+                               target, exception_state);
+}
 
-  // If the promise is not resolved within the |timeout_interval|, a
+BrowserCaptureMediaStreamTrack* BrowserCaptureMediaStreamTrack::clone(
+    ExecutionContext* execution_context) {
+  // Instantiate the clone.
+  BrowserCaptureMediaStreamTrack* cloned_track =
+      MakeGarbageCollected<BrowserCaptureMediaStreamTrack>(
+          execution_context, Component()->Clone(), GetReadyState(),
+          base::DoNothing());
+
+  // Copy state.
+  MediaStreamTrackImpl::CloneInternal(cloned_track);
+
+  return cloned_track;
+}
+
+ScriptPromise BrowserCaptureMediaStreamTrack::ApplySubCaptureTarget(
+    ScriptState* script_state,
+    SubCaptureTarget::Type type,
+    SubCaptureTarget* target,
+    ExceptionState& exception_state) {
+  DCHECK(IsMainThread());
+  CHECK(type == SubCaptureTarget::Type::kCropTarget ||
+        type == SubCaptureTarget::Type::kRestrictionTarget);
+
+  const std::string metric_name_prefix =
+      (type == SubCaptureTarget::Type::kCropTarget)
+          ? "Media.RegionCapture.CropTo"
+          : "Media.ElementCapture.RestrictTo";
+
+  // If the promise is not resolved within the |timeout_interval|, an
   // ApplySubCaptureTargetResult::kTimedOut response will be recorded in the
   // UMA.
   auto* resolver = MakeGarbageCollected<
       ScriptPromiseResolverWithTracker<ApplySubCaptureTargetResult>>(
-      script_state, /*metric_name_prefix=*/"Media.RegionCapture.CropTo",
+      script_state, metric_name_prefix,
       /*timeout_interval=*/base::Seconds(10));
-  resolver->SetResultSuffix("Result2");
+  if (type == SubCaptureTarget::Type::kCropTarget) {
+    resolver->SetResultSuffix("Result2");
+  }
   ScriptPromise promise = resolver->Promise();
 
 #if BUILDFLAG(IS_ANDROID)
@@ -159,8 +204,9 @@ ScriptPromise BrowserCaptureMediaStreamTrack::cropTo(
   return promise;
 #else
 
-  const absl::optional<base::Token> crop_id_token = IdStringToToken(crop_id);
-  if (!crop_id_token.has_value()) {
+  const absl::optional<base::Token> token =
+      IdStringToToken(target ? target->GetId() : String());
+  if (!token.has_value()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
                          DOMExceptionCode::kUnknownError, "Invalid token."),
                      ApplySubCaptureTargetResult::kInvalidTarget);
@@ -189,60 +235,49 @@ ScriptPromise BrowserCaptureMediaStreamTrack::cropTo(
     return promise;
   }
 
-  // TODO(crbug.com/1332628): Instead of using GetNextCropVersion(), move the
-  // ownership of the Promises from this->pending_promises_ into native_source.
-  const absl::optional<uint32_t> optional_crop_version =
-      native_source->GetNextCropVersion();
-  if (!optional_crop_version.has_value()) {
+  // TODO(crbug.com/1332628): Instead of using GetNextSubCaptureTargetVersion(),
+  // move the ownership of the Promises from this->pending_promises_ into
+  // native_source.
+  const absl::optional<uint32_t> optional_sub_capture_target_version =
+      native_source->GetNextSubCaptureTargetVersion();
+  if (!optional_sub_capture_target_version.has_value()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
                          DOMExceptionCode::kOperationError,
                          "Can't change target while clones exist."),
                      ApplySubCaptureTargetResult::kInvalidTarget);
     return promise;
   }
-  const uint32_t crop_version = optional_crop_version.value();
+  const uint32_t sub_capture_target_version =
+      optional_sub_capture_target_version.value();
 
-  pending_promises_.Set(crop_version,
+  pending_promises_.Set(sub_capture_target_version,
                         MakeGarbageCollected<PromiseInfo>(resolver));
 
   // Register for a one-off notification when the first frame cropped
   // to the new crop-target is observed.
-  native_track->AddCropVersionCallback(
-      crop_version,
-      WTF::BindOnce(&BrowserCaptureMediaStreamTrack::OnCropVersionObserved,
-                    WrapWeakPersistent(this), crop_version));
+  native_track->AddSubCaptureTargetVersionCallback(
+      sub_capture_target_version,
+      WTF::BindOnce(
+          &BrowserCaptureMediaStreamTrack::OnSubCaptureTargetVersionObserved,
+          WrapWeakPersistent(this), sub_capture_target_version));
 
-  native_source->Crop(
-      crop_id_token.value(), crop_version,
+  native_source->ApplySubCaptureTarget(
+      type, token.value(), sub_capture_target_version,
       WTF::BindOnce(&BrowserCaptureMediaStreamTrack::OnResultFromBrowserProcess,
-                    WrapWeakPersistent(this), crop_version));
+                    WrapWeakPersistent(this), sub_capture_target_version));
 
   return promise;
 #endif
 }
 
-BrowserCaptureMediaStreamTrack* BrowserCaptureMediaStreamTrack::clone(
-    ExecutionContext* execution_context) {
-  // Instantiate the clone.
-  BrowserCaptureMediaStreamTrack* cloned_track =
-      MakeGarbageCollected<BrowserCaptureMediaStreamTrack>(
-          execution_context, Component()->Clone(), GetReadyState(),
-          base::DoNothing());
-
-  // Copy state.
-  MediaStreamTrackImpl::CloneInternal(cloned_track);
-
-  return cloned_track;
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 void BrowserCaptureMediaStreamTrack::OnResultFromBrowserProcess(
-    uint32_t crop_version,
+    uint32_t sub_capture_target_version,
     media::mojom::ApplySubCaptureTargetResult result) {
   DCHECK(IsMainThread());
-  DCHECK_GT(crop_version, 0u);
+  DCHECK_GT(sub_capture_target_version, 0u);
 
-  const auto iter = pending_promises_.find(crop_version);
+  const auto iter = pending_promises_.find(sub_capture_target_version);
   if (iter == pending_promises_.end()) {
     return;
   }
@@ -254,19 +289,19 @@ void BrowserCaptureMediaStreamTrack::OnResultFromBrowserProcess(
   MaybeFinalizeCropPromise(iter);
 }
 
-void BrowserCaptureMediaStreamTrack::OnCropVersionObserved(
-    uint32_t crop_version) {
+void BrowserCaptureMediaStreamTrack::OnSubCaptureTargetVersionObserved(
+    uint32_t sub_capture_target_version) {
   DCHECK(IsMainThread());
-  DCHECK_GT(crop_version, 0u);
+  DCHECK_GT(sub_capture_target_version, 0u);
 
-  const auto iter = pending_promises_.find(crop_version);
+  const auto iter = pending_promises_.find(sub_capture_target_version);
   if (iter == pending_promises_.end()) {
     return;
   }
   PromiseInfo* const info = iter->value;
 
-  DCHECK(!info->crop_version_observed) << "Invoked twice.";
-  info->crop_version_observed = true;
+  DCHECK(!info->sub_capture_target_version_observed) << "Invoked twice.";
+  info->sub_capture_target_version_observed = true;
 
   MaybeFinalizeCropPromise(iter);
 }
@@ -285,9 +320,9 @@ void BrowserCaptureMediaStreamTrack::MaybeFinalizeCropPromise(
   const media::mojom::ApplySubCaptureTargetResult result = info->result.value();
 
   // Failure can be reported immediately, but success is only reported once
-  // the new crop-version is observed.
+  // the new sub-capture-target-version is observed.
   if (result == media::mojom::ApplySubCaptureTargetResult::kSuccess &&
-      !info->crop_version_observed) {
+      !info->sub_capture_target_version_observed) {
     return;
   }
 
@@ -298,7 +333,7 @@ void BrowserCaptureMediaStreamTrack::MaybeFinalizeCropPromise(
     MediaStreamTrackPlatform* const native_track =
         MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(Component()));
     if (native_track) {
-      native_track->RemoveCropVersionCallback(iter->key);
+      native_track->RemoveSubCaptureTargetVersionCallback(iter->key);
     }
   }
 

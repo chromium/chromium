@@ -39,11 +39,28 @@ namespace {
 // SetHeightAndShowWidget().
 constexpr int kInterceptionBubbleBaseHeight = 500;
 constexpr int kInterceptionBubbleWidth = 290;
+constexpr int kInterceptionChromeSigninBubbleWidth = 320;
 
 views::View* GetBubbleAnchorView(const Browser& browser) {
   return BrowserView::GetBrowserViewForBrowser(&browser)
       ->toolbar_button_provider()
       ->GetAvatarToolbarButton();
+}
+
+GURL GetURLForInterceptionType(
+    WebSigninInterceptor::SigninInterceptionType interception_type) {
+  return interception_type ==
+                 WebSigninInterceptor::SigninInterceptionType::kChromeSignin
+             ? GURL(chrome::kChromeUIDiceWebSigninInterceptChromeSigninURL)
+             : GURL(chrome::kChromeUIDiceWebSigninInterceptURL);
+}
+
+int GetBubbleFixedWidthForInterceptionType(
+    WebSigninInterceptor::SigninInterceptionType interception_type) {
+  return interception_type ==
+                 WebSigninInterceptor::SigninInterceptionType::kChromeSignin
+             ? kInterceptionChromeSigninBubbleWidth
+             : kInterceptionBubbleWidth;
 }
 
 }  // namespace
@@ -146,16 +163,12 @@ DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(
   // Create the web view in the native bubble.
   std::unique_ptr<views::WebView> web_view =
       std::make_unique<views::WebView>(browser->profile());
-  GURL intercept_url =
-      bubble_parameters_.interception_type ==
-              WebSigninInterceptor::SigninInterceptionType::kChromeSignin
-          ? GURL(chrome::kChromeUIDiceWebSigninInterceptChromeSigninURL)
-          : GURL(chrome::kChromeUIDiceWebSigninInterceptURL);
-  web_view->LoadInitialURL(intercept_url);
-
+  web_view->LoadInitialURL(
+      GetURLForInterceptionType(bubble_parameters.interception_type));
   web_view->GetWebContents()->SetDelegate(this);
-  web_view->SetPreferredSize(
-      gfx::Size(kInterceptionBubbleWidth, kInterceptionBubbleBaseHeight));
+  web_view->SetPreferredSize(gfx::Size(GetBubbleFixedWidthForInterceptionType(
+                                           bubble_parameters.interception_type),
+                                       kInterceptionBubbleBaseHeight));
   DiceWebSigninInterceptUI* web_ui = web_view->GetWebContents()
                                          ->GetWebUI()
                                          ->GetController()
@@ -179,7 +192,10 @@ DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(
 }
 
 void DiceWebSigninInterceptionBubbleView::SetHeightAndShowWidget(int height) {
-  web_view_->SetPreferredSize(gfx::Size(kInterceptionBubbleWidth, height));
+  web_view_->SetPreferredSize(
+      gfx::Size(GetBubbleFixedWidthForInterceptionType(
+                    bubble_parameters_.interception_type),
+                height));
   GetWidget()->SetSize(GetWidget()->non_client_view()->GetPreferredSize());
   GetWidget()->Show();
 }

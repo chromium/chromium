@@ -31,7 +31,7 @@ struct LineBreakResults {
   STACK_ALLOCATED();
 
  public:
-  LineBreakResults(const NGInlineNode& node, const NGConstraintSpace& space)
+  LineBreakResults(const InlineNode& node, const NGConstraintSpace& space)
       : node_(node), space_(space) {}
 
   wtf_size_t Size() const { return lines_.size(); }
@@ -61,12 +61,12 @@ struct LineBreakResults {
     const LineLayoutOpportunity line_opportunity(available_width);
     NGLeadingFloats leading_floats;
     ExclusionSpace exclusion_space;
-    NGLineInfo line_info;
+    LineInfo line_info;
     for (;;) {
-      NGLineBreaker line_breaker(node_, NGLineBreakerMode::kContent, space_,
-                                 line_opportunity, leading_floats, break_token_,
-                                 /* column_spanner_path_ */ nullptr,
-                                 &exclusion_space);
+      LineBreaker line_breaker(node_, LineBreakerMode::kContent, space_,
+                               line_opportunity, leading_floats, break_token_,
+                               /* column_spanner_path_ */ nullptr,
+                               &exclusion_space);
       line_breaker.NextLine(&line_info);
       // Bisecting can't find the desired value if the paragraph has forced line
       // breaks.
@@ -114,7 +114,7 @@ struct LineBreakResults {
   }
 
  private:
-  const NGInlineNode node_;
+  const InlineNode node_;
   const NGConstraintSpace& space_;
   Vector<LineBreakResult, kMaxLinesForBalance> lines_;
   const NGInlineBreakToken* break_token_ = nullptr;
@@ -141,8 +141,8 @@ wtf_size_t EstimateNumLines(const String& text_content,
 }  // namespace
 
 // static
-absl::optional<LayoutUnit> NGParagraphLineBreaker::AttemptParagraphBalancing(
-    const NGInlineNode& node,
+absl::optional<LayoutUnit> ParagraphLineBreaker::AttemptParagraphBalancing(
+    const InlineNode& node,
     const NGConstraintSpace& space,
     const LineLayoutOpportunity& line_opportunity) {
   if (node.IsBisectLineBreakDisabled()) {
@@ -168,7 +168,7 @@ absl::optional<LayoutUnit> NGParagraphLineBreaker::AttemptParagraphBalancing(
   } else {
     // Estimate the number of lines to see if the text is too long to balance.
     // Because this is an estimate, allow it to be `max_lines * 2`.
-    const NGInlineItemsData& items_data = node.ItemsData(
+    const InlineItemsData& items_data = node.ItemsData(
         /* use_first_line_style */ false);
     const wtf_size_t estimated_num_lines = EstimateNumLines(
         items_data.text_content, block_style.GetFont().PrimaryFont(),

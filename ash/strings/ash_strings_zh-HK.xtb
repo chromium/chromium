@@ -29,6 +29,7 @@
 <translation id="109942774857561566">我好悶</translation>
 <translation id="1104084341931202936">顯示無障礙功能設定</translation>
 <translation id="1104621072296271835">連結您的裝置，以獲得更佳的體驗</translation>
+<translation id="1106446201446919638">已連接 1 部裝置。使用熱點時，Wi-Fi 將保持關閉。</translation>
 <translation id="1111021433905331574">您可在「設定」&gt;「<ph name="APP_TITLE" />」中變更鍵盤背光的顏色</translation>
 <translation id="1117719261843403176">切換流動數據。<ph name="STATE" />。</translation>
 <translation id="112308213915226829">自動隱藏捷徑列</translation>
@@ -202,7 +203,6 @@
 <translation id="1757857692711134412">關閉，直到日落</translation>
 <translation id="1768366657309696705">「<ph name="LAUNCHER_KEY_NAME" />鍵 + 句號鍵」的鍵盤快速鍵已變更。如要使用 Insert 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + Shift + Backspace 鍵。</translation>
 <translation id="1770726142253415363">移咗去第 <ph name="ROW_NUMBER" /> 列，第 <ph name="COLUMN_NUMBER" /> 欄。</translation>
-<translation id="1771458705381257690">開啟「<ph name="NAME" />」設定並自訂裝置</translation>
 <translation id="1771761307086386028">向右捲動</translation>
 <translation id="1774796056689732716">日曆，<ph name="CURRENT_MONTH_YEAR" />，目前揀咗 <ph name="DATE" />。</translation>
 <translation id="1775598828170459419">目前顯示 <ph name="NUM_SHOWN_ITEMS" /> 個，共 <ph name="NUM_TOTAL_ITEMS" /> 個</translation>
@@ -307,7 +307,6 @@
 <translation id="2258734398699965611">建議檔案</translation>
 <translation id="2268130516524549846">藍牙已停用</translation>
 <translation id="2268813581635650749">登出所有使用者</translation>
-<translation id="2269016722240250274">某個應用程式正在使用麥克風</translation>
 <translation id="2276987123919776440">15 分鐘</translation>
 <translation id="2277103315734023688">向前快轉</translation>
 <translation id="2282073721614284166">在分頁中開啟連結</translation>
@@ -360,6 +359,7 @@
 <translation id="2465145153332031561">電池健康度 <ph name="BATTERY_HEALTH_PERCENTAGE" />%，充電循環次數 <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">確認解像度</translation>
 <translation id="2475982808118771221">發生錯誤</translation>
+<translation id="2478076885740497414">安裝應用程式</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2484513351006226581">按下 <ph name="KEYBOARD_SHORTCUT" /> 鍵可切換鍵盤配置。</translation>
 <translation id="2487915095798731898">加入</translation>
@@ -518,6 +518,7 @@
 <translation id="3160929076476941240">2 小時</translation>
 <translation id="3161500364292033097">關閉桌面和視窗</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> 正在回復您的 <ph name="DEVICE_TYPE" />。您的裝置將會重設，且所有資料將會被刪除。</translation>
+<translation id="3170769098533255179">未連接任何裝置。使用熱點時，Wi-Fi 將保持關閉。</translation>
 <translation id="3171170659304083361">輸入方法設定</translation>
 <translation id="3176221688814061633">Chromebook 或藍牙裝置正使用較舊版本的藍牙。請開啟「超解像度藍牙」或使用內置麥克風，以提高音效品質。</translation>
 <translation id="3181441307743005334">重新啟動中，請稍候</translation>
@@ -531,7 +532,7 @@
 <translation id="3217205077783620295">打開咗音量，切換將會靜音。</translation>
 <translation id="3226991577105957773">還有 <ph name="COUNT" /> 項</translation>
 <translation id="3227137524299004712">麥克風</translation>
-<translation id="3233611303007751344">省電模式已關閉</translation>
+<translation id="3233611303007751344">已關閉「慳電模式」</translation>
 <translation id="324366796737464147">消噪</translation>
 <translation id="3249513730522716925">「<ph name="WINDOW_TITLE" />」視窗已從桌面 <ph name="ACTIVE_DESK" /> 移至桌面 <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">課堂作業類型：<ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -552,6 +553,7 @@
 <translation id="3306386552969601301">有 <ph name="DEVICECOUNT" /> 部裝置已連線至 <ph name="DEVICE_NAME" /> 熱點</translation>
 <translation id="3307642347673023554">已切換至手提電腦模式</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> 稍後仍可登入。</translation>
+<translation id="3317779231018057649">已連接 <ph name="DEVICECOUNT" /> 部裝置。使用熱點時，Wi-Fi 將保持關閉。</translation>
 <translation id="3321628682574733415">家長存取碼錯誤</translation>
 <translation id="332827762492701193">已隱藏通知</translation>
 <translation id="3333674550998107387">展開「<ph name="NOTIFICATION_TITLE" />」通知</translation>
@@ -631,8 +633,6 @@
 <translation id="3600061223661453002">關閉</translation>
 <translation id="3604801046548457007">已建立桌面 <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">已連接點字顯示器。</translation>
-<translation id="3609301425104788351"><ph name="MIC" />，
-        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">如果您啟用流動數據，藍牙亦會隨之開啟</translation>
 <translation id="3616113530831147358">音效檔案</translation>
 <translation id="3616883743181209306">已經將選單移去螢幕右上角。</translation>
@@ -682,9 +682,7 @@
 <translation id="3781910048497807059">將焦點移至上一個窗格</translation>
 <translation id="3783640748446814672">Alt</translation>
 <translation id="3784455785234192852">鎖定</translation>
-<translation id="3789841737615482174">安裝</translation>
 <translation id="3796215473395753611">Alt 鍵 + 向上箭咀鍵</translation>
-<translation id="3796746699333205839">某個應用程式正在使用攝錄機和麥克風</translation>
 <translation id="3798670284305777884">喇叭 (內置)</translation>
 <translation id="3799080171973636491">您已按下全螢幕放大鏡的鍵盤快速鍵。確定要旋轉螢幕嗎？</translation>
 <translation id="380165613292957338">你好，有咩可以幫到你？</translation>
@@ -769,7 +767,8 @@
 <translation id="4146671046252289537">移至下一個字詞的結尾</translation>
 <translation id="4146833061457621061">播音樂</translation>
 <translation id="4150201353443180367">顯示屏</translation>
-<translation id="4156293514828496577">剩餘電量：<ph name="PERCENTAGE" />% (約 <ph name="TIME_LEFT" />)。為延長電池續航力，某些功能會受到限制。</translation>
+<translation id="4156293514828496577">剩餘電量：<ph name="PERCENTAGE" />% (大約 <ph name="TIME_LEFT" />)。
+為延長電池壽命，部分功能會受限制。</translation>
 <translation id="4165275524535002941">連接線可能不支援顯示屏</translation>
 <translation id="4177415338862979658">按一下即可瞭解詳情</translation>
 <translation id="4177913004758410636">{0,plural, =1{請在 1 天內更新裝置}other{請在 # 天內更新裝置}}</translation>
@@ -813,6 +812,7 @@
 <translation id="428715201724021596">正在連線至設定檔。這項操作可能需時數分鐘。</translation>
 <translation id="4294319844246081198"><ph name="GIVEN_NAME" />，早晨：</translation>
 <translation id="4296136865091727875">清除全部 <ph name="COUNT" /> 個通知</translation>
+<translation id="4300272766492248925">開啟應用程式</translation>
 <translation id="430191667033048642">「<ph name="MOVED_APP_NAME" />」已經移咗去「<ph name="FOLDER_NAME" />」資料夾。</translation>
 <translation id="4302592941791324970">無法使用</translation>
 <translation id="4303223480529385476">展開狀態區</translation>
@@ -878,6 +878,7 @@
 <translation id="4566144812051858745">對所有建議都不感興趣</translation>
 <translation id="4569753163207712681">查看手機最近的相片、媒體和通知</translation>
 <translation id="4573176682887762361">「輸入 [文字/詞組]」</translation>
+<translation id="4577188182049003486">熱點開啟時，Wi-Fi 會關閉</translation>
 <translation id="4577274620589681794">時間到 · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">顯示預覽</translation>
 <translation id="4578906031062871102">開咗設定選單</translation>
@@ -899,7 +900,7 @@
 <translation id="4659419629803378708">已啟用 ChromeVox</translation>
 <translation id="4666911709726371538">更多應用程式</translation>
 <translation id="4667099493359681081">下載緊 <ph name="FILENAME" /></translation>
-<translation id="4672539464599646374">省電模式已開啟</translation>
+<translation id="4672539464599646374">已開啟「慳電模式」</translation>
 <translation id="468293128311738995">手機應用程式</translation>
 <translation id="4690510401873698237">捷徑列喺螢幕個底度</translation>
 <translation id="4696813013609194136">使用家長存取碼解鎖裝置</translation>
@@ -1059,8 +1060,8 @@
 <translation id="5297704307811127955">已關閉</translation>
 <translation id="5300589172476337783">顯示</translation>
 <translation id="5302048478445481009">語言</translation>
-<translation id="5303319262469238330">剩餘電量：<ph name="PERCENTAGE" />%。
-為延長電池續航力，某些功能會受到限制。</translation>
+<translation id="5303319262469238330">剩餘 <ph name="PERCENTAGE" />% 電量。
+為延長電池壽命，部分功能會受限制。</translation>
 <translation id="5308380583665731573">連線</translation>
 <translation id="5313326810920013265">藍牙設定</translation>
 <translation id="5314219114274263156">已錄影螢幕畫面</translation>
@@ -1206,7 +1207,6 @@
 <translation id="5876666360658629066">輸入家長存取碼</translation>
 <translation id="5881540930187678962">稍後再設定 Phone Hub</translation>
 <translation id="5881663018261910378">已停用</translation>
-<translation id="5883017113634523865">前往 Google Play 安裝「<ph name="NAME" />」的應用程式，即可查看所有可用功能</translation>
 <translation id="5887954372087850114">「<ph name="WINDOW_TITLE" />」視窗已指派給「<ph name="DESK_TITLE" />」，並取消指派給所有其他桌面</translation>
 <translation id="588817334757907802">在 Chrome 瀏覽器中開啟檔案</translation>
 <translation id="5895138241574237353">重新啟動</translation>
@@ -1301,7 +1301,7 @@
 <translation id="6231419273573514727">周邊裝置的效能可能受到限制</translation>
 <translation id="6232891689835436217">「<ph name="APP_NAME" />」目前正在使用您的相機和麥克風</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="62380141479352646">電力不足，已開啟省電模式。</translation>
+<translation id="62380141479352646">電量不足，已開啟「慳電模式」。</translation>
 <translation id="6247728804802644171">開啟通知</translation>
 <translation id="6254629735336163724">已鎖定為水平</translation>
 <translation id="6259254695169772643">使用觸控筆選擇</translation>
@@ -1415,7 +1415,7 @@
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">相機和麥克風正在使用中</translation>
 <translation id="6739144137573853180">前往「設定」</translation>
-<translation id="6747985245839783873">電量：<ph name="PERCENTAGE" />%。省電模式已開啟。</translation>
+<translation id="6747985245839783873">電量淨番 <ph name="PERCENTAGE" />%。開咗「慳電模式」。</translation>
 <translation id="6751052314767925245">由管理員強制執行</translation>
 <translation id="6751826523481687655">效能追蹤已啟用</translation>
 <translation id="6752912906630585008">已移除桌面 <ph name="REMOVED_DESK" />，並與桌面 <ph name="RECEIVE_DESK" /> 合併</translation>
@@ -1515,7 +1515,7 @@
 <translation id="7131634465328662194">您將會自動登出。</translation>
 <translation id="7143207342074048698">正在連接</translation>
 <translation id="7144942256906679589">電池狀態</translation>
-<translation id="7145639536026937076">電量：<ph name="PERCENTAGE" />% (充電中)。省電模式已開啟。</translation>
+<translation id="7145639536026937076">電量有 <ph name="PERCENTAGE" />%，宜家叉緊電。開咗「慳電模式」。</translation>
 <translation id="7165278925115064263">Alt + Shift + K 鍵</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />，
         <ph name="NETWORK" /></translation>
@@ -1526,7 +1526,7 @@
 <translation id="7198435252016571249">攝錄機已經對齊右下角，同系統平台有衝突。</translation>
 <translation id="7219573373513695352">未連接到任何裝置</translation>
 <translation id="7229029500464092426">記憶體用量：<ph name="AVAILABLE_MEMORY" /> (總記憶體：<ph name="TOTAL_MEMORY" />)</translation>
-<translation id="7244725679040769470">剩餘電量：<ph name="PERCENTAGE" />%。請將裝置接上電源。</translation>
+<translation id="7244725679040769470">剩餘 <ph name="PERCENTAGE" />% 電量。請將裝置接上電源。</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />。此 Chromebook 需要重新啟動才能套用更新。過程可能需時 1 分鐘。</translation>
 <translation id="7256634071279256947">後置麥克風</translation>
 <translation id="7258828758145722155">昨天編輯過</translation>
@@ -1575,7 +1575,6 @@
 <translation id="742594950370306541">相機正在使用中。</translation>
 <translation id="742608627846767349">早晨，</translation>
 <translation id="743058460480092004">相機和麥克風正在使用中。</translation>
-<translation id="7452560014878697800">某個應用程式正在使用攝錄機</translation>
 <translation id="7453330308669753048">移除咗搜尋記錄結果</translation>
 <translation id="7459485586006128091">由於發生內部問題，因此熱點已關閉。請過幾分鐘再重試連線。</translation>
 <translation id="7461924472993315131">Pin</translation>
@@ -1920,7 +1919,7 @@
 <translation id="8878886163241303700">延伸螢幕</translation>
 <translation id="888982883502837004">有適用於裝置的韌體更新，按一下即可查看並更新。</translation>
 <translation id="8896630965521842259">「<ph name="DESK_TEMPLATE_NAME" />」將被永久刪除</translation>
-<translation id="889790758758811533">剩餘電量：<ph name="PERCENTAGE" />% (約 <ph name="TIME_LEFT" />)。請將裝置接上電源。</translation>
+<translation id="889790758758811533">剩餘 <ph name="PERCENTAGE" />% 電量 (大約 <ph name="TIME_LEFT" />)。請將裝置接上電源。</translation>
 <translation id="88986195241502842">下一頁</translation>
 <translation id="8905919797434099235">(無標題)</translation>
 <translation id="890616557918890486">變更來源</translation>

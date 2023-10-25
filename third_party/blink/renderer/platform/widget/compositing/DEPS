@@ -15,7 +15,6 @@ specific_include_rules = {
   ],
   "layer_tree_settings\.cc": [
     "+base/base_switches.h",
-    "+base/strings/string_number_conversions.h",
     "+gpu/config/gpu_finch_features.h",
     "+gpu/command_buffer/service/gpu_switches.h",
     "+media/base/media_switches.h",

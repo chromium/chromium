@@ -37,6 +37,10 @@ class TestLifecycleUnit : public LifecycleUnitBase {
 
   void SetTitle(base::StringPiece16 title) { title_ = std::u16string(title); }
 
+  void SetDiscardFailureReason(DecisionFailureReason failure_reason) {
+    failure_reason_ = failure_reason;
+  }
+
   // LifecycleUnit:
   TabLifecycleUnitExternal* AsTabLifecycleUnitExternal() override;
   std::u16string GetTitle() const override;
@@ -59,6 +63,7 @@ class TestLifecycleUnit : public LifecycleUnitBase {
   base::ProcessHandle process_handle_;
   LifecycleUnit::SortKey sort_key_;
   bool can_discard_ = true;
+  std::optional<DecisionFailureReason> failure_reason_;
 };
 
 // Helper funtions for testing CanDiscard policy.

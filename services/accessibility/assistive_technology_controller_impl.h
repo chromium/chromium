@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
+#include "services/accessibility/public/mojom/autoclick.mojom-forward.h"
 #include "services/accessibility/public/mojom/file_loader.mojom.h"
 #include "services/accessibility/public/mojom/user_interface.mojom-forward.h"
 
@@ -50,6 +51,8 @@ class AssistiveTechnologyControllerImpl
       mojo::PendingAssociatedRemote<mojom::Automation> automation,
       mojo::PendingReceiver<mojom::AutomationClient> automation_client)
       override;
+  void BindAutoclickClient(
+      mojo::PendingReceiver<mojom::AutoclickClient> autoclick_client) override;
   void BindSpeechRecognition(
       mojo::PendingReceiver<mojom::SpeechRecognition> sr_receiver) override;
   void BindTts(mojo::PendingReceiver<mojom::Tts> tts_receiver) override;

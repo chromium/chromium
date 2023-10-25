@@ -45,11 +45,13 @@ void TestGeolocationUrlLoaderFactory::CreateLoaderAndStart(
     const network::ResourceRequest& url_request,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+  // Response must be added before `CreateLoaderAndStart()` to ensure the latest
+  // `position_` is reflected in the incoming request.
+  test_url_loader_factory_.AddResponse(url_request.url.spec(),
+                                       CreateResponseBody(position_));
   test_url_loader_factory_.CreateLoaderAndStart(
       std::move(receiver), request_id, options, url_request, std::move(client),
       traffic_annotation);
-  test_url_loader_factory_.AddResponse(url_request.url.spec(),
-                                       CreateResponseBody(position_));
 }
 
 void TestGeolocationUrlLoaderFactory::Clone(

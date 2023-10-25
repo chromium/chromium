@@ -508,8 +508,8 @@ VizProcessTransportFactory::TryCreateContextsForGpuCompositing(
   }
 
   const auto& gpu_feature_info = gpu_channel_host->gpu_feature_info();
-  // Fallback to software compositing if GPU compositing is blacklisted.
-  // TODO(rivr): For now assume that if GL is blacklisted, then Vulkan is
+  // Fallback to software compositing if GPU compositing is blocklisted.
+  // TODO(rivr): For now assume that if GL is blocklisted, then Vulkan is
   // also. Just check GL to see if GPU compositing is disabled.
   auto gpu_compositing_status =
       gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_ACCELERATED_GL];

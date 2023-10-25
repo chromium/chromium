@@ -50,18 +50,6 @@ class AndroidAutofillManager : public AutofillManager,
 
   bool ShouldClearPreviewedForm() override;
 
-  void FillCreditCardFormImpl(
-      const FormData& form,
-      const FormFieldData& field,
-      const CreditCard& credit_card,
-      const std::u16string& cvc,
-      const AutofillTriggerDetails& trigger_details) override;
-  void FillProfileFormImpl(
-      const FormData& form,
-      const FormFieldData& field,
-      const autofill::AutofillProfile& profile,
-      const AutofillTriggerDetails& trigger_details) override;
-
   void OnFocusNoLongerOnFormImpl(bool had_interacted_form) override;
 
   void OnDidFillAutofillFormDataImpl(const FormData& form,

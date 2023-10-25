@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuObserver;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -258,9 +257,7 @@ public class RequestDesktopSiteTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     WebsitePreferenceBridge.setContentSettingEnabled(
-                            Profile.fromWebContents(tab.getWebContents()),
-                            ContentSettingsType.REQUEST_DESKTOP_SITE,
-                            setting);
+                            tab.getProfile(), ContentSettingsType.REQUEST_DESKTOP_SITE, setting);
                     tab.reload();
                 });
         CriteriaHelper.pollUiThread(() -> Criteria.checkThat(tab.isLoading(), Matchers.is(false)));

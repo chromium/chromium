@@ -302,6 +302,8 @@ void FakeAppInstance::UninstallPackage(const std::string& package_name) {
   app_host_->OnPackageRemoved(package_name);
 }
 
+void FakeAppInstance::UpdateAppDetails(const std::string& package_name) {}
+
 void FakeAppInstance::SetTaskActive(int32_t task_id) {}
 
 void FakeAppInstance::CloseTask(int32_t task_id) {}

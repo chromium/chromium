@@ -29,6 +29,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepageTestRule;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
+import org.chromium.chrome.browser.toolbar.home_button.HomeButton;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -82,7 +83,6 @@ public class HomeButtonTest extends BlankUiTestActivityTestCase {
                             homepagePolicySupplier);
                     mHomeButton.setId(mIdHomeButton);
                     HomepageManager.getInstance().setSettingsLauncherForTesting(mSettingsLauncher);
-                    HomeButton.setSaveContextMenuForTests(true);
 
                     content.addView(mHomeButton);
                 });
@@ -93,7 +93,7 @@ public class HomeButtonTest extends BlankUiTestActivityTestCase {
     public void testContextMenu_AfterConversion() {
         onView(withId(mIdHomeButton)).perform(longClick());
 
-        ModelList menu = mHomeButton.getMenuForTests();
+        ModelList menu = mHomeButton.getMenuForTesting();
         Assert.assertNotNull(ASSERT_MSG_MENU_IS_CREATED, menu);
         Assert.assertEquals(ASSERT_MSG_MENU_SIZE, 1, menu.size());
 

@@ -201,6 +201,7 @@ crbug.com/949003 http/tests/printing/cross-site-frame.html [ Failure Pass ]
 # with the first bug fixed. Will be fixed when the second bug is fixed (crrev.com/c/3752748).
 
 # --- Skia roll test suppressions
+crbug.com/1494899 virtual/oopr-canvas2d/fast/canvas/canvas-ellipse-zero-lineto.html [ Failure Pass ]
 # --- END Skia roll test suppresions
 
 
@@ -492,18 +493,10 @@ crbug.com/367737 external/wpt/svg/painting/reftests/paint-context-002.svg [ Fail
 
 # Unprefixed 'mask' ('mask-image', 'mask-border') support not yet implemented.
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-clip-exclude.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-url-local-mask.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-url-remote-mask.html [ Failure ]
 crbug.com/843084 external/wpt/css/css-masking/clip-path/clip-path-element-userSpaceOnUse-003.html [ Failure ]
 crbug.com/843084 external/wpt/css/css-masking/clip-path/clip-path-element-userSpaceOnUse-004.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-clip-2.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-composite-1a.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-composite-1b.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-composite-1c.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-composite-1d.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-composite-2a.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-composite-2b.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-composite-2c.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-1c.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-3f.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-3g.html [ Failure ]
@@ -512,8 +505,6 @@ crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-mode-b.html [ Fail
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-mode-c.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-mode-d.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-mode-to-mask-type.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-opacity-1d.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-origin-1.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-origin-3.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-position-1a.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-position-1b.html [ Failure ]
@@ -529,35 +520,14 @@ crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-position-4d.html [
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-position-5.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-position-6.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-position-7.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-repeat-1.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-repeat-2.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-repeat-3.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-size-auto-auto.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-size-auto-length.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-size-auto-percent.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-size-auto.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-size-contain-clip-border.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-size-contain-clip-padding.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-size-contain-position-fifty-fifty.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-size-contain.html [ Failure ]
-crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-size-cover.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-size-length-auto.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-size-length-length.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-size-length-percent.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-size-length.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-size-percent-auto.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-size-percent-length.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-size-percent-percent.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-size-percent.html [ Failure ]
 
 # New failures exposed by supporting unprefixed mask-image.
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-3a.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-3b.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-3c.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-3d.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-3e.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-3i.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-3h.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-6.html [ Failure ]
 
 # CSS clip-path: shape() not implemented
@@ -1472,12 +1442,6 @@ crbug.com/1207788 external/wpt/css/css-will-change/will-change-stacking-context-
 # color() function not implemented
 crbug.com/1068610 external/wpt/css/css-color/t32-opacity-basic-0.6-a.xht [ Failure ]
 crbug.com/1068610 external/wpt/css/css-color/at-color-profile-001.html [ Failure ]
-
-# tests failing due to out of gammut colors
-crbug.com/1068610 external/wpt/css/css-color/lch-009.html [ Failure ]
-crbug.com/1068610 external/wpt/css/css-color/lch-010.html [ Failure ]
-crbug.com/1068610 external/wpt/css/css-color/oklch-009.html [ Failure ]
-crbug.com/1068610 external/wpt/css/css-color/oklch-010.html [ Failure ]
 
 # tests failing due to small round errors (.5 values getting rounded up or down)
 crbug.com/1068610 external/wpt/css/css-color/xyz-003.html [ Failure ]
@@ -2667,7 +2631,7 @@ crbug.com/626703 external/wpt/css/css-fonts/parsing/font-variant-invalid.html [ 
 # Marking sending-related tests as failed until refactoring CLs are submitted.
 crbug.com/1465781 virtual/fetch-later/external/wpt/fetch/fetch-later/send-on-deactivate.tentative.https.window.html [ Failure Skip Timeout ]
 crbug.com/1465781 virtual/fetch-later/external/wpt/fetch/fetch-later/send-on-discard.tentative.https.window.html [ Failure Skip Timeout ]
-crbug.com/1465781 virtual/fetch-later/external/wpt/fetch/fetch-later/timeout.tentative.https.window.html [ Failure Skip Timeout ]
+crbug.com/1465781 virtual/fetch-later/external/wpt/fetch/fetch-later/activate-after.tentative.https.window.html [ Failure Skip Timeout ]
 
 # These tests generate baselines whose names are too long.
 crbug.com/626703 external/wpt/editing/other/insertparagraph-in-editing-host-cannot-have-div.tentative.html* [ Failure ]
@@ -2677,8 +2641,7 @@ crbug.com/626703 [ Mac ] virtual/webcodecs-without-task-runner-with-custom-delet
 crbug.com/626703 [ Mac ] virtual/webcodecs-without-task-runner-with-custom-deleter/external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h265_hevc [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 [ Mac11 ] external/wpt/css/css-values/calc-in-media-queries-with-mixed-units.html [ Failure Timeout ]
-crbug.com/626703 [ Mac12 ] external/wpt/css/css-values/calc-in-media-queries-with-mixed-units.html [ Failure Timeout ]
+crbug.com/626703 external/wpt/jpegxl/srgb.html [ Failure ]
 crbug.com/626703 [ Mac12 ] external/wpt/content-security-policy/generic/only-valid-whitespaces-are-allowed.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/css/css-grid/animation/grid-template-rows-interpolation.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/css/css-images/parsing/gradient-interpolation-method-valid.html [ Timeout ]
@@ -2737,8 +2700,6 @@ crbug.com/626703 external/wpt/css/css-contain/content-visibility/content-visibil
 crbug.com/626703 external/wpt/css/css-grid/subgrid/orthogonal-writing-mode-005.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-masking/mask-image/mask-clip-4.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/hyphens/i18n/hyphens-i18n-auto-006.html [ Failure ]
-crbug.com/626703 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-clip-3.html [ Failure ]
-crbug.com/626703 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-clip-4.html [ Failure ]
 crbug.com/626703 virtual/offsetparent-old-behavior/external/wpt/css/css-contain/content-visibility/content-visibility-on-g.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-color/light-dark-currentcolor.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-color/light-dark-inheritance.html [ Failure ]
@@ -2856,7 +2817,6 @@ crbug.com/626703 external/wpt/css/css-masking/mask-shorthand-subproperties-reset
 crbug.com/626703 external/wpt/css/css-fonts/rch-in-monospace.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-fonts/ric-in-monospace.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/text-transform/text-transform-full-size-kana-008.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-masking/mask-svg-content/mask-with-filter.svg [ Failure ]
 crbug.com/626703 external/wpt/css/css-fonts/font-synthesis-position-001.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/css/css-fonts/font-variant-position-04.html [ Failure ]
 crbug.com/626703 [ Win ] external/wpt/css/css-fonts/font-variant-position-04.html [ Failure ]
@@ -2892,25 +2852,6 @@ crbug.com/626703 [ Mac13 ] external/wpt/IndexedDB/idbcursor_iterating.htm [ Time
 crbug.com/626703 [ Mac12 ] external/wpt/IndexedDB/idbobjectstore_getAllKeys.any.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] external/wpt/IndexedDB/idbobjectstore_getAllKeys.any.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-highlight-api/painting/custom-highlight-painting-prioritization-003.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-page/layers-002-print.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-page/layers-003-print.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-page/layers-004-print.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-page/page-name-abspos-002-print.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-page/page-name-canvas-001-print.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-page/page-name-canvas-003-print.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-page/page-name-canvas-004-print.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-page/page-name-flex-001-print.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-page/page-name-flex-002-print.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-page/page-name-flex-004-print.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-page/page-name-img-001-print.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-page/page-name-img-003-print.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-page/page-name-img-004-print.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-page/page-name-margin-001-print.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-page/page-name-margin-002-print.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-page/page-name-zero-height-001-print.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-page/pseudo-first-margin-001-print.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-page/pseudo-first-margin-002-print.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-page/pseudo-first-margin-003-print.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/font-access/font_access_blob.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/font-access/font_access_blob.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/font-access/font_access_blob.tentative.https.window.html [ Timeout ]
@@ -3502,6 +3443,25 @@ crbug.com/964183 external/wpt/css/css-multicol/multicol-width-005.html [ Failure
 crbug.com/481431 external/wpt/css/css-multicol/multicol-zero-height-003.html [ Failure ]
 crbug.com/1191124 external/wpt/css/css-multicol/spanner-fragmentation-012.html [ Failure ]
 crbug.com/1224888 external/wpt/css/css-multicol/spanner-in-opacity.html [ Failure ]
+crbug.com/1494847 external/wpt/css/css-page/layers-002-print.html [ Failure ]
+crbug.com/1494847 external/wpt/css/css-page/layers-003-print.html [ Failure ]
+crbug.com/1494847 external/wpt/css/css-page/layers-004-print.html [ Failure ]
+crbug.com/1494858 external/wpt/css/css-page/page-name-abspos-002-print.html [ Failure ]
+crbug.com/1494859 external/wpt/css/css-page/page-name-canvas-001-print.html [ Failure ]
+crbug.com/1494838 external/wpt/css/css-page/page-name-canvas-003-print.html [ Failure ]
+crbug.com/1494838 external/wpt/css/css-page/page-name-canvas-004-print.html [ Failure ]
+crbug.com/1494858 external/wpt/css/css-page/page-name-flex-001-print.html [ Failure ]
+crbug.com/1494858 external/wpt/css/css-page/page-name-flex-002-print.html [ Failure ]
+crbug.com/1494858 external/wpt/css/css-page/page-name-flex-004-print.html [ Failure ]
+crbug.com/1494859 external/wpt/css/css-page/page-name-img-001-print.html [ Failure ]
+crbug.com/1494838 external/wpt/css/css-page/page-name-img-003-print.html [ Failure ]
+crbug.com/1494838 external/wpt/css/css-page/page-name-img-004-print.html [ Failure ]
+crbug.com/1494847 external/wpt/css/css-page/page-name-margin-001-print.html [ Failure ]
+crbug.com/1494847 external/wpt/css/css-page/page-name-margin-002-print.html [ Failure ]
+crbug.com/1494863 external/wpt/css/css-page/page-name-zero-height-001-print.html [ Failure ]
+crbug.com/1494847 external/wpt/css/css-page/pseudo-first-margin-001-print.html [ Failure ]
+crbug.com/1494847 external/wpt/css/css-page/pseudo-first-margin-002-print.html [ Failure ]
+crbug.com/1494847 external/wpt/css/css-page/pseudo-first-margin-003-print.html [ Failure ]
 
 crbug.com/1031667 external/wpt/css/css-pseudo/marker-content-007.tentative.html [ Failure ]
 crbug.com/1031667 external/wpt/css/css-pseudo/marker-content-009.tentative.html [ Failure ]
@@ -5310,6 +5270,10 @@ crbug.com/1285411 external/wpt/css/css-scroll-snap/input/mouse-wheel.html [ Time
 crbug.com/269917 external/wpt/uievents/mouse/cancel-mousedown-in-subframe.html [ Timeout ]
 crbug.com/346473 external/wpt/uievents/mouse/mousemove_prevent_default_action.tentative.html [ Failure ]
 
+# Possible Interop PE 2024 investigation
+crbug.com/1495467 external/wpt/uievents/mouse/synthetic-mouse-enter-leave-over-out-button-state-after-target-removed.tentative.html?buttonType=LEFT&button=0&buttons=1 [ Failure ]
+crbug.com/1495467 external/wpt/uievents/mouse/synthetic-mouse-enter-leave-over-out-button-state-after-target-removed.tentative.html?buttonType=MIDDLE&button=1&buttons=4 [ Failure ]
+
 # Sheriff 2022-01-17
 crbug.com/1233938 http/tests/notifications/click-shared-worker.html [ Pass Timeout ]
 crbug.com/1094436 [ Win ] http/tests/devtools/overrides/project-added-with-existing-files-bind.js [ Failure Timeout ]
@@ -6288,7 +6252,7 @@ crbug.com/1207146 virtual/force-eager/external/wpt/measure-memory/main-frame-and
 crbug.com/1385413 media/controls/text-track-menu-pointer-selection.html [ Failure Pass Skip Timeout ]
 
 # Sheriff 2022-11-17
-crbug.com/1385642 [ Linux ] external/wpt/css/css-values/calc-in-media-queries-with-mixed-units.html [ Failure Pass Skip Timeout ]
+crbug.com/1385642 external/wpt/css/css-values/calc-in-media-queries-with-mixed-units.html [ Failure Pass Skip Timeout ]
 crbug.com/1372166 fast/spatial-navigation/snav-div-scrollable-but-without-focusable-content.html [ Failure Pass ]
 crbug.com/1349215 external/wpt/fullscreen/api/document-fullscreen-enabled-cross-origin.sub.html [ Skip Timeout ]
 crbug.com/1349215 external/wpt/fullscreen/api/document-exit-fullscreen-nested-in-iframe.html [ Timeout ]
@@ -6712,8 +6676,6 @@ crbug.com/1454064 [ Debug Linux ] fast/events/autoscroll-should-not-stop-on-keyp
 
 crbug.com/1453772 external/wpt/window-management/multi-screen-fullscreen-companion.tentative.https.html [ Failure Pass ]
 
-crbug.com/1447868 virtual/threaded/external/wpt/css/css-scroll-snap/input/keyboard.html [ Failure Pass Timeout ]
-
 # Gardener 2023-06-13
 crbug.com/1450287 [ Mac13-arm64 ] virtual/scalefactor200/external/wpt/largest-contentful-paint/multiple-redirects-TAO.html [ Failure Pass ]
 crbug.com/1450287 [ Mac13-arm64 Release ] external/wpt/largest-contentful-paint/multiple-redirects-TAO.html [ Failure Pass ]
@@ -7010,20 +6972,32 @@ crbug.com/1492850 [ Linux ] http/tests/devtools/elements/accessibility/edit-aria
 
 crbug.com/1467464 http/tests/devtools/security/interstitial-sidebar.js [ Failure Pass ]
 crbug.com/1467464 http/tests/devtools/security/mixed-content-sidebar.js [ Failure Pass ]
+
 # Failures due to adding new virtual tests.
-crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-clip-1.html [ Failure ]
-crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-1a.html [ Failure ]
-crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-1b.html [ Failure ]
-crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-2.html [ Failure ]
-crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-4a.html [ Failure ]
-crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-4b.html [ Failure ]
-crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-url-image-hash.html [ Failure ]
-crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-url-image.html [ Failure ]
-crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-opacity-1a.html [ Failure ]
-crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-opacity-1b.html [ Failure ]
-crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-opacity-1e.html [ Failure ]
-crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-size-percent-percent-stretch.html [ Failure ]
-crbug.com/626703 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-shorthand-subproperties-reset.html [ Timeout ]
+crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/* [ Failure ]
+# Tests that the mask doesn't apply(?).
+crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-clip-7.html [ Pass ]
+# Tests the "old" SVG mask property.
+crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-1d.html [ Pass ]
+# Potentially incorrect.
+crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-5.html [ Pass ]
+# These use mask-image in both the test and the ref.
+crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-clip-8.html [ Pass ]
+crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-6.html [ Pass ]
+crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-data-url-image.html [ Pass ]
+crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-ib-split-2.html [ Pass ]
+crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-ib-split.html [ Pass ]
+# Also includes the prefixed property (-webkit-mask-image) since it primarily tests another feature.
+crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-inline-sliced-1.html [ Pass ]
+crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-svg-child-will-change.html [ Pass ]
+# Doesn't contain anything mask-related.
+crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-opacity-1c.html [ Pass ]
+
+crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-shorthand-subproperties-reset.html [ Timeout ]
+crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/parsing/mask-composite-computed.html [ Failure ]
+crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/parsing/mask-composite-valid.html [ Failure ]
+crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/parsing/mask-repeat-computed.html [ Failure ]
+crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/parsing/mask-repeat-valid.html [ Failure ]
 
 # Gardener 2023-10-17
 crbug.com/1493342 [ Mac10.15 ] external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-video.html [ Failure ]
@@ -7031,9 +7005,17 @@ crbug.com/1493342 [ Mac10.15 ] external/wpt/html/canvas/element/manual/wide-gamu
 crbug.com/1493455 external/wpt/pointerevents/pointerevent_pointerrawupdate.html [ Failure ]
 
 # Gardener 2023-10-19
-crbug.com/1494133 media/controls/video-overlay-cast-light-rendering.html [ Pass Failure ]
+crbug.com/1494133 media/controls/video-overlay-cast-light-rendering.html [ Failure Pass ]
 
 # Gardener 2023-10-20
 crbug.com/1494242 [ Mac ] external/wpt/background-fetch/fetch.https.window.html [ Failure Timeout ]
 crbug.com/1494265 [ Mac10.15 ] external/wpt/intersection-observer/padding-clip.html [ Failure ]
 crbug.com/1494265 [ Mac10.15 ] virtual/disable-intersection-optimization/external/wpt/intersection-observer/padding-clip.html [ Failure ]
+
+# Gardener 2023-10-23
+crbug.com/1363683 [ Mac10.15 ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-2d-drawImage.html [ Failure ]
+
+# Gardener 2023-10-24
+crbug.com/1495422 [ Mac10.15 ] external/wpt/css/css-text/parsing/white-space-shorthand-text-wrap.html [ Failure ]
+crbug.com/1495422 [ Mac10.15 ] external/wpt/html/semantics/popovers/popover-light-dismiss-flat-tree-nested.html [ Failure ]
+crbug.com/1495422 [ Mac10.15 ] external/wpt/css/css-typed-om/the-stylepropertymap/properties/white-space.html [ Failure ]

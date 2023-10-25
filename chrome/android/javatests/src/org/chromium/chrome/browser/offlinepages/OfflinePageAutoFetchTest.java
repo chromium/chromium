@@ -160,7 +160,7 @@ public class OfflinePageAutoFetchTest {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mProfile = Profile.fromWebContents(activityTab().getWebContents());
+                    mProfile = activityTab().getProfile();
                     mOfflinePageBridge = OfflinePageBridge.getForProfile(mProfile);
 
                     if (!NetworkChangeNotifier.isInitialized()) {

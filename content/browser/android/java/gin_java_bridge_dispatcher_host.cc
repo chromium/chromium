@@ -33,8 +33,9 @@ namespace content {
 GinJavaBridgeDispatcherHost::GinJavaBridgeDispatcherHost(
     WebContents* web_contents,
     const base::android::JavaRef<jobject>& retained_object_set)
-    : WebContentsObserver(web_contents),
-      next_object_id_(1),
+    : RefCountedDeleteOnSequence<GinJavaBridgeDispatcherHost>(
+          base::SequencedTaskRunner::GetCurrentDefault()),
+      WebContentsObserver(web_contents),
       retained_object_set_(base::android::AttachCurrentThread(),
                            retained_object_set),
       allow_object_contents_inspection_(true) {
@@ -132,18 +133,16 @@ void GinJavaBridgeDispatcherHost::PrimaryPageChanged(Page& page) {
 GinJavaBoundObject::ObjectID GinJavaBridgeDispatcherHost::AddObject(
     const base::android::JavaRef<jobject>& object,
     const base::android::JavaRef<jclass>& safe_annotation_clazz,
-    bool is_named,
-    int32_t holder) {
+    absl::optional<GlobalRenderFrameHostId> holder) {
   // Can be called on any thread. Calls come from the UI thread via
   // AddNamedObject, and from the background thread, when injected Java
   // object's method returns a Java object.
-  DCHECK(is_named || holder);
   JNIEnv* env = base::android::AttachCurrentThread();
   JavaObjectWeakGlobalRef ref(env, object.obj());
   scoped_refptr<GinJavaBoundObject> new_object =
-      is_named ? GinJavaBoundObject::CreateNamed(ref, safe_annotation_clazz)
-               : GinJavaBoundObject::CreateTransient(ref, safe_annotation_clazz,
-                                                     holder);
+      !holder ? GinJavaBoundObject::CreateNamed(ref, safe_annotation_clazz)
+              : GinJavaBoundObject::CreateTransient(ref, safe_annotation_clazz,
+                                                    holder.value());
   GinJavaBoundObject::ObjectID object_id;
   {
     base::AutoLock locker(objects_lock_);
@@ -192,9 +191,8 @@ JavaObjectWeakGlobalRef GinJavaBridgeDispatcherHost::GetObjectWeakRef(
     return JavaObjectWeakGlobalRef();
 }
 
-JavaObjectWeakGlobalRef
-GinJavaBridgeDispatcherHost::RemoveHolderLocked(
-    int32_t holder,
+JavaObjectWeakGlobalRef GinJavaBridgeDispatcherHost::RemoveHolderLocked(
+    const GlobalRenderFrameHostId& holder,
     ObjectMap::iterator* iter_ptr) {
   objects_lock_.AssertAcquired();
   JavaObjectWeakGlobalRef result;
@@ -240,7 +238,7 @@ void GinJavaBridgeDispatcherHost::AddNamedObject(
     base::AutoLock locker(objects_lock_);
     objects_[object_id]->AddName();
   } else {
-    object_id = AddObject(object, safe_annotation_clazz, true, 0);
+    object_id = AddObject(object, safe_annotation_clazz, absl::nullopt);
   }
   named_objects_[name] = object_id;
 
@@ -365,18 +363,18 @@ void GinJavaBridgeDispatcherHost::OnHasMethod(
 }
 
 void GinJavaBridgeDispatcherHost::OnInvokeMethod(
-    int routing_id,
+    const GlobalRenderFrameHostId& routing_id,
     GinJavaBoundObject::ObjectID object_id,
     const std::string& method_name,
     const base::Value::List& arguments,
     base::Value::List* wrapped_result,
-    content::GinJavaBridgeError* error_code) {
+    content::mojom::GinJavaBridgeError* error_code) {
   DCHECK(JavaBridgeThread::CurrentlyOn());
-  DCHECK(routing_id != MSG_ROUTING_NONE);
+  DCHECK(routing_id);
   scoped_refptr<GinJavaBoundObject> object = FindObject(object_id);
   if (!object.get()) {
     wrapped_result->Append(base::Value());
-    *error_code = kGinJavaBridgeUnknownObjectId;
+    *error_code = mojom::GinJavaBridgeError::kGinJavaBridgeUnknownObjectId;
     return;
   }
   auto result = base::MakeRefCounted<GinJavaMethodInvocationHelper>(
@@ -395,7 +393,6 @@ void GinJavaBridgeDispatcherHost::OnInvokeMethod(
     } else {
       returned_object_id = AddObject(result->GetObjectResult(),
                                      result->GetSafeAnnotationClass(),
-                                     false,
                                      routing_id);
     }
     wrapped_result->Append(base::Value::FromUniquePtrValue(
@@ -406,10 +403,10 @@ void GinJavaBridgeDispatcherHost::OnInvokeMethod(
 }
 
 void GinJavaBridgeDispatcherHost::OnObjectWrapperDeleted(
-    int routing_id,
+    const GlobalRenderFrameHostId& routing_id,
     GinJavaBoundObject::ObjectID object_id) {
   DCHECK(JavaBridgeThread::CurrentlyOn());
-  DCHECK(routing_id != MSG_ROUTING_NONE);
+  DCHECK(routing_id);
   base::AutoLock locker(objects_lock_);
   auto iter = objects_.find(object_id);
   if (iter == objects_.end())

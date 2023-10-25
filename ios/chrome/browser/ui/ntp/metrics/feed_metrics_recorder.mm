@@ -217,11 +217,11 @@ using feed::FeedUserActionType;
     [self recordTimeSpentInFeedIfDayIsDone];
 
     self.previousTimeInFeedForGoodVisitSession =
-        [defaults doubleForKey:kLongFeedVisitTimeAggregateKey];
+        self.prefService->GetDouble(kLongFeedVisitTimeAggregateKey);
     self.discoverPreviousTimeInFeedGV =
-        [defaults doubleForKey:kLongDiscoverFeedVisitTimeAggregateKey];
+        self.prefService->GetDouble(kLongDiscoverFeedVisitTimeAggregateKey);
     self.followingPreviousTimeInFeedGV =
-        [defaults doubleForKey:kLongFollowingFeedVisitTimeAggregateKey];
+        self.prefService->GetDouble(kLongFollowingFeedVisitTimeAggregateKey);
 
     // Checks if there is a timestamp in defaults for when a user clicked
     // on an article in order to be able to trigger a non-short click
@@ -246,8 +246,8 @@ using feed::FeedUserActionType;
     }
   } else {
     // Once the NTP becomes hidden, check for Good Visit which updates
-    // `self.previousTimeInFeedForGoodVisitSession` and then we save it to
-    // defaults.
+    // `self.previousTimeInFeedForGoodVisitSession` and then we save it in
+    // PrefService.
 
     // Also calculate total aggregate for the time in feed aggregate metric.
     self.timeSpentInFeed = base::Time::Now() - self.feedBecameVisibleTime;
@@ -255,12 +255,12 @@ using feed::FeedUserActionType;
     [self checkEngagementGoodVisitWithInteraction:NO];
     self.prefService->SetDouble(kTimeSpentInFeedAggregateKey,
                                 self.timeSpentInFeed.InSecondsF());
-    [defaults setDouble:self.previousTimeInFeedForGoodVisitSession
-                 forKey:kLongFeedVisitTimeAggregateKey];
-    [defaults setDouble:self.discoverPreviousTimeInFeedGV
-                 forKey:kLongDiscoverFeedVisitTimeAggregateKey];
-    [defaults setDouble:self.followingPreviousTimeInFeedGV
-                 forKey:kLongFollowingFeedVisitTimeAggregateKey];
+    self.prefService->SetDouble(kLongFeedVisitTimeAggregateKey,
+                                self.previousTimeInFeedForGoodVisitSession);
+    self.prefService->SetDouble(kLongDiscoverFeedVisitTimeAggregateKey,
+                                self.discoverPreviousTimeInFeedGV);
+    self.prefService->SetDouble(kLongFollowingFeedVisitTimeAggregateKey,
+                                self.followingPreviousTimeInFeedGV);
   }
 }
 
@@ -1313,8 +1313,7 @@ using feed::FeedUserActionType;
   // Reset defaults for new session.
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   [defaults setObject:nil forKey:kArticleVisitTimestampKey];
-  [defaults setDouble:0 forKey:kLongFeedVisitTimeAggregateKey];
-
+  self.prefService->ClearPref(kLongFeedVisitTimeAggregateKey);
   base::Time now = base::Time::Now();
 
   self.lastInteractionTimeForGoodVisits = now;
@@ -1333,16 +1332,15 @@ using feed::FeedUserActionType;
 // sessions to expire only for specific feeds.
 - (void)resetGoodVisitSessionForFeed:(FeedType)feedType {
   base::Time now = base::Time::Now();
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   if (feedType == FeedTypeDiscover) {
-    [defaults setDouble:0 forKey:kLongDiscoverFeedVisitTimeAggregateKey];
+    self.prefService->ClearPref(kLongDiscoverFeedVisitTimeAggregateKey);
     self.lastInteractionTimeForDiscoverGoodVisits = now;
     self.prefService->SetTime(kLastInteractionTimeForDiscoverGoodVisits, now);
     self.discoverPreviousTimeInFeedGV = 0;
     self.goodVisitReportedDiscover = NO;
   }
   if (feedType == FeedTypeFollowing) {
-    [defaults setDouble:0 forKey:kLongFollowingFeedVisitTimeAggregateKey];
+    self.prefService->ClearPref(kLongFollowingFeedVisitTimeAggregateKey);
     self.lastInteractionTimeForFollowingGoodVisits = now;
     self.prefService->SetTime(kLastInteractionTimeForFollowingGoodVisits, now);
     self.followingPreviousTimeInFeedGV = 0;

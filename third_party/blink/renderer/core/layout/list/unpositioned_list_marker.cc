@@ -58,7 +58,7 @@ absl::optional<LayoutUnit> UnpositionedListMarker::ContentAlignmentBaseline(
     const NGPhysicalFragment& content) const {
   // Compute the baseline of the child content.
   if (content.IsLineBox()) {
-    const auto& line_box = To<NGPhysicalLineBoxFragment>(content);
+    const auto& line_box = To<PhysicalLineBoxFragment>(content);
 
     // If this child is an empty line-box, the list marker should be aligned
     // with the next non-empty line box produced. (This can occur with floats

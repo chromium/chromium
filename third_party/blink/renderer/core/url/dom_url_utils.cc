@@ -26,9 +26,6 @@
 
 #include "third_party/blink/renderer/core/url/dom_url_utils.h"
 
-#include "base/feature_list.h"
-#include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 
@@ -88,17 +85,12 @@ void DOMURLUtils::setHostname(const String& value) {
     SetURL(kurl);
 }
 
-void DOMURLUtils::setPort(ScriptState* script_state, const String& value) {
+void DOMURLUtils::setPort(const String& value) {
   KURL kurl = Url();
   if (!kurl.CanSetHostOrPort())
     return;
   if (!value.empty()) {
-    bool value_overflow;
-    kurl.SetPort(value, &value_overflow);
-    if (value_overflow) {
-      UseCounter::Count(ExecutionContext::From(script_state),
-                        mojom::blink::WebFeature::kURLSetPortCheckOverflow);
-    }
+    kurl.SetPort(value);
   } else {
     kurl.RemovePort();
   }

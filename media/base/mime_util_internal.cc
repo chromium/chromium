@@ -102,6 +102,9 @@ const StringToCodecMap& GetStringToCodecMap() {
       {"dtsx", MimeUtil::DTSXP2},
       {"mp4a.b2", MimeUtil::DTSXP2},
       {"mp4a.B2", MimeUtil::DTSXP2},
+      {"ac-4", MimeUtil::AC4},
+      {"mp4a.ae", MimeUtil::AC4},
+      {"mp4a.AE", MimeUtil::AC4},
   });
 
   return *kStringToCodecMap;
@@ -197,6 +200,8 @@ AudioCodec MimeUtilToAudioCodec(MimeUtil::Codec codec) {
       return AudioCodec::kDTSXP2;
     case MimeUtil::DTSE:
       return AudioCodec::kDTSE;
+    case MimeUtil::AC4:
+      return AudioCodec::kAC4;
     default:
       break;
   }
@@ -339,6 +344,10 @@ void MimeUtil::AddSupportedMediaFormats() {
   mp4_audio_codecs.emplace(AC3);
   mp4_audio_codecs.emplace(EAC3);
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+  mp4_audio_codecs.emplace(AC4);
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
 
 #if BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
   mp4_audio_codecs.emplace(MPEG_H_AUDIO);
@@ -675,6 +684,9 @@ bool MimeUtil::IsCodecSupportedOnAndroid(Codec codec,
 #else
       return false;
 #endif
+
+    case AC4:
+      return false;
   }
 
   return false;
@@ -864,6 +876,13 @@ bool MimeUtil::ParseCodecHelper(base::StringPiece mime_type_lower_case,
   if (base::StartsWith(codec_id, "mhm1.", base::CompareCase::SENSITIVE) ||
       base::StartsWith(codec_id, "mha1.", base::CompareCase::SENSITIVE)) {
     out_result->codec = MimeUtil::MPEG_H_AUDIO;
+    return true;
+  }
+#endif
+
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+  if (ParseDolbyAc4CodecId(codec_id.data(), nullptr, nullptr, nullptr)) {
+    out_result->codec = MimeUtil::AC4;
     return true;
   }
 #endif

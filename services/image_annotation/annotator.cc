@@ -383,7 +383,7 @@ std::map<std::string, mojom::AnnotateImageResultPtr> UnpackJsonResponse(
         }
       }
 
-      ReportEngineKnown(ocr_engine || desc_engine);
+      ReportEngineKnown(ocr_engine || desc_engine || icon_engine);
     }
 
     // Remove any description OCR data (which is lower quality) if we have

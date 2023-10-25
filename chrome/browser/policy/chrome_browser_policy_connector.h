@@ -79,7 +79,9 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
       ConfigurationPolicyProvider* provider);
 
   // If the kLocalTestPoliciesForNextStartup pref is non-empty, read and apply
-  // the policies stored in it, and then clear the pref.
+  // the policies stored in it, and then clear the pref. This must be called
+  // right after the `local_state` is created to ensure policies are applied
+  // at the right time.
   void MaybeApplyLocalTestPolicies(PrefService* local_state);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

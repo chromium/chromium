@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/image_editor/screenshot_flow.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/lens/lens_side_panel_helper.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "components/lens/lens_entrypoints.h"
@@ -32,8 +33,7 @@ LensRegionSearchControllerData::~LensRegionSearchControllerData() = default;
 RegionSearchCapturedData::RegionSearchCapturedData() = default;
 RegionSearchCapturedData::~RegionSearchCapturedData() = default;
 
-LensRegionSearchController::LensRegionSearchController(Browser* browser)
-    : browser_(browser) {
+LensRegionSearchController::LensRegionSearchController() {
   weak_this_ = weak_factory_.GetWeakPtr();
 }
 
@@ -50,7 +50,11 @@ void LensRegionSearchController::Start(
   is_google_default_search_provider_ = is_google_default_search_provider;
   // Return early if web contents/browser don't exist and if capture mode is
   // already active.
-  if (!web_contents || !browser_ || in_capture_mode_) {
+  if (!web_contents || in_capture_mode_) {
+    return;
+  }
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  if (!browser) {
     return;
   }
 
@@ -69,7 +73,7 @@ void LensRegionSearchController::Start(
     // Create user education bubble anchored to the toolbar container.
     // This is only done for non-fulllscreen capture.
     bubble_widget_ = lens::OpenLensRegionSearchInstructions(
-        browser_,
+        browser,
         base::BindOnce(&LensRegionSearchController::Close,
                        base::Unretained(this)),
         base::BindOnce(&LensRegionSearchController::Escape,

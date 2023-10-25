@@ -364,6 +364,69 @@ TEST_F(ArcVolumeMounterBridgeTest, SendAllMountEvents) {
             DiskMountManager::MountEvent::MOUNTING);
 }
 
+TEST_F(ArcVolumeMounterBridgeTest, SendAllMountEvents_ExternalStorageDisabled) {
+  constexpr char kDevicePath[] = "/dev/foo";
+  constexpr char kRemovableMountPath[] = "/media/removable/FOO";
+
+  disk_mount_manager()->AddDiskForTest(ash::disks::Disk::Builder()
+                                           .SetDevicePath(kDevicePath)
+                                           .SetMountPath(kRemovableMountPath)
+                                           .Build());
+  disk_mount_manager()->AddMountPointForTest(
+      {kDevicePath, kRemovableMountPath, ash::MountType::kDevice});
+
+  // Disable external storage by policy.
+  prefs()->SetBoolean(disks::prefs::kExternalStorageDisabled, true);
+
+  bridge()->SendAllMountEvents();
+
+  // Mount point info is propagated for MyFiles, but not for
+  // /media/removable/FOO.
+  EXPECT_EQ(volume_mounter_instance()->num_on_mount_event_called(), 1);
+
+  mojom::MountPointInfoPtr mount_point_info_removable =
+      volume_mounter_instance()->GetMountPointInfo(kRemovableMountPath);
+  EXPECT_TRUE(mount_point_info_removable.is_null());
+
+  mojom::MountPointInfoPtr mount_point_info_myfiles =
+      volume_mounter_instance()->GetMountPointInfo(kMyFilesMountPath);
+  EXPECT_FALSE(mount_point_info_myfiles.is_null());
+  EXPECT_EQ(mount_point_info_myfiles->mount_event,
+            DiskMountManager::MountEvent::MOUNTING);
+}
+
+TEST_F(ArcVolumeMounterBridgeTest, SendAllMountEvents_ExternalStorageAccess) {
+  constexpr char kDevicePath[] = "/dev/foo";
+  constexpr char kRemovableMountPath[] = "/media/removable/FOO";
+
+  disk_mount_manager()->AddDiskForTest(ash::disks::Disk::Builder()
+                                           .SetDevicePath(kDevicePath)
+                                           .SetMountPath(kRemovableMountPath)
+                                           .Build());
+  disk_mount_manager()->AddMountPointForTest(
+      {kDevicePath, kRemovableMountPath, ash::MountType::kDevice});
+
+  // Disable external storage access by feature.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kExternalStorageAccess);
+
+  bridge()->SendAllMountEvents();
+
+  // Mount point info is propagated for MyFiles, but not for
+  // /media/removable/FOO.
+  EXPECT_EQ(volume_mounter_instance()->num_on_mount_event_called(), 1);
+
+  mojom::MountPointInfoPtr mount_point_info_removable =
+      volume_mounter_instance()->GetMountPointInfo(kRemovableMountPath);
+  EXPECT_TRUE(mount_point_info_removable.is_null());
+
+  mojom::MountPointInfoPtr mount_point_info_myfiles =
+      volume_mounter_instance()->GetMountPointInfo(kMyFilesMountPath);
+  EXPECT_FALSE(mount_point_info_myfiles.is_null());
+  EXPECT_EQ(mount_point_info_myfiles->mount_event,
+            DiskMountManager::MountEvent::MOUNTING);
+}
+
 TEST_F(ArcVolumeMounterBridgeTest, RequestAllMountPoints_P_Container) {
   // Use ARC++ (container) P.
   ResetArcAndroidSdkVersionForTesting(arc::kArcVersionP);

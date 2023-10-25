@@ -28,10 +28,12 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
+#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/main/bvc_container_view_controller.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator+private.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator_delegate.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/test/block_cleanup_test.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -142,6 +144,10 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
     incognito_browser_ = std::make_unique<TestBrowser>(
         chrome_browser_state_->GetOffTheRecordChromeBrowserState());
     AddAgentsToBrowser(incognito_browser_.get(), scene_state_);
+
+    IncognitoReauthSceneAgent* reauthAgent = [[IncognitoReauthSceneAgent alloc]
+        initWithReauthModule:[[ReauthenticationModule alloc] init]];
+    [scene_state_ addAgent:reauthAgent];
 
     UIWindow* window = GetAnyKeyWindow();
 

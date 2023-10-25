@@ -178,6 +178,7 @@ blink_core_tests_loader = [
   "anchor_element_interaction_test.cc",
   "base_fetch_context_test.cc",
   "document_load_timing_test.cc",
+  "document_loader_auto_speculation_rules_test.cc",
   "document_loader_test.cc",
   "frame_fetch_context_test.cc",
   "frame_loader_test.cc",

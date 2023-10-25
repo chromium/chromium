@@ -135,12 +135,6 @@ BASE_FEATURE(kFilePickerExperimentFeature,
              "ArcFilePickerExperiment",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether ARCVM can request resourced make more resources available
-// for a currently-active ARCVM game.
-BASE_FEATURE(kGameModeFeature,
-             "ArcGameModeFeature",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether the guest zram is enabled. This is only for ARCVM.
 BASE_FEATURE(kGuestZram, "ArcGuestZram", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -257,11 +251,9 @@ BASE_FEATURE(kSaveRawFilesOnTracing,
 
 // When enabled, CertStoreService will talk to KeyMint instead of Keymaster on
 // ARC-T.
-// When you change the default, you also need to change whether Keymaster
-// or KeyMint is started in ARC. Otherwise, it will not work properly.
 BASE_FEATURE(kSwitchToKeyMintOnT,
              "ArcSwitchToKeyMintOnT",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // On boards that blocks KeyMint at launch, enable this feature to force enable
 // KeyMint.
@@ -280,12 +272,6 @@ BASE_FEATURE(kSyncInstallPriority,
 BASE_FEATURE(kTouchscreenEmulation,
              "ArcTouchscreenEmulation",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When enabled, compatibility logic for trackpad scrolling is enabled on
-// specific apps.
-BASE_FEATURE(kTrackpadScrollTouchscreenEmulation,
-             "ArcTrackpadScrollTouchscreenEmulation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether ARC should be enabled on unaffiliated devices on client side
 BASE_FEATURE(kUnaffiliatedDeviceArcRestriction,

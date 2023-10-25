@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {OnDeviceModelService, OnDeviceModelServiceRemote} from './on_device_model.mojom-webui.js';
+import {OnDeviceInternalsPage, OnDeviceInternalsPageRemote} from './on_device_internals_page.mojom-webui.js';
 
 let instance: BrowserProxy|null = null;
 
@@ -10,14 +10,14 @@ let instance: BrowserProxy|null = null;
 export class BrowserProxy {
   static getInstance(): BrowserProxy {
     if (!instance) {
-      instance = new BrowserProxy(OnDeviceModelService.getRemote());
+      instance = new BrowserProxy(OnDeviceInternalsPage.getRemote());
     }
     return instance;
   }
 
-  handler: OnDeviceModelServiceRemote;
+  handler: OnDeviceInternalsPageRemote;
 
-  private constructor(handler: OnDeviceModelServiceRemote) {
+  private constructor(handler: OnDeviceInternalsPageRemote) {
     this.handler = handler;
   }
 }

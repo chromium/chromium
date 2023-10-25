@@ -588,7 +588,7 @@ TEST(StableVideoDecoderTypesMojomTraitsTest, EmptyVideoFrameMetadata) {
   EXPECT_FALSE(deserialized_video_frame_metadata.source_size.has_value());
   EXPECT_FALSE(
       deserialized_video_frame_metadata.region_capture_rect.has_value());
-  EXPECT_EQ(0u, deserialized_video_frame_metadata.crop_version);
+  EXPECT_EQ(0u, deserialized_video_frame_metadata.sub_capture_target_version);
   EXPECT_FALSE(deserialized_video_frame_metadata.dcomp_surface);
 #if BUILDFLAG(USE_VAAPI)
   EXPECT_FALSE(
@@ -657,7 +657,7 @@ TEST(StableVideoDecoderTypesMojomTraitsTest, ValidVideoFrameMetadata) {
   EXPECT_FALSE(deserialized_video_frame_metadata.source_size.has_value());
   EXPECT_FALSE(
       deserialized_video_frame_metadata.region_capture_rect.has_value());
-  EXPECT_EQ(0u, deserialized_video_frame_metadata.crop_version);
+  EXPECT_EQ(0u, deserialized_video_frame_metadata.sub_capture_target_version);
   EXPECT_FALSE(deserialized_video_frame_metadata.dcomp_surface);
 #if BUILDFLAG(USE_VAAPI)
   EXPECT_FALSE(
@@ -682,5 +682,145 @@ TEST(StableVideoDecoderTypesMojomTraitsTest,
   VideoFrameMetadata deserialized_video_frame_metadata;
   ASSERT_FALSE(stable::mojom::VideoFrameMetadata::Deserialize(
       serialized_video_frame_metadata, &deserialized_video_frame_metadata));
+}
+
+TEST(StableVideoDecoderTypesMojomTraitsTest, ValidVideoDecoderConfig) {
+  stable::mojom::VideoDecoderConfigPtr mojom_video_decoder_config =
+      stable::mojom::VideoDecoderConfig::New();
+  mojom_video_decoder_config->codec = VideoCodec::kVP9;
+  mojom_video_decoder_config->profile = VP9PROFILE_PROFILE0;
+  mojom_video_decoder_config->level = kNoVideoCodecLevel;
+  mojom_video_decoder_config->has_alpha = true;
+  mojom_video_decoder_config->coded_size = gfx::Size(320, 240);
+  mojom_video_decoder_config->visible_rect = gfx::Rect(4, 4, 310, 230);
+  mojom_video_decoder_config->natural_size = gfx::Size(310, 234);
+  mojom_video_decoder_config->extra_data.push_back(2u);
+  mojom_video_decoder_config->extra_data.push_back(1u);
+  mojom_video_decoder_config->extra_data.push_back(3u);
+  mojom_video_decoder_config->extra_data.push_back(5u);
+  mojom_video_decoder_config->extra_data.push_back(9u);
+  mojom_video_decoder_config->extra_data.push_back(4u);
+  mojom_video_decoder_config->encryption_scheme =
+      EncryptionScheme::kUnencrypted;
+  mojom_video_decoder_config->color_space_info =
+      gfx::ColorSpace::CreateREC601();
+  mojom_video_decoder_config->hdr_metadata =
+      gfx::HDRMetadata(gfx::HdrMetadataSmpteSt2086(
+                           {0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f},
+                           /*luminance_max=*/1000,
+                           /*luminance_min=*/0),
+                       gfx::HdrMetadataCta861_3(123, 456));
+
+  std::vector<uint8_t> serialized_video_decoder_config =
+      stable::mojom::VideoDecoderConfig::Serialize(&mojom_video_decoder_config);
+
+  VideoDecoderConfig deserialized_video_decoder_config;
+  ASSERT_TRUE(stable::mojom::VideoDecoderConfig::Deserialize(
+      serialized_video_decoder_config, &deserialized_video_decoder_config));
+
+  EXPECT_EQ(deserialized_video_decoder_config.codec(),
+            mojom_video_decoder_config->codec);
+  EXPECT_EQ(deserialized_video_decoder_config.profile(),
+            mojom_video_decoder_config->profile);
+  EXPECT_EQ(deserialized_video_decoder_config.level(),
+            mojom_video_decoder_config->level);
+  EXPECT_EQ(deserialized_video_decoder_config.alpha_mode() ==
+                VideoDecoderConfig::AlphaMode::kHasAlpha,
+            mojom_video_decoder_config->has_alpha);
+  EXPECT_EQ(deserialized_video_decoder_config.coded_size(),
+            mojom_video_decoder_config->coded_size);
+  EXPECT_EQ(deserialized_video_decoder_config.visible_rect(),
+            mojom_video_decoder_config->visible_rect);
+  EXPECT_EQ(deserialized_video_decoder_config.natural_size(),
+            mojom_video_decoder_config->natural_size);
+  EXPECT_EQ(deserialized_video_decoder_config.extra_data(),
+            mojom_video_decoder_config->extra_data);
+  EXPECT_EQ(deserialized_video_decoder_config.encryption_scheme(),
+            mojom_video_decoder_config->encryption_scheme);
+  EXPECT_EQ(
+      deserialized_video_decoder_config.color_space_info().ToGfxColorSpace(),
+      mojom_video_decoder_config->color_space_info);
+  EXPECT_FALSE(deserialized_video_decoder_config.is_encrypted());
+  EXPECT_EQ(deserialized_video_decoder_config.video_transformation(),
+            kNoTransformation);
+  EXPECT_EQ(deserialized_video_decoder_config.aspect_ratio().GetNaturalSize(
+                mojom_video_decoder_config->visible_rect),
+            mojom_video_decoder_config->natural_size);
+  EXPECT_EQ(deserialized_video_decoder_config.hdr_metadata(),
+            mojom_video_decoder_config->hdr_metadata);
+  EXPECT_FALSE(deserialized_video_decoder_config.is_rtc());
+  EXPECT_TRUE(deserialized_video_decoder_config.IsValidConfig());
+}
+
+TEST(StableVideoDecoderTypesMojomTraitsTest,
+     VideoDecoderConfigWithUnknownCodec) {
+  stable::mojom::VideoDecoderConfigPtr mojom_video_decoder_config =
+      stable::mojom::VideoDecoderConfig::New();
+  mojom_video_decoder_config->codec = VideoCodec::kUnknown;
+  mojom_video_decoder_config->profile = VP9PROFILE_PROFILE0;
+  mojom_video_decoder_config->level = kNoVideoCodecLevel;
+  mojom_video_decoder_config->has_alpha = true;
+  mojom_video_decoder_config->coded_size = gfx::Size(320, 240);
+  mojom_video_decoder_config->visible_rect = gfx::Rect(4, 4, 310, 230);
+  mojom_video_decoder_config->natural_size = gfx::Size(310, 234);
+  mojom_video_decoder_config->extra_data.push_back(2u);
+  mojom_video_decoder_config->extra_data.push_back(1u);
+  mojom_video_decoder_config->extra_data.push_back(3u);
+  mojom_video_decoder_config->extra_data.push_back(5u);
+  mojom_video_decoder_config->extra_data.push_back(9u);
+  mojom_video_decoder_config->extra_data.push_back(4u);
+  mojom_video_decoder_config->encryption_scheme =
+      EncryptionScheme::kUnencrypted;
+  mojom_video_decoder_config->color_space_info =
+      gfx::ColorSpace::CreateREC601();
+  mojom_video_decoder_config->hdr_metadata =
+      gfx::HDRMetadata(gfx::HdrMetadataSmpteSt2086(
+                           {0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f},
+                           /*luminance_max=*/1000,
+                           /*luminance_min=*/0),
+                       gfx::HdrMetadataCta861_3(123, 456));
+
+  std::vector<uint8_t> serialized_video_decoder_config =
+      stable::mojom::VideoDecoderConfig::Serialize(&mojom_video_decoder_config);
+
+  VideoDecoderConfig deserialized_video_decoder_config;
+  ASSERT_FALSE(stable::mojom::VideoDecoderConfig::Deserialize(
+      serialized_video_decoder_config, &deserialized_video_decoder_config));
+}
+
+TEST(StableVideoDecoderTypesMojomTraitsTest,
+     VideoDecoderConfigWithTooLargeVisibleRect) {
+  stable::mojom::VideoDecoderConfigPtr mojom_video_decoder_config =
+      stable::mojom::VideoDecoderConfig::New();
+  mojom_video_decoder_config->codec = VideoCodec::kVP9;
+  mojom_video_decoder_config->profile = VP9PROFILE_PROFILE0;
+  mojom_video_decoder_config->level = kNoVideoCodecLevel;
+  mojom_video_decoder_config->has_alpha = true;
+  mojom_video_decoder_config->coded_size = gfx::Size(320, 240);
+  mojom_video_decoder_config->visible_rect = gfx::Rect(4, 4, 320, 240);
+  mojom_video_decoder_config->natural_size = gfx::Size(310, 234);
+  mojom_video_decoder_config->extra_data.push_back(2u);
+  mojom_video_decoder_config->extra_data.push_back(1u);
+  mojom_video_decoder_config->extra_data.push_back(3u);
+  mojom_video_decoder_config->extra_data.push_back(5u);
+  mojom_video_decoder_config->extra_data.push_back(9u);
+  mojom_video_decoder_config->extra_data.push_back(4u);
+  mojom_video_decoder_config->encryption_scheme =
+      EncryptionScheme::kUnencrypted;
+  mojom_video_decoder_config->color_space_info =
+      gfx::ColorSpace::CreateREC601();
+  mojom_video_decoder_config->hdr_metadata =
+      gfx::HDRMetadata(gfx::HdrMetadataSmpteSt2086(
+                           {0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f},
+                           /*luminance_max=*/1000,
+                           /*luminance_min=*/0),
+                       gfx::HdrMetadataCta861_3(123, 456));
+
+  std::vector<uint8_t> serialized_video_decoder_config =
+      stable::mojom::VideoDecoderConfig::Serialize(&mojom_video_decoder_config);
+
+  VideoDecoderConfig deserialized_video_decoder_config;
+  ASSERT_FALSE(stable::mojom::VideoDecoderConfig::Deserialize(
+      serialized_video_decoder_config, &deserialized_video_decoder_config));
 }
 }  // namespace media

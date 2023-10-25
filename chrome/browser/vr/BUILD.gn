@@ -155,6 +155,7 @@ component("vr_common") {
     "frame_type.h",
     "gesture_detector.cc",
     "gesture_detector.h",
+    "graphics_delegate.cc",
     "graphics_delegate.h",
     "input_delegate.h",
     "platform_controller.h",

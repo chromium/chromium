@@ -23,7 +23,7 @@ namespace {
 
 base::FilePath GetFilePath() {
   base::FilePath path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
   return base::MakeAbsoluteFilePath(path.Append(
       FILE_PATH_LITERAL("third_party/blink/common/page_state/test_data")));
 }

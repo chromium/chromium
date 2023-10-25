@@ -144,7 +144,7 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
     }
   }
 
-  if (physical_fragment.IsGridNG()) {
+  if (physical_fragment.IsGrid()) {
     container_builder_.TransferGridLayoutData(
         std::make_unique<NGGridLayoutData>(*result.GridLayoutData()));
   } else if (physical_fragment.IsFrameSet()) {

@@ -113,7 +113,6 @@ js_unittest("file_type_unittest") {
 js_library("filtered_volume_manager") {
   deps = [
     ":array_data_model",
-    ":util",
     "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:cr_deprecated",
     "//ash/webui/common/resources:event_target",
@@ -197,15 +196,12 @@ js_library("url_constants") {
 js_library("util") {
   deps = [
     ":files_app_entry_types",
-    "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:load_time_data.m",
-    "//ui/file_manager/file_manager/common/js:files_app_entry_types",
     "//ui/file_manager/file_manager/common/js:ui",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:entry_location",
     "//ui/file_manager/file_manager/externs:file_manager_private",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
-    "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/externs/ts:store",
     "//ui/file_manager/file_manager/foreground/js:constants",
   ]

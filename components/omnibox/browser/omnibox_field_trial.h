@@ -713,15 +713,12 @@ constexpr base::FeatureParam<int> kInspireMeAdditionalRelatedQueries(
 constexpr base::FeatureParam<int> kInspireMeAdditionalTrendingQueries(
     &omnibox::kInspireMe,
     "AdditionalTrendingQueries",
-    10);
+    0);
 
 constexpr base::FeatureParam<int> kInspireMePsuggestQueries(
     &omnibox::kInspireMe,
     "PersonalizedSuggestQueries",
     20);
-
-constexpr base::FeatureParam<int>
-    kInspireMeNTPZPSLimit(&omnibox::kInspireMe, "NTPZPSSuggestionsLimit", 20);
 
 // <- Inspire Me
 // ---------------------------------------------------------

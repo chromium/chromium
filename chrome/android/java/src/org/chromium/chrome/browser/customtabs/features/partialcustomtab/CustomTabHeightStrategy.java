@@ -10,6 +10,7 @@ import android.view.View;
 import androidx.annotation.Px;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ActivityLayoutState;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
@@ -18,6 +19,8 @@ import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.browser_ui.widget.TouchEventProvider;
 
 /**
  * The default strategy for setting the height of the custom tab.
@@ -37,7 +40,9 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
     }
 
     public static CustomTabHeightStrategy createStrategy(Activity activity,
-            BrowserServicesIntentDataProvider intentData, CustomTabsConnection connection,
+            BrowserServicesIntentDataProvider intentData,
+            Supplier<TouchEventProvider> touchEventProvider, Supplier<Tab> tab,
+            CustomTabsConnection connection,
             ActivityLifecycleDispatcher lifecycleDispatcher, FullscreenManager fullscreenManager,
             boolean isTablet) {
         if (!intentData.isPartialCustomTab()) {
@@ -50,11 +55,12 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
         OnActivityLayoutCallback layoutCallback = (left, top, right, bottom, state)
                 -> connection.onActivityLayout(session, left, top, right, bottom, state);
         if (ChromeFeatureList.sCctResizableSideSheet.isEnabled()) {
-            return new PartialCustomTabDisplayManager(activity, intentData, resizeCallback,
-                    layoutCallback, lifecycleDispatcher, fullscreenManager, isTablet);
+            return new PartialCustomTabDisplayManager(activity, intentData, touchEventProvider, tab,
+                    resizeCallback, layoutCallback, lifecycleDispatcher, fullscreenManager,
+                    isTablet);
         } else {
             return new PartialCustomTabBottomSheetStrategy(activity, intentData,
-                    resizeCallback, layoutCallback,
+                    touchEventProvider, tab, resizeCallback, layoutCallback,
                     lifecycleDispatcher, fullscreenManager, isTablet, /*startMaximized=*/false,
                     new PartialCustomTabHandleStrategyFactory());
         }

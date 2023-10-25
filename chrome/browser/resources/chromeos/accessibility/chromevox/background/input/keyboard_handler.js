@@ -13,7 +13,6 @@ import {Msgs} from '../../common/msgs.js';
 import {QueueMode} from '../../common/tts_types.js';
 import {ChromeVox} from '../chromevox.js';
 import {ChromeVoxRange} from '../chromevox_range.js';
-import {ChromeVoxState} from '../chromevox_state.js';
 import {EventSource} from '../event_source.js';
 import {MathHandler} from '../math_handler.js';
 import {Output} from '../output/output.js';
@@ -99,7 +98,7 @@ export class BackgroundKeyboardHandler {
     Output.forceModeForNextSpeechUtterance(QueueMode.FLUSH);
 
     // Try to restore to the last valid range.
-    ChromeVoxState.instance.restoreLastValidRangeIfNeeded();
+    ChromeVoxRange.restoreLastValidRangeIfNeeded();
 
     if (!this.callOnKeyDownHandlers_(evt) ||
         this.shouldConsumeSearchKey_(evt)) {

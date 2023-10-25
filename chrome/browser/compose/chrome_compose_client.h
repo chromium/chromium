@@ -49,6 +49,7 @@ class ChromeComposeClient
       std::optional<autofill::AutofillClient::PopupScreenLocation>
           popup_screen_location,
       ComposeCallback callback) override;
+  bool HasSession(const autofill::FieldGlobalId& trigger_field_id) override;
 
   // ComposeDialogClosePageHandler
   // Closes the compose dialog. `reason` describes the user action that

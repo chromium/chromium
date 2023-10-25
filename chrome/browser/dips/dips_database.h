@@ -91,6 +91,11 @@ class DIPSDatabase {
   absl::optional<PopupsStateValue> ReadPopup(const std::string& opener_site,
                                              const std::string& popup_site);
 
+  // Returns all entries from the `popups` table with a current interaction,
+  // where the last popup time was more recent than `lookback` ago.
+  std::vector<PopupWithTime> ReadRecentPopupsWithInteraction(
+      const base::TimeDelta& lookback);
+
   // Note: this doesn't clear expired interactions from the database unlike
   // the other database querying methods.
   std::vector<std::string> GetAllSitesForTesting(const DIPSDatabaseTable table);

@@ -183,12 +183,10 @@ void FidoDiscoveryFactory::set_hid_ignore_list(
   hid_ignore_list_ = std::move(hid_ignore_list);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
 void FidoDiscoveryFactory::SetEnclavePasskeys(
     std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys) {
   enclave_passkeys_ = std::move(passkeys);
 }
-#endif
 
 // static
 std::vector<std::unique_ptr<FidoDiscoveryBase>>
@@ -273,7 +271,7 @@ void FidoDiscoveryFactory::MaybeCreateEnclaveDiscovery(
   }
   discoveries.emplace_back(
       std::make_unique<enclave::EnclaveAuthenticatorDiscovery>(
-          std::move(enclave_passkeys_)));
+          std::move(enclave_passkeys_), network_context_));
 }
 #endif
 

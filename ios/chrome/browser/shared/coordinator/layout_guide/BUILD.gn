@@ -7,8 +7,8 @@ source_set("layout_guide_scene_agent") {
     "layout_guide_scene_agent.h",
     "layout_guide_scene_agent.mm",
   ]
+  public_deps = [ "//base" ]
   deps = [
-    "//base",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
     "//ios/chrome/browser/shared/ui/util:util_swift",
   ]

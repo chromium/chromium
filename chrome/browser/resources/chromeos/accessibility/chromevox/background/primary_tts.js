@@ -761,7 +761,7 @@ export class PrimaryTts extends AbstractTts {
    * @private
    */
   clearTimeout_() {
-    if (goog.isDef(this.timeoutId_)) {
+    if (this.timeoutId_ !== undefined) {
       clearTimeout(this.timeoutId_);
       this.timeoutId_ = undefined;
     }

@@ -29,6 +29,7 @@
 #include "components/viz/test/buildflags.h"
 #include "components/viz/test/gl_scaler_test_util.h"
 #include "components/viz/test/paths.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -507,10 +508,12 @@ class SkiaReadbackPixelTest : public cc::PixelTest {
     gpu::SharedImageInterface* sii =
         child_context_provider_->SharedImageInterface();
     DCHECK(sii);
-    gpu::Mailbox mailbox = sii->CreateSharedImage(
-        format, size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestPixels",
-        pixels);
+    gpu::Mailbox mailbox =
+        sii->CreateSharedImage(format, size, gfx::ColorSpace(),
+                               kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+                               gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
+                               "TestPixels", pixels)
+            ->mailbox();
     gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
 
     TransferableResource gl_resource = TransferableResource::MakeGpu(

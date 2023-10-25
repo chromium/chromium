@@ -93,7 +93,6 @@
 <translation id="1643449475550628585">Svakodnevno mijenjanje slike pozadine</translation>
 <translation id="1644574205037202324">Povijest</translation>
 <translation id="1651925268237749928">Odabrali ste dijeljeni album. Druge osobe mogu dodavati ili mijenjati fotografije. Za pozadinu se mogu upotrebljavati fotografije koje trenutačno nisu u ovom albumu.</translation>
-<translation id="1658834457013045127">Zauvijek</translation>
 <translation id="1661865805917886535">Neki podaci o računu i sustavu možda će se poslati Googleu. Te podatke upotrebljavamo za rješavanje tehničkih problema i poboljšavanje svojih usluga, u skladu s našim pravilima o privatnosti (<ph name="PRIVACYPOLICYURL" />) i uvjetima pružanja usluge (<ph name="TERMSOFSERVICEURL" />). Da biste zatražili izmjene sadržaja, posjetite pravnu pomoć (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Zaustavljeno – nema tinte</translation>
 <translation id="1664796644829245314">Pregled: <ph name="PREVIEW_OBJECT" /></translation>
@@ -323,7 +322,6 @@
 <translation id="3484914941826596830">Dok se oprema ažurira, nemojte iskopčavati ovaj vanjski uređaj niti isključivati računalo. Ovaj prozor možete minimizirati. Ažuriranje može potrajati nekoliko minuta i vaš vanjski uređaj tada možda neće funkcionirati.</translation>
 <translation id="3486220673238053218">definicija</translation>
 <translation id="3488065109653206955">Djelomično aktivirano</translation>
-<translation id="349491921221892984"><ph name="MINUTES" /> min</translation>
 <translation id="3502426834823382181">prikaži sve aplikacije</translation>
 <translation id="3510890413042482857">Šalji <ph name="BEGIN_LINK1" />podatke o praćenju izvedbe<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Ažuriranje OS-a Chrome</translation>
@@ -484,7 +482,6 @@
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4771607256327216405">posvjetljivanje tipkovnice</translation>
 <translation id="4773299976671772492">Zaustavljeno</translation>
-<translation id="4782003517030001304">1 h</translation>
 <translation id="4782311465517282004">Pronađite definicije, prijevode ili pretvorbe jedinica kada tekst kliknete desnom tipkom ili ga dodirnete i držite</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotografija</translation>
 <translation id="4793710386569335688">Za dodatnu pomoć posjetite <ph name="BEGIN_LINK" />centar za pomoć<ph name="END_LINK" />.</translation>
@@ -699,6 +696,7 @@
 <translation id="629550705077076970">zatamnjenje tipkovnice</translation>
 <translation id="6302401976930124515">Otkazan je test <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">Aplikacija Istražite</translation>
+<translation id="6318437367327684789">zauvijek</translation>
 <translation id="6319207335391420837">Ažurirajte opremu na uređaju <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Uključivanje čuvara zaslona</translation>
 <translation id="6324916366299863871">Uređivanje prečaca</translation>
@@ -1012,6 +1010,7 @@
 <translation id="8747900814994928677">Potvrda promjena</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Google fotografija</translation>
+<translation id="8775713578693478175">Modemski APN</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8789196995628578448">Prečac se upotrebljava za "<ph name="CONFLICT_ACCEL_NAME" />". Pritisnite novi prečac. Ponovo pritisnite ovaj prečac kako biste zamijenili izvorni prečac.</translation>
 <translation id="879568662008399081">Mreža možda ima zaštitni portal</translation>

@@ -63,12 +63,13 @@ std::vector<std::string> LowercaseAndTokenizeAttributeString(
 // entered by the website and not a real value entered by the user.
 bool SanitizedFieldIsEmpty(const std::u16string& value);
 
-// Returns true if `a` and `b` differ by Levenshtein distance of at most `k`.
+// Returns the Levenshtein distance if it is at most 'k'.
+// If the distance is larger than 'k' this returns 'k+1'.
 // Edits, inserts and removes each count as one step.
 // Runs in O(|a| * k) time and O(k) memory.
-bool IsWithinLevenshteinDistance(std::u16string_view a,
-                                 std::u16string_view b,
-                                 size_t k);
+size_t LevenshteinDistance(std::u16string_view a,
+                           std::u16string_view b,
+                           size_t k);
 
 // Returns true if the first suggestion should be autoselected when the autofill
 // dropdown is shown due to an arrow down event. Enabled on desktop only.

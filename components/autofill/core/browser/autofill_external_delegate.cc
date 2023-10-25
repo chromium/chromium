@@ -726,9 +726,9 @@ void AutofillExternalDelegate::OnPersonalDataFinishedProfileTasks() {
 void AutofillExternalDelegate::OnCreditCardScanned(
     const AutofillTriggerSource trigger_source,
     const CreditCard& card) {
-  manager_->FillCreditCardFormImpl(query_form_, query_field_, card,
-                                   std::u16string(),
-                                   {.trigger_source = trigger_source});
+  manager_->FillCreditCardForm(query_form_, query_field_, card,
+                               std::u16string(),
+                               {.trigger_source = trigger_source});
 }
 
 void AutofillExternalDelegate::FillAutofillFormData(

@@ -131,6 +131,11 @@ bool EventRewriterDelegateImpl::TopRowKeysAreFunctionKeys(int device_id) const {
 bool EventRewriterDelegateImpl::IsExtensionCommandRegistered(
     ui::KeyboardCode key_code,
     int flags) const {
+  if (extension_commands_override_for_testing_.has_value()) {
+    return extension_commands_override_for_testing_->count({key_code, flags}) >
+           0;
+  }
+
   // Some keyboard events for ChromeOS get rewritten, such as:
   // Search+Shift+Left gets converted to Shift+Home (BeginDocument).
   // This doesn't make sense if the user has assigned that shortcut

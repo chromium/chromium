@@ -10,6 +10,7 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_metrics.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_update.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_promise_app_context_menu.h"
@@ -69,16 +70,13 @@ void AppServicePromiseAppItem::OnPromiseAppUpdate(
         update.Status()));
     SetName(base::UTF16ToUTF8(
         ShelfControllerHelper::GetLabelForPromiseStatus(update.Status())));
+    SetAccessibleName(base::UTF16ToUTF8(
+        ShelfControllerHelper::GetAccessibleLabelForPromiseStatus(
+            update.Name(), update.Status())));
     LoadIcon();
   }
   if (update.ProgressChanged() && update.Progress().has_value()) {
     SetProgress(update.Progress().value());
-  }
-  if (update.Name().has_value() &&
-      (update.StatusChanged() || update.NameChanged())) {
-    SetAccessibleName(base::UTF16ToUTF8(
-        ShelfControllerHelper::GetAccessibleLabelForPromiseStatus(
-            update.Name(), update.Status())));
   }
 }
 
@@ -112,6 +110,8 @@ void AppServicePromiseAppItem::InitializeItem(
   SetProgress(update.Progress().value_or(0));
   SetAppStatus(
       ShelfControllerHelper::ConvertPromiseStatusToAppStatus(update.Status()));
+  apps::RecordPromiseAppLifecycleEvent(
+      apps::PromiseAppLifecycleEvent::kCreatedInLauncher);
 }
 
 void AppServicePromiseAppItem::GetContextMenuModel(

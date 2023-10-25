@@ -22,6 +22,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
+#include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -219,9 +220,8 @@ class PrivacySandboxSettingsTest : public testing::Test {
         /*has_appropriate_consent=*/true);
     mock_delegate()->SetUpIsCookieDeprecationExperimentEligibleResponse(
         /*eligible=*/true);
-    mock_delegate()
-        ->SetUpIsCookieDeprecationExperimentCurrentlyEligibleResponse(
-            /*eligible=*/true);
+    mock_delegate()->SetUpGetCookieDeprecationExperimentCurrentEligibility(
+        /*eligibility_reason=*/TpcdExperimentEligibility::Reason::kEligible);
   }
 
   privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate*
@@ -1197,20 +1197,26 @@ TEST_F(PrivacySandboxSettingsTest, ClearingTopicSettings) {
 }
 
 TEST_F(PrivacySandboxSettingsTest,
-       IsCookieDeprecationExperimentCurrentlyEligible) {
+       GetCookieDeprecationExperimentCurrentEligibility) {
   EXPECT_CALL(*mock_delegate(),
-              IsCookieDeprecationExperimentCurrentlyEligible())
+              GetCookieDeprecationExperimentCurrentEligibility())
       .Times(1)
-      .WillOnce(testing::Return(false));
-  EXPECT_FALSE(privacy_sandbox_settings()
-                   ->IsCookieDeprecationExperimentCurrentlyEligible());
+      .WillOnce(testing::Return(TpcdExperimentEligibility(
+          TpcdExperimentEligibility::Reason::k3pCookiesBlocked)));
+  EXPECT_EQ(privacy_sandbox_settings()
+                ->GetCookieDeprecationExperimentCurrentEligibility()
+                .reason(),
+            TpcdExperimentEligibility::Reason::k3pCookiesBlocked);
 
   EXPECT_CALL(*mock_delegate(),
-              IsCookieDeprecationExperimentCurrentlyEligible())
+              GetCookieDeprecationExperimentCurrentEligibility())
       .Times(1)
-      .WillOnce(testing::Return(true));
-  EXPECT_TRUE(privacy_sandbox_settings()
-                  ->IsCookieDeprecationExperimentCurrentlyEligible());
+      .WillOnce(testing::Return(TpcdExperimentEligibility(
+          TpcdExperimentEligibility::Reason::kEligible)));
+  EXPECT_EQ(privacy_sandbox_settings()
+                ->GetCookieDeprecationExperimentCurrentEligibility()
+                .reason(),
+            TpcdExperimentEligibility::Reason::kEligible);
 }
 
 TEST_F(PrivacySandboxSettingsTest, IsCookieDeprecationLabelAllowed) {

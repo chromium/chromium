@@ -13,10 +13,30 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
+
+namespace {
+
+AffineTransform MaskToContentTransform(const LayoutSVGResourceMasker& masker,
+                                       const gfx::RectF& reference_box,
+                                       float zoom) {
+  AffineTransform content_transformation;
+  if (masker.MaskContentUnits() ==
+      SVGUnitTypes::kSvgUnitTypeObjectboundingbox) {
+    content_transformation.Translate(reference_box.x(), reference_box.y());
+    content_transformation.ScaleNonUniform(reference_box.width(),
+                                           reference_box.height());
+  } else if (zoom != 1) {
+    content_transformation.Scale(zoom);
+  }
+  return content_transformation;
+}
+
+}  // namespace
 
 void SVGMaskPainter::Paint(GraphicsContext& context,
                            const LayoutObject& layout_object,
@@ -55,18 +75,11 @@ void SVGMaskPainter::Paint(GraphicsContext& context,
   SECURITY_DCHECK(!masker->SelfNeedsFullLayout());
   masker->ClearInvalidationMask();
 
-  gfx::RectF reference_box =
+  const gfx::RectF reference_box =
       SVGResources::ReferenceBoxForEffects(layout_object);
-  AffineTransform content_transformation;
-  if (masker->MaskContentUnits() ==
-      SVGUnitTypes::kSvgUnitTypeObjectboundingbox) {
-    content_transformation.Translate(reference_box.x(), reference_box.y());
-    content_transformation.ScaleNonUniform(reference_box.width(),
-                                           reference_box.height());
-  } else if (layout_object.IsSVGForeignObject()) {
-    content_transformation.Scale(style.EffectiveZoom());
-  }
-
+  const AffineTransform content_transformation = MaskToContentTransform(
+      *masker, reference_box,
+      layout_object.IsSVGForeignObject() ? style.EffectiveZoom() : 1);
   SubtreeContentTransformScope content_transform_scope(content_transformation);
   PaintRecord record = masker->CreatePaintRecord();
 
@@ -81,6 +94,46 @@ void SVGMaskPainter::Paint(GraphicsContext& context,
   if (needs_luminance_layer)
     context.EndLayer();
   context.Restore();
+}
+
+PaintRecord SVGMaskPainter::PaintResource(SVGResource* mask_resource,
+                                          SVGResourceClient& client,
+                                          const gfx::RectF& reference_box,
+                                          float zoom) {
+  auto* masker =
+      GetSVGResourceAsType<LayoutSVGResourceMasker>(client, mask_resource);
+  if (!masker) {
+    return PaintRecord();
+  }
+  if (DisplayLockUtilities::LockedAncestorPreventingLayout(*masker)) {
+    return PaintRecord();
+  }
+  SECURITY_DCHECK(!masker->SelfNeedsFullLayout());
+  masker->ClearInvalidationMask();
+
+  const AffineTransform content_transformation =
+      MaskToContentTransform(*masker, reference_box, zoom);
+  SubtreeContentTransformScope content_transform_scope(content_transformation);
+  PaintRecord record = masker->CreatePaintRecord();
+  if (record.empty()) {
+    return record;
+  }
+
+  PaintRecorder recorder;
+  cc::PaintCanvas* canvas = recorder.beginRecording();
+  canvas->concat(AffineTransformToSkM44(content_transformation));
+  bool needs_luminance_layer =
+      masker->StyleRef().MaskType() == EMaskType::kLuminance;
+  if (needs_luminance_layer) {
+    cc::PaintFlags flags;
+    flags.setColorFilter(cc::ColorFilter::MakeLuma());
+    canvas->saveLayer(flags);
+  }
+  canvas->drawPicture(std::move(record));
+  if (needs_luminance_layer) {
+    canvas->restore();
+  }
+  return recorder.finishRecordingAsPicture();
 }
 
 }  // namespace blink

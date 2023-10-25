@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/containers/lru_cache.h"
 #include "base/feature_list.h"
+#include "base/i18n/case_conversion.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -752,7 +753,8 @@ void PasswordFormManager::OnFetchCompleted() {
     // dialog and the user could miss it.
     if (observed_form() != nullptr) {
       std::unique_ptr<PasswordForm> password_form =
-          parser_.Parse(*observed_form(), FormDataParser::Mode::kFilling);
+          parser_.Parse(*observed_form(), FormDataParser::Mode::kFilling,
+                        GetStoredUsernames());
       client_->ShowPasswordManagerErrorMessage(
           password_form && (password_form->IsLikelySignupForm() ||
                             password_form->IsLikelyChangePasswordForm() ||
@@ -1129,7 +1131,7 @@ std::tuple<std::unique_ptr<PasswordForm>,
 PasswordFormManager::ParseFormAndMakeLogging(const FormData& form,
                                              FormDataParser::Mode mode) {
   auto [password_form, username_detection_method] =
-      parser_.ParseAndReturnUsernameDetection(form, mode);
+      parser_.ParseAndReturnUsernameDetection(form, mode, GetStoredUsernames());
 
   if (password_manager_util::IsLoggingActive(client_)) {
     BrowserSavePasswordProgressLogger logger(client_->GetLogManager());
@@ -1492,6 +1494,18 @@ bool HasObservedFormChanged(const FormData& form_data,
   form_manager.GetMetricsRecorder()->RecordFormChangeBitmask(
       differences_bitmask);
   return differences_bitmask != 0;
+}
+
+base::flat_set<std::u16string> PasswordFormManager::GetStoredUsernames() const {
+  base::flat_set<std::u16string> stored_usernames =
+      base::MakeFlatSet<std::u16string>(
+          GetBestMatches(), {}, [](const PasswordForm* password_form) {
+            return base::i18n::ToLower(password_form->username_value);
+          });
+  if (stored_usernames.contains(u"")) {
+    stored_usernames.erase(u"");
+  }
+  return stored_usernames;
 }
 
 }  // namespace password_manager

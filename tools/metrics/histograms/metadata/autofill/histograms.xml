@@ -2053,41 +2053,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Autofill.FormAffectedByLaxLocalHeuristicRule.FillingAcceptance{AutofillFormType}"
-    enum="BooleanAutofillFillingAcceptance" expires_after="M120">
-  <owner>battre@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records for each submitted form that is affected by our &quot;lax local
-    heuristic rule&quot; whether the user accepted filling an autofill
-    suggestion. The &quot;lax local heuristic rule&quot; is that we require at
-    least 3 fields to be classified by the local heuristic to propagate that
-    classification - but we don't require 3 distinct field types, which would be
-    the &quot;stricter local heuristic rule&quot;. A form is affected if any
-    field type would be different if we applied the stricter rule.
-    {AutofillFormType}
-  </summary>
-  <token key="AutofillFormType" variants="AutofillFormType"/>
-</histogram>
-
-<histogram
-    name="Autofill.FormAffectedByLaxLocalHeuristicRule.FillingCorrectness{AutofillFormType}"
-    enum="BooleanAutofillFillingCorrectness" expires_after="2024-02-20">
-  <owner>battre@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records for each submitted form that is affected by our &quot;lax local
-    heuristic rule&quot; whether the user edited an autofilled field. The
-    &quot;lax local heuristic rule&quot; is that we require at least 3 fields to
-    be classified by the local heuristic to propagate that classification - but
-    we don't require 3 distinct field types, which would be the &quot;stricter
-    local heuristic rule&quot;. A form is affected if any field type would be
-    different if we applied the stricter rule. {AutofillFormType}
-  </summary>
-  <token key="AutofillFormType" variants="AutofillFormType"/>
-</histogram>
-
 <histogram name="Autofill.FormCacheSize" units="forms" expires_after="M108">
   <obsolete>
     The experiment has been launched in 04/2022.
@@ -3695,10 +3660,7 @@ chromium-metrics-reviews@google.com.
     PlusAddressClient records this whenever it gets a response for the network
     requests it makes.
   </summary>
-  <token key="Type">
-    <variant name="AutofillPlusAddressNetworkRequestType"
-        summary="The relevant network request."/>
-  </token>
+  <token key="Type" variants="AutofillPlusAddressNetworkRequestType"/>
 </histogram>
 
 <histogram name="Autofill.PlusAddresses.NetworkRequest.{Type}.ResponseByteSize"
@@ -3710,10 +3672,7 @@ chromium-metrics-reviews@google.com.
     plus addresses feature. The PlusAddressClient records this whenever it gets
     a response for the network requests it makes.
   </summary>
-  <token key="Type">
-    <variant name="AutofillPlusAddressNetworkRequestType"
-        summary="The relevant network request."/>
-  </token>
+  <token key="Type" variants="AutofillPlusAddressNetworkRequestType"/>
 </histogram>
 
 <histogram name="Autofill.PlusAddresses.NetworkRequest.{Type}.ResponseCode"
@@ -3725,10 +3684,7 @@ chromium-metrics-reviews@google.com.
     plus addresses feature. The PlusAddressClient records this whenever it gets
     a response for the network requests it makes.
   </summary>
-  <token key="Type">
-    <variant name="AutofillPlusAddressNetworkRequestType"
-        summary="The relevant network request."/>
-  </token>
+  <token key="Type" variants="AutofillPlusAddressNetworkRequestType"/>
 </histogram>
 
 <histogram name="Autofill.PlusAddresses.Suggestion.Events"

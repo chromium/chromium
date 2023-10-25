@@ -25,7 +25,6 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.app.tab_activity_glue.ActivityTabWebContentsDelegateAndroidUnitTest.ShadowProfile;
 import org.chromium.chrome.browser.app.tab_activity_glue.ActivityTabWebContentsDelegateAndroidUnitTest.ShadowWebContentsDarkModeController;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
@@ -43,11 +42,7 @@ import org.chromium.url.GURL;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
-        shadows = {
-            ShadowColorUtils.class,
-            ShadowWebContentsDarkModeController.class,
-            ShadowProfile.class
-        })
+        shadows = {ShadowColorUtils.class, ShadowWebContentsDarkModeController.class})
 @EnableFeatures(ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)
 @DisableFeatures(ChromeFeatureList.FORCE_WEB_CONTENTS_DARK_MODE)
 public class ActivityTabWebContentsDelegateAndroidUnitTest {
@@ -59,16 +54,6 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         @Implementation
         public static boolean isEnabledForUrl(BrowserContextHandle browserContextHandle, GURL url) {
             return sGlobalSettingsEnabled && (!url.equals(sBlockedUrl));
-        }
-    }
-
-    @Implements(Profile.class)
-    static class ShadowProfile {
-        static Profile sProfileFromWebContents;
-
-        @Implementation
-        public static Profile fromWebContents(WebContents webContents) {
-            return sProfileFromWebContents;
         }
     }
 
@@ -100,14 +85,13 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
                         mock(Supplier.class),
                         mock(Supplier.class));
 
-        ShadowProfile.sProfileFromWebContents = mProfile;
         doReturn(mWebContents).when(mTab).getWebContents();
+        doReturn(mProfile).when(mTab).getProfile();
         doReturn(mUrl1).when(mWebContents).getVisibleUrl();
     }
 
     @After
     public void tearDown() {
-        ShadowProfile.sProfileFromWebContents = null;
         ShadowWebContentsDarkModeController.sBlockedUrl = null;
     }
 
@@ -139,8 +123,8 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     }
 
     @Test
-    public void testForceDarkWebContent_ProfileNotReady() {
-        ShadowProfile.sProfileFromWebContents = null;
+    public void testForceDarkWebContent_WebContentsNotReady() {
+        doReturn(null).when(mTab).getWebContents();
         assertForceDarkEnabledForWebContents(false);
     }
 

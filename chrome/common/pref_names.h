@@ -1854,6 +1854,9 @@ inline constexpr char kGoogleSearchSidePanelEnabled[] =
     "side_panel.google_search_side_panel_enabled";
 #endif
 
+inline constexpr char kManagedPrivateNetworkAccessRestrictionsEnabled[] =
+    "managed_private_network_access_restrictions_enabled";
+
 // *************** LOCAL STATE ***************
 // These are attached to the machine/installation
 
@@ -2078,6 +2081,11 @@ inline constexpr char kOfficeFileMovedToGoogleDrive[] =
 // Pref that contains the value of the MicrosoftOneDriveMount policy.
 inline constexpr char kMicrosoftOneDriveMount[] =
     "filebrowser.office.microsoft_one_drive_mount";
+
+// Pref that contains the value of the MicrosoftOneDriveAccountRestrictions
+// policy.
+inline constexpr char kMicrosoftOneDriveAccountRestrictions[] =
+    "filebrowser.office.microsoft_one_drive_account_restrictions";
 
 // Pref that contains the value of the MicrosoftOfficeCloudUpload policy.
 inline constexpr char kMicrosoftOfficeCloudUpload[] =

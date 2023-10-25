@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_QUICK_START_FAKE_QUICK_START_DECODER_H_
 #define CHROMEOS_ASH_COMPONENTS_QUICK_START_FAKE_QUICK_START_DECODER_H_
 
+#include "base/containers/queue.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-forward.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
@@ -24,66 +25,35 @@ class FakeQuickStartDecoder : public mojom::QuickStartDecoder {
   mojo::PendingRemote<mojom::QuickStartDecoder> GetRemote();
 
   // mojom::QuickStartDecoder:
-  void DecodeBootstrapConfigurations(
-      const absl::optional<std::vector<uint8_t>>& data,
-      DecodeBootstrapConfigurationsCallback callback) override;
-  void DecodeGetAssertionResponse(
-      const absl::optional<std::vector<uint8_t>>& data,
-      DecodeGetAssertionResponseCallback callback) override;
-  void DecodeWifiCredentialsResponse(
-      const absl::optional<std::vector<uint8_t>>& data,
-      DecodeWifiCredentialsResponseCallback callback) override;
-  void DecodeNotifySourceOfUpdateResponse(
-      const absl::optional<std::vector<uint8_t>>& data,
-      DecodeNotifySourceOfUpdateResponseCallback callback) override;
-  void DecodeUserVerificationMethod(
-      const absl::optional<std::vector<uint8_t>>& data,
-      DecodeUserVerificationMethodCallback callback) override;
-  void DecodeUserVerificationRequested(
-      const absl::optional<std::vector<uint8_t>>& data,
-      DecodeUserVerificationRequestedCallback callback) override;
-  void DecodeUserVerificationResult(
-      const absl::optional<std::vector<uint8_t>>& data,
-      DecodeUserVerificationResultCallback callback) override;
   void DecodeQuickStartMessage(
       const absl::optional<std::vector<uint8_t>>& data,
       DecodeQuickStartMessageCallback callback) override;
 
-  void SetExpectedData(std::vector<uint8_t> expected_data);
   void SetAssertionResponse(mojom::FidoAssertionResponsePtr fido_assertion);
 
   void SetUserVerificationResponse(mojom::UserVerificationResult result,
                                    bool is_first_user_verification);
 
+  void SetUserVerificationMethod(bool use_source_lock_screen_prompt);
+
   void SetUserVerificationRequested(bool is_awaiting_user_verification);
 
   void SetDecoderError(mojom::QuickStartDecoderError error);
 
-  void SetWifiCredentialsResponse(
-      mojom::WifiCredentialsPtr credentials,
-      absl::optional<mojom::QuickStartDecoderError> error);
+  void SetWifiCredentialsResponse(mojom::WifiCredentialsPtr credentials);
 
   void SetNotifySourceOfUpdateResponse(
       mojom::NotifySourceOfUpdateResponsePtr notify_source_of_update_response);
 
-  void SetBootstrapConfigurationsResponse(
-      const std::string& instance_id,
-      absl::optional<mojom::QuickStartDecoderError> error);
+  void SetBootstrapConfigurationsResponse(const std::string& instance_id);
 
   void SetQuickStartMessage(mojom::QuickStartMessagePtr quick_start_message);
 
  private:
-  std::vector<uint8_t> expected_data_;
   mojo::ReceiverSet<ash::quick_start::mojom::QuickStartDecoder> receiver_set_;
-  mojom::NotifySourceOfUpdateResponsePtr notify_source_of_update_response_;
-  mojom::WifiCredentialsPtr credentials_;
-  mojom::FidoAssertionResponsePtr fido_assertion_;
-  mojom::UserVerificationMethodPtr user_verification_method_;
-  mojom::UserVerificationRequestedPtr user_verification_request_;
-  mojom::UserVerificationResponsePtr user_verification_response_;
-  mojom::QuickStartMessagePtr quick_start_message_;
-  absl::optional<mojom::QuickStartDecoderError> error_;
-  std::string response_instance_id_;
+  base::queue<std::pair<mojom::QuickStartMessagePtr,
+                        absl::optional<mojom::QuickStartDecoderError>>>
+      results_;
 };
 
 }  // namespace ash::quick_start

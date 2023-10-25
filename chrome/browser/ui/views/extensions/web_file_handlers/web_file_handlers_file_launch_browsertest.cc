@@ -659,11 +659,11 @@ IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchBrowserTest,
   static constexpr char kScriptTag[] =
       R"(<script src="%s"></script><body>Test</body>)";
 
-  // Create files.
+  // Create a map of one filename for each file content.
   base::flat_map<std::string, std::string> files = {
-      {"open-csv.js", base::StringPrintf(kScript, 2)},
+      {"open-csv.js", base::StringPrintf(kScript, /*expected=*/2)},
       {"open-csv.html", base::StringPrintf(kScriptTag, "/open-csv.js")},
-      {"open-txt.js", base::StringPrintf(kScript, 1)},
+      {"open-txt.js", base::StringPrintf(kScript, /*expected=*/1)},
       {"open-txt.html", base::StringPrintf(kScriptTag, "/open-txt.js")},
   };
 
@@ -705,7 +705,7 @@ IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchBrowserTest,
   } test_cases[] = {
       // clang-format off
 
-    // single-client [by default] opens all files in the same tab.
+    // single-client (default if unset) opens all files in the same tab.
     {
       "Verify single-client",
       "/open-csv.html",

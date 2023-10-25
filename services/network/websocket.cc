@@ -779,7 +779,7 @@ void WebSocket::ReadAndSendFromDataPipe(InterruptionReason resume_reason) {
 bool WebSocket::ReadAndSendFrameFromDataPipe(DataFrame* data_frame) {
   while (true) {
     if (data_frame->data_length == 0) {
-      auto data_to_pass = base::MakeRefCounted<net::IOBuffer>(0);
+      auto data_to_pass = base::MakeRefCounted<net::IOBuffer>();
       if (channel_->SendFrame(true, MessageTypeToOpCode(data_frame->type),
                               std::move(data_to_pass),
                               0) == net::WebSocketChannel::CHANNEL_DELETED) {

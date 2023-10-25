@@ -82,6 +82,7 @@
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/blob_storage/blob_registry_wrapper.h"
+#include "content/browser/blob_storage/file_backed_blob_factory_worker_impl.h"
 #include "content/browser/browser_child_process_host_impl.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/browser_main_loop.h"
@@ -200,6 +201,7 @@
 #include "third_party/blink/public/common/page/launching_process_state.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/switches.h"
+#include "third_party/blink/public/mojom/blob/file_backed_blob_factory.mojom.h"
 #include "third_party/blink/public/mojom/disk_allocator.mojom.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trials_settings.mojom.h"
 #include "third_party/blink/public/mojom/plugins/plugin_registry.mojom.h"
@@ -1908,6 +1910,17 @@ void RenderProcessHostImpl::BindFileSystemAccessManager(
           // the Quarantine Service.
           storage_key.origin().GetURL(), GetID()),
       std::move(receiver));
+}
+
+void RenderProcessHostImpl::BindFileBackedBlobFactory(
+    const url::Origin& origin,
+    mojo::PendingReceiver<blink::mojom::FileBackedBlobFactory> receiver) {
+  if (!file_backed_blob_factory_) {
+    file_backed_blob_factory_ =
+        std::make_unique<FileBackedBlobFactoryWorkerImpl>(browser_context_,
+                                                          GetID());
+  }
+  file_backed_blob_factory_->BindReceiver(std::move(receiver), origin.GetURL());
 }
 
 void RenderProcessHostImpl::GetSandboxedFileSystemForBucket(

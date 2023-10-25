@@ -93,7 +93,7 @@ test-1{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutNGFlexibleBox",
+    "layoutObjectName": "LayoutFlexibleBox",
     "showAccessibilityInfo": true
   },
   "flexInfo": [
@@ -306,7 +306,7 @@ test-2{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutNGFlexibleBox",
+    "layoutObjectName": "LayoutFlexibleBox",
     "showAccessibilityInfo": true
   },
   "flexInfo": [

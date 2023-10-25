@@ -498,35 +498,37 @@ void DualLayerUserPrefStore::DisableTypeAndClearAccountStore(
 
   // Clear all synced preferences from the account store.
   for (const std::string& pref_name : GetPrefNamesInAccountStore()) {
-    if (auto metadata =
-            pref_model_associator_client_->GetSyncablePrefsDatabase()
-                .GetSyncablePrefMetadata(pref_name);
-        metadata.has_value() && metadata->model_type() == model_type) {
-      const base::Value* value = nullptr;
-      // Should only notify observers if the effective value changes.
-      // Note: A notification is still sent if a pref goes from an
-      // explicitly-set value to an equal default value.
-      // Note: If the pref requires history opt-in, but history sync is
-      // disabled, GetValue() will not return the account value, and in case
-      // no value for the pref exists in the local store, no notification should
-      // be sent out.
-      bool should_notify = GetValue(pref_name, &value);
-      if (const base::Value* local_value = nullptr;
-          value && local_pref_store_->GetValue(pref_name, &local_value)) {
-        should_notify = (*local_value != *value);
-      }
-      {
-        base::AutoReset<bool> setting_prefs(&is_setting_prefs_, true);
-        // The write flags only affect persistence, and the default flag is the
-        // safer choice.
-        account_pref_store_->RemoveValue(
-            pref_name, WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-        merged_prefs_.RemoveValue(pref_name);
-      }
-      if (should_notify) {
-        for (PrefStore::Observer& observer : observers_) {
-          observer.OnPrefValueChanged(pref_name);
-        }
+    absl::optional<SyncablePrefMetadata> metadata =
+        pref_model_associator_client_->GetSyncablePrefsDatabase()
+            .GetSyncablePrefMetadata(pref_name);
+    CHECK(metadata.has_value());
+    if (metadata->model_type() != model_type) {
+      continue;
+    }
+    const base::Value* value = nullptr;
+    // Should only notify observers if the effective value changes.
+    // Note: A notification is still sent if a pref goes from an
+    // explicitly-set value to an equal default value.
+    // Note: If the pref requires history opt-in, but history sync is
+    // disabled, GetValue() will not return the account value, and in case
+    // no value for the pref exists in the local store, no notification should
+    // be sent out.
+    bool should_notify = GetValue(pref_name, &value);
+    if (const base::Value* local_value = nullptr;
+        value && local_pref_store_->GetValue(pref_name, &local_value)) {
+      should_notify = (*local_value != *value);
+    }
+    {
+      base::AutoReset<bool> setting_prefs(&is_setting_prefs_, true);
+      // The write flags only affect persistence, and the default flag is the
+      // safer choice.
+      account_pref_store_->RemoveValue(
+          pref_name, WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
+      merged_prefs_.RemoveValue(pref_name);
+    }
+    if (should_notify) {
+      for (PrefStore::Observer& observer : observers_) {
+        observer.OnPrefValueChanged(pref_name);
       }
     }
   }

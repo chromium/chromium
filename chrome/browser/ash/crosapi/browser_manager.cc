@@ -86,6 +86,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/logging_chrome.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/cpp/lacros_startup_state.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom-shared.h"
@@ -614,7 +615,7 @@ BrowserManager::BrowserManager(
           // user still "logged in" (UserManager::IsUserLoggedIn() == true).
           !base::CommandLine::ForCurrentProcess()->HasSwitch(
               ash::switches::kLoginUser) &&
-          crosapi::browser_util::IsCPUSupportedByLacros() &&
+          ash::standalone_browser::BrowserSupport::IsCpuSupported() &&
           base::FeatureList::IsEnabled(kLacrosLaunchAtLoginScreen)),
       disabled_for_testing_(g_disabled_for_testing),
       device_ownership_waiter_(std::make_unique<DeviceOwnershipWaiterImpl>()) {

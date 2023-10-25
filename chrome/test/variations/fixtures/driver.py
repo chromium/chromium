@@ -20,8 +20,6 @@ _PLATFORM_TO_RELEASE_OS = {
   'win': 'win64',
   'android': 'android',
   'webview': 'webview',
-  'lacros': 'linux',
-  'cros': 'linux',
 }
 
 def pytest_addoption(parser):
@@ -76,8 +74,12 @@ def _version_to_download(
       'using --chrome-version to download chrome (ignoring --channel)')
     return test_utils.parse_version(chrome_version)
 
-  release_os = _PLATFORM_TO_RELEASE_OS.get(platform)
-  return test_utils.find_version(release_os, channel)
+  release_os = _PLATFORM_TO_RELEASE_OS.get(platform, None)
+  if release_os is None:
+    logging.info('No Chrome version to download for ' + platform)
+    return None
+  else:
+    return test_utils.find_version(release_os, channel)
 
 # pylint: disable=redefined-outer-name
 @pytest.fixture(scope="session")

@@ -106,7 +106,6 @@ CloudUploadUI::CloudUploadUI(content::WebUI* web_ui)
       {"googleDrive", IDS_OFFICE_CLOUD_PROVIDER_GOOGLE_DRIVE},
   };
   source->AddLocalizedStrings(kStrings);
-  source->AddBoolean("isJellyEnabled", chromeos::features::IsJellyEnabled());
   webui::SetupWebUIDataSource(
       source, base::make_span(kCloudUploadResources, kCloudUploadResourcesSize),
       IDR_CLOUD_UPLOAD_MAIN_HTML);

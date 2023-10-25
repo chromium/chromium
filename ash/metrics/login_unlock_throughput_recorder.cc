@@ -599,6 +599,9 @@ void LoginUnlockThroughputRecorder::ArcUiAvailableAfterLogin() {
   AddLoginTimeMarker("ArcUiAvailable");
   const base::TimeDelta duration =
       base::TimeTicks::Now() - primary_user_logged_in_;
+  base::UmaHistogramCustomTimes("Ash.Login.ArcUiAvailableAfterLogin.Duration",
+                                duration, base::Milliseconds(100),
+                                base::Seconds(30), 100);
   LOCAL_HISTOGRAM_TIMES("Ash.Tast.ArcUiAvailableAfterLogin.Duration", duration);
 }
 

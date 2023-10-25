@@ -44,16 +44,16 @@ as in the following.
 ### NGLayoutInputNode ###
 
 * NGBlockNode
-  - NGInlineNode
-    - NGInlineItem (open tag, span)
-    - NGInlineItem (text, "Hello")
-    - NGInlineItem (close tag, span)
+  - InlineNode
+    - InlineItem (open tag, span)
+    - InlineItem (text, "Hello")
+    - InlineItem (close tag, span)
 
 ### Fragment tree ###
 
 * NGPhysicalBoxFragment
   - NGPhysicalBoxFragment (anonymous wrapper)
-    - NGPhysicalLineBoxFragment
+    - PhysicalLineBoxFragment
       - NGPhysicalBoxFragment (span, may be omitted)
         - NGPhysicalTextFragment ("Hello")
 |||---|||
@@ -63,21 +63,21 @@ as in the following.
 Inline layout is performed in the following phases:
 
 1. **[Pre-layout]** converts LayoutObject tree to a concatenated string
-   and a list of [NGInlineItem].
+   and a list of [InlineItem].
 2. **[Line breaking]** breaks it into lines and
-   produces a list of [NGInlineItemResult] for each line.
+   produces a list of [InlineItemResult] for each line.
 3. **[Line box construction]** orders and positions items on a line.
 4. **[Generate fragments]** generates physical fragments.
 
 | Phase | Input | Output |
 |---|---|---|
-| Pre-layout | LayoutObject | [NGInlineItem] |
-| Line Breaking | [NGInlineItem] | [NGInlineItemResult] |
-| Line box construction | [NGInlineItemResult] | [NGLogicalLineItem] |
-| Generate fragments | [NGLogicalLineItem] | [NGPhysicalFragment] / [FragmentItem] |
+| Pre-layout | LayoutObject | [InlineItem] |
+| Line Breaking | [InlineItem] | [InlineItemResult] |
+| Line box construction | [InlineItemResult] | [LogicalLineItem] |
+| Generate fragments | [LogicalLineItem] | [NGPhysicalFragment] / [FragmentItem] |
 
 Note: There is [an idea](https://docs.google.com/document/d/1dxzIHl1dwBtgeKgWd2cKcog8AyydN5rduQvXthMOMD0/edit?usp=sharing)
-to merge [NGInlineItemResult] and [NGLogicalLineItem], but this hasn't been happened yet.
+to merge [InlineItemResult] and [LogicalLineItem], but this hasn't been happened yet.
 
 This is similar to [CSS Text Processing Order of Operations],
 but not exactly the same,
@@ -91,14 +91,14 @@ because the spec prioritizes the simple description than being accurate.
 For inline layout there is a pre-layout pass that prepares the internal data
 structures needed to perform line layout.
 
-The pre-layout pass, triggered by calling `NGInlineNode::PrepareLayout()`, has
+The pre-layout pass, triggered by calling `InlineNode::PrepareLayout()`, has
 three separate steps or stages that are executed in order:
 
   - `CollectInlines`: Performs a depth-first scan of the container collecting
     all non-atomic inlines and `TextNodes`s. Atomic inlines are represented as a
     unicode object replacement character but are otherwise skipped.
     Each non-atomic inline and `TextNodes` is fed to a
-    [NGInlineItemsBuilder](ng_inline_items_builder.h) instance which collects
+    [InlineItemsBuilder](ng_inline_items_builder.h) instance which collects
     the text content for all non-atomic inlines in the container.
 
     During this process white-space is collapsed and normalized according to CSS
@@ -118,11 +118,11 @@ three separate steps or stages that are executed in order:
 ### <a name="line-breaking">Line Breaking</a> ###
 [line breaking]: #line-breaking
 
-[NGLineBreaker] takes a list of [NGInlineItem],
+[LineBreaker] takes a list of [InlineItem],
 measure them, break into lines, and
-produces a list of [NGInlineItemResult] for each line.
+produces a list of [InlineItemResult] for each line.
 
-[NGInlineItemResult] keeps several information
+[InlineItemResult] keeps several information
 needed during the line box construction,
 such as inline size and [ShapeResult],
 though the inline position is recomputed later
@@ -130,7 +130,7 @@ because [Bidirectional text] may change it.
 
 This phase:
 1. Measures each item.
-2. Breaks text [NGInlineItem] into multiple [NGInlineItemResult].
+2. Breaks text [InlineItem] into multiple [InlineItemResult].
    The core logic of this part is implemented in [ShapingLineBreaker].
 3. Computes inline size of borders/margins/paddings.
    The block size of borders/margins/paddings are ignored
@@ -149,20 +149,20 @@ This phase:
 ### <a name="line-box-construction">Line Box Construction</a> ###
 [line Box Construction]: #line-box-construction
 
-`NGInlineLayoutAlgorithm::CreateLine()` takes a list of [NGInlineItemResult] and
-produces a list of [NGLogicalLineItem].
+`NGInlineLayoutAlgorithm::CreateLine()` takes a list of [InlineItemResult] and
+produces a list of [LogicalLineItem].
 
 This phase consists of following sub-phases:
 
-1. Create a [NGLogicalLineItem] for each [NGInlineItemResult]
+1. Create a [LogicalLineItem] for each [InlineItemResult]
    and determine the positions.
 
-   The inline size of each item was already determined by [NGLineBreaker],
+   The inline size of each item was already determined by [LineBreaker],
    but the inline position is recomputed
    because [BiDi reordering](#bidi) may change them.
 
    In block direction,
-   [NGLogicalLineItem] is placed as if the baseline is at 0.
+   [LogicalLineItem] is placed as if the baseline is at 0.
    This is adjusted later, possibly multiple times,
    for [vertical-align] and the block offset of the parent inline box.
 
@@ -174,11 +174,11 @@ This phase consists of following sub-phases:
 
 2. Process all pending operations in [Inline Box Tree].
 3. [Bidirectional reordering](#bidi):
-   Reorder the list of [NGLogicalLineItem]
+   Reorder the list of [LogicalLineItem]
    according to [UAX#9 Reordering Resolved Levels].
    See [Bidirectional text] below.
 
-   After this point forward, the list of [NGLogicalLineItem] is
+   After this point forward, the list of [LogicalLineItem] is
    in _visual order_; which is from [line-left] to [line-right].
    The block direction is still logical,
    but the inline direction is physical.
@@ -198,7 +198,7 @@ This phase consists of following sub-phases:
 A flat list structure is suitable for many inline operations,
 but some operations require an inline box tree structure.
 A stack of [NGInlineBoxState] is constructed
-from a list of [NGInlineItemResult] to represent the box tree structure.
+from a list of [InlineItemResult] to represent the box tree structure.
 
 This stack:
 1. Caches common values for an inline box.
@@ -219,7 +219,7 @@ This stack:
    Depends on the value,
    the operation is queued to the appropriate stack entry.
 
-Because of index-based operations to the list of [NGInlineItemResult],
+Because of index-based operations to the list of [InlineItemResult],
 the list is append-only during the process.
 When all operations are done,
 `OnEndPlaceItems()` turns the list into the final fragment tree structure.
@@ -250,15 +250,15 @@ creates [NGPhysicalBoxFragment] and add children to it.
 ### <a name="generate-fragments">Generate Fragments</a> ###
 [generate fragments]: #generate-fragments
 
-When all [NGLogicalLineItem]s are ordered and positioned,
+When all [LogicalLineItem]s are ordered and positioned,
 they are converted to fragments.
 
 Without [FragmentItem] enabled,
-each [NGLogicalLineItem] produces a [NGPhysicalFragment],
-added to the [NGPhysicalLineBoxFragment].
+each [LogicalLineItem] produces a [NGPhysicalFragment],
+added to the [PhysicalLineBoxFragment].
 
 With [FragmentItem] enabled,
-each [NGLogicalLineItem] produces a [FragmentItem],
+each [LogicalLineItem] produces a [FragmentItem],
 added to the [FragmentItems] in the containing block of the inline formatting context.
 
 ## Miscellaneous topics ##
@@ -294,7 +294,7 @@ and they are hard coded to derive from the CSS [writing-mode] property today.
 We plan to support more baseline types,
 and allow authors to specify the baseline type,
 as defined in the CSS [dominant-baseline] property in future.
-[NGPhysicalLineBoxFragment] and [NGPhysicalTextFragment] should be
+[PhysicalLineBoxFragment] and [NGPhysicalTextFragment] should be
 responsible for computing different baseline types from font metrics.
 
 [dominant-baseline]: https://drafts.csswg.org/css-inline/#dominant-baseline-property
@@ -360,7 +360,7 @@ Initial design doc: [Using ICU BiDi in LayoutNG](https://docs.google.com/documen
 
 ### Interface for Editing ###
 
-[NGOffsetMapping] provides functions for converting between offsets in the text
+[OffsetMapping] provides functions for converting between offsets in the text
 content of an inline formatting context (computed in [pre-layout]) and DOM
 positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 
@@ -373,6 +373,12 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [FontBaseline]: ../../../../platform/fonts/font_baseline.h
 [FragmentItem]: ng_fragment_item.h
 [FragmentItems]: ng_fragment_items.h
+[InlineItem]: ng_inline_item.h
+[InlineItemResult]: ng_inline_item_result.h
+[InlineNode]: ng_inline_node.h
+[LineBreaker]: ng_line_breaker.h
+[LogicalLineItem]: ng_logical_line_item.h
+[LogicalLineItems]: ng_logical_line_items.h
 [NGBaselineAlgorithmType]: ng_baseline.h
 [NGBaselineRequest]: ng_baseline.h
 [NGBlockNode]: ../ng_block_node.h
@@ -381,18 +387,12 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [NGConstraintSpace]: ../ng_constraint_space_builder.h
 [NGConstraintSpaceBuilder]: ../ng_constraint_space_builder.h
 [NGInlineBoxState]: ng_inline_box_state.h
-[NGInlineItem]: ng_inline_item.h
-[NGInlineItemResult]: ng_inline_item_result.h
-[NGInlineNode]: ng_inline_node.h
 [NGInlineLayoutAlgorithm]: ng_inline_layout_algorithm.h
 [NGLayoutInputNode]: ../ng_layout_input_node.h
-[NGLineBreaker]: ng_line_breaker.h
-[NGLogicalLineItem]: ng_logical_line_item.h
-[NGLogicalLineItems]: ng_logical_line_items.h
-[NGOffsetMapping]: ng_offset_mapping.h
 [NGPhysicalBoxFragment]: ../ng_physical_box_fragment.h
 [NGPhysicalFragment]: ../ng_physical_fragment.h
-[NGPhysicalLineBoxFragment]: ng_physical_line_box_fragment.h
 [NGPhysicalTextFragment]: ng_physical_text_fragment.h
+[OffsetMapping]: ng_offset_mapping.h
+[PhysicalLineBoxFragment]: ng_physical_line_box_fragment.h
 [ShapeResult]: ../../../../platform/fonts/shaping/shape_result.h
 [ShapingLineBreaker]: ../../../../platform/fonts/shaping/shaping_line_breaker.h

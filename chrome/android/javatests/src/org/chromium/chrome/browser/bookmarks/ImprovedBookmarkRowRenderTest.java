@@ -97,7 +97,6 @@ public class ImprovedBookmarkRowRenderTest {
 
     @Mock private CurrencyFormatter.Natives mCurrencyFormatterJniMock;
     @Mock private ShoppingService mShoppingService;
-    @Mock private ImprovedBookmarkFolderViewCoordinator mImprovedBookmarkFolderViewCoordinator;
 
     private final boolean mUseVisualRowLayout;
 
@@ -180,9 +179,6 @@ public class ImprovedBookmarkRowRenderTest {
                                             ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY,
                                             ImageVisibility.DRAWABLE)
                                     .with(ImprovedBookmarkRowProperties.START_ICON_TINT, null)
-                                    .with(
-                                            ImprovedBookmarkRowProperties.FOLDER_COORDINATOR,
-                                            mImprovedBookmarkFolderViewCoordinator)
                                     .with(
                                             ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY,
                                             ImageVisibility.MENU)

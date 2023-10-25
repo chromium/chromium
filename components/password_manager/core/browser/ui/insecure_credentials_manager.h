@@ -21,7 +21,6 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
-#include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"

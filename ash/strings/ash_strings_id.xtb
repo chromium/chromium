@@ -29,6 +29,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="109942774857561566">Saya bosan</translation>
 <translation id="1104084341931202936">Tampilkan setelan aksesibilitas</translation>
 <translation id="1104621072296271835">Perangkat berfungsi lebih baik jika digunakan bersama</translation>
+<translation id="1106446201446919638">1 perangkat terhubung. Jika sedang menggunakan hotspot, Wi-Fi akan tetap nonaktif.</translation>
 <translation id="1111021433905331574">Anda dapat mengubah warna lampu latar keyboard di Setelan &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Aktifkan/nonaktifkan data seluler. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Sembunyikan otomatis rak</translation>
@@ -202,7 +203,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1757857692711134412">Nonaktif sampai matahari terbenam</translation>
 <translation id="1768366657309696705">Pintasan keyboard <ph name="LAUNCHER_KEY_NAME" /> + Titik telah diubah. Untuk menggunakan tombol Insert, tekan tombol <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Dipindahkan ke baris <ph name="ROW_NUMBER" />, kolom <ph name="COLUMN_NUMBER" />.</translation>
-<translation id="1771458705381257690">Buka <ph name="NAME" /> untuk menyiapkan dan menyesuaikan perangkat Anda</translation>
 <translation id="1771761307086386028">Scroll ke kanan</translation>
 <translation id="1774796056689732716">Kalender, <ph name="CURRENT_MONTH_YEAR" />, <ph name="DATE" /> saat ini dipilih.</translation>
 <translation id="1775598828170459419">Menampilkan <ph name="NUM_SHOWN_ITEMS" /> dari <ph name="NUM_TOTAL_ITEMS" /></translation>
@@ -307,7 +307,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2258734398699965611">File yang disarankan</translation>
 <translation id="2268130516524549846">Bluetooth dinonaktifkan</translation>
 <translation id="2268813581635650749">Keluarkan semua</translation>
-<translation id="2269016722240250274">Aplikasi sedang menggunakan mikrofon Anda</translation>
 <translation id="2276987123919776440">15 mnt</translation>
 <translation id="2277103315734023688">Cari Maju</translation>
 <translation id="2282073721614284166">Buka link di tab</translation>
@@ -360,6 +359,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2465145153332031561">Kesehatan baterai <ph name="BATTERY_HEALTH_PERCENTAGE" />%, jumlah siklus pengisian daya penuh <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Konfirmasi Resolusi</translation>
 <translation id="2475982808118771221">Terjadi error</translation>
+<translation id="2478076885740497414">Instal aplikasi</translation>
 <translation id="2482878487686419369">Notifikasi</translation>
 <translation id="2484513351006226581">Tekan <ph name="KEYBOARD_SHORTCUT" /> untuk mengganti tata letak keyboard.</translation>
 <translation id="2487915095798731898">Gabung</translation>
@@ -518,6 +518,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3160929076476941240">2 jam</translation>
 <translation id="3161500364292033097">Tutup desktop dan jendela</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> me-roll back <ph name="DEVICE_TYPE" />. Perangkat Anda akan direset dan semua data akan dihapus.</translation>
+<translation id="3170769098533255179">Tidak ada perangkat yang terhubung. Jika sedang menggunakan hotspot, Wi-Fi akan tetap nonaktif.</translation>
 <translation id="3171170659304083361">Setelan metode input</translation>
 <translation id="3176221688814061633">Chromebook atau perangkat Bluetooth Anda menggunakan Bluetooth versi lama. Aktifkan Resolusi Super Bluetooth atau gunakan mikrofon internal untuk mendapatkan kualitas audio yang lebih baik.</translation>
 <translation id="3181441307743005334">Mulai ulang dapat memerlukan waktu beberapa saat</translation>
@@ -552,6 +553,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> perangkat terhubung ke hotspot <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Beralih ke mode laptop</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> tetap dapat login di lain waktu.</translation>
+<translation id="3317779231018057649"><ph name="DEVICECOUNT" /> perangkat terhubung. Jika sedang menggunakan hotspot, Wi-Fi akan tetap nonaktif.</translation>
 <translation id="3321628682574733415">Kode induk salah</translation>
 <translation id="332827762492701193">Notifikasi disembunyikan</translation>
 <translation id="3333674550998107387">Luaskan notifikasi <ph name="NOTIFICATION_TITLE" /></translation>
@@ -631,8 +633,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3600061223661453002">Nonaktif</translation>
 <translation id="3604801046548457007">Desktop <ph name="DESK_TITILE" /> dibuat</translation>
 <translation id="3606978283550408104">Penampil Braille terhubung.</translation>
-<translation id="3609301425104788351"><ph name="MIC" />,
-        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">Mengaktifkan data seluler akan mengaktifkan Bluetooth</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3616883743181209306">Menu dipindahkan ke pojok kanan atas layar.</translation>
@@ -682,9 +682,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="3781910048497807059">Pindahkan fokus ke panel sebelumnya</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Kunci</translation>
-<translation id="3789841737615482174">Instal</translation>
 <translation id="3796215473395753611">alt + panah atas</translation>
-<translation id="3796746699333205839">Aplikasi sedang menggunakan kamera dan mikrofon Anda</translation>
 <translation id="3798670284305777884">Speaker (internal)</translation>
 <translation id="3799080171973636491">Anda menekan pintasan keyboard untuk kaca pembesar layar penuh. Ingin mengaktifkannya?</translation>
 <translation id="380165613292957338">Hai, ada yang bisa dibantu?</translation>
@@ -814,6 +812,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="428715201724021596">Menghubungkan ke profil. Proses ini mungkin perlu waktu beberapa menit.</translation>
 <translation id="4294319844246081198">Selamat pagi <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Hapus semua (<ph name="COUNT" />) notifikasi</translation>
+<translation id="4300272766492248925">Buka aplikasi</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> dipindahkan ke folder <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Tidak tersedia</translation>
 <translation id="4303223480529385476">Luaskan area status</translation>
@@ -879,6 +878,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4566144812051858745">Tidak tertarik dengan saran apa pun</translation>
 <translation id="4569753163207712681">Lihat foto, media, dan aplikasi terbaru ponsel Anda</translation>
 <translation id="4573176682887762361">"Ketik [kata/frasa]"</translation>
+<translation id="4577188182049003486">Jika hotspot aktif, Wi-Fi akan nonaktif</translation>
 <translation id="4577274620589681794">Waktu habis · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Tampilkan pratinjau</translation>
 <translation id="4578906031062871102">Menu setelan dibuka</translation>
@@ -1208,7 +1208,6 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="5876666360658629066">Masukkan kode orang tua</translation>
 <translation id="5881540930187678962">Siapkan Phone Hub nanti</translation>
 <translation id="5881663018261910378">Nonaktif</translation>
-<translation id="5883017113634523865">Instal aplikasi untuk <ph name="NAME" /> dari Google Play guna melihat semua fitur yang tersedia</translation>
 <translation id="5887954372087850114">Jendela <ph name="WINDOW_TITLE" /> ditetapkan ke <ph name="DESK_TITLE" /> dan tidak lagi ditetapkan ke semua desktop lainnya</translation>
 <translation id="588817334757907802">Buka file di browser Chrome</translation>
 <translation id="5895138241574237353">Mulai Ulang</translation>
@@ -1578,7 +1577,6 @@ Baru diinstal</translation>
 <translation id="742594950370306541">Kamera sedang digunakan.</translation>
 <translation id="742608627846767349">Selamat pagi,</translation>
 <translation id="743058460480092004">Kamera dan mikrofon sedang digunakan.</translation>
-<translation id="7452560014878697800">Aplikasi sedang menggunakan kamera Anda</translation>
 <translation id="7453330308669753048">Hasil histori penelusuran dihapus</translation>
 <translation id="7459485586006128091">Karena error internal, hotspot telah dinonaktifkan. Coba hubungkan kembali dalam beberapa menit.</translation>
 <translation id="7461924472993315131">Sematkan</translation>

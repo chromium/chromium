@@ -257,11 +257,10 @@ bool FindBuffer::IsInSameUninterruptedBlock(const Node& start_node,
     return false;
 
   LayoutBlockFlow& start_block_flow =
-      *NGOffsetMapping::GetInlineFormattingContextOf(
+      *OffsetMapping::GetInlineFormattingContextOf(
           *start_node.GetLayoutObject());
   LayoutBlockFlow& end_block_flow =
-      *NGOffsetMapping::GetInlineFormattingContextOf(
-          *end_node.GetLayoutObject());
+      *OffsetMapping::GetInlineFormattingContextOf(*end_node.GetLayoutObject());
   if (start_block_flow != end_block_flow)
     return false;
 
@@ -276,9 +275,10 @@ bool FindBuffer::IsInSameUninterruptedBlock(const Node& start_node,
       continue;
 
     if (node->GetLayoutObject() &&
-        *NGOffsetMapping::GetInlineFormattingContextOf(
-            *node->GetLayoutObject()) != start_block_flow)
+        *OffsetMapping::GetInlineFormattingContextOf(
+            *node->GetLayoutObject()) != start_block_flow) {
       return false;
+    }
   }
 
   return true;
@@ -399,7 +399,7 @@ void FindBuffer::CollectTextUntilBlockBoundary(
       if (text_node) {
         last_added_text_node = node;
         LayoutBlockFlow& block_flow =
-            *NGOffsetMapping::GetInlineFormattingContextOf(
+            *OffsetMapping::GetInlineFormattingContextOf(
                 *text_node->GetLayoutObject());
         AddTextToBuffer(*text_node, block_flow, range);
       }
@@ -481,11 +481,11 @@ void FindBuffer::AddTextToBuffer(const Text& text_node,
                                  LayoutBlockFlow& block_flow,
                                  const EphemeralRangeInFlatTree& range) {
   if (!offset_mapping_) {
-    offset_mapping_ = NGInlineNode::GetOffsetMapping(&block_flow);
+    offset_mapping_ = InlineNode::GetOffsetMapping(&block_flow);
 
     if (UNLIKELY(!offset_mapping_)) {
       // TODO(crbug.com/955678): There are certain cases where we fail to
-      // compute the |NGOffsetMapping| due to failures in layout. As the root
+      // compute the |OffsetMapping| due to failures in layout. As the root
       // cause is hard to fix at the moment, we just work around it here.
       return;
     }
@@ -502,7 +502,7 @@ void FindBuffer::AddTextToBuffer(const Text& text_node,
   unsigned last_unit_end = 0;
   bool first_unit = true;
   const String mapped_text = offset_mapping_->GetText();
-  for (const NGOffsetMappingUnit& unit :
+  for (const OffsetMappingUnit& unit :
        offset_mapping_->GetMappingUnitsForDOMRange(
            EphemeralRange(node_start, node_end))) {
     if (first_unit || last_unit_end != unit.TextContentStart()) {

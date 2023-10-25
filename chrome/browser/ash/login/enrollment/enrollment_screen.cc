@@ -585,11 +585,12 @@ void EnrollmentScreen::OnAuthError(const GoogleServiceAuthError& error) {
 }
 
 void EnrollmentScreen::OnEnrollmentError(policy::EnrollmentStatus status) {
-  LOG(ERROR) << "Enrollment error: " << status.status();
+  LOG(ERROR) << "Enrollment error: " << status.enrollment_code();
   RecordEnrollmentErrorMetrics();
   // If the DM server does not have a device pre-provisioned for attestation-
   // based enrollment and we have a fallback authentication, show it.
-  if (status.status() == policy::EnrollmentStatus::REGISTRATION_FAILED &&
+  if (status.enrollment_code() ==
+          policy::EnrollmentStatus::Code::kRegistrationFailed &&
       status.client_status() == policy::DM_STATUS_SERVICE_DEVICE_NOT_FOUND &&
       current_auth_ == AUTH_ATTESTATION) {
     UMA(policy::kMetricEnrollmentDeviceNotPreProvisioned);
@@ -703,12 +704,12 @@ void EnrollmentScreen::OnDeviceAttributeUploadCompleted(bool success) {
     connector->GetDeviceCloudPolicyManager()->core()->RefreshSoon(
         policy::PolicyFetchReason::kDeviceEnrollment);
     if (view_) {
-      view_->ShowEnrollmentStatus(policy::EnrollmentStatus::ForStatus(
-          policy::EnrollmentStatus::SUCCESS));
+      view_->ShowEnrollmentStatus(policy::EnrollmentStatus::ForEnrollmentCode(
+          policy::EnrollmentStatus::Code::kSuccess));
     }
   } else if (view_) {
-    view_->ShowEnrollmentStatus(policy::EnrollmentStatus::ForStatus(
-        policy::EnrollmentStatus::ATTRIBUTE_UPDATE_FAILED));
+    view_->ShowEnrollmentStatus(policy::EnrollmentStatus::ForEnrollmentCode(
+        policy::EnrollmentStatus::Code::kAttributeUpdateFailed));
   }
 }
 
@@ -771,8 +772,8 @@ void EnrollmentScreen::ShowEnrollmentStatusOnSuccess() {
       WizardController::skip_enrollment_prompts_for_testing()) {
     OnConfirmationClosed();
   } else if (view_) {
-    view_->ShowEnrollmentStatus(
-        policy::EnrollmentStatus::ForStatus(policy::EnrollmentStatus::SUCCESS));
+    view_->ShowEnrollmentStatus(policy::EnrollmentStatus::ForEnrollmentCode(
+        policy::EnrollmentStatus::Code::kSuccess));
   }
 }
 

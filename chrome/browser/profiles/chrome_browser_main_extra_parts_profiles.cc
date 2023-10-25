@@ -289,10 +289,12 @@
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/browser_context_keyed_service_factories.h"
 #include "chrome/browser/ash/file_manager/cloud_upload_prefs_watcher.h"
+#include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
 #include "chrome/browser/ash/system_extensions/api/window_management/cros_window_management_context_factory.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_provider_factory.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
+#include "chromeos/constants/chromeos_features.h"
 #else
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/profiles/gaia_info_update_service_factory.h"
@@ -564,11 +566,14 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
   AppSessionServiceFactory::GetInstance();
 #endif
-// The 2 factories below could not be added to the ash list as they need to
-// declare dependencies.
-// TODO: fix the dependency with
-// 'chrome/browser/ash/browser_context_keyed_service_factories.cc'
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (chromeos::features::IsOrcaEnabled()) {
+    ash::input_method::EditorMediatorFactory::GetInstance();
+  }
+  // The 2 factories below could not be added to the ash list as they need to
+  // declare dependencies.
+  // TODO: fix the dependency with
+  // 'chrome/browser/ash/browser_context_keyed_service_factories.cc'
   if (base::FeatureList::IsEnabled(ash::features::kSystemExtensions)) {
     ash::CrosWindowManagementContextFactory::GetInstance();
     ash::SystemExtensionsProviderFactory::GetInstance();

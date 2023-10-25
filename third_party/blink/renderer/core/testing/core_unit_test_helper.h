@@ -155,8 +155,8 @@ class RenderingTest : public PageTestBase {
     return To<LayoutBlockFlow>(GetLayoutObjectByElementId(id));
   }
 
-  NGInlineNode GetInlineNodeByElementId(const char* id) const {
-    return NGInlineNode(GetLayoutBlockFlowByElementId(id));
+  InlineNode GetInlineNodeByElementId(const char* id) const {
+    return InlineNode(GetLayoutBlockFlowByElementId(id));
   }
 
   PaintLayer* GetPaintLayerByElementId(const char* id) {

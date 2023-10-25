@@ -321,8 +321,7 @@ public class RootUiCoordinator
     private final boolean mInitializeUiWithIncognitoColors;
     private HistoryClustersCoordinator mHistoryClustersCoordinator;
     private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
-    @Nullable
-    private final BackPressManager mBackPressManager;
+    @Nullable protected final BackPressManager mBackPressManager;
     private final boolean mIsIncognitoReauthPendingOnRestore;
     protected final ExpandedSheetHelper mExpandedBottomSheetHelper;
     private final ObservableSupplierImpl<ReadAloudController> mReadAloudControllerSupplier =
@@ -548,6 +547,13 @@ public class RootUiCoordinator
         return mTopUiThemeColorProvider;
     }
 
+    /** Returns the controller for the Page Insights bottom sheet, if it is enabled. */
+    // TODO(b/307046796): Remove this once we have found better way to integrate with back handling
+    // logic.
+    public @Nullable ManagedBottomSheetController getPageInsightsBottomSheetController() {
+        return null;
+    }
+
     public void onAttachFragment(Fragment fragment) {
         if (fragment instanceof QrCodeDialog) {
             QrCodeDialog qrCodeDialog = (QrCodeDialog) fragment;
@@ -747,22 +753,30 @@ public class RootUiCoordinator
             mModalDialogManagerSupplier.get().addObserver(mModalDialogManagerObserver);
         }
         mChromeActionModeHandler =
-                new ChromeActionModeHandler(mActivityTabProvider, (searchText) -> {
-                    if (mTabModelSelectorSupplier.get() == null) return;
+                new ChromeActionModeHandler(
+                        mActivityTabProvider,
+                        (searchText) -> {
+                            if (mTabModelSelectorSupplier.get() == null) return;
 
-                    String query = ActionModeCallbackHelper.sanitizeQuery(
-                            searchText, ActionModeCallbackHelper.MAX_SEARCH_QUERY_LENGTH);
-                    if (TextUtils.isEmpty(query)) return;
+                            String query =
+                                    ActionModeCallbackHelper.sanitizeQuery(
+                                            searchText,
+                                            ActionModeCallbackHelper.MAX_SEARCH_QUERY_LENGTH);
+                            if (TextUtils.isEmpty(query)) return;
 
-                    Tab tab = mActivityTabProvider.get();
-                    TrackerFactory
-                            .getTrackerForProfile(Profile.fromWebContents(tab.getWebContents()))
-                            .notifyEvent(EventConstants.WEB_SEARCH_PERFORMED);
+                            Tab tab = mActivityTabProvider.get();
+                            TrackerFactory.getTrackerForProfile(tab.getProfile())
+                                    .notifyEvent(EventConstants.WEB_SEARCH_PERFORMED);
 
-                    mTabModelSelectorSupplier.get().openNewTab(
-                            generateUrlParamsForSearch(tab, query),
-                            TabLaunchType.FROM_LONGPRESS_FOREGROUND, tab, tab.isIncognito());
-                }, mShareDelegateSupplier);
+                            mTabModelSelectorSupplier
+                                    .get()
+                                    .openNewTab(
+                                            generateUrlParamsForSearch(tab, query),
+                                            TabLaunchType.FROM_LONGPRESS_FOREGROUND,
+                                            tab,
+                                            tab.isIncognito());
+                        },
+                        mShareDelegateSupplier);
 
         mCaptureController = new MediaCaptureOverlayController(
                 mWindowAndroid, mActivity.findViewById(R.id.capture_overlay));
@@ -971,9 +985,9 @@ public class RootUiCoordinator
      * Generate the LoadUrlParams necessary to load the specified search query.
      */
     private static LoadUrlParams generateUrlParamsForSearch(Tab tab, String query) {
-        String url = TemplateUrlServiceFactory
-                             .getForProfile(Profile.fromWebContents(tab.getWebContents()))
-                             .getUrlForSearchQuery(query);
+        String url =
+                TemplateUrlServiceFactory.getForProfile(tab.getProfile())
+                        .getUrlForSearchQuery(query);
         String headers = GeolocationHeader.getGeoHeader(url, tab);
 
         LoadUrlParams loadUrlParams = new LoadUrlParams(url);
@@ -1042,7 +1056,7 @@ public class RootUiCoordinator
             return true;
         } else if (id == R.id.page_zoom_id) {
             Tab tab = mActivityTabProvider.get();
-            TrackerFactory.getTrackerForProfile(Profile.fromWebContents(tab.getWebContents()))
+            TrackerFactory.getTrackerForProfile(tab.getProfile())
                     .notifyEvent(EventConstants.PAGE_ZOOM_OPENED);
             mPageZoomCoordinator.show(tab.getWebContents());
         }

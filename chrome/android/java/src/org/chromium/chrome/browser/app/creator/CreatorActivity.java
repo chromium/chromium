@@ -27,7 +27,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateImpl;
 import org.chromium.chrome.browser.share.ShareDelegateSupplier;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
+import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -150,7 +150,7 @@ public class CreatorActivity extends SnackbarActivity {
 
     // This implements the CreatorOpenTab interface.
     public void createNewTab(LoadUrlParams params) {
-        new TabDelegate(false).createNewTab(params, TabLaunchType.FROM_LINK, null);
+        new ChromeAsyncTabLauncher(false).launchNewTab(params, TabLaunchType.FROM_LINK, null);
     }
 
     // This implements the SignInInterstitialInitiator interface.

@@ -29,8 +29,12 @@ enum RequestContext {
   CONTEXT_JOURNEYS = 8;
   // Requesting metadata for a user when visiting the new tab page.
   CONTEXT_NEW_TAB_PAGE = 9;
-  // Requesting metadata for a user when visiting the page insights hub.
+  // Requesting metadata for a user when visiting the Page Insights feature;
+  // Gaia can be attached to request.
   CONTEXT_PAGE_INSIGHTS_HUB = 11;
+  // Requesting metadata for a user when visiting the Page Insights feature;
+  // Gaia cannot be attached to request.
+  CONTEXT_NON_PERSONALIZED_PAGE_INSIGHTS_HUB = 12;
 }
 
 message FieldTrial {

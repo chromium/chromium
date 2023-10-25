@@ -65,7 +65,7 @@ class ASH_PUBLIC_EXPORT MockInputDeviceSettingsController
               (),
               (override));
   MOCK_METHOD(const mojom::MousePolicies&, GetMousePolicies, (), (override));
-  MOCK_METHOD(void,
+  MOCK_METHOD(bool,
               SetKeyboardSettings,
               (DeviceId id, mojom::KeyboardSettingsPtr settings),
               (override));
@@ -73,19 +73,19 @@ class ASH_PUBLIC_EXPORT MockInputDeviceSettingsController
               RestoreDefaultKeyboardRemappings,
               (DeviceId id),
               (override));
-  MOCK_METHOD(void,
+  MOCK_METHOD(bool,
               SetTouchpadSettings,
               (DeviceId id, mojom::TouchpadSettingsPtr settings),
               (override));
-  MOCK_METHOD(void,
+  MOCK_METHOD(bool,
               SetMouseSettings,
               (DeviceId id, mojom::MouseSettingsPtr settings),
               (override));
-  MOCK_METHOD(void,
+  MOCK_METHOD(bool,
               SetPointingStickSettings,
               (DeviceId id, mojom::PointingStickSettingsPtr settings),
               (override));
-  MOCK_METHOD(void,
+  MOCK_METHOD(bool,
               SetGraphicsTabletSettings,
               (DeviceId id, mojom::GraphicsTabletSettingsPtr settings),
               (override));

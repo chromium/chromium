@@ -203,8 +203,8 @@
     },
     "mac-rel": {
         "main": "tryserver.chromium.mac",
-        "port_name": "mac-mac12",
-        "specifiers": ["Mac12", "Release"],
+        "port_name": "mac-mac13",
+        "specifiers": ["Mac13", "Release"],
         "steps": {
             "blink_web_tests (with patch)": {},
             "blink_wpt_tests (with patch)": {}

@@ -111,14 +111,6 @@ void MetricsRenderFrameObserver::DidChangePerformanceTiming() {
   SendMetrics();
 }
 
-void MetricsRenderFrameObserver::DidObserveInputDelay(
-    base::TimeDelta input_delay) {
-  if (!page_timing_metrics_sender_ || HasNoRenderFrame()) {
-    return;
-  }
-  page_timing_metrics_sender_->DidObserveInputDelay(input_delay);
-}
-
 void MetricsRenderFrameObserver::DidObserveUserInteraction(
     base::TimeTicks max_event_start,
     base::TimeTicks max_event_end,
@@ -730,18 +722,6 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
   if (perf.FirstInputTimestampAsMonotonicTime()) {
     monotonic_timing.first_input_timestamp =
         perf.FirstInputTimestampAsMonotonicTime();
-  }
-  if (perf.LongestInputDelay().has_value()) {
-    timing->interactive_timing->longest_input_delay = *perf.LongestInputDelay();
-  }
-  if (perf.LongestInputTimestamp().has_value()) {
-    timing->interactive_timing->longest_input_timestamp =
-        CreateTimeDeltaFromTimestampsInSeconds(
-            (*perf.LongestInputTimestamp()).InSecondsF(), start);
-  }
-  if (perf.FirstInputProcessingTime().has_value()) {
-    timing->interactive_timing->first_input_processing_time =
-        *perf.FirstInputProcessingTime();
   }
   if (perf.FirstScrollDelay().has_value()) {
     timing->interactive_timing->first_scroll_delay = *perf.FirstScrollDelay();

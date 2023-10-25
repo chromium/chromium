@@ -26,6 +26,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_metrics.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
@@ -50,6 +51,7 @@
 #include "components/sync/test/fake_sync_change_processor.h"
 #include "components/sync/test/sync_change_processor_wrapper_for_test.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/menu_model.h"
 
 namespace apps {
@@ -617,7 +619,7 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
-                       PromiseAppPinnnedIfLinkedToAPinnedSyncedApp) {
+                       PromiseAppPinnedIfLinkedToAPinnedSyncedApp) {
   syncer::StringOrdinal ordinal = syncer::StringOrdinal::CreateInitialOrdinal();
   syncer::StringOrdinal pin_ordinal = ordinal.CreateAfter();
 
@@ -808,13 +810,8 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
   ChromeAppListItem* item = GetChromeAppListItem(kTestPackageId);
   ASSERT_TRUE(item);
   EXPECT_EQ(item->app_status(), ash::AppStatus::kPending);
-  ASSERT_EQ(item->name(),
-            base::UTF16ToUTF8(ShelfControllerHelper::GetLabelForPromiseStatus(
-                apps::PromiseStatus::kPending)));
-  ASSERT_EQ(item->accessible_name(),
-            base::UTF16ToUTF8(
-                ShelfControllerHelper::GetAccessibleLabelForPromiseStatus(
-                    app_name, apps::PromiseStatus::kPending)));
+  ASSERT_EQ(item->name(), "waiting…");
+  ASSERT_EQ(item->accessible_name(), "Long Name, waiting");
 
   // Update the promise app in the promise app registry cache.
   apps::PromiseAppPtr update = std::make_unique<PromiseApp>(kTestPackageId);
@@ -824,13 +821,51 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
 
   // Promise app item should have updated fields.
   EXPECT_EQ(item->app_status(), ash::AppStatus::kInstalling);
-  EXPECT_EQ(item->name(),
-            base::UTF16ToUTF8(ShelfControllerHelper::GetLabelForPromiseStatus(
-                apps::PromiseStatus::kInstalling)));
-  ASSERT_EQ(item->accessible_name(),
-            base::UTF16ToUTF8(
-                ShelfControllerHelper::GetAccessibleLabelForPromiseStatus(
-                    app_name, apps::PromiseStatus::kInstalling)));
+  EXPECT_EQ(item->name(), "installing…");
+  ASSERT_EQ(item->accessible_name(), "Long Name, installing");
+}
+
+IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
+                       PlaceholderAccessibleLabelUsedWhenNoNameAvailable) {
+  // Register a promise app in the promise app registry cache.
+  apps::PromiseAppPtr promise_app =
+      std::make_unique<PromiseApp>(kTestPackageId);
+  promise_app->should_show = true;
+  cache()->OnPromiseApp(std::move(promise_app));
+
+  // Promise app item should exist in the model.
+  ChromeAppListItem* item = GetChromeAppListItem(kTestPackageId);
+  ASSERT_TRUE(item);
+  EXPECT_EQ(item->app_status(), ash::AppStatus::kPending);
+  ASSERT_EQ(item->accessible_name(), "An app, waiting");
+
+  // Update the promise app in the promise app registry cache.
+  apps::PromiseAppPtr update = std::make_unique<PromiseApp>(kTestPackageId);
+  update->status = PromiseStatus::kInstalling;
+  cache()->OnPromiseApp(std::move(update));
+
+  // Promise app item should have updated fields.
+  EXPECT_EQ(item->app_status(), ash::AppStatus::kInstalling);
+  ASSERT_EQ(item->accessible_name(), "An app, installing");
+}
+
+IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
+                       LauncherItemCreationUpdatesMetrics) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      kPromiseAppLifecycleEventHistogram,
+      apps::PromiseAppLifecycleEvent::kCreatedInLauncher, 0);
+
+  apps::PromiseAppPtr promise_app =
+      std::make_unique<PromiseApp>(kTestPackageId);
+  promise_app->should_show = true;
+  cache()->OnPromiseApp(std::move(promise_app));
+
+  ChromeAppListItem* item = GetChromeAppListItem(kTestPackageId);
+  ASSERT_TRUE(item);
+  histogram_tester.ExpectBucketCount(
+      kPromiseAppLifecycleEventHistogram,
+      apps::PromiseAppLifecycleEvent::kCreatedInLauncher, 1);
 }
 
 }  // namespace apps

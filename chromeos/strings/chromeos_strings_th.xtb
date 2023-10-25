@@ -93,7 +93,6 @@
 <translation id="1643449475550628585">เปลี่ยนรูปภาพวอลเปเปอร์ทุกวัน</translation>
 <translation id="1644574205037202324">ประวัติการเข้าชม</translation>
 <translation id="1651925268237749928">คุณได้เลือกอัลบั้มที่แชร์ ผู้อื่นจะเพิ่มหรือเปลี่ยนรูปภาพได้ วอลเปเปอร์อาจใช้รูปภาพที่ไม่ได้อยู่ในอัลบั้มนี้ในปัจจุบัน</translation>
-<translation id="1658834457013045127">ตลอดไป</translation>
 <translation id="1661865805917886535">อาจมีการส่งข้อมูลระบบและบัญชีบางอย่างไปยัง Google เราใช้ข้อมูลนี้เพื่อช่วยแก้ไขปัญหาทางเทคนิคและปรับปรุงบริการ โดยเป็นไปตามนโยบายความเป็นส่วนตัว (<ph name="PRIVACYPOLICYURL" />) และข้อกำหนดในการให้บริการ (<ph name="TERMSOFSERVICEURL" />) หากต้องการส่งคำขอเปลี่ยนแปลงเนื้อหา โปรดไปที่ความช่วยเหลือด้านกฎหมาย (<ph name="LEGALHELPPAGEURL" />)</translation>
 <translation id="1662989795263954667">หยุดพิมพ์ - หมึกหมด</translation>
 <translation id="1664796644829245314">ตัวอย่าง <ph name="PREVIEW_OBJECT" /></translation>
@@ -323,7 +322,6 @@
 <translation id="3484914941826596830">ขณะอัปเดตเฟิร์มแวร์ โปรดอย่าถอดปลั๊กอุปกรณ์ภายนอกเครื่องนี้หรือปิดคอมพิวเตอร์ คุณย่อหน้าต่างนี้ให้เล็กสุดได้ การอัปเดตอาจใช้เวลาสักครู่และอุปกรณ์ภายนอกอาจใช้ไม่ได้ในช่วงเวลานี้</translation>
 <translation id="3486220673238053218">คำจำกัดความ</translation>
 <translation id="3488065109653206955">เปิดการใช้งานบางส่วน</translation>
-<translation id="349491921221892984"><ph name="MINUTES" /> นาที</translation>
 <translation id="3502426834823382181">ดูแอปทั้งหมด</translation>
 <translation id="3510890413042482857">ส่ง<ph name="BEGIN_LINK1" />ข้อมูลการติดตามประสิทธิภาพ<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">การอัปเดต Chrome OS</translation>
@@ -484,7 +482,6 @@
 <translation id="473775607612524610">อัปเดต</translation>
 <translation id="4771607256327216405">เพิ่มความสว่างของแป้นพิมพ์</translation>
 <translation id="4773299976671772492">หยุดแล้ว</translation>
-<translation id="4782003517030001304">1 ชม.</translation>
 <translation id="4782311465517282004">รับคำจำกัดความ คำแปล หรือการแปลงหน่วยเมื่อคุณคลิกขวาหรือแตะข้อความค้างไว้</translation>
 <translation id="4791000909649665275">รูปภาพ <ph name="NUMBER" /> รูป</translation>
 <translation id="4793710386569335688">ดูความช่วยเหลือเพิ่มเติมได้ที่<ph name="BEGIN_LINK" />ศูนย์ช่วยเหลือ<ph name="END_LINK" /></translation>
@@ -699,6 +696,7 @@
 <translation id="629550705077076970">การหรี่แสงแป้นพิมพ์</translation>
 <translation id="6302401976930124515">ยกเลิกการทดสอบ<ph name="TEST_NAME" />แล้ว</translation>
 <translation id="631063167932043783">แอป "สำรวจ"</translation>
+<translation id="6318437367327684789">ตลอดไป</translation>
 <translation id="6319207335391420837">อัปเดตเฟิร์มแวร์ใน <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">เปิดโปรแกรมรักษาหน้าจอ</translation>
 <translation id="6324916366299863871">แก้ไขทางลัด</translation>

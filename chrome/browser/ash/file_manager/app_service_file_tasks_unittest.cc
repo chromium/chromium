@@ -966,10 +966,7 @@ class AppServiceFileTasksPolicyTest : public AppServiceFileTasksTestEnabled {
                 (override));
   };
 
-  AppServiceFileTasksPolicyTest()
-      : user_manager_(new ash::FakeChromeUserManager()),
-        scoped_user_manager_(std::make_unique<user_manager::ScopedUserManager>(
-            base::WrapUnique(user_manager_.get()))) {}
+  AppServiceFileTasksPolicyTest() = default;
 
   std::unique_ptr<KeyedService> SetDlpRulesManager(
       content::BrowserContext* context) {
@@ -987,13 +984,13 @@ class AppServiceFileTasksPolicyTest : public AppServiceFileTasksTestEnabled {
         AccountId::FromUserEmailGaiaId("test@example.com", "12345");
     profile_->SetIsNewProfile(true);
     user_manager::User* user =
-        user_manager_->AddUserWithAffiliationAndTypeAndProfile(
+        fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
             account_id, /*is_affiliated=*/false,
             user_manager::USER_TYPE_REGULAR, profile_.get());
-    user_manager_->UserLoggedIn(account_id, user->username_hash(),
-                                /*browser_restart=*/false,
-                                /*is_child=*/false);
-    user_manager_->SimulateUserProfileLoad(account_id);
+    fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
+                                     /*browser_restart=*/false,
+                                     /*is_child=*/false);
+    fake_user_manager_->SimulateUserProfileLoad(account_id);
 
     policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
         profile_.get(),
@@ -1009,14 +1006,13 @@ class AppServiceFileTasksPolicyTest : public AppServiceFileTasksTestEnabled {
         .WillByDefault(testing::Return(mock_files_controller_.get()));
   }
 
-  void TearDown() override { scoped_user_manager_.reset(); }
+  void TearDown() override { fake_user_manager_.Reset(); }
 
   raw_ptr<policy::MockDlpRulesManager, ExperimentalAsh> rules_manager_ =
       nullptr;
   std::unique_ptr<MockFilesController> mock_files_controller_ = nullptr;
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      user_manager_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
 };
 
 // Test that out of two apps, one can be blocked by DLP and the other allowed.

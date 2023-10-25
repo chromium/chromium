@@ -85,13 +85,13 @@ class MockFrameSinkVideoCapturer : public viz::mojom::FrameSinkVideoCapturer {
   // This is never called.
   MOCK_METHOD1(SetAutoThrottlingEnabled, void(bool));
   void ChangeTarget(const absl::optional<viz::VideoCaptureTarget>& target,
-                    uint32_t crop_version) final {
+                    uint32_t sub_capture_target_version) final {
     frame_sink_id_ = target ? target->frame_sink_id : viz::FrameSinkId();
-    MockChangeTarget(frame_sink_id_, crop_version);
+    MockChangeTarget(frame_sink_id_, sub_capture_target_version);
   }
   MOCK_METHOD2(MockChangeTarget,
                void(const viz::FrameSinkId& frame_sink_id,
-                    uint32_t crop_version));
+                    uint32_t sub_capture_target_version));
   void Start(
       mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumer> consumer,
       viz::mojom::BufferFormatPreference buffer_format_preference) final {

@@ -381,17 +381,17 @@ void FrameSinkVideoCapturerImpl::SetAutoThrottlingEnabled(bool enabled) {
 
 void FrameSinkVideoCapturerImpl::ChangeTarget(
     const absl::optional<VideoCaptureTarget>& target,
-    uint32_t crop_version) {
+    uint32_t sub_capture_target_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GE(crop_version, crop_version_);
+  DCHECK_GE(sub_capture_target_version, sub_capture_target_version_);
 
   target_ = target;
 
-  if (crop_version_ != crop_version) {
-    crop_version_ = crop_version;
+  if (sub_capture_target_version_ != sub_capture_target_version) {
+    sub_capture_target_version_ = sub_capture_target_version;
 
     if (consumer_) {
-      consumer_->OnNewCropVersion(crop_version);
+      consumer_->OnNewSubCaptureTargetVersion(sub_capture_target_version);
     }
   }
 
@@ -1000,9 +1000,9 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
             : region_properties->render_pass_subrect;
     metadata.source_size = source_size;
   }
-  // Note that this is done unconditionally, as a new crop version may indicate
-  // that the stream has been successfully uncropped.
-  metadata.crop_version = crop_version_;
+  // Note that this is done unconditionally, as a new sub-capture-target version
+  // may indicate that the stream has been successfully uncropped.
+  metadata.sub_capture_target_version = sub_capture_target_version_;
   CaptureRequestProperties request_properties(
       capture_frame_number, oracle_frame_number, content_version_, content_rect,
       *region_properties, std::move(frame), base::TimeTicks::Now());
@@ -1358,10 +1358,11 @@ void FrameSinkVideoCapturerImpl::MaybeDeliverFrame(
     scoped_refptr<VideoFrame> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1332628): When capture fails because the crop version has
-  // changed, expedite the capture/delivery of a new frame.
+  // TODO(crbug.com/1332628): When capture fails because the sub-capture-target
+  // version has changed, expedite the capture/delivery of a new frame.
   const bool capture_was_successful =
-      frame && frame->metadata().crop_version == crop_version_;
+      frame && frame->metadata().sub_capture_target_version ==
+                   sub_capture_target_version_;
   // The Oracle has the final say in whether frame delivery will proceed. It
   // also rewrites the media timestamp in terms of the smooth flow of the
   // original source content.

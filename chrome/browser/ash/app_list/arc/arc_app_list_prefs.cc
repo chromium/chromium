@@ -113,6 +113,9 @@ constexpr char kVersionName[] = "version_name";
 constexpr char kAppSizeBytesString[] = "app_size_bytes_string";
 constexpr char kDataSizeBytesString[] = "data_size_bytes_string";
 constexpr char kAppCategory[] = "app_category";
+constexpr char kLocaleInfo[] = "locale_info";
+constexpr char kSupportedLocales[] = "supported_locales";
+constexpr char kSelectedLocale[] = "selected_locale";
 // Deprecated perfs fields.
 constexpr char kDeprecatePackagePrefsSystem[] = "system";
 
@@ -892,6 +895,22 @@ std::unique_ptr<ArcAppListPrefs::PackageInfo> ArcAppListPrefs::GetPackage(
       web_app_info->certificate_sha256_fingerprint = *fingerprint;
     }
   }
+  arc::mojom::PackageLocaleInfoPtr locale_info;
+  if (const base::Value* locale_info_value = package->Find(kLocaleInfo)) {
+    const base::Value::Dict& locale_info_dict = locale_info_value->GetDict();
+    if (const base::Value::List* supported_locales =
+            locale_info_dict.FindList(kSupportedLocales)) {
+      locale_info = arc::mojom::PackageLocaleInfo::New();
+
+      locale_info->supported_locales.reserve(supported_locales->size());
+      for (const base::Value& locale : *supported_locales) {
+        locale_info->supported_locales.emplace_back(locale.GetString());
+      }
+
+      locale_info->selected_locale =
+          *locale_info_dict.FindString(kSelectedLocale);
+    }
+  }
 
   return std::make_unique<PackageInfo>(
       package_name, package->FindInt(kPackageVersion).value_or(0),
@@ -899,7 +918,7 @@ std::unique_ptr<ArcAppListPrefs::PackageInfo> ArcAppListPrefs::GetPackage(
       package->FindBool(kShouldSync).value_or(false),
       package->FindBool(kVPNProvider).value_or(false),
       package->FindBool(kPreinstalled).value_or(false), std::move(permissions),
-      std::move(web_app_info));
+      std::move(web_app_info), std::move(locale_info));
 }
 
 bool ArcAppListPrefs::IsPackageInstalled(
@@ -1839,6 +1858,23 @@ void ArcAppListPrefs::AddOrUpdatePackagePrefs(
     package_dict.Remove(kWebAppInfo);
   }
 
+  if (package.locale_info) {
+    const arc::mojom::PackageLocaleInfo& package_locale_info =
+        *package.locale_info;
+    base::Value::List supported_locales;
+    for (const std::string& supported_locale :
+         package_locale_info.supported_locales) {
+      supported_locales.Append(supported_locale);
+    }
+    package_dict.Set(
+        kLocaleInfo,
+        base::Value::Dict()
+            .Set(kSupportedLocales, std::move(supported_locales))
+            .Set(kSelectedLocale, package_locale_info.selected_locale));
+  } else {
+    package_dict.Remove(kLocaleInfo);
+  }
+
   if (old_package_version == -1 ||
       old_package_version == package.package_version) {
     return;
@@ -2608,7 +2644,8 @@ ArcAppListPrefs::PackageInfo::PackageInfo(
     bool preinstalled,
     base::flat_map<arc::mojom::AppPermission, arc::mojom::PermissionStatePtr>
         permissions,
-    arc::mojom::WebAppInfoPtr web_app_info)
+    arc::mojom::WebAppInfoPtr web_app_info,
+    arc::mojom::PackageLocaleInfoPtr locale_info)
     : package_name(package_name),
       package_version(package_version),
       last_backup_android_id(last_backup_android_id),
@@ -2617,7 +2654,8 @@ ArcAppListPrefs::PackageInfo::PackageInfo(
       vpn_provider(vpn_provider),
       preinstalled(preinstalled),
       permissions(std::move(permissions)),
-      web_app_info(std::move(web_app_info)) {}
+      web_app_info(std::move(web_app_info)),
+      locale_info(std::move(locale_info)) {}
 
 // Need to add explicit destructor for chromium style checker error:
 // Complex class/struct needs an explicit out-of-line destructor

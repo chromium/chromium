@@ -42,7 +42,7 @@ ASSERT_SIZE(FragmentItem, SameSizeAsFragmentItem);
 
 }  // namespace
 
-FragmentItem::FragmentItem(const NGInlineItem& inline_item,
+FragmentItem::FragmentItem(const InlineItem& inline_item,
                            scoped_refptr<const ShapeResultView> shape_result,
                            const NGTextOffsetRange& text_offset,
                            const PhysicalSize& size,
@@ -95,7 +95,7 @@ FragmentItem::FragmentItem(const LayoutObject& layout_object,
   DCHECK(!IsFormattingContextRoot());
 }
 
-FragmentItem::FragmentItem(const NGInlineItem& inline_item,
+FragmentItem::FragmentItem(const InlineItem& inline_item,
                            scoped_refptr<const ShapeResultView> shape_result,
                            const String& text_content,
                            const PhysicalSize& size,
@@ -109,13 +109,13 @@ FragmentItem::FragmentItem(const NGInlineItem& inline_item,
                    size,
                    is_hidden_for_paint) {}
 
-FragmentItem::FragmentItem(const NGPhysicalLineBoxFragment& line)
+FragmentItem::FragmentItem(const PhysicalLineBoxFragment& line)
     : line_({&line, /* descendants_count */ 1}),
       rect_({PhysicalOffset(), line.Size()}),
       layout_object_(line.ContainerLayoutObject()),
       const_traced_type_(kLineItem),
       type_(kLine),
-      sub_type_(static_cast<unsigned>(line.LineBoxType())),
+      sub_type_(static_cast<unsigned>(line.GetLineBoxType())),
       style_variant_(static_cast<unsigned>(line.StyleVariant())),
       is_hidden_for_paint_(false),
       text_direction_(static_cast<unsigned>(line.BaseDirection())),
@@ -143,7 +143,7 @@ FragmentItem::FragmentItem(const NGPhysicalBoxFragment& box,
 
 // |const_traced_type_| will be re-initialized in another constructor called
 // inside this one.
-FragmentItem::FragmentItem(NGLogicalLineItem&& line_item,
+FragmentItem::FragmentItem(LogicalLineItem&& line_item,
                            WritingMode writing_mode)
     : const_traced_type_(kNone) {
   DCHECK(line_item.CanCreateFragmentItem());
@@ -334,7 +334,7 @@ bool FragmentItem::IsFloating() const {
 }
 
 bool FragmentItem::IsEmptyLineBox() const {
-  return LineBoxType() == NGLineBoxType::kEmptyLineBox;
+  return GetLineBoxType() == LineBoxType::kEmptyLineBox;
 }
 
 bool FragmentItem::IsStyleGeneratedText() const {

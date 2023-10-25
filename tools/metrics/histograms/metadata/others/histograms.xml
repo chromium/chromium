@@ -3649,7 +3649,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.CreateReportStatus8"
+<histogram name="Conversions.CreateReportStatus9"
     enum="ConversionStorageCreateReportStatus" expires_after="2024-03-10">
   <owner>tquintanilla@chromium.org</owner>
   <owner>apaseltiner@chromium.org</owner>
@@ -4160,7 +4160,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.SentVerboseDebugReportType3"
+<histogram name="Conversions.SentVerboseDebugReportType4"
     enum="ConversionVerboseDebugReportType" expires_after="2024-02-20">
   <owner>tquintanilla@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
@@ -4173,7 +4173,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.SourceRegistrationError5"
+<histogram name="Conversions.SourceRegistrationError6"
     enum="ConversionSourceRegistrationError" expires_after="2024-03-24">
   <owner>tquintanilla@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
@@ -8650,7 +8650,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NativeSmbFileShare.GetSharesResult"
-    enum="NativeSmbFileShare_MountResult" expires_after="2023-12-01">
+    enum="NativeSmbFileShare_MountResult" expires_after="2024-10-23">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/chrome/browser/ash/smb_client/OWNERS</owner>
   <summary>
@@ -8660,7 +8660,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NativeSmbFileShare.MountCount" units="Active Mounts"
-    expires_after="2023-12-01">
+    expires_after="2024-10-23">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/chrome/browser/ash/smb_client/OWNERS</owner>
   <summary>
@@ -8670,7 +8670,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NativeSmbFileShare.MountResult"
-    enum="NativeSmbFileShare_MountResult" expires_after="2023-12-01">
+    enum="NativeSmbFileShare_MountResult" expires_after="2024-10-23">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/chrome/browser/ash/smb_client/OWNERS</owner>
   <summary>
@@ -9634,25 +9634,6 @@ chromium-metrics-reviews@google.com.
     Time taken to execute a batch of periodicsync events. A batch is defined as
     the set of `periodicsync` events dispatched at the same time by the
     BackgroundSyncManager. Periodic syncs often run in a batch.
-  </summary>
-</histogram>
-
-<histogram name="PictureInPictureWindow.ButtonPressed"
-    enum="OverlayWindowControl" expires_after="M85">
-  <owner>fbeaufort@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Records Picture-in-Picture window control buttons pressed by user (basically
-    everything except user tap gestures).
-  </summary>
-</histogram>
-
-<histogram name="PictureInPictureWindow.TapGesture" enum="OverlayWindowControl"
-    expires_after="M85">
-  <owner>fbeaufort@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Records Picture-in-Picture window control user tap gestures.
   </summary>
 </histogram>
 
@@ -11297,23 +11278,6 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
-<histogram name="SBIRS.EnvCollectionTime" units="ms" expires_after="2018-08-30">
-  <owner>caitkp@google.com</owner>
-  <summary>
-    The elapsed time to collect environmental data for a safe browsing incident
-    report.
-  </summary>
-</histogram>
-
-<histogram name="SBIRS.FindDownloadedBinaryTime" units="ms"
-    expires_after="2018-08-30">
-  <owner>caitkp@google.com</owner>
-  <summary>
-    The elapsed time to find the most recent binary download from all loaded
-    profiles when creating a safe browsing incident report.
-  </summary>
-</histogram>
-
 <histogram name="SBIRS.Incident" enum="IncidentType" expires_after="never">
 <!-- expires-never: This tracks health of the incident reporting feature and
 should be kept until we remove incident reporting. -->
@@ -11323,14 +11287,6 @@ should be kept until we remove incident reporting. -->
   <summary>
     The type of incident included in an incident report by the safe browsing
     incident reporting service.
-  </summary>
-</histogram>
-
-<histogram name="SBIRS.InterIncidentTime" units="ms" expires_after="2018-08-30">
-  <owner>caitkp@google.com</owner>
-  <summary>
-    The elapsed time between two successive incidents collated into the same
-    incident report by the safe browsing incident reporting service.
   </summary>
 </histogram>
 
@@ -11388,38 +11344,6 @@ should be kept until we remove incident reporting. -->
   <summary>
     The result of an attempted report upload by the safe browsing incident
     reporting service.
-  </summary>
-</histogram>
-
-<histogram name="SBIRS.VerifyBinaryIntegrity.0" units="ms"
-    expires_after="2018-08-30">
-  <owner>caitkp@google.com</owner>
-  <summary>
-    The elapsed time to verify the binary integrity of chrome.exe.
-  </summary>
-</histogram>
-
-<histogram name="SBIRS.VerifyBinaryIntegrity.1" units="ms"
-    expires_after="2018-08-30">
-  <owner>caitkp@google.com</owner>
-  <summary>
-    The elapsed time to verify the binary integrity of chrome.dll.
-  </summary>
-</histogram>
-
-<histogram name="SBIRS.VerifyBinaryIntegrity.2" units="ms"
-    expires_after="2018-08-30">
-  <owner>caitkp@google.com</owner>
-  <summary>
-    The elapsed time to verify the binary integrity of chrome_child.dll.
-  </summary>
-</histogram>
-
-<histogram name="SBIRS.VerifyBinaryIntegrity.3" units="ms"
-    expires_after="2018-08-30">
-  <owner>caitkp@google.com</owner>
-  <summary>
-    The elapsed time to verify the binary integrity of chrome_elf.dll.
   </summary>
 </histogram>
 
@@ -13867,25 +13791,6 @@ should be kept until we use this API.  -->
     Each escaped character is recorded separately, but only once for any
     invocation of DoSimpleHost(). This can potentially be recorded every time a
     URL hostname is parsed, but only if parsing escaped at least one character.
-  </summary>
-</histogram>
-
-<histogram name="URL.Scheme.SetNonSpecialSchemeOnSpecialScheme" enum="Boolean"
-    expires_after="2024-02-01">
-  <owner>hayato@chromium.org</owner>
-  <owner>src/url/OWNERS</owner>
-  <summary>
-    This metrics is recorded each time when KRUL.SetProtocol is called on a
-    special scheme URL. The value is whether a new scheme is a non-special
-    scheme or not.
-
-    The measurement is not specific to any particular use case. For example,
-    this is recorded in the following:
-
-    const url = new URL(&quot;https://example.com/&quot;); url.protocol =
-    &quot;non-special&quot;;
-
-    See https://crbug.com/1416018 for details.
   </summary>
 </histogram>
 

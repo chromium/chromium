@@ -116,11 +116,18 @@
   #tabs {
     display: grid;
     grid-gap: var(--emoji-spacing);
-    grid-template-columns: repeat(18,1fr);
+    /**
+     * The number of repetition here should be aligned with the maximum number
+     * of paginations. Theoretically, we can put MAX_INT here but 100 seems big
+     * enough for our case for now.
+     *
+     * TODO(b/295426497): Find a better way rather than having a magic number.
+     */
+    grid-template-columns: repeat(100,1fr);
     left: var(--emoji-group-tabs-left);
     overflow-x: hidden;
-    padding-top: 6px;
-    padding-bottom: 6px;
+    padding-top: var(--emoji-picker-tabs-vertical-padding, 6px);
+    padding-bottom: var(--emoji-picker-tabs-vertical-padding, 6px);
     scroll-behavior: smooth;
     scroll-padding: var(--emoji-size);
     scroll-snap-type: x mandatory;
@@ -185,6 +192,19 @@
 
   .hidden {
     display: none;
+  }
+
+  /**
+   * With jelly flag on, the highlight bar should be on-top of the tab buttons.
+   */
+  #bar-container[jelly-support]{
+    margin-top: -4px;
+  }
+
+  #bar-container[jelly-support] > #bar {
+    height: 4px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
   }
 
   #bar {
@@ -257,6 +277,7 @@
   :host([text-subcategory-bar-enabled]) #left-chevron {
     left: var(--emoji-picker-subcategory-bar-inline-margin);
     margin-inline-end: var(--tab-button-margin);
+    border-radius: var(--emoji-picker-group-button-border-radius, 0px);
   }
 
   :host([text-subcategory-bar-enabled]) #right-chevron {
@@ -264,6 +285,7 @@
     - var(--emoji-picker-subcategory-bar-inline-margin));
     padding-inline-end: 0;
     --cr-icon-button-fill-color: var(--emoji-picker-icon-button-icon-color);
+    border-radius: var(--emoji-picker-group-button-border-radius, 0px);
   }
 
   /* Center vertically the history icon and text buttons.*/
@@ -437,7 +459,7 @@
     </div>
   </div>
   <div class="sr-only" role="heading" aria-level="1">Emoji Groups</div>
-  <div class="side-padding">
+  <div class="side-padding" id="bar-container" jelly-support$="[[jellySupport]]">
     <div id="bar"
       on-transitionend="onBarTransitionEnd"
       on-transitionstart="onBarTransitionStart"></div>

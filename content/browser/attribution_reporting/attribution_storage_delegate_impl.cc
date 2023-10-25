@@ -29,7 +29,7 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
-#include "content/browser/attribution_reporting/combinatorics.h"
+#include "content/browser/attribution_reporting/privacy_math.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "services/network/public/cpp/trigger_verification.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -346,12 +346,6 @@ AttributionStorageDelegateImpl::GetNullAggregatableReports(
     base::Time trigger_time,
     absl::optional<base::Time> attributed_source_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!base::FeatureList::IsEnabled(
-          attribution_reporting::features::
-              kAttributionReportingNullAggregatableReports)) {
-    return {};
-  }
 
   switch (noise_mode_) {
     case AttributionNoiseMode::kDefault:

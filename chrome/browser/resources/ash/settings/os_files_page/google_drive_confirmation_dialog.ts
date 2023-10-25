@@ -79,7 +79,7 @@ class SettingsDriveConfirmationDialogElement extends PolymerElement {
 
     const closeEvent = new CustomEvent(
         'close',
-        {bubbles: true, composed: true, detail: {'accept': this.accept_}});
+        {bubbles: true, composed: true, detail: {accept: this.accept_}});
     this.dispatchEvent(closeEvent);
   }
 }

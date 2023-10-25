@@ -27,13 +27,11 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.common.ChromeUrlConstants;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -64,7 +62,6 @@ public class ToolbarTabControllerImplTest {
         }
     }
 
-    @Rule public JniMocker mocker = new JniMocker();
     @Mock private Supplier<Tab> mTabSupplier;
     @Mock private Tab mTab;
     @Mock private Tab mTab2;
@@ -75,7 +72,6 @@ public class ToolbarTabControllerImplTest {
     @Mock private Supplier<Tracker> mTrackerSupplier;
     @Mock private Runnable mRunnable;
     @Mock private Profile mProfile;
-    @Mock public Profile.Natives mMockProfileNatives;
     @Mock private NativePage mNativePage;
     @Mock private Supplier<Tab> mActivityTabProvider;
 
@@ -89,8 +85,7 @@ public class ToolbarTabControllerImplTest {
         doReturn(mTab).when(mTabSupplier).get();
         doReturn(mTab).when(mActivityTabProvider).get();
         doReturn(false).when(mOverrideHomePageSupplier).get();
-        mocker.mock(ProfileJni.TEST_HOOKS, mMockProfileNatives);
-        doReturn(mProfile).when(mMockProfileNatives).fromWebContents(any());
+        doReturn(mProfile).when(mTab).getProfile();
         doReturn(mNativePage).when(mTab).getNativePage();
         TrackerFactory.setTrackerForTests(mTracker);
         initToolbarTabController();

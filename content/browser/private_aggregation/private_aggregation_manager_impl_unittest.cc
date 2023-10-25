@@ -53,7 +53,7 @@ using testing::Return;
 
 using Checkpoint = testing::MockFunction<void(int step)>;
 
-constexpr base::Time kExampleTime =
+constexpr auto kExampleTime =
     base::Time::FromMillisecondsSinceUnixEpoch(1652984901234);
 
 constexpr char kExampleOriginUrl[] = "https://origin.example";
@@ -126,13 +126,19 @@ class PrivateAggregationManagerImplTest : public testing::Test {
                  base::WrapUnique(host_.get()),
                  base::WrapUnique(aggregation_service_.get())) {}
 
+  ~PrivateAggregationManagerImplTest() override {
+    budgeter_ = nullptr;
+    host_ = nullptr;
+    aggregation_service_ = nullptr;
+  }
+
  protected:
   BrowserTaskEnvironment task_environment_;
 
   // Keep pointers around for EXPECT_CALL.
-  raw_ptr<MockPrivateAggregationBudgeter, DanglingUntriaged> budgeter_;
-  raw_ptr<MockPrivateAggregationHost, DanglingUntriaged> host_;
-  raw_ptr<MockAggregationService, DanglingUntriaged> aggregation_service_;
+  raw_ptr<MockPrivateAggregationBudgeter> budgeter_;
+  raw_ptr<MockPrivateAggregationHost> host_;
+  raw_ptr<MockAggregationService> aggregation_service_;
 
   testing::StrictMock<PrivateAggregationManagerImplUnderTest> manager_;
 };

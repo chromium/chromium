@@ -30,6 +30,7 @@ bool GLContextVirtual::InitializeImpl(gl::GLSurface* compatible_surface,
 }
 
 void GLContextVirtual::Destroy() {
+  OnContextWillDestroy();
   shared_context_->OnReleaseVirtuallyCurrent(this);
   shared_context_ = nullptr;
 }

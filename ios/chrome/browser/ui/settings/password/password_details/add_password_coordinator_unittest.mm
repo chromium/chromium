@@ -174,7 +174,7 @@ TEST_F(AddPasswordCoordinatorTest,
   CheckAddPasswordIsNotTopViewController();
 
   // Successful auth should reveal add password.
-  [mock_reauth_module_ returnMockedReathenticationResult];
+  [mock_reauth_module_ returnMockedReauthenticationResult];
 
   CheckAddPasswordIsTopViewController();
 }

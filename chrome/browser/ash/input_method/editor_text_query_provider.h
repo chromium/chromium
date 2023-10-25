@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_TEXT_QUERY_PROVIDER_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_TEXT_QUERY_PROVIDER_H_
 
+#include "chrome/browser/ash/input_method/editor_switch.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "components/manta/orca_provider.h"
@@ -16,7 +17,8 @@ class EditorTextQueryProvider : public orca::mojom::TextQueryProvider {
  public:
   EditorTextQueryProvider(
       mojo::PendingAssociatedReceiver<orca::mojom::TextQueryProvider> receiver,
-      Profile* profile);
+      Profile* profile,
+      EditorSwitch* editor_switch);
   ~EditorTextQueryProvider() override;
 
   // orca::mojom::TextQueryProvider overrides
@@ -29,7 +31,14 @@ class EditorTextQueryProvider : public orca::mojom::TextQueryProvider {
   mojo::AssociatedReceiver<orca::mojom::TextQueryProvider>
       text_query_provider_receiver_;
   std::unique_ptr<manta::OrcaProvider> orca_provider_;
+
+  // not owned by this class
+  raw_ptr<EditorSwitch> editor_switch_;
+
+  // Unsigned to allow safe overflows.
+  unsigned int request_id_ = 0;
 };
+
 }  // namespace ash::input_method
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_TEXT_QUERY_PROVIDER_H_

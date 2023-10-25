@@ -96,7 +96,7 @@ void VerifyFormGroupValues(const FormGroup& form_group,
                            bool ignore_status) {
   for (const auto& value : values) {
     SCOPED_TRACE(testing::Message()
-                 << "Expected for type " << FieldTypeToStringPiece(value.type)
+                 << "Expected for type " << FieldTypeToStringView(value.type)
                  << "\n\t" << value.value << " with status "
                  << (ignore_status ? "(ignored)" : "")
                  << value.verification_status << "\nFound:"

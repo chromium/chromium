@@ -123,6 +123,18 @@ TEST(SafeSearchUtilTest, AddGoogleSafeSearchParams) {
                        "imgurl=https://image&" + kBothParameters);
 }
 
+TEST(SafeSearchUtilTest, SafeSearchSettingsPage) {
+  const std::string kBothParameters =
+      std::string(safe_search_api::kSafeSearchSafeParameter) + "&" +
+      safe_search_api::kSafeSearchSsuiParameter;
+
+  CheckAddedParameters("https://www.google.com/safesearch", kBothParameters);
+  CheckAddedParameters("https://google.ca/safesearch", kBothParameters);
+  CheckAddedParameters("https://ipv4.google.com/safesearch", kBothParameters);
+  CheckAddedParameters("https://ipv4.google.com/safesearch?safe=off",
+                       kBothParameters);
+}
+
 TEST(SafeSearchUtilTest, SetYoutubeHeader) {
   net::HttpRequestHeaders headers;
   safe_search_api::ForceYouTubeRestrict(

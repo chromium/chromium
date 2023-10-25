@@ -40,7 +40,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   if (use_predictions)
     parser.set_predictions(predictions);
 
-  std::unique_ptr<PasswordForm> result = parser.Parse(form_data, mode);
+  std::unique_ptr<PasswordForm> result =
+      parser.Parse(form_data, mode, /*stored_usernames=*/{});
   if (result) {
     // Create a copy of the result -- running the copy-constructor might
     // discover some invalid data in |result|.

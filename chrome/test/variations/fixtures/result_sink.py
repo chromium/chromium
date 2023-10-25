@@ -27,6 +27,13 @@ Args:
 """
 AddArtifact = Callable[[str, str], None]
 
+"""Associates a tag with the current test.
+
+Args:
+  tag_key: The tag key
+  tag_value: The string value of the tag.
+"""
+AddTag = Callable[[str, str], None]
 
 _RESULT_TYPES = {
   'passed': result_types.PASS,
@@ -69,6 +76,7 @@ def _extract_tags_from_properties(
     if sec == _PROPERTY_SECTION_TAG
   ]
 
+
 def _extract_artifacts_from_properties(
     properties: List[Tuple[str, Tuple[str, str]]]) -> Mapping[str, Any]:
   """Extracts a dict for artifacts attributes.
@@ -101,6 +109,27 @@ def add_artifact(request: pytest.FixtureRequest) -> AddArtifact:
     request.node.user_properties.append(
       (_PROPERTY_SECTION_ARTIFACT, (artifact_name, file_path)))
   return add
+
+
+@pytest.fixture
+def add_tag(request: pytest.FixtureRequest) -> AddTag:
+  """Fixture for adding a user defined tag to the current test case."""
+  def add(tag_key: str, tag_value: str) -> None:
+    request.node.user_properties.append(
+      (_PROPERTY_SECTION_TAG, (tag_key, tag_value))
+    )
+  return add
+
+@pytest.fixture(autouse=True)
+def tag_common_test_params(pytestconfig, add_tag) -> None:
+  # Add test parameters to result logs.
+  platform = pytestconfig.getoption('target_platform')
+  channel = pytestconfig.getoption('channel')
+  chrome_version = pytestconfig.getoption('chrome_version')
+  add_tag('platform', platform)
+  add_tag('channel', channel)
+  if chrome_version:
+    add_tag('chrome_version', chrome_version)
 
 
 def _report_test_result(result: pytest.TestReport,

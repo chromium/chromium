@@ -166,10 +166,10 @@ template("rust_target") {
   # generate Rust code internally, depending on what bindings are declared. If
   # set, it's a set of rust files that include Cxx bindings declarations.
   _cxx_bindings = []
+  assert(!defined(invoker.cxx_bindings) || enable_cxx,
+         "cxx bindings are not supported when building rust targets " +
+             "outside the Chromium build.")
   if (defined(invoker.cxx_bindings)) {
-    assert(build_with_chromium,
-           "cxx bindings are not supported when building rust targets " +
-               "outside the Chromium build.")
     _cxx_bindings = invoker.cxx_bindings
   }
   _rustenv = [ "OUT_DIR=" +

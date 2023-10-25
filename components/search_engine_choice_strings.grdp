@@ -12,17 +12,6 @@
     </message>
   </if>
 
-  <if expr="use_titlecase">
-    <message name="IDS_SEARCH_ENGINE_CHOICE_PAGE_EXISTING_USER_TITLE" desc="This string is the heading of a screen that prompts the user to select the search engine that they want to use by default. (A search engine provides answers to search queries; this is different from a browser, which displays web pages. A search engine powers many experiences within a browser.) This screen appears when the user opens Chrome after updating it. We want users to read this screen and understand that they can use any search engine with Chrome.">
-      Confirm Your Search Engine
-    </message>
-  </if>
-  <if expr="not use_titlecase">
-    <message name="IDS_SEARCH_ENGINE_CHOICE_PAGE_EXISTING_USER_TITLE" desc="This string is the heading of a screen that prompts the user to select the search engine that they want to use by default. (A search engine provides answers to search queries; this is different from a browser, which displays web pages. A search engine powers many experiences within a browser.) This screen appears when the user opens Chrome after updating it. We want users to read this screen and understand that they can use any search engine with Chrome.">
-      Confirm your search engine
-    </message>
-  </if>
-
   <message name="IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE" desc="This is the body text of a screen that prompts the user to select the search engine that they want to use by default. (A search engine provides answers to search queries; this is different from a browser, which displays web pages. A search engine powers many experiences within a browser.) This screen appears when the user opens Chrome after updating or installing. The headline for this screen is “Choose your search engine” (new users) or “Confirm your search engine” (existing users). The text is immediately followed by a “Learn More” link. Below that one, users will see a list of search engines to choose from. The screen's goal is to help users understand that they can use any search engine with Chrome, that the search engines order includes randomization, and that the user can change their mind at any time.">
     These search engines are shown in random order. You can change your default anytime in settings.
   </message>

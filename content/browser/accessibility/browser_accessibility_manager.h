@@ -239,6 +239,8 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   void SetSelection(const BrowserAccessibility::AXRange& range);
   void ShowContextMenu(const BrowserAccessibility& node);
   void SignalEndOfTest();
+  void StitchChildTree(const BrowserAccessibility& node,
+                       const ui::AXTreeID& child_tree_id);
 
   // Retrieve the bounds of the parent View in screen coordinates.
   gfx::Rect GetViewBoundsInScreenCoordinates() const;

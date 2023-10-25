@@ -69,7 +69,7 @@ base::span<const MatchPatternRef> GetMatchPatterns(
     ServerFieldType type,
     absl::optional<LanguageCode> language_code,
     PatternSource pattern_source) {
-  return GetMatchPatterns(FieldTypeToStringPiece(type), language_code,
+  return GetMatchPatterns(FieldTypeToStringView(type), language_code,
                           pattern_source);
 }
 

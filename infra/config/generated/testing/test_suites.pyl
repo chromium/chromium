@@ -10,19 +10,15 @@
     'android_12_fieldtrial_webview_tests': {
       'webview_trichrome_64_cts_tests_no_field_trial': {
         'test': 'webview_trichrome_64_cts_tests',
+        'mixins': [
+          'webview_cts_archive',
+        ],
         'args': [
           '--disable-field-trial-config',
         ],
         'ci_only': True,
         'swarming': {
           'shards': 2,
-          'cipd_packages': [
-            {
-              'cipd_package': 'chromium/android_webview/tools/cts_archive',
-              'location': 'android_webview/tools/cts_archive',
-              'revision': 'akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC',
-            },
-          ],
         },
       },
       'webview_ui_test_app_test_apk_no_field_trial': {
@@ -5327,15 +5323,11 @@
 
     'webview_64_cts_tests_gtest': {
       'webview_64_cts_tests': {
+        'mixins': [
+          'webview_cts_archive',
+        ],
         'swarming': {
           'shards': 2,
-          'cipd_packages': [
-            {
-              'cipd_package': 'chromium/android_webview/tools/cts_archive',
-              'location': 'android_webview/tools/cts_archive',
-              'revision': 'akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC',
-            },
-          ],
         },
       },
     },
@@ -5369,15 +5361,11 @@
 
     'webview_cts_tests_gtest': {
       'webview_cts_tests': {
+        'mixins': [
+          'webview_cts_archive',
+        ],
         'swarming': {
           'shards': 2,
-          'cipd_packages': [
-            {
-              'cipd_package': 'chromium/android_webview/tools/cts_archive',
-              'location': 'android_webview/tools/cts_archive',
-              'revision': 'akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC',
-            },
-          ],
         },
       },
     },
@@ -5385,51 +5373,39 @@
     'webview_cts_tests_gtest_no_field_trial': {
       'webview_cts_tests_no_field_trial': {
         'test': 'webview_cts_tests',
+        'mixins': [
+          'webview_cts_archive',
+        ],
         'args': [
           '--disable-field-trial-config',
         ],
         'swarming': {
           'shards': 2,
-          'cipd_packages': [
-            {
-              'cipd_package': 'chromium/android_webview/tools/cts_archive',
-              'location': 'android_webview/tools/cts_archive',
-              'revision': 'akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC',
-            },
-          ],
         },
       },
     },
 
     'webview_trichrome_64_cts_field_trial_tests': {
       'webview_trichrome_64_cts_tests': {
+        'mixins': [
+          'webview_cts_archive',
+        ],
         'args': [
           '--store-data-dependencies-in-temp',
         ],
         'swarming': {
           'shards': 2,
-          'cipd_packages': [
-            {
-              'cipd_package': 'chromium/android_webview/tools/cts_archive',
-              'location': 'android_webview/tools/cts_archive',
-              'revision': 'akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC',
-            },
-          ],
         },
       },
     },
 
     'webview_trichrome_64_cts_tests': {
       'webview_trichrome_64_cts_tests': {
+        'mixins': [
+          'webview_cts_archive',
+        ],
         'swarming': {
           'shards': 2,
-          'cipd_packages': [
-            {
-              'cipd_package': 'chromium/android_webview/tools/cts_archive',
-              'location': 'android_webview/tools/cts_archive',
-              'revision': 'akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC',
-            },
-          ],
         },
       },
     },
@@ -5437,33 +5413,23 @@
     'webview_trichrome_64_cts_tests_no_field_trial': {
       'webview_trichrome_64_cts_tests_no_field_trial': {
         'test': 'webview_trichrome_64_cts_tests',
+        'mixins': [
+          'webview_cts_archive',
+        ],
         'args': [
           '--disable-field-trial-config',
         ],
         'swarming': {
           'shards': 2,
-          'cipd_packages': [
-            {
-              'cipd_package': 'chromium/android_webview/tools/cts_archive',
-              'location': 'android_webview/tools/cts_archive',
-              'revision': 'akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC',
-            },
-          ],
         },
       },
     },
 
     'webview_trichrome_cts_tests': {
       'webview_trichrome_cts_tests': {
-        'swarming': {
-          'cipd_packages': [
-            {
-              'cipd_package': 'chromium/android_webview/tools/cts_archive',
-              'location': 'android_webview/tools/cts_archive',
-              'revision': 'akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC',
-            },
-          ],
-        },
+        'mixins': [
+          'webview_cts_archive',
+        ],
       },
     },
 

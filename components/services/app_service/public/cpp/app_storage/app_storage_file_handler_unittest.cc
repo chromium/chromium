@@ -18,6 +18,7 @@
 #include "base/test/test_future.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_effects.h"
+#include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace apps {
@@ -123,6 +124,8 @@ class AppStorageFileHandlerTest : public testing::Test {
     app2->handles_intents = false;
     app2->allow_uninstall = false;
     app2->paused = false;
+    app2->intent_filters.push_back(apps_util::MakeIntentFilterForUrlScope(
+        GURL("https://www.google.com/abc")));
     apps.push_back(std::move(app2));
 
     // TODO(crbug.com/1385932): Add other files in the App structure.

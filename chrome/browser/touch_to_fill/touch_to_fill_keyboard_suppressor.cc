@@ -13,7 +13,8 @@ namespace autofill {
 TouchToFillKeyboardSuppressor::TouchToFillKeyboardSuppressor(
     ContentAutofillClient* autofill_client,
     base::RepeatingCallback<bool(AutofillManager&)> is_showing,
-    base::RepeatingCallback<bool(AutofillManager&, FormGlobalId, FieldGlobalId)>
+    base::RepeatingCallback<
+        bool(AutofillManager&, FormGlobalId, FieldGlobalId, const FormData&)>
         intends_to_show,
     base::TimeDelta timeout)
     : is_showing_(std::move(is_showing)),
@@ -81,9 +82,10 @@ void TouchToFillKeyboardSuppressor::OnAutofillManagerDestroyed(
 void TouchToFillKeyboardSuppressor::OnBeforeAskForValuesToFill(
     AutofillManager& manager,
     FormGlobalId form_id,
-    FieldGlobalId field_id) {
+    FieldGlobalId field_id,
+    const FormData& form_data) {
   if (is_showing_.Run(manager) ||
-      intends_to_show_.Run(manager, form_id, field_id)) {
+      intends_to_show_.Run(manager, form_id, field_id, form_data)) {
     Suppress(manager);
   } else {
     Unsuppress();

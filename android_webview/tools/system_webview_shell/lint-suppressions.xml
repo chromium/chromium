@@ -8,4 +8,5 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
   <issue id="AcceptsUserCertificates" severity="ignore"/>
   <issue id="InsecureBaseConfiguration" severity="ignore"/>
   <issue id="ScopedStorage" severity="ignore"/>
+  <issue id="ForegroundServiceType" severity="ignore" />
 </lint>

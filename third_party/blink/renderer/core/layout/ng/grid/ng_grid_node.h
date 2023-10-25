@@ -16,7 +16,8 @@ namespace blink {
 class CORE_EXPORT NGGridNode final : public NGBlockNode {
  public:
   explicit NGGridNode(LayoutBox* box) : NGBlockNode(box) {
-    DCHECK(box && box->IsLayoutNGGrid());
+    DCHECK(box);
+    DCHECK(box->IsLayoutGrid());
   }
 
   const NGGridPlacementData& CachedPlacementData() const;

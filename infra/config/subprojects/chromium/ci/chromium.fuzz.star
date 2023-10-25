@@ -84,6 +84,7 @@ ci.builder(
         category = "linux asan",
         short_name = "dbg",
     ),
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     reclient_jobs = 250,
 )
 
@@ -114,6 +115,7 @@ ci.builder(
         category = "linux asan|x64 v8-ARM",
         short_name = "dbg",
     ),
+    contact_team_email = "v8-infra@google.com",
 )
 
 ci.builder(
@@ -142,6 +144,7 @@ ci.builder(
         category = "linux asan",
         short_name = "rel",
     ),
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     reclient_jobs = 250,
 )
 
@@ -172,6 +175,7 @@ ci.builder(
         category = "linux asan|x64 v8-ARM",
         short_name = "rel",
     ),
+    contact_team_email = "v8-infra@google.com",
 )
 
 ci.builder(
@@ -244,6 +248,7 @@ ci.builder(
         category = "linux asan|x64 v8-ARM",
         short_name = "med",
     ),
+    contact_team_email = "v8-infra@google.com",
 )
 
 ci.builder(
@@ -275,6 +280,7 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "cros asan",
     ),
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -306,6 +312,7 @@ ci.builder(
         category = "linux msan",
         short_name = "org",
     ),
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     reclient_jobs = 250,
 )
 
@@ -337,6 +344,7 @@ ci.builder(
         category = "linux msan",
         short_name = "rel",
     ),
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     reclient_jobs = 250,
 )
 
@@ -369,6 +377,7 @@ ci.builder(
         category = "mac asan",
         short_name = "rel",
     ),
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
 )
 
 ci.builder(
@@ -429,6 +438,7 @@ ci.builder(
         category = "linux tsan",
         short_name = "dbg",
     ),
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     reclient_jobs = 250,
 )
 
@@ -459,6 +469,7 @@ ci.builder(
         category = "linux tsan",
         short_name = "rel",
     ),
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     reclient_jobs = 250,
 )
 
@@ -485,6 +496,7 @@ ci.builder(
         category = "linux UBSan",
         short_name = "rel",
     ),
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     reclient_jobs = 250,
 )
 
@@ -512,6 +524,7 @@ ci.builder(
         category = "linux UBSan",
         short_name = "vpt",
     ),
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     reclient_jobs = 250,
 )
 
@@ -543,6 +556,7 @@ ci.builder(
         category = "win asan",
         short_name = "rel",
     ),
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
@@ -574,6 +588,7 @@ ci.builder(
         category = "win asan",
         short_name = "med",
     ),
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 

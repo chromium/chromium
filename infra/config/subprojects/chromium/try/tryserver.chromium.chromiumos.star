@@ -147,6 +147,28 @@ try_.builder(
     tryjob = try_.job(),
 )
 
+# crbug/1298113: Temporary orchestrator/compilator builders to test
+# orchestrator compatability before converting lacros-amd64-generic-rel
+try_.orchestrator_builder(
+    name = "lacros-amd64-generic-rel-orchestrator",
+    description_html = """\
+Temporary orchestrator setup for lacros-amd-generic-rel""",
+    mirrors = [
+        "ci/lacros-amd64-generic-rel",
+    ],
+    compilator = "lacros-amd64-generic-rel-compilator",
+    contact_team_email = "chrome-browser-infra-team@google.com",
+    main_list_view = "try",
+)
+
+try_.compilator_builder(
+    name = "lacros-amd64-generic-rel-compilator",
+    description_html = """\
+Temporary compilator setup for lacros-amd-generic-rel""",
+    contact_team_email = "chrome-browser-infra-team@google.com",
+    main_list_view = "try",
+)
+
 try_.builder(
     name = "lacros-amd64-generic-rel-non-skylab",
     branch_selector = branches.selector.CROS_BRANCHES,

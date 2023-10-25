@@ -85,8 +85,9 @@ interface VideoCaptureObserver {
   // other words the frame was dropped before it reached the renderer process.
   OnFrameDropped(media.mojom.VideoCaptureFrameDropReason reason);
 
-  // All subsequent buffers are guaranteed to have this crop-version or higher.
-  OnNewCropVersion(uint32 crop_version);
+  // All subsequent buffers are guaranteed to have this
+  // sub-capture-target-version or higher.
+  OnNewSubCaptureTargetVersion(uint32 sub_capture_target_version);
 };
 
 interface VideoCaptureHost {

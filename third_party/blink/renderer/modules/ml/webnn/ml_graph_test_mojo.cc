@@ -1967,6 +1967,141 @@ TEST_P(MLGraphTestMojo, ReshapeTest) {
   }
 }
 
+enum class FloatingPointUnaryKind { kSigmoid, kTanh };
+
+struct FloatingPointUnaryTester {
+  OperandInfoBlink input;
+  OperandInfoMojo expected;
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder) {
+    Test(helper, scope, builder, FloatingPointUnaryKind::kSigmoid);
+    Test(helper, scope, builder, FloatingPointUnaryKind::kTanh);
+  }
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder,
+            FloatingPointUnaryKind kind) {
+    // Build the graph.
+    auto* input_operand = BuildInput(builder, "input", input.dimensions,
+                                     input.type, scope.GetExceptionState());
+    MLOperand* output_operand = nullptr;
+    switch (kind) {
+      case FloatingPointUnaryKind::kSigmoid:
+        output_operand =
+            builder->sigmoid(input_operand, scope.GetExceptionState());
+        break;
+      case FloatingPointUnaryKind::kTanh:
+        output_operand =
+            builder->tanh(input_operand, scope.GetExceptionState());
+        break;
+    }
+    ASSERT_NE(output_operand, nullptr);
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_NE(graph, nullptr);
+
+    auto graph_info = helper.GetGraphInfo();
+    // Verify the graph information of mojo are as expected.
+    EXPECT_EQ(graph_info->id_to_operand_map.size(), 2u);
+    ASSERT_EQ(graph_info->input_operands.size(), 1u);
+    ASSERT_EQ(graph_info->output_operands.size(), 1u);
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+
+    // Verify the input `mojo::Operand`.
+    auto input_operand_id = graph_info->input_operands[0];
+    auto input_operand_iter =
+        graph_info->id_to_operand_map.find(input_operand_id);
+    ASSERT_TRUE(input_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(input_operand_iter->value->kind,
+              blink_mojom::Operand::Kind::kInput);
+    EXPECT_EQ(input_operand_iter->value->data_type, expected.type);
+    EXPECT_EQ(input_operand_iter->value->dimensions, input.dimensions);
+    EXPECT_EQ(input_operand_iter->value->name, "input");
+
+    // Verify the output `mojo::Operand`.
+    auto output_operand_id = graph_info->output_operands[0];
+    auto output_operand_iter =
+        graph_info->id_to_operand_map.find(output_operand_id);
+    ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(output_operand_iter->value->kind,
+              blink_mojom::Operand::Kind::kOutput);
+    EXPECT_EQ(output_operand_iter->value->data_type, expected.type);
+    EXPECT_EQ(output_operand_iter->value->dimensions, expected.dimensions);
+    EXPECT_EQ(output_operand_iter->value->name, "output");
+
+    // Verify the `mojo::Operator`.
+    auto& operation = graph_info->operations[0];
+    switch (kind) {
+      case FloatingPointUnaryKind::kSigmoid: {
+        EXPECT_TRUE(operation->is_sigmoid());
+        auto& unary = operation->get_sigmoid();
+        EXPECT_EQ(unary->input_operand_id, input_operand_id);
+        EXPECT_EQ(unary->output_operand_id, output_operand_id);
+        break;
+      }
+      case FloatingPointUnaryKind::kTanh: {
+        EXPECT_TRUE(operation->is_tanh());
+        auto& unary = operation->get_tanh();
+        EXPECT_EQ(unary->input_operand_id, input_operand_id);
+        EXPECT_EQ(unary->output_operand_id, output_operand_id);
+        break;
+      }
+    }
+  }
+};
+
+TEST_P(MLGraphTestMojo, FloatingPointUnaryTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      webnn::features::kEnableMachineLearningNeuralNetworkService);
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device preference.
+  options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
+  auto* builder = CreateGraphBuilder(scope, options);
+  ASSERT_NE(builder, nullptr);
+  {
+    // Test unary operator for 1-D tensor.
+    FloatingPointUnaryTester{
+        .input = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {2}},
+        .expected = {.type = blink_mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test unary operator for 2-D tensor.
+    FloatingPointUnaryTester{
+        .input = {.type = V8MLOperandType::Enum::kFloat16,
+                  .dimensions = {3, 7}},
+        .expected = {.type = blink_mojom::Operand::DataType::kFloat16,
+                     .dimensions = {3, 7}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test unary operator for 3-D tensor.
+    FloatingPointUnaryTester{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {1, 5, 3}},
+        .expected = {.type = blink_mojom::Operand::DataType::kFloat32,
+                     .dimensions = {1, 5, 3}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test unary operator for 4-D tensor.
+    FloatingPointUnaryTester{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {1, 2, 2, 1}},
+        .expected = {.type = blink_mojom::Operand::DataType::kFloat32,
+                     .dimensions = {1, 2, 2, 1}}}
+        .Test(*this, scope, builder);
+  }
+}
+
 struct SliceTester {
   struct SliceAttributes {
     Vector<uint32_t> starts;

@@ -63,7 +63,7 @@ bool ShouldHyphenate(const String& text,
 
 inline void CheckBreakOffset(unsigned offset, unsigned start, unsigned end) {
   // It is critical to move the offset forward, or NGLineBreaker may keep adding
-  // NGInlineItemResult until all the memory is consumed.
+  // InlineItemResult until all the memory is consumed.
   CHECK_GT(offset, start);
   // The offset must be within the given range, or NGLineBreaker will fail to
   // sync item with offset.

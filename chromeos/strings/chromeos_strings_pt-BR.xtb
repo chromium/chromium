@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">Sinal fraco</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Atualizando (<ph name="PERCENTAGE_VALUE" />% concluído)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> minutos</translation>
 <translation id="1310380015393971138">Nenhuma rede <ph name="NETWORK_NAME" /> disponível</translation>
 <translation id="131421566576084655">A data da última redefinição não está disponível</translation>
 <translation id="1314565355471455267">VPN do Android</translation>
@@ -93,7 +94,6 @@
 <translation id="1643449475550628585">Mudar a imagem do plano de fundo diariamente</translation>
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="1651925268237749928">Você selecionou um álbum compartilhado. Outras pessoas podem adicionar ou mudar as fotos. Seu plano de fundo pode usar imagens que não estão nesse álbum.</translation>
-<translation id="1658834457013045127">Sempre</translation>
 <translation id="1661865805917886535">Talvez alguns dados sobre a conta e o sistema sejam enviados ao Google. Usamos essas informações para ajudar a resolver problemas técnicos e melhorar nossos serviços, de acordo com nossa Política de Privacidade (<ph name="PRIVACYPOLICYURL" />) e nossos Termos de Serviço (<ph name="TERMSOFSERVICEURL" />). Para pedir mudanças no conteúdo, acesse a Ajuda Jurídica (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Parado (sem tinta)</translation>
 <translation id="1664796644829245314">Visualizar <ph name="PREVIEW_OBJECT" /></translation>
@@ -323,7 +323,6 @@
 <translation id="3484914941826596830">Não desconecte este dispositivo externo ou desligue o computador enquanto o firmware estiver atualizando. Você pode minimizar esta janela. Esta atualização pode levar alguns minutos e é possível que o dispositivo externo não funcione durante esse período.</translation>
 <translation id="3486220673238053218">definição</translation>
 <translation id="3488065109653206955">Ativado parcialmente</translation>
-<translation id="349491921221892984"><ph name="MINUTES" />min</translation>
 <translation id="3502426834823382181">mostrar todos os apps</translation>
 <translation id="3510890413042482857">Enviar <ph name="BEGIN_LINK1" />dados de rastreamento de performance<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Atualização do ChromeOS</translation>
@@ -484,7 +483,6 @@
 <translation id="473775607612524610">Atualizar</translation>
 <translation id="4771607256327216405">clarear teclado</translation>
 <translation id="4773299976671772492">Interrompida</translation>
-<translation id="4782003517030001304">1h</translation>
 <translation id="4782311465517282004">Veja definições, traduções ou conversões de unidades ao clicar com o botão direito do mouse no texto ou tocar nele e mantê-lo pressionado</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
 <translation id="4793710386569335688">Para receber mais ajuda, acesse a <ph name="BEGIN_LINK" />Central de Ajuda<ph name="END_LINK" />.</translation>
@@ -699,6 +697,7 @@
 <translation id="629550705077076970">escurecimento do teclado</translation>
 <translation id="6302401976930124515">O teste de <ph name="TEST_NAME" /> foi cancelado</translation>
 <translation id="631063167932043783">App Explorar</translation>
+<translation id="6318437367327684789">sempre</translation>
 <translation id="6319207335391420837">Atualizar firmware no dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Ativar o protetor de tela</translation>
 <translation id="6324916366299863871">Editar atalho</translation>
@@ -948,6 +947,7 @@
 <translation id="8227119283605456246">Anexar arquivo</translation>
 <translation id="8230672074305416752">Falha no ping do gateway de rede padrão</translation>
 <translation id="8246209727385807362">Operadora desconhecida</translation>
+<translation id="8262870577632766028">1 hora</translation>
 <translation id="827422111966801947">Índigo</translation>
 <translation id="8286154143153872371">Conecte-se a uma rede e atualize a página para ver o plano de fundo.</translation>
 <translation id="8291967909914612644">País do provedor doméstico</translation>
@@ -1012,6 +1012,7 @@
 <translation id="8747900814994928677">Confirmar alteração</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Álbum do Google Fotos</translation>
+<translation id="8775713578693478175">APN de modem</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8789196995628578448">O atalho está sendo usado para "<ph name="CONFLICT_ACCEL_NAME" />". Pressione um novo atalho. Para substituir o atalho original, pressione-o novamente.</translation>
 <translation id="879568662008399081">Esta rede pode ter um portal cativo</translation>

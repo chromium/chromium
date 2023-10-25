@@ -194,7 +194,10 @@ static_library("test_support") {
       "test_trace_processor.cc",
       "test_trace_processor.h",
     ]
-    deps += [ ":gen_cc_chrome_track_event_descriptor" ]
+    deps += [
+      ":amalgamated_perfetto_sql_stdlib",
+      ":gen_cc_chrome_track_event_descriptor",
+    ]
     if (is_ios) {
       deps += [
         ":test_trace_processor+bundle",
@@ -527,6 +530,22 @@ if (enable_base_tracing) {
   perfetto_cc_proto_descriptor("gen_cc_chrome_track_event_descriptor") {
     descriptor_name = "chrome_track_event.descriptor"
     descriptor_target = "//base/tracing/protos:chrome_track_event"
+  }
+
+  import("//base/tracing/stdlib/chrome/perfetto_sql_files.gni")
+  action("amalgamated_perfetto_sql_stdlib") {
+    script = "//third_party/perfetto/tools/gen_amalgamated_sql.py"
+    sources = rebase_path(chrome_stdlib_sql_files,
+                          root_build_dir,
+                          "//base/tracing/stdlib/chrome")
+    stdlib_header = "$root_gen_dir/base/test/perfetto_sql_stdlib.h"
+    outputs = [ stdlib_header ]
+    args = [
+             "--namespace",
+             "chrome_stdlib",
+             "--cpp-out",
+             rebase_path(stdlib_header, root_build_dir),
+           ] + sources
   }
 
   # We encapsulate the trace processor in a separate shared library to prevent

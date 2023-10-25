@@ -1433,6 +1433,19 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "webview_cts_archive",
+    swarming = targets.swarming(
+        cipd_packages = [
+            targets.cipd_package(
+                package = "chromium/android_webview/tools/cts_archive",
+                location = "android_webview/tools/cts_archive",
+                revision = "akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC",
+            ),
+        ],
+    ),
+)
+
+targets.mixin(
     name = "win10",
     swarming = targets.swarming(
         dimensions = {

@@ -11,6 +11,7 @@ If this script is given the argument --auto-update, it will also:
 """
 
 import argparse
+from functools import cached_property
 import json
 import logging
 import re
@@ -23,7 +24,6 @@ from blinkpy.common.system.log_utils import configure_logging
 from blinkpy.w3c.chromium_exportable_commits import exportable_commits_over_last_n_commits
 from blinkpy.w3c.common import read_credentials, is_testharness_baseline, is_file_exportable, WPT_GH_URL
 from blinkpy.w3c.directory_owners_extractor import DirectoryOwnersExtractor
-from blinkpy.w3c.import_notifier import ImportNotifier
 from blinkpy.w3c.local_wpt import LocalWPT
 from blinkpy.w3c.test_copier import TestCopier
 from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
@@ -44,14 +44,14 @@ _log = logging.getLogger(__file__)
 
 
 class TestImporter(object):
-    def __init__(self, host, wpt_github=None, wpt_manifests=None):
+    def __init__(self, host, github=None, wpt_manifests=None):
         self.host = host
-        self.wpt_github = wpt_github
+        self.github = github
 
         self.executive = host.executive
         self.fs = host.filesystem
         self.finder = PathFinder(self.fs)
-        self.chromium_git = self.host.git(self.finder.chromium_base())
+        self.project_git = self.host.git(self.host.project_config.project_root)
         self.dest_path = self.finder.path_from_web_tests('external', 'wpt')
 
         # A common.net.git_cl.GitCL instance.
@@ -68,11 +68,14 @@ class TestImporter(object):
         self.rebaselined_tests = set()
         self.new_test_expectations = {}
         self.verbose = False
+        self.wpt_manifests = wpt_manifests
 
+    @cached_property
+    def expectations_updater(self):
         args = ['--clean-up-affected-tests-only',
                 '--clean-up-test-expectations']
-        self._expectations_updater = WPTExpectationsUpdater(
-            self.host, args, wpt_manifests)
+        return WPTExpectationsUpdater(
+            self.host, args, self.wpt_manifests)
 
     def main(self, argv=None):
         # TODO(robertma): Test this method! Split it to make it easier to test
@@ -107,13 +110,13 @@ class TestImporter(object):
                          '/+/main/docs/testing/web_platform_tests.md'
                          '#GitHub-credentials for instructions on how to set '
                          'your credentials up.')
-        self.wpt_github = self.wpt_github or WPTGitHub(self.host, gh_user,
+        self.github = self.github or WPTGitHub(self.host, gh_user,
                                                        gh_token)
         self.git_cl = GitCL(
             self.host, auth_refresh_token_json=options.auth_refresh_token_json)
 
         _log.debug('Noting the current Chromium revision.')
-        chromium_revision = self.chromium_git.latest_git_commit()
+        chromium_revision = self.project_git.latest_git_commit()
 
         # Instantiate Git after local_wpt.fetch() to make sure the path exists.
         local_wpt = LocalWPT(self.host, gh_token=gh_token)
@@ -153,19 +156,19 @@ class TestImporter(object):
         test_copier.do_import()
 
         # TODO(robertma): Implement `add --all` in Git (it is different from `commit --all`).
-        self.chromium_git.run(['add', '--all', self.dest_path])
+        self.project_git.run(['add', '--all', self.dest_path])
 
         # Remove expectations for tests that were deleted and rename tests in
         # expectations for renamed tests. This requires the old WPT manifest, so
         # must happen before we regenerate it.
-        self._expectations_updater.cleanup_test_expectations_files()
+        self.expectations_updater.cleanup_test_expectations_files()
 
         self._generate_manifest()
 
         # TODO(crbug.com/800570 robertma): Re-enable it once we fix the bug.
         # self._delete_orphaned_baselines()
 
-        if not self.chromium_git.has_working_directory_changes():
+        if not self.project_git.has_working_directory_changes():
             _log.info('Done: no changes to import.')
             return 0
 
@@ -245,13 +248,13 @@ class TestImporter(object):
             # Update metadata after baselines so that `rebaseline-cl` does not
             # complain about uncommitted files. `update-metadata` has a similar
             # but more fine-grained check.
-            self._expectations_updater.update_metadata()
-            if self.chromium_git.has_working_directory_changes():
+            self.expectations_updater.update_metadata()
+            if self.project_git.has_working_directory_changes():
                 # Skip slow and timeout tests so that presubmit check passes
                 port = self.host.port_factory.get()
-                if self._expectations_updater.skip_slow_timeout_tests(port):
+                if self.expectations_updater.skip_slow_timeout_tests(port):
                     path = port.path_to_generic_test_expectations_file()
-                    self.chromium_git.add_list([path])
+                    self.project_git.add_list([path])
 
                 self._generate_manifest()
                 message = 'Update test expectations and baselines.'
@@ -395,11 +398,11 @@ class TestImporter(object):
         return parser.parse_args(argv)
 
     def checkout_is_okay(self):
-        if self.chromium_git.has_working_directory_changes():
+        if self.project_git.has_working_directory_changes():
             _log.warning('Checkout is dirty; aborting.')
             return False
         # TODO(robertma): Add a method in Git to query a range of commits.
-        local_commits = self.chromium_git.run(
+        local_commits = self.project_git.run(
             ['log', '--oneline', 'origin/main..HEAD'])
         if local_commits:
             _log.warning('Checkout has local commits before import.')
@@ -428,7 +431,7 @@ class TestImporter(object):
             _log.info('Subject: %s', commit.subject().strip())
             # Log a note about the corresponding PR.
             # This might not be necessary, and could potentially be removed.
-            pull_request = self.wpt_github.pr_for_chromium_commit(commit)
+            pull_request = self.github.pr_for_chromium_commit(commit)
             if pull_request:
                 _log.info('PR: %spull/%d', WPT_GH_URL, pull_request.number)
             else:
@@ -454,7 +457,7 @@ class TestImporter(object):
         commits, _ = exportable_commits_over_last_n_commits(
             self.host,
             local_wpt,
-            self.wpt_github,
+            self.github,
             require_clean=False,
             verify_merged_pr=True)
         return commits
@@ -473,7 +476,7 @@ class TestImporter(object):
         manifest_base_path = self.fs.normpath(
             self.fs.join(self.dest_path, '..', BASE_MANIFEST_NAME))
         self.copyfile(manifest_path, manifest_base_path)
-        self.chromium_git.add_list([manifest_base_path])
+        self.project_git.add_list([manifest_base_path])
 
     def _clear_out_dest_path(self):
         """Removes all files that are synced with upstream from Chromium WPT.
@@ -492,10 +495,10 @@ class TestImporter(object):
 
     def _commit_changes(self, commit_message):
         _log.info('Committing changes.')
-        self.chromium_git.commit_locally_with_message(commit_message)
+        self.project_git.commit_locally_with_message(commit_message)
 
     def _has_wpt_changes(self):
-        changed_files = self.chromium_git.changed_files()
+        changed_files = self.project_git.changed_files()
         test_roots = [
             self.fs.relpath(self.finder.path_from_web_tests(subdir),
                             self.finder.chromium_base())
@@ -510,7 +513,7 @@ class TestImporter(object):
         # Per the rules defined for the rubber-stamper, it can not auto approve
         # a CL that has .bat, .sh or .py files. Request the sheriff on rotation
         # to approve the CL.
-        changed_files = self.chromium_git.changed_files()
+        changed_files = self.project_git.changed_files()
         for cf in changed_files:
             extension = self.fs.splitext(cf)[1]
             if extension in ['.bat', '.sh', '.py']:
@@ -545,7 +548,8 @@ class TestImporter(object):
         # and the Port class.
         manifest_path = self.finder.path_from_web_tests(
             'external', 'wpt', 'MANIFEST.json')
-        manifest = WPTManifest(self.host, manifest_path)
+        manifest = WPTManifest.from_file(self.host.port_factory.get(),
+                                         manifest_path)
         wpt_urls = manifest.all_urls()
 
         # Currently baselines for tests with query strings are merged,
@@ -597,7 +601,7 @@ class TestImporter(object):
     def get_directory_owners(self):
         """Returns a mapping of email addresses to owners of changed tests."""
         _log.info('Gathering directory owners emails to CC.')
-        changed_files = self.chromium_git.changed_files()
+        changed_files = self.project_git.changed_files()
         extractor = DirectoryOwnersExtractor(self.host)
         return extractor.list_owners(changed_files)
 
@@ -608,7 +612,7 @@ class TestImporter(object):
             directory_owners: A dict of tuples of owner names to lists of directories.
         """
         # TODO(robertma): Add a method in Git for getting the commit body.
-        description = self.chromium_git.run(['log', '-1', '--format=%B'])
+        description = self.project_git.run(['log', '-1', '--format=%B'])
         description += (
             'Note to sheriffs: This CL imports external tests and adds\n'
             'expectations for those tests; if this CL is large and causes\n'
@@ -689,22 +693,22 @@ class TestImporter(object):
         tests_to_rebaseline = set()
 
         to_rebaseline, self.new_test_expectations = (
-            self._expectations_updater.update_expectations())
+            self.expectations_updater.update_expectations())
         tests_to_rebaseline.update(to_rebaseline)
 
         flag_spec_options = self.host.builders.all_flag_specific_options()
         for flag_specific in sorted(flag_spec_options):
             _log.info('Adding test expectations lines for %s', flag_specific)
-            to_rebaseline, _ = self._expectations_updater.update_expectations(
+            to_rebaseline, _ = self.expectations_updater.update_expectations(
                 flag_specific)
             tests_to_rebaseline.update(to_rebaseline)
 
         # commit local changes so that rebaseline tool will be happy
-        if self.chromium_git.has_working_directory_changes():
+        if self.project_git.has_working_directory_changes():
             message = 'Update test expectations'
             self._commit_changes(message)
 
-        self._expectations_updater.download_text_baselines(
+        self.expectations_updater.download_text_baselines(
             list(tests_to_rebaseline))
 
         self.rebaselined_tests = sorted(tests_to_rebaseline)
@@ -712,7 +716,7 @@ class TestImporter(object):
     def _get_last_imported_wpt_revision(self):
         """Finds the last imported WPT revision."""
         # TODO(robertma): Only match commit subjects.
-        output = self.chromium_git.most_recent_log_matching(
+        output = self.project_git.most_recent_log_matching(
             '^Import wpt@', self.finder.chromium_base())
         # No line-start anchor (^) below because of the formatting of output.
         result = re.search(r'Import wpt@(\w+)', output)
@@ -724,10 +728,11 @@ class TestImporter(object):
 
     def send_notifications(self, local_wpt, auto_file_bugs,
                            monorail_auth_json):
+        from blinkpy.w3c.import_notifier import ImportNotifier
         issue = self.git_cl.run(['status', '--field=id']).strip()
         patchset = self.git_cl.run(['status', '--field=patch']).strip()
         # Construct the notifier here so that any errors won't affect the import.
-        notifier = ImportNotifier(self.host, self.chromium_git, local_wpt)
+        notifier = ImportNotifier(self.host, self.project_git, local_wpt)
         notifier.main(self.last_wpt_revision,
                       self.wpt_revision,
                       self.rebaselined_tests,
@@ -742,8 +747,8 @@ class TestImporter(object):
     def update_testlist_with_idlharness_changes(self, testlist_path):
         """Update testlist file to include idlharness test changes
         """
-        added_files = self.chromium_git.added_files()
-        deleted_files = self.chromium_git.deleted_files()
+        added_files = self.project_git.added_files()
+        deleted_files = self.project_git.deleted_files()
 
         # extract test name and filter for idlharness tests from file list
         added_tests = list(
@@ -768,7 +773,7 @@ class TestImporter(object):
 
         with self.fs.open_text_file_for_writing(testlist_path) as f:
             f.write("\n".join(new_testlist_lines))
-        self.chromium_git.run(['add', testlist_path])
+        self.project_git.run(['add', testlist_path])
 
     def update_testlist_lines(self, testlist_lines, added_tests,
                               deleted_tests):

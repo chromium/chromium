@@ -608,7 +608,10 @@ class SafeBrowsingBlockingPageBrowserTest
         {kTagAndAttributeParamName, "div,foo,div,baz"}};
     base::test::FeatureRefAndParams tag_and_attribute(
         safe_browsing::kThreatDomDetailsTagAndAttributeFeature, parameters);
-    scoped_feature_list_.InitWithFeaturesAndParameters({tag_and_attribute}, {});
+    base::test::FeatureRefAndParams add_warning_shown_timestamp_csbrrs(
+        safe_browsing::kAddWarningShownTSToClientSafeBrowsingReport, {});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {tag_and_attribute, add_warning_shown_timestamp_csbrrs}, {});
   }
 
   SafeBrowsingBlockingPageBrowserTest(
@@ -2339,6 +2342,54 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   } else {
     EXPECT_TRUE(IsShowingInterstitial(contents));
   }
+}
+
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
+                       TimestampInCSBRRClickedThroughBlockingPage) {
+  SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), true);
+  content::TestNavigationObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  SetupWarningAndNavigate(browser());
+
+  // Proceed to unsafe site, sending CSBRR.
+  EXPECT_TRUE(ClickAndWaitForDetach("proceed-link"));
+  observer.WaitForNavigationFinished();
+
+  // The "proceed" command should go back instead, if proceeding is disabled.
+  AssertNoInterstitial(true);
+
+  base::RunLoop threat_report_sent_loop;
+  SetReportSentCallback(threat_report_sent_loop.QuitClosure());
+
+  threat_report_sent_loop.Run();
+  std::string serialized = GetReportSent();
+  ClientSafeBrowsingReportRequest report;
+  ASSERT_TRUE(report.ParseFromString(serialized));
+  // The timstamp of the warning shown should be in CSBRRs.
+  EXPECT_TRUE(report.has_warning_shown_timestamp_msec());
+}
+
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
+                       TimestampInFallbackCSBRRSent) {
+  SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), true);
+  content::TestNavigationObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  base::RunLoop threat_report_sent_loop;
+  SetReportSentCallback(threat_report_sent_loop.QuitClosure());
+  SetupWarningAndNavigate(browser());
+  ASSERT_TRUE(IsShowingInterstitial(
+      browser()->tab_strip_model()->GetActiveWebContents()));
+
+  // Send CSBRR without interactions.
+  chrome::CloseTab(browser());
+  observer.WaitForNavigationFinished();
+  threat_report_sent_loop.Run();
+
+  std::string serialized = GetReportSent();
+  ClientSafeBrowsingReportRequest report;
+  ASSERT_TRUE(report.ParseFromString(serialized));
+  // The timstamp of the warning shown should be in CSBRRs.
+  EXPECT_TRUE(report.has_warning_shown_timestamp_msec());
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -4562,6 +4613,76 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingFencedFrameBrowserTest,
       }
     }
   }
+}
+
+class WarningShownTimestampCSBRRDisabledBrowserTest
+    : public SafeBrowsingBlockingPageBrowserTest {
+ public:
+  WarningShownTimestampCSBRRDisabledBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        safe_browsing::kAddWarningShownTSToClientSafeBrowsingReport);
+  }
+  ~WarningShownTimestampCSBRRDisabledBrowserTest() override = default;
+
+  void SetUp() override { SafeBrowsingBlockingPageBrowserTest::SetUp(); }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  void RunThreatReportSentLoop() {
+    base::RunLoop threat_report_sent_loop;
+    SetReportSentCallback(threat_report_sent_loop.QuitClosure());
+    threat_report_sent_loop.Run();
+  }
+
+  void CheckCSBRRForTimestamp() {
+    std::string serialized = GetReportSent();
+    ClientSafeBrowsingReportRequest report;
+    ASSERT_TRUE(report.ParseFromString(serialized));
+    // The timestamp of the warning shown should not be in the report.
+    EXPECT_FALSE(report.has_warning_shown_timestamp_msec());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    WarningShownTimestampCSBRRDisabledBrowserTestWithThreatTypeAndIsolationSetting,
+    WarningShownTimestampCSBRRDisabledBrowserTest,
+    testing::Combine(
+        testing::Values(SB_THREAT_TYPE_URL_PHISHING,  // Threat types
+                        SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING),
+        testing::Bool()));  // If isolate all sites for testing.
+
+IN_PROC_BROWSER_TEST_P(WarningShownTimestampCSBRRDisabledBrowserTest,
+                       TimestampNotInCSBRRClickedThroughBlockingPage) {
+  SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), true);
+  content::TestNavigationObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  SetupWarningAndNavigate(browser());
+
+  // Proceed to unsafe site, sending CSBRR.
+  EXPECT_TRUE(ClickAndWaitForDetach("proceed-link"));
+
+  observer.WaitForNavigationFinished();
+  RunThreatReportSentLoop();
+  CheckCSBRRForTimestamp();
+}
+IN_PROC_BROWSER_TEST_P(WarningShownTimestampCSBRRDisabledBrowserTest,
+                       TimestampNotInFallbackCSBRRSent) {
+  SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), true);
+  content::TestNavigationObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  SetupWarningAndNavigate(browser());
+
+  // Send CSBRR without interactions.
+  chrome::CloseTab(browser());
+
+  observer.WaitForNavigationFinished();
+  RunThreatReportSentLoop();
+  CheckCSBRRForTimestamp();
 }
 
 }  // namespace safe_browsing

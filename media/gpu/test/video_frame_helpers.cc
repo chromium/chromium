@@ -24,6 +24,7 @@
 #include "ui/gfx/gpu_memory_buffer.h"
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#include "media/gpu/chromeos/chromeos_compressed_gpu_memory_buffer_video_frame_utils.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/video_frame_mapper.h"
 #include "media/gpu/video_frame_mapper_factory.h"
@@ -214,8 +215,15 @@ bool CopyVideoFrame(const VideoFrame* src_frame,
   // buffer into memory. We use a VideoFrameMapper to create a memory-based
   // VideoFrame that refers to the |dst_frame|'s buffer.
   if (dst_frame->storage_type() == VideoFrame::STORAGE_DMABUFS) {
+    // We should never get Intel media compressed VideoFrames backed by
+    // STORAGE_DMABUFS, so we don't need that capability from the
+    // VideoFrameMapper.
+    ASSERT_TRUE_OR_RETURN(
+        !IsIntelMediaCompressedModifier(dst_frame->layout().modifier()), false);
     auto video_frame_mapper = VideoFrameMapperFactory::CreateMapper(
-        dst_frame->format(), VideoFrame::STORAGE_DMABUFS, true);
+        dst_frame->format(), VideoFrame::STORAGE_DMABUFS,
+        /*force_linear_buffer_mapper=*/true,
+        /*must_support_intel_media_compressed_buffers=*/false);
     ASSERT_TRUE_OR_RETURN(video_frame_mapper, false);
     dst_frame =
         video_frame_mapper->Map(std::move(dst_frame), PROT_READ | PROT_WRITE);

@@ -10,7 +10,7 @@ import {DESCRIPTOR_C_VALUE, WallpaperSearchElement} from 'chrome://customize-chr
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {$$, assertNotStyle, assertStyle, installMock} from './test_support.js';
 
@@ -80,15 +80,13 @@ suite('WallpaperSearchTest', () => {
       await flushTasks();
 
       assertNotStyle(
-          $$(wallpaperSearchElement, '#descriptorBtnA')!, 'display', 'none');
-      assertNotStyle(
           $$(wallpaperSearchElement, '#descriptorBtnB')!, 'display', 'none');
       assertNotStyle(
           $$(wallpaperSearchElement, '#descriptorBtnC')!, 'display', 'none');
       assertEquals(
           2,
           wallpaperSearchElement.shadowRoot!
-              .querySelectorAll('#descriptorMenuA .dropdown-item')
+              .querySelectorAll('#descriptorComboboxA .dropdown-item')
               .length);
       assertEquals(
           1,
@@ -101,25 +99,10 @@ suite('WallpaperSearchTest', () => {
               .querySelectorAll('#descriptorMenuC .dropdown-item')
               .length);
       assertEquals(
-          5,
+          6,
           wallpaperSearchElement.shadowRoot!
               .querySelectorAll('#descriptorMenuD cr-button')
               .length);
-    });
-
-    test('descriptor menus open and close', async () => {
-      createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
-      assertFalse(wallpaperSearchElement.$.descriptorMenuA.open);
-
-      $$<HTMLElement>(wallpaperSearchElement, '#descriptorBtnA')!.click();
-
-      assertTrue(wallpaperSearchElement.$.descriptorMenuA.open);
-
-      $$<HTMLElement>(
-          wallpaperSearchElement, '#descriptorMenuA .dropdown-item')!.click();
-
-      assertFalse(wallpaperSearchElement.$.descriptorMenuA.open);
     });
   });
 
@@ -145,7 +128,8 @@ suite('WallpaperSearchTest', () => {
       await flushTasks();
 
       $$<HTMLElement>(
-          wallpaperSearchElement, '#descriptorMenuA .dropdown-item')!.click();
+          wallpaperSearchElement,
+          '#descriptorComboboxA .dropdown-item')!.click();
       $$<HTMLElement>(
           wallpaperSearchElement, '#descriptorMenuB .dropdown-item')!.click();
       $$<HTMLElement>(
@@ -192,7 +176,8 @@ suite('WallpaperSearchTest', () => {
       await flushTasks();
 
       $$<HTMLElement>(
-          wallpaperSearchElement, '#descriptorMenuA .dropdown-item')!.click();
+          wallpaperSearchElement,
+          '#descriptorComboboxA .dropdown-item')!.click();
       wallpaperSearchElement.$.submitButton.click();
 
       assertEquals(1, handler.getCallCount('getWallpaperSearchResults'));
@@ -253,8 +238,11 @@ suite('WallpaperSearchTest', () => {
       createWallpaperSearchElementWithDescriptors();
       await flushTasks();
 
+      assertFalse(isVisible(wallpaperSearchElement.$.loading));
       wallpaperSearchElement.$.submitButton.click();
+      assertTrue(isVisible(wallpaperSearchElement.$.loading));
       await waitAfterNextRender(wallpaperSearchElement);
+      assertFalse(isVisible(wallpaperSearchElement.$.loading));
 
       const result = $$(wallpaperSearchElement, '.tile.result');
       assertTrue(!!result);

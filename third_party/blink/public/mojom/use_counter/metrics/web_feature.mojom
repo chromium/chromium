@@ -3840,7 +3840,7 @@ enum WebFeature {
   kSpeculationRulesEagernessConservative = 4500,
   kSpeculationRulesEagernessModerate = 4501,
   kSpeculationRulesEagernessEager = 4502,
-  kURLSetPortCheckOverflow = 4503,
+  kOBSOLETE_URLSetPortCheckOverflow = 4503,
   kV8Animation_RangeStart_AttributeGetter = 4504,
   kV8Animation_RangeStart_AttributeSetter = 4505,
   kV8Animation_RangeEnd_AttributeGetter = 4506,
@@ -4029,6 +4029,8 @@ enum WebFeature {
   kWebAssemblyModuleCompilation = 4689,
   kV8MediaStreamTrack_Stats_AttributeGetter = 4690,
   kElementCheckVisibility = 4691,
+  kV8ClipboardItem_Supports_Method = 4692,
+  kThirdPartyCookieAccessBlockByExperiment = 4693,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

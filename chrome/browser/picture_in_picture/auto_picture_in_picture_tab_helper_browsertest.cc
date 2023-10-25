@@ -21,6 +21,8 @@
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/media_session_service.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/media_start_stop_observer.h"
 #include "media/base/media_switches.h"
@@ -31,6 +33,7 @@
 #include "third_party/blink/public/common/features.h"
 
 using media_session::mojom::MediaSessionAction;
+using testing::_;
 
 namespace {
 
@@ -55,6 +58,11 @@ const base::FilePath::CharType kAutopipDelayPage[] =
 const base::FilePath::CharType kAutopipToggleRegistrationPage[] =
     FILE_PATH_LITERAL(
         "media/picture-in-picture/autopip-toggle-registration.html");
+
+class MockInputObserver : public content::RenderWidgetHost::InputEventObserver {
+ public:
+  MOCK_METHOD(void, OnInputEvent, (const blink::WebInputEvent&), (override));
+};
 
 class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
  public:
@@ -266,6 +274,42 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
     web_contents->GetController().GetVisibleEntry()->SetVirtualURL(url);
   }
 
+  // Send some events to `web_contents`, and see if they arrive or not.
+  // `expect_events` should be true if we expect them, and false if we should
+  // not.  The goal is to infer if the WebContents might be blocking events.
+  void CheckIfEventsAreForwarded(content::WebContents* web_contents,
+                                 bool expect_events) {
+    auto* rwh = web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost();
+    MockInputObserver input_observer;
+    rwh->AddInputEventObserver(&input_observer);
+    EXPECT_CALL(input_observer, OnInputEvent(_)).Times(expect_events ? 4 : 0);
+
+    blink::WebMouseEvent mouse_event(
+        blink::WebMouseEvent::Type::kMouseDown, /*position=*/{},
+        /*global_position=*/{}, blink::WebPointerProperties::Button::kLeft,
+        /*click_count_param=*/1,
+        /*modifiers_param=*/0, base::TimeTicks::Now());
+    rwh->ForwardMouseEvent(mouse_event);
+
+    blink::WebMouseWheelEvent mouse_wheel_event(
+        blink::WebMouseWheelEvent::Type::kMouseWheel, /*modifiers=*/0,
+        base::TimeTicks::Now());
+    mouse_wheel_event.phase = blink::WebMouseWheelEvent::Phase::kPhaseBegan;
+    rwh->ForwardWheelEvent(mouse_wheel_event);
+
+    content::NativeWebKeyboardEvent keyboard_event(
+        blink::WebInputEvent::Type::kChar, /*modifiers=*/0,
+        base::TimeTicks::Now());
+    rwh->ForwardKeyboardEvent(keyboard_event);
+
+    blink::WebGestureEvent gesture_event(
+        blink::WebGestureEvent::Type::kGestureTap, /*modifiers=*/0,
+        base::TimeTicks::Now(), blink::mojom::GestureDevice::kTouchpad);
+    rwh->ForwardGestureEvent(gesture_event);
+
+    rwh->RemoveInputEventObserver(&input_observer);
+  }
+
  protected:
   virtual std::vector<base::test::FeatureRef> GetEnabledFeatures() {
     return {blink::features::kDocumentPictureInPictureAPI,
@@ -371,6 +415,15 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   // the window manager won't keep it.
   auto* setting_helper = window_manager->get_setting_helper_for_testing();
   ASSERT_TRUE(setting_helper);
+
+  // Verify that input has been blocked.
+  auto* pip_contents = window_manager->GetChildWebContents();
+  CheckIfEventsAreForwarded(pip_contents, /*expect_events=*/false);
+
+  // Verify that acknowledging the helper restores it.
+  setting_helper->take_result_cb_for_testing().Run(
+      AutoPipSettingView::UiResult::kAllowOnce);
+  CheckIfEventsAreForwarded(pip_contents, /*expect_events=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,

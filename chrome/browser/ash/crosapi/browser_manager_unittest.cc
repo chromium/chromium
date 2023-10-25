@@ -22,6 +22,7 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom-test-utils.h"
@@ -221,7 +222,8 @@ class BrowserManagerTest : public testing::Test {
     crosapi::browser_util::ClearLacrosAvailabilityCacheForTest();
 
     // Reset any CPU restrictions.
-    crosapi::browser_util::SetCpuAvailabilityForTesting(absl::nullopt);
+    ash::standalone_browser::BrowserSupport::SetCpuSupportedForTesting(
+        absl::nullopt);
 
     // Reset the session manager state.
     session_manager::SessionManager::Get()->SetSessionState(
@@ -510,7 +512,7 @@ TEST_F(BrowserManagerTest, DisallowUseOfLacrosOnOldCPUs) {
   fake_browser_manager_.reset();
 
   // Set the used CPU type to really old.
-  crosapi::browser_util::SetCpuAvailabilityForTesting(false);
+  ash::standalone_browser::BrowserSupport::SetCpuSupportedForTesting(false);
 
   // Now re-create the required objects.
   auto fake_cros_component_manager =

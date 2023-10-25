@@ -91,7 +91,8 @@ ClientSession::ClientSession(
       desktop_environment_factory_(desktop_environment_factory),
       desktop_environment_options_(desktop_environment_options),
       remote_input_filter_(&input_tracker_),
-      mouse_clamping_filter_(&remote_input_filter_),
+      fractional_input_filter_(&remote_input_filter_),
+      mouse_clamping_filter_(&fractional_input_filter_),
       observing_input_filter_(&mouse_clamping_filter_),
       desktop_and_cursor_composer_notifier_(&observing_input_filter_, this),
       disable_input_filter_(&desktop_and_cursor_composer_notifier_),
@@ -1171,6 +1172,7 @@ void ClientSession::OnDesktopDisplayChanged(
   }
 
   // We need to update the input filters whenever the displays change.
+  fractional_input_filter_.set_video_layout(*displays);
   DisplaySize display_size =
       DisplaySize::FromPixels(size.width(), size.height(), default_x_dpi_);
   SetMouseClampingFilter(display_size);

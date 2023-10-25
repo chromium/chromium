@@ -162,7 +162,7 @@ PartitionAlloc-Everywhere is the name of the project that brought PartitionAlloc
 to the entire-ish codebase (exclusions apply). This was done by intercepting
 `malloc()`, `free()`, `realloc()`, aforementioned `posix_memalign()`, etc. and
 routing them into PartitionAlloc. The shim located in
-`base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h` is
+`base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h` is
 responsible for intercepting. For more details, see
 [base/allocator/README.md](../../../base/allocator/README.md).
 

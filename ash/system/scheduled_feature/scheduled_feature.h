@@ -241,10 +241,6 @@ class ASH_EXPORT ScheduledFeature
 
   raw_ptr<GeolocationController, ExperimentalAsh> geolocation_controller_;
 
-  // Track if this is `GeolocationController::Observer` to make sure it is not
-  // added twice if it is already an observer.
-  bool is_observing_geolocation_ = false;
-
   const Clock default_clock_;
   // May be reset in tests to override the time of "Now"; otherwise, points to
   // `default_clock_`. Should never be null.

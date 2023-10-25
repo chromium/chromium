@@ -6,12 +6,15 @@ package org.chromium.chrome.browser.ntp;
 
 import android.content.Context;
 import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.ui.text.SpanApplier;
 
 /**
@@ -19,6 +22,9 @@ import org.chromium.ui.text.SpanApplier;
  * RevampedIncognitoDescriptionView.
  */
 public interface IncognitoDescriptionView {
+    static final String TRACKING_PROTECTION_URL =
+            "https://support.google.com/chrome/?p=pause_protections";
+
     /**
      * Set learn more on click listener.
      * @param listener The given listener.
@@ -63,7 +69,8 @@ public interface IncognitoDescriptionView {
                 new ClickableSpan() {
                     @Override
                     public void onClick(View view) {
-                        openTrackingProtectionLink(view);
+                        new ChromeAsyncTabLauncher(/* incognito= */ true)
+                                .launchUrl(TRACKING_PROTECTION_URL, TabLaunchType.FROM_CHROME_UI);
                     }
 
                     @Override
@@ -75,9 +82,6 @@ public interface IncognitoDescriptionView {
                 };
         view.setText(
                 SpanApplier.applySpans(text, new SpanApplier.SpanInfo("<link>", "</link>", span)));
-    }
-
-    default void openTrackingProtectionLink(View view) {
-        // TODO(b/299284311): Open the link in Incognito.
+        view.setMovementMethod(LinkMovementMethod.getInstance());
     }
 }

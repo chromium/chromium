@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <memory>
-#include <queue>
 #include <vector>
 
 #include "ash/accessibility/chromevox/touch_exploration_controller.h"
@@ -25,12 +24,10 @@
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/keyboard/ui/keyboard_layout_manager.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
-#include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/keyboard/virtual_keyboard_container_layout_manager.h"
 #include "ash/lock_screen_action/lock_screen_action_background_controller.h"
 #include "ash/login_status.h"
 #include "ash/public/cpp/app_menu_constants.h"
-#include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -78,6 +75,7 @@
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "ash/wm/wm_metrics.h"
 #include "ash/wm/work_area_insets.h"
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "ash/wm/workspace_controller.h"
@@ -103,11 +101,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/event_utils.h"
-#include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
-#include "ui/views/layout/fill_layout.h"
-#include "ui/views/view_model.h"
-#include "ui/views/view_model_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/capture_controller.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -1003,9 +997,10 @@ RootWindowController::security_curtain_widget_controller() {
 void RootWindowController::StartSplitViewOverviewSession(
     aura::Window* window,
     absl::optional<OverviewStartAction> action,
-    absl::optional<OverviewEnterExitType> type) {
+    absl::optional<OverviewEnterExitType> type,
+    WindowSnapActionSource snap_action_source) {
   split_view_overview_session_ =
-      std::make_unique<SplitViewOverviewSession>(window);
+      std::make_unique<SplitViewOverviewSession>(window, snap_action_source);
   split_view_overview_session_->Init(action, type);
 }
 

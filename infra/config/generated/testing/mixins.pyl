@@ -1128,6 +1128,17 @@
       '--extra-browser-args=--enable-features=Vulkan',
     ],
   },
+  'webview_cts_archive': {
+    'swarming': {
+      'cipd_packages': [
+        {
+          'cipd_package': 'chromium/android_webview/tools/cts_archive',
+          'location': 'android_webview/tools/cts_archive',
+          'revision': 'akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC',
+        },
+      ],
+    },
+  },
   'win10': {
     'swarming': {
       'dimensions': {

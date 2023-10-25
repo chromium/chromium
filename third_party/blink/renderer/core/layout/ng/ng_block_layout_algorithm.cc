@@ -36,7 +36,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_positioned_float.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_space_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_unpositioned_float.h"
-#include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_utils.h"
+#include "third_party/blink/renderer/core/layout/table/table_layout_utils.h"
 #include "third_party/blink/renderer/core/mathml/mathml_element.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -62,7 +62,7 @@ bool HasLineEvenIfEmpty(LayoutBox* box) {
   }
   if (AreNGBlockFlowChildrenInline(block_flow)) {
     return block_flow->HasLineIfEmpty() &&
-           NGInlineNode(block_flow).IsBlockLevel();
+           InlineNode(block_flow).IsBlockLevel();
   }
   if (const auto* const flow_thread = block_flow->MultiColumnFlowThread()) {
     DCHECK(!flow_thread->ChildrenInline());
@@ -109,7 +109,7 @@ inline const NGLayoutResult* LayoutInflow(
     const NGColumnSpannerPath* column_spanner_path,
     NGLayoutInputNode* node,
     NGInlineChildLayoutContext* context) {
-  if (auto* inline_node = DynamicTo<NGInlineNode>(node)) {
+  if (auto* inline_node = DynamicTo<InlineNode>(node)) {
     return inline_node->Layout(space, break_token, column_spanner_path,
                                context);
   }
@@ -352,13 +352,13 @@ MinMaxSizesResult NGBlockLayoutAlgorithm::ComputeMinMaxSizes(
 
     MinMaxSizesResult child_result;
     if (child.IsInline()) {
-      // From |NGBlockLayoutAlgorithm| perspective, we can handle |NGInlineNode|
-      // almost the same as |NGBlockNode|, because an |NGInlineNode| includes
+      // From |NGBlockLayoutAlgorithm| perspective, we can handle |InlineNode|
+      // almost the same as |NGBlockNode|, because an |InlineNode| includes
       // all inline nodes following |child| and their descendants, and produces
       // an anonymous box that contains all line boxes.
       // |NextSibling| returns the next block sibling, or nullptr, skipping all
       // following inline siblings and descendants.
-      child_result = To<NGInlineNode>(child).ComputeMinMaxSizes(
+      child_result = To<InlineNode>(child).ComputeMinMaxSizes(
           Style().GetWritingMode(), space, child_float_input);
     } else {
       child_result = ComputeMinAndMaxContentContribution(
@@ -475,7 +475,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::Layout() {
   // Inline children require an inline child layout context to be
   // passed between siblings. We want to stack-allocate that one, but
   // only on demand, as it's quite big.
-  NGInlineNode inline_child(nullptr);
+  InlineNode inline_child(nullptr);
   if (Node().IsInlineFormattingContextRoot(&inline_child)) {
     result = LayoutInlineChild(inline_child);
   } else {
@@ -520,7 +520,7 @@ NGBlockLayoutAlgorithm::HandleNonsuccessfulLayoutResult(
 }
 
 const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutInlineChild(
-    const NGInlineNode& node) {
+    const InlineNode& node) {
   const TextWrap wrap = node.Style().GetTextWrap();
   if (UNLIKELY(wrap == TextWrap::kPretty)) {
     DCHECK(RuntimeEnabledFeatures::CSSTextWrapPrettyEnabled());
@@ -542,7 +542,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutInlineChild(
 
 NOINLINE const NGLayoutResult*
 NGBlockLayoutAlgorithm::LayoutWithSimpleInlineChildLayoutContext(
-    const NGInlineNode& child) {
+    const InlineNode& child) {
   NGSimpleInlineChildLayoutContext context(child, &container_builder_);
   const NGLayoutResult* result = Layout(&context);
   return result;
@@ -551,7 +551,7 @@ NGBlockLayoutAlgorithm::LayoutWithSimpleInlineChildLayoutContext(
 template <wtf_size_t capacity>
 NOINLINE const NGLayoutResult*
 NGBlockLayoutAlgorithm::LayoutWithOptimalInlineChildLayoutContext(
-    const NGInlineNode& child) {
+    const InlineNode& child) {
   NGOptimalInlineChildLayoutContext<capacity> context(child,
                                                       &container_builder_);
   const NGLayoutResult* result = Layout(&context);
@@ -1180,7 +1180,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
 }
 
 bool NGBlockLayoutAlgorithm::TryReuseFragmentsFromCache(
-    NGInlineNode inline_node,
+    InlineNode inline_node,
     NGPreviousInflowPosition* previous_inflow_position,
     const NGInlineBreakToken** inline_break_token_out) {
   DCHECK(previous_result_);
@@ -1856,7 +1856,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleInflow(
   DCHECK(!child.IsOutOfFlowPositioned());
   DCHECK(!child.CreatesNewFormattingContext());
 
-  auto* child_inline_node = DynamicTo<NGInlineNode>(child);
+  auto* child_inline_node = DynamicTo<InlineNode>(child);
   if (child_inline_node) {
     // Add reusable line boxes from |previous_result_| if any.
     if (!abort_when_bfc_block_offset_updated_ && !child_break_token &&
@@ -2947,7 +2947,7 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
 void NGBlockLayoutAlgorithm::PropagateBaselineFromLineBox(
     const NGPhysicalFragment& child,
     LayoutUnit block_offset) {
-  const auto& line_box = To<NGPhysicalLineBoxFragment>(child);
+  const auto& line_box = To<PhysicalLineBoxFragment>(child);
 
   // Skip over a line-box which is empty. These don't have any baselines
   // which should be added.
@@ -2961,8 +2961,8 @@ void NGBlockLayoutAlgorithm::PropagateBaselineFromLineBox(
   if (UNLIKELY(line_box.IsBlockInInline())) {
     // Block-in-inline may have different first/last baselines.
     DCHECK(container_builder_.ItemsBuilder());
-    const NGLogicalLineItems& items =
-        container_builder_.ItemsBuilder()->LogicalLineItems(line_box);
+    const auto& items =
+        container_builder_.ItemsBuilder()->GetLogicalLineItems(line_box);
     const NGLayoutResult* result = items.BlockInInlineLayoutResult();
     DCHECK(result);
     PropagateBaselineFromBlockChild(result->PhysicalFragment(),

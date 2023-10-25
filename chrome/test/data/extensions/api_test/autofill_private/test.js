@@ -18,9 +18,13 @@ var COUNTRY_CODE = 'US';
 var PHONE = '1 123-123-1234';
 var EMAIL = 'johndoe@gmail.com';
 var CARD_NAME = 'CardName';
+var GUID = '1234-5678-90'
+var MASKED_NUMBER = '1111';
 var NUMBER = '4111 1111 1111 1111';
 var EXP_MONTH = '02';
 var EXP_YEAR = '2999';
+var CVC = '987';
+MASKED_CVC = '•••';
 var IBAN_VALUE = 'AD1400080001001234567890';
 var INVALID_IBAN_VALUE = 'AD14000800010012345678900';
 
@@ -313,7 +317,8 @@ var availableTests = [
     function filterCardProperties(cards) {
       return cards.map(cards => {
         var filteredCards = {};
-        ['name', 'cardNumber', 'expirationMonth', 'expirationYear', 'nickname']
+        ['name', 'cardNumber', 'expirationMonth', 'expirationYear', 'nickname',
+         'cvc']
             .forEach(property => {
               filteredCards[property] = cards[property];
             });
@@ -332,10 +337,11 @@ var availableTests = [
                 chrome.test.assertEq(
                     [{
                       name: CARD_NAME,
-                      cardNumber: NUMBER,
+                      cardNumber: MASKED_NUMBER,
                       expirationMonth: EXP_MONTH,
                       expirationYear: EXP_YEAR,
-                      nickname: undefined
+                      nickname: undefined,
+                      cvc: MASKED_CVC
                     }],
                     filterCardProperties(cardList));
               }));
@@ -344,7 +350,8 @@ var availableTests = [
             name: CARD_NAME,
             cardNumber: NUMBER,
             expirationMonth: EXP_MONTH,
-            expirationYear: EXP_YEAR
+            expirationYear: EXP_YEAR,
+            cvc: CVC
           });
         }));
   },
@@ -367,7 +374,8 @@ var availableTests = [
         name: CARD_NAME,
         cardNumber: NUMBER,
         expirationMonth: EXP_MONTH,
-        expirationYear: EXP_YEAR
+        expirationYear: EXP_YEAR,
+        cvc: CVC
       });
     }));
   },
@@ -384,7 +392,7 @@ var availableTests = [
       return cards.map(cards => {
         var filteredCards = {};
         ['guid', 'name', 'cardNumber', 'expirationMonth', 'expirationYear',
-         'nickname']
+         'nickname', 'cvc']
             .forEach(property => {
               filteredCards[property] = cards[property];
             });
@@ -407,10 +415,11 @@ var availableTests = [
                     [{
                       guid: cardGuid,
                       name: UPDATED_CARD_NAME,
-                      cardNumber: NUMBER,
+                      cardNumber: MASKED_NUMBER,
                       expirationMonth: EXP_MONTH,
                       expirationYear: UPDATED_EXP_YEAR,
-                      nickname: UPDATED_NICKNAME
+                      nickname: UPDATED_NICKNAME,
+                      cvc: MASKED_CVC
                     }],
                     filterCardProperties(cardList));
               }));
@@ -542,14 +551,35 @@ var availableTests = [
     chrome.test.succeed();
   },
 
-  function authenticateUserToEditLocalCard() {
-    var handler = function(auth_succeeded) {
-      chrome.test.assertNoLastError();
-      chrome.test.succeed();
-      chrome.test.assertTrue(auth_succeeded);
-    }
+  function getLocalCard() {
+    chrome.autofillPrivate.getCreditCardList(
+        chrome.test.callbackPass(function(cardList) {
+          // The card from the addNewCreditCard function should still be there.
+          chrome.test.assertEq(1, cardList.length);
+          var cardGuid = cardList[0].guid;
 
-    chrome.autofillPrivate.authenticateUserToEditLocalCard(handler);
+          // Get the card based on the `cardGuid` with unmasked card number.
+          chrome.autofillPrivate.getLocalCard(cardGuid, function(card) {
+            assert(card);
+            if (card) {
+              chrome.test.assertEq(
+                  [{
+                    guid: cardGuid,
+                    cardNumber: NUMBER,
+                    expirationMonth: EXP_MONTH,
+                    expirationYear: EXP_YEAR,
+                  }],
+                  [{
+                    guid: card.guid,
+                    cardNumber: card.cardNumber,
+                    expirationMonth: card.expirationMonth,
+                    expirationYear: card.expirationYear,
+                  }]);
+            }
+            chrome.test.assertNoLastError();
+            chrome.test.succeed();
+          });
+        }));
   },
 ];
 
@@ -572,7 +602,7 @@ var TESTS_FOR_CONFIG = {
   'isValidIban': ['isValidIban'],
   'authenticateUserAndFlipMandatoryAuthToggle':
       ['authenticateUserAndFlipMandatoryAuthToggle'],
-  'authenticateUserToEditLocalCard': ['authenticateUserToEditLocalCard'],
+  'getLocalCard': ['addNewCreditCard', 'getLocalCard'],
 };
 
 var testConfig = window.location.search.substring(1);

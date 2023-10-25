@@ -1515,14 +1515,7 @@ void ShowVirtualCardEnrollBubble(Browser* browser) {
 void StartTabOrganizationRequest(Browser* browser) {
   TabOrganizationService* service =
       TabOrganizationServiceFactory::GetForProfile(browser->profile());
-  TabOrganizationSession* session = service->GetSessionForBrowser(browser);
-  if (session == nullptr) {
-    session = service->CreateSessionForBrowser(browser);
-  }
-  if (session->request()->state() ==
-      TabOrganizationRequest::State::NOT_STARTED) {
-    session->StartRequest();
-  }
+  service->StartRequest(browser);
 }
 
 void ShowTranslateBubble(Browser* browser) {
@@ -1980,8 +1973,7 @@ void SetAndroidOsForTabletSite(content::WebContents* current_tab) {
     ua_override.ua_metadata_override = embedder_support::GetUserAgentMetadata(
         g_browser_process->local_state());
     ua_override.ua_metadata_override->mobile = true;
-    ua_override.ua_metadata_override->form_factor =
-        embedder_support::kMobileFormFactor;
+    ua_override.ua_metadata_override->form_factor = {blink::kTabletFormFactor};
     ua_override.ua_metadata_override->platform =
         kChPlatformOverrideForTabletSite;
     ua_override.ua_metadata_override->platform_version = std::string();
@@ -2215,7 +2207,7 @@ void ExecLensRegionSearch(Browser* browser) {
     auto lens_region_search_controller_data =
         std::make_unique<lens::LensRegionSearchControllerData>();
     lens_region_search_controller_data->lens_region_search_controller =
-        std::make_unique<lens::LensRegionSearchController>(browser);
+        std::make_unique<lens::LensRegionSearchController>();
     lens_region_search_controller_data->lens_region_search_controller->Start(
         contents, lens::features::IsLensFullscreenSearchEnabled(),
         is_google_dsp, entry_point);

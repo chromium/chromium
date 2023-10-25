@@ -1,2 +1,0 @@
-This tests that paths in documents created using document.implementation.createHTMLDocument are returned correctly.
-SUCCESS

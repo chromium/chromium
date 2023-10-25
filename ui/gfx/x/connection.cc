@@ -377,20 +377,6 @@ bool Connection::ReadResponse(bool queued) {
   return event;
 }
 
-Event Connection::WaitForNextEvent() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (HasNextEvent()) {
-    Event event = std::move(events_.front());
-    events_.pop_front();
-    return event;
-  }
-  if (auto* xcb_event = xcb_wait_for_event(XcbConnection())) {
-    return Event(base::MakeRefCounted<MallocedRefCountedMemory>(xcb_event),
-                 this);
-  }
-  return Event();
-}
-
 bool Connection::HasPendingResponses() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return HasNextEvent() || HasNextResponse();

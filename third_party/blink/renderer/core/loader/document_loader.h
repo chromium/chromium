@@ -230,7 +230,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       const;
 
   void DidChangePerformanceTiming();
-  void DidObserveInputDelay(base::TimeDelta input_delay);
   void DidObserveLoadingBehavior(LoadingBehaviorFlag);
   void DidObserveJavaScriptFrameworks(
       const JavaScriptFrameworkDetectionResult&);
@@ -610,6 +609,11 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // This initiates a view transition if the `view_transition_state_` has been
   // specified.
   void StartViewTransitionIfNeeded(Document& document);
+
+  // Injects speculation rules automatically for some pages based on their
+  // contents (currently only detected JavaScript frameworks). Configured by the
+  // AutoSpeculationRules feature.
+  void InjectAutoSpeculationRules(const JavaScriptFrameworkDetectionResult&);
 
   // Params are saved in constructor and are cleared after StartLoading().
   // TODO(dgozman): remove once StartLoading is merged with constructor.

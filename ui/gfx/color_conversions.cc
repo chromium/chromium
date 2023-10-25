@@ -5,6 +5,7 @@
 #include "ui/gfx/color_conversions.h"
 
 #include <cmath>
+#include <tuple>
 
 #include "skia/ext/skcolorspace_primaries.h"
 #include "skia/ext/skcolorspace_trfn.h"
@@ -42,7 +43,7 @@ const skcms_Matrix3x3* getXYZD50TosRGBLinearMatrix() {
   return &xyzd50_to_srgb_linear;
 }
 
-const skcms_Matrix3x3* getkXYZD65tosRGBMatrix() {
+const skcms_Matrix3x3* getXYZD65tosRGBLinearMatrix() {
   static skcms_Matrix3x3 adapt_XYZD65_to_srgb = skcms_Matrix3x3_concat(
       getXYZD50TosRGBLinearMatrix(), getXYDZ65toXYZD50matrix());
   return &adapt_XYZD65_to_srgb;
@@ -391,10 +392,18 @@ std::tuple<float, float, float> XYZD65ToD50(float x, float y, float z) {
                          xyz_output.vals[2]);
 }
 
+std::tuple<float, float, float> XYZD50TosRGB(float x, float y, float z) {
+  skcms_Vector3 xyz_input{{x, y, z}};
+  skcms_Vector3 rgb_result =
+      skcms_Matrix3x3_apply(getXYZD50TosRGBLinearMatrix(), &xyz_input);
+  return ApplyInverseTransferFnsRGB(rgb_result.vals[0], rgb_result.vals[1],
+                                    rgb_result.vals[2]);
+}
+
 std::tuple<float, float, float> XYZD65TosRGBLinear(float x, float y, float z) {
   skcms_Vector3 xyz_input{{x, y, z}};
   skcms_Vector3 rgb_result =
-      skcms_Matrix3x3_apply(getkXYZD65tosRGBMatrix(), &xyz_input);
+      skcms_Matrix3x3_apply(getXYZD65tosRGBLinearMatrix(), &xyz_input);
   return std::make_tuple(rgb_result.vals[0], rgb_result.vals[1],
                          rgb_result.vals[2]);
 }
@@ -424,6 +433,21 @@ std::tuple<float, float, float> SRGBToXYZD50(float r, float g, float b) {
                          xyz_output.vals[2]);
 }
 
+std::tuple<float, float, float> HSLToSRGB(float h, float s, float l) {
+  // See https://www.w3.org/TR/css-color-4/#hsl-to-rgb
+  if (!s) {
+    return std::make_tuple(l, l, l);
+  }
+
+  auto f = [&h, &l, &s](float n) {
+    float k = fmod(n + h / 30.0f, 12.0);
+    float a = s * std::min(l, 1.0f - l);
+    return l - a * std::max(-1.0f, std::min({k - 3.0f, 9.0f - k, 1.0f}));
+  };
+
+  return std::make_tuple(f(0), f(8), f(4));
+}
+
 std::tuple<float, float, float> SRGBToHSL(float r, float g, float b) {
   // See https://www.w3.org/TR/css-color-4/#rgb-to-hsl
   float max = std::max({r, g, b});
@@ -446,6 +470,23 @@ std::tuple<float, float, float> SRGBToHSL(float r, float g, float b) {
   }
 
   return std::make_tuple(hue, saturation, ligth);
+}
+
+std::tuple<float, float, float> HWBToSRGB(float h, float w, float b) {
+  if (w + b >= 1.0f) {
+    float gray = (w / (w + b));
+    return std::make_tuple(gray, gray, gray);
+  }
+
+  // Leverage HSL to RGB conversion to find HWB to RGB, see
+  // https://drafts.csswg.org/css-color-4/#hwb-to-rgb
+  auto [red, green, blue] = HSLToSRGB(h, 1.0f, 0.5f);
+
+  red += w - (w + b) * red;
+  green += w - (w + b) * green;
+  blue += w - (w + b) * blue;
+
+  return std::make_tuple(red, green, blue);
 }
 
 std::tuple<float, float, float> SRGBToHWB(float r, float g, float b) {
@@ -515,34 +556,12 @@ SkColor4f OklchToSkColor4f(float l_input, float c, float h, float alpha) {
 }
 
 SkColor4f HSLToSkColor4f(float h, float s, float l, float alpha) {
-  // See https://www.w3.org/TR/css-color-4/#hsl-to-rgb
-  if (!s) {
-    return SkColor4f{l, l, l, alpha};
-  }
-
-  auto f = [&h, &l, &s](float n) {
-    float k = fmod(n + h / 30.0f, 12.0);
-    float a = s * std::min(l, 1.0f - l);
-    return l - a * std::max(-1.0f, std::min({k - 3.0f, 9.0f - k, 1.0f}));
-  };
-
-  return SkColor4f{f(0), f(8), f(4), alpha};
+  auto [r, g, b] = HSLToSRGB(h, s, l);
+  return SkColor4f{r, g, b, alpha};
 }
 
 SkColor4f HWBToSkColor4f(float h, float w, float b, float alpha) {
-  if (w + b >= 1.0f) {
-    float gray = (w / (w + b));
-    return SkColor4f{gray, gray, gray, alpha};
-  }
-
-  // Leverage HSL to RGB conversion to find HWB to RGB, see
-  // https://drafts.csswg.org/css-color-4/#hwb-to-rgb
-  SkColor4f result = HSLToSkColor4f(h, 1.0f, 0.5f, alpha);
-
-  result.fR += w - (w + b) * result.fR;
-  result.fG += w - (w + b) * result.fG;
-  result.fB += w - (w + b) * result.fB;
-
-  return result;
+  auto [red, green, blue] = HWBToSRGB(h, w, b);
+  return SkColor4f{red, green, blue, alpha};
 }
 }  // namespace gfx

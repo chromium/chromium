@@ -115,7 +115,7 @@ class CookieSettings
   // This should only be called on the UI thread.
   void SetTemporaryCookieGrantForHeuristic(const GURL& url,
                                            const GURL& first_party_url,
-                                           const base::TimeDelta& ttl);
+                                           base::TimeDelta ttl);
 
   // Represents the TTL of each User Bypass entries.
   static constexpr base::TimeDelta kUserBypassEntriesTTL = base::Days(90);

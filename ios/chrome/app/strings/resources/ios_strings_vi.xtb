@@ -173,6 +173,7 @@
 <translation id="1876851015978093044">Hiện mục này</translation>
 <translation id="1882901927376062252">{count,plural, =1{Đã lưu dấu trang vào Tài khoản Google {email} của bạn}other{Đã lưu {count} dấu trang vào Tài khoản Google {email} của bạn}}</translation>
 <translation id="1883255238294161206">Thu gọn danh sách</translation>
+<translation id="1889872080060107187">Bạn sẽ đăng nhập vào <ph name="URL" /></translation>
 <translation id="1890237935065108104">Chế độ cài đặt này hiện không dùng được.</translation>
 <translation id="1894023287452300670">Theo dõi giá tại đây</translation>
 <translation id="189531189292803889">iPad mới được khôi phục và điều này có thể đã làm thay đổi trình duyệt mặc định của bạn.</translation>
@@ -230,6 +231,7 @@
 <translation id="2218443599109088993">Thu nhỏ</translation>
 <translation id="2220529011494928058">Báo cáo sự cố</translation>
 <translation id="2230173723195178503">Đã tải trang web</translation>
+<translation id="2234827758954819389">Hướng dẫn về quyền riêng tư</translation>
 <translation id="2239626343334228536">Đang xóa dữ liệu duyệt web...</translation>
 <translation id="2251686759395008410">Trình đơn → Nhật ký</translation>
 <translation id="2252674110805316998">Tìm kiếm trên web</translation>
@@ -700,6 +702,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="47677902929517676">Để lưu mật khẩu vào tài khoản của bạn, trước tiên, bạn phải đặt mật mã trên thiết bị.</translation>
 <translation id="4775879719735953715">Trình duyệt mặc định</translation>
 <translation id="4778644898150334464">Dùng mật khẩu khác</translation>
+<translation id="4779732376610430319">Vào phần Cài đặt...</translation>
 <translation id="478808905805139173">Mở trong chế độ ẩn danh?</translation>
 <translation id="4803185665210547709">Do tổ chức của bạn quản lý.
 <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
@@ -724,7 +727,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4854345657858711387">Đặt mật mã</translation>
 <translation id="4856498338299082007">Trong Tài khoản Google của bạn</translation>
 <translation id="4856841893565072365">Thanh trình đơn sắp xếp thông minh</translation>
-<translation id="4858786880085262208">Nâng cấp lên HTTPS (khi có thể). Các trang web an toàn có thể nhúng nội dung không an toàn.</translation>
 <translation id="4860895144060829044">Gọi</translation>
 <translation id="4872323082491632254">Kiểm tra mật khẩu</translation>
 <translation id="4881695831933465202">Mở</translation>

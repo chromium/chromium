@@ -118,6 +118,7 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
               unsafe_resources[0], url_loader_factory, history_service_,
               navigation_observer_manager_,
               sb_error_ui()->get_error_display_options());
+      warning_shown_ts_ = base::Time::Now().InMillisecondsSinceUnixEpoch();
     }
   }
 }
@@ -198,6 +199,10 @@ void SafeBrowsingBlockingPage::SendFallbackReport(
     client_report_utils::FillInterstitialInteractionsHelper(report.get(),
                                                             interactions);
   }
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kAddWarningShownTSToClientSafeBrowsingReport)) {
+    report->set_warning_shown_timestamp_msec(warning_shown_ts_);
+  }
   ui_manager()->SendThreatDetails(web_contents()->GetBrowserContext(),
                                   std::move(report));
 }
@@ -244,7 +249,8 @@ void SafeBrowsingBlockingPage::FinishThreatDetails(const base::TimeDelta& delay,
   auto report_sent_result = trigger_manager_->FinishCollectingThreatDetails(
       TriggerType::SECURITY_INTERSTITIAL, GetWebContentsKey(web_contents()),
       delay, did_proceed, num_visits,
-      sb_error_ui()->get_error_display_options(), is_hats_candidate);
+      sb_error_ui()->get_error_display_options(), warning_shown_ts_,
+      is_hats_candidate);
   if (!report_sent_result.are_threat_details_available &&
       report_sent_result.should_send_report && unsafe_resources().size() == 1) {
     // If reports are not sent because threat details are not available, send a

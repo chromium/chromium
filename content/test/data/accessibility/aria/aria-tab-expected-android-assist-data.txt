@@ -1,0 +1,6 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++TabWidget textSize:16.00 style:0 bundle:[display="block", htmlTag="div", role="tablist"]
+++++View textSize:16.00 style:0 bundle:[display="block", htmlTag="div", id="tab1", role="tab"]
+++++++TextView text:"Tab 1" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++View textSize:16.00 style:0 bundle:[display="block", htmlTag="div", id="tab2", role="tab"]
+++++++TextView text:"Tab 2" textSize:16.00 style:0 bundle:[display="", htmlTag=""]

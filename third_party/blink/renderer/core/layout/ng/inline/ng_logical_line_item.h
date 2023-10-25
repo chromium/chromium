@@ -22,45 +22,45 @@ class NGLayoutResult;
 
 // This class represents an item in a line, after line break, but still mutable
 // and in the logical coordinate system.
-struct NGLogicalLineItem {
+struct LogicalLineItem {
   DISALLOW_NEW();
 
   // Empty constructor needed for |resize()|.
-  NGLogicalLineItem() = default;
+  LogicalLineItem() = default;
   // Create a placeholder. A placeholder does not have a fragment nor a bidi
   // level.
-  NGLogicalLineItem(LayoutUnit block_offset, LayoutUnit block_size)
+  LogicalLineItem(LayoutUnit block_offset, LayoutUnit block_size)
       : rect(LayoutUnit(), block_offset, LayoutUnit(), block_size) {}
   // Crete a bidi control. A bidi control does not have a fragment, but has
   // bidi level and affects bidi reordering.
-  explicit NGLogicalLineItem(UBiDiLevel bidi_level) : bidi_level(bidi_level) {}
+  explicit LogicalLineItem(UBiDiLevel bidi_level) : bidi_level(bidi_level) {}
   // Create an in-flow |NGLayoutResult|.
-  NGLogicalLineItem(const NGLayoutResult* layout_result,
-                    const LogicalRect& rect,
-                    unsigned children_count,
-                    UBiDiLevel bidi_level)
+  LogicalLineItem(const NGLayoutResult* layout_result,
+                  const LogicalRect& rect,
+                  unsigned children_count,
+                  UBiDiLevel bidi_level)
       : layout_result(layout_result),
         rect(rect),
         children_count(children_count),
         bidi_level(bidi_level) {}
-  NGLogicalLineItem(const NGLayoutResult* layout_result,
-                    LogicalOffset offset,
-                    LayoutUnit inline_size,
-                    unsigned children_count,
-                    UBiDiLevel bidi_level)
+  LogicalLineItem(const NGLayoutResult* layout_result,
+                  LogicalOffset offset,
+                  LayoutUnit inline_size,
+                  unsigned children_count,
+                  UBiDiLevel bidi_level)
       : layout_result(layout_result),
         rect(offset, LogicalSize()),
         inline_size(inline_size),
         children_count(children_count),
         bidi_level(bidi_level) {}
   // Create an in-flow text fragment.
-  NGLogicalLineItem(const NGInlineItem& inline_item,
-                    NGInlineItemResult& item_result,
-                    const NGTextOffsetRange& text_offset,
-                    LayoutUnit block_offset,
-                    LayoutUnit inline_size,
-                    LayoutUnit text_height,
-                    UBiDiLevel bidi_level)
+  LogicalLineItem(const InlineItem& inline_item,
+                  InlineItemResult& item_result,
+                  const NGTextOffsetRange& text_offset,
+                  LayoutUnit block_offset,
+                  LayoutUnit inline_size,
+                  LayoutUnit text_height,
+                  UBiDiLevel bidi_level)
       : inline_item(&inline_item),
         shape_result(std::move(item_result.shape_result)),
         text_offset(text_offset),
@@ -68,13 +68,13 @@ struct NGLogicalLineItem {
         inline_size(inline_size),
         bidi_level(bidi_level),
         has_only_trailing_spaces(item_result.has_only_trailing_spaces) {}
-  NGLogicalLineItem(const NGInlineItem& inline_item,
-                    scoped_refptr<const ShapeResultView> shape_result,
-                    const NGTextOffsetRange& text_offset,
-                    LayoutUnit block_offset,
-                    LayoutUnit inline_size,
-                    LayoutUnit text_height,
-                    UBiDiLevel bidi_level)
+  LogicalLineItem(const InlineItem& inline_item,
+                  scoped_refptr<const ShapeResultView> shape_result,
+                  const NGTextOffsetRange& text_offset,
+                  LayoutUnit block_offset,
+                  LayoutUnit inline_size,
+                  LayoutUnit text_height,
+                  UBiDiLevel bidi_level)
       : inline_item(&inline_item),
         shape_result(std::move(shape_result)),
         text_offset(text_offset),
@@ -82,13 +82,13 @@ struct NGLogicalLineItem {
         inline_size(inline_size),
         bidi_level(bidi_level) {}
   // Create a generated text.
-  NGLogicalLineItem(const NGInlineItem& inline_item,
-                    scoped_refptr<const ShapeResultView> shape_result,
-                    const String& text_content,
-                    LayoutUnit block_offset,
-                    LayoutUnit inline_size,
-                    LayoutUnit text_height,
-                    UBiDiLevel bidi_level)
+  LogicalLineItem(const InlineItem& inline_item,
+                  scoped_refptr<const ShapeResultView> shape_result,
+                  const String& text_content,
+                  LayoutUnit block_offset,
+                  LayoutUnit inline_size,
+                  LayoutUnit text_height,
+                  UBiDiLevel bidi_level)
       : inline_item(&inline_item),
         shape_result(std::move(shape_result)),
         text_offset(
@@ -98,13 +98,13 @@ struct NGLogicalLineItem {
         inline_size(inline_size),
         bidi_level(bidi_level) {}
   // Create an ellipsis item. Ellipsis is a generated text, but does not have
-  // corresponding |NGInlineItem| as it is generated by layout.
-  NGLogicalLineItem(const LayoutObject& layout_object,
-                    NGStyleVariant style_variant,
-                    scoped_refptr<const ShapeResultView> shape_result,
-                    const String& text_content,
-                    const LogicalRect& rect,
-                    UBiDiLevel bidi_level)
+  // corresponding |InlineItem| as it is generated by layout.
+  LogicalLineItem(const LayoutObject& layout_object,
+                  NGStyleVariant style_variant,
+                  scoped_refptr<const ShapeResultView> shape_result,
+                  const String& text_content,
+                  const LogicalRect& rect,
+                  UBiDiLevel bidi_level)
       : shape_result(std::move(shape_result)),
         text_offset(
             {this->shape_result->StartIndex(), this->shape_result->EndIndex()}),
@@ -114,9 +114,9 @@ struct NGLogicalLineItem {
         rect(rect),
         inline_size(rect.size.inline_size),
         bidi_level(bidi_level) {}
-  NGLogicalLineItem(const NGLogicalLineItem& source_item,
-                    scoped_refptr<const ShapeResultView> shape_result,
-                    const NGTextOffsetRange& text_offset)
+  LogicalLineItem(const LogicalLineItem& source_item,
+                  scoped_refptr<const ShapeResultView> shape_result,
+                  const NGTextOffsetRange& text_offset)
       : inline_item(source_item.inline_item),
         shape_result(std::move(shape_result)),
         text_offset(text_offset),
@@ -125,23 +125,23 @@ struct NGLogicalLineItem {
         inline_size(this->shape_result->SnappedWidth()),
         bidi_level(source_item.bidi_level) {}
   // Create an out-of-flow positioned object.
-  NGLogicalLineItem(LayoutObject* out_of_flow_positioned_box,
-                    UBiDiLevel bidi_level,
-                    TextDirection container_direction)
+  LogicalLineItem(LayoutObject* out_of_flow_positioned_box,
+                  UBiDiLevel bidi_level,
+                  TextDirection container_direction)
       : out_of_flow_positioned_box(out_of_flow_positioned_box),
         bidi_level(bidi_level),
         container_direction(container_direction) {}
   // Create an unpositioned float.
-  NGLogicalLineItem(LayoutObject* unpositioned_float,
-                    UBiDiLevel bidi_level,
-                    NGInlineItemTextIndex item_index)
+  LogicalLineItem(LayoutObject* unpositioned_float,
+                  UBiDiLevel bidi_level,
+                  InlineItemTextIndex item_index)
       : unpositioned_float(unpositioned_float),
         item_index(item_index),
         bidi_level(bidi_level) {}
   // Create a positioned float.
-  NGLogicalLineItem(const NGLayoutResult* layout_result,
-                    BfcOffset bfc_offset,
-                    UBiDiLevel bidi_level)
+  LogicalLineItem(const NGLayoutResult* layout_result,
+                  BfcOffset bfc_offset,
+                  UBiDiLevel bidi_level)
       : layout_result(layout_result),
         bfc_offset(bfc_offset),
         bidi_level(bidi_level) {}
@@ -170,7 +170,7 @@ struct NGLogicalLineItem {
     return HasInFlowOrFloatingFragment() || HasOutOfFlowFragment();
   }
   bool IsControl() const {
-    return inline_item && inline_item->Type() == NGInlineItem::kControl;
+    return inline_item && inline_item->Type() == InlineItem::kControl;
   }
   bool CanCreateFragmentItem() const { return HasInFlowOrFloatingFragment(); }
   bool HasBidiLevel() const { return bidi_level != 0xff; }
@@ -219,7 +219,7 @@ struct NGLogicalLineItem {
 
   // Data to create a text fragment from.
   // |inline_item| is null only for ellipsis items.
-  const NGInlineItem* inline_item = nullptr;
+  const InlineItem* inline_item = nullptr;
   scoped_refptr<const ShapeResultView> shape_result;
   NGTextOffsetRange text_offset;
 
@@ -228,7 +228,7 @@ struct NGLogicalLineItem {
 
   Member<const NGLayoutResult> layout_result;
 
-  // Ellipsis does not have |NGInlineItem|, but built from |LayoutObject| and
+  // Ellipsis does not have |InlineItem|, but built from |LayoutObject| and
   // |NGStyleVariant|.
   Member<const LayoutObject> layout_object;
   // Used only when |layout_object_| is not null.
@@ -236,7 +236,7 @@ struct NGLogicalLineItem {
 
   Member<LayoutObject> out_of_flow_positioned_box;
   Member<LayoutObject> unpositioned_float;
-  NGInlineItemTextIndex item_index;
+  InlineItemTextIndex item_index;
 
   // The offset of the border box, initially in this child coordinate system.
   // |ComputeInlinePositions()| converts it to the offset within the line box.
@@ -265,24 +265,21 @@ struct NGLogicalLineItem {
 };
 
 CORE_EXPORT std::ostream& operator<<(std::ostream& stream,
-                                     const NGLogicalLineItem& item);
+                                     const LogicalLineItem& item);
 
 // A vector of Child.
 // Unlike the fragment builder, children are mutable.
 // Callers can add to the fragment builder in a batch once finalized.
-class CORE_EXPORT NGLogicalLineItems
-    : public GarbageCollected<NGLogicalLineItems> {
+class CORE_EXPORT LogicalLineItems : public GarbageCollected<LogicalLineItems> {
  public:
-  NGLogicalLineItems() = default;
-  ~NGLogicalLineItems() { DCHECK(IsEmpty()); }
-  void operator=(NGLogicalLineItems&& other) {
+  LogicalLineItems() = default;
+  ~LogicalLineItems() { DCHECK(IsEmpty()); }
+  void operator=(LogicalLineItems&& other) {
     children_ = std::move(other.children_);
   }
 
-  NGLogicalLineItem& operator[](wtf_size_t i) { return children_[i]; }
-  const NGLogicalLineItem& operator[](wtf_size_t i) const {
-    return children_[i];
-  }
+  LogicalLineItem& operator[](wtf_size_t i) { return children_[i]; }
+  const LogicalLineItem& operator[](wtf_size_t i) const { return children_[i]; }
 
   wtf_size_t size() const { return children_.size(); }
   void clear() { children_.clear(); }
@@ -291,33 +288,33 @@ class CORE_EXPORT NGLogicalLineItems
     children_.ReserveInitialCapacity(capacity);
   }
   void Shrink(wtf_size_t size) { children_.Shrink(size); }
-  void swap(NGLogicalLineItems& other) { children_.swap(other.children_); }
+  void swap(LogicalLineItems& other) { children_.swap(other.children_); }
 
-  using iterator = Vector<NGLogicalLineItem, 16>::iterator;
+  using iterator = Vector<LogicalLineItem, 16>::iterator;
   iterator begin() { return children_.begin(); }
   iterator end() { return children_.end(); }
-  using const_iterator = Vector<NGLogicalLineItem, 16>::const_iterator;
+  using const_iterator = Vector<LogicalLineItem, 16>::const_iterator;
   const_iterator begin() const { return children_.begin(); }
   const_iterator end() const { return children_.end(); }
-  using reverse_iterator = Vector<NGLogicalLineItem, 16>::reverse_iterator;
+  using reverse_iterator = Vector<LogicalLineItem, 16>::reverse_iterator;
   reverse_iterator rbegin() { return children_.rbegin(); }
   reverse_iterator rend() { return children_.rend(); }
   using const_reverse_iterator =
-      HeapVector<NGLogicalLineItem, 16>::const_reverse_iterator;
+      HeapVector<LogicalLineItem, 16>::const_reverse_iterator;
   const_reverse_iterator rbegin() const { return children_.rbegin(); }
   const_reverse_iterator rend() const { return children_.rend(); }
 
-  NGLogicalLineItem* FirstInFlowChild();
-  NGLogicalLineItem* LastInFlowChild();
+  LogicalLineItem* FirstInFlowChild();
+  LogicalLineItem* LastInFlowChild();
 
   const NGLayoutResult* BlockInInlineLayoutResult() const;
 
-  // Add a child. Accepts all constructor arguments for |NGLogicalLineItem|.
+  // Add a child. Accepts all constructor arguments for |LogicalLineItem|.
   template <class... Args>
   void AddChild(Args&&... args) {
     children_.emplace_back(std::forward<Args>(args)...);
   }
-  void InsertChild(unsigned index, NGLogicalLineItem&& item) {
+  void InsertChild(unsigned index, LogicalLineItem&& item) {
     WillInsertChild(index);
     children_.insert(index, item);
   }
@@ -327,8 +324,8 @@ class CORE_EXPORT NGLogicalLineItems
                    unsigned children_count) {
     WillInsertChild(index);
     children_.insert(
-        index, NGLogicalLineItem(std::move(layout_result), rect, children_count,
-                                 /* bidi_level */ 0));
+        index, LogicalLineItem(std::move(layout_result), rect, children_count,
+                               /* bidi_level */ 0));
   }
 
   void MoveInInlineDirection(LayoutUnit);
@@ -341,11 +338,11 @@ class CORE_EXPORT NGLogicalLineItems
  private:
   void WillInsertChild(unsigned index);
 
-  HeapVector<NGLogicalLineItem, 16> children_;
+  HeapVector<LogicalLineItem, 16> children_;
 };
 
 }  // namespace blink
 
-WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::NGLogicalLineItem)
+WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::LogicalLineItem)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_LOGICAL_LINE_ITEM_H_

@@ -13,8 +13,8 @@ source_set("common") {
     "infobar_modal_overlay_request_callback_installer.h",
     "infobar_modal_overlay_request_callback_installer.mm",
   ]
+  public_deps = [ "//base" ]
   deps = [
-    "//base",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/infobars/overlays",

@@ -252,8 +252,10 @@ void InputDeviceSettingsProvider::SetKeyboardSettings(
     ::ash::mojom::KeyboardSettingsPtr settings) {
   DCHECK(features::IsInputDeviceSettingsSplitEnabled());
   DCHECK(InputDeviceSettingsController::Get());
-  InputDeviceSettingsController::Get()->SetKeyboardSettings(
-      device_id, std::move(settings));
+  if (!InputDeviceSettingsController::Get()->SetKeyboardSettings(
+          device_id, std::move(settings))) {
+    NotifyKeyboardsUpdated();
+  }
 }
 
 void InputDeviceSettingsProvider::SetPointingStickSettings(
@@ -261,8 +263,10 @@ void InputDeviceSettingsProvider::SetPointingStickSettings(
     ::ash::mojom::PointingStickSettingsPtr settings) {
   DCHECK(features::IsInputDeviceSettingsSplitEnabled());
   DCHECK(InputDeviceSettingsController::Get());
-  InputDeviceSettingsController::Get()->SetPointingStickSettings(
-      device_id, std::move(settings));
+  if (!InputDeviceSettingsController::Get()->SetPointingStickSettings(
+          device_id, std::move(settings))) {
+    NotifyPointingSticksUpdated();
+  }
 }
 
 void InputDeviceSettingsProvider::SetMouseSettings(
@@ -270,8 +274,10 @@ void InputDeviceSettingsProvider::SetMouseSettings(
     ::ash::mojom::MouseSettingsPtr settings) {
   DCHECK(features::IsInputDeviceSettingsSplitEnabled());
   DCHECK(InputDeviceSettingsController::Get());
-  InputDeviceSettingsController::Get()->SetMouseSettings(device_id,
-                                                         std::move(settings));
+  if (!InputDeviceSettingsController::Get()->SetMouseSettings(
+          device_id, std::move(settings))) {
+    NotifyMiceUpdated();
+  }
 }
 
 void InputDeviceSettingsProvider::SetTouchpadSettings(
@@ -279,8 +285,10 @@ void InputDeviceSettingsProvider::SetTouchpadSettings(
     ::ash::mojom::TouchpadSettingsPtr settings) {
   DCHECK(features::IsInputDeviceSettingsSplitEnabled());
   DCHECK(InputDeviceSettingsController::Get());
-  InputDeviceSettingsController::Get()->SetTouchpadSettings(
-      device_id, std::move(settings));
+  if (!InputDeviceSettingsController::Get()->SetTouchpadSettings(
+          device_id, std::move(settings))) {
+    NotifyTouchpadsUpdated();
+  }
 }
 
 void InputDeviceSettingsProvider::SetGraphicsTabletSettings(
@@ -288,8 +296,10 @@ void InputDeviceSettingsProvider::SetGraphicsTabletSettings(
     ::ash::mojom::GraphicsTabletSettingsPtr settings) {
   DCHECK(features::IsPeripheralCustomizationEnabled());
   DCHECK(InputDeviceSettingsController::Get());
-  InputDeviceSettingsController::Get()->SetGraphicsTabletSettings(
-      device_id, std::move(settings));
+  if (!InputDeviceSettingsController::Get()->SetGraphicsTabletSettings(
+          device_id, std::move(settings))) {
+    NotifyGraphicsTabletUpdated();
+  }
 }
 
 void InputDeviceSettingsProvider::ObserveKeyboardSettings(

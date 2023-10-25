@@ -82,7 +82,9 @@ void OomScorePolicyChromeOS::HandlePageNodeEvents() {
     bool is_protected = (can_discard_result ==
                          PageDiscardingHelper::CanDiscardResult::kProtected);
     bool is_visible = page_node->IsVisible();
+    bool is_focused = page_node->IsFocused();
     candidates.emplace_back(page_node, is_marked, is_visible, is_protected,
+                            is_focused,
                             page_node->GetTimeSinceLastVisibilityChange());
   }
 

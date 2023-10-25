@@ -93,7 +93,6 @@
 <translation id="1643449475550628585">Tukar imej kertas dinding setiap hari</translation>
 <translation id="1644574205037202324">Sejarah</translation>
 <translation id="1651925268237749928">Anda telah memilih album kongsi. Orang lain boleh menambahkan atau menukar foto. Hiasan latar anda mungkin menggunakan foto yang tiada dalam album ini pada masa ini.</translation>
-<translation id="1658834457013045127">Selama-lamanya</translation>
 <translation id="1661865805917886535">Sesetengah maklumat akaun dan sistem mungkin dihantar kepada Google. Kami menggunakan maklumat ini untuk mengatasi masalah teknikal dan meningkatkan perkhidmatan kami, tertakluk pada Dasar Privasi (<ph name="PRIVACYPOLICYURL" />) dan Syarat Perkhidmatan (<ph name="TERMSOFSERVICEURL" />) kami. Untuk meminta perubahan kandungan, akses Bantuan Perundangan (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Dihentikan - Kehabisan dakwat</translation>
 <translation id="1664796644829245314">Pratonton <ph name="PREVIEW_OBJECT" /></translation>
@@ -323,7 +322,6 @@
 <translation id="3484914941826596830">Semasa perisian tegar sedang dikemas kini, jangan cabut palam peranti luaran ini atau matikan komputer anda. Anda boleh meminimumkan tetingkap ini. Kemaskinian ini mungkin mengambil masa beberapa minit dan peranti luaran anda mungkin tidak berfungsi pada masa ini.</translation>
 <translation id="3486220673238053218">takrif</translation>
 <translation id="3488065109653206955">Diaktifkan sebahagian</translation>
-<translation id="349491921221892984"><ph name="MINUTES" /> min</translation>
 <translation id="3502426834823382181">lihat semua apl</translation>
 <translation id="3510890413042482857">Hantar <ph name="BEGIN_LINK1" />data surih prestasi<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Kemaskinian ChromeOS</translation>
@@ -484,7 +482,6 @@
 <translation id="473775607612524610">Kemas kini</translation>
 <translation id="4771607256327216405">cerahkan papan kekunci</translation>
 <translation id="4773299976671772492">Dihentikan</translation>
-<translation id="4782003517030001304">1 jam</translation>
 <translation id="4782311465517282004">Dapatkan takrif, terjemahan atau penukaran unit apabila anda mengklik kanan atau menyentuh &amp; menahan teks</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
 <translation id="4793710386569335688">Untuk mendapatkan bantuan lanjut, pergi ke <ph name="BEGIN_LINK" />Pusat bantuan<ph name="END_LINK" />.</translation>
@@ -699,6 +696,7 @@
 <translation id="629550705077076970">pemalapan papan kekunci</translation>
 <translation id="6302401976930124515">Ujian <ph name="TEST_NAME" /> telah dibatalkan</translation>
 <translation id="631063167932043783">Teroka apl</translation>
+<translation id="6318437367327684789">selamanya</translation>
 <translation id="6319207335391420837">Kemas kini perisian tegar pada <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Hidupkan penyelamat skrin</translation>
 <translation id="6324916366299863871">Edit pintasan</translation>
@@ -1012,6 +1010,7 @@
 <translation id="8747900814994928677">Sahkan penukaran</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Google Photos</translation>
+<translation id="8775713578693478175">APN modem</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8789196995628578448">Pintasan digunakan untuk '<ph name="CONFLICT_ACCEL_NAME" />". Tekan pintasan baharu. Untuk menggantikan pintasan asal, tekan pintasan ini lagi.</translation>
 <translation id="879568662008399081">Rangkaian ini mungkin mempunyai portal terbolot</translation>

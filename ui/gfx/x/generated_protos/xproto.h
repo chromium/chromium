@@ -878,7 +878,7 @@ struct Setup {
 };
 
 struct KeyEvent {
-  static constexpr int type_id = 44;
+  static constexpr uint8_t type_id = 44;
   enum Opcode {
     Press = 2,
     Release = 3,
@@ -898,7 +898,7 @@ struct KeyEvent {
 };
 
 struct ButtonEvent {
-  static constexpr int type_id = 45;
+  static constexpr uint8_t type_id = 45;
   enum Opcode {
     Press = 4,
     Release = 5,
@@ -918,7 +918,7 @@ struct ButtonEvent {
 };
 
 struct MotionNotifyEvent {
-  static constexpr int type_id = 46;
+  static constexpr uint8_t type_id = 46;
   static constexpr uint8_t opcode = 6;
   Motion detail{};
   uint16_t sequence{};
@@ -935,7 +935,7 @@ struct MotionNotifyEvent {
 };
 
 struct CrossingEvent {
-  static constexpr int type_id = 47;
+  static constexpr uint8_t type_id = 47;
   enum Opcode {
     EnterNotify = 7,
     LeaveNotify = 8,
@@ -956,7 +956,7 @@ struct CrossingEvent {
 };
 
 struct FocusEvent {
-  static constexpr int type_id = 48;
+  static constexpr uint8_t type_id = 48;
   enum Opcode {
     In = 9,
     Out = 10,
@@ -968,13 +968,13 @@ struct FocusEvent {
 };
 
 struct KeymapNotifyEvent {
-  static constexpr int type_id = 49;
+  static constexpr uint8_t type_id = 49;
   static constexpr uint8_t opcode = 11;
   std::array<uint8_t, 31> keys{};
 };
 
 struct ExposeEvent {
-  static constexpr int type_id = 50;
+  static constexpr uint8_t type_id = 50;
   static constexpr uint8_t opcode = 12;
   uint16_t sequence{};
   Window window{};
@@ -986,7 +986,7 @@ struct ExposeEvent {
 };
 
 struct GraphicsExposureEvent {
-  static constexpr int type_id = 51;
+  static constexpr uint8_t type_id = 51;
   static constexpr uint8_t opcode = 13;
   uint16_t sequence{};
   Drawable drawable{};
@@ -1000,7 +1000,7 @@ struct GraphicsExposureEvent {
 };
 
 struct NoExposureEvent {
-  static constexpr int type_id = 52;
+  static constexpr uint8_t type_id = 52;
   static constexpr uint8_t opcode = 14;
   uint16_t sequence{};
   Drawable drawable{};
@@ -1009,7 +1009,7 @@ struct NoExposureEvent {
 };
 
 struct VisibilityNotifyEvent {
-  static constexpr int type_id = 53;
+  static constexpr uint8_t type_id = 53;
   static constexpr uint8_t opcode = 15;
   uint16_t sequence{};
   Window window{};
@@ -1017,7 +1017,7 @@ struct VisibilityNotifyEvent {
 };
 
 struct CreateNotifyEvent {
-  static constexpr int type_id = 54;
+  static constexpr uint8_t type_id = 54;
   static constexpr uint8_t opcode = 16;
   uint16_t sequence{};
   Window parent{};
@@ -1031,7 +1031,7 @@ struct CreateNotifyEvent {
 };
 
 struct DestroyNotifyEvent {
-  static constexpr int type_id = 55;
+  static constexpr uint8_t type_id = 55;
   static constexpr uint8_t opcode = 17;
   uint16_t sequence{};
   Window event{};
@@ -1039,7 +1039,7 @@ struct DestroyNotifyEvent {
 };
 
 struct UnmapNotifyEvent {
-  static constexpr int type_id = 56;
+  static constexpr uint8_t type_id = 56;
   static constexpr uint8_t opcode = 18;
   uint16_t sequence{};
   Window event{};
@@ -1048,7 +1048,7 @@ struct UnmapNotifyEvent {
 };
 
 struct MapNotifyEvent {
-  static constexpr int type_id = 57;
+  static constexpr uint8_t type_id = 57;
   static constexpr uint8_t opcode = 19;
   uint16_t sequence{};
   Window event{};
@@ -1057,7 +1057,7 @@ struct MapNotifyEvent {
 };
 
 struct MapRequestEvent {
-  static constexpr int type_id = 58;
+  static constexpr uint8_t type_id = 58;
   static constexpr uint8_t opcode = 20;
   uint16_t sequence{};
   Window parent{};
@@ -1065,7 +1065,7 @@ struct MapRequestEvent {
 };
 
 struct ReparentNotifyEvent {
-  static constexpr int type_id = 59;
+  static constexpr uint8_t type_id = 59;
   static constexpr uint8_t opcode = 21;
   uint16_t sequence{};
   Window event{};
@@ -1077,7 +1077,7 @@ struct ReparentNotifyEvent {
 };
 
 struct ConfigureNotifyEvent {
-  static constexpr int type_id = 60;
+  static constexpr uint8_t type_id = 60;
   static constexpr uint8_t opcode = 22;
   uint16_t sequence{};
   Window event{};
@@ -1092,7 +1092,7 @@ struct ConfigureNotifyEvent {
 };
 
 struct ConfigureRequestEvent {
-  static constexpr int type_id = 61;
+  static constexpr uint8_t type_id = 61;
   static constexpr uint8_t opcode = 23;
   StackMode stack_mode{};
   uint16_t sequence{};
@@ -1108,7 +1108,7 @@ struct ConfigureRequestEvent {
 };
 
 struct GravityNotifyEvent {
-  static constexpr int type_id = 62;
+  static constexpr uint8_t type_id = 62;
   static constexpr uint8_t opcode = 24;
   uint16_t sequence{};
   Window event{};
@@ -1118,7 +1118,7 @@ struct GravityNotifyEvent {
 };
 
 struct ResizeRequestEvent {
-  static constexpr int type_id = 63;
+  static constexpr uint8_t type_id = 63;
   static constexpr uint8_t opcode = 25;
   uint16_t sequence{};
   Window window{};
@@ -1127,7 +1127,7 @@ struct ResizeRequestEvent {
 };
 
 struct CirculateEvent {
-  static constexpr int type_id = 64;
+  static constexpr uint8_t type_id = 64;
   enum Opcode {
     Notify = 26,
     Request = 27,
@@ -1139,7 +1139,7 @@ struct CirculateEvent {
 };
 
 struct PropertyNotifyEvent {
-  static constexpr int type_id = 65;
+  static constexpr uint8_t type_id = 65;
   static constexpr uint8_t opcode = 28;
   uint16_t sequence{};
   Window window{};
@@ -1149,7 +1149,7 @@ struct PropertyNotifyEvent {
 };
 
 struct SelectionClearEvent {
-  static constexpr int type_id = 66;
+  static constexpr uint8_t type_id = 66;
   static constexpr uint8_t opcode = 29;
   uint16_t sequence{};
   Time time{};
@@ -1158,7 +1158,7 @@ struct SelectionClearEvent {
 };
 
 struct SelectionRequestEvent {
-  static constexpr int type_id = 67;
+  static constexpr uint8_t type_id = 67;
   static constexpr uint8_t opcode = 30;
   uint16_t sequence{};
   Time time{};
@@ -1170,7 +1170,7 @@ struct SelectionRequestEvent {
 };
 
 struct SelectionNotifyEvent {
-  static constexpr int type_id = 68;
+  static constexpr uint8_t type_id = 68;
   static constexpr uint8_t opcode = 31;
   uint16_t sequence{};
   Time time{};
@@ -1181,7 +1181,7 @@ struct SelectionNotifyEvent {
 };
 
 struct ColormapNotifyEvent {
-  static constexpr int type_id = 69;
+  static constexpr uint8_t type_id = 69;
   static constexpr uint8_t opcode = 32;
   uint16_t sequence{};
   Window window{};
@@ -1200,7 +1200,7 @@ union ClientMessageData {
 static_assert(std::is_trivially_copyable<ClientMessageData>::value, "");
 
 struct ClientMessageEvent {
-  static constexpr int type_id = 70;
+  static constexpr uint8_t type_id = 70;
   static constexpr uint8_t opcode = 33;
   uint8_t format{};
   uint16_t sequence{};
@@ -1210,7 +1210,7 @@ struct ClientMessageEvent {
 };
 
 struct MappingNotifyEvent {
-  static constexpr int type_id = 71;
+  static constexpr uint8_t type_id = 71;
   static constexpr uint8_t opcode = 34;
   uint16_t sequence{};
   Mapping request{};
@@ -1219,7 +1219,7 @@ struct MappingNotifyEvent {
 };
 
 struct GeGenericEvent {
-  static constexpr int type_id = 72;
+  static constexpr uint8_t type_id = 72;
   static constexpr uint8_t opcode = 35;
   uint16_t sequence{};
 };

@@ -92,13 +92,12 @@ class BLINK_PLATFORM_EXPORT URLLoader {
   // Load the request synchronously, returning results directly to the
   // caller upon completion.  There is no mechanism to interrupt a
   // synchronous load!!
-  // If the request's PassResponsePipeToClient flag is set to true, the response
-  // will instead be redirected to a blob, which is passed out in
-  // |downloaded_blob|.
+  // If `download_to_blob` is true, the response will instead be
+  // redirected to a blob, which is passed out in `downloaded_blob`.
   virtual void LoadSynchronously(
       std::unique_ptr<network::ResourceRequest> request,
       scoped_refptr<const SecurityOrigin> top_frame_origin,
-      bool pass_response_pipe_to_client,
+      bool download_to_blob,
       bool no_mime_sniffing,
       base::TimeDelta timeout_interval,
       URLLoaderClient* client,

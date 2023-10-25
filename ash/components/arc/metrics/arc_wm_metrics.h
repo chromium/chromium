@@ -9,6 +9,8 @@
 #include <string>
 
 #include "ash/constants/app_types.h"
+#include "ash/public/cpp/tablet_mode_observer.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/env.h"
@@ -18,7 +20,9 @@
 
 namespace arc {
 
-class ArcWmMetrics : public aura::EnvObserver, public aura::WindowObserver {
+class ArcWmMetrics : public aura::EnvObserver,
+                     public aura::WindowObserver,
+                     public ash::TabletModeObserver {
  public:
   ArcWmMetrics();
   ArcWmMetrics(const ArcWmMetrics&) = delete;
@@ -31,6 +35,9 @@ class ArcWmMetrics : public aura::EnvObserver, public aura::WindowObserver {
 
   static std::string GetArcWindowClosedTimeHistogramName();
 
+  static std::string GetWindowEnterTabletModeTimeHistogramName(
+      ash::AppType app_type);
+
   // aura::EnvObserver
   void OnWindowInitialized(aura::Window* new_window) override;
 
@@ -39,6 +46,10 @@ class ArcWmMetrics : public aura::EnvObserver, public aura::WindowObserver {
                                const void* key,
                                intptr_t old) override;
   void OnWindowDestroying(aura::Window* window) override;
+
+  // ash::TabletModeObserver:
+  void OnTabletModeStarting() override;
+  void OnTabletControllerDestroyed() override;
 
  private:
   friend class ArcWmMetricsTest;
@@ -66,6 +77,9 @@ class ArcWmMetrics : public aura::EnvObserver, public aura::WindowObserver {
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};
+
+  base::ScopedObservation<ash::TabletModeController, ash::TabletModeObserver>
+      tablet_mode_observation_{this};
 
   base::WeakPtrFactory<ArcWmMetrics> weak_ptr_factory_{this};
 };

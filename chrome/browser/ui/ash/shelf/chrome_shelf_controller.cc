@@ -24,7 +24,6 @@
 #include "ash/shell.h"
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -41,6 +40,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/extension_apps_utils.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_metrics.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_service.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_update.h"
 #include "chrome/browser/apps/icon_standardizer.h"
@@ -80,6 +80,7 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_item_factory.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
+#include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/ash/shelf/shelf_extension_app_updater.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "chrome/browser/ui/browser.h"
@@ -93,13 +94,13 @@
 #include "chrome/browser/ui/webui/ash/settings/app_management/app_management_uma.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
@@ -164,6 +165,13 @@ void ReportUpdateShelfIconList(const ash::ShelfModel* model) {
 
   ash::Shell::Get()->login_unlock_throughput_recorder()->UpdateShelfIconList(
       model);
+}
+
+void MaybeRecordPromiseAppShelfItemCreated(bool is_promise_app) {
+  if (is_promise_app) {
+    apps::RecordPromiseAppLifecycleEvent(
+        apps::PromiseAppLifecycleEvent::kCreatedInShelf);
+  }
 }
 
 }  // namespace
@@ -1109,6 +1117,9 @@ void ChromeShelfController::OnPromiseAppUpdate(
         ShelfControllerHelper::ConvertPromiseStatusToAppStatus(update.Status());
     item.title =
         ShelfControllerHelper::GetLabelForPromiseStatus(update.Status());
+    item.accessible_name =
+        ShelfControllerHelper::GetAccessibleLabelForPromiseStatus(
+            update.Name(), update.Status());
   }
   model_->Set(index, item);
 }
@@ -1622,7 +1633,7 @@ void ChromeShelfController::AddAppUpdaterAndIconLoader(Profile* profile) {
           std::make_unique<ShelfPromiseAppUpdater>(this, profile));
     }
 
-    if (base::FeatureList::IsEnabled(features::kCrosWebAppShortcutUiUpdate)) {
+    if (chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
       app_updaters_for_profile.emplace_back(
           std::make_unique<ShelfAppServiceShortcutUpdater>(this, profile));
     }
@@ -1641,7 +1652,7 @@ void ChromeShelfController::AddAppUpdaterAndIconLoader(Profile* profile) {
               profile, extension_misc::EXTENSION_ICON_MEDIUM, this));
     }
 
-    if (base::FeatureList::IsEnabled(features::kCrosWebAppShortcutUiUpdate)) {
+    if (chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
       app_icon_loaders_for_profile.emplace_back(
           std::make_unique<AppServiceShortcutIconLoader>(
               profile, extension_misc::EXTENSION_ICON_MEDIUM,
@@ -1748,9 +1759,18 @@ void ChromeShelfController::ShelfItemAdded(int index) {
 
       bool is_promise_app = ShelfControllerHelper::IsPromiseApp(
           latest_active_profile_, id.app_id);
+      MaybeRecordPromiseAppShelfItemCreated(is_promise_app);
       if (is_promise_app != item.is_promise_app) {
         needs_update = true;
         item.is_promise_app = is_promise_app;
+      }
+
+      std::u16string accessible_name =
+          ShelfControllerHelper::GetPromiseAppAccessibleName(
+              latest_active_profile_, id.app_id);
+      if (is_promise_app && accessible_name != item.accessible_name) {
+        needs_update = true;
+        item.accessible_name = accessible_name;
       }
     }
 

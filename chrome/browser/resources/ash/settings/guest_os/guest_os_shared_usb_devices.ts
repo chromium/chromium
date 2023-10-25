@@ -65,8 +65,8 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
         type: Object,
         value() {
           return {
-            'vm_name': '',
-            'container_name': '',
+            vm_name: '',
+            container_name: '',
           };
         },
       },

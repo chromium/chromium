@@ -281,7 +281,7 @@ void ProxyList::UpdateRetryInfoOnFallback(
 
 void ProxyList::UpdateProxyServers() {
   if (proxy_chains_.empty()) {
-    proxy_servers_ = {{}};
+    proxy_servers_ = std::vector<ProxyServer>();
     return;
   }
 

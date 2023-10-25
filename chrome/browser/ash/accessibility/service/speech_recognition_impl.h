@@ -46,6 +46,9 @@ class SpeechRecognitionImpl
     // Called whenever speech recognition stops.
     void OnStop();
 
+    // Called when a speech recognition result is returned.
+    void OnResult(ax::mojom::SpeechRecognitionResultEventPtr event);
+
     mojo::PendingReceiver<ax::mojom::SpeechRecognitionEventObserver>
     PassReceiver();
 
@@ -70,10 +73,9 @@ class SpeechRecognitionImpl
 
   // extensions::SpeechRecognitionPrivateDelegate:
   void HandleSpeechRecognitionStopped(const std::string& key) override;
-  // TODO(b/304305202): Implement this method.
   void HandleSpeechRecognitionResult(const std::string& key,
                                      const std::u16string& transcript,
-                                     bool is_final) override {}
+                                     bool is_final) override;
   // TODO(b/304305202): Implement this method.
   void HandleSpeechRecognitionError(const std::string& key,
                                     const std::string& error) override {}

@@ -74,7 +74,8 @@ public class PriceTrackingFeaturesTest {
     @Test
     @SmallTest
     public void testIsPriceTrackingEligible() {
-        Assert.assertTrue(PriceTrackingFeatures.isPriceTrackingEligible());
+        Assert.assertTrue(
+                PriceTrackingFeatures.isPriceTrackingEligible(Profile.getLastUsedRegularProfile()));
     }
 
     @UiThreadTest
@@ -82,7 +83,8 @@ public class PriceTrackingFeaturesTest {
     @SmallTest
     public void testIsPriceTrackingEligibleFlagIsDisabled() {
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
-        Assert.assertFalse(PriceTrackingFeatures.isPriceTrackingEligible());
+        Assert.assertFalse(
+                PriceTrackingFeatures.isPriceTrackingEligible(Profile.getLastUsedRegularProfile()));
     }
 
     @UiThreadTest
@@ -90,7 +92,8 @@ public class PriceTrackingFeaturesTest {
     @SmallTest
     public void testIsPriceTrackingEligibleNoMbb() {
         setMbbStatus(false);
-        Assert.assertFalse(PriceTrackingFeatures.isPriceTrackingEligible());
+        Assert.assertFalse(
+                PriceTrackingFeatures.isPriceTrackingEligible(Profile.getLastUsedRegularProfile()));
     }
 
     @UiThreadTest
@@ -98,7 +101,8 @@ public class PriceTrackingFeaturesTest {
     @SmallTest
     public void testIsPriceTrackingEligibleNotSignedIn() {
         setSignedInStatus(false);
-        Assert.assertFalse(PriceTrackingFeatures.isPriceTrackingEligible());
+        Assert.assertFalse(
+                PriceTrackingFeatures.isPriceTrackingEligible(Profile.getLastUsedRegularProfile()));
     }
 
     @UiThreadTest
@@ -110,7 +114,8 @@ public class PriceTrackingFeaturesTest {
         setTabSyncStatus(false, false);
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
 
-        Assert.assertTrue(PriceTrackingFeatures.isPriceTrackingEligible());
+        Assert.assertTrue(
+                PriceTrackingFeatures.isPriceTrackingEligible(Profile.getLastUsedRegularProfile()));
     }
 
     private void setMbbStatus(boolean isEnabled) {

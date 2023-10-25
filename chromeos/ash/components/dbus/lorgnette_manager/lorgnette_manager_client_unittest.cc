@@ -866,12 +866,14 @@ TEST_F(LorgnetteManagerClientTest, ListScanners) {
   SetListScannersExpectation(response.get());
 
   base::RunLoop run_loop;
-  GetClient()->ListScanners(base::BindLambdaForTesting(
-      [&](absl::optional<lorgnette::ListScannersResponse> result) {
-        run_loop.Quit();
-        ASSERT_TRUE(result.has_value());
-        EXPECT_THAT(result.value(), EqualsProto(kExpectedResponse));
-      }));
+  GetClient()->ListScanners(
+      /*local_only=*/false,
+      base::BindLambdaForTesting(
+          [&](absl::optional<lorgnette::ListScannersResponse> result) {
+            run_loop.Quit();
+            ASSERT_TRUE(result.has_value());
+            EXPECT_THAT(result.value(), EqualsProto(kExpectedResponse));
+          }));
 
   run_loop.Run();
 }
@@ -897,12 +899,14 @@ TEST_F(LorgnetteManagerClientTest, ListScannersViaAsyncDiscovery) {
   SetStopScannerDiscoveryExpectation(stop_response.get());
 
   base::RunLoop run_loop;
-  GetClient()->ListScanners(base::BindLambdaForTesting(
-      [&](absl::optional<lorgnette::ListScannersResponse> result) {
-        run_loop.Quit();
-        ASSERT_TRUE(result.has_value());
-        EXPECT_THAT(result.value(), EqualsProto(kExpectedScannerList));
-      }));
+  GetClient()->ListScanners(
+      /*local_only=*/false,
+      base::BindLambdaForTesting(
+          [&](absl::optional<lorgnette::ListScannersResponse> result) {
+            run_loop.Quit();
+            ASSERT_TRUE(result.has_value());
+            EXPECT_THAT(result.value(), EqualsProto(kExpectedScannerList));
+          }));
 
   run_loop.RunUntilIdle();
 
@@ -930,11 +934,13 @@ TEST_F(LorgnetteManagerClientTest, NullResponseToListScanners) {
   SetListScannersExpectation(nullptr);
 
   base::RunLoop run_loop;
-  GetClient()->ListScanners(base::BindLambdaForTesting(
-      [&](absl::optional<lorgnette::ListScannersResponse> result) {
-        EXPECT_EQ(result, absl::nullopt);
-        run_loop.Quit();
-      }));
+  GetClient()->ListScanners(
+      /*local_only=*/false,
+      base::BindLambdaForTesting(
+          [&](absl::optional<lorgnette::ListScannersResponse> result) {
+            EXPECT_EQ(result, absl::nullopt);
+            run_loop.Quit();
+          }));
 
   run_loop.Run();
 }
@@ -946,11 +952,13 @@ TEST_F(LorgnetteManagerClientTest, EmptyResponseToListScanners) {
   SetListScannersExpectation(response.get());
 
   base::RunLoop run_loop;
-  GetClient()->ListScanners(base::BindLambdaForTesting(
-      [&](absl::optional<lorgnette::ListScannersResponse> result) {
-        EXPECT_EQ(result, absl::nullopt);
-        run_loop.Quit();
-      }));
+  GetClient()->ListScanners(
+      /*local_only=*/false,
+      base::BindLambdaForTesting(
+          [&](absl::optional<lorgnette::ListScannersResponse> result) {
+            EXPECT_EQ(result, absl::nullopt);
+            run_loop.Quit();
+          }));
 
   run_loop.Run();
 }

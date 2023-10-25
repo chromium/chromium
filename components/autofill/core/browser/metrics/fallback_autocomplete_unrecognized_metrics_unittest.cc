@@ -84,6 +84,37 @@ TEST_F(AutocompleteUnrecognizedFallbackEventLoggerTest,
       true, 1);
 }
 
+// Tests that the FillAfterSuggestion metric is not emitted when the form
+// dynamically changes autocomplete attribute(s) before filling.
+// Regression test for crbug.com/1483883.
+TEST_F(AutocompleteUnrecognizedFallbackEventLoggerTest,
+       FillAfterSuggestion_DynamicChange) {
+  FormData form;
+  test::CreateTestAddressFormData(&form);
+  SeeForm(form);
+  // Since the form doesn't have any ac=unrecognized fields, the
+  // `AutocompleteUnrecognizedFallbackEventLogger` is not notified.
+  ShowSuggestions(form);
+
+  // Dynamically change the autocomplete attribute before accepting the
+  // suggestion. This causes `OnDidFillSuggestion()` to be called, even though
+  // `OnDidShowSuggestions()` was never called.
+  form.fields[0].parsed_autocomplete =
+      AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized};
+  SeeForm(form);
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, form.fields[0],
+      Suggestion::BackendId(kTestProfileId),
+      {.trigger_source = AutofillTriggerSource::kPopup});
+
+  base::HistogramTester histogram_tester;
+  ResetDriverToCommitMetrics();
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Funnel.ClassifiedFieldAutocompleteUnrecognized."
+      "FillAfterSuggestion.Address",
+      0);
+}
+
 // Tests that when suggestion on an non-autocomplete=unrecognized field are
 // shown, the autocomplete=unrecognized acceptance FillAfterSuggestion is not
 // emitted.

@@ -16,6 +16,7 @@
 #include "base/test/values_test_util.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "components/attribution_reporting/features.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_interop_parser.h"
 #include "content/browser/attribution_reporting/attribution_interop_runner.h"
@@ -113,6 +114,12 @@ AttributionConfig AttributionInteropTest::g_config_;
 TEST_P(AttributionInteropTest, HasExpectedOutput) {
   AttributionConfig config = GetConfig();
   base::Value::Dict dict = base::test::ParseJsonDictFromFile(GetParam());
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  if (dict.FindBool("needs_trigger_config").value_or(false)) {
+    scoped_feature_list.InitAndEnableFeature(
+        attribution_reporting::features::kAttributionReportingTriggerConfig);
+  }
 
   if (const base::Value* api_config = dict.Find("api_config")) {
     ASSERT_TRUE(api_config->is_dict());

@@ -408,6 +408,7 @@ void ResourcedClientImpl::ReportBrowserProcesses(
     process->set_pid(it->pid);
     process->set_protected_(it->is_protected);
     process->set_visible(it->is_visible);
+    process->set_focused(it->is_focused);
   }
 
   dbus::MethodCall method_call(resource_manager::kResourceManagerInterface,

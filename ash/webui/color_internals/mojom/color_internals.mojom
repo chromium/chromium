@@ -8,8 +8,8 @@ import "skia/public/mojom/skcolor.mojom";
 
 // The colors calculated from the current user wallpaper.
 struct WallpaperCalculatedColors {
-  array<skia.mojom.SkColor> prominent_colors;
   skia.mojom.SkColor k_mean_color;
+  skia.mojom.SkColor celebi_color;
 };
 
 // Observer that notifies color internals WebUI when wallpaper calculated colors

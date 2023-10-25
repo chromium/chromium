@@ -4,12 +4,15 @@
 
 #include "components/omnibox/browser/query_tile_provider.h"
 
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/page_classification_functions.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/query_tiles/tile_service.h"
 #include "components/search/search.h"
 #include "components/search_engines/template_url_service.h"
@@ -18,6 +21,9 @@
 
 // The relevance score for query tile match.
 constexpr int kQueryTilesMatchRelevanceScore = 1600;
+constexpr base::FeatureParam<int> kCacheMaxAge(&omnibox::kQueryTilesInZPSOnNTP,
+                                               "QueryTilesMaxCacheAgeHours",
+                                               8);
 
 QueryTileProvider::QueryTileProvider(AutocompleteProviderClient* client,
                                      AutocompleteProviderListener* listener)
@@ -49,6 +55,12 @@ void QueryTileProvider::Start(const AutocompleteInput& input,
 
 void QueryTileProvider::StartPrefetch(const AutocompleteInput& input) {
   if (!IsAllowedInContext(input)) {
+    return;
+  }
+
+  // Verify tiles age. Re-use previously cached response unless expired.
+  if (!tiles_.empty() && (base::TimeTicks::Now() - tiles_creation_timestamp_ <=
+                          base::Hours(kCacheMaxAge.Get()))) {
     return;
   }
 
@@ -88,6 +100,7 @@ bool QueryTileProvider::IsAllowedInContext(const AutocompleteInput& input) {
 void QueryTileProvider::OnTilesFetched(bool is_prefetch,
                                        std::vector<query_tiles::Tile> tiles) {
   tiles_ = std::move(tiles);
+  tiles_creation_timestamp_ = base::TimeTicks::Now();
   if (!is_prefetch) {
     BuildSuggestions();
   }

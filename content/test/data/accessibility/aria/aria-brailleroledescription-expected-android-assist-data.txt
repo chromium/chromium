@@ -1,0 +1,4 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++CheckBox textSize:16.00 style:0 bundle:[aria-brailleroledescription="aria braille role description", display="block", htmlTag="div", role="checkbox"]
+++CheckBox textSize:16.00 style:0 bundle:[display="block", htmlTag="div", role="checkbox"]
+++CheckBox textSize:16.00 style:0 bundle:[aria-brailleroledescription="", display="block", htmlTag="div", role="checkbox"]

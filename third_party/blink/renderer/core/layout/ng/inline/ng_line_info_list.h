@@ -11,13 +11,13 @@
 namespace blink {
 
 //
-// A `Vector` or `Deque`-like class for `NGLineInfo`, with a fixed maximum
+// A `Vector` or `Deque`-like class for `LineInfo`, with a fixed maximum
 // capacity.
 //
-// Use `NGLineInfoListOf` to instantiate. Algorithms can use this class to
+// Use `LineInfoListOf` to instantiate. Algorithms can use this class to
 // handle different capacities.
 //
-class NGLineInfoList {
+class LineInfoList {
   STACK_ALLOCATED();
 
  public:
@@ -27,24 +27,24 @@ class NGLineInfoList {
 
   // Out-of-bounds `index` will hit `DCHECK` and returns the value at `index %
   // max_lines_`.
-  NGLineInfo& operator[](wtf_size_t index) {
+  LineInfo& operator[](wtf_size_t index) {
     DCHECK_LT(index, Size());
     return line_infos_[(start_index_ + index) % max_lines_];
   }
   // Out-of-bounds `index` will hit `DCHECK` and returns the value at `index %
   // max_lines_`.
-  const NGLineInfo& operator[](wtf_size_t index) const {
+  const LineInfo& operator[](wtf_size_t index) const {
     DCHECK_LT(index, Size());
     return line_infos_[(start_index_ + index) % max_lines_];
   }
   // If empty, this will hit `DCHECK`.
-  NGLineInfo& Front() { return (*this)[0]; }
+  LineInfo& Front() { return (*this)[0]; }
   // If empty, this will hit `DCHECK`.
-  const NGLineInfo& Front() const { return (*this)[0]; }
+  const LineInfo& Front() const { return (*this)[0]; }
   // If empty, this will hit `DCHECK`.
-  NGLineInfo& Back() { return (*this)[Size() - 1]; }
+  LineInfo& Back() { return (*this)[Size() - 1]; }
   // If empty, this will hit `DCHECK`.
-  const NGLineInfo& Back() const { return (*this)[Size() - 1]; }
+  const LineInfo& Back() const { return (*this)[Size() - 1]; }
 
   void Shrink(wtf_size_t size) {
     DCHECK_LT(size, size_);
@@ -52,7 +52,7 @@ class NGLineInfoList {
   }
   void Clear() { size_ = start_index_ = 0; }
 
-  NGLineInfo& Append() {
+  LineInfo& Append() {
     DCHECK_LT(size_, max_lines_);
     ++size_;
     return Back();
@@ -64,20 +64,20 @@ class NGLineInfoList {
     start_index_ = (start_index_ + 1) % max_lines_;
   }
 
-  // Get the cached `NGLineInfo` for the `break_token`, remove it from this
+  // Get the cached `LineInfo` for the `break_token`, remove it from this
   // list, and set `is_cached_out` to `true`. If it doesn't exist, returns an
   // unused instance. The unused instance may be a new instance or a used
-  // instance. Callsites are expected to call `NGLineInfo::Reset()`.
-  NGLineInfo& Get(const NGInlineBreakToken* break_token, bool& is_cached_out);
+  // instance. Callsites are expected to call `LineInfo::Reset()`.
+  LineInfo& Get(const NGInlineBreakToken* break_token, bool& is_cached_out);
 
  protected:
-  NGLineInfoList(NGLineInfo* line_infos_instance, wtf_size_t max_lines)
+  LineInfoList(LineInfo* line_infos_instance, wtf_size_t max_lines)
       : max_lines_(max_lines) {
     CHECK_EQ(line_infos_instance, line_infos_);
   }
 
  private:
-  NGLineInfo& UnusedInstance() {
+  LineInfo& UnusedInstance() {
     DCHECK(IsEmpty());
     return line_infos_[0];
   }
@@ -85,17 +85,17 @@ class NGLineInfoList {
   wtf_size_t size_ = 0;
   wtf_size_t start_index_ = 0;
   const wtf_size_t max_lines_;
-  NGLineInfo line_infos_[0];
+  LineInfo line_infos_[0];
 };
 
-inline NGLineInfo& NGLineInfoList::Get(const NGInlineBreakToken* break_token,
-                                       bool& is_cached_out) {
+inline LineInfo& LineInfoList::Get(const NGInlineBreakToken* break_token,
+                                   bool& is_cached_out) {
   DCHECK(!is_cached_out);
   if (IsEmpty()) {
     return UnusedInstance();
   }
 
-  NGLineInfo& line_info = Front();
+  LineInfo& line_info = Front();
   if (break_token ? line_info.Start() == break_token->Start()
                   : line_info.Start().IsZero()) {
     RemoveFront();
@@ -108,15 +108,15 @@ inline NGLineInfo& NGLineInfoList::Get(const NGInlineBreakToken* break_token,
 }
 
 //
-// Instantiate `NGLineInfo` with the given `capacity`.
+// Instantiate `LineInfo` with the given `capacity`.
 //
 template <wtf_size_t max_lines>
-class NGLineInfoListOf : public NGLineInfoList {
+class LineInfoListOf : public LineInfoList {
  public:
-  NGLineInfoListOf() : NGLineInfoList(line_infos_instance_, max_lines) {}
+  LineInfoListOf() : LineInfoList(line_infos_instance_, max_lines) {}
 
  private:
-  NGLineInfo line_infos_instance_[max_lines];
+  LineInfo line_infos_instance_[max_lines];
 };
 
 }  // namespace blink

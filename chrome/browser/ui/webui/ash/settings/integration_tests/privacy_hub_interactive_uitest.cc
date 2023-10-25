@@ -58,7 +58,7 @@ class PrivacyHubInteractiveUiTest : public InteractiveAshTest {
         "main-page-container",
         "os-settings-privacy-page",
         "settings-privacy-hub-subpage",
-        "settings-toggle-button#geolocationToggle",
+        "cr-link-row#geolocationAreaLinkRow",
     };
   }
 

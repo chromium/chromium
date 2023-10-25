@@ -6,12 +6,14 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/scoped_observation.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_almanac_connector.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_metrics.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_update.h"
 #include "chrome/browser/apps/app_service/promise_apps/proto/promise_app.pb.h"
@@ -71,6 +73,8 @@ class PromiseAppServiceTest : public testing::Test,
   PromiseAppIconCache* icon_cache() { return service_->PromiseAppIconCache(); }
 
   PromiseAppService* service() { return service_.get(); }
+
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
   PromiseAppIconPtr CreatePromiseAppIcon(int width) {
     PromiseAppIconPtr icon = std::make_unique<PromiseAppIcon>();
@@ -133,6 +137,7 @@ class PromiseAppServiceTest : public testing::Test,
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
+  base::HistogramTester histogram_tester_;
 
   // Tracks how many times we should expect OnPromiseAppUpdate to be called
   // before proceeding with a unit test.
@@ -217,6 +222,10 @@ TEST_F(PromiseAppServiceTest, AlmanacIconsGetDownloadedThenAddedToIconCache) {
   EXPECT_EQ(icons[1]->width_in_pixels, 1024);
   EXPECT_TRUE(gfx::BitmapsAreEqual(icons[1]->icon,
                                    gfx::test::CreateBitmap(1024, 1024)));
+  histogram_tester().ExpectBucketCount(kPromiseAppIconTypeHistogram,
+                                       PromiseAppIconType::kPlaceholderIcon, 0);
+  histogram_tester().ExpectBucketCount(kPromiseAppIconTypeHistogram,
+                                       PromiseAppIconType::kRealIcon, 1);
 
   // Verify that the promise app is allowed to be visible now.
   const PromiseApp* promise_app_result = cache()->GetPromiseApp(kTestPackageId);
@@ -237,14 +246,19 @@ TEST_F(PromiseAppServiceTest, FailedIconDownloadsDoNotUpdateIconCache) {
       PromiseAppAlmanacConnector::GetServerUrl().spec(),
       response.SerializeAsString());
 
+  // Set up mock icon response.
+  url_loader_factory()->AddResponse("broken-url", "invalid icon");
+
   // Confirm there aren't any icons for the package yet.
   EXPECT_FALSE(icon_cache()->DoesPackageIdHaveIcons(kTestPackageId));
 
-  // We expect 2 Promise App Registry Cache updates in this test:
+  // We expect 3 Promise App Registry Cache updates in this test:
   // The first update is when we initially register the promise app in the
   // cache. The second update is when we take the app name provided by the
-  // Almanac API response and save it to the promise app object.
-  ExpectNumUpdates(/*num_updates=*/2);
+  // Almanac API response and save it to the promise app object. The third is
+  // after we attempt to download the icons for the promise app (but fail) and
+  // mark the promise app as ready to be shown to the user.
+  ExpectNumUpdates(/*num_updates=*/3);
   service()->OnPromiseApp(std::make_unique<PromiseApp>(kTestPackageId));
 
   // Wait for all the updates to trigger.
@@ -252,6 +266,10 @@ TEST_F(PromiseAppServiceTest, FailedIconDownloadsDoNotUpdateIconCache) {
 
   // Icon cache should still be empty.
   EXPECT_FALSE(icon_cache()->DoesPackageIdHaveIcons(kTestPackageId));
+  histogram_tester().ExpectBucketCount(kPromiseAppIconTypeHistogram,
+                                       PromiseAppIconType::kPlaceholderIcon, 1);
+  histogram_tester().ExpectBucketCount(kPromiseAppIconTypeHistogram,
+                                       PromiseAppIconType::kRealIcon, 0);
 }
 
 // Tests that for an empty Almanac response, we still show the promise app (but

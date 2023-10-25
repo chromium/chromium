@@ -6,8 +6,10 @@
 #define CHROME_BROWSER_COMPOSE_COMPOSE_SESSION_H_
 
 #include <memory>
+#include <stack>
 #include <string>
 
+#include "base/check_op.h"
 #include "chrome/common/compose/compose.mojom.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
@@ -66,12 +68,18 @@ class ComposeSession : public compose::mojom::ComposeDialogPageHandler {
   // disk or processed by the Browser Process at all.
   void SaveWebUIState(const std::string& webui_state) override;
 
+  // Undo to the last state with an kOk status and valid response text.
+  void Undo(UndoCallback callback) override;
+
   // Indicates that the compose result should be accepted by Autofill.
   void AcceptComposeResult() override;
 
   // Non-ComposeDialogPageHandler Methods
 
-  void SetComposeResultCallback(ComposeCallback callback) {
+  // Saves the last OK response state to the undo stack.
+  void SaveLastOKStateToUndoStack();
+
+  void set_compose_callback(ComposeCallback callback) {
     callback_ = std::move(callback);
   }
 
@@ -79,7 +87,7 @@ class ComposeSession : public compose::mojom::ComposeDialogPageHandler {
   void set_initial_input(const std::string input) { initial_input_ = input; }
 
  private:
-  void ProcessError(const std::string& message);
+  void ProcessError(compose::mojom::ComposeStatus status);
   void ModelExecutionCallback(
       optimization_guide::OptimizationGuideModelExecutionResult result);
 
@@ -91,7 +99,13 @@ class ComposeSession : public compose::mojom::ComposeDialogPageHandler {
 
   // Initialized during construction, and always remains valid during the
   // lifetime of ComposeSession.
-  compose::mojom::ComposeStatePtr state_;
+  compose::mojom::ComposeStatePtr current_state_;
+
+  // The last state that received a kOk status and valid response text.
+  compose::mojom::ComposeStatePtr last_ok_state_;
+
+  // The state returned when user clicks undo.
+  std::stack<compose::mojom::ComposeStatePtr> undo_states_;
 
   // Renderer provided text selection.
   std::string initial_input_;

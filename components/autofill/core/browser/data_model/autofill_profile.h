@@ -155,7 +155,7 @@ class AutofillProfile : public AutofillDataModel {
 
   // Same as operator==, but ignores differences in guid and cares about
   // differences in usage stats.
-  bool EqualsForSyncPurposes(const AutofillProfile& profile) const;
+  bool EqualsForLegacySyncPurposes(const AutofillProfile& profile) const;
 
   // Returns true if |new_profile| and this are considered equal for updating
   // purposes, meaning that if equal we do not need to update this profile to
@@ -191,7 +191,7 @@ class AutofillProfile : public AutofillDataModel {
 
   // Overwrites the data of |this| profile with data from the given |profile|.
   // Expects that the profiles have the same guid.
-  void OverwriteDataFrom(const AutofillProfile& profile);
+  void OverwriteDataFromForLegacySync(const AutofillProfile& profile);
 
   // Merges the data from |this| profile and the given |profile| into |this|
   // profile. Expects that |this| and |profile| have already been deemed

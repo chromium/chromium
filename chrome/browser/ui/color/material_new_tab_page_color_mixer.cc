@@ -52,6 +52,9 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
     mixer[kColorRealboxForeground] = {ui::kColorSysOnSurfaceSubtle};
   }
 
+  mixer[kColorNewTabPageHistoryClustersModuleItemBackground] = {
+      ui::kColorSysBaseContainerElevated};
+
   mixer[kColorNewTabPageModuleBackground] = {ui::kColorSysBaseContainer};
   if (base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned)) {
     mixer[kColorNewTabPageModuleItemBackground] = {
@@ -61,12 +64,10 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
   } else {
     mixer[kColorNewTabPageModuleItemBackground] = {ui::kColorSysBaseContainer};
   }
-  mixer[kColorNewTabPageHistoryClustersModuleItemBackground] = {
-      ui::kColorSysBaseContainerElevated};
+  mixer[kColorNewTabPageModuleElementDivider] = {ui::kColorSysDivider};
   mixer[kColorNewTabPageModuleContextMenuDivider] = {ui::kColorSysDivider};
 
   mixer[kColorNewTabPagePromoBackground] = {ui::kColorSysBase};
-
   mixer[kColorNewTabPagePrimaryForeground] = {ui::kColorSysOnSurface};
   mixer[kColorNewTabPageSecondaryForeground] = {ui::kColorSysOnSurfaceSubtle};
 }

@@ -5,6 +5,8 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 
 #include <memory>
+#include <string>
+#include <utility>
 #include <vector>
 
 #include "base/time/time.h"
@@ -17,92 +19,32 @@ namespace apps {
 
 namespace {
 
-#define VERIFY_OPTIONAL_STRING_VALUE(VALUE)                  \
-  {                                                          \
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);   \
-    app1->VALUE = "banana";                                  \
-    AppPtr app2 = app1->Clone();                             \
-    EXPECT_TRUE(IsEqual(std::move(app1), std::move(app2)));  \
-  }                                                          \
-  {                                                          \
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);   \
-    AppPtr app2 = app1->Clone();                             \
-    app2->VALUE = "banana";                                  \
-    EXPECT_FALSE(IsEqual(std::move(app1), std::move(app2))); \
-  }                                                          \
-  {                                                          \
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);   \
-    AppPtr app2 = app1->Clone();                             \
-    app1->VALUE = "apple";                                   \
-    app2->VALUE = "banana";                                  \
-    EXPECT_FALSE(IsEqual(std::move(app1), std::move(app2))); \
-  }
+constexpr AppType kAppType = AppType::kArc;
+constexpr char kAppId[] = "abc";
 
-#define VERIFY_OPTIONAL_BOOL_VALUE(VALUE)                    \
-  {                                                          \
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);   \
-    app1->VALUE = true;                                      \
-    AppPtr app2 = app1->Clone();                             \
-    EXPECT_TRUE(IsEqual(std::move(app1), std::move(app2)));  \
-  }                                                          \
-  {                                                          \
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);   \
-    AppPtr app2 = app1->Clone();                             \
-    app2->VALUE = false;                                     \
-    EXPECT_FALSE(IsEqual(std::move(app1), std::move(app2))); \
-  }                                                          \
-  {                                                          \
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);   \
-    AppPtr app2 = app1->Clone();                             \
-    app1->VALUE = true;                                      \
-    app2->VALUE = false;                                     \
-    EXPECT_FALSE(IsEqual(std::move(app1), std::move(app2))); \
-  }
+template <typename T>
+std::pair<T, T> TestValue();
 
-#define VERIFY_OPTIONAL_TIME_VALUE(VALUE)                        \
-  {                                                              \
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);       \
-    app1->VALUE = base::Time::FromSecondsSinceUnixEpoch(1000.0); \
-    AppPtr app2 = app1->Clone();                                 \
-    EXPECT_TRUE(IsEqual(std::move(app1), std::move(app2)));      \
-  }                                                              \
-  {                                                              \
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);       \
-    AppPtr app2 = app1->Clone();                                 \
-    app2->VALUE = base::Time::FromSecondsSinceUnixEpoch(1000.0); \
-    EXPECT_FALSE(IsEqual(std::move(app1), std::move(app2)));     \
-  }                                                              \
-  {                                                              \
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);       \
-    AppPtr app2 = app1->Clone();                                 \
-    app1->VALUE = base::Time::FromSecondsSinceUnixEpoch(1000.0); \
-    app2->VALUE = base::Time::FromSecondsSinceUnixEpoch(2000.0); \
-    EXPECT_FALSE(IsEqual(std::move(app1), std::move(app2)));     \
-  }
+template <>
+std::pair<std::string, std::string> TestValue() {
+  return {"apple", "banana"};
+}
 
-#define VERIFY_OPTIONAL_INT_VALUE(VALUE)                     \
-  {                                                          \
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);   \
-    app1->VALUE = 100;                                       \
-    AppPtr app2 = app1->Clone();                             \
-    EXPECT_TRUE(IsEqual(std::move(app1), std::move(app2)));  \
-  }                                                          \
-  {                                                          \
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);   \
-    AppPtr app2 = app1->Clone();                             \
-    app2->VALUE = 200;                                       \
-    EXPECT_FALSE(IsEqual(std::move(app1), std::move(app2))); \
-  }                                                          \
-  {                                                          \
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);   \
-    AppPtr app2 = app1->Clone();                             \
-    app1->VALUE = 100;                                       \
-    app2->VALUE = 200;                                       \
-    EXPECT_FALSE(IsEqual(std::move(app1), std::move(app2))); \
-  }
+template <>
+std::pair<bool, bool> TestValue() {
+  return {true, false};
+}
 
-const AppType app_type = AppType::kArc;
-const char app_id[] = "abc";
+template <>
+std::pair<base::Time, base::Time> TestValue() {
+  return {base::Time::FromSecondsSinceUnixEpoch(1000),
+          base::Time::FromSecondsSinceUnixEpoch(2000)};
+}
+
+template <>
+std::pair<uint64_t, uint64_t> TestValue() {
+  return {100, 200};
+}
 
 bool IsEqual(AppPtr app1, AppPtr app2) {
   std::vector<AppPtr> apps1;
@@ -112,6 +54,29 @@ bool IsEqual(AppPtr app1, AppPtr app2) {
   apps2.push_back(std::move(app2));
 
   return IsEqual(apps1, apps2);
+}
+
+template <typename T>
+void VerifyOptionalValue(absl::optional<T> App::*field) {
+  {
+    AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
+    app1.get()->*field = TestValue<T>().first;
+    AppPtr app2 = app1->Clone();
+    EXPECT_TRUE(IsEqual(std::move(app1), std::move(app2)));
+  }
+  {
+    AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
+    AppPtr app2 = app1->Clone();
+    app2.get()->*field = TestValue<T>().first;
+    EXPECT_FALSE(IsEqual(std::move(app1), std::move(app2)));
+  }
+  {
+    AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
+    AppPtr app2 = app1->Clone();
+    app1.get()->*field = TestValue<T>().first;
+    app2.get()->*field = TestValue<T>().second;
+    EXPECT_FALSE(IsEqual(std::move(app1), std::move(app2)));
+  }
 }
 
 }  // namespace
@@ -125,7 +90,7 @@ TEST_F(AppTypesTest, EmptyAppsIsEqual) {
 }
 
 TEST_F(AppTypesTest, VerifyAppsIsEqualForEmptyOptionalValues) {
-  AppPtr app1 = std::make_unique<App>(app_type, app_id);
+  AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
   AppPtr app2 = app1->Clone();
   EXPECT_TRUE(IsEqual(std::move(app1), std::move(app2)));
 }
@@ -133,7 +98,7 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForEmptyOptionalValues) {
 TEST_F(AppTypesTest, VerifyAppsIsEqualForReadiness) {
   // Verify the app is equal with the same `readiness`.
   {
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);
+    AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
     app1->readiness = Readiness::kReady;
     AppPtr app2 = app1->Clone();
     EXPECT_TRUE(IsEqual(std::move(app1), std::move(app2)));
@@ -141,7 +106,7 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForReadiness) {
 
   // Verify the app is not equal with different `readiness`.
   {
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);
+    AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
     app1->readiness = Readiness::kReady;
     AppPtr app2 = app1->Clone();
     app2->readiness = Readiness::kUninstalledByUser;
@@ -150,29 +115,29 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForReadiness) {
 }
 
 TEST_F(AppTypesTest, VerifyAppsIsEqualForName) {
-  VERIFY_OPTIONAL_STRING_VALUE(name);
+  VerifyOptionalValue(&App::name);
 }
 
 TEST_F(AppTypesTest, VerifyAppsIsEqualForShortName) {
-  VERIFY_OPTIONAL_STRING_VALUE(short_name);
+  VerifyOptionalValue(&App::short_name);
 }
 
 TEST_F(AppTypesTest, VerifyAppsIsEqualForPublisherId) {
-  VERIFY_OPTIONAL_STRING_VALUE(publisher_id);
+  VerifyOptionalValue(&App::publisher_id);
 }
 
 TEST_F(AppTypesTest, VerifyAppsIsEqualForDescription) {
-  VERIFY_OPTIONAL_STRING_VALUE(description);
+  VerifyOptionalValue(&App::description);
 }
 
 TEST_F(AppTypesTest, VerifyAppsIsEqualForVersion) {
-  VERIFY_OPTIONAL_STRING_VALUE(version);
+  VerifyOptionalValue(&App::version);
 }
 
 TEST_F(AppTypesTest, VerifyAppsIsEqualForAdditionalSearchTerms) {
   // Verify the app is equal with the same `additional_search_terms`.
   {
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);
+    AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
     app1->additional_search_terms = {"aaa"};
     AppPtr app2 = app1->Clone();
     EXPECT_TRUE(IsEqual(std::move(app1), std::move(app2)));
@@ -180,7 +145,7 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForAdditionalSearchTerms) {
 
   // Verify the app is not equal with different `additional_search_terms`.
   {
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);
+    AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
     AppPtr app2 = app1->Clone();
     app1->additional_search_terms = {"aaa"};
     app2->additional_search_terms = {"bbb"};
@@ -191,7 +156,7 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForAdditionalSearchTerms) {
 TEST_F(AppTypesTest, VerifyAppsIsEqualForIconKey) {
   // Verify the app is equal with the same `icon_key`.
   {
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);
+    AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
     app1->icon_key = IconKey(100, 0, 0);
     AppPtr app2 = app1->Clone();
     EXPECT_TRUE(IsEqual(std::move(app1), std::move(app2)));
@@ -200,7 +165,7 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForIconKey) {
   // Verify the app is not equal with an empty `icon_key` vs non-empty
   // `icon_key`.
   {
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);
+    AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
     AppPtr app2 = app1->Clone();
     app2->icon_key = IconKey(100, 0, 0);
     EXPECT_FALSE(IsEqual(std::move(app1), std::move(app2)));
@@ -208,7 +173,7 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForIconKey) {
 
   // Verify the app is not equal with different `icon_key`.
   {
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);
+    AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
     AppPtr app2 = app1->Clone();
     app1->icon_key = IconKey(100, 0, 0);
     app2->icon_key = IconKey(200, 0, 0);
@@ -217,17 +182,17 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForIconKey) {
 }
 
 TEST_F(AppTypesTest, VerifyAppsIsEqualForLastLaunchTime) {
-  VERIFY_OPTIONAL_TIME_VALUE(last_launch_time);
+  VerifyOptionalValue(&App::last_launch_time);
 }
 
 TEST_F(AppTypesTest, VerifyAppsIsEqualForInstallTime) {
-  VERIFY_OPTIONAL_TIME_VALUE(install_time);
+  VerifyOptionalValue(&App::install_time);
 }
 
 TEST_F(AppTypesTest, VerifyAppsIsEqualForPermissions) {
   // Verify the app is equal with the same `permissions`.
   {
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);
+    AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
     app1->permissions.push_back(std::make_unique<Permission>(
         PermissionType::kLocation, TriState::kAllow, /*is_managed=*/true));
     AppPtr app2 = app1->Clone();
@@ -236,7 +201,7 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForPermissions) {
 
   // Verify the app is not equal with different `permissions`.
   {
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);
+    AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
     AppPtr app2 = app1->Clone();
     app1->permissions.push_back(std::make_unique<Permission>(
         PermissionType::kLocation, TriState::kAllow, /*is_managed=*/true));
@@ -249,7 +214,7 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForPermissions) {
 TEST_F(AppTypesTest, VerifyAppsIsEqualForInstallReason) {
   // Verify the app is equal with the same `install_reason`.
   {
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);
+    AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
     app1->install_reason = InstallReason::kUser;
     AppPtr app2 = app1->Clone();
     EXPECT_TRUE(IsEqual(std::move(app1), std::move(app2)));
@@ -257,7 +222,7 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForInstallReason) {
 
   // Verify the app is not equal with different `install_reason`.
   {
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);
+    AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
     AppPtr app2 = app1->Clone();
     app1->install_reason = InstallReason::kUser;
     app2->install_reason = InstallReason::kSystem;
@@ -268,7 +233,7 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForInstallReason) {
 TEST_F(AppTypesTest, VerifyAppsIsEqualForInstallSource) {
   // Verify the app is equal with the same `install_source`.
   {
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);
+    AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
     app1->install_source = InstallSource::kPlayStore;
     AppPtr app2 = app1->Clone();
     EXPECT_TRUE(IsEqual(std::move(app1), std::move(app2)));
@@ -276,7 +241,7 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForInstallSource) {
 
   // Verify the app is not equal with different `install_source`.
   {
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);
+    AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
     AppPtr app2 = app1->Clone();
     app1->install_source = InstallSource::kPlayStore;
     app2->install_source = InstallSource::kBrowser;
@@ -287,7 +252,7 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForInstallSource) {
 TEST_F(AppTypesTest, VerifyAppsIsEqualForPolicyIds) {
   // Verify the app is equal with the same `policy_ids`.
   {
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);
+    AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
     app1->policy_ids = {"policy1"};
     AppPtr app2 = app1->Clone();
     EXPECT_TRUE(IsEqual(std::move(app1), std::move(app2)));
@@ -295,7 +260,7 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForPolicyIds) {
 
   // Verify the app is not equal with different `install_source`.
   {
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);
+    AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
     AppPtr app2 = app1->Clone();
     app1->policy_ids = {"policy1"};
     app2->policy_ids = {"policy2"};
@@ -304,47 +269,47 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForPolicyIds) {
 }
 
 TEST_F(AppTypesTest, VerifyAppsIsEqualForIsPlatformApp) {
-  VERIFY_OPTIONAL_BOOL_VALUE(is_platform_app);
+  VerifyOptionalValue(&App::is_platform_app);
 }
 
 TEST_F(AppTypesTest, VerifyAppsIsEqualForRecommendable) {
-  VERIFY_OPTIONAL_BOOL_VALUE(recommendable);
+  VerifyOptionalValue(&App::recommendable);
 }
 
 TEST_F(AppTypesTest, VerifyAppsIsEqualForSearchable) {
-  VERIFY_OPTIONAL_BOOL_VALUE(searchable);
+  VerifyOptionalValue(&App::searchable);
 }
 
 TEST_F(AppTypesTest, VerifyAppsIsEqualForShowInLauncher) {
-  VERIFY_OPTIONAL_BOOL_VALUE(show_in_launcher);
+  VerifyOptionalValue(&App::show_in_launcher);
 }
 
 TEST_F(AppTypesTest, VerifyAppsIsEqualForShowInShelf) {
-  VERIFY_OPTIONAL_BOOL_VALUE(show_in_shelf);
+  VerifyOptionalValue(&App::show_in_shelf);
 }
 
 TEST_F(AppTypesTest, VerifyAppsIsEqualForShowInSearch) {
-  VERIFY_OPTIONAL_BOOL_VALUE(show_in_search);
+  VerifyOptionalValue(&App::show_in_search);
 }
 
 TEST_F(AppTypesTest, VerifyAppsIsEqualForShowInManagement) {
-  VERIFY_OPTIONAL_BOOL_VALUE(show_in_management);
+  VerifyOptionalValue(&App::show_in_management);
 }
 
 TEST_F(AppTypesTest, VerifyAppsIsEqualForHandlesIntents) {
-  VERIFY_OPTIONAL_BOOL_VALUE(handles_intents);
+  VerifyOptionalValue(&App::handles_intents);
 }
 
 TEST_F(AppTypesTest, VerifyAppsIsEqualForAllowUninstall) {
-  VERIFY_OPTIONAL_BOOL_VALUE(allow_uninstall);
+  VerifyOptionalValue(&App::allow_uninstall);
 }
 
 TEST_F(AppTypesTest, VerifyAppsIsEqualForHasBadge) {
-  VERIFY_OPTIONAL_BOOL_VALUE(has_badge);
+  VerifyOptionalValue(&App::has_badge);
 }
 
 TEST_F(AppTypesTest, VerifyAppsIsEqualForPaused) {
-  VERIFY_OPTIONAL_BOOL_VALUE(paused);
+  VerifyOptionalValue(&App::paused);
 }
 
 TEST_F(AppTypesTest, VerifyAppsIsEqualForIntentFilters) {
@@ -356,7 +321,7 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForIntentFilters) {
 
   // Verify the app is equal with the same `intent_filter`.
   {
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);
+    AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
     app1->intent_filters.push_back(intent_filter1->Clone());
     AppPtr app2 = app1->Clone();
     EXPECT_TRUE(IsEqual(std::move(app1), std::move(app2)));
@@ -364,7 +329,7 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForIntentFilters) {
 
   // Verify the app is not equal with different `intent_filter`.
   {
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);
+    AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
     AppPtr app2 = app1->Clone();
     app1->intent_filters.push_back(intent_filter1->Clone());
     app2->intent_filters.push_back(intent_filter2->Clone());
@@ -373,13 +338,13 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForIntentFilters) {
 }
 
 TEST_F(AppTypesTest, VerifyAppsIsEqualForResizeLocked) {
-  VERIFY_OPTIONAL_BOOL_VALUE(resize_locked);
+  VerifyOptionalValue(&App::resize_locked);
 }
 
 TEST_F(AppTypesTest, VerifyAppsIsEqualForWindowMode) {
   // Verify the app is equal with the same `window_mode`.
   {
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);
+    AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
     app1->window_mode = WindowMode::kBrowser;
     AppPtr app2 = app1->Clone();
     EXPECT_TRUE(IsEqual(std::move(app1), std::move(app2)));
@@ -387,7 +352,7 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForWindowMode) {
 
   // Verify the app is not equal with different `window_mode`.
   {
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);
+    AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
     AppPtr app2 = app1->Clone();
     app1->window_mode = WindowMode::kBrowser;
     app2->window_mode = WindowMode::kTabbedWindow;
@@ -398,7 +363,7 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForWindowMode) {
 TEST_F(AppTypesTest, VerifyAppsIsEqualForRunOnOsLogin) {
   // Verify the app is equal with the same `run_on_os_login`.
   {
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);
+    AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
     app1->run_on_os_login = RunOnOsLogin(RunOnOsLoginMode::kNotRun, false);
     AppPtr app2 = app1->Clone();
     EXPECT_TRUE(IsEqual(std::move(app1), std::move(app2)));
@@ -407,7 +372,7 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForRunOnOsLogin) {
   // Verify the app is not equal with an empty `run_on_os_login` vs non-empty
   // `run_on_os_login`.
   {
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);
+    AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
     AppPtr app2 = app1->Clone();
     app2->run_on_os_login = RunOnOsLogin(RunOnOsLoginMode::kNotRun, false);
     EXPECT_FALSE(IsEqual(std::move(app1), std::move(app2)));
@@ -415,7 +380,7 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForRunOnOsLogin) {
 
   // Verify the app is not equal with different `run_on_os_login`.
   {
-    AppPtr app1 = std::make_unique<App>(app_type, app_id);
+    AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
     AppPtr app2 = app1->Clone();
     app1->run_on_os_login = RunOnOsLogin(RunOnOsLoginMode::kNotRun, false);
     app2->run_on_os_login = RunOnOsLogin(RunOnOsLoginMode::kNotRun, true);
@@ -424,11 +389,11 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForRunOnOsLogin) {
 }
 
 TEST_F(AppTypesTest, VerifyAppsIsEqualForAppSizeInBytes) {
-  VERIFY_OPTIONAL_INT_VALUE(app_size_in_bytes);
+  VerifyOptionalValue(&App::app_size_in_bytes);
 }
 
 TEST_F(AppTypesTest, VerifyAppsIsEqualForDataSizeInBytes) {
-  VERIFY_OPTIONAL_INT_VALUE(data_size_in_bytes);
+  VerifyOptionalValue(&App::data_size_in_bytes);
 }
 
 }  // namespace apps

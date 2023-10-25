@@ -4,8 +4,9 @@
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
+import {isComputersRoot, isFakeEntry, isSameEntry, isTeamDriveRoot} from '../../common/js/entry_utils.js';
 import {MockEntry, MockFileSystem} from '../../common/js/mock_entry.js';
-import {str, util} from '../../common/js/util.js';
+import {str} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {EntryLocation} from '../../externs/entry_location.js';
 import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
@@ -127,7 +128,7 @@ export class MockVolumeManager {
    * @return {!EntryLocation|null} Location information.
    */
   getLocationInfo(entry) {
-    if (util.isFakeEntry(entry)) {
+    if (isFakeEntry(entry)) {
       const isReadOnly =
           // @ts-ignore: error TS2339: Property 'rootType' does not exist on
           // type 'FileSystemEntry | FilesAppEntry'.
@@ -152,7 +153,7 @@ export class MockVolumeManager {
           isRootEntry = true;
         } else {
           rootType = VolumeManagerCommon.RootType.SHARED_DRIVE;
-          isRootEntry = util.isTeamDriveRoot(entry);
+          isRootEntry = isTeamDriveRoot(entry);
         }
       } else if (entry.fullPath.startsWith('/Computers')) {
         if (entry.fullPath === '/Computers') {
@@ -160,7 +161,7 @@ export class MockVolumeManager {
           isRootEntry = true;
         } else {
           rootType = VolumeManagerCommon.RootType.COMPUTER;
-          isRootEntry = util.isComputersRoot(entry);
+          isRootEntry = isComputersRoot(entry);
         }
       } else if (/^\/\.(files|shortcut-targets)-by-id/.test(entry.fullPath)) {
         rootType = VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME;
@@ -176,7 +177,7 @@ export class MockVolumeManager {
     }
     const rootType = VolumeManagerCommon.getRootTypeFromVolumeType(
         assert(volumeInfo.volumeType));
-    const isRootEntry = util.isSameEntry(entry, volumeInfo.fileSystem.root);
+    const isRootEntry = isSameEntry(entry, volumeInfo.fileSystem.root);
     return new EntryLocationImpl(volumeInfo, rootType, isRootEntry, false);
   }
 
@@ -224,6 +225,13 @@ export class MockVolumeManager {
           /** @type VolumeManagerCommon.FileSystemType */ ('fusebox');
     }
 
+    let source = VolumeManagerCommon.Source.NETWORK;
+    if (type === VolumeManagerCommon.VolumeType.ARCHIVE) {
+      source = VolumeManagerCommon.Source.FILE;
+    } else if (type === VolumeManagerCommon.VolumeType.REMOVABLE) {
+      source = VolumeManagerCommon.Source.DEVICE;
+    }
+
     // If there's no label set it to volumeId to make it shorter to write
     // tests.
     const volumeInfo = new VolumeInfoImpl(
@@ -241,7 +249,7 @@ export class MockVolumeManager {
         false,                                      // hasMedia
         false,                                      // configurable
         false,                                      // watchable
-        VolumeManagerCommon.Source.NETWORK,         // source
+        source,                                     // source
         diskFileSystemType,                         // diskFileSystemType
         // @ts-ignore: error TS2345: Argument of type '{}' is not assignable to
         // parameter of type 'IconSet'.

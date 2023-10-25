@@ -58,6 +58,12 @@ CGFloat const kSpacingAfterTitle = 4;
 
   // URL of the current page the bottom sheet is being displayed on.
   GURL _URL;
+
+  // The following are displayed to the user whenever they receive some new
+  // passwords via password sharing that they have not acknowledged before. Nil
+  // otherwise.
+  NSString* _title;
+  NSString* _subtitle;
 }
 
 // The password controller handler used to open the password manager.
@@ -91,6 +97,8 @@ CGFloat const kSpacingAfterTitle = 4;
   // views in `-[ConfirmationAlertViewController viewDidLoad]`.
   self.actionHandler = self;
 
+  self.titleString = _title;
+  self.titleTextStyle = UIFontTextStyleTitle2;
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD);
   self.secondaryActionString =
@@ -98,12 +106,16 @@ CGFloat const kSpacingAfterTitle = 4;
   self.secondaryActionImage =
       DefaultSymbolWithPointSize(kKeyboardSymbol, kSymbolActionPointSize);
 
-  self.subtitleTextStyle = UIFontTextStyleFootnote;
-  std::u16string formattedURL =
-      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-          _URL);
-  self.subtitleString = l10n_util::GetNSStringF(
-      IDS_IOS_PASSWORD_BOTTOM_SHEET_SUBTITLE, formattedURL);
+  if (_subtitle) {
+    self.subtitleString = _subtitle;
+  } else {
+    self.subtitleTextStyle = UIFontTextStyleFootnote;
+    std::u16string formattedURL =
+        url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+            _URL);
+    self.subtitleString = l10n_util::GetNSStringF(
+        IDS_IOS_PASSWORD_BOTTOM_SHEET_SUBTITLE, formattedURL);
+  }
 
   [super viewDidLoad];
 }
@@ -152,6 +164,11 @@ CGFloat const kSpacingAfterTitle = 4;
              andDomain:(NSString*)domain {
   _suggestions = suggestions;
   _domain = domain;
+}
+
+- (void)setTitle:(NSString*)title subtitle:(NSString*)subtitle {
+  _title = title;
+  _subtitle = subtitle;
 }
 
 - (void)dismiss {

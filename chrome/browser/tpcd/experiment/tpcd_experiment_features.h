@@ -20,6 +20,10 @@ extern const base::FeatureParam<bool> kDisable3PCookies;
 extern const base::FeatureParam<base::TimeDelta> kDecisionDelayTime;
 extern const base::FeatureParam<bool> kForceEligibleForTesting;
 
+extern const char kTpcdWritePopupCurrentInteractionHeuristicsGrantsName[];
+extern const char kTpcdWritePopupPastInteractionHeuristicsGrantsName[];
+extern const char kTpcdBackfillPopupHeuristicsGrantsName[];
+
 // Whether to create a short-term grant when observing the Popup With Current
 // Interaction scenario.
 extern const base::FeatureParam<base::TimeDelta>
@@ -29,6 +33,11 @@ extern const base::FeatureParam<base::TimeDelta>
 // Interaction scenario.
 extern const base::FeatureParam<base::TimeDelta>
     kTpcdWritePopupPastInteractionHeuristicsGrants;
+
+// Whether to backfill popup heuristics grants for recent popups with a current
+// interaction, when a user is onboarded to 3PCD.
+extern const base::FeatureParam<base::TimeDelta>
+    kTpcdBackfillPopupHeuristicsGrants;
 
 }  // namespace tpcd::experiment
 

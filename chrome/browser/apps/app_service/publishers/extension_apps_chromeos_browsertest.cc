@@ -263,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionAppsChromeOsBrowserTest, NavigateExisting) {
     web_contents[i] = browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  // SessionID::InvalidValue() is -1 beyond the int of GetWindowIdOfTab.
+  // GetWindowIdOfTab() returns -1 for SessionID::InvalidValue().
   ASSERT_NE(extensions::ExtensionTabUtil::GetWindowIdOfTab(web_contents[0]),
             -1);
 

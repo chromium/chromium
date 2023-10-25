@@ -97,7 +97,7 @@ std::string SerializeProfiles(const std::vector<AutofillProfile*>& profiles) {
     result += "\n";
     for (const ServerFieldType& type : kProfileFieldTypes) {
       std::u16string value = profile->GetRawInfo(type);
-      result += FieldTypeToStringPiece(type);
+      result += FieldTypeToStringView(type);
       result += kFieldSeparator;
       if (!value.empty()) {
         base::ReplaceFirstSubstringAfterOffset(&value, 0, u"\\n", u"\n");

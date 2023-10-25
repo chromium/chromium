@@ -142,4 +142,30 @@ bool DocumentsTable::Remove(SqlDatabase* db, const base::FilePath& file_path) {
   return true;
 }
 
+// static
+bool DocumentsTable::GetAllFiles(SqlDatabase* db,
+                                 std::vector<base::FilePath>& documents) {
+  static constexpr char kQuery[] =
+      "SELECT directory_path, file_name "
+      "FROM documents "
+      "ORDER BY directory_path, file_name";
+
+  std::unique_ptr<sql::Statement> statement =
+      db->GetStatementForQuery(SQL_FROM_HERE, kQuery);
+  if (!statement) {
+    LOG(ERROR) << "Couldn't create the statement";
+    return false;
+  }
+
+  while (statement->Step()) {
+    base::FilePath file_path(statement->ColumnString(0));
+    file_path = file_path.Append(statement->ColumnString(1));
+
+    DVLOG(1) << "GetAll : " << file_path;
+    documents.emplace_back(base::FilePath(std::move(file_path)));
+  }
+
+  return true;
+}
+
 }  // namespace app_list

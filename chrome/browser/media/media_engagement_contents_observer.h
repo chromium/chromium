@@ -59,7 +59,6 @@ class MediaEngagementContentsObserver : public content::WebContentsObserver {
       const AudioContextId& audio_context_id) override;
 
   static const gfx::Size kSignificantSize;
-  static const char* const kHistogramScoreAtPlaybackName;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(MediaEngagementContentsObserverTest,
@@ -76,41 +75,6 @@ class MediaEngagementContentsObserver : public content::WebContentsObserver {
 
   // This is the maximum playback time for media to be considered 'short'.
   static const base::TimeDelta kMaxShortPlaybackTime;
-
-  // This enum is used to record a histogram and should not be renumbered.
-  enum class InsignificantPlaybackReason {
-    // The frame size of the video is too small.
-    kFrameSizeTooSmall = 0,
-
-    // The player was muted.
-    kAudioMuted,
-
-    // The media is paused.
-    kMediaPaused,
-
-    // No audio track was present on the media.
-    kNoAudioTrack,
-
-    // This is always recorded to the histogram so we can see the number
-    // of events that occured.
-    kCount,
-
-    // Add new items before this one, always keep this one at the end.
-    kReasonMax,
-  };
-
-  enum class InsignificantHistogram {
-    // The player isn't currently significant and can't be because it
-    // doesn't meet all the criteria (first time only).
-    kPlayerNotAddedFirstTime = 0,
-
-    // The player isn't currently significant and can't be because it
-    // doesn't meet all the critera (after the first time).
-    kPlayerNotAddedAfterFirstTime,
-
-    // The player was significant but no longer meets the criteria.
-    kPlayerRemoved,
-  };
 
   void OnSignificantMediaPlaybackTimeForPlayer(
       const content::MediaPlayerId& id);
@@ -187,14 +151,6 @@ class MediaEngagementContentsObserver : public content::WebContentsObserver {
     absl::optional<bool> has_audio;         // The media has an audio track.
     absl::optional<bool> has_video;         // The media has a video track.
 
-    // The engagement score of the origin at playback has been recorded
-    // to a histogram.
-    bool score_recorded = false;
-
-    // The reasons why the player was not significant have been recorded
-    // to a histogram.
-    bool reasons_recorded = false;
-
     bool reached_end_of_stream = false;
     std::unique_ptr<PlaybackTimer> playback_timer;
   };
@@ -206,38 +162,14 @@ class MediaEngagementContentsObserver : public content::WebContentsObserver {
   // they are considered significant by GetInsignificantPlayerReason.
   void MaybeInsertRemoveSignificantPlayer(const content::MediaPlayerId& id);
 
-  // Returns a vector containing InsignificantPlaybackReason's why a player
-  // would not be considered significant.
-  std::vector<MediaEngagementContentsObserver::InsignificantPlaybackReason>
-  GetInsignificantPlayerReasons(const PlayerState& state);
-
-  // Records why a player is not significant to a historgram.
-  void RecordInsignificantReasons(
-      std::vector<InsignificantPlaybackReason> reasons,
-      const PlayerState& state,
-      InsignificantHistogram histogram);
+  // Returns whether the player with |id| is considered significant.
+  bool IsSignificantPlayer(const content::MediaPlayerId& id);
 
   // Returns whether we have recieved all the state information about a
   // player in order to be able to make a decision about it.
   bool IsPlayerStateComplete(const PlayerState& state);
 
-  // Returns whether the player is considered to be significant and record
-  // any reasons why not to a histogram.
-  bool IsSignificantPlayerAndRecord(
-      const content::MediaPlayerId& id,
-      MediaEngagementContentsObserver::InsignificantHistogram histogram);
-
-  static const char* const kHistogramSignificantNotAddedAfterFirstTimeName;
-  static const char* const kHistogramSignificantNotAddedFirstTimeName;
-  static const char* const kHistogramSignificantRemovedName;
-  static const int kMaxInsignificantPlaybackReason;
-
   static const base::TimeDelta kSignificantMediaPlaybackTime;
-
-  // Records the engagement score for the current origin to a histogram so we
-  // can identify whether the playback would have been blocked.
-  void RecordEngagementScoreToHistogramAtPlayback(
-      const content::MediaPlayerId& id);
 
   // Clears out players that are ignored because they are too short and register
   // the result as significant/audible players with the `session_`.

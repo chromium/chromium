@@ -27,13 +27,13 @@ struct NGFlexLine;
 //
 // This class does not handle modifications to its arguments after it has been
 // constructed.
-class CORE_EXPORT NGFlexItemIterator {
+class CORE_EXPORT FlexItemIterator {
   STACK_ALLOCATED();
 
  public:
-  NGFlexItemIterator(const HeapVector<NGFlexLine>& flex_lines,
-                     const NGBlockBreakToken* break_token,
-                     bool is_column);
+  FlexItemIterator(const HeapVector<NGFlexLine>& flex_lines,
+                   const NGBlockBreakToken* break_token,
+                   bool is_column);
 
   // Returns the next flex item which should be laid out, along with its
   // respective break token. |broke_before_row| will be true if the current
@@ -70,7 +70,7 @@ class CORE_EXPORT NGFlexItemIterator {
   Vector<wtf_size_t> next_item_idx_for_line_;
 };
 
-struct NGFlexItemIterator::Entry {
+struct FlexItemIterator::Entry {
   STACK_ALLOCATED();
 
  public:
@@ -88,7 +88,7 @@ struct NGFlexItemIterator::Entry {
   wtf_size_t flex_line_idx;
   const NGBlockBreakToken* token;
 
-  bool operator==(const NGFlexItemIterator::Entry& other) const {
+  bool operator==(const FlexItemIterator::Entry& other) const {
     return flex_item == other.flex_item &&
            flex_item_idx == other.flex_item_idx &&
            flex_line_idx == other.flex_line_idx && token == other.token;

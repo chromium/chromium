@@ -101,6 +101,7 @@ public class MainActivity
     private static final String SHARED_PREF_FORCE_ENGAGEMENT_SIGNALS = "ForceEngagementSignals";
     private static final String SHARED_PREF_SIDE_SHEET_MAX_BUTTON = "SideSheetMaxButton";
     private static final String SHARED_PREF_SIDE_SHEET_ROUNDED_CORNER = "RoundedCorner";
+    private static final String SHARED_PREF_CONTENT_SCROLL = "ContentScrollMayResizeTab";
     private static final String SHARED_PREF_CONNECT_BUTTON = "ConnectButton";
     private static final String SHARED_PREF_DISCONNECT_BUTTON = "DisconnectButton";
     private static final String SHARED_PREF_WARMUP_BUTTON = "WarmupButton";
@@ -158,6 +159,7 @@ public class MainActivity
     private CheckBox mForceEngagementSignalsCheckbox;
     private CheckBox mSideSheetMaxButtonCheckbox;
     private CheckBox mSideSheetRoundedCornerCheckbox;
+    private CheckBox mContentScrollCheckbox;
     private TextView mPcctBreakpointLabel;
     private SeekBar mPcctBreakpointSlider;
     private TextView mPcctInitialHeightLabel;
@@ -193,6 +195,8 @@ public class MainActivity
     public static final String EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION =
             "androidx.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION";
 
+    public static final String EXTRA_ACTIVITY_SCROLL_CONTENT_RESIZE =
+            "androidx.browser.customtabs.extra.ACTIVITY_SCROLL_CONTENT_RESIZE";
     /**
      * Once per second, asks the framework for the process importance, and logs any change.
      */
@@ -605,6 +609,9 @@ public class MainActivity
         mSideSheetRoundedCornerCheckbox = findViewById(R.id.side_sheet_rounded_corner_checkbox);
         mSideSheetRoundedCornerCheckbox.setChecked(
                 mSharedPref.getInt(SHARED_PREF_SIDE_SHEET_ROUNDED_CORNER, CHECKED) == CHECKED);
+        mContentScrollCheckbox = findViewById(R.id.content_scroll_checkbox);
+        mContentScrollCheckbox.setChecked(
+                mSharedPref.getInt(SHARED_PREF_CONTENT_SCROLL, UNCHECKED) == CHECKED);
     }
 
     private void initializeCctSpinner() {
@@ -918,6 +925,9 @@ public class MainActivity
             if (mSideSheetRoundedCornerCheckbox.isChecked()) {
                 customTabsIntent.intent.putExtra(EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION,
                         ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_TOP);
+            }
+            if (mContentScrollCheckbox.isChecked()) {
+                customTabsIntent.intent.putExtra(EXTRA_ACTIVITY_SCROLL_CONTENT_RESIZE, true);
             }
             customTabsIntent.intent.putExtra(EXTRA_ACTIVITY_SIDE_SHEET_POSITION, sideSheetPosition);
             customTabsIntent.intent.putExtra(

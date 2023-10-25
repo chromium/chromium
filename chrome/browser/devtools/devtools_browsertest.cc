@@ -3301,8 +3301,16 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
   CloseDevToolsWindow();
 }
 
+// TODO(crbug.com/1494777): Test is flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ExtensionWebSocketOfflineNetworkConditions \
+  DISABLED_ExtensionWebSocketOfflineNetworkConditions
+#else
+#define MAYBE_ExtensionWebSocketOfflineNetworkConditions \
+  ExtensionWebSocketOfflineNetworkConditions
+#endif
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
-                       ExtensionWebSocketOfflineNetworkConditions) {
+                       MAYBE_ExtensionWebSocketOfflineNetworkConditions) {
   net::SpawnedTestServer websocket_server(
       net::SpawnedTestServer::TYPE_WS,
       base::FilePath(FILE_PATH_LITERAL("net/data/websocket")));

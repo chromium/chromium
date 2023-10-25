@@ -184,7 +184,7 @@ static LayoutObject* ChildOfFlexboxOrGridParentOrGrandparent(
   if (!parent) {
     return nullptr;
   }
-  if (parent->IsLayoutNGFlexibleBox() || parent->IsLayoutNGGrid()) {
+  if (parent->IsFlexibleBox() || parent->IsLayoutGrid()) {
     return &layer->GetLayoutObject();
   }
 
@@ -192,7 +192,7 @@ static LayoutObject* ChildOfFlexboxOrGridParentOrGrandparent(
   if (!grandparent) {
     return nullptr;
   }
-  if (grandparent->IsLayoutNGFlexibleBox() || grandparent->IsLayoutNGGrid()) {
+  if (grandparent->IsFlexibleBox() || grandparent->IsLayoutGrid()) {
     return parent;
   }
   return nullptr;

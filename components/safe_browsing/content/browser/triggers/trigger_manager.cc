@@ -221,6 +221,7 @@ TriggerManager::FinishCollectingThreatDetails(
     bool did_proceed,
     int num_visits,
     const SBErrorOptions& error_display_options,
+    absl::optional<int64_t> warning_shown_ts,
     bool is_hats_candidate) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   // Determine whether a report should be sent.
@@ -273,7 +274,8 @@ TriggerManager::FinishCollectingThreatDetails(
         FROM_HERE,
         base::BindOnce(&ThreatDetails::FinishCollection,
                        collectors->threat_details->GetWeakPtr(), did_proceed,
-                       num_visits, std::move(interstitial_interactions_)),
+                       num_visits, std::move(interstitial_interactions_),
+                       warning_shown_ts),
         delay);
 
     // Record that this trigger fired and collected data.

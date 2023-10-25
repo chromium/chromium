@@ -4,6 +4,7 @@
 <translation id="1046370274005147998">Search with Voice in Chromium</translation>
 <translation id="1047130070405668746">Select Chromium</translation>
 <translation id="1091252999271033193">This means that Chromium will request the mobile site every time.</translation>
+<translation id="1115463765356382667">Complete these suggested actions below to get the most out of Chrome.</translation>
 <translation id="1171824629317156389">Open Chromium Settings in iOS, then tap on Default Browser App' and select Chromium.</translation>
 <translation id="1185134272377778587">About Chromium</translation>
 <translation id="1257458525759135959">To save images, tap on settings to let Chromium add to your photos</translation>
@@ -51,6 +52,7 @@
 <translation id="2730884209570016437">Chromium can't use your camera because it's in use by another application</translation>
 <translation id="2784449251446768092">Manage Chromium Settings</translation>
 <translation id="2798503587425057129">Opens the Chromium reading list.</translation>
+<translation id="2843571538056574338">Use Chromium for Autofill</translation>
 <translation id="2915596697727466327">Chromium uses Face ID to ensure authorised access to your passwords.</translation>
 <translation id="2918709798697875261">Your organisation requires you to stay signed out of Chromium.</translation>
 <translation id="2942241131342758843">Use Chromium by default to open links, search from widgets and auto-fill passwords in other apps</translation>
@@ -140,10 +142,12 @@ Things to consider:
 1. Open settings
 2. Tap the default browser app
 3. Select Chromium.</translation>
+<translation id="6154098560469640583">Use Chromium any time that you click links in messages, documents and other apps</translation>
 <translation id="6197255575340902638">If you hide '<ph name="MODULE_NAME" />', Chromium will no longer auto-track your future packages and will delete all your past package tracking data.</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6268381023930128611">Sign out of Chromium?</translation>
 <translation id="6324041800010509197">Visit the Tab Grid in Chromium</translation>
+<translation id="6325378625795868881">Use Chrome anytime that you tap links in messages and other apps.</translation>
 <translation id="632825460376924298">Allow Chromium Sign-in</translation>
 <translation id="6337530241089703714">Choose whether to clear your Chromium data from this device or keep it</translation>
 <translation id="6407399265324739055">Payment methods and addresses won't be encrypted. Browsing history from Chromium won't sync.
@@ -156,6 +160,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="6752854822223394465">Your organisation is setting up Chromium…</translation>
 <translation id="6794054469102824109">Opens the Chromium Dino Game.</translation>
 <translation id="6820823224820483452">Chromium couldn't check all passwords. Try again tomorrow.</translation>
+<translation id="6852799557929001644">Access your Chrome passwords and more across other apps on this device.</translation>
 <translation id="6911341667534646387">Keep using the Chromium data in your Google Account</translation>
 <translation id="7006920032187763988">You can use the passwords that you saved to Password Manager in other apps on your iPad.</translation>
 <translation id="7018284295775193585">Chromium can't update</translation>
@@ -170,6 +175,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="7208566199746267865">Chromium saves you time by bringing your accounts to the web. You can add or remove accounts in Settings.</translation>
 <translation id="725427773388857052">Chromium can help keep you safe from data breaches, unsafe websites and more.</translation>
 <translation id="7269362888766543920">Some add-ons cause Chromium to crash. Please try uninstalling them.</translation>
+<translation id="7285031092584344905">Access your Chrome passwords and more across other apps.</translation>
 <translation id="7313655110045230863">To make Chromium your default browser, open Settings. Tap 'Default browser app', and then select Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">The selected data has been removed from Chromium and synced devices. Your Google Account may have other forms of browsing history such as searches and activity from other Google services at history.google.com.</translation>
@@ -184,14 +190,18 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="786327964234957808">You are switching sync accounts from <ph name="USER_EMAIL1" /> to <ph name="USER_EMAIL2" />. Your existing Chromium data is managed by <ph name="DOMAIN" />. This will delete your data from this device, but your data will remain in <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Start using Chromium scanner</translation>
 <translation id="7905064834449738336">When you use a password, Chromium warns you if it has been published online. When doing this, your passwords and usernames are encrypted, so they can’t be read by anyone, including Google.</translation>
+<translation id="7917424453593305610">Use Chromium in other apps.</translation>
 <translation id="7928628054454574139">Open Chromium whenever you tap on links in other apps</translation>
 <translation id="7931842119211730154">Lock incognito tabs when you close Chromium</translation>
 <translation id="7934404985878918282">See Chromium reading list</translation>
 <translation id="7980860476903281594">Chromium shares your location with sites that you allow.</translation>
+<translation id="7995166854192397899">Suggestions are based on your browsing activity on your other devices. To get suggestions, sign in to Chromium on all your devices.</translation>
+<translation id="800195749539500647">Get the most out of Chromium.</translation>
 <translation id="8013573822802650211">To see your tabs from wherever you use Chromium, sign in on all your devices</translation>
 <translation id="8071041515667087705">Go to Chrome settings</translation>
 <translation id="8073677936375100957">Clear your Chromium data from this device?</translation>
 <translation id="8115308261377517697">Set Chromium as your default browser</translation>
+<translation id="8197822717502700527">You'll now get the most out of Chrome on your device.</translation>
 <translation id="8235427517854598594">Make Chromium your default browser?</translation>
 <translation id="8240981428553046115">Chromium couldn't check for updates. Try again later.</translation>
 <translation id="8303579360494576778">Manage Payment Methods in Chromium</translation>
@@ -218,6 +228,7 @@ Things to consider:
 <translation id="894437814105052438">When you sign out, Chromium won't sync any new data to your Google Account. Data previously synced stays in the account.</translation>
 <translation id="8963279154877372067">Allow Chromium notifications to get price drop alerts</translation>
 <translation id="9022552996538154597">Sign in to Chromium</translation>
+<translation id="9050790730841755540">Use Chrome anytime that you tap links in other apps.</translation>
 <translation id="9059693977935746710">You won't need to remember this password. It will be saved to Password Manager for <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium is out of date</translation>
 <translation id="9110075932708282655">Use Chromium by default</translation>

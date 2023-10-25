@@ -113,6 +113,7 @@ ScheduledFeature::ScheduledFeature(
 }
 
 ScheduledFeature::~ScheduledFeature() {
+  geolocation_controller_->RemoveObserver(this);
   chromeos::PowerManagerClient::Get()->RemoveObserver(this);
   Shell::Get()->session_controller()->RemoveObserver(this);
 }
@@ -317,15 +318,12 @@ void ScheduledFeature::OnEnabledPrefChanged() {
 void ScheduledFeature::OnScheduleTypePrefChanged(
     bool keep_manual_toggles_during_schedules) {
   const ScheduleType schedule_type = GetScheduleType();
-  // To prevent adding (or removing) an observer twice in a row when switching
-  // between different users, we need to check `is_observing_geolocation_`.
-  if (schedule_type == ScheduleType::kNone && is_observing_geolocation_) {
+  // To prevent adding an observer twice in a row when switching between
+  // different users, we need to check `HasObserver()`.
+  if (schedule_type == ScheduleType::kNone) {
     geolocation_controller_->RemoveObserver(this);
-    is_observing_geolocation_ = false;
-  } else if (schedule_type != ScheduleType::kNone &&
-             !is_observing_geolocation_) {
+  } else if (!geolocation_controller_->HasObserver(this)) {
     geolocation_controller_->AddObserver(this);
-    is_observing_geolocation_ = true;
   }
   Refresh(/*did_schedule_change=*/true, keep_manual_toggles_during_schedules);
 }

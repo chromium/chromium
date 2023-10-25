@@ -69,6 +69,7 @@ linux_memory_builder(
         short_name = "bld",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
 )
 
 linux_memory_builder(
@@ -96,6 +97,7 @@ linux_memory_builder(
         short_name = "tst",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     reclient_instance = None,
 )
 
@@ -123,6 +125,7 @@ linux_memory_builder(
         short_name = "bld",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
 )
 
 linux_memory_builder(
@@ -176,6 +179,7 @@ linux_memory_builder(
         category = "cros|asan",
         short_name = "bld",
     ),
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     # TODO(crbug.com/1030593): Builds take more than 3 hours sometimes. Remove
     # once the builds are faster.
     execution_timeout = 6 * time.hour,
@@ -207,6 +211,7 @@ linux_memory_builder(
         category = "cros|asan",
         short_name = "tst",
     ),
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     reclient_instance = None,
 )
 
@@ -238,6 +243,7 @@ linux_memory_builder(
         category = "cros|msan",
         short_name = "bld",
     ),
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     execution_timeout = 4 * time.hour,
 )
 
@@ -269,6 +275,7 @@ linux_memory_builder(
         category = "cros|msan",
         short_name = "tst",
     ),
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     execution_timeout = 4 * time.hour,
     reclient_instance = None,
 )
@@ -299,6 +306,7 @@ linux_memory_builder(
         category = "linux|msan",
         short_name = "bld",
     ),
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
 )
 
 linux_memory_builder(
@@ -328,6 +336,7 @@ linux_memory_builder(
         category = "linux|msan",
         short_name = "tst",
     ),
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
@@ -357,6 +366,7 @@ linux_memory_builder(
         category = "lacros|asan",
         short_name = "asan",
     ),
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
 )
 
 ci.builder(
@@ -385,6 +395,7 @@ ci.builder(
         category = "mac",
         short_name = "bld",
     ),
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
 )
 
 linux_memory_builder(
@@ -413,6 +424,7 @@ linux_memory_builder(
         short_name = "tst",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
@@ -441,6 +453,7 @@ ci.builder(
         category = "mac",
         short_name = "tst",
     ),
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     reclient_instance = None,
 )
 
@@ -467,6 +480,7 @@ ci.builder(
         category = "linux|webkit",
         short_name = "asn",
     ),
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
 )
 
 ci.builder(
@@ -519,6 +533,7 @@ ci.builder(
         category = "linux|webkit",
         short_name = "msn",
     ),
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
 )
 
 ci.builder(
@@ -572,6 +587,7 @@ ci.builder(
         category = "linux|ubsan",
         short_name = "vpt",
     ),
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
@@ -598,6 +614,7 @@ ci.builder(
         category = "win",
         short_name = "asn",
     ),
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     # This builder is normally using 2.5 hours to run with a cached builder. And
     # 1.5 hours additional setup time without cache, https://crbug.com/1311134.
     execution_timeout = 5 * time.hour,
@@ -634,5 +651,6 @@ ci.builder(
         category = "iOS",
         short_name = "asn",
     ),
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     xcode = xcode.x14main,
 )

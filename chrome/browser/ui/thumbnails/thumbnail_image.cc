@@ -232,9 +232,13 @@ std::vector<uint8_t> ThumbnailImage::CompressBitmap(
 // static
 gfx::ImageSkia ThumbnailImage::UncompressImage(
     CompressedThumbnailData compressed) {
-  gfx::ImageSkia result =
-      gfx::ImageSkia::CreateFrom1xBitmap(*gfx::JPEGCodec::Decode(
-          compressed->data.data(), compressed->data.size()));
+  gfx::ImageSkia result;
+  std::unique_ptr<SkBitmap> bitmap(
+      gfx::JPEGCodec::Decode(compressed->data.data(), compressed->data.size()));
+  if (bitmap.get()) {
+    result = gfx::ImageSkia::CreateFrom1xBitmap(*bitmap);
+  }
+
   result.MakeThreadSafe();
   return result;
 }

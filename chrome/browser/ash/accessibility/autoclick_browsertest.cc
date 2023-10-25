@@ -10,10 +10,12 @@
 #include "ash/shell.h"
 #include "base/test/bind.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/accessibility/service/accessibility_service_router_factory.h"
 #include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/autoclick_test_utils.h"
+#include "chrome/browser/ash/accessibility/service/fake_accessibility_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -24,6 +26,7 @@
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/events/test/event_generator.h"
 #include "url/url_constants.h"
@@ -226,6 +229,83 @@ IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest, PauseAutoclick) {
                 utils()->GetNodeBoundsInRoot("click me", "button");
               }));
   runner.Run();
+}
+
+class AutoclickWithAccessibilityServiceTest : public AutoclickBrowserTest {
+ public:
+  AutoclickWithAccessibilityServiceTest() = default;
+  ~AutoclickWithAccessibilityServiceTest() override = default;
+  AutoclickWithAccessibilityServiceTest(
+      const AutoclickWithAccessibilityServiceTest&) = delete;
+  AutoclickWithAccessibilityServiceTest& operator=(
+      const AutoclickWithAccessibilityServiceTest&) = delete;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kAccessibilityService);
+  }
+
+  void SetUpOnMainThread() override {
+    AutoclickBrowserTest::SetUpOnMainThread();
+    // Replaces normal AccessibilityService with a fake one.
+    ax::AccessibilityServiceRouterFactory::GetInstanceForTest()
+        ->SetTestingFactoryAndUse(
+            ash::AccessibilityManager::Get()->profile(),
+            base::BindRepeating(&AutoclickWithAccessibilityServiceTest::
+                                    CreateTestAccessibilityService,
+                                base::Unretained(this)));
+  }
+
+ protected:
+  // Unowned.
+  raw_ptr<FakeAccessibilityService, DanglingUntriaged | ExperimentalAsh>
+      fake_service_ = nullptr;
+
+ private:
+  std::unique_ptr<KeyedService> CreateTestAccessibilityService(
+      content::BrowserContext* context) {
+    std::unique_ptr<FakeAccessibilityService> fake_service =
+        std::make_unique<FakeAccessibilityService>();
+    fake_service_ = fake_service.get();
+    return std::move(fake_service);
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// TODO(b/262637071): When the AccessibilityService is on (instead of a fake),
+// check the focus ring bounds too, as autoclick JS should set these.
+IN_PROC_BROWSER_TEST_F(AutoclickWithAccessibilityServiceTest,
+                       ScrollableBoundsPlumbing) {
+  const std::string kQuoteText =
+      "'Whatever you choose to do, leave tracks. That means don't do it just "
+      "for yourself. You will want to leave the world a little better for your "
+      "having lived.'";
+
+  LoadURLAndAutoclick(
+      "data:text/html;charset=utf-8,"
+      "<textarea id='test_textarea' class='scrollableField' rows='2'' "
+      "cols='20'>" +
+      kQuoteText + "</textarea>");
+  gfx::Rect bounds =
+      utils()->GetBoundsForNodeInRootByClassName("scrollableField");
+
+  fake_service_->BindAnotherAutoclickClient();
+
+  utils()->SetAutoclickEventTypeWithHover(generator(),
+                                          AutoclickEventType::kScroll);
+
+  fake_service_->set_autoclick_scrollable_bounds(bounds);
+  base::RunLoop waiter;
+  Shell::Get()->autoclick_controller()->SetScrollableBoundsCallbackForTesting(
+      base::BindLambdaForTesting(
+          [&waiter, &bounds](const gfx::Rect& scrollable_bounds) {
+            if (scrollable_bounds == bounds) {
+              waiter.Quit();
+            }
+          }));
+  utils()->HoverOverHtmlElement(generator(), kQuoteText, "staticText");
+  waiter.Run();
 }
 
 }  // namespace ash

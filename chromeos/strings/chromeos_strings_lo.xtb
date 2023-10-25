@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">ສັນຍານອ່ອນ</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">ກຳລັງອັບເດດ (ສຳເລັດແລ້ວ <ph name="PERCENTAGE_VALUE" />%)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> ນາທີ</translation>
 <translation id="1310380015393971138">ບໍ່ມີເຄືອຂ່າຍ <ph name="NETWORK_NAME" /> ທີ່ສາມາດໃຊ້ໄດ້</translation>
 <translation id="131421566576084655">ບໍ່ມີຂໍ້ມູນວັນທີຂອງການຣີເຊັດອິນເຕີເນັດຫຼ້າສຸດ</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -93,7 +94,6 @@
 <translation id="1643449475550628585">ປ່ຽນຮູບພື້ນຫຼັງທຸກມື້</translation>
 <translation id="1644574205037202324">ປະຫວັດ</translation>
 <translation id="1651925268237749928">ທ່ານໄດ້ເລືອກອະລະບ້ຳແບ່ງປັນ. ຄົນອື່ນໆສາມາດເພີ່ມ ຫຼື ປ່ຽນຮູບພາບໄດ້. ຮູບພື້ນຫຼັງຂອງທ່ານອາດໃຊ້ຮູບພາບທີ່ບໍ່ໄດ້ຢູ່ໃນອະລະບ້ຳນີ້ໃນປັດຈຸບັນ.</translation>
-<translation id="1658834457013045127">ຕະຫຼອດໄປ</translation>
 <translation id="1661865805917886535">ອາດມີການສົ່ງຂໍ້ມູນບັນຊີ ແລະ ຂໍ້ມູນລະບົບບາງຢ່າງໄປຫາ Google. ພວກເຮົາໃຊ້ຂໍ້ມູນນີ້ເພື່ອຊ່ວຍແກ້ໄຂບັນຫາດ້ານເທັກນິກ ແລະ ປັບປຸງບໍລິການຂອງພວກເຮົາໃຫ້ດີຂຶ້ນ, ໂດຍເປັນໄປຕາມນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ (<ph name="PRIVACYPOLICYURL" />) ແລະ ຂໍ້ກຳນົດບໍລິການຂອງພວກເຮົາ (<ph name="TERMSOFSERVICEURL" />). ເພື່ອສົ່ງຄຳຮ້ອງຂໍປ່ຽນແປງເນື້ອຫາ, ໃຫ້ເຂົ້າໄປການຊ່ວຍເຫຼືອທາງກົດໝາຍ (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">ຢຸດພິມ, ນໍ້າໝຶກໝົດ</translation>
 <translation id="1664796644829245314">ສະແດງຕົວຢ່າງ <ph name="PREVIEW_OBJECT" /></translation>
@@ -323,7 +323,6 @@
 <translation id="3484914941826596830">ໃນຂະນະທີ່ກຳລັງອັບເດດເຟີມແວຢູ່, ກະລຸນາຢ່າຖອດອຸປະກອນພາຍນອກນີ້ອອກ ຫຼື ຢ່າປິດເຄື່ອງຄອມພິວເຕີຂອງທ່ານ. ທ່ານສາມາດຫຍໍ້ໜ້າຈໍນີ້ລົງໄດ້. ອັບເດດນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ ແລະ ອຸປະກອນພາຍນອກຂອງທ່ານອາດບໍ່ເຮັດວຽກໃນລະຫວ່າງນີ້.</translation>
 <translation id="3486220673238053218">ຄໍາ​ນິ​ຍາມ</translation>
 <translation id="3488065109653206955">ເປີດ​​ໃຊ້ງານ​ບາງ​ສ່ວນເທົ່ານັ້ນ</translation>
-<translation id="349491921221892984"><ph name="MINUTES" /> ນທ</translation>
 <translation id="3502426834823382181">ເບິ່ງແອັບທັງໝົດ</translation>
 <translation id="3510890413042482857">ສົ່ງ <ph name="BEGIN_LINK1" />ຂໍ້ມູນການຕິດຕາມປະສິດທິພາບ<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">ອັບເດດ ChromeOS</translation>
@@ -484,7 +483,6 @@
 <translation id="473775607612524610">ອັບເດດ</translation>
 <translation id="4771607256327216405">ແປ້ນພິມແຈ້ງ</translation>
 <translation id="4773299976671772492">ຢຸດ​ແລ້ວ</translation>
-<translation id="4782003517030001304">1 ຊມ</translation>
 <translation id="4782311465517282004">ຮັບຄຳນິຍາມ, ການແປພາສາ ຫຼື ການປ່ຽນແປງຫົວໜ່ວຍເມື່ອທ່ານຄລິກຂວາ ຫຼື ແຕະໃສ່ຂໍ້ຄວາມຄ້າງໄວ້</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ຮູບ</translation>
 <translation id="4793710386569335688">ສຳລັບການຊ່ວຍເຫຼືອເພີ່ມເຕີມ, ກະລຸນາເຂົ້າໄປ <ph name="BEGIN_LINK" />ສູນຊ່ວຍເຫຼືອ<ph name="END_LINK" />.</translation>
@@ -699,6 +697,7 @@
 <translation id="629550705077076970">ການຫຼຸດແສງແປ້ນພິມ</translation>
 <translation id="6302401976930124515">ຍົກເລີກການທົດສອບ <ph name="TEST_NAME" /> ແລ້ວ</translation>
 <translation id="631063167932043783">ແອັບ Explore</translation>
+<translation id="6318437367327684789">ຕະຫຼອດໄປ</translation>
 <translation id="6319207335391420837">ອັບເດດເຟີມແວຢູ່ <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">ເປີດສະກຣີນເຊັບເວີ</translation>
 <translation id="6324916366299863871">ແກ້ໄຂທາງລັດ</translation>
@@ -949,6 +948,7 @@
 <translation id="8227119283605456246">ຄັດ​ຕິດ​ໄຟລ໌</translation>
 <translation id="8230672074305416752">ໃຊ້ຄຳສັ່ງ ping ກັບເກດເວເຄືອຂ່າຍຄ່າເລີ່ມຕົ້ນບໍ່ໄດ້</translation>
 <translation id="8246209727385807362">ຜູ້ໃຫ້ບໍລິການທີ່ບໍ່ຮູ້ຈັກ</translation>
+<translation id="8262870577632766028">1 ຊົ່ວໂມງ</translation>
 <translation id="827422111966801947">ສີຄາມ</translation>
 <translation id="8286154143153872371">ກະລຸນາເຊື່ອມຕໍ່ຫາເຄືອຂ່າຍແລ້ວໂຫຼດໜ້າຄືນໃໝ່ເພື່ອເບິ່ງຮູບພື້ນຫຼັງ.</translation>
 <translation id="8291967909914612644">ປະເທດຜູ້ໃຫ້ບໍລິການ Home</translation>
@@ -1013,6 +1013,7 @@
 <translation id="8747900814994928677">ຢືນຢັນການປ່ຽນແປງ</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">ອະລະບໍ້າ Google ຮູບພາບ</translation>
+<translation id="8775713578693478175">APN ຂອງໂມເດັມ</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8789196995628578448">ກຳລັງໃຊ້ທາງລັດສຳລັບ "<ph name="CONFLICT_ACCEL_NAME" />" ຢູ່. ກົດປຸ່ມທາງລັດໃໝ່. ເພື່ອແທນທີ່ທາງລັດຕົ້ນສະບັບ, ໃຫ້ກົດປຸ່ມທາງລັດນີ້ອີກເທື່ອໜຶ່ງ.</translation>
 <translation id="879568662008399081">ເຄືອຂ່າຍນີ້ອາດມີຊ່ອງ​ທາງ​ເຂົ້າ​ຮັກ​ສາ​ໄວ້</translation>

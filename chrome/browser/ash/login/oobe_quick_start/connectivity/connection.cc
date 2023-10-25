@@ -7,6 +7,7 @@
 #include <array>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -26,6 +27,29 @@
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 
 namespace ash::quick_start {
+
+namespace {
+
+std::string MessageTagToString(mojom::QuickStartMessage::Tag tag) {
+  switch (tag) {
+    case mojom::QuickStartMessage::Tag::kBootstrapConfigurations:
+      return "BootstrapConfigurations";
+    case mojom::QuickStartMessage::Tag::kWifiCredentials:
+      return "WifiCredentials";
+    case mojom::QuickStartMessage::Tag::kNotifySourceOfUpdateResponse:
+      return "NotifySourceOfUpdateResponse";
+    case mojom::QuickStartMessage::Tag::kFidoAssertionResponse:
+      return "FidoAssertionResponse";
+    case mojom::QuickStartMessage::Tag::kUserVerificationRequested:
+      return "UserVerificationRequested";
+    case mojom::QuickStartMessage::Tag::kUserVerificationMethod:
+      return "UserVerificationMethod";
+    case mojom::QuickStartMessage::Tag::kUserVerificationResponse:
+      return "UserVerificationResponse";
+  }
+}
+
+}  // namespace
 
 Connection::Factory::~Factory() = default;
 
@@ -93,27 +117,31 @@ void Connection::Close(
 
 void Connection::RequestWifiCredentials(
     RequestWifiCredentialsCallback callback) {
-  // Build the Wifi Credential Request payload
   SessionContext::SharedSecret secondary_shared_secret =
       session_context_.secondary_shared_secret();
   std::string shared_secret_str(secondary_shared_secret.begin(),
                                 secondary_shared_secret.end());
-  ConnectionResponseCallback on_response_received =
-      base::BindOnce(&Connection::DecodeData<mojom::WifiCredentials>,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     &mojom::QuickStartDecoder::DecodeWifiCredentialsResponse,
-                     std::move(callback));
-  SendMessageAndReadResponse(
+  auto convert_result = base::BindOnce(
+      [](RequestWifiCredentialsCallback callback,
+         mojom::QuickStartMessagePtr wifi_credentials) {
+        if (!wifi_credentials || !wifi_credentials->is_wifi_credentials()) {
+          std::move(callback).Run(absl::nullopt);
+          return;
+        }
+        std::move(callback).Run(
+            std::move(*wifi_credentials->get_wifi_credentials()));
+      },
+      std::move(callback));
+  SendMessageAndDecodeResponse(
       requests::BuildRequestWifiCredentialsMessage(
           session_context_.session_id(), shared_secret_str),
-      QuickStartResponseType::kWifiCredentials,
-      std::move(on_response_received));
+      QuickStartResponseType::kWifiCredentials, std::move(convert_result));
 }
 
 void Connection::NotifySourceOfUpdate(NotifySourceOfUpdateCallback callback) {
   SessionContext::SharedSecret secondary_shared_secret =
       session_context_.secondary_shared_secret();
-  SendMessageAndReadResponse(
+  SendMessageAndDecodeResponse(
       requests::BuildNotifySourceOfUpdateMessage(session_context_.session_id(),
                                                  secondary_shared_secret),
       QuickStartResponseType::kNotifySourceOfUpdate,
@@ -122,7 +150,7 @@ void Connection::NotifySourceOfUpdate(NotifySourceOfUpdateCallback callback) {
 }
 
 void Connection::RequestAccountInfo(base::OnceClosure callback) {
-  SendMessageAndReadResponse(
+  SendMessageAndDecodeResponse(
       requests::BuildBootstrapOptionsRequest(),
       QuickStartResponseType::kBootstrapConfigurations,
       base::BindOnce(&Connection::OnBootstrapConfigurationsResponse,
@@ -134,56 +162,44 @@ void Connection::RequestAccountTransferAssertion(
     RequestAccountTransferAssertionCallback callback) {
   client_data_ = std::make_unique<AccountTransferClientData>(challenge);
 
-  auto parse_assertion_response =
+  auto request_assertion = base::BindOnce(
+      &Connection::SendMessageAndDecodeResponse, weak_ptr_factory_.GetWeakPtr(),
+      requests::BuildAssertionRequestMessage(client_data_->CreateHash()),
+      QuickStartResponseType::kAssertion,
       base::BindOnce(&Connection::OnRequestAccountTransferAssertionResponse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      kDefaultRoundTripTimeout);
 
-  auto request_assertion =
-      base::IgnoreArgs<absl::optional<std::vector<uint8_t>>>(base::BindOnce(
-          &Connection::SendMessageAndReadResponse,
-          weak_ptr_factory_.GetWeakPtr(),
-          requests::BuildAssertionRequestMessage(client_data_->CreateHash()),
-          QuickStartResponseType::kAssertion,
-          std::move(parse_assertion_response), kDefaultRoundTripTimeout));
-
-  SendMessageAndReadResponse(requests::BuildGetInfoRequestMessage(),
-                             QuickStartResponseType::kGetInfo,
-                             std::move(request_assertion));
+  // We can discard the GetInfo response since we assume that all
+  // Quick-Start-compatible Android devices have valid CTAP2 functionality. If
+  // GetInfo produced an error on the source device, we will likely run into the
+  // same error on the GetAssertion step.
+  SendMessageAndDiscardResponse(requests::BuildGetInfoRequestMessage(),
+                                QuickStartResponseType::kGetInfo,
+                                std::move(request_assertion));
 }
 
 void Connection::OnNotifySourceOfUpdateResponse(
     NotifySourceOfUpdateCallback callback,
-    absl::optional<std::vector<uint8_t>> response_bytes) {
+    mojom::QuickStartMessagePtr quick_start_message) {
   response_timeout_timer_.Stop();
 
-  if (!response_bytes.has_value()) {
-    QS_LOG(ERROR)
-        << "No response bytes received for notify source of update message";
+  if (!quick_start_message) {
+    QS_LOG(ERROR) << "Failed to decode NotifySourceOfUpdateResponse";
     std::move(callback).Run(/*ack_received=*/false);
     return;
   }
 
-  auto handle_mojo_response_callback =
-      base::BindOnce(&Connection::HandleNotifySourceOfUpdateResponse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
-
-  decoder_->DecodeNotifySourceOfUpdateResponse(
-      response_bytes.value(), std::move(handle_mojo_response_callback));
-}
-
-void Connection::HandleNotifySourceOfUpdateResponse(
-    NotifySourceOfUpdateCallback callback,
-    mojom::NotifySourceOfUpdateResponsePtr notify_source_of_update_response,
-    absl::optional<mojom::QuickStartDecoderError> error) {
-  if (!notify_source_of_update_response) {
-    CHECK(error.has_value());
-    QS_LOG(ERROR)
-        << "No ack received value in the NotifySourceOfUpdate response.";
+  if (!quick_start_message->is_notify_source_of_update_response()) {
+    QS_LOG(ERROR) << "Unexpected message: received="
+                  << MessageTagToString(quick_start_message->which())
+                  << ", expected=NotifySourceOfUpdateResponse";
     std::move(callback).Run(/*ack_successful=*/false);
     return;
   }
 
-  if (!notify_source_of_update_response->ack_received) {
+  if (!quick_start_message->get_notify_source_of_update_response()
+           ->ack_received) {
     QS_LOG(ERROR) << "The ack received value in the NotifySourceOfUpdate "
                      "response is unexpectedly 'false'.";
     std::move(callback).Run(/*ack_successful=*/false);
@@ -195,39 +211,23 @@ void Connection::HandleNotifySourceOfUpdateResponse(
 
 void Connection::OnRequestAccountTransferAssertionResponse(
     RequestAccountTransferAssertionCallback callback,
-    absl::optional<std::vector<uint8_t>> response_bytes) {
-  if (!response_bytes.has_value()) {
-    quick_start_metrics::RecordGaiaTransferResult(
-        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
-            GaiaTransferResultFailureReason::kNoAccountsReceivedFromPhone);
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-
-  auto parse_mojo_response_callback =
-      base::BindOnce(&Connection::GenerateFidoAssertionInfo,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
-
-  decoder_->DecodeGetAssertionResponse(response_bytes.value(),
-                                       std::move(parse_mojo_response_callback));
-}
-
-void Connection::GenerateFidoAssertionInfo(
-    RequestAccountTransferAssertionCallback callback,
-    ash::quick_start::mojom::FidoAssertionResponsePtr fido_response,
-    absl::optional<::ash::quick_start::mojom::QuickStartDecoderError> error) {
+    mojom::QuickStartMessagePtr quick_start_message) {
   // TODO (b/279614284): Emit metric for Gaia transfer failure reasons when
   // unknown message logic is finalized.
-  if (error.has_value()) {
+  if (!quick_start_message ||
+      !quick_start_message->is_fido_assertion_response()) {
     // TODO (b/286877412): Update this logic once we've aligned on an unknown
     // message strategy.
     QS_LOG(INFO) << "Ignoring message and re-reading";
-    nearby_connection_->Read(
+    nearby_connection_->Read(base::BindOnce(
+        &Connection::DecodeQuickStartMessage, weak_ptr_factory_.GetWeakPtr(),
         base::BindOnce(&Connection::OnRequestAccountTransferAssertionResponse,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
     return;
   }
 
+  mojom::FidoAssertionResponsePtr& fido_response =
+      quick_start_message->get_fido_assertion_response();
   FidoAssertionInfo assertion_info;
   assertion_info.email = fido_response->email;
   assertion_info.credential_id = fido_response->credential_id;
@@ -242,42 +242,51 @@ void Connection::GenerateFidoAssertionInfo(
 
 void Connection::OnBootstrapConfigurationsResponse(
     base::OnceClosure callback,
-    absl::optional<std::vector<uint8_t>> response_bytes) {
-  if (!response_bytes.has_value()) {
+    mojom::QuickStartMessagePtr quick_start_message) {
+  if (!quick_start_message ||
+      !quick_start_message->is_bootstrap_configurations()) {
+    std::move(callback).Run();
     return;
   }
-
-  auto on_decoding_completed =
-      base::BindOnce(&Connection::ParseBootstrapConfigurationsResponse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
-
-  DecodeData<mojom::BootstrapConfigurations>(
-      &mojom::QuickStartDecoder::DecodeBootstrapConfigurations,
-      std::move(on_decoding_completed), std::move(response_bytes));
-}
-
-void Connection::ParseBootstrapConfigurationsResponse(
-    base::OnceClosure callback,
-    absl::optional<mojom::BootstrapConfigurations> bootstrap_configurations) {
-  if (bootstrap_configurations) {
-    phone_instance_id_ = bootstrap_configurations->instance_id;
-  }
-
+  phone_instance_id_ =
+      quick_start_message->get_bootstrap_configurations()->instance_id;
   std::move(callback).Run();
 }
 
-void Connection::SendMessageAndReadResponse(
+void Connection::SendMessageAndDecodeResponse(
     std::unique_ptr<QuickStartMessage> message,
     QuickStartResponseType response_type,
-    ConnectionResponseCallback callback,
+    OnDecodingCompleteCallback callback,
     base::TimeDelta timeout) {
   std::string json_serialized_payload;
   CHECK(base::JSONWriter::Write(*message->GenerateEncodedMessage(),
                                 &json_serialized_payload));
 
-  SendBytesAndReadResponse(std::vector<uint8_t>(json_serialized_payload.begin(),
-                                                json_serialized_payload.end()),
-                           response_type, std::move(callback), timeout);
+  SendBytesAndReadResponse(
+      std::vector<uint8_t>(json_serialized_payload.begin(),
+                           json_serialized_payload.end()),
+      response_type,
+      base::BindOnce(&Connection::DecodeQuickStartMessage,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      timeout);
+}
+
+void Connection::SendMessageAndDiscardResponse(
+    std::unique_ptr<QuickStartMessage> message,
+    QuickStartResponseType response_type,
+    base::OnceClosure callback,
+    base::TimeDelta timeout) {
+  std::string json_serialized_payload;
+  CHECK(base::JSONWriter::Write(*message->GenerateEncodedMessage(),
+                                &json_serialized_payload));
+
+  SendBytesAndReadResponse(
+      std::vector<uint8_t>(json_serialized_payload.begin(),
+                           json_serialized_payload.end()),
+      response_type,
+      base::IgnoreArgs<absl::optional<std::vector<uint8_t>>>(
+          std::move(callback)),
+      timeout);
 }
 
 void Connection::SendBytesAndReadResponse(std::vector<uint8_t>&& bytes,
@@ -344,144 +353,106 @@ void Connection::OnHandshakeResponse(
 
 void Connection::WaitForUserVerification(
     AwaitUserVerificationCallback callback) {
-  auto [on_user_verification_complete, on_error] =
-      base::SplitOnceCallback(std::move(callback));
-  auto on_user_verification_requested_decoded = base::BindOnce(
-      &Connection::OnUserVerificationRequested, weak_ptr_factory_.GetWeakPtr(),
-      std::move(on_user_verification_complete));
+  DoWaitForUserVerification(/*attempt_number=*/1, std::move(callback));
+}
 
-  ConnectionResponseCallback decode_user_verification_requested =
-      base::BindOnce(&Connection::DecodeData<mojom::UserVerificationRequested>,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     &mojom::QuickStartDecoder::DecodeUserVerificationRequested,
-                     std::move(on_user_verification_requested_decoded));
+void Connection::DoWaitForUserVerification(
+    size_t attempt_number,
+    AwaitUserVerificationCallback callback) {
+  // The source device may skip the UserVerificationRequested and
+  // UserVerificationMethod packets, but we should always get the
+  // UserVerificationResponse within three packets.
+  if (attempt_number > 3) {
+    QS_LOG(ERROR) << "Unexpected number of user verification packets.";
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
 
-  // We decode the user verification packet either (1) when the first packet
-  // received fails to parse as a user verification method, or (2) when we
-  // finish handling the user verification method and we receive the second
-  // packet.
-  auto [on_decode_user_verification_method_failure, on_receive_second_packet] =
-      base::SplitOnceCallback(std::move(decode_user_verification_requested));
+  nearby_connection_->Read(base::BindOnce(
+      &Connection::DecodeQuickStartMessage, weak_ptr_factory_.GetWeakPtr(),
+      base::BindOnce(&Connection::OnUserVerificationPacketDecoded,
+                     weak_ptr_factory_.GetWeakPtr(), attempt_number,
+                     std::move(callback))));
+}
 
-  OnDecodingSuccessCallback<mojom::UserVerificationMethod>
-      on_decode_user_verification_method_success = base::BindOnce(
-          [](AwaitUserVerificationCallback callback,
-             base::OnceClosure read_next_packet,
-             mojom::UserVerificationMethod user_verification_method) {
-            if (!user_verification_method.use_source_lock_screen_prompt) {
-              QS_LOG(ERROR) << "Unsupported user verification method";
-              std::move(callback).Run(absl::nullopt);
-              return;
-            }
-            std::move(read_next_packet).Run();
-          },
-          std::move(on_error),
-          base::BindOnce(&NearbyConnection::Read,
-                         nearby_connection_->GetWeakPtr(),
-                         std::move(on_receive_second_packet)));
-
-  ConnectionResponseCallback try_decode_user_verification_method =
-      base::BindOnce(&Connection::TryDecodeData<mojom::UserVerificationMethod>,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     &mojom::QuickStartDecoder::DecodeUserVerificationMethod,
-                     std::move(on_decode_user_verification_method_success),
-                     std::move(on_decode_user_verification_method_failure));
-
-  nearby_connection_->Read(std::move(try_decode_user_verification_method));
+void Connection::OnUserVerificationPacketDecoded(
+    size_t attempt_number,
+    AwaitUserVerificationCallback callback,
+    mojom::QuickStartMessagePtr quick_start_message) {
+  if (!quick_start_message) {
+    QS_LOG(ERROR) << "Failed to decode Quick Start message";
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+  switch (quick_start_message->which()) {
+    case mojom::QuickStartMessage::Tag::kUserVerificationRequested:
+      if (!quick_start_message->get_user_verification_requested()
+               ->is_awaiting_user_verification) {
+        QS_LOG(ERROR) << "User verification request received from phone, but "
+                         "is_awaiting_user_verification is false.";
+        std::move(callback).Run(absl::nullopt);
+        return;
+      }
+      DoWaitForUserVerification(attempt_number + 1, std::move(callback));
+      return;
+    case mojom::QuickStartMessage::Tag::kUserVerificationMethod:
+      if (!quick_start_message->get_user_verification_method()
+               ->use_source_lock_screen_prompt) {
+        QS_LOG(ERROR) << "Unsupported user verification method";
+        std::move(callback).Run(absl::nullopt);
+        return;
+      }
+      DoWaitForUserVerification(attempt_number + 1, std::move(callback));
+      return;
+    case mojom::QuickStartMessage::Tag::kUserVerificationResponse:
+      std::move(callback).Run(
+          quick_start_message->get_user_verification_response()
+              ? absl::make_optional<mojom::UserVerificationResponse>(std::move(
+                    *quick_start_message->get_user_verification_response()))
+              : absl::nullopt);
+      return;
+    default:
+      QS_LOG(ERROR) << "Unexpected message: received a packet of type "
+                    << MessageTagToString(quick_start_message->which())
+                    << " during user verification.";
+      std::move(callback).Run(absl::nullopt);
+      return;
+  }
 }
 
 base::Value::Dict Connection::GetPrepareForUpdateInfo() {
   return session_context_.GetPrepareForUpdateInfo();
 }
 
-void Connection::OnUserVerificationRequested(
-    AwaitUserVerificationCallback callback,
-    absl::optional<mojom::UserVerificationRequested>
-        user_verification_request) {
-  if (!user_verification_request.has_value()) {
-    QS_LOG(ERROR) << "No user verification request received from phone.";
-    std::move(callback).Run(absl::nullopt);
-    return;
+void Connection::DecodeQuickStartMessage(
+    OnDecodingCompleteCallback on_decoding_complete,
+    absl::optional<std::vector<uint8_t>> data) {
+  if (!data || data->empty()) {
+    QS_LOG(INFO) << "Empty response";
+    std::move(on_decoding_complete).Run(nullptr);
   }
 
-  if (!user_verification_request->is_awaiting_user_verification) {
-    QS_LOG(ERROR) << "User verification request received from phone, but "
-                     "is_awaiting_user_verification is false.";
-
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-
-  ConnectionResponseCallback on_response_received =
-      base::BindOnce(&Connection::DecodeData<mojom::UserVerificationResponse>,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     &mojom::QuickStartDecoder::DecodeUserVerificationResult,
-                     std::move(callback));
-
-  nearby_connection_->Read(std::move(on_response_received));
-}
-
-template <typename T>
-void Connection::DecodeData(DecoderMethod<T> decoder_method,
-                            OnDecodingCompleteCallback<T> on_decoding_complete,
-                            absl::optional<std::vector<uint8_t>> data) {
   // Setup a callback to handle the decoder's response. If an error was
   // reported, return empty. If not, run the success callback with the
   // decoded data.
-  // TODO(b/302034651): Refactor to avoid using InlinedStructPtr like this.
-  // Whether an InlinedStructPtr or a StructPtr is to be used is an
-  // implementation detail, and code like this is fragile.
-  DecoderResponseCallback<T> decoder_callback = base::BindOnce(
-      [](OnDecodingCompleteCallback<T> on_decoding_complete,
-         mojo::InlinedStructPtr<T> data,
-         absl::optional<mojom::QuickStartDecoderError> error) {
-        if (error.has_value()) {
-          // TODO(b/281052191): Log error code here
-          QS_LOG(ERROR) << "Error decoding data.";
-          std::move(on_decoding_complete).Run(absl::nullopt);
-          return;
-        }
+  mojom::QuickStartDecoder::DecodeQuickStartMessageCallback decoder_callback =
+      base::BindOnce(
+          [](OnDecodingCompleteCallback on_decoding_complete,
+             mojom::QuickStartMessagePtr data,
+             absl::optional<mojom::QuickStartDecoderError> error) {
+            if (error.has_value() || !data) {
+              // TODO(b/281052191): Log error code here
+              QS_LOG(ERROR) << "Error decoding data.";
+              std::move(on_decoding_complete).Run(nullptr);
+              return;
+            }
 
-        std::move(on_decoding_complete).Run(*std::move(data));
-      },
-      std::move(on_decoding_complete));
+            std::move(on_decoding_complete).Run(std::move(data));
+          },
+          std::move(on_decoding_complete));
 
   // Run the decoder
-  base::BindOnce(decoder_method, decoder_, data, std::move(decoder_callback))
-      .Run();
-}
-
-template <typename T>
-void Connection::TryDecodeData(DecoderMethod<T> decoder_method,
-                               OnDecodingSuccessCallback<T> on_decoding_success,
-                               ConnectionResponseCallback on_decoding_failed,
-                               absl::optional<std::vector<uint8_t>> data) {
-  // Setup a callback to handle the decoder's response. If an error was
-  // reported, run the failure callback with the original data. If not, run the
-  // success callback with the decoded data.
-  // TODO(b/302034651): Refactor to avoid using InlinedStructPtr like this.
-  // Whether an InlinedStructPtr or a StructPtr is to be used is an
-  // implementation detail, and code like this is fragile.
-  DecoderResponseCallback<T> decoder_callback = base::BindOnce(
-      [](OnDecodingSuccessCallback<T> on_decoding_success,
-         ConnectionResponseCallback on_decoding_failed,
-         absl::optional<std::vector<uint8_t>> data,
-         mojo::InlinedStructPtr<T> result,
-         absl::optional<mojom::QuickStartDecoderError> error) {
-        if (error.has_value() || !result) {
-          // TODO(b/281052191): Log error code here
-          QS_LOG(INFO) << "Failed attempt to decode data.";
-          std::move(on_decoding_failed).Run(data);
-          return;
-        }
-
-        std::move(on_decoding_success).Run(*std::move(result));
-      },
-      std::move(on_decoding_success), std::move(on_decoding_failed), data);
-
-  // Run the decoder
-  base::BindOnce(decoder_method, decoder_, data, std::move(decoder_callback))
-      .Run();
+  decoder_->DecodeQuickStartMessage(data, std::move(decoder_callback));
 }
 
 void Connection::OnConnectionClosed(

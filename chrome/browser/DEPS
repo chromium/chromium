@@ -418,6 +418,7 @@ include_rules = [
   "+media/base",  # For media switches
   "+media/capabilities", # For InMemoryVideoDecodeStatsDB
   "+media/cdm",
+  "+media/gpu/buildflags.h",
   "+media/remoting/device_capability_checker.h",
   "+media/capture",
   "+media/midi",  # For midi switches

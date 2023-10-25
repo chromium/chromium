@@ -78,7 +78,6 @@ class MockCloudPolicyClient : public CloudPolicyClient {
                ResultCallback),
               (override));
   MOCK_METHOD(void, CancelAppInstallReportUpload, (), (override));
-  MOCK_METHOD(void, CancelExtensionInstallReportUpload, (), (override));
   MOCK_METHOD(void,
               UpdateGcmId,
               (const std::string&, StatusCallback),
@@ -127,10 +126,6 @@ class MockCloudPolicyClient : public CloudPolicyClient {
   MOCK_METHOD(void,
               UploadAppInstallReport,
               (base::Value::Dict value, ResultCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              UploadExtensionInstallReport,
-              (base::Value::Dict, ResultCallback),
               (override));
   MOCK_METHOD(void,
               ClientCertProvisioningRequest,

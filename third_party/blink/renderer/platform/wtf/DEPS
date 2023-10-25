@@ -3,9 +3,7 @@ include_rules = [
     # directories and files instead of writing 'base/'.
     "+base/apple/bridging.h",
     "+base/apple/scoped_cftyperef.h",
-    "+base/atomic_ref_count.h",
     "+base/apple/foundation_util.h",
-    "+base/no_destructor.h",
     "+base/numerics",
     "+base/process/process_metrics.h",
     "+base/strings",

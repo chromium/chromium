@@ -1274,8 +1274,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                 "modelId": 16,
                 "refreshRate": 15,
                 "resolutionHorizontal": 13,
-                "resolutionVertical": 14,
-                "serialNumber": 17
+                "resolutionVertical": 14
               },
               {
                 "inputType": "unknown"
@@ -1295,8 +1294,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
               "privacyScreenSupported": true,
               "refreshRate": 5,
               "resolutionHorizontal": 3,
-              "resolutionVertical": 4,
-              "serialNumber": 7
+              "resolutionVertical": 4
             }
           }, result);
         chrome.test.succeed();

@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/handoff_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/privacy/lockdown_mode/lockdown_mode_coordinator.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_main_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_navigation_commands.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_table_view_controller.h"
@@ -26,6 +27,7 @@
 
 @interface PrivacyCoordinator () <
     ClearBrowsingDataCoordinatorDelegate,
+    PrivacyGuideMainCoordinatorDelegate,
     PrivacyNavigationCommands,
     PrivacySafeBrowsingCoordinatorDelegate,
     PrivacyTableViewControllerPresentationDelegate,
@@ -42,6 +44,10 @@
 
 // Coordinator for Lockdown Mode settings.
 @property(nonatomic, strong) LockdownModeCoordinator* lockdownModeCoordinator;
+
+// Coordinator for the Privacy Guide screen.
+@property(nonatomic, strong)
+    PrivacyGuideMainCoordinator* privacyGuideMainCoordinator;
 
 @end
 
@@ -143,6 +149,15 @@
   [self.lockdownModeCoordinator start];
 }
 
+- (void)showPrivacyGuide {
+  DCHECK(!self.privacyGuideMainCoordinator);
+  self.privacyGuideMainCoordinator = [[PrivacyGuideMainCoordinator alloc]
+      initWithBaseViewController:self.baseNavigationController
+                         browser:self.browser];
+  self.privacyGuideMainCoordinator.delegate = self;
+  [self.privacyGuideMainCoordinator start];
+}
+
 #pragma mark - ClearBrowsingDataCoordinatorDelegate
 
 - (void)clearBrowsingDataCoordinatorViewControllerWasRemoved:
@@ -167,6 +182,14 @@
   [self stopLockdownModeCoordinator];
 }
 
+#pragma mark - PrivacyGuideMainCoordinatorDelegate
+
+- (void)privacyGuideMainCoordinatorDidRemove:
+    (PrivacyGuideMainCoordinator*)coordinator {
+  DCHECK_EQ(self.privacyGuideMainCoordinator, coordinator);
+  [self stopPrivacyGuideMainCoordinator];
+}
+
 #pragma mark - Private
 
 - (void)stopLockdownModeCoordinator {
@@ -175,12 +198,16 @@
   self.lockdownModeCoordinator = nil;
 }
 
-#pragma mark - Private
-
 - (void)stopSafeBrowsingCoordinator {
   [self.safeBrowsingCoordinator stop];
   self.safeBrowsingCoordinator.delegate = nil;
   self.safeBrowsingCoordinator = nil;
+}
+
+- (void)stopPrivacyGuideMainCoordinator {
+  [self.privacyGuideMainCoordinator stop];
+  self.privacyGuideMainCoordinator.delegate = nil;
+  self.privacyGuideMainCoordinator = nil;
 }
 
 @end

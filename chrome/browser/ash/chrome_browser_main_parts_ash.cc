@@ -101,7 +101,6 @@
 #include "chrome/browser/ash/extensions/default_app_order.h"
 #include "chrome/browser/ash/extensions/login_screen_ui/ui_handler.h"
 #include "chrome/browser/ash/external_metrics.h"
-#include "chrome/browser/ash/input_method/editor_mediator.h"
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
 #include "chrome/browser/ash/language_preferences.h"
 #include "chrome/browser/ash/lock_screen_apps/state_controller.h"
@@ -1256,13 +1255,6 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
         g_browser_process->local_state(), ash::SessionController::Get());
 
     misconfigured_user_cleaner_->ScheduleCleanup();
-
-    if (chromeos::features::IsOrcaEnabled()) {
-      editor_mediator_ = std::make_unique<input_method::EditorMediator>(
-          /*profile=*/profile,
-          /*country_code=*/g_browser_process->variations_service()
-              ->GetLatestCountry());
-    }
 
     g_browser_process->platform_part()->session_manager()->Initialize(
         *base::CommandLine::ForCurrentProcess(), profile,

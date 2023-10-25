@@ -230,8 +230,8 @@ void SmartCardConnection::TransactionState::SettleStartTransaction(
   if (!callback_exception_.IsEmpty()) {
     start_transaction_request_->Reject(callback_exception_);
   } else if (end_transaction_result->is_error()) {
-    SmartCardError::Reject(start_transaction_request_,
-                           end_transaction_result->get_error());
+    SmartCardError::MaybeReject(start_transaction_request_,
+                                end_transaction_result->get_error());
   } else {
     start_transaction_request_->Resolve();
   }
@@ -574,7 +574,7 @@ void SmartCardConnection::OnDisconnectDone(
   ClearOperationInProgress(resolver);
 
   if (result->is_error()) {
-    SmartCardError::Reject(resolver, result->get_error());
+    SmartCardError::MaybeReject(resolver, result->get_error());
     return;
   }
 
@@ -590,7 +590,7 @@ void SmartCardConnection::OnPlainResult(
   ClearOperationInProgress(resolver);
 
   if (result->is_error()) {
-    SmartCardError::Reject(resolver, result->get_error());
+    SmartCardError::MaybeReject(resolver, result->get_error());
     return;
   }
 
@@ -603,7 +603,7 @@ void SmartCardConnection::OnDataResult(
   ClearOperationInProgress(resolver);
 
   if (result->is_error()) {
-    SmartCardError::Reject(resolver, result->get_error());
+    SmartCardError::MaybeReject(resolver, result->get_error());
     return;
   }
 
@@ -618,7 +618,7 @@ void SmartCardConnection::OnStatusDone(
   ClearOperationInProgress(resolver);
 
   if (result->is_error()) {
-    SmartCardError::Reject(resolver, result->get_error());
+    SmartCardError::MaybeReject(resolver, result->get_error());
     return;
   }
 
@@ -628,7 +628,7 @@ void SmartCardConnection::OnStatusDone(
       ToV8ConnectionState(mojo_status->state, mojo_status->protocol);
 
   if (!connection_state.has_value()) {
-    SmartCardError::Reject(
+    SmartCardError::MaybeReject(
         resolver, device::mojom::blink::SmartCardError::kInternalError);
     return;
   }
@@ -663,7 +663,7 @@ void SmartCardConnection::OnBeginTransactionDone(
             device::mojom::blink::SmartCardError::kCancelled) {
       RejectWithAbortionReason(resolver, signal);
     } else {
-      SmartCardError::Reject(resolver, result->get_error());
+      SmartCardError::MaybeReject(resolver, result->get_error());
     }
     return;
   }

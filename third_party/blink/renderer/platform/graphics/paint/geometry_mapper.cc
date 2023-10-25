@@ -202,10 +202,9 @@ bool GeometryMapper::LocalToAncestorVisualRect(
     const PropertyTreeState& ancestor_state,
     FloatClipRect& mapping_rect,
     OverlayScrollbarClipBehavior clip_behavior,
-    InclusiveIntersectOrNot inclusive_behavior) {
+    VisualRectFlags flags) {
   return LocalToAncestorVisualRectInternal<ForCompositingOverlap::kNo>(
-      local_state, ancestor_state, mapping_rect, clip_behavior,
-      inclusive_behavior);
+      local_state, ancestor_state, mapping_rect, clip_behavior, flags);
 }
 
 template <GeometryMapper::ForCompositingOverlap for_compositing_overlap>
@@ -214,7 +213,7 @@ bool GeometryMapper::LocalToAncestorVisualRectInternal(
     const PropertyTreeState& ancestor_state,
     FloatClipRect& rect_to_map,
     OverlayScrollbarClipBehavior clip_behavior,
-    InclusiveIntersectOrNot inclusive_behavior) {
+    VisualRectFlags flags) {
   // Many effects (e.g. filters, clip-paths) can make a clip rect not tight.
   if (&local_state.Effect() != &ancestor_state.Effect())
     rect_to_map.ClearIsTight();
@@ -227,12 +226,13 @@ bool GeometryMapper::LocalToAncestorVisualRectInternal(
     return true;
   }
 
-  if (&local_state.Clip() != &ancestor_state.Clip() &&
+  if (!(flags & kIgnoreFilters) &&
+      &local_state.Clip() != &ancestor_state.Clip() &&
       local_state.Clip().NearestPixelMovingFilterClip() !=
           ancestor_state.Clip().NearestPixelMovingFilterClip()) {
     return SlowLocalToAncestorVisualRectWithPixelMovingFilters<
         for_compositing_overlap>(local_state, ancestor_state, rect_to_map,
-                                 clip_behavior, inclusive_behavior);
+                                 clip_behavior, flags);
   }
 
   ExtraProjectionResult extra_result;
@@ -272,11 +272,12 @@ bool GeometryMapper::LocalToAncestorVisualRectInternal(
   FloatClipRect clip_rect =
       LocalToAncestorClipRectInternal<for_compositing_overlap>(
           local_state.Clip(), ancestor_state.Clip(), ancestor_state.Transform(),
-          clip_behavior, inclusive_behavior);
+          clip_behavior, flags);
   // This is where we propagate the roundedness and tightness of |clip_rect|
   // to |rect_to_map|.
-  if (inclusive_behavior == kInclusiveIntersect)
+  if (flags & kEdgeInclusive) {
     return rect_to_map.InclusiveIntersect(clip_rect);
+  }
   rect_to_map.Intersect(clip_rect);
   return !rect_to_map.Rect().IsEmpty();
 }
@@ -287,7 +288,9 @@ bool GeometryMapper::SlowLocalToAncestorVisualRectWithPixelMovingFilters(
     const PropertyTreeState& ancestor_state,
     FloatClipRect& rect_to_map,
     OverlayScrollbarClipBehavior clip_behavior,
-    InclusiveIntersectOrNot inclusive_behavior) {
+    VisualRectFlags flags) {
+  DCHECK(!(flags & kIgnoreFilters));
+
   PropertyTreeState last_state = local_state;
   last_state.SetEffect(ancestor_state.Effect());
   const auto* ancestor_filter_clip =
@@ -315,8 +318,7 @@ bool GeometryMapper::SlowLocalToAncestorVisualRectWithPixelMovingFilters(
     } else {
       bool intersects =
           LocalToAncestorVisualRectInternal<for_compositing_overlap>(
-              last_state, new_state, rect_to_map, clip_behavior,
-              inclusive_behavior);
+              last_state, new_state, rect_to_map, clip_behavior, flags);
       if (!intersects) {
         rect_to_map = FloatClipRect(gfx::RectF());
         return false;
@@ -333,8 +335,7 @@ bool GeometryMapper::SlowLocalToAncestorVisualRectWithPixelMovingFilters(
   }
 
   return LocalToAncestorVisualRectInternal<for_compositing_overlap>(
-      last_state, ancestor_state, rect_to_map, clip_behavior,
-      inclusive_behavior);
+      last_state, ancestor_state, rect_to_map, clip_behavior, flags);
 }
 
 FloatClipRect GeometryMapper::LocalToAncestorClipRect(
@@ -347,8 +348,7 @@ FloatClipRect GeometryMapper::LocalToAncestorClipRect(
     return FloatClipRect();
 
   auto result = LocalToAncestorClipRectInternal<ForCompositingOverlap::kNo>(
-      local_clip, ancestor_clip, ancestor_state.Transform(), clip_behavior,
-      kNonInclusiveIntersect);
+      local_clip, ancestor_clip, ancestor_state.Transform(), clip_behavior);
 
   // Many effects (e.g. filters, clip-paths) can make a clip rect not tight.
   if (&local_state.Effect() != &ancestor_state.Effect())
@@ -376,7 +376,7 @@ FloatClipRect GeometryMapper::LocalToAncestorClipRectInternal(
     const ClipPaintPropertyNode& ancestor_clip,
     const TransformPaintPropertyNode& ancestor_transform,
     OverlayScrollbarClipBehavior clip_behavior,
-    InclusiveIntersectOrNot inclusive_behavior) {
+    VisualRectFlags flags) {
   if (&descendant_clip == &ancestor_clip)
     return FloatClipRect();
 
@@ -399,9 +399,9 @@ FloatClipRect GeometryMapper::LocalToAncestorClipRectInternal(
   while (clip_node && clip_node != &ancestor_clip) {
     const GeometryMapperClipCache::ClipCacheEntry* cached_clip = nullptr;
     // Inclusive intersected clips are not cached at present.
-    if (inclusive_behavior != kInclusiveIntersect)
+    if (!(flags & kEdgeInclusive)) {
       cached_clip = clip_node->GetClipCache().GetCachedClip(clip_and_transform);
-
+    }
     if (for_compositing_overlap == ForCompositingOverlap::kYes && cached_clip &&
         (cached_clip->has_transform_animation ||
          cached_clip->has_sticky_transform)) {
@@ -444,7 +444,7 @@ FloatClipRect GeometryMapper::LocalToAncestorClipRectInternal(
     // from clip and transform properties, and propagate them to |clip|.
     FloatClipRect mapped_rect(GetClipRect(*node, clip_behavior));
     mapped_rect.Map(projection);
-    if (inclusive_behavior == kInclusiveIntersect) {
+    if (flags & kEdgeInclusive) {
       clip.InclusiveIntersect(mapped_rect);
     } else {
       clip.Intersect(mapped_rect);
@@ -457,7 +457,7 @@ FloatClipRect GeometryMapper::LocalToAncestorClipRectInternal(
   }
   // Clips that are inclusive intersected or expanded for animation are not
   // cached at present.
-  DCHECK(inclusive_behavior == kInclusiveIntersect ||
+  DCHECK(flags & kEdgeInclusive ||
          for_compositing_overlap == ForCompositingOverlap::kYes ||
          descendant_clip.GetClipCache()
                  .GetCachedClip(clip_and_transform)
@@ -563,9 +563,7 @@ gfx::RectF GeometryMapper::VisualRectForCompositingOverlap(
     const PropertyTreeState& ancestor_state) {
   FloatClipRect visual_rect(local_rect);
   GeometryMapper::LocalToAncestorVisualRectInternal<
-      ForCompositingOverlap::kYes>(local_state, ancestor_state, visual_rect,
-                                   kIgnoreOverlayScrollbarSize,
-                                   kNonInclusiveIntersect);
+      ForCompositingOverlap::kYes>(local_state, ancestor_state, visual_rect);
   if (const absl::optional<gfx::RectF> visibility_limit =
           VisibilityLimit(ancestor_state)) {
     visual_rect.Rect().Intersect(*visibility_limit);
@@ -606,9 +604,7 @@ bool GeometryMapper::LocalToAncestorVisualRectInternalForTesting(
     const PropertyTreeState& ancestor_state,
     FloatClipRect& mapping_rect) {
   return GeometryMapper::LocalToAncestorVisualRectInternal<
-      ForCompositingOverlap::kNo>(local_state, ancestor_state, mapping_rect,
-                                  kIgnoreOverlayScrollbarSize,
-                                  kNonInclusiveIntersect);
+      ForCompositingOverlap::kNo>(local_state, ancestor_state, mapping_rect);
 }
 
 bool GeometryMapper::
@@ -617,9 +613,7 @@ bool GeometryMapper::
         const PropertyTreeState& ancestor_state,
         FloatClipRect& mapping_rect) {
   return GeometryMapper::LocalToAncestorVisualRectInternal<
-      ForCompositingOverlap::kYes>(local_state, ancestor_state, mapping_rect,
-                                   kIgnoreOverlayScrollbarSize,
-                                   kNonInclusiveIntersect);
+      ForCompositingOverlap::kYes>(local_state, ancestor_state, mapping_rect);
 }
 
 absl::optional<gfx::RectF> GeometryMapper::VisibilityLimit(

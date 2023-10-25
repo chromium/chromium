@@ -168,7 +168,7 @@ public class PortalsTest {
         TestBrowsingHistoryObserver observer = new TestBrowsingHistoryObserver();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Profile profile = Profile.fromWebContents(tab.getWebContents());
+                    Profile profile = tab.getProfile();
                     BrowsingHistoryBridge provider = new BrowsingHistoryBridge(profile);
                     provider.setObserver(observer);
                     provider.queryHistory(/* query= */ "");

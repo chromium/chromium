@@ -1,0 +1,3 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="div", role="toolbar"]
+++++TextView text:"A toolbar" textSize:16.00 style:0 bundle:[display="", htmlTag=""]

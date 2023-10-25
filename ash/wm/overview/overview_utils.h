@@ -97,6 +97,12 @@ ASH_EXPORT gfx::Rect ToStableSizeRoundedRect(const gfx::RectF& rect);
 
 void MoveFocusToView(OverviewFocusableView* target_view);
 
+// For all `windows`, change their visibility by changing the window opacity,
+// animating where necessary.
+void SetWindowsVisibleDuringItemDragging(const aura::Window::Windows& windows,
+                                         bool visible,
+                                         bool animate);
+
 }  // namespace ash
 
 #endif  // ASH_WM_OVERVIEW_OVERVIEW_UTILS_H_

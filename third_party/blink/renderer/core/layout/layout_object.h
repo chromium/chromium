@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
 #include "third_party/blink/renderer/platform/graphics/subtree_paint_property_update_reason.h"
+#include "third_party/blink/renderer/platform/graphics/visual_rect_flags.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/transform.h"
@@ -89,17 +90,6 @@ class PaintLayer;
 class StyleRequest;
 struct PaintInfo;
 struct PaintInvalidatorContext;
-
-enum VisualRectFlags {
-  kDefaultVisualRectFlags = 0,
-  kEdgeInclusive = 1 << 0,
-  // Use the GeometryMapper fast-path, if possible.
-  kUseGeometryMapper = 1 << 1,
-  // When mapping to absolute coordinates and the main frame is remote, don't
-  // apply the main frame root scroller's overflow clip.
-  kDontApplyMainFrameOverflowClip = 1 << 2,
-  kIgnoreLocalClipPath = 1 << 3,
-};
 
 enum CursorDirective { kSetCursorBasedOnStyle, kSetCursor, kDoNotSetCursor };
 
@@ -900,9 +890,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectNGBlockFlow);
   }
-  bool IsLayoutNGFlexibleBox() const {
+  bool IsFlexibleBox() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectNGFlexibleBox);
+    return IsOfType(kLayoutObjectFlexibleBox);
   }
   bool IsLayoutListItem() const {
     NOT_DESTROYED();
@@ -960,9 +950,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectCustom);
   }
-  bool IsLayoutNGGrid() const {
+  bool IsLayoutGrid() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectNGGrid);
+    return IsOfType(kLayoutObjectGrid);
   }
   bool IsLayoutIFrame() const {
     NOT_DESTROYED();
@@ -2744,12 +2734,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   void Destroy();
 
   // TODO(1229581): Rename this function.
-  virtual bool IsFlexibleBoxIncludingNG() const {
-    NOT_DESTROYED();
-    return false;
-  }
-
-  // TODO(1229581): Rename this function.
   bool IsListItemIncludingNG() const {
     NOT_DESTROYED();
     return IsLayoutListItem() || IsInlineListItem();
@@ -3478,8 +3462,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     kLayoutObjectCustomScrollbarPart,
     kLayoutObjectEmbeddedObject,
     kLayoutObjectFieldset,
+    kLayoutObjectFlexibleBox,
     kLayoutObjectFrame,
     kLayoutObjectFrameSet,
+    kLayoutObjectGrid,
     kLayoutObjectIFrame,
     kLayoutObjectImage,
     kLayoutObjectInlineListItem,
@@ -3492,8 +3478,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     kLayoutObjectMultiColumnSet,
     kLayoutObjectMultiColumnSpannerPlaceholder,
     kLayoutObjectNGBlockFlow,
-    kLayoutObjectNGFlexibleBox,
-    kLayoutObjectNGGrid,
     kLayoutObjectOutsideListMarker,
     kLayoutObjectProgress,
     kLayoutObjectQuote,
@@ -3959,7 +3943,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
         IntrinsicLogicalWidthsChildDependsOnBlockConstraints);
 
     // This flag is set on inline container boxes that need to run the
-    // Pre-layout phase in LayoutNG. See NGInlineNode::CollectInlines().
+    // Pre-layout phase in LayoutNG. See InlineNode::CollectInlines().
     // Also maybe set to inline boxes to optimize the propagation.
     ADD_BOOLEAN_BITFIELD(needs_collect_inlines_, NeedsCollectInlines);
 
@@ -4171,7 +4155,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     ADD_BOOLEAN_BITFIELD(is_table_column_constraints_dirty_,
                          IsTableColumnsConstraintsDirty);
 
-    // Grid item placement is cached on LayoutNGGrid.
+    // Grid item placement is cached on LayoutGrid.
     // When this flag is set, any cached item placements are invalid.
     ADD_BOOLEAN_BITFIELD(is_grid_placement_dirty_, IsGridPlacementDirty);
 

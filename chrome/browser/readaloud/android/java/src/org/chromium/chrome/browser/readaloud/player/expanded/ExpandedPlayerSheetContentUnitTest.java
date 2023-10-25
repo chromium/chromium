@@ -32,6 +32,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link ExpandedPlayerSheetContent}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -39,6 +40,9 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 public class ExpandedPlayerSheetContentUnitTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private InteractionHandler mInteractionHandler;
+    @Mock private PropertyModel mModel;
+    @Mock private OptionsMenuSheetContent mOptionsMenu;
+    @Mock private View.OnClickListener mOnClickListener;
 
     private Context mContext;
     private Drawable mPlayDrawable;
@@ -73,7 +77,10 @@ public class ExpandedPlayerSheetContentUnitTest {
         mBackButton = (ImageView) mContentView.findViewById(R.id.readaloud_seek_back_button);
         mForwardButton = (ImageView) mContentView.findViewById(R.id.readaloud_seek_forward_button);
         mPlayPauseButton = (ImageView) mContentView.findViewById(R.id.readaloud_play_pause_button);
-        mContent = new ExpandedPlayerSheetContent(mContext, mBottomSheetController, mContentView);
+        mContent =
+                new ExpandedPlayerSheetContent(
+                        mContext, mBottomSheetController, mContentView, mModel);
+        mContent.setOptionsMenu(mOptionsMenu);
     }
 
     @Test
@@ -87,7 +94,19 @@ public class ExpandedPlayerSheetContentUnitTest {
     @Test
     public void testSetInteractionHandler() {
         mContent.setInteractionHandler(mInteractionHandler);
+
+        assertTrue(mBackButton.performClick());
+        verify(mInteractionHandler).onSeekBackClick();
+
+        assertTrue(mForwardButton.performClick());
+        verify(mInteractionHandler).onSeekForwardClick();
+
         assertTrue(mPlayPauseButton.performClick());
+        verify(mInteractionHandler).onPlayPauseClick();
+        verify(mInteractionHandler).onSeekForwardClick();
+
+        assertTrue(mPublisherView.performClick());
+        verify(mInteractionHandler).onPublisherClick();
     }
 
     @Test
@@ -128,5 +147,23 @@ public class ExpandedPlayerSheetContentUnitTest {
     public void testHide() {
         mContent.hide();
         verify(mBottomSheetController, times(1)).hideContent(eq(mContent), eq(true));
+    }
+
+    @Test
+    public void testGetOptionsMenu() {
+        assertEquals(mContent.getOptionsMenu(), mOptionsMenu);
+    }
+
+    @Test
+    public void testShowOptionsMenu() {
+        mContent.showOptionsMenu();
+        verify(mBottomSheetController).hideContent(mContent, false);
+        verify(mBottomSheetController).requestShowContent(mContent.getOptionsMenu(), true);
+    }
+
+    @Test
+    public void testNotifySheetClosed() {
+        mContent.notifySheetClosed();
+        verify(mOptionsMenu).notifySheetClosed();
     }
 }

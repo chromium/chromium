@@ -39,6 +39,14 @@ TEST(Syscall, InvalidCallReturnsENOSYS) {
   EXPECT_EQ(-ENOSYS, Syscall::InvalidCall());
 }
 
+// Loads a `T`, possibly unaligned, from `ptr - sizeof(T)`.
+template <typename T>
+T LoadBehind(intptr_t ptr) {
+  T ret;
+  memcpy(&ret, reinterpret_cast<const void*>(ptr - sizeof(T)), sizeof(ret));
+  return ret;
+}
+
 TEST(Syscall, WellKnownEntryPoint) {
 // Test that Syscall::Call(-1) is handled specially. Don't do this on ARM,
 // where syscall(-1) crashes with SIGILL. Not running the test is fine, as we
@@ -48,23 +56,22 @@ TEST(Syscall, WellKnownEntryPoint) {
 #endif
 
 // If possible, test that Syscall::Call(-1) returns the address right
-// after
-// a kernel entry point.
+// after a kernel entry point.
 #if defined(__i386__)
-  EXPECT_EQ(0x80CDu, ((uint16_t*)Syscall::Call(-1))[-1]);  // INT 0x80
+  EXPECT_EQ(0x80CDu, LoadBehind<uint16_t>(Syscall::Call(-1)));  // INT 0x80
 #elif defined(__x86_64__)
-  EXPECT_EQ(0x050Fu, ((uint16_t*)Syscall::Call(-1))[-1]);  // SYSCALL
+  EXPECT_EQ(0x050Fu, LoadBehind<uint16_t>(Syscall::Call(-1)));  // SYSCALL
 #elif defined(__arm__)
 #if defined(__thumb__)
-  EXPECT_EQ(0xDF00u, ((uint16_t*)Syscall::Call(-1))[-1]);  // SWI 0
+  EXPECT_EQ(0xDF00u, LoadBehind<uint16_t>(Syscall::Call(-1)));  // SWI 0
 #else
-  EXPECT_EQ(0xEF000000u, ((uint32_t*)Syscall::Call(-1))[-1]);  // SVC 0
+  EXPECT_EQ(0xEF000000u, LoadBehind<uint32_t>(Syscall::Call(-1)));  // SVC 0
 #endif
 #elif defined(__mips__)
   // Opcode for MIPS sycall is in the lower 16-bits
-  EXPECT_EQ(0x0cu, (((uint32_t*)Syscall::Call(-1))[-1]) & 0x0000FFFF);
+  EXPECT_EQ(0x0cu, LoadBehind<uint32_t>(Syscall::Call(-1)) & 0x0000FFFF);
 #elif defined(__aarch64__)
-  EXPECT_EQ(0xD4000001u, ((uint32_t*)Syscall::Call(-1))[-1]);  // SVC 0
+  EXPECT_EQ(0xD4000001u, LoadBehind<uint32_t>(Syscall::Call(-1)));  // SVC 0
 #else
 #warning Incomplete test case; need port for target platform
 #endif

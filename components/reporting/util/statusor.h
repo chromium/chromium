@@ -63,8 +63,8 @@
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/expected.h"
 #include "components/reporting/util/status.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -73,8 +73,8 @@ namespace internal {
 // Helper class for StatusOr to use.
 class StatusOrHelper {
  public:
-  static const Status& NotInitializedStatus();
-  static const Status& MovedOutStatus();
+  static const base::unexpected<Status>& NotInitializedStatus();
+  static const base::unexpected<Status>& MovedOutStatus();
   static void Crash(const Status& status);
 };
 
@@ -95,7 +95,7 @@ class [[nodiscard]] StatusOr {
 
  public:
   // Constructs a new StatusOr with UNINITIALIZED status and no value.
-  StatusOr() : status_(internal::StatusOrHelper::NotInitializedStatus()) {}
+  StatusOr() : expected_(internal::StatusOrHelper::NotInitializedStatus()) {}
 
   // Constructs a new StatusOr with the given non-ok status. After calling
   // this constructor, calls to ValueOrDie() will CHECK-fail.
@@ -105,8 +105,8 @@ class [[nodiscard]] StatusOr {
   // implicitly converted to the appropriate return type as a matter of
   // convenience.
   // REQUIRES: !status.ok().
-  StatusOr(const Status& status)  // NOLINT(runtime/explicit)
-      : status_(status) {
+  StatusOr(const Status& status)  // NOLINT(google-explicit-constructor)
+      : expected_(base::unexpected<Status>(status)) {
     if (status.ok()) {
       internal::StatusOrHelper::Crash(status);
     }
@@ -133,8 +133,8 @@ class [[nodiscard]] StatusOr {
                 !std::is_same<typename std::remove_reference<
                                   typename std::remove_cv<U>::type>::type,
                               Status>::value>::type>
-  StatusOr(U&& value)  // NOLINT(runtime/explicit)
-      : status_(Status::StatusOK()), value_(std::forward<U>(value)) {}
+  StatusOr(U&& value)  // NOLINT(google-explicit-constructor)
+      : expected_(std::forward<U>(value)) {}
 
   // Copy constructor.
   //
@@ -144,8 +144,7 @@ class [[nodiscard]] StatusOr {
   // than the templated copy constructor, the templated constructor cannot act
   // as a copy constructor, and any attempt to copy-construct a |StatusOr|
   // object results in a compilation error.
-  StatusOr(const StatusOr& other)
-      : status_(other.status_), value_(other.value_) {}
+  StatusOr(const StatusOr& other) : expected_(other.expected_) {}
 
   // Templatized constructor that constructs a |StatusOr<T>| from a const
   // reference to a |StatusOr<U>|.
@@ -154,8 +153,8 @@ class [[nodiscard]] StatusOr {
   template <typename U,
             typename E = typename std::enable_if<
                 is_implicitly_constructible<T, const U&>::value>::type>
-  StatusOr(const StatusOr<U>& other)  // NOLINT(runtime/explicit)
-      : status_(other.status_), value_(other.value_) {}
+  StatusOr(const StatusOr<U>& other)  // NOLINT(google-explicit-constructor)
+      : expected_(other.expected_) {}
 
   // Copy-assignment operator.
   StatusOr& operator=(const StatusOr& other) {
@@ -164,11 +163,7 @@ class [[nodiscard]] StatusOr {
       return *this;
     }
 
-    if (other.status_.ok()) {
-      AssignValue(other.value_);
-    } else {
-      AssignStatus(other.status_);
-    }
+    expected_ = other.expected_;
     return *this;
   }
 
@@ -181,9 +176,9 @@ class [[nodiscard]] StatusOr {
   template <typename U,
             typename E = typename std::enable_if<
                 is_implicitly_constructible<T, U&&>::value>::type>
-  StatusOr(StatusOr<U>&& other)  // NOLINT(runtime/explicit)
-      : status_(std::move(other.status_)), value_(std::move(other.value_)) {
-    other.status_ = internal::StatusOrHelper::MovedOutStatus();
+  StatusOr(StatusOr<U>&& other)  // NOLINT(google-explicit-constructor)
+      : expected_(std::move(other.expected_)) {
+    other.expected_ = internal::StatusOrHelper::MovedOutStatus();
   }
 
   // Move-assignment operator.
@@ -196,21 +191,19 @@ class [[nodiscard]] StatusOr {
       return *this;
     }
 
-    if (other.status_.ok()) {
-      AssignValue(std::move(other.value_.value()));
-    } else {
-      AssignStatus(std::move(other.status_));
-    }
-    other.status_ = internal::StatusOrHelper::MovedOutStatus();
+    this->expected_ = std::move(other.expected_);
+    other.expected_ = internal::StatusOrHelper::MovedOutStatus();
 
     return *this;
   }
 
   // Indicates whether the object contains a |T| value.
-  bool ok() const { return status_.ok(); }
+  bool ok() const { return expected_.has_value(); }
 
   // Gets the stored status object, or an OK status if a |T| value is stored.
-  Status status() const { return status_; }
+  Status status() const {
+    return (expected_.has_value() ? Status::StatusOK() : expected_.error());
+  }
 
   // Gets the stored |T| value.
   //
@@ -218,9 +211,9 @@ class [[nodiscard]] StatusOr {
   // (i.e. a call to ok() returns true), otherwise this call will abort.
   [[nodiscard]] const T& ValueOrDie() const& {
     if (!ok()) {
-      internal::StatusOrHelper::Crash(status_);
+      internal::StatusOrHelper::Crash(expected_.error());
     }
-    return value_.value();
+    return expected_.value();
   }
 
   // Gets a mutable reference to the stored |T| value.
@@ -229,9 +222,9 @@ class [[nodiscard]] StatusOr {
   // (i.e. a call to ok() returns true), otherwise this call will abort.
   [[nodiscard]] T& ValueOrDie() & {
     if (!ok()) {
-      internal::StatusOrHelper::Crash(status_);
+      internal::StatusOrHelper::Crash(expected_.error());
     }
-    return value_.value();
+    return expected_.value();
   }
 
   // Moves and returns the internally-stored |T| value.
@@ -242,40 +235,31 @@ class [[nodiscard]] StatusOr {
   // contain a non-OK status with a |error::UNKNOWN| error code.
   [[nodiscard]] T ValueOrDie() && {
     if (!ok()) {
-      internal::StatusOrHelper::Crash(status_);
+      internal::StatusOrHelper::Crash(expected_.error());
     }
 
     // Invalidate this StatusOr object before returning control to caller.
     StatusResetter set_moved_status(this,
                                     internal::StatusOrHelper::MovedOutStatus());
-    return std::move(value_.value());
+    return std::move(expected_.value());
   }
 
  private:
   class StatusResetter {
    public:
-    StatusResetter(StatusOr<T>* status_or, const Status& reset_to_status)
+    StatusResetter(StatusOr<T>* status_or,
+                   const base::unexpected<Status>& reset_to_status)
         : status_or_(status_or), reset_to_status_(reset_to_status) {}
     StatusResetter(const StatusResetter& other) = delete;
     StatusResetter& operator=(const StatusResetter& other) = delete;
     ~StatusResetter() {
-      status_or_->OverwriteValueWithStatus(reset_to_status_);
+      status_or_->OverwriteValueWithStatus(std::move(reset_to_status_));
     }
 
    private:
     const raw_ptr<StatusOr<T>> status_or_;
-    const Status reset_to_status_;
+    base::unexpected<Status> reset_to_status_;
   };
-
-  // Resets |this| to contain |status|.
-  template <class U>
-  void AssignStatus(U&& status) {
-    if (ok()) {
-      OverwriteValueWithStatus(std::forward<U>(status));
-    } else {
-      status_ = std::forward<U>(status);
-    }
-  }
 
   // Under the assumption that |this| is currently holding a value, resets the
   // |value_| member and sets |status_| to indicate that |this| does not have
@@ -285,21 +269,10 @@ class [[nodiscard]] StatusOr {
     if (!ok()) {
       LOG(FATAL) << "Object does not have a value to change from";
     }
-    value_.reset();
-    status_ = std::forward<U>(status);
+    expected_ = std::forward<U>(status);
   }
 
-  // Resets |value_| to contain the |value| and sets |status_|
-  // to OK, indicating that the StatusOr object has a value.
-  // Destroys the existing |value_|.
-  template <class U>
-  void AssignValue(U&& value) {
-    value_ = std::forward<U>(value);
-    status_ = Status::StatusOK();
-  }
-
-  Status status_;
-  absl::optional<T> value_;
+  base::expected<T, Status> expected_;
 };
 
 }  // namespace reporting

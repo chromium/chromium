@@ -59,19 +59,22 @@ interface FrameSinkVideoConsumer {
                   pending_remote<FrameSinkVideoConsumerFrameCallbacks>
                       callbacks);
 
-  // Called to indicate that a new |crop_version| has been set, and that all
-  // frames which will subsequently be delivered using OnFrameCaptured(),
-  // will have a crop-version that is greater-than-or-equal-to this one.
-  // This allows the Promise which cropTo() returned to be resolved promptly,
-  // even if frames are not being produced over the track at the moment,
-  // which can happen if the track is cropped to an invisible target, or is
-  // paused, or is muted.
-  OnNewCropVersion(uint32 crop_version);
+  // Called to indicate that a new |sub_capture_target_version| has been set,
+  // and that all frames which will subsequently be delivered using
+  // OnFrameCaptured(), will have a sub-capture-target-version that is
+  // greater-than-or-equal-to this one.
+  // This allows the Promise which cropTo() or restrictTo() returned to be
+  // resolved promptly, even if frames are not being produced over the track
+  // at the moment, which can happen if the track is cropped to an invisible
+  // target, or is paused, or is muted.
+  OnNewSubCaptureTargetVersion(uint32 sub_capture_target_version);
 
   // Called when a frame is *not* delivered because Region Capture was applied,
   // but the cropped-to region consists of zero pixels. This is needed because
   // the blue border that is normally drawn around the cropped-to region should
   // be updated.
+  // Note that this is specific to Region Capture. With Element Capture,
+  // we always draw the blue border around the entire tab's viewport.
   OnFrameWithEmptyRegionCapture();
 
   // Indicates that OnFrameCaptured() will not be called again, an end-of-stream
@@ -152,25 +155,33 @@ interface FrameSinkVideoCapturer {
   SetAutoThrottlingEnabled(bool enabled);
 
   // Targets a different compositor frame sink. This may be called anytime,
-  // before or after Start(). If |target| is null, capture will suspend
-  // until a new frame sink target is set. If |target| is provided, the
-  // frame sink identifier associated with it must be valid.
-  // If the |sub_target| is a valid subtree capture id, the capturer will
+  // before or after Start().
+  //
+  // If |target| is null, capture will suspend until a new frame sink target
+  // is set.
+  // If |target| is provided, the frame sink identifier associated with it
+  // must be valid.
+  //
+  // If |target| is a valid subtree capture id, the capturer will
   // capture a render pass associated with a layer subtree under the target
-  // frame sink, which is identifiable by that
-  // |subtree_capture_id|. Else, if the |sub_target| is a valid region capture
-  // crop id, only the region associated with that crop id will be captured.
+  // frame sink, which is identifiable by that |subtree_capture_id|.
+  // Else, if the |target| is a valid sub-capture target, only the
+  // relevant sub-capture target will be captured.
   // Otherwise, the capturer captures the root render pass of the target frame
   // sink.
-  // |crop_version| is a non-decreasing value (for subsequent calls).
-  // It is increased whenever the crop-target changes (new sub_target).
-  // Viz annotates frames with this value, and that allows Blink to
-  // discover when a crop has been applied. Blink will resolve a Promise it
-  // gave the Web-application when the crop was applied, and this way,
-  // the application will know when to start consuming cropped frames.
-  // Note that only tab-capture frames are croppable. Anything else,
-  // such as window-capture for instance, should always set |crop_version| to 0.
-  ChangeTarget(VideoCaptureTarget? target, uint32 crop_version);
+  //
+  // |sub_capture_target_version| is a non-decreasing value (for subsequent
+  // calls). It is increased whenever the sub-capture target changes
+  // (new sub_target). Viz annotates frames with this value, and that allows
+  // Blink to discover when a sub-capture has been applied. Blink will resolve
+  // a Promise it gave the Web-application when the sub-capture was applied,
+  // and this way, the application will know when to start consuming
+  // cropped/restricted frames.
+  //
+  // Note that only tab-capture frames are croppable/restrictable.
+  // Anything else, such as window-capture for instance, should always set
+  // |sub_capture_target_version| to 0.
+  ChangeTarget(VideoCaptureTarget? target, uint32 sub_capture_target_version);
 
   // Starts emitting video frames to the given |consumer|.
   // The caller can express if the |consumer| prefers to receive video buffers

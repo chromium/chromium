@@ -76,10 +76,9 @@ constexpr char kIdpForbiddenHeader[] = "Sec-FedCM-CSRF";
 
 // TODO(crbug.com/1381501): Replace these with a standardized header once
 // we collected enough metrics.
-static constexpr char kGoogleSigninHeader[] = "Google-Accounts-SignIn";
-static constexpr char kGoogleSignoutHeader[] = "Google-Accounts-SignOut";
-static constexpr char kGoogleHeaderValue[] =
-    "email=\"foo@example.com\", sessionindex=0, obfuscatedid=123";
+static constexpr char kSetLoginHeader[] = "Set-Login";
+static constexpr char kLoggedInHeaderValue[] = "logged-in";
+static constexpr char kLoggedOutHeaderValue[] = "logged-out";
 
 // Token value in //content/test/data/id_assertion_endpoint.json
 constexpr char kToken[] = "[not a real token]";
@@ -146,11 +145,11 @@ class IdpTestServer {
   std::unique_ptr<HttpResponse> BuildIdpHeaderResponse(
       const HttpRequest& request) {
     auto response = std::make_unique<BasicHttpResponse>();
-    if (request.relative_url.find("/header/gsignin") != std::string::npos) {
-      response->AddCustomHeader(kGoogleSigninHeader, kGoogleHeaderValue);
-    } else if (request.relative_url.find("/header/gsignout") !=
+    if (request.relative_url.find("/header/signin") != std::string::npos) {
+      response->AddCustomHeader(kSetLoginHeader, kLoggedInHeaderValue);
+    } else if (request.relative_url.find("/header/signout") !=
                std::string::npos) {
-      response->AddCustomHeader(kGoogleSignoutHeader, kGoogleHeaderValue);
+      response->AddCustomHeader(kSetLoginHeader, kLoggedOutHeaderValue);
     } else {
       return nullptr;
     }
@@ -499,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, UnregisterIdP) {
 
 // Verify that IDP sign-in headers work.
 IN_PROC_BROWSER_TEST_F(WebIdIdpSigninStatusBrowserTest, IdpSigninToplevel) {
-  GURL url = https_server().GetURL(kRpHostName, "/header/gsignin");
+  GURL url = https_server().GetURL(kRpHostName, "/header/signin");
   EXPECT_FALSE(sharing_context()
                    ->GetIdpSigninStatus(url::Origin::Create(url))
                    .has_value());
@@ -511,7 +510,7 @@ IN_PROC_BROWSER_TEST_F(WebIdIdpSigninStatusBrowserTest, IdpSigninToplevel) {
 
 // Verify that IDP sign-out headers work.
 IN_PROC_BROWSER_TEST_F(WebIdIdpSigninStatusBrowserTest, IdpSignoutToplevel) {
-  GURL url = https_server().GetURL(kRpHostName, "/header/gsignout");
+  GURL url = https_server().GetURL(kRpHostName, "/header/signout");
   EXPECT_FALSE(sharing_context()
                    ->GetIdpSigninStatus(url::Origin::Create(url))
                    .has_value());
@@ -526,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(WebIdIdpSigninStatusBrowserTest,
                        IdpSigninAndOutSubresource) {
   static constexpr char script[] = R"(
     (async () => {
-      var resp = await fetch('/header/gsign%s');
+      var resp = await fetch('/header/sign%s');
       return resp.status;
     }) ();
   )";
@@ -561,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(WebIdIdpSigninStatusBrowserTest,
   static constexpr char script[] = R"(
     (async () => {
       const request = new XMLHttpRequest();
-      request.open('GET', '/header/gsign%s', false);
+      request.open('GET', '/header/sign%s', false);
       request.send(null);
       return request.status;
     }) ();
@@ -797,7 +796,7 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_noPopUpWindow) {
             content += "nonce=12345&";
             content += "account_id=not_real_account&";
             content += "disclosure_text_shown=false&";
-            content += "is_identity_credential_auto_selected=false&";
+            content += "is_auto_selected=false&";
             // Asserts that the scope, response_type and params parameters
             // were passed correctly to the id assertion endpoint.
             content += "scope=name+email+picture&";
@@ -872,7 +871,7 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_openPopUpWindow) {
             content += "nonce=12345&";
             content += "account_id=not_real_account&";
             content += "disclosure_text_shown=false&";
-            content += "is_identity_credential_auto_selected=false&";
+            content += "is_auto_selected=false&";
             content += "scope=calendar.readonly";
 
             EXPECT_EQ(request.content, content);

@@ -333,6 +333,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.Experimental.CookiesAllowedForUrlsUsage"
+    enum="CookiesAllowedForUrlsUsage" expires_after="2024-04-15">
+  <owner>dylancutler@google.com</owner>
+  <owner>sandormajor@google.com</owner>
+  <summary>
+    Records what types of rules are present in the CookiesAllowedForUrls policy.
+    This policy supports content settings that only apply to the cookie's site,
+    only apply to the top-level site, and rules that apply to both. This
+    histogram is recorded when the CookiesAllowedForUrls policy is first loaded.
+    Only recorded when the policy contains at least one valid rule.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.ExpirationDuration400DaysGT" units="days"
     expires_after="2024-02-20">
   <owner>arichiv@chromium.org</owner>

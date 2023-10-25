@@ -243,6 +243,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
         super.setUpTest();
         getActivity().setTheme(R.style.Theme_BrowserUI_DayNight);
         MockitoAnnotations.initMocks(this);
+
         ViewGroup view = new LinearLayout(getActivity());
         FrameLayout.LayoutParams params =
                 new FrameLayout.LayoutParams(
@@ -348,7 +349,12 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
                 .init(any(LevelDBPersistedDataStorage.class), any(BrowserContextHandle.class));
         doReturn(false).when(mProfile).isOffTheRecord();
         LevelDBPersistedDataStorage.setSkipNativeAssertionsForTesting(true);
+
+        // TODO(crbug/1494442): Remove when MockTab requires a Profile reference that can avoid
+        //                      TabHelpers from needing to use getLastUsedRegularProfile.
         Profile.setLastUsedProfileForTesting(mProfile);
+        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+
         mMocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
         mMocker.mock(CurrencyFormatterJni.TEST_HOOKS, mCurrencyFormatterJniMock);
         doReturn(1L)

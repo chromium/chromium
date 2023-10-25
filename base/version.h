@@ -27,7 +27,7 @@ class BASE_EXPORT Version {
   Version(const Version& other);
 
   // Initializes from a decimal dotted version number, like "0.1.1".
-  // Each component is limited to a uint16_t. Call IsValid() to learn
+  // Each component is limited to a uint32_t. Call IsValid() to learn
   // the outcome.
   explicit Version(StringPiece version_str);
 

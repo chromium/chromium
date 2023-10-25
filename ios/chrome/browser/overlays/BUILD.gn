@@ -56,8 +56,8 @@ source_set("overlays") {
 
   friend = [ ":unit_tests" ]
 
+  public_deps = [ "//base" ]
   deps = [
-    "//base",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public",

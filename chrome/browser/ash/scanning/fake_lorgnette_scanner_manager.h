@@ -26,7 +26,9 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
 
   // LorgnetteScannerManager:
   void GetScannerNames(GetScannerNamesCallback callback) override;
-  void GetScannerInfoList(GetScannerInfoListCallback callback) override;
+  void GetScannerInfoList(LocalScannerFilter local_only,
+                          SecureScannerFilter secure_only,
+                          GetScannerInfoListCallback callback) override;
   void GetScannerCapabilities(const std::string& scanner_name,
                               GetScannerCapabilitiesCallback callback) override;
   void OpenScanner(const lorgnette::OpenScannerRequest& request,

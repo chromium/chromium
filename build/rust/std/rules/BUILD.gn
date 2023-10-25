@@ -454,6 +454,7 @@ cargo_crate("compiler_builtins") {
   ]
   build_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/compiler_builtins-0.1.101/build.rs"
   build_sources = [ "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/compiler_builtins-0.1.101/build.rs" ]
+  build_deps = []
   rustenv = [
     "CFG_DISABLE_UNSTABLE_FEATURES=0",
     "STD_ENV_ARCH=$rust_target_arch",
@@ -1405,6 +1406,7 @@ cargo_crate("libc") {
   ]
   build_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/libc-0.2.149/build.rs"
   build_sources = [ "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/libc-0.2.149/build.rs" ]
+  build_deps = []
   rustenv = [
     "CFG_DISABLE_UNSTABLE_FEATURES=0",
     "STD_ENV_ARCH=$rust_target_arch",
@@ -1488,6 +1490,7 @@ cargo_crate("memchr") {
   ]
   build_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/memchr-2.5.0/build.rs"
   build_sources = [ "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/memchr-2.5.0/build.rs" ]
+  build_deps = []
   rustenv = [
     "CFG_DISABLE_UNSTABLE_FEATURES=0",
     "STD_ENV_ARCH=$rust_target_arch",
@@ -2643,6 +2646,7 @@ cargo_crate("std") {
   build_sources = [
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/build.rs",
   ]
+  build_deps = []
   rustenv = [
     "CFG_DISABLE_UNSTABLE_FEATURES=0",
     "STD_ENV_ARCH=$rust_target_arch",

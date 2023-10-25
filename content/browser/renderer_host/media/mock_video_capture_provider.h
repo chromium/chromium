@@ -81,7 +81,7 @@ class MockLaunchedVideoCaptureDevice : public LaunchedVideoCaptureDevice {
       Crop,
       void(
           const base::Token& crop_id,
-          uint32_t crop_version,
+          uint32_t sub_capture_target_version,
           base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>));
   MOCK_METHOD0(RequestRefreshFrame, void());
   MOCK_METHOD2(DoSetDesktopCaptureWindowId,

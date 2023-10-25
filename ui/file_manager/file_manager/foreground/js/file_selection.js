@@ -6,7 +6,7 @@ import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.j
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
 import {FileType} from '../../common/js/file_type.js';
-import {util} from '../../common/js/util.js';
+import {isDlpEnabled} from '../../common/js/flags.js';
 import {AllowedPaths} from '../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 // @ts-ignore: error TS6133: 'Store' is declared but its value is never read.
@@ -381,7 +381,7 @@ export class FileSelectionHandler extends EventTarget {
    * @return {boolean}
    */
   isDlpBlocked() {
-    if (!util.isDlpEnabled()) {
+    if (!isDlpEnabled()) {
       return false;
     }
 

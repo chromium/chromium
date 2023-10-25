@@ -53,6 +53,19 @@ SkColor GetProfileHighlightColor(Profile* profile) {
   return entry->GetProfileThemeColors().profile_highlight_color;
 }
 
+std::string GetAccountPictureUrl(const AccountInfo& info) {
+  return info.account_image.IsEmpty()
+             ? profiles::GetPlaceholderAvatarIconUrl()
+             : webui::GetBitmapDataUrl(info.account_image.AsBitmap());
+}
+
+base::Value::Dict GetAccountInfoValue(const AccountInfo& info) {
+  base::Value::Dict account_info_value;
+  account_info_value.Set("isManaged", IsManaged(info));
+  account_info_value.Set("pictureUrl", GetAccountPictureUrl(info));
+  return account_info_value;
+}
+
 }  // namespace
 
 DiceWebSigninInterceptHandler::DiceWebSigninInterceptHandler(
@@ -84,6 +97,11 @@ void DiceWebSigninInterceptHandler::RegisterMessages() {
       "pageLoaded",
       base::BindRepeating(&DiceWebSigninInterceptHandler::HandlePageLoaded,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "chromeSigninPageLoaded",
+      base::BindRepeating(
+          &DiceWebSigninInterceptHandler::HandleChromeSigninPageLoaded,
+          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "initializedWithHeight",
       base::BindRepeating(
@@ -153,17 +171,7 @@ void DiceWebSigninInterceptHandler::HandlePageLoaded(
     const base::Value::List& args) {
   AllowJavascript();
 
-  // Update the account info and the images.
-  Profile* profile = Profile::FromWebUI(web_ui());
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  AccountInfo updated_info =
-      identity_manager->FindExtendedAccountInfo(intercepted_account());
-  if (!updated_info.IsEmpty())
-    bubble_parameters_.intercepted_account = updated_info;
-  updated_info = identity_manager->FindExtendedAccountInfo(primary_account());
-  if (!updated_info.IsEmpty())
-    bubble_parameters_.primary_account = updated_info;
+  UpdateExtendedAccountsInfo();
 
   // If there is no extended info for the primary account, populate with
   // reasonable defaults.
@@ -175,6 +183,24 @@ void DiceWebSigninInterceptHandler::HandlePageLoaded(
   DCHECK(!args.empty());
   const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id, GetInterceptionParametersValue());
+}
+
+void DiceWebSigninInterceptHandler::HandleChromeSigninPageLoaded(
+    const base::Value::List& args) {
+  AllowJavascript();
+
+  // Image might not be loaded yet.
+  UpdateExtendedAccountsInfo();
+
+  base::Value::Dict parameters;
+  parameters.Set("email", intercepted_account().email);
+  parameters.Set("fullName", intercepted_account().full_name);
+  parameters.Set("givenName", intercepted_account().given_name);
+  parameters.Set("pictureUrl", GetAccountPictureUrl(intercepted_account()));
+
+  DCHECK(!args.empty());
+  const base::Value& callback_id = args[0];
+  ResolveJavascriptCallback(callback_id, parameters);
 }
 
 void DiceWebSigninInterceptHandler::HandleInitializedWithHeight(
@@ -189,16 +215,22 @@ void DiceWebSigninInterceptHandler::HandleInitializedWithHeight(
   }
 }
 
-base::Value::Dict DiceWebSigninInterceptHandler::GetAccountInfoValue(
-    const AccountInfo& info) {
-  std::string picture_url_to_load =
-      info.account_image.IsEmpty()
-          ? profiles::GetPlaceholderAvatarIconUrl()
-          : webui::GetBitmapDataUrl(info.account_image.AsBitmap());
-  base::Value::Dict account_info_value;
-  account_info_value.Set("isManaged", IsManaged(info));
-  account_info_value.Set("pictureUrl", picture_url_to_load);
-  return account_info_value;
+void DiceWebSigninInterceptHandler::UpdateExtendedAccountsInfo() {
+  // Update the account info and the images.
+  Profile* profile = Profile::FromWebUI(web_ui());
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+
+  AccountInfo updated_info =
+      identity_manager->FindExtendedAccountInfo(intercepted_account());
+  if (!updated_info.IsEmpty()) {
+    bubble_parameters_.intercepted_account = updated_info;
+  }
+
+  updated_info = identity_manager->FindExtendedAccountInfo(primary_account());
+  if (!updated_info.IsEmpty()) {
+    bubble_parameters_.primary_account = updated_info;
+  }
 }
 
 base::Value::Dict

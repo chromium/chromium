@@ -555,7 +555,7 @@ TEST_F(MediaStreamTrackImplTest,
   // Apply new constraints.
   MediaTrackConstraints* track_constraints = MakeMediaTrackConstraints(
       kReducedWidth, kReducedHeight, kMinFrameRate, kMaxFrameRate);
-  EXPECT_CALL(*platform_source_ptr, GetCropVersion)
+  EXPECT_CALL(*platform_source_ptr, GetSubCaptureTargetVersion)
       .WillRepeatedly(testing::Return(1));
   ScriptPromise apply_constraints_promise =
       track->applyConstraints(v8_scope.GetScriptState(), track_constraints);

@@ -1554,6 +1554,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Missive.StorageQueueParsingFailure" enum="Boolean"
+    expires_after="2024-09-30">
+  <owner>lbaraz@google.com</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    Logging 'true' whenever `StorageQueue::Write` cannot parse a wrapper record
+    back after serializing it.
+  </summary>
+</histogram>
+
 <histogram name="Platform.Missive.StorageUsage" units="MiB"
     expires_after="2024-03-17">
   <owner>xuhong@chromium.org</owner>
@@ -1699,7 +1709,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.ReadSectorsLong" units="sectors per second"
-    expires_after="2024-08-07">
+    expires_after="2024-10-17">
   <owner>gwendal@google.com</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>
@@ -1709,7 +1719,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.ReadSectorsShort" units="sectors per second"
-    expires_after="2024-08-07">
+    expires_after="2024-10-17">
   <owner>gwendal@google.com</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>
@@ -1724,6 +1734,18 @@ chromium-metrics-reviews@google.com.
   <owner>chromeos-memory@google.com</owner>
   <summary>
     Memory notification count in 10 minutes, reported every 10 minutes.
+  </summary>
+</histogram>
+
+<histogram name="Platform.Resourced.VmmsReclaimMemoryDuration" units="ms"
+    expires_after="2024-08-23">
+  <owner>vovoy@chromium.org</owner>
+  <owner>chromeos-memory@google.com</owner>
+  <summary>
+    Milliseconds taken by a request to VM Memory Management Service to reclaim
+    memory from VMs. This is recorded by resourced every time it makes a reclaim
+    request to the VM Memory Management Service to try to resolve memory
+    pressure in the host.
   </summary>
 </histogram>
 
@@ -2312,7 +2334,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.WiFiDeviceCount" units="wifi devices"
-    expires_after="2023-12-01">
+    expires_after="2024-12-01">
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2322,7 +2344,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.WiFiDisapppearedFromPCI" units="units"
-    expires_after="2023-12-01">
+    expires_after="2024-12-01">
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2335,7 +2357,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.WiFiStatusAfterForcedPCIRescan" enum="WiFiPCIStatus"
-    expires_after="2023-12-01">
+    expires_after="2024-12-01">
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2346,7 +2368,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.WriteSectorsLong" units="sectors per second"
-    expires_after="2023-10-27">
+    expires_after="2024-10-17">
   <owner>gwendal@google.com</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>
@@ -2356,7 +2378,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.WriteSectorsShort" units="sectors per second"
-    expires_after="2024-03-03">
+    expires_after="2024-10-17">
   <owner>gwendal@google.com</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>

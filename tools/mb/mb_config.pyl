@@ -251,8 +251,8 @@
       'linux-cfm-rel': 'linux_cfm_release_bot_reclient',
       'linux-chromeos-dbg': 'chromeos_with_codecs_debug_bot_reclient',
       'linux-chromeos-rel': 'chromeos_with_codecs_with_lacros_release_bot_reclient',
-      'linux-lacros-builder-rel': 'lacros_on_linux_release_bot_reclient',
-      'linux-lacros-dbg': 'lacros_on_linux_debug_bot_reclient',
+      'linux-lacros-builder-rel': 'lacros_on_linux_release_bot_reclient_with_cups',
+      'linux-lacros-dbg': 'lacros_on_linux_debug_bot_reclient_with_cups',
       'linux-lacros-tester-rel': 'lacros_on_linux_release_bot',
     },
 
@@ -717,7 +717,6 @@
       'android_arm64-cfi-builder-perf-fyi': 'official_reclient_minimal_symbols_android_thin_lto_opt_arm64',
       'chromeos-kevin-builder-perf-fyi': 'chromeos_kevin_include_unwind_tables_official_reclient',
       'fuchsia-builder-perf-arm64': 'official_reclient_fuchsia_arm64_perf',
-      'fuchsia-builder-perf-x64': 'official_reclient_fuchsia_x64_perf',
     },
 
     'chromium.perf.pinpoint': {
@@ -1158,6 +1157,8 @@
       'gpu-fyi-try-chromeos-amd64-generic': 'gpu_tests_chromeos_amd64_release_trybot_dcheck_off_no_symbols_reclient',
       'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel_dchecks_skylab_reclient_use_dummy_lastchange',
       'lacros-amd64-generic-rel-non-skylab': 'chromeos_amd64-generic_lacros_rel_dchecks_reclient',
+      # TODO (crbug.com/1287228): Remove when orchestrator is verified
+      'lacros-amd64-generic-rel-orchestrator': 'chromeos_amd64-generic_lacros_rel_dchecks_skylab_reclient_use_dummy_lastchange',
       'lacros-arm-generic-rel': 'chromeos_arm-generic_lacros_rel_dchecks_reclient',
       'lacros-arm-generic-rel-skylab': 'chromeos_arm-generic_lacros_rel_skylab_reclient',
       'lacros-arm64-generic-rel': 'chromeos_arm64-generic_lacros_rel_dchecks_reclient',
@@ -1169,8 +1170,8 @@
       'linux-chromeos-dbg': 'chromeos_with_codecs_debug_trybot_reclient',
       'linux-chromeos-inverse-fieldtrials-fyi-rel': 'chromeos_with_codecs_release_trybot_invert_fieldtrials_reclient',
       'linux-chromeos-rel': 'chromeos_with_codecs_release_trybot_code_coverage_reclient',
-      'linux-lacros-dbg': 'lacros_on_linux_debug_bot_reclient',
-      'linux-lacros-rel': 'lacros_on_linux_release_trybot_reclient_code_coverage',
+      'linux-lacros-dbg': 'lacros_on_linux_debug_bot_reclient_with_cups',
+      'linux-lacros-rel': 'lacros_on_linux_release_trybot_reclient_code_coverage_with_cups',
     },
 
     'tryserver.chromium.codesearch': {
@@ -3154,12 +3155,20 @@
       'lacros_on_linux', 'debug_bot_reclient', 'also_build_ash_chrome',
     ],
 
+    'lacros_on_linux_debug_bot_reclient_with_cups': [
+      'lacros_on_linux', 'debug_bot_reclient', 'also_build_ash_chrome', 'use_cups',
+    ],
+
     'lacros_on_linux_release_bot': [
       'lacros_on_linux', 'release_bot', 'also_build_ash_chrome',
     ],
 
     'lacros_on_linux_release_bot_reclient': [
       'lacros_on_linux', 'release_bot_reclient', 'also_build_ash_chrome',
+    ],
+
+    'lacros_on_linux_release_bot_reclient_with_cups': [
+      'lacros_on_linux', 'release_bot_reclient', 'also_build_ash_chrome', 'use_cups',
     ],
 
     'lacros_on_linux_release_not_build_ash_bot_reclient': [
@@ -3170,8 +3179,8 @@
       'lacros_on_linux_release_trybot_reclient',
     ],
 
-    'lacros_on_linux_release_trybot_reclient_code_coverage': [
-      'lacros_on_linux_release_trybot_reclient', 'clang', 'use_clang_coverage', 'partial_code_coverage_instrumentation', 'use_dummy_lastchange',
+    'lacros_on_linux_release_trybot_reclient_code_coverage_with_cups': [
+      'lacros_on_linux_release_trybot_reclient', 'clang', 'use_clang_coverage', 'use_cups', 'partial_code_coverage_instrumentation', 'use_dummy_lastchange',
     ],
 
     'lacros_on_linux_tot_debug': [
@@ -3457,10 +3466,6 @@
 
     'official_reclient_fuchsia_arm64_perf': [
       'cast_receiver_size_optimized_internal', 'official', 'reclient', 'minimal_symbols', 'fuchsia', 'fuchsia_include_sd_images', 'arm64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'test_isolate_no_emulator',
-    ],
-
-    'official_reclient_fuchsia_x64_perf': [
-      'official', 'reclient', 'minimal_symbols', 'fuchsia', 'x64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'test_isolate_no_emulator',
     ],
 
     'official_reclient_linux_perf_pgo': [

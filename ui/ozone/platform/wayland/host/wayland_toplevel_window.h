@@ -96,7 +96,10 @@ class WaylandToplevelWindow : public WaylandWindow,
   void HideTooltip() override;
   void PropagateBufferScale(float new_scale) override;
   void OnRotateFocus(uint32_t serial, uint32_t direction, bool restart);
-  void OnOverviewChange(uint32_t in_overview_as_int);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void OnOverviewModeChanged(bool in_overview);
+#endif
 
   // WmDragHandler:
   bool ShouldReleaseCaptureForDrag(ui::OSExchangeData* data) const override;

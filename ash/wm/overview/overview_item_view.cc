@@ -97,12 +97,6 @@ OverviewItemView::OverviewItemView(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
   close_button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
-  // Do not show header if the current overview item is the drop target widget.
-  if (overview_item_->overview_grid()->IsDropTargetItem(overview_item_)) {
-    header_view()->SetVisible(false);
-    current_header_visibility_ = HeaderVisibility::kInvisible;
-  }
-
   header_view()->UpdateIconView(window);
   if (!chromeos::features::IsJellyrollEnabled()) {
     header_view()->SetPaintToLayer();

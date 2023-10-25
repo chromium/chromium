@@ -48,17 +48,17 @@ constexpr const base::StringPiece kShippedPreinstalledAppInstallFeatures[] = {
 bool g_always_enabled_for_testing = false;
 
 struct FeatureWithEnabledFunction {
-  const char* const name;
+  raw_ref<const base::Feature> feature;
   bool (*enabled_func)();
 };
 
 // Features which have a function to be run to determine whether they are
 // enabled. Prefer using a base::Feature with |kPreinstalledAppInstallFeatures|
 // when possible.
-const FeatureWithEnabledFunction
+constexpr const FeatureWithEnabledFunction
     kPreinstalledAppInstallFeaturesWithEnabledFunctions[] = {
 #if BUILDFLAG(IS_CHROMEOS)
-        {chromeos::features::kCloudGamingDevice.name,
+        {raw_ref(chromeos::features::kCloudGamingDevice),
          &chromeos::features::IsCloudGamingDeviceEnabled}
 #endif
 };
@@ -84,10 +84,10 @@ bool IsPreinstalledAppInstallFeatureEnabled(base::StringPiece feature_name,
     }
   }
 
-  for (const auto& feature :
+  for (const auto& feature_with_function :
        kPreinstalledAppInstallFeaturesWithEnabledFunctions) {
-    if (feature.name == feature_name) {
-      return feature.enabled_func();
+    if (feature_with_function.feature->name == feature_name) {
+      return feature_with_function.enabled_func();
     }
   }
 

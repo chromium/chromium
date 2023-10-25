@@ -75,6 +75,8 @@ class DictationTestUtils {
   void ExecuteAccessibilityCommonScript(const std::string& script);
   void DisablePumpkin();
 
+  std::string GetUrlForEditableType();
+
   // Methods for interacting with the editable.
   std::string GetEditableValue();
   void WaitForEditableValue(const std::string& value);

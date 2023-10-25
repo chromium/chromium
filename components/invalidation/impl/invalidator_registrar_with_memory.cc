@@ -170,29 +170,16 @@ bool InvalidatorRegistrarWithMemory::UpdateRegisteredTopics(
   return true;
 }
 
-void InvalidatorRegistrarWithMemory::RemoveUnregisteredTopics(
-    InvalidationHandler* handler) {
-  auto topics_to_unregister =
-      handler_name_to_subscribed_topics_map_[handler->GetOwnerName()];
-  if (registered_handler_to_topics_map_.find(handler) !=
-      registered_handler_to_topics_map_.end()) {
-    topics_to_unregister = base::STLSetDifference<std::set<TopicData>>(
-        topics_to_unregister, registered_handler_to_topics_map_[handler]);
-  }
-
-  RemoveSubscribedTopics(handler, std::move(topics_to_unregister));
-}
-
-Topics InvalidatorRegistrarWithMemory::GetRegisteredTopics(
+TopicMap InvalidatorRegistrarWithMemory::GetRegisteredTopics(
     InvalidationHandler* handler) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto lookup = registered_handler_to_topics_map_.find(handler);
   return lookup != registered_handler_to_topics_map_.end()
              ? ConvertTopicSetToLegacyTopicMap(lookup->second)
-             : Topics();
+             : TopicMap();
 }
 
-Topics InvalidatorRegistrarWithMemory::GetAllSubscribedTopics() const {
+TopicMap InvalidatorRegistrarWithMemory::GetAllSubscribedTopics() const {
   std::set<TopicData> subscribed_topics;
   for (const auto& handler_to_topic : handler_name_to_subscribed_topics_map_) {
     subscribed_topics.insert(handler_to_topic.second.begin(),
@@ -238,12 +225,6 @@ void InvalidatorRegistrarWithMemory::UpdateInvalidatorState(
 InvalidatorState InvalidatorRegistrarWithMemory::GetInvalidatorState() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return state_;
-}
-
-void InvalidatorRegistrarWithMemory::UpdateInvalidatorInstanceId(
-    const std::string& instance_id) {
-  for (auto& observer : handlers_)
-    observer.OnInvalidatorClientIdChange(instance_id);
 }
 
 bool InvalidatorRegistrarWithMemory::HasDuplicateTopicRegistration(

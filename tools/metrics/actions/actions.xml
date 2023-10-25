@@ -7854,6 +7854,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="CookieControls.LowConfidence.Opened">
+  <owner>kmg@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    Cookie controls icon was clicked on for a low confidence page.
+  </description>
+</action>
+
+<action name="CookieControls.LowConfidence.Shown">
+  <owner>kmg@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    Cookie controls icon was shown for a low confidence page.
+  </description>
+</action>
+
 <action name="CookieControls.MediumConfidence.Opened">
   <owner>kmg@google.com</owner>
   <owner>sauski@google.com</owner>
@@ -7883,6 +7899,22 @@ should be able to be added at any place in this file.
   <owner>huanzhong@chromium.org</owner>
   <description>
     Third-party cookie blocking was enabled on the incognito NTP.
+  </description>
+</action>
+
+<action name="CookieControls.OtherConfidence.Opened">
+  <owner>kmg@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    Cookie controls icon was clicked on for other confidence page.
+  </description>
+</action>
+
+<action name="CookieControls.OtherConfidence.Shown">
+  <owner>kmg@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    Cookie controls icon was shown for other confidence page.
   </description>
 </action>
 
@@ -19736,6 +19768,15 @@ should be able to be added at any place in this file.
   <owner>sczs@chromium.org</owner>
   <description>
     Reported when Credit Card Settings UI was dismissed. iOS only.
+  </description>
+</action>
+
+<action name="MobileCrossDeviceTabOpenedOrSent">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <description>
+    Recorded when a user opens a tab from another device or intentionally sends
+    a tab to another device (i.e. send tab to self). Android only.
   </description>
 </action>
 
@@ -36706,6 +36747,12 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="TabContextMenu_OrganizeTabs">
+  <owner>emshack@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>User selected Organize Tabs from tab context menu.</description>
+</action>
+
 <action name="TabContextMenu_Reload">
   <owner>tbergquist@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
@@ -39491,6 +39538,8 @@ should be able to be added at any place in this file.
   <suffix name="DesktopCustomizeChrome" label="For Customize Chrome feature."/>
   <suffix name="DesktopCustomizeChromeRefresh"
       label="For Customize Chrome refresh feature."/>
+  <suffix name="DesktopNewTabPageModulesCustomize"
+      label="For Desktop NTP modules customize feature."/>
   <suffix name="DesktopPwaInstall" label="For desktop PWA install icon."/>
   <suffix name="DesktopSharedHighlighting"
       label="For DesktopSharedHighlighting feature."/>

@@ -93,7 +93,6 @@
 <translation id="1643449475550628585">Duvar kağıdı resmini günlük olarak değiştir</translation>
 <translation id="1644574205037202324">Geçmiş</translation>
 <translation id="1651925268237749928">Paylaşılan bir albüm seçtiniz. Diğer kullanıcılar fotoğraf ekleyebilir veya değiştirebilir. Duvar kağıdınızda şu anda bu albümde olmayan fotoğraflar kullanılabilir.</translation>
-<translation id="1658834457013045127">Sonsuza kadar</translation>
 <translation id="1661865805917886535">Bazı hesap ve sistem bilgileri Google'a gönderilebilir. Bu bilgileri, Gizlilik Politikamıza (<ph name="PRIVACYPOLICYURL" />) ve Hizmet Şartlarımıza (<ph name="TERMSOFSERVICEURL" />) uygun şekilde teknik sorunları gidermek ve size daha iyi hizmet sunmak için kullanırız. İçerik değişikliği talep etmek için Yasal Yardım sayfasına (<ph name="LEGALHELPPAGEURL" />) gidin.</translation>
 <translation id="1662989795263954667">Durduruldu - Mürekkep bitti</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> adlı takvimi önizle</translation>
@@ -323,7 +322,6 @@
 <translation id="3484914941826596830">Donanım yazılımı güncellenirken bu harici cihazı çıkarmayın ya da bilgisayarınızı kapatmayın. Bu pencereyi simge durumuna küçültebilirsiniz. Güncelleme birkaç dakika sürebilir ve bu süre boyunca harici cihazınız çalışmayabilir.</translation>
 <translation id="3486220673238053218">tanım</translation>
 <translation id="3488065109653206955">Kısmen etkinleştirildi</translation>
-<translation id="349491921221892984"><ph name="MINUTES" /> dk.</translation>
 <translation id="3502426834823382181">tüm uygulamaları göster</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Performans izleme verilerini<ph name="END_LINK1" /> gönder</translation>
 <translation id="3517001332549868749">ChromeOS güncellemesi</translation>
@@ -484,7 +482,6 @@
 <translation id="473775607612524610">Güncelle</translation>
 <translation id="4771607256327216405">klavye parlaklığını artır</translation>
 <translation id="4773299976671772492">Durduruldu</translation>
-<translation id="4782003517030001304">1 sa.</translation>
 <translation id="4782311465517282004">Metni sağ tıkladığınızda veya dokunup basılı tuttuğunuzda tanımını veya çevirisini görün ya da birim dönüştürmesi alın</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotoğraf</translation>
 <translation id="4793710386569335688">Daha fazla yardım için <ph name="BEGIN_LINK" />Yardım Merkezi<ph name="END_LINK" />'ne gidin.</translation>
@@ -699,6 +696,7 @@
 <translation id="629550705077076970">klavye karartma</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> testi iptal edildi</translation>
 <translation id="631063167932043783">Keşfet uygulaması</translation>
+<translation id="6318437367327684789">sonsuza kadar</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> cihazındaki donanım yazılımını güncelleyin</translation>
 <translation id="6321407676395378991">Ekran koruyucuyu aç</translation>
 <translation id="6324916366299863871">Kısayolu düzenleyin</translation>

@@ -4,6 +4,8 @@
 
 #include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
 
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 
 namespace safe_browsing {
@@ -38,6 +40,14 @@ bool FeatureMap::AddRealFeature(const std::string& name, double value) {
 void FeatureMap::Clear() {
   features_.clear();
 }
+
+BASE_FEATURE(kClientSideDetectionRetryLimit,
+             "ClientSideDetectionRetryLimit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<int> kClientSideDetectionRetryLimitTime{
+    &kClientSideDetectionRetryLimit, /*name=*/"RetryTimeMax",
+    /*default_value=*/15};
 
 namespace features {
 // URL host features

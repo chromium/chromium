@@ -338,7 +338,6 @@ void PowerMetricsReporter::ReportBatteryUKMs(
 #if BUILDFLAG(IS_MAC)
   builder.SetIdleWakeUps(metrics.idle_wakeups);
   builder.SetPackageExits(metrics.package_idle_wakeups);
-  builder.SetEnergyImpactScore(metrics.energy_impact);
 #endif
   builder.SetMaxTabCount(
       ukm::GetExponentialBucketMinForCounts1000(interval_data.max_tab_count));

@@ -123,12 +123,13 @@ import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.toolbar.bottom.ScrollingBottomViewResourceFrameLayout;
+import org.chromium.chrome.browser.toolbar.home_button.HomeButton;
+import org.chromium.chrome.browser.toolbar.home_button.HomeButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.load_progress.LoadProgressCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonState;
 import org.chromium.chrome.browser.toolbar.top.ActionModeController;
 import org.chromium.chrome.browser.toolbar.top.ActionModeController.ActionBarDelegate;
-import org.chromium.chrome.browser.toolbar.top.HomeButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
@@ -269,6 +270,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private final SnackbarManager mSnackbarManager;
     private OnAttachStateChangeListener mAttachStateChangeListener;
     private final OneshotSupplier<TabReparentingController> mTabReparentingControllerSupplier;
+    private final BackPressManager mBackPressManager;
 
     private HomeButtonCoordinator mHomeButtonCoordinator;
     private ToggleTabStackButtonCoordinator mToggleTabStackButtonCoordinator;
@@ -393,7 +395,11 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         @Override
         public int handleBackPress() {
-            int res = ToolbarManager.this.handleBackPress();
+            int res = BackPressResult.SUCCESS;
+            // When enabled, the content/ native will trigger the navigation.
+            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)) {
+                res = ToolbarManager.this.handleBackPress();
+            }
             // For U+ only.
             if (mHandler != null) mHandler.onBackInvoked();
             return res;
@@ -614,6 +620,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             OnBackPressHandler handler = new OnBackPressHandler();
             backPressManager.addHandler(handler, BackPressHandler.Type.TAB_HISTORY);
             mLastBackPressMsSupplier = backPressManager::getLastPressMs;
+            mBackPressManager = backPressManager;
+        } else {
+            mBackPressManager = null;
         }
 
         BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate =
@@ -1230,7 +1239,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         HomepageManager.getInstance().addListener(mHomepageStateListener);
         mHomepageStateListener.onHomepageStateUpdated();
 
-        HomeButton homeButton = toolbarLayout.getHomeButton();
+        HomeButton homeButton = controlContainer.findViewById(R.id.home_button);
         if (homeButton != null) {
             homeButton.init(mHomepageEnabledSupplier, this::onHomeButtonMenuClick,
                     mHomepageManagedByPolicySupplier);
@@ -1429,8 +1438,10 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 mFullscreenManager, (ScrollingBottomViewResourceFrameLayout) root, mTabGroupUi,
                 mTabObscuringHandler, mOverlayPanelVisibilitySupplier, mConstraintsProxy);
         mBottomControlsCoordinatorSupplier.set(bottomControlsCoordinator);
-        bottomControlsCoordinator.getHandleBackPressChangedSupplier().addObserver(
-                (x) -> { onBackPressStateChanged(); });
+        if (mBackPressManager != null) {
+            mBackPressManager.addHandler(
+                    bottomControlsCoordinator, BackPressHandler.Type.BOTTOM_CONTROLS);
+        }
     }
 
     /**
@@ -1527,10 +1538,18 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         UserEducationHelper userEducationHelper = new UserEducationHelper(mActivity, mHandler);
         View homeButton = mControlContainer.findViewById(R.id.home_button);
-        mHomeButtonCoordinator = new HomeButtonCoordinator(mActivity, homeButton,
-                userEducationHelper, mIncognitoStateProvider::isIncognitoSelected,
-                mPromoShownOneshotSupplier, HomepageManager::isHomepageNonNtp,
-                FeedFeatures::isFeedEnabled, mActivityTabProvider);
+        if (homeButton != null) {
+            mHomeButtonCoordinator =
+                    new HomeButtonCoordinator(
+                            mActivity,
+                            homeButton,
+                            userEducationHelper,
+                            mIncognitoStateProvider::isIncognitoSelected,
+                            mPromoShownOneshotSupplier,
+                            HomepageManager::isHomepageNonNtp,
+                            FeedFeatures::isFeedEnabled,
+                            mActivityTabProvider);
+        }
         ToggleTabStackButton toggleTabStackButton =
                 mControlContainer.findViewById(R.id.tab_switcher_button);
         mToggleTabStackButtonCoordinator =
@@ -2139,9 +2158,12 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * viewed in the tab switcher grid.
      */
     private void maybeShowPriceDropIPH() {
-        if (!PriceTrackingUtilities.isTrackPricesOnTabsEnabled()
-                || !PriceTrackingFeatures.isPriceDropIphEnabled() || mTabModelSelector == null
-                || mTabModelSelector.isIncognitoSelected()) {
+        if (mTabModelSelector == null) return;
+        Profile profile = mTabModelSelector.getCurrentModel().getProfile();
+        if (profile.isOffTheRecord()) return;
+
+        if (!PriceTrackingUtilities.isTrackPricesOnTabsEnabled(profile)
+                || !PriceTrackingFeatures.isPriceDropIphEnabled(profile)) {
             return;
         }
         TabModel tabModel = mTabModelSelector.getCurrentModel();
@@ -2331,12 +2353,12 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     }
 
     /**
-     * Get the home button on the top toolbar to verify the button status.
-     * Note that this home button is not always the home button that on the UI, and the button is
-     * not always visible.
-     * @return The {@link HomeButton} that lives in the top toolbar.
+     * Get the home button on the top toolbar to verify the button status. Note that this home
+     * button is not always the home button that on the UI, and the button is not always visible.
+     *
+     * @return The home button that lives in the top toolbar.
      */
-    public HomeButton getHomeButtonForTesting() {
+    public View getHomeButtonForTesting() {
         return mToolbar.getToolbarLayoutForTesting().getHomeButton();
     }
 

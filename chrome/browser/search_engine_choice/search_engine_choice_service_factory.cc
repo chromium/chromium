@@ -66,9 +66,10 @@ SearchEngineChoiceServiceFactory::ScopedChromeBuildOverrideForTesting(
   return base::AutoReset<bool>(&g_is_chrome_build, force_chrome_build);
 }
 
+// static
 bool SearchEngineChoiceServiceFactory::IsProfileEligibleForChoiceScreen(
     const policy::PolicyService& policy_service,
-    Profile& profile) const {
+    Profile& profile) {
   if (!search_engines::IsChoiceScreenFlagEnabled(
           search_engines::ChoicePromo::kAny)) {
     return false;
@@ -92,6 +93,15 @@ bool SearchEngineChoiceServiceFactory::IsProfileEligibleForChoiceScreen(
       {.is_regular_profile = is_regular_profile,
        .pref_service = profile.GetPrefs()},
       template_url_service);
+}
+
+// static
+bool SearchEngineChoiceServiceFactory::
+    IsProfileEligibleForChoiceScreenForTesting(
+        const policy::PolicyService& policy_service,
+        Profile& profile) {
+  CHECK_IS_TEST();
+  return IsProfileEligibleForChoiceScreen(policy_service, profile);
 }
 
 std::unique_ptr<KeyedService>

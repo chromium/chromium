@@ -255,4 +255,12 @@ BASE_FEATURE(kWebAssemblyInlining,
 BASE_FEATURE(kWebAssemblyGenericWrapper,
              "WebAssemblyGenericWrapper",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enable support for multiple memories according to the multi-memory proposal:
+// https://github.com/WebAssembly/multi-memory. See
+// https://chromestatus.com/feature/5106389887746048.
+BASE_FEATURE(kWebAssemblyMultipleMemories,
+             "WebAssemblyMultipleMemories",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

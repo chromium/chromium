@@ -30,11 +30,13 @@ test("ldt_ffi_tests") {
 
 rust_static_library("ldt_np_adv_ffi") {
   crate_root = "src/nearby/presence/ldt_np_adv_ffi/src/lib.rs"
-  sources = [ "src/nearby/presence/ldt_np_adv_ffi/src/lib.rs" ]
+  sources = [
+    "src/nearby/presence/ldt_np_adv_ffi/src/handle_map.rs",
+    "src/nearby/presence/ldt_np_adv_ffi/src/lib.rs",
+  ]
   allow_unsafe = true
   features = [ "boringssl" ]
   public = [ "src/nearby/presence/ldt_np_adv_ffi/include/np_ldt.h" ]
-
   deps = [
     ":crypto_provider",
     ":crypto_provider_boringssl",
@@ -50,7 +52,13 @@ cargo_crate("crypto_provider_boringssl") {
   build_native_rust_unit_tests = true
   crate_type = "rlib"
   crate_root = "src/nearby/crypto/crypto_provider_boringssl/src/lib.rs"
-  sources = [ "src/nearby/presence/ldt_tbc/src/lib.rs" ]
+  sources = [
+    "src/nearby/crypto/crypto_provider_boringssl/src/aes.rs",
+    "src/nearby/crypto/crypto_provider_boringssl/src/ed25519.rs",
+    "src/nearby/crypto/crypto_provider_boringssl/src/hkdf.rs",
+    "src/nearby/crypto/crypto_provider_boringssl/src/hmac.rs",
+    "src/nearby/crypto/crypto_provider_boringssl/src/lib.rs",
+  ]
   deps = [
     ":crypto_provider",
     ":crypto_provider_stubs",
@@ -63,7 +71,21 @@ cargo_crate("crypto_provider") {
   build_native_rust_unit_tests = false
   crate_type = "rlib"
   crate_root = "src/nearby/crypto/crypto_provider/src/lib.rs"
-  sources = [ "src/nearby/crypto/crypto_provider/src/lib.rs" ]
+  sources = [
+    "src/nearby/crypto/crypto_provider/src/aead/aes_gcm_siv.rs",
+    "src/nearby/crypto/crypto_provider/src/aead/mod.rs",
+    "src/nearby/crypto/crypto_provider/src/aes/cbc.rs",
+    "src/nearby/crypto/crypto_provider/src/aes/ctr.rs",
+    "src/nearby/crypto/crypto_provider/src/aes/mod.rs",
+    "src/nearby/crypto/crypto_provider/src/ed25519.rs",
+    "src/nearby/crypto/crypto_provider/src/elliptic_curve.rs",
+    "src/nearby/crypto/crypto_provider/src/hkdf.rs",
+    "src/nearby/crypto/crypto_provider/src/hmac.rs",
+    "src/nearby/crypto/crypto_provider/src/lib.rs",
+    "src/nearby/crypto/crypto_provider/src/p256.rs",
+    "src/nearby/crypto/crypto_provider/src/sha2.rs",
+    "src/nearby/crypto/crypto_provider/src/x25519.rs",
+  ]
   features = [
     "alloc",
     "std",
@@ -226,7 +248,10 @@ cargo_crate("np_hkdf") {
   crate_type = "rlib"
   build_native_rust_unit_tests = false
   crate_root = "src/nearby/presence/np_hkdf/src/lib.rs"
-  sources = [ "src/nearby/presence/np_hkdf/src/lib.rs" ]
+  sources = [
+    "src/nearby/presence/np_hkdf/src/lib.rs",
+    "src/nearby/presence/np_hkdf/src/v1_salt.rs",
+  ]
   deps = [
     ":crypto_provider",
     ":ldt",

@@ -9,10 +9,13 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,6 +27,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
+#include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/version_info/channel.h"
@@ -39,6 +43,15 @@ namespace {
 
 using ::testing::_;
 using ::testing::Return;
+using TpcdExperimentEligibility = privacy_sandbox::TpcdExperimentEligibility;
+
+constexpr char kReasonForEligibilityStoredInPrefsHistogram[] =
+    "PrivacySandbox.CookieDeprecationFacilitatedTesting."
+    "ReasonForEligibilityStoredInPrefs";
+
+constexpr char kReasonForComputedEligibilityForProfileHistogram[] =
+    "PrivacySandbox.CookieDeprecationFacilitatedTesting."
+    "ReasonForComputedEligibilityForProfile";
 
 }  // namespace
 
@@ -57,6 +70,9 @@ class EligibilityServiceTestBase : public testing::Test {
     auto privacy_sandbox_delegate = std::make_unique<
         privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>();
     privacy_sandbox_delegate_ = privacy_sandbox_delegate.get();
+    privacy_sandbox_delegate_
+        ->SetUpGetCookieDeprecationExperimentCurrentEligibility(
+            TpcdExperimentEligibility::Reason::kEligible);
     privacy_sandbox_settings->SetDelegateForTesting(
         std::move(privacy_sandbox_delegate));
   }
@@ -89,38 +105,72 @@ class EligibilityServiceTest : public EligibilityServiceTestBase {
 };
 
 TEST_F(EligibilityServiceTest, ClientEligibilityKnown_ClientEligibilityNotSet) {
+  base::HistogramTester histograms;
+
   EXPECT_CALL(*experiment_manager_, IsClientEligible).WillOnce(Return(false));
   EXPECT_CALL(*experiment_manager_, SetClientEligibility).Times(0);
 
   EligibilityService eligibility_service(&profile_, experiment_manager_.get());
+
+  histograms.ExpectTotalCount(kReasonForEligibilityStoredInPrefsHistogram, 0);
+  histograms.ExpectUniqueSample(
+      kReasonForComputedEligibilityForProfileHistogram,
+      /*sample=*/TpcdExperimentEligibility::Reason::kEligible,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(EligibilityServiceTest,
        ClientEligibilityUnknownProfileIneligible_ClientEligibilitySet) {
+  base::HistogramTester histograms;
+
   EXPECT_CALL(*experiment_manager_, IsClientEligible)
       .WillOnce(Return(absl::nullopt));
 
   EXPECT_CALL(*privacy_sandbox_delegate_,
-              IsCookieDeprecationExperimentCurrentlyEligible)
-      .WillOnce(Return(false));
+              GetCookieDeprecationExperimentCurrentEligibility)
+      .WillOnce(Return(TpcdExperimentEligibility(
+          TpcdExperimentEligibility::Reason::k3pCookiesBlocked)));
 
-  EXPECT_CALL(*experiment_manager_, SetClientEligibility(false, _));
+  EXPECT_CALL(*experiment_manager_, SetClientEligibility(false, _))
+      .WillOnce(base::test::RunOnceCallback<1>(false));
 
   EligibilityService eligibility_service(&profile_, experiment_manager_.get());
+
+  histograms.ExpectUniqueSample(
+      kReasonForEligibilityStoredInPrefsHistogram,
+      /*sample=*/TpcdExperimentEligibility::Reason::k3pCookiesBlocked,
+      /*expected_bucket_count=*/1);
+  histograms.ExpectUniqueSample(
+      kReasonForComputedEligibilityForProfileHistogram,
+      /*sample=*/TpcdExperimentEligibility::Reason::k3pCookiesBlocked,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(EligibilityServiceTest,
        ClientEligibilityUnknownProfileEligible_ClientEligibilitySet) {
+  base::HistogramTester histograms;
+
   EXPECT_CALL(*experiment_manager_, IsClientEligible)
       .WillOnce(Return(absl::nullopt));
 
   EXPECT_CALL(*privacy_sandbox_delegate_,
-              IsCookieDeprecationExperimentCurrentlyEligible)
-      .WillOnce(Return(true));
+              GetCookieDeprecationExperimentCurrentEligibility)
+      .WillOnce(Return(TpcdExperimentEligibility(
+          TpcdExperimentEligibility::Reason::kEligible)));
 
-  EXPECT_CALL(*experiment_manager_, SetClientEligibility(true, _));
+  EXPECT_CALL(*experiment_manager_, SetClientEligibility(true, _))
+      .WillOnce(base::test::RunOnceCallback<1>(true));
 
   EligibilityService eligibility_service(&profile_, experiment_manager_.get());
+
+  histograms.ExpectUniqueSample(
+      kReasonForEligibilityStoredInPrefsHistogram,
+      /*sample=*/TpcdExperimentEligibility::Reason::kEligible,
+      /*expected_bucket_count=*/1);
+  histograms.ExpectUniqueSample(
+      kReasonForComputedEligibilityForProfileHistogram,
+      /*sample=*/TpcdExperimentEligibility::Reason::kEligible,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(EligibilityServiceTest, VersionChange_OnboardingPrefsReset) {
@@ -158,6 +208,14 @@ TEST_P(EligibilityServiceOTRProfileTest, Creation) {
           Profile::OTRProfileID::CreateUniqueForTesting(),
           /*create_if_needed=*/true));
   EXPECT_EQ(eligibility_service != nullptr, enable_otr_profiles);
+
+// Android does not have guest profiles.
+#if !BUILDFLAG(IS_ANDROID)
+  auto guest_profile = TestingProfile::Builder().SetGuestSession().Build();
+  eligibility_service =
+      EligibilityServiceFactory::GetForProfile(guest_profile.get());
+  EXPECT_EQ(eligibility_service != nullptr, enable_otr_profiles);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -211,8 +269,11 @@ TEST_P(EligibilityServiceHistogramTest, ProfileEligibilityMismatch) {
   EXPECT_CALL(*experiment_manager_, IsClientEligible)
       .WillOnce(Return(test_case.is_client_eligible));
   EXPECT_CALL(*privacy_sandbox_delegate_,
-              IsCookieDeprecationExperimentCurrentlyEligible)
-      .WillOnce(Return(test_case.is_profile_eligible));
+              GetCookieDeprecationExperimentCurrentEligibility)
+      .WillOnce(Return(TpcdExperimentEligibility(
+          test_case.is_profile_eligible
+              ? TpcdExperimentEligibility::Reason::kEligible
+              : TpcdExperimentEligibility::Reason::kHasNotSeenNotice)));
 
   EligibilityService eligibility_service(&profile_, experiment_manager_.get());
 

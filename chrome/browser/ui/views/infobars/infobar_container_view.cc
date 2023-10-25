@@ -81,6 +81,11 @@ InfoBarContainerView::~InfoBarContainerView() {
   RemoveAllInfoBarsForDestruction();
 }
 
+bool InfoBarContainerView::IsEmpty() const {
+  // NOTE: Can't check if the size IsEmpty() since it's always 0-width.
+  return GetPreferredSize().height() == 0;
+}
+
 void InfoBarContainerView::Layout() {
   const auto set_bounds = [this](int top, auto* child) {
     const int height = static_cast<InfoBarView*>(child)->computed_height();

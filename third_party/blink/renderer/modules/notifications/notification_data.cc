@@ -107,7 +107,7 @@ mojom::blink::NotificationDataPtr CreateNotificationData(
   notification_data->timestamp =
       options->hasTimestamp()
           ? static_cast<double>(options->timestamp())
-          : base::Time::Now().InSecondsFSinceUnixEpoch() * 1000.0;
+          : base::Time::Now().InMillisecondsFSinceUnixEpoch();
   notification_data->renotify = options->renotify();
   notification_data->silent = options->silent();
   notification_data->require_interaction = options->requireInteraction();

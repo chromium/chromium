@@ -1040,6 +1040,8 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_SAVE_BUTTON},
       {"hotspotConfigCancelButton",
        IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_CANCEL_BUTTON},
+      {"hotspotConfigGeneralErrorMessage",
+       IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_GENERAL_ERROR_MESSAGE},
       {"hotspotConfigInvalidConfigurationErrorMessage",
        IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_INVALID_CONFIGURATION_ERROR_MESSAGE},
       {"hotspotConfigNotLoginErrorMessage",

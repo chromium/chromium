@@ -20,7 +20,7 @@ import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.features.start_surface.StartSurface;
-import org.chromium.components.browser_ui.widget.InsetObserverView;
+import org.chromium.components.browser_ui.widget.InsetObserver;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
 import org.chromium.content_public.browser.WebContents;
@@ -28,16 +28,14 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/**
- * Coordinator object for gesture navigation.
- */
+/** Coordinator object for gesture navigation. */
 public class HistoryNavigationCoordinator
-        implements InsetObserverView.WindowInsetObserver, PauseResumeWithNativeObserver {
+        implements InsetObserver.WindowInsetObserver, PauseResumeWithNativeObserver {
     private final Runnable mUpdateNavigationStateRunnable = this::onNavigationStateChanged;
 
     private ViewGroup mParentView;
     private HistoryNavigationLayout mNavigationLayout;
-    private InsetObserverView mInsetObserverView;
+    private InsetObserver mInsetObserver;
     private CurrentTabObserver mCurrentTabObserver;
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private BackActionDelegate mBackActionDelegate;
@@ -58,8 +56,8 @@ public class HistoryNavigationCoordinator
      * @param parentView Parent view of the gesture navigation layout.
      * @param requestRunnable Runnable executing the renderer update.
      * @param tabSupplier Activity tab supplier.
-     * @param insetObserverView View that provides information about the inset and inset
-     *        capabilities of the device.
+     * @param insetObserver View that provides information about the inset and inset capabilities of
+     *     the device.
      * @param startSurfaceSupplier StartSurface supplier.
      * @param backActionDelegate Delegate handling actions for back gesture.
      * @param touchEventProvider {@link TouchEventProvider} object.
@@ -72,7 +70,7 @@ public class HistoryNavigationCoordinator
             ViewGroup parentView,
             Runnable requestRunnable,
             ObservableSupplier<Tab> tabSupplier,
-            InsetObserverView insetObserverView,
+            InsetObserver insetObserver,
             OneshotSupplier<StartSurface> startSurfaceSupplier,
             BackActionDelegate backActionDelegate,
             Supplier<TouchEventProvider> touchEventProvider,
@@ -84,7 +82,7 @@ public class HistoryNavigationCoordinator
                 parentView,
                 requestRunnable,
                 tabSupplier,
-                insetObserverView,
+                insetObserver,
                 startSurfaceSupplier,
                 backActionDelegate,
                 touchEventProvider,
@@ -104,7 +102,7 @@ public class HistoryNavigationCoordinator
             ViewGroup parentView,
             Runnable requestRunnable,
             ObservableSupplier<Tab> tabSupplier,
-            InsetObserverView insetObserverView,
+            InsetObserver insetObserver,
             OneshotSupplier<StartSurface> startSurfaceSupplier,
             BackActionDelegate backActionDelegate,
             Supplier<TouchEventProvider> touchEventProvider,
@@ -156,8 +154,8 @@ public class HistoryNavigationCoordinator
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            mInsetObserverView = insetObserverView;
-            insetObserverView.addObserver(this);
+            mInsetObserver = insetObserver;
+            insetObserver.addObserver(this);
         }
         layoutManager.addSceneOverlay(mOverscrollGlowOverlay);
         GestureNavMetrics.logGestureType(isFeatureEnabled());
@@ -303,9 +301,9 @@ public class HistoryNavigationCoordinator
             mCurrentTabObserver.destroy();
             mCurrentTabObserver = null;
         }
-        if (mInsetObserverView != null) {
-            mInsetObserverView.removeObserver(this);
-            mInsetObserverView = null;
+        if (mInsetObserver != null) {
+            mInsetObserver.removeObserver(this);
+            mInsetObserver = null;
         }
         mNavigationLayout = null;
         mParentView.removeCallbacks(mUpdateNavigationStateRunnable);

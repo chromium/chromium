@@ -106,13 +106,14 @@ suite('<settings-text-to-speech-subpage>', function() {
                 '#crosPdfOcrToggle');
         assert(pdfOcrToggle);
         assertTrue(isVisible(pdfOcrToggle));
-        assertFalse(pdfOcrToggle.checked);
-        assertFalse(page.prefs.settings.a11y.pdf_ocr_always_active.value);
+        // PDF OCR pref is on by default.
+        assertTrue(pdfOcrToggle.checked);
+        assertTrue(page.prefs.settings.a11y.pdf_ocr_always_active.value);
         pdfOcrToggle.click();
 
         await waitAfterNextRender(pdfOcrToggle);
-        assertTrue(pdfOcrToggle.checked);
-        assertTrue(page.prefs.settings.a11y.pdf_ocr_always_active.value);
+        assertFalse(pdfOcrToggle.checked);
+        assertFalse(page.prefs.settings.a11y.pdf_ocr_always_active.value);
       });
 
   test('pdf ocr toggle on invokes uma metric', async function() {
@@ -130,7 +131,11 @@ suite('<settings-text-to-speech-subpage>', function() {
             '#crosPdfOcrToggle');
     assert(pdfOcrToggle);
 
-    // Turn on PDF OCR always.
+    // PDF OCR is on by default, so need to turn off and then on again.
+    pdfOcrToggle.click();
+    await waitAfterNextRender(pdfOcrToggle);
+    assertFalse(pdfOcrToggle.checked);
+    // Turn on PDF OCR again.
     pdfOcrToggle.click();
     await waitAfterNextRender(pdfOcrToggle);
     assertTrue(pdfOcrToggle.checked);
@@ -154,11 +159,8 @@ suite('<settings-text-to-speech-subpage>', function() {
     const pdfOcrToggle =
         page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
             '#crosPdfOcrToggle');
+    // PDF OCR is on by default.
     assert(pdfOcrToggle);
-
-    // Turn on PDF OCR always.
-    pdfOcrToggle.click();
-    await waitAfterNextRender(pdfOcrToggle);
     assertTrue(pdfOcrToggle.checked);
 
     // Turn off PDF OCR.

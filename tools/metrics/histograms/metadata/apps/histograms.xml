@@ -1888,6 +1888,16 @@ chromium-metrics-reviews@google.com.
   <token key="InstallReason" variants="InstallReason"/>
 </histogram>
 
+<histogram name="Apps.AppShimSignatureValidationResult"
+    enum="WebAppShimSignatureValidationResult" expires_after="2024-01-01">
+  <owner>markrowe@chromium.org</owner>
+  <owner>chrome-platform-security-core@google.com</owner>
+  <summary>
+    Records the result of validating the code signature of a web app shim
+    connecting to the browser on macOS.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppsInFolders{AppListFolderExperiment}" units="Apps"
     expires_after="2022-10-09">
   <obsolete>
@@ -2394,6 +2404,31 @@ chromium-metrics-reviews@google.com.
     the disk. The preferred apps list is a vector that identifies the preferred
     app for an intent filter. This value is recorded every time on user login
     and we read the stored data from the disk.
+  </summary>
+</histogram>
+
+<histogram name="Apps.PromiseApp.IconType" enum="PromiseAppIconType"
+    expires_after="2024-10-20">
+  <owner>vpao@google.com</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records how often placeholder icons (as opposed to real app icons) are used
+    across all promise apps. A promise app is a temporary item in the Launcher/
+    Shelf which represents an app installation, and some promise apps will have
+    an icon available while others will have no icons and need to fallback on a
+    placeholder.
+  </summary>
+</histogram>
+
+<histogram name="Apps.PromiseApp.LifecycleEvent"
+    enum="PromiseAppLifecycleEvent" expires_after="2024-10-20">
+  <owner>vpao@google.com</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records how often each key lifecycle event occurs across all promise apps. A
+    promise app is a temporary item in the Launcher/ Shelf which represents an
+    app installation, and critical app installation stages will trigger an
+    update to this histogram under their relevant event category.
   </summary>
 </histogram>
 

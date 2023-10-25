@@ -72,8 +72,7 @@ namespace blink {
 
 namespace {
 
-Position GetNextSoftBreak(const NGOffsetMapping& mapping,
-                          InlineCursor& cursor) {
+Position GetNextSoftBreak(const OffsetMapping& mapping, InlineCursor& cursor) {
   while (cursor) {
     DCHECK(cursor.Current().IsLineBox()) << cursor;
     const auto* break_token = cursor.Current().InlineBreakToken();
@@ -920,7 +919,7 @@ String TextControlElement::ValueWithHardLineBreaks() const {
     InlineCursor cursor(*layout_object);
     if (!cursor)
       return Value();
-    const auto* mapping = NGInlineNode::GetOffsetMapping(layout_object);
+    const auto* mapping = InlineNode::GetOffsetMapping(layout_object);
     if (!mapping)
       return Value();
     Position break_position = GetNextSoftBreak(*mapping, cursor);

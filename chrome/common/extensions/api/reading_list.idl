@@ -61,7 +61,7 @@ namespace readingList{
     DOMString? title;
 
     // Indicates whether to search for read (<code>true</code>) or unread
-    // (code>false</code>) items.
+    // (<code>false</code>) items.
     boolean? hasBeenRead;
   };
 

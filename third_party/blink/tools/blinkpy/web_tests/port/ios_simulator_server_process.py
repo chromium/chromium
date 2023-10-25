@@ -2,19 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import json
 import logging
 import os
 import select
 import socket
-import time
 
 from blinkpy.web_tests.port.server_process import ServerProcess
 from blinkpy.web_tests.port import driver
 
 _log = logging.getLogger(__name__)
-
-BOOT_STATE = 'Booted'
 
 CONN_WAITING_TIMEOUT = 20
 
@@ -31,7 +27,7 @@ class IOSSimulatorServerProcess(ServerProcess):
         super(IOSSimulatorServerProcess,
               self).__init__(port_obj, name, cmd, env, treat_no_data_as_crash,
                              more_logging)
-        self._boot_simulator()
+        self._port.check_simulator_is_booted()
 
     def _start(self):
         if self._proc:
@@ -91,48 +87,3 @@ class IOSSimulatorServerProcess(ServerProcess):
         proc.stdout = stdout_pipe
 
         self._set_proc(proc)
-
-    def _boot_simulator(self):
-        device = self._get_device(self._port.device_name())
-        state = device.get('state')
-        if state != BOOT_STATE:
-            _log.info('No simulator is booted. Booting a simulator...')
-            udid = device.get('udid')
-            self._run_simctl('boot ' + udid)
-            time.sleep(2)  # Wait for 2 seconds before checking the state.
-
-            while True:
-                device = self._get_device(self._port.device_name())
-                state = device.get('state')
-                if state == BOOT_STATE:
-                    break
-                time.sleep(2)  # Wait for 2 seconds before checking again.
-
-    def _get_device(self, device_name):
-        devices = json.loads(self._run_simctl('list -j devices available'))
-        if len(devices) == 0:
-            raise RuntimeError('No available device in the iOS simulator.')
-        runtime = self._latest_runtime()
-        return next(
-            (d
-             for d in devices['devices'][runtime] if d['name'] == device_name),
-            None)
-
-    def _latest_runtime(self):
-        runtimes = json.loads(self._run_simctl('list -j runtimes available'))
-        valid_runtimes = [
-            runtime for runtime in runtimes['runtimes']
-            if 'identifier' in runtime and runtime['identifier'].startswith(
-                'com.apple.CoreSimulator.SimRuntime')
-        ]
-        if len(valid_runtimes) == 0:
-            raise RuntimeError('No valid runtime in the iOS simulator.')
-
-        valid_runtimes.sort(key=lambda runtime: float(runtime['version']),
-                            reverse=True)
-        return valid_runtimes[0]['identifier']
-
-    def _run_simctl(self, command):
-        prefix_commands = ['/usr/bin/xcrun', 'simctl']
-        command_array = prefix_commands + command.split()
-        return self._host.executive.run_command(command_array)

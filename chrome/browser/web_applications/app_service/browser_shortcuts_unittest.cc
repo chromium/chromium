@@ -21,8 +21,8 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/icon_effects.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
@@ -43,7 +43,7 @@ class BrowserShortcutsTest : public testing::Test,
   // testing::Test implementation.
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
-        features::kCrosWebAppShortcutUiUpdate);
+        chromeos::features::kCrosWebAppShortcutUiUpdate);
     profile_ = std::make_unique<TestingProfile>();
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }

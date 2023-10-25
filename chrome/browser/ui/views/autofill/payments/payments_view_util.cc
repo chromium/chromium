@@ -10,6 +10,7 @@
 #include "base/ranges/algorithm.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -91,6 +92,23 @@ std::unique_ptr<views::ImageView> CreateIconView(
 }
 
 }  // namespace
+
+ui::ImageModel GetProfileAvatar(const AccountInfo& account_info) {
+  // Get the user avatar icon.
+  gfx::Image account_avatar = account_info.account_image;
+
+  // Check if the avatar is empty, and if so, replace it with a placeholder.
+  if (account_avatar.IsEmpty()) {
+    account_avatar = ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+        profiles::GetPlaceholderAvatarIconResourceID());
+  }
+
+  int avatar_size = views::TypographyProvider::Get().GetLineHeight(
+      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY);
+
+  return ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
+      account_avatar, avatar_size, avatar_size, profiles::SHAPE_CIRCLE));
+}
 
 // TODO(crbug.com/1447913): Replace TableLayout with BoxLayout or FlexLayout,
 // since this view is not tabular data.

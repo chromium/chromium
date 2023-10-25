@@ -11,11 +11,13 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -248,11 +250,22 @@ TEST_F(RemoteDatabaseManagerTest, DestinationsToCheckFromTrial) {
 }
 
 TEST_F(RemoteDatabaseManagerTest, ThreatSource) {
-  EXPECT_EQ(ThreatSource::REMOTE,
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck);
+  EXPECT_EQ(ThreatSource::ANDROID_SAFEBROWSING,
             db_->GetBrowseUrlThreatSource(CheckBrowseUrlType::kHashDatabase));
   EXPECT_EQ(ThreatSource::ANDROID_SAFEBROWSING_REAL_TIME,
             db_->GetBrowseUrlThreatSource(CheckBrowseUrlType::kHashRealTime));
   EXPECT_EQ(ThreatSource::REMOTE, db_->GetNonBrowseUrlThreatSource());
+}
+
+TEST_F(RemoteDatabaseManagerTest, ThreatSource_SafeBrowsingNewGmsApiDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck);
+  EXPECT_EQ(ThreatSource::REMOTE,
+            db_->GetBrowseUrlThreatSource(CheckBrowseUrlType::kHashDatabase));
 }
 
 }  // namespace safe_browsing

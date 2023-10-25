@@ -262,6 +262,7 @@ test("components_unittests") {
     "//components/password_manager/core/browser/features:unit_tests",
     "//components/password_manager/core/browser/generation:unit_tests",
     "//components/password_manager/core/browser/sharing:unit_tests",
+    "//components/password_manager/core/browser/ui:unit_tests",
     "//components/password_manager/core/browser/well_known_change_password:unit_tests",
     "//components/password_manager/core/common:unit_tests",
     "//components/payments/core:unit_tests",
@@ -711,11 +712,12 @@ test("components_unittests") {
     deps += [ "//components/constrained_window:unit_tests" ]
   }
 
+  if (is_win || is_linux || is_chromeos) {
+    deps += [ "//components/stability_report:unit_tests" ]
+  }
+
   if (is_win) {
-    deps += [
-      "//components/stability_report:unit_tests",
-      "//components/winhttp:unit_tests",
-    ]
+    deps += [ "//components/winhttp:unit_tests" ]
   }
 
   if (enable_printing) {

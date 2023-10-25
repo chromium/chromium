@@ -53,8 +53,9 @@ scoped_refptr<VideoFrame> WrapChromeOSCompressedGpuMemoryBufferAsVideoFrame(
   }
 
   const uint64_t modifier = gmb_handle.native_pixmap_handle.modifier;
-  if (modifier != I915_FORMAT_MOD_Y_TILED_GEN12_MC_CCS)
+  if (!IsIntelMediaCompressedModifier(modifier)) {
     return nullptr;
+  }
 
   constexpr size_t kExpectedNumberOfPlanes = 4u;
   if (gmb_handle.native_pixmap_handle.planes.size() !=
@@ -89,6 +90,10 @@ scoped_refptr<VideoFrame> WrapChromeOSCompressedGpuMemoryBufferAsVideoFrame(
   }
   frame->gpu_memory_buffer_ = std::move(gpu_memory_buffer);
   return frame;
+}
+
+bool IsIntelMediaCompressedModifier(uint64_t modifier) {
+  return modifier == I915_FORMAT_MOD_Y_TILED_GEN12_MC_CCS;
 }
 
 }  // namespace media

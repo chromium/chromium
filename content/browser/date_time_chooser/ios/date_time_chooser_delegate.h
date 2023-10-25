@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ui/base/ime/text_input_type.h"
+
 @class DateTimeChooserViewController;
 
 // Delegate to handle actions.
@@ -15,8 +17,8 @@
 // Method invoked when the user closed a dialog.
 - (void)dateTimeChooser:(DateTimeChooserViewController*)chooser
     didCloseSuccessfully:(BOOL)success
-                withDate:(NSDate*)date;
-
+                withDate:(NSDate*)date
+                 forType:(ui::TextInputType)type;
 @end
 
 #endif  // CONTENT_BROWSER_DATE_TIME_CHOOSER_IOS_DATE_TIME_CHOOSER_DELEGATE_H_

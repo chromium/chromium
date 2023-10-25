@@ -1,2 +1,5 @@
 estaab@chromium.org
 gatong@chromium.org
+
+# TODO(crbug.com/1471166): Remove after Tast split on the CQ is done.
+svenzheng@chromium.org

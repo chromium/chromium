@@ -80,11 +80,13 @@ class TracingRenderWidgetHost : public RenderWidgetHostImpl {
  public:
   TracingRenderWidgetHost(FrameTree* frame_tree,
                           RenderWidgetHostDelegate* delegate,
+                          viz::FrameSinkId frame_sink_id,
                           base::SafeRef<SiteInstanceGroup> site_instance_group,
                           int32_t routing_id,
                           bool hidden)
       : RenderWidgetHostImpl(frame_tree,
                              /*self_owned=*/false,
+                             frame_sink_id,
                              delegate,
                              std::move(site_instance_group),
                              routing_id,
@@ -118,12 +120,13 @@ class TracingRenderWidgetHostFactory : public RenderWidgetHostFactory {
   std::unique_ptr<RenderWidgetHostImpl> CreateRenderWidgetHost(
       FrameTree* frame_tree,
       RenderWidgetHostDelegate* delegate,
+      viz::FrameSinkId frame_sink_id,
       base::SafeRef<SiteInstanceGroup> site_instance_group,
       int32_t routing_id,
       bool hidden) override {
     return std::make_unique<TracingRenderWidgetHost>(
-        frame_tree, delegate, std::move(site_instance_group), routing_id,
-        hidden);
+        frame_tree, delegate, frame_sink_id, std::move(site_instance_group),
+        routing_id, hidden);
   }
 };
 

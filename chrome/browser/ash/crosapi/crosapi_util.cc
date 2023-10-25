@@ -683,6 +683,9 @@ void InjectBrowserInitParams(
 
   params->is_desk_profiles_enabled =
       chromeos::features::IsDeskProfilesEnabled();
+
+  params->is_cros_web_app_shortcut_ui_update_enabled =
+      chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled();
 }
 
 template <typename BrowserParams>

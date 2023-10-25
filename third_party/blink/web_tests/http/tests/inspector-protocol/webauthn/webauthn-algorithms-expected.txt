@@ -1,0 +1,13 @@
+Check that the WebAuthn virtual authenticator supports all algorithms
+Supported algorithms:
+Algorithm: -7
+Result: OK
+Algorithm: -8
+Result: OK
+Algorithm: -257
+Result: OK
+
+Invalid algorithm:
+Algorithm: 146919568
+Result: Error
+

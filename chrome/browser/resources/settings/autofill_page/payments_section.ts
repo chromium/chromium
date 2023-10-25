@@ -384,10 +384,13 @@ export class SettingsPaymentsSectionElement extends
    */
   private async onMenuEditCreditCardClick_(e: Event) {
     e.preventDefault();
-
-    if (this.activeCreditCard_!.metadata!.isLocal) {
-      this.showCreditCardDialog_ =
-          await this.paymentsManager_.authenticateUserToEditLocalCard();
+    assert(this.activeCreditCard_);
+    if (this.activeCreditCard_.metadata!.isLocal) {
+      const unmaskedCreditCard = await this.paymentsManager_.getLocalCard(
+          this.activeCreditCard_.guid!);
+      assert(unmaskedCreditCard);
+      this.activeCreditCard_ = unmaskedCreditCard;
+      this.showCreditCardDialog_ = true;
     } else {
       this.onRemoteCreditCardUrlClick_();
     }
@@ -669,6 +672,19 @@ export class SettingsPaymentsSectionElement extends
   private onShowBulkRemoveCvcConfirmationDialogClose_() {
     assert(this.cvcStorageAvailable_);
     this.showBulkRemoveCvcConfirmationDialog_ = false;
+  }
+
+  /**
+   * Method to return the correct sublabel for the cvc storage toggle.
+   * If any card from the list has a cvc, the sublabel with bulk delete
+   * hyperlink is returned else return the regular sublabel.
+   * @returns Cvc storage toggle sublabel string.
+   */
+  private getCvcStorageSublabel_(): TrustedHTML {
+    const card = this.creditCards.find(cc => !!cc.cvc);
+    return this.i18nAdvanced(
+        card === undefined ? 'enableCvcStorageSublabel' :
+                             'enableCvcStorageDeleteDataSublabel');
   }
 }
 

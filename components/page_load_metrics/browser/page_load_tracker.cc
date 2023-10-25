@@ -1027,10 +1027,9 @@ void PageLoadTracker::OnTimingChanged() {
       metrics_update_dispatcher_.timing().Clone();
 }
 
-void PageLoadTracker::OnPageInputTimingChanged(uint64_t num_interactions,
-                                               uint64_t num_input_events) {
+void PageLoadTracker::OnPageInputTimingChanged(uint64_t num_interactions) {
   for (const auto& observer : observers_) {
-    observer->OnPageInputTimingUpdate(num_interactions, num_input_events);
+    observer->OnPageInputTimingUpdate(num_interactions);
   }
 }
 

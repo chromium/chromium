@@ -43,9 +43,9 @@ bool IsBlockFragmented(const NGBoxFragmentBuilder& fragment_builder) {
 }  // namespace
 
 NGInlineChildLayoutContext::NGInlineChildLayoutContext(
-    const NGInlineNode& node,
+    const InlineNode& node,
     NGBoxFragmentBuilder* container_builder,
-    NGLineInfo* line_info)
+    LineInfo* line_info)
     : container_builder_(container_builder),
       items_builder_(node,
                      container_builder->GetWritingDirection(),
@@ -55,9 +55,9 @@ NGInlineChildLayoutContext::NGInlineChildLayoutContext(
 }
 
 NGInlineChildLayoutContext::NGInlineChildLayoutContext(
-    const NGInlineNode& node,
+    const InlineNode& node,
     NGBoxFragmentBuilder* container_builder,
-    NGScoreLineBreakContext* score_line_break_context)
+    ScoreLineBreakContext* score_line_break_context)
     : container_builder_(container_builder),
       items_builder_(node,
                      container_builder->GetWritingDirection(),
@@ -73,7 +73,7 @@ NGInlineChildLayoutContext::~NGInlineChildLayoutContext() {
 
 NGInlineLayoutStateStack*
 NGInlineChildLayoutContext::BoxStatesIfValidForItemIndex(
-    const HeapVector<NGInlineItem>& items,
+    const HeapVector<InlineItem>& items,
     unsigned item_index) {
   if (box_states_.has_value() && items_ == &items && item_index_ == item_index)
     return &*box_states_;

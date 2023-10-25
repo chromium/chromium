@@ -98,10 +98,8 @@ class CORE_EXPORT NGLayoutInputNode {
   bool IsView() const { return IsBlock() && box_->IsLayoutView(); }
   bool IsDocumentElement() const { return box_->IsDocumentElement(); }
   bool IsFlexItem() const { return IsBlock() && box_->IsFlexItemIncludingNG(); }
-  bool IsFlexibleBox() const {
-    return IsBlock() && box_->IsFlexibleBoxIncludingNG();
-  }
-  bool IsGrid() const { return IsBlock() && box_->IsLayoutNGGrid(); }
+  bool IsFlexibleBox() const { return IsBlock() && box_->IsFlexibleBox(); }
+  bool IsGrid() const { return IsBlock() && box_->IsLayoutGrid(); }
   bool ShouldBeConsideredAsReplaced() const {
     return box_->ShouldBeConsideredAsReplaced();
   }
@@ -287,7 +285,7 @@ class CORE_EXPORT NGLayoutInputNode {
   }
 
   CustomLayoutChild* GetCustomLayoutChild() const {
-    // TODO(ikilpatrick): Support NGInlineNode.
+    // TODO(ikilpatrick): Support InlineNode.
     DCHECK(IsBlock());
     return box_->GetCustomLayoutChild();
   }

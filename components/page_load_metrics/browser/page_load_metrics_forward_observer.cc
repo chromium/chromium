@@ -157,8 +157,7 @@ void PageLoadMetricsForwardObserver::OnInputTimingUpdate(
     const mojom::InputTiming& input_timing_delta) {}
 
 void PageLoadMetricsForwardObserver::OnPageInputTimingUpdate(
-    uint64_t num_interactions,
-    uint64_t num_input_events) {}
+    uint64_t num_interactions) {}
 
 void PageLoadMetricsForwardObserver::OnPageRenderDataUpdate(
     const mojom::FrameRenderDataUpdate& render_data,

@@ -103,9 +103,6 @@ IN_PROC_BROWSER_TEST_F(ForegroundDurationUKMObserverBrowserTest, RecordSimple) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   CloseAllTabs();
   ExpectMetricCountForUrl(url, "ForegroundDuration", 1);
-  ExpectMetricCountForUrl(url, "ForegroundNumInputEvents", 1);
-  ExpectMetricCountForUrl(url, "ForegroundTotalInputDelay", 1);
-  ExpectMetricCountForUrl(url, "ForegroundTotalAdjustedInputDelay", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ForegroundDurationUKMObserverBrowserTest,
@@ -118,17 +115,11 @@ IN_PROC_BROWSER_TEST_F(ForegroundDurationUKMObserverBrowserTest,
   prerender_helper().WaitForPrerenderLoadCompletion(host_id);
 
   ExpectMetricCountForUrl(simple, "ForegroundDuration", 0);
-  ExpectMetricCountForUrl(simple, "ForegroundNumInputEvents", 0);
-  ExpectMetricCountForUrl(simple, "ForegroundTotalInputDelay", 0);
-  ExpectMetricCountForUrl(simple, "ForegroundTotalAdjustedInputDelay", 0);
   prerender_helper().NavigatePrimaryPage(simple);
   CloseAllTabs();
 
   // The page was activated in foreground. The metrics should be recorded.
   ExpectMetricCountForUrl(simple, "ForegroundDuration", 1);
-  ExpectMetricCountForUrl(simple, "ForegroundNumInputEvents", 1);
-  ExpectMetricCountForUrl(simple, "ForegroundTotalInputDelay", 1);
-  ExpectMetricCountForUrl(simple, "ForegroundTotalAdjustedInputDelay", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ForegroundDurationUKMObserverBrowserTest,
@@ -146,17 +137,11 @@ IN_PROC_BROWSER_TEST_F(ForegroundDurationUKMObserverBrowserTest,
   web_contents()->WasOccluded();
 
   ExpectMetricCountForUrl(simple, "ForegroundDuration", 0);
-  ExpectMetricCountForUrl(simple, "ForegroundNumInputEvents", 0);
-  ExpectMetricCountForUrl(simple, "ForegroundTotalInputDelay", 0);
-  ExpectMetricCountForUrl(simple, "ForegroundTotalAdjustedInputDelay", 0);
   prerender_helper().NavigatePrimaryPage(simple);
   CloseAllTabs();
 
   // The page was activated in background. The metrics should not be recorded.
   ExpectMetricCountForUrl(simple, "ForegroundDuration", 0);
-  ExpectMetricCountForUrl(simple, "ForegroundNumInputEvents", 0);
-  ExpectMetricCountForUrl(simple, "ForegroundTotalInputDelay", 0);
-  ExpectMetricCountForUrl(simple, "ForegroundTotalAdjustedInputDelay", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ForegroundDurationUKMObserverBrowserTest, TabSwitching) {
@@ -187,11 +172,5 @@ IN_PROC_BROWSER_TEST_F(ForegroundDurationUKMObserverBrowserTest, TabSwitching) {
              TabStripUserGestureDetails::GestureType::kOther));
   tab_strip_model->CloseAllTabs();
   ExpectMetricCountForUrl(url1, "ForegroundDuration", 3);
-  ExpectMetricCountForUrl(url1, "ForegroundNumInputEvents", 3);
-  ExpectMetricCountForUrl(url1, "ForegroundTotalInputDelay", 3);
-  ExpectMetricCountForUrl(url1, "ForegroundTotalAdjustedInputDelay", 3);
   ExpectMetricCountForUrl(url2, "ForegroundDuration", 3);
-  ExpectMetricCountForUrl(url2, "ForegroundNumInputEvents", 3);
-  ExpectMetricCountForUrl(url2, "ForegroundTotalInputDelay", 3);
-  ExpectMetricCountForUrl(url2, "ForegroundTotalAdjustedInputDelay", 3);
 }

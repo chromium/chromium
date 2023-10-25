@@ -10,6 +10,7 @@
 
 import 'chrome://resources/cros_components/button/button.js';
 
+import {isCrosComponentsEnabled} from '../../../../common/js/flags.js';
 import {util} from '../../../../common/js/util.js';
 
 import {getTemplate} from './educational_banner.html.js';
@@ -103,8 +104,7 @@ export class EducationalBanner extends Banner {
     const overridenDismissButton =
         this.querySelector('[slot="dismiss-button"]');
     const defaultDismissButton = this.shadowRoot!.querySelector(
-        util.isCrosComponentsEnabled() ? '#dismiss-button' :
-                                         '#dismiss-button-old');
+        isCrosComponentsEnabled() ? '#dismiss-button' : '#dismiss-button-old');
     if (overridenDismissButton) {
       overridenDismissButton.addEventListener(
           'click',

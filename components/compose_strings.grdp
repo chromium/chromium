@@ -1,16 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
   <!-- TODO(b/301510467): Mark strings as translateable once all strings are aligned. -->
-  <message name="IDS_COMPOSE_TITLE" desc="The description of the Autofill Suggestion window in e.g. the task manager." translateable="false">
-  Autofill dialog title
-  </message>
+  <!-- Nudge -->
   <message name="IDS_COMPOSE_SUGGESTION_MAIN_TEXT" desc="The main text displayed in the Autofill suggestion that a user sees after interacting with a supported text element." translateable="false">
-  Autofill text
+  Lorem ipsum
   </message>
   <message name="IDS_COMPOSE_SUGGESTION_LABEL" desc="The label beneath the main text in the Autofill suggestion that a user sees adter interacting with a supported text element." translateable="false">
   Powered by Google
   </message>
+  <message name="IDS_COMPOSE_SUGGESTION_SAVED_TEXT" desc="The main text displayed in the Autofill suggestion that a user sees after interacting with a supported text element, indicating that user state was saved." translateable="false">
+  Progress saved
+  </message>
+  <message name="IDS_COMPOSE_SUGGESTION_SAVED_LABEL" desc="The label beneath the main text in the Autofill suggestion that a user sees after interacting with a supported text element, indicating that user state was saved." translateable="false">
+  Select to Autofill
+  </message>
+
+  <!-- Input dialog -->
+  <message name="IDS_COMPOSE_TITLE" desc="The title of the input dialog." translateable="false">
+  Lorem ipsum
+  </message>
+  <message name="IDS_COMPOSE_INPUT_PLACEHOLDER" desc="A placeholder text used in the input textfield." translateable="false">
+  We can Autofill many things (e.g., adresses, passwords, user names, credit card.). You can autofill any fields you want.
+  </message>
+  <message name="IDS_COMPOSE_INPUT_FOOTER" desc="The footer text for the input dialog." translateable="false">
+  <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Tip:<ph name="END_BOLD">&lt;/b&gt;</ph> You can activate Autofill in any text field when you right click.
+  </message>
+  <message name="IDS_COMPOSE_SUBMIT_BUTTON" desc="The button to submit the input." translateable="false">
+  Submit
+  </message>
+
+  <!-- Result dialog -->
+  <message name="IDS_COMPOSE_RESULT_FOOTER" desc="The footer text for the result." translateable="false">
+  Autofill relies on the information that you save.
+  <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_COMPOSE_INSERT_BUTTON" desc="The button that inserts the result into the input textfield." translateable="false">
+  Insert
+  </message>
+  <message name="IDS_COMPOSE_MENU_1_TITLE" desc="The first style menu title." translateable="false">
+  Auto
+  </message>
+  <message name="IDS_COMPOSE_MENU_2_TITLE" desc="The second style menu title." translateable="false">
+  Fill
+  </message>
+
+  <!-- Errors -->
   <message name="IDS_COMPOSE_CONFIGURATION_ERROR" desc="The error text shown when Compose is not available due to an internal configuration error." translateable="false">
   Configuration error. Try again later.
   </message>
+  <message name="IDS_COMPOSE_ERROR_TOO_LONG" desc="Error that the input was too long." translateable="false">
+  Input is too long. Cannot use Autofill.
+  </message>
+  <message name="IDS_COMPOSE_ERROR_TRY_AGAIN" desc="Error indicating that the request should be tried again." translateable="false">
+  Something went wrong. Try again.
+  </message>
+  <message name="IDS_COMPOSE_ERROR_TRY_AGAIN_LATER" desc="Error indicating that the request should be tried again later." translateable="false">
+  Something went wrong. Try again later.
+  </message>
+  <message name="IDS_COMPOSE_ERROR_REQUEST_NOT_SUCCESSFUL" desc="Error that the request was not able to be fulfilled." translateable="false">
+    Autofill does not work in this field. Try a different field.
+  </message>
+  <message name="IDS_COMPOSE_ERROR_PERMISSION_DENIED" desc="Error that the request failed by denied permission." translateable="false">
+  Something went wrong. Are you signed in?
+  </message>
+  <message name="IDS_COMPOSE_ERROR_GENERIC" desc="Error without further details." translateable="false">
+  Something went wrong.
+  </message>
+
 </grit-part>

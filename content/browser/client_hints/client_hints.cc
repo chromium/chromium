@@ -785,7 +785,7 @@ void UpdateNavigationRequestClientUaHeadersImpl(
     }
     if (ShouldAddClientHint(data, WebClientHintsType::kUAFormFactor)) {
       AddUAHeader(headers, WebClientHintsType::kUAFormFactor,
-                  SerializeHeaderString(ua_metadata->form_factor));
+                  ua_metadata->SerializeFormFactor());
     }
   } else if (call_type == ClientUaHeaderCallType::kAfterCreated) {
     RemoveClientHintHeader(WebClientHintsType::kUA, headers);

@@ -1,0 +1,3 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++EditText textSize:16.00 style:0 bundle:[aria-multiline="false", display="block", htmlTag="div", role="textbox"]
+++EditText textSize:16.00 style:0 bundle:[aria-multiline="true", display="block", htmlTag="div", role="textbox"]

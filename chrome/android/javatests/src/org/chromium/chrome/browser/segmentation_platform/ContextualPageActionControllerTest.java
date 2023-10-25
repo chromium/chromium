@@ -15,6 +15,7 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -75,6 +76,7 @@ public class ContextualPageActionControllerTest {
         ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
         ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE
     })
+    @DisabledTest(message = "https://crbug.com/1495178")
     public void testContextualPageModelExecution_OnReaderModePage() {
         LibraryLoader.getInstance().ensureInitialized();
 

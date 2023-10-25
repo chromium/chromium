@@ -35,7 +35,7 @@ class CONTENT_EXPORT FirstPartySetsLoader {
   FirstPartySetsLoader& operator=(const FirstPartySetsLoader&) = delete;
 
   // Stores the First-Party Set that was provided via the `kUseFirstPartySet`
-  // flag/switch.
+  // flag/switch. Only the first call has any effect.
   void SetManuallySpecifiedSet(const LocalSetDeclaration& local_set);
 
   // Asynchronously parses and stores the sets from `sets_file`, and merges with
@@ -45,6 +45,9 @@ class CONTENT_EXPORT FirstPartySetsLoader {
   // Only the first call to SetComponentSets can have any effect; subsequent
   // invocations are ignored.
   void SetComponentSets(base::Version version, base::File sets_file);
+
+  // Closes the given file safely.
+  static void DisposeFile(base::File file);
 
  private:
   // Parses the contents of `raw_sets` as a collection of First-Party Set

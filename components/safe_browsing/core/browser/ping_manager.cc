@@ -377,6 +377,9 @@ GURL PingManager::SafeBrowsingHitUrl(
     case safe_browsing::ThreatSource::ANDROID_SAFEBROWSING_REAL_TIME:
       threat_source = "asbrt";
       break;
+    case safe_browsing::ThreatSource::ANDROID_SAFEBROWSING:
+      threat_source = "asb";
+      break;
     case safe_browsing::ThreatSource::UNKNOWN:
       NOTREACHED();
   }

@@ -1,0 +1,7 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[aria-live="off", display="block", htmlTag="div", role="marquee"]
+++++TextView text:"Off" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++View textSize:16.00 style:0 bundle:[aria-live="polite", display="block", htmlTag="div", role="marquee"]
+++++TextView text:"Polite" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++View textSize:16.00 style:0 bundle:[aria-live="assertive", display="block", htmlTag="div", role="marquee"]
+++++TextView text:"Assertive" textSize:16.00 style:0 bundle:[display="", htmlTag=""]

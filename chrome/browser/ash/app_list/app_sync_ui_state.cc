@@ -122,6 +122,14 @@ void AppSyncUIState::CheckAppSync() {
     return;
   }
 
+  // The sync service will be paused if it encounters errors, transition to
+  // normal UI state.
+  if (sync_service_->GetTransportState() ==
+      syncer::SyncService::TransportState::PAUSED) {
+    SetStatus(STATUS_NORMAL);
+    return;
+  }
+
   const bool synced = sync_service_->IsSyncFeatureActive();
   const bool has_pending_extension = extensions::ExtensionSystem::Get(profile_)
                                          ->extension_service()

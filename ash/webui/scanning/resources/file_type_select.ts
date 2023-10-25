@@ -17,7 +17,7 @@ import {getTemplate} from './file_type_select.html.js';
 
 const FileTypeSelectElementBase = I18nMixin(PolymerElement);
 
-class FileTypeSelectElement extends FileTypeSelectElementBase {
+export class FileTypeSelectElement extends FileTypeSelectElementBase {
   static get is() {
     return 'file-type-select' as const;
   }

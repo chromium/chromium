@@ -338,7 +338,7 @@ class MockTouchToFillDelegate : public TouchToFillDelegate {
   MOCK_METHOD(BrowserAutofillManager*, GetManager, (), (override));
   MOCK_METHOD(bool,
               IntendsToShowTouchToFill,
-              (FormGlobalId, FieldGlobalId),
+              (FormGlobalId, FieldGlobalId, const FormData&),
               (override));
   MOCK_METHOD(bool,
               TryToShowTouchToFill,
@@ -377,7 +377,7 @@ class MockFastCheckoutDelegate : public FastCheckoutDelegate {
               (override));
   MOCK_METHOD(bool,
               IntendsToShowFastCheckout,
-              (AutofillManager&, FormGlobalId, FieldGlobalId),
+              (AutofillManager&, FormGlobalId, FieldGlobalId, const FormData&),
               (const, override));
   MOCK_METHOD(bool, IsShowingFastCheckoutUI, (), (const, override));
   MOCK_METHOD(void, HideFastCheckout, (bool), (override));
@@ -7218,9 +7218,7 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
   SCOPED_TRACE(base::StringPrintf(
       "Test: input_value='%s', field_type=%s, structured_names=%s ",
       test_case.input_value,
-      std::string(FieldTypeToStringPiece(*test_case.field_types.begin()))
-          .c_str(),
-      "true"));
+      FieldTypeToString(*test_case.field_types.begin()).c_str(), "true"));
 
   // Take the field types depending on the state of the structured names
   // feature.

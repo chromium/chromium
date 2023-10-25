@@ -5,33 +5,28 @@
 #ifndef ASH_ROOT_WINDOW_CONTROLLER_H_
 #define ASH_ROOT_WINDOW_CONTROLLER_H_
 
-#include <map>
 #include <memory>
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/shelf_types.h"
 #include "ash/style/ash_color_provider_source.h"
 #include "ash/wm/overview/overview_metrics.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/splitview/split_view_overview_session.h"
-#include "ash/wm/workspace/workspace_types.h"
-#include "base/gtest_prod_util.h"
+#include "ash/wm/wm_metrics.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 
 namespace aura {
 class Window;
-}
+}  // namespace aura
 
 namespace gfx {
 class Point;
-}
+}  // namespace gfx
 
 namespace ui {
-class WindowTreeHost;
 class SimpleMenuModel;
 }  // namespace ui
 
@@ -269,12 +264,11 @@ class ASH_EXPORT RootWindowController {
   security_curtain_widget_controller();
 
   // Starts a split view overview session for this root window with `window`
-  // snapped on one side and overview on the other side. Overview and split view
-  // should already be active before calling this function.
-  void StartSplitViewOverviewSession(
-      aura::Window* window,
-      absl::optional<OverviewStartAction> action,
-      absl::optional<OverviewEnterExitType> type);
+  // snapped on one side and overview on the other side.
+  void StartSplitViewOverviewSession(aura::Window* window,
+                                     absl::optional<OverviewStartAction> action,
+                                     absl::optional<OverviewEnterExitType> type,
+                                     WindowSnapActionSource snap_action_source);
 
   // Ends the split view overview session and reports the uma metrics if it is
   // active.

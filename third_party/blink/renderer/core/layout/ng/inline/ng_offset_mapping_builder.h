@@ -22,7 +22,7 @@ class LayoutText;
 // mapping. It holds an offset mapping, and provides APIs to modify the mapping
 // step by step until the construction is finished.
 // Design doc: https://goo.gl/CJbxky
-class CORE_EXPORT NGOffsetMappingBuilder {
+class CORE_EXPORT OffsetMappingBuilder {
   STACK_ALLOCATED();
 
  public:
@@ -33,16 +33,16 @@ class CORE_EXPORT NGOffsetMappingBuilder {
   //
   // Example:
   //
-  // NGOffsetMappingBuilder builder;
+  // OffsetMappingBuilder builder;
   //
   // {
-  //   NGOffsetMappingBuilder::SourceNodeScope scope(&builder, node);
+  //   OffsetMappingBuilder::SourceNodeScope scope(&builder, node);
   //
   //   // These 3 characters are marked as from source node |node|.
   //   builder.AppendIdentity(3);
   //
   //   {
-  //     NGOffsetMappingBuilder::SourceNodeScope unset_scope(&builder, nullptr);
+  //     OffsetMappingBuilder::SourceNodeScope unset_scope(&builder, nullptr);
   //
   //     // This character is marked as having no source node.
   //     builder.AppendCollapsed(1);
@@ -52,7 +52,7 @@ class CORE_EXPORT NGOffsetMappingBuilder {
   //   builder.AppendIdentity(2);
   //
   //   // Not allowed.
-  //   // NGOffsetMappingBuilder::SourceNodeScope scope(&builder, node2);
+  //   // OffsetMappingBuilder::SourceNodeScope scope(&builder, node2);
   // }
   //
   // // This character is marked as having no source node.
@@ -61,24 +61,24 @@ class CORE_EXPORT NGOffsetMappingBuilder {
     STACK_ALLOCATED();
 
    public:
-    SourceNodeScope(NGOffsetMappingBuilder* builder, const LayoutObject* node);
+    SourceNodeScope(OffsetMappingBuilder* builder, const LayoutObject* node);
     SourceNodeScope(const SourceNodeScope&) = delete;
     SourceNodeScope& operator=(const SourceNodeScope&) = delete;
     ~SourceNodeScope();
 
    private:
-    NGOffsetMappingBuilder* const builder_ = nullptr;
+    OffsetMappingBuilder* const builder_ = nullptr;
     base::AutoReset<const LayoutObject*> layout_object_auto_reset_;
     base::AutoReset<unsigned> appended_length_auto_reset_;
   };
 
-  NGOffsetMappingBuilder();
-  NGOffsetMappingBuilder(const NGOffsetMappingBuilder&) = delete;
-  ~NGOffsetMappingBuilder() {
+  OffsetMappingBuilder();
+  OffsetMappingBuilder(const OffsetMappingBuilder&) = delete;
+  ~OffsetMappingBuilder() {
     mapping_units_.clear();
     unit_ranges_.clear();
   }
-  NGOffsetMappingBuilder& operator=(const NGOffsetMappingBuilder&) = delete;
+  OffsetMappingBuilder& operator=(const OffsetMappingBuilder&) = delete;
 
   void ReserveCapacity(unsigned capacity);
 
@@ -96,7 +96,7 @@ class CORE_EXPORT NGOffsetMappingBuilder {
   // annotation to the builder.
   // void AppendExpandedMapping(unsigned length);
 
-  // This function should only be called by NGInlineItemsBuilder during
+  // This function should only be called by InlineItemsBuilder during
   // whitespace collapsing, and in the case that the target string of the
   // currently held mapping:
   // (i)  has at least |space_offset + 1| characters,
@@ -107,11 +107,11 @@ class CORE_EXPORT NGOffsetMappingBuilder {
 
   // Concatenate the offset mapping held by another builder to this builder.
   // TODO(xiaochengh): Implement when adding support for 'text-transform'
-  // void Concatenate(const NGOffsetMappingBuilder&);
+  // void Concatenate(const OffsetMappingBuilder&);
 
   // Composite the offset mapping held by another builder to this builder.
   // TODO(xiaochengh): Implement when adding support for 'text-transform'
-  // void Composite(const NGOffsetMappingBuilder&);
+  // void Composite(const OffsetMappingBuilder&);
 
   // Restore a trailing collapsible space at |offset| of text content. The space
   // is associated with |layout_text|.
@@ -123,7 +123,7 @@ class CORE_EXPORT NGOffsetMappingBuilder {
 
   // Finalize and return the offset mapping.
   // This method can only be called once, as it can invalidate the stored data.
-  NGOffsetMapping* Build();
+  OffsetMapping* Build();
 
  private:
   const LayoutObject* current_layout_object_ = nullptr;
@@ -137,10 +137,10 @@ class CORE_EXPORT NGOffsetMappingBuilder {
   unsigned destination_length_ = 0;
 
   // Mapping units of the current mapping function.
-  HeapVector<NGOffsetMappingUnit> mapping_units_;
+  HeapVector<OffsetMappingUnit> mapping_units_;
 
   // Unit ranges of the current mapping function.
-  NGOffsetMapping::RangeMap unit_ranges_;
+  OffsetMapping::RangeMap unit_ranges_;
 
   // The destination string of the offset mapping.
   String destination_string_;

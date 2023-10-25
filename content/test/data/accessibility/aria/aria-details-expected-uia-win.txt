@@ -1,0 +1,13 @@
+Document
+++Group IsControlElement=false
+++++Edit DescribedBy='{group}'
+++Group IsControlElement=false
+++++Text Name='Details'
+++Group IsControlElement=false
+++++Text Name='This '
+++++Group DescribedBy='{group}, Image details'
+++++++Text Name='text'
+++++Text Name=' has details'
+++Group
+++++Text Name='Text details'
+++Image Name='Image details'

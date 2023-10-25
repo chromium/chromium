@@ -249,7 +249,12 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
           // Resize the `baseImage` into the size of `frameInBaseView` because
           // UIGraphicsImageRenderer is initialized with the size of
           // `frameInBaseView` and it can't render an image beyond that.
-          baseView.bounds = frameInBaseView;
+          if (frameInBaseView.size.height < baseView.bounds.size.height) {
+            DCHECK_EQ(frameInBaseView.size.width, baseView.bounds.size.width);
+            CGRect frame = baseView.frame;
+            frame.size.height = frameInBaseView.size.height;
+            baseView.frame = frame;
+          }
 
           // `-renderInContext:` is the preferred way to render a snapshot, but
           // it's buggy for WKWebView, which is used for some WebUI pages such
@@ -368,18 +373,15 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
   snapshotInfo.baseView = [_delegate snapshotGenerator:self
                                    baseViewForWebState:_webState];
   DCHECK(snapshotInfo.baseView);
-
   UIEdgeInsets baseViewInsets = [_delegate snapshotGenerator:self
                                snapshotEdgeInsetsForWebState:_webState];
   snapshotInfo.snapshotFrameInBaseView =
       UIEdgeInsetsInsetRect(snapshotInfo.baseView.bounds, baseViewInsets);
   DCHECK(!CGRectIsEmpty(snapshotInfo.snapshotFrameInBaseView));
-
   snapshotInfo.snapshotFrameInWindow =
       [snapshotInfo.baseView convertRect:snapshotInfo.snapshotFrameInBaseView
                                   toView:nil];
   DCHECK(!CGRectIsEmpty(snapshotInfo.snapshotFrameInWindow));
-
   snapshotInfo.overlays = [_delegate snapshotGenerator:self
                            snapshotOverlaysForWebState:_webState];
   return snapshotInfo;

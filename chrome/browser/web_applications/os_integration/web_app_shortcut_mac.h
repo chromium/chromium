@@ -299,6 +299,9 @@ class WebAppShortcutCreator {
   // Updates the icon for the shortcut.
   bool UpdateIcon(const base::FilePath& app_path) const;
 
+  // Updates the code signature of |app_path|.
+  bool UpdateSignature(const base::FilePath& app_path) const;
+
   // Path to the data directory for this app. For example:
   // ~/Library/Application Support/Chromium/Default/Web Applications/_crx_abc/
   const base::FilePath app_data_dir_;
@@ -306,6 +309,10 @@ class WebAppShortcutCreator {
   // Information about the app. Owned by the caller of the constructor.
   const raw_ptr<const ShortcutInfo> info_;
 };
+
+// Returns true when running on version of macOS that can perform code signing
+// at runtime and the UseAdHocSigningForWebAppShims feature is enabled.
+bool UseAdHocSigningForWebAppShims();
 
 }  // namespace web_app
 

@@ -26,6 +26,7 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
@@ -60,6 +61,7 @@ class ScopedLacrosAvailabilityCache {
       const ScopedLacrosAvailabilityCache&) = delete;
   ~ScopedLacrosAvailabilityCache() {
     browser_util::ClearLacrosAvailabilityCacheForTest();
+    ash::standalone_browser::BrowserSupport::Shutdown();
   }
 
  private:
@@ -71,6 +73,11 @@ class ScopedLacrosAvailabilityCache {
         base::Value(GetLacrosAvailabilityPolicyName(lacros_availability)),
         /*external_data_fetcher=*/nullptr);
     browser_util::CacheLacrosAvailability(policy);
+    if (ash::standalone_browser::BrowserSupport::
+            IsInitializedForPrimaryUser()) {
+      ash::standalone_browser::BrowserSupport::Shutdown();
+    }
+    ash::standalone_browser::BrowserSupport::InitializeForPrimaryUser(policy);
   }
 };
 
@@ -117,9 +124,14 @@ class BrowserUtilTest : public testing::Test {
   }
 
   void TearDown() override {
+    if (ash::standalone_browser::BrowserSupport::
+            IsInitializedForPrimaryUser()) {
+      ash::standalone_browser::BrowserSupport::Shutdown();
+    }
     ash::system::StatisticsProvider::SetTestProvider(nullptr);
     fake_user_manager_.Reset();
-    browser_util::SetCpuAvailabilityForTesting(absl::nullopt);
+    ash::standalone_browser::BrowserSupport::SetCpuSupportedForTesting(
+        absl::nullopt);
   }
 
   void AddRegularUser(const std::string& email) {
@@ -128,6 +140,8 @@ class BrowserUtilTest : public testing::Test {
     fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
                                      /*browser_restart=*/false,
                                      /*is_child=*/false);
+    ash::standalone_browser::BrowserSupport::InitializeForPrimaryUser(
+        policy::PolicyMap());
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
         user, &testing_profile_);
   }
@@ -180,19 +194,20 @@ TEST_F(BrowserUtilTest, LacrosEnabledByFlag) {
 }
 
 TEST_F(BrowserUtilTest, LacrosDisallowedByCommandLineFlag) {
-  AddRegularUser("user@test.com");
-
-  EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled());
-
   base::test::ScopedCommandLine cmd_line;
   cmd_line.GetProcessCommandLine()->AppendSwitch(
       ash::switches::kDisallowLacros);
-
+  AddRegularUser("user@test.com");
   EXPECT_FALSE(browser_util::IsLacrosAllowedToBeEnabled());
+}
 
+TEST_F(BrowserUtilTest, LacrosDisableDisallowedLacrosByCommandLineFlag) {
+  base::test::ScopedCommandLine cmd_line;
+  cmd_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kDisallowLacros);
   cmd_line.GetProcessCommandLine()->AppendSwitch(
       ash::switches::kDisableDisallowLacros);
-
+  AddRegularUser("user@test.com");
   EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled());
 }
 
@@ -242,8 +257,9 @@ TEST_F(BrowserUtilTest, IsLacrosEnabledForMigrationBeforePolicyInit) {
   // Sets command line flag to emulate the situation where the Chrome
   // restart happens.
   base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-  cmdline->AppendSwitchASCII(browser_util::kLacrosAvailabilityPolicySwitch,
-                             browser_util::kLacrosAvailabilityPolicyLacrosOnly);
+  cmdline->AppendSwitchASCII(
+      ash::standalone_browser::kLacrosAvailabilityPolicySwitch,
+      ash::standalone_browser::kLacrosAvailabilityPolicyLacrosOnly);
 
   EXPECT_TRUE(browser_util::IsLacrosEnabledForMigration(
       user, browser_util::PolicyInitState::kBeforeInit));
@@ -351,8 +367,9 @@ TEST_F(BrowserUtilTest, IsAshWebBrowserEnabledForMigration) {
   // Sets command line flag to emulate the situation where the Chrome
   // restart happens.
   base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-  cmdline->AppendSwitchASCII(browser_util::kLacrosAvailabilityPolicySwitch,
-                             browser_util::kLacrosAvailabilityPolicyLacrosOnly);
+  cmdline->AppendSwitchASCII(
+      ash::standalone_browser::kLacrosAvailabilityPolicySwitch,
+      ash::standalone_browser::kLacrosAvailabilityPolicyLacrosOnly);
 
   // Ash browser is disabled if LacrosOnly is enabled.
   EXPECT_FALSE(browser_util::IsAshWebBrowserEnabledForMigration(
@@ -409,9 +426,9 @@ TEST_F(BrowserUtilTest, LacrosDisabledForOldHardware) {
   EXPECT_TRUE(browser_util::IsLacrosEnabled());
   EXPECT_EQ(browser_util::LacrosMode::kOnly, browser_util::GetLacrosMode());
 
-  browser_util::SetCpuAvailabilityForTesting(false);
+  ash::standalone_browser::BrowserSupport::SetCpuSupportedForTesting(false);
   EXPECT_EQ(browser_util::LacrosMode::kDisabled, browser_util::GetLacrosMode());
-  browser_util::SetCpuAvailabilityForTesting(true);
+  ash::standalone_browser::BrowserSupport::SetCpuSupportedForTesting(true);
   EXPECT_EQ(browser_util::LacrosMode::kOnly, browser_util::GetLacrosMode());
 }
 

@@ -24,9 +24,9 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_outline_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
 #include "third_party/blink/renderer/core/layout/pointer_events_hit_rules.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/background_image_geometry.h"
 #include "third_party/blink/renderer/core/paint/box_border_painter.h"
@@ -1291,7 +1291,7 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackgroundForBlockInInline(
     const PhysicalOffset& paint_offset) {
   while (*children) {
     const FragmentItem* item = children->Current().Item();
-    if (const NGPhysicalLineBoxFragment* line = item->LineBoxFragment()) {
+    if (const PhysicalLineBoxFragment* line = item->LineBoxFragment()) {
       if (!line->IsBlockInInline()) {
         children->MoveToNextSkippingChildren();
         continue;
@@ -1618,7 +1618,7 @@ void NGBoxFragmentPainter::PaintLineBoxChildItems(
     }
 
     if (child_item->Type() == FragmentItem::kLine) {
-      const NGPhysicalLineBoxFragment* line_box_fragment =
+      const PhysicalLineBoxFragment* line_box_fragment =
           child_item->LineBoxFragment();
       DCHECK(line_box_fragment);
       PaintLineBox(*line_box_fragment, *child_item->GetDisplayItemClient(),
@@ -2151,7 +2151,7 @@ bool NGBoxFragmentPainter::HitTestTextItem(const HitTestContext& hit_test,
 
 bool NGBoxFragmentPainter::HitTestLineBoxFragment(
     const HitTestContext& hit_test,
-    const NGPhysicalLineBoxFragment& fragment,
+    const PhysicalLineBoxFragment& fragment,
     const InlineBackwardCursor& cursor,
     const PhysicalOffset& physical_offset) {
   DCHECK_EQ(cursor.Current()->LineBoxFragment(), &fragment);
@@ -2450,7 +2450,7 @@ bool NGBoxFragmentPainter::HitTestItemsChildren(
       if (HitTestTextItem(hit_test, *item, cursor))
         return true;
     } else if (item->Type() == FragmentItem::kLine) {
-      const NGPhysicalLineBoxFragment* child_fragment = item->LineBoxFragment();
+      const PhysicalLineBoxFragment* child_fragment = item->LineBoxFragment();
       DCHECK(child_fragment);
       const PhysicalOffset child_offset =
           hit_test.inline_root_offset + item->OffsetInContainerFragment();
@@ -2583,7 +2583,7 @@ bool NGBoxFragmentPainter::HitTestFloatingChildItems(
       }
       DCHECK(item->GetLayoutObject()->IsLayoutInline());
     } else if (item->Type() == FragmentItem::kLine) {
-      const NGPhysicalLineBoxFragment* child_line = item->LineBoxFragment();
+      const PhysicalLineBoxFragment* child_line = item->LineBoxFragment();
       DCHECK(child_line);
       if (!child_line->HasFloatingDescendantsForPaint())
         continue;

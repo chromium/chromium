@@ -287,7 +287,7 @@ RenderWidgetHostViewBase::CreateVideoCapturer() {
   std::unique_ptr<viz::ClientFrameSinkVideoCapturer> video_capturer =
       GetHostFrameSinkManager()->CreateVideoCapturer();
   video_capturer->ChangeTarget(viz::VideoCaptureTarget(GetFrameSinkId()),
-                               /*crop_version=*/0);
+                               /*sub_capture_target_version=*/0);
   return video_capturer;
 }
 
@@ -1082,6 +1082,37 @@ void RenderWidgetHostViewBase::OnShowWithPageVisibility(
   // visibility metrics.)
   CancelSuccessfulPresentationTimeRequestForHostAndDelegate();
   return;
+}
+
+void RenderWidgetHostViewBase::SetIsFrameSinkIdOwner(bool is_owner) {
+  if (is_frame_sink_id_owner_ == is_owner) {
+    return;
+  }
+
+  is_frame_sink_id_owner_ = is_owner;
+  UpdateFrameSinkIdRegistration();
+}
+
+void RenderWidgetHostViewBase::UpdateFrameSinkIdRegistration() {
+  // If Destroy() has been called before we get here, host_ may be null.
+  if (!host() || !host()->delegate() ||
+      !host()->delegate()->GetInputEventRouter()) {
+    return;
+  }
+
+  // Let the page-level input event router know about our frame sink ID
+  // for surface-based hit testing.
+  auto* router = host()->delegate()->GetInputEventRouter();
+  if (is_frame_sink_id_owner_) {
+    if (!router->IsViewInMap(this)) {
+      router->AddFrameSinkIdOwner(GetFrameSinkId(), this);
+    }
+  } else if (router->IsViewInMap(this)) {
+    // Ensure this view is the owner before removing the associated FrameSinkId
+    // from input tracking. Speculative views start as non-owing and will not
+    // register until ownership has been transferred.
+    router->RemoveFrameSinkIdOwner(GetFrameSinkId());
+  }
 }
 
 }  // namespace content

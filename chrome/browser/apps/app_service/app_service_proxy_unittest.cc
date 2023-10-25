@@ -18,7 +18,6 @@
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -39,6 +38,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/app_service/subscriber_crosapi.h"
+#include "chromeos/constants/chromeos_features.h"
 #endif
 
 namespace apps {
@@ -366,7 +366,8 @@ TEST_F(AppServiceProxyIconTest, IconCoalescer) {
 class AppServiceProxyShortcutIconTest : public AppServiceProxyTest {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {kAppServiceStorage, features::kCrosWebAppShortcutUiUpdate}, {});
+        {kAppServiceStorage, chromeos::features::kCrosWebAppShortcutUiUpdate},
+        {});
   }
 
  protected:

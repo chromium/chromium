@@ -52,7 +52,10 @@ class InputsSection : public OsSettingsSection,
                           Profile* profile,
                           bool show_message) override;
 
+  // Not owned by this class
+  raw_ptr<Profile> profile_;
   raw_ptr<PrefService> pref_service_;
+
   PrefChangeRegistrar pref_change_registrar_;
 
   // Used to monitor input method changes.

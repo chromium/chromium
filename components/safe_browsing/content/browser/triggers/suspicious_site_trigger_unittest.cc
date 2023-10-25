@@ -175,7 +175,7 @@ TEST_F(SuspiciousSiteTriggerTest, RegularPageNonSuspicious) {
               StartCollectingThreatDetailsWithReason(_, _, _, _, _, _, _, _))
       .Times(0);
   EXPECT_CALL(*get_trigger_manager(),
-              FinishCollectingThreatDetails(_, _, _, _, _, _, _))
+              FinishCollectingThreatDetails(_, _, _, _, _, _, _, _))
       .Times(0);
 
   RenderFrameHost* main_frame = NavigateMainFrame(kCleanUrl);
@@ -208,7 +208,7 @@ TEST_F(SuspiciousSiteTriggerTest, MAYBE_SuspiciousHitDuringLoad) {
       .Times(1)
       .WillOnce(Return(true));
   EXPECT_CALL(*get_trigger_manager(),
-              FinishCollectingThreatDetails(_, _, _, _, _, _, _))
+              FinishCollectingThreatDetails(_, _, _, _, _, _, _, _))
       .Times(1)
       .WillOnce(Return(
           MockTriggerManager::FinishCollectingThreatDetailsResult(true, true)));
@@ -247,7 +247,7 @@ TEST_F(SuspiciousSiteTriggerTest, SuspiciousHitAfterLoad) {
       .Times(1)
       .WillOnce(Return(true));
   EXPECT_CALL(*get_trigger_manager(),
-              FinishCollectingThreatDetails(_, _, _, _, _, _, _))
+              FinishCollectingThreatDetails(_, _, _, _, _, _, _, _))
       .Times(1)
       .WillOnce(Return(
           MockTriggerManager::FinishCollectingThreatDetailsResult(true, true)));
@@ -287,7 +287,7 @@ TEST_F(SuspiciousSiteTriggerTest, ReportRejectedByTriggerManager) {
           DoAll(SetArgPointee<7>(TriggerManagerReason::DAILY_QUOTA_EXCEEDED),
                 Return(false)));
   EXPECT_CALL(*get_trigger_manager(),
-              FinishCollectingThreatDetails(_, _, _, _, _, _, _))
+              FinishCollectingThreatDetails(_, _, _, _, _, _, _, _))
       .Times(0);
 
   RenderFrameHost* main_frame = NavigateMainFrame(kCleanUrl);
@@ -326,7 +326,7 @@ TEST_F(SuspiciousSiteTriggerTest, NewNavigationMidLoad_NotSuspicious) {
               StartCollectingThreatDetailsWithReason(_, _, _, _, _, _, _, _))
       .Times(0);
   EXPECT_CALL(*get_trigger_manager(),
-              FinishCollectingThreatDetails(_, _, _, _, _, _, _))
+              FinishCollectingThreatDetails(_, _, _, _, _, _, _, _))
       .Times(0);
 
   RenderFrameHost* main_frame = NavigateMainFrame(kCleanUrl);
@@ -357,7 +357,7 @@ TEST_F(SuspiciousSiteTriggerTest, NewNavigationMidLoad_Suspicious) {
               StartCollectingThreatDetailsWithReason(_, _, _, _, _, _, _, _))
       .Times(0);
   EXPECT_CALL(*get_trigger_manager(),
-              FinishCollectingThreatDetails(_, _, _, _, _, _, _))
+              FinishCollectingThreatDetails(_, _, _, _, _, _, _, _))
       .Times(0);
 
   RenderFrameHost* main_frame = NavigateMainFrame(kCleanUrl);
@@ -395,7 +395,7 @@ TEST_F(SuspiciousSiteTriggerTest, MonitorMode_NotSuspicious) {
               StartCollectingThreatDetailsWithReason(_, _, _, _, _, _, _, _))
       .Times(0);
   EXPECT_CALL(*get_trigger_manager(),
-              FinishCollectingThreatDetails(_, _, _, _, _, _, _))
+              FinishCollectingThreatDetails(_, _, _, _, _, _, _, _))
       .Times(0);
 
   RenderFrameHost* main_frame = NavigateMainFrame(kCleanUrl);
@@ -422,7 +422,7 @@ TEST_F(SuspiciousSiteTriggerTest, MonitorMode_SuspiciousHitDuringLoad) {
               StartCollectingThreatDetailsWithReason(_, _, _, _, _, _, _, _))
       .Times(0);
   EXPECT_CALL(*get_trigger_manager(),
-              FinishCollectingThreatDetails(_, _, _, _, _, _, _))
+              FinishCollectingThreatDetails(_, _, _, _, _, _, _, _))
       .Times(0);
 
   RenderFrameHost* main_frame = NavigateMainFrame(kCleanUrl);
@@ -458,7 +458,7 @@ TEST_F(SuspiciousSiteTriggerTest, VisibleURLChangeMidLoad_NotSuspicious) {
               StartCollectingThreatDetailsWithReason(_, _, _, _, _, _, _, _))
       .Times(0);
   EXPECT_CALL(*get_trigger_manager(),
-              FinishCollectingThreatDetails(_, _, _, _, _, _, _))
+              FinishCollectingThreatDetails(_, _, _, _, _, _, _, _))
       .Times(0);
 
   NavigateMainFrame(kCleanUrl);
@@ -496,7 +496,7 @@ TEST_F(SuspiciousSiteTriggerTest, VisibleURLChangeMidLoad_Suspicious) {
       .Times(1)
       .WillOnce(Return(true));
   EXPECT_CALL(*get_trigger_manager(),
-              FinishCollectingThreatDetails(_, _, _, _, _, _, _))
+              FinishCollectingThreatDetails(_, _, _, _, _, _, _, _))
       .Times(1)
       .WillOnce(Return(
           MockTriggerManager::FinishCollectingThreatDetailsResult(true, true)));

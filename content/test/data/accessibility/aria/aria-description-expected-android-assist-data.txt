@@ -1,0 +1,5 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View text:"description Text-description" textSize:16.00 style:0 bundle:[aria-description="Text-description", aria-label="description", display="block", htmlTag="div"]
+++View text:"both Description from describedby" textSize:16.00 style:0 bundle:[aria-describedby="desc1", aria-description="describedby overrides description", aria-label="both", display="block", htmlTag="div"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="div", id="desc1", role="tooltip"]
+++++TextView text:"Description from describedby" textSize:16.00 style:0 bundle:[display="", htmlTag=""]

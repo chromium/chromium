@@ -411,6 +411,10 @@ void SetFlags(IsolateHolder::ScriptMode mode,
   SetV8FlagsIfOverridden(features::kWebAssemblyGenericWrapper,
                          "--wasm-to-js-generic-wrapper",
                          "--no-wasm-to-js-generic-wrapper");
+  SetV8FlagsIfOverridden(features::kWebAssemblyMultipleMemories,
+                         "--experimental-wasm-multi-memory",
+                         "--no-experimental-wasm-multi-memory");
+
   if (js_command_line_flags.empty())
     return;
 

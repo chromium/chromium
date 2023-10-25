@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -20,7 +19,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
-#include "gpu/ipc/common/surface_handle.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
@@ -29,6 +27,7 @@
 #include "ui/gfx/native_pixmap.h"
 
 namespace gpu {
+class OzoneImageGLTexturesHolder;
 class VaapiDependencies;
 
 // Implementation of SharedImageBacking that uses a NativePixmap created via
@@ -111,6 +110,13 @@ class OzoneImageBacking final : public ClearTrackingSharedImageBacking {
                  AccessStream access_stream,
                  gfx::GpuFenceHandle fence);
 
+  scoped_refptr<OzoneImageGLTexturesHolder> RetainGLTexture(
+      bool is_passthrough);
+
+  // Returns a GpuMemoryBufferHandle for a single plane of the backing pixmap.
+  gfx::GpuMemoryBufferHandle GetSinglePlaneGpuMemoryBufferHandle(
+      uint32_t index);
+
   // Indicates if this backing produced a VASurface that may have pending work.
   bool has_pending_va_writes_ = false;
   std::unique_ptr<VaapiDependencies> vaapi_deps_;
@@ -120,8 +126,7 @@ class OzoneImageBacking final : public ClearTrackingSharedImageBacking {
   int write_streams_count_;
 
   scoped_refptr<gfx::NativePixmap> pixmap_;
-  std::vector<scoped_refptr<GLOzoneImageRepresentationShared::TextureHolder>>
-      cached_texture_holders_;
+  scoped_refptr<OzoneImageGLTexturesHolder> cached_texture_holder_;
 
   // Write fence that is external and does not do Begin/EndAccess (eg. exo)
   gfx::GpuFenceHandle external_write_fence_;

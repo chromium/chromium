@@ -10,8 +10,7 @@ namespace {
 
 class OnDeviceModel : public mojom::OnDeviceModel {
  public:
-  explicit OnDeviceModel(mojom::LoadModelParamsPtr params)
-      : params_(std::move(params)) {}
+  OnDeviceModel() = default;
   ~OnDeviceModel() override = default;
 
   OnDeviceModel(const OnDeviceModel&) = delete;
@@ -21,21 +20,22 @@ class OnDeviceModel : public mojom::OnDeviceModel {
       const std::string& input,
       mojo::PendingRemote<mojom::StreamingResponder> response) override {
     mojo::Remote<mojom::StreamingResponder> remote(std::move(response));
-    remote->OnResponse("Model: " + params_->path.MaybeAsASCII() + "\n");
     remote->OnResponse("Input: " + input + "\n");
     remote->OnComplete();
   }
-
- private:
-  const mojom::LoadModelParamsPtr params_;
 };
 
 }  // namespace
 
 // static
 std::unique_ptr<mojom::OnDeviceModel> OnDeviceModelService::CreateModel(
-    mojom::LoadModelParamsPtr params) {
-  return std::make_unique<OnDeviceModel>(std::move(params));
+    ModelAssets assets) {
+  return std::make_unique<OnDeviceModel>();
+}
+
+// static
+mojom::PerformanceClass OnDeviceModelService::GetEstimatedPerformanceClass() {
+  return mojom::PerformanceClass::kError;
 }
 
 }  // namespace on_device_model

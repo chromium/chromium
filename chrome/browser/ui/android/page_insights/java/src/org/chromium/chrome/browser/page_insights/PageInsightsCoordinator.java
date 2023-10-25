@@ -7,19 +7,25 @@ package org.chromium.chrome.browser.page_insights;
 import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.page_insights.proto.Config.PageInsightsConfig;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.ExpandedSheetHelper;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
+import org.chromium.content_public.browser.NavigationHandle;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.Function;
 
 /**
  * Coordinator for PageInsights bottom sheet module. Provides API, and initializes
@@ -56,6 +62,7 @@ public class PageInsightsCoordinator {
      * @param expandedSheetHelper Helps interaction with other UI in expanded mode.
      * @param controlsStateProvider Provides the browser controls' state.
      * @param browserControlsSizer Bottom browser controls resizer.
+     * @param backPressManager Back press manager.
      * @param isPageInsightsHubEnabled Supplier of the feature flag.
      * @param firstLoadTimeMs Timestamp for the first page load completion.
      */
@@ -70,8 +77,9 @@ public class PageInsightsCoordinator {
             ExpandedSheetHelper expandedSheetHelper,
             BrowserControlsStateProvider controlsStateProvider,
             BrowserControlsSizer browserControlsSizer,
-            BooleanSupplier isPageInsightsHubEnabled,
-            long firstLoadTimeMs) {
+            @Nullable BackPressManager backPressManager,
+            BooleanSupplier isPageInsightsEnabledSupplier,
+            Function<NavigationHandle, PageInsightsConfig> pageInsightsConfigProvider) {
         mContext = context;
         mTabProvider = tabProvider;
         mBottomSheetController = bottomSheetController;
@@ -91,8 +99,9 @@ public class PageInsightsCoordinator {
                         mExpandedSheetHelper,
                         mControlsStateProvider,
                         mBrowserControlsSizer,
-                        isPageInsightsHubEnabled,
-                        firstLoadTimeMs);
+                        backPressManager,
+                        isPageInsightsEnabledSupplier,
+                        pageInsightsConfigProvider);
     }
 
     /**
@@ -117,6 +126,13 @@ public class PageInsightsCoordinator {
      */
     public void onBottomUiStateChanged(boolean opened) {
         mMediator.onBottomUiStateChanged(opened);
+    }
+
+    /** Returns the controller for the Page Insights bottom sheet. */
+    // TODO(b/307046796): Remove this once we have found better way to integrate with back handling
+    // logic.
+    public ManagedBottomSheetController getBottomSheetController() {
+        return mBottomSheetController;
     }
 
     /** Destroy PageInsights component. */

@@ -248,7 +248,7 @@ TEST_F(NGCaretPositionTest,
   const InlineCursor& fragment_d = FragmentOf(text_d);
 
   const Position wrap_position(text_c, 1);
-  const NGOffsetMapping& mapping = *NGOffsetMapping::GetFor(wrap_position);
+  const OffsetMapping& mapping = *OffsetMapping::GetFor(wrap_position);
   const unsigned wrap_offset = *mapping.GetTextContentOffset(wrap_position);
 
   TEST_CARET(ComputeNGCaretPosition(wrap_offset, TextAffinity::kUpstream),
@@ -273,7 +273,7 @@ TEST_F(NGCaretPositionTest,
   const InlineCursor& fragment_d = FragmentOf(text_d);
 
   const Position wrap_position(text_c, 1);
-  const NGOffsetMapping& mapping = *NGOffsetMapping::GetFor(wrap_position);
+  const OffsetMapping& mapping = *OffsetMapping::GetFor(wrap_position);
   const unsigned wrap_offset = *mapping.GetTextContentOffset(wrap_position);
 
   TEST_CARET(ComputeNGCaretPosition(wrap_offset, TextAffinity::kUpstream),
@@ -299,7 +299,7 @@ TEST_F(NGCaretPositionTest, CaretPositionAtSoftLineWrapBetweenDeepTextNodes) {
   const InlineCursor& fragment_d = FragmentOf(text_d);
 
   const Position wrap_position(text_c, 1);
-  const NGOffsetMapping& mapping = *NGOffsetMapping::GetFor(wrap_position);
+  const OffsetMapping& mapping = *OffsetMapping::GetFor(wrap_position);
   const unsigned wrap_offset = *mapping.GetTextContentOffset(wrap_position);
 
   TEST_CARET(ComputeNGCaretPosition(wrap_offset, TextAffinity::kUpstream),
@@ -513,7 +513,7 @@ TEST_F(NGCaretPositionTest, InlineBlockBeforeContent) {
 
   // Test caret position of "|bar", which shouldn't be affected by ::before
   const Position position(text, 0);
-  const NGOffsetMapping& mapping = *NGOffsetMapping::GetFor(position);
+  const OffsetMapping& mapping = *OffsetMapping::GetFor(position);
   const unsigned text_offset = *mapping.GetTextContentOffset(position);
 
   TEST_CARET(ComputeNGCaretPosition(text_offset, TextAffinity::kDownstream),

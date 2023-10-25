@@ -33,7 +33,7 @@ bool StructTraits<media::mojom::VideoFrameMetadataDataView,
          media::VideoFrameMetadata* output) {
   // int.
   DESERIALIZE_INTO_OPT(capture_counter);
-  output->crop_version = input.crop_version();
+  output->sub_capture_target_version = input.sub_capture_target_version();
 
   // bool.
   output->allow_overlay = input.allow_overlay();

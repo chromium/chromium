@@ -394,18 +394,6 @@ class POLICY_EXPORT CloudPolicyClient {
   // Cancels the pending app push-install status report upload, if exists.
   virtual void CancelAppInstallReportUpload();
 
-  // Uploads a report on the status of extension installs. The client must be in
-  // a registered state. The |callback| will be called when the operation
-  // completes.
-  // Only one outstanding extension install report upload is allowed.
-  // In case the new installs report upload is started, the previous one
-  // will be canceled.
-  virtual void UploadExtensionInstallReport(base::Value::Dict report,
-                                            ResultCallback callback);
-
-  // Cancels the pending extension install status report upload, if exists.
-  virtual void CancelExtensionInstallReportUpload();
-
   // Attempts to fetch remote commands, with `last_command_id` being the ID of
   // the last command that finished execution, `command_results` being
   // results for previous commands which have not been reported yet,

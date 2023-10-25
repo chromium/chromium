@@ -1353,15 +1353,12 @@ TEST_F(UkmPageLoadMetricsObserverTest,
               testing::ElementsAre(base::Bucket(50, 1)));
 }
 
-TEST_F(UkmPageLoadMetricsObserverTest,
-       FirstInputDelayAndTimestampAndProcessingTime) {
+TEST_F(UkmPageLoadMetricsObserverTest, FirstInputDelayAndTimestamp) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
   timing.interactive_timing->first_input_delay = base::Milliseconds(50);
   timing.interactive_timing->first_input_timestamp = base::Milliseconds(712);
-  timing.interactive_timing->first_input_processing_time =
-      base::Milliseconds(25);
   PopulateRequiredTimingFields(&timing);
 
   NavigateAndCommit(GURL(kTestUrl1));
@@ -1383,69 +1380,6 @@ TEST_F(UkmPageLoadMetricsObserverTest,
     tester()->test_ukm_recorder().ExpectEntryMetric(
         kv.second.get(), PageLoad::kInteractiveTiming_FirstInputTimestamp4Name,
         712);
-    tester()->test_ukm_recorder().ExpectEntryMetric(
-        kv.second.get(),
-        PageLoad::kInteractiveTiming_FirstInputProcessingTimesName, 25);
-  }
-}
-
-TEST_F(UkmPageLoadMetricsObserverTest, LongestInputDelayAndTimestamp) {
-  page_load_metrics::mojom::PageLoadTiming timing;
-  page_load_metrics::InitPageLoadTimingForTest(&timing);
-  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
-  timing.interactive_timing->longest_input_delay = base::Milliseconds(50);
-  timing.interactive_timing->longest_input_timestamp = base::Milliseconds(712);
-  PopulateRequiredTimingFields(&timing);
-
-  NavigateAndCommit(GURL(kTestUrl1));
-  tester()->SimulateTimingUpdate(timing);
-
-  // Simulate closing the tab.
-  DeleteContents();
-
-  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
-      tester()->test_ukm_recorder().GetMergedEntriesByName(
-          PageLoad::kEntryName);
-  EXPECT_EQ(1ul, merged_entries.size());
-
-  for (const auto& kv : merged_entries) {
-    tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(kv.second.get(),
-                                                          GURL(kTestUrl1));
-    tester()->test_ukm_recorder().ExpectEntryMetric(
-        kv.second.get(), PageLoad::kInteractiveTiming_LongestInputDelay4Name,
-        50);
-    tester()->test_ukm_recorder().ExpectEntryMetric(
-        kv.second.get(),
-        PageLoad::kInteractiveTiming_LongestInputTimestamp4Name, 712);
-  }
-}
-
-TEST_F(UkmPageLoadMetricsObserverTest, InputTiming) {
-  NavigateAndCommit(GURL(kTestUrl1));
-
-  page_load_metrics::mojom::InputTiming input_timing;
-  input_timing.num_input_events = 2;
-  input_timing.total_input_delay = base::Milliseconds(100);
-  input_timing.total_adjusted_input_delay = base::Milliseconds(10);
-  tester()->SimulateInputTimingUpdate(input_timing);
-
-  DeleteContents();
-
-  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
-      tester()->test_ukm_recorder().GetMergedEntriesByName(
-          PageLoad::kEntryName);
-  EXPECT_EQ(1ul, merged_entries.size());
-
-  for (const auto& kv : merged_entries) {
-    tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(kv.second.get(),
-                                                          GURL(kTestUrl1));
-    tester()->test_ukm_recorder().ExpectEntryMetric(
-        kv.second.get(), PageLoad::kInteractiveTiming_NumInputEventsName, 2);
-    tester()->test_ukm_recorder().ExpectEntryMetric(
-        kv.second.get(), PageLoad::kInteractiveTiming_TotalInputDelayName, 100);
-    tester()->test_ukm_recorder().ExpectEntryMetric(
-        kv.second.get(),
-        PageLoad::kInteractiveTiming_TotalAdjustedInputDelayName, 10);
   }
 }
 

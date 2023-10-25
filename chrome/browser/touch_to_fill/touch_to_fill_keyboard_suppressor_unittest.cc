@@ -71,7 +71,8 @@ class TouchToFillKeyboardSuppressorTest
   }
 
   void OnBeforeAskForValuesToFill(AutofillManager& manager) {
-    suppressor().OnBeforeAskForValuesToFill(manager, some_form_, some_field_);
+    suppressor().OnBeforeAskForValuesToFill(manager, some_form_, some_field_,
+                                            some_form_data_);
   }
 
   void OnAfterAskForValuesToFill(AutofillManager& manager) {
@@ -90,7 +91,7 @@ class TouchToFillKeyboardSuppressorTest
   MOCK_METHOD(bool, IsShowing, (AutofillManager & manager));
   MOCK_METHOD(bool,
               IntendsToShow,
-              (AutofillManager&, FormGlobalId, FieldGlobalId));
+              (AutofillManager&, FormGlobalId, FieldGlobalId, const FormData&));
 
  private:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
@@ -100,7 +101,10 @@ class TouchToFillKeyboardSuppressorTest
       autofill_manager_injector_;
   std::unique_ptr<TouchToFillKeyboardSuppressor> suppressor_;
 
-  FormGlobalId some_form_ = test::MakeFormGlobalId();
+  FormData some_form_data_ =
+      test::CreateTestCreditCardFormData(/*is_https=*/true,
+                                         /*use_month_type=*/false);
+  FormGlobalId some_form_ = some_form_data_.global_id();
   FieldGlobalId some_field_ = test::MakeFieldGlobalId();
 
   raw_ptr<content::RenderFrameHost> child_rfh_ = nullptr;

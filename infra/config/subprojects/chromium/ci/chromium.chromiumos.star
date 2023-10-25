@@ -120,6 +120,7 @@ ci.builder(
         short_name = "asn",
     ),
     main_console_view = "main",
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 

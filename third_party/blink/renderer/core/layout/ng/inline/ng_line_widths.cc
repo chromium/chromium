@@ -10,9 +10,9 @@
 
 namespace blink {
 
-bool NGLineWidths::Set(const NGInlineNode& node,
-                       base::span<const LayoutOpportunity> opportunities,
-                       const NGInlineBreakToken* break_token) {
+bool LineWidths::Set(const InlineNode& node,
+                     base::span<const LayoutOpportunity> opportunities,
+                     const NGInlineBreakToken* break_token) {
   // Set the default width if no exclusions.
   DCHECK_GE(opportunities.size(), 1u);
   const LayoutOpportunity& first_opportunity = opportunities.front();
@@ -39,19 +39,19 @@ bool NGLineWidths::Set(const NGInlineNode& node,
   // Check if all lines have the same line heights.
   const SimpleFontData* primary_font = block_font.PrimaryFont();
   DCHECK(primary_font);
-  const NGInlineItemsData& items_data = node.ItemsData(/*is_first_line*/ false);
+  const InlineItemsData& items_data = node.ItemsData(/*is_first_line*/ false);
   // `::first-line` is not supported.
   DCHECK_EQ(&items_data, &node.ItemsData(true));
-  base::span<const NGInlineItem> items(items_data.items);
+  base::span<const InlineItem> items(items_data.items);
   bool is_empty_so_far = true;
   if (break_token) {
     DCHECK(break_token->Start());
     items = items.subspan(break_token->StartItemIndex());
     is_empty_so_far = false;
   }
-  for (const NGInlineItem& item : items) {
+  for (const InlineItem& item : items) {
     switch (item.Type()) {
-      case NGInlineItem::kText: {
+      case InlineItem::kText: {
         if (UNLIKELY(!item.Length())) {
           break;
         }
@@ -79,7 +79,7 @@ bool NGLineWidths::Set(const NGInlineNode& node,
         }
         break;
       }
-      case NGInlineItem::kOpenTag: {
+      case InlineItem::kOpenTag: {
         DCHECK(item.Style());
         const ComputedStyle& style = *item.Style();
         if (UNLIKELY(style.VerticalAlign() != EVerticalAlign::kBaseline)) {
@@ -87,22 +87,22 @@ bool NGLineWidths::Set(const NGInlineNode& node,
         }
         break;
       }
-      case NGInlineItem::kCloseTag:
-      case NGInlineItem::kControl:
-      case NGInlineItem::kOutOfFlowPositioned:
-      case NGInlineItem::kBidiControl:
+      case InlineItem::kCloseTag:
+      case InlineItem::kControl:
+      case InlineItem::kOutOfFlowPositioned:
+      case InlineItem::kBidiControl:
         // These items don't affect line heights.
         break;
-      case NGInlineItem::kFloating:
+      case InlineItem::kFloating:
         // Only leading floats are computable without layout.
         if (is_empty_so_far) {
           break;
         }
         return false;
-      case NGInlineItem::kAtomicInline:
-      case NGInlineItem::kBlockInInline:
-      case NGInlineItem::kInitialLetterBox:
-      case NGInlineItem::kListMarker:
+      case InlineItem::kAtomicInline:
+      case InlineItem::kBlockInInline:
+      case InlineItem::kInitialLetterBox:
+      case InlineItem::kListMarker:
         // These items need layout to determine the height.
         return false;
     }

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "url/gurl.h"
@@ -29,6 +30,14 @@ class PreviewTab final : public content::WebContentsDelegate {
 
   PreviewTab(const PreviewTab&) = delete;
   PreviewTab& operator=(const PreviewTab&) = delete;
+
+  // This performs activation steps for tab promotion. This will relax the
+  // capability control, and send an IPC to relevant renderers  to perform
+  // the prerendering activation algorithm that updates document.prerendering
+  // and runs queued suspended tasks such as resolving promises, releasing
+  // AudioContext, etc.
+  // This is not fully implemented, and the progress is tracked at b:305000959.
+  void Activate(base::OnceClosure completion_callback);
 
   base::WeakPtr<content::WebContents> GetWebContents();
 
@@ -53,6 +62,10 @@ class PreviewTab final : public content::WebContentsDelegate {
   // PrerenderManager.
   std::unique_ptr<content::PrerenderHandle> prerender_handle_;
   GURL url_;
+  // TODO(b:305000959): We may revisit if this flag name or manaving the state
+  // as a bool is the best option. See also review comment at
+  // https://crrev.com/c/4951222/comment/2922530a_7c28b268/
+  bool is_in_preview_mode_ = true;
 };
 
 #endif  // CHROME_BROWSER_PRELOADING_PREVIEW_PREVIEW_TAB_H_

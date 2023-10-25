@@ -72,7 +72,7 @@ class CONTENT_EXPORT GinJavaMethodInvocationHelper
   const base::Value::List& GetPrimitiveResult();
   const base::android::JavaRef<jobject>& GetObjectResult();
   const base::android::JavaRef<jclass>& GetSafeAnnotationClass();
-  GinJavaBridgeError GetInvocationError();
+  mojom::GinJavaBridgeError GetInvocationError();
 
  private:
   friend class base::RefCountedThreadSafe<GinJavaMethodInvocationHelper>;
@@ -91,7 +91,7 @@ class CONTENT_EXPORT GinJavaMethodInvocationHelper
                     const JavaType& return_type,
                     jmethodID id,
                     jvalue* parameters);
-  void SetInvocationError(GinJavaBridgeError error);
+  void SetInvocationError(mojom::GinJavaBridgeError error);
   void SetPrimitiveResult(base::Value::List result_wrapper);
   void SetObjectResult(
       const base::android::JavaRef<jobject>& object,
@@ -106,7 +106,7 @@ class CONTENT_EXPORT GinJavaMethodInvocationHelper
   ObjectRefs object_refs_;
   bool holds_primitive_result_;
   std::unique_ptr<base::Value::List> primitive_result_;
-  GinJavaBridgeError invocation_error_;
+  mojom::GinJavaBridgeError invocation_error_;
   base::android::ScopedJavaGlobalRef<jobject> object_result_;
   base::android::ScopedJavaGlobalRef<jclass> safe_annotation_clazz_;
 };

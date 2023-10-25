@@ -28,6 +28,9 @@ class ComposeClient {
   // Returns the `ComposeManager` associated with this client.
   virtual ComposeManager& GetManager() = 0;
 
+  // Returns whether the `trigger_field_id` has a session (i.e., state).
+  virtual bool HasSession(const autofill::FieldGlobalId& trigger_field_id) = 0;
+
   virtual void ShowComposeDialog(
       autofill::AutofillComposeDelegate::UiEntryPoint ui_entry_point,
       const autofill::FormFieldData& trigger_field,

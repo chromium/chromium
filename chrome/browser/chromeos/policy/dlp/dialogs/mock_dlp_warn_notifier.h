@@ -31,7 +31,7 @@ class MockDlpWarnNotifier : public DlpWarnNotifier {
 
   MOCK_METHOD(base::WeakPtr<views::Widget>,
               ShowDlpWarningDialog,
-              (OnDlpRestrictionCheckedCallback callback,
+              (WarningCallback callback,
                DlpWarnDialog::DlpWarnDialogOptions options),
               (override));
 

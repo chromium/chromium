@@ -280,34 +280,6 @@ PerformanceTimingForReporting::FirstInputTimestampAsMonotonicTime() const {
 }
 
 absl::optional<base::TimeDelta>
-PerformanceTimingForReporting::LongestInputDelay() const {
-  const InteractiveDetector* interactive_detector = GetInteractiveDetector();
-  if (!interactive_detector)
-    return absl::nullopt;
-
-  return interactive_detector->GetLongestInputDelay();
-}
-
-absl::optional<base::TimeDelta>
-PerformanceTimingForReporting::LongestInputTimestamp() const {
-  const InteractiveDetector* interactive_detector = GetInteractiveDetector();
-  if (!interactive_detector)
-    return absl::nullopt;
-
-  return MonotonicTimeToPseudoWallTime(
-      interactive_detector->GetLongestInputTimestamp());
-}
-
-absl::optional<base::TimeDelta>
-PerformanceTimingForReporting::FirstInputProcessingTime() const {
-  const InteractiveDetector* interactive_detector = GetInteractiveDetector();
-  if (!interactive_detector)
-    return absl::nullopt;
-
-  return interactive_detector->GetFirstInputProcessingTime();
-}
-
-absl::optional<base::TimeDelta>
 PerformanceTimingForReporting::FirstScrollDelay() const {
   const InteractiveDetector* interactive_detector = GetInteractiveDetector();
   if (!interactive_detector)

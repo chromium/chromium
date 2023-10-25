@@ -60,7 +60,9 @@ import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.TouchEventProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,6 +104,8 @@ public class PartialCustomTabTestRule implements TestRule {
     @Mock Resources mResources;
     @Mock Configuration mConfiguration;
     WindowManager.LayoutParams mAttributes;
+    @Mock TouchEventProvider mTouchEventProvider;
+    @Mock Tab mTab;
     @Mock View mDecorView;
     @Mock View mRootView;
     @Mock Display mDisplay;

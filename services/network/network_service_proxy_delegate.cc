@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "services/network/network_service_proxy_delegate.h"
-#include "base/base64.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
@@ -241,15 +240,15 @@ void NetworkServiceProxyDelegate::OnBeforeTunnelRequest(
   }
   if (IsForIpProtection() && IsProxyForIpProtection(proxy_server)) {
     if (ipp_config_cache_) {
-      auto token = ipp_config_cache_->GetAuthToken(
-          network::mojom::IpProtectionProxyLayer::kProxyA);
+      absl::optional<network::mojom::BlindSignedAuthTokenPtr> token =
+          ipp_config_cache_->GetAuthToken(
+              network::mojom::IpProtectionProxyLayer::kProxyA);
       if (token) {
         vlog("adding auth token");
-        std::string encoded_token;
-        base::Base64Encode((*token)->token, &encoded_token);
-        auto value = base::StrCat({"Bearer ", encoded_token});
+        // The token value we have here is the full Authorization header value,
+        // so we can add it verbatim.
         extra_headers->SetHeader(net::HttpRequestHeaders::kAuthorization,
-                                 value);
+                                 std::move((*token)->token));
       } else {
         vlog("no token available");
       }

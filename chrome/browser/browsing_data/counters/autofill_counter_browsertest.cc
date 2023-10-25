@@ -186,6 +186,7 @@ class AutofillCounterTest : public InProcessBrowserTest {
   }
 
  private:
+  autofill::test::AutofillBrowserTestEnvironment autofill_test_environment_;
   std::unique_ptr<base::RunLoop> run_loop_;
 
   std::vector<std::string> credit_card_ids_;

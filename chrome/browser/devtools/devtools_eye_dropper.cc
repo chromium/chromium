@@ -351,7 +351,8 @@ void DevToolsEyeDropper::OnFrameCaptured(
   UpdateCursor();
 }
 
-void DevToolsEyeDropper::OnNewCropVersion(uint32_t crop_version) {}
+void DevToolsEyeDropper::OnNewSubCaptureTargetVersion(
+    uint32_t sub_capture_target_version) {}
 
 void DevToolsEyeDropper::OnFrameWithEmptyRegionCapture() {}
 

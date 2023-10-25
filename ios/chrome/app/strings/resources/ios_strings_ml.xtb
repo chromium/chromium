@@ -230,6 +230,7 @@
 <translation id="2218443599109088993">സൂം ഔട്ട് ചെയ്യുക</translation>
 <translation id="2220529011494928058">ഒരു പ്രശ്‌നം റിപ്പോർട്ട് ചെയ്യുക</translation>
 <translation id="2230173723195178503">വെബ്‌പേജ് ലോഡ് ചെയ്‌തു</translation>
+<translation id="2234827758954819389">സ്വകാര്യതാ ഗൈഡ്</translation>
 <translation id="2239626343334228536">ബ്രൗസിംഗ് ഡാറ്റ മായ്‌ക്കുന്നു...</translation>
 <translation id="2251686759395008410">മെനു → ചരിത്രം</translation>
 <translation id="2252674110805316998">വെബ് തിരയൽ</translation>
@@ -700,6 +701,7 @@
 <translation id="47677902929517676">നിങ്ങളുടെ അക്കൗണ്ടിൽ പാസ്‌വേഡുകൾ സംരക്ഷിക്കാൻ, ആദ്യം ഉപകരണത്തിൽ ഒരു പാസ്‌കോഡ് സജ്ജീകരിക്കേണ്ടതുണ്ട്.</translation>
 <translation id="4775879719735953715">സ്ഥിരസ്ഥിതി ബ്രൌസര്‍</translation>
 <translation id="4778644898150334464">മറ്റൊരു പാസ്‌വേഡ് ഉപയോഗിക്കുക</translation>
+<translation id="4779732376610430319">ക്രമീകരണത്തിലേക്ക് പോകുക...</translation>
 <translation id="478808905805139173">അദൃശ്യ മോഡിൽ തുറക്കണോ?</translation>
 <translation id="4803185665210547709">നിങ്ങളുടെ സ്ഥാപനം മാനേജ് ചെയ്യുന്നത്.
 <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
@@ -724,7 +726,6 @@
 <translation id="4854345657858711387">പാസ്‌കോഡ് സജ്ജമാക്കുക</translation>
 <translation id="4856498338299082007">നിങ്ങളുടെ Google അക്കൗണ്ടിൽ</translation>
 <translation id="4856841893565072365">സ്‌മാർട്ട് അടുക്കലിനുള്ള മെനു ബാർ</translation>
-<translation id="4858786880085262208">സാധ്യമാകുമ്പോൾ HTTPS-ലേക്ക് അപ്ഗ്രേഡ് ചെയ്യുക. സുരക്ഷിത സൈറ്റുകൾ, സുരക്ഷിതമല്ലാത്ത ഉള്ളടക്കം ഉൾച്ചേർത്തേക്കാം.</translation>
 <translation id="4860895144060829044">വിളിക്കുക</translation>
 <translation id="4872323082491632254">പാസ്‌വേഡുകൾ പരിശോധിക്കുക</translation>
 <translation id="4881695831933465202">തുറക്കുക</translation>

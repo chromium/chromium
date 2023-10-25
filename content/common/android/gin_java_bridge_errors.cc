@@ -8,24 +8,25 @@
 
 namespace content {
 
-const char* GinJavaBridgeErrorToString(GinJavaBridgeError error) {
+const char* GinJavaBridgeErrorToString(mojom::GinJavaBridgeError error) {
   switch (error) {
-    case kGinJavaBridgeNoError:
+    case mojom::GinJavaBridgeError::kGinJavaBridgeNoError:
       return "No error";
-    case kGinJavaBridgeUnknownObjectId:
+    case mojom::GinJavaBridgeError::kGinJavaBridgeUnknownObjectId:
       return "Unknown Java object ID";
-    case kGinJavaBridgeObjectIsGone:
+    case mojom::GinJavaBridgeError::kGinJavaBridgeObjectIsGone:
       return "Java object is gone";
-    case kGinJavaBridgeMethodNotFound:
+    case mojom::GinJavaBridgeError::kGinJavaBridgeMethodNotFound:
       return "Method not found";
-    case kGinJavaBridgeAccessToObjectGetClassIsBlocked:
+    case mojom::GinJavaBridgeError::
+        kGinJavaBridgeAccessToObjectGetClassIsBlocked:
       return "Access to java.lang.Object.getClass is blocked";
-    case kGinJavaBridgeJavaExceptionRaised:
+    case mojom::GinJavaBridgeError::kGinJavaBridgeJavaExceptionRaised:
       return "Java exception was raised during method invocation";
-    case kGinJavaBridgeNonAssignableTypes:
+    case mojom::GinJavaBridgeError::kGinJavaBridgeNonAssignableTypes:
       return "The type of the object passed to the method is incompatible "
           "with the type of method's argument";
-    case kGinJavaBridgeRenderFrameDeleted:
+    case mojom::GinJavaBridgeError::kGinJavaBridgeRenderFrameDeleted:
       return "RenderFrame has been deleted";
   }
   NOTREACHED();

@@ -28,6 +28,8 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.browser_ui.widget.TouchEventProvider;
 
 /**
  * Class responsible for how the Partial Chrome Custom Tabs are displayed on the screen.
@@ -64,14 +66,19 @@ public class PartialCustomTabDisplayManager
     private int mToolbarCornerRadius;
     private PartialCustomTabHandleStrategyFactory mHandleStrategyFactory;
     private SizeStrategyCreator mSizeStrategyCreator = this::createSizeStrategy;
+    private Supplier<TouchEventProvider> mTouchEventProvider;
+    private Supplier<Tab> mTab;
 
     public PartialCustomTabDisplayManager(Activity activity,
             BrowserServicesIntentDataProvider intentData,
+            Supplier<TouchEventProvider> touchEventProvider, Supplier<Tab> tab,
             OnResizedCallback onResizedCallback, OnActivityLayoutCallback onActivityLayoutCallback,
             ActivityLifecycleDispatcher lifecycleDispatcher, FullscreenManager fullscreenManager,
             boolean isTablet) {
         mActivity = activity;
         mIntentData = intentData;
+        mTouchEventProvider = touchEventProvider;
+        mTab = tab;
         mOnResizedCallback = onResizedCallback;
         mOnActivityLayoutCallback = onActivityLayoutCallback;
         mFullscreenManager = fullscreenManager;
@@ -278,7 +285,7 @@ public class PartialCustomTabDisplayManager
         switch (type) {
             case PartialCustomTabType.BOTTOM_SHEET: {
                 return new PartialCustomTabBottomSheetStrategy(mActivity, mIntentData,
-                        mOnResizedCallback, mOnActivityLayoutCallback,
+                        mTouchEventProvider, mTab, mOnResizedCallback, mOnActivityLayoutCallback,
                         mActivityLifecycleDispatcher, mFullscreenManager, mIsTablet,
                         maximized, mHandleStrategyFactory);
             }

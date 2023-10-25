@@ -135,6 +135,11 @@ public class PartialCustomTabFullSizeStrategy extends PartialCustomTabBaseStrate
     }
 
     @Override
+    protected int getCustomTabsElevation() {
+        return 0;
+    }
+
+    @Override
     protected boolean shouldHaveNoShadowOffset() {
         return true;
     }

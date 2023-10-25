@@ -1087,7 +1087,8 @@
     {
       // https://drafts.csswg.org/css-contain-2/#skips-its-contents
       name: "SkipsContents",
-      field_template: "monotonic_flag",
+      field_template: "primitive",
+      type_name: "bool",
       default_value: "false",
     },
     {

@@ -11,9 +11,47 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
+namespace {
+
+mojom::blink::FileBackedBlobFactory* GetFileBackedBlobFactory(
+    HeapMojoRemote<mojom::blink::FileBackedBlobFactory>& remote,
+    ExecutionContext* execution_context) {
+  if (!remote.is_bound()) {
+    mojo::PendingReceiver<mojom::blink::FileBackedBlobFactory> receiver =
+        remote.BindNewPipeAndPassReceiver(execution_context->GetTaskRunner(
+            blink::TaskType::kMiscPlatformAPI));
+    execution_context->GetBrowserInterfaceBroker().GetInterface(
+        std::move(receiver));
+  }
+  return remote.get();
+}
+
+mojom::blink::FileBackedBlobFactory* GetFileBackedBlobFactory(
+    HeapMojoAssociatedRemote<mojom::blink::FileBackedBlobFactory>& remote,
+    ExecutionContext* execution_context,
+    LocalFrame* frame) {
+  if (!remote.is_bound()) {
+    mojo::PendingAssociatedReceiver<mojom::blink::FileBackedBlobFactory>
+        receiver = remote.BindNewEndpointAndPassReceiver(
+            execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI));
+    frame->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
+        std::move(receiver));
+  }
+  return remote.get();
+}
+
+}  // namespace
+
+FileBackedBlobFactoryDispatcher::FileBackedBlobFactoryDispatcher(
+    ExecutionContext& context)
+    : Supplement<ExecutionContext>(context),
+      ExecutionContextClient(&context),
+      frame_remote_(&context),
+      worker_remote_(&context) {}
 
 // static
 mojom::blink::FileBackedBlobFactory*
@@ -23,6 +61,34 @@ FileBackedBlobFactoryDispatcher::GetFileBackedBlobFactory(
     return nullptr;
   }
   return From(*context)->GetFileBackedBlobFactory();
+}
+
+void FileBackedBlobFactoryDispatcher::SetFileBackedBlobFactoryForTesting(
+    mojo::PendingAssociatedRemote<mojom::blink::FileBackedBlobFactory>
+        factory) {
+  auto* execution_context = GetExecutionContext();
+  if (!execution_context) {
+    return;
+  }
+
+  frame_remote_.Bind(std::move(factory), execution_context->GetTaskRunner(
+                                             TaskType::kMiscPlatformAPI));
+}
+
+void FileBackedBlobFactoryDispatcher::FlushForTesting() {
+  if (frame_remote_.is_bound()) {
+    frame_remote_.FlushForTesting();
+  }
+  if (worker_remote_.is_bound()) {
+    worker_remote_.FlushForTesting();
+  }
+}
+
+void FileBackedBlobFactoryDispatcher::Trace(Visitor* visitor) const {
+  Supplement<ExecutionContext>::Trace(visitor);
+  ExecutionContextClient::Trace(visitor);
+  visitor->Trace(frame_remote_);
+  visitor->Trace(worker_remote_);
 }
 
 // static
@@ -38,12 +104,6 @@ FileBackedBlobFactoryDispatcher* FileBackedBlobFactoryDispatcher::From(
   return dispatcher;
 }
 
-FileBackedBlobFactoryDispatcher::FileBackedBlobFactoryDispatcher(
-    ExecutionContext& context)
-    : Supplement<ExecutionContext>(context),
-      ExecutionContextClient(&context),
-      remote_(&context) {}
-
 mojom::blink::FileBackedBlobFactory*
 FileBackedBlobFactoryDispatcher::GetFileBackedBlobFactory() {
   if (!base::FeatureList::IsEnabled(
@@ -56,48 +116,15 @@ FileBackedBlobFactoryDispatcher::GetFileBackedBlobFactory() {
     return nullptr;
   }
 
-  if (!remote_.is_bound()) {
-    if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
-      if (auto* frame = window->GetFrame()) {
-        mojo::PendingAssociatedReceiver<mojom::blink::FileBackedBlobFactory>
-            receiver = remote_.BindNewEndpointAndPassReceiver(
-                execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI));
-        frame->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
-            std::move(receiver));
-      }
+  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
+    if (auto* frame = window->GetFrame()) {
+      return blink::GetFileBackedBlobFactory(frame_remote_, execution_context,
+                                             frame);
+    } else {
+      return nullptr;
     }
   }
-
-  if (remote_.is_bound()) {
-    return remote_.get();
-  }
-
-  // TODO(b/288508845): Currently we are only handling a frame context, and by
-  // returning a nullptr here we fallback to a BlobRegistry registration. We
-  // probably want to stop relying on BlobRegistry at some point.
-  return nullptr;
-}
-
-void FileBackedBlobFactoryDispatcher::SetFileBackedBlobFactoryForTesting(
-    mojo::PendingAssociatedRemote<mojom::blink::FileBackedBlobFactory>
-        factory) {
-  auto* execution_context = GetExecutionContext();
-  if (!execution_context) {
-    return;
-  }
-
-  remote_.Bind(std::move(factory),
-               GetSupplementable()->GetTaskRunner(TaskType::kMiscPlatformAPI));
-}
-
-void FileBackedBlobFactoryDispatcher::FlushForTesting() {
-  remote_.FlushForTesting();
-}
-
-void FileBackedBlobFactoryDispatcher::Trace(Visitor* visitor) const {
-  Supplement<ExecutionContext>::Trace(visitor);
-  ExecutionContextClient::Trace(visitor);
-  visitor->Trace(remote_);
+  return blink::GetFileBackedBlobFactory(worker_remote_, execution_context);
 }
 
 // static

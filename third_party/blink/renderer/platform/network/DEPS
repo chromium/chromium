@@ -14,7 +14,6 @@ include_rules = [
     "+net/http",
     "+net/nqe",
 
-    "+services/network/public/cpp/features.h",
     "+third_party/blink/renderer/platform/allow_discouraged_type.h",
     "+third_party/blink/renderer/platform/blob/blob_data.h",
     "+third_party/blink/renderer/platform/crypto.h",

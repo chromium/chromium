@@ -21,8 +21,8 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
@@ -75,7 +75,7 @@ class BrowserShortcutIconTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
     scoped_feature_list_.InitAndEnableFeature(
-        features::kCrosWebAppShortcutUiUpdate);
+        chromeos::features::kCrosWebAppShortcutUiUpdate);
     TestingProfile::Builder builder;
     profile_ = builder.Build();
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());

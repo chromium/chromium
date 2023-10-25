@@ -11,38 +11,38 @@
 
 namespace blink {
 
-// Represents an index of `NGInlineItem`, along with the text offset.
-struct CORE_EXPORT NGInlineItemTextIndex {
+// Represents an index of `InlineItem`, along with the text offset.
+struct CORE_EXPORT InlineItemTextIndex {
   explicit operator bool() const { return text_offset || item_index; }
   bool IsZero() const { return !text_offset && !item_index; }
 
-  bool operator==(const NGInlineItemTextIndex& other) const {
+  bool operator==(const InlineItemTextIndex& other) const {
     return text_offset == other.text_offset && item_index == other.item_index;
   }
-  bool operator!=(const NGInlineItemTextIndex& other) const {
+  bool operator!=(const InlineItemTextIndex& other) const {
     return !operator==(other);
   }
-  bool operator>(const NGInlineItemTextIndex& other) const {
+  bool operator>(const InlineItemTextIndex& other) const {
     return text_offset > other.text_offset || item_index > other.item_index;
   }
-  bool operator<(const NGInlineItemTextIndex& other) const {
+  bool operator<(const InlineItemTextIndex& other) const {
     return text_offset < other.text_offset || item_index < other.item_index;
   }
-  bool operator>=(const NGInlineItemTextIndex& other) const {
+  bool operator>=(const InlineItemTextIndex& other) const {
     return !operator<(other);
   }
-  bool operator<=(const NGInlineItemTextIndex& other) const {
+  bool operator<=(const InlineItemTextIndex& other) const {
     return !operator>(other);
   }
 
-  // The index of `NGInlineItemsData::items`.
+  // The index of `InlineItemsData::items`.
   wtf_size_t item_index = 0;
-  // The offset of `NGInlineItemsData::text_content`.
+  // The offset of `InlineItemsData::text_content`.
   wtf_size_t text_offset = 0;
 };
 
 inline std::ostream& operator<<(std::ostream& ostream,
-                                const NGInlineItemTextIndex& index) {
+                                const InlineItemTextIndex& index) {
   return ostream << "{" << index.item_index << "," << index.text_offset << "}";
 }
 

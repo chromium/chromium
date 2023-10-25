@@ -10,6 +10,8 @@
 #include <cmath>
 
 #include "base/check.h"
+#include "base/logging.h"
+#include "base/numerics/math_constants.h"
 #include "ui/events/gesture_detection/motion_event.h"
 #include "ui/events/gesture_detection/scale_gesture_listeners.h"
 
@@ -45,6 +47,8 @@ ScaleGestureDetector::ScaleGestureDetector(const Config& config,
       stylus_scale_enabled_(config.stylus_scale_enabled),
       focus_x_(0),
       focus_y_(0),
+      curr_angles_({}),
+      prev_angles_({}),
       curr_span_(0),
       prev_span_(0),
       initial_span_(0),
@@ -95,6 +99,9 @@ bool ScaleGestureDetector::OnTouchEvent(const MotionEvent& event) {
     } else if (InAnchoredScaleMode() && stream_complete) {
       ResetScaleWithSpan(0);
     }
+
+    curr_angles_.clear();
+    prev_angles_.clear();
 
     if (stream_complete)
       return true;
@@ -154,6 +161,25 @@ bool ScaleGestureDetector::OnTouchEvent(const MotionEvent& event) {
 
     dev_sum_x += std::abs(event.GetX(i) - focus_x);
     dev_sum_y += std::abs(event.GetY(i) - focus_y);
+  }
+
+  // Insert the values of `curr_angles_` into `prev_angles_`. The
+  // values of `curr_angles_` will be updated in the following blocks.
+  std::swap(curr_angles_, prev_angles_);
+
+  if (count != static_cast<int>(curr_angles_.size())) {
+    // If the number of items in `curr_angles_` do not match the count,
+    // we need to reconstruct this vector. These values will be
+    // substituted in the next block.
+    curr_angles_.resize(count, 0.f);
+  }
+
+  // `angles` are the angles between the horizontal axis and the lines
+  // connecting each individual finger locations to the focal point.
+  // They are stored so that their `ActionIndex` matches the index of
+  // the vector.
+  for (int i = 0; i < count; i++) {
+    curr_angles_[i] = CalculateAngle(event, i, focus_x, focus_y);
   }
 
   const float dev_x = dev_sum_x * inverse_unreleased_point_count;
@@ -224,6 +250,7 @@ bool ScaleGestureDetector::OnTouchEvent(const MotionEvent& event) {
       prev_span_y_ = curr_span_y_;
       prev_span_ = curr_span_;
       prev_time_ = curr_time_;
+      prev_angles_ = curr_angles_;
     }
   }
 
@@ -283,6 +310,31 @@ float ScaleGestureDetector::GetScaleFactor() const {
   return prev_span_ > 0 ? curr_span / prev_span_ : 1;
 }
 
+float ScaleGestureDetector::GetAngleChange() const {
+  int count = curr_angles_.size();
+  if (count != static_cast<int>(prev_angles_.size()) || count == 0) {
+    return 0;
+  }
+
+  float angle_change_sum = 0.f;
+  for (int i = 0; i < count; ++i) {
+    float angle_change = curr_angles_[i] - prev_angles_[i];
+
+    // The angle difference should be in (-180, 180].
+    if (angle_change <= -180.f) {
+      angle_change += 360.f;
+    } else if (angle_change > 180.f) {
+      angle_change -= 360.f;
+    }
+
+    angle_change_sum += angle_change;
+  }
+
+  // Calculate the average angle change.
+  const float inverse_valid_point_count = 1.f / count;
+  return angle_change_sum * inverse_valid_point_count;
+}
+
 base::TimeDelta ScaleGestureDetector::GetTimeDelta() const {
   return curr_time_ - prev_time_;
 }
@@ -303,6 +355,23 @@ void ScaleGestureDetector::ResetScaleWithSpan(float span) {
   in_progress_ = false;
   initial_span_ = span;
   anchored_scale_mode_ = ANCHORED_SCALE_MODE_NONE;
+}
+
+float ScaleGestureDetector::CalculateAngle(const MotionEvent& event,
+                                           int action_index,
+                                           float focus_x,
+                                           float focus_y) const {
+  DCHECK_GE(action_index, 0);
+  DCHECK_LT(action_index, static_cast<int>(event.GetPointerCount()));
+  const float delta_x = event.GetX(action_index) - focus_x;
+  const float delta_y = event.GetY(action_index) - focus_y;
+  if (delta_x != 0.f && delta_y != 0.f) {
+    // `std::atan2` returns value in (-pi, pi].
+    // `std::atan2(y, x)`'s value when both x and y are `0` depends
+    // on the implementation, but we explicitly use `0` here.
+    return std::atan2(delta_y, delta_x) * 180.f / base::kPiFloat;
+  }
+  return 0.f;
 }
 
 }  // namespace ui

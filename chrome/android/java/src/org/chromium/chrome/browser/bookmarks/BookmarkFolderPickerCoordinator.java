@@ -45,14 +45,7 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
     private final BookmarkFolderPickerMediator mMediator;
     private final BookmarkUiPrefs mBookmarkUiPrefs;
 
-    private final SimpleRecyclerViewAdapter mAdapter = new SimpleRecyclerViewAdapter(mModelList) {
-        @Override
-        public void onViewRecycled(SimpleRecyclerViewAdapter.ViewHolder holder) {
-            super.onViewRecycled(holder);
-            if (holder == null || holder.model == null) return;
-            holder.model.get(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR).setView(null);
-        }
-    };
+    private final SimpleRecyclerViewAdapter mAdapter = new SimpleRecyclerViewAdapter(mModelList);
 
     public BookmarkFolderPickerCoordinator(Context context, BookmarkModel bookmarkModel,
             BookmarkImageFetcher bookmarkImageFetcher, List<BookmarkId> bookmarkIds,

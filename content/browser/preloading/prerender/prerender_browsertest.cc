@@ -7810,28 +7810,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderWithProactiveBrowsingInstanceSwap,
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
 }
 
-class PrerenderWithBackForwardCacheBrowserTest
-    : public PrerenderBrowserTest,
-      public testing::WithParamInterface<BackForwardCacheType> {
- public:
-  PrerenderWithBackForwardCacheBrowserTest() {
-    switch (GetParam()) {
-      case BackForwardCacheType::kDisabled:
-        feature_list_.InitAndDisableFeature(::features::kBackForwardCache);
-        break;
-      case BackForwardCacheType::kEnabled:
-        feature_list_.InitWithFeaturesAndParameters(
-            GetDefaultEnabledBackForwardCacheFeaturesForTesting(
-                /*ignore_outstanding_network_request=*/false),
-            GetDefaultDisabledBackForwardCacheFeaturesForTesting());
-        break;
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 class PrerenderEagernessBrowserTest : public PrerenderBrowserTest {
  public:
   PrerenderEagernessBrowserTest() {
@@ -8364,6 +8342,28 @@ IN_PROC_BROWSER_TEST_F(PrerenderNewLimitAndSchedulerBrowserTest,
   }
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
+
+class PrerenderWithBackForwardCacheBrowserTest
+    : public PrerenderBrowserTest,
+      public testing::WithParamInterface<BackForwardCacheType> {
+ public:
+  PrerenderWithBackForwardCacheBrowserTest() {
+    switch (GetParam()) {
+      case BackForwardCacheType::kDisabled:
+        feature_list_.InitAndDisableFeature(::features::kBackForwardCache);
+        break;
+      case BackForwardCacheType::kEnabled:
+        feature_list_.InitWithFeaturesAndParameters(
+            GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+                /*ignore_outstanding_network_request=*/false),
+            GetDefaultDisabledBackForwardCacheFeaturesForTesting());
+        break;
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PrerenderWithBackForwardCacheBrowserTest,

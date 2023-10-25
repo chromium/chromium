@@ -240,12 +240,21 @@ BASE_FEATURE(kBottomOmniboxDefaultSetting,
              "BottomOmniboxDefaultSetting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kBottomOmniboxDeviceSwitcherResults,
+             "BottomOmniboxDeviceSwitcherResults",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsBottomOmniboxSteadyStateEnabled() {
   // Bottom omnibox is only available on phones.
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
     return false;
   }
   return base::FeatureList::IsEnabled(kBottomOmniboxSteadyState);
+}
+
+bool IsBottomOmniboxDeviceSwitcherResultsEnabled() {
+  return IsBottomOmniboxSteadyStateEnabled() &&
+         base::FeatureList::IsEnabled(kBottomOmniboxDeviceSwitcherResults);
 }
 
 BASE_FEATURE(kOnlyAccessClipboardAsync,

@@ -476,6 +476,10 @@ TEST_F(WaylandRemoteShellTest, DisplayRemovalAddition) {
 
 // Test that the desktop focus state event is called with the proper value in
 // response to window focus change.
+// Note that some clients such as ARC T+ rely on the behavior that the desktop
+// focus change event is invoked immediately once focus switches in ash, which
+// means, for example, we must not call `RunLoop::RunUntilIdle()` to wait for
+// the event in this test.
 TEST_F(WaylandRemoteShellTest, DesktopFocusState) {
   auto client_controlled_shell_surface =
       exo::test::ShellSurfaceBuilder(

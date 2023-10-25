@@ -56,8 +56,8 @@ source_set("crurl") {
     "crurl.h",
     "crurl.mm",
   ]
+  public_deps = [ "//base" ]
   deps = [
-    "//base",
     "//net",
     "//url",
   ]

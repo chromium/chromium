@@ -102,7 +102,6 @@ src/stress/memory/churn.spec.ts
 src/webgpu/util/memory.ts
 src/stress/memory/oom.spec.ts
 src/stress/queries/occlusion.spec.ts
-src/stress/queries/pipeline_statistics.spec.ts
 src/stress/queries/resolve.spec.ts
 src/stress/queries/timestamps.spec.ts
 src/stress/queue/submit.spec.ts
@@ -290,7 +289,6 @@ src/webgpu/api/validation/encoding/cmds/render/state_tracking.spec.ts
 src/webgpu/api/validation/encoding/programmable/pipeline_bind_group_compat.spec.ts
 src/webgpu/api/validation/encoding/queries/begin_end.spec.ts
 src/webgpu/api/validation/encoding/queries/general.spec.ts
-src/webgpu/api/validation/encoding/queries/pipeline_statistics.spec.ts
 src/webgpu/api/validation/encoding/queries/resolveQuerySet.spec.ts
 src/webgpu/api/validation/image_copy/image_copy.ts
 src/webgpu/api/validation/image_copy/buffer_related.spec.ts
@@ -354,9 +352,11 @@ src/webgpu/shader/execution/zero_init.spec.ts
 src/webgpu/shader/execution/expression/binary/binary.ts
 src/webgpu/shader/execution/expression/binary/af_addition.spec.ts
 src/webgpu/shader/execution/expression/binary/af_comparison.spec.ts
+src/webgpu/shader/execution/expression/binary/af_division.spec.ts
 src/webgpu/shader/execution/expression/binary/af_matrix_addition.spec.ts
 src/webgpu/shader/execution/expression/binary/af_matrix_subtraction.spec.ts
 src/webgpu/shader/execution/expression/binary/af_multiplication.spec.ts
+src/webgpu/shader/execution/expression/binary/af_remainder.spec.ts
 src/webgpu/shader/execution/expression/binary/af_subtraction.spec.ts
 src/webgpu/shader/execution/expression/binary/bitwise.spec.ts
 src/webgpu/shader/execution/expression/binary/bitwise_shift.spec.ts

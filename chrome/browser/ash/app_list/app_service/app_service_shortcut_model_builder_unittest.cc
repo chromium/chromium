@@ -14,8 +14,8 @@
 #include "chrome/browser/ash/app_list/test/fake_app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut_registry_cache.h"
 #include "content/public/test/test_utils.h"
@@ -49,7 +49,7 @@ class AppServiceShortcutModelBuilderTest
   void CreateBuilder(bool guest_mode) {
     ResetBuilder();  // Destroy any existing builder in the correct order.
     scoped_feature_list_.InitAndEnableFeature(
-        features::kCrosWebAppShortcutUiUpdate);
+        chromeos::features::kCrosWebAppShortcutUiUpdate);
     testing_profile()->SetGuestSession(guest_mode);
     app_service_test_.SetUp(profile());
     model_updater_ = std::make_unique<FakeAppListModelUpdater>(

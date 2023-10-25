@@ -401,10 +401,11 @@ void ContextualSearchDelegateImpl::OnTextSurroundingSelectionAvailable(
 
   // Pin the start and end offsets to ensure they point within the string.
   uint32_t surrounding_length = surrounding_text.length();
-  // TODO(crbug.com/1343955): The case where end_offset < start_offset should be
-  // handled here as well.
   start_offset = std::min(surrounding_length, start_offset);
   end_offset = std::min(surrounding_length, end_offset);
+  if (end_offset < start_offset) {
+    return;
+  }
 
   context->SetSelectionSurroundings(start_offset, end_offset, surrounding_text);
 
@@ -412,7 +413,6 @@ void ContextualSearchDelegateImpl::OnTextSurroundingSelectionAvailable(
   // surroundings to use as a sample of the surrounding text.
   int sample_surrounding_size = field_trial_->GetSampleSurroundingSize();
   DCHECK(sample_surrounding_size >= 0);
-  DCHECK(start_offset <= end_offset);
   size_t selection_start = start_offset;
   size_t selection_end = end_offset;
   int sample_padding_each_side = sample_surrounding_size / 2;

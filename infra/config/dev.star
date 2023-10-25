@@ -9,7 +9,7 @@
 load("//lib/branches.star", "branches")
 
 lucicfg.check_version(
-    min = "1.39.14",
+    min = "1.40.0",
     message = "Update depot_tools",
 )
 
@@ -24,6 +24,7 @@ lucicfg.config(
         "builders-dev/gn_args_locations.json",
         "luci/cr-buildbucket-dev.cfg",
         "luci/luci-analysis-dev.cfg",
+        "luci/luci-bisection-dev.cfg",
         "luci/luci-logdog-dev.cfg",
         "luci/luci-milo-dev.cfg",
         "luci/luci-scheduler-dev.cfg",
@@ -37,6 +38,12 @@ lucicfg.config(
 lucicfg.emit(
     dest = "luci/luci-analysis-dev.cfg",
     data = io.read_file("luci-analysis-dev.cfg"),
+)
+
+# Just copy LUCI Bisection config to generated outputs.
+lucicfg.emit(
+    dest = "luci/luci-bisection-dev.cfg",
+    data = io.read_file("luci-bisection-dev.cfg"),
 )
 
 # Just copy Testhaus config to generated outputs.

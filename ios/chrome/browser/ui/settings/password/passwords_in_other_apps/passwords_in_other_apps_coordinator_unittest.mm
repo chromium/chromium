@@ -124,7 +124,7 @@ TEST_F(PasswordsInOtherAppsCoordinatorTest,
   ASSERT_FALSE(IsPasswordsInOtherAppPresented());
 
   // Successful auth should reveal passwords in other apps.
-  [mock_reauth_module_ returnMockedReathenticationResult];
+  [mock_reauth_module_ returnMockedReauthenticationResult];
 
   ASSERT_TRUE(IsPasswordsInOtherAppPresented());
 }

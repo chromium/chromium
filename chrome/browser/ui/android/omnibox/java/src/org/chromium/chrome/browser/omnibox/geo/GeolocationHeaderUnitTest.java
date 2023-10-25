@@ -33,7 +33,6 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleCell;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleWifi;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
@@ -108,8 +107,6 @@ public class GeolocationHeaderUnitTest {
 
     @Mock WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
 
-    @Mock Profile.Natives mProfileJniMock;
-
     @Mock Profile mProfileMock;
 
     @Mock private Tab mTab;
@@ -123,12 +120,12 @@ public class GeolocationHeaderUnitTest {
         MockitoAnnotations.initMocks(this);
         mocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
         mocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceBridgeJniMock);
-        mocker.mock(ProfileJni.TEST_HOOKS, mProfileJniMock);
         GeolocationTracker.setLocationAgeForTesting(null);
         GeolocationHeader.setLocationSourceForTesting(
                 GeolocationHeader.LocationSource.HIGH_ACCURACY);
         GeolocationHeader.setAppPermissionGrantedForTesting(true);
         when(mTab.isIncognito()).thenReturn(false);
+        when(mTab.getProfile()).thenReturn(mProfileMock);
         when(mTab.getWebContents()).thenReturn(mWebContentsMock);
         when(mWebsitePreferenceBridgeJniMock.getPermissionSettingForOrigin(
                         any(BrowserContextHandle.class), eq(ContentSettingsType.GEOLOCATION),
@@ -138,7 +135,6 @@ public class GeolocationHeaderUnitTest {
                         any(BrowserContextHandle.class), anyString()))
                 .thenReturn(true);
         when(mUrlUtilitiesJniMock.isGoogleSearchUrl(anyString())).thenReturn(true);
-        when(mProfileJniMock.fromWebContents(any(WebContents.class))).thenReturn(mProfileMock);
         when(mProfileMock.isOffTheRecord()).thenReturn(false);
         when(mTemplateUrlServiceMock.getUrlForSearchQuery(anyString()))
                 .thenReturn("https://example.com/");
@@ -296,13 +292,6 @@ public class GeolocationHeaderUnitTest {
         GeolocationHeader.setAppPermissionGrantedForTesting(false);
         // Nothing should be included when app permission is missing.
         checkOldLocation(null);
-    }
-
-    @Test
-    public void testGetGeoHeaderNoProfile() {
-        when(mProfileJniMock.fromWebContents(any(WebContents.class))).thenReturn(null);
-        String header = GeolocationHeader.getGeoHeader(SEARCH_URL, mTab);
-        assertNull(header);
     }
 
     @Test

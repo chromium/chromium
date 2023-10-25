@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 387 tests; 379 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 395 tests; 387 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Setup
 [PASS] isolation (type: discrete) has testInterpolation function
 [PASS] isolation uses discrete animation when animating between "auto" and "isolate" with linear easing
@@ -69,6 +69,10 @@ Found 387 tests; 379 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] mask-clip uses discrete animation when animating between "content-box" and "border-box" with linear easing
 [PASS] mask-clip uses discrete animation when animating between "content-box" and "border-box" with effect easing
 [PASS] mask-clip uses discrete animation when animating between "content-box" and "border-box" with keyframe easing
+[PASS] mask-composite (type: discrete) has testInterpolation function
+[PASS] mask-composite uses discrete animation when animating between "add" and "subtract" with linear easing
+[PASS] mask-composite uses discrete animation when animating between "add" and "subtract" with effect easing
+[PASS] mask-composite uses discrete animation when animating between "add" and "subtract" with keyframe easing
 [PASS] mask-image (type: discrete) has testInterpolation function
 [PASS] mask-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with linear easing
 [PASS] mask-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with effect easing
@@ -77,6 +81,10 @@ Found 387 tests; 379 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] mask-origin uses discrete animation when animating between "content-box" and "border-box" with linear easing
 [PASS] mask-origin uses discrete animation when animating between "content-box" and "border-box" with effect easing
 [PASS] mask-origin uses discrete animation when animating between "content-box" and "border-box" with keyframe easing
+[PASS] mask-repeat (type: discrete) has testInterpolation function
+[PASS] mask-repeat uses discrete animation when animating between "space" and "round" with linear easing
+[PASS] mask-repeat uses discrete animation when animating between "space" and "round" with effect easing
+[PASS] mask-repeat uses discrete animation when animating between "space" and "round" with keyframe easing
 [PASS] mask-type (type: discrete) has testInterpolation function
 [PASS] mask-type uses discrete animation when animating between "alpha" and "luminance" with linear easing
 [PASS] mask-type uses discrete animation when animating between "alpha" and "luminance" with effect easing

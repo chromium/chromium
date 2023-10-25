@@ -6,9 +6,9 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
 
 import {getPreferences} from '../../common/js/api.js';
 import {AsyncQueue, Group} from '../../common/js/async_util.js';
+import {comparePath, isSameEntry} from '../../common/js/entry_utils.js';
 import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js';
 import {recordSmallCount, recordUserAction} from '../../common/js/metrics.js';
-import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {addFolderShortcut, refreshFolderShortcut, removeFolderShortcut} from '../../state/ducks/folder_shortcuts.js';
 import {getStore} from '../../state/store.js';
@@ -312,7 +312,7 @@ export class FolderShortcutsDataModel extends EventTarget {
   getIndex(value) {
     for (let i = 0; i < this.length; i++) {
       // Same item check: must be exact match.
-      if (util.isSameEntry(this.array_[i], value)) {
+      if (isSameEntry(this.array_[i], value)) {
         return i;
       }
     }
@@ -329,7 +329,7 @@ export class FolderShortcutsDataModel extends EventTarget {
    *     Otherwise, returns 1.
    */
   compare(a, b) {
-    return util.comparePath(a, b);
+    return comparePath(a, b);
   }
 
   /**
@@ -367,7 +367,7 @@ export class FolderShortcutsDataModel extends EventTarget {
     let addedIndex = -1;
     for (let i = 0; i < this.length; i++) {
       // Same item check: must be exact match.
-      if (util.isSameEntry(this.array_[i], value)) {
+      if (isSameEntry(this.array_[i], value)) {
         return i;
       }
 
@@ -416,7 +416,7 @@ export class FolderShortcutsDataModel extends EventTarget {
     const oldArray = this.array_.slice(0);  // Shallow copy.
     for (let i = 0; i < this.length; i++) {
       // Same item check: must be exact match.
-      if (util.isSameEntry(this.array_[i], value)) {
+      if (isSameEntry(this.array_[i], value)) {
         this.array_.splice(i, 1);
         removedIndex = i;
         break;
@@ -497,7 +497,7 @@ export class FolderShortcutsDataModel extends EventTarget {
         // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry |
         // undefined' is not assignable to parameter of type 'FileSystemEntry |
         // FilesAppEntry'.
-        if (util.isSameEntry(oldArray[oldIndex], newArray[newIndex])) {
+        if (isSameEntry(oldArray[oldIndex], newArray[newIndex])) {
           permutation[oldIndex] = newIndex;
           newIndex++;
           break;

@@ -666,9 +666,17 @@ IN_PROC_BROWSER_TEST_F(
   VerifyHistoryNavPageEndReasons(expected_reasons_b, url_b);
 }
 
+// TODO(https://crbug.com/1494775): Test is flaky on MSAN.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_ResponsivenessMetricsNormalizationWithSendingAllLatencies \
+  DISABLED_ResponsivenessMetricsNormalizationWithSendingAllLatencies
+#else
+#define MAYBE_ResponsivenessMetricsNormalizationWithSendingAllLatencies \
+  ResponsivenessMetricsNormalizationWithSendingAllLatencies
+#endif
 IN_PROC_BROWSER_TEST_F(
     BackForwardCachePageLoadMetricsObserverBrowserTest,
-    ResponsivenessMetricsNormalizationWithSendingAllLatencies) {
+    MAYBE_ResponsivenessMetricsNormalizationWithSendingAllLatencies) {
   Start();
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -720,6 +728,7 @@ IN_PROC_BROWSER_TEST_F(
       "NumInteractionsAfterBackForwardCacheRestore"};
 
   for (auto& ukm : ukm_list) {
+    SCOPED_TRACE(ukm);
     ExpectMetricCountForUrl(url_a, ukm.c_str(), 1);
     ExpectMetricCountForUrl(url_b, ukm.c_str(), 0);
   }

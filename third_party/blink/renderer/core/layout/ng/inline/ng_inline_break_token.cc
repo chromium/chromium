@@ -29,9 +29,9 @@ const NGBlockBreakToken* NGInlineBreakToken::BlockBreakToken() const {
 
 // static
 NGInlineBreakToken* NGInlineBreakToken::Create(
-    NGInlineNode node,
+    InlineNode node,
     const ComputedStyle* style,
-    const NGInlineItemTextIndex& start,
+    const InlineItemTextIndex& start,
     unsigned flags /* NGInlineBreakTokenFlags */,
     const NGBlockBreakToken* sub_break_token) {
   // We store the children list inline in the break token as a flexible
@@ -50,8 +50,8 @@ NGInlineBreakToken* NGInlineBreakToken::Create(
 
 // static
 NGInlineBreakToken* NGInlineBreakToken::CreateForParallelBlockFlow(
-    NGInlineNode node,
-    const NGInlineItemTextIndex& start,
+    InlineNode node,
+    const InlineItemTextIndex& start,
     const NGBlockBreakToken& child_break_token) {
   return Create(node, &node.Style(), start, kIsInParallelBlockFlow,
                 &child_break_token);
@@ -59,9 +59,9 @@ NGInlineBreakToken* NGInlineBreakToken::CreateForParallelBlockFlow(
 
 NGInlineBreakToken::NGInlineBreakToken(
     PassKey key,
-    NGInlineNode node,
+    InlineNode node,
     const ComputedStyle* style,
-    const NGInlineItemTextIndex& start,
+    const InlineItemTextIndex& start,
     unsigned flags /* NGInlineBreakTokenFlags */,
     const NGBlockBreakToken* sub_break_token)
     : NGBreakToken(kInlineBreakToken, node, flags),

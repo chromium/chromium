@@ -9,7 +9,7 @@
 
 namespace blink {
 
-const LayoutObject* NGLogicalLineItem::GetLayoutObject() const {
+const LayoutObject* LogicalLineItem::GetLayoutObject() const {
   if (inline_item)
     return inline_item->GetLayoutObject();
   if (const NGPhysicalFragment* fragment = PhysicalFragment())
@@ -17,7 +17,7 @@ const LayoutObject* NGLogicalLineItem::GetLayoutObject() const {
   return nullptr;
 }
 
-LayoutObject* NGLogicalLineItem::GetMutableLayoutObject() const {
+LayoutObject* LogicalLineItem::GetMutableLayoutObject() const {
   if (inline_item)
     return inline_item->GetLayoutObject();
   if (const NGPhysicalFragment* fragment = PhysicalFragment())
@@ -25,13 +25,13 @@ LayoutObject* NGLogicalLineItem::GetMutableLayoutObject() const {
   return nullptr;
 }
 
-const Node* NGLogicalLineItem::GetNode() const {
+const Node* LogicalLineItem::GetNode() const {
   if (const LayoutObject* object = GetLayoutObject())
     return object->GetNode();
   return nullptr;
 }
 
-const ComputedStyle* NGLogicalLineItem::Style() const {
+const ComputedStyle* LogicalLineItem::Style() const {
   if (const auto* fragment = PhysicalFragment())
     return &fragment->Style();
   if (inline_item)
@@ -39,8 +39,8 @@ const ComputedStyle* NGLogicalLineItem::Style() const {
   return nullptr;
 }
 
-std::ostream& operator<<(std::ostream& stream, const NGLogicalLineItem& item) {
-  stream << "NGLogicalLineItem(";
+std::ostream& operator<<(std::ostream& stream, const LogicalLineItem& item) {
+  stream << "LogicalLineItem(";
   if (item.IsPlaceholder())
     stream << " placeholder";
   stream << " inline_size=" << item.inline_size;
@@ -55,7 +55,7 @@ std::ostream& operator<<(std::ostream& stream, const NGLogicalLineItem& item) {
   return stream;
 }
 
-NGLogicalLineItem* NGLogicalLineItems::FirstInFlowChild() {
+LogicalLineItem* LogicalLineItems::FirstInFlowChild() {
   for (auto& child : *this) {
     if (child.HasInFlowFragment())
       return &child;
@@ -63,7 +63,7 @@ NGLogicalLineItem* NGLogicalLineItems::FirstInFlowChild() {
   return nullptr;
 }
 
-NGLogicalLineItem* NGLogicalLineItems::LastInFlowChild() {
+LogicalLineItem* LogicalLineItems::LastInFlowChild() {
   for (auto& child : base::Reversed(*this)) {
     if (child.HasInFlowFragment())
       return &child;
@@ -71,8 +71,8 @@ NGLogicalLineItem* NGLogicalLineItems::LastInFlowChild() {
   return nullptr;
 }
 
-const NGLayoutResult* NGLogicalLineItems::BlockInInlineLayoutResult() const {
-  for (const NGLogicalLineItem& item : *this) {
+const NGLayoutResult* LogicalLineItems::BlockInInlineLayoutResult() const {
+  for (const LogicalLineItem& item : *this) {
     if (item.layout_result &&
         item.layout_result->PhysicalFragment().IsBlockInInline())
       return item.layout_result.Get();
@@ -80,9 +80,9 @@ const NGLayoutResult* NGLogicalLineItems::BlockInInlineLayoutResult() const {
   return nullptr;
 }
 
-void NGLogicalLineItems::WillInsertChild(unsigned insert_before) {
+void LogicalLineItems::WillInsertChild(unsigned insert_before) {
   unsigned index = 0;
-  for (NGLogicalLineItem& child : children_) {
+  for (LogicalLineItem& child : children_) {
     if (index >= insert_before)
       break;
     if (child.children_count && index + child.children_count > insert_before)
@@ -91,38 +91,38 @@ void NGLogicalLineItems::WillInsertChild(unsigned insert_before) {
   }
 }
 
-void NGLogicalLineItems::MoveInInlineDirection(LayoutUnit delta) {
+void LogicalLineItems::MoveInInlineDirection(LayoutUnit delta) {
   for (auto& child : children_)
     child.rect.offset.inline_offset += delta;
 }
 
-void NGLogicalLineItems::MoveInInlineDirection(LayoutUnit delta,
-                                               unsigned start,
-                                               unsigned end) {
+void LogicalLineItems::MoveInInlineDirection(LayoutUnit delta,
+                                             unsigned start,
+                                             unsigned end) {
   for (unsigned index = start; index < end; index++)
     children_[index].rect.offset.inline_offset += delta;
 }
 
-void NGLogicalLineItems::MoveInBlockDirection(LayoutUnit delta) {
+void LogicalLineItems::MoveInBlockDirection(LayoutUnit delta) {
   for (auto& child : children_)
     child.rect.offset.block_offset += delta;
 }
 
-void NGLogicalLineItems::MoveInBlockDirection(LayoutUnit delta,
-                                              unsigned start,
-                                              unsigned end) {
+void LogicalLineItems::MoveInBlockDirection(LayoutUnit delta,
+                                            unsigned start,
+                                            unsigned end) {
   for (unsigned index = start; index < end; index++)
     children_[index].rect.offset.block_offset += delta;
 }
 
-void NGLogicalLineItem::Trace(Visitor* visitor) const {
+void LogicalLineItem::Trace(Visitor* visitor) const {
   visitor->Trace(layout_result);
   visitor->Trace(layout_object);
   visitor->Trace(out_of_flow_positioned_box);
   visitor->Trace(unpositioned_float);
 }
 
-void NGLogicalLineItems::Trace(Visitor* visitor) const {
+void LogicalLineItems::Trace(Visitor* visitor) const {
   visitor->Trace(children_);
 }
 

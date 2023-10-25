@@ -384,4 +384,28 @@ TEST_F(HotspotMetricsHelperTest, HotspotDisableReasonHistogram) {
       HotspotMetricsHelper::HotspotMetricsDisableReason::kInternalError, 1);
 }
 
+TEST_F(HotspotMetricsHelperTest, HotspotSetConfigHistogram) {
+  HotspotMetricsHelper::RecordSetHotspotConfigResult(
+      hotspot_config::mojom::SetHotspotConfigResult::kSuccess);
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotSetConfigResultHistogram,
+      HotspotMetricsHelper::HotspotMetricsSetConfigResult::kSuccess, 1);
+  HotspotMetricsHelper::RecordSetHotspotConfigResult(
+      hotspot_config::mojom::SetHotspotConfigResult::kFailedShillOperation,
+      shill::kErrorResultIllegalOperation);
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotSetConfigResultHistogram,
+      HotspotMetricsHelper::HotspotMetricsSetConfigResult::
+          kFailedIllegalOperation,
+      1);
+  HotspotMetricsHelper::RecordSetHotspotConfigResult(
+      hotspot_config::mojom::SetHotspotConfigResult::kFailedShillOperation,
+      shill::kErrorResultInvalidArguments);
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotSetConfigResultHistogram,
+      HotspotMetricsHelper::HotspotMetricsSetConfigResult::
+          kFailedInvalidArgument,
+      1);
+}
+
 }  // namespace ash

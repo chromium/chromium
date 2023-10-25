@@ -7,10 +7,12 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "base/auto_reset.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/apps/link_capturing/chromeos_link_capturing_delegate.h"
@@ -69,8 +71,9 @@ class ProjectorNavigationThrottleTest : public InProcessBrowserTest {
     base::TimeDelta forward_by = start_time - task_runner_->Now();
     EXPECT_LT(base::TimeDelta(), forward_by);
     task_runner_->AdvanceMockTickClock(forward_by);
-    apps::ChromeOsLinkCapturingDelegate::SetClockForTesting(
-        task_runner_->GetMockTickClock());
+    clock_reset_ = std::make_unique<base::AutoReset<const base::TickClock*>>(
+        apps::ChromeOsLinkCapturingDelegate::SetClockForTesting(
+            task_runner_->GetMockTickClock()));
   }
 
  protected:
@@ -78,6 +81,7 @@ class ProjectorNavigationThrottleTest : public InProcessBrowserTest {
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
 
  private:
+  std::unique_ptr<base::AutoReset<const base::TickClock*>> clock_reset_;
   base::OnceClosure on_browser_removed_callback_;
 };
 

@@ -136,7 +136,7 @@ constexpr char kPendingAndBrowserWentOfflineTimeUntilReportTime[] =
     "TimeUntilReportTime";
 
 constexpr char kSentVerboseDebugReportTypeMetric[] =
-    "Conversions.SentVerboseDebugReportType3";
+    "Conversions.SentVerboseDebugReportType4";
 
 auto InvokeReportSentCallback(SendResult::Status status) {
   return [=](AttributionReport report, bool is_debug_report,
@@ -1409,7 +1409,7 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_RecordsMetric) {
   attribution_manager_->HandleTrigger(DefaultTrigger(), kFrameId);
   EXPECT_THAT(StoredReports(), IsEmpty());
   histograms.ExpectUniqueSample(
-      "Conversions.CreateReportStatus8",
+      "Conversions.CreateReportStatus9",
       AttributionTrigger::EventLevelResult::kNoMatchingImpressions, 1);
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.CreateReportStatus4",
@@ -1762,7 +1762,7 @@ TEST_F(AttributionManagerImplTest,
   EXPECT_THAT(StoredReports(), IsEmpty());
 
   histograms.ExpectUniqueSample(
-      "Conversions.CreateReportStatus8",
+      "Conversions.CreateReportStatus9",
       AttributionTrigger::EventLevelResult::kProhibitedByBrowserPolicy, 1);
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.CreateReportStatus4",

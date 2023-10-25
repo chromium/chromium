@@ -387,6 +387,7 @@ base::LazyInstance<UnboundWidgetInputHandler>::Leaky g_unbound_input_handler =
 std::unique_ptr<RenderWidgetHostImpl> RenderWidgetHostImpl::Create(
     FrameTree* frame_tree,
     RenderWidgetHostDelegate* delegate,
+    viz::FrameSinkId frame_sink_id,
     base::SafeRef<SiteInstanceGroup> site_instance_group,
     int32_t routing_id,
     bool hidden,
@@ -394,9 +395,9 @@ std::unique_ptr<RenderWidgetHostImpl> RenderWidgetHostImpl::Create(
     std::unique_ptr<FrameTokenMessageQueue> frame_token_message_queue) {
   return base::WrapUnique(new RenderWidgetHostImpl(
       frame_tree,
-      /*self_owned=*/false, delegate, std::move(site_instance_group),
-      routing_id, hidden, renderer_initiated_creation,
-      std::move(frame_token_message_queue)));
+      /*self_owned=*/false, frame_sink_id, delegate,
+      std::move(site_instance_group), routing_id, hidden,
+      renderer_initiated_creation, std::move(frame_token_message_queue)));
 }
 
 // static
@@ -407,16 +408,20 @@ RenderWidgetHostImpl* RenderWidgetHostImpl::CreateSelfOwned(
     int32_t routing_id,
     bool hidden,
     std::unique_ptr<FrameTokenMessageQueue> frame_token_message_queue) {
-  return new RenderWidgetHostImpl(frame_tree, /*self_owned=*/true, delegate,
-                                  std::move(site_instance_group), routing_id,
-                                  hidden,
-                                  /*renderer_initiated_creation=*/true,
-                                  std::move(frame_token_message_queue));
+  auto* host = new RenderWidgetHostImpl(
+      frame_tree, /*self_owned=*/true,
+      DefaultFrameSinkId(*site_instance_group, routing_id), delegate,
+      site_instance_group, routing_id, hidden,
+      /*renderer_initiated_creation=*/true,
+      std::move(frame_token_message_queue));
+  host->SetViewIsFrameSinkIdOwner(true);
+  return host;
 }
 
 RenderWidgetHostImpl::RenderWidgetHostImpl(
     FrameTree* frame_tree,
     bool self_owned,
+    viz::FrameSinkId frame_sink_id,
     RenderWidgetHostDelegate* delegate,
     base::SafeRef<SiteInstanceGroup> site_instance_group,
     int32_t routing_id,
@@ -447,9 +452,7 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
           content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput}),
 #endif
           frame_token_message_queue_.get()),
-      frame_sink_id_(base::checked_cast<uint32_t>(
-                         agent_scheduling_group_->GetProcess()->GetID()),
-                     base::checked_cast<uint32_t>(routing_id_)) {
+      frame_sink_id_(frame_sink_id) {
   DCHECK(frame_token_message_queue_);
   frame_token_message_queue_->Init(this);
 
@@ -563,14 +566,22 @@ RenderWidgetHostImpl* RenderWidgetHostImpl::From(RenderWidgetHost* rwh) {
   return static_cast<RenderWidgetHostImpl*>(rwh);
 }
 
+// static
+viz::FrameSinkId RenderWidgetHostImpl::DefaultFrameSinkId(
+    const SiteInstanceGroup& group,
+    int routing_id) {
+  return viz::FrameSinkId(
+      base::checked_cast<uint32_t>(group.process()->GetID()),
+      base::checked_cast<uint32_t>(routing_id));
+}
+
 void RenderWidgetHostImpl::SetView(RenderWidgetHostViewBase* view) {
   synthetic_gesture_controller_.reset();
 
   if (view) {
     view_ = view->GetWeakPtr();
-    if (!create_frame_sink_callback_.is_null()) {
-      std::move(create_frame_sink_callback_).Run(view_->GetFrameSinkId());
-    }
+    view_->SetIsFrameSinkIdOwner(view_is_frame_sink_id_owner_);
+    MaybeDispatchBufferedFrameSinkRequest();
 
     // SendScreenRects() and SynchronizeVisualProperties() delay until a view
     // is set, however we come here with a newly created `view` that is not
@@ -3647,7 +3658,7 @@ void RenderWidgetHostImpl::CreateFrameSink(
   // Connects the viz process end of CompositorFrameSink message pipes. The
   // renderer compositor may request a new CompositorFrameSink on context
   // loss, which will destroy the existing CompositorFrameSink.
-  auto callback = base::BindOnce(
+  create_frame_sink_callback_ = base::BindOnce(
       [](mojo::PendingReceiver<viz::mojom::CompositorFrameSink> receiver,
          mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client,
          const viz::FrameSinkId& frame_sink_id) {
@@ -3657,11 +3668,19 @@ void RenderWidgetHostImpl::CreateFrameSink(
       std::move(compositor_frame_sink_receiver),
       std::move(compositor_frame_sink_client));
 
-  if (view_) {
-    std::move(callback).Run(view_->GetFrameSinkId());
-  } else {
-    create_frame_sink_callback_ = std::move(callback);
+  MaybeDispatchBufferedFrameSinkRequest();
+}
+
+void RenderWidgetHostImpl::MaybeDispatchBufferedFrameSinkRequest() {
+  if (!view_ || !view_is_frame_sink_id_owner_) {
+    return;
   }
+
+  if (!create_frame_sink_callback_) {
+    return;
+  }
+
+  std::move(create_frame_sink_callback_).Run(view_->GetFrameSinkId());
 }
 
 void RenderWidgetHostImpl::RegisterRenderFrameMetadataObserver(
@@ -3957,6 +3976,18 @@ gfx::PointF RenderWidgetHostImpl::ConvertWindowPointToViewport(
   gfx::PointF viewport_point = window_point;
   viewport_point.Scale(GetScaleFactorForView(GetView()));
   return viewport_point;
+}
+
+void RenderWidgetHostImpl::SetViewIsFrameSinkIdOwner(bool is_owner) {
+  if (view_is_frame_sink_id_owner_ == is_owner) {
+    return;
+  }
+
+  view_is_frame_sink_id_owner_ = is_owner;
+  if (view_) {
+    view_->SetIsFrameSinkIdOwner(view_is_frame_sink_id_owner_);
+    MaybeDispatchBufferedFrameSinkRequest();
+  }
 }
 
 RenderWidgetHostImpl::MainFramePropagationProperties::

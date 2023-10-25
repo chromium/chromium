@@ -104,23 +104,14 @@ otherwise too powerful to use in a post-Spectre world.
 [Cross-Origin-Resource-Policy][corp] restricts a resource to only be fetched by
 "same-origin" or "same-site" pages.
 
-* "NetworkService.CrossOriginResourcePolicy.Result" UMA histogram records the
-  result of the CORP check.
-
-  * "success": The CORP check passes successfully.
-  * "same-origin violation": "same-origin" is specified on a cross-origin
-    response.
-  * "same-origin violation with COEP involvement": No CORP header
-    is specified but that is treated as "same-origin" because the initiator
-    context enables Cross-Origin Embedder Policy (see below), and the response
-    comes from cross-origin.
-  * "same-site violation": "same-site" is specified on a cross-site response.
-
-* "NetworkService.CrossOriginResourcePolciy.ReportOnlyResult" UMA histogram
-  records the result of the CORP check, only when a
-  Cross-Origin-Embedder-Policy-Report-Only header is attached to the initiator
-  context. The format is same as
-  "NetworkService.CrossOriginResourcePolicy.Result".
+* "success": The CORP check passes successfully.
+* "same-origin violation": "same-origin" is specified on a cross-origin
+  response.
+* "same-origin violation with COEP involvement": No CORP header
+  is specified but that is treated as "same-origin" because the initiator
+  context enables Cross-Origin Embedder Policy (see below), and the response
+  comes from cross-origin.
+* "same-site violation": "same-site" is specified on a cross-site response.
 
 [Cross-Origin-Opener-Policy][coop] is used to restrict the usage of window
 openers. Pages can choose to restrict this relation to same-origin pages with

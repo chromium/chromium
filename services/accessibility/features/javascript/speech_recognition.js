@@ -2,46 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// A helper class for the stop event.
-// TODO(b:304305202): Inherit from ATP ChromeEvent.
-class SpeechRecognitionStopEventManager {
-  constructor() {
-    /** @private {Set<!Function>} */
-    this.listeners_ = new Set();
-  }
-
-  /** @param {!Function} listener */
-  addListener(listener) {
-    this.listeners_.add(listener);
-  }
-
-  /** @param {!Function} listener */
-  removeListener(listener) {
-    this.listeners_.delete(listener);
-  }
-
-  notify() {
-    for (const listener of this.listeners_) {
-      listener();
-    }
-  }
-}
-
 // Provides a concrete implementation of SpeechRecognitionEventObserver.
 class AtpSpeechRecognitionEventObserver {
   /**
    * @param {!ax.mojom.SpeechRecognitionEventObserverPendingReceiver}
    *    pendingReceiver
-   * @param {!Function} onStopCallback
+   * @param {!function(): void} onStopCallback
+   * @param {!function(!ax.mojom.SpeechRecognitionResultEvent): void}
+   *    onResultCallback
    */
-  constructor(pendingReceiver, onStopCallback) {
+  constructor(pendingReceiver, onStopCallback, onResultCallback) {
     this.receiver_ = new ax.mojom.SpeechRecognitionEventObserverReceiver(this);
     this.receiver_.$.bindHandle(pendingReceiver.handle);
+    /** @private {!function(): void} */
     this.onStopCallback_ = onStopCallback;
+    /** @private {!function(!ax.mojom.SpeechRecognitionResultEvent): void} */
+    this.onResultCallback_ = onResultCallback;
   }
 
   onStop() {
     this.onStopCallback_();
+  }
+
+  /** @param {!ax.mojom.SpeechRecognitionResultEvent} event */
+  onResult(event) {
+    this.onResultCallback_(event);
   }
 }
 
@@ -52,8 +37,10 @@ class AtpSpeechRecognition {
     this.remote_ = SpeechRecognitionApi.getRemote();
     /** @private {!Map<number, !AtpSpeechRecognitionEventObserver>} */
     this.observers_ = new Map();
-    /** @type {!SpeechRecognitionEvent} */
-    this.onStop = new SpeechRecognitionStopEventManager();
+    /** @type {!ChromeEvent} */
+    this.onStop = new ChromeEvent();
+    /** @type {!ChromeEvent} */
+    this.onResult = new ChromeEvent();
   }
 
   /**
@@ -73,6 +60,9 @@ class AtpSpeechRecognition {
         /*pendingReceiver=*/result.info.observer,
         /*onStopCallback=*/() => {
           this.handleOnStop_();
+        },
+        /*onResultCallback=*/(event) => {
+          this.handleOnResult_(event);
         });
       // Default client ID is 0. It is possible for clients to pass an ID of 0,
       // but this will never happen in practice since we control the only
@@ -97,9 +87,21 @@ class AtpSpeechRecognition {
     });
   }
 
+  /** @private */
   handleOnStop_() {
     // TODO(b/304305202): Ensure we remove the relevant event observer.
-    this.onStop.notify();
+    this.onStop.callListeners();
+  }
+
+  /**
+   * @param {!ax.mojom.SpeechRecognitionResultEvent} event
+   * @private
+   */
+  handleOnResult_(event) {
+    this.onResult.callListeners(
+      /**
+       * @type {!chrome.speechRecognitionPrivate.SpeechRecognitionResultEvent}
+       */ (event));
   }
 
   /**

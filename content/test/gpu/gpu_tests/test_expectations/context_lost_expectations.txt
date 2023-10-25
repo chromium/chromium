@@ -197,8 +197,6 @@ crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] GpuNormalTermination_Origina
 
 crbug.com/1419583 [ linux amd-0x7340 angle-vulkan ] ContextLost_WebGLContextRestoredInHiddenTab [ Failure ]
 
-# Flaky fails with entire window being black
-crbug.com/1490570 [ linux amd-0x7340 angle-vulkan passthrough ] ContextLost_WebGLContextLostFromSelectElement [ Failure ]
 
 crbug.com/1419558 [ angle-swiftshader clang-coverage fuchsia fuchsia-board-qemu-x64 google-0xc0de ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
 

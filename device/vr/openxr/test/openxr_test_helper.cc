@@ -8,7 +8,7 @@
 #include <limits>
 
 #include "base/containers/contains.h"
-#include "device/vr/openxr/openxr_defs.h"
+#include "device/vr/openxr/openxr_interaction_profiles.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/openxr_view_configuration.h"

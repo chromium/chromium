@@ -190,9 +190,9 @@ extension-event based interface in M119. The interface is described in
 | runBatteryDischargeRoutine | (params: RunBatteryDischargeRoutineRequest) => Promise<RunRoutineResponse\> | `os.diagnostics` | M96 |
 | runBatteryChargeRoutine | (params: RunBatteryChargeRoutineRequest) => Promise<RunRoutineResponse\> | `os.diagnostics` | M96 |
 | runBluetoothDiscoveryRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M118 |
-| runBluetoothPairingRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M118 |
+| runBluetoothPairingRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics`, `os.bluetooth_peripherals_info` | M118 |
 | runBluetoothPowerRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M117 |
-| runBluetoothScanningRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M118 |
+| runBluetoothScanningRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics`, `os.bluetooth_peripherals_info` | M118 |
 | runCpuCacheRoutine | (params: RunCpuRoutineRequest) => Promise<RunRoutineResponse\> | `os.diagnostics` | M96 |
 | runCpuFloatingPointAccuracyRoutine | (params: RunCpuRoutineRequest) => Promise<RunRoutineResponse\> | `os.diagnostics` | M99 |
 | runCpuPrimeSearchRoutine | (params: RunCpuRoutineRequest) => Promise<RunRoutineResponse\> | `os.diagnostics` | M99 |

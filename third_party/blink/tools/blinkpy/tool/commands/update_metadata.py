@@ -65,6 +65,7 @@ from wptrunner import (
     metadata,
     testloader,
 )
+from wptrunner.wptcommandline import TestRoot
 from wptrunner.wptmanifest import node as wptnode
 from wptrunner.wptmanifest.parser import ParseError
 
@@ -1233,14 +1234,7 @@ def load_and_update_manifests(finder: path_finder.PathFinder,
     test_paths = {}
     for rel_path_to_wpt_root, url_base in Port.WPT_DIRS.items():
         wpt_root = finder.path_from_web_tests(rel_path_to_wpt_root)
-        test_paths[url_base] = {
-            'tests_path':
-            wpt_root,
-            'metadata_path':
-            wpt_root,
-            'manifest_path':
-            finder.path_from_web_tests(rel_path_to_wpt_root, 'MANIFEST.json'),
-        }
+        test_paths[url_base] = TestRoot(wpt_root, wpt_root)
     return testloader.ManifestLoader(test_paths, force_update).load()
 
 

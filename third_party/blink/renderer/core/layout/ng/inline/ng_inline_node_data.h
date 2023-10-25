@@ -12,12 +12,12 @@
 namespace blink {
 
 template <typename OffsetMappingBuilder>
-class NGInlineItemsBuilderTemplate;
+class InlineItemsBuilderTemplate;
 
 // Data which is required for inline nodes.
-struct CORE_EXPORT NGInlineNodeData final : NGInlineItemsData {
+struct CORE_EXPORT InlineNodeData final : InlineItemsData {
  public:
-  NGInlineNodeData() = default;
+  InlineNodeData() = default;
   bool IsBidiEnabled() const { return is_bidi_enabled_; }
   TextDirection BaseDirection() const {
     return static_cast<TextDirection>(base_direction_);
@@ -29,21 +29,20 @@ struct CORE_EXPORT NGInlineNodeData final : NGInlineItemsData {
 
   bool IsBlockLevel() const { return is_block_level_; }
 
-  // True if this node can't use the bisection in `NGParagraphLineBreaker`.
+  // True if this node can't use the bisection in `ParagraphLineBreaker`.
   bool IsBisectLineBreakDisabled() const {
     return is_bisect_line_break_disabled_;
   }
   // True if this node can't use the `NGScorehLineBreaker`, that can be
   // determined by `CollectInlines`. Conditions that can change without
-  // `CollectInlines` are in `NGLineBreaker::ShouldDisableScoreLineBreak()`.
+  // `CollectInlines` are in `LineBreaker::ShouldDisableScoreLineBreak()`.
   bool IsScoreLineBreakDisabled() const {
     return is_score_line_break_disabled_;
   }
 
-  const NGInlineItemsData& ItemsData(bool is_first_line) const {
-    return !is_first_line || !first_line_items_
-               ? (const NGInlineItemsData&)*this
-               : *first_line_items_;
+  const InlineItemsData& ItemsData(bool is_first_line) const {
+    return !is_first_line || !first_line_items_ ? (const InlineItemsData&)*this
+                                                : *first_line_items_;
   }
 
   void Trace(Visitor* visitor) const override;
@@ -53,20 +52,20 @@ struct CORE_EXPORT NGInlineNodeData final : NGInlineItemsData {
     base_direction_ = static_cast<unsigned>(direction);
   }
 
-  friend class NGInlineItemsBuilderTest;
-  friend class NGInlineNode;
-  friend class NGInlineNodeForTest;
-  friend class NGOffsetMappingTest;
+  friend class InlineItemsBuilderTest;
+  friend class InlineNode;
+  friend class InlineNodeForTest;
+  friend class OffsetMappingTest;
 
   template <typename OffsetMappingBuilder>
-  friend class NGInlineItemsBuilderTemplate;
+  friend class InlineItemsBuilderTemplate;
 
   // Items to use for the first line, when the node has :first-line rules.
   //
   // Items have different ComputedStyle, and may also have different
   // text_content and ShapeResult if 'text-transform' is applied or fonts are
   // different.
-  Member<NGInlineItemsData> first_line_items_;
+  Member<InlineItemsData> first_line_items_;
 
   Member<SvgInlineNodeData> svg_node_data_;
 

@@ -8,8 +8,8 @@ source_set("interaction_handlers") {
     "infobar_interaction_handler.h",
     "infobar_interaction_handler.mm",
   ]
+  public_deps = [ "//base" ]
   deps = [
-    "//base",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/infobars/overlays:overlay_type",
     "//ios/chrome/browser/overlays",

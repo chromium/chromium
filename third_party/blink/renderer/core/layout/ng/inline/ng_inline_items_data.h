@@ -14,45 +14,44 @@
 
 namespace blink {
 
-class NGInlineItemSegments;
-class NGOffsetMapping;
+class InlineItemSegments;
+class OffsetMapping;
 
-// Represents a text content with a list of NGInlineItem. A node may have an
-// additional NGInlineItemsData for ::first-line pseudo element.
-struct CORE_EXPORT NGInlineItemsData
-    : public GarbageCollected<NGInlineItemsData> {
+// Represents a text content with a list of InlineItem. A node may have an
+// additional InlineItemsData for ::first-line pseudo element.
+struct CORE_EXPORT InlineItemsData : public GarbageCollected<InlineItemsData> {
  public:
-  virtual ~NGInlineItemsData() = default;
+  virtual ~InlineItemsData() = default;
 
-  NGInlineItemTextIndex End() const {
+  InlineItemTextIndex End() const {
     return {items.size(), text_content.length()};
   }
 
-  // Text content for all inline items represented by a single NGInlineNode.
+  // Text content for all inline items represented by a single InlineNode.
   // Encoded either as UTF-16 or latin-1 depending on the content.
   String text_content;
-  HeapVector<NGInlineItem> items;
+  HeapVector<InlineItem> items;
 
   // Cache RunSegmenter segments when at least one item has multiple runs.
   // Set to nullptr when all items has only single run, which is common case for
   // most writing systems. However, in multi-script writing systems such as
   // Japanese, almost every item has multiple runs.
-  std::unique_ptr<NGInlineItemSegments> segments;
+  std::unique_ptr<InlineItemSegments> segments;
 
   // The DOM to text content offset mapping of this inline node.
-  Member<NGOffsetMapping> offset_mapping;
+  Member<OffsetMapping> offset_mapping;
 
   bool IsValidOffset(unsigned index, unsigned offset) const {
     return index < items.size() && items[index].IsValidOffset(offset);
   }
-  bool IsValidOffset(const NGInlineItemTextIndex& index) const {
+  bool IsValidOffset(const InlineItemTextIndex& index) const {
     return IsValidOffset(index.item_index, index.text_offset);
   }
 
   void AssertOffset(unsigned index, unsigned offset) const {
     items[index].AssertOffset(offset);
   }
-  void AssertOffset(const NGInlineItemTextIndex& index) const {
+  void AssertOffset(const InlineItemTextIndex& index) const {
     AssertOffset(index.item_index, index.text_offset);
   }
   void AssertEndOffset(unsigned index, unsigned offset) const {
@@ -60,7 +59,7 @@ struct CORE_EXPORT NGInlineItemsData
   }
 
   // Get a list of |kOpenTag| that are open at |size|.
-  using OpenTagItems = Vector<const NGInlineItem*, 16>;
+  using OpenTagItems = Vector<const InlineItem*, 16>;
   void GetOpenTagItems(wtf_size_t size, OpenTagItems* open_items) const;
 
 #if DCHECK_IS_ON()

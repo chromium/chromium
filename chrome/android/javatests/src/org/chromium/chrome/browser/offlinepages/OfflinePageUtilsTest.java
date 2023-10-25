@@ -332,11 +332,7 @@ public class OfflinePageUtilsTest {
                                     REQUEST_ORIGIN);
                     OfflinePageBridge offlinePageBridge =
                             OfflinePageBridge.getForProfile(
-                                    Profile.fromWebContents(
-                                            sActivityTestRule
-                                                    .getActivity()
-                                                    .getActivityTab()
-                                                    .getWebContents()));
+                                    sActivityTestRule.getActivity().getActivityTab().getProfile());
 
                     boolean isSharable =
                             OfflinePageUtils.isOfflinePageShareable(

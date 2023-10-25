@@ -5,8 +5,6 @@
 #include "ash/wm/default_state.h"
 
 #include "ash/public/cpp/metrics_util.h"
-#include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/cpp/window_animation_types.h"
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
@@ -34,6 +32,7 @@
 #include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/wm/core/window_animations.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -409,7 +408,8 @@ void DefaultState::HandleTransitionEvents(WindowState* window_state,
   }
 
   if (type == WM_EVENT_SNAP_PRIMARY || type == WM_EVENT_SNAP_SECONDARY) {
-    HandleWindowSnapping(window_state, type);
+    HandleWindowSnapping(window_state, type,
+                         event->AsSnapEvent()->snap_action_source());
   }
 
   if (next_state_type == current_state_type && window_state->IsSnapped()) {
@@ -434,7 +434,7 @@ void DefaultState::HandleTransitionEvents(WindowState* window_state,
     } else {
       CHECK(event->IsSnapEvent());
       window_state->RecordWindowSnapActionSource(
-          static_cast<const WindowSnapWMEvent*>(event)->snap_action_source());
+          event->AsSnapEvent()->snap_action_source());
     }
   }
 

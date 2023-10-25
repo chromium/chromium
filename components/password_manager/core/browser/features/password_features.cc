@@ -21,7 +21,7 @@ BASE_FEATURE(kBiometricTouchToFill,
 // Delete undecryptable passwords from the store when Sync is active.
 BASE_FEATURE(kClearUndecryptablePasswordsOnSync,
              "ClearUndecryptablePasswordsInSync",
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_IOS)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -116,7 +116,12 @@ BASE_FEATURE(kSharedPasswordNotificationUI,
 // manager
 BASE_FEATURE(kSkipUndecryptablePasswords,
              "SkipUndecryptablePasswords",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 #if BUILDFLAG(IS_ANDROID)
 // Enables use of Google Mobile services for non-synced password storage that
@@ -181,6 +186,12 @@ extern const base::FeatureParam<int> kMaxSingleUsernameFieldsToStore{
 // between username and password fields in Username First Flow.
 BASE_FEATURE(kUsernameFirstFlowWithIntermediateValues,
              "UsernameFirstFlowWithIntermediateValues",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables voting for more text fields outside of the password form in Username
+// First Flow.
+BASE_FEATURE(kUsernameFirstFlowWithIntermediateValuesVoting,
+             "UsernameFirstFlowWithIntermediateValuesVoting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace password_manager::features

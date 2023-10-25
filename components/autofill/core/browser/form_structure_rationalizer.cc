@@ -347,7 +347,7 @@ void FormStructureRationalizer::RationalizeCreditCardFieldPredictions(
                   << "Credit card rationalization: Found multiple expiration "
                      "months and the field following one is not an "
                      "expiration year but "
-                  << FieldTypeToStringPiece(next_field_type) << ".";
+                  << FieldTypeToStringView(next_field_type) << ".";
               field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
             }
           }
@@ -451,7 +451,7 @@ void FormStructureRationalizer::RationalizeMultiOriginCreditCardFields(
               << LoggingScope::kRationalization << LogMessage::kRationalization
               << "Multi-origin Credit Card Rationalization: Converting type of "
               << field->global_id() << " from "
-              << FieldTypeToStringPiece(relevant_type) << " to UNKNOWN_TYPE";
+              << FieldTypeToStringView(relevant_type) << " to UNKNOWN_TYPE";
         }
       }
     }
@@ -594,8 +594,8 @@ void FormStructureRationalizer::RationalizePhoneNumberTrunkTypes(
         field.SetTypeTo(AutofillType(new_type));
         LOG_AF(log_manager)
             << LoggingScope::kRationalization << LogMessage::kRationalization
-            << "Converting " << FieldTypeToStringPiece(current_type) << " to "
-            << FieldTypeToStringPiece(new_type)
+            << "Converting " << FieldTypeToStringView(current_type) << " to "
+            << FieldTypeToStringView(new_type)
             << " as part of phone number trunk type rationalization";
       };
 
@@ -972,7 +972,7 @@ void FormStructureRationalizer::RationalizeTypeRelationships(
       field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
       LOG_AF(log_manager)
           << "RationalizeTypeRelationships: Fields of type "
-          << FieldTypeToStringPiece(field_type)
+          << FieldTypeToStringView(field_type)
           << " can only exist if other fields of specific types exist.";
     }
   }

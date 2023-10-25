@@ -90,8 +90,8 @@ CaretPositionResolution TryResolveCaretPositionInTextFragment(
   if (cursor.Current().IsGeneratedText())
     return CaretPositionResolution();
 
-  const NGOffsetMapping& mapping =
-      *NGOffsetMapping::GetFor(cursor.Current().GetLayoutObject());
+  const OffsetMapping& mapping =
+      *OffsetMapping::GetFor(cursor.Current().GetLayoutObject());
 
   // A text fragment natually allows caret placement in offset range
   // [StartOffset(), EndOffset()], i.e., from before the first character to
@@ -151,7 +151,7 @@ unsigned GetTextOffsetBefore(const Node& node) {
   DCHECK(node.GetLayoutObject()->IsAtomicInlineLevel());
   const Position before_node = Position::BeforeNode(node);
   absl::optional<unsigned> maybe_offset_before =
-      NGOffsetMapping::GetFor(before_node)->GetTextContentOffset(before_node);
+      OffsetMapping::GetFor(before_node)->GetTextContentOffset(before_node);
   // We should have offset mapping for atomic inline boxes.
   DCHECK(maybe_offset_before.has_value());
   return *maybe_offset_before;
@@ -418,8 +418,7 @@ NGCaretPosition ComputeNGCaretPosition(
     return NGCaretPosition();
   }
 
-  const NGOffsetMapping* const mapping =
-      NGInlineNode::GetOffsetMapping(context);
+  const OffsetMapping* const mapping = InlineNode::GetOffsetMapping(context);
   if (!mapping) {
     // TODO(yosin): We should find when we reach here[1].
     // [1] http://crbug.com/1100481
@@ -483,8 +482,8 @@ PositionWithAffinity NGCaretPosition::ToPositionInDOMTreeWithAffinity() const {
     case NGCaretPositionType::kAtTextOffset:
       // In case of ::first-letter, |cursor.Current().GetNode()| is null.
       DCHECK(text_offset.has_value());
-      const NGOffsetMapping* mapping =
-          NGOffsetMapping::GetFor(cursor.Current().GetLayoutObject());
+      const OffsetMapping* mapping =
+          OffsetMapping::GetFor(cursor.Current().GetLayoutObject());
       if (!mapping) {
         // TODO(yosin): We're not sure why |mapping| is |nullptr|. It seems
         // we are attempt to use destroyed/moved |FragmentItem|.

@@ -7633,6 +7633,13 @@ ChromeContentBrowserClient::ShouldOverridePrivateNetworkRequestPolicy(
   }
 #endif
 
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  if (profile->GetPrefs()->GetBoolean(
+          prefs::kManagedPrivateNetworkAccessRestrictionsEnabled)) {
+    return content::ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
+        kBlockInsteadOfWarn;
+  }
+
   return content::ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
       kDefault;
 }

@@ -76,8 +76,6 @@ class PersonalizationAppWallpaperDailyRefreshBrowserTest
       public ScheduledFeature::Clock {
  public:
   PersonalizationAppWallpaperDailyRefreshBrowserTest() {
-    scoped_feature_list_.InitWithFeatures({features::kWallpaperRefreshRevamp},
-                                          {});
     base::Time start_time = base::Time::Now();
     clock_.SetNow(start_time);
     tick_clock_.SetNowTicks(base::TimeTicks() + (start_time - base::Time()));

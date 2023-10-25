@@ -297,10 +297,12 @@ void FlatRulesetIndexer::AddUrlRule(const IndexedRule& indexed_rule) {
   }
 
   FlatVectorOffset<flat::ModifyHeaderInfo> request_headers_offset =
-      BuildModifyHeaderInfoOffset(&builder_, indexed_rule.request_headers);
+      BuildModifyHeaderInfoOffset(&builder_,
+                                  indexed_rule.request_headers_to_modify);
 
   FlatVectorOffset<flat::ModifyHeaderInfo> response_headers_offset =
-      BuildModifyHeaderInfoOffset(&builder_, indexed_rule.response_headers);
+      BuildModifyHeaderInfoOffset(&builder_,
+                                  indexed_rule.response_headers_to_modify);
 
   metadata_.push_back(flat::CreateUrlRuleMetadata(
       builder_, indexed_rule.id,

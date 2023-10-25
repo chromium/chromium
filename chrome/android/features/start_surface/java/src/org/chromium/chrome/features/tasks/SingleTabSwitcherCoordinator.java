@@ -39,12 +39,12 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class SingleTabSwitcherCoordinator implements TabSwitcher {
     private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private final SingleTabSwitcherMediator mMediator;
-    private final SingleTabSwitcherOnTabletMediator mMediatorOnTablet;
+    private final SingleTabSwitcherOnNtpMediator mMediatorOnNtp;
     private final TabListFaviconProvider mTabListFaviconProvider;
     private final TabSwitcher.TabListDelegate mTabListDelegate;
     private final TabModelSelector mTabModelSelector;
     private ViewGroup mContainer;
-    private boolean mIsTablet;
+    private boolean mIsShownOnNtp;
     private TabObserver mLastActiveTabObserver;
     private Tab mLastActiveTab;
 
@@ -53,13 +53,13 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
 
     public SingleTabSwitcherCoordinator(@NonNull Activity activity, @NonNull ViewGroup container,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            @NonNull TabModelSelector tabModelSelector, boolean isTablet,
-            boolean isScrollableMvtEnabled, Tab mostRecentTab,
+            @NonNull TabModelSelector tabModelSelector, boolean isShownOnNtp,
+            boolean isTablet, boolean isScrollableMvtEnabled, Tab mostRecentTab,
             @Nullable Runnable singleTabCardClickedCallback,
             @Nullable Runnable snapshotParentViewRunnable,
             @Nullable TabContentManager tabContentManager, @Nullable UiConfig uiConfig) {
         mTabModelSelector = tabModelSelector;
-        mIsTablet = isTablet;
+        mIsShownOnNtp = isShownOnNtp;
         mLastActiveTab = mostRecentTab;
         mSnapshotParentViewRunnable = snapshotParentViewRunnable;
         boolean isSurfacePolishEnabled = isSurfacePolishEnabled();
@@ -75,17 +75,17 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
         mTabListFaviconProvider = new TabListFaviconProvider(activity, false,
                 isSurfacePolishEnabled ? R.dimen.favicon_corner_radius_polished
                                        : R.dimen.default_favicon_corner_radius);
-        if (!mIsTablet) {
+        if (!mIsShownOnNtp) {
             mMediator = new SingleTabSwitcherMediator(activity, propertyModel, tabModelSelector,
                     mTabListFaviconProvider, isSurfacePolishEnabled ? tabContentManager : null,
                     isSurfacePolishEnabled);
-            mMediatorOnTablet = null;
+            mMediatorOnNtp = null;
         } else {
-            mMediatorOnTablet = new SingleTabSwitcherOnTabletMediator(activity, propertyModel,
+            mMediatorOnNtp = new SingleTabSwitcherOnNtpMediator(activity, propertyModel,
                     activityLifecycleDispatcher, tabModelSelector, mTabListFaviconProvider,
                     mostRecentTab, isScrollableMvtEnabled, singleTabCardClickedCallback,
                     isSurfacePolishEnabled ? tabContentManager : null,
-                    isSurfacePolishEnabled ? uiConfig : null);
+                    isSurfacePolishEnabled && isTablet ? uiConfig : null, isTablet);
             mMediator = null;
         }
         if (ChromeFeatureList.sInstantStart.isEnabled()) {
@@ -246,11 +246,11 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
     @Override
     public void setTabSwitcherRecyclerViewPosition(RecyclerViewPosition recyclerViewPosition) {}
 
-    /** @see SingleTabSwitcherOnTabletMediator#setVisibility. */
+    /** @see SingleTabSwitcherOnNtpMediator#setVisibility. */
     void setVisibility(boolean isVisible) {
-        if (!mIsTablet) return;
+        if (!mIsShownOnNtp) return;
 
-        mMediatorOnTablet.setVisibility(isVisible);
+        mMediatorOnNtp.setVisibility(isVisible);
         mContainer.setVisibility(isVisible ? View.VISIBLE : View.GONE);
     }
 
@@ -260,7 +260,7 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
      * @param mostRecentTab The most recent Tab to track.
      */
     public void showModule(Tab mostRecentTab) {
-        if (!mIsTablet) return;
+        if (!mIsShownOnNtp) return;
 
         showModule(true, mostRecentTab);
     }
@@ -269,7 +269,7 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
      * Shows the single tab module.
      */
     public void showModule() {
-        if (!mIsTablet) return;
+        if (!mIsShownOnNtp) return;
 
         showModule(false, null);
     }
@@ -278,7 +278,7 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
      * Hides the single tab module.
      */
     public void hide() {
-        if (!mIsTablet) return;
+        if (!mIsShownOnNtp) return;
 
         setVisibility(false);
     }
@@ -289,7 +289,7 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
      * @param mostRecentTab The most recent Tab to track.
      */
     private void showModule(boolean shouldUpdateTab, Tab mostRecentTab) {
-        if (!mIsTablet) return;
+        if (!mIsShownOnNtp) return;
 
         boolean hasTabToTrack = true;
         if (shouldUpdateTab) {
@@ -303,8 +303,8 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
      * @return Whether has a Tab to track. Returns false if the Tab to track is set as null.
      */
     public boolean updateTrackingTab(Tab tabToTrack) {
-        assert mIsTablet;
-        boolean hasTabToTrack = mMediatorOnTablet.setTab(tabToTrack);
+        assert mIsShownOnNtp;
+        boolean hasTabToTrack = mMediatorOnNtp.setTab(tabToTrack);
         if (hasTabToTrack && mLastActiveTab == null) {
             mLastActiveTab = tabToTrack;
             beginObserving();
@@ -318,16 +318,16 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
             mLastActiveTab = null;
             mLastActiveTabObserver = null;
         }
-        if (mMediatorOnTablet != null) {
-            mMediatorOnTablet.destroy();
+        if (mMediatorOnNtp != null) {
+            mMediatorOnNtp.destroy();
         }
     }
 
     @VisibleForTesting
     public boolean isVisible() {
-        if (mMediatorOnTablet == null) return false;
+        if (mMediatorOnNtp == null) return false;
 
-        return mMediatorOnTablet.isVisible();
+        return mMediatorOnNtp.isVisible();
     }
 
     private boolean isSurfacePolishEnabled() {

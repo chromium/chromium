@@ -495,9 +495,10 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
 }
 
 // The Promise resolves when it's guaranteed that no additional frames will
-// be issued with an earlier crop version. That an actual frame be issued
-// at all, let alone with the new crop version, is not actually required,
-// or else these promises could languish unfulfilled indefinitely.
+// be issued with an earlier sub-capture-target version. That an actual frame be
+// issued at all, let alone with the new sub-capture-target version, is not
+// actually required, or else these promises could languish unfulfilled
+// indefinitely.
 IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
                        CropToOfInvisibleElementResolvesInTimelyFashion) {
   SetUpTest(Frame::kTopLevelDocument, /*self_capture=*/true);
@@ -593,8 +594,8 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
 // Tests related to behavior when cloning.
 class RegionCaptureClonesBrowserTest : public RegionCaptureBrowserTest {
  public:
-  static const std::string kCropTarget0;
-  static const std::string kCropTarget1;
+  static constexpr char kCropTarget0[] = "0";
+  static constexpr char kCropTarget1[] = "1";
 
   ~RegionCaptureClonesBrowserTest() override = default;
 
@@ -622,9 +623,6 @@ class RegionCaptureClonesBrowserTest : public RegionCaptureBrowserTest {
 
   bool Deallocate(Track track) { return tabs_[kMainTab].Deallocate(track); }
 };
-
-const std::string RegionCaptureClonesBrowserTest::kCropTarget0 = "0";
-const std::string RegionCaptureClonesBrowserTest::kCropTarget1 = "1";
 
 // Sanity cloning 1/2.
 IN_PROC_BROWSER_TEST_F(RegionCaptureClonesBrowserTest,

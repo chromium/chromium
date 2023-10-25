@@ -23,9 +23,9 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_observer.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_notification_helper.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -50,7 +50,7 @@ base::TimeDelta kScreenShareResumeDelay = base::Milliseconds(500);
 void ReportEvent(GURL url,
                  DlpRulesManager::Restriction restriction,
                  DlpRulesManager::Level level,
-                 DlpReportingManager* reporting_manager) {
+                 data_controls::DlpReportingManager* reporting_manager) {
   DCHECK(reporting_manager);
 
   DlpRulesManager* rules_manager =
@@ -108,6 +108,24 @@ const absl::optional<std::string> RestrictionToWarnProceededUMASuffix(
 
 }  // namespace
 
+DlpContentManager::WebContentsInfo::WebContentsInfo() = default;
+
+DlpContentManager::WebContentsInfo::WebContentsInfo(
+    content::WebContents* web_contents,
+    DlpContentRestrictionSet restriction_set,
+    std::vector<DlpContentTabHelper::RfhInfo> rfh_info_vector)
+    : web_contents(web_contents),
+      restriction_set(std::move(restriction_set)),
+      rfh_info_vector(std::move(rfh_info_vector)) {}
+
+DlpContentManager::WebContentsInfo::WebContentsInfo(const WebContentsInfo&) =
+    default;
+
+DlpContentManager::WebContentsInfo&
+DlpContentManager::WebContentsInfo::operator=(const WebContentsInfo&) = default;
+
+DlpContentManager::WebContentsInfo::~WebContentsInfo() = default;
+
 // static
 DlpContentManager* DlpContentManager::Get() {
   return static_cast<DlpContentManager*>(DlpContentObserver::Get());
@@ -130,7 +148,7 @@ bool DlpContentManager::IsScreenShareBlocked(
 void DlpContentManager::CheckPrintingRestriction(
     content::WebContents* web_contents,
     content::GlobalRenderFrameHostId rfh_id,
-    OnDlpRestrictionCheckedCallback callback) {
+    WarningCallback callback) {
   const RestrictionLevelAndUrl restriction_info =
       GetPrintingRestrictionInfo(web_contents, rfh_id);
   MaybeReportEvent(restriction_info, DlpRulesManager::Restriction::kPrinting);
@@ -196,7 +214,7 @@ bool DlpContentManager::IsScreenshotApiRestricted(
 }
 
 void DlpContentManager::SetReportingManagerForTesting(
-    DlpReportingManager* reporting_manager) {
+    data_controls::DlpReportingManager* reporting_manager) {
   DCHECK(!reporting_manager_);
   DCHECK(reporting_manager);
   reporting_manager_ = reporting_manager;
@@ -475,6 +493,22 @@ void DlpContentManager::RemoveObserver(
   observer_lists_[static_cast<int>(restriction)].RemoveObserver(observer);
 }
 
+std::vector<DlpContentManager::WebContentsInfo>
+DlpContentManager::GetWebContentsInfo() const {
+  std::vector<WebContentsInfo> web_contents_info_vector;
+  for (const auto& [web_contents, restriction_set] :
+       confidential_web_contents_) {
+    DlpContentManager::WebContentsInfo web_contents_info(web_contents,
+                                                         restriction_set, {});
+    auto* tab_helper = DlpContentTabHelper::FromWebContents(web_contents);
+    if (tab_helper) {
+      web_contents_info.rfh_info_vector = tab_helper->GetFramesInfo();
+    }
+    web_contents_info_vector.push_back(std::move(web_contents_info));
+  }
+  return web_contents_info_vector;
+}
+
 DlpContentManager::DlpContentManager() {
   // Start observing tab strip models for all browsers.
   BrowserList* browser_list = BrowserList::GetInstance();
@@ -494,7 +528,7 @@ DlpContentManager::~DlpContentManager() {
 void DlpContentManager::ReportWarningProceededEvent(
     const GURL& url,
     DlpRulesManager::Restriction restriction,
-    DlpReportingManager* reporting_manager) {
+    data_controls::DlpReportingManager* reporting_manager) {
   if (!reporting_manager)
     return;
 
@@ -513,7 +547,7 @@ void DlpContentManager::ReportWarningProceededEvent(
 bool DlpContentManager::MaybeReportWarningProceededEvent(
     GURL url,
     DlpRulesManager::Restriction restriction,
-    DlpReportingManager* reporting_manager,
+    data_controls::DlpReportingManager* reporting_manager,
     bool should_proceed) {
   if (should_proceed) {
     ReportWarningProceededEvent(url, restriction, reporting_manager);
@@ -613,7 +647,7 @@ DlpContentManager::GetScreenShareConfidentialContentsInfoForWebContents(
 void DlpContentManager::ProcessScreenShareRestriction(
     const std::u16string& application_title,
     ConfidentialContentsInfo info,
-    OnDlpRestrictionCheckedCallback callback) {
+    WarningCallback callback) {
   data_controls::DlpBooleanHistogram(data_controls::dlp::kScreenShareBlockedUMA,
                                      IsBlocked(info.restriction_info));
   data_controls::DlpBooleanHistogram(data_controls::dlp::kScreenShareWarnedUMA,
@@ -876,7 +910,7 @@ void DlpContentManager::OnDlpScreenShareWarnDialogReply(
 void DlpContentManager::OnDlpWarnDialogReply(
     const DlpConfidentialContents& confidential_contents,
     DlpRulesManager::Restriction restriction,
-    OnDlpRestrictionCheckedCallback callback,
+    WarningCallback callback,
     bool should_proceed) {
   auto suffix = RestrictionToWarnProceededUMASuffix(restriction);
   if (suffix.has_value())

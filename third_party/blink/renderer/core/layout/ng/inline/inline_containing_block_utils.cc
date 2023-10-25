@@ -17,8 +17,8 @@ namespace {
 // std::pair.first points to the start linebox fragment.
 // std::pair.second points to the end linebox fragment.
 // TODO(layout-dev): Update this to a struct for increased readability.
-using LineBoxPair = std::pair<const NGPhysicalLineBoxFragment*,
-                              const NGPhysicalLineBoxFragment*>;
+using LineBoxPair =
+    std::pair<const PhysicalLineBoxFragment*, const PhysicalLineBoxFragment*>;
 
 // |fragment_converter| is the converter for the current containing block
 // fragment, and |containing_block_converter| is the converter of the
@@ -36,10 +36,10 @@ void GatherInlineContainerFragmentsFromItems(
     const WritingModeConverter* fragment_converter = nullptr,
     const WritingModeConverter* containing_block_converter = nullptr) {
   DCHECK_EQ(!!fragment_converter, !!containing_block_converter);
-  const NGPhysicalLineBoxFragment* linebox = nullptr;
+  const PhysicalLineBoxFragment* linebox = nullptr;
   for (const auto& item : items) {
     // Track the current linebox.
-    if (const NGPhysicalLineBoxFragment* current_linebox =
+    if (const PhysicalLineBoxFragment* current_linebox =
             item->LineBoxFragment()) {
       linebox = current_linebox;
       continue;

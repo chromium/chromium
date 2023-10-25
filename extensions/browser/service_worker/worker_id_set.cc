@@ -24,6 +24,8 @@ constexpr int kSmallestRenderProcessId =
     content::ChildProcessHost::kInvalidUniqueID;
 constexpr int kMaxWorkerCountToReport = 50;
 
+bool g_allow_multiple_workers_per_extension = false;
+
 static_assert(kSmallestVersionId < 0,
               "Sentinel version_id must be smaller than any valid version id.");
 static_assert(kSmallestThreadId < 0,
@@ -39,10 +41,15 @@ WorkerIdSet::~WorkerIdSet() = default;
 
 void WorkerIdSet::Add(const WorkerId& worker_id) {
   workers_.insert(worker_id);
+  size_t new_size = GetAllForExtension(worker_id.extension_id).size();
   base::UmaHistogramExactLinear(
-      "Extensions.ServiceWorkerBackground.WorkerCountAfterAdd",
-      GetAllForExtension(worker_id.extension_id).size(),
+      "Extensions.ServiceWorkerBackground.WorkerCountAfterAdd", new_size,
       kMaxWorkerCountToReport);
+
+  if (!g_allow_multiple_workers_per_extension) {
+    DCHECK_LE(new_size, 1u) << "Extension with worker id " << worker_id
+                            << " added additional worker";
+  }
 }
 
 bool WorkerIdSet::Remove(const WorkerId& worker_id) {
@@ -104,6 +111,12 @@ std::vector<WorkerId> WorkerIdSet::GetAllForExtension(
 
 std::vector<WorkerId> WorkerIdSet::GetAllForTesting() const {
   return std::vector<WorkerId>(workers_.begin(), workers_.end());
+}
+
+// static
+base::AutoReset<bool>
+WorkerIdSet::AllowMultipleWorkersPerExtensionForTesting() {
+  return base::AutoReset<bool>(&g_allow_multiple_workers_per_extension, true);
 }
 
 }  // namespace extensions

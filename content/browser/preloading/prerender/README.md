@@ -15,7 +15,8 @@ The Prerender2 is the new implementation of prerendering.
 # Terminology
 
 - **Trigger**: "Trigger" is an entry point to start prerendering. Currently,
-  `<script type="speculationrules">` is the only trigger.
+  `<script type="speculationrules">` is the only trigger in content/.
+  Embedders may define their triggers by calling `WebContents::StartPrerendering`.
 - **Activate**: The Prerender2 runs navigation code twice: navigation for
   prerendering a page, and navigation for displaying the prerendered page.
   "Activate" indicates the latter navigation.
@@ -83,6 +84,75 @@ is activated (a similar pattern is used by `PageLoadMetricsObserver`s outside
 content/). In the future, we may want to support recording UKMs after activation
 with both source IDs. This will require registering the prerender navigation
 source ID with a URL after activation.
+
+# Tips for Chromium Developers
+
+Note that this section is targeting Chromium developers, to help diagnose issues where prerendering needs to be enabled or disabled.
+For web development, see
+[Prerender pages in Chrome for instant page navigations](https://developer.chrome.com/blog/prerender-pages/) and
+[Debugging speculation rules](https://developer.chrome.com/blog/debugging-speculation-rules/).
+
+## Debugging tips
+
+### Force-enable prerendering
+
+#### Prerendering a link on a page
+1. Download the extension of [Prerender Tweak](https://github.com/toyoshim/Prerender-Tweaks).
+2. Install it in chrome://extensions.
+3. Click the icon of the extension to see how to trigger prerendering in this
+case.
+
+#### Prerendering a URL
+
+For now the best strategy is to prerender the url with the bookmark bar's help.
+1. Enable prerendering bookmark bar with command line `--enable-features=BookmarkTriggerForPrerender2`
+2. Save the URL as a bookmark. Ensure the icon is displayed on the bookmark bar.
+3. Trigger prerendering by clicking the button OR hovering more than 300ms.
+
+Note it is expected that prerender2 would only prerender HTTPS sites with this approach.
+
+An alternative is to trigger prerender with Direct URL Input in omnibox. Refer to
+[Demonstration of URL-bar-triggered Omnibox prerendering](https://docs.google.com/document/d/1sUbxYSu1o5G76tA4UW_xxgcfcOn8j6NlJc_Go0Gwb_Q/),
+which demonstrates how to trigger it.
+
+### Force-disable all prerender triggers
+
+- The simplest and most aggressive way is disabling preloading on chrome://settings/preloading.
+- If you only want to disable Prerender2, run chromium with the command of
+  `--enable-features=Prerender2MemoryControls:memory_threshold_in_mb/10000000`.
+  This command makes prerender2 only run on devices with more than 10,000,000 MB
+  memory, and it should be able to stop prerender2 from triggering on (almost)
+  all devices (Change `10000000` to a bigger value if needed).
+
+## Tell whether prerender has started
+- For speculationrules-triggered ones, refer to [Debugging speculation rules](https://developer.chrome.com/blog/debugging-speculation-rules/).
+- For embedder-triggered ones:
+  -  Determine whether prerender is running with chrome://process-internals
+     1. Open chrome://process-internals/#web-contents
+     2. Find the corresponding WebContents to the tab where you will trigger
+     prerendering.
+     3. Attempt to trigger prerendering.
+     4. Click Refresh button in the process-internals page (just below the section title of "Frame Tree").
+     If prerender has started, you will see another FrameTree in the
+     WebContents.
+  - Determine whether prerender is running with Task Manager
+     1. Open Task Manager, which can be found under three-dots menu > More Tools.
+     2. Find the corresponding task to the tab where you will trigger prerendering.
+     3. Attempt to trigger prerendering.
+     4. If prerender has started, a new task starting with "Prerender: " will be displayed under that task.
+
+     * Note: For the "prerender-new-tab" feature, this approach does not work.
+     https://crbug.com/1494829
+  - Determine whether prerendered pages were activated:
+    `chrome://histograms/Prerender.Experimental.PrerenderHostFinalStatus` covers
+    the final status of all triggers, and the meaning of each enum item can be found
+    in
+    [PrerenderFinalStatus](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/preloading/prerender/prerender_final_status.h).
+
+
+## Demo sites:
+- https://prerender2-specrules.glitch.me/
+
 
 # References
 

@@ -106,7 +106,7 @@ namespace blink {
 
 void ImageDecoderBaseTest::SetUp() {
   base::FilePath data_dir;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &data_dir));
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &data_dir));
   data_dir_ = data_dir.AppendASCII("webkit").AppendASCII("data").AppendASCII(
       format_.Utf8() + "_decoder");
   if (!base::PathExists(data_dir_)) {

@@ -1,0 +1,5 @@
+HTTP/1.1 200 OK
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Private-Network: true
+Private-Network-Access-ID: 01:01:01:01:01:01
+Private-Network-Access-Name: test

@@ -1,4 +1,4 @@
 Document
-++Window IsControlElement=false Window.IsModal=true
+++Window Window.IsModal=true
 ++++Text Name='This is the now active dialog. Of course it should be in the tree. '
 ++++Button Name='This is in the active dialog and should be in the tree.'

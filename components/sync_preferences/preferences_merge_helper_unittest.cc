@@ -21,12 +21,11 @@ const char kMergeableListPref[] = "mergeable.list.pref";
 const std::unordered_map<std::string, SyncablePrefMetadata>
     kSyncablePrefsDatabase = {
         {kMergeableListPref,
-         {/*syncable_pref_id=*/1, syncer::PREFERENCES,
-          /*is_history_opt_in_required=*/false,
+         {/*syncable_pref_id=*/1, syncer::PREFERENCES, PrefSensitivity::kNone,
           MergeBehavior::kMergeableListWithRewriteOnUpdate}},
         {kMergeableDictPref,
-         {/*syncable_pref_id=*/2, syncer::PREFERENCES,
-          /*is_history_opt_in_required=*/false, MergeBehavior::kMergeableDict}},
+         {/*syncable_pref_id=*/2, syncer::PREFERENCES, PrefSensitivity::kNone,
+          MergeBehavior::kMergeableDict}},
 };
 
 TEST(PreferencesMergeHelperTest, MergeListValues) {

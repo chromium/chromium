@@ -179,6 +179,8 @@ public class SiteSettingsTest {
     private PermissionUpdateWaiter mPermissionUpdateWaiter;
 
     private static final String[] NULL_ARRAY = new String[0];
+    private static final String[] BINARY_TOGGLE_AND_INFO_TEXT =
+            new String[] {"info_text", "binary_toggle"};
     private static final String[] BINARY_TOGGLE = new String[] {"binary_toggle"};
     private static final String[] BINARY_TOGGLE_WITH_EXCEPTION_AND_INFO_TEXT =
             new String[] {"info_text", "binary_toggle", "add_exception"};
@@ -1498,7 +1500,9 @@ public class SiteSettingsTest {
     @EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_STORAGE_ACCESS})
     public void testOnlyExpectedPreferencesStorageAccess() {
         testExpectedPreferences(
-                SiteSettingsCategory.Type.STORAGE_ACCESS, BINARY_TOGGLE, BINARY_TOGGLE);
+                SiteSettingsCategory.Type.STORAGE_ACCESS,
+                BINARY_TOGGLE_AND_INFO_TEXT,
+                BINARY_TOGGLE_AND_INFO_TEXT);
     }
 
     @Test
@@ -2634,6 +2638,9 @@ public class SiteSettingsTest {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    HistogramWatcher histogramExpectation =
+                            HistogramWatcher.newSingleRecordWatcher(
+                                    "Android.RequestDesktopSite.WindowSettingChanged", true);
                     SingleCategorySettings preferences =
                             (SingleCategorySettings) settingsActivity.getMainFragment();
                     // Window setting is only available when the Global Setting is ON.
@@ -2653,6 +2660,7 @@ public class SiteSettingsTest {
                     Assert.assertTrue(
                             "Window setting should be ON.",
                             prefService.getBoolean(DESKTOP_SITE_WINDOW_SETTING_ENABLED));
+                    histogramExpectation.assertExpected();
 
                     preferences.onPreferenceChange(windowSettingPref, false);
                     Assert.assertFalse(

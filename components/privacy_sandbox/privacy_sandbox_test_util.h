@@ -15,6 +15,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/origin.h"
@@ -93,10 +94,12 @@ class MockPrivacySandboxSettingsDelegate
     });
   }
 
-  void SetUpIsCookieDeprecationExperimentCurrentlyEligibleResponse(
-      bool eligible) {
-    ON_CALL(*this, IsCookieDeprecationExperimentCurrentlyEligible)
-        .WillByDefault([=]() { return eligible; });
+  void SetUpGetCookieDeprecationExperimentCurrentEligibility(
+      privacy_sandbox::TpcdExperimentEligibility::Reason eligibility_reason) {
+    ON_CALL(*this, GetCookieDeprecationExperimentCurrentEligibility)
+        .WillByDefault([=]() {
+          return privacy_sandbox::TpcdExperimentEligibility(eligibility_reason);
+        });
   }
 
   MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (const, override));
@@ -112,8 +115,8 @@ class MockPrivacySandboxSettingsDelegate
               IsCookieDeprecationExperimentEligible,
               (),
               (const, override));
-  MOCK_METHOD(bool,
-              IsCookieDeprecationExperimentCurrentlyEligible,
+  MOCK_METHOD(privacy_sandbox::TpcdExperimentEligibility,
+              GetCookieDeprecationExperimentCurrentEligibility,
               (),
               (const, override));
 };

@@ -10,14 +10,13 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/limits.h"
-#include "media/base/media_switches.h"
+#include "media/base/platform_features.h"
 #include "media/base/video_codecs.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/macros.h"
@@ -184,11 +183,6 @@ void V4L2StatefulVideoDecoderBackend::DoDecodeWork() {
     DCHECK_EQ(current_decode_request_->bytes_used, 0u);
 
     if (IsVp9KSVCStream(profile_, *current_decode_request_->buffer)) {
-      if (!base::FeatureList::IsEnabled(media::kVp9kSVCHWDecoding)) {
-        DLOG(ERROR) << "Vp9 k-SVC hardware decoding is disabled";
-        client_->OnBackendError();
-        return;
-      }
       if (!IsVp9KSVCSupportedDriver(driver_name_)) {
         DLOG(ERROR) << driver_name_ << " doesn't support VP9 k-SVC decoding";
         client_->OnBackendError();

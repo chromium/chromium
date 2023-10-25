@@ -22,19 +22,19 @@ bool IsNavigationInterceptable(const NavigateParams& params,
 // how to load. Returns |true| if the navigation was intercepted.
 bool MaybeInterceptNavigation(const GURL& url);
 
-// Checks if Ash is allowed and able to handle the requested URL or not.
-// Note that the passed |url| must be sanitized before passing in.
-bool IsUrlAcceptedByAsh(const GURL& url);
-
-// Checks if Lacros is able to handle the requested URL or not.
-// Note that the passed |url| must be sanitized before passing in.
-bool IsUrlHandledByLacros(const GURL& requested_url);
-
 // This is an explicit url redirect executed in Ash. It returns |true| when
 // a navigation has been forwarded to Ash. This call is used for chrome:// and
 // os:// URLs which are handled either by Ash or Ash and Lacros.
 // Note that only Ash allow listed url's can be called.
-bool NavigateInAsh(const GURL& url);
+bool NavigateInAsh(GURL url);
+
+// Exposed for testing only.
+// Checks if Ash is allowed and able to handle the requested URL or not.
+bool IsUrlAcceptedByAsh(const GURL& url);
+
+// Exposed for testing only.
+// Checks if Lacros is able to handle the requested URL or not.
+bool IsUrlHandledByLacros(const GURL& url);
 
 }  // namespace lacros_url_handling
 

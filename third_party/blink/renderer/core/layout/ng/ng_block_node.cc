@@ -62,11 +62,11 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_replaced_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_simplified_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_space_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
-#include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm.h"
-#include "third_party/blink/renderer/core/layout/ng/table/ng_table_row_layout_algorithm.h"
-#include "third_party/blink/renderer/core/layout/ng/table/ng_table_section_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape_outside_info.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
+#include "third_party/blink/renderer/core/layout/table/table_layout_algorithm.h"
+#include "third_party/blink/renderer/core/layout/table/table_row_layout_algorithm.h"
+#include "third_party/blink/renderer/core/layout/table/table_section_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/mathml/mathml_element.h"
 #include "third_party/blink/renderer/core/mathml/mathml_fraction_element.h"
@@ -164,8 +164,8 @@ NOINLINE void DetermineAlgorithmAndRun(const NGLayoutAlgorithmParams& params,
                                        const Callback& callback) {
   const ComputedStyle& style = params.node.Style();
   const LayoutBox& box = *params.node.GetLayoutBox();
-  if (box.IsLayoutNGFlexibleBox()) {
-    CreateAlgorithmAndRun<NGFlexLayoutAlgorithm>(params, callback);
+  if (box.IsFlexibleBox()) {
+    CreateAlgorithmAndRun<FlexLayoutAlgorithm>(params, callback);
   } else if (box.IsTable()) {
     CreateAlgorithmAndRun<TableLayoutAlgorithm>(params, callback);
   } else if (box.IsTableRow()) {
@@ -176,7 +176,7 @@ NOINLINE void DetermineAlgorithmAndRun(const NGLayoutAlgorithmParams& params,
     CreateAlgorithmAndRun<CustomLayoutAlgorithm>(params, callback);
   } else if (box.IsMathML()) {
     DetermineMathMLAlgorithmAndRun(box, params, callback);
-  } else if (box.IsLayoutNGGrid()) {
+  } else if (box.IsLayoutGrid()) {
     CreateAlgorithmAndRun<NGGridLayoutAlgorithm>(params, callback);
   } else if (box.IsLayoutReplaced()) {
     CreateAlgorithmAndRun<NGReplacedLayoutAlgorithm>(params, callback);
@@ -836,9 +836,9 @@ void NGBlockNode::FinishLayout(
       if (items)
         CopyFragmentItemsToLayoutBox(physical_fragment, *items, break_token);
     } else {
-      // We still need to clear |NGInlineNodeData| in case it had inline
+      // We still need to clear |InlineNodeData| in case it had inline
       // children.
-      block_flow->ClearNGInlineNodeData();
+      block_flow->ClearInlineNodeData();
     }
   } else {
     DCHECK(!physical_fragment.HasItems());
@@ -1082,7 +1082,7 @@ NGLayoutInputNode NGBlockNode::FirstChild() const {
   if (!AreNGBlockFlowChildrenInline(block))
     return NGBlockNode(To<LayoutBox>(child));
 
-  NGInlineNode inline_node(To<LayoutBlockFlow>(block));
+  InlineNode inline_node(To<LayoutBlockFlow>(block));
   if (!inline_node.IsBlockLevel())
     return std::move(inline_node);
 
@@ -1244,7 +1244,7 @@ void NGBlockNode::PlaceChildrenInLayoutBox(
     bool needs_invalidation_check) const {
   for (const auto& child_fragment : physical_fragment.Children()) {
     // Skip any line-boxes we have as children, this is handled within
-    // NGInlineNode at the moment.
+    // InlineNode at the moment.
     if (!child_fragment->IsBox())
       continue;
 
@@ -1596,14 +1596,14 @@ void NGBlockNode::CopyFragmentItemsToLayoutBox(
 }
 
 bool NGBlockNode::IsInlineFormattingContextRoot(
-    NGInlineNode* first_child_out) const {
+    InlineNode* first_child_out) const {
   if (const auto* block = DynamicTo<LayoutBlockFlow>(box_.Get())) {
     if (!AreNGBlockFlowChildrenInline(block))
       return false;
     NGLayoutInputNode first_child = FirstChild();
     if (first_child.IsInline()) {
       if (first_child_out)
-        *first_child_out = To<NGInlineNode>(first_child);
+        *first_child_out = To<InlineNode>(first_child);
       return true;
     }
   }
@@ -1788,7 +1788,7 @@ void NGBlockNode::UpdateMarginPaddingInfoIfNeeded(
     // is able to return the correct value. This isn't ideal, but eventually
     // we'll answer these queries from the fragment.
     const auto* containing_block = box_->ContainingBlock();
-    if (UNLIKELY(containing_block && containing_block->IsLayoutNGGrid())) {
+    if (UNLIKELY(containing_block && containing_block->IsLayoutGrid())) {
       box_->SetOverrideContainingBlockContentLogicalWidth(
           space.PercentageResolutionInlineSizeForParentWritingMode());
     }

@@ -49,20 +49,32 @@ inline bool MaybeIdeograph(UScriptCode script, StringView text) {
 class SpacingApplier {
  public:
   void SetSpacing(const Vector<wtf_size_t, 16>& offsets,
-                  const NGInlineItem* current_item,
+                  const InlineItem* current_item,
                   const ComputedStyle& style) {
     DCHECK(current_item->TextShapeResult());
     const float spacing = TextAutoSpace::GetSpacingWidth(style.GetFont());
     const wtf_size_t* offset = offsets.begin();
     if (!offsets.empty() && *offset == current_item->StartOffset()) {
       DCHECK(last_item_);
-      // There would be spacing added to the previous item due to its last glyph
-      // is next to `current_item`'s first glyph, since the two glyphs meet the
-      // condition of adding spacing.
-      // https://drafts.csswg.org/css-text-4/#propdef-text-autospace.
-      offsets_with_spacing_.emplace_back(
-          OffsetWithSpacing({.offset = *offset, .spacing = spacing}));
-      ++offset;
+      // If the previous item's direction is from the left to the right, it is
+      // clear that the last run is the rightest run, so it is safe to add
+      // spacing behind that.
+      if (last_item_->Direction() == TextDirection::kLtr) {
+        // There would be spacing added to the previous item due to its last
+        // glyph is next to `current_item`'s first glyph, since the two glyphs
+        // meet the condition of adding spacing.
+        // https://drafts.csswg.org/css-text-4/#propdef-text-autospace.
+        offsets_with_spacing_.emplace_back(
+            OffsetWithSpacing({.offset = *offset, .spacing = spacing}));
+        ++offset;
+      } else {
+        // This branch holds an assumption that RTL texts cannot be ideograph.
+        // The assumption might be wrong, but should work for almost all cases.
+        // Just do nothing in this case, and ShapeResult::ApplyTextAutoSpacing
+        // will insert spacing as an position offset to `offset`'s glyph,
+        // (instead of advance), to ensure spacing is always add to the correct
+        // position regardless of where the line is broken.
+      }
     }
     // Apply all pending spaces to the previous item.
     ApplyIfNeeded();
@@ -91,12 +103,12 @@ class SpacingApplier {
         const_cast<ShapeResult*>(last_item_->TextShapeResult());
     DCHECK(shape_result);
     shape_result->ApplyTextAutoSpacing(offsets_with_spacing_);
-    NGInlineItem* item = const_cast<NGInlineItem*>(last_item_);
+    InlineItem* item = const_cast<InlineItem*>(last_item_);
     item->SetUnsafeToReuseShapeResult();
   }
 
  private:
-  const NGInlineItem* last_item_ = nullptr;
+  const InlineItem* last_item_ = nullptr;
   // Stores the spacing (1/8 ic) and auto-space points's previous positions, for
   // the previous item.
   Vector<OffsetWithSpacing, 16> offsets_with_spacing_;
@@ -104,20 +116,20 @@ class SpacingApplier {
 
 }  // namespace
 
-void InlineTextAutoSpace::Initialize(const NGInlineItemsData& data) {
-  const HeapVector<NGInlineItem>& items = data.items;
+void InlineTextAutoSpace::Initialize(const InlineItemsData& data) {
+  const HeapVector<InlineItem>& items = data.items;
   if (UNLIKELY(items.empty())) {
     return;
   }
 
   // `RunSegmenterRange` is used to find where we can skip computing Unicode
   // properties. Compute them for the whole text content. It's pre-computed, but
-  // packed in `NGInlineItemSegments` to save memory.
+  // packed in `InlineItemSegments` to save memory.
   const String& text = data.text_content;
   if (!data.segments) {
-    for (const NGInlineItem& item : items) {
-      if (item.Type() != NGInlineItem::kText) {
-        // Only `kText` has the data, see `NGInlineItem::SetSegmentData`.
+    for (const InlineItem& item : items) {
+      if (item.Type() != InlineItem::kText) {
+        // Only `kText` has the data, see `InlineItem::SetSegmentData`.
         continue;
       }
       RunSegmenter::RunSegmenterRange range = item.CreateRunSegmenterRange();
@@ -142,7 +154,7 @@ void InlineTextAutoSpace::Initialize(const NGInlineItemsData& data) {
   }
 }
 
-void InlineTextAutoSpace::Apply(NGInlineItemsData& data,
+void InlineTextAutoSpace::Apply(InlineItemsData& data,
                                 Vector<wtf_size_t>* offsets_out) {
   const String& text = data.text_content;
   DCHECK(!text.Is8Bit());
@@ -152,9 +164,13 @@ void InlineTextAutoSpace::Apply(NGInlineItemsData& data,
   CHECK(!ranges_.empty());
   const RunSegmenter::RunSegmenterRange* range = ranges_.begin();
   absl::optional<CharType> last_type = kOther;
+
+  // The initial value does not matter, as the value is used for determine
+  // whether to add spacing into the bound of two items.
+  TextDirection last_direction = TextDirection::kLtr;
   SpacingApplier applier;
-  for (const NGInlineItem& item : data.items) {
-    if (item.Type() != NGInlineItem::kText) {
+  for (const InlineItem& item : data.items) {
+    if (item.Type() != InlineItem::kText) {
       if (item.Length()) {
         // If `item` has a length, e.g., inline-block, set the `last_type`.
         last_type = kOther;
@@ -205,15 +221,27 @@ void InlineTextAutoSpace::Apply(NGInlineItemsData& data,
           const wtf_size_t saved_offset = offset;
           const CharType type = GetTypeAndNext(text, offset);
           DCHECK_NE(type, kIdeograph);
-          if (type == kLetterOrNumeral) {
+          if (type == kLetterOrNumeral &&
+              LIKELY(last_direction == item.Direction())) {
+            offsets.push_back(saved_offset);
+          } else if (UNLIKELY(last_direction == TextDirection::kLtr &&
+                              item.Direction() == TextDirection::kRtl)) {
+            // (1) Fall into the first case of RTL-LTR mixing text.
+            // Given an index i which is the last character of item[a], add
+            // spacing to the end of the last item if: str[i] is ideograph &&
+            // item[a] is LTR && ItemOfCharIndex(i+1) is RTL.
             offsets.push_back(saved_offset);
           }
           if (offset == end_offset) {
             last_type = type;
+            last_direction = item.Direction();
             continue;
           }
         }
+        // When moving the offset to the end of this range, also update the item
+        // direction as it is the last opportunity to know it.
         offset = end_offset;
+        last_direction = item.Direction();
         last_type.reset();
         continue;
       }
@@ -227,11 +255,21 @@ void InlineTextAutoSpace::Apply(NGInlineItemsData& data,
       while (offset < end_offset) {
         const wtf_size_t saved_offset = offset;
         const CharType type = GetTypeAndNext(text, offset);
-        if ((type == kIdeograph && last_type == kLetterOrNumeral) ||
-            (last_type == kIdeograph && type == kLetterOrNumeral)) {
-          offsets.push_back(saved_offset);
+        if (((type == kIdeograph && last_type == kLetterOrNumeral) ||
+             (last_type == kIdeograph && type == kLetterOrNumeral))) {
+          if (last_direction == item.Direction()) {
+            offsets.push_back(saved_offset);
+          } else if (UNLIKELY(last_direction == TextDirection::kRtl &&
+                              item.Direction() == TextDirection::kLtr)) {
+            // (2) Fall into the second case of RTL-LTR mixing text.
+            // Given an index i which is the first character of item[a], add
+            // spacing to the *offset* of i's glyph if: str[i] is ideograph &&
+            // item[a] is LTR && ItemOfCharIndex(i-1) is RTL.
+            offsets.push_back(saved_offset);
+          }
         }
         last_type = type;
+        last_direction = item.Direction();
       }
     } while (offset < item.EndOffset());
 

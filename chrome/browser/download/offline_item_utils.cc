@@ -123,6 +123,7 @@ OfflineItem OfflineItemUtils::CreateOfflineItem(const std::string& name_space,
   item.url = download_item->GetURL();
   item.original_url = download_item->GetOriginalUrl();
   item.is_off_the_record = off_the_record;
+  item.referrer_url = download_item->GetReferrerUrl();
 
   item.is_resumable = download_item->CanResume();
   item.allow_metered = download_item->AllowMetered();

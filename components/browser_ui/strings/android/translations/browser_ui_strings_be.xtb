@@ -169,6 +169,7 @@
 <translation id="3918378745482005425">Некаторыя функцыі могуць не працаваць. Пры гэтым звязаныя сайты па-ранейшаму могуць выкарыстоўваць староннія файлы cookie.</translation>
 <translation id="3955193568934677022">Дазволіць сайтам прайграваць абароненае змесціва (рэкамендуецца)</translation>
 <translation id="3967822245660637423">Спампоўка завершана</translation>
+<translation id="3974105241379491420">Сайты могуць запытваць дазвол на выкарыстанне інфармацыі, якую яны пра вас захавалі</translation>
 <translation id="3987993985790029246">Скапіраваць спасылку</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992684624889376114">Пра гэту старонку</translation>
@@ -243,6 +244,7 @@
 <translation id="5335288049665977812">Дазволіць сайтам запускаць JavaScript (рэкамендавана)</translation>
 <translation id="534295439873310000">Прылады NFC</translation>
 <translation id="5344522958567249764">Кіраваць наладамі прыватнасці пры паказе рэкламы</translation>
+<translation id="5389626883706033615">Сайтам забаронена запытваць у вас дазвол на выкарыстанне інфармацыі, якую яны пра вас захавалі</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(і яшчэ 1)}one{(і яшчэ #)}few{(і яшчэ #)}many{(і яшчэ #)}other{(і яшчэ #)}}</translation>
 <translation id="5403592356182871684">Імёны</translation>
 <translation id="5438097262470833822">Будуць скінуты дазволы для вэб-сайта <ph name="WEBSITE" /></translation>

@@ -35,7 +35,6 @@
 
 namespace blink {
 
-class ContainerNode;
 class CSSSelector;
 struct InvalidationLists;
 class QualifiedName;
@@ -139,9 +138,6 @@ class CORE_EXPORT RuleFeatureSet {
   // Returns true if we have :nth-child(... of S) selectors where S contains a
   // :has() selector.
   bool UsesHasInsideNth() const { return metadata_.uses_has_inside_nth; }
-  bool NeedsFullRecalcForRuleSetInvalidation() const {
-    return metadata_.needs_full_recalc_for_rule_set_invalidation;
-  }
   unsigned MaxDirectAdjacentSelectors() const {
     return metadata_.max_direct_adjacent_selectors;
   }
@@ -203,7 +199,6 @@ class CORE_EXPORT RuleFeatureSet {
       unsigned min_direct_adjacent) const;
   void CollectNthInvalidationSet(InvalidationLists&) const;
   void CollectPartInvalidationSet(InvalidationLists&) const;
-  void CollectTypeRuleInvalidationSet(InvalidationLists&, ContainerNode&) const;
 
   // Quick tests for whether we need to consider :has() invalidation.
   bool NeedsHasInvalidationForClass(const AtomicString& class_name) const;
@@ -345,7 +340,6 @@ class CORE_EXPORT RuleFeatureSet {
                                                PositionType);
   SiblingInvalidationSet& EnsureUniversalSiblingInvalidationSet();
   NthSiblingInvalidationSet& EnsureNthInvalidationSet();
-  DescendantInvalidationSet& EnsureTypeRuleInvalidationSet();
   DescendantInvalidationSet& EnsurePartInvalidationSet();
 
   void UpdateInvalidationSets(const CSSSelector&, const StyleScope*);
@@ -666,7 +660,6 @@ class CORE_EXPORT RuleFeatureSet {
   bool AddValueOfSimpleSelectorInHasArgument(
       const CSSSelector& has_pseudo_class);
 
-  void UpdateRuleSetInvalidation(const InvalidationSetFeatures&);
   void CollectValuesInHasArgument(const CSSSelector& has_pseudo_class);
 
   // The logical combinations like ':is()', ':where()' and ':not()' can cause
@@ -874,7 +867,6 @@ class CORE_EXPORT RuleFeatureSet {
   PseudoTypeInvalidationSetMap pseudo_invalidation_sets_;
   scoped_refptr<SiblingInvalidationSet> universal_sibling_invalidation_set_;
   scoped_refptr<NthSiblingInvalidationSet> nth_invalidation_set_;
-  scoped_refptr<DescendantInvalidationSet> type_rule_invalidation_set_;
   MediaQueryResultFlags media_query_result_flags_;
   ValuesInHasArgument classes_in_has_argument_;
   ValuesInHasArgument attributes_in_has_argument_;

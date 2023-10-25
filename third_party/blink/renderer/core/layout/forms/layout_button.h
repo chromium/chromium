@@ -9,7 +9,7 @@
 
 namespace blink {
 
-class LayoutButton final : public LayoutNGFlexibleBox {
+class LayoutButton final : public LayoutFlexibleBox {
  public:
   explicit LayoutButton(Element*);
   ~LayoutButton() override;
@@ -35,7 +35,7 @@ class LayoutButton final : public LayoutNGFlexibleBox {
 
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();
-    return type == kLayoutObjectButton || LayoutNGFlexibleBox::IsOfType(type);
+    return type == kLayoutObjectButton || LayoutFlexibleBox::IsOfType(type);
   }
 
   Member<LayoutBlock> inner_;

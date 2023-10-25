@@ -56,7 +56,7 @@ namespace mojom {
 class ColorSpaceDataView;
 }  // namespace mojom
 
-// Used to represet a color space for the purpose of color conversion.
+// Used to represent a color space for the purpose of color conversion.
 // This is designed to be safe and compact enough to send over IPC
 // between any processes.
 class COLOR_SPACE_EXPORT ColorSpace {

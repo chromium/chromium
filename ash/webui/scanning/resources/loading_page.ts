@@ -21,7 +21,7 @@ import {AppState} from './scanning_app_types.js';
 
 const LoadingPageElementBase = I18nMixin(PolymerElement);
 
-class LoadingPageElement extends LoadingPageElementBase {
+export class LoadingPageElement extends LoadingPageElementBase {
   static get is() {
     return 'loading-page' as const;
   }

@@ -566,7 +566,7 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
   return 0;
 }
 
-bool AutofillProfile::EqualsForSyncPurposes(
+bool AutofillProfile::EqualsForLegacySyncPurposes(
     const AutofillProfile& profile) const {
   return use_count() == profile.use_count() &&
          UseDateEqualsInSeconds(&profile) && EqualsSansGuid(profile);
@@ -693,7 +693,8 @@ AddressCountryCode AutofillProfile::GetAddressCountryCode() const {
   return AddressCountryCode(country_code);
 }
 
-void AutofillProfile::OverwriteDataFrom(const AutofillProfile& profile) {
+void AutofillProfile::OverwriteDataFromForLegacySync(
+    const AutofillProfile& profile) {
   DCHECK_EQ(guid(), profile.guid());
 
   // Some fields should not got overwritten by empty values; back-up the
@@ -708,23 +709,27 @@ void AutofillProfile::OverwriteDataFrom(const AutofillProfile& profile) {
       name_info.IsStructuredNameMergeable(profile.GetNameInfo());
   name_info.MergeStructuredName(profile.GetNameInfo());
 
+  // ProfileTokenQuality is not synced through legacy sync - and as a result,
+  // `profile` has no observations. Make sure that observations for token values
+  // that haven't changed are kept.
+  ProfileTokenQuality token_quality = std::move(token_quality_);
+  token_quality.ResetObservationsForDifferingTokens(profile);
+
   *this = profile;
 
   if (language_code().empty())
     set_language_code(language_code_value);
 
   // For structured names, use the merged name if possible.
-  if (is_structured_name_mergeable) {
-    name_ = name_info;
-    return;
+  // If the full name of |profile| is empty, maintain the complete name
+  // structure. Note, this should only happen if the complete name is empty. For
+  // the legacy implementation, set the full name if |profile| does not contain
+  // a full name.
+  if (is_structured_name_mergeable || !HasRawInfo(NAME_FULL)) {
+    name_ = std::move(name_info);
   }
-  // For structured names, if the full name of |profile| is empty, maintain the
-  // complete name structure. Note, this should only happen if the complete name
-  // is empty.  For the legacy implementation, set the full name if |profile|
-  // does not contain a full name.
-  if (!HasRawInfo(NAME_FULL)) {
-    name_ = name_info;
-  }
+
+  token_quality_ = std::move(token_quality);
 }
 
 bool AutofillProfile::MergeDataFrom(const AutofillProfile& profile,
@@ -1205,8 +1210,8 @@ std::ostream& operator<<(std::ostream& os, const AutofillProfile& profile) {
 
   // Lambda to print the value and verification status for |type|.
   auto print_values_lambda = [&os, &profile](ServerFieldType type) {
-    os << FieldTypeToStringPiece(type) << ": " << profile.GetRawInfo(type)
-       << "(" << profile.GetVerificationStatus(type) << ")" << std::endl;
+    os << FieldTypeToStringView(type) << ": " << profile.GetRawInfo(type) << "("
+       << profile.GetVerificationStatus(type) << ")" << std::endl;
   };
 
   // Use a helper function to print the values of the stored types.

@@ -41,6 +41,7 @@ import './screens/common/parental_handoff.js';
 import './screens/common/password_selection.js';
 import './screens/common/pin_setup.js';
 import './screens/common/recommend_apps.js';
+import './screens/common/remote_activity_notification.js';
 import './screens/common/saml_confirm_password.js';
 import './screens/common/signin_fatal_error.js';
 import './screens/common/smart_privacy_protection.js';
@@ -148,6 +149,11 @@ export const commonScreensList = [
   },
   {tag: 'pin-setup-element', id: 'pin-setup'},
   {tag: 'recommend-apps-element', id: 'recommend-apps'},
+  {
+    tag: 'remote-activity-notification-element',
+    id: 'remote-activity-notification',
+    condition: 'isRemoteActivityNotificationEnabled',
+  },
   {tag: 'saml-confirm-password-element', id: 'saml-confirm-password'},
   {tag: 'signin-fatal-error-element', id: 'signin-fatal-error'},
   {tag: 'smart-privacy-protection-element', id: 'smart-privacy-protection'},

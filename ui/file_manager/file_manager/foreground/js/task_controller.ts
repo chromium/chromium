@@ -11,6 +11,7 @@ import {assertInstanceof, assertNotReached} from 'chrome://resources/ash/common/
 
 import {getMimeType, startIOTask} from '../../common/js/api.js';
 import {type AnnotatedTask, getDefaultTask} from '../../common/js/file_tasks.js';
+import {isJellyEnabled} from '../../common/js/flags.js';
 import {recordDirectoryListLoadWithTolerance, startInterval} from '../../common/js/metrics.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {Crostini} from '../../externs/background/crostini.js';
@@ -301,7 +302,7 @@ export class TaskController {
     const items = [];
 
     // We don't bold default task item in refresh23 style.
-    const shouldBoldDefaultItem = !util.isJellyEnabled();
+    const shouldBoldDefaultItem = !isJellyEnabled();
 
     // Create items.
     for (const task of tasks) {

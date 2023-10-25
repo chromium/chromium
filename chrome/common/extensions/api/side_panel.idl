@@ -47,13 +47,13 @@ namespace sidePanel {
   };
 
   // Options for opening the side panel.
-  // At least one of `tabId` and `windowId` must be specified.
+  // At least one of `tabId` or `windowId` must be specified.
   dictionary OpenOptions {
     // The window in which to open the side panel. This is only applicable if
     // the extension has a global (non-tab-specific) side panel or
     // <code>tabId</code> is also specified. This will override any
     // currently-active global side panel the user has open in the given
-    // window. At least one of this and <code>tabId</code> must be provided.
+    // window. At least one of this or <code>tabId</code> must be provided.
     long? windowId;
 
     // The tab in which to open the side panel. If the corresponding tab has
@@ -62,7 +62,7 @@ namespace sidePanel {
     // the specified tab and any other tabs without a currently-open tab-
     // specific panel. This will override any currently-active side panel
     // (global or tab-specific) in the corresponding tab. At least one of this
-    // and <code>windowId</code> must be provided.
+    // or <code>windowId</code> must be provided.
     long? tabId;
   };
 

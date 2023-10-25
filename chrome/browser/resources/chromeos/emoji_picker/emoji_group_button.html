@@ -1,7 +1,7 @@
 <style>
   :host {
     display: flex;
-    height: var(--emoji-size);
+    height: calc(var(--emoji-size) + 2 * var(--emoji-picker-group-button-padding));
     justify-content: center;
     scroll-snap-align: none;
     width: var(--emoji-size);
@@ -9,10 +9,14 @@
 
   #group-button {
     --cr-icon-button-size: var(--emoji-size);
-    --cr-icon-button-icon-size: 20px;
+    --cr-icon-button-icon-size: var(--emoji-picker-group-button-icon-size, 20px);
     font-size: 20px;
     margin: 0;
-    padding: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: var(--emoji-picker-group-button-padding, 0px);
+    padding-bottom: var(--emoji-picker-group-button-padding, 0px);
+    border-radius: var(--emoji-picker-group-button-border-radius, 0px);
   }
 
   #group-button:not(.emoji-group-active) {

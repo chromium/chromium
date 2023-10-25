@@ -261,9 +261,7 @@ class WebThemeEngine {
   struct ScrollbarStyle {
     int thumb_thickness;
     int scrollbar_margin;
-    int thumb_thickness_thin;
-    int scrollbar_margin_thin;
-    SkColor color;
+    SkColor4f color;
     base::TimeDelta fade_out_delay;
     base::TimeDelta fade_out_duration;
   };

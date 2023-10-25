@@ -6,6 +6,7 @@
 import enum
 import functools
 import re
+from collections import Counter
 from typing import FrozenSet, Iterator, List, NamedTuple, Optional, Tuple
 
 
@@ -22,13 +23,15 @@ class LineType(enum.Enum):
     PROMPT = 'PROMPT:'
 
 
-class Status(enum.Enum):
+class Status(enum.IntEnum):
+    # Harness error code numbers. Some can also be subtest statuses, but they're
+    # numbered differently.
+    ERROR = 1
+    TIMEOUT = 2
+    PRECONDITION_FAILED = 3
     PASS = enum.auto()
     FAIL = enum.auto()
-    ERROR = enum.auto()
-    TIMEOUT = enum.auto()
     NOTRUN = enum.auto()
-    PRECONDITION_FAILED = enum.auto()
 
 
 ABBREVIATED_ALL_PASS = '\n'.join([
@@ -48,22 +51,19 @@ class TestharnessLine(NamedTuple):
     subtest: Optional[str] = None
 
 
+_HARNESS_ERROR_FORMAT = ('harness_status.status = %s , '
+                         'harness_status.message = %s')
 _HARNESS_ERROR_PATTERN = re.compile(
-    r'harness_status\.status = (?P<status>.*) , '
-    r'harness_status\.message = (?P<message>.*)')
-_HARNESS_ERROR_CODES = {
-    1: Status.ERROR,
-    2: Status.TIMEOUT,
-    3: Status.PRECONDITION_FAILED,
-}
+    re.escape(_HARNESS_ERROR_FORMAT) % ('(?P<status>.*)', '(?P<message>.*)'))
 _STATUS_UNION = '\s*(' + '|'.join(status.name for status in Status) + ')\s*'
 _SUBTEST_PATTERN = re.compile(rf'^\[{_STATUS_UNION}(,{_STATUS_UNION})*\]')
 _MESSAGE_PREFIX = ' ' * 2
+# Threshold at which a "Found [N] tests; ..." line will be written.
+_COUNT_THRESHOLD = 50
 
 
 @functools.lru_cache()
-def parse_testharness_baseline(
-        content_text: str) -> List[Tuple[TestharnessLine]]:
+def parse_testharness_baseline(content_text: str) -> List[TestharnessLine]:
     # Leading and trailing white spaces are accepted.
     raw_lines = iter(content_text.strip().splitlines())
     next_line = next(raw_lines, None)
@@ -96,10 +96,61 @@ def parse_testharness_baseline(
                 if maybe_match:
                     message = maybe_match['message']
                     status_code = int(maybe_match['status'])
-                    statuses = frozenset([_HARNESS_ERROR_CODES[status_code]])
+                    statuses = frozenset([Status(status_code)])
             message = _unescape(message) if message else None
             lines.append(TestharnessLine(line_type, statuses, message))
     return lines
+
+
+def format_testharness_baseline(lines: List[TestharnessLine]) -> str:
+    """Format testharness.js results in the same way as [0].
+
+    [0]: //third_party/blink/web_tests/resources/testharnessreport.js
+    """
+    content = ''
+    status_order = [Status.PASS, Status.FAIL, Status.TIMEOUT, Status.NOTRUN]
+    status_counts = Counter({status: 0 for status in status_order})
+    for line in lines:
+        try:
+            # For the status counts below the header, only count an arbitrary
+            # (but well-defined) status when there are multiple so that the
+            # total is correct. This is OK because the counts are not parsed and
+            # are informational only.
+            status = min(line.statuses, key=status_order.index)
+            status_counts[status] += 1
+        except ValueError:
+            pass
+
+    for line in lines:
+        if line.line_type is LineType.SUBTEST:
+            assert line.subtest and line.statuses, line
+            statuses = ', '.join(
+                sorted(status.name for status in line.statuses))
+            content += f'[{statuses}] {_escape(line.subtest)}\n'
+            if line.message:
+                content += f'{_MESSAGE_PREFIX}{_escape(line.message)}\n'
+        elif line.line_type is LineType.HARNESS_ERROR:
+            (status, ) = line.statuses
+            assert isinstance(status.value, int), line
+            harness_error = _HARNESS_ERROR_FORMAT % (
+                str(status.value),
+                _escape(line.message or ''),
+            )
+            content += f'{line.line_type.value} {harness_error}\n'
+        else:
+            content += line.line_type.value
+            if line.message:
+                content += f' {_escape(line.message)}'
+            content += '\n'
+        total = sum(status_counts.values())
+        if (line.line_type is LineType.HEADER
+                and status_counts[Status.PASS] < total
+                and total >= _COUNT_THRESHOLD):
+            content += f'Found {total} tests; '
+            content += ', '.join(
+                f'{count} {status.name}'
+                for status, count in status_counts.items()) + '.\n'
+    return content
 
 
 def _parse_statuses(subtest_match: re.Match) -> FrozenSet[Status]:
@@ -113,9 +164,17 @@ _UNESCAPE_SUBSTITUTIONS = {
     r'\r': '\r',
     r'\0': '\0',
 }
+_ESCAPE_SUBSTITUTIONS = str.maketrans({
+    unescaped: escaped
+    for escaped, unescaped in _UNESCAPE_SUBSTITUTIONS.items()
+})
 # Add an extra backslash for `re`.
 _UNESCAPE_PATTERN = re.compile('(' + '|'.join(
     literal.replace('\\', r'\\') for literal in _UNESCAPE_SUBSTITUTIONS) + ')')
+
+
+def _escape(s: str) -> str:
+    return s.translate(_ESCAPE_SUBSTITUTIONS)
 
 
 def _unescape(s: str) -> str:

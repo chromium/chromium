@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserv
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -705,7 +706,8 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         }
         if (mMode == TabListCoordinator.TabListMode.GRID
                 && !mTabModelSelector.getCurrentModel().getProfile().isOffTheRecord()
-                && PriceTrackingUtilities.isTrackPricesOnTabsEnabled()) {
+                && PriceTrackingUtilities.isTrackPricesOnTabsEnabled(
+                        Profile.getLastUsedRegularProfile())) {
             RecordUserAction.record("Commerce.TabGridSwitched."
                     + (ShoppingPersistedTabData.hasPriceDrop(tab) ? "HasPriceDrop"
                                                                   : "NoPriceDrop"));

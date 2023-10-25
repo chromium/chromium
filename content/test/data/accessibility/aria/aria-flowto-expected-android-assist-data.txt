@@ -1,0 +1,5 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View text:"current" textSize:16.00 style:0 bundle:[aria-flowto="next", aria-label="current", display="block", htmlTag="section"]
+++++TextView text:"Lorem ipsum" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++View text:"next" textSize:16.00 style:0 bundle:[aria-label="next", display="block", htmlTag="footer", id="next"]
+++++TextView text:"dolor sit amet" textSize:16.00 style:0 bundle:[display="", htmlTag=""]

@@ -376,7 +376,8 @@ DnsResponse::DnsResponse(const void* data, size_t length, size_t answer_offset)
               answer_offset,
               std::numeric_limits<size_t>::max()) {
   DCHECK(data);
-  memcpy(io_buffer_->data(), data, length);
+  std::copy(static_cast<const char*>(data),
+            static_cast<const char*>(data) + length, io_buffer_->data());
 }
 
 // static

@@ -175,7 +175,7 @@ std::u16string ComponentsHandler::ServiceStatusToString(
 void ComponentsHandler::HandleCrosUrlComponentsRedirect(
     const base::Value::List& args) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  lacros_url_handling::NavigateInAsh(GURL(chrome::kOsUIComponentsURL));
+  lacros_url_handling::NavigateInAsh(GURL(chrome::kChromeUIComponentsUrl));
 #else
   // Note: This will only be called by the UI when Lacros is available.
   DCHECK(crosapi::BrowserManager::Get());

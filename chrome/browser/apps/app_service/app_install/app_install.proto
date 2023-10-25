@@ -1,0 +1,89 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package apps.proto;
+
+import "chrome/browser/apps/almanac_api_client/proto/client_context.proto";
+
+// This file is a mirror of the proto file maintained in the server code base at
+// go/app-install-proto. Changes should be made by updating the server code base
+// and then copying the result to Chromium. Changes to this proto should be
+// reflected in ParseAppInstallResponseProto().
+
+message AppInstallRequest {
+  // Context information about the device making this request.
+  optional ClientDeviceContext device_context = 1;
+
+  // Context information about the user making this request.
+  optional ClientUserContext user_context = 2;
+
+  // The PackageId of the specific App Instance being installed.
+  optional string package_id = 3;
+}
+
+message AppInstallResponse {
+  // An individual App Icon.
+  message Icon {
+    // Url to query to get the icon. This will always be from the host
+    // meltingpot.googleusercontent.com
+    optional string url = 1;
+
+    // Width of the icon in pixels.
+    optional int32 width_in_pixels = 2;
+
+    // Mime type of the icon.
+    optional string mime_type = 3;
+
+    // Whether or not we have permission from the platform to mask the icon.
+    // This means that ChromeOS will put a circle around it.
+    optional bool is_masking_allowed = 4;
+  }
+
+  // Represents an instance of an app regardless of what platform it runs on.
+  // Each instance can have only one extra which corresponds to the platform.
+  message AppInstance {
+    // PackageId for the installable app that the information is being
+    // requested for. This is always "platform:primary_key", for example
+    // "android:com.spotify.music" or "web:http://manifest/id"
+    optional string package_id = 1;
+
+    // The name of the app.
+    optional string name = 2;
+
+    // The description of the app if present.
+    optional string description = 3;
+
+    // A set of icons for the app.
+    repeated Icon icons = 4;
+
+    // Every platform has its own [Platform]Extras message to store platform
+    // specific metadata.
+    oneof extras {
+      AndroidExtras android_extras = 6;
+      WebExtras web_extras = 7;
+    }
+  }
+
+  // For Android-only metadata. TBD
+  message AndroidExtras {}
+
+  // For Web-only metadata.
+  message WebExtras {
+    // The (HTML) URL that that the manifest was retrieved from.
+    optional string document_url = 1;
+
+    // The (JSON) original (possibly third-party) Url for the app's manifest.
+    optional string original_manifest_url = 2;
+
+    // The (JSON) first-party Google Url for the manifest for this app.
+    optional string scs_url = 3;
+  }
+
+  // The App Instance for the requested package_id.
+  optional AppInstance app_instance = 1;
+}

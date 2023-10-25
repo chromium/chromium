@@ -287,3 +287,61 @@ class TestHarnessResultCheckerTest(unittest.TestCase):
         self.assertEqual(results[5].statuses, frozenset())
         self.assertIsNone(results[5].subtest)
         self.assertIsNone(results[5].message)
+
+    def test_format_testharness_baseline(self):
+        lines = [
+            TestharnessLine(LineType.CONSOLE_WARNING,
+                            message='warning before test'),
+            TestharnessLine(LineType.HEADER),
+            TestharnessLine(LineType.HARNESS_ERROR, {Status.ERROR},
+                            'SyntaxError'),
+            TestharnessLine(LineType.SUBTEST, {Status.PASS, Status.TIMEOUT},
+                            'fake-message\n\r\0', 'subtest-1\n\r\0'),
+            TestharnessLine(LineType.SUBTEST, {Status.NOTRUN},
+                            subtest='subtest-2'),
+            TestharnessLine(LineType.FOOTER),
+        ]
+        self.assertEqual(
+            testharness_results.format_testharness_baseline(lines),
+            textwrap.dedent("""\
+                CONSOLE WARNING: warning before test
+                This is a testharness.js-based test.
+                Harness Error. harness_status.status = 1 , harness_status.message = SyntaxError
+                [PASS, TIMEOUT] subtest-1\\n\\r\\0
+                  fake-message\\n\\r\\0
+                [NOTRUN] subtest-2
+                Harness: the test ran to completion.
+                """))
+
+    def test_format_all_pass_testharness_baseline(self):
+        lines = [
+            TestharnessLine(LineType.HEADER),
+            TestharnessLine(LineType.SUBTEST, {Status.PASS},
+                            subtest='subtest'),
+            TestharnessLine(LineType.FOOTER),
+        ]
+        # No failure counts written. Note that it is the caller's responsibility
+        # to detect that this is an all-pass baseline, and possibly not write
+        # it.
+        self.assertEqual(
+            testharness_results.format_testharness_baseline(lines),
+            textwrap.dedent("""\
+                This is a testharness.js-based test.
+                [PASS] subtest
+                Harness: the test ran to completion.
+                """))
+
+    def test_format_status_counts(self):
+        lines = [
+            TestharnessLine(LineType.SUBTEST, {Status.FAIL},
+                            subtest=f'subtest-{i}') for i in range(50)
+        ]
+        lines = [
+            TestharnessLine(LineType.HEADER),
+            *lines,
+            TestharnessLine(LineType.FOOTER),
+        ]
+        self.assertIn(
+            'Found 50 tests; 0 PASS, 50 FAIL, 0 TIMEOUT, 0 NOTRUN.',
+            testharness_results.format_testharness_baseline(
+                lines).splitlines())

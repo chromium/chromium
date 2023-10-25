@@ -257,6 +257,9 @@ namespace autofillPrivate {
     // Credit card's image source.
     DOMString? imageSrc;
 
+    // Credit card's masked cvc.
+    DOMString? cvc;
+
     AutofillMetadata? metadata;
   };
 
@@ -282,7 +285,7 @@ namespace autofillPrivate {
   callback GetCreditCardListCallback = void(CreditCardEntry[] entries);
   callback GetIbanListCallback = void(IbanEntry[] entries);
   callback IsValidIbanCallback = void(boolean isValid);
-  callback CheckForUserAuthCallback = void(boolean isUserAuthSuccessful);
+  callback GetCreditCardCallback = void(optional CreditCardEntry card);
   callback CheckForDeviceAuthCallback = void(boolean isDeviceAuthAvailable);
 
   interface Functions {
@@ -376,10 +379,11 @@ namespace autofillPrivate {
     // will then flip the mandatory auth toggle.
     static void authenticateUserAndFlipMandatoryAuthToggle();
 
-    // Authenticates the user via device authentication and it would return
-    // the result of user auth. If the auth was successful, we will show
-    // the edit card dialog for the Local card.
-    [supportsPromises] static void authenticateUserToEditLocalCard(CheckForUserAuthCallback callback);
+    // Returns the local card based on the `guid` provided. The user could
+    // also be challenged with a reauth if that is enabled. For a successful
+    // auth, the local card is returned otherwise return a null object.
+    [supportsPromises] static void getLocalCard(
+        DOMString guid, GetCreditCardCallback callback);
 
     // Returns true if there is authentication available on this device
     // (biometric or screen lock), false otherwise.

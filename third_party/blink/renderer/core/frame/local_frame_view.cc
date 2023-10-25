@@ -1157,7 +1157,7 @@ AtomicString LocalFrameView::MediaType() const {
 void LocalFrameView::AdjustMediaTypeForPrinting(bool printing) {
   if (printing) {
     if (media_type_when_not_printing_.IsNull())
-      media_type_when_not_printing_ = MediaType();
+      media_type_when_not_printing_ = media_type_;
     SetMediaType(media_type_names::kPrint);
   } else {
     if (!media_type_when_not_printing_.IsNull())

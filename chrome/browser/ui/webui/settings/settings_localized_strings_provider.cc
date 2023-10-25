@@ -1134,6 +1134,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
     {"managePasskeysSubTitle", IDS_AUTOFILL_MANAGE_PASSKEYS_SUB_TITLE_WIN},
 #endif
     {"plusAddressSettings", IDS_PLUS_ADDRESS_SETTINGS_LABEL},
+    {"cvcTagForCreditCardListEntry",
+     IDS_AUTOFILL_SETTINGS_PAGE_CVC_TAG_FOR_CREDIT_CARD_LIST_ENTRY},
   };
 
   GURL google_password_manager_url = GetGooglePasswordManagerURL(
@@ -2432,6 +2434,10 @@ void AddSearchStrings(content::WebUIDataSource* html_source) {
      IDS_SEARCH_ENGINE_CHOICE_SETTINGS_ENTRY_POINT_SUBTITLE},
     {"searchEnginesChange",
      IDS_SEARCH_ENGINE_CHOICE_SETTINGS_CHANGE_DEFAULT_ENGINE},
+    {"searchEnginesSettingsDialogSubtitle",
+     IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE},
+    {"searchEnginesSetAsDefaultButton", IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE},
+    {"searchEnginesCancelButton", IDS_CANCEL},
 #endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);

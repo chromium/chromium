@@ -27,11 +27,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/test/scoped_feature_list.h"
-#include "components/policy/core/common/features.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
 namespace {
 
 using SafeSitesFilterBehavior = policy::SafeSitesFilterBehavior;
@@ -56,11 +51,6 @@ class SafeSitesNavigationThrottleTest
   // content::RenderViewHostTestHarness:
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
-
-#if BUILDFLAG(IS_ANDROID)
-    scoped_feature_list_.InitAndEnableFeature(
-        policy::features::kSafeSitesFilterBehaviorPolicyAndroid);
-#endif  // BUILDFLAG(IS_ANDROID)
 
     // Prevent crashes in BrowserContextDependencyManager caused when tests
     // that run in serial happen to reuse a memory address for a BrowserContext
@@ -119,10 +109,6 @@ class SafeSitesNavigationThrottleTest
   void TestSafeSitesCachedSites(const char* expected_error_page_content);
 
   safe_search_api::StubURLChecker stub_url_checker_;
-
-#if BUILDFLAG(IS_ANDROID)
-  base::test::ScopedFeatureList scoped_feature_list_;
-#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 class SafeSitesNavigationThrottleWithErrorContentTest

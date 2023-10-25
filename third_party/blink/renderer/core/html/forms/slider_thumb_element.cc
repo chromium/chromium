@@ -335,7 +335,7 @@ HTMLInputElement* SliderContainerElement::HostInput() const {
 }
 
 LayoutObject* SliderContainerElement::CreateLayoutObject(const ComputedStyle&) {
-  return MakeGarbageCollected<LayoutNGFlexibleBox>(this);
+  return MakeGarbageCollected<LayoutFlexibleBox>(this);
 }
 
 void SliderContainerElement::DefaultEventHandler(Event& event) {

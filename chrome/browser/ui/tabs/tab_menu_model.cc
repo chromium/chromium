@@ -146,6 +146,12 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
                 IDS_TAB_CXMENU_MOVE_TABS_TO_NEW_WINDOW, num_tabs));
   }
 
+  if (features::IsTabOrganization()) {
+    AddItemWithStringId(TabStripModel::CommandOrganizeTabs,
+                        IDS_TAB_CXMENU_ORGANIZE_TABS);
+    SetIsNewFeatureAt(GetItemCount() - 1, true);
+  }
+
   AddSeparator(ui::NORMAL_SEPARATOR);
   AddItemWithStringId(TabStripModel::CommandReload, IDS_TAB_CXMENU_RELOAD);
 

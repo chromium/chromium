@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/network/fake_network_list_network_header_view_delegate.h"
@@ -14,24 +13,14 @@
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tri_view.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/view.h"
 
 namespace ash {
 
-class NetworkListNetworkHeaderViewTest
-    : public AshTestBase,
-      public testing::WithParamInterface<bool> {
+class NetworkListNetworkHeaderViewTest : public AshTestBase {
  public:
-  bool IsQsRevampEnabled() { return GetParam(); }
-
   void SetUp() override {
-    if (IsQsRevampEnabled()) {
-      feature_list_.InitAndEnableFeature(features::kQsRevamp);
-    } else {
-      feature_list_.InitAndDisableFeature(features::kQsRevamp);
-    }
     AshTestBase::SetUp();
 
     network_list_network_header_view_ =
@@ -57,9 +46,7 @@ class NetworkListNetworkHeaderViewTest
 
   views::ToggleButton* GetToggleButton() {
     return FindViewById<views::ToggleButton*>(
-        features::IsQsRevampEnabled()
-            ? NetworkListNetworkHeaderView::kQsToggleButtonId
-            : NetworkListNetworkHeaderView::kToggleButtonId);
+        NetworkListNetworkHeaderView::kToggleButtonId);
   }
 
   void SetToggleVisibility(bool visible) {
@@ -68,28 +55,18 @@ class NetworkListNetworkHeaderViewTest
 
   template <class T>
   T FindViewById(int id) {
-    // For QsRevamp: child views are added into `entry_row()`.
-    if (IsQsRevampEnabled()) {
-      return static_cast<T>(
-          network_list_network_header_view_->entry_row()->GetViewByID(id));
-    }
     return static_cast<T>(
-        network_list_network_header_view_->container()->GetViewByID(id));
+        network_list_network_header_view_->entry_row()->GetViewByID(id));
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   FakeNetworkListNetworkHeaderViewDelegate
       fake_network_list_network_header_delegate_;
   std::unique_ptr<NetworkListNetworkHeaderView>
       network_list_network_header_view_;
 };
 
-INSTANTIATE_TEST_SUITE_P(QsRevamp,
-                         NetworkListNetworkHeaderViewTest,
-                         testing::Bool() /* IsQsRevampEnabled() */);
-
-TEST_P(NetworkListNetworkHeaderViewTest, ToggleStates) {
+TEST_F(NetworkListNetworkHeaderViewTest, ToggleStates) {
   views::ToggleButton* toggle_button = GetToggleButton();
   EXPECT_NE(nullptr, toggle_button);
   EXPECT_EQ(views::Button::ButtonState::STATE_NORMAL,

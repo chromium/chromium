@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.page_insights;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.text.method.LinkMovementMethod;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +21,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -29,6 +32,17 @@ import java.text.DateFormat;
 import java.util.Date;
 
 public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayoutChangeListener {
+
+    interface OnBottomSheetTapHandler {
+        /** Returns true if the tap has been handled. */
+        boolean handle();
+    }
+
+    interface OnBackPressHandler {
+        /** Returns true if the back press has been handled. */
+        boolean handle();
+    }
+
     /** Ratio of the height when in full mode. */
     static final float FULL_HEIGHT_RATIO = 0.9f;
 
@@ -43,6 +57,8 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
     private boolean mShouldPrivacyNoticeBeShown;
     private int mFullScreenHeight;
     private Callback<View> mOnPrivacyNoticeLinkClickCallback;
+    private final OnBackPressHandler mOnBackPressHandler;
+    private final ObservableSupplierImpl<Boolean> mWillHandleBackPressSupplier;
     private static final SharedPreferencesManager sSharedPreferencesManager =
             ChromeSharedPreferences.getInstance();
     private static final long INVALID_TIMESTAMP = -1;
@@ -53,22 +69,38 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
      * @param context An Android context.
      * @param layoutView the top-level view for the Window
      * @param onPrivacyNoticeLinkClickCallback callback for use on privacy notice
+     * @param onBottomSheetTapHandler handler for taps on bottom sheet
      */
     public PageInsightsSheetContent(
-            Context context, View layoutView, Callback<View> onPrivacyNoticeLinkClickCallback) {
+            Context context,
+            View layoutView,
+            Callback<View> onPrivacyNoticeLinkClickCallback,
+            OnBackPressHandler onBackPressHandler,
+            ObservableSupplierImpl<Boolean> willHandleBackPressSupplier,
+            OnBottomSheetTapHandler onBottomSheetTapHandler) {
         mLayoutView = layoutView;
         mToolbarView = (ViewGroup) LayoutInflater.from(context).inflate(
             R.layout.page_insights_sheet_toolbar, null);
         mToolbarView
-            .findViewById(R.id.page_insights_back_button)
-            .setOnClickListener((view)-> onBackButtonPressed());
+                .findViewById(R.id.page_insights_back_button)
+                .setOnClickListener((view) -> onBackPressHandler.handle());
         mSheetContentView = (ViewGroup) LayoutInflater.from(context).inflate(
                 R.layout.page_insights_sheet_content, null);
+
+        // TODO(b/306377148): Remove this once a solution is built into bottom sheet infra.
+        TapInterceptingLinearLayout contentContainer =
+                (TapInterceptingLinearLayout)
+                        mSheetContentView.findViewById(R.id.page_insights_content_container);
+        contentContainer.setOnTapHandler(onBottomSheetTapHandler);
+        contentContainer.setOnClickListener((view) -> onBottomSheetTapHandler.handle());
+        mToolbarView.setOnClickListener((view) -> onBottomSheetTapHandler.handle());
+
         mContext = context;
         mOnPrivacyNoticeLinkClickCallback = onPrivacyNoticeLinkClickCallback;
+        mOnBackPressHandler = onBackPressHandler;
+        mWillHandleBackPressSupplier = willHandleBackPressSupplier;
         mFullScreenHeight = context.getResources().getDisplayMetrics().heightPixels;
-        mLayoutView.addOnLayoutChangeListener(this);
-        updateContentHeight();
+        updateContentDimensions();
     }
 
     @Override
@@ -182,18 +214,30 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
             return;
         }
         mFullScreenHeight = fullScreenHeight;
-        updateContentHeight();
+        updateContentDimensions();
     }
 
-    private void onBackButtonPressed(){
-        showFeedPage();
+    @Override
+    public boolean handleBackPress() {
+        return mOnBackPressHandler.handle();
+    }
+
+    @Override
+    public ObservableSupplierImpl<Boolean> getBackPressStateChangedSupplier() {
+        return mWillHandleBackPressSupplier;
+    }
+
+    @Override
+    public void onBackPressed() {
+        mOnBackPressHandler.handle();
     }
 
     void showLoadingIndicator() {
         setVisibilityById(mSheetContentView, R.id.page_insights_loading_indicator, View.VISIBLE);
         setVisibilityById(mToolbarView, R.id.page_insights_feed_header, View.VISIBLE);
         setVisibilityById(mSheetContentView, R.id.page_insights_feed_content, View.GONE);
-        setVisibilityById(mToolbarView, R.id.page_insights_child_page_header, View.GONE);
+        setVisibilityById(mToolbarView, R.id.page_insights_back_button, View.GONE);
+        setVisibilityById(mToolbarView, R.id.page_insights_child_title, View.GONE);
         setVisibilityById(mSheetContentView, R.id.page_insights_child_content, View.GONE);
         setVisibilityById(mSheetContentView, R.id.page_insights_privacy_notice, View.GONE);
     }
@@ -201,7 +245,8 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
     void showFeedPage() {
         setVisibilityById(mSheetContentView, R.id.page_insights_loading_indicator, View.GONE);
         setVisibilityById(mToolbarView, R.id.page_insights_feed_header, View.VISIBLE);
-        setVisibilityById(mToolbarView, R.id.page_insights_child_page_header, View.GONE);
+        setVisibilityById(mToolbarView, R.id.page_insights_back_button, View.GONE);
+        setVisibilityById(mToolbarView, R.id.page_insights_child_title, View.GONE);
         setVisibilityById(mSheetContentView, R.id.page_insights_feed_content, View.VISIBLE);
         setVisibilityById(mSheetContentView, R.id.page_insights_child_content, View.GONE);
         if (mShouldPrivacyNoticeBeShown) {
@@ -211,8 +256,8 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
         }
     }
 
-    void initContent(View feedPageView) {
-        initPrivacyNotice();
+    void initContent(View feedPageView, boolean isPrivacyNoticeRequired) {
+        initPrivacyNotice(isPrivacyNoticeRequired);
         if (mShouldPrivacyNoticeBeShown) {
             ViewGroup privacyNoticeView =
                     mSheetContentView.findViewById(R.id.page_insights_privacy_notice);
@@ -222,13 +267,14 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
                         @Override
                         public boolean onPreDraw() {
                             privacyNoticeView.getViewTreeObserver().removeOnPreDrawListener(this);
-                            PageInsightsSheetContent.this.updateContentHeight();
+                            PageInsightsSheetContent.this.updateContentDimensions();
                             return true;
                         }
                     });
         } else {
-            updateContentHeight();
+            updateContentDimensions();
         }
+        mLayoutView.addOnLayoutChangeListener(this);
 
         ViewGroup feedContentView = mSheetContentView.findViewById(R.id.page_insights_feed_content);
         feedContentView.removeAllViews();
@@ -244,21 +290,42 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
         childContentView.removeAllViews();
         childContentView.addView(childPageView);
         setVisibilityById(mToolbarView, R.id.page_insights_feed_header, View.GONE);
-        setVisibilityById(mToolbarView, R.id.page_insights_child_page_header, View.VISIBLE);
+        setVisibilityById(mToolbarView, R.id.page_insights_back_button, View.VISIBLE);
+        setVisibilityById(mToolbarView, R.id.page_insights_child_title, View.VISIBLE);
         setVisibilityById(mSheetContentView, R.id.page_insights_feed_content, View.GONE);
         setVisibilityById(mSheetContentView, R.id.page_insights_child_content, View.VISIBLE);
     }
 
-    private void updateContentHeight() {
+    void setPrivacyCardColor(int color) {
+        if (!mShouldPrivacyNoticeBeShown) {
+            return;
+        }
+        View privacyCard = mSheetContentView.findViewById(R.id.page_insights_privacy_notice_card);
+        if (privacyCard != null) {
+            privacyCard.setBackgroundTintList(ColorStateList.valueOf(color));
+        }
+    }
+
+    private void updateContentDimensions() {
+        // Glide (used in our XSurface views) throws an error when one of its images is assigned a
+        // width or height of zero; this happens briefly if we use a parent LinearLayout or
+        // ConstraintLayout to dynamically size our content. So instead we have to do the dynamic
+        // sizing ourselves, here in Java. :(
+        // TODO(b/306894418): See if this issue can be fixed or avoided.
         float contentHeight =
                 (mFullScreenHeight * FULL_HEIGHT_RATIO)
                         - mContext.getResources()
                                 .getDimensionPixelSize(R.dimen.page_insights_toolbar_height);
+        int contentWidth =
+                Math.min(
+                        mLayoutView.getWidth(),
+                        mContext.getResources()
+                                .getDimensionPixelSize(R.dimen.page_insights_max_width));
         mSheetContentView
                 .findViewById(R.id.page_insights_content_container)
                 .setLayoutParams(
                         new FrameLayout.LayoutParams(
-                                ViewGroup.LayoutParams.MATCH_PARENT, (int) contentHeight));
+                                contentWidth, (int) contentHeight, Gravity.CENTER_HORIZONTAL));
 
         int heightTakenByPrivacyNotice =
                 mShouldPrivacyNoticeBeShown
@@ -282,7 +349,7 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
         mViewGroup.findViewById(id).setVisibility(visibility);
     }
 
-    private void initPrivacyNotice() {
+    private void initPrivacyNotice(boolean isPrivacyNoticeRequired) {
         /*
          * The function checks if the privacy notice should be shown and inflates the privacy notice
          * UI if it has to be shown. The privacy notice should appear in Page Insights Hub (PIH) the
@@ -290,6 +357,9 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
          * the privacy notice has been shown 3 times.
          */
         mShouldPrivacyNoticeBeShown = false;
+        if (!isPrivacyNoticeRequired) {
+            return;
+        }
         if (sSharedPreferencesManager.readBoolean(
                 ChromePreferenceKeys.PIH_PRIVACY_NOTICE_CLOSED, false)) {
             return;
@@ -332,7 +402,7 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
                 ChromePreferenceKeys.PIH_PRIVACY_NOTICE_CLOSED, true);
         setVisibilityById(mSheetContentView, R.id.page_insights_privacy_notice, View.GONE);
         mShouldPrivacyNoticeBeShown = false;
-        updateContentHeight();
+        updateContentDimensions();
     }
 
     private void preparePrivacyNoticeView() {

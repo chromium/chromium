@@ -80,10 +80,14 @@ void SharedStorageDocumentServiceImpl::Bind(
   }
 
   if (!IsSecureFrame(&render_frame_host())) {
-    // This could indicate a compromised renderer, so let's terminate it.
-    mojo::ReportBadMessage(
-        "Attempted to request SharedStorageDocumentService from an insecure "
-        "context");
+    // TODO(https://crbug.com/1470628): Invoke mojo::ReportBadMessage here when
+    // we can be sure honest renderers won't hit this path.
+    SCOPED_CRASH_KEY_STRING1024("", "top_frame_url",
+                                render_frame_host()
+                                    .GetOutermostMainFrame()
+                                    ->GetLastCommittedURL()
+                                    .spec());
+    base::debug::DumpWithoutCrashing();
     return;
   }
 

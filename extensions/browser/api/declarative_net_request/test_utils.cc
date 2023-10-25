@@ -288,20 +288,20 @@ std::ostream& operator<<(std::ostream& output, const ParseResult& result) {
     case ParseResult::ERROR_INVALID_ALLOW_ALL_REQUESTS_RESOURCE_TYPE:
       output << "ERROR_INVALID_ALLOW_ALL_REQUESTS_RESOURCE_TYPE";
       break;
-    case ParseResult::ERROR_NO_HEADERS_SPECIFIED:
-      output << "ERROR_NO_HEADERS_SPECIFIED";
+    case ParseResult::ERROR_NO_HEADERS_TO_MODIFY_SPECIFIED:
+      output << "ERROR_NO_HEADERS_TO_MODIFY_SPECIFIED";
       break;
-    case ParseResult::ERROR_EMPTY_REQUEST_HEADERS_LIST:
-      output << "ERROR_EMPTY_REQUEST_HEADERS_LIST";
+    case ParseResult::ERROR_EMPTY_MODIFY_REQUEST_HEADERS_LIST:
+      output << "ERROR_EMPTY_MODIFY_REQUEST_HEADERS_LIST";
       break;
-    case ParseResult::ERROR_EMPTY_RESPONSE_HEADERS_LIST:
-      output << "ERROR_EMPTY_RESPONSE_HEADERS_LIST";
+    case ParseResult::ERROR_EMPTY_MODIFY_RESPONSE_HEADERS_LIST:
+      output << "ERROR_EMPTY_MODIFY_RESPONSE_HEADERS_LIST";
       break;
-    case ParseResult::ERROR_INVALID_HEADER_NAME:
-      output << "ERROR_INVALID_HEADER_NAME";
+    case ParseResult::ERROR_INVALID_HEADER_TO_MODIFY_NAME:
+      output << "ERROR_INVALID_HEADER_TO_MODIFY_NAME";
       break;
-    case ParseResult::ERROR_INVALID_HEADER_VALUE:
-      output << "ERROR_INVALID_HEADER_VALUE";
+    case ParseResult::ERROR_INVALID_HEADER_TO_MODIFY_VALUE:
+      output << "ERROR_INVALID_HEADER_TO_MODIFY_VALUE";
       break;
     case ParseResult::ERROR_HEADER_VALUE_NOT_SPECIFIED:
       output << "ERROR_HEADER_VALUE_NOT_SPECIFIED";

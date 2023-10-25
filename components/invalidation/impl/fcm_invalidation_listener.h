@@ -56,7 +56,7 @@ class FCMInvalidationListener
 
   // Update the set of topics for which we want to get invalidations. May be
   // called at any time.
-  void UpdateInterestedTopics(const Topics& topics);
+  void UpdateInterestedTopics(const TopicMap& topics);
 
   // Called when the InstanceID token is revoked (usually because the InstanceID
   // itself was deleted). Note that while this class receives new tokens
@@ -112,7 +112,7 @@ class FCMInvalidationListener
 
   // The set of topics for which we want to receive invalidations. We'll pass
   // these to |per_user_topic_subscription_manager_| for (un)subscription.
-  Topics interested_topics_;
+  TopicMap interested_topics_;
 
   // The states of the HTTP and FCM channel.
   SubscriptionChannelState subscription_channel_state_ =

@@ -31,10 +31,8 @@ This is a testharness.js-based test.
   assert_true: expected true got false
 [PASS] Property mask-clip has initial value border-box
 [PASS] Property mask-clip does not inherit
-[FAIL] Property mask-composite has initial value add
-  assert_true: mask-composite doesn't seem to be supported in the computed style expected true got false
-[FAIL] Property mask-composite does not inherit
-  assert_true: expected true got false
+[PASS] Property mask-composite has initial value add
+[PASS] Property mask-composite does not inherit
 [PASS] Property mask-image has initial value none
 [PASS] Property mask-image does not inherit
 [FAIL] Property mask-mode has initial value match-source
@@ -47,10 +45,8 @@ This is a testharness.js-based test.
   assert_true: mask-position doesn't seem to be supported in the computed style expected true got false
 [FAIL] Property mask-position does not inherit
   assert_true: expected true got false
-[FAIL] Property mask-repeat has initial value repeat
-  assert_true: mask-repeat doesn't seem to be supported in the computed style expected true got false
-[FAIL] Property mask-repeat does not inherit
-  assert_true: expected true got false
+[PASS] Property mask-repeat has initial value repeat
+[PASS] Property mask-repeat does not inherit
 [PASS] Property mask-size has initial value auto
 [PASS] Property mask-size does not inherit
 [PASS] Property mask-type has initial value luminance

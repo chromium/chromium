@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.searchwidget;
 
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
@@ -214,7 +213,7 @@ public class SearchActivityTest {
 
         doReturn(buildDummyAutocompleteMatch(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL))
                 .when(mAutocompleteController)
-                .classify(any(), anyBoolean());
+                .classify(any());
 
         mTestDelegate = new TestDelegate();
         SearchActivity.setDelegateForTests(mTestDelegate);
@@ -315,7 +314,7 @@ public class SearchActivityTest {
     public void testStartsBrowserAfterUrlSubmitted_chromeUrl() throws Exception {
         doReturn(buildDummyAutocompleteMatch("chrome://flags/"))
                 .when(mAutocompleteController)
-                .classify(any(), anyBoolean());
+                .classify(any());
         verifyUrlLoads("chrome://flags/");
     }
 

@@ -92,7 +92,7 @@ flex-container{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutNGFlexibleBox",
+    "layoutObjectName": "LayoutFlexibleBox",
     "showAccessibilityInfo": true
   },
   "flexInfo": [

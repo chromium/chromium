@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.AsyncTabLauncher;
 import org.chromium.url.GURL;
 
 import java.io.Serializable;
@@ -50,8 +50,8 @@ public interface HistoryClustersDelegate {
     @Nullable
     ViewGroup getToggleView(ViewGroup parent);
 
-    /** Returns an object that can create new tabs. */
-    default @Nullable TabCreator getTabCreator(boolean isIncognito) {
+    /** Returns an object that can launch new tabs. */
+    default @Nullable AsyncTabLauncher getTabLauncher(boolean isIncognito) {
         return null;
     }
 

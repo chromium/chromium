@@ -214,4 +214,5 @@ interface CoreProbes {
   void DidAddSpeculationRuleSet([Keep] Document&, const SpeculationRuleSet& rule_set);
   void DidRemoveSpeculationRuleSet(Document&, const SpeculationRuleSet& rule_set);
   void SpeculationCandidatesUpdated([Keep] Document&, const HeapVector<Member<SpeculationCandidate>>& candidates);
+  void DidInitializeFrameWidget(LocalFrame* document);
 }

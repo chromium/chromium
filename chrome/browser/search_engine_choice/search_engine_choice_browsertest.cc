@@ -82,8 +82,16 @@ class MockSearchEngineChoiceService : public SearchEngineChoiceService {
 
   static std::unique_ptr<KeyedService> Create(
       content::BrowserContext* context) {
+    Profile* profile = Profile::FromBrowserContext(context);
+
+    if (!SearchEngineChoiceServiceFactory::
+            IsProfileEligibleForChoiceScreenForTesting(
+                CHECK_DEREF(g_browser_process->policy_service()), *profile)) {
+      return nullptr;
+    }
+
     return std::make_unique<testing::NiceMock<MockSearchEngineChoiceService>>(
-        Profile::FromBrowserContext(context));
+        profile);
   }
 
   unsigned int GetNumberOfBrowsersWithDialogsOpen() const {
@@ -139,6 +147,11 @@ class SearchEngineChoiceBrowserTest : public InProcessBrowserTest {
 
   void SetUpInProcessBrowserTestFixture() override {
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+    // The search engine choice feature is enabled for countries in the EEA
+    // region.
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kSearchEngineChoiceCountry, "BE");
+
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(

@@ -579,18 +579,6 @@ bool VideoOverlayWindowViews::OnGestureEventHandledOrIgnored(
   return false;
 }
 
-void VideoOverlayWindowViews::RecordTapGesture(
-    OverlayWindowControl window_control) {
-  UMA_HISTOGRAM_ENUMERATION("PictureInPictureWindow.TapGesture",
-                            window_control);
-}
-
-void VideoOverlayWindowViews::RecordButtonPressed(
-    OverlayWindowControl window_control) {
-  UMA_HISTOGRAM_ENUMERATION("PictureInPictureWindow.ButtonPressed",
-                            window_control);
-}
-
 void VideoOverlayWindowViews::ReEnableControlsAfterMove() {
   is_moving_ = false;
 
@@ -763,7 +751,6 @@ void VideoOverlayWindowViews::SetUpViews() {
                               kCloseWindowAndPauseVideo
                         : PictureInPictureWindowManager::UiBehavior::
                               kCloseWindowOnly);
-            overlay->RecordButtonPressed(OverlayWindowControl::kClose);
           },
           base::Unretained(this)));
   auto back_to_tab_label_button =
@@ -773,7 +760,6 @@ void VideoOverlayWindowViews::SetUpViews() {
                 ->ExitPictureInPictureViaWindowUi(
                     PictureInPictureWindowManager::UiBehavior::
                         kCloseWindowAndFocusOpener);
-            overlay->RecordButtonPressed(OverlayWindowControl::kBackToTab);
           },
           base::Unretained(this)));
   auto previous_track_controls_view =
@@ -781,8 +767,6 @@ void VideoOverlayWindowViews::SetUpViews() {
           base::BindRepeating(
               [](VideoOverlayWindowViews* overlay) {
                 overlay->controller_->PreviousTrack();
-                overlay->RecordButtonPressed(
-                    OverlayWindowControl::kPreviousTrack);
               },
               base::Unretained(this)),
           vector_icons::kMediaPreviousTrackIcon,
@@ -792,7 +776,6 @@ void VideoOverlayWindowViews::SetUpViews() {
       std::make_unique<PlaybackImageButton>(base::BindRepeating(
           [](VideoOverlayWindowViews* overlay) {
             overlay->TogglePlayPause();
-            overlay->RecordButtonPressed(OverlayWindowControl::kPlayPause);
           },
           base::Unretained(this)));
   auto next_track_controls_view =
@@ -800,7 +783,6 @@ void VideoOverlayWindowViews::SetUpViews() {
           base::BindRepeating(
               [](VideoOverlayWindowViews* overlay) {
                 overlay->controller_->NextTrack();
-                overlay->RecordButtonPressed(OverlayWindowControl::kNextTrack);
               },
               base::Unretained(this)),
           vector_icons::kMediaNextTrackIcon,
@@ -810,28 +792,23 @@ void VideoOverlayWindowViews::SetUpViews() {
       std::make_unique<SkipAdLabelButton>(base::BindRepeating(
           [](VideoOverlayWindowViews* overlay) {
             overlay->controller_->SkipAd();
-            overlay->RecordButtonPressed(OverlayWindowControl::kSkipAd);
           },
           base::Unretained(this)));
   auto toggle_microphone_button =
       std::make_unique<ToggleMicrophoneButton>(base::BindRepeating(
           [](VideoOverlayWindowViews* overlay) {
             overlay->controller_->ToggleMicrophone();
-            overlay->RecordButtonPressed(
-                OverlayWindowControl::kToggleMicrophone);
           },
           base::Unretained(this)));
   auto toggle_camera_button =
       std::make_unique<ToggleCameraButton>(base::BindRepeating(
           [](VideoOverlayWindowViews* overlay) {
             overlay->controller_->ToggleCamera();
-            overlay->RecordButtonPressed(OverlayWindowControl::kToggleCamera);
           },
           base::Unretained(this)));
   auto hang_up_button = std::make_unique<HangUpButton>(base::BindRepeating(
       [](VideoOverlayWindowViews* overlay) {
         overlay->controller_->HangUp();
-        overlay->RecordButtonPressed(OverlayWindowControl::kHangUp);
       },
       base::Unretained(this)));
   auto previous_slide_controls_view =
@@ -839,8 +816,6 @@ void VideoOverlayWindowViews::SetUpViews() {
           base::BindRepeating(
               [](VideoOverlayWindowViews* overlay) {
                 overlay->controller_->PreviousSlide();
-                overlay->RecordButtonPressed(
-                    OverlayWindowControl::kPreviousSlide);
               },
               base::Unretained(this)),
           vector_icons::kMediaPreviousTrackIcon,
@@ -851,7 +826,6 @@ void VideoOverlayWindowViews::SetUpViews() {
           base::BindRepeating(
               [](VideoOverlayWindowViews* overlay) {
                 overlay->controller_->NextSlide();
-                overlay->RecordButtonPressed(OverlayWindowControl::kNextSlide);
               },
               base::Unretained(this)),
           vector_icons::kMediaNextTrackIcon,
@@ -1272,7 +1246,8 @@ void VideoOverlayWindowViews::ShowInactive() {
     // Also update the bounds, since that's already happened for everything
     // else, potentially, during widget resize.
     overlay_view_->SetBoundsRect(gfx::Rect(GetBounds().size()));
-    overlay_view_->ShowBubble(GetNativeView());
+    overlay_view_->ShowBubble(
+        GetNativeView(), AutoPipSettingOverlayView::PipWindowType::kVideoPip);
     SetBounds(CalculateAndUpdateWindowBounds());
   }
 
@@ -1446,42 +1421,33 @@ void VideoOverlayWindowViews::OnGestureEvent(ui::GestureEvent* event) {
 
   if (GetBackToTabControlsBounds().Contains(event->location())) {
     controller_->CloseAndFocusInitiator();
-    RecordTapGesture(OverlayWindowControl::kBackToTab);
     event->SetHandled();
   } else if (GetSkipAdControlsBounds().Contains(event->location())) {
     controller_->SkipAd();
-    RecordTapGesture(OverlayWindowControl::kSkipAd);
     event->SetHandled();
   } else if (GetCloseControlsBounds().Contains(event->location())) {
     PictureInPictureWindowManager::GetInstance()
         ->ExitPictureInPictureViaWindowUi(
             PictureInPictureWindowManager::UiBehavior::
                 kCloseWindowAndPauseVideo);
-    RecordTapGesture(OverlayWindowControl::kClose);
     event->SetHandled();
   } else if (GetPlayPauseControlsBounds().Contains(event->location())) {
     TogglePlayPause();
-    RecordTapGesture(OverlayWindowControl::kPlayPause);
     event->SetHandled();
   } else if (GetNextTrackControlsBounds().Contains(event->location())) {
     controller_->NextTrack();
-    RecordTapGesture(OverlayWindowControl::kNextTrack);
     event->SetHandled();
   } else if (GetPreviousTrackControlsBounds().Contains(event->location())) {
     controller_->PreviousTrack();
-    RecordTapGesture(OverlayWindowControl::kPreviousTrack);
     event->SetHandled();
   } else if (GetToggleMicrophoneButtonBounds().Contains(event->location())) {
     controller_->ToggleMicrophone();
-    RecordTapGesture(OverlayWindowControl::kToggleMicrophone);
     event->SetHandled();
   } else if (GetToggleCameraButtonBounds().Contains(event->location())) {
     controller_->ToggleCamera();
-    RecordTapGesture(OverlayWindowControl::kToggleCamera);
     event->SetHandled();
   } else if (GetHangUpButtonBounds().Contains(event->location())) {
     controller_->HangUp();
-    RecordTapGesture(OverlayWindowControl::kHangUp);
     event->SetHandled();
   }
 }

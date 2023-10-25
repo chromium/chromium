@@ -3,9 +3,26 @@
 // found in the LICENSE file.
 
 /* @const
- * Add matching sprite definition and config to Runner.spriteDefinitionByType.
+ * Add matching sprite definition and config to spriteDefinitionByType.
  */
 const GAME_TYPE = [];
+
+//******************************************************************************
+
+/**
+ * Collision box object.
+ * @param {number} x X position.
+ * @param {number} y Y Position.
+ * @param {number} w Width.
+ * @param {number} h Height.
+ * @constructor
+ */
+export function CollisionBox(x, y, w, h) {
+  this.x = x;
+  this.y = y;
+  this.width = w;
+  this.height = h;
+}
 
 /**
  * Obstacle definitions.
@@ -30,7 +47,7 @@ let ObstacleType;
 /**
  * T-Rex runner sprite definitions.
  */
-Runner.spriteDefinitionByType = {
+export const spriteDefinitionByType = {
   original: {
     LDPI: {
       BACKGROUND_EL: {x: 86, y: 2},

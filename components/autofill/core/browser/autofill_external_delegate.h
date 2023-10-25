@@ -138,7 +138,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AutofillExternalDelegateUnitTest,
-                           FillCreditCardFormImpl);
+                           FillCreditCardForm);
 
   base::WeakPtr<AutofillExternalDelegate> GetWeakPtr();
 

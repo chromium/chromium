@@ -9,6 +9,14 @@
 
 @interface PasswordManagerAppInterface : NSObject
 
+// Stores a credential to the password store. Similar to the other functions in
+// this file, but also specifies whether the credential was `shared` (received
+// from some other user).
++ (NSError*)storeCredentialWithUsername:(NSString*)username
+                               password:(NSString*)password
+                                    URL:(NSURL*)URL
+                                 shared:(BOOL)shared;
+
 // Stores a credential to the password store.
 + (NSError*)storeCredentialWithUsername:(NSString*)username
                                password:(NSString*)password

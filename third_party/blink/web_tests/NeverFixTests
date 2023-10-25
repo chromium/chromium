@@ -66,12 +66,6 @@
 [ Linux ] virtual/text-antialias/mac-system-ui-weight.html [ Skip ]
 [ Win ] virtual/text-antialias/mac-system-ui-weight.html [ Skip ]
 
-# Tests Mac system font specific width variations, which are supported on Mac11
-# and later.
-[ Linux ] virtual/text-antialias/mac-system-ui-width.html [ Skip ]
-[ Win ] virtual/text-antialias/mac-system-ui-width.html [ Skip ]
-[ Mac10.15 ] virtual/text-antialias/mac-system-ui-width.html [ Skip ]
-
  # Mac's popup behavior is different.
 [ Mac ] fast/forms/select/menulist-onchange-fired-with-key-up-down.html [ Skip ]
 [ Mac ] fast/forms/select/popup-with-display-none-optgroup.html [ Skip ]

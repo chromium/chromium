@@ -93,7 +93,6 @@
 <translation id="1643449475550628585">Canvia la imatge del fons de pantalla diàriament</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1651925268237749928">Has seleccionat un àlbum compartit. Altres persones poden afegir o canviar fotos. És possible que el fons de pantalla faci servir fotos que no siguin en aquest àlbum.</translation>
-<translation id="1658834457013045127">Sempre</translation>
 <translation id="1661865805917886535">És possible que algunes dades del compte i del sistema s'enviïn a Google. Farem servir aquesta informació per ajudar a resoldre problemes tècnics i millorar els nostres serveis de conformitat amb la política de privadesa (<ph name="PRIVACYPOLICYURL" />) i les condicions del servei (<ph name="TERMSOFSERVICEURL" />). Per sol·licitar canvis de contingut, ves a Ajuda legal (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">S'ha aturat: no hi ha tinta</translation>
 <translation id="1664796644829245314">Previsualitza <ph name="PREVIEW_OBJECT" /></translation>
@@ -323,7 +322,6 @@
 <translation id="3484914941826596830">Mentre el microprogramari s'actualitza, no desconnectis el dispositiu extern ni apaguis l'ordinador. Pots minimitzar aquesta finestra. Aquesta actualització pot tardar uns quants minuts i és possible que, durant aquest temps, el dispositiu extern no funcioni.</translation>
 <translation id="3486220673238053218">definició</translation>
 <translation id="3488065109653206955">Activat parcialment</translation>
-<translation id="349491921221892984"><ph name="MINUTES" /> min</translation>
 <translation id="3502426834823382181">mostra totes les aplicacions</translation>
 <translation id="3510890413042482857">Envia <ph name="BEGIN_LINK1" />dades de traça del rendiment<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Actualitz. ChromeOS</translation>
@@ -484,7 +482,6 @@
 <translation id="473775607612524610">Actualitza</translation>
 <translation id="4771607256327216405">brillantor del teclat</translation>
 <translation id="4773299976671772492">En pausa</translation>
-<translation id="4782003517030001304">1 h</translation>
 <translation id="4782311465517282004">Obtén definicions, traduccions o conversions d'unitats quan mantinguis premut el text o quan hi facis clic amb el botó dret</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
 <translation id="4793710386569335688">Per obtenir més ajuda, ves al <ph name="BEGIN_LINK" />Centre d'ajuda<ph name="END_LINK" />.</translation>
@@ -699,6 +696,7 @@
 <translation id="629550705077076970">atenuació del teclat</translation>
 <translation id="6302401976930124515">La prova <ph name="TEST_NAME" /> s'ha cancel·lat</translation>
 <translation id="631063167932043783">Aplicació Explora</translation>
+<translation id="6318437367327684789">sempre</translation>
 <translation id="6319207335391420837">Actualitza el microprogramari que hi ha a <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Activa l'estalvi de pantalla</translation>
 <translation id="6324916366299863871">Edita la drecera</translation>

@@ -6,9 +6,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -32,6 +30,8 @@ namespace {
 constexpr char kPlusAddressModalEventHistogram[] =
     "Autofill.PlusAddresses.Modal.Events";
 
+constexpr char kFakePlusAddress[] = "plus+remote@plus.plus";
+
 // Used to control the behavior of the controller's `plus_address_service_`
 // (though mocking would also be fine). Most importantly, this avoids the
 // requirement to mock the identity portions of the `PlusAddressService`.
@@ -40,19 +40,32 @@ class FakePlusAddressService : public PlusAddressService {
   FakePlusAddressService() = default;
 
   void ReservePlusAddress(const url::Origin& origin,
-                          PlusAddressCallback callback) override {
-    std::move(callback).Run("plus+plus@plus.plus");
+                          PlusAddressRequestCallback on_completed) override {
+    std::move(on_completed)
+        .Run(PlusProfile({.facet = facet_,
+                          .plus_address = kFakePlusAddress,
+                          .is_confirmed = is_confirmed_}));
   }
 
   void ConfirmPlusAddress(const url::Origin& origin,
                           const std::string& plus_address,
-                          PlusAddressCallback callback) override {
-    std::move(callback).Run(plus_address);
+                          PlusAddressRequestCallback on_completed) override {
+    is_confirmed_ = true;
+    std::move(on_completed)
+        .Run(PlusProfile({.facet = facet_,
+                          .plus_address = plus_address,
+                          .is_confirmed = is_confirmed_}));
   }
+
+  // Used to test scenarios where Reserve returns a confirmed PlusProfile.
+  void set_is_confirmed(bool confirmed) { is_confirmed_ = confirmed; }
+
+  std::string facet_ = "facet.bar";
+  bool is_confirmed_ = false;
 
   absl::optional<std::string> GetPrimaryEmail() override {
     // Ensure the value is present without requiring identity setup.
-    return "plus+plus@plus.plus";
+    return "plus+primary@plus.plus";
   }
 };
 
@@ -77,9 +90,17 @@ class PlusAddressCreationControllerDesktopEnabledTest
                             base::Unretained(this)));
   }
 
+  void TearDown() override {
+    fake_plus_address_service_ = nullptr;
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
   std::unique_ptr<KeyedService> PlusAddressServiceTestFactory(
       content::BrowserContext* context) {
-    return std::make_unique<FakePlusAddressService>();
+    std::unique_ptr<FakePlusAddressService> unique_service =
+        std::make_unique<FakePlusAddressService>();
+    fake_plus_address_service_ = unique_service.get();
+    return unique_service;
   }
 
  protected:
@@ -89,6 +110,7 @@ class PlusAddressCreationControllerDesktopEnabledTest
   profiles::testing::ScopedProfileSelectionsForFactoryTesting
       override_profile_selections_;
   base::HistogramTester histogram_tester_;
+  raw_ptr<FakePlusAddressService> fake_plus_address_service_;
 };
 
 TEST_F(PlusAddressCreationControllerDesktopEnabledTest, DirectCallback) {
@@ -117,6 +139,31 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest, DirectCallback) {
               PlusAddressMetrics::PlusAddressModalEvent::kModalConfirmed, 1)));
 }
 
+TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
+       ReserveGivesConfirmedAddress_ModalSuppressed) {
+  std::unique_ptr<content::WebContents> web_contents =
+      ChromeRenderViewHostTestHarness::CreateTestWebContents();
+
+  PlusAddressCreationControllerDesktop::CreateForWebContents(
+      web_contents.get());
+  PlusAddressCreationControllerDesktop* controller =
+      PlusAddressCreationControllerDesktop::FromWebContents(web_contents.get());
+  controller->set_suppress_ui_for_testing(true);
+
+  // Make Reserve() return kFakePlusAddress as an already-confirmed address.
+  fake_plus_address_service_->set_is_confirmed(true);
+
+  base::test::TestFuture<const std::string&> future;
+  controller->OfferCreation(
+      url::Origin::Create(GURL("https://kirubelwashere.example")),
+      future.GetCallback());
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), kFakePlusAddress);
+
+  // Verify that the plus address modal is not shown in this case.
+  histogram_tester_.ExpectTotalCount(kPlusAddressModalEventHistogram, 0);
+}
+
 TEST_F(PlusAddressCreationControllerDesktopEnabledTest, ModalCanceled) {
   std::unique_ptr<content::WebContents> web_contents =
       ChromeRenderViewHostTestHarness::CreateTestWebContents();
@@ -127,11 +174,13 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest, ModalCanceled) {
       PlusAddressCreationControllerDesktop::FromWebContents(web_contents.get());
   controller->set_suppress_ui_for_testing(true);
 
-  base::MockOnceCallback<void(const std::string&)> callback;
-  EXPECT_CALL(callback, Run).Times(0);
+  base::test::TestFuture<const std::string&> future;
   controller->OfferCreation(
-      url::Origin::Create(GURL("https://mattwashere.example")), callback.Get());
+      url::Origin::Create(GURL("https://mattwashere.example")),
+      future.GetCallback());
   controller->OnCanceled();
+  EXPECT_FALSE(future.IsReady());
+
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
       BucketsAre(
@@ -167,10 +216,11 @@ TEST_F(PlusAddressCreationControllerDesktopDisabledTest, NullService) {
       PlusAddressCreationControllerDesktop::FromWebContents(web_contents.get());
   controller->set_suppress_ui_for_testing(true);
 
-  base::MockOnceCallback<void(const std::string&)> callback;
-  EXPECT_CALL(callback, Run).Times(0);
+  base::test::TestFuture<const std::string&> future;
   controller->OfferCreation(
-      url::Origin::Create(GURL("https://mattwashere.example")), callback.Get());
+      url::Origin::Create(GURL("https://mattwashere.example")),
+      future.GetCallback());
   controller->OnConfirmed();
+  EXPECT_FALSE(future.IsReady());
 }
 }  // namespace plus_addresses

@@ -254,28 +254,6 @@ void OrderProfiles(std::vector<AutofillProfile*>& profiles,
   }
 }
 
-// Constructs a new profile without observations for any of the stored types in
-// which `old_profile` and `new_profile` differ.
-// This is used as a mechanism to reset outdated observations. E.g, a user might
-// edit a value of a token in settings. In this case, all observations that were
-// previously collected for that value no longer apply.
-AutofillProfile GetProfileWithRemovedInvalidObservations(
-    const AutofillProfile& old_profile,
-    const AutofillProfile& new_profile) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillTrackProfileTokenQuality)) {
-    return new_profile;
-  }
-  AutofillProfile updated_profile = new_profile;
-  for (ServerFieldType type :
-       AutofillTable::GetStoredTypesForAutofillProfile()) {
-    if (old_profile.GetRawInfo(type) != new_profile.GetRawInfo(type)) {
-      updated_profile.token_quality().ResetObservationsForStoredType(type);
-    }
-  }
-  return updated_profile;
-}
-
 }  // namespace
 
 // Helper class to abstract the switching between account and profile storage
@@ -877,7 +855,9 @@ void PersonalDataManager::AddProfile(const AutofillProfile& profile) {
     return;
   }
   ongoing_profile_changes_[profile.guid()].emplace_back(
-      AutofillProfileChange::ADD, profile);
+      AutofillProfileChange(AutofillProfileChange::ADD, profile.guid(),
+                            profile),
+      /*is_ongoing=*/false);
   HandleNextProfileChange(profile.guid());
 }
 
@@ -1310,28 +1290,6 @@ void PersonalDataManager::SetSyncServiceForTest(
   SetSyncService(sync_service);
 }
 
-void PersonalDataManager::
-    RemoveAutofillProfileByGUIDAndBlankCreditCardReference(
-        const std::string& guid) {
-  RemoveProfileFromDB(guid);
-
-  // Reset the billing_address_id of any card that referred to this profile.
-  for (CreditCard* credit_card : GetCreditCards()) {
-    if (credit_card->billing_address_id() == guid) {
-      credit_card->set_billing_address_id("");
-
-      if (credit_card->record_type() == CreditCard::RecordType::kLocalCard) {
-        database_helper_->GetLocalDatabase()->UpdateCreditCard(*credit_card);
-      } else {
-        DCHECK(database_helper_->GetServerDatabase())
-            << "Updating metadata on null server db.";
-        database_helper_->GetServerDatabase()->UpdateServerCardMetadata(
-            *credit_card);
-      }
-    }
-  }
-}
-
 void PersonalDataManager::RemoveByGUID(const std::string& guid) {
   if (!database_helper_->GetLocalDatabase())
     return;
@@ -1345,7 +1303,7 @@ void PersonalDataManager::RemoveByGUID(const std::string& guid) {
     // Refresh our local cache and send notifications to observers.
     Refresh();
   } else {
-    RemoveAutofillProfileByGUIDAndBlankCreditCardReference(guid);
+    RemoveProfileFromDB(guid);
   }
 }
 
@@ -2468,10 +2426,9 @@ void PersonalDataManager::OnUserAcceptedCardsFromAccountOption() {
 }
 
 void PersonalDataManager::OnAutofillProfileChanged(
-    const AutofillProfileDeepChange& change) {
-  const auto& guid = change.key();
-  const auto& change_type = change.type();
-  const auto& profile = change.profile();
+    const AutofillProfileChange& change) {
+  const std::string& guid = change.key();
+  const AutofillProfile& profile = change.data_model();
   DCHECK(guid == profile.guid());
   // Happens only in tests.
   if (!ProfileChangesAreOngoing(guid)) {
@@ -2481,23 +2438,22 @@ void PersonalDataManager::OnAutofillProfileChanged(
 
   std::vector<std::unique_ptr<AutofillProfile>>& profiles =
       GetProfileStorage(profile.source());
-  const auto* existing_profile = GetProfileByGUID(guid);
-  const bool profile_exists = (existing_profile != nullptr);
-  switch (change_type) {
+  const AutofillProfile* existing_profile = GetProfileByGUID(guid);
+  switch (change.type()) {
     case AutofillProfileChange::ADD:
-      if (!profile_exists && !FindByContents(profiles, profile)) {
+      if (!existing_profile && !FindByContents(profiles, profile)) {
         profiles.push_back(std::make_unique<AutofillProfile>(profile));
       }
       break;
     case AutofillProfileChange::UPDATE:
-      if (profile_exists &&
+      if (existing_profile &&
           !existing_profile->EqualsForUpdatePurposes(profile)) {
         profiles.erase(FindElementByGUID(profiles, guid));
         profiles.push_back(std::make_unique<AutofillProfile>(profile));
       }
       break;
     case AutofillProfileChange::REMOVE:
-      if (profile_exists) {
+      if (existing_profile) {
         profiles.erase(FindElementByGUID(profiles, guid));
       }
       break;
@@ -2532,11 +2488,9 @@ void PersonalDataManager::OnUserAcceptedUpstreamOffer() {
 }
 
 void PersonalDataManager::NotifyPersonalDataObserver() {
-  // After all pending write operations have concluded, the PDM calls Refresh(),
-  // which triggers a series of read operations to update members like
-  // `synced_local_profiles_` and `local_credit_cards_`.
-  // Only when all read operations are concluded, the PDM is in a consistent
-  // state again.
+  // The PDM's state is inconsistent with the database in two cases:
+  // - When profile modifications are still pending: ProfileChangesAreOngoing().
+  // - When reads are still pending.
   bool pending_changes = ProfileChangesAreOngoing() || HasPendingQueries();
   for (PersonalDataManagerObserver& observer : observers_) {
     observer.OnPersonalDataChanged();
@@ -2554,16 +2508,18 @@ void PersonalDataManager::OnCreditCardSaved(bool is_local_card) {}
 
 void PersonalDataManager::UpdateProfileInDB(const AutofillProfile& profile) {
   if (!ProfileChangesAreOngoing(profile.guid())) {
-    const auto* existing_profile = GetProfileByGUID(profile.guid());
-    bool profile_exists = (existing_profile != nullptr);
-    if (!profile_exists || existing_profile->EqualsForUpdatePurposes(profile)) {
+    const AutofillProfile* existing_profile = GetProfileByGUID(profile.guid());
+    if (!existing_profile ||
+        existing_profile->EqualsForUpdatePurposes(profile)) {
       NotifyPersonalDataObserver();
       return;
     }
   }
 
   ongoing_profile_changes_[profile.guid()].emplace_back(
-      AutofillProfileChange::UPDATE, profile);
+      AutofillProfileChange(AutofillProfileChange::UPDATE, profile.guid(),
+                            profile),
+      /*is_ongoing=*/false);
   HandleNextProfileChange(profile.guid());
 }
 
@@ -2571,36 +2527,40 @@ void PersonalDataManager::RemoveProfileFromDB(const std::string& guid) {
   // Find the profile to remove. Since `ongoing_profile_changes_` returns a
   // `const AutofillProfile*`, this logic is in a separate lambda.
   const AutofillProfile* profile = [&]() -> const AutofillProfile* {
-    if (AutofillProfile* profile = GetProfileByGUID(guid))
+    if (AutofillProfile* profile = GetProfileByGUID(guid)) {
       return profile;
-    if (ProfileChangesAreOngoing(guid))
-      return &ongoing_profile_changes_[guid].back().profile();
+    }
+    if (ProfileChangesAreOngoing(guid)) {
+      return &ongoing_profile_changes_[guid].back().first.data_model();
+    }
     return nullptr;
   }();
   if (!profile) {
     NotifyPersonalDataObserver();
     return;
   }
-  AutofillProfileDeepChange change(AutofillProfileChange::REMOVE, *profile);
+  AutofillProfileChange change(AutofillProfileChange::REMOVE, profile->guid(),
+                               *profile);
+  bool is_ongoing = false;
   if (!ProfileChangesAreOngoing(guid)) {
     database_helper_->GetLocalDatabase()->RemoveAutofillProfile(
         guid, profile->source());
-    change.set_is_ongoing_on_background();
+    is_ongoing = true;
   }
-  ongoing_profile_changes_[guid].push_back(std::move(change));
+  ongoing_profile_changes_[guid].emplace_back(std::move(change), is_ongoing);
 }
 
 void PersonalDataManager::HandleNextProfileChange(const std::string& guid) {
   if (!ProfileChangesAreOngoing(guid))
     return;
 
-  const AutofillProfileDeepChange& change =
-      ongoing_profile_changes_[guid].front();
-  if (change.is_ongoing_on_background())
+  auto& [change, is_ongoing] = ongoing_profile_changes_[guid].front();
+  if (is_ongoing) {
     return;
+  }
 
   const AutofillProfile* existing_profile = GetProfileByGUID(guid);
-  const AutofillProfile& profile = change.profile();
+  const AutofillProfile& profile = change.data_model();
   DCHECK(guid == profile.guid());
   scoped_refptr<AutofillWebDataService> webdata_service =
       database_helper_->GetLocalDatabase();
@@ -2632,8 +2592,9 @@ void PersonalDataManager::HandleNextProfileChange(const std::string& guid) {
       // At this point, the `existing_profile` is consistent with
       // AutofillTable's state. Reset observations for all types that change due
       // to this update.
-      AutofillProfile updated_profile =
-          GetProfileWithRemovedInvalidObservations(*existing_profile, profile);
+      AutofillProfile updated_profile = profile;
+      updated_profile.token_quality().ResetObservationsForDifferingTokens(
+          *existing_profile);
       // Unless only metadata has changed, which operator== ignores, update the
       // modification date. This happens e.g. when increasing the use count.
       if (*existing_profile != updated_profile) {
@@ -2645,7 +2606,7 @@ void PersonalDataManager::HandleNextProfileChange(const std::string& guid) {
     case AutofillProfileChange::EXPIRE:
       NOTREACHED_NORETURN();
   }
-  change.set_is_ongoing_on_background();
+  is_ongoing = true;
 }
 
 bool PersonalDataManager::ProfileChangesAreOngoing(const std::string& guid) {
@@ -2665,13 +2626,8 @@ bool PersonalDataManager::ProfileChangesAreOngoing() {
 
 void PersonalDataManager::OnProfileChangeDone(const std::string& guid) {
   ongoing_profile_changes_[guid].pop_front();
-
-  if (!ProfileChangesAreOngoing()) {
-    Refresh();
-  } else {
-    NotifyPersonalDataObserver();
-    HandleNextProfileChange(guid);
-  }
+  NotifyPersonalDataObserver();
+  HandleNextProfileChange(guid);
 }
 
 bool PersonalDataManager::HasPendingQueries() {

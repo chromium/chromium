@@ -161,6 +161,18 @@ suite('<os-settings-menu>', () => {
     }
   });
 
+  suite('About ChromeOS menu item', () => {
+    test('Description text', async () => {
+      await createMenu();
+
+      const aboutMenuItem =
+          queryMenuItemByPath(`/${routesMojom.ABOUT_CHROME_OS_SECTION_PATH}`);
+      assertTrue(!!aboutMenuItem);
+
+      assertEquals('Updates, help, developer options', aboutMenuItem.sublabel);
+    });
+  });
+
   suite('Accounts menu item', () => {
     const fakeAccounts: Account[] = [
       {
@@ -670,6 +682,19 @@ suite('<os-settings-menu>', () => {
       assertTrue(!!privacyMenuItem);
 
       assertEquals('Lock screen, controls', privacyMenuItem.sublabel);
+    });
+  });
+
+  suite('System preferences menu item', () => {
+    test('Description text', async () => {
+      await createMenu();
+
+      const systemPreferencesMenuItem = queryMenuItemByPath(
+          `/${routesMojom.SYSTEM_PREFERENCES_SECTION_PATH}`);
+      assertTrue(!!systemPreferencesMenuItem);
+
+      assertEquals(
+          'Storage, power, language', systemPreferencesMenuItem.sublabel);
     });
   });
 });

@@ -15,12 +15,12 @@
 namespace blink {
 
 class FragmentItems;
+class InlineNode;
 class LayoutBox;
 class NGBlockBreakToken;
 class NGColumnSpannerPath;
 class NGConstraintSpace;
 class NGEarlyBreak;
-class NGInlineNode;
 class NGLayoutResult;
 class NGPhysicalBoxFragment;
 class NGPhysicalFragment;
@@ -134,14 +134,14 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
 
   bool IsFrameSet() const { return box_->IsFrameSet(); }
   bool IsParentNGFrameSet() const { return box_->Parent()->IsFrameSet(); }
-  bool IsParentNGGrid() const { return box_->Parent()->IsLayoutNGGrid(); }
+  bool IsParentGrid() const { return box_->Parent()->IsLayoutGrid(); }
 
   // Return true if this block node establishes an inline formatting context.
   // This will only be the case if there is actual inline content. Empty nodes
   // or nodes consisting purely of block-level, floats, and/or out-of-flow
   // positioned children will return false.
   bool IsInlineFormattingContextRoot(
-      NGInlineNode* first_child_out = nullptr) const;
+      InlineNode* first_child_out = nullptr) const;
 
   bool IsInlineLevel() const;
   bool IsAtomicInlineLevel() const;

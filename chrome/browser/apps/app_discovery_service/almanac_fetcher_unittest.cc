@@ -176,7 +176,7 @@ TEST_F(AlmanacFetcherTest, RegisterForUpdatesTwoApps) {
   std::vector<Result> results = waiter.Take();
   ASSERT_EQ(results.size(), 2u);
   EXPECT_EQ(results[0].GetAppSource(), AppSource::kGames);
-  EXPECT_EQ(results[0].GetAppId(), "http://icon1/");
+  EXPECT_EQ(results[0].GetIconId(), "http://icon1/");
   EXPECT_EQ(results[0].GetAppTitle(), u"app_name1");
   ASSERT_TRUE(results[0].GetSourceExtras());
   auto* game_extras = results[0].GetSourceExtras()->AsGameExtras();
@@ -187,7 +187,7 @@ TEST_F(AlmanacFetcherTest, RegisterForUpdatesTwoApps) {
   EXPECT_TRUE(game_extras->GetIsIconMaskingAllowed());
 
   EXPECT_EQ(results[1].GetAppSource(), AppSource::kGames);
-  EXPECT_EQ(results[1].GetAppId(), "http://icon2/");
+  EXPECT_EQ(results[1].GetIconId(), "http://icon2/");
   EXPECT_EQ(results[1].GetAppTitle(), u"app_name2");
   EXPECT_TRUE(results[1].GetSourceExtras());
   game_extras = results[1].GetSourceExtras()->AsGameExtras();
@@ -295,7 +295,7 @@ TEST_F(AlmanacFetcherTest, GetAppsUpdateOnSecondLogin) {
         EXPECT_EQ(error, DiscoveryError::kSuccess);
         ASSERT_EQ(results.size(), 2u);
         EXPECT_EQ(results[0].GetAppSource(), AppSource::kGames);
-        EXPECT_EQ(results[0].GetAppId(), "http://icon1/");
+        EXPECT_EQ(results[0].GetIconId(), "http://icon1/");
         EXPECT_EQ(results[0].GetAppTitle(), u"app_name1");
         ASSERT_TRUE(results[0].GetSourceExtras());
         auto* game_extras = results[0].GetSourceExtras()->AsGameExtras();
@@ -306,7 +306,7 @@ TEST_F(AlmanacFetcherTest, GetAppsUpdateOnSecondLogin) {
         EXPECT_TRUE(game_extras->GetIsIconMaskingAllowed());
 
         EXPECT_EQ(results[1].GetAppSource(), AppSource::kGames);
-        EXPECT_EQ(results[1].GetAppId(), "http://icon2/");
+        EXPECT_EQ(results[1].GetIconId(), "http://icon2/");
         EXPECT_EQ(results[1].GetAppTitle(), u"app_name2");
         EXPECT_TRUE(results[1].GetSourceExtras());
         game_extras = results[1].GetSourceExtras()->AsGameExtras();
@@ -333,7 +333,7 @@ TEST_F(AlmanacFetcherTest, GetAppsUpdateOnSecondLogin) {
         EXPECT_EQ(error, DiscoveryError::kSuccess);
         ASSERT_EQ(results.size(), 1u);
         EXPECT_EQ(results[0].GetAppSource(), AppSource::kGames);
-        EXPECT_EQ(results[0].GetAppId(), "http://icon/");
+        EXPECT_EQ(results[0].GetIconId(), "http://icon/");
         EXPECT_EQ(results[0].GetAppTitle(), u"app_name");
         ASSERT_TRUE(results[0].GetSourceExtras());
         auto* game_extras = results[0].GetSourceExtras()->AsGameExtras();

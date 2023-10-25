@@ -14,7 +14,6 @@ async function navigateToRequestedUrl() {
 
 // For the first session, register two user scripts.
 async function runFirstSession() {
-  console.log('runFirstSession');
   const userScripts = [
     {
       id: 'us1',
@@ -47,7 +46,6 @@ async function runFirstSession() {
 // first session are injected. At the end, unregister one of the user scripts
 // and register a content script.
 async function runSecondSession() {
-  console.log('runSecondSession');
   const expectedUserScripts = [
     {
       id: 'us1',
@@ -87,7 +85,6 @@ async function runSecondSession() {
 
   // Remove one of the user scripts.
   await chrome.userScripts.unregister({ids: ['us2']});
-  console.log('finish unregister and runSecondSession() will succeed');
 
   chrome.test.succeed();
 }
@@ -95,7 +92,6 @@ async function runSecondSession() {
 // For the third session, verify user script with id us1 and content script are
 // both registered and injected.
 async function runThirdSession() {
-  console.log('runThirdSession');
   const userScripts = await chrome.userScripts.getScripts();
   chrome.test.assertEq(1, userScripts.length);
   chrome.test.assertEq('us1', userScripts[0].id)
@@ -117,7 +113,6 @@ async function runThirdSession() {
 chrome.runtime.onStartup.addListener(async () => {});
 
 chrome.test.sendMessage('ready', testName => {
-  console.log('chrome.test.sendMessage  with test: ', testName);
   if (testName === 'PRE_PRE_PersistentScripts')
     runFirstSession();
   else if (testName === 'PRE_PersistentScripts')

@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import {createChild} from '../../common/js/dom_utils.js';
+import {isSameEntry} from '../../common/js/entry_utils.js';
 import {recordEnum} from '../../common/js/metrics.js';
-import {str, strf, util} from '../../common/js/util.js';
+import {str, strf} from '../../common/js/util.js';
 import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 import {State} from '../../externs/ts/state.js';
@@ -231,10 +232,9 @@ export class FileTypeFiltersController {
   onCurrentDirectoryChanged_(event) {
     const directoryChangeEvent = /** @type {!DirectoryChangeEvent} */ (event);
     const isEnteringRecentEntry =
-        util.isSameEntry(directoryChangeEvent.newDirEntry, this.recentEntry_);
+        isSameEntry(directoryChangeEvent.newDirEntry, this.recentEntry_);
     const isLeavingRecentEntry = !isEnteringRecentEntry &&
-        util.isSameEntry(
-            directoryChangeEvent.previousDirEntry, this.recentEntry_);
+        isSameEntry(directoryChangeEvent.previousDirEntry, this.recentEntry_);
     // We show filter buttons only in Recents view at this moment.
     this.container_.hidden = !isEnteringRecentEntry;
     // Reset the filter back to "All" on leaving Recents view.

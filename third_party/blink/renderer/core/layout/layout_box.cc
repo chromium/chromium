@@ -87,9 +87,9 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape_outside_info.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/text_utils.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/page/autoscroll_controller.h"
@@ -574,8 +574,9 @@ void LayoutBox::StyleWillChange(StyleDifference diff,
           // converse (going from out of flow to in flow) is handled in
           // LayoutBox::UpdateGridPositionAfterStyleChange.
           LayoutBlock* containing_block = ContainingBlock();
-          if (containing_block && containing_block->IsLayoutNGGrid())
+          if (containing_block && containing_block->IsLayoutGrid()) {
             containing_block->SetGridPlacementDirty(true);
+          }
 
           // Out of flow are not part of |FragmentItems|, and that further
           // changes including destruction cannot be tracked. We need to mark it
@@ -803,7 +804,7 @@ void LayoutBox::UpdateGridPositionAfterStyleChange(
   const bool is_out_of_flow = StyleRef().HasOutOfFlowPosition();
 
   LayoutBlock* containing_block = ContainingBlock();
-  if ((containing_block && containing_block->IsLayoutNGGrid()) &&
+  if ((containing_block && containing_block->IsLayoutGrid()) &&
       GridStyleChanged(old_style, StyleRef())) {
     // Out-of-flow items do not impact grid placement.
     // TODO(kschmi): Scope this so that it only dirties the grid when track
@@ -825,10 +826,11 @@ void LayoutBox::UpdateGridPositionAfterStyleChange(
   // schedule a layout.
   if (is_out_of_flow && AlignmentChanged(old_style, StyleRef())) {
     LayoutObject* grid_ng_ancestor = nullptr;
-    if (containing_block && containing_block->IsLayoutNGGrid())
+    if (containing_block && containing_block->IsLayoutGrid()) {
       grid_ng_ancestor = containing_block;
-    else if (parent && parent->IsLayoutNGGrid())
+    } else if (parent && parent->IsLayoutGrid()) {
       grid_ng_ancestor = parent;
+    }
 
     if (grid_ng_ancestor) {
       grid_ng_ancestor->SetNeedsLayout(layout_invalidation_reason::kGridChanged,
@@ -2985,10 +2987,13 @@ bool LayoutBox::MapToVisualRectInAncestorSpaceInternal(
     TransformState& transform_state,
     VisualRectFlags visual_rect_flags) const {
   NOT_DESTROYED();
-  InflateVisualRectForFilter(transform_state);
 
   if (ancestor == this)
     return true;
+
+  if (!(visual_rect_flags & kIgnoreFilters)) {
+    InflateVisualRectForFilter(transform_state);
+  }
 
   AncestorSkipInfo skip_info(ancestor, true);
   LayoutObject* container = Container(&skip_info);
@@ -3008,7 +3013,7 @@ bool LayoutBox::MapToVisualRectInAncestorSpaceInternal(
     container_offset += AnchorPositionScrollTranslationOffset();
   }
 
-  if (skip_info.FilterSkipped()) {
+  if (skip_info.FilterSkipped() && !(visual_rect_flags & kIgnoreFilters)) {
     InflateVisualRectForFilterUnderContainer(transform_state, *container,
                                              ancestor);
   }
@@ -3099,8 +3104,8 @@ bool LayoutBox::SkipContainingBlockForPercentHeightCalculation(
 
   return !containing_block->IsTableCell() &&
          !containing_block->IsOutOfFlowPositioned() &&
-         !containing_block->IsLayoutNGGrid() &&
-         !containing_block->IsFlexibleBoxIncludingNG() &&
+         !containing_block->IsLayoutGrid() &&
+         !containing_block->IsFlexibleBox() &&
          !containing_block->IsLayoutCustom();
 }
 
@@ -3706,7 +3711,7 @@ bool LayoutBox::HasUnsplittableScrollingOverflow() const {
 bool LayoutBox::IsMonolithic() const {
   NOT_DESTROYED();
   // TODO(almaher): Don't consider a writing mode root monolitic if
-  // IsLayoutNGFlexibleBox(). The breakability should be handled at the item
+  // IsFlexibleBox(). The breakability should be handled at the item
   // level. (Likely same for Table and Grid).
   if (ShouldBeConsideredAsReplaced() || HasUnsplittableScrollingOverflow() ||
       (Parent() && IsWritingModeRoot()) ||

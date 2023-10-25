@@ -112,7 +112,8 @@ class AutofillManager
 
     virtual void OnBeforeAskForValuesToFill(AutofillManager& manager,
                                             FormGlobalId form,
-                                            FieldGlobalId field) {}
+                                            FieldGlobalId field,
+                                            const FormData& form_data) {}
     virtual void OnAfterAskForValuesToFill(AutofillManager& manager,
                                            FormGlobalId form,
                                            FieldGlobalId field) {}
@@ -248,17 +249,6 @@ class AutofillManager
   virtual void OnFormSubmitted(const FormData& form,
                                bool known_success,
                                mojom::SubmissionSource source);
-
-  void FillCreditCardForm(const FormData& form,
-                          const FormFieldData& field,
-                          const CreditCard& credit_card,
-                          const std::u16string& cvc,
-                          const AutofillTriggerDetails& trigger_details);
-
-  void FillProfileForm(const AutofillProfile& profile,
-                       const FormData& form,
-                       const FormFieldData& field,
-                       const AutofillTriggerDetails& trigger_details);
 
   // Invoked when |form| has been filled with the value given by
   // FillOrPreviewForm.
@@ -423,18 +413,6 @@ class AutofillManager
   virtual void OnDidFillAutofillFormDataImpl(
       const FormData& form,
       const base::TimeTicks timestamp) = 0;
-
-  virtual void FillCreditCardFormImpl(
-      const FormData& form,
-      const FormFieldData& field,
-      const CreditCard& credit_card,
-      const std::u16string& cvc,
-      const AutofillTriggerDetails& trigger_details) = 0;
-  virtual void FillProfileFormImpl(
-      const FormData& form,
-      const FormFieldData& field,
-      const AutofillProfile& profile,
-      const AutofillTriggerDetails& trigger_details) = 0;
 
   virtual void OnFocusNoLongerOnFormImpl(bool had_interacted_form) = 0;
 

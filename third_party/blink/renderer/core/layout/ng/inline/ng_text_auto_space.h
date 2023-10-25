@@ -16,14 +16,14 @@
 
 namespace blink {
 
-struct NGInlineItemsData;
+struct InlineItemsData;
 
 // A wrapper of TextAutoSpace for the inline layout.
 class CORE_EXPORT InlineTextAutoSpace : public TextAutoSpace {
   STACK_ALLOCATED();
 
  public:
-  explicit InlineTextAutoSpace(const NGInlineItemsData& data);
+  explicit InlineTextAutoSpace(const InlineItemsData& data);
 
   // True if this may apply auto-spacing. If this is false, it's safe to skip
   // calling `Apply()`.
@@ -36,9 +36,8 @@ class CORE_EXPORT InlineTextAutoSpace : public TextAutoSpace {
   //
   // If `offsets_out` is not null, the offsets of auto-space points are added to
   // it without applying auto-spacing. This is for tseting-purpose.
-  void Apply(NGInlineItemsData& data,
-             Vector<wtf_size_t>* offsets_out = nullptr);
-  void ApplyIfNeeded(NGInlineItemsData& data,
+  void Apply(InlineItemsData& data, Vector<wtf_size_t>* offsets_out = nullptr);
+  void ApplyIfNeeded(InlineItemsData& data,
                      Vector<wtf_size_t>* offsets_out = nullptr) {
     if (UNLIKELY(MayApply())) {
       Apply(data, offsets_out);
@@ -46,12 +45,12 @@ class CORE_EXPORT InlineTextAutoSpace : public TextAutoSpace {
   }
 
  private:
-  void Initialize(const NGInlineItemsData& data);
+  void Initialize(const InlineItemsData& data);
 
-  NGInlineItemSegments::RunSegmenterRanges ranges_;
+  InlineItemSegments::RunSegmenterRanges ranges_;
 };
 
-inline InlineTextAutoSpace::InlineTextAutoSpace(const NGInlineItemsData& data) {
+inline InlineTextAutoSpace::InlineTextAutoSpace(const InlineItemsData& data) {
   if (!RuntimeEnabledFeatures::CSSTextAutoSpaceEnabled()) {
     return;
   }

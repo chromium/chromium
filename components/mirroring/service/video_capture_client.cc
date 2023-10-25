@@ -308,7 +308,8 @@ void VideoCaptureClient::OnBufferDestroyed(int32_t buffer_id) {
 void VideoCaptureClient::OnFrameDropped(
     media::VideoCaptureFrameDropReason reason) {}
 
-void VideoCaptureClient::OnNewCropVersion(uint32_t crop_version) {}
+void VideoCaptureClient::OnNewSubCaptureTargetVersion(
+    uint32_t sub_capture_target_version) {}
 
 void VideoCaptureClient::OnClientBufferFinished(int buffer_id,
                                                 MappingKeepAlive mapping) {

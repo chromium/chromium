@@ -12,8 +12,8 @@ import android.view.autofill.AutofillId;
 import androidx.annotation.RequiresApi;
 
 /**
- * This class is used to send the server and computed view type to the autofill service.
- * The valid types are listed in the two FieldTypeToStringPiece() functions in
+ * This class is used to send the server and computed view type to the autofill service. The valid
+ * types are listed in the FieldTypeToStringView() function in
  * components/autofill/core/browser/field_types.cc. Note that the list of possibly returned strings
  * can and will change in the future.
  */

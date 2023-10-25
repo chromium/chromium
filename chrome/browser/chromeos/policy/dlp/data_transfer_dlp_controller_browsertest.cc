@@ -16,12 +16,12 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_impl.h"
-#include "chrome/browser/chromeos/policy/dlp/test/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_rules_manager_test_utils.h"
+#include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
+#include "chrome/browser/enterprise/data_controls/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -177,7 +177,8 @@ class MockDlpRulesManager : public DlpRulesManagerImpl {
       : DlpRulesManagerImpl(local_state, profile) {}
   ~MockDlpRulesManager() override = default;
 
-  MOCK_CONST_METHOD0(GetReportingManager, DlpReportingManager*());
+  MOCK_CONST_METHOD0(GetReportingManager,
+                     data_controls::DlpReportingManager*());
 };
 
 void SetClipboardText(std::u16string text,
@@ -215,7 +216,7 @@ class DataTransferDlpBrowserTest : public InProcessBrowserTest {
                             base::Unretained(this)));
     ASSERT_TRUE(DlpRulesManagerFactory::GetForPrimaryProfile());
 
-    reporting_manager_ = std::make_unique<DlpReportingManager>();
+    reporting_manager_ = std::make_unique<data_controls::DlpReportingManager>();
     auto reporting_queue = std::unique_ptr<::reporting::MockReportQueue,
                                            base::OnTaskRunnerDeleter>(
         new ::reporting::MockReportQueue(),
@@ -285,7 +286,7 @@ class DataTransferDlpBrowserTest : public InProcessBrowserTest {
                       ::reporting::ReportQueue::EnqueueCallback callback) {
           DlpPolicyEvent event;
           ASSERT_TRUE(event.ParseFromString(std::string(record)));
-          EXPECT_THAT(event, IsDlpPolicyEvent(event));
+          EXPECT_THAT(event, data_controls::IsDlpPolicyEvent(event));
           std::move(callback).Run(::reporting::Status::StatusOK());
           run_loop.Quit();
         });
@@ -294,7 +295,7 @@ class DataTransferDlpBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<::reporting::ReportingClient::TestEnvironment>
       test_reporting_;
   raw_ptr<MockDlpRulesManager, DanglingUntriaged> rules_manager_;
-  std::unique_ptr<DlpReportingManager> reporting_manager_;
+  std::unique_ptr<data_controls::DlpReportingManager> reporting_manager_;
   raw_ptr<::reporting::MockReportQueue> reporting_queue_;
   FakeClipboardNotifier helper_;
   std::unique_ptr<FakeDlpController> dlp_controller_;
@@ -507,7 +508,7 @@ class MAYBE_DataTransferDlpBlinkBrowserTest : public InProcessBrowserTest {
     rules_manager_ = std::make_unique<::testing::NiceMock<MockDlpRulesManager>>(
         g_browser_process->local_state(), profile_.get());
 
-    reporting_manager_ = std::make_unique<DlpReportingManager>();
+    reporting_manager_ = std::make_unique<data_controls::DlpReportingManager>();
     auto reporting_queue = std::unique_ptr<::reporting::MockReportQueue,
                                            base::OnTaskRunnerDeleter>(
         new ::reporting::MockReportQueue(),
@@ -556,7 +557,7 @@ class MAYBE_DataTransferDlpBlinkBrowserTest : public InProcessBrowserTest {
                       ::reporting::ReportQueue::EnqueueCallback callback) {
           DlpPolicyEvent event;
           ASSERT_TRUE(event.ParseFromString(std::string(record)));
-          EXPECT_THAT(event, IsDlpPolicyEvent(event));
+          EXPECT_THAT(event, data_controls::IsDlpPolicyEvent(event));
           std::move(callback).Run(::reporting::Status::StatusOK());
           run_loop.Quit();
         });
@@ -564,7 +565,7 @@ class MAYBE_DataTransferDlpBlinkBrowserTest : public InProcessBrowserTest {
 
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<::testing::NiceMock<MockDlpRulesManager>> rules_manager_;
-  std::unique_ptr<DlpReportingManager> reporting_manager_;
+  std::unique_ptr<data_controls::DlpReportingManager> reporting_manager_;
   raw_ptr<::reporting::MockReportQueue> reporting_queue_;
   FakeClipboardNotifier helper_;
   std::unique_ptr<FakeDlpController> dlp_controller_;

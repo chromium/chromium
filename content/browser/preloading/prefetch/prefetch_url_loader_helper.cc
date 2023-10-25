@@ -226,11 +226,7 @@ void OnGotPrefetchToServe(
   }
 
   if (reader.HaveDefaultContextCookiesChanged()) {
-    reader.GetPrefetchContainer()->SetPrefetchStatus(
-        PrefetchStatus::kPrefetchNotUsedCookiesChanged);
-    reader.GetPrefetchContainer()->UpdateServingPageMetrics();
-    reader.GetPrefetchContainer()->CancelStreamingURLLoaderIfNotServing();
-
+    reader.GetPrefetchContainer()->OnCookiesChanged();
     std::move(get_prefetch_callback).Run({});
     return;
   }

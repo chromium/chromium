@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {util} from '../../common/js/util.js';
+import {isRecentRootType} from '../../common/js/entry_utils.js';
 
 import {DirectoryModel} from './directory_model.js';
 import {FileTable} from './ui/file_table.js';
@@ -24,7 +24,7 @@ export class LastModifiedController {
     // If the current directory is Recent root, request FileTable to use
     // modificationByMeTime instead of modificationTime in last modified column.
     const useModificationByMeTime =
-        util.isRecentRootType(this.directoryModel_.getCurrentRootType());
+        isRecentRootType(this.directoryModel_.getCurrentRootType());
     this.fileTable_.setUseModificationByMeTime(useModificationByMeTime);
     this.directoryModel_.getFileList().setUseModificationByMeTime(
         useModificationByMeTime);

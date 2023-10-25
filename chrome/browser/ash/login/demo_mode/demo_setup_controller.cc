@@ -184,57 +184,57 @@ DemoSetupController::DemoSetupError
 DemoSetupController::DemoSetupError::CreateFromEnrollmentStatus(
     const policy::EnrollmentStatus& status) {
   const std::string debug_message = base::StringPrintf(
-      "EnrollmentError: (status: %d, client_status: %d, store_status: %d, "
+      "EnrollmentError: (code: %d, client_status: %d, store_status: %d, "
       "validation_status: %d, lock_status: %d)",
-      status.status(), status.client_status(), status.store_status(),
-      status.validation_status(), status.lock_status());
+      static_cast<int>(status.enrollment_code()), status.client_status(),
+      status.store_status(), status.validation_status(), status.lock_status());
 
-  switch (status.status()) {
-    case policy::EnrollmentStatus::SUCCESS:
+  switch (status.enrollment_code()) {
+    case policy::EnrollmentStatus::Code::kSuccess:
       return DemoSetupError(ErrorCode::kUnexpectedError,
                             RecoveryMethod::kUnknown, debug_message);
-    case policy::EnrollmentStatus::NO_STATE_KEYS:
+    case policy::EnrollmentStatus::Code::kNoStateKeys:
       return DemoSetupError(ErrorCode::kNoStateKeys, RecoveryMethod::kReboot,
                             debug_message);
-    case policy::EnrollmentStatus::REGISTRATION_FAILED:
+    case policy::EnrollmentStatus::Code::kRegistrationFailed:
       return CreateFromClientStatus(status.client_status(), debug_message);
-    case policy::EnrollmentStatus::ROBOT_AUTH_FETCH_FAILED:
-    case policy::EnrollmentStatus::ROBOT_REFRESH_FETCH_FAILED:
+    case policy::EnrollmentStatus::Code::kRobotAuthFetchFailed:
+    case policy::EnrollmentStatus::Code::kRobotRefreshFetchFailed:
       return DemoSetupError(ErrorCode::kRobotFetchError,
                             RecoveryMethod::kCheckNetwork, debug_message);
-    case policy::EnrollmentStatus::ROBOT_REFRESH_STORE_FAILED:
+    case policy::EnrollmentStatus::Code::kRobotRefreshStoreFailed:
       return DemoSetupError(ErrorCode::kRobotStoreError,
                             RecoveryMethod::kReboot, debug_message);
-    case policy::EnrollmentStatus::REGISTRATION_BAD_MODE:
+    case policy::EnrollmentStatus::Code::kRegistrationBadMode:
       return DemoSetupError(ErrorCode::kBadMode, RecoveryMethod::kRetry,
                             debug_message);
-    case policy::EnrollmentStatus::REGISTRATION_CERT_FETCH_FAILED:
+    case policy::EnrollmentStatus::Code::kRegistrationCertFetchFailed:
       return DemoSetupError(ErrorCode::kCertFetchError, RecoveryMethod::kRetry,
                             debug_message);
-    case policy::EnrollmentStatus::POLICY_FETCH_FAILED:
+    case policy::EnrollmentStatus::Code::kPolicyFetchFailed:
       return DemoSetupError(ErrorCode::kPolicyFetchError,
                             RecoveryMethod::kRetry, debug_message);
-    case policy::EnrollmentStatus::VALIDATION_FAILED:
+    case policy::EnrollmentStatus::Code::kValidationFailed:
       return DemoSetupError(ErrorCode::kPolicyValidationError,
                             RecoveryMethod::kRetry, debug_message);
-    case policy::EnrollmentStatus::LOCK_ERROR:
+    case policy::EnrollmentStatus::Code::kLockError:
       return CreateFromLockStatus(status.lock_status(), debug_message);
-    case policy::EnrollmentStatus::STORE_ERROR:
+    case policy::EnrollmentStatus::Code::kStoreError:
       return DemoSetupError(ErrorCode::kOnlineStoreError,
                             RecoveryMethod::kRetry, debug_message);
-    case policy::EnrollmentStatus::ATTRIBUTE_UPDATE_FAILED:
+    case policy::EnrollmentStatus::Code::kAttributeUpdateFailed:
       return DemoSetupError(ErrorCode::kUnexpectedError,
                             RecoveryMethod::kUnknown, debug_message);
-    case policy::EnrollmentStatus::NO_MACHINE_IDENTIFICATION:
+    case policy::EnrollmentStatus::Code::kNoMachineIdentification:
       return DemoSetupError(ErrorCode::kMachineIdentificationError,
                             RecoveryMethod::kUnknown, debug_message);
-    case policy::EnrollmentStatus::ACTIVE_DIRECTORY_POLICY_FETCH_FAILED:
+    case policy::EnrollmentStatus::Code::kActiveDirectoryPolicyFetchFailed:
       return DemoSetupError(ErrorCode::kUnexpectedError,
                             RecoveryMethod::kReboot, debug_message);
-    case policy::EnrollmentStatus::DM_TOKEN_STORE_FAILED:
+    case policy::EnrollmentStatus::Code::kDmTokenStoreFailed:
       return DemoSetupError(ErrorCode::kDMTokenStoreError,
                             RecoveryMethod::kUnknown, debug_message);
-    case policy::EnrollmentStatus::MAY_NOT_BLOCK_DEV_MODE:
+    case policy::EnrollmentStatus::Code::kMayNotBlockDevMode:
       return DemoSetupError(ErrorCode::kUnexpectedError,
                             RecoveryMethod::kUnknown, debug_message);
   }

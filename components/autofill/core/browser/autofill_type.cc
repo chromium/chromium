@@ -71,10 +71,9 @@ ServerFieldType AutofillType::GetStorableType() const {
 }
 
 std::string AutofillType::ToString() const {
-  return std::string(IsUnknown() ? "UNKNOWN_TYPE"
-                     : server_type_ != UNKNOWN_TYPE
-                         ? FieldTypeToStringPiece(server_type_)
-                         : FieldTypeToStringPiece(html_type_));
+  return IsUnknown()                    ? "UNKNOWN_TYPE"
+         : server_type_ != UNKNOWN_TYPE ? FieldTypeToString(server_type_)
+                                        : FieldTypeToString(html_type_);
 }
 
 }  // namespace autofill

@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/typed_macros.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
@@ -216,17 +217,32 @@ class PrerenderHostObserverImpl : public PrerenderHost::Observer {
 
   void OnHostDestroyed(PrerenderFinalStatus final_status) override {
     observation_.Reset();
-    if (waiting_for_destruction_)
+    last_status_ = final_status;
+    if (waiting_for_destruction_) {
       std::move(waiting_for_destruction_).Run();
+    }
+    EXPECT_FALSE(waiting_for_activation_)
+        << "A prerender was destroyed, with status "
+        << base::to_underlying(final_status)
+        << ", while waiting for activation.";
   }
 
   void WaitForActivation() {
     if (was_activated_)
       return;
     EXPECT_FALSE(waiting_for_activation_);
+
+    EXPECT_FALSE(did_observe_ && !observation_.IsObserving())
+        << "A prerender was destroyed, with status "
+        << base::to_underlying(
+               last_status_.value_or(PrerenderFinalStatus::kDestroyed))
+        << ", before waiting for activation.";
+
     base::RunLoop loop;
     waiting_for_activation_ = loop.QuitClosure();
     loop.Run();
+
+    EXPECT_TRUE(did_observe_) << "No prerender was triggered.";
   }
 
   void WaitForDestroyed() {
@@ -264,6 +280,7 @@ class PrerenderHostObserverImpl : public PrerenderHost::Observer {
   std::unique_ptr<PrerenderHostRegistryObserver> registry_observer_;
   bool was_activated_ = false;
   bool did_observe_ = false;
+  absl::optional<PrerenderFinalStatus> last_status_;
 };
 
 PrerenderHostObserver::PrerenderHostObserver(WebContents& web_contents,

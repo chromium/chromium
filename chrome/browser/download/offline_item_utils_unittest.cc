@@ -31,6 +31,7 @@ namespace {
 constexpr char kNameSpace[] = "LEGACY_DOWNLOAD";
 constexpr char kTestUrl[] = "http://www.example.com";
 constexpr char kTestOriginalUrl[] = "http://www.exampleoriginalurl.com";
+constexpr char kTestReferrerUrl[] = "http://www.examplereferrerurl.com";
 
 }  // namespace
 
@@ -85,6 +86,8 @@ OfflineItemUtilsTest::CreateDownloadItem(
   ON_CALL(*item, GetTabUrl()).WillByDefault(ReturnRefOfCopy(GURL(kTestUrl)));
   ON_CALL(*item, GetOriginalUrl())
       .WillByDefault(ReturnRefOfCopy(GURL(kTestOriginalUrl)));
+  ON_CALL(*item, GetReferrerUrl())
+      .WillByDefault(ReturnRefOfCopy(GURL(kTestReferrerUrl)));
   ON_CALL(*item, GetDangerType())
       .WillByDefault(Return(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
   ON_CALL(*item, GetId()).WillByDefault(Return(0));
@@ -186,6 +189,7 @@ TEST_F(OfflineItemUtilsTest, BasicConversions) {
 
   EXPECT_EQ(GURL(kTestUrl), offline_item.url);
   EXPECT_EQ(GURL(kTestOriginalUrl), offline_item.original_url);
+  EXPECT_EQ(GURL(kTestReferrerUrl), offline_item.referrer_url);
   EXPECT_FALSE(offline_item.is_off_the_record);
   EXPECT_EQ("", offline_item.attribution);
 

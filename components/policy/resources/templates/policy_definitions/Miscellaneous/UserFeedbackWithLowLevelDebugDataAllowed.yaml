@@ -16,7 +16,7 @@ items:
 - caption: Allow users to include low level debug data from all device types available below in user feedback
   name: all
   value: all
-- caption: Allow users to include WiFi firmware dump in user feedback
+- caption: Allow users to include WiFi low level debug data in user feedback
   name: wifi
   value: wifi
 owners:

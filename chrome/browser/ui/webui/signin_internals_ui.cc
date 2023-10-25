@@ -101,19 +101,12 @@ void SignInInternalsHandler::OnJavascriptAllowed() {
     AboutSigninInternals* about_signin_internals =
         AboutSigninInternalsFactory::GetForProfile(profile);
     if (about_signin_internals)
-      about_signin_internals->AddSigninObserver(this);
+      about_signin_internals_observeration_.Observe(about_signin_internals);
   }
 }
 
 void SignInInternalsHandler::OnJavascriptDisallowed() {
-  Profile* profile = Profile::FromWebUI(web_ui());
-  if (profile) {
-    AboutSigninInternals* about_signin_internals =
-        AboutSigninInternalsFactory::GetForProfile(profile);
-    if (about_signin_internals) {
-      about_signin_internals->RemoveSigninObserver(this);
-    }
-  }
+  about_signin_internals_observeration_.Reset();
 }
 
 void SignInInternalsHandler::RegisterMessages() {

@@ -30,6 +30,8 @@ extern NSString* const kSyncReadingListIdentifier;
 // Accessibility identifier for Encryption item.
 extern NSString* const kEncryptionAccessibilityIdentifier;
 
+// Accessibility identifier for batch upload recommendation item.
+extern NSString* const kBatchUploadRecommendationItemAccessibilityIdentifier;
 // Accessibility identifier for batch upload item.
 extern NSString* const kBatchUploadAccessibilityIdentifier;
 

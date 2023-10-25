@@ -443,13 +443,14 @@ ParseResult ValidateHeaders(
     const std::vector<dnr_api::ModifyHeaderInfo>& headers,
     bool are_request_headers) {
   if (headers.empty()) {
-    return are_request_headers ? ParseResult::ERROR_EMPTY_REQUEST_HEADERS_LIST
-                               : ParseResult::ERROR_EMPTY_RESPONSE_HEADERS_LIST;
+    return are_request_headers
+               ? ParseResult::ERROR_EMPTY_MODIFY_REQUEST_HEADERS_LIST
+               : ParseResult::ERROR_EMPTY_MODIFY_RESPONSE_HEADERS_LIST;
   }
 
   for (const auto& header_info : headers) {
     if (!net::HttpUtil::IsValidHeaderName(header_info.header))
-      return ParseResult::ERROR_INVALID_HEADER_NAME;
+      return ParseResult::ERROR_INVALID_HEADER_TO_MODIFY_NAME;
 
     if (are_request_headers &&
         header_info.operation == dnr_api::HeaderOperation::kAppend) {
@@ -460,8 +461,9 @@ ParseResult ValidateHeaders(
     }
 
     if (header_info.value) {
-      if (!net::HttpUtil::IsValidHeaderValue(*header_info.value))
-        return ParseResult::ERROR_INVALID_HEADER_VALUE;
+      if (!net::HttpUtil::IsValidHeaderValue(*header_info.value)) {
+        return ParseResult::ERROR_INVALID_HEADER_TO_MODIFY_VALUE;
+      }
 
       // Check that a remove operation must not specify a value.
       if (header_info.operation == dnr_api::HeaderOperation::kRemove) {
@@ -725,25 +727,28 @@ ParseResult IndexedRule::CreateIndexedRule(dnr_api::Rule parsed_rule,
 
   if (parsed_rule.action.type == dnr_api::RuleActionType::kModifyHeaders) {
     if (!parsed_rule.action.request_headers &&
-        !parsed_rule.action.response_headers)
-      return ParseResult::ERROR_NO_HEADERS_SPECIFIED;
+        !parsed_rule.action.response_headers) {
+      return ParseResult::ERROR_NO_HEADERS_TO_MODIFY_SPECIFIED;
+    }
 
     if (parsed_rule.action.request_headers) {
-      indexed_rule->request_headers =
+      indexed_rule->request_headers_to_modify =
           std::move(*parsed_rule.action.request_headers);
 
-      ParseResult result = ValidateHeaders(indexed_rule->request_headers,
-                                           true /* are_request_headers */);
+      ParseResult result =
+          ValidateHeaders(indexed_rule->request_headers_to_modify,
+                          true /* are_request_headers */);
       if (result != ParseResult::SUCCESS)
         return result;
     }
 
     if (parsed_rule.action.response_headers) {
-      indexed_rule->response_headers =
+      indexed_rule->response_headers_to_modify =
           std::move(*parsed_rule.action.response_headers);
 
-      ParseResult result = ValidateHeaders(indexed_rule->response_headers,
-                                           false /* are_request_headers */);
+      ParseResult result =
+          ValidateHeaders(indexed_rule->response_headers_to_modify,
+                          false /* are_request_headers */);
       if (result != ParseResult::SUCCESS)
         return result;
     }

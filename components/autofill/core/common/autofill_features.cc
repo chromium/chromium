@@ -331,6 +331,13 @@ BASE_FEATURE(kAutofillExtractAllDatalists,
 // Enables support to submit feedback on Autofill. Used only in Desktop.
 BASE_FEATURE(kAutofillFeedback,
              "AutofillFeedback",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Replaces cached web elements in AutofillAgent and FormTracker by their
+// renderer ids.
+// DONOTSUMBIT: Disable.
+BASE_FEATURE(kAutofillReplaceCachedWebElementsByRendererIds,
+             "AutofillReplaceCachedWebElementsByRendererIds",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Makes AutofillProfile::IsSubsetOfForFieldSet stop ignoring street address
@@ -614,6 +621,13 @@ BASE_FEATURE(kAutofillShowAutocompleteDeleteButton,
 // TODO(crbug.com/1459990): Clean up when launched.
 BASE_FEATURE(kAutofillGranularFillingAvailable,
              "AutofillGranularFillingAvailable",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether field filling through the context menu will be available for
+// the unclassified fields.
+// TODO(crbug.com/1493361): Clean up when launched.
+BASE_FEATURE(kAutofillForUnclassifiedFieldsAvailable,
+             "AutofillForUnclassifiedFieldsAvailable",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether testing forms using devtools will be available.

@@ -1014,8 +1014,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListSearchTest,
 
   // Verify the notifier announcement on focus.
   sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
-  sm_.ExpectSpeechPattern("Try searching *");
   sm_.ExpectSpeech("Continue");
+  sm_.ExpectSpeechPattern("Try searching *");
 
   sm_.Replay();
 }
@@ -1039,8 +1039,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListSearchTest, SearchCategoryFilter) {
 
   // Move focus to the search notifier.
   sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
-  sm_.ExpectSpeechPattern("Try searching *");
   sm_.ExpectSpeech("Continue");
+  sm_.ExpectSpeechPattern("Try searching *");
 
   // Move focus to the close button.
   sm_.Call([this]() { SendKeyPress(ui::VKEY_UP); });

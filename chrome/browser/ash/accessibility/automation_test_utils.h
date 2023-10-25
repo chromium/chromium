@@ -28,6 +28,13 @@ class AutomationTestUtils {
   // strings.
   void WaitForPageLoad(const std::string& url);
 
+  // Gets the bounds of the root web area with the given URL in
+  // density-independent pixels.
+  // Note that the URL should not use backtick quotes, or if so they
+  // should be escaped, to avoid collisions with the Javascript
+  // strings.
+  gfx::Rect GetBoundsOfRootWebArea(const std::string& url);
+
   // Gets the value of the node with the given `class_name`.
   std::string GetValueForNodeWithClassName(const std::string& class_name);
 

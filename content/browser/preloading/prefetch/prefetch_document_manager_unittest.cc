@@ -447,7 +447,7 @@ TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
   EXPECT_FALSE(prefetch_document_manager->IsPrefetchAttemptFailedOrDiscarded(
       GetCrossOriginUrl("/candidate1.html")));
   prefetch_urls[0]->SetPrefetchStatus(
-      PrefetchStatus::kPrefetchNotEligibleSchemeIsNotHttps);
+      PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps);
   EXPECT_TRUE(prefetch_document_manager->IsPrefetchAttemptFailedOrDiscarded(
       GetCrossOriginUrl("/candidate1.html")));
   prefetch_urls[0]->SetPrefetchStatus(PrefetchStatus::kPrefetchFailedNetError);

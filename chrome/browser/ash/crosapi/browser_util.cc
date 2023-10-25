@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
@@ -27,6 +28,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
+#include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
@@ -55,7 +57,6 @@ namespace crosapi::browser_util {
 namespace {
 
 bool g_profile_migration_completed_for_test = false;
-absl::optional<bool> g_cpu_override_for_test = absl::nullopt;
 
 // At session start the value for LacrosAvailability logic is applied and the
 // result is stored in this variable which is used after that as a cache.
@@ -119,31 +120,6 @@ const user_manager::User* GetPrimaryUser() {
   return UserManager::Get()->GetPrimaryUser();
 }
 
-// Some account types require features that aren't yet supported by lacros.
-// See https://crbug.com/1080693
-bool IsUserTypeAllowed(const User& user) {
-  switch (user.GetType()) {
-    case user_manager::USER_TYPE_REGULAR:
-    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
-    // Note: Lacros will not be enabled for Guest users unless LacrosOnly
-    // flag is passed in --enable-features. See https://crbug.com/1294051#c25.
-    case user_manager::USER_TYPE_GUEST:
-      return true;
-    case user_manager::USER_TYPE_CHILD:
-      return base::FeatureList::IsEnabled(
-          ash::standalone_browser::features::kLacrosForSupervisedUsers);
-    case user_manager::USER_TYPE_WEB_KIOSK_APP:
-      return base::FeatureList::IsEnabled(
-          ash::standalone_browser::features::kWebKioskEnableLacros);
-    case user_manager::USER_TYPE_KIOSK_APP:
-      return base::FeatureList::IsEnabled(
-          ash::standalone_browser::features::kChromeKioskEnableLacros);
-    case user_manager::USER_TYPE_ARC_KIOSK_APP:
-    case user_manager::NUM_USER_TYPES:
-      return false;
-  }
-}
-
 // Returns the lacros integration suggested by the policy lacros-availability.
 // There are several reasons why we might choose to ignore the
 // lacros-availability policy.
@@ -174,8 +150,9 @@ LacrosAvailability GetLacrosAvailability(const user_manager::User* user,
       // See also LacrosAvailabilityPolicyObserver how it will be propergated.
       return ash::standalone_browser::
           DetermineLacrosAvailabilityFromPolicyValue(
-              user, base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-                        kLacrosAvailabilityPolicySwitch));
+              user,
+              base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+                  ash::standalone_browser::kLacrosAvailabilityPolicySwitch));
 
     case PolicyInitState::kAfterInit:
       // If policy initialization is done, the calculated value should be
@@ -184,53 +161,13 @@ LacrosAvailability GetLacrosAvailability(const user_manager::User* user,
   }
 }
 
-// Returns true if `kDisallowLacros` is set by command line.
-bool IsLacrosDisallowedByCommand() {
-  const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-  return cmdline->HasSwitch(ash::switches::kDisallowLacros) &&
-         !cmdline->HasSwitch(ash::switches::kDisableDisallowLacros);
-}
-
-// Returns whether or not lacros is allowed for the Primary user,
-// with given LacrosAvailability policy.
-bool IsLacrosAllowedInternal(const User* user,
-                             LacrosAvailability lacros_availability) {
-  if (IsLacrosDisallowedByCommand() || !IsCPUSupportedByLacros()) {
-    // This happens when Ash is restarted in multi-user session, meaning there
-    // are more than two users logged in to the device. This will not cause an
-    // accidental removal of Lacros data because for the primary user, the fact
-    // that the device is in multi-user session means that Lacros was not
-    // enabled beforehand. And for secondary users, data removal does not happen
-    // even if Lacros is disabled.
-    return false;
-  }
-
-  if (!user) {
-    // User is not available. Practically, this is accidentally happening
-    // if related function is called before session, or in testing.
-    // TODO(crbug.com/1408962): We should limit this at least only for
-    // testing.
-    return false;
-  }
-
-  if (!IsUserTypeAllowed(*user)) {
-    return false;
-  }
-
-  switch (lacros_availability) {
-    case LacrosAvailability::kLacrosDisallowed:
-      return false;
-    case LacrosAvailability::kUserChoice:
-    case LacrosAvailability::kLacrosOnly:
-      return true;
-  }
-}
 
 // Returns the current lacros mode.
 LacrosMode GetLacrosModeInternal(const User* user,
                                  LacrosAvailability lacros_availability,
                                  bool check_migration_status) {
-  if (!IsLacrosAllowedInternal(user, lacros_availability)) {
+  if (!ash::standalone_browser::BrowserSupport::IsAllowedInternal(
+          user, lacros_availability)) {
     return LacrosMode::kDisabled;
   }
 
@@ -377,19 +314,6 @@ const char kLacrosSelectionSwitch[] = "lacros-selection";
 const char kLacrosSelectionRootfs[] = "rootfs";
 const char kLacrosSelectionStateful[] = "stateful";
 
-// The internal name in about_flags.cc for the lacros-availablility-policy
-// config.
-const char kLacrosAvailabilityPolicyInternalName[] =
-    "lacros-availability-policy";
-
-// The commandline flag name of lacros-availability-policy.
-// The value should be the policy value as defined just below.
-// The values need to be consistent with kLacrosAvailabilityMap above.
-const char kLacrosAvailabilityPolicySwitch[] = "lacros-availability-policy";
-const char kLacrosAvailabilityPolicyUserChoice[] = "user_choice";
-const char kLacrosAvailabilityPolicyLacrosDisabled[] = "lacros_disabled";
-const char kLacrosAvailabilityPolicyLacrosOnly[] = "lacros_only";
-
 const char kLaunchOnLoginPref[] = "lacros.launch_on_login";
 // Marks the Chrome version at which profile migration was completed.
 const char kDataVerPref[] = "lacros.data_version";
@@ -430,8 +354,15 @@ base::FilePath GetUserDataDir() {
 }
 
 bool IsLacrosAllowedToBeEnabled() {
-  return IsLacrosAllowedInternal(GetPrimaryUser(),
-                                 GetCachedLacrosAvailability());
+  if (!ash::standalone_browser::BrowserSupport::IsInitializedForPrimaryUser()) {
+    // This function must be called only after user session starts.
+    base::debug::DumpWithoutCrashing();
+    // Returning false for compatibility.
+    // TODO(crbug.com/1494005): replace this logic by CHECK/DCHECK.
+    return false;
+  }
+  return ash::standalone_browser::BrowserSupport::GetForPrimaryUser()
+      ->IsAllowed();
 }
 
 bool IsLacrosEnabled() {
@@ -494,8 +425,15 @@ LacrosMode GetLacrosMode() {
 }
 
 bool IsLacrosOnlyBrowserAllowed() {
-  return IsLacrosAllowedInternal(GetPrimaryUser(),
-                                 GetCachedLacrosAvailability());
+  if (!ash::standalone_browser::BrowserSupport::IsInitializedForPrimaryUser()) {
+    // This function must be called only after user session starts.
+    base::debug::DumpWithoutCrashing();
+    // Returning false for compatibility.
+    // TODO(crbug.com/1494005): replace this logic by CHECK/DCHECK.
+    return false;
+  }
+  return ash::standalone_browser::BrowserSupport::GetForPrimaryUser()
+      ->IsAllowed();
 }
 
 bool IsLacrosOnlyFlagAllowed() {
@@ -1082,26 +1020,6 @@ bool ShouldEnforceAshExtensionKeepList() {
 bool IsAshDevToolEnabled() {
   return IsAshWebBrowserEnabled() ||
          base::FeatureList::IsEnabled(ash::features::kAllowDevtoolsInSystemUI);
-}
-
-// Return true if the CPU of this system is capable to run Lacros.
-bool IsCPUSupportedByLacros() {
-  if (g_cpu_override_for_test.has_value()) {
-    return g_cpu_override_for_test.value();
-  }
-#ifdef ARCH_CPU_X86_64
-  // Some very old Flex devices are not capable to support the -v2 instruction
-  // set. Those CPU's should not use Lacros as Lacros has only one binary
-  // for all intel platforms. As 'x86-64-v2' does not work on the build server,
-  // we check against SSE4.2 here which should be as as good.
-  return __builtin_cpu_supports("sse4.2");
-#else
-  return true;
-#endif
-}
-
-void SetCpuAvailabilityForTesting(absl::optional<bool> value) {
-  g_cpu_override_for_test = value;
 }
 
 }  // namespace crosapi::browser_util

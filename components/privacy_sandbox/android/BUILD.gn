@@ -53,8 +53,10 @@ android_library("javatests") {
 android_resources("java_resources") {
   sources = [ "java/res/xml/tracking_protection_preferences.xml" ]
   deps = [
+    "//components/browser_ui/settings/android:java_resources",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
+    "//components/permissions/android:java_resources",
     "//components/strings:components_strings_grd",
   ]
 }

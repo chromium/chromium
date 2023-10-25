@@ -89,7 +89,6 @@
 -MojoSandboxTest.IsProcessSandboxed
 -NetworkResponseProtocolECHTest.SecurityDetailsECH
 -NoCompositingRenderWidgetHostViewBrowserTest.NoFallbackAfterHiddenNavigationFails
--NoCompositingRenderWidgetHostViewBrowserTest.NoFallbackIfSwapFailedBeforeNavigation
 -NoCompositingRenderWidgetHostViewBrowserTest.ValidLocalSurfaceIdAfterHiddenNavigation
 -NoGPUCaptureScreenshotTest.LargeScreenshot
 -PointerLockBrowserTest.PointerLockRequestUnadjustedMovement
@@ -178,9 +177,6 @@
 # TODO(crbug.com/1482265): These consistently fail.
 -All/DumpAccessibilityTreeTest.AccessibilityInputSubmit/blink0
 -All/DumpAccessibilityTreeTest.AccessibilityInputSubmit/blink1
-
-# TODO(crbug.com/1494611): This test consistently fails.
--AttributionInteropTestInputs/AttributionInteropTest.HasExpectedOutput/config_trigger_data_cardinality
 
 # TODO(crbug.com/1459221): These WebSockets tests seem to depend on the spawned
 # test server, which is not supported on iOS.

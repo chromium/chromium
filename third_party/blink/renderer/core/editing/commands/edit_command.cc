@@ -64,7 +64,7 @@ bool EditCommand::IsRenderedCharacter(const Position& position) {
   if (!layout_object || !layout_object->IsText())
     return false;
 
-  if (auto* mapping = NGOffsetMapping::GetFor(position)) {
+  if (auto* mapping = OffsetMapping::GetFor(position)) {
     return mapping->IsBeforeNonCollapsedContent(position);
   }
 

@@ -18,6 +18,7 @@
 #include "components/services/app_service/public/cpp/app_storage/app_storage_file_handler.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_effects.h"
+#include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace apps {
@@ -171,6 +172,8 @@ class AppStorageTest : public testing::Test {
     app2->handles_intents = false;
     app2->allow_uninstall = false;
     app2->paused = false;
+    app2->intent_filters.push_back(apps_util::MakeIntentFilterForUrlScope(
+        GURL("https://www.google.com/abc")));
     apps.push_back(std::move(app2));
 
     // TODO(crbug.com/1385932): Add other files in the App structure.
@@ -195,6 +198,17 @@ class AppStorageTest : public testing::Test {
   MODIFY_FIELD(show_in_management, true)
   MODIFY_FIELD(handles_intents, false)
   MODIFY_FIELD(allow_uninstall, false)
+
+  void ModifyIntentFilters() {
+    AppPtr app = std::make_unique<App>(kAppType1, kAppId1);
+    auto intent_filter = std::make_unique<apps::IntentFilter>();
+    intent_filter->activity_name = "activity_name";
+    app->intent_filters.push_back(std::move(intent_filter));
+    std::vector<AppPtr> apps;
+    apps.push_back(std::move(app));
+    app_registry_cache_.OnApps(std::move(apps), kAppType1,
+                               /*should_notify_initialized=*/false);
+  }
 
   void RemoveOneApp(AppType app_type, const std::string& app_id) {
     AppPtr app = std::make_unique<App>(app_type, app_id);
@@ -318,6 +332,13 @@ TEST_F(AppStorageTest, ReadAndWriteMultipleApps) {
   VERIFY_MODIFY_FIELD(show_in_management, true);
   VERIFY_MODIFY_FIELD(handles_intents, false);
   VERIFY_MODIFY_FIELD(allow_uninstall, false);
+
+  ModifyIntentFilters();
+  app_storage()->WaitForSaveFinished(/*expect_app_count=*/2);
+  auto intent_filter = std::make_unique<apps::IntentFilter>();
+  intent_filter->activity_name = "activity_name";
+  apps[0]->intent_filters.push_back(std::move(intent_filter));
+  VerifySavedApps(apps);
 
   RemoveOneApp(kAppType1, kAppId1);
   app_storage()->WaitForSaveFinished(/*expect_app_count=*/2);

@@ -145,7 +145,7 @@ public class SharedBookmarkModelMocks {
     }
 
     private static BookmarkItem makeFolderItem(BookmarkId id, String title, BookmarkId parentId) {
-        boolean isEditable = ROOT_BOOKMARK_ID.equals(parentId);
+        boolean isEditable = !ROOT_BOOKMARK_ID.equals(parentId);
         long dateAdded = id.getId();
         return new BookmarkItem(
                 id, title, null, true, parentId, isEditable, false, dateAdded, false, 0);

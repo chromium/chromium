@@ -85,11 +85,6 @@ Status EvaluateScriptAndIgnoreResult(Session* session,
   return web_view->EvaluateScript(frame_id, expression, await_promise, &result);
 }
 
-void InitSessionForWebSocketConnection(SessionConnectionMap* session_map,
-                                       std::string session_id) {
-  session_map->insert({session_id, std::vector<int>{}});
-}
-
 }  // namespace
 
 InitSessionParams::InitSessionParams(
@@ -700,11 +695,9 @@ Status ExecuteInitSession(const InitSessionParams& bound_params,
     session->quit = true;
     if (session->chrome != nullptr)
       session->chrome->Quit();
-  } else if (session->webSocketUrl) {
-    bound_params.cmd_task_runner->PostTask(
-        FROM_HERE, base::BindOnce(&InitSessionForWebSocketConnection,
-                                  bound_params.session_map, session->id));
+    return status;
   }
+
   return status;
 }
 
@@ -716,6 +709,32 @@ Status ExecuteQuit(bool allow_detach,
   if (allow_detach && session->detach)
     return Status(kOk);
   return session->chrome->Quit();
+}
+
+// Quits a session.
+Status ExecuteBidiSessionEnd(Session* session,
+                             const base::Value::Dict& params,
+                             std::unique_ptr<base::Value>* value) {
+  Status status{kOk};
+  WebView* web_view = nullptr;
+  status = session->chrome->GetWebViewById(session->bidi_mapper_web_view_id,
+                                           &web_view);
+  if (status.IsOk()) {
+    // Attempting to forward any pending BiDi responses / events.
+    status = web_view->HandleReceivedEvents();
+  }
+
+  if (status.IsError()) {
+    VLOG(0) << "Ignoring the error while shutting down a BiDi session: "
+            << status.message();
+  }
+
+  session->quit = true;
+  status = session->chrome->Quit();
+  if (status.IsOk()) {
+    *value = std::make_unique<base::Value>(base::Value::Type::DICT);
+  }
+  return status;
 }
 
 Status ExecuteGetSessionCapabilities(Session* session,
@@ -1611,7 +1630,7 @@ Status ExecuteSetTimeZone(Session* session,
 }
 
 // Run a BiDi command
-Status ExecuteBidiCommand(Session* session,
+Status ForwardBidiCommand(Session* session,
                           const base::Value::Dict& params,
                           std::unique_ptr<base::Value>* value) {
   // session == nullptr is a valid case: ExecuteQuit has already been handled

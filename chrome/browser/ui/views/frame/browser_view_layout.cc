@@ -902,6 +902,5 @@ int BrowserViewLayout::GetMinWebContentsWidth() const {
 }
 
 bool BrowserViewLayout::IsInfobarVisible() const {
-  // NOTE: Can't check if the size IsEmpty() since it's always 0-width.
-  return infobar_container_->GetPreferredSize().height() != 0;
+  return !infobar_container_->IsEmpty();
 }

@@ -332,11 +332,7 @@ public class SigninSignoutIntegrationTest {
                 () -> {
                     mBookmarkModel =
                             BookmarkModel.getForProfile(
-                                    Profile.fromWebContents(
-                                            mActivityTestRule
-                                                    .getActivity()
-                                                    .getActivityTab()
-                                                    .getWebContents()));
+                                    mActivityTestRule.getActivity().getActivityTab().getProfile());
                     mBookmarkModel.loadFakePartnerBookmarkShimForTesting();
                 });
         BookmarkTestUtil.waitForBookmarkModelLoaded();

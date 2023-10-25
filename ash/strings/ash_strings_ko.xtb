@@ -29,6 +29,7 @@
 <translation id="109942774857561566">나 심심해</translation>
 <translation id="1104084341931202936">접근성 설정 표시</translation>
 <translation id="1104621072296271835">기기가 연결되면 더욱 원활하게 작동합니다</translation>
+<translation id="1106446201446919638">기기 1대가 연결되었습니다. 핫스팟을 사용하는 중에는 Wi-Fi가 사용 중지된 상태로 유지됩니다.</translation>
 <translation id="1111021433905331574">설정 &gt; <ph name="APP_TITLE" />에서 키보드 백라이트 색상을 변경할 수 있습니다.</translation>
 <translation id="1117719261843403176">모바일 데이터를 전환합니다. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">앱 표시줄 자동 숨김</translation>
@@ -202,7 +203,6 @@
 <translation id="1757857692711134412">일몰까지 끄기</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + 마침표 단축키가 변경되었습니다. Insert 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + Shift + Backspace 키를 누르세요.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />행, <ph name="COLUMN_NUMBER" />열로 이동했습니다.</translation>
-<translation id="1771458705381257690"><ph name="NAME" /> 앱을 열어 기기를 설정하고 맞춤설정하세요</translation>
 <translation id="1771761307086386028">오른쪽으로 스크롤</translation>
 <translation id="1774796056689732716">현재 캘린더에서 <ph name="CURRENT_MONTH_YEAR" />을 표시 중이며 선택된 날짜는 <ph name="DATE" />입니다.</translation>
 <translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" />개 중 <ph name="NUM_SHOWN_ITEMS" />개 표시 중</translation>
@@ -307,7 +307,6 @@
 <translation id="2258734398699965611">추천 파일</translation>
 <translation id="2268130516524549846">블루투스를 사용 안 함</translation>
 <translation id="2268813581635650749">모두 로그아웃</translation>
-<translation id="2269016722240250274">다른 애플리케이션에서 마이크를 사용 중입니다.</translation>
 <translation id="2276987123919776440">15분</translation>
 <translation id="2277103315734023688">앞으로 탐색</translation>
 <translation id="2282073721614284166">탭에서 링크 열기</translation>
@@ -360,6 +359,7 @@
 <translation id="2465145153332031561">배터리 상태 <ph name="BATTERY_HEALTH_PERCENTAGE" />%, 사이클 수 <ph name="CYCLE_COUNT" />회</translation>
 <translation id="2473177541599297363">해상도 확인</translation>
 <translation id="2475982808118771221">오류가 발생했습니다.</translation>
+<translation id="2478076885740497414">앱 설치</translation>
 <translation id="2482878487686419369">알림</translation>
 <translation id="2484513351006226581">키보드 레이아웃을 전환하려면 <ph name="KEYBOARD_SHORTCUT" />을(를) 누르세요.</translation>
 <translation id="2487915095798731898">가입</translation>
@@ -518,6 +518,7 @@
 <translation id="3160929076476941240">2시간</translation>
 <translation id="3161500364292033097">데스크 및 창 닫기</translation>
 <translation id="316356270129335934"><ph name="MANAGER" />에서 <ph name="DEVICE_TYPE" /> 기기를 롤백 중입니다. 기기가 재설정되고 모든 데이터가 삭제됩니다.</translation>
+<translation id="3170769098533255179">연결된 기기가 없습니다. 핫스팟을 사용하는 중에는 Wi-Fi가 사용 중지된 상태로 유지됩니다.</translation>
 <translation id="3171170659304083361">입력 방법 설정</translation>
 <translation id="3176221688814061633">Chromebook 또는 블루투스 기기에서 이전 버전의 블루투스를 사용하고 있습니다. 오디오 품질을 개선하려면 블루투스 초해상도를 사용 설정하거나 내장 마이크를 사용하세요.</translation>
 <translation id="3181441307743005334">다시 시작하는 데 시간이 다소 걸릴 수 있습니다</translation>
@@ -552,6 +553,7 @@
 <translation id="3306386552969601301">기기 <ph name="DEVICECOUNT" />개가 <ph name="DEVICE_NAME" /> 핫스팟에 연결되어 있습니다.</translation>
 <translation id="3307642347673023554">노트북 모드로 전환됨</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" />님은 나중에도 로그인할 수 있습니다.</translation>
+<translation id="3317779231018057649">기기 <ph name="DEVICECOUNT" />대가 연결되었습니다. 핫스팟을 사용하는 중에는 Wi-Fi가 사용 중지된 상태로 유지됩니다.</translation>
 <translation id="3321628682574733415">잘못된 부모 코드</translation>
 <translation id="332827762492701193">알림이 숨겨져 있음</translation>
 <translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> 알림 펼치기</translation>
@@ -631,8 +633,6 @@
 <translation id="3600061223661453002">사용 설정</translation>
 <translation id="3604801046548457007"><ph name="DESK_TITILE" /> 데스크가 생성되었습니다.</translation>
 <translation id="3606978283550408104">점자 디스플레이가 연결되었습니다.</translation>
-<translation id="3609301425104788351"><ph name="MIC" />,
-        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">모바일 데이터를 사용 설정하면 블루투스가 사용 설정됩니다.</translation>
 <translation id="3616113530831147358">오디오</translation>
 <translation id="3616883743181209306">메뉴가 화면 오른쪽 상단으로 이동했습니다.</translation>
@@ -682,9 +682,7 @@
 <translation id="3781910048497807059">이전 창으로 포커스 이동</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">잠금</translation>
-<translation id="3789841737615482174">설치</translation>
 <translation id="3796215473395753611">Alt + 위쪽 화살표</translation>
-<translation id="3796746699333205839">다른 애플리케이션에서 카메라와 마이크를 사용 중입니다.</translation>
 <translation id="3798670284305777884">스피커(내부)</translation>
 <translation id="3799080171973636491">전체 화면 돋보기 단축키를 누르셨습니다. 사용 설정할까요?</translation>
 <translation id="380165613292957338">안녕하세요, 무엇을 도와드릴까요?</translation>
@@ -814,6 +812,7 @@
 <translation id="428715201724021596">프로필에 연결하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="4294319844246081198">좋은 아침이에요, <ph name="GIVEN_NAME" />님</translation>
 <translation id="4296136865091727875">알림 <ph name="COUNT" />개 모두 지우기</translation>
+<translation id="4300272766492248925">앱 열기</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> 앱이 <ph name="FOLDER_NAME" /> 폴더로 이동했습니다.</translation>
 <translation id="4302592941791324970">사용할 수 없음</translation>
 <translation id="4303223480529385476">상태 영역 확장</translation>
@@ -879,6 +878,7 @@
 <translation id="4566144812051858745">어떤 제안에도 관심 없음</translation>
 <translation id="4569753163207712681">휴대전화의 최근 사진, 미디어, 앱 보기</translation>
 <translation id="4573176682887762361">"[단어/구문] 입력"</translation>
+<translation id="4577188182049003486">핫스팟이 사용 설정되면 Wi-Fi가 사용 중지됨</translation>
 <translation id="4577274620589681794">타이머 종료 · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">미리보기 표시</translation>
 <translation id="4578906031062871102">설정 메뉴가 열림</translation>
@@ -1208,7 +1208,6 @@
 <translation id="5876666360658629066">부모 코드 입력</translation>
 <translation id="5881540930187678962">휴대전화 허브 나중에 설정하기</translation>
 <translation id="5881663018261910378">사용 안함</translation>
-<translation id="5883017113634523865">Google Play에서 <ph name="NAME" /> 앱을 설치하고 사용 가능한 모든 기능을 확인하세요</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> 창이 <ph name="DESK_TITLE" />에 할당되고 다른 모든 데스크에서 할당 취소되었습니다.</translation>
 <translation id="588817334757907802">Chrome 브라우저에서 파일 열기</translation>
 <translation id="5895138241574237353">다시 시작</translation>
@@ -1578,7 +1577,6 @@
 <translation id="742594950370306541">카메라가 사용 중입니다.</translation>
 <translation id="742608627846767349">좋은 아침이에요</translation>
 <translation id="743058460480092004">카메라와 마이크가 사용 중입니다.</translation>
-<translation id="7452560014878697800">다른 애플리케이션에서 카메라를 사용 중입니다.</translation>
 <translation id="7453330308669753048">검색 기록 결과 삭제됨</translation>
 <translation id="7459485586006128091">내부 오류로 인해 핫스팟이 사용 중지되었습니다. 몇 분 후에 다시 연결해 보세요.</translation>
 <translation id="7461924472993315131">고정</translation>

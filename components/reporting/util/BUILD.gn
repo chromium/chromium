@@ -56,7 +56,6 @@ source_set("test_callbacks_support") {
     "mock_clock.h",
     "test_support_callbacks.cc",
     "test_support_callbacks.h",
-    "test_util.h",
   ]
 
   deps = [

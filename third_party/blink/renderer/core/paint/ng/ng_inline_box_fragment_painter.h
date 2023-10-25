@@ -261,8 +261,8 @@ class NGLineBoxFragmentPainter : public NGInlineBoxFragmentPainterBase {
     DCHECK(layout_block_flow.IsLayoutNGObject());
   }
 
-  const NGPhysicalLineBoxFragment& PhysicalFragment() const {
-    return static_cast<const NGPhysicalLineBoxFragment&>(inline_box_fragment_);
+  const PhysicalLineBoxFragment& PhysicalFragment() const {
+    return static_cast<const PhysicalLineBoxFragment&>(inline_box_fragment_);
   }
 
   PhysicalBoxSides SidesToInclude() const final { return PhysicalBoxSides(); }

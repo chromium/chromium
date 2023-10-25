@@ -134,13 +134,14 @@
 </style>
 
 <div id="heading">
-  <h1>Autofill</h1>
-  <cr-icon-button iron-icon="cr:close"></cr-icon-button>
+  <h1>$i18n{dialogTitle}</h1>
+  <cr-icon-button id="closeButton" iron-icon="cr:close" on-click="onClose_">
+  </cr-icon-button>
 </div>
 
 <div id="body" scrollable>
   <compose-textarea id="textarea"
-      on-value-changed="onTextareaValueChanged_"
+      value="{{input_}}"
       readonly="[[submitted_]]"
       allow-exiting-readonly-mode="[[!loading_]]">
   </compose-textarea>
@@ -157,19 +158,23 @@
     </cr-loading-gradient>
   </div>
 
-  <div id="resultContainer" hidden="[[!result_]]">
-    [[result_]]
+  <div id="resultContainer" hidden="[[!hasSuccessfulResponse_(response_)]]">
+    [[response_.result]]
 
     <div id="resultOptions">
-      <select class="md-select"><option>Menu 1</option></select>
-      <select class="md-select"><option>Menu 2</option></select>
+      <select class="md-select">
+        <option>$i18n{menu1Title}</option>
+      </select>
+      <select class="md-select">
+        <option>$i18n{menu2Title}</option>
+      </select>
 
       <div class="icon-buttons-row">
-        <cr-icon-button id="undoButton" iron-icon="cr:arrow-back"
+        <cr-icon-button id="undoButton" iron-icon="compose:undo"
             disabled="[[!undoEnabled_]]"
             on-click="onUndoClick_">
         </cr-icon-button>
-        <cr-icon-button id="refreshButton" iron-icon="cr:sync"
+        <cr-icon-button id="refreshButton" iron-icon="compose:refresh"
             on-click="onSubmit_">
         </cr-icon-button>
       </div>
@@ -180,20 +185,20 @@
 <div id="submitFooter" class="footer" hidden$="[[submitted_]]">
   <div class="footer-text">
     <div>
-      <strong>Do:</strong> look at this text.
+      $i18nRaw{inputFooter}
     </div>
   </div>
   <cr-button id="submitButton" class="action-button" on-click="onSubmit_"
       disabled="[[!isSubmitEnabled_]]">
-    Submit
+    $i18n{submitButton}
   </cr-button>
 </div>
 
-<div id="resultFooter" class="footer" hidden="[[!result_]]">
+<div id="resultFooter" class="footer"
+    hidden="[[!hasSuccessfulResponse_(response_)]]">
   <div class="footer-text">
     <div>
-      Here is some text
-      <a href="#">Learn more</a>
+      $i18nRaw{resultFooter}
     </div>
 
     <div class="icon-buttons-row">
@@ -202,6 +207,11 @@
     </div>
   </div>
   <cr-button id="insertButton" class="action-button" on-click="onAccept_">
-    Insert
+    $i18n{insertButton}
   </cr-button>
+</div>
+
+<div id="errorFooter" class="footer"
+    hidden="[[!hasFailedResponse_(response_)]]">
+  <div class="footer-text">[[failedResponseErrorText_(response_)]]</div>
 </div>

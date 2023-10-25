@@ -1,0 +1,4 @@
+# ChromeOS > Software > System Services > Peripherals > Keyboard
+buganizer {
+  component_id: 1131926
+}

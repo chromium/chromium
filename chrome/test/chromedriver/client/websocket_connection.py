@@ -22,6 +22,8 @@ from websocket import WebSocketConnectionClosedException as InternalWebSocketCon
 from websocket import WebSocketTimeoutException as InternalWebSocketTimeoutException
 from exceptions import WebSocketConnectionClosedException
 from exceptions import WebSocketTimeoutException
+from exceptions import ChromeDriverException
+from exceptions import EXCEPTION_MAP
 
 class WebSocketCommands:
   ATTACH_WEBSOCKET_TO_SESSION = \
@@ -47,7 +49,7 @@ class WebSocketConnection(object):
     self._responses = {}
     self._events = []
 
-  def SendCommand(self, cmd_params):
+  def PostCommand(self, cmd_params):
     if 'id' not in cmd_params:
       self._command_id = self._command_id + 1
       cmd_params['id'] = self._command_id
@@ -55,7 +57,21 @@ class WebSocketConnection(object):
       self._websocket.send(json.dumps(cmd_params))
     except InternalWebSocketTimeoutException:
       raise WebSocketTimeoutException()
+    except InternalWebSocketConnectionClosedException:
+      raise WebSocketConnectionClosedException()
+    # ConnectionAbortedError occurs on Windows if the connection was closed by
+    # the remote end.
+    except ConnectionAbortedError:
+      raise WebSocketConnectionClosedException()
     return cmd_params['id']
+
+  def SendCommand(self, cmd_params, channel = None):
+    cmd_id = self.PostCommand(cmd_params)
+    return self.WaitForResponse(cmd_id, channel)
+
+  def SendCommandRaw(self, cmd_params, channel = None):
+    cmd_id = self.PostCommand(cmd_params)
+    return self.WaitForResponseRaw(cmd_id, channel)
 
   def TakeEvents(self):
     result = self._events
@@ -69,7 +85,25 @@ class WebSocketConnection(object):
       return None
     return self._responses[channel][command_id]
 
+  def _ExceptionForResponse(self, response):
+    error = response['error']
+    msg = response['message']
+    cmd_id = response['id']
+    ret = EXCEPTION_MAP.get(error, ChromeDriverException)(msg)
+    if cmd_id is not None and ret is not None:
+      ret.id = cmd_id
+    return ret
+
   def WaitForResponse(self, command_id, channel = None):
+    response = self.WaitForResponseRaw(command_id, channel=channel)
+    if response['type'] == 'error':
+      raise self._ExceptionForResponse(response)
+    if response['type'] == 'success':
+      return response['result']
+    # Unexpected response type. Return it as it is.
+    return response
+
+  def WaitForResponseRaw(self, command_id, channel = None):
     if channel in self._responses:
       if command_id in self._responses[channel]:
         msg = self._responses[channel][command_id]
@@ -97,6 +131,10 @@ class WebSocketConnection(object):
         if start + timeout <= time.monotonic():
           raise TimeoutError()
     except InternalWebSocketConnectionClosedException:
+      raise WebSocketConnectionClosedException()
+    # ConnectionAbortedError occurs on Windows if the connection was closed by
+    # the remote end.
+    except ConnectionAbortedError:
       raise WebSocketConnectionClosedException()
     except InternalWebSocketTimeoutException:
       raise WebSocketTimeoutException()

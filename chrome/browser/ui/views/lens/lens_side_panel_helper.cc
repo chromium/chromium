@@ -49,10 +49,11 @@ views::Widget* OpenLensRegionSearchInstructions(
     Browser* browser,
     base::OnceClosure close_callback,
     base::OnceClosure escape_callback) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  CHECK(browser_view);
   // Our anchor should be the browser view's top container view. This makes sure
   // that we account for side panel width and the top container view.
-  views::View* anchor =
-      BrowserView::GetBrowserViewForBrowser(browser)->contents_web_view();
+  views::View* anchor = browser_view->contents_web_view();
   return views::BubbleDialogDelegateView::CreateBubble(
       std::make_unique<LensRegionSearchInstructionsView>(
           anchor, std::move(close_callback), std::move(escape_callback)));

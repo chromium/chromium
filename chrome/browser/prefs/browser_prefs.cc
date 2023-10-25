@@ -943,6 +943,13 @@ const char kShouldAttemptReenable[] = "android_sms.should_attempt_reenable";
 const char kSupportedLinksAppPrefsKey[] = "supported_links_infobar.apps";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// Deprecated 10/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kNightLightCachedLatitude[] = "ash.night_light.cached_latitude";
+constexpr char kNightLightCachedLongitude[] =
+    "ash.night_light.cached_longitude";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1327,6 +1334,12 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterDictionaryPref(kSupportedLinksAppPrefsKey);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+// Deprecated 10/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterDoublePref(kNightLightCachedLatitude, 0.0);
+  registry->RegisterDoublePref(kNightLightCachedLongitude, 0.0);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2001,7 +2014,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterTimePref(prefs::kDIPSTimerLastUpdate, base::Time());
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  registry->RegisterBooleanPref(prefs::kAccessibilityPdfOcrAlwaysActive, false);
+  registry->RegisterBooleanPref(prefs::kAccessibilityPdfOcrAlwaysActive, true);
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -2009,6 +2022,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #endif
 
   registry->RegisterBooleanPref(prefs::kBlockTruncatedCookies, true);
+  registry->RegisterBooleanPref(
+      prefs::kManagedPrivateNetworkAccessRestrictionsEnabled, false);
 
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
   data_controls::RegisterProfilePrefs(registry);
@@ -2492,6 +2507,12 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs) {
   // Added 10/2023.
 #if BUILDFLAG(IS_CHROMEOS)
   profile_prefs->ClearPref(kSupportedLinksAppPrefsKey);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 10/2023.
+  profile_prefs->ClearPref(kNightLightCachedLatitude);
+  profile_prefs->ClearPref(kNightLightCachedLongitude);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

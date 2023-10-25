@@ -209,8 +209,6 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
 
   // Will be called when |PerformanceTiming| events are updated
   virtual void DidChangePerformanceTiming() {}
-  // Will be called when an |InputEvent| is observed.
-  virtual void DidObserveInputDelay(base::TimeDelta input_delay) {}
 
   // Will be called when a user interaction is observed.
   virtual void DidObserveUserInteraction(base::TimeTicks max_event_start,

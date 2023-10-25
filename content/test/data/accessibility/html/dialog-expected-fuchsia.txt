@@ -1,6 +1,6 @@
 UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN hidden
-++++++UNKNOWN
+++++++UNKNOWN focusable
 ++++++++STATIC_TEXT label='Text in dialog'
 ++++++++++UNKNOWN label='Text in dialog'

@@ -248,6 +248,10 @@ export class PrintPreviewDestinationDialogCrosElement extends
         this.destinationStore,
         DestinationStoreEventType.DESTINATION_SEARCH_DONE,
         this.updateDestinations_.bind(this));
+    this.tracker_.add(
+        this.destinationStore,
+        DestinationStoreEventType.DESTINATION_PRINTER_STATUS_UPDATE,
+        this.onPrinterStatusUpdate_.bind(this));
     this.initialized_ = true;
     if (this.printServerStore_) {
       this.printServerStore_.setDestinationStore(this.destinationStore);
@@ -467,6 +471,16 @@ export class PrintPreviewDestinationDialogCrosElement extends
     if (!this.minLoadingTimeElapsed_) {
       timeOut.cancel(this.timerDelay_);
     }
+  }
+
+  // Trigger updates to the printer status icons and text for dialog
+  // destinations.
+  private onPrinterStatusUpdate_(e: CustomEvent<string>): void {
+    const destinationKey = e.detail;
+    const destinationList =
+        this.shadowRoot!.querySelector('print-preview-destination-list');
+    assert(destinationList);
+    destinationList.updatePrinterStatusIcon(destinationKey);
   }
 }
 

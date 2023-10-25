@@ -1,0 +1,7 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++TextView text:"Before" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++View text:"ARIA separator. No value when unfocusable." textSize:16.00 style:0 bundle:[aria-valuemax="3", aria-valuemin="1", aria-valuenow="1", display="block", htmlTag="div", role="separator"]
+++++TextView text:"ARIA separator. No value when unfocusable." textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++View text:"ARIA separator. Can have a value when focusable." textSize:16.00 style:0 bundle:[aria-valuemax="3", aria-valuemin="1", aria-valuenow="1", display="block", htmlTag="div", role="separator", tabindex="-1"]
+++++TextView text:"ARIA separator. Can have a value when focusable." textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++TextView text:"After" textSize:16.00 style:0 bundle:[display="", htmlTag=""]

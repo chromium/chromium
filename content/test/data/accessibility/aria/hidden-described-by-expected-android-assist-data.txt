@@ -1,0 +1,5 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="div"]
+++++View text:"span-A3 span-A4" textSize:16.00 style:0 bundle:[aria-describedby="a4", aria-label="span-A3", class="visible", display="inline", htmlTag="span"]
+++++View text:"span-B span-A2" textSize:16.00 style:0 bundle:[aria-describedby="a2", aria-label="span-B", display="inline", htmlTag="span"]
+++++View text:"span-C" textSize:16.00 style:0 bundle:[aria-label="span-C", display="inline", htmlTag="span"]

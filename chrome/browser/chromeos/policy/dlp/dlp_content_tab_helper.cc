@@ -102,6 +102,12 @@ void DlpContentTabHelper::OnVisibilityChanged(content::Visibility visibility) {
   DlpContentObserver::Get()->OnVisibilityChanged(web_contents());
 }
 
+std::vector<DlpContentTabHelper::RfhInfo> DlpContentTabHelper::GetFramesInfo()
+    const {
+  return std::vector<RfhInfo>{confidential_frames_.begin(),
+                              confidential_frames_.end()};
+}
+
 DlpContentTabHelper::DlpContentTabHelper(content::WebContents* web_contents)
     : content::WebContentsUserData<DlpContentTabHelper>(*web_contents),
       content::WebContentsObserver(web_contents) {}

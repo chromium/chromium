@@ -52,6 +52,10 @@ class COMPONENT_EXPORT(X11) ExtensionManager {
   ExtensionManager();
   ~ExtensionManager();
 
+  void GetEventTypeAndOp(const void* raw_event,
+                         uint8_t* type_id,
+                         uint8_t* opcode) const;
+
   BigRequests& bigreq() { return *bigreq_; }
   Dri3& dri3() { return *dri3_; }
   Glx& glx() { return *glx_; }
@@ -70,6 +74,15 @@ class COMPONENT_EXPORT(X11) ExtensionManager {
   void Init(Connection* conn);
 
  private:
+  struct ExtensionGeMap {
+    // The extension ID provided by the server.
+    uint8_t extension_id = 0;
+    // The count of generic events for this extension.
+    uint8_t ge_count = 0;
+    // The index in `ge_type_ids_` for this extension.
+    uint16_t offset = 0;
+  };
+
   std::unique_ptr<BigRequests> bigreq_;
   std::unique_ptr<Dri3> dri3_;
   std::unique_ptr<Glx> glx_;
@@ -83,6 +96,14 @@ class COMPONENT_EXPORT(X11) ExtensionManager {
   std::unique_ptr<Input> xinput_;
   std::unique_ptr<Xkb> xkb_;
   std::unique_ptr<Test> xtest_;
+
+  // Event opcodes indexed by response ID.
+  uint8_t opcodes_[128] = {0};
+  // Event type IDs indexed by response ID.
+  uint8_t event_type_ids_[128] = {0};
+  // Generic event type IDs for all extensions.
+  uint8_t ge_type_ids_[33] = {0};
+  ExtensionGeMap ge_extensions_[1] = {};
 };
 
 }  // namespace x11

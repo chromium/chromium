@@ -90,10 +90,12 @@ export interface PaymentsManagerProxy {
   authenticateUserAndFlipMandatoryAuthToggle(): void;
 
   /**
-   * Authenticate the user via device authentication and display the edit dialog
-   * for local card if the auth is successful.
+   * Returns the local card based on the `guid` provided. The user could
+   * also be challenged with a reauth if that is enabled. For a
+   * successful auth, the local card is returned otherwise return a null object.
    */
-  authenticateUserToEditLocalCard(): Promise<boolean>;
+  getLocalCard(guid: string):
+      Promise<chrome.autofillPrivate.CreditCardEntry|null>;
 
   // <if expr="is_win or is_macosx">
   /**
@@ -181,8 +183,8 @@ export class PaymentsManagerImpl implements PaymentsManagerProxy {
     chrome.autofillPrivate.authenticateUserAndFlipMandatoryAuthToggle();
   }
 
-  authenticateUserToEditLocalCard() {
-    return chrome.autofillPrivate.authenticateUserToEditLocalCard();
+  getLocalCard(guid: string) {
+    return chrome.autofillPrivate.getLocalCard(guid);
   }
 
   // <if expr="is_win or is_macosx">

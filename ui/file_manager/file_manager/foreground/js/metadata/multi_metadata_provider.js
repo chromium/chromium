@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
-import {util} from '../../../common/js/util.js';
+import {isTrashEntry} from '../../../common/js/entry_utils.js';
 import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
 
@@ -133,7 +133,7 @@ export class MultiMetadataProvider extends MetadataProvider {
           list.push(new MetadataRequest(request.entry, names));
         }
       };
-      if (volumeInfo && !util.isTrashEntry(request.entry) &&
+      if (volumeInfo && !isTrashEntry(request.entry) &&
           (volumeInfo.volumeType === VolumeManagerCommon.VolumeType.DRIVE ||
            volumeInfo.volumeType === VolumeManagerCommon.VolumeType.PROVIDED)) {
         // Because properties can be out of sync just after sync completion

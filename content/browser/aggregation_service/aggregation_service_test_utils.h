@@ -10,6 +10,7 @@
 #include <ostream>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -44,15 +45,29 @@ class AggregationServiceStorage;
 
 namespace aggregation_service {
 
-struct TestHpkeKey {
-  // Public-private key pair.
-  EVP_HPKE_KEY full_hpke_key;
+class TestHpkeKey {
+ public:
+  // Generates a new HPKE key. Note that `key_id` is just a label.
+  explicit TestHpkeKey(std::string key_id = "example_id");
+  ~TestHpkeKey();
 
-  // Contains a copy of the public key of `full_hpke_key`.
-  PublicKey public_key;
+  // This class is move-only.
+  TestHpkeKey(TestHpkeKey&&);
+  TestHpkeKey& operator=(TestHpkeKey&&);
+  TestHpkeKey(TestHpkeKey&) = delete;
+  TestHpkeKey& operator=(TestHpkeKey&) = delete;
 
-  // Contains a base64-encoded copy of `public_key.key`
-  std::string base64_encoded_public_key;
+  std::string_view key_id() const { return key_id_; }
+  const EVP_HPKE_KEY& full_hpke_key() const { return *full_hpke_key_.get(); }
+
+  // Returns the HPKE key's corresponding public key.
+  PublicKey GetPublicKey() const;
+  // Returns the HPKE key's corresponding public key encoded in base64.
+  std::string GetPublicKeyBase64() const;
+
+ private:
+  std::string key_id_;
+  bssl::ScopedEVP_HPKE_KEY full_hpke_key_;
 };
 
 testing::AssertionResult PublicKeysEqual(const std::vector<PublicKey>& expected,
@@ -87,10 +102,6 @@ AggregatableReportRequest CreateExampleRequestWithReportTime(
 AggregatableReportRequest CloneReportRequest(
     const AggregatableReportRequest& request);
 AggregatableReport CloneAggregatableReport(const AggregatableReport& report);
-
-// Generates a public-private key pair for HPKE and also constructs a PublicKey
-// object for use in assembler methods.
-TestHpkeKey GenerateKey(std::string key_id = "example_id");
 
 base::expected<PublicKeyset, std::string> ReadAndParsePublicKeys(
     const base::FilePath& file,

@@ -1,0 +1,3 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++SeekBar text:"Slider" textSize:16.00 style:0 bundle:[aria-valuemax="10", aria-valuemin="1", aria-valuenow="5", display="block", htmlTag="div", role="slider"]
+++++TextView text:"Slider" textSize:16.00 style:0 bundle:[display="", htmlTag=""]

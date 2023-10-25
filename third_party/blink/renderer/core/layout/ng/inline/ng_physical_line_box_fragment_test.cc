@@ -10,23 +10,23 @@
 
 namespace blink {
 
-class NGPhysicalLineBoxFragmentTest : public RenderingTest {
+class PhysicalLineBoxFragmentTest : public RenderingTest {
  protected:
-  HeapVector<Member<const NGPhysicalLineBoxFragment>> GetLineBoxes() const {
+  HeapVector<Member<const PhysicalLineBoxFragment>> GetLineBoxes() const {
     const Element* container = GetElementById("root");
     DCHECK(container);
     const LayoutObject* layout_object = container->GetLayoutObject();
     DCHECK(layout_object) << container;
     DCHECK(layout_object->IsLayoutBlockFlow()) << container;
     InlineCursor cursor(*To<LayoutBlockFlow>(layout_object));
-    HeapVector<Member<const NGPhysicalLineBoxFragment>> lines;
+    HeapVector<Member<const PhysicalLineBoxFragment>> lines;
     for (cursor.MoveToFirstLine(); cursor; cursor.MoveToNextLine())
       lines.push_back(cursor.Current()->LineBoxFragment());
     return lines;
   }
 
-  const NGPhysicalLineBoxFragment* GetLineBox() const {
-    HeapVector<Member<const NGPhysicalLineBoxFragment>> lines = GetLineBoxes();
+  const PhysicalLineBoxFragment* GetLineBox() const {
+    HeapVector<Member<const PhysicalLineBoxFragment>> lines = GetLineBoxes();
     if (!lines.empty())
       return lines.front().Get();
     return nullptr;
@@ -41,7 +41,7 @@ class NGPhysicalLineBoxFragmentTest : public RenderingTest {
     EXPECT_EQ(GetElementById(id), fragment->GetNode()); \
   }
 
-TEST_F(NGPhysicalLineBoxFragmentTest, HasPropagatedDescendantsFloat) {
+TEST_F(PhysicalLineBoxFragmentTest, HasPropagatedDescendantsFloat) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -53,13 +53,13 @@ TEST_F(NGPhysicalLineBoxFragmentTest, HasPropagatedDescendantsFloat) {
     </style>
     <div id=root>12345678 12345<div class=float>float</div></div>
   )HTML");
-  HeapVector<Member<const NGPhysicalLineBoxFragment>> lines = GetLineBoxes();
+  HeapVector<Member<const PhysicalLineBoxFragment>> lines = GetLineBoxes();
   EXPECT_EQ(lines.size(), 2u);
   EXPECT_FALSE(lines[0]->HasPropagatedDescendants());
   EXPECT_TRUE(lines[1]->HasPropagatedDescendants());
 }
 
-TEST_F(NGPhysicalLineBoxFragmentTest, HasPropagatedDescendantsOOF) {
+TEST_F(PhysicalLineBoxFragmentTest, HasPropagatedDescendantsOOF) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -71,7 +71,7 @@ TEST_F(NGPhysicalLineBoxFragmentTest, HasPropagatedDescendantsOOF) {
     </style>
     <div id=root>12345678 12345<div class=abspos>abspos</div></div>
   )HTML");
-  HeapVector<Member<const NGPhysicalLineBoxFragment>> lines = GetLineBoxes();
+  HeapVector<Member<const PhysicalLineBoxFragment>> lines = GetLineBoxes();
   EXPECT_EQ(lines.size(), 2u);
   EXPECT_FALSE(lines[0]->HasPropagatedDescendants());
   EXPECT_TRUE(lines[1]->HasPropagatedDescendants());

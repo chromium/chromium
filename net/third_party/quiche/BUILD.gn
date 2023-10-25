@@ -848,6 +848,7 @@ proto_library("blind_sign_auth_proto") {
     "src/quiche/blind_sign_auth/proto/blind_sign_auth_options.proto",
     "src/quiche/blind_sign_auth/proto/get_initial_data.proto",
     "src/quiche/blind_sign_auth/proto/key_services.proto",
+    "src/quiche/blind_sign_auth/proto/proxy_layer.proto",
     "src/quiche/blind_sign_auth/proto/public_metadata.proto",
     "src/quiche/blind_sign_auth/proto/spend_token_data.proto",
   ]

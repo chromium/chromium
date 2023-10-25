@@ -20,11 +20,13 @@ import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-annou
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {navigateToNextStep, NavigationMixin} from '../navigation_mixin.js';
-import {BookmarkBarManager, BookmarkProxy, BookmarkProxyImpl} from '../shared/bookmark_proxy.js';
+import type {BookmarkProxy} from '../shared/bookmark_proxy.js';
+import {BookmarkBarManager, BookmarkProxyImpl} from '../shared/bookmark_proxy.js';
 import {ModuleMetricsManager} from '../shared/module_metrics_proxy.js';
-import {StepIndicatorModel} from '../shared/nux_types.js';
+import type {StepIndicatorModel} from '../shared/nux_types.js';
 
-import {GoogleAppProxy, GoogleAppProxyImpl} from './google_app_proxy.js';
+import type {GoogleAppProxy} from './google_app_proxy.js';
+import {GoogleAppProxyImpl} from './google_app_proxy.js';
 import {GoogleAppsMetricsProxyImpl} from './google_apps_metrics_proxy.js';
 import {getTemplate} from './nux_google_apps.html.js';
 

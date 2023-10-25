@@ -23,6 +23,7 @@
 #include "base/test/task_environment.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/test/test_context_support.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/config/gpu_feature_info.h"
@@ -115,7 +116,7 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
     return gpu::Mailbox();
   }
 
-  gpu::Mailbox CreateSharedImage(
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       viz::SharedImageFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
@@ -125,7 +126,7 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
       base::StringPiece debug_label,
       base::span<const uint8_t> pixel_data) override {
     ADD_FAILURE();
-    return gpu::Mailbox();
+    return base::MakeRefCounted<gpu::ClientSharedImage>(gpu::Mailbox());
   }
 
   gpu::Mailbox CreateSharedImage(

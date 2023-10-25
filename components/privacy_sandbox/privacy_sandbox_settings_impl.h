@@ -15,6 +15,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/privacy_sandbox/tracking_protection_settings_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -91,7 +92,9 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
   bool IsPrivateAggregationDebugModeAllowed(
       const url::Origin& top_frame_origin,
       const url::Origin& reporting_origin) const override;
-  bool IsCookieDeprecationExperimentCurrentlyEligible() const override;
+  TpcdExperimentEligibility GetCookieDeprecationExperimentCurrentEligibility()
+      const override;
+
   bool IsCookieDeprecationLabelAllowed() const override;
   bool IsCookieDeprecationLabelAllowedForContext(
       const url::Origin& top_frame_origin,

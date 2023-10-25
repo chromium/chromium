@@ -99,14 +99,6 @@
   [self.consumer setPresentsModal:YES];
 }
 
-#pragma mark InfobarBannerDelegate
-
-- (void)presentInfobarModalFromBanner {
-  [self dismissOverlay];
-
-  self.tabPickupDelegate->OpenTabPickupSettings();
-}
-
 #pragma mark - Private
 
 // Returns the tab hostname from the given `URL`.

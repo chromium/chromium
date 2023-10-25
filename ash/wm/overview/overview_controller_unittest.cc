@@ -23,6 +23,7 @@
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
+#include "ash/wm/overview/overview_metrics.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_util.h"
@@ -32,6 +33,7 @@
 #include "ash/wm/wm_event.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_types.h"
@@ -665,6 +667,80 @@ TEST_F(OverviewControllerTest, CloseWindowDuringAnimation) {
   ShellTestApi().WaitForOverviewAnimationState(
       OverviewAnimationState::kExitAnimationComplete);
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+}
+
+// Quick test on all `OverviewStartAction`s to verify that they are recorded
+// correctly in uma metric.
+TEST_F(OverviewControllerTest, OverviewStartActionHistogramTest) {
+  base::HistogramTester histogram_tester;
+  constexpr char kOverviewStartActionHistogram[] = "Ash.Overview.StartAction";
+  OverviewController* overview_controller = OverviewController::Get();
+
+  for (OverviewStartAction start_action : {
+           OverviewStartAction::kSplitView,
+           OverviewStartAction::kAccelerator,
+           OverviewStartAction::kDragWindowFromShelf,
+           OverviewStartAction::kExitHomeLauncher,
+           OverviewStartAction::kOverviewButton,
+           OverviewStartAction::kOverviewButtonLongPress,
+           OverviewStartAction::kBentoBar_DEPRECATED,
+           OverviewStartAction::k3FingerVerticalScroll,
+           OverviewStartAction::kDevTools,
+           OverviewStartAction::kTests,
+           OverviewStartAction::kOverviewDeskSwitch,
+           OverviewStartAction::kDeskButton,
+           OverviewStartAction::kFasterSplitScreenSetup,
+       }) {
+    // Verify the initial count for the histogram.
+    histogram_tester.ExpectBucketCount(kOverviewStartActionHistogram,
+                                       start_action,
+                                       /*expected_count=*/0);
+    overview_controller->StartOverview(start_action);
+    histogram_tester.ExpectBucketCount(kOverviewStartActionHistogram,
+                                       start_action,
+                                       /*expected_count=*/1);
+    overview_controller->EndOverview(OverviewEndAction::kTests);
+  }
+}
+
+// Quick test on all `OverviewEndAction`s to verify that they are recorded
+// correctly in uma metric.
+TEST_F(OverviewControllerTest, OverviewEndActionHistogramTest) {
+  base::HistogramTester histogram_tester;
+  constexpr char kOverviewEndActionHistogram[] = "Ash.Overview.EndAction";
+  OverviewController* overview_controller = OverviewController::Get();
+
+  for (OverviewEndAction end_action : {
+           OverviewEndAction::kSplitView,
+           OverviewEndAction::kDragWindowFromShelf,
+           OverviewEndAction::kEnterHomeLauncher,
+           OverviewEndAction::kClickingOutsideWindowsInOverview,
+           OverviewEndAction::kWindowActivating,
+           OverviewEndAction::kLastWindowRemoved,
+           OverviewEndAction::kDisplayAdded,
+           OverviewEndAction::kKeyEscapeOrBack,
+           OverviewEndAction::kDeskActivation,
+           OverviewEndAction::kOverviewButton,
+           OverviewEndAction::kOverviewButtonLongPress,
+           OverviewEndAction::k3FingerVerticalScroll,
+           OverviewEndAction::kEnabledDockedMagnifier,
+           OverviewEndAction::kUserSwitch,
+           OverviewEndAction::kStartedWindowCycle,
+           OverviewEndAction::kShuttingDown,
+           OverviewEndAction::kAppListActivatedInClamshell,
+           OverviewEndAction::kShelfAlignmentChanged,
+           OverviewEndAction::kDevTools,
+           OverviewEndAction::kTests,
+           OverviewEndAction::kShowGlanceables_DEPRECATED,
+       }) {
+    // Verify the initial count for the histogram.
+    histogram_tester.ExpectBucketCount(kOverviewEndActionHistogram, end_action,
+                                       /*expected_count=*/0);
+    overview_controller->StartOverview(OverviewStartAction::kTests);
+    overview_controller->EndOverview(end_action);
+    histogram_tester.ExpectBucketCount(kOverviewEndActionHistogram, end_action,
+                                       /*expected_count=*/1);
+  }
 }
 
 // A subclass of DeskSwitchAnimationWaiter that additionally attempts to start

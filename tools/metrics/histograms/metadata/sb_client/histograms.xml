@@ -555,6 +555,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.Classifier.ReadyAfterRetryTimeout"
+    units="bool" expires_after="2024-09-07">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the success rate of renderer-side phishing classification after
+    retries when the model is not available.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.ClassifyThresholdsResult"
     enum="SBClientDetectionClassifyThresholdsResult" expires_after="2024-03-17">
   <owner>andysjlim@chromium.org</owner>

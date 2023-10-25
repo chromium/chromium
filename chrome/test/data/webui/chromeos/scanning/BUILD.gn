@@ -15,12 +15,12 @@ build_webui_tests("build_webui_tests") {
   ]
 
   files = [
-    "action_toolbar_test.js",
-    "color_mode_select_test.js",
-    "file_type_select_test.js",
-    "loading_page_test.js",
-    "multi_page_checkbox_test.js",
-    "multi_page_scan_test.js",
+    "action_toolbar_test.ts",
+    "color_mode_select_test.ts",
+    "file_type_select_test.ts",
+    "loading_page_test.ts",
+    "multi_page_checkbox_test.ts",
+    "multi_page_scan_test.ts",
     "page_size_select_test.js",
     "resolution_select_test.js",
     "scan_done_section_test.js",
@@ -31,7 +31,7 @@ build_webui_tests("build_webui_tests") {
     "scan_preview_test.js",
     "scan_to_select_test.js",
     "source_select_test.js",
-    "test_scanning_browser_proxy.js",
+    "test_scanning_browser_proxy.ts",
   ]
 
   ts_deps = [

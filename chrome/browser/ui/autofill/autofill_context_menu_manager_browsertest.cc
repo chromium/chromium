@@ -29,14 +29,52 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
-using testing::_;
-
 namespace autofill {
 
 namespace {
 
+using ::testing::_;
+using ::testing::Not;
+
 ACTION_P(QuitMessageLoop, loop) {
   loop->Quit();
+}
+
+// Checks if the context menu model contains any entries with manual fallback
+// labels or command id. `arg` must be of type ui::SimpleMenuModel.
+MATCHER(ContainsAnyAutofillFallbackEntries, "") {
+  for (size_t i = 0; i < arg->GetItemCount(); i++) {
+    if (arg->GetCommandIdAt(i) ==
+        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED) {
+      return true;
+    }
+    const std::u16string label = arg->GetLabelAt(i);
+    if (label ==
+        l10n_util::GetStringUTF16(
+            IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED_TITLE)) {
+      return true;
+    }
+    if (label ==
+        l10n_util::GetStringUTF16(
+            IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Checks is the context menu model contains the Autofill manual fallback
+// entries with correct UI strings. `arg` must be of type ui::SimpleMenuModel.
+MATCHER(IsAutofillFallbackAdded, "") {
+  EXPECT_EQ(arg->GetItemCount(), 3u);
+  return arg->GetTypeAt(0) == ui::MenuModel::ItemType::TYPE_TITLE &&
+         arg->GetLabelAt(0) ==
+             l10n_util::GetStringUTF16(
+                 IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED_TITLE) &&
+         arg->GetLabelAt(1) ==
+             l10n_util::GetStringUTF16(
+                 IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED) &&
+         arg->GetTypeAt(2) == ui::MenuModel::ItemType::TYPE_SEPARATOR;
 }
 
 // Generates a ContextMenuParams for the Autofill context menu options.
@@ -80,27 +118,21 @@ class PersonalDataLoadedObserverMock
 
 }  // namespace
 
-class AutofillContextMenuManagerTest : public InProcessBrowserTest {
+// TODO(crbug.com/1493968): Simplify test setup.
+class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
  public:
-  AutofillContextMenuManagerTest() {
-    feature_.InitWithFeatures(
-        {features::kAutofillFeedback,
-         features::kAutofillPredictionsForAutocompleteUnrecognized,
-         features::kAutofillFallbackForAutocompleteUnrecognized},
-        {});
-  }
+  BaseAutofillContextMenuManagerTest() = default;
 
-  AutofillContextMenuManagerTest(const AutofillContextMenuManagerTest&) =
-      delete;
-  AutofillContextMenuManagerTest& operator=(
-      const AutofillContextMenuManagerTest&) = delete;
+  BaseAutofillContextMenuManagerTest(
+      const BaseAutofillContextMenuManagerTest&) = delete;
+  BaseAutofillContextMenuManagerTest& operator=(
+      const BaseAutofillContextMenuManagerTest&) = delete;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
     personal_data_ = PersonalDataManagerFactory::GetForProfile(profile());
 
-    AddAutofillProfile(test::GetFullProfile());
     AddCreditCard(test::GetCreditCard());
 
     menu_model_ = std::make_unique<ui::SimpleMenuModel>(nullptr);
@@ -202,8 +234,10 @@ class AutofillContextMenuManagerTest : public InProcessBrowserTest {
     }
   }
 
-  // Adds the `form` to the `driver()`'s manager.
-  void AddSeenForm(const FormData& form) {
+  // Makes the form identifiable by its global id and adds the `form` to the
+  // `driver()`'s manager.
+  void AttachForm(FormData& form) {
+    SetHostFramesOfFormAndFields(form);
     TestAutofillManagerWaiter waiter(autofill_manager(),
                                      {AutofillManagerEvent::kFormsSeen});
     autofill_manager().OnFormsSeen(/*updated_forms=*/{form},
@@ -211,17 +245,37 @@ class AutofillContextMenuManagerTest : public InProcessBrowserTest {
     ASSERT_TRUE(waiter.Wait());
   }
 
+  // Creates a form with classifiable fields and registers it with the manager.
+  FormData CreateAndAttachClassifiedForm() {
+    FormData form;
+    test::CreateTestAddressFormData(&form);
+    AttachForm(form);
+    return form;
+  }
+
   // Creates a form where every field has unrecognized autocomplete attribute
   // and registers it with the manager.
-  FormData SeeAutocompleteUnrecognizedForm() {
+  FormData CreateAndAttachAutocompleteUnrecognizedForm() {
     FormData form;
     test::CreateTestAddressFormData(&form);
     for (FormFieldData& field : form.fields) {
       field.parsed_autocomplete =
           AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized};
     }
-    SetHostFramesOfFormAndFields(form);
-    AddSeenForm(form);
+    AttachForm(form);
+    return form;
+  }
+
+  // Creates a form with unclassifiable fields and registers it with the
+  // manager.
+  FormData CreateAndAttachUnclassifiedForm() {
+    FormData form;
+    test::CreateTestAddressFormData(&form);
+    for (FormFieldData& field : form.fields) {
+      field.label = u"unclassifiable";
+      field.name = u"unclassifiable";
+    }
+    AttachForm(form);
     return form;
   }
 
@@ -234,12 +288,29 @@ class AutofillContextMenuManagerTest : public InProcessBrowserTest {
   std::unique_ptr<TestRenderViewContextMenu> render_view_context_menu_;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   std::unique_ptr<AutofillContextMenuManager> autofill_context_menu_manager_;
+};
+
+class AutocompleteUnrecognizedFieldsTest
+    : public BaseAutofillContextMenuManagerTest {
+ public:
+  AutocompleteUnrecognizedFieldsTest() {
+    feature_.InitWithFeaturesAndParameters(
+        {{features::kAutofillPredictionsForAutocompleteUnrecognized, {}},
+         {features::kAutofillFallbackForAutocompleteUnrecognized,
+          {{"show_on_all_address_fields", "true"}}}},
+        // Intentionally disable the Autofill feedback so that corresponding
+        // entry doesn't appear in the context menu model.
+        {features::kAutofillFeedback,
+         features::kAutofillForUnclassifiedFieldsAvailable});
+  }
+
+ private:
   base::test::ScopedFeatureList feature_;
 };
 
 // Tests that the Autofill's ContentAutofillDriver is called to record metrics
 // when the context menu is triggered on a field.
-IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerTest,
+IN_PROC_BROWSER_TEST_F(AutocompleteUnrecognizedFieldsTest,
                        RecordContextMenuIsShownOnField) {
   FormRendererId form_renderer_id(test::MakeFormRendererId());
   FieldRendererId field_renderer_id(test::MakeFieldRendererId());
@@ -256,42 +327,71 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerTest,
   autofill_context_menu_manager()->AppendItems();
 }
 
-// Tests that when triggering the context menu on an ac=unrecognized field, the
-// fallback entry is part of the menu.
-IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerTest,
-                       AutocompleteUnrecognizedFallback_ContextMenuEntry) {
-  // Simulate triggering the context menu on an ac=unrecognized field.
-  FormData form = SeeAutocompleteUnrecognizedForm();
+// Tests that when triggering the context menu on an unclassified field, the
+// fallback entry is not part of the menu.
+IN_PROC_BROWSER_TEST_F(AutocompleteUnrecognizedFieldsTest,
+                       UnclassifiedFormShown_FallbackOptionsNotPresent) {
+  AddAutofillProfile(test::GetFullProfile());
+  FormData form = CreateAndAttachUnclassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.unique_renderer_id,
                               form.fields[0].unique_renderer_id));
   autofill_context_menu_manager()->AppendItems();
 
-  // Expect to find the fallback entries at the end (after the manual fallback
-  // and feedback entries).
-  EXPECT_GE(menu_model()->GetItemCount(), 3u);
-  const size_t fallback_index = menu_model()->GetItemCount() - 3;
-  EXPECT_EQ(menu_model()->GetTypeAt(fallback_index),
-            ui::MenuModel::ItemType::TYPE_TITLE);
-  EXPECT_EQ(
-      menu_model()->GetLabelAt(fallback_index),
-      l10n_util::GetStringUTF16(
-          IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED_TITLE));
-  EXPECT_EQ(
-      menu_model()->GetLabelAt(fallback_index + 1),
-      l10n_util::GetStringUTF16(
-          IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED));
-  EXPECT_EQ(menu_model()->GetTypeAt(fallback_index + 2),
-            ui::MenuModel::ItemType::TYPE_SEPARATOR);
+  EXPECT_THAT(menu_model(), Not(ContainsAnyAutofillFallbackEntries()));
+}
+
+// Tests that when triggering the context menu on an ac=unrecognized field, the
+// fallback entry is not part of the menu if there's no AutofillProfile data to
+// fill in.
+IN_PROC_BROWSER_TEST_F(
+    AutocompleteUnrecognizedFieldsTest,
+    AutocompleteUnrecognizedFormShown_NoUserData_FallbackOptionsNotPresent) {
+  FormData form = CreateAndAttachAutocompleteUnrecognizedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.unique_renderer_id,
+                              form.fields[0].unique_renderer_id));
+  autofill_context_menu_manager()->AppendItems();
+
+  EXPECT_THAT(menu_model(), Not(ContainsAnyAutofillFallbackEntries()));
+}
+
+// Tests that when triggering the context menu on a classified field, the
+// fallback entry is part of the menu.
+IN_PROC_BROWSER_TEST_F(AutocompleteUnrecognizedFieldsTest,
+                       ClassifiedFormShown_FallbackOptionsNotPresent) {
+  AddAutofillProfile(test::GetFullProfile());
+  FormData form = CreateAndAttachClassifiedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.unique_renderer_id,
+                              form.fields[0].unique_renderer_id));
+  autofill_context_menu_manager()->AppendItems();
+
+  EXPECT_THAT(menu_model(), IsAutofillFallbackAdded());
+}
+
+// Tests that when triggering the context menu on an ac=unrecognized field, the
+// fallback entry is part of the menu.
+IN_PROC_BROWSER_TEST_F(
+    AutocompleteUnrecognizedFieldsTest,
+    AutocompleteUnrecognizedFormShown_FallbackOptionsPresent) {
+  AddAutofillProfile(test::GetFullProfile());
+  FormData form = CreateAndAttachAutocompleteUnrecognizedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.unique_renderer_id,
+                              form.fields[0].unique_renderer_id));
+  autofill_context_menu_manager()->AppendItems();
+
+  EXPECT_THAT(menu_model(), IsAutofillFallbackAdded());
 }
 
 // Tests that when the fallback entry for ac=unrecognized fields is selected,
 // suggestions are triggered with suggestion trigger source
 // `kManualFallbackForAutocompleteUnrecognized`.
-IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerTest,
+IN_PROC_BROWSER_TEST_F(AutocompleteUnrecognizedFieldsTest,
                        AutocompleteUnrecognizedFallback_TriggerSuggestions) {
-  // Simulate triggering the context menu on an ac=unrecognized field.
-  FormData form = SeeAutocompleteUnrecognizedForm();
+  AddAutofillProfile(test::GetFullProfile());
+  FormData form = CreateAndAttachAutocompleteUnrecognizedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.unique_renderer_id,
                               form.fields[0].unique_renderer_id));
@@ -311,10 +411,10 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    AutofillContextMenuManagerTest,
+    AutocompleteUnrecognizedFieldsTest,
     AutocompleteUnrecognizedFallback_ExplicitlyTriggeredMetric_NotAccepted) {
-  // Simulate triggering the context menu on an ac=unrecognized field.
-  FormData form = SeeAutocompleteUnrecognizedForm();
+  AddAutofillProfile(test::GetFullProfile());
+  FormData form = CreateAndAttachAutocompleteUnrecognizedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.unique_renderer_id,
                               form.fields[0].unique_renderer_id));
@@ -333,10 +433,10 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    AutofillContextMenuManagerTest,
+    AutocompleteUnrecognizedFieldsTest,
     AutocompleteUnrecognizedFallback_ExplicitlyTriggeredMetric_Accepted) {
-  // Simulate triggering the context menu on an ac=unrecognized field.
-  FormData form = SeeAutocompleteUnrecognizedForm();
+  AddAutofillProfile(test::GetFullProfile());
+  FormData form = CreateAndAttachAutocompleteUnrecognizedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.unique_renderer_id,
                               form.fields[0].unique_renderer_id));
@@ -354,6 +454,78 @@ IN_PROC_BROWSER_TEST_F(
       true, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.ManualFallback.ExplicitlyTriggered.Total.Address", true, 1);
+}
+
+class UnclassifiedFieldsTest : public BaseAutofillContextMenuManagerTest {
+ public:
+  UnclassifiedFieldsTest() {
+    feature_.InitWithFeatures(
+        {features::kAutofillForUnclassifiedFieldsAvailable},
+        {features::kAutofillFeedback,
+         features::kAutofillPredictionsForAutocompleteUnrecognized,
+         features::kAutofillFallbackForAutocompleteUnrecognized});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_;
+};
+
+// Tests that when triggering the context menu on an unclassified form, the
+// fallback entry is part of the menu.
+IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
+                       UnclassifiedFormShown_FallbackOptionsPresent) {
+  FormData form = CreateAndAttachUnclassifiedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.unique_renderer_id,
+                              form.fields[0].unique_renderer_id));
+  autofill_context_menu_manager()->AppendItems();
+
+  EXPECT_THAT(menu_model(), IsAutofillFallbackAdded());
+}
+
+// Tests that when triggering the context menu on an autocomplete unrecognized
+// field, the fallback entry is part of the menu.
+IN_PROC_BROWSER_TEST_F(
+    UnclassifiedFieldsTest,
+    AutocompleteUnrecognizedFieldShown_FallbackOptionsPresent) {
+  FormData form = CreateAndAttachAutocompleteUnrecognizedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.unique_renderer_id,
+                              form.fields[0].unique_renderer_id));
+  autofill_context_menu_manager()->AppendItems();
+
+  EXPECT_THAT(menu_model(), IsAutofillFallbackAdded());
+}
+
+// Tests that when triggering the context menu on a classified form, the
+// fallback entry is part of the menu.
+IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
+                       ClassifiedFormShown_FallbackOptionsPresent) {
+  FormData form = CreateAndAttachClassifiedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.unique_renderer_id,
+                              form.fields[0].unique_renderer_id));
+  autofill_context_menu_manager()->AppendItems();
+
+  EXPECT_THAT(menu_model(), IsAutofillFallbackAdded());
+}
+
+// Tests that when the fallback entry for the unclassified fields is selected,
+// suggestions are not triggered.
+IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
+                       UnclassifiedFormShown_ManualFallbackOptionIsNoOp) {
+  AddAutofillProfile(test::GetFullProfile());
+  FormData form = CreateAndAttachAutocompleteUnrecognizedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.unique_renderer_id,
+                              form.fields[0].unique_renderer_id));
+  autofill_context_menu_manager()->AppendItems();
+
+  // Expect that when the entry is selected, suggestions are triggered from that
+  // field.
+  EXPECT_CALL(*driver(), RendererShouldTriggerSuggestions).Times(0);
+  autofill_context_menu_manager()->ExecuteCommand(
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED);
 }
 
 }  // namespace autofill

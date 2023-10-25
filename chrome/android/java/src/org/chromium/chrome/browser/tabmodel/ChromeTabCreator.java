@@ -181,11 +181,6 @@ public class ChromeTabCreator extends TabCreator {
         WarmupManager.getInstance().maybePreconnectUrlAndSubResources(profile, url.getScheme());
     }
 
-    @Override
-    public boolean createsTabsAsynchronously() {
-        return false;
-    }
-
     /**
      * Creates a new tab and posts to UI.
      * @param loadUrlParams parameters of the url load.

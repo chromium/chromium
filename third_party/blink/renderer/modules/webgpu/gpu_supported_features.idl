@@ -18,7 +18,6 @@ enum GPUFeatureName {
     "float32-filterable",
 
     // Non-standard (not currently in the spec).
-    "chromium-experimental-pipeline-statistics-query",
     "chromium-experimental-timestamp-query-inside-passes",
     "chromium-experimental-dp4a",
     "chromium-experimental-read-write-storage-texture",

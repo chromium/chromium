@@ -132,7 +132,7 @@ interface ScopedAccessPermission {};
 
 // Similar to |video_capture.mojom.VideoFrameHandler| but depends on simplified
 // structures.
-// Next min method ID: 12
+// Next min method ID: 13
 [Stable, Uuid="590ab36a-9162-4c9d-8429-1753108825ea"]
 interface VideoFrameHandler {
   [MinVersion=3]
@@ -153,8 +153,12 @@ interface VideoFrameHandler {
 
   OnFrameDropped@4(media.mojom.VideoCaptureFrameDropReason reason);
 
+  // Deprecated in favor of OnNewSubCaptureTargetVersion.
   [MinVersion=2]
-  OnNewCropVersion@10(uint32 crop_version);
+  DEPRECATED_OnNewCropVersion@10(uint32 crop_version);
+
+  [MinVersion=4]
+  OnNewSubCaptureTargetVersion@12(uint32 sub_capture_target_version);
 
   [MinVersion=1]
   OnFrameWithEmptyRegionCapture@9();

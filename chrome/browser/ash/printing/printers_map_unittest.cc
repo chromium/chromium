@@ -12,6 +12,7 @@ namespace {
 using ::chromeos::CupsPrinterStatus;
 using ::chromeos::Printer;
 using ::chromeos::PrinterClass;
+using PrinterStatusReason = CupsPrinterStatus::CupsPrinterStatusReason;
 
 bool IsPrinterInPrinters(const std::vector<Printer>& printers,
                          const Printer& printer) {
@@ -23,11 +24,13 @@ bool IsPrinterInPrinters(const std::vector<Printer>& printers,
   return false;
 }
 
-CupsPrinterStatus CreatePrinterStatus(const std::string& printer_id) {
+CupsPrinterStatus CreatePrinterStatus(
+    const std::string& printer_id,
+    const PrinterStatusReason::Reason reason =
+        PrinterStatusReason::Reason::kNoError) {
   CupsPrinterStatus cups_printer_status(printer_id);
-  cups_printer_status.AddStatusReason(
-      CupsPrinterStatus::CupsPrinterStatusReason::Reason::kNoError,
-      CupsPrinterStatus::CupsPrinterStatusReason::Severity::kReport);
+  cups_printer_status.AddStatusReason(reason,
+                                      PrinterStatusReason::Severity::kReport);
   return cups_printer_status;
 }
 
@@ -613,6 +616,24 @@ TEST_F(PrintersMapTest, RemovePrinterRemovesStatus) {
   absl::optional<Printer> printer = printers_map.Get(printer_id);
   CupsPrinterStatus empty_printer_status = printer->printer_status();
   EXPECT_TRUE(empty_printer_status.GetPrinterId().empty());
+}
+
+TEST_F(PrintersMapTest, DuplicatePrinterStatus) {
+  PrintersMap printers_map;
+  const std::string printer_id = "id";
+  printers_map.Insert(PrinterClass::kDiscovered, Printer(printer_id));
+
+  // Saving a new status should return true.
+  CupsPrinterStatus printer_status = CreatePrinterStatus(printer_id);
+  EXPECT_TRUE(printers_map.SavePrinterStatus(printer_id, printer_status));
+
+  // Saving the same status again should return false.
+  EXPECT_FALSE(printers_map.SavePrinterStatus(printer_id, printer_status));
+
+  // Saving a new status should return true again.
+  CupsPrinterStatus new_printer_status =
+      CreatePrinterStatus(printer_id, PrinterStatusReason::Reason::kOutOfInk);
+  EXPECT_TRUE(printers_map.SavePrinterStatus(printer_id, new_printer_status));
 }
 
 }  // namespace ash

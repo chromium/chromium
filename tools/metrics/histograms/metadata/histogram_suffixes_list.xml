@@ -4660,6 +4660,9 @@ chromium-metrics-reviews@google.com.
 </histogram_suffixes>
 
 <histogram_suffixes name="SecurityInterstitialSBWithSourceType" separator=".">
+  <suffix name="from_android_safebrowsing"
+      label="Interstitial for a resource classified as unsafe by the Android
+             Safe Browsing local blocklist API."/>
   <suffix name="from_android_safebrowsing_real_time"
       label="Interstitial for a resource classified as unsafe by the Android
              Safe Browsing hash-prefix real-time API."/>
@@ -5074,16 +5077,8 @@ chromium-metrics-reviews@google.com.
   <suffix name="Video" label="Video playback"/>
   <suffix name="WheelScroll" label="Mousewheel driven interaction"/>
   <affected-histogram name="CompositorLatency.Type"/>
-  <affected-histogram name="Graphics.Smoothness.Jank.Compositor"/>
-  <affected-histogram name="Graphics.Smoothness.Jank.Main"/>
   <affected-histogram name="Graphics.Smoothness.MaxStale"/>
   <affected-histogram name="Graphics.Smoothness.Stale"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="SmoothnessThreadTypes_Jank" separator=".">
-  <suffix name="Compositor" label="Janks from the compositor thread"/>
-  <suffix name="Main" label="Janks from the main thread"/>
-  <affected-histogram name="Graphics.Smoothness.Jank"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="Spellcheck_Windows_LocaleSupportType" separator=".">

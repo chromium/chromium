@@ -29,6 +29,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="109942774857561566">Rydw i wedi diflasu</translation>
 <translation id="1104084341931202936">Dangos y gosodiadau hygyrchedd</translation>
 <translation id="1104621072296271835">Mae'ch dyfeisiau'n gweithio hyd yn oed yn well gyda'i gilydd</translation>
+<translation id="1106446201446919638">Mae 1 ddyfais yn gysylltiedig. Wrth ddefnyddio'r poethfan, bydd Wi-Fi wedi'i ddiffodd.</translation>
 <translation id="1111021433905331574">Gallwch newid lliw ôl-olau eich bysellfwrdd yn Gosodiadau &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Toglo data symudol. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Cuddio silff yn awtomatig</translation>
@@ -202,7 +203,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1757857692711134412">Diffodd tan fachlud haul</translation>
 <translation id="1768366657309696705">Mae'r llwybr byr bysellfwrdd <ph name="LAUNCHER_KEY_NAME" /> + Period wedi newid. I ddefnyddio'r fysell Insert, pwyswch y fysell <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Symudwyd i res <ph name="ROW_NUMBER" />, colofn <ph name="COLUMN_NUMBER" />.</translation>
-<translation id="1771458705381257690">Agorwch <ph name="NAME" /> i osod ac addasu'ch dyfais</translation>
 <translation id="1771761307086386028">Sgrolio i'r dde</translation>
 <translation id="1774796056689732716">Calendr, <ph name="CURRENT_MONTH_YEAR" />, mae <ph name="DATE" /> wedi'i ddewis ar hyn o bryd.</translation>
 <translation id="1775598828170459419">Yn dangos <ph name="NUM_SHOWN_ITEMS" /> allan o <ph name="NUM_TOTAL_ITEMS" /></translation>
@@ -307,7 +307,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2258734398699965611">Ffeiliau a awgrymir</translation>
 <translation id="2268130516524549846">Mae Bluetooth wedi'i analluogi</translation>
 <translation id="2268813581635650749">Allgofnodi o bob un</translation>
-<translation id="2269016722240250274">Mae ap yn defnyddio'ch meicroffon</translation>
 <translation id="2276987123919776440">15mun</translation>
 <translation id="2277103315734023688">Mynd ymlaen</translation>
 <translation id="2282073721614284166">Agor dolen mewn tab</translation>
@@ -360,6 +359,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2465145153332031561">Iechyd batri <ph name="BATTERY_HEALTH_PERCENTAGE" />% | cyfrif seiclo <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Cadarnhewch y Cydraniad</translation>
 <translation id="2475982808118771221">Bu gwall</translation>
+<translation id="2478076885740497414">Gosod yr ap</translation>
 <translation id="2482878487686419369">Hysbysiadau</translation>
 <translation id="2484513351006226581">Pwyswch <ph name="KEYBOARD_SHORTCUT" /> i newid cynllun y bysellfwrdd.</translation>
 <translation id="2487915095798731898">Ymuno</translation>
@@ -518,6 +518,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3160929076476941240">2a</translation>
 <translation id="3161500364292033097">Cau desg a ffenestri</translation>
 <translation id="316356270129335934">Mae <ph name="MANAGER" /> yn rholio eich <ph name="DEVICE_TYPE" /> yn ôl. Bydd eich dyfais yn ailosod a bydd eich data yn cael eu dileu.</translation>
+<translation id="3170769098533255179">Dim dyfeisiau wedi'u cysylltu. Wrth ddefnyddio'r poethfan, bydd Wi-Fi wedi'i ddiffodd.</translation>
 <translation id="3171170659304083361">Gosodiadau dulliau mewnbynnu</translation>
 <translation id="3176221688814061633">Mae eich dyfais Chromebook neu Bluetooth yn defnyddio fersiwn hŷn o Bluetooth. Trowch y Cydraniad Swper Bluetooth ymlaen neu defnyddiwch feicroffon mewnol i gael gwell ansawdd sain.</translation>
 <translation id="3181441307743005334">Mae'n bosib y bydd ailgychwyn yn cymryd peth amser</translation>
@@ -552,6 +553,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3306386552969601301">Mae <ph name="DEVICECOUNT" /> o ddyfeisiau wedi'u cysylltu â phoethfan <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Newid i'r modd gliniadur</translation>
 <translation id="3308453408813785101">Gall <ph name="USER_EMAIL_ADDRESS" /> fewngofnodi'n nes ymlaen.</translation>
+<translation id="3317779231018057649">Mae <ph name="DEVICECOUNT" /> o ddyfeisiau yn gysylltiedig. Wrth ddefnyddio'r poethfan, bydd Wi-Fi wedi'i ddiffodd.</translation>
 <translation id="3321628682574733415">Cod rhiant anghywir</translation>
 <translation id="332827762492701193">Mae hysbysiadau wedi'u cuddio</translation>
 <translation id="3333674550998107387">Ehangu'r hysbysiad <ph name="NOTIFICATION_TITLE" /></translation>
@@ -631,8 +633,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3600061223661453002">Diffodd</translation>
 <translation id="3604801046548457007">Mae'r ddesg <ph name="DESK_TITILE" /> wedi'i chreu</translation>
 <translation id="3606978283550408104">Wedi cysylltu sgrîn braille.</translation>
-<translation id="3609301425104788351"><ph name="MIC" />,
-        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">Bydd galluogi data symudol yn galluogi Bluetooth</translation>
 <translation id="3616113530831147358">Sain</translation>
 <translation id="3616883743181209306">Cafodd y ddewislen ei symud i gornel dde uchaf y sgrîn.</translation>
@@ -682,9 +682,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="3781910048497807059">Symud ffocws i'r paen blaenorol</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Cloi</translation>
-<translation id="3789841737615482174">Gosod</translation>
 <translation id="3796215473395753611">alt + saeth i fyny</translation>
-<translation id="3796746699333205839">Mae ap yn defnyddio'ch camera a'ch meicroffon</translation>
 <translation id="3798670284305777884">Seinydd (mewnol)</translation>
 <translation id="3799080171973636491">Gwnaethoch bwyso'r llwybr byr bysellfwrdd ar gyfer y chwyddwydr sgrîn lawn. Ydych chi am ei droi ymlaen?</translation>
 <translation id="380165613292957338">Shw'mae, sut alla i helpu?</translation>
@@ -814,6 +812,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="428715201724021596">Wrthi'n cysylltu â'r proffil. Gallai hyn gymryd ychydig funudau.</translation>
 <translation id="4294319844246081198">Bore da <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Clirio'r holl <ph name="COUNT" /> hysbysiad</translation>
+<translation id="4300272766492248925">Agor yr ap</translation>
 <translation id="430191667033048642">Symudwyd <ph name="MOVED_APP_NAME" /> i'r ffolder <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Ddim ar gael</translation>
 <translation id="4303223480529385476">Ehangu'r ardal statws</translation>
@@ -879,6 +878,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="4566144812051858745">Dim diddordeb mewn unrhyw awgrymiadau</translation>
 <translation id="4569753163207712681">Gweld lluniau, cyfryngau ac apiau diweddar eich ffôn</translation>
 <translation id="4573176682887762361">"Teipiwch [gair / ymadrodd]"</translation>
+<translation id="4577188182049003486">Gyda'r poethfan ymlaen, mae Wi-Fi wedi'i ddiffodd</translation>
 <translation id="4577274620589681794">Amser wedi darfod · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Dangos rhagolygon</translation>
 <translation id="4578906031062871102">Cafodd y ddewislen gosodiadau ei hagor</translation>
@@ -1208,7 +1208,6 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="5876666360658629066">Rhowch y cod rhiant</translation>
 <translation id="5881540930187678962">Gosod Phone Hub yn nes ymlaen</translation>
 <translation id="5881663018261910378">Diffodd</translation>
-<translation id="5883017113634523865">Gosodwch yr ap ar gyfer <ph name="NAME" /> o Google Play i weld yr holl nodweddion sydd ar gael</translation>
 <translation id="5887954372087850114">Mae'r ffenestr <ph name="WINDOW_TITLE" /> wedi'i haseinio i <ph name="DESK_TITLE" /> a'i ddadaseinio o bob tasg arall.</translation>
 <translation id="588817334757907802">Agor y ffeil yn y porwr Chrome</translation>
 <translation id="5895138241574237353">Ailgychwyn</translation>
@@ -1578,7 +1577,6 @@ Gosodiad newydd</translation>
 <translation id="742594950370306541">Mae'r camera'n cael ei ddefnyddio.</translation>
 <translation id="742608627846767349">Bore da,</translation>
 <translation id="743058460480092004">Mae'r camera a'r meicroffon yn cael eu defnyddio.</translation>
-<translation id="7452560014878697800">Mae ap yn defnyddio'ch camera</translation>
 <translation id="7453330308669753048">Canlyniad hanes chwilio wedi'i dynnu</translation>
 <translation id="7459485586006128091">Oherwydd gwall mewnol, mae'r boethfan wedi'i diffodd. Rhowch gynnig ar ailgysylltu mewn ychydig funudau.</translation>
 <translation id="7461924472993315131">Pinio</translation>

@@ -172,7 +172,8 @@ class ArcAppListPrefs : public KeyedService,
                 bool preinstalled,
                 base::flat_map<arc::mojom::AppPermission,
                                arc::mojom::PermissionStatePtr> permissions,
-                arc::mojom::WebAppInfoPtr web_app_info);
+                arc::mojom::WebAppInfoPtr web_app_info,
+                arc::mojom::PackageLocaleInfoPtr locale_info);
     ~PackageInfo();
 
     std::string package_name;
@@ -188,6 +189,7 @@ class ArcAppListPrefs : public KeyedService,
     base::flat_map<arc::mojom::AppPermission, arc::mojom::PermissionStatePtr>
         permissions;
     arc::mojom::WebAppInfoPtr web_app_info;
+    arc::mojom::PackageLocaleInfoPtr locale_info;
   };
 
   class Observer : public base::CheckedObserver {

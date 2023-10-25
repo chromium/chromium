@@ -420,14 +420,14 @@ UBiDiLevel InlineCursorPosition::BidiLevel() const {
     }
     const auto& layout_text = *To<LayoutText>(GetLayoutObject());
     DCHECK(!layout_text.NeedsLayout()) << this;
-    const auto* const items = layout_text.GetNGInlineItems();
+    const auto* const items = layout_text.GetInlineItems();
     if (!items || items->size() == 0) {
       // In case of <br>, <wbr>, text-combine-upright, etc.
       return 0;
     }
     const NGTextOffsetRange offset = TextOffset();
     auto* const item =
-        base::ranges::find_if(*items, [offset](const NGInlineItem& item) {
+        base::ranges::find_if(*items, [offset](const InlineItem& item) {
           return item.StartOffset() <= offset.start &&
                  item.EndOffset() >= offset.end;
         });
@@ -440,9 +440,9 @@ UBiDiLevel InlineCursorPosition::BidiLevel() const {
     const LayoutBlockFlow& block_flow =
         *GetLayoutObject()->FragmentItemsContainer();
     const auto& items =
-        block_flow.GetNGInlineNodeData()->ItemsData(UsesFirstLineStyle()).items;
+        block_flow.GetInlineNodeData()->ItemsData(UsesFirstLineStyle()).items;
     const auto* const item = base::ranges::find(items, GetLayoutObject(),
-                                                &NGInlineItem::GetLayoutObject);
+                                                &InlineItem::GetLayoutObject);
     DCHECK(item != items.end()) << this;
     return item->BidiLevel();
   }

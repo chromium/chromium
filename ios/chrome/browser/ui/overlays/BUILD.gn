@@ -46,6 +46,7 @@ source_set("overlays") {
     "//ios/chrome/browser/ui/overlays/infobar_modal/passwords",
     "//ios/chrome/browser/ui/overlays/infobar_modal/permissions",
     "//ios/chrome/browser/ui/overlays/infobar_modal/save_card",
+    "//ios/chrome/browser/ui/overlays/infobar_modal/tab_pickup",
     "//ios/chrome/browser/ui/overlays/infobar_modal/translate",
     "//ios/chrome/browser/ui/overlays/web_content_area/alerts",
     "//ios/chrome/common/ui/util",

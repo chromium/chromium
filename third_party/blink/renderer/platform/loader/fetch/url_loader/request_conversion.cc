@@ -353,6 +353,7 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
   dest->enable_upload_progress = src.ReportUploadProgress();
   dest->throttling_profile_id = src.GetDevToolsToken();
   dest->trust_token_params = ConvertTrustTokenParams(src.TrustTokenParams());
+  dest->target_address_space = src.GetTargetAddressSpace();
 
   if (base::UnguessableToken window_id = src.GetFetchWindowId())
     dest->fetch_window_id = absl::make_optional(window_id);

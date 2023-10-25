@@ -54,7 +54,8 @@ class MockDlpRulesManager : public DlpRulesManager {
 
   MOCK_CONST_METHOD0(IsReportingEnabled, bool());
 
-  MOCK_CONST_METHOD0(GetReportingManager, DlpReportingManager*());
+  MOCK_CONST_METHOD0(GetReportingManager,
+                     data_controls::DlpReportingManager*());
 
   MOCK_CONST_METHOD0(GetDlpFilesController, DlpFilesController*());
 

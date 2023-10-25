@@ -922,11 +922,20 @@ public class StartSurfaceCoordinator implements StartSurface {
         } else if (tabSwitcherType == TabSwitcherType.SINGLE) {
             // We always pass the parameter isTablet to be false here since StartSurfaceCoordinator
             // is only created on phones.
-            mTabSwitcherModule = new SingleTabSwitcherCoordinator(mActivity,
-                    mView.getCarouselTabSwitcherContainer(), null, mTabModelSelector,
-                    /* isTablet= */ false, /* isScrollableMvtEnabled */ true,
-                    /* mostRecentTab= */ null, /* singleTabCardClickedCallback */ null,
-                    /* snapshotParentViewRunnable */ null, mTabContentManager, null);
+            mTabSwitcherModule =
+                    new SingleTabSwitcherCoordinator(
+                            mActivity,
+                            mView.getCarouselTabSwitcherContainer(),
+                            null,
+                            mTabModelSelector,
+                            /* isShownOnNtp= */ false,
+                            /* isTablet */ false,
+                            /* isScrollableMvtEnabled */ true,
+                            /* mostRecentTab= */ null,
+                            /* singleTabCardClickedCallback */ null,
+                            /* snapshotParentViewRunnable */ null,
+                            mTabContentManager,
+                            null);
         }
         boolean isScrollableMVTEnabled =
                 !ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(mActivity);

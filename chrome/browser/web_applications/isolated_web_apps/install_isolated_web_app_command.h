@@ -94,7 +94,6 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
       const IsolatedWebAppLocation& location,
       const absl::optional<base::Version>& expected_version,
       std::unique_ptr<content::WebContents> web_contents,
-      std::unique_ptr<WebAppUrlLoader> url_loader,
       std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
       base::OnceCallback<
@@ -178,6 +177,7 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
   base::Value::Dict debug_log_;
   std::unique_ptr<AppLockDescription> lock_description_;
   std::unique_ptr<AppLock> lock_;
+  std::unique_ptr<WebAppUrlLoader> url_loader_;
 
   std::unique_ptr<IsolatedWebAppInstallCommandHelper> command_helper_;
 
@@ -189,8 +189,6 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
   base::Version actual_version_;
 
   std::unique_ptr<content::WebContents> web_contents_;
-
-  std::unique_ptr<WebAppUrlLoader> url_loader_;
 
   std::unique_ptr<ScopedKeepAlive> optional_keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive_;

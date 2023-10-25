@@ -1,0 +1,4 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View text:"graphics-document" textSize:16.00 style:0 bundle:[aria-label="graphics-document", display="block", htmlTag="div", role="graphics-document"]
+++View text:"graphics-object" textSize:16.00 style:0 bundle:[aria-label="graphics-object", display="block", htmlTag="div", role="graphics-object"]
+++View text:"graphics-symbol" textSize:16.00 style:0 bundle:[aria-label="graphics-symbol", display="block", htmlTag="div", role="graphics-symbol"]

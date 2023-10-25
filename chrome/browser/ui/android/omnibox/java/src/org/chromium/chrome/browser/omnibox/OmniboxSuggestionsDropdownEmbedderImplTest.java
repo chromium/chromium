@@ -36,8 +36,8 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder.OmniboxAlignment;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
-import org.chromium.components.browser_ui.widget.InsetObserverView;
-import org.chromium.components.browser_ui.widget.InsetObserverViewSupplier;
+import org.chromium.components.browser_ui.widget.InsetObserver;
+import org.chromium.components.browser_ui.widget.InsetObserverSupplier;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowDelegate;
@@ -72,7 +72,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     private @Mock ViewGroup mAnchorView;
     private @Mock View mHorizontalAlignmentView;
     private @Mock DisplayAndroid mDisplay;
-    private @Mock InsetObserverView mInsetObserverView;
+    private @Mock InsetObserver mInsetObserver;
 
     private OmniboxSuggestionsDropdownEmbedderImpl mImpl;
     private WeakReference<Context> mContextWeakRef;
@@ -80,7 +80,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     @Before
     public void setUp() {
         mContextWeakRef = new WeakReference<>(ContextUtils.getApplicationContext());
-        InsetObserverViewSupplier.setInstanceForTesting(mInsetObserverView);
+        InsetObserverSupplier.setInstanceForTesting(mInsetObserver);
         doReturn(mContextWeakRef).when(mWindowAndroid).getContext();
         doReturn(mContextWeakRef.get()).when(mAnchorView).getContext();
         doReturn(mViewTreeObserver).when(mAnchorView).getViewTreeObserver();

@@ -4319,7 +4319,7 @@ int AXNodeObject::TextOffsetInFormattingContext(int offset) const {
   // Layout br (subclass of layout text), e.g. <p><br></p>.
 
   if (layout_obj->IsLayoutInline()) {
-    // The NGOffsetMapping class doesn't map layout inline objects to their text
+    // The OffsetMapping class doesn't map layout inline objects to their text
     // mappings because such an operation could be ambiguous. An inline object
     // may have another inline object inside it. For example,
     // <span><span>Inner</span outer</span>. We need to recursively retrieve the
@@ -4349,18 +4349,18 @@ int AXNodeObject::TextOffsetInFormattingContext(int offset) const {
   }
 
   LayoutBlockFlow* formatting_context =
-      NGOffsetMapping::GetInlineFormattingContextOf(*layout_obj);
+      OffsetMapping::GetInlineFormattingContextOf(*layout_obj);
   if (!formatting_context || formatting_context == layout_obj)
     return AXObject::TextOffsetInFormattingContext(offset);
 
   // If "formatting_context" is not a Layout NG object, the offset mappings will
   // be computed on demand and cached.
-  const NGOffsetMapping* inline_offset_mapping =
-      NGInlineNode::GetOffsetMapping(formatting_context);
+  const OffsetMapping* inline_offset_mapping =
+      InlineNode::GetOffsetMapping(formatting_context);
   if (!inline_offset_mapping)
     return AXObject::TextOffsetInFormattingContext(offset);
 
-  const base::span<const NGOffsetMappingUnit> mapping_units =
+  const base::span<const OffsetMappingUnit> mapping_units =
       inline_offset_mapping->GetMappingUnitsForLayoutObject(*layout_obj);
   if (mapping_units.empty())
     return AXObject::TextOffsetInFormattingContext(offset);

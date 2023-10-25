@@ -153,7 +153,7 @@ HoverHighlightView* NetworkDetailedNetworkViewImpl::AddConfigureNetworkEntry(
 
 NetworkListWifiHeaderView*
 NetworkDetailedNetworkViewImpl::AddWifiSectionHeader() {
-  if (!wifi_top_container_ && features::IsQsRevampEnabled()) {
+  if (!wifi_top_container_) {
     wifi_top_container_ =
         scroll_content()->AddChildView(std::make_unique<RoundedContainer>(
             RoundedContainer::Behavior::kTopRounded));
@@ -161,24 +161,20 @@ NetworkDetailedNetworkViewImpl::AddWifiSectionHeader() {
     wifi_top_container_->SetProperty(views::kMarginsKey,
                                      kBetweenContainerMargins);
   }
-  return (features::IsQsRevampEnabled() ? wifi_top_container_.get()
-                                        : scroll_content())
-      ->AddChildView(
-          std::make_unique<NetworkListWifiHeaderViewImpl>(/*delegate=*/this));
+  return wifi_top_container_->AddChildView(
+      std::make_unique<NetworkListWifiHeaderViewImpl>(/*delegate=*/this));
 }
 
 NetworkListMobileHeaderView*
 NetworkDetailedNetworkViewImpl::AddMobileSectionHeader() {
-  if (!mobile_top_container_ && features::IsQsRevampEnabled()) {
+  if (!mobile_top_container_) {
     mobile_top_container_ =
         scroll_content()->AddChildView(std::make_unique<RoundedContainer>(
             RoundedContainer::Behavior::kTopRounded));
     mobile_top_container_->SetBorderInsets(kTopContainerBorder);
   }
-  return (features::IsQsRevampEnabled() ? mobile_top_container_.get()
-                                        : scroll_content())
-      ->AddChildView(
-          std::make_unique<NetworkListMobileHeaderViewImpl>(/*delegate=*/this));
+  return mobile_top_container_->AddChildView(
+      std::make_unique<NetworkListMobileHeaderViewImpl>(/*delegate=*/this));
 }
 
 NetworkListTetherHostsHeaderView*
@@ -192,16 +188,12 @@ NetworkDetailedNetworkViewImpl::AddTetherHostsSectionHeader() {
     tether_hosts_top_container_->SetProperty(views::kMarginsKey,
                                              kBetweenContainerMargins);
   }
-  return tether_hosts_top_container_.get()->AddChildView(
+  return tether_hosts_top_container_->AddChildView(
       std::make_unique<NetworkListTetherHostsHeaderView>(
           /*delegate=*/this));
 }
 
 views::View* NetworkDetailedNetworkViewImpl::GetNetworkList(NetworkType type) {
-  if (!features::IsQsRevampEnabled()) {
-    return scroll_content();
-  }
-
   switch (type) {
     case NetworkType::kWiFi:
       if (!wifi_network_list_view_) {
@@ -308,10 +300,6 @@ void NetworkDetailedNetworkViewImpl::MaybeRemoveFirstListView() {
 }
 
 void NetworkDetailedNetworkViewImpl::UpdateWifiStatus(bool enabled) {
-  if (!features::IsQsRevampEnabled()) {
-    return;
-  }
-
   if (wifi_top_container_) {
     wifi_top_container_->SetBehavior(
         enabled ? RoundedContainer::Behavior::kTopRounded
@@ -323,10 +311,6 @@ void NetworkDetailedNetworkViewImpl::UpdateWifiStatus(bool enabled) {
 }
 
 void NetworkDetailedNetworkViewImpl::UpdateMobileStatus(bool enabled) {
-  if (!features::IsQsRevampEnabled()) {
-    return;
-  }
-
   if (mobile_top_container_) {
     mobile_top_container_->SetBehavior(
         enabled ? RoundedContainer::Behavior::kTopRounded
@@ -338,10 +322,6 @@ void NetworkDetailedNetworkViewImpl::UpdateMobileStatus(bool enabled) {
 }
 
 void NetworkDetailedNetworkViewImpl::UpdateTetherHostsStatus(bool enabled) {
-  if (!features::IsQsRevampEnabled()) {
-    return;
-  }
-
   if (tether_hosts_top_container_) {
     tether_hosts_top_container_->SetBehavior(
         enabled ? RoundedContainer::Behavior::kTopRounded

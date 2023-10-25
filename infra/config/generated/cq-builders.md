@@ -444,6 +444,12 @@ builder.
   Location filters:
   * [`//chrome/updater/.+`](https://cs.chromium.org/chromium/src/chrome/updater/)
 
+* [linux-v4l2-codec-rel](https://ci.chromium.org/p/chromium/builders/try/linux-v4l2-codec-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-v4l2-codec-rel""))
+
+  Location filters:
+  * [`//media/gpu/chromeos/.+`](https://cs.chromium.org/chromium/src/media/gpu/chromeos/)
+  * [`//media/gpu/v4l2/.+`](https://cs.chromium.org/chromium/src/media/gpu/v4l2/)
+
 * [linux-x64-castos-dbg](https://ci.chromium.org/p/chromium/builders/try/linux-x64-castos-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-x64-castos-dbg""))
 
   Location filters:

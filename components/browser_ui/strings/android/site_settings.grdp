@@ -845,4 +845,14 @@
     Don’t apply dark theme for a specific site
   </message>
 
+  <!-- Storage access -->
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_STORAGE_ACCESS_ALLOWED" desc="One of two radio buttons on the Embedded content settings page. If a user chooses this option, they're allowing a new permission prompt that may get shown as the user browses sites. In the description below, “Google Docs” is just used as an example. 1) “use info” means retrieve existing info and save additional info. 2) “they've' saved about you”: Google Docs can only prompt the user for permission on www.myfavoritesite.com if the user has previously used Google Docs.">
+    Sites can ask to use info they've saved about you
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_STORAGE_ACCESS_BLOCKED" desc="The second of two radio buttons on the Embedded content settings page. If a user chooses this option, they're not allowing a new permission prompt that may get shown as the user browses sites. In the description below, “www.myfavoritesite.com” and “Google Docs” are just used as examples. 1) “use info” means retrieve existing info and save additional info. 2) “they've' saved about you”: Google Docs can only prompt the user for permission on www.myfavoritesite.com if the user has previously used Google Docs.">
+    Sites are blocked from asking you to use info they've saved about you
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_STORAGE_ACCESS_PAGE_DESCRIPTION" desc="The body description on the Embedded content settings page.">
+    Sites you visit can embed content from other sites, for example images, ads, and text. These other sites can ask for permission to use info they've saved about you as you browse the site. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more about embedded content<ph name="END_LINK">&lt;/link&gt;</ph>
+  </message>
 </grit-part>

@@ -11,7 +11,10 @@
 #import "ios/web/common/features.h"
 
 bool IsAddressDetectionEnabled() {
-  return base::FeatureList::IsEnabled(web::features::kOneTapForMaps);
+  if (@available(iOS 16.4, *)) {
+    return base::FeatureList::IsEnabled(web::features::kOneTapForMaps);
+  }
+  return false;
 }
 
 bool IsAddressAutomaticDetectionEnabled(PrefService* prefs) {

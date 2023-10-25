@@ -119,7 +119,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
                                 bool use_fixed_aspect_ratio) final;
   void SetAutoThrottlingEnabled(bool enabled) final;
   void ChangeTarget(const absl::optional<VideoCaptureTarget>& target,
-                    uint32_t crop_version) final;
+                    uint32_t sub_capture_target_version) final;
   void Start(mojo::PendingRemote<mojom::FrameSinkVideoConsumer> consumer,
              mojom::BufferFormatPreference buffer_format_preference) final;
   void Stop() final;
@@ -479,12 +479,13 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // of frames dropped due to being cropped to zero pixels.
   bool consumer_informed_of_empty_region_ = false;
 
-  // The crop-version allows Viz to communicate back to Blink the information
-  // of which crop-target each frame is associated with. Better, if cropTo()
-  // is called multiple times, oscillating between two targets, Blink can even
-  // tell whether the frame is cropped to an earlier or later invocation of
-  // cropTo() for a given target, because the crop-version keeps increasing.
-  uint32_t crop_version_ = 0;
+  // The sub-capture-target-version allows Viz to communicate back to Blink the
+  // information of which crop-target each frame is associated with. Better, if
+  // cropTo() is called multiple times, oscillating between two targets, Blink
+  // can even tell whether the frame is cropped to an earlier or later
+  // invocation of cropTo() for a given target, because the
+  // sub-capture-target-version keeps increasing.
+  uint32_t sub_capture_target_version_ = 0;
 
   // A weak pointer factory used for cancelling the results from any in-flight
   // copy output requests.

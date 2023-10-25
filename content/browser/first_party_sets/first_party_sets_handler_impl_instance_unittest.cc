@@ -182,6 +182,13 @@ class FirstPartySetsHandlerImplTest : public ::testing::Test {
     return result.has_value() ? std::move(result).value() : future.Take();
   }
 
+  net::FirstPartySetsContextConfig GetContextConfigForPolicy(
+      const base::Value::Dict* policy) {
+    base::test::TestFuture<net::FirstPartySetsContextConfig> future;
+    handler().GetContextConfigForPolicy(policy, future.GetCallback());
+    return future.Take();
+  }
+
   void ClearSiteDataOnChangedSetsForContextAndWait(
       FirstPartySetsHandlerImplInstance& handler,
       BrowserContext* context,
@@ -236,11 +243,7 @@ class FirstPartySetsHandlerImplTest : public ::testing::Test {
     return GetPersistedSetsAndWait(handler(), browser_context_id);
   }
 
-  absl::optional<bool> HasEntryInBrowserContextsClearedAndWait(
-      const std::string& browser_context_id) {
-    return HasEntryInBrowserContextsClearedAndWait(handler(),
-                                                   browser_context_id);
-  }
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
   FirstPartySetsHandlerImplInstance& handler() { return handler_; }
 
@@ -252,6 +255,7 @@ class FirstPartySetsHandlerImplTest : public ::testing::Test {
  private:
   BrowserTaskEnvironment env_;
   TestBrowserContext context_;
+  base::HistogramTester histogram_tester_;
   FirstPartySetsHandlerImplInstance handler_;
 };
 
@@ -263,14 +267,53 @@ class FirstPartySetsHandlerImplDisabledTest
 };
 
 TEST_F(FirstPartySetsHandlerImplDisabledTest, InitMetrics) {
-  base::HistogramTester histogram_tester;
+  histogram_tester().ExpectTotalCount(kDelayedQueriesCountHistogram, 1);
+  histogram_tester().ExpectTotalCount(kMostDelayedQueryDeltaHistogram, 1);
+}
+
+TEST_F(FirstPartySetsHandlerImplDisabledTest, InitImmediately) {
+  // Should already be able to answer queries, even before Init is called.
+  EXPECT_THAT(handler().GetSets(base::NullCallback()), Optional(_));
+
+  EXPECT_EQ(GetContextConfigForPolicy(nullptr),
+            net::FirstPartySetsContextConfig());
+
+  base::Value policy = base::JSONReader::Read(R"(
+                {
+                "replacements": [
+                  {
+                    "primary": "https://primary.test",
+                    "associatedSites": ["https://associated.test"]
+                  }
+                ]
+              }
+            )")
+                           .value();
+  EXPECT_EQ(GetContextConfigForPolicy(&policy.GetDict()),
+            net::FirstPartySetsContextConfig());
+
+  // The local set declaration should be ignored, since the handler is disabled.
   handler().Init(
-      /*user_data_dir=*/{}, LocalSetDeclaration());
+      /*user_data_dir=*/{},
+      LocalSetDeclaration(
+          R"({"primary": "https://example.test",)"
+          R"("associatedSites": ["https://associatedsite1.test"]})"));
 
-  base::RunLoop().RunUntilIdle();
+  // The public sets should be ignored, since the handler is disabled.
+  handler().SetPublicFirstPartySets(
+      base::Version("0.0.1"),
+      WritePublicSetsFile(
+          R"({"primary": "https://example.test", )"
+          R"("associatedSites": ["https://associatedsite2.test"]})"));
 
-  histogram_tester.ExpectTotalCount(kDelayedQueriesCountHistogram, 1);
-  histogram_tester.ExpectTotalCount(kMostDelayedQueryDeltaHistogram, 1);
+  EXPECT_THAT(GetSetsAndWait().FindEntries(
+                  {
+                      net::SchemefulSite(GURL("https://example.test")),
+                      net::SchemefulSite(GURL("https://associatedsite1.test")),
+                      net::SchemefulSite(GURL("https://associatedsite2.test")),
+                  },
+                  net::FirstPartySetsContextConfig()),
+              IsEmpty());
 }
 
 class FirstPartySetsHandlerImplEnabledTest
@@ -525,7 +568,6 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
                   Pair(associated, net::FirstPartySetEntry(
                                        foo, net::SiteType::kAssociated, 0))));
 
-  base::RunLoop run_loop;
   ClearSiteDataOnChangedSetsForContextAndWait(
       context(), browser_context_id, net::FirstPartySetsContextConfig());
 
@@ -824,26 +866,16 @@ class FirstPartySetsHandlerGetContextConfigForPolicyTest
                                      net::FirstPartySetsContextConfig()),
         SizeIs(3));
   }
-
- protected:
-  base::OnceCallback<void(net::FirstPartySetsContextConfig)>
-  GetConfigCallback() {
-    return future_.GetCallback();
-  }
-
-  net::FirstPartySetsContextConfig GetConfig() { return future_.Take(); }
-
- private:
-  base::test::TestFuture<net::FirstPartySetsContextConfig> future_;
 };
 
 TEST_F(FirstPartySetsHandlerGetContextConfigForPolicyTest,
        DefaultOverridesPolicy_DefaultContextConfigs) {
   base::Value policy = base::JSONReader::Read(R"({})").value();
-  handler().GetContextConfigForPolicy(&policy.GetDict(), GetConfigCallback());
+  base::test::TestFuture<net::FirstPartySetsContextConfig> future;
+  handler().GetContextConfigForPolicy(&policy.GetDict(), future.GetCallback());
 
   InitPublicFirstPartySets();
-  EXPECT_EQ(GetConfig(), net::FirstPartySetsContextConfig());
+  EXPECT_EQ(future.Take(), net::FirstPartySetsContextConfig());
 }
 
 TEST_F(FirstPartySetsHandlerGetContextConfigForPolicyTest,
@@ -853,10 +885,11 @@ TEST_F(FirstPartySetsHandlerGetContextConfigForPolicyTest,
     "additions": true
   })")
                            .value();
-  handler().GetContextConfigForPolicy(&policy.GetDict(), GetConfigCallback());
+  base::test::TestFuture<net::FirstPartySetsContextConfig> future;
+  handler().GetContextConfigForPolicy(&policy.GetDict(), future.GetCallback());
 
   InitPublicFirstPartySets();
-  EXPECT_EQ(GetConfig(), net::FirstPartySetsContextConfig());
+  EXPECT_EQ(future.Take(), net::FirstPartySetsContextConfig());
 }
 
 TEST_F(FirstPartySetsHandlerGetContextConfigForPolicyTest,
@@ -878,12 +911,15 @@ TEST_F(FirstPartySetsHandlerGetContextConfigForPolicyTest,
               }
             )")
                            .value();
-  handler().GetContextConfigForPolicy(&policy.GetDict(), GetConfigCallback());
+  base::test::TestFuture<net::FirstPartySetsContextConfig> future;
+  handler().GetContextConfigForPolicy(&policy.GetDict(), future.GetCallback());
 
   InitPublicFirstPartySets();
   // We don't care what the customizations are, here; we only care that they're
   // not a no-op.
-  EXPECT_FALSE(GetConfig().empty());
+  EXPECT_FALSE(future.Take().empty());
+  EXPECT_EQ(GetContextConfigForPolicy(nullptr),
+            net::FirstPartySetsContextConfig());
 }
 
 }  // namespace content

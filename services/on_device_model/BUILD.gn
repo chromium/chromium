@@ -10,7 +10,8 @@ template("model_service") {
       "on_device_model_service.cc",
       "on_device_model_service.h",
     ]
-    deps = [
+    deps = [ "//services/on_device_model/public/cpp" ]
+    public_deps = [
       "//base",
       "//mojo/public/cpp/bindings",
       "//services/on_device_model/public/mojom",

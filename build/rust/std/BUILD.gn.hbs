@@ -102,7 +102,42 @@ cargo_crate("{{this.0}}") {
   {{#unless extra_kv.skip_build_rs}}
   {{#if build_root}}
   build_root = "{{build_root}}"
-  build_sources = [ "{{build_root}}" ]
+  build_sources = [
+    {{#each build_script_sources}}
+    "{{this}}",
+    {{/each}}
+  ]
+  {{#with build_script_inputs}}
+  build_script_inputs = [
+    {{#each this}}
+    "{{this}}",
+    {{/each}}
+  ]
+  {{/with}}
+  {{#with build_script_outputs}}
+  build_script_outputs = [
+    {{#each this}}
+    "{{this}}",
+    {{/each}}
+  ]
+  {{/with}}
+  {{#each build_deps}}
+  {{#if @first}}
+  build_deps = [
+    {{#each this.packages}}
+      ":{{this.name}}",
+    {{/each}}
+  ]
+  {{else}}
+  if ({{this.cond}}) {
+    build_deps += [
+    {{#each this.packages}}
+      ":{{this.name}}",
+    {{/each}}
+    ]
+  }
+  {{/if}}
+  {{/each}}
   {{/if}}
   {{/unless}}
   rustenv = [

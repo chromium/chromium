@@ -109,158 +109,6 @@ QuickStartDecoder::QuickStartDecoder(
 
 QuickStartDecoder::~QuickStartDecoder() = default;
 
-void QuickStartDecoder::DecodeBootstrapConfigurations(
-    const absl::optional<std::vector<uint8_t>>& data,
-    DecodeBootstrapConfigurationsCallback callback) {
-  if (!data.has_value()) {
-    std::move(callback).Run(nullptr,
-                            mojom::QuickStartDecoderError::kEmptyMessage);
-    return;
-  }
-  auto result = DoDecodeQuickStartMessage(data.value());
-  if (!result.has_value()) {
-    std::move(callback).Run(nullptr, result.error());
-    return;
-  }
-  if (!result.value()->is_bootstrap_configurations()) {
-    std::move(callback).Run(
-        nullptr, mojom::QuickStartDecoderError::kUnexpectedMessageType);
-    return;
-  }
-
-  std::move(callback).Run(
-      result.value()->get_bootstrap_configurations().Clone(), absl::nullopt);
-}
-
-void QuickStartDecoder::DecodeWifiCredentialsResponse(
-    const absl::optional<std::vector<uint8_t>>& data,
-    DecodeWifiCredentialsResponseCallback callback) {
-  if (!data.has_value()) {
-    quick_start_metrics::RecordWifiTransferResult(
-        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
-            WifiTransferResultFailureReason::kEmptyResponseBytes);
-    std::move(callback).Run(nullptr,
-                            mojom::QuickStartDecoderError::kEmptyMessage);
-    return;
-  }
-  auto result = DoDecodeQuickStartMessage(data.value());
-  if (!result.has_value()) {
-    if (result.error() == mojom::QuickStartDecoderError::kUnableToReadAsJSON) {
-      quick_start_metrics::RecordWifiTransferResult(
-          /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
-              WifiTransferResultFailureReason::kUnableToReadAsJSON);
-    }
-    if (result.error() == mojom::QuickStartDecoderError::kUnknownPayload) {
-      quick_start_metrics::RecordWifiTransferResult(
-          /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
-              WifiTransferResultFailureReason::kWifiNetworkInformationNotFound);
-    }
-    std::move(callback).Run(nullptr, result.error());
-    return;
-  }
-  if (!result.value()->is_wifi_credentials()) {
-    std::move(callback).Run(
-        nullptr, mojom::QuickStartDecoderError::kUnexpectedMessageType);
-    return;
-  }
-
-  std::move(callback).Run(result.value()->get_wifi_credentials().Clone(),
-                          absl::nullopt);
-}
-
-void QuickStartDecoder::DecodeUserVerificationRequested(
-    const absl::optional<std::vector<uint8_t>>& data,
-    DecodeUserVerificationRequestedCallback callback) {
-  if (!data.has_value()) {
-    std::move(callback).Run(nullptr,
-                            mojom::QuickStartDecoderError::kEmptyMessage);
-    return;
-  }
-  auto result = DoDecodeQuickStartMessage(data.value());
-  if (!result.has_value()) {
-    std::move(callback).Run(nullptr, result.error());
-    return;
-  }
-  if (!result.value()->is_user_verification_requested()) {
-    std::move(callback).Run(
-        nullptr, mojom::QuickStartDecoderError::kUnexpectedMessageType);
-    return;
-  }
-
-  std::move(callback).Run(
-      result.value()->get_user_verification_requested().Clone(), absl::nullopt);
-}
-
-void QuickStartDecoder::DecodeUserVerificationResult(
-    const absl::optional<std::vector<uint8_t>>& data,
-    DecodeUserVerificationResultCallback callback) {
-  if (!data.has_value()) {
-    std::move(callback).Run(nullptr,
-                            mojom::QuickStartDecoderError::kEmptyMessage);
-    return;
-  }
-  auto result = DoDecodeQuickStartMessage(data.value());
-  if (!result.has_value()) {
-    std::move(callback).Run(nullptr, result.error());
-    return;
-  }
-  if (!result.value()->is_user_verification_response()) {
-    std::move(callback).Run(
-        nullptr, mojom::QuickStartDecoderError::kUnexpectedMessageType);
-    return;
-  }
-
-  std::move(callback).Run(
-      result.value()->get_user_verification_response().Clone(), absl::nullopt);
-}
-
-void QuickStartDecoder::DecodeGetAssertionResponse(
-    const absl::optional<std::vector<uint8_t>>& data,
-    DecodeGetAssertionResponseCallback callback) {
-  if (!data.has_value()) {
-    std::move(callback).Run(nullptr,
-                            mojom::QuickStartDecoderError::kEmptyMessage);
-    return;
-  }
-  auto result = DoDecodeQuickStartMessage(data.value());
-  if (!result.has_value()) {
-    std::move(callback).Run(nullptr, result.error());
-    return;
-  }
-  if (!result.value()->is_fido_assertion_response()) {
-    std::move(callback).Run(
-        nullptr, mojom::QuickStartDecoderError::kUnexpectedMessageType);
-    return;
-  }
-
-  std::move(callback).Run(result.value()->get_fido_assertion_response().Clone(),
-                          absl::nullopt);
-}
-
-void QuickStartDecoder::DecodeNotifySourceOfUpdateResponse(
-    const absl::optional<std::vector<uint8_t>>& data,
-    DecodeNotifySourceOfUpdateResponseCallback callback) {
-  if (!data.has_value()) {
-    std::move(callback).Run(nullptr,
-                            mojom::QuickStartDecoderError::kEmptyMessage);
-    return;
-  }
-  auto result = DoDecodeQuickStartMessage(data.value());
-  if (!result.has_value()) {
-    std::move(callback).Run(nullptr, result.error());
-    return;
-  }
-  if (!result.value()->is_notify_source_of_update_response()) {
-    std::move(callback).Run(
-        nullptr, mojom::QuickStartDecoderError::kUnexpectedMessageType);
-    return;
-  }
-
-  std::move(callback).Run(
-      result.value()->get_notify_source_of_update_response().Clone(),
-      absl::nullopt);
-}
-
 void QuickStartDecoder::DecodeQuickStartMessage(
     const absl::optional<std::vector<uint8_t>>& data,
     DecodeQuickStartMessageCallback callback) {
@@ -451,6 +299,17 @@ QuickStartDecoder::DecodeQuickStartPayload(const base::Value::Dict& payload) {
         mojom::UserVerificationRequested::New(
             is_awaiting_user_verification.value()));
   }
+
+  // user verification method
+  absl::optional<int> user_verification_method;
+  if ((user_verification_method =
+           payload.FindInt(kUserVerificationMethodKey))) {
+    return mojom::QuickStartMessage::NewUserVerificationMethod(
+        mojom::UserVerificationMethod::New(
+            /*use_source_lock_screen_prompt=*/user_verification_method
+                .value() == kUserVerificationMethodSourceLockScreenPrompt));
+  }
+
   // user verification response
   absl::optional<int> user_verification_result_code;
   if ((user_verification_result_code =
@@ -495,42 +354,6 @@ QuickStartDecoder::DecodeQuickStartPayload(const base::Value::Dict& payload) {
 
   LOG(ERROR) << "Unknown QuickStartPayload";
   return base::unexpected(mojom::QuickStartDecoderError::kUnknownPayload);
-}
-
-void QuickStartDecoder::DecodeUserVerificationMethod(
-    const absl::optional<std::vector<uint8_t>>& data,
-    DecodeUserVerificationMethodCallback callback) {
-  if (!data.has_value()) {
-    LOG(ERROR) << "No response bytes received.";
-    std::move(callback).Run(nullptr,
-                            mojom::QuickStartDecoderError::kEmptyMessage);
-    return;
-  }
-
-  QuickStartMessage::ReadResult read_result = QuickStartMessage::ReadMessage(
-      data.value(), QuickStartMessageType::kQuickStartPayload);
-  if (!read_result.has_value()) {
-    LOG(ERROR) << "Failed to read UserVerificationMethod as QuickStartMessage";
-    std::move(callback).Run(nullptr,
-                            mojom::QuickStartDecoderError::kUnableToReadAsJSON);
-    return;
-  }
-
-  absl::optional<int> user_verification_method =
-      read_result.value()->GetPayload()->FindInt(kUserVerificationMethodKey);
-  if (!user_verification_method.has_value()) {
-    LOG(ERROR) << "UserVerificationMethod message does not include "
-                  "user_verification_method";
-    std::move(callback).Run(
-        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
-    return;
-  }
-
-  std::move(callback).Run(
-      mojom::UserVerificationMethod::New(
-          /*use_source_lock_screen_prompt=*/user_verification_method.value() ==
-          kUserVerificationMethodSourceLockScreenPrompt),
-      absl::nullopt);
 }
 
 base::expected<mojom::QuickStartMessagePtr, mojom::QuickStartDecoderError>

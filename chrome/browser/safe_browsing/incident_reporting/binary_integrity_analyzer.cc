@@ -23,19 +23,6 @@
 
 namespace safe_browsing {
 
-void RecordSignatureVerificationTime(size_t file_index,
-                                     const base::TimeDelta& verification_time) {
-  static const char kHistogramName[] = "SBIRS.VerifyBinaryIntegrity.";
-
-  base::HistogramBase* signature_verification_time_histogram =
-      base::Histogram::FactoryTimeGet(
-          std::string(kHistogramName) + base::NumberToString(file_index),
-          base::Milliseconds(1), base::Seconds(20), 50,
-          base::Histogram::kUmaTargetedHistogramFlag);
-
-  signature_verification_time_histogram->AddTime(verification_time);
-}
-
 void ClearBinaryIntegrityForFile(IncidentReceiver* incident_receiver,
                                  const std::string& basename) {
   std::unique_ptr<ClientIncidentReport_IncidentData_BinaryIntegrityIncident>

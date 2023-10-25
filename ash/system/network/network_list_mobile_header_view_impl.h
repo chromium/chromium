@@ -6,15 +6,11 @@
 #define ASH_SYSTEM_NETWORK_NETWORK_LIST_MOBILE_HEADER_VIEW_IMPL_H_
 
 #include "ash/ash_export.h"
-#include "ash/style/icon_button.h"
 #include "ash/system/network/network_list_mobile_header_view.h"
-#include "ash/system/network/network_list_network_header_view.h"
-#include "ash/system/tray/tri_view.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "ui/views/view.h"
 
 namespace ash {
+
+class NetworkListNetworkHeaderView;
 
 // Implementation of NetworkListMobileHeaderView.
 class ASH_EXPORT NetworkListMobileHeaderViewImpl
@@ -32,25 +28,9 @@ class ASH_EXPORT NetworkListMobileHeaderViewImpl
   friend class NetworkListMobileHeaderViewTest;
   friend class NetworkListViewControllerTest;
 
-  // Used for testing.
-  static constexpr int kAddESimButtonId =
-      NetworkListNetworkHeaderView::kToggleButtonId + 2;
-
   // NetworkListNetworkHeaderView:
-  void AddExtraButtons() override;
   void SetToggleState(bool enabled, bool is_on, bool animate_toggle) override;
   void OnToggleToggled(bool is_on) override;
-
-  // NetworkListMobileHeaderView:
-  void SetAddESimButtonState(bool enabled, bool visible) override;
-
-  void AddESimButtonPressed();
-
-  // Button that navigates to the Settings mobile data subpage with the eSIM
-  // setup dialog open. This is null when the device is not eSIM-capable.
-  raw_ptr<IconButton, ExperimentalAsh> add_esim_button_ = nullptr;
-
-  base::WeakPtrFactory<NetworkListMobileHeaderViewImpl> weak_factory_{this};
 };
 
 }  // namespace ash

@@ -485,7 +485,7 @@ void OverviewWindowDragController::ActivateDraggedWindow() {
 
 void OverviewWindowDragController::ResetGesture() {
   if (current_drag_behavior_ == DragBehavior::kNormalDrag) {
-    DCHECK(item_->overview_grid()->drop_target_widget());
+    CHECK(item_->overview_grid()->drop_target());
 
     Shell::Get()->mouse_cursor_filter()->HideSharedEdgeIndicator();
     item_->DestroyMirrorsForDragging();
@@ -677,7 +677,7 @@ void OverviewWindowDragController::ContinueNormalDrag(
     overview_grid->MaybeUpdateDesksWidgetBounds();
   }
 
-  if (!overview_grid->GetDropTarget() &&
+  if (!overview_grid->drop_target() &&
       (!is_eligible_for_drag_to_snap_ ||
        SplitViewDragIndicators::GetSnapPosition(
            overview_grid->split_view_drag_indicators()
@@ -736,7 +736,7 @@ OverviewWindowDragController::CompleteNormalDrag(
     const gfx::PointF& location_in_screen) {
   DCHECK_EQ(current_drag_behavior_, DragBehavior::kNormalDrag);
   auto* item_overview_grid = item_->overview_grid();
-  DCHECK(item_overview_grid->drop_target_widget());
+  CHECK(item_overview_grid->drop_target());
   Shell::Get()->mouse_cursor_filter()->HideSharedEdgeIndicator();
   item_->DestroyMirrorsForDragging();
   overview_session_->RemoveDropTargets();

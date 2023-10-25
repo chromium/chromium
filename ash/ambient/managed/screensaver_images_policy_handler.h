@@ -9,7 +9,6 @@
 
 #include "ash/ambient/managed/screensaver_image_downloader.h"
 #include "ash/ash_export.h"
-#include "ash/public/cpp/ambient/ambient_managed_photo_source.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -23,9 +22,11 @@ namespace ash {
 
 // Observes the policy that provides image sources for the managed screensaver
 // feature in order to download and cache the images.
-class ASH_EXPORT ScreensaverImagesPolicyHandler
-    : public AmbientManagedPhotoSource {
+class ASH_EXPORT ScreensaverImagesPolicyHandler {
  public:
+  using ScreensaverImagesRepeatingCallback =
+      base::RepeatingCallback<void(const std::vector<base::FilePath>& images)>;
+
   enum HandlerType { kSignin, kUser, kManagedGuest };
 
   static std::unique_ptr<ScreensaverImagesPolicyHandler> Create(
@@ -39,12 +40,11 @@ class ASH_EXPORT ScreensaverImagesPolicyHandler
   ScreensaverImagesPolicyHandler& operator=(
       const ScreensaverImagesPolicyHandler&) = delete;
 
-  ~ScreensaverImagesPolicyHandler() override;
+  ~ScreensaverImagesPolicyHandler();
 
-  // AmbientManagedPhotoSource overrides
-  std::vector<base::FilePath> GetScreensaverImages() override;
+  std::vector<base::FilePath> GetScreensaverImages();
   void SetScreensaverImagesUpdatedCallback(
-      ScreensaverImagesRepeatingCallback callback) override;
+      ScreensaverImagesRepeatingCallback callback);
 
   // Used for setting images in tests.
   void SetImagesForTesting(const std::vector<base::FilePath>& images);

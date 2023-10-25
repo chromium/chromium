@@ -201,6 +201,7 @@ std::string YandexSearchPathFromDeviceFormFactor() {
     case ui::DEVICE_FORM_FACTOR_PHONE:
       return "search/touch/";
     case ui::DEVICE_FORM_FACTOR_TABLET:
+    case ui::DEVICE_FORM_FACTOR_FOLDABLE:
     case ui::DEVICE_FORM_FACTOR_AUTOMOTIVE:
       return "search/pad/";
   }

@@ -40,6 +40,7 @@
 #include "remoting/protocol/connection_to_client.h"
 #include "remoting/protocol/data_channel_manager.h"
 #include "remoting/protocol/display_size.h"
+#include "remoting/protocol/fractional_input_filter.h"
 #include "remoting/protocol/host_stub.h"
 #include "remoting/protocol/input_event_tracker.h"
 #include "remoting/protocol/input_filter.h"
@@ -290,6 +291,10 @@ class ClientSession : public protocol::HostStub,
 
   // Filter used to disable remote inputs during local input activity.
   RemoteInputFilter remote_input_filter_;
+
+  // Filter used to convert any fractional coordinates to input-injection
+  // coordinates.
+  protocol::FractionalInputFilter fractional_input_filter_;
 
   // Filter used to clamp mouse events to the current display dimensions.
   protocol::MouseInputFilter mouse_clamping_filter_;

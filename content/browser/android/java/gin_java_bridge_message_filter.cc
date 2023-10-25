@@ -36,7 +36,7 @@ GinJavaBridgeMessageFilter::GinJavaBridgeMessageFilter(
     AgentSchedulingGroupHost& agent_scheduling_group)
     : BrowserMessageFilter(GinJavaBridgeMsgStart),
       agent_scheduling_group_(agent_scheduling_group),
-      current_routing_id_(MSG_ROUTING_NONE) {}
+      render_process_id_(agent_scheduling_group.GetProcess()->GetID()) {}
 
 GinJavaBridgeMessageFilter::~GinJavaBridgeMessageFilter() {
 }
@@ -212,7 +212,7 @@ void GinJavaBridgeMessageFilter::OnInvokeMethod(
     const std::string& method_name,
     const base::Value::List& arguments,
     base::Value::List* wrapped_result,
-    content::GinJavaBridgeError* error_code) {
+    mojom::GinJavaBridgeError* error_code) {
   DCHECK(JavaBridgeThread::CurrentlyOn());
 
   bool is_in_primary_main_frame = false;
@@ -223,11 +223,11 @@ void GinJavaBridgeMessageFilter::OnInvokeMethod(
     UMA_HISTOGRAM_BOOLEAN(
         "Android.WebView.JavaBridge.InvocationIsInPrimaryMainFrame",
         is_in_primary_main_frame);
-    host->OnInvokeMethod(current_routing_id_, object_id, method_name, arguments,
-                         wrapped_result, error_code);
+    host->OnInvokeMethod({render_process_id_, current_routing_id_}, object_id,
+                         method_name, arguments, wrapped_result, error_code);
   } else {
     wrapped_result->Append(base::Value());
-    *error_code = kGinJavaBridgeRenderFrameDeleted;
+    *error_code = mojom::GinJavaBridgeError::kGinJavaBridgeRenderFrameDeleted;
   }
 }
 
@@ -236,7 +236,8 @@ void GinJavaBridgeMessageFilter::OnObjectWrapperDeleted(
   DCHECK(JavaBridgeThread::CurrentlyOn());
   scoped_refptr<GinJavaBridgeDispatcherHost> host = FindHost();
   if (host)
-    host->OnObjectWrapperDeleted(current_routing_id_, object_id);
+    host->OnObjectWrapperDeleted({render_process_id_, current_routing_id_},
+                                 object_id);
 }
 
 }  // namespace content

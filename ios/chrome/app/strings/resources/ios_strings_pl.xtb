@@ -230,6 +230,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="2218443599109088993">Pomniejsz</translation>
 <translation id="2220529011494928058">Zgłoś problem</translation>
 <translation id="2230173723195178503">Wczytano stronę internetową</translation>
+<translation id="2234827758954819389">Przewodnik po prywatności</translation>
 <translation id="2239626343334228536">Czyszczę dane przeglądania…</translation>
 <translation id="2251686759395008410">Menu → Historia</translation>
 <translation id="2252674110805316998">Wyszukiwarka Google</translation>
@@ -700,6 +701,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="47677902929517676">Aby zapisać hasła na koncie, musisz najpierw ustawić kod dostępu na urządzeniu.</translation>
 <translation id="4775879719735953715">Domyślna przeglądarka</translation>
 <translation id="4778644898150334464">Użyj innego hasła</translation>
+<translation id="4779732376610430319">Otwórz Ustawienia…</translation>
 <translation id="478808905805139173">Otworzyć w trybie incognito?</translation>
 <translation id="4803185665210547709">Zarządzana przez Twoją organizację.
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
@@ -724,7 +726,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4854345657858711387">Ustaw kod dostępu</translation>
 <translation id="4856498338299082007">Na Twoim koncie Google</translation>
 <translation id="4856841893565072365">Pasek menu inteligentnego sortowania</translation>
-<translation id="4858786880085262208">Jeśli to możliwe, przełączaj się na HTTPS. Bezpieczne witryny mogą umieszczać treści, które nie są bezpieczne.</translation>
 <translation id="4860895144060829044">Zadzwoń</translation>
 <translation id="4872323082491632254">Sprawdź hasła</translation>
 <translation id="4881695831933465202">Otwórz</translation>

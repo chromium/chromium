@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/payments/account_info_getter.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_details_for_enrollment_request.h"
+#include "components/autofill/core/browser/payments/payments_requests/get_iban_upload_details_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_unmask_details_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_upload_details_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/opt_change_request.h"
@@ -32,6 +33,7 @@
 #include "components/autofill/core/browser/payments/payments_requests/unmask_card_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/update_virtual_card_enrollment_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/upload_card_request.h"
+#include "components/autofill/core/browser/payments/payments_requests/upload_iban_request.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -158,10 +160,11 @@ PaymentsClient::UnmaskResponseDetails::operator=(
   } else {
     fido_request_options.reset();
   }
-  card_unmask_challenge_options = other.card_unmask_challenge_options;
   card_authorization_token = other.card_authorization_token;
-  flow_status = other.flow_status;
+  card_unmask_challenge_options = other.card_unmask_challenge_options;
   context_token = other.context_token;
+  flow_status = other.flow_status;
+  card_type = other.card_type;
   autofill_error_dialog_context = other.autofill_error_dialog_context;
   return *this;
 }
@@ -208,6 +211,11 @@ PaymentsClient::UploadRequestDetails::UploadRequestDetails() = default;
 PaymentsClient::UploadRequestDetails::UploadRequestDetails(
     const UploadRequestDetails& other) = default;
 PaymentsClient::UploadRequestDetails::~UploadRequestDetails() = default;
+
+PaymentsClient::UploadIbanRequestDetails::UploadIbanRequestDetails() = default;
+PaymentsClient::UploadIbanRequestDetails::UploadIbanRequestDetails(
+    const UploadIbanRequestDetails& other) = default;
+PaymentsClient::UploadIbanRequestDetails::~UploadIbanRequestDetails() = default;
 
 PaymentsClient::MigrationRequestDetails::MigrationRequestDetails() = default;
 PaymentsClient::MigrationRequestDetails::MigrationRequestDetails(
@@ -326,6 +334,28 @@ void PaymentsClient::UploadCard(
                             const UploadCardResponseDetails&)> callback) {
   IssueRequest(std::make_unique<UploadCardRequest>(
       request_details,
+      account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
+      std::move(callback)));
+}
+
+void PaymentsClient::GetIbanUploadDetails(
+    const std::string& app_locale,
+    int64_t billing_customer_number,
+    int billable_service_number,
+    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+                            const std::u16string&,
+                            std::unique_ptr<base::Value::Dict>)> callback) {
+  IssueRequest(std::make_unique<GetIbanUploadDetailsRequest>(
+      account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
+      app_locale, billing_customer_number, billable_service_number,
+      std::move(callback)));
+}
+
+void PaymentsClient::UploadIban(
+    const UploadIbanRequestDetails& details,
+    base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback) {
+  IssueRequest(std::make_unique<UploadIbanRequest>(
+      details,
       account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
       std::move(callback)));
 }

@@ -93,7 +93,6 @@
 <translation id="1643449475550628585">වෝල්පේපර රූපය දිනපතා වෙනස් කරන්න</translation>
 <translation id="1644574205037202324">ඉතිහාසය</translation>
 <translation id="1651925268237749928">ඔබ බෙදා ගත් ඇල්බමයක් තෝරා ඇත. වෙනත් පුද්ගලයින්ට ඡායාරූප එක් කිරීමට හෝ වෙනස් කිරීමට හැක. ඔබේ වෝල්පේපරය දැනට මෙම ඇල්බමයේ නොමැති ඡායාරූප භාවිතා කළ හැක.</translation>
-<translation id="1658834457013045127">සදහටම</translation>
 <translation id="1661865805917886535">සමහර ගිණුම් සහ පද්ධති තොරතුරු Google වෙත යැවිය හැක. අපගේ පෞද්ගලිකත්ව ප්‍රතිපත්තිය (<ph name="PRIVACYPOLICYURL" />) සහ සේවා නියම (<ph name="TERMSOFSERVICEURL" />) වෙත යටත්ව, තාක්ෂණික ගැටලු විසඳීමට සහ අපගේ සේවාවන් වැඩි දියුණු කිරීමට අපි මෙම තොරතුරු භාවිතා කරමු. අන්තර්ගත වෙනස්කම් ඉල්ලා සිටීම සඳහා, නීතිමය උදවු (<ph name="LEGALHELPPAGEURL" />) වෙත යන්න.</translation>
 <translation id="1662989795263954667">නැවතිණි - තීන්ත අවසන් විය</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> පෙරදසුන</translation>
@@ -323,7 +322,6 @@
 <translation id="3484914941826596830">නිත්‍ය මෘදුකාංග යාවත්කාලීන වන අතරතුර, මෙම බාහිර උපාංගය විසන්ධි කිරීම හෝ ඔබගේ පරිගණකය වැසීම නොකරන්න. ඔබට මෙම කවුළුව කුඩා කළ හැකිය. මෙම යාවත්කාලීන කිරීමට මිනිත්තු කිහිපයක් ගත විය හැකි අතර මෙම කාලය තුළ ඔබගේ බාහිර උපාංගය ක්‍රියා නොකළ හැකිය.</translation>
 <translation id="3486220673238053218">නිර්වචනය</translation>
 <translation id="3488065109653206955">අර්ධව සක්‍රිය කළ</translation>
-<translation id="349491921221892984">මිනි <ph name="MINUTES" /></translation>
 <translation id="3502426834823382181">සියලු යෙදුම් බලන්න</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />ක්‍රියාකාරීත්ව අනුරේඛන දත්ත<ph name="END_LINK1" /> යවන්න</translation>
 <translation id="3517001332549868749">ChromeOS යාවත්කාලීනය</translation>
@@ -484,7 +482,6 @@
 <translation id="473775607612524610">යාවත්කාලීනය</translation>
 <translation id="4771607256327216405">යතුරු පුවරුව දීප්තිමත්</translation>
 <translation id="4773299976671772492">නවත්වන ලදි</translation>
-<translation id="4782003517030001304">පැය 1</translation>
 <translation id="4782311465517282004">ඔබ දකුණු-ක්ලික් කළ විට හෝ පෙළ ස්පර්ශ කර අල්ලාගෙන සිටින විට නිර්වචන, පරිවර්තන හෝ ඒකක පරිවර්තන ලබා ගන්න</translation>
 <translation id="4791000909649665275">ඡායාරූප <ph name="NUMBER" />ක්</translation>
 <translation id="4793710386569335688">තවත් උදව් සඳහා, <ph name="BEGIN_LINK" />උදවු මධ්‍යස්ථානය<ph name="END_LINK" /> වෙත යන්න.</translation>
@@ -699,6 +696,7 @@
 <translation id="629550705077076970">යතුරු පුවරුව අඳුරු වීම</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> පරීක්ෂණය අවලංගු කර ඇත</translation>
 <translation id="631063167932043783">යෙදුම ගවේෂණය කරන්න</translation>
+<translation id="6318437367327684789">සදහටම</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> හි නිත්‍ය මෘදුකාංග යාවත්කාලීන කරන්න</translation>
 <translation id="6321407676395378991">තිර සුරැකුම ක්‍රියාත්මක කරන්න</translation>
 <translation id="6324916366299863871">කෙටිමඟ සංස්කරණය</translation>

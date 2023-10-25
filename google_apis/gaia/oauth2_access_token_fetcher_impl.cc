@@ -25,12 +25,6 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-BASE_FEATURE(kIgnoreRaptErrors,
-             "IgnoreRaptErrors",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 namespace {
 
 constexpr char kGetAccessTokenBodyFormat[] =
@@ -136,19 +130,17 @@ GoogleServiceAuthError CreateErrorForInvalidGrant(
     const std::string& error_subtype,
     const std::string& error_description) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (base::FeatureList::IsEnabled(kIgnoreRaptErrors)) {
-    // ChromeOS cannot handle RAPT-type re-authentication requests and is
-    // supposed to be excluded from RAPT re-authentication on the server side.
-    // Just to be safe we need to handle this anyways. If we do not handle this,
-    // any service requesting a RAPT re-auth protected OAuth scope can
-    // potentially invalidate the entire ChromeOS session and send the user into
-    // a never ending re-authentication loop.
-    std::string error_subtype_lowercase = base::ToLowerASCII(error_subtype);
-    if (error_subtype_lowercase == kRaptRequiredError ||
-        error_subtype_lowercase == kInvalidRaptError) {
-      return GoogleServiceAuthError::FromScopeLimitedUnrecoverableError(
-          error_description);
-    }
+  // ChromeOS cannot handle RAPT-type re-authentication requests and is
+  // supposed to be excluded from RAPT re-authentication on the server side.
+  // Just to be safe we need to handle this anyways. If we do not handle this,
+  // any service requesting a RAPT re-auth protected OAuth scope can
+  // potentially invalidate the entire ChromeOS session and send the user into
+  // a never ending re-authentication loop.
+  std::string error_subtype_lowercase = base::ToLowerASCII(error_subtype);
+  if (error_subtype_lowercase == kRaptRequiredError ||
+      error_subtype_lowercase == kInvalidRaptError) {
+    return GoogleServiceAuthError::FromScopeLimitedUnrecoverableError(
+        error_description);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

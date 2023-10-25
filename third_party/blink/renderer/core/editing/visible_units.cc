@@ -457,8 +457,7 @@ bool HasRenderedNonAnonymousDescendantsWithHeight(
     // Note: tests[1][2] require this.
     // [1] editing/style/underline.html
     // [2] editing/inserting/return-with-object-element.html
-    if (const NGInlineNodeData* inline_data =
-            block_flow->GetNGInlineNodeData()) {
+    if (const InlineNodeData* inline_data = block_flow->GetInlineNodeData()) {
       if (inline_data->ItemsData(false).text_content.empty() &&
           block_flow->HasLineIfEmpty()) {
         return false;
@@ -1129,9 +1128,8 @@ static bool IsVisuallyEquivalentCandidateAlgorithm(
   if (!layout_object->IsSelectable())
     return false;
 
-  if (layout_object->IsLayoutBlockFlow() ||
-      layout_object->IsFlexibleBoxIncludingNG() ||
-      layout_object->IsLayoutNGGrid()) {
+  if (layout_object->IsLayoutBlockFlow() || layout_object->IsFlexibleBox() ||
+      layout_object->IsLayoutGrid()) {
     if (To<LayoutBlock>(layout_object)->LogicalHeight() ||
         anchor_node->GetDocument().body() == anchor_node) {
       if (!HasRenderedNonAnonymousDescendantsWithHeight(layout_object))

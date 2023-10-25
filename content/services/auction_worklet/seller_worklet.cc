@@ -1262,22 +1262,6 @@ void SellerWorklet::V8State::ScoreAd(
     }
   }
 
-  // Fail if `allow_component_auction` is false and this is a component seller
-  // or a top-level seller scoring a bid from a component auction -
-  // `browser_signals_other_seller` is non-null in only those two cases.
-  if (browser_signals_other_seller && !allow_component_auction) {
-    errors_out.push_back(base::StrCat(
-        {decision_logic_url_.spec(),
-         " scoreAd() return value does not have allowComponentAuction set to "
-         "true. Ad dropped from component auction."}));
-    PostScoreAdCallbackToUserThreadOnError(
-        std::move(callback),
-        /*scoring_latency=*/elapsed, std::move(errors_out),
-        context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests());
-    return;
-  }
-
   // Fail if the score is invalid.
   if (std::isnan(score) || !std::isfinite(score)) {
     errors_out.push_back(base::StrCat(
@@ -1302,6 +1286,24 @@ void SellerWorklet::V8State::ScoreAd(
         context_recycler.private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
         /*scoring_latency=*/elapsed, std::move(errors_out));
+    return;
+  }
+
+  // Fail if `allow_component_auction` is false and this is a component seller
+  // or a top-level seller scoring a bid from a component auction -
+  // `browser_signals_other_seller` is non-null in only those two cases.
+  // This is after the score check so that returning a negative score with
+  // nothing else is not treated as an error in a component auction.
+  if (browser_signals_other_seller && !allow_component_auction) {
+    errors_out.push_back(base::StrCat(
+        {decision_logic_url_.spec(),
+         " scoreAd() return value does not have allowComponentAuction set to "
+         "true. Ad dropped from component auction."}));
+    PostScoreAdCallbackToUserThreadOnError(
+        std::move(callback),
+        /*scoring_latency=*/elapsed, std::move(errors_out),
+        context_recycler.private_aggregation_bindings()
+            ->TakePrivateAggregationRequests());
     return;
   }
 

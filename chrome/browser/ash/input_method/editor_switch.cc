@@ -7,10 +7,14 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
+#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/url_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "extensions/common/constants.h"
 #include "net/base/network_change_notifier.h"
 #include "ui/base/ime/text_input_type.h"
 
@@ -38,9 +42,9 @@ constexpr std::string_view kInputMethodEngineAllowlist[] = {
     "xkb:us::eng",              // US
 };
 
-constexpr AppType kAppTypeAllowlist[] = {
-    AppType::BROWSER,
-    AppType::LACROS,
+constexpr AppType kAppTypeDenylist[] = {
+    AppType::ARC_APP,
+    AppType::CROSTINI_APP,
 };
 
 const char* kDomainsWithPathDenylist[][2] = {
@@ -55,7 +59,19 @@ const char* kDomainsWithPathDenylist[][2] = {
     {"meet.google", ""},
 };
 
-constexpr int kTextLengthMaxLimit = 8000;
+constexpr int kTextLengthMaxLimit = 10000;
+
+const char* kAppIdDenylist[] = {
+    extension_misc::kGmailAppId,        extension_misc::kCalendarAppId,
+    extension_misc::kFilesManagerAppId, extension_misc::kGoogleDocsAppId,
+    extension_misc::kGoogleSlidesAppId, extension_misc::kGoogleSheetsAppId,
+    extension_misc::kGoogleDriveAppId,  extension_misc::kGoogleKeepAppId,
+    file_manager::kFileManagerSwaAppId, web_app::kGmailAppId,
+    web_app::kGoogleChatAppId,          web_app::kGoogleMeetAppId,
+    web_app::kGoogleDocsAppId,          web_app::kGoogleSlidesAppId,
+    web_app::kGoogleSheetsAppId,        web_app::kGoogleDriveAppId,
+    web_app::kGoogleKeepAppId,          web_app::kGoogleCalendarAppId,
+};
 
 bool IsCountryAllowed(std::string_view country_code) {
   return base::Contains(kCountryAllowlist, country_code);
@@ -70,7 +86,7 @@ bool IsInputMethodEngineAllowed(std::string_view engine_id) {
 }
 
 bool IsAppTypeAllowed(AppType app_type) {
-  return base::Contains(kAppTypeAllowlist, app_type);
+  return !base::Contains(kAppTypeDenylist, app_type);
 }
 
 bool IsTriggerableFromConsentStatus(ConsentStatus consent_status) {
@@ -88,6 +104,10 @@ bool IsUrlAllowed(const char* (&denied_domains_with_paths)[N][2], GURL url) {
     }
   }
   return true;
+}
+
+bool IsAppAllowed(std::string_view app_id) {
+  return !base::Contains(kAppIdDenylist, app_id);
 }
 
 }  // namespace
@@ -117,7 +137,8 @@ bool EditorSwitch::CanBeTriggered() const {
          IsInputTypeAllowed(input_type_) && IsAppTypeAllowed(app_type_) &&
          IsTriggerableFromConsentStatus(current_consent_status) &&
          IsUrlAllowed(kDomainsWithPathDenylist, url_) &&
-         !net::NetworkChangeNotifier::IsOffline() && !tablet_mode_enabled_ &&
+         IsAppAllowed(app_id_) && !net::NetworkChangeNotifier::IsOffline() &&
+         !tablet_mode_enabled_ &&
          // user pref value
          profile_->GetPrefs()->GetBoolean(prefs::kOrcaEnabled) &&
          text_length_ <= kTextLengthMaxLimit;
@@ -147,6 +168,7 @@ void EditorSwitch::OnInputContextUpdated(
   input_type_ = input_context.type;
   app_type_ = text_field_contextual_info.app_type;
   url_ = text_field_contextual_info.tab_url;
+  app_id_ = text_field_contextual_info.app_key;
 }
 
 void EditorSwitch::OnActivateIme(std::string_view engine_id) {

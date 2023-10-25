@@ -94,7 +94,7 @@ namespace {
 
 base::FilePath GetAbsoluteSrcRelativePath(base::FilePath::StringType path) {
   base::FilePath root_path;
-  base::PathService::Get(base::BasePathKey::DIR_SOURCE_ROOT, &root_path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_path);
   return base::MakeAbsoluteFilePath(root_path.Append(path));
 }
 

@@ -312,14 +312,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Bookmarks.MobileBookmarkManager.FilterUsed"
+<histogram name="Bookmarks.MobileBookmarkManager.FilterShown"
+    enum="MobileBookmarkManagerFilter" expires_after="2024-01-14">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Records when the filter options are shown to the user in mobile bookmarks
+    manager. This isn't recorded in any particular interval, so the raw counts
+    should be ignored.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.MobileBookmarkManager.FilterUsed2"
     enum="MobileBookmarkManagerFilter" expires_after="2024-01-14">
   <owner>wylieb@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
     Records when a user interacts with the filter options in the mobile
-    bookmarks manager.
+    bookmarks manager. Recorded for both on/off events.
   </summary>
 </histogram>
 

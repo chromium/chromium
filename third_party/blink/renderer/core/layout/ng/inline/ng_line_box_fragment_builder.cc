@@ -18,7 +18,7 @@
 
 namespace blink {
 
-void NGLineBoxFragmentBuilder::Reset() {
+void LineBoxFragmentBuilder::Reset() {
   children_.Shrink(0);
   child_break_tokens_.Shrink(0);
   last_inline_break_token_ = nullptr;
@@ -33,19 +33,18 @@ void NGLineBoxFragmentBuilder::Reset() {
 
   size_.inline_size = LayoutUnit();
   metrics_ = FontHeight::Empty();
-  line_box_type_ = NGPhysicalLineBoxFragment::kNormalLineBox;
+  line_box_type_ = PhysicalLineBoxFragment::kNormalLineBox;
 
   has_floating_descendants_for_paint_ = false;
   has_descendant_that_depends_on_percentage_block_size_ = false;
   has_block_fragmentation_ = false;
 }
 
-void NGLineBoxFragmentBuilder::SetIsEmptyLineBox() {
-  line_box_type_ = NGPhysicalLineBoxFragment::kEmptyLineBox;
+void LineBoxFragmentBuilder::SetIsEmptyLineBox() {
+  line_box_type_ = PhysicalLineBoxFragment::kEmptyLineBox;
 }
 
-void NGLineBoxFragmentBuilder::PropagateChildrenData(
-    NGLogicalLineItems& children) {
+void LineBoxFragmentBuilder::PropagateChildrenData(LogicalLineItems& children) {
   for (unsigned index = 0; index < children.size(); ++index) {
     auto& child = children[index];
     if (child.layout_result) {
@@ -79,14 +78,13 @@ void NGLineBoxFragmentBuilder::PropagateChildrenData(
   MoveOutOfFlowDescendantCandidatesToDescendants();
 }
 
-const NGLayoutResult* NGLineBoxFragmentBuilder::ToLineBoxFragment() {
+const NGLayoutResult* LineBoxFragmentBuilder::ToLineBoxFragment() {
   writing_direction_.SetWritingMode(ToLineWritingMode(GetWritingMode()));
 
-  const NGPhysicalLineBoxFragment* fragment =
-      NGPhysicalLineBoxFragment::Create(this);
+  const auto* fragment = PhysicalLineBoxFragment::Create(this);
 
   return MakeGarbageCollected<NGLayoutResult>(
-      NGLayoutResult::NGLineBoxFragmentBuilderPassKey(), std::move(fragment),
+      NGLayoutResult::LineBoxFragmentBuilderPassKey(), std::move(fragment),
       this);
 }
 

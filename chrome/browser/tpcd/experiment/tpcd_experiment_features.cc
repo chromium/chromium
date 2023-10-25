@@ -38,16 +38,26 @@ const base::FeatureParam<bool> kForceEligibleForTesting{
     /*name=*/kForceEligibleForTestingName,
     /*default_value=*/false};
 
+const char kTpcdWritePopupCurrentInteractionHeuristicsGrantsName[] =
+    "TpcdWritePopupCurrentInteractionHeuristicsGrants";
+const char kTpcdWritePopupPastInteractionHeuristicsGrantsName[] =
+    "TpcdWritePopupPastInteractionHeuristicsGrants";
+const char kTpcdBackfillPopupHeuristicsGrantsName[] =
+    "TpcdBackfillPopupHeuristicsGrants";
+
 const base::FeatureParam<base::TimeDelta>
     kTpcdWritePopupCurrentInteractionHeuristicsGrants{
         &content_settings::features::kTpcdHeuristicsGrants,
-        /*name=*/"TpcdWritePopupCurrentInteractionHeuristicsGrants",
+        kTpcdWritePopupCurrentInteractionHeuristicsGrantsName,
         base::TimeDelta()};
 
 const base::FeatureParam<base::TimeDelta>
     kTpcdWritePopupPastInteractionHeuristicsGrants{
         &content_settings::features::kTpcdHeuristicsGrants,
-        /*name=*/"TpcdWritePopupPastInteractionHeuristicsGrants",
-        base::TimeDelta()};
+        kTpcdWritePopupPastInteractionHeuristicsGrantsName, base::TimeDelta()};
+
+const base::FeatureParam<base::TimeDelta> kTpcdBackfillPopupHeuristicsGrants{
+    &content_settings::features::kTpcdHeuristicsGrants,
+    /*name=*/"TpcdBackfillPopupHeuristicsGrants", base::TimeDelta()};
 
 }  // namespace tpcd::experiment

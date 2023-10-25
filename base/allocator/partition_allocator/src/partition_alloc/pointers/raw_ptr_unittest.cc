@@ -2085,13 +2085,15 @@ TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
   ASSERT_EQ(
       requested_size,
       allocator_.root()->AllocationCapacityFromRequestedSize(requested_size));
-  size_t requested_elements = requested_size / sizeof(int);
+  size_t requested_elements = requested_size / sizeof(uint32_t);
 
-  int* ptr = reinterpret_cast<int*>(allocator_.root()->Alloc(requested_size));
-  int* ptr_end = ptr + requested_elements;
+  uint32_t* ptr =
+      reinterpret_cast<uint32_t*>(allocator_.root()->Alloc(requested_size));
+  uint32_t* ptr_end = ptr + requested_elements;
 
-  CountingRawPtr<int> protected_ptr = ptr;
-  CountingRawPtr<int> protected_ptr_end = protected_ptr + requested_elements;
+  CountingRawPtr<uint32_t> protected_ptr = ptr;
+  CountingRawPtr<uint32_t> protected_ptr_end =
+      protected_ptr + requested_elements;
 
 #if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
   EXPECT_DEATH_IF_SUPPORTED(*protected_ptr_end = 1, "");
@@ -2099,7 +2101,7 @@ TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
 
   RawPtrCountingImpl::ClearCounters();
 
-  int gen_val = 1;
+  uint32_t gen_val = 1;
   std::generate(protected_ptr, protected_ptr_end, [&gen_val]() {
     gen_val ^= gen_val + 1;
     return gen_val;
@@ -2114,7 +2116,7 @@ TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
 
   RawPtrCountingImpl::ClearCounters();
 
-  for (CountingRawPtr<int> protected_ptr_i = protected_ptr;
+  for (CountingRawPtr<uint32_t> protected_ptr_i = protected_ptr;
        protected_ptr_i < protected_ptr_end; protected_ptr_i++) {
     *protected_ptr_i ^= *protected_ptr_i + 1;
   }
@@ -2128,7 +2130,7 @@ TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
 
   RawPtrCountingImpl::ClearCounters();
 
-  for (CountingRawPtr<int> protected_ptr_i = protected_ptr;
+  for (CountingRawPtr<uint32_t> protected_ptr_i = protected_ptr;
        protected_ptr_i < ptr_end; protected_ptr_i++) {
     *protected_ptr_i ^= *protected_ptr_i + 1;
   }
@@ -2142,7 +2144,7 @@ TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
 
   RawPtrCountingImpl::ClearCounters();
 
-  for (int* ptr_i = ptr; ptr_i < protected_ptr_end; ptr_i++) {
+  for (uint32_t* ptr_i = ptr; ptr_i < protected_ptr_end; ptr_i++) {
     *ptr_i ^= *ptr_i + 1;
   }
 
@@ -2156,7 +2158,7 @@ TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
   RawPtrCountingImpl::ClearCounters();
 
   size_t iter_cnt = 0;
-  for (int *ptr_i = protected_ptr, *ptr_i_end = protected_ptr_end;
+  for (uint32_t *ptr_i = protected_ptr, *ptr_i_end = protected_ptr_end;
        ptr_i < ptr_i_end; ptr_i++) {
     *ptr_i ^= *ptr_i + 1;
     iter_cnt++;

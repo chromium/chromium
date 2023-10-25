@@ -36,7 +36,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Companion.CQ.TextHighlight.Success" enum="BooleanSuccess"
-    expires_after="2023-10-20">
+    expires_after="2024-04-21">
   <owner>junzou@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>

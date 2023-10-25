@@ -14,14 +14,14 @@
 namespace blink {
 namespace {
 
-struct SameSizeAsNGInlineItem {
+struct SameSizeAsInlineItem {
   void* pointers[1];
   UntracedMember<void*> members[1];
   unsigned integers[3];
   unsigned bit_fields : 32;
 };
 
-ASSERT_SIZE(NGInlineItem, SameSizeAsNGInlineItem);
+ASSERT_SIZE(InlineItem, SameSizeAsInlineItem);
 
 // Returns true if this inline box is "empty", i.e. if the node contains only
 // empty items it will produce a single zero block-size line box.
@@ -64,13 +64,13 @@ bool IsInlineBoxEndEmpty(const ComputedStyle& style,
 
 }  // namespace
 
-NGInlineItem::NGInlineItem(NGInlineItemType type,
-                           unsigned start,
-                           unsigned end,
-                           LayoutObject* layout_object)
+InlineItem::InlineItem(InlineItemType type,
+                       unsigned start,
+                       unsigned end,
+                       LayoutObject* layout_object)
     : start_offset_(start),
       end_offset_(end),
-      // Use atomic construction to allow for concurrently marking NGInlineItem.
+      // Use atomic construction to allow for concurrently marking InlineItem.
       layout_object_(layout_object,
                      Member<LayoutObject>::AtomicInitializerTag{}),
       type_(type),
@@ -88,14 +88,14 @@ NGInlineItem::NGInlineItem(NGInlineItemType type,
   ComputeBoxProperties();
 }
 
-NGInlineItem::NGInlineItem(const NGInlineItem& other,
-                           unsigned start,
-                           unsigned end,
-                           scoped_refptr<const ShapeResult> shape_result)
+InlineItem::InlineItem(const InlineItem& other,
+                       unsigned start,
+                       unsigned end,
+                       scoped_refptr<const ShapeResult> shape_result)
     : start_offset_(start),
       end_offset_(end),
       shape_result_(shape_result),
-      // Use atomic construction to allow for concurrently marking NGInlineItem.
+      // Use atomic construction to allow for concurrently marking InlineItem.
       layout_object_(other.layout_object_,
                      Member<LayoutObject>::AtomicInitializerTag{}),
       type_(other.type_),
@@ -112,22 +112,23 @@ NGInlineItem::NGInlineItem(const NGInlineItem& other,
   DCHECK_GE(end, start);
 }
 
-NGInlineItem::~NGInlineItem() = default;
+InlineItem::~InlineItem() = default;
 
-void NGInlineItem::ComputeBoxProperties() {
+void InlineItem::ComputeBoxProperties() {
   DCHECK(!is_empty_item_);
 
-  if (type_ == NGInlineItem::kText || type_ == NGInlineItem::kAtomicInline ||
-      type_ == NGInlineItem::kControl || UNLIKELY(type_ == kInitialLetterBox))
+  if (type_ == InlineItem::kText || type_ == InlineItem::kAtomicInline ||
+      type_ == InlineItem::kControl || UNLIKELY(type_ == kInitialLetterBox)) {
     return;
+  }
 
-  if (type_ == NGInlineItem::kOpenTag) {
+  if (type_ == InlineItem::kOpenTag) {
     DCHECK(layout_object_ && layout_object_->IsLayoutInline());
     is_empty_item_ = IsInlineBoxStartEmpty(*Style(), *layout_object_);
     return;
   }
 
-  if (type_ == NGInlineItem::kCloseTag) {
+  if (type_ == InlineItem::kCloseTag) {
     DCHECK(layout_object_ && layout_object_->IsLayoutInline());
     is_empty_item_ = IsInlineBoxEndEmpty(*Style(), *layout_object_);
     return;
@@ -145,7 +146,7 @@ void NGInlineItem::ComputeBoxProperties() {
   is_empty_item_ = true;
 }
 
-const char* NGInlineItem::NGInlineItemTypeToString(NGInlineItemType val) const {
+const char* InlineItem::InlineItemTypeToString(InlineItemType val) const {
   switch (val) {
     case kText:
       return "Text";
@@ -173,37 +174,38 @@ const char* NGInlineItem::NGInlineItemTypeToString(NGInlineItemType val) const {
   NOTREACHED_NORETURN();
 }
 
-void NGInlineItem::SetSegmentData(const RunSegmenter::RunSegmenterRange& range,
-                                  HeapVector<NGInlineItem>* items) {
-  unsigned segment_data = NGInlineItemSegment::PackSegmentData(range);
-  for (NGInlineItem& item : *items) {
-    if (item.Type() == NGInlineItem::kText)
+void InlineItem::SetSegmentData(const RunSegmenter::RunSegmenterRange& range,
+                                HeapVector<InlineItem>* items) {
+  unsigned segment_data = InlineItemSegment::PackSegmentData(range);
+  for (InlineItem& item : *items) {
+    if (item.Type() == InlineItem::kText) {
       item.segment_data_ = segment_data;
+    }
   }
 }
 
-// Set bidi level to a list of NGInlineItem from |index| to the item that ends
+// Set bidi level to a list of InlineItem from |index| to the item that ends
 // with |end_offset|.
 // If |end_offset| is mid of an item, the item is split to ensure each item has
 // one bidi level.
-// @param items The list of NGInlineItem.
+// @param items The list of InlineItem.
 // @param index The first index of the list to set.
 // @param end_offset The exclusive end offset to set.
 // @param level The level to set.
 // @return The index of the next item.
-unsigned NGInlineItem::SetBidiLevel(HeapVector<NGInlineItem>& items,
-                                    unsigned index,
-                                    unsigned end_offset,
-                                    UBiDiLevel level) {
+unsigned InlineItem::SetBidiLevel(HeapVector<InlineItem>& items,
+                                  unsigned index,
+                                  unsigned end_offset,
+                                  UBiDiLevel level) {
   for (; items[index].end_offset_ < end_offset; index++)
     items[index].SetBidiLevel(level);
-  NGInlineItem* item = &items[index];
+  InlineItem* item = &items[index];
   item->SetBidiLevel(level);
 
   if (item->end_offset_ == end_offset) {
     // Let close items have the same bidi-level as the previous item.
     while (index + 1 < items.size() &&
-           items[index + 1].Type() == NGInlineItem::kCloseTag) {
+           items[index + 1].Type() == InlineItem::kCloseTag) {
       items[++index].SetBidiLevel(level);
     }
   } else {
@@ -219,7 +221,7 @@ unsigned NGInlineItem::SetBidiLevel(HeapVector<NGInlineItem>& items,
   return index + 1;
 }
 
-const Font& NGInlineItem::FontWithSvgScaling() const {
+const Font& InlineItem::FontWithSvgScaling() const {
   if (const auto* svg_text =
           DynamicTo<LayoutSVGInlineText>(layout_object_.Get())) {
     // We don't need to care about StyleVariant(). SVG 1.1 doesn't support
@@ -229,21 +231,21 @@ const Font& NGInlineItem::FontWithSvgScaling() const {
   return Style()->GetFont();
 }
 
-String NGInlineItem::ToString() const {
-  return String::Format("NGInlineItem. Type: '%s'. LayoutObject: '%s'",
-                        NGInlineItemTypeToString(Type()),
+String InlineItem::ToString() const {
+  return String::Format("InlineItem. Type: '%s'. LayoutObject: '%s'",
+                        InlineItemTypeToString(Type()),
                         GetLayoutObject()->DebugName().Ascii().c_str());
 }
 
 // Split |items[index]| to 2 items at |offset|.
 // All properties other than offsets are copied to the new item and it is
 // inserted at |items[index + 1]|.
-// @param items The list of NGInlineItem.
+// @param items The list of InlineItem.
 // @param index The index to split.
 // @param offset The offset to split at.
-void NGInlineItem::Split(HeapVector<NGInlineItem>& items,
-                         unsigned index,
-                         unsigned offset) {
+void InlineItem::Split(HeapVector<InlineItem>& items,
+                       unsigned index,
+                       unsigned offset) {
   DCHECK_GT(offset, items[index].start_offset_);
   DCHECK_LT(offset, items[index].end_offset_);
   items[index].shape_result_ = nullptr;
@@ -253,31 +255,31 @@ void NGInlineItem::Split(HeapVector<NGInlineItem>& items,
 }
 
 #if DCHECK_IS_ON()
-void NGInlineItem::CheckTextType(const String& text_content) const {
+void InlineItem::CheckTextType(const String& text_content) const {
   const UChar character = Length() ? text_content[StartOffset()] : 0;
   switch (character) {
     case kNewlineCharacter:
       DCHECK_EQ(Length(), 1u);
-      DCHECK_EQ(Type(), NGInlineItemType::kControl);
+      DCHECK_EQ(Type(), InlineItemType::kControl);
       DCHECK_EQ(TextType(), TextItemType::kForcedLineBreak);
       break;
     case kTabulationCharacter:
-      DCHECK_EQ(Type(), NGInlineItemType::kControl);
+      DCHECK_EQ(Type(), InlineItemType::kControl);
       DCHECK_EQ(TextType(), TextItemType::kFlowControl);
       break;
     case kCarriageReturnCharacter:
     case kFormFeedCharacter:
     case kZeroWidthSpaceCharacter:
-      if (Type() == NGInlineItemType::kControl) {
+      if (Type() == InlineItemType::kControl) {
         DCHECK_EQ(Length(), 1u);
         DCHECK_EQ(TextType(), TextItemType::kFlowControl);
       } else {
-        DCHECK_EQ(Type(), NGInlineItemType::kText);
+        DCHECK_EQ(Type(), InlineItemType::kText);
         DCHECK_EQ(TextType(), TextItemType::kNormal);
       }
       break;
     default:
-      DCHECK_NE(Type(), NGInlineItemType::kControl);
+      DCHECK_NE(Type(), InlineItemType::kControl);
       DCHECK(TextType() == TextItemType::kNormal ||
              TextType() == TextItemType::kSymbolMarker);
       break;
@@ -285,7 +287,7 @@ void NGInlineItem::CheckTextType(const String& text_content) const {
 }
 #endif
 
-void NGInlineItem::Trace(Visitor* visitor) const {
+void InlineItem::Trace(Visitor* visitor) const {
   visitor->Trace(layout_object_);
 }
 

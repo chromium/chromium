@@ -105,7 +105,7 @@ void NameInfo::SetRawInfoWithVerificationStatus(ServerFieldType type,
     return;
   }
   bool success = name_->SetValueForType(type, value, status);
-  DCHECK(success) << FieldTypeToStringPiece(type);
+  DCHECK(success) << FieldTypeToStringView(type);
 }
 
 void NameInfo::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {

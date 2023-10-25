@@ -77,7 +77,7 @@ enum class SelectSoftLineBreak { kNotSelected, kSelected };
 // This is return type of ComputeLayoutSelectionStatus(cursor).
 // This structure represents how the fragment is selected.
 // |start|, |end| : Selection start/end offset. This offset is based on
-//   the text of NGInlineNode of a parent block thus
+//   the text of InlineNode of a parent block thus
 //   |fragemnt.StartOffset <= start <= end <= fragment.EndOffset|.
 // |start| == |end| means this fragment is not selected.
 // |line_break| : This value represents If this fragment is selected and

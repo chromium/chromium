@@ -35,6 +35,12 @@ BASE_FEATURE(kUseRustJsonParser,
 BASE_FEATURE(kJsonNegativeZero, "JsonNegativeZero", FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+// Force to enable LowEndDeviceMode partially on Android 3Gb devices.
+// (see PartialLowEndModeOnMidRangeDevices below)
+BASE_FEATURE(kPartialLowEndModeOn3GbDevices,
+             "PartialLowEndModeOn3GbDevices",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Used to enable LowEndDeviceMode partially on Android and ChromeOS mid-range
 // devices. Such devices aren't considered low-end, but we'd like experiment
 // with a subset of low-end features to see if we get a good memory vs.

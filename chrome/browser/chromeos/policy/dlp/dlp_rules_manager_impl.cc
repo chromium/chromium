@@ -20,10 +20,10 @@
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller_lacros.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate.h"
 #include "chrome/browser/enterprise/data_controls/chrome_dlp_rules_manager.h"
+#include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
@@ -321,7 +321,7 @@ DlpRulesManagerImpl::DlpRulesManagerImpl(PrefService* local_state,
   OnDataLeakPreventionRulesUpdate();
 
   if (IsReportingEnabled())
-    reporting_manager_ = std::make_unique<DlpReportingManager>();
+    reporting_manager_ = std::make_unique<data_controls::DlpReportingManager>();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::DlpClient::Get()) {
@@ -335,7 +335,8 @@ bool DlpRulesManagerImpl::IsReportingEnabled() const {
       policy_prefs::kDlpReportingEnabled);
 }
 
-DlpReportingManager* DlpRulesManagerImpl::GetReportingManager() const {
+data_controls::DlpReportingManager* DlpRulesManagerImpl::GetReportingManager()
+    const {
   return reporting_manager_.get();
 }
 

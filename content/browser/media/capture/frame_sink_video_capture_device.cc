@@ -185,14 +185,6 @@ bool FrameSinkVideoCaptureDevice::CanSupportNV12Format() const {
     return false;
   }
 
-  // TODO(crbug.com/1452092): Disable zero-copy NV12 tab capture with Graphite
-  // until Dawn NV12 rendering is supported.
-  if (!gpu_data_manager->IsGpuFeatureInfoAvailable() ||
-      gpu_data_manager->GetFeatureStatus(gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE) ==
-          gpu::kGpuFeatureStatusEnabled) {
-    return false;
-  }
-
   // We only support NV12 if GL_EXT_texture_rg extension is available. GPU
   // capabilities need to be present in order to determine that.
   if (!gpu_capabilities_) {
@@ -333,7 +325,7 @@ void FrameSinkVideoCaptureDevice::AllocateCapturer(
                                       constraints.fixed_aspect_ratio);
 
   if (target_) {
-    capturer_->ChangeTarget(target_, crop_version_);
+    capturer_->ChangeTarget(target_, sub_capture_target_version_);
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -397,7 +389,7 @@ void FrameSinkVideoCaptureDevice::Resume() {
 
 void FrameSinkVideoCaptureDevice::Crop(
     const base::Token& crop_id,
-    uint32_t crop_version,
+    uint32_t sub_capture_target_version,
     base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -508,14 +500,15 @@ void FrameSinkVideoCaptureDevice::OnFrameCaptured(
       std::move(info)));
 }
 
-void FrameSinkVideoCaptureDevice::OnNewCropVersion(uint32_t crop_version) {
+void FrameSinkVideoCaptureDevice::OnNewSubCaptureTargetVersion(
+    uint32_t sub_capture_target_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!receiver_) {
     return;
   }
 
-  receiver_->OnNewCropVersion(crop_version);
+  receiver_->OnNewSubCaptureTargetVersion(sub_capture_target_version);
 }
 
 void FrameSinkVideoCaptureDevice::OnFrameWithEmptyRegionCapture() {
@@ -548,21 +541,21 @@ void FrameSinkVideoCaptureDevice::OnLog(const std::string& message) {
 
 void FrameSinkVideoCaptureDevice::OnTargetChanged(
     const absl::optional<viz::VideoCaptureTarget>& target,
-    uint32_t crop_version) {
+    uint32_t sub_capture_target_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GE(crop_version, crop_version_);
+  DCHECK_GE(sub_capture_target_version, sub_capture_target_version_);
 
   target_ = target;
-  crop_version_ = crop_version;
+  sub_capture_target_version_ = sub_capture_target_version;
 
   if (capturer_) {
-    capturer_->ChangeTarget(target_, crop_version_);
+    capturer_->ChangeTarget(target_, sub_capture_target_version_);
   }
 }
 
 void FrameSinkVideoCaptureDevice::OnTargetPermanentlyLost() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  OnTargetChanged(absl::nullopt, crop_version_);
+  OnTargetChanged(absl::nullopt, sub_capture_target_version_);
   OnFatalError("Capture target has been permanently lost.");
 }
 

@@ -87,7 +87,7 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
   void MaybeSuspend() final;
   void Resume() final;
   void Crop(const base::Token& crop_id,
-            uint32_t crop_version,
+            uint32_t sub_capture_target_version,
             base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
                 callback) override;
   void StopAndDeAllocate() final;
@@ -100,7 +100,7 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
       const gfx::Rect& content_rect,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
           callbacks) override;
-  void OnNewCropVersion(uint32_t crop_version) final;
+  void OnNewSubCaptureTargetVersion(uint32_t sub_capture_target_version) final;
   void OnFrameWithEmptyRegionCapture() final;
   void OnStopped() final;
   void OnLog(const std::string& message) final;
@@ -110,7 +110,7 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
   // being permanently lost.
   virtual void OnTargetChanged(
       const absl::optional<viz::VideoCaptureTarget>& target,
-      uint32_t crop_version);
+      uint32_t sub_capture_target_version);
   virtual void OnTargetPermanentlyLost();
 
  protected:
@@ -236,14 +236,14 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
       cursor_controller_;
 #endif
 
-  // Whenever the crop-target of a stream changes, the associated crop-version
-  // is incremented. This value is used in frames' metadata so as to allow
-  // other modules (mostly Blink) to see which frames are cropped to the
-  // old/new specified crop-target.
-  // The value 0 is used before any crop-target is assigned. (Note that by
-  // cropping and then uncropping, values other than 0 can also be associated
-  // with an uncropped track.)
-  uint32_t crop_version_ = 0;
+  // Whenever the sub-capture-target of a stream changes, the associated
+  // sub-capture-target-version is incremented. This value is used in frames'
+  // metadata so as to allow other modules (mostly Blink) to see which frames
+  // are cropped/restricted to the old/new specified sub-capture-target.
+  // The value 0 is used before any sub-capture-target is assigned.
+  // (Note that by applying and then removing a sub-capture target,
+  // values other than 0 can also be associated with an uncropped track.)
+  uint32_t sub_capture_target_version_ = 0;
 
   // Prevent display sleeping while content capture is in progress.
   mojo::Remote<device::mojom::WakeLock> wake_lock_;

@@ -10,10 +10,8 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
-#include "build/chromeos_buildflags.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -25,10 +23,6 @@ namespace network {
 class SimpleURLLoader;
 class SharedURLLoaderFactory;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-COMPONENT_EXPORT(GOOGLE_APIS) BASE_DECLARE_FEATURE(kIgnoreRaptErrors);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Abstracts the details to get OAuth2 access token from OAuth2 refresh token.
 // See general document about Oauth2 in https://tools.ietf.org/html/rfc6749.

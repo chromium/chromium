@@ -753,7 +753,8 @@ def main():
         RunCommand([
             'git', '-C', RUST_SRC_DIR, 'remote', 'add', 'maurer',
             'https://github.com/maurer/rust.git'
-        ])
+        ],
+                   fail_hard=False)
         RunCommand(['git', '-C', RUST_SRC_DIR, 'fetch', '--all'])
         GitCherryPick(RUST_SRC_DIR, '046503e6f4318aaba649e51becc38b1db9c87ee7')
 

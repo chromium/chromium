@@ -12,7 +12,6 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -20,7 +19,6 @@
 #include "base/strings/string_split.h"
 #include "base/values.h"
 #include "components/policy/android/jni_headers/PolicyConverter_jni.h"
-#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -213,14 +211,8 @@ absl::optional<base::Value> PolicyConverter::ConvertValueToSchema(
         }
         absl::optional<base::Value> decoded_value = base::JSONReader::Read(
             str_value, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
-        if (decoded_value) {
-          return decoded_value;
-        }
-        if (base::FeatureList::IsEnabled(
-                ::policy::features::
-                    kListPoliciesAcceptCommaSeparatedStringsAndroid)) {
-          return SplitCommaSeparatedList(str_value);
-        }
+        return decoded_value ? std::move(decoded_value)
+                             : SplitCommaSeparatedList(str_value);
       }
       return value;
     }

@@ -36,6 +36,7 @@
 namespace attribution_reporting {
 class AggregationKeys;
 class EventReportWindows;
+class TriggerConfig;
 }  // namespace attribution_reporting
 
 namespace net {
@@ -118,6 +119,8 @@ class SourceBuilder {
       attribution_reporting::EventReportWindows);
 
   SourceBuilder& SetMaxEventLevelReports(int max_event_level_reports);
+
+  SourceBuilder& SetTriggerConfig(attribution_reporting::TriggerConfig);
 
   StorableSource Build() const;
 

@@ -20,12 +20,9 @@
 
 namespace ash {
 
-AutoSnapController::AutoSnapController(aura::Window* root_window,
-                                       bool is_activation_observer)
+AutoSnapController::AutoSnapController(aura::Window* root_window)
     : root_window_(root_window) {
-  if (is_activation_observer) {
-    Shell::Get()->activation_client()->AddObserver(this);
-  }
+  Shell::Get()->activation_client()->AddObserver(this);
 
   AddWindow(root_window);
   for (auto* window :
@@ -36,31 +33,22 @@ AutoSnapController::AutoSnapController(aura::Window* root_window,
 
 AutoSnapController::~AutoSnapController() {
   window_observations_.RemoveAllObservations();
-  // Does nothing if `this` is not observing activation changes.
   Shell::Get()->activation_client()->RemoveObserver(this);
 }
 
-bool AutoSnapController::OnWindowActivatingFromOverview(
-    ActivationReason reason,
-    aura::Window* gained_active) {
+void AutoSnapController::OnWindowActivating(ActivationReason reason,
+                                            aura::Window* gained_active,
+                                            aura::Window* lost_active) {
   // If `gained_active` was activated as a side effect of a window disposition
   // change, do nothing. For example, when a snapped window is closed, another
   // window will be activated before `OnWindowDestroying()` is called. We should
   // not try to snap another window in this case.
   if (!gained_active ||
       reason == ActivationReason::WINDOW_DISPOSITION_CHANGED) {
-    return false;
+    return;
   }
 
-  return AutoSnapWindowIfNeeded(gained_active);
-}
-
-void AutoSnapController::OnWindowActivated(ActivationReason reason,
-                                           aura::Window* gained_active,
-                                           aura::Window* lost_active) {
-  // In tablet mode, `wm::ActivationChangeObserver::OnWindowActivated()` is
-  // needed to observe all windows gaining activation.
-  OnWindowActivatingFromOverview(reason, gained_active);
+  AutoSnapWindowIfNeeded(gained_active);
 }
 
 void AutoSnapController::OnWindowVisibilityChanging(aura::Window* window,
@@ -156,6 +144,8 @@ bool AutoSnapController::AutoSnapWindowIfNeeded(aura::Window* window) {
             : WM_EVENT_SNAP_PRIMARY,
         snap_ratio, WindowSnapActionSource::kAutoSnapInSplitView);
     window_state->OnWMEvent(&event);
+    OverviewController::Get()->EndOverview(
+        OverviewEndAction::kWindowActivating);
     return true;
   }
 

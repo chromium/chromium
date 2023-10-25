@@ -186,7 +186,7 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
 }
 
 + (void)mockReauthenticationModuleReturnMockedResult {
-  [[self mockModule] returnMockedReathenticationResult];
+  [[self mockModule] returnMockedReauthenticationResult];
 }
 
 + (void)dismissSnackBar {

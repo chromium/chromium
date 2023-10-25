@@ -11,12 +11,12 @@
 namespace autofill {
 
 TEST(FieldTypesTest, TypeStringConversion) {
-  EXPECT_EQ(TypeNameToFieldType(FieldTypeToStringPiece(NO_SERVER_DATA)),
+  EXPECT_EQ(TypeNameToFieldType(FieldTypeToStringView(NO_SERVER_DATA)),
             NO_SERVER_DATA);
   for (int i = 0; i < MAX_VALID_FIELD_TYPE; ++i) {
     if (ServerFieldType raw_value = static_cast<ServerFieldType>(i);
         ToSafeServerFieldType(raw_value, NO_SERVER_DATA) != NO_SERVER_DATA) {
-      EXPECT_EQ(TypeNameToFieldType(FieldTypeToStringPiece(raw_value)),
+      EXPECT_EQ(TypeNameToFieldType(FieldTypeToStringView(raw_value)),
                 raw_value);
     }
   }

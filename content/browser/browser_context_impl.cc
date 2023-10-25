@@ -38,17 +38,6 @@ namespace content {
 
 namespace {
 
-void ShutdownServiceWorkerContext(StoragePartition* partition) {
-  ServiceWorkerContextWrapper* wrapper =
-      static_cast<ServiceWorkerContextWrapper*>(
-          partition->GetServiceWorkerContext());
-  wrapper->Shutdown();
-}
-
-void ShutdownSharedWorkerContext(StoragePartition* partition) {
-  partition->GetSharedWorkerService()->Shutdown();
-}
-
 void NotifyContextWillBeDestroyed(StoragePartition* partition) {
   static_cast<StoragePartitionImpl*>(partition)
       ->OnBrowserContextWillBeDestroyed();
@@ -137,14 +126,6 @@ void BrowserContextImpl::NotifyWillBeDestroyed() {
   if (will_be_destroyed_soon_)
     return;
   will_be_destroyed_soon_ = true;
-
-  // Shut down service worker and shared worker machinery because these can keep
-  // RenderProcessHosts and SiteInstances alive, and the codebase assumes these
-  // are destroyed before the BrowserContext is destroyed.
-  self_->ForEachLoadedStoragePartition(
-      base::BindRepeating(ShutdownServiceWorkerContext));
-  self_->ForEachLoadedStoragePartition(
-      base::BindRepeating(ShutdownSharedWorkerContext));
 
   self_->ForEachLoadedStoragePartition(
       base::BindRepeating(NotifyContextWillBeDestroyed));

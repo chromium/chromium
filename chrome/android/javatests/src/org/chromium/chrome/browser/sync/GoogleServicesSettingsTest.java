@@ -218,9 +218,13 @@ public class GoogleServicesSettingsTest {
                     Assert.assertTrue(priceAnnotationsSwitch.isChecked());
 
                     priceAnnotationsSwitch.performClick();
-                    Assert.assertFalse(PriceTrackingUtilities.isTrackPricesOnTabsEnabled());
+                    Assert.assertFalse(
+                            PriceTrackingUtilities.isTrackPricesOnTabsEnabled(
+                                    Profile.getLastUsedRegularProfile()));
                     priceAnnotationsSwitch.performClick();
-                    Assert.assertTrue(PriceTrackingUtilities.isTrackPricesOnTabsEnabled());
+                    Assert.assertTrue(
+                            PriceTrackingUtilities.isTrackPricesOnTabsEnabled(
+                                    Profile.getLastUsedRegularProfile()));
                 });
     }
 

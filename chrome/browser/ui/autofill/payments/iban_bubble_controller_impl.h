@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_IBAN_BUBBLE_CONTROLLER_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/payments/iban_bubble_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_iban_ui.h"
@@ -63,6 +64,7 @@ class IbanBubbleControllerImpl
   std::u16string GetExplanatoryMessage() const override;
   std::u16string GetAcceptButtonText() const override;
   std::u16string GetDeclineButtonText() const override;
+  AccountInfo GetAccountInfo() override;
   const Iban& GetIban() const override;
 
   void OnAcceptButton(const std::u16string& nickname) override;
@@ -96,6 +98,8 @@ class IbanBubbleControllerImpl
 
  private:
   friend class content::WebContentsUserData<IbanBubbleControllerImpl>;
+
+  Profile* GetProfile();
 
   // Displays omnibox icon only.
   void ShowIconOnly();

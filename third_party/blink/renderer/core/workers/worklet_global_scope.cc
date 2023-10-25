@@ -177,7 +177,7 @@ void WorkletGlobalScope::AddConsoleMessageImpl(ConsoleMessage* console_message,
     return;
   }
   worker_thread_->GetWorkerReportingProxy().ReportConsoleMessage(
-      console_message->Source(), console_message->Level(),
+      console_message->GetSource(), console_message->GetLevel(),
       console_message->Message(), console_message->Location());
   worker_thread_->GetConsoleMessageStorage()->AddConsoleMessage(
       worker_thread_->GlobalScope(), console_message, discard_duplicates);

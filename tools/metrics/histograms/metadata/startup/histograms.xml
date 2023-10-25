@@ -240,8 +240,55 @@ chromium-metrics-reviews@google.com.
     The time from the first Chrome tabbed activity creation to the moment Chrome
     first appears ready to the user.
 
+    This metric captures when the omnibox is painted and either a navigation has
+    committed or a Paint Preview is shown. The intent is to reflect Clank's
+    perceived cold start performance regardless of different launch paths, while
+    controlling for the factors that we have the most direct influence over and
+    minimizing external factors. Note that network connectivity is mostly but
+    not entirely omitted as it does impact the initial response time for a site
+    which impacts the omnibox UX and loading metric.
+
+    This metric captures the value of the first emitted metric out of the
+    'Startup.Android.Cold.TimeToFirstNavigationCommit.Tabbed' and
+    'Browser.PaintPreview.TabbedPlayer.TimeToFirstBitmap' metrics and emits the
+    value.
+
+    This metric is only recorded once per application lifetime during cold
+    startup i.e. when Chrome's native library is not loaded at first activity
+    creation. Specifically, it is recorded for the first foreground committed
+    http(s) URL in the primary frame if that first navigation is not: an error,
+    same-document navigation, or fragment navigation.
+
+    This metric is expected be stable from milestone to milestone. Updating
+    Chrome or the Android system image on the device are expected to result in a
+    noticeable slowdown on the first cold startup after. The total counts
+    changes for this histogram are not of significant importance; however, a
+    non-trivial increase in total counts could signal more background kills, for
+    example.
+
+    This metric is not recorded:
+
+    - If another navigation occurs before the first navigation commit and the
+    Paint Preview show.
+
+    - If the navigation is pre-warmed, is a background navigation, or fails to
+    be committed (e.g. cancelled, network error, or error due to lack of
+    connectivity).
+
+    - If the activity was ever backgrounded between activity creation and this
+    metric reporting.
+
+    - If the app opens to the Chrome Start page.
+
+    - For WebApps, PWAs or WebApks.
+
+    - For NTP.
+
     This metrics has the same semantics as
-    Startup.Android.Cold.TimeToFirstVisibleContent, without the known bug.
+    Startup.Android.Cold.TimeToFirstVisibleContent, except with the
+    crbug.com/1273097 fixed. In other words, this v2 metric also records a
+    sample when the first navigation commit happens before post-native
+    initialization.
 
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.

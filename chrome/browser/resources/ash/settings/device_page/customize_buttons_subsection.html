@@ -75,8 +75,7 @@
       <div>
         <cr-button id="saveButton" class="action-button"
             on-click="saveRenamingDialogClicked_"
-            disabled$="[[isSaveDisabled_(buttonRemappingList,
-                actionList, selectedButtonName_)]]">
+            disabled="[[isSaveButtonDisabled_]]">
           $i18n{buttonRemappingDialogSaveLabel}
         </cr-button>
       </div>

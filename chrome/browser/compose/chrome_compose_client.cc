@@ -100,13 +100,22 @@ void ChromeComposeClient::ShowComposeDialog(
   }
 }
 
+bool ChromeComposeClient::HasSession(
+    const autofill::FieldGlobalId& trigger_field_id) {
+  auto it = sessions_.find(trigger_field_id);
+  return it != sessions_.end();
+}
+
 void ChromeComposeClient::CloseUI(compose::mojom::CloseReason reason) {
   switch (reason) {
     case compose::mojom::CloseReason::kCloseButton:
       RemoveActiveSession();
       break;
   }
-  // TODO(b/302748101) Call CloseDialog() on ComposeDialogController.
+
+  if (compose_dialog_controller_) {
+    compose_dialog_controller_->Close();
+  }
 }
 
 void ChromeComposeClient::CreateSessionIfNeeded(
@@ -125,7 +134,7 @@ void ChromeComposeClient::CreateSessionIfNeeded(
   if (found && selected_text.empty()) {
     // Update existing session (only if session was not removed earlier).
     auto& existing_session = *it->second;
-    existing_session.SetComposeResultCallback(std::move(callback));
+    existing_session.set_compose_callback(std::move(callback));
   } else {
     // Insert new session.
     sessions_.emplace(

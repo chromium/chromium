@@ -64,9 +64,6 @@ BLINK_COMMON_EXPORT mojom::CaptureLinks CaptureLinksFromString(
 BLINK_COMMON_EXPORT absl::optional<mojom::ManifestLaunchHandler::ClientMode>
 ClientModeFromString(const std::string& client_mode);
 
-// Returns the URL format manifest ID from the relative id.
-BLINK_COMMON_EXPORT GURL GetIdFromManifest(const mojom::Manifest& manifest);
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_MANIFEST_MANIFEST_UTIL_H_

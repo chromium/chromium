@@ -80,6 +80,8 @@ class GPU_GLES2_EXPORT DawnContextProvider {
   Microsoft::WRL::ComPtr<ID3D11Device> GetD3D11Device() const;
 #endif
 
+  bool SupportsFeature(wgpu::FeatureName feature);
+
   absl::optional<error::ContextLostReason> GetResetStatus() const;
 
   void OnError(WGPUErrorType error_type, const char* message);

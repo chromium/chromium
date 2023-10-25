@@ -48,9 +48,9 @@ class CSSToStyleMap {
                                 FillLayer*,
                                 const CSSValue&);
   static void MapFillClip(StyleResolverState&, FillLayer*, const CSSValue&);
-  static void MapFillComposite(StyleResolverState&,
-                               FillLayer*,
-                               const CSSValue&);
+  static void MapFillCompositingOperator(StyleResolverState&,
+                                         FillLayer*,
+                                         const CSSValue&);
   static void MapFillBlendMode(StyleResolverState&,
                                FillLayer*,
                                const CSSValue&);

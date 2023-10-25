@@ -101,10 +101,17 @@ AutoPipSettingHelper::CreateOverlayViewIfNeeded(
   }
 }
 
+void AutoPipSettingHelper::IgnoreInputEvents(
+    content::WebContents* web_contents) {
+  CHECK(ui_was_shown_but_not_acknowledged_);
+  scoped_ignore_input_events_ = web_contents->IgnoreInputEvents();
+}
+
 void AutoPipSettingHelper::OnUiResult(AutoPipSettingView::UiResult result) {
   // The UI was both shown and acknoweledged, so we don't have to worry about it
   // being dismissed without being acted on for the permission embargo.
   ui_was_shown_but_not_acknowledged_ = false;
+  scoped_ignore_input_events_.reset();
   switch (result) {
     case AutoPipSettingView::UiResult::kBlock:
       UpdateContentSetting(CONTENT_SETTING_BLOCK);

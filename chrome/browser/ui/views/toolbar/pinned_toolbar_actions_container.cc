@@ -137,11 +137,13 @@ void PinnedToolbarActionsContainer::OnActionAdded(const actions::ActionId& id) {
     return;
   }
   AddPinnedActionButtonFor(id);
+  GetSidePanelCoordinator()->UpdateHeaderPinButtonState();
 }
 
 void PinnedToolbarActionsContainer::OnActionRemoved(
     const actions::ActionId& id) {
   RemovePinnedActionButtonFor(id);
+  GetSidePanelCoordinator()->UpdateHeaderPinButtonState();
 }
 
 void PinnedToolbarActionsContainer::OnActionMoved(const actions::ActionId& id,
@@ -183,4 +185,9 @@ void PinnedToolbarActionsContainer::RemovePinnedActionButtonFor(
   // This returns a unique_ptr which is immediately destroyed.
   RemoveChildViewT(*iter);
   pinned_buttons_.erase(iter);
+}
+
+SidePanelCoordinator* PinnedToolbarActionsContainer::GetSidePanelCoordinator() {
+  return SidePanelUtil::GetSidePanelCoordinatorForBrowser(
+      browser_view_->browser());
 }

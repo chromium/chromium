@@ -48,9 +48,5 @@ std::string DisableSyncTypes(const syncer::UserSelectableTypeSet& types_set,
 // need to be disabled if it is managed by policy.
 absl::optional<PolicyDataType> NameToPolicyDataType(const std::string& type);
 
-// Checks if data retention policies dependency on sync types is enabled by
-// feature.
-bool IsPolicyDependencyEnabled();
-
 }  // namespace browsing_data
 #endif  // COMPONENTS_BROWSING_DATA_CORE_BROWSING_DATA_POLICIES_UTILS_H_

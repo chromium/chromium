@@ -161,7 +161,6 @@ js_library("dialog_footer") {
 }
 
 js_library("dialogs") {
-  deps = [ "//ui/file_manager/file_manager/common/js:util" ]
 }
 
 js_library("directory_tree") {
@@ -494,10 +493,7 @@ js_unittest("install_linux_package_dialog_unittest") {
 }
 
 js_library("import_crostini_image_dialog") {
-  deps = [
-    ":dialogs",
-    "//ui/file_manager/file_manager/common/js:util",
-  ]
+  deps = [ ":dialogs" ]
 }
 
 js_library("list") {

@@ -840,6 +840,12 @@ Politika, Devre dışı değerine ayarlanırsa Chrome Temizleme Aracı düzenli 
 
 <ph name="MS_WIN_NAME" /> işletim sisteminde bu politika yalnızca bir <ph name="MS_AD_NAME" /> veya <ph name="MS_AAD_NAME" /> alan adına katılmış ya da <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.</translation>
 <translation id="1736990730683753958">Gruplar halinde düzenlenmiş Chrome geçmişi sayfası chrome://history/grouped adresinde görülemez.</translation>
+<translation id="1740724790865999129">Bu politikanın belirli bir cihaz türleri listesine ayarlanması, ilgili cihaz türlerine ait alt düzey hata ayıklama verilerinin kullanıcı geri bildirimine eklenmesine olanak tanır.
+
+      "all" özel girişi, gelecekte eklenecek olanlar dahil tüm cihaz türlerini içerir.
+
+      Politika ayarlanmazsa veya boş listeye ayarlanırsa kullanıcı geri bildirimine alt düzey hata ayıklama verisi eklenmez.
+      Eklenecek alt düzey hata ayıklama verisi türleri, cihaz türleriyle ilgili açıklamalarda belirtilmiştir.</translation>
 <translation id="1744340218280697033">Anne veya babaların gözetilen hesap eklemesine izin verme</translation>
 <translation id="1751429117283165017">Bu politika ayarlanırsa kullanıcılardan ana makine işletim sisteminin dosya sisteminde bulunan dosya veya dizinlere yazma erişimi vermelerini isteyemeyecek sitelerin belirtildiği URL kalıpları listesini oluşturabilirsiniz.
 
@@ -1965,6 +1971,10 @@ Bu politika ayarlanmazsa varsayılan ayar, iCloud Drive'ın etkin olup olmadığ
 <translation id="2640898752536996430">Kullanıcının oturumu kapansın.</translation>
 <translation id="264093234299818170">Engellenenler listesinde olanlar dışında tüm yazıcılar gösterilir.</translation>
 <translation id="264252574246191885">Liste dışı</translation>
+<translation id="2644268520085581041">Politika, doğru değerine ayarlanırsa IPv6 erişilebilirlik kontrolü geçersiz kılınır. Bu, sistemin ana makine adlarını çözümlerken AAAA kayıtlarını her zaman sorgulayacağı anlamına gelir. Bu, cihazdaki tüm arayüzler ve kullanıcılar için geçerlidir.
+
+Politika, yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa IPv6 erişilebilirlik kontrolü geçersiz kılınmaz.
+Sistem, AAAA kayıtlarını yalnızca küresel bir IPv6 ana makinesinden cihaza erişilebildiğinde sorgular.</translation>
 <translation id="2647069081229792812">Yer işareti düzenlemesini etkinleştir veya devre dışı bırak</translation>
 <translation id="264771271300359481">Hiçbir sitenin, site pano iznini kullanmasına izin verme</translation>
 <translation id="2649537800219643135">Kullanıcı ekran koruyucusu kilit ekranı resminin kaynağı.</translation>
@@ -2599,6 +2609,7 @@ Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://cloud.google
 <translation id="3192902750888034827"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> açıksa <ph name="DEFAULT_SEARCH_PROVIDER_NEW_TAB_URL_POLICY_NAME" /> politikasının ayarlanması, arama motorunun Yeni Sekme sayfası sağlamak için kullandığı URL'yi belirtir.
 
       <ph name="DEFAULT_SEARCH_PROVIDER_NEW_TAB_URL_POLICY_NAME" /> protokolü ayarlanmadan bırakılırsa yeni sekme sayfası sağlanmaz.</translation>
+<translation id="3195062117832383020">Kullanıcı geri bildirimine alt düzey hata ayıklama verilerinin eklenmesine izin ver</translation>
 <translation id="3195103497550111266">Bu politika <ph name="DEVICE_LTS_TAG_VALUE" /> değerine ayarlanırsa cihazın LTS (uzun süreli destek) güncellemelerini almasına izin verir.</translation>
 <translation id="319608028525745507">SVGUseElement öğesinde Veri URL'si desteğini etkinleştir.</translation>
 <translation id="3196585866522778760">Bu politikanın artık kullanılmadığını ve <ph name="PRODUCT_OS_NAME" /> sürüm 85'te kaldırılacağını unutmayın. Lütfen bunun yerine <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" /> politikasını kullanın.
@@ -4114,6 +4125,7 @@ Politika ayarlanmaz veya boş bırakılırsa varsayılan Yeni Sekme sayfası kul
 <ph name="MS_WIN_NAME" /> işletim sisteminde bu politika yalnızca bir <ph name="MS_AD_NAME" /> veya <ph name="MS_AAD_NAME" /> alan adına katılmış ya da <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.
 
 <ph name="MAC_OS_NAME" /> işletim sisteminde bu politika yalnızca MDM ile çalışan, MCX aracılığıyla bir alan adına katılmış veya <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.</translation>
+<translation id="4461400898496433231">IPv6 erişilebilirlik kontrolünü geçersiz kılma. Ana makine adı çözümlemesi için AAAA kaydını yalnızca küresel bir IPv6 ana makinesinden cihaza erişilebildiğinde sorgula.</translation>
 <translation id="4463675333222095358">Bil Bakalım Birim Dönüşümünü Etkinleştir</translation>
 <translation id="4464365009416584564"><ph name="CHROME_SYNC_NAME" /> işlevini devre dışı bırak</translation>
 <translation id="4467952432486360968">Üçüncü taraf çerezlerini engelle</translation>
@@ -4371,6 +4383,7 @@ Politikanın <ph name="BR_UNDER_USER_CONTROL" /> seçeneğine ayarlanması, kull
 Kullanıcılar, ilk kurulumdan sonra Google konum hizmetlerini açabilir veya kapatabilir.</translation>
 <translation id="4670865688564083639">Minimum:</translation>
 <translation id="467236746355332046">Desteklenen özellikler:</translation>
+<translation id="4672774129073185053">IPv6 erişilebilirlik kontrolünü geçersiz kılmayı etkinleştir</translation>
 <translation id="4674167212832291997">Her zaman <ph name="PRODUCT_FRAME_NAME" /> tarafından oluşturulması gereken URL kalıplarının listesini özelleştirir.
 
           Bu politika ayarlanmazsa, "ChromeFrameRendererSettings" politikasında belirtilen tüm siteler için varsayılan oluşturucu kullanılır.
@@ -6234,6 +6247,7 @@ Ayrıntılı bilgi için https://developer.chrome.com/blog/immutable-document-do
 
       Not: Bu özellik aynı istemci taraflı işleve sahip olduğundan, <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> Etkinse bu politikayı etkinleştirmeyin. Bu durumda Google tarafından barındırılan senkronizasyon tamamen kapalıdır.</translation>
 <translation id="6320935916601887506">Varsayılan olarak yeni offsetParent davranışı kullanılacak.</translation>
+<translation id="632248221998836641">IPv6 erişilebilirlik kontrolünü geçersiz kıl. Ana makine adı çözümlemesi için AAAA kaydını her zaman sorgula.</translation>
 <translation id="6324274808543634377">F11/F12 ayarları, alt tuşu değiştiriciyi içeren kısayolu kullanır</translation>
 <translation id="6327643515544933974">Web USB ayarları</translation>
 <translation id="6330882599388782338">Sitelerin sensörlere erişmesine izin ver</translation>
@@ -7412,6 +7426,7 @@ Politika, Devre Dışı değerine ayarlanırsa kullanıcılar sıfır gecikmeyle
 <translation id="7216442368414164495">Kullanıcıların Güvenli Tarama genişletilmiş raporlamasını etkinleştirmesine izin ver</translation>
 <translation id="721970071627370558">Cihazın güç durumu raporlamasını devre dışı bırak</translation>
 <translation id="7221574724100909818">Güvenli bağlantılar için kilit simgesini kullanın</translation>
+<translation id="7227348936232766462">Kullanıcıların, aşağıdaki tüm cihaz türlerine ait alt düzey hata ayıklama verilerini kullanıcı geri bildirimine eklemesine izin ver</translation>
 <translation id="7229365071755865554">Şifrelerin, şifre yöneticisi kullanılarak kaydedilmesini etkinleştir</translation>
 <translation id="7229975860249300121"><ph name="PRODUCT_NAME" /> dahilinde hangi Google hesaplarının tarayıcı birincil hesapları (senkronizasyonu etkinleştirme akışında seçilen hesap) olarak ayarlanabileceğini belirlemek için kullanılan normal bir ifade içerir.
 

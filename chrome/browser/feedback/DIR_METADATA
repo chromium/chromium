@@ -1,1 +1,4 @@
-mixins: "//components/feedback/COMMON_METADATA"
+# ChromeOS > Data > Engineering > Feedback
+buganizer {
+  component_id: 1033360
+}

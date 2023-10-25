@@ -85,7 +85,11 @@ enum class ShillConnectResult {
   kErrorResultWepNotSupported = 57,
   kErrorDisableHotspotFailed = 58,
 
-  kMaxValue = kErrorDisableHotspotFailed,
+  // Flimflam error options.
+  kErrorInvalidAPN = 59,
+  kErrorSimCarrierLocked = 60,
+
+  kMaxValue = kErrorSimCarrierLocked,
 };
 
 // This enum is used to track user-initiated connection results from
@@ -123,7 +127,38 @@ enum class UserInitiatedConnectResult {
   kErrorCellularDeviceBusy = 25,
   kErrorConnectTimeout = 26,
   kConnectableCellularTimeout = 27,
-  kMaxValue = kConnectableCellularTimeout,
+
+  // Flimflam error options.
+  kErrorAaaFailed = 28,
+  kErrorBadWEPKey = 29,
+  kErrorDNSLookupFailed = 30,
+  kErrorDhcpFailed = 31,
+  kErrorHTTPGetFailed = 32,
+  kErrorInternal = 33,
+  kErrorInvalidFailure = 34,
+  kErrorIpsecCertAuthFailed = 35,
+  kErrorIpsecPskAuthFailed = 36,
+  kErrorNeedEvdo = 37,
+  kErrorNeedHomeNetwork = 38,
+  kErrorNoFailure = 39,
+  kErrorNotAssociated = 40,
+  kErrorNotAuthenticated = 41,
+  kErrorOtaspFailed = 42,
+  kErrorOutOfRange = 43,
+  kErrorPinMissing = 44,
+  kErrorPppAuthFailed = 45,
+  kErrorNotRegistered = 46,
+  kErrorTooManySTAs = 47,
+  kErrorDisconnect = 48,
+  kErrorUnknownFailure = 49,
+  kErrorInvalidAPN = 50,
+  kErrorSimCarrierLocked = 51,
+  kErrorEapAuthenticationFailed = 52,
+  kErrorEapLocalTlsFailed = 53,
+  kErrorEapRemoteTlsFailed = 54,
+  kErrorResultWepNotSupported = 55,
+
+  kMaxValue = kErrorResultWepNotSupported,
 };
 
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
@@ -131,7 +166,8 @@ ShillConnectResult ShillErrorToConnectResult(const std::string& error_name);
 
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 UserInitiatedConnectResult NetworkConnectionErrorToConnectResult(
-    const std::string& error_name);
+    const std::string& error_name,
+    const std::string& shill_error);
 
 }  // namespace ash
 

@@ -15,6 +15,7 @@
 #include "components/password_manager/content/browser/bad_message.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/password_manager/content/browser/form_meta_data.h"
+#include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_recorder.h"
@@ -280,9 +281,16 @@ void ContentPasswordManagerDriver::PasswordFormsParsed(
   if (!HasValidURL(render_frame_host_))
     return;
 
+  auto logger =
+      std::make_unique<password_manager::BrowserSavePasswordProgressLogger>(
+          client_->GetLogManager());
   std::vector<autofill::FormData> forms = raw_forms;
-  for (auto& form : forms)
+  for (auto& form : forms) {
     SetFrameAndFormMetaData(render_frame_host_, form);
+    logger->LogFormData(password_manager::BrowserSavePasswordProgressLogger::
+                            STRING_FORM_IS_PASSWORD,
+                        form);
+  }
 
   GetPasswordManager()->OnPasswordFormsParsed(this, forms);
 }

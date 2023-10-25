@@ -50,12 +50,12 @@ void SubAppsInstallDialogController::Init(
 
   widget_ = CreateSubAppsInstallDialogWidget(parent_app_name, parent_app_scope,
                                              sub_apps, window);
-  widget_->AddObserver(this);
+  widget_observation_.Observe(widget_);
   widget_->Show();
 }
 
 void SubAppsInstallDialogController::OnWidgetDestroying(views::Widget* widget) {
-  widget_->RemoveObserver(this);
+  widget_observation_.Reset();
   widget_ = nullptr;
   switch (widget->closed_reason()) {
     case views::Widget::ClosedReason::kAcceptButtonClicked:
@@ -77,10 +77,9 @@ views::Widget* SubAppsInstallDialogController::GetWidgetForTesting() {
 
 SubAppsInstallDialogController::~SubAppsInstallDialogController() {
   if (widget_) {
-    widget_->RemoveObserver(this);
+    widget_observation_.Reset();
     widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
   }
-  CHECK(!views::WidgetObserver::IsInObserverList());
 }
 
 }  // namespace web_app

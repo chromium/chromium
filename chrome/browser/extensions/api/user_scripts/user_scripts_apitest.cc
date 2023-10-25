@@ -103,7 +103,6 @@ class PersistentUserScriptsAPITest : public UserScriptsAPITest {
 // across three sessions.
 IN_PROC_BROWSER_TEST_F(PersistentUserScriptsAPITest,
                        PRE_PRE_PersistentScripts) {
-  LOG(INFO) << "PRE_PRE_PersistentScripts";
   const Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("user_scripts/persistent_scripts"));
   ASSERT_TRUE(extension);
@@ -114,7 +113,6 @@ IN_PROC_BROWSER_TEST_F(PersistentUserScriptsAPITest,
 }
 
 IN_PROC_BROWSER_TEST_F(PersistentUserScriptsAPITest, PRE_PersistentScripts) {
-  LOG(INFO) << "PRE_PersistentScripts";
   ASSERT_TRUE(listener_->WaitUntilSatisfied());
   listener_->Reply(
       testing::UnitTest::GetInstance()->current_test_info()->name());
@@ -122,7 +120,6 @@ IN_PROC_BROWSER_TEST_F(PersistentUserScriptsAPITest, PRE_PersistentScripts) {
 }
 
 IN_PROC_BROWSER_TEST_F(PersistentUserScriptsAPITest, PersistentScripts) {
-  LOG(INFO) << "PersistentScripts";
   ASSERT_TRUE(listener_->WaitUntilSatisfied());
   listener_->Reply(
       testing::UnitTest::GetInstance()->current_test_info()->name());

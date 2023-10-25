@@ -18,7 +18,6 @@
 #include "components/sync/engine/commit_and_get_updates_types.h"
 
 namespace bookmarks {
-class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
 
@@ -28,6 +27,7 @@ class FaviconService;
 
 namespace sync_bookmarks {
 
+class BookmarkModelView;
 class SyncedBookmarkTracker;
 
 // Responsible for merging local and remote bookmark models when bookmark sync
@@ -39,7 +39,7 @@ class BookmarkModelMerger {
   // |bookmark_model|, |favicon_service| and |bookmark_tracker| must not be
   // null and must outlive this object.
   BookmarkModelMerger(syncer::UpdateResponseDataList updates,
-                      bookmarks::BookmarkModel* bookmark_model,
+                      BookmarkModelView* bookmark_model,
                       favicon::FaviconService* favicon_service,
                       SyncedBookmarkTracker* bookmark_tracker);
 
@@ -143,7 +143,7 @@ class BookmarkModelMerger {
   // that is not compatible (e.g. folder vs non-folder).
   static std::unordered_map<base::Uuid, GuidMatch, base::UuidHash>
   FindGuidMatchesOrReassignLocal(const RemoteForest& remote_forest,
-                                 bookmarks::BookmarkModel* bookmark_model);
+                                 BookmarkModelView* bookmark_model);
 
   // Merges a local and a remote subtrees. The input nodes are two equivalent
   // local and remote nodes. This method tries to recursively match their
@@ -219,7 +219,7 @@ class BookmarkModelMerger {
   // long operations like BuildRemoteForest().
   const base::TimeTicks started_ = base::TimeTicks::Now();
 
-  const raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  const raw_ptr<BookmarkModelView> bookmark_model_;
   const raw_ptr<favicon::FaviconService> favicon_service_;
   const raw_ptr<SyncedBookmarkTracker> bookmark_tracker_;
   const size_t remote_updates_size_;

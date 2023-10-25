@@ -110,7 +110,7 @@ class MockSubscriptionManager : public PerUserTopicSubscriptionManager {
   }
   ~MockSubscriptionManager() override = default;
   MOCK_METHOD2(UpdateSubscribedTopics,
-               void(const Topics& topics, const std::string& token));
+               void(const TopicMap& topics, const std::string& token));
   MOCK_METHOD0(Init, void());
   MOCK_CONST_METHOD1(LookupSubscribedPublicTopicByPrivateTopic,
                      absl::optional<Topic>(const std::string& private_topic));
@@ -130,7 +130,7 @@ class FCMInvalidationListenerTest : public testing::Test {
   void SetUp() override {
     StartListener();
 
-    Topics initial_topics;
+    TopicMap initial_topics;
     initial_topics.emplace(kBookmarksTopic_, TopicMetadata{false});
     initial_topics.emplace(kPreferencesTopic_, TopicMetadata{true});
     listener_.UpdateInterestedTopics(initial_topics);
@@ -255,7 +255,7 @@ TEST_F(FCMInvalidationListenerTest, ManyInvalidations_NoDrop) {
 TEST_F(FCMInvalidationListenerTest, InvalidateBeforeRegistration_Simple) {
   const Topic kUnregisteredId = "unregistered";
   const Topic& topic = kUnregisteredId;
-  Topics topics;
+  TopicMap topics;
   topics.emplace(topic, TopicMetadata{false});
 
   EXPECT_EQ(0U, GetInvalidationCount(topic));
@@ -278,7 +278,7 @@ TEST_F(FCMInvalidationListenerTest, InvalidateBeforeRegistration_Drop) {
   const int kRepeatCount = 10;
   const Topic kTopicA = "unregistered topic a";
   const Topic kTopicB = "unregistered topic b";
-  Topics topics;
+  TopicMap topics;
   topics.emplace(kTopicA, TopicMetadata{false});
   topics.emplace(kTopicB, TopicMetadata{false});
 

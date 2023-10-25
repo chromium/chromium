@@ -955,6 +955,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     { key::kMicrosoftOneDriveMount,
     prefs::kMicrosoftOneDriveMount,
     base::Value::Type::STRING},
+  { key::kMicrosoftOneDriveAccountRestrictions,
+    prefs::kMicrosoftOneDriveAccountRestrictions,
+    base::Value::Type::LIST},
   { key::kExtensionOAuthRedirectUrls,
     extensions::pref_names::kOAuthRedirectUrls,
     base::Value::Type::DICT },
@@ -2038,6 +2041,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
 #endif
   { key::kIPv6ReachabilityOverrideEnabled,
     prefs::kIPv6ReachabilityOverrideEnabled,
+    base::Value::Type::BOOLEAN },
+  { key::kPrivateNetworkAccessRestrictionsEnabled,
+    prefs::kManagedPrivateNetworkAccessRestrictionsEnabled,
     base::Value::Type::BOOLEAN },
 };
 // clang-format on

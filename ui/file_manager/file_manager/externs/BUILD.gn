@@ -50,10 +50,6 @@ js_library("directory_change_event") {
   deps = [ ":files_app_entry_interfaces" ]
 }
 
-js_library("entries_changed_event") {
-  deps = [ "//ui/file_manager/file_manager/common/js:util" ]
-}
-
 js_library("entry_location") {
   deps = [ "//ui/file_manager/file_manager/common/js:volume_manager_types" ]
 }

@@ -93,7 +93,6 @@
 <translation id="1643449475550628585">Araw-araw na palitan ang larawan sa wallpaper</translation>
 <translation id="1644574205037202324">History</translation>
 <translation id="1651925268237749928">Pumili ka ng naka-share na album. Puwedeng magdagdag o magbago ng mga larawan ang ibang tao. Posibleng gumagamit ang iyong wallpaper ng mga larawang kasalukuyang wala sa album na ito.</translation>
-<translation id="1658834457013045127">Habambuhay</translation>
 <translation id="1661865805917886535">Puwedeng ipadala sa Google ang ilang impormasyon ng account at system. Gagamitin namin ang impormasyong ito para makatulong na lutasin ang mga teknikal na isyu at pahusayin ang aming mga serbisyo, na napapailalim sa aming Patakaran sa Privacy (<ph name="PRIVACYPOLICYURL" />) at Mga Tuntunin ng Serbisyo (<ph name="TERMSOFSERVICEURL" />). Para mag-request ng mga pagbabago sa content, pumunta sa Legal na Tulong (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Huminto - Wala nang ink</translation>
 <translation id="1664796644829245314">I-preview ang <ph name="PREVIEW_OBJECT" /></translation>
@@ -323,7 +322,6 @@
 <translation id="3484914941826596830">Habang nag-a-update ang firmware, huwag alisin sa pagkakasaksak ang external device na ito o i-shut down ang iyong computer. Puwede mong i-minimize ang window na ito. Posibleng tumagal nang ilang minuto ang update na ito at posibleng hindi gumana ang iyong external device sa panahong ito.</translation>
 <translation id="3486220673238053218">kahulugan</translation>
 <translation id="3488065109653206955">Bahagyang na-activate</translation>
-<translation id="349491921221892984"><ph name="MINUTES" /> (na) minuto</translation>
 <translation id="3502426834823382181">tingnan ang lahat ng app</translation>
 <translation id="3510890413042482857">Ipadala ang <ph name="BEGIN_LINK1" />data ng pagte-trace sa performance<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Update sa Chrome OS</translation>
@@ -484,7 +482,6 @@
 <translation id="473775607612524610">I-update</translation>
 <translation id="4771607256327216405">pagliliwanag ng keyboard</translation>
 <translation id="4773299976671772492">Inihinto</translation>
-<translation id="4782003517030001304">1 oras</translation>
 <translation id="4782311465517282004">Makakuha ng mga kahulugan, pagsasalin, o conversion ng unit kapag nag-right click ka sa o pinindot mo nang matagal ang text</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> larawan</translation>
 <translation id="4793710386569335688">Para sa higit pang tulong, pumunta sa <ph name="BEGIN_LINK" />Help Center<ph name="END_LINK" />.</translation>
@@ -699,6 +696,7 @@
 <translation id="629550705077076970">pag-dim ng keyboard</translation>
 <translation id="6302401976930124515">Nakansela ang pagsubok na <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">Explore app</translation>
+<translation id="6318437367327684789">habambuhay</translation>
 <translation id="6319207335391420837">I-update ang firmware sa <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">I-on ang screen saver</translation>
 <translation id="6324916366299863871">I-edit ang shortcut</translation>
@@ -1012,6 +1010,7 @@
 <translation id="8747900814994928677">Kumpirmahin ang pagbabago</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album sa Google Photos</translation>
+<translation id="8775713578693478175">Modem APN</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8789196995628578448">Ginagamit ang shortcut para sa "<ph name="CONFLICT_ACCEL_NAME" />". Pumindot ng bagong shortcut. Para palitan ang orihinal na shortcut, pindutin ulit ang shortcut na ito.</translation>
 <translation id="879568662008399081">Posibleng may captive portal ang network na ito</translation>

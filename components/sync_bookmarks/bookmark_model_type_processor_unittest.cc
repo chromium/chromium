@@ -19,7 +19,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
-#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/sync/base/client_tag_hash.h"
@@ -32,8 +31,10 @@
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/test/mock_commit_queue.h"
+#include "components/sync_bookmarks/bookmark_model_view.h"
 #include "components/sync_bookmarks/switches.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker_entity.h"
+#include "components/sync_bookmarks/test_bookmark_model_view.h"
 #include "components/undo/bookmark_undo_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -166,7 +167,7 @@ sync_pb::BookmarkMetadata CreateUnsyncedNodeMetadata(
 }
 
 sync_pb::BookmarkModelMetadata CreateMetadataForPermanentNodes(
-    const bookmarks::BookmarkModel* bookmark_model) {
+    const BookmarkModelView* bookmark_model) {
   sync_pb::BookmarkModelMetadata model_metadata;
   *model_metadata.mutable_model_type_state() = CreateDummyModelTypeState();
 
@@ -247,7 +248,7 @@ class BookmarkModelTypeProcessorTest : public testing::Test {
       : processor_(std::make_unique<BookmarkModelTypeProcessor>(
             &bookmark_undo_service_,
             syncer::WipeModelUponSyncDisabledBehavior::kNever)),
-        bookmark_model_(bookmarks::TestBookmarkClient::CreateModel()) {
+        bookmark_model_(std::make_unique<TestBookmarkModelView>()) {
     processor_->SetFaviconService(&favicon_service_);
   }
 
@@ -319,10 +320,9 @@ class BookmarkModelTypeProcessorTest : public testing::Test {
 
   void DestroyBookmarkModel() { bookmark_model_.reset(); }
 
-  bookmarks::BookmarkModel* bookmark_model() { return bookmark_model_.get(); }
+  TestBookmarkModelView* bookmark_model() { return bookmark_model_.get(); }
   bookmarks::TestBookmarkClient* bookmark_client() {
-    return static_cast<bookmarks::TestBookmarkClient*>(
-        bookmark_model_->client());
+    return bookmark_model_->underlying_client();
   }
   BookmarkUndoService* bookmark_undo_service() {
     return &bookmark_undo_service_;
@@ -368,7 +368,7 @@ class BookmarkModelTypeProcessorTest : public testing::Test {
   NiceMock<favicon::MockFaviconService> favicon_service_;
   NiceMock<syncer::MockCommitQueue> mock_commit_queue_;
   std::unique_ptr<BookmarkModelTypeProcessor> processor_;
-  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  std::unique_ptr<TestBookmarkModelView> bookmark_model_;
 };
 
 TEST_F(BookmarkModelTypeProcessorTest, ShouldDoInitialMerge) {
@@ -1607,10 +1607,14 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
   SimulateModelReadyToSyncWithInitialSyncDone();
   SimulateOnSyncStarting();
-  ASSERT_FALSE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+  ASSERT_FALSE(bookmark_model()
+                   ->underlying_model()
+                   ->HasNoUserCreatedBookmarksOrFolders());
 
   processor()->OnSyncStopping(syncer::CLEAR_METADATA);
-  EXPECT_TRUE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+  EXPECT_TRUE(bookmark_model()
+                  ->underlying_model()
+                  ->HasNoUserCreatedBookmarksOrFolders());
 
   // If the process is repeated, the result should be the same (bookmarks
   // deleted once again). This requires doing initial sync again.
@@ -1621,10 +1625,14 @@ TEST_F(BookmarkModelTypeProcessorTest,
   bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(), /*index=*/0,
                            u"foo", kUrl);
   ASSERT_TRUE(processor()->IsTrackingMetadata());
-  ASSERT_FALSE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+  ASSERT_FALSE(bookmark_model()
+                   ->underlying_model()
+                   ->HasNoUserCreatedBookmarksOrFolders());
 
   processor()->OnSyncStopping(syncer::CLEAR_METADATA);
-  EXPECT_TRUE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+  EXPECT_TRUE(bookmark_model()
+                  ->underlying_model()
+                  ->HasNoUserCreatedBookmarksOrFolders());
 }
 
 TEST_F(BookmarkModelTypeProcessorTest,
@@ -1641,18 +1649,26 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
   SimulateModelReadyToSyncWithInitialSyncDone();
   SimulateOnSyncStarting();
-  ASSERT_FALSE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+  ASSERT_FALSE(bookmark_model()
+                   ->underlying_model()
+                   ->HasNoUserCreatedBookmarksOrFolders());
 
   processor()->OnSyncStopping(syncer::CLEAR_METADATA);
-  EXPECT_TRUE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+  EXPECT_TRUE(bookmark_model()
+                  ->underlying_model()
+                  ->HasNoUserCreatedBookmarksOrFolders());
 
   // If the process is repeated, the deletion should not happen.
   bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(), /*index=*/0,
                            u"foo", kUrl);
   SimulateOnSyncStarting();
-  ASSERT_FALSE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+  ASSERT_FALSE(bookmark_model()
+                   ->underlying_model()
+                   ->HasNoUserCreatedBookmarksOrFolders());
   processor()->OnSyncStopping(syncer::CLEAR_METADATA);
-  EXPECT_FALSE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+  EXPECT_FALSE(bookmark_model()
+                   ->underlying_model()
+                   ->HasNoUserCreatedBookmarksOrFolders());
 }
 
 TEST_F(BookmarkModelTypeProcessorTest,
@@ -1668,10 +1684,14 @@ TEST_F(BookmarkModelTypeProcessorTest,
   bookmark_model()->AddURL(folder, /*index=*/0, u"bar", kUrl);
 
   SimulateModelReadyToSyncWithoutLocalMetadata();
-  ASSERT_FALSE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+  ASSERT_FALSE(bookmark_model()
+                   ->underlying_model()
+                   ->HasNoUserCreatedBookmarksOrFolders());
 
   processor()->OnSyncStopping(syncer::CLEAR_METADATA);
-  EXPECT_FALSE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+  EXPECT_FALSE(bookmark_model()
+                   ->underlying_model()
+                   ->HasNoUserCreatedBookmarksOrFolders());
 }
 
 TEST_F(BookmarkModelTypeProcessorTest,
@@ -1687,7 +1707,9 @@ TEST_F(BookmarkModelTypeProcessorTest,
   bookmark_model()->AddURL(folder, /*index=*/0, u"bar", kUrl);
 
   SimulateModelReadyToSyncWithoutLocalMetadata();
-  ASSERT_FALSE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+  ASSERT_FALSE(bookmark_model()
+                   ->underlying_model()
+                   ->HasNoUserCreatedBookmarksOrFolders());
 
   // In most cases, because of how SyncServiceImpl behaves, OnSyncStopping()
   // would be called upon startup. To be extra safe, BookmarkModelTypeProcessor
@@ -1701,7 +1723,9 @@ TEST_F(BookmarkModelTypeProcessorTest,
   EXPECT_TRUE(processor()->IsTrackingMetadata());
 
   processor()->OnSyncStopping(syncer::CLEAR_METADATA);
-  EXPECT_FALSE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+  EXPECT_FALSE(bookmark_model()
+                   ->underlying_model()
+                   ->HasNoUserCreatedBookmarksOrFolders());
 }
 
 TEST_F(BookmarkModelTypeProcessorTest,
@@ -1767,7 +1791,9 @@ TEST_F(BookmarkModelTypeProcessorTest,
                            u"foo", GURL("http://www.example.com"));
 
   ASSERT_TRUE(processor()->IsTrackingMetadata());
-  ASSERT_FALSE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+  ASSERT_FALSE(bookmark_model()
+                   ->underlying_model()
+                   ->HasNoUserCreatedBookmarksOrFolders());
 
   base::HistogramTester histogram_tester;
 
@@ -1782,7 +1808,9 @@ TEST_F(BookmarkModelTypeProcessorTest,
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 1);
 
   // Local bookmarks should have been deleted.
-  EXPECT_TRUE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+  EXPECT_TRUE(bookmark_model()
+                  ->underlying_model()
+                  ->HasNoUserCreatedBookmarksOrFolders());
 }
 
 TEST_F(BookmarkModelTypeProcessorTest,
@@ -1808,7 +1836,9 @@ TEST_F(BookmarkModelTypeProcessorTest,
       GURL("http://www.example.com"));
 
   ASSERT_FALSE(processor()->IsTrackingMetadata());
-  ASSERT_FALSE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+  ASSERT_FALSE(bookmark_model()
+                   ->underlying_model()
+                   ->HasNoUserCreatedBookmarksOrFolders());
 
   sync_pb::BookmarkModelMetadata model_metadata =
       CreateMetadataForPermanentNodes(bookmark_model());
@@ -1832,7 +1862,9 @@ TEST_F(BookmarkModelTypeProcessorTest,
       "Sync.ClearMetadataWhileStopped.DelayedClear", 1);
 
   // Local bookmarks should have been deleted.
-  EXPECT_TRUE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+  EXPECT_TRUE(bookmark_model()
+                  ->underlying_model()
+                  ->HasNoUserCreatedBookmarksOrFolders());
 }
 
 TEST_F(BookmarkModelTypeProcessorTest, ShouldWipeBookmarksIfCacheGuidMismatch) {
@@ -1842,14 +1874,18 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldWipeBookmarksIfCacheGuidMismatch) {
   bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(), /*index=*/0,
                            u"foo", GURL("http://www.example.com"));
 
-  ASSERT_FALSE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+  ASSERT_FALSE(bookmark_model()
+                   ->underlying_model()
+                   ->HasNoUserCreatedBookmarksOrFolders());
 
   SimulateOnSyncStarting("unexpected_cache_guid");
 
   EXPECT_FALSE(processor()->IsTrackingMetadata());
 
   // Local bookmarks should have been deleted.
-  EXPECT_TRUE(bookmark_model()->HasNoUserCreatedBookmarksOrFolders());
+  EXPECT_TRUE(bookmark_model()
+                  ->underlying_model()
+                  ->HasNoUserCreatedBookmarksOrFolders());
 }
 
 }  // namespace

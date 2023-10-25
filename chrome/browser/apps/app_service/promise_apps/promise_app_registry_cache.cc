@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_metrics.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_update.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_utils.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_wrapper.h"
@@ -52,6 +53,7 @@ void PromiseAppRegistryCache::OnPromiseApp(PromiseAppPtr delta) {
   } else {
     // Add the promise app instance to the cache if it isn't registered yet.
     promise_app_map_[delta->package_id] = delta->Clone();
+    RecordPromiseAppLifecycleEvent(PromiseAppLifecycleEvent::kCreatedInCache);
   }
 
   for (auto& observer : observers_) {
@@ -62,6 +64,10 @@ void PromiseAppRegistryCache::OnPromiseApp(PromiseAppPtr delta) {
   if (IsPromiseAppCompleted(delta->status)) {
     const PackageId package_id = delta->package_id;
     promise_app_map_.erase(package_id);
+    RecordPromiseAppLifecycleEvent(
+        delta->status == PromiseStatus::kSuccess
+            ? PromiseAppLifecycleEvent::kInstallationSucceeded
+            : PromiseAppLifecycleEvent::kInstallationCancelled);
     for (auto& observer : observers_) {
       observer.OnPromiseAppRemoved(package_id);
     }

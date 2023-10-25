@@ -102,7 +102,7 @@ enum class DeviceSyncSetSoftwareFeature {
   kBetterTogetherSuite = 1,
   kSmartLock = 2,
   kInstantTethering = 3,
-  // 4 is deprecated.
+  kMessages = 4,
   kUnexpectedClientFeature = 5,
   kMaxValue = kUnexpectedClientFeature
 };
@@ -193,6 +193,8 @@ DeviceSyncSetSoftwareFeature GetDeviceSyncSoftwareFeature(
       return DeviceSyncSetSoftwareFeature::kSmartLock;
     case multidevice::SoftwareFeature::kInstantTetheringHost:
       return DeviceSyncSetSoftwareFeature::kInstantTethering;
+    case multidevice::SoftwareFeature::kMessagesForWebHost:
+      return DeviceSyncSetSoftwareFeature::kMessages;
     default:
       NOTREACHED();
       return DeviceSyncSetSoftwareFeature::kUnexpectedClientFeature;

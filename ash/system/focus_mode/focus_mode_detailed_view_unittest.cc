@@ -113,6 +113,10 @@ class FocusModeDetailedViewTest : public AshTestBase {
     return focus_mode_detailed_view_->timer_countdown_view_;
   }
 
+  views::Label* GetEndTimeLabel() {
+    return focus_mode_detailed_view_->end_time_label_;
+  }
+
   FakeDetailedViewDelegate detailed_view_delegate_;
 
  private:
@@ -246,19 +250,17 @@ TEST_F(FocusModeDetailedViewTest, ToggleRow) {
     EXPECT_EQ(active, focus_mode_controller->in_focus_session());
     EXPECT_EQ(active ? u"Focusing" : u"Focus", GetToggleRowLabel()->GetText());
 
-    const base::Time now = base::Time::Now();
-    const base::TimeDelta session_duration =
-        focus_mode_controller->session_duration();
-    const int remaining_minutes =
-        active ? (focus_mode_controller->end_time() - now).InMinutes()
-               : session_duration.InMinutes();
+    EXPECT_EQ(active,
+              GetToggleRowSubLabel() && GetToggleRowSubLabel()->GetVisible());
 
-    EXPECT_EQ(base::UTF8ToUTF16(base::StringPrintf(
-                  "%d min ⋅ Until %s", remaining_minutes,
-                  base::UTF16ToUTF8(focus_mode_util::GetFormattedClockString(
-                                        now + session_duration))
-                      .c_str())),
-              GetToggleRowSubLabel()->GetText());
+    if (active) {
+      EXPECT_EQ(base::UTF8ToUTF16(base::StringPrintf(
+                    "Until %s",
+                    base::UTF16ToUTF8(focus_mode_util::GetFormattedClockString(
+                                          focus_mode_controller->end_time()))
+                        .c_str())),
+                GetToggleRowSubLabel()->GetText());
+    }
     EXPECT_EQ(active ? u"End" : u"Start", GetToggleRowButton()->GetText());
   };
 
@@ -269,9 +271,8 @@ TEST_F(FocusModeDetailedViewTest, ToggleRow) {
   LeftClickOn(GetToggleRowButton());
   CreateFakeFocusModeDetailedView();
 
-  // Wait a second to avoid the time remaining being either 1500 seconds or
-  // 1499.99 seconds.
-  task_environment()->FastForwardBy(base::Seconds(1));
+  // Wait a minute to test that the time remaining label updates.
+  task_environment()->FastForwardBy(base::Seconds(61));
   validate_labels(/*active=*/true);
 
   LeftClickOn(GetToggleRowButton());
@@ -485,6 +486,15 @@ TEST_F(FocusModeDetailedViewTest, TimerViewVisibility) {
   EXPECT_FALSE(countdown_view->GetVisible());
   EXPECT_TRUE(timer_setting_view->GetVisible());
 
+  const base::TimeDelta session_duration =
+      focus_mode_controller->session_duration();
+  EXPECT_EQ(base::UTF8ToUTF16(base::StringPrintf(
+                "Until %s",
+                base::UTF16ToUTF8(focus_mode_util::GetFormattedClockString(
+                                      base::Time::Now() + session_duration))
+                    .c_str())),
+            GetEndTimeLabel()->GetText());
+
   // In a focus session the countdown view should be visible and the timer view
   // hidden.
   focus_mode_controller->ToggleFocusMode();
@@ -502,6 +512,12 @@ TEST_F(FocusModeDetailedViewTest, TimerViewVisibility) {
   EXPECT_FALSE(focus_mode_controller->in_focus_session());
   EXPECT_FALSE(countdown_view->GetVisible());
   EXPECT_TRUE(timer_setting_view->GetVisible());
+  EXPECT_EQ(base::UTF8ToUTF16(base::StringPrintf(
+                "Until %s",
+                base::UTF16ToUTF8(focus_mode_util::GetFormattedClockString(
+                                      base::Time::Now() + session_duration))
+                    .c_str())),
+            GetEndTimeLabel()->GetText());
 }
 
 }  // namespace ash

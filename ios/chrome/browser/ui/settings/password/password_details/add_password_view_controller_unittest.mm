@@ -295,7 +295,7 @@ TEST_F(AddPasswordViewControllerTest,
   EXPECT_FALSE(delegate_.showExistingCredentialCalled);
 
   // Deliver successful auth result.
-  [mock_reauthentication_module_ returnMockedReathenticationResult];
+  [mock_reauthentication_module_ returnMockedReauthenticationResult];
 
   // Delegate should have been called now.
   EXPECT_TRUE(delegate_.showExistingCredentialCalled);

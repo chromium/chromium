@@ -6,23 +6,14 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <memory>
 #include <string>
-#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/base64.h"
-#include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial.h"
-#include "base/metrics/metrics_hashes.h"
-#include "base/run_loop.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -32,51 +23,30 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
-#include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/payments/better_auth_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_flow_metrics.h"
-#include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
-#include "components/autofill/core/browser/payments/payments_requests/unmask_card_request.h"
 #include "components/autofill/core/browser/payments/test/test_credit_card_otp_authenticator.h"
-#include "components/autofill/core/browser/payments/test/test_credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/test_payments_client.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_clock.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
-#include "components/autofill/core/common/autofill_switches.h"
-#include "components/autofill/core/common/autofill_util.h"
-#include "components/autofill/core/common/form_data.h"
-#include "components/prefs/pref_service.h"
-#include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/variations/scoped_variations_ids_provider.h"
-#include "components/version_info/channel.h"
-#include "net/base/url_util.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/geometry/rect.h"
-#include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 #include "components/autofill/core/browser/payments/test_credit_card_fido_authenticator.h"
@@ -448,13 +418,10 @@ class CreditCardAccessManagerTest : public testing::Test {
     credit_card_access_manager().FetchCreditCard(virtual_card,
                                                  accessor_->GetWeakPtr());
 
-    // Ensures the UnmaskRequestDetails is populated with correct contents.
-    EXPECT_TRUE(payments_client().unmask_request()->context_token.empty());
-    EXPECT_FALSE(payments_client().unmask_request()->risk_data.empty());
-    EXPECT_TRUE(payments_client()
-                    .unmask_request()
-                    ->last_committed_primary_main_frame_origin.has_value());
-
+    // This checks risk-based authentication flow is successfully invoked,
+    // because it is always the very first authentication flow in a VCN
+    // unmasking flow.
+    EXPECT_TRUE(autofill_client_.risk_based_authentication_invoked());
     // Mock server response with information regarding VCN auth.
     payments::PaymentsClient::UnmaskResponseDetails response;
     response.context_token = "fake_context_token";
@@ -463,8 +430,9 @@ class CreditCardAccessManagerTest : public testing::Test {
     if (fido_authenticator_is_user_opted_in)
       response.fido_request_options = GetTestRequestOptions();
 #endif
-    credit_card_access_manager().OnVirtualCardUnmaskResponseReceivedForTesting(
-        AutofillClient::PaymentsRpcResult::kSuccess, response);
+    credit_card_access_manager()
+        .OnVirtualCardRiskBasedAuthenticationResponseReceived(
+            AutofillClient::PaymentsRpcResult::kSuccess, response);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
     // This if-statement ensures that fido-related flows run correctly.
@@ -791,13 +759,10 @@ TEST_P(CreditCardAccessManagerMandatoryReauthTest,
   credit_card_access_manager().FetchCreditCard(virtual_card,
                                                accessor_->GetWeakPtr());
 
-  // Ensures the UnmaskRequestDetails is populated with correct contents.
-  EXPECT_TRUE(payments_client().unmask_request()->context_token.empty());
-  EXPECT_FALSE(payments_client().unmask_request()->risk_data.empty());
-  EXPECT_TRUE(payments_client()
-                  .unmask_request()
-                  ->last_committed_primary_main_frame_origin.has_value());
-
+  // This checks risk-based authentication flow is successfully invoked,
+  // because it is always the very first authentication flow in a VCN
+  // unmasking flow.
+  EXPECT_TRUE(autofill_client_.risk_based_authentication_invoked());
   // Mock server response with valid card information.
   payments::PaymentsClient::UnmaskResponseDetails response;
   response.real_pan = "4111111111111111";
@@ -809,8 +774,9 @@ TEST_P(CreditCardAccessManagerMandatoryReauthTest,
   // TODO(crbug/1489440): Extract shared boilerplate code out for
   // CreditCardAccessManagerMandatoryReauthTest tests.
   SetUpDeviceAuthenticatorResponseMock();
-  credit_card_access_manager().OnVirtualCardUnmaskResponseReceivedForTesting(
-      AutofillClient::PaymentsRpcResult::kSuccess, response);
+  credit_card_access_manager()
+      .OnVirtualCardRiskBasedAuthenticationResponseReceived(
+          AutofillClient::PaymentsRpcResult::kSuccess, response);
 
   // Ensure the accessor received the correct response.
   if (IsMandatoryReauthEnabled() && !MandatoryReauthResponseIsSuccess()) {
@@ -2823,13 +2789,10 @@ TEST_F(CreditCardAccessManagerTest, RiskBasedVirtualCardUnmasking_Success) {
   credit_card_access_manager().FetchCreditCard(virtual_card,
                                                accessor_->GetWeakPtr());
 
-  // Ensures the UnmaskRequestDetails is populated with correct contents.
-  EXPECT_TRUE(payments_client().unmask_request()->context_token.empty());
-  EXPECT_FALSE(payments_client().unmask_request()->risk_data.empty());
-  EXPECT_TRUE(payments_client()
-                  .unmask_request()
-                  ->last_committed_primary_main_frame_origin.has_value());
-
+  // This checks risk-based authentication flow is successfully invoked,
+  // because it is always the very first authentication flow in a VCN
+  // unmasking flow.
+  EXPECT_TRUE(autofill_client_.risk_based_authentication_invoked());
   // Mock server response with valid card information.
   payments::PaymentsClient::UnmaskResponseDetails response;
   response.real_pan = "4111111111111111";
@@ -2837,8 +2800,9 @@ TEST_F(CreditCardAccessManagerTest, RiskBasedVirtualCardUnmasking_Success) {
   response.expiration_month = test::NextMonth();
   response.expiration_year = test::NextYear();
   response.card_type = AutofillClient::PaymentsRpcCardType::kVirtualCard;
-  credit_card_access_manager().OnVirtualCardUnmaskResponseReceivedForTesting(
-      AutofillClient::PaymentsRpcResult::kSuccess, response);
+  credit_card_access_manager()
+      .OnVirtualCardRiskBasedAuthenticationResponseReceived(
+          AutofillClient::PaymentsRpcResult::kSuccess, response);
 
   // Ensure the accessor received the correct response.
   EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
@@ -3032,19 +2996,17 @@ TEST_F(CreditCardAccessManagerTest,
   credit_card_access_manager().FetchCreditCard(virtual_card,
                                                accessor_->GetWeakPtr());
 
-  // Ensures the UnmaskRequestDetails is populated with correct contents.
-  EXPECT_TRUE(payments_client().unmask_request()->context_token.empty());
-  EXPECT_FALSE(payments_client().unmask_request()->risk_data.empty());
-  EXPECT_TRUE(payments_client()
-                  .unmask_request()
-                  ->last_committed_primary_main_frame_origin.has_value());
-
+  // This checks risk-based authentication flow is successfully invoked,
+  // because it is always the very first authentication flow in a VCN
+  // unmasking flow.
+  EXPECT_TRUE(autofill_client_.risk_based_authentication_invoked());
   // Mock server response with information regarding FIDO auth.
   payments::PaymentsClient::UnmaskResponseDetails response;
   response.context_token = "fake_context_token";
   response.fido_request_options = GetTestRequestOptions();
-  credit_card_access_manager().OnVirtualCardUnmaskResponseReceivedForTesting(
-      AutofillClient::PaymentsRpcResult::kSuccess, response);
+  credit_card_access_manager()
+      .OnVirtualCardRiskBasedAuthenticationResponseReceived(
+          AutofillClient::PaymentsRpcResult::kSuccess, response);
 
   // Expect the CreditCardAccessManager invokes the FIDO authenticator.
   ASSERT_TRUE(fido_authenticator().authenticate_invoked());
@@ -3092,13 +3054,10 @@ TEST_F(
   credit_card_access_manager().FetchCreditCard(virtual_card,
                                                accessor_->GetWeakPtr());
 
-  // Ensures the UnmaskRequestDetails is populated with correct contents.
-  EXPECT_TRUE(payments_client().unmask_request()->context_token.empty());
-  EXPECT_FALSE(payments_client().unmask_request()->risk_data.empty());
-  EXPECT_TRUE(payments_client()
-                  .unmask_request()
-                  ->last_committed_primary_main_frame_origin.has_value());
-
+  // This checks risk-based authentication flow is successfully invoked,
+  // because it is always the very first authentication flow in a VCN
+  // unmasking flow.
+  EXPECT_TRUE(autofill_client_.risk_based_authentication_invoked());
   // Mock server response with information regarding both FIDO and OTP auth.
   payments::PaymentsClient::UnmaskResponseDetails response;
   response.context_token = "fake_context_token";
@@ -3107,8 +3066,9 @@ TEST_F(
           {CardUnmaskChallengeOptionType::kSmsOtp})[0];
   response.card_unmask_challenge_options.emplace_back(challenge_option);
   response.fido_request_options = GetTestRequestOptions();
-  credit_card_access_manager().OnVirtualCardUnmaskResponseReceivedForTesting(
-      AutofillClient::PaymentsRpcResult::kSuccess, response);
+  credit_card_access_manager()
+      .OnVirtualCardRiskBasedAuthenticationResponseReceived(
+          AutofillClient::PaymentsRpcResult::kSuccess, response);
 
   // Expect the CreditCardAccessManager invokes the FIDO authenticator.
   ASSERT_TRUE(fido_authenticator().authenticate_invoked());
@@ -3216,19 +3176,17 @@ TEST_F(
   credit_card_access_manager().FetchCreditCard(virtual_card,
                                                accessor_->GetWeakPtr());
 
-  // Ensures the UnmaskRequestDetails is populated with correct contents.
-  EXPECT_TRUE(payments_client().unmask_request()->context_token.empty());
-  EXPECT_FALSE(payments_client().unmask_request()->risk_data.empty());
-  EXPECT_TRUE(payments_client()
-                  .unmask_request()
-                  ->last_committed_primary_main_frame_origin.has_value());
-
+  // This checks risk-based authentication flow is successfully invoked,
+  // because it is always the very first authentication flow in a VCN
+  // unmasking flow.
+  EXPECT_TRUE(autofill_client_.risk_based_authentication_invoked());
   // Mock server response with information regarding FIDO auth.
   payments::PaymentsClient::UnmaskResponseDetails response;
   response.context_token = "fake_context_token";
   response.fido_request_options = GetTestRequestOptions();
-  credit_card_access_manager().OnVirtualCardUnmaskResponseReceivedForTesting(
-      AutofillClient::PaymentsRpcResult::kSuccess, response);
+  credit_card_access_manager()
+      .OnVirtualCardRiskBasedAuthenticationResponseReceived(
+          AutofillClient::PaymentsRpcResult::kSuccess, response);
 
   // Expect the CreditCardAccessManager to end the session.
   EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
@@ -3266,18 +3224,16 @@ TEST_F(CreditCardAccessManagerTest,
   credit_card_access_manager().FetchCreditCard(virtual_card,
                                                accessor_->GetWeakPtr());
 
-  // Ensures the UnmaskRequestDetails is populated with correct contents.
-  EXPECT_TRUE(payments_client().unmask_request()->context_token.empty());
-  EXPECT_FALSE(payments_client().unmask_request()->risk_data.empty());
-  EXPECT_TRUE(payments_client()
-                  .unmask_request()
-                  ->last_committed_primary_main_frame_origin.has_value());
-
+  // This checks risk-based authentication flow is successfully invoked,
+  // because it is always the very first authentication flow in a VCN
+  // unmasking flow.
+  EXPECT_TRUE(autofill_client_.risk_based_authentication_invoked());
   // Mock server response with no challenge options.
   payments::PaymentsClient::UnmaskResponseDetails response;
   response.context_token = "fake_context_token";
-  credit_card_access_manager().OnVirtualCardUnmaskResponseReceivedForTesting(
-      AutofillClient::PaymentsRpcResult::kPermanentFailure, response);
+  credit_card_access_manager()
+      .OnVirtualCardRiskBasedAuthenticationResponseReceived(
+          AutofillClient::PaymentsRpcResult::kPermanentFailure, response);
 
   // Expect the CreditCardAccessManager to end the session.
   EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
@@ -3313,18 +3269,16 @@ TEST_F(CreditCardAccessManagerTest,
   credit_card_access_manager().FetchCreditCard(virtual_card,
                                                accessor_->GetWeakPtr());
 
-  // Ensures the UnmaskRequestDetails is populated with correct contents.
-  EXPECT_TRUE(payments_client().unmask_request()->context_token.empty());
-  EXPECT_FALSE(payments_client().unmask_request()->risk_data.empty());
-  EXPECT_TRUE(payments_client()
-                  .unmask_request()
-                  ->last_committed_primary_main_frame_origin.has_value());
-
+  // This checks risk-based authentication flow is successfully invoked,
+  // because it is always the very first authentication flow in a VCN
+  // unmasking flow.
+  EXPECT_TRUE(autofill_client_.risk_based_authentication_invoked());
   // Mock server response with no challenge options.
   payments::PaymentsClient::UnmaskResponseDetails response;
-  credit_card_access_manager().OnVirtualCardUnmaskResponseReceivedForTesting(
-      AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure,
-      response);
+  credit_card_access_manager()
+      .OnVirtualCardRiskBasedAuthenticationResponseReceived(
+          AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure,
+          response);
 
   // Expect the CreditCardAccessManager to end the session.
   EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
@@ -3359,9 +3313,10 @@ TEST_F(CreditCardAccessManagerTest,
 
   payments::PaymentsClient::UnmaskResponseDetails response;
   response.autofill_error_dialog_context = autofill_error_dialog_context;
-  credit_card_access_manager().OnVirtualCardUnmaskResponseReceivedForTesting(
-      AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure,
-      response);
+  credit_card_access_manager()
+      .OnVirtualCardRiskBasedAuthenticationResponseReceived(
+          AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure,
+          response);
 
   EXPECT_TRUE(autofill_client_.autofill_error_dialog_shown());
   const AutofillErrorDialogContext& displayed_error_dialog_context =
@@ -3393,13 +3348,10 @@ TEST_F(CreditCardAccessManagerTest,
   credit_card_access_manager().FetchCreditCard(virtual_card,
                                                accessor_->GetWeakPtr());
 
-  // Ensures the UnmaskRequestDetails is populated with correct contents.
-  EXPECT_TRUE(payments_client().unmask_request()->context_token.empty());
-  EXPECT_FALSE(payments_client().unmask_request()->risk_data.empty());
-  EXPECT_TRUE(payments_client()
-                  .unmask_request()
-                  ->last_committed_primary_main_frame_origin.has_value());
-
+  // This checks risk-based authentication flow is successfully invoked,
+  // because it is always the very first authentication flow in a VCN
+  // unmasking flow.
+  EXPECT_TRUE(autofill_client_.risk_based_authentication_invoked());
   // Mock that the flow was cancelled by the user.
   credit_card_access_manager().OnVirtualCardUnmaskCancelled();
 
@@ -3434,73 +3386,6 @@ TEST_F(CreditCardAccessManagerTest, DestructorResetsCardIdentifier) {
       form_data_importer
           ->GetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted()
           .has_value());
-}
-
-// Params of the CreditCardAccessManagerCardMetadataTest:
-// -- bool card_name_available;
-// -- bool card_art_available;
-// -- bool metadata_enabled;
-class CreditCardAccessManagerCardMetadataTest
-    : public CreditCardAccessManagerTest,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
- public:
-  CreditCardAccessManagerCardMetadataTest() = default;
-  ~CreditCardAccessManagerCardMetadataTest() override = default;
-
-  bool CardNameAvailable() { return std::get<0>(GetParam()); }
-  bool CardArtAvailable() { return std::get<1>(GetParam()); }
-  bool MetadataEnabled() { return std::get<2>(GetParam()); }
-};
-
-INSTANTIATE_TEST_SUITE_P(,
-                         CreditCardAccessManagerCardMetadataTest,
-                         testing::Combine(testing::Bool(),
-                                          testing::Bool(),
-                                          testing::Bool()));
-
-TEST_P(CreditCardAccessManagerCardMetadataTest, MetadataSignal) {
-  base::test::ScopedFeatureList metadata_feature_list;
-  CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
-  CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
-  virtual_card->set_record_type(CreditCard::RecordType::kVirtualCard);
-  if (MetadataEnabled()) {
-    metadata_feature_list.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillEnableCardProductName,
-                              features::kAutofillEnableCardArtImage},
-        /*disabled_features=*/{});
-  } else {
-    metadata_feature_list.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{features::kAutofillEnableCardProductName,
-                               features::kAutofillEnableCardArtImage});
-  }
-  if (CardNameAvailable()) {
-    virtual_card->set_product_description(u"Fake card product name");
-  }
-  if (CardArtAvailable()) {
-    virtual_card->set_card_art_url(GURL("https://www.example.com"));
-  }
-
-  credit_card_access_manager().FetchCreditCard(virtual_card,
-                                               accessor_->GetWeakPtr());
-
-  // Ensures the UnmaskRequestDetails is populated with correct contents.
-  EXPECT_TRUE(payments_client().unmask_request()->context_token.empty());
-  EXPECT_FALSE(payments_client().unmask_request()->risk_data.empty());
-  EXPECT_TRUE(payments_client()
-                  .unmask_request()
-                  ->last_committed_primary_main_frame_origin.has_value());
-  std::vector<ClientBehaviorConstants> signals =
-      payments_client().unmask_request()->client_behavior_signals;
-  if (MetadataEnabled() && CardNameAvailable() && CardArtAvailable()) {
-    EXPECT_NE(
-        signals.end(),
-        base::ranges::find(
-            signals,
-            ClientBehaviorConstants::kShowingCardArtImageAndCardProductName));
-  } else {
-    EXPECT_TRUE(signals.empty());
-  }
 }
 
 }  // namespace autofill

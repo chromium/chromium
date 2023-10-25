@@ -291,6 +291,17 @@ suite('SyncControlsManagedTest', async function() {
         syncControls.shadowRoot!.querySelectorAll('cr-policy-indicator');
     assertTrue(policyIndicators.length > 0);
     for (const indicator of policyIndicators) {
+      // On Lacros, if kSyncChromeOSAppsToggleSharing is enabled, syncing of Apps
+      // is controlled via the OS, not the browser. So in that case, the policy
+      // indicator should not be visible here.
+      // <if expr="chromeos_lacros">
+      if (indicator.id === 'appsSyncPolicyIndicator') {
+        const showSyncSettingsRevamp =
+            loadTimeData.getBoolean('showSyncSettingsRevamp');
+        assertEquals(isVisible(indicator), !showSyncSettingsRevamp);
+        continue;
+      }
+      // </if>
       assertTrue(isVisible(indicator));
     }
 

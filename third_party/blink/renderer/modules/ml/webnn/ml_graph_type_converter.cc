@@ -95,6 +95,7 @@ namespace blink {
 
 namespace {
 
+using blink_mojom::ActivationPtr;
 using blink_mojom::ElementWiseBinary;
 using blink_mojom::Operation;
 using blink_mojom::OperationPtr;
@@ -122,23 +123,24 @@ uint64_t GetOperatorOutputId(const MLOperator* op,
   return operand_to_id_map.at(output);
 }
 
-OperationPtr CreateClampOperation(const OperandToIdMap& operand_to_id_map,
+blink_mojom::ClampPtr CreateClamp(const OperandToIdMap& operand_to_id_map,
                                   const MLOperator* clamp,
-                                  bool activation = false) {
+                                  bool is_activation) {
   auto clamp_mojo = blink_mojom::Clamp::New();
   // Activation has no input and output operand.
-  if (!activation) {
+  if (!is_activation) {
     clamp_mojo->input_operand_id = GetOperatorInputId(clamp, operand_to_id_map);
     clamp_mojo->output_operand_id =
         GetOperatorOutputId(clamp, operand_to_id_map);
   }
+
   const auto* options = static_cast<const MLClampOptions*>(clamp->Options());
   CHECK(options);
   clamp_mojo->min_value =
       options->getMinValueOr(-std::numeric_limits<float>::infinity());
   clamp_mojo->max_value =
       options->getMaxValueOr(+std::numeric_limits<float>::infinity());
-  return blink_mojom::Operation::NewClamp(std::move(clamp_mojo));
+  return clamp_mojo;
 }
 
 blink_mojom::InputOperandLayout BlinkInputOperandLayoutToMojo(
@@ -258,13 +260,25 @@ base::expected<OperationPtr, String> CreateConv2dOperation(
     auto operator_kind = options->activation()->Operator()->Kind();
     switch (operator_kind) {
       case blink::MLOperator::OperatorKind::kClamp: {
-        conv2d_mojo->activation = CreateClampOperation(
-            operand_to_id_map, options->activation()->Operator(), true);
+        conv2d_mojo->activation = blink_mojom::Activation::NewClamp(CreateClamp(
+            operand_to_id_map, options->activation()->Operator(), true));
         break;
       }
       case blink::MLOperator::OperatorKind::kRelu:
         conv2d_mojo->activation =
-            blink_mojom::Operation::NewRelu(blink_mojom::Relu::New());
+            blink_mojom::Activation::NewRelu(blink_mojom::Relu::New());
+        break;
+      case blink::MLOperator::OperatorKind::kSigmoid:
+        conv2d_mojo->activation =
+            blink_mojom::Activation::NewSigmoid(blink_mojom::Sigmoid::New());
+        break;
+      case blink::MLOperator::OperatorKind::kSoftmax:
+        conv2d_mojo->activation =
+            blink_mojom::Activation::NewSoftmax(blink_mojom::Softmax::New());
+        break;
+      case blink::MLOperator::OperatorKind::kTanh:
+        conv2d_mojo->activation =
+            blink_mojom::Activation::NewTanh(blink_mojom::Tanh::New());
         break;
       default:
         return base::unexpected(
@@ -495,6 +509,16 @@ OperationPtr CreateReshapeOperation(const OperandToIdMap& operand_to_id_map,
   return blink_mojom::Operation::NewReshape(std::move(reshape_mojo));
 }
 
+OperationPtr CreateSigmoidOperation(const OperandToIdMap& operand_to_id_map,
+                                    const MLOperator* sigmoid) {
+  auto sigmoid_mojo = blink_mojom::Sigmoid::New();
+  sigmoid_mojo->input_operand_id =
+      GetOperatorInputId(sigmoid, operand_to_id_map);
+  sigmoid_mojo->output_operand_id =
+      GetOperatorOutputId(sigmoid, operand_to_id_map);
+  return blink_mojom::Operation::NewSigmoid(std::move(sigmoid_mojo));
+}
+
 OperationPtr CreateSliceOperation(const OperandToIdMap& operand_to_id_map,
                                   const MLOperator* slice) {
   auto slice_mojo = webnn::mojom::blink::Slice::New();
@@ -543,6 +567,14 @@ OperationPtr CreateSplitOperation(const OperandToIdMap& operand_to_id_map,
   return blink_mojom::Operation::NewSplit(std::move(split_mojo));
 }
 
+OperationPtr CreateTanhOperation(const OperandToIdMap& operand_to_id_map,
+                                 const MLOperator* tanh) {
+  auto tanh_mojo = blink_mojom::Tanh::New();
+  tanh_mojo->input_operand_id = GetOperatorInputId(tanh, operand_to_id_map);
+  tanh_mojo->output_operand_id = GetOperatorOutputId(tanh, operand_to_id_map);
+  return blink_mojom::Operation::NewTanh(std::move(tanh_mojo));
+}
+
 OperationPtr CreateTransposeOperation(const OperandToIdMap& operand_to_id_map,
                                       const MLOperator* transpose) {
   auto transpose_mojo = blink_mojom::Transpose::New();
@@ -569,7 +601,8 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
     const MLOperator* op) {
   switch (op->Kind()) {
     case MLOperator::OperatorKind::kClamp:
-      return CreateClampOperation(operand_to_id_map, op);
+      return blink_mojom::Operation::NewClamp(
+          CreateClamp(operand_to_id_map, op, false));
     case MLOperator::OperatorKind::kConcat:
       return CreateConcatOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kConv2d:
@@ -609,6 +642,9 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
     case MLOperator::OperatorKind::kReduceMean:
     case MLOperator::OperatorKind::kReduceSum:
     case MLOperator::OperatorKind::kSigmoid:
+      return CreateSigmoidOperation(operand_to_id_map, op);
+    case MLOperator::OperatorKind::kTanh:
+      return CreateTanhOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kLeakyRelu:
     case MLOperator::OperatorKind::kConvTranspose2d:
     case MLOperator::OperatorKind::kElu:
@@ -616,7 +652,6 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
     case MLOperator::OperatorKind::kCeil:
     case MLOperator::OperatorKind::kFloor:
     case MLOperator::OperatorKind::kNeg:
-    case MLOperator::OperatorKind::kTanh:
       return base::unexpected(MLOperator::OperatorKindToString(op->Kind()) +
                               " is not implemented.");
   }

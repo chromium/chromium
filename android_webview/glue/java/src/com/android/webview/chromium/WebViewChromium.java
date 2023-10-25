@@ -58,11 +58,13 @@ import android.widget.TextView;
 import androidx.annotation.IntDef;
 import androidx.annotation.RequiresApi;
 
+import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwPrintDocumentAdapter;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.AwThreadUtils;
+import org.chromium.android_webview.ManifestMetadataUtil;
 import org.chromium.android_webview.R;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.gfx.AwDrawFnImpl;
@@ -720,10 +722,29 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             AwContentsStatics.setRecordFullDocument(sRecordWholeDocumentEnabledByApi
                     || mAppTargetSdkVersion < Build.VERSION_CODES.LOLLIPOP);
 
-            mAwContents = new AwContents(mFactory.getBrowserContextOnUiThread(), mWebView, mContext,
-                    new InternalAccessAdapter(), new WebViewNativeDrawFunctorFactory(),
-                    mContentsClientAdapter, mWebSettings.getAwSettings(),
-                    new AwContents.DependencyFactory());
+            AwBrowserContext browserContext = null;
+            // Temporary workaround for setting the profile at WebView startup.
+            Integer appProfileNameTagKey =
+                    ManifestMetadataUtil.getAppMultiProfileProfileNameTagKey();
+            if (appProfileNameTagKey != null
+                    && mWebView.getTag(appProfileNameTagKey) instanceof String profileName) {
+                browserContext = AwBrowserContext.getNamedContext(profileName, true);
+            }
+
+            if (browserContext == null) {
+                browserContext = mFactory.getDefaultBrowserContextOnUiThread();
+            }
+
+            mAwContents =
+                    new AwContents(
+                            browserContext,
+                            mWebView,
+                            mContext,
+                            new InternalAccessAdapter(),
+                            new WebViewNativeDrawFunctorFactory(),
+                            mContentsClientAdapter,
+                            mWebSettings.getAwSettings(),
+                            new AwContents.DependencyFactory());
             if (mAppTargetSdkVersion >= Build.VERSION_CODES.KITKAT) {
                 // On KK and above, favicons are automatically downloaded as the method
                 // old apps use to enable that behavior is deprecated.

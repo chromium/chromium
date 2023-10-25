@@ -92,7 +92,7 @@ grid-with-areas{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutNGGrid",
+    "layoutObjectName": "LayoutGrid",
     "showAccessibilityInfo": true
   },
   "gridInfo": [

@@ -43,10 +43,7 @@ constexpr base::TimeDelta kDefaultAttemptDelay = base::Seconds(1);
 constexpr int kProxyChangeDelaySec = 1;
 
 // Timeout for attempts.
-constexpr base::TimeDelta kAttemptTimeout = base::Seconds(15);
-
-// Number of unknown or offline results before stopping chrome detection.
-constexpr int kMaxOfflineResultsBeforeReport = 3;
+constexpr base::TimeDelta kAttemptTimeout = base::Seconds(10);
 
 const NetworkState* DefaultNetwork() {
   return NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
@@ -226,8 +223,10 @@ void NetworkPortalDetectorImpl::OnShuttingDown() {
 // NetworkPortalDetectorImpl, private:
 
 void NetworkPortalDetectorImpl::StopDetection() {
-  if (is_idle())
+  if (is_idle()) {
+    NET_LOG(EVENT) << "StopDetection(): Attempt not running";
     return;
+  }
   NET_LOG(EVENT) << "StopDetection";
   attempt_task_.Cancel();
   attempt_timeout_task_.Cancel();
@@ -238,10 +237,12 @@ void NetworkPortalDetectorImpl::StopDetection() {
 }
 
 void NetworkPortalDetectorImpl::ScheduleAttempt(const base::TimeDelta& delay) {
-  DCHECK(is_idle());
-
   if (!IsEnabled())
     return;
+
+  if (is_idle()) {
+    NET_LOG(EVENT) << "ScheduleAttempt(): Attempt already running, restarting.";
+  }
 
   attempt_task_.Cancel();
   attempt_timeout_task_.Cancel();
@@ -375,34 +376,28 @@ void NetworkPortalDetectorImpl::OnAttemptCompleted(
     base::UmaHistogramEnumeration("Network.NetworkPortalDetectorType", type);
   }
 
-  if (last_detection_status_ != status) {
-    last_detection_status_ = status;
-    same_detection_result_count_ = 1;
-  } else {
-    ++same_detection_result_count_;
-  }
-
   captive_portal_detector_run_count_++;
 
-  bool detection_completed = false;
   if (status == CAPTIVE_PORTAL_STATUS_ONLINE ||
-      status == CAPTIVE_PORTAL_STATUS_PORTAL ||
       status == CAPTIVE_PORTAL_STATUS_PROXY_AUTH_REQUIRED) {
-    // Chrome positively identified an online, portal or proxy auth state.
+    // Chrome positively identified an online or proxy-auth state.
     // No need to continue detection.
-    detection_completed = true;
-  } else if (same_detection_result_count_ >= kMaxOfflineResultsBeforeReport) {
-    NET_LOG(EVENT) << "Max identical portal detection results reached: "
-                   << same_detection_result_count_ << " Status: " << status;
-    detection_completed = true;
-  }
-
-  if (detection_completed) {
     response_code_for_testing_ = response_code;
     DetectionCompleted(network, status);
-  } else if (is_idle()) {
-    ScheduleAttempt(results.retry_after_delta);
+    return;
   }
+
+  if (!is_idle()) {
+    return;
+  }
+
+  // Set network portal state and continue scheduling attempts until online.
+  if (status == CAPTIVE_PORTAL_STATUS_PORTAL) {
+    response_code_for_testing_ = response_code;
+    default_portal_status_ = CAPTIVE_PORTAL_STATUS_PORTAL;
+    SetNetworkPortalState(network, NetworkState::PortalState::kPortal);
+  }
+  ScheduleAttempt(results.retry_after_delta);
 }
 
 void NetworkPortalDetectorImpl::Observe(
@@ -465,8 +460,6 @@ void NetworkPortalDetectorImpl::ResetCountersAndSendMetrics() {
                                    /*buckets=*/10);
     captive_portal_detector_run_count_ = 0;
   }
-  last_detection_status_ = CAPTIVE_PORTAL_STATUS_UNKNOWN;
-  same_detection_result_count_ = 0;
 }
 
 bool NetworkPortalDetectorImpl::AttemptTimeoutIsCancelledForTesting() const {

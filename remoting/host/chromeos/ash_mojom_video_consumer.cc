@@ -215,8 +215,9 @@ void AshMojomVideoConsumer::OnStopped() {
 void AshMojomVideoConsumer::OnLog(const std::string& message) {
   VLOG(3) << "AshMojomVideoConsumer::OnLog : " << message;
 }
-// Invoked every time we change target, but, crop_version is not relevant for
-// window capture.
-void AshMojomVideoConsumer::OnNewCropVersion(uint32_t crop_version) {}
+// Invoked every time we change target, but, sub_capture_target_version is not
+// relevant for window capture.
+void AshMojomVideoConsumer::OnNewSubCaptureTargetVersion(
+    uint32_t sub_capture_target_version) {}
 
 }  // namespace remoting

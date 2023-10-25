@@ -108,7 +108,7 @@ BASE_FEATURE(kSuppressTextMessages,
 
 BASE_FEATURE(kAltClickAndSixPackCustomization,
              "AltClickAndSixPackCustomization",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to enable AutoEnrollment for Kiosk in OOBE
 BASE_FEATURE(kAutoEnrollmentKioskInOobe,
@@ -1155,9 +1155,6 @@ BASE_FEATURE(kFilesNewDirectoryTree,
              "FilesNewDirectoryTree",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables V2 of search functionality in files.
-BASE_FEATURE(kFilesSearchV2, "FilesSearchV2", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables local image search by query in the Files app.
 BASE_FEATURE(kFilesLocalImageSearch,
              "FilesLocalImageSearch",
@@ -1931,6 +1928,9 @@ BASE_FEATURE(kSearchCustomizableShortcutsInLauncher,
              "SearchCustomizableShortcutsInLauncher",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables sending feedback for Orca.
+BASE_FEATURE(kOrcaFeedback, "OrcaFeedback", base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If enabled, a new App Notifications subpage will appear in CrOS Apps section.
 BASE_FEATURE(kOsSettingsAppNotificationsPage,
              "OsSettingsAppNotificationsPage",
@@ -2643,14 +2643,6 @@ BASE_FEATURE(kUseAndroidStagingSmds,
              "UseAndroidStagingSmds",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Uses new AuthFactor-based API when communicating with cryptohome.
-// This feature flag also affects usage of AuthSessions in QuickUnlock, but
-// only in case when cryptohome is used as backend.
-// This feature flag also affects usage of AuthSession on lock screen.
-BASE_FEATURE(kUseAuthFactors,
-             "UseAuthFactors",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Uses AuthSessionStorage signleton class instead of Profile-keyed
 // QuickUnlockStorage to store authenticated UserContext.
 BASE_FEATURE(kUseAuthSessionStorage,
@@ -2775,11 +2767,6 @@ BASE_FEATURE(kWallpaperGooglePhotosSharedAlbums,
 BASE_FEATURE(kWallpaperPerDesk,
              "WallpaperPerDesk",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enable daily wallpaper refresh revamp.
-BASE_FEATURE(kWallpaperRefreshRevamp,
-             "WallpaperRefreshRevamp",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the Welcome Tour that walks new users through ChromeOS System UI.
 BASE_FEATURE(kWelcomeTour, "WelcomeTour", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -3355,10 +3342,6 @@ bool IsFileManagerFuseBoxDebugEnabled() {
 
 bool IsFilesConflictDialogEnabled() {
   return base::FeatureList::IsEnabled(kFilesConflictDialog);
-}
-
-bool IsFilesSearchV2Enabled() {
-  return base::FeatureList::IsEnabled(kFilesSearchV2);
 }
 
 bool IsFilesLocalImageSearchEnabled() {
@@ -4250,10 +4233,6 @@ bool IsWallpaperGooglePhotosSharedAlbumsEnabled() {
 
 bool IsWallpaperPerDeskEnabled() {
   return base::FeatureList::IsEnabled(kWallpaperPerDesk);
-}
-
-bool IsWallpaperRefreshRevampEnabled() {
-  return base::FeatureList::IsEnabled(kWallpaperRefreshRevamp);
 }
 
 bool IsWelcomeTourEnabled() {

@@ -98,6 +98,12 @@ public class ExpandedPlayerCoordinatorUnitTest {
     }
 
     @Test
+    public void testOnSheetClosed() {
+        mBottomSheetObserver.onSheetClosed(StateChangeReason.NAVIGATION);
+        verify(mSheetContent).notifySheetClosed();
+    }
+
+    @Test
     public void testBindVisibility() {
         mModel.set(PlayerProperties.EXPANDED_PLAYER_VISIBILITY, VisibilityState.HIDING);
         verify(mSheetContent).hide();

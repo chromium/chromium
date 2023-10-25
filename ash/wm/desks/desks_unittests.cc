@@ -224,6 +224,15 @@ void ClickOnView(const views::View* view,
   event_generator->ClickLeftButton();
 }
 
+void RightClickOnView(const views::View* view,
+                      ui::test::EventGenerator* event_generator) {
+  DCHECK(view);
+
+  const gfx::Point view_center = view->GetBoundsInScreen().CenterPoint();
+  event_generator->MoveMouseTo(view_center);
+  event_generator->ClickRightButton();
+}
+
 void DoubleClickOnView(const views::View* view,
                        ui::test::EventGenerator* event_generator) {
   DCHECK(view);
@@ -1763,7 +1772,7 @@ TEST_P(DesksTest, DragWindowToDesk) {
   EXPECT_EQ(1u, overview_grid->size());
   EXPECT_FALSE(DoesActiveDeskContainWindow(win1.get()));
   EXPECT_TRUE(base::Contains(desk_2->windows(), win1.get()));
-  EXPECT_FALSE(overview_grid->drop_target_widget());
+  EXPECT_FALSE(overview_grid->drop_target());
 
   // After dragging an item outside of overview to another desk, the focus
   // should not be given to another window in overview, and should remain on the
@@ -1859,7 +1868,7 @@ TEST_P(DesksTest, DragMinimizedWindowToDesk) {
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_TRUE(overview_grid->empty());
   EXPECT_TRUE(base::Contains(desk_2->windows(), window.get()));
-  EXPECT_FALSE(overview_grid->drop_target_widget());
+  EXPECT_FALSE(overview_grid->drop_target());
   DeskSwitchAnimationWaiter waiter;
   ClickOnView(desk_2_mini_view, GetEventGenerator());
   waiter.Wait();
@@ -3993,7 +4002,7 @@ TEST_P(DesksTest, SuccessfulDragToDeskRemovesSplitViewIndicators) {
                   /*drop=*/false);
   // Validate that before dropping, the SplitView indicators and the drop target
   // widget are created.
-  EXPECT_TRUE(overview_grid->drop_target_widget());
+  EXPECT_TRUE(overview_grid->drop_target());
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kFromOverview,
             overview_session->grid_list()[0]
                 ->split_view_drag_indicators()
@@ -4005,7 +4014,7 @@ TEST_P(DesksTest, SuccessfulDragToDeskRemovesSplitViewIndicators) {
   EXPECT_TRUE(overview_grid->empty());
   EXPECT_FALSE(DoesActiveDeskContainWindow(window.get()));
   EXPECT_TRUE(overview_grid->no_windows_widget());
-  EXPECT_FALSE(overview_grid->drop_target_widget());
+  EXPECT_FALSE(overview_grid->drop_target());
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kNoDrag,
             overview_session->grid_list()[0]
                 ->split_view_drag_indicators()
@@ -4836,6 +4845,116 @@ TEST_F(DesksPerDeskZOrderTest, MultiDisplayMultipleAdwWithMoving) {
        .expected_desk_2_windows_after = {{}, {1, 4}},
        .expected_desk_1_final_active_window = 1},
   });
+}
+
+class FloatAllDesksWithZOrderTest : public AshTestBase {
+ public:
+  FloatAllDesksWithZOrderTest()
+      : scoped_feature_list_(features::kEnablePerDeskZOrder) {}
+  ~FloatAllDesksWithZOrderTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that floating a window that is already visible on all desks removes its
+// z-ordering data, and unfloating the window restores the data.
+TEST_F(FloatAllDesksWithZOrderTest, TrackOrderAfterUnfloat) {
+  // Start the test with two desks.
+  NewDesk();
+
+  // Create a window that is visible on both desks.
+  auto window = CreateAppWindow();
+  views::Widget::GetWidgetForNativeWindow(window.get())
+      ->SetVisibleOnAllWorkspaces(true);
+  auto* desks_controller = DesksController::Get();
+  ASSERT_EQ(1u, desks_controller->visible_on_all_desks_windows().size());
+  ASSERT_TRUE(desks_util::IsWindowVisibleOnAllWorkspaces(window.get()));
+  EXPECT_TRUE(desks_util::BelongsToActiveDesk(window.get()));
+
+  // Each desk should be tracking the window's z-ordering data.
+  for (auto& desk : desks_controller->desks()) {
+    for (aura::Window* root : Shell::GetAllRootWindows()) {
+      auto& adw_data = desk->all_desk_window_stacking().at(root);
+      ASSERT_EQ(adw_data.size(), 1u);
+      ASSERT_EQ(adw_data.begin()->window, window.get());
+    }
+  }
+
+  // Float the window.
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(WindowState::Get(window.get())->IsFloated());
+
+  // The desks are no longer tracking the window's z-ordering data.
+  for (auto& desk : desks_controller->desks()) {
+    for (aura::Window* root : Shell::GetAllRootWindows()) {
+      auto& adw_data = desk->all_desk_window_stacking().at(root);
+      ASSERT_EQ(adw_data.size(), 0u);
+    }
+  }
+}
+
+// Tests that sending a floated window to all desks then restoring it to a
+// single desk works as intended.
+TEST_F(FloatAllDesksWithZOrderTest, FloatThenAllDesks) {
+  // Start the test with two desks.
+  NewDesk();
+
+  // Create a floated window.
+  auto window = CreateAppWindow();
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(WindowState::Get(window.get())->IsFloated());
+
+  // Send the floated window to all desks.
+  views::Widget::GetWidgetForNativeWindow(window.get())
+      ->SetVisibleOnAllWorkspaces(true);
+  auto* desks_controller = DesksController::Get();
+  ASSERT_EQ(1u, desks_controller->visible_on_all_desks_windows().size());
+
+  // The desks are not tracking the window's z-ordering data.
+  for (auto& desk : desks_controller->desks()) {
+    desk->all_desk_window_stacking().empty();
+  }
+
+  // Restore the floated window back to a single desk.
+  views::Widget::GetWidgetForNativeWindow(window.get())
+      ->SetVisibleOnAllWorkspaces(false);
+  ASSERT_EQ(0u, desks_controller->visible_on_all_desks_windows().size());
+}
+
+class FloatAllDesksWithoutZOrderTest : public AshTestBase {
+ public:
+  FloatAllDesksWithoutZOrderTest() {
+    scoped_feature_list_.InitAndDisableFeature(features::kEnablePerDeskZOrder);
+  }
+  ~FloatAllDesksWithoutZOrderTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that restacking a floated all desk window after a desk switch does not
+// cause a crash.
+TEST_F(FloatAllDesksWithoutZOrderTest, RestackOnDeskSwitch) {
+  // Start the test with two desks.
+  NewDesk();
+
+  // Create a floated window that is visible on both desks.
+  auto floated_adw = CreateAppWindow();
+  views::Widget::GetWidgetForNativeWindow(floated_adw.get())
+      ->SetVisibleOnAllWorkspaces(true);
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  auto* desks_controller = DesksController::Get();
+  ASSERT_EQ(1u, desks_controller->visible_on_all_desks_windows().size());
+  ASSERT_TRUE(desks_util::IsWindowVisibleOnAllWorkspaces(floated_adw.get()));
+  EXPECT_TRUE(desks_util::BelongsToActiveDesk(floated_adw.get()));
+  EXPECT_TRUE(WindowState::Get(floated_adw.get())->IsFloated());
+
+  // Switch desks, the window should still be floated on the new desk without
+  // crashing.
+  ActivateDesk(desks_controller->GetDeskAtIndex(1));
+  EXPECT_TRUE(desks_util::BelongsToActiveDesk(floated_adw.get()));
+  EXPECT_TRUE(WindowState::Get(floated_adw.get())->IsFloated());
 }
 
 namespace {
@@ -5991,6 +6110,8 @@ TEST_P(PerDeskShelfTest, ShelfViewTransformUpdatedForScrollWhenSwitchingDesks) {
   ShelfViewTestAPI shelf_view_test_api(shelf_view);
   shelf_view_test_api.SetAnimationDuration(base::Milliseconds(1));
 
+  NewDesk();
+
   // Create apps running on the active desk, and not pinned to the shelf, until
   // the right or bottom scroll arrow appears.
   ScrollArrowView* right_arrow = scrollable_shelf_view->right_arrow();
@@ -6007,7 +6128,6 @@ TEST_P(PerDeskShelfTest, ShelfViewTransformUpdatedForScrollWhenSwitchingDesks) {
   EXPECT_FALSE(scrolled_transform.IsIdentity());
 
   // Switch desks.
-  NewDesk();
   ActivateDesk(DesksController::Get()->GetDeskAtIndex(1));
   if (IsPerDeskShelfEnabled()) {
     EXPECT_TRUE(shelf_view->GetTransform().IsIdentity());
@@ -10386,10 +10506,9 @@ TEST_P(DeskBarTest, ReverseTabbing) {
   auto* desk_bar_view = GetDeskBarView();
   ASSERT_TRUE(desk_bar_view);
 
-  // If in overview, tab through the save desk for later button.
-  if (bar_type_ == DeskBarViewBase::Type::kOverview) {
-    SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  }
+  // If in overview, tab through the save desk for later button; if it's bento
+  // button desk bar, tab one more time since it starts at the active desk.
+  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
 
   // Tab through library button.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
@@ -10472,11 +10591,11 @@ TEST_P(DeskBarTest, CloseActiveDesk) {
   auto* desk_bar_view = GetDeskBarView();
   ASSERT_TRUE(desk_bar_view);
 
-  // Focus desk #1. For both `kOverview` and `kDeskButton` bars, we will
-  // need the same number of tabs because, while there is an overview item for
-  // the overview bar, the desk close button is added to the tab order for the
-  // first mini view.
-  for (int i = 0; i < 4; i++) {
+  // Focus desk #1. For `kDeskButton` bar, 1 tab is needed since it tabs from
+  // the active desk; for `kOverview` bar, 4 tabs are needed to tab through the
+  // overview item, desk 1's desk preview and desk name view.
+  for (int i = 0; i < (bar_type_ == DeskBarViewBase::Type::kDeskButton ? 1 : 4);
+       i++) {
     SendKey(ui::VKEY_TAB);
   }
 
@@ -10524,11 +10643,11 @@ TEST_P(DeskBarTest, MergeActiveDesk) {
   auto* desk_bar_view = GetDeskBarView();
   ASSERT_TRUE(desk_bar_view);
 
-  // Highlight desk #1. For both `kOverview` and `kDeskButton` bars, we will
-  // need the same number of tabs because, while there is an overview item for
-  // the overview bar, the desk close button is added to the tab order for the
-  // first mini view.
-  for (int i = 0; i < 4; i++) {
+  // Focus desk #1. For `kDeskButton` bar, 1 tab is needed since it tabs from
+  // the active desk; for `kOverview` bar, 4 tabs are needed to tab through the
+  // overview item, desk 1's desk preview and desk name view.
+  for (int i = 0; i < (bar_type_ == DeskBarViewBase::Type::kDeskButton ? 1 : 4);
+       i++) {
     SendKey(ui::VKEY_TAB);
   }
 
@@ -10830,6 +10949,33 @@ TEST_P(DeskBarTest, DeskCreationRemovalMetrics) {
       2);
 }
 
+// Tests that metrics are correctly separated for open desk context menu
+// between the overview desk bar and the desk button desk bar.
+TEST_P(DeskBarTest, DeskOpenContextMenuMetrics) {
+  NewDesk();
+
+  base::HistogramTester histogram_tester;
+
+  WindowHolder window(CreateAppWindow());
+  auto* desks_controller = DesksController::Get();
+  desks_controller->SendToDeskAtIndex(window.window(), 0);
+
+  OpenDeskBar();
+  auto* desk_bar = GetDeskBarView();
+  auto* event_generator = GetEventGenerator();
+  RightClickOnView(desk_bar->mini_views()[0], event_generator);
+
+  EnterOverview();
+  auto* overview_desks_bar =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
+  RightClickOnView(overview_desks_bar->mini_views()[0], event_generator);
+  histogram_tester.ExpectTotalCount(
+      bar_type_ == DeskBarViewBase::Type::kDeskButton
+          ? kDeskButtonDeskBarOpenContextMenuHistogramName
+          : kOverviewDeskBarOpenContextMenuHistogramName,
+      1);
+}
+
 // Tests that setting to bottom locked shelf should not crash. Please refer to
 // b/293625099.
 TEST_P(DeskBarTest, BottomLockedShelf) {
@@ -10866,7 +11012,7 @@ TEST_P(DeskBarTest, CanUndoDeskClosureThroughKeyboardNavigation) {
                                ? "in desk button desk bar"
                                : "in overview desk bar")),
        DeskRemovalMethod::kInactiveDeskRemovedReverseTab,
-       bar_type_ == DeskBarViewBase::Type::kDeskButton ? 1 : 4},
+       bar_type_ == DeskBarViewBase::Type::kDeskButton ? 2 : 4},
       {base::StringPrintf(
            "Activating the undo button after removing the active desk %s",
            (bar_type_ == DeskBarViewBase::Type::kDeskButton

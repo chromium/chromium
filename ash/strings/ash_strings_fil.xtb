@@ -203,7 +203,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1757857692711134412">Naka-off hanggang paglubog ng araw</translation>
 <translation id="1768366657309696705">Nagbago ang keyboard shortcut na <ph name="LAUNCHER_KEY_NAME" /> + Period. Para magamit ang Insert key, pindutin ang <ph name="LAUNCHER_KEY_NAME" /> key + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Inilipat sa row <ph name="ROW_NUMBER" />, column <ph name="COLUMN_NUMBER" />.</translation>
-<translation id="1771458705381257690">Buksan ang <ph name="NAME" /> para i-set up at i-customize ang iyong device</translation>
 <translation id="1771761307086386028">Mag-scroll pakanan</translation>
 <translation id="1774796056689732716">Kalendaryo, <ph name="CURRENT_MONTH_YEAR" />, kasalukuyang pinili ang <ph name="DATE" />.</translation>
 <translation id="1775598828170459419">Ipinapakita ang <ph name="NUM_SHOWN_ITEMS" /> sa <ph name="NUM_TOTAL_ITEMS" /></translation>
@@ -308,7 +307,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2258734398699965611">Mga iminumungkahing file</translation>
 <translation id="2268130516524549846">Hindi pinagana ang Bluetooth</translation>
 <translation id="2268813581635650749">I-sign out ang lahat</translation>
-<translation id="2269016722240250274">May application na gumagamit ng iyong mikropono</translation>
 <translation id="2276987123919776440">15min</translation>
 <translation id="2277103315734023688">Mag-seek Pasulong</translation>
 <translation id="2282073721614284166">Buksan ang link sa tab</translation>
@@ -361,6 +359,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2465145153332031561">Tagal ng baterya <ph name="BATTERY_HEALTH_PERCENTAGE" />%, bilang ng cycle <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Kumpirmahin ang Resolution</translation>
 <translation id="2475982808118771221">May isang naganap na error</translation>
+<translation id="2478076885740497414">I-install ang app</translation>
 <translation id="2482878487686419369">Mga Abiso</translation>
 <translation id="2484513351006226581">Pindutin ang <ph name="KEYBOARD_SHORTCUT" /> upang palitan ang layout ng keyboard.</translation>
 <translation id="2487915095798731898">Sumali</translation>
@@ -634,8 +633,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3600061223661453002">I-off</translation>
 <translation id="3604801046548457007">Ginawa ang Desk <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">Nagkonekta ng braille display.</translation>
-<translation id="3609301425104788351"><ph name="MIC" />,
-        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">Kapag na-enable ang mobile data, mae-enable din ang Bluetooth</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3616883743181209306">Inilipat ang menu sa kanang sulok sa itaas ng screen.</translation>
@@ -685,9 +682,7 @@ Isaksak ang iyong device.</translation>
 <translation id="3781910048497807059">Ilipat ang focus sa nakaraang pane</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">I-lock</translation>
-<translation id="3789841737615482174">Mag-install</translation>
 <translation id="3796215473395753611">alt + pataas na arrow</translation>
-<translation id="3796746699333205839">May application na gumagamit ng iyong camera at mikropono</translation>
 <translation id="3798670284305777884">Speaker (internal)</translation>
 <translation id="3799080171973636491">Napindot mo ang keyboard shortcut para sa full-screen magnifier. Gusto mo ba itong i-on?</translation>
 <translation id="380165613292957338">Kumusta, ano ang maitutulong ko?</translation>
@@ -817,6 +812,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="428715201724021596">Kumokonekta sa profile. Puwede itong tumagal nang ilang minuto.</translation>
 <translation id="4294319844246081198">Magandang umaga <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">I-clear ang lahat ng <ph name="COUNT" /> (na) notification</translation>
+<translation id="4300272766492248925">Buksan ang app</translation>
 <translation id="430191667033048642">Inilipat ang <ph name="MOVED_APP_NAME" /> sa folder na <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Hindi available</translation>
 <translation id="4303223480529385476">I-expand ang lugar ng status</translation>
@@ -1212,7 +1208,6 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="5876666360658629066">Ilagay ang code ng magulang</translation>
 <translation id="5881540930187678962">I-set up ang Phone Hub sa ibang pagkakataon</translation>
 <translation id="5881663018261910378">Naka-off</translation>
-<translation id="5883017113634523865">I-install ang app para sa <ph name="NAME" /> mula sa Google Play para makita ang lahat ng available na feature</translation>
 <translation id="5887954372087850114">Itinalaga sa <ph name="DESK_TITLE" /> ang window na<ph name="WINDOW_TITLE" /> at inalis ang pagkakatalaga nito sa lahat ng iba pang desk</translation>
 <translation id="588817334757907802">Buksan ang file sa Chrome browser</translation>
 <translation id="5895138241574237353">I-restart</translation>
@@ -1581,7 +1576,6 @@ Kaka-install lang</translation>
 <translation id="742594950370306541">Ginagamit ang camera.</translation>
 <translation id="742608627846767349">Magandang umaga,</translation>
 <translation id="743058460480092004">Ginagamit ang camera at mikropono.</translation>
-<translation id="7452560014878697800">May application na gumagamit ng iyong camera</translation>
 <translation id="7453330308669753048">Naalis ang resulta ng history ng paghahanap</translation>
 <translation id="7459485586006128091">Dahil sa internal na error, na-off ang hotspot. Subukang kumonekta ulit sa loob ng ilang minuto.</translation>
 <translation id="7461924472993315131">I-pin</translation>

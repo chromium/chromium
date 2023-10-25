@@ -75,7 +75,7 @@ bool LayoutMedia::IsChildAllowed(LayoutObject* child,
   if (child->GetNode()->IsMediaControls()) {
     // LayoutObject::IsInline() doesn't work at this timing.
     DCHECK(!child->GetNode()->GetComputedStyle()->IsDisplayInlineType());
-    return child->IsFlexibleBoxIncludingNG();
+    return child->IsFlexibleBox();
   }
 
   if (child->GetNode()->IsTextTrackContainer() ||

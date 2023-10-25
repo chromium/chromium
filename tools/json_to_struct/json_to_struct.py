@@ -71,8 +71,10 @@ try:
 finally:
   sys.path.pop(0)
 
-import struct_generator
+import class_generator
 import element_generator
+import java_element_generator
+import struct_generator
 
 HEAD = u"""// Copyright %d The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
@@ -200,6 +202,42 @@ def _GenerateCC(basepath, fileroot, head, namespace, schema, description):
       f.write(u'}  // namespace %s\n' % namespace)
 
 
+def _GenerateJava(basepath, fileroot, head, package, schema, description):
+  """Generates the .java file containing the static initializers for the
+  of the elements specified in the description.
+
+  Args:
+    basepath: The base directory in which files are generated.
+    fileroot: The filename and path, relative to basepath, of the file to
+        create, without an extension.
+    head: The string to output as the header of the .cc file.
+    package: A string corresponding to the Java package to use.
+    schema: A dict containing the schema. See comment at the top of this file.
+    description: A dict containing the description. See comment at the top of
+        this file.
+  """
+  with io.open(os.path.join(basepath, fileroot + '.java'),
+               'w',
+               encoding='utf-8') as f:
+    f.write(head)
+
+    if package:
+      f.write(u'package %s;\n' % package)
+      f.write(u'\n')
+
+    f.write(u'public class GeneratedFieldtrialTestingConfigVariations {\n')
+
+    f.write(
+        class_generator.GenerateInnerClasses(schema['type_name'],
+                                             schema['schema']))
+
+    f.write(
+        java_element_generator.GenerateElements(schema['type_name'],
+                                                schema['schema'], description))
+
+    f.write(u'} // class GeneratedFieldtrialTestingConfigVariations\n')
+
+
 def _Load(filename):
   """Loads a JSON file int a Python object and return this object.
   """
@@ -207,6 +245,36 @@ def _Load(filename):
   with io.open(filename, 'r', encoding='utf-8') as handle:
     result = json.loads(json_comment_eater.Nom(handle.read()))
   return result
+
+
+def GenerateClass(basepath,
+                  output_root,
+                  package,
+                  schema,
+                  description,
+                  description_filename,
+                  schema_filename,
+                  year=None):
+  """Generates a Java class from a JSON description.
+
+  Args:
+    basepath: The base directory in which files are generated.
+    output_root: The filename and path, relative to basepath, of the file to
+        create, without an extension.
+    package: A string corresponding to the Java package to use.
+    schema: A dict containing the schema. See comment at the top of this file.
+    description: A dict containing the description. See comment at the top of
+        this file.
+    description_filename: The description filename. This is added to the
+        header of the outputted files.
+    schema_filename: The schema filename. This is added to the header of the
+        outputted files.
+    year: Year to display next to the copy-right in the header.
+  """
+  year = int(year) if year else datetime.now().year
+  head = HEAD % (year, schema_filename, description_filename)
+  _GenerateJava(basepath, output_root, head, package, schema, description)
+
 
 def GenerateStruct(basepath, output_root, namespace, schema, description,
                    description_filename, schema_filename, year=None):

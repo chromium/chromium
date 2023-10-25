@@ -44,9 +44,6 @@ IsolatedWebAppInstallerCoordinator::~IsolatedWebAppInstallerCoordinator() =
 
 void IsolatedWebAppInstallerCoordinator::Show(
     base::OnceCallback<void(absl::optional<webapps::AppId>)> callback) {
-  // TODO(crbug.com/1479140): Switch to "not enabled" if the pref isn't set
-  model_->SetStep(IsolatedWebAppInstallerModel::Step::kGetMetadata);
-
   controller_->Show(
       base::BindOnce(&IsolatedWebAppInstallerCoordinator::OnDialogClosed,
                      base::Unretained(this), std::move(callback)));

@@ -13,6 +13,7 @@
 #include "chrome/browser/tpcd/experiment/experiment_manager.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
 #include "content/public/browser/cookie_deprecation_label_manager.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
@@ -60,7 +61,7 @@ EligibilityService::EligibilityService(Profile* profile,
     onboarding_service_->MaybeResetOnboardingPrefs();
   }
 
-  is_profile_eligible_ = IsProfileEligible();
+  profile_eligibility_ = ProfileEligibility();
   BroadcastProfileEligibility();
 }
 
@@ -76,6 +77,7 @@ void EligibilityService::Shutdown() {
 }
 
 void EligibilityService::BroadcastProfileEligibility() {
+  CHECK(profile_eligibility_.has_value());
   absl::optional<bool> is_client_eligible =
       experiment_manager_->IsClientEligible();
   if (is_client_eligible.has_value()) {
@@ -83,8 +85,13 @@ void EligibilityService::BroadcastProfileEligibility() {
     return;
   }
 
+  base::UmaHistogramEnumeration(
+      "PrivacySandbox.CookieDeprecationFacilitatedTesting."
+      "ReasonForEligibilityStoredInPrefs",
+      profile_eligibility_->reason());
+
   experiment_manager_->SetClientEligibility(
-      is_profile_eligible_,
+      profile_eligibility_->is_eligible(),
       base::BindOnce(&EligibilityService::MarkProfileEligibility,
                      weak_factory_.GetWeakPtr()));
 }
@@ -92,8 +99,12 @@ void EligibilityService::BroadcastProfileEligibility() {
 void EligibilityService::MarkProfileEligibility(bool is_client_eligible) {
   // Record when profile eligiblity and client eligiblity matches and
   // mismatches.
-  UmaHistogramProfileEligibilityMismatch(is_profile_eligible_,
+  UmaHistogramProfileEligibilityMismatch(profile_eligibility_->is_eligible(),
                                          is_client_eligible);
+  base::UmaHistogramEnumeration(
+      "PrivacySandbox.CookieDeprecationFacilitatedTesting."
+      "ReasonForComputedEligibilityForProfile",
+      profile_eligibility_->reason());
 
   // For each storage partition, update the cookie deprecation label to the
   // updated value from the CookieDeprecationLabelManager.
@@ -117,13 +128,14 @@ void EligibilityService::MarkProfileEligibility(bool is_client_eligible) {
   }
 }
 
-bool EligibilityService::IsProfileEligible() {
+privacy_sandbox::TpcdExperimentEligibility
+EligibilityService::ProfileEligibility() {
   auto* privacy_sandbox_settings =
       PrivacySandboxSettingsFactory::GetForProfile(profile_);
   CHECK(privacy_sandbox_settings);
 
   return privacy_sandbox_settings
-      ->IsCookieDeprecationExperimentCurrentlyEligible();
+      ->GetCookieDeprecationExperimentCurrentEligibility();
 }
 
 }  // namespace tpcd::experiment

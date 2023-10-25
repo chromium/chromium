@@ -8,7 +8,9 @@ import {isRTL} from 'chrome://resources/ash/common/util.js';
 
 import {RateLimiter} from '../../../common/js/async_util.js';
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
+import {entriesToURLs} from '../../../common/js/entry_utils.js';
 import {FileType} from '../../../common/js/file_type.js';
+import {isDriveShortcutsEnabled, isJellyEnabled} from '../../../common/js/flags.js';
 import {str, util} from '../../../common/js/util.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
@@ -649,7 +651,7 @@ export class FileGrid extends Grid {
   getFolderItemHeight_() {
     // Align with CSS value for .thumbnail-item.directory: height + margin +
     // border.
-    const height = util.isJellyEnabled() ? 48 : 40;
+    const height = isJellyEnabled() ? 48 : 40;
     return height + this.getItemMarginTop_() + 2;
   }
 
@@ -675,7 +677,7 @@ export class FileGrid extends Grid {
     // the CSS rule ".grid-title ~ .grid-title" for more information in the CSS
     // file.
     const groupMarginTop =
-        util.isJellyEnabled() && groupIndex > 0 ? GROUP_MARGIN_TOP : 0;
+        isJellyEnabled() && groupIndex > 0 ? GROUP_MARGIN_TOP : 0;
     switch (fileListModel.groupByField) {
       case GROUP_BY_FIELD_DIRECTORY:
         return DIRECTORY_GROUP_HEADING_HEIGHT + groupMarginTop;
@@ -734,7 +736,7 @@ export class FileGrid extends Grid {
    */
   getItemWidth_() {
     // Align with CSS value for .thumbnail-item: width + margin + border.
-    const width = util.isJellyEnabled() ? 160 : 180;
+    const width = isJellyEnabled() ? 160 : 180;
     return width + this.getItemMarginLeft_() + 2;
   }
 
@@ -829,7 +831,7 @@ export class FileGrid extends Grid {
    */
   // @ts-ignore: error TS6133: 'type' is declared but its value is never read.
   updateListItemsMetadata(type, entries) {
-    const urls = util.entriesToURLs(entries);
+    const urls = entriesToURLs(entries);
     // @ts-ignore: error TS2315: Type 'NodeList' is not generic.
     const boxes = /** @type {!NodeList<!HTMLElement>} */ (
         this.querySelectorAll('.img-container'));
@@ -948,7 +950,7 @@ export class FileGrid extends Grid {
     checkmark.className = 'detail-checkmark';
     detailIcon.appendChild(checkmark);
     bottom.appendChild(detailIcon);
-    if (util.isDriveShortcutsEnabled()) {
+    if (isDriveShortcutsEnabled()) {
       bottom.appendChild(filelist.renderIconBadge(li.ownerDocument));
     }
     bottom.appendChild(
@@ -1130,7 +1132,7 @@ export class FileGrid extends Grid {
   setGenericThumbnail_(box, entry, opt_mimeType) {
     if (entry.isDirectory) {
       // There is no space to show the thumbnail so don't adde one for Jelly.
-      if (!util.isJellyEnabled()) {
+      if (!isJellyEnabled()) {
         box.setAttribute('generic-thumbnail', 'folder');
       }
     } else if (FileType.isEncrypted(entry, opt_mimeType)) {
@@ -1293,7 +1295,7 @@ export class FileGrid extends Grid {
  * @return {number}
  */
 FileGrid.GridSize = () => {
-  return util.isJellyEnabled() ? 160 : 180;
+  return isJellyEnabled() ? 160 : 180;
 };
 
 FileGrid.Item = class extends ListItem {

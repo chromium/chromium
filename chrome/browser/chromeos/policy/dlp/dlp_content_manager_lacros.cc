@@ -83,7 +83,7 @@ DlpContentManagerLacros* DlpContentManagerLacros::Get() {
 void DlpContentManagerLacros::CheckScreenShareRestriction(
     const content::DesktopMediaID& media_id,
     const std::u16string& application_title,
-    OnDlpRestrictionCheckedCallback callback) {
+    WarningCallback callback) {
   if (media_id.type == content::DesktopMediaID::Type::TYPE_WEB_CONTENTS) {
     ProcessScreenShareRestriction(
         application_title,

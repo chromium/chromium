@@ -18,28 +18,28 @@ namespace blink {
 
 namespace {
 
-struct SameSizeAsNGPhysicalLineBoxFragment : NGPhysicalFragment {
+struct SameSizeAsPhysicalLineBoxFragment : NGPhysicalFragment {
   FontHeight metrics;
 };
 
-ASSERT_SIZE(NGPhysicalLineBoxFragment, SameSizeAsNGPhysicalLineBoxFragment);
+ASSERT_SIZE(PhysicalLineBoxFragment, SameSizeAsPhysicalLineBoxFragment);
 
 }  // namespace
 
-const NGPhysicalLineBoxFragment* NGPhysicalLineBoxFragment::Create(
-    NGLineBoxFragmentBuilder* builder) {
+const PhysicalLineBoxFragment* PhysicalLineBoxFragment::Create(
+    LineBoxFragmentBuilder* builder) {
   DCHECK_EQ(builder->children_.size(), 0u);
-  return MakeGarbageCollected<NGPhysicalLineBoxFragment>(PassKey(), builder);
+  return MakeGarbageCollected<PhysicalLineBoxFragment>(PassKey(), builder);
 }
 
-const NGPhysicalLineBoxFragment* NGPhysicalLineBoxFragment::Clone(
-    const NGPhysicalLineBoxFragment& other) {
-  return MakeGarbageCollected<NGPhysicalLineBoxFragment>(PassKey(), other);
+const PhysicalLineBoxFragment* PhysicalLineBoxFragment::Clone(
+    const PhysicalLineBoxFragment& other) {
+  return MakeGarbageCollected<PhysicalLineBoxFragment>(PassKey(), other);
 }
 
-NGPhysicalLineBoxFragment::NGPhysicalLineBoxFragment(
+PhysicalLineBoxFragment::PhysicalLineBoxFragment(
     PassKey key,
-    NGLineBoxFragmentBuilder* builder)
+    LineBoxFragmentBuilder* builder)
     : NGPhysicalFragment(builder,
                          builder->GetWritingMode(),
                          kFragmentLineBox,
@@ -54,20 +54,20 @@ NGPhysicalLineBoxFragment::NGPhysicalLineBoxFragment(
                                 builder->unpositioned_list_marker_;
 }
 
-NGPhysicalLineBoxFragment::NGPhysicalLineBoxFragment(
+PhysicalLineBoxFragment::PhysicalLineBoxFragment(
     PassKey key,
-    const NGPhysicalLineBoxFragment& other)
+    const PhysicalLineBoxFragment& other)
     : NGPhysicalFragment(other), metrics_(other.metrics_) {
   base_direction_ = other.base_direction_;
   has_hanging_ = other.has_hanging_;
   has_propagated_descendants_ = other.has_propagated_descendants_;
 }
 
-NGPhysicalLineBoxFragment::~NGPhysicalLineBoxFragment() = default;
+PhysicalLineBoxFragment::~PhysicalLineBoxFragment() = default;
 
-void NGPhysicalLineBoxFragment::Dispose() {}
+void PhysicalLineBoxFragment::Dispose() {}
 
-FontHeight NGPhysicalLineBoxFragment::BaselineMetrics() const {
+FontHeight PhysicalLineBoxFragment::BaselineMetrics() const {
   // TODO(kojii): Computing other baseline types than the used one is not
   // implemented yet.
   // TODO(kojii): We might need locale/script to look up OpenType BASE table.
@@ -97,7 +97,7 @@ inline void AddInlineSizeToOverflow(const PhysicalRect& rect,
 
 }  // namespace
 
-PhysicalRect NGPhysicalLineBoxFragment::ScrollableOverflow(
+PhysicalRect PhysicalLineBoxFragment::ScrollableOverflow(
     const NGPhysicalBoxFragment& container,
     const ComputedStyle& container_style,
     TextHeightType height_type) const {
@@ -109,7 +109,7 @@ PhysicalRect NGPhysicalLineBoxFragment::ScrollableOverflow(
   return overflow;
 }
 
-PhysicalRect NGPhysicalLineBoxFragment::ScrollableOverflowForLine(
+PhysicalRect PhysicalLineBoxFragment::ScrollableOverflowForLine(
     const NGPhysicalBoxFragment& container,
     const ComputedStyle& container_style,
     const FragmentItem& line,
@@ -132,12 +132,12 @@ PhysicalRect NGPhysicalLineBoxFragment::ScrollableOverflowForLine(
   return overflow;
 }
 
-bool NGPhysicalLineBoxFragment::HasSoftWrapToNextLine() const {
+bool PhysicalLineBoxFragment::HasSoftWrapToNextLine() const {
   const auto* break_token = To<NGInlineBreakToken>(BreakToken());
   return break_token && !break_token->IsForcedBreak();
 }
 
-void NGPhysicalLineBoxFragment::TraceAfterDispatch(Visitor* visitor) const {
+void PhysicalLineBoxFragment::TraceAfterDispatch(Visitor* visitor) const {
   NGPhysicalFragment::TraceAfterDispatch(visitor);
 }
 

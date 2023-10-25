@@ -43,6 +43,9 @@ public class ManifestMetadataUtilTest {
     private static final String XRW_ALLOWLIST_METADATA_NAME =
             "REQUESTED_WITH_HEADER_ORIGIN_ALLOW_LIST";
 
+    private static final String MULTI_PROFILE_NAME_TAG_KEY_METADATA_NAME =
+            "android.webkit.WebView.MultiProfileNameTagKey";
+
     private static final int XRW_ALLOWLIST_RESOURCE_ID = 0xcafebabe;
     private static final String[] XRW_ALLOWLIST = {"*.example.com", "*.google.com"};
     private static final int INVALID_XRW_ALLOWLIST_RESOURCE_ID = 0xdead;
@@ -67,21 +70,25 @@ public class ManifestMetadataUtilTest {
         var bundle = new Bundle();
         bundle.putBoolean(METRICS_OPT_OUT_METADATA_NAME, true);
         mContext.putServiceMetadata(mContext.getPackageName(), bundle);
-        Assert.assertTrue(ManifestMetadataUtil.isAppOptedOutFromMetricsCollection());
+
+        Bundle appMetadata = ManifestMetadataUtil.getAppMetadata(mContext);
+        Assert.assertTrue(ManifestMetadataUtil.isAppOptedOutFromMetricsCollection(appMetadata));
     }
 
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Manifest"})
     public void testMetricsCollectionDefault() throws Exception {
-        Assert.assertFalse(ManifestMetadataUtil.isAppOptedOutFromMetricsCollection());
+        Bundle appMetadata = ManifestMetadataUtil.getAppMetadata(mContext);
+        Assert.assertFalse(ManifestMetadataUtil.isAppOptedOutFromMetricsCollection(appMetadata));
     }
 
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Manifest"})
     public void testSafeBrowsingDefault() throws Exception {
-        Assert.assertNull(ManifestMetadataUtil.getSafeBrowsingAppOptInPreference());
+        Bundle appMetadata = ManifestMetadataUtil.getAppMetadata(mContext);
+        Assert.assertNull(ManifestMetadataUtil.getSafeBrowsingAppOptInPreference(appMetadata));
     }
 
     @Test
@@ -91,7 +98,8 @@ public class ManifestMetadataUtilTest {
         var bundle = new Bundle();
         bundle.putBoolean(SAFE_BROWSING_OPT_IN_METADATA_NAME, true);
         mContext.putServiceMetadata(mContext.getPackageName(), bundle);
-        var preference = ManifestMetadataUtil.getSafeBrowsingAppOptInPreference();
+        Bundle appMetadata = ManifestMetadataUtil.getAppMetadata(mContext);
+        var preference = ManifestMetadataUtil.getSafeBrowsingAppOptInPreference(appMetadata);
         Assert.assertNotNull(preference);
         Assert.assertTrue(preference);
     }
@@ -103,9 +111,36 @@ public class ManifestMetadataUtilTest {
         var bundle = new Bundle();
         bundle.putBoolean(SAFE_BROWSING_OPT_IN_METADATA_NAME, false);
         mContext.putServiceMetadata(mContext.getPackageName(), bundle);
-        var preference = ManifestMetadataUtil.getSafeBrowsingAppOptInPreference();
+        Bundle appMetadata = ManifestMetadataUtil.getAppMetadata(mContext);
+        var preference = ManifestMetadataUtil.getSafeBrowsingAppOptInPreference(appMetadata);
         Assert.assertNotNull(preference);
         Assert.assertFalse(preference);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Manifest"})
+    public void testMultiProfileProfileNameTagKeyRetrieval() throws Exception {
+        var bundle = new Bundle();
+        bundle.putInt(MULTI_PROFILE_NAME_TAG_KEY_METADATA_NAME, 12345);
+        mContext.putServiceMetadata(mMetadataServiceName, bundle);
+
+        Bundle holderServiceMetadata =
+                ManifestMetadataUtil.getMetadataHolderServiceMetadata(mContext);
+        Integer profileNameTagKey =
+                ManifestMetadataUtil.getAppMultiProfileProfileNameTagKey(holderServiceMetadata);
+        Assert.assertNotNull(profileNameTagKey);
+        Assert.assertEquals(12345, profileNameTagKey.intValue());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Manifest"})
+    public void testNullMultiProfileProfileNameTagDefault() throws Exception {
+        Bundle holderServiceMetadata =
+                ManifestMetadataUtil.getMetadataHolderServiceMetadata(mContext);
+        Assert.assertNull(
+                ManifestMetadataUtil.getAppMultiProfileProfileNameTagKey(holderServiceMetadata));
     }
 
     @Test
@@ -117,16 +152,22 @@ public class ManifestMetadataUtilTest {
         mContext.putServiceMetadata(mMetadataServiceName, bundle);
         mContext.putStringArrayResource(XRW_ALLOWLIST_RESOURCE_ID, XRW_ALLOWLIST);
 
-        Set<String> allowList = ManifestMetadataUtil.getXRequestedWithAllowList();
+        Bundle holderServiceMetadata =
+                ManifestMetadataUtil.getMetadataHolderServiceMetadata(mContext);
+        Set<String> allowList =
+                ManifestMetadataUtil.getXRequestedWithAllowList(mContext, holderServiceMetadata);
         Assert.assertEquals(Set.of(XRW_ALLOWLIST), allowList);
     }
 
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Manifest"})
-    public void testExceptionIfServiceMetadataNotFound() throws Exception {
+    public void testEmptySetIfServiceMetadataNotFound() throws Exception {
+        Bundle holderServiceMetadata =
+                ManifestMetadataUtil.getMetadataHolderServiceMetadata(mContext);
         Assert.assertEquals(
-                Collections.emptySet(), ManifestMetadataUtil.getXRequestedWithAllowList());
+                Collections.emptySet(),
+                ManifestMetadataUtil.getXRequestedWithAllowList(mContext, holderServiceMetadata));
     }
 
     @Test
@@ -135,10 +176,16 @@ public class ManifestMetadataUtilTest {
     public void testNoErrorsIfXrwAllowListKeyNotSet() throws Exception {
         mContext.putServiceMetadata(mMetadataServiceName, new Bundle());
 
+        Bundle holderServiceMetadata =
+                ManifestMetadataUtil.getMetadataHolderServiceMetadata(mContext);
         Assert.assertEquals(
-                Collections.emptySet(), ManifestMetadataUtil.getXRequestedWithAllowList());
+                Collections.emptySet(),
+                ManifestMetadataUtil.getXRequestedWithAllowList(mContext, holderServiceMetadata));
     }
 
+    /**
+     * @noinspection ResultOfMethodCallIgnored
+     */
     @Test(expected = IllegalArgumentException.class)
     @SmallTest
     @Feature({"AndroidWebView", "Manifest"})
@@ -150,10 +197,15 @@ public class ManifestMetadataUtilTest {
 
         mContext.putStringArrayResource(XRW_ALLOWLIST_RESOURCE_ID, XRW_ALLOWLIST);
 
-        ManifestMetadataUtil.getXRequestedWithAllowList();
+        Bundle holderServiceMetadata =
+                ManifestMetadataUtil.getMetadataHolderServiceMetadata(mContext);
+        ManifestMetadataUtil.getXRequestedWithAllowList(mContext, holderServiceMetadata);
         Assert.fail("An IllegalArgumentException should have been thrown");
     }
 
+    /**
+     * @noinspection ResultOfMethodCallIgnored
+     */
     @Test(expected = IllegalArgumentException.class)
     @SmallTest
     @Feature({"AndroidWebView", "Manifest"})
@@ -163,7 +215,9 @@ public class ManifestMetadataUtilTest {
 
         mContext.putServiceMetadata(mMetadataServiceName, bundle);
 
-        ManifestMetadataUtil.getXRequestedWithAllowList();
+        Bundle holderServiceMetadata =
+                ManifestMetadataUtil.getMetadataHolderServiceMetadata(mContext);
+        ManifestMetadataUtil.getXRequestedWithAllowList(mContext, holderServiceMetadata);
         Assert.fail("An IllegalArgumentException should have been thrown");
     }
 }

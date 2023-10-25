@@ -1434,8 +1434,8 @@ Node* Document::adoptNode(Node* source, ExceptionState& exception_state) {
         // The above removeChild() can execute arbitrary JavaScript code.
         if (source->parentNode()) {
           AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-              mojom::ConsoleMessageSource::kJavaScript,
-              mojom::ConsoleMessageLevel::kWarning,
+              ConsoleMessage::Source::kJavaScript,
+              ConsoleMessage::Level::kWarning,
               ExceptionMessages::FailedToExecute("adoptNode", "Document",
                                                  "Unable to remove the "
                                                  "specified node from the "
@@ -4345,8 +4345,7 @@ void Document::write(const String& text,
   if (!has_insertion_point) {
     if (ignore_destructive_write_count_) {
       AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::ConsoleMessageSource::kJavaScript,
-          mojom::ConsoleMessageLevel::kWarning,
+          ConsoleMessage::Source::kJavaScript, ConsoleMessage::Level::kWarning,
           ExceptionMessages::FailedToExecute(
               "write", "Document",
               "It isn't possible to write into a document "
@@ -4547,11 +4546,11 @@ KURL Document::FallbackBaseURL() const {
     }
   }
 
-  // [spec] 2. If document's URL is about:blank, and document's browsing
-  //           context's creator base URL is non-null, then return that creator
-  //           base URL.
+  // [spec] 2. If document's URL matches about:blank and document's about base
+  //           URL is non-null, then return document's about base URL.
   if (urlForBinding().IsAboutBlankURL()) {
-    if (!dom_window_ && execution_context_) {
+    if (!RuntimeEnabledFeatures::DocumentBaseURIFixEnabled() && !dom_window_ &&
+        execution_context_) {
       return execution_context_->BaseURL();
     }
 
@@ -4628,8 +4627,7 @@ void Document::ProcessBaseElement() {
         base_element_url.ProtocolIsJavaScript()) {
       UseCounter::Count(*this, WebFeature::kBaseWithDataHref);
       AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::ConsoleMessageSource::kSecurity,
-          mojom::ConsoleMessageLevel::kError,
+          ConsoleMessage::Source::kSecurity, ConsoleMessage::Level::kError,
           "'" + base_element_url.Protocol() +
               "' URLs may not be used as base URLs for a document."));
     }
@@ -4735,8 +4733,8 @@ void Document::MaybeHandleHttpRefresh(const String& content,
     String message =
         "Refused to refresh " + url_.ElidedString() + " to a javascript: URL";
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::ConsoleMessageSource::kSecurity,
-        mojom::ConsoleMessageLevel::kError, message));
+        ConsoleMessage::Source::kSecurity, ConsoleMessage::Level::kError,
+        message));
     return;
   }
 
@@ -4748,8 +4746,8 @@ void Document::MaybeHandleHttpRefresh(const String& content,
         "http-equiv='refresh' content='...'>'. The document is sandboxed, and "
         "the 'allow-scripts' keyword is not set.";
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::ConsoleMessageSource::kSecurity,
-        mojom::ConsoleMessageLevel::kError, message));
+        ConsoleMessage::Source::kSecurity, ConsoleMessage::Level::kError,
+        message));
     return;
   }
 
@@ -6126,8 +6124,7 @@ void Document::setDomain(const String& raw_domain,
 
   if (Agent::IsCrossOriginIsolated()) {
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kSecurity,
-        mojom::blink::ConsoleMessageLevel::kWarning,
+        ConsoleMessage::Source::kSecurity, ConsoleMessage::Level::kWarning,
         "document.domain mutation is ignored because the surrounding agent "
         "cluster is cross-origin isolated."));
     return;
@@ -6136,8 +6133,7 @@ void Document::setDomain(const String& raw_domain,
   if (RuntimeEnabledFeatures::OriginIsolationHeaderEnabled(dom_window_) &&
       dom_window_->GetAgent()->IsOriginKeyed()) {
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kSecurity,
-        mojom::blink::ConsoleMessageLevel::kWarning,
+        ConsoleMessage::Source::kSecurity, ConsoleMessage::Level::kWarning,
         "document.domain mutation is ignored because the surrounding agent "
         "cluster is origin-keyed."));
     return;
@@ -6377,8 +6373,7 @@ ScriptPromise Document::requestStorageAccessFor(ScriptState* script_state,
 
   if (!IsInOutermostMainFrame()) {
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kSecurity,
-        mojom::blink::ConsoleMessageLevel::kError,
+        ConsoleMessage::Source::kSecurity, ConsoleMessage::Level::kError,
         "requestStorageAccessFor: Only supported in primary top-level "
         "browsing contexts."));
     FireRequestStorageAccessForHistogram(
@@ -6391,8 +6386,7 @@ ScriptPromise Document::requestStorageAccessFor(ScriptState* script_state,
 
   if (dom_window_->GetSecurityOrigin()->IsOpaque()) {
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kSecurity,
-        mojom::blink::ConsoleMessageLevel::kError,
+        ConsoleMessage::Source::kSecurity, ConsoleMessage::Level::kError,
         "requestStorageAccessFor: Cannot be used by opaque origins."));
 
     FireRequestStorageAccessForHistogram(
@@ -6409,8 +6403,7 @@ ScriptPromise Document::requestStorageAccessFor(ScriptState* script_state,
 
   if (!dom_window_->isSecureContext()) {
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kSecurity,
-        mojom::blink::ConsoleMessageLevel::kError,
+        ConsoleMessage::Source::kSecurity, ConsoleMessage::Level::kError,
         "requestStorageAccessFor: May not be used in an insecure "
         "context."));
     FireRequestStorageAccessForHistogram(
@@ -6427,8 +6420,7 @@ ScriptPromise Document::requestStorageAccessFor(ScriptState* script_state,
       SecurityOrigin::Create(origin_as_kurl);
   if (supplied_origin->IsOpaque()) {
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kSecurity,
-        mojom::blink::ConsoleMessageLevel::kError,
+        ConsoleMessage::Source::kSecurity, ConsoleMessage::Level::kError,
         "requestStorageAccessFor: Invalid origin parameter."));
     FireRequestStorageAccessForHistogram(
         RequestStorageResult::REJECTED_OPAQUE_ORIGIN);
@@ -6493,8 +6485,7 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
 
   if (!dom_window_->isSecureContext()) {
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kSecurity,
-        mojom::blink::ConsoleMessageLevel::kError,
+        ConsoleMessage::Source::kSecurity, ConsoleMessage::Level::kError,
         "requestStorageAccess: May not be used in an insecure context."));
     FireRequestStorageAccessHistogram(
         RequestStorageResult::REJECTED_INSECURE_CONTEXT);
@@ -6517,8 +6508,7 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
 
   if (dom_window_->GetSecurityOrigin()->IsOpaque()) {
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kSecurity,
-        mojom::blink::ConsoleMessageLevel::kError,
+        ConsoleMessage::Source::kSecurity, ConsoleMessage::Level::kError,
         "requestStorageAccess: Cannot be used by opaque origins."));
     FireRequestStorageAccessHistogram(
         RequestStorageResult::REJECTED_OPAQUE_ORIGIN);
@@ -6531,8 +6521,7 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
 
   if (dom_window_->credentialless()) {
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kSecurity,
-        mojom::blink::ConsoleMessageLevel::kError,
+        ConsoleMessage::Source::kSecurity, ConsoleMessage::Level::kError,
         "requestStorageAccess: May not be used in a credentialless iframe"));
     FireRequestStorageAccessHistogram(
         RequestStorageResult::REJECTED_CREDENTIALLESS_IFRAME);
@@ -6546,8 +6535,7 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
   if (dom_window_->IsSandboxed(network::mojom::blink::WebSandboxFlags::
                                    kStorageAccessByUserActivation)) {
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kSecurity,
-        mojom::blink::ConsoleMessageLevel::kError,
+        ConsoleMessage::Source::kSecurity, ConsoleMessage::Level::kError,
         dom_window_->GetFrame()->IsInFencedFrameTree()
             ? "requestStorageAccess: Refused to execute request. The document "
               "is in a fenced frame tree."
@@ -6601,8 +6589,7 @@ void Document::ProcessStorageAccessPermissionState(
     FireRequestStorageAccessHistogram(
         RequestStorageResult::REJECTED_GRANT_DENIED);
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kSecurity,
-        mojom::blink::ConsoleMessageLevel::kError,
+        ConsoleMessage::Source::kSecurity, ConsoleMessage::Level::kError,
         "requestStorageAccess: Permission denied."));
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
@@ -6628,8 +6615,7 @@ void Document::ProcessTopLevelStorageAccessPermissionState(
     FireRequestStorageAccessForHistogram(
         RequestStorageResult::REJECTED_GRANT_DENIED);
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kSecurity,
-        mojom::blink::ConsoleMessageLevel::kError,
+        ConsoleMessage::Source::kSecurity, ConsoleMessage::Level::kError,
         "requestStorageAccessFor: Permission denied."));
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,

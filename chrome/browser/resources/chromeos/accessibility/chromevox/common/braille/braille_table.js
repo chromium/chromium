@@ -117,8 +117,8 @@ BrailleTable.getUncontracted = function(tables, table) {
       return candidate;
     }
     if (current.locale === candidate.locale &&
-        current.dots === candidate.dots && goog.isDef(current.grade) &&
-        goog.isDef(candidate.grade) && candidate.grade < current.grade) {
+        current.dots === candidate.dots && (current.grade !== undefined) &&
+        (candidate.grade !== undefined) && candidate.grade < current.grade) {
       return candidate;
     }
     return current;

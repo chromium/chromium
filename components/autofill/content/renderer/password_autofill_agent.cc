@@ -1263,7 +1263,7 @@ void PasswordAutofillAgent::AnnotateFormsAndFieldsWithSignatures(
     std::string form_signature;
     std::string alternative_form_signature;
     if (form_data) {
-      // GetFormSignatureAsString() may require the FormData::url.
+      // GetAlternativeFormSignatureAsString() require the FormData::url.
       form_data->url = render_frame()->GetWebFrame()->GetDocument().Url();
       form_signature = GetFormSignatureAsString(*form_data);
       alternative_form_signature =
@@ -1349,9 +1349,6 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
       continue;
     }
 
-    if (logger)
-      logger->LogFormData(Logger::STRING_FORM_IS_PASSWORD, *form_data);
-
     FormStructureInfo form_structure_info =
         ExtractFormStructureInfo(*form_data);
     if (only_visible || WasFormStructureChanged(form_structure_info)) {
@@ -1387,9 +1384,6 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
   if (add_unowned_inputs) {
     std::unique_ptr<FormData> form_data(GetFormDataFromUnownedInputElements());
     if (form_data && IsRendererRecognizedCredentialForm(*form_data)) {
-      if (logger) {
-        logger->LogFormData(Logger::STRING_FORM_IS_PASSWORD, *form_data);
-      }
       password_forms_data.push_back(std::move(*form_data));
     }
   }

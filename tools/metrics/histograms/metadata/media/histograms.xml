@@ -2372,6 +2372,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.ElementCapture.RestrictTo.Latency" units="ms"
+    expires_after="2024-09-20">
+  <owner>eladalon@chromium.org</owner>
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <summary>
+    Duration in milliseconds of the time it takes for a
+    BrowserCaptureMediaStreamTrack.restrictTo() call to resolve (either
+    successfully or with an error). Note a call which never resolves won't be
+    counted in this metric.
+  </summary>
+</histogram>
+
+<histogram name="Media.ElementCapture.RestrictTo.Result"
+    enum="ApplySubCaptureTargetResult" expires_after="2024-09-20">
+  <owner>eladalon@chromium.org</owner>
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <summary>
+    Tracks the result of calls to BrowserCaptureMediaStreamTrack.restrictTo().
+    Recorded when resolving the promise produced by restrictTo().
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.CdmFileIO.FileSizeKBOnError" units="KB"
     expires_after="2024-04-11">
   <owner>xhwang@chromium.org</owner>
@@ -3286,68 +3310,6 @@ chromium-metrics-reviews@google.com.
   <token key="EmeApi" variants="EmeApi"/>
 </histogram>
 
-<histogram name="Media.Engagement.ScoreAtPlayback" units="%"
-    expires_after="M82">
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    The media engagement score recorded at the time of playback. It is converted
-    to a percentage so should be divided by 100 to get the actual score. It is
-    only recorded for playback that is either lacking an audio track or not
-    muted.
-  </summary>
-</histogram>
-
-<histogram
-    name="Media.Engagement.SignificantPlayers.PlayerNotAdded.AfterFirstTime"
-    enum="InsignificantPlaybackReason" expires_after="M82">
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Recorded when the Media Engagement service doesn't determine a player to be
-    significant. If a player is not significant the reasons why will be
-    individually recorded to this histogram each time except for the first time
-    which is recorded to a different histogram.
-
-    The significant state of a player is reevaluated any time the state of the
-    player changes (e.g. muted, playing/paused). If the player was not
-    considered signficiant and still is not then we will record the reasons why
-    in this histogram.
-  </summary>
-</histogram>
-
-<histogram name="Media.Engagement.SignificantPlayers.PlayerNotAdded.FirstTime"
-    enum="InsignificantPlaybackReason" expires_after="M82">
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Recorded when the Media Engagement service doesn't determine a player to be
-    significant. If a player is not significant the reasons why will be
-    individually recorded to this histogram the first time only.
-
-    The significant state of a player is reevaluated any time the state of the
-    player changes (e.g. muted, playing/paused). If the player was not
-    considered signficiant and still is not then we will record the reasons why
-    in this histogram.
-  </summary>
-</histogram>
-
-<histogram name="Media.Engagement.SignificantPlayers.PlayerRemoved"
-    enum="InsignificantPlaybackReason" expires_after="M77">
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Recorded when the Media Engagement service no longer determines a player to
-    be significant. If a player is no longer significant, the reasons why will
-    be individually recorded to this histogram.
-
-    The significant state of a player is re-evaluted any time the state of the
-    player changes (e.g. muted, playing/paused). If the player was previously
-    considered significant and is no longer considered that we will record the
-    reasons why in this histogram.
-  </summary>
-</histogram>
-
 <histogram name="Media.FallbackToHighLatencyAudioPath"
     enum="BooleanDidFallBack" expires_after="never">
 <!-- expires-never: Media pipeline health metric. -->
@@ -3734,12 +3696,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.HardwareKeyPressed" enum="MediaHardwareKeyAction"
-    expires_after="2021-08-29">
+    expires_after="2024-01-31">
   <owner>steimel@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Records media key presses that are handled by the
     HardwareKeyMediaController.
+
+    Warning: this histogram was expired from 2021-08-29 to 2023-10-24; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -4176,7 +4141,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Midi.SendReceiveUsage" enum="MidiSendReceiveUsage"
-    expires_after="2023-12-01">
+    expires_after="2024-12-01">
   <owner>hongchan@chromium.org</owner>
   <owner>mjwilson@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
@@ -4191,7 +4156,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Midi.SysExMessageSizeUpTo1MB" units="bytes"
-    expires_after="2023-12-01">
+    expires_after="2024-12-01">
   <owner>hongchan@chromium.org</owner>
   <owner>mjwilson@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
@@ -4202,7 +4167,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Midi.Usage" enum="MidiUsage" expires_after="2023-12-01">
+<histogram name="Media.Midi.Usage" enum="MidiUsage" expires_after="2024-12-01">
   <owner>hongchan@chromium.org</owner>
   <owner>mjwilson@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>

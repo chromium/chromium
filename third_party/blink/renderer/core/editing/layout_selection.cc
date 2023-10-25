@@ -46,7 +46,7 @@ namespace blink {
 
 namespace {
 
-// TODO(yoichio): Share condition between NGOffsetMapping::AcceptsPosition.
+// TODO(yoichio): Share condition between OffsetMapping::AcceptsPosition.
 // TODO(1229581): Do we need this function anymore?
 bool ShouldUseLayoutNGTextContent(const Node& node) {
   LayoutObject* layout_object = node.GetLayoutObject();
@@ -474,8 +474,7 @@ static absl::optional<unsigned> GetTextContentOffset(const Position& position) {
   DCHECK(IsPositionValidText(position));
 #endif
   DCHECK(ShouldUseLayoutNGTextContent(*position.AnchorNode()));
-  const NGOffsetMapping* const offset_mapping =
-      NGOffsetMapping::GetFor(position);
+  const OffsetMapping* const offset_mapping = OffsetMapping::GetFor(position);
   DCHECK(offset_mapping);
   const absl::optional<unsigned>& ng_offset =
       offset_mapping->GetTextContentOffset(position);

@@ -20,8 +20,8 @@
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
-#include "content/browser/attribution_reporting/combinatorics.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
+#include "content/browser/attribution_reporting/privacy_math.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -463,10 +463,6 @@ TEST_F(AttributionStorageDelegateImplTestInvalidFeatureConfigured,
 
 TEST(AttributionStorageDelegateImplTest,
      NullAggregatableReports_IncludeSourceRegistrationTime) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      attribution_reporting::features::
-          kAttributionReportingNullAggregatableReports);
-
   const auto trigger = DefaultTrigger();
 
   EXPECT_THAT(AttributionStorageDelegateImpl()
@@ -493,10 +489,6 @@ TEST(AttributionStorageDelegateImplTest,
 
 TEST(AttributionStorageDelegateImplTest,
      NullAggregatableReports_ExcludeSourceRegistrationTime) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      attribution_reporting::features::
-          kAttributionReportingNullAggregatableReports);
-
   const auto trigger = TriggerBuilder()
                            .SetSourceRegistrationTimeConfig(
                                attribution_reporting::mojom::

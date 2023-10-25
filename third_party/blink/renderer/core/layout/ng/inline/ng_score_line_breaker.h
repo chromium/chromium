@@ -15,11 +15,11 @@
 
 namespace blink {
 
+class InlineNode;
+class LineInfoList;
+class LineWidths;
 class NGConstraintSpace;
 class NGInlineBreakToken;
-class NGInlineNode;
-class NGLineInfoList;
-class NGLineWidths;
 struct NGLeadingFloats;
 
 //
@@ -27,7 +27,7 @@ struct NGLeadingFloats;
 // the Knuth's TeX algorithm.
 //
 // In short, the algorithm works in following steps:
-// 1. It runs `NGLineBreaker` to compute line break points greedy.
+// 1. It runs `LineBreaker` to compute line break points greedy.
 // 2. If the result doesn't meet the criteria to apply this score-based line
 //    breaking, it returns the result without applying the algorithm.
 // 3. It then computes all break candidates (a.k.a., break opportunities) with
@@ -39,15 +39,15 @@ struct NGLeadingFloats;
 // This algorithm is based on Android's `LineBreak.Strategy.HighQuality`:
 // https://cs.android.com/android/platform/superproject/+/master:frameworks/minikin/libs/minikin/OptimalLineBreaker.cpp
 //
-class CORE_EXPORT NGScoreLineBreaker {
+class CORE_EXPORT ScoreLineBreaker {
   STACK_ALLOCATED();
 
  public:
-  NGScoreLineBreaker(const NGInlineNode& node,
-                     const NGConstraintSpace& space,
-                     const NGLineWidths& line_widths,
-                     const NGInlineBreakToken* break_token,
-                     ExclusionSpace* exclusion_space)
+  ScoreLineBreaker(const InlineNode& node,
+                   const NGConstraintSpace& space,
+                   const LineWidths& line_widths,
+                   const NGInlineBreakToken* break_token,
+                   ExclusionSpace* exclusion_space)
       : node_(node),
         space_(space),
         line_widths_(line_widths),
@@ -66,51 +66,51 @@ class CORE_EXPORT NGScoreLineBreaker {
   // The primary entry point of doing all the work described in the class
   // comment.
   void OptimalBreakPoints(const NGLeadingFloats& leading_floats,
-                          NGScoreLineBreakContext& context);
+                          ScoreLineBreakContext& context);
 
   // Makes the length of all lines balanced, by running the `OptimalBreakPoints`
   // with a higher penalty for the end of the paragraph.
   void BalanceBreakPoints(const NGLeadingFloats& leading_floats,
-                          NGScoreLineBreakContext& context);
+                          ScoreLineBreakContext& context);
 
   void SetScoresOutForTesting(Vector<float>* scores_out);
 
  private:
-  struct NGLineBreakScore {
+  struct LineBreakScore {
     float score = 0;            // best score found for this break
     wtf_size_t prev_index = 0;  // index to previous break
     wtf_size_t line_index = 0;  // the computed line number of the candidate
   };
-  using NGLineBreakScores =
-      Vector<NGLineBreakScore, NGLineBreakCandidate::kInlineCapacity>;
+  using LineBreakScores =
+      Vector<LineBreakScore, LineBreakCandidate::kInlineCapacity>;
 
-  const NGInlineNode& Node() const { return node_; }
+  const InlineNode& Node() const { return node_; }
   LayoutUnit AvailableWidth(wtf_size_t line_index) const;
   LayoutUnit AvailableWidthToFit(wtf_size_t line_index) const {
-    return AvailableWidth(line_index).AddEpsilon();  // Match `NGLineBreaker`.
+    return AvailableWidth(line_index).AddEpsilon();  // Match `LineBreaker`.
   }
 
-  bool Optimize(const NGLineInfoList& line_info_list,
-                NGLineBreaker& line_breaker,
-                NGLineBreakPoints& break_points);
-  bool ComputeCandidates(const NGLineInfoList& line_info_list,
-                         NGLineBreaker& line_breaker,
-                         NGLineBreakCandidates& candidates);
+  bool Optimize(const LineInfoList& line_info_list,
+                LineBreaker& line_breaker,
+                LineBreakPoints& break_points);
+  bool ComputeCandidates(const LineInfoList& line_info_list,
+                         LineBreaker& line_breaker,
+                         LineBreakCandidates& candidates);
   void SetupParameters();
-  void ComputeLineWidths(const NGLineInfoList& line_info_list);
-  void ComputeScores(const NGLineBreakCandidates& candidates,
-                     NGLineBreakScores& scores);
-  void ComputeBreakPoints(const NGLineBreakCandidates& candidates,
-                          const NGLineBreakScores& scores,
-                          NGLineBreakPoints& break_points);
+  void ComputeLineWidths(const LineInfoList& line_info_list);
+  void ComputeScores(const LineBreakCandidates& candidates,
+                     LineBreakScores& scores);
+  void ComputeBreakPoints(const LineBreakCandidates& candidates,
+                          const LineBreakScores& scores,
+                          LineBreakPoints& break_points);
 
   static constexpr float kScoreInfinity = std::numeric_limits<float>::max();
   static constexpr float kScoreOverfull = 1e12f;
   static constexpr float kLastLinePenaltyMultiplier = 4.0f;
 
-  const NGInlineNode node_;
+  const InlineNode node_;
   const NGConstraintSpace& space_;
-  const NGLineWidths& line_widths_;
+  const LineWidths& line_widths_;
   ExclusionSpace* exclusion_space_;
   const NGInlineBreakToken* break_token_;
   LayoutUnit first_line_indent_;

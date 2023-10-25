@@ -431,8 +431,8 @@ TEST_F(ApplyRulesetsTest, AddUniversalRuleToDocument) {
   GetStyleEngine().ApplyRuleSetChanges(GetDocument(), ActiveStyleSheetVector(),
                                        new_style_sheets, {});
 
-  EXPECT_EQ(kSubtreeStyleChange,
-            GetDocument().documentElement()->GetStyleChangeType());
+  EXPECT_FALSE(GetStyleEngine().NeedsStyleInvalidation());
+  EXPECT_FALSE(GetStyleEngine().NeedsStyleRecalc());
 }
 
 TEST_F(ApplyRulesetsTest, AddUniversalRuleToShadowTree) {
@@ -453,8 +453,8 @@ TEST_F(ApplyRulesetsTest, AddUniversalRuleToShadowTree) {
   GetStyleEngine().ApplyRuleSetChanges(shadow_root, ActiveStyleSheetVector(),
                                        new_style_sheets, {});
 
-  EXPECT_FALSE(GetDocument().NeedsStyleRecalc());
-  EXPECT_EQ(kSubtreeStyleChange, host->GetStyleChangeType());
+  EXPECT_FALSE(GetStyleEngine().NeedsStyleInvalidation());
+  EXPECT_FALSE(GetStyleEngine().NeedsStyleRecalc());
 }
 
 TEST_F(ApplyRulesetsTest, AddFontFaceRuleToDocument) {

@@ -80,6 +80,13 @@ class PermissionServiceContextTest : public RenderViewHostTestHarness {
             render_frame_host);
   }
 
+  void TearDown() override {
+    permission_controller_ = nullptr;
+    render_frame_host_impl_ = nullptr;
+    permission_service_context_ = nullptr;
+    RenderViewHostTestHarness::TearDown();
+  }
+
   std::unique_ptr<TestPermissionObserver> CreateSubscription(
       PermissionType type,
       blink::mojom::PermissionStatus last_status,
@@ -113,12 +120,9 @@ class PermissionServiceContextTest : public RenderViewHostTestHarness {
 
  private:
   url::Origin origin_;
-  raw_ptr<PermissionControllerImpl, AcrossTasksDanglingUntriaged>
-      permission_controller_;
-  raw_ptr<RenderFrameHostImpl, AcrossTasksDanglingUntriaged>
-      render_frame_host_impl_;
-  raw_ptr<PermissionServiceContext, AcrossTasksDanglingUntriaged>
-      permission_service_context_;
+  raw_ptr<PermissionControllerImpl> permission_controller_;
+  raw_ptr<RenderFrameHostImpl> render_frame_host_impl_;
+  raw_ptr<PermissionServiceContext> permission_service_context_;
 };
 
 TEST_F(PermissionServiceContextTest, DispatchPermissionChangeEvent) {

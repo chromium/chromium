@@ -607,7 +607,6 @@ Se questo criterio non viene configurato, gli utenti potranno aggiungere eccezio
       Per informazioni dettagliate sui pattern URL di siti validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti. Questo criterio ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso nel pattern URL viene ignorato.
 
       Se il criterio non viene configurato per un sito, il criterio di <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> viene applicato al sito, se configurato, altrimenti l'autorizzazione seguirà le impostazioni predefinite del browser e consentirà agli utenti di scegliere se concedere o meno l'autorizzazione per ciascun sito.</translation>
-<translation id="1573640116113281811">Consenti agli utenti di includere il dump del firmware Wi-Fi nel loro feedback</translation>
 <translation id="1574258262373444557">Non usare <ph name="AES_KL_NAME" /> come algoritmo di crittografia per la crittografia dello spazio di archiviazione degli utenti</translation>
 <translation id="1575015449587326319">Criterio di configurazione per il connettore OnFileDownloaded di Chrome Enterprise</translation>
 <translation id="1583248206450240930">Utilizza <ph name="PRODUCT_FRAME_NAME" /> per impostazione predefinita</translation>
@@ -7442,6 +7441,19 @@ Se questo criterio viene disattivato o se non viene configurato, le impostazioni
       Se il criterio è impostato su false o se non viene impostato, <ph name="PRODUCT_NAME" /> utilizza le impostazioni di controllo delle revoche online esistenti.
 
       Questo criterio non ha effetto su <ph name="MAC_OS_NAME" /> se il criterio <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> viene impostato su false.</translation>
+<translation id="7277031272747335531">Questo criterio consente agli amministratori di limitare gli account autorizzati ad accedere a <ph name="MICROSOFT_ONE_DRIVE_NAME" /> quando il criterio <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" /> è attivo.
+
+Se questo criterio contiene il valore "<ph name="COMMON_NAME" />", è possibile utilizzare qualsiasi account per accedere.
+
+Se questo criterio contiene il valore "<ph name="ORGANIZATIONS_NAME" />", è possibile utilizzare account di lavoro o della scuola per accedere.
+
+Se questo criterio contiene il valore "<ph name="CONSUMER_NAME" />", è possibile utilizzare account <ph name="MICROSOFT_NAME" /> personali per accedere.
+
+Se questo criterio contiene nomi di dominio o ID tenant, è possibile utilizzare gli account di questi nomi di dominio o ID tenant (vedi la pagina https://learn.microsoft.com/it-it/azure/active-directory/develop/v2-protocols#endpoints) per accedere.
+
+Se questo criterio non viene configurato o se contiene soltanto un valore vuoto, si comporta come se fosse stato specificato il valore "<ph name="ORGANIZATIONS_NAME" />".
+
+La modifica della limitazione potrebbe comportare la disconnessione degli utenti dal loro account <ph name="MICROSOFT_ONE_DRIVE_NAME" /> se non ottempera alla nuova limitazione.</translation>
 <translation id="7278854311116092134">Nomi degli host di messaggi nativi da escludere dalla lista bloccata</translation>
 <translation id="7291084543582732020">Se attivi questa impostazione, gli utenti potranno utilizzare la funzione Smart Lock se ne vengono soddisfatti i requisiti.
 

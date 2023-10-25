@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/form_types.h"
+
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -32,7 +35,7 @@ FormType FieldTypeGroupToFormType(FieldTypeGroup field_type_group) {
   }
 }
 
-base::StringPiece FormTypeToStringPiece(FormType form_type) {
+std::string_view FormTypeToStringView(FormType form_type) {
   switch (form_type) {
     case FormType::kAddressForm:
       return "Address";

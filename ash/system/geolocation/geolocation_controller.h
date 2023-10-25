@@ -139,7 +139,7 @@ class ASH_EXPORT GeolocationController
 
   base::OneShotTimer* GetTimerForTesting() { return timer_.get(); }
 
-  bool HasObserverForTesting(const Observer* obs) const {
+  bool HasObserver(const Observer* obs) const {
     return observers_.HasObserver(obs);
   }
 
@@ -151,6 +151,10 @@ class ASH_EXPORT GeolocationController
   void SetGeolocationProviderForTesting(
       std::unique_ptr<SimpleGeolocationProvider> geolocation_provider);
   void SetCurrentTimezoneIdForTesting(const std::u16string& timezone_id);
+  // Resets the running `timer_` and issues an immediate geoposition request.
+  // Any responses on the fly will be processed first, but will be overridden
+  // once the response of this request arrives.
+  void RequestImmediateGeopositionForTesting();
 
  protected:
   // The callback of geolocation request via `provider_`. Once receiving a

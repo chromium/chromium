@@ -40,11 +40,6 @@ public class MockTabCreator extends TabCreator {
     }
 
     @Override
-    public boolean createsTabsAsynchronously() {
-        return false;
-    }
-
-    @Override
     public Tab createNewTab(LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent) {
         return createNewTab(loadUrlParams, type, parent, TabModel.INVALID_TAB_INDEX);
     }

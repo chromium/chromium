@@ -59,7 +59,7 @@
 <translation id="216989819110952009">即使有綠色眼鏡保護眼睛，這座奇妙之城的璀璨光輝一開始還是讓桃樂絲和朋友看得眼都花了</translation>
 <translation id="2176704795966505152">在主選單中顯示縮放選項</translation>
 <translation id="2182457891543959921">在允許網站建立您身處環境的 3D 地圖或追蹤攝錄機位置前先詢問您 (建議)</translation>
-<translation id="2185965788978862351">這會刪除網站或主畫面上的應用程式儲存的資料和 Cookie (共 <ph name="DATASIZE" />)。</translation>
+<translation id="2185965788978862351">這會刪除網站或主畫面上的應用程式儲存的資料和 Cookie，共 <ph name="DATASIZE" />。</translation>
 <translation id="2194856509914051091">考慮因素</translation>
 <translation id="2212565012507486665">允許 Cookie</translation>
 <translation id="2228071138934252756">如要讓 <ph name="APP_NAME" /> 存取您的相機，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟相機。</translation>
@@ -82,7 +82,7 @@
 <translation id="2434158240863470628">下載完成 <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="244264527810019436">部分網站的功能可能無法在無痕模式中正常運作</translation>
 <translation id="2442870161001914531">一律要求桌面版網站</translation>
-<translation id="2469312991797799607">這項操作將刪除 <ph name="ORIGIN" /> 及底下所有網站的所有資料和 Cookie</translation>
+<translation id="2469312991797799607">此操作會刪除 <ph name="ORIGIN" /> 及底下所有網站的所有資料和 Cookie</translation>
 <translation id="2479148705183875116">前往「設定」</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2485422356828889247">解除安裝</translation>
@@ -169,6 +169,7 @@
 <translation id="3918378745482005425">部分功能可能無法正常運作。相關網站仍可使用第三方 Cookie。</translation>
 <translation id="3955193568934677022">允許網站播放受保護的內容 (建議)</translation>
 <translation id="3967822245660637423">下載完成</translation>
+<translation id="3974105241379491420">網站可要求使用與你相關的既有資料</translation>
 <translation id="3987993985790029246">複製連結</translation>
 <translation id="3991845972263764475">已下載：<ph name="BYTES_DOWNLOADED_WITH_UNITS" />，總大小：不明</translation>
 <translation id="3992684624889376114">關於本頁</translation>
@@ -243,6 +244,7 @@
 <translation id="5335288049665977812">允許網站執行 JavaScript (建議)</translation>
 <translation id="534295439873310000">NFC 裝置</translation>
 <translation id="5344522958567249764">管理廣告私隱權</translation>
+<translation id="5389626883706033615">已禁止網站要求使用與你相關的既有資料</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(還有 1 個)}other{(還有 # 個)}}</translation>
 <translation id="5403592356182871684">名稱</translation>
 <translation id="5438097262470833822">此選項將會清除 <ph name="WEBSITE" /> 的權限</translation>
@@ -273,7 +275,7 @@
 <translation id="5916664084637901428">開啟</translation>
 <translation id="5922853908706496913">正在分享螢幕畫面</translation>
 <translation id="5922967540311291836">封鎖第三方 Cookie：</translation>
-<translation id="5923512600150154850">這會刪除網站儲存的資料和 Cookie (共 <ph name="DATASIZE" />)。</translation>
+<translation id="5923512600150154850">這會刪除網站儲存的資料和 Cookie，共 <ph name="DATASIZE" />。</translation>
 <translation id="5939518447894949180">重設</translation>
 <translation id="5964247741333118902">已嵌入的內容</translation>
 <translation id="5968921426641056619">輸入網址</translation>
@@ -343,7 +345,7 @@
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">重新整理</translation>
 <translation id="7188508872042490670">裝置上的網站資料</translation>
-<translation id="7201549776650881587">這項操作會刪除 <ph name="ORIGIN" /> 底下所有網站或該網站在主畫面上的應用程式儲存的所有資料和 Cookie</translation>
+<translation id="7201549776650881587">此操作會刪除 <ph name="ORIGIN" /> 底下所有網站或該網站在主畫面上的應用程式儲存的所有資料和 Cookie</translation>
 <translation id="7203150201908454328">已展開</translation>
 <translation id="7219254577985949841">要刪除網站資料嗎？</translation>
 <translation id="723171743924126238">選取圖片</translation>

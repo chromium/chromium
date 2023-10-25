@@ -37,6 +37,7 @@
 #import "components/optimization_guide/core/optimization_guide_prefs.h"
 #import "components/password_manager/core/browser/password_manager.h"
 #import "components/payments/core/payment_prefs.h"
+#import "components/plus_addresses/plus_address_prefs.h"
 #import "components/policy/core/browser/browser_policy_connector.h"
 #import "components/policy/core/browser/url_blocklist_manager.h"
 #import "components/policy/core/common/local_test_policy_provider.h"
@@ -423,6 +424,7 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   optimization_guide::prefs::RegisterProfilePrefs(registry);
   password_manager::PasswordManager::RegisterProfilePrefs(registry);
   payments::RegisterProfilePrefs(registry);
+  plus_addresses::RegisterProfilePrefs(registry);
   policy::URLBlocklistManager::RegisterProfilePrefs(registry);
   PrefProxyConfigTrackerImpl::RegisterProfilePrefs(registry);
   PushNotificationService::RegisterBrowserStatePrefs(registry);
@@ -618,6 +620,9 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterTimePref(kLastInteractionTimeForDiscoverGoodVisits,
                              base::Time());
   registry->RegisterTimePref(kLastInteractionTimeForGoodVisits, base::Time());
+  registry->RegisterDoublePref(kLongDiscoverFeedVisitTimeAggregateKey, 0.0);
+  registry->RegisterDoublePref(kLongFollowingFeedVisitTimeAggregateKey, 0.0);
+  registry->RegisterDoublePref(kLongFeedVisitTimeAggregateKey, 0.0);
 
   registry->RegisterBooleanPref(kSyncRequested, false);
 }
@@ -783,6 +788,18 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
   // Added 10/2023.
   MigrateNSDatePreferenceFromUserDefaults(kLastInteractionTimeForGoodVisits,
                                           prefs, defaults);
+
+  // Added 10/2023.
+  MigrateDoublePreferenceFromUserDefaults(
+      kLongDiscoverFeedVisitTimeAggregateKey, prefs, defaults);
+
+  // Added 10/2023.
+  MigrateDoublePreferenceFromUserDefaults(
+      kLongFollowingFeedVisitTimeAggregateKey, prefs, defaults);
+
+  // Added 10/2023.
+  MigrateDoublePreferenceFromUserDefaults(kLongFeedVisitTimeAggregateKey, prefs,
+                                          defaults);
 }
 
 void MigrateObsoleteUserDefault(void) {

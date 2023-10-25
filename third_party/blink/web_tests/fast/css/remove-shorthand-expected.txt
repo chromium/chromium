@@ -58,7 +58,7 @@ removes "-webkit-mask"
 and adds "".
 Removing -webkit-mask-position
 removes "-webkit-mask"
-and adds "mask-image, mask-size, -webkit-mask-repeat, mask-origin, mask-clip".
+and adds "mask-image, mask-size, mask-repeat, mask-origin, mask-clip".
 Removing overflow
 removes "overflow"
 and adds "".

@@ -112,10 +112,6 @@ namespace internal {
 class DBusServices;
 }
 
-namespace input_method {
-class EditorMediator;
-}
-
 namespace mojo_service_manager {
 class Helper;
 }
@@ -321,8 +317,6 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
       video_conference_manager_client_;
 
   std::unique_ptr<MisconfiguredUserCleaner> misconfigured_user_cleaner_;
-
-  std::unique_ptr<input_method::EditorMediator> editor_mediator_;
 
   base::WeakPtrFactory<ChromeBrowserMainPartsAsh> weak_ptr_factory_{this};
 };

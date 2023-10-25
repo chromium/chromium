@@ -166,7 +166,7 @@ TEST_F(PasswordIssuesCoordinatorTest, PasswordIssuesPresentedWithAuth) {
   // Password Issues should be covered until auth is passed.
   CheckPasswordIssuesIsNotPresented();
 
-  [mock_reauth_module_ returnMockedReathenticationResult];
+  [mock_reauth_module_ returnMockedReauthenticationResult];
 
   // Successful auth should leave Password Issues visible.
   CheckPasswordIssuesIsPresented();

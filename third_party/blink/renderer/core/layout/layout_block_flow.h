@@ -44,7 +44,7 @@ namespace blink {
 
 class LayoutMultiColumnFlowThread;
 
-struct NGInlineNodeData;
+struct InlineNodeData;
 
 // LayoutBlockFlow is the class that implements a block container in CSS 2.1.
 // http://www.w3.org/TR/CSS21/visuren.html#block-boxes
@@ -140,21 +140,21 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
     return may_be_non_contiguous_ifc_;
   }
 
-  // Returns the associated `NGInlineNodeData`, or `nullptr` if `this` doesn't
+  // Returns the associated `InlineNodeData`, or `nullptr` if `this` doesn't
   // have one (i.e., not an NG inline formatting context.)
-  virtual NGInlineNodeData* GetNGInlineNodeData() const {
+  virtual InlineNodeData* GetInlineNodeData() const {
     NOT_DESTROYED();
     return nullptr;
   }
-  // Same as `GetNGInlineNodeData` and then `ClearNGInlineNodeData`.
-  virtual NGInlineNodeData* TakeNGInlineNodeData() {
+  // Same as `GetInlineNodeData` and then `ClearInlineNodeData`.
+  virtual InlineNodeData* TakeInlineNodeData() {
     NOT_DESTROYED();
     return nullptr;
   }
-  // Reset `NGInlineNodeData` to a new instance.
-  virtual void ResetNGInlineNodeData() { NOT_DESTROYED(); }
-  // Clear `NGInlineNodeData` to `nullptr`.
-  virtual void ClearNGInlineNodeData() { NOT_DESTROYED(); }
+  // Reset `InlineNodeData` to a new instance.
+  virtual void ResetInlineNodeData() { NOT_DESTROYED(); }
+  // Clear `InlineNodeData` to `nullptr`.
+  virtual void ClearInlineNodeData() { NOT_DESTROYED(); }
   virtual void WillCollectInlines() { NOT_DESTROYED(); }
 
  protected:

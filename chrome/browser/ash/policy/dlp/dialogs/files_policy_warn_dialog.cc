@@ -123,7 +123,7 @@ const std::u16string GetJustificationLabelText(dlp::FileAction action) {
 }  // namespace
 
 FilesPolicyWarnDialog::FilesPolicyWarnDialog(
-    OnDlpRestrictionCheckedWithJustificationCallback callback,
+    WarningWithJustificationCallback callback,
     dlp::FileAction action,
     gfx::NativeWindow modal_parent,
     absl::optional<DlpFileDestination> destination,
@@ -283,7 +283,7 @@ std::u16string FilesPolicyWarnDialog::GetMessage() {
 }
 
 void FilesPolicyWarnDialog::ProceedWarning(
-    OnDlpRestrictionCheckedWithJustificationCallback callback) {
+    WarningWithJustificationCallback callback) {
   absl::optional<std::u16string> user_justification;
   if (justification_field_) {
     user_justification = justification_field_->GetText();
@@ -293,7 +293,7 @@ void FilesPolicyWarnDialog::ProceedWarning(
 }
 
 void FilesPolicyWarnDialog::CancelWarning(
-    OnDlpRestrictionCheckedWithJustificationCallback callback) {
+    WarningWithJustificationCallback callback) {
   std::move(callback).Run(/*user_justification=*/absl::nullopt,
                           /*should_proceed=*/false);
 }

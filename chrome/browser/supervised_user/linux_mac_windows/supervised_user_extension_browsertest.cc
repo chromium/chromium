@@ -27,6 +27,14 @@ namespace extensions {
 // supervision is removed from the account.
 class SupervisionRemovalExtensionTest : public ExtensionBrowserTest {
  public:
+  SupervisionRemovalExtensionTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        supervised_user::
+            kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+  }
+
+  ~SupervisionRemovalExtensionTest() override { scoped_feature_list_.Reset(); }
+
   // We have to essentially replicate what MixinBasedInProcessBrowserTest does
   // here because ExtensionBrowserTest doesn't inherit from that class.
   void SetUp() override {
@@ -89,6 +97,7 @@ class SupervisionRemovalExtensionTest : public ExtensionBrowserTest {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   InProcessBrowserTestMixinHost mixin_host_;
 
   // In order to simulate supervision removal and re-authentication use

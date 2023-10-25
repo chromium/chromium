@@ -894,7 +894,7 @@ void FontFace::InitCSSFontFace(ExecutionContext* context, const CSSValue& src) {
       }
     } else {
       css_font_face_->AddSource(MakeGarbageCollected<LocalFontFaceSource>(
-          css_font_face_, font_selector, item.GetResource()));
+          css_font_face_, font_selector, item.LocalResource()));
     }
   }
 }

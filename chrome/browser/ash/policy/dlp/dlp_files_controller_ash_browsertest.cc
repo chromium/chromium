@@ -13,11 +13,11 @@
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
-#include "chrome/browser/chromeos/policy/dlp/test/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
+#include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
+#include "chrome/browser/enterprise/data_controls/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/extensions/api/file_system/file_entry_picker.h"
 #include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/ui/browser.h"
@@ -152,7 +152,8 @@ IN_PROC_BROWSER_TEST_F(DlpFilesControllerAshBrowserTest,
 
   // Setup the reporting manager.
   std::vector<DlpPolicyEvent> events;
-  auto reporting_manager = std::make_unique<DlpReportingManager>();
+  auto reporting_manager =
+      std::make_unique<data_controls::DlpReportingManager>();
   SetReportQueueForReportingManager(
       reporting_manager.get(), events,
       base::SequencedTaskRunner::GetCurrentDefault());
@@ -189,14 +190,15 @@ IN_PROC_BROWSER_TEST_F(DlpFilesControllerAshBrowserTest,
 
   ASSERT_EQ(events.size(), 1u);
 
-  auto event_builder = DlpPolicyEventBuilder::Event(
+  auto event_builder = data_controls::DlpPolicyEventBuilder::Event(
       kExampleUrl, rule_name, rule_id, DlpRulesManager::Restriction::kFiles,
       DlpRulesManager::Level::kBlock);
 
   event_builder->SetDestinationComponent(data_controls::Component::kOneDrive);
   event_builder->SetContentName(base::FilePath(file_path).BaseName().value());
 
-  EXPECT_THAT(events[0], IsDlpPolicyEvent(event_builder->Create()));
+  EXPECT_THAT(events[0],
+              data_controls::IsDlpPolicyEvent(event_builder->Create()));
 }
 
 IN_PROC_BROWSER_TEST_F(DlpFilesControllerAshBrowserTest,

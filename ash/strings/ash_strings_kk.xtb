@@ -29,6 +29,7 @@
 <translation id="109942774857561566">Ішім пысты</translation>
 <translation id="1104084341931202936">Арнайы мүмкіндіктер параметрлерін көрсету</translation>
 <translation id="1104621072296271835">Құрылғылар бірігіп жақсы жұмыс істейді</translation>
+<translation id="1106446201446919638">1 құрылғы жалғанды. Хотспот пайдаланылғанда, Wi-Fi өшіп тұрады.</translation>
 <translation id="1111021433905331574">Пернетақта жарығының түсін "Параметрлер &gt; <ph name="APP_TITLE" />" бөлімінен өзгерте аласыз.</translation>
 <translation id="1117719261843403176">Мобильдік интернетті қосу/өшіру. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Сөрені автоматты жасыру</translation>
@@ -202,7 +203,6 @@
 <translation id="1757857692711134412">Күн батқанға дейін өшірулі</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + нүкте пернелер тіркесімінің функциясы өзгерді. Insert пернесінің әрекетін орындау үшін <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace пернелер тіркесімін басыңыз.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />-жолға, <ph name="COLUMN_NUMBER" />-бағанға жылжытылды.</translation>
-<translation id="1771458705381257690">Құрылғы параметрлерін орнату және бейімдеу үшін <ph name="NAME" /> қолданбасын ашыңыз</translation>
 <translation id="1771761307086386028">Оңға айналдыру</translation>
 <translation id="1774796056689732716">Күнтізбе, <ph name="CURRENT_MONTH_YEAR" />, ағымдағы <ph name="DATE" /> таңдалды.</translation>
 <translation id="1775598828170459419"><ph name="NUM_SHOWN_ITEMS" />/<ph name="NUM_TOTAL_ITEMS" /> көрсету</translation>
@@ -307,7 +307,6 @@
 <translation id="2258734398699965611">Ұсынылған файлдар</translation>
 <translation id="2268130516524549846">Bluetooth өшірілген</translation>
 <translation id="2268813581635650749">Барлығын шығару</translation>
-<translation id="2269016722240250274">Қолданба сіздің микрофоныңызды қолданып жатыр.</translation>
 <translation id="2276987123919776440">15 мин</translation>
 <translation id="2277103315734023688">Алға</translation>
 <translation id="2282073721614284166">Сілтемені қойындыда ашу</translation>
@@ -360,6 +359,7 @@
 <translation id="2465145153332031561">Батарея күйі: <ph name="BATTERY_HEALTH_PERCENTAGE" />%, цикл саны: <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Ажыратымдылықты растаңыз</translation>
 <translation id="2475982808118771221">Қате орын алды</translation>
+<translation id="2478076885740497414">Қолданбаны орнату</translation>
 <translation id="2482878487686419369">Хабарландырулар</translation>
 <translation id="2484513351006226581">Пернетақтаны ауыстыру үшін <ph name="KEYBOARD_SHORTCUT" /> пернелерін басыңыз.</translation>
 <translation id="2487915095798731898">Қосылу</translation>
@@ -518,6 +518,7 @@
 <translation id="3160929076476941240">2 сағ</translation>
 <translation id="3161500364292033097">Жұмыс үстелі мен терезелерді жабу</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> <ph name="DEVICE_TYPE" /> құрылғыңызды алдыңғы нұсқаға қайтарады. Құрылғы бастапқы күйге қайтарылады және барлық дерек жойылады.</translation>
+<translation id="3170769098533255179">Ешқандай құрылғы жалғанбады. Хотспот пайдаланылғанда, Wi-Fi өшіп тұрады.</translation>
 <translation id="3171170659304083361">Енгізу әдістерінің параметрлері</translation>
 <translation id="3176221688814061633">Chromebook немесе Bluetooth құрылғыңызда Bluetooth-тың ескі нұсқасы тұр. Дыбыс сапасын жақсарту үшін Bluetooth аса жоғары ажыратымдылығын қосыңыз немесе ішкі микрофонды пайдаланыңыз.</translation>
 <translation id="3181441307743005334">Қайту іске қосуға біраз уақыт қажет болуы мүмкін</translation>
@@ -552,6 +553,7 @@
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> құрылғы <ph name="DEVICE_NAME" /> хотспотына қосылған</translation>
 <translation id="3307642347673023554">Ноутбук режиміне ауысты.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> кейінірек те кіре алады.</translation>
+<translation id="3317779231018057649"><ph name="DEVICECOUNT" /> құрылғы жалғанды. Хотспот пайдаланылғанда, Wi-Fi өшіп тұрады.</translation>
 <translation id="3321628682574733415">Ата-ана коды дұрыс емес</translation>
 <translation id="332827762492701193">Хабарландырулар жасырулы</translation>
 <translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> хабарландыруын жаю</translation>
@@ -631,8 +633,6 @@
 <translation id="3600061223661453002">Өшіру</translation>
 <translation id="3604801046548457007"><ph name="DESK_TITILE" /> үстелі жасалды.</translation>
 <translation id="3606978283550408104">Брайль дисплейі қосылды.</translation>
-<translation id="3609301425104788351"><ph name="MIC" />,
-        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">Мобильдік интернетті қоссаңыз, Bluetooth та қосылады.</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3616883743181209306">Мәзір экранның жоғарғы оң жақ бұрышына жылжытылды.</translation>
@@ -682,9 +682,7 @@
 <translation id="3781910048497807059">Алдыңғы панельге өту</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Құлыптау</translation>
-<translation id="3789841737615482174">Орнату</translation>
 <translation id="3796215473395753611">alt + жоғары бағыт пернесі</translation>
-<translation id="3796746699333205839">Қолданба сіздің камераңыз бен микрофоныңызды пайдаланып жатыр.</translation>
 <translation id="3798670284305777884">Динамик (ішкі)</translation>
 <translation id="3799080171973636491">Толық экран ұлғайтқышына арналған пернелер тіркесімін бастыңыз. Оны қосқыңыз келе ме?</translation>
 <translation id="380165613292957338">Сәлеметсіз бе, сізге қандай көмек қажет?</translation>
@@ -814,6 +812,7 @@
 <translation id="428715201724021596">Профильге қосылуда. Бұл бірнеше минутқа созылуы мүмкін.</translation>
 <translation id="4294319844246081198">Қайырлы таң, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Барлық <ph name="COUNT" /> хабарландыруды өшіру</translation>
+<translation id="4300272766492248925">Қолданбаны ашу</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> қолданбасы <ph name="FOLDER_NAME" /> қалтасына ауысты.</translation>
 <translation id="4302592941791324970">Қолжетімді емес</translation>
 <translation id="4303223480529385476">Күй аумағын жаю</translation>
@@ -879,6 +878,7 @@
 <translation id="4566144812051858745">Ешқандай ұсыныс қызықтырмайды</translation>
 <translation id="4569753163207712681">Телефондағы соңғы фотосуреттерді, медиафайлдарды және қолданбаларды көру</translation>
 <translation id="4573176682887762361">"[Cөз немесе фраза] теру"</translation>
+<translation id="4577188182049003486">Хотспот қосылса, Wi-Fi өшіріледі</translation>
 <translation id="4577274620589681794">Уақыт бітті · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Алдын ала көріністерді көрсету</translation>
 <translation id="4578906031062871102">Параметрлер мәзірі ашық.</translation>
@@ -1208,7 +1208,6 @@
 <translation id="5876666360658629066">Ата-ана кодын енгізіңіз</translation>
 <translation id="5881540930187678962">Phone Hub кейін орнату</translation>
 <translation id="5881663018261910378">Өшіру</translation>
-<translation id="5883017113634523865">Барлық қолжетімді мүмкіндікті көру үшін <ph name="NAME" /> қолданбасын Google Play-ден орнатыңыз</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> терезесі <ph name="DESK_TITLE" /> жұмыс үстеліне тағайындалып, басқаларының бәрінен алынды.</translation>
 <translation id="588817334757907802">Файлды Chrome браузерінде ашу</translation>
 <translation id="5895138241574237353">Қайта іске қосу</translation>
@@ -1578,7 +1577,6 @@
 <translation id="742594950370306541">Камера пайдаланылуда.</translation>
 <translation id="742608627846767349">Қайырлы таң!</translation>
 <translation id="743058460480092004">Камера және микрофон пайдаланылуда.</translation>
-<translation id="7452560014878697800">Қолданба камераңызды пайдаланып жатыр.</translation>
 <translation id="7453330308669753048">Іздеу тарихы нәтижесі өшірілді.</translation>
 <translation id="7459485586006128091">Ішкі қатеге байланысты хотспот өшірілді. Бірнеше минуттан кейін қайта қосылып көріңіз.</translation>
 <translation id="7461924472993315131">Бекіту</translation>

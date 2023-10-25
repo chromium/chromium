@@ -165,6 +165,10 @@ bool AppStorage::IsAppChanged(const apps::AppUpdate& update) {
   IS_APP_VALUE_CHANGED(handles_intents);
   IS_APP_VALUE_CHANGED(allow_uninstall);
 
+  if (!IsEqual(app->intent_filters, it->second->intent_filters)) {
+    return true;
+  }
+
   // TODO(crbug.com/1385932): Add other files in the App structure.
   return false;
 }

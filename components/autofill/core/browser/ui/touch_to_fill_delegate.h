@@ -25,7 +25,8 @@ class TouchToFillDelegate {
   virtual AutofillManager* GetManager() = 0;
 
   virtual bool IntendsToShowTouchToFill(FormGlobalId form_id,
-                                        FieldGlobalId field_id) = 0;
+                                        FieldGlobalId field_id,
+                                        const FormData& form) = 0;
 
   // Checks whether TTF is eligible for the given web form data and, if
   // successful, triggers the corresponding surface and returns |true|.

@@ -26,6 +26,12 @@
   }
 
   h1 {
+    margin-bottom: 5px;
+    text-align: center;
+  }
+
+  .performance-class {
+    padding-bottom: 20px;
     text-align: center;
   }
 
@@ -62,6 +68,9 @@
   }
 </style>
 <h1>On-Device Internals</h1>
+<div class="performance-class">
+  Device performance class: <strong>[[performanceClassText_]]</strong>
+</div>
 <cr-input id="modelInput" label="Model directory" placeholder="/tmp/model"
     disabled="[[isLoading_(loadModelStart_)]]"
     on-change="onModelSelected_" error-message="[[error_]]"

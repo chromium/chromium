@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/smart_card/smart_card_error.h"
+#include "services/device/public/mojom/smart_card.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_error_options.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -18,8 +20,22 @@ SmartCardError* SmartCardError::Create(String message,
 }
 
 // static
-void SmartCardError::Reject(ScriptPromiseResolver* resolver,
-                            device::mojom::blink::SmartCardError mojom_error) {
+void SmartCardError::MaybeReject(
+    ScriptPromiseResolver* resolver,
+    device::mojom::blink::SmartCardError mojom_error) {
+  ScriptState* script_state = resolver->GetScriptState();
+
+  if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                     script_state)) {
+    return;
+  }
+
+  // Enter the associated v8 context.
+  // Otherwise a RejectWithDOMException() or RejectWithTypeError() call will
+  // abort, as they need it in order to add call site context to the error
+  // message text.
+  ScriptState::Scope script_state_scope(script_state);
+
   switch (mojom_error) {
     // SmartCardError:
     // The response code messages are mostly from

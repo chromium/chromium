@@ -157,8 +157,10 @@ void SetAutofillData(Node* node, ContextMenuData& data) {
            content_editable == ContentEditableType::kContentEditable) &&
           !DynamicTo<HTMLFormElement>(node) &&
           !DynamicTo<HTMLFormControlElement>(node);
-      data.field_renderer_id = html_element->GetDomNodeId();
-      data.form_renderer_id = html_element->GetDomNodeId();
+      if (data.is_content_editable_for_autofill) {
+        data.field_renderer_id = html_element->GetDomNodeId();
+        data.form_renderer_id = html_element->GetDomNodeId();
+      }
     }
   }
 }

@@ -185,8 +185,8 @@ void BackgroundThumbnailVideoCapturer::OnFrameCaptured(
   got_frame_callback_.Run(cropped_frame, frame_id);
 }
 
-void BackgroundThumbnailVideoCapturer::OnNewCropVersion(uint32_t crop_version) {
-}
+void BackgroundThumbnailVideoCapturer::OnNewSubCaptureTargetVersion(
+    uint32_t sub_capture_target_version) {}
 
 void BackgroundThumbnailVideoCapturer::OnFrameWithEmptyRegionCapture() {}
 

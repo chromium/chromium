@@ -143,7 +143,10 @@ executable("character_data_generator") {
 # but it helps to have the targets match the GYP build.
 group("make_platform_generated") {
   visibility = []  # Allow re-assignment of list.
-  visibility = [ "//third_party/blink/renderer/*" ]
+  visibility = [
+    "//third_party/blink/public:blink_headers",
+    "//third_party/blink/renderer/*",
+  ]
   public_deps = [
     ":bindings_buildflags",
     ":character_data",
@@ -152,6 +155,7 @@ group("make_platform_generated") {
     ":runtime_enabled_features",
     ":runtime_feature_state_override_context",
     "//third_party/blink/public/common:buildflags",
+    "//third_party/blink/renderer/platform/heap:blink_heap_buildflags",
     "//third_party/blink/renderer/platform/network:make_generated",
   ]
 }
@@ -198,7 +202,6 @@ group("blink_platform_public_deps") {
     "//third_party/blink/public/common:font_enumeration_table_proto",
     "//third_party/blink/public/mojom:mojom_platform_blink",
     "//third_party/blink/public/mojom:web_bluetooth_mojo_bindings_blink",
-    "//third_party/blink/renderer/platform/heap:blink_heap_buildflags",
     "//third_party/blink/renderer/platform/network:make_generated",
     "//third_party/blink/renderer/platform/wtf",
     "//third_party/boringssl",
@@ -1186,6 +1189,7 @@ component("platform") {
     "graphics/video_frame_submitter.cc",
     "graphics/video_frame_submitter.h",
     "graphics/view_transition_element_id.h",
+    "graphics/visual_rect_flags.h",
     "graphics/viz_util.cc",
     "graphics/viz_util.h",
     "graphics/web_graphics_context_3d_provider_util.cc",

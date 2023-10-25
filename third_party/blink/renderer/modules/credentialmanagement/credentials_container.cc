@@ -538,7 +538,7 @@ void OnRequestToken(ScriptPromiseResolver* resolver,
                     const absl::optional<KURL>& selected_idp_config_url,
                     const WTF::String& token,
                     mojom::blink::TokenErrorPtr error,
-                    bool is_identity_credential_auto_selected) {
+                    bool is_auto_selected) {
   switch (status) {
     case RequestTokenStatus::kErrorTooManyRequests: {
       resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -571,8 +571,8 @@ void OnRequestToken(ScriptPromiseResolver* resolver,
       return;
     }
     case RequestTokenStatus::kSuccess: {
-      IdentityCredential* credential = IdentityCredential::Create(
-          token, is_identity_credential_auto_selected);
+      IdentityCredential* credential =
+          IdentityCredential::Create(token, is_auto_selected);
       resolver->Resolve(credential);
       return;
     }

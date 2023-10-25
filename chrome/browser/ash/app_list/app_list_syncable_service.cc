@@ -17,7 +17,6 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase_map.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -50,11 +49,11 @@
 #include "chrome/browser/ui/app_list/app_list_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -551,7 +550,7 @@ void AppListSyncableService::BuildModel() {
     app_service_promise_apps_builder_ =
         std::make_unique<AppServicePromiseAppModelBuilder>(controller);
   }
-  if (base::FeatureList::IsEnabled(features::kCrosWebAppShortcutUiUpdate)) {
+  if (chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
     app_service_shortcuts_builder_ =
         std::make_unique<AppServiceShortcutModelBuilder>(controller);
   }
@@ -564,7 +563,7 @@ void AppListSyncableService::BuildModel() {
     app_service_promise_apps_builder_->Initialize(this, profile_,
                                                   model_updater_.get());
   }
-  if (base::FeatureList::IsEnabled(features::kCrosWebAppShortcutUiUpdate)) {
+  if (chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
     app_service_shortcuts_builder_->Initialize(this, profile_,
                                                model_updater_.get());
   }
@@ -1430,7 +1429,7 @@ void AppListSyncableService::Shutdown() {
   if (ash::features::ArePromiseIconsEnabled()) {
     app_service_promise_apps_builder_.reset();
   }
-  if (base::FeatureList::IsEnabled(features::kCrosWebAppShortcutUiUpdate)) {
+  if (chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
     app_service_shortcuts_builder_.reset();
   }
 }

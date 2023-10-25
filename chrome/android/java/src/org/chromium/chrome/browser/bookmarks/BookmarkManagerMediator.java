@@ -1231,7 +1231,9 @@ class BookmarkManagerMediator
         propertyModel.set(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY, bookmarkListEntry);
 
         // Menu
-        propertyModel.set(ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY, ImageVisibility.MENU);
+        propertyModel.set(
+                ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY,
+                bookmarkItem.isEditable() ? ImageVisibility.MENU : ImageVisibility.NONE);
         propertyModel.set(
                 ImprovedBookmarkRowProperties.POPUP_LISTENER, this::onBookmarkItemMenuOpened);
         // TODO(crbug.com/1442044): Investigate caching ModelList for the menu.
@@ -1545,6 +1547,10 @@ class BookmarkManagerMediator
         Set<PowerBookmarkType> powerFilter = mCurrentPowerFilter;
         if (!filterVisible && powerFilter.contains(PowerBookmarkType.SHOPPING)) {
             onShoppingFilterToggle(false);
+        }
+
+        if (filterVisible) {
+            BookmarkMetrics.reportBookmarkManagerFilterShown(BookmarkManagerFilter.SHOPPING);
         }
     }
 

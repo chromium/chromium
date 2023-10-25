@@ -26,7 +26,13 @@ NavigatorUAData* NavigatorUA::userAgentData() {
   ua_data->SetBitness(String::FromUTF8(metadata.bitness));
   ua_data->SetFullVersionList(metadata.brand_full_version_list);
   ua_data->SetWoW64(metadata.wow64);
-  ua_data->SetFormFactor(String::FromUTF8(metadata.form_factor));
+  Vector<String> form_factor;
+  form_factor.reserve(
+      base::checked_cast<wtf_size_t>(metadata.form_factor.size()));
+  for (auto& ff : metadata.form_factor) {
+    form_factor.push_back(String::FromUTF8(ff));
+  }
+  ua_data->SetFormFactor(std::move(form_factor));
 
   return ua_data;
 }

@@ -50,6 +50,7 @@
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -306,6 +307,8 @@ bool ShouldContextResponsePopulateHintCache(
       return false;
     case proto::RequestContext::CONTEXT_PAGE_INSIGHTS_HUB:
       return false;
+    case proto::RequestContext::CONTEXT_NON_PERSONALIZED_PAGE_INSIGHTS_HUB:
+      return false;
   }
   NOTREACHED();
   return false;
@@ -329,7 +332,6 @@ HintsManager::HintsManager(
           GetPendingOptimizationHintsComponentVersionFromPref(pref_service)),
       is_off_the_record_(is_off_the_record),
       application_locale_(application_locale),
-      oauth_scopes_(features::GetOAuthScopesForPersonalizedMetadata()),
       pref_service_(pref_service),
       hint_cache_(
           std::make_unique<HintCache>(hint_store,
@@ -1106,11 +1108,11 @@ void HintsManager::CanApplyOptimizationOnDemand(
                              urls_to_fetch.vector(), hosts_to_fetch.vector(),
                              optimization_guide_logger_);
 
-  if (features::ShouldEnablePersonalizedMetadata(request_context) &&
-      !oauth_scopes_.empty()) {
+  if (features::ShouldEnablePersonalizedMetadata(request_context)) {
     // Request the token before fetching the hints.
     RequestAccessToken(
-        identity_manager_, oauth_scopes_,
+        identity_manager_,
+        {GaiaConstants::kOptimizationGuideServiceGetHintsOAuth2Scope},
         base::BindOnce(&HintsManager::FetchOptimizationGuideServiceBatchHints,
                        weak_ptr_factory_.GetWeakPtr(), hosts_to_fetch,
                        urls_to_fetch, optimization_types, request_context,

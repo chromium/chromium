@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">Tín hiệu yếu</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Đang cập nhật (đã xong <ph name="PERCENTAGE_VALUE" />%)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> phút</translation>
 <translation id="1310380015393971138">Không có sẵn mạng <ph name="NETWORK_NAME" /></translation>
 <translation id="131421566576084655">Không có ngày đặt lại dữ liệu gần nhất</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -93,7 +94,6 @@
 <translation id="1643449475550628585">Thay đổi hình nền hàng ngày</translation>
 <translation id="1644574205037202324">Nhật ký</translation>
 <translation id="1651925268237749928">Bạn đã chọn một album chia sẻ. Người khác có thể thêm hoặc thay đổi ảnh. Hình nền của bạn có thể sử dụng ảnh hiện không có trong album này.</translation>
-<translation id="1658834457013045127">Vĩnh viễn</translation>
 <translation id="1661865805917886535">Một số thông tin về tài khoản và hệ thống có thể được gửi đến Google. Chúng tôi dùng thông tin này theo Chính sách quyền riêng tư (<ph name="PRIVACYPOLICYURL" />) và Điều khoản dịch vụ (<ph name="TERMSOFSERVICEURL" />) để xử lý các vấn đề kỹ thuật và cải thiện dịch vụ. Nếu bạn muốn yêu cầu thay đổi nội dung, hãy chuyển đến trang Trợ giúp pháp lý (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Đã dừng – Hết mực</translation>
 <translation id="1664796644829245314">Xem trước <ph name="PREVIEW_OBJECT" /></translation>
@@ -323,7 +323,6 @@
 <translation id="3484914941826596830">Khi chương trình cơ sở đang cập nhật, đừng rút thiết bị bên ngoài này ra hay tắt máy tính. Bạn có thể thu nhỏ cửa sổ này. Quá trình cập nhật có thể mất vài phút và thiết bị bên ngoài của bạn có thể không hoạt động được trong thời gian này.</translation>
 <translation id="3486220673238053218">định nghĩa</translation>
 <translation id="3488065109653206955">Được kích hoạt một phần</translation>
-<translation id="349491921221892984"><ph name="MINUTES" /> phút</translation>
 <translation id="3502426834823382181">xem tất cả các ứng dụng</translation>
 <translation id="3510890413042482857">Gửi <ph name="BEGIN_LINK1" />dữ liệu theo dõi hiệu suất<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Bản cập nhật ChromeOS</translation>
@@ -484,7 +483,6 @@
 <translation id="473775607612524610">Cập nhật</translation>
 <translation id="4771607256327216405">làm sáng bàn phím</translation>
 <translation id="4773299976671772492">Đã dừng</translation>
-<translation id="4782003517030001304">1 giờ</translation>
 <translation id="4782311465517282004">Xem định nghĩa, bản dịch hoặc kết quả chuyển đổi đơn vị bằng cách nhấp chuột phải hoặc chạm và giữ văn bản</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ảnh</translation>
 <translation id="4793710386569335688">Để được trợ giúp thêm, hãy truy cập <ph name="BEGIN_LINK" />Trung tâm trợ giúp<ph name="END_LINK" />.</translation>
@@ -699,6 +697,7 @@
 <translation id="629550705077076970">giảm độ sáng bàn phím</translation>
 <translation id="6302401976930124515">Đã hủy quá trình kiểm tra <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">Ứng dụng Explore</translation>
+<translation id="6318437367327684789">vĩnh viễn</translation>
 <translation id="6319207335391420837">Cập nhật chương trình cơ sở cho <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Bật trình bảo vệ màn hình</translation>
 <translation id="6324916366299863871">Chỉnh sửa phím tắt</translation>
@@ -948,6 +947,7 @@
 <translation id="8227119283605456246">Đính kèm tệp</translation>
 <translation id="8230672074305416752">Không ping được cổng của mạng mặc định</translation>
 <translation id="8246209727385807362">Nhà cung cấp dịch vụ không xác định</translation>
+<translation id="8262870577632766028">1 giờ</translation>
 <translation id="827422111966801947">Màu chàm</translation>
 <translation id="8286154143153872371">Vui lòng kết nối mạng và tải lại trang để xem hình nền.</translation>
 <translation id="8291967909914612644">Quốc gia của nhà cung cấp Home</translation>
@@ -1012,6 +1012,7 @@
 <translation id="8747900814994928677">Xác nhận thay đổi</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album trên Google Photos</translation>
+<translation id="8775713578693478175">APN Modem</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8789196995628578448">Phím tắt đang được sử dụng cho "<ph name="CONFLICT_ACCEL_NAME" />". Nhấn một phím tắt mới. Để thay thế phím tắt ban đầu, hãy nhấn phím tắt này một lần nữa.</translation>
 <translation id="879568662008399081">Mạng này có thể có một trang xác thực</translation>

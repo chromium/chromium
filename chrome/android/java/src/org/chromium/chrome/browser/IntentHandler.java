@@ -625,7 +625,7 @@ public class IntentHandler {
         Profile profile = Profile.getLastUsedRegularProfile();
         AutocompleteMatch match;
         try (var controller = AutocompleteControllerProvider.createCloseableController(profile)) {
-            match = controller.get().classify(query, false);
+            match = controller.get().classify(query);
         }
 
         if (!match.isSearchSuggestion()) return match.getUrl().getSpec();

@@ -26,9 +26,8 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kUseRustJsonParser);
 BASE_EXPORT BASE_DECLARE_FEATURE(kJsonNegativeZero);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartialLowEndModeOn3GbDevices);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartialLowEndModeOnMidRangeDevices);
-extern const BASE_EXPORT FeatureParam<bool>
-    kPartialLowEndModeExcludeLowEndBackgroundCleanup;
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

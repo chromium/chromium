@@ -69,7 +69,7 @@ void MakeServableStreamingURLLoaderForTest(
           [](base::RunLoop* on_response_received_loop,
              network::mojom::URLResponseHead* head) {
             on_response_received_loop->Quit();
-            return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+            return absl::optional<PrefetchErrorOnResponseReceived>();
           },
           &on_response_received_loop),
       base::BindOnce(
@@ -117,7 +117,7 @@ MakeManuallyServableStreamingURLLoaderForTest(
       &test_url_loader_factory, *request, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*timeout_duration=*/base::TimeDelta(),
       base::BindOnce([](network::mojom::URLResponseHead* head) {
-        return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+        return absl::optional<PrefetchErrorOnResponseReceived>();
       }),
       base::BindOnce(
           [](const network::URLLoaderCompletionStatus& completion_status) {}),
@@ -178,7 +178,7 @@ void MakeServableStreamingURLLoaderWithRedirectForTest(
           [](base::RunLoop* on_response_received_loop,
              network::mojom::URLResponseHead* head) {
             on_response_received_loop->Quit();
-            return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+            return absl::optional<PrefetchErrorOnResponseReceived>();
           },
           &on_response_received_loop),
       base::BindOnce(
@@ -255,7 +255,7 @@ void MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
       /*timeout_duration=*/base::TimeDelta(),
       base::BindOnce([](network::mojom::URLResponseHead* head) {
         NOTREACHED();
-        return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+        return absl::optional<PrefetchErrorOnResponseReceived>();
       }),
       base::BindOnce(
           [](const network::URLLoaderCompletionStatus& completion_status) {
@@ -310,8 +310,7 @@ void MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
               [](base::RunLoop* on_response_received_loop,
                  network::mojom::URLResponseHead* head) {
                 on_response_received_loop->Quit();
-                return PrefetchStreamingURLLoaderStatus::
-                    kHeadReceivedWaitingOnBody;
+                return absl::optional<PrefetchErrorOnResponseReceived>();
               },
               &on_response_received_loop),
           base::BindOnce(

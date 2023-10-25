@@ -40,6 +40,7 @@ class PrefetchServingPageMetricsContainer;
 class PrefetchStreamingURLLoader;
 class PreloadingAttempt;
 class ProxyLookupClientImpl;
+class RenderFrameHost;
 
 // Holds the relevant size information of the prefetched response. The struct is
 // installed onto `PrefetchContainer`, and gets passed into
@@ -281,6 +282,9 @@ class CONTENT_EXPORT PrefetchContainer {
   void SetOnReceivedHeadCallback(base::OnceClosure on_received_head_callback);
   base::OnceClosure ReleaseOnReceivedHeadCallback();
 
+  void StartTimeoutTimer(base::TimeDelta timeout,
+                         base::OnceClosure on_timeout_callback);
+
   // Returns the head of the prefetched response. If there is no valid response,
   // then returns null.
   const network::mojom::URLResponseHead* GetHead();
@@ -330,9 +334,13 @@ class CONTENT_EXPORT PrefetchContainer {
   const absl::optional<net::HttpNoVarySearchData>& GetNoVarySearchData() const {
     return no_vary_search_data_;
   }
-  void SetNoVarySearchData(net::HttpNoVarySearchData no_vary_search_data) {
-    no_vary_search_data_ = std::move(no_vary_search_data);
-  }
+  // Sets `no_vary_search_data_` from `GetHead()`. Exposed for tests.
+  void SetNoVarySearchData(RenderFrameHost* rfh);
+
+  // Called when cookies changes are detected via
+  // `HaveDefaultContextCookiesChanged()`, either for `this` or other
+  // `PrefetchContainer`s under the same `PrefetchMatchResolver`.
+  void OnCookiesChanged();
 
   class SinglePrefetch;
 
@@ -490,6 +498,8 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // The No-Vary-Search response data, parsed from the actual response header
   // (`GetHead()`).
+  // Unless this is set, `no_vary_search` helpers don't perform No-Vary-Search
+  // matching for `this`, even if `GetHead()` has No-Vary-Search headers.
   absl::optional<net::HttpNoVarySearchData> no_vary_search_data_;
 
   // The No-Vary-Search hint of the prefetch, which is specified by the
@@ -584,6 +594,8 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // Called when `OnReceivedHead()` is called.
   base::OnceClosure on_received_head_callback_;
+
+  std::unique_ptr<base::OneShotTimer> timeout_timer_;
 
   base::WeakPtrFactory<PrefetchContainer> weak_method_factory_{this};
 };

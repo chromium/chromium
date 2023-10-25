@@ -365,6 +365,10 @@ class AutofillField : public FormFieldData {
   // heuristic_type_).
   // |AutofillType(NO_SERVER_DATA)| is used when this |overall_type_| has not
   // been set.
+  // This field serves as a cache to prevent frequent re-evaluation of
+  // ComputedType(). It is invalidated when set_heuristic_type(),
+  // set_server_predictions() or SetHtmlType() is called and then set to a
+  // value during the rationalization.
   AutofillType overall_type_;
 
   // The type of the field, as specified by the site author in HTML.

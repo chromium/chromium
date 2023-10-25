@@ -27,7 +27,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_disable_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_outline_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_relative_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/outline_painter.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
@@ -892,7 +892,7 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
       AddChild(child_scrollable_overflow);
     }
 
-    void AddLineBoxChild(const NGPhysicalLineBoxFragment& child,
+    void AddLineBoxChild(const PhysicalLineBoxFragment& child,
                          const PhysicalOffset& child_offset) {
       if (padding_strut)
         AddLineBoxRect({child_offset, child.Size()});
@@ -908,7 +908,7 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
       DCHECK_EQ(child.Type(), FragmentItem::kLine);
       if (padding_strut)
         AddLineBoxRect(child.RectInContainerFragment());
-      const NGPhysicalLineBoxFragment* line_box = child.LineBoxFragment();
+      const PhysicalLineBoxFragment* line_box = child.LineBoxFragment();
       DCHECK(line_box);
       PhysicalRect child_scrollable_overflow =
           line_box->ScrollableOverflowForLine(container, style, child, cursor,
@@ -975,7 +975,7 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
     if (child->IsFloatingOrOutOfFlowPositioned()) {
       context.AddFloatingOrOutOfFlowPositionedChild(*child, child.Offset());
     } else if (add_inline_children && child->IsLineBox()) {
-      context.AddLineBoxChild(To<NGPhysicalLineBoxFragment>(*child),
+      context.AddLineBoxChild(To<PhysicalLineBoxFragment>(*child),
                               child.Offset());
     } else if (height_type == TextHeightType::kEmHeight && IsRubyColumn()) {
       PhysicalRect r = child->ScrollableOverflow(*this, height_type);

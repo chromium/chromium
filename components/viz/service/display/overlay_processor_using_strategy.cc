@@ -652,13 +652,14 @@ void OverlayProcessorUsingStrategy::SortProposedOverlayCandidates(
     // candidate. The rational for rejection is usually power improvements but
     // this can indirectly reallocate limited overlay resources to another
     // candidate.
+    int power_gained = track_data.GetModeledPowerGain(
+        frame_sequence_number_, tracker_config_, display_area,
+        it->strategy->GetUMAEnum() == OverlayStrategy::kFullscreen);
     bool passes_min_threshold =
         ((track_data.IsActivelyChanging(frame_sequence_number_,
                                         tracker_config_) ||
           !prioritization_config_.changing_threshold) &&
-         (track_data.GetModeledPowerGain(frame_sequence_number_,
-                                         tracker_config_, display_area) >= 0 ||
-          !prioritization_config_.damage_rate_threshold));
+         (power_gained >= 0 || !prioritization_config_.damage_rate_threshold));
 
     // Candidates that have rounded-display mask textures must be promoted
     // even though they do not pass the minimum threshold.
@@ -668,8 +669,7 @@ void OverlayProcessorUsingStrategy::SortProposedOverlayCandidates(
     // textures for correctness.
     if (it->candidate.requires_overlay ||
         it->candidate.has_rounded_display_masks || passes_min_threshold) {
-      it->relative_power_gain = track_data.GetModeledPowerGain(
-          frame_sequence_number_, tracker_config_, display_area);
+      it->relative_power_gain = power_gained;
       ++it;
     } else {
       // We 'Reset' rather than delete the |track_data| because this candidate

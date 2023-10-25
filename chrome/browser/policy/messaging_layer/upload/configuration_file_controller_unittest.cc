@@ -8,6 +8,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
@@ -15,9 +16,9 @@
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/test_support_callbacks.h"
-#include "components/reporting/util/test_util.h"
 #include "content/public/test/browser_task_environment.h"
 
+using ::base::EqualsProto;
 using ::testing::HasSubstr;
 
 namespace reporting {

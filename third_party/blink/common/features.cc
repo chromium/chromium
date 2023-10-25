@@ -1037,6 +1037,16 @@ const base::FeatureParam<bool> kLCPCriticalPathPredictorDryRun{
 const base::FeatureParam<int> kLCPCriticalPathPredictorMaxElementLocatorLength{
     &kLCPCriticalPathPredictor, "lcpp_max_element_locator_length", 1024};
 
+const base::FeatureParam<LcppRecordedLcpElementTypes>::Option
+    lcpp_recorded_element_types[] = {
+        {LcppRecordedLcpElementTypes::kAll, "all"},
+        {LcppRecordedLcpElementTypes::kImageOnly, "image_only"},
+};
+const base::FeatureParam<LcppRecordedLcpElementTypes>
+    kLCPCriticalPathPredictorRecordedLcpElementTypes{
+        &kLCPCriticalPathPredictor, "lcpp_recorded_lcp_element_types",
+        LcppRecordedLcpElementTypes::kImageOnly, &lcpp_recorded_element_types};
+
 const base::FeatureParam<LcppResourceLoadPriority>::Option
     lcpp_resource_load_priorities[] = {
         {LcppResourceLoadPriority::kMedium, "medium"},
@@ -1654,7 +1664,7 @@ BASE_FEATURE(kSetTimeoutWithoutClamp,
 // https://github.com/pythagoraskitty/shared-storage/blob/main/README.md
 BASE_FEATURE(kSharedStorageAPI,
              "SharedStorageAPI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<int>
     kSharedStorageURLSelectionOperationInputURLSizeLimit{
         &kSharedStorageAPI, "url_selection_operation_input_url_size_limit", 8};
@@ -1923,10 +1933,6 @@ BASE_FEATURE(kTimedHTMLParserBudget,
 BASE_FEATURE(kUACHOverrideBlank,
              "UACHOverrideBlank",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kURLSetPortCheckOverflow,
-             "URLSetPortCheckOverflow",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUseBlinkSchedulerTaskRunnerWithCustomDeleter,
              "UseBlinkSchedulerTaskRunnerWithCustomDeleter",

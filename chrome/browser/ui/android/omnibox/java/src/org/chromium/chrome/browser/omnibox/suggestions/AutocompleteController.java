@@ -152,15 +152,12 @@ public class AutocompleteController implements Destroyable {
      * should reference the returned suggestion by index 0.
      *
      * @param text The user's input text to classify (i.e. what they typed in the omnibox)
-     * @param focusedFromFakebox Whether the user entered the omnibox by tapping the fakebox on the
-     *     native NTP. This should be false on all other pages.
      * @return The AutocompleteMatch specifying where to navigate, the transition type, etc. May be
      *     null if the input is invalid.
      */
-    public AutocompleteMatch classify(@NonNull String text, boolean focusedFromFakebox) {
+    public AutocompleteMatch classify(@NonNull String text) {
         if (mNativeController == 0) return null;
-        return AutocompleteControllerJni.get()
-                .classify(mNativeController, text, focusedFromFakebox);
+        return AutocompleteControllerJni.get().classify(mNativeController, text);
     }
 
     /**
@@ -394,8 +391,7 @@ public class AutocompleteController implements Destroyable {
                 boolean allowExactKeywordMatch,
                 boolean wantAsynchronousMatches);
 
-        AutocompleteMatch classify(
-                long nativeAutocompleteControllerAndroid, String text, boolean focusedFromFakebox);
+        AutocompleteMatch classify(long nativeAutocompleteControllerAndroid, String text);
 
         void stop(long nativeAutocompleteControllerAndroid, boolean clearResults);
 

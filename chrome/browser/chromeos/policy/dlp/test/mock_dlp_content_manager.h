@@ -32,7 +32,7 @@ class MockDlpContentManager : public DlpContentManager {
               CheckScreenShareRestriction,
               (const content::DesktopMediaID&,
                const std::u16string&,
-               OnDlpRestrictionCheckedCallback),
+               WarningCallback),
               (override));
   MOCK_METHOD(void,
               OnScreenShareStarted,

@@ -11,12 +11,12 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_content_manager_test_helper.h"
-#include "chrome/browser/chromeos/policy/dlp/test/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
+#include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
+#include "chrome/browser/enterprise/data_controls/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "chrome/browser/printing/print_test_utils.h"
@@ -118,7 +118,7 @@ class DlpContentManagerBrowserTest : public InProcessBrowserTest {
   void SetupReporting() {
     SetupDlpRulesManager();
     // Set up mock report queue.
-    SetReportQueueForReportingManager(
+    data_controls::SetReportQueueForReportingManager(
         helper_->GetReportingManager(), events_,
         base::SequencedTaskRunner::GetCurrentDefault());
   }
@@ -128,9 +128,10 @@ class DlpContentManagerBrowserTest : public InProcessBrowserTest {
                    size_t count) {
     EXPECT_EQ(events_.size(), count);
     for (size_t i = 0; i < count; ++i) {
-      EXPECT_THAT(events_[i],
-                  IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                      kSrcPattern, restriction, kRuleName, kRuleId, level)));
+      EXPECT_THAT(
+          events_[i],
+          data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
+              kSrcPattern, restriction, kRuleName, kRuleId, level)));
     }
   }
 
@@ -152,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingNotRestricted) {
 
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
 
-  base::MockCallback<OnDlpRestrictionCheckedCallback> cb;
+  base::MockCallback<WarningCallback> cb;
   EXPECT_CALL(cb, Run(true)).Times(1);
 
   helper_->GetContentManager()->CheckPrintingRestriction(
@@ -407,7 +408,7 @@ class DlpContentManagerReportingBrowserTest
     EXPECT_EQ(event.source().url(), kSrcPattern);
     EXPECT_EQ(event.triggered_rule_name(), kRuleName);
     EXPECT_EQ(event.triggered_rule_id(), kRuleId);
-    EXPECT_THAT(event, IsDlpPolicyEvent(expectedEvent));
+    EXPECT_THAT(event, data_controls::IsDlpPolicyEvent(expectedEvent));
   }
 
   // Sets an action to execute when an event arrives to the report queue storage
@@ -504,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
 
   // Set up the mocks for directly calling CheckPrintingRestriction().
-  base::MockCallback<OnDlpRestrictionCheckedCallback> cb;
+  base::MockCallback<WarningCallback> cb;
   testing::InSequence s;
   EXPECT_CALL(cb, Run(true)).Times(1);
   EXPECT_CALL(cb, Run(false)).Times(1);
@@ -551,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
   helper_->ChangeConfidentiality(web_contents, kPrintReported);
   // Printing should be reported, but still allowed whether we call
   // CheckPrintingRestriction() directly or indirectly.
-  base::MockCallback<OnDlpRestrictionCheckedCallback> cb;
+  base::MockCallback<WarningCallback> cb;
   EXPECT_CALL(cb, Run(true)).Times(1);
   helper_->GetContentManager()->CheckPrintingRestriction(
       web_contents, web_contents->GetPrimaryMainFrame()->GetGlobalId(),
@@ -671,9 +672,10 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
   EXPECT_EQ(events_.size(), 2u);
   EXPECT_THAT(events_[1],
-              IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
-                  kSrcPattern, DlpRulesManager::Restriction::kScreenShare,
-                  kRuleName, kRuleId)));
+              data_controls::IsDlpPolicyEvent(
+                  data_controls::CreateDlpPolicyWarningProceededEvent(
+                      kSrcPattern, DlpRulesManager::Restriction::kScreenShare,
+                      kRuleName, kRuleId)));
 
   // The contents should already be cached as allowed by the user, so this
   // should not trigger a new warning.

@@ -136,3 +136,29 @@ IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest, IncognitoDisabled) {
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_TRUE(GetLastActiveBrowser()->profile()->IsIncognitoProfile());
 }
+
+IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest, IncognitoForced) {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+
+  // Forcing Incognito mode, opens any consequent window & tabs in Incognito.
+  IncognitoModePrefs::SetAvailability(
+      profile->GetPrefs(), policy::IncognitoModeAvailability::kForced);
+
+  // Deactivating the current normal profile browser
+  Browser* regular_browser = GetLastActiveBrowser();
+  regular_browser->window()->Deactivate();
+
+  // NewTab should open a new browser window in Incognito
+  ChromeNewWindowClient::Get()->NewTab();
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+
+  Browser* incognito_browser = GetLastActiveBrowser();
+  EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
+
+  // After deactivating browsers, NewTab should open a new Incognito Tab only
+  incognito_browser->window()->Deactivate();
+  regular_browser->window()->Deactivate();
+  ChromeNewWindowClient::Get()->NewTab();
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(2, incognito_browser->tab_strip_model()->count());
+}

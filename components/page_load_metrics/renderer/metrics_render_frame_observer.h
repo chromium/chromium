@@ -58,7 +58,6 @@ class MetricsRenderFrameObserver
 
   // RenderFrameObserver implementation
   void DidChangePerformanceTiming() override;
-  void DidObserveInputDelay(base::TimeDelta input_delay) override;
   void DidObserveUserInteraction(
       base::TimeTicks max_event_start,
       base::TimeTicks max_event_end,

@@ -1519,3 +1519,5 @@ crbug.com/1473373 wpt_internal/scheduler/task-signal-any-memory-abort-2.any.work
 crbug.com/1488860 virtual/threaded/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Slow ]
 crbug.com/1488860 virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Slow ]
 crbug.com/1493194 external/wpt/css/cssom/insert-dir-rule-in-iframe-crash.html [ Slow ]
+
+crbug.com/1465046 [ Mac ] virtual/threaded/external/wpt/css/css-scroll-snap/input/keyboard.html [ Slow ]

@@ -139,11 +139,18 @@ class COMPONENT_EXPORT(RESOURCED) ResourcedClient {
                                          const std::vector<int32_t>& pids) = 0;
 
   struct Process {
-    Process(base::ProcessHandle pid, bool is_protected, bool is_visible)
-        : pid(pid), is_protected(is_protected), is_visible(is_visible) {}
+    Process(base::ProcessHandle pid,
+            bool is_protected,
+            bool is_visible,
+            bool is_focused)
+        : pid(pid),
+          is_protected(is_protected),
+          is_visible(is_visible),
+          is_focused(is_focused) {}
     base::ProcessHandle pid;
     bool is_protected;
     bool is_visible;
+    bool is_focused;
   };
 
   virtual void ReportBrowserProcesses(

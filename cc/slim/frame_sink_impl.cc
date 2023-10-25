@@ -25,6 +25,7 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -161,11 +162,13 @@ void FrameSinkImpl::UploadUIResource(cc::UIResourceId resource_id,
   auto* sii = context_provider_->SharedImageInterface();
   constexpr gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
   uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-  uploaded_resource.mailbox = sii->CreateSharedImage(
+  auto client_shared_image = sii->CreateSharedImage(
       format, resource_bitmap.GetSize(), color_space, kTopLeft_GrSurfaceOrigin,
       kPremul_SkAlphaType, shared_image_usage, "SlimCompositorUIResource",
       base::span<const uint8_t>(resource_bitmap.GetPixels(),
                                 resource_bitmap.SizeInBytes()));
+  CHECK(client_shared_image);
+  uploaded_resource.mailbox = client_shared_image->mailbox();
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
 
   GLenum texture_target = gpu::GetBufferTextureTarget(

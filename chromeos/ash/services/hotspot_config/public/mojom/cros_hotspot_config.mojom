@@ -53,6 +53,8 @@ enum SetHotspotConfigResult {
   kFailedNotLogin,
   // Failed for invalid hotspot configuration.
   kFailedInvalidConfiguration,
+  // Failed due to Shill operation failure.
+  kFailedShillOperation,
 };
 
 // Status about whether Hotspot is allowed or not.

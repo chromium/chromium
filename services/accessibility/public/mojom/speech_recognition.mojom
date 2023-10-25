@@ -10,6 +10,14 @@ enum SpeechRecognitionType {
   kNetwork,
 };
 
+// An event that is sent when speech recognition results are available.
+struct SpeechRecognitionResultEvent {
+  // The recognized phrase.
+  string transcript;
+  // Whether the result is a final or an interim result.
+  bool is_final;
+};
+
 // Options used when starting speech recognition.
 struct StartOptions {
   // An optional ID to specify the client.
@@ -37,6 +45,9 @@ interface SpeechRecognitionEventObserver {
   // speech recognition is stopped because of an explicit request from the
   // caller.
   OnStop();
+  // Called when a speech recognition result is returned from the speech
+  // recognition service to the browser process.
+  OnResult(SpeechRecognitionResultEvent event);
 };
 
 // Information that is returned once speech recognition has started.

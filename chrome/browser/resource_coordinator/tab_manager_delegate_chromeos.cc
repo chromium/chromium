@@ -880,16 +880,21 @@ void TabManagerDelegate::ListProcesses() {
     DecisionDetails decision_details;
     bool is_protected = false;
     bool is_visible = false;
+    bool is_focused = false;
     if (!lifecycle_unit->CanDiscard(
             ::mojom::LifecycleUnitDiscardReason::EXTERNAL, &decision_details)) {
       if (!decision_details.reasons().empty() &&
           decision_details.FailureReason() ==
               DecisionFailureReason::LIVE_STATE_VISIBLE) {
         is_visible = true;
+
+        if (lifecycle_unit->GetLastFocusedTime() == base::TimeTicks::Max()) {
+          is_focused = true;
+        }
       }
       is_protected = true;
     }
-    processes.emplace_back(pid, is_protected, is_visible);
+    processes.emplace_back(pid, is_protected, is_visible, is_focused);
   }
 
   ReportProcesses(processes);

@@ -1413,6 +1413,13 @@ class WebContents : public PageNavigator,
   virtual void SetTabSwitchStartTime(base::TimeTicks start_time,
                                      bool destination_is_loaded) = 0;
 
+  // Activates the primary page that is shown in preview mode. This will relax
+  // capability restriction in the browser process, and notify the renderer to
+  // process the prerendering activation algorithm.
+  // Should be called while WebContentsDelegate::IsInPreviewMode returns true.
+  virtual void ActivatePreviewPage(base::TimeTicks activation_start,
+                                   base::OnceClosure completion_callback) = 0;
+
   // Starts an embedder triggered (browser-initiated) prerendering page and
   // returns the unique_ptr<PrerenderHandle>, which cancels prerendering on its
   // destruction. If the prerendering failed to start (e.g. if prerendering is

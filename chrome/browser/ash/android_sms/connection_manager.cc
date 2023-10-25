@@ -161,7 +161,21 @@ void ConnectionManager::UpdateConnectionStatus() {
 }
 
 absl::optional<GURL> ConnectionManager::GenerateEnabledPwaUrl() {
-  return absl::nullopt;
+  const auto it = multidevice_setup_client_->GetFeatureStates().find(
+      multidevice_setup::mojom::Feature::kMessages);
+
+  // If the feature is not enabled, there is no enabled URL.
+  if (it->second != multidevice_setup::mojom::FeatureState::kEnabledByUser)
+    return absl::nullopt;
+
+  // Return the installed app URL if the PWA is installed.
+  absl::optional<GURL> installed_url =
+      android_sms_app_manager_->GetCurrentAppUrl();
+  if (installed_url)
+    return installed_url;
+
+  // Otherwise, return the default URL.
+  return GetAndroidMessagesURL();
 }
 
 content::ServiceWorkerContext*

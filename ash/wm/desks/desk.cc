@@ -944,6 +944,11 @@ void Desk::RestackAllDeskWindows() {
 }
 
 void Desk::TrackAllDeskWindow(aura::Window* window) {
+  // Floated windows are always on top, so we should not track their stacking
+  // data.
+  if (WindowState::Get(window)->IsFloated()) {
+    return;
+  }
   aura::Window* root = window->GetRootWindow();
   auto& adw_data = all_desk_window_stacking_[root];
 
@@ -969,7 +974,9 @@ void Desk::UntrackAllDeskWindow(aura::Window* window,
   if (it == adw_data.end()) {
     // This will happen when the desk was created after the window was made into
     // an all desk window. In this case, there's nothing to do since this desk
-    // doesn't have any stacking info for this window.
+    // doesn't have any stacking info for this window. This will also happen
+    // when the window is floated, as floated windows are always on top and
+    // shouldn't have stacking data.
     return;
   }
 

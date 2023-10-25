@@ -95,6 +95,30 @@ packager_builder(
 )
 
 packager_builder(
+    name = "3pp-win-amd64-packager",
+    description_html = "3PP Packager for Windows",
+    executable = "recipe:chromium_3pp",
+    # TODO(crbug.com/1267449): Trigger builds routinely once works fine.
+    schedule = "triggered",
+    triggered_by = [],
+    builderless = True,
+    cores = None,
+    os = os.WINDOWS_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "packager|3pp|win",
+        short_name = "amd64",
+    ),
+    contact_team_email = "chrome-browser-infra-team@google.com",
+    notifies = ["chromium-infra"],
+    properties = {
+        "$build/chromium_3pp": {
+            "platform": "win-amd64",
+            "gclient_config": "chromium",
+        },
+    },
+)
+
+packager_builder(
     name = "android-androidx-packager",
     executable = "recipe:android/androidx_packager",
     schedule = "0 7,14,22 * * * *",
@@ -125,7 +149,7 @@ packager_builder(
                 "tools/android/avd/proto/creation/android_30_google_atd_x86.textpb",
                 "tools/android/avd/proto/creation/android_30_google_atd_x64.textpb",
                 "tools/android/avd/proto/creation/android_31_google_atd_x64.textpb",
-                "tools/android/avd/proto/creation/android_32_google_atd_x64.textpb",
+                "tools/android/avd/proto/creation/android_32_google_atd_x64_foldable.textpb",
                 "tools/android/avd/proto/creation/android_33_google_atd_x64.textpb",
                 "tools/android/avd/proto/creation/android_34_google_apis_x64.textpb",
                 # TODO(hypan): Using more specific names for the configs below.

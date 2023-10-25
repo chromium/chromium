@@ -51,17 +51,15 @@ SnapGroupController* SnapGroupController::Get() {
   return g_instance;
 }
 
-void SnapGroupController::OnWindowSnapped(aura::Window* window) {
-  if (!IsArm1AutomaticallyLockEnabled()) {
+void SnapGroupController::OnWindowSnapped(
+    aura::Window* window,
+    WindowSnapActionSource snap_action_source) {
+  // If `window` already belongs to a snap group, do nothing.
+  if (!IsArm1AutomaticallyLockEnabled() || GetSnapGroupForGivenWindow(window)) {
     return;
   }
 
-  if (GetSnapGroupForGivenWindow(window)) {
-    // If `window` already belongs to a snap group, do nothing.
-    return;
-  }
-
-  window_util::MaybeStartSplitViewOverview(window);
+  window_util::MaybeStartSplitViewOverview(window, snap_action_source);
 }
 
 bool SnapGroupController::AreWindowsInSnapGroup(aura::Window* window1,

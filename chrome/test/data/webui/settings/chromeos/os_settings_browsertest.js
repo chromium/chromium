@@ -375,13 +375,15 @@ TEST_F(
      ],
    },
  ],
+ // TODO(crbug.com/1495138): Re-enable after fixing flakiness.
  [
-   'DevicePagePower',
+   'DISABLED_DevicePagePower',
    'device_page/power_test.js',
    {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
+ // TODO(b/303702729): Re-enable after fixing flakiness.
  [
-   'DevicePagePowerRevamp',
+   'DISABLED_DevicePagePowerRevamp',
    'device_page/power_test.js',
    {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
@@ -1058,6 +1060,10 @@ TEST_F(
 ].forEach(test => registerTest(...test));
 
 function registerTest(testName, module, featureList) {
+  if (testName.startsWith('DISABLED')) {
+    return;
+  }
+
   const className = `OSSettings${testName}Test`;
   this[className] = class extends OSSettingsBrowserTest {
     /** @override */

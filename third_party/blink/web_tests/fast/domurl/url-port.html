@@ -52,14 +52,4 @@ test(function() {
     assert_equals(url.port, '8081');
     assert_equals(url.href, 'http://abc.de:8081/path/file?query#fragment');
 }, 'port property invalid URL');
-
-test(function() {
-    const kURLSetPortCheckOverflow = 4503;  // From web_feature.mojom
-    const url = new URL('http://example.com');
-    url.port = '8000';
-    assert_false(window.internals.isUseCounted(document, kURLSetPortCheckOverflow));
-    url.port = '80000';
-    assert_true(window.internals.isUseCounted(document, kURLSetPortCheckOverflow));
-}, 'URLSetPortCheckOverflow UseCounter');
-
 </script>

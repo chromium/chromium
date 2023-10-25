@@ -88,6 +88,12 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   void set_frames_since_last_qualified_multi_overlays_for_testing(int value) {
     frames_since_last_qualified_multi_overlays_ = value;
   }
+  void set_system_hdr_enabled_for_testing(int value) {
+    system_hdr_enabled_ = value;
+  }
+  void set_has_p010_video_processor_support_for_testing(int value) {
+    has_p010_video_processor_support_ = value;
+  }
   size_t get_previous_frame_render_pass_count() const {
     CHECK_IS_TEST();
     return previous_frame_render_pass_states_.size();
@@ -230,7 +236,8 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
       const FilterOperationsMap& render_pass_backdrop_filters,
       RenderPassOverlayData& overlay_data,
       RenderPassCurrentFrameState& render_pass_state,
-      GlobalOverlayState& global_overlay_state);
+      GlobalOverlayState& global_overlay_state,
+      bool is_page_fullscreen_mode);
 
   // Promotes overlay candidates for a render pass. Coordinate systems for all
   // parameters should be in in render pass space.

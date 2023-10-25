@@ -64,7 +64,8 @@ std::string EncodeSkBitmapToPNG(const std::string& uma_client_name,
   std::vector<unsigned char> encoded_data;
   bool result = gfx::PNGCodec::Encode(
       static_cast<const unsigned char*>(bitmap.getPixels()),
-      gfx::PNGCodec::FORMAT_RGBA, gfx::Size(bitmap.width(), bitmap.height()),
+      gfx::PNGCodec::FORMAT_SkBitmap,
+      gfx::Size(bitmap.width(), bitmap.height()),
       static_cast<int>(bitmap.rowBytes()), /* discard_transparency */ false,
       std::vector<gfx::PNGCodec::Comment>(), &encoded_data);
   if (!result) {

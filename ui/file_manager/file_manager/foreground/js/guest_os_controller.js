@@ -4,7 +4,7 @@
 
 import {listMountableGuests} from '../../common/js/api.js';
 import {GuestOsPlaceholder} from '../../common/js/files_app_entry_types.js';
-import {util} from '../../common/js/util.js';
+import {isGuestOsEnabled, isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {addUiEntry, removeUiEntry} from '../../state/ducks/ui_entries.js';
@@ -25,7 +25,7 @@ export class GuestOsController {
    * @param {!VolumeManager} volumeManager VolumeManager.
    */
   constructor(directoryModel, directoryTree, volumeManager) {
-    if (!util.isGuestOsEnabled()) {
+    if (!isGuestOsEnabled()) {
       console.warn('Created a guest os controller when it\'s not enabled');
     }
     /** @private @const */
@@ -86,7 +86,7 @@ export class GuestOsController {
       return navigationModelItem;
     });
 
-    if (!util.isNewDirectoryTreeEnabled()) {
+    if (!isNewDirectoryTreeEnabled()) {
       this.directoryTree_.dataModel.guestOsPlaceholders =
           newGuestOsPlaceholders;
       // Redraw the tree to ensure any newly added/removed roots are

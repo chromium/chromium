@@ -32,7 +32,7 @@ constexpr char kSplitViewOverviewSessionExitPoint[] =
 // Histogram names that record presentation time of resize operation with
 // following conditions:
 // a) clamshell split view, empty overview grid;
-// b) clamshell split view, nonempty overview grid;
+// b) clamshell split view, non-empty overview grid;
 // c) clamshell split view, two snapped windows (for Snap Groups);
 constexpr char kClamshellSplitViewResizeSingleHistogram[] =
     "Ash.SplitViewResize.PresentationTime.ClamshellMode.SingleWindow";
@@ -49,21 +49,27 @@ constexpr char kClamshellSplitViewResizeWithOverviewMaxLatencyHistogram[] =
     "WithOverview";
 
 bool InClamshellSplitViewMode(SplitViewController* controller) {
-  return controller && controller->InClamshellSplitViewMode() &&
+  // If `kFasterSplitScreenSetup` is enabled, clamshell split view does *not*
+  // have to be active.
+  // TODO(sophiewen): Consolidate with `kSnapGroup` flag.
+  return (features::IsFasterSplitScreenSetupEnabled() ||
+          (controller && controller->InClamshellSplitViewMode())) &&
          GetOverviewSession();
 }
 
 }  // namespace
 
-SplitViewOverviewSession::SplitViewOverviewSession(aura::Window* window)
-    : window_(window) {
+SplitViewOverviewSession::SplitViewOverviewSession(
+    aura::Window* window,
+    WindowSnapActionSource snap_action_source)
+    : window_(window), snap_action_source_(snap_action_source) {
   CHECK(window);
   window_observation_.Observe(window);
   WindowState::Get(window)->AddObserver(this);
 
   if (window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled()) {
-    auto_snap_controller_ = std::make_unique<AutoSnapController>(
-        window->GetRootWindow(), /*is_activation_observer=*/false);
+    auto_snap_controller_ =
+        std::make_unique<AutoSnapController>(window->GetRootWindow());
   }
 }
 
@@ -74,15 +80,15 @@ SplitViewOverviewSession::~SplitViewOverviewSession() {
 void SplitViewOverviewSession::Init(
     absl::optional<OverviewStartAction> action,
     absl::optional<OverviewEnterExitType> type) {
+  // Overview may already be in session, if a window was dragged to split view
+  // from overview in clamshell mode.
   if (IsInOverviewSession()) {
     setup_type_ = SplitViewOverviewSetupType::kOverviewThenManualSnap;
     return;
   }
 
-  // Overview may already be in session, if a window was dragged to split view
-  // from overview in clamshell mode.
   Shell::Get()->overview_controller()->StartOverview(
-      action.value_or(OverviewStartAction::kSplitView),
+      action.value_or(OverviewStartAction::kFasterSplitScreenSetup),
       type.value_or(OverviewEnterExitType::kNormal));
   setup_type_ = SplitViewOverviewSetupType::kSnapThenAutomaticOverview;
 }

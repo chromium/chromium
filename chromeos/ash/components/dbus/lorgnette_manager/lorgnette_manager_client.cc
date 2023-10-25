@@ -49,6 +49,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
   ~LorgnetteManagerClientImpl() override = default;
 
   void ListScanners(
+      bool local_only,
       chromeos::DBusMethodCallback<lorgnette::ListScannersResponse> callback)
       override {
     if (features::IsAsynchronousScannerDiscoveryEnabled()) {
@@ -58,6 +59,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
       // cross-caller interference.
       request.set_client_id(kListScannersDiscoveryClientId);
       request.set_preferred_only(true);
+      request.set_local_only(local_only);
 
       StartScannerDiscovery(
           std::move(request),

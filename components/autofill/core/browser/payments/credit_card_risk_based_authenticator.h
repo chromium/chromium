@@ -9,11 +9,12 @@
 #include <string>
 
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 
 namespace autofill {
+
+class CreditCard;
 
 // Authenticates credit card unmasking through risk-based authentication. This
 // authenticator is owned by AutofillClient, and will exist per tab on Chrome.
@@ -56,6 +57,13 @@ class CreditCardRiskBasedAuthenticator {
     virtual ~Requester() = default;
     virtual void OnRiskBasedAuthenticationResponseReceived(
         const RiskBasedAuthenticationResponse& response) = 0;
+    // Callback function invoked when an unmask response for a virtual card has
+    // been received.
+    // TODO(crbug.com/1487282): Merge virtual card authentication response
+    // handling logic with OnRiskBasedAuthenticationResponseReceived().
+    virtual void OnVirtualCardRiskBasedAuthenticationResponseReceived(
+        AutofillClient::PaymentsRpcResult result,
+        payments::PaymentsClient::UnmaskResponseDetails& response_details) = 0;
   };
 
   explicit CreditCardRiskBasedAuthenticator(AutofillClient* client);

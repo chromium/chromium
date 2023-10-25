@@ -1497,18 +1497,22 @@ def main(argv):
     # You are allowed to depend on both android |deps_require_android| and
     # non-android |deps_not_support_android| targets.
     if not options.bypass_platform_checks and not options.is_robolectric:
-      deps_require_android = (all_resources_deps +
-          [d['name'] for d in all_library_deps if d['requires_android']])
-      deps_not_support_android = (
-          [d['name'] for d in all_library_deps if not d['supports_android']])
+      deps_require_android = all_resources_deps + [
+          d for d in all_library_deps if d['requires_android']
+      ]
+      deps_not_support_android = [
+          d for d in all_library_deps if not d['supports_android']
+      ]
 
       if deps_require_android and not options.requires_android:
-        raise Exception('Some deps require building for the Android platform: '
-            + str(deps_require_android))
+        raise Exception(
+            'Some deps require building for the Android platform:\n' +
+            '\n'.join('* ' + d['gn_target'] for d in deps_require_android))
 
       if deps_not_support_android and options.supports_android:
-        raise Exception('Not all deps support the Android platform: '
-            + str(deps_not_support_android))
+        raise Exception('Not all deps support the Android platform:\n' +
+                        '\n'.join('* ' + d['gn_target']
+                                  for d in deps_not_support_android))
 
   if is_apk_or_module_target or options.type == 'dist_jar':
     all_dex_files = [c['dex_path'] for c in all_library_deps]

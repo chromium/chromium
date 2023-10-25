@@ -10,9 +10,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/json/json_writer.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/schema.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -141,10 +139,6 @@ TEST_F(PolicyConverterTest, ConvertToStringValue) {
 }
 
 TEST_F(PolicyConverterTest, ConvertToListValue) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      ::policy::features::kListPoliciesAcceptCommaSeparatedStringsAndroid);
-
   Schema list_schema = schema_.GetKnownProperty("list");
   ASSERT_TRUE(list_schema.valid());
 
@@ -157,29 +151,6 @@ TEST_F(PolicyConverterTest, ConvertToListValue) {
   EXPECT_EQ("[\"hurz\"]", Convert(Value("hurz"), list_schema));
   EXPECT_EQ("[\"foo\",\"bar\"]", Convert(Value("foo,bar"), list_schema));
   EXPECT_EQ("[\"foo\",\"bar\"]", Convert(Value("foo, bar"), list_schema));
-  EXPECT_EQ("19", Convert(Value(19), list_schema));
-
-  EXPECT_FALSE(PolicyConverter::ConvertValueToSchema(Value(""), list_schema)
-                   .has_value());
-}
-
-TEST_F(PolicyConverterTest, ConvertToListValue_RejectCommaSeparatedLists) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      ::policy::features::kListPoliciesAcceptCommaSeparatedStringsAndroid);
-
-  Schema list_schema = schema_.GetKnownProperty("list");
-  ASSERT_TRUE(list_schema.valid());
-
-  Value::List list;
-  list.Append("foo");
-  list.Append("bar");
-  EXPECT_EQ("[\"foo\",\"bar\"]", Convert(Value(std::move(list)), list_schema));
-  EXPECT_EQ("[\"baz\",\"blurp\"]",
-            Convert(Value("[\"baz\", \"blurp\"]"), list_schema));
-  EXPECT_EQ("\"hurz\"", Convert(Value("hurz"), list_schema));
-  EXPECT_EQ("\"foo,bar\"", Convert(Value("foo,bar"), list_schema));
-  EXPECT_EQ("\"foo, bar\"", Convert(Value("foo, bar"), list_schema));
   EXPECT_EQ("19", Convert(Value(19), list_schema));
 
   EXPECT_FALSE(PolicyConverter::ConvertValueToSchema(Value(""), list_schema)

@@ -36,11 +36,6 @@ bool FakeInvalidationService::UpdateInterestedTopics(
   return invalidator_registrar_->UpdateRegisteredTopics(handler, topic_set);
 }
 
-void FakeInvalidationService::UnsubscribeFromUnregisteredTopics(
-    InvalidationHandler* handler) {
-  invalidator_registrar_->RemoveUnregisteredTopics(handler);
-}
-
 void FakeInvalidationService::UnregisterInvalidationHandler(
     InvalidationHandler* handler) {
   invalidator_registrar_->UnregisterHandler(handler);
@@ -65,7 +60,7 @@ void FakeInvalidationService::EmitInvalidationForTest(
   Invalidation invalidation_copy(invalidation);
 
   // If no one is listening to this invalidation, do not send it out.
-  Topics subscribed_topics = invalidator_registrar_->GetAllSubscribedTopics();
+  TopicMap subscribed_topics = invalidator_registrar_->GetAllSubscribedTopics();
   if (subscribed_topics.find(invalidation.topic()) == subscribed_topics.end()) {
     fake_ack_handler_.RegisterUnsentInvalidation(&invalidation_copy);
     return;

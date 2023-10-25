@@ -195,8 +195,9 @@ class MockFrameObserver : public VideoCaptureControllerEventHandler {
                      const ReadyBuffer& buffer) override {}
   void OnFrameDropped(const VideoCaptureControllerID& id,
                       media::VideoCaptureFrameDropReason reason) override {}
-  void OnNewCropVersion(const VideoCaptureControllerID& id,
-                        uint32_t crop_version) override {}
+  void OnNewSubCaptureTargetVersion(
+      const VideoCaptureControllerID& id,
+      uint32_t sub_capture_target_version) override {}
   void OnFrameWithEmptyRegionCapture(const VideoCaptureControllerID&) override {
   }
   void OnEnded(const VideoCaptureControllerID& id) override {}

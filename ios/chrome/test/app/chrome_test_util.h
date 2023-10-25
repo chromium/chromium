@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 
 @protocol ApplicationCommands;
+@protocol UnitConversionCommands;
 class Browser;
 class ChromeBrowserState;
 @class MainController;
@@ -47,7 +48,10 @@ Browser* GetMainBrowser();
 UIViewController* GetActiveViewController();
 
 // Returns the dispatcher for the active Browser.
-id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands>
+id<ApplicationCommands,
+   BrowserCommands,
+   BrowserCoordinatorCommands,
+   UnitConversionCommands>
 HandlerForActiveBrowser();
 
 // Removes all presented infobars.

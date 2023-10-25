@@ -32,7 +32,6 @@
 #include "ash/components/arc/mojom/keymaster.mojom.h"
 #include "ash/components/arc/mojom/keymint.mojom.h"
 #include "ash/components/arc/mojom/kiosk.mojom.h"
-#include "ash/components/arc/mojom/lock_screen.mojom.h"
 #include "ash/components/arc/mojom/media_session.mojom.h"
 #include "ash/components/arc/mojom/memory.mojom.h"
 #include "ash/components/arc/mojom/metrics.mojom.h"
@@ -249,12 +248,6 @@ void ArcBridgeHostImpl::OnKeyMintInstanceReady(
 void ArcBridgeHostImpl::OnKioskInstanceReady(
     mojo::PendingRemote<mojom::KioskInstance> kiosk_remote) {
   OnInstanceReady(arc_bridge_service_->kiosk(), std::move(kiosk_remote));
-}
-
-void ArcBridgeHostImpl::OnLockScreenInstanceReady(
-    mojo::PendingRemote<mojom::LockScreenInstance> lock_screen_remote) {
-  OnInstanceReady(arc_bridge_service_->lock_screen(),
-                  std::move(lock_screen_remote));
 }
 
 void ArcBridgeHostImpl::OnMediaSessionInstanceReady(

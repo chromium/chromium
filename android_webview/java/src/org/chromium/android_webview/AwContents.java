@@ -1132,16 +1132,24 @@ public class AwContents implements SmartClipProvider {
 
     /**
      * @param dependencyFactory an instance of the DependencyFactory used to provide instances of
-     *                          classes that this class depends on.
-     *
-     * This version of the constructor is used in test code to inject test versions of the above
-     * documented classes.
+     *     classes that this class depends on.
+     *     <p>This version of the constructor is used in test code to inject test versions of the
+     *     above documented classes.
      */
-    public AwContents(AwBrowserContext browserContext, ViewGroup containerView, Context context,
+    public AwContents(
+            AwBrowserContext browserContext,
+            ViewGroup containerView,
+            Context context,
             InternalAccessDelegate internalAccessAdapter,
-            NativeDrawFunctorFactory nativeDrawFunctorFactory, AwContentsClient contentsClient,
-            AwSettings settings, DependencyFactory dependencyFactory) {
+            NativeDrawFunctorFactory nativeDrawFunctorFactory,
+            AwContentsClient contentsClient,
+            AwSettings settings,
+            DependencyFactory dependencyFactory) {
         assert browserContext != null;
+        if (!browserContext.isDefaultAwBrowserContext()) {
+            // The browser context has been explicitly set by the application.
+            mBrowserContextSetExplicitly = true;
+        }
         try (ScopedSysTraceEvent e1 = ScopedSysTraceEvent.scoped("AwContents.constructor")) {
             mDisplayModeController =
                     new AwDisplayModeController(new AwDisplayModeController.Delegate() {

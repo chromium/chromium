@@ -32,50 +32,12 @@ class QuickStartDecoder : public mojom::QuickStartDecoder {
   ~QuickStartDecoder() override;
 
   // mojom::QuickStartDecoder;
-  void DecodeBootstrapConfigurations(
-      const absl::optional<std::vector<uint8_t>>& data,
-      DecodeBootstrapConfigurationsCallback callback) override;
-
-  void DecodeGetAssertionResponse(
-      const absl::optional<std::vector<uint8_t>>& data,
-      DecodeGetAssertionResponseCallback callback) override;
-
-  void DecodeWifiCredentialsResponse(
-      const absl::optional<std::vector<uint8_t>>& data,
-      DecodeWifiCredentialsResponseCallback callback) override;
-
-  void DecodeNotifySourceOfUpdateResponse(
-      const absl::optional<std::vector<uint8_t>>& data,
-      DecodeNotifySourceOfUpdateResponseCallback callback) override;
-
-  void DecodeUserVerificationMethod(
-      const absl::optional<std::vector<uint8_t>>& data,
-      DecodeUserVerificationMethodCallback callback) override;
-
-  void DecodeUserVerificationResult(
-      const absl::optional<std::vector<uint8_t>>& data,
-      DecodeUserVerificationResultCallback callback) override;
-
-  void DecodeUserVerificationRequested(
-      const absl::optional<std::vector<uint8_t>>& data,
-      DecodeUserVerificationRequestedCallback callback) override;
-
   void DecodeQuickStartMessage(
       const absl::optional<std::vector<uint8_t>>& data,
       DecodeQuickStartMessageCallback callback) override;
-  // mojom::QuickStartDecoder:
 
  private:
   friend class QuickStartDecoderTest;
-  void DoDecodeBootstrapConfigurations(
-      const absl::optional<std::vector<uint8_t>>& data,
-      DecodeBootstrapConfigurationsCallback callback);
-  void DoDecodeGetAssertionResponse(
-      const absl::optional<std::vector<uint8_t>>& data,
-      DecodeGetAssertionResponseCallback callback);
-  void DoDecodeWifiCredentialsResponse(
-      const absl::optional<std::vector<uint8_t>>& data,
-      DecodeWifiCredentialsResponseCallback callback);
 
   base::expected<mojom::QuickStartMessagePtr, mojom::QuickStartDecoderError>
   DoDecodeQuickStartMessage(const std::vector<uint8_t>& data);

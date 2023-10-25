@@ -691,6 +691,7 @@ source_set("unit_tests") {
     deps += [
       "//third_party/blink/renderer/modules/direct_sockets:unit_tests",
       "//third_party/blink/renderer/modules/serial:unit_tests",
+      "//third_party/blink/renderer/modules/smart_card:unit_tests",
     ]
   }
 

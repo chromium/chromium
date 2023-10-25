@@ -230,6 +230,7 @@
 <translation id="2218443599109088993">Кичирейтүү</translation>
 <translation id="2220529011494928058">Маселе жөнүндө кабар берүү</translation>
 <translation id="2230173723195178503">Веб баракча жүктөлдү</translation>
+<translation id="2234827758954819389">Купуялык жетектемеси</translation>
 <translation id="2239626343334228536">Серептөө дайындары тазаланууда…</translation>
 <translation id="2251686759395008410">Меню → Таржымал</translation>
 <translation id="2252674110805316998">Интернетте издөө</translation>
@@ -700,6 +701,7 @@
 <translation id="47677902929517676">Сырсөздөрдү аккаунтуңузга сактоо үчүн адегенде түзмөгүңүзгө өткөрүүчү кодду коюшуңуз керек.</translation>
 <translation id="4775879719735953715">Демейки серепчи</translation>
 <translation id="4778644898150334464">Башка сырсөздү колдонуу</translation>
+<translation id="4779732376610430319">Жөндөөлөргө өтүү...</translation>
 <translation id="478808905805139173">Жашыруун режимде ачылсынбы?</translation>
 <translation id="4803185665210547709">Уюмуңуз тарабынан башкарылат.
 <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
@@ -724,7 +726,6 @@
 <translation id="4854345657858711387">Өткөрүүчү кодду коюу</translation>
 <translation id="4856498338299082007">Google аккаунтуңузда</translation>
 <translation id="4856841893565072365">Меню тилкеси үчүн акылдуу иргөө</translation>
-<translation id="4858786880085262208">Мүмкүн болгондо HTTPS кеңейтүүсүнө жаңыртыңыз. Коопсуз сайттар кооптуу контентти жалгаштырышы мүмкүн.</translation>
 <translation id="4860895144060829044">Чалуу</translation>
 <translation id="4872323082491632254">Сырсөздөрдү текшерүү</translation>
 <translation id="4881695831933465202">Ачуу</translation>

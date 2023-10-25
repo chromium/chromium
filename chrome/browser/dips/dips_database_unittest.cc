@@ -508,6 +508,49 @@ TEST_P(DIPSDatabasePopupsTest, DeleteSeveralPopups) {
   EXPECT_FALSE(db_->Read(opener_site_2).has_value());
 }
 
+// Test the `ReadRecentPopupsWithInteraction` function which retrieves a list of
+// `popups` table entries with recent popup timestamps.
+TEST_P(DIPSDatabasePopupsTest, ReadRecentPopupsWithInteraction) {
+  base::Time now = Now();
+
+  // Add popups to db.
+  const std::string opener_site_1 =
+      GetSiteForDIPS(GURL("http://www.youtube.com/"));
+  const std::string opener_site_2 =
+      GetSiteForDIPS(GURL("http://www.picasa.com/"));
+  const std::string opener_site_3 =
+      GetSiteForDIPS(GURL("http://www.google.com/"));
+  const std::string popup_site =
+      GetSiteForDIPS(GURL("http://www.doubleclick.net/"));
+  EXPECT_TRUE(db_->WritePopup(opener_site_1, popup_site,
+                              /*access_id=*/123, now - base::Seconds(10),
+                              /*is_current_interaction=*/true));
+  EXPECT_TRUE(db_->WritePopup(opener_site_2, popup_site,
+                              /*access_id=*/456, now - base::Seconds(10),
+                              /*is_current_interaction=*/false));
+  EXPECT_TRUE(db_->WritePopup(opener_site_3, popup_site,
+                              /*access_id=*/789, now - base::Seconds(30),
+                              /*is_current_interaction=*/true));
+
+  // Verify that all three sites are in the `popups` table.
+  EXPECT_TRUE(db_->ReadPopup(opener_site_1, popup_site).has_value());
+  EXPECT_TRUE(db_->ReadPopup(opener_site_2, popup_site).has_value());
+  EXPECT_TRUE(db_->ReadPopup(opener_site_3, popup_site).has_value());
+
+  // Expect no popups recorded in the last 5 seconds.
+  std::vector<PopupWithTime> very_recent_popups =
+      db_->ReadRecentPopupsWithInteraction(base::Seconds(5));
+  EXPECT_TRUE(very_recent_popups.empty());
+
+  // Expect one popup in the last 20 seconds with a current interaction.
+  std::vector<PopupWithTime> recent_popups =
+      db_->ReadRecentPopupsWithInteraction(base::Seconds(20));
+  ASSERT_EQ(recent_popups.size(), 1u);
+  EXPECT_EQ(recent_popups.at(0).opener_site, opener_site_1);
+  EXPECT_EQ(recent_popups.at(0).popup_site, popup_site);
+  EXPECT_EQ(recent_popups.at(0).last_popup_time, now - base::Seconds(10));
+}
+
 INSTANTIATE_TEST_SUITE_P(All, DIPSDatabasePopupsTest, ::testing::Bool());
 
 TEST_P(DIPSDatabaseAllColumnTest, ErrorHistograms_OpenEndedRange_NullStart) {

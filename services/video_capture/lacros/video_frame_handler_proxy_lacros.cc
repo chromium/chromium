@@ -175,11 +175,18 @@ void VideoFrameHandlerProxyLacros::OnFrameDropped(
   }
 }
 
-void VideoFrameHandlerProxyLacros::OnNewCropVersion(uint32_t crop_version) {
+void VideoFrameHandlerProxyLacros::DEPRECATED_OnNewCropVersion(
+    uint32_t crop_version) {
+  OnNewSubCaptureTargetVersion(crop_version);
+}
+
+void VideoFrameHandlerProxyLacros::OnNewSubCaptureTargetVersion(
+    uint32_t sub_capture_target_version) {
   if (handler_.is_bound()) {
-    handler_->OnNewCropVersion(crop_version);
+    handler_->OnNewSubCaptureTargetVersion(sub_capture_target_version);
   } else if (handler_in_process_) {
-    handler_in_process_->OnNewCropVersion(crop_version);
+    handler_in_process_->OnNewSubCaptureTargetVersion(
+        sub_capture_target_version);
   }
 }
 

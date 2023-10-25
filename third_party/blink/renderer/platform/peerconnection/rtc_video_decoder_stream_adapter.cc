@@ -28,6 +28,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/overlay_info.h"
+#include "media/base/platform_features.h"
 #include "media/base/video_types.h"
 #include "media/renderers/default_decoder_factory.h"
 #include "media/video/gpu_video_accelerator_factories.h"
@@ -502,9 +503,8 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
     // true, we will do the decoder capability check.
     if (video_codec_type_ == webrtc::kVideoCodecVP9 &&
         input_image.SpatialIndex().value_or(0) > 0 &&
-        !RTCVideoDecoderAdapter::Vp9HwSupportForSpatialLayers(
-            video_decoder_type_) &&
-        decoder_configured_ && decoder_info_.is_hardware_accelerated) {
+        !media::IsVp9kSVCHWDecodingEnabled() && decoder_configured_ &&
+        decoder_info_.is_hardware_accelerated) {
       DLOG(ERROR) << __func__
                   << " fallback to software due to decoder doesn't support "
                      "decoding VP9 multiple spatial layers.";

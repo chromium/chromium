@@ -22,10 +22,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-namespace base {
-class OneShotTimer;
-}  // namespace base
-
 namespace network::mojom {
 class NetworkContext;
 class URLLoaderFactory;
@@ -263,9 +259,9 @@ class CONTENT_EXPORT PrefetchService {
 
   // Called when the response for |prefetch_container| has started. Based on
   // |head|, returns a status to inform the |PrefetchStreamingURLLoader| whether
-  // the prefetch is servable. If servable, then |kHeadReceivedWaitingOnBody|
-  // will be returned, otherwise a valid failure status is returned.
-  PrefetchStreamingURLLoaderStatus OnPrefetchResponseStarted(
+  // the prefetch is servable. If servable, then `absl::nullopt` will be
+  // returned, otherwise a failure status is returned.
+  absl::optional<PrefetchErrorOnResponseReceived> OnPrefetchResponseStarted(
       base::WeakPtr<PrefetchContainer> prefetch_container,
       network::mojom::URLResponseHead* head);
 
@@ -370,13 +366,8 @@ class CONTENT_EXPORT PrefetchService {
 
   // Prefetches owned by |this|. Once the network request for a prefetch is
   // started, |this| takes ownership of the prefetch so the response can be used
-  // on future page loads. A timer of
-  // |PrefetchContainerLifetimeInPrefetchService| is set that deletes the
-  // prefetch. If |PrefetchContainerLifetimeInPrefetchService| zero or less,
-  // then, the prefetch is kept forever.
-  std::map<PrefetchContainer::Key,
-           std::pair<std::unique_ptr<PrefetchContainer>,
-                     std::unique_ptr<base::OneShotTimer>>>
+  // on future page loads.
+  std::map<PrefetchContainer::Key, std::unique_ptr<PrefetchContainer>>
       owned_prefetches_;
 
 // Protects against Prefetch() being called recursively.

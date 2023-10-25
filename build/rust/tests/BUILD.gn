@@ -87,7 +87,7 @@ group("deps") {
     # Dylibs should only be built in component builds. We turn on flags which
     # are incompatible with shared library compilation in non-component builds
     # (such as code coverage https://crbug.com/1457533).
-    if (is_component_build) {
+    if (is_component_build && enable_cxx) {
       deps += [ "test_rust_shared_library" ]
       if (can_build_rust_unit_tests) {
         deps += [

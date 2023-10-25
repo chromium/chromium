@@ -8,7 +8,7 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_notifier.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
+#include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
@@ -27,7 +27,7 @@ DlpContentManagerTestHelper::DlpContentManagerTestHelper() {
   manager_ = new DlpContentManagerLacros();
 #endif
   DCHECK(manager_);
-  reporting_manager_ = new DlpReportingManager();
+  reporting_manager_ = new data_controls::DlpReportingManager();
   DCHECK(reporting_manager_);
   manager_->SetReportingManagerForTesting(reporting_manager_);
   manager_->SetWarnNotifierForTesting(std::make_unique<DlpWarnNotifier>());
@@ -121,7 +121,8 @@ DlpContentManager* DlpContentManagerTestHelper::GetContentManager() const {
   return manager_;
 }
 
-DlpReportingManager* DlpContentManagerTestHelper::GetReportingManager() const {
+data_controls::DlpReportingManager*
+DlpContentManagerTestHelper::GetReportingManager() const {
   return manager_->reporting_manager_;
 }
 

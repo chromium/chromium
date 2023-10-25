@@ -89,5 +89,8 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(
       safe_browsing::kSafeBrowsingSkipSubresources);
 
+  // Disable Shared Storage on WebView.
+  aw_feature_overrides.DisableFeature(blink::features::kSharedStorageAPI);
+
   aw_feature_overrides.RegisterOverrides(feature_list);
 }

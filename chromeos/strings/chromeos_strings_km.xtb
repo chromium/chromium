@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">សេវាខ្សោយ</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">កំពុងដំឡើងកំណែ (បានបញ្ចប់ <ph name="PERCENTAGE_VALUE" />% ហើយ)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> នាទី</translation>
 <translation id="1310380015393971138">មិនមានបណ្ដាញ <ph name="NETWORK_NAME" /> ដែលអាចប្រើបានទេ</translation>
 <translation id="131421566576084655">មិនមានកាលបរិច្ឆេទនៃការកំណត់ទិន្នន័យឡើងវិញលើកចុងក្រោយទេ</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -93,7 +94,6 @@
 <translation id="1643449475550628585">ប្ដូរផ្ទាំងរូបភាព​ជារៀងរាល់ថ្ងៃ</translation>
 <translation id="1644574205037202324">ប្រវត្តិ</translation>
 <translation id="1651925268237749928">អ្នកបាន​ជ្រើសរើស​អាល់ប៊ុម​រួម។ អ្នកផ្សេង​អាច​បញ្ចូល ឬ​ផ្លាស់ប្ដូរ​រូបថតបាន។ ផ្ទាំង​រូបភាព​របស់​អ្នក​ប្រហែលជា​ប្រើរូបថត​ដែល​បច្ចុប្បន្នមិន​ស្ថិត​នៅ​ក្នុង​អាល់ប៊ុម​នេះ។</translation>
-<translation id="1658834457013045127">ជានិច្ច</translation>
 <translation id="1661865805917886535">ព័ត៌មាន​ខ្លះ​អំពី​គណនី និងប្រព័ន្ធ​អាច​ត្រូវបាន​ផ្ញើទៅ Google។ យើងប្រើ​ព័ត៌មាននេះ ដើម្បីជួយ​ដោះស្រាយបញ្ហា​បច្ចេកទេស និង​កែលម្អសេវាកម្ម​របស់យើង ដោយផ្អែកលើ​គោលការណ៍​ឯកជនភាព (<ph name="PRIVACYPOLICYURL" />) និង​លក្ខខណ្ឌ​ប្រើប្រាស់ (<ph name="TERMSOFSERVICEURL" />) របស់យើង។ ដើម្បីស្នើសុំ​ផ្លាស់ប្ដូរ​ខ្លឹមសារ សូមចូលទៅកាន់​ជំនួយ​ផ្នែកច្បាប់ (<ph name="LEGALHELPPAGEURL" />)។</translation>
 <translation id="1662989795263954667">បានឈប់ - អស់​ទឹកថ្នាំ</translation>
 <translation id="1664796644829245314">មើល <ph name="PREVIEW_OBJECT" /> សាកល្បង</translation>
@@ -323,7 +323,6 @@
 <translation id="3484914941826596830">សូមកុំដកឧបករណ៍ខាងក្រៅនេះ ឬបិទកុំព្យូទ័ររបស់អ្នក ពេលកំពុងដំឡើងកំណែកម្មវិធី​បង្កប់។ អ្នកអាចបង្រួមវិនដូនេះបាន។ ការដំឡើងកំណែនេះអាចចំណាយពេលពីរបីនាទី ហើយឧបករណ៍ខាងក្រៅរបស់អ្នកអាចមិនដំណើរការនៅអំឡុងពេលនេះទេ។</translation>
 <translation id="3486220673238053218">និយមន័យ</translation>
 <translation id="3488065109653206955">បានធ្វើសកម្មភាពតាមផ្នែក</translation>
-<translation id="349491921221892984"><ph name="MINUTES" /> ន</translation>
 <translation id="3502426834823382181">មើល​កម្មវិធី​ទាំងអស់</translation>
 <translation id="3510890413042482857">ផ្ញើ<ph name="BEGIN_LINK1" />ទិន្នន័យដានប្រតិបត្តិការ<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">កំណែថ្មី ChromeOS</translation>
@@ -484,7 +483,6 @@
 <translation id="473775607612524610">ធ្វើបច្ចុប្បន្នភាព</translation>
 <translation id="4771607256327216405">ក្ដារចុចភ្លឺជាងមុន</translation>
 <translation id="4773299976671772492">បានឈប់</translation>
-<translation id="4782003517030001304">1 ម៉</translation>
 <translation id="4782311465517282004">ទទួលបាននិយមន័យ ការបកប្រែ ឬការបំប្លែងខ្នាត នៅពេលអ្នកចុចកណ្ដុរខាងស្ដាំ ឬចុចអត្ថបទឱ្យជាប់</translation>
 <translation id="4791000909649665275">រូបថត <ph name="NUMBER" /> សន្លឹក</translation>
 <translation id="4793710386569335688">សម្រាប់ជំនួយបន្ថែម សូមចូលទៅកាន់<ph name="BEGIN_LINK" />មជ្ឈមណ្ឌលជំនួយ<ph name="END_LINK" />។</translation>
@@ -699,6 +697,7 @@
 <translation id="629550705077076970">ក្ដារចុចថយពន្លឺ</translation>
 <translation id="6302401976930124515">ការធ្វើតេស្ត​លើ <ph name="TEST_NAME" /> ត្រូវបានបោះបង់</translation>
 <translation id="631063167932043783">កម្មវិធី​រុករក</translation>
+<translation id="6318437367327684789">ជានិច្ច</translation>
 <translation id="6319207335391420837">ដំឡើងកំណែកម្មវិធី​បង្កប់នៅលើ <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">បើកធាតុរក្សាអេក្រង់</translation>
 <translation id="6324916366299863871">កែសម្រួលផ្លូវកាត់</translation>
@@ -948,6 +947,7 @@
 <translation id="8227119283605456246">ភ្ជាប់ឯកសារ</translation>
 <translation id="8230672074305416752">មិនអាចភីងច្រកបណ្ដាញលំនាំដើមបានទេ</translation>
 <translation id="8246209727385807362">ក្រុមហ៊ុនបម្រើសេវាទូរសព្ទ​ដែលមិនស្គាល់</translation>
+<translation id="8262870577632766028">1 ម៉ោង</translation>
 <translation id="827422111966801947">ទឹកប៊ិក</translation>
 <translation id="8286154143153872371">សូមភ្ជាប់​បណ្ដាញ រួចផ្ទុកទំព័រ​ឡើងវិញ ដើម្បីមើល​ផ្ទាំងរូបភាព។</translation>
 <translation id="8291967909914612644">ប្រទេសនៃអ្នកផ្តល់សេវាកម្មនៅផ្ទះ</translation>
@@ -1012,6 +1012,7 @@
 <translation id="8747900814994928677">បញ្ជាក់​ការ​ផ្លាស់ប្ដូរ</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">អាល់ប៊ុម Google រូបថត</translation>
+<translation id="8775713578693478175">APN ម៉ូដឹម</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8789196995628578448">ផ្លូវកាត់​កំពុង​ត្រូវបានប្រើ​សម្រាប់ "<ph name="CONFLICT_ACCEL_NAME" />"។ សូមចុច​ផ្លូវកាត់ថ្មី។ ដើម្បីជំនួស​ផ្លូវកាត់ដើម សូមចុច​ផ្លូវកាត់នេះ​ម្ដងទៀត។</translation>
 <translation id="879568662008399081">បណ្ដាញនេះអាចមានច្រកចូលប្រើបណ្ដាញ</translation>

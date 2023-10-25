@@ -8,12 +8,9 @@
 #include "base/memory/raw_ptr.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 
-namespace bookmarks {
-class BookmarkModel;
-}
-
 namespace sync_bookmarks {
 
+class BookmarkModelView;
 class SyncedBookmarkTracker;
 
 class BookmarkLocalChangesBuilder {
@@ -21,7 +18,7 @@ class BookmarkLocalChangesBuilder {
   // |bookmark_tracker| and |bookmark_model| must not be null and must outlive
   // this object.
   BookmarkLocalChangesBuilder(SyncedBookmarkTracker* bookmark_tracker,
-                              bookmarks::BookmarkModel* bookmark_model);
+                              BookmarkModelView* bookmark_model);
 
   BookmarkLocalChangesBuilder(const BookmarkLocalChangesBuilder&) = delete;
   BookmarkLocalChangesBuilder& operator=(const BookmarkLocalChangesBuilder&) =
@@ -32,7 +29,7 @@ class BookmarkLocalChangesBuilder {
 
  private:
   const raw_ptr<SyncedBookmarkTracker> bookmark_tracker_;
-  const raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  const raw_ptr<BookmarkModelView> bookmark_model_;
 };
 
 }  // namespace sync_bookmarks

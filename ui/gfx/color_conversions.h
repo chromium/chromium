@@ -79,6 +79,10 @@ GFX_EXPORT std::tuple<float, float, float> XYZD65TosRGBLinear(float x,
                                                               float y,
                                                               float z);
 
+GFX_EXPORT std::tuple<float, float, float> XYZD50TosRGB(float x,
+                                                        float y,
+                                                        float z);
+
 GFX_EXPORT std::tuple<float, float, float> XYZD50TosRGBLinear(float x,
                                                               float y,
                                                               float z);
@@ -91,8 +95,10 @@ GFX_EXPORT std::tuple<float, float, float> SRGBToXYZD50(float r,
                                                         float g,
                                                         float b);
 
+GFX_EXPORT std::tuple<float, float, float> HSLToSRGB(float h, float s, float l);
 GFX_EXPORT std::tuple<float, float, float> SRGBToHSL(float r, float g, float b);
 
+GFX_EXPORT std::tuple<float, float, float> HWBToSRGB(float h, float w, float b);
 GFX_EXPORT std::tuple<float, float, float> SRGBToHWB(float r, float g, float b);
 
 GFX_EXPORT SkColor4f XYZD50ToSkColor4f(float x, float y, float z, float alpha);

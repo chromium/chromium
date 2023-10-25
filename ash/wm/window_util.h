@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/window_transient_descendant_iterator.h"
+#include "ash/wm/wm_metrics.h"
 #include "ui/aura/window.h"
 #include "ui/wm/core/window_util.h"
 
@@ -131,7 +132,7 @@ bool IsAnyWindowDragged();
 
 // Returns the top window on MRU window list, or null if the list is empty.
 aura::Window* GetTopWindow();
-aura::Window* GetTopNonFloatedWindow();
+ASH_EXPORT aura::Window* GetTopNonFloatedWindow();
 
 // Returns the floated window for the active desk if it exists.
 ASH_EXPORT aura::Window* GetFloatedWindowForActiveDesk();
@@ -184,7 +185,8 @@ ASH_EXPORT bool ShouldRoundThumbnailWindow(
 bool IsFasterSplitScreenOrSnapGroupArm1Enabled();
 
 // Starts SplitViewOverviewSession for `window`, if it wasn't already active.
-void MaybeStartSplitViewOverview(aura::Window* window);
+void MaybeStartSplitViewOverview(aura::Window* window,
+                                 WindowSnapActionSource snap_action_source);
 
 }  // namespace ash::window_util
 

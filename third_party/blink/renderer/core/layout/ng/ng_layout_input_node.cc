@@ -17,9 +17,9 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_column.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_column.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_section.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -49,9 +49,9 @@ void AppendNodeToString(NGLayoutInputNode node,
     }
   }
 
-  if (auto* inline_node = DynamicTo<NGInlineNode>(node)) {
+  if (auto* inline_node = DynamicTo<InlineNode>(node)) {
     const auto& items = inline_node->ItemsData(false).items;
-    for (const NGInlineItem& inline_item : items) {
+    for (const InlineItem& inline_item : items) {
       string_builder->Append(indent_builder.ToString());
       string_builder->Append(inline_item.ToString());
       string_builder->Append("\n");
@@ -156,7 +156,7 @@ void NGLayoutInputNode::IntrinsicSize(
 }
 
 NGLayoutInputNode NGLayoutInputNode::NextSibling() const {
-  auto* inline_node = DynamicTo<NGInlineNode>(this);
+  auto* inline_node = DynamicTo<InlineNode>(this);
   return inline_node ? inline_node->NextSibling()
                      : To<NGBlockNode>(*this).NextSibling();
 }
@@ -168,7 +168,7 @@ PhysicalSize NGLayoutInputNode::InitialContainingBlockSize() const {
 }
 
 String NGLayoutInputNode::ToString() const {
-  auto* inline_node = DynamicTo<NGInlineNode>(this);
+  auto* inline_node = DynamicTo<InlineNode>(this);
   return inline_node ? inline_node->ToString()
                      : To<NGBlockNode>(*this).ToString();
 }

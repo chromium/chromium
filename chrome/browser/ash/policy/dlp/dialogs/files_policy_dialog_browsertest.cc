@@ -104,7 +104,7 @@ class WarningDialogBrowserTest : public FilesPolicyDialogBrowserTest {
 
  protected:
   std::vector<base::FilePath> warning_paths_;
-  base::MockCallback<OnDlpRestrictionCheckedWithJustificationCallback> cb_;
+  base::MockCallback<WarningWithJustificationCallback> cb_;
 };
 
 // Tests that the warning dialog is created as a system modal if no parent is

@@ -90,6 +90,14 @@ class HttpHandler {
   void Handle(const net::HttpServerRequestInfo& request,
               const HttpResponseSenderFunc& send_response_func);
 
+  void OnWebSocketMessage(HttpServerInterface* http_server,
+                          int connection_id,
+                          const std::string& data);
+
+  void OnWebSocketRequest(HttpServerInterface* http_server,
+                          int connection_id,
+                          const net::HttpServerRequestInfo& info);
+
   base::WeakPtr<HttpHandler> WeakPtr();
 
  private:
@@ -99,37 +107,6 @@ class HttpHandler {
   FRIEND_TEST_ALL_PREFIXES(HttpHandlerTest, HandleUnimplementedCommand);
   FRIEND_TEST_ALL_PREFIXES(HttpHandlerTest, HandleCommand);
   FRIEND_TEST_ALL_PREFIXES(HttpHandlerTest, StandardResponse_ErrorNoMessage);
-  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest, UnknownSessionNoId);
-  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest,
-                           UnknownSessionNoIdIsPostedToIO);
-  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest, UnknownSessionWithId);
-  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest,
-                           UnknownSessionWithIdIsPostedToIO);
-  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest, NoId);
-  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest, NoMethod);
-  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest, NoParams);
-  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest, MalformedJson);
-  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest, OtherErrorIsPostedToIO);
-  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest, UnknownStaticCommand);
-  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest,
-                           UnknownStaticCommandIsPostedToIO);
-  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest,
-                           KnownStaticCommandReturnsSuccess);
-  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest,
-                           KnownStaticCommandReturnsError);
-  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest,
-                           KnownStaticCommandResponseIsPostedToIO);
-  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest, SessionCommandReturnsSuccess);
-  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest, SessionCommandNoReturnValue);
-  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest, SessionCommandReturnsError);
-  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest,
-                           SessionCommandResponseIsPostedToIO);
-  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest,
-                           StaticCommandOnSessionBoundConnection);
-  FRIEND_TEST_ALL_PREFIXES(WebSocketRequestTest, UnknownPath);
-  FRIEND_TEST_ALL_PREFIXES(WebSocketRequestTest, UnknownSession);
-  FRIEND_TEST_ALL_PREFIXES(WebSocketRequestTest, ConnectionAlreadyBound);
-  FRIEND_TEST_ALL_PREFIXES(WebSocketRequestTest, CreateUnboundConnection);
   typedef std::vector<CommandMapping> CommandMap;
 
   friend class HttpServer;
@@ -166,10 +143,6 @@ class HttpHandler {
       std::unique_ptr<base::Value> value,
       const std::string& session_id);
 
-  void OnWebSocketRequest(HttpServerInterface* http_server,
-                          int connection_id,
-                          const net::HttpServerRequestInfo& info);
-
   void OnWebSocketAttachToSessionRequest(
       HttpServerInterface* http_server,
       int connection_id,
@@ -181,10 +154,6 @@ class HttpHandler {
       int connection_id,
       const net::HttpServerRequestInfo& info);
 
-  void OnWebSocketMessage(HttpServerInterface* http_server,
-                          int connection_id,
-                          const std::string& data);
-
   void SendResponseOverWebSocket(HttpServerInterface* http_server,
                                  int connection_id,
                                  absl::optional<double> maybe_id,
@@ -193,6 +162,13 @@ class HttpHandler {
                                  const std::string& session_id,
                                  bool w3c);
 
+  void CloseConnectionOnCommandThread(HttpServerInterface* http_server,
+                                      int connection_id);
+
+  void SendForwardedResponseOnCommandThread(HttpServerInterface* http_server,
+                                            int connection_id,
+                                            std::string message);
+
   void OnWebSocketResponseOnCmdThread(HttpServerInterface* http_server,
                                       int connection_id,
                                       const std::string& data);
@@ -200,6 +176,19 @@ class HttpHandler {
   void OnWebSocketResponseOnSessionThread(HttpServerInterface* http_server,
                                           int connection_id,
                                           const std::string& data);
+  Command WrapCreateNewSessionCommand(Command command);
+  void OnNewSessionCreated(const CommandCallback& next_callback,
+                           const Status& status,
+                           std::unique_ptr<base::Value> result,
+                           const std::string& session_id,
+                           bool w3c);
+  void OnNewBidiSessionOnCmdThread(HttpServerInterface* http_server,
+                                   int connection_id,
+                                   absl::optional<double> maybe_id,
+                                   const Status& status,
+                                   std::unique_ptr<base::Value> result,
+                                   const std::string& session_id,
+                                   bool w3c);
 
   void OnClose(HttpServerInterface* http_server, int connection_id);
 
@@ -230,7 +219,8 @@ class HttpHandler {
   std::unique_ptr<Adb> adb_;
   std::unique_ptr<DeviceManager> device_manager_;
   std::map<std::string, Command> static_bidi_command_map_;
-  Command execute_session_command_;
+  std::map<std::string, Command> session_bidi_command_map_;
+  Command forward_session_command_;
 
   base::WeakPtrFactory<HttpHandler> weak_ptr_factory_{this};
 };

@@ -151,7 +151,7 @@ TEST_F(PasswordSettingsCoordinatorTest, PasswordSettingsPresentedWithAuth) {
   // Password Settings should be covered until auth is passed.
   ASSERT_FALSE(IsPasswordSettingsPresented());
 
-  [mock_reauth_module_ returnMockedReathenticationResult];
+  [mock_reauth_module_ returnMockedReauthenticationResult];
 
   // Successful auth should leave Password Settings visible.
   ASSERT_TRUE(IsPasswordSettingsPresented());

@@ -1534,6 +1534,9 @@ TEST_F(AshAcceleratorConfigurationTest, RemoveAcceleratorThenResetAllPref) {
   histogram_tester_->ExpectBucketCount(
       "Ash.ShortcutCustomization.CustomizationsLoadedOnStartup", 0, 2);
 
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.CustomizationsBeforeResetAll", 1, 0);
+
   const AcceleratorData test_data[] = {
       {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
        AcceleratorAction::kSwitchToLastUsedIme},
@@ -1617,6 +1620,9 @@ TEST_F(AshAcceleratorConfigurationTest, RemoveAcceleratorThenResetAllPref) {
   // `SimulateUserLogin`.
   histogram_tester_->ExpectBucketCount(
       "Ash.ShortcutCustomization.CustomizationsLoadedOnStartup", 0, 4);
+
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.CustomizationsBeforeResetAll", 1, 1);
 }
 
 TEST_F(AshAcceleratorConfigurationTest, RemoveAcceleratorThenResetPref) {

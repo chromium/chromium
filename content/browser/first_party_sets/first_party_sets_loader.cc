@@ -31,19 +31,6 @@ std::string ReadSetsFile(base::File sets_file) {
   return base::ReadStreamToString(file.get(), &raw_sets) ? raw_sets : "";
 }
 
-void DisposeFile(base::File sets_file) {
-  if (!sets_file.IsValid()) {
-    return;
-  }
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(
-          [](base::File sets_file) {
-            // Run `sets_file`'s dtor in the threadpool.
-          },
-          std::move(sets_file)));
-}
-
 }  // namespace
 
 FirstPartySetsLoader::FirstPartySetsLoader(
@@ -57,6 +44,9 @@ FirstPartySetsLoader::~FirstPartySetsLoader() {
 void FirstPartySetsLoader::SetManuallySpecifiedSet(
     const LocalSetDeclaration& local_set) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (manually_specified_set_.has_value()) {
+    return;
+  }
   manually_specified_set_ = local_set;
   UmaHistogramTimes(
       "Cookie.FirstPartySets.InitializationDuration.ReadCommandLineSet2",
@@ -87,6 +77,20 @@ void FirstPartySetsLoader::SetComponentSets(base::Version version,
       base::BindOnce(&ReadSetsFile, std::move(sets_file)),
       base::BindOnce(&FirstPartySetsLoader::OnReadSetsFile,
                      weak_factory_.GetWeakPtr(), std::move(version)));
+}
+
+// static
+void FirstPartySetsLoader::DisposeFile(base::File file) {
+  if (!file.IsValid()) {
+    return;
+  }
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(
+          [](base::File file) {
+            // Run `file`'s dtor in the threadpool.
+          },
+          std::move(file)));
 }
 
 void FirstPartySetsLoader::OnReadSetsFile(base::Version version,

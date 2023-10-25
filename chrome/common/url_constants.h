@@ -670,6 +670,9 @@ inline constexpr char kHapticFeedbackHelpURL[] =
 // The URL path to offline OEM EULA.
 inline constexpr char kOemEulaURLPath[] = "oem";
 
+inline constexpr char kOrcaSuggestionLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=copyeditor";
+
 // Help URL for the OS settings page's search feature.
 inline constexpr char kOsSettingsSearchHelpURL[] =
     "https://support.google.com/chromebook?p=settings_search_help";
@@ -735,9 +738,9 @@ inline constexpr char kGoogleDriveOfflineLearnMoreURL[] =
 inline constexpr char kSpeakOnMuteDetectionLearnMoreURL[] =
     "https://support.google.com/chromebook?p=mic-mute";
 
-// The URL for the "Learn more" page for the geolocation toggle in the privacy
+// The URL for the "Learn more" page for the geolocation area in the privacy
 // hub page.
-inline constexpr char kGeolocationToggleLearnMoreURL[] =
+inline constexpr char kGeolocationAreaLearnMoreURL[] =
     "https://support.google.com/chromebook?p=cpn_location_sharing";
 
 // The URL for the "Learn more" page for Suggested Content in the privacy page.

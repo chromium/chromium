@@ -1849,19 +1849,18 @@ TEST_P(PasswordFormManagerTest, PresaveGenerationWhenParsingFails) {
   fetcher_->NotifyFetchCompleted();
   MockFormSaver& form_saver = MockFormSaver::Get(form_manager_.get());
 
-  // Create a password form with empty |form_data|. On this form the form parser
-  // should fail.
-  PasswordForm form_with_empty_form_data;
+  // Create a password form with url. Other members will be empty. On this form
+  // the form parser should fail. The url is required for LogFormData to work.
+  PasswordForm form;
   const std::u16string generated_password = u"gen_pw";
-  form_with_empty_form_data.password_value = generated_password;
+  form.password_value = generated_password;
+  form.form_data.url = GURL("https://accounts.google.com/a/ServiceLoginAuth");
 
   // Check that nevertheless the generated password is presaved.
   PasswordForm saved_form;
   EXPECT_CALL(form_saver, Save(_, IsEmpty(), std::u16string()))
       .WillOnce(SaveArg<0>(&saved_form));
-  form_manager_->PresaveGeneratedPassword(
-      form_with_empty_form_data.form_data,
-      form_with_empty_form_data.password_value);
+  form_manager_->PresaveGeneratedPassword(form.form_data, form.password_value);
   EXPECT_EQ(generated_password, saved_form.password_value);
 }
 
@@ -4199,18 +4198,19 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
 TEST_F(PasswordFormManagerTestWithMockedSaver,
        PresaveGenerationWhenParsingFails) {
   fetcher_->NotifyFetchCompleted();
-  // Create a password form with empty |form_data|. On this form the form parser
-  // should fail.
-  PasswordForm form_with_empty_form_data;
+  // Create a password form with url. Other members will be empty. On
+  // this form the form parser should fail. The url is required for LogFormData
+  // to work.
+  PasswordForm form;
   const std::u16string generated_password = u"gen_pw";
-  form_with_empty_form_data.password_value = generated_password;
+  form.password_value = generated_password;
+  form.form_data.url = GURL("https://accounts.google.com/a/ServiceLoginAuth");
+
   // Check that nevertheless the generated password is forwarded to the
   // PasswordSaveManager.
   EXPECT_CALL(*mock_password_save_manager(),
               PresaveGeneratedPassword(FormHasPassword(generated_password)));
-  form_manager_->PresaveGeneratedPassword(
-      form_with_empty_form_data.form_data,
-      form_with_empty_form_data.password_value);
+  form_manager_->PresaveGeneratedPassword(form.form_data, form.password_value);
 }
 
 TEST_F(PasswordFormManagerTestWithMockedSaver, PasswordNoLongerGenerated) {

@@ -848,6 +848,7 @@
 <translation id="1646045728251578877">有可用的軟體更新</translation>
 <translation id="1646982517418478057">請輸入加密這個憑證時所使用的密碼</translation>
 <translation id="1647408325348388858">要在這個網頁應用程式中開啟並編輯「<ph name="FILE_NAME" />」嗎？</translation>
+<translation id="1647986356840967552">上一頁</translation>
 <translation id="1648439345221797326">Ctrl + Shift + <ph name="TOP_ROW_KEY" /> 鍵</translation>
 <translation id="1648528859488547844">使用 Wi-Fi 或行動網路判斷所在位置</translation>
 <translation id="164936512206786300">取消配對藍牙裝置</translation>
@@ -1859,6 +1860,7 @@
            • 刪除 Cookie 和其他暫存網站資料
             <ph name="LINE_BREAKS" />
            書籤、歷史記錄及已儲存的密碼不會受到影響。</translation>
+<translation id="2427507373259914951">按左鍵</translation>
 <translation id="2428510569851653187">說明分頁當掉時你正在執行的動作</translation>
 <translation id="2428939361789119025">關閉 Wi-Fi</translation>
 <translation id="2428978615149723410">這些購物車</translation>
@@ -2025,7 +2027,6 @@
 <translation id="2541706104884128042">已設定新的就寢時間</translation>
 <translation id="2542050502251273923">使用 ff_debug 設定網路連線管理員和其他服務的偵錯等級。</translation>
 <translation id="2544352060595557290">這個分頁</translation>
-<translation id="2546283357679194313">Cookie 和網站資料</translation>
 <translation id="2546302722632337735">禁止網站使用 ID 來播放受保護的內容</translation>
 <translation id="2546991196809436099">放大畫面上的項目。使用搜尋鍵 + Ctrl + M 鍵即可開啟或關閉放大鏡。</translation>
 <translation id="2548347166720081527">已允許使用<ph name="PERMISSION" /></translation>
@@ -2064,7 +2065,6 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{系統會記住這部裝置，在 1 年內無需輸入驗證碼即可再次連接。這項設定是由你系統管理員指定。}other{系統會記住這部裝置，在 {YEARS} 年內無需輸入驗證碼即可再次連接。這項設定是由你系統管理員指定。}}</translation>
 <translation id="2577446426265992344">沒有網址列</translation>
 <translation id="257779572837908839">設為 Chromebox 視訊會議解決方案</translation>
-<translation id="2579309488038515659">啟用無線基地台</translation>
 <translation id="2580889980133367162">永遠允許 <ph name="HOST" /> 下載多個檔案</translation>
 <translation id="258095186877893873">長</translation>
 <translation id="2581455244799175627">進一步瞭解允許第三方 Cookie</translation>
@@ -2752,7 +2752,6 @@
 <translation id="3115147772012638511">等候快取...</translation>
 <translation id="3115580024857770654">全部收合</translation>
 <translation id="3115743155098198207">管理 Google 帳戶語言</translation>
-<translation id="3117138513108032865">將網頁瀏覽通訊協定升級為 HTTPS，並在載入不支援該通訊協定的網站前發出警告。由於「進階保護」功能已啟用，因此你無法變更這項設定。</translation>
 <translation id="3117362587799608430">座架不完全相容</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{無法將 <ph name="ATTACHMENTS" />傳送給「<ph name="DEVICE_NAME" />」}other{無法將 <ph name="ATTACHMENTS" />傳送給「<ph name="DEVICE_NAME" />」}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" />說明</translation>
@@ -3530,7 +3529,7 @@
 <translation id="37613671848467444">在無痕式視窗中開啟(&amp;I)</translation>
 <translation id="3761390540041101668">請清楚說明問題，並盡可能提供重現問題的步驟</translation>
 <translation id="3761556954875533505">要允許網站編輯檔案嗎？</translation>
-<translation id="3763433740586298940">你可以封鎖不喜歡的網站，Chrome 也會自動將 30 天前的網站從清單中刪除。</translation>
+<translation id="3763433740586298940">如果不想讓網站儲存造訪資訊，建議你封鎖這些網站。Chrome 也會自動將 30 天前的網站從清單中刪除。</translation>
 <translation id="3763549179847864476">「隱私權指南」返回按鈕</translation>
 <translation id="3764314093345384080">詳細版本資訊</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{與 1 個 USB 裝置通訊}other{與 # 個 USB 裝置通訊}}</translation>
@@ -3841,6 +3840,7 @@
 <translation id="3984135167056005094">不包含電子郵件地址</translation>
 <translation id="3984159763196946143">無法啟動示範模式</translation>
 <translation id="3984431586879874039">要允許這個網站查看你的安全金鑰嗎？</translation>
+<translation id="3984536049089846927">下一頁</translation>
 <translation id="398477389655464998">複製醒目顯示文字的連結</translation>
 <translation id="3984862166739904574">快速解答功能的定義</translation>
 <translation id="3985022125189960801">你重新新增的網站可再次推斷你的興趣喜好</translation>
@@ -4407,7 +4407,6 @@
 <translation id="4451203458188403050">擷取 PDF 中的文字</translation>
 <translation id="4452898361839215358">或選取 PPD。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">請輕觸鍵盤右上角的指紋感應器。你的指紋資料會安全地儲存在「<ph name="DEVICE_TYPE" />」上，絕不會外洩。</translation>
-<translation id="4453853000812412311"><ph name="DESCRIPTION_ITEM_1" />、<ph name="DESCRIPTION_ITEM_2" />、<ph name="DESCRIPTION_ITEM_3" /></translation>
 <translation id="4453946976636652378">執行 <ph name="SEARCH_ENGINE_NAME" /> 搜尋或輸入網址</translation>
 <translation id="4457472090507035117">選取目前的語音：</translation>
 <translation id="4459169140545916303">上次使用時間：<ph name="DEVICE_LAST_ACTIVATED_TIME" /> 天前</translation>
@@ -4672,6 +4671,7 @@
 <translation id="4666911709726371538">更多應用程式</translation>
 <translation id="4667027203988048332">我們會使用哪些資料：</translation>
 <translation id="4668279686271488041">定期刪除裝置上的廣告評估資料</translation>
+<translation id="4668929960204016307">，</translation>
 <translation id="4672759829555593783">立即開啟「<ph name="FILE_NAME" />」</translation>
 <translation id="4673442866648850031">移除觸控筆時取出觸控筆工具</translation>
 <translation id="4673785607287397025">無法連線。請確認 Chromecast 和電腦已連上同一個網路，然後再試一次。</translation>
@@ -5144,7 +5144,6 @@
 <translation id="506886127401228110">開啟隔離網頁應用程式</translation>
 <translation id="5068919226082848014">披薩</translation>
 <translation id="506934332411950286">從 Android 手機傳輸 Wi-Fi 資訊</translation>
-<translation id="5070710277167211639">將瀏覽路徑升級至 HTTPS，並在載入不支援該協定的網站前發出警告</translation>
 <translation id="5070773577685395116">尚未收到通知嗎？</translation>
 <translation id="5071295820492622726">返回近期下載內容</translation>
 <translation id="5071892329440114717">顯示標準保護措施詳細資料</translation>
@@ -5711,6 +5710,7 @@
 <translation id="5526745900034778153">如要繼續同步處理，請重新登入</translation>
 <translation id="5527463195266282916">試圖降級外掛程式。</translation>
 <translation id="5527474464531963247">你也可以選取其他網路。</translation>
+<translation id="5527597176701279474">正在安裝「<ph name="APP_NAME" />」</translation>
 <translation id="5528295196101251711">VM 名稱</translation>
 <translation id="5529554942700688235">記憶體用量節省摘要，已釋出 <ph name="MEMORY_VALUE" /></translation>
 <translation id="5532223876348815659">通用</translation>
@@ -6384,7 +6384,6 @@
 <translation id="6078323886959318429">新增捷徑</translation>
 <translation id="6078742430369906859">「<ph name="NETWORK_ID" />」的連線能力可能受到限制</translation>
 <translation id="6078752646384677957">請檢查麥克風和音量。</translation>
-<translation id="6079162143107623965">你目前瀏覽的網站可嵌入其他網站的內容，例如圖片、廣告和文字。這些嵌入的網站可以將資料儲存到你的裝置。</translation>
 <translation id="608029822688206592">找不到網路。請插入 SIM 卡，然後再試一次</translation>
 <translation id="6080689532560039067">請檢查你的系統時間</translation>
 <translation id="6082877069782862752">對應按鍵</translation>
@@ -6536,7 +6535,6 @@
 <translation id="6205314730813004066">廣告隱私權設定</translation>
 <translation id="6206199626856438589">系統會將你登出所顯示的網站，包含已開啟的分頁</translation>
 <translation id="6206311232642889873">複製圖片(&amp;Y)</translation>
-<translation id="6206521455877863927">包括同一網域中的網站，例如 google.com 和 mail.google.com。你目前瀏覽的網站可將資料儲存到你的裝置。</translation>
 <translation id="6207200176136643843">重設為預設縮放等級</translation>
 <translation id="6207937957461833379">國家/地區</translation>
 <translation id="6208521041562685716">正在啟用行動數據</translation>
@@ -6794,7 +6792,6 @@
 <translation id="6418511932144861495">安裝重大更新</translation>
 <translation id="641867537956679916">管理員已登入並調查問題。等到管理員還回控管權限後，你就可以繼續使用裝置。</translation>
 <translation id="641899100123938294">掃描新裝置</translation>
-<translation id="6419239627403237650">來自你目前瀏覽的網站</translation>
 <translation id="6419524191360800346">現在可以升級至 Debian 11 (Bullseye)</translation>
 <translation id="6419546358665792306">載入未封裝項目</translation>
 <translation id="642469772702851743">這部裝置 (序號：<ph name="SERIAL_NUMBER" />) 已被擁有者鎖定。</translation>
@@ -7104,6 +7101,7 @@
 <translation id="6673898378497337661">調高鍵盤亮度</translation>
 <translation id="6674571176963658787">如要開始同步處理，請輸入通關密語</translation>
 <translation id="6675665718701918026">已連上指標裝置</translation>
+<translation id="6675985668044425385">如果網站無法正常運作，可以透過網址列中的追蹤保護功能選項，為該網站啟用第三方 Cookie。</translation>
 <translation id="6676212663108450937">訓練聲音時，建議你使用耳罩式耳機</translation>
 <translation id="6677942524382973058">私密狀態權杖能進一步保護網路使用者的隱私，且無法用來識別個人身分。</translation>
 <translation id="6678717876183468697">查詢網址</translation>
@@ -7442,6 +7440,7 @@
 <translation id="6943176775188458830">取消列印</translation>
 <translation id="6943939122536910181">已中斷與「<ph name="DEVICE" />」的連線</translation>
 <translation id="6944708469742828051">這個密碼金鑰只會儲存在 Windows Hello 中</translation>
+<translation id="6944750221184785444">無法安裝這個設定檔。如需技術支援，請與你的電信業者聯絡。</translation>
 <translation id="6945221475159498467">選取</translation>
 <translation id="694592694773692225">已在這個網頁禁止重新導向。</translation>
 <translation id="6947015141909171112">系統會根據你最近搜尋的食譜，向你顯示食譜。
@@ -7680,6 +7679,7 @@
 <translation id="7131040479572660648">讀取你在 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" /> 和 <ph name="WEBSITE_3" /> 上產生的資料</translation>
 <translation id="713122686776214250">新增網頁(&amp;G)...</translation>
 <translation id="7131431455372521159">所有 TrackPoint 均已中斷連線</translation>
+<translation id="7131896909366247105">「<ph name="APP_NAME" />」等待中</translation>
 <translation id="7134098520442464001">縮小文字</translation>
 <translation id="7135729336746831607">要開啟藍牙功能嗎？</translation>
 <translation id="7136694880210472378">設為預設</translation>
@@ -7727,6 +7727,7 @@
 <translation id="7180611975245234373">重新整理</translation>
 <translation id="7180865173735832675">自訂</translation>
 <translation id="7181117767881540376">隱藏書籤列(&amp;H)</translation>
+<translation id="7182063559013288142">即時無線基地台</translation>
 <translation id="7182791023900310535">轉移你的密碼</translation>
 <translation id="718427252411067142">如果不希望他人使用你的密碼，請開啟應用程式變更密碼</translation>
 <translation id="7186088072322679094">固定在工具列中</translation>
@@ -7977,7 +7978,7 @@
 <translation id="7387273928653486359">可以接受</translation>
 <translation id="7387951778417998929">如要使用非系統預設的搜尋引擎，請在網址列中輸入相應的快捷字詞，然後按下你慣用的鍵盤快速鍵。你也可以在這裡變更你的預設搜尋引擎。</translation>
 <translation id="7388209873137778229">只顯示支援的裝置。</translation>
-<translation id="7388615499319468910">網站和廣告商可以瞭解廣告成效。這項設定已關閉。</translation>
+<translation id="7388615499319468910">網站和廣告主可以瞭解廣告成效。這項設定已關閉。</translation>
 <translation id="738903649531469042">將分頁新增至閱讀清單</translation>
 <translation id="7392118418926456391">病毒掃描失敗</translation>
 <translation id="7392915005464253525">重新開啟已關閉視窗(&amp;E)</translation>
@@ -8994,7 +8995,6 @@
 <translation id="8168435359814927499">內容</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{將分頁新增至閱讀清單}other{將分頁新增至閱讀清單}}</translation>
 <translation id="8171334254070436367">隱藏所有資訊卡</translation>
-<translation id="8172192489606308982">來自其他網站</translation>
 <translation id="8174047975335711832">裝置資訊</translation>
 <translation id="8174876712881364124">備份到 Google 雲端硬碟。你隨時可以輕鬆還原資料或改用其他裝置。備份內容包含應用程式資料。備份內容會上傳到 Google，並以貴子女帳戶的 Google 帳戶密碼加密。<ph name="BEGIN_LINK1" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="8176332201990304395">粉紅色與白色</translation>
@@ -9036,6 +9036,7 @@
 <translation id="8202160505685531999">請再次輸入您的密碼，以更新您的 <ph name="DEVICE_TYPE" /> 設定檔。</translation>
 <translation id="8203152941016626022">鄰近分享裝置名稱</translation>
 <translation id="8203732864715032075">傳送通知給你，並預設記住這部電腦，以便在收到簡訊時傳送通知。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="8203795194971602413">按右鍵</translation>
 <translation id="8205432712228803050">螢幕和周邊裝置可能會快速重設，請先拔除周邊裝置的插頭再重新插回，這項變更才會生效。</translation>
 <translation id="8205478243727418828">啟動器按鈕 + 向下鍵</translation>
 <translation id="820568752112382238">最常造訪的網站</translation>
@@ -9284,6 +9285,7 @@
 <translation id="839363317075970734">藍牙裝置詳細資料</translation>
 <translation id="8393700583063109961">傳送訊息</translation>
 <translation id="8394212467245680403">英數字元</translation>
+<translation id="8394908167088220973">媒體播放/暫停</translation>
 <translation id="8396098434728053815">一併分享分頁音訊</translation>
 <translation id="8397825320644530257">中斷與已連結手機的連線</translation>
 <translation id="8398877366907290961">仍要繼續</translation>
@@ -9479,7 +9481,7 @@
 <translation id="8557856025359704738">下次下載日期為 <ph name="NEXT_DATE_DOWNLOAD" />。</translation>
 <translation id="8558281414737757274">Google 帳戶密碼</translation>
 <translation id="8559858985063901027">密碼金鑰</translation>
-<translation id="8559961053328923750">Chrome 會限制網站為評估廣告成效而透過瀏覽器分享的資料總量</translation>
+<translation id="8559961053328923750">對於收集用來評估廣告成效的資料，Chrome 會限制網站可透過瀏覽器分享的資料總量</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{在新視窗中開啟所有網址(&amp;N)}=1{在新視窗中開啟(&amp;N)}other{在新視窗中開啟所有 ({COUNT} 個) 網址(&amp;N)}}</translation>
 <translation id="8561206103590473338">大象</translation>
 <translation id="8561565784790166472">執行時請特別注意</translation>
@@ -10076,7 +10078,7 @@
 <translation id="9021662811137657072">系統偵測到病毒</translation>
 <translation id="902236149563113779">網站通常會追蹤你的攝影機位置，以提供遊戲或抬頭顯示導航等 AR 功能</translation>
 <translation id="9022847679183471841"><ph name="AVATAR_NAME" />目前已在這部電腦上使用這個帳戶。</translation>
-<translation id="9022871169049522985">網站和廣告商可評估廣告成效</translation>
+<translation id="9022871169049522985">網站和廣告主可評估廣告成效</translation>
 <translation id="9023015617655685412">將此分頁加入書籤...</translation>
 <translation id="902319268551617004">請使用裝置攝影機掃描 QR code，或輸入電信業者提供的啟用碼。</translation>
 <translation id="9023909777842748145">即使關閉了這項功能，你的裝置仍然可以傳送基本服務 (例如系統更新和安全防護) 所需的資訊。</translation>
@@ -10191,7 +10193,6 @@
 <translation id="9101691533782776290">啟動應用程式</translation>
 <translation id="9102610709270966160">啟用擴充功能</translation>
 <translation id="9102864637938129124">網站和廣告主可以瞭解廣告成效。這項設定已開啟。</translation>
-<translation id="9103308773831468707"><ph name="DESCRIPTION_ITEM_1" />、<ph name="DESCRIPTION_ITEM_2" /></translation>
 <translation id="9103479157856427471">放大的螢幕畫面會追蹤鍵盤焦點</translation>
 <translation id="9103868373786083162">按下即可返回，內容選單會顯示歷史記錄</translation>
 <translation id="9107096627210171112">翻譯(&amp;R)...</translation>

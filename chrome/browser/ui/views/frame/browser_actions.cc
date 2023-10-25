@@ -29,7 +29,8 @@ actions::ActionItem::ActionItemBuilder SidePanelAction(
     int title_id,
     const gfx::VectorIcon& icon,
     actions::ActionId action_id,
-    Browser* browser) {
+    Browser* browser,
+    bool is_pinnable) {
   const int side_panel_icon_size =
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE);
@@ -45,9 +46,9 @@ actions::ActionItem::ActionItemBuilder SidePanelAction(
       .SetActionId(action_id)
       .SetText(l10n_util::GetStringUTF16(title_id))
       .SetImage(ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon,
-                                               side_panel_icon_size));
+                                               side_panel_icon_size))
+      .SetProperty(actions::kActionItemPinnableKey, is_pinnable);
 }
-
 }  // namespace
 
 const int BrowserActions::kUserDataKey;
@@ -80,41 +81,42 @@ void BrowserActions::InitializeBrowserActions() {
           .AddChildren(
               SidePanelAction(SidePanelEntryId::kBookmarks,
                               IDS_BOOKMARK_MANAGER_TITLE, omnibox::kStarIcon,
-                              kActionSidePanelShowBookmarks, &(browser_.get())),
+                              kActionSidePanelShowBookmarks, &(browser_.get()),
+                              true),
               SidePanelAction(SidePanelEntryId::kReadingList,
                               IDS_READ_LATER_TITLE, kReadLaterIcon,
                               kActionSidePanelShowReadingList,
-                              &(browser_.get())),
+                              &(browser_.get()), true),
               SidePanelAction(
                   SidePanelEntryId::kHistoryClusters,
                   rename_journeys ? IDS_HISTORY_TITLE
                                   : IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL,
                   rename_journeys ? kHistoryIcon : kJourneysIcon,
-                  kActionSidePanelShowHistoryCluster, &(browser_.get())),
+                  kActionSidePanelShowHistoryCluster, &(browser_.get()), true),
               SidePanelAction(
                   SidePanelEntryId::kReadAnything, IDS_READING_MODE_TITLE,
                   kMenuBookChromeRefreshIcon, kActionSidePanelShowReadAnything,
-                  &(browser_.get())),
+                  &(browser_.get()), true),
               SidePanelAction(SidePanelEntryId::kUserNote, IDS_USER_NOTE_TITLE,
                               kNoteOutlineIcon, kActionSidePanelShowUserNote,
-                              &(browser_.get())),
+                              &(browser_.get()), true),
               SidePanelAction(SidePanelEntryId::kFeed, IDS_FEED_TITLE,
                               vector_icons::kFeedIcon, kActionSidePanelShowFeed,
-                              &(browser_.get())),
+                              &(browser_.get()), true),
               SidePanelAction(SidePanelEntryId::kPerformance,
                               IDS_SHOW_PERFORMANCE, kHighEfficiencyIcon,
                               kActionSidePanelShowPerformance,
-                              &(browser_.get())),
+                              &(browser_.get()), true),
               SidePanelAction(
                   SidePanelEntryId::kAboutThisSite,
                   IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE,
                   PageInfoViewFactory::GetAboutThisSiteColorVectorIcon(),
-                  kActionSidePanelShowAboutThisSite, &(browser_.get())),
+                  kActionSidePanelShowAboutThisSite, &(browser_.get()), false),
               SidePanelAction(SidePanelEntryId::kCustomizeChrome,
                               IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE,
                               vector_icons::kEditIcon,
                               kActionSidePanelShowCustomizeChrome,
-                              &(browser_.get())),
+                              &(browser_.get()), false),
               SidePanelAction(
                   SidePanelEntryId::kSearchCompanion,
                   IDS_SIDE_PANEL_COMPANION_TITLE,
@@ -124,11 +126,11 @@ void BrowserActions::InitializeBrowserActions() {
 #else
                   vector_icons::kSearchIcon,
 #endif
-                  kActionSidePanelShowSearchCompanion, &(browser_.get())),
+                  kActionSidePanelShowSearchCompanion, &(browser_.get()), true),
               SidePanelAction(SidePanelEntryId::kShoppingInsights,
                               IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TITLE,
                               vector_icons::kShoppingBagIcon,
                               kActionSidePanelShowShoppingInsights,
-                              &(browser_.get())))
+                              &(browser_.get()), false))
           .Build());
 }

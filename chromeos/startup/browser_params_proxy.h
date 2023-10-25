@@ -154,6 +154,8 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool IsDeskProfilesEnabled() const;
 
+  bool IsCrosWebAppShortcutUiUpdateEnabled() const;
+
  private:
   friend base::NoDestructor<BrowserParamsProxy>;
 

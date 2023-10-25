@@ -21,6 +21,9 @@
 // Shows Lockdown Mode screen.
 - (void)showLockdownMode;
 
+// Show Privacy Guide screen.
+- (void)showPrivacyGuide;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PRIVACY_PRIVACY_NAVIGATION_COMMANDS_H_

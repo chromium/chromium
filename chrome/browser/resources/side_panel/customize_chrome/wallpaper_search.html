@@ -7,8 +7,28 @@
     margin: 16px 16px 8px;
   }
 
+  customize-chrome-combobox {
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--color-sys-on-surface);
+  }
+
+  .category {
+    font-weight: 700;
+  }
+
+  #descriptorMenuD {
+    display: flex;
+    height: 48px;
+    justify-content: space-between;
+    margin-top: 16px;
+    width: 272px;
+  }
+
   #descriptorMenuD cr-button {
-    background-color: var(--sys-color-neutral-container);
+    background-color: var(--color-sys-neutral-container);
+    border-radius: 8px;
+    border-color: var(--color-sys-neutral-container);
     height: 40px;
     min-width: 40px;
     padding: 0px;
@@ -16,8 +36,24 @@
 
   .descriptor-d {
     border-radius: 50%;
+    display: block;
     height: 28px;
     width: 28px;
+  }
+
+  #colorPickerIcon {
+    -webkit-mask-image: url(chrome://resources/cr_components/customize_themes/colorize.svg);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100%;
+    background-color: var(
+        --color-theme-color-picker-custom-color-icon-background,
+        var(--cr-fallback-color-on-surface-subtle));
+    height: 16px;
+    left: calc(50% - 8px);
+    pointer-events: none;
+    position: absolute;
+    top: calc(50% - 8px);
+    width: 16px;
   }
 
   #btnContainer {
@@ -93,19 +129,19 @@
     <h2 slot="heading">Wallpaper Search</h2>
   </sp-heading>
   <div class="content" hidden$="[[!descriptors_]]">
-    <cr-button id="descriptorBtnA" on-click="onDescriptorMenuClickA_">
-      Descriptor A
-    </cr-button>
-    <cr-action-menu id="descriptorMenuA">
+    <customize-chrome-combobox id="descriptorComboboxA" label="Descriptor A"
+        value="{{selectedDescriptorA_}}">
       <template is="dom-repeat" items="[[descriptors_.descriptorA]]">
-        <span>[[item.category]]</span>
-        <template is="dom-repeat" items="[[item.labels]]">
-          <button class="dropdown-item" on-click="onDescriptorLabelClickA_">
-            <span>[[item]]</span>
-          </button>
-        </template>
+        <div role="group">
+          <span class="category">[[item.category]]</span>
+          <template is="dom-repeat" items="[[item.labels]]">
+            <div class="dropdown-item" role="option" value="[[item]]">
+              [[item]]
+            </div>
+          </template>
+        </div>
       </template>
-    </cr-action-menu>
+    </customize-chrome-combobox>
     <cr-button id="descriptorBtnB" on-click="onDescriptorMenuClickB_">
       Descriptor B
     </cr-button>
@@ -134,6 +170,9 @@
           </span>
         </cr-button>
       </template>
+      <cr-button id="customColorContainer">
+        <div id="colorPickerIcon"></div>
+      </cr-button>
     </div>
     <div id="btnContainer">
       <cr-button
@@ -144,6 +183,22 @@
       </cr-button>
     </div>
     <hr class="sp-hr">
+    <div id="loading" hidden$="[[!loading_]]">
+      <cr-loading-gradient>
+        <svg width="280" height="183" xmlns="http://www.w3.org/2000/svg">
+          <clipPath>
+            <rect x="0" y="0" width="86.67" height="86.67" rx="12"></rect>
+            <rect x="96.67" y="0" width="86.67" height="86.67" rx="12"></rect>
+            <rect x="193.34" y="0" width="86.67" height="86.67" rx="12"></rect>
+            <rect x="0" y="96.67" width="86.67" height="86.67" rx="12"></rect>
+            <rect x="96.67" y="96.67" width="86.67" height="86.67" rx="12">
+            </rect>
+            <rect x="193.34" y="96.67" width="86.67" height="86.67" rx="12">
+            </rect>
+          </clipPath>
+        </svg>
+      </cr-loading-gradient>
+    </div>
     <cr-grid columns="3" disable-arrow-navigation>
       <template is="dom-repeat" id="resultsRepeat" items="[[results_]]">
         <div class="tile result" tabindex="0" role="button"
@@ -159,20 +214,6 @@
           <div class="image-container"></div>
         </div>
       </template>
-    <cr-grid>
+    </cr-grid>
   </div>
 </div>
-
-<!-- demo -->
-<customize-chrome-combobox id="combobox" label="Descriptor A"
-    value="[[selectedDescriptorA_]]"
-    on-value-changed="onComboboxDemoChange_">
-  <template is="dom-repeat" items="[[descriptors_.descriptorA]]">
-    <div role="group">
-      [[item.category]]
-      <template is="dom-repeat" items="[[item.labels]]">
-        <div role="option" value="[[item]]">[[item]]</div>
-      </template>
-    </div>
-  </template>
-</customize-chrome-combobox>

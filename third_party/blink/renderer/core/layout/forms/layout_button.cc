@@ -7,13 +7,13 @@
 namespace blink {
 
 LayoutButton::LayoutButton(Element* element)
-    : LayoutNGFlexibleBox(element), inner_(nullptr) {}
+    : LayoutFlexibleBox(element), inner_(nullptr) {}
 
 LayoutButton::~LayoutButton() = default;
 
 void LayoutButton::Trace(Visitor* visitor) const {
   visitor->Trace(inner_);
-  LayoutNGFlexibleBox::Trace(visitor);
+  LayoutFlexibleBox::Trace(visitor);
 }
 
 void LayoutButton::AddChild(LayoutObject* new_child,
@@ -22,7 +22,7 @@ void LayoutButton::AddChild(LayoutObject* new_child,
     // Create an anonymous block.
     DCHECK(!FirstChild());
     inner_ = CreateAnonymousBlock(StyleRef().Display());
-    LayoutNGFlexibleBox::AddChild(inner_);
+    LayoutFlexibleBox::AddChild(inner_);
   }
 
   inner_->AddChild(new_child, before_child);
@@ -30,13 +30,13 @@ void LayoutButton::AddChild(LayoutObject* new_child,
 
 void LayoutButton::RemoveChild(LayoutObject* old_child) {
   if (old_child == inner_ || !inner_) {
-    LayoutNGFlexibleBox::RemoveChild(old_child);
+    LayoutFlexibleBox::RemoveChild(old_child);
     inner_ = nullptr;
 
   } else if (old_child->Parent() == this) {
     // We aren't the inner node, but we're getting removed from the button, this
     // can happen with things like scrollable area resizer's.
-    LayoutNGFlexibleBox::RemoveChild(old_child);
+    LayoutFlexibleBox::RemoveChild(old_child);
 
   } else {
     inner_->RemoveChild(old_child);

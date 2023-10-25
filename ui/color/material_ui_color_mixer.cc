@@ -97,6 +97,9 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorListItemFolderIconBackground] = {kColorSysTonalContainer};
   mixer[kColorListItemFolderIconForeground] = {kColorSysOnTonalContainer};
   mixer[kColorListItemUrlFaviconBackground] = {kColorSysNeutralContainer};
+  mixer[kColorLoadingGradientEnd] = {kColorSysGradientTertiary};
+  mixer[kColorLoadingGradientMiddle] = {kColorSysGradientPrimary};
+  mixer[kColorLoadingGradientStart] = {SK_ColorTRANSPARENT};
   mixer[kColorMenuButtonBackground] = {kColorSysNeutralContainer};
   mixer[kColorMenuButtonBackgroundSelected] = {GetResultingPaintColor(
       {kColorSysStateHoverOnSubtle}, {kColorMenuButtonBackground})};

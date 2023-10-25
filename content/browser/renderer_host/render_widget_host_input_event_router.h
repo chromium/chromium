@@ -122,10 +122,6 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
                            RenderWidgetHostViewBase* owner);
   void RemoveFrameSinkIdOwner(const viz::FrameSinkId& id);
 
-  bool is_registered(const viz::FrameSinkId& id) const {
-    return owner_map_.find(id) != owner_map_.end();
-  }
-
   TouchEmulator* GetTouchEmulator();
   // Since GetTouchEmulator will lazily create a touch emulator, the following
   // accessor allows testing for its existence without causing it to be created.

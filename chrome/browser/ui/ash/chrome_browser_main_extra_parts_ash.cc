@@ -9,6 +9,7 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
@@ -28,7 +29,6 @@
 #include "chrome/browser/ash/game_mode/game_mode_controller.h"
 #include "chrome/browser/ash/geolocation/system_geolocation_source.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier_factory.h"
-#include "chrome/browser/ash/night_light/night_light_client_impl.h"
 #include "chrome/browser/ash/policy/display/display_resolution_handler.h"
 #include "chrome/browser/ash/policy/display/display_rotation_default_handler.h"
 #include "chrome/browser/ash/policy/display/display_settings_handler.h"
@@ -274,10 +274,9 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   }
 #endif
 
-  night_light_client_ = std::make_unique<ash::NightLightClientImpl>(
-      g_browser_process->platform_part()->GetTimezoneResolverManager(),
-      g_browser_process->shared_url_loader_factory());
-  night_light_client_->Start();
+  // Result is unused, but `TimezoneResolverManager` must be created here for
+  // its internal initialization to succeed.
+  g_browser_process->platform_part()->GetTimezoneResolverManager();
 
   projector_app_client_ = std::make_unique<ProjectorAppClientImpl>();
   projector_client_ = std::make_unique<ProjectorClientImpl>();
@@ -341,11 +340,13 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
   }
 
   ash_web_view_factory_ = std::make_unique<AshWebViewFactoryImpl>();
+  bool force_throttle = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ash::switches::kForceRefreshRateThrottle);
 
   game_mode_controller_ = std::make_unique<game_mode::GameModeController>();
   refresh_rate_controller_ = std::make_unique<ash::RefreshRateController>(
       ash::Shell::Get()->display_configurator(), ash::PowerStatus::Get(),
-      game_mode_controller_.get());
+      game_mode_controller_.get(), force_throttle);
 
   // Initialize TabScrubberChromeOS after the Ash Shell has been initialized.
   TabScrubberChromeOS::GetInstance();
@@ -377,7 +378,6 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   exo_parts_.reset();
 #endif
 
-  night_light_client_.reset();
   mobile_data_notifications_.reset();
   chrome_shelf_controller_initializer_.reset();
   attestation_cleanup_manager_.reset();

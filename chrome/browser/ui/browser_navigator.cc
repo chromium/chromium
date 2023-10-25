@@ -760,7 +760,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // If Lacros gets here with an internal os:// redirect scheme to Ash, Ash
   // did not accept the URL. Convert it into a blocked URL instead.
-  if (crosapi::gurl_os_handler_utils::IsAshOsUrl(params->url)) {
+  if (crosapi::gurl_os_handler_utils::HasOsScheme(params->url)) {
     params->url = GURL(content::kBlockedURL);
   }
 #endif

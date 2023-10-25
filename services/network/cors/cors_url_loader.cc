@@ -884,6 +884,14 @@ void CorsURLLoader::StartRequest() {
       !IsUrlPotentiallyTrustworthy(request_.url);
   if (needs_pna_permission &&
       url_loader_network_service_observer_->is_bound()) {
+    // Fail the request if `targetAddressSpace` on fetch option is not the same
+    // as the real target address space.
+    if (request_.target_address_space != mojom::IPAddressSpace::kUnknown &&
+        request_.target_address_space != request_.target_ip_address_space) {
+      HandleComplete(URLLoaderCompletionStatus(
+          CorsErrorStatus(mojom::CorsError::kInvalidPrivateNetworkAccess)));
+      return;
+    }
     (*url_loader_network_service_observer_)
         ->Clone(remote_observer.InitWithNewPipeAndPassReceiver());
   }

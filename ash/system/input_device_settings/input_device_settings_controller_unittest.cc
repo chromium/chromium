@@ -878,6 +878,18 @@ TEST_F(InputDeviceSettingsControllerTest, GraphicsTabletSettingsAreValid) {
   controller_->SetGraphicsTabletSettings(kSampleGraphicsTablet.id,
                                          settings.Clone());
   EXPECT_EQ(observer_->num_graphics_tablets_settings_updated(), 3u);
+
+  // Valid settings with a button remapping name with exactly 64 characters.
+  settings->pen_button_remappings[0]->name = std::string(64, 'a');
+  controller_->SetGraphicsTabletSettings(kSampleGraphicsTablet.id,
+                                         settings.Clone());
+  EXPECT_EQ(observer_->num_graphics_tablets_settings_updated(), 4u);
+
+  // Valid settings with a button remapping name with exactly 65 characters.
+  settings->pen_button_remappings[0]->name = std::string(65, 'a');
+  controller_->SetGraphicsTabletSettings(kSampleGraphicsTablet.id,
+                                         settings.Clone());
+  EXPECT_EQ(observer_->num_graphics_tablets_settings_updated(), 4u);
 }
 
 TEST_F(InputDeviceSettingsControllerTest,

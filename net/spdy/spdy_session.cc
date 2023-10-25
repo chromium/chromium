@@ -2864,6 +2864,16 @@ void SpdySession::OnSettings() {
   net_log_.AddEvent(NetLogEventType::HTTP2_SESSION_RECV_SETTINGS);
   net_log_.AddEvent(NetLogEventType::HTTP2_SESSION_SEND_SETTINGS_ACK);
 
+  base::UmaHistogramCounts1000("Net.SpdySession.OnSettings.CreatedStreamCount",
+                               created_streams_.size());
+  base::UmaHistogramCounts1000("Net.SpdySession.OnSettings.ActiveStreamCount",
+                               active_streams_.size());
+  base::UmaHistogramCounts1000(
+      "Net.SpdySession.OnSettings.CreatedAndActiveStreamCount",
+      created_streams_.size() + active_streams_.size());
+  base::UmaHistogramCounts1000("Net.SpdySession.OnSettings.PendingStreamCount",
+                               GetTotalSize(pending_create_stream_queues_));
+
   // Send an acknowledgment of the setting.
   spdy::SpdySettingsIR settings_ir;
   settings_ir.set_is_ack(true);

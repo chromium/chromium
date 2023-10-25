@@ -80,7 +80,9 @@ bool GLContextStub::HasRobustness() {
 void GLContextStub::FlushForDriverCrashWorkaround() {}
 #endif
 
-GLContextStub::~GLContextStub() {}
+GLContextStub::~GLContextStub() {
+  OnContextWillDestroy();
+}
 
 GLApi* GLContextStub::CreateGLApi(DriverGL* driver) {
   if (use_stub_api_) {

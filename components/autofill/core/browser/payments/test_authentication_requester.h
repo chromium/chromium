@@ -5,11 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_AUTHENTICATION_REQUESTER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_AUTHENTICATION_REQUESTER_H_
 
-#include <memory>
 #include <string>
 
 #include "build/build_config.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
@@ -67,6 +65,10 @@ class TestAuthenticationRequester
   void OnRiskBasedAuthenticationResponseReceived(
       const CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse&
           response) override;
+  void OnVirtualCardRiskBasedAuthenticationResponseReceived(
+      AutofillClient::PaymentsRpcResult result,
+      payments::PaymentsClient::UnmaskResponseDetails& response_details)
+      override;
 
   base::WeakPtr<TestAuthenticationRequester> GetWeakPtr();
 
@@ -75,6 +77,10 @@ class TestAuthenticationRequester
   absl::optional<bool> did_succeed() { return did_succeed_; }
 
   std::u16string number() { return number_; }
+
+  payments::PaymentsClient::UnmaskResponseDetails response_details() const {
+    return response_details_;
+  }
 
   payments::FullCardRequest::FailureType failure_type() {
     return failure_type_;
@@ -94,6 +100,9 @@ class TestAuthenticationRequester
 
   // The card number returned from On*AuthenticationComplete().
   std::u16string number_;
+
+  // Unmask response returned from UnmaskCard request.
+  payments::PaymentsClient::UnmaskResponseDetails response_details_;
 
   base::WeakPtrFactory<TestAuthenticationRequester> weak_ptr_factory_{this};
 };

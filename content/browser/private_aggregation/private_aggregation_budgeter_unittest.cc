@@ -50,7 +50,7 @@ using BudgetEntryValidityStatus =
 
 using RequestResult = PrivateAggregationBudgeter::RequestResult;
 
-constexpr base::Time kExampleTime =
+constexpr auto kExampleTime =
     base::Time::FromMillisecondsSinceUnixEpoch(1652984901234);
 
 class PrivateAggregationBudgeterUnderTest : public PrivateAggregationBudgeter {
@@ -275,8 +275,7 @@ TEST_F(PrivateAggregationBudgeterTest, DatabaseReopened_DataPersisted) {
 
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::CreateForTesting(
-          url::Origin::Create(GURL("https://a.example/")),
-          base::Time::FromMillisecondsSinceUnixEpoch(1652984901234),
+          url::Origin::Create(GURL("https://a.example/")), kExampleTime,
           PrivateAggregationBudgetKey::Api::kProtectedAudience);
   budgeter()->ConsumeBudget(
       PrivateAggregationBudgeter::kSmallerScopeValues.max_budget_per_scope,
@@ -313,8 +312,7 @@ TEST_F(PrivateAggregationBudgeterTest,
 
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::CreateForTesting(
-          url::Origin::Create(GURL("https://a.example/")),
-          base::Time::FromMillisecondsSinceUnixEpoch(1652984901234),
+          url::Origin::Create(GURL("https://a.example/")), kExampleTime,
           PrivateAggregationBudgetKey::Api::kProtectedAudience);
   budgeter()->ConsumeBudget(
       PrivateAggregationBudgeter::kSmallerScopeValues.max_budget_per_scope,
@@ -350,8 +348,7 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetSameKey) {
 
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::CreateForTesting(
-          url::Origin::Create(GURL("https://a.example/")),
-          base::Time::FromMillisecondsSinceUnixEpoch(1652984901234),
+          url::Origin::Create(GURL("https://a.example/")), kExampleTime,
           PrivateAggregationBudgetKey::Api::kProtectedAudience);
 
   // Budget can be increased to below max
@@ -395,8 +392,7 @@ TEST_F(PrivateAggregationBudgeterTest,
 
   CreateAndInitializeBudgeterThenWait();
 
-  base::Time reference_time =
-      base::Time::FromMillisecondsSinceUnixEpoch(1652984901234);
+  base::Time reference_time = kExampleTime;
 
   // Create 10 min worth of budget keys for a particular site-API pair
   // (with varying time windows) plus one extra.
@@ -459,8 +455,7 @@ TEST_F(PrivateAggregationBudgeterTest,
 
   CreateAndInitializeBudgeterThenWait();
 
-  base::Time reference_time =
-      base::Time::FromMillisecondsSinceUnixEpoch(1652984901234);
+  base::Time reference_time = kExampleTime;
 
   // Create a day's worth of budget keys for a particular site-API pair
   // (with varying time windows) plus one extra.
@@ -530,14 +525,12 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentApis) {
 
   PrivateAggregationBudgetKey protected_audience_key =
       PrivateAggregationBudgetKey::CreateForTesting(
-          url::Origin::Create(GURL("https://a.example/")),
-          base::Time::FromMillisecondsSinceUnixEpoch(1652984901234),
+          url::Origin::Create(GURL("https://a.example/")), kExampleTime,
           PrivateAggregationBudgetKey::Api::kProtectedAudience);
 
   PrivateAggregationBudgetKey shared_storage_key =
       PrivateAggregationBudgetKey::CreateForTesting(
-          url::Origin::Create(GURL("https://a.example/")),
-          base::Time::FromMillisecondsSinceUnixEpoch(1652984901234),
+          url::Origin::Create(GURL("https://a.example/")), kExampleTime,
           PrivateAggregationBudgetKey::Api::kSharedStorage);
 
   budgeter()->ConsumeBudget(
@@ -571,14 +564,12 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentSites) {
 
   PrivateAggregationBudgetKey key_a =
       PrivateAggregationBudgetKey::CreateForTesting(
-          url::Origin::Create(GURL("https://a.example/")),
-          base::Time::FromMillisecondsSinceUnixEpoch(1652984901234),
+          url::Origin::Create(GURL("https://a.example/")), kExampleTime,
           PrivateAggregationBudgetKey::Api::kProtectedAudience);
 
   PrivateAggregationBudgetKey key_b =
       PrivateAggregationBudgetKey::CreateForTesting(
-          url::Origin::Create(GURL("https://b.example/")),
-          base::Time::FromMillisecondsSinceUnixEpoch(1652984901234),
+          url::Origin::Create(GURL("https://b.example/")), kExampleTime,
           PrivateAggregationBudgetKey::Api::kProtectedAudience);
 
   budgeter()->ConsumeBudget(
@@ -610,14 +601,12 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentOriginsSameSite) {
 
   PrivateAggregationBudgetKey key_a =
       PrivateAggregationBudgetKey::CreateForTesting(
-          url::Origin::Create(GURL("https://a.domain.example/")),
-          base::Time::FromMillisecondsSinceUnixEpoch(1652984901234),
+          url::Origin::Create(GURL("https://a.domain.example/")), kExampleTime,
           PrivateAggregationBudgetKey::Api::kProtectedAudience);
 
   PrivateAggregationBudgetKey key_b =
       PrivateAggregationBudgetKey::CreateForTesting(
-          url::Origin::Create(GURL("https://b.domain.example/")),
-          base::Time::FromMillisecondsSinceUnixEpoch(1652984901234),
+          url::Origin::Create(GURL("https://b.domain.example/")), kExampleTime,
           PrivateAggregationBudgetKey::Api::kProtectedAudience);
 
   budgeter()->ConsumeBudget(
@@ -647,8 +636,7 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetValueTooLarge) {
 
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::CreateForTesting(
-          url::Origin::Create(GURL("https://a.example/")),
-          base::Time::FromMillisecondsSinceUnixEpoch(1652984901234),
+          url::Origin::Create(GURL("https://a.example/")), kExampleTime,
           PrivateAggregationBudgetKey::Api::kProtectedAudience);
 
   base::RunLoop run_loop;
@@ -766,8 +754,7 @@ TEST_F(PrivateAggregationBudgeterTest,
 
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::CreateForTesting(
-          url::Origin::Create(GURL("https://a.example/")),
-          base::Time::FromMillisecondsSinceUnixEpoch(1652984901234),
+          url::Origin::Create(GURL("https://a.example/")), kExampleTime,
           PrivateAggregationBudgetKey::Api::kProtectedAudience);
 
   // Queries should be processed in the order they are received.
@@ -844,8 +831,7 @@ TEST_F(PrivateAggregationBudgeterTest,
 
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::CreateForTesting(
-          url::Origin::Create(GURL("https://a.example/")),
-          base::Time::FromMillisecondsSinceUnixEpoch(1652984901234),
+          url::Origin::Create(GURL("https://a.example/")), kExampleTime,
           PrivateAggregationBudgetKey::Api::kProtectedAudience);
 
   // Queries should be processed in the order they are received.
@@ -894,8 +880,7 @@ TEST_F(PrivateAggregationBudgeterTest,
 
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::CreateForTesting(
-          url::Origin::Create(GURL("https://a.example/")),
-          base::Time::FromMillisecondsSinceUnixEpoch(1652984901234),
+          url::Origin::Create(GURL("https://a.example/")), kExampleTime,
           PrivateAggregationBudgetKey::Api::kProtectedAudience);
 
   int num_queries_succeeded = 0;
@@ -944,8 +929,7 @@ TEST_F(PrivateAggregationBudgeterTest,
 
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::CreateForTesting(
-          url::Origin::Create(GURL("https://a.example/")),
-          base::Time::FromMillisecondsSinceUnixEpoch(1652984901234),
+          url::Origin::Create(GURL("https://a.example/")), kExampleTime,
           PrivateAggregationBudgetKey::Api::kProtectedAudience);
 
   int num_consume_queries_succeeded = 0;

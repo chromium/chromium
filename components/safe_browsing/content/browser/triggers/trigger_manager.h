@@ -184,6 +184,7 @@ class TriggerManager {
       bool did_proceed,
       int num_visits,
       const SBErrorOptions& error_display_options,
+      absl::optional<int64_t> warning_shown_ts = absl::nullopt,
       bool is_hats_candidate = false);
 
   // Called when a ThreatDetails report finishes for the specified

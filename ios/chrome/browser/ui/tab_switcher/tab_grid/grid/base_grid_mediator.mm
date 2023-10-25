@@ -158,11 +158,11 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
   // ItemID of the dragged tab. Used to check if the dropped tab is from the
   // same Chrome window.
   web::WebStateID _dragItemID;
+  base::WeakPtr<Browser> _browser;
 }
 
-- (instancetype)initWithConsumer:(id<TabCollectionConsumer>)consumer {
+- (instancetype)init {
   if (self = [super init]) {
-    _consumer = consumer;
     _webStateListObserverBridge =
         std::make_unique<WebStateListObserverBridge>(self);
     _scopedWebStateListObservation = std::make_unique<
@@ -180,12 +180,19 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
 
 #pragma mark - Public properties
 
+- (Browser*)browser {
+  return _browser.get();
+}
+
 - (void)setBrowser:(Browser*)browser {
   [self.snapshotStorage removeObserver:self];
   _scopedWebStateListObservation->RemoveAllObservations();
   _scopedWebStateObservation->RemoveAllObservations();
 
-  _browser = browser;
+  _browser.reset();
+  if (browser) {
+    _browser = browser->AsWeakPtr();
+  }
 
   _webStateList = browser ? browser->GetWebStateList() : nullptr;
   _browserState = browser ? browser->GetBrowserState() : nullptr;
@@ -210,7 +217,7 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
 #pragma mark - Subclassing
 
 - (void)disconnect {
-  _browser = nil;
+  _browser.reset();
   _browserState = nil;
   _consumer = nil;
   _delegate = nil;
@@ -944,6 +951,9 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
 
 // Calls `-populateItems:selectedItemID:` on the consumer.
 - (void)populateConsumerItems {
+  if (!self.webStateList) {
+    return;
+  }
   [self.consumer populateItems:CreateItems(self.webStateList)
                 selectedItemID:GetActiveNonPinnedTabID(self.webStateList)];
 }

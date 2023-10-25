@@ -1,0 +1,6 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++RadioGroup text:"My group" textSize:16.00 style:0 bundle:[aria-label="My group", display="block", htmlTag="div", role="radiogroup"]
+++++RadioButton textSize:16.00 style:0 bundle:[display="block", htmlTag="div", role="radio", tabindex="0"]
+++++++TextView text:"Radio 1" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++RadioButton textSize:16.00 style:0 bundle:[display="block", htmlTag="div", role="radio", tabindex="1"]
+++++++TextView text:"Radio 2" textSize:16.00 style:0 bundle:[display="", htmlTag=""]

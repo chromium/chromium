@@ -15,8 +15,4 @@ void LogShareSourceDesktop(ShareSourceDesktop source) {
   UMA_HISTOGRAM_ENUMERATION(kAnyShareStarted, source);
 }
 
-void RecordSharingHubTimeToShow(base::TimeDelta time) {
-  UMA_HISTOGRAM_TIMES("Sharing.SharingHubDesktop.TimeToShow", time);
-}
-
 }  // namespace share

@@ -544,9 +544,9 @@ TEST_P(PredictionQualityMetricsTest, Classification) {
   ServerFieldType actual_field_type = GetParam().actual_field_type;
   ServerFieldType predicted_type = GetParam().predicted_field_type;
 
-  DVLOG(2) << "Test Case = Predicted: "
-           << FieldTypeToStringPiece(predicted_type) << "; "
-           << "Actual: " << FieldTypeToStringPiece(actual_field_type);
+  DVLOG(2) << "Test Case = Predicted: " << FieldTypeToStringView(predicted_type)
+           << "; "
+           << "Actual: " << FieldTypeToStringView(actual_field_type);
 
   FormData form = CreateForm(
       {CreateTestFormField("first", "first", ValueForType(NAME_FIRST),
