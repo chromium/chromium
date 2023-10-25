@@ -6182,6 +6182,11 @@
     "expiry_milestone": 123
   },
   {
+    "name": "password-generation-strong-label-experiment",
+    "owners": ["rgod@google.com", "chrome-password-manager-team@google.com"],
+    "expiry_milestone": 123
+  },
+  {
     "name": "password-parsing-on-save-uses-predictions",
     "owners": ["kazinova@google.com", "vasilii@chromium.org"],
     "expiry_milestone": 125

@@ -11101,6 +11101,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSyncSessionOnVisibilityChangedDescription, kOsAll,
      FEATURE_VALUE_TYPE(syncer::kSyncSessionOnVisibilityChanged)},
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"password-generation-strong-label-experiment",
+     flag_descriptions::kPasswordGenerationStrongLabelExperimentName,
+     flag_descriptions::kPasswordGenerationStrongLabelExperimentDescription,
+     kOsDesktop, FEATURE_VALUE_TYPE(blink::features::kPasswordStrongLabel)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

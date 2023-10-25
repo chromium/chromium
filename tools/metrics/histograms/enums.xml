@@ -63054,6 +63054,7 @@ from previous Chrome versions.
       label="RequestDesktopSiteExceptionsDowngrade:disabled"/>
   <int value="-1268836676" label="disable-out-of-process-pdf"/>
   <int value="-1268452697" label="CastStreamingAv1:disabled"/>
+  <int value="-1268228824" label="PasswordStrongLabel:disabled"/>
   <int value="-1267958145" label="disable-pdf-material-ui"/>
   <int value="-1266934701" label="AccessibilityAXModes:enabled"/>
   <int value="-1265627803" label="WebAppEnableManifestId:enabled"/>
@@ -69508,6 +69509,7 @@ from previous Chrome versions.
   <int value="1865963858" label="tls13-variant"/>
   <int value="1866079109" label="team-drives"/>
   <int value="1866280482" label="SearchHistoryLink:disabled"/>
+  <int value="1866434293" label="PasswordStrongLabel:enabled"/>
   <int value="1866656400" label="DisplayCutoutAPI:disabled"/>
   <int value="1866963423" label="SyncPseudoUSSThemes:enabled"/>
   <int value="1867085340" label="brotli-encoding:enabled"/>
