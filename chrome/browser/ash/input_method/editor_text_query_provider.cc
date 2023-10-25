@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/input_method/editor_text_query_provider.h"
 
+#include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
 #include "base/values.h"
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
@@ -16,6 +17,11 @@
 namespace ash::input_method {
 
 namespace {
+
+std::string GetConfigLabelFromFieldTrialConfig() {
+  return base::GetFieldTrialParamValue("OrcaEnabled", "config_label");
+}
+
 std::unique_ptr<manta::OrcaProvider> CreateProvider(Profile* profile) {
   if (!manta::features::IsMantaServiceEnabled()) {
     return nullptr;
@@ -39,6 +45,11 @@ std::map<std::string, std::string> CreateProviderRequest(
   }
 
   provider_request["tone"] = request->text_query_id;
+
+  if (auto config_label = GetConfigLabelFromFieldTrialConfig();
+      !config_label.empty()) {
+    provider_request["config_label"] = config_label;
+  }
   return provider_request;
 }
 
