@@ -59,11 +59,6 @@
             authenticationService:(AuthenticationService*)authenticationService
                       prefService:(PrefService*)prefService
             isHistorySyncOptional:(BOOL)isOptional {
-  if (!authenticationService->GetPrimaryIdentity(
-          signin::ConsentLevel::kSignin)) {
-    // Don't show history sync opt-in screen if no signed-in user account.
-    return HistorySyncSkipReason::kNotSignedIn;
-  }
   if (syncService->HasDisableReason(
           syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) ||
       syncService->GetUserSettings()->IsTypeManagedByPolicy(
@@ -74,8 +69,12 @@
     // tabs sync is disabled by policy.
     return HistorySyncSkipReason::kSyncForbiddenByPolicies;
   }
+  if (!authenticationService->GetPrimaryIdentity(
+          signin::ConsentLevel::kSignin)) {
+    // Don't show history sync opt-in screen if no signed-in user account.
+    return HistorySyncSkipReason::kNotSignedIn;
+  }
   syncer::SyncUserSettings* userSettings = syncService->GetUserSettings();
-
   if (userSettings->GetSelectedTypes().HasAll(
           {syncer::UserSelectableType::kHistory,
            syncer::UserSelectableType::kTabs})) {
