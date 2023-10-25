@@ -513,7 +513,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                 mFeedSurfaceProvider.getScrollDelegate(),
                 mFeedSurfaceProvider.getTouchEnabledDelegate(), mFeedSurfaceProvider.getUiConfig(),
                 lifecycleDispatcher, uma, mTab.isIncognito(), windowAndroid,
-                mIsNtpAsHomeSurfaceEnabled, mIsSurfacePolishEnabled,
+                isNtpAsHomeSurfaceOnTablet(), mIsSurfacePolishEnabled,
                 mIsSurfacePolishOmniboxColorEnabled, mIsTablet);
 
         // If new NewTabPage is created via back operations, re-show the single Tab card with the
@@ -1093,7 +1093,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
             }
         }
 
-        if (mIsNtpAsHomeSurfaceEnabled && mSearchProviderHasLogo) {
+        if (isNtpAsHomeSurfaceOnTablet() && mSearchProviderHasLogo) {
             return resources.getDimensionPixelSize(R.dimen.ntp_logo_vertical_top_margin_tablet);
         }
 
@@ -1111,7 +1111,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
             }
         }
 
-        if (mIsNtpAsHomeSurfaceEnabled && mSearchProviderHasLogo) {
+        if (isNtpAsHomeSurfaceOnTablet() && mSearchProviderHasLogo) {
             return resources.getDimensionPixelSize(R.dimen.ntp_logo_vertical_bottom_margin_tablet);
         }
 
@@ -1210,5 +1210,13 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
 
     public boolean getSnapshotSingleTabCardChangedForTesting() {
         return mSnapshotSingleTabCardChanged;
+    }
+
+    /**
+     * Returns whether Chrome is running on tablet with NTP as home surface enabled. Returns false
+     * if Chrome is running on phone.
+     */
+    private boolean isNtpAsHomeSurfaceOnTablet() {
+        return mIsNtpAsHomeSurfaceEnabled && mIsTablet;
     }
 }

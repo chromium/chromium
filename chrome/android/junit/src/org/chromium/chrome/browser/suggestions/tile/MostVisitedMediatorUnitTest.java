@@ -284,7 +284,10 @@ public class MostVisitedMediatorUnitTest {
     @Test
     public void testSetPortraitPaddings_NonScrollableMVT() {
         mConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
-        createMediator(/* isScrollableMVTEnabled= */ false, /* isNtpAsHomeSurfaceEnabled= */ false);
+        createMediator(
+                /* isScrollableMVTEnabled= */ false,
+                /* isNtpAsHomeSurfaceEnabled= */ false,
+                /* isTablet */ false);
         mMediator.onTileDataChanged();
         Assert.assertNull(mModel.get(HORIZONTAL_EDGE_PADDINGS));
         Assert.assertNull(mModel.get(HORIZONTAL_INTERVAL_PADDINGS));
@@ -307,7 +310,10 @@ public class MostVisitedMediatorUnitTest {
     @Test
     public void testSetLandscapePaddings_NonScrollableMVT() {
         mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
-        createMediator(/* isScrollableMVTEnabled= */ false, /* isNtpAsHomeSurfaceEnabled= */ false);
+        createMediator(
+                /* isScrollableMVTEnabled= */ false,
+                /* isNtpAsHomeSurfaceEnabled= */ false,
+                /* isTablet */ false);
         mMediator.onTileDataChanged();
 
         Assert.assertNull(mModel.get(HORIZONTAL_EDGE_PADDINGS));
@@ -327,7 +333,10 @@ public class MostVisitedMediatorUnitTest {
     @Test
     public void testUpdateTilesViewForCarouselLayout() {
         mConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
-        createMediator(/* isScrollableMVTEnabled= */ true, /* isNtpAsHomeSurfaceEnabled= */ true);
+        createMediator(
+                /* isScrollableMVTEnabled= */ true,
+                /* isNtpAsHomeSurfaceEnabled= */ true,
+                /* isTablet */ true);
         mMediator.onTileDataChanged();
         Assert.assertEquals(
                 "The horizontal edge padding passed to the model is wrong",
@@ -339,7 +348,10 @@ public class MostVisitedMediatorUnitTest {
                 mModel.get(UPDATE_INTERVAL_PADDINGS_TABLET));
 
         mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
-        createMediator(/* isScrollableMVTEnabled= */ true, /* isNtpAsHomeSurfaceEnabled= */ true);
+        createMediator(
+                /* isScrollableMVTEnabled= */ true,
+                /* isNtpAsHomeSurfaceEnabled= */ true,
+                /* isTablet */ true);
         mMediator.onTileDataChanged();
         Assert.assertEquals(
                 "The horizontal edge padding passed to the model is wrong",
@@ -351,11 +363,38 @@ public class MostVisitedMediatorUnitTest {
                 mModel.get(UPDATE_INTERVAL_PADDINGS_TABLET));
     }
 
-    private void createMediator() {
-        createMediator(true, false);
+    @Test
+    public void testUpdateTilesViewForCarouselLayout_Phone() {
+        mConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
+        createMediator(
+                /* isScrollableMVTEnabled= */ true,
+                /* isNtpAsHomeSurfaceEnabled= */ true,
+                /* isTablet */ false);
+        mMediator.onTileDataChanged();
+        // tile_view_padding_edge_portrait
+        Assert.assertEquals(
+                "The horizontal edge padding passed to the model is wrong",
+                mResources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_portrait),
+                (int) mModel.get(HORIZONTAL_EDGE_PADDINGS));
+
+        mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
+        createMediator(
+                /* isScrollableMVTEnabled= */ true,
+                /* isNtpAsHomeSurfaceEnabled= */ true,
+                /* isTablet */ false);
+        mMediator.onTileDataChanged();
+        Assert.assertEquals(
+                "The horizontal edge padding passed to the model is wrong",
+                mResources.getDimensionPixelSize(R.dimen.tile_view_padding_landscape),
+                (int) mModel.get(HORIZONTAL_EDGE_PADDINGS));
     }
 
-    private void createMediator(boolean isScrollableMVTEnabled, boolean isNtpAsHomeSurfaceEnabled) {
+    private void createMediator() {
+        createMediator(true, false, false);
+    }
+
+    private void createMediator(
+            boolean isScrollableMVTEnabled, boolean isNtpAsHomeSurfaceEnabled, boolean isTablet) {
         if (!isScrollableMVTEnabled) {
             mMvTilesLayout = Mockito.mock(MostVisitedTilesGridLayout.class);
         } else {
@@ -377,7 +416,7 @@ public class MostVisitedMediatorUnitTest {
                         mModel,
                         false,
                         isScrollableMVTEnabled,
-                        false,
+                        isTablet,
                         mSnapshotTileGridChangedRunnable,
                         mTileCountChangedRunnable,
                         isNtpAsHomeSurfaceEnabled);

@@ -133,7 +133,7 @@ public class NewTabPageLayout extends LinearLayout {
     private boolean mSnapshotTileGridChanged;
     private boolean mIsIncognito;
     private WindowAndroid mWindowAndroid;
-    private boolean mIsNtpAsHomeSurfaceEnabled;
+    private boolean mIsNtpAsHomeSurfaceOnTablet;
 
     /**
      * Vertical inset to add to the top and bottom of the search box bounds. May be 0 if no inset
@@ -207,14 +207,15 @@ public class NewTabPageLayout extends LinearLayout {
      * @param uma {@link NewTabPageUma} object recording user metrics.
      * @param isIncognito Whether the new tab page is in incognito mode.
      * @param windowAndroid An instance of a {@link WindowAndroid}
-     * @param isNtpAsHomeSurfaceEnabled {@code true} if the NTP is showing as the home surface.
+     * @param isNtpAsHomeSurfaceOnTablet {@code true} if the NTP is showing as the home surface on
+     *         tablets.
      * @param isSurfacePolishEnabled {@code true} if the NTP surface is polished.
      */
     public void initialize(NewTabPageManager manager, Activity activity, Delegate tileGroupDelegate,
             boolean searchProviderHasLogo, boolean searchProviderIsGoogle,
             FeedSurfaceScrollDelegate scrollDelegate, TouchEnabledDelegate touchEnabledDelegate,
             UiConfig uiConfig, ActivityLifecycleDispatcher lifecycleDispatcher, NewTabPageUma uma,
-            boolean isIncognito, WindowAndroid windowAndroid, boolean isNtpAsHomeSurfaceEnabled,
+            boolean isIncognito, WindowAndroid windowAndroid, boolean isNtpAsHomeSurfaceOnTablet,
             boolean isSurfacePolishEnabled, boolean isSurfacePolishOmniboxColorEnabled,
             boolean isTablet) {
         TraceEvent.begin(TAG + ".initialize()");
@@ -225,7 +226,7 @@ public class NewTabPageLayout extends LinearLayout {
         mNewTabPageUma = uma;
         mIsIncognito = isIncognito;
         mWindowAndroid = windowAndroid;
-        mIsNtpAsHomeSurfaceEnabled = isNtpAsHomeSurfaceEnabled;
+        mIsNtpAsHomeSurfaceOnTablet = isNtpAsHomeSurfaceOnTablet;
         mIsSurfacePolishEnabled = isSurfacePolishEnabled;
         mIsSurfacePolishOmniboxColorEnabled = isSurfacePolishOmniboxColorEnabled;
         Profile profile = Profile.getLastUsedRegularProfile();
@@ -264,7 +265,7 @@ public class NewTabPageLayout extends LinearLayout {
                         R.dimen.ntp_search_box_transition_length_polish_offset)
                 : 0;
 
-        if (mIsNtpAsHomeSurfaceEnabled && isTablet && !mIsSurfacePolishEnabled) {
+        if (mIsNtpAsHomeSurfaceOnTablet && !mIsSurfacePolishEnabled) {
             // We add extra side margins to the fake search box when multiple column Feeds are
             // shown. There is only one exception that we don't shorten the width of the fake search
             // box: one row of MV tiles in portrait mode.
@@ -414,7 +415,7 @@ public class NewTabPageLayout extends LinearLayout {
             LogoUtils.setLogoViewLayoutParams(logoView, getResources(),
                     DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext()),
                     StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE.getValue());
-        } else if (mIsNtpAsHomeSurfaceEnabled) {
+        } else if (mIsNtpAsHomeSurfaceOnTablet) {
             logoView.getLayoutParams().height =
                     mContext.getResources().getDimensionPixelSize(R.dimen.ntp_logo_height_shrink);
         }
@@ -538,7 +539,7 @@ public class NewTabPageLayout extends LinearLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        if (mIsNtpAsHomeSurfaceEnabled && isScrollableMvtEnabled()) {
+        if (mIsNtpAsHomeSurfaceOnTablet && isScrollableMvtEnabled()) {
             if (mIsSurfacePolishEnabled) {
                 calculateTabletMvtWidth(MeasureSpec.getSize(widthMeasureSpec));
             } else {
@@ -676,7 +677,7 @@ public class NewTabPageLayout extends LinearLayout {
                 (MarginLayoutParams) mMvTilesContainerLayout.getLayoutParams();
 
         if (mIsSurfacePolishEnabled) {
-            if (mIsNtpAsHomeSurfaceEnabled) {
+            if (mIsNtpAsHomeSurfaceOnTablet) {
                 if (isScrollableMvtEnabled()) {
                     marginLayoutParams.topMargin = getResources().getDimensionPixelSize(
                             shouldShowLogo() ? R.dimen.mvt_container_top_margin_polish
@@ -694,7 +695,7 @@ public class NewTabPageLayout extends LinearLayout {
         if (isScrollableMvtEnabled()) {
             // Let mMvTilesContainerLayout attached to the edge of the screen.
             setClipToPadding(false);
-            if (mIsNtpAsHomeSurfaceEnabled) {
+            if (mIsNtpAsHomeSurfaceOnTablet) {
                 updateTilesLayoutLeftAndRightMarginsOnTablet(marginLayoutParams);
             } else {
                 int lateralPaddingsForNTP = -getResources().getDimensionPixelSize(
@@ -715,7 +716,7 @@ public class NewTabPageLayout extends LinearLayout {
             marginLayoutParams.bottomMargin = getGridMvtBottomMargin();
         }
 
-        if (mIsNtpAsHomeSurfaceEnabled) {
+        if (mIsNtpAsHomeSurfaceOnTablet) {
             marginLayoutParams.bottomMargin = getResources().getDimensionPixelOffset(
                     R.dimen.mvt_container_bottom_margin_tablet);
         }
@@ -1104,7 +1105,7 @@ public class NewTabPageLayout extends LinearLayout {
         if (mIsSurfacePolishEnabled) {
             updateMvtOnTabletForPolish();
             updateSearchBoxWidthForPolish();
-        } else if (mIsNtpAsHomeSurfaceEnabled && isScrollableMvtEnabled()) {
+        } else if (mIsNtpAsHomeSurfaceOnTablet && isScrollableMvtEnabled()) {
             MarginLayoutParams marginLayoutParams =
                     (MarginLayoutParams) mMvTilesContainerLayout.getLayoutParams();
             updateTilesLayoutLeftAndRightMarginsOnTablet(marginLayoutParams);
@@ -1173,7 +1174,7 @@ public class NewTabPageLayout extends LinearLayout {
             } else {
                 mIsHalfMvtPortrait = null;
             }
-        } else if (mIsNtpAsHomeSurfaceEnabled && mIsTablet) {
+        } else if (mIsNtpAsHomeSurfaceOnTablet) {
             mSearchBoxTwoSideMargin =
                     getResources()
                                     .getDimensionPixelSize(

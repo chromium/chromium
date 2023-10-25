@@ -31,7 +31,7 @@ public final class MostVisitedTilesProperties {
             new WritableObjectPropertyKey<>(true);
     public static final PropertyModel.WritableObjectPropertyKey<Integer> HORIZONTAL_EDGE_PADDINGS =
             new WritableObjectPropertyKey<>(true);
-    public static final PropertyModel.WritableBooleanPropertyKey IS_NTP_AS_HOME_SURFACE_ENABLED =
+    public static final PropertyModel.WritableBooleanPropertyKey IS_NTP_AS_HOME_SURFACE_ON_TABLET =
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey IS_SURFACE_POLISH_ENABLED =
             new PropertyModel.WritableBooleanPropertyKey();
@@ -43,6 +43,6 @@ public final class MostVisitedTilesProperties {
 
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {IS_CONTAINER_VISIBLE,
             IS_MVT_LAYOUT_VISIBLE, PLACEHOLDER_VIEW, HORIZONTAL_INTERVAL_PADDINGS,
-            HORIZONTAL_EDGE_PADDINGS, IS_NTP_AS_HOME_SURFACE_ENABLED, IS_SURFACE_POLISH_ENABLED,
+            HORIZONTAL_EDGE_PADDINGS, IS_NTP_AS_HOME_SURFACE_ON_TABLET, IS_SURFACE_POLISH_ENABLED,
             UPDATE_INTERVAL_PADDINGS_TABLET};
 }
