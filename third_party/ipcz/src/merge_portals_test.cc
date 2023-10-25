@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <chrono>
 #include <string>
 #include <string_view>
+#include <thread>
 
 #include "ipcz/ipcz.h"
 #include "test/multinode_test.h"
@@ -121,6 +123,47 @@ MULTINODE_TEST(MergePortalsTest, MergeComplexRoutes) {
   EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(c1, &message));
   EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(c2, &message));
   CloseAll({c1, c2});
+}
+
+MULTINODE_TEST_NODE(MergePortalsTestNode, RaceWithDisconnectClient) {
+  IpczHandle b = ConnectToBroker();
+  Put(b, "ping");
+
+  // Small delay on this thread which gives some test drivers enough time
+  // to wake up the broker node with the above ping and have them initiate
+  // a portal merge. The race condition is extremely sensitive to timing, so
+  // this still does not guarantee that the bug would be triggered if present.
+  using namespace std::chrono_literals;
+  std::this_thread::sleep_for(300us);
+
+  // Forcibly disconnect, simulating sudden client termination from the broker's
+  // perspective.
+  CloseThisNode();
+
+  Close(b);
+}
+
+MULTINODE_TEST(MergePortalsTest, RaceWithDisconnect) {
+  // Regression test for https://crbug.com/1495461. If the bug is present this
+  // test becomes flaky.
+
+  IpczHandle c = SpawnTestNode<RaceWithDisconnectClient>();
+
+  // Wait for a message on `c`, indicating that handshake is done and there is
+  // a direct connection between `c` and the client.
+  const IpczTrapConditions conditions = {
+      .size = sizeof(conditions),
+      .flags = IPCZ_TRAP_ABOVE_MIN_LOCAL_PARCELS | IPCZ_TRAP_DEAD,
+      .min_local_parcels = 0,
+  };
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitForConditions(c, conditions));
+
+  // Initiate a merge with `c` and wait for `p` to observe peer closure, which
+  // will be triggered by the client node's forced disconnection. Disconnection
+  // propagation can race with the merge.
+  auto [q, p] = OpenPortals();
+  Merge(c, q);
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitForConditionFlags(p, IPCZ_TRAP_PEER_CLOSED));
 }
 
 }  // namespace
