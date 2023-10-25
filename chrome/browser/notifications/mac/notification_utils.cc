@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
+#include "chrome/browser/notifications/mac/notification_utils.h"
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"

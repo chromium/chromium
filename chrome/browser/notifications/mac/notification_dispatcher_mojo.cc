@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/notifications/notification_dispatcher_mojo.h"
+#include "chrome/browser/notifications/mac/notification_dispatcher_mojo.h"
 
 #include <set>
 #include <utility>
@@ -16,8 +16,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "chrome/browser/notifications/mac_notification_provider_factory.h"
-#include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
+#include "chrome/browser/notifications/mac/mac_notification_provider_factory.h"
+#include "chrome/browser/notifications/mac/notification_utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 

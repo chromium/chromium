@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/notifications/notification_dispatcher_mojo.h"
+#include "chrome/browser/notifications/mac/notification_dispatcher_mojo.h"
 
 #include <memory>
 
@@ -15,7 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
-#include "chrome/browser/notifications/mac_notification_provider_factory.h"
+#include "chrome/browser/notifications/mac/mac_notification_provider_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/notifications/notification_operation.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"

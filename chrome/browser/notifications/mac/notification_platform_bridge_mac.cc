@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/notifications/notification_platform_bridge_mac.h"
+#include "chrome/browser/notifications/mac/notification_platform_bridge_mac.h"
 
 #include <utility>
 
@@ -11,11 +11,11 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/notifications/mac_notification_provider_factory.h"
+#include "chrome/browser/notifications/mac/mac_notification_provider_factory.h"
+#include "chrome/browser/notifications/mac/notification_dispatcher_mojo.h"
+#include "chrome/browser/notifications/mac/notification_utils.h"
 #include "chrome/browser/notifications/notification_common.h"
-#include "chrome/browser/notifications/notification_dispatcher_mojo.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
-#include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_provider.h"

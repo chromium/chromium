@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/notifications/stub_notification_dispatcher_mac.h"
+#include "chrome/browser/notifications/mac/stub_notification_dispatcher_mac.h"
 
 #include <algorithm>
 #include <memory>
@@ -13,7 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
-#include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
+#include "chrome/browser/notifications/mac/notification_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "url/origin.h"
 

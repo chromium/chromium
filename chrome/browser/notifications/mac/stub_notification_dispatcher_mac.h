@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NOTIFICATIONS_STUB_NOTIFICATION_DISPATCHER_MAC_H_
-#define CHROME_BROWSER_NOTIFICATIONS_STUB_NOTIFICATION_DISPATCHER_MAC_H_
+#ifndef CHROME_BROWSER_NOTIFICATIONS_MAC_STUB_NOTIFICATION_DISPATCHER_MAC_H_
+#define CHROME_BROWSER_NOTIFICATIONS_MAC_STUB_NOTIFICATION_DISPATCHER_MAC_H_
 
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/notifications/notification_dispatcher_mac.h"
+#include "chrome/browser/notifications/mac/notification_dispatcher_mac.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 
 class StubNotificationDispatcherMac : public NotificationDispatcherMac {
@@ -56,4 +56,4 @@ class StubNotificationDispatcherMac : public NotificationDispatcherMac {
   base::WeakPtrFactory<StubNotificationDispatcherMac> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_NOTIFICATIONS_STUB_NOTIFICATION_DISPATCHER_MAC_H_
+#endif  // CHROME_BROWSER_NOTIFICATIONS_MAC_STUB_NOTIFICATION_DISPATCHER_MAC_H_

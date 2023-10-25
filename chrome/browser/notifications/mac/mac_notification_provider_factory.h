@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NOTIFICATIONS_MAC_NOTIFICATION_PROVIDER_FACTORY_H_
-#define CHROME_BROWSER_NOTIFICATIONS_MAC_NOTIFICATION_PROVIDER_FACTORY_H_
+#ifndef CHROME_BROWSER_NOTIFICATIONS_MAC_MAC_NOTIFICATION_PROVIDER_FACTORY_H_
+#define CHROME_BROWSER_NOTIFICATIONS_MAC_MAC_NOTIFICATION_PROVIDER_FACTORY_H_
 
 #include "chrome/services/mac_notifications/public/cpp/notification_style.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom-forward.h"
@@ -34,4 +34,4 @@ class MacNotificationProviderFactory {
   const webapps::AppId web_app_id_;
 };
 
-#endif  // CHROME_BROWSER_NOTIFICATIONS_MAC_NOTIFICATION_PROVIDER_FACTORY_H_
+#endif  // CHROME_BROWSER_NOTIFICATIONS_MAC_MAC_NOTIFICATION_PROVIDER_FACTORY_H_

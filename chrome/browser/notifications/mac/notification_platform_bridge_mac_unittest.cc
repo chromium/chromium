@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/notifications/notification_platform_bridge_mac.h"
+#include "chrome/browser/notifications/mac/notification_platform_bridge_mac.h"
 
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
@@ -14,9 +14,9 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
+#include "chrome/browser/notifications/mac/notification_utils.h"
+#include "chrome/browser/notifications/mac/stub_notification_dispatcher_mac.h"
 #include "chrome/browser/notifications/notification_test_util.h"
-#include "chrome/browser/notifications/stub_notification_dispatcher_mac.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"

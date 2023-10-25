@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MAC_H_
-#define CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MAC_H_
+#ifndef CHROME_BROWSER_NOTIFICATIONS_MAC_NOTIFICATION_PLATFORM_BRIDGE_MAC_H_
+#define CHROME_BROWSER_NOTIFICATIONS_MAC_NOTIFICATION_PLATFORM_BRIDGE_MAC_H_
 
 #include <memory>
 #include <string>
@@ -79,4 +79,4 @@ class NotificationPlatformBridgeMac : public NotificationPlatformBridge {
   WebAppDispatcherFactory web_app_dispatcher_factory_;
 };
 
-#endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MAC_H_
+#endif  // CHROME_BROWSER_NOTIFICATIONS_MAC_NOTIFICATION_PLATFORM_BRIDGE_MAC_H_

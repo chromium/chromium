@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MAC_UTILS_H_
-#define CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MAC_UTILS_H_
+#ifndef CHROME_BROWSER_NOTIFICATIONS_MAC_NOTIFICATION_UTILS_H_
+#define CHROME_BROWSER_NOTIFICATIONS_MAC_NOTIFICATION_UTILS_H_
 
 #include <string>
 
-#include "chrome/browser/notifications/mac_notification_provider_factory.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_style.h"
@@ -50,4 +49,4 @@ mac_notifications::mojom::NotificationPtr CreateMacNotification(
     Profile* profile,
     const message_center::Notification& notification);
 
-#endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MAC_UTILS_H_
+#endif  // CHROME_BROWSER_NOTIFICATIONS_MAC_NOTIFICATION_UTILS_H_

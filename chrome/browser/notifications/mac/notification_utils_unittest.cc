@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/notifications/mac/notification_utils.h"
+
 #include <string>
 
 #include "chrome/browser/notifications/notification_platform_bridge.h"
-#include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
 #include "chrome/common/notifications/notification_operation.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -13,7 +14,7 @@
 
 using message_center::Notification;
 
-class NotificationPlatformBridgeMacUtilsTest : public testing::Test {
+class NotificationUtilsMacTest : public testing::Test {
  public:
   void SetUp() override { response_ = BuildDefaultNotificationResponse(); }
 
@@ -65,7 +66,7 @@ class NotificationPlatformBridgeMacUtilsTest : public testing::Test {
   mac_notifications::mojom::NotificationActionInfoPtr response_;
 };
 
-TEST_F(NotificationPlatformBridgeMacUtilsTest, TestCreateNotificationTitle) {
+TEST_F(NotificationUtilsMacTest, TestCreateNotificationTitle) {
   Notification notification = CreateNotification(
       u"Title", u"Subtitle", "https://moe.example.com",
       message_center::NOTIFICATION_TYPE_SIMPLE, /*progress=*/0,
@@ -74,7 +75,7 @@ TEST_F(NotificationPlatformBridgeMacUtilsTest, TestCreateNotificationTitle) {
   EXPECT_EQ(u"Title", createdTitle);
 }
 
-TEST_F(NotificationPlatformBridgeMacUtilsTest,
+TEST_F(NotificationUtilsMacTest,
        TestCreateNotificationTitleWithProgress) {
   Notification notification = CreateNotification(
       u"Title", u"Subtitle", "https://moe.example.com",
@@ -84,7 +85,7 @@ TEST_F(NotificationPlatformBridgeMacUtilsTest,
   EXPECT_EQ(u"50% - Title", createdTitle);
 }
 
-TEST_F(NotificationPlatformBridgeMacUtilsTest,
+TEST_F(NotificationUtilsMacTest,
        TestCreateNotificationContextBanner) {
   Notification notification = CreateNotification(
       u"Title", u"Subtitle", "https://moe.example.com",
@@ -95,7 +96,7 @@ TEST_F(NotificationPlatformBridgeMacUtilsTest,
   EXPECT_EQ(u"moe.example.com", createdContext);
 }
 
-TEST_F(NotificationPlatformBridgeMacUtilsTest,
+TEST_F(NotificationUtilsMacTest,
        TestCreateNotificationContextAlert) {
   Notification notification = CreateNotification(
       u"Title", u"Subtitle", "https://moe.example.com",
@@ -106,7 +107,7 @@ TEST_F(NotificationPlatformBridgeMacUtilsTest,
   EXPECT_EQ(u"moe.example.com", createdContext);
 }
 
-TEST_F(NotificationPlatformBridgeMacUtilsTest,
+TEST_F(NotificationUtilsMacTest,
        TestCreateNotificationContextNoAttribution) {
   Notification notification =
       CreateNotification(u"Title", u"Subtitle", /*origin=*/std::string(),
@@ -118,7 +119,7 @@ TEST_F(NotificationPlatformBridgeMacUtilsTest,
   EXPECT_EQ(u"moe", createdContext);
 }
 
-TEST_F(NotificationPlatformBridgeMacUtilsTest,
+TEST_F(NotificationUtilsMacTest,
        TestCreateNotificationContexteTLDPlusOne) {
   Notification notification = CreateNotification(
       u"Title", u"Subtitle",
@@ -137,7 +138,7 @@ TEST_F(NotificationPlatformBridgeMacUtilsTest,
   EXPECT_EQ(u"example.co.uk", createdContext);
 }
 
-TEST_F(NotificationPlatformBridgeMacUtilsTest,
+TEST_F(NotificationUtilsMacTest,
        TestCreateNotificationContextAlertLongOrigin) {
   Notification notification = CreateNotification(
       u"Title", u"Subtitle", "https://thisisalongorigin.moe.co.uk",
@@ -153,7 +154,7 @@ TEST_F(NotificationPlatformBridgeMacUtilsTest,
   EXPECT_EQ(u"thisisalongorigin.moe.co.uk", createdContext);
 }
 
-TEST_F(NotificationPlatformBridgeMacUtilsTest,
+TEST_F(NotificationUtilsMacTest,
        TestCreateNotificationContextLongOrigin) {
   Notification notification = CreateNotification(
       u"Title", u"Subtitle", "https://thisisareallylongorigin.moe.co.uk",
@@ -169,35 +170,35 @@ TEST_F(NotificationPlatformBridgeMacUtilsTest,
   EXPECT_EQ(u"moe.co.uk", createdContext);
 }
 
-TEST_F(NotificationPlatformBridgeMacUtilsTest,
+TEST_F(NotificationUtilsMacTest,
        TestNotificationVerifyValidResponse) {
   EXPECT_TRUE(VerifyMacNotificationData(response_));
 }
 
-TEST_F(NotificationPlatformBridgeMacUtilsTest, TestNotificationUnknownType) {
+TEST_F(NotificationUtilsMacTest, TestNotificationUnknownType) {
   response_->meta->type = 210581;
   EXPECT_FALSE(VerifyMacNotificationData(response_));
 }
 
-TEST_F(NotificationPlatformBridgeMacUtilsTest,
+TEST_F(NotificationUtilsMacTest,
        TestNotificationVerifyNoProfileId) {
   response_->meta->id->profile = nullptr;
   EXPECT_FALSE(VerifyMacNotificationData(response_));
 }
 
-TEST_F(NotificationPlatformBridgeMacUtilsTest,
+TEST_F(NotificationUtilsMacTest,
        TestNotificationVerifyNoNotificationId) {
   response_->meta->id = nullptr;
   EXPECT_FALSE(VerifyMacNotificationData(response_));
 }
 
-TEST_F(NotificationPlatformBridgeMacUtilsTest,
+TEST_F(NotificationUtilsMacTest,
        TestNotificationVerifyInvalidButton) {
   response_->button_index = -5;
   EXPECT_FALSE(VerifyMacNotificationData(response_));
 }
 
-TEST_F(NotificationPlatformBridgeMacUtilsTest, TestNotificationVerifyOrigin) {
+TEST_F(NotificationUtilsMacTest, TestNotificationVerifyOrigin) {
   response_->meta->origin_url = GURL("http://?");
   EXPECT_FALSE(VerifyMacNotificationData(response_));
 
