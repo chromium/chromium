@@ -439,8 +439,11 @@ void XuCameraService::GetCtrlWithDevicePath(
   switch (ctrl->which()) {
     case mojom::CtrlType::Tag::kQueryCtrl:
       if (is_ip_camera) {
-        GetCtrlDbus(*dev_path, std::move(ctrl->get_query_ctrl()),
-                    GetRequest(fn), std::move(callback));
+        content::GetUIThreadTaskRunner({})->PostTask(
+            FROM_HERE, base::BindOnce(&XuCameraService::GetCtrlDbus,
+                                      weak_factory_.GetWeakPtr(), *dev_path,
+                                      std::move(ctrl->get_query_ctrl()),
+                                      GetRequest(fn), std::move(callback)));
         return;
       }
       error_code =
@@ -499,8 +502,11 @@ void XuCameraService::SetCtrlWithDevicePath(
   switch (ctrl->which()) {
     case mojom::CtrlType::Tag::kQueryCtrl:
       if (is_ip_camera) {
-        SetCtrlDbus(*dev_path, std::move(ctrl->get_query_ctrl()), data_,
-                    std::move(callback));
+        content::GetUIThreadTaskRunner({})->PostTask(
+            FROM_HERE, base::BindOnce(&XuCameraService::SetCtrlDbus,
+                                      weak_factory_.GetWeakPtr(), *dev_path,
+                                      std::move(ctrl->get_query_ctrl()), data_,
+                                      std::move(callback)));
         return;
       }
       error_code =
