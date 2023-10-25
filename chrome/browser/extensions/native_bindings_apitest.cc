@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/api/file_system/file_system_api.h"
@@ -27,6 +28,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -66,8 +68,10 @@ class NativeBindingsRestrictedToDeveloperModeApiTest
     : public NativeBindingsApiTest {
  public:
   NativeBindingsRestrictedToDeveloperModeApiTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kRestrictDeveloperModeAPIs);
+    scoped_feature_list_.InitWithFeatures(
+        {extensions_features::kRestrictDeveloperModeAPIs,
+         extensions_features::kApiUserScripts},
+        /*disabled_features=*/{});
   }
 
   NativeBindingsRestrictedToDeveloperModeApiTest(
@@ -78,6 +82,11 @@ class NativeBindingsRestrictedToDeveloperModeApiTest
   ~NativeBindingsRestrictedToDeveloperModeApiTest() override = default;
 
  private:
+  // The userScripts API is currently behind a channel and feature restriction.
+  // TODO(crbug.com/1472902): Remove channel override when user scripts API goes
+  // to stable.
+  ScopedCurrentChannel current_channel_override_{
+      version_info::Channel::UNKNOWN};
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

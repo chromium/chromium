@@ -318,8 +318,7 @@
   },
   "debugger": {
     "dependencies": ["permission:debugger"],
-    "contexts": ["blessed_extension"],
-    "developer_mode_only": true
+    "contexts": ["blessed_extension"]
   },
   "declarativeContent": {
     "dependencies": ["permission:declarativeContent"],
