@@ -3,24 +3,25 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"
-
 #include "base/functional/callback_helpers.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/test_future.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "components/webapps/common/web_app_id.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace web_app {
 
-using SubAppsInstallDialogControllerTest = BrowserWithTestWindowTest;
 using DialogViewIDForTesting =
-    SubAppsInstallDialogController::DialogViewIDForTesting;
+    SubAppsInstallDialogController::SubAppsInstallDialogViewID;
 
 constexpr const char kParentAppName[] = "Parent App";
 constexpr const char kParentAppScope[] = "https://www.parent-app.com/";
@@ -33,14 +34,20 @@ const std::u16string kSubAppName1 = u"Sub App 1";
 const std::u16string kSubAppName2 = u"Sub App 2";
 const std::u16string kSubAppName3 = u"Sub App 3";
 
-std::unique_ptr<SubAppsInstallDialogController> CreateDefaultController(
-    base::OnceCallback<void(bool)> callback,
-    gfx::NativeWindow window) {
-  auto controller = std::make_unique<SubAppsInstallDialogController>();
-  controller->Init(std::move(callback), {}, kParentAppName, kParentAppScope,
-                   window);
-  return controller;
-}
+class SubAppsInstallDialogControllerTest : public BrowserWithTestWindowTest {
+ protected:
+  std::unique_ptr<SubAppsInstallDialogController> CreateDefaultController(
+      base::OnceCallback<void(bool)> callback) {
+    const webapps::AppId parent_app_id =
+        web_app::GenerateAppIdFromManifestId(GURL(kParentAppScope));
+
+    auto controller = std::make_unique<SubAppsInstallDialogController>();
+    controller->Init(std::move(callback), /*sub_apps=*/{}, kParentAppName,
+                     kParentAppScope, parent_app_id, GetProfile(),
+                     GetContext());
+    return controller;
+  }
+};
 
 std::unique_ptr<WebAppInstallInfo> CreateInstallInfoWithIconForSubApp(
     const std::u16string& name) {
@@ -61,7 +68,9 @@ TEST_F(SubAppsInstallDialogControllerTest, DialogViewSetUpCorrectly) {
   sub_apps.emplace_back(CreateInstallInfoWithIconForSubApp(kSubAppName3));
 
   views::Widget* widget = CreateSubAppsInstallDialogWidget(
-      kParentAppName, kParentAppScope, sub_apps, GetContext());
+      base::ASCIIToUTF16(std::string(kParentAppName)),
+      base::ASCIIToUTF16(std::string(kParentAppScope)), sub_apps,
+      base::DoNothing(), GetContext());
   views::DialogDelegate* dialog = widget->widget_delegate()->AsDialogDelegate();
 
   EXPECT_FALSE(dialog->ShouldShowCloseButton());
@@ -95,9 +104,11 @@ TEST_F(SubAppsInstallDialogControllerTest, SubAppConvertedCorrectly) {
   std::vector<std::unique_ptr<WebAppInstallInfo>> sub_apps;
   sub_apps.emplace_back(std::move(sub_app_install_info));
 
+  webapps::AppId parent_app_id =
+      web_app::GenerateAppIdFromManifestId(GURL(kParentAppScope));
   auto controller = std::make_unique<SubAppsInstallDialogController>();
   controller->Init(base::DoNothing(), sub_apps, kParentAppName, kParentAppScope,
-                   GetContext());
+                   parent_app_id, GetProfile(), GetContext());
   views::Widget* widget = controller->GetWidgetForTesting();
 
   std::vector<views::View*> sub_app_labels;
@@ -121,7 +132,7 @@ TEST_F(SubAppsInstallDialogControllerTest, SubAppConvertedCorrectly) {
 
 TEST_F(SubAppsInstallDialogControllerTest, DialogAccepted) {
   base::test::TestFuture<bool> future;
-  auto controller = CreateDefaultController(future.GetCallback(), GetContext());
+  auto controller = CreateDefaultController(future.GetCallback());
   auto* dialog =
       controller->GetWidgetForTesting()->widget_delegate()->AsDialogDelegate();
 
@@ -132,7 +143,7 @@ TEST_F(SubAppsInstallDialogControllerTest, DialogAccepted) {
 
 TEST_F(SubAppsInstallDialogControllerTest, DialogCancelled) {
   base::test::TestFuture<bool> future;
-  auto controller = CreateDefaultController(future.GetCallback(), GetContext());
+  auto controller = CreateDefaultController(future.GetCallback());
   auto* dialog =
       controller->GetWidgetForTesting()->widget_delegate()->AsDialogDelegate();
 
@@ -143,7 +154,7 @@ TEST_F(SubAppsInstallDialogControllerTest, DialogCancelled) {
 
 TEST_F(SubAppsInstallDialogControllerTest, EscPressed) {
   base::test::TestFuture<bool> future;
-  auto controller = CreateDefaultController(future.GetCallback(), GetContext());
+  auto controller = CreateDefaultController(future.GetCallback());
   views::Widget* widget = controller->GetWidgetForTesting();
 
   // Simulate esc key press.
@@ -158,7 +169,7 @@ TEST_F(SubAppsInstallDialogControllerTest,
   views::Widget* widget;
 
   {
-    auto controller = CreateDefaultController(base::DoNothing(), GetContext());
+    auto controller = CreateDefaultController(base::DoNothing());
     widget = controller->GetWidgetForTesting();
     EXPECT_TRUE(widget->IsVisible());
   }

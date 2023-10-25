@@ -171,7 +171,8 @@ enum class AppSettingsPageEntryPoint {
   kPageInfoView = 0,
   kChromeAppsPage = 1,
   kBrowserCommand = 2,
-  kMaxValue = kBrowserCommand,
+  kSubAppsInstallPrompt = 3,
+  kMaxValue = kSubAppsInstallPrompt,
 };
 
 // When user_display_mode indicates a user preference for opening in

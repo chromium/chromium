@@ -6575,9 +6575,13 @@ Keep your key file in a safe place. You will need it to create new versions of y
 
       <message name="IDS_SUB_APPS_INSTALL_DIALOG_PERMISSIONS_DESCRIPTION" desc="Explanation of the permissions mechanisms resulting from the install of sub app(s). [ICU Syntax]">
         {NUM_SUB_APP_INSTALLS, plural,
-          =1 {Permissions that you allow for "<ph name="APP_NAME">{APP_NAME}<ex>Citrix</ex></ph>" will also be allowed for this app.}
-          other {Permissions that you allow for "<ph name="APP_NAME">{APP_NAME}<ex>Citrix</ex></ph>" will also be allowed for these apps.}
+          =1 {Permissions that you allow for "<ph name="APP_NAME">$1<ex>Citrix</ex></ph>" will also be allowed for this app. <ph name="MANAGE_LINK">$2<ex>Manage</ex></ph>}
+          other {Permissions that you allow for "<ph name="APP_NAME">$1<ex>Citrix</ex></ph>" will also be allowed for these apps. <ph name="MANAGE_LINK">$2<ex>Manage</ex></ph>}
         }
+      </message>
+
+      <message name="IDS_SUB_APPS_INSTALL_DIALOG_MANAGE_PERMISSIONS_LINK" desc="">
+        Manage
       </message>
 
       <message name="IDS_SUB_APPS_INSTALL_DIALOG_PERMISSIONS_BUTTON" desc="Button label on a dialog that lets the user approve the install of one or more sub apps.">

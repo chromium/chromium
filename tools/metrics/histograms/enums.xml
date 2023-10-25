@@ -4186,6 +4186,7 @@ Unknown properties are collapsed to zero. -->
   <int value="13" label="App Management main view (Borealis)"/>
   <int value="14" label="Page info view"/>
   <int value="15" label="Privacy indicators notification settings button"/>
+  <int value="16" label="Sub Apps install dialog"/>
 </enum>
 
 <enum name="AppManagementUserAction">
@@ -4311,6 +4312,7 @@ Unknown properties are collapsed to zero. -->
   <int value="2"
       label="From a browser command, currently the App Menu in the menu bar
              on Mac OS"/>
+  <int value="3" label="From a sub apps install dialog"/>
 </enum>
 
 <enum name="AppsPageDragSource">

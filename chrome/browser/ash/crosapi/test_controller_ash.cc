@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crosapi/test_controller_ash.h"
 
 #include <utility>
+#include <vector>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/app_list/app_list_controller_impl.h"
@@ -77,6 +78,7 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(USE_CUPS)
 #include "chrome/browser/ash/printing/cups_print_job.h"
@@ -923,6 +925,18 @@ void TestControllerAsh::CheckAtLeastOneAshBrowserWindowOpen(
   SelfOwnedAshBrowserWindowOpenWaiter* window_waiter =
       new SelfOwnedAshBrowserWindowOpenWaiter(std::move(callback));
   window_waiter->CheckIfAtLeastOneWindowOpen();
+}
+
+void TestControllerAsh::GetAllOpenTabURLs(GetAllOpenTabURLsCallback callback) {
+  std::vector<GURL> result;
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    for (int i = 0; i < browser->tab_strip_model()->GetTabCount(); i++) {
+      result.emplace_back(browser->tab_strip_model()
+                              ->GetWebContentsAt(i)
+                              ->GetLastCommittedURL());
+    }
+  }
+  std::move(callback).Run(std::move(result));
 }
 
 void TestControllerAsh::OnAshUtteranceFinished(int utterance_id) {

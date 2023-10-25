@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/functional/callback.h"
 #include "base/i18n/message_formatter.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -19,6 +20,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout_view.h"
 
 namespace web_app {
@@ -46,31 +48,50 @@ std::u16string DialogTitle(int num_sub_apps) {
 }
 
 ui::DialogModelLabel DialogDescription(int num_sub_apps,
-                                       std::string_view parent_app_name,
-                                       std::string_view parent_app_scope) {
+                                       std::u16string parent_app_name,
+                                       std::u16string parent_app_scope) {
   std::u16string description =
       base::i18n::MessageFormatter::FormatWithNamedArgs(
           l10n_util::GetStringUTF16(IDS_SUB_APPS_INSTALL_DIALOG_DESCRIPTION),
-          "NUM_SUB_APP_INSTALLS", num_sub_apps, "APP_NAME",
-          base::ASCIIToUTF16(parent_app_name), "DOMAIN",
-          base::ASCIIToUTF16(parent_app_scope));
-
+          /*name0=*/"NUM_SUB_APP_INSTALLS", num_sub_apps,
+          /*name1=*/"APP_NAME", parent_app_name, "DOMAIN", parent_app_scope);
   ui::DialogModelLabel label = ui::DialogModelLabel(description);
   label.set_is_secondary().set_allow_character_break();
   return label;
 }
 
-ui::DialogModelLabel PermissionsExplanation(int num_sub_apps,
-                                            std::string_view parent_app_name) {
-  std::u16string description =
-      base::i18n::MessageFormatter::FormatWithNamedArgs(
-          l10n_util::GetStringUTF16(
-              IDS_SUB_APPS_INSTALL_DIALOG_PERMISSIONS_DESCRIPTION),
-          "NUM_SUB_APP_INSTALLS", num_sub_apps, "APP_NAME",
-          base::ASCIIToUTF16(parent_app_name));
-  ui::DialogModelLabel label = ui::DialogModelLabel(description);
-  label.set_is_secondary().set_allow_character_break();
-  return label;
+std::unique_ptr<views::BubbleDialogModelHost::CustomView>
+PermissionsExplanation(int num_sub_apps,
+                       std::u16string parent_app_name,
+                       base::RepeatingClosure settings_page_callback) {
+  std::u16string explanation_string = l10n_util::GetPluralStringFUTF16(
+      IDS_SUB_APPS_INSTALL_DIALOG_PERMISSIONS_DESCRIPTION, num_sub_apps);
+  const std::u16string manage_permissions_link_string =
+      l10n_util::GetStringUTF16(
+          IDS_SUB_APPS_INSTALL_DIALOG_MANAGE_PERMISSIONS_LINK);
+
+  std::vector<size_t> offsets;
+  const std::u16string formatted_string = base::ReplaceStringPlaceholders(
+      explanation_string, {parent_app_name, manage_permissions_link_string},
+      &offsets);
+
+  auto label = std::make_unique<views::StyledLabel>();
+  label->SetText(formatted_string);
+  label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+  label->SetID(base::to_underlying(
+      SubAppsInstallDialogController::SubAppsInstallDialogViewID::
+          MANAGE_PERMISSIONS_LINK));
+
+  // Styles the "Manage" part of the string as a link and binds the callback
+  // (that opens the parent app's settings page) as the link's action
+  label->AddStyleRange(
+      gfx::Range(offsets.back(),
+                 offsets.back() + manage_permissions_link_string.length()),
+      views::StyledLabel::RangeStyleInfo::CreateForLink(
+          std::move(settings_page_callback)));
+
+  return std::make_unique<views::BubbleDialogModelHost::CustomView>(
+      std::move(label), views::BubbleDialogModelHost::FieldType::kText);
 }
 
 std::u16string AcceptButtonLabel() {
@@ -115,15 +136,17 @@ std::unique_ptr<views::ScrollView> CreateSubAppsListView(
         gfx::ImageSkia(std::make_unique<WebAppInfoImageSource>(
                            kSubAppIconSize, sub_app->icon_bitmaps.any),
                        gfx::Size(kSubAppIconSize, kSubAppIconSize)));
-    sub_app_icon->SetGroup(base::to_underlying(
-        SubAppsInstallDialogController::DialogViewIDForTesting::SUB_APP_ICON));
+    sub_app_icon->SetGroup(
+        base::to_underlying(SubAppsInstallDialogController::
+                                SubAppsInstallDialogViewID::SUB_APP_ICON));
 
     auto* sub_app_label =
         box->AddChildView(std::make_unique<views::Label>(sub_app->title));
     sub_app_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     sub_app_label->SetMultiLine(true);
-    sub_app_label->SetGroup(base::to_underlying(
-        SubAppsInstallDialogController::DialogViewIDForTesting::SUB_APP_LABEL));
+    sub_app_label->SetGroup(
+        base::to_underlying(SubAppsInstallDialogController::
+                                SubAppsInstallDialogViewID::SUB_APP_LABEL));
   }
 
   return scroll_view;
@@ -132,9 +155,10 @@ std::unique_ptr<views::ScrollView> CreateSubAppsListView(
 }  // namespace
 
 views::Widget* CreateSubAppsInstallDialogWidget(
-    const std::string_view parent_app_name,
-    const std::string_view parent_app_scope,
-    const std::vector<std::unique_ptr<WebAppInstallInfo>>& sub_apps,
+    const std::u16string parent_app_name,
+    const std::u16string parent_app_scope,
+    const std::vector<std::unique_ptr<web_app::WebAppInstallInfo>>& sub_apps,
+    base::RepeatingClosure settings_page_callback,
     gfx::NativeWindow window) {
   int num_sub_apps = sub_apps.size();
   std::unique_ptr<ui::DialogModel> dialog_model =
@@ -148,7 +172,9 @@ views::Widget* CreateSubAppsInstallDialogWidget(
               std::make_unique<views::BubbleDialogModelHost::CustomView>(
                   CreateSubAppsListView(sub_apps),
                   views::BubbleDialogModelHost::FieldType::kMenuItem))
-          .AddParagraph(PermissionsExplanation(num_sub_apps, parent_app_name))
+          .AddCustomField(
+              PermissionsExplanation(sub_apps.size(), parent_app_name,
+                                     std::move(settings_page_callback)))
           .AddOkButton(
               base::DoNothing(),
               ui::DialogModelButton::Params().SetLabel(AcceptButtonLabel()))

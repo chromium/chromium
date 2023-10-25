@@ -26,6 +26,7 @@ source_set("unit_tests") {
     "//chrome/browser/web_applications:web_applications_unit_tests",
     "//chrome/test:test_support",
     "//components/services/app_service",
+    "//components/webapps/common",
     "//content/test:test_support",
     "//storage/browser:test_support",
   ]
@@ -66,6 +67,7 @@ source_set("browser_tests") {
   if (is_chromeos_ash) {
     sources += [
       "app_browser_controller_browsertest_chromeos.cc",
+      "sub_apps_install_dialog_controller_browsertest.cc",
       "web_app_guest_session_browsertest_chromeos.cc",
     ]
   }
@@ -115,7 +117,7 @@ source_set("browser_tests") {
 }
 
 # On Lacros, these browser tests require Ash to be running, as they rely on
-# web apps being registered with the App Service.
+# web apps being registered with the App Service. Runs in the "lacros_chrome_browsertests_run_in_series" target.
 source_set("app_service_browser_tests") {
   testonly = true
 
@@ -139,6 +141,7 @@ source_set("app_service_browser_tests") {
     sources += [
       "lacros_web_app_browsertest.cc",
       "lacros_web_app_shelf_browsertest.cc",
+      "sub_apps_install_dialog_controller_browsertest.cc",
       "web_app_link_capturing_browsertest.cc",
     ]
   }
@@ -161,6 +164,7 @@ source_set("app_service_browser_tests") {
     "//components/page_load_metrics/browser:test_support",
     "//components/services/app_service",
     "//components/webapps/browser:test_support",
+    "//components/webapps/common",
   ]
 
   if (is_chromeos_lacros) {

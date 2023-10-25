@@ -28,7 +28,8 @@ enum class AppManagementEntryPoint {
   kAppManagementMainViewBorealis = 13,
   kPageInfoView = 14,
   kPrivacyIndicatorsNotificationSettings = 15,
-  kMaxValue = kPrivacyIndicatorsNotificationSettings,
+  kSubAppsInstallPrompt = 16,
+  kMaxValue = kSubAppsInstallPrompt,
 };
 
 }  // namespace ash::settings
