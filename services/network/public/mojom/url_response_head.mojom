@@ -250,6 +250,12 @@ struct URLResponseHead {
   // See: https://fetch.spec.whatwg.org/#concept-http-network-fetch
   bool request_include_credentials = true;
 
+  // If this response contains JavaScript, then downstream components may cache
+  // the parsed bytecode, but must use a source hash comparison rather than the
+  // response time when determining whether the current version of the script
+  // matches the cached bytecode.
+  bool should_use_source_hash_for_js_code_cache = false;
+
   // Supports aggregatable reports in the Attribution Reporting API:
   // https://github.com/WICG/attribution-reporting-api.
   //

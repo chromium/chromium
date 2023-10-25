@@ -234,7 +234,7 @@ bool ShouldUseIsolatedCodeCache(
       // send cached code to it.
       return false;
     }
-  } else {
+  } else if (!response_head.should_use_source_hash_for_js_code_cache) {
     // If the timestamps don't match or are null, the code cache data may be
     // for a different response. See https://crbug.com/1099587.
     if (code_cache_response_time.is_null() ||

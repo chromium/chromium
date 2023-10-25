@@ -181,6 +181,25 @@ TEST_F(ResourceLoaderCodeCacheTest, CodeCacheFullHttpsScheme) {
             resource_->CodeCacheSize());
 }
 
+TEST_F(ResourceLoaderCodeCacheTest, CodeCacheFullHttpsSchemeWithResponseFlag) {
+  CommonSetup("https://www.example.com/");
+
+  std::vector<uint8_t> cache_data{2, 3, 4, 5, 6};
+
+  // Nothing has changed yet because the content response hasn't arrived yet.
+  EXPECT_FALSE(resource_->CodeCacheSize());
+
+  response_.SetShouldUseSourceHashForJSCodeCache(true);
+  loader_->DidReceiveResponse(
+      WrappedResourceResponse(response_),
+      /*body=*/mojo::ScopedDataPipeConsumerHandle(),
+      mojo_base::BigBuffer(MakeSerializedCodeCacheDataWithHash(cache_data)));
+
+  // Code cache data was present.
+  EXPECT_EQ(resource_->CodeCacheSize(),
+            cache_data.size() + sizeof(CachedMetadataHeader));
+}
+
 TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheInvalidOuterType) {
   CommonSetup();
 

@@ -85,7 +85,8 @@ ResourceResponse::ResourceResponse()
       was_alpn_negotiated_(false),
       has_authorization_covered_by_wildcard_on_preflight_(false),
       is_validated_(false),
-      request_include_credentials_(true) {}
+      request_include_credentials_(true),
+      should_use_source_hash_for_js_code_cache_(false) {}
 
 ResourceResponse::ResourceResponse(const KURL& current_request_url)
     : ResourceResponse() {

@@ -132,5 +132,23 @@ TEST(ScriptResourceTest, WebUICodeCacheDisabled) {
   EXPECT_FALSE(handler);
 }
 
+TEST(ScriptResourceTest, CodeCacheEnabledByResponseFlag) {
+  const KURL url("https://www.example.com/script.js");
+  ScriptResource* resource = ScriptResource::CreateForTest(url, UTF8Encoding());
+  ResourceResponse response(url);
+  response.SetHttpStatusCode(200);
+  response.SetShouldUseSourceHashForJSCodeCache(true);
+
+  resource->ResponseReceived(response);
+  constexpr char kData[5] = "abcd";
+  resource->AppendData(kData, strlen(kData));
+  resource->FinishForTest();
+
+  auto* handler = resource->CacheHandler();
+  EXPECT_TRUE(handler);
+  EXPECT_TRUE(handler->HashRequired());
+  EXPECT_EQ(UTF8Encoding().GetName(), handler->Encoding());
+}
+
 }  // namespace
 }  // namespace blink

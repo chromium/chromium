@@ -460,6 +460,21 @@ class PLATFORM_EXPORT ResourceResponse final {
     request_include_credentials_ = request_include_credentials;
   }
 
+  bool ShouldUseSourceHashForJSCodeCache() const {
+    return should_use_source_hash_for_js_code_cache_;
+  }
+  void SetShouldUseSourceHashForJSCodeCache(
+      bool should_use_source_hash_for_js_code_cache) {
+    if (should_use_source_hash_for_js_code_cache) {
+      // This flag should only be set for http(s) resources, because others
+      // would end up blocked in the browser process anyway (see
+      // code_cache_host_impl.cc).
+      CHECK(CurrentRequestUrl().ProtocolIsInHTTPFamily());
+    }
+    should_use_source_hash_for_js_code_cache_ =
+        should_use_source_hash_for_js_code_cache;
+  }
+
  private:
   void UpdateHeaderParsedState(const AtomicString& name);
 
@@ -564,6 +579,12 @@ class PLATFORM_EXPORT ResourceResponse final {
   // algorithm.
   // See: https://fetch.spec.whatwg.org/#concept-http-network-fetch
   bool request_include_credentials_ : 1;
+
+  // If this response contains JavaScript, then downstream components may cache
+  // the parsed bytecode, but must use a source hash comparison rather than the
+  // response time when determining whether the current version of the script
+  // matches the cached bytecode.
+  bool should_use_source_hash_for_js_code_cache_ : 1;
 
   // Pre-computed padding.  This should only be non-zero if |response_type| is
   // set to kOpaque.  In addition, it is only set if the response was provided

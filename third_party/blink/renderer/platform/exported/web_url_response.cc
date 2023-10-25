@@ -238,6 +238,9 @@ WebURLResponse WebURLResponse::Create(
   response.SetAuthChallengeInfo(head.auth_challenge_info);
   response.SetRequestIncludeCredentials(head.request_include_credentials);
 
+  response.SetShouldUseSourceHashForJSCodeCache(
+      head.should_use_source_hash_for_js_code_cache);
+
   const net::HttpResponseHeaders* headers = head.headers.get();
   if (!headers)
     return response;
@@ -734,6 +737,16 @@ void WebURLResponse::SetRequestIncludeCredentials(
 
 bool WebURLResponse::RequestIncludeCredentials() const {
   return resource_response_->RequestIncludeCredentials();
+}
+
+void WebURLResponse::SetShouldUseSourceHashForJSCodeCache(
+    bool should_use_source_hash_for_js_code_cache) {
+  resource_response_->SetShouldUseSourceHashForJSCodeCache(
+      should_use_source_hash_for_js_code_cache);
+}
+
+bool WebURLResponse::ShouldUseSourceHashForJSCodeCache() const {
+  return resource_response_->ShouldUseSourceHashForJSCodeCache();
 }
 
 WebURLResponse::WebURLResponse(ResourceResponse& r) : resource_response_(&r) {}
