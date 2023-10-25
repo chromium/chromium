@@ -33,6 +33,11 @@ void EditorTextActuator::SetProfile(Profile* profile) {
 
 void EditorTextActuator::InsertText(const std::string& text) {
   LogEditorState(EditorStates::kInsert, delegate_->GetEditorMode());
+  LogEditorState(EditorStates::kCharsInserted, delegate_->GetEditorMode(),
+                 text.length());
+  LogEditorState(EditorStates::kCharsSelectedForInsert,
+                 delegate_->GetEditorMode(),
+                 delegate_->GetSelectedTextLength());
 
   // We queue the text to be inserted here rather then insert it directly into
   // the input.

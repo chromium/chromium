@@ -87,6 +87,7 @@ class EditorMediator
   void ProcessConsentAction(ConsentAction consent_action) override;
   void ShowUI() override;
   void CloseUI() override;
+  size_t GetSelectedTextLength() override;
 
   // Checks if the feature should be visible.
   bool IsAllowedForUse();

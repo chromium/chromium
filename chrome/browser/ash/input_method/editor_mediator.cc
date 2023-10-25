@@ -199,6 +199,10 @@ void EditorMediator::CloseUI() {
   mako_bubble_coordinator_.CloseUI();
 }
 
+size_t EditorMediator::GetSelectedTextLength() {
+  return surrounding_text_.selection_range.length();
+}
+
 void EditorMediator::OnPromoCardDeclined() {
   consent_store_->ProcessPromoCardAction(PromoCardAction::kDeclined);
 }

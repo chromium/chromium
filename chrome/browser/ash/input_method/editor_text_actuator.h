@@ -27,6 +27,7 @@ class EditorTextActuator : public orca::mojom::TextActuator {
     virtual void ShowUI() = 0;
     virtual void CloseUI() = 0;
     virtual EditorMode GetEditorMode() const = 0;
+    virtual size_t GetSelectedTextLength() = 0;
   };
 
   EditorTextActuator(
