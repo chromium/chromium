@@ -285,6 +285,9 @@
 # TODO(crbug.com/1492573): reports the wrong width/height.
 -RenderWidgetHostFoldableCSSTest.ViewportSegmentsWorksInUAFullscreenCSS
 
+# TODO(crbug.com/1495761): Text area handle has shrunk.
+-FormControlsBrowserTest.Textarea
+
 # These tests are flaky.
 -All/CoopRestrictPropertiesReportingBrowserTest.NavigationVirtualBrowsingContextGroup/RDCrashedFrame_BFCacheDisabled
 -All/DumpAccessibilityTreeTest.AccessibilitySelectListOpen/blink1
