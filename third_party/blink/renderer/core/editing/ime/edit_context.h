@@ -185,6 +185,9 @@ class CORE_EXPORT EditContext final : public EventTarget,
   // Extends the current selection range and removes the
   // characters from the buffer.
   void ExtendSelectionAndDelete(int before, int after);
+  // Delete `before` characters preceding the current `selection_start_` and
+  // `after` characters following the current `selection_end_`.
+  void DeleteSurroundingText(int before, int after);
 
   // Sets rect_in_viewport to the surrounding rect, in CSS pixels,
   // for the character range specified by `location` and `length`.

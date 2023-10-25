@@ -1752,6 +1752,13 @@ void WebLocalFrameImpl::ExtendSelectionAndReplace(
 
 void WebLocalFrameImpl::DeleteSurroundingText(int before, int after) {
   TRACE_EVENT0("blink", "WebLocalFrameImpl::deleteSurroundingText");
+
+  if (EditContext* edit_context =
+          GetFrame()->GetInputMethodController().GetActiveEditContext()) {
+    edit_context->DeleteSurroundingText(before, after);
+    return;
+  }
+
   if (WebPlugin* plugin = FocusedPluginIfInputMethodSupported()) {
     plugin->DeleteSurroundingText(before, after);
     return;
