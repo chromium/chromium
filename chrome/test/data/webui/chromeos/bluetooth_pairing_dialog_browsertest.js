@@ -12,7 +12,7 @@ GEN('#include "content/public/test/browser_test.h"');
 var BluetoothPairingDialogBrowserTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://bluetooth-pairing/test_loader.html?module=chromeos/bluetooth_pairing_test.js&host=test';
+    return 'chrome://bluetooth-pairing/test_loader.html?module=chromeos/bluetooth_pairing_test.js';
   }
 };
 

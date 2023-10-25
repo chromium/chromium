@@ -28,7 +28,7 @@ this.OSFeedbackBrowserTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
     return 'chrome://os-feedback/test_loader.html?module=chromeos/' +
-        'os_feedback_ui/os_feedback_unified_test.js&host=test';
+        'os_feedback_ui/os_feedback_unified_test.js';
   }
 
   /** @override */
