@@ -31,7 +31,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
-#include "net/base/proxy_server.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_string_util.h"
 #include "net/base/request_priority.h"
 #include "net/base/schemeful_site.h"
@@ -543,7 +543,7 @@ class TestConnectJobFactory : public ConnectJobFactory {
 
   std::unique_ptr<ConnectJob> CreateConnectJob(
       Endpoint endpoint,
-      const ProxyServer& proxy_server,
+      const ProxyChain& proxy_chain,
       const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       const SSLConfig* ssl_config_for_origin,
       const SSLConfig* ssl_config_for_proxy,
@@ -633,14 +633,14 @@ class ClientSocketPoolBaseTest : public TestWithTaskEnvironment {
       base::TimeDelta unused_idle_socket_timeout,
       base::TimeDelta used_idle_socket_timeout,
       bool enable_backup_connect_jobs = false,
-      ProxyServer proxy_server = ProxyServer::Direct()) {
+      ProxyChain proxy_chain = ProxyChain::Direct()) {
     DCHECK(!pool_.get());
     std::unique_ptr<TestConnectJobFactory> connect_job_factory =
         std::make_unique<TestConnectJobFactory>(&client_socket_factory_);
     connect_job_factory_ = connect_job_factory.get();
     pool_ = TransportClientSocketPool::CreateForTesting(
         max_sockets, max_sockets_per_group, unused_idle_socket_timeout,
-        used_idle_socket_timeout, proxy_server, /*is_for_websockets=*/false,
+        used_idle_socket_timeout, proxy_chain, /*is_for_websockets=*/false,
         &common_connect_job_params_, std::move(connect_job_factory),
         nullptr /* ssl_config_service */, enable_backup_connect_jobs);
   }
@@ -5730,7 +5730,7 @@ class ClientSocketPoolBaseRefreshTest
             max_sockets, max_sockets_per_group, kUnusedIdleSocketTimeout,
             ClientSocketPool::used_idle_socket_timeout(),
             enable_backup_connect_jobs,
-            PacResultElementToProxyServer("HTTPS myproxy:70"));
+            PacResultElementToProxyChain("HTTPS myproxy:70"));
         break;
     }
   }
@@ -5939,7 +5939,7 @@ TEST_F(ClientSocketPoolBaseTest, RefreshProxyRefreshesAllGroups) {
                              kUnusedIdleSocketTimeout,
                              ClientSocketPool::used_idle_socket_timeout(),
                              false /* no backup connect jobs */,
-                             PacResultElementToProxyServer("HTTPS myproxy:70"));
+                             PacResultElementToProxyChain("HTTPS myproxy:70"));
 
   const ClientSocketPool::GroupId kGroupId1 =
       TestGroupId("a", 443, url::kHttpsScheme);

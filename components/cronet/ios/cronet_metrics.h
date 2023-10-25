@@ -54,7 +54,7 @@ FOUNDATION_EXPORT GRPC_SUPPORT_EXPORT NS_AVAILABLE_IOS(10.0)
 
 // This is set to net::HttpResponseInfo::connection_info.
 @property(copy, readwrite) NSString* networkProtocolName;
-// This is set to YES if net::HttpResponseInfo::proxy_server.is_direct()
+// This is set to YES if net::HttpResponseInfo::proxy_chain.is_direct()
 // returns false.
 @property(assign, readwrite, getter=isProxyConnection) BOOL proxyConnection;
 // This is set to YES if net::LoadTimingInfo::ConnectTiming::conect_start is

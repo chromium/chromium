@@ -947,7 +947,7 @@ void URLRequest::PrepareToRestart() {
 
   status_ = OK;
   is_pending_ = false;
-  proxy_server_ = ProxyServer();
+  proxy_chain_ = ProxyChain();
 }
 
 void URLRequest::Redirect(

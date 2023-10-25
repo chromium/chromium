@@ -570,9 +570,9 @@ void ApplicationContextImpl::CreateLocalState() {
 
   sessions::SessionIdGenerator::GetInstance()->Init(local_state_.get());
 
-  net::ClientSocketPoolManager::set_max_sockets_per_proxy_server(
+  net::ClientSocketPoolManager::set_max_sockets_per_proxy_chain(
       net::HttpNetworkSession::NORMAL_SOCKET_POOL,
-      std::max(std::min<int>(net::kDefaultMaxSocketsPerProxyServer, 99),
+      std::max(std::min<int>(net::kDefaultMaxSocketsPerProxyChain, 99),
                net::ClientSocketPoolManager::max_sockets_per_group(
                    net::HttpNetworkSession::NORMAL_SOCKET_POOL)));
 

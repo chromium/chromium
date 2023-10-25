@@ -161,7 +161,7 @@ CronetTransactionMetrics* NativeToIOSMetrics(Metrics& metrics)
   transaction_metrics.networkProtocolName =
       base::SysUTF8ToNSString(net::HttpResponseInfo::ConnectionInfoToString(
           response_info.connection_info));
-  transaction_metrics.proxyConnection = !response_info.proxy_server.is_direct();
+  transaction_metrics.proxyConnection = !response_info.proxy_chain.is_direct();
 
   // If the connect timing information is null, then there was no connection
   // establish - i.e., one was reused.

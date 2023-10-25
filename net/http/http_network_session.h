@@ -63,7 +63,7 @@ class NetworkErrorLoggingService;
 class NetworkQualityEstimator;
 class ProxyDelegate;
 class ProxyResolutionService;
-class ProxyServer;
+class ProxyChain;
 class QuicCryptoClientStreamFactory;
 #if BUILDFLAG(ENABLE_REPORTING)
 class ReportingService;
@@ -233,10 +233,10 @@ class NET_EXPORT HttpNetworkSession {
   void RemoveResponseDrainer(HttpResponseBodyDrainer* drainer);
 
   // Returns the socket pool of the given type for use with the specified
-  // ProxyServer. Use ProxyServer::Direct() to get the pool for use with direct
+  // ProxyChain. Use ProxyChain::Direct() to get the pool for use with direct
   // connections.
   ClientSocketPool* GetSocketPool(SocketPoolType pool_type,
-                                  const ProxyServer& proxy_server);
+                                  const ProxyChain& proxy_chain);
 
   CertVerifier* cert_verifier() { return cert_verifier_; }
   ProxyResolutionService* proxy_resolution_service() {

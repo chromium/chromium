@@ -1857,7 +1857,7 @@ int HttpCache::Transaction::DoSendRequestComplete(int result) {
   const HttpResponseInfo* response = network_trans_->GetResponseInfo();
   response_.network_accessed = response->network_accessed;
   response_.was_fetched_via_proxy = response->was_fetched_via_proxy;
-  response_.proxy_server = response->proxy_server;
+  response_.proxy_chain = response->proxy_chain;
   response_.restricted_prefetch = response->restricted_prefetch;
   response_.resolve_error_info = response->resolve_error_info;
 

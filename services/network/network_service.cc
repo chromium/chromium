@@ -739,7 +739,7 @@ void NetworkService::SetRawHeadersAccess(
 void NetworkService::SetMaxConnectionsPerProxy(int32_t max_connections) {
   int new_limit = max_connections;
   if (new_limit < 0)
-    new_limit = net::kDefaultMaxSocketsPerProxyServer;
+    new_limit = net::kDefaultMaxSocketsPerProxyChain;
 
   // Clamp the value between min_limit and max_limit.
   int max_limit = 99;
@@ -748,7 +748,7 @@ void NetworkService::SetMaxConnectionsPerProxy(int32_t max_connections) {
   new_limit = std::clamp(new_limit, min_limit, max_limit);
 
   // Assign the global limit.
-  net::ClientSocketPoolManager::set_max_sockets_per_proxy_server(
+  net::ClientSocketPoolManager::set_max_sockets_per_proxy_chain(
       net::HttpNetworkSession::NORMAL_SOCKET_POOL, new_limit);
 }
 

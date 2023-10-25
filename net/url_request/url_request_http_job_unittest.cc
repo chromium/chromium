@@ -26,6 +26,7 @@
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 #include "net/base/request_priority.h"
@@ -217,7 +218,7 @@ class URLRequestHttpJobWithProxy {
   std::unique_ptr<URLRequestContext> context_;
 };
 
-// Tests that when proxy is not used, the proxy server is set correctly on the
+// Tests that when a proxy is not used, the proxy chain is set correctly on the
 // URLRequest.
 TEST_F(URLRequestHttpJobWithProxyTest, TestFailureWithoutProxy) {
   URLRequestHttpJobWithProxy http_job_with_proxy(nullptr);
@@ -239,14 +240,15 @@ TEST_F(URLRequestHttpJobWithProxyTest, TestFailureWithoutProxy) {
   delegate.RunUntilComplete();
 
   EXPECT_THAT(delegate.request_status(), IsError(ERR_CONNECTION_RESET));
-  EXPECT_EQ(ProxyServer::Direct(), request->proxy_server());
+  EXPECT_EQ(ProxyChain::Direct(), request->proxy_chain());
   EXPECT_EQ(0, request->received_response_content_length());
   EXPECT_EQ(CountWriteBytes(writes), request->GetTotalSentBytes());
   EXPECT_EQ(CountReadBytes(reads), request->GetTotalReceivedBytes());
 }
 
-// Tests that when one proxy is in use and the connection to the proxy server
-// fails, the proxy server is still set correctly on the URLRequest.
+// Tests that when one proxy chain is in use and the connection to a proxy
+// server in the proxy chain fails, the proxy chain is still set correctly on
+// the URLRequest.
 TEST_F(URLRequestHttpJobWithProxyTest, TestSuccessfulWithOneProxy) {
   const char kSimpleProxyGetMockWrite[] =
       "GET http://www.example.com/ HTTP/1.1\r\n"
@@ -256,12 +258,12 @@ TEST_F(URLRequestHttpJobWithProxyTest, TestSuccessfulWithOneProxy) {
       "Accept-Encoding: gzip, deflate\r\n"
       "Accept-Language: en-us,fr\r\n\r\n";
 
-  const ProxyServer proxy_server =
-      ProxyUriToProxyServer("http://origin.net:80", ProxyServer::SCHEME_HTTP);
+  const ProxyChain proxy_chain =
+      ProxyUriToProxyChain("http://origin.net:80", ProxyServer::SCHEME_HTTP);
 
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
-          ProxyServerToPacResultElement(proxy_server),
+          ProxyChainToPacResultElement(proxy_chain),
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite writes[] = {MockWrite(kSimpleProxyGetMockWrite)};
@@ -284,26 +286,27 @@ TEST_F(URLRequestHttpJobWithProxyTest, TestSuccessfulWithOneProxy) {
   delegate.RunUntilComplete();
 
   EXPECT_THAT(delegate.request_status(), IsError(ERR_CONNECTION_RESET));
-  // When request fails due to proxy connection errors, the proxy server should
-  // still be set on the |request|.
-  EXPECT_EQ(proxy_server, request->proxy_server());
+  // When request fails due to proxy connection errors, the proxy chain should
+  // still be set on the `request`.
+  EXPECT_EQ(proxy_chain, request->proxy_chain());
   EXPECT_EQ(0, request->received_response_content_length());
   EXPECT_EQ(CountWriteBytes(writes), request->GetTotalSentBytes());
   EXPECT_EQ(0, request->GetTotalReceivedBytes());
 }
 
-// Tests that when two proxies are in use and the connection to the first proxy
-// server fails, the proxy server is set correctly on the URLRequest.
+// Tests that when two proxy chains are in use and the connection to a proxy
+// server in the first proxy chain fails, the proxy chain is set correctly on
+// the URLRequest.
 TEST_F(URLRequestHttpJobWithProxyTest,
        TestContentLengthSuccessfulRequestWithTwoProxies) {
-  const ProxyServer proxy_server =
-      ProxyUriToProxyServer("http://origin.net:80", ProxyServer::SCHEME_HTTP);
+  const ProxyChain proxy_chain =
+      ProxyUriToProxyChain("http://origin.net:80", ProxyServer::SCHEME_HTTP);
 
-  // Connection to |proxy_server| would fail. Request should be fetched over
+  // Connection to `proxy_chain` would fail. Request should be fetched over
   // DIRECT.
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
-          ProxyServerToPacResultElement(proxy_server) + "; DIRECT",
+          ProxyChainToPacResultElement(proxy_chain) + "; DIRECT",
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite writes[] = {MockWrite(kSimpleGetMockWrite)};
@@ -333,7 +336,7 @@ TEST_F(URLRequestHttpJobWithProxyTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_THAT(delegate.request_status(), IsOk());
-  EXPECT_EQ(ProxyServer::Direct(), request->proxy_server());
+  EXPECT_EQ(ProxyChain::Direct(), request->proxy_chain());
   EXPECT_EQ(12, request->received_response_content_length());
   EXPECT_EQ(CountWriteBytes(writes), request->GetTotalSentBytes());
   EXPECT_EQ(CountReadBytes(reads), request->GetTotalReceivedBytes());

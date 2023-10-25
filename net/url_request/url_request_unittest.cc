@@ -56,6 +56,7 @@
 #include "net/base/load_timing_info_test_util.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_module.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 #include "net/base/request_priority.h"
@@ -1346,9 +1347,9 @@ TEST_F(URLRequestTest, NetworkDelegateProxyError) {
   d.RunUntilComplete();
 
   // Check we see a failed request.
-  // The proxy server should be set before failure.
-  EXPECT_EQ(PacResultElementToProxyServer("PROXY myproxy:70"),
-            req->proxy_server());
+  // The proxy chain should be set before failure.
+  EXPECT_EQ(PacResultElementToProxyChain("PROXY myproxy:70"),
+            req->proxy_chain());
   EXPECT_EQ(ERR_PROXY_CONNECTION_FAILED, d.request_status());
   EXPECT_THAT(req->response_info().resolve_error_info.error,
               IsError(ERR_DNS_TIMED_OUT));
@@ -4046,10 +4047,10 @@ TEST_F(URLRequestTestHTTP, ProxyTunnelRedirectTest) {
 
     d.RunUntilComplete();
 
-    // The proxy server should be set before failure.
-    EXPECT_EQ(ProxyServer(ProxyServer::SCHEME_HTTP,
-                          http_test_server()->host_port_pair()),
-              r->proxy_server());
+    // The proxy chain should be set before failure.
+    EXPECT_EQ(ProxyChain(ProxyServer::SCHEME_HTTP,
+                         http_test_server()->host_port_pair()),
+              r->proxy_chain());
     EXPECT_EQ(ERR_TUNNEL_CONNECTION_FAILED, d.request_status());
     EXPECT_EQ(1, d.response_started_count());
     // We should not have followed the redirect.
@@ -4080,10 +4081,10 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateTunnelConnectionFailed) {
 
     d.RunUntilComplete();
 
-    // The proxy server should be set before failure.
-    EXPECT_EQ(ProxyServer(ProxyServer::SCHEME_HTTP,
-                          http_test_server()->host_port_pair()),
-              r->proxy_server());
+    // The proxy chain should be set before failure.
+    EXPECT_EQ(ProxyChain(ProxyServer::SCHEME_HTTP,
+                         http_test_server()->host_port_pair()),
+              r->proxy_chain());
     EXPECT_EQ(1, d.response_started_count());
     EXPECT_EQ(ERR_TUNNEL_CONNECTION_FAILED, d.request_status());
     // We should not have followed the redirect.
@@ -4159,8 +4160,8 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateCancelRequest) {
     r->Start();
     d.RunUntilComplete();
 
-    // The proxy server is not set before cancellation.
-    EXPECT_FALSE(r->proxy_server().is_valid());
+    // The proxy chain is not set before cancellation.
+    EXPECT_FALSE(r->proxy_chain().IsValid());
     EXPECT_EQ(ERR_EMPTY_RESPONSE, d.request_status());
     EXPECT_EQ(1, network_delegate.created_requests());
     EXPECT_EQ(0, network_delegate.destroyed_requests());
@@ -4190,12 +4191,12 @@ void NetworkDelegateCancelRequest(BlockingNetworkDelegate::BlockMode block_mode,
     r->Start();
     d.RunUntilComplete();
 
-    // The proxy server is not set before cancellation.
+    // The proxy chain is not set before cancellation.
     if (stage == BlockingNetworkDelegate::ON_BEFORE_URL_REQUEST ||
         stage == BlockingNetworkDelegate::ON_BEFORE_SEND_HEADERS) {
-      EXPECT_FALSE(r->proxy_server().is_valid());
+      EXPECT_FALSE(r->proxy_chain().IsValid());
     } else if (stage == BlockingNetworkDelegate::ON_HEADERS_RECEIVED) {
-      EXPECT_TRUE(r->proxy_server().is_direct());
+      EXPECT_TRUE(r->proxy_chain().is_direct());
     } else {
       NOTREACHED();
     }
@@ -4291,9 +4292,9 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateRedirectRequest) {
                               absl::nullopt /* modified_headers */);
     d.RunUntilComplete();
     EXPECT_EQ(OK, d.request_status());
-    EXPECT_EQ(ProxyServer(ProxyServer::SCHEME_HTTP,
-                          http_test_server()->host_port_pair()),
-              r->proxy_server());
+    EXPECT_EQ(ProxyChain(ProxyServer::SCHEME_HTTP,
+                         http_test_server()->host_port_pair()),
+              r->proxy_chain());
     EXPECT_EQ(OK, d.request_status());
     EXPECT_EQ(redirect_url, r->url());
     EXPECT_EQ(original_url, r->original_url());
@@ -4344,9 +4345,9 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateRedirectRequestSynchronously) {
     d.RunUntilComplete();
 
     EXPECT_EQ(OK, d.request_status());
-    EXPECT_EQ(ProxyServer(ProxyServer::SCHEME_HTTP,
-                          http_test_server()->host_port_pair()),
-              r->proxy_server());
+    EXPECT_EQ(ProxyChain(ProxyServer::SCHEME_HTTP,
+                         http_test_server()->host_port_pair()),
+              r->proxy_chain());
     EXPECT_EQ(OK, d.request_status());
     EXPECT_EQ(redirect_url, r->url());
     EXPECT_EQ(original_url, r->original_url());
@@ -4441,9 +4442,9 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateRedirectRequestOnHeadersReceived) {
     d.RunUntilComplete();
 
     EXPECT_EQ(OK, d.request_status());
-    EXPECT_EQ(ProxyServer(ProxyServer::SCHEME_HTTP,
-                          http_test_server()->host_port_pair()),
-              r->proxy_server());
+    EXPECT_EQ(ProxyChain(ProxyServer::SCHEME_HTTP,
+                         http_test_server()->host_port_pair()),
+              r->proxy_chain());
     EXPECT_EQ(OK, d.request_status());
     EXPECT_EQ(redirect_url, r->url());
     EXPECT_EQ(original_url, r->original_url());
@@ -4677,10 +4678,10 @@ TEST_F(URLRequestTestHTTP, UnexpectedServerAuthTest) {
 
     d.RunUntilComplete();
 
-    // The proxy server should be set before failure.
-    EXPECT_EQ(ProxyServer(ProxyServer::SCHEME_HTTP,
-                          http_test_server()->host_port_pair()),
-              r->proxy_server());
+    // The proxy chain should be set before failure.
+    EXPECT_EQ(ProxyChain(ProxyServer::SCHEME_HTTP,
+                         http_test_server()->host_port_pair()),
+              r->proxy_chain());
     EXPECT_EQ(ERR_TUNNEL_CONNECTION_FAILED, d.request_status());
   }
 }

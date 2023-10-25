@@ -30,6 +30,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_errors.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/transport_info.h"
 #include "net/base/upload_data_stream.h"
@@ -1648,7 +1649,7 @@ int HttpNetworkTransaction::HandleSSLClientAuthError(int error) {
   bool is_server = !UsingHttpProxyWithoutTunnel();
   HostPortPair host_port_pair =
       is_server ? HostPortPair::FromURL(request_->url)
-                : proxy_info_.proxy_server().host_port_pair();
+                : proxy_info_.proxy_chain().proxy_server().host_port_pair();
 
   if (error == ERR_SSL_PROTOCOL_ERROR || IsClientCertificateError(error)) {
     DCHECK((is_server && IsSecureRequest()) ||
@@ -1976,16 +1977,17 @@ bool HttpNetworkTransaction::HaveAuth(HttpAuth::Target target) const {
 GURL HttpNetworkTransaction::AuthURL(HttpAuth::Target target) const {
   switch (target) {
     case HttpAuth::AUTH_PROXY: {
-      if (!proxy_info_.proxy_server().is_valid() ||
-          proxy_info_.proxy_server().is_direct()) {
-        return GURL();  // There is no proxy server.
+      if (!proxy_info_.proxy_chain().IsValid() ||
+          proxy_info_.proxy_chain().is_direct()) {
+        return GURL();  // There is no proxy chain.
       }
       // TODO(https://crbug.com/1103768): Mapping proxy addresses to
       // URLs is a lossy conversion, shouldn't do this.
       const char* scheme =
           proxy_info_.is_secure_http_like() ? "https://" : "http://";
-      return GURL(scheme +
-                  proxy_info_.proxy_server().host_port_pair().ToString());
+      return GURL(
+          scheme +
+          proxy_info_.proxy_chain().proxy_server().host_port_pair().ToString());
     }
     case HttpAuth::AUTH_SERVER:
       if (ForWebSocketHandshake()) {
@@ -2104,11 +2106,11 @@ void HttpNetworkTransaction::SetProxyInfoInResponse(
   response_info->was_fetched_via_proxy = !proxy_info.is_direct();
   response_info->was_ip_protected = proxy_info.is_for_ip_protection();
   if (response_info->was_fetched_via_proxy && !proxy_info.is_empty()) {
-    response_info->proxy_server = proxy_info.proxy_server();
+    response_info->proxy_chain = proxy_info.proxy_chain();
   } else if (!response_info->was_fetched_via_proxy && proxy_info.is_direct()) {
-    response_info->proxy_server = ProxyServer::Direct();
+    response_info->proxy_chain = ProxyChain::Direct();
   } else {
-    response_info->proxy_server = ProxyServer();
+    response_info->proxy_chain = ProxyChain();
   }
 }
 

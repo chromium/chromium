@@ -304,7 +304,7 @@ TEST_F(HttpsWithDnsOverHttpsTest, EndToEnd) {
       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
   EXPECT_EQ(network_session
                 ->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,
-                                ProxyServer::Direct())
+                                ProxyChain::Direct())
                 ->IdleSocketCountInGroup(group_id),
             1u);
 

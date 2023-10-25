@@ -20,14 +20,14 @@
 
 namespace net {
 
-class ProxyServer;
+class ProxyChain;
 class ClientSocketPool;
 
 class NET_EXPORT_PRIVATE ClientSocketPoolManagerImpl
     : public ClientSocketPoolManager {
  public:
-  // |websocket_common_connect_job_params| is only used for direct WebSocket
-  // connections (No proxy in use). It's never used if |pool_type| is not
+  // `websocket_common_connect_job_params` is only used for direct WebSocket
+  // connections (No proxies in use). It's never used if `pool_type` is not
   // HttpNetworkSession::SocketPoolType::WEBSOCKET_SOCKET_POOL.
   ClientSocketPoolManagerImpl(
       const CommonConnectJobParams& common_connect_job_params,
@@ -45,14 +45,13 @@ class NET_EXPORT_PRIVATE ClientSocketPoolManagerImpl
                                  const char* net_log_reason_utf8) override;
   void CloseIdleSockets(const char* net_log_reason_utf8) override;
 
-  ClientSocketPool* GetSocketPool(const ProxyServer& proxy_server) override;
+  ClientSocketPool* GetSocketPool(const ProxyChain& proxy_chain) override;
 
   // Creates a Value summary of the state of the socket pools.
   base::Value SocketPoolInfoToValue() const override;
 
  private:
-  using SocketPoolMap =
-      std::map<ProxyServer, std::unique_ptr<ClientSocketPool>>;
+  using SocketPoolMap = std::map<ProxyChain, std::unique_ptr<ClientSocketPool>>;
 
   const CommonConnectJobParams common_connect_job_params_;
   // Used only for direct WebSocket connections (i.e., no proxy in use).

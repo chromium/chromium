@@ -50,6 +50,7 @@
 #include "net/base/load_timing_info_test_util.h"
 #include "net/base/net_errors.h"
 #include "net/base/privacy_mode.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_delegate.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
@@ -176,14 +177,14 @@ const char kAlternativeServiceHttpHeader[] =
 int GetIdleSocketCountInTransportSocketPool(HttpNetworkSession* session) {
   return session
       ->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,
-                      ProxyServer::Direct())
+                      ProxyChain::Direct())
       ->IdleSocketCount();
 }
 
 bool IsTransportSocketPoolStalled(HttpNetworkSession* session) {
   return session
       ->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,
-                      ProxyServer::Direct())
+                      ProxyChain::Direct())
       ->IsStalled();
 }
 
@@ -299,7 +300,7 @@ class CapturingProxyResolver : public ProxyResolver {
   };
 
   CapturingProxyResolver()
-      : proxy_server_(ProxyServer::SCHEME_HTTP, HostPortPair("myproxy", 80)) {}
+      : proxy_chain_(ProxyServer::SCHEME_HTTP, HostPortPair("myproxy", 80)) {}
 
   CapturingProxyResolver(const CapturingProxyResolver&) = delete;
   CapturingProxyResolver& operator=(const CapturingProxyResolver&) = delete;
@@ -312,15 +313,15 @@ class CapturingProxyResolver : public ProxyResolver {
                      CompletionOnceCallback callback,
                      std::unique_ptr<Request>* request,
                      const NetLogWithSource& net_log) override {
-    results->UseProxyServer(proxy_server_);
+    results->UseProxyChain(proxy_chain_);
     lookup_info_.push_back(LookupInfo{url, network_anonymization_key});
     return OK;
   }
 
   // Sets whether the resolver should use direct connections, instead of a
   // proxy.
-  void set_proxy_server(ProxyServer proxy_server) {
-    proxy_server_ = proxy_server;
+  void set_proxy_chain(const ProxyChain& proxy_chain) {
+    proxy_chain_ = proxy_chain;
   }
 
   const std::vector<LookupInfo>& lookup_info() const { return lookup_info_; }
@@ -328,7 +329,7 @@ class CapturingProxyResolver : public ProxyResolver {
  private:
   std::vector<LookupInfo> lookup_info_;
 
-  ProxyServer proxy_server_;
+  ProxyChain proxy_chain_;
 };
 
 class CapturingProxyResolverFactory : public ProxyResolverFactory {
@@ -368,9 +369,7 @@ class FailingProxyResolverFactory : public ProxyResolverFactory {
 
 class SingleProxyDelegate : public ProxyDelegate {
  public:
-  void set_proxy(const ProxyServer& proxy_server) {
-    proxy_server_ = proxy_server;
-  }
+  void set_proxy(const ProxyChain& proxy_chain) { proxy_chain_ = proxy_chain; }
 
   // ProxyDelegate implementation:
   void OnResolveProxy(const GURL& url,
@@ -378,8 +377,9 @@ class SingleProxyDelegate : public ProxyDelegate {
                       const std::string& method,
                       const ProxyRetryInfoMap& proxy_retry_info,
                       ProxyInfo* result) override {
-    if (proxy_server_.is_valid())
-      result->UseProxyServer(proxy_server_);
+    if (proxy_chain_.IsValid()) {
+      result->UseProxyChain(proxy_chain_);
+    }
   }
   void OnFallback(const ProxyChain& bad_chain, int net_error) override {}
   void OnBeforeTunnelRequest(const ProxyChain& proxy_chain,
@@ -393,7 +393,7 @@ class SingleProxyDelegate : public ProxyDelegate {
   }
 
  private:
-  ProxyServer proxy_server_;
+  ProxyChain proxy_chain_;
 };
 
 // A default minimal HttpRequestInfo for use in tests, targeting HTTP.
@@ -704,11 +704,11 @@ class CaptureGroupIdTransportSocketPool : public TransportClientSocketPool {
  public:
   explicit CaptureGroupIdTransportSocketPool(
       const CommonConnectJobParams* common_connect_job_params)
-      : TransportClientSocketPool(0,
-                                  0,
+      : TransportClientSocketPool(/*max_sockets=*/0,
+                                  /*max_sockets_per_group=*/0,
                                   base::TimeDelta(),
-                                  ProxyServer::Direct(),
-                                  false /* is_for_websockets */,
+                                  ProxyChain::Direct(),
+                                  /*is_for_websockets=*/false,
                                   common_connect_job_params) {}
 
   const ClientSocketPool::GroupId& last_group_id_received() const {
@@ -1506,7 +1506,7 @@ TEST_P(HttpNetworkTransactionTest, TwoIdenticalLocationHeaders) {
   std::string url;
   EXPECT_TRUE(response->headers->IsRedirect(&url));
   EXPECT_EQ("http://good.com/", url);
-  EXPECT_TRUE(response->proxy_server.is_direct());
+  EXPECT_TRUE(response->proxy_chain.is_direct());
 }
 
 // Checks that two distinct Location headers result in an error.
@@ -1567,7 +1567,7 @@ TEST_P(HttpNetworkTransactionTest, Head) {
   EXPECT_TRUE(response->headers);
   EXPECT_EQ(1234, response->headers->GetContentLength());
   EXPECT_EQ("HTTP/1.1 404 Not Found", response->headers->GetStatusLine());
-  EXPECT_TRUE(response->proxy_server.is_direct());
+  EXPECT_TRUE(response->proxy_chain.is_direct());
   EXPECT_THAT(connected_handler.transports(),
               ElementsAre(EmbeddedHttpServerTransportInfo()));
 
@@ -1625,7 +1625,7 @@ TEST_P(HttpNetworkTransactionTest, ReuseConnection) {
 
     EXPECT_TRUE(response->headers);
     EXPECT_EQ("HTTP/1.1 200 OK", response->headers->GetStatusLine());
-    EXPECT_TRUE(response->proxy_server.is_direct());
+    EXPECT_TRUE(response->proxy_chain.is_direct());
 
     std::string response_data;
     rv = ReadTransaction(&trans, &response_data);
@@ -2035,7 +2035,7 @@ void HttpNetworkTransactionTestBase::KeepAliveConnectionResendRequestTest(
     ASSERT_TRUE(response);
 
     EXPECT_TRUE(response->headers);
-    EXPECT_TRUE(response->proxy_server.is_direct());
+    EXPECT_TRUE(response->proxy_chain.is_direct());
     EXPECT_EQ("HTTP/1.1 200 OK", response->headers->GetStatusLine());
 
     std::string response_data;
@@ -3866,8 +3866,8 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthProxyNoKeepAliveHttp11) {
   EXPECT_EQ(407, response->headers->response_code());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
   EXPECT_TRUE(CheckBasicProxyAuth(response->auth_challenge));
-  EXPECT_EQ(PacResultElementToProxyServer("PROXY myproxy:70"),
-            response->proxy_server);
+  EXPECT_EQ(PacResultElementToProxyChain("PROXY myproxy:70"),
+            response->proxy_chain);
 
   // TODO(crbug.com/986744): Fix handling of OnConnected() when proxy
   // authentication is required. We should notify the callback that a connection
@@ -3896,8 +3896,8 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthProxyNoKeepAliveHttp11) {
   EXPECT_EQ(200, response->headers->response_code());
   EXPECT_EQ(5, response->headers->GetContentLength());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
-  EXPECT_EQ(PacResultElementToProxyServer("PROXY myproxy:70"),
-            response->proxy_server);
+  EXPECT_EQ(PacResultElementToProxyChain("PROXY myproxy:70"),
+            response->proxy_chain);
 
   TransportInfo expected_transport;
   expected_transport.type = TransportType::kProxied;
@@ -4117,8 +4117,8 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthProxyKeepAliveHttp11) {
     EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
     EXPECT_TRUE(CheckBasicProxyAuth(response->auth_challenge));
     EXPECT_FALSE(response->did_use_http_auth);
-    EXPECT_EQ(PacResultElementToProxyServer("PROXY myproxy:70"),
-              response->proxy_server);
+    EXPECT_EQ(PacResultElementToProxyChain("PROXY myproxy:70"),
+              response->proxy_chain);
 
     TestCompletionCallback callback2;
 
@@ -4136,8 +4136,8 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthProxyKeepAliveHttp11) {
     EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
     EXPECT_TRUE(CheckBasicProxyAuth(response->auth_challenge));
     EXPECT_TRUE(response->did_use_http_auth);
-    EXPECT_EQ(PacResultElementToProxyServer("PROXY myproxy:70"),
-              response->proxy_server);
+    EXPECT_EQ(PacResultElementToProxyChain("PROXY myproxy:70"),
+              response->proxy_chain);
 
     // Flush the idle socket before the NetLog and HttpNetworkTransaction go
     // out of scope.
@@ -6217,33 +6217,33 @@ TEST_P(HttpNetworkTransactionTest, SameDestinationForDifferentProxyTypes) {
               session
                   ->GetSocketPool(
                       HttpNetworkSession::NORMAL_SOCKET_POOL,
-                      ProxyServer(ProxyServer::SCHEME_SOCKS4,
-                                  SameProxyWithDifferentSchemesProxyResolver::
-                                      ProxyHostPortPair()))
+                      ProxyChain(ProxyServer::SCHEME_SOCKS4,
+                                 SameProxyWithDifferentSchemesProxyResolver::
+                                     ProxyHostPortPair()))
                   ->IdleSocketCount());
     EXPECT_EQ(test_case.expected_idle_socks5_sockets,
               session
                   ->GetSocketPool(
                       HttpNetworkSession::NORMAL_SOCKET_POOL,
-                      ProxyServer(ProxyServer::SCHEME_SOCKS5,
-                                  SameProxyWithDifferentSchemesProxyResolver::
-                                      ProxyHostPortPair()))
+                      ProxyChain(ProxyServer::SCHEME_SOCKS5,
+                                 SameProxyWithDifferentSchemesProxyResolver::
+                                     ProxyHostPortPair()))
                   ->IdleSocketCount());
     EXPECT_EQ(test_case.expected_idle_http_sockets,
               session
                   ->GetSocketPool(
                       HttpNetworkSession::NORMAL_SOCKET_POOL,
-                      ProxyServer(ProxyServer::SCHEME_HTTP,
-                                  SameProxyWithDifferentSchemesProxyResolver::
-                                      ProxyHostPortPair()))
+                      ProxyChain(ProxyServer::SCHEME_HTTP,
+                                 SameProxyWithDifferentSchemesProxyResolver::
+                                     ProxyHostPortPair()))
                   ->IdleSocketCount());
     EXPECT_EQ(test_case.expected_idle_https_sockets,
               session
                   ->GetSocketPool(
                       HttpNetworkSession::NORMAL_SOCKET_POOL,
-                      ProxyServer(ProxyServer::SCHEME_HTTPS,
-                                  SameProxyWithDifferentSchemesProxyResolver::
-                                      ProxyHostPortPair()))
+                      ProxyChain(ProxyServer::SCHEME_HTTPS,
+                                 SameProxyWithDifferentSchemesProxyResolver::
+                                     ProxyHostPortPair()))
                   ->IdleSocketCount());
   }
 }
@@ -6317,7 +6317,7 @@ TEST_P(HttpNetworkTransactionTest, HttpProxyLoadTimingNoPacTwoRequests) {
 
   const HttpResponseInfo* response1 = trans1->GetResponseInfo();
   ASSERT_TRUE(response1);
-  EXPECT_TRUE(response1->proxy_server.is_http());
+  EXPECT_TRUE(response1->proxy_chain.proxy_server().is_http());
   ASSERT_TRUE(response1->headers);
   EXPECT_EQ(1, response1->headers->GetContentLength());
 
@@ -6339,7 +6339,7 @@ TEST_P(HttpNetworkTransactionTest, HttpProxyLoadTimingNoPacTwoRequests) {
 
   const HttpResponseInfo* response2 = trans2->GetResponseInfo();
   ASSERT_TRUE(response2);
-  EXPECT_TRUE(response2->proxy_server.is_http());
+  EXPECT_TRUE(response2->proxy_chain.proxy_server().is_http());
   ASSERT_TRUE(response2->headers);
   EXPECT_EQ(2, response2->headers->GetContentLength());
 
@@ -6466,7 +6466,7 @@ TEST_P(HttpNetworkTransactionTest, ProxyResolvedWithNetworkAnonymizationKey) {
   proxy_config.set_pac_url(GURL("http://fooproxyurl"));
 
   CapturingProxyResolver capturing_proxy_resolver;
-  capturing_proxy_resolver.set_proxy_server(ProxyServer::Direct());
+  capturing_proxy_resolver.set_proxy_chain(ProxyChain::Direct());
   session_deps_.proxy_resolution_service =
       std::make_unique<ConfiguredProxyResolutionService>(
           std::make_unique<ProxyConfigServiceFixed>(ProxyConfigWithAnnotation(
@@ -6585,7 +6585,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyGet) {
   const HttpResponseInfo* response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
 
-  EXPECT_TRUE(response->proxy_server.is_https());
+  EXPECT_TRUE(response->proxy_chain.proxy_server().is_https());
   EXPECT_TRUE(response->headers->IsKeepAlive());
   EXPECT_EQ(200, response->headers->response_code());
   EXPECT_EQ(100, response->headers->GetContentLength());
@@ -6665,7 +6665,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyGet) {
 
   const HttpResponseInfo* response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
-  EXPECT_TRUE(response->proxy_server.is_https());
+  EXPECT_TRUE(response->proxy_chain.proxy_server().is_https());
   ASSERT_TRUE(response->headers);
   EXPECT_EQ("HTTP/1.1 200", response->headers->GetStatusLine());
 
@@ -7105,8 +7105,8 @@ TEST_P(HttpNetworkTransactionTest, ProxiedH2SessionAppearsDuringAuth) {
   proxy_config.set_pac_url(GURL("http://fooproxyurl"));
 
   CapturingProxyResolver capturing_proxy_resolver;
-  capturing_proxy_resolver.set_proxy_server(
-      ProxyServer(ProxyServer::SCHEME_HTTP, HostPortPair("myproxy", 70)));
+  capturing_proxy_resolver.set_proxy_chain(
+      ProxyChain(ProxyServer::SCHEME_HTTP, HostPortPair("myproxy", 70)));
   session_deps_.proxy_resolution_service =
       std::make_unique<ConfiguredProxyResolutionService>(
           std::make_unique<ProxyConfigServiceFixed>(ProxyConfigWithAnnotation(
@@ -7727,8 +7727,8 @@ TEST_P(HttpNetworkTransactionTest, SpdyProxyIsolation1) {
   std::string response_data;
 
   // Make a request using proxy:70 as a HTTP/2 proxy.
-  capturing_proxy_resolver.set_proxy_server(
-      ProxyServer(ProxyServer::SCHEME_HTTPS, HostPortPair("proxy", 70)));
+  capturing_proxy_resolver.set_proxy_chain(
+      ProxyChain(ProxyServer::SCHEME_HTTPS, HostPortPair("proxy", 70)));
   HttpRequestInfo request1;
   request1.method = "GET";
   request1.url = GURL("https://www.example.org/");
@@ -7756,7 +7756,7 @@ TEST_P(HttpNetworkTransactionTest, SpdyProxyIsolation1) {
   RunUntilIdle();
 
   // Make a direct HTTP/2 request to proxy:70.
-  capturing_proxy_resolver.set_proxy_server(ProxyServer::Direct());
+  capturing_proxy_resolver.set_proxy_chain(ProxyChain::Direct());
   HttpRequestInfo request2;
   request2.method = "GET";
   request2.url = GURL("https://proxy:70/");
@@ -7860,7 +7860,7 @@ TEST_P(HttpNetworkTransactionTest, SpdyProxyIsolation2) {
   std::string response_data;
 
   // Make a direct HTTP/2 request to proxy:70.
-  capturing_proxy_resolver.set_proxy_server(ProxyServer::Direct());
+  capturing_proxy_resolver.set_proxy_chain(ProxyChain::Direct());
   HttpRequestInfo request1;
   request1.method = "GET";
   request1.url = GURL("https://proxy:70/");
@@ -7874,8 +7874,8 @@ TEST_P(HttpNetworkTransactionTest, SpdyProxyIsolation2) {
   RunUntilIdle();
 
   // Make a request using proxy:70 as a HTTP/2 proxy.
-  capturing_proxy_resolver.set_proxy_server(
-      ProxyServer(ProxyServer::SCHEME_HTTPS, HostPortPair("proxy", 70)));
+  capturing_proxy_resolver.set_proxy_chain(
+      ProxyChain(ProxyServer::SCHEME_HTTPS, HostPortPair("proxy", 70)));
   HttpRequestInfo request2;
   request2.method = "GET";
   request2.url = GURL("https://www.example.org/");
@@ -7976,8 +7976,8 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyAuthRetry) {
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
   EXPECT_TRUE(CheckBasicSecureProxyAuth(response->auth_challenge));
   EXPECT_FALSE(response->did_use_http_auth);
-  EXPECT_EQ(PacResultElementToProxyServer("HTTPS myproxy:70"),
-            response->proxy_server);
+  EXPECT_EQ(PacResultElementToProxyChain("HTTPS myproxy:70"),
+            response->proxy_chain);
 
   TestCompletionCallback callback2;
 
@@ -8000,8 +8000,8 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyAuthRetry) {
   EXPECT_EQ(100, response->headers->GetContentLength());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
   EXPECT_TRUE(response->did_use_http_auth);
-  EXPECT_EQ(PacResultElementToProxyServer("HTTPS myproxy:70"),
-            response->proxy_server);
+  EXPECT_EQ(PacResultElementToProxyChain("HTTPS myproxy:70"),
+            response->proxy_chain);
 
   // The password prompt info should not be set.
   EXPECT_FALSE(response->auth_challenge.has_value());
@@ -8092,8 +8092,8 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyAuthRetryNoKeepAlive) {
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
   EXPECT_TRUE(CheckBasicSecureProxyAuth(response->auth_challenge));
   EXPECT_FALSE(response->did_use_http_auth);
-  EXPECT_EQ(PacResultElementToProxyServer("HTTPS myproxy:70"),
-            response->proxy_server);
+  EXPECT_EQ(PacResultElementToProxyChain("HTTPS myproxy:70"),
+            response->proxy_chain);
 
   TestCompletionCallback callback2;
 
@@ -8116,8 +8116,8 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyAuthRetryNoKeepAlive) {
   EXPECT_EQ(100, response->headers->GetContentLength());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
   EXPECT_TRUE(response->did_use_http_auth);
-  EXPECT_EQ(PacResultElementToProxyServer("HTTPS myproxy:70"),
-            response->proxy_server);
+  EXPECT_EQ(PacResultElementToProxyChain("HTTPS myproxy:70"),
+            response->proxy_chain);
 
   // The password prompt info should not be set.
   EXPECT_FALSE(response->auth_challenge.has_value());
@@ -8127,10 +8127,10 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyAuthRetryNoKeepAlive) {
 // connection that requires a restart, with a proxy change occurring over the
 // restart.
 TEST_P(HttpNetworkTransactionTest, HttpsProxyAuthRetryNoKeepAliveChangeProxy) {
-  const auto proxy1 = PacResultElementToProxyServer("HTTPS myproxy:70");
-  const auto proxy2 = PacResultElementToProxyServer("HTTPS myproxy2:70");
+  const auto proxy_chain1 = PacResultElementToProxyChain("HTTPS myproxy:70");
+  const auto proxy_chain2 = PacResultElementToProxyChain("HTTPS myproxy2:70");
   auto proxy_delegate = std::make_unique<SingleProxyDelegate>();
-  proxy_delegate->set_proxy(proxy1);
+  proxy_delegate->set_proxy(proxy_chain1);
 
   HttpRequestInfo request;
   request.method = "GET";
@@ -8216,12 +8216,12 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyAuthRetryNoKeepAliveChangeProxy) {
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
   EXPECT_TRUE(CheckBasicSecureProxyAuth(response->auth_challenge));
   EXPECT_FALSE(response->did_use_http_auth);
-  EXPECT_EQ(proxy1, response->proxy_server);
+  EXPECT_EQ(proxy_chain1, response->proxy_chain);
 
   TestCompletionCallback callback2;
 
   // Configure against https proxy server "myproxy2:70".
-  proxy_delegate->set_proxy(proxy2);
+  proxy_delegate->set_proxy(proxy_chain2);
 
   rv = trans.RestartWithAuth(AuthCredentials(kFoo, kBar), callback2.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
@@ -8242,7 +8242,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyAuthRetryNoKeepAliveChangeProxy) {
   EXPECT_EQ(100, response->headers->GetContentLength());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
   EXPECT_TRUE(response->did_use_http_auth);
-  EXPECT_EQ(proxy2, response->proxy_server);
+  EXPECT_EQ(proxy_chain2, response->proxy_chain);
 
   // The password prompt info should not be set.
   EXPECT_FALSE(response->auth_challenge.has_value());
@@ -8253,10 +8253,10 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyAuthRetryNoKeepAliveChangeProxy) {
 // occurring over the restart.
 TEST_P(HttpNetworkTransactionTest,
        HttpsProxyAuthRetryNoKeepAliveChangeToDirect) {
-  const auto proxy = PacResultElementToProxyServer("HTTPS myproxy:70");
-  const auto direct = ProxyServer::Direct();
+  const auto proxy_chain = PacResultElementToProxyChain("HTTPS myproxy:70");
+  const auto direct = ProxyChain::Direct();
   auto proxy_delegate = std::make_unique<SingleProxyDelegate>();
-  proxy_delegate->set_proxy(proxy);
+  proxy_delegate->set_proxy(proxy_chain);
 
   HttpRequestInfo request;
   request.method = "GET";
@@ -8341,7 +8341,7 @@ TEST_P(HttpNetworkTransactionTest,
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
   EXPECT_TRUE(CheckBasicSecureProxyAuth(response->auth_challenge));
   EXPECT_FALSE(response->did_use_http_auth);
-  EXPECT_EQ(proxy, response->proxy_server);
+  EXPECT_EQ(proxy_chain, response->proxy_chain);
 
   TestCompletionCallback callback2;
 
@@ -8366,7 +8366,7 @@ TEST_P(HttpNetworkTransactionTest,
   EXPECT_EQ(100, response->headers->GetContentLength());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
   EXPECT_FALSE(response->did_use_http_auth);
-  EXPECT_EQ(direct, response->proxy_server);
+  EXPECT_EQ(direct, response->proxy_chain);
 
   // The password prompt info should not be set.
   EXPECT_FALSE(response->auth_challenge.has_value());
@@ -11416,7 +11416,7 @@ TEST_P(HttpNetworkTransactionTest, HTTPSViaHttpsProxy) {
 
   ASSERT_TRUE(response);
 
-  EXPECT_TRUE(response->proxy_server.is_https());
+  EXPECT_TRUE(response->proxy_chain.proxy_server().is_https());
   EXPECT_TRUE(response->headers->IsKeepAlive());
   EXPECT_EQ(200, response->headers->response_code());
   EXPECT_EQ(100, response->headers->GetContentLength());
@@ -12450,7 +12450,8 @@ TEST_P(HttpNetworkTransactionTest, SOCKS4_HTTP_GET) {
   const HttpResponseInfo* response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
 
-  EXPECT_EQ(ProxyServer::SCHEME_SOCKS4, response->proxy_server.scheme());
+  EXPECT_EQ(ProxyServer::SCHEME_SOCKS4,
+            response->proxy_chain.proxy_server().scheme());
   LoadTimingInfo load_timing_info;
   EXPECT_TRUE(trans.GetLoadTimingInfo(&load_timing_info));
   TestLoadTimingNotReusedWithPac(load_timing_info,
@@ -12515,7 +12516,8 @@ TEST_P(HttpNetworkTransactionTest, SOCKS4_SSL_GET) {
 
   const HttpResponseInfo* response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
-  EXPECT_EQ(ProxyServer::SCHEME_SOCKS4, response->proxy_server.scheme());
+  EXPECT_EQ(ProxyServer::SCHEME_SOCKS4,
+            response->proxy_chain.proxy_server().scheme());
 
   std::string response_text;
   rv = ReadTransaction(&trans, &response_text);
@@ -12633,7 +12635,8 @@ TEST_P(HttpNetworkTransactionTest, SOCKS5_HTTP_GET) {
 
   const HttpResponseInfo* response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
-  EXPECT_EQ(ProxyServer::SCHEME_SOCKS5, response->proxy_server.scheme());
+  EXPECT_EQ(ProxyServer::SCHEME_SOCKS5,
+            response->proxy_chain.proxy_server().scheme());
 
   LoadTimingInfo load_timing_info;
   EXPECT_TRUE(trans.GetLoadTimingInfo(&load_timing_info));
@@ -12707,7 +12710,8 @@ TEST_P(HttpNetworkTransactionTest, SOCKS5_SSL_GET) {
 
   const HttpResponseInfo* response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
-  EXPECT_EQ(ProxyServer::SCHEME_SOCKS5, response->proxy_server.scheme());
+  EXPECT_EQ(ProxyServer::SCHEME_SOCKS5,
+            response->proxy_chain.proxy_server().scheme());
 
   LoadTimingInfo load_timing_info;
   EXPECT_TRUE(trans.GetLoadTimingInfo(&load_timing_info));
@@ -12725,7 +12729,7 @@ namespace {
 // Tests that for connection endpoints the group ids are correctly set.
 
 struct GroupIdTest {
-  std::string proxy_server;
+  std::string proxy_chain;
   std::string url;
   ClientSocketPool::GroupId expected_group_id;
   bool ssl;
@@ -12820,7 +12824,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
   for (const auto& test : tests) {
     session_deps_.proxy_resolution_service =
         ConfiguredProxyResolutionService::CreateFixedForTest(
-            test.proxy_server, TRAFFIC_ANNOTATION_FOR_TESTS);
+            test.proxy_chain, TRAFFIC_ANNOTATION_FOR_TESTS);
     std::unique_ptr<HttpNetworkSession> session(
         SetupSessionForGroupIdTests(&session_deps_));
 
@@ -12830,7 +12834,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
             &dummy_connect_job_params_);
     auto* transport_conn_pool_ptr = transport_conn_pool.get();
     auto mock_pool_manager = std::make_unique<MockClientSocketPoolManager>();
-    mock_pool_manager->SetSocketPool(ProxyServer::Direct(),
+    mock_pool_manager->SetSocketPool(ProxyChain::Direct(),
                                      std::move(transport_conn_pool));
     peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
 
@@ -12880,19 +12884,19 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForHTTPProxyConnections) {
   for (const auto& test : tests) {
     session_deps_.proxy_resolution_service =
         ConfiguredProxyResolutionService::CreateFixedForTest(
-            test.proxy_server, TRAFFIC_ANNOTATION_FOR_TESTS);
+            test.proxy_chain, TRAFFIC_ANNOTATION_FOR_TESTS);
     std::unique_ptr<HttpNetworkSession> session(
         SetupSessionForGroupIdTests(&session_deps_));
 
     HttpNetworkSessionPeer peer(session.get());
 
-    ProxyServer proxy_server(ProxyServer::SCHEME_HTTP,
-                             HostPortPair("http_proxy", 80));
+    ProxyChain proxy_chain(ProxyServer::SCHEME_HTTP,
+                           HostPortPair("http_proxy", 80));
     auto http_proxy_pool = std::make_unique<CaptureGroupIdTransportSocketPool>(
         &dummy_connect_job_params_);
     auto* http_proxy_pool_ptr = http_proxy_pool.get();
     auto mock_pool_manager = std::make_unique<MockClientSocketPoolManager>();
-    mock_pool_manager->SetSocketPool(proxy_server, std::move(http_proxy_pool));
+    mock_pool_manager->SetSocketPool(proxy_chain, std::move(http_proxy_pool));
     peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
 
     EXPECT_EQ(ERR_IO_PENDING,
@@ -12958,20 +12962,20 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
   for (const auto& test : tests) {
     session_deps_.proxy_resolution_service =
         ConfiguredProxyResolutionService::CreateFixedForTest(
-            test.proxy_server, TRAFFIC_ANNOTATION_FOR_TESTS);
+            test.proxy_chain, TRAFFIC_ANNOTATION_FOR_TESTS);
     std::unique_ptr<HttpNetworkSession> session(
         SetupSessionForGroupIdTests(&session_deps_));
 
     HttpNetworkSessionPeer peer(session.get());
 
-    ProxyServer proxy_server(
-        ProxyUriToProxyServer(test.proxy_server, ProxyServer::SCHEME_HTTP));
-    ASSERT_TRUE(proxy_server.is_valid());
+    ProxyChain proxy_chain =
+        ProxyUriToProxyChain(test.proxy_chain, ProxyServer::SCHEME_HTTP);
+    ASSERT_TRUE(proxy_chain.IsValid());
     auto socks_conn_pool = std::make_unique<CaptureGroupIdTransportSocketPool>(
         &dummy_connect_job_params_);
     auto* socks_conn_pool_ptr = socks_conn_pool.get();
     auto mock_pool_manager = std::make_unique<MockClientSocketPoolManager>();
-    mock_pool_manager->SetSocketPool(proxy_server, std::move(socks_conn_pool));
+    mock_pool_manager->SetSocketPool(proxy_chain, std::move(socks_conn_pool));
     peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
 
     HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -16075,14 +16079,13 @@ TEST_P(HttpNetworkTransactionTest, MultiRoundAuth) {
   CommonConnectJobParams common_connect_job_params(
       session->CreateCommonConnectJobParams());
   auto transport_pool = std::make_unique<TransportClientSocketPool>(
-      50,                            // Max sockets for pool
-      1,                             // Max sockets per group
-      base::Seconds(10),             // unused_idle_socket_timeout
-      ProxyServer::Direct(), false,  // is_for_websockets
-      &common_connect_job_params);
+      50,  // Max sockets for pool
+      1,   // Max sockets per group
+      /*unused_idle_socket_timeout=*/base::Seconds(10), ProxyChain::Direct(),
+      /*is_for_websockets=*/false, &common_connect_job_params);
   auto* transport_pool_ptr = transport_pool.get();
   auto mock_pool_manager = std::make_unique<MockClientSocketPoolManager>();
-  mock_pool_manager->SetSocketPool(ProxyServer::Direct(),
+  mock_pool_manager->SetSocketPool(ProxyChain::Direct(),
                                    std::move(transport_pool));
   session_peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
 
@@ -16495,9 +16498,9 @@ TEST_P(HttpNetworkTransactionTest, ProxyGet) {
   EXPECT_EQ(100, response->headers->GetContentLength());
   EXPECT_TRUE(response->was_fetched_via_proxy);
   EXPECT_FALSE(response->was_ip_protected);
-  EXPECT_EQ(ProxyServer(ProxyServer::SCHEME_HTTP,
-                        HostPortPair::FromString("myproxy:70")),
-            response->proxy_server);
+  EXPECT_EQ(ProxyChain(ProxyServer::SCHEME_HTTP,
+                       HostPortPair::FromString("myproxy:70")),
+            response->proxy_chain);
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
 
   TransportInfo expected_transport;
@@ -16580,9 +16583,9 @@ TEST_P(HttpNetworkTransactionTest, ProxyTunnelGet) {
   EXPECT_EQ(100, response->headers->GetContentLength());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
   EXPECT_TRUE(response->was_fetched_via_proxy);
-  EXPECT_EQ(ProxyServer(ProxyServer::SCHEME_HTTP,
-                        HostPortPair::FromString("myproxy:70")),
-            response->proxy_server);
+  EXPECT_EQ(ProxyChain(ProxyServer::SCHEME_HTTP,
+                       HostPortPair::FromString("myproxy:70")),
+            response->proxy_chain);
 
   TransportInfo expected_transport;
   expected_transport.type = TransportType::kProxied;
@@ -16663,9 +16666,9 @@ TEST_P(HttpNetworkTransactionTest, ProxyTunnelGetIPv6) {
   EXPECT_EQ(100, response->headers->GetContentLength());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
   EXPECT_TRUE(response->was_fetched_via_proxy);
-  EXPECT_EQ(ProxyServer(ProxyServer::SCHEME_HTTP,
-                        HostPortPair::FromString("myproxy:70")),
-            response->proxy_server);
+  EXPECT_EQ(ProxyChain(ProxyServer::SCHEME_HTTP,
+                       HostPortPair::FromString("myproxy:70")),
+            response->proxy_chain);
 
   LoadTimingInfo load_timing_info;
   EXPECT_TRUE(trans.GetLoadTimingInfo(&load_timing_info));
@@ -24144,20 +24147,20 @@ TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_Direct) {
   HttpNetworkTransaction::SetProxyInfoInResponse(proxy_info, &response_info);
   EXPECT_EQ(response_info.was_fetched_via_proxy, false);
   EXPECT_EQ(response_info.was_ip_protected, false);
-  EXPECT_EQ(response_info.proxy_server, ProxyServer::Direct());
+  EXPECT_EQ(response_info.proxy_chain, ProxyChain::Direct());
 }
 
 // Test behavior of SetProxyInfoInResponse with a proxied connection.
 TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_Proxied) {
   ProxyInfo proxy_info;
-  ProxyServer proxy_server =
-      ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTPS, "prx", 443);
-  proxy_info.UseProxyServer(proxy_server);
+  ProxyChain proxy_chain =
+      ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTPS, "prx", 443);
+  proxy_info.UseProxyChain(proxy_chain);
   HttpResponseInfo response_info;
   HttpNetworkTransaction::SetProxyInfoInResponse(proxy_info, &response_info);
   EXPECT_EQ(response_info.was_fetched_via_proxy, true);
   EXPECT_EQ(response_info.was_ip_protected, false);
-  EXPECT_EQ(response_info.proxy_server, proxy_server);
+  EXPECT_EQ(response_info.proxy_chain, proxy_chain);
 }
 
 // Test behavior of SetProxyInfoInResponse with an empty ProxyInfo.
@@ -24168,22 +24171,22 @@ TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_Empty) {
                                                  &response_info);
   EXPECT_EQ(response_info.was_fetched_via_proxy, true);
   EXPECT_EQ(response_info.was_ip_protected, false);
-  EXPECT_FALSE(response_info.proxy_server.is_valid());
+  EXPECT_FALSE(response_info.proxy_chain.IsValid());
 }
 
 // Test behavior of SetProxyInfoInResponse with a proxied connection for IP
 // protection.
 TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_IpProtection) {
   ProxyInfo proxy_info;
-  ProxyServer proxy_server =
-      ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTPS, "prx", 443);
-  proxy_info.UseProxyServer(proxy_server);
+  ProxyChain proxy_chain =
+      ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTPS, "prx", 443);
+  proxy_info.UseProxyChain(proxy_chain);
   proxy_info.set_is_for_ip_protection(true);
   HttpResponseInfo response_info;
   HttpNetworkTransaction::SetProxyInfoInResponse(proxy_info, &response_info);
   EXPECT_EQ(response_info.was_fetched_via_proxy, true);
   EXPECT_EQ(response_info.was_ip_protected, true);
-  EXPECT_EQ(response_info.proxy_server, proxy_server);
+  EXPECT_EQ(response_info.proxy_chain, proxy_chain);
 }
 
 }  // namespace net

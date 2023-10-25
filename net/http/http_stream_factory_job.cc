@@ -345,7 +345,7 @@ bool HttpStreamFactory::Job::TargettedSocketGroupHasActiveSocket() const {
   DCHECK(!using_quic_);
   DCHECK(!is_websocket_);
   ClientSocketPool* pool = session_->GetSocketPool(
-      HttpNetworkSession::NORMAL_SOCKET_POOL, proxy_info_.proxy_server());
+      HttpNetworkSession::NORMAL_SOCKET_POOL, proxy_info_.proxy_chain());
   DCHECK(pool);
   ClientSocketPool::GroupId connection_group(
       destination_, request_info_.privacy_mode,
@@ -746,12 +746,12 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
     return ERR_NO_SUPPORTED_PROXIES;
   }
 
-  DCHECK(proxy_info_.proxy_server().is_valid());
+  DCHECK(proxy_info_.proxy_chain().IsValid());
   next_state_ = STATE_INIT_CONNECTION_COMPLETE;
 
   if (proxy_info_.is_secure_http_like()) {
     // Disable network fetches for HTTPS proxies, since the network requests
-    // are probably going to need to go through the proxy too.
+    // are probably going to need to go through the proxy chain too.
     proxy_ssl_config_.disable_cert_verification_network_fetches = true;
   }
   if (using_ssl_) {

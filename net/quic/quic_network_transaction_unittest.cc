@@ -679,9 +679,10 @@ class QuicNetworkTransactionTest
     CheckResponsePort(&trans, port);
     CheckResponseData(&trans, expected);
     if (used_proxy) {
-      EXPECT_TRUE(trans.GetResponseInfo()->proxy_server.is_https());
+      EXPECT_TRUE(
+          trans.GetResponseInfo()->proxy_chain.proxy_server().is_https());
     } else {
-      EXPECT_TRUE(trans.GetResponseInfo()->proxy_server.is_direct());
+      EXPECT_TRUE(trans.GetResponseInfo()->proxy_chain.is_direct());
     }
   }
   void SendRequestAndExpectQuicResponse(const std::string& expected,
@@ -894,12 +895,13 @@ class QuicNetworkTransactionTest
     CheckResponsePort(&trans, port);
     CheckResponseData(&trans, expected);
     if (used_proxy) {
-      EXPECT_TRUE(trans.GetResponseInfo()->proxy_server.is_quic());
+      EXPECT_TRUE(
+          trans.GetResponseInfo()->proxy_chain.proxy_server().is_quic());
 
       // DNS aliases should be empty when using a proxy.
       EXPECT_TRUE(trans.GetResponseInfo()->dns_aliases.empty());
     } else {
-      EXPECT_TRUE(trans.GetResponseInfo()->proxy_server.is_direct());
+      EXPECT_TRUE(trans.GetResponseInfo()->proxy_chain.is_direct());
     }
   }
 
@@ -6296,7 +6298,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectHttpsServer) {
   CheckWasHttpResponse(&trans);
   CheckResponsePort(&trans, 70);
   CheckResponseData(&trans, "0123456789");
-  EXPECT_TRUE(trans.GetResponseInfo()->proxy_server.is_quic());
+  EXPECT_TRUE(trans.GetResponseInfo()->proxy_chain.proxy_server().is_quic());
 
   // DNS aliases should be empty when using a proxy.
   EXPECT_TRUE(trans.GetResponseInfo()->dns_aliases.empty());
@@ -6392,7 +6394,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectSpdyServer) {
   CheckWasSpdyResponse(&trans);
   CheckResponsePort(&trans, 70);
   CheckResponseData(&trans, "0123456789");
-  EXPECT_TRUE(trans.GetResponseInfo()->proxy_server.is_quic());
+  EXPECT_TRUE(trans.GetResponseInfo()->proxy_chain.proxy_server().is_quic());
 
   // Causes MockSSLClientSocket to disconproxyconnecthttpnect, which causes the
   // underlying QUIC proxy socket to disconnect.
@@ -6510,7 +6512,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseTransportSocket) {
   CheckWasHttpResponse(&trans_1);
   CheckResponsePort(&trans_1, 70);
   CheckResponseData(&trans_1, "0123456789");
-  EXPECT_TRUE(trans_1.GetResponseInfo()->proxy_server.is_quic());
+  EXPECT_TRUE(trans_1.GetResponseInfo()->proxy_chain.proxy_server().is_quic());
 
   request_.url = GURL("https://mail.example.org/2");
   HttpNetworkTransaction trans_2(DEFAULT_PRIORITY, session_.get());
@@ -6518,7 +6520,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseTransportSocket) {
   CheckWasHttpResponse(&trans_2);
   CheckResponsePort(&trans_2, 70);
   CheckResponseData(&trans_2, "0123456");
-  EXPECT_TRUE(trans_2.GetResponseInfo()->proxy_server.is_quic());
+  EXPECT_TRUE(trans_2.GetResponseInfo()->proxy_chain.proxy_server().is_quic());
 
   // Causes MockSSLClientSocket to disconnect, which causes the underlying QUIC
   // proxy socket to disconnect.
@@ -6668,7 +6670,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseQuicSession) {
   CheckWasHttpResponse(&trans_1);
   CheckResponsePort(&trans_1, 70);
   CheckResponseData(&trans_1, "0123456789");
-  EXPECT_TRUE(trans_1.GetResponseInfo()->proxy_server.is_quic());
+  EXPECT_TRUE(trans_1.GetResponseInfo()->proxy_chain.proxy_server().is_quic());
 
   request_.url = GURL("https://different.example.org/");
   HttpNetworkTransaction trans_2(DEFAULT_PRIORITY, session_.get());
@@ -6676,7 +6678,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseQuicSession) {
   CheckWasSpdyResponse(&trans_2);
   CheckResponsePort(&trans_2, 70);
   CheckResponseData(&trans_2, "0123456");
-  EXPECT_TRUE(trans_2.GetResponseInfo()->proxy_server.is_quic());
+  EXPECT_TRUE(trans_2.GetResponseInfo()->proxy_chain.proxy_server().is_quic());
 
   // Causes MockSSLClientSocket to disconnect, which causes the underlying QUIC
   // proxy socket to disconnect.
@@ -6896,7 +6898,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectBadCertificate) {
   CheckWasHttpResponse(&trans);
   CheckResponsePort(&trans, 70);
   CheckResponseData(&trans, "0123456789");
-  EXPECT_TRUE(trans.GetResponseInfo()->proxy_server.is_quic());
+  EXPECT_TRUE(trans.GetResponseInfo()->proxy_chain.proxy_server().is_quic());
 
   // Causes MockSSLClientSocket to disconnect, which causes the underlying QUIC
   // proxy socket to disconnect.

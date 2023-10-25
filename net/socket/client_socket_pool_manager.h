@@ -24,11 +24,11 @@ class ClientSocketHandle;
 class NetLogWithSource;
 class NetworkAnonymizationKey;
 class ProxyInfo;
-class ProxyServer;
+class ProxyChain;
 
 struct SSLConfig;
 
-constexpr int kDefaultMaxSocketsPerProxyServer = 32;
+constexpr int kDefaultMaxSocketsPerProxyChain = 32;
 
 class NET_EXPORT_PRIVATE ClientSocketPoolManager {
  public:
@@ -49,9 +49,9 @@ class NET_EXPORT_PRIVATE ClientSocketPoolManager {
       HttpNetworkSession::SocketPoolType pool_type,
       int socket_count);
 
-  static int max_sockets_per_proxy_server(
+  static int max_sockets_per_proxy_chain(
       HttpNetworkSession::SocketPoolType pool_type);
-  static void set_max_sockets_per_proxy_server(
+  static void set_max_sockets_per_proxy_chain(
       HttpNetworkSession::SocketPoolType pool_type,
       int socket_count);
 
@@ -64,9 +64,9 @@ class NET_EXPORT_PRIVATE ClientSocketPoolManager {
                                          const char* net_log_reason_utf8) = 0;
   virtual void CloseIdleSockets(const char* net_log_reason_utf8) = 0;
 
-  // Returns the socket pool for the specified ProxyServer (Which may be
-  // ProxyServer::Direct()).
-  virtual ClientSocketPool* GetSocketPool(const ProxyServer& proxy_server) = 0;
+  // Returns the socket pool for the specified ProxyChain (Which may be
+  // ProxyChain::Direct()).
+  virtual ClientSocketPool* GetSocketPool(const ProxyChain& proxy_chain) = 0;
 
   // Creates a Value summary of the state of the socket pools.
   virtual base::Value SocketPoolInfoToValue() const = 0;

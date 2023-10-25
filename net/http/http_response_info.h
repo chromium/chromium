@@ -12,7 +12,7 @@
 #include "net/base/auth.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
-#include "net/base/proxy_server.h"
+#include "net/base/proxy_chain.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/http/alternate_protocol_usage.h"
 #include "net/http/http_vary_data.h"
@@ -164,27 +164,27 @@ class NET_EXPORT HttpResponseInfo {
   // True if ALPN was negotiated for this request.
   bool was_alpn_negotiated = false;
 
-  // True if the response was fetched via an explicit proxy.  The proxy could
-  // be any type of proxy, HTTP or SOCKS.  Note, we do not know if a
+  // True if the response was fetched via explicit proxying. Any type of
+  // proxying may have taken place, HTTP or SOCKS. Note, we do not know if a
   // transparent proxy may have been involved.
   //
-  // If true and this struct was not restored from pickled data, |proxy_server|
-  // contains the proxy server that was used.
+  // If true and this struct was not restored from pickled data, `proxy_chain`
+  // contains the proxy chain that was used.
   //
-  // TODO(https://crbug.com/653354): Remove this in favor of |proxy_server|.
+  // TODO(https://crbug.com/653354): Remove this in favor of `proxy_chain`.
   bool was_fetched_via_proxy = false;
 
-  // Information about the proxy used to fetch this response, if any.
+  // Information about the proxy chain used to fetch this response, if any.
   //
-  // This field is not persisted by |Persist()| and not restored by
-  // |InitFromPickle()|.
+  // This field is not persisted by `Persist()` and not restored by
+  // `InitFromPickle()`.
   //
-  // TODO(https://crbug.com/653354): Support this field in |Persist()| and
-  // |InitFromPickle()| then use it to replace |was_fetched_via_proxy|.
-  ProxyServer proxy_server;
+  // TODO(https://crbug.com/653354): Support this field in `Persist()` and
+  // `InitFromPickle()` then use it to replace `was_fetched_via_proxy`.
+  ProxyChain proxy_chain;
 
   // Whether this request was covered by IP protection. This may be true even if
-  // the IP Protection proxy server is `direct://`. It is false if `was_cached`.
+  // the IP Protection proxy chain is `direct://`. It is false if `was_cached`.
   // This field is not persisted by `Persist()` and not restored by
   // `InitFromPickle()`.
   bool was_ip_protected = false;

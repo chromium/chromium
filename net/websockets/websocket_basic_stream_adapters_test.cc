@@ -31,7 +31,7 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_handle.h"
 #include "net/base/privacy_mode.h"
-#include "net/base/proxy_server.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/request_priority.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cert/cert_verify_result.h"
@@ -143,11 +143,11 @@ class WebSocketClientSocketHandleAdapterTest : public TestWithTaskEnvironment {
             url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443),
             PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
             SecureDnsPolicy::kAllow),
-        socks_params, TRAFFIC_ANNOTATION_FOR_TESTS /* proxy_annotation_tag */,
+        socks_params, /*proxy_annotation_tag=*/TRAFFIC_ANNOTATION_FOR_TESTS,
         MEDIUM, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
         callback.callback(), ClientSocketPool::ProxyAuthCallback(),
         network_session_->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,
-                                        ProxyServer::Direct()),
+                                        ProxyChain::Direct()),
         NetLogWithSource());
     rv = callback.GetResult(rv);
     return rv == OK;
