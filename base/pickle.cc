@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <limits>
 #include <ostream>
+#include <type_traits>
 
 #include "base/bits.h"
 #include "base/numerics/safe_conversions.h"
@@ -28,13 +29,13 @@ PickleIterator::PickleIterator(const Pickle& pickle)
 
 template <typename Type>
 inline bool PickleIterator::ReadBuiltinType(Type* result) {
+  static_assert(
+      std::is_integral_v<Type> && !std::is_same_v<Type, bool>,
+      "This method is only safe with to use with types without padding bits.");
   const char* read_from = GetReadPointerAndAdvance<Type>();
   if (!read_from)
     return false;
-  if (sizeof(Type) > sizeof(uint32_t))
-    memcpy(result, read_from, sizeof(*result));
-  else
-    *result = *reinterpret_cast<const Type*>(read_from);
+  memcpy(result, read_from, sizeof(*result));
   return true;
 }
 
@@ -79,7 +80,14 @@ inline const char* PickleIterator::GetReadPointerAndAdvance(
 }
 
 bool PickleIterator::ReadBool(bool* result) {
-  return ReadBuiltinType(result);
+  // Not all bit patterns are valid bools. Avoid undefined behavior by reading a
+  // type with no padding bits, then converting to bool.
+  uint8_t v;
+  if (!ReadBuiltinType(&v)) {
+    return false;
+  }
+  *result = v != 0;
+  return true;
 }
 
 bool PickleIterator::ReadInt(int* result) {

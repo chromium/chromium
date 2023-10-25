@@ -634,4 +634,16 @@ TEST(PickleTest, ReachedEnd) {
   EXPECT_TRUE(iter.ReachedEnd());
 }
 
+// Test that reading a value other than 0 or 1 as a bool does not trigger
+// UBSan.
+TEST(PickleTest, NonCanonicalBool) {
+  Pickle pickle;
+  pickle.WriteInt(0xff);
+
+  PickleIterator iter(pickle);
+  bool b;
+  ASSERT_TRUE(iter.ReadBool(&b));
+  EXPECT_TRUE(b);
+}
+
 }  // namespace base
