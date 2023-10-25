@@ -26717,6 +26717,8 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="19" label="Failed YUV video quad HLG"/>
   <int value="20"
       label="Failed YUV video quad no p010 video processor support"/>
+  <int value="21" label="Failed YUV video quad hdr non fullscreen"/>
+  <int value="22" label="Failed YUV video quad hdr non p010"/>
 </enum>
 
 <enum name="DebugScenario">
