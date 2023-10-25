@@ -49,6 +49,12 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 };
 
 @interface SignoutActionSheetCoordinator () {
+  // YES if the coordinator asked its delegate to block the user interaction.
+  // This boolean makes sure the user interaction is allowed when `stop` is
+  // called.
+  BOOL _userActionBlocked;
+  // YES if the coordinator has been stopped.
+  BOOL _stopped;
   // Rectangle for the popover alert.
   CGRect _rect;
   // View for the popovert alert.
@@ -107,10 +113,17 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 }
 
 - (void)stop {
+  if (_userActionBlocked) {
+    [self allowUserInteraction];
+  }
   [self dismissActionSheetCoordinator];
+  _stopped = YES;
+  [self callCompletionBlock:NO];
 }
 
 - (void)dealloc {
+  DCHECK(!_userActionBlocked);
+  DCHECK(_stopped);
   DCHECK(!self.actionSheetCoordinator);
 }
 
@@ -235,10 +248,24 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 
 #pragma mark - Private
 
+// Calls the delegate to prevent user actions, and updates `_userActionBlocked`.
+- (void)preventUserInteraction {
+  DCHECK(!_userActionBlocked);
+  _userActionBlocked = YES;
+  [self.delegate signoutActionSheetCoordinatorPreventUserInteraction:self];
+}
+
+// Calls the delegate to allow user actions, and updates `_userActionBlocked`.
+- (void)allowUserInteraction {
+  DCHECK(_userActionBlocked);
+  _userActionBlocked = NO;
+  [self.delegate signoutActionSheetCoordinatorAllowUserInteraction:self];
+}
+
 // Fetches for unsynced data, and the sign-out continued after (with unsynced
 // data dialog if needed, and then sign-out).
 - (void)checkForUnsyncedDataAndSignOut {
-  [self.delegate signoutActionSheetCoordinatorPreventUserInteraction:self];
+  [self preventUserInteraction];
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
   __weak __typeof(self) weakSelf = self;
@@ -251,7 +278,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 // Displays the sign-out confirmation dialog if `set` contains an "interesting"
 // data type, otherwise the sign-out is triggered without dialog.
 - (void)continueSignOutWithUnsyncedDataModelTypeSet:(syncer::ModelTypeSet)set {
-  [self.delegate signoutActionSheetCoordinatorAllowUserInteraction:self];
+  [self allowUserInteraction];
   if (set.HasAny({syncer::BOOKMARKS, syncer::READING_LIST, syncer::PASSWORDS,
                   syncer::CONTACT_INFO})) {
     [self startActionSheetCoordinatorForSignout];
@@ -367,9 +394,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   [self.actionSheetCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
                 action:^{
-                  if (weakSelf) {
-                    weakSelf.completion(NO);
-                  }
+                  [weakSelf callCompletionBlock:NO];
                   [weakSelf dismissActionSheetCoordinator];
                 }
                  style:UIAlertActionStyleCancel];
@@ -384,12 +409,10 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 
   if (!self.authenticationService->HasPrimaryIdentity(
           signin::ConsentLevel::kSignin)) {
-    self.completion(YES);
+    [self callCompletionBlock:YES];
     return;
   }
-
-  [self.delegate signoutActionSheetCoordinatorPreventUserInteraction:self];
-
+  [self preventUserInteraction];
   id<SnackbarCommands> snackbarCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SnackbarCommands);
   // The snackbar message might be nil if the snackbar is not needed.
@@ -413,10 +436,13 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 
 // Called when the sign-out is done.
 - (void)signOutDidFinish {
-  [self.delegate signoutActionSheetCoordinatorAllowUserInteraction:self];
-  if (self.completion) {
-    self.completion(YES);
+  if (_stopped) {
+    // The coordinator has been stopped. The UI has been unblocked, and the
+    // owner doesn't expect the completion call anymore.
+    return;
   }
+  [self allowUserInteraction];
+  [self callCompletionBlock:YES];
 }
 
 // Returns snackbar if needed.
@@ -446,6 +472,16 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
           : IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE;
   return
       [MDCSnackbarMessage messageWithText:l10n_util::GetNSString(message_id)];
+}
+
+// Calls `self.completion` if available, and sets it to `null` before the call.
+- (void)callCompletionBlock:(BOOL)signedOut {
+  if (!self.completion) {
+    return;
+  }
+  signin_ui::CompletionCallback completion = self.completion;
+  self.completion = nil;
+  completion(signedOut);
 }
 
 @end
