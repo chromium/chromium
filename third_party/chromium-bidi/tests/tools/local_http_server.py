@@ -14,7 +14,7 @@
 #  limitations under the License.
 
 import base64
-import time
+from threading import Event
 
 from pytest_httpserver import HTTPServer
 from werkzeug.wrappers import Request, Response
@@ -23,25 +23,28 @@ from werkzeug.wrappers import Request, Response
 class LocalHttpServer:
     """A wrapper of `pytest_httpserver.httpserver` to simplify the usage. Sets
     up common use cases and provides url for them."""
+
     __http_server: HTTPServer
+
     __path_200 = "/200"
     __path_permanent_redirect = "/301"
     __path_basic_auth = "/401"
     __path_hang_forever = "/hang_forever"
+
     default_200_page_content: str = 'default 200 page'
 
     def __init__(self, http_server: HTTPServer) -> None:
         super().__init__()
         self.__http_server = http_server
 
-        # Setting up 200 page.
+        # Set up 200 page.
         self.__http_server \
             .expect_request(self.__path_200) \
             .respond_with_data(
                 f"<html><body>{self.default_200_page_content}</body></html>",
                 headers={"Content-Type": "text/html"})
 
-        # Setting up permanent redirect.
+        # Set up permanent redirect.
         self.__http_server \
             .expect_request(self.__path_permanent_redirect) \
             .respond_with_data('', 301, {"Location": self.url_200()})
@@ -68,13 +71,16 @@ class LocalHttpServer:
             .expect_request(self.__path_basic_auth) \
             .respond_with_handler(process_auth)
 
-        def hang_forever(request):
-            while True:
-                time.sleep(60)
-            raise Exception("Should not reach here")
+        def hang_forever(_):
+            self.hang_forever_stop_flag = Event()
+            while not self.hang_forever_stop_flag.is_set():
+                self.hang_forever_stop_flag.wait(60)
 
         self.__http_server.expect_request(self.__path_hang_forever) \
             .respond_with_handler(hang_forever)
+
+    def hang_forever_stop(self):
+        self.hang_forever_stop_flag.set()
 
     def _url_for(self, suffix: str, host: str = 'localhost') -> str:
         """

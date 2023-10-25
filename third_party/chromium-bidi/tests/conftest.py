@@ -162,8 +162,10 @@ def auth_required_url(local_server: LocalHttpServer):
 @pytest.fixture
 def hang_url(local_server: LocalHttpServer):
     """Return a URL that hangs forever."""
-    pytest.skip(reason='TODO: Use our own test server.')
-    return local_server.url_hang_forever()
+    try:
+        yield local_server.url_hang_forever()
+    finally:
+        local_server.hang_forever_stop()
 
 
 @pytest.fixture
