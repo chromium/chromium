@@ -6,6 +6,7 @@
 
 #include <base/notreached.h>
 #include <base/posix/eintr_wrapper.h>
+#include <base/task/bind_post_task.h>
 #include <fcntl.h>
 #include <libudev.h>
 #include <linux/usb/video.h>
@@ -116,23 +117,113 @@ IpPeripheralServiceClient::SetControlCallback ConvertSetCtrlCallbackForDbus(
       std::move(callback));
 }
 
+void GetCtrlDbus(const std::string& dev_path,
+                 const uint8_t& query_selector,
+                 const uint8_t& request,
+                 XuCameraService::GetCtrlCallback callback) const {
+  if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&GetCtrlDbus, dev_path, guid, query_selector,
+                                  request, std::move(callback)));
+  }
+  // Falcon firmware through 1.5.17 does not return the expected GET_INFO
+  // value.  This array, indexed by query_selector, provides the response
+  // corresponding to the support level at 1.5.17.
+  const uint8_t kUnsupported = 0x0;
+  const uint8_t kRead = 0x1;
+  const uint8_t kWrite = 0x2;
+  const uint8_t kAutoupdate = 0x8;
+  static const uint8_t kExpectedGetInfo[] = {
+      /* not a selector */ kUnsupported,
+      /* GOOGXU_FRAME_STRATEGY */ kAutoupdate | kWrite | kRead,
+      /* GOOGXU_REFRAME */ kWrite,
+      /* GOOGXU_OCCUPANCY_COUNTING_TOGGLE */ kAutoupdate | kWrite | kRead,
+      /* GOOGXU_OCCUPANCY_COUNTING_READ */ kAutoupdate | kRead,
+      /* GOOGXU_OCCUPANCY_STATUS_INFO */ kUnsupported,  // kAutoupdate | kRead
+      /* GOOGXU_OCCUPANCY_STATUS_RESET */ kWrite | kRead,
+      /* GOOGXU_PRESETS */ kWrite,
+      /* GOOGXU_PAN_TILT_ABSOLUTE */ kAutoupdate | kWrite | kRead,
+      /* GOOGXU_PAN_TILT_RELATIVE */ kUnsupported,
+  };
+  // dbus call: must be on UI thread
+  const std::string& ip_address = dev_path;
+  VLOG(4) << __func__ << " ip - " << ip_address  //
+          << " selector - " << static_cast<unsigned int>(query_selector)
+          << " request - " << static_cast<unsigned int>(request);
+
+  auto* ip_peripheral_service_client = IpPeripheralServiceClient::Get();
+  auto get_control_callback =
+      ConvertGetCtrlCallbackForDbus(std::move(callback));
+  if (!ip_peripheral_service_client) {
+    LOG(ERROR) << __func__ << " failed to get IpPeripheralServiceClient";
+    std::move(get_control_callback).Run(false, std::vector<uint8_t>());
+  } else if (UVC_GET_INFO == request) {
+    if (query_selector >= base::size(kExpectedGetInfo)) {
+      LOG(ERROR) << __func__ << " GET_INFO for query_selector=["
+                 << static_cast<unsigned int>(query_selector)
+                 << "] not possible, max is "
+                 << static_cast<unsigned int>(base::size(kExpectedGetInfo));
+      std::move(get_control_callback).Run(false, std::vector<uint8_t>());
+    } else {
+      std::vector<uint8_t> expected_get_info = {
+          kExpectedGetInfo[query_selector]};
+      std::move(get_control_callback).Run(true, expected_get_info);
+    }
+  } else {
+    ip_peripheral_service_client->GetControl(ip_address, meet_xu_guid_le_,
+                                             query_selector, request,
+                                             std::move(get_control_callback));
+  }
+}
+
+void SetCtrlDbus(const std::string& dev_path,
+                 const uint8_t& query_selector,
+                 const std::vector<uint8_t>& data,
+                 XuCameraService::SetCtrlCallback callback) const {
+  if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&SetCtrlDbus, dev_path, guid, query_selector,
+                                  data, std::move(callback)));
+  }
+  // dbus call: must be on UI thread
+  const std::string& ip_address = dev_path;
+  VLOG(4) << __func__ << " ip - " << ip_address  //
+          << " selector - " << static_cast<unsigned int>(query_selector);
+
+  auto* ip_peripheral_service_client = IpPeripheralServiceClient::Get();
+  auto set_control_callback =
+      ConvertSetCtrlCallbackForDbus(std::move(callback));
+  if (!ip_peripheral_service_client) {
+    LOG(ERROR) << __func__ << " failed to get IpPeripheralServiceClient";
+    std::move(set_control_callback).Run(false);
+  } else {
+    ip_peripheral_service_client->SetControl(ip_address, meet_xu_guid_le_,
+                                             query_selector, data,
+                                             std::move(set_control_callback));
+  }
+}
+
 void TranslateDeviceId(
     const std::string& hashed_device_id,
     base::OnceCallback<void(const absl::optional<std::string>&)> callback,
     const url::Origin& security_origin,
     const std::string& salt) {
-  VLOG(4) << __func__;
+  VLOG(4) << __func__ << " hashed_device_id=[" << hashed_device_id
+          << "] security_origin=[" << security_origin << "] salt=[" << salt
+          << "]";
+  auto callback_on_ui_thread = base::BindPostTask(
+      content::GetUIThreadTaskRunner({}), std::move(callback));
+
   auto translate_device_id_callback = base::BindOnce(
       [](const std::string& hashed_device_id,
          base::OnceCallback<void(const absl::optional<std::string>&)> callback,
          const url::Origin& security_origin, const std::string& salt) {
-        VLOG(4) << "About to call content::GetMediaDeviceIDForHMAC";
         content::GetMediaDeviceIDForHMAC(
             blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, salt,
             security_origin, hashed_device_id,
             content::GetUIThreadTaskRunner({}), std::move(callback));
       },
-      std::move(hashed_device_id), std::move(callback),
+      std::move(hashed_device_id), std::move(callback_on_ui_thread),
       std::move(security_origin), std::move(salt));
 
   content::GetIOThreadTaskRunner({})->PostTask(
@@ -243,6 +334,7 @@ void XuCameraService::SetDelegate(Delegate* delegate) {
 void XuCameraService::GetUnitId(mojom::WebcamIdPtr id,
                                 const std::vector<uint8_t>& guid_le,
                                 GetUnitIdCallback callback) {
+  // mojom entry point: expected to be on the calling (UI) thread
   auto host_id = receivers_.current_context();
 
   auto get_unit_id_callback = base::BindOnce(
@@ -258,6 +350,7 @@ void XuCameraService::GetUnitIdWithDevicePath(
     GetUnitIdCallback callback,
     const absl::optional<std::string>& dev_path) {
   if (dev_path.has_value()) {
+    VLOG(4) << __func__ << " dev_path=[" << *dev_path << "]";
     const bool is_ip_camera = IsIpCamera(*dev_path);
     if (is_ip_camera) {
       VLOG(4) << __func__ << ": No UnitId for IP cameras";
@@ -273,6 +366,7 @@ void XuCameraService::GetUnitIdWithDevicePath(
       return;
     }
   }
+  VLOG(4) << __func__ << " no dev_path";
 
   content::GetDeviceService().BindUsbDeviceManager(
       usb_manager_.BindNewPipeAndPassReceiver());
@@ -334,6 +428,7 @@ void XuCameraService::OnGetDevices(
 void XuCameraService::MapCtrl(mojom::WebcamIdPtr id,
                               mojom::ControlMappingPtr mapping_ctrl,
                               MapCtrlCallback callback) {
+  // mojom entry point: expected to be on the calling (UI) thread
   auto host_id = receivers_.current_context();
 
   auto map_ctrl_callback = base::BindOnce(
@@ -402,6 +497,7 @@ void XuCameraService::GetCtrl(mojom::WebcamIdPtr id,
                               mojom::CtrlTypePtr ctrl,
                               mojom::GetFn fn,
                               GetCtrlCallback callback) {
+  // mojom entry point: expected to be on the calling (UI) thread
   auto host_id = receivers_.current_context();
 
   auto get_ctrl_callback = base::BindOnce(
@@ -439,11 +535,8 @@ void XuCameraService::GetCtrlWithDevicePath(
   switch (ctrl->which()) {
     case mojom::CtrlType::Tag::kQueryCtrl:
       if (is_ip_camera) {
-        content::GetUIThreadTaskRunner({})->PostTask(
-            FROM_HERE, base::BindOnce(&XuCameraService::GetCtrlDbus,
-                                      weak_factory_.GetWeakPtr(), *dev_path,
-                                      std::move(ctrl->get_query_ctrl()),
-                                      GetRequest(fn), std::move(callback)));
+        GetCtrlDbus(*dev_path, std::move(ctrl->get_query_ctrl())->selector,
+                    GetRequest(fn), std::move(callback));
         return;
       }
       error_code =
@@ -465,6 +558,7 @@ void XuCameraService::SetCtrl(mojom::WebcamIdPtr id,
                               mojom::CtrlTypePtr ctrl,
                               const std::vector<uint8_t>& data,
                               SetCtrlCallback callback) {
+  // mojom entry point: expected to be on the calling (UI) thread
   auto host_id = receivers_.current_context();
 
   auto set_ctrl_callback = base::BindOnce(
@@ -502,11 +596,8 @@ void XuCameraService::SetCtrlWithDevicePath(
   switch (ctrl->which()) {
     case mojom::CtrlType::Tag::kQueryCtrl:
       if (is_ip_camera) {
-        content::GetUIThreadTaskRunner({})->PostTask(
-            FROM_HERE, base::BindOnce(&XuCameraService::SetCtrlDbus,
-                                      weak_factory_.GetWeakPtr(), *dev_path,
-                                      std::move(ctrl->get_query_ctrl()), data_,
-                                      std::move(callback)));
+        SetCtrlDbus(*dev_path, std::move(ctrl->get_query_ctrl())->selector,
+                    data_, std::move(callback));
         return;
       }
       error_code =
@@ -599,81 +690,6 @@ void XuCameraService::GetDevicePath(
   TranslateDeviceId(hashed_device_id, std::move(callback),
                     std::move(security_origin),
                     browser_context->GetMediaDeviceIDSalt());
-}
-
-void XuCameraService::GetCtrlDbus(const std::string& dev_path,
-                                  const mojom::ControlQueryPtr& query,
-                                  const uint8_t& request,
-                                  GetCtrlCallback callback) const {
-  // Falcon firmware through 1.5.17 does not return the expected GET_INFO
-  // value.  This array, indexed by query->selector, provides the response
-  // corresponding to the support level at 1.5.17.
-  const uint8_t kUnsupported = 0x0;
-  const uint8_t kRead = 0x1;
-  const uint8_t kWrite = 0x2;
-  const uint8_t kAutoupdate = 0x8;
-  static const uint8_t kExpectedGetInfo[] = {
-      /* not a selector */ kUnsupported,
-      /* GOOGXU_FRAME_STRATEGY */ kAutoupdate | kWrite | kRead,
-      /* GOOGXU_REFRAME */ kWrite,
-      /* GOOGXU_OCCUPANCY_COUNTING_TOGGLE */ kAutoupdate | kWrite | kRead,
-      /* GOOGXU_OCCUPANCY_COUNTING_READ */ kAutoupdate | kRead,
-      /* GOOGXU_OCCUPANCY_STATUS_INFO */ kUnsupported,  // kAutoupdate | kRead
-      /* GOOGXU_OCCUPANCY_STATUS_RESET */ kWrite | kRead,
-      /* GOOGXU_PRESETS */ kWrite,
-      /* GOOGXU_PAN_TILT_ABSOLUTE */ kAutoupdate | kWrite | kRead,
-      /* GOOGXU_PAN_TILT_RELATIVE */ kUnsupported,
-  };
-  // dbus call: must be on UI thread
-  const std::string& ip_address = dev_path;
-  VLOG(4) << __func__ << " ip - " << ip_address  //
-          << " selector - " << static_cast<unsigned int>(query->selector)
-          << " request - " << static_cast<unsigned int>(request);
-
-  auto* ip_peripheral_service_client = IpPeripheralServiceClient::Get();
-  auto get_control_callback =
-      ConvertGetCtrlCallbackForDbus(std::move(callback));
-  if (!ip_peripheral_service_client) {
-    LOG(ERROR) << __func__ << " failed to get IpPeripheralServiceClient";
-    std::move(get_control_callback).Run(false, std::vector<uint8_t>());
-  } else if (UVC_GET_INFO == request) {
-    if (query->selector >= base::size(kExpectedGetInfo)) {
-      LOG(ERROR) << __func__ << " GET_INFO for query->selector=["
-                 << static_cast<unsigned int>(query->selector)
-                 << "] not possible, max is "
-                 << static_cast<unsigned int>(base::size(kExpectedGetInfo));
-      std::move(get_control_callback).Run(false, std::vector<uint8_t>());
-    } else {
-      std::vector<uint8_t> expected_get_info = {
-          kExpectedGetInfo[query->selector]};
-      std::move(get_control_callback).Run(true, expected_get_info);
-    }
-  } else {
-    ip_peripheral_service_client->GetControl(ip_address, meet_xu_guid_le_,
-                                             query->selector, request,
-                                             std::move(get_control_callback));
-  }
-}
-
-void XuCameraService::SetCtrlDbus(const std::string& dev_path,
-                                  const mojom::ControlQueryPtr& query,
-                                  const std::vector<uint8_t>& data,
-                                  SetCtrlCallback callback) const {
-  const std::string& ip_address = dev_path;
-  VLOG(4) << __func__ << " ip - " << ip_address  //
-          << " selector - " << static_cast<unsigned int>(query->selector);
-
-  auto* ip_peripheral_service_client = IpPeripheralServiceClient::Get();
-  auto set_control_callback =
-      ConvertSetCtrlCallbackForDbus(std::move(callback));
-  if (!ip_peripheral_service_client) {
-    LOG(ERROR) << __func__ << " failed to get IpPeripheralServiceClient";
-    std::move(set_control_callback).Run(false);
-  } else {
-    ip_peripheral_service_client->SetControl(ip_address, meet_xu_guid_le_,
-                                             query->selector, data,
-                                             std::move(set_control_callback));
-  }
 }
 
 uint8_t XuCameraService::CtrlThroughQuery(const base::ScopedFD& file_descriptor,
