@@ -5503,8 +5503,21 @@ TEST_F(ChromeShelfControllerTest, InternalAppPinUnpin) {
   EXPECT_FALSE(shelf_controller_->IsAppPinned(app_id));
 }
 
+class ChromeShelfControllerWithInternalAppTest
+    : public ChromeShelfControllerTest {
+ public:
+  ChromeShelfControllerWithInternalAppTest() {
+    feature_list_.InitAndDisableFeature(
+        ash::features::kOnlyShowNewShortcutsApp);
+  }
+  ~ChromeShelfControllerWithInternalAppTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Test that internal app can be added and removed on shelf.
-TEST_F(ChromeShelfControllerTest, InternalAppWindowRecreation) {
+TEST_F(ChromeShelfControllerWithInternalAppTest, InternalAppWindowRecreation) {
   InitShelfController();
 
   // Only test the first internal app. The others should be the same.
@@ -5535,7 +5548,8 @@ TEST_F(ChromeShelfControllerTest, InternalAppWindowRecreation) {
 
 // Test that internal app can be added and removed by SetProperty of
 // ash::kShelfIDKey.
-TEST_F(ChromeShelfControllerTest, InternalAppWindowPropertyChanged) {
+TEST_F(ChromeShelfControllerWithInternalAppTest,
+       InternalAppWindowPropertyChanged) {
   InitShelfController();
 
   // Only test the first internal app. The others should be the same.

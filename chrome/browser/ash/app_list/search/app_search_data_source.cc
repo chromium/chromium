@@ -415,12 +415,6 @@ void AppSearchDataSource::Refresh() {
           return;
         }
 
-        if (!std::strcmp(update.AppId().c_str(),
-                         ash::kInternalAppIdContinueReading)) {
-          // Don't show continue reading results in the recommended apps.
-          return;
-        }
-
         // TODO(crbug.com/826982): add the "can load in incognito" concept to
         // the App Service and use it here, similar to ExtensionDataSource.
         const std::string name = update.Name();

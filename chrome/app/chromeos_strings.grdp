@@ -4819,9 +4819,6 @@
   <message name="IDS_INTERNAL_APP_SETTINGS" desc="The name of Settings.">
     Settings
   </message>
-  <message name="IDS_INTERNAL_APP_CONTINUOUS_READING" desc="The default title of Chrome browser to allow users to seamlessly continue reading a web page when they switch from phones or tablets to Chromebook.">
-    Continue reading in Chrome
-  </message>
 
   <!-- Launcher Settings shortcuts -->
   <message name="IDS_LAUNCHER_SHORTCUTS_BLUETOOTH" desc="The name of bluetooth shortcut.">
