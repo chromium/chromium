@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<script src="../../../../resources/testharness.js"></script>
+<script src="../../../../resources/testharnessreport.js"></script>
+<script src="../../../../resources/gesture-util.js"></script>
+<script src="../../../../resources/testdriver.js"></script>
+<script src="../../../../resources/testdriver-actions.js"></script>
+<script src="../../../../resources/testdriver-vendor.js"></script>
+<style>
+body {
+  margin: 0;
+}
+
+.greenbox {
+  width: 100px;
+  height: 100px;
+  background: green;
+  padding: 0px;
+  margin: 0px;
+}
+
+.redbox {
+  width: 100px;
+  height: 100px;
+  background: red;
+  padding: 0px;
+  margin: 0px;
+}
+
+.bluebox {
+  width: 100px;
+  height: 100px;
+  background: blue;
+  padding: 0px;
+  margin: 0px;
+}
+
+.yellowbox {
+  width: 100px;
+  height: 100px;
+  background: yellow;
+  padding: 0px;
+  margin: 0px;
+}
+
+#innerdiv {
+  width: 200px;
+  height: 200px;
+  overflow-y: scroll;
+  overflow-x: scroll;
+}
+
+#outerdiv {
+  width: 250px;
+  height: 250px;
+  overflow-y: scroll;
+  overflow-x: scroll;
+}
+
+#outermostdiv {
+  width: 300px;
+  height: 300px;
+  overflow-y: scroll;
+  overflow-x: scroll;
+}
+</style>
+<body>
+<div id="outermostdiv">
+  <div id="outerdiv">
+    <div id="innerdiv">
+      <div class="greenbox"></div>
+      <div class="redbox"></div>
+      <div class="greenbox"></div>
+    </div>
+    <div class="bluebox"></div>
+  </div>
+  <div class="yellowbox"></div>
+</div>
+</body>
+
+<script>
+promise_test (async () => {
+  assert_equals(outerdiv.scrollTop, 0);
+  assert_equals(innerdiv.scrollTop, 0);
+  assert_equals(outermostdiv.scrollTop, 0);
+
+  const target = document.getElementById("innerdiv");
+  const insets = {x: 20, y: 20};
+  const position = elementPosition(target,
+                                   ElementAlignment.CENTER,
+                                   ElementAlignment.BOTTOM,
+                                   insets);
+  const innerScrollRange = target.scrollHeight - target.clientHeight;
+  const outerScrollRange = outerdiv.scrollHeight - outerdiv.clientHeight;
+  const outermostScrollRange =
+      outermostdiv.scrollHeight - outermostdiv.clientHeight;
+
+  const dx = 0;
+  const dy = -position.y;
+  // Amount we expect to drag before scrolling starts.
+  // Ensure that the drag amount is enough to position any of the scroll
+  // containers at their respective boundary.
+  const touchSlop = 15;
+  const requiredDrag =
+     Math.max(innerScrollRange, outerScrollRange, outermostScrollRange) +
+         touchSlop;
+  assert_greater_than(Math.abs(dy), requiredDrag);
+
+  // First scroll positions target at scroll boundary, and remainder does not
+  // propagate.
+  await touchScroll(position.x, position.y, dx, dy, target);
+  assert_equals(target.scrollTop, innerScrollRange);
+  assert_equals(outerdiv.scrollTop, 0);
+  assert_equals(outermostdiv.scrollTop, 0);
+
+  // Second scroll propagates to outerdiv, positioning it at the scrollboundary.
+  // Remaining scroll delta does not propagate to outermost.
+  await touchScroll(position.x, position.y, dx, dy, outerdiv);
+  assert_equals(target.scrollTop, innerScrollRange);
+  assert_equals(outerdiv.scrollTop, outerScrollRange);
+  assert_equals(outermostdiv.scrollTop, 0);
+
+  // Third scroll propagates to outermostdiv, positioning it at the
+  // scrollboundary.
+  await touchScroll(position.x, position.y, dx, dy, outermostdiv);
+  assert_equals(target.scrollTop, innerScrollRange);
+  assert_equals(outerdiv.scrollTop, outerScrollRange);
+  assert_equals(outermostdiv.scrollTop, outermostScrollRange);
+}, 'This tests gesture scroll propagation with multiply nesting of ' +
+   'scroll containers');
+</script>
