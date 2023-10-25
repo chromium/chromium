@@ -4022,7 +4022,7 @@
             ]
         }
     ],
-    "CombinedPowerExperimentV2": [
+    "CombinedPowerExperimentV2_1": [
         {
             "platforms": [
                 "android"
@@ -4031,9 +4031,12 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "DelayFirstPeriodicPAPurgeOrReclaim",
+                        "DelayFirstWorkerWake",
                         "InhibitLoadingStateUpdate",
                         "MainThreadCompositingPriority",
                         "QuickIntensiveWakeUpThrottlingAfterLoading",
+                        "ReduceCookieIPCs",
                         "UseCompositorJob"
                     ],
                     "disable_features": [
@@ -4052,9 +4055,12 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AboveNormalCompositingBrowserWin",
+                        "DelayFirstPeriodicPAPurgeOrReclaim",
+                        "DelayFirstWorkerWake",
                         "InhibitLoadingStateUpdate",
                         "MainThreadCompositingPriority",
                         "QuickIntensiveWakeUpThrottlingAfterLoading",
+                        "ReduceCookieIPCs",
                         "UseCompositorJob",
                         "UseEcoQoSForBackgroundProcess"
                     ],
@@ -4074,9 +4080,12 @@
                     "name": "Enabled",
                     "enable_features": [
                         "CacheMacSandboxProfiles",
+                        "DelayFirstPeriodicPAPurgeOrReclaim",
+                        "DelayFirstWorkerWake",
                         "InhibitLoadingStateUpdate",
                         "MainThreadCompositingPriority",
                         "QuickIntensiveWakeUpThrottlingAfterLoading",
+                        "ReduceCookieIPCs",
                         "RunTasksByBatches",
                         "SkipConditionVariableWakeupHack",
                         "UseCompositorJob"
@@ -4097,8 +4106,11 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "DelayFirstPeriodicPAPurgeOrReclaim",
+                        "DelayFirstWorkerWake",
                         "InhibitLoadingStateUpdate",
                         "QuickIntensiveWakeUpThrottlingAfterLoading",
+                        "ReduceCookieIPCs",
                         "RunTasksByBatches",
                         "UseCompositorJob"
                     ],
@@ -5156,29 +5168,6 @@
                     },
                     "enable_features": [
                         "DeferredSyncStartupCustomDelay"
-                    ]
-                }
-            ]
-        }
-    ],
-    "DelayMemoryInterventions": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DelayFirstPeriodicPAPurgeOrReclaim",
-                        "DelayFirstWorkerWake"
                     ]
                 }
             ]
@@ -14059,26 +14048,6 @@
                     },
                     "enable_features": [
                         "RedWarningSurvey"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ReduceCookieIPCs": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ReduceCookieIPCs"
                     ]
                 }
             ]
