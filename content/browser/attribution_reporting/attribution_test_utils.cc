@@ -12,11 +12,7 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
-#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
@@ -30,7 +26,6 @@
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_config.h"
 #include "components/attribution_reporting/trigger_registration.h"
-#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -840,20 +835,6 @@ std::ostream& operator<<(std::ostream& out, const SendResult& info) {
 std::ostream& operator<<(std::ostream& out,
                          const AttributionDataModel::DataKey& key) {
   return out << "{reporting_origin=" << key.reporting_origin() << "}";
-}
-
-std::vector<AttributionReport> GetAttributionReportsForTesting(
-    AttributionManager* manager) {
-  base::RunLoop run_loop;
-  std::vector<AttributionReport> attribution_reports;
-  manager->GetPendingReportsForInternalUse(
-      /*limit=*/-1,
-      base::BindLambdaForTesting([&](std::vector<AttributionReport> reports) {
-        attribution_reports = std::move(reports);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-  return attribution_reports;
 }
 
 TestAggregatableSourceProvider::TestAggregatableSourceProvider(size_t size) {

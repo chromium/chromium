@@ -49,7 +49,6 @@ class TriggerVerification;
 
 namespace content {
 
-class AttributionManager;
 class AttributionTrigger;
 class CommonSourceInfo;
 
@@ -387,9 +386,6 @@ std::ostream& operator<<(std::ostream& out,
 // that rely on DataKey
 std::ostream& operator<<(std::ostream& out,
                          const AttributionDataModel::DataKey& key);
-
-std::vector<AttributionReport> GetAttributionReportsForTesting(
-    AttributionManager* manager);
 
 // Source matchers
 

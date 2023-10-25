@@ -374,7 +374,16 @@ class AttributionManagerImplTest : public testing::Test {
   }
 
   std::vector<AttributionReport> StoredReports() {
-    return GetAttributionReportsForTesting(attribution_manager_.get());
+    std::vector<AttributionReport> result;
+    base::RunLoop run_loop;
+    attribution_manager_->GetPendingReportsForInternalUse(
+        /*limit=*/-1,
+        base::BindLambdaForTesting([&](std::vector<AttributionReport> reports) {
+          result = std::move(reports);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return result;
   }
 
   void ForceGetReportsToSend() { attribution_manager_->GetReportsToSend(); }
