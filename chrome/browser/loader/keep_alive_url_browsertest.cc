@@ -12,8 +12,12 @@
 #include "base/test/allow_check_is_test_for_testing.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
@@ -234,6 +238,48 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
   // The response should be processed in browser.
   loaders_observer().WaitForTotalOnReceiveResponseProcessed(1);
 }
+
+// Shutdown delay is not supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
+// Mac browser shutdown is flaky: https://crbug.com/1259913
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ReceiveResponseAfterBrowserShutdown \
+  DISABLED_ReceiveResponseAfterBrowserShutdown
+#else
+#define MAYBE_ReceiveResponseAfterBrowserShutdown \
+  ReceiveResponseAfterBrowserShutdown
+#endif
+// Verifies that a keepalive ping can be made within a short timeframe after
+// browser shutdown.
+IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
+                       MAYBE_ReceiveResponseAfterBrowserShutdown) {
+  const std::string method = GetParam();
+  auto request_handler =
+      std::move(RegisterRequestHandlers({kKeepAliveEndpoint})[0]);
+  ASSERT_TRUE(embedded_test_server()->Start());
+  auto keepalive_page_url = GetKeepAlivePageURL(kPrimaryHost, method);
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), keepalive_page_url));
+
+  // Close the browser.
+  CloseBrowserSynchronously(browser());
+  ASSERT_TRUE(browser_shutdown::IsTryingToQuit());
+  ASSERT_TRUE(BrowserList::GetInstance()->empty());
+  ASSERT_EQ(browser_shutdown::GetShutdownType(),
+            browser_shutdown::ShutdownType::kWindowClose);
+  // The keepalive request may be sent before or after shutting down, but only
+  // get processed by the server after shutting down here.
+  request_handler->WaitForRequest();
+  // The disconnected loader is pending to receive response.
+
+  // Send back response to terminate in-browser request handling.
+  request_handler->Send(k200TextResponse);
+  request_handler->Done();
+
+  // The response should be processed by browser before shutting down.
+  // TODO(crbug.com/1356128): Deflake WaitForTotalOnReceiveResponseProcessed
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Delays response to a keepalive ping until after the page making the keepalive
 // ping is put into BackForwardCache. The response should be processed by the

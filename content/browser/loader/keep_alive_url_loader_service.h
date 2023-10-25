@@ -84,6 +84,10 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
           subresource_proxying_factory_bundle,
       scoped_refptr<PolicyContainerHost> policy_container_host);
 
+  // Called when the `browser_context_` that owns this instance is shutting
+  // down.
+  void Shutdown();
+
   // For testing only:
   size_t NumLoadersForTesting() const;
   size_t NumDisconnectedLoadersForTesting() const;
