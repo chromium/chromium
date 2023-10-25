@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
-#include "components/password_manager/core/browser/password_store_sync.h"
+#include "components/password_manager/core/browser/sync/password_store_sync.h"
 #include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 
 namespace syncer {

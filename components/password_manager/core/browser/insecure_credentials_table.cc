@@ -9,7 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_store_sync.h"
+#include "components/password_manager/core/browser/sync/password_store_sync.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 

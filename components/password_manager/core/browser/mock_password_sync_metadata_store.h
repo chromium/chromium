@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "components/password_manager/core/browser/password_store_sync.h"
+#include "components/password_manager/core/browser/sync/password_store_sync.h"
 #include "components/sync/model/metadata_batch.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "components/password_manager/core/browser/password_account_storage_settings_watcher.h"
+#include "components/password_manager/core/browser/sync/password_account_storage_settings_watcher.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/service/model_type_controller.h"
