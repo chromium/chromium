@@ -368,8 +368,10 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
         resource_provider_->GetOverlayColorSpace(resource_id);
     candidate.hdr_metadata = resource_provider_->GetHDRMetadata(resource_id);
 
-    if (!base::Contains(kOverlayFormats, candidate.format))
+    if (!context_.is_delegated_context &&
+        !base::Contains(kOverlayFormats, candidate.format)) {
       return CandidateStatus::kFailBufferFormat;
+    }
   }
 
   SetDisplayRect(*quad, candidate);

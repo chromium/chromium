@@ -44,6 +44,8 @@ unsigned GetDataFormatFromInternalFormat(unsigned internalformat) {
     case GL_RGB_YCBCR_420V_CHROMIUM:
     case GL_RGB_YCBCR_P010_CHROMIUM:
       return GL_RGB;
+    case GL_RGBA16F_EXT:
+      return GL_RGBA;
     case GL_RED:
     case GL_RG:
     case GL_RGB:

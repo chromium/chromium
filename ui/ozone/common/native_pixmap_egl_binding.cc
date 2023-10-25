@@ -31,6 +31,7 @@ namespace {
 #define DRM_FORMAT_XBGR8888 FOURCC('X', 'B', '2', '4')
 #define DRM_FORMAT_ABGR2101010 FOURCC('A', 'B', '3', '0')
 #define DRM_FORMAT_ARGB2101010 FOURCC('A', 'R', '3', '0')
+#define DRM_FORMAT_ABGR16161616F FOURCC('A', 'B', '4', 'H')
 #define DRM_FORMAT_YVU420 FOURCC('Y', 'V', '1', '2')
 #define DRM_FORMAT_NV12 FOURCC('N', 'V', '1', '2')
 #define DRM_FORMAT_P010 FOURCC('P', '0', '1', '0')
@@ -65,8 +66,9 @@ EGLint FourCC(gfx::BufferFormat format) {
       return DRM_FORMAT_NV12;
     case gfx::BufferFormat::P010:
       return DRM_FORMAT_P010;
-    case gfx::BufferFormat::RGBA_4444:
     case gfx::BufferFormat::RGBA_F16:
+      return DRM_FORMAT_ABGR16161616F;
+    case gfx::BufferFormat::RGBA_4444:
     case gfx::BufferFormat::YUVA_420_TRIPLANAR:
       return 0;
   }
@@ -263,8 +265,7 @@ bool NativePixmapEGLBinding::InitializeFromNativePixmap(
 }
 
 GLuint NativePixmapEGLBinding::GetInternalFormat() {
-  if (format_ == gfx::BufferFormat::RGBA_4444 ||
-      format_ == gfx::BufferFormat::RGBA_F16) {
+  if (format_ == gfx::BufferFormat::RGBA_4444) {
     return GL_RGB_YCBCR_P010_CHROMIUM;
   }
 
