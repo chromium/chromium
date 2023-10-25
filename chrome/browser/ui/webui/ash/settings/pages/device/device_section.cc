@@ -1718,6 +1718,8 @@ void DeviceSection::AddCustomizeButtonsPageStrings(
        IDS_SETTINGS_CUSTOMIZE_BUTTONS_DIALOG_SAVE},
       {"buttonRemappingDropdownAriaLabel",
        IDS_SETTINGS_CUSTOMIZE_BUTTONS_REMAPPING_DROPDOWN_ARIA_LABEL},
+      {"buttonRenamingDialogErrorMessage",
+       IDS_SETTINGS_CUSTOMIZE_BUTTONS_RENAMING_DIALOG_ERROR_MESSAGE},
       {"buttonRenamingDialogInputCharCount",
        IDS_SETTINGS_CUSTOMIZE_BUTTONS_RENAMING_DIALOG_INPUT_CHARACTER_COUNT},
       {"buttonRenamingDialogTitle",

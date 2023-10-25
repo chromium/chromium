@@ -57,6 +57,9 @@ suite('<customize-buttons-subsection>', () => {
     customizeButtonsSubsection.set(
         'selectedButton_',
         fakeGraphicsTablets[0]!.settings!.penButtonRemappings[0]);
+    customizeButtonsSubsection.set(
+        'buttonRemappingList',
+        fakeGraphicsTablets[0]!.settings!.penButtonRemappings);
     await flushTasks();
     assertTrue(!!customizeButtonsSubsection.shadowRoot!.querySelector(
         '#renamingDialog'));
@@ -90,6 +93,14 @@ suite('<customize-buttons-subsection>', () => {
     const inputCountText: HTMLDivElement|null =
         customizeButtonsSubsection.shadowRoot!.querySelector('#inputCount');
     assertEquals(inputCountText!.textContent!.trim(), '64/64');
+
+    // Verify that if the button name is duplicate with other buttons, the
+    // save button is blocked.
+    buttonLabelInput.value = 'Redo';
+    saveButton.click();
+    await flushTasks();
+    assertTrue(buttonLabelInput.invalid);
+    assertEquals(buttonRemappingChangedEventCount, 0);
 
     buttonLabelInput.value = 'New Button Name';
     assertEquals(inputCountText!.textContent!.trim(), '15/64');

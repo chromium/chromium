@@ -2826,6 +2826,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_RENAMING_DIALOG_INPUT_CHARACTER_COUNT" desc="Character count of the button renaming dialog input that shows up the current and maximum character count.">
     <ph name="CURRENT_CHARACTER_COUNT">$1<ex>15</ex></ph>/<ph name="MAX_CHARACTER_COUNT">$2<ex>64</ex></ph>
   </message>
+  <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_RENAMING_DIALOG_ERROR_MESSAGE" desc="Error message in the button renaming dialog saying the button name has taken.">
+    There is a button with the same name. Please choose another one.
+  </message>
   <message name="IDS_SETTINGS_DISABLE_OPTION_LABEL" desc="Label of Disable option in the button remapping action dropdown menu.">
     Disable
   </message>

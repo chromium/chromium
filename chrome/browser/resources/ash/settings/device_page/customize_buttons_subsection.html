@@ -18,20 +18,21 @@
     --cr-dialog-width: 320px;
   }
 
-  :host([button-name-invalid_]) #inputCount {
+  :host([button-name-invalid_]) #inputSuffix {
     color: var(--cros-text-color-alert);
   }
 
-  #inputCount {
-    display: var(--cr-input-error-display, block);
+  #inputSuffix {
+    display: flex;
     font-size: var(--cr-form-field-label-font-size);
     height: var(--cr-form-field-label-height);
+    justify-content: flex-end;
     line-height: var(--cr-form-field-label-line-height);
     margin: 8px 0;
     position: absolute;
-    right: 32px;
     top: 130px;
     white-space: var(--cr-input-error-white-space);
+    width: 256px;
   }
 </style>
 <div class="subsection">
@@ -60,8 +61,13 @@
           value="{{selectedButtonName_}}"
           aria-label="$i18n{buttonRenamingDialogTitle}">
         </cr-input>
-        <div id="inputCount" aria-hidden="true">
-          [[getInputCountString_(selectedButtonName_)]]
+        <div id="inputSuffix">
+          <span id="duplicateNameError" hidden="[[!duplicateButtonName_]]">
+            $i18n{buttonRenamingDialogErrorMessage}
+          </span>
+          <span id="inputCount" aria-hidden="true">
+            [[getInputCountString_(selectedButtonName_)]]
+          </span>
         </div>
       </div>
     </div>
