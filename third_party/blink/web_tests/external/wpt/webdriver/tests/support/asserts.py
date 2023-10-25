@@ -1,7 +1,7 @@
 import imghdr
 from base64 import decodebytes
 
-from webdriver import NoSuchAlertException, WebDriverException, WebElement
+from webdriver import Element, NoSuchAlertException, WebDriverException
 
 
 # WebDriver specification ID: dfn-error-response-data
@@ -148,17 +148,17 @@ def assert_is_active_element(session, element):
 def assert_same_element(session, a, b):
     """Verify that two element references describe the same element."""
     if isinstance(a, dict):
-        assert WebElement.identifier in a, "Actual value does not describe an element"
-        a_id = a[WebElement.identifier]
-    elif isinstance(a, WebElement):
+        assert Element.identifier in a, "Actual value does not describe an element"
+        a_id = a[Element.identifier]
+    elif isinstance(a, Element):
         a_id = a.id
     else:
         raise AssertionError("Actual value is not a dictionary or web element")
 
     if isinstance(b, dict):
-        assert WebElement.identifier in b, "Expected value does not describe an element"
-        b_id = b[WebElement.identifier]
-    elif isinstance(b, WebElement):
+        assert Element.identifier in b, "Expected value does not describe an element"
+        b_id = b[Element.identifier]
+    elif isinstance(b, Element):
         b_id = b.id
     else:
         raise AssertionError("Expected value is not a dictionary or web element")
