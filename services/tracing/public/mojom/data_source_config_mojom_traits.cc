@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "services/tracing/public/mojom/chrome_config_mojom_traits.h"
+#include "services/tracing/public/mojom/interceptor_config_mojom_traits.h"
 
 namespace mojo {
 bool StructTraits<tracing::mojom::DataSourceConfigDataView,
@@ -15,9 +16,11 @@ bool StructTraits<tracing::mojom::DataSourceConfigDataView,
          perfetto::DataSourceConfig* out) {
   std::string name, legacy_config, track_event_config_raw;
   perfetto::ChromeConfig chrome_config;
+  absl::optional<perfetto::protos::gen::InterceptorConfig> interceptor_config;
   if (!data.ReadName(&name) || !data.ReadChromeConfig(&chrome_config) ||
       !data.ReadLegacyConfig(&legacy_config) ||
-      !data.ReadTrackEventConfigRaw(&track_event_config_raw)) {
+      !data.ReadTrackEventConfigRaw(&track_event_config_raw) ||
+      !data.ReadInterceptorConfig(&interceptor_config)) {
     return false;
   }
   out->set_name(name);
@@ -25,6 +28,9 @@ bool StructTraits<tracing::mojom::DataSourceConfigDataView,
   out->set_trace_duration_ms(data.trace_duration_ms());
   out->set_tracing_session_id(data.tracing_session_id());
   *out->mutable_chrome_config() = std::move(chrome_config);
+  if (interceptor_config) {
+    *out->mutable_interceptor_config() = std::move(*interceptor_config);
+  }
   // Perfetto compares configs based on their serialized representation. Setting
   // a field to an empty value flips the "has_field" bit and makes it a
   // different config from the Perfetto's point of view.
