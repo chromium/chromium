@@ -597,6 +597,7 @@ message OmniboxEventProto {
     SHORTCUT_BOOST = 8;
     REMOTE_SECONDARY_ZERO_SUGGEST = 9;
     ML_URL_SCORING = 10;
+    COMPANY_ENTITY_ADJUSTMENT = 11;
   }
   // The set of features triggered in the most recent query. Each element is a
   // value of `Features` enum.

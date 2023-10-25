@@ -31,6 +31,8 @@ FormFactorMetricsProvider::GetFormFactor() const {
       return SystemProfileProto::Hardware::FORM_FACTOR_TV;
     case ui::DEVICE_FORM_FACTOR_AUTOMOTIVE:
       return SystemProfileProto::Hardware::FORM_FACTOR_AUTOMOTIVE;
+    case ui::DEVICE_FORM_FACTOR_FOLDABLE:
+      return SystemProfileProto::Hardware::FORM_FACTOR_FOLDABLE;
     default:
       return SystemProfileProto::Hardware::FORM_FACTOR_UNKNOWN;
   }
