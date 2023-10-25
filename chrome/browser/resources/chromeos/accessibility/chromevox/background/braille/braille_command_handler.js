@@ -19,7 +19,6 @@ import {EventSourceType} from '../../common/event_source_type.js';
 import {Spannable} from '../../common/spannable.js';
 import {QueueMode} from '../../common/tts_types.js';
 import {ChromeVoxRange} from '../chromevox_range.js';
-import {ChromeVoxState} from '../chromevox_state.js';
 import {DesktopAutomationInterface} from '../event/desktop_automation_interface.js';
 import {EventSource} from '../event_source.js';
 import {CommandHandlerInterface} from '../input/command_handler_interface.js';
@@ -71,7 +70,7 @@ export class BrailleCommandHandler {
     EventSource.set(EventSourceType.BRAILLE_KEYBOARD);
 
     // Try to restore to the last valid range.
-    ChromeVoxState.instance.restoreLastValidRangeIfNeeded();
+    ChromeVoxRange.restoreLastValidRangeIfNeeded();
 
     // Note: panning within content occurs earlier in event dispatch.
     Output.forceModeForNextSpeechUtterance(QueueMode.FLUSH);

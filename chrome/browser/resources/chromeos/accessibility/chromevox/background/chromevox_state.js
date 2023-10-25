@@ -38,11 +38,6 @@ export class ChromeVoxState {
   set isReadingContinuously(newValue) {}
 
   /**
-   * Restores the last valid ChromeVox range.
-   */
-  restoreLastValidRangeIfNeeded() {}
-
-  /**
    * @param {!CursorRange} range
    * @param {CursorRange} prevRange
    */

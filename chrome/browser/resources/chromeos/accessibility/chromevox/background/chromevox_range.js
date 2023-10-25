@@ -119,6 +119,11 @@ export class ChromeVoxRange {
     ChromeVoxRange.instance.navigateTo_(...arguments);
   }
 
+  /** Restores the last valid ChromeVox range. */
+  static restoreLastValidRangeIfNeeded() {
+    ChromeVoxRange.instance.restoreLastValidRangeIfNeeded_();
+  }
+
   /**
    * @param {?CursorRange} newRange The new range.
    * @param {boolean=} opt_fromEditing
@@ -284,6 +289,19 @@ export class ChromeVoxRange {
   notifyObservers_(range, opt_fromEditing = undefined) {
     for (const observer of ChromeVoxRange.observers_) {
       observer.onCurrentRangeChanged(range, opt_fromEditing);
+    }
+  }
+
+  /** @private */
+  restoreLastValidRangeIfNeeded_() {
+    // Never restore range when TalkBack is enabled as commands such as
+    // Search+Left, go directly to TalkBack.
+    if (ChromeVoxState.instance.talkBackEnabled) {
+      return;
+    }
+
+    if (!this.current_?.isValid()) {
+      this.current_ = this.previous_;
     }
   }
 

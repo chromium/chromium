@@ -117,7 +117,7 @@ export class GestureCommandHandler {
     // Always try to recover the range to the previous valid target which may
     // have been invalidated by touch explore; this recovery omits touch explore
     // explicitly.
-    ChromeVoxState.instance.restoreLastValidRangeIfNeeded();
+    ChromeVoxRange.restoreLastValidRangeIfNeeded();
 
     // Handle gestures mapped to keys. Global keys are handled in place of
     // commands, and menu key overrides are handled only in menus.

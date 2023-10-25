@@ -163,19 +163,6 @@ export class Background extends ChromeVoxState {
     return BrailleCommandHandler.onBrailleKeyEvent(evt, content);
   }
 
-  /** @override */
-  restoreLastValidRangeIfNeeded() {
-    // Never restore range when TalkBack is enabled as commands such as
-    // Search+Left, go directly to TalkBack.
-    if (this.talkBackEnabled) {
-      return;
-    }
-
-    if (!ChromeVoxRange.getCurrentRangeWithoutRecovery()?.isValid()) {
-      ChromeVoxRange.set(ChromeVoxRange.previous);
-    }
-  }
-
   /**
    * @param {!CursorRange} range
    * @param {CursorRange} prevRange
