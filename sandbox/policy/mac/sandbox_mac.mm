@@ -99,6 +99,7 @@ std::string GetSandboxProfile(sandbox::mojom::Sandbox sandbox_type) {
       profile += kSeatbeltPolicyString_speech_recognition;
       break;
     // kService and kUtility are the same on OS_MAC, so fallthrough.
+    case sandbox::mojom::Sandbox::kOnDeviceModelExecution:
     case sandbox::mojom::Sandbox::kService:
     case sandbox::mojom::Sandbox::kServiceWithJit:
     case sandbox::mojom::Sandbox::kUtility:

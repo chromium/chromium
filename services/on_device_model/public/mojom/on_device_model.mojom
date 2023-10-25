@@ -5,6 +5,7 @@
 module on_device_model.mojom;
 
 import "mojo/public/mojom/base/file.mojom";
+import "sandbox/policy/mojom/context.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
 // Streams a response from a call to execute a model.
@@ -17,7 +18,8 @@ interface StreamingResponder {
   OnComplete();
 };
 
-// A loaded model which can be queried.
+// A loaded model which can be queried. This interface must be controlled by the
+// browser and consumers must take care to sanitize inputs.
 interface OnDeviceModel {
   // Executes model on the given input. The response will be streamed to
   // |response|.
@@ -56,8 +58,10 @@ enum PerformanceClass {
   kVeryHigh,
 };
 
-// A service which allows loading models which are stored on-device.
-[ServiceSandbox=sandbox.mojom.Sandbox.kNoSandbox]
+// A service which allows loading trusted models which are stored on-device and
+// which may process untrustworthy data.
+[ServiceSandbox=sandbox.mojom.Sandbox.kOnDeviceModelExecution,
+ RequireContext=sandbox.mojom.Context.kBrowser]
 interface OnDeviceModelService {
   // Initializes a new model instance given `assets`.
   LoadModel(ModelAssets assets) => (LoadModelResult result);

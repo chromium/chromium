@@ -40,6 +40,8 @@ const char* ProcessNameFromSandboxType(sandbox::mojom::Sandbox sandbox_type) {
       return "audio";
     case sandbox::mojom::Sandbox::kCdm:
       return "cdm";
+    case sandbox::mojom::Sandbox::kOnDeviceModelExecution:
+      return "on-device-model-execution";
     case sandbox::mojom::Sandbox::kPrintCompositor:
       return "print-compositor";
     case sandbox::mojom::Sandbox::kSpeechRecognition:

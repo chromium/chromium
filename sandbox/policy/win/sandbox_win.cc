@@ -462,6 +462,9 @@ std::wstring GetAppContainerProfileName(const std::string& appcontainer_id,
     case Sandbox::kNetwork:
       sandbox_base_name = std::string("cr.sb.net");
       break;
+    case Sandbox::kOnDeviceModelExecution:
+      sandbox_base_name = std::string("cr.sb.odm");
+      break;
     case Sandbox::kWindowsSystemProxyResolver:
       sandbox_base_name = std::string("cr.sb.pxy");
       break;
@@ -495,6 +498,7 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
       sandbox_type != Sandbox::kXrCompositing &&
       sandbox_type != Sandbox::kMediaFoundationCdm &&
       sandbox_type != Sandbox::kNetwork &&
+      sandbox_type != Sandbox::kOnDeviceModelExecution &&
       sandbox_type != Sandbox::kWindowsSystemProxyResolver) {
     return SBOX_ERROR_UNSUPPORTED;
   }
@@ -549,6 +553,11 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
         features::kWinSboxNetworkServiceSandboxIsLPAC));
   }
 
+  if (sandbox_type == Sandbox::kOnDeviceModelExecution) {
+    container->AddImpersonationCapability(kChromeInstallFiles);
+    container->AddCapability(kLpacPnpNotifications);
+  }
+
   if (sandbox_type == Sandbox::kWindowsSystemProxyResolver) {
     container->AddCapability(base::win::WellKnownCapability::kInternetClient);
     container->AddCapability(kLpacServicesManagement);
@@ -560,7 +569,8 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
   if ((sandbox_type == Sandbox::kGpu &&
        base::FeatureList::IsEnabled(features::kGpuLPAC)) ||
       sandbox_type == Sandbox::kMediaFoundationCdm ||
-      sandbox_type == Sandbox::kWindowsSystemProxyResolver) {
+      sandbox_type == Sandbox::kWindowsSystemProxyResolver ||
+      sandbox_type == Sandbox::kOnDeviceModelExecution) {
     container->SetEnableLowPrivilegeAppContainer(true);
   }
 
@@ -899,6 +909,10 @@ bool SandboxWin::IsAppContainerEnabledForSandbox(
     return true;
   }
 
+  if (sandbox_type == Sandbox::kOnDeviceModelExecution) {
+    return true;
+  }
+
   if (sandbox_type == Sandbox::kWindowsSystemProxyResolver)
     return true;
 
@@ -1086,6 +1100,8 @@ std::string SandboxWin::GetSandboxTypeInEnglish(Sandbox sandbox_type) {
 #endif
     case Sandbox::kNetwork:
       return "Network";
+    case Sandbox::kOnDeviceModelExecution:
+      return "On-Device Model Execution";
     case Sandbox::kCdm:
       return "CDM";
     case Sandbox::kPrintCompositor:

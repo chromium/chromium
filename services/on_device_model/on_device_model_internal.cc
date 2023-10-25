@@ -4,22 +4,16 @@
 
 #include <memory>
 
-#include "base/no_destructor.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/on_device_model/chrome_ml_instance.h"
 #include "services/on_device_model/on_device_model_service.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
-#include "third_party/ml/public/chrome_ml.h"
 #include "third_party/ml/public/on_device_model_executor.h"
 #include "third_party/ml/public/utils.h"
 
 namespace on_device_model {
-namespace {
 
-const ml::ChromeML* GetChromeML() {
-  static base::NoDestructor<std::unique_ptr<ml::ChromeML>> ml{
-      ml::ChromeML::Create()};
-  return ml->get();
-}
+namespace {
 
 class OnDeviceModel : public mojom::OnDeviceModel {
  public:
@@ -45,12 +39,12 @@ class OnDeviceModel : public mojom::OnDeviceModel {
 // static
 std::unique_ptr<mojom::OnDeviceModel> OnDeviceModelService::CreateModel(
     ModelAssets assets) {
-  if (!GetChromeML()) {
+  if (!GetChromeMLInstance()) {
     return nullptr;
   }
 
-  auto executor =
-      ml::OnDeviceModelExecutor::Create(*GetChromeML(), std::move(assets));
+  auto executor = ml::OnDeviceModelExecutor::Create(*GetChromeMLInstance(),
+                                                    std::move(assets));
   if (!executor) {
     return nullptr;
   }
@@ -59,10 +53,10 @@ std::unique_ptr<mojom::OnDeviceModel> OnDeviceModelService::CreateModel(
 
 // static
 mojom::PerformanceClass OnDeviceModelService::GetEstimatedPerformanceClass() {
-  if (!GetChromeML()) {
+  if (!GetChromeMLInstance()) {
     return mojom::PerformanceClass::kError;
   }
-  return ml::GetEstimatedPerformanceClass(*GetChromeML());
+  return ml::GetEstimatedPerformanceClass(*GetChromeMLInstance());
 }
 
 }  // namespace on_device_model

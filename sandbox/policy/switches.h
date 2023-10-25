@@ -28,6 +28,7 @@ SANDBOX_POLICY_EXPORT extern const char kServiceSandboxType[];
 SANDBOX_POLICY_EXPORT extern const char kNoneSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kNoneSandboxAndElevatedPrivileges[];
 SANDBOX_POLICY_EXPORT extern const char kNetworkSandbox[];
+SANDBOX_POLICY_EXPORT extern const char kOnDeviceModelExecutionSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kPpapiSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kUtilitySandbox[];
 SANDBOX_POLICY_EXPORT extern const char kCdmSandbox[];

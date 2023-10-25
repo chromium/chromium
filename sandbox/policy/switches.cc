@@ -25,6 +25,7 @@ const char kServiceSandboxType[] = "service-sandbox-type";
 const char kNoneSandbox[] = "none";
 const char kNoneSandboxAndElevatedPrivileges[] = "none_and_elevated";
 const char kNetworkSandbox[] = "network";
+const char kOnDeviceModelExecutionSandbox[] = "on_device_model_execution";
 const char kPpapiSandbox[] = "ppapi";
 const char kUtilitySandbox[] = "utility";
 const char kCdmSandbox[] = "cdm";

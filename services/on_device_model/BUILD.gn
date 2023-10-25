@@ -9,6 +9,7 @@ template("model_service") {
     sources = [
       "on_device_model_service.cc",
       "on_device_model_service.h",
+      "pre_sandbox_init.cc",
     ]
     deps = [ "//services/on_device_model/public/cpp" ]
     public_deps = [
@@ -16,13 +17,20 @@ template("model_service") {
       "//mojo/public/cpp/bindings",
       "//services/on_device_model/public/mojom",
     ]
+    defines = [ "IS_ON_DEVICE_MODEL_IMPL" ]
     if (invoker.enable_internal) {
-      sources += [ "on_device_model_internal.cc" ]
+      sources += [
+        "chrome_ml_instance.cc",
+        "chrome_ml_instance.h",
+        "on_device_model_internal.cc",
+      ]
       deps += [ "//third_party/ml/public" ]
+
+      # NOTE: Not a buildflag since it's controllable per target.
+      defines += [ "ENABLE_ML_INTERNAL" ]
     } else {
       sources += [ "on_device_model.cc" ]
     }
-    defines = [ "IS_ON_DEVICE_MODEL_IMPL" ]
   }
 }
 

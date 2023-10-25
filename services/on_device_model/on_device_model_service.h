@@ -15,6 +15,11 @@ namespace on_device_model {
 class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModelService
     : public mojom::OnDeviceModelService {
  public:
+  // Must be called in the service's process before sandbox initialization.
+  // This is defined separately in pre_sandbox_init.cc for explicit security
+  // review coverage.
+  [[nodiscard]] static bool PreSandboxInit();
+
   static mojom::PerformanceClass GetEstimatedPerformanceClass();
 
   explicit OnDeviceModelService(

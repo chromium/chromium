@@ -30,6 +30,8 @@
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox.h"
 #include "sandbox/policy/sandbox_type.h"
+#include "services/on_device_model/on_device_model_service.h"
+#include "services/on_device_model/public/cpp/features.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
@@ -196,6 +198,11 @@ int UtilityMain(MainFunctionParams parameters) {
       parameters.command_line->HasSwitch(switches::kMessageLoopTypeUi)
           ? base::MessagePumpType::UI
           : base::MessagePumpType::DEFAULT;
+
+  if (parameters.command_line->GetSwitchValueASCII(switches::kUtilitySubType) ==
+      on_device_model::mojom::OnDeviceModelService::Name_) {
+    CHECK(on_device_model::OnDeviceModelService::PreSandboxInit());
+  }
 
 #if BUILDFLAG(IS_MAC)
   auto sandbox_type =

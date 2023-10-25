@@ -111,6 +111,7 @@ class UtilityProcessSandboxBrowserTest
 #if BUILDFLAG(ENABLE_PPAPI)
       case Sandbox::kPpapi:
 #endif
+      case Sandbox::kOnDeviceModelExecution:
       case Sandbox::kPrintCompositor:
       case Sandbox::kService:
       case Sandbox::kServiceWithJit:
