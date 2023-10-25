@@ -126,6 +126,11 @@ void EditorMediator::BindEditorPanelManager(
 }
 
 void EditorMediator::OnFocus(int context_id) {
+  if (mako_bubble_coordinator_.IsShowingUI() ||
+      panel_manager_.IsEditorMenuVisible()) {
+    return;
+  }
+
   if (IsAllowedForUse() && !editor_service_connector_.IsBound()) {
     SetUpNewEditorService();
   }
@@ -139,6 +144,11 @@ void EditorMediator::OnFocus(int context_id) {
 }
 
 void EditorMediator::OnBlur() {
+  if (mako_bubble_coordinator_.IsShowingUI() ||
+      panel_manager_.IsEditorMenuVisible()) {
+    return;
+  }
+
   if (text_actuator_ != nullptr) {
     text_actuator_->OnBlur();
   }
@@ -162,6 +172,11 @@ void EditorMediator::OnTabletControllerDestroyed() {
 
 void EditorMediator::OnSurroundingTextChanged(const std::u16string& text,
                                               gfx::Range selection_range) {
+  if (mako_bubble_coordinator_.IsShowingUI() ||
+      panel_manager_.IsEditorMenuVisible()) {
+    return;
+  }
+
   surrounding_text_ = {.text = text, .selection_range = selection_range};
 
   size_t selected_length = NonWhitespaceAndSymbolsLength(text, selection_range);

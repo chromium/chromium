@@ -192,6 +192,13 @@ void MakoBubbleCoordinator::CloseUI() {
   }
 }
 
+bool MakoBubbleCoordinator::IsShowingUI() const {
+  // TODO(b/301518440): To accurately check if the bubble is open, detect when
+  // the JS has finished loading instead of checking this pointer.
+  return contents_wrapper_ != nullptr &&
+         contents_wrapper_->GetHost() != nullptr;
+}
+
 void MakoBubbleCoordinator::CacheContextCaretBounds() {
   const ui::InputMethod* input_method =
       IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
@@ -199,13 +206,6 @@ void MakoBubbleCoordinator::CacheContextCaretBounds() {
     context_caret_bounds_ =
         input_method->GetTextInputClient()->GetCaretBounds();
   }
-}
-
-bool MakoBubbleCoordinator::IsShowingUI() const {
-  // TODO(b/301518440): To accurately check if the bubble is open, detect when
-  // the JS has finished loading instead of checking this pointer.
-  return contents_wrapper_ != nullptr &&
-         contents_wrapper_->GetHost() != nullptr;
 }
 
 }  // namespace ash

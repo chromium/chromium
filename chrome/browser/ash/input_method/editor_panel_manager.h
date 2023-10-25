@@ -61,6 +61,8 @@ class EditorPanelManager : public crosapi::mojom::EditorPanelManager {
 
   void BindEditorClient();
 
+  bool IsEditorMenuVisible() const;
+
  private:
   void OnGetPresetTextQueriesResult(
       GetEditorPanelContextCallback callback,
@@ -69,6 +71,8 @@ class EditorPanelManager : public crosapi::mojom::EditorPanelManager {
   raw_ptr<Delegate> delegate_;
   mojo::ReceiverSet<crosapi::mojom::EditorPanelManager> receivers_;
   mojo::Remote<orca::mojom::EditorClient> editor_client_remote_;
+
+  bool is_editor_menu_visible_ = false;
 
   base::WeakPtrFactory<EditorPanelManager> weak_ptr_factory_{this};
 };

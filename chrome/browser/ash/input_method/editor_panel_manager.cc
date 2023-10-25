@@ -137,6 +137,11 @@ void EditorPanelManager::OnGetPresetTextQueriesResult(
 }
 
 void EditorPanelManager::OnEditorMenuVisibilityChanged(bool visible) {
+  is_editor_menu_visible_ = visible;
+}
+
+bool EditorPanelManager::IsEditorMenuVisible() const {
+  return is_editor_menu_visible_;
 }
 
 }  // namespace ash::input_method
