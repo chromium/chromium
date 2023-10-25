@@ -21,11 +21,14 @@ void TestCopyImpl(CopyMethod copy) {
   memset(tgt, 0, buffer_size + (2 * sizeof(size_t)));
   copy(tgt + sizeof(size_t), src);
   // Check nothing before the buffer was changed
-  EXPECT_EQ(0u, *reinterpret_cast<size_t*>(&tgt[0]));
+  size_t v;
+  memcpy(&v, tgt, sizeof(size_t));
+  EXPECT_EQ(0u, v);
   // Check buffer was copied correctly
   EXPECT_TRUE(!memcmp(src, tgt + sizeof(size_t), buffer_size));
   // Check nothing after the buffer was changed
-  EXPECT_EQ(0u, *reinterpret_cast<size_t*>(&tgt[sizeof(size_t) + buffer_size]));
+  memcpy(&v, tgt + sizeof(size_t) + buffer_size, sizeof(size_t));
+  EXPECT_EQ(0u, v);
 }
 
 // Tests for AtomicReadMemcpy
@@ -119,13 +122,15 @@ void TestAtomicMemzero() {
   memset(buf, ~uint8_t{0}, buffer_size + (2 * sizeof(size_t)));
   AtomicMemzero<buffer_size, alignment>(buf + sizeof(size_t));
   // Check nothing before the buffer was changed
-  EXPECT_EQ(~size_t{0}, *reinterpret_cast<size_t*>(&buf[0]));
+  size_t v;
+  memcpy(&v, buf, sizeof(size_t));
+  EXPECT_EQ(~size_t{0}, v);
   // Check buffer was copied correctly
   static const unsigned char for_comparison[buffer_size] = {0};
   EXPECT_TRUE(!memcmp(buf + sizeof(size_t), for_comparison, buffer_size));
   // Check nothing after the buffer was changed
-  EXPECT_EQ(~size_t{0},
-            *reinterpret_cast<size_t*>(&buf[sizeof(size_t) + buffer_size]));
+  memcpy(&v, buf + sizeof(size_t) + buffer_size, sizeof(size_t));
+  EXPECT_EQ(~size_t{0}, v);
 }
 
 TEST_F(AtomicOperationsTest, AtomicMemzero_UINT8T) {
