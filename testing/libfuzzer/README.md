@@ -30,6 +30,7 @@ Started Guide].
 
 ## Advanced Topics
 
+* [Using libfuzzer instead of FuzzTest].
 * [Improving fuzz target efficiency].
 * [Creating a fuzz target that expects a protobuf] instead of a byte stream as
   input.
@@ -81,3 +82,4 @@ Started Guide].
 [go/fuzzing-success]: https://goto.google.com/fuzzing-success
 [libFuzzer]: http://llvm.org/docs/LibFuzzer.html
 [libFuzzer integration]: libFuzzer_integration.md
+[Using libfuzzer instead of FuzzTest]: getting_started_with_libfuzzer.md
