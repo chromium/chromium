@@ -36,6 +36,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
@@ -435,7 +436,9 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         // PAYMENTS can only be selected if AUTOFILL is also selected.
         // TODO(crbug.com/1435431): Remove this coupling.
         if (!mSyncEverything.isChecked()
-                && !mSyncTypePreferencesMap.get(UserSelectableType.AUTOFILL).isChecked()) {
+                && !mSyncTypePreferencesMap.get(UserSelectableType.AUTOFILL).isChecked()
+                && !ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.SYNC_DECOUPLE_ADDRESS_PAYMENT_SETTINGS)) {
             types.remove(UserSelectableType.PAYMENTS);
         }
         return types;
@@ -597,7 +600,9 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
             // PAYMENTS can only be selected if AUTOFILL is also selected.
             // TODO(crbug.com/1435431): Remove this coupling.
-            if (type == UserSelectableType.PAYMENTS) {
+            if (type == UserSelectableType.PAYMENTS
+                    && !ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.SYNC_DECOUPLE_ADDRESS_PAYMENT_SETTINGS)) {
                 // TODO(crbug.com/1459963): Consider overriding the delegate's
                 // isPreferenceControlledByCustodian() instead.
                 pref.setEnabled(!syncEverything && !mSyncService.isTypeManagedByCustodian(type)

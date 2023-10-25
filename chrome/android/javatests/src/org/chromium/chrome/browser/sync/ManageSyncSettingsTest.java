@@ -40,6 +40,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivity;
@@ -53,6 +54,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.policy.test.annotations.Policies;
@@ -70,6 +73,7 @@ import java.util.Set;
 /** Tests for ManageSyncSettings. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@EnableFeatures({ChromeFeatureList.SYNC_DECOUPLE_ADDRESS_PAYMENT_SETTINGS})
 public class ManageSyncSettingsTest {
     private static final int RENDER_TEST_REVISION = 5;
 
@@ -210,6 +214,7 @@ public class ManageSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
+    @DisableFeatures({ChromeFeatureList.SYNC_DECOUPLE_ADDRESS_PAYMENT_SETTINGS})
     public void testSettingDataTypes() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         ManageSyncSettings fragment = startManageSyncPreferences();
@@ -430,6 +435,7 @@ public class ManageSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
+    @DisableFeatures({ChromeFeatureList.SYNC_DECOUPLE_ADDRESS_PAYMENT_SETTINGS})
     public void testPaymentsIntegrationDisabledByAutofillSyncCheckbox() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
 
@@ -463,6 +469,40 @@ public class ManageSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
+    public void testPaymentsIntegrationNotDisabledByAutofillSyncCheckbox() {
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+
+        // Get the UI elements.
+        ManageSyncSettings fragment = startManageSyncPreferences();
+        ChromeSwitchPreference syncEverything = getSyncEverything(fragment);
+        CheckBoxPreference syncAutofill =
+                (CheckBoxPreference) fragment.findPreference(ManageSyncSettings.PREF_SYNC_AUTOFILL);
+        CheckBoxPreference paymentsIntegration =
+                (CheckBoxPreference)
+                        fragment.findPreference(ManageSyncSettings.PREF_SYNC_PAYMENTS_INTEGRATION);
+
+        assertSyncOnState(fragment);
+        Assert.assertFalse(paymentsIntegration.isEnabled());
+        Assert.assertTrue(paymentsIntegration.isChecked());
+
+        mSyncTestRule.togglePreference(syncEverything);
+
+        Assert.assertTrue(paymentsIntegration.isEnabled());
+        Assert.assertTrue(paymentsIntegration.isChecked());
+
+        mSyncTestRule.togglePreference(syncAutofill);
+
+        Assert.assertTrue(paymentsIntegration.isEnabled());
+        Assert.assertTrue(paymentsIntegration.isChecked());
+
+        closeFragment(fragment);
+        assertPaymentsIntegrationEnabled(true);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Sync"})
+    @DisableFeatures({ChromeFeatureList.SYNC_DECOUPLE_ADDRESS_PAYMENT_SETTINGS})
     public void testPaymentsIntegrationEnabledBySyncEverything() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mSyncTestRule.disableDataType(UserSelectableType.PAYMENTS);
