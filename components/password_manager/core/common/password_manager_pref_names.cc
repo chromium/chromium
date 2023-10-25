@@ -31,6 +31,9 @@ const char kCurrentMigrationVersionToGoogleMobileServices[] =
 
 const char kTimeOfLastMigrationAttempt[] = "time_of_last_migration_attempt";
 
+const char kPasswordsUseUPMLocalAndSeparateStores[] =
+    "passwords_use_upm_local_and_separate_stores";
+
 const char kRequiresMigrationAfterSyncStatusChange[] =
     "requires_migration_after_sync_status_change";
 

@@ -310,6 +310,8 @@ void PasswordManager::RegisterProfilePrefs(
   registry->RegisterIntegerPref(
       prefs::kCurrentMigrationVersionToGoogleMobileServices, 0);
   registry->RegisterDoublePref(prefs::kTimeOfLastMigrationAttempt, 0.0);
+  registry->RegisterBooleanPref(prefs::kPasswordsUseUPMLocalAndSeparateStores,
+                                false);
   registry->RegisterBooleanPref(prefs::kRequiresMigrationAfterSyncStatusChange,
                                 false);
   registry->RegisterBooleanPref(
