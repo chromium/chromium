@@ -9,7 +9,7 @@ namespace promos_features {
 // when saving/updating their passwords.
 BASE_FEATURE(kIOSPromoPasswordBubble,
              "IOSPromoPasswordBubble",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This array lists the different activation params that can be passed in the
 // experiment config, with their corresponding string.

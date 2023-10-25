@@ -299,11 +299,11 @@ TEST_F(IOSPasswordPromoOnDesktopTest, IsDirectVariantIOSPasswordPromoTestTrue) {
   EXPECT_TRUE(promos_utils::IsDirectVariantIOSPasswordPromo());
 }
 
-// Tests that IsDirectVariantIOSPasswordPromo returns false when the feature is
-// not active.
+// Tests that IsDirectVariantIOSPasswordPromo returns true since feature is
+// enabled by default.
 TEST_F(IOSPasswordPromoOnDesktopTest,
        IsDirectVariantIOSPasswordPromoTestFalseFeatureInactive) {
-  EXPECT_FALSE(promos_utils::IsDirectVariantIOSPasswordPromo());
+  EXPECT_TRUE(promos_utils::IsDirectVariantIOSPasswordPromo());
 }
 
 // Tests that IsDirectVariantIOSPasswordPromo returns false when the user's
