@@ -449,12 +449,10 @@ public class TasksView extends CoordinatorLayoutForPointer {
      * @param translationX Current translationX of text view in fake search box layout.
      * @param buttonSize Current height and width of the buttons in fake search box layout.
      * @param lensButtonLeftMargin Current left margin of the lens button in fake search box layout.
-     * @param fakeSearchBoxContainerHeight Current height of the fake search box container.
      * @param searchTextSize Current size for the search text in the fake search box.
      */
     public void updateFakeSearchBox(int height, int topMargin, int endPadding, float translationX,
-            int buttonSize, int lensButtonLeftMargin, int fakeSearchBoxContainerHeight,
-            float searchTextSize) {
+            int buttonSize, int lensButtonLeftMargin, float searchTextSize) {
         if (mSearchBoxCoordinator.getView().getVisibility() != View.VISIBLE) return;
         mSearchBoxCoordinator.setHeight(height);
         mSearchBoxCoordinator.setTopMargin(topMargin);
@@ -464,16 +462,14 @@ public class TasksView extends CoordinatorLayoutForPointer {
         mSearchBoxCoordinator.setButtonsWidth(buttonSize);
         mSearchBoxCoordinator.setLensButtonLeftMargin(lensButtonLeftMargin);
         mSearchBoxCoordinator.setSearchTextSize(searchTextSize);
-        updateFakeSearchBoxContainer(fakeSearchBoxContainerHeight);
     }
 
     /**
-     * Update both the fake search box layout and its container.
-     * @param height Current height of both the fake search box layout and its container.
+     * Update both the fake search box height.
+     * @param height Current height of the fake search box.
      */
-    public void updateFakeSearchBoxLayoutAndContainer(int height) {
+    public void updateFakeSearchBoxHeight(int height) {
         mSearchBoxCoordinator.setHeight(height);
-        updateFakeSearchBoxContainer(height);
     }
 
     /**
