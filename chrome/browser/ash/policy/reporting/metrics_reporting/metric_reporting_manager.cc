@@ -97,7 +97,7 @@ constexpr size_t kAppEventsBucketCount = 10;
 // static
 BASE_FEATURE(kEnableAppEventsObserver,
              "EnableAppEventsObserver",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableFatalCrashEventsObserver,
              "EnableFatalCrashEventsObserver",
              base::FEATURE_DISABLED_BY_DEFAULT);
