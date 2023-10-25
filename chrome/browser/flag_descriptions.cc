@@ -2312,6 +2312,10 @@ const char kOmniboxActionsUISimplificationName[] =
 const char kOmniboxActionsUISimplificationDescription[] =
     "Simplifies omnibox actions UI design with inlined and separated actions.";
 
+const char kOmniboxKeywordModeRefreshName[] = "Omnibox Keyword Mode Refresh";
+const char kOmniboxKeywordModeRefreshDescription[] =
+    "Changes suggestion behavior for keyword mode/site search/starter pack.";
+
 const char kOmniboxDomainSuggestionsName[] = "Omnibox Domain Suggestions";
 const char kOmniboxDomainSuggestionsDescription[] =
     "If enabled, history URL suggestions from hosts visited often bypass the "

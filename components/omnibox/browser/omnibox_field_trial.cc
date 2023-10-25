@@ -554,6 +554,10 @@ bool OmniboxFieldTrial::IsActionsUISimplificationEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kOmniboxActionsUISimplification);
 }
 
+bool OmniboxFieldTrial::IsKeywordModeRefreshEnabled() {
+  return base::FeatureList::IsEnabled(omnibox::kOmniboxKeywordModeRefresh);
+}
+
 const base::FeatureParam<bool>
     OmniboxFieldTrial::kActionsUISimplificationIncludeRealbox(
         &omnibox::kOmniboxActionsUISimplification,

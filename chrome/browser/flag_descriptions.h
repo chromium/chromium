@@ -1335,6 +1335,9 @@ extern const char kOmniboxCR23SuggestionHoverFillShapeDescription[];
 extern const char kOmniboxActionsUISimplificationName[];
 extern const char kOmniboxActionsUISimplificationDescription[];
 
+extern const char kOmniboxKeywordModeRefreshName[];
+extern const char kOmniboxKeywordModeRefreshDescription[];
+
 extern const char kOmniboxDomainSuggestionsName[];
 extern const char kOmniboxDomainSuggestionsDescription[];
 

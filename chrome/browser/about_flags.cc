@@ -6131,6 +6131,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kOmniboxActionsUISimplification,
                                     kOmniboxActionsUISimplificationVariations,
                                     "OmniboxActionsUISimplification")},
+    {"omnibox-keyword-mode-refresh",
+     flag_descriptions::kOmniboxKeywordModeRefreshName,
+     flag_descriptions::kOmniboxKeywordModeRefreshDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxKeywordModeRefresh)},
 
     {"omnibox-domain-suggestions",
      flag_descriptions::kOmniboxDomainSuggestionsName,

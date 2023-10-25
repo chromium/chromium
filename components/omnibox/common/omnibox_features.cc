@@ -323,6 +323,11 @@ BASE_FEATURE(kOmniboxActionsUISimplification,
              "OmniboxActionsUISimplification",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Feature used to enable the new keyword mode behavior.
+BASE_FEATURE(kOmniboxKeywordModeRefresh,
+             "OmniboxKeywordModeRefresh",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Feature used to synchronize the toolbar's and status bar's color.
 BASE_FEATURE(kOmniboxMatchToolbarAndStatusBarColor,
              "OmniboxMatchToolbarAndStatusBarColor",
