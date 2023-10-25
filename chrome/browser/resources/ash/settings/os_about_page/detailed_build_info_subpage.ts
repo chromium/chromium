@@ -353,15 +353,15 @@ class SettingsDetailedBuildInfoSubpageElement extends
 
   private onCopyBuildDetailsToClipBoardClick_(): void {
     const buildInfo: {[key: string]: string|boolean} = {
-      'application_label': loadTimeData.getString('aboutBrowserVersion'),
-      'platform': this.versionInfo_.osVersion,
-      'aboutChannelLabel': this.channelInfo_.targetChannel,
-      'firmware_version': this.versionInfo_.osFirmware,
-      'aboutIsArcStatusTitle': loadTimeData.getBoolean('aboutIsArcEnabled'),
-      'arc_label': this.versionInfo_.arcVersion,
-      'isEnterpriseManagedTitle':
+      application_label: loadTimeData.getString('aboutBrowserVersion'),
+      platform: this.versionInfo_.osVersion,
+      aboutChannelLabel: this.channelInfo_.targetChannel,
+      firmware_version: this.versionInfo_.osFirmware,
+      aboutIsArcStatusTitle: loadTimeData.getBoolean('aboutIsArcEnabled'),
+      arc_label: this.versionInfo_.arcVersion,
+      isEnterpriseManagedTitle:
           loadTimeData.getBoolean('aboutEnterpriseManaged'),
-      'aboutIsDeveloperModeTitle':
+      aboutIsDeveloperModeTitle:
           loadTimeData.getBoolean('aboutIsDeveloperMode'),
     };
 

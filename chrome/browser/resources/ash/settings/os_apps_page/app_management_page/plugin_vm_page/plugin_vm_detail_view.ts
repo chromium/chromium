@@ -76,13 +76,13 @@ export class AppManagementPluginVmDetailViewElement extends
   private onSharedPathsClick_(): void {
     Router.getInstance().navigateTo(
         routes.APP_MANAGEMENT_PLUGIN_VM_SHARED_PATHS,
-        new URLSearchParams({'id': this.app_.id}));
+        new URLSearchParams({id: this.app_.id}));
   }
 
   private onSharedUsbDevicesClick_(): void {
     Router.getInstance().navigateTo(
         routes.APP_MANAGEMENT_PLUGIN_VM_SHARED_USB_DEVICES,
-        new URLSearchParams({'id': this.app_.id}));
+        new URLSearchParams({id: this.app_.id}));
   }
 
   private async onPermissionChanged_(e: Event): Promise<void> {

@@ -43,8 +43,8 @@ const kLanguageCodeToTranslateCode = {
 // Translate still uses the old versions. TODO(michaelpg): Chrome does too.
 // Follow up with Translate owners to understand the right thing to do.
 const kTranslateLanguageSynonyms = {
-  'he': 'iw',
-  'jv': 'jw',
+  he: 'iw',
+  jv: 'jw',
 } as const;
 
 // The fake language name used for ARC IMEs. The value must be in sync with the
