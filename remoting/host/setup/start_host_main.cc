@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_executor.h"
@@ -129,6 +130,7 @@ void OnDone(HostStarter::Result result) {
   switch (result) {
     case HostStarter::START_COMPLETE:
       g_started = true;
+      printf("Host started successfully.\n");
       break;
     case HostStarter::NETWORK_ERROR:
       fprintf(stderr, "Couldn't start host: network error.\n");
@@ -139,6 +141,8 @@ void OnDone(HostStarter::Result result) {
     case HostStarter::START_ERROR:
       fprintf(stderr, "Couldn't start host.\n");
       break;
+    default:
+      NOTREACHED() << "Unexpected HostStarter result: " << result;
   }
 
   g_active_run_loop->Quit();

@@ -60,6 +60,7 @@ int StartHostAsRoot(int argc, char** argv) {
     return return_value;
   }
 
+  printf("Host service started successfully.\n");
   return 0;
 }
 
