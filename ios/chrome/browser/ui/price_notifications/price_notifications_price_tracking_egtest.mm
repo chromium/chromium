@@ -27,12 +27,9 @@
   std::string priceNotificationsFlag =
       std::string(commerce::kCommercePriceTracking.name) + params;
   std::string shoppingListFlag = std::string("ShoppingList");
-  std::string priceNotificationsSmartSortingFlag =
-      std::string("kSmartSortingPriceTrackingDestination");
 
   config.additional_args.push_back(
-      "--enable-features=" + priceNotificationsFlag + "," + shoppingListFlag +
-      "," + priceNotificationsSmartSortingFlag);
+      "--enable-features=" + priceNotificationsFlag + "," + shoppingListFlag);
 
   return config;
 }

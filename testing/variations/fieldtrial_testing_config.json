@@ -6508,8 +6508,7 @@
                         "IPH_PriceNotificationsWhileBrowsing",
                         "NotificationSettingsMenuItem",
                         "OptimizationGuidePushNotifications",
-                        "ShoppingList",
-                        "kSmartSortingPriceTrackingDestination"
+                        "ShoppingList"
                     ]
                 }
             ]
