@@ -1479,11 +1479,14 @@ ManifestParser::ParseUrlHandler(const JSONObject* object) {
 Vector<mojom::blink::ManifestScopeExtensionPtr>
 ManifestParser::ParseScopeExtensions(const JSONObject* from) {
   Vector<mojom::blink::ManifestScopeExtensionPtr> scope_extensions;
-  if (!base::FeatureList::IsEnabled(
+  const bool feature_enabled =
+      base::FeatureList::IsEnabled(
           blink::features::kWebAppEnableScopeExtensions) ||
-      !from->Get("scope_extensions")) {
+      RuntimeEnabledFeatures::WebAppScopeExtensionsEnabled(execution_context_);
+  if (!feature_enabled || !from->Get("scope_extensions")) {
     return scope_extensions;
   }
+
   JSONArray* extensions_list = from->GetArray("scope_extensions");
   if (!extensions_list) {
     AddErrorInfo("property 'scope_extensions' ignored, type array expected.");
@@ -1550,8 +1553,10 @@ ManifestParser::ParseScopeExtensions(const JSONObject* from) {
 
 absl::optional<mojom::blink::ManifestScopeExtensionPtr>
 ManifestParser::ParseScopeExtension(const JSONObject* object) {
-  DCHECK(base::FeatureList::IsEnabled(
-      blink::features::kWebAppEnableScopeExtensions));
+  DCHECK(
+      base::FeatureList::IsEnabled(
+          blink::features::kWebAppEnableScopeExtensions) ||
+      RuntimeEnabledFeatures::WebAppScopeExtensionsEnabled(execution_context_));
   if (!object->Get("origin")) {
     AddErrorInfo(
         "scope_extensions entry ignored, required property 'origin' is "
@@ -1569,8 +1574,10 @@ ManifestParser::ParseScopeExtension(const JSONObject* object) {
 
 absl::optional<mojom::blink::ManifestScopeExtensionPtr>
 ManifestParser::ParseScopeExtensionOrigin(const String& origin_string) {
-  DCHECK(base::FeatureList::IsEnabled(
-      blink::features::kWebAppEnableScopeExtensions));
+  DCHECK(
+      base::FeatureList::IsEnabled(
+          blink::features::kWebAppEnableScopeExtensions) ||
+      RuntimeEnabledFeatures::WebAppScopeExtensionsEnabled(execution_context_));
 
   // TODO(crbug.com/1250011): pre-process for input without scheme.
   // (eg. example.com instead of https://example.com) because we can always

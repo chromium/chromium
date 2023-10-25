@@ -728,8 +728,7 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
   app->publisher_id = update.PublisherId();
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(
-          blink::features::kWebAppEnableScopeExtensions)) {
+  if (!provider->registrar_unsafe().GetScopeExtensions(app->id).empty()) {
     app->formatted_origin = GetFormattedOrigin(app->id, *provider);
     app->scope_extensions = GetScopeExtensions(app->id, *provider);
   }

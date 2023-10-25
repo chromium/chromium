@@ -4105,6 +4105,13 @@
       base_feature: "none",
     },
     {
+      name: "WebAppScopeExtensions",
+      origin_trial_feature_name: "WebAppScopeExtensions",
+      origin_trial_os: ["win", "mac", "linux", "chromeos"],
+      status: "experimental",
+      base_feature: "none",
+    },
+    {
       name:"WebAppsLockScreen",
       status:"experimental",
       base_feature: "none",

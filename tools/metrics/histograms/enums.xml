@@ -44254,7 +44254,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="ServiceWorkerFetchHandlerModifiedAfterInitialization"/>
   <int value="4454" label="OptionLabelInQuirksMode"/>
   <int value="4455" label="ParseFromStringIncludeShadows"/>
-  <int value="4456" label="WebAppEnableScopeExtensions"/>
+  <int value="4456" label="WebAppManifestScopeExtensions"/>
   <int value="4457"
       label="ServiceWorkerBypassFetchHandlerForMainResourceByOriginTrial"/>
   <int value="4458"

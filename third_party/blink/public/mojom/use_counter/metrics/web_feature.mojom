@@ -3793,7 +3793,7 @@ enum WebFeature {
   kServiceWorkerFetchHandlerModifiedAfterInitialization = 4453,
   kOptionLabelInQuirksMode = 4454,
   kParseFromStringIncludeShadows = 4455,
-  kWebAppEnableScopeExtensions = 4456,
+  kWebAppManifestScopeExtensions = 4456,
   kServiceWorkerBypassFetchHandlerForMainResourceByOriginTrial = 4457,
   kOBSOLETE_V8RegExpUnicodeSetIncompatibilitiesWithUnicodeMode = 4458,
   kFedCmAutoReauthn = 4459,
