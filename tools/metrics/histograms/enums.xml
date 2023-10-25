@@ -56636,6 +56636,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="3" label="User declined"/>
   <int value="4" label="User opened settings (double count)"/>
   <int value="5" label="User dismissed"/>
+  <int value="6" label="Popover displayed"/>
 </enum>
 
 <enum name="IOSMultiWindowConfiguration">
