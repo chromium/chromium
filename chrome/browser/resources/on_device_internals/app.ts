@@ -136,8 +136,7 @@ class OnDeviceInternalsAppElement extends PolymerElement {
     // <if expr="not is_win">
     const processedPath = modelPath;
     // </if>
-    const {result} =
-        await this.proxy_.handler.loadModel({path: {path: processedPath}});
+    const {result} = await this.proxy_.handler.loadModel({path: processedPath});
     if (result.error) {
       this.error_ = result.error;
     } else {

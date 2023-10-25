@@ -1,0 +1,20 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+import "services/on_device_model/public/mojom/on_device_model.mojom";
+
+// Primary interface for the chrome://on-device-internals WebUI.
+interface OnDeviceInternalsPage {
+  // Binds a new OnDeviceModel interface if possible using model assets loaded
+  // from within `model_path`.
+  LoadModel(mojo_base.mojom.FilePath model_path) =>
+      (on_device_model.mojom.LoadModelResult result);
+
+  // Returns the performance class based on benchmarks run on the device.
+  GetEstimatedPerformanceClass() =>
+      (on_device_model.mojom.PerformanceClass performance_class);
+};

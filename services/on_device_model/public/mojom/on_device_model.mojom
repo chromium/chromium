@@ -4,7 +4,7 @@
 
 module on_device_model.mojom;
 
-import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/file.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
 // Streams a response from a call to execute a model.
@@ -24,13 +24,20 @@ interface OnDeviceModel {
   Execute(string input, pending_remote<StreamingResponder> response);
 };
 
-struct LoadModelParams {
-  // The path to the model on disk.
-  mojo_base.mojom.FilePath path;
+// Opened file resources needed to define the model.
+struct ModelAssets {
+  mojo_base.mojom.File? sp_model;
+  mojo_base.mojom.File? model;
+  mojo_base.mojom.File? weights;
 };
 
+// The result of OnDeviceModelService.LoadModel().
 union LoadModelResult {
+  // On successful load, this field is populated with a Remote to control the
+  // loaded model.
   pending_remote<OnDeviceModel> model;
+
+  // On load failure, this field is populated with a description of the failure.
   string error;
 };
 
@@ -52,9 +59,8 @@ enum PerformanceClass {
 // A service which allows loading models which are stored on-device.
 [ServiceSandbox=sandbox.mojom.Sandbox.kNoSandbox]
 interface OnDeviceModelService {
-  // Loads a model and returns the model or an error if the model could not be
-  // loaded.
-  LoadModel(LoadModelParams params) => (LoadModelResult result);
+  // Initializes a new model instance given `assets`.
+  LoadModel(ModelAssets assets) => (LoadModelResult result);
 
   // Returns the performance class based on benchmarks run on the device.
   GetEstimatedPerformanceClass() => (PerformanceClass performance_class);

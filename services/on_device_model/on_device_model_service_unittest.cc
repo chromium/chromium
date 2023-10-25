@@ -4,9 +4,9 @@
 
 #include "services/on_device_model/on_device_model_service.h"
 
-#include "base/files/file_path.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "services/on_device_model/public/cpp/model_assets.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -44,12 +44,11 @@ class OnDeviceModelServiceTest : public testing::Test {
 
   mojo::Remote<mojom::OnDeviceModelService>& service() { return service_; }
 
-  mojo::Remote<mojom::OnDeviceModel> LoadModel(
-      mojom::LoadModelParamsPtr params) {
+  mojo::Remote<mojom::OnDeviceModel> LoadModel() {
     base::RunLoop run_loop;
     mojo::Remote<mojom::OnDeviceModel> remote;
     service()->LoadModel(
-        std::move(params),
+        ModelAssets(),
         base::BindLambdaForTesting([&](mojom::LoadModelResultPtr result) {
           remote.Bind(std::move(result->get_model()));
           run_loop.Quit();
@@ -65,16 +64,14 @@ class OnDeviceModelServiceTest : public testing::Test {
 };
 
 TEST_F(OnDeviceModelServiceTest, Responds) {
-  auto model = LoadModel(
-      mojom::LoadModelParams::New(base::FilePath(FILE_PATH_LITERAL("foo"))));
+  auto model = LoadModel();
   {
     ResponseHolder response;
     model->Execute("bar", response.BindRemote());
     response.WaitForCompletion();
     const auto& responses = response.responses();
-    EXPECT_EQ(responses.size(), 2u);
-    EXPECT_EQ(responses[0], "Model: foo\n");
-    EXPECT_EQ(responses[1], "Input: bar\n");
+    EXPECT_EQ(responses.size(), 1u);
+    EXPECT_EQ(responses[0], "Input: bar\n");
   }
   // Try another input on  the same model.
   {
@@ -82,9 +79,8 @@ TEST_F(OnDeviceModelServiceTest, Responds) {
     model->Execute("cat", response.BindRemote());
     response.WaitForCompletion();
     const auto& responses = response.responses();
-    EXPECT_EQ(responses.size(), 2u);
-    EXPECT_EQ(responses[0], "Model: foo\n");
-    EXPECT_EQ(responses[1], "Input: cat\n");
+    EXPECT_EQ(responses.size(), 1u);
+    EXPECT_EQ(responses[0], "Input: cat\n");
   }
 }
 

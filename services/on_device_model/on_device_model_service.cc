@@ -12,9 +12,9 @@ OnDeviceModelService::OnDeviceModelService(
 
 OnDeviceModelService::~OnDeviceModelService() = default;
 
-void OnDeviceModelService::LoadModel(mojom::LoadModelParamsPtr params,
+void OnDeviceModelService::LoadModel(ModelAssets assets,
                                      LoadModelCallback callback) {
-  auto model = CreateModel(std::move(params));
+  auto model = CreateModel(std::move(assets));
   if (!model) {
     std::move(callback).Run(
         mojom::LoadModelResult::NewError("Failed to create model."));

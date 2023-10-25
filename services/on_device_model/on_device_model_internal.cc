@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
+#include "base/no_destructor.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/on_device_model/on_device_model_service.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
@@ -12,11 +15,16 @@
 namespace on_device_model {
 namespace {
 
+const ml::ChromeML* GetChromeML() {
+  static base::NoDestructor<std::unique_ptr<ml::ChromeML>> ml{
+      ml::ChromeML::Create()};
+  return ml->get();
+}
+
 class OnDeviceModel : public mojom::OnDeviceModel {
  public:
-  explicit OnDeviceModel(std::unique_ptr<ml::ChromeML> chrome_ml,
-                         std::unique_ptr<ml::OnDeviceModelExecutor> executor)
-      : chrome_ml_(std::move(chrome_ml)), executor_(std::move(executor)) {}
+  explicit OnDeviceModel(std::unique_ptr<ml::OnDeviceModelExecutor> executor)
+      : executor_(std::move(executor)) {}
   ~OnDeviceModel() override = default;
 
   OnDeviceModel(const OnDeviceModel&) = delete;
@@ -29,7 +37,6 @@ class OnDeviceModel : public mojom::OnDeviceModel {
   }
 
  private:
-  std::unique_ptr<ml::ChromeML> chrome_ml_;
   std::unique_ptr<ml::OnDeviceModelExecutor> executor_;
 };
 
@@ -37,27 +44,25 @@ class OnDeviceModel : public mojom::OnDeviceModel {
 
 // static
 std::unique_ptr<mojom::OnDeviceModel> OnDeviceModelService::CreateModel(
-    mojom::LoadModelParamsPtr params) {
-  auto chrome_ml = ml::ChromeML::Create();
-  if (!chrome_ml) {
+    ModelAssets assets) {
+  if (!GetChromeML()) {
     return nullptr;
   }
-  auto executor = ml::OnDeviceModelExecutor::Create(
-      *chrome_ml, LoadModelAssets(params->path));
+
+  auto executor =
+      ml::OnDeviceModelExecutor::Create(*GetChromeML(), std::move(assets));
   if (!executor) {
     return nullptr;
   }
-  return std::make_unique<OnDeviceModel>(std::move(chrome_ml),
-                                         std::move(executor));
+  return std::make_unique<OnDeviceModel>(std::move(executor));
 }
 
 // static
 mojom::PerformanceClass OnDeviceModelService::GetEstimatedPerformanceClass() {
-  auto chrome_ml = ml::ChromeML::Create();
-  if (!chrome_ml) {
+  if (!GetChromeML()) {
     return mojom::PerformanceClass::kError;
   }
-  return ml::GetEstimatedPerformanceClass(*chrome_ml);
+  return ml::GetEstimatedPerformanceClass(*GetChromeML());
 }
 
 }  // namespace on_device_model
