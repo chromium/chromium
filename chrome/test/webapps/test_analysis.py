@@ -90,13 +90,9 @@ def compare_and_print_tests_to_remove_and_add(
         tests_to_add: List[CoverageTest] = []
         for test in tests:
             if platforms in existing_tests:
-                existing_test_set = set([
-                    TestIdTestNameTuple(test_id, test_name)
-                    for (test_id, test_name) in existing_tests[platforms]
-                ])
-                if TestIdTestNameTuple(
-                        test.id,
-                        test.generate_test_name()) not in existing_test_set:
+                existing_test_set = set(
+                    [test_id for (test_id, _) in existing_tests[platforms]])
+                if test.id not in existing_test_set:
                     tests_to_add.append(test)
                 else:
                     test_ids_to_keep[platforms].add(test.id)

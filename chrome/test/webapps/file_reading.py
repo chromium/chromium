@@ -543,7 +543,7 @@ def get_and_maybe_delete_tests_in_browsertest(
                 '\\s*{\n(?:\\s*\\/\\/.*\n)+((?:[^;^}}]+;\n)+)}', file):
             test_steps: List[str] = []
             if match.group(2):
-                test_body = match.group(2).split("\n")
+                test_body = match.group(2).split(";")
                 for line in test_body:
                     assert not line.strip().startswith("//")
                     test_steps.append(line.strip())
@@ -551,9 +551,11 @@ def get_and_maybe_delete_tests_in_browsertest(
             test_name = match.group(1)
             tests[TestIdTestNameTuple(test_id, test_name)] = set(TestPlatform)
             browser_test_name = f"{CoverageTest.TEST_ID_PREFIX}{test_name}"
+            required_tests_ids = []
+            for t in required_tests:
+                required_tests_ids.append(t[0])
             if f"DISABLED_{browser_test_name}" not in file:
-                if delete_in_place and TestIdTestNameTuple(
-                        test_id, test_name) not in required_tests:
+                if delete_in_place and test_id not in required_tests_ids:
                     del tests[TestIdTestNameTuple(test_id, test_name)]
                     # Remove the matching test code block when the test is not
                     # in required_tests
@@ -625,7 +627,7 @@ def generate_test_id_from_test_steps(test_steps: List[str]) -> str:
     for test_step in test_steps:
         # Examples of the matching regex.
         # https://regex101.com/r/UYlzkK/1
-        match_test_step = re.search(r"helper_.(\w+)\(([\w,\s:]*)\);", test_step)
+        match_test_step = re.search(r"helper_.(\w+)\(([\w,\s:]*)\)", test_step)
         if match_test_step:
             actions = re.findall('[A-Z][^A-Z]*', match_test_step.group(1))
             test_id += [a.lower() for a in actions]
