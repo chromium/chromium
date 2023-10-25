@@ -574,19 +574,21 @@ class AvdConfig:
           logging.info('The version for package %r on the device is %r',
                        package_name, package_version)
 
-      # Always disable the network to prevent built-in system apps from
-      # updating themselves, which could take over package manager and
-      # cause shell command timeout.
-      # Use svc as this also works on the images with build type "user", and
-      # does not require a reboot or broadcast compared to setting the
-      # airplane_mode_on in "settings/global".
-      logging.info('Disabling the network.')
-      instance.device.RunShellCommand(['svc', 'wifi', 'disable'],
-                                      as_root=True,
-                                      check_return=True)
-      instance.device.RunShellCommand(['svc', 'data', 'disable'],
-                                      as_root=True,
-                                      check_return=True)
+      # Skip Marshmallow as svc commands fail on this version.
+      if instance.device.build_version_sdk != 23:
+        # Always disable the network to prevent built-in system apps from
+        # updating themselves, which could take over package manager and
+        # cause shell command timeout.
+        # Use svc as this also works on the images with build type "user", and
+        # does not require a reboot or broadcast compared to setting the
+        # airplane_mode_on in "settings/global".
+        logging.info('Disabling the network.')
+        instance.device.RunShellCommand(['svc', 'wifi', 'disable'],
+                                        as_root=True,
+                                        check_return=True)
+        instance.device.RunShellCommand(['svc', 'data', 'disable'],
+                                        as_root=True,
+                                        check_return=True)
 
       if snapshot:
         instance.SaveSnapshot()
