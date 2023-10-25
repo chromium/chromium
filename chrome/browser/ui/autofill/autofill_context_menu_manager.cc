@@ -36,8 +36,8 @@ namespace {
 // The command IDs reserved for autofill's custom menus.
 static constexpr int kAutofillContextFeedback =
     IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK;
-static constexpr int kAutofillFallbackForAutocompleteUnrecognized =
-    IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED;
+static constexpr int kAutofillFallbackForAddress =
+    IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS;
 
 constexpr char kFeedbackPlaceholder[] =
     "What steps did you just take?\n"
@@ -116,8 +116,7 @@ bool IsLikelyDogfoodClient() {
 bool AutofillContextMenuManager::IsAutofillCustomCommandId(
     CommandId command_id) {
   const int id = command_id.value();
-  return id == kAutofillContextFeedback ||
-         id == kAutofillFallbackForAutocompleteUnrecognized;
+  return id == kAutofillContextFeedback || id == kAutofillFallbackForAddress;
 }
 
 AutofillContextMenuManager::AutofillContextMenuManager(
@@ -168,11 +167,11 @@ void AutofillContextMenuManager::AppendItems() {
   }
 
   if (ShouldAddAutofillManualFallbackItem(*driver)) {
-    menu_model_->AddTitle(l10n_util::GetStringUTF16(
-        IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED_TITLE));
+    menu_model_->AddTitle(
+        l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE));
     menu_model_->AddItemWithStringId(
-        kAutofillFallbackForAutocompleteUnrecognized,
-        IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED);
+        kAutofillFallbackForAddress,
+        IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS);
     menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
 
     LogManualFallbackContextMenuEntryShown(*driver);
@@ -206,7 +205,7 @@ void AutofillContextMenuManager::ExecuteCommand(int command_id) {
     return;
   }
 
-  if (command_id == kAutofillFallbackForAutocompleteUnrecognized) {
+  if (command_id == kAutofillFallbackForAddress) {
     ExecuteFallbackForAutocompleteUnrecognizedCommand(manager);
     return;
   }

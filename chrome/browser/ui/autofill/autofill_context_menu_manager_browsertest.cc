@@ -45,18 +45,16 @@ ACTION_P(QuitMessageLoop, loop) {
 MATCHER(ContainsAnyAutofillFallbackEntries, "") {
   for (size_t i = 0; i < arg->GetItemCount(); i++) {
     if (arg->GetCommandIdAt(i) ==
-        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED) {
+        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS) {
       return true;
     }
     const std::u16string label = arg->GetLabelAt(i);
-    if (label ==
-        l10n_util::GetStringUTF16(
-            IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED_TITLE)) {
+    if (label == l10n_util::GetStringUTF16(
+                     IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE)) {
       return true;
     }
-    if (label ==
-        l10n_util::GetStringUTF16(
-            IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED)) {
+    if (label == l10n_util::GetStringUTF16(
+                     IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS)) {
       return true;
     }
   }
@@ -70,10 +68,10 @@ MATCHER(IsAutofillFallbackAdded, "") {
   return arg->GetTypeAt(0) == ui::MenuModel::ItemType::TYPE_TITLE &&
          arg->GetLabelAt(0) ==
              l10n_util::GetStringUTF16(
-                 IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED_TITLE) &&
+                 IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE) &&
          arg->GetLabelAt(1) ==
              l10n_util::GetStringUTF16(
-                 IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED) &&
+                 IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS) &&
          arg->GetTypeAt(2) == ui::MenuModel::ItemType::TYPE_SEPARATOR;
 }
 
@@ -425,7 +423,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteUnrecognizedFieldsTest,
           AutofillSuggestionTriggerSource::
               kManualFallbackForAutocompleteUnrecognized));
   autofill_context_menu_manager()->ExecuteCommand(
-      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED);
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -463,7 +461,7 @@ IN_PROC_BROWSER_TEST_F(
   // Expect that when the autofill_manager() is destroyed, the explicitly
   // triggered metric is emitted correctly.
   autofill_context_menu_manager()->ExecuteCommand(
-      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED);
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS);
   base::HistogramTester histogram_tester;
   autofill_manager().Reset();
   histogram_tester.ExpectUniqueSample(
@@ -546,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
   // field.
   EXPECT_CALL(*driver(), RendererShouldTriggerSuggestions).Times(0);
   autofill_context_menu_manager()->ExecuteCommand(
-      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED);
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS);
 }
 
 }  // namespace autofill
