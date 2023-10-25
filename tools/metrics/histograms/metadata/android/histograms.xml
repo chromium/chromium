@@ -5275,6 +5275,67 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.Metrics.PackagesAllowList.ParseStatus"
+    enum="AppPackageNameAllowlistParseStatus" expires_after="2024-04-01">
+  <owner>avvall@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the result of parsing the apps package names allowlist used to
+    populate the &quot;app_package_name&quot; field in UMA metrics logs. This is
+    recorded when the AwAppsPackageNamesAllowlistComponentLoaderPolicy is
+    successfully loaded by EmbeddedComponentLoader, i.e when ComponentLoaded is
+    called by the loader.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.Metrics.PackagesAllowList.RecordStatus"
+    enum="AppPackageNameLoggingRuleStatus" expires_after="2024-03-17">
+  <owner>avvall@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the status of the apps package names allowlist used to populate the
+    &quot;app_package_name&quot; field in UMA metrics log. The status tracks if
+    a new version is loaded, a cached one is used or if loading the allowlist
+    has failed. It's recorded everytime the app package name is queried when a
+    new metrics log is created.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.WebView.Metrics.PackagesAllowList.ResultReceivingDelay"
+    units="ms" expires_after="2024-04-01">
+  <owner>avvall@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the time delta between creating a AwMetricsServiceClient instance
+    during WebView startup and the time when the app package names allowlist is
+    loaded and looked up. This only records when a new version of the allowlist
+    is loaded successfully. i.e it's not recorded if the loading the allowlist
+    fails or if a cached version is used.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.Metrics.PackagesAllowList.ThrottleStatus"
+    enum="Boolean" expires_after="2024-04-01">
+  <owner>avvall@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Whether requests to query the app package names allowlist component is
+    throttled or not.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.Metrics.PackagesAllowList.TimeToExpire"
+    units="hours" expires_after="2024-04-01">
+  <owner>avvall@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    How long before the app package names allowlist record cached in the client
+    expires. This is only recorded from Apps that are in the app package names
+    allowlist. Recorded every time a metrics log is being created.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.MixedContent.Mode"
     enum="WebViewMixedContentMode" expires_after="2024-08-25">
   <owner>ntfschr@chromium.org</owner>
