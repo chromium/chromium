@@ -9,6 +9,7 @@
 #include "skia/ext/platform_canvas.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_conversions.h"
+#include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace blink {
@@ -157,15 +158,7 @@ gfx::Size WebThemeEngineAndroid::GetSize(WebThemeEngine::Part part) {
 }
 
 void WebThemeEngineAndroid::GetOverlayScrollbarStyle(ScrollbarStyle* style) {
-  // TODO(bokan): Android scrollbars on non-composited scrollers don't
-  // currently fade out so the fadeOutDuration and Delay  Now that this has
-  // been added into Blink for other platforms we should plumb that through for
-  // Android as well.
-  style->fade_out_delay = base::TimeDelta();
-  style->fade_out_duration = base::TimeDelta();
-  style->thumb_thickness = 4;
-  style->scrollbar_margin = 0;
-  style->color = SkColorSetARGB(128, 64, 64, 64);
+  *style = WebThemeEngineHelper::AndroidScrollbarStyle();
 }
 
 void WebThemeEngineAndroid::Paint(
