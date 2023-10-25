@@ -507,6 +507,13 @@ _ANDROID_PIXEL6_BENCHMARK_CONFIGS = PerfSuite(
         _GetBenchmarkConfig('system_health.scroll_jank_mobile')
     ]
 )
+_ANDROID_PIXEL6_PGO_BENCHMARK_CONFIGS = PerfSuite([
+    _GetBenchmarkConfig('system_health.common_mobile'),
+    _GetBenchmarkConfig('jetstream2'),
+    _GetBenchmarkConfig('rendering.mobile'),
+    _GetBenchmarkConfig('speedometer2'),
+    _GetBenchmarkConfig('speedometer3'),
+])
 _ANDROID_PIXEL6_PRO_BENCHMARK_CONFIGS = PerfSuite(
     _OFFICIAL_EXCEPT_DISPLAY_LOCKING)
 _ANDROID_PIXEL6_EXECUTABLE_CONFIGS = frozenset([
@@ -740,14 +747,9 @@ ANDROID_PIXEL6 = PerfPlatform('android-pixel6-perf',
                               28,
                               'android',
                               executables=_ANDROID_PIXEL6_EXECUTABLE_CONFIGS)
-ANDROID_PIXEL6_PGO = PerfPlatform(
-    'android-pixel6-perf-pgo',
-    'Android T',
-    _ANDROID_PIXEL6_BENCHMARK_CONFIGS,
-    28,
-    'android',
-    executables=_ANDROID_PIXEL6_EXECUTABLE_CONFIGS,
-    pinpoint_only=True)
+ANDROID_PIXEL6_PGO = PerfPlatform('android-pixel6-perf-pgo', 'Android T',
+                                  _ANDROID_PIXEL6_PGO_BENCHMARK_CONFIGS, 4,
+                                  'android')
 ANDROID_PIXEL6_PRO = PerfPlatform(
     'android-pixel6-pro-perf',
     'Android T',
