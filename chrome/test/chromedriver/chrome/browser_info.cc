@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/json/json_reader.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -188,9 +189,9 @@ Status BrowserInfo::ParseBlinkVersionString(const std::string& blink_version,
 }
 
 bool BrowserInfo::IsGitHash(const std::string& revision) {
-  const int kShortGitHashLength = 7;
-  const int kFullGitHashLength = 40;
-  return kShortGitHashLength <= revision.size()
-      && revision.size() <= kFullGitHashLength
-      && base::ContainsOnlyChars(revision, "0123456789abcdefABCDEF");
+  constexpr int kShortGitHashLength = 7;
+  constexpr int kFullGitHashLength = 40;
+  return kShortGitHashLength <= revision.size() &&
+         revision.size() <= kFullGitHashLength &&
+         base::ranges::all_of(revision, base::IsHexDigit<char>);
 }

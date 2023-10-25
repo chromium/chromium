@@ -13,6 +13,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
@@ -966,12 +967,7 @@ bool IsValidRemoteBoundLogFilename(const std::string& filename) {
   // Expect log ID.
   const std::string log_id = filename.substr(index);
   DCHECK_EQ(log_id.length(), kWebRtcEventLogIdLength);
-  const char* const log_id_chars = "0123456789ABCDEF";
-  if (filename.find_first_not_of(log_id_chars, index) != std::string::npos) {
-    return false;
-  }
-
-  return true;
+  return base::ContainsOnlyChars(log_id, "0123456789ABCDEF");
 }
 
 bool IsValidRemoteBoundLogFilePath(const base::FilePath& path) {
