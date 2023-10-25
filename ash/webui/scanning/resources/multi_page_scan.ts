@@ -21,7 +21,7 @@ import {ScanningBrowserProxyImpl} from './scanning_browser_proxy.js';
 
 const MultiPageScanElementBase = I18nMixin(PolymerElement);
 
-class MultiPageScanElement extends MultiPageScanElementBase {
+export class MultiPageScanElement extends MultiPageScanElementBase {
   static get is() {
     return 'multi-page-scan' as const;
   }
