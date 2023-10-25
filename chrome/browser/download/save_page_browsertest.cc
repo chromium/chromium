@@ -104,8 +104,8 @@ std::string ReadFileAndCollapseWhitespace(const base::FilePath& file_path) {
 // the SavePageAs logic.
 std::string WriteSavedFromPath(const std::string& file_contents,
                                const GURL& url) {
-  return base::StringPrintf(file_contents.c_str(), url.spec().length(),
-                            url.spec().c_str());
+  return base::StringPrintfNonConstexpr(
+      file_contents.c_str(), url.spec().length(), url.spec().c_str());
 }
 
 // Waits for an item record in the downloads database to match |filter|. See

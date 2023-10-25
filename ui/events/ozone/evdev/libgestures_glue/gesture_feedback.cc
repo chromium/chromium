@@ -37,7 +37,7 @@ std::string DumpArrayProperty(const std::vector<T>& value, const char* format) {
   for (size_t i = 0; i < value.size(); ++i) {
     if (i > 0)
       ret.append(", ");
-    ret.append(base::StringPrintf(format, value[i]));
+    ret.append(base::StringPrintfNonConstexpr(format, value[i]));
   }
   return ret;
 }

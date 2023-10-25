@@ -112,7 +112,7 @@ class BrowserEncodingTest
     }
 
     // Add "Mark of the Web" path with source URL.
-    expected_contents = base::StringPrintf(
+    expected_contents = base::StringPrintfNonConstexpr(
         expected_contents.c_str(), url.spec().length(), url.spec().c_str());
 
     EXPECT_EQ(expected_contents, actual_contents);

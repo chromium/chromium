@@ -216,7 +216,8 @@ class Handler : public content::WebContentsObserver {
                                    const char* format) {
     ScriptExecutor::FrameResult& frame_result =
         GetFrameResult(render_frame_host->GetFrameToken());
-    frame_result.error = base::StringPrintf(format, frame_result.frame_id);
+    frame_result.error =
+        base::StringPrintfNonConstexpr(format, frame_result.frame_id);
   }
 
   ScriptExecutor::FrameResult& GetFrameResult(

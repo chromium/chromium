@@ -1723,12 +1723,14 @@ base::FilePath CaptureModeController::BuildImagePathForDisplay(
 base::FilePath CaptureModeController::BuildPathNoExtension(
     const char* const format_string,
     base::Time timestamp) const {
-  return GetCurrentCaptureFolder().path.AppendASCII(base::StringPrintf(
-      format_string,
-      base::UnlocalizedTimeFormatWithPattern(timestamp, "y-MM-dd").c_str(),
-      base::UnlocalizedTimeFormatWithPattern(
-          timestamp, delegate_->Uses24HourFormat() ? "HH.mm.ss" : "h.mm.ss a")
-          .c_str()));
+  return GetCurrentCaptureFolder().path.AppendASCII(
+      base::StringPrintfNonConstexpr(
+          format_string,
+          base::UnlocalizedTimeFormatWithPattern(timestamp, "y-MM-dd").c_str(),
+          base::UnlocalizedTimeFormatWithPattern(
+              timestamp,
+              delegate_->Uses24HourFormat() ? "HH.mm.ss" : "h.mm.ss a")
+              .c_str()));
 }
 
 base::FilePath CaptureModeController::GetFallbackFilePathFromFile(

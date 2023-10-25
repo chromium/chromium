@@ -156,7 +156,7 @@ class DeprecatedAppsDialogViewBrowserTest
                                                      const char* url) {
     extensions::TestExtensionDir test_app_dir;
     test_app_dir.WriteManifest(
-        base::StringPrintf(app_manifest, GURL(url).spec().c_str()));
+        base::StringPrintfNonConstexpr(app_manifest, GURL(url).spec().c_str()));
     const extensions::Extension* app = InstallExtensionWithSourceAndFlags(
         test_app_dir.UnpackedPath(), /*expected_change=*/1,
         extensions::mojom::ManifestLocation::kInternal,

@@ -85,7 +85,7 @@ std::string GetTosHost(ToS terms_type) {
 
   const char* url_path = kTermsTypeToUrlAndSwitch.at(terms_type).first;
   if (terms_type == ToS::GOOGLE_EULA || terms_type == ToS::CROS_EULA) {
-    return base::StringPrintf(
+    return base::StringPrintfNonConstexpr(
         url_path, g_browser_process->GetApplicationLocale().c_str());
   }
   return url_path;

@@ -222,7 +222,8 @@ CommandMapping VendorPrefixedCommandMapping(HttpMethod method,
                                             const char* path_pattern,
                                             const Command& command) {
   return CommandMapping(
-      method, base::StringPrintf(path_pattern, kChromeDriverCompanyPrefix),
+      method,
+      base::StringPrintfNonConstexpr(path_pattern, kChromeDriverCompanyPrefix),
       command);
 }
 

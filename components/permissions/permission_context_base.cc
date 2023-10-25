@@ -97,8 +97,8 @@ void LogPermissionBlockedMessage(content::RenderFrameHost* rfh,
                                  ContentSettingsType type) {
   rfh->GetOutermostMainFrame()->AddMessageToConsole(
       blink::mojom::ConsoleMessageLevel::kWarning,
-      base::StringPrintf(message,
-                         PermissionUtil::GetPermissionString(type).c_str()));
+      base::StringPrintfNonConstexpr(
+          message, PermissionUtil::GetPermissionString(type).c_str()));
 }
 
 }  // namespace

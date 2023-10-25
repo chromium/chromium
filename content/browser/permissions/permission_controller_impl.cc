@@ -90,8 +90,8 @@ void LogPermissionBlockedMessage(PermissionType permission,
                                  const char* message) {
   rfh->GetOutermostMainFrame()->AddMessageToConsole(
       blink::mojom::ConsoleMessageLevel::kWarning,
-      base::StringPrintf(message,
-                         blink::GetPermissionString(permission).c_str()));
+      base::StringPrintfNonConstexpr(
+          message, blink::GetPermissionString(permission).c_str()));
 }
 
 PermissionResult VerifyContextOfCurrentDocument(

@@ -137,8 +137,8 @@ class HostZoomMapBrowserTest : public InProcessBrowserTest {
   }
 
   GURL ConstructTestServerURL(const char* url_template) {
-    return GURL(base::StringPrintf(
-        url_template, embedded_test_server()->port()));
+    return GURL(base::StringPrintfNonConstexpr(url_template,
+                                               embedded_test_server()->port()));
   }
 
  private:

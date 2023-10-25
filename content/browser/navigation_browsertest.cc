@@ -4677,7 +4677,7 @@ class SubresourceLoadingTest : public NavigationBrowserTest {
             // `%%s` is replaced with the value of `target_document`.
             %s.body.appendChild(img);
         }); )";
-    std::string script = base::StringPrintf(
+    std::string script = base::StringPrintfNonConstexpr(
         JsReplace(kScriptTemplate, image_url).c_str(), target_document.c_str());
     EXPECT_EQ("allowed", EvalJs(target, script));
   }

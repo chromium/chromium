@@ -220,7 +220,7 @@ class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
                const char* background_script,
                bool from_webstore) {
     extensions::TestExtensionDir extension_dir;
-    extension_dir.WriteManifest(base::StringPrintf(
+    extension_dir.WriteManifest(base::StringPrintfNonConstexpr(
         manifest, https_test_server_.GetURL(web_app_path).spec().c_str()));
     extension_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
                             background_script);

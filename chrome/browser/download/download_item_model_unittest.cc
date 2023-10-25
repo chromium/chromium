@@ -334,8 +334,8 @@ TEST_F(DownloadItemModelTest, InterruptedStatus) {
   const char default_failed_msg[] = "Failed";
   for (const auto& test_case : kTestCases) {
     SetupInterruptedDownloadItem(test_case.reason);
-    std::string expected_status_msg =
-        base::StringPrintf(test_case.expected_status_msg, default_failed_msg);
+    std::string expected_status_msg = base::StringPrintfNonConstexpr(
+        test_case.expected_status_msg, default_failed_msg);
     std::u16string expected_bubble_status_msg =
         base::UTF8ToUTF16(test_case.expected_bubble_status_msg);
     if (expected_bubble_status_msg.empty()) {

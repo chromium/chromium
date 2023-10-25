@@ -90,7 +90,7 @@ gfx::Point ExpectedTabStripRegionOrigin(BrowserView* browser_view) {
 // browser name (like "Chromium" or "Google Chrome") for %s, and return the
 // result as a std::u16string.
 std::u16string SubBrowserName(const char* fmt) {
-  return base::UTF8ToUTF16(base::StringPrintf(
+  return base::UTF8ToUTF16(base::StringPrintfNonConstexpr(
       fmt, l10n_util::GetStringUTF8(IDS_PRODUCT_NAME).c_str()));
 }
 

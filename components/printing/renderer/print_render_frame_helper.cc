@@ -134,7 +134,8 @@ void ExecuteScript(blink::WebLocalFrame* frame,
                    const base::Value& parameters) {
   std::string json;
   base::JSONWriter::Write(parameters, &json);
-  std::string script = base::StringPrintf(script_format, json.c_str());
+  std::string script =
+      base::StringPrintfNonConstexpr(script_format, json.c_str());
   frame->ExecuteScript(
       blink::WebScriptSource(blink::WebString::FromUTF8(script)));
 }

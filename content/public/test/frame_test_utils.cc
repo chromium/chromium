@@ -48,7 +48,8 @@ std::string ArrangeFramesAndGetContentFromLeaf(
     const GURL& leaf_url) {
   ArrangeFramesAndNavigate(
       web_contents, server,
-      base::StringPrintf(frame_tree_pattern.c_str(), leaf_url.spec().c_str()));
+      base::StringPrintfNonConstexpr(frame_tree_pattern.c_str(),
+                                     leaf_url.spec().c_str()));
   return EvalJs(SelectDescendentFrame(web_contents, leaf_path),
                 "document.body.textContent")
       .ExtractString();
@@ -72,7 +73,8 @@ std::vector<net::CanonicalCookie> ArrangeFramesAndGetCanonicalCookiesForLeaf(
     const GURL& cookie_url) {
   ArrangeFramesAndNavigate(
       web_contents, server,
-      base::StringPrintf(frame_tree_pattern.c_str(), leaf_url.spec().c_str()));
+      base::StringPrintfNonConstexpr(frame_tree_pattern.c_str(),
+                                     leaf_url.spec().c_str()));
   return GetCanonicalCookies(web_contents->GetBrowserContext(), cookie_url);
 }
 

@@ -713,9 +713,9 @@ class AnalysisServiceSettingsTest : public testing::TestWithParam<TestParam> {
       },
     )";
 
-    return base::StringPrintf(GetParam().settings_value,
-                              is_cloud_ ? "google" : "local_user_agent",
-                              verification);
+    return base::StringPrintfNonConstexpr(
+        GetParam().settings_value, is_cloud_ ? "google" : "local_user_agent",
+        verification);
   }
   AnalysisSettings* expected_settings() const {
     // Set the GURL field dynamically to avoid static initialization issues.
@@ -951,8 +951,8 @@ class AnalysisServiceSourceDestinationSettingsTest
   }
   content::BrowserContext* fs_context() const { return profile_; }
   std::string settings_value() const {
-    return base::StringPrintf(GetParam().settings_value,
-                              is_cloud_ ? "google" : "local_user_agent");
+    return base::StringPrintfNonConstexpr(
+        GetParam().settings_value, is_cloud_ ? "google" : "local_user_agent");
   }
   AnalysisSettings* expected_settings() const {
     // Set the GURL field dynamically to avoid static initialization issues.

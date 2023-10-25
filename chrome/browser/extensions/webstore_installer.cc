@@ -188,8 +188,8 @@ GURL WebstoreInstaller::GetWebstoreInstallURL(
   if (cmd_line->HasSwitch(::switches::kAppsGalleryDownloadURL)) {
     std::string download_url =
         cmd_line->GetSwitchValueASCII(::switches::kAppsGalleryDownloadURL);
-    return GURL(base::StringPrintf(download_url.c_str(),
-                                   extension_id.c_str()));
+    return GURL(base::StringPrintfNonConstexpr(download_url.c_str(),
+                                               extension_id.c_str()));
   }
   std::vector<base::StringPiece> params;
   std::string extension_param = "id=" + extension_id;

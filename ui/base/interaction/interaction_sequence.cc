@@ -388,8 +388,8 @@ InteractionSequence::StepBuilder::SetDescription(
 InteractionSequence::StepBuilder&
 InteractionSequence::StepBuilder::FormatDescription(
     const base::StringPiece& format_string) {
-  step_->description =
-      base::StringPrintf(format_string.data(), step_->description.c_str());
+  step_->description = base::StringPrintfNonConstexpr(
+      format_string.data(), step_->description.c_str());
   return *this;
 }
 
