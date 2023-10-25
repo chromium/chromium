@@ -21,6 +21,10 @@ In Chromium, you can easily create and submit fuzz targets. The targets are
 automatically discovered by buildbots, built with different fuzzing engines,
 then uploaded to the distributed [ClusterFuzz] fuzzing system to run at scale.
 
+You should fuzz any code which absorbs inputs from untrusted sources, such
+as the web. If the code parses, decodes, or otherwise manipulates that input,
+it's an especially good idea to fuzz it.
+
 Create your first fuzz target and submit it by stepping through our [Getting
 Started Guide].
 
@@ -41,7 +45,6 @@ Started Guide].
 ## Further Reading
 
 * [LibFuzzer integration] with Chromium and ClusterFuzz.
-* [AFL integration] with Chromium and ClusterFuzz.
 * [Detailed references] for other integration parts.
 * Writing fuzzers for the [non-browser parts of Chrome OS].
 * [Fuzzing browsertests] if you need to fuzz multiple Chrome subsystems.
@@ -57,8 +60,6 @@ Started Guide].
 * [ClusterFuzz Stats] for fuzz targets built with AddressSanitizer and
   libFuzzer.
 
-[AFL]: http://lcamtuf.coredump.cx/afl/
-[AFL integration]: AFL_integration.md
 [Blackbox fuzzing]: https://google.github.io/clusterfuzz/setting-up-fuzzing/blackbox-fuzzing/
 [Bugs found in open-source projects]: http://llvm.org/docs/LibFuzzer.html#trophies
 [Bugs found in PDFium]: https://bugs.chromium.org/p/pdfium/issues/list?can=1&q=libfuzzer&colspec=ID+Type+Status+Priority+Milestone+Owner+Summary&cells=tiles
