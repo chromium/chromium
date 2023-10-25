@@ -701,7 +701,7 @@ PhysicalSize LayoutView::PageAreaSize(wtf_size_t page_index,
   const ComputedStyle* page_style =
       GetDocument().StyleForPage(page_index, page_name);
   WebPrintPageDescription description = default_page_description_;
-  GetDocument().GetPageDescription(*page_style, &description);
+  GetDocument().GetPageDescriptionNoLifecycleUpdate(*page_style, &description);
 
   gfx::SizeF page_size(
       std::max(.0f, description.size.width() -
