@@ -179,7 +179,7 @@ void JsBinding::OnPostMessage(blink::WebMessagePayload message) {
 
   // Copy the listeners so that if the listener modifies the list in some way
   // there isn't a UAF.
-  std::vector<v8::Local<v8::Function>> listeners_copy;
+  v8::LocalVector<v8::Function> listeners_copy(isolate);
   listeners_copy.reserve(listeners_.size());
   for (const auto& listener : listeners_) {
     listeners_copy.push_back(listener.Get(isolate));
@@ -229,7 +229,7 @@ void JsBinding::PostMessage(gin::Arguments* args) {
   }
 
   std::vector<blink::MessagePortChannel> ports;
-  std::vector<v8::Local<v8::Object>> objs;
+  v8::LocalVector<v8::Object> objs(args->isolate());
   // If we get more than two arguments and the second argument is not an array
   // of ports, we can't process.
   if (args->Length() >= 2 && !args->GetNext(&objs)) {

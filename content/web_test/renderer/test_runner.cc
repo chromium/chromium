@@ -110,19 +110,19 @@ const int kWPTPrintHeight = 2 * 96;
 // A V8 callback with bound arguments, and the ability to pass additional
 // arguments at time of calling Run().
 using BoundV8Callback =
-    base::OnceCallback<void(const std::vector<v8::Local<v8::Value>>&)>;
+    base::OnceCallback<void(const v8::LocalVector<v8::Value>&)>;
 // Returns an empty set of args for running the BoundV8Callback.
-std::vector<v8::Local<v8::Value>> NoV8Args() {
-  return {};
+v8::LocalVector<v8::Value> NoV8Args(v8::Isolate* isolate) {
+  return v8::LocalVector<v8::Value>(isolate);
 }
 
 // Returns 3 arguments, width, height, and an array of pixel values. Takes a
 // v8::Context::Scope just to prove one exists in the caller.
-std::vector<v8::Local<v8::Value>> ConvertBitmapToV8(
+v8::LocalVector<v8::Value> ConvertBitmapToV8(
     v8::Isolate* isolate,
     const v8::Context::Scope& context_scope,
     const SkBitmap& bitmap) {
-  std::vector<v8::Local<v8::Value>> args;
+  v8::LocalVector<v8::Value> args(isolate);
   // Note that the bitmap size can be 0 if there's no pixels.
   args.push_back(v8::Number::New(isolate, bitmap.info().width()));
   args.push_back(v8::Number::New(isolate, bitmap.info().height()));
@@ -202,18 +202,19 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
   // arguments. The callback will do nothing when Run() if the
   // TestRunnerBindings has been destroyed, so it is safe to PostTask(). At the
   // time of Run(), further arguments can be passed to the V8 function.
-  BoundV8Callback WrapV8Callback(
-      v8::Local<v8::Function> v8_callback,
-      std::vector<v8::Local<v8::Value>> args_to_bind = {});
+  BoundV8Callback WrapV8Callback(v8::Local<v8::Function> v8_callback);
+  BoundV8Callback WrapV8Callback(v8::Local<v8::Function> v8_callback,
+                                 v8::LocalVector<v8::Value> args_to_bind);
   // Same as WrapV8Callback but Run() takes no arguments, so only bound
   // arguments can be passed to the V8 function.
-  base::OnceClosure WrapV8Closure(
-      v8::Local<v8::Function> v8_callback,
-      std::vector<v8::Local<v8::Value>> args_to_bind = {});
+  base::OnceClosure WrapV8Closure(v8::Local<v8::Function> v8_callback);
+  base::OnceClosure WrapV8Closure(v8::Local<v8::Function> v8_callback,
+                                  v8::LocalVector<v8::Value> args_to_bind);
   // Calls WrapV8Callback() and then posts the resulting callback to the frame's
   // task runner.
+  void PostV8Callback(v8::Local<v8::Function> v8_callback);
   void PostV8Callback(v8::Local<v8::Function> v8_callback,
-                      std::vector<v8::Local<v8::Value>> args = {});
+                      v8::LocalVector<v8::Value> args);
 
   blink::WebLocalFrame* GetWebFrame() {
     CHECK(!invalid_);
@@ -408,7 +409,7 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
 
   void InvokeV8Callback(v8::UniquePersistent<v8::Function> callback,
                         std::vector<v8::UniquePersistent<v8::Value>> bound_args,
-                        const std::vector<v8::Local<v8::Value>>& runtime_args);
+                        const v8::LocalVector<v8::Value>& runtime_args);
 
   // Hears about the RenderFrame in |frame_| being destroyed. The
   // TestRunningBindings should not do anything thereafter.
@@ -839,8 +840,14 @@ gin::ObjectTemplateBuilder TestRunnerBindings::GetObjectTemplateBuilder(
 }
 
 BoundV8Callback TestRunnerBindings::WrapV8Callback(
+    v8::Local<v8::Function> v8_callback) {
+  v8::Isolate* isolate = GetWebFrame()->GetAgentGroupScheduler()->Isolate();
+  return WrapV8Callback(v8_callback, NoV8Args(isolate));
+}
+
+BoundV8Callback TestRunnerBindings::WrapV8Callback(
     v8::Local<v8::Function> v8_callback,
-    std::vector<v8::Local<v8::Value>> args_to_bind) {
+    v8::LocalVector<v8::Value> args_to_bind) {
   v8::Isolate* isolate = GetWebFrame()->GetAgentGroupScheduler()->Isolate();
   auto persistent_callback =
       v8::UniquePersistent<v8::Function>(isolate, std::move(v8_callback));
@@ -856,16 +863,27 @@ BoundV8Callback TestRunnerBindings::WrapV8Callback(
 }
 
 base::OnceClosure TestRunnerBindings::WrapV8Closure(
-    v8::Local<v8::Function> v8_callback,
-    std::vector<v8::Local<v8::Value>> args_to_bind) {
-  return base::BindOnce(
-      WrapV8Callback(std::move(v8_callback), std::move(args_to_bind)),
-      NoV8Args());
+    v8::Local<v8::Function> v8_callback) {
+  v8::Isolate* isolate = GetWebFrame()->GetAgentGroupScheduler()->Isolate();
+  return WrapV8Closure(v8_callback, NoV8Args(isolate));
 }
 
-void TestRunnerBindings::PostV8Callback(
+base::OnceClosure TestRunnerBindings::WrapV8Closure(
     v8::Local<v8::Function> v8_callback,
-    std::vector<v8::Local<v8::Value>> args) {
+    v8::LocalVector<v8::Value> args_to_bind) {
+  v8::Isolate* isolate = GetWebFrame()->GetAgentGroupScheduler()->Isolate();
+  return base::BindOnce(
+      WrapV8Callback(std::move(v8_callback), std::move(args_to_bind)),
+      NoV8Args(isolate));
+}
+
+void TestRunnerBindings::PostV8Callback(v8::Local<v8::Function> v8_callback) {
+  v8::Isolate* isolate = GetWebFrame()->GetAgentGroupScheduler()->Isolate();
+  return PostV8Callback(v8_callback, NoV8Args(isolate));
+}
+
+void TestRunnerBindings::PostV8Callback(v8::Local<v8::Function> v8_callback,
+                                        v8::LocalVector<v8::Value> args) {
   if (invalid_)
     return;
   const auto& task_runner =
@@ -877,7 +895,7 @@ void TestRunnerBindings::PostV8Callback(
 void TestRunnerBindings::InvokeV8Callback(
     v8::UniquePersistent<v8::Function> callback,
     std::vector<v8::UniquePersistent<v8::Value>> bound_args,
-    const std::vector<v8::Local<v8::Value>>& runtime_args) {
+    const v8::LocalVector<v8::Value>& runtime_args) {
   if (invalid_)
     return;
   blink::WebLocalFrame* web_frame = GetWebFrame();
@@ -888,7 +906,7 @@ void TestRunnerBindings::InvokeV8Callback(
   CHECK(!context.IsEmpty());
   v8::Context::Scope context_scope(context);
 
-  std::vector<v8::Local<v8::Value>> local_args;
+  v8::LocalVector<v8::Value> local_args(isolate);
   for (auto& arg : bound_args)
     local_args.push_back(v8::Local<v8::Value>::New(isolate, std::move(arg)));
   for (const auto& arg : runtime_args)
@@ -1782,9 +1800,9 @@ static void GetBluetoothManualChooserEventsReply(
   bool converted = gin::TryConvertToV8(isolate, events, &arg);
   CHECK(converted);
 
-  std::move(callback).Run({
-      arg,
-  });
+  std::move(callback).Run(v8::LocalVector<v8::Value>(isolate, {
+                                                                  arg,
+                                                              }));
 }
 
 void TestRunnerBindings::GetBluetoothManualChooserEvents(
@@ -1921,17 +1939,19 @@ void TestRunnerBindings::SetAnimationRequiresRaster(bool do_raster) {
   runner_->SetAnimationRequiresRaster(do_raster);
 }
 
-static void GetManifestReply(BoundV8Callback callback,
+static void GetManifestReply(v8::Isolate* isolate,
+                             BoundV8Callback callback,
                              const blink::WebURL& manifest_url) {
-  std::move(callback).Run(NoV8Args());
+  std::move(callback).Run(NoV8Args(isolate));
 }
 
 void TestRunnerBindings::GetManifestThen(v8::Local<v8::Function> v8_callback) {
   if (invalid_)
     return;
+  v8::Isolate* isolate = GetWebFrame()->GetAgentGroupScheduler()->Isolate();
   blink::WebManifestManager::RequestManifestForTesting(
-      GetWebFrame(),
-      base::BindOnce(GetManifestReply, WrapV8Callback(std::move(v8_callback))));
+      GetWebFrame(), base::BindOnce(GetManifestReply, isolate,
+                                    WrapV8Callback(std::move(v8_callback))));
 }
 
 #if BUILDFLAG(ENABLE_PRINTING)
@@ -1953,9 +1973,7 @@ void TestRunnerBindings::CapturePrintingPixelsThen(
   v8::Context::Scope context_scope(context);
 
   WrapV8Callback(std::move(v8_callback))
-      .Run({
-          ConvertBitmapToV8(isolate, context_scope, bitmap),
-      });
+      .Run(ConvertBitmapToV8(isolate, context_scope, bitmap));
 }
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 
@@ -2049,9 +2067,10 @@ static void DispatchBeforeInstallPromptEventReply(v8::Isolate* isolate,
                                                   BoundV8Callback callback,
                                                   bool cancelled) {
   v8::HandleScope handle_scope(isolate);
-  std::move(callback).Run({
-      v8::Boolean::New(isolate, cancelled),
-  });
+  std::move(callback).Run(v8::LocalVector<v8::Value>(
+      isolate, {
+                   v8::Boolean::New(isolate, cancelled),
+               }));
 }
 
 void TestRunnerBindings::DispatchBeforeInstallPromptEvent(
