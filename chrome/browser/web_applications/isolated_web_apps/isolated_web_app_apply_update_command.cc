@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_apply_update_command.h"
 
 #include <memory>
+#include <ostream>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -51,6 +52,13 @@
 #include "url/gurl.h"
 
 namespace web_app {
+
+std::ostream& operator<<(std::ostream& os,
+                         const IsolatedWebAppApplyUpdateCommandError& error) {
+  return os << "IsolatedWebAppApplyUpdateCommandError { "
+               "message = \""
+            << error.message << "\" }.";
+}
 
 IsolatedWebAppApplyUpdateCommand::IsolatedWebAppApplyUpdateCommand(
     IsolatedWebAppUrlInfo url_info,

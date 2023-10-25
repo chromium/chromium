@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_PREPARE_AND_STORE_UPDATE_COMMAND_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_PREPARE_AND_STORE_UPDATE_COMMAND_H_
 
+#include <iosfwd>
 #include <memory>
-#include <ostream>
 #include <string>
 #include <type_traits>
 
@@ -45,28 +45,23 @@ class WebAppUrlLoader;
 enum class WebAppUrlLoaderResult;
 
 struct IsolatedWebAppUpdatePrepareAndStoreCommandSuccess {
-  base::Version update_version;
+  explicit IsolatedWebAppUpdatePrepareAndStoreCommandSuccess(
+      base::Version update_version);
 
-  friend std::ostream& operator<<(
-      std::ostream& os,
-      const IsolatedWebAppUpdatePrepareAndStoreCommandSuccess& success) {
-    return os << "IsolatedWebAppUpdatePrepareAndStoreCommandSuccess { "
-                 "update_version = \""
-              << success.update_version.GetString() << "\" }.";
-  }
+  base::Version update_version;
 };
+
+std::ostream& operator<<(
+    std::ostream& os,
+    const IsolatedWebAppUpdatePrepareAndStoreCommandSuccess& success);
 
 struct IsolatedWebAppUpdatePrepareAndStoreCommandError {
   std::string message;
-
-  friend std::ostream& operator<<(
-      std::ostream& os,
-      const IsolatedWebAppUpdatePrepareAndStoreCommandError& error) {
-    return os << "IsolatedWebAppUpdatePrepareAndStoreCommandError { "
-                 "message = \""
-              << error.message << "\" }.";
-  }
 };
+
+std::ostream& operator<<(
+    std::ostream& os,
+    const IsolatedWebAppUpdatePrepareAndStoreCommandError& error);
 
 using IsolatedWebAppUpdatePrepareAndStoreCommandResult =
     base::expected<IsolatedWebAppUpdatePrepareAndStoreCommandSuccess,

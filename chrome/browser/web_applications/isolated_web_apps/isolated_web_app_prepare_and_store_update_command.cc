@@ -6,6 +6,7 @@
 
 #include <array>
 #include <memory>
+#include <ostream>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -51,6 +52,27 @@
 #include "url/gurl.h"
 
 namespace web_app {
+
+IsolatedWebAppUpdatePrepareAndStoreCommandSuccess::
+    IsolatedWebAppUpdatePrepareAndStoreCommandSuccess(
+        base::Version update_version)
+    : update_version(std::move(update_version)) {}
+
+std::ostream& operator<<(
+    std::ostream& os,
+    const IsolatedWebAppUpdatePrepareAndStoreCommandSuccess& success) {
+  return os << "IsolatedWebAppUpdatePrepareAndStoreCommandSuccess { "
+               "update_version = \""
+            << success.update_version.GetString() << "\" }.";
+}
+
+std::ostream& operator<<(
+    std::ostream& os,
+    const IsolatedWebAppUpdatePrepareAndStoreCommandError& error) {
+  return os << "IsolatedWebAppUpdatePrepareAndStoreCommandError { "
+               "message = \""
+            << error.message << "\" }.";
+}
 
 IsolatedWebAppUpdatePrepareAndStoreCommand::
     IsolatedWebAppUpdatePrepareAndStoreCommand(
@@ -315,9 +337,9 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::ReportSuccess(
   debug_log_.Set("result", "success");
   SignalCompletionAndSelfDestruct(
       CommandResult::kSuccess,
-      base::BindOnce(std::move(callback_),
-                     IsolatedWebAppUpdatePrepareAndStoreCommandSuccess{
-                         .update_version = update_version}));
+      base::BindOnce(
+          std::move(callback_),
+          IsolatedWebAppUpdatePrepareAndStoreCommandSuccess(update_version)));
 }
 
 Profile& IsolatedWebAppUpdatePrepareAndStoreCommand::profile() {

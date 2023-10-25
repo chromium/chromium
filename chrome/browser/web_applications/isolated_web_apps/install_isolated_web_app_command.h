@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_INSTALL_ISOLATED_WEB_APP_COMMAND_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_INSTALL_ISOLATED_WEB_APP_COMMAND_H_
 
+#include <iosfwd>
 #include <memory>
-#include <ostream>
 #include <string>
 #include <type_traits>
 
@@ -49,28 +49,19 @@ class WebAppUrlLoader;
 enum class WebAppUrlLoaderResult;
 
 struct InstallIsolatedWebAppCommandSuccess {
-  explicit InstallIsolatedWebAppCommandSuccess(base::Version installed_version)
-      : installed_version(std::move(installed_version)) {}
+  explicit InstallIsolatedWebAppCommandSuccess(base::Version installed_version);
   base::Version installed_version;
-
-  friend std::ostream& operator<<(
-      std::ostream& os,
-      const InstallIsolatedWebAppCommandSuccess& success) {
-    return os << "InstallIsolatedWebAppCommandSuccess { installed_version = \""
-              << success.installed_version.GetString() << "\" }.";
-  }
 };
+
+std::ostream& operator<<(std::ostream& os,
+                         const InstallIsolatedWebAppCommandSuccess& success);
 
 struct InstallIsolatedWebAppCommandError {
   std::string message;
-
-  friend std::ostream& operator<<(
-      std::ostream& os,
-      const InstallIsolatedWebAppCommandError& error) {
-    return os << "InstallIsolatedWebAppCommandError { message = \""
-              << error.message << "\" }.";
-  }
 };
+
+std::ostream& operator<<(std::ostream& os,
+                         const InstallIsolatedWebAppCommandError& error);
 
 // Isolated Web App requires:
 //  * no cross-origin navigation

@@ -6,6 +6,7 @@
 
 #include <array>
 #include <memory>
+#include <ostream>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -51,6 +52,22 @@
 #include "url/gurl.h"
 
 namespace web_app {
+
+InstallIsolatedWebAppCommandSuccess::InstallIsolatedWebAppCommandSuccess(
+    base::Version installed_version)
+    : installed_version(std::move(installed_version)) {}
+
+std::ostream& operator<<(std::ostream& os,
+                         const InstallIsolatedWebAppCommandSuccess& success) {
+  return os << "InstallIsolatedWebAppCommandSuccess { installed_version = \""
+            << success.installed_version.GetString() << "\" }.";
+}
+
+std::ostream& operator<<(std::ostream& os,
+                         const InstallIsolatedWebAppCommandError& error) {
+  return os << "InstallIsolatedWebAppCommandError { message = \""
+            << error.message << "\" }.";
+}
 
 InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
     const IsolatedWebAppUrlInfo& url_info,
