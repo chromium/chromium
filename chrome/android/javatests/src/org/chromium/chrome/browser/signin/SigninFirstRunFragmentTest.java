@@ -260,6 +260,7 @@ public class SigninFirstRunFragmentTest {
         mSigninTestRule.addAccount(
                 CHILD_ACCOUNT_EMAIL, CHILD_FULL_NAME, /* givenName= */ null, /* avatar= */ null);
         launchActivityWithFragment();
+        checkFragmentWithChildAccount(true, true);
 
         mSigninTestRule.removeAccount(CHILD_ACCOUNT_EMAIL);
 
@@ -294,6 +295,7 @@ public class SigninFirstRunFragmentTest {
     public void testRemovingAllAccountsDismissesAccountPickerDialog() {
         mSigninTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, /* avatar= */ null);
         launchActivityWithFragment();
+        checkFragmentWithSelectedAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1);
         onView(withText(TEST_EMAIL1)).perform(click());
         onView(withText(R.string.signin_account_picker_dialog_title))
                 .inRoot(isDialog())
@@ -440,8 +442,9 @@ public class SigninFirstRunFragmentTest {
         mSigninTestRule.addAccount(
                 TEST_EMAIL2, /* fullName= */ null, /* givenName= */ null, /* avatar= */ null);
         launchActivityWithFragment();
-        onView(withText(TEST_EMAIL1)).perform(click());
+        checkFragmentWithSelectedAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1);
 
+        onView(withText(TEST_EMAIL1)).perform(click());
         onView(withText(TEST_EMAIL2)).inRoot(isDialog()).perform(click());
 
         checkFragmentWithSelectedAccount(TEST_EMAIL2, /* fullName= */ null, /* givenName= */ null);
@@ -970,6 +973,7 @@ public class SigninFirstRunFragmentTest {
         mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_OK, TEST_EMAIL2);
         mSigninTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
         launchActivityWithFragment();
+        checkFragmentWithSelectedAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1);
 
         onView(withText(TEST_EMAIL1)).perform(click());
         onView(withText(R.string.signin_add_account_to_device)).perform(click());
@@ -1407,7 +1411,6 @@ public class SigninFirstRunFragmentTest {
                 .signinAndEnableSync(any(Account.class), anyInt(), any());
     }
 
-    @SuppressWarnings("CheckReturnValue")
     private void checkFragmentWhenSigninIsDisabledByPolicy() {
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -1423,7 +1426,6 @@ public class SigninFirstRunFragmentTest {
         onView(withId(R.id.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
     }
 
-    @SuppressWarnings("CheckReturnValue")
     private void launchActivityWithFragment() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
