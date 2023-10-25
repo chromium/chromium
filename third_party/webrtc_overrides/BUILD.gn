@@ -44,7 +44,6 @@ webrtc_public_deps = [
   "//third_party/webrtc/api:turn_customizer",
   "//third_party/webrtc/api/adaptation:resource_adaptation_api",
   "//third_party/webrtc/api/audio:aec3_config",
-  "//third_party/webrtc/api/audio:aec3_config_json",
   "//third_party/webrtc/api/audio:aec3_factory",
   "//third_party/webrtc/api/audio_codecs:audio_codecs_api",
   "//third_party/webrtc/api/audio_codecs/L16:audio_decoder_L16",
