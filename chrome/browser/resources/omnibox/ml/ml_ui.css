@@ -24,4 +24,17 @@
 
 a {
   color: var(--blue-text);
+  padding-left: 10px;
+}
+
+.notification {
+  background: var(--active-background);
+  padding: 10px;
+  position: sticky;
+  bottom: 0;
+}
+
+.notification.fade-out {
+  opacity: 0;
+  transition: opacity .5s .5s;
 }

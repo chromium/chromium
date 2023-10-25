@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {Signals} from '../omnibox.mojom-webui.js';
-import {clamp, createEl, signalNames} from '../omnibox_util.js';
+import {clamp, createEl, setFormattedClipboardForMl, signalNames} from '../omnibox_util.js';
 
 import {MlBrowserProxy} from './ml_browser_proxy';
 // @ts-ignore:next-line
@@ -39,15 +39,10 @@ export class MlCalculatorElement extends CustomElement {
     });
 
     this.getRequiredElement('#copy').addEventListener('click', async () => {
-      const copyObj = {
-        url: window.location.href,
-        version: (await this.mlBrowserProxy_.modelVersion).string,
-        signals: this.signals,
-        score: this.score,
-      };
-      navigator.clipboard.writeText(JSON.stringify(copyObj, null, 2))
-          .catch(
-              error => console.error('unable to export to clipboard:', error));
+      const promise = setFormattedClipboardForMl(
+          {score: this.score}, this.signals, window.location.href,
+          await this.mlBrowserProxy_.modelVersion);
+      this.dispatchEvent(new CustomEvent('copied', {detail: promise}));
     });
 
     this.getRequiredElement('#clear').addEventListener('click', () => {
@@ -100,8 +95,10 @@ export class MlCalculatorElement extends CustomElement {
   }
 
   set signals(signals: Signals) {
+    // Signals can be numbers, booleans, or null.
     Object.values(signals).forEach(
-        (signal, i) => this.signalInputs[i]!.value = signal);
+        (signal, i) => this.signalInputs[i]!.value =
+            signal === null ? '' : String(Number(signal)));
     this.update();
   }
 

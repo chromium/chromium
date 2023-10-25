@@ -21,6 +21,7 @@ import {getTemplate} from './ml_ui.html.js';
 declare global {
   interface HTMLElementEventMap {
     'match-selected': CustomEvent<Signals>;
+    'copied': CustomEvent<Promise<void>>;
   }
 }
 
@@ -43,6 +44,13 @@ export class MlUiElement extends CustomElement {
 
     this.getRequiredElement('#ml-sync-batch-url-scoring-disabled-warning')
         .hidden = loadTimeData.getBoolean('isMlSyncBatchUrlScoringEnabled');
+    [mlCalculator, mlTable].forEach(
+        el => el.addEventListener('copied', async ({detail}) => {
+          this.notification = await detail.then(() => 'Copied!').catch(e => {
+            console.error('Failed to copy to clipboard:', e);
+            return 'Failed to copy :(';
+          });
+        }));
     mlTable.addEventListener(
         'match-selected', ({detail}) => mlCalculator.signals = detail);
 
@@ -51,6 +59,16 @@ export class MlUiElement extends CustomElement {
       mlCalculator.mlBrowserProxy = this.mlBrowserProxy;
       mlTable.mlBrowserProxy = this.mlBrowserProxy;
     });
+  }
+
+  private set notification(text: string) {
+    const notification = this.getRequiredElement('#copied-notification');
+    notification.textContent = text;
+    notification.classList.remove('fade-out');
+    // Force dom reflow so that the browser doesn't dedupe the above and below
+    // classList changes.
+    notification.offsetHeight;
+    notification.classList.add('fade-out');
   }
 }
 

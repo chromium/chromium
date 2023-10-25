@@ -79,3 +79,76 @@ export class MlVersionObj {
     this.url = `${codeSearchPrefix} ${version}`;
   }
 }
+
+function setFormattedClipboard(text: string) {
+  let styleCount = 0;
+  const addStyle = (style: string) => {
+    styleCount++;
+    return `<span style="${style}">`;
+  };
+  const clearStyles = () => {
+    const n = styleCount;
+    styleCount = 0;
+    return '</span>'.repeat(n);
+  };
+  let linkStep = 0;
+  const addLink = () => {
+    linkStep = (linkStep + 1) % 3;
+    switch (linkStep) {
+      case 1:
+        return '<a href="';
+      case 2:
+        return '">';
+      case 3:
+      default:
+        return '</a>';
+    }
+  };
+
+  type StyleMap = Record<string, () => string>;
+  const htmlMap: StyleMap = {
+    $$: () => '$',
+    $n: () => '<br>',
+    $h: () => addStyle('font-weight:bold'),
+    $r: () => addStyle('color:red'),
+    $g: () => addStyle('color:green'),
+    $b: () => addStyle('color:blue'),
+    $p: () => addStyle('color:purple'),
+    $0: clearStyles,
+    $l: addLink,
+  };
+  const plainMap: StyleMap = {
+    $$: () => '$',
+    $n: () => '\n',
+  };
+  const applyMap = (map: StyleMap) => {
+    return text.split(/(\$.)/g)
+        .map((part, i) => i % 2 ? map[part]?.() ?? '' : part)
+        .join('');
+  };
+
+  const clipboardEntries: Array<[string, StyleMap]> = [
+    ['text/html', htmlMap],
+    ['text/plain', plainMap],
+  ];
+  const clipboardItem =
+      new ClipboardItem(Object.fromEntries(clipboardEntries.map(
+          ([type, map]) => [type, new Blob([applyMap(map)], {type})])));
+  return navigator.clipboard.write([clipboardItem]);
+}
+
+export function setFormattedClipboardForMl(
+    matchDetails: Record<string, any>, signals: Signals, shareUrl: string,
+    version: MlVersionObj) {
+  return setFormattedClipboard([
+    // clang-format off
+    ...Object.entries(matchDetails)
+        .flatMap(([k, v]) => ['$h$g', k, ': $0$b', v, '$0$n']),
+    ...Object.entries(signals)
+        .filter(([, v]) => v)
+        .flatMap(([k, v]) => ['$h$p', k, ': $0$b', v, '$0$n']),
+    ...shareUrl ? ['$r', shareUrl, '$0$n'] : [],
+    '$h$r', 'Version: ', '$0', '$l', version.url, '$l', version.string, '$l$n',
+    // clang-format on
+  ].join(''));
+}
