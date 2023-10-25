@@ -10839,6 +10839,7 @@ if (!is_android && !is_chromeos_device) {
           "../browser/ui/ash/quick_settings_integration_test.cc",
           "../browser/ui/ash/user_education/welcome_tour/welcome_tour_interactive_uitest.cc",
           "../browser/ui/web_applications/test/system_web_app_interactive_uitest.cc",
+          "../browser/ui/webui/ash/settings/integration_tests/add_new_keyboard_interactive_uitest.cc",
           "../browser/ui/webui/ash/settings/integration_tests/privacy_hub_interactive_uitest.cc",
           "//ash/drag_drop/drag_drop_interactive_uitest.cc",
 
@@ -10857,6 +10858,9 @@ if (!is_android && !is_chromeos_device) {
           "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
           "//chromeos/ash/components/standalone_browser",
           "//components/app_constants",
+          "//device/udev_linux:test_support",
+          "//ui/events/devices",
+          "//ui/events/devices:test_support",
         ]
       } else {
         sources += [
