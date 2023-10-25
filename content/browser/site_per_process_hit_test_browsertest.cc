@@ -4460,7 +4460,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
     set_cursor_interceptor->Wait();
     EXPECT_TRUE(set_cursor_interceptor->cursor().has_value());
     EXPECT_EQ(ui::mojom::CursorType::kPointer,
-              set_cursor_interceptor->cursor());
+              set_cursor_interceptor->cursor()->type());
   }
 }
 
@@ -4528,7 +4528,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   set_cursor_interceptor->Wait();
   EXPECT_TRUE(set_cursor_interceptor->cursor().has_value());
   EXPECT_EQ(ui::mojom::CursorType::kPointer,
-            set_cursor_interceptor->cursor());
+            set_cursor_interceptor->cursor()->type());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
