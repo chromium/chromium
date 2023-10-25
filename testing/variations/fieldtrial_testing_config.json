@@ -19499,6 +19499,7 @@
     "V8MinorMS": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "chromeos_lacros",
                 "fuchsia",
