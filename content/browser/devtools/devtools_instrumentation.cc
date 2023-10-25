@@ -1890,7 +1890,7 @@ void OnWebTransportHandshakeFailed(
           .SetSource(protocol::Log::LogEntry::SourceEnum::Network)
           .SetLevel(protocol::Log::LogEntry::LevelEnum::Error)
           .SetText(text)
-          .SetTimestamp(base::Time::Now().InSecondsFSinceUnixEpoch() * 1000.0)
+          .SetTimestamp(base::Time::Now().InMillisecondsFSinceUnixEpoch())
           .Build();
   DispatchToAgents(ftn, &protocol::LogHandler::EntryAdded, entry.get());
 }
@@ -1929,7 +1929,7 @@ void OnServiceWorkerMainScriptFetchingFailed(
           .SetSource(protocol::Log::LogEntry::SourceEnum::Network)
           .SetLevel(protocol::Log::LogEntry::LevelEnum::Error)
           .SetText(error)
-          .SetTimestamp(base::Time::Now().InSecondsFSinceUnixEpoch() * 1000.0)
+          .SetTimestamp(base::Time::Now().InMillisecondsFSinceUnixEpoch())
           .Build();
   DispatchToAgents(ftn, &protocol::LogHandler::EntryAdded, entry.get());
 
@@ -2111,7 +2111,7 @@ void LogWorkletMessage(RenderFrameHostImpl& frame_host,
           .SetSource(protocol::Log::LogEntry::SourceEnum::Other)
           .SetLevel(log_level_string)
           .SetText(message)
-          .SetTimestamp(base::Time::Now().InSecondsFSinceUnixEpoch() * 1000.0)
+          .SetTimestamp(base::Time::Now().InMillisecondsFSinceUnixEpoch())
           .Build();
   DispatchToAgents(ftn, &protocol::LogHandler::EntryAdded, entry.get());
 

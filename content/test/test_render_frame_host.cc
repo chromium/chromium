@@ -679,7 +679,7 @@ TestRenderFrameHost::BuildDidCommitParams(bool did_create_new_entry,
   // Simulate Blink assigning an item and document sequence number to the
   // navigation.
   params->item_sequence_number =
-      base::Time::Now().InSecondsFSinceUnixEpoch() * 1000000;
+      (base::Time::Now() - base::Time::UnixEpoch()).InMicroseconds();
   params->document_sequence_number = params->item_sequence_number + 1;
 
   // When the user hits enter in the Omnibox without changing the URL, Blink
