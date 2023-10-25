@@ -1217,12 +1217,17 @@ void HintsManager::ProcessAndInvokeOnDemandHintsCallbacks(
     for (const auto optimization_type : optimization_types) {
       OptimizationMetadata metadata;
       OptimizationTypeDecision type_decision = CanApplyOptimization(
-          url, optimization_type, url_mapped_hints[url.spec()],
-          host_mapped_hints[url.host()], /*skip_cache=*/true, &metadata);
+          /*is_on_demand_request=*/true, url, optimization_type,
+          url_mapped_hints[url.spec()], host_mapped_hints[url.host()],
+          /*skip_cache=*/true, &metadata);
       OptimizationGuideDecision decision =
           GetOptimizationGuideDecisionFromOptimizationTypeDecision(
               type_decision);
       decisions[optimization_type] = {decision, metadata};
+      base::UmaHistogramEnumeration(
+          "OptimizationGuide.ApplyDecision." +
+              GetStringNameForOptimizationType(optimization_type),
+          type_decision);
     }
     callback.Run(url, decisions);
   }
@@ -1372,14 +1377,15 @@ OptimizationTypeDecision HintsManager::CanApplyOptimization(
     proto::OptimizationType optimization_type,
     OptimizationMetadata* optimization_metadata) {
   return CanApplyOptimization(
-      navigation_url, optimization_type,
+      /*is_on_demand_request=*/false, navigation_url, optimization_type,
       hint_cache_->GetURLKeyedHint(navigation_url),
       hint_cache_->GetHostKeyedHintIfLoaded(navigation_url.host()), false,
       optimization_metadata);
 }
 
 OptimizationTypeDecision HintsManager::CanApplyOptimization(
-    const GURL& navigation_url,
+    bool is_on_demand_request,
+    const GURL& url,
     proto::OptimizationType optimization_type,
     const proto::Hint* url_keyed_hint,
     const proto::Hint* host_keyed_hint,
@@ -1387,8 +1393,8 @@ OptimizationTypeDecision HintsManager::CanApplyOptimization(
     OptimizationMetadata* optimization_metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  ScopedCanApplyOptimizationLogger scoped_logger(
-      optimization_type, navigation_url, optimization_guide_logger_);
+  ScopedCanApplyOptimizationLogger scoped_logger(optimization_type, url,
+                                                 optimization_guide_logger_);
   // Clear out optimization metadata if provided.
   if (optimization_metadata)
     *optimization_metadata = {};
@@ -1401,18 +1407,21 @@ OptimizationTypeDecision HintsManager::CanApplyOptimization(
   // have a hint, so just return.
   if (!is_optimization_type_registered &&
       (url_keyed_hint == nullptr && host_keyed_hint == nullptr)) {
-    scoped_logger.set_type_decision(
-        OptimizationTypeDecision::kRequestedUnregisteredType);
-    return OptimizationTypeDecision::kRequestedUnregisteredType;
+    OptimizationTypeDecision type_decision =
+        is_on_demand_request
+            ? OptimizationTypeDecision::kNoHintAvailable
+            : OptimizationTypeDecision::kRequestedUnregisteredType;
+    scoped_logger.set_type_decision(type_decision);
+    return type_decision;
   }
 
   // If the URL doesn't have a host, we cannot query the hint for it, so just
   // return early.
-  if (!navigation_url.has_host()) {
+  if (!url.has_host()) {
     scoped_logger.set_type_decision(OptimizationTypeDecision::kInvalidURL);
     return OptimizationTypeDecision::kInvalidURL;
   }
-  const auto& host = navigation_url.host();
+  const auto& host = url.host();
 
   // Check if the URL should be filtered out if we have an optimization filter
   // for the type.
@@ -1422,8 +1431,7 @@ OptimizationTypeDecision HintsManager::CanApplyOptimization(
   if (allowlist_optimization_filters_.find(optimization_type) !=
       allowlist_optimization_filters_.end()) {
     const auto type_decision =
-        allowlist_optimization_filters_[optimization_type]->Matches(
-            navigation_url)
+        allowlist_optimization_filters_[optimization_type]->Matches(url)
             ? OptimizationTypeDecision::kAllowedByOptimizationFilter
             : OptimizationTypeDecision::kNotAllowedByOptimizationFilter;
     scoped_logger.set_type_decision(type_decision);
@@ -1435,8 +1443,7 @@ OptimizationTypeDecision HintsManager::CanApplyOptimization(
   if (blocklist_optimization_filters_.find(optimization_type) !=
       blocklist_optimization_filters_.end()) {
     const auto type_decision =
-        blocklist_optimization_filters_[optimization_type]->Matches(
-            navigation_url)
+        blocklist_optimization_filters_[optimization_type]->Matches(url)
             ? OptimizationTypeDecision::kNotAllowedByOptimizationFilter
             : OptimizationTypeDecision::kAllowedByOptimizationFilter;
     scoped_logger.set_type_decision(type_decision);
@@ -1491,7 +1498,7 @@ OptimizationTypeDecision HintsManager::CanApplyOptimization(
       }
     }
 
-    if (IsHintBeingFetchedForNavigation(navigation_url)) {
+    if (IsHintBeingFetchedForNavigation(url)) {
       scoped_logger.set_type_decision(
           OptimizationTypeDecision::kHintFetchStartedButNotAvailableInTime);
       return OptimizationTypeDecision::kHintFetchStartedButNotAvailableInTime;
@@ -1509,8 +1516,7 @@ OptimizationTypeDecision HintsManager::CanApplyOptimization(
   }
 
   const proto::PageHint* matched_page_hint =
-      host_keyed_hint ? FindPageHintForURL(navigation_url, host_keyed_hint)
-                      : nullptr;
+      host_keyed_hint ? FindPageHintForURL(url, host_keyed_hint) : nullptr;
   if (!matched_page_hint) {
     scoped_logger.set_type_decision(
         OptimizationTypeDecision::kNotAllowedByHint);

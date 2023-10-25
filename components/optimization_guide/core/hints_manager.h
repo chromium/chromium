@@ -120,7 +120,8 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // be computed on |url_keyed_hint| or |host_keyed_hint| if possible.
   // |skip_cache| will be used to determine if the decision is unknown.
   OptimizationTypeDecision CanApplyOptimization(
-      const GURL& navigation_url,
+      bool is_on_demand_request,
+      const GURL& url,
       proto::OptimizationType optimization_type,
       const proto::Hint* url_keyed_hint,
       const proto::Hint* host_keyed_hint,
