@@ -13,6 +13,7 @@
 
 namespace views {
 class BoxLayoutView;
+class Label;
 }
 
 namespace ash {
@@ -88,6 +89,10 @@ class ASH_EXPORT FocusModeDetailedView
   // `UpdateTimerSettingViewUI`.
   void SetInactiveSessionDuration(base::TimeDelta duration);
 
+  // Updates the `end_time_label_` to show the current end time during a focus
+  // session.
+  void UpdateEndTimeLabelUI();
+
   // This view contains a description of the focus session, as well as a toggle
   // button for staring/ending focus mode.
   raw_ptr<HoverHighlightView> toggle_view_ = nullptr;
@@ -106,6 +111,9 @@ class ASH_EXPORT FocusModeDetailedView
   // The decrement and increment buttons in the `timer_setting_view_`.
   raw_ptr<IconButton> timer_decrement_button_ = nullptr;
   raw_ptr<IconButton> timer_increment_button_ = nullptr;
+  // A label that displays the end time of the focus session when focus is
+  // active.
+  raw_ptr<views::Label> end_time_label_ = nullptr;
   // This view contains controls for selecting the focus scene (background +
   // audio), as well as volume controls.
   raw_ptr<RoundedContainer> scene_view_ = nullptr;
@@ -113,6 +121,9 @@ class ASH_EXPORT FocusModeDetailedView
   // This view contains a toggle for turning on/off DND.
   raw_ptr<RoundedContainer> do_not_disturb_view_ = nullptr;
   raw_ptr<Switch> do_not_disturb_toggle_button_ = nullptr;
+
+  // The last time the `toggle_view_` end time sub label was updated.
+  base::Time cached_end_time_;
 
   // Updates the subheading of the toggle view so that it can correctly show
   // what time the focus mode session will end. This is activated when the panel

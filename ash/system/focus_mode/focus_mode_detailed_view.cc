@@ -70,35 +70,6 @@ constexpr int kTimerSettingViewBetweenChildSpacing = 8;
 constexpr auto kTimerAdjustmentButtonSize = gfx::Size(63, 36);
 constexpr auto kTimerCountdownViewInsets = gfx::Insets::VH(0, 24);
 
-// Creates the appropriately formatted string to display for the time remaining
-// display in the detailed view. When focus mode is active, this function
-// returns a string reading the hours and minutes remaining in the session, with
-// hours removed if their value is equal to 0. For example, if there are 10
-// minutes remaining in an active focus session, the string returned will be "10
-// min" as opposed to "0 hr, 10 min". On the other hand, if focus mode is
-// inactive, only the minutes of the currently set session duration will be
-// returned.
-std::u16string CreateTimeRemainingString() {
-  auto* controller = FocusModeController::Get();
-  CHECK(controller);
-
-  const base::Time now = base::Time::Now();
-  const base::TimeDelta session_duration_remaining =
-      controller->in_focus_session() ? controller->end_time() - now
-                                     : controller->session_duration();
-  // `FocusModeController::end_time_` is only calculated when the focus
-  // session is started. Thus, if focus mode is not active, we can find this
-  // end time by adding the focus mode controller's session duration to the
-  // current time.
-  const base::Time end_time = now + session_duration_remaining;
-  const std::u16string time_string = focus_mode_util::GetDurationString(
-      session_duration_remaining,
-      focus_mode_util::TimeFormatType::kMinutesOnly);
-  return l10n_util::GetStringFUTF16(
-      IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_TIME_SUBLABEL, time_string,
-      focus_mode_util::GetFormattedClockString(end_time));
-}
-
 // Creates an `IconButton` with the formatting needed for the
 // `timer_setting_view_`'s timer adjustment buttons.
 std::unique_ptr<IconButton> CreateTimerAdjustmentButton(
@@ -321,7 +292,10 @@ void FocusModeDetailedView::OnFocusModeChanged(bool in_focus_session) {
   toggle_view_->text_label()->SetText(l10n_util::GetStringUTF16(
       in_focus_session ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_ACTIVE_LABEL
                        : IDS_ASH_STATUS_TRAY_FOCUS_MODE));
-  toggle_view_->SetSubText(CreateTimeRemainingString());
+  if (toggle_view_->sub_text_label()) {
+    toggle_view_->sub_text_label()->SetVisible(false);
+  }
+  cached_end_time_ = base::Time();
   views::AsViewClass<PillButton>(toggle_view_->right_view())
       ->SetText(l10n_util::GetStringUTF16(
           in_focus_session
@@ -335,7 +309,14 @@ void FocusModeDetailedView::OnFocusModeChanged(bool in_focus_session) {
 }
 
 void FocusModeDetailedView::OnTimerTick() {
-  toggle_view_->SetSubText(CreateTimeRemainingString());
+  // Only update the sub label if the end time has changed since the last time
+  // it was updated.
+  base::Time end_time = FocusModeController::Get()->end_time();
+  if (cached_end_time_ != end_time) {
+    toggle_view_->SetSubText(
+        focus_mode_util::GetFormattedEndTimeString(end_time));
+    cached_end_time_ = end_time;
+  }
   timer_countdown_view_->UpdateUI();
 }
 
@@ -360,11 +341,16 @@ void FocusModeDetailedView::CreateToggleView() {
   TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton1,
                                         *toggle_view_->text_label());
 
-  toggle_view_->SetSubText(CreateTimeRemainingString());
-  toggle_view_->sub_text_label()->SetEnabledColorId(
-      cros_tokens::kCrosSysSecondary);
-  TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosAnnotation1,
-                                        *toggle_view_->sub_text_label());
+  if (in_focus_session) {
+    cached_end_time_ = focus_mode_controller->end_time();
+    toggle_view_->SetSubText(
+        focus_mode_util::GetFormattedEndTimeString(cached_end_time_));
+    toggle_view_->sub_text_label()->SetEnabledColorId(
+        cros_tokens::kCrosSysSecondary);
+    TypographyProvider::Get()->StyleLabel(
+        ash::TypographyToken::kCrosAnnotation1,
+        *toggle_view_->sub_text_label());
+  }
 
   toggle_view_->AddRightView(
       std::make_unique<PillButton>(
@@ -427,10 +413,28 @@ void FocusModeDetailedView::CreateTimerView() {
   timer_setting_view_->SetBetweenChildSpacing(
       kTimerSettingViewBetweenChildSpacing);
 
+  // Add a container for the textfield, the minutes label, and the "Until"
+  // label.
+  auto* end_time_container = timer_setting_view_->AddChildView(
+      std::make_unique<views::BoxLayoutView>());
+  end_time_container->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  end_time_container->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
+
+  // Add a container for the timer textfield and the minutes label.
+  auto* textfield_container = end_time_container->AddChildView(
+      std::make_unique<views::BoxLayoutView>());
+  textfield_container->SetOrientation(
+      views::BoxLayout::Orientation::kHorizontal);
+  textfield_container->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+  textfield_container->SetBetweenChildSpacing(
+      kTimerSettingViewBetweenChildSpacing);
+
   // `SystemTextfield` does not currently confirm text when the user clicks
   // outside of the textfield but within the textfield's parent. See
   // b/302038651.
-  timer_textfield_ = timer_setting_view_->AddChildView(
+  timer_textfield_ = textfield_container->AddChildView(
       std::make_unique<SystemTextfield>(SystemTextfield::Type::kLarge));
   timer_textfield_->SetFontList(
       TypographyProvider::Get()->ResolveTypographyToken(
@@ -440,20 +444,30 @@ void FocusModeDetailedView::CreateTimerView() {
   timer_textfield_->SetAccessibleName(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIMER_TEXTFIELD));
 
-  views::Label* minutes_label = timer_setting_view_->AddChildView(
+  views::Label* minutes_label = textfield_container->AddChildView(
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_FOCUS_MODE_MINUTES_LABEL)));
   minutes_label->SetHorizontalAlignment(
       gfx::HorizontalAlignment::ALIGN_TO_HEAD);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosDisplay6Regular,
                                         *minutes_label);
-  timer_setting_view_->SetFlexForView(minutes_label, 1);
+  timer_setting_view_->SetFlexForView(end_time_container, 1);
 
   // The minutes label ignores the between child spacing on its left side so
   // that it can be directly next to the textfield.
   minutes_label->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(0, -1 * kTimerSettingViewBetweenChildSpacing, 0, 0));
+
+  end_time_label_ =
+      end_time_container->AddChildView(std::make_unique<views::Label>());
+  end_time_label_->SetHorizontalAlignment(
+      gfx::HorizontalAlignment::ALIGN_TO_HEAD);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
+                                        *end_time_label_);
+  end_time_label_->SetEnabledColorId(cros_tokens::kCrosSysSecondary);
+  end_time_label_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::VH(0, kTimerSettingViewBetweenChildSpacing)));
 
   timer_decrement_button_ =
       timer_setting_view_->AddChildView(CreateTimerAdjustmentButton(
@@ -489,6 +503,7 @@ void FocusModeDetailedView::UpdateTimerView(bool in_focus_session) {
 
   if (in_focus_session) {
     timer_countdown_view_->UpdateUI();
+    UpdateEndTimeLabelUI();
   } else {
     UpdateTimerSettingViewUI();
   }
@@ -548,7 +563,7 @@ void FocusModeDetailedView::OnClockMinutePassed() {
   // subheading to display the correct session end time and restart the clock
   // timer. If we are in focus mode, then `FocusModeController::end_time()` will
   // tell us the time at which the session will end.
-  toggle_view_->SetSubText(CreateTimeRemainingString());
+  UpdateEndTimeLabelUI();
   StartClockTimer();
 }
 
@@ -571,9 +586,10 @@ void FocusModeDetailedView::AdjustInactiveSessionDuration(bool decrement) {
 void FocusModeDetailedView::UpdateTimerSettingViewUI() {
   FocusModeController* focus_mode_controller = FocusModeController::Get();
   CHECK(!focus_mode_controller->in_focus_session());
-  toggle_view_->SetSubText(CreateTimeRemainingString());
   const base::TimeDelta session_duration =
       focus_mode_controller->session_duration();
+  end_time_label_->SetText(focus_mode_util::GetFormattedEndTimeString(
+      session_duration + base::Time::Now()));
   std::u16string new_session_duration_string =
       base::NumberToString16(session_duration.InMinutes());
   timer_textfield_->SetText(new_session_duration_string);
@@ -590,6 +606,11 @@ void FocusModeDetailedView::SetInactiveSessionDuration(
     base::TimeDelta duration) {
   FocusModeController::Get()->SetSessionDuration(duration);
   UpdateTimerSettingViewUI();
+}
+
+void FocusModeDetailedView::UpdateEndTimeLabelUI() {
+  end_time_label_->SetText(focus_mode_util::GetFormattedEndTimeString(
+      FocusModeController::Get()->end_time()));
 }
 
 BEGIN_METADATA(FocusModeDetailedView, TrayDetailedView)
