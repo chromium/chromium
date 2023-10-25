@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/text/text_boundaries.h"
 #include "third_party/blink/renderer/platform/wtf/decimal.h"
@@ -297,7 +298,7 @@ uint32_t EditContext::characterBoundsRangeStart() const {
   return character_bounds_range_start_;
 }
 
-const HeapVector<Member<Element>>& EditContext::attachedElements() {
+const HeapVector<Member<HTMLElement>>& EditContext::attachedElements() {
   return attached_elements_;
 }
 
@@ -615,10 +616,11 @@ void EditContext::ExtendSelectionAndDelete(int before, int after) {
                           selection_start_, selection_end_);
 }
 
-void EditContext::AttachElement(Element* element_to_attach) {
+void EditContext::AttachElement(HTMLElement* element_to_attach) {
   if (base::Contains(attached_elements_, element_to_attach,
-                     &Member<Element>::Get))
+                     &Member<HTMLElement>::Get)) {
     return;
+  }
 
   // Currently an EditContext can only have one associated element.
   // However, the spec is written with the expectation that this limit may be
@@ -632,9 +634,9 @@ void EditContext::AttachElement(Element* element_to_attach) {
   attached_elements_.push_back(element_to_attach);
 }
 
-void EditContext::DetachElement(Element* element_to_detach) {
+void EditContext::DetachElement(HTMLElement* element_to_detach) {
   auto* it = base::ranges::find(attached_elements_, element_to_detach,
-                                &Member<Element>::Get);
+                                &Member<HTMLElement>::Get);
 
   if (it != attached_elements_.end())
     attached_elements_.erase(it);

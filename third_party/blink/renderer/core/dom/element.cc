@@ -4496,6 +4496,8 @@ EditContext* Element::editContext() const {
 
 void Element::setEditContext(EditContext* edit_context,
                              ExceptionState& exception_state) {
+  CHECK(DynamicTo<HTMLElement>(this));
+
   // https://w3c.github.io/edit-context/#extensions-to-the-htmlelement-interface
   // 1. If this's local name is neither a valid shadow host name nor "canvas",
   // then throw a "NotSupportedError" DOMException.
@@ -4525,11 +4527,11 @@ void Element::setEditContext(EditContext* edit_context,
       old_edit_context->Blur();
     }
 
-    old_edit_context->DetachElement(this);
+    old_edit_context->DetachElement(DynamicTo<HTMLElement>(this));
   }
 
   if (edit_context) {
-    edit_context->AttachElement(this);
+    edit_context->AttachElement(DynamicTo<HTMLElement>(this));
 
     if (IsFocusedElementInDocument()) {
       edit_context->Focus();
