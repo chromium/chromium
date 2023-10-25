@@ -686,6 +686,15 @@ bool ElementRuleCollector::CheckIfAnyRuleMatches(
       match_request);
 }
 
+bool ElementRuleCollector::CanRejectScope(const StyleScope& style_scope) {
+  if (!style_scope.IsImplicit()) {
+    return false;
+  }
+  StyleScopeFrame* style_scope_frame = style_recalc_context_.style_scope_frame;
+  return style_scope_frame &&
+         !style_scope_frame->HasSeenImplicitScope(style_scope);
+}
+
 template <bool stop_at_first_match>
 DISABLE_CFI_PERF bool ElementRuleCollector::CollectMatchingRulesInternal(
     const MatchRequest& match_request) {

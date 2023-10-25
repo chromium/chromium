@@ -483,6 +483,23 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
     return !ua_shadow_pseudo_element_rules_.IsEmpty();
   }
 
+  // If a single @scope rule covers all rules in this RuleSet,
+  // returns the corresponding StyleScope rule, or returns nullptr otherwise.
+  //
+  // This is useful for rejecting entire RuleSets early when implicit @scopes
+  // aren't in scope.
+  //
+  // See ElementRuleCollector::CanRejectScope.
+  const StyleScope* SingleScope() const {
+    if (scope_intervals_.size() == 1u) {
+      const Interval<StyleScope>& interval = scope_intervals_.front();
+      if (interval.start_position == 0) {
+        return interval.value.Get();
+      }
+    }
+    return nullptr;
+  }
+
   bool DidMediaQueryResultsChange(const MediaQueryEvaluator& evaluator) const;
 
   // We use a vector of Interval<T> to represent that rules with positions

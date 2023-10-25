@@ -33,6 +33,10 @@ class StyleScopeData final : public GarbageCollected<StyleScopeData>,
   void RemoveTriggeredImplicitScope(const StyleScope&);
   bool TriggersScope(const StyleScope&) const;
 
+  const HeapVector<Member<const StyleScope>, 1>& GetTriggeredScopes() const {
+    return triggered_implicit_scopes_;
+  }
+
  private:
   friend class StyleScopeDataTest;
 

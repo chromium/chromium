@@ -244,14 +244,28 @@ void ScopedStyleResolver::KeyframesRulesAdded(const TreeScope& tree_scope) {
   tree_scope.GetDocument().Timeline().InvalidateKeyframeEffects(tree_scope);
 }
 
+namespace {
+
+bool CanRejectRuleSet(ElementRuleCollector& collector,
+                      const RuleSet& rule_set) {
+  const StyleScope* scope = rule_set.SingleScope();
+  return scope && collector.CanRejectScope(*scope);
+}
+
+}  // namespace
+
 template <class Func>
-void ScopedStyleResolver::ForAllStylesheets(const Func& func) {
+void ScopedStyleResolver::ForAllStylesheets(ElementRuleCollector& collector,
+                                            const Func& func) {
   if (active_style_sheets_.empty()) {
     return;
   }
 
   MatchRequest match_request{&scope_->RootNode()};
   for (auto [sheet, rule_set] : active_style_sheets_) {
+    if (CanRejectRuleSet(collector, *rule_set)) {
+      continue;
+    }
     match_request.AddRuleset(rule_set.Get());
     if (match_request.IsFull()) {
       func(match_request);
@@ -265,21 +279,21 @@ void ScopedStyleResolver::ForAllStylesheets(const Func& func) {
 
 void ScopedStyleResolver::CollectMatchingElementScopeRules(
     ElementRuleCollector& collector) {
-  ForAllStylesheets([&collector](const MatchRequest& match_request) {
+  ForAllStylesheets(collector, [&collector](const MatchRequest& match_request) {
     collector.CollectMatchingRules(match_request);
   });
 }
 
 void ScopedStyleResolver::CollectMatchingShadowHostRules(
     ElementRuleCollector& collector) {
-  ForAllStylesheets([&collector](const MatchRequest& match_request) {
+  ForAllStylesheets(collector, [&collector](const MatchRequest& match_request) {
     collector.CollectMatchingShadowHostRules(match_request);
   });
 }
 
 void ScopedStyleResolver::CollectMatchingSlottedRules(
     ElementRuleCollector& collector) {
-  ForAllStylesheets([&collector](const MatchRequest& match_request) {
+  ForAllStylesheets(collector, [&collector](const MatchRequest& match_request) {
     collector.CollectMatchingSlottedRules(match_request);
   });
 }
@@ -288,7 +302,7 @@ void ScopedStyleResolver::CollectMatchingPartPseudoRules(
     ElementRuleCollector& collector,
     PartNames& part_names,
     bool for_shadow_pseudo) {
-  ForAllStylesheets([&](const MatchRequest& match_request) {
+  ForAllStylesheets(collector, [&](const MatchRequest& match_request) {
     collector.CollectMatchingPartPseudoRules(match_request, part_names,
                                              for_shadow_pseudo);
   });

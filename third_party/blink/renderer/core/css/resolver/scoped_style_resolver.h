@@ -106,7 +106,7 @@ class CORE_EXPORT ScopedStyleResolver final
 
  private:
   template <class Func>
-  void ForAllStylesheets(const Func& func);
+  void ForAllStylesheets(ElementRuleCollector&, const Func& func);
 
   void AddFontFaceRules(const RuleSet&);
   void AddCounterStyleRules(const RuleSet&);

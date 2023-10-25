@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/resolver/match_flags.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -90,13 +91,31 @@ class CORE_EXPORT StyleScopeFrame {
   StyleScopeFrame* GetParentFrameOrNull(Element& parent_element);
   StyleScopeFrame& GetParentFrameOrThis(Element& parent_element);
 
+  // A StyleScope has been "seen" if `element_` or any of the elements
+  // in element_'s ancestor chain is a scoping root.
+  //
+  // Note that a StyleScope being "seen" does not mean that it's currently
+  // "in scope" [1], because the scope may be limited [2]. However, if a
+  // StyleScope has *not* been seen, it's definitely not in scope.
+  //
+  // This function is only valid for implicit StyleScopes (IsImplicit()==true).
+  //
+  // [1] https://drafts.csswg.org/css-cascade-6/#in-scope
+  // [2] https://drafts.csswg.org/css-cascade-6/#scoping-limit
+  bool HasSeenImplicitScope(const StyleScope&);
+
  private:
   friend class SelectorChecker;
+
+  using ScopeSet = HeapHashSet<Member<const StyleScope>>;
+
+  ScopeSet* CalculateSeenImplicitScopes();
 
   Element& element_;
   StyleScopeFrame* parent_;
   HeapHashMap<Member<const StyleScope>, Member<const StyleScopeActivations>>
       data_;
+  ScopeSet* seen_implicit_scopes_ = nullptr;
 };
 
 }  // namespace blink
