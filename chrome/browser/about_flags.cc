@@ -11108,6 +11108,15 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop, FEATURE_VALUE_TYPE(blink::features::kPasswordStrongLabel)},
 #endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+    {"attach-logs-to-autofill-rater-extentsion-report",
+     flag_descriptions::kAttachLogsToAutofillRaterExtensionReportName,
+     flag_descriptions::kAttachLogsToAutofillRaterExtensionReportDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(password_manager::features::
+                            kAttachLogsToAutofillRaterExtensionReport)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

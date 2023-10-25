@@ -7,6 +7,14 @@
 
 namespace password_manager::features {
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// Enables attaching password manager and autofill internals logs to an Autofill
+// Rater Extension Report.
+BASE_FEATURE(kAttachLogsToAutofillRaterExtensionReport,
+             "AttachLogsToAutofillRaterExtensionReport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // When enabled, updates to shared existing passwords from the same sender are
 // auto-approved.
 BASE_FEATURE(kAutoApproveSharedPasswordUpdatesFromSameSender,

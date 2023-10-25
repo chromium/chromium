@@ -7656,6 +7656,14 @@ const char kUnoDesktopDescription[] =
 const char kDesktopPWAsUserLinkCapturingName[] = "Desktop PWA Link Capturing";
 const char kDesktopPWAsUserLinkCapturingDescription[] =
     "Enables opening links from Chrome in an installed PWA";
+
+const char kAttachLogsToAutofillRaterExtensionReportName[] =
+    "Attach logs to Autofill Rater Extension Report";
+const char kAttachLogsToAutofillRaterExtensionReportDescription[] =
+    "When a report is started via the Autofill Rater Extension, the logs which "
+    "are normally recorded in chrome://password-manager-internals and "
+    "chrome://autofill-internals will be recorded on files on the disk. At the "
+    "end of the report, these files will be attached to the report.";
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)

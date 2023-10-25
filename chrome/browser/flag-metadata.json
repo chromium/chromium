@@ -435,6 +435,11 @@
     "expiry_milestone": 123
   },
   {
+    "name": "attach-logs-to-autofill-rater-extentsion-report",
+    "owners": [ "theocristea@google.com", "vasilii@chromium.org" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "attribution-reporting-debug-mode",
     "owners": [ "//content/browser/attribution_reporting/OWNERS" ],
     "expiry_milestone": 123

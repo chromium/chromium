@@ -63320,6 +63320,8 @@ from previous Chrome versions.
   <int value="-1146126821" label="DeprecateUnload:enabled"/>
   <int value="-1145909380" label="EnableGamepadMultitouch:disabled"/>
   <int value="-1145905507" label="SendTabToSelfWhenSignedIn:disabled"/>
+  <int value="-1145871257"
+      label="AttachLogsToAutofillRaterExtensionReport:enabled"/>
   <int value="-1145702446" label="ChromeHomeInactivitySheetExpansion:enabled"/>
   <int value="-1145246849" label="ThirdPartyDoodles:enabled"/>
   <int value="-1144754105" label="ScalableStatusArea:enabled"/>
@@ -67127,6 +67129,8 @@ from previous Chrome versions.
   <int value="713946324" label="OmniboxSearchReadyIncognito:disabled"/>
   <int value="714714531" label="VcControlsUi:enabled"/>
   <int value="714871827" label="FastPairSoftwareScanning:enabled"/>
+  <int value="715464715"
+      label="AttachLogsToAutofillRaterExtensionReport:disabled"/>
   <int value="715617684" label="OriginTrials:disabled"/>
   <int value="715957869" label="SendTabToSelfSigninPromo:disabled"/>
   <int value="716073306" label="AssistantVoiceMatch:disabled"/>
