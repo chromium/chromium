@@ -86,6 +86,11 @@ export class CustomizeButtonsSubsectionElement extends
         value: false,
         reflectToAttribute: true,
       },
+
+      isSaveButtonDisabled_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -97,6 +102,7 @@ export class CustomizeButtonsSubsectionElement extends
   private selectedButtonName_: string;
   private dragAndDropManager: DragAndDropManager = new DragAndDropManager();
   private buttonNameInvalid_: boolean;
+  private isSaveButtonDisabled_: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -115,6 +121,7 @@ export class CustomizeButtonsSubsectionElement extends
     this.selectedButton_ = this.buttonRemappingList[this.selectedButtonIndex_];
     this.selectedButtonName_ = this.selectedButton_.name;
     this.buttonNameInvalid_ = false;
+    this.isSaveButtonDisabled_ = false;
     this.shouldShowRenamingDialog_ = true;
   }
 
@@ -142,7 +149,7 @@ export class CustomizeButtonsSubsectionElement extends
   }
 
   private saveRenamingDialogClicked_(): void {
-    if (!this.isSaveDisabled_()) {
+    if (!this.isSaveButtonDisabled_) {
       this.updateButtonName_();
       this.shouldShowRenamingDialog_ = false;
     }
@@ -165,6 +172,7 @@ export class CustomizeButtonsSubsectionElement extends
     // Truncate the name to maxInputLength.
     this.selectedButtonName_ =
         this.selectedButtonName_.substring(0, MAX_BUTTON_NAME_INPUT_LENGTH);
+    this.isSaveButtonDisabled_ = this.selectedButtonName_ === '';
   }
 
   private updateButtonName_(): void {
@@ -202,18 +210,6 @@ export class CustomizeButtonsSubsectionElement extends
           composed: true,
         }));
       };
-
-  private isSaveDisabled_(): boolean {
-    if (this.selectedButtonName_ === this.selectedButton_.name) {
-      return true;
-    }
-
-    if (!this.selectedButtonName_.length) {
-      return true;
-    }
-
-    return false;
-  }
 }
 
 declare global {
