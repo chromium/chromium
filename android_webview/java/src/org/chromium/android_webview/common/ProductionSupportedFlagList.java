@@ -597,6 +597,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "SafeBrowsingSkipSubResources2",
                 "When enabled, Safe Browsing will skip WebTransport and WebSockets"),
+        Flag.baseFeature(
+                "AddWarningShownTSToClientSafeBrowsingReport",
+                "When enabled, client reports will include a timestamp of when the warning was "
+                        + "shown to the user"),
         Flag.baseFeature("SafeBrowsingOnUIThread"),
         Flag.baseFeature(
                 BlinkFeatures.ANDROID_EXTENDED_KEYBOARD_SHORTCUTS,
