@@ -1,6 +1,0 @@
-include_rules = [
-  "+content/public/app/sandbox_helper_win.h",
-  "+mojo/public/cpp/system",
-  "+sandbox/policy",
-  "+sandbox/win/src",
-]

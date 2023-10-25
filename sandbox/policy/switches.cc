@@ -126,7 +126,6 @@ const char kDisableMetalShaderCache[] = "disable-metal-shader-cache";
 // Flags spied upon from other layers.
 const char kProcessType[] = "type";
 const char kGpuProcess[] = "gpu-process";
-const char kNaClBrokerProcess[] = "nacl-broker";
 const char kNaClLoaderProcess[] = "nacl-loader";
 const char kPpapiPluginProcess[] = "ppapi";
 const char kRendererProcess[] = "renderer";

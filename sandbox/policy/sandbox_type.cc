@@ -213,9 +213,6 @@ sandbox::mojom::Sandbox SandboxTypeFromCommandLine(
 #endif
   }
 
-  if (process_type == switches::kNaClBrokerProcess)
-    return Sandbox::kNoSandbox;
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Intermediate process gains a sandbox later.
   if (process_type == switches::kZygoteProcessType)
