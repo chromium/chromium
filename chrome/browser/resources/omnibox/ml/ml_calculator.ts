@@ -119,6 +119,7 @@ export class MlCalculatorElement extends CustomElement {
     this.score = await this.mlBrowserProxy_.makeMlRequest(this.signals);
     window.history.replaceState(
         null, '', `?signals=${Object.values(this.signals)}`);
+    this.dispatchEvent(new CustomEvent('updated'));
   }
 }
 

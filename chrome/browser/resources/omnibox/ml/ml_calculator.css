@@ -3,8 +3,8 @@
  * found in the LICENSE file. */
 
 :host {
-  display: block;
-  max-width: 400px;
+  display: inline-block;
+  width: 400px;
 }
 
 :host > *:not(:last-child) {

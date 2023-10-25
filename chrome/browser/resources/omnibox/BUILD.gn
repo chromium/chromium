@@ -9,6 +9,7 @@ build_webui("build") {
 
   web_component_files = [
     "ml/ml_calculator.ts",
+    "ml/ml_chart.ts",
     "ml/ml_table.ts",
     "ml/ml_ui.ts",
   ]
@@ -19,6 +20,7 @@ build_webui("build") {
     "ml/ml.css",
     "ml/ml.html",
     "ml/ml_calculator.css",
+    "ml/ml_chart.css",
     "ml/ml_table.css",
     "ml/ml_ui.css",
     "omnibox.css",

@@ -7,14 +7,20 @@
   min-width: 900px;
 }
 
+.top-row {
+  margin-bottom: 15px;
+  display: flex;
+  align-items: flex-start;
+}
+
 .section {
   padding: 5px;
   background-color: var(--theme);
   border: 1px solid var(--light-border);
 }
 
-.section:not(:last-child) {
-  margin-bottom: 15px;
+ml-calculator {
+  margin-right: 15px;
 }
 
 #ml-sync-batch-url-scoring-disabled-warning {
