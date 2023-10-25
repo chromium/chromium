@@ -116,7 +116,7 @@ StatusOr<uint32_t> RemoveAndTruncateLine(const base::FilePath& file_path,
   if (!status_or.ok()) {
     return status_or.status();
   }
-  std::string content = status_or.value();
+  std::string content = status_or.ValueOrDie();
   uint32_t offset = 0;
   // Search for next new line after pos.
   while (offset < content.length()) {

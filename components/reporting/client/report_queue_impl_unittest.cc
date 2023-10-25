@@ -82,12 +82,12 @@ class ReportQueueImplTest : public testing::Test {
     ASSERT_OK(config_result) << config_result.status();
 
     test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
-    ReportQueueImpl::Create(std::move(config_result.value()), storage_module_,
-                            report_queue_event.cb());
+    ReportQueueImpl::Create(std::move(config_result.ValueOrDie()),
+                            storage_module_, report_queue_event.cb());
     auto report_queue_result = report_queue_event.result();
     ASSERT_OK(report_queue_result) << report_queue_result.status();
 
-    report_queue_ = std::move(report_queue_result.value());
+    report_queue_ = std::move(report_queue_result.ValueOrDie());
   }
 
   Status EnqueueTestRecord(
@@ -99,7 +99,7 @@ class ReportQueueImplTest : public testing::Test {
     auto report_queue_result = report_queue_event.result();
     CHECK(report_queue_result.ok()) << report_queue_result.status();
 
-    report_queue_ = std::move(report_queue_result.value());
+    report_queue_ = std::move(report_queue_result.ValueOrDie());
 
     test::TestEvent<Status> a;
     report_queue_->Enqueue(std::make_unique<test::TestMessage>(test_message),
@@ -193,7 +193,7 @@ TEST_F(ReportQueueImplTest,
 
   // Test records are not MetricData so they should trigger CHECK.
   EXPECT_CHECK_DEATH(static_cast<void>(EnqueueTestRecord(
-      std::move(config_result.value()), test::TestMessage())));
+      std::move(config_result.ValueOrDie()), test::TestMessage())));
 }
 
 // Verifies that records sent to `Destination::TELEMETRY_METRIC` are
@@ -209,7 +209,7 @@ TEST_F(ReportQueueImplTest,
 
   // Test records are not MetricData so they should trigger CHECK.
   EXPECT_CHECK_DEATH(static_cast<void>(EnqueueTestRecord(
-      std::move(config_result.value()), test::TestMessage())));
+      std::move(config_result.ValueOrDie()), test::TestMessage())));
 }
 
 // Verifies that records sent to `Destination::INFO_METRIC` are
@@ -225,7 +225,7 @@ TEST_F(ReportQueueImplTest,
 
   // Test records are not MetricData so they should trigger CHECK.
   EXPECT_CHECK_DEATH(static_cast<void>(EnqueueTestRecord(
-      std::move(config_result.value()), test::TestMessage())));
+      std::move(config_result.ValueOrDie()), test::TestMessage())));
 }
 
 TEST_F(ReportQueueImplTest, SuccessfulProtoRecordWithRateLimiter) {
@@ -240,12 +240,12 @@ TEST_F(ReportQueueImplTest, SuccessfulProtoRecordWithRateLimiter) {
   ASSERT_OK(config_result) << config_result.status();
 
   test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
-  ReportQueueImpl::Create(std::move(config_result.value()), storage_module_,
-                          report_queue_event.cb());
+  ReportQueueImpl::Create(std::move(config_result.ValueOrDie()),
+                          storage_module_, report_queue_event.cb());
   auto report_queue_result = report_queue_event.result();
   ASSERT_OK(report_queue_result) << report_queue_result.status();
 
-  report_queue_ = std::move(report_queue_result.value());
+  report_queue_ = std::move(report_queue_result.ValueOrDie());
 
   test::TestMessage test_message;
   test_message.set_test(kTestMessage);
@@ -294,7 +294,7 @@ TEST_F(ReportQueueImplTest, SuccessfulProtoRecordWithReservedSpace) {
   test_message.set_test(kTestMessage);
 
   const auto a_result =
-      EnqueueTestRecord(std::move(config_result.value()), test_message);
+      EnqueueTestRecord(std::move(config_result.ValueOrDie()), test_message);
   EXPECT_OK(a_result) << a_result;
 
   EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
@@ -321,7 +321,7 @@ TEST_F(ReportQueueImplTest, SuccessfulProtoRecordWithSource) {
   test::TestMessage test_message;
   test_message.set_test(kTestMessage);
   const auto a_result =
-      EnqueueTestRecord(std::move(config_result.value()), test_message);
+      EnqueueTestRecord(std::move(config_result.ValueOrDie()), test_message);
   EXPECT_OK(a_result) << a_result;
 
   EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
@@ -350,7 +350,7 @@ TEST_F(ReportQueueImplTest, SuccessfulProtoRecordWithSourceVersion) {
   test::TestMessage test_message;
   test_message.set_test(kTestMessage);
   const auto a_result =
-      EnqueueTestRecord(std::move(config_result.value()), test_message);
+      EnqueueTestRecord(std::move(config_result.ValueOrDie()), test_message);
   EXPECT_OK(a_result) << a_result;
 
   EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
@@ -492,12 +492,12 @@ TEST_F(ReportQueueImplTest, SuccessfulSpeculativeStringRecordWithRateLimiter) {
   ASSERT_OK(config_result) << config_result.status();
 
   test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
-  ReportQueueImpl::Create(std::move(config_result.value()), storage_module_,
-                          report_queue_event.cb());
+  ReportQueueImpl::Create(std::move(config_result.ValueOrDie()),
+                          storage_module_, report_queue_event.cb());
   auto report_queue_result = report_queue_event.result();
   ASSERT_OK(report_queue_result) << report_queue_result.status();
 
-  report_queue_ = std::move(report_queue_result.value());
+  report_queue_ = std::move(report_queue_result.ValueOrDie());
 
   EXPECT_CALL(*mock_rate_limiter, Acquire(_)).WillOnce(Return(false));
 
@@ -544,12 +544,12 @@ TEST_F(ReportQueueImplTest,
   ASSERT_OK(config_result) << config_result.status();
 
   test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
-  ReportQueueImpl::Create(std::move(config_result.value()), storage_module_,
-                          report_queue_event.cb());
+  ReportQueueImpl::Create(std::move(config_result.ValueOrDie()),
+                          storage_module_, report_queue_event.cb());
   auto report_queue_result = report_queue_event.result();
   ASSERT_OK(report_queue_result) << report_queue_result.status();
 
-  report_queue_ = std::move(report_queue_result.value());
+  report_queue_ = std::move(report_queue_result.ValueOrDie());
 
   test::TestEvent<Status> a;
   auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
@@ -583,11 +583,11 @@ TEST_F(ReportQueueImplTest, SuccessfulSpeculativeStringRecordWithSource) {
   ASSERT_OK(config_result) << config_result.status();
 
   test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
-  ReportQueueImpl::Create(std::move(config_result.value()), storage_module_,
-                          report_queue_event.cb());
+  ReportQueueImpl::Create(std::move(config_result.ValueOrDie()),
+                          storage_module_, report_queue_event.cb());
   auto report_queue_result = report_queue_event.result();
   ASSERT_OK(report_queue_result) << report_queue_result.status();
-  report_queue_ = std::move(report_queue_result.value());
+  report_queue_ = std::move(report_queue_result.ValueOrDie());
 
   test::TestEvent<Status> a;
   auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
@@ -623,11 +623,11 @@ TEST_F(ReportQueueImplTest,
   ASSERT_OK(config_result) << config_result.status();
 
   test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
-  ReportQueueImpl::Create(std::move(config_result.value()), storage_module_,
-                          report_queue_event.cb());
+  ReportQueueImpl::Create(std::move(config_result.ValueOrDie()),
+                          storage_module_, report_queue_event.cb());
   auto report_queue_result = report_queue_event.result();
   ASSERT_OK(report_queue_result) << report_queue_result.status();
-  report_queue_ = std::move(report_queue_result.value());
+  report_queue_ = std::move(report_queue_result.ValueOrDie());
 
   test::TestEvent<Status> a;
   auto speculative_report_queue = SpeculativeReportQueueImpl::Create();

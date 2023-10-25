@@ -71,7 +71,7 @@ TEST(StatusMacros, AssignOnOk) {
       AssignOrReturnWrapperFunction(/*fail=*/false, kReturnValue);
 
   ASSERT_TRUE(status_or_result.ok());
-  EXPECT_EQ(status_or_result.value(), kReturnValue);
+  EXPECT_EQ(status_or_result.ValueOrDie(), kReturnValue);
 }
 
 // ASSIGN_OR_RETURN actually returns on a non-OK status.
@@ -97,7 +97,7 @@ TEST(StatusMacros, MultipleAssignsSucceed) {
   StatusOr<int> status_or_result =
       MultipleAssignOrReturnWrapperFunction(kReturnValue);
   ASSERT_TRUE(status_or_result.ok());
-  EXPECT_EQ(status_or_result.value(), kReturnValue);
+  EXPECT_EQ(status_or_result.ValueOrDie(), kReturnValue);
 }
 
 // ASSIGN_OR_RETURN actually moves the value if the status is OK.
@@ -109,7 +109,7 @@ TEST(StatusMacros, AssignOnOkMoveable) {
                                     std::make_unique<int>(kReturnValue));
 
   ASSERT_TRUE(status_or_result.ok());
-  EXPECT_EQ(*status_or_result.value(), kReturnValue);
+  EXPECT_EQ(*status_or_result.ValueOrDie(), kReturnValue);
 }
 
 // ASSIGN_OR_RETURN actually returns on a non-OK status.

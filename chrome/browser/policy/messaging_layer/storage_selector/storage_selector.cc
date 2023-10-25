@@ -56,7 +56,7 @@ void StorageSelector::CreateLocalStorageModule(
               std::move(cb).Run(result.status());
               return;
             }
-            std::move(cb).Run(result.value());
+            std::move(cb).Run(result.ValueOrDie());
           },
           std::move(cb)));
 }

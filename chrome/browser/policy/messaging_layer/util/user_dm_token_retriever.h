@@ -23,7 +23,7 @@ namespace reporting {
 //    user_dm_token_retriever->RetrieveDMToken(
 //      base::BindOnce(
 //        [](StatusOr<std::string> dm_token_result) {
-//          config->SetDMToken(dm_token_result.value());
+//          config->SetDMToken(dm_token_result.ValueOrDie());
 //        }
 //      )
 //    );

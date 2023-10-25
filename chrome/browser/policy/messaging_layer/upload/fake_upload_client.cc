@@ -65,7 +65,7 @@ void FakeUploadClient::OnUploadComplete(
     return;
   }
   const base::Value::Dict* last_success =
-      response.value().FindDict("lastSucceedUploadedRecord");
+      response.ValueOrDie().FindDict("lastSucceedUploadedRecord");
   if (last_success != nullptr) {
     const auto force_confirm_flag = last_success->FindBool("forceConfirm");
     bool force_confirm =
@@ -74,12 +74,12 @@ void FakeUploadClient::OnUploadComplete(
         RecordHandlerImpl::SequenceInformationValueToProto(*last_success);
     if (seq_info_result.ok()) {
       std::move(report_upload_success_cb)
-          .Run(seq_info_result.value(), force_confirm);
+          .Run(seq_info_result.ValueOrDie(), force_confirm);
     }
   }
 
   const base::Value::Dict* signed_encryption_key_record =
-      response.value().FindDict("encryptionSettings");
+      response.ValueOrDie().FindDict("encryptionSettings");
   if (signed_encryption_key_record != nullptr) {
     const std::string* public_key_str =
         signed_encryption_key_record->FindString("publicKey");

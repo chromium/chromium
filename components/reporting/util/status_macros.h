@@ -31,7 +31,7 @@ namespace reporting {
   if (__builtin_expect(!result.ok(), 0)) {        \
     return result.status();                       \
   }                                               \
-  lhs = std::move(result).value()
+  lhs = std::move(result).ValueOrDie()
 
 // Executes an expression that returns a StatusOr, extracting its value
 // into the variable defined by lhs (or returning on error).
@@ -55,7 +55,7 @@ namespace reporting {
     std::move(callback).Run(result.status());                                 \
     return;                                                                   \
   }                                                                           \
-  lhs = result.value();
+  lhs = result.ValueOrDie();
 
 // Executes an expression that returns a StatusOr, extracting its value into the
 // variabled defined by lhs (or calls callback with error and returns).

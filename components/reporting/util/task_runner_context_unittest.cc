@@ -366,7 +366,7 @@ TEST_F(TaskRunner, ActionsWithStatusOrPtr) {
       &vector, test_event.cb(), base::SequencedTaskRunner::GetCurrentDefault());
   const StatusOrPtr result = test_event.result();
   ASSERT_TRUE(result.ok()) << result.status();
-  EXPECT_EQ(result.value()->value(), kI);
+  EXPECT_EQ(result.ValueOrDie()->value(), kI);
 }
 
 }  // namespace

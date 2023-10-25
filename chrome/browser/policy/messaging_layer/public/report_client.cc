@@ -128,7 +128,7 @@ void ReportingClient::ConfigureReportQueue(
             // Set DM token in config and trigger completion callback with the
             // corresponding result.
             auto config_result =
-                configuration->SetDMToken(dm_token_result.value());
+                configuration->SetDMToken(dm_token_result.ValueOrDie());
 
             // Fail on error
             if (!config_result.ok()) {

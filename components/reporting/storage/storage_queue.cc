@@ -391,7 +391,7 @@ StatusOr<int64_t> StorageQueue::AddDataFile(
   if (!file_or_status.ok()) {
     return file_or_status.status();
   }
-  if (!files_.emplace(file_sequence_id, file_or_status.value()).second) {
+  if (!files_.emplace(file_sequence_id, file_or_status.ValueOrDie()).second) {
     return Status(error::ALREADY_EXISTS,
                   base::StrCat({"Sequencing id duplicated: '",
                                 full_name.MaybeAsASCII(), "'"}));
@@ -434,8 +434,8 @@ Status StorageQueue::EnumerateDataFiles(
     }
     used_files_set->emplace(full_name);  // File is in use.
     if (!first_sequencing_id.has_value() ||
-        first_sequencing_id.value() > file_sequencing_id_result.value()) {
-      first_sequencing_id = file_sequencing_id_result.value();
+        first_sequencing_id.value() > file_sequencing_id_result.ValueOrDie()) {
+      first_sequencing_id = file_sequencing_id_result.ValueOrDie();
     }
   }
 
@@ -494,15 +494,16 @@ Status StorageQueue::ScanLastFile() {
                  << ", status=" << read_result.status();
       break;
     }
-    pos += read_result.value().size();
+    pos += read_result.ValueOrDie().size();
     // Copy out the header, since the buffer might be overwritten later on.
-    const auto header_status = RecordHeader::FromString(read_result.value());
+    const auto header_status =
+        RecordHeader::FromString(read_result.ValueOrDie());
     if (!header_status.ok()) {
       // Error detected.
       LOG(ERROR) << "Incomplete record header in file " << last_file->name();
       break;
     }
-    const auto header = std::move(header_status.value());
+    const auto header = std::move(header_status.ValueOrDie());
     // Read the data (rounded to frame size).
     const size_t data_size = RoundUpToFrameSize(header.record_size);
     read_result = last_file->Read(pos, data_size, max_buffer_size,
@@ -513,8 +514,8 @@ Status StorageQueue::ScanLastFile() {
                  << ", status=" << read_result.status();
       break;
     }
-    pos += read_result.value().size();
-    if (read_result.value().size() < data_size) {
+    pos += read_result.ValueOrDie().size();
+    if (read_result.ValueOrDie().size() < data_size) {
       // Error detected.
       LOG(ERROR) << "Incomplete record in file " << last_file->name();
       break;
@@ -527,8 +528,8 @@ Status StorageQueue::ScanLastFile() {
       break;
     }
     // Verify record hash.
-    uint32_t actual_record_hash =
-        base::PersistentHash(read_result.value().substr(0, header.record_size));
+    uint32_t actual_record_hash = base::PersistentHash(
+        read_result.ValueOrDie().substr(0, header.record_size));
     if (header.record_hash != actual_record_hash) {
       LOG(ERROR) << "Hash mismatch, seq=" << header.record_sequencing_id
                  << " actual_hash=" << std::hex << actual_record_hash
@@ -719,7 +720,7 @@ Status StorageQueue::WriteMetadata(std::string_view current_record_digest) {
         base::StrCat({"Cannot write metafile=", meta_file->name(),
                       " status=", append_result.status().ToString()}));
   }
-  if (append_result.value() != current_record_digest.size()) {
+  if (append_result.ValueOrDie() != current_record_digest.size()) {
     return Status(error::DATA_LOSS, base::StrCat({"Failure writing metafile=",
                                                   meta_file->name()}));
   }
@@ -752,13 +753,13 @@ Status StorageQueue::ReadMetadata(
   auto read_result =
       meta_file->Read(/*pos=*/0, sizeof(generation_id_), max_buffer_size);
   if (!read_result.ok() ||
-      read_result.value().size() != sizeof(generation_id_)) {
+      read_result.ValueOrDie().size() != sizeof(generation_id_)) {
     return Status(error::DATA_LOSS,
                   base::StrCat({"Cannot read metafile=", meta_file->name(),
                                 " status=", read_result.status().ToString()}));
   }
   const int64_t generation_id =
-      *reinterpret_cast<const int64_t*>(read_result.value().data());
+      *reinterpret_cast<const int64_t*>(read_result.ValueOrDie().data());
   if (generation_id <= 0) {
     // Generation is not in [1, max_int64] range - file corrupt or empty.
     return Status(error::DATA_LOSS,
@@ -780,7 +781,7 @@ Status StorageQueue::ReadMetadata(
   read_result = meta_file->Read(/*pos=*/sizeof(generation_id),
                                 crypto::kSHA256Length, max_buffer_size);
   if (!read_result.ok() ||
-      read_result.value().size() != crypto::kSHA256Length) {
+      read_result.ValueOrDie().size() != crypto::kSHA256Length) {
     return Status(error::DATA_LOSS,
                   base::StrCat({"Cannot read metafile=", meta_file->name(),
                                 " status=", read_result.status().ToString()}));
@@ -792,7 +793,7 @@ Status StorageQueue::ReadMetadata(
   if (sequencing_id == next_sequencing_id_ - 1) {
     // Record last digest only if the metadata matches
     // the latest sequencing id.
-    last_record_digest_.emplace(read_result.value());
+    last_record_digest_.emplace(read_result.ValueOrDie());
   }
   meta_file->Close();
   // Store used metadata file.
@@ -817,7 +818,7 @@ Status StorageQueue::RestoreMetadata(
     }
 
     // Record file name and size. Ignore the result.
-    meta_files.emplace(file_sequence_id.value(),
+    meta_files.emplace(file_sequence_id.ValueOrDie(),
                        std::make_pair(full_name, dir_enum.GetInfo().GetSize()));
   }
   // See whether we have a match for next_sequencing_id_ - 1.
@@ -887,7 +888,7 @@ void StorageQueue::DeleteOutdatedMetadata(int64_t sequencing_id_to_keep) const {
             if (!sequence_id.ok()) {
               return false;
             }
-            if (sequence_id.value() >= sequence_id_to_keep) {
+            if (sequence_id.ValueOrDie() >= sequence_id_to_keep) {
               return false;
             }
             return true;
@@ -1262,7 +1263,7 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
     auto read_result = current_file_->second->Read(
         current_pos_, RecordHeader::kSize, max_buffer_size);
     RETURN_IF_ERROR(read_result.status());
-    auto header_data = read_result.value();
+    auto header_data = read_result.ValueOrDie();
     if (header_data.empty()) {
       // No more blobs.
       return Status(error::OUT_OF_RANGE, "Reached end of data");
@@ -1277,7 +1278,7 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
           error::INTERNAL,
           base::StrCat({"File corrupt: ", current_file_->second->name()}));
     }
-    const auto header = std::move(header_status.value());
+    const auto header = std::move(header_status.ValueOrDie());
     if (header.record_sequencing_id != sequencing_id) {
       return Status(
           error::INTERNAL,
@@ -1293,19 +1294,19 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
     read_result =
         current_file_->second->Read(current_pos_, data_size, max_buffer_size);
     RETURN_IF_ERROR(read_result.status());
-    current_pos_ += read_result.value().size();
-    if (read_result.value().size() != data_size) {
+    current_pos_ += read_result.ValueOrDie().size();
+    if (read_result.ValueOrDie().size() != data_size) {
       // File corrupt, blob incomplete.
       return Status(
           error::INTERNAL,
           base::StrCat(
               {"File corrupt: ", current_file_->second->name(),
-               " size=", base::NumberToString(read_result.value().size()),
+               " size=", base::NumberToString(read_result.ValueOrDie().size()),
                " expected=", base::NumberToString(data_size)}));
     }
     // Verify record hash.
-    uint32_t actual_record_hash =
-        base::PersistentHash(read_result.value().substr(0, header.record_size));
+    uint32_t actual_record_hash = base::PersistentHash(
+        read_result.ValueOrDie().substr(0, header.record_size));
     if (header.record_hash != actual_record_hash) {
       return Status(
           error::INTERNAL,
@@ -1320,7 +1321,7 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
                    reinterpret_cast<const uint8_t*>(&actual_record_hash),
                    sizeof(actual_record_hash))}));
     }
-    return read_result.value().substr(0, header.record_size);
+    return read_result.ValueOrDie().substr(0, header.record_size);
   }
 
   void CallRecordOrGap(int64_t sequencing_id) {
@@ -1354,7 +1355,7 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
       // Resume at ScheduleNextRecord.
       return;
     }
-    CallCurrentRecord(blob.value());
+    CallCurrentRecord(blob.ValueOrDie());
     // Resume at ScheduleNextRecord.
   }
 
@@ -1403,7 +1404,7 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
     }
     CHECK(!uploader_)
         << "Uploader instantiated more than once for single upload";
-    uploader_ = std::move(uploader_result.value());
+    uploader_ = std::move(uploader_result.ValueOrDie());
 
     std::move(continuation).Run();
   }
@@ -1663,7 +1664,7 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
       Response(encrypted_record_result.status());
       return;
     }
-    auto encrypted_record = std::move(encrypted_record_result.value());
+    auto encrypted_record = std::move(encrypted_record_result.ValueOrDie());
 
     // Add compression information to the encrypted record if it exists.
     if (compression_information.has_value()) {
@@ -1781,7 +1782,7 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
       Response(assign_result.status());
       return;
     }
-    scoped_refptr<SingleFile> last_file = assign_result.value();
+    scoped_refptr<SingleFile> last_file = assign_result.ValueOrDie();
 
     // Writing metadata ahead of the data write.
     Status write_result = storage_queue_->WriteMetadata(current_record_digest_);

@@ -81,11 +81,11 @@ void AddRecordToStorage(scoped_refptr<StorageModuleInterface> storage,
     return;
   }
 
-  CHECK(RecordMayGoToDestination(record_result.value(), destination));
+  CHECK(RecordMayGoToDestination(record_result.ValueOrDie(), destination));
 
   // Augment data.
   Record record;
-  *record.mutable_data() = std::move(record_result.value());
+  *record.mutable_data() = std::move(record_result.ValueOrDie());
   record.set_destination(destination);
   if (reserved_space > 0L) {
     record.set_reserved_space(reserved_space);
@@ -403,7 +403,7 @@ void SpeculativeReportQueueImpl::AttachActualQueue(
     return;
   }
   // Actual report queue succeeded, store it (never to change later).
-  actual_report_queue_ = std::move(status_or_actual_queue.value());
+  actual_report_queue_ = std::move(status_or_actual_queue.ValueOrDie());
   EnqueuePendingRecordProducers();
 }
 

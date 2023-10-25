@@ -36,9 +36,9 @@ void ReportQueueFactory::Create(
   // Asynchronously create and try to set ReportQueue.
   auto try_set_cb = CreateTrySetCallback(std::move(done_cb), GetBackoffEntry());
   base::ThreadPool::PostTask(
-      FROM_HERE,
-      base::BindOnce(ReportQueueProvider::CreateQueue,
-                     std::move(config_result.value()), std::move(try_set_cb)));
+      FROM_HERE, base::BindOnce(ReportQueueProvider::CreateQueue,
+                                std::move(config_result.ValueOrDie()),
+                                std::move(try_set_cb)));
 }
 
 //  static
@@ -57,7 +57,7 @@ ReportQueueFactory::CreateSpeculativeReportQueue(
   }
 
   auto speculative_queue_result = ReportQueueProvider::CreateSpeculativeQueue(
-      std::move(config_result.value()));
+      std::move(config_result.ValueOrDie()));
   if (!speculative_queue_result.ok()) {
     DVLOG(1) << "Failed to create speculative queue: "
              << speculative_queue_result.status();
@@ -66,7 +66,7 @@ ReportQueueFactory::CreateSpeculativeReportQueue(
                      base::SequencedTaskRunner::GetCurrentDefault()));
   }
 
-  return std::move(speculative_queue_result.value());
+  return std::move(speculative_queue_result.ValueOrDie());
 }
 
 // static
@@ -116,6 +116,6 @@ void ReportQueueFactory::TrySetReportQueue(
                     report_queue_result);
     return;
   }
-  std::move(success_cb).Run(std::move(report_queue_result.value()));
+  std::move(success_cb).Run(std::move(report_queue_result.ValueOrDie()));
 }
 }  // namespace reporting

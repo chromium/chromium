@@ -71,13 +71,13 @@ BASE_DECLARE_FEATURE(kEncryptedReportingPipeline);
 //                         return;
 //                       }
 //                       // Queue created successfully, enqueue the message.
-//                       report_queue_result.value()->Enqueue(
+//                       report_queue_result.ValueOrDie()->Enqueue(
 //                           important_message, std::move(done_cb));
 //                     },
 //                     important_message, std::move(done_cb)));
 //           },
 //           important_message, std::move(done_cb),
-//           std::move(config_result.value())))
+//           std::move(config_result.ValueOrDie())))
 // }
 class ReportQueueProvider {
  public:

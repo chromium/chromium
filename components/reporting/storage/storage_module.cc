@@ -74,7 +74,7 @@ void StorageModule::Create(
               std::move(callback).Run(storage.status());
               return;
             }
-            instance->storage_ = std::move(storage.value());
+            instance->storage_ = std::move(storage.ValueOrDie());
             std::move(callback).Run(std::move(instance));
           },
           std::move(instance), std::move(callback)));

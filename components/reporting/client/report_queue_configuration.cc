@@ -22,18 +22,19 @@ ReportQueueConfiguration::Builder::Builder(
     const ReportQueueConfiguration::Settings& settings)
     : final_value_(base::WrapUnique<ReportQueueConfiguration>(
           new ReportQueueConfiguration())) {
-  auto status = final_value_.value()->SetEventType(settings.event_type);
+  auto status = final_value_.ValueOrDie()->SetEventType(settings.event_type);
   if (!status.ok()) {
     final_value_ = status;
     return;
   }
-  status = final_value_.value()->SetDestination(settings.destination);
+  status = final_value_.ValueOrDie()->SetDestination(settings.destination);
   if (!status.ok()) {
     final_value_ = status;
     return;
   }
   if (settings.reserved_space != 0L) {
-    status = final_value_.value()->SetReservedSpace(settings.reserved_space);
+    status =
+        final_value_.ValueOrDie()->SetReservedSpace(settings.reserved_space);
     if (!status.ok()) {
       final_value_ = status;
       return;
@@ -50,8 +51,8 @@ ReportQueueConfiguration::Builder
 ReportQueueConfiguration::Builder::SetPolicyCheckCallback(
     ReportQueueConfiguration::PolicyCheckCallback policy_check_callback) {
   if (final_value_.ok()) {
-    auto status =
-        final_value_.value()->SetPolicyCheckCallback(policy_check_callback);
+    auto status = final_value_.ValueOrDie()->SetPolicyCheckCallback(
+        policy_check_callback);
     if (!status.ok()) {
       final_value_ = status;
     }
@@ -63,7 +64,8 @@ ReportQueueConfiguration::Builder
 ReportQueueConfiguration::Builder::SetRateLimiter(
     std::unique_ptr<RateLimiterInterface> rate_limiter) {
   if (final_value_.ok()) {
-    auto status = final_value_.value()->SetRateLimiter(std::move(rate_limiter));
+    auto status =
+        final_value_.ValueOrDie()->SetRateLimiter(std::move(rate_limiter));
     if (!status.ok()) {
       final_value_ = status;
     }
@@ -74,7 +76,7 @@ ReportQueueConfiguration::Builder::SetRateLimiter(
 ReportQueueConfiguration::Builder ReportQueueConfiguration::Builder::SetDMToken(
     std::string_view dm_token) {
   if (final_value_.ok()) {
-    auto status = final_value_.value()->SetDMToken(dm_token);
+    auto status = final_value_.ValueOrDie()->SetDMToken(dm_token);
     if (!status.ok()) {
       final_value_ = status;
     }
@@ -86,7 +88,8 @@ ReportQueueConfiguration::Builder
 ReportQueueConfiguration::Builder::SetSourceInfo(
     absl::optional<SourceInfo> source_info) {
   if (final_value_.ok()) {
-    auto status = final_value_.value()->SetSourceInfo(std::move(source_info));
+    auto status =
+        final_value_.ValueOrDie()->SetSourceInfo(std::move(source_info));
     if (!status.ok()) {
       final_value_ = status;
     }

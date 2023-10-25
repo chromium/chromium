@@ -140,7 +140,7 @@ class SingleDecryptionContext {
                   FROM_HERE,
                   base::BindOnce(&SingleDecryptionContext::DecryptSharedSecret,
                                  base::Unretained(self),
-                                 private_key_result.value()));
+                                 private_key_result.ValueOrDie()));
             },
             base::Unretained(this)));
   }
@@ -154,9 +154,9 @@ class SingleDecryptionContext {
       return;
     }
     base::ThreadPool::PostTask(
-        FROM_HERE,
-        base::BindOnce(&SingleDecryptionContext::OpenRecord,
-                       base::Unretained(this), shared_secret_result.value()));
+        FROM_HERE, base::BindOnce(&SingleDecryptionContext::OpenRecord,
+                                  base::Unretained(this),
+                                  shared_secret_result.ValueOrDie()));
   }
 
   void OpenRecord(std::string_view shared_secret) {
@@ -173,7 +173,7 @@ class SingleDecryptionContext {
                   FROM_HERE,
                   base::BindOnce(&SingleDecryptionContext::AddToRecord,
                                  base::Unretained(self),
-                                 base::Unretained(handle_result.value())));
+                                 base::Unretained(handle_result.ValueOrDie())));
             },
             base::Unretained(this)));
   }
@@ -577,7 +577,7 @@ class StorageTest
                  ASSERT_OK(result.status()) << result.status();
                  WrappedRecord wrapped_record;
                  ASSERT_TRUE(wrapped_record.ParseFromArray(
-                     result.value().data(), result.value().size()));
+                     result.ValueOrDie().data(), result.ValueOrDie().size()));
                  // Schedule on the same runner to verify wrapped record once
                  // decrypted.
                  task_runner->PostTask(
@@ -810,7 +810,7 @@ class StorageTest
         CreateTestStorage(options, encryption_module);
     ASSERT_OK(storage_result)
         << "Failed to create TestStorage, error=" << storage_result.status();
-    storage_ = std::move(storage_result.value());
+    storage_ = std::move(storage_result.ValueOrDie());
   }
 
   void ResetTestStorage() {
@@ -893,7 +893,7 @@ class StorageTest
                 std::move(start_uploader_cb).Run(result.status());
                 return;
               }
-              auto uploader = std::move(result.value());
+              auto uploader = std::move(result.ValueOrDie());
               std::move(start_uploader_cb).Run(std::move(uploader));
             },
             reason, std::move(start_uploader_cb), base::Unretained(this)));
@@ -967,7 +967,7 @@ class StorageTest
         prepare_key_pair.cb());
     auto prepare_key_result = prepare_key_pair.result();
     CHECK_OK(prepare_key_result) << prepare_key_result.status();
-    public_key_id = prepare_key_result.value();
+    public_key_id = prepare_key_result.ValueOrDie();
     // Prepare signed encryption key to be delivered to Storage.
     SignedEncryptionInfo signed_encryption_key;
     signed_encryption_key.set_public_asymmetric_key(
@@ -1014,7 +1014,7 @@ class StorageTest
     // Create decryption module.
     auto decryptor_result = test::Decryptor::Create();
     ASSERT_OK(decryptor_result.status()) << decryptor_result.status();
-    decryptor_ = std::move(decryptor_result.value());
+    decryptor_ = std::move(decryptor_result.ValueOrDie());
     // Prepare the key.
     signed_encryption_key_ = GenerateAndSignKey();
     // First record enqueue to Storage would need key delivered.
@@ -2009,7 +2009,7 @@ TEST_P(StorageTest, KeyDeliveryFailureOnNewStorage) {
       CreateTestStorageWithFailedKeyDelivery(BuildTestStorageOptions());
   ASSERT_OK(storage_result)
       << "Failed to create StorageTest, error=" << storage_result.status();
-  storage_ = std::move(storage_result.value());
+  storage_ = std::move(storage_result.ValueOrDie());
 
   key_delivery_failure_.store(true);
   for (size_t failure = 1; failure < kFailuresCount; ++failure) {

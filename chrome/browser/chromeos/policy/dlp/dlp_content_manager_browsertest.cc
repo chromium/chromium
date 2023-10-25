@@ -373,7 +373,7 @@ class DlpContentManagerReportingBrowserTest
     ::reporting::test::TestEvent<
         ::reporting::StatusOr<std::unique_ptr<::reporting::ReportQueue>>>
         report_queue_event;
-    ::reporting::ReportQueueImpl::Create(std::move(config_result.value()),
+    ::reporting::ReportQueueImpl::Create(std::move(config_result.ValueOrDie()),
                                          storage_module_,
                                          report_queue_event.cb());
     auto report_queue_result = report_queue_event.result();
@@ -387,7 +387,7 @@ class DlpContentManagerReportingBrowserTest
 
     helper_->GetReportingManager()->SetReportQueueForTest(
         std::move(speculative_report_queue));
-    std::move(attach_queue_cb).Run(std::move(report_queue_result.value()));
+    std::move(attach_queue_cb).Run(std::move(report_queue_result.ValueOrDie()));
 
     // Wait until the speculative report queue is initialized with the stubbed
     // report queue posted to its internal task runner

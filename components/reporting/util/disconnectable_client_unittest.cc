@@ -100,10 +100,10 @@ TEST_F(DisconnectableClientTest, NormalConnection) {
 
   auto result = res1.result();
   ASSERT_OK(result) << result.status();
-  EXPECT_THAT(result.value(), Eq(222));
+  EXPECT_THAT(result.ValueOrDie(), Eq(222));
   result = res2.result();
   ASSERT_OK(result) << result.status();
-  EXPECT_THAT(result.value(), Eq(444));
+  EXPECT_THAT(result.ValueOrDie(), Eq(444));
 }
 
 TEST_F(DisconnectableClientTest, NoConnection) {
@@ -134,7 +134,7 @@ TEST_F(DisconnectableClientTest, FailedCallOnNormalConnection) {
 
   auto result = res1.result();
   ASSERT_OK(result) << result.status();
-  EXPECT_THAT(result.value(), Eq(222));
+  EXPECT_THAT(result.ValueOrDie(), Eq(222));
 
   task_environment_.FastForwardBy(base::Seconds(1));
 
@@ -147,7 +147,7 @@ TEST_F(DisconnectableClientTest, FailedCallOnNormalConnection) {
 
   result = res3.result();
   ASSERT_OK(result) << result.status();
-  EXPECT_THAT(result.value(), Eq(444));
+  EXPECT_THAT(result.ValueOrDie(), Eq(444));
 }
 
 TEST_F(DisconnectableClientTest, DroppedConnection) {
@@ -164,7 +164,7 @@ TEST_F(DisconnectableClientTest, DroppedConnection) {
 
   auto result = res1.result();
   ASSERT_OK(result) << result.status();
-  EXPECT_THAT(result.value(), Eq(222));
+  EXPECT_THAT(result.ValueOrDie(), Eq(222));
 
   client_.SetAvailability(/*is_available=*/false);
 
@@ -191,7 +191,7 @@ TEST_F(DisconnectableClientTest, FailedCallOnDroppedConnection) {
 
   auto result = res1.result();
   ASSERT_OK(result) << result.status();
-  EXPECT_THAT(result.value(), Eq(222));
+  EXPECT_THAT(result.ValueOrDie(), Eq(222));
 
   client_.SetAvailability(/*is_available=*/false);
 
@@ -223,7 +223,7 @@ TEST_F(DisconnectableClientTest, ConnectionDroppedThenRestored) {
 
   auto result = res1.result();
   ASSERT_OK(result) << result.status();
-  EXPECT_THAT(result.value(), Eq(222));
+  EXPECT_THAT(result.ValueOrDie(), Eq(222));
 
   client_.SetAvailability(/*is_available=*/false);
 
@@ -243,7 +243,7 @@ TEST_F(DisconnectableClientTest, ConnectionDroppedThenRestored) {
 
   result = res3.result();
   ASSERT_OK(result) << result.status();
-  EXPECT_THAT(result.value(), Eq(666));
+  EXPECT_THAT(result.ValueOrDie(), Eq(666));
 }
 
 }  // namespace reporting

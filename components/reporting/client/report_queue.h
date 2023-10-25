@@ -60,13 +60,13 @@ namespace reporting {
 //                         return;
 //                       }
 //                       // Queue created successfully, enqueue the message.
-//                       report_queue_result.value()->Enqueue(
+//                       report_queue_result.ValueOrDie()->Enqueue(
 //                           std::move(important_message), std::move(done_cb));
 //                     },
 //                     std::move(important_message), std::move(done_cb)));
 //           },
 //           std::move(important_message), std::move(done_cb),
-//           std::move(config_result.value())));
+//           std::move(config_result.ValueOrDie())));
 // }
 //
 // |SpeculativeReportQueueImpl| is an extension to |ReportQueue| which allows
@@ -100,7 +100,7 @@ namespace reporting {
 //   }
 //   // Enqueue event (store it in memory only until the actual queue is
 //   // created).
-//   report_queue_result.value()->Enqueue(
+//   report_queue_result.ValueOrDie()->Enqueue(
 //       std::move(less_important_message), std::move(done_cb));
 // }
 

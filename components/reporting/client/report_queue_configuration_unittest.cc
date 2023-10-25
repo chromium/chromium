@@ -185,7 +185,7 @@ TEST_F(ReportQueueConfigurationTest, UsesProvidedPolicyCheckCallback) {
           .Build();
   ASSERT_OK(config_result) << config_result.status();
 
-  const auto config = std::move(config_result.value());
+  const auto config = std::move(config_result.ValueOrDie());
   EXPECT_OK(config->CheckPolicy());
   EXPECT_THAT(config->reserved_space(), Eq(0L));
 }
@@ -200,7 +200,7 @@ TEST_F(ReportQueueConfigurationTest, ValidateConfigurationWithRateLimiter) {
           .SetRateLimiter(std::move(rate_limiter))
           .Build();
   ASSERT_OK(config_result) << config_result.status();
-  const auto config = std::move(config_result.value());
+  const auto config = std::move(config_result.ValueOrDie());
   const auto is_event_allowed_cb = config->is_event_allowed_cb();
   ASSERT_TRUE(is_event_allowed_cb);
 
@@ -225,7 +225,7 @@ TEST_F(ReportQueueConfigurationTest,
           .SetRateLimiter(std::move(rate_limiter))
           .Build();
   ASSERT_OK(config_result) << config_result.status();
-  auto config = std::move(config_result.value());
+  auto config = std::move(config_result.ValueOrDie());
   const auto is_event_allowed_cb = config->is_event_allowed_cb();
   ASSERT_TRUE(is_event_allowed_cb);
   config.reset();
@@ -246,7 +246,7 @@ TEST_F(ReportQueueConfigurationTest,
           .Build();
   ASSERT_OK(config_result) << config_result.status();
 
-  const auto config = std::move(config_result.value());
+  const auto config = std::move(config_result.ValueOrDie());
   EXPECT_THAT(config->reserved_space(), Eq(kReservedSpace));
 }
 
@@ -261,7 +261,7 @@ TEST_F(ReportQueueConfigurationTest, ValidateConfigurationWithSource) {
           .Build();
   ASSERT_OK(config_result) << config_result.status();
 
-  const auto config = std::move(config_result.value());
+  const auto config = std::move(config_result.ValueOrDie());
   ASSERT_TRUE(config->source_info().has_value());
   EXPECT_THAT(config->source_info().value().source(), Eq(source_info.source()));
 }
@@ -289,7 +289,7 @@ TEST_F(ReportQueueConfigurationTest, ValidateConfigurationWithSourceVersion) {
           .Build();
   ASSERT_OK(config_result) << config_result.status();
 
-  const auto config = std::move(config_result.value());
+  const auto config = std::move(config_result.ValueOrDie());
   ASSERT_TRUE(config->source_info().has_value());
   const auto config_source_info = config->source_info().value();
   EXPECT_THAT(config_source_info.source(), Eq(source_info.source()));

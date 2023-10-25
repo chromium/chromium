@@ -303,7 +303,8 @@ void ReportingServerConnector::UploadEncryptedReport(
             if (request_payload_size.has_value()) {
               // Request payload has already been computed at the time of
               // request.
-              const int response_payload_size = GetPayloadSize(result.value());
+              const int response_payload_size =
+                  GetPayloadSize(result.ValueOrDie());
 
               // Let UMA report the request and response payload sizes.
               if (PayloadSizeUmaReporter::ShouldReport()) {
@@ -321,7 +322,7 @@ void ReportingServerConnector::UploadEncryptedReport(
               }
             }
 
-            std::move(callback).Run(std::move(result.value()));
+            std::move(callback).Run(std::move(result.ValueOrDie()));
           },
           std::move(callback), std::move(request_payload_size),
           connector->payload_size_per_hour_uma_reporter_.GetWeakPtr())));

@@ -873,7 +873,7 @@ TEST_F(FileUploadJobTest, AttemptToInitiateMultipleJobs) {
                   ++(*failures);
                   return;
                 }
-                auto* const job = job_or_error.value();
+                auto* const job = job_or_error.ValueOrDie();
                 jobs_weak_ptrs->push_back(job->GetWeakPtr());
                 job->Initiate(done.Release());
               },
@@ -959,7 +959,7 @@ TEST_F(FileUploadJobTest, AttemptToNextStepMultipleJobs) {
                   return;
                 }
                 EXPECT_OK(job_or_error) << job_or_error.status();
-                auto* const job = job_or_error.value();
+                auto* const job = job_or_error.ValueOrDie();
                 jobs_weak_ptrs->push_back(job->GetWeakPtr());
                 ScopedReservation scoped_reservation(0uL, memory_resource);
                 job->NextStep(scoped_reservation, done.Release());
@@ -1039,7 +1039,7 @@ TEST_F(FileUploadJobTest, AttemptToFinalizeMultipleJobs) {
                   return;
                 }
                 EXPECT_OK(job_or_error) << job_or_error.status();
-                auto* const job = job_or_error.value();
+                auto* const job = job_or_error.ValueOrDie();
                 jobs_weak_ptrs->push_back(job->GetWeakPtr());
                 job->Finalize(done.Release());
               },
@@ -1098,7 +1098,7 @@ TEST_F(FileUploadJobTest, MultipleStagesJob) {
                base::WeakPtr<FileUploadJob>* job_weak_ptr,
                StatusOr<FileUploadJob*> job_or_error) {
               EXPECT_OK(job_or_error) << job_or_error.status();
-              auto* const job = job_or_error.value();
+              auto* const job = job_or_error.ValueOrDie();
               *job_weak_ptr = job->GetWeakPtr();
               job->Initiate(done.Release());
             },

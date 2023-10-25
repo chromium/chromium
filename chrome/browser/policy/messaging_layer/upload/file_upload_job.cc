@@ -444,7 +444,7 @@ void FileUploadJob::DoneInitiate(
   }
   int64_t total = 0L;
   std::string_view session_token;
-  std::tie(total, session_token) = result.value();
+  std::tie(total, session_token) = result.ValueOrDie();
   if (total <= 0L) {
     Status{error::FAILED_PRECONDITION, "Empty upload"}.SaveTo(
         tracker_.mutable_status());
@@ -511,7 +511,7 @@ void FileUploadJob::DoneNextStep(
   }
   int64_t uploaded = 0L;
   std::string_view session_token;
-  std::tie(uploaded, session_token) = result.value();
+  std::tie(uploaded, session_token) = result.ValueOrDie();
   if (session_token.empty()) {
     Status{error::DATA_LOSS, "Job has lost session_token"}.SaveTo(
         tracker_.mutable_status());
@@ -573,7 +573,7 @@ void FileUploadJob::DoneFinalize(
     result.status().SaveTo(tracker_.mutable_status());
     return;
   }
-  std::string_view access_parameters = result.value();
+  std::string_view access_parameters = result.ValueOrDie();
   if (access_parameters.empty()) {
     Status{error::FAILED_PRECONDITION, "Access parameters not set"}.SaveTo(
         tracker_.mutable_status());

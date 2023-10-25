@@ -70,7 +70,7 @@ MATCHER_P(ResponseEquals,
     *result_listener << "Failure status=" << arg.status();
     return false;
   }
-  const auto& arg_value = arg.value();
+  const auto& arg_value = arg.ValueOrDie();
   if (arg_value.sequence_information.GetTypeName() !=
       expected.sequence_information.GetTypeName()) {
     *result_listener << "Sequence info type mismatch: actual="
@@ -160,7 +160,7 @@ class RecordHandlerUploadTest : public ::testing::Test {
             .Build();
     EXPECT_OK(config_result) << config_result.status();
     test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> create_queue_event;
-    ReportQueueProvider::CreateQueue(std::move(config_result.value()),
+    ReportQueueProvider::CreateQueue(std::move(config_result.ValueOrDie()),
                                      create_queue_event.cb());
     auto report_queue_result = create_queue_event.result();
     // Let everything ongoing to finish.
@@ -169,7 +169,7 @@ class RecordHandlerUploadTest : public ::testing::Test {
 
     // Enqueue event.
     test::TestEvent<Status> enqueue_record_event;
-    std::move(report_queue_result.value())
+    std::move(report_queue_result.ValueOrDie())
         ->Enqueue("Record", FAST_BATCH, enqueue_record_event.cb());
     const auto enqueue_record_result = enqueue_record_event.result();
     EXPECT_OK(enqueue_record_result) << enqueue_record_result;

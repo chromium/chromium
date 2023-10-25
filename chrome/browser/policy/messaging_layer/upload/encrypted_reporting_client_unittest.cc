@@ -183,9 +183,9 @@ TEST_F(EncryptedReportingClientTest, Default) {
 
     const auto actual_response = response_event.result();
     ASSERT_OK(actual_response);
-    ASSERT_THAT(actual_response.value(), SizeIs(1));
-    ASSERT_TRUE(actual_response.value().FindString(kResponseKey));
-    EXPECT_THAT(*(actual_response.value().FindString(kResponseKey)),
+    ASSERT_THAT(actual_response.ValueOrDie(), SizeIs(1));
+    ASSERT_TRUE(actual_response.ValueOrDie().FindString(kResponseKey));
+    EXPECT_THAT(*(actual_response.ValueOrDie().FindString(kResponseKey)),
                 StrEq(kResponseValue));
   }
 
@@ -268,9 +268,9 @@ TEST_F(EncryptedReportingClientTest, ServiceRejectedByRateLimiting) {
 
     const auto actual_response = response_event.result();
     ASSERT_OK(actual_response);
-    ASSERT_THAT(actual_response.value(), SizeIs(1));
-    ASSERT_TRUE(actual_response.value().FindString(kResponseKey));
-    EXPECT_THAT(*(actual_response.value().FindString(kResponseKey)),
+    ASSERT_THAT(actual_response.ValueOrDie(), SizeIs(1));
+    ASSERT_TRUE(actual_response.ValueOrDie().FindString(kResponseKey));
+    EXPECT_THAT(*(actual_response.ValueOrDie().FindString(kResponseKey)),
                 StrEq(kResponseValue));
   }
 
