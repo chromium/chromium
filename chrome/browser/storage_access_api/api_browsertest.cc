@@ -7,6 +7,7 @@
 #include "base/path_service.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -156,6 +157,10 @@ bool ThirdPartyPartitionedStorageAllowedByDefault() {
              net::features::kThirdPartyStoragePartitioning);
 }
 
+std::string CookieAttributes(base::StringPiece domain) {
+  return base::StrCat({";SameSite=None;Secure;Domain=", domain, ";Path=/"});
+}
+
 class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
  protected:
   explicit StorageAccessAPIBaseBrowserTest(bool is_storage_partitioned)
@@ -248,9 +253,8 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
   void SetCrossSiteCookieOnDomain(const std::string& domain) {
     GURL domain_url = GetURL(domain);
     std::string cookie = base::StrCat({"cross-site=", domain});
-    content::SetCookie(
-        browser()->profile(), domain_url,
-        base::StrCat({cookie, ";SameSite=None;Secure;Domain=", domain}));
+    content::SetCookie(browser()->profile(), domain_url,
+                       base::StrCat({cookie, CookieAttributes(domain)}));
     ASSERT_THAT(content::GetCookies(browser()->profile(), domain_url),
                 testing::HasSubstr(cookie));
   }
@@ -264,7 +268,8 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
         net::CookiePartitionKey::FromURLForTesting(GetURL(top_level_host));
     content::SetPartitionedCookie(
         browser()->profile(), host_url,
-        base::StrCat({cookie, ";SameSite=None;Secure;Partitioned"}),
+        base::StrCat({cookie, CookieAttributes(/*domain=*/embedded_host),
+                      ";Partitioned"}),
         partition_key);
     ASSERT_THAT(content::GetCookies(
                     browser()->profile(), host_url,
@@ -2115,10 +2120,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
 }
 
-class StorageAccessAPIWithCHIPSBrowserTest
+class StorageAccessAPIWithPartitionedCookiesBrowserTest
     : public StorageAccessAPIBaseBrowserTest {
  public:
-  StorageAccessAPIWithCHIPSBrowserTest()
+  StorageAccessAPIWithPartitionedCookiesBrowserTest()
       : StorageAccessAPIBaseBrowserTest(
             /*is_storage_partitioned=*/false) {}
 
@@ -2130,8 +2135,8 @@ class StorageAccessAPIWithCHIPSBrowserTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithCHIPSBrowserTest,
-                       RequestStorageAccess_CoexistsWithCHIPS) {
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithPartitionedCookiesBrowserTest,
+                       RequestStorageAccess_CoexistsWithPartitionedCookies) {
   SetBlockThirdPartyCookies(true);
 
   SetPartitionedCookieInContext(/*top_level_host=*/kHostA,
