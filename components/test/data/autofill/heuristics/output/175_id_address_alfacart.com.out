@@ -1,6 +1,6 @@
 UNKNOWN_TYPE | txtAddAddressNewAddress | Nama Alamat * |  | txtAddAddressNewAddress_1
 NAME_FULL | txtNameNewAddress | Nama Penerima * |  | txtAddAddressNewAddress_1
-PHONE_HOME_WHOLE_NUMBER | txtHandphoneNewAddress | Telepon * |  | txtAddAddressNewAddress_1
+PHONE_HOME_CITY_AND_NUMBER | txtHandphoneNewAddress | Telepon * |  | txtAddAddressNewAddress_1
 ADDRESS_HOME_STATE | listProvince | Provinsi * |  | txtAddAddressNewAddress_1
 ADDRESS_HOME_CITY | listCity | Kota/kabupaten * |  | txtAddAddressNewAddress_1
 ADDRESS_HOME_DEPENDENT_LOCALITY | listDistrict | Kecamatan * |  | txtAddAddressNewAddress_1

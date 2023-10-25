@@ -6,7 +6,7 @@ ADDRESS_HOME_LINE2 | address2 | Address Line 2: |  | fname_1
 ADDRESS_HOME_CITY | city | *City: |  | fname_1
 ADDRESS_HOME_STATE | /atg/commerce/order/purchase/ShippingGroupFormHandler.editValue.state | *State: |  | fname_1
 ADDRESS_HOME_ZIP | zip | *Zip Code: |  | fname_1
-PHONE_HOME_WHOLE_NUMBER | phone | *Phone number: |  | fname_1
+PHONE_HOME_CITY_AND_NUMBER | phone | *Phone number: |  | fname_1
 EMAIL_ADDRESS | /atg/commerce/order/purchase/ShippingGroupFormHandler.emailAddress | *Email Address: |  | fname_1
 EMAIL_ADDRESS | /atg/commerce/order/purchase/ShippingGroupFormHandler.confirmEmailAddress | *Confirm Email Address: |  | fname_1
 UNKNOWN_TYPE | emailOptIn | Yes! Send me exclusive coupons and special online savings via OfficeMax email.OfficeMax is committed to safeguarding your privacy. Our Privacy Policy outlines how OfficeMax handles your information. | https://www.officemax.com:443/ | fname_1

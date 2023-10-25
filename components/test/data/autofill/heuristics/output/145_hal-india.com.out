@@ -2,4 +2,4 @@ UNKNOWN_TYPE | ctl00$ContentPlaceHolder1$ddlCategory | My Query Relates to * | 0
 SEARCH_TERM | ctl00$ContentPlaceHolder1$txtQueryl | Mention Your Query * |  | ctl00$ContentPlaceHolder1$ddlCategory_1
 NAME_FULL | ctl00$ContentPlaceHolder1$txtName | Name * |  | ctl00$ContentPlaceHolder1$ddlCategory_1
 EMAIL_ADDRESS | ctl00$ContentPlaceHolder1$txtEmail | Email ID * |  | ctl00$ContentPlaceHolder1$ddlCategory_1
-PHONE_HOME_WHOLE_NUMBER | ctl00$ContentPlaceHolder1$txtContact | Contact Number * |  | ctl00$ContentPlaceHolder1$ddlCategory_1
+PHONE_HOME_CITY_AND_NUMBER | ctl00$ContentPlaceHolder1$txtContact | Contact Number * |  | ctl00$ContentPlaceHolder1$ddlCategory_1

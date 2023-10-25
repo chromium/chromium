@@ -11,7 +11,7 @@ ADDRESS_HOME_CITY | profileInformation.customerContact.city | City or APO/FPO* |
 ADDRESS_HOME_STATE | profileInformation.customerContact.stateOrProvince | State/Province* |  | profileInformation.email_1
 ADDRESS_HOME_ZIP | profileInformation.customerContact.zipOrPostalCode | Zip/Postal code |  | profileInformation.email_1
 ADDRESS_HOME_COUNTRY | profileInformation.customerContact.country | Country* | US | profileInformation.email_1
-PHONE_HOME_WHOLE_NUMBER | profileInformation.customerContact.primaryPhone | Phone number |  | profileInformation.email_1
+PHONE_HOME_CITY_AND_NUMBER | profileInformation.customerContact.primaryPhone | Phone number |  | profileInformation.email_1
 COMPANY_NAME | profileInformation.businessName | Company name |  | profileInformation.email_1
 UNKNOWN_TYPE | profileInformation.currency | Preferred currency | USD | profileInformation.email_1
 UNKNOWN_TYPE | profileInformation.customerContact.loyaltyAccountDesired | Sign me up to get 1 free night anywhere for every 10 nights I stay with Hotels.com. By enrolling, I agree to the full Terms and Conditions of the program. Learn more. | true | profileInformation.email_1

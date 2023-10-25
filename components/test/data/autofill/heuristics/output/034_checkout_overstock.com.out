@@ -5,8 +5,8 @@ ADDRESS_HOME_LINE2 | BillingAddress2 | Address Line 2 |  | BillingFirstName_1
 ADDRESS_HOME_CITY | BillingCity | City | Cupertino | BillingFirstName_1
 ADDRESS_HOME_STATE | BillingState | State | CA | BillingFirstName_1
 ADDRESS_HOME_ZIP | BillingZipCode | Zip | 95014 | BillingFirstName_1
-PHONE_HOME_WHOLE_NUMBER | BillingDaytimePhone | Day Phone | 4088737223 | BillingFirstName_1
-PHONE_HOME_WHOLE_NUMBER | BillingEveningPhone | Evening Phone |  | BillingFirstName_1
+PHONE_HOME_CITY_AND_NUMBER | BillingDaytimePhone | Day Phone | 4088737223 | BillingFirstName_1
+PHONE_HOME_CITY_AND_NUMBER | BillingEveningPhone | Evening Phone |  | BillingFirstName_1
 UNKNOWN_TYPE | checkbox2 | This order is being sent as a gift | on | BillingFirstName_1
 UNKNOWN_TYPE | diffShip | My shipping address is the same as my billing address | on | BillingFirstName_1
 NAME_FIRST | ShippingFirstName | First Name |  | ShippingFirstName_2

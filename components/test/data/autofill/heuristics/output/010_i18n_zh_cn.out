@@ -6,7 +6,7 @@ ADDRESS_HOME_CITY | ct | 市: |  | fl_1
 ADDRESS_HOME_ZIP | zc | 邮编: |  | fl_1
 ADDRESS_HOME_STATE | st | 省: |  | fl_1
 EMAIL_ADDRESS | em | 邮箱: |  | fl_1
-PHONE_HOME_WHOLE_NUMBER | ph | 电话: |  | fl_1
+PHONE_HOME_CITY_AND_NUMBER | ph | 电话: |  | fl_1
 CREDIT_CARD_NAME_FULL | c1 | 持卡人姓名： |  | c1_2
 CREDIT_CARD_NUMBER | c2 | 信用卡号码： |  | c1_2
 CREDIT_CARD_EXP_MONTH | c3 | 月： |  | c1_2

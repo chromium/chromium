@@ -9,9 +9,9 @@ ADDRESS_HOME_COUNTRY | accountData.country | Country: | USA | accountData.title_
 ADDRESS_HOME_CITY | accountData.city | City: |  | accountData.title_1
 ADDRESS_HOME_STATE | accountData.state | State/Province: |  | accountData.title_1
 ADDRESS_HOME_ZIP | accountData.zip | Zip/Postal code: |  | accountData.title_1
-PHONE_HOME_WHOLE_NUMBER | accountData.phone | Phone number: |  | accountData.title_1
+PHONE_HOME_CITY_AND_NUMBER | accountData.phone | Phone number: |  | accountData.title_1
 UNKNOWN_TYPE | accountData.phoneType | Phone type: | M | accountData.title_1
-PHONE_HOME_WHOLE_NUMBER | accountData.alternatePhone | Alternate phone: |  | accountData.title_1
+PHONE_HOME_CITY_AND_NUMBER | accountData.alternatePhone | Alternate phone: |  | accountData.title_1
 UNKNOWN_TYPE | accountData.alternatePhoneType | Alternate phone type: |  | accountData.title_1
 UNKNOWN_TYPE | accountData.fax | Fax: |  | accountData.title_1
 EMAIL_ADDRESS | accountData.email | Email address: |  | accountData.title_1

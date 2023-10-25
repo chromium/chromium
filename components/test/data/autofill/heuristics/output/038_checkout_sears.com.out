@@ -7,7 +7,7 @@ ADDRESS_HOME_LINE2 | shipping_address2 | Street Address Line 2 |  | address_emai
 ADDRESS_HOME_CITY | shipping_city | City* |  | address_email_1
 ADDRESS_HOME_STATE | shipping_state | State* | AL | address_email_1
 ADDRESS_HOME_ZIP | shipping_zipCode | ZIP Code* |  | address_email_1
-PHONE_HOME_WHOLE_NUMBER | shipping_day1 | Phone Number* |  | address_email_1
+PHONE_HOME_CITY_AND_NUMBER | shipping_day1 | Phone Number* |  | address_email_1
 PHONE_HOME_EXTENSION | shipping_ext1 | Ext. |  | address_email_1
 ADDRESS_HOME_STATE | shipping_county | County | UNKNOWN | address_email_1
 UNKNOWN_TYPE | billingAddressCheckBox | Same as Delivery/Shipping Address | on | address_email_1
@@ -19,7 +19,7 @@ ADDRESS_HOME_LINE2 | address2 | Street Address Line 2 |  | firstName_2
 ADDRESS_HOME_CITY | city | City* |  | firstName_2
 ADDRESS_HOME_STATE | state | State* State* | AL | firstName_2
 ADDRESS_HOME_ZIP | zipCode | ZIP Code* ZIP Code* |  | firstName_2
-PHONE_HOME_WHOLE_NUMBER | day1 | Phone Number* |  | firstName_2
+PHONE_HOME_CITY_AND_NUMBER | day1 | Phone Number* |  | firstName_2
 PHONE_HOME_EXTENSION | ext1 | Ext. |  | firstName_2
 ADDRESS_HOME_STATE | county | County County | UNKNOWN | firstName_2
 UNKNOWN_TYPE | KmartSpuSpecialInstr |  |  | KmartSpuSpecialInstr_1

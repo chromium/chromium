@@ -6,7 +6,7 @@ ADDRESS_HOME_LINE2 | billing_suite | Address 2:(optional) |  | billing_firstname
 ADDRESS_HOME_CITY | billing_city | City: |  | billing_firstname_1
 ADDRESS_HOME_STATE | billing_state | State: |  | billing_firstname_1
 ADDRESS_HOME_ZIP | billing_zipcode | ZIP Code: |  | billing_firstname_1
-PHONE_HOME_WHOLE_NUMBER | billing_phonenum | Contact Phone: |  | billing_firstname_1
+PHONE_HOME_CITY_AND_NUMBER | billing_phonenum | Contact Phone: |  | billing_firstname_1
 EMAIL_ADDRESS | email_Txt | Email |  | billing_firstname_1
 EMAIL_ADDRESS | re_Email_Txt | Confirm Email Address |  | billing_firstname_1
 UNKNOWN_TYPE | emailOutPutStatus | Yes, sign me up for Sale Alerts. (optional) | true | billing_firstname_1

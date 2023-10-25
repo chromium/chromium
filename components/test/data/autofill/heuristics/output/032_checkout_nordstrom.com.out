@@ -1,7 +1,7 @@
 UNKNOWN_TYPE | keyword |  |  | keyword_1
 EMAIL_ADDRESS | ctl00$mainContentPlaceHolder$emailAddress | E-mail Address |  | ctl00$mainContentPlaceHolder$emailAddress_1
 EMAIL_ADDRESS | ctl00$mainContentPlaceHolder$emailAddressConfirm | Confirm E-mail |  | ctl00$mainContentPlaceHolder$emailAddress_1
-PHONE_HOME_WHOLE_NUMBER | ctl00$mainContentPlaceHolder$phoneNumber | Phone Number |  | ctl00$mainContentPlaceHolder$emailAddress_1
+PHONE_HOME_CITY_AND_NUMBER | ctl00$mainContentPlaceHolder$phoneNumber | Phone Number |  | ctl00$mainContentPlaceHolder$emailAddress_1
 NAME_FIRST | ctl00$mainContentPlaceHolder$billingAddressForm$firstName | First Name |  | ctl00$mainContentPlaceHolder$emailAddress_1
 NAME_MIDDLE_INITIAL | ctl00$mainContentPlaceHolder$billingAddressForm$middleInitial | M.I. |  | ctl00$mainContentPlaceHolder$emailAddress_1
 NAME_LAST | ctl00$mainContentPlaceHolder$billingAddressForm$lastName | Last Name |  | ctl00$mainContentPlaceHolder$emailAddress_1

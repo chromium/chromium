@@ -9,5 +9,5 @@ ADDRESS_HOME_ZIP |  | Postleitzahl/Ort: |  | _1
 ADDRESS_HOME_CITY |  |  |  | _1
 ADDRESS_HOME_COUNTRY |  | Land:* |  | _1
 EMAIL_ADDRESS |  | E-Mail: |  | _1
-PHONE_HOME_WHOLE_NUMBER |  | Telefon: |  | _1
+PHONE_HOME_CITY_AND_NUMBER |  | Telefon: |  | _1
 UNKNOWN_TYPE |  | Fax: |  | _1

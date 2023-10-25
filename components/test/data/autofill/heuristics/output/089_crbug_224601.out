@@ -37,9 +37,9 @@ NAME_FIRST | Register1$txtForenames | Forename(s): * |  | txtSearch_1
 NAME_LAST | Register1$txtSurname | Surname: * |  | txtSearch_1
 EMAIL_ADDRESS | Register1$txtEmail | Email: * |  | txtSearch_1
 EMAIL_ADDRESS | Register1$txtConfirmEmail | Confirm Email: * |  | txtSearch_1
-PHONE_HOME_WHOLE_NUMBER | Register1$txtDayPhone | Day time phone: |  | txtSearch_1
-PHONE_HOME_WHOLE_NUMBER | Register1$txtEveningPhone | Evening phone: |  | txtSearch_1
-PHONE_HOME_WHOLE_NUMBER | Register1$txtMobilePhone | Mobile phone: |  | txtSearch_1
+PHONE_HOME_CITY_AND_NUMBER | Register1$txtDayPhone | Day time phone: |  | txtSearch_1
+PHONE_HOME_CITY_AND_NUMBER | Register1$txtEveningPhone | Evening phone: |  | txtSearch_1
+PHONE_HOME_CITY_AND_NUMBER | Register1$txtMobilePhone | Mobile phone: |  | txtSearch_1
 ADDRESS_HOME_LINE1 | Register1$txtAddress1 | Address Line 1: * |  | txtSearch_1
 ADDRESS_HOME_LINE2 | Register1$txtAddress2 | Address Line 2: * |  | txtSearch_1
 ADDRESS_HOME_LINE3 | Register1$txtAddress3 | Address Line 3: |  | txtSearch_1

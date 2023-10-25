@@ -20,10 +20,10 @@ ADDRESS_HOME_CITY | ctl00$ContentInfo$Address$city$txtCity | City/Town/Departmen
 ADDRESS_HOME_STATE | ctl00$ContentInfo$Address$state$txtState | State/Province/Region/County: |  | ctl00$CustomerHeader$ddlCountries_1
 ADDRESS_HOME_ZIP | ctl00$ContentInfo$Address$zip$txtZip | ZIP/Postal Code: |  | ctl00$CustomerHeader$ddlCountries_1
 ADDRESS_HOME_COUNTRY | ctl00$ContentInfo$Address$country$cboCountry | Country: | US | ctl00$CustomerHeader$ddlCountries_1
-PHONE_HOME_WHOLE_NUMBER | ctl00$ContentInfo$HomePhone$txtNumber$txtPhone | Home PhoneNumber: |  | ctl00$CustomerHeader$ddlCountries_1
+PHONE_HOME_CITY_AND_NUMBER | ctl00$ContentInfo$HomePhone$txtNumber$txtPhone | Home PhoneNumber: |  | ctl00$CustomerHeader$ddlCountries_1
 PHONE_HOME_EXTENSION | ctl00$ContentInfo$HomePhone$txtExt$txtPhoneExt | Ext./PIN (optional): |  | ctl00$CustomerHeader$ddlCountries_1
 ADDRESS_HOME_COUNTRY | ctl00$ContentInfo$HomePhone$cboCountry$cboCountry | Country: | US | ctl00$ContentInfo$HomePhone$cboCountry$cboCountry_2
-PHONE_HOME_WHOLE_NUMBER | ctl00$ContentInfo$BusinessPhone$txtNumber$txtPhone | Business/Other PhoneNumber: |  | ctl00$ContentInfo$HomePhone$cboCountry$cboCountry_2
+PHONE_HOME_CITY_AND_NUMBER | ctl00$ContentInfo$BusinessPhone$txtNumber$txtPhone | Business/Other PhoneNumber: |  | ctl00$ContentInfo$HomePhone$cboCountry$cboCountry_2
 PHONE_HOME_EXTENSION | ctl00$ContentInfo$BusinessPhone$txtExt$txtPhoneExt | Ext./PIN (optional): |  | ctl00$ContentInfo$HomePhone$cboCountry$cboCountry_2
 ADDRESS_HOME_COUNTRY | ctl00$ContentInfo$BusinessPhone$cboCountry$cboCountry | Country: | US | ctl00$ContentInfo$BusinessPhone$cboCountry$cboCountry_3
 UNKNOWN_TYPE | ctl00$ContentInfo$HomeAirport$txtAirport | Home Airport (optional): |  | ctl00$ContentInfo$BusinessPhone$cboCountry$cboCountry_3

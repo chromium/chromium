@@ -14,5 +14,5 @@ ADDRESS_HOME_LINE2 | billingAddress.addressLine2 | Address line 2 (optional) |  
 ADDRESS_HOME_CITY | billingAddress.city | City |  | payment.type_1
 ADDRESS_HOME_STATE | billingAddress.state | State | -1 | payment.type_1
 ADDRESS_HOME_ZIP | billingAddress.zipCode | Zip code |  | payment.type_1
-PHONE_HOME_WHOLE_NUMBER | billingAddress.phone | Phone number |  | payment.type_1
+PHONE_HOME_CITY_AND_NUMBER | billingAddress.phone | Phone number |  | payment.type_1
 EMAIL_ADDRESS | billingContact.email | Email address |  | payment.type_1

@@ -11,4 +11,4 @@ ADDRESS_HOME_LINE2 | addressForm.street2 | Address Line 2 |  | isBillingAddress_
 ADDRESS_HOME_CITY | addressForm.city | City |  | isBillingAddress_2
 ADDRESS_HOME_STATE | addressForm.state | State |  | isBillingAddress_2
 ADDRESS_HOME_ZIP | addressForm.zip | Zip Code |  | isBillingAddress_2
-PHONE_HOME_WHOLE_NUMBER | addressForm.phone | Phone Number |  | isBillingAddress_2
+PHONE_HOME_CITY_AND_NUMBER | addressForm.phone | Phone Number |  | isBillingAddress_2

@@ -7,7 +7,7 @@ ADDRESS_HOME_CITY | ct | Kota/Kabupaten: |  | fn_1
 ADDRESS_HOME_DEPENDENT_LOCALITY | dl | Kecamatan: |  | fn_1
 ADDRESS_HOME_ZIP | zc | Kode Pos: |  | fn_1
 EMAIL_ADDRESS | em | Email: |  | fn_1
-PHONE_HOME_WHOLE_NUMBER | ph | Nomor Telepon: |  | fn_1
+PHONE_HOME_CITY_AND_NUMBER | ph | Nomor Telepon: |  | fn_1
 CREDIT_CARD_NAME_FULL | c1 | Nama di kartu: |  | c1_2
 CREDIT_CARD_NUMBER | c2 | Nomor Kartu: |  | c1_2
 CREDIT_CARD_EXP_MONTH | c3 | Masa Berlaku: |  | c1_2

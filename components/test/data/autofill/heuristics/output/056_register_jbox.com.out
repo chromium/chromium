@@ -5,7 +5,7 @@ ADDRESS_HOME_CITY | city | City |  | firstname_1
 ADDRESS_HOME_STATE | state | State / Province / Region |  | firstname_1
 ADDRESS_HOME_ZIP | zip | Postal / Zip Code |  | firstname_1
 ADDRESS_HOME_COUNTRY | country | Country | United States | firstname_1
-PHONE_HOME_WHOLE_NUMBER | phone |  |  | firstname_1
+PHONE_HOME_CITY_AND_NUMBER | phone |  |  | firstname_1
 EMAIL_ADDRESS | email |  |  | firstname_1
 UNKNOWN_TYPE | password | Enter a password |  | firstname_1
 UNKNOWN_TYPE | password_again | Retype your password |  | firstname_1

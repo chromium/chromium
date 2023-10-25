@@ -1,5 +1,5 @@
 NAME_FULL | eformstw93_00001 | 姓　　名 |  | eformstw93_00001_1
-PHONE_HOME_WHOLE_NUMBER | eformstw93_00002 | 聯絡電話 |  | eformstw93_00001_1
+PHONE_HOME_CITY_AND_NUMBER | eformstw93_00002 | 聯絡電話 |  | eformstw93_00001_1
 EMAIL_ADDRESS | eformstw93_00005 | 電子郵件 |  | eformstw93_00001_1
 UNKNOWN_TYPE | eformstw93_00006 | 留　　言 |  | eformstw93_00001_1
 UNKNOWN_TYPE | verifycode | 驗證碼 |  | eformstw93_00001_1

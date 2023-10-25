@@ -11,7 +11,7 @@ ADDRESS_HOME_STATE | ImailorAttr1 | 地區 Region |  | Imrname_1
 UNKNOWN_TYPE | ImailorAttr2 | 學歷 Level of Education |  | Imrname_1
 UNKNOWN_TYPE | ImailorAttr3 | 年齡 Age |  | Imrname_1
 UNKNOWN_TYPE | ImailorAttr4 | 職業 Occupation |  | Imrname_1
-PHONE_HOME_WHOLE_NUMBER | Imrtel | 電話 TEL |  | Imrname_1
+PHONE_HOME_CITY_AND_NUMBER | Imrtel | 電話 TEL |  | Imrname_1
 UNKNOWN_TYPE | Imrsex | 男 | 1 | Imrname_1
 UNKNOWN_TYPE | Imrsex | 女 | 0 | Imrname_1
 ADDRESS_HOME_LINE1 | Imraddress | 地址 Address |  | Imrname_1

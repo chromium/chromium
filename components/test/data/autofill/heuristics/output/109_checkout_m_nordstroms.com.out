@@ -7,7 +7,7 @@ ADDRESS_HOME_LINE2 |  | Address 2 (Optional) |  | _1
 ADDRESS_HOME_CITY |  | City |  | _1
 ADDRESS_HOME_STATE |  | State |  | _1
 ADDRESS_HOME_ZIP |  | ZIP Code |  | _1
-PHONE_HOME_WHOLE_NUMBER |  | Phone Information |  | _1
+PHONE_HOME_CITY_AND_NUMBER |  | Phone Information |  | _1
 UNKNOWN_TYPE |  | Use this as my billing address. | on | _1
 UNKNOWN_TYPE | multiple-address | No | false | _1
 UNKNOWN_TYPE | multiple-address | Yes | true | _1
@@ -37,5 +37,5 @@ ADDRESS_HOME_STATE |  | State/Province |  | _1
 ADDRESS_HOME_ZIP |  | ZIP/Postal Code |  | _1
 ADDRESS_HOME_COUNTRY |  | Country | 0 | _1
 EMAIL_ADDRESS |  | E-mail Information Information |  | _1
-PHONE_HOME_WHOLE_NUMBER |  | Phone Information Information |  | _1
+PHONE_HOME_CITY_AND_NUMBER |  | Phone Information Information |  | _1
 UNKNOWN_TYPE |  | Yes! Send me e-mail updates about the latest trends, products and promotions online and in store. | on | _1

@@ -12,11 +12,11 @@ ADDRESS_HOME_LINE2 | BAddress2 | Address 2 |  | LoginName_1
 ADDRESS_HOME_CITY | BCity | City* |  | LoginName_1
 ADDRESS_HOME_STATE | BState | State* | AK | LoginName_1
 ADDRESS_HOME_ZIP | BZip | Zip Code* |  | LoginName_1
-PHONE_HOME_WHOLE_NUMBER | BNightPhone_tel1 | Shipping Phone* |  | LoginName_1
+PHONE_HOME_CITY_AND_NUMBER | BNightPhone_tel1 | Shipping Phone* |  | LoginName_1
 UNKNOWN_TYPE | BNightPhone_tel2 | Exchange |  | LoginName_1
 UNKNOWN_TYPE | BNightPhone_tel3 | Last four digits |  | LoginName_1
 UNKNOWN_TYPE | BNightPhone_ext1 | Ext |  | LoginName_1
-PHONE_HOME_WHOLE_NUMBER | BDayPhone_tel1 | Daytime Phone |  | LoginName_1
+PHONE_HOME_CITY_AND_NUMBER | BDayPhone_tel1 | Daytime Phone |  | LoginName_1
 UNKNOWN_TYPE | BDayPhone_tel2 | Exchange |  | LoginName_1
 UNKNOWN_TYPE | BDayPhone_tel3 | Last four digits |  | LoginName_1
 UNKNOWN_TYPE | BDayPhone_ext1 | Ext |  | LoginName_1
@@ -31,7 +31,7 @@ ADDRESS_HOME_LINE2 | SAddress2 | Address 2 |  | SFirstName_2
 ADDRESS_HOME_CITY | SCity | City* |  | SFirstName_2
 ADDRESS_HOME_STATE | SState | State* | AK | SFirstName_2
 ADDRESS_HOME_ZIP | SZip | Zip Code* |  | SFirstName_2
-PHONE_HOME_WHOLE_NUMBER | ShippingPhone_tel1 | Shipping Phone* |  | SFirstName_2
+PHONE_HOME_CITY_AND_NUMBER | ShippingPhone_tel1 | Shipping Phone* |  | SFirstName_2
 UNKNOWN_TYPE | ShippingPhone_tel2 |  |  | SFirstName_2
 UNKNOWN_TYPE | ShippingPhone_tel3 |  |  | SFirstName_2
 UNKNOWN_TYPE | ShippingPhone_ext1 | Ext |  | SFirstName_2

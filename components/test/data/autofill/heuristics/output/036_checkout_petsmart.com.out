@@ -7,7 +7,7 @@ ADDRESS_HOME_CITY | billCity | • City or APO/FPO: |  | billCountry_1
 ADDRESS_HOME_STATE | billState | • State/Province: |  | billCountry_1
 UNKNOWN_TYPE | altBillState | • Other State/Province: |  | billCountry_1
 ADDRESS_HOME_ZIP | billZip | • Zip/Postal Code: |  | billCountry_1
-PHONE_HOME_WHOLE_NUMBER | billPhone | • Telephone: |  | billCountry_1
+PHONE_HOME_CITY_AND_NUMBER | billPhone | • Telephone: |  | billCountry_1
 EMAIL_ADDRESS | guestEmail | • Email Address: |  | billCountry_1
 UNKNOWN_TYPE | shipOptions | Ship to the above billing address | useShip | billCountry_1
 UNKNOWN_TYPE | shipOptions | Ship to a different address | provideNew | billCountry_1

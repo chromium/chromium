@@ -7,7 +7,7 @@ ADDRESS_HOME_CITY | ct | Город: |  | fn_1
 ADDRESS_HOME_ZIP | zc | Почтовый Индекс: |  | fn_1
 ADDRESS_HOME_STATE | st | область: |  | fn_1
 EMAIL_ADDRESS | em | Электронной Почты: |  | fn_1
-PHONE_HOME_WHOLE_NUMBER | ph | телефон: |  | fn_1
+PHONE_HOME_CITY_AND_NUMBER | ph | телефон: |  | fn_1
 CREDIT_CARD_NAME_FULL | c1 | Имя владельца карты: |  | c1_2
 CREDIT_CARD_NUMBER | c2 | Номер кредитной карты: |  | c1_2
 CREDIT_CARD_EXP_MONTH | c3 | Срок действия карты : |  | c1_2

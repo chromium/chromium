@@ -7,7 +7,7 @@ ADDRESS_HOME_CITY | BillCity | Town/City* |  | BillName_1
 ADDRESS_HOME_STATE | BillState | State/Province* |  | BillName_1
 UNKNOWN_TYPE | BillStateOther | State/Province* |  | BillName_1
 ADDRESS_HOME_ZIP | BillZip | Zip/Postal Code* |  | BillName_1
-PHONE_HOME_WHOLE_NUMBER | BillPhone | Phone Number* |  | BillName_1
+PHONE_HOME_CITY_AND_NUMBER | BillPhone | Phone Number* |  | BillName_1
 EMAIL_ADDRESS | BillEmail | Email Address* |  | BillName_1
 UNKNOWN_TYPE | cbStoreSpecial |  | on | BillName_1
 UNKNOWN_TYPE | ShipDestination | billaddress | billaddress | BillName_1

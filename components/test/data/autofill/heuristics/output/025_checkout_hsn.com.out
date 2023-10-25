@@ -6,11 +6,11 @@ ADDRESS_HOME_LINE2 | Body$BillingAddress$_address2 | Address Line 2(optional) | 
 ADDRESS_HOME_CITY | Body$BillingAddress$_city | City |  | Body$BillingIsShippingCheckboxB_1
 ADDRESS_HOME_STATE | Body$BillingAddress$_state | State |    | Body$BillingIsShippingCheckboxB_1
 ADDRESS_HOME_ZIP | Body$BillingAddress$_zipcode | Zip Code |  | Body$BillingIsShippingCheckboxB_1
-PHONE_HOME_WHOLE_NUMBER | Body$BillingAddress$_PrimaryPhone | Primary Phone |  | Body$BillingIsShippingCheckboxB_1
+PHONE_HOME_CITY_AND_NUMBER | Body$BillingAddress$_PrimaryPhone | Primary Phone |  | Body$BillingIsShippingCheckboxB_1
 UNKNOWN_TYPE | Body$BillingAddress$rdoPrimary | H | H | Body$BillingIsShippingCheckboxB_1
 UNKNOWN_TYPE | Body$BillingAddress$rdoPrimary | M | M | Body$BillingIsShippingCheckboxB_1
 UNKNOWN_TYPE | Body$BillingAddress$rdoPrimary | W | W | Body$BillingIsShippingCheckboxB_1
-PHONE_HOME_WHOLE_NUMBER | Body$BillingAddress$_Alt1Phone | Alternate Phone2(optional) |  | Body$BillingIsShippingCheckboxB_1
+PHONE_HOME_CITY_AND_NUMBER | Body$BillingAddress$_Alt1Phone | Alternate Phone2(optional) |  | Body$BillingIsShippingCheckboxB_1
 UNKNOWN_TYPE | Body$BillingAddress$rdoAlt1 | H | H | Body$BillingIsShippingCheckboxB_1
 UNKNOWN_TYPE | Body$BillingAddress$rdoAlt1 | M | M | Body$BillingIsShippingCheckboxB_1
 UNKNOWN_TYPE | Body$BillingAddress$rdoAlt1 | W | W | Body$BillingIsShippingCheckboxB_1
@@ -25,7 +25,7 @@ ADDRESS_HOME_LINE2 | Body$ShippingAddress$_address2 | Address Line 2(optional) |
 ADDRESS_HOME_CITY | Body$ShippingAddress$_city | City |  | Body$ShippingAddress$_firstName_2
 ADDRESS_HOME_STATE | Body$ShippingAddress$_state | State |    | Body$ShippingAddress$_firstName_2
 ADDRESS_HOME_ZIP | Body$ShippingAddress$_zipcode | Zip Code |  | Body$ShippingAddress$_firstName_2
-PHONE_HOME_WHOLE_NUMBER | Body$ShippingAddress$_telephone | Phone Number |  | Body$ShippingAddress$_firstName_2
+PHONE_HOME_CITY_AND_NUMBER | Body$ShippingAddress$_telephone | Phone Number |  | Body$ShippingAddress$_firstName_2
 UNKNOWN_TYPE | PaymentTypeSelection | Pay with a Credit or Debit Card | 0 | Body$BillingIsShippingCheckboxB_1
 CREDIT_CARD_NUMBER | Body$CCNumber | Card Number |  | Body$CCNumber_3
 CREDIT_CARD_EXP_MONTH | Body$CCExpirationDateMonth | Expiration Date | 0 | Body$CCNumber_3

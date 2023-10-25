@@ -23,9 +23,9 @@ ADDRESS_HOME_ZIP | _1_INTLPostal | Postal Code |  | _1_CAPostal_4
 UNKNOWN_TYPE | _1_addressSelect | Home | homeAddress | _1_zipCode_3
 UNKNOWN_TYPE | _1_addressSelect | Business | bizAddress | _1_zipCode_3
 COMPANY_NAME | _1_otherAddress | Company Name (optional) |  | _1_zipCode_3
-PHONE_HOME_WHOLE_NUMBER | _1_phone1 | Daytime Phone Number |  | _1_zipCode_3
-PHONE_HOME_WHOLE_NUMBER | _1_intlPhone1Prefix | Daytime Phone Number |  | _1_zipCode_3
-PHONE_HOME_WHOLE_NUMBER | _1_intlPhone1 | Daytime Phone Number |  | _1_zipCode_3
+PHONE_HOME_CITY_AND_NUMBER | _1_phone1 | Daytime Phone Number |  | _1_zipCode_3
+PHONE_HOME_CITY_AND_NUMBER | _1_intlPhone1Prefix | Daytime Phone Number |  | _1_zipCode_3
+PHONE_HOME_CITY_AND_NUMBER | _1_intlPhone1 | Daytime Phone Number |  | _1_zipCode_3
 UNKNOWN_TYPE | _1_phone1_Loc | Home | H | _1_zipCode_3
 UNKNOWN_TYPE | _1_phone1_Loc | Work | B | _1_zipCode_3
 UNKNOWN_TYPE | _1_phone1_Loc | Mobile | M | _1_zipCode_3

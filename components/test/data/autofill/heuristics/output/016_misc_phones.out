@@ -4,7 +4,7 @@ ADDRESS_HOME_LINE1 | address | Address: |  | firstname_1
 ADDRESS_HOME_CITY | city | City: |  | firstname_1
 ADDRESS_HOME_STATE | state | State: |  | firstname_1
 ADDRESS_HOME_ZIP | zip | Zip: |  | firstname_1
-PHONE_HOME_WHOLE_NUMBER | phone | Phone: |  | firstname_1
+PHONE_HOME_CITY_AND_NUMBER | phone | Phone: |  | firstname_1
 PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | areacode1 | Area Code: |  | firstname_1
 PHONE_HOME_NUMBER | phone1 | Phone: |  | firstname_1
 PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | hphone1 | Phone: |  | firstname_1

@@ -7,9 +7,9 @@ ADDRESS_HOME_ZIP | zipCode | Zip Code: |  | firstName_1
 ADDRESS_HOME_CITY | city | City: |  | firstName_1
 EMAIL_ADDRESS | email1 | Email: |  | firstName_1
 EMAIL_ADDRESS | email1retype | Re-type Email: |  | firstName_1
-PHONE_HOME_WHOLE_NUMBER | phone1 | Primary Tel Number: |  | firstName_1
+PHONE_HOME_CITY_AND_NUMBER | phone1 | Primary Tel Number: |  | firstName_1
 PHONE_HOME_EXTENSION | phone1ext | Ext: (Optional) |  | firstName_1
-PHONE_HOME_WHOLE_NUMBER | phone2 | Alternative Number: |  | firstName_1
+PHONE_HOME_CITY_AND_NUMBER | phone2 | Alternative Number: |  | firstName_1
 PHONE_HOME_EXTENSION | phone2ext | Ext: (Optional) |  | firstName_1
 UNKNOWN_TYPE | fax1 | Fax Number: (Optional) |  | firstName_1
 UNKNOWN_TYPE | fax1ext | Ext: (Optional) |  | firstName_1

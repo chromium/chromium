@@ -8,4 +8,4 @@ ADDRESS_HOME_CITY | ucMasterFrame$ctl02$objAddForm$txtCity | *City: |  | ucMaste
 ADDRESS_HOME_STATE | ucMasterFrame$ctl02$objAddForm$ddState | *State: |  | ucMasterFrame$ctl02$objAddForm$ddPrefix_1
 ADDRESS_HOME_ZIP | ucMasterFrame$ctl02$objAddForm$txtZip | *Zip/Postal Code: |  | ucMasterFrame$ctl02$objAddForm$ddPrefix_1
 ADDRESS_HOME_COUNTRY | ucMasterFrame$ctl02$objAddForm$ddCountry | Country: | 228 | ucMasterFrame$ctl02$objAddForm$ddPrefix_1
-PHONE_HOME_WHOLE_NUMBER | ucMasterFrame$ctl02$objAddForm$txtPhone | *Phone: |  | ucMasterFrame$ctl02$objAddForm$ddPrefix_1
+PHONE_HOME_CITY_AND_NUMBER | ucMasterFrame$ctl02$objAddForm$txtPhone | *Phone: |  | ucMasterFrame$ctl02$objAddForm$ddPrefix_1

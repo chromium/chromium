@@ -8,7 +8,7 @@ ADDRESS_HOME_CITY | ct | Poblacion: |  | fn_1
 ADDRESS_HOME_ZIP | zc | Código Postal: |  | fn_1
 ADDRESS_HOME_STATE | st | Provincia: |  | fn_1
 EMAIL_ADDRESS | em | E-mail: |  | fn_1
-PHONE_HOME_WHOLE_NUMBER | ph | Teléfono: |  | fn_1
+PHONE_HOME_CITY_AND_NUMBER | ph | Teléfono: |  | fn_1
 CREDIT_CARD_NAME_FULL | c1 | Nombre de Tarjeta: |  | c1_2
 CREDIT_CARD_NUMBER | c2 | Número de Tarjeta: |  | c1_2
 CREDIT_CARD_EXP_MONTH | c3 | Fecha de Expiración: |  | c1_2

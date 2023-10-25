@@ -7,7 +7,7 @@ ADDRESS_HOME_CITY | ct | Localita: |  | fn_1
 ADDRESS_HOME_ZIP | zc | CAP: |  | fn_1
 ADDRESS_HOME_STATE | st | Provincia: |  | fn_1
 EMAIL_ADDRESS | em | E-mail: |  | fn_1
-PHONE_HOME_WHOLE_NUMBER | ph | Telefono: |  | fn_1
+PHONE_HOME_CITY_AND_NUMBER | ph | Telefono: |  | fn_1
 CREDIT_CARD_NAME_FULL | c1 | Nome titolare carta: |  | c1_2
 CREDIT_CARD_NUMBER | c2 | Numero carta di credito: |  | c1_2
 CREDIT_CARD_EXP_MONTH | c3 | Data di scadenza: |  | c1_2

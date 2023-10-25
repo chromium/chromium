@@ -22,7 +22,7 @@ ADDRESS_HOME_STATE | state | State* | AL | typeOfAddress_1
 UNKNOWN_TYPE |  | ZIP* | Χ  | typeOfAddress_1
 ADDRESS_HOME_ZIP | zipCode | ZIP* |  | typeOfAddress_1
 UNKNOWN_TYPE |  | Phone number | Χ  | typeOfAddress_1
-PHONE_HOME_WHOLE_NUMBER | phone1 | Phone number |  | typeOfAddress_1
+PHONE_HOME_CITY_AND_NUMBER | phone1 | Phone number |  | typeOfAddress_1
 UNKNOWN_TYPE |  | Ext | Χ  | typeOfAddress_1
 PHONE_HOME_EXTENSION | phone2 | Ext |  | typeOfAddress_1
 UNKNOWN_TYPE | phone1Type | Cell phone | C | typeOfAddress_1

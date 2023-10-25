@@ -8,7 +8,7 @@ ADDRESS_HOME_LINE2 | HT_Bill_Address2 | Address 2 |  | HT_First_Name_1
 ADDRESS_HOME_CITY | HT_Bill_City | City |  | HT_First_Name_1
 ADDRESS_HOME_STATE | HT_Bill_State | State/Province |  | HT_First_Name_1
 ADDRESS_HOME_ZIP | HT_Bill_Zip | Zip/Postal Code |  | HT_First_Name_1
-PHONE_HOME_WHOLE_NUMBER | HT_phone | Phone |  | HT_First_Name_1
+PHONE_HOME_CITY_AND_NUMBER | HT_phone | Phone |  | HT_First_Name_1
 ADDRESS_HOME_COUNTRY | HT_Bill_Country | Country | USA | HT_First_Name_1
 NAME_FULL | HT_Ship_Name | Full Name |  | HT_First_Name_1
 ADDRESS_HOME_LINE1 | HT_Ship_Address1 | Address 1 |  | HT_Ship_Address1_2

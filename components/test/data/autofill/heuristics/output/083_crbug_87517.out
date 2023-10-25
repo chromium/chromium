@@ -8,7 +8,7 @@ ADDRESS_HOME_CITY | dcity | City / State / Zip * |  | f1_1
 ADDRESS_HOME_STATE | dstate | Name * | AL | f1_1
 ADDRESS_HOME_ZIP | dzip | Name * |  | f1_1
 ADDRESS_HOME_COUNTRY | CC_COUNTRY | Country | United States | f1_1
-PHONE_HOME_WHOLE_NUMBER | dphone | Telephone |  | f1_1
+PHONE_HOME_CITY_AND_NUMBER | dphone | Telephone |  | f1_1
 EMAIL_ADDRESS | demail | Email * |  | f1_1
 UNKNOWN_TYPE | amt | $ |  | f1_1
 UNKNOWN_TYPE | tributeSelect | My donation is In Honor or In Memory of someone special | on | f1_1

@@ -10,7 +10,7 @@ UNKNOWN_TYPE | aa | Landmark |  | fn_1
 UNKNOWN_TYPE | bb | Landmarks: |  | fn_1
 UNKNOWN_TYPE | cc | Land-mark: |  | fn_1
 EMAIL_ADDRESS | em | E-Mail-Adresse: |  | fn_1
-PHONE_HOME_WHOLE_NUMBER | ph | Telefonnummer: |  | fn_1
+PHONE_HOME_CITY_AND_NUMBER | ph | Telefonnummer: |  | fn_1
 CREDIT_CARD_NAME_FULL | c1 | Karteninhaber: |  | c1_2
 CREDIT_CARD_NUMBER | c2 | Kartennummer: |  | c1_2
 CREDIT_CARD_EXP_MONTH | c3 | gültig bis monat: |  | c1_2

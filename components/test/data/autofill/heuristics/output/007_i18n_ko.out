@@ -12,8 +12,8 @@ ADDRESS_HOME_COUNTRY | st2 | 시・도: |  | ln_1
 EMAIL_ADDRESS | em | Email: |  | ln_1
 EMAIL_ADDRESS | em2 | 전자 우편: |  | ln_1
 EMAIL_ADDRESS | em3 | e-mail 주소 |  | ln_1
-PHONE_HOME_WHOLE_NUMBER | ph | 전화 번호: |  | ln_1
-PHONE_HOME_WHOLE_NUMBER | ph2 | 휴대폰번호: |  | ln_1
+PHONE_HOME_CITY_AND_NUMBER | ph | 전화 번호: |  | ln_1
+PHONE_HOME_CITY_AND_NUMBER | ph2 | 휴대폰번호: |  | ln_1
 NAME_FULL | not_ln2 | 성명 |  | not_ln2_1
 UNKNOWN_TYPE | fn2 | 이름 |  | not_ln2_1
 ADDRESS_HOME_CITY | ct3 | city |  | not_ln2_1

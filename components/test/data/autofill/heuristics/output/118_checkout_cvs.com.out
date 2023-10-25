@@ -5,13 +5,13 @@ ADDRESS_HOME_LINE2 | aptstreetAddr | Apartment, Building, Floor, Etc |  | fname_
 ADDRESS_HOME_CITY | city | City |  | fname_1
 ADDRESS_HOME_STATE | stateName | State | 0 | fname_1
 ADDRESS_HOME_ZIP | zip | ZIP Code |  | fname_1
-PHONE_HOME_WHOLE_NUMBER | phone | Phone Number |  | fname_1
+PHONE_HOME_CITY_AND_NUMBER | phone | Phone Number |  | fname_1
 UNKNOWN_TYPE | orderConfirmation | Send order information to somebody@example.com. | on | fname_1
 EMAIL_ADDRESS | cemail | Specify a different email address: |  | fname_1
 UNKNOWN_TYPE | bopusPerson | ... will pick up order. | on | fname_1
 NAME_FIRST | bdfname | First Name |  | bdfname_2
 NAME_LAST | bdlname | Last Name |  | bdfname_2
-PHONE_HOME_WHOLE_NUMBER | bdphone | Phone Number |  | bdfname_2
+PHONE_HOME_CITY_AND_NUMBER | bdphone | Phone Number |  | bdfname_2
 UNKNOWN_TYPE | bopusSMSagree | Text me information from CVS/pharmacy, including information about my order. I Agree to the Mobile Terms of Use. | on | bdfname_2
 UNKNOWN_TYPE | orderConfirmation1 | Send order information to . | on | bdfname_2
 EMAIL_ADDRESS | bdemail | Specify a different email address |  | bdfname_2
@@ -19,7 +19,7 @@ UNKNOWN_TYPE | bopusSMSagree1 | Text me information from CVS/pharmacy�, includ
 UNKNOWN_TYPE | fsaValue | I would like to apply $0.00 of eligible items in this order to my FSA Debit Card. | on | bdfname_2
 UNKNOWN_TYPE | fsaValue1 | I would like to apply $0.00 of eligible items in this order to my FSA Debit Card. | on | bdfname_2
 UNKNOWN_TYPE | ccfield | FSA Card |  | bdfname_2
-PHONE_HOME_WHOLE_NUMBER | expfield | First Name Last Name Street Address Apartment, Building, Floor, Etc City State ZIP Code Phone Number FSA Card Exp FSA Card Exp First Name Last Name Street Address Apartment, Building, Floor, Etc City State ZIP Code Phone Number Credit Card Exp Credit Card Exp First Name Last Name Street Address Apartment, Building, Floor, Etc City State ZIP Code Phone Number |  | bdfname_2
+PHONE_HOME_CITY_AND_NUMBER | expfield | First Name Last Name Street Address Apartment, Building, Floor, Etc City State ZIP Code Phone Number FSA Card Exp FSA Card Exp First Name Last Name Street Address Apartment, Building, Floor, Etc City State ZIP Code Phone Number Credit Card Exp Credit Card Exp First Name Last Name Street Address Apartment, Building, Floor, Etc City State ZIP Code Phone Number |  | bdfname_2
 UNKNOWN_TYPE | cvvfield | Specify a different email address: First Name Last Name Phone Number Specify a different email address CVV CVV CVV CVV |  | bdfname_2
 UNKNOWN_TYPE | cvvfield | | CVV |  | cvvfield_3
 UNKNOWN_TYPE | ccfield | FSA Card |  | bdfname_2
@@ -34,7 +34,7 @@ ADDRESS_HOME_LINE2 | fstreetAddr1 | Apartment, Building, Floor, Etc |  | bdfname
 ADDRESS_HOME_CITY | fcity | City |  | bdfname_2
 ADDRESS_HOME_STATE | sstateName | State | 0 | bdfname_2
 ADDRESS_HOME_ZIP | fzip | ZIP Code |  | bdfname_2
-PHONE_HOME_WHOLE_NUMBER | fphone | Phone Number |  | bdfname_2
+PHONE_HOME_CITY_AND_NUMBER | fphone | Phone Number |  | bdfname_2
 UNKNOWN_TYPE | ccfield | Credit Card |  | fname_1
 UNKNOWN_TYPE | expfield | Exp |  | fname_1
 UNKNOWN_TYPE | cvvfield | CVV |  | fname_1
@@ -52,4 +52,4 @@ ADDRESS_HOME_LINE2 | ustreetAddr1 | Apartment, Building, Floor, Etc |  | ufname_
 ADDRESS_HOME_CITY | ucity | City |  | ufname_4
 ADDRESS_HOME_STATE | ustateName | State | 0 | ufname_4
 ADDRESS_HOME_ZIP | uzip | ZIP Code |  | ufname_4
-PHONE_HOME_WHOLE_NUMBER | uphone | Phone Number |  | ufname_4
+PHONE_HOME_CITY_AND_NUMBER | uphone | Phone Number |  | ufname_4

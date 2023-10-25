@@ -7,6 +7,6 @@ ADDRESS_HOME_STATE | state | *State |  | firstName_1
 ADDRESS_HOME_ZIP | zipcode | *Zip Code |  | firstName_1
 PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | phoneAreaCode | *Phone |  | firstName_1
 PHONE_HOME_NUMBER | phoneExchange | *Phone |  | firstName_1
-PHONE_HOME_WHOLE_NUMBER | phoneNumber | *Phone |  | firstName_1
+PHONE_HOME_CITY_AND_NUMBER | phoneNumber | *Phone |  | firstName_1
 UNKNOWN_TYPE | label | *Address Label |  | firstName_1
 UNKNOWN_TYPE | ssoShipToPOBox | This address is a P.O. Box. | true | firstName_1

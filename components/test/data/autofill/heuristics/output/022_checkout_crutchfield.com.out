@@ -6,7 +6,7 @@ ADDRESS_HOME_LINE1 | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$a
 ADDRESS_HOME_CITY | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$city | City |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$firstname_1
 ADDRESS_HOME_STATE | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$state | State | Select Your State | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$firstname_1
 ADDRESS_HOME_ZIP | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$zip | Zip/Postal Code |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$firstname_1
-PHONE_HOME_WHOLE_NUMBER | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$billphone2 | Billing Phone |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$firstname_1
+PHONE_HOME_CITY_AND_NUMBER | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$billphone2 | Billing Phone |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$firstname_1
 EMAIL_ADDRESS | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$email2 | Email |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$firstname_1
 UNKNOWN_TYPE | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$chbox2 | Send me exclusive offers, deals and expert reviews. | on | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$firstname_1
 UNKNOWN_TYPE | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$same | Same as billing address. | same | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$firstname_1
@@ -19,5 +19,5 @@ ADDRESS_HOME_LINE1 | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$s
 ADDRESS_HOME_CITY | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingCity | City |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_2
 ADDRESS_HOME_STATE | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingState | State | Select Your State | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_2
 ADDRESS_HOME_ZIP | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingZip | Zip/Postal Code |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_2
-PHONE_HOME_WHOLE_NUMBER | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingPhone | Shipping Phone |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_2
+PHONE_HOME_CITY_AND_NUMBER | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingPhone | Shipping Phone |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_2
 UNKNOWN_TYPE | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$customerID | Customer # |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_2

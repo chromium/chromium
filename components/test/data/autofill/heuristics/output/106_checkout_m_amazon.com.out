@@ -5,7 +5,7 @@ ADDRESS_HOME_CITY | enterAddressCity | City |  | enterAddressFullName_1
 ADDRESS_HOME_STATE | enterAddressStateOrRegion | State/Province/Region |  | enterAddressFullName_1
 ADDRESS_HOME_ZIP | enterAddressPostalCode | ZIP |  | enterAddressFullName_1
 UNKNOWN_TYPE | enterAddressTaxId |  |  | enterAddressFullName_1
-PHONE_HOME_WHOLE_NUMBER | enterAddressPhoneNumber | Phone number |  | enterAddressFullName_1
+PHONE_HOME_CITY_AND_NUMBER | enterAddressPhoneNumber | Phone number |  | enterAddressFullName_1
 ADDRESS_HOME_COUNTRY | enterAddressCountryCode |  | US | enterAddressFullName_1
 UNKNOWN_TYPE | AddressType | Optional Delivery Preferences | OTH | enterAddressFullName_1
 UNKNOWN_TYPE | GateCode | Security Access Code |  | enterAddressFullName_1

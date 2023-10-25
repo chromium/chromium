@@ -11,4 +11,4 @@ ADDRESS_HOME_CITY | city | City * |  | firstname_2
 ADDRESS_HOME_STATE | state | State * |  | firstname_2
 ADDRESS_HOME_ZIP | zip | State * |  | firstname_2
 ADDRESS_HOME_COUNTRY | country | Country * | us | firstname_2
-PHONE_HOME_WHOLE_NUMBER | phonenumber | Mobile Phone* |  | firstname_2
+PHONE_HOME_CITY_AND_NUMBER | phonenumber | Mobile Phone* |  | firstname_2

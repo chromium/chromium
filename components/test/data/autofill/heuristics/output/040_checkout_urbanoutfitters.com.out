@@ -8,8 +8,8 @@ ADDRESS_HOME_CITY | shippingCity | City | City | shipto_1
 ADDRESS_HOME_STATE | shippingStates |  |  | shipto_1
 ADDRESS_HOME_ZIP | shippingPostalCode | Postal Code | Postal Code | shipto_1
 ADDRESS_HOME_COUNTRY | shippingCountries |  |  | shipto_1
-PHONE_HOME_WHOLE_NUMBER | shippingPhone | Phone | Phone | shipto_1
-PHONE_HOME_WHOLE_NUMBER | altShippingPhone | Alternate Phone (optional) | Alternate Phone (optional) | shipto_1
+PHONE_HOME_CITY_AND_NUMBER | shippingPhone | Phone | Phone | shipto_1
+PHONE_HOME_CITY_AND_NUMBER | altShippingPhone | Alternate Phone (optional) | Alternate Phone (optional) | shipto_1
 UNKNOWN_TYPE | billingIsShipping | My billing address is the same as my shipping address | true | shipto_1
 UNKNOWN_TYPE | defaultShipping | Make this my default shipping address | true | shipto_1
 NAME_FIRST | billingFirstName | First Name | First Name | billingFirstName_1
@@ -21,8 +21,8 @@ ADDRESS_HOME_CITY | billingCity | City | City | billingFirstName_1
 ADDRESS_HOME_STATE | billingStates |  |  | billingFirstName_1
 ADDRESS_HOME_ZIP | billingPostalCode | Postal Code | Postal Code | billingFirstName_1
 ADDRESS_HOME_COUNTRY | billingCountries |  |  | billingFirstName_1
-PHONE_HOME_WHOLE_NUMBER | billingPhone | Phone | Phone | billingFirstName_1
-PHONE_HOME_WHOLE_NUMBER | altBillingPhone | Alternate Phone (optional) | Alternate Phone (optional) | billingFirstName_1
+PHONE_HOME_CITY_AND_NUMBER | billingPhone | Phone | Phone | billingFirstName_1
+PHONE_HOME_CITY_AND_NUMBER | altBillingPhone | Alternate Phone (optional) | Alternate Phone (optional) | billingFirstName_1
 UNKNOWN_TYPE | defaultBilling | Make this my default billing address | true | billingFirstName_1
 UNKNOWN_TYPE | savedCreditCard |  |  | billingFirstName_1
 CREDIT_CARD_TYPE | payment_cardtype |  |  | payment_cardtype_2

@@ -15,7 +15,7 @@ UNKNOWN_TYPE | NewsLetter | We'll let you know about exclusive sales and events,
 UNKNOWN_TYPE | MobileMarketing | Yes, please text me about exclusive sales and events, both online and in-store. We'll send your first text message within 48 hours. | MobileMarketing | FirstName_1
 PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | MobilePhoneAreaCode |  |  | FirstName_1
 PHONE_HOME_NUMBER | MobilePhoneExchangeNbr |  |  | FirstName_1
-PHONE_HOME_WHOLE_NUMBER | MobilePhoneSubscriberNbr |  |  | FirstName_1
+PHONE_HOME_CITY_AND_NUMBER | MobilePhoneSubscriberNbr |  |  | FirstName_1
 UNKNOWN_TYPE | addacard | Yes, I'd like to add my Macy's Card to my profile. | on | FirstName_1
 UNKNOWN_TYPE | MaskedAccountNumber | Macy's Account Number: |  | FirstName_1
 UNKNOWN_TYPE | SSN4 | Last 4 digits of SSN: |  | FirstName_1

@@ -6,7 +6,7 @@ ADDRESS_HOME_CITY | user[billing][city] | Billing City |  | user[billing][firstn
 ADDRESS_HOME_STATE | user[billing][state] | State/Province | CA | user[billing][firstname]_1
 ADDRESS_HOME_ZIP | user[billing][zip] | Billing Postal Code | 94043 | user[billing][firstname]_1
 ADDRESS_HOME_COUNTRY | user[billing][country] | Billing Country | US | user[billing][firstname]_1
-PHONE_HOME_WHOLE_NUMBER | user[phone_first] | Phone Number |  | user[billing][firstname]_1
+PHONE_HOME_CITY_AND_NUMBER | user[phone_first] | Phone Number |  | user[billing][firstname]_1
 EMAIL_ADDRESS | user[email] | Email Address |  | user[billing][firstname]_1
 EMAIL_ADDRESS | user[email_confirm] | Confirm Email Address |  | user[billing][firstname]_1
 CREDIT_CARD_NUMBER | payment[cc_number] | Credit Card Number |  | payment[cc_number]_2
