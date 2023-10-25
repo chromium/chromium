@@ -467,11 +467,8 @@ void JNI_ProfileOAuth2TokenServiceDelegate_OnOAuth2TokenFetched(
                       CREDENTIALS_REJECTED_BY_SERVER);
   }
 
-  const base::Time expiration_time =
-      expiration_time_secs == 0 ? base::Time()
-                                : base::Time::FromMillisecondsSinceUnixEpoch(
-                                      expiration_time_secs * 1000);
-
-  std::move(*heap_callback).Run(err, token, expiration_time);
+  std::move(*heap_callback)
+      .Run(err, token,
+           base::Time::FromSecondsSinceUnixEpoch(expiration_time_secs));
 }
 }  // namespace signin

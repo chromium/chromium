@@ -124,10 +124,9 @@ void RecordCurrentTime(
     // Ask for a new time zone object each time; don't cache it, as time zones
     // may change while Chrome is running.
     std::unique_ptr<icu::TimeZone> time_zone(icu::TimeZone::createDefault());
-    time_zone->getOffset(
-        now.InSecondsFSinceUnixEpoch() * base::Time::kMillisecondsPerSecond,
-        false,  // interpret |now| as from UTC/GMT
-        raw_offset, dst_offset, status);
+    time_zone->getOffset(now.InMillisecondsFSinceUnixEpoch(),
+                         false,  // interpret |now| as from UTC/GMT
+                         raw_offset, dst_offset, status);
     base::TimeDelta time_zone_offset =
         base::Milliseconds(raw_offset + dst_offset);
     if (U_FAILURE(status)) {

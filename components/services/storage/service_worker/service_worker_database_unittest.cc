@@ -601,7 +601,7 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForStorageKey) {
   data1.script = URL(origin1, "/script1.js");
   data1.version_id = 1000;
   data1.resources_total_size_bytes = 100;
-  data1.script_response_time = base::Time::FromMillisecondsSinceUnixEpoch(0);
+  data1.script_response_time = base::Time::UnixEpoch();
   data1.ancestor_frame_type = blink::mojom::AncestorFrameType::kNormalFrame;
   data1.policy_container_policies =
       blink::mojom::PolicyContainerPolicies::New();

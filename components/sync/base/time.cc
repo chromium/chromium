@@ -10,11 +10,11 @@
 namespace syncer {
 
 int64_t TimeToProtoTime(const base::Time& t) {
-  return (t - base::Time::UnixEpoch()).InMilliseconds();
+  return t.InMillisecondsSinceUnixEpoch();
 }
 
 base::Time ProtoTimeToTime(int64_t proto_t) {
-  return base::Time::UnixEpoch() + base::Milliseconds(proto_t);
+  return base::Time::FromMillisecondsSinceUnixEpoch(proto_t);
 }
 
 std::string GetTimeDebugString(const base::Time& t) {
