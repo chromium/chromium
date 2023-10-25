@@ -884,7 +884,7 @@
           "p50_mins": 20
         }
       },
-      "chromeos-amd64-generic-rel": {
+      "chromeos-amd64-generic-rel-renamed": {
         "build_time": {
           "p50_mins": 60
         },

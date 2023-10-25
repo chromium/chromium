@@ -1,8 +1,4 @@
 {
-  "$build/chromium_orchestrator": {
-    "compilator": "chromeos-amd64-generic-rel-compilator",
-    "compilator_watcher_git_revision": "e6d08be3fd589d4f222dae5d18dbc972e6117b23"
-  },
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "builder_db": {
@@ -10,7 +6,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "chromeos-amd64-generic-rel",
+              "builder": "chromeos-amd64-generic-rel-renamed",
               "project": "chromium"
             },
             "builder_spec": {
@@ -47,11 +43,27 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "chromeos-amd64-generic-rel",
+          "builder": "chromeos-amd64-generic-rel-renamed",
           "project": "chromium"
+        }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "chromeos-amd64-generic-rel-renamed",
+          "group": "tryserver.chromium.chromiumos"
+        },
+        {
+          "builder": "chromeos-amd64-generic-siso-rel",
+          "group": "tryserver.chromium.chromiumos"
         }
       ]
     }
+  },
+  "$build/reclient": {
+    "instance": "rbe-chromium-trusted",
+    "jobs": 500,
+    "metrics_project": "chromium-reclient-metrics",
+    "scandeps_server": true
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -60,6 +72,9 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "tryserver.chromium.chromiumos",
-  "recipe": "chromium/orchestrator"
+  "builder_group": "chromium.chromiumos",
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chromium"
+  ]
 }

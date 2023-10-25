@@ -46,7 +46,7 @@
       "use_remoteexec": true
     }
   },
-  "chromeos-amd64-generic-rel": {
+  "chromeos-amd64-generic-rel-renamed": {
     "args_file": "//build/args/chromeos/amd64-generic-vm.gni",
     "gn_args": {
       "also_build_lacros_chrome_for_architecture": "amd64",

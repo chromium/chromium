@@ -1536,7 +1536,7 @@
           'chrome',
         ],
       },
-      'chromeos-amd64-generic-rel': {
+      'chromeos-amd64-generic-rel-renamed': {
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],

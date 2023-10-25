@@ -64,10 +64,12 @@ try_.builder(
 )
 
 try_.orchestrator_builder(
-    name = "chromeos-amd64-generic-rel",
+    name = "chromeos-amd64-generic-rel-renamed",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
-    mirrors = ["ci/chromeos-amd64-generic-rel"],
+    description_html = "This is a renamed builder of chromeos-amd64-generic-rel.",
+    mirrors = ["ci/chromeos-amd64-generic-rel-renamed"],
     compilator = "chromeos-amd64-generic-rel-compilator",
+    contact_team_email = "chromeos-sw-engprod@google.com",
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
@@ -88,7 +90,7 @@ try_.orchestrator_builder(
 This builder shadows chromeos-amd64-generic-rel builder to compare between Siso builds and Ninja builds.<br/>
 This builder should be removed after migrating chromeos-amd64-generic-rel from Ninja to Siso. b/277863839
 """,
-    mirrors = builder_config.copy_from("try/chromeos-amd64-generic-rel"),
+    mirrors = builder_config.copy_from("try/chromeos-amd64-generic-rel-renamed"),
     try_settings = builder_config.try_settings(
         is_compile_only = True,
     ),

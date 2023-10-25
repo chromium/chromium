@@ -21,7 +21,7 @@
       "chrome"
     ]
   },
-  "chromeos-amd64-generic-rel": {
+  "chromeos-amd64-generic-rel-renamed": {
     "additional_compile_targets": [
       "chromiumos_preflight"
     ],
@@ -188,7 +188,7 @@
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 16
+          "shards": 7
         },
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/"

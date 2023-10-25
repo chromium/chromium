@@ -10,7 +10,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "chromeos-amd64-generic-rel",
+              "builder": "chromeos-amd64-generic-rel-renamed",
               "project": "chromium"
             },
             "builder_spec": {
@@ -47,7 +47,7 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "chromeos-amd64-generic-rel",
+          "builder": "chromeos-amd64-generic-rel-renamed",
           "project": "chromium"
         }
       ],

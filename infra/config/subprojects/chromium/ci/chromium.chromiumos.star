@@ -235,8 +235,9 @@ ci.builder(
 )
 
 ci.builder(
-    name = "chromeos-amd64-generic-rel",
+    name = "chromeos-amd64-generic-rel-renamed",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
+    description_html = "This is a renamed builder of chromeos-amd64-generic-rel.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
