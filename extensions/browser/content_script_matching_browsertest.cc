@@ -12,7 +12,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_test_utils.h"
-#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/shell/browser/shell_extension_loader.h"
 #include "extensions/shell/test/shell_apitest.h"
@@ -26,11 +25,13 @@
 namespace extensions {
 
 // Test suite covering
-// `extensions::ScriptInjectionTracker::DoScriptsMatchForTesting` from
-// //extensions/browser/script_injection_tracker.h.
+// `extensions::ScriptInjectionTracker::DoStaticContentScriptsMatchForTesting`
+// from //extensions/browser/script_injection_tracker.h.
 //
 // See also ScriptInjectionTrackerBrowserTest in
 // //chrome/browser/extensions/script_injection_tracker_browsertest.cc.
+// TODO(crbug.com/1385165): Add test coverage for dynamic content and user
+// scripts matching.
 class ContentScriptMatchingBrowserTest : public ShellApiTest,
                                          public content::WebContentsDelegate {
  public:
@@ -191,7 +192,7 @@ class ContentScriptMatchingBrowserTest : public ShellApiTest,
 
   bool DoContentScriptsMatch(content::RenderFrameHost* navigating_frame,
                              const GURL& navigation_target) {
-    return ScriptInjectionTracker::DoScriptsMatchForTesting(
+    return ScriptInjectionTracker::DoStaticContentScriptsMatchForTesting(
         *extension_, navigating_frame, navigation_target);
   }
 

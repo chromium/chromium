@@ -1249,6 +1249,112 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
       *first_tab->GetPrimaryMainFrame()->GetProcess(), extension->id()));
 }
 
+class UserScriptTrackerBrowserTest : public ScriptInjectionTrackerBrowserTest {
+ public:
+  UserScriptTrackerBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kApiUserScripts);
+  }
+
+ private:
+  // The userScripts API is currently behind a channel and feature restriction.
+  // TODO(crbug.com/1472902): Remove channel override when user scripts API goes
+  // to stable.
+  ScopedCurrentChannel current_channel_override_{
+      version_info::Channel::UNKNOWN};
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests tracking of content scripts injected/declared via `chrome.userScripts`
+// API.
+IN_PROC_BROWSER_TEST_F(UserScriptTrackerBrowserTest,
+                       UserScriptViaUserScriptsApi) {
+  // Install a test extension with a user script.
+  TestExtensionDir dir;
+  const char kManifestTemplate[] = R"(
+      {
+        "name": "register user script",
+        "version": "1.0",
+        "manifest_version": 3,
+        "permissions": ["userScripts"],
+        "host_permissions": ["<all_urls>"],
+        "background": {"service_worker": "worker.js"}
+      })";
+  dir.WriteManifest(kManifestTemplate);
+
+  const char kServiceWorker[] = R"(
+      var scripts = [{
+        id: 'us1',
+        matches: ['*://requested.com/*'],
+        js: [{ file: "user_script.js"}],
+        runAt: 'document_end'
+      }];
+
+      chrome.runtime.onInstalled.addListener(async function(details) {
+        await chrome.userScripts.register(scripts, () => {
+          chrome.test.sendMessage('SCRIPT_LOADED');
+        });
+      }); )";
+  dir.WriteFile(FILE_PATH_LITERAL("worker.js"), kServiceWorker);
+
+  const char kUserScript[] = R"(
+      window.onload = function() {
+          chrome.test.assertEq('complete', document.readyState);
+          document.body.innerText = 'user script has run';
+          chrome.test.sendMessage('SCRIPT_INJECTED');
+      }
+  )";
+  dir.WriteFile(FILE_PATH_LITERAL("user_script.js"), kUserScript);
+
+  ExtensionTestMessageListener script_loaded_listener("SCRIPT_LOADED");
+  const Extension* extension = LoadExtension(dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(script_loaded_listener.WaitUntilSatisfied());
+
+  // Navigate to a page that is not in the user script 'matches'.
+  GURL ignored_url =
+      embedded_test_server()->GetURL("other.com", "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), ignored_url));
+
+  // Verify that no frames show up as having been injected with user scripts.
+  content::WebContents* first_tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ("This page has no title.",
+            content::EvalJs(first_tab, "document.body.innerText"));
+  EXPECT_FALSE(ScriptInjectionTracker::DidProcessRunUserScriptFromExtension(
+      *first_tab->GetPrimaryMainFrame()->GetProcess(), extension->id()));
+
+  // Navigate to a page that is in the user script 'matches'.
+  GURL injected_url =
+      embedded_test_server()->GetURL("requested.com", "/title1.html");
+  ExtensionTestMessageListener listener("SCRIPT_INJECTED");
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), injected_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+
+  content::WebContents* second_tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_NE(first_tab, second_tab);
+  EXPECT_NE(first_tab->GetPrimaryMainFrame()->GetProcess(),
+            second_tab->GetPrimaryMainFrame()->GetProcess());
+
+  // Verify that the new tab shows up as having been injected with user scripts.
+  EXPECT_EQ("user script has run",
+            content::EvalJs(second_tab, "document.body.innerText"));
+  EXPECT_EQ("This page has no title.",
+            content::EvalJs(first_tab, "document.body.innerText"));
+  EXPECT_TRUE(ScriptInjectionTracker::DidProcessRunUserScriptFromExtension(
+      *second_tab->GetPrimaryMainFrame()->GetProcess(), extension->id()));
+  EXPECT_FALSE(ScriptInjectionTracker::DidProcessRunUserScriptFromExtension(
+      *first_tab->GetPrimaryMainFrame()->GetProcess(), extension->id()));
+
+  // Confidence check: injecting a user script should not count as injecting a
+  // content script.
+  EXPECT_FALSE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+      *second_tab->GetPrimaryMainFrame()->GetProcess(), extension->id()));
+}
+
 class ScriptInjectionTrackerAppBrowserTest : public PlatformAppBrowserTest {
  public:
   ScriptInjectionTrackerAppBrowserTest() = default;

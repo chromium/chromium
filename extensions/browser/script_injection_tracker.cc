@@ -4,8 +4,7 @@
 
 #include "extensions/browser/script_injection_tracker.h"
 
-#include <map>
-
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ref.h"
@@ -13,7 +12,6 @@
 #include "base/trace_event/typed_macros.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -26,7 +24,6 @@
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/content_script_injection_url_getter.h"
-#include "extensions/common/context_data.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -158,6 +155,44 @@ class RenderProcessHostUserData : public base::SupportsUserData::Data {
 const char* RenderProcessHostUserData::kUserDataKey =
     "ScriptInjectionTracker's data";
 
+std::vector<const UserScript*> GetVectorFromScriptList(
+    const UserScriptList& scripts) {
+  std::vector<const UserScript*> result;
+  result.reserve(scripts.size());
+  for (const auto& script : scripts) {
+    result.push_back(script.get());
+  }
+  return result;
+}
+
+// Returns all the loaded dynamic scripts with `source` of `extension_id` on
+// `frame`.
+std::vector<const UserScript*> GetLoadedDynamicScripts(
+    const ExtensionId& extension_id,
+    UserScript::Source source,
+    content::RenderProcessHost& process) {
+  // `manager` can be null for some unit tests which do not initialize the
+  // ExtensionSystem.
+  UserScriptManager* manager =
+      ExtensionSystem::Get(process.GetBrowserContext())->user_script_manager();
+  if (!manager) {
+    CHECK_IS_TEST();
+    return std::vector<const UserScript*>();
+  }
+
+  const UserScriptList& loaded_dynamic_scripts =
+      manager->GetUserScriptLoaderForExtension(extension_id)
+          ->GetLoadedDynamicScripts();
+
+  std::vector<const UserScript*> scripts;
+  for (auto& loaded_script : loaded_dynamic_scripts) {
+    if (loaded_script->GetSource() == source) {
+      scripts.push_back(loaded_script.get());
+    }
+  }
+  return scripts;
+}
+
 // This function approximates ScriptContext::GetEffectiveDocumentURLForInjection
 // from the renderer side.
 GURL GetEffectiveDocumentURL(
@@ -176,6 +211,16 @@ GURL GetEffectiveDocumentURL(
       kAllowInaccessibleParents);
 }
 
+// Returns whether the extension's scripts can run on `frame`.
+bool CanExtensionScriptsAffectFrame(content::RenderFrameHost& frame,
+                                    const Extension& extension) {
+  // Most extension's scripts won't run on webviews. The only ones that may are
+  // those from extensions that can execute script everywhere.
+  auto* guest = guest_view::GuestViewBase::FromRenderFrameHost(&frame);
+  return !guest || PermissionsData::CanExecuteScriptEverywhere(
+                       extension.id(), extension.location());
+}
+
 // Returns whether `script` will inject JavaScript content into the `frame` /
 // `url`. Note that this function ignores CSS content scripts. This function
 // approximates a subset of checks from UserScriptSet::GetInjectionForScript
@@ -186,41 +231,39 @@ GURL GetEffectiveDocumentURL(
 // This is okay, because the top-level doc comment for ScriptInjectionTracker
 // documents that false positives are expected and why they are okay.
 bool DoesScriptMatch(const UserScript& script,
-                     content::RenderFrameHost* frame,
+                     content::RenderFrameHost& frame,
                      const GURL& url) {
-  content::RenderProcessHost& process = *frame->GetProcess();
+  content::RenderProcessHost& process = *frame.GetProcess();
   const ExtensionId& extension_id = script.extension_id();
 
   // ScriptInjectionTracker only needs to track Javascript content scripts (e.g.
   // doesn't track CSS-only injections).
   if (script.js_scripts().empty()) {
-    TRACE_EVENT_INSTANT(
-        "extensions",
-        "ScriptInjectionTracker/DoesContentScriptMatch=false(non-js)",
-        ChromeTrackEvent::kRenderProcessHost, process,
-        ChromeTrackEvent::kChromeExtensionId,
-        ExtensionIdForTracing(extension_id));
+    TRACE_EVENT_INSTANT("extensions",
+                        "ScriptInjectionTracker/DoesScriptMatch=false(non-js)",
+                        ChromeTrackEvent::kRenderProcessHost, process,
+                        ChromeTrackEvent::kChromeExtensionId,
+                        ExtensionIdForTracing(extension_id));
     return false;
   }
 
   GURL effective_url =
-      GetEffectiveDocumentURL(frame, url, script.match_origin_as_fallback());
+      GetEffectiveDocumentURL(&frame, url, script.match_origin_as_fallback());
   if (script.url_patterns().MatchesSecurityOrigin(effective_url)) {
     TRACE_EVENT_INSTANT("extensions",
-                        "ScriptInjectionTracker/DoesContentScriptMatch=true",
+                        "ScriptInjectionTracker/DoesScriptMatch=true",
                         ChromeTrackEvent::kRenderProcessHost, process,
                         ChromeTrackEvent::kChromeExtensionId,
                         ExtensionIdForTracing(extension_id));
     return true;
-  } else {
-    TRACE_EVENT_INSTANT(
-        "extensions",
-        "ScriptInjectionTracker/DoesContentScriptMatch=false(mismatch)",
-        ChromeTrackEvent::kRenderProcessHost, process,
-        ChromeTrackEvent::kChromeExtensionId,
-        ExtensionIdForTracing(extension_id));
-    return false;
   }
+
+  TRACE_EVENT_INSTANT("extensions",
+                      "ScriptInjectionTracker/DoesScriptMatch=false(mismatch)",
+                      ChromeTrackEvent::kRenderProcessHost, process,
+                      ChromeTrackEvent::kChromeExtensionId,
+                      ExtensionIdForTracing(extension_id));
+  return false;
 }
 
 void HandleProgrammaticScriptInjection(
@@ -244,123 +287,234 @@ void HandleProgrammaticScriptInjection(
       pass_key, frame, extension);
 }
 
-bool DoScriptsMatch(const UserScriptList& script_list,
-                    content::RenderFrameHost* frame,
+// Returns whether any of `scripts` will inject JavaScript content into the
+// `frame` / `url`.
+bool DoScriptsMatch(const std::vector<const UserScript*>& scripts,
+                    content::RenderFrameHost& frame,
                     const GURL& url) {
-  return base::ranges::any_of(
-      script_list.begin(), script_list.end(),
-      [frame, &url](const std::unique_ptr<UserScript>& script) {
-        return DoesScriptMatch(*script, frame, url);
-      });
+  return base::ranges::any_of(scripts.begin(), scripts.end(),
+                              [&frame, &url](const UserScript* script) {
+                                return DoesScriptMatch(*script, frame, url);
+                              });
 }
 
-// If `extension`'s manifest declares that it may inject JavaScript content
-// script into the `frame` / `url`, then DoScriptsMatch returns true.
-// Otherwise it may return either true or false.
-//
-// Note that the `url` might be either 1) the last committed URL of `frame` or
-// 2) the target of a ReadyToCommit navigation in `frame`.
-//
-// Note that this method ignores CSS content scripts.
-bool DoScriptsMatch(const Extension& extension,
-                    content::RenderFrameHost* frame,
-                    const GURL& url) {
-  TRACE_EVENT("extensions", "ScriptInjectionTracker/DoScriptsMatch",
-              ChromeTrackEvent::kRenderProcessHost, *frame->GetProcess(),
+// Returns whether an `extension` can inject JavaScript web view scripts into
+// the `frame` / `url`.
+bool DoWebViewScripstMatch(const Extension& extension,
+                           content::RenderFrameHost& frame) {
+  content::RenderProcessHost& process = *frame.GetProcess();
+  TRACE_EVENT("extensions", "ScriptInjectionTracker/DoWebViewScripstMatch",
+              ChromeTrackEvent::kRenderProcessHost, process,
               ChromeTrackEvent::kChromeExtensionId,
               ExtensionIdForTracing(extension.id()));
-  content::RenderProcessHost& process = *frame->GetProcess();
 
-  auto* guest = guest_view::GuestViewBase::FromRenderFrameHost(frame);
-  if (guest) {
-    // Return true if `extension` is an owner of `guest` and it registered
-    // content scripts using the `webview.addContentScripts` API.
-    GURL owner_site_url = guest->GetOwnerSiteURL();
-    if (owner_site_url.SchemeIs(kExtensionScheme) &&
-        owner_site_url.host_piece() == extension.id()) {
-      WebViewContentScriptManager* script_manager =
-          WebViewContentScriptManager::Get(frame->GetBrowserContext());
-      int embedder_process_id = guest->owner_rfh()->GetProcess()->GetID();
-      std::set<std::string> script_ids = script_manager->GetContentScriptIDSet(
-          embedder_process_id, guest->view_instance_id());
-
-      // Note - more granular checks (e.g. against URL patterns) are desirable
-      // for performance (to avoid creating unnecessary URLLoaderFactory via
-      // URLLoaderFactoryManager), but not necessarily for security (because
-      // there are anyway no OOPIFs inside the webView process -
-      // https://crbug.com/614463).  At the same time, more granular checks are
-      // difficult to achieve, because the UserScript objects are not retained
-      // (i.e. only UserScriptIDs are available) by WebViewContentScriptManager.
-      if (!script_ids.empty()) {
-        TRACE_EVENT_INSTANT("extensions",
-                            "ScriptInjectionTracker/DoScriptsMatch=true(guest)",
-                            ChromeTrackEvent::kRenderProcessHost, process,
-                            ChromeTrackEvent::kChromeExtensionId,
-                            ExtensionIdForTracing(extension.id()));
-        return true;
-      }
-    }
+  auto* guest = guest_view::GuestViewBase::FromRenderFrameHost(&frame);
+  if (!guest) {
+    // Not a guest; no webview scripts.
+    TRACE_EVENT_INSTANT(
+        "extensions",
+        "ScriptInjectionTracker/DoWebViewScripstMatch=false(non-guest)",
+        ChromeTrackEvent::kRenderProcessHost, process,
+        ChromeTrackEvent::kChromeExtensionId,
+        ExtensionIdForTracing(extension.id()));
+    return false;
   }
 
-  if (!guest || PermissionsData::CanExecuteScriptEverywhere(
-                    extension.id(), extension.location())) {
-    // Return true if manifest-declared content scripts match.
-    const UserScriptList& manifest_scripts =
-        ContentScriptsInfo::GetContentScripts(&extension);
-    if (DoScriptsMatch(manifest_scripts, frame, url)) {
-      TRACE_EVENT_INSTANT(
-          "extensions", "ScriptInjectionTracker/DoScriptsMatch=true(manifest)",
-          ChromeTrackEvent::kRenderProcessHost, process,
-          ChromeTrackEvent::kChromeExtensionId,
-          ExtensionIdForTracing(extension.id()));
+  // Return true if `extension` is an owner of `guest` and it registered
+  // content scripts using the `webview.addContentScripts` API.
+  GURL owner_site_url = guest->GetOwnerSiteURL();
+  if (owner_site_url.SchemeIs(kExtensionScheme) &&
+      owner_site_url.host_piece() == extension.id()) {
+    WebViewContentScriptManager* script_manager =
+        WebViewContentScriptManager::Get(frame.GetBrowserContext());
+    int embedder_process_id = guest->owner_rfh()->GetProcess()->GetID();
+    std::set<std::string> script_ids = script_manager->GetContentScriptIDSet(
+        embedder_process_id, guest->view_instance_id());
+
+    // Note - more granular checks (e.g. against URL patterns) are desirable
+    // for performance (to avoid creating unnecessary URLLoaderFactory via
+    // URLLoaderFactoryManager), but not necessarily for security (because
+    // there are anyway no OOPIFs inside the webView process -
+    // https://crbug.com/614463).  At the same time, more granular checks are
+    // difficult to achieve, because the UserScript objects are not retained
+    // (i.e. only UserScriptIDs are available) by WebViewContentScriptManager.
+    if (!script_ids.empty()) {
+      TRACE_EVENT_INSTANT("extensions",
+                          "ScriptInjectionTracker/DoWebViewScripstMatch=true",
+                          ChromeTrackEvent::kRenderProcessHost, process,
+                          ChromeTrackEvent::kChromeExtensionId,
+                          ExtensionIdForTracing(extension.id()));
       return true;
     }
-
-    // Return true if dynamic scripts match. Note that `manager` can be null for
-    // some unit tests which do not initialize the ExtensionSystem.
-    UserScriptManager* manager =
-        ExtensionSystem::Get(frame->GetProcess()->GetBrowserContext())
-            ->user_script_manager();
-    if (manager) {
-      const UserScriptList& dynamic_scripts =
-          manager->GetUserScriptLoaderForExtension(extension.id())
-              ->GetLoadedDynamicScripts();
-      if (DoScriptsMatch(dynamic_scripts, frame, url)) {
-        TRACE_EVENT_INSTANT(
-            "extensions", "ScriptInjectionTracker/DoScriptsMatch=true(dynamic)",
-            ChromeTrackEvent::kRenderProcessHost, process,
-            ChromeTrackEvent::kChromeExtensionId,
-            ExtensionIdForTracing(extension.id()));
-        return true;
-      }
-    }
   }
 
-  // Otherwise, no content script from `extension` can run in `frame` at `url`.
+  TRACE_EVENT_INSTANT(
+      "extensions",
+      "ScriptInjectionTracker/DoWebViewScripstMatch=false(nomatch)",
+      ChromeTrackEvent::kRenderProcessHost, process,
+      ChromeTrackEvent::kChromeExtensionId,
+      ExtensionIdForTracing(extension.id()));
+  return false;
+}
+
+// Returns whether an `extension` can inject JavaScript static content scripts
+// into the `frame` / `url`.  The `url` might be either the last committed URL
+// of `frame` or the target of a ReadyToCommit navigation in `frame`.
+bool DoStaticContentScriptsMatch(const Extension& extension,
+                                 content::RenderFrameHost& frame,
+                                 const GURL& url) {
+  content::RenderProcessHost& process = *frame.GetProcess();
+  TRACE_EVENT("extensions", "ScriptInjectionTracker/DoStaticContentScriptMatch",
+              ChromeTrackEvent::kRenderProcessHost, process,
+              ChromeTrackEvent::kChromeExtensionId,
+              ExtensionIdForTracing(extension.id()));
+
+  if (!CanExtensionScriptsAffectFrame(frame, extension)) {
+    TRACE_EVENT_INSTANT(
+        "extensions",
+        "ScriptInjectionTracker/DoStaticContentScriptMatch=false(webview)",
+        ChromeTrackEvent::kRenderProcessHost, process,
+        ChromeTrackEvent::kChromeExtensionId,
+        ExtensionIdForTracing(extension.id()));
+    return false;
+  }
+
+  std::vector<const UserScript*> static_content_scripts =
+      GetVectorFromScriptList(
+          ContentScriptsInfo::GetContentScripts(&extension));
+  if (DoScriptsMatch(static_content_scripts, frame, url)) {
+    TRACE_EVENT_INSTANT(
+        "extensions", "ScriptInjectionTracker/DoStaticContentScriptMatch=true",
+        ChromeTrackEvent::kRenderProcessHost, process,
+        ChromeTrackEvent::kChromeExtensionId,
+        ExtensionIdForTracing(extension.id()));
+    return true;
+  }
+
+  TRACE_EVENT_INSTANT(
+      "extensions",
+      "ScriptInjectionTracker/DoStaticContentScriptMatch=false(nomatch)",
+      ChromeTrackEvent::kRenderProcessHost, process,
+      ChromeTrackEvent::kChromeExtensionId,
+      ExtensionIdForTracing(extension.id()));
+  return false;
+}
+
+// Returns whether an `extension` can inject JavaScript dynamic content scripts
+// into the `frame` / `url`.  The `url` might be either the last committed
+// URL of `frame` or the target of a ReadyToCommit navigation in `frame`.
+bool DoDynamicContentScriptsMatch(const Extension& extension,
+                                  content::RenderFrameHost& frame,
+                                  const GURL& url) {
+  content::RenderProcessHost& process = *frame.GetProcess();
+  TRACE_EVENT("extensions",
+              "ScriptInjectionTracker/DoDynamicContentScriptsMatch",
+              ChromeTrackEvent::kRenderProcessHost, process,
+              ChromeTrackEvent::kChromeExtensionId,
+              ExtensionIdForTracing(extension.id()));
+
+  if (!CanExtensionScriptsAffectFrame(frame, extension)) {
+    TRACE_EVENT_INSTANT(
+        "extensions",
+        "ScriptInjectionTracker/DoDynamicContentScriptsMatch=false(webview)",
+        ChromeTrackEvent::kRenderProcessHost, process,
+        ChromeTrackEvent::kChromeExtensionId,
+        ExtensionIdForTracing(extension.id()));
+    return false;
+  }
+
+  std::vector<const UserScript*> dynamic_user_scripts = GetLoadedDynamicScripts(
+      extension.id(), UserScript::Source::kDynamicContentScript, process);
+  if (DoScriptsMatch(dynamic_user_scripts, frame, url)) {
+    TRACE_EVENT_INSTANT(
+        "extensions",
+        "ScriptInjectionTracker/DoDynamicContentScriptsMatch=true",
+        ChromeTrackEvent::kRenderProcessHost, process,
+        ChromeTrackEvent::kChromeExtensionId,
+        ExtensionIdForTracing(extension.id()));
+    return true;
+  }
+
+  TRACE_EVENT_INSTANT(
+      "extensions",
+      "ScriptInjectionTracker/DoDynamicContentScriptsMatch=false(nomatch)",
+      ChromeTrackEvent::kRenderProcessHost, process,
+      ChromeTrackEvent::kChromeExtensionId,
+      ExtensionIdForTracing(extension.id()));
+  return false;
+}
+
+// Returns whether an `extension` can inject JavaScript dynamic user scripts
+// into the `frame` / `url`.  The `url` might be either the last committed URL
+// of `frame` or the target of a ReadyToCommit navigation in `frame`.
+bool DoUserScriptsMatch(const Extension& extension,
+                        content::RenderFrameHost& frame,
+                        const GURL& url) {
+  content::RenderProcessHost& process = *frame.GetProcess();
+  TRACE_EVENT("extensions", "ScriptInjectionTracker/DoUserScriptsMatch",
+              ChromeTrackEvent::kRenderProcessHost, process,
+              ChromeTrackEvent::kChromeExtensionId,
+              ExtensionIdForTracing(extension.id()));
+
+  if (!CanExtensionScriptsAffectFrame(frame, extension)) {
+    TRACE_EVENT_INSTANT(
+        "extensions",
+        "ScriptInjectionTracker/DoUserScriptsMatch=false(webview)",
+        ChromeTrackEvent::kRenderProcessHost, process,
+        ChromeTrackEvent::kChromeExtensionId,
+        ExtensionIdForTracing(extension.id()));
+    return false;
+  }
+
+  std::vector<const UserScript*> dynamic_user_scripts = GetLoadedDynamicScripts(
+      extension.id(), UserScript::Source::kDynamicUserScript, process);
+  if (DoScriptsMatch(dynamic_user_scripts, frame, url)) {
+    TRACE_EVENT_INSTANT(
+        "extensions", "ScriptInjectionTracker/DoUserScriptsMatch=true(dynamic)",
+        ChromeTrackEvent::kRenderProcessHost, process,
+        ChromeTrackEvent::kChromeExtensionId,
+        ExtensionIdForTracing(extension.id()));
+    return true;
+  }
+
   TRACE_EVENT_INSTANT("extensions",
-                      "ScriptInjectionTracker/DoScriptsMatch=false",
+                      "ScriptInjectionTracker/DoUserScriptsMatch=false",
                       ChromeTrackEvent::kRenderProcessHost, process,
                       ChromeTrackEvent::kChromeExtensionId,
                       ExtensionIdForTracing(extension.id()));
   return false;
 }
 
-std::vector<const Extension*> GetExtensionsInjectingScripts(
-    content::NavigationHandle* navigation) {
-  content::RenderFrameHost* frame = navigation->GetRenderFrameHost();
-  const GURL& url = navigation->GetURL();
-
+// Returns all the extensions injecting content scripts into the `frame` /
+// `url`.
+std::vector<const Extension*> GetExtensionsInjectingContentScripts(
+    const ExtensionSet& extensions,
+    content::RenderFrameHost& frame,
+    const GURL& url) {
   std::vector<const Extension*> extensions_injecting_scripts;
-  const ExtensionRegistry* registry =
-      ExtensionRegistry::Get(frame->GetProcess()->GetBrowserContext());
-  DCHECK(registry);  // This method shouldn't be called during shutdown.
-  for (const auto& it : registry->enabled_extensions()) {
+  for (const auto& it : extensions) {
     const Extension& extension = *it;
-    if (!DoScriptsMatch(extension, frame, url)) {
-      continue;
+    if (DoWebViewScripstMatch(extension, frame) ||
+        DoStaticContentScriptsMatch(extension, frame, url) ||
+        DoDynamicContentScriptsMatch(extension, frame, url)) {
+      extensions_injecting_scripts.push_back(&extension);
     }
+  }
 
-    extensions_injecting_scripts.push_back(&extension);
+  return extensions_injecting_scripts;
+}
+
+// Returns all the extensions injecting user scripts into the `frame` / `url`.
+std::vector<const Extension*> GetExtensionsInjectingUserScripts(
+    const ExtensionSet& extensions,
+    content::RenderFrameHost& frame,
+    const GURL& url) {
+  std::vector<const Extension*> extensions_injecting_scripts;
+  for (const auto& it : extensions) {
+    const Extension& extension = *it;
+    if (DoUserScriptsMatch(extension, frame, url)) {
+      extensions_injecting_scripts.push_back(&extension);
+    }
   }
 
   return extensions_injecting_scripts;
@@ -477,19 +631,19 @@ const Extension* FindExtensionByHostId(content::BrowserContext* browser_context,
   return extension;
 }
 
-void StoreExtensionsInjectingContentScripts(
-    const std::vector<const Extension*>& extensions_injecting_content_scripts,
+// Stores extensions injecting scripts with `script_type` in `process` data.
+void StoreExtensionsInjectingScripts(
+    const std::vector<const Extension*>& extensions,
+    ScriptInjectionTracker::ScriptType script_type,
     content::RenderProcessHost& process) {
-  // Store `extensions_injecting_content_scripts` in `process_data`.
-  // ScriptInjectionTracker never removes entries from this set - once a
-  // renderer process gains an ability to talk on behalf of a content script, it
-  // retains this ability forever.  Note that the `process_data` will be
+  // ContentScriptTracker never removes entries from this set - once a
+  // renderer process gains an ability to talk on behalf of a content script,
+  // it retains this ability forever.  Note that the `process_data` will be
   // destroyed together with the RenderProcessHost (see also a comment inside
   // RenderProcessHostUserData::GetOrCreate).
   auto& process_data = RenderProcessHostUserData::GetOrCreate(process);
-  for (const Extension* extension : extensions_injecting_content_scripts) {
-    process_data.AddScript(ScriptInjectionTracker::ScriptType::kContentScript,
-                           extension->id());
+  for (const Extension* extension : extensions) {
+    process_data.AddScript(script_type, extension->id());
   }
 }
 
@@ -548,30 +702,49 @@ void ScriptInjectionTracker::ReadyToCommitNavigation(
     content::NavigationHandle* navigation) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  content::RenderProcessHost& process =
-      *navigation->GetRenderFrameHost()->GetProcess();
+  content::RenderFrameHost& frame = *navigation->GetRenderFrameHost();
+  content::RenderProcessHost& process = *frame.GetProcess();
   TRACE_EVENT("extensions", "ScriptInjectionTracker::ReadyToCommitNavigation",
               ChromeTrackEvent::kRenderProcessHost, process);
 
-  // Need to call StoreExtensionsInjectingContentScripts at
-  // ReadyToCommitNavigation time to deal with a (hypothetical, not confirmed by
-  // tests) race condition where Browser process sends Commit IPC and then
-  // immediately disables the extension.  In this scenario, the renderer may run
-  // some content scripts, even though at DidCommit time the Browser will see
-  // that the extension has been disabled.
-  // TODO(crbug.com/1385165): GetExtensionsInjectingScripts returns extensions
-  // with content and user scripts, but then we store all as content scripts.
-  // Separate them.
-  std::vector<const Extension*> extensions_injecting_scripts =
-      GetExtensionsInjectingScripts(navigation);
-  StoreExtensionsInjectingContentScripts(extensions_injecting_scripts, process);
+  const GURL& url = navigation->GetURL();
+  const ExtensionRegistry* registry =
+      ExtensionRegistry::Get(process.GetBrowserContext());
+  DCHECK(registry);  // This method shouldn't be called during shutdown.
+  const ExtensionSet& extensions = registry->enabled_extensions();
 
-  // Notify URLLoaderFactoryManager - this needs to happen at
-  // ReadyToCommitNavigation time (i.e. before constructing a URLLoaderFactory
-  // that will be sent to the Renderer in a Commit IPC).
+  // Need to call StoreExtensionsInjectingScripts at ReadyToCommitNavigation
+  // time to deal with a (hypothetical, not confirmed by tests) race condition
+  // where Browser process sends Commit IPC and then immediately disables the
+  // extension.  In this scenario, the renderer may run some content scripts,
+  // even though at DidCommit time the Browser will see that the extension has
+  // been disabled.
+  std::vector<const Extension*> extensions_injecting_content_scripts =
+      GetExtensionsInjectingContentScripts(extensions, frame, url);
+  std::vector<const Extension*> extensions_injecting_user_scripts =
+      GetExtensionsInjectingUserScripts(extensions, frame, url);
+  StoreExtensionsInjectingScripts(
+      extensions_injecting_content_scripts,
+      ScriptInjectionTracker::ScriptType::kContentScript, process);
+  StoreExtensionsInjectingScripts(
+      extensions_injecting_user_scripts,
+      ScriptInjectionTracker::ScriptType::kUserScript, process);
+
+  // Notify URLLoaderFactoryManager for both user and content scripts. This
+  // needs to happen at ReadyToCommitNavigation time (i.e. before constructing a
+  // URLLoaderFactory that will be sent to the Renderer in a Commit IPC).
+  // TODO(crbug.com/1495177): This should only use webview scripts, since it's
+  // not needed for all extensions.
+  extensions_injecting_content_scripts.reserve(
+      extensions_injecting_content_scripts.size() +
+      extensions_injecting_user_scripts.size());
+  extensions_injecting_content_scripts.insert(
+      extensions_injecting_content_scripts.end(),
+      extensions_injecting_user_scripts.begin(),
+      extensions_injecting_user_scripts.end());
   URLLoaderFactoryManager::WillInjectContentScriptsWhenNavigationCommits(
       base::PassKey<ScriptInjectionTracker>(), navigation,
-      extensions_injecting_scripts);
+      extensions_injecting_content_scripts);
 }
 
 // static
@@ -593,22 +766,35 @@ void ScriptInjectionTracker::DidFinishNavigation(
     return;
   }
 
-  content::RenderProcessHost& process =
-      *navigation->GetRenderFrameHost()->GetProcess();
+  content::RenderFrameHost& frame = *navigation->GetRenderFrameHost();
+  content::RenderProcessHost& process = *frame.GetProcess();
   TRACE_EVENT("extensions", "ScriptInjectionTracker::DidFinishNavigation",
               ChromeTrackEvent::kRenderProcessHost, process);
 
-  // Calling StoreExtensionsInjectingContentScripts in response to DidCommit IPC
-  // is required for correct handling of the race condition from
-  // https://crbug.com/1312125.
-  // TODO(crbug.com/1385165): GetExtensionsInjectingScripts returns extensions
-  // with content and user scripts, but then we store all as content scripts.
-  // Separate them.
-  std::vector<const Extension*> extensions_injecting_scripts =
-      GetExtensionsInjectingScripts(navigation);
-  StoreExtensionsInjectingContentScripts(extensions_injecting_scripts, process);
+  const GURL& url = navigation->GetURL();
+  const ExtensionRegistry* registry =
+      ExtensionRegistry::Get(process.GetBrowserContext());
+  DCHECK(registry);  // This method shouldn't be called during shutdown.
+  const ExtensionSet& extensions = registry->enabled_extensions();
 
-  RecordUkm(navigation, extensions_injecting_scripts.size());
+  // Calling StoreExtensionsInjectingScripts in response to DidCommit IPC is
+  // required for correct handling of the race condition from
+  // https://crbug.com/1312125.
+  std::vector<const Extension*> extensions_injecting_content_scripts =
+      GetExtensionsInjectingContentScripts(extensions, frame, url);
+  std::vector<const Extension*> extensions_injecting_user_scripts =
+      GetExtensionsInjectingUserScripts(extensions, frame, url);
+  StoreExtensionsInjectingScripts(
+      extensions_injecting_content_scripts,
+      ScriptInjectionTracker::ScriptType::kContentScript, process);
+  StoreExtensionsInjectingScripts(
+      extensions_injecting_user_scripts,
+      ScriptInjectionTracker::ScriptType::kUserScript, process);
+
+  int num_extensions_injecting_scripts =
+      extensions_injecting_content_scripts.size() +
+      extensions_injecting_user_scripts.size();
+  RecordUkm(navigation, num_extensions_injecting_scripts);
 }
 
 // static
@@ -676,7 +862,7 @@ void ScriptInjectionTracker::WillExecuteCode(
 }
 
 // static
-void ScriptInjectionTracker::WillUpdateContentScriptsInRenderer(
+void ScriptInjectionTracker::WillUpdateScriptsInRenderer(
     base::PassKey<UserScriptLoader> pass_key,
     const mojom::HostID& host_id,
     content::RenderProcessHost& process) {
@@ -696,11 +882,15 @@ void ScriptInjectionTracker::WillUpdateContentScriptsInRenderer(
   auto& process_data = RenderProcessHostUserData::GetOrCreate(process);
   const std::set<content::RenderFrameHost*>& frames_in_process =
       process_data.frames();
-  bool any_frame_matches_content_scripts = base::ranges::any_of(
+  bool any_frame_matches_scripts = base::ranges::any_of(
       frames_in_process, [extension](content::RenderFrameHost* frame) {
-        return DoScriptsMatch(*extension, frame, frame->GetLastCommittedURL());
+        auto url = frame->GetLastCommittedURL();
+        return DoWebViewScripstMatch(*extension, *frame) ||
+               DoStaticContentScriptsMatch(*extension, *frame, url) ||
+               DoDynamicContentScriptsMatch(*extension, *frame, url) ||
+               DoUserScriptsMatch(*extension, *frame, url);
       });
-  if (any_frame_matches_content_scripts) {
+  if (any_frame_matches_scripts) {
     process_data.AddScript(ScriptType::kContentScript, extension->id());
   } else {
     TRACE_EVENT_INSTANT("extensions",
@@ -713,11 +903,11 @@ void ScriptInjectionTracker::WillUpdateContentScriptsInRenderer(
 }
 
 // static
-bool ScriptInjectionTracker::DoScriptsMatchForTesting(
+bool ScriptInjectionTracker::DoStaticContentScriptsMatchForTesting(
     const Extension& extension,
     content::RenderFrameHost* frame,
     const GURL& url) {
-  return DoScriptsMatch(extension, frame, url);
+  return DoStaticContentScriptsMatch(extension, *frame, url);
 }
 
 }  // namespace extensions

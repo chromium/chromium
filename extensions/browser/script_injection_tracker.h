@@ -118,9 +118,8 @@ class ScriptInjectionTracker {
                               content::RenderFrameHost* frame,
                               const Extension& extension);
 
-  // Called before the given renderer `process` is notified about new content
-  // scripts.
-  static void WillUpdateContentScriptsInRenderer(
+  // Called before the given renderer `process` is notified about new scripts.
+  static void WillUpdateScriptsInRenderer(
       base::PassKey<UserScriptLoader> pass_key,
       const mojom::HostID& host_id,
       content::RenderProcessHost& process);
@@ -128,11 +127,13 @@ class ScriptInjectionTracker {
  private:
   using PassKey = base::PassKey<ScriptInjectionTracker>;
 
-  // See the doc comment of DoContentScriptsMatch in the .cc file.
+  // See the doc comment of DoStaticContentScriptsMatchForTesting in the .cc
+  // file.
   friend class ContentScriptMatchingBrowserTest;
-  static bool DoScriptsMatchForTesting(const Extension& extension,
-                                       content::RenderFrameHost* frame,
-                                       const GURL& url);
+  static bool DoStaticContentScriptsMatchForTesting(
+      const Extension& extension,
+      content::RenderFrameHost* frame,
+      const GURL& url);
 };
 
 }  // namespace extensions

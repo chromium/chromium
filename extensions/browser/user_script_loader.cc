@@ -480,7 +480,7 @@ void UserScriptLoader::SendUpdate(
       return;
   }
 
-  ScriptInjectionTracker::WillUpdateContentScriptsInRenderer(
+  ScriptInjectionTracker::WillUpdateScriptsInRenderer(
       base::PassKey<UserScriptLoader>(), host_id_, *process);
 
   mojom::Renderer* renderer =
