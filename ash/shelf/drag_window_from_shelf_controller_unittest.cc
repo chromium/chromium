@@ -25,6 +25,7 @@
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_drop_target.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_test_util.h"
@@ -638,15 +639,15 @@ TEST_F(DragWindowFromShelfControllerTest, HideOverviewDuringDragging) {
   OverviewGrid* current_grid =
       overview_controller->overview_session()->GetGridWithRootWindow(
           window1->GetRootWindow());
-  auto* drop_target_item = current_grid->GetDropTarget();
-  EXPECT_TRUE(drop_target_item);
-  EXPECT_EQ(drop_target_item->GetWindow()->layer()->GetTargetOpacity(), 1.f);
+  auto* drop_target = current_grid->drop_target();
+  EXPECT_TRUE(drop_target);
+  EXPECT_EQ(drop_target->item_widget()->GetLayer()->GetTargetOpacity(), 1.f);
 
   Drag(gfx::Point(200, 200), 0.5f,
        DragWindowFromShelfController::kShowOverviewThreshold + 1);
-  // Test overview should be invisble.
+  // Test that the overview drop target is invisible.
   EXPECT_TRUE(overview_controller->InOverviewSession());
-  EXPECT_EQ(drop_target_item->GetWindow()->layer()->GetTargetOpacity(), 0.f);
+  EXPECT_EQ(drop_target->item_widget()->GetLayer()->GetTargetOpacity(), 0.f);
 
   Drag(gfx::Point(200, 200), 0.5f, 0.5f);
   DragWindowFromShelfControllerTestApi().WaitUntilOverviewIsShown(

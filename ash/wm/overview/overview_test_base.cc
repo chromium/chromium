@@ -12,6 +12,7 @@
 #include "ash/style/close_button.h"
 #include "ash/style/system_shadow.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_drop_target.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_base.h"
@@ -110,7 +111,7 @@ gfx::Rect OverviewTestBase::GetTransformedBoundsInRootWindow(
 }
 
 OverviewItemBase* OverviewTestBase::GetDropTarget(int grid_index) {
-  return GetOverviewSession()->grid_list_[grid_index]->GetDropTarget();
+  return GetOverviewSession()->grid_list_[grid_index]->drop_target();
 }
 
 CloseButton* OverviewTestBase::GetCloseButton(OverviewItemBase* item) {

@@ -59,6 +59,9 @@ OverviewSession* GetOverviewSession() {
 }
 
 bool CanCoverAvailableWorkspace(aura::Window* window) {
+  if (!window) {
+    return false;
+  }
   SplitViewController* split_view_controller = SplitViewController::Get(window);
   if (split_view_controller->InSplitViewMode())
     return split_view_controller->CanSnapWindow(window);
@@ -380,6 +383,26 @@ void MoveFocusToView(OverviewFocusableView* target_view) {
   CHECK(focus_cycler);
 
   focus_cycler->MoveFocusToView(target_view);
+}
+
+void SetWindowsVisibleDuringItemDragging(const aura::Window::Windows& windows,
+                                         bool visible,
+                                         bool animate) {
+  float new_opacity = visible ? 1.f : 0.f;
+  for (auto* window : windows) {
+    ui::Layer* layer = window->layer();
+    if (layer->GetTargetOpacity() == new_opacity) {
+      continue;
+    }
+
+    if (animate) {
+      ScopedOverviewAnimationSettings settings(
+          OVERVIEW_ANIMATION_OPACITY_ON_WINDOW_DRAG, window);
+      layer->SetOpacity(new_opacity);
+    } else {
+      layer->SetOpacity(new_opacity);
+    }
+  }
 }
 
 }  // namespace ash

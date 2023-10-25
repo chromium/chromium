@@ -2540,6 +2540,8 @@ component("ash") {
     "wm/overview/overview_controller.h",
     "wm/overview/overview_controller.h",
     "wm/overview/overview_delegate.h",
+    "wm/overview/overview_drop_target.cc",
+    "wm/overview/overview_drop_target.h",
     "wm/overview/overview_focus_cycler.cc",
     "wm/overview/overview_focus_cycler.h",
     "wm/overview/overview_focusable_view.cc",

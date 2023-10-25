@@ -17,6 +17,7 @@
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/overview/scoped_overview_animation_settings.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
@@ -220,15 +221,17 @@ void OverviewItemBase::HandleGestureEventForTabletModeLayout(
 
 views::Widget::InitParams OverviewItemBase::CreateOverviewItemWidgetParams(
     aura::Window* parent_window,
-    const std::string& widget_name) const {
+    const std::string& widget_name,
+    bool accept_events) const {
   views::Widget::InitParams params;
   params.type = views::Widget::InitParams::TYPE_POPUP;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+  // TODO(sammiequon): Investigate if this parameter is necessary.
   params.visible_on_all_workspaces = true;
   params.name = widget_name;
   params.activatable = views::Widget::InitParams::Activatable::kDefault;
-  params.accept_events = true;
+  params.accept_events = accept_events;
   params.parent = parent_window;
   params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
   return params;

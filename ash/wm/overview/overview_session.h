@@ -374,6 +374,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   }
 
   size_t num_items() const { return num_items_; }
+  void set_num_items(size_t num_items) { num_items_ = num_items; }
 
   OverviewEnterExitType enter_exit_overview_type() const {
     return enter_exit_overview_type_;

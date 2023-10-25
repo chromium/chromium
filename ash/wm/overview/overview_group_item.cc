@@ -342,7 +342,7 @@ void OverviewGroupItem::CreateItemWidget() {
   item_widget_->set_focus_on_creation(false);
   item_widget_->Init(CreateOverviewItemWidgetParams(
       desks_util::GetActiveDeskContainerForRoot(overview_grid_->root_window()),
-      "OverviewGroupItemWidget"));
+      "OverviewGroupItemWidget", /*accept_events=*/true));
 
   ConfigureTheShadow();
 

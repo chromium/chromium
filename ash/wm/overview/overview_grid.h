@@ -42,6 +42,7 @@ class PresentationTimeRecorder;
 namespace ash {
 
 class LegacyDeskBarView;
+class OverviewDropTarget;
 class OverviewGridEventHandler;
 class OverviewItemBase;
 class OverviewSession;
@@ -229,14 +230,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Shows/Hides windows during window dragging. Used when swiping up a window
   // from shelf.
   void SetVisibleDuringWindowDragging(bool visible, bool animate);
-
-  // Returns true if the `item` is the placeholder for the
-  // `drop_target_widget_`.
-  bool IsDropTargetItem(OverviewItemBase* item) const;
-
-  // Returns the overview item that accociates with |drop_target_widget_|.
-  // Returns nullptr if overview does not have the drop target.
-  OverviewItemBase* GetDropTarget();
 
   // Called by |OverviewSession::OnDisplayMetricsChanged|, only for the display
   // with this grid.
@@ -432,6 +425,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Returns how many overview items are in the grid.
   size_t size() const { return window_list_.size(); }
 
+  OverviewDropTarget* drop_target() { return drop_target_; }
+
   // Returns the root window in which the grid displays the windows.
   aura::Window* root_window() { return root_window_; }
 
@@ -457,8 +452,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   }
 
   void set_suspend_reposition(bool value) { suspend_reposition_ = value; }
-
-  views::Widget* drop_target_widget() { return drop_target_widget_.get(); }
 
   OverviewGridEventHandler* grid_event_handler() {
     return grid_event_handler_.get();
@@ -583,6 +576,21 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   bool ShouldUseScrollingLayout(size_t ignored_items_size) const;
 
+  // Creates the drop target, which lets users know where `dragged_item` will
+  // land. Adds the drop target to `window_list_` at `position` (which is
+  // usually the index of `dragged_item`), and calls `PositionWindows()`.
+  void AddDropTargetImpl(OverviewItemBase* dragged_item,
+                         size_t position,
+                         bool animate);
+
+  // The drop target is created when a window or overview item is being dragged,
+  // and is destroyed when the drag ends or overview mode is ended. The drop
+  // target is hidden when a snap preview area is shown. You can drop a window
+  // into overview by dragging to the drop target or by dragging to almost
+  // anywhere while the drop target is shown. The drop target is owned by
+  // `window_list_`; this is just a convenience pointer.
+  raw_ptr<OverviewDropTarget> drop_target_ = nullptr;
+
   // Root window the grid is in.
   raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> root_window_;
 
@@ -605,13 +613,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // The contents view of the above |desks_widget_| if created.
   raw_ptr<LegacyDeskBarView, DanglingUntriaged | ExperimentalAsh>
       desks_bar_view_ = nullptr;
-
-  // The drop target widget. The drop target is created when a window or
-  // overview item is being dragged, and is destroyed when the drag ends or
-  // overview mode is ended. The drop target is hidden when a snap preview area
-  // is shown. You can drop a window into overview by dragging to the drop
-  // target or by dragging to almost anywhere while the drop target is shown.
-  std::unique_ptr<views::Widget> drop_target_widget_;
 
   // True if the overview grid should animate when exiting overview mode. Note
   // even if it's true, it doesn't mean all window items in the grid should

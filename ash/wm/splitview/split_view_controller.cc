@@ -1561,8 +1561,10 @@ void SplitViewController::OnOverviewModeEnding(
   }
 
   for (const auto& overview_item : current_grid->window_list()) {
+    // TODO(michelefan|sammiequon): See if we should use
+    // `OverviewItemBase::GetWindows()` to cover snap group item case.
     aura::Window* window = overview_item->GetWindow();
-    if (window != GetDefaultSnappedWindow()) {
+    if (window && window != GetDefaultSnappedWindow()) {
       absl::optional<float> snap_ratio = ComputeSnapRatio(window);
       if (snap_ratio) {
         const bool was_active =

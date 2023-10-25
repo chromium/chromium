@@ -534,7 +534,7 @@ void OverviewSession::UpdateDropTargetsBackgroundVisibilities(
     OverviewItemBase* dragged_item,
     const gfx::PointF& location_in_screen) {
   for (std::unique_ptr<OverviewGrid>& grid : grid_list_) {
-    if (grid->GetDropTarget()) {
+    if (grid->drop_target()) {
       grid->UpdateDropTargetBackgroundVisibility(dragged_item,
                                                  location_in_screen);
     }
@@ -623,8 +623,9 @@ void OverviewSession::RemoveItem(OverviewItemBase* overview_item,
 
 void OverviewSession::RemoveDropTargets() {
   for (std::unique_ptr<OverviewGrid>& grid : grid_list_) {
-    if (grid->GetDropTarget())
+    if (grid->drop_target()) {
       grid->RemoveDropTarget();
+    }
   }
 }
 
@@ -932,8 +933,9 @@ void OverviewSession::OnWindowActivating(
   // dragged as evidenced by the presence of a drop target. (Dragging to close
   // does not count; canceling overview mode is okay then.)
   for (std::unique_ptr<OverviewGrid>& overview_grid : grid_list_) {
-    if (overview_grid->GetDropTarget())
+    if (overview_grid->drop_target()) {
       return;
+    }
   }
 
   auto* grid = GetGridWithRootWindow(gained_active->GetRootWindow());
@@ -1619,12 +1621,6 @@ void OverviewSession::OnItemAdded(aura::Window* window) {
   UpdateNoWindowsWidgetOnEachGrid(/*animate=*/true,
                                   /*is_continuous_enter=*/false);
 
-  OverviewGrid* grid = GetGridWithRootWindow(window->GetRootWindow());
-  // The drop target window is non-activatable, so no need to transfer focus.
-  if (grid && grid->IsDropTargetItem(grid->GetOverviewItemContaining(window))) {
-    return;
-  }
-
   // Transfer focus from `window` to `overview_focus_widget_` to match the
   // behavior of entering overview mode in the beginning.
   DCHECK(overview_focus_widget_);
@@ -1652,7 +1648,9 @@ void OverviewSession::UpdateFrameThrottling() {
       }
 
       for (auto& item : grid->window_list()) {
-        windows_to_throttle.push_back(item->GetWindow());
+        for (auto* window : item->GetWindows()) {
+          windows_to_throttle.push_back(window);
+        }
       }
     }
   }

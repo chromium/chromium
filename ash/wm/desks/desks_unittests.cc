@@ -1772,7 +1772,7 @@ TEST_P(DesksTest, DragWindowToDesk) {
   EXPECT_EQ(1u, overview_grid->size());
   EXPECT_FALSE(DoesActiveDeskContainWindow(win1.get()));
   EXPECT_TRUE(base::Contains(desk_2->windows(), win1.get()));
-  EXPECT_FALSE(overview_grid->drop_target_widget());
+  EXPECT_FALSE(overview_grid->drop_target());
 
   // After dragging an item outside of overview to another desk, the focus
   // should not be given to another window in overview, and should remain on the
@@ -1868,7 +1868,7 @@ TEST_P(DesksTest, DragMinimizedWindowToDesk) {
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_TRUE(overview_grid->empty());
   EXPECT_TRUE(base::Contains(desk_2->windows(), window.get()));
-  EXPECT_FALSE(overview_grid->drop_target_widget());
+  EXPECT_FALSE(overview_grid->drop_target());
   DeskSwitchAnimationWaiter waiter;
   ClickOnView(desk_2_mini_view, GetEventGenerator());
   waiter.Wait();
@@ -4002,7 +4002,7 @@ TEST_P(DesksTest, SuccessfulDragToDeskRemovesSplitViewIndicators) {
                   /*drop=*/false);
   // Validate that before dropping, the SplitView indicators and the drop target
   // widget are created.
-  EXPECT_TRUE(overview_grid->drop_target_widget());
+  EXPECT_TRUE(overview_grid->drop_target());
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kFromOverview,
             overview_session->grid_list()[0]
                 ->split_view_drag_indicators()
@@ -4014,7 +4014,7 @@ TEST_P(DesksTest, SuccessfulDragToDeskRemovesSplitViewIndicators) {
   EXPECT_TRUE(overview_grid->empty());
   EXPECT_FALSE(DoesActiveDeskContainWindow(window.get()));
   EXPECT_TRUE(overview_grid->no_windows_widget());
-  EXPECT_FALSE(overview_grid->drop_target_widget());
+  EXPECT_FALSE(overview_grid->drop_target());
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kNoDrag,
             overview_session->grid_list()[0]
                 ->split_view_drag_indicators()
