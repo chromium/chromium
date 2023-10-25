@@ -18906,10 +18906,20 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_99p_5m",
+                    "name": "Enabled_default",
                     "params": {
                         "inert_interval_after_loading": "5m",
                         "memory_threshold_mb": "458"
+                    },
+                    "enable_features": [
+                        "UserLevelMemoryPressureSignalOn4GbDevices"
+                    ]
+                },
+                {
+                    "name": "Enabled_99p_5m",
+                    "params": {
+                        "inert_interval_after_loading": "5m",
+                        "memory_threshold_mb": "803"
                     },
                     "enable_features": [
                         "UserLevelMemoryPressureSignalOn4GbDevices"
@@ -18919,27 +18929,27 @@
                     "name": "Enabled_99p_1m",
                     "params": {
                         "inert_interval_after_loading": "1m",
-                        "memory_threshold_mb": "458"
+                        "memory_threshold_mb": "803"
                     },
                     "enable_features": [
                         "UserLevelMemoryPressureSignalOn4GbDevices"
                     ]
                 },
                 {
-                    "name": "Enabled_Middle_5m",
+                    "name": "Enabled_95p_5m",
                     "params": {
                         "inert_interval_after_loading": "5m",
-                        "memory_threshold_mb": "345"
+                        "memory_threshold_mb": "508"
                     },
                     "enable_features": [
                         "UserLevelMemoryPressureSignalOn4GbDevices"
                     ]
                 },
                 {
-                    "name": "Enabled_Middle_1m",
+                    "name": "Enabled_95p_1m",
                     "params": {
                         "inert_interval_after_loading": "1m",
-                        "memory_threshold_mb": "345"
+                        "memory_threshold_mb": "508"
                     },
                     "enable_features": [
                         "UserLevelMemoryPressureSignalOn4GbDevices"
@@ -18949,7 +18959,7 @@
                     "name": "Enabled_90p_5m",
                     "params": {
                         "inert_interval_after_loading": "5m",
-                        "memory_threshold_mb": "229"
+                        "memory_threshold_mb": "405"
                     },
                     "enable_features": [
                         "UserLevelMemoryPressureSignalOn4GbDevices"
@@ -18959,7 +18969,7 @@
                     "name": "Enabled_90p_1m",
                     "params": {
                         "inert_interval_after_loading": "1m",
-                        "memory_threshold_mb": "229"
+                        "memory_threshold_mb": "405"
                     },
                     "enable_features": [
                         "UserLevelMemoryPressureSignalOn4GbDevices"
@@ -18976,10 +18986,20 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_99p_5m",
+                    "name": "Enabled_default",
                     "params": {
                         "inert_interval_after_loading": "5m",
                         "memory_threshold_mb": "494"
+                    },
+                    "enable_features": [
+                        "UserLevelMemoryPressureSignalOn6GbDevices"
+                    ]
+                },
+                {
+                    "name": "Enabled_99p_5m",
+                    "params": {
+                        "inert_interval_after_loading": "5m",
+                        "memory_threshold_mb": "924"
                     },
                     "enable_features": [
                         "UserLevelMemoryPressureSignalOn6GbDevices"
@@ -18989,27 +19009,27 @@
                     "name": "Enabled_99p_1m",
                     "params": {
                         "inert_interval_after_loading": "1m",
-                        "memory_threshold_mb": "494"
+                        "memory_threshold_mb": "924"
                     },
                     "enable_features": [
                         "UserLevelMemoryPressureSignalOn6GbDevices"
                     ]
                 },
                 {
-                    "name": "Enabled_Middle_5m",
+                    "name": "Enabled_95p_5m",
                     "params": {
                         "inert_interval_after_loading": "5m",
-                        "memory_threshold_mb": "400"
+                        "memory_threshold_mb": "580"
                     },
                     "enable_features": [
                         "UserLevelMemoryPressureSignalOn6GbDevices"
                     ]
                 },
                 {
-                    "name": "Enabled_Middle_1m",
+                    "name": "Enabled_95p_1m",
                     "params": {
                         "inert_interval_after_loading": "1m",
-                        "memory_threshold_mb": "400"
+                        "memory_threshold_mb": "580"
                     },
                     "enable_features": [
                         "UserLevelMemoryPressureSignalOn6GbDevices"
@@ -19019,7 +19039,7 @@
                     "name": "Enabled_90p_5m",
                     "params": {
                         "inert_interval_after_loading": "5m",
-                        "memory_threshold_mb": "252"
+                        "memory_threshold_mb": "460"
                     },
                     "enable_features": [
                         "UserLevelMemoryPressureSignalOn6GbDevices"
@@ -19029,7 +19049,7 @@
                     "name": "Enabled_90p_1m",
                     "params": {
                         "inert_interval_after_loading": "1m",
-                        "memory_threshold_mb": "252"
+                        "memory_threshold_mb": "460"
                     },
                     "enable_features": [
                         "UserLevelMemoryPressureSignalOn6GbDevices"
