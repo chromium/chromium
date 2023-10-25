@@ -143,4 +143,16 @@ void UpdateCompanionDefaultPinnedToToolbarState(PrefService* pref_service) {
       base::Value(companion_should_be_default_pinned));
 }
 
+bool ShouldUseContextualLensPanelForImageSearch(const Browser* browser) {
+  if (!browser) {
+    return false;
+  }
+  // Contextual Lens panel should only be enabled when image search is disabled
+  // for the companion AND the feature param for contextual Lens panel is
+  // enabled.
+  return IsSearchInCompanionSidePanelSupported(browser) &&
+         !IsSearchImageInCompanionSidePanelSupported(browser) &&
+         ShouldOpenContextualLensPanel();
+}
+
 }  // namespace companion

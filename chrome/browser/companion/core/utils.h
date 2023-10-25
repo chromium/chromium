@@ -23,6 +23,7 @@ std::string GetExpsRegistrationSuccessPageURLs();
 std::string GetCompanionIPHBlocklistedPageURLs();
 bool IsValidPageURLForCompanion(const GURL& url);
 bool IsSafeURLFromCompanion(const GURL& url);
+bool ShouldOpenContextualLensPanel();
 
 }  // namespace companion
 

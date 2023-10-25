@@ -73,11 +73,11 @@ LensSidePanelCoordinator::~LensSidePanelCoordinator() {
 void LensSidePanelCoordinator::DeregisterLensFromSidePanel() {
   lens_side_panel_view_ = nullptr;
   auto* active_web_contents = GetBrowserView()->GetActiveWebContents();
-  const bool is_companion_enabled =
-      companion::IsSearchInCompanionSidePanelSupported(&GetBrowser());
+  const bool should_use_contextual_panel =
+      companion::ShouldUseContextualLensPanelForImageSearch(&GetBrowser());
 
   // Delete contextual lens view if applicable.
-  if (is_companion_enabled && active_web_contents) {
+  if (should_use_contextual_panel && active_web_contents) {
     auto* companion_helper =
         companion::CompanionTabHelper::FromWebContents(active_web_contents);
     if (companion_helper) {
@@ -87,7 +87,7 @@ void LensSidePanelCoordinator::DeregisterLensFromSidePanel() {
 
   // Remove entry from side panel entry if it exists.
   auto* registry =
-      is_companion_enabled
+      should_use_contextual_panel
           ? SidePanelRegistry::Get(active_web_contents)
           : SidePanelCoordinator::GetGlobalSidePanelRegistry(&GetBrowser());
   if (registry) {
@@ -103,7 +103,7 @@ void LensSidePanelCoordinator::OnSidePanelDidClose() {
 
 void LensSidePanelCoordinator::OnFaviconFetched(const gfx::Image& favicon) {
   auto* registry =
-      companion::IsSearchInCompanionSidePanelSupported(&GetBrowser())
+      companion::ShouldUseContextualLensPanelForImageSearch(&GetBrowser())
           ? SidePanelRegistry::Get(GetBrowserView()->GetActiveWebContents())
           : SidePanelCoordinator::GetGlobalSidePanelRegistry(&GetBrowser());
   if (registry == nullptr) {
@@ -146,7 +146,7 @@ void LensSidePanelCoordinator::OnEntryHidden(SidePanelEntry* entry) {
 }
 
 bool LensSidePanelCoordinator::IsLaunchButtonEnabledForTesting() {
-  if (companion::IsSearchInCompanionSidePanelSupported(&GetBrowser())) {
+  if (companion::ShouldUseContextualLensPanelForImageSearch(&GetBrowser())) {
     auto* companion_helper = companion::CompanionTabHelper::FromWebContents(
         GetBrowserView()->GetActiveWebContents());
     return companion_helper->IsLensLaunchButtonEnabledForTesting();  // IN-TEST
@@ -163,8 +163,7 @@ bool LensSidePanelCoordinator::IsDefaultSearchProviderGoogle() {
 std::u16string LensSidePanelCoordinator::GetComboboxLabel() {
   // If this panel was opened while the companion feature is enabled, then we
   // want this panel to be labelled like the companion panel.
-  if (companion::IsSearchInCompanionSidePanelSupportedForProfile(
-          GetBrowser().profile())) {
+  if (companion::ShouldUseContextualLensPanelForImageSearch(&GetBrowser())) {
     return l10n_util::GetStringUTF16(IDS_SIDE_PANEL_COMPANION_TITLE);
   }
 
@@ -180,8 +179,7 @@ std::u16string LensSidePanelCoordinator::GetComboboxLabel() {
 const ui::ImageModel LensSidePanelCoordinator::GetFaviconImage() {
   // If this panel was opened while the companion feature is enabled, then we
   // want this panel to use the companion panel favicon.
-  if (companion::IsSearchInCompanionSidePanelSupportedForProfile(
-          GetBrowser().profile())) {
+  if (companion::ShouldUseContextualLensPanelForImageSearch(&GetBrowser())) {
     return ui::ImageModel::FromVectorIcon(
         features::IsChromeRefresh2023()
             ? vector_icons::
@@ -221,23 +219,23 @@ const ui::ImageModel LensSidePanelCoordinator::GetFaviconImage() {
 void LensSidePanelCoordinator::RegisterEntryAndShow(
     const content::OpenURLParams& params) {
   base::RecordAction(base::UserMetricsAction("LensUnifiedSidePanel.LensQuery"));
-  const bool is_companion_enabled =
-      companion::IsSearchInCompanionSidePanelSupported(&GetBrowser());
+  const bool should_use_contextual_panel =
+      companion::ShouldUseContextualLensPanelForImageSearch(&GetBrowser());
   auto* companion_helper = companion::CompanionTabHelper::FromWebContents(
       GetBrowserView()->GetActiveWebContents());
   auto* registry =
-      is_companion_enabled
+      should_use_contextual_panel
           ? SidePanelRegistry::Get(GetBrowserView()->GetActiveWebContents())
           : SidePanelCoordinator::GetGlobalSidePanelRegistry(&GetBrowser());
 
   // check if the view is already registered
   if (registry->GetEntryForKey(
           SidePanelEntry::Key(SidePanelEntry::Id::kLens)) != nullptr &&
-      (lens_side_panel_view_ != nullptr || is_companion_enabled)) {
+      (lens_side_panel_view_ != nullptr || should_use_contextual_panel)) {
     // The user issued a follow-up Lens query.
     base::RecordAction(
         base::UserMetricsAction("LensUnifiedSidePanel.LensQuery_Followup"));
-    if (is_companion_enabled) {
+    if (should_use_contextual_panel) {
       companion_helper->OpenContextualLensView(params);
     } else {
       lens_side_panel_view_->OpenUrl(params);
@@ -245,7 +243,7 @@ void LensSidePanelCoordinator::RegisterEntryAndShow(
   } else {
     base::RecordAction(
         base::UserMetricsAction("LensUnifiedSidePanel.LensQuery_New"));
-    if (is_companion_enabled) {
+    if (should_use_contextual_panel) {
       // Side panel entry needs to be created and registered
       // in the companion side panel controller that exists per web contents in
       // order to prevent a dependency on views on CompanionTabHelper.
@@ -282,7 +280,7 @@ void LensSidePanelCoordinator::RegisterEntryAndShow(
 }
 
 content::WebContents* LensSidePanelCoordinator::GetViewWebContentsForTesting() {
-  if (companion::IsSearchInCompanionSidePanelSupported(&GetBrowser())) {
+  if (companion::ShouldUseContextualLensPanelForImageSearch(&GetBrowser())) {
     auto* companion_helper = companion::CompanionTabHelper::FromWebContents(
         GetBrowserView()->GetActiveWebContents());
     return companion_helper->GetLensViewWebContentsForTesting();  // IN-TEST
@@ -292,7 +290,7 @@ content::WebContents* LensSidePanelCoordinator::GetViewWebContentsForTesting() {
 }
 
 bool LensSidePanelCoordinator::OpenResultsInNewTabForTesting() {
-  if (companion::IsSearchInCompanionSidePanelSupported(&GetBrowser())) {
+  if (companion::ShouldUseContextualLensPanelForImageSearch(&GetBrowser())) {
     auto* companion_helper = companion::CompanionTabHelper::FromWebContents(
         GetBrowserView()->GetActiveWebContents());
     return companion_helper->OpenLensResultsInNewTabForTesting();  // IN-TEST
