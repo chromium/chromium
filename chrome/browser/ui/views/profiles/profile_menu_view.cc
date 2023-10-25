@@ -78,6 +78,10 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/trusted_vault/features.h"
+#endif
+
 namespace {
 
 // Helpers --------------------------------------------------------------------
@@ -324,6 +328,15 @@ void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
       break;
     case AvatarSyncErrorType::kTrustedVaultKeyMissingForEverythingError:
     case AvatarSyncErrorType::kTrustedVaultKeyMissingForPasswordsError:
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      if (base::FeatureList::IsEnabled(
+              trusted_vault::kChromeOSTrustedVaultUseWebUIDialog)) {
+        OpenDialogForSyncKeyRetrieval(
+            browser()->profile(),
+            syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
+        break;
+      }
+#endif
       OpenTabForSyncKeyRetrieval(
           browser(), syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
       break;
@@ -331,6 +344,15 @@ void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
         kTrustedVaultRecoverabilityDegradedForEverythingError:
     case AvatarSyncErrorType::
         kTrustedVaultRecoverabilityDegradedForPasswordsError:
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      if (base::FeatureList::IsEnabled(
+              trusted_vault::kChromeOSTrustedVaultUseWebUIDialog)) {
+        OpenDialogForSyncKeyRecoverabilityDegraded(
+            browser()->profile(),
+            syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
+        break;
+      }
+#endif
       OpenTabForSyncKeyRecoverabilityDegraded(
           browser(), syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
       break;

@@ -74,6 +74,10 @@
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/trusted_vault/features.h"
+#endif
+
 using content::WebContents;
 using l10n_util::GetStringFUTF16;
 using l10n_util::GetStringUTF16;
@@ -721,6 +725,15 @@ void PeopleHandler::HandlePauseSync(const base::Value::List& args) {
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 void PeopleHandler::HandleStartKeyRetrieval(const base::Value::List& args) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (base::FeatureList::IsEnabled(
+          trusted_vault::kChromeOSTrustedVaultUseWebUIDialog)) {
+    OpenDialogForSyncKeyRetrieval(
+        profile_, syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
+    return;
+  }
+#endif
+
   Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
   if (!browser)
     return;
