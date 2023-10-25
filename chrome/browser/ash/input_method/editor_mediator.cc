@@ -193,12 +193,12 @@ void EditorMediator::HandleTrigger(
     case EditorMode::kRewrite:
       mako_bubble_coordinator_.LoadEditorUI(profile_, MakoEditorMode::kRewrite,
                                             preset_query_id, freeform_text);
-      LogEditorState(EditorStates::kRequest, EditorMode::kRewrite);
+      LogEditorState(EditorStates::kNativeRequest, EditorMode::kRewrite);
       break;
     case EditorMode::kWrite:
       mako_bubble_coordinator_.LoadEditorUI(profile_, MakoEditorMode::kWrite,
                                             preset_query_id, freeform_text);
-      LogEditorState(EditorStates::kRequest, EditorMode::kWrite);
+      LogEditorState(EditorStates::kNativeRequest, EditorMode::kWrite);
       break;
     case EditorMode::kConsentNeeded:
       mako_bubble_coordinator_.LoadConsentUI(profile_);

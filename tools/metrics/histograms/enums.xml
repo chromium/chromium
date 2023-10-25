@@ -54380,6 +54380,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="11" label="REJECTED_REMOVED_LETTERS"/>
   <int value="12" label="REJECTED_TYPING_NO_SELECTION"/>
   <int value="13" label="REJECTED_SELECTED_INVALID_RANGE"/>
+  <int value="14" label="CLICK_CLOSE_BUTTON"/>
 </enum>
 
 <enum name="IMEAutocorrectSuggestionProvider">
@@ -54446,7 +54447,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 <enum name="IMEEditorStates">
   <int value="0" label="NATIVE_UI_SHOWN_OPPORTUNITY"/>
   <int value="1" label="NATIVE_UI_SHOWN"/>
-  <int value="2" label="REQUEST"/>
+  <int value="2" label="NATIVE_REQUEST"/>
   <int value="3" label="DISMISS"/>
   <int value="4" label="REFINE_REQUEST"/>
   <int value="5" label="SUCCESS_RESPONSE"/>
@@ -54458,6 +54459,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="11" label="CHARACTERS_SELECTED_FOR_INSERT"/>
   <int value="12" label="FREEFORM_CHARACTERS_FOR_INSERT"/>
   <int value="13" label="RETURN_TO_PREVIOUS_SUGGESTIONS"/>
+  <int value="14" label="CLICK_CLOSE_BUTTON"/>
+  <int value="15" label="WEBUI_REQUEST"/>
 </enum>
 
 <enum name="IMEGrammarActions">

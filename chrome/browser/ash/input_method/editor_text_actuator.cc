@@ -31,11 +31,10 @@ EditorTextActuator::EditorTextActuator(
 EditorTextActuator::~EditorTextActuator() = default;
 
 void EditorTextActuator::InsertText(const std::string& text) {
-  LogEditorState(EditorStates::kInsert, delegate_->GetEditorMode());
-  LogEditorState(EditorStates::kCharsInserted, delegate_->GetEditorMode(),
-                 text.length());
-  LogEditorState(EditorStates::kCharsSelectedForInsert,
-                 delegate_->GetEditorMode(),
+  EditorMode editor_mode = delegate_->GetEditorMode();
+  LogEditorState(EditorStates::kInsert, editor_mode);
+  LogEditorState(EditorStates::kCharsInserted, editor_mode, text.length());
+  LogEditorState(EditorStates::kCharsSelectedForInsert, editor_mode,
                  delegate_->GetSelectedTextLength());
 
   // We queue the text to be inserted here rather then insert it directly into
@@ -67,6 +66,7 @@ void EditorTextActuator::ShowUI() {
 }
 
 void EditorTextActuator::CloseUI() {
+  LogEditorState(EditorStates::kClickCloseButton, delegate_->GetEditorMode());
   delegate_->CloseUI();
 }
 

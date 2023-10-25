@@ -17,9 +17,9 @@ enum class EditorStates {
   kNativeUIShowOpportunity = 0,
   // Increase by 1 when the native UI menu is shown.
   kNativeUIShown = 1,
-  // Increase by 1 for only the first request to the server of the session.
-  // Refines are not counted here.
-  kRequest = 2,
+  // Increase by 1 for only the first request to the server of the session from
+  // the views UI. Refines are not counted here.
+  kNativeRequest = 2,
   // Increase by 1 when a response page is dismissed by user clicking elsewhere
   // or explicitly clicking the close button.
   kDismiss = 3,
@@ -45,7 +45,14 @@ enum class EditorStates {
   kFreeformCharsForInsert = 12,
   // Increase by 1 when a user returns to previous in the webUI.
   kReturnToPreviousSuggestions = 13,
-  kMaxValue = kReturnToPreviousSuggestions,
+  // Increase by 1 when a user directly clicks the WebUI close button to close
+  // the feature.
+  kClickCloseButton = 14,
+  // Increase by 1 for only the first request to the server of the session from
+  // the WebUI. This will only happen a maximum of once per user, right after
+  // they consent.
+  kWebUIRequest = 15,
+  kMaxValue = kWebUIRequest,
 };
 
 }  // namespace ash::input_method
