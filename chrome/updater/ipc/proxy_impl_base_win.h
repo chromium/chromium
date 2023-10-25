@@ -49,8 +49,7 @@ class ProxyImplBase {
   }
 
  protected:
-  explicit ProxyImplBase(UpdaterScope scope, const std::vector<IID>& iids = {})
-      : scope_(scope), iids_(iids) {
+  explicit ProxyImplBase(UpdaterScope scope) : scope_(scope) {
     DETACH_FROM_SEQUENCE(sequence_checker_);
     VLOG(3) << __func__ << ": Interface: " << typeid(Interface).name()
             << ": iid_user: " << base::win::WStringFromGUID(iid_user)
@@ -154,7 +153,6 @@ class ProxyImplBase {
            base::WithBaseSyncPrimitives(), base::MayBlock()});
 
   const UpdaterScope scope_;
-  const std::vector<IID> iids_;
 
   HResultOr<Microsoft::WRL::ComPtr<Interface>> interface_ =
       base::unexpected(S_OK);
