@@ -185,7 +185,10 @@
             <div class="language-packs-error">
               <iron-icon id="failure-icon" icon="os-settings:multidevice-error">
               </iron-icon>
-              <span>$i18n{inputMethodLanguagePacksGeneralError}</span>
+              <span>
+                [[getLanguagePacksErrorMessage_(item.id,
+                    languages.inputMethods.imeLanguagePackStatus.*)]]
+              </span>
             </div>
           </template>
         </div>

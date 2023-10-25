@@ -646,6 +646,19 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
         status ===
         chrome.inputMethodPrivate.LanguagePackStatus.ERROR_NEEDS_REBOOT;
   }
+
+  private getLanguagePacksErrorMessage_(imeId: string): string {
+    const status = this.languageHelper.getImeLanguagePackStatus(imeId);
+    switch (status) {
+      case chrome.inputMethodPrivate.LanguagePackStatus.ERROR_NEEDS_REBOOT:
+        return this.i18n('inputMethodLanguagePacksNeedsRebootError');
+      case chrome.inputMethodPrivate.LanguagePackStatus.ERROR_OTHER:
+        return this.i18n('inputMethodLanguagePacksGeneralError');
+      default:
+        console.error('Invalid status:', status);
+        return '';
+    }
+  }
 }
 
 customElements.define(
