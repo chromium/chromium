@@ -58,33 +58,6 @@ public class NotificationTriggerScheduler {
     }
 
     /**
-     * Schedules a one-off background task to wake the browser up and call into native code to
-     * display pending notifications. If there is already a trigger scheduled earlier, this is a
-     * nop. Otherwise the existing trigger is overwritten.
-     * @param timestamp The timestamp of the next trigger.
-     */
-    @CalledByNative
-    @VisibleForTesting
-    protected void schedule(long timestamp) {
-        // Check if there is already a trigger scheduled earlier. Also check for the case where
-        // Android did not execute our task and reschedule.
-        long now = mClock.currentTimeMillis();
-        long nextTrigger = getNextTrigger();
-
-        if (timestamp < nextTrigger) {
-            // New timestamp is earlier than existing one -> schedule new task.
-            setNextTrigger(timestamp);
-            nextTrigger = timestamp;
-        } else if (nextTrigger >= now) {
-            // Existing timestamp is earlier than new one and still in future -> do nothing.
-            return;
-        } // else: Existing timestamp is earlier than new one and overdue -> schedule task again.
-
-        long delay = Math.max(nextTrigger - now, 0);
-        NotificationTriggerBackgroundTask.schedule(nextTrigger, delay);
-    }
-
-    /**
      * Calls into native code to trigger all pending notifications.
      */
     public void triggerNotifications() {

@@ -19,21 +19,18 @@ import android.os.PersistableBundle;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.background_task_scheduler.ChromeBackgroundTaskFactory;
 import org.chromium.components.background_task_scheduler.BackgroundTask;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.NativeBackgroundTask;
 import org.chromium.components.background_task_scheduler.TaskIds;
-import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.components.background_task_scheduler.TaskParameters;
 
 /** Unit tests for NotificationTriggerBackgroundTask. */
@@ -56,30 +53,6 @@ public class NotificationTriggerBackgroundTaskTest {
         PersistableBundle extras = new PersistableBundle();
         extras.putLong(NotificationTriggerBackgroundTask.KEY_TIMESTAMP, timestamp);
         return TaskParameters.create(TaskIds.NOTIFICATION_TRIGGER_JOB_ID).addExtras(extras).build();
-    }
-
-    @Test
-    @DisabledTest(message = "crbug.com/1379251")
-    public void testScheduleInitializesOneOffTask() {
-        long delay = 1000;
-        long timestamp = System.currentTimeMillis() + delay;
-        ArgumentCaptor<TaskInfo> taskInfoCaptor = ArgumentCaptor.forClass(TaskInfo.class);
-        NotificationTriggerBackgroundTask.schedule(timestamp, delay);
-        verify(mTaskScheduler).schedule(any(), taskInfoCaptor.capture());
-        TaskInfo taskInfo = taskInfoCaptor.getValue();
-
-        assertEquals(TaskIds.NOTIFICATION_TRIGGER_JOB_ID, taskInfo.getTaskId());
-        assertTrue(taskInfo.isPersisted());
-        assertTrue(taskInfo.shouldUpdateCurrent());
-        assertEquals(TaskInfo.NetworkType.NONE, taskInfo.getRequiredNetworkType());
-        assertEquals(
-                timestamp,
-                taskInfo.getExtras().getLong(NotificationTriggerBackgroundTask.KEY_TIMESTAMP));
-        // See crbug.com/1379251.
-        // TaskInfo.TimingInfo timingInfo = taskInfo.getTimingInfo();
-        // assertTrue(timingInfo instanceof TaskInfo.ExactInfo);
-        // TaskInfo.ExactInfo exactTimingInfo = (TaskInfo.ExactInfo) timingInfo;
-        // assertEquals(timestamp, exactTimingInfo.getTriggerAtMs());
     }
 
     @Test

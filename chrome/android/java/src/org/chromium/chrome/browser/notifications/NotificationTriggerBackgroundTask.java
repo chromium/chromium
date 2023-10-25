@@ -9,7 +9,6 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.Log;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.NativeBackgroundTask;
 import org.chromium.components.background_task_scheduler.TaskIds;
@@ -58,16 +57,6 @@ public class NotificationTriggerBackgroundTask extends NativeBackgroundTask {
     protected boolean onStopTaskWithNative(Context context, TaskParameters taskParameters) {
         assert taskParameters.getTaskId() == TaskIds.NOTIFICATION_TRIGGER_JOB_ID;
         return mShouldReschedule;
-    }
-
-    /**
-     * Schedules and replaces a task to trigger notifications at |timestamp|.
-     * @param timestamp The time at which this task should trigger.
-     * @param delay The delay from now in milliseconds when this task should trigger.
-     */
-    public static void schedule(long timestamp, long delay) {
-        // See crbug.com/1379251.
-        Log.e("NotifTrigBT", "Scheduling BackgroundTasks with exact timing is unsupported");
     }
 
     /**
