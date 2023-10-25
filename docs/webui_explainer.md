@@ -395,7 +395,7 @@ Specific setup steps include:
 
 * Setting the content security policy to allow the data source to load only
   resources from its own host (e.g. chrome://history), chrome://resources, and
-  chrome://test (used to load test files).
+  chrome://webui-test (used to serve test files).
 * Enabling i18n template replacements by calling <code>UseStringsJs()</code> and
   <code>EnableReplaceI18nInJS()</code> on the data source.
 * Adding the test loader files to the data source, so that test files can be
@@ -1259,6 +1259,7 @@ computing stability metrics.
 * WebUI's C++ code follows the [Chromium C++ styleguide](../styleguide/c++/c++.md).
 * WebUI's HTML/CSS/JS code follows the [Chromium Web
   Development Style Guide](../styleguide/web/web.md)
+* Adding tests for WebUI pages: [Testing WebUI](./testing_webui.md)
 
 
 <script>
