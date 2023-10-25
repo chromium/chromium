@@ -936,6 +936,14 @@ TEST_F(IntegrationTest, UpdateAppSucceedsEvenAfterDeletingInterfaces) {
     GTEST_SKIP() << "Need admin privileges to run this test";
   }
 
+  // Skips `DUMP_WILL_BE_CHECK` when running this test.
+  base::win::RegKey(HKEY_LOCAL_MACHINE, UPDATER_DEV_KEY, KEY_WRITE)
+      .WriteValue(kRegValueIntegrationTestMode, 1);
+  absl::Cleanup remove_test_mode = [] {
+    base::win::RegKey(HKEY_LOCAL_MACHINE, UPDATER_DEV_KEY, DELETE)
+        .DeleteValue(kRegValueIntegrationTestMode);
+  };
+
   ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_TRUE(WaitForUpdaterExit());
