@@ -16,10 +16,15 @@ def _CheckNoDirectLitImport(input_api, output_api):
         xf_base_file_path = input_api.os_path.join('ui', 'file_manager',
                                                    'file_manager', 'widgets',
                                                    'xf_base.ts')
+        selector_path = input_api.os_path.join('ui', 'file_manager',
+                                               'file_manager', 'lib',
+                                               'selector.ts')
+
+        allowed_paths = {xf_base_file_path, selector_path}
         local_path = file_path.LocalPath()
         return Path(local_path).suffix in {
             '.ts', '.js'
-        } and local_path != xf_base_file_path
+        } and local_path not in allowed_paths
 
     ts_files = input_api.AffectedFiles(include_deletes=False,
                                        file_filter=_isLitDisallowed)
