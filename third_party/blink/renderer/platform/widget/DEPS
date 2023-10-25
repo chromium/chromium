@@ -4,6 +4,7 @@ include_rules = [
     "-cc/mojom",
     "-cc/test",
     "+components/viz/common",
+    "+media/base/media_switches.h",
     "+gpu/command_buffer/client/shared_memory_limits.h",
     "+gpu/command_buffer/common/context_creation_attribs.h",
     "+gpu/ipc/client/gpu_channel_host.h",
