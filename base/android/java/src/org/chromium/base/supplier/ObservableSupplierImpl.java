@@ -90,6 +90,11 @@ public class ObservableSupplierImpl<E> implements ObservableSupplier<E> {
         return mObject;
     }
 
+    /** Returns if there are any observers currently. */
+    public boolean hasObservers() {
+        return !mObservers.isEmpty();
+    }
+
     private void checkThread() {
         assert sIgnoreThreadChecksForTesting
                 || mThread

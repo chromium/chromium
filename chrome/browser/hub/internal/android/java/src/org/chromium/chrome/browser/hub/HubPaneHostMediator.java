@@ -11,51 +11,35 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Logic for hosting a single pane at a time in the Hub. */
 public class HubPaneHostMediator {
 
     private final @NonNull PropertyModel mPropertyModel;
-    private final @NonNull ObservableSupplier<Pane> mPaneSupplier;
-    private final @NonNull Callback<Pane> mOnPaneChangeCallback = this::onPaneChange;
     private final @NonNull Callback<FullButtonData> mOnActionButtonChangeCallback =
             this::onActionButtonChange;
 
-    private @Nullable ObservableSupplier<FullButtonData> mCurrentButtonDataSupplier;
+    private @Nullable TransitiveObservableSupplier<Pane, FullButtonData> mActionButtonDataSupplier;
 
     /** Creates the mediator. */
     public HubPaneHostMediator(
             @NonNull PropertyModel propertyModel, @NonNull ObservableSupplier<Pane> paneSupplier) {
         mPropertyModel = propertyModel;
-        mPaneSupplier = paneSupplier;
         if (HubFieldTrial.usesFloatActionButton()) {
-            mPaneSupplier.addObserver(mOnPaneChangeCallback);
+            mActionButtonDataSupplier =
+                    new TransitiveObservableSupplier<>(
+                            paneSupplier, p -> p.getActionButtonDataSupplier());
+            mActionButtonDataSupplier.addObserver(mOnActionButtonChangeCallback);
         }
     }
 
     /** Cleans up observers. */
     public void destroy() {
-        mPaneSupplier.removeObserver(mOnPaneChangeCallback);
-        if (mCurrentButtonDataSupplier != null) {
-            mCurrentButtonDataSupplier.removeObserver(mOnActionButtonChangeCallback);
-        }
-    }
-
-    private void onPaneChange(@Nullable Pane pane) {
-        if (mCurrentButtonDataSupplier != null) {
-            mCurrentButtonDataSupplier.removeObserver(mOnActionButtonChangeCallback);
-        }
-
-        if (pane == null) {
-            mPropertyModel.set(ACTION_BUTTON_DATA, null);
-        } else {
-            mCurrentButtonDataSupplier = pane.getActionButtonDataSupplier();
-            if (mCurrentButtonDataSupplier != null) {
-                mCurrentButtonDataSupplier.addObserver(mOnActionButtonChangeCallback);
-            } else {
-                mPropertyModel.set(ACTION_BUTTON_DATA, null);
-            }
+        if (mActionButtonDataSupplier != null) {
+            mActionButtonDataSupplier.removeObserver(mOnActionButtonChangeCallback);
+            mActionButtonDataSupplier = null;
         }
     }
 

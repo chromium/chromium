@@ -5,7 +5,9 @@
 package org.chromium.base.supplier;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
 import android.os.Handler;
 
@@ -186,6 +188,37 @@ public class ObservableSupplierImplTest {
 
         mSupplier.set(TEST_STRING_2);
         checkState(1, TEST_STRING_1, TEST_STRING_2, "after setting second string.");
+    }
+
+    @Test
+    public void testHasObservers() {
+        Callback<String> observer1 = (ignored) -> {};
+        Callback<String> observer2 = (ignored) -> {};
+
+        assertFalse("No observers yet", mSupplier.hasObservers());
+
+        mSupplier.addObserver(observer1);
+        assertTrue("Should have observer1", mSupplier.hasObservers());
+
+        mSupplier.addObserver(observer1);
+        assertTrue("Adding observer1 twice shouldn't break anything", mSupplier.hasObservers());
+
+        mSupplier.removeObserver(observer1);
+        assertFalse(
+                "observer1 should be entirely removed with one remove", mSupplier.hasObservers());
+
+        mSupplier.addObserver(observer1);
+        mSupplier.addObserver(observer2);
+        assertTrue("Should have multiple observers", mSupplier.hasObservers());
+
+        mSupplier.removeObserver(observer1);
+        assertTrue("Should still have observer2", mSupplier.hasObservers());
+
+        mSupplier.removeObserver(observer1);
+        assertTrue("Removing observer1 twice shouldn't break anything", mSupplier.hasObservers());
+
+        mSupplier.removeObserver(observer2);
+        assertFalse("Both observers should be gone", mSupplier.hasObservers());
     }
 
     private void checkState(
