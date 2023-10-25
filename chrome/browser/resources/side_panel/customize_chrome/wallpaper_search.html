@@ -11,10 +11,31 @@
     font-size: 12px;
     line-height: 16px;
     color: var(--color-sys-on-surface);
+    width: 220px;
   }
 
   .category {
     font-weight: 700;
+  }
+
+  #descriptorComboboxB .dropdown-item {
+    background-color: inherit;
+    border: none;
+    display: flex;
+    height: 48px;
+    padding: 4px 20px 4px 20px;
+  }
+
+  #descriptorComboboxB img {
+    border-radius: 8px;
+  }
+
+  #descriptorComboboxB span {
+    align-items: center;
+    display: flex;
+    height: 40px;
+    padding-top: 2px;
+    padding-inline-start: 16px;
   }
 
   #descriptorMenuD {
@@ -142,17 +163,15 @@
         </div>
       </template>
     </customize-chrome-combobox>
-    <cr-button id="descriptorBtnB" on-click="onDescriptorMenuClickB_">
-      Descriptor B
-    </cr-button>
-    <cr-action-menu id="descriptorMenuB">
+    <customize-chrome-combobox id="descriptorComboboxB" label="Descriptor B"
+        value="{{selectedDescriptorB_}}">
       <template is="dom-repeat" items="[[descriptors_.descriptorB]]">
-        <button class="dropdown-item" on-click="onDescriptorLabelClickB_">
+        <button class="dropdown-item" role="option" value="[[item.label]]">
           <img is="cr-auto-img" auto-src="[[item.imagePath]]"></img>
           <span>[[item.label]]</span>
         </button>
       </template>
-    </cr-action-menu>
+    </customize-chrome-combobox>
     <cr-button id="descriptorBtnC" on-click="onDescriptorMenuClickC_">
       Descriptor C
     </cr-button>

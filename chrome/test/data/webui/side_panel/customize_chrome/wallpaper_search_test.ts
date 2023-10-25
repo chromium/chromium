@@ -80,8 +80,6 @@ suite('WallpaperSearchTest', () => {
       await flushTasks();
 
       assertNotStyle(
-          $$(wallpaperSearchElement, '#descriptorBtnB')!, 'display', 'none');
-      assertNotStyle(
           $$(wallpaperSearchElement, '#descriptorBtnC')!, 'display', 'none');
       assertEquals(
           2,
@@ -91,7 +89,7 @@ suite('WallpaperSearchTest', () => {
       assertEquals(
           1,
           wallpaperSearchElement.shadowRoot!
-              .querySelectorAll('#descriptorMenuB .dropdown-item')
+              .querySelectorAll('#descriptorComboboxB .dropdown-item')
               .length);
       assertEquals(
           3,
@@ -131,7 +129,8 @@ suite('WallpaperSearchTest', () => {
           wallpaperSearchElement,
           '#descriptorComboboxA .dropdown-item')!.click();
       $$<HTMLElement>(
-          wallpaperSearchElement, '#descriptorMenuB .dropdown-item')!.click();
+          wallpaperSearchElement,
+          '#descriptorComboboxB .dropdown-item')!.click();
       $$<HTMLElement>(
           wallpaperSearchElement, '#descriptorMenuC .dropdown-item')!.click();
       $$<HTMLElement>(

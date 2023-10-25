@@ -18,7 +18,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CustomizeChromeCombobox} from './combobox/customize_chrome_combobox.js';
-import {CustomizeChromePageHandlerInterface, DescriptorA, DescriptorB, Descriptors, WallpaperSearchResult} from './customize_chrome.mojom-webui.js';
+import {CustomizeChromePageHandlerInterface, DescriptorA, Descriptors, WallpaperSearchResult} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import {getTemplate} from './wallpaper_search.html.js';
 
@@ -28,7 +28,7 @@ export const DESCRIPTOR_C_VALUE =
 export interface WallpaperSearchElement {
   $: {
     descriptorComboboxA: CustomizeChromeCombobox,
-    descriptorMenuB: CrActionMenuElement,
+    descriptorComboboxB: CustomizeChromeCombobox,
     descriptorMenuC: CrActionMenuElement,
     descriptorMenuD: CrActionMenuElement,
     heading: SpHeading,
@@ -113,11 +113,6 @@ export class WallpaperSearchElement extends PolymerElement {
     this.dispatchEvent(new Event('back-click'));
   }
 
-  private onDescriptorLabelClickB_(e: DomRepeatEvent<DescriptorB>) {
-    this.selectedDescriptorB_ = e.model.item.label;
-    this.$.descriptorMenuB.close();
-  }
-
   private onDescriptorLabelClickC_(e: DomRepeatEvent<string>) {
     this.selectedDescriptorC_ = e.model.item;
     this.$.descriptorMenuC.close();
@@ -126,10 +121,6 @@ export class WallpaperSearchElement extends PolymerElement {
   private onDescriptorLabelClickD_(e: DomRepeatEvent<string>) {
     this.selectedDescriptorD_ = e.model.item;
     this.$.descriptorMenuC.close();
-  }
-
-  private onDescriptorMenuClickB_(e: Event) {
-    this.$.descriptorMenuB.showAt(e.target as HTMLElement);
   }
 
   private onDescriptorMenuClickC_(e: Event) {
