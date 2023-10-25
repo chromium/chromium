@@ -33412,6 +33412,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Promo_Close">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user closes the sign-in promo. iOS only.
+  </description>
+</action>
+
 <action name="Signin_Show_EnterpriseAccountPrompt">
   <owner>gogerald@chromium.org</owner>
   <description>

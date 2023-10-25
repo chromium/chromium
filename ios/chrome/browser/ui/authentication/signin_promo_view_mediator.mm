@@ -1109,6 +1109,7 @@ id<SystemIdentity> GetDisplayedIdentity(
          self.accessPoint ==
              signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO)
       << base::SysNSStringToUTF8([self description]);
+  base::RecordAction(base::UserMetricsAction("Signin_Promo_Close"));
   self.signinPromoViewState = SigninPromoViewState::kClosed;
   const char* alreadySeenSigninViewPreferenceKey =
       AlreadySeenSigninViewPreferenceKey(self.accessPoint);
