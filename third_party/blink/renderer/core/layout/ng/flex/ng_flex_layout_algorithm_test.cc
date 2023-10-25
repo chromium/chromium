@@ -14,7 +14,7 @@
 namespace blink {
 namespace {
 
-class NGFlexLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
+class FlexLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
  protected:
   const DevtoolsFlexInfo* LayoutForDevtools(const String& body_content) {
     SetBodyInnerHTML(body_content);
@@ -34,7 +34,7 @@ class NGFlexLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
   }
 };
 
-TEST_F(NGFlexLayoutAlgorithmTest, DetailsFlexDoesntCrash) {
+TEST_F(FlexLayoutAlgorithmTest, DetailsFlexDoesntCrash) {
   SetBodyInnerHTML(R"HTML(
     <details style="display:flex"></details>
   )HTML");
@@ -42,7 +42,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, DetailsFlexDoesntCrash) {
   // No crash is good.
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, ReplacedAspectRatioPrecision) {
+TEST_F(FlexLayoutAlgorithmTest, ReplacedAspectRatioPrecision) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; flex-direction: column; width: 50px">
       <svg width="29" height="22" style="width: auto; height: auto;
@@ -64,7 +64,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, ReplacedAspectRatioPrecision) {
   EXPECT_EQ(PhysicalSize(29, 22), fragment->Children()[0]->Size());
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsBasic) {
+TEST_F(FlexLayoutAlgorithmTest, DevtoolsBasic) {
   const DevtoolsFlexInfo* devtools = LayoutForDevtools(R"HTML(
     <div style="display:flex; width: 100px;" id=flexbox>
       <div style="flex-grow: 1; height: 50px;"></div>
@@ -78,7 +78,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsBasic) {
   EXPECT_EQ(devtools->lines[0].items[0].rect, PhysicalRect(0, 0, 50, 50));
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsWrap) {
+TEST_F(FlexLayoutAlgorithmTest, DevtoolsWrap) {
   const DevtoolsFlexInfo* devtools = LayoutForDevtools(R"HTML(
     <div style="display:flex; width: 100px; flex-wrap: wrap;" id=flexbox>
       <div style="min-width: 100px; height: 50px;"></div>
@@ -93,7 +93,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsWrap) {
   EXPECT_EQ(devtools->lines[1].items[0].rect, PhysicalRect(0, 50, 100, 90));
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsCoordinates) {
+TEST_F(FlexLayoutAlgorithmTest, DevtoolsCoordinates) {
   const DevtoolsFlexInfo* devtools = LayoutForDevtools(R"HTML(
     <div style="display:flex; width: 100px; flex-wrap: wrap; border-top: 2px solid; padding-top: 3px; border-left: 3px solid; padding-left: 5px; margin-left: 19px;" id=flexbox>
       <div style="margin-left: 5px; min-width: 95px; height: 50px;"></div>
@@ -108,7 +108,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsCoordinates) {
   EXPECT_EQ(devtools->lines[1].items[0].rect, PhysicalRect(8, 55, 100, 90));
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsOverflow) {
+TEST_F(FlexLayoutAlgorithmTest, DevtoolsOverflow) {
   const DevtoolsFlexInfo* devtools = LayoutForDevtools(R"HTML(
     <div style="display:flex; width: 100px; border-left: 1px solid; border-right: 3px solid;" id=flexbox>
       <div style="min-width: 150px; height: 75px;"></div>
@@ -118,7 +118,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsOverflow) {
   EXPECT_EQ(devtools->lines[0].items[0].rect, PhysicalRect(1, 0, 150, 75));
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsWithRelPosItem) {
+TEST_F(FlexLayoutAlgorithmTest, DevtoolsWithRelPosItem) {
   // Devtools' heuristic algorithm shows two lines for this case, but layout
   // knows there's only one line.
   const DevtoolsFlexInfo* devtools = LayoutForDevtools(R"HTML(
@@ -137,7 +137,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsWithRelPosItem) {
   EXPECT_EQ(devtools->lines.size(), 1u);
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsBaseline) {
+TEST_F(FlexLayoutAlgorithmTest, DevtoolsBaseline) {
   LoadAhem();
   const DevtoolsFlexInfo* devtools = LayoutForDevtools(R"HTML(
     <div style="display:flex; align-items: baseline; flex-wrap: wrap; width: 250px; margin: 10px;" id=flexbox>
@@ -157,7 +157,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsBaseline) {
             devtools->lines[1].items[1].baseline);
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsOneImageItemCrash) {
+TEST_F(FlexLayoutAlgorithmTest, DevtoolsOneImageItemCrash) {
   const DevtoolsFlexInfo* devtools = LayoutForDevtools(R"HTML(
     <div style="display: flex;" id=flexbox><img></div>
   )HTML");
@@ -165,7 +165,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsOneImageItemCrash) {
   EXPECT_EQ(devtools->lines.size(), 1u);
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsColumnWrap) {
+TEST_F(FlexLayoutAlgorithmTest, DevtoolsColumnWrap) {
   const DevtoolsFlexInfo* devtools = LayoutForDevtools(R"HTML(
     <div style="display: flex; flex-flow: column wrap; width: 300px; height: 100px;" id=flexbox>
       <div style="height: 200px">
@@ -177,7 +177,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsColumnWrap) {
   EXPECT_EQ(devtools->lines.size(), 1u);
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsColumnWrapOrtho) {
+TEST_F(FlexLayoutAlgorithmTest, DevtoolsColumnWrapOrtho) {
   const DevtoolsFlexInfo* devtools = LayoutForDevtools(R"HTML(
     <div style="display: flex; flex-flow: column wrap; width: 300px; height: 100px;" id=flexbox>
       <div style="height: 200px; writing-mode: vertical-lr;">
@@ -189,7 +189,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsColumnWrapOrtho) {
   EXPECT_EQ(devtools->lines.size(), 1u);
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsRowWrapOrtho) {
+TEST_F(FlexLayoutAlgorithmTest, DevtoolsRowWrapOrtho) {
   const DevtoolsFlexInfo* devtools = LayoutForDevtools(R"HTML(
     <div style="display: flex; flex-flow: wrap; width: 300px; height: 100px;" id=flexbox>
       <div style="height: 200px; writing-mode: vertical-lr;">
@@ -202,7 +202,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsRowWrapOrtho) {
   EXPECT_EQ(devtools->lines.size(), 1u);
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsLegacyItem) {
+TEST_F(FlexLayoutAlgorithmTest, DevtoolsLegacyItem) {
   const DevtoolsFlexInfo* devtools = LayoutForDevtools(R"HTML(
     <div style="display: flex;" id=flexbox>
       <div style="columns: 1">
@@ -216,7 +216,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsLegacyItem) {
   EXPECT_EQ(devtools->lines.size(), 1u);
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsFragmentedItemDoesntCrash) {
+TEST_F(FlexLayoutAlgorithmTest, DevtoolsFragmentedItemDoesntCrash) {
   const DevtoolsFlexInfo* devtools = LayoutForDevtools(R"HTML(
     <div style="columns: 2; height: 300px; width: 300px; background: orange;">
       <div style="display: flex; background: blue;" id=flexbox>
@@ -228,7 +228,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsFragmentedItemDoesntCrash) {
   DCHECK(!devtools);
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsAutoScrollbar) {
+TEST_F(FlexLayoutAlgorithmTest, DevtoolsAutoScrollbar) {
   // Pass if we get a devtools info object and don't crash.
   const DevtoolsFlexInfo* devtools = LayoutForDevtools(R"HTML(
     <style>
@@ -252,7 +252,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsAutoScrollbar) {
   EXPECT_TRUE(devtools);
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUma1) {
+TEST_F(FlexLayoutAlgorithmTest, AbsPosUma1) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; flex-flow: column; width:100px; height:100px;" id=flexbox>
       <div style="position: absolute; justify-self: stretch; align-self: flex-end; width:50px; height:50px;" id=item></div>
@@ -267,7 +267,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUma1) {
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos));
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaDifferent) {
+TEST_F(FlexLayoutAlgorithmTest, AbsPosUmaDifferent) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; flex-flow: column; width:100px; height:100px;">
       <div style="position: absolute; height:50px; width:50px; justify-self: start; align-self: end"></div>
@@ -277,7 +277,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaDifferent) {
       << "justify and align are clearly different";
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaDifferentButRow) {
+TEST_F(FlexLayoutAlgorithmTest, AbsPosUmaDifferentButRow) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; width:100px; height:100px;">
       <div style="position: absolute; height:50px; width:50px; justify-self: start; align-self: end"></div>
@@ -288,7 +288,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaDifferentButRow) {
          "flexboxes";
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaBothCenter) {
+TEST_F(FlexLayoutAlgorithmTest, AbsPosUmaBothCenter) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; flex-flow: column; width:100px; height:100px;">
       <div style="position: absolute; height:50px; width:50px; justify-self: center; align-self: center; "></div>
@@ -298,7 +298,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaBothCenter) {
       << "justify and align are both center";
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaEndFlexEnd) {
+TEST_F(FlexLayoutAlgorithmTest, AbsPosUmaEndFlexEnd) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; flex-flow: column; width:100px; height:100px;">
       <div style="position: absolute; height:50px; width:50px; justify-self: flex-end; align-self: end; "></div>
@@ -308,7 +308,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaEndFlexEnd) {
       << "justify and align map to same even though specified differently";
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaLeftEnd) {
+TEST_F(FlexLayoutAlgorithmTest, AbsPosUmaLeftEnd) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; flex-flow: column; width:100px; height:100px;">
       <div style="position: absolute; height:50px; width:50px; justify-self: left; align-self: end;"></div>
@@ -319,7 +319,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaLeftEnd) {
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos));
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaVerticalWritingMode) {
+TEST_F(FlexLayoutAlgorithmTest, AbsPosUmaVerticalWritingMode) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; flex-flow: column; width:100px; height:100px; writing-mode: vertical-rl;">
       <div style="position: absolute; height:50px; width:50px; justify-self: start; align-self: end;"></div>
@@ -330,7 +330,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaVerticalWritingMode) {
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos));
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaOrthogonalWritingMode) {
+TEST_F(FlexLayoutAlgorithmTest, AbsPosUmaOrthogonalWritingMode) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; flex-flow: column; width:100px; height:100px;">
       <div style="position: absolute; height:50px; width:50px; justify-self: end; align-self: self-start; writing-mode: vertical-rl;"></div>
@@ -342,7 +342,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaOrthogonalWritingMode) {
 }
 
 // column-reverse switches main-axis order (start placing items at block-end)
-TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaFlexEndReverseStart) {
+TEST_F(FlexLayoutAlgorithmTest, AbsPosUmaFlexEndReverseStart) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; flex-flow: column-reverse; width:100px; height:100px;">
       <div style="position: absolute; height:50px; width:50px; justify-self: flex-end; align-self: start;"></div>
@@ -354,7 +354,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaFlexEndReverseStart) {
 }
 
 // wrap-reverse switches cross-axis order (of the lines)
-TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaFlexEndWrapReverse) {
+TEST_F(FlexLayoutAlgorithmTest, AbsPosUmaFlexEndWrapReverse) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; flex-flow: column wrap-reverse; width:100px; height:100px;">
       <div style="position: absolute; height:50px; width:50px; justify-self: flex-end; align-self: start;"></div>
@@ -366,7 +366,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaFlexEndWrapReverse) {
       << "justify and align map to same even though specified differently";
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaAlignItemsSame) {
+TEST_F(FlexLayoutAlgorithmTest, AbsPosUmaAlignItemsSame) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; flex-flow: column; width:100px; height:100px; align-items: end;">
       <div style="position: absolute; height:50px; width:50px; justify-self: end;"></div>
@@ -379,7 +379,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaAlignItemsSame) {
          "justify-self";
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaAlignItemsDifferent) {
+TEST_F(FlexLayoutAlgorithmTest, AbsPosUmaAlignItemsDifferent) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; flex-flow: column; width:100px; height:100px; align-items: end;">
       <div style="position: absolute; height:50px; width:50px; justify-self: start;"></div>
@@ -396,7 +396,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaAlignItemsDifferent) {
 // number of pages that will be changed by the abspos proposal in
 // https://github.com/w3c/csswg-drafts/issues/5843.
 
-TEST_F(NGFlexLayoutAlgorithmTest, DISABLED_AbsPosUma0px) {
+TEST_F(FlexLayoutAlgorithmTest, DISABLED_AbsPosUma0px) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; flex-flow: column;">
       <div style="position: absolute; justify-self: start; align-self: end;">
@@ -407,7 +407,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, DISABLED_AbsPosUma0px) {
       << "static pos rectangle and item are both 0px";
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, DISABLED_AbsPosUmaSameSize) {
+TEST_F(FlexLayoutAlgorithmTest, DISABLED_AbsPosUmaSameSize) {
   SetBodyInnerHTML(R"HTML(
     <div style="position: relative; width: 80px;">
       <div style="display: flex; flex-flow: column; width: 70px; height: 100px;">
@@ -420,7 +420,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, DISABLED_AbsPosUmaSameSize) {
       << "static pos rectangle is same size as item's margin box";
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, DISABLED_AbsPosUmaSameSizeWithMargin) {
+TEST_F(FlexLayoutAlgorithmTest, DISABLED_AbsPosUmaSameSizeWithMargin) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; flex-flow: column; width: 70px; height: 100px;">
       <div style="position: absolute; justify-self: start; align-self: end; margin: 25px 25px; height: 50px;">
@@ -431,7 +431,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, DISABLED_AbsPosUmaSameSizeWithMargin) {
       << "static pos rectangle is same size as item's margin box";
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, DISABLED_AbsPosUmaAutoInsetsSameSize) {
+TEST_F(FlexLayoutAlgorithmTest, DISABLED_AbsPosUmaAutoInsetsSameSize) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; flex-flow: column; width:100px; height:100px;">
       <div style="position: absolute; height:50px; width:100px; justify-self: start; align-self: end; inset: 1px auto 1px auto"></div>
@@ -441,7 +441,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, DISABLED_AbsPosUmaAutoInsetsSameSize) {
       << "auto insets in the axis of same size means no change";
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaNoAutoInsets) {
+TEST_F(FlexLayoutAlgorithmTest, AbsPosUmaNoAutoInsets) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; flex-flow: column; width:100px; height:100px;">
       <div style="position: absolute; height:50px; width:50px; justify-self: start; align-self: end; inset: 1px 1px auto auto"></div>
@@ -451,7 +451,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaNoAutoInsets) {
       << "justify and align are different but has non-auto insets";
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaAutoInsetsDifferentSize) {
+TEST_F(FlexLayoutAlgorithmTest, AbsPosUmaAutoInsetsDifferentSize) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; flex-flow: column; width:100px; height:100px;">
       <div style="position: absolute; height:100px; width:50px; justify-self: start; align-self: end; inset: 1px auto 1px auto"></div>
@@ -463,7 +463,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaAutoInsetsDifferentSize) {
 
 // Current:  item is at top of container.
 // Proposed: item is at bottom of container.
-TEST_F(NGFlexLayoutAlgorithmTest, UseCounter1) {
+TEST_F(FlexLayoutAlgorithmTest, UseCounter1) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; align-content: flex-end; height: 50px">
       <div style="height:20px;"></div>
@@ -473,7 +473,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, UseCounter1) {
       WebFeature::kFlexboxAlignSingleLineDifference));
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, UseCounter1b) {
+TEST_F(FlexLayoutAlgorithmTest, UseCounter1b) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; align-content: flex-end; height: 50px; flex-wrap: wrap;">
       <div style="height:20px;"></div>
@@ -483,7 +483,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, UseCounter1b) {
       WebFeature::kFlexboxAlignSingleLineDifference));
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, UseCounter2) {
+TEST_F(FlexLayoutAlgorithmTest, UseCounter2) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; align-content: baseline; height: 50px">
       <div style="height:20px;"></div>
@@ -493,7 +493,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, UseCounter2) {
       WebFeature::kFlexboxAlignSingleLineDifference));
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, UseCounter2b) {
+TEST_F(FlexLayoutAlgorithmTest, UseCounter2b) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; height: 50px; align-content: end;">
       <div style="height:20px;"></div>
@@ -503,7 +503,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, UseCounter2b) {
       WebFeature::kFlexboxAlignSingleLineDifference));
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, UseCounter2c) {
+TEST_F(FlexLayoutAlgorithmTest, UseCounter2c) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; height: 50px; align-content: end;">
       <div style="height:20px; align-self: baseline;">other stuff</div>
@@ -513,7 +513,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, UseCounter2c) {
       WebFeature::kFlexboxAlignSingleLineDifference));
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, UseCounter2d) {
+TEST_F(FlexLayoutAlgorithmTest, UseCounter2d) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; height: 50px; align-content: end;">
       <div style="align-self: baseline;">other stuff</div>
@@ -523,7 +523,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, UseCounter2d) {
       WebFeature::kFlexboxAlignSingleLineDifference));
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, UseCounter2e) {
+TEST_F(FlexLayoutAlgorithmTest, UseCounter2e) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; height: 50px; align-content: start;">
       <div style="align-self: baseline;">other stuff</div>
@@ -533,7 +533,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, UseCounter2e) {
       WebFeature::kFlexboxAlignSingleLineDifference));
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, UseCounter2f) {
+TEST_F(FlexLayoutAlgorithmTest, UseCounter2f) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; height: 50px; align-content: center;">
       <div style="align-self: baseline;">other stuff</div>
@@ -543,7 +543,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, UseCounter2f) {
       WebFeature::kFlexboxAlignSingleLineDifference));
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, UseCounter2g) {
+TEST_F(FlexLayoutAlgorithmTest, UseCounter2g) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; height: 50px; align-content: end;">
       <div style="align-self: baseline;">blah<br>blah</div>
@@ -554,7 +554,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, UseCounter2g) {
       WebFeature::kFlexboxAlignSingleLineDifference));
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, UseCounter3) {
+TEST_F(FlexLayoutAlgorithmTest, UseCounter3) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; align-content: initial; height: 50px">
       <div style="height:20px;"></div>
@@ -564,7 +564,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, UseCounter3) {
       WebFeature::kFlexboxAlignSingleLineDifference));
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, UseCounter4) {
+TEST_F(FlexLayoutAlgorithmTest, UseCounter4) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; align-content: stretch; height: 50px">
       <div style="height:20px;"></div>
@@ -574,7 +574,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, UseCounter4) {
       WebFeature::kFlexboxAlignSingleLineDifference));
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, UseCounter5) {
+TEST_F(FlexLayoutAlgorithmTest, UseCounter5) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; align-content: flex-start; height: 50px">
       <div style="height:20px;"></div>
@@ -584,7 +584,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, UseCounter5) {
       WebFeature::kFlexboxAlignSingleLineDifference));
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, UseCounter6) {
+TEST_F(FlexLayoutAlgorithmTest, UseCounter6) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; height: 50px">
       <div style="height:20px;"></div>
@@ -594,7 +594,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, UseCounter6) {
       WebFeature::kFlexboxAlignSingleLineDifference));
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, UseCounter7) {
+TEST_F(FlexLayoutAlgorithmTest, UseCounter7) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; align-content: flex-end;">
       <div style="height:20px;"></div>
@@ -606,7 +606,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, UseCounter7) {
 
 // Current:  item gets 50px height.
 // Proposed: item gets 0px height and abuts bottom edge of container.
-TEST_F(NGFlexLayoutAlgorithmTest, UseCounter9) {
+TEST_F(FlexLayoutAlgorithmTest, UseCounter9) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; align-content: flex-end; height: 50px;">
       <div></div>
@@ -618,7 +618,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, UseCounter9) {
 
 // Current:  item abuts left edge of container.
 // Proposed: item abuts right edge of container.
-TEST_F(NGFlexLayoutAlgorithmTest, UseCounter10) {
+TEST_F(FlexLayoutAlgorithmTest, UseCounter10) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; flex-flow: column; align-content: flex-end;">
       <div style="width:20px;"></div>
@@ -628,7 +628,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, UseCounter10) {
       WebFeature::kFlexboxAlignSingleLineDifference));
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, UseCounter11) {
+TEST_F(FlexLayoutAlgorithmTest, UseCounter11) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; flex-flow: column; align-content: flex-end;">
       <div style="width:20px;"></div>
@@ -641,7 +641,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, UseCounter11) {
 
 // Current:  items abut left edge of container.
 // Proposed: items abut right edge of container.
-TEST_F(NGFlexLayoutAlgorithmTest, UseCounter12) {
+TEST_F(FlexLayoutAlgorithmTest, UseCounter12) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; flex-flow: column; align-content: flex-end;">
       <div style="width:20px;"></div>
@@ -652,7 +652,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, UseCounter12) {
       WebFeature::kFlexboxAlignSingleLineDifference));
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, UseCounter14) {
+TEST_F(FlexLayoutAlgorithmTest, UseCounter14) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; flex-flow: column; align-content: flex-end; width: 200px">
       <div style="align-self: flex-end"></div>
@@ -662,7 +662,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, UseCounter14) {
       WebFeature::kFlexboxAlignSingleLineDifference));
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, UseCounter15) {
+TEST_F(FlexLayoutAlgorithmTest, UseCounter15) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; flex-flow: column; align-content: flex-end; width: 200px">
       <div style="align-self: flex-end; width: 100px;"></div>
@@ -674,7 +674,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, UseCounter15) {
 
 // Current: item at top
 // Proposed: item at bottom
-TEST_F(NGFlexLayoutAlgorithmTest, UseCounter15b) {
+TEST_F(FlexLayoutAlgorithmTest, UseCounter15b) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; align-content: end; height: 200px">
       <div style="align-self: flex-start; height: 100px;"></div>
@@ -684,7 +684,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, UseCounter15b) {
       WebFeature::kFlexboxAlignSingleLineDifference));
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, UseCounter15c) {
+TEST_F(FlexLayoutAlgorithmTest, UseCounter15c) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; align-content: end; height: 200px;">
       <div style="height: 100px; align-self: self-end;"></div>
@@ -696,7 +696,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, UseCounter15c) {
 
 // Current: item at top
 // Proposed: item in center
-TEST_F(NGFlexLayoutAlgorithmTest, UseCounter15d) {
+TEST_F(FlexLayoutAlgorithmTest, UseCounter15d) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; align-content: space-around; height: 200px;">
       <div style="height: 100px;"></div>
@@ -706,7 +706,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, UseCounter15d) {
       WebFeature::kFlexboxAlignSingleLineDifference));
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, UseCounter15e) {
+TEST_F(FlexLayoutAlgorithmTest, UseCounter15e) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; align-content: space-around; height: 200px;">
       <div style="height: 100px; align-self: center;"></div>
@@ -716,7 +716,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, UseCounter15e) {
       WebFeature::kFlexboxAlignSingleLineDifference));
 }
 
-TEST_F(NGFlexLayoutAlgorithmTest, UseCounter15f) {
+TEST_F(FlexLayoutAlgorithmTest, UseCounter15f) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; align-content: space-between; height: 200px;">
       <div style="height: 100px;"></div>
@@ -728,7 +728,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, UseCounter15f) {
 
 // Current: first item is on the top
 // Proposed: first item is on the bottom
-TEST_F(NGFlexLayoutAlgorithmTest, UseCounter15g) {
+TEST_F(FlexLayoutAlgorithmTest, UseCounter15g) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; align-content: end; height: 200px;">
       <div style="height: 100px; align-self: start"></div>
@@ -741,7 +741,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, UseCounter15g) {
 
 // Current: item is on the right.
 // Proposed: item is on the left.
-TEST_F(NGFlexLayoutAlgorithmTest, UseCounter16) {
+TEST_F(FlexLayoutAlgorithmTest, UseCounter16) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; flex-flow: column; align-content: flex-start; width: 200px">
       <div style="align-self: flex-end; width: 100px;"></div>
@@ -754,7 +754,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, UseCounter16) {
 // Current: first item's right edge abuts container's right edge
 //          second item is horizontally centered
 // Proposal: both abut container's right edge
-TEST_F(NGFlexLayoutAlgorithmTest, UseCounter17) {
+TEST_F(FlexLayoutAlgorithmTest, UseCounter17) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; flex-flow: column; align-content: flex-end; width: 200px">
       <div style="align-self: flex-end; width: 100px;"></div>
@@ -768,7 +768,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, UseCounter17) {
 // Current: first item's bottom edge abuts container's bottom edge
 //          second item is vertically centered
 // Proposal: both abut container's bottom edge
-TEST_F(NGFlexLayoutAlgorithmTest, UseCounter18) {
+TEST_F(FlexLayoutAlgorithmTest, UseCounter18) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; align-content: flex-end; height: 200px">
       <div style="align-self: flex-end; height: 100px;"></div>
@@ -782,7 +782,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, UseCounter18) {
 // This case has no behavior change but checking the used width of each item
 // against the flex container's width is too difficult without fully
 // implementing the new behavior.
-TEST_F(NGFlexLayoutAlgorithmTest, UseCounter19) {
+TEST_F(FlexLayoutAlgorithmTest, UseCounter19) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex; flex-flow: column; align-content: flex-end; width: 20px">
       <div style="width:20px;"></div>

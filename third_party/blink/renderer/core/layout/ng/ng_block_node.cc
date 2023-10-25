@@ -165,7 +165,7 @@ NOINLINE void DetermineAlgorithmAndRun(const NGLayoutAlgorithmParams& params,
   const ComputedStyle& style = params.node.Style();
   const LayoutBox& box = *params.node.GetLayoutBox();
   if (box.IsFlexibleBox()) {
-    CreateAlgorithmAndRun<NGFlexLayoutAlgorithm>(params, callback);
+    CreateAlgorithmAndRun<FlexLayoutAlgorithm>(params, callback);
   } else if (box.IsTable()) {
     CreateAlgorithmAndRun<TableLayoutAlgorithm>(params, callback);
   } else if (box.IsTableRow()) {

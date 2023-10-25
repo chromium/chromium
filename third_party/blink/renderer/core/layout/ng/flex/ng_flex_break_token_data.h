@@ -10,8 +10,8 @@
 
 namespace blink {
 
-struct NGFlexBreakTokenData final : NGBlockBreakTokenData {
-  // NGFlexBreakBeforeRow is used to maintain the state of break before rows
+struct FlexBreakTokenData final : NGBlockBreakTokenData {
+  // FlexBreakBeforeRow is used to maintain the state of break before rows
   // during flex fragmentation. kNotBreakBeforeRow implies that we are either
   // fragmenting a column-based flex container, or the current break token does
   // not represent a break before a row. If kAtStartOfBreakBeforeRow is set,
@@ -19,18 +19,18 @@ struct NGFlexBreakTokenData final : NGBlockBreakTokenData {
   // first time we broke before the given row. If kPastStartOfBreakBeforeRow is
   // set, then the current break token similarly represents a break before a
   // row, but it is not the first time we've broken before the given row.
-  enum NGFlexBreakBeforeRow {
+  enum FlexBreakBeforeRow {
     kNotBreakBeforeRow,
     kAtStartOfBreakBeforeRow,
     kPastStartOfBreakBeforeRow
   };
 
-  NGFlexBreakTokenData(const NGBlockBreakTokenData* break_token_data,
-                       const HeapVector<NGFlexLine>& flex_lines,
-                       const Vector<EBreakBetween>& row_break_between,
-                       const HeapVector<Member<LayoutBox>>& oof_children,
-                       LayoutUnit intrinsic_block_size,
-                       NGFlexBreakBeforeRow break_before_row)
+  FlexBreakTokenData(const NGBlockBreakTokenData* break_token_data,
+                     const HeapVector<NGFlexLine>& flex_lines,
+                     const Vector<EBreakBetween>& row_break_between,
+                     const HeapVector<Member<LayoutBox>>& oof_children,
+                     LayoutUnit intrinsic_block_size,
+                     FlexBreakBeforeRow break_before_row)
       : NGBlockBreakTokenData(kFlexBreakTokenData, break_token_data),
         flex_lines(flex_lines),
         row_break_between(row_break_between),
@@ -58,11 +58,11 @@ struct NGFlexBreakTokenData final : NGBlockBreakTokenData {
   // breaks before. Thus, we will also track if the current break before is the
   // first, or if we are past the first break before row (as distinguished by
   // the kAtStartOfBreakBeforeRow and kPastStartOfBreakBeforeRow values).
-  NGFlexBreakBeforeRow break_before_row = kNotBreakBeforeRow;
+  FlexBreakBeforeRow break_before_row = kNotBreakBeforeRow;
 };
 
 template <>
-struct DowncastTraits<NGFlexBreakTokenData> {
+struct DowncastTraits<FlexBreakTokenData> {
   static bool AllowFrom(const NGBlockBreakTokenData& token_data) {
     return token_data.IsFlexType();
   }

@@ -19,12 +19,12 @@ class NGBlockBreakToken;
 struct DevtoolsFlexInfo;
 struct NGFlexItem;
 
-class CORE_EXPORT NGFlexLayoutAlgorithm
+class CORE_EXPORT FlexLayoutAlgorithm
     : public NGLayoutAlgorithm<NGBlockNode,
                                NGBoxFragmentBuilder,
                                NGBlockBreakToken> {
  public:
-  explicit NGFlexLayoutAlgorithm(
+  explicit FlexLayoutAlgorithm(
       const NGLayoutAlgorithmParams& params,
       const HashMap<wtf_size_t, LayoutUnit>* cross_size_adjustments = nullptr);
 
@@ -97,7 +97,7 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   NGLayoutResult::EStatus GiveItemsFinalPositionAndSizeForFragmentation(
       HeapVector<NGFlexLine>* flex_line_outputs,
       Vector<EBreakBetween>* row_break_between_outputs,
-      NGFlexBreakTokenData::NGFlexBreakBeforeRow* break_before_row);
+      FlexBreakTokenData::FlexBreakBeforeRow* break_before_row);
   NGLayoutResult::EStatus PropagateFlexItemInfo(FlexItem* flex_item,
                                                 wtf_size_t flex_line_idx,
                                                 LogicalOffset offset,

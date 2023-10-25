@@ -16,11 +16,11 @@ namespace blink {
 //
 // This class does not handle modifications to its arguments after it has been
 // constructed.
-class CORE_EXPORT NGFlexChildIterator {
+class CORE_EXPORT FlexChildIterator {
   STACK_ALLOCATED();
 
  public:
-  NGFlexChildIterator(const NGBlockNode node);
+  FlexChildIterator(const NGBlockNode node);
 
   // Returns the next block node which should be laid out.
   NGBlockNode NextChild() {
@@ -50,6 +50,6 @@ class CORE_EXPORT NGFlexChildIterator {
 }  // namespace blink
 
 WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(
-    blink::NGFlexChildIterator::ChildWithOrder)
+    blink::FlexChildIterator::ChildWithOrder)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_FLEX_NG_FLEX_CHILD_ITERATOR_H_

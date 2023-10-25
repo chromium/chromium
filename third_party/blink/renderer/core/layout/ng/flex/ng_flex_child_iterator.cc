@@ -6,7 +6,7 @@
 
 namespace blink {
 
-NGFlexChildIterator::NGFlexChildIterator(const NGBlockNode node) {
+FlexChildIterator::FlexChildIterator(const NGBlockNode node) {
   bool is_deprecated_webkit_box = node.Style().IsDeprecatedWebkitBox();
   int initial_order = is_deprecated_webkit_box
                           ? ComputedStyleInitialValues::InitialBoxOrdinalGroup()

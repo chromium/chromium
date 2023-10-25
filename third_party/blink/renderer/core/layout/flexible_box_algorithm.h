@@ -46,9 +46,9 @@
 namespace blink {
 
 class FlexItem;
+class FlexLayoutAlgorithm;
 class FlexLine;
 class FlexibleBoxAlgorithm;
-class NGFlexLayoutAlgorithm;
 struct MinMaxSizes;
 struct NGFlexLine;
 
@@ -427,7 +427,7 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
   const LayoutUnit gap_between_lines_;
 
  private:
-  friend class NGFlexLayoutAlgorithm;
+  friend class FlexLayoutAlgorithm;
   EOverflow MainAxisOverflowForChild(const LayoutBox& child) const;
 
   Member<const ComputedStyle> style_;
