@@ -61,6 +61,7 @@ class ScopedLacrosAvailabilityCache {
       const ScopedLacrosAvailabilityCache&) = delete;
   ~ScopedLacrosAvailabilityCache() {
     browser_util::ClearLacrosAvailabilityCacheForTest();
+    ash::standalone_browser::BrowserSupport::Shutdown();
   }
 
  private:
@@ -72,6 +73,11 @@ class ScopedLacrosAvailabilityCache {
         base::Value(GetLacrosAvailabilityPolicyName(lacros_availability)),
         /*external_data_fetcher=*/nullptr);
     browser_util::CacheLacrosAvailability(policy);
+    if (ash::standalone_browser::BrowserSupport::
+            IsInitializedForPrimaryUser()) {
+      ash::standalone_browser::BrowserSupport::Shutdown();
+    }
+    ash::standalone_browser::BrowserSupport::InitializeForPrimaryUser(policy);
   }
 };
 
@@ -118,6 +124,10 @@ class BrowserUtilTest : public testing::Test {
   }
 
   void TearDown() override {
+    if (ash::standalone_browser::BrowserSupport::
+            IsInitializedForPrimaryUser()) {
+      ash::standalone_browser::BrowserSupport::Shutdown();
+    }
     ash::system::StatisticsProvider::SetTestProvider(nullptr);
     fake_user_manager_.Reset();
     ash::standalone_browser::BrowserSupport::SetCpuSupportedForTesting(
@@ -130,6 +140,8 @@ class BrowserUtilTest : public testing::Test {
     fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
                                      /*browser_restart=*/false,
                                      /*is_child=*/false);
+    ash::standalone_browser::BrowserSupport::InitializeForPrimaryUser(
+        policy::PolicyMap());
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
         user, &testing_profile_);
   }
@@ -182,19 +194,20 @@ TEST_F(BrowserUtilTest, LacrosEnabledByFlag) {
 }
 
 TEST_F(BrowserUtilTest, LacrosDisallowedByCommandLineFlag) {
-  AddRegularUser("user@test.com");
-
-  EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled());
-
   base::test::ScopedCommandLine cmd_line;
   cmd_line.GetProcessCommandLine()->AppendSwitch(
       ash::switches::kDisallowLacros);
-
+  AddRegularUser("user@test.com");
   EXPECT_FALSE(browser_util::IsLacrosAllowedToBeEnabled());
+}
 
+TEST_F(BrowserUtilTest, LacrosDisableDisallowedLacrosByCommandLineFlag) {
+  base::test::ScopedCommandLine cmd_line;
+  cmd_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kDisallowLacros);
   cmd_line.GetProcessCommandLine()->AppendSwitch(
       ash::switches::kDisableDisallowLacros);
-
+  AddRegularUser("user@test.com");
   EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled());
 }
 

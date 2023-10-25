@@ -10,6 +10,10 @@
 #include "base/strings/string_piece.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace policy {
+class PolicyMap;
+}
+
 namespace user_manager {
 class User;
 }
@@ -65,6 +69,11 @@ COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
 LacrosAvailability DetermineLacrosAvailabilityFromPolicyValue(
     const user_manager::User* user,
     base::StringPiece policy_value);
+
+// Returns LacrosAvailability policy for the given `user` and its `policy_map`.
+// This function may take a look at more surrounding context.
+LacrosAvailability GetLacrosAvailability(const user_manager::User* user,
+                                         const policy::PolicyMap& policy_map);
 
 // Returns true if the given user's profile is associated with a google internal
 // account. This includes @managedchrome.com accounts.

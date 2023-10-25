@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
@@ -119,31 +120,6 @@ const user_manager::User* GetPrimaryUser() {
   return UserManager::Get()->GetPrimaryUser();
 }
 
-// Some account types require features that aren't yet supported by lacros.
-// See https://crbug.com/1080693
-bool IsUserTypeAllowed(const User& user) {
-  switch (user.GetType()) {
-    case user_manager::USER_TYPE_REGULAR:
-    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
-    // Note: Lacros will not be enabled for Guest users unless LacrosOnly
-    // flag is passed in --enable-features. See https://crbug.com/1294051#c25.
-    case user_manager::USER_TYPE_GUEST:
-      return true;
-    case user_manager::USER_TYPE_CHILD:
-      return base::FeatureList::IsEnabled(
-          ash::standalone_browser::features::kLacrosForSupervisedUsers);
-    case user_manager::USER_TYPE_WEB_KIOSK_APP:
-      return base::FeatureList::IsEnabled(
-          ash::standalone_browser::features::kWebKioskEnableLacros);
-    case user_manager::USER_TYPE_KIOSK_APP:
-      return base::FeatureList::IsEnabled(
-          ash::standalone_browser::features::kChromeKioskEnableLacros);
-    case user_manager::USER_TYPE_ARC_KIOSK_APP:
-    case user_manager::NUM_USER_TYPES:
-      return false;
-  }
-}
-
 // Returns the lacros integration suggested by the policy lacros-availability.
 // There are several reasons why we might choose to ignore the
 // lacros-availability policy.
@@ -185,54 +161,13 @@ LacrosAvailability GetLacrosAvailability(const user_manager::User* user,
   }
 }
 
-// Returns true if `kDisallowLacros` is set by command line.
-bool IsLacrosDisallowedByCommand() {
-  const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-  return cmdline->HasSwitch(ash::switches::kDisallowLacros) &&
-         !cmdline->HasSwitch(ash::switches::kDisableDisallowLacros);
-}
-
-// Returns whether or not lacros is allowed for the Primary user,
-// with given LacrosAvailability policy.
-bool IsLacrosAllowedInternal(const User* user,
-                             LacrosAvailability lacros_availability) {
-  if (IsLacrosDisallowedByCommand() ||
-      !ash::standalone_browser::BrowserSupport::IsCpuSupported()) {
-    // This happens when Ash is restarted in multi-user session, meaning there
-    // are more than two users logged in to the device. This will not cause an
-    // accidental removal of Lacros data because for the primary user, the fact
-    // that the device is in multi-user session means that Lacros was not
-    // enabled beforehand. And for secondary users, data removal does not happen
-    // even if Lacros is disabled.
-    return false;
-  }
-
-  if (!user) {
-    // User is not available. Practically, this is accidentally happening
-    // if related function is called before session, or in testing.
-    // TODO(crbug.com/1408962): We should limit this at least only for
-    // testing.
-    return false;
-  }
-
-  if (!IsUserTypeAllowed(*user)) {
-    return false;
-  }
-
-  switch (lacros_availability) {
-    case LacrosAvailability::kLacrosDisallowed:
-      return false;
-    case LacrosAvailability::kUserChoice:
-    case LacrosAvailability::kLacrosOnly:
-      return true;
-  }
-}
 
 // Returns the current lacros mode.
 LacrosMode GetLacrosModeInternal(const User* user,
                                  LacrosAvailability lacros_availability,
                                  bool check_migration_status) {
-  if (!IsLacrosAllowedInternal(user, lacros_availability)) {
+  if (!ash::standalone_browser::BrowserSupport::IsAllowedInternal(
+          user, lacros_availability)) {
     return LacrosMode::kDisabled;
   }
 
@@ -419,8 +354,15 @@ base::FilePath GetUserDataDir() {
 }
 
 bool IsLacrosAllowedToBeEnabled() {
-  return IsLacrosAllowedInternal(GetPrimaryUser(),
-                                 GetCachedLacrosAvailability());
+  if (!ash::standalone_browser::BrowserSupport::IsInitializedForPrimaryUser()) {
+    // This function must be called only after user session starts.
+    base::debug::DumpWithoutCrashing();
+    // Returning false for compatibility.
+    // TODO(crbug.com/1494005): replace this logic by CHECK/DCHECK.
+    return false;
+  }
+  return ash::standalone_browser::BrowserSupport::GetForPrimaryUser()
+      ->IsAllowed();
 }
 
 bool IsLacrosEnabled() {
@@ -483,8 +425,15 @@ LacrosMode GetLacrosMode() {
 }
 
 bool IsLacrosOnlyBrowserAllowed() {
-  return IsLacrosAllowedInternal(GetPrimaryUser(),
-                                 GetCachedLacrosAvailability());
+  if (!ash::standalone_browser::BrowserSupport::IsInitializedForPrimaryUser()) {
+    // This function must be called only after user session starts.
+    base::debug::DumpWithoutCrashing();
+    // Returning false for compatibility.
+    // TODO(crbug.com/1494005): replace this logic by CHECK/DCHECK.
+    return false;
+  }
+  return ash::standalone_browser::BrowserSupport::GetForPrimaryUser()
+      ->IsAllowed();
 }
 
 bool IsLacrosOnlyFlagAllowed() {
