@@ -1408,4 +1408,87 @@ TEST_P(StaticShortcutActionRewritingTest,
             ConvertToString(*continuation.passthrough_event));
 }
 
+class StaticShortcutActionMouseButtonRewritingTest
+    : public PeripheralCustomizationEventRewriterTest,
+      public testing::WithParamInterface<
+          std::tuple<mojom::StaticShortcutAction, ui::EventFlags>> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    StaticShortcutActionMouseButtonRewritingTest,
+    testing::ValuesIn(
+        std::vector<std::tuple<mojom::StaticShortcutAction, ui::EventFlags>>{
+            {mojom::StaticShortcutAction::kLeftClick, ui::EF_LEFT_MOUSE_BUTTON},
+            {mojom::StaticShortcutAction::kRightClick,
+             ui::EF_RIGHT_MOUSE_BUTTON},
+            {mojom::StaticShortcutAction::kMiddleClick,
+             ui::EF_MIDDLE_MOUSE_BUTTON},
+        }));
+
+TEST_P(StaticShortcutActionMouseButtonRewritingTest, RewriteEvent) {
+  const auto [static_shortcut_action, expected_flag] = GetParam();
+  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+      "",
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kForward),
+      mojom::RemappingAction::NewStaticShortcutAction(static_shortcut_action)));
+
+  TestEventRewriterContinuation continuation;
+  const ui::MouseEvent mouse_pressed_event =
+      CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED, ui::EF_FORWARD_MOUSE_BUTTON,
+                             ui::EF_FORWARD_MOUSE_BUTTON, kMouseDeviceId);
+  const ui::MouseEvent expected_press_event = CreateMouseButtonEvent(
+      ui::ET_MOUSE_PRESSED, expected_flag, expected_flag);
+  rewriter_->RewriteEvent(mouse_pressed_event,
+                          continuation.weak_ptr_factory_.GetWeakPtr());
+
+  ASSERT_TRUE(continuation.passthrough_event);
+  EXPECT_EQ(ConvertToString(expected_press_event),
+            ConvertToString(*continuation.passthrough_event));
+
+  continuation.reset();
+  const ui::MouseEvent mouse_released_event =
+      CreateMouseButtonEvent(ui::ET_MOUSE_RELEASED, ui::EF_FORWARD_MOUSE_BUTTON,
+                             ui::EF_FORWARD_MOUSE_BUTTON, kMouseDeviceId);
+  const ui::MouseEvent expected_release_event = CreateMouseButtonEvent(
+      ui::ET_MOUSE_RELEASED, expected_flag, expected_flag);
+  rewriter_->RewriteEvent(expected_release_event,
+                          continuation.weak_ptr_factory_.GetWeakPtr());
+
+  ASSERT_TRUE(continuation.passthrough_event);
+  EXPECT_EQ(ConvertToString(expected_release_event),
+            ConvertToString(*continuation.passthrough_event));
+}
+
+TEST_P(StaticShortcutActionMouseButtonRewritingTest, KeyEventRewrite) {
+  const auto [static_shortcut_action, expected_flag] = GetParam();
+  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+      "", mojom::Button::NewVkey(ui::VKEY_A),
+      mojom::RemappingAction::NewStaticShortcutAction(static_shortcut_action)));
+
+  TestEventRewriterContinuation continuation;
+  const ui::KeyEvent key_pressed_event =
+      CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_COMMAND_DOWN);
+  const ui::MouseEvent expected_pressed_event = CreateMouseButtonEvent(
+      ui::ET_MOUSE_PRESSED, ui::EF_COMMAND_DOWN | expected_flag, expected_flag);
+  rewriter_->RewriteEvent(key_pressed_event,
+                          continuation.weak_ptr_factory_.GetWeakPtr());
+
+  ASSERT_TRUE(continuation.passthrough_event);
+  EXPECT_EQ(ConvertToString(expected_pressed_event),
+            ConvertToString(*continuation.passthrough_event));
+
+  continuation.reset();
+  const ui::KeyEvent key_released_event = CreateKeyButtonEvent(
+      ui::ET_KEY_RELEASED, ui::VKEY_A, ui::EF_COMMAND_DOWN);
+  const ui::MouseEvent expected_released_event = CreateMouseButtonEvent(
+      ui::ET_MOUSE_RELEASED, ui::EF_COMMAND_DOWN | expected_flag,
+      expected_flag);
+  rewriter_->RewriteEvent(key_released_event,
+                          continuation.weak_ptr_factory_.GetWeakPtr());
+
+  ASSERT_TRUE(continuation.passthrough_event);
+  EXPECT_EQ(ConvertToString(expected_released_event),
+            ConvertToString(*continuation.passthrough_event));
+}
+
 }  // namespace ash

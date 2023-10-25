@@ -16,16 +16,20 @@
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "base/check.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_dispatcher.h"
+#include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/ozone/evdev/mouse_button_property.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace ash {
 
@@ -39,10 +43,20 @@ constexpr int kGraphicsTabletRemappableFlags =
     ui::EF_RIGHT_MOUSE_BUTTON | ui::EF_BACK_MOUSE_BUTTON |
     ui::EF_FORWARD_MOUSE_BUTTON | ui::EF_MIDDLE_MOUSE_BUTTON;
 
+constexpr auto kStaticActionToMouseButtonFlag =
+    base::MakeFixedFlatMap<mojom::StaticShortcutAction, ui::EventFlags>({
+        {mojom::StaticShortcutAction::kLeftClick, ui::EF_LEFT_MOUSE_BUTTON},
+        {mojom::StaticShortcutAction::kRightClick, ui::EF_RIGHT_MOUSE_BUTTON},
+        {mojom::StaticShortcutAction::kMiddleClick, ui::EF_MIDDLE_MOUSE_BUTTON},
+    });
+
 mojom::KeyEvent GetStaticShortcutAction(mojom::StaticShortcutAction action) {
   mojom::KeyEvent key_event;
   switch (action) {
     case mojom::StaticShortcutAction::kDisable:
+    case mojom::StaticShortcutAction::kLeftClick:
+    case mojom::StaticShortcutAction::kRightClick:
+    case mojom::StaticShortcutAction::kMiddleClick:
       NOTREACHED_NORETURN();
     case mojom::StaticShortcutAction::kCopy:
       key_event = mojom::KeyEvent(
@@ -106,6 +120,31 @@ std::unique_ptr<ui::Event> RewriteEventToKeyEvent(
       event_type, key_event.vkey, static_cast<ui::DomCode>(key_event.dom_code),
       key_event.modifiers | event.flags(),
       static_cast<ui::DomKey>(key_event.dom_key), event.time_stamp());
+  rewritten_event->set_source_device_id(event.source_device_id());
+  return rewritten_event;
+}
+
+std::unique_ptr<ui::Event> RewriteEventToMouseButtonEvent(
+    const ui::Event& event,
+    mojom::StaticShortcutAction action) {
+  auto* flag_iter = kStaticActionToMouseButtonFlag.find(action);
+  CHECK(flag_iter != kStaticActionToMouseButtonFlag.end());
+  const int characteristic_flag = flag_iter->second;
+
+  auto* screen = display::Screen::GetScreen();
+  CHECK(screen);
+  const gfx::PointF location = gfx::ScalePoint(
+      gfx::PointF(screen->GetCursorScreenPoint()),
+      screen->GetDisplayNearestPoint(screen->GetCursorScreenPoint())
+          .device_scale_factor());
+
+  const ui::EventType type = (event.type() == ui::ET_MOUSE_PRESSED ||
+                              event.type() == ui::ET_KEY_PRESSED)
+                                 ? ui::ET_MOUSE_PRESSED
+                                 : ui::ET_MOUSE_RELEASED;
+  auto rewritten_event = std::make_unique<ui::MouseEvent>(
+      type, location, location, event.time_stamp(),
+      event.flags() | characteristic_flag, characteristic_flag);
   rewritten_event->set_source_device_id(event.source_device_id());
   return rewritten_event;
 }
@@ -259,7 +298,9 @@ int GetRemappedModifiersFromMouseSettings(
     const mojom::MouseSettings& settings) {
   int modifiers = 0;
   for (const auto& button_remapping : settings.button_remappings) {
-    modifiers |= ConvertButtonToFlags(*button_remapping->button);
+    if (button_remapping->remapping_action) {
+      modifiers |= ConvertButtonToFlags(*button_remapping->button);
+    }
   }
   return modifiers;
 }
@@ -458,14 +499,19 @@ bool PeripheralCustomizationEventRewriter::RewriteEventFromButton(
   }
 
   if (remapping_action->is_static_shortcut_action()) {
-    if (remapping_action->get_static_shortcut_action() ==
-        mojom::StaticShortcutAction::kDisable) {
+    const auto static_action = remapping_action->get_static_shortcut_action();
+    if (static_action == mojom::StaticShortcutAction::kDisable) {
       // Return true to discard the event.
       return true;
     }
-    rewritten_event = RewriteEventToKeyEvent(
-        event, GetStaticShortcutAction(
-                   remapping_action->get_static_shortcut_action()));
+
+    if (kStaticActionToMouseButtonFlag.contains(static_action)) {
+      rewritten_event = RewriteEventToMouseButtonEvent(event, static_action);
+    } else {
+      rewritten_event = RewriteEventToKeyEvent(
+          event, GetStaticShortcutAction(
+                     remapping_action->get_static_shortcut_action()));
+    }
   }
 
   return false;
@@ -504,9 +550,13 @@ void PeripheralCustomizationEventRewriter::UpdatePressedButtonMap(
     const std::unique_ptr<ui::Event>& rewritten_event) {
   DeviceIdButton device_id_button_key =
       DeviceIdButton{original_event.source_device_id(), std::move(button)};
-  const int flags =
+  const int key_event_flags =
       (rewritten_event && rewritten_event->IsKeyEvent())
           ? ConvertKeyCodeToFlags(rewritten_event->AsKeyEvent()->key_code())
+          : 0;
+  const int mouse_event_flags =
+      (rewritten_event && rewritten_event->IsMouseEvent())
+          ? rewritten_event->AsMouseEvent()->changed_button_flags()
           : 0;
 
   // If the button is released, the entry must be removed from the map.
@@ -519,7 +569,7 @@ void PeripheralCustomizationEventRewriter::UpdatePressedButtonMap(
   // Add the entry to the map with the flags that must be applied to other
   // events.
   device_button_to_flags_.insert_or_assign(std::move(device_id_button_key),
-                                           flags);
+                                           key_event_flags | mouse_event_flags);
 }
 
 ui::EventDispatchDetails

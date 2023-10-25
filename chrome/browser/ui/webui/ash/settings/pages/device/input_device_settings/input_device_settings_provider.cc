@@ -54,15 +54,13 @@ constexpr ActionChoice kMouseButtonOptions[] = {
      AcceleratorAction::kEnableOrToggleDictation},
 };
 
-// TODO(wangdanny): Update static shortcut actions for left, right and middle
-// click.
 constexpr ActionChoice kGraphicsTabletOptions[] = {
     {IDS_SETTINGS_RIGHT_CLICK_OPTION_LABEL,
-     ::ash::mojom::StaticShortcutAction::kDisable},
+     ::ash::mojom::StaticShortcutAction::kRightClick},
     {IDS_SETTINGS_MIDDLE_CLICK_OPTION_LABEL,
-     ::ash::mojom::StaticShortcutAction::kDisable},
+     ::ash::mojom::StaticShortcutAction::kMiddleClick},
     {IDS_SETTINGS_LEFT_CLICK_OPTION_LABEL,
-     ::ash::mojom::StaticShortcutAction::kDisable},
+     ::ash::mojom::StaticShortcutAction::kLeftClick},
     {IDS_SETTINGS_UNDO_OPTION_LABEL, ::ash::mojom::StaticShortcutAction::kUndo},
     {IDS_SETTINGS_REDO_OPTION_LABEL, ::ash::mojom::StaticShortcutAction::kRedo},
     {IDS_SETTINGS_PREVIOUS_PAGE_OPTION_LABEL,
