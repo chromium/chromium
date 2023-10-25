@@ -11,8 +11,5 @@ source_set("test_support") {
     "fake_ax_media_app.h",
   ]
 
-  deps = [
-    "//content/public/browser",
-    "//ui/gfx",
-  ]
+  deps = [ "//ui/gfx" ]
 }
