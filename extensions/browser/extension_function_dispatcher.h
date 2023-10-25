@@ -116,11 +116,10 @@ class ExtensionFunctionDispatcher {
   }
 
  private:
-
   // Helper to create an ExtensionFunction to handle the function given by
-  // |params|. Can be called on any thread.
+  // |params|.
   // Does not set subclass properties, or include_incognito.
-  static scoped_refptr<ExtensionFunction> CreateExtensionFunction(
+  scoped_refptr<ExtensionFunction> CreateExtensionFunction(
       const mojom::RequestParams& params,
       const Extension* extension,
       int requesting_process_id,

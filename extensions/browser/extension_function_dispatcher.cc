@@ -421,7 +421,6 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
   if (!function.get())
     return;
 
-  function->SetDispatcher(weak_ptr_factory_.GetWeakPtr());
   if (extension &&
       ExtensionsBrowserClient::Get()->CanExtensionCrossIncognito(
           extension, browser_context_)) {
@@ -595,7 +594,6 @@ void ExtensionFunctionDispatcher::ProcessResponseAck(
   response_targets_.erase(iter);
 }
 
-// static
 scoped_refptr<ExtensionFunction>
 ExtensionFunctionDispatcher::CreateExtensionFunction(
     const mojom::RequestParams& params,
@@ -651,6 +649,11 @@ ExtensionFunctionDispatcher::CreateExtensionFunction(
   } else {
     function->SetRenderFrameHost(render_frame_host);
   }
+
+  // Note: `SetDispatcher()` also initializes the `browser_context_` member
+  // for `ExtensionFunction`, which is necessary for properly performing
+  // permission checks.
+  function->SetDispatcher(weak_ptr_factory_.GetWeakPtr());
 
   if (!function->HasPermission()) {
     LOG(ERROR) << "Permission denied for " << params.name;

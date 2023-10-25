@@ -6,10 +6,21 @@ chrome.test.getConfig(function(config) {
   var inDeveloperMode = config.customArg == 'in_developer_mode';
 
   chrome.test.runTests([
-    function testDebuggerApiAccess() {
+    async function testDebuggerApiAccess() {
       if (inDeveloperMode) {
+        // In developer mode, the API should be defined...
         chrome.test.assertTrue(!!chrome.debugger);
         chrome.test.assertTrue(!!chrome.debugger.getTargets);
+
+        // ... And, just as importantly, should be usable. (We don't need to
+        // check the whole implementation here -- just verifying the API calls
+        // don't throw is sufficient.)
+        const tabs = await chrome.tabs.query({});
+        chrome.test.assertEq(1, tabs.length);
+        const debuggee = {tabId: tabs[0].id};
+        await chrome.debugger.attach(debuggee, '1.3');
+        await chrome.debugger.detach(debuggee);
+        chrome.test.succeed();
       } else {
         var expectedError = 'The \'debugger\' API is only '
                           + 'available for users in developer mode.';
