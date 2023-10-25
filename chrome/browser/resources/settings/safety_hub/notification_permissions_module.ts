@@ -199,11 +199,10 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
 
     this.headerString_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
-            'safetyCheckNotificationPermissionReviewPrimaryLabel',
-            this.sites_.length);
+            'safetyHubNotificationPermissionsPrimaryLabel', this.sites_.length);
     this.subheaderString_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
-            'safetyCheckNotificationPermissionReviewSecondaryLabel',
+            'safetyHubNotificationPermissionsSecondaryLabel',
             this.sites_.length);
     this.headerIconString_ = 'settings:notifications-none';
   }

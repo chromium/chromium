@@ -557,11 +557,10 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
 
     this.notificationPermissionsReviewHeader_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
-            'safetyCheckNotificationPermissionReviewPrimaryLabel',
-            permissions.length);
+            'safetyHubNotificationPermissionsPrimaryLabel', permissions.length);
     this.notificationPermissionsReviewSubheader_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
-            'safetyCheckNotificationPermissionReviewSecondaryLabel',
+            'safetyHubNotificationPermissionsSecondaryLabel',
             permissions.length);
   }
 

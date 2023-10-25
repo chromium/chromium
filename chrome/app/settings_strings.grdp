@@ -4352,8 +4352,8 @@
   <message name="IDS_SETTINGS_SAFETY_HUB_PAGE_CARD_SECTION_HEADER" desc="The title of the first section in the Safety Hub page. The 'Safety at a glance' section gives an overview about the current state of passwords, browser version and safe browsing setting of the browser. ">
     Safety at a glance
   </message>
-  <message name="IDS_SETTINGS_SAFETY_HUB_PAGE_MODULE_SECTION_HEADER" desc="The title of the second section in the Safety Hub page. The 'Safety recommendation' section shows actionable modules about permissions and extensions based on the current state of the browser.">
-    Safety recommendation
+  <message name="IDS_SETTINGS_SAFETY_HUB_PAGE_MODULE_SECTION_HEADER" desc="The title of the second section in the Safety Check page. The 'Safety recommendations' section shows actionable modules about permissions and extensions based on the current state of the browser.">
+    Safety recommendations
   </message>
   <message name="IDS_SETTINGS_SAFETY_HUB_EMPTY_STATE_MODULE_HEADER" desc="The header of the 'Empty State Module' in the Safety Hub page. The 'Empty State Module' is visible if there is no safety recommendation.">
     Nothing else needs your attention right now
@@ -4379,6 +4379,9 @@
   <message name="IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_NO_PASSWORDS_POLICY" desc="Subtitle of the passwords card in SafetyHub when there are no saved passwords and saving of passwords is disabled through enterprise policy. This text is shown below the header 'No saved passwords'. It explains that the SafetyHub features for passwords are not available since the user's organization has a policy in place that prevents the user from saving passwords in Chrome.">
     Your organization turned off saving passwords
   </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_PASSWORD_NAVIGATION_ARIA_LABEL" desc="Safety Check settings page (chrome://settings/safetyCheck) gives users an overview over their safety status. Password card in this page shows if there is any insecure password stored. This string is for the accesibility label for the card to call out where to navigation will happen (chrome://password-manager/passwords) if the card is clicked.">
+    Go to Google Password Manager
+  </message>
   <message name="IDS_SETTINGS_SAFETY_HUB_SB_ON_ENHANCED_HEADER" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. Safe browsing card in this page shows the current state of Safe browsing setting (chrome://settings/security). This string is the headline of the Safe Browsing card when the current state is Enhanced protection.">
     Enhanced Safe Browsing is on
   </message>
@@ -4403,6 +4406,9 @@
   <message name="IDS_SETTINGS_SAFETY_HUB_SB_OFF_USER_SUBHEADER" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. Safe browsing card in this page shows the current state of Safe browsing setting (chrome://settings/security). This string is the body text of the Safe Browsing card when the current state is No protection because the user has turned it off.">
     Turn on Safe Browsing to get protection against dangerous sites
   </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_SB_NAVIGATION_ARIA_LABEL" desc="Safety Check settings page (chrome://settings/safetyCheck) gives users an overview over their safety status. Safe browsing card in this page shows the current state of Safe browsing setting (chrome://settings/security). This string is for the accesibility label for the card to call out where to navigation will happen (chrome://settings/security) if the card is clicked.">
+    Go to Safe Browsing settings
+  </message>
   <message name="IDS_SETTINGS_SAFETY_HUB_GO_SITE_SETTINGS_ITEM" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. 'Unused Site Permissions' in this page shows unused websites for which permissions have been revoked. This label is for the action menu item that navigates users to the site settings page.">
     Go to site settings
   </message>
@@ -4415,11 +4421,6 @@
   <message name="IDS_SETTINGS_SAFETY_HUB_USER_EDU_SAFE_BROWSING_HEADER" desc="The header of the second item in the 'User Education Module' in the Safety Hub page. This item explains Safe Browsing.">
     Safe Browsing
   </message>
-  <message name="IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION" desc="The unused site permissions module of Safety Hub revokes permissions of sites that the user hasn't visited in a while. This label is for the notification in Chrome's three-dot menu indicating for how many sites the permission was revoked.">
-    {NUM_SITES, plural,
-      =1 {Permissions removed from 1 unused site}
-      other {Permissions removed from {NUM_SITES} sites}}
-  </message>
   <if expr="not is_chromeos">
     <message name="IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_SUBHEADER_RESTART" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. The version card, which this text is a part of, informs the user whether their Chrome is up to date. This text is shown when Chrome is not up to date but there is an update available and the user needs to restart their browser to finish the update. Shown below the title 'Chrome is out of date'.">
       Relaunch to finish update. Your tabs will reopen.
@@ -4430,6 +4431,21 @@
       Restart your device to finish updating
     </message>
   </if>
+  <message name="IDS_SETTINGS_SAFETY_HUB_NOTIFICATION_PERMISSIONS_PRIMARY_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is the header of the module in the Safety Check page (chrome://settings/SafetyCheck). The number represents the number of notification permissions to be reviewed.">
+    {NUM_SITES, plural,
+     =1 {Review 1 site that recently sent a lot of notifications}
+     other {Review {NUM_SITES} sites that recently sent a lot of notifications}}
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_NOTIFICATION_PERMISSIONS_SECONDARY_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is the header of the module in the Safety Check page (chrome://settings/SafetyCheck). The number represents the number of notification permissions to be reviewed.">
+    {NUM_SITES, plural,
+     =1 {You can stop this site from sending future notifications.}
+     other {You can stop these sites from sending future notifications.}}
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION" desc="The unused site permissions module of Safety Hub revokes permissions of sites that the user hasn't visited in a while. This label is for the notification in Chrome's three-dot menu indicating for how many sites the permission was revoked.">
+    {NUM_SITES, plural,
+      =1 {Permissions removed from 1 unused site}
+      other {Permissions removed from {NUM_SITES} sites}}
+  </message>
   <message name="IDS_SETTINGS_SAFETY_HUB_REVIEW_NOTIFICATION_PERMISSIONS_MENU_NOTIFICATION" desc="The review notification permissions module of Safety Hub marks sites that send a lot of notifications for review by the user. This label is for the notification in Chrome's three-dot menu indicating how many sites should be reviewed.">
     {NUM_SITES, plural,
       =1 {Review 1 website with lots of notifications}
@@ -4439,6 +4455,11 @@
     {NUM_SITES, plural,
       =1 {Found 1 compromised password}
       other {Found {NUM_SITES} compromised passwords}}
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_EXTENSIONS_MENU_NOTIFICATION" desc="The extension module of Safety Hub warns users if any downloaded extension is malware or policy violated. This label is for the notification in Chrome's three-dot menu indicating how many extension are marked as unsafe.">
+    {NUM_SITES, plural,
+      =1 {Turned off 1 unsafe extension}
+      other {Turned off {NUM_SITES} unsafe extensions}}
   </message>
   <message name="IDS_SETTINGS_SAFETY_HUB_PASSWORDS_MODULE_NAME" desc="The entry point shown on the screenshot leads to Safety Check settings page (chrome://settings/safetyCheck) when at least on of the Safety Check modules have recommendations. The subheader of the entry point lists the modules with recommendations. This string is the upper case version (i.e. version that comes first in the sentence) for the name of passwords module.">
     Passwords
