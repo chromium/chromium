@@ -47,12 +47,12 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
     private final @NonNull Activity mActivity;
     private final @NonNull TabSupplierObserver mTabSupplierObserver;
     private final @NonNull EdgeToEdgeOSWrapper mEdgeToEdgeOSWrapper;
+    private final @NonNull TabObserver mTabObserver;
 
     /** Multiplier to convert from pixels to DPs. */
     private final float mPxToDp;
 
     private Tab mCurrentTab;
-    private TabObserver mTabObserver;
     private WebContentsObserver mWebContentsObserver;
     private boolean mIsActivityToEdge;
     private Insets mSystemInsets;
@@ -82,30 +82,33 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
                 onTabSwitched(tab);
             }
         };
+        mTabObserver =
+                new EmptyTabObserver() {
+                    @Override
+                    public void onWebContentsSwapped(
+                            Tab tab, boolean didStartLoad, boolean didFinishLoad) {
+                        updateWebContentsObserver(tab);
+                    }
+
+                    @Override
+                    public void onContentChanged(Tab tab) {
+                        assert tab.getWebContents() != null
+                                : "onContentChanged called on tab w/o WebContents: "
+                                        + tab.getTitle();
+                        updateWebContentsObserver(tab);
+                    }
+                };
     }
 
     @Override
     @RequiresApi(VERSION_CODES.R)
     public void onTabSwitched(@Nullable Tab tab) {
-        removeCurrentTabObserver();
+        if (mCurrentTab != null) mCurrentTab.removeObserver(mTabObserver);
         mCurrentTab = tab;
         if (tab != null) {
-            if (mTabObserver != null) {
-                tab.removeObserver(mTabObserver);
-                mTabObserver = null;
-            }
+            tab.addObserver(mTabObserver);
             if (tab.getWebContents() != null) {
                 updateWebContentsObserver(tab);
-                // Also disconnect the WebContentsObserver when this tab switches its WebContents.
-                mTabObserver =
-                        new EmptyTabObserver() {
-                            @Override
-                            public void onWebContentsSwapped(
-                                    Tab tab, boolean didStartLoad, boolean didFinishLoad) {
-                                updateWebContentsObserver(tab);
-                            }
-                        };
-                tab.addObserver(mTabObserver);
             }
         }
 
@@ -275,14 +278,6 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
         return safeAreaInsetsTracker == null ? false : safeAreaInsetsTracker.isViewportFitCover();
     }
 
-    /** Removes any existing TabObserver tracked by private members for the Tab and TabObserver. */
-    private void removeCurrentTabObserver() {
-        if (mCurrentTab != null && mTabObserver != null) {
-            mCurrentTab.removeObserver(mTabObserver);
-            mTabObserver = null;
-        }
-    }
-
     @CallSuper
     @Override
     public void destroy() {
@@ -290,7 +285,7 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
             mWebContentsObserver.destroy();
             mWebContentsObserver = null;
         }
-        removeCurrentTabObserver();
+        if (mCurrentTab != null) mCurrentTab.removeObserver(mTabObserver);
         mTabSupplierObserver.destroy();
     }
 

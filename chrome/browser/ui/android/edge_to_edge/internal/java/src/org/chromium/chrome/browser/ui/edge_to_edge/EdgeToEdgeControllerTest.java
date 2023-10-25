@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -322,6 +323,33 @@ public class EdgeToEdgeControllerTest {
                 "onWebContentsSwapped not handling WebContentsObservers correctly",
                 initialWebContentsObserver,
                 mEdgeToEdgeControllerImpl.getWebContentsObserver());
+    }
+
+    @Test
+    public void onTabSwitched_onContentChanged() {
+        // Start with a Tab with no WebContents
+        when(mTab.getWebContents()).thenReturn(null);
+        doNothing().when(mTab).addObserver(mTabObserverArgumentCaptor.capture());
+
+        // When onTabSwitched is called, we capture the TabObserver created for the Tab.
+        mEdgeToEdgeControllerImpl.onTabSwitched(mTab);
+        TabObserver tabObserver = mTabObserverArgumentCaptor.getValue();
+        assertNotNull(tabObserver);
+        WebContentsObserver initialWebContentsObserver =
+                mEdgeToEdgeControllerImpl.getWebContentsObserver();
+        assertNull(initialWebContentsObserver);
+
+        // Simulate the tab getting new WebContents.
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+        tabObserver.onContentChanged(mTab);
+        WebContentsObserver firstObserver = mEdgeToEdgeControllerImpl.getWebContentsObserver();
+        assertNotNull(firstObserver);
+
+        // Make sure we can still swap to another WebContents.
+        tabObserver.onWebContentsSwapped(mTab, true, true);
+        WebContentsObserver secondObserver = mEdgeToEdgeControllerImpl.getWebContentsObserver();
+        assertNotNull(secondObserver);
+        assertNotEquals(firstObserver, secondObserver);
     }
 
     @Test
