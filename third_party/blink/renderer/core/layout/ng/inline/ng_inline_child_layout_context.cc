@@ -16,7 +16,7 @@ struct SameSizeAsNGInlineChildLayoutContext {
 
  public:
   FragmentItemsBuilder items_builder_;
-  absl::optional<NGInlineLayoutStateStack> box_states_;
+  absl::optional<InlineLayoutStateStack> box_states_;
   absl::optional<LayoutUnit> optional_layout_unit;
   void* pointers[5];
   unsigned number;
@@ -71,7 +71,7 @@ NGInlineChildLayoutContext::~NGInlineChildLayoutContext() {
   parallel_flow_break_tokens_.clear();
 }
 
-NGInlineLayoutStateStack*
+InlineLayoutStateStack*
 NGInlineChildLayoutContext::BoxStatesIfValidForItemIndex(
     const HeapVector<InlineItem>& items,
     unsigned item_index) {

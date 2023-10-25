@@ -12,9 +12,9 @@
 
 namespace blink {
 
+class InlineLayoutStateStack;
 class LineInfo;
 class LogicalLineItems;
-class NGInlineLayoutStateStack;
 struct LogicalLineItem;
 
 // A class to truncate lines and place ellipsis, invoked by the CSS
@@ -33,11 +33,11 @@ class CORE_EXPORT NGLineTruncator final {
   // created.
   LayoutUnit TruncateLine(LayoutUnit line_width,
                           LogicalLineItems* line_box,
-                          NGInlineLayoutStateStack* box_states);
+                          InlineLayoutStateStack* box_states);
 
   LayoutUnit TruncateLineInTheMiddle(LayoutUnit line_width,
                                      LogicalLineItems* line_box,
-                                     NGInlineLayoutStateStack* box_states);
+                                     InlineLayoutStateStack* box_states);
 
  private:
   const ComputedStyle& EllipsisStyle() const;
@@ -66,7 +66,7 @@ class CORE_EXPORT NGLineTruncator final {
                                LayoutUnit position,
                                TextDirection edge,
                                LogicalLineItems* line_box,
-                               NGInlineLayoutStateStack* box_states);
+                               InlineLayoutStateStack* box_states);
   bool EllipsizeChild(LayoutUnit line_width,
                       LayoutUnit ellipsis_width,
                       bool is_first_child,

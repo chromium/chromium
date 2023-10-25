@@ -24,11 +24,11 @@ wtf_size_t ItemIndex(const InlineCursor& cursor) {
                                  &cursor.Items().front());
 }
 
-class NGAbstractInlineTextBoxCache final {
+class AbstractInlineTextBoxCache final {
  public:
-  static NGAbstractInlineTextBox* GetOrCreate(const InlineCursor& cursor) {
+  static AbstractInlineTextBox* GetOrCreate(const InlineCursor& cursor) {
     if (!s_instance_)
-      s_instance_ = new NGAbstractInlineTextBoxCache();
+      s_instance_ = new AbstractInlineTextBoxCache();
     return s_instance_->GetOrCreateInternal(cursor);
   }
 
@@ -39,9 +39,9 @@ class NGAbstractInlineTextBoxCache final {
   }
 
  private:
-  NGAbstractInlineTextBoxCache() : map_(MakeGarbageCollected<MapType>()) {}
+  AbstractInlineTextBoxCache() : map_(MakeGarbageCollected<MapType>()) {}
 
-  NGAbstractInlineTextBox* GetOrCreateInternal(const InlineCursor& cursor) {
+  AbstractInlineTextBox* GetOrCreateInternal(const InlineCursor& cursor) {
     DCHECK(cursor.CurrentItem());
     MapKey key = ToMapKey(cursor);
     const auto it = map_->find(key);
@@ -51,7 +51,7 @@ class NGAbstractInlineTextBoxCache final {
       CHECK(layout_text->HasAbstractInlineTextBox());
       return it->value.Get();
     }
-    auto* obj = MakeGarbageCollected<NGAbstractInlineTextBox>(cursor);
+    auto* obj = MakeGarbageCollected<AbstractInlineTextBox>(cursor);
     map_->Set(key, obj);
     layout_text->SetHasAbstractInlineTextBox();
     return obj;
@@ -75,50 +75,49 @@ class NGAbstractInlineTextBoxCache final {
     return MapKey(&cursor.Items(), ItemIndex(cursor));
   }
 
-  static NGAbstractInlineTextBoxCache* s_instance_;
+  static AbstractInlineTextBoxCache* s_instance_;
 
-  using MapType = HeapHashMap<MapKey, Member<NGAbstractInlineTextBox>>;
+  using MapType = HeapHashMap<MapKey, Member<AbstractInlineTextBox>>;
   Persistent<MapType> map_;
 };
 
-NGAbstractInlineTextBoxCache* NGAbstractInlineTextBoxCache::s_instance_ =
-    nullptr;
+AbstractInlineTextBoxCache* AbstractInlineTextBoxCache::s_instance_ = nullptr;
 
 }  // namespace
 
-NGAbstractInlineTextBox* NGAbstractInlineTextBox::GetOrCreate(
+AbstractInlineTextBox* AbstractInlineTextBox::GetOrCreate(
     const InlineCursor& cursor) {
   if (!cursor)
     return nullptr;
-  return NGAbstractInlineTextBoxCache::GetOrCreate(cursor);
+  return AbstractInlineTextBoxCache::GetOrCreate(cursor);
 }
 
-void NGAbstractInlineTextBox::WillDestroy(const InlineCursor& cursor) {
+void AbstractInlineTextBox::WillDestroy(const InlineCursor& cursor) {
   if (cursor.CurrentItem()) {
-    return NGAbstractInlineTextBoxCache::WillDestroy(cursor);
+    return AbstractInlineTextBoxCache::WillDestroy(cursor);
   }
   NOTREACHED();
 }
 
-NGAbstractInlineTextBox::NGAbstractInlineTextBox(const InlineCursor& cursor)
+AbstractInlineTextBox::AbstractInlineTextBox(const InlineCursor& cursor)
     : fragment_item_index_(ItemIndex(cursor)),
       layout_text_(To<LayoutText>(cursor.Current().GetMutableLayoutObject())),
       root_box_fragment_(&cursor.ContainerFragment()) {
   DCHECK(cursor.CurrentItem()->IsText()) << cursor.CurrentItem();
 }
 
-NGAbstractInlineTextBox::~NGAbstractInlineTextBox() {
+AbstractInlineTextBox::~AbstractInlineTextBox() {
   DCHECK(!fragment_item_index_);
   DCHECK(!root_box_fragment_);
   DCHECK(!layout_text_);
 }
 
-void NGAbstractInlineTextBox::Trace(Visitor* visitor) const {
+void AbstractInlineTextBox::Trace(Visitor* visitor) const {
   visitor->Trace(layout_text_);
   visitor->Trace(root_box_fragment_);
 }
 
-void NGAbstractInlineTextBox::Detach() {
+void AbstractInlineTextBox::Detach() {
   LayoutObject* prev_layout_object = GetLayoutText();
   AXObjectCache* cache = ExistingAXObjectCache();
 
@@ -139,7 +138,7 @@ void NGAbstractInlineTextBox::Detach() {
   }
 }
 
-LayoutText* NGAbstractInlineTextBox::GetFirstLetterPseudoLayoutText() const {
+LayoutText* AbstractInlineTextBox::GetFirstLetterPseudoLayoutText() const {
   // We only want to apply the first letter to the first inline text box
   // for a LayoutObject.
   if (!IsFirst()) {
@@ -156,7 +155,7 @@ LayoutText* NGAbstractInlineTextBox::GetFirstLetterPseudoLayoutText() const {
   return nullptr;
 }
 
-InlineCursor NGAbstractInlineTextBox::GetCursor() const {
+InlineCursor AbstractInlineTextBox::GetCursor() const {
   if (!fragment_item_index_) {
     return InlineCursor();
   }
@@ -166,7 +165,7 @@ InlineCursor NGAbstractInlineTextBox::GetCursor() const {
   return cursor;
 }
 
-InlineCursor NGAbstractInlineTextBox::GetCursorOnLine() const {
+InlineCursor AbstractInlineTextBox::GetCursorOnLine() const {
   InlineCursor current = GetCursor();
   InlineCursor line_box = current;
   line_box.MoveToContainingLine();
@@ -175,14 +174,14 @@ InlineCursor NGAbstractInlineTextBox::GetCursorOnLine() const {
   return cursor;
 }
 
-String NGAbstractInlineTextBox::GetTextContent() const {
+String AbstractInlineTextBox::GetTextContent() const {
   const InlineCursor& cursor = GetCursor();
   if (cursor.Current().IsLayoutGeneratedText())
     return cursor.Current().Text(cursor).ToString();
   return cursor.Items().Text(cursor.Current().UsesFirstLineStyle());
 }
 
-bool NGAbstractInlineTextBox::NeedsTrailingSpace() const {
+bool AbstractInlineTextBox::NeedsTrailingSpace() const {
   const InlineCursor& cursor = GetCursor();
   if (cursor.Current().Style().ShouldPreserveWhiteSpaces()) {
     return false;
@@ -219,7 +218,7 @@ bool NGAbstractInlineTextBox::NeedsTrailingSpace() const {
   return mapping_unit.GetLayoutObject() == layout_object;
 }
 
-NGAbstractInlineTextBox* NGAbstractInlineTextBox::NextInlineTextBox() const {
+AbstractInlineTextBox* AbstractInlineTextBox::NextInlineTextBox() const {
   InlineCursor next = GetCursor();
   if (!next)
     return nullptr;
@@ -229,14 +228,14 @@ NGAbstractInlineTextBox* NGAbstractInlineTextBox::NextInlineTextBox() const {
   return GetOrCreate(next);
 }
 
-PhysicalRect NGAbstractInlineTextBox::LocalBounds() const {
+PhysicalRect AbstractInlineTextBox::LocalBounds() const {
   if (const InlineCursor& cursor = GetCursor()) {
     return cursor.Current().RectInContainerFragment();
   }
   return PhysicalRect();
 }
 
-unsigned NGAbstractInlineTextBox::Len() const {
+unsigned AbstractInlineTextBox::Len() const {
   const InlineCursor& cursor = GetCursor();
   if (!cursor)
     return 0;
@@ -245,7 +244,7 @@ unsigned NGAbstractInlineTextBox::Len() const {
   return cursor.Current().Text(cursor).length();
 }
 
-unsigned NGAbstractInlineTextBox::TextOffsetInFormattingContext(
+unsigned AbstractInlineTextBox::TextOffsetInFormattingContext(
     unsigned offset) const {
   const InlineCursor& cursor = GetCursor();
   if (!cursor)
@@ -253,8 +252,7 @@ unsigned NGAbstractInlineTextBox::TextOffsetInFormattingContext(
   return cursor.Current().TextStartOffset() + offset;
 }
 
-NGAbstractInlineTextBox::Direction NGAbstractInlineTextBox::GetDirection()
-    const {
+AbstractInlineTextBox::Direction AbstractInlineTextBox::GetDirection() const {
   const InlineCursor& cursor = GetCursor();
   if (!cursor)
     return kLeftToRight;
@@ -265,16 +263,16 @@ NGAbstractInlineTextBox::Direction NGAbstractInlineTextBox::GetDirection()
   return IsLtr(text_direction) ? kTopToBottom : kBottomToTop;
 }
 
-Node* NGAbstractInlineTextBox::GetNode() const {
+Node* AbstractInlineTextBox::GetNode() const {
   return layout_text_ ? layout_text_->GetNode() : nullptr;
 }
 
-AXObjectCache* NGAbstractInlineTextBox::ExistingAXObjectCache() const {
+AXObjectCache* AbstractInlineTextBox::ExistingAXObjectCache() const {
   return layout_text_ ? layout_text_->GetDocument().ExistingAXObjectCache()
                       : nullptr;
 }
 
-void NGAbstractInlineTextBox::CharacterWidths(Vector<float>& widths) const {
+void AbstractInlineTextBox::CharacterWidths(Vector<float>& widths) const {
   const InlineCursor& cursor = GetCursor();
   if (!cursor)
     return;
@@ -301,7 +299,7 @@ void NGAbstractInlineTextBox::CharacterWidths(Vector<float>& widths) const {
   widths.resize(Len());
 }
 
-void NGAbstractInlineTextBox::GetWordBoundaries(
+void AbstractInlineTextBox::GetWordBoundaries(
     Vector<WordBoundaries>& words) const {
   GetWordBoundariesForText(words, GetText());
 
@@ -390,7 +388,7 @@ void NGAbstractInlineTextBox::GetWordBoundaries(
 }
 
 // static
-void NGAbstractInlineTextBox::GetWordBoundariesForText(
+void AbstractInlineTextBox::GetWordBoundariesForText(
     Vector<WordBoundaries>& words,
     const String& text) {
   if (!text.length()) {
@@ -481,7 +479,7 @@ void NGAbstractInlineTextBox::GetWordBoundariesForText(
   }
 }
 
-String NGAbstractInlineTextBox::GetText() const {
+String AbstractInlineTextBox::GetText() const {
   const InlineCursor& cursor = GetCursor();
   if (!cursor)
     return g_empty_string;
@@ -506,7 +504,7 @@ String NGAbstractInlineTextBox::GetText() const {
   return result;
 }
 
-bool NGAbstractInlineTextBox::IsFirst() const {
+bool AbstractInlineTextBox::IsFirst() const {
   const InlineCursor& cursor = GetCursor();
   if (!cursor)
     return true;
@@ -515,7 +513,7 @@ bool NGAbstractInlineTextBox::IsFirst() const {
   return cursor == first_fragment;
 }
 
-bool NGAbstractInlineTextBox::IsLast() const {
+bool AbstractInlineTextBox::IsLast() const {
   InlineCursor cursor = GetCursor();
   if (!cursor)
     return true;
@@ -523,7 +521,7 @@ bool NGAbstractInlineTextBox::IsLast() const {
   return !cursor;
 }
 
-NGAbstractInlineTextBox* NGAbstractInlineTextBox::NextOnLine() const {
+AbstractInlineTextBox* AbstractInlineTextBox::NextOnLine() const {
   InlineCursor cursor = GetCursorOnLine();
   if (!cursor)
     return nullptr;
@@ -534,7 +532,7 @@ NGAbstractInlineTextBox* NGAbstractInlineTextBox::NextOnLine() const {
   return nullptr;
 }
 
-NGAbstractInlineTextBox* NGAbstractInlineTextBox::PreviousOnLine() const {
+AbstractInlineTextBox* AbstractInlineTextBox::PreviousOnLine() const {
   InlineCursor cursor = GetCursorOnLine();
   if (!cursor)
     return nullptr;
@@ -545,7 +543,7 @@ NGAbstractInlineTextBox* NGAbstractInlineTextBox::PreviousOnLine() const {
   return nullptr;
 }
 
-bool NGAbstractInlineTextBox::IsLineBreak() const {
+bool AbstractInlineTextBox::IsLineBreak() const {
   const InlineCursor& cursor = GetCursor();
   return cursor && cursor.Current().IsLineBreak();
 }

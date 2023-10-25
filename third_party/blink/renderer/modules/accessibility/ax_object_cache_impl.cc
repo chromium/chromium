@@ -993,7 +993,7 @@ AXObject* AXObjectCacheImpl::Get(const Node* node) {
   return SafeGet(node);
 }
 
-AXObject* AXObjectCacheImpl::Get(NGAbstractInlineTextBox* inline_text_box) {
+AXObject* AXObjectCacheImpl::Get(AbstractInlineTextBox* inline_text_box) {
   if (!inline_text_box)
     return nullptr;
 
@@ -1271,7 +1271,7 @@ AXObject* AXObjectCacheImpl::CreateFromNode(Node* node) {
 }
 
 AXObject* AXObjectCacheImpl::CreateFromInlineTextBox(
-    NGAbstractInlineTextBox* inline_text_box) {
+    AbstractInlineTextBox* inline_text_box) {
   return MakeGarbageCollected<AXInlineTextBox>(inline_text_box, *this);
 }
 
@@ -1482,9 +1482,8 @@ AXObject* AXObjectCacheImpl::GetOrCreate(LayoutObject* layout_object,
                        parent_if_known);
 }
 
-AXObject* AXObjectCacheImpl::GetOrCreate(
-    NGAbstractInlineTextBox* inline_text_box,
-    AXObject* parent) {
+AXObject* AXObjectCacheImpl::GetOrCreate(AbstractInlineTextBox* inline_text_box,
+                                         AXObject* parent) {
   if (!inline_text_box)
     return nullptr;
 
@@ -1763,11 +1762,11 @@ void AXObjectCacheImpl::RemovePopup(Document* popup_document) {
 }
 
 // This is safe to call even if there isn't a current mapping.
-void AXObjectCacheImpl::Remove(NGAbstractInlineTextBox* inline_text_box) {
+void AXObjectCacheImpl::Remove(AbstractInlineTextBox* inline_text_box) {
   Remove(inline_text_box, /* notify_parent */ true);
 }
 
-void AXObjectCacheImpl::Remove(NGAbstractInlineTextBox* inline_text_box,
+void AXObjectCacheImpl::Remove(AbstractInlineTextBox* inline_text_box,
                                bool notify_parent) {
   if (!inline_text_box)
     return;

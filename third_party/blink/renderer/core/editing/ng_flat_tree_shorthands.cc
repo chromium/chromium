@@ -19,9 +19,9 @@ const LayoutBlockFlow* NGInlineFormattingContextOf(
   return NGInlineFormattingContextOf(ToPositionInDOMTree(position));
 }
 
-NGCaretPosition ComputeNGCaretPosition(
+CaretPosition ComputeCaretPosition(
     const PositionInFlatTreeWithAffinity& position) {
-  return ComputeNGCaretPosition(ToPositionInDOMTreeWithAffinity(position));
+  return ComputeCaretPosition(ToPositionInDOMTreeWithAffinity(position));
 }
 
 bool InSameNGLineBox(const PositionInFlatTreeWithAffinity& position1,

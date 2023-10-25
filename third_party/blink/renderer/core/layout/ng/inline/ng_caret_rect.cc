@@ -37,7 +37,7 @@ TextDirection ResolvedDirection(const InlineCursor& cursor) {
 }
 
 PhysicalRect ComputeLocalCaretRectByBoxSide(const InlineCursor& cursor,
-                                            NGCaretPositionType position_type) {
+                                            CaretPositionType position_type) {
   const bool is_horizontal = cursor.Current().Style().IsHorizontalWritingMode();
   InlineCursor line_box(cursor);
   line_box.MoveToContainingLine();
@@ -64,7 +64,7 @@ PhysicalRect ComputeLocalCaretRectByBoxSide(const InlineCursor& cursor,
   if (!cursor.Current().IsAtomicInline()) {
     caret_left = is_horizontal ? offset.left : offset.top;
   }
-  if (is_ltr != (position_type == NGCaretPositionType::kBeforeBox)) {
+  if (is_ltr != (position_type == CaretPositionType::kBeforeBox)) {
     if (is_horizontal)
       caret_left += cursor.Current().Size().width - caret_width;
     else
@@ -188,7 +188,7 @@ PhysicalRect ComputeLocalCaretRectAtTextOffset(const InlineCursor& cursor,
 
 }  // namespace
 
-LocalCaretRect ComputeLocalCaretRect(const NGCaretPosition& caret_position) {
+LocalCaretRect ComputeLocalCaretRect(const CaretPosition& caret_position) {
   if (caret_position.IsNull())
     return LocalCaretRect();
 
@@ -197,14 +197,14 @@ LocalCaretRect ComputeLocalCaretRect(const NGCaretPosition& caret_position) {
   const NGPhysicalBoxFragment& container_fragment =
       caret_position.cursor.ContainerFragment();
   switch (caret_position.position_type) {
-    case NGCaretPositionType::kBeforeBox:
-    case NGCaretPositionType::kAfterBox: {
+    case CaretPositionType::kBeforeBox:
+    case CaretPositionType::kAfterBox: {
       DCHECK(!caret_position.cursor.Current().IsText());
       const PhysicalRect fragment_local_rect = ComputeLocalCaretRectByBoxSide(
           caret_position.cursor, caret_position.position_type);
       return {layout_object, fragment_local_rect, &container_fragment};
     }
-    case NGCaretPositionType::kAtTextOffset: {
+    case CaretPositionType::kAtTextOffset: {
       DCHECK(caret_position.cursor.Current().IsText());
       DCHECK(caret_position.text_offset.has_value());
       const PhysicalRect caret_rect = ComputeLocalCaretRectAtTextOffset(
@@ -217,8 +217,7 @@ LocalCaretRect ComputeLocalCaretRect(const NGCaretPosition& caret_position) {
   return {layout_object, PhysicalRect()};
 }
 
-LocalCaretRect ComputeLocalSelectionRect(
-    const NGCaretPosition& caret_position) {
+LocalCaretRect ComputeLocalSelectionRect(const CaretPosition& caret_position) {
   const LocalCaretRect caret_rect = ComputeLocalCaretRect(caret_position);
   if (!caret_rect.layout_object)
     return caret_rect;

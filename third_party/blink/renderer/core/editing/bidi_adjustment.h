@@ -10,7 +10,7 @@
 
 namespace blink {
 
-struct NGCaretPosition;
+struct CaretPosition;
 enum class TextDirection : uint8_t;
 
 class BidiAdjustment final {
@@ -19,12 +19,11 @@ class BidiAdjustment final {
  public:
   // Function to be called at the end of caret position resolution, adjusting
   // the result in bidi text runs.
-  static NGCaretPosition AdjustForCaretPositionResolution(
-      const NGCaretPosition&);
+  static CaretPosition AdjustForCaretPositionResolution(const CaretPosition&);
 
   // Function to be called at the end of hit tests, adjusting the result in bidi
   // text runs.
-  static NGCaretPosition AdjustForHitTest(const NGCaretPosition&);
+  static CaretPosition AdjustForHitTest(const CaretPosition&);
 
   // Function to be called at the end of creating a range selection by mouse
   // dragging, ensuring that the created range selection matches the dragging

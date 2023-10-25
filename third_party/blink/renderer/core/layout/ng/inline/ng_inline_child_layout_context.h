@@ -44,17 +44,17 @@ class CORE_EXPORT NGInlineChildLayoutContext {
   LogicalLineItems& AcquireTempLogicalLineItems();
   void ReleaseTempLogicalLineItems(LogicalLineItems&);
 
-  // Returns the NGInlineLayoutStateStack in this context.
+  // Returns the InlineLayoutStateStack in this context.
   bool HasBoxStates() const { return box_states_.has_value(); }
-  NGInlineLayoutStateStack* BoxStates() { return &*box_states_; }
-  NGInlineLayoutStateStack* ResetBoxStates() { return &box_states_.emplace(); }
+  InlineLayoutStateStack* BoxStates() { return &*box_states_; }
+  InlineLayoutStateStack* ResetBoxStates() { return &box_states_.emplace(); }
 
   // Returns the box states in this context if it exists and it can be used to
   // create a line starting from |items[item_index}|, otherwise returns nullptr.
   //
   // To determine this, callers must call |SetItemIndex| to set the end of the
   // current line.
-  NGInlineLayoutStateStack* BoxStatesIfValidForItemIndex(
+  InlineLayoutStateStack* BoxStatesIfValidForItemIndex(
       const HeapVector<InlineItem>& items,
       unsigned item_index);
   void SetItemIndex(const HeapVector<InlineItem>& items, unsigned item_index) {
@@ -93,7 +93,7 @@ class CORE_EXPORT NGInlineChildLayoutContext {
 
   LogicalLineItems* temp_logical_line_items_ = nullptr;
 
-  absl::optional<NGInlineLayoutStateStack> box_states_;
+  absl::optional<InlineLayoutStateStack> box_states_;
 
   // The items and its index this context is set up for.
   const HeapVector<InlineItem>* items_ = nullptr;

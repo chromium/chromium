@@ -166,7 +166,7 @@ This phase consists of following sub-phases:
    This is adjusted later, possibly multiple times,
    for [vertical-align] and the block offset of the parent inline box.
 
-   An open-tag item pushes a new stack entry of [NGInlineBoxState],
+   An open-tag item pushes a new stack entry of [InlineBoxState],
    and a close-tag item pops a stack entry.
    This stack is used to determine the size of the inline box,
    for [vertical-align], and for a few other purposes.
@@ -197,7 +197,7 @@ This phase consists of following sub-phases:
 
 A flat list structure is suitable for many inline operations,
 but some operations require an inline box tree structure.
-A stack of [NGInlineBoxState] is constructed
+A stack of [InlineBoxState] is constructed
 from a list of [InlineItemResult] to represent the box tree structure.
 
 This stack:
@@ -234,17 +234,17 @@ Not all [inline-level] boxes produces [NGPhysicalBoxFragment]s.
 [NGInlineLayoutAlgorithm] determines
 whether a [NGPhysicalBoxFragment] is needed or not,
 such as when a `<span>` has borders,
-and calls [NGInlineBoxState]`::SetNeedsBoxFragment()`.
+and calls [InlineBoxState]`::SetNeedsBoxFragment()`.
 
 Since [NGPhysicalBoxFragment] needs to know its children
 and size before creating it,
-`NGInlineLayoutStateStack::AddBoxFragmentPlaceholder()`
+`InlineLayoutStateStack::AddBoxFragmentPlaceholder()`
 first creates placeholders.
 We then add children,
 and adjust positions both horizontally and vertically.
 
 Once all children and their positions and sizes are finalized,
-`NGInlineLayoutStateStack::CreateBoxFragments()`
+`InlineLayoutStateStack::CreateBoxFragments()`
 creates [NGPhysicalBoxFragment] and add children to it.
 
 ### <a name="generate-fragments">Generate Fragments</a> ###
@@ -373,6 +373,7 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [FontBaseline]: ../../../../platform/fonts/font_baseline.h
 [FragmentItem]: ng_fragment_item.h
 [FragmentItems]: ng_fragment_items.h
+[InlineBoxState]: ng_inline_box_state.h
 [InlineItem]: ng_inline_item.h
 [InlineItemResult]: ng_inline_item_result.h
 [InlineNode]: ng_inline_node.h
@@ -386,7 +387,6 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [NGBoxFragmentBuilder]: ../ng_box_fragment_builder.h
 [NGConstraintSpace]: ../ng_constraint_space_builder.h
 [NGConstraintSpaceBuilder]: ../ng_constraint_space_builder.h
-[NGInlineBoxState]: ng_inline_box_state.h
 [NGInlineLayoutAlgorithm]: ng_inline_layout_algorithm.h
 [NGLayoutInputNode]: ../ng_layout_input_node.h
 [NGPhysicalBoxFragment]: ../ng_physical_box_fragment.h

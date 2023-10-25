@@ -95,9 +95,9 @@ static PositionWithAffinityTemplate<Strategy> EndPositionForLine(
            !RuntimeEnabledFeatures::BidiCaretAffinityEnabled())
         << "Logical line boundary for BidiCaretAffinity is not implemented yet";
 
-    const NGCaretPosition caret_position = ComputeNGCaretPosition(adjusted);
+    const CaretPosition caret_position = ComputeCaretPosition(adjusted);
     if (caret_position.IsNull()) {
-      // TODO(crbug.com/947593): Support |ComputeNGCaretPosition()| on content
+      // TODO(crbug.com/947593): Support |ComputeCaretPosition()| on content
       // hidden by 'text-overflow:ellipsis' so that we always have a non-null
       // |caret_position| here.
       return PositionWithAffinityTemplate<Strategy>();
@@ -133,9 +133,9 @@ PositionWithAffinityTemplate<Strategy> StartPositionForLine(
            !RuntimeEnabledFeatures::BidiCaretAffinityEnabled())
         << "Logical line boundary for BidiCaretAffinity is not implemented yet";
 
-    const NGCaretPosition caret_position = ComputeNGCaretPosition(adjusted);
+    const CaretPosition caret_position = ComputeCaretPosition(adjusted);
     if (caret_position.IsNull()) {
-      // TODO(crbug.com/947593): Support |ComputeNGCaretPosition()| on content
+      // TODO(crbug.com/947593): Support |ComputeCaretPosition()| on content
       // hidden by 'text-overflow:ellipsis' so that we always have a non-null
       // |caret_position| here.
       return PositionWithAffinityTemplate<Strategy>();

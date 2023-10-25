@@ -631,7 +631,7 @@ class CORE_EXPORT NGFragmentBuilder {
   bool is_may_have_descendant_above_block_start_explicitly_set_ = false;
 #endif
 
-  friend class NGInlineLayoutStateStack;
+  friend class InlineLayoutStateStack;
   friend class NGLayoutResult;
   friend class NGPhysicalFragment;
 };

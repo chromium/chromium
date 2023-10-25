@@ -39,8 +39,8 @@
 
 namespace blink {
 
+class AbstractInlineTextBox;
 class ContentCaptureManager;
-class NGAbstractInlineTextBox;
 class OffsetMapping;
 struct InlineItemsData;
 struct InlineItemSpan;
@@ -252,7 +252,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   void RemoveAndDestroyTextBoxes();
 
-  NGAbstractInlineTextBox* FirstAbstractInlineTextBox();
+  AbstractInlineTextBox* FirstAbstractInlineTextBox();
 
   bool HasAbstractInlineTextBox() const {
     NOT_DESTROYED();
@@ -463,7 +463,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   void DetachAbstractInlineTextBoxes();
 
   // Used for LayoutNG with accessibility. True if inline fragments are
-  // associated to |NGAbstractInlineTextBox|.
+  // associated to |AbstractInlineTextBox|.
   unsigned has_abstract_inline_text_box_ : 1;
 
   DOMNodeId node_id_ = kInvalidDOMNodeId;

@@ -160,13 +160,13 @@ class AbstractInlineBox {
 enum SideAffinity { kLeft, kRight };
 
 // Returns whether |caret_position| is at the start of its fragment.
-bool IsAtFragmentStart(const NGCaretPosition& caret_position) {
+bool IsAtFragmentStart(const CaretPosition& caret_position) {
   switch (caret_position.position_type) {
-    case NGCaretPositionType::kBeforeBox:
+    case CaretPositionType::kBeforeBox:
       return true;
-    case NGCaretPositionType::kAfterBox:
+    case CaretPositionType::kAfterBox:
       return false;
-    case NGCaretPositionType::kAtTextOffset:
+    case CaretPositionType::kAtTextOffset:
       DCHECK(caret_position.text_offset.has_value());
       return *caret_position.text_offset ==
              caret_position.cursor.Current().TextStartOffset();
@@ -176,13 +176,13 @@ bool IsAtFragmentStart(const NGCaretPosition& caret_position) {
 }
 
 // Returns whether |caret_position| is at the end of its fragment.
-bool IsAtFragmentEnd(const NGCaretPosition& caret_position) {
+bool IsAtFragmentEnd(const CaretPosition& caret_position) {
   switch (caret_position.position_type) {
-    case NGCaretPositionType::kBeforeBox:
+    case CaretPositionType::kBeforeBox:
       return false;
-    case NGCaretPositionType::kAfterBox:
+    case CaretPositionType::kAfterBox:
       return true;
-    case NGCaretPositionType::kAtTextOffset:
+    case CaretPositionType::kAtTextOffset:
       DCHECK(caret_position.text_offset.has_value());
       return *caret_position.text_offset ==
              caret_position.cursor.Current().TextEndOffset();
@@ -192,7 +192,7 @@ bool IsAtFragmentEnd(const NGCaretPosition& caret_position) {
 }
 
 // Returns whether |caret_position| is at the left or right side of fragment.
-SideAffinity GetSideAffinity(const NGCaretPosition& caret_position) {
+SideAffinity GetSideAffinity(const CaretPosition& caret_position) {
   DCHECK(!caret_position.IsNull());
   DCHECK(IsAtFragmentStart(caret_position) || IsAtFragmentEnd(caret_position));
   const bool is_at_start = IsAtFragmentStart(caret_position);
@@ -214,32 +214,31 @@ class AbstractInlineBoxAndSideAffinity {
     DCHECK(box_.IsNotNull());
   }
 
-  explicit AbstractInlineBoxAndSideAffinity(
-      const NGCaretPosition& caret_position)
+  explicit AbstractInlineBoxAndSideAffinity(const CaretPosition& caret_position)
       : box_(caret_position.cursor), side_(GetSideAffinity(caret_position)) {
     DCHECK(!caret_position.IsNull());
   }
 
-  NGCaretPosition ToNGCaretPosition() const {
+  CaretPosition ToCaretPosition() const {
     DCHECK(box_.IsNotNull());
     const bool is_at_start = IsLtr(box_.Direction()) == AtLeftSide();
     InlineCursor cursor(box_.GetCursor());
 
     if (!cursor.Current().IsText()) {
       return {cursor,
-              is_at_start ? NGCaretPositionType::kBeforeBox
-                          : NGCaretPositionType::kAfterBox,
+              is_at_start ? CaretPositionType::kBeforeBox
+                          : CaretPositionType::kAfterBox,
               absl::nullopt};
     }
 
-    return {cursor, NGCaretPositionType::kAtTextOffset,
+    return {cursor, CaretPositionType::kAtTextOffset,
             is_at_start ? cursor.Current().TextStartOffset()
                         : cursor.Current().TextEndOffset()};
   }
 
   PositionInFlatTree GetPosition() const {
     DCHECK(box_.IsNotNull());
-    return ToPositionInFlatTree(ToNGCaretPosition().ToPositionInDOMTree());
+    return ToPositionInFlatTree(ToCaretPosition().ToPositionInDOMTree());
   }
 
   AbstractInlineBox GetBox() const { return box_; }
@@ -651,7 +650,7 @@ class RangeSelectionAdjuster {
         : box_(box), bidi_boundary_type_(type) {}
 
     static BidiBoundaryType GetPotentialBidiBoundaryType(
-        const NGCaretPosition& caret_position) {
+        const CaretPosition& caret_position) {
       DCHECK(!caret_position.IsNull());
       DCHECK(!RuntimeEnabledFeatures::BidiCaretAffinityEnabled());
       if (!IsAtFragmentStart(caret_position) &&
@@ -673,7 +672,7 @@ class RangeSelectionAdjuster {
         return RenderedPosition();
 
       if (NGInlineFormattingContextOf(adjusted.GetPosition())) {
-        const NGCaretPosition caret_position = ComputeNGCaretPosition(adjusted);
+        const CaretPosition caret_position = ComputeCaretPosition(adjusted);
         if (caret_position.IsNull())
           return RenderedPosition();
         return RenderedPosition(AbstractInlineBox(caret_position.cursor),
@@ -741,8 +740,8 @@ RangeSelectionAdjuster::RenderedPosition::Create(
 
 }  // namespace
 
-NGCaretPosition BidiAdjustment::AdjustForCaretPositionResolution(
-    const NGCaretPosition& caret_position) {
+CaretPosition BidiAdjustment::AdjustForCaretPositionResolution(
+    const CaretPosition& caret_position) {
   DCHECK(!RuntimeEnabledFeatures::BidiCaretAffinityEnabled());
   const AbstractInlineBoxAndSideAffinity unadjusted(caret_position);
   const AbstractInlineBoxAndSideAffinity adjusted =
@@ -751,18 +750,18 @@ NGCaretPosition BidiAdjustment::AdjustForCaretPositionResolution(
                 unadjusted.GetBox())
           : CaretPositionResolutionAdjuster<TraverseLeft>::AdjustFor(
                 unadjusted.GetBox());
-  return adjusted.ToNGCaretPosition();
+  return adjusted.ToCaretPosition();
 }
 
-NGCaretPosition BidiAdjustment::AdjustForHitTest(
-    const NGCaretPosition& caret_position) {
+CaretPosition BidiAdjustment::AdjustForHitTest(
+    const CaretPosition& caret_position) {
   DCHECK(!RuntimeEnabledFeatures::BidiCaretAffinityEnabled());
   const AbstractInlineBoxAndSideAffinity unadjusted(caret_position);
   const AbstractInlineBoxAndSideAffinity adjusted =
       unadjusted.AtLeftSide()
           ? HitTestAdjuster<TraverseRight>::AdjustFor(unadjusted.GetBox())
           : HitTestAdjuster<TraverseLeft>::AdjustFor(unadjusted.GetBox());
-  return adjusted.ToNGCaretPosition();
+  return adjusted.ToCaretPosition();
 }
 
 SelectionInFlatTree BidiAdjustment::AdjustForRangeSelection(

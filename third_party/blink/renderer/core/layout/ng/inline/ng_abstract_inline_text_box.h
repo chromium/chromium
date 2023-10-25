@@ -14,19 +14,19 @@ class InlineCursor;
 
 // High-level abstraction of a text box fragment, to allow the accessibility
 // module to get information without tight coupling.
-class CORE_EXPORT NGAbstractInlineTextBox final
-    : public GarbageCollected<NGAbstractInlineTextBox> {
+class CORE_EXPORT AbstractInlineTextBox final
+    : public GarbageCollected<AbstractInlineTextBox> {
  private:
-  // Returns existing or newly created |NGAbstractInlineTextBox|.
+  // Returns existing or newly created |AbstractInlineTextBox|.
   // * |cursor| should be attached to a text item.
-  static NGAbstractInlineTextBox* GetOrCreate(const InlineCursor& cursor);
+  static AbstractInlineTextBox* GetOrCreate(const InlineCursor& cursor);
   static void WillDestroy(const InlineCursor& cursor);
 
   friend class LayoutText;
 
  public:
-  explicit NGAbstractInlineTextBox(const InlineCursor& cursor);
-  ~NGAbstractInlineTextBox();
+  explicit AbstractInlineTextBox(const InlineCursor& cursor);
+  ~AbstractInlineTextBox();
   void Trace(Visitor* visitor) const;
 
   struct WordBoundaries {
@@ -39,7 +39,7 @@ class CORE_EXPORT NGAbstractInlineTextBox final
   static void GetWordBoundariesForText(Vector<WordBoundaries>&, const String&);
 
   void Detach();
-  NGAbstractInlineTextBox* NextInlineTextBox() const;
+  AbstractInlineTextBox* NextInlineTextBox() const;
   PhysicalRect LocalBounds() const;
   unsigned Len() const;
   // Given a text offset in this inline text box, returns the equivalent text
@@ -58,8 +58,8 @@ class CORE_EXPORT NGAbstractInlineTextBox final
   String GetText() const;
   bool IsFirst() const;
   bool IsLast() const;
-  NGAbstractInlineTextBox* NextOnLine() const;
-  NGAbstractInlineTextBox* PreviousOnLine() const;
+  AbstractInlineTextBox* NextOnLine() const;
+  AbstractInlineTextBox* PreviousOnLine() const;
   bool IsLineBreak() const;
   bool NeedsTrailingSpace() const;
 
@@ -76,7 +76,7 @@ class CORE_EXPORT NGAbstractInlineTextBox final
   absl::optional<wtf_size_t> fragment_item_index_;
   Member<LayoutText> layout_text_;
   // |root_box_fragment_| owns |fragment_item_|. Persistent is used here to keep
-  // |NGAbstractInlineTextBoxCache| off-heap.
+  // |AbstractInlineTextBoxCache| off-heap.
   Member<const NGPhysicalBoxFragment> root_box_fragment_;
 };
 

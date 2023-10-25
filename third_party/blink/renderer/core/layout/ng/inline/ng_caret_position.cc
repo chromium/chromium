@@ -24,18 +24,18 @@ namespace {
 // - A TextAffinity
 //
 // The calculation iterates all inline fragments in the context, and tries to
-// compute an NGCaretPosition using the "caret resolution process" below:
+// compute an CaretPosition using the "caret resolution process" below:
 //
 // The (offset, affinity) pair is compared against each inline fragment to see
 // if the corresponding caret should be placed in the fragment, using the
 // |TryResolveCaretPositionInXXX()| functions. These functions may return:
 // - Failed, indicating that the caret must not be placed in the fragment;
 // - Resolved, indicating that the care should be placed in the fragment, and
-//   no further search is required. The result NGCaretPosition is returned
+//   no further search is required. The result CaretPosition is returned
 //   together.
 // - FoundCandidate, indicating that the caret may be placed in the fragment;
 //   however, further search may find a better position. The candidate
-//   NGCaretPosition is also returned together.
+//   CaretPosition is also returned together.
 
 enum class ResolutionType { kFailed, kFoundCandidate, kResolved };
 struct CaretPositionResolution {
@@ -43,7 +43,7 @@ struct CaretPositionResolution {
 
  public:
   ResolutionType type = ResolutionType::kFailed;
-  NGCaretPosition caret_position;
+  CaretPosition caret_position;
 };
 
 bool CanResolveCaretPositionBeforeFragment(const InlineCursor& cursor,
@@ -116,7 +116,7 @@ CaretPositionResolution TryResolveCaretPositionInTextFragment(
     // |offset| is after soft line wrap, e.g. "abc |xyz".
     // See http://crbug.com/1183269 and |AdjustForSoftLineWrap()|
     return {ResolutionType::kResolved,
-            {cursor, NGCaretPositionType::kAtTextOffset, offset - 1}};
+            {cursor, CaretPositionType::kAtTextOffset, offset - 1}};
   }
   if (offset > current_offset.end &&
       !mapping.HasBidiControlCharactersOnly(end_offset, offset))
@@ -124,8 +124,7 @@ CaretPositionResolution TryResolveCaretPositionInTextFragment(
 
   offset = std::max(offset, start_offset);
   offset = std::min(offset, end_offset);
-  NGCaretPosition candidate = {cursor, NGCaretPositionType::kAtTextOffset,
-                               offset};
+  CaretPosition candidate = {cursor, CaretPositionType::kAtTextOffset, offset};
 
   // Offsets in the interior of a fragment can be resolved directly.
   if (offset > start_offset && offset < end_offset)
@@ -177,10 +176,10 @@ CaretPositionResolution TryResolveCaretPositionByBoxFragmentSide(
   // TODO(xiaochengh): Ignore bidi control characters before & after the box.
   if (offset != offset_before && offset != offset_after)
     return CaretPositionResolution();
-  const NGCaretPositionType position_type =
-      offset == offset_before ? NGCaretPositionType::kBeforeBox
-                              : NGCaretPositionType::kAfterBox;
-  NGCaretPosition candidate{cursor, position_type, absl::nullopt};
+  const CaretPositionType position_type = offset == offset_before
+                                              ? CaretPositionType::kBeforeBox
+                                              : CaretPositionType::kAfterBox;
+  CaretPosition candidate{cursor, position_type, absl::nullopt};
 
   if (offset == offset_before &&
       CanResolveCaretPositionBeforeFragment(cursor, affinity)) {
@@ -206,13 +205,14 @@ CaretPositionResolution TryResolveCaretPositionWithFragment(
   return CaretPositionResolution();
 }
 
-bool NeedsBidiAdjustment(const NGCaretPosition& caret_position) {
+bool NeedsBidiAdjustment(const CaretPosition& caret_position) {
   if (RuntimeEnabledFeatures::BidiCaretAffinityEnabled())
     return false;
   if (caret_position.IsNull())
     return false;
-  if (caret_position.position_type != NGCaretPositionType::kAtTextOffset)
+  if (caret_position.position_type != CaretPositionType::kAtTextOffset) {
     return true;
+  }
   DCHECK(caret_position.text_offset.has_value());
   const NGTextOffsetRange offset = caret_position.cursor.Current().TextOffset();
   const unsigned start_offset = offset.start;
@@ -226,16 +226,17 @@ bool NeedsBidiAdjustment(const NGCaretPosition& caret_position) {
          *caret_position.text_offset == end_offset;
 }
 
-NGCaretPosition AdjustCaretPositionForBidiText(
-    const NGCaretPosition& caret_position) {
+CaretPosition AdjustCaretPositionForBidiText(
+    const CaretPosition& caret_position) {
   if (!NeedsBidiAdjustment(caret_position))
     return caret_position;
   return BidiAdjustment::AdjustForCaretPositionResolution(caret_position);
 }
 
-bool IsUpstreamAfterLineBreak(const NGCaretPosition& caret_position) {
-  if (caret_position.position_type != NGCaretPositionType::kAtTextOffset)
+bool IsUpstreamAfterLineBreak(const CaretPosition& caret_position) {
+  if (caret_position.position_type != CaretPositionType::kAtTextOffset) {
     return false;
+  }
 
   DCHECK(caret_position.cursor.IsNotNull());
   DCHECK(caret_position.text_offset.has_value());
@@ -246,9 +247,9 @@ bool IsUpstreamAfterLineBreak(const NGCaretPosition& caret_position) {
          caret_position.cursor.Current().TextEndOffset();
 }
 
-NGCaretPosition BetterCandidateBetween(const NGCaretPosition& current,
-                                       const NGCaretPosition& other,
-                                       unsigned offset) {
+CaretPosition BetterCandidateBetween(const CaretPosition& current,
+                                     const CaretPosition& other,
+                                     unsigned offset) {
   DCHECK(!other.IsNull());
   if (current.IsNull())
     return other;
@@ -268,7 +269,7 @@ NGCaretPosition BetterCandidateBetween(const NGCaretPosition& current,
   return current;
 }
 
-NGCaretPosition ComputeNGCaretPositionAfterInline(
+CaretPosition ComputeCaretPositionAfterInline(
     const PositionWithAffinity& position_with_affinity) {
   const Position& position = position_with_affinity.GetPosition();
   const LayoutInline& layout_inline =
@@ -279,7 +280,7 @@ NGCaretPosition ComputeNGCaretPositionAfterInline(
   // This DCHECK can fail with the <area> element.
   // DCHECK(cursor);
   if (!cursor)
-    return NGCaretPosition();
+    return CaretPosition();
   InlineCursor line = cursor;
   line.MoveToContainingLine();
   DCHECK(line);
@@ -295,21 +296,21 @@ NGCaretPosition ComputeNGCaretPositionAfterInline(
             ? cursor.Current()->EndOffset()
             : cursor.Current()->StartOffset();
     return AdjustCaretPositionForBidiText(
-        {cursor, NGCaretPositionType::kAtTextOffset, offset});
+        {cursor, CaretPositionType::kAtTextOffset, offset});
   }
 
   if (cursor.Current().IsAtomicInline()) {
-    const NGCaretPositionType type =
+    const CaretPositionType type =
         line.Current().BaseDirection() == cursor.Current().ResolvedDirection()
-            ? NGCaretPositionType::kAfterBox
-            : NGCaretPositionType::kBeforeBox;
+            ? CaretPositionType::kAfterBox
+            : CaretPositionType::kBeforeBox;
     return AdjustCaretPositionForBidiText({cursor, type, absl::nullopt});
   }
 
   return AdjustCaretPositionForBidiText(
-      {cursor, NGCaretPositionType::kAfterBox, absl::nullopt});
+      {cursor, CaretPositionType::kAfterBox, absl::nullopt});
 }
-NGCaretPosition ComputeNGCaretPositionBeforeInline(
+CaretPosition ComputeCaretPositionBeforeInline(
     const PositionWithAffinity& position_with_affinity) {
   const Position& position = position_with_affinity.GetPosition();
   const LayoutInline& layout_inline =
@@ -320,7 +321,7 @@ NGCaretPosition ComputeNGCaretPositionBeforeInline(
   // This DCHECK can fail with the <area> element.
   // DCHECK(cursor);
   if (!cursor)
-    return NGCaretPosition();
+    return CaretPosition();
   InlineCursor line = cursor;
   line.MoveToContainingLine();
   DCHECK(line);
@@ -336,32 +337,32 @@ NGCaretPosition ComputeNGCaretPositionBeforeInline(
             ? cursor.Current()->StartOffset()
             : cursor.Current()->EndOffset();
     return AdjustCaretPositionForBidiText(
-        {cursor, NGCaretPositionType::kAtTextOffset, offset});
+        {cursor, CaretPositionType::kAtTextOffset, offset});
   }
 
   if (cursor.Current().IsAtomicInline()) {
-    const NGCaretPositionType type =
+    const CaretPositionType type =
         line.Current().BaseDirection() == cursor.Current().ResolvedDirection()
-            ? NGCaretPositionType::kBeforeBox
-            : NGCaretPositionType::kAfterBox;
+            ? CaretPositionType::kBeforeBox
+            : CaretPositionType::kAfterBox;
     return AdjustCaretPositionForBidiText({cursor, type, absl::nullopt});
   }
 
   return AdjustCaretPositionForBidiText(
-      {cursor, NGCaretPositionType::kBeforeBox, absl::nullopt});
+      {cursor, CaretPositionType::kBeforeBox, absl::nullopt});
 }
 
 }  // namespace
 
-// The main function for compute an NGCaretPosition. See the comments at the top
+// The main function for compute an CaretPosition. See the comments at the top
 // of this file for details.
-NGCaretPosition ComputeNGCaretPosition(const LayoutBlockFlow& context,
-                                       unsigned offset,
-                                       TextAffinity affinity,
-                                       const LayoutText* layout_text) {
+CaretPosition ComputeCaretPosition(const LayoutBlockFlow& context,
+                                   unsigned offset,
+                                   TextAffinity affinity,
+                                   const LayoutText* layout_text) {
   InlineCursor cursor(context);
 
-  NGCaretPosition candidate;
+  CaretPosition candidate;
   if (layout_text && layout_text->HasInlineFragments())
     cursor.MoveTo(*layout_text);
   for (; cursor; cursor.MoveToNextIncludingFragmentainer()) {
@@ -390,32 +391,32 @@ NGCaretPosition ComputeNGCaretPosition(const LayoutBlockFlow& context,
   return AdjustCaretPositionForBidiText(candidate);
 }
 
-NGCaretPosition ComputeNGCaretPosition(
+CaretPosition ComputeCaretPosition(
     const PositionWithAffinity& position_with_affinity) {
   const Position& position = position_with_affinity.GetPosition();
 
   if (position.IsNull())
-    return NGCaretPosition();
+    return CaretPosition();
 
   const LayoutObject* layout_object = position.AnchorNode()->GetLayoutObject();
   if (!layout_object || !layout_object->IsInLayoutNGInlineFormattingContext())
-    return NGCaretPosition();
+    return CaretPosition();
 
   if (layout_object->IsLayoutInline()) {
     if (position.IsBeforeAnchor())
-      return ComputeNGCaretPositionBeforeInline(position_with_affinity);
+      return ComputeCaretPositionBeforeInline(position_with_affinity);
     if (position.IsAfterAnchor())
-      return ComputeNGCaretPositionAfterInline(position_with_affinity);
+      return ComputeCaretPositionAfterInline(position_with_affinity);
     NOTREACHED() << "Caller should not pass a position inside inline: "
                  << position;
-    return NGCaretPosition();
+    return CaretPosition();
   }
 
   LayoutBlockFlow* const context = NGInlineFormattingContextOf(position);
   if (!context) {
     // We reach here for empty <div>[1].
     // [1] third_party/blink/web_tests/editing/caret/caret-in-inline-block.html
-    return NGCaretPosition();
+    return CaretPosition();
   }
 
   const OffsetMapping* const mapping = InlineNode::GetOffsetMapping(context);
@@ -423,7 +424,7 @@ NGCaretPosition ComputeNGCaretPosition(
     // TODO(yosin): We should find when we reach here[1].
     // [1] http://crbug.com/1100481
     NOTREACHED() << context;
-    return NGCaretPosition();
+    return CaretPosition();
   }
   const absl::optional<unsigned> maybe_offset =
       mapping->GetTextContentOffset(position);
@@ -434,7 +435,7 @@ NGCaretPosition ComputeNGCaretPosition(
     } else {
       // TODO(xiaochengh): Investigate if we reach here.
       NOTREACHED();
-      return NGCaretPosition();
+      return CaretPosition();
     }
   }
 
@@ -455,31 +456,30 @@ NGCaretPosition ComputeNGCaretPosition(
               mapping->GetText()[offset - 1] == kZeroWidthSpaceCharacter
           ? offset - 1
           : offset;
-  return ComputeNGCaretPosition(*context, adjusted_offset, affinity,
-                                layout_text);
+  return ComputeCaretPosition(*context, adjusted_offset, affinity, layout_text);
 }
 
-Position NGCaretPosition::ToPositionInDOMTree() const {
+Position CaretPosition::ToPositionInDOMTree() const {
   return ToPositionInDOMTreeWithAffinity().GetPosition();
 }
 
-PositionWithAffinity NGCaretPosition::ToPositionInDOMTreeWithAffinity() const {
+PositionWithAffinity CaretPosition::ToPositionInDOMTreeWithAffinity() const {
   if (IsNull())
     return PositionWithAffinity();
   switch (position_type) {
-    case NGCaretPositionType::kBeforeBox:
+    case CaretPositionType::kBeforeBox:
       if (const Node* node = cursor.Current().GetNode()) {
         return PositionWithAffinity(Position::BeforeNode(*node),
                                     TextAffinity::kDownstream);
       }
       return PositionWithAffinity();
-    case NGCaretPositionType::kAfterBox:
+    case CaretPositionType::kAfterBox:
       if (const Node* node = cursor.Current().GetNode()) {
         return PositionWithAffinity(Position::AfterNode(*node),
                                     TextAffinity::kUpstreamIfPossible);
       }
       return PositionWithAffinity();
-    case NGCaretPositionType::kAtTextOffset:
+    case CaretPositionType::kAtTextOffset:
       // In case of ::first-letter, |cursor.Current().GetNode()| is null.
       DCHECK(text_offset.has_value());
       const OffsetMapping* mapping =

@@ -101,7 +101,7 @@ wtf_size_t NGLineTruncator::AddTruncatedChild(
     LayoutUnit position,
     TextDirection edge,
     LogicalLineItems* line_box,
-    NGInlineLayoutStateStack* box_states) {
+    InlineLayoutStateStack* box_states) {
   LogicalLineItems& line = *line_box;
   const LogicalLineItem& source_item = line[source_index];
   DCHECK(source_item.shape_result);
@@ -128,7 +128,7 @@ wtf_size_t NGLineTruncator::AddTruncatedChild(
 
 LayoutUnit NGLineTruncator::TruncateLine(LayoutUnit line_width,
                                          LogicalLineItems* line_box,
-                                         NGInlineLayoutStateStack* box_states) {
+                                         InlineLayoutStateStack* box_states) {
   // Shape the ellipsis and compute its inline size.
   SetupEllipsis();
 
@@ -198,7 +198,7 @@ LayoutUnit NGLineTruncator::TruncateLine(LayoutUnit line_width,
 LayoutUnit NGLineTruncator::TruncateLineInTheMiddle(
     LayoutUnit line_width,
     LogicalLineItems* line_box,
-    NGInlineLayoutStateStack* box_states) {
+    InlineLayoutStateStack* box_states) {
   // Shape the ellipsis and compute its inline size.
   SetupEllipsis();
 

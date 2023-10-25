@@ -39,11 +39,11 @@ namespace blink {
 class Node;
 class AXObjectCacheImpl;
 
-// Encapsulates an NGAbstractInlineTextBox and adapts it for use in Blink's
+// Encapsulates an AbstractInlineTextBox and adapts it for use in Blink's
 // accessibility tree.
 class AXInlineTextBox final : public AXObject {
  public:
-  AXInlineTextBox(NGAbstractInlineTextBox*, AXObjectCacheImpl&);
+  AXInlineTextBox(AbstractInlineTextBox*, AXObjectCacheImpl&);
   void Trace(Visitor* visitor) const override;
 
   AXInlineTextBox(const AXInlineTextBox&) = delete;
@@ -73,7 +73,7 @@ class AXInlineTextBox final : public AXObject {
     return ax::mojom::blink::Role::kInlineTextBox;
   }
   void ClearChildren() const override;
-  NGAbstractInlineTextBox* GetInlineTextBox() const override;
+  AbstractInlineTextBox* GetInlineTextBox() const override;
 
  protected:
   void Init(AXObject* parent) override;
@@ -89,7 +89,7 @@ class AXInlineTextBox final : public AXObject {
  private:
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
 
-  Member<NGAbstractInlineTextBox> inline_text_box_;
+  Member<AbstractInlineTextBox> inline_text_box_;
 };
 
 }  // namespace blink

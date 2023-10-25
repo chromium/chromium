@@ -18,7 +18,7 @@ void TrimLeadingSpace(LayoutUnit& leading_space) {
 }  // namespace
 
 InlineCursor NGContainingLineBoxOf(const PositionWithAffinity& position) {
-  const NGCaretPosition caret_position = ComputeNGCaretPosition(position);
+  const CaretPosition caret_position = ComputeCaretPosition(position);
   if (caret_position.IsNull())
     return InlineCursor();
   InlineCursor line = caret_position.cursor;

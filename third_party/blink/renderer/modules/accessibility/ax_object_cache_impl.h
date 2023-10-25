@@ -67,9 +67,9 @@
 namespace blink {
 
 class AXRelationCache;
+class AbstractInlineTextBox;
 class HTMLAreaElement;
 class LocalFrameView;
-class NGAbstractInlineTextBox;
 class WebLocalFrameClient;
 
 // Describes a decicion on whether to create an AXNodeObject, an AXLayoutObject,
@@ -196,7 +196,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   void Remove(LayoutObject*) override;
   void Remove(Node*) override;
   void RemovePopup(Document*) override;
-  void Remove(NGAbstractInlineTextBox*) override;
+  void Remove(AbstractInlineTextBox*) override;
   // Remove an AXObject or its subtree, and if |notify_parent| is true,
   // recompute the parent's children and reserialize the parent.
   void Remove(AXObject*, bool notify_parent);
@@ -334,7 +334,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   AXObject* GetOrCreate(Node*, AXObject* parent_if_known);
   AXObject* GetOrCreate(Node*);
   AXObject* GetOrCreate(const Node*);
-  AXObject* GetOrCreate(NGAbstractInlineTextBox*, AXObject* parent_if_known);
+  AXObject* GetOrCreate(AbstractInlineTextBox*, AXObject* parent_if_known);
 
   AXID GetAXID(Node*) override;
 
@@ -343,7 +343,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   // Return an AXObject for the AccessibleNode. If the AccessibleNode is
   // attached to an element, will return the AXObject for that element instead.
   AXObject* Get(AccessibleNode*);
-  AXObject* Get(NGAbstractInlineTextBox*);
+  AXObject* Get(AbstractInlineTextBox*);
 
   // Get an AXObject* backed by the passed-in DOM node.
   AXObject* Get(const Node*);
@@ -637,7 +637,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   AXObject* CreateFromRenderer(LayoutObject*);
   AXObject* CreateFromNode(Node*);
 
-  AXObject* CreateFromInlineTextBox(NGAbstractInlineTextBox*);
+  AXObject* CreateFromInlineTextBox(AbstractInlineTextBox*);
 
   // Removes AXObject backed by passed-in object, if there is one.
   // It will also notify the parent that its children have changed, so that the
@@ -645,7 +645,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   // |notify_parent| is passed in as false.
   void Remove(AccessibleNode*, bool notify_parent);
   void Remove(LayoutObject*, bool notify_parent);
-  void Remove(NGAbstractInlineTextBox*, bool notify_parent);
+  void Remove(AbstractInlineTextBox*, bool notify_parent);
 
   // Helper to remove the object from the cache.
   // Most callers should be using Remove(AXObject) instead.
@@ -814,7 +814,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   HeapHashMap<Member<AccessibleNode>, AXID> accessible_node_mapping_;
   HeapHashMap<Member<const LayoutObject>, AXID> layout_object_mapping_;
   HeapHashMap<Member<const Node>, AXID> node_object_mapping_;
-  HeapHashMap<Member<NGAbstractInlineTextBox>, AXID>
+  HeapHashMap<Member<AbstractInlineTextBox>, AXID>
       inline_text_box_object_mapping_;
 
   // Used for a mock AXObject representing the message displayed in the

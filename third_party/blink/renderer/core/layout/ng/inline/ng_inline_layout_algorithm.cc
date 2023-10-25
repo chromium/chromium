@@ -255,12 +255,12 @@ NGInlineLayoutAlgorithm::NGInlineLayoutAlgorithm(
 // header.
 NGInlineLayoutAlgorithm::~NGInlineLayoutAlgorithm() = default;
 
-NGInlineBoxState* NGInlineLayoutAlgorithm::HandleOpenTag(
+InlineBoxState* NGInlineLayoutAlgorithm::HandleOpenTag(
     const InlineItem& item,
     const InlineItemResult& item_result,
     LogicalLineItems* line_box,
-    NGInlineLayoutStateStack* box_states) const {
-  NGInlineBoxState* box = box_states->OnOpenTag(
+    InlineLayoutStateStack* box_states) const {
+  InlineBoxState* box = box_states->OnOpenTag(
       ConstraintSpace(), item, item_result, baseline_type_, line_box);
   // Compute text metrics for all inline boxes since even empty inlines
   // influence the line height, except when quirks mode and the box is empty
@@ -278,24 +278,24 @@ NGInlineBoxState* NGInlineLayoutAlgorithm::HandleOpenTag(
   return box;
 }
 
-NGInlineBoxState* NGInlineLayoutAlgorithm::HandleCloseTag(
+InlineBoxState* NGInlineLayoutAlgorithm::HandleCloseTag(
     const InlineItem& item,
     const InlineItemResult& item_result,
     LogicalLineItems* line_box,
-    NGInlineBoxState* box) {
+    InlineBoxState* box) {
   if (UNLIKELY(quirks_mode_ && !item.IsEmptyItem()))
     box->EnsureTextMetrics(*item.Style(), *box->font, baseline_type_);
   box =
       box_states_->OnCloseTag(ConstraintSpace(), line_box, box, baseline_type_);
   // Just clear |NeedsLayout| flags. Culled inline boxes do not need paint
   // invalidations. If this object produces box fragments,
-  // |NGInlineBoxStateStack| takes care of invalidations.
+  // |InlineBoxStateStack| takes care of invalidations.
   if (!NGDisableSideEffectsScope::IsDisabled())
     item.GetLayoutObject()->ClearNeedsLayoutWithoutPaintInvalidation();
   return box;
 }
 
-// Prepare NGInlineLayoutStateStack for a new line.
+// Prepare InlineLayoutStateStack for a new line.
 void NGInlineLayoutAlgorithm::PrepareBoxStates(
     const LineInfo& line_info,
     const NGInlineBreakToken* break_token) {
@@ -354,7 +354,7 @@ static LayoutUnit AdjustLineOffsetForHanging(LineInfo* line_info,
 void NGInlineLayoutAlgorithm::RebuildBoxStates(
     const LineInfo& line_info,
     const NGInlineBreakToken* break_token,
-    NGInlineLayoutStateStack* box_states) const {
+    InlineLayoutStateStack* box_states) const {
   // Compute which tags are not closed at the beginning of this line.
   InlineItemsData::OpenTagItems open_items;
   line_info.ItemsData().GetOpenTagItems(break_token->StartItemIndex(),
@@ -377,7 +377,7 @@ void NGInlineLayoutAlgorithm::RebuildBoxStates(
 void NGInlineLayoutAlgorithm::CheckBoxStates(
     const LineInfo& line_info,
     const NGInlineBreakToken* break_token) const {
-  NGInlineLayoutStateStack rebuilt;
+  InlineLayoutStateStack rebuilt;
   RebuildBoxStates(line_info, break_token, &rebuilt);
   LogicalLineItems& line_box = context_->AcquireTempLogicalLineItems();
   rebuilt.OnBeginPlaceItems(Node(), line_info.LineStyle(), baseline_type_,
@@ -405,7 +405,7 @@ void NGInlineLayoutAlgorithm::CreateLine(
   // The baseline is adjusted after the height of the line box is computed.
   const ComputedStyle& line_style = line_info->LineStyle();
   box_states_->SetIsEmptyLine(line_info->IsEmptyLine());
-  NGInlineBoxState* box = box_states_->OnBeginPlaceItems(
+  InlineBoxState* box = box_states_->OnBeginPlaceItems(
       Node(), line_style, baseline_type_, quirks_mode_, line_box);
 #if EXPENSIVE_DCHECKS_ARE_ON()
   if (is_box_states_from_context_)
@@ -531,7 +531,7 @@ void NGInlineLayoutAlgorithm::CreateLine(
     } else if (UNLIKELY(item.Type() == InlineItem::kInitialLetterBox)) {
       // The initial letter does not increase the logical height of the line
       // box in which it participates[1]. So, we should not changes
-      // `NGInlineBoxState::metrics`, or not call ` ComputeTextMetrics()` to
+      // `InlineBoxState::metrics`, or not call ` ComputeTextMetrics()` to
       // incorporate from `ComputedStyle::GetFont()` of the initial letter box.
       // See also `LineInfo::ComputeTotalBlockSize()` for calculation of
       // layout opportunities.
@@ -741,7 +741,7 @@ void NGInlineLayoutAlgorithm::PlaceControlItem(const InlineItem& item,
                                                const LineInfo& line_info,
                                                InlineItemResult* item_result,
                                                LogicalLineItems* line_box,
-                                               NGInlineBoxState* box) {
+                                               InlineBoxState* box) {
   DCHECK_EQ(item.Type(), InlineItem::kControl);
   DCHECK_GE(item.Length(), 1u);
   DCHECK(!item.TextShapeResult());
@@ -772,7 +772,7 @@ void NGInlineLayoutAlgorithm::PlaceControlItem(const InlineItem& item,
 void NGInlineLayoutAlgorithm::PlaceHyphen(const InlineItemResult& item_result,
                                           LayoutUnit hyphen_inline_size,
                                           LogicalLineItems* line_box,
-                                          NGInlineBoxState* box) {
+                                          InlineBoxState* box) {
   DCHECK(item_result.item);
   DCHECK(item_result.is_hyphenated);
   DCHECK(item_result.hyphen);
@@ -784,7 +784,7 @@ void NGInlineLayoutAlgorithm::PlaceHyphen(const InlineItemResult& item_result,
       box->text_height, item.BidiLevel());
 }
 
-NGInlineBoxState* NGInlineLayoutAlgorithm::PlaceAtomicInline(
+InlineBoxState* NGInlineLayoutAlgorithm::PlaceAtomicInline(
     const InlineItem& item,
     const LineInfo& line_info,
     InlineItemResult* item_result,
@@ -798,7 +798,7 @@ NGInlineBoxState* NGInlineLayoutAlgorithm::PlaceAtomicInline(
   DCHECK(To<LayoutBox>(layout_object)->IsMonolithic());
   layout_object->SetIsTruncated(false);
 
-  NGInlineBoxState* box = box_states_->OnOpenTag(
+  InlineBoxState* box = box_states_->OnOpenTag(
       ConstraintSpace(), item, *item_result, baseline_type_, *line_box);
 
   if (LIKELY(!IsA<LayoutTextCombine>(layout_object))) {
@@ -824,7 +824,7 @@ NGInlineBoxState* NGInlineLayoutAlgorithm::PlaceAtomicInline(
 // Place a NGLayoutResult into the line box.
 void NGInlineLayoutAlgorithm::PlaceLayoutResult(InlineItemResult* item_result,
                                                 LogicalLineItems* line_box,
-                                                NGInlineBoxState* box,
+                                                InlineBoxState* box,
                                                 LayoutUnit inline_offset) {
   DCHECK(item_result->layout_result);
   DCHECK(item_result->item);
@@ -897,11 +897,11 @@ void NGInlineLayoutAlgorithm::PlaceInitialLetterBox(
   DCHECK(!item_result->spacing_before);
 
   // Because of the initial letter box should not contribute baseline position
-  // to surrounding text, we should not update `NGInlineBoxState` for avoiding
+  // to surrounding text, we should not update `InlineBoxState` for avoiding
   // to affect `line_box_metrics`.
   //
   // Note: `item.Style()` which holds style of `<::first-letter>` should not be
-  // include in `NGInlineBoxState::font_metrics` and `metrics`, because they
+  // include in `InlineBoxState::font_metrics` and `metrics`, because they
   // don't affect baseline of surrounding text.
   line_box->AddChild(
       std::move(item_result->layout_result),

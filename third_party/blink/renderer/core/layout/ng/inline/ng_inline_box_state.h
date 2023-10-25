@@ -25,7 +25,7 @@ struct InlineItemResult;
 
 // Fragments that require the layout position/size of ancestor are packed in
 // this struct.
-struct NGPendingPositions {
+struct PendingPositions {
   unsigned fragment_start;
   unsigned fragment_end;
   FontHeight metrics;
@@ -36,7 +36,7 @@ struct NGPendingPositions {
 // Used 1) to cache common values for a box, and 2) to layout children that
 // require ancestor position or size.
 // This is a transient object only while building line boxes in a block.
-struct NGInlineBoxState {
+struct InlineBoxState {
   DISALLOW_NEW();
 
  public:
@@ -82,7 +82,7 @@ struct NGInlineBoxState {
   LineBoxStrut borders;
   LineBoxStrut padding;
 
-  Vector<NGPendingPositions> pending_descendants;
+  Vector<PendingPositions> pending_descendants;
   bool include_used_fonts = false;
   bool has_box_placeholder = false;
   bool needs_box_fragment = false;
@@ -90,11 +90,11 @@ struct NGInlineBoxState {
 
   // If you add new data members, update the move constructor.
 
-  NGInlineBoxState() = default;
-  // Needs the move constructor for Vector<NGInlineBoxState>.
-  NGInlineBoxState(const NGInlineBoxState&& state);
-  NGInlineBoxState(const NGInlineBoxState&) = delete;
-  NGInlineBoxState& operator=(const NGInlineBoxState&) = delete;
+  InlineBoxState() = default;
+  // Needs the move constructor for Vector<InlineBoxState>.
+  InlineBoxState(const InlineBoxState&& state);
+  InlineBoxState(const InlineBoxState&) = delete;
+  InlineBoxState& operator=(const InlineBoxState&) = delete;
 
   void Trace(Visitor* visitor) const { visitor->Trace(style); }
 
@@ -132,7 +132,7 @@ struct NGInlineBoxState {
   bool CanAddTextOfStyle(const ComputedStyle&) const;
 
 #if DCHECK_IS_ON()
-  void CheckSame(const NGInlineBoxState&) const;
+  void CheckSame(const InlineBoxState&) const;
 #endif
 };
 
@@ -140,41 +140,41 @@ struct NGInlineBoxState {
 // 1) Allow access to fragments belonging to the current box.
 // 2) Performs layout when the positin/size of a box was computed.
 // 3) Cache common values for a box.
-class CORE_EXPORT NGInlineLayoutStateStack {
+class CORE_EXPORT InlineLayoutStateStack {
   STACK_ALLOCATED();
 
  public:
   // The box state for the line box.
-  NGInlineBoxState& LineBoxState() { return stack_.front(); }
+  InlineBoxState& LineBoxState() { return stack_.front(); }
 
   void SetIsEmptyLine(bool is_empty_line) { is_empty_line_ = is_empty_line; }
 
   // Initialize the box state stack for a new line.
   // @return The initial box state for the line.
-  NGInlineBoxState* OnBeginPlaceItems(const InlineNode node,
-                                      const ComputedStyle&,
-                                      FontBaseline,
-                                      bool line_height_quirk,
-                                      LogicalLineItems* line_box);
+  InlineBoxState* OnBeginPlaceItems(const InlineNode node,
+                                    const ComputedStyle&,
+                                    FontBaseline,
+                                    bool line_height_quirk,
+                                    LogicalLineItems* line_box);
 
   // Push a box state stack.
-  NGInlineBoxState* OnOpenTag(const NGConstraintSpace&,
-                              const InlineItem&,
-                              const InlineItemResult&,
-                              FontBaseline baseline_type,
-                              const LogicalLineItems&);
+  InlineBoxState* OnOpenTag(const NGConstraintSpace&,
+                            const InlineItem&,
+                            const InlineItemResult&,
+                            FontBaseline baseline_type,
+                            const LogicalLineItems&);
   // This variation adds a box placeholder to |line_box|.
-  NGInlineBoxState* OnOpenTag(const NGConstraintSpace&,
-                              const InlineItem&,
-                              const InlineItemResult&,
-                              FontBaseline baseline_type,
-                              LogicalLineItems* line_box);
+  InlineBoxState* OnOpenTag(const NGConstraintSpace&,
+                            const InlineItem&,
+                            const InlineItemResult&,
+                            FontBaseline baseline_type,
+                            LogicalLineItems* line_box);
 
   // Pop a box state stack.
-  NGInlineBoxState* OnCloseTag(const NGConstraintSpace& space,
-                               LogicalLineItems*,
-                               NGInlineBoxState*,
-                               FontBaseline);
+  InlineBoxState* OnCloseTag(const NGConstraintSpace& space,
+                             LogicalLineItems*,
+                             InlineBoxState*,
+                             FontBaseline);
 
   // Compute all the pending positioning at the end of a line.
   void OnEndPlaceItems(const NGConstraintSpace& space,
@@ -211,23 +211,21 @@ class CORE_EXPORT NGInlineLayoutStateStack {
                           bool is_opaque);
 
 #if DCHECK_IS_ON()
-  void CheckSame(const NGInlineLayoutStateStack&) const;
+  void CheckSame(const InlineLayoutStateStack&) const;
 #endif
 
  private:
   // End of a box state, either explicitly by close tag, or implicitly at the
   // end of a line.
   void EndBoxState(const NGConstraintSpace&,
-                   NGInlineBoxState*,
+                   InlineBoxState*,
                    LogicalLineItems*,
                    FontBaseline);
 
-  void AddBoxFragmentPlaceholder(NGInlineBoxState*,
+  void AddBoxFragmentPlaceholder(InlineBoxState*,
                                  LogicalLineItems*,
                                  FontBaseline);
-  void AddBoxData(const NGConstraintSpace&,
-                  NGInlineBoxState*,
-                  LogicalLineItems*);
+  void AddBoxData(const NGConstraintSpace&, InlineBoxState*, LogicalLineItems*);
 
   enum PositionPending { kPositionNotPending, kPositionPending };
 
@@ -237,18 +235,18 @@ class CORE_EXPORT NGInlineLayoutStateStack {
   // the line box was computed.
   // https://www.w3.org/TR/CSS22/visudet.html#propdef-vertical-align
   // https://www.w3.org/TR/css-inline-3/#propdef-vertical-align
-  PositionPending ApplyBaselineShift(NGInlineBoxState*,
+  PositionPending ApplyBaselineShift(InlineBoxState*,
                                      LogicalLineItems*,
                                      FontBaseline);
 
   // Computes an offset that will align the |box| with its 'alignment-baseline'
   // relative to the baseline of the line box. This takes into account both the
   // 'dominant-baseline' and 'alignment-baseline' of |box| and its parent.
-  LayoutUnit ComputeAlignmentBaselineShift(const NGInlineBoxState* box);
+  LayoutUnit ComputeAlignmentBaselineShift(const InlineBoxState* box);
 
   // Compute the metrics for when 'vertical-align' is 'top' and 'bottom' from
   // |pending_descendants|.
-  FontHeight MetricsForTopAndBottomAlign(const NGInlineBoxState&,
+  FontHeight MetricsForTopAndBottomAlign(const InlineBoxState&,
                                          const LogicalLineItems&) const;
 
   // Data for a box fragment. See AddBoxFragmentPlaceholder().
@@ -314,7 +312,7 @@ class CORE_EXPORT NGInlineLayoutStateStack {
   // Update edges of inline fragmented boxes.
   void UpdateFragmentedBoxDataEdges(Vector<BoxData>* fragmented_boxes);
 
-  HeapVector<NGInlineBoxState, 4> stack_;
+  HeapVector<InlineBoxState, 4> stack_;
   Vector<BoxData, 4> box_data_list_;
 
   bool is_empty_line_ = false;
@@ -324,6 +322,6 @@ class CORE_EXPORT NGInlineLayoutStateStack {
 
 }  // namespace blink
 
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::NGInlineBoxState)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::InlineBoxState)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_INLINE_BOX_STATE_H_

@@ -21,15 +21,15 @@ namespace blink {
 
 class ExclusionSpace;
 class InlineItem;
+class InlineLayoutStateStack;
 class InlineNode;
 class LineInfo;
 class NGColumnSpannerPath;
 class NGConstraintSpace;
 class NGInlineBreakToken;
 class NGInlineChildLayoutContext;
-class NGInlineLayoutStateStack;
+struct InlineBoxState;
 struct InlineItemResult;
-struct NGInlineBoxState;
 struct NGLeadingFloats;
 
 // A class for laying out an inline formatting context, i.e. a block with inline
@@ -72,19 +72,19 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
   void PrepareBoxStates(const LineInfo&, const NGInlineBreakToken*);
   void RebuildBoxStates(const LineInfo&,
                         const NGInlineBreakToken*,
-                        NGInlineLayoutStateStack*) const;
+                        InlineLayoutStateStack*) const;
 #if EXPENSIVE_DCHECKS_ARE_ON()
   void CheckBoxStates(const LineInfo&, const NGInlineBreakToken*) const;
 #endif
 
-  NGInlineBoxState* HandleOpenTag(const InlineItem&,
-                                  const InlineItemResult&,
-                                  LogicalLineItems*,
-                                  NGInlineLayoutStateStack*) const;
-  NGInlineBoxState* HandleCloseTag(const InlineItem&,
-                                   const InlineItemResult&,
-                                   LogicalLineItems* line_box,
-                                   NGInlineBoxState*);
+  InlineBoxState* HandleOpenTag(const InlineItem&,
+                                const InlineItemResult&,
+                                LogicalLineItems*,
+                                InlineLayoutStateStack*) const;
+  InlineBoxState* HandleCloseTag(const InlineItem&,
+                                 const InlineItemResult&,
+                                 LogicalLineItems* line_box,
+                                 InlineBoxState*);
 
   void BidiReorder(TextDirection base_direction, LogicalLineItems* line_box);
 
@@ -92,15 +92,15 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
                         const LineInfo&,
                         InlineItemResult*,
                         LogicalLineItems* line_box,
-                        NGInlineBoxState*);
+                        InlineBoxState*);
   void PlaceHyphen(const InlineItemResult&,
                    LayoutUnit hyphen_inline_size,
                    LogicalLineItems* line_box,
-                   NGInlineBoxState*);
-  NGInlineBoxState* PlaceAtomicInline(const InlineItem&,
-                                      const LineInfo&,
-                                      InlineItemResult*,
-                                      LogicalLineItems* line_box);
+                   InlineBoxState*);
+  InlineBoxState* PlaceAtomicInline(const InlineItem&,
+                                    const LineInfo&,
+                                    InlineItemResult*,
+                                    LogicalLineItems* line_box);
   void PlaceBlockInInline(const InlineItem&,
                           const LineInfo&,
                           InlineItemResult*,
@@ -111,7 +111,7 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
                              LogicalLineItems* line_box);
   void PlaceLayoutResult(InlineItemResult*,
                          LogicalLineItems* line_box,
-                         NGInlineBoxState*,
+                         InlineBoxState*,
                          LayoutUnit inline_offset = LayoutUnit());
   void PlaceOutOfFlowObjects(const LineInfo&,
                              const FontHeight&,
@@ -137,7 +137,7 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
                                    const LogicalLineItems& line_box,
                                    const FontHeight& line_box_metrics);
 
-  NGInlineLayoutStateStack* box_states_;
+  InlineLayoutStateStack* box_states_;
   NGInlineChildLayoutContext* context_;
 
   const NGColumnSpannerPath* column_spanner_path_;

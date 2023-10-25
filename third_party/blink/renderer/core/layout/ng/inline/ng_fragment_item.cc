@@ -1088,8 +1088,8 @@ PositionWithAffinity FragmentItem::PositionForPointInText(
   DCHECK_EQ(cursor.CurrentItem(), this);
   DCHECK(!IsGeneratedText());
   DCHECK_LE(text_offset, EndOffset());
-  const NGCaretPosition unadjusted_position{
-      cursor, NGCaretPositionType::kAtTextOffset, text_offset};
+  const CaretPosition unadjusted_position{
+      cursor, CaretPositionType::kAtTextOffset, text_offset};
   if (RuntimeEnabledFeatures::BidiCaretAffinityEnabled())
     return unadjusted_position.ToPositionInDOMTreeWithAffinity();
   if (text_offset > StartOffset() && text_offset < EndOffset())

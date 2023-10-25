@@ -33,7 +33,7 @@ bool LineWidths::Set(const InlineNode& node,
   const ComputedStyle& block_style = node.Style();
   const Font& block_font = block_style.GetFont();
   const FontBaseline baseline_type = block_style.GetFontBaseline();
-  NGInlineBoxState line_box;
+  InlineBoxState line_box;
   line_box.ComputeTextMetrics(block_style, block_font, baseline_type);
 
   // Check if all lines have the same line heights.
@@ -63,7 +63,7 @@ bool LineWidths::Set(const InlineNode& node,
           // different.
           DCHECK(item.Style());
           const ComputedStyle& item_style = *item.Style();
-          NGInlineBoxState text_box;
+          InlineBoxState text_box;
           text_box.ComputeTextMetrics(item_style, item_style.GetFont(),
                                       baseline_type);
           if (text_box.include_used_fonts) {

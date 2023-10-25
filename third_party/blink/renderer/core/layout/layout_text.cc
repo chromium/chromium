@@ -318,14 +318,14 @@ void LayoutText::DetachAbstractInlineTextBoxes() {
   NOT_DESTROYED();
   // TODO(layout-dev): Because We should call |WillDestroy()| once for
   // associated fragments, when you reuse fragments, you should construct
-  // NGAbstractInlineTextBox for them.
+  // AbstractInlineTextBox for them.
   DCHECK(has_abstract_inline_text_box_);
   has_abstract_inline_text_box_ = false;
   // TODO(yosin): Make sure we call this function within valid containg block
   // of |this|.
   InlineCursor cursor;
   for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject())
-    NGAbstractInlineTextBox::WillDestroy(cursor);
+    AbstractInlineTextBox::WillDestroy(cursor);
 }
 
 void LayoutText::ClearFirstInlineFragmentItemIndex() {
@@ -338,7 +338,7 @@ void LayoutText::ClearFirstInlineFragmentItemIndex() {
 void LayoutText::SetFirstInlineFragmentItemIndex(wtf_size_t index) {
   NOT_DESTROYED();
   CHECK(IsInLayoutNGInlineFormattingContext());
-  // TODO(yosin): Call |NGAbstractInlineTextBox::WillDestroy()|.
+  // TODO(yosin): Call |AbstractInlineTextBox::WillDestroy()|.
   DCHECK_NE(index, 0u);
   DetachAbstractInlineTextBoxesIfNeeded();
   // Changing the first fragment item index causes
@@ -1328,12 +1328,12 @@ void LayoutText::MomentarilyRevealLastTypedCharacter(
   secure_text_timer->RestartWithNewText(last_typed_character_offset);
 }
 
-NGAbstractInlineTextBox* LayoutText::FirstAbstractInlineTextBox() {
+AbstractInlineTextBox* LayoutText::FirstAbstractInlineTextBox() {
   NOT_DESTROYED();
   DCHECK(IsInLayoutNGInlineFormattingContext());
   InlineCursor cursor;
   cursor.MoveTo(*this);
-  return NGAbstractInlineTextBox::GetOrCreate(cursor);
+  return AbstractInlineTextBox::GetOrCreate(cursor);
 }
 
 void LayoutText::InvalidatePaint(const PaintInvalidatorContext& context) const {
