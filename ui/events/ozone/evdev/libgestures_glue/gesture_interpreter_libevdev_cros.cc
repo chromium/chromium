@@ -82,6 +82,9 @@ HardwareProperties GestureHardwareProperties(
                       EvdevBitIsSet(evdev->info.rel_bitmask, REL_HWHEEL);
   hwprops.wheel_is_hi_res =
 	  EvdevBitIsSet(evdev->info.rel_bitmask, REL_WHEEL_HI_RES);
+  hwprops.reports_pressure =
+      EvdevBitIsSet(evdev->info.abs_bitmask, ABS_MT_PRESSURE) ||
+      EvdevBitIsSet(evdev->info.abs_bitmask, ABS_PRESSURE);
 
   return hwprops;
 }
