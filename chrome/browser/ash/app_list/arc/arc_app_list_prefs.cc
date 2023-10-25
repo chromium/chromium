@@ -71,6 +71,7 @@ constexpr char kFrameworkPackageName[] = "android";
 constexpr char kResizeLockState[] = "resize_lock_state";
 constexpr char kResizeLockNeedsConfirmation[] =
     "resize_lock_needs_confirmation";
+constexpr char kGameControlsOptOut[] = "game_controls_opt_out";
 constexpr char kIconResourceId[] = "icon_resource_id";
 constexpr char kIconVersion[] = "icon_version";
 constexpr char kInstallTime[] = "install_time";
@@ -917,8 +918,9 @@ std::unique_ptr<ArcAppListPrefs::PackageInfo> ArcAppListPrefs::GetPackage(
       last_backup_android_id, last_backup_time,
       package->FindBool(kShouldSync).value_or(false),
       package->FindBool(kVPNProvider).value_or(false),
-      package->FindBool(kPreinstalled).value_or(false), std::move(permissions),
-      std::move(web_app_info), std::move(locale_info));
+      package->FindBool(kPreinstalled).value_or(false),
+      package->FindBool(kGameControlsOptOut).value_or(false),
+      std::move(permissions), std::move(web_app_info), std::move(locale_info));
 }
 
 bool ArcAppListPrefs::IsPackageInstalled(
@@ -1809,6 +1811,7 @@ void ArcAppListPrefs::AddOrUpdatePackagePrefs(
   package_dict.Set(kUninstalled, false);
   package_dict.Set(kVPNProvider, package.vpn_provider);
   package_dict.Set(kPreinstalled, package.preinstalled);
+  package_dict.Set(kGameControlsOptOut, package.game_controls_opt_out);
   if (package.version_name)
     package_dict.Set(kVersionName, package.version_name.value());
   else
@@ -2642,6 +2645,7 @@ ArcAppListPrefs::PackageInfo::PackageInfo(
     bool should_sync,
     bool vpn_provider,
     bool preinstalled,
+    bool game_controls_opt_out,
     base::flat_map<arc::mojom::AppPermission, arc::mojom::PermissionStatePtr>
         permissions,
     arc::mojom::WebAppInfoPtr web_app_info,
@@ -2653,6 +2657,7 @@ ArcAppListPrefs::PackageInfo::PackageInfo(
       should_sync(should_sync),
       vpn_provider(vpn_provider),
       preinstalled(preinstalled),
+      game_controls_opt_out(game_controls_opt_out),
       permissions(std::move(permissions)),
       web_app_info(std::move(web_app_info)),
       locale_info(std::move(locale_info)) {}

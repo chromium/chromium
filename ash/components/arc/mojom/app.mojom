@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 61
+// Next MinVersion: 62
 
 module arc.mojom;
 
@@ -153,6 +153,9 @@ struct ArcPackageInfo {
 
   // If sent from ARC, null denotes that per-app language is not supported.
   [MinVersion=60] PackageLocaleInfo? locale_info;
+
+  // True if the package has the Game Controls Opt Out metadata set to true.
+  [MinVersion=61] bool game_controls_opt_out;
 };
 
 // Describes ARC app shortcut.
