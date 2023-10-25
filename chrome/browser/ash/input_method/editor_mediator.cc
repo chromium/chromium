@@ -13,6 +13,8 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
+#include "chrome/browser/ash/input_method/editor_metrics_enums.h"
+#include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -208,10 +210,12 @@ void EditorMediator::HandleTrigger(
     case EditorMode::kRewrite:
       mako_bubble_coordinator_.LoadEditorUI(profile_, MakoEditorMode::kRewrite,
                                             preset_query_id, freeform_text);
+      LogEditorState(EditorStates::kRequest, EditorMode::kRewrite);
       break;
     case EditorMode::kWrite:
       mako_bubble_coordinator_.LoadEditorUI(profile_, MakoEditorMode::kWrite,
                                             preset_query_id, freeform_text);
+      LogEditorState(EditorStates::kRequest, EditorMode::kWrite);
       break;
     case EditorMode::kConsentNeeded:
       mako_bubble_coordinator_.LoadConsentUI(profile_);
