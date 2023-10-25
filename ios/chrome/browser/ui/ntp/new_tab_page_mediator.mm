@@ -295,7 +295,9 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 // engine choice.
 - (BOOL)hideFeedWithSearchChoice {
   return IsIOSHideFeedWithSearchChoiceEnabled() &&
-         ![self isGoogleDefaultSearchEngine];
+         ![self isGoogleDefaultSearchEngine] &&
+         (!IsIOSHideFeedWithSearchChoiceTargeted() ||
+          self.templateURLService->IsEeaChoiceCountry());
 }
 
 // Returns an updated value for feedHeaderVisible.

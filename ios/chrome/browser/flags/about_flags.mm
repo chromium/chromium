@@ -689,6 +689,13 @@ const FeatureEntry::Choice kEnablePasswordSharingChoices[] = {
      "PasswordManagerEnableReceiverService,SharedPasswordNotificationUI"},
 };
 
+const FeatureEntry::FeatureParam kIOSHideFeedWithSearchChoiceTargetedParams[] =
+    {{kIOSHideFeedWithSearchChoiceTargeted, "true"}};
+const FeatureEntry::FeatureVariation kIOSHideFeedWithSearchChoiceVariations[]{
+    {"with targeting", kIOSHideFeedWithSearchChoiceTargetedParams,
+     std::size(kIOSHideFeedWithSearchChoiceTargetedParams), nullptr},
+};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -1044,7 +1051,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"ios-hide-feed-with-search-choice",
      flag_descriptions::kIOSHideFeedWithSearchChoiceName,
      flag_descriptions::kIOSHideFeedWithSearchChoiceDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSHideFeedWithSearchChoice)},
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         kIOSHideFeedWithSearchChoice,
+         kIOSHideFeedWithSearchChoiceVariations,
+         flag_descriptions::kIOSHideFeedWithSearchChoiceName)},
     {"ios-large-fakebox", flag_descriptions::kIOSLargeFakeboxName,
      flag_descriptions::kIOSLargeFakeboxDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSLargeFakebox)},

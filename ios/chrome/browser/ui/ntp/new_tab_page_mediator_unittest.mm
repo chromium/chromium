@@ -9,6 +9,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/feed/core/v2/public/common_enums.h"
+#import "components/search_engines/search_engines_switches.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_data.h"
 #import "components/search_engines/template_url_service.h"
@@ -155,6 +156,11 @@ class NewTabPageMediatorTest : public PlatformTest {
             std::make_unique<TemplateURL>(template_url_data)));
   }
 
+  void OverrideSearchEngineChoiceCountry(base::StringPiece country) {
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kSearchEngineChoiceCountry, country);
+  }
+
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
@@ -244,5 +250,42 @@ TEST_F(NewTabPageMediatorTest, TestHideFeedWithSearchChoice) {
   // Test setting a custom search engine.
   SetCustomSearchEngine();
   EXPECT_FALSE(mediator_.feedHeaderVisible);
+  EXPECT_OCMOCK_VERIFY(feed_control_delegate);
+}
+
+// Tests that the feed will be hidden when IOSHideFeedWithSearchChoice is
+// enabled and a non-Google search engine is chosen, but only in EEA countries.
+TEST_F(NewTabPageMediatorTest, TestHideFeedWithSearchChoiceTargeted) {
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {
+          {kIOSHideFeedWithSearchChoice,
+           {{kIOSHideFeedWithSearchChoiceTargeted, "true"}}},
+      },
+      {});
+
+  // Test it with the default search engine, with country set to France.
+  OverrideSearchEngineChoiceCountry("FR");
+  [mediator_ setUp];
+  EXPECT_TRUE(mediator_.feedHeaderVisible);
+
+  // Set up expectation for custom search engine, country set to France.
+  id feed_control_delegate = OCMProtocolMock(@protocol(FeedControlDelegate));
+  OCMExpect([feed_control_delegate setFeedAndHeaderVisibility:NO]);
+  mediator_.feedControlDelegate = feed_control_delegate;
+
+  // Test setting a custom search engine, country still set to France.
+  SetCustomSearchEngine();
+  EXPECT_FALSE(mediator_.feedHeaderVisible);
+  EXPECT_OCMOCK_VERIFY(feed_control_delegate);
+
+  // Set up expectation for custom search engine, with country set to US.
+  feed_control_delegate = OCMProtocolMock(@protocol(FeedControlDelegate));
+  OCMExpect([feed_control_delegate setFeedAndHeaderVisibility:YES]);
+  mediator_.feedControlDelegate = feed_control_delegate;
+
+  // Test with custom search engine, with country set to US.
+  OverrideSearchEngineChoiceCountry("US");
+  SetCustomSearchEngine();
+  EXPECT_TRUE(mediator_.feedHeaderVisible);
   EXPECT_OCMOCK_VERIFY(feed_control_delegate);
 }

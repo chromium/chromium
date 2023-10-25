@@ -132,6 +132,11 @@ extern const char kFeedUnseenRefreshThresholdInSeconds[];
 extern const char
     kEnableFeedUseInteractivityInvalidationForForegroundRefreshes[];
 
+// Feature param under `kIOSHideFeedWithSearchChoice` to only target the
+// feature at certain countries (i.e. only hide the feed when the device is
+// from those countries when the search engine is changed).
+extern const char kIOSHideFeedWithSearchChoiceTargeted[];
+
 // Whether the Following Feed is enabled on NTP.
 bool IsWebChannelsEnabled();
 
@@ -225,6 +230,10 @@ double GetFeedSeenRefreshThresholdInSeconds();
 
 // Returns the refresh threshold (aka feed expiration) for an unseen feed.
 double GetFeedUnseenRefreshThresholdInSeconds();
+
+// Returns whether the feed hide with search choice feature should be targeted
+// only at devices from certain countries.
+bool IsIOSHideFeedWithSearchChoiceTargeted();
 
 // YES if user engagement is used as a signal to invalidate the cache when the
 // app is foregrounded. This can result in a visible refresh when the NTP is
