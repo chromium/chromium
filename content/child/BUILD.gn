@@ -70,6 +70,7 @@ target(link_target_type, "child") {
     "//cc/paint",
     "//components/discardable_memory/client",
     "//components/discardable_memory/public/mojom",
+    "//components/permissions:permissions_common",
     "//components/tracing:startup_tracing",
     "//components/variations",
     "//components/webcrypto",

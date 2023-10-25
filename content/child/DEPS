@@ -25,4 +25,7 @@ specific_include_rules = {
   "child_thread_impl_browsertest\.*": [
     "+components/discardable_memory/service",
   ],
+  "runtime_features.cc": [
+    "+components/permissions/features.h",
+  ],
 }

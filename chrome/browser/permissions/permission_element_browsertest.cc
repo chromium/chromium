@@ -11,7 +11,6 @@
 #include "components/permissions/features.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -60,11 +59,6 @@ class PermissionElementBrowserTest : public InProcessBrowserTest {
       delete;
 
   ~PermissionElementBrowserTest() override = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "PermissionElement");
-  }
 
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());

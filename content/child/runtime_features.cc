@@ -19,6 +19,7 @@
 #include "build/chromeos_buildflags.h"
 #include "cc/base/features.h"
 #include "components/attribution_reporting/features.h"
+#include "components/permissions/features.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/features.h"
@@ -401,7 +402,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      raw_ref(features::kEnableBluetoothSerialPortProfileInSerialApi)},
     {"MediaStreamTrackTransfer", raw_ref(features::kMediaStreamTrackTransfer)},
     {"PrivateNetworkAccessPermissionPrompt",
-     raw_ref(network::features::kPrivateNetworkAccessPermissionPrompt)} };
+     raw_ref(network::features::kPrivateNetworkAccessPermissionPrompt)},
+    {"PermissionElement", raw_ref(permissions::features::kPermissionElement)} };
   for (const auto& mapping : runtimeFeatureNameToChromiumFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(
         *mapping.chromium_feature, mapping.option, [&mapping](bool enabled) {
