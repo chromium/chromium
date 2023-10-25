@@ -214,7 +214,8 @@ bool DawnContextProvider::Initialize(wgpu::BackendType backend_type,
         kGraphiteDawnGpuDiskCacheHandle, std::move(callback));
   }
 
-  platform_ = std::make_unique<Platform>(std::move(caching_interface));
+  platform_ = std::make_unique<Platform>(std::move(caching_interface),
+                                         /*uma_prefix=*/"GPU.GraphiteDawn.");
   instance_ = webgpu::DawnInstance::Create(platform_.get(), gpu_preferences);
 
   // If a new toggle is added here, ForceDawnTogglesForSkia() which collects

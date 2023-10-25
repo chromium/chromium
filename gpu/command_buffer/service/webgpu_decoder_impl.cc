@@ -1062,7 +1062,8 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
       dawn_platform_(new DawnPlatform(
           base::FeatureList::IsEnabled(features::kWebGPUBlobCache)
               ? std::move(dawn_caching_interface)
-              : nullptr)),
+              : nullptr,
+          /*uma_prefix=*/"GPU.WebGPU.")),
       dawn_instance_(
           DawnInstance::Create(dawn_platform_.get(), gpu_preferences)),
       memory_transfer_service_(new DawnServiceMemoryTransferService(this)),
