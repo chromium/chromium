@@ -25,7 +25,7 @@ Event::Event(scoped_refptr<base::RefCountedMemory> event_bytes,
       const_cast<uint8_t*>(event_bytes->data()));
   uint8_t response_type = xcb_event->response_type & ~kSendEventMask;
   if (xcb_event->response_type & kSendEventMask) {
-    send_event_ = true;
+    flags_ |= kSendEventFlag;
   }
   sequence_ = xcb_event->full_sequence;
   // On the wire, events are 32 bytes except for generic events which are
@@ -40,7 +40,8 @@ Event::Event(scoped_refptr<base::RefCountedMemory> event_bytes,
   }
   connection->GetEventTypeAndOp(event_bytes->data(), &type_id_, &opcode_);
   if (type_id_) {
-    raw_event_ = event_bytes;
+    event_ = {new ReadBuffer(event_bytes),
+              [](void* e) { delete static_cast<ReadBuffer*>(e); }};
   }
 }
 
@@ -49,17 +50,14 @@ Event::Event(Event&& event) {
 }
 
 Event& Event::operator=(Event&& event) {
-  send_event_ = event.send_event_;
-  fabricated_ = event.fabricated_;
+  flags_ = event.flags_;
   type_id_ = event.type_id_;
   opcode_ = event.opcode_;
   sequence_ = event.sequence_;
-  raw_event_ = std::move(event.raw_event_);
   event_ = std::move(event.event_);
 
   // Clear the old instance, to make sure it's in a valid state.
-  event.send_event_ = false;
-  event.fabricated_ = false;
+  event.flags_ = 0;
   event.type_id_ = 0;
   event.opcode_ = 0;
   event.sequence_ = 0;
@@ -67,15 +65,5 @@ Event& Event::operator=(Event&& event) {
 }
 
 Event::~Event() = default;
-
-void Event::Parse(void* event, Parser parser, Deleter deleter) {
-  DUMP_WILL_BE_CHECK(type_id_);
-  DUMP_WILL_BE_CHECK(!event_);
-  DUMP_WILL_BE_CHECK(raw_event_);
-  ReadBuffer read_buffer(raw_event_);
-  parser(event, &read_buffer);
-  event_ = {event, deleter};
-  raw_event_.reset();
-}
 
 }  // namespace x11

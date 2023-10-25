@@ -30,8 +30,10 @@ class COMPONENT_EXPORT(X11) Event {
   template <typename T>
   Event(bool send_event, T&& xproto_event) {
     using DecayT = std::decay_t<T>;
-    fabricated_ = true;
-    send_event_ = send_event;
+    flags_ = kParsedFlag | kFabricatedEventFlag;
+    if (send_event) {
+      flags_ |= kSendEventFlag;
+    }
     type_id_ = DecayT::type_id;
     auto* event = new DecayT(std::forward<T>(xproto_event));
     event_ = {event, [](void* e) {
@@ -61,13 +63,14 @@ class COMPONENT_EXPORT(X11) Event {
     if (type_id_ != T::type_id) {
       return nullptr;
     }
-    if (!event_) {
+    if (!(flags_ & kParsedFlag)) {
       T* event = new T;
-      Parse(event, reinterpret_cast<Parser>(ReadEvent<T>),
-            [](void* e) { delete static_cast<T*>(e); });
+      ReadEvent(event, static_cast<ReadBuffer*>(event_.get()));
       if constexpr (std::is_member_pointer<decltype(&T::opcode)>()) {
         event->opcode = static_cast<decltype(event->opcode)>(opcode_);
       }
+      event_ = {event, [](void* e) { delete static_cast<T*>(e); }};
+      flags_ |= kParsedFlag;
     }
     return static_cast<T*>(event_.get());
   }
@@ -77,26 +80,26 @@ class COMPONENT_EXPORT(X11) Event {
     return const_cast<Event*>(this)->As<T>();
   }
 
-  bool send_event() const { return send_event_; }
+  bool send_event() const { return flags_ & kSendEventFlag; }
 
   uint32_t sequence() const {
-    DUMP_WILL_BE_CHECK(!fabricated_);
+    DUMP_WILL_BE_CHECK(!(flags_ & kFabricatedEventFlag));
     return sequence_;
   }
 
   bool Initialized() const { return type_id_; }
 
  private:
-  using Parser = void (*)(void*, ReadBuffer*);
-  using Deleter = void (*)(void*);
+  enum Flags : uint8_t {
+    // Indicates `event_` has been deserialized.
+    kParsedFlag = 1 << 0,
+    // Indicates this event was sent from another client instead of the server.
+    kSendEventFlag = 1 << 1,
+    // Indicates this event was created, not sent by the server or a client.
+    kFabricatedEventFlag = 1 << 2,
+  };
 
-  void Parse(void* event, Parser parser, Deleter deleter);
-
-  // Indicates this event was sent from another client instead of the server.
-  bool send_event_ = false;
-
-  // Indicates this event was created, not sent by the server or a client.
-  bool fabricated_ = false;
+  uint8_t flags_ = 0;
 
   // The value of the underlying event's `T::type_id`.
   uint8_t type_id_ = 0;
@@ -107,11 +110,9 @@ class COMPONENT_EXPORT(X11) Event {
   // The (extended) event sequence provided by XCB.
   uint32_t sequence_ = 0;
 
-  // The unparsed event, or nullptr if it's already parsed.
-  scoped_refptr<base::RefCountedMemory> raw_event_;
-
-  // The type-erased parsed event, or nullptr if it hasn't been parsed yet.
-  std::unique_ptr<void, Deleter> event_ = {nullptr, nullptr};
+  // If `flags_ & kParsedFlag`, this holds the underlying event, otherwise it
+  // holds a `ReadBuffer`.
+  std::unique_ptr<void, void (*)(void*)> event_ = {nullptr, nullptr};
 };
 
 }  // namespace x11
