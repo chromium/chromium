@@ -2524,5 +2524,16 @@
     ],
     "args": ["--enable-features=RegisterJSSourceLocationBlockingBFCache"],
     "expires": "Feb 1, 2024"
+  },
+  {
+    "prefix": "saa-beyond-cookies-disabled",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/storage-access-api",
+      "wpt_internal/storage-access-api"
+    ],
+    "args": ["--disable-blink-features=StorageAccessAPIBeyondCookies"],
+    "expires": "Jul 1, 2024",
+    "owners": ["arichiv@chromium.org"]
   }
 ]

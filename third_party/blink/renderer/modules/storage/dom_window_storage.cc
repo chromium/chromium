@@ -19,10 +19,6 @@
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
-namespace {
-constexpr const char kAccessDeniedMessage[] =
-    "Access is denied for this document.";
-}
 
 DOMWindowStorage::DOMWindowStorage(LocalDOMWindow& window)
     : Supplement<LocalDOMWindow>(window) {}
@@ -70,7 +66,7 @@ StorageArea* DOMWindowStorage::sessionStorage(
     UseCounter::Count(window, WebFeature::kFileAccessedSessionStorage);
 
   if (!storage->CanAccessStorage()) {
-    exception_state.ThrowSecurityError(kAccessDeniedMessage);
+    exception_state.ThrowSecurityError(StorageArea::kAccessDeniedMessage);
     return nullptr;
   }
   return storage;
@@ -87,7 +83,7 @@ StorageArea* DOMWindowStorage::localStorage(
     UseCounter::Count(window, WebFeature::kFileAccessedLocalStorage);
 
   if (!storage->CanAccessStorage()) {
-    exception_state.ThrowSecurityError(kAccessDeniedMessage);
+    exception_state.ThrowSecurityError(StorageArea::kAccessDeniedMessage);
     return nullptr;
   }
   return storage;
@@ -119,13 +115,11 @@ StorageArea* DOMWindowStorage::GetOrCreateSessionStorage(
 
   if (!window->GetSecurityOrigin()->CanAccessSessionStorage()) {
     if (window->IsSandboxed(network::mojom::blink::WebSandboxFlags::kOrigin))
-      exception_state.ThrowSecurityError(
-          "The document is sandboxed and lacks the 'allow-same-origin' flag.");
+      exception_state.ThrowSecurityError(StorageArea::kAccessSandboxedMessage);
     else if (window->Url().ProtocolIs("data"))
-      exception_state.ThrowSecurityError(
-          "Storage is disabled inside 'data:' URLs.");
+      exception_state.ThrowSecurityError(StorageArea::kAccessDataMessage);
     else
-      exception_state.ThrowSecurityError(kAccessDeniedMessage);
+      exception_state.ThrowSecurityError(StorageArea::kAccessDeniedMessage);
     return nullptr;
   }
 
@@ -161,13 +155,11 @@ StorageArea* DOMWindowStorage::GetOrCreateLocalStorage(
 
   if (!window->GetSecurityOrigin()->CanAccessLocalStorage()) {
     if (window->IsSandboxed(network::mojom::blink::WebSandboxFlags::kOrigin))
-      exception_state.ThrowSecurityError(
-          "The document is sandboxed and lacks the 'allow-same-origin' flag.");
+      exception_state.ThrowSecurityError(StorageArea::kAccessSandboxedMessage);
     else if (window->Url().ProtocolIs("data"))
-      exception_state.ThrowSecurityError(
-          "Storage is disabled inside 'data:' URLs.");
+      exception_state.ThrowSecurityError(StorageArea::kAccessDataMessage);
     else
-      exception_state.ThrowSecurityError(kAccessDeniedMessage);
+      exception_state.ThrowSecurityError(StorageArea::kAccessDeniedMessage);
     return nullptr;
   }
 

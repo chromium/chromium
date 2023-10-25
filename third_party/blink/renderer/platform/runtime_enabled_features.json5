@@ -3697,6 +3697,12 @@
       status: "stable",
     },
     {
+      name: "StorageAccessAPIBeyondCookies",
+      status: "experimental",
+      base_feature: "none",
+      origin_trial_feature_name: "StorageAccessAPIBeyondCookies",
+    },
+    {
       name: "StorageAccessAPIForOriginExtension",
       public: true,
       status: "stable",

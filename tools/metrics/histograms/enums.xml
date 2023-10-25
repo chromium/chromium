@@ -44521,6 +44521,18 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4693" label="ThirdPartyCookieAccessBlockByExperiment"/>
   <int value="4694" label="CspWouldBlockIfWildcardDoesNotMatchWs"/>
   <int value="4695" label="CspWouldBlockIfWildcardDoesNotMatchFtp"/>
+  <int value="4696"
+      label="StorageAccessAPI_requestStorageAccess_BeyondCookies"/>
+  <int value="4697"
+      label="StorageAccessAPI_requestStorageAccess_BeyondCookies_all"/>
+  <int value="4698"
+      label="StorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage"/>
+  <int value="4699"
+      label="StorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage_Use"/>
+  <int value="4700"
+      label="StorageAccessAPI_requestStorageAccess_BeyondCookies_localStorage"/>
+  <int value="4701"
+      label="StorageAccessAPI_requestStorageAccess_BeyondCookies_localStorage_Use"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

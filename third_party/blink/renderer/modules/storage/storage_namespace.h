@@ -62,6 +62,11 @@ class MODULES_EXPORT StorageNamespace final
     : public GarbageCollected<StorageNamespace>,
       public Supplement<Page> {
  public:
+  // `kStandard` is access for a given context's storage, while
+  // `kStorageAccessAPI` indicates a desire to load the first-party storage from
+  // a third-party context. For more see:
+  // third_party/blink/renderer/modules/storage_access/README.md
+  enum class StorageContext { kStandard, kStorageAccessAPI };
   static const char kSupplementName[];
 
   static void ProvideSessionStorageNamespaceTo(
@@ -76,10 +81,11 @@ class MODULES_EXPORT StorageNamespace final
   // Creates a namespace for SessionStorage.
   StorageNamespace(Page& page, StorageController*, const String& namespace_id);
 
-  // |storage_area| is ignored here if a cached namespace already exists.
+  // `storage_area` is ignored here if a cached namespace already exists.
   scoped_refptr<CachedStorageArea> GetCachedArea(
       LocalDOMWindow* local_dom_window,
-      mojo::PendingRemote<mojom::blink::StorageArea> storage_area = {});
+      mojo::PendingRemote<mojom::blink::StorageArea> storage_area = {},
+      StorageContext context = StorageContext::kStandard);
 
   scoped_refptr<CachedStorageArea> CreateCachedAreaForPrerender(
       LocalDOMWindow* local_dom_window,

@@ -319,6 +319,16 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kChromeCSIStartE,
           WebFeature::kChromeCSITran,
           WebFeature::kThirdPartyCookieAccessBlockByExperiment,
+          WebFeature::kStorageAccessAPI_requestStorageAccess_BeyondCookies,
+          WebFeature::kStorageAccessAPI_requestStorageAccess_BeyondCookies_all,
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage,
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage_Use,
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_localStorage,
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_localStorage_Use,
       }));
   return *opt_in_features;
 }

@@ -47,6 +47,18 @@
 
 namespace blink {
 
+// static
+const char StorageArea::kAccessDataMessage[] =
+    "Storage is disabled inside 'data:' URLs.";
+
+// static
+const char StorageArea::kAccessDeniedMessage[] =
+    "Access is denied for this document.";
+
+// static
+const char StorageArea::kAccessSandboxedMessage[] =
+    "The document is sandboxed and lacks the 'allow-same-origin' flag.";
+
 StorageArea* StorageArea::Create(LocalDOMWindow* window,
                                  scoped_refptr<CachedStorageArea> storage_area,
                                  StorageType storage_type) {

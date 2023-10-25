@@ -1,0 +1,15 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[RuntimeEnabled=StorageAccessAPIBeyondCookies]
+interface StorageAccessHandle {
+    [LogActivity=GetterOnly, RaisesException=Getter] readonly attribute Storage sessionStorage;
+    [LogActivity=GetterOnly, RaisesException=Getter] readonly attribute Storage localStorage;
+    // TODO(crbug.com/1484966): Add indexeddb
+    // TODO(crbug.com/1484966): Add web locks
+    // TODO(crbug.com/1484966): Add cache storage
+    // TODO(crbug.com/1484966): Add origin private file system
+    // TODO(crbug.com/1484966): Add quota
+    // TODO(crbug.com/1484966): Add blob storage, broadcast channel, shared worker
+};

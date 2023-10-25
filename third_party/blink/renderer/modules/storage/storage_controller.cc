@@ -115,11 +115,12 @@ void StorageController::ClearAreasIfNeeded() {
 
 scoped_refptr<CachedStorageArea> StorageController::GetLocalStorageArea(
     LocalDOMWindow* local_dom_window,
-    mojo::PendingRemote<mojom::blink::StorageArea> local_storage_area) {
+    mojo::PendingRemote<mojom::blink::StorageArea> local_storage_area,
+    StorageNamespace::StorageContext context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureLocalStorageNamespaceCreated();
-  return local_storage_namespace_->GetCachedArea(local_dom_window,
-                                                 std::move(local_storage_area));
+  return local_storage_namespace_->GetCachedArea(
+      local_dom_window, std::move(local_storage_area), context);
 }
 
 void StorageController::AddLocalStorageInspectorStorageAgent(
