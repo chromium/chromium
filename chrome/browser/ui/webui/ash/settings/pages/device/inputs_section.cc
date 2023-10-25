@@ -9,11 +9,12 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/input_method/editor_mediator.h"
+#include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/input_method/input_method_settings.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/spellcheck/browser/pref_names.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -116,6 +117,15 @@ const std::vector<SearchConcept>& GetAutoCorrectionSearchConcepts() {
        {.setting = mojom::Setting::kShowPKAutoCorrection}},
   });
   return *tags;
+}
+
+bool IsOrcaAllowed(Profile* profile) {
+  input_method::EditorMediator* editor_mediator =
+      chromeos::features::IsOrcaEnabled()
+          ? input_method::EditorMediatorFactory::GetInstance()->GetForProfile(
+                profile)
+          : nullptr;
+  return editor_mediator && editor_mediator->IsAllowedForUse();
 }
 
 void AddInputMethodOptionsLoadTimeData(
@@ -331,6 +341,7 @@ void AddInputMethodOptionsLoadTimeData(
 }
 
 void AddSuggestionsLoadTimeData(content::WebUIDataSource* html_source,
+                                bool is_orca_allowed,
                                 bool is_emoji_suggestion_allowed) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"suggestionsTitle", IDS_SETTINGS_SUGGESTIONS_TITLE},
@@ -342,11 +353,8 @@ void AddSuggestionsLoadTimeData(content::WebUIDataSource* html_source,
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddString("orcaLearnMoreUrl",
                          chrome::kOrcaSuggestionLearnMoreURL);
-
   html_source->AddBoolean("allowEmojiSuggestion", is_emoji_suggestion_allowed);
-  html_source->AddBoolean(
-      "allowOrca", input_method::EditorMediator::HasInstance() &&
-                       input_method::EditorMediator::Get()->IsAllowedForUse());
+  html_source->AddBoolean("allowOrca", is_orca_allowed);
 }
 
 }  // namespace
@@ -355,6 +363,7 @@ InputsSection::InputsSection(Profile* profile,
                              SearchTagRegistry* search_tag_registry,
                              PrefService* pref_service)
     : OsSettingsSection(profile, search_tag_registry),
+      profile_(profile),
       pref_service_(pref_service) {
   CHECK(profile);
   CHECK(search_tag_registry);
@@ -480,7 +489,8 @@ void InputsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       input_method::IsPhysicalKeyboardAutocorrectAllowed(*pref_service_),
       input_method::IsPhysicalKeyboardPredictiveWritingAllowed(*pref_service_));
 
-  AddSuggestionsLoadTimeData(html_source, IsEmojiSuggestionAllowed());
+  AddSuggestionsLoadTimeData(html_source, IsOrcaAllowed(profile_),
+                             IsEmojiSuggestionAllowed());
 }
 
 void InputsSection::AddHandlers(content::WebUI* web_ui) {

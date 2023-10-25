@@ -1496,6 +1496,8 @@ source_set("ash") {
     "input_method/editor_feedback.h",
     "input_method/editor_mediator.cc",
     "input_method/editor_mediator.h",
+    "input_method/editor_mediator_factory.cc",
+    "input_method/editor_mediator_factory.h",
     "input_method/editor_metrics_enums.h",
     "input_method/editor_metrics_recorder.cc",
     "input_method/editor_metrics_recorder.h",

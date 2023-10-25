@@ -8,7 +8,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/hash/sha1.h"
-#include "chrome/browser/ash/input_method/editor_mediator.h"
+#include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/mako/url_constants.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -68,8 +68,11 @@ MakoUntrustedUI::~MakoUntrustedUI() = default;
 
 void MakoUntrustedUI::BindInterface(
     mojo::PendingReceiver<orca::mojom::EditorClient> pending_receiver) {
-  input_method::EditorMediator::Get()->BindEditorClient(
-      std::move(pending_receiver));
+  // If mako ui is shown to the user, then we know that EditorMediator is
+  // allowed for the current profile and will return a valid instance.
+  input_method::EditorMediatorFactory::GetInstance()
+      ->GetForProfile(Profile::FromWebUI(web_ui()))
+      ->BindEditorClient(std::move(pending_receiver));
 }
 
 void MakoUntrustedUI::BindInterface(

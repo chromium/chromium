@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_promo_card_view.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_view.h"
 #include "chrome/browser/ui/views/editor_menu/utils/preset_text_query.h"
@@ -29,7 +30,7 @@
 #include "chromeos/lacros/lacros_service.h"
 #else
 #include "ash/public/cpp/new_window_delegate.h"
-#include "chrome/browser/ash/input_method/editor_mediator.h"
+#include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -41,16 +42,24 @@ using crosapi::mojom::EditorPanelMode;
 using crosapi::mojom::EditorPanelPresetTextQuery;
 using crosapi::mojom::EditorPanelPresetTextQueryPtr;
 
-crosapi::mojom::EditorPanelManager& GetEditorPanelManager(
+crosapi::mojom::EditorPanelManager* GetEditorPanelManager(
     content::BrowserContext* browser_context) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::LacrosService* const lacros_service =
       chromeos::LacrosService::Get();
   CHECK(lacros_service->IsAvailable<crosapi::mojom::EditorPanelManager>());
-  return *lacros_service->GetRemote<crosapi::mojom::EditorPanelManager>().get();
+  return (lacros_service->GetRemote<crosapi::mojom::EditorPanelManager>()
+              .is_bound() &&
+          lacros_service->GetRemote<crosapi::mojom::EditorPanelManager>()
+              .is_connected())
+             ? lacros_service->GetRemote<crosapi::mojom::EditorPanelManager>()
+                   .get()
+             : nullptr;
 #else
-  CHECK(ash::input_method::EditorMediator::Get());
-  return ash::input_method::EditorMediator::Get()->panel_manager();
+  ash::input_method::EditorMediator* editor_mediator =
+      ash::input_method::EditorMediatorFactory::GetInstance()->GetForProfile(
+          Profile::FromBrowserContext(browser_context));
+  return editor_mediator ? editor_mediator->panel_manager() : nullptr;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
@@ -197,8 +206,12 @@ void EditorMenuControllerImpl::OnEditorMenuVisibilityChanged(bool visible) {
 
 void EditorMenuControllerImpl::SetBrowserContext(
     content::BrowserContext* context) {
-  card_session_ =
-      std::make_unique<EditorCardSession>(GetEditorPanelManager(context));
+  if (auto* panel_manager = GetEditorPanelManager(context);
+      panel_manager != nullptr) {
+    // A card session can only be initialized if we are able to connect
+    // successfully to the backend panel manager.
+    card_session_ = std::make_unique<EditorCardSession>(*panel_manager);
+  }
 }
 
 void EditorMenuControllerImpl::OnGetEditorPanelContextResultForTesting(

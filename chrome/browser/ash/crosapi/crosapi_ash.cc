@@ -108,7 +108,7 @@
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "chrome/browser/ash/crosapi/web_kiosk_service_ash.h"
 #include "chrome/browser/ash/crosapi/web_page_info_ash.h"
-#include "chrome/browser/ash/input_method/editor_mediator.h"
+#include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
 #include "chrome/browser/ash/sync/sync_mojo_service_ash.h"
@@ -518,7 +518,10 @@ void CrosapiAsh::BindEchoPrivate(
 
 void CrosapiAsh::BindEditorPanelManager(
     mojo::PendingReceiver<mojom::EditorPanelManager> receiver) {
-  if (auto* editor_mediator = ash::input_method::EditorMediator::Get()) {
+  auto* editor_mediator =
+      ash::input_method::EditorMediatorFactory::GetInstance()->GetForProfile(
+          GetAshProfile());
+  if (editor_mediator) {
     editor_mediator->BindEditorPanelManager(std::move(receiver));
   }
 }

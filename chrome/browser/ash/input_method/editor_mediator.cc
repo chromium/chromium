@@ -23,7 +23,6 @@
 namespace ash::input_method {
 namespace {
 
-EditorMediator* g_instance_ = nullptr;
 constexpr auto striped_symbols =
     base::MakeFixedFlatSet<char>({' ', '\t', '\n', '.', ','});
 
@@ -52,32 +51,11 @@ EditorMediator::EditorMediator(Profile* profile, std::string_view country_code)
       editor_switch_(std::make_unique<EditorSwitch>(profile, country_code)),
       consent_store_(
           std::make_unique<EditorConsentStore>(profile->GetPrefs())) {
-  DCHECK(!g_instance_);
-  g_instance_ = this;
-
-  user_manager::UserManager::Get()->AddSessionStateObserver(this);
-  profile_observation_.Observe(profile_);
   tablet_mode_observation_.Observe(TabletMode::Get());
-
   editor_switch_->OnTabletModeUpdated(ash::TabletMode::IsInTabletMode());
 }
 
-EditorMediator::~EditorMediator() {
-  DCHECK_EQ(g_instance_, this);
-  g_instance_ = nullptr;
-
-  if (user_manager::UserManager::IsInitialized()) {
-    user_manager::UserManager::Get()->RemoveSessionStateObserver(this);
-  }
-}
-
-EditorMediator* EditorMediator::Get() {
-  return g_instance_;
-}
-
-bool EditorMediator::HasInstance() {
-  return g_instance_ != nullptr;
-}
+EditorMediator::~EditorMediator() = default;
 
 void EditorMediator::BindEditorClient(
     mojo::PendingReceiver<orca::mojom::EditorClient> pending_receiver) {
@@ -260,31 +238,12 @@ EditorMode EditorMediator::GetEditorMode() const {
   return editor_switch_->GetEditorMode();
 }
 
-void EditorMediator::ActiveUserChanged(user_manager::User* user) {
-  if (user) {
-    user->AddProfileCreatedObserver(
-        base::BindOnce(&EditorMediator::SetProfileByUser,
-                       weak_ptr_factory_.GetWeakPtr(), user));
-  }
-}
-
-void EditorMediator::SetProfileByUser(user_manager::User* user) {
-  profile_ = ProfileHelper::Get()->GetProfileByUser(user);
-  profile_observation_.Reset();
-  profile_observation_.Observe(profile_);
-  editor_switch_->SetProfile(profile_);
-  consent_store_->SetPrefService(profile_->GetPrefs());
-  if (text_query_provider_ != nullptr) {
-    text_query_provider_->OnProfileChanged(profile_);
-  }
-  if (text_actuator_ != nullptr) {
-    text_actuator_->SetProfile(profile_);
-  }
-}
-
-void EditorMediator::OnProfileWillBeDestroyed(Profile* profile) {
-  profile_observation_.Reset();
-
+void EditorMediator::Shutdown() {
+  // Note that this method is part of the two-phase shutdown completed by a
+  // KeyedService. This method is invoked as the first phase, and is called
+  // prior to the destruction of the keyed profile (this allows us to cleanup
+  // any resources that depend on a valid profile instance - ie WebUI). The
+  // second phase is the destruction of the eKeyedService itself.
   mako_bubble_coordinator_.CloseUI();
   profile_ = nullptr;
   text_query_provider_ = nullptr;
