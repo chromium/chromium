@@ -16,7 +16,8 @@ GetTrackingProtectionOnboardingService() {
 }  // namespace
 
 static jint JNI_TrackingProtectionBridge_GetRequiredNotice(JNIEnv* env) {
-  return GetTrackingProtectionOnboardingService()->ShouldShowOnboardingNotice();
+  return static_cast<int>(
+      GetTrackingProtectionOnboardingService()->GetRequiredNotice());
 }
 
 static void JNI_TrackingProtectionBridge_NoticeShown(JNIEnv* env,
