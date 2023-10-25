@@ -15,8 +15,9 @@ import '//resources/cr_elements/md_select.css.js';
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {CrScrollableMixin} from '//resources/cr_elements/cr_scrollable_mixin.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {EventTracker} from '//resources/js/event_tracker.js';
+import {Debouncer, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
 import {CloseReason, ComposeDialogCallbackRouter, ComposeResponse, ComposeStatus, Length, Tone} from './compose.mojom-webui.js';
@@ -93,20 +94,23 @@ export class ComposeAppElement extends ComposeAppElementBase {
 
   static get observers() {
     return [
-      'saveComposeAppState_(input_)',
+      'debounceSaveComposeAppState_(input_)',
     ];
   }
 
   private apiProxy_: ComposeApiProxy = ComposeApiProxyImpl.getInstance();
+  private eventTracker_: EventTracker = new EventTracker();
   private router_: ComposeDialogCallbackRouter = this.apiProxy_.getRouter();
   private input_: string;
   private isSubmitEnabled_: boolean;
   private loading_: boolean;
   private response_: ComposeResponse|undefined;
+  private saveAppStateDebouncer_: Debouncer;
   private selectedLength_: Length;
   private selectedTone_: Tone;
   private submitted_: boolean;
   private undoEnabled_: boolean;
+  private userHasModifiedState_: boolean = false;
 
   constructor() {
     super();
@@ -115,6 +119,27 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.router_.responseReceived.addListener((response: ComposeResponse) => {
       this.composeResponseReceived_(response);
     });
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.eventTracker_.add(document, 'visibilitychange', () => {
+      if (document.visibilityState !== 'visible') {
+        // Ensure app state is saved when hiding the dialog.
+        this.saveComposeAppState_();
+      }
+    });
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.eventTracker_.removeAll();
+  }
+
+  private debounceSaveComposeAppState_() {
+    this.saveAppStateDebouncer_ = Debouncer.debounce(
+        this.saveAppStateDebouncer_, microTask,
+        () => this.saveComposeAppState_());
   }
 
   private getInitialState_() {
@@ -143,7 +168,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
 
     this.submitted_ = true;
-    this.saveComposeAppState_();  // Ensure state is saved before compose call.
     this.compose_();
   }
 
@@ -152,12 +176,14 @@ export class ComposeAppElement extends ComposeAppElementBase {
   }
 
   private onInputChanged_() {
+    this.userHasModifiedState_ = true;
     this.isSubmitEnabled_ = this.$.textarea.validate();
   }
 
   private compose_() {
     this.loading_ = true;
     this.response_ = undefined;
+    this.saveComposeAppState_();  // Ensure state is saved before compose call.
     this.apiProxy_.compose(
         {
           length: this.selectedLength_,
@@ -203,8 +229,18 @@ export class ComposeAppElement extends ComposeAppElementBase {
   }
 
   private saveComposeAppState_() {
-    const state: ComposeAppState = {input: this.input_};
-    // TODO(johntlee): Throttle this call or parts of this call (eg. input).
+    if (this.saveAppStateDebouncer_?.isActive()) {
+      this.saveAppStateDebouncer_.flush();
+      return;
+    }
+
+    if (!this.userHasModifiedState_) {
+      return;
+    }
+
+    const state: ComposeAppState = {
+      input: this.input_,
+    };
     this.apiProxy_.saveWebuiState(JSON.stringify(state));
   }
 

@@ -246,10 +246,27 @@ suite('ComposeApp', () => {
     assertEquals(JSON.stringify({input: 'Here is my input'}), savedState);
     testProxy.resetResolver('saveWebuiState');
 
+    // Visibilitychange event saves state.
+    Object.defineProperty(
+        document, 'visibilityState', {value: 'hidden', writable: true});
+    document.dispatchEvent(new CustomEvent('visibilitychange'));
+    savedState = await testProxy.whenCalled('saveWebuiState');
+    assertEquals(JSON.stringify({input: 'Here is my input'}), savedState);
+    testProxy.resetResolver('saveWebuiState');
+
     // Hitting submit saves state.
     app.$.submitButton.click();
     savedState = await testProxy.whenCalled('saveWebuiState');
     assertEquals(JSON.stringify({input: 'Here is my input'}), savedState);
+  });
+
+  test('DebouncesSavingState', async () => {
+    mockInput('Here is my input');
+    mockInput('Here is my input 2');
+    await flushTasks();
+    const savedState = await testProxy.whenCalled('saveWebuiState');
+    assertEquals(1, testProxy.getCallCount('saveWebuiState'));
+    assertEquals(JSON.stringify({input: 'Here is my input 2'}), savedState);
   });
 
   test('CloseButton', async () => {
