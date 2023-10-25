@@ -34,10 +34,6 @@ namespace gfx {
 class RectF;
 }  // namespace gfx
 
-namespace password_manager {
-class ContentPasswordManagerDriver;
-}
-
 namespace ui {
 class AXPlatformNode;
 }
@@ -46,7 +42,6 @@ namespace autofill {
 
 class AutofillPopupDelegate;
 class AutofillPopupView;
-class ContentAutofillDriver;
 
 // Sub-popups and their parent popups are connected by providing children
 // with links to their parents. This interface defines the API exposed by
@@ -221,12 +216,6 @@ class AutofillPopupControllerImpl
   // trick the user into accepting some suggestion (crbug.com/1239496). In such
   // a case, we should hide the popup.
   bool IsMouseLocked() const;
-
-  // Casts `delegate_->GetDriver()` to ContentAutofillDriver or
-  // ContentPasswordManagerDriver, respectively.
-  absl::variant<ContentAutofillDriver*,
-                password_manager::ContentPasswordManagerDriver*>
-  GetDriver();
 
   // ExpandablePopupParentControllerImpl:
   base::WeakPtr<AutofillPopupView> CreateSubPopupView(
