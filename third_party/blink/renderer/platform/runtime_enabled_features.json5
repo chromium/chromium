@@ -3956,7 +3956,7 @@
     },
     {
       name: "URLCanParse",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "URLPatternCompareComponent",

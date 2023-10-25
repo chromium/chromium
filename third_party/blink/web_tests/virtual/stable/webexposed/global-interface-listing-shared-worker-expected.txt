@@ -1308,6 +1308,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method isScript
 [Worker]     method isScriptURL
 [Worker] interface URL
+[Worker]     static method canParse
 [Worker]     static method createObjectURL
 [Worker]     static method revokeObjectURL
 [Worker]     attribute @@toStringTag
