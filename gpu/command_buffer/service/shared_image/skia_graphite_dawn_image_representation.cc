@@ -56,9 +56,16 @@ SkiaGraphiteDawnImageRepresentation::Create(
     MemoryTypeTracker* tracker,
     int plane_index,
     bool is_yuv_plane) {
+  const bool is_dcomp_surface =
+      backing->usage() & SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE;
+  const bool supports_multiplanar_rendering =
+      SupportsMultiplanarRendering(context_state.get());
+  wgpu::TextureUsage supported_tex_usages = GetSupportedDawnTextureUsage(
+      is_yuv_plane, is_dcomp_surface, supports_multiplanar_rendering);
   return base::WrapUnique(new SkiaGraphiteDawnImageRepresentation(
       std::move(dawn_representation), recorder, std::move(context_state),
-      manager, backing, tracker, plane_index, is_yuv_plane));
+      manager, backing, tracker, plane_index, is_yuv_plane,
+      supported_tex_usages));
 }
 
 SkiaGraphiteDawnImageRepresentation::SkiaGraphiteDawnImageRepresentation(
@@ -69,13 +76,15 @@ SkiaGraphiteDawnImageRepresentation::SkiaGraphiteDawnImageRepresentation(
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
     int plane_index,
-    bool is_yuv_plane)
+    bool is_yuv_plane,
+    wgpu::TextureUsage supported_tex_usages)
     : SkiaGraphiteImageRepresentation(manager, backing, tracker),
       dawn_representation_(std::move(dawn_representation)),
       context_state_(std::move(context_state)),
       recorder_(recorder),
       plane_index_(plane_index),
-      is_yuv_plane_(is_yuv_plane) {
+      is_yuv_plane_(is_yuv_plane),
+      supported_tex_usages_(supported_tex_usages) {
   CHECK(dawn_representation_);
 }
 
@@ -134,12 +143,8 @@ SkiaGraphiteDawnImageRepresentation::BeginWriteAccess(
     const gfx::Rect& update_rect) {
   CHECK_EQ(mode_, RepresentationAccessMode::kNone);
   CHECK(!dawn_scoped_access_);
-  bool is_dcomp_surface = usage() & SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE;
-  wgpu::TextureUsage wgpu_usage = GetSupportedDawnTextureUsage(
-      is_yuv_plane_, is_dcomp_surface,
-      SupportsMultiplanarRendering(context_state_.get()));
   dawn_scoped_access_ = dawn_representation_->BeginScopedAccess(
-      wgpu_usage, AllowUnclearedAccess::kYes, update_rect);
+      supported_tex_usages_, AllowUnclearedAccess::kYes, update_rect);
   if (!dawn_scoped_access_) {
     DLOG(ERROR) << "Could not create DawnImageRepresentation::ScopedAccess";
     return {};
@@ -179,12 +184,8 @@ SkiaGraphiteDawnImageRepresentation::BeginWriteAccess() {
   CHECK_EQ(mode_, RepresentationAccessMode::kNone);
   CHECK(!dawn_scoped_access_);
 
-  bool is_dcomp_surface = usage() & SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE;
   dawn_scoped_access_ = dawn_representation_->BeginScopedAccess(
-      GetSupportedDawnTextureUsage(
-          is_yuv_plane_, is_dcomp_surface,
-          SupportsMultiplanarRendering(context_state_.get())),
-      AllowUnclearedAccess::kYes);
+      supported_tex_usages_, AllowUnclearedAccess::kYes);
   if (!dawn_scoped_access_) {
     DLOG(ERROR) << "Could not create DawnImageRepresentation::ScopedAccess";
     return {};
@@ -206,13 +207,8 @@ SkiaGraphiteDawnImageRepresentation::BeginReadAccess() {
   CHECK_EQ(mode_, RepresentationAccessMode::kNone);
   CHECK(!dawn_scoped_access_);
 
-  bool is_dcomp_surface = usage() & SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE;
   dawn_scoped_access_ = dawn_representation_->BeginScopedAccess(
-      GetSupportedDawnTextureUsage(
-          is_yuv_plane_, is_dcomp_surface,
-          SupportsMultiplanarRendering(context_state_.get())),
-      AllowUnclearedAccess::kNo);
-
+      supported_tex_usages_, AllowUnclearedAccess::kNo);
   if (!dawn_scoped_access_) {
     DLOG(ERROR) << "Could not create DawnImageRepresentation::ScopedAccess";
     return {};

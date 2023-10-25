@@ -46,7 +46,8 @@ class GPU_GLES2_EXPORT SkiaGraphiteDawnImageRepresentation
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
       int plane_index,
-      bool is_yuv_plane);
+      bool is_yuv_plane,
+      wgpu::TextureUsage supported_tex_usages);
 
   std::vector<skgpu::graphite::BackendTexture> CreateBackendTextures(
       wgpu::Texture texture);
@@ -57,6 +58,7 @@ class GPU_GLES2_EXPORT SkiaGraphiteDawnImageRepresentation
   const raw_ptr<skgpu::graphite::Recorder> recorder_;
   const int plane_index_;
   const bool is_yuv_plane_;
+  const wgpu::TextureUsage supported_tex_usages_;
   RepresentationAccessMode mode_ = RepresentationAccessMode::kNone;
   std::vector<wgpu::TextureView> plane_views_;
 };
