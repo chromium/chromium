@@ -3510,6 +3510,78 @@ TEST_P(SpdyNetworkTransactionTest, NetLog) {
 
   ASSERT_TRUE((*header_list)[4].is_string());
   EXPECT_EQ("user-agent: Chrome", (*header_list)[4].GetString());
+
+  pos = ExpectLogContainsSomewhere(entries, 0,
+                                   NetLogEventType::HTTP2_SESSION_RECV_HEADERS,
+                                   NetLogEventPhase::NONE);
+  ASSERT_TRUE(entries[pos].HasParams());
+  absl::optional<bool> fin = entries[pos].params.FindBool("fin");
+  ASSERT_TRUE(fin.has_value());
+  EXPECT_FALSE(*fin);
+
+  // DATA frame with END_STREAM is logged as two HTTP2_SESSION_RECV_DATA events:
+  //     the first with `fin == false`,
+  //     the second with `length = 0` and `fin = true`.
+  pos = ExpectLogContainsSomewhere(entries, 0,
+                                   NetLogEventType::HTTP2_SESSION_RECV_DATA,
+                                   NetLogEventPhase::NONE);
+  ASSERT_TRUE(entries[pos].HasParams());
+  absl::optional<int> size = entries[pos].params.FindInt("size");
+  ASSERT_TRUE(size.has_value());
+  EXPECT_EQ(static_cast<int>(strlen("hello!")), *size);
+  fin = entries[pos].params.FindBool("fin");
+  ASSERT_TRUE(fin.has_value());
+  EXPECT_FALSE(*fin);
+
+  pos = ExpectLogContainsSomewhereAfter(
+      entries, pos + 1, NetLogEventType::HTTP2_SESSION_RECV_DATA,
+      NetLogEventPhase::NONE);
+  ASSERT_TRUE(entries[pos].HasParams());
+  size = entries[pos].params.FindInt("size");
+  ASSERT_TRUE(size.has_value());
+  EXPECT_EQ(0, *size);
+  fin = entries[pos].params.FindBool("fin");
+  ASSERT_TRUE(fin.has_value());
+  EXPECT_TRUE(*fin);
+}
+
+TEST_P(SpdyNetworkTransactionTest, NetLogForResponseWithNoBody) {
+  spdy::SpdySerializedFrame req(
+      spdy_util_.ConstructSpdyGet(nullptr, 0, 1, LOWEST));
+  MockWrite writes[] = {CreateMockWrite(req, 0)};
+
+  spdy::Http2HeaderBlock response_headers;
+  response_headers[spdy::kHttp2StatusHeader] = "200";
+  response_headers["hello"] = "bye";
+  spdy::SpdySerializedFrame resp(spdy_util_.ConstructSpdyResponseHeaders(
+      1, std::move(response_headers), /* fin = */ true));
+  MockRead reads[] = {CreateMockRead(resp, 1), MockRead(ASYNC, 0, 2)};
+
+  RecordingNetLogObserver net_log_observer;
+
+  SequencedSocketData data(reads, writes);
+  NormalSpdyTransactionHelper helper(
+      request_, DEFAULT_PRIORITY,
+      NetLogWithSource::Make(NetLogSourceType::NONE), nullptr);
+  helper.RunToCompletion(&data);
+  TransactionHelperResult out = helper.output();
+  EXPECT_THAT(out.rv, IsOk());
+  EXPECT_EQ("HTTP/1.1 200", out.status_line);
+  EXPECT_EQ("", out.response_data);
+
+  // Incoming HEADERS frame has END_STREAM (fin) flag set,
+  // and there is no incoming DATA frame.
+  auto entries = net_log_observer.GetEntries();
+  int pos = ExpectLogContainsSomewhere(
+      entries, 0, NetLogEventType::HTTP2_SESSION_RECV_HEADERS,
+      NetLogEventPhase::NONE);
+  ASSERT_TRUE(entries[pos].HasParams());
+  absl::optional<bool> fin = entries[pos].params.FindBool("fin");
+  ASSERT_TRUE(fin.has_value());
+  EXPECT_TRUE(*fin);
+
+  EXPECT_FALSE(LogContainsEntryWithType(
+      entries, 0, NetLogEventType::HTTP2_SESSION_RECV_DATA));
 }
 
 // Since we buffer the IO from the stream to the renderer, this test verifies
