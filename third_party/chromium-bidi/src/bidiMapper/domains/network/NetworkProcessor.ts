@@ -19,7 +19,6 @@ import type Protocol from 'devtools-protocol';
 import {
   Network,
   type EmptyResult,
-  UnknownCommandException,
   NoSuchRequestException,
   InvalidArgumentException,
 } from '../../../protocol/protocol.js';
@@ -136,8 +135,19 @@ export class NetworkProcessor {
     return {};
   }
 
-  continueWithAuth(_params: Network.ContinueWithAuthParameters): EmptyResult {
-    throw new UnknownCommandException('Not implemented yet.');
+  continueWithAuth(params: Network.ContinueWithAuthParameters): EmptyResult {
+    const networkId = params.request;
+    const {phase} = this.#getBlockedRequest(networkId);
+
+    if (phase !== Network.InterceptPhase.AuthRequired) {
+      throw new InvalidArgumentException(
+        `Blocked request for network id '${networkId}' is not in 'AuthRequired' phase`
+      );
+    }
+    // TODO: https://w3c.github.io/webdriver-bidi/#command-network-continueWithAuth
+    // Implement remaining steps 6-8.
+
+    return {};
   }
 
   async failRequest(
