@@ -33,6 +33,7 @@
 #include "components/autofill/core/browser/payments/payments_requests/unmask_card_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/update_virtual_card_enrollment_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/upload_card_request.h"
+#include "components/autofill/core/browser/payments/payments_requests/upload_iban_request.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -211,6 +212,11 @@ PaymentsClient::UploadRequestDetails::UploadRequestDetails(
     const UploadRequestDetails& other) = default;
 PaymentsClient::UploadRequestDetails::~UploadRequestDetails() = default;
 
+PaymentsClient::UploadIbanRequestDetails::UploadIbanRequestDetails() = default;
+PaymentsClient::UploadIbanRequestDetails::UploadIbanRequestDetails(
+    const UploadIbanRequestDetails& other) = default;
+PaymentsClient::UploadIbanRequestDetails::~UploadIbanRequestDetails() = default;
+
 PaymentsClient::MigrationRequestDetails::MigrationRequestDetails() = default;
 PaymentsClient::MigrationRequestDetails::MigrationRequestDetails(
     const MigrationRequestDetails& other) = default;
@@ -342,6 +348,15 @@ void PaymentsClient::GetIbanUploadDetails(
   IssueRequest(std::make_unique<GetIbanUploadDetailsRequest>(
       account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
       app_locale, billing_customer_number, billable_service_number,
+      std::move(callback)));
+}
+
+void PaymentsClient::UploadIban(
+    const UploadIbanRequestDetails& details,
+    base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback) {
+  IssueRequest(std::make_unique<UploadIbanRequest>(
+      details,
+      account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
       std::move(callback)));
 }
 
