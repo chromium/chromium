@@ -42,13 +42,13 @@
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/mock_data_retriever.h"
+#include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
-#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -99,6 +99,10 @@ using ::testing::UnorderedElementsAre;
 using ::testing::VariantWith;
 using ::testing::WithArg;
 
+constexpr base::StringPiece kManifestPath =
+    "/.well-known/_generated_install_page.html";
+constexpr base::StringPiece kIconPath = "/icon.png";
+
 IsolatedWebAppUrlInfo CreateRandomIsolatedWebAppUrlInfo() {
   web_package::SignedWebBundleId signed_web_bundle_id =
       web_package::SignedWebBundleId::CreateRandomForDevelopment();
@@ -129,51 +133,19 @@ blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url) {
   manifest->display = DisplayMode::kStandalone;
   manifest->short_name = u"test short manifest name";
   manifest->version = u"1.0.0";
+
+  blink::Manifest::ImageResource icon;
+  icon.src = application_url.Resolve(kIconPath);
+  icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
+  icon.type = u"image/png";
+  icon.sizes = {gfx::Size(256, 256)};
+  manifest->icons.push_back(icon);
+
   return manifest;
 }
 
 GURL CreateDefaultManifestURL(const GURL& application_url) {
   return application_url.Resolve("/manifest.webmanifest");
-}
-
-auto ReturnManifest(const blink::mojom::ManifestPtr& manifest,
-                    const GURL& manifest_url,
-                    webapps::InstallableStatusCode error_code =
-                        webapps::InstallableStatusCode::NO_ERROR_DETECTED) {
-  constexpr int kCallbackArgumentIndex = 2;
-
-  return DoAll(
-      WithArg<kCallbackArgumentIndex>(
-          [](const WebAppDataRetriever::CheckInstallabilityCallback& callback) {
-            DCHECK(!callback.is_null());
-          }),
-      RunOnceCallback<kCallbackArgumentIndex>(
-          /*manifest=*/manifest.Clone(),
-          /*manifest_url=*/manifest_url,
-          /*valid_manifest_for_web_app=*/true, error_code));
-}
-
-std::unique_ptr<MockDataRetriever> CreateDefaultDataRetriever(
-    const GURL& application_url) {
-  std::unique_ptr<MockDataRetriever> fake_data_retriever =
-      std::make_unique<NiceMock<MockDataRetriever>>();
-
-  EXPECT_CALL(*fake_data_retriever, GetWebAppInstallInfo).Times(0);
-
-  ON_CALL(*fake_data_retriever, CheckInstallabilityAndRetrieveManifest)
-      .WillByDefault(ReturnManifest(CreateDefaultManifest(application_url),
-                                    CreateDefaultManifestURL(application_url)));
-
-  std::map<GURL, std::vector<SkBitmap>> icons = {};
-
-  using HttpStatusCode = int;
-  std::map<GURL, HttpStatusCode> http_result = {};
-
-  ON_CALL(*fake_data_retriever, GetIcons(_, _, _, _, IsNotNullCallback()))
-      .WillByDefault(RunOnceCallback<4>(IconsDownloadedResult::kCompleted,
-                                        std::move(icons), http_result));
-
-  return fake_data_retriever;
 }
 
 // TODO(b/288395295): Refactor this test to use `FakeWebContentsManager` and
@@ -205,42 +177,48 @@ class InstallIsolatedWebAppCommandTest : public WebAppTest {
     fake_provider().command_manager().ScheduleCommand(std::move(command));
   }
 
+  std::pair<FakeWebContentsManager::FakePageState&,
+            FakeWebContentsManager::FakeIconState&>
+  SetUpPageAndIconStates(const IsolatedWebAppUrlInfo& url_info) {
+    GURL application_url = url_info.origin().GetURL();
+    auto& page_state = web_contents_manager().GetOrCreatePageState(
+        application_url.Resolve(kManifestPath));
+    page_state.url_load_result = WebAppUrlLoader::Result::kUrlLoaded;
+    page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
+
+    page_state.manifest_url = CreateDefaultManifestURL(application_url);
+    page_state.valid_manifest_for_web_app = true;
+    page_state.opt_manifest = CreateDefaultManifest(application_url);
+
+    auto& icon_state = web_contents_manager().GetOrCreateIconState(
+        application_url.Resolve(kIconPath));
+    icon_state.bitmaps = {web_app::CreateSquareIcon(32, SK_ColorRED)};
+
+    return {page_state, icon_state};
+  }
+
   struct Parameters {
     IsolatedWebAppUrlInfo url_info;
-    WebAppUrlLoader::Result install_page_url_loader_result =
-        WebAppUrlLoader::Result::kUrlLoaded;
-    std::unique_ptr<content::WebContents> web_contents;
     absl::optional<IsolatedWebAppLocation> location;
     absl::optional<base::Version> expected_version;
-    raw_ptr<WebAppInstallFinalizer> install_finalizer = nullptr;
     base::expected<void, UnusableSwbnFileError> bundle_status = base::ok();
   };
 
   base::expected<InstallIsolatedWebAppCommandSuccess,
                  InstallIsolatedWebAppCommandError>
-  ExecuteCommand(
-      Parameters parameters,
-      std::unique_ptr<WebAppDataRetriever> data_retriever = nullptr) {
+  ExecuteCommand(Parameters parameters) {
     base::test::TestFuture<base::expected<InstallIsolatedWebAppCommandSuccess,
                                           InstallIsolatedWebAppCommandError>>
         test_future;
 
     std::unique_ptr<content::WebContents> web_contents =
-        std::move(parameters.web_contents);
-    if (web_contents == nullptr) {
-      web_contents = content::WebContents::Create(
-          content::WebContents::CreateParams(profile()));
-    }
-
-    auto& page_state = web_contents_manager().GetOrCreatePageState(
-        parameters.url_info.origin().GetURL().Resolve(
-            ".well-known/_generated_install_page.html"));
-    page_state.url_load_result = parameters.install_page_url_loader_result;
+        content::WebContents::Create(
+            content::WebContents::CreateParams(profile()));
 
     auto command = CreateCommand(
         parameters.url_info, std::move(web_contents), parameters.location,
-        parameters.expected_version, std::move(data_retriever),
-        test_future.GetCallback(), std::move(parameters.bundle_status));
+        parameters.expected_version, test_future.GetCallback(),
+        std::move(parameters.bundle_status));
 
     ScheduleCommand(std::move(command));
     return test_future.Get();
@@ -251,7 +229,6 @@ class InstallIsolatedWebAppCommandTest : public WebAppTest {
       std::unique_ptr<content::WebContents> web_contents,
       absl::optional<IsolatedWebAppLocation> location,
       absl::optional<base::Version> expected_version,
-      std::unique_ptr<WebAppDataRetriever> data_retriever,
       base::OnceCallback<
           void(base::expected<InstallIsolatedWebAppCommandSuccess,
                               InstallIsolatedWebAppCommandError>)> callback,
@@ -260,12 +237,8 @@ class InstallIsolatedWebAppCommandTest : public WebAppTest {
       location = CreateDevProxyLocation();
     }
 
-    if (data_retriever == nullptr) {
-      data_retriever = CreateDefaultDataRetriever(url_info.origin().GetURL());
-    }
-
     auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
-        url_info, std::move(data_retriever),
+        url_info, web_contents_manager().CreateDataRetriever(),
         std::make_unique<FakeResponseReaderFactory>(std::move(bundle_status)));
 
     return std::make_unique<InstallIsolatedWebAppCommand>(
@@ -275,38 +248,16 @@ class InstallIsolatedWebAppCommandTest : public WebAppTest {
         std::move(command_helper));
   }
 
-  base::expected<InstallIsolatedWebAppCommandSuccess,
-                 InstallIsolatedWebAppCommandError>
-  ExecuteCommandWithManifest(const IsolatedWebAppUrlInfo& url_info,
-                             const blink::mojom::ManifestPtr& manifest,
-                             absl::optional<IsolatedWebAppLocation> location =
-                                 absl::optional<IsolatedWebAppLocation>()) {
-    GURL application_url = url_info.origin().GetURL();
-    std::unique_ptr<MockDataRetriever> fake_data_retriever =
-        CreateDefaultDataRetriever(application_url);
-
-    ON_CALL(*fake_data_retriever, CheckInstallabilityAndRetrieveManifest)
-        .WillByDefault(ReturnManifest(
-            manifest, CreateDefaultManifestURL(application_url)));
-
-    return ExecuteCommand(
-        Parameters{
-            .url_info = url_info,
-            .location = location,
-        },
-        std::move(fake_data_retriever));
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(InstallIsolatedWebAppCommandTest, PropagateErrorWhenURLLoaderFails) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  EXPECT_THAT(ExecuteCommand(Parameters{
-                  .url_info = url_info,
-                  .install_page_url_loader_result =
-                      WebAppUrlLoader::Result::kFailedErrorPageLoaded}),
+  auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
+  page_state.url_load_result = WebAppUrlLoader::Result::kFailedErrorPageLoaded;
+
+  EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}),
               ErrorIs(Field(&InstallIsolatedWebAppCommandError::message,
                             HasSubstr("Error during URL loading: "))));
 }
@@ -314,11 +265,13 @@ TEST_F(InstallIsolatedWebAppCommandTest, PropagateErrorWhenURLLoaderFails) {
 TEST_F(InstallIsolatedWebAppCommandTest,
        PropagateErrorWhenURLLoaderFailsWithDestroyedWebContentsError) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
+  auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
+  page_state.url_load_result =
+      WebAppUrlLoader::Result::kFailedWebContentsDestroyed;
+
   EXPECT_THAT(
       ExecuteCommand(Parameters{
           .url_info = url_info,
-          .install_page_url_loader_result =
-              WebAppUrlLoaderResult::kFailedWebContentsDestroyed,
       }),
       ErrorIs(Field(
           &InstallIsolatedWebAppCommandError::message,
@@ -328,11 +281,12 @@ TEST_F(InstallIsolatedWebAppCommandTest,
 TEST_F(InstallIsolatedWebAppCommandTest,
        InstallationSucceedesWhenFinalizerReturnSuccessNewInstall) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
+  SetUpPageAndIconStates(url_info);
 
-  EXPECT_TRUE(ExecuteCommand(Parameters{
-                                 .url_info = url_info,
-                             })
-                  .has_value());
+  EXPECT_THAT(ExecuteCommand(Parameters{
+                  .url_info = url_info,
+              }),
+              HasValue());
 }
 
 TEST_F(InstallIsolatedWebAppCommandTest,
@@ -341,6 +295,7 @@ TEST_F(InstallIsolatedWebAppCommandTest,
   scoped_feature_list.InitAndDisableFeature(features::kIsolatedWebAppDevMode);
 
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
+  SetUpPageAndIconStates(url_info);
   EXPECT_THAT(
       ExecuteCommand(Parameters{.url_info = url_info}),
       ErrorIs(
@@ -351,16 +306,12 @@ TEST_F(InstallIsolatedWebAppCommandTest,
 TEST_F(InstallIsolatedWebAppCommandTest,
        InstallationFinalizedWithIsolatedWebAppDevInstallInstallSource) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
+  SetUpPageAndIconStates(url_info);
 
-  std::unique_ptr<MockDataRetriever> fake_data_retriever =
-      CreateDefaultDataRetriever(url_info.origin().GetURL());
-
-  EXPECT_TRUE(ExecuteCommand(
-                  Parameters{
-                      .url_info = url_info,
-                  },
-                  std::move(fake_data_retriever))
-                  .has_value());
+  EXPECT_THAT(ExecuteCommand(Parameters{
+                  .url_info = url_info,
+              }),
+              HasValue());
 
   using InstallSource = webapps::WebappInstallSource;
 
@@ -376,31 +327,26 @@ TEST_F(InstallIsolatedWebAppCommandTest,
 TEST_F(InstallIsolatedWebAppCommandTest,
        InstallationFailsWhenAppIsNotInstallable) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  std::unique_ptr<MockDataRetriever> fake_data_retriever =
-      CreateDefaultDataRetriever(url_info.origin().GetURL());
+  auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
+  page_state.manifest_url = GURL("http://test-url-example.com/manifest.json");
+  page_state.opt_manifest = blink::mojom::Manifest::New();
+  page_state.error_code = webapps::InstallableStatusCode::NO_MANIFEST;
 
-  ON_CALL(*fake_data_retriever, CheckInstallabilityAndRetrieveManifest)
-      .WillByDefault(
-          ReturnManifest(blink::mojom::Manifest::New(),
-                         GURL{"http://test-url-example.com/manifest.json"},
-                         webapps::InstallableStatusCode::NO_MANIFEST));
-
-  EXPECT_THAT(ExecuteCommand(
-                  Parameters{
-                      .url_info = url_info,
-                  },
-                  std::move(fake_data_retriever)),
+  EXPECT_THAT(ExecuteCommand(Parameters{
+                  .url_info = url_info,
+              }),
               ErrorIs(Field(&InstallIsolatedWebAppCommandError::message,
                             HasSubstr("App is not installable"))));
 }
 
 TEST_F(InstallIsolatedWebAppCommandTest, PendingUpdateInfoIsEmpty) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
+  SetUpPageAndIconStates(url_info);
 
-  EXPECT_TRUE(ExecuteCommand(Parameters{
-                                 .url_info = url_info,
-                             })
-                  .has_value());
+  EXPECT_THAT(ExecuteCommand(Parameters{
+                  .url_info = url_info,
+              }),
+              HasValue());
   EXPECT_THAT(web_app_registrar().GetAppById(url_info.app_id()),
               Pointee(Property(
                   &WebApp::isolation_data,
@@ -411,31 +357,29 @@ TEST_F(InstallIsolatedWebAppCommandTest, PendingUpdateInfoIsEmpty) {
 TEST_F(InstallIsolatedWebAppCommandTest,
        InstallationFailsWhenAppVersionDoesNotMatchExpectedVersion) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  std::unique_ptr<MockDataRetriever> fake_data_retriever =
-      CreateDefaultDataRetriever(url_info.origin().GetURL());
+  SetUpPageAndIconStates(url_info);
 
   EXPECT_THAT(
       ExecuteCommand(Parameters{.url_info = url_info,
-                                .expected_version = base::Version("99.99.99")},
-                     std::move(fake_data_retriever)),
+                                .expected_version = base::Version("99.99.99")}),
       ErrorIs(Field(
           &InstallIsolatedWebAppCommandError::message,
           HasSubstr("does not match the version provided in the manifest"))));
 }
 
 TEST_F(InstallIsolatedWebAppCommandTest, CommandLocksOnAppId) {
+  IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
+  SetUpPageAndIconStates(url_info);
+
   base::test::TestFuture<base::expected<InstallIsolatedWebAppCommandSuccess,
                                         InstallIsolatedWebAppCommandError>>
       test_future;
-
-  IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  auto command =
-      CreateCommand(url_info,
-                    content::WebContents::Create(
-                        content::WebContents::CreateParams(profile())),
-                    CreateDevProxyLocation(),
-                    /*expected_version=*/absl::nullopt,
-                    /*data_retriever=*/nullptr, test_future.GetCallback());
+  auto command = CreateCommand(
+      url_info,
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile())),
+      CreateDevProxyLocation(),
+      /*expected_version=*/absl::nullopt, test_future.GetCallback());
   EXPECT_THAT(
       command->lock_description(),
       AllOf(Property(&LockDescription::type, Eq(LockDescription::Type::kApp)),
@@ -445,16 +389,15 @@ TEST_F(InstallIsolatedWebAppCommandTest, CommandLocksOnAppId) {
 
 TEST_F(InstallIsolatedWebAppCommandTest, LocationSentToFinalizer) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
+  SetUpPageAndIconStates(url_info);
 
-  EXPECT_TRUE(
-      ExecuteCommand(
-          Parameters{
-              .url_info = url_info,
-              .location =
-                  DevModeProxy{.proxy_url = url::Origin::Create(
-                                   GURL("http://some-testing-proxy-url.com/"))},
-          })
-          .has_value());
+  EXPECT_THAT(
+      ExecuteCommand(Parameters{
+          .url_info = url_info,
+          .location = DevModeProxy{.proxy_url = url::Origin::Create(GURL(
+                                       "http://some-testing-proxy-url.com/"))},
+      }),
+      HasValue());
 
   EXPECT_THAT(web_app_registrar().GetAppById(url_info.app_id()),
               Pointee(AllOf(Property(
@@ -470,8 +413,9 @@ TEST_F(InstallIsolatedWebAppCommandTest, LocationSentToFinalizer) {
 TEST_F(InstallIsolatedWebAppCommandTest,
        CreatesStorageParitionDuringInstallation) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
+  SetUpPageAndIconStates(url_info);
 
-  EXPECT_TRUE(ExecuteCommand(Parameters{.url_info = url_info}).has_value());
+  EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}), HasValue());
 
   EXPECT_THAT(profile()->GetStoragePartition(
                   url_info.storage_partition_config(profile()),
@@ -481,10 +425,12 @@ TEST_F(InstallIsolatedWebAppCommandTest,
 
 TEST_F(InstallIsolatedWebAppCommandTest, UsersCanDeleteIsolatedApp) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  ASSERT_TRUE(ExecuteCommand(Parameters{
-                                 .url_info = url_info,
-                             })
-                  .has_value());
+  SetUpPageAndIconStates(url_info);
+
+  EXPECT_THAT(ExecuteCommand(Parameters{
+                  .url_info = url_info,
+              }),
+              HasValue());
 
   EXPECT_THAT(web_app_registrar().GetAppById(url_info.app_id()),
               Pointee(Property("CanUserUninstallWebApp",
@@ -494,6 +440,7 @@ TEST_F(InstallIsolatedWebAppCommandTest, UsersCanDeleteIsolatedApp) {
 TEST_F(InstallIsolatedWebAppCommandTest,
        CreatesStoragePartitionBeforeUrlLoading) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
+  SetUpPageAndIconStates(url_info);
 
   content::StoragePartition* storage_partition_during_url_loading = nullptr;
   web_contents_manager().TrackLoadUrlCalls(base::BindLambdaForTesting(
@@ -501,8 +448,7 @@ TEST_F(InstallIsolatedWebAppCommandTest,
           content::WebContents* unused_web_contents,
           WebAppUrlLoader::UrlComparison unused_url_comparison) {
         EXPECT_THAT(load_url_params.url,
-                    Eq(url_info.origin().GetURL().Resolve(
-                        ".well-known/_generated_install_page.html")));
+                    Eq(url_info.origin().GetURL().Resolve(kManifestPath)));
         storage_partition_during_url_loading = profile()->GetStoragePartition(
             url_info.storage_partition_config(profile()),
             /*can_create=*/false);
@@ -513,10 +459,10 @@ TEST_F(InstallIsolatedWebAppCommandTest,
                   /*can_create=*/false),
               IsNull());
 
-  EXPECT_TRUE(ExecuteCommand({
-                                 .url_info = url_info,
-                             })
-                  .has_value());
+  EXPECT_THAT(ExecuteCommand({
+                  .url_info = url_info,
+              }),
+              HasValue());
 
   EXPECT_THAT(storage_partition_during_url_loading, NotNull());
 }
@@ -527,11 +473,9 @@ using InstallIsolatedWebAppCommandManifestTest =
 TEST_F(InstallIsolatedWebAppCommandManifestTest,
        PassesManifestIdToFinalizerWhenManifestIdIsEmpty) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  blink::mojom::ManifestPtr manifest =
-      CreateDefaultManifest(url_info.origin().GetURL());
+  SetUpPageAndIconStates(url_info);
 
-  EXPECT_TRUE(
-      ExecuteCommandWithManifest(url_info, manifest.Clone()).has_value());
+  EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}), HasValue());
 
   EXPECT_THAT(web_app_registrar().GetAppById(url_info.app_id()), NotNull());
 }
@@ -539,11 +483,11 @@ TEST_F(InstallIsolatedWebAppCommandManifestTest,
 TEST_F(InstallIsolatedWebAppCommandManifestTest,
        FailsWhenManifestIdIsNotEmpty) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  blink::mojom::ManifestPtr manifest =
-      CreateDefaultManifest(url_info.origin().GetURL());
-  manifest->id = url_info.origin().GetURL().Resolve("/test-manifest-id");
+  auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
+  page_state.opt_manifest->id =
+      url_info.origin().GetURL().Resolve("/test-manifest-id");
 
-  EXPECT_THAT(ExecuteCommandWithManifest(url_info, manifest.Clone()),
+  EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}),
               ErrorIs(Field(&InstallIsolatedWebAppCommandError::message,
                             HasSubstr(R"(Manifest `id` must be "/")"))));
 
@@ -553,12 +497,10 @@ TEST_F(InstallIsolatedWebAppCommandManifestTest,
 TEST_F(InstallIsolatedWebAppCommandManifestTest,
        InstalledApplicationScopeIsResolvedToRootWhenManifestScopeIsSlash) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  blink::mojom::ManifestPtr manifest =
-      CreateDefaultManifest(url_info.origin().GetURL());
-  manifest->scope = url_info.origin().GetURL().Resolve("/");
+  auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
+  page_state.opt_manifest->scope = url_info.origin().GetURL().Resolve("/");
 
-  EXPECT_TRUE(
-      ExecuteCommandWithManifest(url_info, manifest.Clone()).has_value());
+  EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}), HasValue());
 
   EXPECT_THAT(web_app_registrar().GetAppById(url_info.app_id()),
               Pointee(Property("scope", &WebApp::scope,
@@ -568,12 +510,10 @@ TEST_F(InstallIsolatedWebAppCommandManifestTest,
 TEST_F(InstallIsolatedWebAppCommandManifestTest,
        PassesManifestNameAsUntranslatedName) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  blink::mojom::ManifestPtr manifest =
-      CreateDefaultManifest(url_info.origin().GetURL());
-  manifest->name = u"test application name";
+  auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
+  page_state.opt_manifest->name = u"test application name";
 
-  EXPECT_TRUE(
-      ExecuteCommandWithManifest(url_info, manifest.Clone()).has_value());
+  EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}), HasValue());
 
   EXPECT_THAT(web_app_registrar().GetAppById(url_info.app_id()),
               Pointee(Property("untranslated_name", &WebApp::untranslated_name,
@@ -583,14 +523,11 @@ TEST_F(InstallIsolatedWebAppCommandManifestTest,
 TEST_F(InstallIsolatedWebAppCommandManifestTest,
        UseShortNameAsUntranslatedNameWhenNameIsNotPresent) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
+  auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
+  page_state.opt_manifest->name = absl::nullopt;
+  page_state.opt_manifest->short_name = u"test short name";
 
-  blink::mojom::ManifestPtr manifest =
-      CreateDefaultManifest(url_info.origin().GetURL());
-  manifest->name = absl::nullopt;
-  manifest->short_name = u"test short name";
-
-  EXPECT_TRUE(
-      ExecuteCommandWithManifest(url_info, manifest.Clone()).has_value());
+  EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}), HasValue());
 
   EXPECT_THAT(web_app_registrar().GetAppById(url_info.app_id()),
               Pointee(Property("untranslated_name", &WebApp::untranslated_name,
@@ -600,106 +537,26 @@ TEST_F(InstallIsolatedWebAppCommandManifestTest,
 TEST_F(InstallIsolatedWebAppCommandManifestTest,
        UseShortNameAsTitleWhenManifestNameIsEmpty) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  blink::mojom::ManifestPtr manifest =
-      CreateDefaultManifest(url_info.origin().GetURL());
-  manifest->name = u"";
-  manifest->short_name = u"other test short name";
+  auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
+  page_state.opt_manifest->name = u"";
+  page_state.opt_manifest->short_name = u"other test short name";
 
-  EXPECT_TRUE(
-      ExecuteCommandWithManifest(url_info, manifest.Clone()).has_value());
+  EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}), HasValue());
 
   EXPECT_THAT(web_app_registrar().GetAppById(url_info.app_id()),
               Pointee(Property("untranslated_name", &WebApp::untranslated_name,
                                Eq("other test short name"))));
 }
 
-class InstallIsolatedWebAppCommandManifestIconsTest
-    : public InstallIsolatedWebAppCommandManifestTest {
- public:
- protected:
-  GURL kSomeTestApplicationUrl = GURL("http://manifest-test-url.com");
-  void SetUp() override { InstallIsolatedWebAppCommandManifestTest::SetUp(); }
-
-  blink::mojom::ManifestPtr CreateManifest() const {
-    return CreateDefaultManifest(kSomeTestApplicationUrl);
-  }
-
-  std::unique_ptr<MockDataRetriever> CreateFakeDataRetriever(
-      blink::mojom::ManifestPtr manifest) const {
-    std::unique_ptr<MockDataRetriever> fake_data_retriever =
-        CreateDefaultDataRetriever(kSomeTestApplicationUrl);
-
-    EXPECT_CALL(*fake_data_retriever, GetWebAppInstallInfo).Times(0);
-
-    ON_CALL(*fake_data_retriever, CheckInstallabilityAndRetrieveManifest)
-        .WillByDefault(ReturnManifest(
-            manifest, CreateDefaultManifestURL(kSomeTestApplicationUrl)));
-
-    return fake_data_retriever;
-  }
-};
-
-constexpr int kImageSize = 96;
-
-SkBitmap CreateTestBitmap(SkColor color) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(kImageSize, kImageSize);
-  bitmap.eraseColor(color);
-  return bitmap;
-}
-
-blink::Manifest::ImageResource CreateImageResourceForAnyPurpose(
-    const GURL& image_src) {
-  blink::Manifest::ImageResource image;
-  image.type = u"image/png";
-  image.sizes.push_back(gfx::Size{kImageSize, kImageSize});
-  image.purpose = {
-      blink::mojom::ManifestImageResource_Purpose::ANY,
-  };
-  image.src = image_src;
-  return image;
-}
+using InstallIsolatedWebAppCommandManifestIconsTest =
+    InstallIsolatedWebAppCommandManifestTest;
 
 TEST_F(InstallIsolatedWebAppCommandManifestIconsTest,
        ManifestIconIsDownloaded) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  kSomeTestApplicationUrl = url_info.origin().GetURL();
-  GURL img_url = url_info.origin().GetURL().Resolve("icon.png");
+  SetUpPageAndIconStates(url_info);
 
-  blink::mojom::ManifestPtr manifest = CreateManifest();
-
-  manifest->icons = {CreateImageResourceForAnyPurpose(img_url)};
-
-  std::unique_ptr<MockDataRetriever> fake_data_retriever =
-      CreateFakeDataRetriever(manifest.Clone());
-
-  ON_CALL(*fake_data_retriever, CheckInstallabilityAndRetrieveManifest)
-      .WillByDefault(ReturnManifest(
-          manifest, CreateDefaultManifestURL(kSomeTestApplicationUrl)));
-
-  std::map<GURL, std::vector<SkBitmap>> icons = {{
-      img_url,
-      {CreateTestBitmap(SK_ColorRED)},
-  }};
-
-  using HttpStatusCode = int;
-  std::map<GURL, HttpStatusCode> http_result = {
-      {img_url, net::HttpStatusCode::HTTP_OK},
-  };
-
-  EXPECT_CALL(*fake_data_retriever,
-              GetIcons(_, UnorderedElementsAre(img_url),
-                       /*skip_page_favicons=*/true,
-                       /*fail_all_if_any_fail=*/true, IsNotNullCallback()))
-      .WillOnce(RunOnceCallback<4>(IconsDownloadedResult::kCompleted,
-                                   std::move(icons), http_result));
-
-  EXPECT_TRUE(ExecuteCommand(
-                  Parameters{
-                      .url_info = url_info,
-                  },
-                  std::move(fake_data_retriever))
-                  .has_value());
+  EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}), HasValue());
 
   base::test::TestFuture<std::map<SquareSizePx, SkBitmap>> test_future;
   web_app_icon_manager().ReadIconAndResize(url_info.app_id(), IconPurpose::ANY,
@@ -724,35 +581,12 @@ TEST_F(InstallIsolatedWebAppCommandManifestIconsTest,
 TEST_F(InstallIsolatedWebAppCommandManifestIconsTest,
        InstallationFailsWhenIconDownloadingFails) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  kSomeTestApplicationUrl = url_info.origin().GetURL();
-  GURL img_url = url_info.origin().GetURL().Resolve("icon.png");
-
-  blink::mojom::ManifestPtr manifest = CreateManifest();
-
-  manifest->icons = {CreateImageResourceForAnyPurpose(img_url)};
-
-  std::unique_ptr<MockDataRetriever> fake_data_retriever =
-      CreateFakeDataRetriever(manifest.Clone());
-
-  ON_CALL(*fake_data_retriever, CheckInstallabilityAndRetrieveManifest)
-      .WillByDefault(ReturnManifest(
-          manifest, CreateDefaultManifestURL(kSomeTestApplicationUrl)));
-
-  std::map<GURL, std::vector<SkBitmap>> icons = {};
-
-  using HttpStatusCode = int;
-  std::map<GURL, HttpStatusCode> http_result = {};
-
-  EXPECT_CALL(*fake_data_retriever, GetIcons(_, _, _, _, IsNotNullCallback()))
-      .WillOnce(RunOnceCallback<4>(IconsDownloadedResult::kAbortedDueToFailure,
-                                   std::move(icons), http_result));
+  auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
+  icon_state.http_status_code = net::HttpStatusCode::HTTP_NOT_FOUND;
+  icon_state.bitmaps = {};
 
   EXPECT_THAT(
-      ExecuteCommand(
-          Parameters{
-              .url_info = url_info,
-          },
-          std::move(fake_data_retriever)),
+      ExecuteCommand(Parameters{.url_info = url_info}),
       ErrorIs(Field(
           &InstallIsolatedWebAppCommandError::message,
           HasSubstr("Error during icon downloading: AbortedDueToFailure"))));
@@ -764,13 +598,14 @@ using InstallIsolatedWebAppCommandMetricsTest =
 TEST_F(InstallIsolatedWebAppCommandMetricsTest,
        ReportSuccessWhenFinishedSuccessfully) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
+  SetUpPageAndIconStates(url_info);
 
   base::HistogramTester histogram_tester;
 
-  EXPECT_TRUE(ExecuteCommand(Parameters{
-                                 .url_info = url_info,
-                             })
-                  .has_value());
+  EXPECT_THAT(ExecuteCommand(Parameters{
+                  .url_info = url_info,
+              }),
+              HasValue());
 
   EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Install.Result"),
               BucketsAre(base::Bucket(true, 1)));
@@ -778,13 +613,13 @@ TEST_F(InstallIsolatedWebAppCommandMetricsTest,
 
 TEST_F(InstallIsolatedWebAppCommandMetricsTest, ReportErrorWhenUrlLoaderFails) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
+  auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
+  page_state.url_load_result = WebAppUrlLoader::Result::kFailedErrorPageLoaded;
 
   base::HistogramTester histogram_tester;
 
   EXPECT_THAT(ExecuteCommand(Parameters{
                   .url_info = url_info,
-                  .install_page_url_loader_result =
-                      WebAppUrlLoader::Result::kFailedErrorPageLoaded,
               }),
               Not(HasValue()));
 
@@ -795,23 +630,16 @@ TEST_F(InstallIsolatedWebAppCommandMetricsTest, ReportErrorWhenUrlLoaderFails) {
 TEST_F(InstallIsolatedWebAppCommandMetricsTest,
        ReportFailureWhenAppIsNotInstallable) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-
-  std::unique_ptr<MockDataRetriever> fake_data_retriever =
-      CreateDefaultDataRetriever(url_info.origin().GetURL());
-
-  ON_CALL(*fake_data_retriever, CheckInstallabilityAndRetrieveManifest)
-      .WillByDefault(
-          ReturnManifest(blink::mojom::Manifest::New(),
-                         GURL{"http://test-url-example.com/manifest.json"},
-                         webapps::InstallableStatusCode::NO_MANIFEST));
+  auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
+  page_state.manifest_url = GURL{"http://test-url-example.com/manifest.json"};
+  page_state.opt_manifest = blink::mojom::Manifest::New();
+  page_state.error_code = webapps::InstallableStatusCode::NO_MANIFEST;
 
   base::HistogramTester histogram_tester;
 
-  EXPECT_THAT(ExecuteCommand(
-                  Parameters{
-                      .url_info = url_info,
-                  },
-                  std::move(fake_data_retriever)),
+  EXPECT_THAT(ExecuteCommand(Parameters{
+                  .url_info = url_info,
+              }),
               Not(HasValue()));
 
   EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Install.Result"),
@@ -821,23 +649,15 @@ TEST_F(InstallIsolatedWebAppCommandMetricsTest,
 TEST_F(InstallIsolatedWebAppCommandMetricsTest,
        ReportFailureWhenManifestIsNull) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-
-  std::unique_ptr<MockDataRetriever> fake_data_retriever =
-      CreateDefaultDataRetriever(url_info.origin().GetURL());
-
-  ON_CALL(*fake_data_retriever, CheckInstallabilityAndRetrieveManifest)
-      .WillByDefault(ReturnManifest(
-          /*manifest=*/nullptr,
-          CreateDefaultManifestURL(url_info.origin().GetURL()),
-          webapps::InstallableStatusCode::NO_MANIFEST));
+  auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
+  page_state.opt_manifest = nullptr;
+  page_state.error_code = webapps::InstallableStatusCode::NO_MANIFEST;
 
   base::HistogramTester histogram_tester;
 
-  EXPECT_THAT(ExecuteCommand(
-                  Parameters{
-                      .url_info = url_info,
-                  },
-                  std::move(fake_data_retriever)),
+  EXPECT_THAT(ExecuteCommand(Parameters{
+                  .url_info = url_info,
+              }),
               Not(HasValue()));
 
   EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Install.Result"),
@@ -847,13 +667,13 @@ TEST_F(InstallIsolatedWebAppCommandMetricsTest,
 TEST_F(InstallIsolatedWebAppCommandMetricsTest,
        ReportFailureWhenManifestIdIsNotEmpty) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  blink::mojom::ManifestPtr manifest =
-      CreateDefaultManifest(url_info.origin().GetURL());
-  manifest->id = url_info.origin().GetURL().Resolve("/test manifest id");
+  auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
+  page_state.opt_manifest->id =
+      url_info.origin().GetURL().Resolve("/test manifest id");
 
   base::HistogramTester histogram_tester;
 
-  EXPECT_THAT(ExecuteCommandWithManifest(url_info, manifest.Clone()),
+  EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}),
               Not(HasValue()));
   EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Install.Result"),
               BucketsAre(base::Bucket(false, 1)));
@@ -865,11 +685,11 @@ class InstallIsolatedWebAppCommandBundleTest
  public:
   InstallIsolatedWebAppCommandBundleTest()
       : is_dev_mode_(GetParam()),
-        location_(is_dev_mode_ ? IsolatedWebAppLocation(InstalledBundle{
+        location_(is_dev_mode_ ? IsolatedWebAppLocation(DevModeBundle{
                                      .path = base::FilePath{FILE_PATH_LITERAL(
                                          "/testing/path/to/a/bundle")},
                                  })
-                               : IsolatedWebAppLocation(DevModeBundle{
+                               : IsolatedWebAppLocation(InstalledBundle{
                                      .path = base::FilePath{FILE_PATH_LITERAL(
                                          "/testing/path/to/a/bundle")},
                                  })) {}
@@ -881,13 +701,14 @@ class InstallIsolatedWebAppCommandBundleTest
 
 TEST_P(InstallIsolatedWebAppCommandBundleTest, InstallsWhenThereIsNoError) {
   IsolatedWebAppUrlInfo url_info = CreateEd25519IsolatedWebAppUrlInfo();
+  SetUpPageAndIconStates(url_info);
 
-  EXPECT_TRUE(ExecuteCommand(Parameters{
-                                 .url_info = url_info,
-                                 .location = location_,
-                                 .bundle_status = base::ok(),
-                             })
-                  .has_value());
+  EXPECT_THAT(ExecuteCommand(Parameters{
+                  .url_info = url_info,
+                  .location = location_,
+                  .bundle_status = base::ok(),
+              }),
+              HasValue());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

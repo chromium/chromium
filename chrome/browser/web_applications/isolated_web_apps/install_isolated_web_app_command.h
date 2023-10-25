@@ -52,7 +52,15 @@ struct InstallIsolatedWebAppCommandSuccess {
   explicit InstallIsolatedWebAppCommandSuccess(base::Version installed_version)
       : installed_version(std::move(installed_version)) {}
   base::Version installed_version;
+
+  friend std::ostream& operator<<(
+      std::ostream& os,
+      const InstallIsolatedWebAppCommandSuccess& success) {
+    return os << "InstallIsolatedWebAppCommandSuccess { installed_version = \""
+              << success.installed_version.GetString() << "\" }.";
+  }
 };
+
 struct InstallIsolatedWebAppCommandError {
   std::string message;
 
