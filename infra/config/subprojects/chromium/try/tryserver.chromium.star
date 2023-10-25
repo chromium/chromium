@@ -37,6 +37,7 @@ try_.builder(
     mirrors = [
         "ci/android-official",
     ],
+    ssd = True,
 )
 
 try_.builder(
@@ -45,6 +46,7 @@ try_.builder(
     mirrors = [
         "ci/fuchsia-official",
     ],
+    ssd = True,
 )
 
 try_.builder(
@@ -53,6 +55,7 @@ try_.builder(
     mirrors = [
         "ci/linux-official",
     ],
+    ssd = True,
     gn_args = gn_args.config(
         configs = ["ci/linux-official", "try_builder"],
     ),
