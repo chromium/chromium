@@ -2139,6 +2139,7 @@ if (!is_android) {
       "../browser/client_hints/client_hints_browsertest.cc",
       "../browser/component_updater/component_patcher_operation_browsertest.cc",
       "../browser/component_updater/pki_metadata_component_installer_browsertest.cc",
+      "../browser/content_extraction/inner_text_browsertest.cc",
       "../browser/content_index/content_index_browsertest.cc",
       "../browser/content_language/content_language_browsertest.cc",
       "../browser/content_settings/mixed_content_settings_tab_helper_browsertest.cc",
@@ -6341,6 +6342,7 @@ test("unit_tests") {
     sources += [
       # The test is disabled for Android. The respective functionality is currently not being used on
       # Android. We should enable this test when Android becomes supported.
+      "../browser/content_extraction/inner_text_unittest.cc",
       "../browser/content_settings/one_time_permission_provider_unittest.cc",
       "../browser/metrics/power/battery_discharge_reporter_unittest.cc",
       "../browser/performance_manager/metrics/metrics_provider_desktop_unittest.cc",
