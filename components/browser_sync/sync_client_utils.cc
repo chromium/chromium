@@ -89,6 +89,35 @@ base::Time GetLatestOfTimeLastUsedOrModifiedOrCreated(
       {form.date_last_used, form.date_password_modified, form.date_created});
 }
 
+// Some of the services required for data migrations might not exist (e.g.
+// disabled for some reason) or may not have initialized (initialization is
+// ongoing or failed). In these cases, a sensible fallback is to exclude the
+// affected types. This function returns the set of types that are usable,
+// i.e. their dependent services are available and ready.
+syncer::ModelTypeSet FilterUsableTypes(
+    syncer::ModelTypeSet types,
+    password_manager::PasswordStoreInterface* profile_password_store,
+    password_manager::PasswordStoreInterface* account_password_store,
+    bookmarks::BookmarkModel* local_bookmark_model,
+    bookmarks::BookmarkModel* account_bookmark_model,
+    reading_list::DualReadingListModel* reading_list_model) {
+  if (!profile_password_store || !account_password_store ||
+      !account_password_store->IsAbleToSavePasswords()) {
+    types.Remove(syncer::PASSWORDS);
+  }
+
+  if (!local_bookmark_model || !account_bookmark_model ||
+      !local_bookmark_model->loaded() || !account_bookmark_model->loaded()) {
+    types.Remove(syncer::BOOKMARKS);
+  }
+
+  if (!reading_list_model || !reading_list_model->loaded()) {
+    types.Remove(syncer::READING_LIST);
+  }
+
+  return types;
+}
+
 }  // namespace
 
 // A class to represent individual local data query requests.
@@ -223,9 +252,13 @@ void LocalDataQueryHelper::Run(
     syncer::ModelTypeSet types,
     base::OnceCallback<void(
         std::map<syncer::ModelType, syncer::LocalDataDescription>)> callback) {
-  // Create a request to query info about local data of all `types`.
+  syncer::ModelTypeSet usable_types = FilterUsableTypes(
+      types, profile_password_store_, account_password_store_,
+      local_bookmark_model_, account_bookmark_model_, dual_reading_list_model_);
+  // Create a request to query info about local data of all `usable_types`.
   std::unique_ptr<LocalDataQueryRequest> request_ptr =
-      std::make_unique<LocalDataQueryRequest>(this, types, std::move(callback));
+      std::make_unique<LocalDataQueryRequest>(this, usable_types,
+                                              std::move(callback));
   LocalDataQueryRequest& request = *request_ptr;
   request_list_.push_back(std::move(request_ptr));
   request.Run();
@@ -397,10 +430,13 @@ LocalDataMigrationHelper::LocalDataMigrationHelper(
 LocalDataMigrationHelper::~LocalDataMigrationHelper() = default;
 
 void LocalDataMigrationHelper::Run(syncer::ModelTypeSet types) {
-  // Create a request to move all local data of all `types` to the account
-  // store.
+  syncer::ModelTypeSet usable_types = FilterUsableTypes(
+      types, profile_password_store_, account_password_store_,
+      local_bookmark_model_, account_bookmark_model_, dual_reading_list_model_);
+  // Create a request to move all local data of all `usable_types` to the
+  // account store.
   std::unique_ptr<LocalDataMigrationRequest> request_ptr =
-      std::make_unique<LocalDataMigrationRequest>(this, types);
+      std::make_unique<LocalDataMigrationRequest>(this, usable_types);
   LocalDataMigrationRequest& request = *request_ptr;
   request_list_.push_back(std::move(request_ptr));
   request.Run();

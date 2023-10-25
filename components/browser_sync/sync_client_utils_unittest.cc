@@ -24,6 +24,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace browser_sync {
 namespace {
 
 password_manager::PasswordForm CreateTestPassword(
@@ -95,18 +96,22 @@ class LocalDataQueryHelperTest : public testing::Test {
     local_reading_list_storage_ptr->TriggerLoadCompletion();
     account_reading_list_storage_ptr->TriggerLoadCompletion();
 
-    local_data_query_helper_ =
-        std::make_unique<browser_sync::LocalDataQueryHelper>(
-            /*profile_password_store=*/local_password_store_.get(),
-            /*account_password_store=*/account_password_store_.get(),
-            /*local_bookmark_model=*/local_bookmark_model_.get(),
-            /*account_bookmark_model=*/account_bookmark_model_.get(),
-            /*dual_reading_list_model=*/dual_reading_list_model_.get());
+    local_data_query_helper_ = std::make_unique<LocalDataQueryHelper>(
+        /*profile_password_store=*/local_password_store_.get(),
+        /*account_password_store=*/account_password_store_.get(),
+        /*local_bookmark_model=*/local_bookmark_model_.get(),
+        /*account_bookmark_model=*/account_bookmark_model_.get(),
+        /*dual_reading_list_model=*/dual_reading_list_model_.get());
+
+    // Make sure PasswordStore is fully initialized.
+    RunAllPendingTasks();
   }
+
   ~LocalDataQueryHelperTest() override {
     local_password_store_->ShutdownOnUIThread();
     account_password_store_->ShutdownOnUIThread();
   }
+
   void RunAllPendingTasks() { task_environment_.RunUntilIdle(); }
 
  protected:
@@ -129,7 +134,7 @@ class LocalDataQueryHelperTest : public testing::Test {
   raw_ptr<ReadingListModel> local_reading_list_model_;
   raw_ptr<ReadingListModel> account_reading_list_model_;
 
-  std::unique_ptr<browser_sync::LocalDataQueryHelper> local_data_query_helper_;
+  std::unique_ptr<LocalDataQueryHelper> local_data_query_helper_;
 };
 
 TEST_F(LocalDataQueryHelperTest, ShouldHandleZeroTypes) {
@@ -140,6 +145,30 @@ TEST_F(LocalDataQueryHelperTest, ShouldHandleZeroTypes) {
   EXPECT_CALL(callback, Run(::testing::IsEmpty()));
 
   local_data_query_helper_->Run(syncer::ModelTypeSet(), callback.Get());
+}
+
+TEST_F(LocalDataQueryHelperTest, ShouldHandleUnusableTypes) {
+  base::HistogramTester histogram_tester;
+
+  base::MockOnceCallback<void(
+      std::map<syncer::ModelType, syncer::LocalDataDescription>)>
+      callback;
+
+  EXPECT_CALL(callback, Run(::testing::IsEmpty()));
+
+  ASSERT_TRUE(task_environment_.MainThreadIsIdle());
+
+  LocalDataQueryHelper helper(
+      /*profile_password_store=*/nullptr,
+      /*account_password_store=*/nullptr,
+      /*local_bookmark_model=*/nullptr,
+      /*account_bookmark_model=*/nullptr,
+      /*dual_reading_list_model=*/nullptr);
+  helper.Run(syncer::ModelTypeSet(
+                 {syncer::PASSWORDS, syncer::BOOKMARKS, syncer::READING_LIST}),
+             callback.Get());
+
+  EXPECT_TRUE(task_environment_.MainThreadIsIdle());
 }
 
 TEST_F(LocalDataQueryHelperTest, ShouldReturnLocalPasswordsViaCallback) {
@@ -476,18 +505,22 @@ class LocalDataMigrationHelperTest : public testing::Test {
     local_reading_list_storage_ptr->TriggerLoadCompletion();
     account_reading_list_storage_ptr->TriggerLoadCompletion();
 
-    local_data_migration_helper_ =
-        std::make_unique<browser_sync::LocalDataMigrationHelper>(
-            /*profile_password_store=*/local_password_store_.get(),
-            /*account_password_store=*/account_password_store_.get(),
-            /*local_bookmark_model=*/local_bookmark_model_.get(),
-            /*account_bookmark_model=*/account_bookmark_model_.get(),
-            /*dual_reading_list_model=*/dual_reading_list_model_.get());
+    local_data_migration_helper_ = std::make_unique<LocalDataMigrationHelper>(
+        /*profile_password_store=*/local_password_store_.get(),
+        /*account_password_store=*/account_password_store_.get(),
+        /*local_bookmark_model=*/local_bookmark_model_.get(),
+        /*account_bookmark_model=*/account_bookmark_model_.get(),
+        /*dual_reading_list_model=*/dual_reading_list_model_.get());
+
+    // Make sure PasswordStore is fully initialized.
+    RunAllPendingTasks();
   }
+
   ~LocalDataMigrationHelperTest() override {
     local_password_store_->ShutdownOnUIThread();
     account_password_store_->ShutdownOnUIThread();
   }
+
   void RunAllPendingTasks() { task_environment_.RunUntilIdle(); }
 
  protected:
@@ -510,8 +543,7 @@ class LocalDataMigrationHelperTest : public testing::Test {
   raw_ptr<ReadingListModel> local_reading_list_model_;
   raw_ptr<ReadingListModel> account_reading_list_model_;
 
-  std::unique_ptr<browser_sync::LocalDataMigrationHelper>
-      local_data_migration_helper_;
+  std::unique_ptr<LocalDataMigrationHelper> local_data_migration_helper_;
 };
 
 TEST_F(LocalDataMigrationHelperTest, ShouldLogRequestsToHistogram) {
@@ -569,6 +601,23 @@ TEST_F(LocalDataMigrationHelperTest,
 TEST_F(LocalDataMigrationHelperTest, ShouldHandleZeroTypes) {
   // Just checks that there's no crash.
   local_data_migration_helper_->Run(syncer::ModelTypeSet());
+}
+
+TEST_F(LocalDataMigrationHelperTest, ShouldHandleUnusableTypes) {
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(task_environment_.MainThreadIsIdle());
+
+  LocalDataMigrationHelper helper(
+      /*profile_password_store=*/nullptr,
+      /*account_password_store=*/nullptr,
+      /*local_bookmark_model=*/nullptr,
+      /*account_bookmark_model=*/nullptr,
+      /*dual_reading_list_model=*/nullptr);
+  helper.Run(syncer::ModelTypeSet(
+      {syncer::PASSWORDS, syncer::BOOKMARKS, syncer::READING_LIST}));
+
+  EXPECT_TRUE(task_environment_.MainThreadIsIdle());
 }
 
 TEST_F(LocalDataMigrationHelperTest, ShouldMovePasswordsToAccountStore) {
@@ -1132,3 +1181,4 @@ TEST_F(LocalDataMigrationHelperTest, ShouldClearReadingListFromLocalStore) {
 }
 
 }  // namespace
+}  // namespace browser_sync

@@ -75,31 +75,6 @@
 #import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
-namespace {
-syncer::ModelTypeSet FilterTypesWithAccountStorage(
-    syncer::ModelTypeSet types,
-    ChromeBrowserState* browser_state) {
-  if (types.Has(syncer::PASSWORDS) &&
-      !IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
-          browser_state, ServiceAccessType::IMPLICIT_ACCESS)) {
-    DVLOG(1) << "Passwords account-storage is not enabled.";
-    types.Remove(syncer::PASSWORDS);
-  }
-  if (types.Has(syncer::BOOKMARKS) &&
-      !ios::AccountBookmarkModelFactory::GetForBrowserState(browser_state)) {
-    DVLOG(1) << "Bookmarks account-storage is not enabled";
-    types.Remove(syncer::BOOKMARKS);
-  }
-  if (types.Has(syncer::READING_LIST) &&
-      !ReadingListModelFactory::GetAsDualReadingListModelForBrowserState(
-          browser_state)) {
-    DVLOG(1) << "Reading List account-storage is not enabled";
-    types.Remove(syncer::READING_LIST);
-  }
-  return types;
-}
-}  // namespace
-
 IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
     : browser_state_(browser_state) {
   profile_web_data_service_ =
@@ -309,13 +284,10 @@ void IOSChromeSyncClient::GetLocalDataDescriptions(
     syncer::ModelTypeSet types,
     base::OnceCallback<void(
         std::map<syncer::ModelType, syncer::LocalDataDescription>)> callback) {
-  local_data_query_helper_->Run(
-      FilterTypesWithAccountStorage(types, browser_state_),
-      std::move(callback));
+  local_data_query_helper_->Run(types, std::move(callback));
 }
 
 void IOSChromeSyncClient::TriggerLocalDataMigration(
     syncer::ModelTypeSet types) {
-  local_data_migration_helper_->Run(
-      FilterTypesWithAccountStorage(types, browser_state_));
+  local_data_migration_helper_->Run(types);
 }
