@@ -727,6 +727,10 @@ TEST_F(FormStructureTestImpl, DetermineHeuristicTypes_AutocompleteFalse) {
 }
 
 TEST_F(FormStructureTestImpl, HeuristicsContactInfo) {
+  ServerFieldType expected_phone_number =
+      base::FeatureList::IsEnabled(features::kAutofillDefaultToCityAndNumber)
+          ? PHONE_HOME_CITY_AND_NUMBER
+          : PHONE_HOME_WHOLE_NUMBER;
   CheckFormStructureTestData(
       {{{.description_for_logging = "HeuristicsContactInfo",
          .fields = {{.role = ServerFieldType::NAME_FIRST},
@@ -746,7 +750,7 @@ TEST_F(FormStructureTestImpl, HeuristicsContactInfo) {
             .autofill_count = 8,
         },
         {.expected_heuristic_type = {
-             NAME_FIRST, NAME_LAST, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER,
+             NAME_FIRST, NAME_LAST, EMAIL_ADDRESS, expected_phone_number,
              PHONE_HOME_EXTENSION, ADDRESS_HOME_LINE1, ADDRESS_HOME_CITY,
              ADDRESS_HOME_ZIP, UNKNOWN_TYPE}}}});
 }
@@ -792,6 +796,10 @@ TEST_F(FormStructureTestImpl, HeuristicsAutocompleteAttribute) {
 // All fields share a common prefix which could confuse the heuristics. Test
 // that the common prefix is stripped out before running heuristics.
 TEST_F(FormStructureTestImpl, StripCommonNamePrefix) {
+  ServerFieldType expected_phone_number =
+      base::FeatureList::IsEnabled(features::kAutofillDefaultToCityAndNumber)
+          ? PHONE_HOME_CITY_AND_NUMBER
+          : PHONE_HOME_WHOLE_NUMBER;
   CheckFormStructureTestData(
       {{{.description_for_logging = "StripCommonNamePrefix",
          .fields =
@@ -811,7 +819,7 @@ TEST_F(FormStructureTestImpl, StripCommonNamePrefix) {
          .field_count = 5,
          .autofill_count = 4},
         {.expected_heuristic_type = {NAME_FIRST, NAME_LAST, EMAIL_ADDRESS,
-                                     PHONE_HOME_WHOLE_NUMBER, UNKNOWN_TYPE}}}});
+                                     expected_phone_number, UNKNOWN_TYPE}}}});
 }
 
 // All fields share a common prefix which is small enough that it is not
@@ -1354,8 +1362,11 @@ TEST_F(FormStructureTestImpl, HeuristicsSample8) {
   // Country.
   EXPECT_EQ(ADDRESS_HOME_COUNTRY, form_structure->field(7)->heuristic_type());
   // Phone.
-  EXPECT_EQ(PHONE_HOME_WHOLE_NUMBER,
-            form_structure->field(8)->heuristic_type());
+  ServerFieldType expected_phone_number =
+      base::FeatureList::IsEnabled(features::kAutofillDefaultToCityAndNumber)
+          ? PHONE_HOME_CITY_AND_NUMBER
+          : PHONE_HOME_WHOLE_NUMBER;
+  EXPECT_EQ(expected_phone_number, form_structure->field(8)->heuristic_type());
   // Submit.
   EXPECT_EQ(UNKNOWN_TYPE, form_structure->field(9)->heuristic_type());
 }
@@ -1494,8 +1505,11 @@ TEST_F(FormStructureTestImpl, HeuristicsLabelsOnly) {
   // Email.
   EXPECT_EQ(EMAIL_ADDRESS, form_structure->field(2)->heuristic_type());
   // Phone.
-  EXPECT_EQ(PHONE_HOME_WHOLE_NUMBER,
-            form_structure->field(3)->heuristic_type());
+  ServerFieldType expected_phone_number =
+      base::FeatureList::IsEnabled(features::kAutofillDefaultToCityAndNumber)
+          ? PHONE_HOME_CITY_AND_NUMBER
+          : PHONE_HOME_WHOLE_NUMBER;
+  EXPECT_EQ(expected_phone_number, form_structure->field(3)->heuristic_type());
   // Address.
   EXPECT_EQ(ADDRESS_HOME_LINE1, form_structure->field(4)->heuristic_type());
   // Address Line 2.
@@ -1938,8 +1952,11 @@ TEST_F(FormStructureTestImpl, HeuristicsWithBilling) {
   EXPECT_EQ(ADDRESS_HOME_STATE, form_structure->field(6)->heuristic_type());
   EXPECT_EQ(ADDRESS_HOME_COUNTRY, form_structure->field(7)->heuristic_type());
   EXPECT_EQ(ADDRESS_HOME_ZIP, form_structure->field(8)->heuristic_type());
-  EXPECT_EQ(PHONE_HOME_WHOLE_NUMBER,
-            form_structure->field(9)->heuristic_type());
+  ServerFieldType expected_phone_number =
+      base::FeatureList::IsEnabled(features::kAutofillDefaultToCityAndNumber)
+          ? PHONE_HOME_CITY_AND_NUMBER
+          : PHONE_HOME_WHOLE_NUMBER;
+  EXPECT_EQ(expected_phone_number, form_structure->field(9)->heuristic_type());
   EXPECT_EQ(EMAIL_ADDRESS, form_structure->field(10)->heuristic_type());
 }
 

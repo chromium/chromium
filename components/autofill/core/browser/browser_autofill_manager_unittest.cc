@@ -209,20 +209,6 @@ struct TestCardFillData {
 const TestAddressFillData
     kEmptyAddressFillData("", "", "", "", "", "", "", "", "", "", "", "", "");
 
-const TestAddressFillData kElvisAddressFillData("Elvis",
-                                                "Aaron",
-                                                "Presley",
-                                                "3734 Elvis Presley Blvd.",
-                                                "Apt. 10",
-                                                "Memphis",
-                                                "Tennessee",
-                                                "38116",
-                                                "United States",
-                                                "US",
-                                                "12345678901",
-                                                "theking@gmail.com",
-                                                "RCA");
-
 const TestCardFillData kEmptyCardFillData("",
                                           "",
                                           "",
@@ -234,6 +220,25 @@ const TestCardFillData kElvisCardFillData("Elvis Presley",
                                           "04",
                                           "2999",
                                           /*use_month_type*/ false);
+
+TestAddressFillData GetElvisAddressFillData() {
+  return {
+      "Elvis",
+      "Aaron",
+      "Presley",
+      "3734 Elvis Presley Blvd.",
+      "Apt. 10",
+      "Memphis",
+      "Tennessee",
+      "38116",
+      "United States",
+      "US",
+      base::FeatureList::IsEnabled(features::kAutofillDefaultToCityAndNumber)
+          ? "2345678901"
+          : "12345678901",
+      "theking@gmail.com",
+      "RCA"};
+}
 
 // Creates a GUID for testing. For example,
 // MakeGuid(123) = "00000000-0000-0000-0000-000000000123";
@@ -499,7 +504,8 @@ void ExpectFilledAddressFormElvis(const FormData& filled_form,
   if (has_credit_card_fields) {
     expected_card_fill_data = kEmptyCardFillData;
   }
-  ExpectFilledForm(filled_form, kElvisAddressFillData, expected_card_fill_data);
+  ExpectFilledForm(filled_form, GetElvisAddressFillData(),
+                   expected_card_fill_data);
 }
 
 void ExpectFilledCreditCardFormElvis(const FormData& filled_form,
@@ -1235,7 +1241,8 @@ class BrowserAutofillManagerTest : public testing::Test {
   }
 
   void CreateTestAutofillProfiles() {
-    AutofillProfile profile1 = FillDataToAutofillProfile(kElvisAddressFillData);
+    AutofillProfile profile1 =
+        FillDataToAutofillProfile(GetElvisAddressFillData());
     profile1.set_guid(kElvisProfileGuid);
     personal_data().AddProfile(profile1);
 
@@ -1452,7 +1459,7 @@ TEST_F(BrowserAutofillManagerTest,
   // The city field was filled.
   EXPECT_EQ(response_data.fields[0].name, u"firstName");
   EXPECT_EQ(response_data.fields[0].value,
-            UTF8ToUTF16(kElvisAddressFillData.first));
+            UTF8ToUTF16(GetElvisAddressFillData().first));
   // The city field was NOT filled.
   EXPECT_EQ(response_data.fields[1].name, u"lastName");
   EXPECT_EQ(response_data.fields[1].value, u"");
@@ -3713,7 +3720,7 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteUnrecognizedFillingBehavior) {
   // gets filled.
   FormData filled_form = FillAutofillFormDataAndGetResults(form, form.fields[0],
                                                            kElvisProfileGuid);
-  TestAddressFillData fill_data = kElvisAddressFillData;
+  TestAddressFillData fill_data = GetElvisAddressFillData();
   fill_data.middle = "";
   ExpectFilledForm(filled_form, fill_data, /*card_fill_data=*/absl::nullopt);
 
@@ -3727,7 +3734,8 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteUnrecognizedFillingBehavior) {
       *personal_data().GetProfileByGUID(kElvisProfileGuid),
       {.trigger_source =
            AutofillTriggerSource::kManualFallbackForAutocompleteUnrecognized});
-  ExpectFilledForm(filled_form, kElvisAddressFillData,
+
+  ExpectFilledForm(filled_form, GetElvisAddressFillData(),
                    /*card_fill_data=*/absl::nullopt);
 }
 
@@ -4203,7 +4211,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   FormsSeen({form});
 
-  TestAddressFillData profile_info_data = kElvisAddressFillData;
+  TestAddressFillData profile_info_data = GetElvisAddressFillData();
   profile_info_data.company = "1987";
   AutofillProfile profile = FillDataToAutofillProfile(profile_info_data);
   profile.set_guid(MakeGuid(123));
@@ -4559,6 +4567,9 @@ TEST_F(BrowserAutofillManagerTest, DoNotFillUnfocusableFieldsExceptForSelect) {
 // Test that non-focusable field is ignored while inferring boundaries between
 // sections, but not filled.
 TEST_F(BrowserAutofillManagerTest, FillFormWithNonFocusableFields) {
+  bool default_to_city_and_number =
+      base::FeatureList::IsEnabled(features::kAutofillDefaultToCityAndNumber);
+
   // Create a form with both focusable and non-focusable fields.
   FormData form;
   form.name = u"MyForm";
@@ -4591,7 +4602,8 @@ TEST_F(BrowserAutofillManagerTest, FillFormWithNonFocusableFields) {
                     response_data.fields[1]);
   ExpectFilledField("", "email", "theking@gmail.com",
                     FormControlType::kInputText, response_data.fields[2]);
-  ExpectFilledField("Phone Number", "phonenumber", "12345678901",
+  ExpectFilledField("Phone Number", "phonenumber",
+                    default_to_city_and_number ? "2345678901" : "12345678901",
                     FormControlType::kInputTelephone, response_data.fields[3]);
   ExpectFilledField("", "email_", "", FormControlType::kInputText,
                     response_data.fields[4]);
@@ -4890,7 +4902,10 @@ TEST_F(BrowserAutofillManagerTest, FillPartlyAutofilledForm) {
     expected_address_fill_data.last = "Presley";
     expected_address_fill_data.postal_code = "38116";
     expected_address_fill_data.country = "United States";
-    expected_address_fill_data.phone = "12345678901";
+    bool default_to_city_and_number =
+        base::FeatureList::IsEnabled(features::kAutofillDefaultToCityAndNumber);
+    expected_address_fill_data.phone =
+        default_to_city_and_number ? "2345678901" : "12345678901";
 
     ExpectFilledForm(response_data, expected_address_fill_data,
                      kEmptyCardFillData);
@@ -4929,7 +4944,7 @@ TEST_F(BrowserAutofillManagerTest, FillPartlyManuallyFilledForm) {
       form, *form.fields.begin(), MakeGuid(1));
   {
     SCOPED_TRACE("Address");
-    TestAddressFillData expected_address_fill_data = kElvisAddressFillData;
+    TestAddressFillData expected_address_fill_data = GetElvisAddressFillData();
     expected_address_fill_data.last = "Jackson";
     ExpectFilledForm(response_data, expected_address_fill_data,
                      kEmptyCardFillData);
@@ -5988,8 +6003,11 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
   response_data = FillAutofillFormDataAndGetResults(
       response_data, *response_data.fields.begin(), MakeGuid(1));
 
+  bool default_to_city_and_number =
+      base::FeatureList::IsEnabled(features::kAutofillDefaultToCityAndNumber);
   expected_address_fill_data.first = "Elvis";
-  expected_address_fill_data.phone = "12345678901";
+  expected_address_fill_data.phone =
+      default_to_city_and_number ? "2345678901" : "12345678901";
   expected_address_fill_data.email = "theking@gmail.com";
   ExpectFilledForm(response_data, expected_address_fill_data,
                    /*card_fill_data=*/absl::nullopt);
@@ -7028,7 +7046,7 @@ void DoTestFormSubmittedControlWithDefaultValue(
   FormFieldData* state_field = form.FindFieldByName(u"state");
   ASSERT_TRUE(state_field != nullptr);
   state_field->form_control_type = form_control_type;
-  state_field->value = base::UTF8ToUTF16(kElvisAddressFillData.state);
+  state_field->value = base::UTF8ToUTF16(GetElvisAddressFillData().state);
 
   test->FormsSeen({form});
 
@@ -7236,7 +7254,7 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
   // Set up the test profiles.
   std::vector<AutofillProfile> profiles;
   profiles.resize(3);
-  TestAddressFillData profile_info_data = kElvisAddressFillData;
+  TestAddressFillData profile_info_data = GetElvisAddressFillData();
   profile_info_data.phone = "+1 (234) 567-8901";
   profiles[0] = FillDataToAutofillProfile(profile_info_data);
 
@@ -7297,7 +7315,7 @@ void DoTestDeterminePossibleFieldTypesForUploadOfSelect(
 
   // Set up a profile and no credit cards.
   std::vector<AutofillProfile> profiles(1);
-  TestAddressFillData profile_info_data = kElvisAddressFillData;
+  TestAddressFillData profile_info_data = GetElvisAddressFillData();
   profile_info_data.phone = "+1 (234) 567-8901";
   profiles[0] = FillDataToAutofillProfile(profile_info_data);
   profiles[0].set_guid(MakeGuid(1));
@@ -7431,7 +7449,7 @@ TEST_F(BrowserAutofillManagerTest,
 TEST_F(BrowserAutofillManagerTest, DisambiguateUploadTypes) {
   // Set up the test profile.
   std::vector<AutofillProfile> profiles;
-  TestAddressFillData profile_info_data = kElvisAddressFillData;
+  TestAddressFillData profile_info_data = GetElvisAddressFillData();
   profile_info_data.address2 = "";
   profile_info_data.phone = "(234) 567-8901";
   AutofillProfile profile = FillDataToAutofillProfile(profile_info_data);

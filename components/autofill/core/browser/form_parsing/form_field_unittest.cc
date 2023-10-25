@@ -199,7 +199,11 @@ TEST_P(FormFieldTest, TestParseableLabels) {
 
 // Tests that `ParseSingleFieldForms` is called as part of `ParseFormFields`.
 TEST_P(FormFieldTest, ParseSingleFieldFormsInsideParseFormField) {
-  AddTextFormFieldData("", "Phone", PHONE_HOME_WHOLE_NUMBER);
+  AddTextFormFieldData(
+      "", "Phone",
+      base::FeatureList::IsEnabled(features::kAutofillDefaultToCityAndNumber)
+          ? PHONE_HOME_CITY_AND_NUMBER
+          : PHONE_HOME_WHOLE_NUMBER);
   AddTextFormFieldData("", "Email", EMAIL_ADDRESS);
   AddTextFormFieldData("", "Promo code", MERCHANT_PROMO_CODE);
 

@@ -431,12 +431,12 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, ProfileSavedWithValidCountryPhone) {
   for (const AutofillProfile* profile :
        personal_data_manager()->GetProfiles()) {
     actual_phone_numbers.push_back(
-        profile->GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+        profile->GetInfo(PHONE_HOME_WHOLE_NUMBER, "en-US"));
   }
   // Two valid phone numbers are imported, two invalid ones are removed.
   EXPECT_THAT(actual_phone_numbers,
               testing::UnorderedElementsAreArray(
-                  {u"408-871-4567", u"+49 40-80-81-79-000", u"", u""}));
+                  {u"4088714567", u"+4940808179000", u"", u""}));
 }
 
 // Prepend country codes when formatting phone numbers if:
