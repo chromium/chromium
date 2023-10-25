@@ -27,10 +27,21 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) UrlMatcherWithBypass {
   // match on them. If false, `Matches` will always return false.
   bool IsPopulated();
 
+  struct MatchResult {
+    // Whether a resource URL matches the list.
+    bool matches = false;
+    // Whether a resource is requested in a first or third-party context.
+    bool is_third_party = false;
+
+    bool operator==(const MatchResult& rhs) const {
+      return matches == rhs.matches && is_third_party == rhs.is_third_party;
+    }
+  };
+
   // Determines if the pair of URLs are a match by first trying to match on the
   // resource_url and then checking if the top_frame_url matches the bypass
   // match rules.
-  bool Matches(const GURL& resource_url, const GURL& top_frame_url);
+  MatchResult Matches(const GURL& resource_url, const GURL& top_frame_url);
 
   // Adds a matcher rule and bypass matcher for the domain.
   void AddDomainWithBypass(std::string_view domain,

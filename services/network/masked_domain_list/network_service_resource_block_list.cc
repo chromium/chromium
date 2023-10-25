@@ -53,8 +53,9 @@ bool NetworkServiceResourceBlockList::Matches(
 
   VLOG(3) << "NSRBL::Matches(" << request_url << ", "
           << isolation_info->top_frame_origin()->GetURL() << ")";
-  return url_matcher_with_bypass_.Matches(
+  UrlMatcherWithBypass::MatchResult result = url_matcher_with_bypass_.Matches(
       request_url, isolation_info->top_frame_origin()->GetURL());
+  return result.matches && result.is_third_party;
 }
 
 void NetworkServiceResourceBlockList::UseMaskedDomainList(

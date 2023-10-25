@@ -75,7 +75,9 @@ size_t NetworkServiceProxyAllowList::EstimateMemoryUsage() const {
 bool NetworkServiceProxyAllowList::Matches(const GURL& request_url,
                                            const GURL& top_frame_url) {
   VLOG(3) << "NSPAL::Matches(" << request_url << ", " << top_frame_url << ")";
-  return url_matcher_with_bypass_.Matches(request_url, top_frame_url);
+  UrlMatcherWithBypass::MatchResult result =
+      url_matcher_with_bypass_.Matches(request_url, top_frame_url);
+  return result.matches && result.is_third_party;
 }
 
 void NetworkServiceProxyAllowList::UseMaskedDomainList(
