@@ -3850,31 +3850,24 @@ void WebContentsImpl::FullscreenStateChanged(
 }
 
 void WebContentsImpl::Maximize() {
-  SetWindowShowState(ui::SHOW_STATE_MAXIMIZED);
+  if (!GetDelegate()) {
+    return;
+  }
+  GetDelegate()->MaximizeFromWebAPI();
 }
 
 void WebContentsImpl::Minimize() {
-  SetWindowShowState(ui::SHOW_STATE_MINIMIZED);
+  if (!GetDelegate()) {
+    return;
+  }
+  GetDelegate()->MinimizeFromWebAPI();
 }
 
 void WebContentsImpl::Restore() {
-  SetWindowShowState(ui::SHOW_STATE_NORMAL);
-}
-
-void WebContentsImpl::SetWindowShowState(ui::WindowShowState state) {
-#if defined(USE_AURA)
-  aura::Window* window = GetTopLevelNativeWindow();
-
-  // TODO(laurila, crbug.com/1466855): This API function currently works only on
-  // Aura platforms (Win/Lin/CrOS/Fuchsia), make it also work on Mac.
-  wm::SetWindowState(window, state);
-
-  // This is needed to update `display-state` CSS @media query value.
-  if (RenderWidgetHost* render_widget_host =
-          GetPrimaryMainFrame()->GetRenderWidgetHost()) {
-    render_widget_host->SynchronizeVisualProperties();
+  if (!GetDelegate()) {
+    return;
   }
-#endif
+  GetDelegate()->RestoreFromWebAPI();
 }
 
 ui::WindowShowState WebContentsImpl::GetWindowShowState() {

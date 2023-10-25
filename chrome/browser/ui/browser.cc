@@ -2051,6 +2051,18 @@ bool Browser::GetCanResize() {
   return window_->GetCanResize();
 }
 
+void Browser::MinimizeFromWebAPI() {
+  window_->Minimize();
+}
+
+void Browser::MaximizeFromWebAPI() {
+  window_->Maximize();
+}
+
+void Browser::RestoreFromWebAPI() {
+  window_->Restore();
+}
+
 bool Browser::CanEnterFullscreenModeForTab(
     content::RenderFrameHost* requesting_frame,
     const blink::mojom::FullscreenOptions& options) {

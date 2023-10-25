@@ -939,6 +939,9 @@ class Browser : public TabStripModelObserver,
       content::RenderFrameHost* requesting_frame) override;
   void SetCanResizeFromWebAPI(absl::optional<bool> can_resize) override;
   bool GetCanResize() override;
+  void MinimizeFromWebAPI() override;
+  void MaximizeFromWebAPI() override;
+  void RestoreFromWebAPI() override;
   bool CanEnterFullscreenModeForTab(
       content::RenderFrameHost* requesting_frame,
       const blink::mojom::FullscreenOptions& options) override;

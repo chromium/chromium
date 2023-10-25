@@ -462,6 +462,9 @@ class CONTENT_EXPORT WebContentsDelegate {
   // default.
   virtual void SetCanResizeFromWebAPI(absl::optional<bool> can_resize) {}
   virtual bool GetCanResize();
+  virtual void MinimizeFromWebAPI() {}
+  virtual void MaximizeFromWebAPI() {}
+  virtual void RestoreFromWebAPI() {}
 
   // Returns whether entering fullscreen with |EnterFullscreenModeForTab()| is
   // allowed.

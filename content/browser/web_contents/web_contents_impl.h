@@ -1782,10 +1782,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Returns the size that the main frame should be sized to.
   gfx::Size GetSizeForMainFrame();
 
-  // Sets the window's state to the given `ui::WindowShowState` and synchronizes
-  // the visual properties of the `RenderWidgetHost`.
-  void SetWindowShowState(ui::WindowShowState state);
-
   // Helper method that's called whenever |preferred_size_| or
   // |preferred_size_for_capture_| changes, to propagate the new value to the
   // |delegate_|.
