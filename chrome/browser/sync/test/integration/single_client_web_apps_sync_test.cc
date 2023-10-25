@@ -5,6 +5,7 @@
 #include "base/test/bind.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
+#include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/web_apps_sync_test_base.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/protocol/app_specifics.pb.h"
@@ -51,6 +53,17 @@ class SingleClientWebAppsSyncTest : public WebAppsSyncTestBase {
     if (!SyncTest::SetupClients()) {
       return false;
     }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Apps sync is controlled by a dedicated preference on Lacros,
+    // corresponding to the Apps toggle in OS Sync settings. which
+    // need to be enabled for this test.
+    if (base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)) {
+      syncer::SyncServiceImpl* service = GetSyncService(0);
+      syncer::SyncUserSettings* settings = service->GetUserSettings();
+      settings->SetAppsSyncEnabledByOs(true);
+    }
+#endif
 
     for (Profile* profile : GetAllProfiles()) {
       auto* web_app_provider = WebAppProvider::GetForTest(profile);
@@ -122,7 +135,20 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   ASSERT_TRUE(settings->GetSelectedTypes().Has(UserSelectableType::kApps));
   EXPECT_TRUE(service->GetActiveDataTypes().Has(syncer::WEB_APPS));
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Apps sync is controlled by a dedicated preference on Lacros,
+  // corresponding to the Apps toggle in OS Sync settings if
+  // kSyncChromeOSAppsToggleSharing is enabled. Disabling Apps sync requires
+  // disabling Apps toggle in OS.
+  if (base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)) {
+    settings->SetAppsSyncEnabledByOs(false);
+  } else {
+    settings->SetSelectedTypes(false, UserSelectableTypeSet());
+  }
+#else
   settings->SetSelectedTypes(false, UserSelectableTypeSet());
+#endif
+
   ASSERT_FALSE(settings->GetSelectedTypes().Has(UserSelectableType::kApps));
   EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::WEB_APPS));
 #endif
