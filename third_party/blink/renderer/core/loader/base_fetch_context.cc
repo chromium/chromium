@@ -389,7 +389,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
             network::mojom::blink::WebClientHintsType::kUAFormFactor,
             hints_preferences)) {
       SetHttpHeader(WebClientHintsType::kUAFormFactor,
-                    SerializeStringHeader(ua->form_factor), request);
+                    AtomicString(ua->SerializeFormFactor().c_str()), request);
     }
   }
 

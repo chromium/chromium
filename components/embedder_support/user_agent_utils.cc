@@ -487,8 +487,9 @@ blink::UserAgentMetadata GetUserAgentMetadata(const PrefService* pref_service,
   metadata.architecture = content::GetCpuArchitecture();
   metadata.model = content::BuildModelInfo();
 
-  // TODO(https://crbug.com/1442283): Support a broader range of form-factors.
-  metadata.form_factor = metadata.mobile ? kMobileFormFactor : "";
+  // By default, use "Mobile" or "Desktop" depending on the `mobile` bit.
+  metadata.form_factor = {metadata.mobile ? blink::kMobileFormFactor
+                                          : blink::kDesktopFormFactor};
 
 #if BUILDFLAG(IS_WIN)
   metadata.platform_version = GetWindowsPlatformVersion();
@@ -520,7 +521,7 @@ void SetDesktopUserAgentOverride(content::WebContents* web_contents,
       std::string();  // match content::GetOSVersion(false) on Linux
   spoofed_ua.ua_metadata_override->model = std::string();
   spoofed_ua.ua_metadata_override->mobile = false;
-  spoofed_ua.ua_metadata_override->form_factor = "";
+  spoofed_ua.ua_metadata_override->form_factor = {blink::kDesktopFormFactor};
   // Match the above "CpuInfo" string, which is also the most common Linux
   // CPU architecture and bitness.`
   spoofed_ua.ua_metadata_override->architecture = "x86";
