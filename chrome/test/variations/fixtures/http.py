@@ -29,7 +29,7 @@ def _start_http_server(
   return http_server
 
 @pytest.fixture(scope='session')
-def local_http_server():
+def local_http_server() -> http.server.HTTPServer:
   """Starts and returns a http server."""
   http_server = _start_http_server()
   yield http_server
