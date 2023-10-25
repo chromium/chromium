@@ -46,6 +46,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_client.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
@@ -345,10 +346,14 @@ void AdAuctionServiceImpl::RunAdAuction(
     return;
   }
 
+  AdAuctionPageData* ad_auction_page_data =
+      PageUserData<AdAuctionPageData>::GetOrCreateForPage(
+          render_frame_host().GetPage());
+
   std::unique_ptr<AuctionRunner> auction = AuctionRunner::CreateAndStart(
       &auction_worklet_manager_, &auction_nonce_manager_,
       &GetInterestGroupManager(), render_frame_host().GetBrowserContext(),
-      private_aggregation_manager_,
+      private_aggregation_manager_, ad_auction_page_data,
       // Unlike other callbacks, this needs to be safe to call after destruction
       // of the AdAuctionServiceImpl, so that the reporter can outlive it.
       base::BindRepeating(
@@ -358,8 +363,6 @@ void AdAuctionServiceImpl::RunAdAuction(
       render_frame_host().GetPageUkmSourceId(), GetClientSecurityState(),
       GetRefCountedTrustedURLLoaderFactory(),
       base::BindRepeating(&AdAuctionServiceImpl::IsInterestGroupAPIAllowed,
-                          base::Unretained(this)),
-      base::BindRepeating(&AdAuctionServiceImpl::GetAdAuctionPageData,
                           base::Unretained(this)),
       base::BindRepeating(
           &AreAllowedReportingOriginsAttested,
@@ -667,11 +670,6 @@ bool AdAuctionServiceImpl::IsInterestGroupAPIAllowed(
       origin);
 }
 
-AdAuctionPageData* AdAuctionServiceImpl::GetAdAuctionPageData() {
-  return PageUserData<AdAuctionPageData>::GetForPage(
-      render_frame_host().GetPage());
-}
-
 void AdAuctionServiceImpl::OnAuctionComplete(
     RunAdAuctionCallback callback,
     GURL urn_uuid,
@@ -904,6 +902,8 @@ void AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey(
       std::move(*maybe_request).ReleaseContext(), state.start_time);
   ad_auction_page_data->RegisterAdAuctionRequestContext(state.request_id,
                                                         std::move(context));
+  // Pre-warm data decoder.
+  ad_auction_page_data->GetDecoderFor(state.seller)->GetService();
 
   size_t start_offset = 0;
   if (base::FeatureList::IsEnabled(kBiddingAndAuctionEncryptionMediaType)) {

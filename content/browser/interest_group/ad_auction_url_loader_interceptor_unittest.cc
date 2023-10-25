@@ -17,6 +17,7 @@
 #include "content/test/test_render_view_host.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/parsed_headers.mojom.h"
@@ -278,6 +279,7 @@ class AdAuctionURLLoaderInterceptorTest : public RenderViewHostTestHarness {
   }
 
  protected:
+  data_decoder::test::InProcessDataDecoder data_decoder_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
   InterceptingContentBrowserClient browser_client_;

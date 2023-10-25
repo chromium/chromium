@@ -1930,6 +1930,7 @@ InterestGroupAuction::InterestGroupAuction(
     AuctionNonceManager* auction_nonce_manager,
     InterestGroupManagerImpl* interest_group_manager,
     AuctionMetricsRecorder* auction_metrics_recorder,
+    AdAuctionPageData* ad_auction_page_data,
     base::Time auction_start_time,
     IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
     base::RepeatingCallback<
@@ -1950,7 +1951,8 @@ InterestGroupAuction::InterestGroupAuction(
       is_interest_group_api_allowed_callback_(
           std::move(is_interest_group_api_allowed_callback)),
       maybe_log_private_aggregation_web_features_callback_(
-          std::move(maybe_log_private_aggregation_web_features_callback)) {
+          std::move(maybe_log_private_aggregation_web_features_callback)),
+      data_decoder_(ad_auction_page_data->GetDecoderFor(config->seller)) {
   DCHECK(is_interest_group_api_allowed_callback_);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("fledge", "auction", *trace_id_,
                                     "decision_logic_url",
@@ -1962,13 +1964,13 @@ InterestGroupAuction::InterestGroupAuction(
     // Nested component auctions are not supported.
     DCHECK(!parent_);
     component_auctions_.emplace(
-        child_pos,
-        std::make_unique<InterestGroupAuction>(
-            kanon_mode_, &component_auction_config, /*parent=*/this,
-            auction_worklet_manager, auction_nonce_manager,
-            interest_group_manager, auction_metrics_recorder_,
-            auction_start_time_, is_interest_group_api_allowed_callback_,
-            maybe_log_private_aggregation_web_features_callback_));
+        child_pos, std::make_unique<InterestGroupAuction>(
+                       kanon_mode_, &component_auction_config, /*parent=*/this,
+                       auction_worklet_manager, auction_nonce_manager,
+                       interest_group_manager, auction_metrics_recorder_,
+                       ad_auction_page_data, auction_start_time_,
+                       is_interest_group_api_allowed_callback_,
+                       maybe_log_private_aggregation_web_features_callback_));
     ++child_pos;
   }
 
@@ -2257,7 +2259,7 @@ void InterestGroupAuction::StartFromServerResponse(
         {"runAdAuction(): Could not parse response framing"});
     return;
   }
-  request_context->decoder->GzipUncompress(
+  data_decoder_->GzipUncompress(
       std::move(compressed_response).value(),
       base::BindOnce(
           &InterestGroupAuction::OnDecompressedServerResponse,
@@ -3578,7 +3580,7 @@ void InterestGroupAuction::DecodeAdditionalBidsIfReady() {
       continue;
     }
     ++num_scoring_dependencies_;
-    data_decoder_.ParseJson(
+    data_decoder_->ParseJson(
         signed_additional_bid_data,
         base::BindOnce(&InterestGroupAuction::HandleDecodedSignedAdditionalBid,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -3607,7 +3609,7 @@ void InterestGroupAuction::HandleDecodedSignedAdditionalBid(
 
   auto valid_signatures = maybe_signed_additional_bid->VerifySignatures();
 
-  data_decoder_.ParseJson(
+  data_decoder_->ParseJson(
       maybe_signed_additional_bid->additional_bid_json,
       base::BindOnce(&InterestGroupAuction::HandleDecodedAdditionalBid,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -4295,7 +4297,7 @@ void InterestGroupAuction::OnDecompressedServerResponse(
     return;
   }
   base::span<const uint8_t> result_span = result.value().byte_span();
-  request_context->decoder->ParseCbor(
+  data_decoder_->ParseCbor(
       result_span,
       base::BindOnce(
           &InterestGroupAuction::OnParsedServerResponse,
@@ -4447,7 +4449,7 @@ data_decoder::DataDecoder* InterestGroupAuction::GetDataDecoder(
   if (!instance) {
     return nullptr;
   }
-  return &instance->data_decoder_;
+  return instance->data_decoder_.get();
 }
 
 }  // namespace content

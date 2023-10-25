@@ -77,6 +77,7 @@ std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
     InterestGroupManagerImpl* interest_group_manager,
     BrowserContext* browser_context,
     PrivateAggregationManager* private_aggregation_manager,
+    AdAuctionPageData* ad_auction_page_data,
     InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
         log_private_aggregation_requests_callback,
     const blink::AuctionConfig& auction_config,
@@ -86,20 +87,19 @@ std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
     network::mojom::ClientSecurityStatePtr client_security_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
-    GetAdAuctionPageDataCallback get_page_data_callback,
     AreReportingOriginsAttestedCallback attestation_callback,
     mojo::PendingReceiver<AbortableAdAuction> abort_receiver,
     RunAuctionCallback callback) {
   std::unique_ptr<AuctionRunner> instance(new AuctionRunner(
       auction_worklet_manager, auction_nonce_manager, interest_group_manager,
-      browser_context, private_aggregation_manager,
+      browser_context, private_aggregation_manager, ad_auction_page_data,
       std::move(log_private_aggregation_requests_callback),
       DetermineKAnonMode(), std::move(auction_config), main_frame_origin,
       frame_origin, ukm_source_id, std::move(client_security_state),
       std::move(url_loader_factory),
       std::move(is_interest_group_api_allowed_callback),
-      std::move(get_page_data_callback), std::move(attestation_callback),
-      std::move(abort_receiver), std::move(callback)));
+      std::move(attestation_callback), std::move(abort_receiver),
+      std::move(callback)));
   instance->StartAuction();
   return instance;
 }
@@ -302,7 +302,7 @@ void AuctionRunner::ResolvedDirectFromSellerSignalsHeaderAdSlotPromise(
     return;
   }
 
-  AdAuctionPageData* page_data = get_page_data_callback_.Run();
+  AdAuctionPageData* page_data = ad_auction_page_data_.get();
   if (!page_data) {
     // There's no page data attached so we can't find matching responses.
     // There's no way the auction can proceed.
@@ -351,7 +351,7 @@ void AuctionRunner::ResolvedAuctionAdResponsePromise(
     return;
   }
   config->server_response->got_response = true;
-  AdAuctionPageData* page_data = get_page_data_callback_.Run();
+  AdAuctionPageData* page_data = ad_auction_page_data_.get();
   if (!page_data) {
     // There's no page data attached so we can't decode the response. There's
     // no way the auction can proceed.
@@ -393,7 +393,7 @@ void AuctionRunner::ResolvedAdditionalBids(
 
   config->expects_additional_bids = false;
 
-  AdAuctionPageData* page_data = get_page_data_callback_.Run();
+  AdAuctionPageData* page_data = ad_auction_page_data_.get();
   if (auction_id->is_main_auction()) {
     auction_.NotifyAdditionalBidsConfig(page_data);
   } else {
@@ -461,6 +461,7 @@ AuctionRunner::AuctionRunner(
     InterestGroupManagerImpl* interest_group_manager,
     BrowserContext* browser_context,
     PrivateAggregationManager* private_aggregation_manager,
+    AdAuctionPageData* ad_auction_page_data,
     InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
         log_private_aggregation_requests_callback,
     auction_worklet::mojom::KAnonymityBidMode kanon_mode,
@@ -471,7 +472,6 @@ AuctionRunner::AuctionRunner(
     network::mojom::ClientSecurityStatePtr client_security_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
-    GetAdAuctionPageDataCallback get_page_data_callback,
     AreReportingOriginsAttestedCallback attestation_callback,
     mojo::PendingReceiver<AbortableAdAuction> abort_receiver,
     RunAuctionCallback callback)
@@ -484,7 +484,7 @@ AuctionRunner::AuctionRunner(
       url_loader_factory_(std::move(url_loader_factory)),
       is_interest_group_api_allowed_callback_(
           std::move(is_interest_group_api_allowed_callback)),
-      get_page_data_callback_(get_page_data_callback),
+      ad_auction_page_data_(ad_auction_page_data),
       attestation_callback_(attestation_callback),
       abort_receiver_(this, std::move(abort_receiver)),
       kanon_mode_(kanon_mode),
@@ -500,6 +500,7 @@ AuctionRunner::AuctionRunner(
                auction_nonce_manager,
                interest_group_manager,
                &auction_metrics_recorder_,
+               ad_auction_page_data,
                /*auction_start_time=*/base::Time::Now(),
                is_interest_group_api_allowed_callback_,
                std::move(log_private_aggregation_requests_callback)) {}

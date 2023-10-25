@@ -14,6 +14,7 @@
 #include "content/public/browser/page.h"
 #include "content/public/browser/page_user_data.h"
 #include "content/public/common/content_client.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -204,6 +205,8 @@ void AdAuctionURLLoaderInterceptor::OnReceiveResponse(
               blink::features::kAdAuctionSignalsMaxSizeBytes.Get())) {
     ad_auction_page_data->AddAuctionSignalsWitnessForOrigin(request_origin_,
                                                             ad_auction_signals);
+    // Pre-warm the data-decoder.
+    ad_auction_page_data->GetDecoderFor(request_origin_)->GetService();
   }
 
   if (!nonce_additional_bids_map.empty()) {

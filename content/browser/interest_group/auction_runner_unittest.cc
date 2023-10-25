@@ -1475,6 +1475,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
     auction_nonce_manager_ = std::make_unique<AuctionNonceManager>(GetFrame());
+    ad_auction_page_data_ = PageUserData<AdAuctionPageData>::GetOrCreateForPage(
+        web_contents()->GetPrimaryPage());
   }
 
   void TearDown() override {
@@ -1793,14 +1795,11 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     auction_runner_ = AuctionRunner::CreateAndStart(
         auction_worklet_manager_.get(), auction_nonce_manager_.get(),
         interest_group_manager_.get(), /*browser_context=*/browser_context(),
-        &private_aggregation_manager_,
+        &private_aggregation_manager_, ad_auction_page_data_.get(),
         private_aggregation_manager_.GetLogPrivateAggregationRequestsCallback(),
         std::move(auction_config), top_frame_origin_, frame_origin_, source_id_,
         GetClientSecurityState(), dummy_report_shared_url_loader_factory_,
-        IsInterestGroupApiAllowedCallback(), base::BindLambdaForTesting([&]() {
-          return ad_auction_page_data_.get();
-        }),
-        std::move(attestation_callback),
+        IsInterestGroupApiAllowedCallback(), std::move(attestation_callback),
         abortable_ad_auction_.BindNewPipeAndPassReceiver(),
         base::BindOnce(&AuctionRunnerTest::OnAuctionComplete,
                        base::Unretained(this)));
@@ -7502,8 +7501,6 @@ TEST_F(AuctionRunnerTest, PromiseAndNetworkErrors3) {
         "adSlot": "adSlot1",
         "sellerSignals": 3
       }])";
-  ad_auction_page_data_ = PageUserData<AdAuctionPageData>::GetOrCreateForPage(
-      web_contents()->GetPrimaryPage());
   ad_auction_page_data_->AddAuctionSignalsWitnessForOrigin(kComponentSeller2,
                                                            kSignals);
 
@@ -7967,9 +7964,6 @@ TEST_F(AuctionRunnerTest, AdditionalBidAliasesInterestGroup) {
        blink::features::kBiddingAndScoringDebugReportingAPI},
       {});
 
-  ad_auction_page_data_ = PageUserData<AdAuctionPageData>::GetOrCreateForPage(
-      web_contents()->GetPrimaryPage());
-
   const char kAdditionalBidUrl[] =
       "https://adplatform.com/offers-contextual.js";
 
@@ -8217,9 +8211,6 @@ TEST_F(AuctionRunnerTest, AdditionalBidDistinctFromInterestGroup) {
       {blink::features::kFledgeNegativeTargeting,
        blink::features::kBiddingAndScoringDebugReportingAPI},
       {});
-
-  ad_auction_page_data_ = PageUserData<AdAuctionPageData>::GetOrCreateForPage(
-      web_contents()->GetPrimaryPage());
 
   const char kAdditionalBidUrl[] =
       "https://adplatform.com/offers-contextual.js";
@@ -8550,8 +8541,6 @@ TEST_F(AuctionRunnerDfssAdSlotTest,
   "adSlot": "adSlot1",
   "sellerSignals": 3
 }])";
-  ad_auction_page_data_ = PageUserData<AdAuctionPageData>::GetOrCreateForPage(
-      web_contents()->GetPrimaryPage());
   ad_auction_page_data_->AddAuctionSignalsWitnessForOrigin(kSeller, kSignals);
 
   pass_promise_for_direct_from_seller_signals_header_ad_slot_ = true;
@@ -8603,8 +8592,6 @@ TEST_F(AuctionRunnerDfssAdSlotTest,
   "adSlot": "adSlot1",
   "sellerSignals": 3
 }])";
-  ad_auction_page_data_ = PageUserData<AdAuctionPageData>::GetOrCreateForPage(
-      web_contents()->GetPrimaryPage());
   ad_auction_page_data_->AddAuctionSignalsWitnessForOrigin(kSeller, kSignals);
 
   pass_promise_for_direct_from_seller_signals_header_ad_slot_ = true;
@@ -8656,8 +8643,6 @@ TEST_F(AuctionRunnerDfssAdSlotTest,
   "adSlot": "adSlot1",
   "sellerSignals": 3
 }])";
-  ad_auction_page_data_ = PageUserData<AdAuctionPageData>::GetOrCreateForPage(
-      web_contents()->GetPrimaryPage());
   ad_auction_page_data_->AddAuctionSignalsWitnessForOrigin(kSeller, kSignals);
 
   pass_promise_for_direct_from_seller_signals_header_ad_slot_ = true;
@@ -8721,8 +8706,6 @@ TEST_F(AuctionRunnerDfssAdSlotTest,
   "adSlot": "adSlot1",
   "sellerSignals": 3
 })";
-  ad_auction_page_data_ = PageUserData<AdAuctionPageData>::GetOrCreateForPage(
-      web_contents()->GetPrimaryPage());
   ad_auction_page_data_->AddAuctionSignalsWitnessForOrigin(kSeller, kSignals);
 
   pass_promise_for_direct_from_seller_signals_header_ad_slot_ = true;
@@ -8772,50 +8755,6 @@ TEST_F(AuctionRunnerDfssAdSlotTest,
               "\"sellerSignals\": 3\n}"),
           testing::Eq("When looking for directFromSellerSignalsHeaderAdSlot "
                       "adSlot1, failed to find a matching response.")));
-}
-
-// An auction that passes directFromSellerSignalsHeaderAdSlot via a promise, but
-// the auction fails since there's no AdAuctionPageData.
-TEST_F(AuctionRunnerDfssAdSlotTest,
-       PromiseDirectFromSellerSignalsHeaderAdSlotNoPageData) {
-  pass_promise_for_direct_from_seller_signals_header_ad_slot_ = true;
-
-  auction_worklet::AddJavascriptResponse(
-      &url_loader_factory_, kBidder1Url,
-      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
-                    kBidder1, kBidder1Name));
-  auction_worklet::AddJavascriptResponse(
-      &url_loader_factory_, kBidder2Url,
-      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/0,
-                    kBidder2, kBidder2Name));
-  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
-                                         MakeAuctionScript());
-
-  std::vector<StorageInterestGroup> bidders;
-  bidders.emplace_back(MakeInterestGroup(
-      kBidder1, kBidder1Name, kBidder1Url,
-      /*trusted_bidding_signals_url=*/absl::nullopt,
-      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com"),
-      /*ad_component_urls=*/absl::nullopt));
-  bidders.emplace_back(MakeInterestGroup(
-      kBidder2, kBidder2Name, kBidder2Url,
-      /*trusted_bidding_signals_url=*/absl::nullopt,
-      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com"),
-      /*ad_component_urls=*/absl::nullopt));
-  StartAuction(kSellerUrl, std::move(bidders));
-
-  // Can't complete yet.
-  task_environment()->RunUntilIdle();
-  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
-
-  // Feed in directFromSellerSignalsHeaderAdSlot.
-  abortable_ad_auction_->ResolvedDirectFromSellerSignalsHeaderAdSlotPromise(
-      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0), "adSlot1");
-  auction_run_loop_->Run();
-
-  EXPECT_EQ(absl::nullopt, result_.winning_group_id);
-  EXPECT_EQ(absl::nullopt, result_.ad_descriptor);
-  EXPECT_THAT(result_.errors, testing::ElementsAre());
 }
 
 // Trying to update auctionSignals which wasn't originally passed in as a
@@ -9218,8 +9157,6 @@ TEST_F(AuctionRunnerTest, PromiseServerResponseResolveTwice) {
           ->EncapsulateAndSerialize();
 
   std::string witnessed_hash = crypto::SHA256HashString(encrypted_response);
-  ad_auction_page_data_ = PageUserData<AdAuctionPageData>::GetOrCreateForPage(
-      web_contents()->GetPrimaryPage());
   ad_auction_page_data_->AddAuctionResultWitnessForOrigin(kSeller,
                                                           witnessed_hash);
 
@@ -9401,8 +9338,6 @@ TEST_F(AuctionRunnerTest, PromiseSignalsUpdateAdditionalBidsFeatureOff) {
 // Trying to update directFromSellerSignalsHeaderAdSlot twice.
 TEST_F(AuctionRunnerDfssAdSlotTest,
        PromiseSignalsUpdateNonPromiseDirectFromSellerSignalsHeaderAdSlot) {
-  ad_auction_page_data_ = PageUserData<AdAuctionPageData>::GetOrCreateForPage(
-      web_contents()->GetPrimaryPage());
 
   // Have two kind of promises so we don't just finish after first
   // directFromSellerSignalsHeaderAdSlot update
@@ -20147,9 +20082,6 @@ TEST_P(AuctionRunnerKAnonTest, AdditionalBidBuyerReporting) {
   base::test::ScopedFeatureList additional_bids_on;
   additional_bids_on.InitAndEnableFeature(
       blink::features::kFledgeNegativeTargeting);
-
-  ad_auction_page_data_ = PageUserData<AdAuctionPageData>::GetOrCreateForPage(
-      web_contents()->GetPrimaryPage());
 
   const char kAdditionalBidUrl[] =
       "https://adplatform.com/offers-contextual.js";

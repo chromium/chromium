@@ -40,7 +40,6 @@
 
 namespace content {
 
-class AdAuctionPageData;
 class InterestGroupManagerImpl;
 struct BiddingAndAuctionServerKey;
 class RenderFrameHost;
@@ -148,8 +147,6 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   bool IsInterestGroupAPIAllowed(ContentBrowserClient::InterestGroupApiOperation
                                      interest_group_api_operation,
                                  const url::Origin& origin) const;
-
-  AdAuctionPageData* GetAdAuctionPageData();
 
   // Deletes `auction`.
   void OnAuctionComplete(

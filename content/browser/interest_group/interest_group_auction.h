@@ -454,6 +454,7 @@ class CONTENT_EXPORT InterestGroupAuction
       AuctionNonceManager* auction_nonce_manager,
       InterestGroupManagerImpl* interest_group_manager,
       AuctionMetricsRecorder* auction_metrics_recorder,
+      AdAuctionPageData* ad_auction_page_data,
       base::Time auction_start_time,
       IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
       base::RepeatingCallback<
@@ -1325,7 +1326,7 @@ class CONTENT_EXPORT InterestGroupAuction
   mojo::ReceiverSet<auction_worklet::mojom::ScoreAdClient, std::unique_ptr<Bid>>
       score_ad_receivers_;
 
-  data_decoder::DataDecoder data_decoder_;
+  raw_ptr<data_decoder::DataDecoder> data_decoder_;
 
   base::WeakPtrFactory<InterestGroupAuction> weak_ptr_factory_{this};
 };
