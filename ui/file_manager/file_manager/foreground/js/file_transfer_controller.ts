@@ -13,7 +13,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
 import {getDisallowedTransfers, grantAccess, startIOTask} from '../../common/js/api.js';
-import {getFocusedTreeItem, htmlEscape, isDirectoryTree, queryRequiredElement} from '../../common/js/dom_utils.js';
+import {getFocusedTreeItem, htmlEscape, isDirectoryTree, isDirectoryTreeItem, queryRequiredElement} from '../../common/js/dom_utils.js';
 import {convertURLsToEntries, entriesToURLs, getRootType, getTeamDriveName, isNonModifiable, isRecentRoot, isSameEntry, isSharedDriveEntry, isSiblingEntry, isTeamDriveRoot, isTrashEntry, isTrashRoot, unwrapEntry} from '../../common/js/entry_utils.js';
 import {FileType} from '../../common/js/file_type.js';
 import {getFileTypeForName} from '../../common/js/file_types_base.js';
@@ -826,7 +826,7 @@ export class FileTransferController {
    */
   private changeToDropTargetDirectory_() {
     // Do custom action.
-    if (this.dropTarget_ instanceof DirectoryItem) {
+    if (isDirectoryTreeItem(this.dropTarget_)) {
       this.dropTarget_.doDropTargetAction();
     }
     if (!this.destinationEntry_) {

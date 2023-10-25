@@ -1001,14 +1001,6 @@ export class DirectoryTreeContainer {
     }
   }
 
-  /**
-   * When drop target changes, this will be called with the drop target
-   * element.
-   */
-  doDropTargetAction(element: XfTreeItem) {
-    element.expanded = true;
-  }
-
   private maybeShowToolTip_(event: MouseEvent) {
     const treeItem = event.target;
     if (!treeItem || !(treeItem instanceof XfTreeItem)) {

@@ -159,6 +159,13 @@ export class XfTreeItem extends XfBase {
     }
   }
 
+  /**
+   * This will be called when tree item is being set as a drop target.
+   */
+  doDropTargetAction() {
+    this.expanded = true;
+  }
+
   static override get styles() {
     return getCSS();
   }
