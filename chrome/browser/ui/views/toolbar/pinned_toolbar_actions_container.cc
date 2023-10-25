@@ -12,7 +12,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/frame/browser_actions.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -75,15 +74,6 @@ void PinnedToolbarActionsContainer::PinnedActionToolbarButton::ButtonPressed() {
   action_item_->InvokeAction();
 }
 
-void PinnedToolbarActionsContainer::PinnedActionToolbarButton::AddHighlight() {
-  anchor_higlight_ = AddAnchorHighlight();
-}
-
-void PinnedToolbarActionsContainer::PinnedActionToolbarButton::
-    ResetHighlight() {
-  anchor_higlight_.reset();
-}
-
 void PinnedToolbarActionsContainer::PinnedActionToolbarButton::
     ActionItemChanged() {
   auto tooltip_text = action_item_->GetTooltipText().empty()
@@ -102,7 +92,7 @@ void PinnedToolbarActionsContainer::PinnedActionToolbarButton::
 
 PinnedToolbarActionsContainer::PinnedToolbarActionsContainer(
     BrowserView* browser_view)
-    : ToolbarIconContainerView(/*uses_highlight=*/false),
+    : ToolbarIconContainerView(/*uses_highlight=*/true),
       browser_view_(browser_view),
       model_(PinnedToolbarActionsModel::Get(browser_view->GetProfile())) {
   // So we only get enter/exit messages when the mouse enters/exits the whole
@@ -127,18 +117,11 @@ PinnedToolbarActionsContainer::PinnedToolbarActionsContainer(
 
 PinnedToolbarActionsContainer::~PinnedToolbarActionsContainer() = default;
 
-void PinnedToolbarActionsContainer::UpdateActionState(actions::ActionId id,
-                                                      bool is_active) {
-  if (auto* button = GetPinnedButtonFor(id)) {
-    if (is_active) {
-      button->AddHighlight();
-    } else {
-      button->ResetHighlight();
-    }
-  } else {
-    // TODO(b:299462072): Handle popping out unpinned actions while they are
-    // active.
-  }
+ToolbarButton* PinnedToolbarActionsContainer::GetPinnedButtonFor(
+    const actions::ActionId& id) {
+  const auto iter = base::ranges::find(
+      pinned_buttons_, id, [](auto* button) { return button->GetActionId(); });
+  return iter == pinned_buttons_.end() ? nullptr : *iter;
 }
 
 void PinnedToolbarActionsContainer::UpdateAllIcons() {
@@ -202,13 +185,6 @@ void PinnedToolbarActionsContainer::RemovePinnedActionButtonFor(
   // This returns a unique_ptr which is immediately destroyed.
   RemoveChildViewT(*iter);
   pinned_buttons_.erase(iter);
-}
-
-PinnedToolbarActionsContainer::PinnedActionToolbarButton*
-PinnedToolbarActionsContainer::GetPinnedButtonFor(const actions::ActionId& id) {
-  const auto iter = base::ranges::find(
-      pinned_buttons_, id, [](auto* button) { return button->GetActionId(); });
-  return iter == pinned_buttons_.end() ? nullptr : *iter;
 }
 
 SidePanelCoordinator* PinnedToolbarActionsContainer::GetSidePanelCoordinator() {

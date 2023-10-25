@@ -33,7 +33,6 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_header.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_toolbar_container.h"
-#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -362,10 +361,6 @@ void SidePanelCoordinator::Close() {
     }
     current_entry_.reset();
     current_entry->OnEntryHidden();
-
-    if (browser_view_->toolbar()->pinned_toolbar_actions_container()) {
-      NotifyPinnedContainerOfActiveStateChange(current_entry->key(), false);
-    }
   }
 
   // Reset active entry values for all observed registries and clear cache for
@@ -699,13 +694,8 @@ void SidePanelCoordinator::PopulateSidePanel(
   }
   UpdateNewTabButtonState();
   UpdateHeaderPinButtonState();
-  if (browser_view_->toolbar()->pinned_toolbar_actions_container()) {
-    NotifyPinnedContainerOfActiveStateChange(entry->key(), true);
-    if (previous_entry) {
-      NotifyPinnedContainerOfActiveStateChange(previous_entry->key(), false);
-    }
-  } else if (auto* side_panel_container =
-                 browser_view_->toolbar()->side_panel_container()) {
+  if (auto* side_panel_container =
+          browser_view_->toolbar()->side_panel_container()) {
     side_panel_container->UpdateSidePanelContainerButtonsState();
   }
 
@@ -976,23 +966,6 @@ SidePanelEntry* SidePanelCoordinator::GetNewActiveEntryOnTabChanged() {
   return global_registry_->active_entry()
              ? GetEntryForKey((*global_registry_->active_entry())->key())
              : nullptr;
-}
-
-void SidePanelCoordinator::NotifyPinnedContainerOfActiveStateChange(
-    SidePanelEntryKey key,
-    bool is_active) {
-  auto* toolbar_container =
-      browser_view_->toolbar()->pinned_toolbar_actions_container();
-  CHECK(toolbar_container);
-
-  if (key.id() == SidePanelEntryId::kExtension) {
-    // TODO(b/303064829): Handle extensions pop out and highlighting.
-  } else {
-    absl::optional<actions::ActionId> action_id =
-        SidePanelEntryIdToActionId(key.id());
-    CHECK(action_id.has_value());
-    toolbar_container->UpdateActionState(*action_id, is_active);
-  }
 }
 
 void SidePanelCoordinator::OnEntryRegistered(SidePanelRegistry* registry,

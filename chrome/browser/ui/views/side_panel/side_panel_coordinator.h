@@ -223,9 +223,6 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // side panel.
   SidePanelEntry* GetNewActiveEntryOnTabChanged();
 
-  void NotifyPinnedContainerOfActiveStateChange(SidePanelEntryKey key,
-                                                bool is_active);
-
   // SidePanelRegistryObserver:
   void OnEntryRegistered(SidePanelRegistry* registry,
                          SidePanelEntry* entry) override;
