@@ -930,9 +930,7 @@ std::u16string AutofillSuggestionGenerator::GetProfileSuggestionMainText(
     const AutofillProfile* profile,
     ServerFieldType trigger_field_type) {
   std::string app_locale = personal_data_->app_locale();
-  ::i18n::addressinput::AddressField address_field;
-  if (i18n::FieldForType(trigger_field_type, &address_field) &&
-      address_field == ::i18n::addressinput::STREET_ADDRESS) {
+  if (trigger_field_type == ADDRESS_HOME_STREET_ADDRESS) {
     std::string street_address_line;
     ::i18n::addressinput::GetStreetAddressLinesAsSingleLine(
         *i18n::CreateAddressDataFromAutofillProfile(*profile, app_locale),
