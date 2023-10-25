@@ -395,6 +395,10 @@ class RenderViewContextMenu
   // or whether the current page can be translated.
   bool CanTranslate(bool menu_logging);
 
+  // Under the correct conditions, issues a preconnection to the Lens URL and
+  // warms up a renderer process.
+  void MaybePrepareForLensQuery();
+
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   // Does not execute "Save link as" if the URL is blocked by the URL filter.
   void CheckSupervisedUserURLFilterAndSaveLinkAs();

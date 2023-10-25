@@ -267,6 +267,11 @@ extern bool GetShouldIssuePreconnectForLens();
 // is shown.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern std::string GetPreconnectKeyForLens();
+
+// Returns whether to start a Spare Render process when the context menu item
+// is shown.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetShouldIssueProcessPrewarmingForLens();
 }  // namespace features
 }  // namespace lens
 

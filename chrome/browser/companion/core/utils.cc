@@ -68,6 +68,11 @@ std::string GetPreconnectKeyForCompanion() {
   return url;
 }
 
+bool GetShouldIssueProcessPrewarmingForCompanion() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      *GetFeatureToUse(), "companion-issue-process-prewarming", true);
+}
+
 bool ShouldEnableOpenCompanionForImageSearch() {
   // Allow multiple field trials to control the value. This is needed because
   // companion may be enabled by any of the field trials.

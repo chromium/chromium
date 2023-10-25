@@ -84,6 +84,9 @@ constexpr base::FeatureParam<bool> kShouldIssuePreconnectForLens{
 constexpr base::FeatureParam<std::string> kPreconnectKeyForLens{
     &kLensStandalone, "lens-preconnect-key", "https://google.com"};
 
+constexpr base::FeatureParam<bool> kShouldIssueProcessPrewarmingForLens{
+    &kLensStandalone, "lens-issue-process-prewarming", true};
+
 constexpr base::FeatureParam<bool> kDismissLoadingStateOnDidFinishLoad{
     &kLensStandalone, "dismiss-loading-state-on-did-finish-load", false};
 
@@ -249,6 +252,10 @@ bool GetShouldIssuePreconnectForLens() {
 
 std::string GetPreconnectKeyForLens() {
   return kPreconnectKeyForLens.Get();
+}
+
+bool GetShouldIssueProcessPrewarmingForLens() {
+  return kShouldIssueProcessPrewarmingForLens.Get();
 }
 
 }  // namespace features
