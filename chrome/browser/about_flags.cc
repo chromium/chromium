@@ -4204,11 +4204,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"audio-flexible-loopback", flag_descriptions::kAudioFlexibleLoopbackName,
      flag_descriptions::kAudioFlexibleLoopbackDescription, kOsCrOS,
      PLATFORM_FEATURE_NAME_TYPE("CrOSLateBootAudioFlexibleLoopback")},
-    {"audio-flexible-loopback-for-system-loopback",
-     flag_descriptions::kAudioFlexibleLoopbackForSystemLoopbackName,
-     flag_descriptions::kAudioFlexibleLoopbackForSystemLoopbackDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(media::kAudioFlexibleLoopbackForSystemLoopback)},
     {"audio-hfp-mic-sr", flag_descriptions::kAudioHFPMicSRName,
      flag_descriptions::kAudioHFPMicSRDescription, kOsCrOS,
      PLATFORM_FEATURE_NAME_TYPE("CrOSLateBootAudioHFPMicSR")},
@@ -7441,6 +7436,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kShowForceRespectUiGainsToggleDescription,
      kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(media::kShowForceRespectUiGainsToggle)},
+    {"audio-flexible-loopback-for-system-loopback",
+     flag_descriptions::kAudioFlexibleLoopbackForSystemLoopbackName,
+     flag_descriptions::kAudioFlexibleLoopbackForSystemLoopbackDescription,
+     kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(media::kAudioFlexibleLoopbackForSystemLoopback)},
 #endif
 
     {"enable-css-selector-fragment-anchor",

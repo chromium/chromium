@@ -3191,9 +3191,6 @@ extern const char kAudioAPNoiseCancellationDescription[];
 extern const char kAudioFlexibleLoopbackName[];
 extern const char kAudioFlexibleLoopbackDescription[];
 
-extern const char kAudioFlexibleLoopbackForSystemLoopbackName[];
-extern const char kAudioFlexibleLoopbackForSystemLoopbackDescription[];
-
 extern const char kAudioHFPMicSRName[];
 extern const char kAudioHFPMicSRDescription[];
 
@@ -4228,6 +4225,9 @@ extern const char kShowForceRespectUiGainsToggleDescription[];
 
 extern const char kCrOSSystemVoiceIsolationOptionName[];
 extern const char kCrOSSystemVoiceIsolationOptionDescription[];
+
+extern const char kAudioFlexibleLoopbackForSystemLoopbackName[];
+extern const char kAudioFlexibleLoopbackForSystemLoopbackDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
