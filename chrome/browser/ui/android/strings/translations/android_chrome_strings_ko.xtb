@@ -637,7 +637,7 @@
 <translation id="4335835283689002019">세이프 브라우징 사용 안함</translation>
 <translation id="4351244548802238354">대화상자 닫기</translation>
 <translation id="4355272626458588338">중요한 페이지를 북마크에 추가하여 다시 돌아갈 수 있습니다.</translation>
-<translation id="4369735607080757018">광고 실적을 측정할 수 있도록 광고 표시 시간 등 제한된 유형의 데이터가 사이트 간에 공유됩니다.</translation>
+<translation id="4369735607080757018">광고 실적을 측정하기 위해 광고가 표시된 시간과 같이 제한된 유형의 데이터가 사이트 간에 공유됩니다.</translation>
 <translation id="4378154925671717803">전화기</translation>
 <translation id="438319986296050901">카드만 공유</translation>
 <translation id="4384468725000734951">검색할 때 Sogou 사용</translation>
@@ -795,7 +795,7 @@
 <translation id="5091199029769593641">곧 새 탭을 열 때 <ph name="SITE_NAME" /> 스토리가 표시됩니다. 내가 팔로우하는 사이트는 Google 계정에 저장되며 디스커버 설정에서 관리할 수 있습니다.</translation>
 <translation id="5091249083535528968">확장된 사용 데이터</translation>
 <translation id="509429900233858213">오류가 발생했습니다.</translation>
-<translation id="5097349930204431044">방문한 사이트에서 내가 좋아하는 콘텐츠가 무엇인지 파악할 수 있으며, 내가 인터넷을 계속 탐색하면 사이트에서 광고를 제안할 수 있습니다.</translation>
+<translation id="5097349930204431044">방문한 사이트에서 내가 좋아하는 콘텐츠가 무엇인지 파악할 수 있으며, 내가 인터넷을 계속 탐색하면 사이트에서 광고를 추천할 수 있습니다.</translation>
 <translation id="5099845111805573968">데스크톱 사이트를 선택하면 사이트에 방문할 때마다 이 설정이 적용됩니다.</translation>
 <translation id="5102401324271069229">사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chrome에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
 <translation id="510275257476243843">1시간 남음</translation>
@@ -1436,7 +1436,7 @@
 <translation id="829672787777123339">기기에 연결 중…</translation>
 <translation id="8310344678080805313">일반 탭</translation>
 <translation id="831192587911042850">팔로우하는 웹사이트 목록에 현재 웹사이트를 추가하세요.</translation>
-<translation id="8333340769932050274">사이트와 공유하고 싶지 않은 주제를 차단할 수 있습니다. 또한 Chrome에서는 4주 이상된 주제를 자동으로 삭제합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="8333340769932050274">사이트와 공유하고 싶지 않은 주제를 차단할 수 있습니다. 또한 Chrome에서는 4주가 지난 주제를 자동으로 삭제합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="834313815369870491">사이트 번역 안 함</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Chrome의 데이터 사용 방식:<ph name="END_BOLD" /> 사이트에서는 Chrome에 내 관심분야에 관한 정보를 저장할 수 있습니다. 예를 들어 마라톤화를 구매하려고 사이트를 방문하면 사이트에서 내 관심분야를 마라톤으로 정의할 수 있습니다. 나중에 마라톤 대회에 등록하기 위해 다른 사이트에 방문하면 관심분야를 토대로 마라톤화 광고가 표시될 수 있습니다.</translation>
 <translation id="8354977102499939946">음성으로 빠르게 검색합니다. 바로가기를 수정하려면 설정으로 이동하세요.</translation>

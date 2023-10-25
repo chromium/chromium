@@ -4166,7 +4166,7 @@
 <translation id="431076611119798497">&amp;Мәліметтер</translation>
 <translation id="4311284648179069796">Оқып, өзгерту рұқсаты жоқ</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google аккаунты}other{<ph name="EXTRA_ACCOUNTS" /> Google аккаунты}}</translation>
-<translation id="4312866146174492540">Бөгеу (әдепкі)</translation>
+<translation id="4312866146174492540">Блоктау (әдепкі)</translation>
 <translation id="4314497418046265427">Телефонды <ph name="DEVICE_TYPE" /> құрылғысына жалғап, жұмыс өнімділігін арттырыңыз</translation>
 <translation id="4314815835985389558">Синхрондауды басқару</translation>
 <translation id="4316850752623536204">Әзірлеуші веб-сайты</translation>
@@ -7472,7 +7472,7 @@
 <translation id="7050037487872780845">Хотспот конфигурациясы жарамсыз</translation>
 <translation id="7051551856857948729">IBAN мәнін жасыру</translation>
 <translation id="7052237160939977163">Өнімділікті бақылау деректерін жіберу</translation>
-<translation id="7053983685419859001">Бөгеу</translation>
+<translation id="7053983685419859001">Блоктау</translation>
 <translation id="7055152154916055070">Бағыттау функциясына тыйым салынды.</translation>
 <translation id="7055451306017383754">Бөлісуден бас тарту мүмкін емес, себебі бұл қалтаны қолданба пайдаланып жатыр. Parallels Desktop өшкен соң ғана, қалтаны бөлісуден бас тартылады.</translation>
 <translation id="7056418393177503237">{0,plural, =1{Инкогнито}other{# инкогнито терезесі ашық}}</translation>

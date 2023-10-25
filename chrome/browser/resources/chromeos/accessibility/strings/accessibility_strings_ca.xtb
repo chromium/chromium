@@ -36,7 +36,7 @@
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">No hi ha cap encapçalament més de nivell 4</translation>
 <translation id="1212770441379271564">Les dreceres següents no són ordres de ChromeVox, però són molt útils per treure tot el partit de Chrome.
-    Per navegar cap endavant per diversos elements clicables, com ara botons i enllaços, prem la tecla Tab. Per navegar cap enrere, prem Maj+Tab.
+    Per navegar endavant per diversos elements clicables, com ara botons i enllaços, prem la tecla Tab. Per navegar cap enrere, prem Maj+Tab.
     Per entrar al quadre d'adreces del navegador Chrome, que també s'anomena omnibox, prem Control+L.
     Per obrir una pestanya nova i anar-hi automàticament, prem Control+T. El cursor se situarà a l'omnibox.
     Per tancar una pestanya, prem Control+W.
@@ -560,7 +560,7 @@
 <translation id="4804818685124855865">Desconnecta</translation>
 <translation id="481165870889056555">Presenta el títol de la pàgina actual</translation>
 <translation id="4815668758102003883">Turquesa pàl·lid</translation>
-<translation id="4826415162591436065">Navega cap endavant.</translation>
+<translation id="4826415162591436065">Navega endavant.</translation>
 <translation id="4827410568042294688">no seleccionat</translation>
 <translation id="4838490795649708173">Toca amb quatre dits</translation>
 <translation id="4839925464551908214">Ves a la fila anterior</translation>

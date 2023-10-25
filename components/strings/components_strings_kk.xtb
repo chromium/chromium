@@ -1609,7 +1609,7 @@
 <translation id="4310070645992025887">Саяхаттарыңызды іздеңіз</translation>
 <translation id="4310496734563057511">Бұл құрылғыны басқалармен бірге қолдансаңыз, сақталған құпия сөзді пайдаланған кезде жеке басыңызды растау үшін Windows Hello технологиясын қосып қоюыңызға болады.</translation>
 <translation id="4312613361423056926">B2</translation>
-<translation id="4312866146174492540">Бөгеу (әдепкі)</translation>
+<translation id="4312866146174492540">Блоктау (әдепкі)</translation>
 <translation id="4314815835985389558">Синхрондауды басқару</translation>
 <translation id="4318213823155573975">Бас киім</translation>
 <translation id="4318312030194671742">Paint Preview шығармашылық қызметі</translation>
@@ -2906,7 +2906,7 @@
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250"><ph name="DOMAIN" /> доменіне қол жеткізуге әрекет еттіңіз, бірақ сервер сенімді болуы үшін жарамдылық мерзімі тым ұзақ болған сертификатты ұсынды.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Бұл карта қазір сақталмайды}other{Бұл карталар қазір сақталмайды}}</translation>
-<translation id="7053983685419859001">Бөгеу</translation>
+<translation id="7053983685419859001">Блоктау</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> браузері <ph name="ISSUER" /> осы веб-сайттың сертификатын шығарғанын растады.</translation>
 <translation id="7058774143982824355">CSV құпия сөзін талдау қызметі</translation>
 <translation id="7061777300866737982">Үй қауіпсіздігі</translation>

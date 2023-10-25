@@ -386,7 +386,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="3490765818161916458">Zerrenda moduko sareta</translation>
 <translation id="3492609944033322585">{COUNT,plural, =1{eskuineko kako zuzena}other{eskuineko # kako zuzen}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
-<translation id="3497063866483065785">{COUNT,plural, =1{galdera-ikurra}other{# galdera-ikur}}</translation>
+<translation id="3497063866483065785">{COUNT,plural, =1{galdera-marka}other{# galdera-marka}}</translation>
 <translation id="3505359110822747654">Tolestu ChromeVox-en menuak</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{azentu zirkunflexua}other{# azentu zirkunflexu}}</translation>
 <translation id="3518600448524470129">{COUNT,plural, =1{bulet zuri bat}other{# bulet zuri}}</translation>
