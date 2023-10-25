@@ -149,6 +149,8 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
     extensions_container_ =
         AddChildView(std::make_unique<ExtensionsToolbarContainer>(
             browser_view_->browser(), display_mode));
+    extensions_container_->GetExtensionsButton()
+        ->SetAppearDisabledInInactiveWidget(true);
     extensions_container_->SetProperty(
         views::kFlexBehaviorKey,
         views::FlexSpecification(
@@ -163,6 +165,7 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
     download_button_ = AddChildView(
         std::make_unique<DownloadToolbarButtonView>(browser_view_));
     views::SetHitTestComponent(download_button_, static_cast<int>(HTCLIENT));
+    ConfigureWebAppToolbarButton(download_button_, toolbar_button_provider_);
   }
 
 #if !BUILDFLAG(IS_CHROMEOS)
