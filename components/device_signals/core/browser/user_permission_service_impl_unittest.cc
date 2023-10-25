@@ -62,6 +62,7 @@ class UserPermissionServiceImplTest : public testing::Test,
     permission_service_ = std::make_unique<UserPermissionServiceImpl>(
         &management_service_, std::move(mock_user_delegate), &test_prefs_);
   }
+  ~UserPermissionServiceImplTest() override { mock_user_delegate_ = nullptr; }
 
   void SetDeviceAsCloudManaged() {
     scoped_override_.emplace(&management_service_,
@@ -104,8 +105,7 @@ class UserPermissionServiceImplTest : public testing::Test,
   base::test::ScopedFeatureList scoped_feature_list_;
   TestManagementService management_service_;
   absl::optional<ScopedManagementServiceOverrideForTesting> scoped_override_;
-  raw_ptr<testing::StrictMock<MockUserDelegate>, DanglingUntriaged>
-      mock_user_delegate_;
+  raw_ptr<testing::StrictMock<MockUserDelegate>> mock_user_delegate_;
   TestingPrefServiceSimple test_prefs_;
 
   std::unique_ptr<UserPermissionServiceImpl> permission_service_;
