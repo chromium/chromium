@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
+#include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -394,8 +395,14 @@ template <typename ElementIDLType, typename ContainerType>
   for (typename ContainerType::const_iterator iter = sequence.begin();
        iter != end; ++iter) {
     v8::Local<v8::Value> v8_value;
-    if (!ToV8Traits<ElementIDLType>::ToV8(script_state, *iter)
-             .ToLocal(&v8_value)) {
+    v8::MaybeLocal<v8::Value> maybe_v8_value;
+    if constexpr (WTF::IsAnyMemberType<decltype(*iter)>::value) {
+      maybe_v8_value =
+          ToV8Traits<ElementIDLType>::ToV8(script_state, iter->Get());
+    } else {
+      maybe_v8_value = ToV8Traits<ElementIDLType>::ToV8(script_state, *iter);
+    }
+    if (!maybe_v8_value.ToLocal(&v8_value)) {
       return {};
     }
     converted_vector.push_back(std::move(v8_value));
@@ -448,9 +455,16 @@ template <typename ValueIDLType, typename ContainerType>
   for (typename ContainerType::const_iterator iter = record.begin();
        iter != end; ++iter) {
     v8::Local<v8::Value> v8_value;
-    if (!ToV8Traits<ValueIDLType>::ToV8(script_state, iter->second)
-             .ToLocal(&v8_value)) {
-      return {};
+    v8::MaybeLocal<v8::Value> maybe_v8_value;
+    if constexpr (WTF::IsAnyMemberType<decltype(iter->second)>::value) {
+      maybe_v8_value =
+          ToV8Traits<ValueIDLType>::ToV8(script_state, iter->second.Get());
+    } else {
+      maybe_v8_value =
+          ToV8Traits<ValueIDLType>::ToV8(script_state, iter->second);
+    }
+    if (!maybe_v8_value.ToLocal(&v8_value)) {
+      return v8::MaybeLocal<v8::Value>();
     }
     bool is_property_created;
     if (!object
