@@ -944,7 +944,7 @@ class ClientManager {
         return callOnSession(session, null, SessionParams::getEngagementSignalsAvailableSupplier);
     }
 
-    public @NonNull EngagementSignalsHandler getEngagementSignalsHandlerForSession(
+    public @Nullable EngagementSignalsHandler getEngagementSignalsHandlerForSession(
             CustomTabsSessionToken session) {
         return callOnSession(session, null, SessionParams::getEngagementSignalsHandler);
     }

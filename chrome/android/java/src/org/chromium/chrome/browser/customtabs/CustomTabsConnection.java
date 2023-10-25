@@ -1781,10 +1781,11 @@ public class CustomTabsConnection {
                 || !isEngagementSignalsApiAvailableInternal(sessionToken)) {
             return false;
         }
-
-        mClientManager.setEngagementSignalsCallbackForSession(sessionToken, callback);
         var engagementSignalsHandler =
                 mClientManager.getEngagementSignalsHandlerForSession(sessionToken);
+        if (engagementSignalsHandler == null) return false;
+
+        mClientManager.setEngagementSignalsCallbackForSession(sessionToken, callback);
         PostTask.postTask(TaskTraits.UI_DEFAULT,
                 () -> engagementSignalsHandler.setEngagementSignalsCallback(callback));
         return true;
