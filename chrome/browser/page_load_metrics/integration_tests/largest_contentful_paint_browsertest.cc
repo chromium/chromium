@@ -1447,7 +1447,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
 #define MAYBE_LCPBreakdownTimings_DetachedWindow LCPBreakdownTimings_DetachedWindow
 #endif
 IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
-                       LCPBreakdownTimings_DetachedWindow) {
+                       MAYBE_LCPBreakdownTimings_DetachedWindow) {
   Start();
 
   Load("/lcp_detached_window.html");
