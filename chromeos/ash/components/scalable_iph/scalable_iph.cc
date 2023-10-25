@@ -46,42 +46,6 @@ constexpr auto kIphTriggeringEvents =
     base::MakeFixedFlatSet<ScalableIph::Event>(
         {ScalableIph::Event::kFiveMinTick, ScalableIph::Event::kUnlocked});
 
-const base::flat_map<ScalableIph::Event, std::string>& GetEventNamesMap() {
-  // IPH events are put in a global namespace. Prefix with ScalableIph for all
-  // events.
-  static const base::NoDestructor<
-      base::flat_map<ScalableIph::Event, std::string>>
-      event_names_map({
-          {ScalableIph::Event::kFiveMinTick, kEventNameFiveMinTick},
-          {ScalableIph::Event::kUnlocked, kEventNameUnlocked},
-          {ScalableIph::Event::kAppListShown, kEventNameAppListShown},
-          {ScalableIph::Event::kAppListItemActivationYouTube,
-           kEventNameAppListItemActivationYouTube},
-          {ScalableIph::Event::kAppListItemActivationGoogleDocs,
-           kEventNameAppListItemActivationGoogleDocs},
-          {ScalableIph::Event::kAppListItemActivationGooglePhotosWeb,
-           kEventNameAppListItemActivationGooglePhotosWeb},
-          {ScalableIph::Event::kOpenPersonalizationApp,
-           kEventNameOpenPersonalizationApp},
-          {ScalableIph::Event::kShelfItemActivationYouTube,
-           kEventNameShelfItemActivationYouTube},
-          {ScalableIph::Event::kShelfItemActivationGoogleDocs,
-           kEventNameShelfItemActivationGoogleDocs},
-          {ScalableIph::Event::kShelfItemActivationGooglePhotosWeb,
-           kEventNameShelfItemActivationGooglePhotosWeb},
-          {ScalableIph::Event::kShelfItemActivationGooglePhotosAndroid,
-           kEventNameShelfItemActivationGooglePhotosAndroid},
-          {ScalableIph::Event::kShelfItemActivationGooglePlay,
-           kEventNameShelfItemActivationGooglePlay},
-          {ScalableIph::Event::kAppListItemActivationGooglePlayStore,
-           kEventNameAppListItemActivationGooglePlayStore},
-          {ScalableIph::Event::kAppListItemActivationGooglePhotosAndroid,
-           kEventNameAppListItemActivationGooglePhotosAndroid},
-          {ScalableIph::Event::kPrintJobCreated, kEventNamePrintJobCreated},
-      });
-  return *event_names_map;
-}
-
 std::string GetHelpAppIphEventName(ActionType action_type) {
   switch (action_type) {
     case ActionType::kOpenChrome:
@@ -223,6 +187,43 @@ constexpr auto kShelfItemActivationEventsMap =
     });
 
 constexpr base::TimeDelta kTimeTickEventInterval = base::Minutes(5);
+
+std::string GetEventName(ScalableIph::Event event, Logger* logger) {
+  // Use switch statement as you can get a compiler error if you forget to add a
+  // conversion.
+  switch (event) {
+    case ScalableIph::Event::kFiveMinTick:
+      return kEventNameFiveMinTick;
+    case ScalableIph::Event::kUnlocked:
+      return kEventNameUnlocked;
+    case ScalableIph::Event::kAppListShown:
+      return kEventNameAppListShown;
+    case ScalableIph::Event::kAppListItemActivationYouTube:
+      return kEventNameAppListItemActivationYouTube;
+    case ScalableIph::Event::kAppListItemActivationGoogleDocs:
+      return kEventNameAppListItemActivationGoogleDocs;
+    case ScalableIph::Event::kAppListItemActivationGooglePhotosWeb:
+      return kEventNameAppListItemActivationGooglePhotosWeb;
+    case ScalableIph::Event::kOpenPersonalizationApp:
+      return kEventNameOpenPersonalizationApp;
+    case ScalableIph::Event::kShelfItemActivationYouTube:
+      return kEventNameShelfItemActivationYouTube;
+    case ScalableIph::Event::kShelfItemActivationGoogleDocs:
+      return kEventNameShelfItemActivationGoogleDocs;
+    case ScalableIph::Event::kShelfItemActivationGooglePhotosWeb:
+      return kEventNameShelfItemActivationGooglePhotosWeb;
+    case ScalableIph::Event::kShelfItemActivationGooglePhotosAndroid:
+      return kEventNameShelfItemActivationGooglePhotosAndroid;
+    case ScalableIph::Event::kShelfItemActivationGooglePlay:
+      return kEventNameShelfItemActivationGooglePlay;
+    case ScalableIph::Event::kAppListItemActivationGooglePlayStore:
+      return kEventNameAppListItemActivationGooglePlayStore;
+    case ScalableIph::Event::kAppListItemActivationGooglePhotosAndroid:
+      return kEventNameAppListItemActivationGooglePhotosAndroid;
+    case ScalableIph::Event::kPrintJobCreated:
+      return kEventNamePrintJobCreated;
+  }
+}
 
 std::string GetParamValue(const base::Feature& feature,
                           const std::string& param_name) {
@@ -785,21 +786,15 @@ void ScalableIph::RecordEventInternal(ScalableIph::Event event,
     return;
   }
 
-  auto it = GetEventNamesMap().find(event);
-  if (it == GetEventNamesMap().end()) {
-    SCALABLE_IPH_LOG(GetLogger())
-        << "Missing ScalableIph::Event to event name string mapping.";
-    return;
-  }
-
-  SCALABLE_IPH_LOG(GetLogger()) << "Recording event as " << it->second;
-  tracker_->NotifyEvent(it->second);
+  const std::string event_name = GetEventName(event, GetLogger());
+  SCALABLE_IPH_LOG(GetLogger()) << "Recording event as " << event_name;
+  tracker_->NotifyEvent(event_name);
 
   if (kIphTriggeringEvents.contains(event)) {
     SCALABLE_IPH_LOG(GetLogger()) << event
                                   << " is a condition check triggering event. "
                                      "Running trigger conditions check.";
-    CheckTriggerConditions();
+    CheckTriggerConditions(event);
   }
 }
 
@@ -810,10 +805,11 @@ void ScalableIph::CheckTriggerConditionsOnInitSuccess(bool init_success) {
     return;
   }
 
-  CheckTriggerConditions();
+  CheckTriggerConditions(std::nullopt);
 }
 
-void ScalableIph::CheckTriggerConditions() {
+void ScalableIph::CheckTriggerConditions(
+    const std::optional<ScalableIph::Event>& trigger_event) {
   // Make sure that `tracker_` is initialized. `tracker_` should not cause crash
   // even if we call `ShouldTriggerHelpUI` before initialization. But it returns
   // false. It can become a difficult to notice/debug bug if we accidentally
@@ -845,7 +841,7 @@ void ScalableIph::CheckTriggerConditions() {
       continue;
     }
 
-    if (!CheckCustomConditions(*feature)) {
+    if (!CheckCustomConditions(*feature, trigger_event)) {
       SCALABLE_IPH_LOG(GetLogger())
           << "Custom conditions are not satisfied for " << feature->name;
       continue;
@@ -905,12 +901,47 @@ void ScalableIph::CheckTriggerConditions() {
   }
 }
 
-bool ScalableIph::CheckCustomConditions(const base::Feature& feature) {
+bool ScalableIph::CheckCustomConditions(
+    const base::Feature& feature,
+    const std::optional<ScalableIph::Event>& trigger_event) {
   SCALABLE_IPH_LOG(GetLogger())
       << "Checking custom conditions for " << feature.name;
-  return CheckNetworkConnection(feature) && CheckClientAge(feature) &&
+  return CheckTriggerEvent(feature, trigger_event) &&
+         CheckNetworkConnection(feature) && CheckClientAge(feature) &&
          CheckHasSavedPrinters(feature) &&
          CheckPhoneHubOnboardingEligible(feature);
+}
+
+bool ScalableIph::CheckTriggerEvent(
+    const base::Feature& feature,
+    const std::optional<ScalableIph::Event>& trigger_event) {
+  if (!trigger_event.has_value()) {
+    SCALABLE_IPH_LOG(GetLogger())
+        << "This condition check is NOT triggered by an event. Skipping this "
+           "trigger event condition check.";
+    return true;
+  }
+
+  SCALABLE_IPH_LOG(GetLogger())
+      << "Checking trigger event condition for " << feature.name;
+
+  std::string trigger_event_condition =
+      GetParamValue(feature, kCustomConditionTriggerEventParamName);
+  if (trigger_event_condition.empty()) {
+    SCALABLE_IPH_LOG(GetLogger()) << "No trigger event condition specified.";
+    return true;
+  }
+
+  std::string trigger_event_name =
+      GetEventName(trigger_event.value(), GetLogger());
+
+  const bool result = trigger_event_condition == trigger_event_name;
+  SCALABLE_IPH_LOG(GetLogger())
+      << "Specified trigger event name is " << trigger_event_condition
+      << ". This condition check is triggered by " << trigger_event.value()
+      << ". Compared trigger event name is " << trigger_event_name
+      << ". Result: " << result;
+  return result;
 }
 
 bool ScalableIph::CheckNetworkConnection(const base::Feature& feature) {

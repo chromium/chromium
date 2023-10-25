@@ -212,6 +212,13 @@ inline constexpr char kCustomConditionPhoneHubOnboardingEligibleParamName[] =
 inline constexpr char kCustomConditionPhoneHubOnboardingEligibleValueTrue[] =
     "True";
 
+// `TriggerEvent` condition is true if an IPH conditions check is triggered by a
+// record of an event specified in this condition. Note that only sub-set of
+// events can trigger an IPH condition check as specified in
+// `kIphTriggeringEvents` in `scalable_iph.cc`.
+inline constexpr char kCustomConditionTriggerEventParamName[] =
+    "x_CustomConditionTriggerEvent";
+
 // `UiType` param indicates which IPH UI is used for an event config.
 inline constexpr char kCustomUiTypeParamName[] = "x_CustomUiType";
 inline constexpr char kCustomUiTypeValueNotification[] = "Notification";

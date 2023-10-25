@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH_SCALABLE_IPH_H_
 #define CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH_SCALABLE_IPH_H_
 
+#include <optional>
 #include <ostream>
 #include <vector>
 
@@ -165,12 +166,16 @@ class ScalableIph : public KeyedService,
   void RecordUnlockedEvent();
   void RecordEventInternal(Event event, bool init_success);
   void CheckTriggerConditionsOnInitSuccess(bool init_success);
-  void CheckTriggerConditions();
+  void CheckTriggerConditions(
+      const std::optional<ScalableIph::Event>& trigger_event);
 
   // Check all custom conditions assigned to `feature`. Returns true if all
   // conditions are valid and satisfied. Otherwise false including an invalid
   // config case.
-  bool CheckCustomConditions(const base::Feature& feature);
+  bool CheckCustomConditions(const base::Feature& feature,
+                             const std::optional<Event>& trigger_event);
+  bool CheckTriggerEvent(const base::Feature& feature,
+                         const std::optional<Event>& trigger_event);
   bool CheckNetworkConnection(const base::Feature& feature);
   bool CheckClientAge(const base::Feature& feature);
   bool CheckHasSavedPrinters(const base::Feature& feature);
