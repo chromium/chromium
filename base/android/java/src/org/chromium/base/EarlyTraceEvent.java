@@ -242,10 +242,13 @@ public class EarlyTraceEvent {
      */
     @CalledByNative
     static void setBackgroundStartupTracingFlag(boolean enabled) {
-        ContextUtils.getAppSharedPreferences()
-                .edit()
-                .putBoolean(BACKGROUND_STARTUP_TRACING_ENABLED_KEY, enabled)
-                .apply();
+        // Setting preferences might cause a disk write
+        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
+            ContextUtils.getAppSharedPreferences()
+                    .edit()
+                    .putBoolean(BACKGROUND_STARTUP_TRACING_ENABLED_KEY, enabled)
+                    .apply();
+        }
     }
 
     /**
