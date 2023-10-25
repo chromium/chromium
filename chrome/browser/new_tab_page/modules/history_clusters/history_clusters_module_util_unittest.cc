@@ -4,7 +4,9 @@
 
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_util.h"
 
+#include "base/containers/contains.h"
 #include "components/history_clusters/core/clustering_test_utils.h"
+#include "components/search/ntp_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -13,6 +15,19 @@ namespace {
 using ::testing::ElementsAre;
 
 using HistoryClustersModuleUtilTest = testing::Test;
+
+TEST(HistoryClustersModuleUtilTest, GetDefaultCategories) {
+  constexpr size_t kSampleCategoryCount = 3;
+  std::array<std::string_view, kSampleCategoryCount> sample_categories{"a", "b",
+                                                                       "c"};
+  auto categories_set = GetCategories(
+      ntp_features::kNtpHistoryClustersModuleCategoriesBlocklistParam,
+      {sample_categories.cbegin(), kSampleCategoryCount});
+  ASSERT_EQ(kSampleCategoryCount, categories_set.size());
+  for (auto category : sample_categories) {
+    ASSERT_TRUE(base::Contains(categories_set, category));
+  }
+}
 
 TEST(HistoryClustersModuleUtilTest, RecencyOnly) {
   history::Cluster cluster1;

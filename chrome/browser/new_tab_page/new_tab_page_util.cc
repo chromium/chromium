@@ -75,3 +75,19 @@ bool IsDriveModuleEnabled() {
   }
   return IsOsSupportedForDrive();
 }
+
+bool IsHistoryClustersModuleEnabled() {
+  if (base::FeatureList::GetInstance()->IsFeatureOverridden(
+          ntp_features::kNtpHistoryClustersModule.name)) {
+    return base::FeatureList::IsEnabled(
+        ntp_features::kNtpHistoryClustersModule);
+  }
+  return IsInUS();
+}
+
+bool IsEnUSLocaleOnlyFeatureEnabled(const base::Feature& ntp_feature) {
+  if (base::FeatureList::GetInstance()->IsFeatureOverridden(ntp_feature.name)) {
+    return base::FeatureList::IsEnabled(ntp_feature);
+  }
+  return IsInUS();
+}

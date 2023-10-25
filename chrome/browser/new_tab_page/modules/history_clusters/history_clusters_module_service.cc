@@ -4,6 +4,8 @@
 
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_service.h"
 
+#include <array>
+
 #include "base/barrier_callback.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -39,6 +41,18 @@ enum NTPHistoryClustersIneligibleReason {
   kMaxValue = kInsufficientRelatedSearches,
 };
 
+const size_t kCategoryBoostListSize = 32;
+constexpr std::array<std::string_view, kCategoryBoostListSize>
+    kCategoryBoostList{
+        "/m/04n1sn", "/m/025t3bg",    "/g/11h1zghcjr", "/m/01hbs0",
+        "/m/01lj9",  "/m/022hpx",     "/m/01mf_",      "/m/01mkq",
+        "/m/019qw9", "/g/11h16094f_", "/m/02h32",      "/m/017rcq",
+        "/m/02csf",  "/m/027hpj",     "/m/0dcz2",      "/m/02jfc",
+        "/m/05xlzx", "/m/03nlf2w",    "/m/01pmdg",     "/m/03r55",
+        "/m/03n2_q", "/g/1q677w6hv",  "/m/02rfdq",     "/m/01rk91",
+        "/m/04rjg",  "/m/0g55yf",     "/m/06k1r",      "/m/012mq4",
+        "/m/06mnr",  "/m/014dsx",     "/g/11fhwwq0bp", "/m/033wsp"};
+
 base::Time GetBeginTime() {
   static int hours_to_look_back = base::GetFieldTrialParamByFeatureAsInt(
       ntp_features::kNtpHistoryClustersModuleBeginTimeDuration,
@@ -59,7 +73,8 @@ HistoryClustersModuleService::HistoryClustersModuleService(
     OptimizationGuideKeyedService* optimization_guide_keyed_service)
     : max_clusters_to_return_(GetMaxClusters()),
       category_boostlist_(GetCategories(
-          ntp_features::kNtpHistoryClustersModuleCategoriesBoostlistParam)),
+          ntp_features::kNtpHistoryClustersModuleCategoriesBoostlistParam,
+          {kCategoryBoostList.begin(), kCategoryBoostListSize})),
       should_fetch_clusters_until_exhausted_(base::FeatureList::IsEnabled(
           ntp_features::kNtpHistoryClustersModuleFetchClustersUntilExhausted)),
       history_clusters_service_(history_clusters_service),

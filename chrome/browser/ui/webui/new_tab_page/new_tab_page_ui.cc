@@ -219,12 +219,12 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
                      base::FeatureList::IsEnabled(ntp_features::kNtpShortcuts));
   source->AddBoolean(
       "singleRowShortcutsEnabled",
-      base::FeatureList::IsEnabled(ntp_features::kNtpSingleRowShortcuts));
+      IsEnUSLocaleOnlyFeatureEnabled(ntp_features::kNtpSingleRowShortcuts));
   source->AddBoolean("logoEnabled",
                      base::FeatureList::IsEnabled(ntp_features::kNtpLogo));
   source->AddBoolean(
       "reducedLogoSpaceEnabled",
-      base::FeatureList::IsEnabled(ntp_features::kNtpReducedLogoSpace));
+      IsEnUSLocaleOnlyFeatureEnabled(ntp_features::kNtpReducedLogoSpace));
   source->AddBoolean(
       "middleSlotPromoEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpMiddleSlotPromo) &&
