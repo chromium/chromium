@@ -64489,6 +64489,7 @@ from previous Chrome versions.
   <int value="-568448085" label="SharedClipboardReceiver:disabled"/>
   <int value="-567920515" label="disable-experimental-hotwording"/>
   <int value="-567743697" label="EnableInputNoiseCancellationUi:enabled"/>
+  <int value="-567309305" label="FontationsFontBackend:disabled"/>
   <int value="-567197068" label="ProductivityLauncherAnimation:enabled"/>
   <int value="-565368004" label="AutofillCenterAlignedSuggestions:disabled"/>
   <int value="-565155800" label="ImprovedScreenCaptureSettings:disabled"/>
@@ -67948,6 +67949,7 @@ from previous Chrome versions.
   <int value="1121879933" label="CrosPrivacyHubAppPermissions:enabled"/>
   <int value="1122217615" label="PasswordGenerationBottomSheet:enabled"/>
   <int value="1122820469" label="ArcImageCopyPasteCompat:enabled"/>
+  <int value="1122825280" label="FontationsFontBackend:enabled"/>
   <int value="1123140537" label="tab-link-drag-drop:disabled"/>
   <int value="1124100808"
       label="FilterWebsitesForSupervisedUsersOnDesktopAndIOS:enabled"/>
