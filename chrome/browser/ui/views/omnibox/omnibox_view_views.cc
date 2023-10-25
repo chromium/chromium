@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/omnibox/clipboard_utils.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -479,9 +480,14 @@ gfx::Size OmniboxViewViews::GetMinimumSize() const {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // TODO(crbug.com/1338087): The minimum size of Lacros toolbar is set too wide
   // to use split view in tablet mode. Temporally making the minimum size of
-  // omnibox smaller for Lacros to align the behavior with Ash.
+  // omnibox smaller for Lacros to align the behavior with Ash. Responsive
+  // Toolbar is supposed to fix this. Remove the temporal solution when
+  // Responsive Toolbar is launched.
   const int kMinCharacters =
-      chromeos::TabletState::Get()->InTabletMode() ? 8 : 20;
+      chromeos::TabletState::Get()->InTabletMode() &&
+              !base::FeatureList::IsEnabled(features::kResponsiveToolbar)
+          ? 8
+          : 20;
 #else
   const int kMinCharacters = 20;
 #endif
