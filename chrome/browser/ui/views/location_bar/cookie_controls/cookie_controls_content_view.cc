@@ -105,7 +105,7 @@ void CookieControlsContentView::AddContentLabels() {
 }
 
 void CookieControlsContentView::SetToggleIsOn(bool is_on) {
-  toggle_button_->AnimateIsOn(is_on);
+  toggle_button_->SetIsOn(is_on);
 }
 
 void CookieControlsContentView::SetToggleIcon(const gfx::VectorIcon& icon) {
