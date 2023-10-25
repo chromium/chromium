@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
+#include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 #include "chromeos/crosapi/mojom/editor_panel.mojom.h"
 
 namespace ash::input_method {
@@ -142,6 +143,21 @@ void EditorPanelManager::OnEditorMenuVisibilityChanged(bool visible) {
 
 bool EditorPanelManager::IsEditorMenuVisible() const {
   return is_editor_menu_visible_;
+}
+
+void EditorPanelManager::LogEditorMode(
+    crosapi::mojom::EditorPanelMode mode) {
+  switch (mode) {
+    case crosapi::mojom::EditorPanelMode::kRewrite:
+      LogEditorState(EditorStates::kNativeUIShown, EditorMode::kRewrite);
+      return;
+    case crosapi::mojom::EditorPanelMode::kWrite:
+      LogEditorState(EditorStates::kNativeUIShown, EditorMode::kWrite);
+      return;
+    case crosapi::mojom::EditorPanelMode::kBlocked:
+    case crosapi::mojom::EditorPanelMode::kPromoCard:
+      return;
+  }
 }
 
 }  // namespace ash::input_method

@@ -244,6 +244,9 @@ void EditorMenuControllerImpl::OnGetEditorPanelContextResult(
       editor_menu_widget_->ShowInactive();
       break;
   }
+  if (card_session_ != nullptr) {
+    card_session_->panel_manager.LogEditorMode(context->editor_panel_mode);
+  }
 }
 
 void EditorMenuControllerImpl::OnEditorCardHidden() {
