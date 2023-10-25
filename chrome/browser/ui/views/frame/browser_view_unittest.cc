@@ -32,6 +32,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/performance_manager/public/features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/version_info/channel.h"
 #include "content/public/test/navigation_simulator.h"
@@ -166,7 +167,7 @@ TEST_F(BrowserViewTest, BrowserView) {
   EXPECT_EQ(customize_chrome_action->GetImage(),
             ui::ImageModel::FromVectorIcon(
                 vector_icons::kEditIcon, ui::kColorIcon, side_panel_icon_size));
-
+  EXPECT_EQ(customize_chrome_action->GetEnabled(), true);
   browser()->RemoveUserData(BrowserActions::UserDataKey());
 
   actions.clear();
