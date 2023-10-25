@@ -567,7 +567,7 @@ void FederatedAuthRequestImpl::CompleteDigitalCredentialRequest(
 }
 
 base::Value::Dict BuildDigitalCredentialRequest(
-    blink::mojom::WalletProviderPtr provider) {
+    blink::mojom::DigitalCredentialProviderPtr provider) {
   auto formats = Value::List();
   for (auto& format : provider->selector->format) {
     formats.Append(format);

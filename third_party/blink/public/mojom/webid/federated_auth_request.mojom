@@ -70,28 +70,28 @@ struct LogoutRpsRequest {
 
 // The details of different mechanisms that allows the browser
 // to intermediate the exchange of the user's entities.
-// Currently, federated identities are supported, and mobile driver's license
+// Currently, federated identities are supported, and digital credentials
 // are being prototyped.
 union IdentityProvider {
   IdentityProviderConfig federated;
-  WalletProvider holder;
+  DigitalCredentialProvider holder;
 };
 
-// The specification of the query to wallets.
-struct WalletProvider {
+// The specification of the query to digital credentials.
+struct DigitalCredentialProvider {
   map<string, string> params;
-  WalletSelector selector;
+  DigitalCredentialSelector selector;
 };
 
 // The requirements of the credentials that are being requested.
-struct WalletSelector {
+struct DigitalCredentialSelector {
   array<string> format;
   string? doctype;
-  array<WalletFieldRequirement> fields;
+  array<DigitalCredentialFieldRequirement> fields;
 };
 
 // The requirements that the verifier needs on specific fields.
-struct WalletFieldRequirement {
+struct DigitalCredentialFieldRequirement {
   // The name of the field (e.g. "org.iso.18013.5.1.family_name").
   string name;
 
