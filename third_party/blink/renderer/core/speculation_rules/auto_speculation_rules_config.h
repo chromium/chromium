@@ -7,8 +7,6 @@
 
 #include "third_party/blink/public/mojom/loader/javascript_framework_detection.mojom-shared.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -38,7 +36,7 @@ class CORE_EXPORT AutoSpeculationRulesConfig {
   static AutoSpeculationRulesConfig* OverrideInstanceForTesting(
       AutoSpeculationRulesConfig* new_override);
 
-  WTF::HashMap<mojom::JavaScriptFramework, String>
+  WTF::Vector<std::pair<mojom::JavaScriptFramework, String>>
       framework_to_speculation_rules_;
 };
 

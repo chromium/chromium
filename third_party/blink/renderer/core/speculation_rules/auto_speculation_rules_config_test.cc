@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/speculation_rules/auto_speculation_rules_config.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/loader/javascript_framework_detection.mojom-shared.h"
 
 namespace blink {
 namespace {
@@ -27,13 +26,7 @@ TEST_F(AutoSpeculationRulesConfigTest, EmptyConfig) {
   ExpectNoFrameworkSpeculationRules(config);
 }
 
-// TODO(1495420): Tests fail on Linux CFI builder
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_ValidConfig DISABLED_ValidConfig
-#else
-#define MAYBE_ValidConfig ValidConfig
-#endif
-TEST_F(AutoSpeculationRulesConfigTest, MAYBE_ValidConfig) {
+TEST_F(AutoSpeculationRulesConfigTest, ValidConfig) {
   AutoSpeculationRulesConfig config(R"(
   {
     "framework_to_speculation_rules": {
@@ -73,13 +66,7 @@ TEST_F(AutoSpeculationRulesConfigTest, NonObjectFrameworkToSpeculationRules) {
   ExpectNoFrameworkSpeculationRules(config);
 }
 
-// TODO(1495420): Tests fail on Linux CFI builder
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_OutOfRangeFramework DISABLED_OutOfRangeFramework
-#else
-#define MAYBE_OutOfRangeFramework OutOfRangeFramework
-#endif
-TEST_F(AutoSpeculationRulesConfigTest, MAYBE_OutOfRangeFramework) {
+TEST_F(AutoSpeculationRulesConfigTest, OutOfRangeFramework) {
   static_assert(base::to_underlying(mojom::JavaScriptFramework::kMaxValue) <
                 999);
 
@@ -98,13 +85,7 @@ TEST_F(AutoSpeculationRulesConfigTest, MAYBE_OutOfRangeFramework) {
                   .IsNull());
 }
 
-// TODO(1495420): Tests fail on Linux CFI builder
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_NonIntegerFramework DISABLED_NonIntegerFramework
-#else
-#define MAYBE_NonIntegerFramework NonIntegerFramework
-#endif
-TEST_F(AutoSpeculationRulesConfigTest, MAYBE_NonIntegerFramework) {
+TEST_F(AutoSpeculationRulesConfigTest, NonIntegerFramework) {
   static_assert(base::to_underlying(mojom::JavaScriptFramework::kMaxValue) <
                 999);
 
@@ -123,13 +104,7 @@ TEST_F(AutoSpeculationRulesConfigTest, MAYBE_NonIntegerFramework) {
                   .IsNull());
 }
 
-// TODO(1495420): Tests fail on Linux CFI builder
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_NonStringSpeculationRules DISABLED_NonStringSpeculationRules
-#else
-#define MAYBE_NonStringSpeculationRules NonStringSpeculationRules
-#endif
-TEST_F(AutoSpeculationRulesConfigTest, MAYBE_NonStringSpeculationRules) {
+TEST_F(AutoSpeculationRulesConfigTest, NonStringSpeculationRules) {
   static_assert(base::to_underlying(mojom::JavaScriptFramework::kMaxValue) <
                 999);
 

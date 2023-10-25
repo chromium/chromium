@@ -67,7 +67,7 @@ AutoSpeculationRulesConfig::AutoSpeculationRulesConfig(
       continue;
     }
 
-    framework_to_speculation_rules_.insert(framework, speculation_rules);
+    framework_to_speculation_rules_.emplace_back(framework, speculation_rules);
   }
 }
 
@@ -95,9 +95,10 @@ AutoSpeculationRulesConfig::OverrideInstanceForTesting(
 
 String AutoSpeculationRulesConfig::ForFramework(
     mojom::JavaScriptFramework framework) const {
-  if (auto iter = framework_to_speculation_rules_.find(framework);
-      iter != framework_to_speculation_rules_.end()) {
-    return iter->value;
+  for (const auto& entry : framework_to_speculation_rules_) {
+    if (entry.first == framework) {
+      return entry.second;
+    }
   }
 
   return String();

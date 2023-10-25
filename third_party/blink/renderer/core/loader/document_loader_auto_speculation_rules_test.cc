@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
-#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/javascript_framework_detection.h"
@@ -42,13 +41,7 @@ class DocumentLoaderAutoSpeculationRulesTest : public ::testing::Test {
   WebViewImpl* web_view_impl_;
 };
 
-// TODO(1495420): Tests fail on Linux CFI builder
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_InvalidJSON DISABLED_InvalidJSON
-#else
-#define MAYBE_InvalidJSON InvalidJSON
-#endif
-TEST_F(DocumentLoaderAutoSpeculationRulesTest, MAYBE_InvalidJSON) {
+TEST_F(DocumentLoaderAutoSpeculationRulesTest, InvalidJSON) {
   test::AutoSpeculationRulesConfigOverride override(R"(
   {
     "framework_to_speculation_rules": {
@@ -67,13 +60,7 @@ TEST_F(DocumentLoaderAutoSpeculationRulesTest, MAYBE_InvalidJSON) {
   EXPECT_EQ(rules.rule_sets().size(), 0u);
 }
 
-// TODO(1495420): Tests fail on Linux CFI builder
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_ValidRules DISABLED_ValidRules
-#else
-#define MAYBE_ValidRules ValidRules
-#endif
-TEST_F(DocumentLoaderAutoSpeculationRulesTest, MAYBE_ValidRules) {
+TEST_F(DocumentLoaderAutoSpeculationRulesTest, ValidRules) {
   test::AutoSpeculationRulesConfigOverride override(R"(
   {
     "framework_to_speculation_rules": {
@@ -94,13 +81,7 @@ TEST_F(DocumentLoaderAutoSpeculationRulesTest, MAYBE_ValidRules) {
   // the speculation rules tests.
 }
 
-// TODO(1495420): Tests fail on Linux CFI builder
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_MultipleRules DISABLED_MultipleRules
-#else
-#define MAYBE_MultipleRules MultipleRules
-#endif
-TEST_F(DocumentLoaderAutoSpeculationRulesTest, MAYBE_MultipleRules) {
+TEST_F(DocumentLoaderAutoSpeculationRulesTest, MultipleRules) {
   test::AutoSpeculationRulesConfigOverride override(R"(
   {
     "framework_to_speculation_rules": {
