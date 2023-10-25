@@ -47,3 +47,27 @@ def _CheckNoDirectLitImport(input_api, output_api):
                 break
 
     return results
+
+
+def _IsComment(line):
+    l = line.lstrip()
+    return l.startswith(('//', '/*', '* '))
+
+
+def _CheckBannedTsTags(input_api, output_api):
+    ts_only = lambda f: f.LocalPath().endswith('.ts')
+    results = []
+    offending_files = []
+    for f in input_api.AffectedFiles(file_filter=ts_only):
+        for line_num, line in f.ChangedContents():
+            if not _IsComment(line):
+                continue
+            if '@ts-ignore' in line:
+                offending_files.append(f'{f}: {line_num}: {line[:100]}')
+
+    if offending_files:
+        results.append(
+            output_api.PresubmitError('@ts-ignore is banned in TS files.',
+                                      offending_files))
+
+    return results
