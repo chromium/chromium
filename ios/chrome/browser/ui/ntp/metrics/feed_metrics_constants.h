@@ -32,7 +32,7 @@ extern const int kMinutesBetweenSessions;
 extern const int kMaxCardsInFeed;
 
 // Stores the time when the user visits an article on the feed.
-extern NSString* const kArticleVisitTimestampKey;
+extern const char kArticleVisitTimestampKey[];
 // Stores the time elapsed on the feed when the user leaves.
 extern const char kLongFeedVisitTimeAggregateKey[];
 extern const char kLongFollowingFeedVisitTimeAggregateKey[];

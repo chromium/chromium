@@ -187,7 +187,6 @@ using feed::FeedUserActionType;
                                   asInteraction:NO];
   }
 
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   if (visible) {
     base::Time lastInteractionTimeForGoodVisitsDate =
         self.prefService->GetTime(kLastInteractionTimeForGoodVisits);
@@ -223,26 +222,27 @@ using feed::FeedUserActionType;
     self.followingPreviousTimeInFeedGV =
         self.prefService->GetDouble(kLongFollowingFeedVisitTimeAggregateKey);
 
-    // Checks if there is a timestamp in defaults for when a user clicked
+    // Checks if there is a timestamp in PrefService for when a user clicked
     // on an article in order to be able to trigger a non-short click
     // interaction.
-    NSDate* articleVisitStart = base::apple::ObjCCast<NSDate>(
-        [defaults objectForKey:kArticleVisitTimestampKey]);
+    base::Time articleVisitStart =
+        self.prefService->GetTime(kArticleVisitTimestampKey);
     self.feedBecameVisibleTime = base::Time::Now();
 
-    if (articleVisitStart) {
+    if (articleVisitStart != base::Time()) {
       // Report Good Visit if user came back to the NTP after spending
       // kNonShortClickSeconds in a feed article.
-      if (base::Time::FromNSDate(articleVisitStart) - base::Time::Now() >
+      if (base::Time::Now() - articleVisitStart >
           base::Seconds(kNonShortClickSeconds)) {
         // Trigger a GV for a specific feed.
+        NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
         [self
             recordEngagedGoodVisits:
                 (FeedType)[defaults integerForKey:kLastUsedFeedForGoodVisitsKey]
                        allFeedsOnly:NO];
       }
-      // Clear defaults for new session.
-      [defaults setObject:nil forKey:kArticleVisitTimestampKey];
+      // Clear PrefService for new session.
+      self.prefService->ClearPref(kArticleVisitTimestampKey);
     }
   } else {
     // Once the NTP becomes hidden, check for Good Visit which updates
@@ -1311,8 +1311,7 @@ using feed::FeedUserActionType;
 // kMinutesBetweenSessions minutes between sessions.
 - (void)resetGoodVisitSession {
   // Reset defaults for new session.
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  [defaults setObject:nil forKey:kArticleVisitTimestampKey];
+  self.prefService->ClearPref(kArticleVisitTimestampKey);
   self.prefService->ClearPref(kLongFeedVisitTimeAggregateKey);
   base::Time now = base::Time::Now();
 
@@ -1395,8 +1394,9 @@ using feed::FeedUserActionType;
 - (void)recordOpenURL {
   // Save the time of the open so we can then calculate how long the user spent
   // in that page.
+  self.prefService->SetTime(kArticleVisitTimestampKey, base::Time::Now());
+
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  [defaults setObject:[[NSDate alloc] init] forKey:kArticleVisitTimestampKey];
   [defaults setInteger:[self.feedControlDelegate selectedFeed]
                 forKey:kLastUsedFeedForGoodVisitsKey];
 
