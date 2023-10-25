@@ -1123,6 +1123,9 @@ static_library("browser") {
     "performance_manager/mechanisms/page_freezer.h",
     "performance_manager/mechanisms/working_set_trimmer.cc",
     "performance_manager/mechanisms/working_set_trimmer.h",
+    "performance_manager/metrics/cpu_probe/cpu_probe.cc",
+    "performance_manager/metrics/cpu_probe/cpu_probe.h",
+    "performance_manager/metrics/cpu_probe/pressure_sample.h",
     "performance_manager/metrics/memory_pressure_metrics.cc",
     "performance_manager/metrics/memory_pressure_metrics.h",
     "performance_manager/metrics/metrics_provider_common.cc",
@@ -5956,6 +5959,8 @@ static_library("browser") {
       "os_crypt/app_bound_encryption_win.h",
       "password_manager/password_manager_util_win.cc",
       "password_manager/password_manager_util_win.h",
+      "performance_manager/metrics/cpu_probe/cpu_probe_win.cc",
+      "performance_manager/metrics/cpu_probe/cpu_probe_win.h",
       "performance_monitor/metric_evaluator_helper_win.cc",
       "performance_monitor/metric_evaluator_helper_win.h",
       "platform_util_win.cc",
@@ -6048,6 +6053,7 @@ static_library("browser") {
 
     deps += [
       ":chrome_process_finder",
+      ":cpu_probe_pdh_support",
       "//base/win:base_win_buildflags",
       "//chrome/app:chrome_exe_main_exports",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
@@ -6228,6 +6234,12 @@ static_library("browser") {
       "obsolete_system/obsolete_system_mac.cc",
       "password_manager/password_manager_util_mac.h",
       "password_manager/password_manager_util_mac.mm",
+      "performance_manager/metrics/cpu_probe/core_times.cc",
+      "performance_manager/metrics/cpu_probe/core_times.h",
+      "performance_manager/metrics/cpu_probe/cpu_probe_mac.cc",
+      "performance_manager/metrics/cpu_probe/cpu_probe_mac.h",
+      "performance_manager/metrics/cpu_probe/host_processor_info_scanner.cc",
+      "performance_manager/metrics/cpu_probe/host_processor_info_scanner.h",
       "platform_util_mac.mm",
       "policy/browser_dm_token_storage_mac.h",
       "policy/browser_dm_token_storage_mac.mm",
@@ -6467,6 +6479,12 @@ static_library("browser") {
       "memory_details_linux.cc",
       "metrics/bluetooth_metrics_provider.cc",
       "metrics/bluetooth_metrics_provider.h",
+      "performance_manager/metrics/cpu_probe/core_times.cc",
+      "performance_manager/metrics/cpu_probe/core_times.h",
+      "performance_manager/metrics/cpu_probe/cpu_probe_linux.cc",
+      "performance_manager/metrics/cpu_probe/cpu_probe_linux.h",
+      "performance_manager/metrics/cpu_probe/procfs_stat_cpu_parser.cc",
+      "performance_manager/metrics/cpu_probe/procfs_stat_cpu_parser.h",
       "policy/browser_dm_token_storage_linux.cc",
       "policy/browser_dm_token_storage_linux.h",
     ]
@@ -8052,6 +8070,29 @@ if (is_win) {
   source_set("titlebar_config") {
     sources = [ "win/titlebar_config.h" ]
     deps = [ "//base" ]
+  }
+
+  # This is in a separate config so the flags can be applied to dependents.
+  # ldflags in GN aren't automatically inherited.
+  config("cpu_probe_pdh_support_linker_flags") {
+    libs = [ "pdh.lib" ]
+    ldflags = [
+      # Don't load unless the CpuProbe feature is enabled.
+      "/DELAYLOAD:pdh.dll",
+    ]
+  }
+
+  # This is in a separate source set so that it can specify that it needs
+  # pdh.lib, which isn't commonly used.
+  source_set("cpu_probe_pdh_support") {
+    sources = [
+      "performance_manager/metrics/cpu_probe/scoped_pdh_query.cc",
+      "performance_manager/metrics/cpu_probe/scoped_pdh_query.h",
+    ]
+
+    deps = [ "//base" ]
+
+    all_dependent_configs = [ ":cpu_probe_pdh_support_linker_flags" ]
   }
 }
 

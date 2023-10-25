@@ -179,6 +179,8 @@ static_library("test_support") {
     "../browser/optimization_guide/mock_optimization_guide_keyed_service.h",
     "../browser/password_manager/password_manager_test_util.cc",
     "../browser/password_manager/password_manager_test_util.h",
+    "../browser/performance_manager/metrics/cpu_probe/pressure_test_support.cc",
+    "../browser/performance_manager/metrics/cpu_probe/pressure_test_support.h",
     "../browser/permissions/crowd_deny_fake_safe_browsing_database_manager.cc",
     "../browser/permissions/crowd_deny_fake_safe_browsing_database_manager.h",
     "../browser/policy/messaging_layer/public/report_client_test_util.cc",
@@ -6104,6 +6106,7 @@ test("unit_tests") {
     "../browser/performance_manager/decorators/helpers/page_live_state_decorator_helper_unittest.cc",
     "../browser/performance_manager/decorators/page_aggregator_unittest.cc",
     "../browser/performance_manager/mechanisms/page_freezer_unittest.cc",
+    "../browser/performance_manager/metrics/cpu_probe/cpu_probe_unittest.cc",
     "../browser/performance_manager/metrics/memory_pressure_metrics_unittest.cc",
     "../browser/performance_manager/metrics/metrics_provider_common_unittest.cc",
     "../browser/performance_manager/metrics/page_timeline_cpu_monitor_unittest.cc",
@@ -6375,8 +6378,12 @@ test("unit_tests") {
   }
 
   if (is_linux || is_chromeos) {
-    sources +=
-        [ "../browser/policy/browser_dm_token_storage_linux_unittest.cc" ]
+    sources += [
+      "../browser/performance_manager/metrics/cpu_probe/core_times_unittest.cc",
+      "../browser/performance_manager/metrics/cpu_probe/cpu_probe_linux_unittest.cc",
+      "../browser/performance_manager/metrics/cpu_probe/procfs_stat_cpu_parser_unittest.cc",
+      "../browser/policy/browser_dm_token_storage_linux_unittest.cc",
+    ]
   }
 
   if (is_chromeos_ash) {
@@ -6940,6 +6947,7 @@ test("unit_tests") {
       "../browser/notifications/win/fake_notification_image_retainer.cc",
       "../browser/notifications/win/fake_notification_image_retainer.h",
       "../browser/notifications/win/notification_template_builder_unittest.cc",
+      "../browser/performance_manager/metrics/cpu_probe/cpu_probe_win_unittest.cc",
       "../browser/performance_monitor/metric_evaluator_helper_win_unittest.cc",
       "../browser/policy/browser_dm_token_storage_win_unittest.cc",
       "../browser/process_singleton_win_unittest.cc",
@@ -7045,6 +7053,8 @@ test("unit_tests") {
       "../browser/notifications/mac/notification_utils_unittest.cc",
       "../browser/notifications/mac/stub_notification_dispatcher_mac.cc",
       "../browser/notifications/mac/stub_notification_dispatcher_mac.h",
+      "../browser/performance_manager/metrics/cpu_probe/core_times_unittest.cc",
+      "../browser/performance_manager/metrics/cpu_probe/cpu_probe_mac_unittest.cc",
       "../browser/policy/browser_dm_token_storage_mac_unittest.cc",
       "../browser/renderer_host/chrome_render_widget_host_view_mac_history_swiper_unit_test.mm",
       "../browser/ui/cocoa/applescript/apple_event_util_unittest.mm",
