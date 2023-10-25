@@ -244,7 +244,8 @@ class DIPSBounceDetector {
   // The following methods are based on WebContentsObserver, simplified.
   void DidStartNavigation(DIPSNavigationHandle* navigation_handle);
   void OnClientSiteDataAccessed(const GURL& url, CookieOperation op);
-  void OnClientCookiesAccessed(const GURL& url, CookieOperation op);
+  // Note: `navigation_handle` may be null if this server cookie access is
+  // associated with a document rather than a navigation.
   void OnServerCookiesAccessed(DIPSNavigationHandle* navigation_handle,
                                const GURL& url,
                                CookieOperation op);
@@ -264,7 +265,7 @@ class DIPSBounceDetector {
   void SetRedirectChainHandlerForTesting(DIPSRedirectChainHandler handler) {
     committed_redirect_context_.SetRedirectChainHandlerForTesting(handler);
   }
-  const DIPSRedirectContext& CommittedRedirectContext() {
+  DIPSRedirectContext& CommittedRedirectContext() {
     return committed_redirect_context_;
   }
 

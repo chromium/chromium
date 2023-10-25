@@ -256,11 +256,17 @@ class DIPSBounceDetectorTest : public ::testing::Test {
   }
 
   void AccessClientCookie(CookieOperation op) {
-    detector_.OnClientCookiesAccessed(delegate_.GetLastCommittedURL(), op);
+    detector_.OnClientSiteDataAccessed(delegate_.GetLastCommittedURL(), op);
   }
 
   void LateAccessClientCookie(const std::string& url, CookieOperation op) {
-    detector_.OnClientCookiesAccessed(GURL(url), op);
+    if (detector_.CommittedRedirectContext().AddLateCookieAccess(GURL(url),
+                                                                 op)) {
+      detector_.OnServerCookiesAccessed(/*navigation_handle=*/nullptr,
+                                        GURL(url), op);
+    } else {
+      detector_.OnClientSiteDataAccessed(GURL(url), op);
+    }
   }
 
   void ActivatePage() { detector_.OnUserActivation(); }

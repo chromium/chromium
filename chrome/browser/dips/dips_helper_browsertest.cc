@@ -797,7 +797,8 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, SitesInOpenTabsAreExempt) {
 }
 
 #if BUILDFLAG(IS_LINUX)
-#define MAYBE_SitesInDestroyedTabsAreNotExempt DISABLED_SitesInDestroyedTabsAreNotExempt
+#define MAYBE_SitesInDestroyedTabsAreNotExempt \
+  DISABLED_SitesInDestroyedTabsAreNotExempt
 #else
 #define MAYBE_SitesInDestroyedTabsAreNotExempt SitesInDestroyedTabsAreNotExempt
 #endif

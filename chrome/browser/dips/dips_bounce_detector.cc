@@ -579,30 +579,6 @@ void DIPSWebContentsObserver::OnSiteDataAccessed(
 
 void DIPSWebContentsObserver::OnStatefulBounceDetected() {}
 
-void DIPSBounceDetector::OnClientSiteDataAccessed(const GURL& url,
-                                                  CookieOperation op) {
-  auto now = clock_->Now();
-
-  if (client_detection_state_ &&
-      GetSiteForDIPS(url) == client_detection_state_->current_site) {
-    client_detection_state_->site_data_access_type =
-        client_detection_state_->site_data_access_type |
-        ToSiteDataAccessType(op);
-
-    // To decrease the number of writes made to the database, after a site
-    // storage event (cookie write) on the page, new storage events will not
-    // be recorded for the next |kTimestampUpdateInterval|.
-    if (op == CookieOperation::kChange &&
-        ShouldUpdateTimestamp(client_detection_state_->last_storage_time,
-                              now)) {
-      client_detection_state_->last_storage_time = now;
-      delegate_->RecordEvent(DIPSRecordedEvent::kStorage, url, now);
-    }
-  } else if (op == CookieOperation::kChange) {
-    delegate_->RecordEvent(DIPSRecordedEvent::kStorage, url, now);
-  }
-}
-
 bool HasCHIPS(const net::CookieList& cookie_list) {
   for (const auto& cookie : cookie_list) {
     if (cookie.IsPartitioned()) {
@@ -630,17 +606,31 @@ void DIPSWebContentsObserver::OnCookiesAccessed(
     return;
   }
 
+  // We might be called for "late" server cookie accesses, not just client
+  // cookies. Before completing other checks, attempt to attribute the cookie
+  // access to the current redirect chain to handle that case.
+  //
+  // TODO(rtarpine): Is it possible for cookie accesses to be reported late for
+  // uncommitted navigations?
+  if (detector_.CommittedRedirectContext().AddLateCookieAccess(details.url,
+                                                               details.type)) {
+    detector_.OnServerCookiesAccessed(/*navigation_handle=*/nullptr,
+                                      details.url, details.type);
+    return;
+  }
+
+  // Otherwise, attribute the client cookie access to the first party site of
+  // the RFH.
   const absl::optional<GURL> fpu = GetFirstPartyURL(render_frame_host);
   if (!fpu.has_value()) {
     return;
   }
-
   if (!HasCHIPS(details.cookie_list) &&
       !IsSameSiteForDIPS(fpu.value(), details.url)) {
     return;
   }
 
-  detector_.OnClientCookiesAccessed(fpu.value(), details.type);
+  detector_.OnClientSiteDataAccessed(fpu.value(), details.type);
 }
 
 void DIPSWebContentsObserver::OnCookiesAccessed(
@@ -678,24 +668,28 @@ void DIPSWebContentsObserver::OnCookiesAccessed(
   detector_.OnServerCookiesAccessed(&dips_handle, details.url, details.type);
 }
 
-void DIPSBounceDetector::OnClientCookiesAccessed(const GURL& url,
-                                                 CookieOperation op) {
-  base::Time now = clock_->Now();
+void DIPSBounceDetector::OnClientSiteDataAccessed(const GURL& url,
+                                                  CookieOperation op) {
+  auto now = clock_->Now();
 
-  // We might be called for "late" server cookie accesses, not just client
-  // cookies. Before completing other checks, attempt to attribute the cookie
-  // access to the current redirect chain to handle that case.
-  //
-  // TODO(rtarpine): Is it possible for cookie accesses to be reported late for
-  // uncommitted navigations?
-  if (committed_redirect_context_.AddLateCookieAccess(url, op)) {
-    if (op == CookieOperation::kChange) {
+  if (client_detection_state_ &&
+      GetSiteForDIPS(url) == client_detection_state_->current_site) {
+    client_detection_state_->site_data_access_type =
+        client_detection_state_->site_data_access_type |
+        ToSiteDataAccessType(op);
+
+    // To decrease the number of writes made to the database, after a site
+    // storage event (cookie write) on the page, new storage events will not
+    // be recorded for the next |kTimestampUpdateInterval|.
+    if (op == CookieOperation::kChange &&
+        ShouldUpdateTimestamp(client_detection_state_->last_storage_time,
+                              now)) {
+      client_detection_state_->last_storage_time = now;
       delegate_->RecordEvent(DIPSRecordedEvent::kStorage, url, now);
     }
-    return;
+  } else if (op == CookieOperation::kChange) {
+    delegate_->RecordEvent(DIPSRecordedEvent::kStorage, url, now);
   }
-
-  OnClientSiteDataAccessed(url, op);
 }
 
 void DIPSBounceDetector::OnServerCookiesAccessed(
@@ -705,9 +699,11 @@ void DIPSBounceDetector::OnServerCookiesAccessed(
   if (op == CookieOperation::kChange) {
     delegate_->RecordEvent(DIPSRecordedEvent::kStorage, url, clock_->Now());
   }
-  ServerBounceDetectionState* state = navigation_handle->GetServerState();
-  if (state) {
-    state->filter.AddAccess(url, op);
+  if (navigation_handle) {
+    ServerBounceDetectionState* state = navigation_handle->GetServerState();
+    if (state) {
+      state->filter.AddAccess(url, op);
+    }
   }
 }
 
