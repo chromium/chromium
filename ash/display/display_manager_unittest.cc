@@ -110,14 +110,14 @@ class DisplayManagerTest : public AshTestBase,
 
   const vector<display::Display>& changed() const { return changed_; }
   const vector<display::Display>& added() const { return added_; }
-  uint32_t changed_metrics() const {
-    uint32_t changed_metrics = 0;
+  int32_t changed_metrics() const {
+    int32_t changed_metrics = 0;
     for (const auto& display_metrics : changed_metrics_) {
       changed_metrics |= display_metrics.second;
     }
     return changed_metrics;
   }
-  uint32_t changed_metrics(int64_t display_id) const {
+  int32_t changed_metrics(int64_t display_id) const {
     return changed_metrics_.at(display_id);
   }
 
@@ -337,16 +337,34 @@ TEST_F(DisplayManagerTest, UpdateDisplayTest) {
   const vector<display::ManagedDisplayInfo> empty;
   display_manager()->OnNativeDisplaysChanged(empty);
   EXPECT_EQ(1U, display_manager()->GetNumDisplays());
-  // Going to 0 displays doesn't actually change the list and is effectively
-  // ignored.
-  EXPECT_EQ("0 0 0 0 0", GetCountSummary());
+  // Going to 0 displays doesn't actually change the list and but the detected
+  // is set to false.
+  EXPECT_EQ("1 0 0 0 0", GetCountSummary());
   EXPECT_FALSE(root_window_destroyed());
   // Display configuration stays the same
   EXPECT_EQ(gfx::Rect(0, 0, 800, 300),
             display_manager()->GetDisplayAt(0).bounds());
+  EXPECT_FALSE(display_manager()->GetDisplayAt(0).detected());
+  EXPECT_EQ(changed_metrics(),
+            display::DisplayObserver::DISPLAY_METRIC_DETECTED);
   reset();
 
-  // Connect to display again
+  // Connect to display again.
+  UpdateDisplay("1+1-800x300");
+  EXPECT_EQ(1U, display_manager()->GetNumDisplays());
+  EXPECT_EQ("1 0 0 1 1", GetCountSummary());
+  EXPECT_FALSE(root_window_destroyed());
+  EXPECT_EQ(gfx::Rect(800, 300), changed()[0].bounds());
+  EXPECT_EQ(gfx::Rect(1, 1, 800, 300),
+            GetDisplayInfo(changed()[0]).bounds_in_native());
+  EXPECT_TRUE(display_manager()->GetDisplayAt(0).detected());
+  EXPECT_EQ(changed_metrics(),
+            display::DisplayObserver::DISPLAY_METRIC_DETECTED);
+
+  // Resumed with different resolution.
+  display_manager()->OnNativeDisplaysChanged(empty);
+  EXPECT_EQ(1U, display_manager()->GetNumDisplays());
+  reset();
   UpdateDisplay("100+100-500x400");
   EXPECT_EQ(1U, display_manager()->GetNumDisplays());
   EXPECT_EQ("1 0 0 1 1", GetCountSummary());
@@ -354,6 +372,11 @@ TEST_F(DisplayManagerTest, UpdateDisplayTest) {
   EXPECT_EQ(gfx::Rect(0, 0, 500, 400), changed()[0].bounds());
   EXPECT_EQ(gfx::Rect(100, 100, 500, 400),
             GetDisplayInfo(changed()[0]).bounds_in_native());
+  EXPECT_TRUE(display_manager()->GetDisplayAt(0).detected());
+  EXPECT_EQ(changed_metrics(),
+            (display::DisplayObserver::DISPLAY_METRIC_DETECTED |
+             display::DisplayObserver::DISPLAY_METRIC_BOUNDS |
+             display::DisplayObserver::DISPLAY_METRIC_WORK_AREA));
   reset();
 
   // Go back to zero and wake up with multiple displays.
@@ -1968,7 +1991,7 @@ TEST_F(DisplayManagerTest, DisplayRemovedOnlyOnceWhenEnteringDockedMode) {
 
   // There should only be 1 display change, 0 adds, and 1 removal.
   EXPECT_EQ("1 0 1 1 1", GetCountSummary());
-  const unsigned int expected_changed_metrics =
+  const int expected_changed_metrics =
       display::DisplayObserver::DISPLAY_METRIC_BOUNDS |
       display::DisplayObserver::DISPLAY_METRIC_WORK_AREA |
       display::DisplayObserver::DISPLAY_METRIC_PRIMARY;

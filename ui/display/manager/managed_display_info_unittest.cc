@@ -160,14 +160,15 @@ TEST_F(DisplayInfoTest, TestToStringFormat) {
       info.ToString(),
       "ManagedDisplayInfo[10] native bounds=0,0 200x100, size=200x100, "
       "device-scale=1, display-zoom=1, overscan=x:0,0 y:0,0, rotation=0, "
-      "touchscreen=unknown, corner_radii=0.000000,0.000000,0.000000,0.000000");
+      "touchscreen=unknown, corner_radii=0.000000,0.000000,0.000000,0.000000, "
+      "detected=true");
 
   EXPECT_EQ(
       info.ToFullString(),
       "ManagedDisplayInfo[10] native bounds=0,0 200x100, size=200x100, "
       "device-scale=1, display-zoom=1, overscan=x:0,0 y:0,0, rotation=0, "
       "touchscreen=unknown, corner_radii=0.000000,0.000000,0.000000,0.000000, "
-      "display_modes==(200x100@60P(N) 1)");
+      "detected=true, display_modes==(200x100@60P(N) 1)");
 }
 
 }  // namespace display
