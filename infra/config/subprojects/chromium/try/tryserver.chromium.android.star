@@ -243,6 +243,7 @@ try_.builder(
     mirrors = [
         "ci/android-archive-rel",
     ],
+    contact_team_email = "clank-engprod@google.com",
 )
 
 try_.builder(

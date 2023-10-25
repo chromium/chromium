@@ -38,6 +38,7 @@ try_.builder(
         "ci/android-official",
     ],
     ssd = True,
+    contact_team_email = "clank-engprod@google.com",
 )
 
 try_.builder(

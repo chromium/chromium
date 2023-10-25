@@ -74,6 +74,7 @@ ci.builder(
         category = "android",
         short_name = "rel",
     ),
+    contact_team_email = "clank-engprod@google.com",
     properties = {
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
@@ -160,6 +161,7 @@ ci.builder(
         category = "android",
         short_name = "off",
     ),
+    contact_team_email = "clank-engprod@google.com",
     # See https://crbug.com/1153349#c22, as we update symbol_level=2, build
     # needs longer time to complete.
     execution_timeout = 7 * time.hour,

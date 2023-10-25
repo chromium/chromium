@@ -235,7 +235,6 @@ _exempted_from_contact_builders = {
         "android-13-x64-rel",
         "android-angle-chromium-arm64-builder",
         "android-annotator-rel",
-        "android-archive-dbg",
         "android-archive-rel",
         "android-arm64-archive-rel",
         "android-asan",
