@@ -134,6 +134,13 @@ class ASH_EXPORT DeskBarController : public DesksController::Observer,
   // Observes display configuration changes.
   display::ScopedDisplayObserver display_observer_{this};
 
+  // Root window of the desk button that is clicked. This is used to determine
+  // which desk button should gain focus back after the desk bar is closed.
+  raw_ptr<aura::Window, ExperimentalAsh> desk_button_root_ = nullptr;
+
+  // True if the desk button should acquire focus back when hitting esc.
+  bool should_desk_button_acquire_focus_ = false;
+
   // Indicates that shell is destroying.
   bool is_shell_destroying_ = false;
 

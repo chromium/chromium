@@ -244,12 +244,15 @@ void DeskBarController::OnKeyEvent(ui::KeyEvent* event) {
     // TODO(b/290651821): Consolidates arrow key behaviors for the desk bar.
     switch (event->key_code()) {
       case ui::VKEY_BROWSER_BACK:
-      case ui::VKEY_ESCAPE:
+      case ui::VKEY_ESCAPE: {
         if (focused_name_view) {
           return;
         }
+        base::AutoReset<bool> auto_reset(&should_desk_button_acquire_focus_,
+                                         true);
         CloseAllDeskBars();
         break;
+      }
       case ui::VKEY_UP:
       case ui::VKEY_DOWN:
         MoveFocus(desk_bar,
@@ -405,6 +408,10 @@ void DeskBarController::OpenDeskBar(aura::Window* root) {
   // is opening.
   base::AutoReset<bool> auto_reset(&should_ignore_activation_change_, true);
 
+  desk_button_root_ = root;
+
+  SetDeskButtonActivation(root, /*is_activated=*/true);
+
   // Calculates bar widget and bar view.
   DeskBarViewBase* bar_view = GetDeskBarView(root);
   if (!bar_view) {
@@ -423,8 +430,6 @@ void DeskBarController::OpenDeskBar(aura::Window* root) {
   } else {
     bar_view->GetWidget()->Show();
   }
-
-  SetDeskButtonActivation(root, /*is_activated=*/true);
 }
 
 void DeskBarController::CloseDeskBar(aura::Window* root) {
@@ -470,6 +475,11 @@ void DeskBarController::CloseDeskBarInternal(BarWidgetAndView& desk_bar) {
   // Deletes asynchronously so it is less likely to result in UAF.
   base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
       FROM_HERE, desk_bar.bar_widget.release());
+
+  // Resets `desk_button_root_` when there is no active desk bar.
+  if (!IsShowingDeskBar()) {
+    desk_button_root_ = nullptr;
+  }
 
   SetDeskButtonActivation(desk_bar.bar_view->root(),
                           /*is_activated=*/false);
@@ -525,7 +535,20 @@ DeskButton* DeskBarController::GetDeskButton(aura::Window* root) {
 
 void DeskBarController::SetDeskButtonActivation(aura::Window* root,
                                                 bool is_activated) {
-  GetDeskButton(root)->SetActivation(/*is_activated=*/is_activated);
+  // Store the desk button focus when opening the desk bar.
+  if (desk_button_root_ == root && is_activated) {
+    Shelf::ForWindow(root)->desk_button_widget()->StoreDeskButtonFocus();
+  }
+
+  GetDeskButton(root)->SetActivation(is_activated);
+
+  // Restore the desk button focus when closing the desk bar.
+  if (should_desk_button_acquire_focus_ && desk_button_root_ == root &&
+      !is_activated) {
+    Shelf::ForWindow(desk_button_root_)
+        ->desk_button_widget()
+        ->RestoreDeskButtonFocus();
+  }
 }
 
 }  // namespace ash

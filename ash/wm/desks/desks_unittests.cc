@@ -11747,6 +11747,22 @@ TEST_P(DeskButtonTest, BarAboveFloatWindow) {
       desk_bar_view->GetWidget()->GetNativeWindow());
 }
 
+// Tests that desk bar sends back focus to desk button when hitting esc.
+TEST_P(DeskButtonTest, SendFocusBackToDeskButton) {
+  // Focus the desk button.
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
+  ASSERT_TRUE(GetDeskButton()->HasFocus());
+
+  // Open desk bar.
+  SendKey(ui::VKEY_RETURN);
+  ASSERT_TRUE(GetDeskBarView());
+
+  // Hit esc and verify focus is sent back to the desk button.
+  SendKey(ui::VKEY_ESCAPE);
+  ASSERT_TRUE(GetDeskButton()->HasFocus());
+}
+
 // TODO(afakhry): Add more tests:
 // - Always on top windows are not tracked by any desk.
 // - Reusing containers when desks are removed and created.
