@@ -820,6 +820,12 @@ absl::optional<PreferencesContents> MigratePreferencesContents(
     UpdatePreferencesKeyByType(lacros_root_dict, key, ChromeType::kLacros);
   }
 
+  // Sync feature setup should not be triggered after migration and should be
+  // assumed completed. In Lacros it is controlled by the preference below, but
+  // this preference doesn't exist in Ash, so need to set it explicitly here.
+  lacros_root_dict->SetByDottedPath(
+      kSyncInitialSyncFeatureSetupCompletePrefName, base::Value(true));
+
   // Generate the resulting JSON.
   PreferencesContents contents;
   if (!base::JSONWriter::Write(*ash_root, &contents.ash)) {
