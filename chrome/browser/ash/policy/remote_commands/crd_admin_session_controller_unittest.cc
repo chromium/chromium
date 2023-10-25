@@ -286,7 +286,7 @@ class CrdAdminSessionControllerTest : public ash::AshTestBase {
   void TerminateActiveSession() {
     TestFuture<void> terminate_signal;
     delegate().TerminateSession(terminate_signal.GetCallback());
-    ASSERT_TRUE(terminate_signal.GetCallback());
+    ASSERT_TRUE(terminate_signal.Wait());
   }
 
   void SimulateLoginScreenIsVisible() {
@@ -616,6 +616,8 @@ TEST_F(CrdAdminSessionControllerTest,
   observer.OnHostStateReceivedAccessCode("access-code", base::Days(1));
   observer.OnHostStateStarting();
   observer.OnHostStateDisconnected(absl::nullopt);
+  observer.OnHostStateDisconnected(absl::nullopt);
+  observer.OnHostStateConnected("name");
   observer.OnHostStateError(1);
   observer.OnPolicyError();
   observer.OnInvalidDomainError();
@@ -701,7 +703,7 @@ TEST_F(
 
   Response response = WaitForResponse();
   ASSERT_TRUE(response.HasError());
-  EXPECT_EQ("enterprise remote support disabled", response.error_message());
+  EXPECT_EQ("host state error", response.error_message());
   EXPECT_EQ(ResultCode::FAILURE_DISABLED_BY_POLICY, response.error_code());
 }
 

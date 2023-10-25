@@ -7,24 +7,31 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ash/policy/remote_commands/crd_session_observer.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
 namespace policy {
 
+// When a private CRD session is finished, ChromeOS shows a notification to
+// inform the local user that a remote admin was present. This class handles
+// both remembering when this notification must be shown (even after a reboot)
+// and actually showing it.
 class RemoteActivityNotificationController
-    : public session_manager::SessionManagerObserver {
+    : public session_manager::SessionManagerObserver,
+      public CrdSessionObserver {
  public:
   RemoteActivityNotificationController(
       PrefService& local_state,
       base::RepeatingCallback<bool()> is_current_session_curtained);
   ~RemoteActivityNotificationController() override;
 
-  // `session_manager::SessionManagerObserver` implementation.
+  // `session_manager::SessionManagerObserver` implementation:
   void OnLoginOrLockScreenVisible() override;
 
-  void OnCurtainSessionStarted();
+  // `CrdSessionObserver` implementation:
+  void OnClientConnected() override;
 
   void ClickNotificationButtonForTesting();
 

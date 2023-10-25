@@ -86,8 +86,10 @@ void RemoteActivityNotificationController::OnLoginOrLockScreenVisible() {
   Init();
 }
 
-void RemoteActivityNotificationController::OnCurtainSessionStarted() {
-  local_state_->SetBoolean(prefs::kRemoteAdminWasPresent, true);
+void RemoteActivityNotificationController::OnClientConnected() {
+  if (is_current_session_curtained_.Run()) {
+    local_state_->SetBoolean(prefs::kRemoteAdminWasPresent, true);
+  }
 }
 
 // TODO(b/299143143): Add id for the new UI view and check if the button click
