@@ -12,69 +12,115 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * JNI wrapper for C++ PlusAddressCreationViewAndroid.
- */
+/** JNI wrapper for C++ PlusAddressCreationViewAndroid. */
 @JNINamespace("plus_addresses")
-public class PlusAddressCreationViewBridge implements PlusAddressCreationDelegate {
-    private PlusAddressCreationPrompt mPlusAddressCreationPrompt;
-
+public class PlusAddressCreationViewBridge extends EmptyBottomSheetObserver
+        implements PlusAddressCreationDelegate {
     private long mNativePlusAddressCreationPromptAndroid;
+    private Activity mActivity;
+    private BottomSheetController mBottomSheetController;
+    private PlusAddressCreationBottomSheetContent mBottomSheetContent;
 
-    private PlusAddressCreationViewBridge(long nativePlusAddressCreationPromptAndroid) {
+    private PlusAddressCreationViewBridge(
+            long nativePlusAddressCreationPromptAndroid, WindowAndroid window) {
         mNativePlusAddressCreationPromptAndroid = nativePlusAddressCreationPromptAndroid;
+        mActivity = window.getActivity().get();
+        mBottomSheetController = BottomSheetControllerProvider.from(window);
+        mBottomSheetController.addObserver(this);
     }
 
     @CalledByNative
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    static PlusAddressCreationViewBridge create(long nativePlusAddressCreationPromptAndroid) {
-        return new PlusAddressCreationViewBridge(nativePlusAddressCreationPromptAndroid);
+    static PlusAddressCreationViewBridge create(
+            long nativePlusAddressCreationPromptAndroid, WindowAndroid window) {
+        return new PlusAddressCreationViewBridge(nativePlusAddressCreationPromptAndroid, window);
     }
 
     @CalledByNative
-    private void show(
-            WindowAndroid windowAndroid,
-            String primaryEmailAddress,
+    void show(
             String modalTitle,
-            String plusAddressLabel,
-            String proposedPlusAddressPlaceholder,
             String plusAddressDescription,
+            String proposedPlusAddressPlaceholder,
             String plusAddressModalOkText,
             String plusAddressModalCancelText) {
-        Activity activity = windowAndroid.getActivity().get();
-        mPlusAddressCreationPrompt =
-                new PlusAddressCreationPrompt(
-                        this,
-                        activity,
-                        primaryEmailAddress,
-                        modalTitle,
-                        plusAddressLabel,
-                        proposedPlusAddressPlaceholder,
-                        plusAddressDescription,
-                        plusAddressModalOkText,
-                        plusAddressModalCancelText);
-        mPlusAddressCreationPrompt.show(windowAndroid.getModalDialogManager());
+        if (mNativePlusAddressCreationPromptAndroid != 0) {
+            mBottomSheetContent =
+                    new PlusAddressCreationBottomSheetContent(
+                            this,
+                            mActivity,
+                            modalTitle,
+                            plusAddressDescription,
+                            proposedPlusAddressPlaceholder,
+                            plusAddressModalOkText,
+                            plusAddressModalCancelText);
+
+            mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true);
+        }
     }
 
+    // Hide the bottom sheet (if showing) and clean up observers.
+    @CalledByNative
+    void destroy() {
+        mBottomSheetController.hideContent(mBottomSheetContent, /* animate= */ false);
+        mBottomSheetController.removeObserver(this);
+        mNativePlusAddressCreationPromptAndroid = 0;
+    }
+
+    // EmptyBottomSheetObserver overridden methods:
+    @Override
+    public void onSheetClosed(@StateChangeReason int reason) {
+        this.onPromptDismissed();
+    }
+
+    // PlusAddressCreationDelegate implementation:
     @Override
     public void onConfirmed() {
-        PlusAddressCreationViewBridgeJni.get().onConfirmed(
-                mNativePlusAddressCreationPromptAndroid, PlusAddressCreationViewBridge.this);
+        mBottomSheetController.hideContent(
+                mBottomSheetContent, /* animate= */ true, StateChangeReason.INTERACTION_COMPLETE);
+        if (mNativePlusAddressCreationPromptAndroid != 0) {
+            PlusAddressCreationViewBridgeJni.get()
+                    .onConfirmed(
+                            mNativePlusAddressCreationPromptAndroid,
+                            PlusAddressCreationViewBridge.this);
+        }
     }
 
     @Override
     public void onCanceled() {
-        PlusAddressCreationViewBridgeJni.get().onCanceled(
-                mNativePlusAddressCreationPromptAndroid, PlusAddressCreationViewBridge.this);
+        mBottomSheetController.hideContent(
+                mBottomSheetContent, /* animate= */ true, StateChangeReason.INTERACTION_COMPLETE);
+        if (mNativePlusAddressCreationPromptAndroid != 0) {
+            PlusAddressCreationViewBridgeJni.get()
+                    .onCanceled(
+                            mNativePlusAddressCreationPromptAndroid,
+                            PlusAddressCreationViewBridge.this);
+        }
     }
 
     @Override
     public void onPromptDismissed() {
-        PlusAddressCreationViewBridgeJni.get().promptDismissed(
-                mNativePlusAddressCreationPromptAndroid, PlusAddressCreationViewBridge.this);
-        mNativePlusAddressCreationPromptAndroid = 0;
+        if (mNativePlusAddressCreationPromptAndroid != 0) {
+            PlusAddressCreationViewBridgeJni.get()
+                    .promptDismissed(
+                            mNativePlusAddressCreationPromptAndroid,
+                            PlusAddressCreationViewBridge.this);
+            mNativePlusAddressCreationPromptAndroid = 0;
+        }
+    }
+
+    @VisibleForTesting
+    public PlusAddressCreationBottomSheetContent getBottomSheetContent() {
+        return mBottomSheetContent;
+    }
+
+    public void setActivityForTesting(Activity activity) {
+        mActivity = activity;
     }
 
     @NativeMethods

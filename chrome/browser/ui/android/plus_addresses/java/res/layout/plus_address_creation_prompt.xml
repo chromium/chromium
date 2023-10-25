@@ -13,44 +13,59 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingHorizontal="@dimen/dialog_padding_sides"
-        android:paddingVertical="12dp"
-        android:gravity="center_vertical">
+        android:paddingVertical="12dp">
+
+  <ImageView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_horizontal"
+      android:layout_marginBottom="@dimen/list_item_default_margin"
+      android:importantForAccessibility="no"
+      app:srcCompat="@drawable/chrome_sync_logo" />
 
   <TextView
       android:id="@+id/plus_address_notice_title"
-      android:layout_width="wrap_content"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_gravity="center"
-      android:gravity="center"
-      android:layout_marginBottom="@dimen/list_item_default_margin"
+      android:textAlignment="center"
       style="@style/TextAppearance.Headline.Primary" />
 
   <TextView
-      android:id="@+id/plus_address_modal_plus_address_label"
+      android:id="@+id/plus_address_modal_explanation"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:textAlignment="center"
       android:layout_marginBottom="@dimen/list_item_default_margin"
-      android:textAppearance="@style/TextAppearance.TextLarge.Primary"/>
+      android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
 
   <TextView
       android:id="@+id/proposed_plus_address"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginBottom="@dimen/list_item_default_margin"
-      android:textAppearance="@style/TextAppearance.TextLarge.Secondary"/>
+      android:textAlignment="center"
+      android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+      android:background="@drawable/rounded_rectangle_surface_1"
+      android:paddingVertical="10dp" />
 
-  <TextView
-      android:id="@+id/plus_address_modal_primary_email"
+  <org.chromium.ui.widget.ButtonCompat
+      android:id="@+id/plus_address_confirm_button"
+      style="@style/FilledButton.Flat"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginBottom="@dimen/list_item_default_margin"
-      android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
+      android:textAlignment="center"
+      android:layout_marginTop="@dimen/autofill_bottom_sheet_confirm_button_top_margin"
+      android:minHeight="@dimen/min_touch_target_size"
+      android:minWidth="@dimen/min_touch_target_size" />
 
-  <org.chromium.ui.widget.TextViewWithLeading
-      android:id="@+id/plus_address_modal_explanation"
+  <org.chromium.ui.widget.ButtonCompat
+      android:id="@+id/plus_address_cancel_button"
+      style="@style/TextButton"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginBottom="@dimen/list_item_default_margin"
-      android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
+      android:textAlignment="center"
+      android:layout_marginTop="@dimen/autofill_bottom_sheet_spacing_extra_small"
+      android:layout_marginBottom="@dimen/autofill_bottom_sheet_spacing_extra_small"
+      android:minHeight="@dimen/min_touch_target_size"
+      android:minWidth="@dimen/min_touch_target_size" />
 
 </LinearLayout>

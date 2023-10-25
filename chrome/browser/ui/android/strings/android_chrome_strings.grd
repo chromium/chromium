@@ -6006,6 +6006,11 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_NO_PASSKEYS_SHEET_USE_ANOTHER_DEVICE" desc="Label for the button that allows users to starts a flow allowing them to use a passkey from another device to sign into ths site.">
         Use another device
       </message>
+
+      <!-- Plus Address accessibility strings: TODO(crbug.com/1467623): Replace with final versions  -->
+      <message name="IDS_PLUS_ADDRESS_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string read when the plus address bottom sheet is opened." is_accessibility_with_no_ui="true">
+        Lorem Ipsum
+      </message>
     </messages>
   </release>
 </grit>
