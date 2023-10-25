@@ -913,8 +913,7 @@ bool TestRecipeReplayer::OverrideAutofillClock(
     VLOG(1) << kClockNotSetMessage << "No DeterministicTimeSeedMs found";
     return false;
   }
-  // wpr archive stores time seed in ms, clock is set in seconds.
-  test_clock_.SetNow(base::Time::FromSecondsSinceUnixEpoch(*time_value / 1000));
+  test_clock_.SetNow(base::Time::FromMillisecondsSinceUnixEpoch(*time_value));
   return true;
 }
 
@@ -1116,7 +1115,7 @@ bool TestRecipeReplayer::ReplayRecordedActions(
         while (!thread_finished) {
           base::RunLoop run_loop;
           base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-              FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(1000));
+              FROM_HERE, run_loop.QuitClosure(), base::Seconds(1));
           run_loop.Run();
         }
       }

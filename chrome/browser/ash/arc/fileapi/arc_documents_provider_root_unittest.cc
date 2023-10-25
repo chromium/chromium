@@ -546,8 +546,7 @@ TEST_F(ArcDocumentsProviderRootTest, ReadDirectory) {
                       file_list[2].name);
             EXPECT_EQ("no-last-modified-date-id", file_list[2].document_id);
             EXPECT_FALSE(file_list[2].is_directory);
-            EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(0),
-                      file_list[2].last_modified);
+            EXPECT_EQ(base::Time::UnixEpoch(), file_list[2].last_modified);
             EXPECT_EQ(FILE_PATH_LITERAL("no-rename.jpg"), file_list[3].name);
             EXPECT_EQ("no-rename-id", file_list[3].document_id);
             EXPECT_FALSE(file_list[3].is_directory);

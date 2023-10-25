@@ -57,17 +57,14 @@ const char kInvalidUrlError[] = "Url is invalid.";
 const char kDeleteProhibitedError[] = "Browsing history is not allowed to be "
                                       "deleted.";
 
-double MilliSecondsFromTime(const base::Time& time) {
-  return 1000 * time.InSecondsFSinceUnixEpoch();
-}
-
 HistoryItem GetHistoryItem(const history::URLRow& row) {
   HistoryItem history_item;
 
   history_item.id = base::NumberToString(row.id());
   history_item.url = row.url().spec();
   history_item.title = base::UTF16ToUTF8(row.title());
-  history_item.last_visit_time = MilliSecondsFromTime(row.last_visit());
+  history_item.last_visit_time =
+      row.last_visit().InMillisecondsFSinceUnixEpoch();
   history_item.typed_count = row.typed_count();
   history_item.visit_count = row.visit_count();
 
@@ -79,7 +76,7 @@ VisitItem GetVisitItem(const history::VisitRow& row) {
 
   visit_item.id = base::NumberToString(row.url_id);
   visit_item.visit_id = base::NumberToString(row.visit_id);
-  visit_item.visit_time = MilliSecondsFromTime(row.visit_time);
+  visit_item.visit_time = row.visit_time.InMillisecondsFSinceUnixEpoch();
   visit_item.referring_visit_id = base::NumberToString(row.referring_visit);
 
   api::history::TransitionType transition = api::history::TRANSITION_TYPE_LINK;
@@ -235,14 +232,7 @@ bool HistoryFunction::VerifyDeleteAllowed(std::string* error) {
 }
 
 base::Time HistoryFunction::GetTime(double ms_from_epoch) {
-  // The history service has seconds resolution, while javascript Date() has
-  // milliseconds resolution.
-  double seconds_from_epoch = ms_from_epoch / 1000.0;
-  // Time::FromDoubleT converts double time 0 to empty Time object. So we need
-  // to do special handling here.
-  return (seconds_from_epoch == 0)
-             ? base::Time::UnixEpoch()
-             : base::Time::FromSecondsSinceUnixEpoch(seconds_from_epoch);
+  return base::Time::FromMillisecondsSinceUnixEpoch(ms_from_epoch);
 }
 
 Profile* HistoryFunction::GetProfile() const {

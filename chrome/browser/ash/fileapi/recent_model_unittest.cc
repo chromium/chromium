@@ -37,17 +37,17 @@ std::vector<std::unique_ptr<RecentSource>> BuildDefaultSourcesWithLag(
     uint32_t lag2_ms) {
   auto source1 = std::make_unique<FakeRecentSource>();
   source1->SetLag(base::Milliseconds(lag1_ms));
-  source1->AddFile(MakeRecentFile(
-      "aaa.jpg", base::Time::FromMillisecondsSinceUnixEpoch(1000)));
-  source1->AddFile(MakeRecentFile(
-      "ccc.mp4", base::Time::FromMillisecondsSinceUnixEpoch(3000)));
+  source1->AddFile(
+      MakeRecentFile("aaa.jpg", base::Time::FromSecondsSinceUnixEpoch(1)));
+  source1->AddFile(
+      MakeRecentFile("ccc.mp4", base::Time::FromSecondsSinceUnixEpoch(3)));
 
   auto source2 = std::make_unique<FakeRecentSource>();
   source2->SetLag(base::Milliseconds(lag2_ms));
-  source2->AddFile(MakeRecentFile(
-      "bbb.png", base::Time::FromMillisecondsSinceUnixEpoch(2000)));
-  source2->AddFile(MakeRecentFile(
-      "ddd.ogg", base::Time::FromMillisecondsSinceUnixEpoch(4000)));
+  source2->AddFile(
+      MakeRecentFile("bbb.png", base::Time::FromSecondsSinceUnixEpoch(2)));
+  source2->AddFile(
+      MakeRecentFile("ddd.ogg", base::Time::FromSecondsSinceUnixEpoch(4)));
 
   std::vector<std::unique_ptr<RecentSource>> sources;
   sources.emplace_back(std::move(source1));
@@ -128,17 +128,13 @@ TEST_F(RecentModelTest, GetRecentFiles) {
 
   ASSERT_EQ(4u, files.size());
   EXPECT_EQ("ddd.ogg", files[0].url().path().value());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(4000),
-            files[0].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(4), files[0].last_modified());
   EXPECT_EQ("ccc.mp4", files[1].url().path().value());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(3000),
-            files[1].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(3), files[1].last_modified());
   EXPECT_EQ("bbb.png", files[2].url().path().value());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(2000),
-            files[2].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(2), files[2].last_modified());
   EXPECT_EQ("aaa.jpg", files[3].url().path().value());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(1000),
-            files[3].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(1), files[3].last_modified());
 }
 
 TEST_F(RecentModelTest, GetRecentFiles_MaxFiles) {
@@ -148,14 +144,11 @@ TEST_F(RecentModelTest, GetRecentFiles_MaxFiles) {
 
   ASSERT_EQ(3u, files.size());
   EXPECT_EQ("ddd.ogg", files[0].url().path().value());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(4000),
-            files[0].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(4), files[0].last_modified());
   EXPECT_EQ("ccc.mp4", files[1].url().path().value());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(3000),
-            files[1].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(3), files[1].last_modified());
   EXPECT_EQ("bbb.png", files[2].url().path().value());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(2000),
-            files[2].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(2), files[2].last_modified());
 }
 
 TEST_F(RecentModelTest, GetRecentFiles_CutoffTime) {
@@ -166,11 +159,9 @@ TEST_F(RecentModelTest, GetRecentFiles_CutoffTime) {
 
   ASSERT_EQ(2u, files.size());
   EXPECT_EQ("ddd.ogg", files[0].url().path().value());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(4000),
-            files[0].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(4), files[0].last_modified());
   EXPECT_EQ("ccc.mp4", files[1].url().path().value());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(3000),
-            files[1].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(3), files[1].last_modified());
 }
 
 TEST_F(RecentModelTest, GetRecentFiles_UmaStats) {
@@ -190,8 +181,7 @@ TEST_F(RecentModelTest, GetRecentFiles_Audio) {
 
   ASSERT_EQ(1u, files.size());
   EXPECT_EQ("ddd.ogg", files[0].url().path().value());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(4000),
-            files[0].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(4), files[0].last_modified());
 }
 
 TEST_F(RecentModelTest, GetRecentFiles_Image) {
@@ -201,11 +191,9 @@ TEST_F(RecentModelTest, GetRecentFiles_Image) {
 
   ASSERT_EQ(2u, files.size());
   EXPECT_EQ("bbb.png", files[0].url().path().value());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(2000),
-            files[0].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(2), files[0].last_modified());
   EXPECT_EQ("aaa.jpg", files[1].url().path().value());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(1000),
-            files[1].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(1), files[1].last_modified());
 }
 
 TEST_F(RecentModelTest, GetRecentFiles_Video) {
@@ -215,8 +203,7 @@ TEST_F(RecentModelTest, GetRecentFiles_Video) {
 
   ASSERT_EQ(1u, files.size());
   EXPECT_EQ("ccc.mp4", files[0].url().path().value());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(3000),
-            files[0].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(3), files[0].last_modified());
 }
 
 TEST_F(RecentModelTest, GetRecentFiles_OneSourceIsLate) {
@@ -226,11 +213,9 @@ TEST_F(RecentModelTest, GetRecentFiles_OneSourceIsLate) {
 
   ASSERT_EQ(2u, files.size());
   EXPECT_EQ("ccc.mp4", files[0].url().path().value());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(3000),
-            files[0].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(3), files[0].last_modified());
   EXPECT_EQ("aaa.jpg", files[1].url().path().value());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(1000),
-            files[1].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(1), files[1].last_modified());
 }
 
 TEST_F(RecentModelTest, GetRecentFiles_NoSourceIsLate) {
@@ -240,17 +225,13 @@ TEST_F(RecentModelTest, GetRecentFiles_NoSourceIsLate) {
 
   ASSERT_EQ(4u, files.size());
   EXPECT_EQ("ddd.ogg", files[0].url().path().value());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(4000),
-            files[0].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(4), files[0].last_modified());
   EXPECT_EQ("ccc.mp4", files[1].url().path().value());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(3000),
-            files[1].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(3), files[1].last_modified());
   EXPECT_EQ("bbb.png", files[2].url().path().value());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(2000),
-            files[2].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(2), files[2].last_modified());
   EXPECT_EQ("aaa.jpg", files[3].url().path().value());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(1000),
-            files[3].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(1), files[3].last_modified());
 }
 
 // Do not use RecentModelTest fixture, because we need to get a reference of

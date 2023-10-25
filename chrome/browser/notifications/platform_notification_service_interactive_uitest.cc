@@ -275,8 +275,8 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   // Verify that the notification's default timestamp is set in the last 30
   // seconds. (30 has no significance, just needs to be significantly high to
   // avoid test flakiness.)
-  EXPECT_NEAR(default_notification.timestamp().InMillisecondsFSinceUnixEpoch(),
-              base::Time::Now().InMillisecondsFSinceUnixEpoch(), 30 * 1000);
+  EXPECT_NEAR(default_notification.timestamp().InSecondsFSinceUnixEpoch(),
+              base::Time::Now().InSecondsFSinceUnixEpoch(), 30);
 
   // Now, test the non-default values.
 
@@ -389,8 +389,8 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   // Verifies that the notification's default timestamp is set in the last 30
   // seconds. This number has no significance, but it needs to be significantly
   // high to avoid flakiness in the test.
-  EXPECT_NEAR(default_notification.timestamp().InMillisecondsFSinceUnixEpoch(),
-              base::Time::Now().InMillisecondsFSinceUnixEpoch(), 30 * 1000);
+  EXPECT_NEAR(default_notification.timestamp().InSecondsFSinceUnixEpoch(),
+              base::Time::Now().InSecondsFSinceUnixEpoch(), 30);
 
   // Now, test the non-default values.
 
