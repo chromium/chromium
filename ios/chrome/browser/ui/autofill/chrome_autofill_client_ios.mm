@@ -439,6 +439,19 @@ ChromeAutofillClientIOS::GetPlusAddressService() {
   return PlusAddressServiceFactory::GetForBrowserState(browser_state_);
 }
 
+void ChromeAutofillClientIOS::OfferPlusAddressCreation(
+    const url::Origin& main_frame_origin,
+    plus_addresses::PlusAddressCallback callback) {
+  plus_addresses::PlusAddressService* service = GetPlusAddressService();
+  // This code path should have set up the service. If not, something is badly
+  // wrong, so bail out.
+  CHECK(service);
+  // TODO(crbug.com/1467623): Run UI orchestration here rather than filling
+  // directly in response to the eventual service call. This will eventually
+  // trigger a bottom sheet.
+  service->OfferPlusAddressCreation(main_frame_origin, std::move(callback));
+}
+
 void ChromeAutofillClientIOS::UpdateAutofillPopupDataListValues(
     base::span<const autofill::SelectOption> datalist) {
   // No op. ios/web_view does not support display datalist.

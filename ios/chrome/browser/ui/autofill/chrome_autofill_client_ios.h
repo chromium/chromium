@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #import "components/autofill/ios/browser/autofill_client_ios_bridge.h"
 #include "components/infobars/core/infobar_manager.h"
+#include "components/plus_addresses/plus_address_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/service/sync_service.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -151,6 +152,9 @@ class ChromeAutofillClientIOS : public AutofillClient {
   LogManager* GetLogManager() const override;
   bool IsLastQueriedField(FieldGlobalId field_id) override;
   plus_addresses::PlusAddressService* GetPlusAddressService() override;
+  void OfferPlusAddressCreation(
+      const url::Origin& main_frame_origin,
+      plus_addresses::PlusAddressCallback callback) override;
 
   // RiskDataLoader:
   void LoadRiskData(

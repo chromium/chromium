@@ -462,7 +462,8 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   }
 
   if (suggestion.popupItemId == autofill::PopupItemId::kAddressEntry ||
-      suggestion.popupItemId == autofill::PopupItemId::kCreditCardEntry) {
+      suggestion.popupItemId == autofill::PopupItemId::kCreditCardEntry ||
+      suggestion.popupItemId == autofill::PopupItemId::kCreateNewPlusAddress) {
     _pendingAutocompleteFieldID = uniqueFieldID;
     if (_popupDelegate) {
       // TODO(966411): Replace 0 with the index of the selected suggestion.
