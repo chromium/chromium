@@ -67,15 +67,12 @@ namespace {
 // be PRERENDER or PRECONNECT. Due to the current design, the prerender one
 // should be higher than the preconnect one, otherwise preconnect will never
 // run.
-// Android uses lower thresholds determined based on an experiment. For
-// non-Android, we're now running a similar experiment with a different
-// progress. See https://crbug.com/1399401 for the current progress.
 const base::FeatureParam<double> kPrerenderDUIConfidenceCutoff{
     &features::kAutocompleteActionPredictorConfidenceCutoff,
-    "prerender_dui_confidence_cutoff", BUILDFLAG(IS_ANDROID) ? 0.5 : 0.8};
+    "prerender_dui_confidence_cutoff", 0.5};
 const base::FeatureParam<double> kPreconnectConfidenceCutoff{
     &features::kAutocompleteActionPredictorConfidenceCutoff,
-    "preconnect_dui_confidence_cutoff", BUILDFLAG(IS_ANDROID) ? 0.3 : 0.5};
+    "preconnect_dui_confidence_cutoff", 0.3};
 
 const int kMinimumNumberOfHits = 3;
 const size_t kMaximumTransitionalMatchesSize = 1024 * 1024;  // 1 MB.
