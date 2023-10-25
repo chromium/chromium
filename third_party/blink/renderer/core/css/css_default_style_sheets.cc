@@ -116,12 +116,6 @@ CSSDefaultStyleSheets::CSSDefaultStyleSheets()
   String quirks_rules = UncompressResourceAsASCIIString(IDR_UASTYLE_QUIRKS_CSS);
   quirks_style_sheet_ = ParseUASheet(quirks_rules);
 
-  if (RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
-    String dir_pseudo_rules =
-        UncompressResourceAsASCIIString(IDR_UASTYLE_DIR_PSEUDO_CSS);
-    dir_pseudo_style_sheet_ = ParseUASheet(dir_pseudo_rules);
-  }
-
   InitializeDefaultStyles();
 }
 
@@ -205,9 +199,6 @@ void CSSDefaultStyleSheets::InitializeDefaultStyles() {
   default_html_quirks_style_->AddRulesFromSheet(QuirksStyleSheet(),
                                                 ScreenEval());
   default_print_style_->AddRulesFromSheet(DefaultStyleSheet(), PrintEval());
-  if (dir_pseudo_style_sheet_) {
-    AddRulesToDefaultStyleSheets(dir_pseudo_style_sheet_, NamespaceType::kHTML);
-  }
 
   CHECK(default_html_style_->ViewTransitionsRules().empty())
       << "@view-transitions is not implemented for the UA stylesheet.";
@@ -513,7 +504,6 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(marker_style_sheet_);
   visitor->Trace(form_controls_not_vertical_style_sheet_);
   visitor->Trace(form_controls_not_vertical_style_text_sheet_);
-  visitor->Trace(dir_pseudo_style_sheet_);
 }
 
 }  // namespace blink
