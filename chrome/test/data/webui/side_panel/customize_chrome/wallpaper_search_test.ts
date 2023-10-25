@@ -14,7 +14,7 @@ import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {$$, assertNotStyle, assertStyle, installMock} from './test_support.js';
+import {$$, assertStyle, installMock} from './test_support.js';
 
 suite('WallpaperSearchTest', () => {
   let handler: TestMock<CustomizeChromePageHandlerRemote>;
@@ -81,8 +81,6 @@ suite('WallpaperSearchTest', () => {
       createWallpaperSearchElementWithDescriptors();
       await flushTasks();
 
-      assertNotStyle(
-          $$(wallpaperSearchElement, '#descriptorBtnC')!, 'display', 'none');
       assertEquals(
           2,
           wallpaperSearchElement.shadowRoot!
@@ -96,7 +94,7 @@ suite('WallpaperSearchTest', () => {
       assertEquals(
           3,
           wallpaperSearchElement.shadowRoot!
-              .querySelectorAll('#descriptorMenuC .dropdown-item')
+              .querySelectorAll('#descriptorComboboxC .dropdown-item')
               .length);
       assertEquals(
           6,
@@ -134,7 +132,8 @@ suite('WallpaperSearchTest', () => {
           wallpaperSearchElement,
           '#descriptorComboboxB .dropdown-item')!.click();
       $$<HTMLElement>(
-          wallpaperSearchElement, '#descriptorMenuC .dropdown-item')!.click();
+          wallpaperSearchElement,
+          '#descriptorComboboxC .dropdown-item')!.click();
       $$<HTMLElement>(
           wallpaperSearchElement, '#descriptorMenuD cr-button')!.click();
       wallpaperSearchElement.$.submitButton.click();

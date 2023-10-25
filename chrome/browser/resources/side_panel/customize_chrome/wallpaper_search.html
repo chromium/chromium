@@ -174,19 +174,17 @@
         </button>
       </template>
     </customize-chrome-combobox>
-    <cr-button id="descriptorBtnC" on-click="onDescriptorMenuClickC_">
-      Descriptor C
-    </cr-button>
-    <cr-action-menu id="descriptorMenuC">
+    <customize-chrome-combobox id="descriptorComboboxC" label="Descriptor C"
+        value="{{selectedDescriptorC_}}">
       <template is="dom-repeat" items="[[descriptors_.descriptorC]]">
-        <button class="dropdown-item" on-click="onDescriptorLabelClickC_">
-          <span>[[item]]</span>
-        </button>
+        <div class="dropdown-item" role="option" value="[[item]]">
+          [[item]]
+        </div>
       </template>
-    </cr-action-menu>
+    </customize-chrome-combobox>
     <div id="descriptorMenuD">
       <template is="dom-repeat" items="[[descriptorD_]]">
-        <cr-button on-click="onDescriptorLabelClickD_">
+        <cr-button on-click="onSelectedColorChanged_">
           <span class="descriptor-d" style$="background-color: [[item]];">
           </span>
         </cr-button>

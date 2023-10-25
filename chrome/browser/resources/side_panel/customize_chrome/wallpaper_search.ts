@@ -32,7 +32,7 @@ export interface WallpaperSearchElement {
   $: {
     descriptorComboboxA: CustomizeChromeCombobox,
     descriptorComboboxB: CustomizeChromeCombobox,
-    descriptorMenuC: CrActionMenuElement,
+    descriptorComboboxC: CustomizeChromeCombobox,
     descriptorMenuD: CrActionMenuElement,
     heading: SpHeading,
     hueSlider: ThemeHueSliderDialogElement,
@@ -121,21 +121,12 @@ export class WallpaperSearchElement extends PolymerElement {
     this.$.hueSlider.showAt(e.target as HTMLElement);
   }
 
-  private async onSelectedHueChanged_() {
-    this.selectedDescriptorD_ = {hue: this.$.hueSlider.selectedHue};
-  }
-
-  private onDescriptorLabelClickC_(e: DomRepeatEvent<string>) {
-    this.selectedDescriptorC_ = e.model.item;
-    this.$.descriptorMenuC.close();
-  }
-
-  private onDescriptorLabelClickD_(e: DomRepeatEvent<string>) {
+  private onSelectedColorChanged_(e: DomRepeatEvent<string>) {
     this.selectedDescriptorD_ = {color: hexColorToSkColor(e.model.item)};
   }
 
-  private onDescriptorMenuClickC_(e: Event) {
-    this.$.descriptorMenuC.showAt(e.target as HTMLElement);
+  private async onSelectedHueChanged_() {
+    this.selectedDescriptorD_ = {hue: this.$.hueSlider.selectedHue};
   }
 
   private async onSearchClick_() {
