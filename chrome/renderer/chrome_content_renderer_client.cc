@@ -1377,11 +1377,7 @@ void ChromeContentRendererClient::PostCompositorThreadCreated(
       FROM_HERE,
       base::BindOnce(&tracing::TracingSamplerProfiler::
                          CreateOnChildThreadWithCustomUnwinders,
-#if BUILDFLAG(IS_ANDROID)
-                     base::BindRepeating(&CreateCoreUnwindersFactory, false)));
-#else
                      base::BindRepeating(&CreateCoreUnwindersFactory)));
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 bool ChromeContentRendererClient::RunIdleHandlerWhenWidgetsHidden() {
