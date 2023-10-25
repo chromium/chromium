@@ -4,6 +4,8 @@
 
 #include "ash/events/peripheral_customization_event_rewriter.h"
 
+#include <linux/input.h>
+
 #include <memory>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
@@ -22,6 +24,7 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/events/ozone/evdev/mouse_button_property.h"
 #include "ui/events/types/event_type.h"
 
 namespace ash {
@@ -130,8 +133,8 @@ int GetRemappableMouseEventFlags(
   }
 }
 
-mojom::ButtonPtr GetButtonFromMouseEventFlag(int flag) {
-  switch (flag) {
+mojom::ButtonPtr GetButtonFromMouseEvent(const ui::MouseEvent& mouse_event) {
+  switch (mouse_event.changed_button_flags()) {
     case ui::EF_LEFT_MOUSE_BUTTON:
       return mojom::Button::NewCustomizableButton(
           mojom::CustomizableButton::kLeft);
@@ -142,12 +145,36 @@ mojom::ButtonPtr GetButtonFromMouseEventFlag(int flag) {
       return mojom::Button::NewCustomizableButton(
           mojom::CustomizableButton::kMiddle);
     case ui::EF_FORWARD_MOUSE_BUTTON:
+    case ui::EF_BACK_MOUSE_BUTTON:
+      break;
+  }
+
+  CHECK(mouse_event.changed_button_flags() == ui::EF_FORWARD_MOUSE_BUTTON ||
+        mouse_event.changed_button_flags() == ui::EF_BACK_MOUSE_BUTTON);
+  auto linux_key_code = ui::GetForwardBackMouseButtonProperty(mouse_event);
+  if (!linux_key_code) {
+    return (mouse_event.changed_button_flags() == ui::EF_FORWARD_MOUSE_BUTTON)
+               ? mojom::Button::NewCustomizableButton(
+                     mojom::CustomizableButton::kForward)
+               : mojom::Button::NewCustomizableButton(
+                     mojom::CustomizableButton::kBack);
+  }
+
+  switch (*linux_key_code) {
+    case BTN_FORWARD:
       return mojom::Button::NewCustomizableButton(
           mojom::CustomizableButton::kForward);
-    case ui::EF_BACK_MOUSE_BUTTON:
+    case BTN_BACK:
       return mojom::Button::NewCustomizableButton(
           mojom::CustomizableButton::kBack);
+    case BTN_SIDE:
+      return mojom::Button::NewCustomizableButton(
+          mojom::CustomizableButton::kSide);
+    case BTN_EXTRA:
+      return mojom::Button::NewCustomizableButton(
+          mojom::CustomizableButton::kExtra);
   }
+
   NOTREACHED_NORETURN();
 }
 
@@ -180,11 +207,9 @@ int ConvertButtonToFlags(const mojom::Button& button) {
       case mojom::CustomizableButton::kMiddle:
         return ui::EF_MIDDLE_MOUSE_BUTTON;
       case mojom::CustomizableButton::kForward:
-        return ui::EF_FORWARD_MOUSE_BUTTON;
-      case mojom::CustomizableButton::kBack:
-        return ui::EF_BACK_MOUSE_BUTTON;
       case mojom::CustomizableButton::kExtra:
         return ui::EF_FORWARD_MOUSE_BUTTON;
+      case mojom::CustomizableButton::kBack:
       case mojom::CustomizableButton::kSide:
         return ui::EF_BACK_MOUSE_BUTTON;
     }
@@ -360,8 +385,7 @@ bool PeripheralCustomizationEventRewriter::NotifyMouseEventObserving(
     return true;
   }
 
-  const auto button =
-      GetButtonFromMouseEventFlag(mouse_event.changed_button_flags());
+  const auto button = GetButtonFromMouseEvent(mouse_event);
   switch (device_type) {
     case DeviceType::kMouse:
       input_device_settings_controller_->OnMouseButtonPressed(
@@ -522,8 +546,7 @@ PeripheralCustomizationEventRewriter::RewriteMouseEvent(
 
   std::unique_ptr<ui::Event> rewritten_event;
   if (IsMouseButtonEvent(mouse_event) && mouse_event.changed_button_flags()) {
-    mojom::ButtonPtr button =
-        GetButtonFromMouseEventFlag(mouse_event.changed_button_flags());
+    mojom::ButtonPtr button = GetButtonFromMouseEvent(mouse_event);
     if (RewriteEventFromButton(mouse_event, *button, rewritten_event)) {
       return DiscardEvent(continuation);
     }

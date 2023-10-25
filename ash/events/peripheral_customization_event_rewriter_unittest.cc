@@ -4,6 +4,8 @@
 
 #include "ash/events/peripheral_customization_event_rewriter.h"
 
+#include <linux/input.h>
+
 #include <algorithm>
 #include <memory>
 
@@ -27,6 +29,7 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/events/ozone/evdev/mouse_button_property.h"
 #include "ui/events/ozone/layout/scoped_keyboard_layout_engine.h"
 #include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
 #include "ui/events/test/test_event_rewriter_continuation.h"
@@ -533,6 +536,88 @@ TEST_P(MouseButtonObserverTest, EventRewriting) {
   ASSERT_TRUE(continuation.passthrough_event);
   EXPECT_EQ(ConvertToString(data.incoming_event),
             ConvertToString(*continuation.passthrough_event));
+}
+
+TEST_F(MouseButtonObserverTest, MouseBackButtonRecognition) {
+  rewriter_->StartObservingMouse(kMouseDeviceId,
+                                 /*can_rewrite_key_event=*/true);
+
+  ui::MouseEvent incoming_event = CreateMouseButtonEvent(
+      ui::ET_MOUSE_PRESSED, ui::EF_BACK_MOUSE_BUTTON, ui::EF_BACK_MOUSE_BUTTON);
+  ui::SetForwardBackMouseButtonProperty(incoming_event, BTN_BACK);
+
+  TestEventRewriterContinuation continuation;
+  rewriter_->RewriteEvent(incoming_event,
+                          continuation.weak_ptr_factory_.GetWeakPtr());
+
+  const auto& actual_pressed_buttons =
+      controller_->pressed_mouse_buttons().at(kMouseDeviceId);
+  ASSERT_EQ(1u, actual_pressed_buttons.size());
+  EXPECT_EQ(
+      *mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kBack),
+      *actual_pressed_buttons[0]);
+}
+
+TEST_F(MouseButtonObserverTest, MouseSideButtonRecognition) {
+  rewriter_->StartObservingMouse(kMouseDeviceId,
+                                 /*can_rewrite_key_event=*/true);
+
+  ui::MouseEvent incoming_event = CreateMouseButtonEvent(
+      ui::ET_MOUSE_PRESSED, ui::EF_BACK_MOUSE_BUTTON, ui::EF_BACK_MOUSE_BUTTON);
+  ui::SetForwardBackMouseButtonProperty(incoming_event, BTN_SIDE);
+
+  TestEventRewriterContinuation continuation;
+  rewriter_->RewriteEvent(incoming_event,
+                          continuation.weak_ptr_factory_.GetWeakPtr());
+
+  const auto& actual_pressed_buttons =
+      controller_->pressed_mouse_buttons().at(kMouseDeviceId);
+  ASSERT_EQ(1u, actual_pressed_buttons.size());
+  EXPECT_EQ(
+      *mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kSide),
+      *actual_pressed_buttons[0]);
+}
+
+TEST_F(MouseButtonObserverTest, MouseForwardButtonRecognition) {
+  rewriter_->StartObservingMouse(kMouseDeviceId,
+                                 /*can_rewrite_key_event=*/true);
+
+  ui::MouseEvent incoming_event =
+      CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED, ui::EF_FORWARD_MOUSE_BUTTON,
+                             ui::EF_FORWARD_MOUSE_BUTTON);
+  ui::SetForwardBackMouseButtonProperty(incoming_event, BTN_FORWARD);
+
+  TestEventRewriterContinuation continuation;
+  rewriter_->RewriteEvent(incoming_event,
+                          continuation.weak_ptr_factory_.GetWeakPtr());
+
+  const auto& actual_pressed_buttons =
+      controller_->pressed_mouse_buttons().at(kMouseDeviceId);
+  ASSERT_EQ(1u, actual_pressed_buttons.size());
+  EXPECT_EQ(*mojom::Button::NewCustomizableButton(
+                mojom::CustomizableButton::kForward),
+            *actual_pressed_buttons[0]);
+}
+
+TEST_F(MouseButtonObserverTest, MouseExtraButtonRecognition) {
+  rewriter_->StartObservingMouse(kMouseDeviceId,
+                                 /*can_rewrite_key_event=*/true);
+
+  ui::MouseEvent incoming_event =
+      CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED, ui::EF_FORWARD_MOUSE_BUTTON,
+                             ui::EF_FORWARD_MOUSE_BUTTON);
+  ui::SetForwardBackMouseButtonProperty(incoming_event, BTN_EXTRA);
+
+  TestEventRewriterContinuation continuation;
+  rewriter_->RewriteEvent(incoming_event,
+                          continuation.weak_ptr_factory_.GetWeakPtr());
+
+  const auto& actual_pressed_buttons =
+      controller_->pressed_mouse_buttons().at(kMouseDeviceId);
+  ASSERT_EQ(1u, actual_pressed_buttons.size());
+  EXPECT_EQ(
+      *mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kExtra),
+      *actual_pressed_buttons[0]);
 }
 
 TEST_F(MouseButtonObserverTest, BlockEventRewritingForKeyEvent) {

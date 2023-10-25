@@ -25,6 +25,7 @@
 #include "ui/events/ozone/evdev/input_device_factory_evdev.h"
 #include "ui/events/ozone/evdev/input_device_factory_evdev_proxy.h"
 #include "ui/events/ozone/evdev/input_injector_evdev.h"
+#include "ui/events/ozone/evdev/mouse_button_property.h"
 #include "ui/events/ozone/evdev/touch_evdev_types.h"
 #include "ui/events/ozone/features.h"
 #include "ui/events/ozone/gamepad/gamepad_provider_ozone.h"
@@ -327,9 +328,11 @@ void EventFactoryEvdev::DispatchMouseButtonEvent(
       modifier = MODIFIER_MIDDLE_MOUSE_BUTTON;
       break;
     case BTN_BACK:
+    case BTN_SIDE:
       modifier = MODIFIER_BACK_MOUSE_BUTTON;
       break;
     case BTN_FORWARD:
+    case BTN_EXTRA:
       modifier = MODIFIER_FORWARD_MOUSE_BUTTON;
       break;
     default:
@@ -353,6 +356,11 @@ void EventFactoryEvdev::DispatchMouseButtonEvent(
   event.set_location_f(location);
   event.set_root_location_f(location);
   event.set_source_device_id(params.device_id);
+  if (modifier == MODIFIER_BACK_MOUSE_BUTTON ||
+      modifier == MODIFIER_FORWARD_MOUSE_BUTTON) {
+    SetForwardBackMouseButtonProperty(event, button);
+  }
+
   DispatchUiEvent(&event);
 }
 
