@@ -73,8 +73,8 @@ TEST(NotificationDataTest, ReflectProperties) {
     actions.push_back(action);
   }
 
-  DOMTimeStamp show_timestamp =
-      base::Time::Now().InSecondsFSinceUnixEpoch() * 1000.0;
+  const DOMTimeStamp show_timestamp =
+      base::Time::Now().InMillisecondsSinceUnixEpoch();
   TimestampTrigger* showTrigger = TimestampTrigger::Create(show_timestamp);
 
   NotificationOptions* options =
@@ -289,7 +289,7 @@ TEST(NotificationDataTest, DefaultTimestampValue) {
   // wasn't supplied by the developer. "32" has no significance, but an equal
   // comparison of the value could lead to flaky failures.
   EXPECT_NEAR(notification_data->timestamp,
-              base::Time::Now().InSecondsFSinceUnixEpoch() * 1000.0, 32);
+              base::Time::Now().InMillisecondsFSinceUnixEpoch(), 32);
 }
 
 TEST(NotificationDataTest, DirectionValues) {
