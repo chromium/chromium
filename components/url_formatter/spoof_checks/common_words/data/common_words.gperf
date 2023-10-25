@@ -40,7 +40,6 @@ accessed, 0
 accessibility, 0
 accessible, 0
 accessing, 0
-accession, 0
 accessories, 0
 accessory, 0
 accident, 0
@@ -68,6 +67,7 @@ accurately, 0
 accused, 0
 acdbentity, 0
 ace, 0
+acer, 0
 achieve, 0
 achieved, 0
 achievement, 0
@@ -348,7 +348,6 @@ ampland, 0
 amplifier, 0
 amsterdam, 0
 amy, 0
-ana, 0
 anaheim, 0
 anal, 0
 analog, 0
@@ -556,7 +555,6 @@ artistic, 0
 artists, 0
 arts, 0
 artwork, 0
-aruba, 0
 asbestos, 0
 ascending, 0
 ascii, 0
@@ -1161,7 +1159,6 @@ brings, 0
 brisbane, 0
 bristol, 0
 britain, 0
-britannica, 0
 british, 0
 britney, 0
 broad, 0
@@ -1389,7 +1386,6 @@ carolina, 0
 caroline, 0
 carpenter, 0
 carpet, 0
-carriage, 0
 carried, 0
 carrier, 0
 carriers, 0
@@ -1414,7 +1410,6 @@ cash, 0
 cashiers, 0
 casino, 0
 casinos, 0
-casio, 0
 cassette, 0
 cast, 0
 casting, 0
@@ -1442,6 +1437,7 @@ causing, 0
 caution, 0
 cave, 0
 cayman, 0
+cbs, 0
 ccd, 0
 cdna, 0
 cds, 0
@@ -1570,6 +1566,7 @@ cheryl, 0
 chess, 0
 chest, 0
 chester, 0
+chevrolet, 0
 chevy, 0
 chi, 0
 chicago, 0
@@ -1636,6 +1633,7 @@ circulation, 0
 circumstances, 0
 circus, 0
 cis, 0
+cisco, 0
 citation, 0
 citations, 0
 cite, 0
@@ -2194,7 +2192,6 @@ covering, 0
 covers, 0
 cow, 0
 cowboy, 0
-cox, 0
 cpu, 0
 crack, 0
 cradle, 0
@@ -2298,7 +2295,6 @@ cut, 0
 cute, 0
 cuts, 0
 cutting, 0
-cvs, 0
 cyber, 0
 cycle, 0
 cycles, 0
@@ -2641,6 +2637,7 @@ director, 0
 directories, 0
 directors, 0
 directory, 0
+directv, 0
 dirt, 0
 dirty, 0
 dis, 0
@@ -2685,6 +2682,7 @@ dish, 0
 dishes, 0
 disk, 0
 disks, 0
+disney, 0
 disorder, 0
 disorders, 0
 dispatch, 0
@@ -3005,7 +3003,6 @@ emergency, 0
 emerging, 0
 emily, 0
 eminem, 0
-emirates, 0
 emission, 0
 emissions, 0
 emma, 0
@@ -3113,7 +3110,6 @@ environment, 0
 environmental, 0
 environments, 0
 enzyme, 0
-eos, 0
 epa, 0
 epic, 0
 epinions, 0
@@ -3331,7 +3327,6 @@ exterior, 0
 external, 0
 extra, 0
 extract, 0
-extracted, 0
 extraction, 0
 extraordinary, 0
 extras, 0
@@ -3419,6 +3414,7 @@ favourites, 0
 fax, 0
 fbi, 0
 fcc, 0
+fda, 0
 fear, 0
 fears, 0
 feat, 0
@@ -4121,6 +4117,7 @@ harrison, 0
 harry, 0
 hart, 0
 hartford, 0
+harvard, 0
 harvest, 0
 harvey, 0
 has, 0
@@ -4319,7 +4316,6 @@ hosts, 0
 hot, 0
 hotel, 0
 hotels, 0
-hotmail, 0
 hottest, 0
 hour, 0
 hourly, 0
@@ -4371,6 +4367,7 @@ hurricane, 0
 hurt, 0
 husband, 0
 hwy, 0
+hyatt, 0
 hybrid, 0
 hydraulic, 0
 hydrocodone, 0
@@ -4378,10 +4375,8 @@ hydrogen, 0
 hygiene, 0
 hypothesis, 0
 hypothetical, 0
-hyundai, 0
 ian, 0
 ice, 0
-iceland, 0
 icon, 0
 icons, 0
 icq, 0
@@ -4635,7 +4630,6 @@ integrated, 0
 integrating, 0
 integration, 0
 integrity, 0
-intel, 0
 intellectual, 0
 intelligence, 0
 intelligent, 0
@@ -5286,6 +5280,7 @@ logic, 0
 logical, 0
 login, 0
 logistics, 0
+logitech, 0
 logo, 0
 logos, 0
 logout, 0
@@ -5495,6 +5490,7 @@ mart, 0
 martha, 0
 martial, 0
 martin, 0
+marvel, 0
 mary, 0
 maryland, 0
 mas, 0
@@ -5835,6 +5831,7 @@ motivation, 0
 motor, 0
 motorcycle, 0
 motorcycles, 0
+motorola, 0
 motors, 0
 mount, 0
 mountain, 0
@@ -5865,6 +5862,7 @@ msgid, 0
 msgstr, 0
 msie, 0
 mst, 0
+mtv, 0
 much, 0
 mud, 0
 mug, 0
@@ -5897,6 +5895,7 @@ myers, 0
 myrtle, 0
 myself, 0
 mysimon, 0
+myspace, 0
 mysql, 0
 mysterious, 0
 mystery, 0
@@ -5917,6 +5916,7 @@ naples, 0
 narrative, 0
 narrow, 0
 nas, 0
+nasa, 0
 nascar, 0
 nasdaq, 0
 nashville, 0
@@ -5943,6 +5943,9 @@ navigate, 0
 navigation, 0
 navigator, 0
 navy, 0
+nba, 0
+nbc, 0
+ncaa, 0
 near, 0
 nearby, 0
 nearest, 0
@@ -6038,6 +6041,7 @@ nobody, 0
 node, 0
 nodes, 0
 noise, 0
+nokia, 0
 nominal, 0
 nominated, 0
 nomination, 0
@@ -6058,6 +6062,7 @@ northeast, 0
 northern, 0
 northwest, 0
 northwestern, 0
+norton, 0
 norway, 0
 norwegian, 0
 nose, 0
@@ -6374,6 +6379,7 @@ pam, 0
 pamela, 0
 pan, 0
 panama, 0
+panasonic, 0
 panel, 0
 panels, 0
 panic, 0
@@ -6467,7 +6473,6 @@ patriot, 0
 patrol, 0
 pattern, 0
 patterns, 0
-patterson, 0
 paul, 0
 pavilion, 0
 paxil, 0
@@ -7397,7 +7402,6 @@ regularly, 0
 regulated, 0
 regulation, 0
 regulations, 0
-regulator, 0
 regulatory, 0
 rehab, 0
 rehabilitation, 0
@@ -7622,7 +7626,6 @@ revolution, 0
 revolutionary, 0
 reward, 0
 rewards, 0
-rex, 0
 reynolds, 0
 rfc, 0
 rfid, 0
@@ -8226,6 +8229,7 @@ skirt, 0
 skirts, 0
 sku, 0
 sky, 0
+skype, 0
 slave, 0
 sleep, 0
 sleeping, 0
@@ -8430,7 +8434,6 @@ spray, 0
 spread, 0
 spreading, 0
 spring, 0
-springer, 0
 springfield, 0
 springs, 0
 sprint, 0
@@ -8908,7 +8911,6 @@ tenure, 0
 term, 0
 terminal, 0
 terminals, 0
-terminate, 0
 terminated, 0
 termination, 0
 terminology, 0
@@ -8974,7 +8976,6 @@ there, 0
 thereafter, 0
 thereby, 0
 therefore, 0
-therein, 0
 thereof, 0
 thermal, 0
 thesaurus, 0
@@ -9426,7 +9427,6 @@ upload, 0
 uploaded, 0
 upon, 0
 upper, 0
-ups, 0
 upset, 0
 upskirt, 0
 upskirts, 0
@@ -9443,7 +9443,9 @@ urw, 0
 usa, 0
 usage, 0
 usb, 0
+usc, 0
 usd, 0
+usda, 0
 use, 0
 used, 0
 useful, 0
@@ -9889,7 +9891,6 @@ woods, 0
 wool, 0
 worcester, 0
 word, 0
-wordpress, 0
 words, 0
 work, 0
 worked, 0
@@ -9937,7 +9938,6 @@ writings, 0
 written, 0
 wrong, 0
 wrote, 0
-wto, 0
 www, 0
 wyoming, 0
 xanax, 0
@@ -9982,6 +9982,7 @@ yrs, 0
 yugoslavia, 0
 yukon, 0
 zambia, 0
+zdnet, 0
 zealand, 0
 zen, 0
 zero, 0
@@ -9998,5 +9999,4 @@ zoophilia, 0
 zope, 0
 zshops, 0
 zum, 0
-zus, 0
 %%
