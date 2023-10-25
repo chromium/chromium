@@ -39,8 +39,8 @@ class ShelfControllerHelper : public ExtensionEnableFlowDelegate {
   // status.
   static std::u16string GetLabelForPromiseStatus(apps::PromiseStatus status);
 
-  // Get the accessible item label that should be shown for the specified
-  // promise app name and status.
+  // Get the accessible label that should be announced by the screenreader for
+  // the specified promise app name and status.
   static std::u16string GetAccessibleLabelForPromiseStatus(
       absl::optional<std::string> app_name,
       apps::PromiseStatus status);
@@ -59,6 +59,12 @@ class ShelfControllerHelper : public ExtensionEnableFlowDelegate {
   // Returns the app id of the specified tab, or an empty string if there is
   // no app. All known profiles will be queried for this.
   virtual std::string GetAppID(content::WebContents* tab);
+
+  // Get the accessible label that should be announced by the screenreader for
+  // the specified promise shelf item.
+  static std::u16string GetPromiseAppAccessibleName(
+      Profile* profile,
+      const std::string& package_id);
 
   // Retrieve the label for a registered promise app. If there isn't a promise
   // app with the specified package ID, return an empty string.

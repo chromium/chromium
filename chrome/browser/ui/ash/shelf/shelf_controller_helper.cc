@@ -178,6 +178,23 @@ std::u16string ShelfControllerHelper::GetAppTitle(Profile* profile,
   return std::u16string();
 }
 
+std::u16string ShelfControllerHelper::GetPromiseAppAccessibleName(
+    Profile* profile,
+    const std::string& package_id) {
+  if (!ash::features::ArePromiseIconsEnabled()) {
+    return std::u16string();
+  }
+  const apps::PromiseApp* promise_app =
+      apps::AppServiceProxyFactory::GetForProfile(profile)
+          ->PromiseAppRegistryCache()
+          ->GetPromiseAppForStringPackageId(package_id);
+  if (!promise_app) {
+    return std::u16string();
+  }
+  return GetAccessibleLabelForPromiseStatus(promise_app->name,
+                                            promise_app->status);
+}
+
 // static
 ash::AppStatus ShelfControllerHelper::GetAppStatus(Profile* profile,
                                                    const std::string& app_id) {

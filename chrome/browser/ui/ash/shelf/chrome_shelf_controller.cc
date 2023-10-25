@@ -80,6 +80,7 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_item_factory.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
+#include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/ash/shelf/shelf_extension_app_updater.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "chrome/browser/ui/browser.h"
@@ -1116,6 +1117,9 @@ void ChromeShelfController::OnPromiseAppUpdate(
         ShelfControllerHelper::ConvertPromiseStatusToAppStatus(update.Status());
     item.title =
         ShelfControllerHelper::GetLabelForPromiseStatus(update.Status());
+    item.accessible_name =
+        ShelfControllerHelper::GetAccessibleLabelForPromiseStatus(
+            update.Name(), update.Status());
   }
   model_->Set(index, item);
 }
@@ -1759,6 +1763,14 @@ void ChromeShelfController::ShelfItemAdded(int index) {
       if (is_promise_app != item.is_promise_app) {
         needs_update = true;
         item.is_promise_app = is_promise_app;
+      }
+
+      std::u16string accessible_name =
+          ShelfControllerHelper::GetPromiseAppAccessibleName(
+              latest_active_profile_, id.app_id);
+      if (is_promise_app && accessible_name != item.accessible_name) {
+        needs_update = true;
+        item.accessible_name = accessible_name;
       }
     }
 
