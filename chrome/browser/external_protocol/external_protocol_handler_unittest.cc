@@ -9,7 +9,6 @@
 
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/prefs/browser_prefs.h"
@@ -279,125 +278,6 @@ TEST_F(ExternalProtocolHandlerTest,
 // Android doesn't use the external protocol dialog.
 #if !BUILDFLAG(IS_ANDROID)
 
-// Tests for the PromptForExternalNewsSchemes feature. When enabled, news: and
-// snews: schemes are not considered default-allowed, and a prompt may be
-// shown. When the feature is disabled, those schemes are default-allowed.
-class ExternalProtocolHandlerPromptNewsSchemesFeatureTest
-    : public ExternalProtocolHandlerTest {
- public:
-  ExternalProtocolHandlerPromptNewsSchemesFeatureTest()
-      : initiating_origin_(url::Origin::Create(GURL("https://example.com"))) {}
-
- protected:
-  const url::Origin& initiating_origin() { return initiating_origin_; }
-
-  void DoFeatureTest(bool enable_feature,
-                     shell_integration::DefaultWebClientState os_state,
-                     Action expected_action,
-                     const GURL& url,
-                     const std::u16string& program_name) {
-    base::test::ScopedFeatureList feature_list;
-    if (enable_feature) {
-      feature_list.InitAndEnableFeature(kPromptForExternalNewsSchemes);
-    } else {
-      feature_list.InitAndDisableFeature(kPromptForExternalNewsSchemes);
-    }
-
-    const url::Origin precursor =
-        url::Origin::Create(GURL("https://precursor.test"));
-
-    ExternalProtocolHandler::BlockState block_state =
-        ExternalProtocolHandler::GetBlockState(
-            url.scheme(), &initiating_origin_, profile_.get());
-
-    DoTest(block_state, os_state, expected_action, url, initiating_origin_,
-           precursor, program_name);
-  }
-
-  void ExpectBlockStateHistogram(
-      ExternalProtocolHandler::BlockStateMetric sample,
-      int count) {
-    histogram_tester_.ExpectBucketCount(
-        ExternalProtocolHandler::kBlockStateMetric, sample, count);
-  }
-
- private:
-  const url::Origin initiating_origin_;
-  base::HistogramTester histogram_tester_;
-};
-
-TEST_F(ExternalProtocolHandlerPromptNewsSchemesFeatureTest, Enabled_Mail) {
-  DoFeatureTest(true, shell_integration::NOT_DEFAULT, Action::LAUNCH,
-                GURL("mailto:test@example.com"), u"MailClient");
-  ExpectBlockStateHistogram(
-      ExternalProtocolHandler::BlockStateMetric::kAllowedDefaultMail, 1);
-}
-
-TEST_F(ExternalProtocolHandlerPromptNewsSchemesFeatureTest, Disabled_Mail) {
-  DoFeatureTest(false, shell_integration::NOT_DEFAULT, Action::LAUNCH,
-                GURL("mailto:test@example.com"), u"MailClient");
-  ExpectBlockStateHistogram(
-      ExternalProtocolHandler::BlockStateMetric::kAllowedDefaultMail, 1);
-}
-
-TEST_F(ExternalProtocolHandlerPromptNewsSchemesFeatureTest, Enabled_News) {
-  DoFeatureTest(true, shell_integration::NOT_DEFAULT, Action::PROMPT,
-                GURL("news:alt.software.chrome"), u"UsenetReader");
-  ExpectBlockStateHistogram(
-      ExternalProtocolHandler::BlockStateMetric::kNewsNotDefault, 1);
-  ExpectBlockStateHistogram(ExternalProtocolHandler::BlockStateMetric::kPrompt,
-                            1);
-}
-
-TEST_F(ExternalProtocolHandlerPromptNewsSchemesFeatureTest,
-       Enabled_News_Remember) {
-  ExternalProtocolHandler::SetBlockState("news", initiating_origin(),
-                                         ExternalProtocolHandler::DONT_BLOCK,
-                                         profile_.get());
-  DoFeatureTest(true, shell_integration::NOT_DEFAULT, Action::LAUNCH,
-                GURL("news:alt.software.chrome"), u"UsenetReader");
-  ExpectBlockStateHistogram(
-      ExternalProtocolHandler::BlockStateMetric::kNewsNotDefault, 1);
-  ExpectBlockStateHistogram(
-      ExternalProtocolHandler::BlockStateMetric::kAllowedByPreference, 1);
-}
-
-TEST_F(ExternalProtocolHandlerPromptNewsSchemesFeatureTest, Disabled_News) {
-  DoFeatureTest(false, shell_integration::NOT_DEFAULT, Action::LAUNCH,
-                GURL("news:alt.software.chrome"), u"UsenetReader");
-  ExpectBlockStateHistogram(
-      ExternalProtocolHandler::BlockStateMetric::kAllowedDefaultNews, 1);
-}
-
-TEST_F(ExternalProtocolHandlerPromptNewsSchemesFeatureTest, Enabled_SNews) {
-  DoFeatureTest(true, shell_integration::NOT_DEFAULT, Action::PROMPT,
-                GURL("snews:alt.software.chrome"), u"UsenetReader");
-  ExpectBlockStateHistogram(
-      ExternalProtocolHandler::BlockStateMetric::kNewsNotDefault, 1);
-  ExpectBlockStateHistogram(ExternalProtocolHandler::BlockStateMetric::kPrompt,
-                            1);
-}
-
-TEST_F(ExternalProtocolHandlerPromptNewsSchemesFeatureTest,
-       Enabled_SNews_Remember) {
-  ExternalProtocolHandler::SetBlockState("snews", initiating_origin(),
-                                         ExternalProtocolHandler::DONT_BLOCK,
-                                         profile_.get());
-  DoFeatureTest(true, shell_integration::NOT_DEFAULT, Action::LAUNCH,
-                GURL("snews:alt.software.chrome"), u"UsetnetReader");
-  ExpectBlockStateHistogram(
-      ExternalProtocolHandler::BlockStateMetric::kNewsNotDefault, 1);
-  ExpectBlockStateHistogram(
-      ExternalProtocolHandler::BlockStateMetric::kAllowedByPreference, 1);
-}
-
-TEST_F(ExternalProtocolHandlerPromptNewsSchemesFeatureTest, Disabled_SNews) {
-  DoFeatureTest(false, shell_integration::NOT_DEFAULT, Action::LAUNCH,
-                GURL("snews:alt.software.chrome"), u"UsenetReader");
-  ExpectBlockStateHistogram(
-      ExternalProtocolHandler::BlockStateMetric::kAllowedDefaultNews, 1);
-}
-
 TEST_F(ExternalProtocolHandlerTest, TestLaunchSchemeUnBlockedChromeDefault) {
   DoTest(ExternalProtocolHandler::DONT_BLOCK, shell_integration::IS_DEFAULT,
          Action::BLOCK);
@@ -526,15 +406,29 @@ TEST_F(ExternalProtocolHandlerTest, TestUrlEscapeNoChecks) {
 }
 
 TEST_F(ExternalProtocolHandlerTest, TestGetBlockStateUnknown) {
+  base::HistogramTester histogram_tester;
+
   ExternalProtocolHandler::BlockState block_state =
       ExternalProtocolHandler::GetBlockState("tel", nullptr, profile_.get());
   EXPECT_EQ(ExternalProtocolHandler::UNKNOWN, block_state);
+  block_state =
+      ExternalProtocolHandler::GetBlockState("news", nullptr, profile_.get());
+  EXPECT_EQ(ExternalProtocolHandler::UNKNOWN, block_state);
+  block_state =
+      ExternalProtocolHandler::GetBlockState("snews", nullptr, profile_.get());
+  EXPECT_EQ(ExternalProtocolHandler::UNKNOWN, block_state);
+
   EXPECT_TRUE(profile_->GetPrefs()
                   ->GetDict(prefs::kProtocolHandlerPerOriginAllowedProtocols)
                   .empty());
+  histogram_tester.ExpectBucketCount(
+      ExternalProtocolHandler::kBlockStateMetric,
+      ExternalProtocolHandler::BlockStateMetric::kPrompt, 3);
 }
 
 TEST_F(ExternalProtocolHandlerTest, TestGetBlockStateDefaultBlock) {
+  base::HistogramTester histogram_tester;
+
   ExternalProtocolHandler::BlockState block_state =
       ExternalProtocolHandler::GetBlockState("afp", nullptr, profile_.get());
   EXPECT_EQ(ExternalProtocolHandler::BLOCK, block_state);
@@ -548,21 +442,33 @@ TEST_F(ExternalProtocolHandlerTest, TestGetBlockStateDefaultBlock) {
   block_state =
       ExternalProtocolHandler::GetBlockState("mk", nullptr, profile_.get());
   EXPECT_EQ(ExternalProtocolHandler::BLOCK, block_state);
+
   EXPECT_TRUE(profile_->GetPrefs()
                   ->GetDict(prefs::kProtocolHandlerPerOriginAllowedProtocols)
                   .empty());
+  histogram_tester.ExpectBucketCount(
+      ExternalProtocolHandler::kBlockStateMetric,
+      ExternalProtocolHandler::BlockStateMetric::kDeniedDefault, 4);
 }
 
 TEST_F(ExternalProtocolHandlerTest, TestGetBlockStateDefaultDontBlock) {
+  base::HistogramTester histogram_tester;
+
   ExternalProtocolHandler::BlockState block_state =
       ExternalProtocolHandler::GetBlockState("mailto", nullptr, profile_.get());
   EXPECT_EQ(ExternalProtocolHandler::DONT_BLOCK, block_state);
+
   EXPECT_TRUE(profile_->GetPrefs()
                   ->GetDict(prefs::kProtocolHandlerPerOriginAllowedProtocols)
                   .empty());
+  histogram_tester.ExpectBucketCount(
+      ExternalProtocolHandler::kBlockStateMetric,
+      ExternalProtocolHandler::BlockStateMetric::kAllowedDefaultMail, 1);
 }
 
 TEST_F(ExternalProtocolHandlerTest, TestSetBlockState) {
+  base::HistogramTester histogram_tester;
+
   const char kScheme_1[] = "custom1";
   const char kScheme_2[] = "custom2";
   url::Origin example_origin_1 =
@@ -585,6 +491,9 @@ TEST_F(ExternalProtocolHandlerTest, TestSetBlockState) {
   EXPECT_TRUE(profile_->GetPrefs()
                   ->GetDict(prefs::kProtocolHandlerPerOriginAllowedProtocols)
                   .empty());
+  histogram_tester.ExpectBucketCount(
+      ExternalProtocolHandler::kBlockStateMetric,
+      ExternalProtocolHandler::BlockStateMetric::kPrompt, 4);
 
   // Set to DONT_BLOCK for {kScheme_1, example_origin_1}, and make sure it is
   // written to prefs.
@@ -603,6 +512,12 @@ TEST_F(ExternalProtocolHandlerTest, TestSetBlockState) {
   block_state = ExternalProtocolHandler::GetBlockState(
       kScheme_2, &example_origin_2, profile_.get());
   EXPECT_EQ(ExternalProtocolHandler::UNKNOWN, block_state);
+  histogram_tester.ExpectBucketCount(
+      ExternalProtocolHandler::kBlockStateMetric,
+      ExternalProtocolHandler::BlockStateMetric::kAllowedByPreference, 1);
+  histogram_tester.ExpectBucketCount(
+      ExternalProtocolHandler::kBlockStateMetric,
+      ExternalProtocolHandler::BlockStateMetric::kPrompt, 7);
 
   // Set to DONT_BLOCK for {kScheme_2, example_origin_2}, and make sure it is
   // written to prefs independently of {kScheme_1, example_origin_1}.
@@ -621,6 +536,12 @@ TEST_F(ExternalProtocolHandlerTest, TestSetBlockState) {
   block_state = ExternalProtocolHandler::GetBlockState(
       kScheme_2, &example_origin_2, profile_.get());
   EXPECT_EQ(ExternalProtocolHandler::DONT_BLOCK, block_state);
+  histogram_tester.ExpectBucketCount(
+      ExternalProtocolHandler::kBlockStateMetric,
+      ExternalProtocolHandler::BlockStateMetric::kAllowedByPreference, 3);
+  histogram_tester.ExpectBucketCount(
+      ExternalProtocolHandler::kBlockStateMetric,
+      ExternalProtocolHandler::BlockStateMetric::kPrompt, 9);
 
   const base::Value::Dict& protocol_origin_pairs =
       profile_->GetPrefs()->GetDict(
@@ -657,6 +578,12 @@ TEST_F(ExternalProtocolHandlerTest, TestSetBlockState) {
   EXPECT_TRUE(profile_->GetPrefs()
                   ->GetDict(prefs::kProtocolHandlerPerOriginAllowedProtocols)
                   .empty());
+  histogram_tester.ExpectBucketCount(
+      ExternalProtocolHandler::kBlockStateMetric,
+      ExternalProtocolHandler::BlockStateMetric::kAllowedByPreference, 3);
+  histogram_tester.ExpectBucketCount(
+      ExternalProtocolHandler::kBlockStateMetric,
+      ExternalProtocolHandler::BlockStateMetric::kPrompt, 11);
 }
 
 TEST_F(ExternalProtocolHandlerTest, TestSetBlockStateWithUntrustowrthyOrigin) {
