@@ -758,7 +758,15 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, LevelDBLogFileTest) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, CanDeleteWhenOverQuotaTest) {
+// TODO(crbug.com/1489517): this test fails sometimes on Windows when durability
+// is relaxed, in particular on ASAN builds, but disable across all Windows
+// builds for safety.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_CanDeleteWhenOverQuotaTest DISABLED_CanDeleteWhenOverQuotaTest
+#else
+#define MAYBE_CanDeleteWhenOverQuotaTest CanDeleteWhenOverQuotaTest
+#endif
+IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, MAYBE_CanDeleteWhenOverQuotaTest) {
   SetQuota(5);
   const GURL kTestUrl = GetTestUrl("indexeddb", "fill_quota.html");
   SimpleTest(kTestUrl);
