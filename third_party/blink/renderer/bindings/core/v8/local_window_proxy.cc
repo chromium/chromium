@@ -161,6 +161,8 @@ void LocalWindowProxy::DisposeContext(Lifecycle next_status,
 // Record/replay state is initialized along with the first LocalWindowProxy.
 static bool gRecordReplayStateInitialized;
 
+extern "C" void V8RecordReplaySetDefaultContext(v8::Isolate* isolate, v8::Local<v8::Context> cx);
+
 void LocalWindowProxy::Initialize() {
   // https://linear.app/replay/issue/RUN-749
   recordreplay::Assert("LocalWindowProxy::Initialize Start");
@@ -218,7 +220,7 @@ void LocalWindowProxy::Initialize() {
   if (origin &&
       !origin->Host().empty()) {
 
-    // Initialize Replay globals.
+    // Initialize Replay basics.
     OnNewWindow1(GetIsolate(), GetFrame());
 
     if (recordreplay::IsRecordingOrReplaying("checkpoints") &&
@@ -229,12 +231,12 @@ void LocalWindowProxy::Initialize() {
       // the first checkpoint at which execution can pause.
       gRecordReplayStateInitialized = true;
       SetupRecordReplayCommands(GetIsolate(), GetFrame());
+      V8RecordReplaySetDefaultContext(GetIsolate(), context);
       recordreplay::NewCheckpoint();
     }
 
     if (GetFrame()->IsOutermostMainFrame()) {
       // Root-level navigation event.
-      // Note: This must happen after our first checkpoint, or we'll crash with "Progress counter updated before first checkpoint".
       OnNewRootFrame(GetIsolate(), GetFrame());
     }
 
