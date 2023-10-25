@@ -134,11 +134,6 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         computed: 'computeIsDisabled(acceleratorInfo.*)',
         reflectToAttribute: true,
       },
-
-      highlighted: {
-        type: Boolean,
-        reflectToAttribute: true,
-      },
     };
   }
 
@@ -153,7 +148,6 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   categoryIsLocked: boolean;
   isFirstAccelerator: boolean;
   isDisabled: boolean;
-  highlighted: boolean;
   protected pendingAcceleratorInfo: StandardAcceleratorInfo;
   protected isCapturing: boolean;
   protected lastAccelerator: Accelerator;
