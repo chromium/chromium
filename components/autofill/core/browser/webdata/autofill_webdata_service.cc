@@ -14,8 +14,8 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
+#include "components/autofill/core/browser/webdata/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
-#include "components/autofill/core/browser/webdata/autofill_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend_impl.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
@@ -159,12 +159,12 @@ WebDataServiceBase::Handle
       consumer);
 }
 
-void AutofillWebDataService::UpdateAutofillEntries(
-    const std::vector<AutofillEntry>& autofill_entries) {
+void AutofillWebDataService::UpdateAutocompleteEntries(
+    const std::vector<AutocompleteEntry>& autocomplete_entries) {
   wdbs_->ScheduleDBTask(
       FROM_HERE,
-      base::BindOnce(&AutofillWebDataBackendImpl::UpdateAutofillEntries,
-                     autofill_backend_, autofill_entries));
+      base::BindOnce(&AutofillWebDataBackendImpl::UpdateAutocompleteEntries,
+                     autofill_backend_, autocomplete_entries));
 }
 
 void AutofillWebDataService::AddCreditCard(const CreditCard& credit_card) {

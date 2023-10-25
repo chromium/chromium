@@ -24,8 +24,8 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
+#include "components/autofill/core/browser/webdata/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
-#include "components/autofill/core/browser/webdata/autofill_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
@@ -93,8 +93,8 @@ class MockAutofillWebDataServiceObserver
     : public AutofillWebDataServiceObserverOnDBSequence {
  public:
   MOCK_METHOD(void,
-              AutofillEntriesChanged,
-              (const AutofillChangeList& changes),
+              AutocompleteEntriesChanged,
+              (const AutocompleteChangeList& changes),
               (override));
   MOCK_METHOD(void,
               AutofillProfileChanged,
@@ -198,14 +198,16 @@ class WebDataServiceAutofillTest : public WebDataServiceTest {
 };
 
 TEST_F(WebDataServiceAutofillTest, FormFillAdd) {
-  const AutofillChange expected_changes[] = {
-      AutofillChange(AutofillChange::ADD, AutofillKey(name1_, value1_)),
-      AutofillChange(AutofillChange::ADD, AutofillKey(name2_, value2_))};
+  const AutocompleteChange expected_changes[] = {
+      AutocompleteChange(AutocompleteChange::ADD,
+                         AutocompleteKey(name1_, value1_)),
+      AutocompleteChange(AutocompleteChange::ADD,
+                         AutocompleteKey(name2_, value2_))};
 
   // This will verify that the correct notification is triggered,
-  // passing the correct list of autofill keys in the details.
+  // passing the correct list of autocomplete keys in the details.
   EXPECT_CALL(observer_,
-              AutofillEntriesChanged(ElementsAreArray(expected_changes)))
+              AutocompleteEntriesChanged(ElementsAreArray(expected_changes)))
       .WillOnce(SignalEvent(&done_event_));
 
   std::vector<FormFieldData> form_fields;
@@ -216,7 +218,7 @@ TEST_F(WebDataServiceAutofillTest, FormFillAdd) {
   // The event will be signaled when the mock observer is notified.
   done_event_.TimedWait(test_timeout_);
 
-  AutofillWebDataServiceWaiter<std::vector<AutofillEntry>> consumer;
+  AutofillWebDataServiceWaiter<std::vector<AutocompleteEntry>> consumer;
   WebDataServiceBase::Handle handle;
   static const int limit = 10;
   handle = wds_->GetFormValuesForElementName(name1_, std::u16string(), limit,
@@ -227,8 +229,8 @@ TEST_F(WebDataServiceAutofillTest, FormFillAdd) {
 }
 
 TEST_F(WebDataServiceAutofillTest, FormFillRemoveOne) {
-  // First add some values to autofill.
-  EXPECT_CALL(observer_, AutofillEntriesChanged(_))
+  // First add some values to autocomplete.
+  EXPECT_CALL(observer_, AutocompleteEntriesChanged(_))
       .WillOnce(SignalEvent(&done_event_));
   std::vector<FormFieldData> form_fields;
   AppendFormField(name1_, value1_, &form_fields);
@@ -238,11 +240,11 @@ TEST_F(WebDataServiceAutofillTest, FormFillRemoveOne) {
   done_event_.TimedWait(test_timeout_);
 
   // This will verify that the correct notification is triggered,
-  // passing the correct list of autofill keys in the details.
-  const AutofillChange expected_changes[] = {
-      AutofillChange(AutofillChange::REMOVE, AutofillKey(name1_, value1_))};
+  // passing the correct list of autocomplete keys in the details.
+  const AutocompleteChange expected_changes[] = {AutocompleteChange(
+      AutocompleteChange::REMOVE, AutocompleteKey(name1_, value1_))};
   EXPECT_CALL(observer_,
-              AutofillEntriesChanged(ElementsAreArray(expected_changes)))
+              AutocompleteEntriesChanged(ElementsAreArray(expected_changes)))
       .WillOnce(SignalEvent(&done_event_));
   wds_->RemoveFormValueForElementName(name1_, value1_);
 
@@ -254,7 +256,7 @@ TEST_F(WebDataServiceAutofillTest, FormFillRemoveMany) {
   base::TimeDelta one_day(base::Days(1));
   Time t = AutofillClock::Now();
 
-  EXPECT_CALL(observer_, AutofillEntriesChanged(_))
+  EXPECT_CALL(observer_, AutocompleteEntriesChanged(_))
       .WillOnce(SignalEvent(&done_event_));
 
   std::vector<FormFieldData> form_fields;
@@ -266,12 +268,14 @@ TEST_F(WebDataServiceAutofillTest, FormFillRemoveMany) {
   done_event_.TimedWait(test_timeout_);
 
   // This will verify that the correct notification is triggered,
-  // passing the correct list of autofill keys in the details.
-  const AutofillChange expected_changes[] = {
-      AutofillChange(AutofillChange::REMOVE, AutofillKey(name1_, value1_)),
-      AutofillChange(AutofillChange::REMOVE, AutofillKey(name2_, value2_))};
+  // passing the correct list of autocomplete keys in the details.
+  const AutocompleteChange expected_changes[] = {
+      AutocompleteChange(AutocompleteChange::REMOVE,
+                         AutocompleteKey(name1_, value1_)),
+      AutocompleteChange(AutocompleteChange::REMOVE,
+                         AutocompleteKey(name2_, value2_))};
   EXPECT_CALL(observer_,
-              AutofillEntriesChanged(ElementsAreArray(expected_changes)))
+              AutocompleteEntriesChanged(ElementsAreArray(expected_changes)))
       .WillOnce(SignalEvent(&done_event_));
   wds_->RemoveFormElementsAddedBetween(t, t + one_day);
 

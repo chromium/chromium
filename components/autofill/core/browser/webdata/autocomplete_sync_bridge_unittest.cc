@@ -19,7 +19,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/webdata/autofill_entry.h"
+#include "components/autofill/core/browser/webdata/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
 #include "components/sync/base/client_tag_hash.h"
@@ -125,9 +125,10 @@ void VerifyDataBatch(std::map<std::string, AutofillSpecifics> expected,
   EXPECT_TRUE(expected.empty());
 }
 
-AutofillEntry CreateAutofillEntry(const AutofillSpecifics& autofill_specifics) {
-  AutofillKey key(UTF8ToUTF16(autofill_specifics.name()),
-                  UTF8ToUTF16(autofill_specifics.value()));
+AutocompleteEntry CreateAutocompleteEntry(
+    const AutofillSpecifics& autofill_specifics) {
+  AutocompleteKey key(UTF8ToUTF16(autofill_specifics.name()),
+                      UTF8ToUTF16(autofill_specifics.value()));
   Time date_created, date_last_used;
   const google::protobuf::RepeatedField<int64_t>& timestamps =
       autofill_specifics.usage_timestamp();
@@ -135,7 +136,7 @@ AutofillEntry CreateAutofillEntry(const AutofillSpecifics& autofill_specifics) {
     date_created = Time::FromInternalValue(*timestamps.begin());
     date_last_used = Time::FromInternalValue(*timestamps.rbegin());
   }
-  return AutofillEntry(key, date_created, date_last_used);
+  return AutocompleteEntry(key, date_created, date_last_used);
 }
 
 }  // namespace
@@ -202,11 +203,11 @@ class AutocompleteSyncBridgeTest : public testing::Test {
 
   void SaveSpecificsToTable(
       const std::vector<AutofillSpecifics>& specifics_list) {
-    std::vector<AutofillEntry> new_entries;
+    std::vector<AutocompleteEntry> new_entries;
     for (const auto& specifics : specifics_list) {
-      new_entries.push_back(CreateAutofillEntry(specifics));
+      new_entries.push_back(CreateAutocompleteEntry(specifics));
     }
-    table_.UpdateAutofillEntries(new_entries);
+    table_.UpdateAutocompleteEntries(new_entries);
   }
 
   AutofillSpecifics CreateSpecifics(const std::string& name,
@@ -577,10 +578,12 @@ TEST_F(AutocompleteSyncBridgeTest, LocalEntriesAdded) {
   const AutofillSpecifics added_specifics1 = CreateSpecifics(1, {2, 3});
   const AutofillSpecifics added_specifics2 = CreateSpecifics(2, {2, 3});
 
-  const AutofillEntry added_entry1 = CreateAutofillEntry(added_specifics1);
-  const AutofillEntry added_entry2 = CreateAutofillEntry(added_specifics2);
+  const AutocompleteEntry added_entry1 =
+      CreateAutocompleteEntry(added_specifics1);
+  const AutocompleteEntry added_entry2 =
+      CreateAutocompleteEntry(added_specifics2);
 
-  table()->UpdateAutofillEntries({added_entry1, added_entry2});
+  table()->UpdateAutocompleteEntries({added_entry1, added_entry2});
 
   EXPECT_CALL(mock_processor(), Put(_, HasSpecifics(added_specifics1), _));
   EXPECT_CALL(mock_processor(), Put(_, HasSpecifics(added_specifics2), _));
@@ -588,40 +591,43 @@ TEST_F(AutocompleteSyncBridgeTest, LocalEntriesAdded) {
   // the AutofillWebDataService itself).
   EXPECT_CALL(*backend(), CommitChanges()).Times(0);
 
-  bridge()->AutofillEntriesChanged(
-      {AutofillChange(AutofillChange::ADD, added_entry1.key()),
-       AutofillChange(AutofillChange::ADD, added_entry2.key())});
+  bridge()->AutocompleteEntriesChanged(
+      {AutocompleteChange(AutocompleteChange::ADD, added_entry1.key()),
+       AutocompleteChange(AutocompleteChange::ADD, added_entry2.key())});
 }
 
 TEST_F(AutocompleteSyncBridgeTest, LocalEntryAddedThenUpdated) {
   StartSyncing();
   const AutofillSpecifics added_specifics = CreateSpecifics(1, {2, 3});
-  const AutofillEntry added_entry = CreateAutofillEntry(added_specifics);
-  table()->UpdateAutofillEntries({added_entry});
+  const AutocompleteEntry added_entry =
+      CreateAutocompleteEntry(added_specifics);
+  table()->UpdateAutocompleteEntries({added_entry});
   EXPECT_CALL(mock_processor(), Put(_, HasSpecifics(added_specifics), _));
   // Bridge should not commit transaction on local changes (it is committed by
   // the AutofillWebDataService itself).
   EXPECT_CALL(*backend(), CommitChanges()).Times(0);
 
-  bridge()->AutofillEntriesChanged(
-      {AutofillChange(AutofillChange::ADD, added_entry.key())});
+  bridge()->AutocompleteEntriesChanged(
+      {AutocompleteChange(AutocompleteChange::ADD, added_entry.key())});
 
   const AutofillSpecifics updated_specifics = CreateSpecifics(1, {2, 4});
-  const AutofillEntry updated_entry = CreateAutofillEntry(updated_specifics);
-  table()->UpdateAutofillEntries({updated_entry});
+  const AutocompleteEntry updated_entry =
+      CreateAutocompleteEntry(updated_specifics);
+  table()->UpdateAutocompleteEntries({updated_entry});
   EXPECT_CALL(mock_processor(), Put(_, HasSpecifics(updated_specifics), _));
   // Bridge should not commit transaction on local changes (it is committed by
   // the AutofillWebDataService itself).
   EXPECT_CALL(*backend(), CommitChanges()).Times(0);
 
-  bridge()->AutofillEntriesChanged(
-      {AutofillChange(AutofillChange::UPDATE, updated_entry.key())});
+  bridge()->AutocompleteEntriesChanged(
+      {AutocompleteChange(AutocompleteChange::UPDATE, updated_entry.key())});
 }
 
 TEST_F(AutocompleteSyncBridgeTest, LocalEntryDeleted) {
   StartSyncing();
   const AutofillSpecifics deleted_specifics = CreateSpecifics(1, {2, 3});
-  const AutofillEntry deleted_entry = CreateAutofillEntry(deleted_specifics);
+  const AutocompleteEntry deleted_entry =
+      CreateAutocompleteEntry(deleted_specifics);
   const std::string storage_key = GetStorageKey(deleted_specifics);
 
   EXPECT_CALL(mock_processor(), Delete(storage_key, _));
@@ -629,16 +635,17 @@ TEST_F(AutocompleteSyncBridgeTest, LocalEntryDeleted) {
   // the AutofillWebDataService itself).
   EXPECT_CALL(*backend(), CommitChanges()).Times(0);
 
-  bridge()->AutofillEntriesChanged(
-      {AutofillChange(AutofillChange::REMOVE, deleted_entry.key())});
+  bridge()->AutocompleteEntriesChanged(
+      {AutocompleteChange(AutocompleteChange::REMOVE, deleted_entry.key())});
 }
 
-// Tests that AutofillEntry marked with AutofillChange::EXPIRE are unlinked from
-// sync, and their sync metadata is deleted in this client.
+// Tests that AutocompleteEntry marked with AutocompleteChange::EXPIRE are
+// unlinked from sync, and their sync metadata is deleted in this client.
 TEST_F(AutocompleteSyncBridgeTest, LocalEntryExpired) {
   StartSyncing();
   const AutofillSpecifics expired_specifics = CreateSpecifics(1, {2, 3});
-  const AutofillEntry expired_entry = CreateAutofillEntry(expired_specifics);
+  const AutocompleteEntry expired_entry =
+      CreateAutocompleteEntry(expired_specifics);
   const std::string storage_key = GetStorageKey(expired_specifics);
 
   // Let's add the sync metadata
@@ -655,8 +662,8 @@ TEST_F(AutocompleteSyncBridgeTest, LocalEntryExpired) {
   // the AutofillWebDataService itself).
   EXPECT_CALL(*backend(), CommitChanges()).Times(0);
 
-  bridge()->AutofillEntriesChanged(
-      {AutofillChange(AutofillChange::EXPIRE, expired_entry.key())});
+  bridge()->AutocompleteEntriesChanged(
+      {AutocompleteChange(AutocompleteChange::EXPIRE, expired_entry.key())});
 
   // Expect metadata to have been cleaned up.
   EXPECT_TRUE(table()->GetAllSyncMetadata(syncer::AUTOFILL, &batch));

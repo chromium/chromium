@@ -63,15 +63,16 @@ class AutocompleteSyncBridge
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
 
   // AutofillWebDataServiceObserverOnDBSequence implementation.
-  void AutofillEntriesChanged(const AutofillChangeList& changes) override;
+  void AutocompleteEntriesChanged(
+      const AutocompleteChangeList& changes) override;
 
  private:
   // Returns the table associated with the |web_data_backend_|.
   AutofillTable* GetAutofillTable() const;
 
-  // Respond to local autofill entries changing by notifying sync of the
+  // Respond to local autocomplete entries changing by notifying sync of the
   // changes.
-  void ActOnLocalChanges(const AutofillChangeList& changes);
+  void ActOnLocalChanges(const AutocompleteChangeList& changes);
 
   // Synchronously load sync metadata from the autofill table and pass it to the
   // processor so that it can start tracking changes.

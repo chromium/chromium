@@ -29,7 +29,7 @@ class SequencedTaskRunner;
 
 namespace autofill {
 
-class AutofillEntry;
+class AutocompleteEntry;
 class AutofillWebDataBackend;
 class AutofillWebDataBackendImpl;
 class AutofillWebDataServiceObserverOnDBSequence;
@@ -101,9 +101,9 @@ class AutofillWebDataService : public WebDataServiceBase {
       const base::Time& end,
       WebDataServiceConsumer* consumer);
 
-  // Schedules a task to update autofill entries in the web database.
-  void UpdateAutofillEntries(
-      const std::vector<AutofillEntry>& autofill_entries);
+  // Schedules a task to update autocomplete entries in the web database.
+  void UpdateAutocompleteEntries(
+      const std::vector<AutocompleteEntry>& autocomplete_entries);
 
   void SetAutofillProfileChangedCallback(
       base::RepeatingCallback<void(const AutofillProfileChange&)> change_cb);

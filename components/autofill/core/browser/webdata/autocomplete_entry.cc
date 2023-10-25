@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/webdata/autofill_entry.h"
+#include "components/autofill/core/browser/webdata/autocomplete_entry.h"
 
 #include <string>
 #include <tuple>
@@ -11,55 +11,55 @@
 
 namespace autofill {
 
-AutofillKey::AutofillKey() {}
+AutocompleteKey::AutocompleteKey() = default;
 
-AutofillKey::AutofillKey(const std::u16string& name,
+AutocompleteKey::AutocompleteKey(const std::u16string& name,
                          const std::u16string& value)
     : name_(name), value_(value) {}
 
-AutofillKey::AutofillKey(const std::string& name,
+AutocompleteKey::AutocompleteKey(const std::string& name,
                          const std::string& value)
     : name_(base::UTF8ToUTF16(name)),
       value_(base::UTF8ToUTF16(value)) {
 }
 
-AutofillKey::AutofillKey(const AutofillKey& key)
+AutocompleteKey::AutocompleteKey(const AutocompleteKey& key)
     : name_(key.name()),
       value_(key.value()) {
 }
 
-AutofillKey::~AutofillKey() {}
+AutocompleteKey::~AutocompleteKey() = default;
 
-bool AutofillKey::operator==(const AutofillKey& key) const {
+bool AutocompleteKey::operator==(const AutocompleteKey& key) const {
   return name_ == key.name() && value_ == key.value();
 }
 
-bool AutofillKey::operator<(const AutofillKey& key) const {
+bool AutocompleteKey::operator<(const AutocompleteKey& key) const {
   return std::tie(name_, value_) < std::tie(key.name(), key.value());
 }
 
-AutofillEntry::AutofillEntry() {}
+AutocompleteEntry::AutocompleteEntry() = default;
 
-AutofillEntry::AutofillEntry(const AutofillKey& key,
+AutocompleteEntry::AutocompleteEntry(const AutocompleteKey& key,
                              const base::Time& date_created,
                              const base::Time& date_last_used)
     : key_(key),
       date_created_(date_created),
       date_last_used_(date_last_used) {}
 
-AutofillEntry::~AutofillEntry() {}
+AutocompleteEntry::~AutocompleteEntry() = default;
 
-bool AutofillEntry::operator==(const AutofillEntry& entry) const {
+bool AutocompleteEntry::operator==(const AutocompleteEntry& entry) const {
   return key() == entry.key() &&
          date_created() == entry.date_created() &&
          date_last_used() == entry.date_last_used();
 }
 
-bool AutofillEntry::operator!=(const AutofillEntry& entry) const {
+bool AutocompleteEntry::operator!=(const AutocompleteEntry& entry) const {
   return !(*this == entry);
 }
 
-bool AutofillEntry::operator<(const AutofillEntry& entry) const {
+bool AutocompleteEntry::operator<(const AutocompleteEntry& entry) const {
   return key_ < entry.key();
 }
 

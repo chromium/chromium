@@ -32,8 +32,8 @@ class MetadataBatch;
 
 namespace autofill {
 
-class AutofillChange;
-class AutofillEntry;
+class AutocompleteChange;
+class AutocompleteEntry;
 struct AutofillMetadata;
 class AutofillOfferData;
 class AutofillTableEncryptor;
@@ -610,37 +610,37 @@ class AutofillTable : public WebDatabaseTable,
   // autofill table.  A list of all added and updated autofill entries
   // is returned in the changes out parameter.
   bool AddFormFieldValues(const std::vector<FormFieldData>& elements,
-                          std::vector<AutofillChange>* changes);
+                          std::vector<AutocompleteChange>* changes);
 
   // Records a single form element in the database in the autofill table. A list
-  // of all added and updated autofill entries is returned in the changes out
-  // parameter.
+  // of all added and updated autocomplete entries is returned in the changes
+  // out parameter.
   bool AddFormFieldValue(const FormFieldData& element,
-                         std::vector<AutofillChange>* changes);
+                         std::vector<AutocompleteChange>* changes);
 
   // Retrieves a vector of all values which have been recorded in the autofill
   // table as the value in a form element with name |name| and which start with
-  // |prefix|.  The comparison of the prefix is case insensitive.
+  // |prefix|. The comparison of the prefix is case insensitive.
   bool GetFormValuesForElementName(const std::u16string& name,
                                    const std::u16string& prefix,
-                                   std::vector<AutofillEntry>* entries,
+                                   std::vector<AutocompleteEntry>* entries,
                                    int limit);
 
   // Removes rows from the autofill table if they were created on or after
-  // |delete_begin| and last used strictly before |delete_end|.  For rows where
+  // |delete_begin| and last used strictly before |delete_end|. For rows where
   // the time range [date_created, date_last_used] overlaps with [delete_begin,
   // delete_end), but is not entirely contained within the latter range, updates
   // the rows so that their resulting time range [new_date_created,
   // new_date_last_used] lies entirely outside of [delete_begin, delete_end),
-  // updating the count accordingly.  A list of all changed keys and whether
+  // updating the count accordingly. A list of all changed keys and whether
   // each was updater or removed is returned in the changes out parameter.
   bool RemoveFormElementsAddedBetween(const base::Time& delete_begin,
                                       const base::Time& delete_end,
-                                      std::vector<AutofillChange>* changes);
+                                      std::vector<AutocompleteChange>* changes);
 
   // Removes rows from the autofill table if they were last accessed strictly
-  // before |AutofillEntry::ExpirationTime()|.
-  bool RemoveExpiredFormElements(std::vector<AutofillChange>* changes);
+  // before |AutocompleteEntry::ExpirationTime()|.
+  bool RemoveExpiredFormElements(std::vector<AutocompleteChange>* changes);
 
   // Removes the row from the autofill table for the given |name| |value| pair.
   virtual bool RemoveFormElement(const std::u16string& name,
@@ -653,7 +653,8 @@ class AutofillTable : public WebDatabaseTable,
                                                const base::Time& end);
 
   // Retrieves all of the entries in the autofill table.
-  virtual bool GetAllAutofillEntries(std::vector<AutofillEntry>* entries);
+  virtual bool GetAllAutocompleteEntries(
+      std::vector<AutocompleteEntry>* entries);
 
   // Retrieves a single entry from the autofill table.
   virtual bool GetAutofillTimestamps(const std::u16string& name,
@@ -661,10 +662,10 @@ class AutofillTable : public WebDatabaseTable,
                                      base::Time* date_created,
                                      base::Time* date_last_used);
 
-  // Replaces existing autofill entries with the entries supplied in
-  // the argument.  If the entry does not already exist, it will be
-  // added.
-  virtual bool UpdateAutofillEntries(const std::vector<AutofillEntry>& entries);
+  // Replaces existing autocomplete entries with the entries supplied in
+  // the argument. If the entry does not already exist, it will be added.
+  virtual bool UpdateAutocompleteEntries(
+      const std::vector<AutocompleteEntry>& entries);
 
   // Records a single Autofill profile in the autofill_profiles table.
   virtual bool AddAutofillProfile(const AutofillProfile& profile);
@@ -938,58 +939,57 @@ class AutofillTable : public WebDatabaseTable,
   static const size_t kMaxDataLength;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest, Autofill);
-  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest, Autofill_AddChanges);
+  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest, Autocomplete);
+  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest, Autocomplete_AddChanges);
   FRIEND_TEST_ALL_PREFIXES(AutofillTableTest,
-                           Autofill_GetCountOfValuesContainedBetween);
-  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest, Autofill_RemoveBetweenChanges);
-  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest, Autofill_UpdateDontReplace);
+                           Autocomplete_GetCountOfValuesContainedBetween);
+  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest,
+                           Autocomplete_RemoveBetweenChanges);
+  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest, Autocomplete_UpdateDontReplace);
   FRIEND_TEST_ALL_PREFIXES(
       AutofillTableTest,
-      Autofill_RemoveFormElementsAddedBetween_UsedOnlyBefore);
+      Autocomplete_RemoveFormElementsAddedBetween_UsedOnlyBefore);
   FRIEND_TEST_ALL_PREFIXES(
       AutofillTableTest,
-      Autofill_RemoveFormElementsAddedBetween_UsedOnlyAfter);
+      Autocomplete_RemoveFormElementsAddedBetween_UsedOnlyAfter);
   FRIEND_TEST_ALL_PREFIXES(
       AutofillTableTest,
-      Autofill_RemoveFormElementsAddedBetween_UsedOnlyDuring);
+      Autocomplete_RemoveFormElementsAddedBetween_UsedOnlyDuring);
   FRIEND_TEST_ALL_PREFIXES(
       AutofillTableTest,
-      Autofill_RemoveFormElementsAddedBetween_UsedBeforeAndDuring);
+      Autocomplete_RemoveFormElementsAddedBetween_UsedBeforeAndDuring);
   FRIEND_TEST_ALL_PREFIXES(
       AutofillTableTest,
-      Autofill_RemoveFormElementsAddedBetween_UsedDuringAndAfter);
+      Autocomplete_RemoveFormElementsAddedBetween_UsedDuringAndAfter);
   FRIEND_TEST_ALL_PREFIXES(
       AutofillTableTest,
-      Autofill_RemoveFormElementsAddedBetween_OlderThan30Days);
+      Autocomplete_RemoveFormElementsAddedBetween_OlderThan30Days);
   FRIEND_TEST_ALL_PREFIXES(AutofillTableTest,
                            RemoveExpiredFormElements_Expires_DeleteEntry);
   FRIEND_TEST_ALL_PREFIXES(AutofillTableTest,
                            RemoveExpiredFormElements_NotOldEnough);
-  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest, Autofill_AddFormFieldValues);
+  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest, Autocomplete_AddFormFieldValues);
   FRIEND_TEST_ALL_PREFIXES(AutofillTableTest, AutofillProfile);
   FRIEND_TEST_ALL_PREFIXES(AutofillTableTest, UpdateAutofillProfile);
-  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest, AutofillProfileTrash);
-  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest, AutofillProfileTrashInteraction);
   FRIEND_TEST_ALL_PREFIXES(AutofillTableTest,
                            RemoveAutofillDataModifiedBetween);
   FRIEND_TEST_ALL_PREFIXES(AutofillTableTest, CreditCard);
   FRIEND_TEST_ALL_PREFIXES(AutofillTableTest, UpdateCreditCard);
   FRIEND_TEST_ALL_PREFIXES(AutofillTableTest,
-                           Autofill_GetAllAutofillEntries_OneResult);
+                           Autocomplete_GetAllAutocompleteEntries_OneResult);
   FRIEND_TEST_ALL_PREFIXES(AutofillTableTest,
-                           Autofill_GetAllAutofillEntries_TwoDistinct);
+                           Autocomplete_GetAllAutocompleteEntries_TwoDistinct);
   FRIEND_TEST_ALL_PREFIXES(AutofillTableTest,
-                           Autofill_GetAllAutofillEntries_TwoSame);
-  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest, Autofill_GetEntry_Populated);
+                           Autocomplete_GetAllAutocompleteEntries_TwoSame);
+  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest, Autocomplete_GetEntry_Populated);
 
-  // Methods for adding autofill entries at a specified time.  For
-  // testing only.
+  // Methods for adding autocomplete entries at a specified time. For testing
+  // only.
   bool AddFormFieldValuesTime(const std::vector<FormFieldData>& elements,
-                              std::vector<AutofillChange>* changes,
+                              std::vector<AutocompleteChange>* changes,
                               base::Time time);
   bool AddFormFieldValueTime(const FormFieldData& element,
-                             std::vector<AutofillChange>* changes,
+                             std::vector<AutocompleteChange>* changes,
                              base::Time time);
 
   bool SupportsMetadataForModelType(syncer::ModelType model_type) const;
@@ -1001,8 +1001,8 @@ class AutofillTable : public WebDatabaseTable,
   bool GetModelTypeState(syncer::ModelType model_type,
                          sync_pb::ModelTypeState* state);
 
-  // Insert a single AutofillEntry into the autofill table.
-  bool InsertAutofillEntry(const AutofillEntry& entry);
+  // Insert a single AutocompleteEntry into the autofill table.
+  bool InsertAutocompleteEntry(const AutocompleteEntry& entry);
 
   // Adds to |masked_credit_cards| and updates |server_card_metadata|.
   // Must already be in a transaction.

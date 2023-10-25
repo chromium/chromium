@@ -144,9 +144,9 @@ class AutofillWebDataBackendImpl
       const base::Time& end,
       WebDatabase* db);
 
-  // Updates Autofill entries in the web database.
-  WebDatabase::State UpdateAutofillEntries(
-      const std::vector<AutofillEntry>& autofill_entries,
+  // Updates autocomplete entries in the web database.
+  WebDatabase::State UpdateAutocompleteEntries(
+      const std::vector<AutocompleteEntry>& autocomplete_entries,
       WebDatabase* db);
 
   // Adds a credit card to the web database. Valid only for local cards.

@@ -41,8 +41,8 @@
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/webdata/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
-#include "components/autofill/core/browser/webdata/autofill_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_table_encryptor.h"
 #include "components/autofill/core/browser/webdata/autofill_table_encryptor_factory.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -1294,19 +1294,20 @@ bool AutofillTable::MigrateToVersion(int version,
 
 bool AutofillTable::AddFormFieldValues(
     const std::vector<FormFieldData>& elements,
-    std::vector<AutofillChange>* changes) {
+    std::vector<AutocompleteChange>* changes) {
   return AddFormFieldValuesTime(elements, changes, AutofillClock::Now());
 }
 
-bool AutofillTable::AddFormFieldValue(const FormFieldData& element,
-                                      std::vector<AutofillChange>* changes) {
+bool AutofillTable::AddFormFieldValue(
+    const FormFieldData& element,
+    std::vector<AutocompleteChange>* changes) {
   return AddFormFieldValueTime(element, changes, AutofillClock::Now());
 }
 
 bool AutofillTable::GetFormValuesForElementName(
     const std::u16string& name,
     const std::u16string& prefix,
-    std::vector<AutofillEntry>* entries,
+    std::vector<AutocompleteEntry>* entries,
     int limit) {
   DCHECK(entries);
   bool succeeded = false;
@@ -1321,9 +1322,9 @@ bool AutofillTable::GetFormValuesForElementName(
 
     entries->clear();
     while (s.Step()) {
-      entries->push_back(AutofillEntry(
-          AutofillKey(/*name=*/s.ColumnString16(0),
-                      /*value=*/s.ColumnString16(1)),
+      entries->push_back(AutocompleteEntry(
+          AutocompleteKey(/*name=*/s.ColumnString16(0),
+                          /*value=*/s.ColumnString16(1)),
           /*date_created=*/base::Time::FromTimeT(s.ColumnInt64(2)),
           /*date_last_used=*/base::Time::FromTimeT(s.ColumnInt64(3))));
     }
@@ -1349,9 +1350,9 @@ bool AutofillTable::GetFormValuesForElementName(
 
     entries->clear();
     while (s1.Step()) {
-      entries->push_back(AutofillEntry(
-          AutofillKey(/*name=*/s1.ColumnString16(0),
-                      /*value=*/s1.ColumnString16(1)),
+      entries->push_back(AutocompleteEntry(
+          AutocompleteKey(/*name=*/s1.ColumnString16(0),
+                          /*value=*/s1.ColumnString16(1)),
           /*date_created=*/base::Time::FromTimeT(s1.ColumnInt64(2)),
           /*date_last_used=*/base::Time::FromTimeT(s1.ColumnInt64(3))));
     }
@@ -1365,7 +1366,7 @@ bool AutofillTable::GetFormValuesForElementName(
 bool AutofillTable::RemoveFormElementsAddedBetween(
     const base::Time& delete_begin,
     const base::Time& delete_end,
-    std::vector<AutofillChange>* changes) {
+    std::vector<AutocompleteChange>* changes) {
   const time_t delete_begin_time_t = delete_begin.ToTimeT();
   const time_t delete_end_time_t = GetEndTime(delete_end);
 
@@ -1382,7 +1383,7 @@ bool AutofillTable::RemoveFormElementsAddedBetween(
   s.BindInt64(3, delete_end_time_t);
 
   std::vector<AutofillUpdate> updates;
-  std::vector<AutofillChange> tentative_changes;
+  std::vector<AutocompleteChange> tentative_changes;
   while (s.Step()) {
     std::u16string name = s.ColumnString16(0);
     std::u16string value = s.ColumnString16(1);
@@ -1393,12 +1394,12 @@ bool AutofillTable::RemoveFormElementsAddedBetween(
     // If *all* uses of the element were between |delete_begin| and
     // |delete_end|, then delete the element.  Otherwise, update the use
     // timestamps and use count.
-    AutofillChange::Type change_type;
+    AutocompleteChange::Type change_type;
     if (date_created_time_t >= delete_begin_time_t &&
         date_last_used_time_t < delete_end_time_t) {
-      change_type = AutofillChange::REMOVE;
+      change_type = AutocompleteChange::REMOVE;
     } else {
-      change_type = AutofillChange::UPDATE;
+      change_type = AutocompleteChange::UPDATE;
 
       // For all updated elements, set either date_created or date_last_used so
       // that the range [date_created, date_last_used] no longer overlaps with
@@ -1433,7 +1434,7 @@ bool AutofillTable::RemoveFormElementsAddedBetween(
       updates.push_back(updated_entry);
     }
 
-    tentative_changes.emplace_back(change_type, AutofillKey(name, value));
+    tentative_changes.emplace_back(change_type, AutocompleteKey(name, value));
   }
   if (!s.Succeeded())
     return false;
@@ -1470,8 +1471,8 @@ bool AutofillTable::RemoveFormElementsAddedBetween(
 }
 
 bool AutofillTable::RemoveExpiredFormElements(
-    std::vector<AutofillChange>* changes) {
-  const auto change_type = AutofillChange::EXPIRE;
+    std::vector<AutocompleteChange>* changes) {
+  const auto change_type = AutocompleteChange::EXPIRE;
 
   base::Time expiration_time =
       AutofillClock::Now() - kAutocompleteRetentionPolicyPeriod;
@@ -1482,11 +1483,11 @@ bool AutofillTable::RemoveExpiredFormElements(
   SelectBuilder(db_, select_for_delete, kAutofillTable, {kName, kValue},
                 "WHERE date_last_used < ?");
   select_for_delete.BindInt64(0, expiration_time.ToTimeT());
-  std::vector<AutofillChange> tentative_changes;
+  std::vector<AutocompleteChange> tentative_changes;
   while (select_for_delete.Step()) {
     std::u16string name = select_for_delete.ColumnString16(0);
     std::u16string value = select_for_delete.ColumnString16(1);
-    tentative_changes.emplace_back(change_type, AutofillKey(name, value));
+    tentative_changes.emplace_back(change_type, AutocompleteKey(name, value));
   }
 
   if (!select_for_delete.Succeeded())
@@ -1534,7 +1535,8 @@ int AutofillTable::GetCountOfValuesContainedBetween(const base::Time& begin,
   return s.ColumnInt(0);
 }
 
-bool AutofillTable::GetAllAutofillEntries(std::vector<AutofillEntry>* entries) {
+bool AutofillTable::GetAllAutocompleteEntries(
+    std::vector<AutocompleteEntry>* entries) {
   sql::Statement s;
   SelectBuilder(db_, s, kAutofillTable,
                 {kName, kValue, kDateCreated, kDateLastUsed});
@@ -1544,8 +1546,8 @@ bool AutofillTable::GetAllAutofillEntries(std::vector<AutofillEntry>* entries) {
     std::u16string value = s.ColumnString16(1);
     base::Time date_created = base::Time::FromTimeT(s.ColumnInt64(2));
     base::Time date_last_used = base::Time::FromTimeT(s.ColumnInt64(3));
-    entries->push_back(
-        AutofillEntry(AutofillKey(name, value), date_created, date_last_used));
+    entries->push_back(AutocompleteEntry(AutocompleteKey(name, value),
+                                         date_created, date_last_used));
   }
 
   return s.Succeeded();
@@ -1570,8 +1572,8 @@ bool AutofillTable::GetAutofillTimestamps(const std::u16string& name,
   return true;
 }
 
-bool AutofillTable::UpdateAutofillEntries(
-    const std::vector<AutofillEntry>& entries) {
+bool AutofillTable::UpdateAutocompleteEntries(
+    const std::vector<AutocompleteEntry>& entries) {
   if (entries.empty())
     return true;
 
@@ -1587,8 +1589,9 @@ bool AutofillTable::UpdateAutofillEntries(
 
   // Insert all the supplied autofill entries.
   for (const auto& entry : entries) {
-    if (!InsertAutofillEntry(entry))
+    if (!InsertAutocompleteEntry(entry)) {
       return false;
+    }
   }
 
   return true;
@@ -3662,7 +3665,7 @@ bool AutofillTable::
 
 bool AutofillTable::AddFormFieldValuesTime(
     const std::vector<FormFieldData>& elements,
-    std::vector<AutofillChange>* changes,
+    std::vector<AutocompleteChange>* changes,
     base::Time time) {
   // Only add one new entry for each unique element name.  Use |seen_names|
   // to track this.  Add up to |kMaximumUniqueNames| unique entries per
@@ -3681,9 +3684,10 @@ bool AutofillTable::AddFormFieldValuesTime(
   return result;
 }
 
-bool AutofillTable::AddFormFieldValueTime(const FormFieldData& element,
-                                          std::vector<AutofillChange>* changes,
-                                          base::Time time) {
+bool AutofillTable::AddFormFieldValueTime(
+    const FormFieldData& element,
+    std::vector<AutocompleteChange>* changes,
+    base::Time time) {
   if (!db_->is_open()) {
     return false;
   }
@@ -3749,10 +3753,10 @@ bool AutofillTable::AddFormFieldValueTime(const FormFieldData& element,
     }
   }
 
-  AutofillChange::Type change_type =
-      already_exists ? AutofillChange::UPDATE : AutofillChange::ADD;
-  changes->push_back(
-      AutofillChange(change_type, AutofillKey(element.name, element.value)));
+  AutocompleteChange::Type change_type =
+      already_exists ? AutocompleteChange::UPDATE : AutocompleteChange::ADD;
+  changes->push_back(AutocompleteChange(
+      change_type, AutocompleteKey(element.name, element.value)));
   return true;
 }
 
@@ -3817,7 +3821,7 @@ bool AutofillTable::GetModelTypeState(syncer::ModelType model_type,
   return state->ParseFromString(serialized_state);
 }
 
-bool AutofillTable::InsertAutofillEntry(const AutofillEntry& entry) {
+bool AutofillTable::InsertAutocompleteEntry(const AutocompleteEntry& entry) {
   sql::Statement s;
   InsertBuilder(
       db_, s, kAutofillTable,

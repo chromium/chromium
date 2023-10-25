@@ -13,14 +13,14 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/webdata/autofill_entry.h"
+#include "components/autofill/core/browser/webdata/autocomplete_entry.h"
 #include "components/sync/engine/cycle/sync_cycle_context.h"
 #include "content/public/test/browser_test.h"
 #include "testing/perf/perf_result_reporter.h"
 
 namespace {
 
-using autofill::AutofillKey;
+using autofill::AutocompleteKey;
 using autofill::AutofillProfile;
 using autofill_helper::AddProfile;
 using autofill_helper::GetAllAutoFillProfiles;
@@ -198,12 +198,12 @@ class AutocompleteSyncPerfTest : public SyncTest {
   AutocompleteSyncPerfTest(const AutocompleteSyncPerfTest&) = delete;
   AutocompleteSyncPerfTest& operator=(const AutocompleteSyncPerfTest&) = delete;
 
-  // Adds |num_keys| new autofill keys to the sync profile |profile|.
+  // Adds |num_keys| new autocomplete keys to the sync profile |profile|.
   void AddKeys(int profile, int num_keys);
 
  private:
-  // Returns a new unique autofill key.
-  const AutofillKey NextAutofillKey();
+  // Returns a new unique autocomplete key.
+  const AutocompleteKey NextAutocompleteKey();
 
   // Returns a new unused unique name.
   const std::string NextName();
@@ -212,15 +212,15 @@ class AutocompleteSyncPerfTest : public SyncTest {
 };
 
 void AutocompleteSyncPerfTest::AddKeys(int profile, int num_keys) {
-  std::set<AutofillKey> keys;
+  std::set<AutocompleteKey> keys;
   for (int i = 0; i < num_keys; ++i) {
-    keys.insert(NextAutofillKey());
+    keys.insert(NextAutocompleteKey());
   }
   autofill_helper::AddKeys(profile, keys);
 }
 
-const AutofillKey AutocompleteSyncPerfTest::NextAutofillKey() {
-  return AutofillKey(NextName().c_str(), NextName().c_str());
+const AutocompleteKey AutocompleteSyncPerfTest::NextAutocompleteKey() {
+  return AutocompleteKey(NextName().c_str(), NextName().c_str());
 }
 
 const std::string AutocompleteSyncPerfTest::NextName() {

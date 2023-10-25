@@ -22,8 +22,8 @@
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
+#include "components/autofill/core/browser/webdata/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
-#include "components/autofill/core/browser/webdata/autofill_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
@@ -58,8 +58,8 @@ enum class Result {
   kRemoveAutofillProfile_Success = 50,
   kRemoveAutofillProfile_ReadFailure = 51,
   kRemoveAutofillProfile_WriteFailure = 52,
-  kUpdateAutofillEntries_Success = 60,
-  kUpdateAutofillEntries_Failure = 61,
+  kUpdateAutocompleteEntries_Success = 60,
+  kUpdateAutocompleteEntries_Failure = 61,
   kAddCreditCard_Success = 70,
   kAddCreditCard_Failure = 71,
   kUpdateCreditCard_Success = 80,
@@ -172,7 +172,7 @@ void AutofillWebDataBackendImpl::CommitChanges() {
 std::unique_ptr<WDTypedResult>
 AutofillWebDataBackendImpl::RemoveExpiredAutocompleteEntries(WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  AutofillChangeList changes;
+  AutocompleteChangeList changes;
 
   if (AutofillTable::FromWebDatabase(db)->RemoveExpiredFormElements(&changes)) {
     if (!changes.empty()) {
@@ -180,7 +180,7 @@ AutofillWebDataBackendImpl::RemoveExpiredAutocompleteEntries(WebDatabase* db) {
       // This is sent here so that work resulting from this notification
       // will be done on the DB sequence, and not the UI sequence.
       for (auto& db_observer : db_observer_list_)
-        db_observer.AutofillEntriesChanged(changes);
+        db_observer.AutocompleteEntriesChanged(changes);
     }
   }
 
@@ -230,7 +230,7 @@ WebDatabase::State AutofillWebDataBackendImpl::AddFormElements(
     const std::vector<FormFieldData>& fields,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  AutofillChangeList changes;
+  AutocompleteChangeList changes;
   if (!AutofillTable::FromWebDatabase(db)->AddFormFieldValues(fields,
                                                               &changes)) {
     ReportResult(Result::kAddFormElements_Failure);
@@ -241,7 +241,7 @@ WebDatabase::State AutofillWebDataBackendImpl::AddFormElements(
   // This is sent here so that work resulting from this notification will be
   // done on the DB sequence, and not the UI sequence.
   for (auto& db_observer : db_observer_list_)
-    db_observer.AutofillEntriesChanged(changes);
+    db_observer.AutocompleteEntriesChanged(changes);
 
   ReportResult(Result::kAddFormElements_Success);
   return WebDatabase::COMMIT_NEEDED;
@@ -254,10 +254,10 @@ AutofillWebDataBackendImpl::GetFormValuesForElementName(
     int limit,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  std::vector<AutofillEntry> entries;
+  std::vector<AutocompleteEntry> entries;
   AutofillTable::FromWebDatabase(db)->GetFormValuesForElementName(
       name, prefix, &entries, limit);
-  return std::make_unique<WDResult<std::vector<AutofillEntry>>>(
+  return std::make_unique<WDResult<std::vector<AutocompleteEntry>>>(
       AUTOFILL_VALUE_RESULT, entries);
 }
 
@@ -266,7 +266,7 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveFormElementsAddedBetween(
     const base::Time& delete_end,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  AutofillChangeList changes;
+  AutocompleteChangeList changes;
 
   if (AutofillTable::FromWebDatabase(db)->RemoveFormElementsAddedBetween(
           delete_begin, delete_end, &changes)) {
@@ -275,7 +275,7 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveFormElementsAddedBetween(
       // This is sent here so that work resulting from this notification
       // will be done on the DB sequence, and not the UI sequence.
       for (auto& db_observer : db_observer_list_)
-        db_observer.AutofillEntriesChanged(changes);
+        db_observer.AutocompleteEntriesChanged(changes);
     }
     ReportResult(Result::kRemoveFormElementsAddedBetween_Success);
     return WebDatabase::COMMIT_NEEDED;
@@ -291,13 +291,13 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveFormValueForElementName(
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
 
   if (AutofillTable::FromWebDatabase(db)->RemoveFormElement(name, value)) {
-    AutofillChangeList changes;
-    changes.push_back(
-        AutofillChange(AutofillChange::REMOVE, AutofillKey(name, value)));
+    AutocompleteChangeList changes;
+    changes.push_back(AutocompleteChange(AutocompleteChange::REMOVE,
+                                         AutocompleteKey(name, value)));
 
     // Post the notifications including the list of affected keys.
     for (auto& db_observer : db_observer_list_)
-      db_observer.AutofillEntriesChanged(changes);
+      db_observer.AutocompleteEntriesChanged(changes);
 
     ReportResult(Result::kRemoveFormValueForElementName_Success);
     return WebDatabase::COMMIT_NEEDED;
@@ -445,17 +445,17 @@ AutofillWebDataBackendImpl::GetCountOfValuesContainedBetween(
       new WDResult<int>(AUTOFILL_VALUE_RESULT, value));
 }
 
-WebDatabase::State AutofillWebDataBackendImpl::UpdateAutofillEntries(
-    const std::vector<AutofillEntry>& autofill_entries,
+WebDatabase::State AutofillWebDataBackendImpl::UpdateAutocompleteEntries(
+    const std::vector<AutocompleteEntry>& autocomplete_entries,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  if (!AutofillTable::FromWebDatabase(db)->UpdateAutofillEntries(
-          autofill_entries)) {
-    ReportResult(Result::kUpdateAutofillEntries_Failure);
+  if (!AutofillTable::FromWebDatabase(db)->UpdateAutocompleteEntries(
+          autocomplete_entries)) {
+    ReportResult(Result::kUpdateAutocompleteEntries_Failure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
 
-  ReportResult(Result::kUpdateAutofillEntries_Success);
+  ReportResult(Result::kUpdateAutocompleteEntries_Success);
   return WebDatabase::COMMIT_NEEDED;
 }
 

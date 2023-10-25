@@ -12,8 +12,9 @@ namespace autofill {
 
 class AutofillWebDataServiceObserverOnDBSequence {
  public:
-  // Called on DB sequence whenever Autofill entries are changed.
-  virtual void AutofillEntriesChanged(const AutofillChangeList& changes) {}
+  // Called on DB sequence whenever autocomplete entries are changed.
+  virtual void AutocompleteEntriesChanged(
+      const AutocompleteChangeList& changes) {}
 
   // Called on DB sequence when an AutofillProfile has been
   // added/removed/updated in the WebDatabase.

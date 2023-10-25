@@ -20,7 +20,7 @@
 #import "components/autofill/core/browser/metrics/autofill_metrics.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/test_autofill_manager_waiter.h"
-#import "components/autofill/core/browser/webdata/autofill_entry.h"
+#import "components/autofill/core/browser/webdata/autocomplete_entry.h"
 #import "components/autofill/core/common/autofill_clock.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
@@ -165,9 +165,9 @@ void CheckField(const FormStructure& form,
   FAIL() << "Missing field " << name;
 }
 
-AutofillEntry CreateAutofillEntry(const std::u16string& value) {
+AutocompleteEntry CreateAutocompleteEntry(const std::u16string& value) {
   const base::Time kNow = AutofillClock::Now();
-  return AutofillEntry(AutofillKey(u"Name", value), kNow, kNow);
+  return AutocompleteEntry(AutocompleteKey(u"Name", value), kNow, kNow);
 }
 
 // Forces rendering of a UIView. This is used in tests to make sure that UIKit
@@ -195,10 +195,11 @@ class TestConsumer : public WebDataServiceConsumer {
       WebDataServiceBase::Handle handle,
       std::unique_ptr<WDTypedResult> result) override {
     DCHECK_EQ(result->GetType(), AUTOFILL_VALUE_RESULT);
-    result_ = static_cast<WDResult<std::vector<AutofillEntry>>*>(result.get())
-                  ->GetValue();
+    result_ =
+        static_cast<WDResult<std::vector<AutocompleteEntry>>*>(result.get())
+            ->GetValue();
   }
-  std::vector<AutofillEntry> result_;
+  std::vector<AutocompleteEntry> result_;
 };
 
 // Text fixture to test autofill.
@@ -635,9 +636,9 @@ TEST_F(AutofillControllerTest, KeyValueImport) {
           browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);
   TestConsumer consumer;
   const int limit = 1;
-  consumer.result_ = {CreateAutofillEntry(u"Should"),
-                      CreateAutofillEntry(u"get"),
-                      CreateAutofillEntry(u"overwritten")};
+  consumer.result_ = {CreateAutocompleteEntry(u"Should"),
+                      CreateAutocompleteEntry(u"get"),
+                      CreateAutocompleteEntry(u"overwritten")};
   web_data_service->GetFormValuesForElementName(u"greeting", std::u16string(),
                                                 limit, &consumer);
   base::ThreadPoolInstance::Get()->FlushForTesting();

@@ -34,8 +34,8 @@
 #include "components/autofill/core/browser/profile_token_quality.h"
 #include "components/autofill/core/browser/profile_token_quality_test_api.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/browser/webdata/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
-#include "components/autofill/core/browser/webdata/autofill_entry.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -63,28 +63,28 @@ using testing::UnorderedElementsAre;
 
 namespace autofill {
 
-// So we can compare AutofillKeys with EXPECT_EQ().
-std::ostream& operator<<(std::ostream& os, const AutofillKey& key) {
+// So we can compare AutocompleteKeys with EXPECT_EQ().
+std::ostream& operator<<(std::ostream& os, const AutocompleteKey& key) {
   return os << base::UTF16ToASCII(key.name()) << ", "
             << base::UTF16ToASCII(key.value());
 }
 
-// So we can compare AutofillChanges with EXPECT_EQ().
-std::ostream& operator<<(std::ostream& os, const AutofillChange& change) {
+// So we can compare AutocompleteChanges with EXPECT_EQ().
+std::ostream& operator<<(std::ostream& os, const AutocompleteChange& change) {
   switch (change.type()) {
-    case AutofillChange::ADD: {
+    case AutocompleteChange::ADD: {
       os << "ADD";
       break;
     }
-    case AutofillChange::UPDATE: {
+    case AutocompleteChange::UPDATE: {
       os << "UPDATE";
       break;
     }
-    case AutofillChange::REMOVE: {
+    case AutocompleteChange::REMOVE: {
       os << "REMOVE";
       break;
     }
-    case AutofillChange::EXPIRE: {
+    case AutocompleteChange::EXPIRE: {
       os << "EXPIRED";
       break;
     }
@@ -94,31 +94,33 @@ std::ostream& operator<<(std::ostream& os, const AutofillChange& change) {
 
 namespace {
 
-typedef std::set<AutofillEntry,
-                 bool (*)(const AutofillEntry&, const AutofillEntry&)>
-    AutofillEntrySet;
-typedef AutofillEntrySet::iterator AutofillEntrySetIterator;
+typedef std::set<AutocompleteEntry,
+                 bool (*)(const AutocompleteEntry&, const AutocompleteEntry&)>
+    AutocompleteEntrySet;
+typedef AutocompleteEntrySet::iterator AutocompleteEntrySetIterator;
 
-bool CompareAutofillEntries(const AutofillEntry& a, const AutofillEntry& b) {
+bool CompareAutocompleteEntries(const AutocompleteEntry& a,
+                                const AutocompleteEntry& b) {
   return std::tie(a.key().name(), a.key().value(), a.date_created(),
                   a.date_last_used()) <
          std::tie(b.key().name(), b.key().value(), b.date_created(),
                   b.date_last_used());
 }
 
-AutofillEntry MakeAutofillEntry(const std::u16string& name,
-                                const std::u16string& value,
-                                time_t date_created,
-                                time_t date_last_used) {
+AutocompleteEntry MakeAutocompleteEntry(const std::u16string& name,
+                                        const std::u16string& value,
+                                        time_t date_created,
+                                        time_t date_last_used) {
   if (date_last_used < 0)
     date_last_used = date_created;
-  return AutofillEntry(AutofillKey(name, value), Time::FromTimeT(date_created),
-                       Time::FromTimeT(date_last_used));
+  return AutocompleteEntry(AutocompleteKey(name, value),
+                           Time::FromTimeT(date_created),
+                           Time::FromTimeT(date_last_used));
 }
 
 // Checks |actual| and |expected| contain the same elements.
-void CompareAutofillEntrySets(const AutofillEntrySet& actual,
-                              const AutofillEntrySet& expected) {
+void CompareAutocompleteEntrySets(const AutocompleteEntrySet& actual,
+                                  const AutocompleteEntrySet& expected) {
   ASSERT_EQ(expected.size(), actual.size());
   size_t count = 0;
   for (auto it = actual.begin(); it != actual.end(); ++it) {
@@ -127,9 +129,9 @@ void CompareAutofillEntrySets(const AutofillEntrySet& actual,
   EXPECT_EQ(actual.size(), count);
 }
 
-int GetAutofillEntryCount(const std::u16string& name,
-                          const std::u16string& value,
-                          WebDatabase* db) {
+int GetAutocompleteEntryCount(const std::u16string& name,
+                              const std::u16string& value,
+                              WebDatabase* db) {
   sql::Statement s(db->GetSQLConnection()->GetUniqueStatement(
       "SELECT count FROM autofill WHERE name = ? AND value = ?"));
   s.BindString16(0, name);
@@ -231,19 +233,19 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn({AutofillProfile::Source::kLocalOrSyncable,
                        AutofillProfile::Source::kAccount}));
 
-TEST_F(AutofillTableTest, Autofill) {
+TEST_F(AutofillTableTest, Autocomplete) {
   Time t1 = AutofillClock::Now();
 
   // Simulate the submission of a handful of entries in a field called "Name",
   // some more often than others.
-  AutofillChangeList changes;
+  AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
   base::Time now = AutofillClock::Now();
   base::TimeDelta two_seconds = base::Seconds(2);
   EXPECT_TRUE(table_->AddFormFieldValue(field, &changes));
-  std::vector<AutofillEntry> v;
+  std::vector<AutocompleteEntry> v;
   for (int i = 0; i < 5; ++i) {
     field.value = u"Clark Kent";
     EXPECT_TRUE(
@@ -262,13 +264,14 @@ TEST_F(AutofillTableTest, Autofill) {
   }
 
   // We have added the name Clark Kent 5 times, so count should be 5.
-  EXPECT_EQ(5, GetAutofillEntryCount(u"Name", u"Clark Kent", db_.get()));
+  EXPECT_EQ(5, GetAutocompleteEntryCount(u"Name", u"Clark Kent", db_.get()));
 
   // Storing in the data base should be case sensitive, so there should be no
   // database entry for clark kent lowercase.
-  EXPECT_EQ(0, GetAutofillEntryCount(u"Name", u"clark kent", db_.get()));
+  EXPECT_EQ(0, GetAutocompleteEntryCount(u"Name", u"clark kent", db_.get()));
 
-  EXPECT_EQ(2, GetAutofillEntryCount(u"Favorite Color", u"Green", db_.get()));
+  EXPECT_EQ(2,
+            GetAutocompleteEntryCount(u"Favorite Color", u"Green", db_.get()));
 
   // This is meant to get a list of suggestions for Name.  The empty prefix
   // in the second argument means it should return all suggestions for a name
@@ -306,21 +309,22 @@ TEST_F(AutofillTableTest, Autofill) {
   changes.clear();
   EXPECT_TRUE(table_->RemoveFormElementsAddedBetween(t1, Time(), &changes));
 
-  const AutofillChange kExpectedChanges[] = {
-      AutofillChange(AutofillChange::REMOVE, AutofillKey(u"Name", u"Superman")),
-      AutofillChange(AutofillChange::REMOVE,
-                     AutofillKey(u"Name", u"Clark Kent")),
-      AutofillChange(AutofillChange::REMOVE,
-                     AutofillKey(u"Name", u"Clark Sutter")),
-      AutofillChange(AutofillChange::REMOVE,
-                     AutofillKey(u"Favorite Color", u"Green")),
+  const AutocompleteChange kExpectedChanges[] = {
+      AutocompleteChange(AutocompleteChange::REMOVE,
+                         AutocompleteKey(u"Name", u"Superman")),
+      AutocompleteChange(AutocompleteChange::REMOVE,
+                         AutocompleteKey(u"Name", u"Clark Kent")),
+      AutocompleteChange(AutocompleteChange::REMOVE,
+                         AutocompleteKey(u"Name", u"Clark Sutter")),
+      AutocompleteChange(AutocompleteChange::REMOVE,
+                         AutocompleteKey(u"Favorite Color", u"Green")),
   };
   EXPECT_EQ(std::size(kExpectedChanges), changes.size());
   for (size_t i = 0; i < std::size(kExpectedChanges); ++i) {
     EXPECT_EQ(kExpectedChanges[i], changes[i]);
   }
 
-  EXPECT_EQ(0, GetAutofillEntryCount(u"Name", u"Clark Kent", db_.get()));
+  EXPECT_EQ(0, GetAutocompleteEntryCount(u"Name", u"Clark Kent", db_.get()));
 
   EXPECT_TRUE(
       table_->GetFormValuesForElementName(u"Name", std::u16string(), &v, 6));
@@ -349,8 +353,8 @@ TEST_F(AutofillTableTest, Autofill) {
   EXPECT_EQ(4U, v.size());
 }
 
-TEST_F(AutofillTableTest, Autofill_GetEntry_Populated) {
-  AutofillChangeList changes;
+TEST_F(AutofillTableTest, Autocomplete_GetEntry_Populated) {
+  AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
@@ -358,15 +362,16 @@ TEST_F(AutofillTableTest, Autofill_GetEntry_Populated) {
 
   EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, now));
 
-  std::vector<AutofillEntry> prefix_v;
+  std::vector<AutocompleteEntry> prefix_v;
   EXPECT_TRUE(
       table_->GetFormValuesForElementName(field.name, u"Super", &prefix_v, 10));
 
-  std::vector<AutofillEntry> no_prefix_v;
+  std::vector<AutocompleteEntry> no_prefix_v;
   EXPECT_TRUE(
       table_->GetFormValuesForElementName(field.name, u"", &no_prefix_v, 10));
 
-  AutofillEntry expected_entry(AutofillKey(field.name, field.value), now, now);
+  AutocompleteEntry expected_entry(AutocompleteKey(field.name, field.value),
+                                   now, now);
 
   EXPECT_THAT(prefix_v, ElementsAre(expected_entry));
   EXPECT_THAT(no_prefix_v, ElementsAre(expected_entry));
@@ -379,15 +384,15 @@ TEST_F(AutofillTableTest, Autofill_GetEntry_Populated) {
   EXPECT_TRUE(
       table_->GetFormValuesForElementName(field.name, u"", &no_prefix_v, 10));
 
-  expected_entry =
-      AutofillEntry(AutofillKey(field.name, field.value), now, new_time);
+  expected_entry = AutocompleteEntry(AutocompleteKey(field.name, field.value),
+                                     now, new_time);
 
   EXPECT_THAT(prefix_v, ElementsAre(expected_entry));
   EXPECT_THAT(no_prefix_v, ElementsAre(expected_entry));
 }
 
-TEST_F(AutofillTableTest, Autofill_GetCountOfValuesContainedBetween) {
-  AutofillChangeList changes;
+TEST_F(AutofillTableTest, Autocomplete_GetCountOfValuesContainedBetween) {
+  AutocompleteChangeList changes;
   // This test makes time comparisons that are precise to a microsecond, but the
   // database uses the time_t format which is only precise to a second.
   // Make sure we use timestamps rounded to a second.
@@ -451,12 +456,12 @@ TEST_F(AutofillTableTest, Autofill_GetCountOfValuesContainedBetween) {
   EXPECT_EQ(0, table_->GetCountOfValuesContainedBetween(Time(), begin));
 }
 
-TEST_F(AutofillTableTest, Autofill_RemoveBetweenChanges) {
+TEST_F(AutofillTableTest, Autocomplete_RemoveBetweenChanges) {
   base::TimeDelta one_day(base::Days(1));
   Time t1 = AutofillClock::Now();
   Time t2 = t1 + one_day;
 
-  AutofillChangeList changes;
+  AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
@@ -466,75 +471,75 @@ TEST_F(AutofillTableTest, Autofill_RemoveBetweenChanges) {
   changes.clear();
   EXPECT_TRUE(table_->RemoveFormElementsAddedBetween(t1, t2, &changes));
   ASSERT_EQ(1U, changes.size());
-  EXPECT_EQ(
-      AutofillChange(AutofillChange::UPDATE, AutofillKey(u"Name", u"Superman")),
-      changes[0]);
+  EXPECT_EQ(AutocompleteChange(AutocompleteChange::UPDATE,
+                               AutocompleteKey(u"Name", u"Superman")),
+            changes[0]);
   changes.clear();
 
   EXPECT_TRUE(
       table_->RemoveFormElementsAddedBetween(t2, t2 + one_day, &changes));
   ASSERT_EQ(1U, changes.size());
-  EXPECT_EQ(
-      AutofillChange(AutofillChange::REMOVE, AutofillKey(u"Name", u"Superman")),
-      changes[0]);
+  EXPECT_EQ(AutocompleteChange(AutocompleteChange::REMOVE,
+                               AutocompleteKey(u"Name", u"Superman")),
+            changes[0]);
 }
 
-TEST_F(AutofillTableTest, Autofill_AddChanges) {
+TEST_F(AutofillTableTest, Autocomplete_AddChanges) {
   base::TimeDelta one_day(base::Days(1));
   Time t1 = AutofillClock::Now();
   Time t2 = t1 + one_day;
 
-  AutofillChangeList changes;
+  AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
   EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, t1));
   ASSERT_EQ(1U, changes.size());
-  EXPECT_EQ(
-      AutofillChange(AutofillChange::ADD, AutofillKey(u"Name", u"Superman")),
-      changes[0]);
+  EXPECT_EQ(AutocompleteChange(AutocompleteChange::ADD,
+                               AutocompleteKey(u"Name", u"Superman")),
+            changes[0]);
 
   changes.clear();
   EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, t2));
   ASSERT_EQ(1U, changes.size());
-  EXPECT_EQ(
-      AutofillChange(AutofillChange::UPDATE, AutofillKey(u"Name", u"Superman")),
-      changes[0]);
+  EXPECT_EQ(AutocompleteChange(AutocompleteChange::UPDATE,
+                               AutocompleteKey(u"Name", u"Superman")),
+            changes[0]);
 }
 
-TEST_F(AutofillTableTest, Autofill_UpdateOneWithOneTimestamp) {
-  AutofillEntry entry(MakeAutofillEntry(u"foo", u"bar", 1, -1));
-  std::vector<AutofillEntry> entries;
+TEST_F(AutofillTableTest, Autocomplete_UpdateOneWithOneTimestamp) {
+  AutocompleteEntry entry(MakeAutocompleteEntry(u"foo", u"bar", 1, -1));
+  std::vector<AutocompleteEntry> entries;
   entries.push_back(entry);
-  ASSERT_TRUE(table_->UpdateAutofillEntries(entries));
+  ASSERT_TRUE(table_->UpdateAutocompleteEntries(entries));
 
-  EXPECT_EQ(1, GetAutofillEntryCount(u"foo", u"bar", db_.get()));
+  EXPECT_EQ(1, GetAutocompleteEntryCount(u"foo", u"bar", db_.get()));
 
-  std::vector<AutofillEntry> all_entries;
-  ASSERT_TRUE(table_->GetAllAutofillEntries(&all_entries));
+  std::vector<AutocompleteEntry> all_entries;
+  ASSERT_TRUE(table_->GetAllAutocompleteEntries(&all_entries));
   ASSERT_EQ(1U, all_entries.size());
   EXPECT_EQ(entry, all_entries[0]);
 }
 
-TEST_F(AutofillTableTest, Autofill_UpdateOneWithTwoTimestamps) {
-  AutofillEntry entry(MakeAutofillEntry(u"foo", u"bar", 1, 2));
-  std::vector<AutofillEntry> entries;
+TEST_F(AutofillTableTest, Autocomplete_UpdateOneWithTwoTimestamps) {
+  AutocompleteEntry entry(MakeAutocompleteEntry(u"foo", u"bar", 1, 2));
+  std::vector<AutocompleteEntry> entries;
   entries.push_back(entry);
-  ASSERT_TRUE(table_->UpdateAutofillEntries(entries));
+  ASSERT_TRUE(table_->UpdateAutocompleteEntries(entries));
 
-  EXPECT_EQ(2, GetAutofillEntryCount(u"foo", u"bar", db_.get()));
+  EXPECT_EQ(2, GetAutocompleteEntryCount(u"foo", u"bar", db_.get()));
 
-  std::vector<AutofillEntry> all_entries;
-  ASSERT_TRUE(table_->GetAllAutofillEntries(&all_entries));
+  std::vector<AutocompleteEntry> all_entries;
+  ASSERT_TRUE(table_->GetAllAutocompleteEntries(&all_entries));
   ASSERT_EQ(1U, all_entries.size());
   EXPECT_EQ(entry, all_entries[0]);
 }
 
-TEST_F(AutofillTableTest, Autofill_GetAutofillTimestamps) {
-  AutofillEntry entry(MakeAutofillEntry(u"foo", u"bar", 1, 2));
-  std::vector<AutofillEntry> entries;
+TEST_F(AutofillTableTest, Autocomplete_GetAutofillTimestamps) {
+  AutocompleteEntry entry(MakeAutocompleteEntry(u"foo", u"bar", 1, 2));
+  std::vector<AutocompleteEntry> entries;
   entries.push_back(entry);
-  ASSERT_TRUE(table_->UpdateAutofillEntries(entries));
+  ASSERT_TRUE(table_->UpdateAutocompleteEntries(entries));
 
   Time date_created, date_last_used;
   ASSERT_TRUE(table_->GetAutofillTimestamps(u"foo", u"bar", &date_created,
@@ -543,86 +548,86 @@ TEST_F(AutofillTableTest, Autofill_GetAutofillTimestamps) {
   EXPECT_EQ(Time::FromTimeT(2), date_last_used);
 }
 
-TEST_F(AutofillTableTest, Autofill_UpdateTwo) {
-  AutofillEntry entry0(MakeAutofillEntry(u"foo", u"bar0", 1, -1));
-  AutofillEntry entry1(MakeAutofillEntry(u"foo", u"bar1", 2, 3));
-  std::vector<AutofillEntry> entries;
+TEST_F(AutofillTableTest, Autocomplete_UpdateTwo) {
+  AutocompleteEntry entry0(MakeAutocompleteEntry(u"foo", u"bar0", 1, -1));
+  AutocompleteEntry entry1(MakeAutocompleteEntry(u"foo", u"bar1", 2, 3));
+  std::vector<AutocompleteEntry> entries;
   entries.push_back(entry0);
   entries.push_back(entry1);
-  ASSERT_TRUE(table_->UpdateAutofillEntries(entries));
+  ASSERT_TRUE(table_->UpdateAutocompleteEntries(entries));
 
-  EXPECT_EQ(1, GetAutofillEntryCount(u"foo", u"bar0", db_.get()));
-  EXPECT_EQ(2, GetAutofillEntryCount(u"foo", u"bar1", db_.get()));
+  EXPECT_EQ(1, GetAutocompleteEntryCount(u"foo", u"bar0", db_.get()));
+  EXPECT_EQ(2, GetAutocompleteEntryCount(u"foo", u"bar1", db_.get()));
 }
 
-TEST_F(AutofillTableTest, Autofill_UpdateNullTerminated) {
+TEST_F(AutofillTableTest, Autocomplete_UpdateNullTerminated) {
   const char16_t kName[] = u"foo";
   const char16_t kValue[] = u"bar";
   // A value which contains terminating character.
   std::u16string value(kValue, std::size(kValue));
 
-  AutofillEntry entry0(MakeAutofillEntry(kName, kValue, 1, -1));
-  AutofillEntry entry1(MakeAutofillEntry(kName, value, 2, 3));
-  std::vector<AutofillEntry> entries;
+  AutocompleteEntry entry0(MakeAutocompleteEntry(kName, kValue, 1, -1));
+  AutocompleteEntry entry1(MakeAutocompleteEntry(kName, value, 2, 3));
+  std::vector<AutocompleteEntry> entries;
   entries.push_back(entry0);
   entries.push_back(entry1);
-  ASSERT_TRUE(table_->UpdateAutofillEntries(entries));
+  ASSERT_TRUE(table_->UpdateAutocompleteEntries(entries));
 
-  EXPECT_EQ(1, GetAutofillEntryCount(kName, kValue, db_.get()));
-  EXPECT_EQ(2, GetAutofillEntryCount(kName, value, db_.get()));
+  EXPECT_EQ(1, GetAutocompleteEntryCount(kName, kValue, db_.get()));
+  EXPECT_EQ(2, GetAutocompleteEntryCount(kName, value, db_.get()));
 
-  std::vector<AutofillEntry> all_entries;
-  ASSERT_TRUE(table_->GetAllAutofillEntries(&all_entries));
+  std::vector<AutocompleteEntry> all_entries;
+  ASSERT_TRUE(table_->GetAllAutocompleteEntries(&all_entries));
   ASSERT_EQ(2U, all_entries.size());
   EXPECT_EQ(entry0, all_entries[0]);
   EXPECT_EQ(entry1, all_entries[1]);
 }
 
-TEST_F(AutofillTableTest, Autofill_UpdateReplace) {
-  AutofillChangeList changes;
+TEST_F(AutofillTableTest, Autocomplete_UpdateReplace) {
+  AutocompleteChangeList changes;
   // Add a form field.  This will be replaced.
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
   EXPECT_TRUE(table_->AddFormFieldValue(field, &changes));
 
-  AutofillEntry entry(MakeAutofillEntry(u"Name", u"Superman", 1, 2));
-  std::vector<AutofillEntry> entries;
+  AutocompleteEntry entry(MakeAutocompleteEntry(u"Name", u"Superman", 1, 2));
+  std::vector<AutocompleteEntry> entries;
   entries.push_back(entry);
-  ASSERT_TRUE(table_->UpdateAutofillEntries(entries));
+  ASSERT_TRUE(table_->UpdateAutocompleteEntries(entries));
 
-  std::vector<AutofillEntry> all_entries;
-  ASSERT_TRUE(table_->GetAllAutofillEntries(&all_entries));
+  std::vector<AutocompleteEntry> all_entries;
+  ASSERT_TRUE(table_->GetAllAutocompleteEntries(&all_entries));
   ASSERT_EQ(1U, all_entries.size());
   EXPECT_EQ(entry, all_entries[0]);
 }
 
-TEST_F(AutofillTableTest, Autofill_UpdateDontReplace) {
+TEST_F(AutofillTableTest, Autocomplete_UpdateDontReplace) {
   Time t = AutofillClock::Now();
-  AutofillEntry existing(
-      MakeAutofillEntry(u"Name", u"Superman", t.ToTimeT(), -1));
+  AutocompleteEntry existing(
+      MakeAutocompleteEntry(u"Name", u"Superman", t.ToTimeT(), -1));
 
-  AutofillChangeList changes;
+  AutocompleteChangeList changes;
   // Add a form field.  This will NOT be replaced.
   FormFieldData field;
   field.name = existing.key().name();
   field.value = existing.key().value();
   EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, t));
-  AutofillEntry entry(MakeAutofillEntry(u"Name", u"Clark Kent", 1, 2));
-  std::vector<AutofillEntry> entries;
+  AutocompleteEntry entry(MakeAutocompleteEntry(u"Name", u"Clark Kent", 1, 2));
+  std::vector<AutocompleteEntry> entries;
   entries.push_back(entry);
-  ASSERT_TRUE(table_->UpdateAutofillEntries(entries));
+  ASSERT_TRUE(table_->UpdateAutocompleteEntries(entries));
 
-  std::vector<AutofillEntry> all_entries;
-  ASSERT_TRUE(table_->GetAllAutofillEntries(&all_entries));
+  std::vector<AutocompleteEntry> all_entries;
+  ASSERT_TRUE(table_->GetAllAutocompleteEntries(&all_entries));
   ASSERT_EQ(2U, all_entries.size());
-  AutofillEntrySet expected_entries(all_entries.begin(), all_entries.end(),
-                                    CompareAutofillEntries);
+  AutocompleteEntrySet expected_entries(all_entries.begin(), all_entries.end(),
+                                        CompareAutocompleteEntries);
   EXPECT_EQ(1U, expected_entries.count(existing));
   EXPECT_EQ(1U, expected_entries.count(entry));
 }
 
-TEST_F(AutofillTableTest, Autofill_AddFormFieldValues) {
+TEST_F(AutofillTableTest, Autocomplete_AddFormFieldValues) {
   Time t = AutofillClock::Now();
 
   // Add multiple values for "firstname" and "lastname" names.  Test that only
@@ -646,24 +651,26 @@ TEST_F(AutofillTableTest, Autofill_AddFormFieldValues) {
   field.value = u"Jones";
   elements.push_back(field);
 
-  std::vector<AutofillChange> changes;
+  std::vector<AutocompleteChange> changes;
   table_->AddFormFieldValuesTime(elements, &changes, t);
 
   ASSERT_EQ(2U, changes.size());
-  EXPECT_EQ(changes[0], AutofillChange(AutofillChange::ADD,
-                                       AutofillKey(u"firstname", u"Joe")));
-  EXPECT_EQ(changes[1], AutofillChange(AutofillChange::ADD,
-                                       AutofillKey(u"lastname", u"Smith")));
+  EXPECT_EQ(changes[0],
+            AutocompleteChange(AutocompleteChange::ADD,
+                               AutocompleteKey(u"firstname", u"Joe")));
+  EXPECT_EQ(changes[1],
+            AutocompleteChange(AutocompleteChange::ADD,
+                               AutocompleteKey(u"lastname", u"Smith")));
 
-  std::vector<AutofillEntry> all_entries;
-  ASSERT_TRUE(table_->GetAllAutofillEntries(&all_entries));
+  std::vector<AutocompleteEntry> all_entries;
+  ASSERT_TRUE(table_->GetAllAutocompleteEntries(&all_entries));
   ASSERT_EQ(2U, all_entries.size());
 }
 
 TEST_F(AutofillTableTest,
-       Autofill_RemoveFormElementsAddedBetween_UsedOnlyBefore) {
-  // Add an entry used only before the targetted range.
-  AutofillChangeList changes;
+       Autocomplete_RemoveFormElementsAddedBetween_UsedOnlyBefore) {
+  // Add an entry used only before the targeted range.
+  AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
@@ -678,19 +685,19 @@ TEST_F(AutofillTableTest,
   EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
                                             base::Time::FromTimeT(50)));
 
-  EXPECT_EQ(5, GetAutofillEntryCount(field.name, field.value, db_.get()));
+  EXPECT_EQ(5, GetAutocompleteEntryCount(field.name, field.value, db_.get()));
 
   changes.clear();
   EXPECT_TRUE(table_->RemoveFormElementsAddedBetween(
       base::Time::FromTimeT(51), base::Time::FromTimeT(60), &changes));
   EXPECT_TRUE(changes.empty());
-  EXPECT_EQ(5, GetAutofillEntryCount(field.name, field.value, db_.get()));
+  EXPECT_EQ(5, GetAutocompleteEntryCount(field.name, field.value, db_.get()));
 }
 
 TEST_F(AutofillTableTest,
-       Autofill_RemoveFormElementsAddedBetween_UsedOnlyAfter) {
-  // Add an entry used only after the targetted range.
-  AutofillChangeList changes;
+       Autocomplete_RemoveFormElementsAddedBetween_UsedOnlyAfter) {
+  // Add an entry used only after the targeted range.
+  AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
@@ -705,19 +712,19 @@ TEST_F(AutofillTableTest,
   EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
                                             base::Time::FromTimeT(90)));
 
-  EXPECT_EQ(5, GetAutofillEntryCount(field.name, field.value, db_.get()));
+  EXPECT_EQ(5, GetAutocompleteEntryCount(field.name, field.value, db_.get()));
 
   changes.clear();
   EXPECT_TRUE(table_->RemoveFormElementsAddedBetween(
       base::Time::FromTimeT(40), base::Time::FromTimeT(50), &changes));
   EXPECT_TRUE(changes.empty());
-  EXPECT_EQ(5, GetAutofillEntryCount(field.name, field.value, db_.get()));
+  EXPECT_EQ(5, GetAutocompleteEntryCount(field.name, field.value, db_.get()));
 }
 
 TEST_F(AutofillTableTest,
-       Autofill_RemoveFormElementsAddedBetween_UsedOnlyDuring) {
-  // Add an entry used entirely during the targetted range.
-  AutofillChangeList changes;
+       Autocomplete_RemoveFormElementsAddedBetween_UsedOnlyDuring) {
+  // Add an entry used entirely during the targeted range.
+  AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
@@ -732,22 +739,22 @@ TEST_F(AutofillTableTest,
   EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
                                             base::Time::FromTimeT(50)));
 
-  EXPECT_EQ(5, GetAutofillEntryCount(field.name, field.value, db_.get()));
+  EXPECT_EQ(5, GetAutocompleteEntryCount(field.name, field.value, db_.get()));
 
   changes.clear();
   EXPECT_TRUE(table_->RemoveFormElementsAddedBetween(
       base::Time::FromTimeT(10), base::Time::FromTimeT(51), &changes));
   ASSERT_EQ(1U, changes.size());
-  EXPECT_EQ(AutofillChange(AutofillChange::REMOVE,
-                           AutofillKey(field.name, field.value)),
+  EXPECT_EQ(AutocompleteChange(AutocompleteChange::REMOVE,
+                               AutocompleteKey(field.name, field.value)),
             changes[0]);
-  EXPECT_EQ(0, GetAutofillEntryCount(field.name, field.value, db_.get()));
+  EXPECT_EQ(0, GetAutocompleteEntryCount(field.name, field.value, db_.get()));
 }
 
 TEST_F(AutofillTableTest,
-       Autofill_RemoveFormElementsAddedBetween_UsedBeforeAndDuring) {
-  // Add an entry used both before and during the targetted range.
-  AutofillChangeList changes;
+       Autocomplete_RemoveFormElementsAddedBetween_UsedBeforeAndDuring) {
+  // Add an entry used both before and during the targeted range.
+  AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
@@ -762,16 +769,16 @@ TEST_F(AutofillTableTest,
   EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
                                             base::Time::FromTimeT(50)));
 
-  EXPECT_EQ(5, GetAutofillEntryCount(field.name, field.value, db_.get()));
+  EXPECT_EQ(5, GetAutocompleteEntryCount(field.name, field.value, db_.get()));
 
   changes.clear();
   EXPECT_TRUE(table_->RemoveFormElementsAddedBetween(
       base::Time::FromTimeT(40), base::Time::FromTimeT(60), &changes));
   ASSERT_EQ(1U, changes.size());
-  EXPECT_EQ(AutofillChange(AutofillChange::UPDATE,
-                           AutofillKey(field.name, field.value)),
+  EXPECT_EQ(AutocompleteChange(AutocompleteChange::UPDATE,
+                               AutocompleteKey(field.name, field.value)),
             changes[0]);
-  EXPECT_EQ(4, GetAutofillEntryCount(field.name, field.value, db_.get()));
+  EXPECT_EQ(4, GetAutocompleteEntryCount(field.name, field.value, db_.get()));
   base::Time date_created, date_last_used;
   EXPECT_TRUE(table_->GetAutofillTimestamps(field.name, field.value,
                                             &date_created, &date_last_used));
@@ -780,9 +787,9 @@ TEST_F(AutofillTableTest,
 }
 
 TEST_F(AutofillTableTest,
-       Autofill_RemoveFormElementsAddedBetween_UsedDuringAndAfter) {
-  // Add an entry used both during and after the targetted range.
-  AutofillChangeList changes;
+       Autocomplete_RemoveFormElementsAddedBetween_UsedDuringAndAfter) {
+  // Add an entry used both during and after the targeted range.
+  AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
@@ -797,16 +804,16 @@ TEST_F(AutofillTableTest,
   EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
                                             base::Time::FromTimeT(90)));
 
-  EXPECT_EQ(5, GetAutofillEntryCount(field.name, field.value, db_.get()));
+  EXPECT_EQ(5, GetAutocompleteEntryCount(field.name, field.value, db_.get()));
 
   changes.clear();
   EXPECT_TRUE(table_->RemoveFormElementsAddedBetween(
       base::Time::FromTimeT(40), base::Time::FromTimeT(80), &changes));
   ASSERT_EQ(1U, changes.size());
-  EXPECT_EQ(AutofillChange(AutofillChange::UPDATE,
-                           AutofillKey(field.name, field.value)),
+  EXPECT_EQ(AutocompleteChange(AutocompleteChange::UPDATE,
+                               AutocompleteKey(field.name, field.value)),
             changes[0]);
-  EXPECT_EQ(2, GetAutofillEntryCount(field.name, field.value, db_.get()));
+  EXPECT_EQ(2, GetAutocompleteEntryCount(field.name, field.value, db_.get()));
   base::Time date_created, date_last_used;
   EXPECT_TRUE(table_->GetAutofillTimestamps(field.name, field.value,
                                             &date_created, &date_last_used));
@@ -815,14 +822,14 @@ TEST_F(AutofillTableTest,
 }
 
 TEST_F(AutofillTableTest,
-       Autofill_RemoveFormElementsAddedBetween_OlderThan30Days) {
+       Autocomplete_RemoveFormElementsAddedBetween_OlderThan30Days) {
   const base::Time kNow = AutofillClock::Now();
   const base::Time k29DaysOld = kNow - base::Days(29);
   const base::Time k30DaysOld = kNow - base::Days(30);
   const base::Time k31DaysOld = kNow - base::Days(31);
 
   // Add some form field entries.
-  AutofillChangeList changes;
+  AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
@@ -838,12 +845,12 @@ TEST_F(AutofillTableTest,
   EXPECT_TRUE(table_->RemoveFormElementsAddedBetween(base::Time(), k30DaysOld,
                                                      &changes));
   ASSERT_EQ(1U, changes.size());
-  EXPECT_EQ(AutofillChange(AutofillChange::REMOVE,
-                           AutofillKey(u"Name", u"Clark Sutter")),
+  EXPECT_EQ(AutocompleteChange(AutocompleteChange::REMOVE,
+                               AutocompleteKey(u"Name", u"Clark Sutter")),
             changes[0]);
-  EXPECT_EQ(0, GetAutofillEntryCount(u"Name", u"Clark Sutter", db_.get()));
-  EXPECT_EQ(1, GetAutofillEntryCount(u"Name", u"Superman", db_.get()));
-  EXPECT_EQ(1, GetAutofillEntryCount(u"Name", u"Clark Kent", db_.get()));
+  EXPECT_EQ(0, GetAutocompleteEntryCount(u"Name", u"Clark Sutter", db_.get()));
+  EXPECT_EQ(1, GetAutocompleteEntryCount(u"Name", u"Superman", db_.get()));
+  EXPECT_EQ(1, GetAutocompleteEntryCount(u"Name", u"Clark Kent", db_.get()));
   changes.clear();
 }
 
@@ -853,7 +860,7 @@ TEST_F(AutofillTableTest, RemoveExpiredFormElements_Expires_DeleteEntry) {
   auto kNow = AutofillClock::Now();
   auto k2YearsOld = kNow - 2 * kAutocompleteRetentionPolicyPeriod;
 
-  AutofillChangeList changes;
+  AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
@@ -862,8 +869,8 @@ TEST_F(AutofillTableTest, RemoveExpiredFormElements_Expires_DeleteEntry) {
 
   EXPECT_TRUE(table_->RemoveExpiredFormElements(&changes));
 
-  EXPECT_EQ(AutofillChange(AutofillChange::EXPIRE,
-                           AutofillKey(field.name, field.value)),
+  EXPECT_EQ(AutocompleteChange(AutocompleteChange::EXPIRE,
+                               AutocompleteKey(field.name, field.value)),
             changes[0]);
 }
 
@@ -873,7 +880,7 @@ TEST_F(AutofillTableTest, RemoveExpiredFormElements_NotOldEnough) {
   auto kNow = AutofillClock::Now();
   auto k2DaysOld = kNow - base::Days(2);
 
-  AutofillChangeList changes;
+  AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
@@ -1949,15 +1956,15 @@ TEST_F(AutofillTableTest, RemoveOriginURLsModifiedBetween) {
   EXPECT_EQ(kSettingsOrigin, s_credit_cards_all.ColumnString(1));
 }
 
-TEST_F(AutofillTableTest, Autofill_GetAllAutofillEntries_NoResults) {
-  std::vector<AutofillEntry> entries;
-  ASSERT_TRUE(table_->GetAllAutofillEntries(&entries));
+TEST_F(AutofillTableTest, Autocomplete_GetAllAutocompleteEntries_NoResults) {
+  std::vector<AutocompleteEntry> entries;
+  ASSERT_TRUE(table_->GetAllAutocompleteEntries(&entries));
 
   EXPECT_EQ(0U, entries.size());
 }
 
-TEST_F(AutofillTableTest, Autofill_GetAllAutofillEntries_OneResult) {
-  AutofillChangeList changes;
+TEST_F(AutofillTableTest, Autocomplete_GetAllAutocompleteEntries_OneResult) {
+  AutocompleteChangeList changes;
   std::map<std::string, std::vector<Time>> name_value_times_map;
 
   time_t start = 0;
@@ -1972,22 +1979,22 @@ TEST_F(AutofillTableTest, Autofill_GetAllAutofillEntries_OneResult) {
   name_value_times_map.insert(
       std::pair<std::string, std::vector<Time>>(key1, timestamps1));
 
-  AutofillEntrySet expected_entries(CompareAutofillEntries);
-  AutofillKey ak1(u"Name", u"Superman");
-  AutofillEntry ae1(ak1, timestamps1.front(), timestamps1.back());
+  AutocompleteEntrySet expected_entries(CompareAutocompleteEntries);
+  AutocompleteKey ak1(u"Name", u"Superman");
+  AutocompleteEntry ae1(ak1, timestamps1.front(), timestamps1.back());
 
   expected_entries.insert(ae1);
 
-  std::vector<AutofillEntry> entries;
-  ASSERT_TRUE(table_->GetAllAutofillEntries(&entries));
-  AutofillEntrySet entry_set(entries.begin(), entries.end(),
-                             CompareAutofillEntries);
+  std::vector<AutocompleteEntry> entries;
+  ASSERT_TRUE(table_->GetAllAutocompleteEntries(&entries));
+  AutocompleteEntrySet entry_set(entries.begin(), entries.end(),
+                                 CompareAutocompleteEntries);
 
-  CompareAutofillEntrySets(entry_set, expected_entries);
+  CompareAutocompleteEntrySets(entry_set, expected_entries);
 }
 
-TEST_F(AutofillTableTest, Autofill_GetAllAutofillEntries_TwoDistinct) {
-  AutofillChangeList changes;
+TEST_F(AutofillTableTest, Autocomplete_GetAllAutocompleteEntries_TwoDistinct) {
+  AutocompleteChangeList changes;
   std::map<std::string, std::vector<Time>> name_value_times_map;
   time_t start = 0;
 
@@ -2013,25 +2020,25 @@ TEST_F(AutofillTableTest, Autofill_GetAllAutofillEntries_TwoDistinct) {
   name_value_times_map.insert(
       std::pair<std::string, std::vector<Time>>(key2, timestamps2));
 
-  AutofillEntrySet expected_entries(CompareAutofillEntries);
-  AutofillKey ak1(u"Name", u"Superman");
-  AutofillKey ak2(u"Name", u"Clark Kent");
-  AutofillEntry ae1(ak1, timestamps1.front(), timestamps1.back());
-  AutofillEntry ae2(ak2, timestamps2.front(), timestamps2.back());
+  AutocompleteEntrySet expected_entries(CompareAutocompleteEntries);
+  AutocompleteKey ak1(u"Name", u"Superman");
+  AutocompleteKey ak2(u"Name", u"Clark Kent");
+  AutocompleteEntry ae1(ak1, timestamps1.front(), timestamps1.back());
+  AutocompleteEntry ae2(ak2, timestamps2.front(), timestamps2.back());
 
   expected_entries.insert(ae1);
   expected_entries.insert(ae2);
 
-  std::vector<AutofillEntry> entries;
-  ASSERT_TRUE(table_->GetAllAutofillEntries(&entries));
-  AutofillEntrySet entry_set(entries.begin(), entries.end(),
-                             CompareAutofillEntries);
+  std::vector<AutocompleteEntry> entries;
+  ASSERT_TRUE(table_->GetAllAutocompleteEntries(&entries));
+  AutocompleteEntrySet entry_set(entries.begin(), entries.end(),
+                                 CompareAutocompleteEntries);
 
-  CompareAutofillEntrySets(entry_set, expected_entries);
+  CompareAutocompleteEntrySets(entry_set, expected_entries);
 }
 
-TEST_F(AutofillTableTest, Autofill_GetAllAutofillEntries_TwoSame) {
-  AutofillChangeList changes;
+TEST_F(AutofillTableTest, Autocomplete_GetAllAutocompleteEntries_TwoSame) {
+  AutocompleteChangeList changes;
   std::map<std::string, std::vector<Time>> name_value_times_map;
 
   std::vector<Time> timestamps;
@@ -2049,18 +2056,18 @@ TEST_F(AutofillTableTest, Autofill_GetAllAutofillEntries_TwoSame) {
   name_value_times_map.insert(
       std::pair<std::string, std::vector<Time>>(key, timestamps));
 
-  AutofillEntrySet expected_entries(CompareAutofillEntries);
-  AutofillKey ak1(u"Name", u"Superman");
-  AutofillEntry ae1(ak1, timestamps.front(), timestamps.back());
+  AutocompleteEntrySet expected_entries(CompareAutocompleteEntries);
+  AutocompleteKey ak1(u"Name", u"Superman");
+  AutocompleteEntry ae1(ak1, timestamps.front(), timestamps.back());
 
   expected_entries.insert(ae1);
 
-  std::vector<AutofillEntry> entries;
-  ASSERT_TRUE(table_->GetAllAutofillEntries(&entries));
-  AutofillEntrySet entry_set(entries.begin(), entries.end(),
-                             CompareAutofillEntries);
+  std::vector<AutocompleteEntry> entries;
+  ASSERT_TRUE(table_->GetAllAutocompleteEntries(&entries));
+  AutocompleteEntrySet entry_set(entries.begin(), entries.end(),
+                                 CompareAutocompleteEntries);
 
-  CompareAutofillEntrySets(entry_set, expected_entries);
+  CompareAutocompleteEntrySets(entry_set, expected_entries);
 }
 
 TEST_F(AutofillTableTest, SetGetServerCards) {
@@ -3284,7 +3291,7 @@ TEST_F(AutofillTableTest, DontCrashWhenAddingValueToPoisonedDB) {
   db_->GetSQLConnection()->Poison();
 
   // Simulate the submission of a form.
-  AutofillChangeList changes;
+  AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";

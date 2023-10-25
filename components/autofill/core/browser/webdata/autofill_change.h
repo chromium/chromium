@@ -15,13 +15,13 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
-#include "components/autofill/core/browser/webdata/autofill_entry.h"
+#include "components/autofill/core/browser/webdata/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 
 namespace autofill {
 
-// For classic Autofill form fields, the KeyType is AutofillKey.
-// Autofill++ types such as AutofillProfile and CreditCard simply use a string.
+// For classic Autofill form fields, the KeyType is AutocompleteKey.
+// Autofill types such as AutofillProfile and CreditCard simply use a string.
 template <typename KeyType>
 class GenericAutofillChange {
  public:
@@ -41,16 +41,16 @@ class GenericAutofillChange {
   KeyType key_;
 };
 
-class AutofillChange : public GenericAutofillChange<AutofillKey> {
+class AutocompleteChange : public GenericAutofillChange<AutocompleteKey> {
  public:
-  AutofillChange(Type type, const AutofillKey& key);
-  ~AutofillChange() override;
-  bool operator==(const AutofillChange& change) const {
+  AutocompleteChange(Type type, const AutocompleteKey& key);
+  ~AutocompleteChange() override;
+  bool operator==(const AutocompleteChange& change) const {
     return type() == change.type() && key() == change.key();
   }
 };
 
-using AutofillChangeList = std::vector<AutofillChange>;
+using AutocompleteChangeList = std::vector<AutocompleteChange>;
 
 template <
     typename DataType,
