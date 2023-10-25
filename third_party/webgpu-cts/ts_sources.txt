@@ -68,6 +68,7 @@ src/stress/listing.ts
 src/webgpu/constants.ts
 src/webgpu/capability_info.ts
 src/stress/adapter/device_allocation.spec.ts
+src/webgpu/util/reinterpret.ts
 src/webgpu/util/constants.ts
 src/webgpu/util/conversion.ts
 src/webgpu/util/math.ts
