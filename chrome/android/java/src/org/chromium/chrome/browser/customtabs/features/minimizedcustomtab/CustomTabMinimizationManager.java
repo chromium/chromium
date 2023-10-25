@@ -42,12 +42,6 @@ import java.util.concurrent.TimeUnit;
 @RequiresApi(VERSION_CODES.O)
 public class CustomTabMinimizationManager
         implements CustomTabMinimizeDelegate, Consumer<PictureInPictureModeChangedInfo> {
-    @VisibleForTesting
-    static final Rational ASPECT_RATIO = new Rational(16, 9);
-    private final AppCompatActivity mActivity;
-    private final ActivityTabProvider mTabProvider;
-    private long mMinimizationSystemTime;
-
     // List of possible minimization events - maximize is effectively an 'un-PiP', whereas destroy
     // refers to the activity being finished either by user action or otherwise.
     // These values are persisted to logs. Entries should not be renumbered and
@@ -67,22 +61,32 @@ public class CustomTabMinimizationManager
         int COUNT = 3;
     }
 
+    @VisibleForTesting static final Rational ASPECT_RATIO = new Rational(16, 9);
+    private final AppCompatActivity mActivity;
+    private final ActivityTabProvider mTabProvider;
+    private final MinimizedCustomTabFeatureEngagementDelegate mFeatureEngagementDelegate;
+    private long mMinimizationSystemTime;
+
     /**
      * @param activity The {@link AppCompatActivity} to minimize.
      * @param tabProvider The {@link ActivityTabProvider} that provides the Tab that will be
-     *                    minimized.
+     *     minimized.
      */
     public CustomTabMinimizationManager(
-            AppCompatActivity activity, ActivityTabProvider tabProvider) {
+            AppCompatActivity activity,
+            ActivityTabProvider tabProvider,
+            MinimizedCustomTabFeatureEngagementDelegate featureEngagementDelegate) {
         mActivity = activity;
         mActivity.addOnPictureInPictureModeChangedListener(this);
         mTabProvider = tabProvider;
+        mFeatureEngagementDelegate = featureEngagementDelegate;
     }
 
     /** Minimize the Custom Tab into picture-in-picture. */
     @Override
     public void minimize() {
         if (!mTabProvider.hasValue()) return;
+        mFeatureEngagementDelegate.notifyUserEngaged();
         var builder = new PictureInPictureParams.Builder().setAspectRatio(ASPECT_RATIO);
         if (VERSION.SDK_INT >= VERSION_CODES.S) {
             builder.setSeamlessResizeEnabled(false);

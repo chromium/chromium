@@ -73,6 +73,7 @@ public class CustomTabMinimizationManagerUnitTest {
     @Mock private ActivityTabProvider mTabProvider;
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
+    @Mock private MinimizedCustomTabFeatureEngagementDelegate mFeatureEngagementDelegate;
 
     private CustomTabMinimizationManager mManager;
 
@@ -87,7 +88,9 @@ public class CustomTabMinimizationManagerUnitTest {
         when(mTabProvider.get()).thenReturn(mTab);
         when(mActivity.enterPictureInPictureMode(any(PictureInPictureParams.class)))
                 .thenReturn(true);
-        mManager = new CustomTabMinimizationManager(mActivity, mTabProvider);
+        mManager =
+                new CustomTabMinimizationManager(
+                        mActivity, mTabProvider, mFeatureEngagementDelegate);
     }
 
     @Test
@@ -98,6 +101,7 @@ public class CustomTabMinimizationManagerUnitTest {
                         CustomTabMinimizationManager.MinimizationEvents.MINIMIZE);
         mManager.minimize();
         verify(mActivity).enterPictureInPictureMode(any(PictureInPictureParams.class));
+        verify(mFeatureEngagementDelegate).notifyUserEngaged();
 
         // Simulate Activity entering PiP.
         mManager.accept(new PictureInPictureModeChangedInfo(true));

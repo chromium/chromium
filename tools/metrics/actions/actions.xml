@@ -39543,6 +39543,7 @@ should be able to be added at any place in this file.
   <suffix name="BatterySaverMode" label="For BatterySaverMode feature."/>
   <suffix name="Bookmark" label="For Bookmark feature."/>
   <suffix name="BottomToolbarTip" label="For BottomToolbarTip feature."/>
+  <suffix name="CCTMinimized" label="For Minimized CCT feature."/>
   <suffix name="ChromeDuet" label="For ChromeDuet feature."/>
   <suffix name="ChromeDuetHomeButton"
       label="For ChromeDuetHomeButton feature."/>

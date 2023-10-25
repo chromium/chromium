@@ -168,6 +168,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/customtabs/features/ImmersiveModeControllerTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/features/TabInteractionRecorderUnitTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/features/minimizedcustomtab/CustomTabMinimizationManagerUnitTest.java",
+  "junit/src/org/chromium/chrome/browser/customtabs/features/minimizedcustomtab/MinimizedCustomTabIPHControllerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/features/minimizedcustomtab/MinimizedFeatureUtilsUnitTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/ContentGestureListenerTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabBottomSheetStrategyTest.java",

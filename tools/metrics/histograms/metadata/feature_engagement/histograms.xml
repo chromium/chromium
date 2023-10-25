@@ -75,6 +75,7 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_BatterySaverMode" summary="battery saver mode"/>
   <variant name="IPH_Bookmark" summary="bookmark"/>
   <variant name="IPH_BottomToolbarTip" summary="bottom toolbar"/>
+  <variant name="IPH_CCTMinimized" summary="CCT minimize action"/>
   <variant name="IPH_ChromeDuet"
       summary="notifying users that search accelerator is at the bottom of
                the screen"/>

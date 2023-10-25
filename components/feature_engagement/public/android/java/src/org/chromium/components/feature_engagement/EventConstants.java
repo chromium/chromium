@@ -75,6 +75,9 @@ public final class EventConstants {
      */
     public static final String ADD_TO_HOMESCREEN_DIALOG_SHOWN = "add_to_homescreen_dialog_shown";
 
+    /** The user clicked the minimize button on the toolbar. */
+    public static final String CCT_MINIMIZE_BUTTON_CLICKED = "cct_minimize_button_clicked";
+
     /**
      * Contextual Search panel was opened.
      */

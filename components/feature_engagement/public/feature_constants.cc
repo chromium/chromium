@@ -197,6 +197,9 @@ BASE_FEATURE(kIPHAutoDarkUserEducationMessageFeature,
 BASE_FEATURE(kIPHAutoDarkUserEducationMessageOptInFeature,
              "IPH_AutoDarkUserEducationMessageOptIn",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHCCTMinimized,
+             "IPH_CCTMinimized",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHContextualPageActionsQuietVariantFeature,
              "IPH_ContextualPageActions_QuietVariant",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -544,6 +544,21 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
 
 #if BUILDFLAG(IS_ANDROID)
 
+  if (kIPHCCTMinimized.name == feature->name) {
+    // A config that allows the Custom Tab minimize button IPH to be shown once
+    // a day, up to 3 times, unless the button is clicked at least once.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    config->trigger = EventConfig("cct_minimized_iph_trigger",
+                                  Comparator(LESS_THAN, 3), 360, 360);
+    config->event_configs.insert(EventConfig("cct_minimized_iph_trigger",
+                                             Comparator(LESS_THAN, 1), 1, 360));
+    config->used = EventConfig("cct_minimize_button_clicked",
+                               Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
   if (kIPHDataSaverDetailFeature.name == feature->name) {
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;

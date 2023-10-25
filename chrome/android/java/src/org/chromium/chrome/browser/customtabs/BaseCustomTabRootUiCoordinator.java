@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.customtabs;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Rect;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewStub;
@@ -41,6 +43,7 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigatio
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
 import org.chromium.chrome.browser.customtabs.features.branding.BrandingController;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManager;
+import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedCustomTabIPHController;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.CustomTabHeightStrategy;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBottomSheetStrategy;
@@ -75,6 +78,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
@@ -110,6 +114,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     // The minimum API level is checked before initializing the manager.
     @SuppressLint("NewApi")
     private CustomTabMinimizationManager mMinimizationManager;
+
+    private MinimizedCustomTabIPHController mMinimizedCustomTabIPHController;
 
     /**
      * Construct a new BaseCustomTabRootUiCoordinator.
@@ -396,11 +402,18 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 DeviceFormFactor.isWindowOnTablet(mWindowAndroid));
 
         if (MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mActivity)) {
+            mMinimizedCustomTabIPHController =
+                    new MinimizedCustomTabIPHController(
+                            mActivity,
+                            mActivityTabProvider,
+                            new UserEducationHelper(mActivity, new Handler(Looper.getMainLooper())),
+                            mProfileSupplier);
             // The method above already checks for the minimum API level.
             //
             // noinspection NewApi
             mMinimizationManager =
-                    new CustomTabMinimizationManager(mActivity, mActivityTabProvider);
+                    new CustomTabMinimizationManager(
+                            mActivity, mActivityTabProvider, mMinimizedCustomTabIPHController);
         }
     }
 
@@ -472,6 +485,11 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         if (mPageInsightsCoordinator != null) {
             mPageInsightsCoordinator.destroy();
             mPageInsightsCoordinator = null;
+        }
+
+        if (mMinimizedCustomTabIPHController != null) {
+            mMinimizedCustomTabIPHController.destroy();
+            mMinimizedCustomTabIPHController = null;
         }
     }
 
