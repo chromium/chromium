@@ -161,6 +161,18 @@ suite('<os-settings-menu>', () => {
     }
   });
 
+  suite('About ChromeOS menu item', () => {
+    test('Description text', async () => {
+      await createMenu();
+
+      const aboutMenuItem =
+          queryMenuItemByPath(`/${routesMojom.ABOUT_CHROME_OS_SECTION_PATH}`);
+      assertTrue(!!aboutMenuItem);
+
+      assertEquals('Updates, help, developer options', aboutMenuItem.sublabel);
+    });
+  });
+
   suite('Accounts menu item', () => {
     const fakeAccounts: Account[] = [
       {

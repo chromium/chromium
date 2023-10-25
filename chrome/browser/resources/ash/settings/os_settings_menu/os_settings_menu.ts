@@ -376,6 +376,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
           path: this.aboutMenuItemPath_,
           icon: 'os-settings:chrome',
           label: this.i18n('aboutOsPageTitle'),
+          sublabel: this.i18n('aboutChromeOsMenuItemDescription'),
         },
       ];
     } else {

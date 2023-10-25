@@ -362,6 +362,8 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
     {"isEnterpriseManagedTitle",
      IDS_OS_SETTINGS_ABOUT_PAGE_ENTERPRISE_ENNROLLED_TITLE},
     {"aboutOsPageTitle", IDS_SETTINGS_ABOUT_OS},
+    {"aboutChromeOsMenuItemDescription",
+     IDS_OS_SETTINGS_ABOUT_CHROMEOS_MENU_ITEM_DESCRIPTION},
     {"aboutGetHelpUsingChromeOs",
      kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_GET_HELP_USING_CHROME_OS
                       : IDS_SETTINGS_GET_HELP_USING_CHROME_OS},
