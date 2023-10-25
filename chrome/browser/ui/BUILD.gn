@@ -3532,6 +3532,8 @@ static_library("ui") {
       "//ash/webui/color_internals",
       "//ash/webui/common:chrome_os_webui_config",
       "//ash/webui/common:trusted_types_util",
+      "//ash/webui/common/backend",
+      "//ash/webui/common/mojom",
       "//ash/webui/common/resources/office_fallback:resources",
       "//ash/webui/connectivity_diagnostics",
       "//ash/webui/demo_mode_app_ui",

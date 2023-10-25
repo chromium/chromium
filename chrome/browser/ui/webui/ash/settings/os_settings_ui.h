@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/webui/common/mojom/shortcut_input_provider.mojom.h"
 #include "ash/webui/personalization_app/search/search.mojom-forward.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler.h"
@@ -136,6 +137,12 @@ class OSSettingsUI : public ui::MojoWebUIController {
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<mojom::DisplaySettingsProvider> receiver);
+
+  // Instantiates implementor of the mojom::ShortcutInputProvider mojo
+  // interface passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<::ash::common::mojom::ShortcutInputProvider>
+          receiver);
 
   // Instantiates implementor of the mojom::PageHandlerFactory mojo interface
   // passing the pending receiver that will be internally bound.

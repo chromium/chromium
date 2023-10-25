@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/apps/app_notification_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/app_permission_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pref_names.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/services/hats/os_settings_hats_manager.h"
 #include "chrome/browser/ui/webui/ash/settings/services/hats/os_settings_hats_manager_factory.h"
@@ -39,7 +40,6 @@
 #include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager.h"
 #include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager_factory.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
-#include "chrome/browser/ui/webui/ash/settings/pref_names.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/os_settings_resources.h"
@@ -55,6 +55,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/widget/widget.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
@@ -287,6 +288,21 @@ void OSSettingsUI::BindInterface(
   OsSettingsManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
       ->display_settings_provider()
       ->BindInterface(std::move(receiver));
+}
+
+void OSSettingsUI::BindInterface(
+    mojo::PendingReceiver<::ash::common::mojom::ShortcutInputProvider>
+        receiver) {
+  CHECK(features::IsPeripheralCustomizationEnabled());
+  auto* shortcut_input_provider =
+      OsSettingsManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
+          ->shortcut_input_provider();
+  auto* widget = views::Widget::GetWidgetForNativeWindow(
+      web_ui()->GetWebContents()->GetTopLevelNativeWindow());
+  if (widget) {
+    shortcut_input_provider->TieProviderToWidget(widget);
+  }
+  shortcut_input_provider->BindInterface(std::move(receiver));
 }
 
 void OSSettingsUI::BindInterface(

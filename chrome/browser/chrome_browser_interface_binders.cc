@@ -251,6 +251,7 @@
 #include "ash/webui/color_internals/color_internals_ui.h"
 #include "ash/webui/color_internals/mojom/color_internals.mojom.h"
 #include "ash/webui/common/mojom/accessibility_features.mojom.h"
+#include "ash/webui/common/mojom/shortcut_input_provider.mojom.h"
 #include "ash/webui/connectivity_diagnostics/connectivity_diagnostics_ui.h"
 #include "ash/webui/demo_mode_app_ui/demo_mode_app_untrusted_ui.h"
 #include "ash/webui/diagnostics_ui/diagnostics_ui.h"
@@ -1366,6 +1367,10 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       ash::settings::mojom::DisplaySettingsProvider,
       ash::settings::OSSettingsUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
+      ash::common::mojom::ShortcutInputProvider, ash::settings::OSSettingsUI>(
+      map);
 
   RegisterWebUIControllerInterfaceBinder<
       ash::cellular_setup::mojom::CellularSetup, ash::settings::OSSettingsUI>(

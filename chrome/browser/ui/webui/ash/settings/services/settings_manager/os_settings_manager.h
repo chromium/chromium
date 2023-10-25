@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/webui/common/backend/shortcut_input_provider.h"
 #include "ash/webui/eche_app_ui/eche_app_manager.h"
 #include "base/gtest_prod_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
@@ -127,6 +128,10 @@ class OsSettingsManager : public KeyedService {
     return settings_user_action_tracker_.get();
   }
 
+  ShortcutInputProvider* shortcut_input_provider() {
+    return shortcut_input_provider_.get();
+  }
+
   const Hierarchy* hierarchy() const { return hierarchy_.get(); }
 
  private:
@@ -144,6 +149,7 @@ class OsSettingsManager : public KeyedService {
   std::unique_ptr<AppPermissionHandler> app_permission_handler_;
   std::unique_ptr<InputDeviceSettingsProvider> input_device_settings_provider_;
   std::unique_ptr<DisplaySettingsProvider> display_settings_provider_;
+  std::unique_ptr<ShortcutInputProvider> shortcut_input_provider_;
 };
 
 }  // namespace settings
