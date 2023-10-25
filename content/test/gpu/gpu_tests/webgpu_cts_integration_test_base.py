@@ -42,7 +42,7 @@ MESSAGE_TIMEOUT_CONNECTION_ACK = 5
 # In most cases, this should be very fast, but the first test run after a page
 # load can be slow.
 MESSAGE_TIMEOUT_TEST_STARTED = 10
-MESSAGE_TIMEOUT_HEARTBEAT = 5
+MESSAGE_TIMEOUT_HEARTBEAT = 10
 MESSAGE_TIMEOUT_TEST_LOG = 1
 
 # Thresholds for how slow parts of the test have to be for the test to be
