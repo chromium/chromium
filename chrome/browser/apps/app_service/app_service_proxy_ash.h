@@ -51,6 +51,7 @@ class ImageSkia;
 
 namespace apps {
 
+class AppInstallService;
 class AppPlatformMetrics;
 class AppPlatformMetricsService;
 class InstanceRegistryUpdater;
@@ -110,6 +111,8 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   const base::OneShotEvent* OnReady() const {
     return on_ready_ ? on_ready_.get() : nullptr;
   }
+
+  apps::AppInstallService& AppInstallService();
 
   // apps::AppServiceProxyBase overrides:
   void Uninstall(const std::string& app_id,
@@ -597,6 +600,8 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   base::flat_map<AppType, ShortcutPublisher*> shortcut_publishers_;
 
   std::unique_ptr<apps::ShortcutRegistryCache> shortcut_registry_cache_;
+
+  std::unique_ptr<apps::AppInstallService> app_install_service_;
 
   base::WeakPtrFactory<AppServiceProxyAsh> weak_ptr_factory_{this};
 };

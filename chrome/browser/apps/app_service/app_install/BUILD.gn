@@ -1,0 +1,54 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash)
+
+proto_library("proto") {
+  proto_in_dir = "//"
+  sources = [ "app_install.proto" ]
+
+  link_deps = [ "//chrome/browser/apps/almanac_api_client/proto" ]
+}
+
+source_set("app_install_service") {
+  sources = [
+    "app_install_almanac_connector.cc",
+    "app_install_almanac_connector.h",
+    "app_install_service.cc",
+    "app_install_service.h",
+    "app_install_types.cc",
+    "app_install_types.h",
+  ]
+
+  deps = [
+    ":proto",
+    "//base",
+    "//chrome/browser/apps/almanac_api_client",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/web_applications",
+    "//chromeos/crosapi/mojom",
+    "//components/services/app_service",
+    "//services/network/public/cpp",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "app_install_almanac_connector_unittest.cc" ]
+
+  deps = [
+    ":app_install_service",
+    ":proto",
+    "//base",
+    "//chrome/browser/apps/almanac_api_client/proto",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//services/network:test_support",
+    "//testing/gtest",
+  ]
+}

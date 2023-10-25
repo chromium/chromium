@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 
+#include <memory>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -13,6 +14,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
+#include "chrome/browser/apps/app_service/app_install/app_install_service.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 #include "chrome/browser/apps/app_service/instance_registry_updater.h"
@@ -199,6 +201,7 @@ void AppServiceProxyAsh::Initialize() {
   if (chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
     shortcut_registry_cache_ = std::make_unique<apps::ShortcutRegistryCache>();
   }
+  app_install_service_ = std::make_unique<apps::AppInstallService>(*profile_);
 }
 
 apps::InstanceRegistry& AppServiceProxyAsh::InstanceRegistry() {
@@ -229,6 +232,10 @@ AppServiceProxyAsh::BrowserAppInstanceRegistry() {
 
 apps::StandaloneBrowserApps* AppServiceProxyAsh::StandaloneBrowserApps() {
   return publisher_host_ ? publisher_host_->StandaloneBrowserApps() : nullptr;
+}
+
+apps::AppInstallService& AppServiceProxyAsh::AppInstallService() {
+  return *app_install_service_;
 }
 
 void AppServiceProxyAsh::RegisterCrosApiSubScriber(
