@@ -90,6 +90,10 @@ void FeatureCache::InvalidateExtension(const ExtensionId& extension_id) {
   }
 }
 
+void FeatureCache::InvalidateAllExtensions() {
+  extension_cache_.clear();
+}
+
 const FeatureCache::ExtensionFeatureData& FeatureCache::GetFeaturesFromCache(
     Feature::Context context_type,
     const Extension* extension,

@@ -309,8 +309,10 @@ class Dispatcher : public content::RenderThreadObserver,
   // Enable custom element allowlist in Apps.
   void EnableCustomElementAllowlist();
 
-  // Adds or removes bindings for all contexts.
-  void UpdateAllBindings();
+  // Adds or removes bindings for all contexts. `api_permissions_changed`
+  // indicates whether the effective permission state for extensions has
+  // changed and cached features should be re-calculated.
+  void UpdateAllBindings(bool api_permissions_changed);
 
   // Adds or removes bindings for every context belonging to |extension|, due to
   // permissions change in the extension.

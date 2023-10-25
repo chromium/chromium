@@ -1156,7 +1156,7 @@ void Dispatcher::LoadExtensions(
   // Update the available bindings for all contexts. These may have changed if
   // an externally_connectable extension was loaded that can connect to an
   // open webpage.
-  UpdateAllBindings();
+  UpdateAllBindings(/*api_permissions_changed=*/false);
 }
 
 void Dispatcher::UnloadExtension(const std::string& extension_id) {
@@ -1199,7 +1199,7 @@ void Dispatcher::UnloadExtension(const std::string& extension_id) {
   // Update the available bindings for the remaining contexts. These may have
   // changed if an externally_connectable extension is unloaded and a webpage
   // is no longer accessible.
-  UpdateAllBindings();
+  UpdateAllBindings(/*api_permissions_changed=*/false);
 
   // Invalidates the messages map for the extension in case the extension is
   // reloaded with a new messages map.
@@ -1268,7 +1268,7 @@ void Dispatcher::UpdateDefaultPolicyHostRestrictions(
       UpdateOriginPermissions(*extension);
     }
   }
-  UpdateAllBindings();
+  UpdateAllBindings(/*api_permissions_changed=*/false);
 }
 
 void Dispatcher::UpdateUserScriptWorld(mojom::UserScriptWorldInfoPtr info) {
@@ -1405,6 +1405,9 @@ void Dispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
 
 void Dispatcher::SetDeveloperMode(bool current_developer_mode) {
   SetCurrentDeveloperMode(kRendererProfileId, current_developer_mode);
+  // Since this affects the availability of different APIs, we indicate that
+  // api permissions may have changed.
+  UpdateAllBindings(/*api_permissions_changed=*/true);
 }
 
 void Dispatcher::SetSessionInfo(version_info::Channel channel,
@@ -1511,13 +1514,15 @@ void Dispatcher::EnableCustomElementAllowlist() {
   delegate_->EnableCustomElementAllowlist();
 }
 
-void Dispatcher::UpdateAllBindings() {
+void Dispatcher::UpdateAllBindings(bool api_permissions_changed) {
   bindings_system_->UpdateBindings(ExtensionId() /* all contexts */,
-                                   false /* permissions_changed */,
+                                   api_permissions_changed,
                                    script_context_set_iterator());
   // TODO(crbug.com/986416): Can "externally_connectable" affect Service Worker
   // ScriptContext-s in some way? We'd need to process that here if that is the
   // case.
+  // Addendum: And, even if externally_connectable doesn't, developer mode does.
+  // we need to fix this.
 }
 
 void Dispatcher::UpdateBindingsForExtension(const Extension& extension) {

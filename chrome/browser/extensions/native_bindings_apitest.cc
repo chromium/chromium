@@ -27,6 +27,7 @@
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/browser/script_result_queue.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/mojom/view_type.mojom.h"
@@ -37,6 +38,59 @@
 #include "net/dns/mock_host_resolver.h"
 
 namespace extensions {
+
+namespace {
+
+// A script that can verify whether a developer-mode-restricted API is
+// available. Note that we use separate verify methods here (as opposed to
+// a boolean "is API available") so we can better verify expected errors and
+// give more meaningful messages in the case of failure.
+constexpr char kCheckApiAvailability[] =
+    R"(const script =
+           {
+             id: 'script',
+             matches: ['*://*/*'],
+             js: [{file: 'script.js'}]
+           };
+       async function verifyApiIsAvailable() {
+         let message;
+         try {
+           await chrome.userScripts.register([script]);
+           const registered = await chrome.userScripts.getScripts();
+           message =
+               (registered.length == 1 &&
+                registered[0].id == 'script')
+                   ? 'success'
+                   : 'Unexpected registration result: ' +
+                         JSON.stringify(registered);
+           await chrome.userScripts.unregister();
+         } catch (e) {
+           message = 'Unexpected error: ' + e.toString();
+         }
+         chrome.test.sendScriptResult(message);
+       }
+
+       async function verifyApiIsNotAvailable() {
+         let message;
+         try {
+           // Note: we try to call a method on the API (and not just test
+           // accessing it) since, if it was previously instantiated when the
+           // API was available, it would still be present.
+           await chrome.userScripts.register([script]);
+           message = 'API unexpectedly available.';
+           await chrome.userScripts.unregister();
+         } catch(e) {
+           const expectedError =
+               `Error: The 'userScripts' API is only available for users ` +
+               'in developer mode.';
+           message = e.toString() == expectedError
+               ? 'success'
+               : 'Unexpected error: ' + e.toString();
+         }
+         chrome.test.sendScriptResult(message);
+       })";
+
+}  // namespace
 
 // And end-to-end test for extension APIs using native bindings.
 class NativeBindingsApiTest : public ExtensionApiTest {
@@ -634,6 +688,57 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(RunExtensionTest(
       "native_bindings/developer_mode_only_without_api_permission"))
       << message_;
+}
+
+// Tests that changing the developer mode setting affects existing renderers.
+// TODO(https://crbug.com/1267489): Expand this to test service worker bindings.
+IN_PROC_BROWSER_TEST_F(NativeBindingsRestrictedToDeveloperModeApiTest,
+                       SwitchingDeveloperModeAffectsExistingRenderers) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "permissions": ["userScripts"]
+         })";
+  static constexpr char kPageHtml[] =
+      R"(<!doctype html>
+         <html>
+           <script src="page.js"></script>
+         </html>)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtml);
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.js"), kCheckApiAvailability);
+  test_dir.WriteFile(FILE_PATH_LITERAL("script.js"), "// blank");
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  const GURL extension_url = extension->GetResourceURL("page.html");
+
+  // Navigate to the extension page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
+  content::WebContents* existing_tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_EQ(extension_url, existing_tab->GetLastCommittedURL());
+
+  ScriptResultQueue result_queue;
+
+  // By default, the API is unavailable.
+  ASSERT_TRUE(content::ExecJs(existing_tab, "verifyApiIsNotAvailable();"));
+  EXPECT_EQ("success", result_queue.GetNextResult());
+
+  // Next, set the user in developer mode. Now the API should be available.
+  util::SetDeveloperModeForProfile(profile(), true);
+  ASSERT_TRUE(content::ExecJs(existing_tab, "verifyApiIsAvailable();"));
+  EXPECT_EQ("success", result_queue.GetNextResult());
+
+  // Toggle back to not in developer mode. The API should be unavailable again.
+  util::SetDeveloperModeForProfile(profile(), false);
+  ASSERT_TRUE(content::ExecJs(existing_tab, "verifyApiIsNotAvailable();"));
+  EXPECT_EQ("success", result_queue.GetNextResult());
 }
 
 }  // namespace extensions

@@ -153,10 +153,6 @@ class NativeExtensionBindingsSystem {
   // granted by active extensions.
   void UpdateContentCapabilities(ScriptContext* context);
 
-  // Invalidates the cached feature availability for |extension|; called when
-  // bindings availability has changed (such as after a permissions change).
-  void InvalidateFeatureCache(const ExtensionId& extension_id);
-
   // Creates the parameters objects inside chrome.scripting, if |context| is for
   // content scripts running in an isolated world.
   void SetScriptingParams(ScriptContext* context);

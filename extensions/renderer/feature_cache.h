@@ -55,6 +55,9 @@ class FeatureCache {
   // Invalidates the cache for the specified extension.
   void InvalidateExtension(const ExtensionId& extension_id);
 
+  // Invalidates the cache for all extensions.
+  void InvalidateAllExtensions();
+
  private:
   using FeatureVector = std::vector<const Feature*>;
   struct ExtensionFeatureData {
