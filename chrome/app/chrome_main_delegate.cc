@@ -570,6 +570,13 @@ struct MainFunction {
 
 // Initializes the user data dir. Must be called before InitializeLocalState().
 void InitializeUserDataDir(base::CommandLine* command_line) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS) && \
+    (!defined(NDEBUG) || defined(DCHECK_ALWAYS_ON))
+  // In debug builds of Lacros, we keep track of when the user data dir
+  // is initialized, to ensure the cryptohome is not accessed before login
+  // when prelaunching at login screen.
+  chromeos::lacros_paths::SetInitializedUserDataDir();
+#endif
 #if BUILDFLAG(IS_WIN)
   // Reach out to chrome_elf for the truth on the user data directory.
   // Note that in tests, this links to chrome_elf_test_stubs.
@@ -1430,13 +1437,14 @@ void ChromeMainDelegate::PreSandboxStartup() {
   base::CPU cpu_info;
 #endif
 
+  // Initialize the user data dir for any process type that needs it.
   bool initialize_user_data_dir = chrome::ProcessNeedsProfileDir(process_type);
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // In Lacros, when prelaunching at login screen, we postpone the
   // initialization of the user data directory.
+  // We verify that no access happens before login via DCHECKs.
   initialize_user_data_dir &= !chromeos::IsLaunchedWithPostLoginParams();
 #endif
-  // Initialize the user data dir for any process type that needs it.
   if (initialize_user_data_dir) {
     InitializeUserDataDir(base::CommandLine::ForCurrentProcess());
   }

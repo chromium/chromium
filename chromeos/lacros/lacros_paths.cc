@@ -17,6 +17,11 @@ struct LacrosPaths {
   base::FilePath ash_resource_dir;
 };
 
+#if !defined(NDEBUG) || defined(DCHECK_ALWAYS_ON)
+// Keep track of whether the user data directory was initialized.
+bool g_initialized_user_data_dir = false;
+#endif
+
 LacrosPaths& GetLacrosPaths() {
   static base::NoDestructor<LacrosPaths> lacros_paths;
   return *lacros_paths;
@@ -35,6 +40,9 @@ bool PathProvider(int key, base::FilePath* result) {
       }
       return true;
     case chromeos::lacros_paths::USER_DATA_DIR:
+      // Check that the user data directory is not accessed before
+      // initialization.
+      DCHECK(chromeos::lacros_paths::IsInitializedUserDataDir());
       // The value for USER_DATA_DIR should be consistent with ash-side
       // UserDataDir defined in browser_util::GetUserDataDir().
       if (base::SysInfo::IsRunningOnChromeOS()) {
@@ -52,6 +60,17 @@ bool PathProvider(int key, base::FilePath* result) {
 
 namespace chromeos {
 namespace lacros_paths {
+
+#if !defined(NDEBUG) || defined(DCHECK_ALWAYS_ON)
+bool IsInitializedUserDataDir() {
+  return g_initialized_user_data_dir;
+}
+
+void SetInitializedUserDataDir() {
+  DCHECK(!g_initialized_user_data_dir);
+  g_initialized_user_data_dir = true;
+}
+#endif
 
 void RegisterPathProvider() {
   base::PathService::RegisterProvider(PathProvider, PATH_START, PATH_END);

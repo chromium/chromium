@@ -30,6 +30,15 @@ enum {
   PATH_END
 };
 
+#if !defined(NDEBUG) || defined(DCHECK_ALWAYS_ON)
+// Returns true if the user data directory has been initialized,
+// false otherwise.
+bool IsInitializedUserDataDir();
+
+// Signals that the user data directory has been initialized.
+void SetInitializedUserDataDir();
+#endif
+
 // Call once to register the provide for the path keys defined above.
 void RegisterPathProvider();
 
