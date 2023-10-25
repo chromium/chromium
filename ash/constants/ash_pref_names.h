@@ -1853,6 +1853,13 @@ inline constexpr char kDemoModeStoreId[] = "demo_mode.store_id";
 // A string pref holding the value of the default locale for demo sessions.
 inline constexpr char kDemoModeDefaultLocale[] = "demo_mode.default_locale";
 
+// A string pref holding the version of the installed demo mode app.
+inline constexpr char kDemoModeAppVersion[] = "demo_mode.app_version";
+
+// A string pref holding the version of the installed demo mode resources.
+inline constexpr char kDemoModeResourcesVersion[] =
+    "demo_mode.resources_version";
+
 // A dictionary pref containing the set of touchpad settings for the user. This
 // is synced for all user devices.
 inline constexpr char kTouchpadInternalSettings[] =

@@ -397,6 +397,8 @@ void DemoSession::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kDemoModeCountry, kSupportedCountries[0]);
   registry->RegisterStringPref(prefs::kDemoModeRetailerId, std::string());
   registry->RegisterStringPref(prefs::kDemoModeStoreId, std::string());
+  registry->RegisterStringPref(prefs::kDemoModeAppVersion, std::string());
+  registry->RegisterStringPref(prefs::kDemoModeResourcesVersion, std::string());
 }
 
 void DemoSession::EnsureResourcesLoaded(base::OnceClosure load_callback) {
