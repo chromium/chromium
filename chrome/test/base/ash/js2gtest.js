@@ -9,9 +9,9 @@
  * @author scr@chromium.org (Sheridan Rawlins)
  * @see WebUI testing: http://goo.gl/ZWFXF
  * @see gtest documentation: http://goo.gl/Ujj3H
- * @see chrome/test/base/js2gtest.gni
- * @see chrome/test/base/js2gtest.js
- * @see chrome/test/base/v8sh.py
+ * @see chrome/test/base/ash/js2gtest.gni
+ * @see chrome/test/base/ash/js2gtest.js
+ * @see chrome/test/base/ash/v8sh.py
  */
 
 // Arguments from the js2gtest template in chrome/test/base/js2gtest.gni
@@ -147,22 +147,22 @@ ${argHint}
   // 'webui' - browser_tests harness, js2webui rule, WebUIBrowserTest
   // superclass. Uses chrome.send to communicate test results.
   if (testType === 'extension') {
-    output('#include "chrome/test/base/extension_js_browser_test.h"');
+    output('#include "chrome/test/base/ash/extension_js_browser_test.h"');
     testing.Test.prototype.typedefCppFixture = 'ExtensionJSBrowserTest';
     addSetPreloadInfo = false;
     testF = 'IN_PROC_BROWSER_TEST_F';
   } else if (testType === 'unit') {
-    output('#include "chrome/test/base/v8_unit_test.h"');
+    output('#include "chrome/test/base/ash/v8_unit_test.h"');
     testing.Test.prototype.typedefCppFixture = 'V8UnitTest';
     testF = 'TEST_F';
     addSetPreloadInfo = false;
   } else if (testType === 'mojo_lite_webui' || testType == 'mojo_webui') {
-    output('#include "chrome/test/base/mojo_web_ui_browser_test.h"');
+    output('#include "chrome/test/base/ash/mojo_web_ui_browser_test.h"');
     testing.Test.prototype.typedefCppFixture = 'MojoWebUIBrowserTest';
     testF = 'IN_PROC_BROWSER_TEST_F';
     addSetPreloadInfo = true;
   } else if (testType === 'webui') {
-    output('#include "chrome/test/base/web_ui_browser_test.h"');
+    output('#include "chrome/test/base/ash/web_ui_browser_test.h"');
     testing.Test.prototype.typedefCppFixture = 'WebUIBrowserTest';
     testF = 'IN_PROC_BROWSER_TEST_F';
     addSetPreloadInfo = true;

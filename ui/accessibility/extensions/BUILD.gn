@@ -7,7 +7,7 @@ import("//testing/test.gni")
 import("//tools/grit/grit_rule.gni")
 
 if (is_chromeos_ash) {
-  import("//chrome/test/base/js2gtest.gni")
+  import("//chrome/test/base/ash/js2gtest.gni")
 }
 
 group("extensions") {

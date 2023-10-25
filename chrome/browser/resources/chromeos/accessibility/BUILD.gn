@@ -5,7 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//chrome/common/features.gni")
-import("//chrome/test/base/js2gtest.gni")
+import("//chrome/test/base/ash/js2gtest.gni")
 import("manifest.gni")
 import("strings/accessibility_strings.gni")
 

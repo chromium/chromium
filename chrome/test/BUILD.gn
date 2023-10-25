@@ -66,7 +66,7 @@ if (is_android) {
 }
 
 if (is_chromeos_ash && include_js2gtest_tests) {
-  import("//chrome/test/base/js2gtest.gni")
+  import("//chrome/test/base/ash/js2gtest.gni")
 }
 
 # This target exists to reference other test executables to bring these files
@@ -228,8 +228,6 @@ static_library("test_support") {
     "base/fake_profile_manager.h",
     "base/find_result_waiter.cc",
     "base/find_result_waiter.h",
-    "base/js_test_api.cc",
-    "base/js_test_api.h",
     "base/profile_deletion_observer.cc",
     "base/profile_deletion_observer.h",
     "base/profile_destruction_waiter.cc",
@@ -770,14 +768,16 @@ static_library("test_support") {
       "../browser/ui/webui/ash/login/fake_app_launch_splash_screen_handler.h",
       "../browser/ui/webui/ash/login/fake_update_required_screen_handler.cc",
       "../browser/ui/webui/ash/login/fake_update_required_screen_handler.h",
+      "base/ash/js_test_api.cc",
+      "base/ash/js_test_api.h",
       "base/browser_process_platform_part_test_api_chromeos.cc",
       "base/browser_process_platform_part_test_api_chromeos.h",
       "base/chromeos/ash_browser_test_starter.cc",
       "base/chromeos/ash_browser_test_starter.h",
 
       # Only used for Chromevox tests, so only included on Chrome OS.
-      "base/extension_js_browser_test.cc",
-      "base/extension_js_browser_test.h",
+      "base/ash/extension_js_browser_test.cc",
+      "base/ash/extension_js_browser_test.h",
     ]
 
     public_deps += [
@@ -2069,7 +2069,7 @@ if (!is_android) {
       # Libraries for tests that inherit from BaseWebUIBrowserTest.
       data += [
         "//third_party/node/node_modules/chai/chai.js",
-        "//chrome/test/data/webui/test_api.js",
+        "//chrome/test/data/webui/chromeos/test_api.js",
       ]
     }
     data += metric_integration_jsdeps
@@ -2902,7 +2902,7 @@ if (!is_android) {
         "../browser/sessions/tab_restore_service_browsertest.cc",
         "../browser/support_tool/signin_data_collector_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest_cros.cc",
-        "base/web_ui_browser_test_browsertest.cc",
+        "base/ash/web_ui_browser_test_browsertest.cc",
         "data/webui/async_gen.cc",
         "data/webui/async_gen.h",
         "data/webui/chromeos/webui_resource_browsertest.cc",
@@ -6324,8 +6324,6 @@ test("unit_tests") {
     "../renderer/v8_unwinder_unittest.cc",
     "../test/base/menu_model_test.cc",
     "../test/base/menu_model_test.h",
-    "../test/base/v8_unit_test.cc",
-    "../test/base/v8_unit_test.h",
   ]
   if (build_with_tflite_lib) {
     sources += [
@@ -6392,6 +6390,8 @@ test("unit_tests") {
       "../browser/prefs/chrome_pref_service_factory_ash_unittest.cc",
       "../browser/ui/ash/arc_vm_data_migration_confirmation_dialog_unittest.cc",
       "../browser/ui/ash/clipboard_history_url_title_fetcher_impl_unittest.cc",
+      "../test/base/ash/v8_unit_test.cc",
+      "../test/base/ash/v8_unit_test.h",
     ]
   }
 
@@ -10057,8 +10057,6 @@ if (!is_android) {
       "base/interactive_test_utils.cc",
       "base/interactive_test_utils.h",
       "base/interactive_test_utils_views.cc",
-      "base/javascript_browser_test.cc",
-      "base/javascript_browser_test.h",
       "base/mixin_based_in_process_browser_test.cc",
       "base/mixin_based_in_process_browser_test.h",
       "base/save_desktop_snapshot.cc",
@@ -10265,10 +10263,12 @@ if (!is_android) {
 
     if (is_chromeos_ash) {
       sources += [
-        "base/mojo_web_ui_browser_test.cc",
-        "base/mojo_web_ui_browser_test.h",
-        "base/web_ui_browser_test.cc",
-        "base/web_ui_browser_test.h",
+        "base/ash/javascript_browser_test.cc",
+        "base/ash/javascript_browser_test.h",
+        "base/ash/mojo_web_ui_browser_test.cc",
+        "base/ash/mojo_web_ui_browser_test.h",
+        "base/ash/web_ui_browser_test.cc",
+        "base/ash/web_ui_browser_test.h",
       ]
       deps += [
         "//ash",

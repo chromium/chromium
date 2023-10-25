@@ -14,7 +14,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/test_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chrome/test/base/web_ui_browser_test.h"
+#include "chrome/test/base/ash/web_ui_browser_test.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "content/public/test/browser_test.h"

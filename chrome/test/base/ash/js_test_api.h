@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_TEST_BASE_JS_TEST_API_H_
-#define CHROME_TEST_BASE_JS_TEST_API_H_
+#ifndef CHROME_TEST_BASE_ASH_JS_TEST_API_H_
+#define CHROME_TEST_BASE_ASH_JS_TEST_API_H_
 
 #include <vector>
 
@@ -21,4 +21,4 @@ struct JsTestApiConfig {
   std::vector<base::FilePath> default_libraries;
 };
 
-#endif  // CHROME_TEST_BASE_JS_TEST_API_H_
+#endif  // CHROME_TEST_BASE_ASH_JS_TEST_API_H_

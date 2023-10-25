@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_TEST_BASE_EXTENSION_JS_BROWSER_TEST_H_
-#define CHROME_TEST_BASE_EXTENSION_JS_BROWSER_TEST_H_
+#ifndef CHROME_TEST_BASE_ASH_EXTENSION_JS_BROWSER_TEST_H_
+#define CHROME_TEST_BASE_ASH_EXTENSION_JS_BROWSER_TEST_H_
 
 #include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/test/base/devtools_agent_coverage_observer.h"
-#include "chrome/test/base/javascript_browser_test.h"
+#include "chrome/test/base/ash/javascript_browser_test.h"
 
 // A super class that handles javascript-based tests against an extension.
 //
@@ -48,4 +48,4 @@ class ExtensionJSBrowserTest : public JavaScriptBrowserTest {
   std::unique_ptr<DevToolsAgentCoverageObserver> coverage_handler_;
 };
 
-#endif  // CHROME_TEST_BASE_EXTENSION_JS_BROWSER_TEST_H_
+#endif  // CHROME_TEST_BASE_ASH_EXTENSION_JS_BROWSER_TEST_H_

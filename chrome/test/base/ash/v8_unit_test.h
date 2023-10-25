@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_TEST_BASE_V8_UNIT_TEST_H_
-#define CHROME_TEST_BASE_V8_UNIT_TEST_H_
+#ifndef CHROME_TEST_BASE_ASH_V8_UNIT_TEST_H_
+#define CHROME_TEST_BASE_ASH_V8_UNIT_TEST_H_
 
 #include <string>
 #include <vector>
@@ -88,4 +88,4 @@ class V8UnitTest : public testing::Test {
   std::vector<base::FilePath> user_libraries_;
 };
 
-#endif  // CHROME_TEST_BASE_V8_UNIT_TEST_H_
+#endif  // CHROME_TEST_BASE_ASH_V8_UNIT_TEST_H_

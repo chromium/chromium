@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/test/base/web_ui_browser_test.h"
+#include "chrome/test/base/ash/web_ui_browser_test.h"
 
 #include <stddef.h>
 
@@ -34,7 +34,7 @@
 #include "chrome/browser/ui/webui/web_ui_test_handler.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/test/base/js_test_api.h"
+#include "chrome/test/base/ash/js_test_api.h"
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
 #include "chrome/test/base/test_switches.h"
 #include "chrome/test/base/web_ui_test_data_source.h"
@@ -54,10 +54,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_handle.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/webui/test_data_source.h"
-#endif
 
 using content::RenderFrameHost;
 using content::WebContents;
@@ -289,47 +286,6 @@ void BaseWebUIBrowserTest::BrowsePreload(const GURL& browse_to) {
   navigation_observer.Wait();
 }
 
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-
-// This custom ContentBrowserClient is used to get notified when a WebContents
-// for the print preview dialog gets created.
-class PrintContentBrowserClient : public ChromeContentBrowserClient {
- public:
-  PrintContentBrowserClient(BaseWebUIBrowserTest* browser_test,
-                            const std::string& preload_test_fixture,
-                            const std::string& preload_test_name)
-      : browser_test_(browser_test),
-        preload_test_fixture_(preload_test_fixture),
-        preload_test_name_(preload_test_name),
-        message_loop_runner_(
-            base::MakeRefCounted<content::MessageLoopRunner>()) {}
-
-  void Wait() {
-    message_loop_runner_->Run();
-    EXPECT_TRUE(content::WaitForLoadStop(preview_dialog_));
-  }
-
- private:
-  // ChromeContentBrowserClient implementation:
-  std::unique_ptr<content::WebContentsViewDelegate> GetWebContentsViewDelegate(
-      content::WebContents* web_contents) override {
-    preview_dialog_ = web_contents;
-    observer_ = std::make_unique<WebUIJsInjectionReadyObserver>(
-        preview_dialog_, browser_test_, preload_test_fixture_,
-        preload_test_name_);
-    message_loop_runner_->Quit();
-    return nullptr;
-  }
-
-  const raw_ptr<BaseWebUIBrowserTest> browser_test_;
-  std::unique_ptr<WebUIJsInjectionReadyObserver> observer_;
-  std::string preload_test_fixture_;
-  std::string preload_test_name_;
-  raw_ptr<content::WebContents> preview_dialog_ = nullptr;
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
-};
-#endif
-
 BaseWebUIBrowserTest::BaseWebUIBrowserTest() = default;
 
 void BaseWebUIBrowserTest::set_preload_test_fixture(
@@ -436,7 +392,6 @@ void BaseWebUIBrowserTest::SetUpOnMainThread() {
 
   logging::SetLogMessageHandler(&LogHandler);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (crosapi::browser_util::IsLacrosEnabled() && browser() == nullptr) {
     // Create a new Ash browser window so test code using browser() can work
     // even when Lacros is the only browser.
@@ -444,18 +399,15 @@ void BaseWebUIBrowserTest::SetUpOnMainThread() {
     chrome::NewEmptyWindow(ProfileManager::GetActiveUserProfile());
     SelectFirstBrowser();
   }
-#endif
 
   // For tests that run on the login screen, there is no Browser during
   // SetUpOnMainThread() so skip adding TestDataSource. These tests don't need
   // TestDataSource anyway.
   if (browser()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     // Register URLDataSource that serves files used in tests at chrome://test/
     // e.g. `chrome://test/mocha.js`.
     content::URLDataSource::Add(browser()->profile(),
                                 std::make_unique<TestDataSource>("webui"));
-#endif
 
     // Register data sources for chrome://webui-test/ URLs
     // e.g. `chrome://webui-test/chai_assert.js`.

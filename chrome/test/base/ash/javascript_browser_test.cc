@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/test/base/javascript_browser_test.h"
+#include "chrome/test/base/ash/javascript_browser_test.h"
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -11,7 +11,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/test/base/js_test_api.h"
+#include "chrome/test/base/ash/js_test_api.h"
 #include "components/nacl/common/buildflags.h"
 #include "content/public/browser/web_ui.h"
 #include "net/base/filename_util.h"
@@ -20,55 +20,37 @@ void JavaScriptBrowserTest::AddLibrary(const base::FilePath& library_path) {
   user_libraries_.push_back(library_path);
 }
 
-JavaScriptBrowserTest::JavaScriptBrowserTest() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
-#endif
-}
+JavaScriptBrowserTest::JavaScriptBrowserTest() = default;
 
 JavaScriptBrowserTest::~JavaScriptBrowserTest() {
 }
 
 void JavaScriptBrowserTest::SetUpInProcessBrowserTestFixture() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   ash_starter_ = std::make_unique<test::AshBrowserTestStarter>();
   if (ash_starter_->HasLacrosArgument())
     ASSERT_TRUE(ash_starter_->PrepareEnvironmentForLacros());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void JavaScriptBrowserTest::TearDownInProcessBrowserTestFixture() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (ash_starter_->HasLacrosArgument())
     ash_starter_.reset();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void JavaScriptBrowserTest::SetUpOnMainThread() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (ash_starter_->HasLacrosArgument())
     ash_starter_->StartLacros(this);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   JsTestApiConfig config;
   library_search_paths_.push_back(config.search_path);
   DCHECK(user_libraries_.empty());
   user_libraries_ = config.default_libraries;
 
-// When the sanitizers (ASAN/MSAN/TSAN) are enabled, the WebUI tests
-// which use this generated directory are disabled in the build.
-// However, the generated directory is there if NaCl is enabled --
-// though it's usually disabled on the bots when the sanitizers are
-// enabled. Also, it seems some ChromeOS-specific tests use the
-// js2gtest GN template.
-#if (!defined(MEMORY_SANITIZER) && !defined(ADDRESS_SANITIZER) && \
-     !defined(LEAK_SANITIZER)) ||                                 \
-    BUILDFLAG(ENABLE_NACL) || BUILDFLAG(IS_CHROMEOS_ASH)
+  // This generated test directory needs to exist for tests using the js2gtest
+  // GN template.
   base::FilePath gen_test_data_directory;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_GEN_TEST_DATA,
                                      &gen_test_data_directory));
   library_search_paths_.push_back(gen_test_data_directory);
-#endif
 
   base::FilePath source_root_directory;
   ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT,
@@ -143,7 +125,6 @@ std::u16string JavaScriptBrowserTest::BuildRunTestJSCall(
 }
 
 Profile* JavaScriptBrowserTest::GetProfile() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   CHECK(ash_starter_);
   if (ash_starter_->HasLacrosArgument()) {
     // In LacrosOnly mode, ash web browser is disabled, don't access profile via
@@ -152,6 +133,5 @@ Profile* JavaScriptBrowserTest::GetProfile() const {
     CHECK(profile) << "Failed to get a valid profile in Ash.";
     return profile;
   }
-#endif
   return browser()->profile();
 }

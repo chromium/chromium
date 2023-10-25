@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_TEST_BASE_WEB_UI_BROWSER_TEST_H_
-#define CHROME_TEST_BASE_WEB_UI_BROWSER_TEST_H_
+#ifndef CHROME_TEST_BASE_ASH_WEB_UI_BROWSER_TEST_H_
+#define CHROME_TEST_BASE_ASH_WEB_UI_BROWSER_TEST_H_
 
 #include <memory>
 #include <string>
@@ -16,7 +16,7 @@
 #include "chrome/test/base/devtools_agent_coverage_observer.h"
 #include "chrome/test/base/devtools_listener.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/javascript_browser_test.h"
+#include "chrome/test/base/ash/javascript_browser_test.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 
 namespace {
@@ -200,4 +200,4 @@ class WebUIBrowserTest : public BaseWebUIBrowserTest {
       test_message_handler_;
 };
 
-#endif  // CHROME_TEST_BASE_WEB_UI_BROWSER_TEST_H_
+#endif  // CHROME_TEST_BASE_ASH_WEB_UI_BROWSER_TEST_H_

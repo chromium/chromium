@@ -9,18 +9,12 @@ per-file fake_gaia*=file://google_apis/gaia/OWNERS
 per-file profile_deletion_observer.cc=file://chrome/browser/profiles/OWNERS
 
 per-file javascript_browser_test.*=dtseng@chromium.org
-per-file js2gtest.*=dtseng@chromium.org
-per-file js2gtest.*=file://ui/webui/PLATFORM_OWNERS
 per-file *.js=file://ui/webui/PLATFORM_OWNERS
 
-per-file *javascript*=file://ui/webui/PLATFORM_OWNERS
 per-file *web_ui*=file://ui/webui/PLATFORM_OWNERS
-per-file js_test_api.*=file://ui/webui/PLATFORM_OWNERS
 
 per-file *tracing*=file://base/trace_event/OWNERS
 
 per-file interactive_test_utils_mac.mm=tapted@chromium.org
-
-per-file v8sh.py=file:v8/v8:main:/INFRA_OWNERS
 
 per-file *devtools*=file://chrome/browser/devtools/OWNERS

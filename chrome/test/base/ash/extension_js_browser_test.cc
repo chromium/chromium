@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/test/base/extension_js_browser_test.h"
+#include "chrome/test/base/ash/extension_js_browser_test.h"
 
 #include <memory>
 #include <vector>
@@ -16,14 +16,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chrome/test/base/javascript_browser_test.h"
+#include "chrome/test/base/ash/javascript_browser_test.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_test_helper.h"
-#include "test_switches.h"
+#include "chrome/test/base/test_switches.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 
 namespace {

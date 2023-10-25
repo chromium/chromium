@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chrome/test/base/mojo_web_ui_browser_test.h"
+#include "chrome/test/base/ash/mojo_web_ui_browser_test.h"
 
 namespace content {
 class WebUIControllerFactory;

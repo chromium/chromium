@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/test/base/mojo_web_ui_browser_test.h"
+#include "chrome/test/base/ash/mojo_web_ui_browser_test.h"
 
 #include <utility>
 
@@ -132,7 +132,6 @@ void MojoWebUIBrowserTest::SetupHandlers() {
 
 void MojoWebUIBrowserTest::BrowsePreload(const GURL& browse_to) {
   BaseWebUIBrowserTest::BrowsePreload(browse_to);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (use_mojo_modules_)
     return;
 
@@ -143,8 +142,4 @@ void MojoWebUIBrowserTest::BrowsePreload(const GURL& browse_to) {
           IDR_WEBUI_TEST_WEB_UI_TEST_MOJOM_LITE_JS);
   web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       base::UTF8ToUTF16(test_mojo_lite_js), base::NullCallback());
-#else
-  // Mojo browser tests not using modules are not supported on other platforms.
-  CHECK(use_mojo_modules_);
-#endif
 }

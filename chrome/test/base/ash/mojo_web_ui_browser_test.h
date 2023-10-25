@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_TEST_BASE_MOJO_WEB_UI_BROWSER_TEST_H_
-#define CHROME_TEST_BASE_MOJO_WEB_UI_BROWSER_TEST_H_
+#ifndef CHROME_TEST_BASE_ASH_MOJO_WEB_UI_BROWSER_TEST_H_
+#define CHROME_TEST_BASE_ASH_MOJO_WEB_UI_BROWSER_TEST_H_
 
-#include "chrome/test/base/web_ui_browser_test.h"
+#include "chrome/test/base/ash/web_ui_browser_test.h"
 
 // The runner of Mojo WebUI javascript based tests. The main difference between
 // this and WebUIBrowserTest is that tests subclassing from this class use a
@@ -29,4 +29,4 @@ class MojoWebUIBrowserTest : public BaseWebUIBrowserTest {
   bool use_mojo_modules_ = false;
 };
 
-#endif  // CHROME_TEST_BASE_MOJO_WEB_UI_BROWSER_TEST_H_
+#endif  // CHROME_TEST_BASE_ASH_MOJO_WEB_UI_BROWSER_TEST_H_

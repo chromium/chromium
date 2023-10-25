@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/test/base/v8_unit_test.h"
+#include "chrome/test/base/ash/v8_unit_test.h"
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -10,7 +10,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/test/base/js_test_api.h"
+#include "chrome/test/base/ash/js_test_api.h"
 #include "content/public/test/unittest_test_suite.h"
 #include "third_party/blink/public/web/blink.h"
 

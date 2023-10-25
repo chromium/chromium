@@ -20,7 +20,7 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 
 if (is_chromeos_ash) {
-  import("//chrome/test/base/js2gtest.gni")
+  import("//chrome/test/base/ash/js2gtest.gni")
 }
 
 assert(!is_android)

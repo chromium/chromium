@@ -18,7 +18,7 @@
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/test/base/js_test_api.h"
+#include "chrome/test/base/ash/js_test_api.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
