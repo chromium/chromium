@@ -302,6 +302,7 @@ source_set("interactive_ui_tests_filters") {
   testonly = true
 
   data = [
+    "//testing/buildbot/filters/accessibility-linux.interactive_ui_tests.filter",
     "//testing/buildbot/filters/cr23.linux.cr23_interactive_ui_tests.filter",
     "//testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter",
     "//testing/buildbot/filters/cr23.win.cr23_interactive_ui_tests.filter",

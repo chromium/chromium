@@ -4969,6 +4969,15 @@ targets.legacy_basic_suite(
                 shards = 8,
             ),
         ),
+        "interactive_ui_tests": targets.legacy_test_config(
+            args = [
+                "--force-renderer-accessibility",
+                "--test-launcher-filter-file=../../testing/buildbot/filters/accessibility-linux.interactive_ui_tests.filter",
+            ],
+            swarming = targets.swarming(
+                shards = 6,
+            ),
+        ),
     },
 )
 
