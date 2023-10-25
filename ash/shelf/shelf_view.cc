@@ -1027,6 +1027,7 @@ views::View* ShelfView::CreateViewForItem(const ShelfItem& item) {
       button->SetImage(item.image);
       button->SetNotificationBadgeColor(item.notification_badge_color);
       button->ReflectItemStatus(item);
+      button->SetAccessibleName(item.accessible_name);
       view = button;
       break;
     }
@@ -2386,6 +2387,7 @@ void ShelfView::ShelfItemChanged(int model_index, const ShelfItem& old_item) {
       button->ReflectItemStatus(item);
       button->SetImage(item.image);
       button->SetNotificationBadgeColor(item.notification_badge_color);
+      button->SetAccessibleName(item.accessible_name);
       button->SchedulePaint();
       break;
     }

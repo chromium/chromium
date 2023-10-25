@@ -583,8 +583,10 @@ void ShelfAppButton::ShowContextMenu(const gfx::Point& p,
 
 void ShelfAppButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   ShelfButton::GetAccessibleNodeData(node_data);
-  const std::u16string title = shelf_view_->GetTitleForView(this);
-  node_data->SetName(title.empty() ? GetAccessibleName() : title);
+  const std::u16string accessible_name = GetAccessibleName();
+  node_data->SetName(!accessible_name.empty()
+                         ? accessible_name
+                         : shelf_view_->GetTitleForView(this));
 
   switch (app_status_) {
     case AppStatus::kBlocked:
