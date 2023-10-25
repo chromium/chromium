@@ -11,6 +11,7 @@
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller.h"
+#include "ash/display/window_tree_host_manager.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/window_properties.h"
@@ -334,11 +335,9 @@ class SplitViewController::ToBeSnappedWindowsObserver
   ToBeSnappedWindowsObserver(const ToBeSnappedWindowsObserver&) = delete;
   ToBeSnappedWindowsObserver& operator=(const ToBeSnappedWindowsObserver&) =
       delete;
-
   ~ToBeSnappedWindowsObserver() override {
     for (auto& to_be_snapped_window : to_be_snapped_windows_) {
-      aura::Window* window = to_be_snapped_window.second;
-      if (window) {
+      if (aura::Window* window = to_be_snapped_window.second.window) {
         window->RemoveObserver(this);
         WindowState::Get(window)->RemoveObserver(this);
       }
@@ -361,16 +360,17 @@ class SplitViewController::ToBeSnappedWindowsObserver
       return;
     }
 
-    aura::Window* old_window = to_be_snapped_windows_[snap_position];
-    if (old_window == window)
+    aura::Window* old_window = to_be_snapped_windows_[snap_position].window;
+    if (old_window == window) {
       return;
+    }
 
     // Stop observe any previous to-be-snapped window in `snap_position`. This
     // can happen to Android windows as its window state and bounds change are
     // async, so it's possible to snap another window to the same position while
     // waiting for the snapping of the previous window.
     if (old_window) {
-      to_be_snapped_windows_[snap_position] = nullptr;
+      to_be_snapped_windows_.erase(snap_position);
       WindowState::Get(old_window)->RemoveObserver(this);
       old_window->RemoveObserver(this);
     }
@@ -378,7 +378,8 @@ class SplitViewController::ToBeSnappedWindowsObserver
     // If the to-be-snapped window already has the desired snapped window state,
     // no need to listen to the state change notification (there will be none
     // anyway), instead just attach the window to split screen directly.
-    if (WindowState::Get(window)->GetStateType() ==
+    WindowState* window_state = WindowState::Get(window);
+    if (window_state->GetStateType() ==
         GetStateTypeFromSnapPosition(snap_position)) {
       split_view_controller_->AttachSnappingWindow(window, snap_position,
                                                    snap_action_source);
@@ -386,8 +387,9 @@ class SplitViewController::ToBeSnappedWindowsObserver
                                               /*previous_state=*/absl::nullopt,
                                               snap_action_source);
     } else {
-      to_be_snapped_windows_[snap_position] = window;
-      WindowState::Get(window)->AddObserver(this);
+      to_be_snapped_windows_[snap_position] =
+          WindowAndSnapSourceInfo{window, snap_action_source};
+      window_state->AddObserver(this);
       window->AddObserver(this);
     }
   }
@@ -408,46 +410,53 @@ class SplitViewController::ToBeSnappedWindowsObserver
   // WindowStateObserver:
   void OnPreWindowStateTypeChange(WindowState* window_state,
                                   WindowStateType old_type) override {
+    aura::Window* window = window_state->window();
     // When arriving here, we know the to-be-snapped window's state has just
     // changed and its bounds will be changed soon.
-    auto iter = FindWindow(window_state->window());
+    auto iter = FindWindow(window);
     DCHECK(iter != to_be_snapped_windows_.end());
     SnapPosition snap_position = iter->first;
 
     // If the new window type is the target snapped state, remove the window
-    // from `to_be_snapped_windows_` and doing some prep work for snapping it in
+    // from `to_be_snapped_windows_` and do some prep work for snapping it in
     // split screen. Otherwise (i.e. if the new window type is not the target
     // one) just ignore the event and keep waiting for the next event.
     if (window_state->GetStateType() ==
         GetStateTypeFromSnapPosition(snap_position)) {
+      const auto cached_snap_action_source = iter->second.snap_action_source;
       to_be_snapped_windows_.erase(iter);
       window_state->RemoveObserver(this);
-      window_state->window()->RemoveObserver(this);
-      // TODO(b/307556222): Use the actual snap action source corresponding to
-      // the window.
-      split_view_controller_->AttachSnappingWindow(
-          window_state->window(), snap_position,
-          WindowSnapActionSource::kNotSpecified);
+      window->RemoveObserver(this);
+      split_view_controller_->AttachSnappingWindow(window, snap_position,
+                                                   cached_snap_action_source);
     }
   }
 
  private:
-  base::flat_map<SnapPosition, aura::Window*>::const_iterator FindWindow(
-      const aura::Window* window) const {
+  // Contains the info of the window to be snapped and its corresponding snap
+  // action source.
+  struct WindowAndSnapSourceInfo {
+    raw_ptr<aura::Window> window = nullptr;
+    WindowSnapActionSource snap_action_source =
+        WindowSnapActionSource::kNotSpecified;
+  };
+
+  base::flat_map<SnapPosition, WindowAndSnapSourceInfo>::const_iterator
+  FindWindow(const aura::Window* window) const {
     for (auto iter = to_be_snapped_windows_.begin();
          iter != to_be_snapped_windows_.end(); iter++) {
-      if (iter->second == window)
+      if (iter->second.window == window) {
         return iter;
+      }
     }
     return to_be_snapped_windows_.end();
   }
 
   const raw_ptr<SplitViewController, ExperimentalAsh> split_view_controller_;
 
-  // Maps the snap position to the to-be-snapped windows.
-  // TODO(b/307556222): Refactor this map so that the `SnapPosition` maps to the
-  // window and the corresponding snap action source.
-  base::flat_map<SnapPosition, aura::Window*> to_be_snapped_windows_;
+  // Maps the snap position to the to-be-snapped window with its corresponding
+  // snap action source.
+  base::flat_map<SnapPosition, WindowAndSnapSourceInfo> to_be_snapped_windows_;
 };
 
 // static
