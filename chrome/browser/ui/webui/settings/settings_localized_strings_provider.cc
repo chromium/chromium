@@ -1134,6 +1134,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
     {"managePasskeysSubTitle", IDS_AUTOFILL_MANAGE_PASSKEYS_SUB_TITLE_WIN},
 #endif
     {"plusAddressSettings", IDS_PLUS_ADDRESS_SETTINGS_LABEL},
+    {"cvcTagForCreditCardListEntry",
+     IDS_AUTOFILL_SETTINGS_PAGE_CVC_TAG_FOR_CREDIT_CARD_LIST_ENTRY},
   };
 
   GURL google_password_manager_url = GetGooglePasswordManagerURL(

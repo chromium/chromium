@@ -540,7 +540,7 @@ suite('PaymentsSection', function() {
 
   // --------- End of Reauth Tests ---------
 
-  test('verifyCvvStorageToggleIsShown', async function() {
+  test('verifyCvcStorageToggleIsShown', async function() {
     loadTimeData.overrideValues({
       cvcStorageAvailable: true,
     });
@@ -555,7 +555,49 @@ suite('PaymentsSection', function() {
 
     assertTrue(!!cvcStorageToggle);
     assertEquals(
-        cvcStorageToggle.subLabelWithLink,
+        cvcStorageToggle.subLabelWithLink.toString(),
+        loadTimeData.getString('enableCvcStorageSublabel'));
+  });
+
+  test('verifyCvcStorageToggleSublabelWithDeletionIsShown', async function() {
+    loadTimeData.overrideValues({
+      cvcStorageAvailable: true,
+    });
+
+    const creditCard = createCreditCardEntry();
+    creditCard.cvc = '***';
+    const section = await createPaymentsSection(
+        /*creditCards=*/[creditCard], /*ibans=*/[], {
+          credit_card_enabled: {value: true},
+        });
+    const cvcStorageToggle =
+        section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#cvcStorageToggle');
+
+    assertTrue(!!cvcStorageToggle);
+    assertEquals(
+        cvcStorageToggle.subLabelWithLink.toString(),
         loadTimeData.getString('enableCvcStorageDeleteDataSublabel'));
   });
+
+  test(
+      'verifyCvcStorageToggleSublabelWithoutDeletionIsShown', async function() {
+        loadTimeData.overrideValues({
+          cvcStorageAvailable: true,
+        });
+
+        const creditCard = createCreditCardEntry();
+        const section = await createPaymentsSection(
+            /*creditCards=*/[creditCard], /*ibans=*/[], {
+              credit_card_enabled: {value: true},
+            });
+        const cvcStorageToggle =
+            section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                '#cvcStorageToggle');
+
+        assertTrue(!!cvcStorageToggle);
+        assertEquals(
+            cvcStorageToggle.subLabelWithLink.toString(),
+            loadTimeData.getString('enableCvcStorageSublabel'));
+      });
 });

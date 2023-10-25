@@ -1011,6 +1011,9 @@
     <message name="IDS_AUTOFILL_SETTINGS_PAGE_BULK_REMOVE_CVC_DESCRIPTION" desc="Description for the modal dialog when the user is trying to bulk remove/delete all the CVCs stored locally and on Google servers.">
       All security codes saved on your device and in Google Account will be deleted
     </message>
+    <message name="IDS_AUTOFILL_SETTINGS_PAGE_CVC_TAG_FOR_CREDIT_CARD_LIST_ENTRY" desc="Tag present on each entry in the credit card list on the payments settings page if that entry has a cvc saved to it.">
+      CVC saved
+    </message>
   </if>
   <if expr="is_android">
     <message name="IDS_AUTOFILL_SETTINGS_PAGE_BULK_REMOVE_CVC_LABEL" desc="Label for the payments settings page button that allows the user to bulk delete all the CVCs stored locally and on Google servers." formatter_data="android_java">

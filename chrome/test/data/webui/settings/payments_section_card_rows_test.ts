@@ -483,6 +483,62 @@ suite('PaymentsSectionCardRows', function() {
                 .querySelector<HTMLElement>(
                     '#summarySublabel')!.textContent!.trim());
       });
+
+  // Test to verify the cvc tag is visible when cvc is present on a server/local
+  // cards.
+  [true, false].forEach(cvcOnServerCard => {
+    test(
+        'verifyCvcTagPresentFor_' +
+            (cvcOnServerCard ? 'ServerCard' : 'LocalCard'),
+        async function() {
+          loadTimeData.overrideValues({
+            cvcStorageAvailable: true,
+          });
+          const serverCreditCard = createCreditCardEntry();
+          serverCreditCard.metadata!.isLocal = false;
+          const localCreditCard = createCreditCardEntry();
+          if (cvcOnServerCard) {
+            serverCreditCard.cvc = '***';
+          } else {
+            localCreditCard.cvc = '***';
+          }
+          await createPaymentsSection(
+              [serverCreditCard, localCreditCard], /*ibans=*/[],
+              /*prefValues=*/ {});
+
+          let serverCardExpectedSublabel = serverCreditCard.expirationMonth +
+              '/' + serverCreditCard.expirationYear!.toString().substring(2);
+          let localCardExpectedSublabel = localCreditCard.expirationMonth +
+              '/' + localCreditCard.expirationYear!.toString().substring(2);
+          if (cvcOnServerCard) {
+            serverCardExpectedSublabel +=
+                ' | ' + loadTimeData.getString('cvcTagForCreditCardListEntry');
+          } else {
+            localCardExpectedSublabel +=
+                ' | ' + loadTimeData.getString('cvcTagForCreditCardListEntry');
+          }
+
+          const paymentsList = getLocalAndServerCreditCardListItems();
+          assertTrue(!!paymentsList);
+          assertEquals(2, paymentsList.length);
+          assertTrue(
+              isVisible(paymentsList[0]!.shadowRoot!.querySelector<HTMLElement>(
+                  '#summarySublabel')));
+          assertTrue(
+              isVisible(paymentsList[1]!.shadowRoot!.querySelector<HTMLElement>(
+                  '#summarySublabel')));
+          assertEquals(
+              serverCardExpectedSublabel,
+              paymentsList[0]!.shadowRoot!
+                  .querySelector<HTMLElement>(
+                      '#summarySublabel')!.textContent!.trim());
+          assertEquals(
+              localCardExpectedSublabel,
+              paymentsList[1]!.shadowRoot!
+                  .querySelector<HTMLElement>(
+                      '#summarySublabel')!.textContent!.trim());
+        });
+  });
 });
 
 suite('PaymentsSectionEditCreditCardLink', function() {
