@@ -68,6 +68,9 @@ class FirstRunFlowControllerDice : public ProfileManagementFlowControllerImpl {
       PostHostClearedCallback post_host_cleared_callback,
       bool is_continue_callback = false);
 
+  // Checks the conditions and timeouts to display the default browser step.
+  void HandleSwitchToDefaultBrowserStep(bool is_continue_callback);
+
   void MaybeShowDefaultBrowserStep(bool should_show_default_browser_step);
 
   // Callbacks to be called after checking if the browser is already set as
