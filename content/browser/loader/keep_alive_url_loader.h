@@ -134,6 +134,9 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // Called when the receiver of URLLoader implemented by this is disconnected.
   void OnURLLoaderDisconnected();
 
+  // Called when the `browser_context_` is shutting down.
+  void Shutdown();
+
   base::WeakPtr<KeepAliveURLLoader> GetWeakPtr();
 
   // For testing only:

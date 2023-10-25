@@ -45576,6 +45576,13 @@ Called by update_permissions_policy_enum.py.-->
     Recorded once every time a scheduled or a started FetchLater request is
     cancelled by the browser after some internal time limit.
   </int>
+  <int value="4"
+      label="kStartedWhenShutdown: FetchLater request is started when browser
+             is shutting down earlier than renderer">
+    Recorded once every time a scheduled or FetchLater request is started when
+    browser is shutting down. This does not include cases when renderer
+    terminates earlier, which is logged as kStartedAfterInitiatorDisconnected.
+  </int>
 </enum>
 
 <enum name="FetchLaterRendererMetricType">

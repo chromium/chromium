@@ -1335,6 +1335,10 @@ void StoragePartitionImpl::OnBrowserContextWillBeDestroyed() {
   if (GetContentIndexContext()) {
     GetContentIndexContext()->Shutdown();
   }
+
+  if (keep_alive_url_loader_service_) {
+    keep_alive_url_loader_service_->Shutdown();
+  }
 }
 
 // static
