@@ -543,6 +543,9 @@ BASE_FEATURE(kIPHiOSPromoPasswordManagerWidgetFeature,
 BASE_FEATURE(kIPHiOSChoiceScreenFeature,
              "IPH_iOSChoiceScreenFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSParcelTrackingFeature,
+             "IPH_iOSParcelTrackingFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Non-FET feature.
 BASE_FEATURE(kDefaultBrowserEligibilitySlidingWindow,

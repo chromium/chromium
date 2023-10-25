@@ -210,6 +210,8 @@ chromium-metrics-reviews@google.com.
       summary="history item on the overflow menu on iOS"/>
   <variant name="IPH_iOSNewTabToolbarItemFeature"
       summary="the new tab tool bar item (bottom on iPhone, top on iPad)"/>
+  <variant name="IPH_iOSParcelTrackingFeature"
+      summary="showing the Parcel Tracking IPH on the Magic Stack"/>
   <variant name="IPH_iOSPasswordPromoDesktop"
       summary="showing the iOS password promo on desktop"/>
   <variant name="IPH_iOSPromoAppStore"

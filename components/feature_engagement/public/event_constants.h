@@ -203,6 +203,12 @@ extern const char kDefaultBrowserVideoPromoConditionsMet[];
 // The user has triggered the Lens button in the Omnibox keyboard.
 extern const char kLensButtonKeyboardUsed[];
 
+// The user has triggered Parcel Tracking.
+extern const char kParcelTrackingTriggered[];
+
+// The user has tracked a parcel.
+extern const char kParcelTracked[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

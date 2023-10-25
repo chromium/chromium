@@ -110,6 +110,8 @@ const char kShareToolbarItemUsed[] = "share_toolbar_item_used";
 const char kDefaultBrowserVideoPromoConditionsMet[] =
     "default_browser_video_promo_conditions_met";
 const char kLensButtonKeyboardUsed[] = "lens_keyboard_used";
+const char kParcelTrackingTriggered[] = "parcel_tracking_triggered";
+const char kParcelTracked[] = "parcel_tracked";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)
