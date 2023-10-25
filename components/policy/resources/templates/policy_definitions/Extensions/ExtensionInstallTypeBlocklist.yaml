@@ -1,0 +1,30 @@
+caption: Blocklist for install types of extensions
+desc: |-
+  The blocklist controls which extensions install types are disallowed.
+
+  Setting "command_line" will block extension from being loaded from
+  command line.
+
+example_value:
+- command_line
+features:
+  dynamic_refresh: false
+  per_profile: true
+items:
+- caption: Blocks extensions from being loaded from command line
+  name: command_line
+  value: command_line
+owners:
+- kristianm@chromium.org
+- file://extensions/OWNERS
+
+schema:
+  items:
+    enum:
+    - command_line
+    type: string
+  type: array
+supported_on:
+- chrome.*:120-
+tags: []
+type: string-enum-list

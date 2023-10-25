@@ -127,6 +127,10 @@ inline constexpr char kStorageGarbageCollect[] =
 inline constexpr char kChromeAppsWebViewPermissiveBehaviorAllowed[] =
     "extensions.webview_permissive_behavior";
 
+// Pref for policy to enable/disable loading extension from command line
+inline constexpr char kExtensionInstallTypeBlocklist[] =
+    "extensions.extension_install_type_blocklist";
+
 // Properties in kExtensions dictionaries --------------------------------------
 
 // Extension-controlled preferences.

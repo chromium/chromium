@@ -2272,6 +2272,7 @@ void ExtensionPrefs::RegisterProfilePrefs(
   registry->RegisterBooleanPref(pref_names::kBlockExternalExtensions, false);
   registry->RegisterIntegerPref(pref_names::kExtensionUnpublishedAvailability,
                                 0);
+  registry->RegisterListPref(pref_names::kExtensionInstallTypeBlocklist);
 }
 
 template <class ExtensionIdContainer>

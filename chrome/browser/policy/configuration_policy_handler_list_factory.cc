@@ -2045,6 +2045,13 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kPrivateNetworkAccessRestrictionsEnabled,
     prefs::kManagedPrivateNetworkAccessRestrictionsEnabled,
     base::Value::Type::BOOLEAN },
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  { key::kExtensionInstallTypeBlocklist,
+    extensions::pref_names::kExtensionInstallTypeBlocklist,
+    base::Value::Type::LIST},
+#endif // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#endif // BUILDFLAG(ENABLE_EXTENSIONS)
 };
 // clang-format on
 
