@@ -446,6 +446,14 @@ class WebAppRegistrar : public ProfileManagerObserver {
   bool AppScopesMatchForUserLinkCapturing(const webapps::AppId& app_id1,
                                           const webapps::AppId& app_id2) const;
 
+  // Returns information about apps that controls the input url, i.e. the app's
+  // scope is a substring of the url passed to the API.
+  base::flat_map<webapps::AppId, std::string> GetAllAppsControllingUrl(
+      const GURL& url) const;
+
+  bool IsPreferredAppForCapturingUrl(const GURL& url,
+                                     const webapps::AppId& app_id);
+
 #if BUILDFLAG(IS_MAC)
   bool AlwaysShowToolbarInFullscreen(const webapps::AppId& app_id) const;
   void NotifyAlwaysShowToolbarInFullscreenChanged(const webapps::AppId& app_id,

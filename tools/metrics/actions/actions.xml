@@ -12230,6 +12230,48 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="IntentPickerIconClicked">
+  <owner>dibyapal@google.com</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <description>
+    Recorded when the user clicks on the intent picker icon that pops up
+    whenever a navigation occurs to a site that is already installed by a PWA
+    and controlled by the PWA's scope. This is measured regardless of whether
+    the intent picker icon is extended or not. This is currently measured only
+    on Windows, Mac and Linux platforms.
+  </description>
+</action>
+
+<action name="IntentPickerViewAcceptLaunchApp">
+  <owner>dibyapal@google.com</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <description>
+    Recorded when the user clicks on a PWA that shows up in the intent picker,
+    and clicks on Open, leading to the current site being launched in the PWA.
+    This is currently measured only on Windows, Mac and Linux platforms.
+  </description>
+</action>
+
+<action name="IntentPickerViewClosedOpenInChrome">
+  <owner>dibyapal@google.com</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <description>
+    Recorded when the user manually closes the intent picker bubble view,
+    leading to the site not being launched in a PWA. This is currently measured
+    only on Windows, Mac and Linux platforms.
+  </description>
+</action>
+
+<action name="IntentPickerViewIgnored">
+  <owner>dibyapal@google.com</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <description>
+    Recorded when the user navigates away from the current site with an open
+    intent picker bubble view, leading to it being closed. This is currently
+    only meaasured on Windows, Mac and Linux.
+  </description>
+</action>
+
 <action name="IOS.DefaultBrowserFullscreenPromo.Cancel">
   <owner>gayane@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>

@@ -9,10 +9,10 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/apps/intent_helper/intent_picker_helpers.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -40,7 +40,7 @@ class IntentPickerDialogTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override {
     std::vector<apps::IntentPickerAppInfo> app_info;
     const auto add_entry = [&app_info](const std::string& str) {
-      auto icon_size = apps::GetIntentPickerBubbleIconSize();
+      auto icon_size = IntentPickerTabHelper::GetIntentPickerBubbleIconSize();
       app_info.emplace_back(
           apps::PickerEntryType::kUnknown,
           ui::ImageModel::FromImage(

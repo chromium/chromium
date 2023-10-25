@@ -25,7 +25,8 @@ namespace apps {
 using IntentPickerAppsCallback =
     base::OnceCallback<void(std::vector<apps::IntentPickerAppInfo>)>;
 
-// TODO(b/300155286): Implement for WML as well.
+using IconLoadedCallback = base::OnceCallback<void(ui::ImageModel)>;
+
 class AppsIntentPickerDelegate {
  public:
   virtual ~AppsIntentPickerDelegate() = default;
@@ -34,15 +35,14 @@ class AppsIntentPickerDelegate {
                                  IntentPickerAppsCallback apps_callback) = 0;
   virtual bool IsPreferredAppForSupportedLinks(
       const webapps::AppId& app_id) = 0;
-  virtual void LoadSingleAppIcon(
-      apps::AppType app_type,
-      const webapps::AppId& app_id,
-      int size_in_dep,
-      base::OnceCallback<void(apps::IconValuePtr)> callback) = 0;
+  virtual void LoadSingleAppIcon(apps::AppType app_type,
+                                 const webapps::AppId& app_id,
+                                 int size_in_dep,
+                                 IconLoadedCallback icon_loaded_callback) = 0;
   // Records metrics for usage of the intent picker icon which appears in the
   // Omnibox.
   virtual void RecordIntentPickerIconEvent(
-      IntentHandlingMetrics::IntentPickerIconEvent event) = 0;
+      apps::IntentPickerIconEvent event) = 0;
   virtual bool ShouldLaunchAppDirectly(const GURL& url,
                                        const std::string& app_name) = 0;
   virtual void RecordOutputMetrics(PickerEntryType entry_type,

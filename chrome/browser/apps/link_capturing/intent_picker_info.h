@@ -82,6 +82,19 @@ enum class IntentPickerBubbleType {
   kClickToCall,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class IntentPickerIconEvent {
+  // The intent picker icon was shown in the Omnibox.
+  kIconShown = 0,
+  // The intent picker icon in the Omnibox was clicked.
+  kIconClicked = 1,
+  // The intent picker dialog automatically popped out. This has the same
+  // effect as kIconClicked, but without the user interaction.
+  kAutoPopOut = 2,
+  kMaxValue = kAutoPopOut,
+};
+
 }  // namespace apps
 
 // Callback to pass the launch name and type of the app selected by the user,

@@ -20,15 +20,11 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/display/types/display_constants.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_MAC)
-#include "base/task/thread_pool.h"
-#include "chrome/browser/apps/link_capturing/mac_intent_picker_helpers.h"
-#endif
 
 namespace apps {
 
@@ -63,17 +59,6 @@ PickerEntryType GetPickerEntryType(AppType app_type) {
   }
   return picker_entry_type;
 }
-
-#if BUILDFLAG(IS_MAC)
-std::vector<apps::IntentPickerAppInfo> CombinePossibleMacAppWithOtherApps(
-    std::vector<apps::IntentPickerAppInfo> apps,
-    absl::optional<apps::IntentPickerAppInfo> mac_app) {
-  if (mac_app) {
-    apps.emplace_back(std::move(mac_app.value()));
-  }
-  return apps;
-}
-#endif  // BUILDFLAG(IS_MAC)
 
 void CloseOrGoBack(content::WebContents* web_contents) {
   DCHECK(web_contents);
@@ -127,18 +112,8 @@ void ChromeOsAppsIntentPickerDelegate::FindAllAppsForUrl(
   // was at least deterministic).
   std::reverse(apps.begin(), apps.end());
 
-#if BUILDFLAG(IS_MAC)
-  // On the Mac, if there is a Universal Link, jump to a worker thread to do
-  // this.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
-      base::BindOnce(&FindMacAppForUrl, url),
-      base::BindOnce(&CombinePossibleMacAppWithOtherApps, std::move(apps))
-          .Then(std::move(apps_callback)));
-#else
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(apps_callback), std::move(apps)));
-#endif  // BUILDFLAG(IS_MAC)
 }
 
 bool ChromeOsAppsIntentPickerDelegate::IsPreferredAppForSupportedLinks(
@@ -151,14 +126,27 @@ void ChromeOsAppsIntentPickerDelegate::LoadSingleAppIcon(
     apps::AppType app_type,
     const webapps::AppId& app_id,
     int size_in_dep,
-    base::OnceCallback<void(apps::IconValuePtr)> callback) {
+    IconLoadedCallback icon_loaded_callback) {
   CHECK(proxy_);
+
+  auto transform_icon_to_metadata =
+      base::BindOnce([](apps::IconValuePtr icon_ptr) -> ui::ImageModel {
+        bool is_valid_icon =
+            (icon_ptr && icon_ptr->icon_type == apps::IconType::kStandard);
+        if (!is_valid_icon) {
+          return ui::ImageModel();
+        }
+
+        return ui::ImageModel::FromImageSkia(icon_ptr->uncompressed);
+      });
   proxy_->LoadIcon(app_type, app_id, apps::IconType::kStandard, size_in_dep,
-                   /*allow_placeholder_icon=*/false, std::move(callback));
+                   /*allow_placeholder_icon=*/false,
+                   std::move(transform_icon_to_metadata)
+                       .Then(std::move(icon_loaded_callback)));
 }
 
 void ChromeOsAppsIntentPickerDelegate::RecordIntentPickerIconEvent(
-    IntentHandlingMetrics::IntentPickerIconEvent event) {
+    apps::IntentPickerIconEvent event) {
   base::UmaHistogramEnumeration("ChromeOS.Intents.IntentPickerIconEvent",
                                 event);
 }
@@ -179,9 +167,6 @@ void ChromeOsAppsIntentPickerDelegate::RecordOutputMetrics(
     IntentPickerCloseReason close_reason,
     bool should_persist,
     bool should_launch_app) {
-// TODO(b/300155286): Remove buildflag once this class only compiles to ChromeOS
-// after the WML implementation is introduced.
-#if BUILDFLAG(IS_CHROMEOS)
   apps::IntentHandlingMetrics::RecordIntentPickerMetrics(
       entry_type, close_reason, should_persist);
 
@@ -196,7 +181,6 @@ void ChromeOsAppsIntentPickerDelegate::RecordOutputMetrics(
         entry_type,
         apps::IntentHandlingMetrics::LinkCapturingEvent::kAppOpened);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void ChromeOsAppsIntentPickerDelegate::PersistIntentPreferencesForApp(

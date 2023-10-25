@@ -14,10 +14,6 @@ source_set("link_capturing") {
     "intent_picker_info.h",
     "link_capturing_features.cc",
     "link_capturing_features.h",
-
-    # TODO(b/300155286): Implement for WML as well.
-    "chromeos_apps_intent_picker_delegate.cc",
-    "chromeos_apps_intent_picker_delegate.h",
     "link_capturing_navigation_throttle.cc",
     "link_capturing_navigation_throttle.h",
   ]
@@ -31,7 +27,6 @@ source_set("link_capturing") {
 
   deps = [
     "//base",
-    "//chrome/browser/apps/app_service",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
     "//components/keep_alive_registry",
@@ -45,6 +40,8 @@ source_set("link_capturing") {
 
   if (is_chromeos) {
     sources += [
+      "chromeos_apps_intent_picker_delegate.cc",
+      "chromeos_apps_intent_picker_delegate.h",
       "chromeos_link_capturing_delegate.cc",
       "chromeos_link_capturing_delegate.h",
       "metrics/intent_handling_metrics.cc",
@@ -52,8 +49,7 @@ source_set("link_capturing") {
     ]
     deps += [
       "//ash/webui/projector_app/public/cpp",
-      # TODO(b/300155286): Bring back here later.
-      # "//chrome/browser/apps/app_service",
+      "//chrome/browser/apps/app_service",
     ]
   } else {
     sources += [
@@ -61,6 +57,8 @@ source_set("link_capturing") {
       "enable_link_capturing_infobar_delegate.h",
       "web_app_link_capturing_delegate.cc",
       "web_app_link_capturing_delegate.h",
+      "web_apps_intent_picker_delegate.cc",
+      "web_apps_intent_picker_delegate.h",
     ]
     deps += [
       "//chrome/app:generated_resources_grit",

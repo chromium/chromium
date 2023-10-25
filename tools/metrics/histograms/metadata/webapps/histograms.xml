@@ -1510,6 +1510,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Webapp.Site.Intents.IntentPickerIconEvent"
+    enum="IntentPickerIconEvent" expires_after="2024-11-30">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>cdesktop-pwas-team@google.com</owner>
+  <summary>
+    Records events associated with the intent picker icon in the omnibox.
+    Recorded when the icon is shown or interacted with on Windows, Mac and Linux
+    only.
+  </summary>
+</histogram>
+
 <histogram name="Webapp.SyncInitiatedUninstallResult" enum="BooleanSuccess"
     expires_after="2024-01-01">
   <owner>alancutter@chromium.org</owner>

@@ -90,19 +90,6 @@ class IntentHandlingMetrics {
     kMaxValue = MAC_OS,
   };
 
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class IntentPickerIconEvent {
-    // The intent picker icon was shown in the Omnibox.
-    kIconShown = 0,
-    // The intent picker icon in the Omnibox was clicked.
-    kIconClicked = 1,
-    // The intent picker dialog automatically popped out. This has the same
-    // effect as kIconClicked, but without the user interaction.
-    kAutoPopOut = 2,
-    kMaxValue = kAutoPopOut,
-  };
-
   // These are the events that occur in the link capturing flow.
   enum class LinkCapturingEvent {
     // An entry point for the link capturing flow was shown, in the form of the

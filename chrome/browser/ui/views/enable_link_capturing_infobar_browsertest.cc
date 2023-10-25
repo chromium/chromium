@@ -133,7 +133,7 @@ class EnableLinkCapturingInfobarBrowserTest
     app->SetIsUserSelectedAppForSupportedLinks(true);
   }
 
-  testing::AssertionResult ClickIntentPickerAndWaitForBubble() {
+  testing::AssertionResult WaitForIntentPickerToShow() {
     base::test::TestFuture<void> future;
     auto* tab_helper =
         IntentPickerTabHelper::FromWebContents(GetActiveWebContents(browser()));
@@ -149,6 +149,7 @@ class EnableLinkCapturingInfobarBrowserTest
       return testing::AssertionFailure()
              << "Intent picker icon does not exist.";
     }
+
     if (!intent_picker_icon->GetVisible()) {
       base::test::TestFuture<void> icon_visible;
       OneOffIconObserver observer(icon_visible.GetCallback());
@@ -160,10 +161,34 @@ class EnableLinkCapturingInfobarBrowserTest
     }
     EXPECT_TRUE(intent_picker_icon->GetVisible());
 
+    return testing::AssertionSuccess();
+  }
+
+  testing::AssertionResult ClickIntentPickerChip() {
+    testing::AssertionResult intent_picker_icon_shown =
+        WaitForIntentPickerToShow();
+    if (!intent_picker_icon_shown) {
+      return intent_picker_icon_shown;
+    }
+
+    views::test::ButtonTestApi test_api(GetIntentPickerIcon());
+    test_api.NotifyClick(ui::MouseEvent(
+        ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), base::TimeTicks(),
+        ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+    return testing::AssertionSuccess();
+  }
+
+  testing::AssertionResult ClickIntentPickerAndWaitForBubble() {
+    testing::AssertionResult intent_picker_icon_shown =
+        WaitForIntentPickerToShow();
+    if (!intent_picker_icon_shown) {
+      return intent_picker_icon_shown;
+    }
+
     views::NamedWidgetShownWaiter intent_picker_bubble_shown(
         views::test::AnyWidgetTestPasskey{},
         IntentPickerBubbleView::kViewClassName);
-    views::test::ButtonTestApi test_api(intent_picker_icon);
+    views::test::ButtonTestApi test_api(GetIntentPickerIcon());
     test_api.NotifyClick(ui::MouseEvent(
         ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), base::TimeTicks(),
         ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
@@ -255,11 +280,14 @@ IN_PROC_BROWSER_TEST_F(EnableLinkCapturingInfobarBrowserTest,
   TurnOnLinkCapturing(app_id);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
-  ASSERT_TRUE(ClickIntentPickerAndWaitForBubble());
 
   ui_test_utils::BrowserChangeObserver browser_added_waiter(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
-  intent_picker_bubble()->AcceptDialog();
+  // If there is only 1 app installed that captures the document URL, and that
+  // app is also set to capture links by default, the link should open in the
+  // PWA automatically on clicking the intent chip without going through the
+  // intent picker bubble.
+  ASSERT_TRUE(ClickIntentPickerChip());
   Browser* app_browser = browser_added_waiter.Wait();
   ASSERT_TRUE(app_browser);
 

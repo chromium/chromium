@@ -2,36 +2,39 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_LINK_CAPTURING_CHROMEOS_APPS_INTENT_PICKER_DELEGATE_H_
-#define CHROME_BROWSER_APPS_LINK_CAPTURING_CHROMEOS_APPS_INTENT_PICKER_DELEGATE_H_
+#ifndef CHROME_BROWSER_APPS_LINK_CAPTURING_WEB_APPS_INTENT_PICKER_DELEGATE_H_
+#define CHROME_BROWSER_APPS_LINK_CAPTURING_WEB_APPS_INTENT_PICKER_DELEGATE_H_
 
 #include <string>
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/link_capturing/apps_intent_picker_delegate.h"
 #include "chrome/browser/apps/link_capturing/intent_picker_info.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
+
+class Profile;
 
 namespace content {
 class WebContents;
 }  // namespace content
 
-class Profile;
+namespace web_app {
+class WebAppProvider;
+}  // namespace web_app
 
 namespace apps {
 
-class ChromeOsAppsIntentPickerDelegate : public AppsIntentPickerDelegate {
+class WebAppsIntentPickerDelegate : public AppsIntentPickerDelegate {
  public:
-  explicit ChromeOsAppsIntentPickerDelegate(Profile* profile);
-  ~ChromeOsAppsIntentPickerDelegate() override;
+  explicit WebAppsIntentPickerDelegate(Profile* profile);
+  ~WebAppsIntentPickerDelegate() override;
 
-  ChromeOsAppsIntentPickerDelegate(const ChromeOsAppsIntentPickerDelegate&) =
+  WebAppsIntentPickerDelegate(const WebAppsIntentPickerDelegate&) = delete;
+  WebAppsIntentPickerDelegate& operator=(const WebAppsIntentPickerDelegate&) =
       delete;
-  ChromeOsAppsIntentPickerDelegate& operator=(
-      const ChromeOsAppsIntentPickerDelegate&) = delete;
 
   bool ShouldShowIntentPickerWithApps() override;
   void FindAllAppsForUrl(const GURL& url,
@@ -43,7 +46,7 @@ class ChromeOsAppsIntentPickerDelegate : public AppsIntentPickerDelegate {
                          IconLoadedCallback icon_loaded_callback) override;
   void RecordIntentPickerIconEvent(apps::IntentPickerIconEvent event) override;
   bool ShouldLaunchAppDirectly(const GURL& url,
-                               const std::string& app_name) override;
+                               const std::string& app_id) override;
   void RecordOutputMetrics(PickerEntryType entry_type,
                            IntentPickerCloseReason close_reason,
                            bool should_persist,
@@ -57,11 +60,10 @@ class ChromeOsAppsIntentPickerDelegate : public AppsIntentPickerDelegate {
 
  private:
   raw_ref<Profile> profile_;
-  raw_ptr<apps::AppServiceProxy> proxy_ = nullptr;
-  base::WeakPtrFactory<ChromeOsAppsIntentPickerDelegate> weak_ptr_factory_{
-      this};
+  raw_ref<web_app::WebAppProvider> provider_;
+  base::WeakPtrFactory<WebAppsIntentPickerDelegate> weak_ptr_factory{this};
 };
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_APPS_LINK_CAPTURING_CHROMEOS_APPS_INTENT_PICKER_DELEGATE_H_
+#endif  // CHROME_BROWSER_APPS_LINK_CAPTURING_WEB_APPS_INTENT_PICKER_DELEGATE_H_

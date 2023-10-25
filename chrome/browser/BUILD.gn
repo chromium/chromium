@@ -3664,8 +3664,6 @@ static_library("browser") {
       "accessibility/live_translate_controller_factory.h",
       "apps/intent_helper/intent_chip_display_prefs.cc",
       "apps/intent_helper/intent_chip_display_prefs.h",
-      "apps/intent_helper/intent_picker_helpers.cc",
-      "apps/intent_helper/intent_picker_helpers.h",
       "autocomplete/tab_matcher_desktop.cc",
       "autocomplete/tab_matcher_desktop.h",
       "background/background_contents.cc",
