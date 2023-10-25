@@ -30,9 +30,8 @@ public class CustomTabLocator {
         if (tabId == Tab.INVALID_TAB_ID) return null;
 
         for (Activity activity : ApplicationStatus.getRunningActivities()) {
-            if (!(activity instanceof BaseCustomTabActivity)) continue;
+            if (!(activity instanceof BaseCustomTabActivity customTabActivity)) continue;
 
-            BaseCustomTabActivity customTabActivity = (BaseCustomTabActivity) activity;
             Tab tab = customTabActivity.getActivityTab();
             if (tab != null && tab.getId() == tabId) {
                 return new WeakReference<>(customTabActivity);
@@ -50,10 +49,9 @@ public class CustomTabLocator {
     public static WeakReference<BaseCustomTabActivity> findRunningWebappActivityWithId(
             String webappId) {
         for (Activity activity : ApplicationStatus.getRunningActivities()) {
-            if (!(activity instanceof WebappActivity)) {
+            if (!(activity instanceof WebappActivity customTabActivity)) {
                 continue;
             }
-            BaseCustomTabActivity customTabActivity = (BaseCustomTabActivity) activity;
             WebappExtras webappExtras = customTabActivity.getIntentDataProvider().getWebappExtras();
             if (webappExtras != null && TextUtils.equals(webappId, webappExtras.id)) {
                 return new WeakReference<>(customTabActivity);

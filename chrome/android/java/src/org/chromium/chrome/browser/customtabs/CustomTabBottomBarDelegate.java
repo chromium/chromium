@@ -327,8 +327,7 @@ public class CustomTabBottomBarDelegate
         // as it is unique across all tags.
         view.setTag(R.id.view_id_tag_key, view.getId());
         view.setId(View.NO_ID);
-        if (view instanceof ViewGroup) {
-            final ViewGroup group = (ViewGroup) view;
+        if (view instanceof ViewGroup group) {
             final int childCount = group.getChildCount();
             for (int i = 0; i < childCount; i++) {
                 final View child = group.getChildAt(i);

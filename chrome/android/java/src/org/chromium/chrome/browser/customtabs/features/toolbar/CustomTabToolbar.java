@@ -590,8 +590,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     private void updateButtonTint(ImageButton button) {
         Drawable drawable = button.getDrawable();
-        if (drawable instanceof TintedDrawable) {
-            ((TintedDrawable) drawable).setTint(mTint);
+        if (drawable instanceof TintedDrawable tintedDrawable) {
+            tintedDrawable.setTint(mTint);
         } else if (button.getTag(R.id.custom_tabs_toolbar_tintable) != null) {
             drawable.setTintList(mTint);
         }

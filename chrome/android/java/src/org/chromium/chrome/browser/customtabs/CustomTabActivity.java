@@ -225,9 +225,9 @@ public class CustomTabActivity extends BaseCustomTabActivity {
 
     @Override
     public String getPackageName() {
-        if (mShouldOverridePackage && mIntentDataProvider instanceof CustomTabIntentDataProvider) {
-            return ((CustomTabIntentDataProvider) mIntentDataProvider)
-                    .getInsecureClientPackageNameForOnFinishAnimation();
+        if (mShouldOverridePackage
+                && mIntentDataProvider instanceof CustomTabIntentDataProvider intentDataProvider) {
+            return intentDataProvider.getInsecureClientPackageNameForOnFinishAnimation();
         }
         return super.getPackageName();
     }

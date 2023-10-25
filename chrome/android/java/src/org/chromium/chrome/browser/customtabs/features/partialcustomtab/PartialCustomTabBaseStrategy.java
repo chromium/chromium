@@ -468,8 +468,7 @@ public abstract class PartialCustomTabBaseStrategy
         View dragBar = mActivity.findViewById(R.id.drag_bar);
         // Check if the current dragBar background is the InsetDrawable used in conjunction with
         // the divider line
-        if (dragBar.getBackground() instanceof InsetDrawable) {
-            InsetDrawable insetDrawable = (InsetDrawable) dragBar.getBackground();
+        if (dragBar.getBackground() instanceof InsetDrawable insetDrawable) {
             return (GradientDrawable) insetDrawable.getDrawable();
         } else {
             return (GradientDrawable) dragBar.getBackground();
