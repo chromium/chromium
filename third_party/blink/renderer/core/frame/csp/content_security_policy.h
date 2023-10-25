@@ -31,6 +31,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/unguessable_token.h"
+#include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -74,6 +75,8 @@ class SourceLocation;
 typedef HeapVector<Member<ConsoleMessage>> ConsoleMessageVector;
 using RedirectStatus = ResourceRequest::RedirectStatus;
 using network::mojom::blink::CSPDirectiveName;
+
+using CSPCheckResult = network::CSPCheckResult;
 
 //  A delegate interface to implement violation reporting, support for some
 //  directives and other miscellaneous functionality.

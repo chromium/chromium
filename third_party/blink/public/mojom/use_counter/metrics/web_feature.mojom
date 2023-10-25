@@ -4031,6 +4031,8 @@ enum WebFeature {
   kElementCheckVisibility = 4691,
   kV8ClipboardItem_Supports_Method = 4692,
   kThirdPartyCookieAccessBlockByExperiment = 4693,
+  kCspWouldBlockIfWildcardDoesNotMatchWs = 4694,
+  kCspWouldBlockIfWildcardDoesNotMatchFtp = 4695,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -18,6 +18,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/features.h"
@@ -563,6 +564,54 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_document_url));
   LoadIFrame(sub_document_url);
   ExpectHistogramIncreasedBy(1);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       LogCSPFrameSrcWildcardMatchFeature) {
+  struct {
+    const char* csp_frame_src;
+    const char* sub_document_url;
+    int expected_kCspWouldBlockIfWildcardDoesNotMatchWs;
+    int expected_kCspWouldBlockIfWildcardDoesNotMatchFtp;
+  } test_cases[] = {
+      {"*", "http://example.com", 0, 0},
+      // Feature shouldn't be logged if matches explicitly.
+      {"ftp:*", "ftp://example.com", 0, 0},
+      {"ws:*", "ws://example.com", 0, 0},
+      {"wss:*", "wss://example.com", 0, 0},
+      // Feature should be logged if matched with wildcard.
+      {"*", "ftp://example.com", 0, 1},
+      {"*", "ws://example.com", 1, 0},
+      {"*", "wss://example.com", 1, 0},
+  };
+  int total_kCspWouldBlockIfWildcardDoesNotMatchWs = 0;
+  int total_kCspWouldBlockIfWildcardDoesNotMatchFtp = 0;
+  for (const auto& test_case : test_cases) {
+    GURL main_document_url = https_server().GetURL(
+        "a.com",
+        base::StrCat({"/set-header?Content-Security-Policy: frame-src ",
+                      test_case.csp_frame_src, ";"}));
+    url::Origin main_document_origin = url::Origin::Create(main_document_url);
+    GURL sub_document_url = GURL(test_case.sub_document_url);
+    EXPECT_TRUE(content::NavigateToURL(web_contents(), main_document_url));
+
+    content::TestNavigationObserver load_observer(web_contents());
+    EXPECT_TRUE(
+        content::ExecJs(web_contents(), content::JsReplace(R"(
+      let iframe = document.createElement("iframe");
+      iframe.src = $1;
+      document.body.appendChild(iframe);
+    )",
+                                                           sub_document_url)));
+    load_observer.Wait();
+
+    CheckCounter(WebFeature::kCspWouldBlockIfWildcardDoesNotMatchWs,
+                 total_kCspWouldBlockIfWildcardDoesNotMatchWs +=
+                 test_case.expected_kCspWouldBlockIfWildcardDoesNotMatchWs);
+    CheckCounter(WebFeature::kCspWouldBlockIfWildcardDoesNotMatchFtp,
+                 total_kCspWouldBlockIfWildcardDoesNotMatchFtp +=
+                 test_case.expected_kCspWouldBlockIfWildcardDoesNotMatchFtp);
+  }
 }
 
 // Check kCrossOriginSubframeWithoutEmbeddingControl reporting. Cross-origin
