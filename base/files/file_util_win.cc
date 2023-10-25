@@ -62,6 +62,8 @@ namespace {
 
 int g_extra_allowed_path_for_no_execute = 0;
 
+bool g_disable_secure_system_temp_for_testing = false;
+
 const DWORD kFileShareAll =
     FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
 const wchar_t kDefaultTempDirPrefix[] = L"ChromiumTemp";
@@ -688,6 +690,10 @@ bool CreateTemporaryDirInDir(const FilePath& base_dir,
 }
 
 bool GetSecureSystemTemp(FilePath* temp) {
+  if (g_disable_secure_system_temp_for_testing) {
+    return false;
+  }
+
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 
   CHECK(temp);
@@ -711,6 +717,10 @@ bool GetSecureSystemTemp(FilePath* temp) {
   return false;
 }
 
+void SetDisableSecureSystemTempForTesting(bool disabled) {
+  g_disable_secure_system_temp_for_testing = disabled;
+}
+
 // The directory is created under `GetSecureSystemTemp` for security reasons if
 // the caller is admin to avoid attacks from lower privilege processes.
 //
@@ -719,7 +729,8 @@ bool GetSecureSystemTemp(FilePath* temp) {
 // `GetSecureSystemTemp` could be because `%systemroot%\SystemTemp` does not
 // exist, or unable to resolve `DIR_WINDOWS` or `DIR_PROGRAM_FILES`, say due to
 // registry redirection, or unable to create a directory due to
-// `GetSecureSystemTemp` being read-only or having atypical ACLs.
+// `GetSecureSystemTemp` being read-only or having atypical ACLs. Tests can also
+// disable this behavior resulting in false being returned.
 bool CreateNewTempDirectory(const FilePath::StringType& prefix,
                             FilePath* new_temp_path) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
