@@ -17,15 +17,18 @@ namespace blink {
 BLINK_COMMON_EXPORT const std::unordered_set<std::string>
 UnloadDeprecationAllowedHosts();
 
-// Returns `true` if `hosts` is empty or contains `origin`.
+// Returns `true` if `hosts` is empty or contains `host`.
 // Exported for testing.
-BLINK_COMMON_EXPORT bool UnloadDeprecationAllowedForOrigin(
-    const url::Origin& origin,
+BLINK_COMMON_EXPORT bool UnloadDeprecationAllowedForHost(
+    const std::string& host,
     const std::unordered_set<std::string>& hosts);
 
-// Checks `origin` against the hosts listed in the `kDeprecateUnloadAllowlist`
-// parameter.
-bool UnloadDeprecationAllowedForOrigin(const url::Origin& origin);
+// Checks `origin` against all criteria:
+// - the hosts listed in `kDeprecateUnloadAllowlist`
+// - the gradual rollout percentage
+// If `origin` is an opaque origin, the precursor origin is used.
+BLINK_COMMON_EXPORT bool UnloadDeprecationAllowedForOrigin(
+    const url::Origin& origin);
 
 }  // namespace blink
 
