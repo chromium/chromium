@@ -41,6 +41,8 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   // in any AXTreeManager.
   static void SetFocusChangeCallbackForTesting(base::RepeatingClosure callback);
 
+  // This default constructor does not create an empty accessibility tree. Call
+  // `SetTree` if you need to manage a specific tree.
   AXTreeManager();
   explicit AXTreeManager(std::unique_ptr<AXTree> tree);
 
@@ -119,7 +121,15 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   // `AXTreeManagerMap`.
   void WillBeRemovedFromMap();
 
+  // Returns a pointer to the managed tree, if any.
   AXTree* ax_tree() const { return ax_tree_.get(); }
+
+  // Takes ownership of a new accessibility tree and returns the one that is
+  // currently being managed. It is considered an error to pass an empty
+  // unique_ptr for `tree`. If no tree is currently being managed, returns an
+  // empty unique_ptr.
+  std::unique_ptr<AXTree> SetTree(std::unique_ptr<AXTree> tree);
+  std::unique_ptr<AXTree> SetTree(const AXTreeUpdate& initial_state);
 
   const AXEventGenerator& event_generator() const { return event_generator_; }
   AXEventGenerator& event_generator() { return event_generator_; }
