@@ -7063,6 +7063,9 @@ New install
       <message name="IDS_GLANCEABLES_CLASSROOM_FETCH_ERROR" desc="A glanceables classroom bubble displays a notification with an error message when an error occurs while fetching data. This is the text that describes the error to the user and appears on the notification.">
         Can't show items. Try reopening this panel.
       </message>
+      <message name="IDS_GLANCEABLES_OVERVIEW_REMOVE_CHIP" desc="The text shown on the removing glanceable chip panel in Overview">
+        Remove this suggestion
+      </message>
 
       <!-- Do Not Disturb notification -->
       <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TITLE" desc="Label used for the notification that shows up when the 'Do Not Disturb' feature is enabled.">
