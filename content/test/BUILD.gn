@@ -1071,10 +1071,7 @@ mojom("web_ui_test_mojo_bindings") {
     "data/web_ui_test.test-mojom",
     "data/web_ui_test_types.test-mojom",
   ]
-  public_deps = [
-    ":web_ui_js_bridge_test_bindings",
-    "//url/mojom:url_mojom_gurl",
-  ]
+  public_deps = [ "//url/mojom:url_mojom_gurl" ]
   webui_module_path = "/content/test/data"
 
   # Generate WebUI bindings in JavaScript instead of TypeScript. This is
@@ -1091,11 +1088,6 @@ mojom_with_webui_js_bridge("web_ui_js_bridge_test_bindings") {
   webui_controller_deps = [ "//content/test:test_support" ]
 
   webui_module_path = "/content/test/data"
-
-  # Generate WebUI bindings in JavaScript instead of TypeScript.
-  # TODO (https://crbug.com/1002798): Determine if this target should be
-  # Ash-only or migrated to TypeScript.
-  use_typescript_sources = false
 }
 
 # Closure compilation is only used on Ash. See below for TypeScript targets
@@ -1128,7 +1120,10 @@ mojom("web_ui_ts_test_mojo_bindings") {
 preprocess_if_expr("preprocess_mojo_webui_test") {
   in_folder = "./data"
   out_folder = "$target_gen_dir/data"
-  in_files = [ "web_ui_mojo_ts_test.ts" ]
+  in_files = [
+    "web_ui_mojo_ts_test.ts",
+    "web_ui_managed_interface_test.ts",
+  ]
 }
 
 ts_library("web_ui_mojo_test_build_ts") {
@@ -1138,10 +1133,13 @@ ts_library("web_ui_mojo_test_build_ts") {
     "web_ui_mojo_ts_test.ts",
     "web_ui_ts_test.test-mojom-webui.ts",
     "web_ui_ts_test_types.test-mojom-webui.ts",
+    "web_ui_managed_interface_test.ts",
+    "web_ui_managed_interface_test.test-mojom-webui.ts",
   ]
   deps = [ "//ui/webui/resources/mojo:build_ts" ]
   extra_deps = [
     ":preprocess_mojo_webui_test",
+    ":web_ui_js_bridge_test_bindings_ts__generator",
     ":web_ui_ts_test_mojo_bindings_ts__generator",
   ]
 }
@@ -1681,6 +1679,7 @@ test("content_browsertests") {
     ":browsertest_support",
     ":content_test_mojo_bindings",
     ":test_support",
+    ":web_ui_js_bridge_test_bindings__generator",
     ":web_ui_js_bridge_test_bindings_webui_js_bridge_impl",
     ":web_ui_test_mojo_bindings",
     ":web_ui_ts_test_mojo_bindings",
@@ -2236,7 +2235,6 @@ grit("web_ui_mojo_test_resources") {
     "web_ui_mojo_test_resources.pak",
   ]
   deps = [
-    ":web_ui_js_bridge_test_bindings_js__generator",
     ":web_ui_mojo_test_build_ts",
     ":web_ui_test_mojo_bindings_js__generator",
   ]

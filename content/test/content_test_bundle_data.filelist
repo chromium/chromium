@@ -7211,8 +7211,8 @@ data/web_bundle/web_bundle_browsertest_b2.wbn
 data/web_bundle/web_bundle_browsertest_b2.wbn.mock-http-headers
 data/web_ui_dedicated_worker.js
 data/web_ui_managed_interface_test.html
-data/web_ui_managed_interface_test.js
 data/web_ui_managed_interface_test.test-mojom
+data/web_ui_managed_interface_test.ts
 data/web_ui_mojo_native.html
 data/web_ui_mojo_native.js
 data/web_ui_mojo_test.html
