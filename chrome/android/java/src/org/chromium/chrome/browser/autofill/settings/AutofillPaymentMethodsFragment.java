@@ -41,14 +41,11 @@ import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.components.autofill.MandatoryReauthAuthenticationFlowEvent;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
-import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.payments.AndroidPaymentAppFactory;
-import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
 /**
  * Autofill credit cards fragment, which allows the user to edit credit cards and control
@@ -192,14 +189,12 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
             saveCvcSwitch.setChecked(PersonalDataManager.isAutofillCreditCardEnabled()
                     && PersonalDataManager.isPaymentCvcStorageEnabled());
 
-            // Add the deletion button for saved CVCs. Note that this button's presence doesn't
-            // depend on the value of the "Save and fill payment methods" toggle, since we would
-            // like to allow the user to delete saved CVCs even when the toggle is disabled.
-            // Conditionally show the deletion button based on whether there are any CVCs stored.
-            if (PersonalDataManager.getInstance().getCreditCardsForSettings().stream()
-                    .anyMatch(card -> !card.getCvc().isEmpty())) {
-                createDeleteSavedCvcsButton();
-            }
+            // Add the deletion button for saved Cvc. Note that this button's presence doesn't
+            // depend on "Save And Fill Payments Methods" value. Since we would like to allow user
+            // to delete saved cvcs even when "Save And Fill Payments Methods" is disabled.
+            // TODO(crbug.com/1474710): Conditionally show the deletion button based on whether
+            // there is cvc stored.
+            createDeleteSavedCvcs();
         }
 
         for (CreditCard card : PersonalDataManager.getInstance().getCreditCardsForSettings()) {
@@ -459,7 +454,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
      * Create a clickable "Delete saved cvcs" button and add it to the preference screen.
      * No divider line above this preference.
      */
-    private void createDeleteSavedCvcsButton() {
+    private void createDeleteSavedCvcs() {
         ChromeBasePreference deleteSavedCvcs = new ChromeBasePreference(getStyledContext());
         deleteSavedCvcs.setKey(PREF_DELETE_SAVED_CVCS);
         SpannableString spannableString = new SpannableString(
@@ -469,26 +464,8 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                 0, spannableString.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
         deleteSavedCvcs.setSummary(spannableString);
         deleteSavedCvcs.setDividerAllowedAbove(false);
-        deleteSavedCvcs.setOnPreferenceClickListener(
-                preference -> {
-                    showDeleteSavedCvcsConfirmationDialog();
-                    return true;
-                });
+        // TODO(crbug.com/1474710): Add click listener.
         getPreferenceScreen().addPreference(deleteSavedCvcs);
-    }
-
-    private void showDeleteSavedCvcsConfirmationDialog() {
-        AutofillDeleteSavedCvcsConfirmationDialog dialog =
-                new AutofillDeleteSavedCvcsConfirmationDialog(
-                        getActivity(),
-                        new ModalDialogManager(
-                                new AppModalPresenter(getActivity()), ModalDialogType.APP),
-                        deleteRequested -> {
-                            if (deleteRequested) {
-                                // TODO(crbug.com/1491570): Call to the saved CVC delete interface.
-                            }
-                        });
-        dialog.show();
     }
 
     @Override
