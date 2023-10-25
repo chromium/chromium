@@ -34,13 +34,7 @@ namespace chromeos {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kKeyboardDiagnosticsUrl[] = "chrome://diagnostics?input";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-const char kKeyboardDiagnosticsUrl[] = "os://diagnostics?input";
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace cx_events = ::chromeos::api::os_events;
 namespace crosapi = ::crosapi::mojom;

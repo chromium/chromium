@@ -413,7 +413,6 @@ extern const char kChromeUINotifGeneratorURL[];
 extern const char kChromeUIOSSettingsHost[];
 extern const char kChromeUIOSSettingsURL[];
 extern const char kChromeUISystemURL[];
-extern const char kOsUIAboutURL[];
 extern const char kOsUIComponentsURL[];
 extern const char kOsUIConnectivityDiagnosticsAppURL[];
 extern const char kOsUIDeviceLogURL[];

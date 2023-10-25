@@ -89,7 +89,7 @@ void OpenUrlInternalContinue(Profile* profile,
   // assistant.
   // TODO(crbug.com/1445145): Figure out how to get rid of this.
   if (swa_type == ash::SystemWebAppType::CAMERA &&
-      !gurl_os_handler_utils::IsAshOsUrl(original_url)) {
+      !gurl_os_handler_utils::HasOsScheme(original_url)) {
     target_url = original_url;
   }
 
@@ -117,7 +117,7 @@ bool UrlHandlerAsh::OpenUrlInternal(const GURL& url) {
     return false;
   }
 
-  GURL target_url = gurl_os_handler_utils::GetTargetURLFromLacrosURL(url);
+  const GURL target_url = gurl_os_handler_utils::SanitizeAshUrl(url);
   if (!ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(target_url)) {
     LOG(ERROR) << "Invalid URL passed to UrlHandlerAsh::OpenUrl: " << url;
     return false;

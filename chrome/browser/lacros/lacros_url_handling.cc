@@ -39,20 +39,18 @@ bool IsNavigationInterceptable(const NavigateParams& params,
 }
 
 bool MaybeInterceptNavigation(const GURL& url) {
-  const GURL& ash_url = crosapi::gurl_os_handler_utils::SanitizeAshURL(url);
-  // Every URL which is supported by Ash but not by Lacros will automatically
+  // Every URL which is supported by Ash but not by Lacros will automatically be
   // forwarded to Ash.
-  if (IsUrlHandledByLacros(ash_url) || !IsUrlAcceptedByAsh(ash_url))
-    return false;
-
-  return NavigateInAsh(ash_url);
+  return !IsUrlHandledByLacros(url) &&
+         NavigateInAsh(
+             crosapi::gurl_os_handler_utils::GetAshUrlFromLacrosUrl(url));
 }
 
 bool IsUrlHandledByLacros(const GURL& url) {
   return ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url);
 }
 
-bool IsUrlAcceptedByAsh(const GURL& requested_url) {
+bool IsUrlAcceptedByAsh(const GURL& url) {
   auto* init_params = chromeos::BrowserParamsProxy::Get();
   const absl::optional<std::vector<GURL>>& accepted_urls =
       init_params->AcceptedInternalAshUrls();
@@ -61,34 +59,20 @@ bool IsUrlAcceptedByAsh(const GURL& requested_url) {
     return false;
   }
 
-  GURL sanitized_url =
-      crosapi::gurl_os_handler_utils::SanitizeAshURL(requested_url);
-
-  // For compatibility with older Ash.
-  // TOOD(neis): Remove in M118.
-  if (crosapi::gurl_os_handler_utils::IsUrlInList(sanitized_url,
-                                                  *accepted_urls)) {
-    return true;
-  }
-
-  return crosapi::gurl_os_handler_utils::IsUrlInList(
-      crosapi::gurl_os_handler_utils::GetTargetURLFromLacrosURL(sanitized_url),
-      *accepted_urls);
+  return crosapi::gurl_os_handler_utils::IsAshUrlInList(url, *accepted_urls);
 }
 
-bool NavigateInAsh(const GURL& url) {
-  // As requested by security, all additional queries will get removed.
-  // Note that this will also be done on the Ash side for the same reason.
-  const GURL& ash_url = crosapi::gurl_os_handler_utils::SanitizeAshURL(url);
-
-  if (!IsUrlAcceptedByAsh(ash_url))
+bool NavigateInAsh(GURL url) {
+  if (!IsUrlAcceptedByAsh(url)) {
     return false;
+  }
 
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
-  if (!service->IsAvailable<crosapi::mojom::UrlHandler>())
+  if (!service->IsAvailable<crosapi::mojom::UrlHandler>()) {
     return false;
+  }
 
-  service->GetRemote<crosapi::mojom::UrlHandler>()->OpenUrl(ash_url);
+  service->GetRemote<crosapi::mojom::UrlHandler>()->OpenUrl(url);
   return true;
 }
 
