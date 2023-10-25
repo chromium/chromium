@@ -657,6 +657,21 @@ enum class ProcessIncomingPasswordSharingInvitationResult {
   kMaxValue = kSharedCredentialsExistWithDifferentSenderAndDifferentPassword,
 };
 
+#if BUILDFLAG(IS_ANDROID)
+// Enum that describes different outcomes on the attempt of triggering the
+// Touch-To-Fill bottom sheet for password generation.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class TouchToFillPasswordGenerationTriggerOutcome {
+  kShown = 0,
+  kHasSavedCredentials = 1,
+  kDismissed4TimesInARow = 2,
+  kShownBefore = 3,
+  kFailedToDisplay = 4,
+  kMaxValue = kFailedToDisplay
+};
+#endif
+
 std::string GetPasswordAccountStorageUsageLevelHistogramSuffix(
     password_manager::features_util::PasswordAccountStorageUsageLevel
         usage_level);
@@ -860,6 +875,11 @@ base::OnceCallback<R(Args...)> TimeCallback(
       },
       histogram, base::ElapsedTimer(), std::move(callback));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void LogTouchToFillPasswordGenerationTriggerOutcome(
+    TouchToFillPasswordGenerationTriggerOutcome outcome);
+#endif
 
 #if BUILDFLAG(IS_IOS)
 // This enum indicates migration status from Keychain to OSCrypt for passwords

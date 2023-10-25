@@ -40,6 +40,8 @@ using autofill::password_generation::PasswordGenerationType;
 using password_manager::metrics_util::GenerationDialogChoice;
 using password_manager::prefs::kPasswordGenerationBottomSheetDismissCount;
 using ShouldShowAction = ManualFillingController::ShouldShowAction;
+using TouchToFillOutcome =
+    password_manager::metrics_util::TouchToFillPasswordGenerationTriggerOutcome;
 
 PasswordGenerationControllerImpl::~PasswordGenerationControllerImpl() = default;
 
@@ -284,19 +286,47 @@ bool PasswordGenerationControllerImpl::TryToShowGenerationTouchToFill(
     bool has_saved_credentials) {
   CHECK(touch_to_fill_generation_state_ != TouchToFillState::kIsShowing);
 
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordGenerationBottomSheet)) {
+    return false;
+  }
+
+  if (has_saved_credentials) {
+    password_manager::metrics_util::
+        LogTouchToFillPasswordGenerationTriggerOutcome(
+            TouchToFillOutcome::kHasSavedCredentials);
+    return false;
+  }
+
   bool dismissed_4_times_in_a_row =
       client_->GetPrefs()->GetInteger(
           kPasswordGenerationBottomSheetDismissCount) >=
       TouchToFillPasswordGenerationController::kMaxAllowedNumberOfDismisses;
-
-  if (has_saved_credentials ||
-      !base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordGenerationBottomSheet) ||
-      touch_to_fill_generation_state_ == TouchToFillState::kWasShown ||
-      dismissed_4_times_in_a_row) {
+  if (dismissed_4_times_in_a_row) {
+    password_manager::metrics_util::
+        LogTouchToFillPasswordGenerationTriggerOutcome(
+            TouchToFillOutcome::kDismissed4TimesInARow);
     return false;
   }
-  return ShowBottomSheet(PasswordGenerationType::kTouchToFill);
+
+  if (touch_to_fill_generation_state_ == TouchToFillState::kWasShown) {
+    password_manager::metrics_util::
+        LogTouchToFillPasswordGenerationTriggerOutcome(
+            TouchToFillOutcome::kShownBefore);
+    return false;
+  }
+
+  if (ShowBottomSheet(PasswordGenerationType::kTouchToFill)) {
+    password_manager::metrics_util::
+        LogTouchToFillPasswordGenerationTriggerOutcome(
+            TouchToFillOutcome::kShown);
+    return true;
+  }
+
+  password_manager::metrics_util::
+      LogTouchToFillPasswordGenerationTriggerOutcome(
+          TouchToFillOutcome::kFailedToDisplay);
+  return false;
 }
 
 bool PasswordGenerationControllerImpl::ShowBottomSheet(

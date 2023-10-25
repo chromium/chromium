@@ -421,6 +421,14 @@ void LogGroupedPasswordsResults(
       "PasswordManager.GetLogins.GroupedMatchesStatus", result);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void LogTouchToFillPasswordGenerationTriggerOutcome(
+    TouchToFillPasswordGenerationTriggerOutcome outcome) {
+  base::UmaHistogramEnumeration(
+      "PasswordManager.TouchToFill.PasswordGeneration.TriggerOutcome", outcome);
+}
+#endif
+
 #if BUILDFLAG(IS_IOS)
 void RecordMigrationToOSCryptLatency(bool success,
                                      base::TimeDelta latency,

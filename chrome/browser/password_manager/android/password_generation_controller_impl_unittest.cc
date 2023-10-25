@@ -61,6 +61,11 @@ using testing::NiceMock;
 using testing::Return;
 using testing::StrictMock;
 using ShouldShowAction = ManualFillingController::ShouldShowAction;
+using TouchToFillOutcome =
+    password_manager::metrics_util::TouchToFillPasswordGenerationTriggerOutcome;
+
+const char kTouchToFillTriggerOutcomeHistogramName[] =
+    "PasswordManager.TouchToFill.PasswordGeneration.TriggerOutcome";
 
 class TestPasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
@@ -502,6 +507,7 @@ TEST_F(PasswordGenerationControllerTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       password_manager::features::kPasswordGenerationBottomSheet);
+  base::HistogramTester histogram_tester;
 
   auto ttf_password_generation_bridge =
       std::make_unique<MockTouchToFillPasswordGenerationBridge>();
@@ -524,6 +530,8 @@ TEST_F(PasswordGenerationControllerTest,
   controller()->OnAutomaticGenerationAvailable(
       active_driver(), GetTestGenerationUIData1(),
       /*has_saved_credentials=*/false, gfx::RectF(100, 20));
+  histogram_tester.ExpectUniqueSample(kTouchToFillTriggerOutcomeHistogramName,
+                                      TouchToFillOutcome::kShown, 1);
   // Removes the keyboard suppression callback from the render widget host. It
   // needs to be done before the `PasswordGenerationController` destructor is
   // called.
@@ -559,6 +567,7 @@ TEST_F(PasswordGenerationControllerTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       password_manager::features::kPasswordGenerationBottomSheet);
+  base::HistogramTester histogram_tester;
 
   auto ttf_password_generation_bridge =
       std::make_unique<MockTouchToFillPasswordGenerationBridge>();
@@ -578,12 +587,15 @@ TEST_F(PasswordGenerationControllerTest,
   controller()->OnAutomaticGenerationAvailable(
       active_driver(), GetTestGenerationUIData1(),
       /*has_saved_credentials=*/false, gfx::RectF(100, 20));
+  histogram_tester.ExpectUniqueSample(kTouchToFillTriggerOutcomeHistogramName,
+                                      TouchToFillOutcome::kFailedToDisplay, 1);
 }
 
 TEST_F(PasswordGenerationControllerTest,
        DoesNotShowGenerationBottomSheetIfSavedPasswordsAvailable) {
   base::test::ScopedFeatureList feature_list(
       password_manager::features::kPasswordGenerationBottomSheet);
+  base::HistogramTester histogram_tester;
 
   // Password generation bottom sheet must not show up. Keyboard accessory
   // should show up instead.
@@ -595,12 +607,16 @@ TEST_F(PasswordGenerationControllerTest,
   controller()->OnAutomaticGenerationAvailable(
       active_driver(), GetTestGenerationUIData1(),
       /*has_saved_credentials=*/true, gfx::RectF(100, 20));
+  histogram_tester.ExpectUniqueSample(kTouchToFillTriggerOutcomeHistogramName,
+                                      TouchToFillOutcome::kHasSavedCredentials,
+                                      1);
 }
 
 TEST_F(PasswordGenerationControllerTest,
        DoesNotShowGenerationBottomSheetIfDismissCountAtLeast4) {
   base::test::ScopedFeatureList feature_list(
       password_manager::features::kPasswordGenerationBottomSheet);
+  base::HistogramTester histogram_tester;
 
   pref_service()->SetInteger(
       password_manager::prefs::kPasswordGenerationBottomSheetDismissCount, 4);
@@ -615,6 +631,9 @@ TEST_F(PasswordGenerationControllerTest,
   controller()->OnAutomaticGenerationAvailable(
       active_driver(), GetTestGenerationUIData1(),
       /*has_saved_credentials=*/false, gfx::RectF(100, 20));
+  histogram_tester.ExpectUniqueSample(
+      kTouchToFillTriggerOutcomeHistogramName,
+      TouchToFillOutcome::kDismissed4TimesInARow, 1);
 }
 
 TEST_F(PasswordGenerationControllerTest,
@@ -622,6 +641,7 @@ TEST_F(PasswordGenerationControllerTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       password_manager::features::kPasswordGenerationBottomSheet);
+  base::HistogramTester histogram_tester;
   auto ttf_password_generation_bridge =
       std::make_unique<FakeTouchToFillPasswordGenerationBridge>();
   FakeTouchToFillPasswordGenerationBridge* ttf_password_generation_bridge_ptr =
@@ -641,6 +661,8 @@ TEST_F(PasswordGenerationControllerTest,
   controller()->OnAutomaticGenerationAvailable(
       active_driver(), GetTestGenerationUIData1(),
       /*has_saved_credentials=*/false, gfx::RectF(100, 20));
+  histogram_tester.ExpectBucketCount(kTouchToFillTriggerOutcomeHistogramName,
+                                     TouchToFillOutcome::kShown, 1);
 
   ttf_password_generation_bridge_ptr->OnDismissed(
       /*env=*/nullptr, /*generated_password_accepted=*/false);
@@ -652,6 +674,9 @@ TEST_F(PasswordGenerationControllerTest,
   controller()->OnAutomaticGenerationAvailable(
       active_driver(), GetTestGenerationUIData1(),
       /*has_saved_credentials=*/false, gfx::RectF(100, 20));
+  histogram_tester.ExpectBucketCount(kTouchToFillTriggerOutcomeHistogramName,
+                                     TouchToFillOutcome::kShownBefore, 1);
+
   // Removes the keyboard suppression callback from the render widget host. It
   // needs to be done before the `PasswordGenerationController` destructor is
   // called.

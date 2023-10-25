@@ -107146,6 +107146,14 @@ would be helpful to identify which type is being sent.
   <int value="4" label="Selected Hybrid"/>
 </enum>
 
+<enum name="TouchToFillPasswordGenerationTriggerOutcome">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Stored credentials present, not shown"/>
+  <int value="2" label="Was already dismissed max times, not shown"/>
+  <int value="3" label="Already shown once for this page, not shown"/>
+  <int value="4" label="UI error, not shown"/>
+</enum>
+
 <enum name="TouchType">
   <int value="0" label="None"/>
   <int value="1" label="Finger"/>

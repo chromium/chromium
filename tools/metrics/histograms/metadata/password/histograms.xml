@@ -3578,6 +3578,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.TouchToFill.PasswordGeneration.TriggerOutcome"
+    enum="TouchToFillPasswordGenerationTriggerOutcome"
+    expires_after="2024-04-01">
+  <owner>atsvirchkova@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Records the outcome of an attempt to trigger the password generation bottom
+    sheet. It either records success or the reason why the sheet was not shown.
+    The metric is recorded when the browser process receives the notification
+    about password generation being available and only if the generation bottom
+    sheet feature is on. Important: due to the renderer issuing 2 generation
+    available calls per field focus event, all buckets apart from
+    &quot;Shown&quot; are double-counted.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.TouchToFill.PasswordGeneration.UserChoice"
     enum="GenerationDialogChoice" expires_after="2024-06-01">
   <owner>atsvirchkova@google.com</owner>
