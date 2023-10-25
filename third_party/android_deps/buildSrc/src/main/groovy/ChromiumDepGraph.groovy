@@ -211,47 +211,50 @@ class ChromiumDepGraph {
             licenseUrl: 'https://raw.githubusercontent.com/hrldcpr/pcollections/master/LICENSE',
             licenseName: 'The MIT License'),
         org_robolectric_annotations: new PropertyOverride(
-            licensePath: 'licenses/Codehaus_License-2009.txt',
+            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
             licenseName: 'MIT'),
         org_robolectric_junit: new PropertyOverride(
-            licensePath: 'licenses/Codehaus_License-2009.txt',
+            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
             licenseName: 'MIT'),
         org_robolectric_nativeruntime: new PropertyOverride(
-            licensePath: 'licenses/Codehaus_License-2009.txt',
+            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
             licenseName: 'MIT'),
         org_robolectric_nativeruntime_dist_compat: new PropertyOverride(
-            licensePath: 'licenses/Codehaus_License-2009.txt',
+            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
             licenseName: 'MIT'),
         org_robolectric_pluginapi: new PropertyOverride(
-            licensePath: 'licenses/Codehaus_License-2009.txt',
+            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
             licenseName: 'MIT'),
         org_robolectric_plugins_maven_dependency_resolver: new PropertyOverride(
-            licensePath: 'licenses/Codehaus_License-2009.txt',
+            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
             licenseName: 'MIT'),
         org_robolectric_resources: new PropertyOverride(
-            licensePath: 'licenses/Codehaus_License-2009.txt',
+            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
             licenseName: 'MIT'),
         org_robolectric_robolectric: new PropertyOverride(
-            licensePath: 'licenses/Codehaus_License-2009.txt',
+            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
             licenseName: 'MIT'),
         org_robolectric_sandbox: new PropertyOverride(
-            licensePath: 'licenses/Codehaus_License-2009.txt',
+            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
             licenseName: 'MIT'),
         org_robolectric_shadowapi: new PropertyOverride(
-            licensePath: 'licenses/Codehaus_License-2009.txt',
+            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
             licenseName: 'MIT'),
         org_robolectric_shadows_framework: new PropertyOverride(
-            licensePath: 'licenses/Codehaus_License-2009.txt',
+            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
             licenseName: 'MIT'),
         org_robolectric_shadows_multidex: new PropertyOverride(exclude: true),
         org_robolectric_shadows_playservices: new PropertyOverride(
-            licensePath: 'licenses/Codehaus_License-2009.txt',
+            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
+            licenseName: 'MIT'),
+        org_robolectric_shadows_versioning: new PropertyOverride(
+            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
             licenseName: 'MIT'),
         org_robolectric_utils: new PropertyOverride(
-            licensePath: 'licenses/Codehaus_License-2009.txt',
+            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
             licenseName: 'MIT'),
         org_robolectric_utils_reflector: new PropertyOverride(
-            licensePath: 'licenses/Codehaus_License-2009.txt',
+            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
             licenseName: 'MIT'),
         // Prevent version changing ~weekly. https://crbug.com/1257197
         org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm: new PropertyOverride(

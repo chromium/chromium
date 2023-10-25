@@ -176,6 +176,8 @@ dependencies {
     testCompile "org.robolectric:shadows-multidex:${robolectricVersion}"
     testCompile "org.robolectric:shadows-playservices:${robolectricVersion}"
     testCompile "org.robolectric:utils:${robolectricVersion}"
+    // TODO(crbug.comA1484130): Remove entry once CIPD is populated.
+    testCompile "org.robolectric:shadows-versioning:4.11-beta-2"
 }
 
 task setUpRepository(type: BuildConfigGenerator) {
