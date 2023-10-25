@@ -284,34 +284,6 @@ wtf_size_t FindScopePositionPrecedingElement(const Element& element,
                               : wtf_size_t(std::prev(it) - scopes.begin());
 }
 
-// When the first counter of the scope is deleted, other counters
-// in the scope may be reparented to one of the scope's children.
-CountersScope* TakeNewParentScopeDuringRemove(CountersScope& scope,
-                                              const AtomicString& identifier) {
-  CHECK(!scope.Counters().empty());
-  // If we have parent, always reparent to it.
-  if (scope.Parent()) {
-    return scope.Parent();
-  }
-  // If not, we need to find the new parent for our counters among our children
-  // scopes.
-  if (scope.Children().empty()) {
-    return nullptr;
-  }
-  // Find the position inside children scopes, which precedes the first
-  // counter's element.
-  wtf_size_t pos =
-      FindScopePositionPrecedingElement(scope.RootElement(), scope.Children());
-  if (pos == kNotFound) {
-    return nullptr;
-  }
-  CountersScope* new_parent = scope.Children()[pos];
-  // Remove that child from our children.
-  new_parent->SetParent(nullptr);
-  scope.Children().EraseAt(pos);
-  return new_parent;
-}
-
 }  // namespace
 
 void CountersScopeTree::Trace(Visitor* visitor) const {
@@ -383,12 +355,17 @@ void CountersScopeTree::CreateScope(CounterNode& counter,
   new_scope->SetStyleScope(style_scope_);
   new_scope->AttachCounter(counter);
   auto it = scopes_.find(identifier);
-  if (it == scopes_.end()) {
+  if (it != scopes_.end()) {
+    // Insert new scope in correct pre-order traversal order with other scopes'
+    // root elements.
+    ScopesVector& scopes = *it->value;
+    wtf_size_t pos = FindScopePositionPrecedingElement(element, scopes);
+    scopes.insert(pos + 1, new_scope);
+  } else {
     scopes_.insert(identifier,
                    MakeGarbageCollected<ScopesVector>(1u, new_scope));
     return;
   }
-  ScopesVector& scopes = *it->value;
   // As per https://drafts.csswg.org/css-lists/#inheriting-counters
   // we don't take counter from previous sibling, if we create a new counter.
   if (parent && parent->RootElement().ParentOrShadowHostElement() ==
@@ -399,15 +376,12 @@ void CountersScopeTree::CreateScope(CounterNode& counter,
   // We might've become parent to our parent's children scopes or counters. If
   // so, correctly reparent things.
   if (!parent) {
+    ScopesVector& scopes = *it->value;
     ReparentFosterScopes(*new_scope, scopes);
   } else {
     ReparentParentScopes(*new_scope, *parent);
     parent->AppendChild(*new_scope);
   }
-  // Insert new scope in correct pre-order traversal order with other scopes'
-  // root elements.
-  wtf_size_t pos = FindScopePositionPrecedingElement(element, scopes);
-  scopes.insert(pos + 1, new_scope);
 }
 
 void CountersScopeTree::AttachCounter(CounterNode& counter,
@@ -479,19 +453,16 @@ void CountersScopeTree::RemoveEmptyScope(CountersScope& scope,
 void CountersScopeTree::RemoveCounterFromScope(CounterNode& counter,
                                                CountersScope& scope,
                                                const AtomicString& identifier) {
-  // If the counter has been a root of the scope,
+  // If the counter has been a root of the scope with parent,
   // we should reparent other counters in the scope, as they
-  // can now be in other scope. Else, just remove the counter,
+  // will now be in scope of parent's root counter, as only one
+  // counter-reset can be in the scope. Else, just remove the counter,
   // and if it has been the first one, but with no parent, the next counter
   // will become a new root.
-  if (&counter == &scope.FirstCounter()) {
+  if (&counter == &scope.FirstCounter() && scope.Parent()) {
     scope.Counters().EraseAt(0u);
     if (scope.Counters().size()) {
-      CountersScope* new_parent =
-          TakeNewParentScopeDuringRemove(scope, identifier);
-      if (new_parent) {
-        MoveScopeDuringRemove(scope, *new_parent, counter.PreviousInParent());
-      }
+      MoveScopeDuringRemove(scope, *scope.Parent(), counter.PreviousInParent());
     }
   } else {
     scope.DetachCounter(counter);
@@ -522,14 +493,6 @@ void CountersScopeTree::RemoveCounterForLayoutCounter(LayoutCounter& counter) {
   // just delete the counter.
   if (counter_node == &scope->FirstCounter()) {
     scope->Counters().EraseAt(0u);
-    if (scope->Counters().size()) {
-      CountersScope* new_parent =
-          TakeNewParentScopeDuringRemove(*scope, counter.Identifier());
-      if (new_parent) {
-        MoveScopeDuringRemove(*scope, *new_parent,
-                              counter_node->PreviousInParent());
-      }
-    }
   } else {
     scope->DetachCounter(*counter_node);
   }
