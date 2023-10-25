@@ -28,6 +28,7 @@ class COMPONENT_EXPORT(LORGNETTE_MANAGER) FakeLorgnetteManagerClient
   void Init(dbus::Bus* bus) override;
 
   void ListScanners(
+      bool local_only,
       chromeos::DBusMethodCallback<lorgnette::ListScannersResponse> callback)
       override;
   void GetScannerCapabilities(
