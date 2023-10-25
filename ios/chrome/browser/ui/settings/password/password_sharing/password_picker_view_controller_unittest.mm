@@ -44,6 +44,16 @@ class PasswordPickerViewControllerTest : public ChromeTableViewControllerTest {
         static_cast<PasswordPickerViewController*>(controller());
     [password_picker_controller setCredentials:credentials];
   }
+
+  void CheckCellAccessoryType(UITableViewCellAccessoryType accessoryType,
+                              int section,
+                              int row) {
+    UITableViewCell* cell =
+        [controller() tableView:controller().tableView
+            cellForRowAtIndexPath:[NSIndexPath indexPathForRow:row
+                                                     inSection:section]];
+    EXPECT_EQ(cell.accessoryType, accessoryType);
+  }
 };
 
 TEST_F(PasswordPickerViewControllerTest, TestPasswordPickerLayout) {
@@ -61,4 +71,46 @@ TEST_F(PasswordPickerViewControllerTest, TestPasswordPickerLayout) {
         ([NSString stringWithFormat:@"%@%d%@", @"www.example", i, @".com"]),
         base::SysUTF8ToNSString(item.URL.gurl.host()));
   }
+}
+
+TEST_F(PasswordPickerViewControllerTest, TestNextButtonEnabledByDefault) {
+  SetCredentials(/*amount=*/3);
+
+  EXPECT_EQ(NumberOfSections(), 1);
+  EXPECT_EQ(NumberOfItemsInSection(0), 3);
+
+  PasswordPickerViewController* passwordPickerController =
+      base::apple::ObjCCastStrict<PasswordPickerViewController>(controller());
+  EXPECT_TRUE(
+      passwordPickerController.navigationItem.rightBarButtonItem.isEnabled);
+}
+
+TEST_F(PasswordPickerViewControllerTest, TestSettingAccessoryType) {
+  SetCredentials(/*amount=*/4);
+
+  EXPECT_EQ(NumberOfSections(), 1);
+  EXPECT_EQ(NumberOfItemsInSection(0), 4);
+
+  // Check that the first row has a checkmark by default.
+  CheckCellAccessoryType(UITableViewCellAccessoryCheckmark, 0, 0);
+  CheckCellAccessoryType(UITableViewCellAccessoryNone, 0, 1);
+  CheckCellAccessoryType(UITableViewCellAccessoryNone, 0, 2);
+  CheckCellAccessoryType(UITableViewCellAccessoryNone, 0, 3);
+
+  // Select last row.
+  PasswordPickerViewController* passwordPickerController =
+      base::apple::ObjCCastStrict<PasswordPickerViewController>(controller());
+  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:3 inSection:0];
+  [passwordPickerController.tableView
+      selectRowAtIndexPath:indexPath
+                  animated:NO
+            scrollPosition:UITableViewScrollPositionNone];
+  [passwordPickerController tableView:passwordPickerController.tableView
+              didSelectRowAtIndexPath:indexPath];
+
+  // Check that the last row has a checkmark.
+  CheckCellAccessoryType(UITableViewCellAccessoryNone, 0, 0);
+  CheckCellAccessoryType(UITableViewCellAccessoryNone, 0, 1);
+  CheckCellAccessoryType(UITableViewCellAccessoryNone, 0, 2);
+  CheckCellAccessoryType(UITableViewCellAccessoryCheckmark, 0, 3);
 }

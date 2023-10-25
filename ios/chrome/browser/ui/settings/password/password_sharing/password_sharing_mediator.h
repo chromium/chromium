@@ -45,14 +45,14 @@ class IdentityManager;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Fetches corresponding password forms for all `selectedCredentials` and
-// invokes SendPasswords method of PasswordSenderService with all forms for each
-// of the `selectedRecipients`.
-- (void)sendSelectedPasswordsToSelectedRecipients;
+// Fetches corresponding password forms for `selectedCredential` and invokes
+// SendPasswords method of PasswordSenderService with all forms for each of the
+// `selectedRecipients`.
+- (void)sendSelectedCredentialToSelectedRecipients;
 
-// Credentials selected by the user to be shared.
-@property(nonatomic, assign) std::vector<password_manager::CredentialUIEntry>
-    selectedCredentials;
+// Credential selected by the user to be shared.
+@property(nonatomic, assign)
+    password_manager::CredentialUIEntry selectedCredential;
 
 // Recipients selected by the user to receive the shared passwords.
 @property(nonatomic, strong)

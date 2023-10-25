@@ -131,9 +131,9 @@ using password_manager::FetchFamilyMembersRequestStatus;
                                   GetForBrowserState(browserState)];
 
   // With more than 1 credential an additional UI will be presented to select
-  // which ones should be shared.
+  // which one should be shared.
   if (_credentials.size() == 1) {
-    self.mediator.selectedCredentials = _credentials;
+    self.mediator.selectedCredential = _credentials[0];
   }
 }
 
@@ -197,10 +197,9 @@ using password_manager::FetchFamilyMembersRequestStatus;
 }
 
 - (void)passwordPickerCoordinator:(PasswordPickerCoordinator*)coordinator
-             didSelectCredentials:
-                 (const std::vector<password_manager::CredentialUIEntry>&)
-                     credentials {
-  self.mediator.selectedCredentials = credentials;
+              didSelectCredential:
+                  (const password_manager::CredentialUIEntry&)credential {
+  self.mediator.selectedCredential = credential;
   [self startFamilyPickerCoordinator];
 }
 
@@ -249,7 +248,7 @@ using password_manager::FetchFamilyMembersRequestStatus;
 }
 
 - (void)startPasswordSharing {
-  [self.mediator sendSelectedPasswordsToSelectedRecipients];
+  [self.mediator sendSelectedCredentialToSelectedRecipients];
 }
 
 #pragma mark - Private
@@ -287,10 +286,8 @@ using password_manager::FetchFamilyMembersRequestStatus;
 
 - (void)startSharingStatusCoordinator {
   [self.sharingStatusCoordinator stop];
-  // TODO(crbug.com/1463882): Remove multiple credential selection, before it's
-  // done use the first one.
   password_manager::CredentialUIEntry credential =
-      self.mediator.selectedCredentials[0];
+      self.mediator.selectedCredential;
   self.sharingStatusCoordinator = [[SharingStatusCoordinator alloc]
       initWithBaseViewController:self.navigationController
                          browser:self.browser

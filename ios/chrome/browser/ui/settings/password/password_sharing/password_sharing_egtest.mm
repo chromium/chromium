@@ -372,19 +372,16 @@ void SignInAndEnableSync() {
       selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
       performAction:grey_tap()];
 
-  // Check that the next button is not visible without any rows selected.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordPickerNextButtonId)]
-      assertWithMatcher:grey_not(grey_enabled())];
-
-  // Select first row and click "Next".
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(@"username1"),
-                                          grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
+  // Check that the next button is enabled by default.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kPasswordPickerNextButtonId)]
       assertWithMatcher:grey_enabled()];
+
+  // Select second row and click "Next".
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(@"username2"),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kPasswordPickerNextButtonId)]
       performAction:grey_tap()];

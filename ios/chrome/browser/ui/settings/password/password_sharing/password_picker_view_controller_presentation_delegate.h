@@ -17,10 +17,10 @@ struct CredentialUIEntry;
 // Called when the user clicks cancel button or dismisses the view by swiping.
 - (void)passwordPickerWasDismissed:(PasswordPickerViewController*)controller;
 
-// Called when the user clicks next button with selected credentials.
+// Called when the user clicks next button with selected credential.
 - (void)passwordPickerClosed:(PasswordPickerViewController*)controller
-     withSelectedCredentials:
-         (const std::vector<password_manager::CredentialUIEntry>&)credentials;
+      withSelectedCredential:
+          (const password_manager::CredentialUIEntry&)credential;
 
 @end
 

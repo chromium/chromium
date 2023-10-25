@@ -20,9 +20,8 @@ struct CredentialUIEntry;
 
 // Called when the user confirms the selection by clicking the next button.
 - (void)passwordPickerCoordinator:(PasswordPickerCoordinator*)coordinator
-             didSelectCredentials:
-                 (const std::vector<password_manager::CredentialUIEntry>&)
-                     credentials;
+              didSelectCredential:
+                  (const password_manager::CredentialUIEntry&)credential;
 
 @end
 
