@@ -2518,8 +2518,7 @@ error::Error GLES2DecoderPassthroughImpl::DoWritePixelsYUVINTERNAL(
                 "src_yuv_subsampling must be a valid Subsampling");
     return error::kNoError;
   }
-  if (src_yuv_datatype < 0 ||
-      src_yuv_datatype > static_cast<int>(SkYUVAPixmapInfo::DataType::kLast)) {
+  if (src_yuv_datatype > static_cast<int>(SkYUVAPixmapInfo::DataType::kLast)) {
     InsertError(GL_INVALID_ENUM,
                 "src_yuv_datatype must be a valid SkYUVAPixmapInfo::DataType");
     return error::kNoError;
@@ -2708,12 +2707,12 @@ error::Error GLES2DecoderPassthroughImpl::DoReadbackARGBImagePixelsINTERNAL(
   ui::ScopedMakeCurrent smc(lazy_context_->shared_context_state()->context(),
                             lazy_context_->shared_context_state()->surface());
 
-  if (dst_sk_color_type > kLastEnum_SkColorType || dst_sk_color_type < 0) {
+  if (dst_sk_color_type > kLastEnum_SkColorType) {
     InsertError(GL_INVALID_ENUM,
                 "dst_sk_color_type must be a valid SkColorType");
     return error::kNoError;
   }
-  if (dst_sk_alpha_type > kLastEnum_SkAlphaType || dst_sk_alpha_type < 0) {
+  if (dst_sk_alpha_type > kLastEnum_SkAlphaType) {
     InsertError(GL_INVALID_ENUM,
                 "dst_sk_alpha_type must be a valid SkAlphaType");
     return error::kNoError;
