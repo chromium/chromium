@@ -32,16 +32,6 @@ class CertificateViewerUITest : public WebUIMochaBrowserTest {
     set_test_loader_host(chrome::kChromeUIDefaultHost);
   }
 
-  void SubstituteWebContents(content::WebContents** out_new_contents) override {
-    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs = GetCerts();
-    ASSERT_TRUE(certs.back());
-
-    content::WebContents* dialog_contents =
-        ShowCertificateViewer(std::move(certs));
-    ASSERT_TRUE(dialog_contents);
-    *out_new_contents = dialog_contents;
-  }
-
   virtual std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> GetCerts() {
     std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs;
     certs.push_back(
@@ -50,10 +40,18 @@ class CertificateViewerUITest : public WebUIMochaBrowserTest {
   }
 
   void RunTestCase(const std::string& testCase) {
-    RunTestWithoutTestLoader(
-        "certificate_viewer_dialog_test.js",
+    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs = GetCerts();
+    ASSERT_TRUE(certs.back());
+
+    content::WebContents* dialog_contents =
+        ShowCertificateViewer(std::move(certs));
+    ASSERT_TRUE(dialog_contents);
+
+    ASSERT_TRUE(RunTestOnWebContents(dialog_contents,
+        "certificate_viewer_dialog/certificate_viewer_dialog_test.js",
         base::StringPrintf("runMochaTest('CertificateViewer', '%s');",
-                           testCase.c_str()));
+                           testCase.c_str()),
+        /*skip_test_loader=*/ true));
   }
 
  private:

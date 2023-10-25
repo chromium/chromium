@@ -100,7 +100,8 @@ source_set("browser_tests") {
   }
 
   if (enable_webui_certificate_viewer) {
-    sources += [ "certificate_viewer_dialog_browsertest.cc" ]
+    sources +=
+        [ "certificate_viewer_dialog/certificate_viewer_dialog_browsertest.cc" ]
   }
 
   if (is_chromeos_ash) {
@@ -451,7 +452,8 @@ ts_library("build_ts") {
   }
 
   if (enable_webui_certificate_viewer) {
-    in_files += [ "certificate_viewer_dialog_test.js" ]
+    in_files +=
+        [ "certificate_viewer_dialog/certificate_viewer_dialog_test.js" ]
   }
 
   if (!is_chromeos_lacros) {
