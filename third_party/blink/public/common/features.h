@@ -565,6 +565,15 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kLCPCriticalPathPredictorMaxElementLocatorLength;
 
+// The type of LCP elements recorded by LCPP.
+enum class LcppRecordedLcpElementTypes {
+  kAll,
+  kImageOnly,
+};
+
+BLINK_COMMON_EXPORT extern const base::FeatureParam<LcppRecordedLcpElementTypes>
+    kLCPCriticalPathPredictorRecordedLcpElementTypes;
+
 // TODO(crbug.com/1419756): We should merge this to ResourceLoadPriority.
 enum class LcppResourceLoadPriority {
   kMedium,

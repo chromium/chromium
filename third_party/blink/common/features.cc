@@ -1037,6 +1037,16 @@ const base::FeatureParam<bool> kLCPCriticalPathPredictorDryRun{
 const base::FeatureParam<int> kLCPCriticalPathPredictorMaxElementLocatorLength{
     &kLCPCriticalPathPredictor, "lcpp_max_element_locator_length", 1024};
 
+const base::FeatureParam<LcppRecordedLcpElementTypes>::Option
+    lcpp_recorded_element_types[] = {
+        {LcppRecordedLcpElementTypes::kAll, "all"},
+        {LcppRecordedLcpElementTypes::kImageOnly, "image_only"},
+};
+const base::FeatureParam<LcppRecordedLcpElementTypes>
+    kLCPCriticalPathPredictorRecordedLcpElementTypes{
+        &kLCPCriticalPathPredictor, "lcpp_recorded_lcp_element_types",
+        LcppRecordedLcpElementTypes::kImageOnly, &lcpp_recorded_element_types};
+
 const base::FeatureParam<LcppResourceLoadPriority>::Option
     lcpp_resource_load_priorities[] = {
         {LcppResourceLoadPriority::kMedium, "medium"},
