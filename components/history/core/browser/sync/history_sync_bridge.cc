@@ -808,10 +808,6 @@ void HistorySyncBridge::OnURLsDeleted(HistoryBackend* history_backend,
                                       const std::set<GURL>& favicon_urls) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!ShouldCommitRightNow()) {
-    return;
-  }
-
   // If individual URLs get deleted, we're notified about their removed visits
   // via OnVisitDeleted(), so there's nothing to be done here. But if all
   // history is cleared, there are no individual notifications, so handle that
@@ -857,17 +853,15 @@ void HistorySyncBridge::OnVisitUpdated(const VisitRow& visit_row,
 void HistorySyncBridge::OnVisitDeleted(const VisitRow& visit_row) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!ShouldCommitRightNow()) {
-    return;
-  }
-
   // No need to send an actual deletion: Either this was an expiry, in which
   // no deletion should be sent, or if it's an actual deletion, then a
   // HistoryDeleteDirective will take care of that. Just untrack the entity and
   // delete its metadata (just in case this entity was waiting to be committed -
   // otherwise no metadata exists anyway).
   std::string storage_key = GetStorageKeyFromVisitRow(visit_row);
-  sync_metadata_database_->ClearEntityMetadata(syncer::HISTORY, storage_key);
+  if (sync_metadata_database_) {
+    sync_metadata_database_->ClearEntityMetadata(syncer::HISTORY, storage_key);
+  }
   change_processor()->UntrackEntityForStorageKey(storage_key);
 }
 
@@ -1192,8 +1186,9 @@ bool HistorySyncBridge::UpdateEntityInBackend(
 }
 
 void HistorySyncBridge::UntrackAndClearMetadataForAllEntities() {
-  DCHECK(sync_metadata_database_);
-  sync_metadata_database_->ClearAllEntityMetadata();
+  if (sync_metadata_database_) {
+    sync_metadata_database_->ClearAllEntityMetadata();
+  }
   for (const std::string& storage_key :
        change_processor()->GetAllTrackedStorageKeys()) {
     change_processor()->UntrackEntityForStorageKey(storage_key);
