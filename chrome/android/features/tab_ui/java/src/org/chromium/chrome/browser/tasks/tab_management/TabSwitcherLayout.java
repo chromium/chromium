@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.compositor.scene_layer.SolidColorSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.TabListSceneLayer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.hub.ShrinkExpandImageView;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -185,7 +186,7 @@ public class TabSwitcherLayout extends Layout {
 
     private HideTabCallback mHideTabCallback;
 
-    private TabImageView mTabJavaView;
+    private ShrinkExpandImageView mTabJavaView;
 
     public TabSwitcherLayout(Context context, LayoutUpdateHost updateHost,
             LayoutStateProvider layoutStateProvider, LayoutRenderHost renderHost,
@@ -207,7 +208,7 @@ public class TabSwitcherLayout extends Layout {
             reportAnimationPerf(metrics, mTransitionStartTime, mAnimationTransitionType);
         });
 
-        mTabJavaView = new TabImageView(context);
+        mTabJavaView = new ShrinkExpandImageView(context);
         mTabJavaView.setVisibility(View.GONE);
         mController.getTabSwitcherContainer().addView(mTabJavaView,
                 new ViewGroup.LayoutParams(Math.round(getWidth()), Math.round(getHeight())));
@@ -720,7 +721,7 @@ public class TabSwitcherLayout extends Layout {
         mRunningNewTabAnimation = true;
         mShowEmptyLayer = true;
         mTabJavaView.invalidate();
-        mTabJavaView.setOnNextLayoutRunnable(
+        mTabJavaView.runOnNextLayout(
                 () -> {
                     mTabJavaView.setVisibility(View.VISIBLE);
                     if (mNewTabAnimation != null) {
@@ -742,7 +743,7 @@ public class TabSwitcherLayout extends Layout {
             // If we are forcing the animation to finish treat this identically to a timeout.
             runner.runAnimationDueToTimeout();
         }
-        mTabJavaView.runOnNextLayoutRunnable();
+        mTabJavaView.runOnNextLayoutRunnables();
         if (mNewTabAnimation != null) {
             if (mNewTabAnimation.isStarted()) {
                 mNewTabAnimation.end();
@@ -947,11 +948,11 @@ public class TabSwitcherLayout extends Layout {
                     }
                 });
 
-        // The animation needs to be deferred so that the TabImageView has been laid out before the
-        // animation starts otherwise it might jank.
+        // The animation needs to be deferred so that the ShrinkExpandImageView has been laid out
+        // before the animation starts otherwise it might jank.
         mAnimationTransitionType = TransitionType.SHRINK;
         mTabJavaView.invalidate();
-        mTabJavaView.setOnNextLayoutRunnable(
+        mTabJavaView.runOnNextLayout(
                 () -> {
                     mTabJavaView.setVisibility(View.VISIBLE);
                     mAnimationTracker.onStart();
@@ -1019,7 +1020,7 @@ public class TabSwitcherLayout extends Layout {
 
                             mAnimationTransitionType = TransitionType.EXPAND;
                             mTabJavaView.invalidate();
-                            mTabJavaView.setOnNextLayoutRunnable(
+                            mTabJavaView.runOnNextLayout(
                                     () -> {
                                         mAnimationTracker.onStart();
                                         if (mTabToSwitcherAnimation != null) {

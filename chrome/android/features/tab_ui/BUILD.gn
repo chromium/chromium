@@ -120,6 +120,8 @@ android_library("unit_device_javatests") {
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/commerce/price_tracking/android:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/hub:factory_java",
+    "//chrome/browser/hub:java",
     "//chrome/browser/optimization_guide/android:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",

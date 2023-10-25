@@ -28,6 +28,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/PresetHubLayoutAnimatorProvider.java",
     "android/java/src/org/chromium/chrome/browser/hub/RunOnNextLayout.java",
     "android/java/src/org/chromium/chrome/browser/hub/RunOnNextLayoutDelegate.java",
+    "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandImageView.java",
   ]
 
   deps = [
@@ -55,6 +56,7 @@ robolectric_library("junit") {
     "android/java/src/org/chromium/chrome/browser/hub/HubFieldTrialTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneListBuilderUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/RunOnNextLayoutDelegateUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandImageViewUnitTest.java",
   ]
 
   deps = [

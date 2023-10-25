@@ -32,6 +32,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.hub.ShrinkExpandImageView;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -57,7 +58,7 @@ public class GtsRectAnimatorTest extends BlankUiTestActivityTestCase {
     }
 
     private FrameLayout mRootView;
-    private TabImageView mView;
+    private ShrinkExpandImageView mView;
 
     @Before
     public void setUp() throws Exception {
@@ -73,9 +74,9 @@ public class GtsRectAnimatorTest extends BlankUiTestActivityTestCase {
                                     ViewGroup.LayoutParams.MATCH_PARENT,
                                     ViewGroup.LayoutParams.MATCH_PARENT));
 
-                    mView = new TabImageView(activity);
+                    mView = new ShrinkExpandImageView(activity);
                     mRootView.addView(mView);
-                    mView.setOnNextLayoutRunnable(onFirstLayout::notifyCalled);
+                    mView.runOnNextLayout(onFirstLayout::notifyCalled);
                 });
 
         // Ensure layout has completed so getWidth() and getHeight() are non-zero.
@@ -102,7 +103,7 @@ public class GtsRectAnimatorTest extends BlankUiTestActivityTestCase {
                         startX + thumbnailSize.getWidth(),
                         startY + thumbnailSize.getHeight());
 
-        setupTabImageView(startValue);
+        setupShrinkExpandImageView(startValue);
         GtsRectAnimator animator = createAnimator(startValue, endValue, thumbnailSize);
 
         stepThroughAnimation("expand_rect", animator, startValue, endValue, ANIMATION_STEPS);
@@ -127,7 +128,7 @@ public class GtsRectAnimatorTest extends BlankUiTestActivityTestCase {
                         startX + thumbnailSize.getWidth(),
                         Math.round(thumbnailSize.getHeight() / 2.0f));
 
-        setupTabImageView(startValue);
+        setupShrinkExpandImageView(startValue);
         GtsRectAnimator animator = createAnimator(startValue, endValue, thumbnailSize);
 
         stepThroughAnimation(
@@ -154,7 +155,7 @@ public class GtsRectAnimatorTest extends BlankUiTestActivityTestCase {
                         endX + thumbnailSize.getWidth(),
                         endY + thumbnailSize.getHeight());
 
-        setupTabImageView(startValue);
+        setupShrinkExpandImageView(startValue);
         GtsRectAnimator animator = createAnimator(startValue, endValue, thumbnailSize);
 
         stepThroughAnimation("shrink_rect_rect", animator, startValue, endValue, ANIMATION_STEPS);
@@ -228,7 +229,7 @@ public class GtsRectAnimatorTest extends BlankUiTestActivityTestCase {
      *
      * @param startValue The rect to position the image view at.
      */
-    private void setupTabImageView(Rect startValue) throws Exception {
+    private void setupShrinkExpandImageView(Rect startValue) throws Exception {
         CallbackHelper onNextLayout = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -244,11 +245,11 @@ public class GtsRectAnimatorTest extends BlankUiTestActivityTestCase {
                     mView.setTranslationX(0.0f);
                     mView.setTranslationY(0.0f);
                     mView.setVisibility(View.VISIBLE);
-                    mView.setOnNextLayoutRunnable(onNextLayout::notifyCalled);
+                    mView.runOnNextLayout(onNextLayout::notifyCalled);
                 });
 
-        // Wait for a layout to make sure the TabImageView is positioned correctly before starting
-        // to step through the animation.
+        // Wait for a layout to make sure the ShrinkExpandImageView is positioned correctly before
+        // starting to step through the animation.
         onNextLayout.waitForNext();
     }
 
