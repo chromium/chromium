@@ -72,6 +72,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
           AudioDevicePriorityQueue;
   typedef std::vector<uint64_t> NodeIdList;
 
+  enum class SurveyType {
+    kGeneral,
+    kBluetooth,
+  };
+
+  static constexpr char kSurveyNameKey[] = "SurveyName";
+  static constexpr char kSurveyNameGeneral[] = "GENERAL";
+  static constexpr char kSurveyNameBluetooth[] = "BLUETOOTH";
+
   // Key-value mapping type for audio survey specific data.
   // For audio satisfaction survey, it contains
   //  - StreamType: Usage of the stream, e.g., multimedia.
@@ -79,6 +88,27 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   //  - NodeType: Pair of the active input/output device types, e.g., USB_USB.
   // The content can be extended when other types of survey is added.
   typedef base::flat_map<std::string, std::string> AudioSurveyData;
+  class AudioSurvey {
+   public:
+    AudioSurvey();
+    ~AudioSurvey();
+    AudioSurvey(const AudioSurvey&) = delete;
+    AudioSurvey& operator=(const AudioSurvey&) = delete;
+
+    SurveyType type() const { return type_; }
+    AudioSurveyData data() const { return data_; }
+
+    void set_type(SurveyType type) { type_ = type; }
+    void clear_data() { data_.clear(); }
+    void AddData(std::string key, std::string value) {
+      data_.emplace(key, value);
+    }
+
+   private:
+    SurveyType type_;
+    AudioSurveyData data_;
+  };
+
   static constexpr int32_t kSystemAecGroupIdNotAvailable = -1;
 
   enum class InputMuteChangeMethod {
@@ -191,9 +221,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
     // for >= 30 seconds is closed.
     // CRAS also has full control on what data to send to Chrome. These survey
     // specific data will be attached with each survey response for analysis.
-    // Currently this only supports one general audio satisfaction survey and
-    // should be modified and extended when other types of survey is added.
-    virtual void OnSurveyTriggered(const AudioSurveyData& survey_specific_data);
+    // Currently this supports general audio and Bluetooth audio surveys.
+    // The survey to trigger is determined by the type of the `AudioSurvey`
+    // passed in.
+    virtual void OnSurveyTriggered(const AudioSurvey& survey);
 
     // Called when a speak-on-mute is detected.
     virtual void OnSpeakOnMuteDetected();
@@ -900,6 +931,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Handle dbus callback for GetNumStreamIgnoreUiGains.
   void HandleGetNumStreamIgnoreUiGains(
       absl::optional<int32_t> num_stream_ignore_ui_gains);
+
+  // Static helper function to abstract the |AudioSurvey| from input
+  // |survey_specific_data|.
+  static std::unique_ptr<CrasAudioHandler::AudioSurvey> AbstractAudioSurvey(
+      const base::flat_map<std::string, std::string>& survey_specific_data);
 
   mojo::Remote<media_session::mojom::MediaControllerManager>
       media_controller_manager_;

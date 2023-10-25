@@ -138,6 +138,10 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   void SetActiveInputStreamsWithPermission(
       const ClientTypeToInputStreamCount& input_streams);
 
+  // Generates fake signal for SurveyTriggered.
+  void NotifySurveyTriggered(
+      const base::flat_map<std::string, std::string>& survey_specific_data);
+
   const AudioNodeList& node_list() const { return node_list_; }
   const uint64_t& active_input_node_id() const { return active_input_node_id_; }
   const uint64_t& active_output_node_id() const {
