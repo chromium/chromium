@@ -230,6 +230,7 @@ ci.builder(
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-desktop-engprod@google.com",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -535,6 +536,7 @@ ci.builder(
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-desktop-engprod@google.com",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -570,6 +572,7 @@ ci.builder(
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-desktop-engprod@google.com",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -608,6 +611,7 @@ ci.builder(
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-desktop-engprod@google.com",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -749,6 +753,7 @@ ci.builder(
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-desktop-engprod@google.com",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -783,6 +788,7 @@ ci.thin_tester(
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-desktop-engprod@google.com",
 )
 
 ci.builder(
@@ -814,6 +820,7 @@ ci.builder(
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-desktop-engprod@google.com",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 

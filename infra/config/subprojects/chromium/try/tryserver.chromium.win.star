@@ -64,6 +64,7 @@ try_.builder(
     mirrors = [
         "ci/win-archive-rel",
     ],
+    contact_team_email = "chrome-desktop-engprod@google.com",
 )
 
 try_.builder(
@@ -143,6 +144,7 @@ try_.builder(
     mirrors = [
         "ci/win32-archive-rel",
     ],
+    contact_team_email = "chrome-desktop-engprod@google.com",
 )
 
 try_.builder(

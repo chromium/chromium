@@ -19,6 +19,7 @@ ci.defaults.set(
     sheriff_rotations = sheriff_rotations.CHROMIUM,
     tree_closing = True,
     main_console_view = "main",
+    contact_team_email = "chrome-desktop-engprod@google.com",
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,

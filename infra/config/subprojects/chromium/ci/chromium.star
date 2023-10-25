@@ -319,6 +319,7 @@ ci.builder(
         category = "lacros",
         short_name = "rel",
     ),
+    contact_team_email = "chrome-desktop-engprod@google.com",
     properties = {
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
@@ -363,6 +364,7 @@ ci.builder(
         category = "lacros",
         short_name = "arm",
     ),
+    contact_team_email = "chrome-desktop-engprod@google.com",
     properties = {
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
@@ -624,6 +626,7 @@ ci.builder(
         category = "win|rel",
         short_name = "64",
     ),
+    contact_team_email = "chrome-desktop-engprod@google.com",
     properties = {
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
@@ -661,6 +664,7 @@ ci.builder(
         category = "win|off",
         short_name = "64",
     ),
+    contact_team_email = "chrome-desktop-engprod@google.com",
     # TODO(crbug.com/1155416) builds with PGO change take long time.
     execution_timeout = 7 * time.hour,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
@@ -689,6 +693,7 @@ ci.builder(
         category = "win|rel",
         short_name = "32",
     ),
+    contact_team_email = "chrome-desktop-engprod@google.com",
     properties = {
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
@@ -726,6 +731,7 @@ ci.builder(
         category = "win|off",
         short_name = "32",
     ),
+    contact_team_email = "chrome-desktop-engprod@google.com",
     # TODO(crbug.com/1155416) builds with PGO change take long time.
     execution_timeout = 7 * time.hour,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
