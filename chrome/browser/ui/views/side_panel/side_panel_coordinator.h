@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/browser/ui/toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry_observer.h"
@@ -55,7 +54,6 @@ class View;
 class SidePanelCoordinator final : public SidePanelRegistryObserver,
                                    public TabStripModelObserver,
                                    public views::ViewObserver,
-                                   public PinnedToolbarActionsModel::Observer,
                                    public SidePanelUI {
  public:
   explicit SidePanelCoordinator(BrowserView* browser_view);
@@ -180,14 +178,6 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   void OnViewVisibilityChanged(views::View* observed_view,
                                views::View* starting_from) override;
 
-  // PinnedToolbarActionsModel::Observer:
-  void OnActionAdded(const actions::ActionId& id) override;
-  void OnActionRemoved(const actions::ActionId& id) override;
-  void OnActionMoved(const actions::ActionId& id,
-                     int from_index,
-                     int to_index) override {}
-  void OnActionsChanged() override {}
-
   // Returns the last active entry or the default entry if no last active
   // entry exists.
   absl::optional<SidePanelEntry::Key> GetLastActiveEntryKey() const;
@@ -300,10 +290,6 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   base::ScopedMultiSourceObservation<SidePanelRegistry,
                                      SidePanelRegistryObserver>
       registry_observations_{this};
-
-  base::ScopedObservation<PinnedToolbarActionsModel,
-                          PinnedToolbarActionsModel::Observer>
-      model_observation_{this};
 };
 
 namespace base {
