@@ -118,9 +118,10 @@ IpPeripheralServiceClient::SetControlCallback ConvertSetCtrlCallbackForDbus(
 }
 
 void GetCtrlDbus(const std::string& dev_path,
+                 const std::vector<uint8_t>& guid,
                  const uint8_t& query_selector,
                  const uint8_t& request,
-                 XuCameraService::GetCtrlCallback callback) const {
+                 XuCameraService::GetCtrlCallback callback) {
   if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&GetCtrlDbus, dev_path, guid, query_selector,
@@ -158,11 +159,11 @@ void GetCtrlDbus(const std::string& dev_path,
     LOG(ERROR) << __func__ << " failed to get IpPeripheralServiceClient";
     std::move(get_control_callback).Run(false, std::vector<uint8_t>());
   } else if (UVC_GET_INFO == request) {
-    if (query_selector >= base::size(kExpectedGetInfo)) {
+    if (query_selector >= sizeof(kExpectedGetInfo)) {
       LOG(ERROR) << __func__ << " GET_INFO for query_selector=["
                  << static_cast<unsigned int>(query_selector)
                  << "] not possible, max is "
-                 << static_cast<unsigned int>(base::size(kExpectedGetInfo));
+                 << static_cast<unsigned int>(sizeof(kExpectedGetInfo));
       std::move(get_control_callback).Run(false, std::vector<uint8_t>());
     } else {
       std::vector<uint8_t> expected_get_info = {
@@ -170,16 +171,17 @@ void GetCtrlDbus(const std::string& dev_path,
       std::move(get_control_callback).Run(true, expected_get_info);
     }
   } else {
-    ip_peripheral_service_client->GetControl(ip_address, meet_xu_guid_le_,
-                                             query_selector, request,
+    ip_peripheral_service_client->GetControl(ip_address, guid, query_selector,
+                                             request,
                                              std::move(get_control_callback));
   }
 }
 
 void SetCtrlDbus(const std::string& dev_path,
+                 const std::vector<uint8_t>& guid,
                  const uint8_t& query_selector,
                  const std::vector<uint8_t>& data,
-                 XuCameraService::SetCtrlCallback callback) const {
+                 XuCameraService::SetCtrlCallback callback) {
   if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&SetCtrlDbus, dev_path, guid, query_selector,
@@ -197,8 +199,8 @@ void SetCtrlDbus(const std::string& dev_path,
     LOG(ERROR) << __func__ << " failed to get IpPeripheralServiceClient";
     std::move(set_control_callback).Run(false);
   } else {
-    ip_peripheral_service_client->SetControl(ip_address, meet_xu_guid_le_,
-                                             query_selector, data,
+    ip_peripheral_service_client->SetControl(ip_address, guid, query_selector,
+                                             data,
                                              std::move(set_control_callback));
   }
 }
@@ -535,8 +537,9 @@ void XuCameraService::GetCtrlWithDevicePath(
   switch (ctrl->which()) {
     case mojom::CtrlType::Tag::kQueryCtrl:
       if (is_ip_camera) {
-        GetCtrlDbus(*dev_path, std::move(ctrl->get_query_ctrl())->selector,
-                    GetRequest(fn), std::move(callback));
+        GetCtrlDbus(*dev_path, meet_xu_guid_le_,
+                    std::move(ctrl->get_query_ctrl())->selector, GetRequest(fn),
+                    std::move(callback));
         return;
       }
       error_code =
@@ -596,8 +599,9 @@ void XuCameraService::SetCtrlWithDevicePath(
   switch (ctrl->which()) {
     case mojom::CtrlType::Tag::kQueryCtrl:
       if (is_ip_camera) {
-        SetCtrlDbus(*dev_path, std::move(ctrl->get_query_ctrl())->selector,
-                    data_, std::move(callback));
+        SetCtrlDbus(*dev_path, meet_xu_guid_le_,
+                    std::move(ctrl->get_query_ctrl())->selector, data_,
+                    std::move(callback));
         return;
       }
       error_code =
@@ -640,7 +644,8 @@ uint8_t XuCameraService::QueryXuControl(const base::ScopedFD& file_descriptor,
 
   if (error < 0) {
     logging::SystemErrorCode err = logging::GetLastSystemErrorCode();
-    LOG(ERROR) << "ioctl call failed. error: " << logging::SystemErrorCodeToString(err);
+    LOG(ERROR) << "ioctl call failed. error: "
+               << logging::SystemErrorCodeToString(err);
     return err;
   }
   return error;
