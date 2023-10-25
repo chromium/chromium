@@ -8600,30 +8600,6 @@
             ]
         }
     ],
-    "IOSMagicStack": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Magic_Stack_Less_Top_Space_20231024",
-                    "params": {
-                        "ReducedNTPTopSpace": "20",
-                        "enable_default_model": "true"
-                    },
-                    "enable_features": [
-                        "IOSParcelTracking",
-                        "MagicStack",
-                        "SafetyCheckMagicStack",
-                        "SegmentationPlatformIosModuleRanker",
-                        "SegmentationPlatformUserVisibleTaskRunner",
-                        "TabResumption"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSNewOverflowMenuIPH": [
         {
             "platforms": [
@@ -9914,6 +9890,30 @@
                     },
                     "enable_features": [
                         "MacWebContentsOcclusion"
+                    ]
+                }
+            ]
+        }
+    ],
+    "MagicStack": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Magic_Stack_Less_Top_Space_20231024",
+                    "params": {
+                        "ReducedNTPTopSpace": "20",
+                        "enable_default_model": "true"
+                    },
+                    "enable_features": [
+                        "IOSParcelTracking",
+                        "MagicStack",
+                        "SafetyCheckMagicStack",
+                        "SegmentationPlatformIosModuleRanker",
+                        "SegmentationPlatformUserVisibleTaskRunner",
+                        "TabResumption"
                     ]
                 }
             ]
