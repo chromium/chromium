@@ -251,11 +251,9 @@ BASE_FEATURE(kSaveRawFilesOnTracing,
 
 // When enabled, CertStoreService will talk to KeyMint instead of Keymaster on
 // ARC-T.
-// When you change the default, you also need to change whether Keymaster
-// or KeyMint is started in ARC. Otherwise, it will not work properly.
 BASE_FEATURE(kSwitchToKeyMintOnT,
              "ArcSwitchToKeyMintOnT",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // On boards that blocks KeyMint at launch, enable this feature to force enable
 // KeyMint.
