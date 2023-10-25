@@ -20,7 +20,10 @@ import type {PreloadScript} from './PreloadScript.js';
 
 /** PreloadScripts can be filtered by BiDi ID or target ID. */
 export type PreloadScriptFilter = Partial<
-  Pick<PreloadScript, 'id'> & Pick<CdpTarget, 'targetId'>
+  Pick<PreloadScript, 'id'> &
+    Pick<CdpTarget, 'targetId'> & {
+      global: boolean;
+    }
 >;
 
 /**
@@ -43,6 +46,15 @@ export class PreloadScriptStorage {
       if (
         filter.targetId !== undefined &&
         !script.targetIds.has(filter.targetId)
+      ) {
+        return false;
+      }
+      if (
+        filter.global !== undefined &&
+        // Global scripts have no contexts
+        ((filter.global && script.contexts !== undefined) ||
+          // Non global scripts always have contexts
+          (!filter.global && script.contexts === undefined))
       ) {
         return false;
       }

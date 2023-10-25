@@ -200,7 +200,9 @@ export class CdpTarget {
 
   /** Loads all top-level preload scripts. */
   async #initAndEvaluatePreloadScripts() {
-    for (const script of this.#preloadScriptStorage.find()) {
+    for (const script of this.#preloadScriptStorage.find({
+      global: true,
+    })) {
       await script.initInTarget(this, true);
     }
   }

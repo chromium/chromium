@@ -895,3 +895,64 @@ async def test_preloadScript_add_respectContextsForOldContexts(
             }
         })
     assert result["result"] == {"type": "undefined"}
+
+
+@pytest.mark.asyncio
+async def test_preloadScript_add_respectContextsForNewContexts(
+        websocket, context_id, html):
+
+    # Add the PreloadScript only to a specific context
+    await execute_command(
+        websocket, {
+            "method": "script.addPreloadScript",
+            "params": {
+                "functionDeclaration": """
+                    () => {
+                        window.FOO = "BAR"
+                    }""",
+                "contexts": [context_id]
+            }
+        })
+
+    # Create a new context after adding PreloadScript
+    result = await execute_command(websocket, {
+        "method": "browsingContext.create",
+        "params": {
+            "type": "tab"
+        }
+    })
+    new_context_id = result['context']
+
+    # Navigate both contexts to trigger PreloadScripts
+    await goto_url(websocket, context_id, html())
+    await goto_url(websocket, new_context_id, html())
+
+    # Expect context with context_id to be affected by PreloadScript
+    result = await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "window.FOO",
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": True,
+                "resultOwnership": "root"
+            }
+        })
+    assert result["result"] == {"type": "string", "value": 'BAR'}
+
+    # Expect context with new_context_id to not be affected by PreloadScript
+    result = await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "window.FOO",
+                "target": {
+                    "context": new_context_id
+                },
+                "awaitPromise": True,
+                "resultOwnership": "root"
+            }
+        })
+    assert result["result"] == {"type": "undefined"}
