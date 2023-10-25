@@ -33,8 +33,7 @@ namespace ash {
 namespace {
 
 const char kPhoneBluetoothAddress[] = "23:45:67:89:AB:CD";
-constexpr auto kTestTime =
-    base::Time::FromMillisecondsSinceUnixEpoch(100000000);
+constexpr auto kTestTime = base::Time::FromSecondsSinceUnixEpoch(100000);
 
 std::string kPhoneHubNudgeFeatureParam = "use_nudge";
 std::string kPhoneHubNudgeFeatureUseNudgeTrue = "true";
@@ -220,10 +219,10 @@ TEST_F(OnboardingNudgeControllerTest, ClickNudgeAndPhoneHubIcon) {
   GetController()->OnNudgeClicked();
   EXPECT_EQ(pref_service()->GetTime(
                 OnboardingNudgeController::kPhoneHubNudgeLastActionTime),
-            kTestTime + base::Milliseconds(3000));
+            kTestTime + base::Seconds(3));
   EXPECT_EQ(pref_service()->GetTime(
                 OnboardingNudgeController::kPhoneHubNudgeLastClickTime),
-            kTestTime + base::Milliseconds(3000));
+            kTestTime + base::Seconds(3));
 
   // Simulate click on Phone Hub icon.
   GetController()->HideNudge();
@@ -259,10 +258,10 @@ TEST_F(OnboardingNudgeControllerTest, ClickPhoneHubIcon) {
   GetController()->HideNudge();
   EXPECT_EQ(pref_service()->GetTime(
                 OnboardingNudgeController::kPhoneHubNudgeLastActionTime),
-            kTestTime + base::Milliseconds(3000));
+            kTestTime + base::Seconds(3));
   EXPECT_EQ(pref_service()->GetTime(
                 OnboardingNudgeController::kPhoneHubNudgeLastClickTime),
-            kTestTime + base::Milliseconds(3000));
+            kTestTime + base::Seconds(3));
 
   histogram_tester_.ExpectTimeBucketCount(
       "MultiDeviceSetup.NudgeActionDuration", base::Seconds(3), 1);

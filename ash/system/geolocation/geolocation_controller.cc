@@ -318,9 +318,6 @@ GeolocationController::GetSunRiseSet(bool sunrise) const {
   // icu::CalendarAstronomer object should be set to a time near local noon.
   // This avoids having the computation flopping over into an adjacent day.
   // See the documentation of icu::CalendarAstronomer::getSunRiseSet().
-  // Note that the icu calendar works with milliseconds since epoch, and
-  // base::Time::FromSecondsSinceUnixEpoch() / InSecondsFSinceUnixEpoch() work
-  // with seconds since epoch.
   const absl::optional<base::Time> midday_today =
       TimeOfDay(12 * 60)
           .SetClock(clock_)
@@ -330,14 +327,14 @@ GeolocationController::GetSunRiseSet(bool sunrise) const {
     return kSunRiseSetUnavailable;
   }
 
-  astro.setTime(midday_today->InSecondsFSinceUnixEpoch() * 1000.0);
+  astro.setTime(midday_today->InMillisecondsFSinceUnixEpoch());
   const double sun_rise_set_ms = astro.getSunRiseSet(sunrise);
   // If there is 24 hours of daylight or darkness, `CalendarAstronomer` returns
   // a very large negative value. Any timestamp before or at the epoch
   // definitely does not make sense, so assume `kNoSunRiseSet`.
   if (sun_rise_set_ms > 0) {
     return base::ok(
-        base::Time::FromSecondsSinceUnixEpoch(sun_rise_set_ms / 1000.0));
+        base::Time::FromMillisecondsSinceUnixEpoch(sun_rise_set_ms));
   }
   return kNoSunRiseSet;
 }
