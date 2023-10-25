@@ -519,8 +519,9 @@ ConnectorsService::GetProfileDmToken() const {
 
   policy::UserCloudPolicyManager* policy_manager =
       profile->GetUserCloudPolicyManager();
-  if (!policy_manager || !policy_manager->IsClientRegistered())
+  if (!policy_manager || !policy_manager->IsClientRegistered()) {
     return absl::nullopt;
+  }
 
   return DmToken(policy_manager->core()->client()->dm_token(),
                  policy::POLICY_SCOPE_USER);

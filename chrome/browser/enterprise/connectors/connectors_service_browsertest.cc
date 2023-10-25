@@ -892,17 +892,28 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
 
 class ConnectorsServiceRealtimeURLCheckProfileBrowserTest
     : public ConnectorsServiceProfileBrowserTest,
-      public testing::WithParamInterface<ManagementStatus> {
+      public testing::WithParamInterface<std::tuple<ManagementStatus, bool>> {
  public:
   ConnectorsServiceRealtimeURLCheckProfileBrowserTest()
-      : ConnectorsServiceProfileBrowserTest(GetParam()) {}
+      : ConnectorsServiceProfileBrowserTest(std::get<0>(GetParam())) {
+    if (enable_relaxed_affiliation()) {
+      scoped_feature_list_.InitAndEnableFeature(kEnableRelaxedAffiliationCheck);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          kEnableRelaxedAffiliationCheck);
+    }
+  }
+
+  bool enable_relaxed_affiliation() const { return std::get<1>(GetParam()); }
 };
 
-INSTANTIATE_TEST_SUITE_P(,
-                         ConnectorsServiceRealtimeURLCheckProfileBrowserTest,
-                         testing::Values(ManagementStatus::AFFILIATED,
-                                         ManagementStatus::UNAFFILIATED,
-                                         ManagementStatus::UNMANAGED));
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ConnectorsServiceRealtimeURLCheckProfileBrowserTest,
+    testing::Combine(testing::Values(ManagementStatus::AFFILIATED,
+                                     ManagementStatus::UNAFFILIATED,
+                                     ManagementStatus::UNMANAGED),
+                     testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceRealtimeURLCheckProfileBrowserTest,
                        Test) {
@@ -930,11 +941,18 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceRealtimeURLCheckProfileBrowserTest,
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetManagementDomain();
   switch (management_status()) {
-    case ManagementStatus::UNAFFILIATED:
-      ASSERT_FALSE(maybe_dm_token.has_value());
-      ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_DISABLED, url_check_pref);
-      ASSERT_TRUE(management_domain.empty());
-      break;
+    case ManagementStatus::UNAFFILIATED: {
+      if (enable_relaxed_affiliation()) {
+        ASSERT_TRUE(maybe_dm_token.has_value());
+        ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED,
+                  url_check_pref);
+        ASSERT_EQ(kDomain1, management_domain);
+      } else {
+        ASSERT_FALSE(maybe_dm_token.has_value());
+        ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_DISABLED, url_check_pref);
+        ASSERT_TRUE(management_domain.empty());
+      }
+    } break;
     case ManagementStatus::AFFILIATED:
       ASSERT_TRUE(maybe_dm_token.has_value());
       ASSERT_EQ(kFakeProfileDMToken, maybe_dm_token.value());
