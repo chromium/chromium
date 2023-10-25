@@ -8,11 +8,13 @@
 #include "ash/constants/ash_features.h"
 #include "base/test/gtest_util.h"
 #include "base/test/protobuf_matchers.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/feedback/feedback_uploader.h"
 #include "components/feedback/proto/extension.pb.h"
@@ -130,6 +132,8 @@ TEST(EditorFeedback, SendFeedbackRedactsDescription) {
 TEST(EditorFeedback, SendFeedbackOnlyContainsNecessaryInformation) {
   content::BrowserTaskEnvironment task_environment;
   base::test::ScopedFeatureList feature_list(features::kOrcaFeedback);
+  base::test::ScopedChromeOSVersionInfo scoped_version_info(
+      "CHROMEOS_RELEASE_VERSION=42", base::Time::Now());
   base::test::TestFuture<userfeedback::ExtensionSubmit> on_report_sent_future;
   std::unique_ptr<TestingProfile> profile = CreateTestingProfile(
       "test@google.com", on_report_sent_future.GetRepeatingCallback());
@@ -153,6 +157,17 @@ TEST(EditorFeedback, SendFeedbackOnlyContainsNecessaryInformation) {
   expected_feedback_data.mutable_web_data()
       ->mutable_navigator()
       ->set_user_agent("");
+  userfeedback::ProductSpecificData chrome_version_data;
+  chrome_version_data.set_key("CHROME VERSION");
+  chrome_version_data.set_value(
+      chrome::GetVersionString(chrome::WithExtendedStable(true)));
+  userfeedback::ProductSpecificData chromeos_version_data;
+  chromeos_version_data.set_key("CHROMEOS_RELEASE_VERSION");
+  chromeos_version_data.set_value("42");
+  *expected_feedback_data.mutable_web_data()->add_product_specific_data() =
+      chrome_version_data;
+  *expected_feedback_data.mutable_web_data()->add_product_specific_data() =
+      chromeos_version_data;
 
   EXPECT_THAT(feedback_data, base::EqualsProto(expected_feedback_data));
 }

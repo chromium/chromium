@@ -40,6 +40,16 @@ void RedactFeedbackData(scoped_refptr<feedback::FeedbackData> feedback_data) {
   feedback_data->RedactDescription(redactor);
 }
 
+std::string GetChromeVersion() {
+  return chrome::GetVersionString(chrome::WithExtendedStable(true));
+}
+
+std::string GetOsVersion() {
+  std::string version;
+  base::SysInfo::GetLsbReleaseValue("CHROMEOS_RELEASE_VERSION", &version);
+  return version;
+}
+
 }  // namespace
 
 bool SendEditorFeedback(Profile* profile, std::string_view description) {
@@ -57,6 +67,8 @@ bool SendEditorFeedback(Profile* profile, std::string_view description) {
       gaia::IsGoogleInternalAccountEmail(*user_email)) {
     feedback_data->set_user_email(*user_email);
   }
+  feedback_data->AddLog("CHROME VERSION", GetChromeVersion());
+  feedback_data->AddLog("CHROMEOS_RELEASE_VERSION", GetOsVersion());
   RedactFeedbackData(feedback_data);
   feedback_data->OnFeedbackPageDataComplete();
   return true;
