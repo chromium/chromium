@@ -61,15 +61,15 @@ void GetApplicationDirs(std::vector<base::FilePath>* locations) {
 void GetApplicationDirs(std::vector<base::FilePath>* locations) {
   // TODO: Respect users' PATH variables.
   // Until then, we use an approximation of the most common defaults.
-  locations->push_back(base::FilePath("/usr/local/sbin"));
-  locations->push_back(base::FilePath("/usr/local/bin"));
-  locations->push_back(base::FilePath("/usr/sbin"));
-  locations->push_back(base::FilePath("/usr/bin"));
-  locations->push_back(base::FilePath("/sbin"));
-  locations->push_back(base::FilePath("/bin"));
+  locations->emplace_back("/usr/local/sbin");
+  locations->emplace_back("/usr/local/bin");
+  locations->emplace_back("/usr/sbin");
+  locations->emplace_back("/usr/bin");
+  locations->emplace_back("/sbin");
+  locations->emplace_back("/bin");
   // Lastly, try the default installation location.
-  locations->push_back(base::FilePath("/opt/google/chrome"));
-  locations->push_back(base::FilePath("/opt/chromium.org/chromium"));
+  locations->emplace_back("/opt/google/chrome");
+  locations->emplace_back("/opt/chromium.org/chromium");
 }
 #elif BUILDFLAG(IS_ANDROID)
 void GetApplicationDirs(std::vector<base::FilePath>* locations) {
@@ -123,7 +123,9 @@ bool FindExe(
   for (auto& rel_path : rel_paths) {
     for (auto& location : locations) {
       base::FilePath path = location.Append(rel_path);
+      VLOG(logging::LOGGING_INFO) << "Browser search. Trying... " << path;
       if (exists_func.Run(path)) {
+        VLOG(logging::LOGGING_INFO) << "Browser search. Found at  " << path;
         *out_path = path;
         return true;
       }
@@ -184,8 +186,10 @@ bool FindChrome(base::FilePath* browser_exe) {
 #endif
     for (const base::FilePath& file_path : browser_exes) {
       base::FilePath path = module_dir.Append(file_path);
+      VLOG(logging::LOGGING_INFO) << "Browser search. Trying... " << path;
       if (base::PathExists(path)) {
         *browser_exe = path;
+        VLOG(logging::LOGGING_INFO) << "Browser search. Found at  " << path;
         return true;
       }
     }
@@ -194,6 +198,10 @@ bool FindChrome(base::FilePath* browser_exe) {
   std::vector<base::FilePath> locations;
   GetApplicationDirs(&locations);
   GetPathsFromEnvironment(&locations);
-  return internal::FindExe(base::BindRepeating(&base::PathExists), browser_exes,
-                           locations, browser_exe);
+  bool found = internal::FindExe(base::BindRepeating(&base::PathExists),
+                                 browser_exes, locations, browser_exe);
+  if (!found) {
+    VLOG(logging::LOGGING_INFO) << "Browser search. Not found.";
+  }
+  return found;
 }
