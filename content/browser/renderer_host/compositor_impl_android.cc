@@ -108,38 +108,10 @@ gpu::SharedMemoryLimits GetCompositorContextSharedMemoryLimits(
 gpu::ContextCreationAttribs GetCompositorContextAttributes(
     const gfx::ColorSpace& display_color_space,
     bool requires_alpha_channel) {
-  // This is used for the browser compositor (offscreen) and for the display
-  // compositor (onscreen), so ask for capabilities needed by either one.
-  // The default framebuffer for an offscreen context is not used, so it does
-  // not need alpha, stencil, depth, antialiasing. The display compositor does
-  // not use these things either, except for alpha when it has a transparent
-  // background.
   gpu::ContextCreationAttribs attributes;
-  attributes.alpha_size = -1;
   attributes.bind_generates_resource = false;
   attributes.color_space = gpu::COLOR_SPACE_SRGB;
-
-  if (requires_alpha_channel) {
-    attributes.alpha_size = 8;
-  } else if (viz::PreferRGB565ResourcesForDisplay()) {
-    // In this case we prefer to use RGB565 format instead of RGBA8888 if
-    // possible.
-    // TODO(danakj): CommandBufferStub constructor checks for alpha == 0
-    // in order to enable 565, but it should avoid using 565 when -1s are
-    // specified
-    // (IOW check that a <= 0 && rgb > 0 && rgb <= 565) then alpha should be
-    // -1.
-    // TODO(liberato): This condition is memorized in ComositorView.java, to
-    // avoid using two surfaces temporarily during alpha <-> no alpha
-    // transitions.  If these mismatch, then we risk a power regression if the
-    // SurfaceView is not marked as eOpaque (FORMAT_OPAQUE), and we have an
-    // EGL surface with an alpha channel.  SurfaceFlinger needs at least one of
-    // those hints to optimize out alpha blending.
-    attributes.alpha_size = 0;
-    attributes.red_size = 5;
-    attributes.green_size = 6;
-    attributes.blue_size = 5;
-  }
+  attributes.need_alpha = requires_alpha_channel;
 
   attributes.enable_swap_timestamps_if_supported = true;
   attributes.enable_raster_interface = true;
@@ -149,7 +121,6 @@ gpu::ContextCreationAttribs GetCompositorContextAttributes(
 
 void CreateContextProviderAfterGpuChannelEstablished(
     gpu::SurfaceHandle handle,
-    gpu::ContextCreationAttribs attributes,
     gpu::SharedMemoryLimits shared_memory_limits,
     Compositor::ContextProviderCallback callback,
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host) {
@@ -164,6 +135,9 @@ void CreateContextProviderAfterGpuChannelEstablished(
   constexpr bool automatic_flushes = false;
   constexpr bool support_locking = false;
   constexpr bool support_grcontext = false;
+
+  gpu::ContextCreationAttribs attributes;
+  attributes.bind_generates_resource = false;
 
   auto context_provider =
       base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
@@ -337,13 +311,12 @@ void Compositor::Initialize() {
 // static
 void Compositor::CreateContextProvider(
     gpu::SurfaceHandle handle,
-    gpu::ContextCreationAttribs attributes,
     gpu::SharedMemoryLimits shared_memory_limits,
     ContextProviderCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   BrowserGpuChannelHostFactory::instance()->EstablishGpuChannel(
       base::BindOnce(&CreateContextProviderAfterGpuChannelEstablished, handle,
-                     attributes, shared_memory_limits, std::move(callback)));
+                     shared_memory_limits, std::move(callback)));
 }
 
 // static

@@ -20,10 +20,7 @@ bool StructTraits<gpu::mojom::ContextCreationAttribsDataView,
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  out->alpha_size = data.alpha_size();
-  out->blue_size = data.blue_size();
-  out->green_size = data.green_size();
-  out->red_size = data.red_size();
+  out->need_alpha = data.need_alpha();
 #endif
   out->bind_generates_resource = data.bind_generates_resource();
   out->fail_if_major_perf_caveat = data.fail_if_major_perf_caveat();

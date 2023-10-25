@@ -3280,7 +3280,7 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
 
   if (offscreen) {
 #if BUILDFLAG(IS_ANDROID)
-    offscreen_buffer_should_have_alpha_ = attrib_helper.alpha_size > 0;
+    offscreen_buffer_should_have_alpha_ = attrib_helper.need_alpha;
 #else
     offscreen_buffer_should_have_alpha_ = false;
 #endif

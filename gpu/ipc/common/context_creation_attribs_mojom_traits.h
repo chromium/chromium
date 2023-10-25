@@ -104,20 +104,8 @@ struct GPU_EXPORT StructTraits<gpu::mojom::ContextCreationAttribsDataView,
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  static int32_t alpha_size(const gpu::ContextCreationAttribs& attribs) {
-    return attribs.alpha_size;
-  }
-
-  static int32_t blue_size(const gpu::ContextCreationAttribs& attribs) {
-    return attribs.blue_size;
-  }
-
-  static int32_t green_size(const gpu::ContextCreationAttribs& attribs) {
-    return attribs.green_size;
-  }
-
-  static int32_t red_size(const gpu::ContextCreationAttribs& attribs) {
-    return attribs.red_size;
+  static bool need_alpha(const gpu::ContextCreationAttribs& attribs) {
+    return attribs.need_alpha;
   }
 #endif
 
