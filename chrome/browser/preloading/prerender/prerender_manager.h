@@ -136,9 +136,6 @@ class PrerenderManager : public content::WebContentsObserver,
       const GURL& canonical_search_url,
       base::WeakPtr<content::PreloadingAttempt> attempt);
 
-  // Stops search prefetch from being upgraded to prerender.
-  void UnregisterSearchPrerender();
-
   // Stores the prerender which serves for search results. It is responsible for
   // tracking a started search prerender, and it keeps alive even if the
   // prerender has been destroyed by the timer. With its help, PrerenderManager
