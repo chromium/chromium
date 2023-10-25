@@ -125,9 +125,6 @@ const char kArcUseDevCaches[] = "arc-use-dev-caches";
 // Flag that indicates ARC images are formatted with EROFS (go/arcvm-erofs).
 const char kArcErofs[] = "arc-erofs";
 
-// If set, forces ARC apk cache to be enabled for testing.
-const char kArcForceEnableApkCache[] = "arc-force-enable-apk-cache";
-
 // If set, forces post boot dexopt to run immediately without device idle
 // requirement.
 const char kArcForcePostBootDexOpt[] = "arc-force-post-boot-dex-opt";

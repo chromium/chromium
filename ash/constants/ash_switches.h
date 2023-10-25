@@ -47,7 +47,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kArcHostUreadaheadGeneration[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcUseDevCaches[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcErofs[];
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcForceEnableApkCache[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcForcePostBootDexOpt[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcForceShowOptInUi[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcGeneratePlayAutoInstall[];
