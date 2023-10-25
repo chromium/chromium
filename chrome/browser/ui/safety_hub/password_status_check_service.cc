@@ -6,6 +6,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/json/values_util.h"
+#include "base/metrics/user_metrics.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
@@ -264,6 +265,7 @@ void PasswordStatusCheckService::RunPasswordCheckAsync() {
   }
 
   password_check_delegate_->StartPasswordCheck();
+  base::RecordAction(base::UserMetricsAction("SafetyHub_PasswordCheckRun"));
 }
 
 void PasswordStatusCheckService::OnSavedPasswordsChanged(

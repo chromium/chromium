@@ -29661,6 +29661,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SafetyHub_PasswordCheckRun">
+  <owner>sideyilmaz@google.com</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <description>
+    Reported when the password check is run by Safety Hub in the backgroud.
+  </description>
+</action>
+
 <action name="Save">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
