@@ -16,7 +16,7 @@ const char kLongDiscoverFeedVisitTimeAggregateKey[] =
     "LongDiscoverFeedInteractionTimeDelta";
 const char kLongFollowingFeedVisitTimeAggregateKey[] =
     "LongFollowingFeedInteractionTimeDelta";
-NSString* const kLastUsedFeedForGoodVisitsKey = @"LastUsedFeedForGoodVisits";
+const char kLastUsedFeedForGoodVisitsKey[] = "LastUsedFeedForGoodVisits";
 const char kLastInteractionTimeForGoodVisits[] =
     "LastInteractionTimeForGoodVisits";
 const char kLastInteractionTimeForDiscoverGoodVisits[] =

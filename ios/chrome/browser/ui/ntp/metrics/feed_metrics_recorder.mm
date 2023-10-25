@@ -235,11 +235,11 @@ using feed::FeedUserActionType;
       if (base::Time::Now() - articleVisitStart >
           base::Seconds(kNonShortClickSeconds)) {
         // Trigger a GV for a specific feed.
-        NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-        [self
-            recordEngagedGoodVisits:
-                (FeedType)[defaults integerForKey:kLastUsedFeedForGoodVisitsKey]
-                       allFeedsOnly:NO];
+        FeedType lastUsedFeedType =
+            self.prefService->GetInteger(kLastUsedFeedForGoodVisitsKey) == 1
+                ? FeedTypeFollowing
+                : FeedTypeDiscover;
+        [self recordEngagedGoodVisits:lastUsedFeedType allFeedsOnly:NO];
       }
       // Clear PrefService for new session.
       self.prefService->ClearPref(kArticleVisitTimestampKey);
@@ -1396,9 +1396,8 @@ using feed::FeedUserActionType;
   // in that page.
   self.prefService->SetTime(kArticleVisitTimestampKey, base::Time::Now());
 
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  [defaults setInteger:[self.feedControlDelegate selectedFeed]
-                forKey:kLastUsedFeedForGoodVisitsKey];
+  self.prefService->SetInteger(kLastUsedFeedForGoodVisitsKey,
+                               [self.feedControlDelegate selectedFeed]);
 
   [self.NTPMetricsDelegate feedArticleOpened];
 

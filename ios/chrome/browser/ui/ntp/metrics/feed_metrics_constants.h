@@ -37,7 +37,7 @@ extern const char kArticleVisitTimestampKey[];
 extern const char kLongFeedVisitTimeAggregateKey[];
 extern const char kLongFollowingFeedVisitTimeAggregateKey[];
 extern const char kLongDiscoverFeedVisitTimeAggregateKey[];
-extern NSString* const kLastUsedFeedForGoodVisitsKey;
+extern const char kLastUsedFeedForGoodVisitsKey[];
 // Stores the last interaction time for Good Visits (NSDate).
 extern const char kLastInteractionTimeForGoodVisits[];
 extern const char kLastInteractionTimeForDiscoverGoodVisits[];
