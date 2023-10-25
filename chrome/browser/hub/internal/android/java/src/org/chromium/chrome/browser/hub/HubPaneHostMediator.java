@@ -5,6 +5,9 @@
 package org.chromium.chrome.browser.hub;
 
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.ACTION_BUTTON_DATA;
+import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_ROOT_VIEW;
+
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,10 +19,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Logic for hosting a single pane at a time in the Hub. */
 public class HubPaneHostMediator {
-
-    private final @NonNull PropertyModel mPropertyModel;
+    private final @NonNull Callback<Pane> mOnPangeChangeCallback = this::onPaneChange;
     private final @NonNull Callback<FullButtonData> mOnActionButtonChangeCallback =
             this::onActionButtonChange;
+    private final @NonNull PropertyModel mPropertyModel;
+    private final @NonNull ObservableSupplier<Pane> mPaneSupplier;
 
     private @Nullable TransitiveObservableSupplier<Pane, FullButtonData> mActionButtonDataSupplier;
 
@@ -27,6 +31,9 @@ public class HubPaneHostMediator {
     public HubPaneHostMediator(
             @NonNull PropertyModel propertyModel, @NonNull ObservableSupplier<Pane> paneSupplier) {
         mPropertyModel = propertyModel;
+        mPaneSupplier = paneSupplier;
+        mPaneSupplier.addObserver(mOnPangeChangeCallback);
+
         if (HubFieldTrial.usesFloatActionButton()) {
             mActionButtonDataSupplier =
                     new TransitiveObservableSupplier<>(
@@ -37,13 +44,19 @@ public class HubPaneHostMediator {
 
     /** Cleans up observers. */
     public void destroy() {
+        mPaneSupplier.removeObserver(mOnPangeChangeCallback);
         if (mActionButtonDataSupplier != null) {
             mActionButtonDataSupplier.removeObserver(mOnActionButtonChangeCallback);
             mActionButtonDataSupplier = null;
         }
     }
 
-    private void onActionButtonChange(FullButtonData actionButtonData) {
+    private void onPaneChange(@Nullable Pane pane) {
+        View view = pane == null ? null : pane.getRootView();
+        mPropertyModel.set(PANE_ROOT_VIEW, view);
+    }
+
+    private void onActionButtonChange(@Nullable FullButtonData actionButtonData) {
         mPropertyModel.set(ACTION_BUTTON_DATA, actionButtonData);
     }
 }
