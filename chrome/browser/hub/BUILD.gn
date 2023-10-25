@@ -9,7 +9,6 @@ android_library("java") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/hub/DefaultPaneOrderController.java",
     "android/java/src/org/chromium/chrome/browser/hub/DisplayButtonData.java",
-    "android/java/src/org/chromium/chrome/browser/hub/EmptyHubLayoutAnimatorProvider.java",
     "android/java/src/org/chromium/chrome/browser/hub/FullButtonData.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubContainerView.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubController.java",

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.hub;
 
+import android.animation.AnimatorSet;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.RectF;
@@ -63,6 +64,7 @@ public class HubLayout extends Layout {
     private final LayoutStateProvider mLayoutStateProvider;
     private final ViewGroup mRootView;
     private final HubController mHubController;
+    private final PaneManager mPaneManager;
 
     private HubLayoutAnimationRunner mCurrentAnimationRunner;
 
@@ -81,18 +83,21 @@ public class HubLayout extends Layout {
      * @param layoutStateProvider The {@link LayoutStateProvider} for the {@link LayoutManager}.
      * @param rootView The {@link ViewGroup} to attach the Hub to.
      * @param hubController The {@link HubController} for controlling the Hub.
+     * @param paneManager The {@link PaneManager} for managing Hub panes.
      */
     public HubLayout(
-            Context context,
-            LayoutUpdateHost updateHost,
-            LayoutRenderHost renderHost,
-            LayoutStateProvider layoutStateProvider,
-            ViewGroup rootView,
-            HubController hubController) {
+            @NonNull Context context,
+            @NonNull LayoutUpdateHost updateHost,
+            @NonNull LayoutRenderHost renderHost,
+            @NonNull LayoutStateProvider layoutStateProvider,
+            @NonNull ViewGroup rootView,
+            @NonNull HubController hubController,
+            @NonNull PaneManager paneManager) {
         super(context, updateHost, renderHost);
         mLayoutStateProvider = layoutStateProvider;
         mRootView = rootView;
         mHubController = hubController;
+        mPaneManager = paneManager;
     }
 
     /** Returns the current {@link HubLayoutAnimationType}. */
@@ -313,8 +318,11 @@ public class HubLayout extends Layout {
 
         mCurrentSceneLayer = mEmptySceneLayer;
 
+        // TODO(crbug/1487209): Replace this with a real animation.
+        HubLayoutAnimator newTabAnimator =
+                new HubLayoutAnimator(HubLayoutAnimationType.NEW_TAB, new AnimatorSet(), null);
         HubLayoutAnimatorProvider animatorProvider =
-                new EmptyHubLayoutAnimatorProvider(HubLayoutAnimationType.NEW_TAB);
+                new PresetHubLayoutAnimatorProvider(newTabAnimator);
         mCurrentAnimationRunner =
                 HubLayoutAnimationRunnerFactory.createHubLayoutAnimationRunner(animatorProvider);
         mCurrentAnimationRunner.addListener(
@@ -394,29 +402,31 @@ public class HubLayout extends Layout {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     HubLayoutAnimatorProvider createShowAnimatorProvider(@NonNull HubContainerView containerView) {
+        @Nullable Pane pane = mPaneManager.getFocusedPaneSupplier().get();
+
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
             return TranslateHubLayoutAnimationFactory.createTranslateUpAnimatorProvider(
                     containerView, TRANSLATE_DURATION_MS);
-        } else if (mPreviousLayoutType == LayoutType.START_SURFACE) {
+        } else if (mPreviousLayoutType == LayoutType.START_SURFACE || pane == null) {
             return FadeHubLayoutAnimationFactory.createFadeInAnimatorProvider(
                     containerView, FADE_DURATION_MS);
         }
-        // TODO(crbug/1487209): Get the animations from a Pane or HubController.
-        return new EmptyHubLayoutAnimatorProvider(HubLayoutAnimationType.SHRINK_TAB);
+        return pane.createShowHubLayoutAnimatorProvider(containerView);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     HubLayoutAnimatorProvider createHideAnimatorProvider(
             @NonNull HubContainerView containerView, @LayoutType int nextLayoutType) {
+        @Nullable Pane pane = mPaneManager.getFocusedPaneSupplier().get();
+
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
             return TranslateHubLayoutAnimationFactory.createTranslateDownAnimatorProvider(
                     containerView, TRANSLATE_DURATION_MS);
-        } else if (nextLayoutType == LayoutType.START_SURFACE) {
+        } else if (nextLayoutType == LayoutType.START_SURFACE || pane == null) {
             return FadeHubLayoutAnimationFactory.createFadeOutAnimatorProvider(
                     containerView, FADE_DURATION_MS);
         }
-        // TODO(crbug/1487209): Get the animations from a Pane or HubController.
-        return new EmptyHubLayoutAnimatorProvider(HubLayoutAnimationType.EXPAND_TAB);
+        return pane.createHideHubLayoutAnimatorProvider(containerView);
     }
 
     // Internal helpers

@@ -26,4 +26,24 @@ public interface Pane extends BackPressHandler {
     /** Returns the visuals for creating a button to navigate to this pane. */
     @NonNull
     DisplayButtonData getReferenceButtonData();
+
+    /**
+     * Create a {@link HubLayoutAnimatorProvider} to use when showing the {@link HubLayout} if this
+     * pane is focused.
+     *
+     * @param hubContainerView The {@link HubContainerView} that should show.
+     */
+    @NonNull
+    HubLayoutAnimatorProvider createShowHubLayoutAnimatorProvider(
+            @NonNull HubContainerView hubContainerView);
+
+    /**
+     * Create a {@link HubLayoutAnimatorProvider} to use when hiding the {@link HubLayout} if this
+     * pane is focused.
+     *
+     * @param hubContainerView The {@link HubContainerView} that should hide.
+     */
+    @NonNull
+    HubLayoutAnimatorProvider createHideHubLayoutAnimatorProvider(
+            @NonNull HubContainerView hubContainerView);
 }
