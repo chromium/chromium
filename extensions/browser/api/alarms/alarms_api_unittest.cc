@@ -573,8 +573,7 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollScheduling) {
     alarm.js_alarm->period_in_minutes = 3;
     alarm_manager_->AddAlarmImpl(extension()->id(), std::move(alarm));
     base::RunLoop().Run();
-    EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(3 * 60000) +
-                  base::Minutes(3),
+    EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(3 * 60) + base::Minutes(3),
               alarm_manager_->next_poll_time_);
     RemoveAllAlarms();
   }
@@ -593,8 +592,7 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollScheduling) {
     alarm3.js_alarm->period_in_minutes = 25;
     alarm_manager_->AddAlarmImpl(extension()->id(), std::move(alarm3));
     base::RunLoop().Run();
-    EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(4 * 60000) +
-                  base::Minutes(4),
+    EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(4 * 60) + base::Minutes(4),
               alarm_manager_->next_poll_time_);
     RemoveAllAlarms();
   }
@@ -604,7 +602,7 @@ TEST_F(ExtensionAlarmsSchedulingTest, ReleasedExtensionPollsInfrequently) {
   set_extension(ExtensionBuilder("Test")
                     .SetLocation(mojom::ManifestLocation::kInternal)
                     .Build());
-  test_clock_.SetNow(base::Time::FromMillisecondsSinceUnixEpoch(300000));
+  test_clock_.SetNow(base::Time::FromSecondsSinceUnixEpoch(300));
   CreateAlarm("[\"a\", {\"when\": 300010}]");
   CreateAlarm("[\"b\", {\"when\": 340000}]");
 
@@ -613,8 +611,7 @@ TEST_F(ExtensionAlarmsSchedulingTest, ReleasedExtensionPollsInfrequently) {
   EXPECT_DOUBLE_EQ(
       300010, alarm_manager_->next_poll_time_.InMillisecondsFSinceUnixEpoch());
 
-  alarm_manager_->last_poll_time_ =
-      base::Time::FromMillisecondsSinceUnixEpoch(290000);
+  alarm_manager_->last_poll_time_ = base::Time::FromSecondsSinceUnixEpoch(290);
   // In released extensions, we set the granularity to at least 1
   // minute, which makes AddAlarm schedule the next poll after the
   // extension requested.
@@ -642,14 +639,14 @@ TEST_F(ExtensionAlarmsSchedulingTest, MinimumGranularity) {
   set_extension(ExtensionBuilder("Test")
                     .SetLocation(mojom::ManifestLocation::kInternal)
                     .Build());
-  test_clock_.SetNow(base::Time::FromMillisecondsSinceUnixEpoch(0));
+  test_clock_.SetNow(base::Time::UnixEpoch());
   CreateAlarm("[\"a\", {\"periodInMinutes\": 2}]");
   test_clock_.Advance(base::Seconds(1));
   CreateAlarm("[\"b\", {\"periodInMinutes\": 2}]");
   test_clock_.Advance(base::Minutes(2));
 
   alarm_manager_->last_poll_time_ =
-      base::Time::FromMillisecondsSinceUnixEpoch(2 * 60000);
+      base::Time::FromSecondsSinceUnixEpoch(2 * 60);
   // In released extensions, we set the granularity to at least 1
   // minute, which makes scheduler set it to 1 minute, rather than
   // 1 second later (when b is supposed to go off).
@@ -661,7 +658,7 @@ TEST_F(ExtensionAlarmsSchedulingTest, MinimumGranularity) {
 }
 
 TEST_F(ExtensionAlarmsSchedulingTest, DifferentMinimumGranularities) {
-  test_clock_.SetNow(base::Time::FromMillisecondsSinceUnixEpoch(0));
+  test_clock_.SetNow(base::Time::UnixEpoch());
   // Create an alarm to go off in 12 seconds. This uses the default, unpacked
   // extension - so there is no minimum granularity.
   CreateAlarm("[\"a\", {\"periodInMinutes\": 0.2}]");  // 12 seconds.
@@ -676,8 +673,7 @@ TEST_F(ExtensionAlarmsSchedulingTest, DifferentMinimumGranularities) {
 
   CreateAlarm("[\"b\", {\"periodInMinutes\": 2}]");
 
-  alarm_manager_->last_poll_time_ =
-      base::Time::FromMillisecondsSinceUnixEpoch(0);
+  alarm_manager_->last_poll_time_ = base::Time::UnixEpoch();
   alarm_manager_->ScheduleNextPoll();
 
   // The next poll time should be 12 seconds from now - the time at which the
@@ -742,7 +738,7 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollFrequencyFromStoredAlarm) {
     // StateStore specified "periodInMinutes".
     base::Time expected_poll_time =
         // 10s initial clock.
-        base::Time::FromMillisecondsSinceUnixEpoch(10000) +
+        base::Time::FromSecondsSinceUnixEpoch(10) +
         // 10ms in FrequencyTestGetAlarmsCallback.
         base::Milliseconds(10) + test_data[i].delay_minimum;
     // The alarm should not trigger before our expected poll time...
@@ -758,11 +754,10 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollFrequencyFromStoredAlarm) {
 // Test that scheduled alarms go off at set intervals, even if their actual
 // trigger is off.
 TEST_F(ExtensionAlarmsSchedulingTest, RepeatingAlarmsScheduledPredictably) {
-  test_clock_.SetNow(base::Time::FromMillisecondsSinceUnixEpoch(0));
+  test_clock_.SetNow(base::Time::UnixEpoch());
   CreateAlarm("[\"a\", {\"periodInMinutes\": 2}]");
 
-  alarm_manager_->last_poll_time_ =
-      base::Time::FromMillisecondsSinceUnixEpoch(0);
+  alarm_manager_->last_poll_time_ = base::Time::UnixEpoch();
   alarm_manager_->ScheduleNextPoll();
 
   // We expect the first poll to happen two minutes from the start.
