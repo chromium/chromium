@@ -536,7 +536,7 @@ if (enable_base_tracing) {
   action("amalgamated_perfetto_sql_stdlib") {
     script = "//third_party/perfetto/tools/gen_amalgamated_sql.py"
     sources = rebase_path(chrome_stdlib_sql_files,
-                          root_build_dir,
+                          ".",
                           "//base/tracing/stdlib/chrome")
     stdlib_header = "$root_gen_dir/base/test/perfetto_sql_stdlib.h"
     outputs = [ stdlib_header ]
@@ -545,7 +545,7 @@ if (enable_base_tracing) {
              "chrome_stdlib",
              "--cpp-out",
              rebase_path(stdlib_header, root_build_dir),
-           ] + sources
+           ] + rebase_path(sources, root_build_dir)
   }
 
   # We encapsulate the trace processor in a separate shared library to prevent
