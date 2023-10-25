@@ -762,6 +762,7 @@
     "dependencies": [ "permission:userScripts" ],
     "contexts": [ "blessed_extension" ],
     "channel": "trunk",
+    "developer_mode_only": true,
     "feature_flag": "ApiUserScripts"
   },
   "virtualKeyboard": {
