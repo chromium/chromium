@@ -63,9 +63,10 @@ bool ElementIntersectionObserverData::ComputeIntersectionsForTarget(
     unsigned flags) {
   bool needs_occlusion_tracking = false;
   absl::optional<base::TimeTicks> monotonic_time;
+  absl::optional<IntersectionGeometry::RootGeometry> root_geometry;
   for (auto& entry : observations_) {
     needs_occlusion_tracking |= entry.key->NeedsOcclusionTracking();
-    entry.value->ComputeIntersection(flags, monotonic_time);
+    entry.value->ComputeIntersection(flags, monotonic_time, root_geometry);
   }
   return needs_occlusion_tracking;
 }

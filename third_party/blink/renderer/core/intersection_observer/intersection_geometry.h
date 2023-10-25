@@ -57,8 +57,9 @@ class CORE_EXPORT IntersectionGeometry {
 
    public:
     RootGeometry(const LayoutObject* root, const Vector<Length>& margin);
+    bool operator==(const RootGeometry&) const;
 
-    float zoom;
+    float zoom = 1.0f;
     // The root object's content rect in the root object's own coordinate system
     PhysicalRect local_root_rect;
     gfx::Transform root_to_document_transform;
@@ -84,6 +85,10 @@ class CORE_EXPORT IntersectionGeometry {
 
   static const LayoutObject* GetExplicitRootLayoutObject(const Node& root_node);
 
+  // If `root_geometry` is nullopt, it will be emplaced with `root` and
+  // `root_margin`. The caller can call this constructor again with the same
+  // `root_geometry` as long as `root` and `root_margin` are the same as the
+  // first call.
   IntersectionGeometry(const Node* root,
                        const Element& target,
                        const Vector<Length>& root_margin,
@@ -91,15 +96,7 @@ class CORE_EXPORT IntersectionGeometry {
                        const Vector<Length>& target_margin,
                        const Vector<Length>& scroll_margin,
                        unsigned flags,
-                       CachedRects* cached_rects = nullptr);
-
-  IntersectionGeometry(const RootGeometry& root_geometry,
-                       const Node& explicit_root,
-                       const Element& target,
-                       const Vector<float>& thresholds,
-                       const Vector<Length>& target_margin,
-                       const Vector<Length>& scroll_margin,
-                       unsigned flags,
+                       absl::optional<RootGeometry>& root_geometry,
                        CachedRects* cached_rects = nullptr);
 
   IntersectionGeometry(const IntersectionGeometry&) = default;

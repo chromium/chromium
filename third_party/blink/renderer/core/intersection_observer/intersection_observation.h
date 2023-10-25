@@ -72,12 +72,10 @@ class CORE_EXPORT IntersectionObservation final
   unsigned LastThresholdIndex() const { return last_threshold_index_; }
   // Returns 1 if the geometry was recalculated, otherwise 0. This could be a
   // bool, but int64_t matches IntersectionObserver::ComputeIntersections().
-  int64_t ComputeIntersection(unsigned flags,
-                              absl::optional<base::TimeTicks>& monotonic_time);
   int64_t ComputeIntersection(
-      const IntersectionGeometry::RootGeometry& root_geometry,
       unsigned flags,
-      absl::optional<base::TimeTicks>& monotonic_time);
+      absl::optional<base::TimeTicks>& monotonic_time,
+      absl::optional<IntersectionGeometry::RootGeometry>& root_geometry);
   gfx::Vector2dF MinScrollDeltaToUpdate() const;
   void TakeRecords(HeapVector<Member<IntersectionObserverEntry>>&);
   void Disconnect();
@@ -88,11 +86,6 @@ class CORE_EXPORT IntersectionObservation final
   bool CanUseCachedRectsForTesting() const;
 
  private:
-  int64_t ComputeIntersectionInternal(
-      base::FunctionRef<IntersectionGeometry(unsigned geometry_flags)>
-          geometry_creater,
-      unsigned flags,
-      absl::optional<base::TimeTicks>& monitonic_time);
   bool ShouldCompute(unsigned flags) const;
   bool MaybeDelayAndReschedule(unsigned flags, DOMHighResTimeStamp timestamp);
   unsigned GetIntersectionGeometryFlags(unsigned compute_flags) const;

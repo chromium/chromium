@@ -184,6 +184,12 @@ IntersectionGeometry::RootGeometry::RootGeometry(const LayoutObject* root,
   root_to_document_transform = transform_state.AccumulatedTransform();
 }
 
+bool IntersectionGeometry::RootGeometry::operator==(
+    const RootGeometry& other) const {
+  return zoom == other.zoom && local_root_rect == other.local_root_rect &&
+         root_to_document_transform == other.root_to_document_transform;
+}
+
 const LayoutObject* IntersectionGeometry::GetExplicitRootLayoutObject(
     const Node& root_node) {
   if (!root_node.isConnected()) {
@@ -195,14 +201,16 @@ const LayoutObject* IntersectionGeometry::GetExplicitRootLayoutObject(
   return root_node.GetLayoutObject();
 }
 
-IntersectionGeometry::IntersectionGeometry(const Node* root_node,
-                                           const Element& target_element,
-                                           const Vector<Length>& root_margin,
-                                           const Vector<float>& thresholds,
-                                           const Vector<Length>& target_margin,
-                                           const Vector<Length>& scroll_margin,
-                                           unsigned flags,
-                                           CachedRects* cached_rects)
+IntersectionGeometry::IntersectionGeometry(
+    const Node* root_node,
+    const Element& target_element,
+    const Vector<Length>& root_margin,
+    const Vector<float>& thresholds,
+    const Vector<Length>& target_margin,
+    const Vector<Length>& scroll_margin,
+    unsigned flags,
+    absl::optional<RootGeometry>& root_geometry,
+    CachedRects* cached_rects)
     : flags_(flags & kConstructorFlagsMask) {
   // Only one of root_margin or target_margin can be specified.
   DCHECK(root_margin.empty() || target_margin.empty());
@@ -214,30 +222,14 @@ IntersectionGeometry::IntersectionGeometry(const Node* root_node,
   if (root_and_target.relationship == RootAndTarget::kInvalid) {
     return;
   }
-  RootGeometry root_geometry(root_and_target.root, root_margin);
 
-  ComputeGeometry(root_geometry, root_and_target, thresholds, target_margin,
-                  scroll_margin, cached_rects);
-}
-
-IntersectionGeometry::IntersectionGeometry(const RootGeometry& root_geometry,
-                                           const Node& explicit_root,
-                                           const Element& target_element,
-                                           const Vector<float>& thresholds,
-                                           const Vector<Length>& target_margin,
-                                           const Vector<Length>& scroll_margin,
-                                           unsigned flags,
-                                           CachedRects* cached_rects)
-    : flags_(flags & kConstructorFlagsMask),
-      intersection_ratio_(0),
-      threshold_index_(0) {
-  auto root_and_target =
-      PrepareComputeGeometry(&explicit_root, target_element, cached_rects);
-  if (root_and_target.relationship == RootAndTarget::kInvalid) {
-    return;
+  if (root_geometry) {
+    DCHECK(*root_geometry == RootGeometry(root_and_target.root, root_margin));
+  } else {
+    root_geometry.emplace(root_and_target.root, root_margin);
   }
 
-  ComputeGeometry(root_geometry, root_and_target, thresholds, target_margin,
+  ComputeGeometry(*root_geometry, root_and_target, thresholds, target_margin,
                   scroll_margin, cached_rects);
 }
 
