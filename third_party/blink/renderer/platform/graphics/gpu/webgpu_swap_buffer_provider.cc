@@ -61,10 +61,6 @@ WebGPUSwapBufferProvider::WebGPUSwapBufferProvider(
   layer_->SetHdrMetadata(hdr_metadata);
 
   dawn_control_client_->GetProcs().deviceReference(device_);
-
-  WGPUSupportedLimits limits = {};
-  DCHECK(dawn_control_client_->GetProcs().deviceGetLimits(device_, &limits));
-  max_texture_size_ = limits.limits.maxTextureDimension2D;
 }
 
 WebGPUSwapBufferProvider::~WebGPUSwapBufferProvider() {
@@ -230,10 +226,6 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUSwapBufferProvider::GetNewTexture(
     return nullptr;
   }
 
-  if (size.width() > max_texture_size_ || size.height() > max_texture_size_) {
-    return nullptr;
-  }
-
   // Create a new swap buffer.
   current_swap_buffer_ = NewOrRecycledSwapBuffer(
       context_provider->ContextProvider()->SharedImageInterface(),
@@ -325,7 +317,7 @@ bool WebGPUSwapBufferProvider::CopyToVideoFrame(
     const gfx::ColorSpace& dst_color_space,
     WebGraphicsContext3DVideoFramePool::FrameReadyCallback callback) {
   DCHECK(!neutered_);
-  if (!current_swap_buffer_ || neutered_ || !GetContextProviderWeakPtr()) {
+  if (neutered_ || !GetContextProviderWeakPtr()) {
     return false;
   }
 
