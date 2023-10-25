@@ -4054,7 +4054,7 @@ void RenderViewContextMenu::ExecRegionSearch(
 
   if (!lens_region_search_controller_) {
     lens_region_search_controller_ =
-        std::make_unique<lens::LensRegionSearchController>(browser);
+        std::make_unique<lens::LensRegionSearchController>();
   }
   const lens::AmbientSearchEntryPoint entry_point =
       is_google_default_search_provider

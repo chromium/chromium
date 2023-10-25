@@ -81,7 +81,7 @@ void LensStaticPageController::StartRegionSearch(
   DCHECK(browser_);
   if (!lens_region_search_controller_) {
     lens_region_search_controller_ =
-        std::make_unique<lens::LensRegionSearchController>(browser_);
+        std::make_unique<lens::LensRegionSearchController>();
   }
   lens_region_search_controller_->Start(
       contents,
