@@ -52,6 +52,7 @@ class EntryPointDisplayReasonTest : public ::testing::Test {
  public:
   EntryPointDisplayReasonTest() {
     pref_service_.registry()->RegisterBooleanPref(prefs::kSigninAllowed, true);
+    sync_service_.SetAccountInfo(CoreAccountInfo());
   }
 
   syncer::TestSyncService* sync_service() { return &sync_service_; }
