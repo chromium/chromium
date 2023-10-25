@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -1939,7 +1940,9 @@ class SoftNavigationTabRestoreTest : public TabRestoreTest {
 
 // Test is flaky on LACROS and ASH, most probably due to mouseclicks not working
 // consistently.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(crbug.com/1492469): Flaky on linux
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
+    BUILDFLAG(IS_LINUX)
 #define MAYBE_SoftNavigationToRestoredTab DISABLED_SoftNavigationToRestoredTab
 #else
 #define MAYBE_SoftNavigationToRestoredTab SoftNavigationToRestoredTab
