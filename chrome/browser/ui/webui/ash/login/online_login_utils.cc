@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
@@ -182,7 +183,10 @@ void BuildUserContextForGaiaSignIn(
     if (using_saml) {
       user_context->SetSamlPassword(SamlPassword{password});
     } else {
-      user_context->SetGaiaPassword(GaiaPassword{password});
+      if (!features::AreLocalPasswordsEnabledForConsumers() ||
+          !password.empty()) {
+        user_context->SetGaiaPassword(GaiaPassword{password});
+      }
     }
     user_context->SetPasswordKey(Key(password));
   }
