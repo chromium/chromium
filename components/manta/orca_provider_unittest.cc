@@ -201,7 +201,7 @@ TEST_F(OrcaProviderTest, ParseMalformedSerializedProto) {
 // handled properly.
 TEST_F(OrcaProviderTest, ParseRpcStatusFromFailedResponse) {
   proto::RpcStatus rpc_status;
-  rpc_status.set_code(403);
+  rpc_status.set_code(3);  // Will be mapped to kInvalidInput.
   rpc_status.set_message("foo");
 
   proto::RpcLocalizedMessage localize_message;
@@ -216,14 +216,39 @@ TEST_F(OrcaProviderTest, ParseRpcStatusFromFailedResponse) {
 
   SetEndpointMockResponse(GURL{kMockEndpoint},
                           /*response_data=*/rpc_status.SerializeAsString(),
-                          net::HTTP_FORBIDDEN, net::OK);
+                          net::HTTP_BAD_REQUEST, net::OK);
 
   orca_provider->Call(
       input, base::BindLambdaForTesting(
                  [quit_closure = task_environment_.QuitClosure()](
                      base::Value::Dict response, MantaStatus manta_status) {
                    EXPECT_EQ(manta_status.status_code,
-                             MantaStatusCode::kBackendFailure);
+                             MantaStatusCode::kInvalidInput);
+                   EXPECT_EQ(manta_status.message, "bar");
+                   quit_closure.Run();
+                 }));
+
+  task_environment_.RunUntilQuit();
+
+  // ErrorInfo.reason can be mapped to kRestrictedCountry and override the manta
+  // status code.
+  proto::RpcErrorInfo error_info;
+  error_info.set_reason("RESTRICTED_COUNTRY");
+  error_info.set_domain("aratea-pa.googleapis.com");
+  detail = rpc_status.add_details();
+  detail->set_type_url("type.googleapis.com/google.rpc.ErrorInfo");
+  detail->set_value(error_info.SerializeAsString());
+
+  SetEndpointMockResponse(GURL{kMockEndpoint},
+                          /*response_data=*/rpc_status.SerializeAsString(),
+                          net::HTTP_BAD_REQUEST, net::OK);
+
+  orca_provider->Call(
+      input, base::BindLambdaForTesting(
+                 [quit_closure = task_environment_.QuitClosure()](
+                     base::Value::Dict response, MantaStatus manta_status) {
+                   EXPECT_EQ(manta_status.status_code,
+                             MantaStatusCode::kRestrictedCountry);
                    EXPECT_EQ(manta_status.message, "bar");
                    quit_closure.Run();
                  }));

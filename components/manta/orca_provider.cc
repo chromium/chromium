@@ -48,7 +48,7 @@ absl::optional<Tone> GetTone(const std::string& tone) {
           {"FREEFORM_WRITE", proto::RequestConfig::FREEFORM_WRITE},
 
       });
-  auto* iter = tone_map.find(tone);
+  const auto* iter = tone_map.find(tone);
 
   return iter != tone_map.end() ? absl::optional<Tone>(iter->second)
                                 : absl::nullopt;
@@ -56,7 +56,7 @@ absl::optional<Tone> GetTone(const std::string& tone) {
 
 absl::optional<proto::Request> ComposeRequest(
     const std::map<std::string, std::string>& input) {
-  auto tone_iter = input.find("tone");
+  const auto& tone_iter = input.find("tone");
   if (tone_iter == input.end()) {
     DVLOG(1) << "Tone not found in the parameters";
     return absl::nullopt;
