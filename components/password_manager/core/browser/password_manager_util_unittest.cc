@@ -61,7 +61,6 @@ constexpr char kTestProxyOrigin[] = "http://proxy.com/";
 constexpr char kTestProxySignonRealm[] = "proxy.com/realm";
 constexpr char kTestURL[] = "https://example.com/login/";
 constexpr char16_t kTestUsername[] = u"Username";
-constexpr char16_t kTestUsername2[] = u"Username2";
 constexpr char16_t kTestPassword[] = u"12345";
 
 class MockPasswordManagerClient
@@ -394,31 +393,6 @@ class PasswordManagerUtilTest : public testing::Test {
   TestingPrefServiceSimple pref_service_;
   syncer::TestSyncService sync_service_;
 };
-
-TEST(PasswordManagerUtil, TrimUsernameOnlyCredentials) {
-  std::vector<std::unique_ptr<PasswordForm>> forms;
-  std::vector<std::unique_ptr<PasswordForm>> expected_forms;
-  forms.push_back(std::make_unique<PasswordForm>(GetTestAndroidCredential()));
-  expected_forms.push_back(
-      std::make_unique<PasswordForm>(GetTestAndroidCredential()));
-
-  PasswordForm username_only;
-  username_only.scheme = PasswordForm::Scheme::kUsernameOnly;
-  username_only.signon_realm = kTestAndroidRealm;
-  username_only.username_value = kTestUsername2;
-  forms.push_back(std::make_unique<PasswordForm>(username_only));
-
-  username_only.federation_origin =
-      url::Origin::Create(GURL(kTestFederationURL));
-  username_only.skip_zero_click = false;
-  forms.push_back(std::make_unique<PasswordForm>(username_only));
-  username_only.skip_zero_click = true;
-  expected_forms.push_back(std::make_unique<PasswordForm>(username_only));
-
-  TrimUsernameOnlyCredentials(&forms);
-
-  EXPECT_THAT(forms, UnorderedPasswordFormElementsAre(&expected_forms));
-}
 
 TEST(PasswordManagerUtil, GetSignonRealmWithProtocolExcluded) {
   PasswordForm http_form;

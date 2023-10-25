@@ -488,4 +488,54 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
   RunUntilIdle();
 }
 
+TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
+       TrimUsernameOnlyCredentials) {
+  PasswordForm username_only;
+  username_only.scheme = PasswordForm::Scheme::kUsernameOnly;
+  username_only.signon_realm = kAffiliatedAndroidApp;
+  username_only.username_value = u"test";
+  username_only.in_store = PasswordForm::Store::kProfileStore;
+
+  PasswordForm federated_credential;
+  federated_credential.in_store = PasswordForm::Store::kProfileStore;
+  federated_credential.scheme = PasswordForm::Scheme::kUsernameOnly;
+  federated_credential.signon_realm = kAffiliatedAndroidApp;
+  federated_credential.username_value = u"test";
+  federated_credential.federation_origin =
+      url::Origin::Create(GURL("https://google.com/"));
+  federated_credential.skip_zero_click = false;
+
+  backend()->AddLoginAsync(username_only, base::DoNothing());
+  backend()->AddLoginAsync(federated_credential, base::DoNothing());
+  RunUntilIdle();
+
+  EXPECT_CALL(affiliation_service(), GetPSLExtensions)
+      .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
+  std::vector<Facet> facets;
+  facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kAffiliatedWebURL));
+  facets.emplace_back(
+      FacetURI::FromPotentiallyInvalidSpec(kAffiliatedAndroidApp));
+  EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
+      .WillOnce(RunOnceCallback<2>(facets, true));
+  GroupedFacets group;
+  group.facets.emplace_back(
+      FacetURI::FromPotentiallyInvalidSpec(kAffiliatedWebURL));
+  EXPECT_CALL(affiliation_service(), GetGroupingInfo)
+      .WillOnce(RunOnceCallback<1>(std::vector<GroupedFacets>{group}));
+
+  base::MockCallback<LoginsOrErrorReply> result_callback;
+  PasswordFormDigest observed_form = CreateFormDigest(kAffiliatedWebURL);
+  GetLoginsWithAffiliationsRequestHandler(
+      observed_form, backend(), &match_helper(), result_callback.Get());
+
+  std::vector<std::unique_ptr<PasswordForm>> expected_forms;
+  expected_forms.push_back(
+      std::make_unique<PasswordForm>(federated_credential));
+  expected_forms.back()->match_type = PasswordForm::MatchType::kAffiliated;
+  expected_forms.back()->skip_zero_click = true;
+
+  EXPECT_CALL(result_callback, Run(LoginsResultsOrErrorAre(&expected_forms)));
+  RunUntilIdle();
+}
+
 }  // namespace password_manager

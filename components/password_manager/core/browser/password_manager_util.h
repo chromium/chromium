@@ -46,12 +46,6 @@ enum class GetLoginMatchType {
 // Update |credential| to reflect usage.
 void UpdateMetadataForUsage(password_manager::PasswordForm* credential);
 
-// Removes Android username-only credentials from |android_credentials|.
-// Transforms federated credentials into non zero-click ones.
-void TrimUsernameOnlyCredentials(
-    std::vector<std::unique_ptr<password_manager::PasswordForm>>*
-        android_credentials);
-
 // A convenience function for testing that |client| has a non-null LogManager
 // and that that LogManager returns true for IsLoggingActive. This function can
 // be removed once PasswordManagerClient::GetLogManager is implemented on iOS

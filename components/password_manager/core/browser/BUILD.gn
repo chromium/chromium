@@ -62,8 +62,6 @@ static_library("browser") {
     "form_saver_impl.cc",
     "form_saver_impl.h",
     "form_submission_observer.h",
-    "get_logins_with_affiliations_request_handler.cc",
-    "get_logins_with_affiliations_request_handler.h",
     "hsts_query.cc",
     "hsts_query.h",
     "http_auth_manager.h",
@@ -74,18 +72,12 @@ static_library("browser") {
     "http_password_store_migrator.h",
     "insecure_credentials_helper.cc",
     "insecure_credentials_helper.h",
-    "insecure_credentials_table.cc",
-    "insecure_credentials_table.h",
     "leak_detection_delegate.cc",
     "leak_detection_delegate.h",
     "leak_detection_delegate_helper.cc",
     "leak_detection_delegate_helper.h",
     "leak_detection_dialog_utils.cc",
     "leak_detection_dialog_utils.h",
-    "login_database.cc",
-    "login_database.h",
-    "login_database_async_helper.cc",
-    "login_database_async_helper.h",
     "manage_passwords_referrer.h",
     "move_password_to_account_store_helper.cc",
     "move_password_to_account_store_helper.h",
@@ -141,8 +133,6 @@ static_library("browser") {
     "password_manager_settings_service.h",
     "password_manager_util.cc",
     "password_manager_util.h",
-    "password_notes_table.cc",
-    "password_notes_table.h",
     "password_requirements_service.cc",
     "password_requirements_service.h",
     "password_reuse_detector.cc",
@@ -157,38 +147,20 @@ static_library("browser") {
     "password_save_manager_impl.h",
     "password_session_durations_metrics_recorder.cc",
     "password_session_durations_metrics_recorder.h",
-    "password_store.cc",
-    "password_store.h",
-    "password_store_backend.h",
-    "password_store_backend_metrics_recorder.cc",
-    "password_store_backend_metrics_recorder.h",
-    "password_store_built_in_backend.cc",
-    "password_store_built_in_backend.h",
     "password_store_factory_util.cc",
     "password_store_factory_util.h",
     "password_store_signin_notifier.h",
-    "password_store_sync.cc",
-    "password_store_sync.h",
     "password_sync_util.cc",
     "password_sync_util.h",
     "password_ui_utils.cc",
     "password_ui_utils.h",
     "possible_username_data.cc",
     "possible_username_data.h",
-    "psl_matching_helper.cc",
-    "psl_matching_helper.h",
     "reauth_purpose.h",
-    "smart_bubble_stats_store.h",
-    "statistics_table.cc",
-    "statistics_table.h",
     "store_metrics_reporter.cc",
     "store_metrics_reporter.h",
     "sync/credential_model_type_controller.cc",
     "sync/credential_model_type_controller.h",
-    "sync/password_proto_utils.cc",
-    "sync/password_proto_utils.h",
-    "sync/password_sync_bridge.cc",
-    "sync/password_sync_bridge.h",
     "sync_credentials_filter.cc",
     "sync_credentials_filter.h",
     "votes_uploader.cc",
@@ -202,9 +174,7 @@ static_library("browser") {
   public_deps = [
     ":metrics_util",
     ":passkey_credential",
-    ":password_form",
-    ":password_store_interface",
-    ":sql_builder",
+    ":password_store_impl",
     "//base",
     "//components/password_manager/core/browser/affiliation",
     "//components/password_manager/core/browser/features:utils",
@@ -276,18 +246,11 @@ static_library("browser") {
 
   if (is_android) {
     sources += [
-      "android_backend_error.cc",
-      "android_backend_error.h",
       "password_credential_filler.h",
       "password_credential_filler_impl.cc",
       "password_credential_filler_impl.h",
-      "unified_password_manager_proto_utils.cc",
-      "unified_password_manager_proto_utils.h",
     ]
-    deps += [
-      ":unified_password_manager_proto",
-      "//components/webauthn/android",
-    ]
+    deps += [ "//components/webauthn/android" ]
   }
 
   if (!is_android && !is_ios) {
@@ -299,22 +262,6 @@ static_library("browser") {
       "http_credentials_cleaner.cc",
       "http_credentials_cleaner.h",
     ]
-  }
-
-  if ((is_posix && !is_apple) || is_fuchsia) {
-    sources += [ "login_database_posix.cc" ]
-  }
-
-  if (is_mac) {
-    sources += [ "login_database_mac.cc" ]
-  }
-
-  if (is_ios) {
-    sources += [ "login_database_ios.cc" ]
-  }
-
-  if (is_win) {
-    sources += [ "login_database_win.cc" ]
   }
 
   if (!is_chromeos_ash && !is_android) {
@@ -400,6 +347,91 @@ source_set("metrics_util") {
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
   ]
+}
+
+# TODO(crbug.com/1479425): Move to a subfolder.
+source_set("password_store_impl") {
+  sources = [
+    "get_logins_with_affiliations_request_handler.cc",
+    "get_logins_with_affiliations_request_handler.h",
+    "insecure_credentials_table.cc",
+    "insecure_credentials_table.h",
+    "login_database.cc",
+    "login_database.h",
+    "login_database_async_helper.cc",
+    "login_database_async_helper.h",
+    "password_notes_table.cc",
+    "password_notes_table.h",
+    "password_store.cc",
+    "password_store.h",
+    "password_store_backend.h",
+    "password_store_backend_metrics_recorder.cc",
+    "password_store_backend_metrics_recorder.h",
+    "password_store_built_in_backend.cc",
+    "password_store_built_in_backend.h",
+    "password_store_sync.cc",
+    "password_store_sync.h",
+    "psl_matching_helper.cc",
+    "psl_matching_helper.h",
+    "smart_bubble_stats_store.h",
+    "statistics_table.cc",
+    "statistics_table.h",
+    "sync/password_proto_utils.cc",
+    "sync/password_proto_utils.h",
+    "sync/password_sync_bridge.cc",
+    "sync/password_sync_bridge.h",
+  ]
+  public_deps = [
+    ":password_form",
+    ":password_store_interface",
+  ]
+  deps = [
+    ":metrics_util",
+    ":sql_builder",
+    "//base",
+    "//build:blink_buildflags",
+    "//components/autofill/core/common",
+    "//components/os_crypt/sync:os_crypt",
+    "//components/password_manager/core/browser/affiliation",
+    "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/core/common",
+    "//components/password_manager/core/common:features",
+    "//components/prefs",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/sync/base",
+    "//components/sync/base:features",
+    "//components/sync/model",
+    "//components/sync/protocol",
+    "//sql",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/re2",
+    "//url",
+  ]
+  if (is_android) {
+    sources += [
+      "android_backend_error.cc",
+      "android_backend_error.h",
+      "unified_password_manager_proto_utils.cc",
+      "unified_password_manager_proto_utils.h",
+    ]
+    deps += [ ":unified_password_manager_proto" ]
+  }
+
+  if ((is_posix && !is_apple) || is_fuchsia) {
+    sources += [ "login_database_posix.cc" ]
+  }
+
+  if (is_mac) {
+    sources += [ "login_database_mac.cc" ]
+  }
+
+  if (is_ios) {
+    sources += [ "login_database_ios.cc" ]
+  }
+
+  if (is_win) {
+    sources += [ "login_database_win.cc" ]
+  }
 }
 
 if (is_android) {
@@ -617,6 +649,7 @@ source_set("unit_tests") {
   deps = [
     ":hash_password_manager",
     ":password_hash_data",
+    ":sql_builder",
     ":test_support",
     "//base/test:test_support",
     "//build:branding_buildflags",

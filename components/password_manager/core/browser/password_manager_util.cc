@@ -80,23 +80,6 @@ void UpdateMetadataForUsage(PasswordForm* credential) {
   credential->all_alternative_usernames.clear();
 }
 
-void TrimUsernameOnlyCredentials(
-    std::vector<std::unique_ptr<PasswordForm>>* android_credentials) {
-  // Remove username-only credentials which are not federated.
-  base::EraseIf(*android_credentials,
-                [](const std::unique_ptr<PasswordForm>& form) {
-                  return form->scheme == PasswordForm::Scheme::kUsernameOnly &&
-                         form->federation_origin.opaque();
-                });
-
-  // Set "skip_zero_click" on federated credentials.
-  base::ranges::for_each(
-      *android_credentials, [](const std::unique_ptr<PasswordForm>& form) {
-        if (form->scheme == PasswordForm::Scheme::kUsernameOnly)
-          form->skip_zero_click = true;
-      });
-}
-
 bool IsLoggingActive(password_manager::PasswordManagerClient* client) {
   autofill::LogManager* log_manager = client->GetLogManager();
   return log_manager && log_manager->IsLoggingActive();

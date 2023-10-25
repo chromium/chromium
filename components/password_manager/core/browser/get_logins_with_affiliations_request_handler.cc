@@ -21,7 +21,6 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
@@ -112,6 +111,25 @@ void InjectAffiliationAndBrandingInformation(
   }
   affiliated_match_helper->InjectAffiliationAndBrandingInformation(
       std::move(absl::get<LoginsResult>(forms_or_error)), std::move(callback));
+}
+
+// Removes username-only credentials from |credentials|.
+// Transforms federated credentials into non zero-click ones.
+void TrimUsernameOnlyCredentials(
+    std::vector<std::unique_ptr<PasswordForm>>* credentials) {
+  // Remove username-only credentials which are not federated.
+  base::EraseIf(*credentials, [](const std::unique_ptr<PasswordForm>& form) {
+    return form->scheme == PasswordForm::Scheme::kUsernameOnly &&
+           form->federation_origin.opaque();
+  });
+
+  // Set "skip_zero_click" on federated credentials.
+  base::ranges::for_each(
+      *credentials, [](const std::unique_ptr<PasswordForm>& form) {
+        if (form->scheme == PasswordForm::Scheme::kUsernameOnly) {
+          form->skip_zero_click = true;
+        }
+      });
 }
 
 class GetLoginsHelper : public base::RefCounted<GetLoginsHelper> {
@@ -284,7 +302,7 @@ LoginsResultOrError GetLoginsHelper::MergeResults(
   base::EraseIf(final_result,
                 [](const auto& form) { return !form->match_type.has_value(); });
 
-  password_manager_util::TrimUsernameOnlyCredentials(&final_result);
+  TrimUsernameOnlyCredentials(&final_result);
   password_manager::metrics_util::LogGroupedPasswordsResults(final_result);
   // Remove grouped only matches if filling across groups is disabled.
   if (!base::FeatureList::IsEnabled(
