@@ -334,9 +334,10 @@ void FidoRequestHandlerBase::DiscoveryStarted(
     if (discovery->transport() == FidoTransportProtocol::kInternal &&
         // |authenticators| can be empty in tests.
         !authenticators.empty()) {
-      internal_authenticator_found_ = true;
-
       for (FidoAuthenticator* platform_authenticator : authenticators) {
+        if (platform_authenticator->GetType() == AuthenticatorType::kEnclave) {
+          continue;
+        }
         transport_availability_info_.has_icloud_keychain |=
             platform_authenticator->GetType() ==
             AuthenticatorType::kICloudKeychain;

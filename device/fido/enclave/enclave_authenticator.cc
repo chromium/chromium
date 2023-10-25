@@ -149,7 +149,8 @@ void EnclaveAuthenticator::OnResponseReceived(
 
     if (pending_get_assertion_request_) {
       // TODO(kenrb): Add handling of MakeCredential responses.
-      auto decode_result = ParseGetAssertionResponse(plaintext);
+      auto decode_result = ParseGetAssertionResponse(
+          plaintext, pending_get_assertion_request_->request.allow_list[0].id);
       if (!decode_result.first) {
         FIDO_LOG(ERROR) << "Error in response received from server: "
                         << decode_result.second;
@@ -235,7 +236,7 @@ const AuthenticatorSupportedOptions& EnclaveAuthenticator::Options() const {
 
 absl::optional<FidoTransportProtocol>
 EnclaveAuthenticator::AuthenticatorTransport() const {
-  return FidoTransportProtocol::kHybrid;
+  return FidoTransportProtocol::kInternal;
 }
 
 base::WeakPtr<FidoAuthenticator> EnclaveAuthenticator::GetWeakPtr() {

@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "crypto/ec_private_key.h"
 #include "device/fido/fido_discovery_base.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
@@ -40,6 +41,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticatorDiscovery
   std::unique_ptr<EnclaveAuthenticator> authenticator_;
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys_;
   raw_ptr<network::mojom::NetworkContext> network_context_;
+
+  // TODO(https://crbug.com/1459620): Temporary for the stand-in signing
+  // function.
+  std::unique_ptr<crypto::ECPrivateKey> signing_key_;
 
   base::WeakPtrFactory<EnclaveAuthenticatorDiscovery> weak_factory_{this};
 };

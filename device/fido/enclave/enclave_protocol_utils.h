@@ -47,7 +47,8 @@ using EnclaveRequestSigningCallback =
 
 // Parses a decrypted command response from the enclave.
 std::pair<absl::optional<AuthenticatorGetAssertionResponse>, std::string>
-ParseGetAssertionResponse(const std::vector<uint8_t>& response_cbor);
+ParseGetAssertionResponse(const std::vector<uint8_t>& response_cbor,
+                          base::span<uint8_t> credential_id);
 
 // Returns a CBOR value with the provided GetAssertion request and associated
 // passkey. The return value can be serialized into a Command request according

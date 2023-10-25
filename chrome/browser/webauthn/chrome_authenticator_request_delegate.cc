@@ -815,12 +815,10 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
   }
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator) &&
+  if (EnclaveAuthenticatorAvailable() &&
       request_type == device::FidoRequestType::kGetAssertion) {
     ConfigureEnclaveDiscovery(rp_id, discovery_factory);
   }
-#endif
 
   dialog_model_->set_is_non_webauthn_request(request_source !=
                                              RequestSource::kWebAuthentication);
@@ -907,7 +905,8 @@ void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
   }
   if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials) &&
       base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI) &&
-      !IsVirtualEnvironmentEnabled() && can_use_synced_phone_passkeys_) {
+      (can_use_synced_phone_passkeys_ || EnclaveAuthenticatorAvailable()) &&
+      !IsVirtualEnvironmentEnabled()) {
     GetPhoneContactableGpmPasskeysForRpId(&data.recognized_credentials);
   }
   if (!credential_filter_.empty()) {
@@ -1124,17 +1123,18 @@ void ChromeAuthenticatorRequestDelegate::OnCableEvent(
 
 void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
     std::vector<device::DiscoverableCredentialMetadata>* passkeys) {
-  // TODO(crbug.com/1456847): Introduce
-  // PasskeyModel::GetPasskeysForRelyingPartyId() and move this logic there.
   webauthn::PasskeyModel* passkey_model =
       PasskeyModelFactory::GetInstance()->GetForProfile(
           Profile::FromBrowserContext(GetBrowserContext()));
   CHECK(passkey_model);
+  device::AuthenticatorType type = EnclaveAuthenticatorAvailable()
+                                       ? device::AuthenticatorType::kEnclave
+                                       : device::AuthenticatorType::kPhone;
   for (const sync_pb::WebauthnCredentialSpecifics& passkey :
        passkey_model->GetPasskeysForRelyingPartyId(
            dialog_model_->relying_party_id())) {
     passkeys->emplace_back(
-        device::AuthenticatorType::kPhone, passkey.rp_id(),
+        type, passkey.rp_id(),
         std::vector<uint8_t>(passkey.credential_id().begin(),
                              passkey.credential_id().end()),
         device::PublicKeyCredentialUserEntity(
@@ -1144,7 +1144,6 @@ void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
   }
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
 void ChromeAuthenticatorRequestDelegate::ConfigureEnclaveDiscovery(
     const std::string& rp_id,
     device::FidoDiscoveryFactory* discovery_factory) {
@@ -1157,7 +1156,17 @@ void ChromeAuthenticatorRequestDelegate::ConfigureEnclaveDiscovery(
       passkey_model->GetPasskeysForRelyingPartyId(rp_id);
   discovery_factory->SetEnclavePasskeys(std::move(passkeys));
 }
+
+bool ChromeAuthenticatorRequestDelegate::EnclaveAuthenticatorAvailable() {
+#if BUILDFLAG(IS_CHROMEOS)
+  // Enclave service authenticators are not needed for Chrome OS.
+  return false;
+#else
+  // TODO(https://crbug.com/1459620): This also has to be conditional on device
+  // registration with the enclave, when implemented.
+  return base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator);
 #endif
+}
 
 #if BUILDFLAG(IS_MAC)
 // static

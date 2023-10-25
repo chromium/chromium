@@ -92,6 +92,10 @@ std::u16string PasskeyCredential::GetAuthenticatorLabel() const {
     case Source::kAndroidPhone:
       id = IDS_PASSWORD_MANAGER_USE_SCREEN_LOCK;
       break;
+    case Source::kGooglePasswordManager:
+      // TODO(https://crbug.com/1459620): Update this when a proper string is
+      // added.
+      return u"Passkey from Google Password Manager (UNTRANSLATED STRING)";
     case Source::kOther:
       id = IDS_PASSWORD_MANAGER_USE_GENERIC_DEVICE;
       break;

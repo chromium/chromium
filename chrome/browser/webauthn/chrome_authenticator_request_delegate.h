@@ -252,13 +252,13 @@ class ChromeAuthenticatorRequestDelegate
   void GetPhoneContactableGpmPasskeysForRpId(
       std::vector<device::DiscoverableCredentialMetadata>* passkeys);
 
-#if !BUILDFLAG(IS_CHROMEOS)
   // Configures an WebAuthn enclave authenticator discovery and provides it with
   // synced passkeys.
   void ConfigureEnclaveDiscovery(
       const std::string& rp_id,
       device::FidoDiscoveryFactory* discovery_factory);
-#endif
+
+  bool EnclaveAuthenticatorAvailable();
 
 #if BUILDFLAG(IS_MAC)
   // DaysSinceDate returns the number of days between `formatted_date` (in ISO
