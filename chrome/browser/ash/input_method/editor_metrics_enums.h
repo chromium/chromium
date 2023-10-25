@@ -43,7 +43,9 @@ enum class EditorStates {
   // Increase by #characters in a freeform request (if any) for an insert. This
   // is recorded at the time of an insert.
   kFreeformCharsForInsert = 12,
-  kMaxValue = kFreeformCharsForInsert,
+  // Increase by 1 when a user returns to previous in the webUI.
+  kReturnToPreviousSuggestions = 13,
+  kMaxValue = kReturnToPreviousSuggestions,
 };
 
 }  // namespace ash::input_method

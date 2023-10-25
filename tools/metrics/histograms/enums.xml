@@ -54409,6 +54409,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="10" label="CHARACTERS_INSERTED"/>
   <int value="11" label="CHARACTERS_SELECTED_FOR_INSERT"/>
   <int value="12" label="FREEFORM_CHARACTERS_FOR_INSERT"/>
+  <int value="13" label="RETURN_TO_PREVIOUS_SUGGESTIONS"/>
 </enum>
 
 <enum name="IMEGrammarActions">
