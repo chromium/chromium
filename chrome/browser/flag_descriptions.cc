@@ -3401,6 +3401,11 @@ const char kTrackingProtection3pcdDescription[] =
     "Enables the tracking protection UI + prefs that will be used for the 3PCD "
     "1%. ";
 
+const char kTrackingProtectionOnboardingRollbackName[] =
+    "Tracking Protection Rollback Flow";
+const char kTrackingProtectionOnboardingRollbackDescription[] =
+    "Enables the tracking protection rollback flow";
+
 const char kUserBypassUIName[] = "User Bypass UI";
 const char kUserBypassUIDescription[] = "Enables the User Bypass UI. ";
 

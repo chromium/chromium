@@ -1971,6 +1971,9 @@ extern const char kTpcdHeuristicsGrantsDescription[];
 extern const char kTrackingProtection3pcdName[];
 extern const char kTrackingProtection3pcdDescription[];
 
+extern const char kTrackingProtectionOnboardingRollbackName[];
+extern const char kTrackingProtectionOnboardingRollbackDescription[];
+
 extern const char kUnifiedPasswordManagerAndroidReenrollmentName[];
 extern const char kUnifiedPasswordManagerAndroidReenrollmentDescription[];
 
