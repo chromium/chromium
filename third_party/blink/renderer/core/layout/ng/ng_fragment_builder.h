@@ -26,10 +26,10 @@
 namespace blink {
 
 class FragmentItemsBuilder;
+class InlineBreakToken;
 class LayoutObject;
 class NGColumnSpannerPath;
 class NGEarlyBreak;
-class NGInlineBreakToken;
 
 class CORE_EXPORT NGFragmentBuilder {
   STACK_ALLOCATED();
@@ -573,7 +573,7 @@ class CORE_EXPORT NGFragmentBuilder {
   // Only used by the NGBoxFragmentBuilder subclass, but defined here to avoid
   // a virtual function call.
   NGBreakTokenVector child_break_tokens_;
-  const NGInlineBreakToken* last_inline_break_token_ = nullptr;
+  const InlineBreakToken* last_inline_break_token_ = nullptr;
 
   HeapVector<NGLogicalOutOfFlowPositionedNode> oof_positioned_candidates_;
   HeapVector<NGLogicalOOFNodeForFragmentation>

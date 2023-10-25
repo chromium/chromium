@@ -149,7 +149,7 @@ This phase:
 ### <a name="line-box-construction">Line Box Construction</a> ###
 [line Box Construction]: #line-box-construction
 
-`NGInlineLayoutAlgorithm::CreateLine()` takes a list of [InlineItemResult] and
+`InlineLayoutAlgorithm::CreateLine()` takes a list of [InlineItemResult] and
 produces a list of [LogicalLineItem].
 
 This phase consists of following sub-phases:
@@ -231,7 +231,7 @@ When all operations are done,
 
 Not all [inline-level] boxes produces [NGPhysicalBoxFragment]s.
 
-[NGInlineLayoutAlgorithm] determines
+[InlineLayoutAlgorithm] determines
 whether a [NGPhysicalBoxFragment] is needed or not,
 such as when a `<span>` has borders,
 and calls [InlineBoxState]`::SetNeedsBoxFragment()`.
@@ -376,6 +376,7 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [InlineBoxState]: ng_inline_box_state.h
 [InlineItem]: ng_inline_item.h
 [InlineItemResult]: ng_inline_item_result.h
+[InlineLayoutAlgorithm]: ng_inline_layout_algorithm.h
 [InlineNode]: ng_inline_node.h
 [LineBreaker]: ng_line_breaker.h
 [LogicalLineItem]: ng_logical_line_item.h
@@ -387,7 +388,6 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [NGBoxFragmentBuilder]: ../ng_box_fragment_builder.h
 [NGConstraintSpace]: ../ng_constraint_space_builder.h
 [NGConstraintSpaceBuilder]: ../ng_constraint_space_builder.h
-[NGInlineLayoutAlgorithm]: ng_inline_layout_algorithm.h
 [NGLayoutInputNode]: ../ng_layout_input_node.h
 [NGPhysicalBoxFragment]: ../ng_physical_box_fragment.h
 [NGPhysicalFragment]: ../ng_physical_fragment.h

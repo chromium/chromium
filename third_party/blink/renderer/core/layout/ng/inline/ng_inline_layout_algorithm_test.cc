@@ -36,7 +36,7 @@ const PhysicalLineBoxFragment* FindBlockInInlineLineBoxFragment(
   return nullptr;
 }
 
-class NGInlineLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
+class InlineLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
  protected:
   static std::string AsFragmentItemsString(const LayoutBlockFlow& root) {
     std::ostringstream ostream;
@@ -62,7 +62,7 @@ class NGInlineLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
   }
 };
 
-TEST_F(NGInlineLayoutAlgorithmTest, Types) {
+TEST_F(InlineLayoutAlgorithmTest, Types) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <div id="normal">normal</div>
@@ -78,7 +78,7 @@ TEST_F(NGInlineLayoutAlgorithmTest, Types) {
   EXPECT_TRUE(empty.Current()->LineBoxFragment()->IsEmptyLineBox());
 }
 
-TEST_F(NGInlineLayoutAlgorithmTest, TypesForFirstLine) {
+TEST_F(InlineLayoutAlgorithmTest, TypesForFirstLine) {
   SetBodyInnerHTML(R"HTML(
     <style>
     div::first-line { font-size: 2em; }
@@ -102,7 +102,7 @@ TEST_F(NGInlineLayoutAlgorithmTest, TypesForFirstLine) {
             NGStyleVariant::kFirstLine);
 }
 
-TEST_F(NGInlineLayoutAlgorithmTest, TypesForBlockInInline) {
+TEST_F(InlineLayoutAlgorithmTest, TypesForBlockInInline) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <div id="block-in-inline">
@@ -157,7 +157,7 @@ TEST_F(NGInlineLayoutAlgorithmTest, TypesForBlockInInline) {
       block_in_inline_height.Current()->LineBoxFragment()->IsBlockInInline());
 }
 
-TEST_F(NGInlineLayoutAlgorithmTest, BreakToken) {
+TEST_F(InlineLayoutAlgorithmTest, BreakToken) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
@@ -188,7 +188,7 @@ TEST_F(NGInlineLayoutAlgorithmTest, BreakToken) {
   NGBoxFragmentBuilder container_builder(
       block_flow, block_flow->Style(), constraint_space,
       block_flow->Style()->GetWritingDirection());
-  NGSimpleInlineChildLayoutContext context(inline_node, &container_builder);
+  SimpleInlineChildLayoutContext context(inline_node, &container_builder);
   const NGLayoutResult* layout_result =
       inline_node.Layout(constraint_space, nullptr, nullptr, &context);
   const auto& line1 = layout_result->PhysicalFragment();
@@ -210,7 +210,7 @@ TEST_F(NGInlineLayoutAlgorithmTest, BreakToken) {
 // This test ensures box fragments are generated when necessary, even when the
 // line is empty. One such case is when the line contains a containing box of an
 // out-of-flow object.
-TEST_F(NGInlineLayoutAlgorithmTest,
+TEST_F(InlineLayoutAlgorithmTest,
        EmptyLineWithOutOfFlowInInlineContainingBlock) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
@@ -256,7 +256,7 @@ TEST_F(NGInlineLayoutAlgorithmTest,
 // This test ensures that if an inline box generates (or does not generate) box
 // fragments for a wrapped line, it should consistently do so for other lines
 // too, when the inline box is fragmented to multiple lines.
-TEST_F(NGInlineLayoutAlgorithmTest, BoxForEndMargin) {
+TEST_F(InlineLayoutAlgorithmTest, BoxForEndMargin) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
@@ -298,7 +298,7 @@ TEST_F(NGInlineLayoutAlgorithmTest, BoxForEndMargin) {
   ASSERT_FALSE(line_box) << "block_flow has two lines.";
 }
 
-TEST_F(NGInlineLayoutAlgorithmTest, InlineBoxBorderPadding) {
+TEST_F(InlineLayoutAlgorithmTest, InlineBoxBorderPadding) {
   SetBodyInnerHTML(R"HTML(
     <style>
     div {
@@ -362,7 +362,7 @@ TEST_F(NGInlineLayoutAlgorithmTest, InlineBoxBorderPadding) {
 //   - A wrapper box fragment created by InlineNode
 //     - Line box fragments.
 // This test verifies that borders/paddings are applied to the wrapper box.
-TEST_F(NGInlineLayoutAlgorithmTest, ContainerBorderPadding) {
+TEST_F(InlineLayoutAlgorithmTest, ContainerBorderPadding) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -396,7 +396,7 @@ TEST_F(NGInlineLayoutAlgorithmTest, ContainerBorderPadding) {
 #else
 #define MAYBE_VerticalAlignBottomReplaced VerticalAlignBottomReplaced
 #endif
-TEST_F(NGInlineLayoutAlgorithmTest, MAYBE_VerticalAlignBottomReplaced) {
+TEST_F(InlineLayoutAlgorithmTest, MAYBE_VerticalAlignBottomReplaced) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -419,7 +419,7 @@ TEST_F(NGInlineLayoutAlgorithmTest, MAYBE_VerticalAlignBottomReplaced) {
 
 // Verifies that text can flow correctly around floats that were positioned
 // before the inline block.
-TEST_F(NGInlineLayoutAlgorithmTest, TextFloatsAroundFloatsBefore) {
+TEST_F(InlineLayoutAlgorithmTest, TextFloatsAroundFloatsBefore) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -484,7 +484,7 @@ TEST_F(NGInlineLayoutAlgorithmTest, TextFloatsAroundFloatsBefore) {
 
 // Verifies that text correctly flows around the inline float that fits on
 // the same text line.
-TEST_F(NGInlineLayoutAlgorithmTest, TextFloatsAroundInlineFloatThatFitsOnLine) {
+TEST_F(InlineLayoutAlgorithmTest, TextFloatsAroundInlineFloatThatFitsOnLine) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -531,7 +531,7 @@ TEST_F(NGInlineLayoutAlgorithmTest, TextFloatsAroundInlineFloatThatFitsOnLine) {
 
 // Verifies that the inline float got pushed to the next line if it doesn't
 // fit the current line.
-TEST_F(NGInlineLayoutAlgorithmTest,
+TEST_F(InlineLayoutAlgorithmTest,
        TextFloatsAroundInlineFloatThatDoesNotFitOnLine) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
@@ -563,7 +563,7 @@ TEST_F(NGInlineLayoutAlgorithmTest,
 // Verifies that if an inline float pushed to the next line then all others
 // following inline floats positioned with respect to the float's top edge
 // alignment rule.
-TEST_F(NGInlineLayoutAlgorithmTest,
+TEST_F(InlineLayoutAlgorithmTest,
        FloatsArePositionedWithRespectToTopEdgeAlignmentRule) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
@@ -603,7 +603,7 @@ TEST_F(NGInlineLayoutAlgorithmTest,
 }
 
 // Block-in-inline is not reusable. See |EndOfReusableItems|.
-TEST_F(NGInlineLayoutAlgorithmTest, BlockInInlineAppend) {
+TEST_F(InlineLayoutAlgorithmTest, BlockInInlineAppend) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -638,7 +638,7 @@ TEST_F(NGInlineLayoutAlgorithmTest, BlockInInlineAppend) {
 
 // Verifies that InlineLayoutAlgorithm positions floats with respect to their
 // margins.
-TEST_F(NGInlineLayoutAlgorithmTest, PositionFloatsWithMargins) {
+TEST_F(InlineLayoutAlgorithmTest, PositionFloatsWithMargins) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -662,7 +662,7 @@ TEST_F(NGInlineLayoutAlgorithmTest, PositionFloatsWithMargins) {
 }
 
 // Test glyph bounding box causes ink overflow.
-TEST_F(NGInlineLayoutAlgorithmTest, InkOverflow) {
+TEST_F(InlineLayoutAlgorithmTest, InkOverflow) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
@@ -686,8 +686,8 @@ TEST_F(NGInlineLayoutAlgorithmTest, InkOverflow) {
   EXPECT_EQ(LayoutUnit(20), ink_overflow.size.height);
 }
 
-// See also NGInlineLayoutAlgorithmTest.TextCombineFake
-TEST_F(NGInlineLayoutAlgorithmTest, TextCombineBasic) {
+// See also InlineLayoutAlgorithmTest.TextCombineFake
+TEST_F(InlineLayoutAlgorithmTest, TextCombineBasic) {
   LoadAhem();
   InsertStyleElement(
       "body { margin: 0px; font: 100px/110px Ahem; }"
@@ -713,8 +713,8 @@ TEST_F(NGInlineLayoutAlgorithmTest, TextCombineBasic) {
                 GetLayoutObjectByElementId("target")->SlowFirstChild())));
 }
 
-// See also NGInlineLayoutAlgorithmTest.TextCombineBasic
-TEST_F(NGInlineLayoutAlgorithmTest, TextCombineFake) {
+// See also InlineLayoutAlgorithmTest.TextCombineBasic
+TEST_F(InlineLayoutAlgorithmTest, TextCombineFake) {
   LoadAhem();
   InsertStyleElement(
       "body { margin: 0px; font: 100px/110px Ahem; }"
@@ -744,7 +744,7 @@ TEST_F(NGInlineLayoutAlgorithmTest, TextCombineFake) {
 }
 
 // http://crbug.com/1413969
-TEST_F(NGInlineLayoutAlgorithmTest, InitialLetterEmpty) {
+TEST_F(InlineLayoutAlgorithmTest, InitialLetterEmpty) {
   LoadAhem();
   InsertStyleElement(
       "body { font: 10px/15px Ahem; }"
@@ -759,7 +759,7 @@ TEST_F(NGInlineLayoutAlgorithmTest, InitialLetterEmpty) {
 }
 
 // http://crbug.com/1420168
-TEST_F(NGInlineLayoutAlgorithmTest, InitialLetterWithEmptyInline) {
+TEST_F(InlineLayoutAlgorithmTest, InitialLetterWithEmptyInline) {
   GetDocument().SetCompatibilityMode(Document::kQuirksMode);
   LoadAhem();
   InsertStyleElement(
@@ -775,7 +775,7 @@ TEST_F(NGInlineLayoutAlgorithmTest, InitialLetterWithEmptyInline) {
                           GetLayoutObjectByElementId("sample"))));
 }
 
-TEST_F(NGInlineLayoutAlgorithmTest, LineBoxWithHangingWidthRTLRightAligned) {
+TEST_F(InlineLayoutAlgorithmTest, LineBoxWithHangingWidthRTLRightAligned) {
   LoadAhem();
   InsertStyleElement(
       "textarea {"
@@ -808,7 +808,7 @@ TEST_F(NGInlineLayoutAlgorithmTest, LineBoxWithHangingWidthRTLRightAligned) {
   EXPECT_EQ(PhysicalRect(70, 0, 30, 10), TextAreaFirstLineRect("d"));
 }
 
-TEST_F(NGInlineLayoutAlgorithmTest, LineBoxWithHangingWidthRTLCenterAligned) {
+TEST_F(InlineLayoutAlgorithmTest, LineBoxWithHangingWidthRTLCenterAligned) {
   LoadAhem();
   InsertStyleElement(
       "textarea {"

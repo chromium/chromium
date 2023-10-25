@@ -44,7 +44,7 @@ ASSERT_SIZE(FragmentItem, SameSizeAsFragmentItem);
 
 FragmentItem::FragmentItem(const InlineItem& inline_item,
                            scoped_refptr<const ShapeResultView> shape_result,
-                           const NGTextOffsetRange& text_offset,
+                           const TextOffsetRange& text_offset,
                            const PhysicalSize& size,
                            bool is_hidden_for_paint)
     : text_({std::move(shape_result), text_offset}),
@@ -536,7 +536,7 @@ const ShapeResultView* FragmentItem::TextShapeResult() const {
   return nullptr;
 }
 
-NGTextOffsetRange FragmentItem::TextOffset() const {
+TextOffsetRange FragmentItem::TextOffset() const {
   if (Type() == kText)
     return text_.text_offset;
   if (Type() == kSvgText)

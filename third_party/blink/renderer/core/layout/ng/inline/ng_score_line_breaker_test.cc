@@ -42,7 +42,7 @@ class ScoreLineBreakerTest : public RenderingTest {
     LineBreakPoints& break_points = context.GetLineBreakPoints();
     break_points.clear();
     context.DidCreateLine(/*is_end_paragraph*/ true);
-    NGLeadingFloats empty_leading_floats;
+    LeadingFloats empty_leading_floats;
     for (;;) {
       breaker.OptimalBreakPoints(empty_leading_floats, context);
       if (!context.IsActive() || !breaker.BreakToken() ||
@@ -62,13 +62,13 @@ class ScoreLineBreakerTest : public RenderingTest {
     const LayoutUnit width = FragmentWidth(node);
     NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
     LineWidths line_widths(width);
-    const NGInlineBreakToken* break_token = nullptr;
+    const InlineBreakToken* break_token = nullptr;
     ExclusionSpace exclusion_space;
     ScoreLineBreaker optimizer(node, space, line_widths, break_token,
                                &exclusion_space);
     Vector<float> scores;
     optimizer.SetScoresOutForTesting(&scores);
-    NGLeadingFloats empty_leading_floats;
+    LeadingFloats empty_leading_floats;
     ScoreLineBreakContextOf<kMaxLinesForOptimal> context;
     optimizer.OptimalBreakPoints(empty_leading_floats, context);
     return scores;
@@ -101,14 +101,14 @@ TEST_F(ScoreLineBreakerTest, LastLines) {
   LineWidths line_widths(width);
   ScoreLineBreakContextOf<kMaxLinesForOptimal> context;
   LineInfoList& line_info_list = context.GetLineInfoList();
-  const NGInlineBreakToken* break_token = nullptr;
+  const InlineBreakToken* break_token = nullptr;
   ExclusionSpace exclusion_space;
   ScoreLineBreaker optimizer(node, space, line_widths, break_token,
                              &exclusion_space);
 
   // Run the optimizer from the beginning of the `target`. This should cache
   // `optimizer.MaxLines()` lines.
-  NGLeadingFloats empty_leading_floats;
+  LeadingFloats empty_leading_floats;
   optimizer.OptimalBreakPoints(empty_leading_floats, context);
   EXPECT_EQ(line_info_list.Size(), optimizer.MaxLines());
   TestLinesAreContiguous(line_info_list);
@@ -258,7 +258,7 @@ TEST_F(ScoreLineBreakerTest, ForcedBreak) {
   ScoreLineBreakContextOf<kMaxLinesForOptimal> context;
   LineInfoList& line_info_list = context.GetLineInfoList();
   LineBreakPoints& break_points = context.GetLineBreakPoints();
-  const NGInlineBreakToken* break_token = nullptr;
+  const InlineBreakToken* break_token = nullptr;
   ExclusionSpace exclusion_space;
   ScoreLineBreaker optimizer(node, space, line_widths, break_token,
                              &exclusion_space);
@@ -269,7 +269,7 @@ TEST_F(ScoreLineBreakerTest, ForcedBreak) {
   //
   // Since the paragraphs has only 2 break candidates, it should return two
   // `LineInfo` without the optimization.
-  NGLeadingFloats empty_leading_floats;
+  LeadingFloats empty_leading_floats;
   optimizer.OptimalBreakPoints(empty_leading_floats, context);
   EXPECT_EQ(break_points.size(), 0u);
   EXPECT_EQ(line_info_list.Size(), 2u);
@@ -389,11 +389,11 @@ TEST_P(DisabledByLineBreakerTest, Data) {
   NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
   LineWidths line_widths(width);
   ScoreLineBreakContextOf<kMaxLinesForOptimal> context;
-  const NGInlineBreakToken* break_token = nullptr;
+  const InlineBreakToken* break_token = nullptr;
   ExclusionSpace exclusion_space;
   ScoreLineBreaker optimizer(node, space, line_widths, break_token,
                              &exclusion_space);
-  NGLeadingFloats empty_leading_floats;
+  LeadingFloats empty_leading_floats;
   optimizer.OptimalBreakPoints(empty_leading_floats, context);
   EXPECT_FALSE(context.IsActive());
   if (data.disabled) {
@@ -403,7 +403,7 @@ TEST_P(DisabledByLineBreakerTest, Data) {
   }
 }
 
-// Test when `NGInlineLayoutAlgorithm::Layout` runs `LineBreaker` twice for
+// Test when `InlineLayoutAlgorithm::Layout` runs `LineBreaker` twice for
 // the same line, to retry line breaking due to float placements.
 TEST_F(ScoreLineBreakerTest, FloatRetry) {
   ScopedCSSTextWrapPrettyForTest enable(true);

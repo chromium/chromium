@@ -42,7 +42,7 @@ void AppendBreakTokenToString(const NGBreakToken* token,
     const auto children = block_break_token->ChildBreakTokens();
     for (const auto& child : children)
       AppendBreakTokenToString(child, string_builder, indent + 2);
-  } else if (auto* inline_break_token = DynamicTo<NGInlineBreakToken>(token)) {
+  } else if (auto* inline_break_token = DynamicTo<InlineBreakToken>(token)) {
     if (auto* child_block_break_token = inline_break_token->BlockBreakToken()) {
       AppendBreakTokenToString(child_block_break_token, string_builder,
                                indent + 2);
@@ -56,7 +56,7 @@ String NGBreakToken::ToString() const {
     case kBlockBreakToken:
       return To<NGBlockBreakToken>(this)->ToString();
     case kInlineBreakToken:
-      return To<NGInlineBreakToken>(this)->ToString();
+      return To<InlineBreakToken>(this)->ToString();
   }
   NOTREACHED();
 }
@@ -75,7 +75,7 @@ void NGBreakToken::Trace(Visitor* visitor) const {
       To<NGBlockBreakToken>(this)->TraceAfterDispatch(visitor);
       return;
     case kInlineBreakToken:
-      To<NGInlineBreakToken>(this)->TraceAfterDispatch(visitor);
+      To<InlineBreakToken>(this)->TraceAfterDispatch(visitor);
       return;
   }
   NOTREACHED();

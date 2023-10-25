@@ -75,7 +75,7 @@ namespace {
 Position GetNextSoftBreak(const OffsetMapping& mapping, InlineCursor& cursor) {
   while (cursor) {
     DCHECK(cursor.Current().IsLineBox()) << cursor;
-    const auto* break_token = cursor.Current().InlineBreakToken();
+    const auto* break_token = cursor.Current().GetInlineBreakToken();
     cursor.MoveToNextLine();
     // We don't need to emit a LF for the last line.
     if (!cursor)

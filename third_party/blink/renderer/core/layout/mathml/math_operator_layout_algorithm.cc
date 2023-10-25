@@ -44,8 +44,8 @@ const NGLayoutResult* MathOperatorLayoutAlgorithm::Layout() {
   DCHECK(!child.NextSibling());
   DCHECK(!child.IsOutOfFlowPositioned());
 
-  NGSimpleInlineChildLayoutContext context(To<InlineNode>(child),
-                                           &container_builder_);
+  SimpleInlineChildLayoutContext context(To<InlineNode>(child),
+                                         &container_builder_);
   const NGLayoutResult* child_layout_result =
       To<InlineNode>(child).Layout(ConstraintSpace(), /* break_token */ nullptr,
                                    /* column_spanner_path */ nullptr, &context);

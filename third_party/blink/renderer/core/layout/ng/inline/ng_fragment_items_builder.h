@@ -53,7 +53,7 @@ class CORE_EXPORT FragmentItemsBuilder {
                : text_content_;
   }
 
-  // Adding a line is a three-pass operation, because |NGInlineLayoutAlgorithm|
+  // Adding a line is a three-pass operation, because |InlineLayoutAlgorithm|
   // creates and positions children within a line box, but its parent algorithm
   // positions the line box.
   //
@@ -67,7 +67,7 @@ class CORE_EXPORT FragmentItemsBuilder {
   // reduce memory allocations.
   //
   // Custom layout produces all line boxes first by running only 1 and 2 (in
-  // |NGInlineLayoutAlgorithm|). Then after worklet determined the position and
+  // |InlineLayoutAlgorithm|). Then after worklet determined the position and
   // the order of line boxes, it runs 3 for each line. In this case,
   // |FragmentItemsBuilder| allocates new instance for each line, and keeps
   // them alive until |AddLine|.
@@ -89,7 +89,7 @@ class CORE_EXPORT FragmentItemsBuilder {
     STACK_ALLOCATED();
 
    public:
-    const NGInlineBreakToken* inline_break_token = nullptr;
+    const InlineBreakToken* inline_break_token = nullptr;
     LayoutUnit used_block_size;
     wtf_size_t line_count = 0;
     bool succeeded = false;

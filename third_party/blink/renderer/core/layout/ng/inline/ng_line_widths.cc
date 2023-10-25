@@ -12,7 +12,7 @@ namespace blink {
 
 bool LineWidths::Set(const InlineNode& node,
                      base::span<const LayoutOpportunity> opportunities,
-                     const NGInlineBreakToken* break_token) {
+                     const InlineBreakToken* break_token) {
   // Set the default width if no exclusions.
   DCHECK_GE(opportunities.size(), 1u);
   const LayoutOpportunity& first_opportunity = opportunities.front();

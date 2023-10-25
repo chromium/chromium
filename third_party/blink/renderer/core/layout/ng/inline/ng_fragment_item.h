@@ -24,7 +24,7 @@
 namespace blink {
 
 class FragmentItems;
-class NGInlineBreakToken;
+class InlineBreakToken;
 class NGInlinePaintContext;
 struct LogicalLineItem;
 struct NGTextFragmentPaintInfo;
@@ -35,7 +35,7 @@ struct NGSvgFragmentData {
 
  public:
   scoped_refptr<const ShapeResultView> shape_result;
-  NGTextOffsetRange text_offset;
+  TextOffsetRange text_offset;
   gfx::RectF rect;
   float length_adjust_scale;
   float angle;
@@ -57,7 +57,7 @@ class CORE_EXPORT FragmentItem final {
     scoped_refptr<const ShapeResultView> shape_result;
     // TODO(kojii): |text_offset| should match to the offset in |shape_result|.
     // Consider if we should remove them, or if keeping them is easier.
-    const NGTextOffsetRange text_offset;
+    const TextOffsetRange text_offset;
   };
   // Represents text in SVG <text>.
   struct SvgTextItem {
@@ -289,11 +289,11 @@ class CORE_EXPORT FragmentItem final {
     return nullptr;
   }
 
-  // Returns |NGInlineBreakToken| associated with this line, for line items.
+  // Returns |InlineBreakToken| associated with this line, for line items.
   // Calling this function for other types is not valid.
-  const NGInlineBreakToken* InlineBreakToken() const {
+  const InlineBreakToken* GetInlineBreakToken() const {
     if (const PhysicalLineBoxFragment* line_box = LineBoxFragment()) {
-      return To<NGInlineBreakToken>(line_box->BreakToken());
+      return To<InlineBreakToken>(line_box->BreakToken());
     }
     NOTREACHED();
     return nullptr;
@@ -413,7 +413,7 @@ class CORE_EXPORT FragmentItem final {
   }
 
   const ShapeResultView* TextShapeResult() const;
-  NGTextOffsetRange TextOffset() const;
+  TextOffsetRange TextOffset() const;
   wtf_size_t StartOffset() const { return TextOffset().start; }
   wtf_size_t EndOffset() const { return TextOffset().end; }
   wtf_size_t TextLength() const { return TextOffset().Length(); }
@@ -529,7 +529,7 @@ class CORE_EXPORT FragmentItem final {
   // Create a text item.
   FragmentItem(const InlineItem& inline_item,
                scoped_refptr<const ShapeResultView> shape_result,
-               const NGTextOffsetRange& text_offset,
+               const TextOffsetRange& text_offset,
                const PhysicalSize& size,
                bool is_hidden_for_paint);
   // Create a generated text item.

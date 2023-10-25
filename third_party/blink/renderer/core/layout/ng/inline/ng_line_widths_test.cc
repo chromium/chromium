@@ -33,12 +33,11 @@ class LineWidthsTest : public RenderingTest {
     const ComputedStyle& style = node.Style();
     NGBoxFragmentBuilder container_builder(node, &style, space,
                                            style.GetWritingDirection());
-    NGSimpleInlineChildLayoutContext context(node, &container_builder);
-    NGInlineLayoutAlgorithm algorithm(node, space, /*break_token*/ nullptr,
-                                      /*column_spanner_path*/ nullptr,
-                                      &context);
+    SimpleInlineChildLayoutContext context(node, &container_builder);
+    InlineLayoutAlgorithm algorithm(node, space, /*break_token*/ nullptr,
+                                    /*column_spanner_path*/ nullptr, &context);
     ExclusionSpace exclusion_space(space.GetExclusionSpace());
-    NGLeadingFloats leading_floats;
+    LeadingFloats leading_floats;
     algorithm.PositionLeadingFloats(exclusion_space, leading_floats);
     const LayoutOpportunityVector& opportunities =
         exclusion_space.AllLayoutOpportunities(

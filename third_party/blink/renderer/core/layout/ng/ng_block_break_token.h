@@ -16,8 +16,8 @@
 
 namespace blink {
 
+class InlineBreakToken;
 class NGBoxFragmentBuilder;
-class NGInlineBreakToken;
 
 // Represents a break token for a block node.
 class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
@@ -211,9 +211,9 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
     return ChildBreakTokensInternal();
   }
 
-  // Find the child NGInlineBreakToken for the specified node.
-  const NGInlineBreakToken* InlineBreakTokenFor(const NGLayoutInputNode&) const;
-  const NGInlineBreakToken* InlineBreakTokenFor(const LayoutBox&) const;
+  // Find the child InlineBreakToken for the specified node.
+  const InlineBreakToken* InlineBreakTokenFor(const NGLayoutInputNode&) const;
+  const InlineBreakToken* InlineBreakTokenFor(const LayoutBox&) const;
 
 #if DCHECK_IS_ON()
   String ToString() const;

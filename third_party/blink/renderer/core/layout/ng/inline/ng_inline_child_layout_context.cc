@@ -11,7 +11,7 @@ namespace blink {
 
 namespace {
 
-struct SameSizeAsNGInlineChildLayoutContext {
+struct SameSizeAsInlineChildLayoutContext {
   STACK_ALLOCATED();
 
  public:
@@ -24,8 +24,8 @@ struct SameSizeAsNGInlineChildLayoutContext {
 };
 
 static_assert(
-    sizeof(NGInlineChildLayoutContext) ==
-        sizeof(SameSizeAsNGInlineChildLayoutContext),
+    sizeof(InlineChildLayoutContext) ==
+        sizeof(SameSizeAsInlineChildLayoutContext),
     "Only data which can be regenerated from the node, constraints, and break "
     "token are allowed to be placed in this context object.");
 
@@ -42,7 +42,7 @@ bool IsBlockFragmented(const NGBoxFragmentBuilder& fragment_builder) {
 
 }  // namespace
 
-NGInlineChildLayoutContext::NGInlineChildLayoutContext(
+InlineChildLayoutContext::InlineChildLayoutContext(
     const InlineNode& node,
     NGBoxFragmentBuilder* container_builder,
     LineInfo* line_info)
@@ -54,7 +54,7 @@ NGInlineChildLayoutContext::NGInlineChildLayoutContext(
   container_builder->SetItemsBuilder(ItemsBuilder());
 }
 
-NGInlineChildLayoutContext::NGInlineChildLayoutContext(
+InlineChildLayoutContext::InlineChildLayoutContext(
     const InlineNode& node,
     NGBoxFragmentBuilder* container_builder,
     ScoreLineBreakContext* score_line_break_context)
@@ -66,13 +66,12 @@ NGInlineChildLayoutContext::NGInlineChildLayoutContext(
   container_builder->SetItemsBuilder(ItemsBuilder());
 }
 
-NGInlineChildLayoutContext::~NGInlineChildLayoutContext() {
+InlineChildLayoutContext::~InlineChildLayoutContext() {
   container_builder_->SetItemsBuilder(nullptr);
   parallel_flow_break_tokens_.clear();
 }
 
-InlineLayoutStateStack*
-NGInlineChildLayoutContext::BoxStatesIfValidForItemIndex(
+InlineLayoutStateStack* InlineChildLayoutContext::BoxStatesIfValidForItemIndex(
     const HeapVector<InlineItem>& items,
     unsigned item_index) {
   if (box_states_.has_value() && items_ == &items && item_index_ == item_index)
@@ -80,11 +79,11 @@ NGInlineChildLayoutContext::BoxStatesIfValidForItemIndex(
   return nullptr;
 }
 
-void NGInlineChildLayoutContext::ClearParallelFlowBreakTokens() {
+void InlineChildLayoutContext::ClearParallelFlowBreakTokens() {
   parallel_flow_break_tokens_.Shrink(0);
 }
 
-void NGInlineChildLayoutContext::PropagateParallelFlowBreakToken(
+void InlineChildLayoutContext::PropagateParallelFlowBreakToken(
     const NGBreakToken* token) {
   parallel_flow_break_tokens_.push_back(token);
 }

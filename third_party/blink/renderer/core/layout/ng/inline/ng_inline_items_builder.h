@@ -103,7 +103,7 @@ class InlineItemsBuilderTemplate {
 
   // Append floats and positioned objects in the same way as atomic inlines.
   // Because these objects need positions, they will be handled in
-  // NGInlineLayoutAlgorithm.
+  // InlineLayoutAlgorithm.
   void AppendFloating(LayoutObject* layout_object);
   void AppendOutOfFlowPositioned(LayoutObject* layout_object);
 

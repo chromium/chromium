@@ -18,15 +18,15 @@
 namespace blink {
 
 class ComputedStyle;
+class InlineBreakToken;
 class InlineNode;
-class NGInlineBreakToken;
 struct InlineItemsData;
 
 // Represents a line to build.
 //
 // This is a transient context object only while building line boxes.
 //
-// LineBreaker produces, and NGInlineLayoutAlgorithm consumes.
+// LineBreaker produces, and InlineLayoutAlgorithm consumes.
 class CORE_EXPORT LineInfo {
   STACK_ALLOCATED();
 
@@ -90,8 +90,8 @@ class CORE_EXPORT LineInfo {
   InlineItemResults* MutableResults() { return &results_; }
   const InlineItemResults& Results() const { return results_; }
 
-  const NGInlineBreakToken* BreakToken() const { return break_token_; }
-  void SetBreakToken(const NGInlineBreakToken* break_token) {
+  const InlineBreakToken* BreakToken() const { return break_token_; }
+  void SetBreakToken(const InlineBreakToken* break_token) {
     break_token_ = break_token;
   }
   // True if this line ends a paragraph; i.e., ends a block or has a forced
@@ -266,7 +266,7 @@ class CORE_EXPORT LineInfo {
 
   BfcOffset bfc_offset_;
 
-  const NGInlineBreakToken* break_token_ = nullptr;
+  const InlineBreakToken* break_token_ = nullptr;
   HeapVector<Member<const NGBreakToken>> parallel_flow_break_tokens_;
 
   const NGLayoutResult* block_in_inline_layout_result_ = nullptr;

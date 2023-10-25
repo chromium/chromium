@@ -22,11 +22,11 @@
 namespace blink {
 
 class Hyphenation;
+class InlineBreakToken;
 class InlineItem;
 class LineBreakCandidateContext;
 class LineInfo;
 class NGColumnSpannerPath;
-class NGInlineBreakToken;
 class ResolvedTextLayoutAttributesIterator;
 class ShapingLineBreaker;
 
@@ -36,7 +36,7 @@ enum class LineBreakerMode { kContent, kMinContent, kMaxContent };
 // Represents a line breaker.
 //
 // This class measures each InlineItem and determines items to form a line,
-// so that NGInlineLayoutAlgorithm can build a line box from the output.
+// so that InlineLayoutAlgorithm can build a line box from the output.
 class CORE_EXPORT LineBreaker {
   STACK_ALLOCATED();
 
@@ -45,8 +45,8 @@ class CORE_EXPORT LineBreaker {
               LineBreakerMode,
               const NGConstraintSpace&,
               const LineLayoutOpportunity&,
-              const NGLeadingFloats& leading_floats,
-              const NGInlineBreakToken*,
+              const LeadingFloats& leading_floats,
+              const InlineBreakToken*,
               const NGColumnSpannerPath*,
               ExclusionSpace*);
   ~LineBreaker();
@@ -265,9 +265,9 @@ class CORE_EXPORT LineBreaker {
   void RestoreLastHyphen(InlineItemResults* item_results);
   void FinalizeHyphen(InlineItemResults* item_results);
 
-  // Create an NGInlineBreakToken for the last line returned by NextLine().
+  // Create an InlineBreakToken for the last line returned by NextLine().
   // Only call once per instance.
-  const NGInlineBreakToken* CreateBreakToken(const LineInfo&);
+  const InlineBreakToken* CreateBreakToken(const LineInfo&);
 
   // Represents the current offset of the input.
   LineBreakState state_;
@@ -279,7 +279,7 @@ class CORE_EXPORT LineBreaker {
   // the state of trailing whitespaces.
   WhitespaceState trailing_whitespace_ = WhitespaceState::kUnknown;
 
-  // The current position from inline_start. Unlike NGInlineLayoutAlgorithm
+  // The current position from inline_start. Unlike InlineLayoutAlgorithm
   // that computes position in visual order, this position in logical order.
   LayoutUnit position_;
   LayoutUnit available_width_;
@@ -350,7 +350,7 @@ class CORE_EXPORT LineBreaker {
 
   const NGConstraintSpace& constraint_space_;
   ExclusionSpace* exclusion_space_;
-  const NGInlineBreakToken* break_token_;
+  const InlineBreakToken* break_token_;
   const NGColumnSpannerPath* column_spanner_path_;
   const ComputedStyle* current_style_ = nullptr;
 
@@ -374,7 +374,7 @@ class CORE_EXPORT LineBreaker {
   LayoutUnit override_available_width_;
 
   // Keep track of handled float items. See HandleFloat().
-  const NGLeadingFloats& leading_floats_;
+  const LeadingFloats& leading_floats_;
   unsigned leading_floats_index_ = 0u;
 
   // Cache for computing |MinMaxSize|. See |MaxSizeCache|.

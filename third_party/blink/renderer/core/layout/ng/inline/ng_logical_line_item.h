@@ -56,7 +56,7 @@ struct LogicalLineItem {
   // Create an in-flow text fragment.
   LogicalLineItem(const InlineItem& inline_item,
                   InlineItemResult& item_result,
-                  const NGTextOffsetRange& text_offset,
+                  const TextOffsetRange& text_offset,
                   LayoutUnit block_offset,
                   LayoutUnit inline_size,
                   LayoutUnit text_height,
@@ -70,7 +70,7 @@ struct LogicalLineItem {
         has_only_trailing_spaces(item_result.has_only_trailing_spaces) {}
   LogicalLineItem(const InlineItem& inline_item,
                   scoped_refptr<const ShapeResultView> shape_result,
-                  const NGTextOffsetRange& text_offset,
+                  const TextOffsetRange& text_offset,
                   LayoutUnit block_offset,
                   LayoutUnit inline_size,
                   LayoutUnit text_height,
@@ -116,7 +116,7 @@ struct LogicalLineItem {
         bidi_level(bidi_level) {}
   LogicalLineItem(const LogicalLineItem& source_item,
                   scoped_refptr<const ShapeResultView> shape_result,
-                  const NGTextOffsetRange& text_offset)
+                  const TextOffsetRange& text_offset)
       : inline_item(source_item.inline_item),
         shape_result(std::move(shape_result)),
         text_offset(text_offset),
@@ -221,7 +221,7 @@ struct LogicalLineItem {
   // |inline_item| is null only for ellipsis items.
   const InlineItem* inline_item = nullptr;
   scoped_refptr<const ShapeResultView> shape_result;
-  NGTextOffsetRange text_offset;
+  TextOffsetRange text_offset;
 
   // Data to create a generated text fragment.
   String text_content;

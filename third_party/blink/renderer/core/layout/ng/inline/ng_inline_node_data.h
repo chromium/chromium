@@ -89,7 +89,7 @@ struct CORE_EXPORT InlineNodeData final : InlineItemsData {
 
   // We use this flag to determine if we have *only* floats, and OOF-positioned
   // children. If so we consider them block-level, and run the
-  // |NGBlockLayoutAlgorithm| instead of the |NGInlineLayoutAlgorithm|. This is
+  // |NGBlockLayoutAlgorithm| instead of the |InlineLayoutAlgorithm|. This is
   // done to pick up block-level static-position behaviour.
   unsigned is_block_level_ : 1;
 

@@ -133,7 +133,7 @@ PhysicalRect PhysicalLineBoxFragment::ScrollableOverflowForLine(
 }
 
 bool PhysicalLineBoxFragment::HasSoftWrapToNextLine() const {
-  const auto* break_token = To<NGInlineBreakToken>(BreakToken());
+  const auto* break_token = To<InlineBreakToken>(BreakToken());
   return break_token && !break_token->IsForcedBreak();
 }
 

@@ -16,7 +16,7 @@ namespace blink {
 // Represents already handled leading floats within an inline formatting
 // context. See `PositionLeadingFloats`.
 //
-struct CORE_EXPORT NGLeadingFloats {
+struct CORE_EXPORT LeadingFloats {
   STACK_ALLOCATED();
 
  public:

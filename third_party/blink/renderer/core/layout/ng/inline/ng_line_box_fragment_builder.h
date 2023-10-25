@@ -20,8 +20,8 @@
 namespace blink {
 
 class ComputedStyle;
+class InlineBreakToken;
 class LogicalLineItems;
-class NGInlineBreakToken;
 
 class CORE_EXPORT LineBoxFragmentBuilder final : public NGFragmentBuilder {
   STACK_ALLOCATED();
@@ -80,7 +80,7 @@ class CORE_EXPORT LineBoxFragmentBuilder final : public NGFragmentBuilder {
 
   // Set the break token for the fragment to build.
   // Is nullptr if we didn't break.
-  void SetBreakToken(const NGInlineBreakToken* break_token) {
+  void SetBreakToken(const InlineBreakToken* break_token) {
     break_token_ = break_token;
   }
 

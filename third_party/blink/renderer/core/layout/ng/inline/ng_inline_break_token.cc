@@ -12,44 +12,44 @@ namespace blink {
 
 namespace {
 
-struct SameSizeAsNGInlineBreakToken : NGBreakToken {
+struct SameSizeAsInlineBreakToken : NGBreakToken {
   Member<const ComputedStyle> style;
   unsigned numbers[2];
 };
 
-ASSERT_SIZE(NGInlineBreakToken, SameSizeAsNGInlineBreakToken);
+ASSERT_SIZE(InlineBreakToken, SameSizeAsInlineBreakToken);
 
 }  // namespace
 
-const NGBlockBreakToken* NGInlineBreakToken::BlockBreakToken() const {
+const NGBlockBreakToken* InlineBreakToken::BlockBreakToken() const {
   if (!(flags_ & kHasSubBreakToken))
     return nullptr;
   return sub_break_token_[0].Get();
 }
 
 // static
-NGInlineBreakToken* NGInlineBreakToken::Create(
+InlineBreakToken* InlineBreakToken::Create(
     InlineNode node,
     const ComputedStyle* style,
     const InlineItemTextIndex& start,
-    unsigned flags /* NGInlineBreakTokenFlags */,
+    unsigned flags /* InlineBreakTokenFlags */,
     const NGBlockBreakToken* sub_break_token) {
   // We store the children list inline in the break token as a flexible
   // array. Therefore, we need to make sure to allocate enough space for that
   // array here, which requires a manual allocation + placement new.
-  wtf_size_t size = sizeof(NGInlineBreakToken);
+  wtf_size_t size = sizeof(InlineBreakToken);
   if (UNLIKELY(sub_break_token)) {
     size += sizeof(Member<const NGBlockBreakToken>);
     flags |= kHasSubBreakToken;
   }
 
-  return MakeGarbageCollected<NGInlineBreakToken>(AdditionalBytes(size),
-                                                  PassKey(), node, style, start,
-                                                  flags, sub_break_token);
+  return MakeGarbageCollected<InlineBreakToken>(AdditionalBytes(size),
+                                                PassKey(), node, style, start,
+                                                flags, sub_break_token);
 }
 
 // static
-NGInlineBreakToken* NGInlineBreakToken::CreateForParallelBlockFlow(
+InlineBreakToken* InlineBreakToken::CreateForParallelBlockFlow(
     InlineNode node,
     const InlineItemTextIndex& start,
     const NGBlockBreakToken& child_break_token) {
@@ -57,13 +57,12 @@ NGInlineBreakToken* NGInlineBreakToken::CreateForParallelBlockFlow(
                 &child_break_token);
 }
 
-NGInlineBreakToken::NGInlineBreakToken(
-    PassKey key,
-    InlineNode node,
-    const ComputedStyle* style,
-    const InlineItemTextIndex& start,
-    unsigned flags /* NGInlineBreakTokenFlags */,
-    const NGBlockBreakToken* sub_break_token)
+InlineBreakToken::InlineBreakToken(PassKey key,
+                                   InlineNode node,
+                                   const ComputedStyle* style,
+                                   const InlineItemTextIndex& start,
+                                   unsigned flags /* InlineBreakTokenFlags */,
+                                   const NGBlockBreakToken* sub_break_token)
     : NGBreakToken(kInlineBreakToken, node, flags),
       style_(style),
       start_(start) {
@@ -74,9 +73,9 @@ NGInlineBreakToken::NGInlineBreakToken(
 
 #if DCHECK_IS_ON()
 
-String NGInlineBreakToken::ToString() const {
+String InlineBreakToken::ToString() const {
   StringBuilder string_builder;
-  string_builder.Append(String::Format("NGInlineBreakToken index:%u offset:%u",
+  string_builder.Append(String::Format("InlineBreakToken index:%u offset:%u",
                                        StartItemIndex(), StartTextOffset()));
   if (UseFirstLineStyle()) {
     string_builder.Append(" first-line");
@@ -94,7 +93,7 @@ String NGInlineBreakToken::ToString() const {
 
 #endif  // DCHECK_IS_ON()
 
-void NGInlineBreakToken::TraceAfterDispatch(Visitor* visitor) const {
+void InlineBreakToken::TraceAfterDispatch(Visitor* visitor) const {
   // It is safe to check flags_ here because it is a const value and initialized
   // in ctor.
   if (flags_ & kHasSubBreakToken)

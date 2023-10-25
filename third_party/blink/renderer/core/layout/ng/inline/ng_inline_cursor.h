@@ -24,12 +24,12 @@ class DisplayItemClient;
 class FragmentItem;
 class FragmentItems;
 class InlineBackwardCursor;
+class InlineBreakToken;
 class InlineCursor;
 class LayoutBlockFlow;
 class LayoutInline;
 class LayoutObject;
 class LayoutUnit;
-class NGInlineBreakToken;
 class NGInlinePaintContext;
 class NGPhysicalBoxFragment;
 class Node;
@@ -136,8 +136,8 @@ class CORE_EXPORT InlineCursorPosition {
   bool HasChildren() const;
 
   // Returns break token for line box. It is error to call other than line box.
-  const NGInlineBreakToken* InlineBreakToken() const {
-    return item_->InlineBreakToken();
+  const InlineBreakToken* GetInlineBreakToken() const {
+    return item_->GetInlineBreakToken();
   }
 
   // The offset relative to the root of the inline formatting context.
@@ -162,7 +162,7 @@ class CORE_EXPORT InlineCursorPosition {
 
   // Returns start/end of offset in text content of current text fragment.
   // It is error when this cursor doesn't point to text fragment.
-  NGTextOffsetRange TextOffset() const { return item_->TextOffset(); }
+  TextOffsetRange TextOffset() const { return item_->TextOffset(); }
   wtf_size_t TextStartOffset() const { return TextOffset().start; }
   wtf_size_t TextEndOffset() const { return TextOffset().end; }
 

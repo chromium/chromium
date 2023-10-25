@@ -1599,12 +1599,12 @@ const NGLayoutResult* InlineNode::Layout(
     const NGConstraintSpace& constraint_space,
     const NGBreakToken* break_token,
     const NGColumnSpannerPath* column_spanner_path,
-    NGInlineChildLayoutContext* context) const {
+    InlineChildLayoutContext* context) const {
   PrepareLayoutIfNeeded();
 
-  const auto* inline_break_token = To<NGInlineBreakToken>(break_token);
-  NGInlineLayoutAlgorithm algorithm(*this, constraint_space, inline_break_token,
-                                    column_spanner_path, context);
+  const auto* inline_break_token = To<InlineBreakToken>(break_token);
+  InlineLayoutAlgorithm algorithm(*this, constraint_space, inline_break_token,
+                                  column_spanner_path, context);
   return algorithm.Layout();
 }
 
@@ -1665,7 +1665,7 @@ static LayoutUnit ComputeContentSize(InlineNode node,
       mode == LineBreakerMode::kMaxContent ? LayoutUnit::Max() : LayoutUnit();
 
   ExclusionSpace empty_exclusion_space;
-  NGLeadingFloats empty_leading_floats;
+  LeadingFloats empty_leading_floats;
   LineLayoutOpportunity line_opportunity(available_inline_size);
   LayoutUnit result;
   LineBreaker line_breaker(

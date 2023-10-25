@@ -248,7 +248,7 @@ FragmentItemsBuilder::AddPreviousItems(const NGPhysicalBoxFragment& container,
   WritingModeConverter line_converter(
       {ToLineWritingMode(writing_mode), TextDirection::kLtr});
 
-  const NGInlineBreakToken* last_break_token = nullptr;
+  const InlineBreakToken* last_break_token = nullptr;
   const InlineItemsData* items_data = nullptr;
   LayoutUnit used_block_size;
   wtf_size_t line_count = 0;
@@ -270,8 +270,8 @@ FragmentItemsBuilder::AddPreviousItems(const NGPhysicalBoxFragment& container,
         const PhysicalLineBoxFragment* line_fragment = item.LineBoxFragment();
         // Block-in-inline should have been prevented by |EndOfReusableItems|.
         DCHECK(!line_fragment->IsBlockInInline());
-        const NGInlineBreakToken* break_token =
-            To<NGInlineBreakToken>(line_fragment->BreakToken());
+        const auto* break_token =
+            To<InlineBreakToken>(line_fragment->BreakToken());
         DCHECK(break_token);
         const InlineItemsData* current_items_data;
         if (UNLIKELY(break_token->UseFirstLineStyle()))

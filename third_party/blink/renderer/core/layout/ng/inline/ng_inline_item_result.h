@@ -32,7 +32,7 @@ struct NGPositionedFloat;
 // Produced while determining the line break points, but these data are needed
 // to create line boxes.
 //
-// LineBreaker produces, and NGInlineLayoutAlgorithm consumes.
+// LineBreaker produces, and InlineLayoutAlgorithm consumes.
 struct CORE_EXPORT InlineItemResult {
   DISALLOW_NEW();
 
@@ -40,12 +40,12 @@ struct CORE_EXPORT InlineItemResult {
   InlineItemResult() = default;
   InlineItemResult(const InlineItem*,
                    unsigned index,
-                   const NGTextOffsetRange& text_offset,
+                   const TextOffsetRange& text_offset,
                    bool break_anywhere_if_overflow,
                    bool should_create_line_box,
                    bool has_unpositioned_floats);
 
-  const NGTextOffsetRange& TextOffset() const { return text_offset; }
+  const TextOffsetRange& TextOffset() const { return text_offset; }
   wtf_size_t StartOffset() const { return text_offset.start; }
   wtf_size_t EndOffset() const { return text_offset.end; }
   wtf_size_t Length() const { return text_offset.Length(); }
@@ -66,7 +66,7 @@ struct CORE_EXPORT InlineItemResult {
   unsigned item_index = 0;
 
   // The range of text content for this item.
-  NGTextOffsetRange text_offset;
+  TextOffsetRange text_offset;
 
   // Inline size of this item.
   LayoutUnit inline_size;

@@ -17,9 +17,9 @@ namespace blink {
 class NGBlockBreakToken;
 
 // Represents a break token for an inline node.
-class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
+class CORE_EXPORT InlineBreakToken final : public NGBreakToken {
  public:
-  enum NGInlineBreakTokenFlags {
+  enum InlineBreakTokenFlags {
     kDefault = 0,
     kIsForcedBreak = 1 << 0,
     kHasSubBreakToken = 1 << 1,
@@ -32,18 +32,18 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
   // Creates a break token for a node which did fragment, and can potentially
   // produce more fragments.
   // Takes ownership of the state_stack.
-  static NGInlineBreakToken* Create(
+  static InlineBreakToken* Create(
       InlineNode node,
       const ComputedStyle* style,
       const InlineItemTextIndex& start,
-      unsigned flags /* NGInlineBreakTokenFlags */,
+      unsigned flags /* InlineBreakTokenFlags */,
       const NGBlockBreakToken* sub_break_token = nullptr);
 
   // Wrap a block break token inside an inline break token. The block break
   // token may for instance be for a float inside an inline formatting context.
   // Wrapping it inside an inline break token makes it possible to resume and
   // place it correctly inside any inline ancestors.
-  static NGInlineBreakToken* CreateForParallelBlockFlow(
+  static InlineBreakToken* CreateForParallelBlockFlow(
       InlineNode node,
       const InlineItemTextIndex& start,
       const NGBlockBreakToken& child_break_token);
@@ -79,15 +79,15 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
   // https://www.w3.org/TR/css-break-3/#parallel-flows
   bool IsInParallelBlockFlow() const { return flags_ & kIsInParallelBlockFlow; }
 
-  using PassKey = base::PassKey<NGInlineBreakToken>;
-  NGInlineBreakToken(PassKey,
-                     InlineNode node,
-                     const ComputedStyle*,
-                     const InlineItemTextIndex& start,
-                     unsigned flags /* NGInlineBreakTokenFlags */,
-                     const NGBlockBreakToken* sub_break_token);
+  using PassKey = base::PassKey<InlineBreakToken>;
+  InlineBreakToken(PassKey,
+                   InlineNode node,
+                   const ComputedStyle*,
+                   const InlineItemTextIndex& start,
+                   unsigned flags /* InlineBreakTokenFlags */,
+                   const NGBlockBreakToken* sub_break_token);
 
-  explicit NGInlineBreakToken(PassKey, NGLayoutInputNode node);
+  explicit InlineBreakToken(PassKey, NGLayoutInputNode node);
 
 #if DCHECK_IS_ON()
   String ToString() const;
@@ -106,7 +106,7 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
 };
 
 template <>
-struct DowncastTraits<NGInlineBreakToken> {
+struct DowncastTraits<InlineBreakToken> {
   static bool AllowFrom(const NGBreakToken& token) {
     return token.IsInlineType();
   }

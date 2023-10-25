@@ -108,7 +108,7 @@ inline const NGLayoutResult* LayoutInflow(
     const NGEarlyBreak* early_break,
     const NGColumnSpannerPath* column_spanner_path,
     NGLayoutInputNode* node,
-    NGInlineChildLayoutContext* context) {
+    InlineChildLayoutContext* context) {
   if (auto* inline_node = DynamicTo<InlineNode>(node)) {
     return inline_node->Layout(space, break_token, column_spanner_path,
                                context);
@@ -543,7 +543,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutInlineChild(
 NOINLINE const NGLayoutResult*
 NGBlockLayoutAlgorithm::LayoutWithSimpleInlineChildLayoutContext(
     const InlineNode& child) {
-  NGSimpleInlineChildLayoutContext context(child, &container_builder_);
+  SimpleInlineChildLayoutContext context(child, &container_builder_);
   const NGLayoutResult* result = Layout(&context);
   return result;
 }
@@ -552,8 +552,7 @@ template <wtf_size_t capacity>
 NOINLINE const NGLayoutResult*
 NGBlockLayoutAlgorithm::LayoutWithOptimalInlineChildLayoutContext(
     const InlineNode& child) {
-  NGOptimalInlineChildLayoutContext<capacity> context(child,
-                                                      &container_builder_);
+  OptimalInlineChildLayoutContext<capacity> context(child, &container_builder_);
   const NGLayoutResult* result = Layout(&context);
   return result;
 }
@@ -572,7 +571,7 @@ NGBlockLayoutAlgorithm::RelayoutIgnoringLineClamp() {
 }
 
 inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
-    NGInlineChildLayoutContext* inline_child_layout_context) {
+    InlineChildLayoutContext* inline_child_layout_context) {
   DCHECK_EQ(!!inline_child_layout_context,
             Node().IsInlineFormattingContextRoot());
   container_builder_.SetIsInlineFormattingContext(inline_child_layout_context);
@@ -702,7 +701,7 @@ inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
   // Try to reuse line box fragments from cached fragments if possible.
   // When possible, this adds fragments to |container_builder_| and update
   // |previous_inflow_position| and |BreakToken()|.
-  const NGInlineBreakToken* previous_inline_break_token = nullptr;
+  const InlineBreakToken* previous_inline_break_token = nullptr;
 
   NGBlockChildIterator child_iterator(Node().FirstChild(), BreakToken());
 
@@ -851,7 +850,7 @@ inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
   // all parallel flows from incoming break tokens means that we'll never get
   // the opportunity to handle them again. We don't repropagate unhandled
   // incoming break tokens, and there should be no need to.
-  if (auto* inline_token = DynamicTo<NGInlineBreakToken>(entry.token)) {
+  if (auto* inline_token = DynamicTo<InlineBreakToken>(entry.token)) {
     DCHECK(!inline_token->IsInParallelBlockFlow());
   } else if (auto* block_token = DynamicTo<NGBlockBreakToken>(entry.token)) {
     // A column spanner forces all content preceding it to stay in the same
@@ -909,7 +908,7 @@ inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
 
 const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
     NGPreviousInflowPosition* previous_inflow_position,
-    NGInlineChildLayoutContext* inline_child_layout_context) {
+    InlineChildLayoutContext* inline_child_layout_context) {
   LogicalSize border_box_size = container_builder_.InitialBorderBoxSize();
   MarginStrut end_margin_strut = previous_inflow_position->margin_strut;
 
@@ -1182,7 +1181,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
 bool NGBlockLayoutAlgorithm::TryReuseFragmentsFromCache(
     InlineNode inline_node,
     NGPreviousInflowPosition* previous_inflow_position,
-    const NGInlineBreakToken** inline_break_token_out) {
+    const InlineBreakToken** inline_break_token_out) {
   DCHECK(previous_result_);
 
   // No lines are reusable if this block uses `NGParagraphLineBreaker`.
@@ -1849,8 +1848,8 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleInflow(
     NGLayoutInputNode child,
     const NGBreakToken* child_break_token,
     NGPreviousInflowPosition* previous_inflow_position,
-    NGInlineChildLayoutContext* inline_child_layout_context,
-    const NGInlineBreakToken** previous_inline_break_token) {
+    InlineChildLayoutContext* inline_child_layout_context,
+    const InlineBreakToken** previous_inline_break_token) {
   DCHECK(child);
   DCHECK(!child.IsFloating());
   DCHECK(!child.IsOutOfFlowPositioned());
@@ -1933,8 +1932,8 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
     const NGLayoutResult* layout_result,
     NGInflowChildData* child_data,
     NGPreviousInflowPosition* previous_inflow_position,
-    NGInlineChildLayoutContext* inline_child_layout_context,
-    const NGInlineBreakToken** previous_inline_break_token) {
+    InlineChildLayoutContext* inline_child_layout_context,
+    const InlineBreakToken** previous_inline_break_token) {
   absl::optional<LayoutUnit> child_bfc_block_offset =
       layout_result->BfcBlockOffset();
 
@@ -2244,7 +2243,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
 
   if (child.IsInline()) {
     *previous_inline_break_token =
-        To<NGInlineBreakToken>(physical_fragment.BreakToken());
+        To<InlineBreakToken>(physical_fragment.BreakToken());
   } else {
     *previous_inline_break_token = nullptr;
   }
@@ -2407,7 +2406,7 @@ NGPreviousInflowPosition NGBlockLayoutAlgorithm::ComputeInflowPosition(
     //  - There are no following child boxes and this container has block-end
     //    padding.
     //
-    // See NGInlineLayoutAlgorithm::CreateLine() and
+    // See InlineLayoutAlgorithm::CreateLine() and
     // BlockLayoutAlgorithm::Layout().
     logical_block_offset = logical_offset.block_offset + fragment.BlockSize() +
                            std::max(layout_result.AnnotationOverflow(),

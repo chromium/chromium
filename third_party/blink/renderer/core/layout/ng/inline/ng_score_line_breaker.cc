@@ -54,7 +54,7 @@ void ScoreLineBreaker::SetScoresOutForTesting(Vector<float>* scores_out) {
   scores_out_for_testing_ = scores_out;
 }
 
-void ScoreLineBreaker::OptimalBreakPoints(const NGLeadingFloats& leading_floats,
+void ScoreLineBreaker::OptimalBreakPoints(const LeadingFloats& leading_floats,
                                           ScoreLineBreakContext& context) {
   DCHECK(!is_balanced_ || !break_token_);
   DCHECK(context.GetLineBreakPoints().empty());
@@ -143,7 +143,7 @@ void ScoreLineBreaker::OptimalBreakPoints(const NGLeadingFloats& leading_floats,
   }
 }
 
-void ScoreLineBreaker::BalanceBreakPoints(const NGLeadingFloats& leading_floats,
+void ScoreLineBreaker::BalanceBreakPoints(const LeadingFloats& leading_floats,
                                           ScoreLineBreakContext& context) {
   is_balanced_ = true;
   OptimalBreakPoints(leading_floats, context);

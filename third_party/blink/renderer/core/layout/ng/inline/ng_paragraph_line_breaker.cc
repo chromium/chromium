@@ -41,7 +41,7 @@ struct LineBreakResults {
                              return acc + item.width;
                            });
   }
-  const NGInlineBreakToken* BreakToken() const { return break_token_; }
+  const InlineBreakToken* BreakToken() const { return break_token_; }
 
   void Clear() {
     break_token_ = nullptr;
@@ -56,10 +56,10 @@ struct LineBreakResults {
 
   Status BreakLines(const LayoutUnit available_width,
                     wtf_size_t max_lines,
-                    const NGInlineBreakToken* stop_at = nullptr) {
+                    const InlineBreakToken* stop_at = nullptr) {
     DCHECK(lines_.empty());
     const LineLayoutOpportunity line_opportunity(available_width);
-    NGLeadingFloats leading_floats;
+    LeadingFloats leading_floats;
     ExclusionSpace exclusion_space;
     LineInfo line_info;
     for (;;) {
@@ -91,7 +91,7 @@ struct LineBreakResults {
                                   const LayoutUnit min_available_width,
                                   const LayoutUnit epsilon,
                                   const wtf_size_t num_lines,
-                                  const NGInlineBreakToken* stop_at = nullptr) {
+                                  const InlineBreakToken* stop_at = nullptr) {
     DCHECK_GT(epsilon, LayoutUnit());  // 0 may cause an infinite loop
     DCHECK_GT(num_lines, 0u);
     DCHECK_EQ(Size(), 0u);
@@ -117,7 +117,7 @@ struct LineBreakResults {
   const InlineNode node_;
   const NGConstraintSpace& space_;
   Vector<LineBreakResult, kMaxLinesForBalance> lines_;
-  const NGInlineBreakToken* break_token_ = nullptr;
+  const InlineBreakToken* break_token_ = nullptr;
 };
 
 // Estimate the number of lines using the `ch` unit (the space width) without

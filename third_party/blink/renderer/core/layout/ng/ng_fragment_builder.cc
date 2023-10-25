@@ -332,7 +332,7 @@ void NGFragmentBuilder::PropagateFromFragment(
         }
 
         const auto* inline_break_token =
-            To<NGInlineBreakToken>(child_break_token);
+            To<InlineBreakToken>(child_break_token);
         // TODO(mstensho): Orphans / widows calculation is wrong when regular
         // inline layout gets interrupted by a block-in-inline. We need to reset
         // line_count_ when this happens.

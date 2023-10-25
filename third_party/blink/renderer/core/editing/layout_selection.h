@@ -41,7 +41,7 @@ class SelectionPaintRange;
 enum class SelectionState;
 struct LayoutSelectionStatus;
 struct LayoutTextSelectionStatus;
-struct NGTextOffsetRange;
+struct TextOffsetRange;
 
 class LayoutSelection final : public GarbageCollected<LayoutSelection> {
  public:
@@ -72,7 +72,7 @@ class LayoutSelection final : public GarbageCollected<LayoutSelection> {
 
  private:
   LayoutSelectionStatus ComputeSelectionStatus(const InlineCursor&,
-                                               const NGTextOffsetRange&) const;
+                                               const TextOffsetRange&) const;
   SelectionState ComputeSelectionStateFromOffsets(SelectionState state,
                                                   unsigned start_offset,
                                                   unsigned end_offset) const;

@@ -16,10 +16,10 @@
 
 namespace blink {
 
+class InlineChildLayoutContext;
 class NGBreakToken;
 class NGColumnSpannerPath;
 class NGConstraintSpace;
-class NGInlineChildLayoutContext;
 class NGLayoutResult;
 class OffsetMapping;
 struct InlineItemsData;
@@ -40,7 +40,7 @@ class CORE_EXPORT InlineNode : public NGLayoutInputNode {
   const NGLayoutResult* Layout(const NGConstraintSpace&,
                                const NGBreakToken*,
                                const NGColumnSpannerPath*,
-                               NGInlineChildLayoutContext* context) const;
+                               InlineChildLayoutContext* context) const;
 
   // Computes the value of min-content and max-content for this anonymous block
   // box. min-content is the inline size when lines wrap at every break

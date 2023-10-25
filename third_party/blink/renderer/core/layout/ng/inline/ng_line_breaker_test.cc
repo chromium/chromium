@@ -51,11 +51,11 @@ class LineBreakerTest : public RenderingTest {
     DCHECK(node);
     node.PrepareLayoutIfNeeded();
     NGConstraintSpace space = ConstraintSpaceForAvailableSize(available_width);
-    const NGInlineBreakToken* break_token = nullptr;
+    const InlineBreakToken* break_token = nullptr;
     Vector<std::pair<String, unsigned>> lines;
     trailing_whitespaces_.resize(0);
     ExclusionSpace exclusion_space;
-    NGLeadingFloats leading_floats;
+    LeadingFloats leading_floats;
     LineLayoutOpportunity line_opportunity(available_width);
     LineInfo line_info;
     do {
@@ -90,9 +90,9 @@ class LineBreakerTest : public RenderingTest {
     DCHECK(node);
     node.PrepareLayoutIfNeeded();
     NGConstraintSpace space = ConstraintSpaceForAvailableSize(available_width);
-    const NGInlineBreakToken* break_token = nullptr;
+    const InlineBreakToken* break_token = nullptr;
     ExclusionSpace exclusion_space;
-    NGLeadingFloats leading_floats;
+    LeadingFloats leading_floats;
     LineLayoutOpportunity line_opportunity(available_width);
     wtf_size_t line_index = 0;
     do {
@@ -1231,9 +1231,9 @@ TEST_P(CanBreakInsideTest, Data) {
   ASSERT_EQ(num_lines, 1u);
 
   NGConstraintSpace space = ConstraintSpaceForAvailableSize(available_width);
-  const NGInlineBreakToken* break_token = nullptr;
+  const InlineBreakToken* break_token = nullptr;
   ExclusionSpace exclusion_space;
-  NGLeadingFloats leading_floats;
+  LeadingFloats leading_floats;
   LineLayoutOpportunity line_opportunity(available_width);
   LineBreaker line_breaker(target, LineBreakerMode::kContent, space,
                            line_opportunity, leading_floats, break_token,

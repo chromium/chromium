@@ -32,7 +32,7 @@ struct PendingPositions {
   EVerticalAlign vertical_align;
 };
 
-// Represents the current box while NGInlineLayoutAlgorithm performs layout.
+// Represents the current box while InlineLayoutAlgorithm performs layout.
 // Used 1) to cache common values for a box, and 2) to layout children that
 // require ancestor position or size.
 // This is a transient object only while building line boxes in a block.

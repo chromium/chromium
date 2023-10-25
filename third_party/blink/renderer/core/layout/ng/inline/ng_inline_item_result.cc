@@ -13,7 +13,7 @@ namespace blink {
 
 InlineItemResult::InlineItemResult(const InlineItem* item,
                                    unsigned index,
-                                   const NGTextOffsetRange& text_offset,
+                                   const TextOffsetRange& text_offset,
                                    bool break_anywhere_if_overflow,
                                    bool should_create_line_box,
                                    bool has_unpositioned_floats)

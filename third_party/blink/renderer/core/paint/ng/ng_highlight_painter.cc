@@ -50,7 +50,7 @@ using HighlightPart = NGHighlightOverlay::HighlightPart;
 // If "bar" is a TextFragment. That start(), end() {4, 7} correspond this
 // offset. If a marker has StartOffset / EndOffset as {2, 6},
 // this function returns{ 4,6 }, which represents "ba" on "foo_bar".
-unsigned ClampToFragmentRange(const NGTextOffsetRange& fragment_range,
+unsigned ClampToFragmentRange(const TextOffsetRange& fragment_range,
                               unsigned offset) {
   return std::min(std::max(offset, fragment_range.start), fragment_range.end);
 }
@@ -153,7 +153,7 @@ class MarkerRangeMappingContext {
 
  private:
   const DOMToTextContentOffsetMapper mapper_;
-  const NGTextOffsetRange fragment_range_;
+  const TextOffsetRange fragment_range_;
   const unsigned text_length_;
 };
 

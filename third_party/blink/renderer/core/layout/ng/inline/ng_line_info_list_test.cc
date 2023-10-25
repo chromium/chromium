@@ -37,8 +37,8 @@ TEST_F(LineInfoListTest, Get) {
     <div id="container">test</div>
   )HTML");
   InlineNode node(To<LayoutBlockFlow>(GetLayoutObjectByElementId("container")));
-  NGInlineBreakToken* second_break_token = NGInlineBreakToken::Create(
-      node, &node.Style(), second.Start(), NGInlineBreakToken::kDefault);
+  auto* second_break_token = InlineBreakToken::Create(
+      node, &node.Style(), second.Start(), InlineBreakToken::kDefault);
   is_cached = false;
   LineInfo& second_cached = list.Get(second_break_token, is_cached);
   EXPECT_TRUE(is_cached);

@@ -20,17 +20,17 @@
 namespace blink {
 
 class ExclusionSpace;
+class InlineBreakToken;
+class InlineChildLayoutContext;
 class InlineItem;
 class InlineLayoutStateStack;
 class InlineNode;
 class LineInfo;
 class NGColumnSpannerPath;
 class NGConstraintSpace;
-class NGInlineBreakToken;
-class NGInlineChildLayoutContext;
 struct InlineBoxState;
 struct InlineItemResult;
-struct NGLeadingFloats;
+struct LeadingFloats;
 
 // A class for laying out an inline formatting context, i.e. a block with inline
 // children.
@@ -38,17 +38,17 @@ struct NGLeadingFloats;
 // This class determines the position of InlineItem and build line boxes.
 //
 // Uses LineBreaker to find InlineItems to form a line.
-class CORE_EXPORT NGInlineLayoutAlgorithm final
+class CORE_EXPORT InlineLayoutAlgorithm final
     : public NGLayoutAlgorithm<InlineNode,
                                LineBoxFragmentBuilder,
-                               NGInlineBreakToken> {
+                               InlineBreakToken> {
  public:
-  NGInlineLayoutAlgorithm(InlineNode,
-                          const NGConstraintSpace&,
-                          const NGInlineBreakToken*,
-                          const NGColumnSpannerPath*,
-                          NGInlineChildLayoutContext* context);
-  ~NGInlineLayoutAlgorithm() override;
+  InlineLayoutAlgorithm(InlineNode,
+                        const NGConstraintSpace&,
+                        const InlineBreakToken*,
+                        const NGColumnSpannerPath*,
+                        InlineChildLayoutContext* context);
+  ~InlineLayoutAlgorithm() override;
 
   void CreateLine(const LineLayoutOpportunity&,
                   LineInfo*,
@@ -64,17 +64,17 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
  private:
   friend class LineWidthsTest;
 
-  void PositionLeadingFloats(ExclusionSpace&, NGLeadingFloats&);
+  void PositionLeadingFloats(ExclusionSpace&, LeadingFloats&);
   NGPositionedFloat PositionFloat(LayoutUnit origin_block_bfc_offset,
                                   LayoutObject* floating_object,
                                   ExclusionSpace*);
 
-  void PrepareBoxStates(const LineInfo&, const NGInlineBreakToken*);
+  void PrepareBoxStates(const LineInfo&, const InlineBreakToken*);
   void RebuildBoxStates(const LineInfo&,
-                        const NGInlineBreakToken*,
+                        const InlineBreakToken*,
                         InlineLayoutStateStack*) const;
 #if EXPENSIVE_DCHECKS_ARE_ON()
-  void CheckBoxStates(const LineInfo&, const NGInlineBreakToken*) const;
+  void CheckBoxStates(const LineInfo&, const InlineBreakToken*) const;
 #endif
 
   InlineBoxState* HandleOpenTag(const InlineItem&,
@@ -138,7 +138,7 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
                                    const FontHeight& line_box_metrics);
 
   InlineLayoutStateStack* box_states_;
-  NGInlineChildLayoutContext* context_;
+  InlineChildLayoutContext* context_;
 
   const NGColumnSpannerPath* column_spanner_path_;
 

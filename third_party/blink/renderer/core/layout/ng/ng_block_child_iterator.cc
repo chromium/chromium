@@ -38,7 +38,7 @@ NGBlockChildIterator::NGBlockChildIterator(NGLayoutInputNode first_child,
 }
 
 NGBlockChildIterator::Entry NGBlockChildIterator::NextChild(
-    const NGInlineBreakToken* previous_inline_break_token) {
+    const InlineBreakToken* previous_inline_break_token) {
   if (previous_inline_break_token) {
     DCHECK(!child_idx_);
     return Entry(previous_inline_break_token->InputNode(),

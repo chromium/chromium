@@ -8,8 +8,7 @@
 
 namespace blink {
 
-std::ostream& operator<<(std::ostream& ostream,
-                         const NGTextOffsetRange& offset) {
+std::ostream& operator<<(std::ostream& ostream, const TextOffsetRange& offset) {
   return ostream << "{" << offset.start << ", " << offset.end << "}";
 }
 

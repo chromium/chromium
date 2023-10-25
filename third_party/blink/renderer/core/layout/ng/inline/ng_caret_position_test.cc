@@ -324,13 +324,13 @@ TEST_F(CaretPositionTest, GeneratedZeroWidthSpace) {
   InlineCursor cursor;
   cursor.MoveTo(*text.GetLayoutObject());
 
-  ASSERT_EQ(NGTextOffsetRange(0, 4), cursor.Current().TextOffset());
+  ASSERT_EQ(TextOffsetRange(0, 4), cursor.Current().TextOffset());
   TEST_CARET(blink::ComputeCaretPosition(
                  PositionWithAffinity(after_zws, TextAffinity::kUpstream)),
              cursor, kAtTextOffset, absl::optional<unsigned>(4));
 
   cursor.MoveToNextForSameLayoutObject();
-  ASSERT_EQ(NGTextOffsetRange(5, 9), cursor.Current().TextOffset());
+  ASSERT_EQ(TextOffsetRange(5, 9), cursor.Current().TextOffset());
   TEST_CARET(blink::ComputeCaretPosition(
                  PositionWithAffinity(after_zws, TextAffinity::kDownstream)),
              cursor, kAtTextOffset, absl::optional<unsigned>(5));
@@ -461,13 +461,13 @@ TEST_F(CaretPositionTest, SoftLineWrap) {
 
   // Note: upstream/downstream before "xyz" are in different line.
 
-  ASSERT_EQ(NGTextOffsetRange(0, 3), cursor.Current().TextOffset());
+  ASSERT_EQ(TextOffsetRange(0, 3), cursor.Current().TextOffset());
   TEST_CARET(blink::ComputeCaretPosition(
                  PositionWithAffinity(before_xyz, TextAffinity::kUpstream)),
              cursor, kAtTextOffset, absl::optional<unsigned>(3));
 
   cursor.MoveToNextForSameLayoutObject();
-  ASSERT_EQ(NGTextOffsetRange(4, 7), cursor.Current().TextOffset());
+  ASSERT_EQ(TextOffsetRange(4, 7), cursor.Current().TextOffset());
   TEST_CARET(blink::ComputeCaretPosition(
                  PositionWithAffinity(before_xyz, TextAffinity::kDownstream)),
              cursor, kAtTextOffset, absl::optional<unsigned>(4));
@@ -489,13 +489,13 @@ TEST_F(CaretPositionTest, ZeroWidthSpace) {
   InlineCursor cursor;
   cursor.MoveTo(*text.GetLayoutObject());
 
-  ASSERT_EQ(NGTextOffsetRange(0, 5), cursor.Current().TextOffset());
+  ASSERT_EQ(TextOffsetRange(0, 5), cursor.Current().TextOffset());
   TEST_CARET(blink::ComputeCaretPosition(
                  PositionWithAffinity(after_zws, TextAffinity::kUpstream)),
              cursor, kAtTextOffset, absl::optional<unsigned>(4));
 
   cursor.MoveToNextForSameLayoutObject();
-  ASSERT_EQ(NGTextOffsetRange(5, 9), cursor.Current().TextOffset());
+  ASSERT_EQ(TextOffsetRange(5, 9), cursor.Current().TextOffset());
   TEST_CARET(blink::ComputeCaretPosition(
                  PositionWithAffinity(after_zws, TextAffinity::kDownstream)),
              cursor, kAtTextOffset, absl::optional<unsigned>(5));

@@ -15,12 +15,12 @@
 
 namespace blink {
 
+class InlineBreakToken;
 class InlineNode;
 class LineInfoList;
 class LineWidths;
 class NGConstraintSpace;
-class NGInlineBreakToken;
-struct NGLeadingFloats;
+struct LeadingFloats;
 
 //
 // This class computes line break points using penalties and scores, similar to
@@ -46,7 +46,7 @@ class CORE_EXPORT ScoreLineBreaker {
   ScoreLineBreaker(const InlineNode& node,
                    const NGConstraintSpace& space,
                    const LineWidths& line_widths,
-                   const NGInlineBreakToken* break_token,
+                   const InlineBreakToken* break_token,
                    ExclusionSpace* exclusion_space)
       : node_(node),
         space_(space),
@@ -61,16 +61,16 @@ class CORE_EXPORT ScoreLineBreaker {
   }
 
   const NGConstraintSpace& ConstraintSpace() const { return space_; }
-  const NGInlineBreakToken* BreakToken() const { return break_token_; }
+  const InlineBreakToken* BreakToken() const { return break_token_; }
 
   // The primary entry point of doing all the work described in the class
   // comment.
-  void OptimalBreakPoints(const NGLeadingFloats& leading_floats,
+  void OptimalBreakPoints(const LeadingFloats& leading_floats,
                           ScoreLineBreakContext& context);
 
   // Makes the length of all lines balanced, by running the `OptimalBreakPoints`
   // with a higher penalty for the end of the paragraph.
-  void BalanceBreakPoints(const NGLeadingFloats& leading_floats,
+  void BalanceBreakPoints(const LeadingFloats& leading_floats,
                           ScoreLineBreakContext& context);
 
   void SetScoresOutForTesting(Vector<float>* scores_out);
@@ -112,7 +112,7 @@ class CORE_EXPORT ScoreLineBreaker {
   const NGConstraintSpace& space_;
   const LineWidths& line_widths_;
   ExclusionSpace* exclusion_space_;
-  const NGInlineBreakToken* break_token_;
+  const InlineBreakToken* break_token_;
   LayoutUnit first_line_indent_;
   float hyphen_penalty_ = .0f;
   float line_penalty_ = .0f;

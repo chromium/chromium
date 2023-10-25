@@ -83,16 +83,16 @@ void NGBoxFragmentBuilder::AddBreakBeforeChild(
           // If there is an inline break token, it will always be the last
           // child.
           last_inline_break_token_ =
-              DynamicTo<NGInlineBreakToken>(child_tokens.back().Get());
+              DynamicTo<InlineBreakToken>(child_tokens.back().Get());
           if (last_inline_break_token_)
             return;
         }
       }
 
       // We're at the beginning of the inline formatting context.
-      last_inline_break_token_ = NGInlineBreakToken::Create(
+      last_inline_break_token_ = InlineBreakToken::Create(
           *child_inline_node, /* style */ nullptr, InlineItemTextIndex(),
-          NGInlineBreakToken::kDefault);
+          InlineBreakToken::kDefault);
     }
     return;
   }

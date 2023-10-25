@@ -307,7 +307,7 @@ void InlineCursor::ExpandRootToContainingBlock() {
 
 bool InlineCursorPosition::HasSoftWrapToNextLine() const {
   DCHECK(IsLineBox());
-  const NGInlineBreakToken* break_token = InlineBreakToken();
+  const InlineBreakToken* break_token = GetInlineBreakToken();
   return break_token && !break_token->IsForcedBreak();
 }
 
@@ -425,7 +425,7 @@ UBiDiLevel InlineCursorPosition::BidiLevel() const {
       // In case of <br>, <wbr>, text-combine-upright, etc.
       return 0;
     }
-    const NGTextOffsetRange offset = TextOffset();
+    const TextOffsetRange offset = TextOffset();
     auto* const item =
         base::ranges::find_if(*items, [offset](const InlineItem& item) {
           return item.StartOffset() <= offset.start &&

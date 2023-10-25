@@ -68,7 +68,7 @@ class LineInfoList {
   // list, and set `is_cached_out` to `true`. If it doesn't exist, returns an
   // unused instance. The unused instance may be a new instance or a used
   // instance. Callsites are expected to call `LineInfo::Reset()`.
-  LineInfo& Get(const NGInlineBreakToken* break_token, bool& is_cached_out);
+  LineInfo& Get(const InlineBreakToken* break_token, bool& is_cached_out);
 
  protected:
   LineInfoList(LineInfo* line_infos_instance, wtf_size_t max_lines)
@@ -88,7 +88,7 @@ class LineInfoList {
   LineInfo line_infos_[0];
 };
 
-inline LineInfo& LineInfoList::Get(const NGInlineBreakToken* break_token,
+inline LineInfo& LineInfoList::Get(const InlineBreakToken* break_token,
                                    bool& is_cached_out) {
   DCHECK(!is_cached_out);
   if (IsEmpty()) {

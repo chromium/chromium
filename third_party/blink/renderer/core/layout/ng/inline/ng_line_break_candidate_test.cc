@@ -20,9 +20,9 @@ class LineBreakCandidateTest : public RenderingTest {
                          LineBreakCandidates& candidates) {
     NGConstraintSpace space = ConstraintSpaceForAvailableSize(available_width);
     ExclusionSpace exclusion_space;
-    NGLeadingFloats leading_floats;
+    LeadingFloats leading_floats;
     LineLayoutOpportunity line_opportunity(available_width);
-    const NGInlineBreakToken* break_token = nullptr;
+    const InlineBreakToken* break_token = nullptr;
     LineInfo line_info;
     LineBreakCandidateContext context(candidates);
     bool is_first = true;

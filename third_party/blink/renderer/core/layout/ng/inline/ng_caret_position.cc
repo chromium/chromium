@@ -103,7 +103,7 @@ CaretPositionResolution TryResolveCaretPositionInTextFragment(
   // Note that we don't ignore other characters that are not in fragments. For
   // example, a trailing space of a line is not in any fragment, but its two
   // sides are still different caret positions, so we don't ignore it.
-  const NGTextOffsetRange current_offset = cursor.Current().TextOffset();
+  const TextOffsetRange current_offset = cursor.Current().TextOffset();
   const unsigned start_offset = current_offset.start;
   const unsigned end_offset = current_offset.end;
   if (offset < start_offset &&
@@ -214,7 +214,7 @@ bool NeedsBidiAdjustment(const CaretPosition& caret_position) {
     return true;
   }
   DCHECK(caret_position.text_offset.has_value());
-  const NGTextOffsetRange offset = caret_position.cursor.Current().TextOffset();
+  const TextOffsetRange offset = caret_position.cursor.Current().TextOffset();
   const unsigned start_offset = offset.start;
   const unsigned end_offset = offset.end;
   DCHECK_GE(*caret_position.text_offset, start_offset);

@@ -12,9 +12,9 @@
 namespace blink {
 
 // Represents a range of text, as a |start| and |end| offset pair.
-struct CORE_EXPORT NGTextOffsetRange {
-  NGTextOffsetRange() = default;
-  NGTextOffsetRange(wtf_size_t start, wtf_size_t end) : start(start), end(end) {
+struct CORE_EXPORT TextOffsetRange {
+  TextOffsetRange() = default;
+  TextOffsetRange(wtf_size_t start, wtf_size_t end) : start(start), end(end) {
     AssertValid();
   }
 
@@ -26,10 +26,10 @@ struct CORE_EXPORT NGTextOffsetRange {
   void AssertValid() const { DCHECK_GE(end, start); }
   void AssertNotEmpty() const { DCHECK_GT(end, start); }
 
-  bool operator==(const NGTextOffsetRange& other) const {
+  bool operator==(const TextOffsetRange& other) const {
     return start == other.start && end == other.end;
   }
-  bool operator!=(const NGTextOffsetRange& other) const {
+  bool operator!=(const TextOffsetRange& other) const {
     return !operator==(other);
   }
 
@@ -37,7 +37,7 @@ struct CORE_EXPORT NGTextOffsetRange {
   wtf_size_t end = 0;
 };
 
-CORE_EXPORT std::ostream& operator<<(std::ostream&, const NGTextOffsetRange&);
+CORE_EXPORT std::ostream& operator<<(std::ostream&, const TextOffsetRange&);
 
 }  // namespace blink
 

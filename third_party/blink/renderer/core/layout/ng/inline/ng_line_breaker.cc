@@ -369,8 +369,8 @@ LineBreaker::LineBreaker(InlineNode node,
                          LineBreakerMode mode,
                          const NGConstraintSpace& space,
                          const LineLayoutOpportunity& line_opportunity,
-                         const NGLeadingFloats& leading_floats,
-                         const NGInlineBreakToken* break_token,
+                         const LeadingFloats& leading_floats,
+                         const InlineBreakToken* break_token,
                          const NGColumnSpannerPath* column_spanner_path,
                          ExclusionSpace* exclusion_space)
     : line_opportunity_(line_opportunity),
@@ -472,7 +472,7 @@ inline InlineItemResult* LineBreaker::AddItem(const InlineItem& item,
   InlineItemResults* item_results = line_info->MutableResults();
   return &item_results->emplace_back(
       &item, current_.item_index,
-      NGTextOffsetRange(current_.text_offset, end_offset),
+      TextOffsetRange(current_.text_offset, end_offset),
       break_anywhere_if_overflow_, ShouldCreateLineBox(*item_results),
       HasUnpositionedFloats(*item_results));
 }
@@ -1817,7 +1817,7 @@ void LineBreaker::AppendCandidates(const InlineItemResult& item_result,
   // Extend the end offset to the end of the item or the end of this line,
   // whichever earlier. This is not only for performance but also to include
   // trailing spaces that may be removed by the line breaker.
-  NGTextOffsetRange offset = item_result.TextOffset();
+  TextOffsetRange offset = item_result.TextOffset();
   offset.end = std::max(offset.end,
                         std::min(item.EndOffset(), line_info.EndTextOffset()));
 
@@ -2033,7 +2033,7 @@ bool LineBreaker::CanBreakInside(const InlineItemResult& item_result) {
   if (!auto_wrap_) {
     return false;
   }
-  const NGTextOffsetRange& offset = item_result.TextOffset();
+  const TextOffsetRange& offset = item_result.TextOffset();
   if (offset.start < break_iterator_.StartOffset()) {
     break_iterator_.SetStartOffset(offset.start);
   }
@@ -2454,7 +2454,7 @@ void LineBreaker::HandleControlItem(const InlineItem& item,
       InlineItemResult* item_result = AddItem(item, line_info);
       // A generated break opportunity doesn't generate fragments, but we still
       // need to add this for rewind to find this opportunity. This will be
-      // discarded in |NGInlineLayoutAlgorithm| when it generates fragments.
+      // discarded in |InlineLayoutAlgorithm| when it generates fragments.
       if (!item.IsGeneratedForLineBreak())
         item_result->should_create_line_box = true;
       item_result->can_break_after = true;
@@ -2749,9 +2749,8 @@ void LineBreaker::HandleBlockInInline(
     // actual inline content after the block-in- inline in the current
     // fragmentainer.
     if (outgoing_block_break_token->IsAtBlockEnd()) {
-      const auto* parallel_token =
-          NGInlineBreakToken::CreateForParallelBlockFlow(
-              node_, current_, *outgoing_block_break_token);
+      const auto* parallel_token = InlineBreakToken::CreateForParallelBlockFlow(
+          node_, current_, *outgoing_block_break_token);
       line_info->PropagateParallelFlowBreakToken(parallel_token);
 
       MoveToNextOf(item);
@@ -2880,9 +2879,8 @@ void LineBreaker::HandleFloat(const InlineItem& item,
 
   if (constraint_space_.HasBlockFragmentation()) {
     if (const auto* break_token = item_result->positioned_float->BreakToken()) {
-      const auto* parallel_token =
-          NGInlineBreakToken::CreateForParallelBlockFlow(
-              node_, index_before_float, *break_token);
+      const auto* parallel_token = InlineBreakToken::CreateForParallelBlockFlow(
+          node_, index_before_float, *break_token);
       line_info->PropagateParallelFlowBreakToken(parallel_token);
       if (item_result->positioned_float->minimum_space_shortage) {
         line_info->PropagateMinimumSpaceShortage(
@@ -3623,7 +3621,7 @@ void LineBreaker::MoveToNextOf(const InlineItemResult& item_result) {
   }
 }
 
-const NGInlineBreakToken* LineBreaker::CreateBreakToken(
+const InlineBreakToken* LineBreaker::CreateBreakToken(
     const LineInfo& line_info) {
 #if DCHECK_IS_ON()
   DCHECK(!has_considered_creating_break_token_);
@@ -3653,15 +3651,15 @@ const NGInlineBreakToken* LineBreaker::CreateBreakToken(
 
   DCHECK_EQ(line_info.HasForcedBreak(), is_after_forced_break_);
   unsigned flags =
-      (is_after_forced_break_ ? NGInlineBreakToken::kIsForcedBreak : 0) |
-      (line_info.UseFirstLineStyle() ? NGInlineBreakToken::kUseFirstLineStyle
+      (is_after_forced_break_ ? InlineBreakToken::kIsForcedBreak : 0) |
+      (line_info.UseFirstLineStyle() ? InlineBreakToken::kUseFirstLineStyle
                                      : 0) |
       (cloned_box_decorations_count_
-           ? NGInlineBreakToken::kHasClonedBoxDecorations
+           ? InlineBreakToken::kHasClonedBoxDecorations
            : 0);
 
-  return NGInlineBreakToken::Create(node_, current_style_, current_, flags,
-                                    sub_break_token);
+  return InlineBreakToken::Create(node_, current_style_, current_, flags,
+                                  sub_break_token);
 }
 
 }  // namespace blink

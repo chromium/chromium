@@ -20,11 +20,11 @@ struct LogicalLineItem;
 // A class to truncate lines and place ellipsis, invoked by the CSS
 // 'text-overflow: ellipsis' property.
 // https://drafts.csswg.org/css-ui/#overflow-ellipsis
-class CORE_EXPORT NGLineTruncator final {
+class CORE_EXPORT LineTruncator final {
   STACK_ALLOCATED();
 
  public:
-  NGLineTruncator(const LineInfo& line_info);
+  LineTruncator(const LineInfo& line_info);
 
   // Truncate |line_box| and place ellipsis. Returns the new inline-size of the
   // |line_box|.
