@@ -1699,6 +1699,10 @@ views::View* AshNotificationView::FindGroupNotificationView(
              : *notification;
 }
 
+views::Label* AshNotificationView::GetTitleRowLabelForTest() {
+  return title_row_->title_view();
+}
+
 void AshNotificationView::OnNotificationRemoved(
     const std::string& notification_id,
     bool by_user) {

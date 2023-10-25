@@ -70,6 +70,9 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   void ConvertGroupedNotificationViewToNotificationView(
       const std::string& grouped_notification_id,
       const std::string& new_single_notification_id) override;
+  void OnChildNotificationViewUpdated(
+      const std::string& parent_notification_id,
+      const std::string& child_notification_id) override;
 
   // MessageCenterObserver:
   void OnNotificationAdded(const std::string& notification_id) override;

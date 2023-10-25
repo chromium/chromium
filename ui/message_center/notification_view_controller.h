@@ -17,6 +17,8 @@ class MessageView;
 // notifications.
 class MESSAGE_CENTER_EXPORT NotificationViewController {
  public:
+  virtual ~NotificationViewController() = default;
+
   // Returns the `MessageView` associated with `notification_id`
   virtual MessageView* GetMessageViewForNotificationId(
       const std::string& notification_id) = 0;
@@ -40,6 +42,11 @@ class MESSAGE_CENTER_EXPORT NotificationViewController {
   virtual void ConvertGroupedNotificationViewToNotificationView(
       const std::string& grouped_notification_id,
       const std::string& new_single_notification_id) = 0;
+
+  // Called to update child notification view inside a parent view.
+  virtual void OnChildNotificationViewUpdated(
+      const std::string& parent_notification_id,
+      const std::string& child_notification_id) = 0;
 };
 
 }  // namespace message_center

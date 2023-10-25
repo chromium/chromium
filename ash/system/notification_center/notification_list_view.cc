@@ -682,6 +682,26 @@ void NotificationListView::ConvertGroupedNotificationViewToNotificationView(
       ->set_notification_id(new_single_notification_id);
 }
 
+void NotificationListView::OnChildNotificationViewUpdated(
+    const std::string& parent_notification_id,
+    const std::string& child_notification_id) {
+  auto* parent_view = GetMessageViewForNotificationId(parent_notification_id);
+  if (!parent_view) {
+    return;
+  }
+
+  // Update the child notification view with the updated notification.
+  auto* child_view = static_cast<AshNotificationView*>(
+      parent_view->FindGroupNotificationView(child_notification_id));
+  auto* notification =
+      MessageCenter::Get()->FindNotificationById(child_notification_id);
+
+  if (child_view && notification) {
+    child_view->UpdateWithNotification(*notification);
+    ResetBounds();
+  }
+}
+
 void NotificationListView::OnNotificationAdded(const std::string& id) {
   auto* notification = MessageCenter::Get()->FindVisibleNotificationById(id);
   if (!notification) {
@@ -796,15 +816,6 @@ void NotificationListView::OnNotificationUpdated(const std::string& id) {
     // First checks through the immediate children.
     if (mvc->GetNotificationId() == id) {
       found_child = mvc->message_view();
-      break;
-    }
-
-    // Then checks if they have inner children who might have matching id
-    // This can be true for grouped notifications.
-    auto* inner_child = static_cast<MessageView*>(mvc->message_view()
-                    ->FindGroupNotificationView(id));
-    if (inner_child) {
-      found_child = inner_child;
       break;
     }
   }

@@ -483,6 +483,12 @@ void NotificationGroupingController::OnNotificationUpdated(
   Notification* parent_notification =
       MessageCenter::Get()->FindNotificationById(parent_id);
 
+  auto* notification_view_controller = GetActiveNotificationViewController();
+  if (notification_view_controller) {
+    notification_view_controller->OnChildNotificationViewUpdated(
+        parent_id, notification_id);
+  }
+
   if (parent_notification && notification->pinned()) {
     parent_notification->set_pinned(true);
     return;

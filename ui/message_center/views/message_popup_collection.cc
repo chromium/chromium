@@ -194,6 +194,22 @@ void MessagePopupCollection::ConvertGroupedNotificationViewToNotificationView(
   it->popup->message_view()->set_notification_id(new_single_notification_id);
 }
 
+void MessagePopupCollection::OnChildNotificationViewUpdated(
+    const std::string& parent_notification_id,
+    const std::string& child_notification_id) {
+  auto* notification =
+      MessageCenter::Get()->FindNotificationById(child_notification_id);
+  if (!notification) {
+    return;
+  }
+
+  auto* parent_popup = GetPopupViewForNotificationID(parent_notification_id);
+  if (parent_popup) {
+    parent_popup->UpdateContentsForChildNotification(child_notification_id,
+                                                     *notification);
+  }
+}
+
 void MessagePopupCollection::OnNotificationAdded(
     const std::string& notification_id) {
   // Should not call MessagePopupCollection::Update here. Because notification

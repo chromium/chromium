@@ -131,6 +131,9 @@ class ASH_EXPORT NotificationListView
   void ConvertGroupedNotificationViewToNotificationView(
       const std::string& grouped_notification_id,
       const std::string& new_single_notification_id) override;
+  void OnChildNotificationViewUpdated(
+      const std::string& parent_notification_id,
+      const std::string& child_notification_id) override;
 
   // message_center::MessageCenterObserver:
   void OnNotificationAdded(const std::string& id) override;

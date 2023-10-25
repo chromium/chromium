@@ -35,6 +35,12 @@ class MESSAGE_CENTER_EXPORT MessagePopupView
   // Update notification contents to |notification|. Virtual for unit testing.
   virtual void UpdateContents(const Notification& notification);
 
+  // Updates the content of the child notification view inside this popup.
+  // Virtual for unit testing.
+  virtual void UpdateContentsForChildNotification(
+      const std::string& notification_id,
+      const Notification& notification);
+
   // Return opacity of the widget.
   float GetOpacity() const;
 

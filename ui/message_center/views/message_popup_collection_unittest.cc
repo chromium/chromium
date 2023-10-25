@@ -145,6 +145,14 @@ class MockMessagePopupView : public MessagePopupView {
     title_ = base::UTF16ToUTF8(notification.title());
   }
 
+  void UpdateContentsForChildNotification(
+      const std::string& notification_id,
+      const Notification& notification) override {
+    child_updated_ = true;
+    child_updated_notification_id_ = notification_id;
+    child_updated_title_ = base::UTF16ToUTF8(notification.title());
+  }
+
   void AutoCollapse() override {
     if (expandable_)
       children().front()->SetPreferredSize(gfx::Size(kNotificationWidth, 42));
@@ -176,6 +184,12 @@ class MockMessagePopupView : public MessagePopupView {
   const std::string& id() const { return id_; }
   bool updated() const { return updated_; }
 
+  bool child_updated() const { return child_updated_; }
+  const std::string& child_updated_notification_id() {
+    return child_updated_notification_id_;
+  }
+  const std::string& child_updated_title() { return child_updated_title_; }
+
   const std::string& title() const { return title_; }
 
   void set_expandable(bool expandable) { expandable_ = expandable; }
@@ -189,6 +203,11 @@ class MockMessagePopupView : public MessagePopupView {
 
   std::string id_;
   bool updated_ = false;
+
+  bool child_updated_ = false;
+  std::string child_updated_notification_id_;
+  std::string child_updated_title_;
+
   bool expandable_ = false;
   std::string title_;
 
@@ -432,6 +451,24 @@ TEST_F(MessagePopupCollectionTest, DISABLED_UpdateContentsCausesPopupClose) {
   MessageCenter::Get()->UpdateNotification(id, std::move(updated_notification));
   RunPendingMessages();
   EXPECT_EQ(0u, GetPopupCounts());
+}
+
+TEST_F(MessagePopupCollectionTest, OnChildNotificationViewUpdated) {
+  std::string parent_id = AddNotification();
+  std::string child_id = AddNotification();
+
+  const std::string new_notification_title("new_title");
+  auto new_notification = CreateNotification(child_id, new_notification_title);
+  MessageCenter::Get()->UpdateNotification(child_id,
+                                           std::move(new_notification));
+
+  // Calling `OnChildNotificationViewUpdated()` should update the child
+  // notification in parent's popup.
+  popup_collection()->OnChildNotificationViewUpdated(parent_id, child_id);
+
+  EXPECT_TRUE(GetPopup(parent_id)->child_updated());
+  EXPECT_EQ(child_id, GetPopup(parent_id)->child_updated_notification_id());
+  EXPECT_EQ(new_notification_title, GetPopup(parent_id)->child_updated_title());
 }
 
 TEST_F(MessagePopupCollectionTest, MessageCenterVisibility) {

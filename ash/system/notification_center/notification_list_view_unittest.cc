@@ -6,6 +6,7 @@
 
 #include "ash/system/message_center/ash_notification_view.h"
 #include "ash/system/message_center/message_center_constants.h"
+#include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/scoped_refptr.h"
@@ -13,12 +14,16 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/notification_list.h"
+#include "ui/message_center/public/cpp/notifier_id.h"
 #include "ui/message_center/views/message_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/test/views_test_utils.h"
+#include "url/gurl.h"
 
 using message_center::MessageCenter;
 using message_center::MessageView;
@@ -133,6 +138,9 @@ class NotificationListViewTest : public AshTestBase,
   void SetUp() override {
     AshTestBase::SetUp();
     model_ = base::MakeRefCounted<UnifiedSystemTrayModel>(nullptr);
+
+    test_api_ = std::make_unique<NotificationCenterTestApi>(
+        GetPrimaryNotificationCenterTray());
   }
 
   void TearDown() override {
@@ -147,6 +155,8 @@ class NotificationListViewTest : public AshTestBase,
     views::test::RunScheduledLayout(view);
     ++size_changed_count_;
   }
+
+  NotificationCenterTestApi* test_api() { return test_api_.get(); }
 
  protected:
   std::string AddNotification(bool pinned = false, bool expandable = false) {
@@ -242,6 +252,7 @@ class NotificationListViewTest : public AshTestBase,
   int id_ = 0;
   int size_changed_count_ = 0;
 
+  std::unique_ptr<NotificationCenterTestApi> test_api_;
   scoped_refptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<TestNotificationListView> notification_list_view_;
 };
@@ -691,6 +702,54 @@ TEST_F(NotificationListViewTest, NotificationAddedInSortedOrder) {
   EXPECT_EQ(id4, GetMessageViewAt(2)->notification_id());
   EXPECT_EQ(id0, GetMessageViewAt(1)->notification_id());
   EXPECT_EQ(id3, GetMessageViewAt(0)->notification_id());
+}
+
+TEST_F(NotificationListViewTest, OnChildNotificationViewUpdated) {
+  const std::string source_url = "http://test-url.com";
+
+  std::string id0;
+  id0 = test_api()->AddNotificationWithSourceUrl(source_url);
+  test_api()->AddNotificationWithSourceUrl(source_url);
+
+  // Get the notification id for the parent notification. Parent notifications
+  // are created by copying the oldest notification for a given notifier_id.
+  const std::string parent_id =
+      test_api()->NotificationIdToParentNotificationId(id0);
+
+  test_api()->ToggleBubble();
+
+  auto* parent_notification_view =
+      test_api()->GetNotificationViewForId(parent_id);
+
+  // Ensure id0 exist as child notifications inside the
+  // `parent_notification_view` with the correct title.
+  auto* child_view = static_cast<AshNotificationView*>(
+      parent_notification_view->FindGroupNotificationView(id0));
+  EXPECT_TRUE(child_view);
+  EXPECT_EQ(u"test_title",
+            child_view->GetTitleRowLabelForTest()->GetDisplayTextForTesting());
+
+  std::u16string new_title = u"new title";
+
+  // Update the child notification with a new title.
+  std::unique_ptr<Notification> notification = std::make_unique<Notification>(
+      message_center::NOTIFICATION_TYPE_SIMPLE, id0, new_title, u"message",
+      ui::ImageModel(), u"display source", GURL(source_url),
+      message_center::NotifierId(GURL(source_url)),
+      message_center::RichNotificationData(),
+      new message_center::NotificationDelegate());
+  message_center::MessageCenter::Get()->UpdateNotification(
+      id0, std::move(notification));
+
+  test_api()->GetNotificationListView()->OnChildNotificationViewUpdated(
+      parent_id, /*child_notification_id=*/id0);
+
+  // Make sure the child view has the new title.
+  child_view = static_cast<AshNotificationView*>(
+      parent_notification_view->FindGroupNotificationView(id0));
+  EXPECT_TRUE(child_view);
+  EXPECT_EQ(new_title,
+            child_view->GetTitleRowLabelForTest()->GetDisplayTextForTesting());
 }
 
 // Tests that preferred size changes upon toggle of expand/collapse.
