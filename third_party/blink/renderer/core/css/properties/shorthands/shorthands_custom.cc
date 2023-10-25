@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/css/style_property_serializer.h"
 #include "third_party/blink/renderer/core/css/zoom_adjusted_pixel_value.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
@@ -198,12 +199,13 @@ bool ParseBackgroundOrMaskPosition(
     bool important,
     CSSParserTokenRange& range,
     const CSSParserContext& context,
+    absl::optional<WebFeature> three_value_position,
     HeapVector<CSSPropertyValue, 64>& properties) {
   CSSValue* result_x = nullptr;
   CSSValue* result_y = nullptr;
   if (!css_parsing_utils::ConsumeBackgroundPosition(
-          range, context, css_parsing_utils::UnitlessQuirk::kAllow, result_x,
-          result_y) ||
+          range, context, css_parsing_utils::UnitlessQuirk::kAllow,
+          three_value_position, result_x, result_y) ||
       !range.AtEnd()) {
     return false;
   }
@@ -544,8 +546,9 @@ bool BackgroundPosition::ParseShorthand(
     const CSSParserContext& context,
     const CSSParserLocalContext&,
     HeapVector<CSSPropertyValue, 64>& properties) const {
-  return ParseBackgroundOrMaskPosition(backgroundPositionShorthand(), important,
-                                       range, context, properties);
+  return ParseBackgroundOrMaskPosition(
+      backgroundPositionShorthand(), important, range, context,
+      WebFeature::kThreeValuedPositionBackground, properties);
 }
 
 const CSSValue* BackgroundPosition::CSSValueFromComputedStyleInternal(
@@ -3792,14 +3795,37 @@ bool WebkitAlternativeMask::ParseShorthand(
                                                   local_context, properties);
 }
 
+bool MaskPosition::ParseShorthand(
+    bool important,
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  return ParseBackgroundOrMaskPosition(
+      maskPositionShorthand(), important, range, context,
+      local_context.UseAliasParsing()
+          ? WebFeature::kThreeValuedPositionBackground
+          : absl::optional<WebFeature>(),
+      properties);
+}
+
+const CSSValue* MaskPosition::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  return ComputedStyleUtils::BackgroundPositionOrWebkitMaskPosition(
+      *this, style, &style.MaskLayers());
+}
+
 bool WebkitMaskPosition::ParseShorthand(
     bool important,
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
     HeapVector<CSSPropertyValue, 64>& properties) const {
-  return ParseBackgroundOrMaskPosition(webkitMaskPositionShorthand(), important,
-                                       range, context, properties);
+  return ParseBackgroundOrMaskPosition(
+      webkitMaskPositionShorthand(), important, range, context,
+      WebFeature::kThreeValuedPositionBackground, properties);
 }
 
 const CSSValue* WebkitMaskPosition::CSSValueFromComputedStyleInternal(

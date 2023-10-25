@@ -936,6 +936,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kAliasWebkitAlternativeMaskComposite:
     case CSSPropertyID::kAliasWebkitAlternativeMaskImage:
     case CSSPropertyID::kAliasWebkitAlternativeMaskOrigin:
+    case CSSPropertyID::kAliasWebkitAlternativeMaskPosition:
     case CSSPropertyID::kAliasWebkitAlternativeMaskRepeat:
     case CSSPropertyID::kAliasWebkitAlternativeMaskSize:
     case CSSPropertyID::kAliasWebkitAnimation:
@@ -1243,6 +1244,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kWebkitColumnBreakInside:
     case CSSPropertyID::kWebkitMask:
     case CSSPropertyID::kWebkitMaskBoxImage:
+    case CSSPropertyID::kMaskPosition:
     case CSSPropertyID::kWebkitMaskPosition:
     case CSSPropertyID::kWebkitTextStroke:
     case CSSPropertyID::kWhiteSpace:

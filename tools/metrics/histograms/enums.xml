@@ -71802,6 +71802,7 @@ Called by update_use_counter_css.py.-->
   <int value="776" label="text-spacing"/>
   <int value="777" label="mask-repeat"/>
   <int value="778" label="mask-composite"/>
+  <int value="779" label="mask-position"/>
 </enum>
 
 <enum name="MappedEditingCommands">

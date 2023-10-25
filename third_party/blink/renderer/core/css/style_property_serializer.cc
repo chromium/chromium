@@ -623,6 +623,8 @@ String StylePropertySerializer::SerializeShorthand(
       return GetLayeredShorthandValue(transitionShorthand());
     case CSSPropertyID::kListStyle:
       return GetShorthandValue(listStyleShorthand());
+    case CSSPropertyID::kMaskPosition:
+      return GetLayeredShorthandValue(maskPositionShorthand());
     case CSSPropertyID::kWebkitMaskPosition:
       return GetLayeredShorthandValue(webkitMaskPositionShorthand());
     case CSSPropertyID::kWebkitMask:

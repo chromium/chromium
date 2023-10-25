@@ -506,26 +506,11 @@ crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-mode-c.html [ Fail
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-mode-d.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-mode-to-mask-type.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-origin-3.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-position-1a.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-position-1b.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-position-1c.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-position-2a.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-position-2b.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-position-3a.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-position-3b.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-position-4a.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-position-4b.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-position-4c.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-position-4d.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-position-5.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-position-6.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-position-7.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-size-contain-position-fifty-fifty.html [ Failure ]
 
 # New failures exposed by supporting unprefixed mask-image.
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-3d.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-3i.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-6.html [ Failure ]
 
 # CSS clip-path: shape() not implemented
 crbug.com/1308431 [ Win11 ] external/wpt/css/css-masking/animations/clip-path-interpolation-shape.html [ Failure ]
@@ -6990,6 +6975,9 @@ crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/parsi
 crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/parsing/mask-composite-valid.html [ Failure ]
 crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/parsing/mask-repeat-computed.html [ Failure ]
 crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/parsing/mask-repeat-valid.html [ Failure ]
+
+crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/animations/mask-position-interpolation.html [ Failure ]
+crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/parsing/mask-position-valid.html [ Failure ]
 
 # Gardener 2023-10-17
 crbug.com/1493342 [ Mac10.15 ] external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-video.html [ Failure ]

@@ -400,6 +400,7 @@ class CSSProperties(object):
             updated_alias.alternative = alias.alternative
             updated_alias.aliased_property = aliased_property.name.to_upper_camel_case(
             )
+            updated_alias.computable = alias.computable
             updated_alias.property_id = id_for_css_property_alias(alias.name)
             updated_alias.enum_key = enum_key_for_css_property_alias(
                 alias.name)

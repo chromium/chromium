@@ -276,6 +276,7 @@ maskClip
 maskComposite
 maskImage
 maskOrigin
+maskPosition
 maskRepeat
 maskSize
 maskType

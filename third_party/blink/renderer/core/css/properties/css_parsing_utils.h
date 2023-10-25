@@ -358,6 +358,7 @@ CSSValue* ConsumePrefixedMaskComposite(CSSParserTokenRange&);
 bool ConsumeBackgroundPosition(CSSParserTokenRange&,
                                const CSSParserContext&,
                                UnitlessQuirk,
+                               absl::optional<WebFeature> three_value_position,
                                CSSValue*& result_x,
                                CSSValue*& result_y);
 CSSValue* ConsumePrefixedBackgroundBox(CSSParserTokenRange&, AllowTextValue);

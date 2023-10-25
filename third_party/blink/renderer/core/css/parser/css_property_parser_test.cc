@@ -1159,4 +1159,26 @@ TEST(CSSPropertyParserTest, RepeatStyle2ValViaShorthand) {
   TestRepeatStyleViaShorthandsParsing("url(foo) space repeat", "space repeat");
 }
 
+void TestMaskPositionParsing(const String& testValue,
+                             const String& expectedCssText) {
+  auto* style =
+      MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
+  CSSParser::ParseValue(style, CSSPropertyID::kMaskPosition, testValue,
+                        false /* important */);
+  ASSERT_NE(style, nullptr);
+  EXPECT_TRUE(style->AsText().Contains(expectedCssText));
+}
+
+TEST(CSSPropertyParserTest, MaskPositionCenter) {
+  TestMaskPositionParsing("center", "center center");
+}
+
+TEST(CSSPropertyParserTest, MaskPositionTopRight) {
+  TestMaskPositionParsing("top right", "right top");
+}
+
+TEST(CSSPropertyParserTest, MaskPositionBottomLeft) {
+  TestMaskPositionParsing("bottom 10% left -13px", "left -13px bottom 10%");
+}
+
 }  // namespace blink

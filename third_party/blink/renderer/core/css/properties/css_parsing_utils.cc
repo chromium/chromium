@@ -4191,14 +4191,14 @@ static void SetAllowsNegativePercentageReference(CSSValue* value) {
 bool ConsumeBackgroundPosition(CSSParserTokenRange& range,
                                const CSSParserContext& context,
                                UnitlessQuirk unitless,
+                               absl::optional<WebFeature> three_value_position,
                                CSSValue*& result_x,
                                CSSValue*& result_y) {
   do {
     CSSValue* position_x = nullptr;
     CSSValue* position_y = nullptr;
-    if (!ConsumePosition(range, context, unitless,
-                         WebFeature::kThreeValuedPositionBackground, position_x,
-                         position_y)) {
+    if (!ConsumePosition(range, context, unitless, three_value_position,
+                         position_x, position_y)) {
       return false;
     }
     // TODO(crbug.com/825895): So far, 'background-position' is the only

@@ -7593,6 +7593,20 @@
       computable: true,
     },
     {
+      name: "mask-position",
+      longhands: ["-webkit-mask-position-x", "-webkit-mask-position-y"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      computable: true,
+      runtime_flag: "CSSMaskingInterop",
+    },
+    {
+      name: "-webkit-alternative-mask-position",
+      alternative_of: "-webkit-mask-position",
+      alias_for: "mask-position",
+      computable: false,
+      runtime_flag: "CSSMaskingInterop",
+    },
+    {
       name: "-webkit-mask-position",
       longhands: ["-webkit-mask-position-x", "-webkit-mask-position-y"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],

@@ -455,9 +455,6 @@ All changes to this list should go through Blink's feature review process: http:
         -webkit-mask-box-image-slice
         -webkit-mask-box-image-source
         -webkit-mask-box-image-width
-    -webkit-mask-position
-        -webkit-mask-position-x
-        -webkit-mask-position-y
     -webkit-text-stroke
         -webkit-text-stroke-color
         -webkit-text-stroke-width
@@ -711,6 +708,9 @@ All changes to this list should go through Blink's feature review process: http:
         marker-end
         marker-mid
         marker-start
+    mask-position
+        -webkit-mask-position-x
+        -webkit-mask-position-y
     offset
         offset-anchor
         offset-distance
@@ -972,6 +972,8 @@ All changes to this list should go through Blink's feature review process: http:
         mask-image
     -webkit-mask-origin
         mask-origin
+    -webkit-mask-position
+        mask-position
     -webkit-mask-repeat
         mask-repeat
     -webkit-mask-size
