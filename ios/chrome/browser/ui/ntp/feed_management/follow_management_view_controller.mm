@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/ui/ntp/feed_management/follow_management_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/ios/ios_util.h"
 #import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_follow_delegate.h"
@@ -35,7 +37,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 }  // namespace
 
-@interface FollowManagementViewController ()
+@interface FollowManagementViewController () <UIEditMenuInteractionDelegate>
 
 // Saved placement of the item that was last attempted to unfollow.
 @property(nonatomic, strong) NSIndexPath* indexPathOfLastUnfollowAttempt;
@@ -47,6 +49,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, strong)
     FollowedWebChannelItem* lastUnfollowedWebChannelItem;
 
+// Used to create and show the actions users can execute when they tap on a row
+// in the tableView. These actions are displayed as a pop-up.
+// TODO(crbug.com/1489457): Remove available guard when min deployment target is
+// bumped to iOS 16.0.
+@property(nonatomic, strong)
+    UIEditMenuInteraction* interactionMenu API_AVAILABLE(ios(16));
+
 @end
 
 @implementation FollowManagementViewController
@@ -55,6 +64,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [super viewDidLoad];
   [self configureNavigationBar];
   [self loadModel];
+
+  if (base::FeatureList::IsEnabled(kEnableUIEditMenuInteraction)) {
+    if (@available(iOS 16.0, *)) {
+      _interactionMenu = [[UIEditMenuInteraction alloc] initWithDelegate:self];
+      [self.tableView addInteraction:self.interactionMenu];
+    }
+  }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -122,30 +138,44 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   self.indexPathOfSelectedRow = indexPath;
+  if (base::FeatureList::IsEnabled(kEnableUIEditMenuInteraction) &&
+      base::ios::IsRunningOnIOS16OrLater()) {
+    if (@available(iOS 16.0, *)) {
+      CGRect row = [tableView rectForRowAtIndexPath:indexPath];
+      CGPoint editMenuLocation = CGPointMake(CGRectGetMidX(row), row.origin.y);
+      UIEditMenuConfiguration* configuration = [UIEditMenuConfiguration
+          configurationWithIdentifier:nil
+                          sourcePoint:editMenuLocation];
+      [self.interactionMenu presentEditMenuWithConfiguration:configuration];
+    }
+  }
+#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
+  else {
+    UIMenuController* menu = [UIMenuController sharedMenuController];
+    UIMenuItem* visitSiteOption = [[UIMenuItem alloc]
+        initWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_FOLLOW_MANAGEMENT_VISIT_SITE_ACTION)
+               action:@selector(visitSiteTapped)];
+    UIMenuItem* unfollowOption = [[UIMenuItem alloc]
+        initWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_FOLLOW_MANAGEMENT_UNFOLLOW_ACTION)
+               action:@selector(unfollowTapped)];
+    menu.menuItems = @[ visitSiteOption, unfollowOption ];
 
-  UIMenuController* menu = [UIMenuController sharedMenuController];
-  UIMenuItem* visitSiteOption = [[UIMenuItem alloc]
-      initWithTitle:l10n_util::GetNSString(
-                        IDS_IOS_FOLLOW_MANAGEMENT_VISIT_SITE_ACTION)
-             action:@selector(visitSiteTapped)];
-  UIMenuItem* unfollowOption = [[UIMenuItem alloc]
-      initWithTitle:l10n_util::GetNSString(
-                        IDS_IOS_FOLLOW_MANAGEMENT_UNFOLLOW_ACTION)
-             action:@selector(unfollowTapped)];
-  menu.menuItems = @[ visitSiteOption, unfollowOption ];
+    // UIMenuController requires that this view controller be the first
+    // responder in order to display the menu and handle the menu options.
+    [self becomeFirstResponder];
 
-  // UIMenuController requires that this view controller be the first responder
-  // in order to display the menu and handle the menu options.
-  [self becomeFirstResponder];
+    [menu showMenuFromView:tableView
+                      rect:[tableView rectForRowAtIndexPath:indexPath]];
 
-  [menu showMenuFromView:tableView
-                    rect:[tableView rectForRowAtIndexPath:indexPath]];
-
-  // When the menu is manually presented, it doesn't get focused by
-  // Voiceover. This notification forces voiceover to select the
-  // presented menu.
-  UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
-                                  menu);
+    // When the menu is manually presented, it doesn't get focused by
+    // voiceover. This notification forces voiceover to select the
+    // presented menu.
+    UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                    menu);
+  }
+#endif
 }
 
 - (UISwipeActionsConfiguration*)tableView:(UITableView*)tableView
@@ -313,6 +343,36 @@ typedef NS_ENUM(NSInteger, ItemType) {
     [self addItem:item atIndex:index];
   }
   [self showOrHideEmptyTableViewBackground];
+}
+
+#pragma mark - UIEditMenuInteractionDelegate
+
+// TODO(crbug.com/1489457): Remove available guard when min deployment target is
+// bumped to iOS 16.0.
+- (UIMenu*)editMenuInteraction:(UIEditMenuInteraction*)interaction
+          menuForConfiguration:(UIEditMenuConfiguration*)configuration
+              suggestedActions:(NSArray<UIMenuElement*>*)suggestedActions
+    API_AVAILABLE(ios(16)) {
+  __weak FollowManagementViewController* weakSelf = self;
+
+  UIAction* visitSite =
+      [UIAction actionWithTitle:l10n_util::GetNSString(
+                                    IDS_IOS_FOLLOW_MANAGEMENT_VISIT_SITE_ACTION)
+                          image:nil
+                     identifier:nil
+                        handler:^(__kindof UIAction* _Nonnull action) {
+                          [weakSelf visitSiteTapped];
+                        }];
+
+  UIAction* unfollow =
+      [UIAction actionWithTitle:l10n_util::GetNSString(
+                                    IDS_IOS_FOLLOW_MANAGEMENT_UNFOLLOW_ACTION)
+                          image:nil
+                     identifier:nil
+                        handler:^(__kindof UIAction* _Nonnull action) {
+                          [weakSelf unfollowTapped];
+                        }];
+  return [UIMenu menuWithChildren:@[ visitSite, unfollow ]];
 }
 
 #pragma mark - Helpers
