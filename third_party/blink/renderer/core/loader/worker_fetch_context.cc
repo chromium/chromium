@@ -199,6 +199,8 @@ void WorkerFetchContext::PrepareRequest(
       RuntimeEnabledFeatures::CompressionDictionaryTransportEnabled(
           GetExecutionContext()));
 
+  request.SetHasStorageAccess(GetExecutionContext()->HasStorageAccess());
+
   WrappedResourceRequest webreq(request);
   web_context_->WillSendRequest(webreq);
   if (auto* worker_scope = DynamicTo<WorkerGlobalScope>(*global_scope_)) {

@@ -1496,6 +1496,32 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
             CookieBundle("cross-site=a.test"));
 }
 
+IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
+                       DedicatedWorker_InheritsStorageAccessFromDocument) {
+  SetBlockThirdPartyCookies(true);
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  // Get storage access and then do a self-initiated same-site navigation to the
+  // fetch_from_worker.html, so that fetch_from_worker.html has storage access
+  // upon load (and therefore has storage access when it creates the Worker).
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+  ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+  ASSERT_TRUE(content::NavigateToURLFromRenderer(
+      GetFrame(),
+      https_server().GetURL(
+          kHostB,
+          "/workers/fetch_from_worker.html?script=fetch_from_worker.js")));
+  ASSERT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  // When the worker's parent document has storage access at the time the worker
+  // is created, the worker should inherit that access and be able to use it.
+  EXPECT_EQ(
+      content::EvalJs(GetFrame(), "fetch_from_worker('/echoheader?cookie');"),
+      "cross-site=b.test");
+}
+
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     StorageAccessAPIBrowserTest,

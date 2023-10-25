@@ -473,8 +473,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   };
 
   // Returns true if this execution context has obtained storage access via the
-  // Storage Access API. In practice, this can only return true for
-  // LocalDOMWindows.
+  // Storage Access API.
   virtual bool HasStorageAccess() const { return false; }
 
  protected:

@@ -91,6 +91,7 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
   // Implements ExecutionContext.
   void SetIsInBackForwardCache(bool) override;
   bool IsDedicatedWorkerGlobalScope() const override { return true; }
+  bool HasStorageAccess() const override;
 
   // Implements EventTarget
   // (via WorkerOrWorkletGlobalScope -> EventTarget).
@@ -180,6 +181,7 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
   struct ParsedCreationParams {
     std::unique_ptr<GlobalScopeCreationParams> creation_params;
     ExecutionContextToken parent_context_token;
+    bool parent_has_storage_access;
   };
 
   static ParsedCreationParams ParseCreationParams(
@@ -229,6 +231,10 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
   // frozen due to back-forward cache. This number gets reset when the worker
   // gets out of the back-forward cache.
   size_t total_bytes_buffered_while_in_back_forward_cache_ = 0;
+
+  // Whether this worker has storage access (inherited from the parent
+  // ExecutionContext).
+  bool has_storage_access_;
 };
 
 template <>

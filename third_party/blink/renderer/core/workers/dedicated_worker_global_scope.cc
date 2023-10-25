@@ -122,6 +122,8 @@ DedicatedWorkerGlobalScope::ParseCreationParams(
   // WorkerGlobalScope.
   parsed_creation_params.parent_context_token =
       creation_params->parent_context_token.value();
+  parsed_creation_params.parent_has_storage_access =
+      creation_params->parent_has_storage_access;
 
   parsed_creation_params.creation_params = std::move(creation_params);
   return parsed_creation_params;
@@ -176,7 +178,8 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
       animation_frame_provider_(
           MakeGarbageCollected<WorkerAnimationFrameProvider>(
               this,
-              begin_frame_provider_params)) {
+              begin_frame_provider_params)),
+      has_storage_access_(parsed_creation_params.parent_has_storage_access) {
   // https://html.spec.whatwg.org/C/#run-a-worker
   // Step 14.10 "If shared is false and owner's cross-origin isolated
   // capability is false, then set worker global scope's cross-origin isolated
@@ -540,6 +543,10 @@ void DedicatedWorkerGlobalScope::SetIsInBackForwardCache(
             total_bytes_buffered_while_in_back_forward_cache_);
     total_bytes_buffered_while_in_back_forward_cache_ = 0;
   }
+}
+
+bool DedicatedWorkerGlobalScope::HasStorageAccess() const {
+  return has_storage_access_;
 }
 
 }  // namespace blink
