@@ -651,7 +651,6 @@ void DisplayManager::RegisterDisplayProperty(
   ManagedDisplayInfo& info = display_info_[display_id];
   info.SetRotation(rotation, Display::RotationSource::USER);
   info.SetRotation(rotation, Display::RotationSource::ACTIVE);
-
   info.set_zoom_factor(display_zoom_factor);
 
   if (overscan_insets)
@@ -1444,8 +1443,8 @@ void DisplayManager::SetMirrorMode(
   ReconfigureDisplays();
 }
 
-void DisplayManager::AddRemoveDisplay(
-    ManagedDisplayInfo::ManagedDisplayModeList display_modes) {
+void DisplayManager::AddRemoveDisplay() {
+  ManagedDisplayInfo::ManagedDisplayModeList display_modes;
   DCHECK(!active_display_list_.empty());
 
   DisplayInfoList new_display_info_list;
@@ -1456,36 +1455,15 @@ void DisplayManager::AddRemoveDisplay(
   new_display_info_list.push_back(first_display);
   // Add if there is only one display connected.
   if (num_connected_displays() == 1) {
+    constexpr int kVerticalOffsetPx = 100;
+    constexpr int kExtraWidth = 100;
+    // Layout the 2nd display's host below the primary as with the real device.
     gfx::Rect host_bounds = first_display.bounds_in_native();
-    if (display_modes.empty()) {
-      display_modes.emplace_back(
-          gfx::Size(host_bounds.height() + 100 /* width */,
-                    host_bounds.height()),
-          60.0, /* refresh_rate */
-          false /* is_interlaced */, true /* native */);
-    }
-
-    // Find native display mode (or just the first one if there is no
-    // mode marked as native) and create a display with this mode as a default
-    const ManagedDisplayMode* native_display_mode = &(display_modes[0]);
-    for (const ManagedDisplayMode& display_mode : display_modes) {
-      if (display_mode.native()) {
-        native_display_mode = &display_mode;
-        break;
-      }
-    }
-
-    const int kVerticalOffsetPx = 100;
-    // Layout the 2nd display below the primary as with the real device.
-    ManagedDisplayInfo display = ManagedDisplayInfo::CreateFromSpecWithID(
-        base::StringPrintf("%d+%d-%dx%d", host_bounds.x(),
-                           host_bounds.bottom() + kVerticalOffsetPx,
-                           native_display_mode->size().width(),
-                           native_display_mode->size().height()),
-        first_display.id() + 1);
-
-    display.SetManagedDisplayModes(std::move(display_modes));
-    new_display_info_list.push_back(std::move(display));
+    new_display_info_list.push_back(
+        ManagedDisplayInfo::CreateFromSpec(base::StringPrintf(
+            "%d+%d-%dx%d", host_bounds.x(),
+            host_bounds.bottom() + kVerticalOffsetPx,
+            host_bounds.height() + kExtraWidth, host_bounds.height())));
   }
   connected_display_id_list_ = CreateDisplayIdList(new_display_info_list);
   ClearMirroringSourceAndDestination();
