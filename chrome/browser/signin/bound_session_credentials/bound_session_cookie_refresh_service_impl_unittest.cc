@@ -46,11 +46,8 @@ class FakeBoundSessionCookieController : public BoundSessionCookieController {
  public:
   explicit FakeBoundSessionCookieController(
       const bound_session_credentials::BoundSessionParams& bound_session_params,
-      const base::flat_set<std::string>& cookie_names,
       Delegate* delegate)
-      : BoundSessionCookieController(bound_session_params,
-                                     cookie_names,
-                                     delegate) {
+      : BoundSessionCookieController(bound_session_params, delegate) {
     std::string wrapped_key_str = bound_session_params.wrapped_key();
     wrapped_key_.assign(wrapped_key_str.begin(), wrapped_key_str.end());
   }
@@ -109,7 +106,7 @@ class FakeBoundSessionCookieController : public BoundSessionCookieController {
 
 class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
  public:
-  const GURL kTestGaiaURL = GURL("https://google.com");
+  const GURL kTestGoogleURL = GURL("https://google.com");
 
   BoundSessionCookieRefreshServiceImplTest() {
     BoundSessionParamsStorage::RegisterProfilePrefs(prefs_.registry());
@@ -119,11 +116,10 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
 
   std::unique_ptr<BoundSessionCookieController> GetBoundSessionCookieController(
       const bound_session_credentials::BoundSessionParams& bound_session_params,
-      const base::flat_set<std::string>& cookie_names,
       BoundSessionCookieController::Delegate* delegate) {
     std::unique_ptr<FakeBoundSessionCookieController> controller =
-        std::make_unique<FakeBoundSessionCookieController>(
-            bound_session_params, cookie_names, delegate);
+        std::make_unique<FakeBoundSessionCookieController>(bound_session_params,
+                                                           delegate);
     controller->set_on_destroy_callback(base::BindOnce(
         &BoundSessionCookieRefreshServiceImplTest::OnCookieControllerDestroy,
         base::Unretained(this)));
@@ -216,24 +212,30 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
     EXPECT_FALSE(prefs()->HasPrefPath(kBoundSessionParamsPref));
   }
 
-  bound_session_credentials::Credential CreateCookieCredential() {
+  bound_session_credentials::Credential CreateCookieCredential(
+      const std::string& cookie_name) {
     bound_session_credentials::Credential credential;
     bound_session_credentials::CookieCredential* cookie_credential =
         credential.mutable_cookie_credential();
-    cookie_credential->set_name("auth_cookie");
+    cookie_credential->set_name(cookie_name);
     cookie_credential->set_domain(".google.com");
     cookie_credential->set_path("/");
     return credential;
   }
 
   bound_session_credentials::BoundSessionParams CreateTestBoundSessionParams() {
+    static const std::vector<std::string> cookie_names = {"__Secure-1PSIDTS",
+                                                          "__Secure-3PSIDTS"};
+
     bound_session_credentials::BoundSessionParams params;
-    params.set_site(kTestGaiaURL.spec());
+    params.set_site(kTestGoogleURL.spec());
     params.set_session_id(kTestSessionId);
     params.set_wrapped_key(kWrappedKey);
     *params.mutable_creation_time() =
         bound_session_credentials::TimeToTimestamp(base::Time::Now());
-    *params.add_credentials() = CreateCookieCredential();
+    for (const std::string& cookie_name : cookie_names) {
+      *params.add_credentials() = CreateCookieCredential(cookie_name);
+    }
     return params;
   }
 
@@ -254,7 +256,7 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest, VerifyControllerParams) {
   VerifyBoundSession();
   FakeBoundSessionCookieController* controller = cookie_controller();
   EXPECT_TRUE(controller);
-  EXPECT_EQ(controller->url(), kTestGaiaURL);
+  EXPECT_EQ(controller->url(), kTestGoogleURL);
   EXPECT_EQ(controller->session_id(), kTestSessionId);
   EXPECT_EQ(
       controller->cookie_names(),
@@ -280,8 +282,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
 
   chrome::mojom::BoundSessionThrottlerParamsPtr bound_session_throttler_params =
       service->GetBoundSessionThrottlerParams();
-  EXPECT_EQ(bound_session_throttler_params->domain, kTestGaiaURL.host());
-  EXPECT_EQ(bound_session_throttler_params->path, kTestGaiaURL.path_piece());
+  EXPECT_EQ(bound_session_throttler_params->domain, kTestGoogleURL.host());
+  EXPECT_EQ(bound_session_throttler_params->path, kTestGoogleURL.path_piece());
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
@@ -488,7 +490,7 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest, ClearMatchingData) {
   service->RegisterNewBoundSession(CreateTestBoundSessionParams());
 
   ClearOriginData(content::StoragePartition::REMOVE_DATA_MASK_COOKIES,
-                  url::Origin::Create(kTestGaiaURL));
+                  url::Origin::Create(kTestGoogleURL));
   VerifyNoBoundSession();
 }
 
@@ -498,7 +500,7 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   service->RegisterNewBoundSession(CreateTestBoundSessionParams());
 
   ClearOriginData(content::StoragePartition::REMOVE_DATA_MASK_CACHE_STORAGE,
-                  url::Origin::Create(kTestGaiaURL));
+                  url::Origin::Create(kTestGoogleURL));
   VerifyBoundSession();
 }
 
@@ -528,7 +530,7 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   service->RegisterNewBoundSession(CreateTestBoundSessionParams());
 
   ClearOriginData(content::StoragePartition::REMOVE_DATA_MASK_COOKIES,
-                  url::Origin::Create(kTestGaiaURL),
+                  url::Origin::Create(kTestGoogleURL),
                   base::Time::Now() - base::Seconds(5),
                   base::Time::Now() - base::Seconds(3));
   VerifyBoundSession();

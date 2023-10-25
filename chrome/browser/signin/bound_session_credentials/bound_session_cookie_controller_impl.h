@@ -54,7 +54,6 @@ class BoundSessionCookieControllerImpl
       content::StoragePartition* storage_partition,
       network::NetworkConnectionTracker* network_connection_tracker,
       const bound_session_credentials::BoundSessionParams& bound_session_params,
-      const base::flat_set<std::string>& cookie_names,
       Delegate* delegate);
 
   ~BoundSessionCookieControllerImpl() override;

@@ -45,7 +45,6 @@ class BoundSessionCookieController {
 
   BoundSessionCookieController(
       const bound_session_credentials::BoundSessionParams& bound_session_params,
-      const base::flat_set<std::string>& cookie_names,
       Delegate* delegate);
 
   virtual ~BoundSessionCookieController();

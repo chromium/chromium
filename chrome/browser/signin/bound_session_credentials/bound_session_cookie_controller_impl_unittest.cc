@@ -47,6 +47,18 @@ const base::TimeDelta kResumeBlockedRequestTimeout = base::Seconds(20);
 base::Time GetTimeInTenMinutes() {
   return base::Time::Now() + base::Minutes(10);
 }
+
+bound_session_credentials::Credential CreateCookieCredential(
+    const std::string& cookie_name) {
+  bound_session_credentials::Credential credential;
+  bound_session_credentials::CookieCredential* cookie_credential =
+      credential.mutable_cookie_credential();
+  cookie_credential->set_name(cookie_name);
+  cookie_credential->set_domain(".google.com");
+  cookie_credential->set_path("/");
+  return credential;
+}
+
 }  // namespace
 
 class BoundSessionCookieControllerImplTest
@@ -63,6 +75,10 @@ class BoundSessionCookieControllerImplTest
     bound_session_params.set_session_id("test_session_id");
     bound_session_params.set_wrapped_key(
         std::string(wrapped_key.begin(), wrapped_key.end()));
+    *bound_session_params.add_credentials() =
+        CreateCookieCredential(k1PSIDTSCookieName);
+    *bound_session_params.add_credentials() =
+        CreateCookieCredential(k3PSIDTSCookieName);
 
     storage_partition_.set_cookie_manager_for_browser_process(&cookie_manager_);
 
@@ -72,10 +88,7 @@ class BoundSessionCookieControllerImplTest
     bound_session_cookie_controller_ =
         std::make_unique<BoundSessionCookieControllerImpl>(
             unexportable_key_service_, &storage_partition_,
-            content::GetNetworkConnectionTracker(), bound_session_params,
-            base::flat_set<std::string>(
-                {k1PSIDTSCookieName, k3PSIDTSCookieName}),
-            this);
+            content::GetNetworkConnectionTracker(), bound_session_params, this);
 
     bound_session_cookie_controller_
         ->set_refresh_cookie_fetcher_factory_for_testing(

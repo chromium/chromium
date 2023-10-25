@@ -202,25 +202,18 @@ void BoundSessionCookieRefreshServiceImpl::OnStorageKeyDataCleared(
 
 std::unique_ptr<BoundSessionCookieController>
 BoundSessionCookieRefreshServiceImpl::CreateBoundSessionCookieController(
-    const bound_session_credentials::BoundSessionParams& bound_session_params,
-    const base::flat_set<std::string>& cookie_names) {
+    const bound_session_credentials::BoundSessionParams& bound_session_params) {
   return controller_factory_for_testing_.is_null()
              ? std::make_unique<BoundSessionCookieControllerImpl>(
                    key_service_.get(), storage_partition_,
-                   network_connection_tracker_, bound_session_params,
-                   cookie_names, this)
-             : controller_factory_for_testing_.Run(bound_session_params,
-                                                   cookie_names, this);
+                   network_connection_tracker_, bound_session_params, this)
+             : controller_factory_for_testing_.Run(bound_session_params, this);
 }
 
 void BoundSessionCookieRefreshServiceImpl::InitializeBoundSession(
     const bound_session_credentials::BoundSessionParams& bound_session_params) {
   CHECK(!cookie_controller_);
-  constexpr char k1PSIDTSCookieName[] = "__Secure-1PSIDTS";
-  constexpr char k3PSIDTSCookieName[] = "__Secure-3PSIDTS";
-
-  cookie_controller_ = CreateBoundSessionCookieController(
-      bound_session_params, {k1PSIDTSCookieName, k3PSIDTSCookieName});
+  cookie_controller_ = CreateBoundSessionCookieController(bound_session_params);
   cookie_controller_->Initialize();
   UpdateAllRenderers();
 }
