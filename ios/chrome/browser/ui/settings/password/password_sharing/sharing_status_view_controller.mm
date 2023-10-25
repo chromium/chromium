@@ -34,7 +34,7 @@ const NSInteger kProgressBarCirclesAmount = 20;
 
 // Loaded images size dimensions.
 const CGFloat kProfileImageSize = 60.0;
-const CGFloat kLockSymbolPointSize = 24.0;
+const CGFloat kLockSymbolPointSize = 22.0;
 const CGFloat kFaviconContainerSize = 30.0;
 const CGFloat kFaviconSize = 22.0;
 
@@ -150,12 +150,12 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
   UIView* progressBarView = [self createProgressBarView];
   [animationView insertSubview:progressBarView belowSubview:recipientImageView];
 
+  // Add progress bar circles.
+  [self createProgressBarSubviews];
+
   // Add lock image.
   UIImageView* lockImage = [self createLockImage];
   [progressBarView addSubview:lockImage];
-
-  // Add progress bar circles.
-  [self createProgressBarSubviews];
 
   // Add favicon and its container.
   FaviconContainerView* faviconContainerView =
