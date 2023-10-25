@@ -381,9 +381,8 @@ TEST_F(
    'device_page/power_test.js',
    {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
- // TODO(b/303702729): Re-enable after fixing flakiness.
  [
-   'DISABLED_DevicePagePowerRevamp',
+   'DevicePagePowerRevamp',
    'device_page/power_test.js',
    {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],

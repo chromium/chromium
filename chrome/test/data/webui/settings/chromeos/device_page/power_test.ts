@@ -6,9 +6,8 @@ import 'chrome://os-settings/lazy_load.js';
 
 import {SettingsPowerElement} from 'chrome://os-settings/lazy_load.js';
 import {Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
-import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
+import {addWebUiListener, removeWebUiListener, webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -18,11 +17,22 @@ suite('<settings-power>', () => {
       loadTimeData.getBoolean('isRevampWayfindingEnabled');
   let powerSubpage: SettingsPowerElement;
 
+  /**
+   * Returns a promise that resolves when a WebUI event with the given
+   * `eventName` is received.
+   */
+  function webUiEventToPromise(eventName: string): Promise<void> {
+    return new Promise((resolve) => {
+      const listener = addWebUiListener(eventName, () => {
+        removeWebUiListener(listener);
+        resolve();
+      });
+    });
+  }
+
   async function initSubpage(): Promise<void> {
-    const batteryStatusPromise = new PromiseResolver();
+    const batteryStatusPromise = webUiEventToPromise('battery-status-changed');
     powerSubpage = document.createElement('settings-power');
-    powerSubpage.addWebUiListener(
-        'battery-status-changed', batteryStatusPromise.resolve);
     document.body.appendChild(powerSubpage);
     await flushTasks();
 
