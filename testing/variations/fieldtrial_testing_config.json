@@ -17390,10 +17390,11 @@
             ]
         }
     ],
-    "SpdyHeadersToHttpResponseVerifyCorrectness": [
+    "SpdyHeadersToHttpResponseUseBuilder": [
         {
             "platforms": [
                 "android",
+                "android_webview",
                 "chromeos",
                 "chromeos_lacros",
                 "linux",
@@ -17404,7 +17405,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "SpdyHeadersToHttpResponseVerifyCorrectness"
+                        "SpdyHeadersToHttpResponseUseBuilder"
                     ]
                 }
             ]
