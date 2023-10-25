@@ -322,6 +322,8 @@ void PasswordFactorEditor::OnPasswordConfigured(
     return;
   }
 
+  auth_factor_config_->OnUserHasKnowledgeFactor(*context);
+
   auth_factor_config_->NotifyFactorObserversAfterSuccess(
       {mojom::AuthFactor::kGaiaPassword, mojom::AuthFactor::kLocalPassword},
       auth_token, std::move(context), std::move(callback));

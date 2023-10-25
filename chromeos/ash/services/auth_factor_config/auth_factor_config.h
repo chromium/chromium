@@ -80,6 +80,9 @@ class AuthFactorConfig : public mojom::AuthFactorConfig {
                                          std::unique_ptr<UserContext> context,
                                          base::OnceCallback<void()> callback);
 
+  // Called when user is known to have knowledge factor set up.
+  void OnUserHasKnowledgeFactor(const UserContext& context);
+
  private:
   void ObtainContext(
       const std::string& auth_token,

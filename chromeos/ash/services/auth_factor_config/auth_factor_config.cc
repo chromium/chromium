@@ -80,6 +80,10 @@ void AuthFactorConfig::NotifyFactorObserversAfterFailure(
                      std::move(ignore_param_callback), auth_token));
 }
 
+void AuthFactorConfig::OnUserHasKnowledgeFactor(const UserContext& context) {
+  user_manager::UserDirectoryIntegrityManager(local_state_).ClearPrefs();
+}
+
 void AuthFactorConfig::IsSupported(const std::string& auth_token,
                                    mojom::AuthFactor factor,
                                    base::OnceCallback<void(bool)> callback) {
@@ -401,14 +405,16 @@ void AuthFactorConfig::OnGetAuthFactorsConfiguration(
     std::move(callback).Run(mojom::ConfigureResult::kFatalError);
     return;
   }
+
+  if (has_knowledge_factor) {
+    OnUserHasKnowledgeFactor(*context);
+  }
+
   if (!ash::features::ShouldUseAuthSessionStorage()) {
     const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
     quick_unlock_storage_->SetUserContext(user, std::move(context));
   }
 
-  if (has_knowledge_factor) {
-    user_manager::UserDirectoryIntegrityManager(local_state_).ClearPrefs();
-  }
 
   std::move(callback).Run(mojom::ConfigureResult::kSuccess);
 
