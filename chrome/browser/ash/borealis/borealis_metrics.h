@@ -38,15 +38,27 @@ enum class BorealisUninstallResult {
 enum class BorealisStartupResult {
   kSuccess = 0,
   kCancelled = 1,
-  kMountFailed = 2,
+  // kMountFailed = 2, // No longer used, expanded into kDlc*.
   kDiskImageFailed = 3,
   kStartVmFailed = 4,
   kAwaitBorealisStartupFailed = 5,
   kSyncDiskFailed = 6,
   kRequestWaylandFailed = 7,
   kDisallowed = 8,
+  kDlcCancelled = 9,
+  kDlcOffline = 10,
+  kDlcNeedUpdateError = 11,
+  kDlcNeedRebootError = 12,
+  kDlcNeedSpaceError = 13,
+  kDlcBusyError = 14,
+  kDlcInternalError = 15,
+  kDlcUnsupportedError = 16,
+  kDlcUnknownError = 17,
+  kConciergeUnavailable = 18,
+  kEmptyDiskResponse = 19,
+  kStartVmEmptyResponse = 20,
   // Remember to add new entries to histograms/enums.xml.
-  kMaxValue = kDisallowed,
+  kMaxValue = kStartVmEmptyResponse,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

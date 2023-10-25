@@ -116,7 +116,35 @@ void MountDlc::OnMountDlc(
   if (!install_result.has_value()) {
     std::stringstream ss;
     ss << "Mounting the DLC for Borealis failed: " << install_result.error();
-    Complete(BorealisStartupResult::kMountFailed, ss.str());
+    switch (install_result.error()) {
+      case guest_os::GuestOsDlcInstallation::Error::Cancelled:
+        Complete(BorealisStartupResult::kDlcCancelled, ss.str());
+        return;
+      case guest_os::GuestOsDlcInstallation::Error::Offline:
+        Complete(BorealisStartupResult::kDlcOffline, ss.str());
+        return;
+      case guest_os::GuestOsDlcInstallation::Error::NeedUpdate:
+        Complete(BorealisStartupResult::kDlcNeedUpdateError, ss.str());
+        return;
+      case guest_os::GuestOsDlcInstallation::Error::NeedReboot:
+        Complete(BorealisStartupResult::kDlcNeedRebootError, ss.str());
+        return;
+      case guest_os::GuestOsDlcInstallation::Error::DiskFull:
+        Complete(BorealisStartupResult::kDlcNeedSpaceError, ss.str());
+        return;
+      case guest_os::GuestOsDlcInstallation::Error::Busy:
+        Complete(BorealisStartupResult::kDlcBusyError, ss.str());
+        return;
+      case guest_os::GuestOsDlcInstallation::Error::Internal:
+        Complete(BorealisStartupResult::kDlcInternalError, ss.str());
+        return;
+      case guest_os::GuestOsDlcInstallation::Error::Invalid:
+        Complete(BorealisStartupResult::kDlcUnsupportedError, ss.str());
+        return;
+      case guest_os::GuestOsDlcInstallation::Error::UnknownFailure:
+        Complete(BorealisStartupResult::kDlcUnknownError, ss.str());
+        return;
+    }
   } else {
     Complete(BorealisStartupResult::kSuccess, "");
   }
@@ -135,7 +163,7 @@ void CreateDiskImage::OnConciergeAvailable(BorealisContext* context,
                                            bool is_available) {
   if (!is_available) {
     context->set_disk_path({});
-    Complete(BorealisStartupResult::kDiskImageFailed,
+    Complete(BorealisStartupResult::kConciergeUnavailable,
              "Concierge service is not available");
     return;
   }
@@ -160,7 +188,7 @@ void CreateDiskImage::OnCreateDiskImage(
     absl::optional<vm_tools::concierge::CreateDiskImageResponse> response) {
   if (!response) {
     context->set_disk_path(base::FilePath());
-    Complete(BorealisStartupResult::kDiskImageFailed,
+    Complete(BorealisStartupResult::kEmptyDiskResponse,
              "Failed to create disk image for Borealis: Empty response.");
     return;
   }
@@ -252,7 +280,7 @@ void StartBorealisVm::OnStartBorealisVm(
     BorealisContext* context,
     absl::optional<vm_tools::concierge::StartVmResponse> response) {
   if (!response) {
-    Complete(BorealisStartupResult::kStartVmFailed,
+    Complete(BorealisStartupResult::kStartVmEmptyResponse,
              "Failed to start Borealis VM: Empty response.");
     return;
   }

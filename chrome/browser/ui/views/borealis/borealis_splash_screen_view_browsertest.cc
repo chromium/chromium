@@ -33,7 +33,8 @@ class FakeBorealisContextManager : public BorealisContextManager {
  public:
   void StartBorealis(ResultCallback callback) override {
     std::move(callback).Run(base::unexpected(Described<BorealisStartupResult>(
-        BorealisStartupResult::kMountFailed, "failed on purpose for testing")));
+        BorealisStartupResult::kDiskImageFailed,
+        "failed on purpose for testing")));
   }
 
   bool IsRunning() override { return false; }

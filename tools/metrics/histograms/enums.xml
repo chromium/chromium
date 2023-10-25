@@ -13880,6 +13880,20 @@ Called by update_bad_message_reasons.py.-->
   <int value="6" label="Failed Syncing Disks"/>
   <int value="7" label="Failed starting wayland server"/>
   <int value="8" label="Disallowed"/>
+  <int value="9" label="DLC install was cancelled"/>
+  <int value="10" label="DLC failed because the device is offline"/>
+  <int value="11" label="DLC couldn't find an image at the correct version"/>
+  <int value="12"
+      label="Device has a pending update and needs to be restarted to use
+             Borealis DLC"/>
+  <int value="13" label="Device needs more space to use Borealis DLC"/>
+  <int value="14" label="DLC service is busy"/>
+  <int value="15" label="DLC reported an internal error"/>
+  <int value="16" label="Borealis DLC is not supported"/>
+  <int value="17" label="DLC faced an unknown error"/>
+  <int value="18" label="Concierge was unavailable"/>
+  <int value="19" label="Recieved an empty disk response from Concierge"/>
+  <int value="20" label="Recieved an empty startup response from Concierge"/>
 </enum>
 
 <enum name="BorealisSyncDiskSizeResult">
