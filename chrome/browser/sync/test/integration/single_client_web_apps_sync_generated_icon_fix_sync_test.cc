@@ -20,6 +20,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
+#include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 
 namespace web_app {
@@ -67,8 +68,15 @@ class SingleClientWebAppsSyncGeneratedIconFixSyncTest
 
   void SetUpOnMainThread() override {
     SyncTest::SetUpOnMainThread();
+    ASSERT_TRUE(SetupClients());
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Apps sync is controlled by a dedicated preference on Lacros,
+    // corresponding to the Apps toggle in OS Sync settings.
+    if (base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)) {
+      GetSyncService(0)->GetUserSettings()->SetAppsSyncEnabledByOs(true);
+    }
+#endif
     ASSERT_TRUE(SetupSync());
-
     embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
         [this](const net::test_server::HttpRequest& request)
             -> std::unique_ptr<net::test_server::HttpResponse> {
