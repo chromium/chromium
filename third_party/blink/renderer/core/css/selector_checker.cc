@@ -1768,12 +1768,12 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         break;
       }
 
-      // Recomputing the slot assignment can update cached directionality.
-      // This should already have been done unless this an API call like
-      // Element.matches().
+      // Recomputing the slot assignment can update cached directionality.  In
+      // most cases it's OK for this code to be run when slot assignments are
+      // dirty; however for API calls like Element.matches() we should recalc
+      // them now.
       Document& document = element.GetDocument();
-      if (document.IsSlotAssignmentDirty()) {
-        CHECK_EQ(mode_, kQueryingRules);
+      if (mode_ == kQueryingRules && document.IsSlotAssignmentDirty()) {
         document.GetSlotAssignmentEngine().RecalcSlotAssignments();
       }
 

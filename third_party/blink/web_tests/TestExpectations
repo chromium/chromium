@@ -1494,9 +1494,6 @@ crbug.com/1491198 external/wpt/css/selectors/selectors-4/lang-011.html [ Failure
 crbug.com/1491198 external/wpt/css/selectors/selectors-4/lang-012.html [ Failure ]
 crbug.com/1491198 external/wpt/css/selectors/selectors-4/lang-015.html [ Failure ]
 
-crbug.com/1486351 external/wpt/css/cssom/insert-dir-rule-crash.html [ Crash ]
-crbug.com/1486351 external/wpt/css/cssom/insert-dir-rule-in-iframe-crash.html [ Crash ]
-
 # ====== Style team owned tests to here ======
 
 # Failing WPT html/semantics/* tests. Not all have been investigated.
