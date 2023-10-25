@@ -18,7 +18,7 @@
       <part file="neterror_scaled_resources.grdp" />
       <part file="welcome_scaled_resources.grdp" />
       <part file="version_ui_scaled_resources.grdp" />
-      <if expr="enable_search_engine_choice">
+      <if expr="not is_android">
         <part file="search_engine_choice_scaled_resources.grdp" />
       </if>
 
