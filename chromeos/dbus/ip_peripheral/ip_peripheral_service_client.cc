@@ -188,7 +188,8 @@ class IpPeripheralServiceClientImpl : public IpPeripheralServiceClient {
                   uint8_t uvc_get_request,
                   GetControlCallback callback) override {
     dbus::MethodCall method_call(ip_peripheral::kIpPeripheralServiceInterface,
-                                 ip_peripheral::kGetControlMethod);
+                                 /* ip_peripheral::kGetControlMethod */
+                                 "GetControl");
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(ip);
     writer.AppendArrayOfBytes(guid_le.data(), guid_le.size());
@@ -205,7 +206,8 @@ class IpPeripheralServiceClientImpl : public IpPeripheralServiceClient {
                   const std::vector<uint8_t>& control_setting,
                   SetControlCallback callback) override {
     dbus::MethodCall method_call(ip_peripheral::kIpPeripheralServiceInterface,
-                                 ip_peripheral::kSetControlMethod);
+                                 /* ip_peripheral::kSetControlMethod */
+                                 "SetControl");
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(ip);
     writer.AppendArrayOfBytes(guid_le.data(), guid_le.size());
