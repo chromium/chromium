@@ -7,5 +7,10 @@ syntax = "proto2";
 option optimize_for = LITE_RUNTIME;
 package supervised_user;
 
+import "discover_feed.proto";
+
 // Response for kid-friendly content feed.
-message GetDiscoverFeedResponse {}
+message GetDiscoverFeedResponse {
+  // Unused SearchApiResponseContext = 1;
+  optional DiscoverFeed discover_feed = 2;
+}

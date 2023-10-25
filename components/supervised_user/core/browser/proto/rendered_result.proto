@@ -1,0 +1,17 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+package supervised_user;
+
+message RenderedResult {
+  // Contains the rendered feature. This is stored in a `oneof` result to
+  // provide support for multiple output formats.
+  oneof result {
+    // Populated for xUIKit rendered features.
+    bytes elements_output = 1;
+  }
+}
