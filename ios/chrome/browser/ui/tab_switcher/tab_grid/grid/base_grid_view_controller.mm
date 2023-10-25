@@ -21,8 +21,6 @@
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/commerce/price_card/price_card_data_source.h"
 #import "ios/chrome/browser/ui/commerce/price_card/price_card_item.h"
-#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
-#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_view.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
@@ -124,9 +122,6 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 // The supplementary view registration for the Inactive Tabs preamble header.
 @property(nonatomic, strong) UICollectionViewSupplementaryRegistration*
     inactiveTabsPreambleHeaderRegistration;
-// A view to obscure incognito content when the user isn't authorized to
-// see it.
-@property(nonatomic, strong) IncognitoReauthView* blockingView;
 // The local model backing the collection view.
 @property(nonatomic, strong) NSMutableArray<TabSwitcherItem*>* items;
 // Identifier of the selected item. This value is disregarded if `self.items` is
@@ -880,12 +875,6 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 - (UIContextMenuConfiguration*)collectionView:(UICollectionView*)collectionView
     contextMenuConfigurationForItemAtIndexPath:(NSIndexPath*)indexPath
                                          point:(CGPoint)point {
-  // Don't allow long-press previews when the incognito reauth view is blocking
-  // the content.
-  if (self.contentNeedsAuthentication) {
-    return nil;
-  }
-
   // Context menu shouldn't appear in the selection mode.
   if (_mode == TabGridModeSelection) {
     return nil;
@@ -1211,47 +1200,6 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   base::RecordAction(
       base::UserMetricsAction("TabsSearch.SuggestedActions.SearchOnWeb"));
   [self.suggestedActionsDelegate searchWebForText:self.searchText];
-}
-
-#pragma mark - IncognitoReauthConsumer
-
-- (void)setItemsRequireAuthentication:(BOOL)require {
-  self.contentNeedsAuthentication = require;
-  [self.delegate gridViewController:self
-      contentNeedsAuthenticationChanged:require];
-
-  if (require) {
-    if (!self.blockingView) {
-      self.blockingView = [[IncognitoReauthView alloc] init];
-      self.blockingView.translatesAutoresizingMaskIntoConstraints = NO;
-      self.blockingView.layer.zPosition = FLT_MAX;
-      // No need to show tab switcher button when already in the tab switcher.
-      self.blockingView.tabSwitcherButton.hidden = YES;
-      // Hide the logo.
-      self.blockingView.logoView.hidden = YES;
-
-      [self.blockingView.authenticateButton
-                 addTarget:self.reauthHandler
-                    action:@selector(authenticateIncognitoContent)
-          forControlEvents:UIControlEventTouchUpInside];
-    }
-
-    [self.view addSubview:self.blockingView];
-    self.blockingView.alpha = 1;
-    AddSameConstraints(self.collectionView.frameLayoutGuide, self.blockingView);
-  } else {
-    [UIView animateWithDuration:0.2
-        animations:^{
-          self.blockingView.alpha = 0;
-        }
-        completion:^(BOOL finished) {
-          if (self.contentNeedsAuthentication) {
-            self.blockingView.alpha = 1;
-          } else {
-            [self.blockingView removeFromSuperview];
-          }
-        }];
-  }
 }
 
 #pragma mark - TabCollectionConsumer

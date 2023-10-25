@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_container_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_empty_state_view.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_delegate.h"
@@ -502,7 +503,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 #pragma mark - Public Properties
 
 - (void)setIncognitoTabsViewController:
-    (BaseGridViewController*)incognitoTabsViewController {
+    (IncognitoGridViewController*)incognitoTabsViewController {
   _incognitoTabsViewController = incognitoTabsViewController;
   _incognitoTabsViewController.mode = self.tabGridMode;
   _incognitoTabsViewController.delegate = self;

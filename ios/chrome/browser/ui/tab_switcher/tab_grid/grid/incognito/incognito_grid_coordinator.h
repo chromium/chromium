@@ -14,6 +14,7 @@
 @protocol GridCoordinatorAudience;
 @protocol GridMediatorDelegate;
 @protocol GridToolbarsMutator;
+@class IncognitoGridViewController;
 @class IncognitoGridMediator;
 @protocol TabContextMenuDelegate;
 @class TabGridViewController;
@@ -25,11 +26,9 @@
 @property(nonatomic, readonly, strong)
     GridContainerViewController* gridContainerViewController;
 // The Grid view controller.
-// TODO(crbug.com/1457146): Replace with IncognitoGridViewController when
-// possible.
 // TODO(crbug.com/1457146): Make it private.
 @property(nonatomic, readonly, strong)
-    BaseGridViewController* gridViewController;
+    IncognitoGridViewController* gridViewController;
 // The view controller to displayed when incognito is disabled.
 // TODO(crbug.com/1457146): Make it private.
 @property(nonatomic, readonly, strong) UIViewController* disabledViewController;

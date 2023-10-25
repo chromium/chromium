@@ -9,7 +9,6 @@
 
 #import <set>
 
-#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_theme.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_info_consumer.h"
@@ -21,7 +20,6 @@
 @protocol GridShareableItemsProvider;
 @class LegacyGridTransitionLayout;
 @class BaseGridViewController;
-@protocol IncognitoReauthCommands;
 @protocol PriceCardDataSource;
 @protocol SuggestedActionsDelegate;
 namespace web {
@@ -98,7 +96,6 @@ class WebStateID;
 
 // A view controller that contains a grid of items.
 @interface BaseGridViewController : UIViewController <InactiveTabsInfoConsumer,
-                                                      IncognitoReauthConsumer,
                                                       TabCollectionConsumer>
 // The gridView is accessible to manage the content inset behavior.
 @property(nonatomic, readonly) UIScrollView* gridView;
@@ -116,8 +113,6 @@ class WebStateID;
 // The current search text to use for filtering results when the search mode is
 // active.
 @property(nonatomic, copy) NSString* searchText;
-// Handler for reauth commands.
-@property(nonatomic, weak) id<IncognitoReauthCommands> reauthHandler;
 // Delegate for search results suggested actions.
 @property(nonatomic, weak) id<SuggestedActionsDelegate>
     suggestedActionsDelegate;
@@ -132,9 +127,6 @@ class WebStateID;
 // YES if the selected cell is visible in the grid.
 @property(nonatomic, readonly, getter=isSelectedCellVisible)
     BOOL selectedCellVisible;
-// YES when the current contents are hidden from the user before a successful
-// biometric authentication.
-@property(nonatomic, assign) BOOL contentNeedsAuthentication;
 // Provider of context menu configurations for the tabs in the grid.
 @property(nonatomic, weak) id<TabContextMenuProvider> menuProvider;
 // Provider of shareable state for tabs in the grid.
