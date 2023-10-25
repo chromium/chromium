@@ -1159,20 +1159,6 @@ bool HostProcess::ApplyConfig(const base::Value::Dict& config) {
     return false;
   }
 
-  const std::string* host_secret_hash =
-      config.FindString(kHostSecretHashConfigPath);
-  if (!host_secret_hash) {
-    LOG(ERROR) << "Host config is missing a required path: `"
-               << kHostSecretHashConfigPath << "`";
-    return false;
-  }
-
-  if (!ParsePinHashFromConfig(*host_secret_hash, host_id_, &pin_hash_)) {
-    LOG(ERROR) << "Host config has an invalid value for path: `"
-               << kHostSecretHashConfigPath << "`";
-    return false;
-  }
-
   // Retrieve the service account used for signaling and backend requests.
   const std::string* service_account_email =
       config.FindString(kServiceAccountConfigPath);
@@ -1205,6 +1191,23 @@ bool HostProcess::ApplyConfig(const base::Value::Dict& config) {
   // Check if the host owner's email is Google-internal.
   is_googler_ = base::EndsWith(host_owner_, kGooglerEmailDomain,
                                base::CompareCase::INSENSITIVE_ASCII);
+
+  const std::string* host_secret_hash =
+      config.FindString(kHostSecretHashConfigPath);
+  if (host_secret_hash) {
+    if (!ParsePinHashFromConfig(*host_secret_hash, host_id_, &pin_hash_)) {
+      LOG(ERROR) << "Host config has an invalid value for path: `"
+                 << kHostSecretHashConfigPath << "`";
+      return false;
+    }
+  } else if (is_googler_) {
+    HOST_LOG << "No value store for: " << kHostSecretHashConfigPath << ". PIN "
+             << "authentication is disabled.";
+  } else {
+    LOG(ERROR) << "Host config is missing a required path: `"
+               << kHostSecretHashConfigPath << "`";
+    return false;
+  }
 
   return true;
 }
