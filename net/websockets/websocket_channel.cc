@@ -714,7 +714,7 @@ ChannelState WebSocketChannel::HandleFrameByState(
       DVLOG(1) << "Got Ping of size " << payload.size();
       if (state_ == CONNECTED) {
         auto buffer = base::MakeRefCounted<IOBuffer>(payload.size());
-        memcpy(buffer->data(), payload.data(), payload.size());
+        base::ranges::copy(payload, buffer->data());
         return SendFrameInternal(true, WebSocketFrameHeader::kOpCodePong,
                                  std::move(buffer), payload.size());
       }

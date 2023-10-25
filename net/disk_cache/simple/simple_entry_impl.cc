@@ -481,7 +481,7 @@ int SimpleEntryImpl::WriteData(int stream_index,
     // operations.
     if (buf) {
       op_buf = base::MakeRefCounted<IOBuffer>(buf_len);
-      memcpy(op_buf->data(), buf->data(), buf_len);
+      std::copy(buf->data(), buf->data() + buf_len, op_buf->data());
     }
     op_callback = CompletionOnceCallback();
     ret_value = buf_len;
@@ -1668,7 +1668,8 @@ int SimpleEntryImpl::ReadFromBuffer(net::GrowableIOBuffer* in_buf,
                                     net::IOBuffer* out_buf) {
   DCHECK_GE(buf_len, 0);
 
-  memcpy(out_buf->data(), in_buf->data() + offset, buf_len);
+  std::copy(in_buf->data() + offset, in_buf->data() + offset + buf_len,
+            out_buf->data());
   UpdateDataFromEntryStat(SimpleEntryStat(base::Time::Now(), last_modified_,
                                           data_size_, sparse_data_size_));
   return buf_len;
@@ -1687,7 +1688,7 @@ int SimpleEntryImpl::SetStream0Data(net::IOBuffer* buf,
   int data_size = GetDataSize(0);
   if (offset == 0 && truncate) {
     stream_0_data_->SetCapacity(buf_len);
-    memcpy(stream_0_data_->data(), buf->data(), buf_len);
+    std::copy(buf->data(), buf->data() + buf_len, stream_0_data_->data());
     data_size_[0] = buf_len;
   } else {
     const int buffer_size =
@@ -1696,10 +1697,14 @@ int SimpleEntryImpl::SetStream0Data(net::IOBuffer* buf,
     // If |stream_0_data_| was extended, the extension until offset needs to be
     // zero-filled.
     const int fill_size = offset <= data_size ? 0 : offset - data_size;
-    if (fill_size > 0)
-      memset(stream_0_data_->data() + data_size, 0, fill_size);
-    if (buf)
-      memcpy(stream_0_data_->data() + offset, buf->data(), buf_len);
+    if (fill_size > 0) {
+      std::fill(stream_0_data_->data() + data_size,
+                stream_0_data_->data() + data_size + fill_size, 0);
+    }
+    if (buf) {
+      std::copy(buf->data(), buf->data() + buf_len,
+                stream_0_data_->data() + offset);
+    }
     data_size_[0] = buffer_size;
   }
   RecordHeaderSize(cache_type_, data_size_[0]);
