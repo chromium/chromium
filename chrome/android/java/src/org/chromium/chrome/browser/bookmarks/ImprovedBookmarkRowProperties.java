@@ -67,7 +67,7 @@ public class ImprovedBookmarkRowProperties {
     // This means that the model won't necessarily always be up-to-date. Using skipEquality to
     // push events to the view even if the property is the same.
     public static final WritableObjectPropertyKey<Boolean> SELECTED =
-            new WritableObjectPropertyKey<>(/*skipEquality=*/true);
+            new WritableObjectPropertyKey<>(/* skipEquality= */ true);
     // Not if the row is currently selected, but whether another row in the same list is selected.
     public static final WritableBooleanPropertyKey SELECTION_ACTIVE =
             new WritableBooleanPropertyKey();
@@ -126,6 +126,7 @@ public class ImprovedBookmarkRowProperties {
         FOLDER_START_IMAGE_FOLDER_DRAWABLES,
         FOLDER_CHILD_COUNT
     };
-    public static final PropertyKey[] ALL_KEYS = PropertyModel.concatKeys(
-            BookmarkManagerProperties.ALL_KEYS, IMPROVED_BOOKMARK_ROW_PROPERTIES);
+    public static final PropertyKey[] ALL_KEYS =
+            PropertyModel.concatKeys(
+                    BookmarkManagerProperties.ALL_KEYS, IMPROVED_BOOKMARK_ROW_PROPERTIES);
 }

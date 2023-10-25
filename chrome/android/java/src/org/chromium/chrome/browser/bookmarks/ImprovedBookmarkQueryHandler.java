@@ -30,12 +30,15 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
 
     /**
      * Constructs a handle that operates on the given backend.
+     *
      * @param bookmarkModel The backend that holds the truth of what the bookmark state looks like.
      * @param bookmarkUiPrefs Stores the display prefs for bookmarks.
      * @param shoppingService Supports queries about shopping data.
      */
-    public ImprovedBookmarkQueryHandler(BookmarkModel bookmarkModel,
-            BookmarkUiPrefs bookmarkUiPrefs, ShoppingService shoppingService) {
+    public ImprovedBookmarkQueryHandler(
+            BookmarkModel bookmarkModel,
+            BookmarkUiPrefs bookmarkUiPrefs,
+            ShoppingService shoppingService) {
         mBookmarkModel = bookmarkModel;
         mBookmarkUiPrefs = bookmarkUiPrefs;
         mShoppingService = shoppingService;
@@ -84,7 +87,8 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
         if (sortOrder == BookmarkRowSortOrder.MANUAL) return;
 
         Collections.sort(
-                bookmarkListEntries, (BookmarkListEntry entry1, BookmarkListEntry entry2) -> {
+                bookmarkListEntries,
+                (BookmarkListEntry entry1, BookmarkListEntry entry2) -> {
                     BookmarkItem item1 = entry1.getBookmarkItem();
                     BookmarkItem item2 = entry2.getBookmarkItem();
 
@@ -122,19 +126,21 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
         return 0;
     }
 
-    private void applyPowerFilters(List<BookmarkListEntry> bookmarkListEntries,
+    private void applyPowerFilters(
+            List<BookmarkListEntry> bookmarkListEntries,
             @Nullable Set<PowerBookmarkType> powerFilter) {
         if (powerFilter == null || powerFilter.isEmpty()) return;
 
         // Remove entries from the list if the any filter from powerFilter doesn't match.
-        bookmarkListEntries.removeIf(bookmarkListEntry -> {
-            // Remove bookmarks which aren't price-tracked if the shopping filter is active.
-            if (powerFilter.contains(PowerBookmarkType.SHOPPING)) {
-                if (!isPriceTracked(bookmarkListEntry)) return true;
-            }
+        bookmarkListEntries.removeIf(
+                bookmarkListEntry -> {
+                    // Remove bookmarks which aren't price-tracked if the shopping filter is active.
+                    if (powerFilter.contains(PowerBookmarkType.SHOPPING)) {
+                        if (!isPriceTracked(bookmarkListEntry)) return true;
+                    }
 
-            return false;
-        });
+                    return false;
+                });
     }
 
     private boolean isPriceTracked(BookmarkListEntry bookmarkListEntry) {
@@ -160,9 +166,11 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
             if (bookmarkItem.isFolder()) {
                 collectLeafNodesImpl(childId, bookmarkListEntries);
             } else {
-                bookmarkListEntries.add(BookmarkListEntry.createBookmarkEntry(bookmarkItem,
-                        mBookmarkModel.getPowerBookmarkMeta(childId),
-                        mBookmarkUiPrefs.getBookmarkRowDisplayPref()));
+                bookmarkListEntries.add(
+                        BookmarkListEntry.createBookmarkEntry(
+                                bookmarkItem,
+                                mBookmarkModel.getPowerBookmarkMeta(childId),
+                                mBookmarkUiPrefs.getBookmarkRowDisplayPref()));
             }
         }
     }

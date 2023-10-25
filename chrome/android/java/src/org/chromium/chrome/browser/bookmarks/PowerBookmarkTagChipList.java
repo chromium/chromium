@@ -35,16 +35,15 @@ public class PowerBookmarkTagChipList extends FrameLayout {
     private final ModelList mChipList = new ModelList();
     private final Map<String, Integer> mTagMap = new HashMap<>();
 
-    private BookmarkModelObserver mBookmarkModelObserver = new BookmarkModelObserver() {
-        @Override
-        public void bookmarkModelChanged() {
-            populateChipsForCurrentFolder();
-        }
-    };
+    private BookmarkModelObserver mBookmarkModelObserver =
+            new BookmarkModelObserver() {
+                @Override
+                public void bookmarkModelChanged() {
+                    populateChipsForCurrentFolder();
+                }
+            };
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public PowerBookmarkTagChipList(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -55,16 +54,17 @@ public class PowerBookmarkTagChipList extends FrameLayout {
 
         mChipsCoordinator = new ChipsCoordinator(getContext(), mChipList);
         mChipsCoordinator.setSpaceItemDecoration(
-                getResources().getDimensionPixelSize(
-                        R.dimen.contextual_search_chip_list_chip_spacing),
-                getResources().getDimensionPixelSize(
-                        R.dimen.contextual_search_chip_list_side_padding));
+                getResources()
+                        .getDimensionPixelSize(R.dimen.contextual_search_chip_list_chip_spacing),
+                getResources()
+                        .getDimensionPixelSize(R.dimen.contextual_search_chip_list_side_padding));
         addView(mChipsCoordinator.getView());
     }
 
     /**
      * Initializes the object with the given {@link BookmarkModel} which allows observation of
      * changes the the underlying data.
+     *
      * @param bookmarkModel The {@link BookmarkModel} which manages bookmark data.
      */
     public void init(BookmarkModel bookmarkModel) {
@@ -73,9 +73,10 @@ public class PowerBookmarkTagChipList extends FrameLayout {
     }
 
     /**
-     * Sets the current folder which contains the bookmarks to populate the tag chip list. The
-     * tag chip list is currently populated under the assumption that all the relevant bookmarks
-     * will be direct children of the given folder.
+     * Sets the current folder which contains the bookmarks to populate the tag chip list. The tag
+     * chip list is currently populated under the assumption that all the relevant bookmarks will be
+     * direct children of the given folder.
+     *
      * @param currentFolder The current folder to retrieve child bookmarks from.
      */
     public void setBookmarkFolder(BookmarkId currentFolder) {
@@ -107,7 +108,8 @@ public class PowerBookmarkTagChipList extends FrameLayout {
     void populateChipListFromCurrentTagMap() {
         List<Map.Entry<String, Integer>> entryList = new ArrayList<>(mTagMap.entrySet());
         Collections.sort(
-                entryList, (Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) -> {
+                entryList,
+                (Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) -> {
                     return o2.getValue().compareTo(o1.getValue());
                 });
 

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 

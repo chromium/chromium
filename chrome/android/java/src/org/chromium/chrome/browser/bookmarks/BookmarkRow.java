@@ -41,11 +41,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
-/**
- * Common logic for bookmark and folder rows.
- */
-public abstract class BookmarkRow
-        extends CheckableSelectableItemView<BookmarkId> implements BookmarkUiObserver {
+/** Common logic for bookmark and folder rows. */
+public abstract class BookmarkRow extends CheckableSelectableItemView<BookmarkId>
+        implements BookmarkUiObserver {
     // The start icon view which is shows the favicon and the checkmark.
     protected ImageView mStartIconView;
     // 3-dot menu which displays contextual actions.
@@ -62,6 +60,7 @@ public abstract class BookmarkRow
 
     /** Levels for the background. */
     private final int mDefaultLevel;
+
     private final int mSelectedLevel;
     private boolean mIsAttachedToWindow;
     private PopupMenuShownListener mPopupListener;
@@ -79,14 +78,16 @@ public abstract class BookmarkRow
 
     /**
      * Factory constructor for building the view programmatically.
+     *
      * @param row The BookmarkRow to build.
      * @param context The calling context, usually the parent view.
      * @param isVisualRefreshEnabled Whether to show the visual or compact bookmark row.
      */
     protected static void buildView(
             BookmarkRow row, Context context, boolean isVisualRefreshEnabled) {
-        row.setLayoutParams(new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        row.setLayoutParams(
+                new FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         LayoutInflater.from(context)
                 .inflate(
                         isVisualRefreshEnabled
@@ -123,13 +124,13 @@ public abstract class BookmarkRow
     }
 
     /**
-     * Sets the bookmark ID for this BookmarkRow and provides information about its location
-     * within the list of bookmarks.
+     * Sets the bookmark ID for this BookmarkRow and provides information about its location within
+     * the list of bookmarks.
      *
      * @param bookmarkId The BookmarkId that this BookmarkRow now contains.
-     * @param location   The location of this BookmarkRow.
+     * @param location The location of this BookmarkRow.
      * @param fromFilterView The Bookmark is being displayed in a filter view, determines if the row
-     *         is selectable.
+     *     is selectable.
      * @return The BookmarkItem corresponding to BookmarkId.
      */
     BookmarkItem setBookmarkId(
@@ -139,8 +140,11 @@ public abstract class BookmarkRow
         mFromFilterView = fromFilterView;
         BookmarkItem bookmarkItem = mDelegate.getModel().getBookmarkById(bookmarkId);
         mMoreButton.dismiss();
-        SelectableListUtils.setContentDescriptionContext(getContext(), mMoreButton,
-                bookmarkItem.getTitle(), SelectableListUtils.ContentDescriptionSource.MENU_BUTTON);
+        SelectableListUtils.setContentDescriptionContext(
+                getContext(),
+                mMoreButton,
+                bookmarkItem.getTitle(),
+                SelectableListUtils.ContentDescriptionSource.MENU_BUTTON);
 
         setChecked(isItemSelected());
         updateVisualState();
@@ -178,7 +182,8 @@ public abstract class BookmarkRow
             mMoreButton.setVisibility(bookmarkItem.isEditable() ? VISIBLE : GONE);
             mMoreButton.setClickable(!isSelectionModeActive());
             mMoreButton.setEnabled(mMoreButton.isClickable());
-            mMoreButton.setImportantForAccessibility(mMoreButton.isClickable()
+            mMoreButton.setImportantForAccessibility(
+                    mMoreButton.isClickable()
                             ? IMPORTANT_FOR_ACCESSIBILITY_YES
                             : IMPORTANT_FOR_ACCESSIBILITY_NO);
         }
@@ -224,10 +229,13 @@ public abstract class BookmarkRow
         ModelList listItems = new ModelList();
         if (mBookmarkId.getType() == BookmarkType.READING_LIST) {
             if (bookmarkItem != null) {
-                listItems.add(buildMenuListItem(bookmarkItem.isRead()
-                                ? R.string.reading_list_mark_as_unread
-                                : R.string.reading_list_mark_as_read,
-                        0, 0));
+                listItems.add(
+                        buildMenuListItem(
+                                bookmarkItem.isRead()
+                                        ? R.string.reading_list_mark_as_unread
+                                        : R.string.reading_list_mark_as_read,
+                                0,
+                                0));
             }
         }
         addListItems(listItems, canMove);
@@ -235,7 +243,8 @@ public abstract class BookmarkRow
         if (mDelegate.getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
             listItems.add(buildMenuListItem(R.string.bookmark_show_in_folder, 0, 0));
         } else if (mDelegate.getCurrentUiMode() == BookmarkUiMode.FOLDER
-                && mLocation != Location.SOLO && canReorder) {
+                && mLocation != Location.SOLO
+                && canReorder) {
             // Only add move up / move down buttons if there is more than 1 item
             if (mLocation != Location.TOP) {
                 listItems.add(buildMenuListItem(R.string.menu_item_move_up, 0, 0));
@@ -257,56 +266,71 @@ public abstract class BookmarkRow
 
     private ListMenu getListMenu() {
         ModelList listItems = getItems();
-        ListMenu.Delegate delegate = item -> {
-            int textId = item.get(ListMenuItemProperties.TITLE_ID);
-            if (textId == R.string.bookmark_item_select) {
-                setChecked(mDelegate.getSelectionDelegate().toggleSelectionForItem(mBookmarkId));
-                RecordUserAction.record("Android.BookmarkPage.SelectFromMenu");
-                if (mBookmarkId.getType() == BookmarkType.READING_LIST) {
-                    RecordUserAction.record("Android.BookmarkPage.ReadingList.SelectFromMenu");
-                }
-            } else if (textId == R.string.bookmark_item_edit) {
-                BookmarkItem bookmarkItem = mDelegate.getModel().getBookmarkById(mBookmarkId);
-                if (bookmarkItem.isFolder()) {
-                    BookmarkAddEditFolderActivity.startEditFolderActivity(
-                            getContext(), bookmarkItem.getId());
-                } else {
-                    BookmarkUtils.startEditActivity(getContext(), bookmarkItem.getId());
-                }
-            } else if (textId == R.string.reading_list_mark_as_read) {
-                BookmarkItem bookmarkItem = mDelegate.getModel().getBookmarkById(mBookmarkId);
-                mDelegate.getModel().setReadStatusForReadingList(
-                        bookmarkItem.getUrl(), /*read=*/true);
-                RecordUserAction.record("Android.BookmarkPage.ReadingList.MarkAsRead");
-            } else if (textId == R.string.reading_list_mark_as_unread) {
-                BookmarkItem bookmarkItem = mDelegate.getModel().getBookmarkById(mBookmarkId);
-                mDelegate.getModel().setReadStatusForReadingList(
-                        bookmarkItem.getUrl(), /*read=*/false);
-                RecordUserAction.record("Android.BookmarkPage.ReadingList.MarkAsUnread");
-            } else if (textId == R.string.bookmark_item_move) {
-                BookmarkFolderSelectActivity.startFolderSelectActivity(getContext(), mBookmarkId);
-                RecordUserAction.record("MobileBookmarkManagerMoveToFolder");
-            } else if (textId == R.string.bookmark_item_delete) {
-                if (mDelegate != null && mDelegate.getModel() != null) {
-                    mDelegate.getModel().deleteBookmarks(mBookmarkId);
-                    RecordUserAction.record("Android.BookmarkPage.RemoveItem");
-                    if (mBookmarkId.getType() == BookmarkType.READING_LIST) {
-                        RecordUserAction.record("Android.BookmarkPage.ReadingList.RemoveItem");
+        ListMenu.Delegate delegate =
+                item -> {
+                    int textId = item.get(ListMenuItemProperties.TITLE_ID);
+                    if (textId == R.string.bookmark_item_select) {
+                        setChecked(
+                                mDelegate
+                                        .getSelectionDelegate()
+                                        .toggleSelectionForItem(mBookmarkId));
+                        RecordUserAction.record("Android.BookmarkPage.SelectFromMenu");
+                        if (mBookmarkId.getType() == BookmarkType.READING_LIST) {
+                            RecordUserAction.record(
+                                    "Android.BookmarkPage.ReadingList.SelectFromMenu");
+                        }
+                    } else if (textId == R.string.bookmark_item_edit) {
+                        BookmarkItem bookmarkItem =
+                                mDelegate.getModel().getBookmarkById(mBookmarkId);
+                        if (bookmarkItem.isFolder()) {
+                            BookmarkAddEditFolderActivity.startEditFolderActivity(
+                                    getContext(), bookmarkItem.getId());
+                        } else {
+                            BookmarkUtils.startEditActivity(getContext(), bookmarkItem.getId());
+                        }
+                    } else if (textId == R.string.reading_list_mark_as_read) {
+                        BookmarkItem bookmarkItem =
+                                mDelegate.getModel().getBookmarkById(mBookmarkId);
+                        mDelegate
+                                .getModel()
+                                .setReadStatusForReadingList(
+                                        bookmarkItem.getUrl(), /* read= */ true);
+                        RecordUserAction.record("Android.BookmarkPage.ReadingList.MarkAsRead");
+                    } else if (textId == R.string.reading_list_mark_as_unread) {
+                        BookmarkItem bookmarkItem =
+                                mDelegate.getModel().getBookmarkById(mBookmarkId);
+                        mDelegate
+                                .getModel()
+                                .setReadStatusForReadingList(
+                                        bookmarkItem.getUrl(), /* read= */ false);
+                        RecordUserAction.record("Android.BookmarkPage.ReadingList.MarkAsUnread");
+                    } else if (textId == R.string.bookmark_item_move) {
+                        BookmarkFolderSelectActivity.startFolderSelectActivity(
+                                getContext(), mBookmarkId);
+                        RecordUserAction.record("MobileBookmarkManagerMoveToFolder");
+                    } else if (textId == R.string.bookmark_item_delete) {
+                        if (mDelegate != null && mDelegate.getModel() != null) {
+                            mDelegate.getModel().deleteBookmarks(mBookmarkId);
+                            RecordUserAction.record("Android.BookmarkPage.RemoveItem");
+                            if (mBookmarkId.getType() == BookmarkType.READING_LIST) {
+                                RecordUserAction.record(
+                                        "Android.BookmarkPage.ReadingList.RemoveItem");
+                            }
+                        }
+                    } else if (textId == R.string.bookmark_show_in_folder) {
+                        BookmarkItem bookmarkItem =
+                                mDelegate.getModel().getBookmarkById(mBookmarkId);
+                        mDelegate.openFolder(bookmarkItem.getParentId());
+                        mDelegate.highlightBookmark(mBookmarkId);
+                        RecordUserAction.record("MobileBookmarkManagerShowInFolder");
+                    } else if (textId == R.string.menu_item_move_up) {
+                        mDelegate.moveUpOne(mBookmarkId);
+                        RecordUserAction.record("MobileBookmarkManagerMoveUp");
+                    } else if (textId == R.string.menu_item_move_down) {
+                        mDelegate.moveDownOne(mBookmarkId);
+                        RecordUserAction.record("MobileBookmarkManagerMoveDown");
                     }
-                }
-            } else if (textId == R.string.bookmark_show_in_folder) {
-                BookmarkItem bookmarkItem = mDelegate.getModel().getBookmarkById(mBookmarkId);
-                mDelegate.openFolder(bookmarkItem.getParentId());
-                mDelegate.highlightBookmark(mBookmarkId);
-                RecordUserAction.record("MobileBookmarkManagerShowInFolder");
-            } else if (textId == R.string.menu_item_move_up) {
-                mDelegate.moveUpOne(mBookmarkId);
-                RecordUserAction.record("MobileBookmarkManagerMoveUp");
-            } else if (textId == R.string.menu_item_move_down) {
-                mDelegate.moveDownOne(mBookmarkId);
-                RecordUserAction.record("MobileBookmarkManagerMoveDown");
-            }
-        };
+                };
         return new BasicListMenu(getContext(), listItems, delegate);
     }
 

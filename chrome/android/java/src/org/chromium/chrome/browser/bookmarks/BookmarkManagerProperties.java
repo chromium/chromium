@@ -32,7 +32,15 @@ class BookmarkManagerProperties {
     static final WritableObjectPropertyKey<Callback<BookmarkId>> OPEN_FOLDER =
             new WritableObjectPropertyKey<>();
 
-    static final PropertyKey[] ALL_KEYS = {BOOKMARK_PROMO_HEADER, PROMO_TOP_MARGIN_RES,
-            BOOKMARK_LIST_ENTRY, BOOKMARK_ID, LOCATION, IS_FROM_FILTER_VIEW, IS_HIGHLIGHTED,
-            CLEAR_HIGHLIGHT, OPEN_FOLDER};
+    static final PropertyKey[] ALL_KEYS = {
+        BOOKMARK_PROMO_HEADER,
+        PROMO_TOP_MARGIN_RES,
+        BOOKMARK_LIST_ENTRY,
+        BOOKMARK_ID,
+        LOCATION,
+        IS_FROM_FILTER_VIEW,
+        IS_HIGHLIGHTED,
+        CLEAR_HIGHLIGHT,
+        OPEN_FOLDER
+    };
 }

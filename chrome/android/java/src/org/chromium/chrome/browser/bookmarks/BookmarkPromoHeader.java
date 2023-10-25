@@ -34,12 +34,14 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 
 /**
- * Class that manages all the logic and UI behind the signin promo header in the bookmark
- * content UI. The header is shown only on certain situations, (e.g., not signed in).
+ * Class that manages all the logic and UI behind the signin promo header in the bookmark content
+ * UI. The header is shown only on certain situations, (e.g., not signed in).
  */
-public class BookmarkPromoHeader implements SyncService.SyncStateChangedListener,
-                                            SignInStateObserver, ProfileDataCache.Observer,
-                                            AccountsChangeObserver {
+public class BookmarkPromoHeader
+        implements SyncService.SyncStateChangedListener,
+                SignInStateObserver,
+                ProfileDataCache.Observer,
+                AccountsChangeObserver {
     // TODO(kkimlabs): Figure out the optimal number based on UMA data.
     private static final int MAX_SIGNIN_AND_SYNC_PROMO_SHOW_COUNT = 10;
 
@@ -91,9 +93,7 @@ public class BookmarkPromoHeader implements SyncService.SyncStateChangedListener
         updatePromoState();
     }
 
-    /**
-     * Clean ups the class. Must be called once done using this class.
-     */
+    /** Clean ups the class. Must be called once done using this class. */
     void destroy() {
         if (mSyncService != null) mSyncService.removeSyncStateChangedListener(this);
 
@@ -115,8 +115,8 @@ public class BookmarkPromoHeader implements SyncService.SyncStateChangedListener
 
     /** Returns personalized signin promo header {@link View}. */
     View createPersonalizedSigninAndSyncPromoHolder(ViewGroup parent) {
-        return LayoutInflater.from(mContext).inflate(
-                R.layout.sync_promo_view_bookmarks, parent, false);
+        return LayoutInflater.from(mContext)
+                .inflate(R.layout.sync_promo_view_bookmarks, parent, false);
     }
 
     /** Returns sync promo header {@link View}. */
@@ -124,24 +124,18 @@ public class BookmarkPromoHeader implements SyncService.SyncStateChangedListener
         return LegacySyncPromoView.create(parent, SigninAccessPoint.BOOKMARK_MANAGER);
     }
 
-    /**
-     * Sets up the sync promo view.
-     */
+    /** Sets up the sync promo view. */
     void setUpSyncPromoView(PersonalizedSigninPromoView view) {
         mSyncPromoController.setUpSyncPromoView(
                 mProfileDataCache, view, this::setPersonalizedSigninPromoDeclined);
     }
 
-    /**
-     * Detaches the previously configured {@link PersonalizedSigninPromoView}.
-     */
+    /** Detaches the previously configured {@link PersonalizedSigninPromoView}. */
     void detachPersonalizePromoView() {
         if (mSyncPromoController != null) mSyncPromoController.detach();
     }
 
-    /**
-     * Saves that the personalized signin promo was declined and updates the UI.
-     */
+    /** Saves that the personalized signin promo was declined and updates the UI. */
     private void setPersonalizedSigninPromoDeclined() {
         mPromoState = calculatePromoState();
         triggerPromoUpdate();
@@ -178,9 +172,9 @@ public class BookmarkPromoHeader implements SyncService.SyncStateChangedListener
         }
 
         boolean impressionLimitNotReached =
-                ChromeSharedPreferences.getInstance().readInt(
-                        ChromePreferenceKeys.SIGNIN_AND_SYNC_PROMO_SHOW_COUNT)
-                < MAX_SIGNIN_AND_SYNC_PROMO_SHOW_COUNT;
+                ChromeSharedPreferences.getInstance()
+                                .readInt(ChromePreferenceKeys.SIGNIN_AND_SYNC_PROMO_SHOW_COUNT)
+                        < MAX_SIGNIN_AND_SYNC_PROMO_SHOW_COUNT;
         if (mSyncService.getSelectedTypes().isEmpty() && impressionLimitNotReached) {
             return SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE;
         }
@@ -194,15 +188,15 @@ public class BookmarkPromoHeader implements SyncService.SyncStateChangedListener
         // PROMO_SYNC state and it's impression counts is not tracked by SyncPromoController.
         final boolean hasSyncPromoStateChangedtoShown =
                 (mPromoState == SyncPromoState.NO_PROMO
-                        || mPromoState == SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE)
-                && (newState == SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE
-                        || newState == SyncPromoState.PROMO_FOR_SIGNED_IN_STATE);
+                                || mPromoState == SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE)
+                        && (newState == SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE
+                                || newState == SyncPromoState.PROMO_FOR_SIGNED_IN_STATE);
         if (mSyncPromoController != null && hasSyncPromoStateChangedtoShown) {
             mSyncPromoController.increasePromoShowCount();
         }
         if (newState == SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE) {
-            ChromeSharedPreferences.getInstance().incrementInt(
-                    ChromePreferenceKeys.SIGNIN_AND_SYNC_PROMO_SHOW_COUNT);
+            ChromeSharedPreferences.getInstance()
+                    .incrementInt(ChromePreferenceKeys.SIGNIN_AND_SYNC_PROMO_SHOW_COUNT);
         }
         mPromoState = newState;
     }
@@ -246,6 +240,7 @@ public class BookmarkPromoHeader implements SyncService.SyncStateChangedListener
 
     /**
      * Forces the promo state to a particular value for testing purposes.
+     *
      * @param promoState The promo state to which the header will be set to.
      */
     public static void forcePromoStateForTesting(@Nullable @SyncPromoState Integer promoState) {

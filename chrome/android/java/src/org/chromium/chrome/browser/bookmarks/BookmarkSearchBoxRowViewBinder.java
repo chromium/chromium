@@ -22,6 +22,7 @@ class BookmarkSearchBoxRowViewBinder {
     /** Allows raising a flag that will automatically lower when exiting scoped context. */
     private static class AutoFlag {
         public boolean isActive;
+
         public ScopedNoException raiseFlag() {
             return new ScopedNoException();
         }
@@ -76,12 +77,14 @@ class BookmarkSearchBoxRowViewBinder {
             boolean isVisible = model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY);
             ((View) shoppingChip.getParent()).setVisibility(isVisible ? View.VISIBLE : View.GONE);
         } else if (key == BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TOGGLE_CALLBACK) {
-            Callback<Boolean> onToggle = wrapCallback(
-                    model, BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TOGGLE_CALLBACK);
-            shoppingChip.setOnClickListener((View v) -> {
-                onToggle.onResult(
-                        !model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_SELECTED));
-            });
+            Callback<Boolean> onToggle =
+                    wrapCallback(
+                            model, BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TOGGLE_CALLBACK);
+            shoppingChip.setOnClickListener(
+                    (View v) -> {
+                        onToggle.onResult(
+                                !model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_SELECTED));
+                    });
         } else if (key == BookmarkSearchBoxRowProperties.SHOPPING_CHIP_SELECTED) {
             shoppingChip.setSelected(
                     model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_SELECTED));
@@ -90,7 +93,7 @@ class BookmarkSearchBoxRowViewBinder {
                     model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_START_ICON_RES);
             // TODO(https://crbug.com/1466583): Use tintWithTextColor because the drawable tint
             // is broken.
-            shoppingChip.setIcon(res, /*tintWithTextColor*/ true);
+            shoppingChip.setIcon(res, /* tintWithTextColor= */ true);
         } else if (key == BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TEXT_RES) {
             final @StringRes int res =
                     model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TEXT_RES);

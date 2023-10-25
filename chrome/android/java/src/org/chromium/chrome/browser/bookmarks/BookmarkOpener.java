@@ -180,7 +180,9 @@ public class BookmarkOpener {
     private void recordTimeSinceAdded(BookmarkItem item, String histogramPrefix) {
         RecordHistogram.recordCustomTimesHistogram(
                 histogramPrefix + bookmarkTypeToHistogramSuffix(item.getId().getType()),
-                System.currentTimeMillis() - item.getDateAdded(), 1, DateUtils.DAY_IN_MILLIS * 30,
+                System.currentTimeMillis() - item.getDateAdded(),
+                1,
+                DateUtils.DAY_IN_MILLIS * 30,
                 50);
     }
 }

@@ -14,8 +14,8 @@ import org.chromium.components.favicon.LargeIconBridge;
 import java.util.List;
 
 /**
- * Interface used by UI components in the main bookmarks UI to broadcast UI change notifications
- * and get bookmark data model.
+ * Interface used by UI components in the main bookmarks UI to broadcast UI change notifications and
+ * get bookmark data model.
  */
 public interface BookmarkDelegate {
     /**
@@ -27,6 +27,7 @@ public interface BookmarkDelegate {
 
     /**
      * Shows bookmarks contained in the specified folder.
+     *
      * @param folder Parent folder that contains bookmarks to show as its children.
      */
     void openFolder(BookmarkId folder);
@@ -49,30 +50,26 @@ public interface BookmarkDelegate {
 
     /**
      * Closes the Bookmark UI (if on phone) and opens the given bookmark.
+     *
      * @param bookmark Bookmark to open.
      */
     void openBookmark(BookmarkId bookmark);
 
     /**
      * Closes the Bookmark UI (if on phone) and opens the given list of bookmarks in new tabs.
+     *
      * @param bookmarks Bookmarks to open.
      * @param incognito Whether the bookmarks should be opened in an incognito tab.
      */
     void openBookmarksInNewTabs(List<BookmarkId> bookmark, boolean incognito);
 
-    /**
-     * Shows the search UI.
-     */
+    /** Shows the search UI. */
     void openSearchUi();
 
-    /**
-     * Add an observer to bookmark UI changes.
-     */
+    /** Add an observer to bookmark UI changes. */
     void addUiObserver(BookmarkUiObserver observer);
 
-    /**
-     * Remove an observer of bookmark UI changes.
-     */
+    /** Remove an observer of bookmark UI changes. */
     void removeUiObserver(BookmarkUiObserver observer);
 
     /**
@@ -81,8 +78,8 @@ public interface BookmarkDelegate {
     BookmarkModel getModel();
 
     /**
-     * Returns current mode of bookmark main UI. If no mode is stored,
-     * {@link BookmarkUiMode.LOADING} is returned.
+     * Returns current mode of bookmark main UI. If no mode is stored, {@link
+     * BookmarkUiMode.LOADING} is returned.
      */
     @BookmarkUiMode
     int getCurrentUiMode();
@@ -111,9 +108,7 @@ public interface BookmarkDelegate {
      */
     void moveUpOne(BookmarkId bookmarkId);
 
-    /**
-     * Notified when the menu is opened for a bookmark row displayed in the UI.
-     */
+    /** Notified when the menu is opened for a bookmark row displayed in the UI. */
     void onBookmarkItemMenuOpened();
 
     /**

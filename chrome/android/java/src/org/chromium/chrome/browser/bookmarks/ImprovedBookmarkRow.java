@@ -35,8 +35,7 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
      * The base duration of the settling animation of the sheet. 218 ms is a spec for material
      * design (this is the minimum time a user is guaranteed to pay attention to something).
      */
-    @VisibleForTesting
-    static final int BASE_ANIMATION_DURATION_MS = 218;
+    @VisibleForTesting static final int BASE_ANIMATION_DURATION_MS = 218;
 
     private ViewGroup mContainer;
     // The start image view which is shows the favicon.
@@ -64,13 +63,15 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
 
     /**
      * Factory constructor for building the view programmatically.
+     *
      * @param context The calling context, usually the parent view.
      * @param isVisual Whether the visual row should be used.
      */
     public static ImprovedBookmarkRow buildView(Context context, boolean isVisual) {
         ImprovedBookmarkRow row = new ImprovedBookmarkRow(context, null);
-        row.setLayoutParams(new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        row.setLayoutParams(
+                new FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         LayoutInflater.from(context)
                 .inflate(
@@ -100,9 +101,13 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
         assert mStartImageView != null;
 
         mStartImageView.setOutlineProvider(
-                new RoundedCornerOutlineProvider(getContext().getResources().getDimensionPixelSize(
-                        isVisual ? R.dimen.improved_bookmark_row_outer_corner_radius
-                                 : R.dimen.improved_bookmark_icon_radius)));
+                new RoundedCornerOutlineProvider(
+                        getContext()
+                                .getResources()
+                                .getDimensionPixelSize(
+                                        isVisual
+                                                ? R.dimen.improved_bookmark_row_outer_corner_radius
+                                                : R.dimen.improved_bookmark_icon_radius)));
         mStartImageView.setClipToOutline(true);
     }
 
@@ -127,7 +132,10 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
 
     void setTitle(String title) {
         mTitleView.setText(title);
-        SelectableListUtils.setContentDescriptionContext(getContext(), mMoreButton, title,
+        SelectableListUtils.setContentDescriptionContext(
+                getContext(),
+                mMoreButton,
+                title,
                 SelectableListUtils.ContentDescriptionSource.MENU_BUTTON);
     }
 
@@ -198,7 +206,8 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
         mSelectionEnabled = selectionEnabled;
         mMoreButton.setClickable(!selectionEnabled);
         mMoreButton.setEnabled(!selectionEnabled);
-        mMoreButton.setImportantForAccessibility(!selectionEnabled
+        mMoreButton.setImportantForAccessibility(
+                !selectionEnabled
                         ? IMPORTANT_FOR_ACCESSIBILITY_YES
                         : IMPORTANT_FOR_ACCESSIBILITY_NO);
         updateView();

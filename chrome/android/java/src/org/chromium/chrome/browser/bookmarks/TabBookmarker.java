@@ -34,17 +34,20 @@ public class TabBookmarker {
 
     /**
      * Constructor.
+     *
      * @param activity The current activity.
      * @param bookmarkModelSupplier Supplier of the bookmark bridge for the current profile.
      * @param bottomSheetControllerSupplier Supplier of the {@link BottomSheetController} for this
-     *         activity.
+     *     activity.
      * @param snackbarManagerSupplier Supplier of the {@link SnackbarManager}.
      * @param isCustomTab Whether this is a custom tab activity.
      */
-    public TabBookmarker(@NonNull Activity activity,
+    public TabBookmarker(
+            @NonNull Activity activity,
             @NonNull ObservableSupplier<BookmarkModel> bookmarkModelSupplier,
             @NonNull Supplier<BottomSheetController> bottomSheetControllerSupplier,
-            @NonNull Supplier<SnackbarManager> snackbarManagerSupplier, boolean isCustomTab) {
+            @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
+            boolean isCustomTab) {
         mActivity = activity;
         mBookmarkModelSupplier = bookmarkModelSupplier;
         mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
@@ -59,7 +62,7 @@ public class TabBookmarker {
      * @param tabToBookmark The tab that needs to be bookmarked.
      */
     public void addOrEditBookmark(final Tab tabToBookmark) {
-        addOrEditBookmark(tabToBookmark, BookmarkType.NORMAL, /*fromExplicitTrackUi=*/false);
+        addOrEditBookmark(tabToBookmark, BookmarkType.NORMAL, /* fromExplicitTrackUi= */ false);
     }
 
     /**
@@ -69,24 +72,29 @@ public class TabBookmarker {
      * @param tabToAdd The tab that to add to the Reading List.
      */
     public void addToReadingList(final Tab tabToAdd) {
-        addOrEditBookmark(tabToAdd, BookmarkType.READING_LIST, /*fromExplicitTrackUi=*/false);
+        addOrEditBookmark(tabToAdd, BookmarkType.READING_LIST, /* fromExplicitTrackUi= */ false);
     }
 
     /**
      * Starts price tracking for the current tab. If the page is already being price tracked, the
      * edit price tracking flow will start.
+     *
      * @param currentTab The tab being currently shown.
      */
     public void startOrModifyPriceTracking(Tab currentTab) {
         BookmarkId bookmarkId = mBookmarkModelSupplier.get().getUserBookmarkIdForTab(currentTab);
         if (bookmarkId == null) {
-            addOrEditBookmark(currentTab, BookmarkType.NORMAL, /* fromExplicitTrackUi=*/true);
+            addOrEditBookmark(currentTab, BookmarkType.NORMAL, /* fromExplicitTrackUi= */ true);
         } else {
             // In the case where the bookmark exists, re-show the save flow with price-tracking
             // enabled.
-            BookmarkUtils.showSaveFlow(mActivity, mBottomSheetControllerSupplier.get(),
-                    /*fromExplicitTrackUi=*/true, bookmarkId, /*wasBookmarkMoved=*/false,
-                    /*isNewBookmark=*/false);
+            BookmarkUtils.showSaveFlow(
+                    mActivity,
+                    mBottomSheetControllerSupplier.get(),
+                    /* fromExplicitTrackUi= */ true,
+                    bookmarkId,
+                    /* wasBookmarkMoved= */ false,
+                    /* isNewBookmark= */ false);
         }
     }
 
@@ -103,41 +111,63 @@ public class TabBookmarker {
             return;
         }
 
-        bookmarkModel.finishLoadingBookmarkModel(() -> {
-            // Gives up the bookmarking if the tab is being destroyed.
-            if (tabToBookmark.isClosing() || !tabToBookmark.isInitialized()
-                    || mBottomSheetControllerSupplier.get() == null
-                    || mSnackbarManagerSupplier.get() == null) {
-                return;
-            }
+        bookmarkModel.finishLoadingBookmarkModel(
+                () -> {
+                    // Gives up the bookmarking if the tab is being destroyed.
+                    if (tabToBookmark.isClosing()
+                            || !tabToBookmark.isInitialized()
+                            || mBottomSheetControllerSupplier.get() == null
+                            || mSnackbarManagerSupplier.get() == null) {
+                        return;
+                    }
 
-            BookmarkId bookmarkId = bookmarkModel.getUserBookmarkIdForTab(tabToBookmark);
-            boolean isNewBookmark = bookmarkId == null;
-            if (ReadingListUtils.maybeTypeSwapAndShowSaveFlow(mActivity,
-                        mBottomSheetControllerSupplier.get(), bookmarkModel, bookmarkId,
-                        bookmarkType)) {
-                return;
-            }
+                    BookmarkId bookmarkId = bookmarkModel.getUserBookmarkIdForTab(tabToBookmark);
+                    boolean isNewBookmark = bookmarkId == null;
+                    if (ReadingListUtils.maybeTypeSwapAndShowSaveFlow(
+                            mActivity,
+                            mBottomSheetControllerSupplier.get(),
+                            bookmarkModel,
+                            bookmarkId,
+                            bookmarkType)) {
+                        return;
+                    }
 
-            BookmarkItem currentBookmarkItem =
-                    bookmarkId == null ? null : bookmarkModel.getBookmarkById(bookmarkId);
-            onBookmarkModelLoaded(tabToBookmark, currentBookmarkItem, bookmarkModel, bookmarkType,
-                    fromExplicitTrackUi, isNewBookmark);
-        });
+                    BookmarkItem currentBookmarkItem =
+                            bookmarkId == null ? null : bookmarkModel.getBookmarkById(bookmarkId);
+                    onBookmarkModelLoaded(
+                            tabToBookmark,
+                            currentBookmarkItem,
+                            bookmarkModel,
+                            bookmarkType,
+                            fromExplicitTrackUi,
+                            isNewBookmark);
+                });
     }
 
-    private void onBookmarkModelLoaded(final Tab tabToBookmark,
-            @Nullable final BookmarkItem currentBookmarkItem, final BookmarkModel bookmarkModel,
-            @BookmarkType int bookmarkType, boolean fromExplicitTrackUi, boolean isNewBookmark) {
-        BookmarkUtils.addOrEditBookmark(currentBookmarkItem, bookmarkModel, tabToBookmark,
-                mSnackbarManagerSupplier.get(), mBottomSheetControllerSupplier.get(), mActivity,
-                mIsCustomTab, bookmarkType, (newBookmarkId) -> {
+    private void onBookmarkModelLoaded(
+            final Tab tabToBookmark,
+            @Nullable final BookmarkItem currentBookmarkItem,
+            final BookmarkModel bookmarkModel,
+            @BookmarkType int bookmarkType,
+            boolean fromExplicitTrackUi,
+            boolean isNewBookmark) {
+        BookmarkUtils.addOrEditBookmark(
+                currentBookmarkItem,
+                bookmarkModel,
+                tabToBookmark,
+                mSnackbarManagerSupplier.get(),
+                mBottomSheetControllerSupplier.get(),
+                mActivity,
+                mIsCustomTab,
+                bookmarkType,
+                (newBookmarkId) -> {
                     BookmarkId currentBookmarkId =
                             (currentBookmarkItem == null) ? null : currentBookmarkItem.getId();
                     // Add offline page for a new bookmark.
                     if (newBookmarkId != null && !newBookmarkId.equals(currentBookmarkId)) {
                         OfflinePageUtils.saveBookmarkOffline(newBookmarkId, tabToBookmark);
                     }
-                }, fromExplicitTrackUi);
+                },
+                fromExplicitTrackUi);
     }
 }

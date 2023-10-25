@@ -42,53 +42,61 @@ public class BookmarkAddNewFolderCoordinator {
      * created under "other bookmarks".
      */
     public void show(BookmarkId parent) {
-        View customView = LayoutInflater.from(mContext).inflate(
-                R.layout.bookmark_add_new_folder_input_layout, null);
+        View customView =
+                LayoutInflater.from(mContext)
+                        .inflate(R.layout.bookmark_add_new_folder_input_layout, null);
         BookmarkTextInputLayout folderTitle = customView.findViewById(R.id.folder_title);
 
-        ModalDialogProperties.Controller dialogController = new ModalDialogProperties.Controller() {
-            @Override
-            public void onClick(PropertyModel model, int buttonType) {
-                if (buttonType == ModalDialogProperties.ButtonType.POSITIVE
-                        && !folderTitle.validate()) {
-                    folderTitle.requestFocus();
-                    return;
-                }
+        ModalDialogProperties.Controller dialogController =
+                new ModalDialogProperties.Controller() {
+                    @Override
+                    public void onClick(PropertyModel model, int buttonType) {
+                        if (buttonType == ModalDialogProperties.ButtonType.POSITIVE
+                                && !folderTitle.validate()) {
+                            folderTitle.requestFocus();
+                            return;
+                        }
 
-                final @DialogDismissalCause int cause;
-                if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
-                    addFolder(parent, folderTitle.getTrimmedText());
-                    cause = DialogDismissalCause.POSITIVE_BUTTON_CLICKED;
-                } else {
-                    cause = DialogDismissalCause.NEGATIVE_BUTTON_CLICKED;
-                }
+                        final @DialogDismissalCause int cause;
+                        if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
+                            addFolder(parent, folderTitle.getTrimmedText());
+                            cause = DialogDismissalCause.POSITIVE_BUTTON_CLICKED;
+                        } else {
+                            cause = DialogDismissalCause.NEGATIVE_BUTTON_CLICKED;
+                        }
 
-                mModalDialogManager.dismissDialog(mModel, cause);
-            }
+                        mModalDialogManager.dismissDialog(mModel, cause);
+                    }
 
-            @Override
-            public void onDismiss(PropertyModel model, int dismissalCause) {}
-        };
+                    @Override
+                    public void onDismiss(PropertyModel model, int dismissalCause) {}
+                };
 
         Resources res = mContext.getResources();
-        mModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                         .with(ModalDialogProperties.CONTROLLER, dialogController)
-                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                                 res.getString(R.string.app_banner_add))
-                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
-                                 res.getString(R.string.cancel))
-                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
-                         .with(ModalDialogProperties.BUTTON_STYLES,
-                                 ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
-                         .with(ModalDialogProperties.CUSTOM_VIEW, customView)
-                         .build();
+        mModel =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.CONTROLLER, dialogController)
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                res.getString(R.string.app_banner_add))
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                res.getString(R.string.cancel))
+                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                        .with(
+                                ModalDialogProperties.BUTTON_STYLES,
+                                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
+                        .with(ModalDialogProperties.CUSTOM_VIEW, customView)
+                        .build();
         mModalDialogManager.showDialog(mModel, ModalDialogType.APP);
     }
 
     private void addFolder(BookmarkId parent, String title) {
-        mBookmarkModel.addFolder(parent.equals(mBookmarkModel.getRootFolderId())
+        mBookmarkModel.addFolder(
+                parent.equals(mBookmarkModel.getRootFolderId())
                         ? mBookmarkModel.getOtherFolderId()
                         : parent,
-                0, title);
+                0,
+                title);
     }
 }

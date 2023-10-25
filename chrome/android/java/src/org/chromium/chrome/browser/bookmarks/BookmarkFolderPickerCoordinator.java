@@ -47,9 +47,13 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
 
     private final SimpleRecyclerViewAdapter mAdapter = new SimpleRecyclerViewAdapter(mModelList);
 
-    public BookmarkFolderPickerCoordinator(Context context, BookmarkModel bookmarkModel,
-            BookmarkImageFetcher bookmarkImageFetcher, List<BookmarkId> bookmarkIds,
-            Runnable finishRunnable, BookmarkAddNewFolderCoordinator addNewFolderCoordinator,
+    public BookmarkFolderPickerCoordinator(
+            Context context,
+            BookmarkModel bookmarkModel,
+            BookmarkImageFetcher bookmarkImageFetcher,
+            List<BookmarkId> bookmarkIds,
+            Runnable finishRunnable,
+            BookmarkAddNewFolderCoordinator addNewFolderCoordinator,
             BookmarkUiPrefs bookmarkUiPrefs,
             ImprovedBookmarkRowCoordinator improvedBookmarkRowCoordinator,
             ShoppingService shoppingService) {
@@ -61,32 +65,44 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
         mRecyclerView.setLayoutManager(
                 new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
         mRecyclerView.setAdapter(mAdapter);
-        mAdapter.registerType(BookmarkFolderPickerMediator.FOLDER_ROW, this::buildFolderRow,
+        mAdapter.registerType(
+                BookmarkFolderPickerMediator.FOLDER_ROW,
+                this::buildFolderRow,
                 ImprovedBookmarkRowViewBinder::bind);
 
         PropertyModel model = new PropertyModel(BookmarkFolderPickerProperties.ALL_KEYS);
         PropertyModelChangeProcessor.create(model, mView, BookmarkFolderPickerViewBinder::bind);
 
-        mMediator = new BookmarkFolderPickerMediator(context, bookmarkModel, bookmarkImageFetcher,
-                bookmarkIds, finishRunnable,
-                new BookmarkUiPrefs(ChromeSharedPreferences.getInstance()), model, mModelList,
-                addNewFolderCoordinator, improvedBookmarkRowCoordinator, shoppingService);
+        mMediator =
+                new BookmarkFolderPickerMediator(
+                        context,
+                        bookmarkModel,
+                        bookmarkImageFetcher,
+                        bookmarkIds,
+                        finishRunnable,
+                        new BookmarkUiPrefs(ChromeSharedPreferences.getInstance()),
+                        model,
+                        mModelList,
+                        addNewFolderCoordinator,
+                        improvedBookmarkRowCoordinator,
+                        shoppingService);
 
         FadingShadowView shadow = (FadingShadowView) mView.findViewById(R.id.shadow);
         shadow.init(mContext.getColor(R.color.toolbar_shadow_color), FadingShadow.POSITION_TOP);
-        mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-            }
+        mRecyclerView.setOnScrollListener(
+                new RecyclerView.OnScrollListener() {
+                    @Override
+                    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                        super.onScrollStateChanged(recyclerView, newState);
+                    }
 
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                shadow.setVisibility(
-                        mRecyclerView.canScrollVertically(-1) ? View.VISIBLE : View.GONE);
-            }
-        });
+                    @Override
+                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                        super.onScrolled(recyclerView, dx, dy);
+                        shadow.setVisibility(
+                                mRecyclerView.canScrollVertically(-1) ? View.VISIBLE : View.GONE);
+                    }
+                });
 
         // Back presses are always handled.
         mBackPressStateSupplier.set(true);
@@ -127,8 +143,11 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
     // Building rows for the recycler view.
 
     View buildFolderRow(ViewGroup parent) {
-        ImprovedBookmarkRow row = ImprovedBookmarkRow.buildView(parent.getContext(),
-                mBookmarkUiPrefs.getBookmarkRowDisplayPref() == BookmarkRowDisplayPref.VISUAL);
+        ImprovedBookmarkRow row =
+                ImprovedBookmarkRow.buildView(
+                        parent.getContext(),
+                        mBookmarkUiPrefs.getBookmarkRowDisplayPref()
+                                == BookmarkRowDisplayPref.VISUAL);
         return row;
     }
 

@@ -55,9 +55,15 @@ public class ImprovedBookmarkSaveFlowProperties {
     public static final WritableObjectPropertyKey<CompoundButton.OnCheckedChangeListener>
             PRICE_TRACKING_SWITCH_LISTENER = new WritableObjectPropertyKey<>();
 
-    private static final PropertyKey[] NEW_KEYS = {BOOKMARK_ROW_CLICK_LISTENER, BOOKMARK_ROW_ICON,
-            FOLDER_TEXT, PRICE_TRACKING_VISIBLE, PRICE_TRACKING_ENABLED,
-            PRICE_TRACKING_SWITCH_CHECKED, PRICE_TRACKING_SWITCH_LISTENER};
+    private static final PropertyKey[] NEW_KEYS = {
+        BOOKMARK_ROW_CLICK_LISTENER,
+        BOOKMARK_ROW_ICON,
+        FOLDER_TEXT,
+        PRICE_TRACKING_VISIBLE,
+        PRICE_TRACKING_ENABLED,
+        PRICE_TRACKING_SWITCH_CHECKED,
+        PRICE_TRACKING_SWITCH_LISTENER
+    };
     public static final PropertyKey[] ALL_KEYS =
             PropertyModel.concatKeys(BookmarkSaveFlowProperties.ALL_KEYS, NEW_KEYS);
 }

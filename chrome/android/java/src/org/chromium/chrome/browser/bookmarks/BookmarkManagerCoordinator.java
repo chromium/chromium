@@ -62,16 +62,17 @@ public class BookmarkManagerCoordinator
     private static final int FAVICON_MAX_CACHE_SIZE_BYTES =
             10 * ConversionUtils.BYTES_PER_MEGABYTE; // 10MB
 
-    private final SelectionDelegate<BookmarkId> mSelectionDelegate = new SelectionDelegate<>() {
-        @Override
-        public boolean toggleSelectionForItem(BookmarkId bookmark) {
-            if (mBookmarkModel.getBookmarkById(bookmark) != null
-                    && !mBookmarkModel.getBookmarkById(bookmark).isEditable()) {
-                return false;
-            }
-            return super.toggleSelectionForItem(bookmark);
-        }
-    };
+    private final SelectionDelegate<BookmarkId> mSelectionDelegate =
+            new SelectionDelegate<>() {
+                @Override
+                public boolean toggleSelectionForItem(BookmarkId bookmark) {
+                    if (mBookmarkModel.getBookmarkById(bookmark) != null
+                            && !mBookmarkModel.getBookmarkById(bookmark).isEditable()) {
+                        return false;
+                    }
+                    return super.toggleSelectionForItem(bookmark);
+                }
+            };
 
     private final class DragAndCancelAdapter extends DragReorderableRecyclerViewAdapter {
         DragAndCancelAdapter(Context context, ModelList modelList) {
@@ -107,6 +108,7 @@ public class BookmarkManagerCoordinator
     /**
      * Creates an instance of {@link BookmarkManagerCoordinator}. It also initializes resources,
      * bookmark models and jni bridges.
+     *
      * @param context The current {@link Context} used to obtain resources or inflate views.
      * @param openBookmarkComponentName The component to use when opening a bookmark.
      * @param isDialogUi Whether the main bookmarks UI will be shown in a dialog, not a NativePage.
@@ -115,13 +117,20 @@ public class BookmarkManagerCoordinator
      * @param profile The profile which the manager is running in.
      * @param bookmarkUiPrefs Manages prefs for bookmarks ui.
      */
-    public BookmarkManagerCoordinator(Context context, ComponentName openBookmarkComponentName,
-            boolean isDialogUi, boolean isIncognito, SnackbarManager snackbarManager,
-            Profile profile, BookmarkUiPrefs bookmarkUiPrefs) {
+    public BookmarkManagerCoordinator(
+            Context context,
+            ComponentName openBookmarkComponentName,
+            boolean isDialogUi,
+            boolean isIncognito,
+            SnackbarManager snackbarManager,
+            Profile profile,
+            BookmarkUiPrefs bookmarkUiPrefs) {
         mProfile = profile;
         mImageFetcher =
-                ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
-                        profile.getProfileKey(), GlobalDiscardableReferencePool.getReferencePool());
+                ImageFetcherFactory.createImageFetcher(
+                        ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
+                        profile.getProfileKey(),
+                        GlobalDiscardableReferencePool.getReferencePool());
         mSnackbarManager = snackbarManager;
 
         mMainView = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.bookmark_main, null);
@@ -165,10 +174,20 @@ public class BookmarkManagerCoordinator
         // Using OneshotSupplier as an alternative to a 2-step initialization process.
         OneshotSupplierImpl<BookmarkDelegate> bookmarkDelegateSupplier =
                 new OneshotSupplierImpl<>();
-        mBookmarkToolbarCoordinator = new BookmarkToolbarCoordinator(context, mSelectableListLayout,
-                mSelectionDelegate, /*searchDelegate=*/this, dragReorderableRecyclerViewAdapter,
-                isDialogUi, bookmarkDelegateSupplier, mBookmarkModel, mBookmarkOpener,
-                mBookmarkUiPrefs, mModalDialogManager, this::onEndSearch);
+        mBookmarkToolbarCoordinator =
+                new BookmarkToolbarCoordinator(
+                        context,
+                        mSelectableListLayout,
+                        mSelectionDelegate,
+                        /* searchDelegate= */ this,
+                        dragReorderableRecyclerViewAdapter,
+                        isDialogUi,
+                        bookmarkDelegateSupplier,
+                        mBookmarkModel,
+                        mBookmarkOpener,
+                        mBookmarkUiPrefs,
+                        mModalDialogManager,
+                        this::onEndSearch);
         mSelectableListLayout.configureWideDisplayStyle();
 
         LargeIconBridge largeIconBridge = new LargeIconBridge(mProfile);
@@ -192,47 +211,74 @@ public class BookmarkManagerCoordinator
                 new BookmarkUndoController(context, mBookmarkModel, snackbarManager);
         Consumer<OnScrollListener> onScrollListenerConsumer =
                 onScrollListener -> mRecyclerView.addOnScrollListener(onScrollListener);
-        mMediator = new BookmarkManagerMediator(context, mBookmarkModel, mBookmarkOpener,
-                mSelectableListLayout, mSelectionDelegate, mRecyclerView,
-                dragReorderableRecyclerViewAdapter, largeIconBridge, isDialogUi, isIncognito,
-                mBackPressStateSupplier, mProfile, bookmarkUndoController, modelList,
-                mBookmarkUiPrefs, this::hideKeyboard, bookmarkImageFetcher,
-                ShoppingServiceFactory.getForProfile(mProfile), mSnackbarManager,
-                onScrollListenerConsumer);
+        mMediator =
+                new BookmarkManagerMediator(
+                        context,
+                        mBookmarkModel,
+                        mBookmarkOpener,
+                        mSelectableListLayout,
+                        mSelectionDelegate,
+                        mRecyclerView,
+                        dragReorderableRecyclerViewAdapter,
+                        largeIconBridge,
+                        isDialogUi,
+                        isIncognito,
+                        mBackPressStateSupplier,
+                        mProfile,
+                        bookmarkUndoController,
+                        modelList,
+                        mBookmarkUiPrefs,
+                        this::hideKeyboard,
+                        bookmarkImageFetcher,
+                        ShoppingServiceFactory.getForProfile(mProfile),
+                        mSnackbarManager,
+                        onScrollListenerConsumer);
         mPromoHeaderManager = mMediator.getPromoHeaderManager();
 
-        bookmarkDelegateSupplier.set(/*bookmarkDelegate=*/mMediator);
+        bookmarkDelegateSupplier.set(/* bookmarkDelegate= */ mMediator);
 
         mMainView.addOnAttachStateChangeListener(this);
 
-        dragReorderableRecyclerViewAdapter.registerType(ViewType.PERSONALIZED_SIGNIN_PROMO,
+        dragReorderableRecyclerViewAdapter.registerType(
+                ViewType.PERSONALIZED_SIGNIN_PROMO,
                 this::buildPersonalizedPromoView,
                 BookmarkManagerViewBinder::bindPersonalizedPromoView);
-        dragReorderableRecyclerViewAdapter.registerType(ViewType.PERSONALIZED_SYNC_PROMO,
+        dragReorderableRecyclerViewAdapter.registerType(
+                ViewType.PERSONALIZED_SYNC_PROMO,
                 this::buildPersonalizedPromoView,
                 BookmarkManagerViewBinder::bindPersonalizedPromoView);
-        dragReorderableRecyclerViewAdapter.registerType(ViewType.SYNC_PROMO,
-                this::buildLegacyPromoView, BookmarkManagerViewBinder::bindLegacyPromoView);
-        dragReorderableRecyclerViewAdapter.registerType(ViewType.SECTION_HEADER,
+        dragReorderableRecyclerViewAdapter.registerType(
+                ViewType.SYNC_PROMO,
+                this::buildLegacyPromoView,
+                BookmarkManagerViewBinder::bindLegacyPromoView);
+        dragReorderableRecyclerViewAdapter.registerType(
+                ViewType.SECTION_HEADER,
                 BookmarkManagerCoordinator::buildSectionHeaderView,
                 BookmarkManagerViewBinder::bindSectionHeaderView);
-        dragReorderableRecyclerViewAdapter.registerDraggableType(ViewType.FOLDER,
+        dragReorderableRecyclerViewAdapter.registerDraggableType(
+                ViewType.FOLDER,
                 this::buildAndInitBookmarkFolderView,
                 BookmarkManagerViewBinder::bindBookmarkFolderView,
                 BookmarkManagerViewBinder::bindDraggableViewHolder,
                 mMediator.getDraggabilityProvider());
-        dragReorderableRecyclerViewAdapter.registerDraggableType(ViewType.BOOKMARK,
-                this::buildAndInitBookmarkItemRow, BookmarkManagerViewBinder::bindBookmarkItemView,
+        dragReorderableRecyclerViewAdapter.registerDraggableType(
+                ViewType.BOOKMARK,
+                this::buildAndInitBookmarkItemRow,
+                BookmarkManagerViewBinder::bindBookmarkItemView,
                 BookmarkManagerViewBinder::bindDraggableViewHolder,
                 mMediator.getDraggabilityProvider());
-        dragReorderableRecyclerViewAdapter.registerDraggableType(ViewType.SHOPPING_POWER_BOOKMARK,
-                this::buildAndInitShoppingItemView, BookmarkManagerViewBinder::bindShoppingItemView,
+        dragReorderableRecyclerViewAdapter.registerDraggableType(
+                ViewType.SHOPPING_POWER_BOOKMARK,
+                this::buildAndInitShoppingItemView,
+                BookmarkManagerViewBinder::bindShoppingItemView,
                 BookmarkManagerViewBinder::bindDraggableViewHolder,
                 mMediator.getDraggabilityProvider());
-        dragReorderableRecyclerViewAdapter.registerType(ViewType.DIVIDER,
+        dragReorderableRecyclerViewAdapter.registerType(
+                ViewType.DIVIDER,
                 BookmarkManagerCoordinator::buildDividerView,
                 BookmarkManagerViewBinder::bindDividerView);
-        dragReorderableRecyclerViewAdapter.registerType(ViewType.SHOPPING_FILTER,
+        dragReorderableRecyclerViewAdapter.registerType(
+                ViewType.SHOPPING_FILTER,
                 BookmarkManagerCoordinator::buildShoppingFilterView,
                 BookmarkManagerViewBinder::bindShoppingFilterView);
         dragReorderableRecyclerViewAdapter.registerDraggableType(
@@ -247,8 +293,10 @@ public class BookmarkManagerCoordinator
                 ImprovedBookmarkRowViewBinder::bind,
                 (viewHolder, itemTouchHelper) -> {},
                 mMediator.getDraggabilityProvider());
-        dragReorderableRecyclerViewAdapter.registerType(ViewType.SEARCH_BOX,
-                this::buildSearchBoxRow, BookmarkSearchBoxRowViewBinder.createViewBinder());
+        dragReorderableRecyclerViewAdapter.registerType(
+                ViewType.SEARCH_BOX,
+                this::buildSearchBoxRow,
+                BookmarkSearchBoxRowViewBinder.createViewBinder());
 
         RecordUserAction.record("MobileBookmarkManagerOpen");
         if (!isDialogUi) {
@@ -258,9 +306,7 @@ public class BookmarkManagerCoordinator
 
     // Public API implementation.
 
-    /**
-     * Destroys and cleans up itself. This must be called after done using this class.
-     */
+    /** Destroys and cleans up itself. This must be called after done using this class. */
     public void onDestroyed() {
         RecordUserAction.record("MobileBookmarkManagerClose");
         mMainView.removeOnAttachStateChangeListener(this);
@@ -273,9 +319,7 @@ public class BookmarkManagerCoordinator
         return mMainView;
     }
 
-    /**
-     * Sets the listener that reacts upon the change of the UI state of bookmark manager.
-     */
+    /** Sets the listener that reacts upon the change of the UI state of bookmark manager. */
     // TODO(crbug.com/1418859): Create abstraction between BookmarkManager & BasicNativePage.
     public void setBasicNativePage(BasicNativePage nativePage) {
         mMediator.setBasicNativePage(nativePage);
@@ -285,7 +329,9 @@ public class BookmarkManagerCoordinator
      * Updates UI based on the new URL. If the bookmark model is not loaded yet, cache the url and
      * it will be picked up later when the model is loaded. This method is supposed to align with
      * {@link BookmarkPage#updateForUrl(String)}
+     *
      * <p>
+     *
      * @param url The url to navigate to.
      */
     public void updateForUrl(String url) {
@@ -294,6 +340,7 @@ public class BookmarkManagerCoordinator
 
     /**
      * Called when the user presses the back key. This is only going to be called on Phone.
+     *
      * @return True if manager handles this event, false if it decides to ignore.
      */
     public boolean onBackPressed() {
@@ -345,9 +392,11 @@ public class BookmarkManagerCoordinator
 
     private int computeCacheMaxSize() {
         ActivityManager activityManager =
-                ((ActivityManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.ACTIVITY_SERVICE));
-        return Math.min(activityManager.getMemoryClass() / 4 * ConversionUtils.BYTES_PER_MEGABYTE,
+                ((ActivityManager)
+                        ContextUtils.getApplicationContext()
+                                .getSystemService(Context.ACTIVITY_SERVICE));
+        return Math.min(
+                activityManager.getMemoryClass() / 4 * ConversionUtils.BYTES_PER_MEGABYTE,
                 FAVICON_MAX_CACHE_SIZE_BYTES);
     }
 
@@ -366,20 +415,25 @@ public class BookmarkManagerCoordinator
     }
 
     private static BookmarkFolderRow buildBookmarkFolderView(ViewGroup parent) {
-        BookmarkFolderRow bookmarkFolderRow = BookmarkFolderRow.buildView(
-                parent.getContext(), BookmarkFeatures.isLegacyBookmarksVisualRefreshEnabled());
+        BookmarkFolderRow bookmarkFolderRow =
+                BookmarkFolderRow.buildView(
+                        parent.getContext(),
+                        BookmarkFeatures.isLegacyBookmarksVisualRefreshEnabled());
         return bookmarkFolderRow;
     }
 
     static @VisibleForTesting BookmarkItemRow buildBookmarkItemView(ViewGroup parent) {
-        BookmarkItemRow bookmarkItemRow = BookmarkItemRow.buildView(
-                parent.getContext(), BookmarkFeatures.isLegacyBookmarksVisualRefreshEnabled());
+        BookmarkItemRow bookmarkItemRow =
+                BookmarkItemRow.buildView(
+                        parent.getContext(),
+                        BookmarkFeatures.isLegacyBookmarksVisualRefreshEnabled());
         return bookmarkItemRow;
     }
 
     static @VisibleForTesting PowerBookmarkShoppingItemRow buildShoppingItemView(ViewGroup parent) {
         PowerBookmarkShoppingItemRow powerBookmarkShoppingItemRow =
-                PowerBookmarkShoppingItemRow.buildView(parent.getContext(),
+                PowerBookmarkShoppingItemRow.buildView(
+                        parent.getContext(),
                         BookmarkFeatures.isLegacyBookmarksVisualRefreshEnabled());
         return powerBookmarkShoppingItemRow;
     }

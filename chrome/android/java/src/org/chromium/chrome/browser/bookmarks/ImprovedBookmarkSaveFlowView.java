@@ -57,9 +57,13 @@ public class ImprovedBookmarkSaveFlowView extends FrameLayout {
 
     void setFolderText(FolderText folderText) {
         SpannableString ss = new SpannableString(folderText.getDisplayText());
-        ForegroundColorSpan fcs = new ForegroundColorSpan(
-                SemanticColorUtils.getDefaultTextColorAccent1(getContext()));
-        ss.setSpan(fcs, folderText.getFolderTitleStartIndex(), folderText.getFolderTitleEndIndex(),
+        ForegroundColorSpan fcs =
+                new ForegroundColorSpan(
+                        SemanticColorUtils.getDefaultTextColorAccent1(getContext()));
+        ss.setSpan(
+                fcs,
+                folderText.getFolderTitleStartIndex(),
+                folderText.getFolderTitleEndIndex(),
                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         // mBookmarkSubtitleView.setMovementMethod(LinkMovementMethod.getInstance());
         mBookmarkSubtitleView.setText(ss);

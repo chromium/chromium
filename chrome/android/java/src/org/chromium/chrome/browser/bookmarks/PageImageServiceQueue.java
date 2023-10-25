@@ -23,8 +23,7 @@ import java.util.Queue;
 /** Class which encapsulates making/queuing requests to {@link PageImageService}. */
 public class PageImageServiceQueue {
     // Max number of parallel requests we send to the page image service.
-    @VisibleForTesting
-    static final int DEFAULT_MAX_FETCH_REQUESTS = 30;
+    @VisibleForTesting static final int DEFAULT_MAX_FETCH_REQUESTS = 30;
 
     // Cache the results for repeated queries to avoid extra calls through the JNI/network.
     private final Map<GURL, GURL> mSalientImageUrlCache = new HashMap<>();

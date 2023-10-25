@@ -26,15 +26,18 @@ public class BookmarkMetrics {
     /** Report a sort option was used in the bookmarks manager. */
     public static void reportBookmarkManagerSortChanged(
             @BookmarkRowSortOrder int bookmarkRowSortOrder) {
-        RecordHistogram.recordEnumeratedHistogram("Bookmarks.MobileBookmarkManager.SortOptionUsed",
-                bookmarkRowSortOrder, BookmarkRowSortOrder.COUNT);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Bookmarks.MobileBookmarkManager.SortOptionUsed",
+                bookmarkRowSortOrder,
+                BookmarkRowSortOrder.COUNT);
     }
 
     /** Report a visuals option was used in the bookmarks manager. */
     public static void reportBookmarkManagerDisplayPrefChanged(
             @BookmarkRowDisplayPref int bookmarkRowDisplayPref) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Bookmarks.MobileBookmarkManager.DisplayOptionUsed", bookmarkRowDisplayPref,
+                "Bookmarks.MobileBookmarkManager.DisplayOptionUsed",
+                bookmarkRowDisplayPref,
                 BookmarkRowDisplayPref.COUNT);
     }
 
