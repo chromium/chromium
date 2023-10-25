@@ -22,18 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="Discover.Search.SearchStatus"
-    enum="LocalSearchServiceResponseStatus" expires_after="2022-01-08">
-  <owner>callistus@google.com</owner>
-  <owner>showoff-eng@google.com</owner>
-  <summary>
-    Records the search status when searching with the Local Search Service in
-    the Discover (internally &quot;Showoff&quot;) app. This is logged once per
-    user search and will count the number of searches while the index is still
-    empty, successful searches, etc.
-  </summary>
-</histogram>
-
 <histogram name="Discover.SearchConcept.ReadStatus"
     enum="HelpAppSearchConceptReadStatus" expires_after="2023-12-10">
   <owner>chenjih@google.com</owner>
