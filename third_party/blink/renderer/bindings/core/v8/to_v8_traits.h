@@ -450,16 +450,24 @@ template <typename ValueIDLType, typename ContainerType>
     v8::Local<v8::Value> v8_value;
     if (!ToV8Traits<ValueIDLType>::ToV8(script_state, iter->second)
              .ToLocal(&v8_value)) {
-      return v8::MaybeLocal<v8::Value>();
+      return {};
     }
     bool is_property_created;
     if (!object
              ->CreateDataProperty(context, V8AtomicString(isolate, iter->first),
                                   v8_value)
-             .To(&is_property_created) ||
-        !is_property_created) {
-      return v8::Local<v8::Value>();
+             .To(&is_property_created)) {
+      return {};
     }
+    // `!is_property_created` at this point means that the property wasn't
+    // created although v8::Object::CreateDataProperty has succeeded. ---
+    // it must not happen because the object has just been created newly, so
+    // there must be no existing property with the same property name.
+    //
+    // Note that we must not return v8::Nothing because CreateDataProperty
+    // didn't throw (the convention is that v8::Nothing comes with an
+    // exception).
+    CHECK(is_property_created);
   }
   return object;
 }
