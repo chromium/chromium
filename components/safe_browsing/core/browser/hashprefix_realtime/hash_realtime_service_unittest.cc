@@ -361,7 +361,8 @@ class HashRealTimeServiceTest : public PlatformTest {
       int expected_network_result,
       const absl::optional<std::string>& expected_network_result_suffix,
       HashRealTimeService::OperationResult expected_operation_result,
-      absl::optional<bool> expected_found_unmatched_full_hashes) {
+      absl::optional<bool> expected_found_unmatched_full_hashes,
+      absl::optional<bool> expected_ohttp_client_destructed_early) {
     histogram_tester_->ExpectUniqueSample(
         /*name=*/"SafeBrowsing.HPRT.Request.CountOfPrefixes",
         /*sample=*/expected_prefix_count,
@@ -372,6 +373,19 @@ class HashRealTimeServiceTest : public PlatformTest {
         /*name=*/"SafeBrowsing.HPRT.Network.Result",
         /*sample=*/expected_network_result,
         /*expected_bucket_count=*/1);
+    if (expected_network_result == net::ERR_FAILED &&
+        expected_ohttp_client_destructed_early.has_value()) {
+      histogram_tester_->ExpectUniqueSample(
+          /*name=*/
+          "SafeBrowsing.HPRT.FailedNetResultIsFromEarlyOhttpClientDestruct",
+          /*sample=*/expected_ohttp_client_destructed_early.value(),
+          /*expected_bucket_count=*/1);
+    } else {
+      histogram_tester_->ExpectTotalCount(
+          /*name=*/
+          "SafeBrowsing.HPRT.FailedNetResultIsFromEarlyOhttpClientDestruct",
+          /*expected_count=*/0);
+    }
     if (expected_network_result_suffix.has_value()) {
       histogram_tester_->ExpectUniqueSample(
           /*name=*/"SafeBrowsing.HPRT.Network." +
@@ -527,7 +541,8 @@ class HashRealTimeServiceTest : public PlatformTest {
         /*expected_operation_result=*/
         HashRealTimeService::OperationResult::kSuccess,
         /*expected_found_unmatched_full_hashes=*/
-        expected_found_unmatched_full_hashes);
+        expected_found_unmatched_full_hashes,
+        /*expected_ohttp_client_destructed_early=*/false);
     CheckPostSuccessfulRequestMetrics(/*made_network_request=*/true,
                                       expected_threat_info_size);
     ResetMetrics();
@@ -595,7 +610,8 @@ class HashRealTimeServiceTest : public PlatformTest {
         /*expected_network_result_suffix=*/expected_network_result_suffix,
         /*expected_operation_result=*/
         expected_operation_result,
-        /*expected_found_unmatched_full_hashes=*/absl::nullopt);
+        /*expected_found_unmatched_full_hashes=*/absl::nullopt,
+        /*expected_ohttp_client_destructed_early=*/false);
     CheckNoPostSuccessfulRequestMetrics();
     if (expected_backoff_error_reason.has_value()) {
       histogram_tester_->ExpectUniqueSample(
@@ -1164,6 +1180,28 @@ TEST_F(HashRealTimeServiceTest, TestLookup_DuplicateFullHashDetailsInResponse) {
       /*expected_relay_url=*/kTestRelayUrl);
 }
 
+TEST_F(HashRealTimeServiceTest, TestLookupFailure_OhttpClientDestructedEarly) {
+  GURL url = GURL("https://example.test");
+  // Set up request and kick it off, but don't wait for the response.
+  auto request = std::make_unique<V5::SearchHashesRequest>();
+  for (const auto& hash_prefix : UrlToHashPrefixesAsSet(url)) {
+    request->add_hash_prefixes(hash_prefix);
+  }
+  std::string expected_url = GetExpectedRequestUrl(request);
+  SetUpLookupResponse(/*request_url=*/expected_url,
+                      /*full_hashes=*/{});
+  base::MockCallback<HPRTLookupResponseCallback> response_callback;
+  service_->StartLookup(url, is_source_lookup_mechanism_experiment_,
+                        response_callback.Get(),
+                        base::SequencedTaskRunner::GetCurrentDefault());
+  // Trigger destructing OHTTP client before it has completed.
+  service_->ohttp_client_receivers_.Clear();
+  histogram_tester_->ExpectUniqueSample(
+      /*name=*/
+      "SafeBrowsing.HPRT.FailedNetResultIsFromEarlyOhttpClientDestruct",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+}
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_NetError) {
   GURL url = GURL("https://example.test");
   RunRequestFailureTest(
@@ -1931,7 +1969,8 @@ class HashRealTimeServiceDirectFetchTest : public HashRealTimeServiceTest {
         /*expected_network_result_suffix=*/absl::nullopt,
         /*expected_operation_result=*/
         expected_operation_result,
-        /*expected_found_unmatched_full_hashes=*/absl::nullopt);
+        /*expected_found_unmatched_full_hashes=*/absl::nullopt,
+        /*expected_ohttp_client_destructed_early=*/absl::nullopt);
     CheckEnteringBackoffMetric(
         /*expected_network_result=*/expected_enter_backoff
             ? net_error

@@ -83,7 +83,8 @@ class ObliviousHttpClient : public network::mojom::ObliviousHttpClient {
       base::OnceCallback<void(const absl::optional<std::string>&,
                               int,
                               int,
-                              scoped_refptr<net::HttpResponseHeaders>)>;
+                              scoped_refptr<net::HttpResponseHeaders>,
+                              bool)>;
 
   explicit ObliviousHttpClient(OnCompletedCallback callback)
       : callback_(std::move(callback)) {}
@@ -91,7 +92,8 @@ class ObliviousHttpClient : public network::mojom::ObliviousHttpClient {
   ~ObliviousHttpClient() override {
     if (!called_) {
       std::move(callback_).Run(absl::nullopt, net::ERR_FAILED,
-                               /*response_code=*/0, /*headers=*/nullptr);
+                               /*response_code=*/0, /*headers=*/nullptr,
+                               /*ohttp_client_destructed_early=*/true);
     }
   }
 
@@ -133,7 +135,8 @@ class ObliviousHttpClient : public network::mojom::ObliviousHttpClient {
         ("SafeBrowsing.HPRT.Network." + histogram_suffix).c_str(), net_error,
         response_code);
     std::move(callback_).Run(response_body, net_error, response_code,
-                             response_headers);
+                             response_headers,
+                             /*ohttp_client_destructed_early=*/false);
   }
 
  private:
@@ -453,7 +456,8 @@ void HashRealTimeService::OnOhttpComplete(
     const absl::optional<std::string>& response_body,
     int net_error,
     int response_code,
-    scoped_refptr<net::HttpResponseHeaders> headers) {
+    scoped_refptr<net::HttpResponseHeaders> headers,
+    bool ohttp_client_destructed_early) {
   ohttp_key_service_->NotifyLookupResponse(ohttp_key, response_code, headers);
 
   auto response_body_ptr =
@@ -463,7 +467,7 @@ void HashRealTimeService::OnOhttpComplete(
       request_start_time, std::move(response_callback_task_runner),
       std::move(response_callback), locally_cached_results_threat_type,
       std::move(response_body_ptr), net_error, response_code,
-      webui_delegate_token);
+      webui_delegate_token, ohttp_client_destructed_early);
 }
 
 void HashRealTimeService::OnDirectURLLoaderComplete(
@@ -492,7 +496,7 @@ void HashRealTimeService::OnDirectURLLoaderComplete(
       request_start_time, std::move(response_callback_task_runner),
       std::move(response_callback), locally_cached_results_threat_type,
       std::move(response_body), url_loader->NetError(), response_code,
-      webui_delegate_token);
+      webui_delegate_token, /*ohttp_client_destructed_early=*/absl::nullopt);
 
   pending_requests_.erase(pending_request_it);
 }
@@ -508,7 +512,8 @@ void HashRealTimeService::OnURLLoaderComplete(
     std::unique_ptr<std::string> response_body,
     int net_error,
     int response_code,
-    absl::optional<int> webui_delegate_token) {
+    absl::optional<int> webui_delegate_token,
+    absl::optional<bool> ohttp_client_destructed_early) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::UmaHistogramTimes("SafeBrowsing.HPRT.Network.Time",
                           base::TimeTicks::Now() - request_start_time);
@@ -523,6 +528,12 @@ void HashRealTimeService::OnURLLoaderComplete(
     base::UmaHistogramSparse(
         "SafeBrowsing.HPRT.Network.HttpResponseCode.NetworkChanged",
         response_code);
+  }
+  if (ohttp_client_destructed_early.has_value() &&
+      net_error == net::ERR_FAILED) {
+    base::UmaHistogramBoolean(
+        "SafeBrowsing.HPRT.FailedNetResultIsFromEarlyOhttpClientDestruct",
+        ohttp_client_destructed_early.value());
   }
 
   base::expected<std::unique_ptr<V5::SearchHashesResponse>, OperationResult>

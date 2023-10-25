@@ -149,6 +149,8 @@ class HashRealTimeService : public KeyedService {
                            TestBackoffModeRespected_FullyCached);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
                            TestBackoffModeRespected_NotCached);
+  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
+                           TestLookupFailure_OhttpClientDestructedEarly);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceDirectFetchTest,
                            TestLookupFailure_RetriableNetError);
 
@@ -229,8 +231,9 @@ class HashRealTimeService : public KeyedService {
 
   // Callback for requests sent via OHTTP. Most parameters are used by
   // |OnURLLoaderComplete|, see the description above |OnURLLoaderComplete| for
-  // details. |response_body|, |net_error|, |response_code| and |headers| are
-  // returned from the OHTTP client. |ohttp_key| is sent to the key service.
+  // details. |response_body|, |net_error|, |response_code|, |headers|, and
+  // |ohttp_client_destructed_early| are returned from the OHTTP client.
+  // |ohttp_key| is sent to the key service.
   void OnOhttpComplete(
       const GURL& url,
       const std::vector<std::string>& hash_prefixes_in_request,
@@ -244,7 +247,8 @@ class HashRealTimeService : public KeyedService {
       const absl::optional<std::string>& response_body,
       int net_error,
       int response_code,
-      scoped_refptr<net::HttpResponseHeaders> headers);
+      scoped_refptr<net::HttpResponseHeaders> headers,
+      bool ohttp_client_destructed_early);
 
   // Callback for requests sent directly to the Safe Browsing server. Most
   // parameters are used by |OnURLLoaderComplete|, see the description above
@@ -287,6 +291,10 @@ class HashRealTimeService : public KeyedService {
   //  - |response_code| is the HTTP status code from the server.
   //  - |webui_delegate_token| is used for matching HPRT lookup responses to
   //    pings on chrome://safe-browsing.
+  //  - |ohttp_client_destructed_early| represents whether the OHTTP client
+  //    used for making the request destructed before its normal callback was
+  //    called. This is used only for logging purposes. It is null when there
+  //    is no OHTTP client, i.e. for direct fetch.
   void OnURLLoaderComplete(
       const GURL& url,
       const std::vector<std::string>& hash_prefixes_in_request,
@@ -298,7 +306,8 @@ class HashRealTimeService : public KeyedService {
       std::unique_ptr<std::string> response_body,
       int net_error,
       int response_code,
-      absl::optional<int> webui_delegate_token);
+      absl::optional<int> webui_delegate_token,
+      absl::optional<bool> ohttp_client_destructed_early);
 
   // Determines the most severe threat type based on |result_full_hashes|, which
   // contains the merged caching and server response results. The |url| is

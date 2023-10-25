@@ -1227,6 +1227,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.HPRT.FailedNetResultIsFromEarlyOhttpClientDestruct"
+    enum="BooleanYesNo" expires_after="2024-02-04">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logged when a SafeBrowsing hash-prefix real-time lookup request results in a
+    net error ERR_FAILED. Specifies whether or not the error was caused by the
+    OHTTP client destructing before it completed.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.HPRT.FoundUnmatchedFullHashes"
     enum="BooleanFound" expires_after="2024-02-04">
   <owner>thefrog@chromium.org</owner>
