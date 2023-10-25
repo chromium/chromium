@@ -132,6 +132,7 @@ bool FillLayersEqual(const FillLayer& a_layers, const FillLayer& b_layers) {
         }
         break;
       case CSSPropertyID::kBackgroundImage:
+      case CSSPropertyID::kMaskImage:
         if (!base::ValuesEquivalent(a_layer->GetImage(), b_layer->GetImage())) {
           return false;
         }
@@ -796,7 +797,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
           a.MaskLayers(), b.MaskLayers());
     case CSSPropertyID::kMaskImage:
     case CSSPropertyID::kWebkitMaskImage:
-      return base::ValuesEquivalent(a.MaskImage(), b.MaskImage());
+      return FillLayersEqual<CSSPropertyID::kMaskImage>(a.MaskLayers(),
+                                                        b.MaskLayers());
     case CSSPropertyID::kMaskOrigin:
       return FillLayersEqual<CSSPropertyID::kMaskOrigin>(a.MaskLayers(),
                                                          b.MaskLayers());

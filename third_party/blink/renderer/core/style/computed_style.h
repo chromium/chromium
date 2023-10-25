@@ -1047,7 +1047,6 @@ class ComputedStyle final : public ComputedStyleBase {
     return MaskInternal().AnyLayerHasImage() ||
            MaskBoxImageInternal().HasImage();
   }
-  StyleImage* MaskImage() const { return MaskInternal().GetImage(); }
   const FillLayer& MaskLayers() const { return MaskInternal(); }
   const NinePieceImage& MaskBoxImage() const { return MaskBoxImageInternal(); }
   bool MaskBoxImageSlicesFill() const { return MaskBoxImageInternal().Fill(); }

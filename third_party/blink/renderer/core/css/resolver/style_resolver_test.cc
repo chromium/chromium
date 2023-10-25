@@ -1277,8 +1277,8 @@ TEST_F(StyleResolverTest, InheritStyleImagesFromDisplayContents) {
   EXPECT_FALSE(style->MaskBoxImageSource()->IsPendingImage())
       << "-webkit-mask-box-image-source";
 
-  ASSERT_TRUE(style->MaskImage());
-  EXPECT_FALSE(style->MaskImage()->IsPendingImage())
+  ASSERT_TRUE(style->MaskLayers().GetImage());
+  EXPECT_FALSE(style->MaskLayers().GetImage()->IsPendingImage())
       << "-webkit-mask-image is fetched";
 }
 
