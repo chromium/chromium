@@ -785,6 +785,12 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual void CancelPreviewByMojoBinderPolicy(
       const std::string& interface_name) {}
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Whether the WebContents should use per PWA instanced
+  // system media controls.
+  virtual bool ShouldUseInstancedSystemMediaControls() const;
+#endif  // !BUILDFLAG(IS_ANDROID)
+
  protected:
   virtual ~WebContentsDelegate();
 

@@ -2001,6 +2001,10 @@ void Browser::InitiatePreview(content::WebContents& web_contents,
 #endif
 }
 
+bool Browser::ShouldUseInstancedSystemMediaControls() const {
+  return is_type_app() || is_type_app_popup();
+}
+
 void Browser::DidFinishNavigation(
     content::WebContents* web_contents,
     content::NavigationHandle* navigation_handle) {

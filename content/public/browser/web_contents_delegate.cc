@@ -406,4 +406,10 @@ bool WebContentsDelegate::IsInPreviewMode() const {
   return false;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+bool WebContentsDelegate::ShouldUseInstancedSystemMediaControls() const {
+  return false;
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 }  // namespace content
