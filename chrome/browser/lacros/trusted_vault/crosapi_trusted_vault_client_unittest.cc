@@ -113,7 +113,7 @@ TEST_F(CrosapiTrustedVaultClientTest, ShouldMarkLocalKeysAsStale) {
 }
 
 TEST_F(CrosapiTrustedVaultClientTest, ShouldGetIsRecoverabilityDegraded) {
-  trusted_vault_client_ash().SetIsRecoverabilityDegraded(true);
+  trusted_vault_client_ash().SetIsRecoveryMethodRequired(true);
 
   base::MockCallback<base::OnceCallback<void(bool)>>
       on_get_is_recoverability_degraded;
@@ -176,7 +176,7 @@ TEST_F(CrosapiTrustedVaultClientTest, ShouldNotifyObservers) {
   EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(&observer));
 
   EXPECT_CALL(observer, OnTrustedVaultRecoverabilityChanged);
-  trusted_vault_client_ash().SetIsRecoverabilityDegraded(true);
+  trusted_vault_client_ash().SetIsRecoveryMethodRequired(true);
   crosapi_backend().FlushMojo();
 
   trusted_vault_client_lacros().RemoveObserver(&observer);

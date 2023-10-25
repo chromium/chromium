@@ -244,29 +244,6 @@ class TrustedVaultKeyRequiredForPreferredDataTypesChecker
   }
 };
 
-// Used to wait until IsTrustedVaultRecoverabilityDegraded() returns false.
-class TrustedVaultRecoverabilityDegradedStateChecker
-    : public SingleClientStatusChangeChecker {
- public:
-  TrustedVaultRecoverabilityDegradedStateChecker(
-      syncer::SyncServiceImpl* service,
-      bool degraded)
-      : SingleClientStatusChangeChecker(service), degraded_(degraded) {}
-  ~TrustedVaultRecoverabilityDegradedStateChecker() override = default;
-
- protected:
-  // StatusChangeChecker implementation.
-  bool IsExitConditionSatisfied(std::ostream* os) override {
-    *os << "Waiting until trusted vault recoverability degraded state is "
-        << degraded_;
-    return service()
-               ->GetUserSettings()
-               ->IsTrustedVaultRecoverabilityDegraded() == degraded_;
-  }
-
-  const bool degraded_;
-};
-
 class FakeSecurityDomainsServerMemberStatusChecker
     : public StatusChangeChecker,
       public trusted_vault::FakeSecurityDomainsServer::Observer {

@@ -152,3 +152,17 @@ void TrustedVaultKeysChangedStateChecker::OnTrustedVaultKeysChanged() {
 
 void TrustedVaultKeysChangedStateChecker::
     OnTrustedVaultRecoverabilityChanged() {}
+
+TrustedVaultRecoverabilityDegradedStateChecker::
+    TrustedVaultRecoverabilityDegradedStateChecker(
+        syncer::SyncServiceImpl* service,
+        bool degraded)
+    : SingleClientStatusChangeChecker(service), degraded_(degraded) {}
+
+bool TrustedVaultRecoverabilityDegradedStateChecker::IsExitConditionSatisfied(
+    std::ostream* os) {
+  *os << "Waiting until trusted vault recoverability degraded state is "
+      << degraded_;
+  return service()->GetUserSettings()->IsTrustedVaultRecoverabilityDegraded() ==
+         degraded_;
+}

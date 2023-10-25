@@ -33,6 +33,7 @@ namespace {
 
 using testing::ElementsAre;
 using testing::Eq;
+using testing::SizeIs;
 
 MATCHER_P4(StatusLabelsMatch,
            message_type,
@@ -78,6 +79,19 @@ GURL GetFakeTrustedVaultRetrievalURL(
   return test_server.GetURL(base::StringPrintf(
       "/sync/encryption_keys_retrieval.html?gaia=%s&key=%s&key_version=%d",
       gaia_id.c_str(), base64_encoded_key.c_str(), encryption_key_version));
+}
+
+GURL GetFakeTrustedVaultRecoverabilityURL(
+    const net::test_server::EmbeddedTestServer& test_server,
+    const std::string& gaia_id,
+    const std::vector<uint8_t>& public_key) {
+  // encryption_keys_recoverability.html would populate encryption key to sync
+  // service upon loading. Key is provided as part of URL and needs to be
+  // encoded with Base64, because |public_key| is binary.
+  const std::string base64_encoded_public_key = base::Base64Encode(public_key);
+  return test_server.GetURL(
+      base::StringPrintf("/sync/encryption_keys_recoverability.html?%s#%s",
+                         gaia_id.c_str(), base64_encoded_public_key.c_str()));
 }
 
 // Helper function to install server redirects in the test HTTP server.
@@ -155,7 +169,23 @@ class TrustedVaultKeysSharingLacrosBrowserTest : public SyncTest {
       return false;
     }
 
-    CoreAccountInfo primary_account_info = GetSyncService(0)->GetAccountInfo();
+    const CoreAccountInfo primary_account_info =
+        GetSyncService(0)->GetAccountInfo();
+
+    // Install a redirect from the actual degraded recoverability URL as
+    // determined by GaiaUrls to |recoverability_url|, which runs Javascript
+    // code to mimic adding recovery method with kTestRecoveryMethodPublicKey.
+    // Note that this needs to be installed before the analogous below for
+    // retrieval, because they share prefix.
+    const GURL recoverability_url = GetFakeTrustedVaultRecoverabilityURL(
+        *embedded_test_server(), primary_account_info.gaia,
+        kTestRecoveryMethodPublicKey);
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+        &HttpServerRedirect,
+        /*from_prefix=*/
+        GaiaUrls::GetInstance()
+            ->signin_chrome_sync_keys_recoverability_degraded_url(),
+        /*to=*/recoverability_url));
 
     // Install a redirect from the actual retrieval URL as determined by
     // GaiaUrls to `retrieval_url`, which runs Javascript code to mimic
@@ -168,10 +198,12 @@ class TrustedVaultKeysSharingLacrosBrowserTest : public SyncTest {
         /*from_prefix=*/
         GaiaUrls::GetInstance()->signin_chrome_sync_keys_retrieval_url(),
         /*to=*/retrieval_url));
+
     embedded_test_server()->StartAcceptingConnections();
 
     fake_crosapi_backend_->SetPrimaryAccountInfo(
         GetSyncService(0)->GetAccountInfo());
+
     return true;
   }
 
@@ -189,6 +221,7 @@ class TrustedVaultKeysSharingLacrosBrowserTest : public SyncTest {
 
  protected:
   const std::vector<uint8_t> kTestTrustedVaultKey = {1, 2, 3};
+  const std::vector<uint8_t> kTestRecoveryMethodPublicKey = {1, 2, 3, 4};
 
  private:
   base::test::ScopedFeatureList override_features_;
@@ -279,6 +312,60 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultKeysSharingLacrosBrowserTest,
   EXPECT_THAT(trusted_vault_client_ash().GetStoredKeys(
                   GetSyncService(0)->GetAccountInfo().gaia),
               ElementsAre(kTestTrustedVaultKey));
+}
+
+IN_PROC_BROWSER_TEST_F(TrustedVaultKeysSharingLacrosBrowserTest,
+                       ShouldAddRecoveryMethodFromWeb) {
+  ASSERT_TRUE(SetupSyncAndTrustedVaultFakes());
+
+  // Inject trusted vault Nigori server-side and make it decryptable, degraded
+  // recoverability is absent from the UI otherwise.
+  fake_server::SetNigoriInFakeServer(
+      syncer::BuildTrustedVaultNigoriSpecifics({kTestTrustedVaultKey}),
+      GetFakeServer());
+  trusted_vault_client_ash().StoreKeys(GetSyncService(0)->GetAccountInfo().gaia,
+                                       {kTestTrustedVaultKey},
+                                       /*last_key_version=*/1);
+
+  // Enters degraded recoverability state.
+  trusted_vault_client_ash().SetIsRecoveryMethodRequired(true);
+
+  // Wait until Lacros is aware of degraded recoverability state.
+  EXPECT_TRUE(
+      TrustedVaultRecoverabilityDegradedStateChecker(GetSyncService(0), true)
+          .Wait());
+
+  // Verify that error has been shown to the user in profile menu:
+  EXPECT_THAT(GetAvatarSyncErrorType(GetProfile(0)),
+              Eq(AvatarSyncErrorType::
+                     kTrustedVaultRecoverabilityDegradedForPasswordsError));
+  // No errors expected in settings.
+  EXPECT_THAT(GetSyncStatusLabels(GetProfile(0)),
+              StatusLabelsMatch(
+                  SyncStatusMessageType::kSynced, IDS_SYNC_ACCOUNT_SYNCING,
+                  IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction));
+
+  // Simulate that user clicks on the error. Normally that triggers a reauth,
+  // but this test bypass it (opens page that mimics the reauth completion and
+  // closes automatically).
+  OpenDialogForSyncKeyRecoverabilityDegraded(
+      GetProfile(0), syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
+  EXPECT_TRUE(WaitForTrustedVaultReauthCompletion());
+
+  // Wait until degraded recoverability state is resolved.
+  EXPECT_TRUE(
+      TrustedVaultRecoverabilityDegradedStateChecker(GetSyncService(0), false)
+          .Wait());
+
+  // Verify that errors disappeared from the UI.
+  EXPECT_FALSE(GetAvatarSyncErrorType(GetProfile(0)).has_value());
+
+  // Verify that recovery method was added.
+  const auto recovery_methods =
+      trusted_vault_client_ash().server()->GetRecoveryMethods(
+          GetSyncService(0)->GetAccountInfo().gaia);
+  ASSERT_THAT(recovery_methods, SizeIs(1));
+  EXPECT_THAT(recovery_methods[0].public_key, Eq(kTestRecoveryMethodPublicKey));
 }
 
 }  // namespace

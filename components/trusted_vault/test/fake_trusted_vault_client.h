@@ -98,7 +98,9 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
   // requests.
   bool CompleteAllPendingRequests();
 
-  void SetIsRecoverabilityDegraded(bool is_recoverability_degraded);
+  // When set to true, implementation will start to report that recoverability
+  // is degraded if no recovery method present in the `server_`.
+  void SetIsRecoveryMethodRequired(bool is_recovery_method_required);
 
   // TrustedVaultClient implementation.
   void AddObserver(Observer* observer) override;
@@ -143,7 +145,7 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
   int get_is_recoverablity_degraded_call_count_ = 0;
   int server_request_count_ = 0;
   std::vector<base::OnceClosure> pending_responses_;
-  bool is_recoverability_degraded_ = false;
+  bool is_recovery_method_required_ = false;
 
   base::WeakPtrFactory<FakeTrustedVaultClient> weak_ptr_factory_{this};
 };

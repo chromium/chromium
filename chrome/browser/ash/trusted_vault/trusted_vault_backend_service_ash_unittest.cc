@@ -209,7 +209,7 @@ TEST_F(TrustedVaultBackendServiceAshTest, ShouldStoreKeys) {
 }
 
 TEST_F(TrustedVaultBackendServiceAshTest, ShouldGetIsRecoverabilityDegraded) {
-  client_ash()->SetIsRecoverabilityDegraded(true);
+  client_ash()->SetIsRecoveryMethodRequired(true);
 
   base::MockCallback<
       TrustedVaultBackendServiceAsh::GetIsRecoverabilityDegradedCallback>
@@ -229,7 +229,7 @@ TEST_F(TrustedVaultBackendServiceAshTest, ShouldGetIsRecoverabilityDegraded) {
 
 TEST_F(TrustedVaultBackendServiceAshTest,
        ShouldValidateAccountOnGetIsRecoverabilityDegraded) {
-  client_ash()->SetIsRecoverabilityDegraded(true);
+  client_ash()->SetIsRecoveryMethodRequired(true);
 
   base::MockCallback<
       TrustedVaultBackendServiceAsh::GetIsRecoverabilityDegradedCallback>
@@ -308,7 +308,7 @@ TEST_F(TrustedVaultBackendServiceAshTest, ShouldNotifyObservers) {
   EXPECT_THAT(observer.num_on_trusted_vault_recoverability_changed_calls(),
               Eq(0));
 
-  client_ash()->SetIsRecoverabilityDegraded(true);
+  client_ash()->SetIsRecoveryMethodRequired(true);
   backend_remote().FlushForTesting();
   EXPECT_THAT(observer.num_on_trusted_vault_recoverability_changed_calls(),
               Eq(1));

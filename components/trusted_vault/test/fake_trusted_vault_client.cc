@@ -110,10 +110,11 @@ bool FakeTrustedVaultClient::CompleteAllPendingRequests() {
   return true;
 }
 
-void FakeTrustedVaultClient::SetIsRecoverabilityDegraded(
-    bool is_recoverability_degraded) {
-  is_recoverability_degraded_ = is_recoverability_degraded;
-  for (Observer& observer : observer_list_) {
+void FakeTrustedVaultClient::SetIsRecoveryMethodRequired(
+    bool is_recovery_method_required) {
+  is_recovery_method_required_ = is_recovery_method_required;
+  for (auto& observer : observer_list_) {
+    // May be a false positive, but observers should handle this well.
     observer.OnTrustedVaultRecoverabilityChanged();
   }
 }
@@ -214,8 +215,11 @@ void FakeTrustedVaultClient::GetIsRecoverabilityDegraded(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(bool)> callback) {
   ++get_is_recoverablity_degraded_call_count_;
+  const bool is_recoverability_degraded =
+      is_recovery_method_required_ &&
+      server_.GetRecoveryMethods(account_info.gaia).empty();
   pending_responses_.push_back(
-      base::BindOnce(std::move(callback), is_recoverability_degraded_));
+      base::BindOnce(std::move(callback), is_recoverability_degraded));
   if (auto_complete_requests_) {
     PostCompleteAllPendingRequests();
   }
@@ -228,6 +232,11 @@ void FakeTrustedVaultClient::AddTrustedRecoveryMethod(
     base::OnceClosure callback) {
   server_.AddRecoveryMethod(gaia_id, public_key, method_type_hint);
   std::move(callback).Run();
+
+  for (auto& observer : observer_list_) {
+    // May be a false positive, but observers should handle this well.
+    observer.OnTrustedVaultRecoverabilityChanged();
+  }
 }
 
 void FakeTrustedVaultClient::ClearLocalDataForAccount(
