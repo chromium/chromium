@@ -19610,6 +19610,26 @@
             ]
         }
     ],
+    "V8TurboshaftInstructionSelection": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "V8TurboshaftInstructionSelection"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8VirtualMemoryCage": [
         {
             "platforms": [

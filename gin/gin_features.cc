@@ -94,6 +94,11 @@ BASE_FEATURE(kV8Turbofan, "V8Turbofan", base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables Turbofan's new compiler IR Turboshaft.
 BASE_FEATURE(kV8Turboshaft, "V8Turboshaft", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable running instruction selection on Turboshaft IR directly.
+BASE_FEATURE(kV8TurboshaftInstructionSelection,
+             "V8TurboshaftInstructionSelection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables Maglev compiler. Note that this only sets the V8 flag when
 // manually overridden; otherwise it defers to whatever the V8 default is.
 BASE_FEATURE(kV8Maglev, "V8Maglev", base::FEATURE_ENABLED_BY_DEFAULT);
