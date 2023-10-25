@@ -14,19 +14,30 @@
 #include "chrome/browser/accessibility/media_app/ax_media_app.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "content/public/browser/browser_accessibility_state.h"
+#include "ui/accessibility/ax_action_handler_base.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_mode_observer.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
+namespace ui {
+
+struct AXActionData;
+
+}  // namespace ui
+
 namespace ash {
 
 class AXMediaAppHandler final
-    : private ui::AXModeObserver
+    : private ui::AXActionHandlerBase,
+      private ui::AXModeObserver
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     ,
       private screen_ai::ScreenAIInstallState::Observer
@@ -48,6 +59,9 @@ class AXMediaAppHandler final
   // ScreenAIInstallState::Observer:
   void StateChanged(screen_ai::ScreenAIInstallState::State state) override;
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+
+  // ui::AXActionHandlerBase:
+  void PerformAction(const ui::AXActionData& action_data) override;
 
   // ui::AXModeObserver:
   void OnAXModeAdded(ui::AXMode mode) override;

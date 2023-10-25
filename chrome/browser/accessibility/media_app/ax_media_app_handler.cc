@@ -10,6 +10,9 @@
 #include "base/notreached.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/ax_action_data.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace ash {
 
@@ -83,6 +86,56 @@ void AXMediaAppHandler::StateChanged(ScreenAIInstallState::State state) {
 bool AXMediaAppHandler::IsAccessibilityEnabled() const {
   return features::IsBacklightOcrEnabled() &&
          accessibility_state_utils::IsScreenReaderEnabled();
+}
+
+void AXMediaAppHandler::PerformAction(const ui::AXActionData& action_data) {
+  switch (action_data.action) {
+    case ax::mojom::Action::kBlur:
+    case ax::mojom::Action::kClearAccessibilityFocus:
+    case ax::mojom::Action::kCollapse:
+    case ax::mojom::Action::kDecrement:
+    case ax::mojom::Action::kDoDefault:
+    case ax::mojom::Action::kExpand:
+    case ax::mojom::Action::kFocus:
+    case ax::mojom::Action::kGetImageData:
+    case ax::mojom::Action::kIncrement:
+    case ax::mojom::Action::kLoadInlineTextBoxes:
+      return;
+    case ax::mojom::Action::kScrollBackward:
+    case ax::mojom::Action::kScrollForward:
+    case ax::mojom::Action::kScrollUp:
+    case ax::mojom::Action::kScrollDown:
+    case ax::mojom::Action::kScrollLeft:
+    case ax::mojom::Action::kScrollRight:
+    case ax::mojom::Action::kScrollToMakeVisible:
+      NOTIMPLEMENTED();
+      return;
+    case ax::mojom::Action::kScrollToPoint:
+    case ax::mojom::Action::kScrollToPositionAtRowColumn:
+    case ax::mojom::Action::kSetAccessibilityFocus:
+    case ax::mojom::Action::kSetScrollOffset:
+    case ax::mojom::Action::kSetSelection:
+    case ax::mojom::Action::kSetSequentialFocusNavigationStartingPoint:
+    case ax::mojom::Action::kSetValue:
+    case ax::mojom::Action::kShowContextMenu:
+    case ax::mojom::Action::kStitchChildTree:
+    case ax::mojom::Action::kCustomAction:
+    case ax::mojom::Action::kHitTest:
+    case ax::mojom::Action::kReplaceSelectedText:
+    case ax::mojom::Action::kNone:
+    case ax::mojom::Action::kGetTextLocation:
+    case ax::mojom::Action::kAnnotatePageImages:
+    case ax::mojom::Action::kSignalEndOfTest:
+    case ax::mojom::Action::kShowTooltip:
+    case ax::mojom::Action::kHideTooltip:
+    case ax::mojom::Action::kInternalInvalidateTree:
+    case ax::mojom::Action::kResumeMedia:
+    case ax::mojom::Action::kStartDuckingMedia:
+    case ax::mojom::Action::kStopDuckingMedia:
+    case ax::mojom::Action::kSuspendMedia:
+    case ax::mojom::Action::kLongClick:
+      return;
+  }
 }
 
 void AXMediaAppHandler::OnAXModeAdded(ui::AXMode mode) {
