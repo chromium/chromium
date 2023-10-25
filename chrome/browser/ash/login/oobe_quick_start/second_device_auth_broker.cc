@@ -344,9 +344,6 @@ std::string CreateStartSessionRequestData(
   base::Value::Dict source_device_info;
   source_device_info.Set(kDeviceTypeKey, "ANDROID");
 
-  // TODO(b/259021973): Figure out how to send the device model here - after
-  // taking user's consent. Also change the network annotation after adding
-  // this.
   base::Value::Dict chrome_os_device_info;
   // Gaia expects a byte array of cert chain in their request proto (see request
   // format above). We need to Base64 encode the cert chain on top of the PEM
