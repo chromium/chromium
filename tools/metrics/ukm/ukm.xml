@@ -3491,7 +3491,13 @@ be describing additional metrics about the same event.
     <summary>
       A form control type of a web form-associated element. We only list the
       very common ones that are seen in autofill, such as text, textarea,
-      checkbox, radio, select-one, see |autofill::FormControlType|.
+      checkbox, radio, select-one, see |autofill::DeprecatedFormControlType|.
+    </summary>
+  </metric>
+  <metric name="FormControlType2" enum="AutofillFormControlType2">
+    <summary>
+      A form control type of a web form-associated element. We only list the
+      ones that are handled by Autofill, see |autofill::FormControlType|.
     </summary>
   </metric>
   <metric name="FormSessionIdentifier">

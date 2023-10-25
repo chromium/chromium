@@ -13,22 +13,23 @@ import "url/mojom/url.mojom";
 
 // The form control types supported by Autofill: a subset of
 // blink::mojom::FormControlType plus kContentEditable.
+// Do not modify the integer values because they are used UKM metrics.
 enum FormControlType {
-  kContentEditable,
-  kInputCheckbox,
-  kInputEmail,
-  kInputMonth,
-  kInputNumber,
-  kInputPassword,
-  kInputRadio,
-  kInputSearch,
-  kInputTelephone,
-  kInputText,
-  kInputUrl,
-  kSelectOne,
-  kSelectMultiple,
-  kSelectList,
-  kTextArea,
+  kContentEditable = 0,
+  kInputCheckbox = 1,
+  kInputEmail = 2,
+  kInputMonth = 3,
+  kInputNumber = 4,
+  kInputPassword = 5,
+  kInputRadio = 6,
+  kInputSearch = 7,
+  kInputTelephone = 8,
+  kInputText = 9,
+  kInputUrl = 10,
+  kSelectOne = 11,
+  kSelectMultiple = 12,
+  kSelectList = 13,
+  kTextArea = 14,
 };
 
 // The list of all HTML autocomplete field mode hints supported by Chrome.

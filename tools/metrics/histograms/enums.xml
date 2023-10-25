@@ -7561,6 +7561,24 @@ Called by update_autofill_enums.py.-->
   <int value="7" label="Selectmenu"/>
 </enum>
 
+<enum name="AutofillFormControlType2">
+  <int value="0" label="ContentEditable"/>
+  <int value="1" label="InputCheckbox"/>
+  <int value="2" label="InputEmail"/>
+  <int value="3" label="InputMonth"/>
+  <int value="4" label="InputNumber"/>
+  <int value="5" label="InputPassword"/>
+  <int value="6" label="InputRadio"/>
+  <int value="7" label="InputSearch"/>
+  <int value="8" label="InputTelephone"/>
+  <int value="9" label="InputText"/>
+  <int value="10" label="InputUrl"/>
+  <int value="11" label="SelectOne"/>
+  <int value="12" label="SelectMultiple"/>
+  <int value="13" label="SelectList"/>
+  <int value="14" label="TextArea"/>
+</enum>
+
 <enum name="AutofillFormDynamicity">
   <int value="0" label="Static form"/>
   <int value="1" label="Field changed"/>
