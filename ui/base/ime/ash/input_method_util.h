@@ -96,14 +96,14 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodUtil {
   //    m17n:vi_telex -> _comp_ime_...vkd_vi_telex
   //  - ChromiumOS input method ID to ChromeOS one, or vice versa, e.g.
   //    _comp_ime_xxxxxx...xkb:us::eng -> _comp_ime_yyyyyy...xkb:us::eng
-  std::string MigrateInputMethod(const std::string& input_method_id);
+  static std::string MigrateInputMethod(const std::string& input_method_id);
 
   // Migrates the input method IDs.
   // Returns true if the given input method id list is modified,
   // returns false otherwise.
   // This method should not be removed because it's required to transfer XKB
   // input method ID from VPD into extension-based XKB input method ID.
-  bool MigrateInputMethods(std::vector<std::string>* input_method_ids);
+  static bool MigrateInputMethods(std::vector<std::string>* input_method_ids);
 
   // Updates the internal cache of hardware layouts.
   void UpdateHardwareLayoutCache();
@@ -125,8 +125,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodUtil {
   const std::vector<std::string>& GetHardwareLoginInputMethodIds();
 
   // Returns the localized display name for the given input method.
-  std::string GetLocalizedDisplayName(
-      const InputMethodDescriptor& descriptor) const;
+  static std::string GetLocalizedDisplayName(
+      const InputMethodDescriptor& descriptor);
 
   // Returns true if given input method can be used to input login data.
   bool IsLoginKeyboard(const std::string& input_method_id) const;
@@ -157,11 +157,11 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodUtil {
 
  protected:
   // protected: for unit testing as well.
-  bool GetInputMethodIdsFromLanguageCodeInternal(
+  static bool GetInputMethodIdsFromLanguageCodeInternal(
       const LanguageCodeToIdsMap& language_code_to_ids,
       std::string_view normalized_language_code,
       InputMethodType type,
-      std::vector<std::string>* out_input_method_ids) const;
+      std::vector<std::string>* out_input_method_ids);
 
  private:
   // Get long name of the given input method. |short_name| is to specify whether
