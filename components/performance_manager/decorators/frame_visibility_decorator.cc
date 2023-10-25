@@ -28,17 +28,18 @@ FrameNode::Visibility GetFrameNodeVisibility(FrameNodeImpl* frame_node,
     return FrameNode::Visibility::kVisible;
   }
 
-  // No viewport intersection. Can't determine the visibility.
-  if (!frame_node->viewport_intersection().has_value()) {
+  // Too early in the frame's lifecycle, don't know yet if it intersects with
+  // the viewport. Can't determine the visibility.
+  if (!frame_node->intersects_viewport().has_value()) {
     return FrameNode::Visibility::kUnknown;
   }
 
-  // A non-empty viewport intersection denotes a visible frame.
-  if (!frame_node->viewport_intersection()->IsEmpty()) {
+  // The frame intersects with the viewport and is thus visible.
+  if (frame_node->intersects_viewport().value()) {
     return FrameNode::Visibility::kVisible;
   }
 
-  // Empty viewport intersection. The frame is thus not visible.
+  // Does not intersects with the viewport. The frame is not visible.
   return FrameNode::Visibility::kNotVisible;
 }
 
@@ -101,10 +102,10 @@ void FrameVisibilityDecorator::OnIsCurrentChanged(const FrameNode* frame_node) {
   frame_node_impl->SetVisibility(visibility);
 }
 
-void FrameVisibilityDecorator::OnViewportIntersectionChanged(
+void FrameVisibilityDecorator::OnIntersectsViewportChanged(
     const FrameNode* frame_node) {
   DCHECK(!frame_node->IsMainFrame());
-  DCHECK(frame_node->GetViewportIntersection().has_value());
+  DCHECK(frame_node->IntersectsViewport().has_value());
 
   FrameNodeImpl* frame_node_impl = FrameNodeImpl::FromNode(frame_node);
   FrameNode::Visibility visibility = GetFrameNodeVisibility(

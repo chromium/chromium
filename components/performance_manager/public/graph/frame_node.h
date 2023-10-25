@@ -18,7 +18,6 @@
 #include "content/public/browser/site_instance.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "ui/gfx/geometry/rect.h"
 
 class GURL;
 
@@ -219,13 +218,16 @@ class FrameNode : public Node {
   // Returns true if the frame is capturing a video stream.
   virtual bool IsCapturingVideoStream() const = 0;
 
-  // Returns the intersection of this frame with the viewport. This is initially
-  // null on node creation and is initialized during layout when the viewport
-  // intersection is first calculated. May only be called for a child frame.
-  virtual const absl::optional<gfx::Rect>& GetViewportIntersection() const = 0;
+  // Returns true if the frame intersects with the viewport. This could be false
+  // if the frame is not rendered (display: none) or is scrolled out of view.
+  // This is initially null on node creation and is initialized during layout
+  // when the viewport intersection is first calculated. May only be called for
+  // a child frame, as the main frame is always considered to be intersecting
+  // the viewport.
+  virtual absl::optional<bool> IntersectsViewport() const = 0;
 
-  // Returns true if the frame is visible. This value is based on the viewport
-  // intersection of the frame, and the visibility of the page.
+  // Returns true if the frame is visible. This value is based on if the frame
+  // intersect with the viewport, and if the page is visible to the user.
   virtual Visibility GetVisibility() const = 0;
 
   // Returns a proxy to the RenderFrameHost associated with this node. The
@@ -323,7 +325,7 @@ class FrameNodeObserver {
   virtual void OnIsCapturingVideoStreamChanged(const FrameNode* frame_node) = 0;
 
   // Invoked when a frame's intersection with the viewport changes
-  virtual void OnViewportIntersectionChanged(const FrameNode* frame_node) = 0;
+  virtual void OnIntersectsViewportChanged(const FrameNode* frame_node) = 0;
 
   // Invoked when the visibility property changes.
   virtual void OnFrameVisibilityChanged(
@@ -377,7 +379,7 @@ class FrameNode::ObserverDefaultImpl : public FrameNodeObserver {
   void OnHadUserEditsChanged(const FrameNode* frame_node) override {}
   void OnIsAudibleChanged(const FrameNode* frame_node) override {}
   void OnIsCapturingVideoStreamChanged(const FrameNode* frame_node) override {}
-  void OnViewportIntersectionChanged(const FrameNode* frame_node) override {}
+  void OnIntersectsViewportChanged(const FrameNode* frame_node) override {}
   void OnFrameVisibilityChanged(const FrameNode* frame_node,
                                 FrameNode::Visibility previous_value) override {
   }

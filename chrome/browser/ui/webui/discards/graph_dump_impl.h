@@ -113,7 +113,7 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
       const performance_manager::FrameNode* frame_node,
       base::TimeDelta time_since_navigation_start) override {}
   // Ignored.
-  void OnViewportIntersectionChanged(
+  void OnIntersectsViewportChanged(
       const performance_manager::FrameNode* frame_node) override {}
   // Ignored.
   void OnFrameVisibilityChanged(

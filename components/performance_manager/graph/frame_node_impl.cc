@@ -259,11 +259,11 @@ bool FrameNodeImpl::is_capturing_video_stream() const {
   return is_capturing_video_stream_.value();
 }
 
-const absl::optional<gfx::Rect>& FrameNodeImpl::viewport_intersection() const {
+absl::optional<bool> FrameNodeImpl::intersects_viewport() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // The viewport intersection of the main frame is not tracked.
+  // The intersection with the viewport of the main frame is not tracked.
   DCHECK(!IsMainFrame());
-  return viewport_intersection_.value();
+  return intersects_viewport_.value();
 }
 
 FrameNode::Visibility FrameNodeImpl::visibility() const {
@@ -324,12 +324,11 @@ void FrameNodeImpl::SetIsCapturingVideoStream(bool is_capturing_video_stream) {
   is_capturing_video_stream_.SetAndMaybeNotify(this, is_capturing_video_stream);
 }
 
-void FrameNodeImpl::SetViewportIntersection(
-    const gfx::Rect& viewport_intersection) {
+void FrameNodeImpl::SetIntersectsViewport(bool intersects_viewport) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // The viewport intersection of the main frame is not tracked.
+  // The intersection with the viewport of the main frame is not tracked.
   DCHECK(!IsMainFrame());
-  viewport_intersection_.SetAndMaybeNotify(this, viewport_intersection);
+  intersects_viewport_.SetAndMaybeNotify(this, intersects_viewport);
 }
 
 void FrameNodeImpl::SetInitialVisibility(Visibility visibility) {
@@ -637,10 +636,9 @@ bool FrameNodeImpl::IsCapturingVideoStream() const {
   return is_capturing_video_stream();
 }
 
-const absl::optional<gfx::Rect>& FrameNodeImpl::GetViewportIntersection()
-    const {
+absl::optional<bool> FrameNodeImpl::IntersectsViewport() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return viewport_intersection();
+  return intersects_viewport();
 }
 
 FrameNode::Visibility FrameNodeImpl::GetVisibility() const {

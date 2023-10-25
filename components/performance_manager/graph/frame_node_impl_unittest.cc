@@ -151,7 +151,7 @@ class LenientMockObserver : public FrameNodeImpl::Observer {
   MOCK_METHOD1(OnHadUserEditsChanged, void(const FrameNode*));
   MOCK_METHOD1(OnIsAudibleChanged, void(const FrameNode*));
   MOCK_METHOD1(OnIsCapturingVideoStreamChanged, void(const FrameNode*));
-  MOCK_METHOD1(OnViewportIntersectionChanged, void(const FrameNode*));
+  MOCK_METHOD1(OnIntersectsViewportChanged, void(const FrameNode*));
   MOCK_METHOD2(OnFrameVisibilityChanged,
                void(const FrameNode*, FrameNode::Visibility));
   MOCK_METHOD1(OnNonPersistentNotificationCreated, void(const FrameNode*));
@@ -455,11 +455,11 @@ TEST_F(FrameNodeImplTest, IsCapturingVideoStream) {
   graph()->RemoveFrameNodeObserver(&obs);
 }
 
-TEST_F(FrameNodeImplTest, ViewportIntersection) {
+TEST_F(FrameNodeImplTest, IntersectsViewport) {
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
-  // A child frame node is used because the main frame does not have a viewport
-  // intersection.
+  // A child frame node is used because the intersection with the viewport of a
+  // main frame is not tracked.
   auto main_frame_node = CreateFrameNodeAutoId(process.get(), page.get());
   auto child_frame_node =
       CreateFrameNodeAutoId(process.get(), page.get(), main_frame_node.get());
@@ -467,11 +467,16 @@ TEST_F(FrameNodeImplTest, ViewportIntersection) {
   MockObserver obs;
   graph()->AddFrameNodeObserver(&obs);
 
-  EXPECT_CALL(obs, OnViewportIntersectionChanged(child_frame_node.get()));
+  // Initially unknown.
+  EXPECT_FALSE(child_frame_node->intersects_viewport().has_value());
 
-  gfx::Rect kViewportIntersection(25, 25, 100, 100);
-  child_frame_node->SetViewportIntersection(kViewportIntersection);
-  EXPECT_EQ(child_frame_node->viewport_intersection(), kViewportIntersection);
+  EXPECT_CALL(obs, OnIntersectsViewportChanged(child_frame_node.get()));
+  child_frame_node->SetIntersectsViewport(true);
+  EXPECT_TRUE(child_frame_node->intersects_viewport().value());
+
+  EXPECT_CALL(obs, OnIntersectsViewportChanged(child_frame_node.get()));
+  child_frame_node->SetIntersectsViewport(false);
+  EXPECT_FALSE(child_frame_node->intersects_viewport().value());
 
   graph()->RemoveFrameNodeObserver(&obs);
 }
@@ -554,10 +559,10 @@ TEST_F(FrameNodeImplTest, PublicInterface) {
   EXPECT_EQ(frame_node->had_form_interaction(),
             public_frame_node->HadFormInteraction());
   EXPECT_EQ(frame_node->had_user_edits(), public_frame_node->HadUserEdits());
-  // Use the child frame node to test the viewport intersection because the
-  // viewport intersection of the main frame is not tracked.
-  EXPECT_EQ(child_frame_node->viewport_intersection(),
-            public_child_frame_node->GetViewportIntersection());
+  // Use the child frame node to test the intersection with the viewport because
+  // this property is not tracked for a main frame.
+  EXPECT_EQ(child_frame_node->intersects_viewport(),
+            public_child_frame_node->IntersectsViewport());
   EXPECT_EQ(frame_node->visibility(), public_frame_node->GetVisibility());
 }
 

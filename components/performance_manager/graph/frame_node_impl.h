@@ -108,7 +108,7 @@ class FrameNodeImpl
   bool had_user_edits() const;
   bool is_audible() const;
   bool is_capturing_video_stream() const;
-  const absl::optional<gfx::Rect>& viewport_intersection() const;
+  absl::optional<bool> intersects_viewport() const;
   Visibility visibility() const;
   uint64_t resident_set_kb_estimate() const;
   uint64_t private_footprint_kb_estimate() const;
@@ -119,7 +119,7 @@ class FrameNodeImpl
   void SetIsHoldingIndexedDBLock(bool is_holding_indexeddb_lock);
   void SetIsAudible(bool is_audible);
   void SetIsCapturingVideoStream(bool is_capturing_video_stream);
-  void SetViewportIntersection(const gfx::Rect& viewport_intersection);
+  void SetIntersectsViewport(bool intersects_viewport);
   void SetInitialVisibility(Visibility visibility);
   void SetVisibility(Visibility visibility);
   void SetResidentSetKbEstimate(uint64_t rss_estimate);
@@ -198,7 +198,7 @@ class FrameNodeImpl
   bool HadUserEdits() const override;
   bool IsAudible() const override;
   bool IsCapturingVideoStream() const override;
-  const absl::optional<gfx::Rect>& GetViewportIntersection() const override;
+  absl::optional<bool> IntersectsViewport() const override;
   Visibility GetVisibility() const override;
   uint64_t GetResidentSetKbEstimate() const override;
   uint64_t GetPrivateFootprintKbEstimate() const override;
@@ -361,16 +361,16 @@ class FrameNodeImpl
       &FrameNodeObserver::OnIsCapturingVideoStreamChanged>
       is_capturing_video_stream_{false};
 
-  // Tracks the intersection of this frame with the viewport.
+  // Indicates if the frame intersects with the viewport.
   //
-  // Note that the viewport intersection for the main frame is always invalid.
-  // This is because the main frame always occupies the entirety of the viewport
-  // so there is no point in tracking it. To avoid programming mistakes, it is
-  // forbidden to query this property for the main frame.
+  // Note that this property is always invalid for a main frame. This is because
+  // the main frame always occupies the entirety of the viewport so there is no
+  // point in tracking it. To avoid programming mistakes, it is forbidden to
+  // query this property for the main frame.
   ObservedProperty::NotifiesOnlyOnChanges<
-      absl::optional<gfx::Rect>,
-      &FrameNodeObserver::OnViewportIntersectionChanged>
-      viewport_intersection_;
+      absl::optional<bool>,
+      &FrameNodeObserver::OnIntersectsViewportChanged>
+      intersects_viewport_;
 
   // Indicates if the frame is visible. This is maintained by the
   // FrameVisibilityDecorator.

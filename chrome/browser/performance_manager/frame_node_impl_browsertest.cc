@@ -39,30 +39,29 @@ DerivedType* PassToPMGraph(std::unique_ptr<DerivedType> graph_owned) {
 
 // A FrameNodeObserver that allows waiting until a frame's viewport intersection
 // is initialized to a set value.
-class ViewportIntersectionChangedObserver
+class IntersectsViewportChangedObserver
     : public GraphOwned,
       public FrameNode::ObserverDefaultImpl {
  public:
-  // Needed to filter OnViewportIntersectionChanged() notifications for frames
+  // Needed to filter OnIntersectsViewportChanged() notifications for frames
   // that aren't under test. Since the frame node does not exist before the
   // navigation, it is not possible to directly compare the frame node pointer.
   // Note: The URL of the frame does not work because the initialization of the
   // viewport intersection can happen before the document URL is known.
   using FrameNodeMatcher = base::RepeatingCallback<bool(const FrameNode*)>;
 
-  ViewportIntersectionChangedObserver(
-      FrameNodeMatcher frame_node_matcher,
-      const gfx::Rect& expected_viewport_intersection,
-      base::OnceClosure quit_closure)
+  IntersectsViewportChangedObserver(FrameNodeMatcher frame_node_matcher,
+                                    bool expected_intersects_viewport,
+                                    base::OnceClosure quit_closure)
       : frame_node_matcher_(std::move(frame_node_matcher)),
-        expected_viewport_intersection_(expected_viewport_intersection),
+        expected_intersects_viewport_(expected_intersects_viewport),
         quit_closure_(std::move(quit_closure)) {}
-  ~ViewportIntersectionChangedObserver() override = default;
+  ~IntersectsViewportChangedObserver() override = default;
 
-  ViewportIntersectionChangedObserver(
-      const ViewportIntersectionChangedObserver&) = delete;
-  ViewportIntersectionChangedObserver& operator=(
-      const ViewportIntersectionChangedObserver&) = delete;
+  IntersectsViewportChangedObserver(const IntersectsViewportChangedObserver&) =
+      delete;
+  IntersectsViewportChangedObserver& operator=(
+      const IntersectsViewportChangedObserver&) = delete;
 
   // GraphOwned:
   void OnPassedToGraph(Graph* graph) override {
@@ -73,18 +72,18 @@ class ViewportIntersectionChangedObserver
   }
 
   // FrameNodeObserver:
-  void OnViewportIntersectionChanged(const FrameNode* frame_node) override {
+  void OnIntersectsViewportChanged(const FrameNode* frame_node) override {
     if (!frame_node_matcher_.Run(frame_node))
       return;
 
-    EXPECT_EQ(*frame_node->GetViewportIntersection(),
-              expected_viewport_intersection_);
+    EXPECT_EQ(frame_node->IntersectsViewport().value(),
+              expected_intersects_viewport_);
     std::move(quit_closure_).Run();
   }
 
  private:
   const FrameNodeMatcher frame_node_matcher_;
-  const gfx::Rect expected_viewport_intersection_;
+  const bool expected_intersects_viewport_;
   base::OnceClosure quit_closure_;
 };
 
@@ -106,12 +105,11 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
         DCHECK_EQ(main_frame_node->GetChildFrameNodes().size(), 1u);
         return frame_node->GetParentFrameNode() == main_frame_node;
       });
-  const gfx::Rect kExpectedViewportIntersection(0, 0, 0, 0);
   base::RunLoop run_loop;
   PerformanceManagerImpl::PassToGraph(
-      FROM_HERE, std::make_unique<ViewportIntersectionChangedObserver>(
-                     std::move(frame_node_matcher),
-                     kExpectedViewportIntersection, run_loop.QuitClosure()));
+      FROM_HERE,
+      std::make_unique<IntersectsViewportChangedObserver>(
+          std::move(frame_node_matcher), false, run_loop.QuitClosure()));
 
   // Navigate.
   const GURL main_frame_url(
@@ -138,12 +136,11 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
         DCHECK_EQ(main_frame_node->GetChildFrameNodes().size(), 1u);
         return frame_node->GetParentFrameNode() == main_frame_node;
       });
-  const gfx::Rect kExpectedViewportIntersection(0, 0, 0, 0);
   base::RunLoop run_loop;
   PerformanceManagerImpl::PassToGraph(
-      FROM_HERE, std::make_unique<ViewportIntersectionChangedObserver>(
-                     std::move(frame_node_matcher),
-                     kExpectedViewportIntersection, run_loop.QuitClosure()));
+      FROM_HERE,
+      std::make_unique<IntersectsViewportChangedObserver>(
+          std::move(frame_node_matcher), false, run_loop.QuitClosure()));
 
   // Navigate.
   const GURL main_frame_url(
@@ -170,14 +167,11 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
         DCHECK_EQ(main_frame_node->GetChildFrameNodes().size(), 1u);
         return frame_node->GetParentFrameNode() == main_frame_node;
       });
-  // The frame is a 100x100 px square centered on the origin of the
-  // viewport. Thus only the bottom right quarter is visible
-  const gfx::Rect kExpectedViewportIntersection(0, 0, 50, 50);
   base::RunLoop run_loop;
   PerformanceManagerImpl::PassToGraph(
-      FROM_HERE, std::make_unique<ViewportIntersectionChangedObserver>(
-                     std::move(frame_node_matcher),
-                     kExpectedViewportIntersection, run_loop.QuitClosure()));
+      FROM_HERE,
+      std::make_unique<IntersectsViewportChangedObserver>(
+          std::move(frame_node_matcher), true, run_loop.QuitClosure()));
 
   // Navigate.
   const GURL main_frame_url(
@@ -204,26 +198,11 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
         DCHECK_EQ(main_frame_node->GetChildFrameNodes().size(), 1u);
         return frame_node->GetParentFrameNode() == main_frame_node;
       });
-  const gfx::Rect kExpectedViewportIntersection = []() {
-    gfx::Rect expected_viewport_intersection;
-
-    // The iframe is a 200x200 px square centered at (200, 200) scaled
-    // to 1.5x its size from it's center.
-
-    // The size should be 50% larger.
-    expected_viewport_intersection.set_size(gfx::Size(300, 300));
-
-    // Because the resulting square is still centered at (200, 200), its
-    // origin is (200-width/2, 200-height/2) = (50, 50)
-    expected_viewport_intersection.set_origin(gfx::Point(50, 50));
-
-    return expected_viewport_intersection;
-  }();
   base::RunLoop run_loop;
   PerformanceManagerImpl::PassToGraph(
-      FROM_HERE, std::make_unique<ViewportIntersectionChangedObserver>(
-                     std::move(frame_node_matcher),
-                     kExpectedViewportIntersection, run_loop.QuitClosure()));
+      FROM_HERE,
+      std::make_unique<IntersectsViewportChangedObserver>(
+          std::move(frame_node_matcher), true, run_loop.QuitClosure()));
 
   // Navigate.
   const GURL main_frame_url(
@@ -250,24 +229,11 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
         DCHECK_EQ(main_frame_node->GetChildFrameNodes().size(), 1u);
         return frame_node->GetParentFrameNode() == main_frame_node;
       });
-  const gfx::Rect kExpectedViewportIntersection = []() {
-    // The iframe is a 100x100 px square centered at (150, 150) rotated by
-    // 45 degree around its center.
-
-    // This results in a diamond shape also centered at (150, 150), whose
-    // width can be calculated with the pythagorean theorem.
-    const float width = sqrt(100 * 100 + 100 * 100);
-    const float start = 150 - width / 2;
-    const gfx::RectF enclosing_rectf(start, start, width, width);
-    // Thus the expectation for the viewport intersection is to be equal to
-    // the smallest Rect that encloses the |enclosing_rectf|.
-    return ToEnclosingRect(enclosing_rectf);
-  }();
   base::RunLoop run_loop;
   PerformanceManagerImpl::PassToGraph(
-      FROM_HERE, std::make_unique<ViewportIntersectionChangedObserver>(
-                     std::move(frame_node_matcher),
-                     kExpectedViewportIntersection, run_loop.QuitClosure()));
+      FROM_HERE,
+      std::make_unique<IntersectsViewportChangedObserver>(
+          std::move(frame_node_matcher), true, run_loop.QuitClosure()));
 
   // Navigate.
   const GURL main_frame_url(

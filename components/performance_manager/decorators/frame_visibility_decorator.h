@@ -16,9 +16,9 @@ namespace performance_manager {
 // viewport intersection of all frames, and decorates each frame with their
 // visibility.
 //
-// Currently, all frame nodes are added with an empty viewport intersection.
-// Shorty after creation, a OnViewportIntersectionChanged() notification is
-// expected.
+// Currently, all frame nodes are added before knowing if they intersect with
+// the viewport. Shorty after creation, a OnIntersectsViewportChanged()
+// notification is expected.
 class FrameVisibilityDecorator : public GraphOwnedDefaultImpl,
                                  public InitializingFrameNodeObserver,
                                  public PageNode::ObserverDefaultImpl {
@@ -39,7 +39,7 @@ class FrameVisibilityDecorator : public GraphOwnedDefaultImpl,
   // FrameNodeObserver:
   void OnFrameNodeInitializing(const FrameNode* frame_node) override;
   void OnIsCurrentChanged(const FrameNode* frame_node) override;
-  void OnViewportIntersectionChanged(const FrameNode* frame_node) override;
+  void OnIntersectsViewportChanged(const FrameNode* frame_node) override;
 };
 
 }  // namespace performance_manager

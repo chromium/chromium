@@ -7,16 +7,8 @@
 #include <memory>
 
 #include "components/performance_manager/test_support/graph_test_harness.h"
-#include "ui/gfx/geometry/rect.h"
 
 namespace performance_manager {
-
-namespace {
-
-static constexpr gfx::Rect kEmptyIntersection(0, 0, 0, 0);
-static constexpr gfx::Rect kNonEmptyIntersection(0, 0, 10, 10);
-
-}  // namespace
 
 class FrameVisibilityDecoratorTest : public GraphTestHarness {
  public:
@@ -78,86 +70,89 @@ TEST_F(FrameVisibilityDecoratorTest, SetPageVisibleWithChildNodes) {
   auto main_frame_node = CreateFrameNodeAutoId(process_node(), page_node.get());
   main_frame_node->SetIsCurrent(true);
 
-  // Create a child frame node with a non-empty viewport intersection.
+  // Create a child frame node whose intersection with the viewport is still
+  // unknown.
+  auto unknown_intersection_child_frame_node = CreateFrameNodeAutoId(
+      process_node(), page_node.get(), main_frame_node.get());
+  unknown_intersection_child_frame_node->SetIsCurrent(true);
+
+  // Create a child frame node that intersect with the viewport.
   auto intersecting_child_frame_node = CreateFrameNodeAutoId(
       process_node(), page_node.get(), main_frame_node.get());
   intersecting_child_frame_node->SetIsCurrent(true);
-  intersecting_child_frame_node->SetViewportIntersection(kNonEmptyIntersection);
+  intersecting_child_frame_node->SetIntersectsViewport(true);
 
-  // Create a child frame node with an empty viewport intersection.
+  // Create a child frame node that doesn't intersect with the viewport.
   auto non_intersecting_child_frame_node = CreateFrameNodeAutoId(
       process_node(), page_node.get(), main_frame_node.get());
   non_intersecting_child_frame_node->SetIsCurrent(true);
-  non_intersecting_child_frame_node->SetViewportIntersection(
-      kEmptyIntersection);
+  non_intersecting_child_frame_node->SetIntersectsViewport(false);
 
-  // Create a child frame node with no viewport intersection
-  auto no_intersection_child_frame_node = CreateFrameNodeAutoId(
-      process_node(), page_node.get(), main_frame_node.get());
-  no_intersection_child_frame_node->SetIsCurrent(true);
-
-  // Starts not visible because the page is not visible.
+  // They all starts not visible because the page is not visible.
+  EXPECT_EQ(unknown_intersection_child_frame_node->visibility(),
+            FrameNode::Visibility::kNotVisible);
   EXPECT_EQ(main_frame_node->visibility(), FrameNode::Visibility::kNotVisible);
   EXPECT_EQ(intersecting_child_frame_node->visibility(),
             FrameNode::Visibility::kNotVisible);
   EXPECT_EQ(non_intersecting_child_frame_node->visibility(),
-            FrameNode::Visibility::kNotVisible);
-  EXPECT_EQ(no_intersection_child_frame_node->visibility(),
             FrameNode::Visibility::kNotVisible);
 
   // Make the page visible.
   page_node->SetIsVisible(true);
+  // The frame with an unknown viewport intersection has an unknown visibility.
+  EXPECT_EQ(unknown_intersection_child_frame_node->visibility(),
+            FrameNode::Visibility::kUnknown);
+  // The frame that intersects with the viewport is now visible.
   EXPECT_EQ(main_frame_node->visibility(), FrameNode::Visibility::kVisible);
   EXPECT_EQ(intersecting_child_frame_node->visibility(),
             FrameNode::Visibility::kVisible);
-  // The frame with an empty viewport intersection is still not visible.
+  // The frame that doesn't intersect with the viewport is still not visible.
   EXPECT_EQ(non_intersecting_child_frame_node->visibility(),
             FrameNode::Visibility::kNotVisible);
-  // The frame with no viewport intersection has an unknown visibility.
-  EXPECT_EQ(no_intersection_child_frame_node->visibility(),
-            FrameNode::Visibility::kUnknown);
 
   // Make the page not visible again.
   page_node->SetIsVisible(false);
+  EXPECT_EQ(unknown_intersection_child_frame_node->visibility(),
+            FrameNode::Visibility::kNotVisible);
   EXPECT_EQ(main_frame_node->visibility(), FrameNode::Visibility::kNotVisible);
   EXPECT_EQ(intersecting_child_frame_node->visibility(),
             FrameNode::Visibility::kNotVisible);
   EXPECT_EQ(non_intersecting_child_frame_node->visibility(),
             FrameNode::Visibility::kNotVisible);
-  EXPECT_EQ(no_intersection_child_frame_node->visibility(),
-            FrameNode::Visibility::kNotVisible);
 }
 
-TEST_F(FrameVisibilityDecoratorTest, SetFrameViewportIntersection) {
+TEST_F(FrameVisibilityDecoratorTest, SetFrameIntersectsViewport) {
   auto page_node = CreateNode<PageNodeImpl>();
+  // The page starts already visible.
   page_node->SetIsVisible(true);
   auto main_frame_node = CreateFrameNodeAutoId(process_node(), page_node.get());
   main_frame_node->SetIsCurrent(true);
 
-  // Create a test frame node with no viewport intersection.
+  // Create a test frame node whose intersection with the viewport is still
+  // unknown.
   auto frame_node = CreateFrameNodeAutoId(process_node(), page_node.get(),
                                           main_frame_node.get());
   frame_node->SetIsCurrent(true);
-  EXPECT_FALSE(frame_node->viewport_intersection().has_value());
+  EXPECT_FALSE(frame_node->intersects_viewport().has_value());
 
-  // Create a child frame node with no viewport_intersection.
+  // Create a child frame node whose intersection with the viewport is still
+  // unknown.
   auto child_frame_node =
       CreateFrameNodeAutoId(process_node(), page_node.get(), frame_node.get());
   child_frame_node->SetIsCurrent(true);
-  EXPECT_FALSE(child_frame_node->viewport_intersection().has_value());
+  EXPECT_FALSE(child_frame_node->intersects_viewport().has_value());
 
-  // Both frames have an unknown visibility because their viewport intersection
-  // hasn't been determined yet.
+  // Both frames starts with an unknown visibility.
   EXPECT_EQ(frame_node->visibility(), FrameNode::Visibility::kUnknown);
   EXPECT_EQ(child_frame_node->visibility(), FrameNode::Visibility::kUnknown);
 
-  // Set the viewport intersection of the test frame to a non-empty one.
-  frame_node->SetViewportIntersection(kNonEmptyIntersection);
+  // Make it so that the test frame intersects with the view port.
+  frame_node->SetIntersectsViewport(true);
   EXPECT_EQ(frame_node->visibility(), FrameNode::Visibility::kVisible);
   EXPECT_EQ(child_frame_node->visibility(), FrameNode::Visibility::kUnknown);
 
-  // Set the viewport intersection of the child frame to a non-empty one.
-  child_frame_node->SetViewportIntersection(kNonEmptyIntersection);
+  // Make it so that the child frame intersects with the view port.
+  child_frame_node->SetIntersectsViewport(true);
   EXPECT_EQ(frame_node->visibility(), FrameNode::Visibility::kVisible);
   EXPECT_EQ(child_frame_node->visibility(), FrameNode::Visibility::kVisible);
 }
