@@ -86,7 +86,7 @@ class CORE_EXPORT FillLayer {
   EFillBox Clip() const { return static_cast<EFillBox>(clip_); }
   EFillBox Origin() const { return static_cast<EFillBox>(origin_); }
   const FillRepeat& Repeat() const { return repeat_; }
-  CompositingOperator CompositingOperator() const {
+  enum CompositingOperator CompositingOperator() const {
     return static_cast<enum CompositingOperator>(compositing_operator_);
   }
   CompositeOperator Composite() const;
