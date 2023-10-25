@@ -11,7 +11,6 @@ import android.animation.ObjectAnimator;
 import android.animation.RectEvaluator;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Handler;
@@ -19,7 +18,6 @@ import android.os.SystemClock;
 import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
@@ -695,7 +693,7 @@ public class TabSwitcherLayout extends Layout {
         int y = Math.round(originY);
         int offsetY = y + topMargin;
         Rect origin = new Rect(x, y, x + 1, y + 1);
-        resetTabJavaView(new Rect(x, offsetY, x + 1, offsetY + 1));
+        mTabJavaView.reset(new Rect(x, offsetY, x + 1, offsetY + 1));
         mTabJavaView.setImageBitmap(null);
         updateBackgroundColor(newIsIncognito);
         mTabJavaView.setVisibility(View.INVISIBLE);
@@ -714,7 +712,7 @@ public class TabSwitcherLayout extends Layout {
                     public void onAnimationEnd(Animator animation) {
                         mNewTabAnimation = null;
                         postHiding();
-                        resetTabJavaView(fullscreenRect);
+                        mTabJavaView.reset(fullscreenRect);
                     }
                 });
 
@@ -857,23 +855,6 @@ public class TabSwitcherLayout extends Layout {
         mTabToSwitcherAnimation.start();
     }
 
-    private void resetTabJavaView(Rect rect) {
-        if (rect != null) {
-            FrameLayout.LayoutParams layoutParams =
-                    (FrameLayout.LayoutParams) mTabJavaView.getLayoutParams();
-            layoutParams.width = rect.width();
-            layoutParams.height = rect.height();
-            layoutParams.setMargins(rect.left, rect.top, 0, 0);
-            mTabJavaView.setLayoutParams(layoutParams);
-        }
-        mTabJavaView.setImageBitmap(null);
-        mTabJavaView.setImageMatrix(new Matrix());
-        mTabJavaView.setScaleX(1.0f);
-        mTabJavaView.setScaleY(1.0f);
-        mTabJavaView.setTranslationX(0.0f);
-        mTabJavaView.setTranslationY(0.0f);
-    }
-
     private void showOverviewWithTabShrinkJava(
             boolean animate, Supplier<Rect> target, boolean tabListCanShowQuickly, Bitmap bitmap) {
         // Skip shrinking animation when there is no tab in current tab model.
@@ -895,7 +876,7 @@ public class TabSwitcherLayout extends Layout {
         final Rect targetRect = target.get();
         if (!showShrinkingAnimation || targetRect == null) {
             mController.showTabSwitcherView(animate);
-            resetTabJavaView(targetRect);
+            mTabJavaView.reset(targetRect);
             mTabJavaView.setVisibility(View.GONE);
             return;
         }
@@ -907,8 +888,12 @@ public class TabSwitcherLayout extends Layout {
         final int topMargin = fullscreenTop - containerRect.top;
         fullscreenRect.set(fullscreenRect.left, 0, fullscreenRect.right, fullscreenRect.bottom);
 
-        resetTabJavaView(new Rect(fullscreenRect.left, topMargin, fullscreenRect.right,
-                fullscreenRect.bottom + topMargin));
+        mTabJavaView.reset(
+                new Rect(
+                        fullscreenRect.left,
+                        topMargin,
+                        fullscreenRect.right,
+                        fullscreenRect.bottom + topMargin));
         updateBackgroundColor(isIncognito());
         mTabJavaView.setImageBitmap(bitmap);
         mTabJavaView.setVisibility(View.INVISIBLE);
@@ -941,7 +926,7 @@ public class TabSwitcherLayout extends Layout {
                         mTabToSwitcherAnimation = null;
                         doneShowing();
                         mSkipDoneShowingOnTabSwitcherFinishedShowing = false;
-                        resetTabJavaView(targetRect);
+                        mTabJavaView.reset(targetRect);
 
                         mAnimationTracker.onEnd();
                         mAnimationTransitionType = TransitionType.NONE;
@@ -976,8 +961,12 @@ public class TabSwitcherLayout extends Layout {
         final int topMargin = fullscreenTop - containerRect.top;
         fullscreenRect.set(fullscreenRect.left, 0, fullscreenRect.right, fullscreenRect.bottom);
 
-        resetTabJavaView(new Rect(
-                source.left, source.top + topMargin, source.right, source.bottom + topMargin));
+        mTabJavaView.reset(
+                new Rect(
+                        source.left,
+                        source.top + topMargin,
+                        source.right,
+                        source.bottom + topMargin));
         mTabJavaView.setVisibility(View.INVISIBLE);
 
         mRectAnimator = new GtsRectAnimator(mTabJavaView, source, fullscreenRect);
@@ -997,7 +986,7 @@ public class TabSwitcherLayout extends Layout {
                     public void onAnimationEnd(Animator animation) {
                         mTabToSwitcherAnimation = null;
                         postHiding();
-                        resetTabJavaView(fullscreenRect);
+                        mTabJavaView.reset(fullscreenRect);
                         mAnimationTracker.onEnd();
                         mAnimationTransitionType = TransitionType.NONE;
                     }
@@ -1009,7 +998,7 @@ public class TabSwitcherLayout extends Layout {
                             if (bitmap == null) {
                                 mTabToSwitcherAnimation = null;
                                 postHiding();
-                                resetTabJavaView(fullscreenRect);
+                                mTabJavaView.reset(fullscreenRect);
                                 return;
                             }
 

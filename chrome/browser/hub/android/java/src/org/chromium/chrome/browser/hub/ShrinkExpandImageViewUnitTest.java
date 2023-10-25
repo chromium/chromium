@@ -4,13 +4,19 @@
 
 package org.chromium.chrome.browser.hub;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.widget.FrameLayout;
 
 import androidx.test.filters.SmallTest;
@@ -36,6 +42,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(Mode.PAUSED)
 public class ShrinkExpandImageViewUnitTest {
+    private static final float FLOAT_TOLERANCE = 0.001f;
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private ActivityController<Activity> mActivityController;
@@ -45,6 +53,9 @@ public class ShrinkExpandImageViewUnitTest {
 
     @Mock private Runnable mRunnable1;
     @Mock private Runnable mRunnable2;
+
+    @Mock private Bitmap mBitmap;
+    @Mock private Drawable mDrawable;
 
     @Before
     public void setUp() {
@@ -62,6 +73,70 @@ public class ShrinkExpandImageViewUnitTest {
     @After
     public void tearDown() {
         mActivityController.destroy();
+    }
+
+    @Test
+    @SmallTest
+    public void testReset() {
+        mRootView.addView(mShrinkExpandImageView);
+        ShadowLooper.runUiThreadTasks();
+        mRootView.layout(0, 0, 100, 100);
+
+        mShrinkExpandImageView.setScaleX(1.5f);
+        mShrinkExpandImageView.setScaleY(2.0f);
+        mShrinkExpandImageView.setTranslationX(3.0f);
+        mShrinkExpandImageView.setTranslationY(3.0f);
+        Matrix m = new Matrix();
+        m.setTranslate(40, 60);
+        mShrinkExpandImageView.setImageMatrix(m);
+        mShrinkExpandImageView.setImageBitmap(mBitmap);
+        assertEquals(mBitmap, mShrinkExpandImageView.getBitmap());
+
+        int left = 100;
+        int top = 50;
+        int width = 70;
+        int height = 1000;
+        mShrinkExpandImageView.reset(new Rect(left, top, left + width, top + height));
+
+        assertEquals(1.0f, mShrinkExpandImageView.getScaleX(), FLOAT_TOLERANCE);
+        assertEquals(1.0f, mShrinkExpandImageView.getScaleY(), FLOAT_TOLERANCE);
+        assertEquals(0.0f, mShrinkExpandImageView.getTranslationX(), FLOAT_TOLERANCE);
+        assertEquals(0.0f, mShrinkExpandImageView.getTranslationY(), FLOAT_TOLERANCE);
+        assertTrue(mShrinkExpandImageView.getImageMatrix().isIdentity());
+        assertNull(mShrinkExpandImageView.getBitmap());
+
+        FrameLayout.LayoutParams layoutParams =
+                (FrameLayout.LayoutParams) mShrinkExpandImageView.getLayoutParams();
+        assertEquals(left, layoutParams.leftMargin);
+        assertEquals(top, layoutParams.topMargin);
+        assertEquals(width, layoutParams.width);
+        assertEquals(height, layoutParams.height);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetBitmap() {
+        mRootView.addView(mShrinkExpandImageView);
+        ShadowLooper.runUiThreadTasks();
+        mRootView.layout(0, 0, 100, 100);
+
+        mShrinkExpandImageView.setImageBitmap(mBitmap);
+        assertEquals(mBitmap, mShrinkExpandImageView.getBitmap());
+
+        mShrinkExpandImageView.setImageBitmap(null);
+        assertNull(mShrinkExpandImageView.getBitmap());
+
+        mShrinkExpandImageView.setImageBitmap(mBitmap);
+        assertEquals(mBitmap, mShrinkExpandImageView.getBitmap());
+
+        mShrinkExpandImageView.setImageDrawable(mDrawable);
+        assertNull(mShrinkExpandImageView.getBitmap());
+
+        mShrinkExpandImageView.setImageBitmap(mBitmap);
+        assertEquals(mBitmap, mShrinkExpandImageView.getBitmap());
+
+        mShrinkExpandImageView.setImageDrawable(null);
+        assertNull(mShrinkExpandImageView.getBitmap());
     }
 
     /** These tests are mirrored from {@link RunOnNextLayoutDelegateUnitTest}. */

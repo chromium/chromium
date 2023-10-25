@@ -7,16 +7,15 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
 import android.util.Size;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.build.annotations.UsedByReflection;
+import org.chromium.chrome.browser.hub.ShrinkExpandImageView;
 
-/** Animator for scaling a view from one rect to another. */
+/** Animator for scaling a {@link ShrinkExpandImageView} from one rect to another. */
 public class GtsRectAnimator {
     /**
      * Tag for the {@link ObjectAnimator#ofObject()} {@code propertyName} param. Using this
@@ -25,7 +24,7 @@ public class GtsRectAnimator {
      */
     public static final String RECT = "rect";
 
-    private final ImageView mView;
+    private final ShrinkExpandImageView mView;
     private final Rect mInitialRect;
     private final Rect mFinalRect;
     private final Matrix mImageMatrix;
@@ -33,14 +32,16 @@ public class GtsRectAnimator {
 
     /**
      * Create an animator that scales and translates a view from one rect to another.
-     * @param view the ImageView to apply the translation and scaling to. It should have a
-     *             default scale of 1.0f and translation of 0.0f and be the size of
-     *             {@code initialRect}.
+     *
+     * @param view the ShrinkExpandImageView to apply the translation and scaling to. It should have
+     *     a default scale of 1.0f and translation of 0.0f and be the size of {@code initialRect}.
      * @param initialRect the initial rect that view encompasses in global coordinates.
      * @param finalRect the final rect that view will encompass in global coordinates.
      */
     public GtsRectAnimator(
-            @NonNull ImageView view, @NonNull Rect initialRect, @NonNull Rect finalRect) {
+            @NonNull ShrinkExpandImageView view,
+            @NonNull Rect initialRect,
+            @NonNull Rect finalRect) {
         mView = view;
         assert mView.getScaleX() == 1.0f;
         assert mView.getScaleY() == 1.0f;
@@ -50,11 +51,6 @@ public class GtsRectAnimator {
         mInitialRect = initialRect;
         mFinalRect = finalRect;
         mImageMatrix = new Matrix();
-    }
-
-    private @Nullable Bitmap getBitmap() {
-        BitmapDrawable drawable = (BitmapDrawable) mView.getDrawable();
-        return drawable != null ? drawable.getBitmap() : null;
     }
 
     /**
@@ -87,7 +83,7 @@ public class GtsRectAnimator {
 
         // If there is no image we don't need to do anything else.
         mImageMatrix.reset();
-        Bitmap bitmap = getBitmap();
+        Bitmap bitmap = mView.getBitmap();
         if (bitmap == null) return;
 
         // Scale image to fill the width of the screen. Normalize the scale against the scaling of
