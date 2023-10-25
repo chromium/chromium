@@ -285,6 +285,34 @@ TEST_F(FasterSplitScreenTest, CycleSnap) {
   VerifySplitViewOverviewSession(w1.get());
 }
 
+TEST_F(FasterSplitScreenTest, EndSplitViewOverviewSession) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kSecondarySnapped);
+  VerifySplitViewOverviewSession(w1.get());
+
+  // Drag `w1` out of split view. Test it ends overview.
+  const gfx::Rect window_bounds(w1->GetBoundsInScreen());
+  const gfx::Point drag_point(window_bounds.CenterPoint().x(),
+                              window_bounds.y() + 10);
+  auto* event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(drag_point);
+  event_generator->DragMouseBy(10, 10);
+  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  // Snap then minimize the window. Test it ends overview.
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
+  VerifySplitViewOverviewSession(w1.get());
+  WMEvent minimize_event(WM_EVENT_MINIMIZE);
+  WindowState::Get(w1.get())->OnWMEvent(&minimize_event);
+  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  // Snap then close the window. Test it ends overview.
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
+  VerifySplitViewOverviewSession(w1.get());
+  w1.reset();
+  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+}
+
 // Tests the histograms for the split view overview session exit points are
 // recorded correctly.
 TEST_F(FasterSplitScreenTest, SplitViewOverviewSessionExitPointHistogramsTest) {
@@ -881,12 +909,9 @@ TEST_F(SnapGroupEntryPointArm1Test, SnapOneTestWindowStartsOverview) {
       /*state_type=*/chromeos::WindowStateType::kSecondarySnapped);
   VerifySplitViewOverviewSession(w.get());
 
-  // Close `w`. Test that we are still in overview but not split view overview.
+  // Close `w`. Test that we end overview.
   w.reset();
-  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
-  EXPECT_FALSE(RootWindowController::ForWindow(Shell::GetPrimaryRootWindow())
-                   ->split_view_overview_session());
-  EXPECT_EQ(work_area_bounds(), GetOverviewGridBounds());
+  EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
 }
 
 // Tests that when there is one snapped window and overview open, creating a new

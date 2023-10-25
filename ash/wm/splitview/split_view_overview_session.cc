@@ -74,7 +74,17 @@ SplitViewOverviewSession::SplitViewOverviewSession(
 }
 
 SplitViewOverviewSession::~SplitViewOverviewSession() {
+  if (is_shutting_down_) {
+    return;
+  }
   WindowState::Get(window_)->RemoveObserver(this);
+  if (window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled() &&
+      IsInOverviewSession()) {
+    // `EndOverview()` will also try to end this again.
+    base::AutoReset<bool> ignore(&is_shutting_down_, true);
+    Shell::Get()->overview_controller()->EndOverview(
+        OverviewEndAction::kSplitView);
+  }
 }
 
 void SplitViewOverviewSession::Init(
@@ -217,6 +227,12 @@ void SplitViewOverviewSession::OnWindowBoundsChanged(
           WindowResizer::kBoundsChange_Resizes);
     CHECK(presentation_time_recorder_);
     presentation_time_recorder_->RequestNext();
+  }
+
+  if (GetOverviewSession()) {
+    GetOverviewSession()
+        ->GetGridWithRootWindow(window->GetRootWindow())
+        ->RefreshGridBounds(/*animate=*/false);
   }
 
   // SplitViewController will update the divider position and notify observers

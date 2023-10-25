@@ -109,6 +109,9 @@ class ASH_EXPORT SplitViewOverviewSession : public aura::WindowObserver,
   // the opposite side.
   const raw_ptr<aura::Window> window_;
 
+  // True when `this` is being destroyed.
+  bool is_shutting_down_ = false;
+
   SplitViewOverviewSetupType setup_type_ =
       SplitViewOverviewSetupType::kSnapThenAutomaticOverview;
 
