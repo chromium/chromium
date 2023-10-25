@@ -81,7 +81,11 @@ base::TimeDelta AdjustExpiry(base::TimeDelta expiry, SourceType source_type) {
 
 }  // namespace
 
-void RecordSourceRegistrationError(mojom::SourceRegistrationError error) {
+void RecordSourceRegistrationError(SourceRegistrationError error) {
+  static_assert(
+      SourceRegistrationError::kMaxValue ==
+          SourceRegistrationError::kTriggerDataMatchingUnknownValue,
+      "Bump version of Conversions.SourceRegistrationError6 histogram.");
   base::UmaHistogramEnumeration("Conversions.SourceRegistrationError6", error);
 }
 
