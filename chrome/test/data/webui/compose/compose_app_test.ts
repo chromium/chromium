@@ -5,7 +5,7 @@
 import 'chrome://compose/app.js';
 
 import {ComposeAppElement} from 'chrome://compose/app.js';
-import {ComposeDialogCallbackRouter, ComposeState, ComposeStatus, Length, OpenMetadata, StyleModifiers, Tone} from 'chrome://compose/compose.mojom-webui.js';
+import {CloseReason, ComposeDialogCallbackRouter, ComposeState, ComposeStatus, Length, OpenMetadata, StyleModifiers, Tone} from 'chrome://compose/compose.mojom-webui.js';
 import {ComposeApiProxy, ComposeApiProxyImpl} from 'chrome://compose/compose_api_proxy.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -24,7 +24,11 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
   remote = this.router_.$.bindNewPipeAndPassRemote();
 
   constructor() {
-    super(['compose', 'requestInitialState', 'saveWebuiState']);
+    super(['closeUi', 'compose', 'requestInitialState', 'saveWebuiState']);
+  }
+
+  closeUi(reason: CloseReason) {
+    this.methodCalled('closeUi', reason);
   }
 
   compose(style: StyleModifiers, input: string): void {
@@ -230,5 +234,14 @@ suite('ComposeApp', () => {
     app.$.submitButton.click();
     savedState = await testProxy.whenCalled('saveWebuiState');
     assertEquals(JSON.stringify({input: 'Here is my input'}), savedState);
+  });
+
+  test('CloseButton', async () => {
+    assertTrue(isVisible(app.$.closeButton));
+
+    app.$.closeButton.click();
+    // Close reason should match that given to the close button.
+    const closeReason = await testProxy.whenCalled('closeUi');
+    assertEquals(CloseReason.kCloseButton, closeReason);
   });
 });

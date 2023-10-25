@@ -7,6 +7,7 @@ import {CloseReason, ComposeDialogCallbackRouter, ComposeDialogClosePageHandlerR
 /** @interface */
 export interface ComposeApiProxy {
   acceptComposeResult(): void;
+  closeUi(reason: CloseReason): void;
   compose(style: StyleModifiers, input: string): void;
   getRouter(): ComposeDialogCallbackRouter;
   requestInitialState(): Promise<OpenMetadata>;

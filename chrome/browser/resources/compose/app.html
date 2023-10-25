@@ -135,7 +135,8 @@
 
 <div id="heading">
   <h1>$i18n{dialogTitle}</h1>
-  <cr-icon-button iron-icon="cr:close"></cr-icon-button>
+  <cr-icon-button id="closeButton" iron-icon="cr:close" on-click="onClose_">
+  </cr-icon-button>
 </div>
 
 <div id="body" scrollable>

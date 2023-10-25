@@ -17,7 +17,7 @@ import {CrScrollableMixin} from '//resources/cr_elements/cr_scrollable_mixin.js'
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {ComposeDialogCallbackRouter, ComposeResponse, ComposeStatus, Length, Tone} from './compose.mojom-webui.js';
+import {CloseReason, ComposeDialogCallbackRouter, ComposeResponse, ComposeStatus, Length, Tone} from './compose.mojom-webui.js';
 import {ComposeApiProxy, ComposeApiProxyImpl} from './compose_api_proxy.js';
 import {ComposeTextareaElement} from './textarea.js';
 
@@ -30,6 +30,7 @@ interface ComposeAppState {
 export interface ComposeAppElement {
   $: {
     body: HTMLElement,
+    closeButton: HTMLElement,
     insertButton: CrButtonElement,
     loading: HTMLElement,
     refreshButton: HTMLElement,
@@ -125,6 +126,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
         this.input_ = appState.input;
       }
     });
+  }
+
+  private onClose_() {
+    this.apiProxy_.closeUi(CloseReason.kCloseButton);
   }
 
   private onSubmit_() {

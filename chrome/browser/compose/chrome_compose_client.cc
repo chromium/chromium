@@ -112,7 +112,10 @@ void ChromeComposeClient::CloseUI(compose::mojom::CloseReason reason) {
       RemoveActiveSession();
       break;
   }
-  // TODO(b/302748101) Call CloseDialog() on ComposeDialogController.
+
+  if (compose_dialog_controller_) {
+    compose_dialog_controller_->Close();
+  }
 }
 
 void ChromeComposeClient::CreateSessionIfNeeded(
