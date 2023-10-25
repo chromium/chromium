@@ -318,6 +318,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kChromeCSIPageT,
           WebFeature::kChromeCSIStartE,
           WebFeature::kChromeCSITran,
+          WebFeature::kThirdPartyCookieAccessBlockByExperiment,
       }));
   return *opt_in_features;
 }
