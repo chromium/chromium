@@ -1176,6 +1176,7 @@ policies:
   1175: DeviceFlexHwDataForProductImprovementEnabled
   1176: SiteSearchSettings
   1177: PrivateNetworkAccessRestrictionsEnabled
+  1178: ContextMenuPhotoSharingSettings
 atomic_groups:
   1: Homepage
   2: RemoteAccess

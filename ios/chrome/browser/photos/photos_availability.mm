@@ -5,11 +5,14 @@
 #import "ios/chrome/browser/photos/photos_availability.h"
 
 #import "base/feature_list.h"
+#import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/photos/photos_policy.h"
 #import "ios/chrome/browser/photos/photos_service.h"
 #import "ios/chrome/browser/photos/photos_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "url/gurl.h"
@@ -19,6 +22,13 @@ bool IsSaveToPhotosAvailable(ChromeBrowserState* browser_state) {
 
   // Check flag.
   if (!base::FeatureList::IsEnabled(kIOSSaveToPhotos)) {
+    return false;
+  }
+
+  // Check policy.
+  if (browser_state->GetPrefs()->GetInteger(
+          prefs::kIosSaveToPhotosContextMenuPolicySettings) ==
+      static_cast<int>(SaveToPhotosPolicySettings::kDisabled)) {
     return false;
   }
 

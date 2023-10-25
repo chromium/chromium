@@ -11,6 +11,7 @@ include_rules = [
   "+ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h",
   "+ios/chrome/browser/voice/model/voice_search_prefs_registration.h",
   "+ios/chrome/browser/web/font_size/font_size_tab_helper.h",
+  "+ios/chrome/browser/photos/photos_policy.h",
 ]
 
 specific_include_rules = {

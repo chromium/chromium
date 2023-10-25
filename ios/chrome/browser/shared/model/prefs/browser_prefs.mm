@@ -77,6 +77,7 @@
 #import "ios/chrome/browser/ntp/set_up_list_prefs.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
+#import "ios/chrome/browser/photos/photos_policy.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/prerender/model/prerender_pref.h"
 #import "ios/chrome/browser/push_notification/push_notification_service.h"
@@ -592,6 +593,9 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                std::string());
   registry->RegisterBooleanPref(prefs::kIosSaveToPhotosSkipAccountPicker,
                                 false);
+  registry->RegisterIntegerPref(
+      prefs::kIosSaveToPhotosContextMenuPolicySettings,
+      static_cast<int>(SaveToPhotosPolicySettings::kEnabled));
 
   // Preferences related to parcel tracking.
   registry->RegisterBooleanPref(

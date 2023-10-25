@@ -131,6 +131,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kLensCameraAssistedSearchEnabled,
     prefs::kLensCameraAssistedSearchPolicyAllowed,
     base::Value::Type::BOOLEAN },
+  { policy::key::kContextMenuPhotoSharingSettings,
+    prefs::kIosSaveToPhotosContextMenuPolicySettings,
+    base::Value::Type::INTEGER },
 };
 // clang-format on
 

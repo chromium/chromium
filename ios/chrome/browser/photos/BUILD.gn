@@ -15,6 +15,10 @@ source_set("photos") {
   ]
 }
 
+source_set("policy") {
+  sources = [ "photos_policy.h" ]
+}
+
 source_set("metrics") {
   sources = [
     "photos_metrics.h",
@@ -46,9 +50,12 @@ source_set("photos_availability") {
   deps = [
     ":photos",
     ":photos_service_factory",
+    ":policy",
+    "//components/prefs",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin",
     "//url",

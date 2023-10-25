@@ -25646,5 +25646,8 @@
   },
   "SiteSearchSettings": {
     "reason_for_missing_test": "TODO(b/306201833): enable this policy test once policy handler is implemented"
+  },
+  "ContextMenuPhotoSharingSettings" : {
+    "reason_for_missing_test": "Maps into an iOS-specific pref"
   }
 }

@@ -25,6 +25,7 @@ tags must be opened and closed on the same line to avoid validation errors.
 * Google Cast: `<ph name="PRODUCT_NAME">Google Cast</ph>`
 * Google Cloud Print: `<ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph>`
 * Google Drive: `<ph name="GOOGLE_DRIVE_NAME">Google Drive</ph>`
+* Google Photos: `<ph name="GOOGLE_PHOTOS_PRODUCT_NAME">Google Photos</ph>`
 * Google Update: `<ph name="GOOGLE_UPDATE_NAME">Google Update</ph>`
 * Google Workspace: `<ph name="GOOGLE_WORKSPACE_PRODUCT_NAME">Google Workspace</ph>`
 * Lacros: `<ph name="LACROS_NAME">Lacros</ph>`

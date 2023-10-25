@@ -73,6 +73,7 @@ extern const char kIosSafetyCheckManagerUpdateCheckResult[];
 extern const char kIosSafetyCheckManagerSafeBrowsingCheckResult[];
 extern const char kIosSaveToPhotosDefaultGaiaId[];
 extern const char kIosSaveToPhotosSkipAccountPicker[];
+extern const char kIosSaveToPhotosContextMenuPolicySettings[];
 extern const char kIosSettingsSafetyCheckLastRunTime[];
 extern const char kIosNtpFeedTopPromoAlreadySeen[];
 extern const char kIosNtpFeedTopSigninPromoDisplayedCount[];

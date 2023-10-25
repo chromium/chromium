@@ -268,6 +268,11 @@ const char kIosSaveToPhotosDefaultGaiaId[] =
 const char kIosSaveToPhotosSkipAccountPicker[] =
     "ios.save_to_photos.skip_account_picker";
 
+// Integer preference indicating whether Save to Photos is enabled by enterprise
+// policy.
+const char kIosSaveToPhotosContextMenuPolicySettings[] =
+    "ios.save_to_photos.context_menu_policy";
+
 // Time preference containing the last run time of the Safety Check (via
 // Settings).
 const char kIosSettingsSafetyCheckLastRunTime[] =

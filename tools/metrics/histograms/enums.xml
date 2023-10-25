@@ -34246,6 +34246,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1175" label="DeviceFlexHwDataForProductImprovementEnabled"/>
   <int value="1176" label="SiteSearchSettings"/>
   <int value="1177" label="PrivateNetworkAccessRestrictionsEnabled"/>
+  <int value="1178" label="ContextMenuPhotoSharingSettings"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
