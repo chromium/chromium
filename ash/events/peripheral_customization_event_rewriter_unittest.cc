@@ -35,6 +35,7 @@
 #include "ui/events/test/test_event_rewriter_continuation.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace ash {
 
@@ -394,6 +395,25 @@ TEST_F(PeripheralCustomizationEventRewriterTest, MouseEventActionRewriting) {
       continuation.weak_ptr_factory_.GetWeakPtr());
   EXPECT_TRUE(continuation.discarded());
   ASSERT_FALSE(accelerator_observer.has_action_performed());
+}
+
+TEST_F(PeripheralCustomizationEventRewriterTest, MouseWheelDuringObserving) {
+  TestEventRewriterContinuation continuation;
+
+  rewriter_->StartObservingMouse(kMouseDeviceId,
+                                 /*can_rewrite_key_event=*/true);
+
+  gfx::Vector2d expected_offset(/*x=*/100, /*y=*/50);
+  ui::MouseWheelEvent event =
+      ui::MouseWheelEvent(expected_offset, gfx::PointF{}, gfx::PointF{},
+                          /*time_stamp=*/{}, ui::EF_NONE, ui::EF_NONE);
+  event.set_source_device_id(kMouseDeviceId);
+
+  rewriter_->RewriteEvent(event, continuation.weak_ptr_factory_.GetWeakPtr());
+  ASSERT_TRUE(continuation.passthrough_event);
+  ASSERT_TRUE(continuation.passthrough_event->IsMouseWheelEvent());
+  EXPECT_EQ(expected_offset,
+            continuation.passthrough_event->AsMouseWheelEvent()->offset());
 }
 
 class MouseButtonObserverTest

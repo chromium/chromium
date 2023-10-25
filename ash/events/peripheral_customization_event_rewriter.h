@@ -113,6 +113,8 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
   // Applies all remapped modifiers.
   void ApplyRemappedModifiers(ui::Event& event);
 
+  std::unique_ptr<ui::Event> CloneEvent(const ui::Event& event);
+
   base::flat_set<int> mice_to_observe_;
   base::flat_set<int> mice_to_observe_key_events_;
   base::flat_set<int> graphics_tablets_to_observe_;

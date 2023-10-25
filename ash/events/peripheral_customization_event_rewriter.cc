@@ -585,13 +585,16 @@ PeripheralCustomizationEventRewriter::RewriteMouseEvent(
 
     // Otherwise, the flags must be cleared for the remappable buttons so they
     // do not affect the application while the mouse is meant to be observed.
-    ui::MouseEvent rewritten_event = mouse_event;
+    std::unique_ptr<ui::Event> rewritten_event = CloneEvent(mouse_event);
     const int remappable_flags =
         GetRemappableMouseEventFlags(*device_type_to_observe);
-    rewritten_event.set_flags(rewritten_event.flags() & ~remappable_flags);
-    rewritten_event.set_changed_button_flags(
-        rewritten_event.changed_button_flags() & ~remappable_flags);
-    return SendEvent(continuation, &rewritten_event);
+    rewritten_event->set_flags(rewritten_event->flags() & ~remappable_flags);
+    if (rewritten_event->IsMouseEvent()) {
+      auto& rewritten_mouse_event = *rewritten_event->AsMouseEvent();
+      rewritten_mouse_event.set_changed_button_flags(
+          rewritten_mouse_event.changed_button_flags() & ~remappable_flags);
+    }
+    return SendEvent(continuation, rewritten_event.get());
   }
 
   std::unique_ptr<ui::Event> rewritten_event;
@@ -603,13 +606,7 @@ PeripheralCustomizationEventRewriter::RewriteMouseEvent(
     UpdatePressedButtonMap(std::move(button), mouse_event, rewritten_event);
   }
   if (!rewritten_event) {
-    rewritten_event = mouse_event.Clone();
-    // SetNativeEvent must be called explicitly as native events are not copied
-    // on ChromeOS by default. This is because `PlatformEvent` is a pointer by
-    // default, so its lifetime can not be guaranteed in general. In this case,
-    // the lifetime of  `rewritten_event` is guaranteed to be less than the
-    // original `mouse_event`.
-    SetNativeEvent(*rewritten_event, mouse_event.native_event());
+    rewritten_event = CloneEvent(mouse_event);
   }
 
   RemoveRemappedModifiers(*rewritten_event);
@@ -684,6 +681,18 @@ void PeripheralCustomizationEventRewriter::ApplyRemappedModifiers(
     flags |= flag;
   }
   event.set_flags(event.flags() | flags);
+}
+
+std::unique_ptr<ui::Event> PeripheralCustomizationEventRewriter::CloneEvent(
+    const ui::Event& event) {
+  std::unique_ptr<ui::Event> cloned_event = event.Clone();
+  // SetNativeEvent must be called explicitly as native events are not copied
+  // on ChromeOS by default. This is because `PlatformEvent` is a pointer by
+  // default, so its lifetime can not be guaranteed in general. In this case,
+  // the lifetime of  `rewritten_event` is guaranteed to be less than the
+  // original `mouse_event`.
+  SetNativeEvent(*cloned_event, event.native_event());
+  return cloned_event;
 }
 
 }  // namespace ash
