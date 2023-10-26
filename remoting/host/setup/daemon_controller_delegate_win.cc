@@ -17,6 +17,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "base/win/scoped_bstr.h"
+#include "remoting/base/is_google_email.h"
 #include "remoting/base/scoped_sc_handle_win.h"
 #include "remoting/host/branding.h"
 #include "remoting/host/host_config.h"
@@ -153,12 +154,16 @@ bool WriteConfig(const base::Value::Dict& config) {
     LOG(ERROR) << "Config is missing " << kHostIdConfigPath;
     return false;
   }
-  if (!config.FindString(kHostSecretHashConfigPath)) {
-    LOG(ERROR) << "Config is missing " << kHostSecretHashConfigPath;
+  const std::string* host_owner = config.FindString(kHostOwnerConfigPath);
+  if (!host_owner) {
+    LOG(ERROR) << "Config is missing " << kHostOwnerConfigPath;
     return false;
   }
-  if (!config.FindString(kHostOwnerConfigPath)) {
-    LOG(ERROR) << "Config is missing " << kHostOwnerConfigPath;
+  if (!config.FindString(kHostSecretHashConfigPath) &&
+      !IsGoogleEmail(*host_owner)) {
+    // PIN authentication is not needed for Google hosts so we only want to
+    // fail if a secret_hash value isn't present for a non-Google host.
+    LOG(ERROR) << "Config is missing " << kHostSecretHashConfigPath;
     return false;
   }
   if (!config.FindString(kServiceAccountConfigPath) &&

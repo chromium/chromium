@@ -51,6 +51,8 @@ source_set("base") {
     "directory_service_client.h",
     "hostname.cc",
     "hostname.h",
+    "is_google_email.cc",
+    "is_google_email.h",
     "leaky_bucket.cc",
     "leaky_bucket.h",
     "name_value_map.h",
