@@ -38,4 +38,39 @@ void LogEditorNativeUIShowOpportunityState(EditorOpportunityMode mode) {
   }
 }
 
+void LogNumberOfCharactersInserted(EditorMode mode, int number_of_characters) {
+  std::string histogram_name;
+  switch (mode) {
+    case EditorMode::kWrite:
+      histogram_name = "InputMethod.Manta.Orca.CharactersInserted.Write";
+      break;
+    case EditorMode::kRewrite:
+      histogram_name = "InputMethod.Manta.Orca.CharactersInserted.Rewrite";
+      break;
+    case EditorMode::kConsentNeeded:
+    case EditorMode::kBlocked:
+      return;
+  }
+  base::UmaHistogramCounts100000(histogram_name, number_of_characters);
+}
+
+void LogNumberOfCharactersSelectedForInsert(EditorMode mode,
+                                            int number_of_characters) {
+  std::string histogram_name;
+  switch (mode) {
+    case EditorMode::kWrite:
+      histogram_name =
+          "InputMethod.Manta.Orca.CharactersSelectedForInsert.Write";
+      break;
+    case EditorMode::kRewrite:
+      histogram_name =
+          "InputMethod.Manta.Orca.CharactersSelectedForInsert.Rewrite";
+      break;
+    case EditorMode::kConsentNeeded:
+    case EditorMode::kBlocked:
+      return;
+  }
+  base::UmaHistogramCounts100000(histogram_name, number_of_characters);
+}
+
 }  // namespace ash::input_method

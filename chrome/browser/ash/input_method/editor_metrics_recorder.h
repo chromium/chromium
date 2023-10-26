@@ -14,6 +14,11 @@ void LogEditorState(EditorStates state, EditorMode mode);
 
 void LogEditorNativeUIShowOpportunityState(EditorOpportunityMode mode);
 
+void LogNumberOfCharactersInserted(EditorMode mode, int number_of_characters);
+
+void LogNumberOfCharactersSelectedForInsert(EditorMode mode,
+                                            int number_of_characters);
+
 }  // namespace ash::input_method
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_METRICS_RECORDER_H_

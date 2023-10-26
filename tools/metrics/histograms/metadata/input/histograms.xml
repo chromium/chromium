@@ -1106,6 +1106,57 @@ chromium-metrics-reviews@google.com.
   <summary>Time taken by the engine to handle a key event.</summary>
 </histogram>
 
+<histogram name="InputMethod.Manta.Orca.CharactersInserted.{Mode}"
+    units="characters" expires_after="2024-10-19">
+  <owner>hdchuong@google.com</owner>
+  <owner>zacpartridge@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Counts the number of characters inserted by the editor. This metric is
+    recorded at the time an insertion is performed.
+  </summary>
+  <token key="Mode">
+    <variant name="Rewrite"
+        summary="There is selected text and the user is rewriting it with the
+                 editor"/>
+    <variant name="Write" summary="The editor is in freeform write mode"/>
+  </token>
+</histogram>
+
+<histogram name="InputMethod.Manta.Orca.CharactersSelectedForInsert.{Mode}"
+    units="characters" expires_after="2024-10-19">
+  <owner>hdchuong@google.com</owner>
+  <owner>zacpartridge@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Counts the number of characters selected for insertion. This metric is
+    recorded at the time an insertion is performed.
+  </summary>
+  <token key="Mode">
+    <variant name="Rewrite"
+        summary="There is selected text and the user is rewriting it with the
+                 editor"/>
+    <variant name="Write" summary="The editor is in freeform write mode"/>
+  </token>
+</histogram>
+
+<histogram name="InputMethod.Manta.Orca.FreeFormCharactersForInsert.{Mode}"
+    units="characters" expires_after="2024-10-19">
+  <owner>hdchuong@google.com</owner>
+  <owner>zacpartridge@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Counts the number of characters in a freeform request (if any) for an
+    insert. This metric is recorded at the time an insertion is performed.
+  </summary>
+  <token key="Mode">
+    <variant name="Rewrite"
+        summary="There is selected text and the user is rewriting it with the
+                 editor"/>
+    <variant name="Write" summary="The editor is in freeform write mode"/>
+  </token>
+</histogram>
+
 <histogram name="InputMethod.Manta.Orca.States.{Mode}" enum="IMEEditorStates"
     expires_after="2024-10-19">
   <owner>zacpartridge@google.com</owner>
