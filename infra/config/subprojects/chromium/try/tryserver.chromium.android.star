@@ -349,6 +349,15 @@ try_.builder(
     ],
     contact_team_email = "cronet-team@google.com",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+    tryjob = try_.job(
+        location_filters = [
+            "components/cronet/.+",
+            "components/grpc_support/.+",
+            "build/android/.+",
+            "build/config/android/.+",
+            cq.location_filter(exclude = True, path_regexp = "components/cronet/ios/.+"),
+        ],
+    ),
 )
 
 try_.builder(
@@ -386,15 +395,6 @@ try_.builder(
     contact_team_email = "cronet-team@google.com",
     main_list_view = "try",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
-    tryjob = try_.job(
-        location_filters = [
-            "components/cronet/.+",
-            "components/grpc_support/.+",
-            "build/android/.+",
-            "build/config/android/.+",
-            cq.location_filter(exclude = True, path_regexp = "components/cronet/ios/.+"),
-        ],
-    ),
 )
 
 try_.builder(
