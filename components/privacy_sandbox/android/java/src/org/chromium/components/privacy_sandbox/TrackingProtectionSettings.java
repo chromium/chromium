@@ -233,7 +233,6 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
     }
 
     private void maybeShowOffboardingCard() {
-        // TODO(b/307275613): Check the user is kOffboarded.
         if (mDelegate.shouldShowSettingsOffboardingNotice()) {
             mOffboardingNoticeCard = (CardPreference) findPreference(OFFBOARDING_NOTICE);
             mOffboardingNoticeCard.setVisible(true);

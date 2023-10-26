@@ -45,7 +45,8 @@ public class ChromeTrackingProtectionDelegate implements TrackingProtectionDeleg
     @Override
     public boolean shouldShowSettingsOffboardingNotice() {
         return ChromeFeatureList.isEnabled(
-                ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_PAGE_ROLLBACK_NOTICE);
+                        ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_PAGE_ROLLBACK_NOTICE)
+                && TrackingProtectionBridge.isOffboarded();
     }
 
     @Override

@@ -21,6 +21,10 @@ public class TrackingProtectionBridge {
         TrackingProtectionBridgeJni.get().noticeShown(noticeType);
     }
 
+    public static boolean isOffboarded() {
+        return TrackingProtectionBridgeJni.get().isOffboarded();
+    }
+
     @NativeMethods
     public interface Natives {
         void noticeShown(int noticeType);
@@ -28,5 +32,7 @@ public class TrackingProtectionBridge {
         void noticeActionTaken(int noticeType, int action);
 
         int getRequiredNotice();
+
+        boolean isOffboarded();
     }
 }

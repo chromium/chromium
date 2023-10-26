@@ -26,6 +26,11 @@ public class FakeTrackingProtectionBridge implements TrackingProtectionBridge.Na
         return mNoticeType;
     }
 
+    @Override
+    public boolean isOffboarded() {
+        return false;
+    }
+
     public void setRequiredNotice(@NoticeType int noticeType) {
         mNoticeType = noticeType;
     }

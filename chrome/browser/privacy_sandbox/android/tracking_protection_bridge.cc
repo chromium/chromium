@@ -36,3 +36,7 @@ static void JNI_TrackingProtectionBridge_NoticeActionTaken(JNIEnv* env,
       static_cast<privacy_sandbox::TrackingProtectionOnboarding::NoticeAction>(
           action));
 }
+
+static jboolean JNI_TrackingProtectionBridge_IsOffboarded(JNIEnv* env) {
+  return GetTrackingProtectionOnboardingService()->IsOffboarded();
+}
