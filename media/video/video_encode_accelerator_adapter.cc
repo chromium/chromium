@@ -99,6 +99,19 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
       VideoEncodeAccelerator::Config(format, opts.frame_size, profile, bitrate,
                                      initial_framerate, opts.keyframe_interval);
 
+  if (opts.content_hint) {
+    switch (*opts.content_hint) {
+      case media::VideoEncoder::ContentHint::Camera:
+        config.content_type =
+            VideoEncodeAccelerator::Config::ContentType::kCamera;
+        break;
+      case media::VideoEncoder::ContentHint::Screen:
+        config.content_type =
+            VideoEncodeAccelerator::Config::ContentType::kDisplay;
+        break;
+    }
+  }
+
   size_t num_temporal_layers = 1;
   if (opts.scalability_mode) {
     switch (opts.scalability_mode.value()) {
